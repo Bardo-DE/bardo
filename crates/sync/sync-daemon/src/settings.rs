@@ -492,7 +492,7 @@ fn write_drives(file: &Path, list: &str, id: &str, listed: bool) -> std::io::Res
         );
     }
     let text = toml::to_string(&table).map_err(std::io::Error::other)?;
-    account_fs::atomic::AtomicWrite::PRIVATE.write(file, text.as_bytes())
+    base_fs::atomic::AtomicWrite::PRIVATE.write(file, text.as_bytes())
 }
 
 /// A drive's folder as people see it: each is a folder of `~/Cloud` ([`crate::paths::Paths`]).
@@ -518,7 +518,7 @@ fn write_cache_limit(file: &Path, limit: CacheLimit) -> std::io::Result<()> {
         );
     }
     let text = toml::to_string(&table).map_err(std::io::Error::other)?;
-    account_fs::atomic::AtomicWrite::PRIVATE.write(file, text.as_bytes())
+    base_fs::atomic::AtomicWrite::PRIVATE.write(file, text.as_bytes())
 }
 
 /// Bytes as the row takes them: text of digits (or a whole number).

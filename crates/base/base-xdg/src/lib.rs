@@ -1,6 +1,6 @@
 //! The XDG base directories a daemon keeps its files under, resolved from an environment the
 //! caller hands in (a closure, so a test names its own directories and nothing here reads the
-//! process's environment). One reader for accountd, syncd and inferd.
+//! process's environment). One reader for every program of the desktop.
 //!
 //! The XDG rule: a variable whose value is not an absolute path is invalid and ignored, as if it
 //! were not set; the directory then falls back to its place under `$HOME`, and a `$HOME` that is

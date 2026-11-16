@@ -12,7 +12,7 @@ publish.workspace = true
 account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 base-time = { path = "../../base/base-time" }
-account-fs = {path = "../account-fs"}
+base-fs = {path = "../../base/base-fs"}
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 oo7 = { workspace = true, optional = true }

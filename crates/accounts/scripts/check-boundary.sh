@@ -24,7 +24,7 @@ RULES=(
   "account-core: $EFFECTS toml"
   "account-wire: $EFFECTS toml"
   "account-sheet: $EFFECTS toml"
-  "account-fs: $EFFECTS"
+  "base-fs: $EFFECTS"
   "account-provider: $EFFECTS"
   "account-secrets: $EFFECTS"
   "account-service-core: $EFFECTS"
@@ -35,8 +35,8 @@ RULES=(
   "account-spaces: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
   "account-settings: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey"
   "account-store: zbus zvariant reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
-  "account-client: $EFFECTS account-dbus account-callers account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider account-fs"
-  "account-client-dbus: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider account-fs"
+  "account-client: $EFFECTS account-dbus account-callers account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider base-fs"
+  "account-client-dbus: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings account-service account-service-core account-service-accounts account-service-grants account-secrets account-provider base-fs"
   "account-client-inproc: zbus zvariant hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings account-dbus"
   "account-sheets: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
   "account-fake: $EFFECTS"
@@ -208,7 +208,7 @@ for file in "${PURE_FILES[@]}"; do
   fi
 done
 
-# account-core's and account-ids' source is pure: the file writer is account-fs, so no file, process or
+# account-core's and account-ids' source is pure: the file writer is base-fs, so no file, process or
 # environment access is named anywhere in either crate (a dependency rule cannot see std's own
 # modules).
 for pure in account-ids account-core; do
@@ -288,17 +288,17 @@ EDGES=(
   "account-wire: account-core account-match account-capability"
   "account-sheet: account-core account-tailscale account-capability account-ids account-wire"
   "account-daemon-support:"
-  "account-fs:"
+  "base-fs:"
   "account-keyring-chunked:"
   "account-provider: account-core account-match account-capability account-sheet account-ids"
-  "account-secrets: account-keyring-chunked account-core account-capability account-ids account-fs"
+  "account-secrets: account-keyring-chunked account-core account-capability account-ids base-fs"
   "account-service-core: account-core account-match account-capability account-sheet account-wire account-ids account-provider account-secrets"
   "account-service-accounts: account-service-core account-core account-tailscale account-match account-capability account-sheet account-wire account-ids account-provider account-secrets"
   "account-service-grants: account-service-core account-service-accounts account-core account-match account-capability account-wire account-ids account-provider account-secrets account-sheet"
   "account-service: account-service-core account-service-accounts account-service-grants account-core account-match account-capability account-wire account-ids account-provider account-secrets account-sheet"
-  "account-store: account-core account-capability account-fs"
-  "account-identities: account-service-core account-core account-ids account-fs account-secrets account-wire account-sheet"
-  "account-spaces: account-core account-ids account-fs"
+  "account-store: account-core account-capability base-fs"
+  "account-identities: account-service-core account-core account-ids base-fs account-secrets account-wire account-sheet"
+  "account-spaces: account-core account-ids base-fs"
   "account-settings: ui-settings account-service-core account-capability account-core account-ids account-provider account-sheet"
   "account-dbus-macros:"
   "account-callers: account-core"
@@ -327,7 +327,7 @@ EDGES=(
   "account-family-nextcloud: account-family-kit account-nextcloud-proto account-dav-proto account-core account-capability account-sheet account-provider account-http"
   "account-family-generic: account-family-kit account-generic-proto account-core account-capability account-sheet account-provider account-http account-discover account-proxy"
   "account-family-oauth: account-family-kit account-oauth-probe-proto account-core account-capability account-sheet account-ids account-provider account-http account-http-reqwest account-oauth"
-  "account-daemon: ui-settings account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth account-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
+  "account-daemon: ui-settings account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth base-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
   "account-rig: account-fake-secret-service account-client account-core account-capability account-wire account-ids account-callers account-fake account-fake-servers base-testkit account-client-dbus"
   "account-fake-secret-service:"
 )

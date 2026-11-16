@@ -15,7 +15,7 @@
 //! every change is refused until the person mends or moves the file.
 
 use account_core::{AppName, IdentityId};
-use account_fs::atomic::AtomicFile;
+use base_fs::atomic::AtomicFile;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -104,7 +104,7 @@ impl UseBook {
 
     /// Saves `doc` and, once it is on disk, holds it. In memory it is held at once.
     async fn commit(&mut self, doc: Document) -> Result<(), Unsaved> {
-        account_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
+        base_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
             .await
             .map(drop)
             .map_err(|_| Unsaved)

@@ -1,9 +1,9 @@
 //! Where accountd reads and writes, resolved from the environment (PLAN §2.3, §2.6): the one
 //! place the daemon names a path, so a test can give it scratch directories.
 
-pub use account_daemon_support::xdg::PathError;
-use account_daemon_support::{xdg::Xdg, xdg::absolute};
 use account_families::set::Layer;
+pub use base_xdg::PathError;
+use base_xdg::{Xdg, absolute};
 use std::path::{Path, PathBuf};
 
 /// Every path the daemon uses.

@@ -1,0 +1,15 @@
+[package]
+name = "base-xdg"
+description = "The XDG base directories resolved from an environment the caller hands in: the absolute-path rule, the $HOME fallbacks and the data and config search lists."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

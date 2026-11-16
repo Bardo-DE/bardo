@@ -14,7 +14,7 @@
 
 use account_core::store::{Persisted, StoreFault};
 use account_core::store::{RegistryStore, StoreError};
-use account_fs::atomic::AtomicFile;
+use base_fs::atomic::AtomicFile;
 use std::io;
 use std::path::{Path, PathBuf};
 

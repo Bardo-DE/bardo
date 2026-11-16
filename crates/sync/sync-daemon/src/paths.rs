@@ -3,8 +3,8 @@
 //! by its object-path segment (`base_ids::object_segment`), the form the account's
 //! directories are named in, so a wipe needs no map back to the id.
 
-pub use account_daemon_support::xdg::PathError;
-use account_daemon_support::xdg::Xdg;
+pub use base_xdg::PathError;
+use base_xdg::Xdg;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 

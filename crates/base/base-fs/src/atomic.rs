@@ -1,4 +1,4 @@
-//! The one way porter writes a file that a reader or a crash must never see half written.
+//! The one way the desktop writes a file that a reader or a crash must never see half written.
 //!
 //! A write goes to a staging file in the target's own directory (`.tmp-<pid>-<n>.tmp`, a dot
 //! file whose name no other save, in this process or another, is using), is written whole and
@@ -7,8 +7,7 @@
 //! staging file. Blocking calls only; the files are small.
 //!
 //! [`AtomicWrite`] is the writer; [`AtomicFile`] is one small file kept with the copy from before
-//! its last change (`<name>.bak`), as the registry is. This module is the one place in porter
-//! that touches the file system: the vocabulary around it stays free of I/O.
+//! its last change (`<name>.bak`), as the registry is.
 
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};

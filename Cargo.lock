@@ -193,6 +193,7 @@ dependencies = [
  "account-capability",
  "account-match",
  "base-ids",
+ "base-secret",
  "base-time",
  "base-url",
  "caller-identity-core",
@@ -219,7 +220,6 @@ dependencies = [
  "account-fake-servers",
  "account-families",
  "account-family-oauth",
- "account-fs",
  "account-http",
  "account-http-reqwest",
  "account-identities",
@@ -238,10 +238,12 @@ dependencies = [
  "account-store",
  "account-tailscale",
  "account-wire",
+ "base-fs",
  "base-ids",
  "base-testkit",
  "base-time",
  "base-url",
+ "base-xdg",
  "clap",
  "old-folders",
  "rustix 1.1.6",
@@ -482,16 +484,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "account-fs"
-version = "0.1.0"
-dependencies = [
- "base-testkit",
- "serde",
- "serde_json",
- "tokio",
-]
-
-[[package]]
 name = "account-generic-proto"
 version = "0.1.0"
 dependencies = [
@@ -550,11 +542,11 @@ name = "account-identities"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-fs",
  "account-secrets",
  "account-service-core",
  "account-sheet",
  "account-wire",
+ "base-fs",
  "base-testkit",
  "base-time",
  "serde",
@@ -696,10 +688,10 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-fs",
  "account-keyring-chunked",
  "account-secrets",
  "apple-native-keyring-store",
+ "base-fs",
  "base-testkit",
  "base-time",
  "keyring-core",
@@ -836,7 +828,7 @@ name = "account-spaces"
 version = "0.1.0"
 dependencies = [
  "account-core",
- "account-fs",
+ "base-fs",
  "base-testkit",
  "base-time",
  "serde",
@@ -852,7 +844,7 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-fake",
- "account-fs",
+ "base-fs",
  "base-testkit",
  "serde",
  "serde_json",
@@ -3121,12 +3113,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "base-fs"
+version = "0.1.0"
+dependencies = [
+ "base-testkit",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "base-ids"
 version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "base-secret"
+version = "0.1.0"
+dependencies = [
+ "secrecy",
+ "serde",
+ "subtle",
+ "zeroize",
 ]
 
 [[package]]
@@ -3149,6 +3161,13 @@ dependencies = [
  "percent-encoding",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "base-xdg"
+version = "0.1.0"
+dependencies = [
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -5986,7 +6005,7 @@ name = "drive-core"
 version = "0.1.0"
 dependencies = [
  "account-capability",
- "account-fs",
+ "base-fs",
  "base-ids",
  "base-testkit",
  "base-time",
@@ -7808,10 +7827,10 @@ dependencies = [
  "account-core",
  "account-dbus",
  "account-fake-servers",
- "account-fs",
  "account-match",
  "account-tailscale",
  "account-wire",
+ "base-fs",
  "base-ids",
  "base-testkit",
  "base-time",
@@ -7879,7 +7898,6 @@ dependencies = [
  "account-dbus",
  "account-fake",
  "account-fake-servers",
- "account-fs",
  "account-http",
  "account-http-reqwest",
  "account-match",
@@ -7888,10 +7906,12 @@ dependencies = [
  "account-settings",
  "account-tailscale",
  "account-wire",
+ "base-fs",
  "base-ids",
  "base-testkit",
  "base-time",
  "base-url",
+ "base-xdg",
  "chrono",
  "clap",
  "computer-use-action",
@@ -8020,8 +8040,8 @@ name = "inference-tailnet"
 version = "0.1.0"
 dependencies = [
  "account-fake-servers",
- "account-fs",
  "account-tailscale",
+ "base-fs",
  "base-testkit",
  "base-time",
  "http-body-util",
@@ -14590,7 +14610,6 @@ dependencies = [
  "account-dbus",
  "account-fake",
  "account-fake-servers",
- "account-fs",
  "account-http",
  "account-http-relay",
  "account-http-reqwest",
@@ -14601,10 +14620,12 @@ dependencies = [
  "account-service-core",
  "account-sheet",
  "account-wire",
+ "base-fs",
  "base-ids",
  "base-testkit",
  "base-time",
  "base-url",
+ "base-xdg",
  "base64 0.22.1",
  "chrono",
  "clap",

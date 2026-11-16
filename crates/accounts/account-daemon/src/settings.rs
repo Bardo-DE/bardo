@@ -21,7 +21,6 @@ use account_core::{
     Account, AccountId, AccountState, AppId, AppName, AuthKind, GrantId, IdentityId, Isolation,
 };
 use account_families::set::ProviderNames;
-use account_fs::atomic::AtomicFile;
 use account_provider::{ClientChannel, ClientsFile, Issuer, parse_clients};
 use account_service_accounts::{Launchers as _, program_of};
 use account_service_core::audit::AuditEvent;
@@ -34,6 +33,7 @@ use account_sheets::AppNames;
 use account_wire::AccountsReply;
 use account_wire::ParentWindow;
 use account_wire::names::ACCOUNTS_SETTINGS_PATH;
+use base_fs::atomic::AtomicFile;
 use std::sync::Arc;
 use ui_settings::live::{
     Access, Caller, LiveError, LiveModule, LiveSchema, Snapshot, Verdict, serve,

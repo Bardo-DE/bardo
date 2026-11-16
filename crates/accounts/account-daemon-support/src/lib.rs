@@ -15,7 +15,6 @@
 mod registry;
 #[cfg(feature = "watch")]
 mod watch;
-pub mod xdg;
 
 pub use registry::registry_words;
 #[cfg(feature = "watch")]

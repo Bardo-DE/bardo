@@ -28,7 +28,7 @@
 //! lending.disable().await?;                    // the switch turned off: idempotent
 //! ```
 
-use account_fs::atomic::AtomicWrite;
+use base_fs::atomic::AtomicWrite;
 use std::ffi::OsString;
 use std::future::Future;
 use std::io;

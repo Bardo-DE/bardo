@@ -5,7 +5,7 @@
 //! The accounts folders (`porter/providers`, `porter/clients.toml`) are accountd's to move.
 
 use crate::config::ConfigError;
-use account_daemon_support::xdg::{PathError, Xdg};
+use base_xdg::{PathError, Xdg};
 use std::path::PathBuf;
 
 /// The folders of the variables `var` answers, before and after the rename: `(old, new)` pairs.

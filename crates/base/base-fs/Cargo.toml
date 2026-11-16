@@ -1,6 +1,6 @@
 [package]
-name = "account-fs"
-description = "porter's file writer: atomic saves (a staging file, synced, renamed over the target, the directory synced) the one-file backup and (feature `book`) a kept document saved on the blocking pool. Std only by default; the one place porter's blocking file writes live."
+name = "base-fs"
+description = "Files a reader or a crash never sees half written: AtomicWrite replaces a file whole, AtomicFile keeps one small file with its backup; with the book feature, a document saved off the async runtime."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

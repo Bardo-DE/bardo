@@ -1,5 +1,4 @@
-//! porter's file writer: the one blocking place that writes files, kept out of the pure
-//! vocabulary crate (`account-core`) so that crate reaches no file system.
+//! Atomic file writes: the one blocking place that writes small files whole.
 //!
 //! [`atomic::AtomicWrite`] replaces a file whole or not at all; [`atomic::AtomicFile`] is one
 //! small file kept with its backup. Std only, no runtime, unless the `book` feature is named:

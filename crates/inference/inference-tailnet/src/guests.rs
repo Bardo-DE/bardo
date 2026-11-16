@@ -9,9 +9,9 @@
 //! person may want back. The questions still waiting are kept in memory only: after a restart
 //! the computer asks again when it next wants a model.
 
-#[cfg(feature = "persist")]
-use account_fs::atomic::AtomicWrite;
 use account_tailscale::NodeId;
+#[cfg(feature = "persist")]
+use base_fs::atomic::AtomicWrite;
 use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;

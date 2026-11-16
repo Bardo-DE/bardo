@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 account-core = {path = "../account-core"}
 base-time = { path = "../../base/base-time" }
-account-fs = {path = "../account-fs", features = ["book"]}
+base-fs = {path = "../../base/base-fs", features = ["book"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }

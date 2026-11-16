@@ -18,7 +18,7 @@ use crate::namespace::Namespace;
 use crate::secrets::Secrets;
 use account_core::AccountId;
 use account_core::{Credential, SecretKey};
-use account_fs::atomic::AtomicWrite;
+use base_fs::atomic::AtomicWrite;
 use serde_json::{Value, json};
 use std::fs::{File, OpenOptions};
 use std::io::{ErrorKind, Read};

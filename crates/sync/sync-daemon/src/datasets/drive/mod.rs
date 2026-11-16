@@ -53,7 +53,7 @@ pub fn note_folder(paths: &Paths, account: &AccountDir, folder: &str) -> std::io
     if let Some(dir) = note.parent() {
         std::fs::create_dir_all(dir)?;
     }
-    account_fs::atomic::AtomicWrite::PRIVATE.write(&note, folder.as_bytes())
+    base_fs::atomic::AtomicWrite::PRIVATE.write(&note, folder.as_bytes())
 }
 
 /// The folder the drive of `account` was last shown at: the noted one, else one named after

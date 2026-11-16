@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
 zbus-ready = { path = "../../zbus-ready" }
 account-core = {path = "../account-core"}
 account-match = {path = "../account-match"}
@@ -19,7 +20,7 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 account-daemon-support = {path = "../account-daemon-support", default-features = false, features = ["watch"]}
-account-fs = {path = "../account-fs"}
+base-fs = {path = "../../base/base-fs"}
 account-callers = {path = "../account-callers", features = ["file"]}
 account-dbus = {path = "../account-dbus"}
 account-families = {path = "../account-families", features = ["set"]}

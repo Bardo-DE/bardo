@@ -7,7 +7,7 @@ mod discover;
 
 use crate::probe::ProbeConfig;
 use crate::structured::AiConfig;
-use account_daemon_support::{xdg::PathError, xdg::Xdg};
+use base_xdg::{PathError, Xdg};
 use inference_router::catalog::CatalogDirs;
 use inference_router::local::EngineConfig;
 use serde::{Deserialize, Serialize};

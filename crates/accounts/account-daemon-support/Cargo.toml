@@ -1,6 +1,6 @@
 [package]
 name = "account-daemon-support"
-description = "What every desktop daemon shares and has no bus for: the choice of the /proc a daemon reads its callers from, a watch on a settings file, and the XDG base directories."
+description = "What every desktop daemon shares and has no bus for: the choice of the /proc a daemon reads its callers from and a watch on a settings file."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -14,7 +14,7 @@
 //!   every change is refused until the person mends or moves the file.
 
 use account_core::{AppName, DesktopSpace, DesktopSpaceRecord, SpaceLook, SpaceName};
-use account_fs::atomic::AtomicFile;
+use base_fs::atomic::AtomicFile;
 use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, VecDeque};
@@ -270,7 +270,7 @@ impl SpaceBook {
         if !self.writable {
             return Err(SpaceFault::Unsaved);
         }
-        account_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
+        base_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
             .await
             .map(drop)
             .map_err(|_| SpaceFault::Unsaved)

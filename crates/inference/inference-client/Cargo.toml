@@ -29,7 +29,7 @@ model-wire = {optional = true, path = "../../models/model-wire"}
 account-callers = {optional = true, path = "../../accounts/account-callers"}
 account-dbus = {optional = true, path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../inference-dbus", optional = true}
-account-fs = {optional = true, path = "../../accounts/account-fs"}
+base-fs = {optional = true, path = "../../base/base-fs"}
 rustix = {version = "1.1", default-features = false, features = ["std", "event", "fs", "net", "time", "process"], optional = true}
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
@@ -72,9 +72,9 @@ engines = [
 ]
 # `TailnetLending`: installs and takes away the drop-in that lets the person's other computers
 # reach inferd (the Settings switch "Let my other computers use this computer's models"), with the
-# manager of the person's units injected. Off by default: it brings account-fs (std only). With
+# manager of the person's units injected. Off by default: it brings base-fs (std only). With
 # `dbus` it also has `SessionUnits`, the real manager over the session bus.
-lending = ["dep:account-fs"]
+lending = ["dep:base-fs"]
 # The D-Bus transport (Linux, the desktop's inferd). It reads the session `Open` returns as
 # frames over a Unix stream socket with descriptors riding on them, so it pulls in the runtime.
 dbus = ["dep:rustix", "dep:serde", "dep:tokio", "dep:account-callers", "dep:account-dbus", "dep:inference-dbus", "dep:serde_json", "dep:zbus"]

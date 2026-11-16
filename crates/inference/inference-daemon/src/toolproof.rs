@@ -12,8 +12,8 @@
 //! never a prompt. A file that cannot be read is an empty cache, and the checks run again.
 
 use account_capability::LlmFeature;
-use account_fs::atomic::AtomicWrite;
 use account_match::Need;
+use base_fs::atomic::AtomicWrite;
 use inference_core::{InferReply, ModelError, ModelRef, ServedBy, ToolProof, Why};
 use inference_router::carried::Carried;
 use inference_router::seams::AuditSink;

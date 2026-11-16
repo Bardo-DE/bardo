@@ -1,0 +1,18 @@
+[package]
+name = "base-secret"
+description = "Secret text with a redacting Debug, wiped on drop, compared in constant time and never serialised by accident."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+secrecy = { workspace = true }
+serde = { workspace = true }
+subtle = { workspace = true }
+zeroize = { workspace = true }
+
+[lints]
+workspace = true

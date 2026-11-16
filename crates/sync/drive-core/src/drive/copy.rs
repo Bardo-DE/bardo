@@ -6,7 +6,7 @@ use crate::Reason;
 use crate::index::{Dirty, Edit};
 use crate::naming;
 use crate::source::CopyError;
-use account_fs::atomic::AtomicWrite;
+use base_fs::atomic::AtomicWrite;
 use sync_core::ItemKind;
 
 /// The name a file made here is shown by when the index lost it (a crash between its write and

@@ -5,7 +5,7 @@ use super::resolve::resolve;
 use crate::config::InferdConfig;
 use crate::engines::Engines;
 use crate::supervise::Programs;
-use account_fs::atomic::AtomicWrite;
+use base_fs::atomic::AtomicWrite;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 

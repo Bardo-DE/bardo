@@ -23,8 +23,8 @@
 use super::book::AttachedBook;
 use account_capability::ModelId;
 use account_core::SecretText;
-use account_fs::atomic::AtomicWrite;
 use account_tailscale::NodeId;
+use base_fs::atomic::AtomicWrite;
 use inference_core::{ComputerName, PlaceId};
 use inference_router::attached::{
     Attached, AttachedEntry, AttachedError, Place, Reach, local_model,

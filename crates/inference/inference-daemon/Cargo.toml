@@ -15,6 +15,7 @@ publish.workspace = true
 test-proc-root = ["account-callers/test-proc-root"]
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
 zbus-ready = { path = "../../zbus-ready" }
 old-folders = { path = "../../platform/old-folders" }
 account-core = {path = "../../accounts/account-core"}
@@ -25,7 +26,7 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 account-daemon-support = {default-features = false, features = ["watch"], path = "../../accounts/account-daemon-support"}
-account-fs = {path = "../../accounts/account-fs"}
+base-fs = {path = "../../base/base-fs"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 account-callers = {path = "../../accounts/account-callers"}
 account-dbus = {path = "../../accounts/account-dbus"}
