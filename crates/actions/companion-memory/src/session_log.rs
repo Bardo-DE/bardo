@@ -116,8 +116,7 @@ impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
         Ok(EntriesQuery {
             kinds: vec![
                 KindPattern::parse(ENTRY_KINDS)
-                    .ok()
-                    .ok_or(LogFault::Encode)?,
+                    .unwrap_or_else(|e| unreachable!("`ENTRY_KINDS` is a kind pattern: {e}")),
             ],
             about: Some(Self::thing(session)?),
             after,
@@ -291,8 +290,7 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
             let query = EntriesQuery {
                 kinds: vec![
                     KindPattern::parse(OPENED_KIND)
-                        .ok()
-                        .ok_or(LogFault::Encode)?,
+                        .unwrap_or_else(|e| unreachable!("`OPENED_KIND` is a kind pattern: {e}")),
                 ],
                 about: None,
                 after,

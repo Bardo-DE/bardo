@@ -96,7 +96,8 @@ fn fact_entity(id: &memory_core::FactId) -> Option<EntityId> {
 }
 
 fn text_param(inv: &Invocation, name: &str) -> Result<String, AppRefusal> {
-    let param = ParamName::parse(name).ok().ok_or(AppRefusal::Unsupported)?;
+    let param = ParamName::parse(name)
+        .map_err(|e| failed(&format!("{name:?} is not a parameter name: {e}")))?;
     match inv.args.get(&param).map(|a| &a.value) {
         Some(Value::Text(t)) if !t.trim().is_empty() => Ok(t.clone()),
         Some(Value::Text(_)) | None => Err(AppRefusal::NeedsParam {
@@ -221,11 +222,9 @@ impl<T: Transport> MemoryProvider<T> {
         let text = text_param(inv, "text")?;
         let draft = FactDraft {
             topic: TopicPath::parse(PROPOSAL_TOPIC)
-                .ok()
-                .ok_or(AppRefusal::Unsupported)?,
+                .map_err(|e| failed(&format!("the proposal topic is not a topic: {e}")))?,
             text: FactText::parse(&text)
-                .ok()
-                .ok_or_else(|| failed("that is not one short paragraph"))?,
+                .map_err(|e| failed(&format!("that is not one short paragraph: {e}")))?,
             links: Vec::new(),
             supersedes: Vec::new(),
             on_behalf: helper_job(&inv.actor),
