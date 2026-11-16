@@ -6,7 +6,7 @@ use std::process::{Command, Output};
 fn run(settings: Option<&str>) -> Output {
     let home = tempfile::tempdir().expect("scratch");
     if let Some(text) = settings {
-        let dir = home.path().join("config/docket");
+        let dir = home.path().join("config/bardo/actions");
         std::fs::create_dir_all(&dir).expect("dir");
         std::fs::write(dir.join("settings.toml"), text).expect("settings");
     }

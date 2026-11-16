@@ -40,7 +40,7 @@ pub(super) fn Routines(model: HelpersModel, helper: HelperId) -> Element {
         },
     };
     rsx! {
-        div { class: "sill-helper-routines",
+        div { class: "shell-helper-routines",
             Label { text: "Routines", style: LabelStyle::Headline }
             for proposal in model.routines.proposed_to(&helper) {
                 {proposal_panel(proposal, &say)}
@@ -74,14 +74,14 @@ fn routine_row(line: &RoutineLine, model: &HelpersModel, say: &Say) -> Element {
     };
     let (toggler, remover) = (say.clone(), say.clone());
     rsx! {
-        div { key: "{id}", class: "sill-helper-routine",
+        div { key: "{id}", class: "shell-helper-routine",
             Label { text: line.goal.clone() }
             Label { text: line.when.clone(), role: LabelRole::Secondary, style: LabelStyle::Footnote }
             Label { text: state_label(line.state), role: LabelRole::Secondary, style: LabelStyle::Footnote }
             if let Some(last) = last_run_line(line) {
                 Label { text: last, role: LabelRole::Secondary, style: LabelStyle::Footnote }
             }
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 Button {
                     label: toggle_label,
                     bezel: Bezel::Inline,
@@ -107,9 +107,9 @@ fn removal_question(line: &RoutineLine, say: &Say) -> Element {
     let question = remove_routine_question(&line.goal);
     let (keep, remove, id) = (say.clone(), say.clone(), line.id);
     rsx! {
-        div { class: "sill-helper-ask", role: "alert",
+        div { class: "shell-helper-ask", role: "alert",
             p { "{question}" }
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 Button {
                     label: "Cancel",
                     common: Common { id: Some("helper-routine-keep".to_owned()), ..Common::default() },
@@ -163,7 +163,7 @@ fn RoutineSheet(draft: RoutineDraft, notice: Option<String>) -> Element {
         },
     };
     rsx! {
-        div { class: "sill-helper-ask",
+        div { class: "shell-helper-ask",
             FieldGroup {
                 FieldRow { label: "Do",
                     TextField {
@@ -188,9 +188,9 @@ fn RoutineSheet(draft: RoutineDraft, notice: Option<String>) -> Element {
             }
             Label { text: MISSED_SKIPPED, role: LabelRole::Secondary, style: LabelStyle::Footnote }
             if let Some(sentence) = &notice {
-                p { class: "sill-helper-notice", role: "status", "{sentence}" }
+                p { class: "shell-helper-notice", role: "status", "{sentence}" }
             }
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 Button {
                     label: "Cancel",
                     common: Common { id: Some("helper-routine-cancel".to_owned()), ..Common::default() },

@@ -84,7 +84,7 @@ mod tests {
     #[test]
     fn the_indicator_floats_over_its_edge_and_takes_nothing() {
         let config = layer(&output(Some("DP-1")), &OsdTokens::default());
-        assert_eq!(config.namespace, "sill-osd-DP-1");
+        assert_eq!(config.namespace, "shell-osd-DP-1");
         assert_eq!(config.layer, LayerLevel::Overlay);
         assert_eq!(config.exclusive, ExclusiveZone::Auto);
         assert_eq!(config.keyboard, KeyboardMode::None);

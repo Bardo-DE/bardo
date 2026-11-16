@@ -30,7 +30,7 @@ fn sent(running: &mut cc_support::live::Running) -> Vec<IntentsCommand> {
 #[test]
 fn nothing_is_drawn_while_the_terminal_has_nothing_to_say() {
     let mut running = center(|_| {});
-    assert_eq!(running.harness.count(".sill-cc-terminal"), 0);
+    assert_eq!(running.harness.count(".shell-cc-terminal"), 0);
     assert_eq!(
         sent(&mut running),
         vec![IntentsCommand::RefreshGrants],
@@ -51,24 +51,24 @@ fn each_grant_is_a_row_and_revoke_sends_that_grant() {
     });
     sent(&mut running);
     let h = &mut running.harness;
-    assert_eq!(h.count(".sill-cc-terminal-row"), 2);
+    assert_eq!(h.count(".shell-cc-terminal-row"), 2);
     assert_eq!(
-        h.text_of(".sill-cc-terminal-row:nth-child(1) .sill-cc-terminal-action")
+        h.text_of(".shell-cc-terminal-row:nth-child(1) .shell-cc-terminal-action")
             .as_deref(),
         Some("Thread archive")
     );
     assert_eq!(
-        h.text_of(".sill-cc-terminal-row:nth-child(1) .sill-cc-terminal-app")
+        h.text_of(".shell-cc-terminal-row:nth-child(1) .shell-cc-terminal-app")
             .as_deref(),
         Some("in Mail")
     );
     assert_eq!(
-        h.text_of(".sill-cc-terminal-row:nth-child(2) .sill-cc-terminal-action")
+        h.text_of(".shell-cc-terminal-row:nth-child(2) .shell-cc-terminal-action")
             .as_deref(),
         Some("Dock pin")
     );
     assert_eq!(h.count("#terminal-resume"), 0, "not paused");
-    press(h, ".sill-cc-terminal-row:nth-child(2) .ds-button");
+    press(h, ".shell-cc-terminal-row:nth-child(2) .ds-button");
     h.advance(ms(40));
     assert_eq!(sent(&mut running), vec![IntentsCommand::RevokeGrant(shell)]);
 }
@@ -84,12 +84,12 @@ fn a_paused_terminal_says_why_and_resumes_on_the_button() {
     });
     sent(&mut running);
     let h = &mut running.harness;
-    assert_eq!(h.count(".sill-cc-terminal-paused"), 1);
+    assert_eq!(h.count(".shell-cc-terminal-paused"), 1);
     assert_eq!(
         h.text_of("#terminal-resume").as_deref(),
         Some("Resume the terminal")
     );
-    assert_eq!(h.count(".sill-cc-terminal-row"), 0);
+    assert_eq!(h.count(".shell-cc-terminal-row"), 0);
     press(h, "#terminal-resume");
     h.advance(ms(40));
     assert_eq!(sent(&mut running), vec![IntentsCommand::ResumeTerminal]);
@@ -99,5 +99,5 @@ fn a_paused_terminal_says_why_and_resumes_on_the_button() {
         .intents
         .send_replace(seat(Terminal::default()));
     running.harness.advance(ms(100));
-    assert_eq!(running.harness.count(".sill-cc-terminal"), 0);
+    assert_eq!(running.harness.count(".shell-cc-terminal"), 0);
 }

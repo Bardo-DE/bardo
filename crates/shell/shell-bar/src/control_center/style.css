@@ -6,7 +6,7 @@
 
 /* The panel holds the keyboard (Escape), with no ring of its own. It is positioned: quire's
    inline `Alert` ("Turn Bluetooth off?", its last child) covers it. */
-.sill-cc{ display:block; position:relative; width:var(--cc-width); padding:var(--cc-pad); box-sizing:border-box; color:var(--ink);
+.shell-cc{ display:block; position:relative; width:var(--cc-width); padding:var(--cc-pad); box-sizing:border-box; color:var(--ink);
   outline:none; }
 
 /* The full-width modules (Sound, Display, Now Playing, Appearance, Battery) are quire's
@@ -14,36 +14,36 @@
 
 /* Now Playing: quire's track (art and two lines) beside the transport, the position under
    them. */
-.sill-cc-media{ display:flex; flex-direction:column; gap:var(--s-6); min-width:0; }
-.sill-cc-media-row{ display:flex; align-items:center; gap:var(--s-12); min-width:0; }
-.sill-cc-media-track{ display:block; flex:1 1 0; min-width:0; }
-.sill-cc-media-buttons{ display:flex; align-items:center; gap:var(--s-2); }
+.shell-cc-media{ display:flex; flex-direction:column; gap:var(--s-6); min-width:0; }
+.shell-cc-media-row{ display:flex; align-items:center; gap:var(--s-12); min-width:0; }
+.shell-cc-media-track{ display:block; flex:1 1 0; min-width:0; }
+.shell-cc-media-buttons{ display:flex; align-items:center; gap:var(--s-2); }
 
 /* Night Shift under Display: the line that says what it is doing, and the warmth slider with
    its two ends. In a module's own dropdown the panels have no plate, so they are spaced apart. */
-.sill-cc-night-line{ font-size:var(--fs-help); color:var(--ink-faint); }
-.sill-cc-night-warmth{ display:flex; flex-direction:column; gap:var(--s-2); }
-.sill-cc-night-ends{ display:flex; justify-content:space-between; font-size:var(--fs-help); color:var(--ink-faint); }
-.sill-cc[*|data-drop=module] .sill-cc-night{ margin-top:var(--s-10); }
+.shell-cc-night-line{ font-size:var(--fs-help); color:var(--ink-faint); }
+.shell-cc-night-warmth{ display:flex; flex-direction:column; gap:var(--s-2); }
+.shell-cc-night-ends{ display:flex; justify-content:space-between; font-size:var(--fs-help); color:var(--ink-faint); }
+.shell-cc[*|data-drop=module] .shell-cc-night{ margin-top:var(--s-10); }
 
 /* Appearance: the theme row and the accent row, one under the other. */
-.sill-cc-appearance{ display:grid; gap:var(--s-14); }
+.shell-cc-appearance{ display:grid; gap:var(--s-14); }
 
 /* Battery: one ring per device, its lines, the power mode. */
-.sill-cc-battery{ display:flex; flex-direction:column; gap:var(--s-6); }
-.sill-cc-batteries{ display:flex; flex-wrap:wrap; gap:var(--s-12); }
-.sill-cc-profile{ display:flex; flex-direction:column; margin-top:var(--s-4); }
+.shell-cc-battery{ display:flex; flex-direction:column; gap:var(--s-6); }
+.shell-cc-batteries{ display:flex; flex-wrap:wrap; gap:var(--s-12); }
+.shell-cc-profile{ display:flex; flex-direction:column; margin-top:var(--s-4); }
 
 /* A detail pane (Wi-Fi's networks, Bluetooth's devices): quire's PaneHeader, its list or empty
    state, its PaneFooter. */
-.sill-cc-detail{ display:flex; flex-direction:column; gap:var(--s-6); }
+.shell-cc-detail{ display:flex; flex-direction:column; gap:var(--s-6); }
 
 /* Terminal: what the terminal may do without asking, with its Revoke, and the way back from a
    pause. */
-.sill-cc-terminal{ display:flex; flex-direction:column; gap:var(--s-6); }
-.sill-cc-terminal-paused{ display:flex; flex-direction:column; align-items:flex-start; gap:var(--s-6); }
-.sill-cc-terminal-grants{ display:flex; flex-direction:column; gap:var(--s-4); }
-.sill-cc-terminal-row{ display:flex; align-items:center; justify-content:space-between; gap:var(--s-8); }
-.sill-cc-terminal-words{ display:flex; flex-direction:column; min-width:0; }
-.sill-cc-terminal-action{ font-size:var(--fs-body); }
-.sill-cc-terminal-app{ font-size:var(--fs-small); color:var(--ink-soft); }
+.shell-cc-terminal{ display:flex; flex-direction:column; gap:var(--s-6); }
+.shell-cc-terminal-paused{ display:flex; flex-direction:column; align-items:flex-start; gap:var(--s-6); }
+.shell-cc-terminal-grants{ display:flex; flex-direction:column; gap:var(--s-4); }
+.shell-cc-terminal-row{ display:flex; align-items:center; justify-content:space-between; gap:var(--s-8); }
+.shell-cc-terminal-words{ display:flex; flex-direction:column; min-width:0; }
+.shell-cc-terminal-action{ font-size:var(--fs-body); }
+.shell-cc-terminal-app{ font-size:var(--fs-small); color:var(--ink-soft); }

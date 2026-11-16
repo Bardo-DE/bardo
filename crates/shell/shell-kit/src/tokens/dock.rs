@@ -33,24 +33,24 @@ pub enum DockToken {
     /// 6 px padding.
     #[token(name = "dock-dot-gap", input = "--dock-dot-gap-px", value = "3px")]
     DotGap,
-    /// `--sill-dock-pill-radius`: the pill's squircle corner (22).
+    /// `--shell-dock-pill-radius`: the pill's squircle corner (22).
     #[token(
-        name = "sill-dock-pill-radius",
-        input = "--sill-dock-pill-radius-px",
+        name = "shell-dock-pill-radius",
+        input = "--shell-dock-pill-radius-px",
         value = "22px"
     )]
     PillRadius,
-    /// `--sill-dock-edge-clamp`: how close the pill gets to the output's sides (8).
+    /// `--shell-dock-edge-clamp`: how close the pill gets to the output's sides (8).
     #[token(
-        name = "sill-dock-edge-clamp",
-        input = "--sill-dock-edge-clamp-px",
+        name = "shell-dock-edge-clamp",
+        input = "--shell-dock-edge-clamp-px",
         value = "8px"
     )]
     EdgeClamp,
-    /// `--sill-dock-separator-height`: the line before Trash (36).
+    /// `--shell-dock-separator-height`: the line before Trash (36).
     #[token(
-        name = "sill-dock-separator-height",
-        input = "--sill-dock-separator-height-px",
+        name = "shell-dock-separator-height",
+        input = "--shell-dock-separator-height-px",
         value = "36px"
     )]
     SeparatorHeight,

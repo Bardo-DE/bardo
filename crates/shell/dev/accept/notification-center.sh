@@ -7,7 +7,7 @@
 # bardo-shell running meanwhile keeps its own single-instance lock and IPC socket. Every notification
 # comes from `bardo-shell debug notify`. The daemon is quit at the end.
 #
-#   1. `sill-notification-center-<out>` exists from the start, hidden (no capture).
+#   1. `shell-notification-center-<out>` exists from the start, hidden (no capture).
 #   2. `bardo-shell notifications toggle` shows it (a capture with the column's pixels; the empty state
 #      in dev/out/notification-center-empty-casement.png), `toggle`
 #      again hides it, `open` twice stays open, `close` hides it.
@@ -157,8 +157,8 @@ start_center_daemon() {
   backdrop_seed "$CONFIG" || return 1
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  BAR="sill-bar-$NAME"
-  CENTER="sill-notification-center-$NAME"
+  BAR="shell-bar-$NAME"
+  CENTER="shell-notification-center-$NAME"
   sleep 1.5
   echo "daemon on a private bus and runtime dir $RUNTIME; $BAR, $CENTER" >&2
 }

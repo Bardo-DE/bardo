@@ -28,7 +28,7 @@ DETENT="$SCEN_BUILD/detent-target/debug/bardo-settings"
 scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
 
 export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+export CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 floor_shim bardo-settings-1.5 bardo-compositorctl bardo-settings bardo-compositor   # bardo-compositorctl shot watches the screen; bardo-settings is the Settings app (both run from build/)
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"

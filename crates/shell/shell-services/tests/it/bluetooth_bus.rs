@@ -72,7 +72,7 @@ fn bluez_starting_late_dying_and_returning_is_followed() {
     let Some(bus) = PrivateBus::start() else {
         return;
     };
-    let scratch = std::env::temp_dir().join(format!("sill-bt-bus-{}", std::process::id()));
+    let scratch = std::env::temp_dir().join(format!("shell-bt-bus-{}", std::process::id()));
     std::fs::create_dir_all(&scratch).unwrap_or_else(|e| panic!("{e}"));
     let log = scratch.join("powered.log");
     let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));

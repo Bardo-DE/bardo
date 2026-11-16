@@ -3,7 +3,7 @@
    surface times before it asks shell-host to unlock. Nothing under `.ds-lock*` is styled here.
    Attribute selectors carry `*|`. */
 
-.sill-lock{ position:absolute; inset:0; opacity:1;
+.shell-lock{ position:absolute; inset:0; opacity:1;
   transition:opacity var(--t-move) var(--e-exit); }
 
-.sill-lock[*|data-leaving=yes]{ opacity:0; }
+.shell-lock[*|data-leaving=yes]{ opacity:0; }

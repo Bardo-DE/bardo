@@ -92,7 +92,7 @@ fn the_prompt_follows_the_check() {
 
 #[test]
 fn a_written_backdrop_is_the_stages_picture() {
-    let dir = std::env::temp_dir().join(format!("sill-lock-render-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("shell-lock-render-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
     let image = dir.join("aa-1920x1080.png");
     std::fs::write(dir.join("aa-1920x1080-backdrop.png"), b"png").unwrap_or_else(|e| panic!("{e}"));

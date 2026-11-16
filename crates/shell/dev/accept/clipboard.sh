@@ -142,7 +142,7 @@ print(json.loads(sys.stdin.read())["v"]["selected"])' 2>/dev/null || echo -1
 # 4.
 step_launcher() {
   local rows="$OUT_DIR/launcher-rows.json" panel
-  panel="sill-launcher-$(output_name)" || return 1
+  panel="shell-launcher-$(output_name)" || return 1
   # The marked copy was killed above; put the made-up text back as the selection first, so a
   # paste proves the history's offer and not wl-copy's.
   nested_wl wl-copy -- "something else, made up" || return 1

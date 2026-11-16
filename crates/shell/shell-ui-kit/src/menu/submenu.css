@@ -6,5 +6,5 @@
    `PopupFrame` writes `--popup-submenu-room` and adds this sheet only when there is room. It names
    quire's overlay, which the frame's own sheet may not (`style.css` is clean under Strict): the
    lint test beside it excuses exactly these two selectors. */
-.sill-popup-frame .ds-overlay{ padding-left:var(--popup-submenu-room); }
-.sill-popup-frame .ds-overlay ~ .ds-overlay{ position:absolute; inset:0; }
+.shell-popup-frame .ds-overlay{ padding-left:var(--popup-submenu-room); }
+.shell-popup-frame .ds-overlay ~ .ds-overlay{ position:absolute; inset:0; }

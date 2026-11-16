@@ -92,7 +92,7 @@ mod tests {
     use super::write_consent;
 
     fn scratch() -> std::path::PathBuf {
-        let dir = std::env::temp_dir().join(format!("sill-voice-consent-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-voice-consent-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         dir
     }

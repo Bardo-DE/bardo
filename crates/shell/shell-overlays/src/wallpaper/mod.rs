@@ -9,7 +9,7 @@
 //! design/21 §8 says the wallpaper must not have. `Material::Widget` is used instead (closest
 //! in kind: a background-level surface, not a bar/menu/sheet one) with `false`
 //! (design's "blur none"): its own paper tint never shows, since the two image layers (or, with
-//! no source, `.sill-wallpaper`'s own `--paper`) cover the root completely. A quire gap: no
+//! no source, `.shell-wallpaper`'s own `--paper`) cover the root completely. A quire gap: no
 //! material variant paints nothing at all.
 
 mod crossfade;

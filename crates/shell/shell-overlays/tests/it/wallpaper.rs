@@ -56,8 +56,8 @@ fn no_entry_for_this_output_paints_no_image() {
 fn an_entry_for_a_different_output_is_ignored() {
     let html = run(image(
         "HDMI-A-1",
-        "/tmp/sill-wallpaper-render/other-light.png",
-        "/tmp/sill-wallpaper-render/other-dark.png",
+        "/tmp/shell-wallpaper-render/other-light.png",
+        "/tmp/shell-wallpaper-render/other-dark.png",
     ))
     .harness
     .html();
@@ -68,13 +68,13 @@ fn an_entry_for_a_different_output_is_ignored() {
 fn this_outputs_entry_shows_its_light_path_as_a_file_url() {
     let html = run(image(
         "DP-1",
-        "/tmp/sill-wallpaper-render/light.png",
-        "/tmp/sill-wallpaper-render/dark.png",
+        "/tmp/shell-wallpaper-render/light.png",
+        "/tmp/shell-wallpaper-render/dark.png",
     ))
     .harness
     .html();
     assert!(
-        html.contains("src=\"file:///tmp/sill-wallpaper-render/light.png\""),
+        html.contains("src=\"file:///tmp/shell-wallpaper-render/light.png\""),
         "{html}"
     );
     assert!(!html.contains("dark.png"), "{html}");
@@ -84,7 +84,7 @@ fn this_outputs_entry_shows_its_light_path_as_a_file_url() {
 fn fixture(tag: &str) -> PathBuf {
     let [r, g, b] = IMAGE;
     let path = std::env::temp_dir().join(format!(
-        "sill-wallpaper-paint-{tag}-{}.png",
+        "shell-wallpaper-paint-{tag}-{}.png",
         std::process::id()
     ));
     image::RgbaImage::from_pixel(64, 40, image::Rgba([r, g, b, 255]))

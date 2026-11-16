@@ -69,7 +69,7 @@ fn pinned_then_running_then_trash_with_dots_and_a_badge() {
             2,
         ),
         ("every icon as it is, on no plate", "class=\"ds-plate\"", 0),
-        ("no bare art", "class=\"sill-dock-art\"", 0),
+        ("no bare art", "class=\"shell-dock-art\"", 0),
         ("the terminal draws its own icon", "icons/foot.svg", 1),
         ("quire's floor in the pill", "class=\"ds-dock-floor\"", 1),
         ("a squircle pill", "data-corner=\"squircle\"", 1),
@@ -85,13 +85,13 @@ fn pinned_then_running_then_trash_with_dots_and_a_badge() {
         ("the pill element", "id=\"dock-pill\"", 1),
         (
             "the separator before Trash",
-            "class=\"sill-dock-separator\"",
+            "class=\"shell-dock-separator\"",
             1,
         ),
         ("no strip while auto-hide is off", "id=\"dock-strip\"", 0),
         ("the Dock material", "data-material=\"dock\"", 1),
         ("the root draws the Space", "data-frame=\"tinted\"", 1),
-        ("no tint layer of the dock's own", "sill-dock-tint", 0),
+        ("no tint layer of the dock's own", "shell-dock-tint", 0),
         ("plates on paper", "data-ground=\"frame\"", 0),
         (
             "Files and Terminal draw their own icons",
@@ -142,7 +142,7 @@ fn settings_drop_the_trash_and_add_the_strip() {
         labels(&html),
         ["Example Files", "Example Terminal", "Firefox"]
     );
-    assert_eq!(count(&html, "class=\"sill-dock-separator\""), 0);
+    assert_eq!(count(&html, "class=\"shell-dock-separator\""), 0);
     assert_eq!(count(&html, "id=\"dock-strip\""), 1);
 }
 
@@ -166,7 +166,7 @@ fn a_mapped_app_draws_its_own_icon_on_no_plate() {
             "{style:?}: an image, not the window glyph\n{html}"
         );
         assert!(
-            !html.contains("sill-dock-art"),
+            !html.contains("shell-dock-art"),
             "{style:?}: no art of the dock's own\n{html}"
         );
     }

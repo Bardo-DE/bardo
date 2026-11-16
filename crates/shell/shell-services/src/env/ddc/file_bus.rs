@@ -129,7 +129,7 @@ mod tests {
 
     #[test]
     fn the_file_answers_reads_and_records_writes() {
-        let dir = std::env::temp_dir().join(format!("sill-file-bus-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-file-bus-{}", std::process::id()));
         std::fs::create_dir_all(&dir).expect("a scratch dir"); // test-only
         let path = dir.join("ddc.json");
         std::fs::write(

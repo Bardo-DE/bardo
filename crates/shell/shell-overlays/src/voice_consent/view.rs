@@ -68,13 +68,13 @@ fn ConsentCard(shown: bool, stage: Signal<SheetStage<Asked>>) -> Element {
                 ..Common::default()
             },
             div {
-                class: "sill-consent",
+                class: "shell-consent",
                 // The keyboard starts on the card; the sheet's own close (Escape) is Not Now.
                 tabindex: "0",
                 onmounted: move |event: MountedEvent| focus_soon(event.data()),
-                div { class: "sill-consent-title", "{TITLE}" }
-                div { class: "sill-consent-body", "{BODY}" }
-                div { class: "sill-consent-footer",
+                div { class: "shell-consent-title", "{TITLE}" }
+                div { class: "shell-consent-body", "{BODY}" }
+                div { class: "shell-consent-footer",
                     Button {
                         label: "Not Now",
                         answers: Answers::Escape,

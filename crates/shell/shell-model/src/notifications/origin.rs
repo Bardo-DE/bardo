@@ -47,11 +47,11 @@ mod tests {
     #[test]
     fn only_the_shells_namespace_is_the_system() {
         const CASES: &[(Option<&str>, Origin)] = &[
-            (Some("sill-accounts"), Origin::System),
-            (Some("sill-keycap"), Origin::System),
+            (Some("shell-accounts"), Origin::System),
+            (Some("shell-keycap"), Origin::System),
             (Some("org.example.Mail"), Origin::App),
             (Some("bardo-shell"), Origin::App),
-            (Some("not-sill-accounts"), Origin::App),
+            (Some("not-shell-accounts"), Origin::App),
             (None, Origin::App),
         ];
         for &(entry, want) in CASES {
@@ -61,7 +61,7 @@ mod tests {
 
     #[test]
     fn an_app_cannot_claim_the_shells_namespace() {
-        assert_eq!(app_entry("sill-accounts".to_owned()), None);
+        assert_eq!(app_entry("shell-accounts".to_owned()), None);
         assert_eq!(
             app_entry("org.example.Mail".to_owned()).as_deref(),
             Some("org.example.Mail")

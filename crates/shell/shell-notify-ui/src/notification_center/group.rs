@@ -3,7 +3,7 @@
 //! Clear) keyed by its `AppKey`, or a card (quire's `NotificationCard` through [`NoteCard`], the
 //! newest stacked over the rest while folded) keyed by its `NotificationId`. The keyboard's
 //! ring is quire's: the header or card it is on carries `data-focus=ring`. The gap between rows
-//! is the row's own padding (`.sill-nc-item`), never the list's.
+//! is the row's own padding (`.shell-nc-item`), never the list's.
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;
@@ -46,7 +46,7 @@ pub(super) fn row_item(
         row.key(),
         String::new(),
         rsx! {
-            div { class: "sill-nc-item", "data-group": "{group.key.0}", {content} }
+            div { class: "shell-nc-item", "data-group": "{group.key.0}", {content} }
         },
     ))
 }

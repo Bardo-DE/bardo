@@ -72,7 +72,7 @@ fn a_reverse_dns_desktop_file_needs_its_own_apps_manifest() {
         "dist/intents/org.bardo.Settings.toml",
         &MAIL_MANIFEST
             .replace("org.bardo.Mail", "org.bardo.Settings")
-            .replace("mail.", "detent."),
+            .replace("mail.", "settings."),
     );
     assert_eq!(failures(dir.path()), Vec::<String>::new());
 }

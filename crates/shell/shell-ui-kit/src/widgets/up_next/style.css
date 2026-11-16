@@ -2,29 +2,29 @@
    accent over the day's number, then the next events, each with its calendar's colour (quire's
    label hues) beside its title and time. Quire's tokens only (coherence rule 1). */
 
-.sill-un{ display:flex; gap:var(--s-12); padding:var(--s-2) var(--s-4); color:var(--ink); }
+.shell-un{ display:flex; gap:var(--s-12); padding:var(--s-2) var(--s-4); color:var(--ink); }
 
 /* Today. */
-.sill-un-day{ display:flex; flex-direction:column; flex:0 0 auto; }
-.sill-un-weekday{ color:var(--accent-text); font-size:var(--fs-small); font-weight:700; }
-.sill-un-date{ font-size:var(--fs-day); font-weight:300; }
+.shell-un-day{ display:flex; flex-direction:column; flex:0 0 auto; }
+.shell-un-weekday{ color:var(--accent-text); font-size:var(--fs-small); font-weight:700; }
+.shell-un-date{ font-size:var(--fs-day); font-weight:300; }
 
 /* The events. */
-.sill-un-list{ display:flex; flex-direction:column; gap:var(--s-6); flex:1 1 0; min-width:0; }
-.sill-un-row{ display:flex; gap:var(--s-6); align-items:stretch; }
-.sill-un-bar{ flex:0 0 var(--s-3); border-radius:var(--r-pill); }
+.shell-un-list{ display:flex; flex-direction:column; gap:var(--s-6); flex:1 1 0; min-width:0; }
+.shell-un-row{ display:flex; gap:var(--s-6); align-items:stretch; }
+.shell-un-bar{ flex:0 0 var(--s-3); border-radius:var(--r-pill); }
 /* The words take the rest of the row, so the title's `.ds-truncate` fade lies over the
    column's last 1.5em, not the title's own (quire's fade covers it whether the words reach it
    or not); a title that fits is drawn whole. */
-.sill-un-text{ display:flex; flex-direction:column; flex:1 1 0; min-width:0; }
-.sill-un-title{ font-size:var(--fs-body); font-weight:600; }
-.sill-un-when{ font-size:var(--fs-small); color:var(--ink-soft); }
-.sill-un-empty{ font-size:var(--fs-body); color:var(--ink-faint); }
-.sill-un-quiet{ font-size:var(--fs-small); color:var(--ink-faint); }
+.shell-un-text{ display:flex; flex-direction:column; flex:1 1 0; min-width:0; }
+.shell-un-title{ font-size:var(--fs-body); font-weight:600; }
+.shell-un-when{ font-size:var(--fs-small); color:var(--ink-soft); }
+.shell-un-empty{ font-size:var(--fs-body); color:var(--ink-faint); }
+.shell-un-quiet{ font-size:var(--fs-small); color:var(--ink-faint); }
 
 /* A calendar's colour: one of quire's label hues (`data-hue`, the month widget's own words). */
-.sill-un-bar{ background:var(--c-blue); }
-.sill-un-bar[*|data-hue=red]{ background:var(--c-red); }
-.sill-un-bar[*|data-hue=amber]{ background:var(--c-amber); }
-.sill-un-bar[*|data-hue=green]{ background:var(--c-green); }
-.sill-un-bar[*|data-hue=violet]{ background:var(--c-violet); }
+.shell-un-bar{ background:var(--c-blue); }
+.shell-un-bar[*|data-hue=red]{ background:var(--c-red); }
+.shell-un-bar[*|data-hue=amber]{ background:var(--c-amber); }
+.shell-un-bar[*|data-hue=green]{ background:var(--c-green); }
+.shell-un-bar[*|data-hue=violet]{ background:var(--c-violet); }

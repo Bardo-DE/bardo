@@ -20,9 +20,9 @@ pub const BANNER_WIDTH: u16 = 320;
 pub const CENTER_WIDTH: u16 = 320;
 /// `--notifications-icon`'s shipped value: the app icon's side.
 pub const ICON: u16 = 28;
-/// `--sill-notifications-position-right`'s shipped value.
+/// `--shell-notifications-position-right`'s shipped value.
 pub const POSITION_RIGHT: u16 = 8;
-/// `--sill-notifications-position-top-gap`'s shipped value.
+/// `--shell-notifications-position-top-gap`'s shipped value.
 pub const POSITION_TOP_GAP: u16 = 8;
 
 /// The token values the notification surfaces use, in whole logical pixels.

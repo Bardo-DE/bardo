@@ -54,7 +54,7 @@ fn shell_schema() -> Schema {
     Schema {
         footnotes: Vec::new(),
         pages: Vec::new(),
-        app: AppId("bardo-shell".to_owned()),
+        app: AppId("shell".to_owned()),
         file: FilePath(FILE.to_owned()),
         foreign: Default::default(),
         version: 1,
@@ -64,7 +64,7 @@ fn shell_schema() -> Schema {
 
 fn world(name: &str, fake: &Fake) -> Sandbox {
     let sandbox = Sandbox::new(name).with_corners(fake.desk());
-    sandbox.remove_schema("bardo-shell");
+    sandbox.remove_schema("shell");
     sandbox.install_schema(&shell_schema());
     sandbox
 }

@@ -71,7 +71,7 @@ pub(super) fn switcher(output: OutputInfo) -> Element {
             if let Some(session) = &session {
                 div {
                     key: "{session.serial.0}",
-                    class: "sill-switcher",
+                    class: "shell-switcher",
                     tabindex: "0",
                     onmounted: move |event: MountedEvent| focus_soon(event.data()),
                     onkeydown: move |event: KeyboardEvent| ctx.key_down(&event),
@@ -79,7 +79,7 @@ pub(super) fn switcher(output: OutputInfo) -> Element {
                     onpointermove: move |event: PointerEvent| ctx.pointer_moved(at_of(&event)),
                     {chord_watch(host.as_ref(), session, ctx)}
                     if let Some((apps, selected)) = row {
-                        div { id: PANEL_ID, class: "sill-switcher-panel",
+                        div { id: PANEL_ID, class: "shell-switcher-panel",
                             AppSwitcher {
                                 apps,
                                 selected,

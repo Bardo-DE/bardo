@@ -6,38 +6,38 @@
    measures it). The catcher is an empty, transparent layer that only takes presses, sized by
    the viewport (an absolutely placed box with `inset:0` and no content got no hit area on
    Blitz). Everything drawn is quire's. */
-.sill-launcher{ position:absolute; inset:0; }
-.sill-launcher-catcher{ width:100vw; height:100vh; }
-.sill-launcher-body{ display:flex; flex-direction:column; position:relative; }
+.shell-launcher{ position:absolute; inset:0; }
+.shell-launcher-catcher{ width:100vw; height:100vh; }
+.shell-launcher-body{ display:flex; flex-direction:column; position:relative; }
 /* The permissions mode sits at the field's trailing edge, over the card's top row. */
-.sill-launcher-mode{ position:absolute; top:var(--s-16); right:var(--s-16); display:flex; align-items:center; gap:var(--s-8); }
-.sill-launcher-foot{ flex:none; height:0; }
+.shell-launcher-mode{ position:absolute; top:var(--s-16); right:var(--s-16); display:flex; align-items:center; gap:var(--s-8); }
+.shell-launcher-foot{ flex:none; height:0; }
 /* The preview pane is quire's, set in the palette's aside; its
    wrapper only fills the aside's width. The body widens to the card's and the pane's room while
    the pane is there (written inline from the layer's constants). */
-.sill-launcher-preview{ display:flex; flex-direction:column; flex:1; min-width:0; }
+.shell-launcher-preview{ display:flex; flex-direction:column; flex:1; min-width:0; }
 /* How an answer was reached: one quiet line under the answer's card, in the secondary text. */
-.sill-route-line{ margin:var(--s-8) 0 0; font-size:var(--fs-caption); color:var(--ink-faint); }
+.shell-route-line{ margin:var(--s-8) 0 0; font-size:var(--fs-caption); color:var(--ink-faint); }
 /* A text answer in the pane: the question as the heading, the answer's lines under it. */
-.sill-answer-title{ margin:0 0 var(--s-8); font-size:var(--fs-control); font-weight:600; color:var(--ink); }
-.sill-answer-line{ margin:0 0 var(--s-6); font-size:var(--fs-small); color:var(--ink); }
+.shell-answer-title{ margin:0 0 var(--s-8); font-size:var(--fs-control); font-weight:600; color:var(--ink); }
+.shell-answer-line{ margin:0 0 var(--s-6); font-size:var(--fs-small); color:var(--ink); }
 /* What the companion said while it worked: quiet lines in the secondary text, newest last,
    the activity indicator under them. */
-.sill-answer-progress{ margin:var(--s-8) 0 0; }
-.sill-answer-progress-line{ margin:0 0 var(--s-4); font-size:var(--fs-caption); color:var(--ink-soft); }
+.shell-answer-progress{ margin:var(--s-8) 0 0; }
+.shell-answer-progress-line{ margin:0 0 var(--s-4); font-size:var(--fs-caption); color:var(--ink-soft); }
 /* Result rows: quire's palette lays its rows out at `--row-settings-h` (48), a form row's. A
    command row is a Spotlight row, 38 pt, so the panel sets that one token for its subtree (the
    preview pane's rows are the only others in it). To be replaced by a palette row token in quire. */
-.sill-launcher-body{ --row-settings-h:38px; }
+.shell-launcher-body{ --row-settings-h:38px; }
 /* A helper's card in the pane: a quiet column that scrolls when the form is taller than the pane. */
-.sill-helper-card{ display:flex; flex-direction:column; gap:var(--s-8); width:100%; height:100%; padding:var(--s-8); overflow-y:auto; }
-.sill-helper-head{ display:flex; flex-direction:column; gap:var(--s-2); }
-.sill-helper-apps, .sill-helper-models{ display:flex; flex-direction:column; gap:var(--s-4); }
-.sill-helper-buttons{ display:flex; flex-wrap:wrap; gap:var(--s-6); }
-.sill-helper-notice{ margin:0; font-size:var(--fs-help); color:var(--ink-soft); }
-.sill-helper-sight{ display:flex; flex-direction:column; align-items:flex-start; gap:var(--s-4); }
-.sill-helper-ask p{ margin:0 0 var(--s-6); font-size:var(--fs-control); color:var(--ink); }
-.sill-helper-jobs, .sill-helper-latest{ display:flex; flex-direction:column; gap:var(--s-4); }
-.sill-helper-job{ display:flex; flex-direction:column; }
-.sill-helper-app, .sill-helper-pool, .sill-helper-routines{ display:flex; flex-direction:column; gap:var(--s-4); }
-.sill-helper-routine{ display:flex; flex-direction:column; gap:var(--s-2); padding:var(--s-4) 0; }
+.shell-helper-card{ display:flex; flex-direction:column; gap:var(--s-8); width:100%; height:100%; padding:var(--s-8); overflow-y:auto; }
+.shell-helper-head{ display:flex; flex-direction:column; gap:var(--s-2); }
+.shell-helper-apps, .shell-helper-models{ display:flex; flex-direction:column; gap:var(--s-4); }
+.shell-helper-buttons{ display:flex; flex-wrap:wrap; gap:var(--s-6); }
+.shell-helper-notice{ margin:0; font-size:var(--fs-help); color:var(--ink-soft); }
+.shell-helper-sight{ display:flex; flex-direction:column; align-items:flex-start; gap:var(--s-4); }
+.shell-helper-ask p{ margin:0 0 var(--s-6); font-size:var(--fs-control); color:var(--ink); }
+.shell-helper-jobs, .shell-helper-latest{ display:flex; flex-direction:column; gap:var(--s-4); }
+.shell-helper-job{ display:flex; flex-direction:column; }
+.shell-helper-app, .shell-helper-pool, .shell-helper-routines{ display:flex; flex-direction:column; gap:var(--s-4); }
+.shell-helper-routine{ display:flex; flex-direction:column; gap:var(--s-2); padding:var(--s-4) 0; }

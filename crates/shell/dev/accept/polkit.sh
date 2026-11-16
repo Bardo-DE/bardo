@@ -10,18 +10,18 @@
 # examples/polkit_authority.rs plays polkitd's Authority (records the registration, sends
 # BeginAuthentication and CancelAuthentication on command, prints each call's result), and
 # crates/shell/shell-services/src/bin/polkit_helper.rs plays polkit-agent-helper-1 (the helper protocol; accepts
-# `sill-fake`, refuses anything else, runs no PAM). The daemon gets its own XDG_RUNTIME_DIR and
+# `shell-fake`, refuses anything else, runs no PAM). The daemon gets its own XDG_RUNTIME_DIR and
 # a scratch XDG_CONFIG_HOME. Keys are `bardo-shell debug key SURFACE KEY`: layer-shell-host's `Inject::Key`,
 # which enters the prompt where a real xkb key does, whether or not the compositor gave it the
 # keyboard.
 #
 #   1. The agent registered with the stand-in for ("unix-session", {session-id}) at bardo-shell's path,
-#      `bardo-shell polkit status` says registered, and sill-polkit-<out> exists, hidden.
+#      `bardo-shell polkit status` says registered, and shell-polkit-<out> exists, hidden.
 #   2. The stand-in's BeginAuthentication shows the prompt (a capture of the surface,
 #      also into dev/out/polkit.png); `bardo-shell polkit status` shows the action.
 #   3. A wrong password: the stand-in helper refuses, the field shakes (frames while it plays)
 #      and clears (the capture after it matches the one before typing), the request stays.
-#   4. `sill-fake`: the stand-in Authority's call returns (authorized) and the prompt hides.
+#   4. `shell-fake`: the stand-in Authority's call returns (authorized) and the prompt hides.
 #   5. CancelAuthentication hides the prompt; the call fails Cancelled.
 #   6. Escape cancels: the call fails Cancelled and the prompt hides.
 #   7. `bardo-shell debug polkit` shows a made-up request with no bus call, and Escape dismisses it.
@@ -81,7 +81,7 @@ start_polkit_daemon() {
   launch_daemon --polkit-bus "$BUS" --polkit-helper "$HELPER_BIN" --polkit-session "$SESSION_ID" \
     || return 1
   NAME=$(output_name) || return 1
-  PROMPT="sill-polkit-$NAME"
+  PROMPT="shell-polkit-$NAME"
   sleep 1
 }
 
@@ -209,12 +209,12 @@ after it $cleared px differ from the empty field" >&2
 
 # 4.
 step_right_completes() {
-  type_text "sill-fake" || return 1
+  type_text "shell-fake" || return 1
   press Enter || return 1
   await_line "^result k1 authorized$" || {
     echo "the stand-in never saw k1 authorized: $(tail -3 "$OUT_DIR/authority.log")" >&2; return 1; }
   await_status showing "" && await_hidden || return 1
-  echo "sill-fake: BeginAuthentication k1 returned; the prompt hid" >&2
+  echo "shell-fake: BeginAuthentication k1 returned; the prompt hid" >&2
 }
 
 # 5.

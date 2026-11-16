@@ -33,7 +33,7 @@ pub struct DebugSeams {
     /// The stand-in polkit helper program (with `--polkit-bus`).
     #[arg(long, value_name = "PROGRAM", requires = "polkit_bus")]
     pub polkit_helper: Option<std::path::PathBuf>,
-    /// The session id the agent registers for (with `--polkit-bus`; default `sill-test`).
+    /// The session id the agent registers for (with `--polkit-bus`; default `shell-test`).
     #[arg(long, value_name = "ID", requires = "polkit_bus")]
     pub polkit_session: Option<String>,
     /// Carry out no session action (power menu, launcher rows): each chosen one is only printed
@@ -153,7 +153,7 @@ impl DebugSeams {
                 session: SessionChoice::Id(
                     self.polkit_session
                         .clone()
-                        .unwrap_or_else(|| "sill-test".to_owned()),
+                        .unwrap_or_else(|| "shell-test".to_owned()),
                 ),
             },
             None => env.polkit,
@@ -261,7 +261,7 @@ mod tests {
                 PolkitRoute {
                     bus: bus(),
                     helper: HelperChoice::Use(HelperRoute::Missing),
-                    session: SessionChoice::Id("sill-test".to_owned()),
+                    session: SessionChoice::Id("shell-test".to_owned()),
                 },
             ),
             (

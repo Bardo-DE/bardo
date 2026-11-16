@@ -222,10 +222,10 @@ exec 5>"$OUT/ime-launcher.fifo"
 sleep 3
 printf 'open\nstats\n' >&5
 sleep 2
-PANEL=$(grep -o '"sill-launcher-[A-Za-z0-9-]*"' "$OUT/ime-launcher.out" | tr -d '"' \
+PANEL=$(grep -o '"shell-launcher-[A-Za-z0-9-]*"' "$OUT/ime-launcher.out" | tr -d '"' \
   | grep -v catcher | head -1)
 if [ -z "$PANEL" ]; then
-  fail launcher "no sill-launcher-<output> surface in $OUT/ime-launcher.out"
+  fail launcher "no shell-launcher-<output> surface in $OUT/ime-launcher.out"
   exit "$status"
 fi
 

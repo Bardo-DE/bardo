@@ -1,7 +1,7 @@
 //! The dock on a real compositor with fake services, for acceptance (`dev/accept/dock.sh`):
 //! one `shell_dock::Dock` per output, fed by fixed `watch` channels (Files and
 //! Terminal pinned, Terminal active with two windows, Firefox running with a count of 7 and
-//! 40 % progress), driven by layer-shell-host's `debug-inject` commands on stdin (`sill-dock-<output>
+//! 40 % progress), driven by layer-shell-host's `debug-inject` commands on stdin (`shell-dock-<output>
 //! hover X Y`, `click X Y [primary|secondary|middle]`, `leave`, `capture PATH`, `stats`,
 //! `quit`). Commands the dock sends to the fake services are printed on stderr.
 //!

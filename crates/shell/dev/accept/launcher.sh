@@ -25,7 +25,7 @@
 #   ui: the panel and the catcher
 #     1. Warm: both launcher surfaces exist from the start, hidden (no capture of either).
 #     2. `bardo-shell launcher toggle` shows the panel: over 10 warm openings, a capture of
-#        `sill-launcher-<output>` within 100 ms of the toggle has the panel's pixels (the first
+#        `shell-launcher-<output>` within 100 ms of the toggle has the panel's pixels (the first
 #        opening after start is reported separately); the daemon's
 #        `launcher.open_to_frame_ms` lines are printed.
 #     3. `bardo-shell launcher toggle` again hides it (no capture), and a click on the catcher closes a
@@ -179,7 +179,7 @@ launcher_counters() {
   bardo-shell debug stats | python3 -c '
 import json, sys
 for row in json.loads(sys.stdin.read())["v"]:
-    if row["surface"].startswith("sill-launcher-"):
+    if row["surface"].startswith("shell-launcher-"):
         print(row["surface"], row["frames"])'
 }
 launcher_frames() { launcher_counters | awk '{sum += $2} END {print sum + 0}'; }
@@ -250,7 +250,7 @@ is_open() { field query >/dev/null 2>&1; }
 close_launcher() { bardo-shell launcher close >>"$OUT_DIR/keys.log" 2>&1; sleep 0.3; }
 
 # Capture of the launcher panel into $1.
-capture_launcher() { capture "sill-launcher-$NAME" "$1"; }
+capture_launcher() { capture "shell-launcher-$NAME" "$1"; }
 
 # Writes the documents the files provider's `fd` finds under home $1: a PDF (with $2 rings on
 # its page), a PNG, a Markdown note, and, by $3, six more PDFs (`pdfs`) or 24 `m9-list-NN.txt`
@@ -329,7 +329,7 @@ key_spec() {
 }
 
 # A key (`key_spec`'s words) on the demo's panel (its stdin is fd 7), through layer-shell-host's `key` verb.
-demo_key() { echo "sill-launcher-$NAME key $(key_spec "$1")" >&7; sleep 0.3; }
+demo_key() { echo "shell-launcher-$NAME key $(key_spec "$1")" >&7; sleep 0.3; }
 
 # ---------------------------------------------------------------- group toggle
 
@@ -364,7 +364,7 @@ step_panel_and_idle() {
   bardo-shell launcher toggle >>"$log" 2>&1 || true
   surface=$(launcher_counters | awk 'NR==1 {print $1}')
   if [ -z "$surface" ]; then
-    echo "no sill-launcher-* surface in 'bardo-shell debug stats'" | tee -a "$log" >&2
+    echo "no shell-launcher-* surface in 'bardo-shell debug stats'" | tee -a "$log" >&2
     return 1
   fi
   bardo-shell debug capture "$surface" "$OUT_DIR/panel.png" >>"$log" 2>&1 || {
@@ -589,7 +589,7 @@ group_ui() {
   backdrop_seed "$CONFIG" || { group_end; return 1; }
   launch_daemon || { group_end; return 1; }
   NAME=$(output_name) || { group_end; return 1; }
-  PANEL="sill-launcher-$NAME"; CATCHER="sill-launcher-catcher-$NAME"
+  PANEL="shell-launcher-$NAME"; CATCHER="shell-launcher-catcher-$NAME"
   sleep 1
   run_steps step_ui_warm step_ui_toggle_shows step_ui_hide step_ui_idle step_ui_stress
   local result=$STATUS
@@ -605,7 +605,7 @@ group_ui() {
 OPENINGS=10
 
 # One key (`key_spec`'s words) on the launcher's panel, through `bardo-shell debug key`.
-debug_key() { bardo-shell debug key "sill-launcher-$NAME" "$(key_spec "$1")" >>"$OUT_DIR/keys.log" 2>&1; sleep 0.25; }
+debug_key() { bardo-shell debug key "shell-launcher-$NAME" "$(key_spec "$1")" >>"$OUT_DIR/keys.log" 2>&1; sleep 0.25; }
 
 open_query() {
   bardo-shell launcher open --query "$1" >>"$OUT_DIR/keys.log" 2>&1
@@ -803,7 +803,7 @@ step_palette_idle() {
 }
 
 # A capture of the demo (its stdin is fd 7) into launcher-v2-$1-fixtures.png.
-fixtures_shot() { echo "sill-launcher-$NAME capture $SHOTS/launcher-v2-$1-fixtures.png" >&7; sleep 0.8; }
+fixtures_shot() { echo "shell-launcher-$NAME capture $SHOTS/launcher-v2-$1-fixtures.png" >&7; sleep 0.8; }
 
 # palette F.
 step_palette_fixtures() {
@@ -872,7 +872,7 @@ group_palette() {
 # ---------------------------------------------------------------- group files
 
 BARDO_FILES_PROBE="$BARDO_SHELL_OUT/examples/files_probe"
-TOKEN=sill-accept-files-token
+TOKEN=shell-accept-files-token
 STEP_FAILED=0
 STEP_PENDING=0
 
@@ -903,7 +903,7 @@ printf '%s\ttoken=%s\n' "\$1" "\${XDG_ACTIVATION_TOKEN:-}" >>"$OPENED"
 grep -o 'app-bardo-open[^/]*\.scope' /proc/\$\$/cgroup >>"$SCRATCH/scopes.log"
 EOF
   chmod +x "$SCRATCH/record-open"
-  cat >"$DATA/applications/sill-stub-opener.desktop" <<EOF
+  cat >"$DATA/applications/shell-stub-opener.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=Stub Opener
@@ -914,7 +914,7 @@ EOF
   {
     echo "[Default Applications]"
     for type in application/pdf text/markdown text/plain inode/directory; do
-      echo "$type=sill-stub-opener.desktop"
+      echo "$type=shell-stub-opener.desktop"
     done
   } >"$CONFIG/mimeapps.list"
   : >"$CONFIG/shell/settings.toml"

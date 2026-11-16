@@ -37,7 +37,7 @@ pub fn PopupFrame(
             AppStyle { css: POPUP_SUBMENU_CSS }
         }
         div {
-            class: "sill-popup-frame",
+            class: "shell-popup-frame",
             style: "{room.style()}{cap};--popup-submenu-room:{submenu_room}px",
             {children}
         }

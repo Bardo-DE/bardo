@@ -172,7 +172,7 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
     let table = callers::shipped();
     for (pid, leaf, main) in [
         (1, "bardo-shell.service", Main::Yes),
-        (2, "sill-shell.scope", Main::No),
+        (2, "shell-shell.scope", Main::No),
         (3, "bardo-shell.service", Main::No),
         (4, "bardo-companiond.service", Main::Yes),
         (5, "app-org.bardo.Companion1-1.scope", Main::No),
@@ -180,7 +180,7 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
         (7, "curl.service", Main::Yes),
         (8, "bardo-agent-acp.scope", Main::No),
         (9, "bardo-computer-use.service", Main::Yes),
-        (10, "app-org.bardo.Cua1-1.scope", Main::No),
+        (10, "app-org.bardo.ComputerUse1-1.scope", Main::No),
         (11, "run-r4242.scope", Main::No),
     ] {
         put(root, pid, leaf, main);

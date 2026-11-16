@@ -5,7 +5,7 @@ use crate::notifications::{ActionKey, NotesState, NotificationId, shown_with_act
 use super::model::{Dataset, Hold};
 
 /// The desktop entry the notifications carry; it names them among the notifications held.
-pub const NOTICE_ENTRY: &str = "sill-sync-hold";
+pub const NOTICE_ENTRY: &str = "shell-sync-hold";
 
 /// What an action key says before the dataset it is for.
 const KEY_PREFIX: &str = "open-settings:";

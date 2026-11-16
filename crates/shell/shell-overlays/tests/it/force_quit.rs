@@ -70,7 +70,7 @@ fn asking(harness: &Harness) -> bool {
 #[test]
 fn hidden_it_draws_nothing() {
     let running = start(&[]);
-    assert_eq!(running.harness.count(".sill-fq"), 0);
+    assert_eq!(running.harness.count(".shell-fq"), 0);
     assert_eq!(running.harness.count(".ds-sheet"), 0);
 }
 
@@ -78,7 +78,7 @@ fn hidden_it_draws_nothing() {
 fn open_it_lists_the_apps_and_says_which_do_not_answer() {
     let running = opened(hung_and_well());
     let html = running.harness.html();
-    assert_eq!(running.harness.count(".sill-fq"), 1);
+    assert_eq!(running.harness.count(".shell-fq"), 1);
     assert_eq!(running.harness.count(".ds-row"), 2);
     assert!(html.contains("Force Quit Applications"), "{html}");
     assert!(html.contains("term (not responding)"), "{html}");
@@ -139,5 +139,5 @@ fn escape_answers_the_question_first_and_then_closes_the_panel() {
     running.harness.send(Input::key(ShortcutKey::Escape));
     running.harness.advance(Duration::from_millis(600));
     assert!(running.link.now().opening().is_none(), "the panel closes");
-    assert_eq!(running.harness.count(".sill-fq"), 0, "and leaves");
+    assert_eq!(running.harness.count(".shell-fq"), 0, "and leaves");
 }

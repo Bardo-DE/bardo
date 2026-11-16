@@ -43,7 +43,7 @@ fn start(
 ) -> (watch::Receiver<Clipboard>, Control<ClipboardCommand>) {
     let env = Env {
         wayland: display,
-        ..Env::isolated(std::path::Path::new("/nonexistent/sill-clipboard-live"))
+        ..Env::isolated(std::path::Path::new("/nonexistent/shell-clipboard-live"))
     };
     let service = spawn::<ClipboardService>(rt.handle(), &env, ());
     (service.state, service.control)
@@ -84,7 +84,7 @@ fn is_text(content: &ClipContent, want: &str) -> bool {
 #[test]
 fn without_a_compositor_history_is_on_but_not_connected() {
     let rt = runtime();
-    let missing = std::env::temp_dir().join("sill-clipboard-no-such-socket");
+    let missing = std::env::temp_dir().join("shell-clipboard-no-such-socket");
     let (mut history, control) = start(&rt, WaylandRoute::Socket(missing));
     control.send(memory()).expect("the service listens");
     wait(&rt, &mut history, "history on", |h| {

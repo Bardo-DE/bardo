@@ -14,7 +14,7 @@ const READ: &str = "mail__mail_thread_read";
 const ARCHIVE: &str = "mail__mail_thread_archive";
 
 fn ours(tool: &str) -> Option<Value> {
-    Some(json!({"tool": tool, "server": "quire"}))
+    Some(json!({"tool": tool, "server": "bardo"}))
 }
 
 /// One turn: the agent asks `request`, then ends. The person refuses any sheet.
@@ -95,13 +95,13 @@ async fn another_server_a_missing_meta_or_another_kind_still_gets_a_sheet() {
 
 #[tokio::test]
 async fn listing_our_own_servers_resources_is_answered_once_and_nothing_wider_is() {
-    let list = mcp_request("other", None, json!({"ServerName": "quire"}), agy_options());
+    let list = mcp_request("other", None, json!({"ServerName": "bardo"}), agy_options());
     let (rig, _) = ask(list, 0).await;
     assert_eq!(once_option(&rig).as_deref(), Some("a-once"));
     assert!(rig.sheets().is_empty());
     for raw in [
         json!({"ServerName": "elsewhere"}),
-        json!({"ServerName": "quire", "Uri": "file:///x"}),
+        json!({"ServerName": "bardo", "Uri": "file:///x"}),
     ] {
         let request = mcp_request("other", None, raw.clone(), agy_options());
         let (rig, _) = ask(request, 1).await;

@@ -724,12 +724,12 @@ fn the_force_quit_panel_lists_the_apps_and_who_answers() {
         last(&panel),
         [Effect::Shell(ShellNote::ForceQuitPanel(vec![
             ForceQuitRow {
-                app: web,
-                responding: true
-            },
-            ForceQuitRow {
                 app: mail,
                 responding: false
+            },
+            ForceQuitRow {
+                app: web,
+                responding: true
             },
         ]))]
     );

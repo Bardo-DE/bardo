@@ -143,7 +143,7 @@ fn owning_serves_notify_and_close_with_their_signal() {
                 Some(BUS_NAME),
                 "Notify",
                 &(
-                    "sill-test",
+                    "shell-test",
                     0u32,
                     "",
                     "Hello",

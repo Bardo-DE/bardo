@@ -6,7 +6,7 @@
 # `start` records its own demo's and its command tail's PIDs in $D; `stop` and the one-copy guard
 # look only at those, never at other sessions' launcher demos.
 set -uo pipefail
-D="${IME_LIVE_DIR:-${XDG_RUNTIME_DIR:-/tmp}/sill-ime-live}"; mkdir -p "$D"
+D="${IME_LIVE_DIR:-${XDG_RUNTIME_DIR:-/tmp}/shell-ime-live}"; mkdir -p "$D"
 IN=$D/ime-cmds
 PIPE=$D/ime-pipe
 DEMO_PID=$D/demo.pid
@@ -44,8 +44,8 @@ case "${1:-start}" in
     grep -o 'launcher.open_to_frame_ms=[0-9.]*' "$D/ime-demo.log" | tail -1
     ;;
   capture)
-    out=$(grep -o 'sill-launcher-[A-Za-z0-9-]*' "$D/ime-demo.log" | grep -v catcher | head -1)
-    out=${out:-sill-launcher-HDMI-A-2}
+    out=$(grep -o 'shell-launcher-[A-Za-z0-9-]*' "$D/ime-demo.log" | grep -v catcher | head -1)
+    out=${out:-shell-launcher-HDMI-A-2}
     echo "$out capture $D/ime-after.png" >>"$IN"
     sleep 2
     ls -la "$D/ime-after.png"

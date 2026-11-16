@@ -27,7 +27,7 @@ const RIGHT: &str = "right horse battery";
 fn start(authenticator: Arc<dyn Authenticator>) -> (watch::Receiver<Auth>, Control<AuthCommand>) {
     let env = Env {
         authenticator,
-        ..Env::isolated(Path::new("/nonexistent/sill-auth-live"))
+        ..Env::isolated(Path::new("/nonexistent/shell-auth-live"))
     };
     let auth = spawn::<AuthService>(&tokio::runtime::Handle::current(), &env, ());
     (auth.state, auth.control)
@@ -72,7 +72,7 @@ async fn many_wrongs_never_lock_out_and_the_right_one_opens() {
     send(&control, AuthCommand::Reset);
     let loaded = until(&mut auth, "the account", |a| !a.account.user.0.is_empty()).await;
     // The person is the environment's stand-in, never the machine's own account.
-    assert_eq!(loaded.account.user, UserName("sill-test".to_owned()));
+    assert_eq!(loaded.account.user, UserName("shell-test".to_owned()));
     assert_eq!(loaded.account.name, RealName("Test Person".to_owned()));
     for n in 1..=10 {
         wrong_once(&mut auth, &control, n).await;

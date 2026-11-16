@@ -205,11 +205,17 @@ impl World {
     }
 
     pub fn read(&self, relative: &str) -> Option<String> {
-        std::fs::read_to_string(self.config_home().0.join(relative)).ok()
+        std::fs::read_to_string(
+            self.config_home()
+                .path_of_relative(std::path::Path::new(relative)),
+        )
+        .ok()
     }
 
     pub fn write(&self, relative: &str, text: &str) {
-        let path = self.config_home().0.join(relative);
+        let path = self
+            .config_home()
+            .path_of_relative(std::path::Path::new(relative));
         std::fs::create_dir_all(path.parent().expect("a parent")).expect("mkdir");
         std::fs::write(path, text).expect("write");
     }

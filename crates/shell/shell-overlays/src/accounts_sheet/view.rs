@@ -62,14 +62,14 @@ fn Card(drawn: Drawn) -> Element {
     let title = drawn.step.title();
     let step = slug(&drawn.step);
     rsx! {
-        div { class: "sill-accounts-stage",
+        div { class: "shell-accounts-stage",
             div {
-                class: "sill-accounts-window",
+                class: "shell-accounts-window",
                 role: "dialog",
                 "aria-label": "{title}",
                 "data-step": step,
                 WindowTitlebar { title: title.clone(), lights: false }
-                div { class: "sill-accounts-body", {body(drawn.step, io)} }
+                div { class: "shell-accounts-body", {body(drawn.step, io)} }
             }
         }
     }

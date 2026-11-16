@@ -179,7 +179,7 @@ mod tests {
     #[tokio::test]
     async fn an_address_nobody_listens_on_is_an_error() {
         let buses = Buses::new(
-            BusRoute::Address("unix:path=/nonexistent/sill-env-test".to_owned()),
+            BusRoute::Address("unix:path=/nonexistent/shell-env-test".to_owned()),
             BusRoute::Absent,
         );
         assert!(matches!(

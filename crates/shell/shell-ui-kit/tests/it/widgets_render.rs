@@ -162,11 +162,11 @@ fn up_next_never_clips_a_row_past_the_tiles_body() {
             .rect("#widget-up-next .ds-widget-body")
             .expect("the frame's body is laid out");
         let bottom = body.origin.y.0 + body.size.height.0;
-        let row_count = h.count("#widget-up-next .sill-un-row");
+        let row_count = h.count("#widget-up-next .shell-un-row");
         assert_eq!(row_count, want, "the tile holds {want} whole rows");
         for n in 1..=row_count {
             let row = h
-                .rect(&format!("#widget-up-next .sill-un-row:nth-child({n})"))
+                .rect(&format!("#widget-up-next .shell-un-row:nth-child({n})"))
                 .unwrap_or_else(|| panic!("row {n} is laid out"));
             assert!(
                 row.origin.y.0 + row.size.height.0 <= bottom + 0.5,

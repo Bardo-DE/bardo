@@ -96,7 +96,7 @@ mod tests {
     #[test]
     fn the_catcher_covers_the_output_and_takes_no_keyboard_or_blur() {
         let catcher = layer(&output(Some("DP-1")));
-        assert_eq!(catcher.namespace, "sill-launcher-catcher-DP-1");
+        assert_eq!(catcher.namespace, "shell-launcher-catcher-DP-1");
         assert_eq!(catcher.anchor, Anchor::ALL);
         assert_eq!(
             catcher.blur,

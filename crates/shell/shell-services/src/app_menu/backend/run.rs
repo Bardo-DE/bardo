@@ -35,7 +35,7 @@ pub(crate) async fn run(
         Ok(connection) => connection,
         Err(ConnectError::NoBus(_)) => return,
         Err(error) => {
-            eprintln!("sill-services: app_menu: no session bus: {error}");
+            eprintln!("shell-services: app_menu: no session bus: {error}");
             return;
         }
     };
@@ -113,7 +113,7 @@ enum Tell {
 fn tell(connection: &Connection, tells: &Arc<Semaphore>, name: MenuName, id: i32, tell: Tell) {
     let Ok(permit) = Arc::clone(tells).try_acquire_owned() else {
         eprintln!(
-            "sill-services: app_menu: {}: too many calls on the way",
+            "shell-services: app_menu: {}: too many calls on the way",
             name.0
         );
         return;
@@ -126,7 +126,7 @@ fn tell(connection: &Connection, tells: &Arc<Semaphore>, name: MenuName, id: i32
             Tell::AboutToShow => wire::about_to_show(&connection, &name.0, id).await,
         };
         if let Err(error) = sent {
-            eprintln!("sill-services: app_menu: {}: {error}", name.0);
+            eprintln!("shell-services: app_menu: {}: {error}", name.0);
         }
     });
 }

@@ -277,7 +277,7 @@ impl Live {
     fn made_up(&mut self, fake: FakeRequest) -> AuthRequest {
         self.serial += 1;
         AuthRequest {
-            cookie: Cookie(format!("sill-fake-{}", self.serial)),
+            cookie: Cookie(format!("shell-fake-{}", self.serial)),
             action_id: fake.action_id,
             message: fake.message,
             icon: fake.icon,

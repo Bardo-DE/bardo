@@ -1,5 +1,5 @@
 //! A stand-in for polkit's `polkit-agent-helper-1`: speaks the setuid helper's line protocol and
-//! accepts `sill-fake` (`FAKE_SECRET`) and nothing else. It runs no PAM, reads no password database
+//! accepts `shell-fake` (`FAKE_SECRET`) and nothing else. It runs no PAM, reads no password database
 //! and tells no polkitd anything, so the live test and `dev/accept/polkit.sh` can drive bardo-shell's
 //! agent through a real child process.
 //!

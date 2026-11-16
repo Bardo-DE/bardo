@@ -43,12 +43,12 @@ pub(super) fn wallpaper(output: OutputInfo) -> Element {
             custom_styles: root.custom_styles,
             AppStyle { css: WALLPAPER_CSS }
             div {
-                class: "sill-wallpaper",
+                class: "shell-wallpaper",
                 onmousedown: move |event| secondary_press(&event, menu),
                 for (slot , back , image) in layers {
                     div {
                         key: "{slot}",
-                        class: "sill-wallpaper-layer",
+                        class: "shell-wallpaper-layer",
                         "data-layer": back,
                         if let Some(url) = image {
                             img { src: "{url}", alt: "" }

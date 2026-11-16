@@ -69,7 +69,7 @@ pub fn LauncherPane(
     let operation = use_operation(pane.cue());
     let actions = pane_actions(&actions);
     rsx! {
-        div { id: PREVIEW_ID, class: "sill-launcher-preview",
+        div { id: PREVIEW_ID, class: "shell-launcher-preview",
             ui_components::prelude::PreviewPane {
                 content,
                 actions,

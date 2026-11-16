@@ -25,7 +25,7 @@ pub fn AppearanceModule() -> Element {
     };
     rsx! {
         ModulePanel { plate: use_plate(),
-            div { class: "sill-cc-appearance",
+            div { class: "shell-cc-appearance",
                 SectionHeader { title: "Theme", value: hint }
                 SegmentedControl::<Theme> {
                     label: "Theme",

@@ -144,7 +144,7 @@ mod tests {
     use crate::notifications::{NotificationId, UnixMs};
 
     fn system(mut note: Notification) -> Notification {
-        note.app.desktop_entry = Some("sill-keycap".to_owned());
+        note.app.desktop_entry = Some("shell-keycap".to_owned());
         note
     }
 

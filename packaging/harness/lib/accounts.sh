@@ -26,7 +26,7 @@ ACC_BG=()
 # acc_need: the artefacts exist (exit 3 with the fix otherwise).
 acc_need() {
   scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-    "$SCEN_BUILD/sill-probe-target/debug/bardo-shell" "$ARIG/bardo-accountd" "$AFER/bardo-syncd" "$ASTW/bardo-inferd" \
+    "$SCEN_BUILD/shell-probe-target/debug/bardo-shell" "$ARIG/bardo-accountd" "$AFER/bardo-syncd" "$ASTW/bardo-inferd" \
     "$ARIG/account-rig-servers" "$ARIG/account-rig-client" "$ARIG/account-rig-secrets" "$ASTW/inference-rig-client" \
     "$AFER/sync-rig-servers" "$AFER/sync-rig-client" \
     "$SCEN_SIB/accounts/providers/microsoft.toml" "$SCEN_SIB/accounts/dist/callers.toml" "$@"
@@ -36,12 +36,12 @@ acc_need() {
 # become the stand-in checkout floor_shim makes).
 acc_env() {
   export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
-  export CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+  export CARGO_TARGET_DIR="$SCEN_BUILD/shell-probe-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
   # The rig's programs take no power; bardo-compositorctl's `shot` (acc_shot) takes the screen and the window list, so those are the
   # floor's only rows and nothing waits on a question (an unanswered ask stops the capture after ~29 s, and its dialog
   # covers the page). The caller list names bardo-shell (at its pin) as the shell, bardo-settings as Settings and the porter daemons by
   # their roles, for bardo-compositor and for bardo-shell (floor_sill_callers before launch_daemon).
-  FLOOR_SILL_TARGET="$SCEN_BUILD/sill-probe-target" floor_shim accounts bardo-shell bardo-settings bardo-accountd bardo-inferd bardo-syncd bardo-compositor bardo-compositorctl || return 1
+  FLOOR_SILL_TARGET="$SCEN_BUILD/shell-probe-target" floor_shim accounts bardo-shell bardo-settings bardo-accountd bardo-inferd bardo-syncd bardo-compositor bardo-compositorctl || return 1
 }
 
 # Where the scenario keeps things; set by acc_dirs after scratch_new.

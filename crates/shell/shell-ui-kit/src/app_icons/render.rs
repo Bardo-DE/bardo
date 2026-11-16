@@ -218,7 +218,7 @@ mod tests {
 
     fn temp(tag: &str) -> PathBuf {
         let dir =
-            std::env::temp_dir().join(format!("sill-ui-kit-icons-{tag}-{}", std::process::id()));
+            std::env::temp_dir().join(format!("shell-ui-kit-icons-{tag}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
         dir

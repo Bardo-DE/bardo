@@ -1,5 +1,5 @@
-//! How layer-shell-host sets the lock surfaces up: their name prefix, `sill-lock`, so each is
-//! `sill-lock/<output>` (what `bardo-shell debug capture` and `debug stats` address).
+//! How layer-shell-host sets the lock surfaces up: their name prefix, `shell-lock`, so each is
+//! `shell-lock/<output>` (what `bardo-shell debug capture` and `debug stats` address).
 
 use layer_shell_host::LockConfig;
 use shell_settings::ShellFile;
@@ -7,7 +7,7 @@ use shell_settings::ShellFile;
 /// The lock surfaces' configuration; nothing in the settings changes it yet.
 pub fn config(_settings: &ShellFile) -> LockConfig {
     LockConfig {
-        namespace: "sill-lock".to_owned(),
+        namespace: "shell-lock".to_owned(),
     }
 }
 
@@ -19,6 +19,6 @@ mod tests {
 
     #[test]
     fn the_lock_surfaces_are_named_sill_lock() {
-        assert_eq!(config(&ShellFile::default()).namespace, "sill-lock");
+        assert_eq!(config(&ShellFile::default()).namespace, "shell-lock");
     }
 }

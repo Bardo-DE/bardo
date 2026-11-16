@@ -148,7 +148,7 @@ fn a_request_draws_quires_prompt_on_a_narrow_sheet() {
 #[test]
 fn enter_answers_with_what_was_typed_and_escape_dismisses() {
     let mut running = shown(request("c1", asking(), LastTry::None));
-    for c in "sill-fake".chars() {
+    for c in "shell-fake".chars() {
         running.harness.send(Input::key(ShortcutKey::Char(c)));
     }
     running.harness.send(Input::key(ShortcutKey::Enter));
@@ -158,10 +158,10 @@ fn enter_answers_with_what_was_typed_and_escape_dismisses() {
         panic!("one answer: {asked:?}");
     };
     assert_eq!(cookie, &Cookie("c1".to_owned()));
-    assert_eq!(secret.expose(), "sill-fake");
+    assert_eq!(secret.expose(), "shell-fake");
     assert_eq!(format!("{secret:?}"), "Secret(..)", "never printed");
     assert!(
-        !running.harness.html().contains("sill-fake"),
+        !running.harness.html().contains("shell-fake"),
         "the secret is not in the markup"
     );
     running.harness.send(Input::key(ShortcutKey::Escape));

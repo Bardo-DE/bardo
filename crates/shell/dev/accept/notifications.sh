@@ -13,7 +13,7 @@
 # reducer, no D-Bus). Another bardo-shell daemon drawing on the same nested output would be in the
 # screenshots, so the script waits for it to finish first.
 #
-#   1. Warm: `sill-banners-<out>` exists from the start, hidden (no capture).
+#   1. Warm: `shell-banners-<out>` exists from the start, hidden (no capture).
 #   2. A notification shows it within 300 ms (a capture with the card's pixels);
 #      dev/out/banners-casement.png.
 #   3. It hides between the hold (the banner hold, 5200) and the hold plus the exit
@@ -803,7 +803,7 @@ step_real_center_delete() {
 
 # A hash of a capture's top band: the whole column scrolls (the title along with the history,
 # notification_center.css's own comment), so wheeling it changes this band if layer-shell-host's scroll
-# engine is wired to `.sill-nc-column`.
+# engine is wired to `.shell-nc-column`.
 column_signature() {
   python3 - "$1" <<'EOF'
 import sys, hashlib
@@ -1235,7 +1235,7 @@ setup_banners() {
   backdrop_seed "$CONFIG" || return 1
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  BANNERS="sill-banners-$NAME"
+  BANNERS="shell-banners-$NAME"
   sleep 1
 }
 
@@ -1266,9 +1266,9 @@ setup_real() {
   seed_checks || { echo "no checks wallpaper" >&2; return 1; }
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  BAR="sill-bar-$NAME"
-  BANNERS="sill-banners-$NAME"
-  CENTER="sill-notification-center-$NAME"
+  BAR="shell-bar-$NAME"
+  BANNERS="shell-banners-$NAME"
+  CENTER="shell-notification-center-$NAME"
   sleep 1.5
   start_monitor
   start_input || { echo "no fake input client" >&2; return 1; }

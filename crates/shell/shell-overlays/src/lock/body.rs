@@ -103,7 +103,7 @@ pub(super) fn LockBody(
     let id = output.id;
     rsx! {
         div {
-            class: "sill-lock",
+            class: "shell-lock",
             "data-leaving": leaving(&auth.phase, host),
             onmousedown: move |_| link.set(PromptOutput::On(id)),
             LockScreen {

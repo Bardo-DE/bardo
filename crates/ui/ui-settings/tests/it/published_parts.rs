@@ -13,12 +13,12 @@ fn classes(names: &[&str]) -> Vec<String> {
 fn only_the_apps_own_prefix_is_kept_on_write_and_on_read() {
     let parts = PublishedParts::new(
         "shell",
-        classes(&["sill-bar", "ds-row", "mailo-list", "sill-bar-item"]),
+        classes(&["shell-bar", "ds-row", "mailo-list", "shell-bar-item"]),
     );
-    assert_eq!(parts.classes, classes(&["sill-bar", "sill-bar-item"]));
-    let text = "app = \"shell\"\nclasses = [\"sill-bar\", \"ds-chip\"]\n";
+    assert_eq!(parts.classes, classes(&["shell-bar", "shell-bar-item"]));
+    let text = "app = \"shell\"\nclasses = [\"shell-bar\", \"ds-chip\"]\n";
     let read = PublishedParts::from_toml(text).expect("parses");
-    assert_eq!(read.classes, classes(&["sill-bar"]));
+    assert_eq!(read.classes, classes(&["shell-bar"]));
     assert_eq!(PublishedParts::from_toml(&parts.to_toml()), Ok(parts));
 }
 
@@ -27,14 +27,14 @@ fn every_app_is_found_once_and_a_misnamed_file_is_skipped() {
     let scratch = Scratch::new();
     let system = scratch.root().join("system");
     let person = scratch.root().join("person");
-    PublishedParts::new("shell", classes(&["sill-bar"]))
+    PublishedParts::new("shell", classes(&["shell-bar"]))
         .write_to(&system)
         .expect("writes");
     PublishedParts::new("files", classes(&["files-path"]))
         .write_to(&system)
         .expect("writes");
     // The person's directory comes last: it may add an app, never replace an installed one.
-    PublishedParts::new("shell", classes(&["sill-dock"]))
+    PublishedParts::new("shell", classes(&["shell-dock"]))
         .write_to(&person)
         .expect("writes");
     PublishedParts::new("temor", classes(&["temor-tab"]))
@@ -50,7 +50,7 @@ fn every_app_is_found_once_and_a_misnamed_file_is_skipped() {
         apps,
         [
             ("files", &classes(&["files-path"])[..]),
-            ("shell", &classes(&["sill-bar"])[..]),
+            ("shell", &classes(&["shell-bar"])[..]),
             ("temor", &classes(&["temor-tab"])[..]),
         ]
     );

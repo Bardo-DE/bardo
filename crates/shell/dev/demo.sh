@@ -353,7 +353,7 @@ cmd_start() {
 
   # The wallpaper surface follows ping, once the image is prepared.
   for _ in $(seq 100); do
-    [ -n "$(surface_named sill-wallpaper-)" ] && break
+    [ -n "$(surface_named shell-wallpaper-)" ] && break
     sleep 0.1
   done
 
@@ -504,7 +504,7 @@ await_up() {
 }
 
 # The launcher's panel, for `bardo-shell debug key`.
-launcher_panel() { echo "sill-launcher-$NAME"; }
+launcher_panel() { echo "shell-launcher-$NAME"; }
 
 # Types $1 into the open launcher's field, replacing what is there: Ctrl+A and BackSpace, then
 # each character as a key of its own, so the panel stays the one panel the whole time.
@@ -941,7 +941,7 @@ beat_osd_switcher_power() {
   # A made-up volume change: the indicator, not this machine's mixer. It stays about 1.5 s, so
   # the next indicator replaces it instead of a gap.
   bardo-shell debug osd volume 64 >/dev/null
-  await_up "sill-osd-$NAME" 0.3
+  await_up "shell-osd-$NAME" 0.3
   cmd_shot "$SHOTS/demo-6-volume.png"
   show 1.15
   echo "demo.sh tour: 6 brightness"
@@ -954,7 +954,7 @@ beat_osd_switcher_power() {
 
   echo "demo.sh tour: 7 switcher"
   bardo-shell debug switcher foot org.gnome.Nautilus google-chrome >/dev/null
-  await_up "sill-switcher-$NAME" 0.4
+  await_up "shell-switcher-$NAME" 0.4
   cmd_shot "$SHOTS/demo-7-switcher.png"
   show 2.0
   bardo-shell switcher cancel >/dev/null 2>&1
@@ -962,7 +962,7 @@ beat_osd_switcher_power() {
 
   echo "demo.sh tour: 8 power"
   bardo-shell power-menu open >/dev/null
-  await_up "sill-power-menu-$NAME" 0.5
+  await_up "shell-power-menu-$NAME" 0.5
   cmd_shot "$SHOTS/demo-8-power.png"
   show 2.0
   bardo-shell power-menu close >/dev/null
@@ -996,10 +996,10 @@ PY
   local polkit px py
   bardo-shell debug polkit --message "Authentication is required to install updates" \
     --action org.freedesktop.packagekit.package-install >/dev/null
-  await_up "sill-polkit-$NAME" 0.5
+  await_up "shell-polkit-$NAME" 0.5
   cmd_shot "$SHOTS/demo-11-polkit.png"
   show 2.2
-  polkit=$(surface_named sill-polkit-)
+  polkit=$(surface_named shell-polkit-)
   if [ -n "$polkit" ] && bardo-shell debug capture "$polkit" "$WORK/polkit.png" >/dev/null 2>&1; then
     if read -r px py <<<"$(polkit_cancel "$WORK/polkit.png")" && [ -n "${py:-}" ]; then
       bardo-shell debug click "$polkit" "$px" "$py" >/dev/null 2>&1
@@ -1014,13 +1014,13 @@ beat_notifications() {
   bardo-shell notifications dismiss-all >/dev/null 2>&1
   bardo-shell debug notify "Lunch?" --app Mail --body "Noon at the usual place." >/dev/null
   bardo-shell debug notify "Ping" --app Chat --body "Are you there?" >/dev/null
-  await_up "sill-banners-$NAME" 0.5
+  await_up "shell-banners-$NAME" 0.5
   cmd_shot "$SHOTS/demo-12-banners.png"
   show 2.0
   bardo-shell notifications close >/dev/null 2>&1
   # The clock opens the center.
   bardo-shell debug click "$BAR" "$CLOCK_X" "$CLOCK_Y" >/dev/null
-  await_up "sill-notification-center-$NAME" 0.6
+  await_up "shell-notification-center-$NAME" 0.6
   cmd_shot "$SHOTS/demo-12-center.png"
   show 2.6
 }
@@ -1037,8 +1037,8 @@ cmd_tour() {
   mkdir -p "$SHOTS" "$WORK"
   WIDTH=$(nested_output_size | cut -d' ' -f1)
   [ -n "$WIDTH" ] || die "tour: no output"
-  BAR=$(surface_named sill-bar-)
-  DOCK=$(surface_named sill-dock-)
+  BAR=$(surface_named shell-bar-)
+  DOCK=$(surface_named shell-dock-)
   [ -n "$BAR" ] && [ -n "$DOCK" ] || die "tour: the bar or the dock is missing"
   CLOCK_X=$((WIDTH - 60)) CLOCK_Y=12
 

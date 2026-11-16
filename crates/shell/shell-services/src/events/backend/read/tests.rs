@@ -183,7 +183,7 @@ fn a_vdirsyncer_folder_is_one_calendar_per_collection() {
 /// address book's `.vcf` files make none, a `*-tasks` directory (a VTODO task list) is no calendar, and a place that is missing is a problem, not a panic.
 #[test]
 fn a_porter_vdir_is_one_calendar_per_collection_of_every_account() {
-    let root = std::env::temp_dir().join(format!("sill-vdir-{}", std::process::id()));
+    let root = std::env::temp_dir().join(format!("shell-vdir-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
     let event = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:u\r\nSUMMARY:Dentist\r\nDTSTART;VALUE=DATE:20260927\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";
     for (collection, file, text) in [

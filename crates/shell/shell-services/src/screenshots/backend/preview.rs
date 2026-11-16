@@ -58,7 +58,7 @@ mod tests {
 
     #[test]
     fn a_large_screenshot_is_downscaled_once_and_a_broken_one_fails() {
-        let dir = std::env::temp_dir().join(format!("sill-shot-preview-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-shot-preview-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).expect("a temp dir"); // test-only
         let shot = dir.join("Screenshot_1.png");

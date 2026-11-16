@@ -117,7 +117,7 @@ pub(crate) fn start<F: Follow>(
 ) -> io::Result<Wire<F::Order>> {
     let (orders, from_service) = channel::channel();
     std::thread::Builder::new()
-        .name(format!("sill-{}", F::NAME))
+        .name(format!("shell-{}", F::NAME))
         .spawn(move || run::<F>(&display, start, from_service, tell))?;
     Ok(Wire { orders })
 }

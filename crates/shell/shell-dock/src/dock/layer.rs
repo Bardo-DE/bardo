@@ -79,7 +79,7 @@ mod tests {
             &ShellFile::default(),
             &DockTokens::default(),
         );
-        assert_eq!(config.namespace, "sill-dock-DP-1");
+        assert_eq!(config.namespace, "shell-dock-DP-1");
         assert_eq!(config.layer, LayerLevel::Top);
         assert_eq!(config.anchor, Anchor::BOTTOM | Anchor::LEFT | Anchor::RIGHT);
         assert_eq!(config.size.height, LayerExtent::Px(134));

@@ -150,7 +150,8 @@ fn painted_buffer(
     let stride = usize::try_from(width).map_err(|e| e.to_string())? * PIXEL_BYTES;
     let bytes = stride * usize::try_from(height).map_err(|e| e.to_string())?;
     let size = i32::try_from(bytes).map_err(|e| e.to_string())?;
-    let fd = memfd_create("sill-session-locker", MemfdFlags::CLOEXEC).map_err(|e| e.to_string())?;
+    let fd =
+        memfd_create("shell-session-locker", MemfdFlags::CLOEXEC).map_err(|e| e.to_string())?;
     let mut file = File::from(fd);
     file.write_all(&GROUND.repeat(bytes / PIXEL_BYTES))
         .map_err(|e| e.to_string())?;

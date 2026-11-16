@@ -183,14 +183,18 @@ mod keys_home {
             Err(HomeFault::LooseMode(..))
         ));
         mode(&home.join("accountd.keys"), 0o600);
-        let registry = home.join("state/porter");
+        let registry = home.join("state/bardo/accounts");
         std::fs::create_dir_all(&registry).expect("state");
         std::fs::write(registry.join("registry.json"), "{}").expect("registry");
         let open = KeysHome::open(&home).expect("filled");
         assert!(open.keys_setting().ends_with("/accountd.keys"));
         let world = tmp.path().join("world");
         open.seed(&world).expect("seed");
-        assert!(world.join(".local/state/porter/registry.json").is_file());
+        assert!(
+            world
+                .join(".local/state/bardo/accounts/registry.json")
+                .is_file()
+        );
         assert!(!world.join("accountd.keys").exists());
     }
 

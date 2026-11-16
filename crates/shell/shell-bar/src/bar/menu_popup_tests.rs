@@ -161,7 +161,7 @@ fn a_tray_submenu_opens_beside_its_row_after_the_rest_delay_inside_the_popup() {
     harness.advance(Duration::from_millis(200));
     assert_eq!(harness.count(SUBMENU), 1, "after it:\n{}", harness.html());
     harness.advance(Duration::from_millis(100));
-    let frame = harness.rect(".sill-popup-frame").expect("the frame"); // test-only
+    let frame = harness.rect(".shell-popup-frame").expect("the frame"); // test-only
     let card = harness
         .rect(".ds-popover:not([*|data-depth])")
         .expect("the card"); // test-only
@@ -249,7 +249,7 @@ fn submenus_of_submenus_each_take_a_column_of_the_popup() {
     harness.send(Input::pointer_move(second));
     harness.advance(Duration::from_millis(400));
     assert_eq!(harness.count(SUBMENU), 2, "{}", harness.html());
-    let frame = harness.rect(".sill-popup-frame").expect("the frame"); // test-only
+    let frame = harness.rect(".shell-popup-frame").expect("the frame"); // test-only
     let card = harness
         .rect(".ds-popover:not([*|data-depth])")
         .expect("the card"); // test-only

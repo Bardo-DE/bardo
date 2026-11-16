@@ -106,7 +106,7 @@ mod tests {
         const CASES: &[(&str, bool)] = &[
             ("text/uri-list", true),
             ("text/plain;charset=utf-8", true),
-            ("application/x-sill-tile", true),
+            ("application/x-shell-tile", true),
             ("UTF8_STRING", false),
             ("text/", false),
             ("/plain", false),

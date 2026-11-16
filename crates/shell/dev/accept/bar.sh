@@ -126,7 +126,7 @@ bar_counters() {
 import json, sys
 reply = json.loads(sys.stdin.read())
 for row in reply["v"]:
-    if row["surface"].startswith("sill-bar-") and "/" not in row["surface"]:
+    if row["surface"].startswith("shell-bar-") and "/" not in row["surface"]:
         print(row["surface"], row["frames"], row["commits"])'
 }
 
@@ -192,7 +192,7 @@ step_exclusive_zone() {
   height=$(maximised_height) || return $?
   # The dock reserves its base + margin too when the daemon runs one on this output: gut 8
   # + tile 48 + 2 x the 6 px padding.
-  if bardo-shell debug stats 2>/dev/null | grep -q '"sill-dock-'; then dock_reserve=68; fi
+  if bardo-shell debug stats 2>/dev/null | grep -q '"shell-dock-'; then dock_reserve=68; fi
   echo "output ${out_h}, maximised window ${height}, bar ${BAR_H}, dock ${dock_reserve}" | tee -a "$OUT_DIR/exclusive-zone.log" >&2
   [ "$height" = "$(( out_h - BAR_H - dock_reserve ))" ]
 }
@@ -263,13 +263,13 @@ step_menus() {
 
 # 8. The clock: a click toggles the notification center on its output
 #    and opens no bar menu; a second click closes the center. Whether the center is up is
-#    whether `bardo-shell debug capture sill-notification-center-<out>` succeeds.
+#    whether `bardo-shell debug capture shell-notification-center-<out>` succeeds.
 step_clock_center() {
   local log="$OUT_DIR/clock.log" bar center y items opened=no closed=no menu=no
   : >"$log"
   bar=$(bar_counters | awk 'NR==1 {print $1}')
   [ -n "$bar" ] || { echo "no bar surface in 'bardo-shell debug stats'" >&2; return 1; }
-  center="sill-notification-center-${bar#sill-bar-}"
+  center="shell-notification-center-${bar#shell-bar-}"
   y=$(( BAR_H / 2 ))
   center_up() { bardo-shell debug capture "$center" "$OUT_DIR/center.png" >>"$log" 2>&1; }
   if center_up; then echo "the center was open before the click" | tee -a "$log" >&2; return 1; fi
@@ -393,7 +393,7 @@ def probe_maximized():
 def bar_ready(p):
     for _ in range(200):
         rows = p.stats()
-        bars = {k: r for k, r in rows.items() if k.startswith("sill-bar-") and "/" not in k}
+        bars = {k: r for k, r in rows.items() if k.startswith("shell-bar-") and "/" not in k}
         if bars and all(r["counters"]["frames"] >= 1 for r in bars.values()):
             return next(iter(bars)), bars
         time.sleep(0.05)
@@ -620,9 +620,9 @@ menu_bar_battery = false
 EOF
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  BAR="sill-bar-$NAME"
+  BAR="shell-bar-$NAME"
   POPUP="$BAR/popup"
-  CENTER="sill-notification-center-$NAME"
+  CENTER="shell-notification-center-$NAME"
   sleep 1.5
   echo "daemon on KWin's bus, runtime $RUNTIME, home $HOME_DIR, output $NAME" >&2
 }
@@ -980,7 +980,7 @@ run_real_input() {
   scratch_new
   # A short runtime folder of its own: the agent socket's path must fit in 108 bytes.
   rm -rf "$RUNTIME"
-  RUNTIME=$(mktemp -d /tmp/sill-rt.XXXXXX)
+  RUNTIME=$(mktemp -d /tmp/shell-rt.XXXXXX)
   chmod 700 "$RUNTIME"
   # No key repeat: under load a key's release can reach the shell after its repeat delay, and a
   # repeated Tab or Space would walk or toggle past what the step looks at.

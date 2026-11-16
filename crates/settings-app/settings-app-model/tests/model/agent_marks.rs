@@ -90,7 +90,7 @@ fn a_path_two_programs_share_names_no_one_key() {
     std::fs::write(dir.join("shell.settings.toml"), &text).expect("write");
     std::fs::write(
         dir.join("twin.settings.toml"),
-        text.replace("app = \"bardo-shell\"", "app = \"twin\"")
+        text.replace("app = \"shell\"", "app = \"twin\"")
             .replace("shell/settings.toml", "twin/settings.toml"),
     )
     .expect("write");

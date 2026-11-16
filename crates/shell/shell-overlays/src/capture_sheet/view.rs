@@ -169,7 +169,7 @@ fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> 
                 ..Common::default()
             },
             div {
-                class: "sill-capture",
+                class: "shell-capture",
                 tabindex: "0",
                 onmounted: move |event: MountedEvent| focus_soon(event.data()),
                 onkeydown: move |event: KeyboardEvent| {
@@ -177,10 +177,10 @@ fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> 
                         end.call(None);
                     }
                 },
-                div { class: "sill-capture-title", "{title}" }
-                div { class: "sill-capture-byline", "{byline}" }
+                div { class: "shell-capture-title", "{title}" }
+                div { class: "shell-capture-byline", "{byline}" }
                 if now.tabs.len() > 1 {
-                    div { class: "sill-capture-tabs",
+                    div { class: "shell-capture-tabs",
                         SegmentedControl::<Tab> {
                             label: "Share",
                             choices: now.tabs.iter().map(|tab| Choice::new(*tab, tab_words(*tab))).collect::<Vec<_>>(),
@@ -189,9 +189,9 @@ fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> 
                         }
                     }
                 }
-                div { class: "sill-capture-list", onkeydown: on_space,
+                div { class: "shell-capture-list", onkeydown: on_space,
                     if listing {
-                        div { class: "sill-capture-empty", {empty_words(tab)} }
+                        div { class: "shell-capture-empty", {empty_words(tab)} }
                     } else {
                         List::<String> {
                             label: tab_words(tab),
@@ -203,8 +203,8 @@ fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> 
                     }
                 }
                 if now.pointers.len() > 1 {
-                    div { class: "sill-capture-pointer",
-                        span { class: "sill-capture-pointer-label", "Pointer" }
+                    div { class: "shell-capture-pointer",
+                        span { class: "shell-capture-pointer-label", "Pointer" }
                         SegmentedControl::<Pointer> {
                             label: "Pointer",
                             choices: now.pointers.iter().map(|p| Choice::new(*p, pointer_words(*p))).collect::<Vec<_>>(),
@@ -214,9 +214,9 @@ fn SheetCard(asking: Asking, shown: bool, stage: Signal<SheetStage<Asking>>) -> 
                     }
                 }
                 if let Some(kept) = kept {
-                    div { class: "sill-capture-kept", "{kept}" }
+                    div { class: "shell-capture-kept", "{kept}" }
                 }
-                div { class: "sill-capture-footer",
+                div { class: "shell-capture-footer",
                     Button {
                         label: "Cancel",
                         answers: Answers::Escape,

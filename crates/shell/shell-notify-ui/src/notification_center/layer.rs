@@ -67,7 +67,7 @@ mod tests {
     #[test]
     fn the_center_covers_the_output_below_the_bar_and_takes_the_keyboard_on_demand() {
         let config = layer(&output(Some("DP-1")), &ShellFile::default());
-        assert_eq!(config.namespace, "sill-notification-center-DP-1");
+        assert_eq!(config.namespace, "shell-notification-center-DP-1");
         assert_eq!(config.layer, LayerLevel::Overlay);
         assert_eq!(config.anchor, Anchor::ALL);
         assert_eq!(config.size.width, LayerExtent::Fill);

@@ -15,22 +15,22 @@ pub const SILL_SELECTORS: AppSelectors = AppSelectors {
     components: &[
         ComponentSelectors {
             component: "Bar",
-            root: "sill-bar",
+            root: "shell-bar",
             parts: &["group"],
         },
         ComponentSelectors {
             component: "Dock",
-            root: "sill-dock",
+            root: "shell-dock",
             parts: &["hit"],
         },
         ComponentSelectors {
             component: "Switcher",
-            root: "sill-switcher",
+            root: "shell-switcher",
             parts: &["panel"],
         },
         ComponentSelectors {
             component: "Control Center",
-            root: "sill-cc",
+            root: "shell-cc",
             parts: &["media", "detail"],
         },
     ],
@@ -62,7 +62,7 @@ mod tests {
     /// gives back every class the table publishes.
     #[test]
     fn the_written_file_is_read_back_by_the_parts_reader() {
-        let dir = std::env::temp_dir().join(format!("sill-selectors-test-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-selectors-test-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let written = write_to(&dir).unwrap_or_else(|e| panic!("{}: {e}", dir.display()));
         assert_eq!(written, dir.join("shell.toml"));
@@ -75,7 +75,7 @@ mod tests {
             found[0]
                 .classes
                 .iter()
-                .any(|class| class == "sill-bar-group")
+                .any(|class| class == "shell-bar-group")
         );
     }
 }

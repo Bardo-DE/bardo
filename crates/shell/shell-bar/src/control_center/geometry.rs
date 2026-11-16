@@ -2,14 +2,14 @@
 //! gap 10, padding 10, sliders spanning both columns; height fits content, at most
 //! `output_h - bar_h - 16`, then scrolls), pure. The width, gap and padding are `--cc-*` tokens
 //! (`CONTROL_CENTER`), the bar's height is [`BarTokens`] and the margin is
-//! `--sill-cc-bottom-margin`. The popup's size is layer-shell-host's content fit, not computed here.
+//! `--shell-cc-bottom-margin`. The popup's size is layer-shell-host's content fit, not computed here.
 
 use shell_settings::ControlCenterModule;
 
 use super::modules::{Span, module};
 use crate::bar::tokens::BarTokens;
 
-/// `--sill-cc-bottom-margin`'s shipped value: the least space the panel keeps above the
+/// `--shell-cc-bottom-margin`'s shipped value: the least space the panel keeps above the
 /// output's bottom edge.
 pub const BOTTOM_MARGIN: u16 = 16;
 

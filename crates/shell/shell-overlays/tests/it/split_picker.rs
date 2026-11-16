@@ -55,14 +55,14 @@ fn tiles(harness: &Harness) -> usize {
 #[test]
 fn hidden_it_draws_nothing() {
     let running = start();
-    assert_eq!(running.harness.count(".sill-split"), 0);
+    assert_eq!(running.harness.count(".shell-split"), 0);
     assert_eq!(tiles(&running.harness), 0);
 }
 
 #[test]
 fn an_offer_draws_the_backdrop_and_a_tile_per_window_in_the_free_half() {
     let running = offered();
-    assert_eq!(running.harness.count(".sill-split-scrim"), 1);
+    assert_eq!(running.harness.count(".shell-split-scrim"), 1);
     assert_eq!(tiles(&running.harness), 2, "w2 and w3");
     assert!(
         running.harness.html().contains("data-half=\"right\""),
@@ -81,7 +81,7 @@ fn escape_turns_the_choice_down_and_hides_the_picker() {
         (answered.first.as_str(), &answered.answer),
         ("w1", &SplitAnswer::Cancelled)
     );
-    assert_eq!(running.harness.count(".sill-split"), 0);
+    assert_eq!(running.harness.count(".shell-split"), 0);
 }
 
 #[test]
@@ -94,7 +94,7 @@ fn a_press_on_the_first_windows_half_turns_the_choice_down() {
     running.harness.advance(Duration::from_millis(100));
     let answered = running.link.last_answer().expect("answered");
     assert_eq!(answered.answer, SplitAnswer::Cancelled);
-    assert_eq!(running.harness.count(".sill-split"), 0);
+    assert_eq!(running.harness.count(".shell-split"), 0);
 }
 
 #[test]
@@ -112,7 +112,7 @@ fn a_click_on_a_tile_picks_that_window() {
         ("w1", &SplitAnswer::Picked("w2".to_owned())),
         "the first tile is the most recently used window"
     );
-    assert_eq!(running.harness.count(".sill-split"), 0);
+    assert_eq!(running.harness.count(".shell-split"), 0);
 }
 
 #[test]
@@ -120,6 +120,6 @@ fn the_compositor_ending_the_offer_takes_the_picker_away() {
     let mut running = offered();
     running.link.end("w1");
     running.harness.advance(Duration::from_millis(100));
-    assert_eq!(running.harness.count(".sill-split"), 0);
+    assert_eq!(running.harness.count(".shell-split"), 0);
     assert_eq!(running.link.last_answer(), None, "nobody answered");
 }

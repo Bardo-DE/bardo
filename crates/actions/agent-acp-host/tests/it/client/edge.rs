@@ -75,7 +75,7 @@ async fn session_new_offers_one_stdio_server_whose_token_is_not_on_a_command_lin
     let servers = rig.agent.new_session()["mcpServers"].clone();
     assert_eq!(servers.as_array().map(Vec::len), Some(1));
     let server = offered(&rig);
-    assert_eq!(server.name, "quire");
+    assert_eq!(server.name, "bardo");
     assert_eq!(server.command, "/opt/docket/bardo-actions-mcp");
     assert_eq!(server.args.len(), 2);
     assert_eq!(server.args[0], "--host-socket");

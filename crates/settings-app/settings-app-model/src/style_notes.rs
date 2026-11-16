@@ -114,7 +114,7 @@ mod tests {
             ("no files", vec![], 0),
             (
                 "a file with nothing to say",
-                vec![file(app("bardo-shell"), &[])],
+                vec![file(app("shell"), &[])],
                 0,
             ),
             (
@@ -126,7 +126,7 @@ mod tests {
                 "two files add up",
                 vec![
                     file(StyleOwner::Desktop, &[(1, "a"), (2, "b")]),
-                    file(app("bardo-shell"), &[(9, "c")]),
+                    file(app("shell"), &[(9, "c")]),
                 ],
                 3,
             ),
@@ -146,7 +146,7 @@ mod tests {
                     (12, "This animation never stops"),
                 ],
             ),
-            file(StyleOwner::App("bardo-shell".to_owned()), &[]),
+            file(StyleOwner::App("shell".to_owned()), &[]),
             file(
                 StyleOwner::App("files".to_owned()),
                 &[(2, "Could not be read")],

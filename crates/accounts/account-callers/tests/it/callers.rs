@@ -189,7 +189,7 @@ fn a_process_is_named_by_its_scope_or_unit() {
 fn a_scope_named_after_a_daemons_app_is_an_app() {
     // Any process may start a scope by any name: only the unit itself carries the unit's role.
     let s = Procs::new();
-    s.process(30, Some(&scope("app-org.bardo.Cua-1.scope")));
+    s.process(30, Some(&scope("app-org.bardo.ComputerUse-1.scope")));
     s.process(31, Some(&scope("app-flatpak-org.bardo.Inference-2.scope")));
     s.process(32, Some(&scope("app-org.bardo.Intent-3.scope")));
     s.flatpak(31, "org.bardo.Inference");

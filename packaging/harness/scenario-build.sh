@@ -6,11 +6,11 @@
 #
 #   build/tools/bin/{bardo-compositor,bardo-compositorctl,compositor-probe,compositor-shell-exec,fake-logind} bardo-compositor's dev/bootstrap.sh --build-only
 #   build/tools/bin/foot                                                 the host's (install foot from your distro), else, on Fedora only, its rpm (dnf download, unpacked)
-#   build/sill-target/debug/bardo-shell                                         bardo-shell with --features debug (the fake DDC)
+#   build/shell-target/debug/bardo-shell                                         bardo-shell with --features debug (the fake DDC)
 #   build/transom-target/debug/bardo-portal                                  bardo-portal (the portal backend), for portal-bardo; needs libpipewire-devel and clang
 #   build/shell-host-target/debug/examples/demo_*                        layer-shell-host's real-input demos
 #   build/detent-target/debug/bardo-settings                                     bardo-settings with ui-blitz/debug-probe, for the accounts-* and bardo-settings-on-casement-at-1.5 scenarios
-#   build/sill-probe-target/debug/bardo-shell                                   bardo-shell with --features debug,ui-blitz/debug-probe (the accounts-* scenarios; the probe is linked but writes nothing for bardo-shell's surfaces)
+#   build/shell-probe-target/debug/bardo-shell                                   bardo-shell with --features debug,ui-blitz/debug-probe (the accounts-* scenarios; the probe is linked but writes nothing for bardo-shell's surfaces)
 #   build/porter-target/debug/bardo-accountd                                   porter's bardo-accountd, a test-proc-root build
 #   build/ferry-target/debug/bardo-syncd                                       ferry's bardo-syncd, a test-proc-root build (the sync daemon left porter)
 #   build/ferry-target/debug/ferry-rig-{servers,client}                  ferry's test rig: the OAuth issuer + Graph fake, an app client for bardo-syncd
@@ -90,8 +90,8 @@ build_detent() {
 }
 
 build_sill() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" cargo build -p shell-app --features debug) &&
-    built_at sill-target
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" cargo build -p shell-app --features debug) &&
+    built_at shell-target
 }
 
 # bardo-portal, --locked (the tree's Cargo.lock is never changed).
@@ -152,7 +152,7 @@ build_docket() {
 
 # bardo-shell with the debug probe: the accounts-* scenarios read the accounts sheet through it.
 build_sill_probe() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" cargo build -p shell-app --features debug,ui-blitz/debug-probe)
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/shell-probe-target" cargo build -p shell-app --features debug,ui-blitz/debug-probe)
 }
 
 # foot is the scenarios' terminal: say how to get it before the long builds, not after.

@@ -68,7 +68,7 @@ fn Dropper(
     let loupe = pointer().and_then(|at| loupe_at(shot.size, surface, at));
     rsx! {
         div {
-            class: "sill-eyedrop",
+            class: "shell-eyedrop",
             tabindex: "0",
             onmounted: move |event: MountedEvent| focus_soon(event.data()),
             onkeydown: move |event: KeyboardEvent| {
@@ -88,16 +88,16 @@ fn Dropper(
                 }
                 Some(_) => {}
             },
-            img { class: "sill-eyedrop-still", src: "{source}", alt: "" }
+            img { class: "shell-eyedrop-still", src: "{source}", alt: "" }
             if let Some(loupe) = loupe {
-                div { class: "sill-eyedrop-loupe", style: loupe_style(&loupe),
+                div { class: "shell-eyedrop-loupe", style: loupe_style(&loupe),
                     img {
-                        class: "sill-eyedrop-zoom",
+                        class: "shell-eyedrop-zoom",
                         src: "{source}",
                         alt: "",
                         style: zoom_style(&loupe),
                     }
-                    div { class: "sill-eyedrop-cell", style: cell_style() }
+                    div { class: "shell-eyedrop-cell", style: cell_style() }
                 }
             }
         }

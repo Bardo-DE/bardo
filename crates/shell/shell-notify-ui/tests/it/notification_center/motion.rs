@@ -46,7 +46,7 @@ fn at_rest() -> Running {
 
 /// A group's control, `control`, in the header of `group`.
 fn in_head(group: &str, control: &str) -> String {
-    format!(".sill-nc-item[*|data-group={group}] {control}")
+    format!(".shell-nc-item[*|data-group={group}] {control}")
 }
 
 #[test]
@@ -127,7 +127,7 @@ fn the_rows_keep_one_gap_inside_themselves() {
     let tops: Vec<(f32, f32)> = (1..=6)
         .map(|n| {
             let rect = h
-                .rect(&format!("{ROW}:nth-child({n}) > .sill-nc-item > *"))
+                .rect(&format!("{ROW}:nth-child({n}) > .shell-nc-item > *"))
                 .expect("a row's content");
             (rect.origin.y.0, rect.origin.y.0 + rect.size.height.0)
         })
@@ -181,7 +181,7 @@ fn clear_all_fades_every_row_together_then_says_the_list_is_empty() {
     let mut running = at_rest();
     let all = running
         .harness
-        .centre(".sill-nc-head .ds-button")
+        .centre(".shell-nc-head .ds-button")
         .expect("Clear All");
     running.harness.send(Input::click(all));
     assert_eq!(
@@ -203,7 +203,7 @@ fn clear_all_fades_every_row_together_then_says_the_list_is_empty() {
     assert_eq!(rows(&running.harness), 0);
     assert_settles_to_zero_frames(&mut running.harness);
     // Clear All went with the history; the column has the keyboard again.
-    assert!(running.harness.focus_of(".sill-nc-column"));
+    assert!(running.harness.focus_of(".shell-nc-column"));
 }
 
 #[test]
@@ -223,7 +223,7 @@ fn a_clear_gives_the_column_the_keyboard_back() {
     until(&mut running, |h| rows(h) == 2);
     assert_settles_to_zero_frames(&mut running.harness);
     assert!(
-        running.harness.focus_of(".sill-nc-column"),
+        running.harness.focus_of(".shell-nc-column"),
         "Escape reaches the column, not the gone button"
     );
 }

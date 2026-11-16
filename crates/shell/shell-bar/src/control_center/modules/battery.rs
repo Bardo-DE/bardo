@@ -62,9 +62,9 @@ pub fn BatteryModule() -> Element {
     };
     rsx! {
         ModulePanel { glyph, title, trailing, plate: use_plate(),
-            div { class: "sill-cc-battery",
+            div { class: "shell-cc-battery",
                 if !rings.is_empty() {
-                    div { class: "sill-cc-batteries", role: "group", "aria-label": "Device batteries",
+                    div { class: "shell-cc-batteries", role: "group", "aria-label": "Device batteries",
                         for ring in rings {
                             BatteryRing {
                                 key: "{ring.key}",

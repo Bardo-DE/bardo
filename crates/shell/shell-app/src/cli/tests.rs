@@ -449,29 +449,29 @@ fn every_command_line_sends_its_request() {
             }))),
         ),
         (
-            &["debug", "pointer", "sill-dock-DP-1", "300", "64"],
+            &["debug", "pointer", "shell-dock-DP-1", "300", "64"],
             debug(DebugRequest::Pointer {
-                surface: surface("sill-dock-DP-1"),
+                surface: surface("shell-dock-DP-1"),
                 at: Point { x: 300, y: 64 },
             }),
         ),
         (
-            &["debug", "leave", "sill-dock-DP-1"],
+            &["debug", "leave", "shell-dock-DP-1"],
             debug(DebugRequest::Leave {
-                surface: surface("sill-dock-DP-1"),
+                surface: surface("shell-dock-DP-1"),
             }),
         ),
         (
-            &["debug", "capture", "sill-bar-DP-1", "/tmp/bar.png"],
+            &["debug", "capture", "shell-bar-DP-1", "/tmp/bar.png"],
             debug(DebugRequest::Capture {
-                surface: surface("sill-bar-DP-1"),
+                surface: surface("shell-bar-DP-1"),
                 path: PathBuf::from("/tmp/bar.png"),
             }),
         ),
         (
-            &["debug", "key", "sill-power-menu-DP-1", "ArrowRight"],
+            &["debug", "key", "shell-power-menu-DP-1", "ArrowRight"],
             debug(DebugRequest::Key {
-                surface: surface("sill-power-menu-DP-1"),
+                surface: surface("shell-power-menu-DP-1"),
                 key: KeySpec("ArrowRight".to_owned()),
                 action: KeyAction::Tap,
             }),
@@ -480,62 +480,68 @@ fn every_command_line_sends_its_request() {
             &[
                 "debug",
                 "key",
-                "sill-launcher-DP-1",
+                "shell-launcher-DP-1",
                 "k+ctrl",
                 "--action",
                 "press",
             ],
             debug(DebugRequest::Key {
-                surface: surface("sill-launcher-DP-1"),
+                surface: surface("shell-launcher-DP-1"),
                 key: KeySpec("k+ctrl".to_owned()),
                 action: KeyAction::Press,
             }),
         ),
         (
-            &["debug", "click", "sill-bar-DP-1", "1200", "16"],
-            click("sill-bar-DP-1", 1200, 16, PointerButton::Primary),
+            &["debug", "click", "shell-bar-DP-1", "1200", "16"],
+            click("shell-bar-DP-1", 1200, 16, PointerButton::Primary),
         ),
         (
             &[
                 "debug",
                 "click",
-                "sill-dock-DP-1",
+                "shell-dock-DP-1",
                 "40",
                 "30",
                 "--button",
                 "secondary",
             ],
-            click("sill-dock-DP-1", 40, 30, PointerButton::Secondary),
+            click("shell-dock-DP-1", 40, 30, PointerButton::Secondary),
         ),
         (
             &["debug", "click", "s", "0", "0", "--button", "middle"],
             click("s", 0, 0, PointerButton::Middle),
         ),
         (
-            &["debug", "pointer-press", "sill-wallpaper-DP-1", "900", "96"],
-            press("sill-wallpaper-DP-1", 900, 96, PointerButton::Primary),
+            &[
+                "debug",
+                "pointer-press",
+                "shell-wallpaper-DP-1",
+                "900",
+                "96",
+            ],
+            press("shell-wallpaper-DP-1", 900, 96, PointerButton::Primary),
         ),
         (
             &[
                 "debug",
                 "pointer-press",
-                "sill-dock-DP-1",
+                "shell-dock-DP-1",
                 "40",
                 "30",
                 "--button",
                 "secondary",
             ],
-            press("sill-dock-DP-1", 40, 30, PointerButton::Secondary),
+            press("shell-dock-DP-1", 40, 30, PointerButton::Secondary),
         ),
         (
             &[
                 "debug",
                 "pointer-release",
-                "sill-wallpaper-DP-1",
+                "shell-wallpaper-DP-1",
                 "0",
                 "456",
             ],
-            release("sill-wallpaper-DP-1", 0, 456, PointerButton::Primary),
+            release("shell-wallpaper-DP-1", 0, 456, PointerButton::Primary),
         ),
         (
             &[

@@ -81,7 +81,7 @@ wallpaper_counters() {
 import json, sys
 reply = json.loads(sys.stdin.read())
 for row in reply["v"]:
-    if row["surface"].startswith("sill-wallpaper-"):
+    if row["surface"].startswith("shell-wallpaper-"):
         print(row["surface"], row["frames"], row["commits"])'
 }
 

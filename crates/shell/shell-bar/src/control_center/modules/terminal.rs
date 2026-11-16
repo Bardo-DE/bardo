@@ -71,9 +71,9 @@ pub fn TerminalModule() -> Element {
     let resume = control.clone();
     rsx! {
         ModulePanel { glyph: Icon::Terminal, title: "Terminal", plate: use_plate(),
-            div { class: "sill-cc-terminal",
+            div { class: "shell-cc-terminal",
                 if view.paused == Breaker::Tripped {
-                    div { class: "sill-cc-terminal-paused",
+                    div { class: "shell-cc-terminal-paused",
                         Label {
                             text: "Paused: too many refusals in a row.",
                             role: LabelRole::Secondary,
@@ -95,7 +95,7 @@ pub fn TerminalModule() -> Element {
                         role: LabelRole::Tertiary,
                         style: LabelStyle::Footnote,
                     }
-                    div { class: "sill-cc-terminal-grants", role: "list",
+                    div { class: "shell-cc-terminal-grants", role: "list",
                         for (place , row) in view.rows.iter().enumerate() {
                             {grant_row(place, row, &control)}
                         }
@@ -114,10 +114,10 @@ fn grant_row(
 ) -> Element {
     let (revoke, grant) = (control.clone(), row.grant.clone());
     rsx! {
-        div { key: "{place}", class: "sill-cc-terminal-row", role: "listitem",
-            div { class: "sill-cc-terminal-words",
-                div { class: "sill-cc-terminal-action", "{row.action}" }
-                div { class: "sill-cc-terminal-app", "in {row.app}" }
+        div { key: "{place}", class: "shell-cc-terminal-row", role: "listitem",
+            div { class: "shell-cc-terminal-words",
+                div { class: "shell-cc-terminal-action", "{row.action}" }
+                div { class: "shell-cc-terminal-app", "in {row.app}" }
             }
             Button {
                 bezel: Bezel::Inline,

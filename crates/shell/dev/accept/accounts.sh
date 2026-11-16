@@ -13,7 +13,7 @@
 #      cannot open one (refused, still hidden).
 #   2. The provider list opens as a centred window (capture, dev/out/accounts-providers.png);
 #      Escape sends {"kind":"dismiss"}.
-#   3. The password flow: the sign-in form opens, "ada", Tab, "sill-fake", Return sends a Submit
+#   3. The password flow: the sign-in form opens, "ada", Tab, "shell-fake", Return sends a Submit
 #      carrying both; the secret is in no daemon log line and not in the surface's markup.
 #   4. Working, Failed (Return is Try Again: a Retry), the browser wait and the device code each
 #      show, and Escape dismisses each.
@@ -29,7 +29,7 @@ OUT_DIR="$BARDO_SHELL_OUT_ROOT/accept-accounts"
 SHOTS="$BARDO_SHELL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 STANDIN_BIN="$BARDO_SHELL_OUT/examples/accountd_standin"
-SECRET=sill-fake
+SECRET=shell-fake
 
 scratch_new
 mkdir -p "$CONFIG/bardo/shell" "$OUT_DIR/views"
@@ -260,7 +260,7 @@ dev_caller org.bardo.Accounts accounts "$STANDIN_BIN" || exit 1
 start_standin || exit 1
 launch_daemon || exit 1
 NAME=$(output_name) || exit 1
-SHEET="sill-accounts-sheet-$NAME"
+SHEET="shell-accounts-sheet-$NAME"
 sleep 1
 run_steps step_hidden_and_forged_open_refused step_providers_window_and_escape step_password_flow \
   step_other_steps_and_cancel step_consent step_idle

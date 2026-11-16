@@ -27,7 +27,7 @@ pub(super) fn AutomaticPool(groups: Vec<ModelGroup>, automatic: Automatic) -> El
     };
     let (confirm, cancel) = (say.clone(), say.clone());
     rsx! {
-        div { class: "sill-helper-pool",
+        div { class: "shell-helper-pool",
             Label { text: AUTOMATIC_HELP, role: LabelRole::Secondary, style: LabelStyle::Footnote }
             for group in groups.iter() {
                 Label { key: "{group.heading}", text: group.heading.clone(), style: LabelStyle::Caption }
@@ -35,7 +35,7 @@ pub(super) fn AutomaticPool(groups: Vec<ModelGroup>, automatic: Automatic) -> El
                     {pooled_row(&group.heading, at, offer, &automatic, &say)}
                 }
             }
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 Button {
                     label: "Cancel",
                     common: Common { id: Some("helper-automatic-cancel".to_owned()), ..Common::default() },

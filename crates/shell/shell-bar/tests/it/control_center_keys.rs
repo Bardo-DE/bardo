@@ -20,7 +20,7 @@ fn tab_walks_the_tiles_and_space_toggles_the_focused_one() {
     // The popover places its card a frame after it measures the anchor.
     running.harness.advance(Duration::from_millis(300));
     assert!(
-        running.harness.focus_of(".sill-cc"),
+        running.harness.focus_of(".shell-cc"),
         "the panel holds the keyboard as it opens"
     );
     // Wi-Fi's tile, then its chevron (the default modules: Wi-Fi, Bluetooth, Focus, ...).

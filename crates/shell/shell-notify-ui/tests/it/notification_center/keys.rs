@@ -15,7 +15,7 @@ use ui_harness::Input;
 fn the_column_holds_the_keyboard_and_the_arrows_move_the_ring() {
     let mut running = opened(two_apps());
     assert!(
-        running.harness.focus_of(".sill-nc-column"),
+        running.harness.focus_of(".shell-nc-column"),
         "focused as it opens"
     );
     assert_eq!(ringed(&running.harness), None);

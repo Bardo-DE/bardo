@@ -177,7 +177,7 @@ fn answer_card(task: &provenance::TaskId, companion: &Companion) -> PaneContent 
                 {body}
             }
             if !route.is_empty() {
-                p { class: "sill-route-line", "{route}" }
+                p { class: "shell-route-line", "{route}" }
             }
         },
     }

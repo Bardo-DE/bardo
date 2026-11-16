@@ -54,7 +54,7 @@ mod tests {
     fn the_bar_is_a_top_strip_that_reserves_nothing_takes_no_keys_and_takes_input_on_its_own_box() {
         let settings = ShellFile::default();
         let layer = bar_layer(&output(Some("DP-1")), &settings);
-        assert_eq!(layer.namespace, "sill-spaces-bar-DP-1");
+        assert_eq!(layer.namespace, "shell-spaces-bar-DP-1");
         assert_eq!(layer.layer, LayerLevel::Top);
         assert_eq!(layer.anchor, Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
         assert_eq!(layer.size.width, LayerExtent::Fill);

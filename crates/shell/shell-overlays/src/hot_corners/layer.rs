@@ -54,22 +54,22 @@ mod tests {
             (
                 Corner::TopLeft,
                 Anchor::TOP | Anchor::LEFT,
-                "sill-hot-corner-top-left-DP-1",
+                "shell-hot-corner-top-left-DP-1",
             ),
             (
                 Corner::TopRight,
                 Anchor::TOP | Anchor::RIGHT,
-                "sill-hot-corner-top-right-DP-1",
+                "shell-hot-corner-top-right-DP-1",
             ),
             (
                 Corner::BottomLeft,
                 Anchor::BOTTOM | Anchor::LEFT,
-                "sill-hot-corner-bottom-left-DP-1",
+                "shell-hot-corner-bottom-left-DP-1",
             ),
             (
                 Corner::BottomRight,
                 Anchor::BOTTOM | Anchor::RIGHT,
-                "sill-hot-corner-bottom-right-DP-1",
+                "shell-hot-corner-bottom-right-DP-1",
             ),
         ];
         for (corner, anchor, name) in cases {

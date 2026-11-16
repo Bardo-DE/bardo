@@ -67,9 +67,9 @@ fn the_card_footer_says_how_the_answer_was_reached_in_the_wire_crates_words() {
             .send_replace(companion(vec![routed(draft(), HAIKU)], fresh()));
     });
     let h = &open.harness;
-    assert_eq!(h.count(".ds-palette-aside .sill-route-line"), 1);
+    assert_eq!(h.count(".ds-palette-aside .shell-route-line"), 1);
     assert_eq!(
-        h.text_of(".sill-route-line").as_deref(),
+        h.text_of(".shell-route-line").as_deref(),
         Some(HAIKU_LINE),
         "exactly the line companion_wire::footer_line prints"
     );
@@ -82,7 +82,7 @@ fn an_answer_a_coding_agent_gave_says_so_by_the_name_the_person_knows_it() {
             .send_replace(companion(vec![routed(draft(), CLAUDE_CODE)], fresh()));
     });
     assert_eq!(
-        open.harness.text_of(".sill-route-line").as_deref(),
+        open.harness.text_of(".shell-route-line").as_deref(),
         Some("Answered by Claude Code (you chose it)")
     );
 }
@@ -94,7 +94,7 @@ fn an_answer_with_no_notes_has_no_footer_line() {
             .send_replace(companion(vec![draft()], fresh()));
     });
     assert_eq!(open.harness.count(".ds-answer-card"), 1);
-    assert_eq!(open.harness.count(".sill-route-line"), 0);
+    assert_eq!(open.harness.count(".shell-route-line"), 0);
 }
 
 #[test]
@@ -103,14 +103,14 @@ fn the_footer_line_follows_the_notes_as_they_change() {
         bar.companion
             .send_replace(companion(vec![draft()], fresh()));
     });
-    assert_eq!(open.harness.count(".sill-route-line"), 0);
+    assert_eq!(open.harness.count(".shell-route-line"), 0);
     open.feeds
         .bar
         .companion
         .send_replace(companion(vec![routed(draft(), HAIKU)], fresh()));
     settled(&mut open);
     assert_eq!(
-        open.harness.text_of(".sill-route-line").as_deref(),
+        open.harness.text_of(".shell-route-line").as_deref(),
         Some(HAIKU_LINE)
     );
 }
@@ -345,8 +345,8 @@ fn a_finished_text_answer_shows_the_answer_in_its_row_and_every_line_in_the_pane
         html.contains("The capital of Taiwan is Taipei."),
         "the row says the answer: {html}"
     );
-    assert_eq!(h.count(".ds-palette-aside .sill-answer-title"), 1);
-    assert_eq!(h.count(".ds-palette-aside .sill-answer-line"), 2, "{html}");
+    assert_eq!(h.count(".ds-palette-aside .shell-answer-title"), 1);
+    assert_eq!(h.count(".ds-palette-aside .shell-answer-line"), 2, "{html}");
     assert!(html.contains("I&#x27;ll check my memory") || html.contains("I'll check my memory"));
     assert_eq!(
         h.text_of(".ds-palette-aside .ds-run").as_deref(),
@@ -392,14 +392,14 @@ fn while_working_the_row_says_the_newest_progress_and_the_pane_lists_the_newest_
     let html = h.html();
     assert!(html.contains("Looking at your calendar"), "the row: {html}");
     assert_eq!(
-        h.count(".ds-palette-aside .sill-answer-progress-line"),
+        h.count(".ds-palette-aside .shell-answer-progress-line"),
         4,
         "three lines and the fold: {html}"
     );
     assert!(html.contains("+2 earlier"), "{html}");
     assert!(!html.contains("**"), "no marks show: {html}");
     assert_eq!(
-        h.count(".ds-palette-aside .sill-answer-progress .ds-progress"),
+        h.count(".ds-palette-aside .shell-answer-progress .ds-progress"),
         1
     );
 }
@@ -418,7 +418,7 @@ fn a_finished_answer_hides_the_working_out_in_the_row_and_the_pane() {
         });
         let h = &open.harness;
         let html = h.html();
-        assert_eq!(h.count(".sill-answer-progress"), 0, "{phase:?}: {html}");
+        assert_eq!(h.count(".shell-answer-progress"), 0, "{phase:?}: {html}");
         assert!(
             !html.contains("Looking at your calendar"),
             "{phase:?}: {html}"
@@ -436,5 +436,5 @@ fn a_working_answer_with_nothing_said_shows_the_thinking_words_and_no_list() {
     });
     let h = &open.harness;
     assert!(h.html().contains("Thinking"));
-    assert_eq!(h.count(".sill-answer-progress"), 0);
+    assert_eq!(h.count(".shell-answer-progress"), 0);
 }

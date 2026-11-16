@@ -57,7 +57,7 @@ pub(super) fn split_picker(output: OutputInfo) -> Element {
                     rsx! {
                         div {
                             key: "{offer.serial.0}",
-                            class: "sill-split",
+                            class: "shell-split",
                             tabindex: "0",
                             onmounted: move |event: MountedEvent| focus_soon(event.data()),
                             onkeydown: move |event: KeyboardEvent| {
@@ -80,12 +80,12 @@ pub(super) fn split_picker(output: OutputInfo) -> Element {
                                 }
                             },
                             div {
-                                class: "sill-split-scrim",
+                                class: "shell-split-scrim",
                                 onpointerdown: move |_| by_press.cancel(),
                             }
                             if let Some(current) = current {
-                                div { class: "sill-split-stage", "data-half": other_half(offer.side),
-                                    div { class: "sill-split-panel",
+                                div { class: "shell-split-stage", "data-half": other_half(offer.side),
+                                    div { class: "shell-split-panel",
                                         AppSwitcher {
                                             apps: tiles,
                                             selected: AppKey(current),

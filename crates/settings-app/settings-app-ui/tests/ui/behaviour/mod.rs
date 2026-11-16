@@ -34,8 +34,7 @@ fn harness_spec(sandbox: &Sandbox) -> settings_app_model::FileSpec {
         .files
         .iter()
         .find(|f| {
-            f.file.relative().ends_with("settings.toml")
-                && f.file.relative().starts_with("bardo-shell")
+            f.file.relative().ends_with("settings.toml") && f.file.relative().starts_with("shell/")
         })
         .cloned()
         .expect("bardo-shell's file")

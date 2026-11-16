@@ -4,9 +4,9 @@
 //! on stdin:
 //!
 //! - `toggle`, `open [QUERY]`, `close`: what `bardo-shell launcher ...` does;
-//! - anything else is a layer-shell-host `debug-inject` command (`sill-launcher-<output> key
-//!   ArrowDown`, `sill-launcher-<output> key k+ctrl`, `sill-launcher-<output> capture PATH`,
-//!   `sill-launcher-catcher-<output> click X Y`, `stats`, `quit`); a key enters the panel where a
+//! - anything else is a layer-shell-host `debug-inject` command (`shell-launcher-<output> key
+//!   ArrowDown`, `shell-launcher-<output> key k+ctrl`, `shell-launcher-<output> capture PATH`,
+//!   `shell-launcher-catcher-<output> click X Y`, `stats`, `quit`); a key enters the panel where a
 //!   real one does.
 //!
 //! What the launcher sends to the fake launch and compositor services is printed on stderr.

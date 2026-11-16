@@ -239,7 +239,7 @@ mod tests {
     }
 
     fn scratch_dir() -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("sill-peek-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-peek-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
         dir
     }

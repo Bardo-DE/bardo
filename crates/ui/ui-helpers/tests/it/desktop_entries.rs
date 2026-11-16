@@ -296,8 +296,8 @@ fn an_identity_reads_x_keys_and_falls_back_to_the_entry() {
     };
     let declared = identity(
         "org.bardo.Mail.desktop",
-        "[Desktop Entry]\nStartupWMClass=mailo\nX-Quire-WindowId=mailo-main\n\
-         X-Bardo-BusNames=org.bardo.Mail; io.github.PoHsuanLai.mailo;;\nX-Quire-IntentsApp=org.bardo.Mail\n",
+        "[Desktop Entry]\nStartupWMClass=mailo\nX-Bardo-WindowId=mailo-main\n\
+         X-Bardo-BusNames=org.bardo.Mail; io.github.PoHsuanLai.mailo;;\nX-Bardo-IntentsApp=org.bardo.Mail\n",
     );
     assert_eq!(declared.desktop_id, id_of("org.bardo.Mail"));
     assert_eq!(declared.window_id, "mailo-main");
@@ -311,7 +311,7 @@ fn an_identity_reads_x_keys_and_falls_back_to_the_entry() {
     assert_eq!(by_class.window_id, "Foo");
     let bare = identity(
         "kde-foo.desktop",
-        "[Desktop Entry]\nName=Foo\nX-Quire-IntentsApp= \n",
+        "[Desktop Entry]\nName=Foo\nX-Bardo-IntentsApp= \n",
     );
     assert_eq!(bare.window_id, "kde-foo");
     assert!(bare.bus_names.is_empty());

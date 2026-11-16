@@ -5,4 +5,4 @@
    corner lands on. It stays in flow: a bare absolute box would be 0 px tall, since the mount
    point has no height without flow content. Never painted: no background, no
    border. */
-.sill-hot-corner{ width:100vw; height:100vh; }
+.shell-hot-corner{ width:100vw; height:100vh; }

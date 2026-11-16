@@ -32,7 +32,7 @@
 # suspend never, except in step 7 (10 s).
 #
 #   1. Idle dims, then turns the displays off and locks with cause idle_screen_off. The dim
-#      surface (`sill-idle-dim-<output>`) is unmapped before the dim (a capture is refused), and
+#      surface (`shell-idle-dim-<output>`) is unmapped before the dim (a capture is refused), and
 #      captured twice while dimmed: early in the fade and once `--t-idle-dim` (2 s) has run.
 #      Both must be the black scrim (every pixel RGB 0), the early one lighter than the late
 #      one, and the late one at 50 % (alpha 128 +- 12). The late capture is kept as
@@ -225,7 +225,7 @@ step_dim_off_lock() {
   local log="$OUT_DIR/1-dim-off-lock.log" start dim off locked g341 name before early late after
   : >"$log"
   name=$(output_name) || return 1
-  DIM_SURFACE="sill-idle-dim-$name"
+  DIM_SURFACE="shell-idle-dim-$name"
   wake_timed; start=$(now_ms)
   rm -f "$OUT_DIR"/dim-*.png
   if capture_dim "$OUT_DIR/dim-before.png"; then before=mapped; else before=unmapped; fi

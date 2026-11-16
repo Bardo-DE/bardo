@@ -90,7 +90,7 @@ mod tests {
 
     #[test]
     fn a_backdrop_is_written_once_at_the_images_size_and_blurred() {
-        let dir = std::env::temp_dir().join(format!("sill-backdrop-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-backdrop-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
         let image = dir.join("aa-160x90.png");
         image::RgbaImage::from_fn(160, 90, |x, _| {

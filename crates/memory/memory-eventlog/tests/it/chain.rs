@@ -11,7 +11,7 @@ fn fixed_header() -> Header {
         occurred: UnixSeconds(1_790_000_000),
         recorded: UnixSeconds(1_790_000_005),
         actor: Actor::User {
-            via: app("org.bardo.Mail"),
+            via: app("org.quire.Mail"),
         },
         kind: KindTag::parse("thing.archived").expect("kind"),
         effect: Effect::UndoableWrite,

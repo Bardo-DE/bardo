@@ -5,7 +5,7 @@ use crate::notifications::{ActionKey, NotesState, NotificationId, shown_with_act
 use super::model::{AccountKey, NeedsSignIn, SignInAsk};
 
 /// The desktop entry the notices carry; it names them among the notifications held.
-pub const NOTICE_ENTRY: &str = "sill-accounts";
+pub const NOTICE_ENTRY: &str = "shell-accounts";
 
 /// What an action key says before the account it is for.
 const KEY_PREFIX: &str = "sign-in-again:";

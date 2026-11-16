@@ -4,34 +4,34 @@
    everything here is a token. Attribute selectors carry `*|`. */
 
 /* The box around the Ds root. */
-.sill-bar-root{ display:block; position:relative; }
+.shell-bar-root{ display:block; position:relative; }
 
 /* The bar's content (`bar-body`): slid up out of the surface while the bar hides (an inline
    transform, `bar.autohide`), and the element the shown input and blur regions follow. */
-.sill-bar-body{ display:block; }
+.shell-bar-body{ display:block; }
 
 /* The hide trigger (`bar-strip`): a transparent strip along the top edge that takes the pointer
    while the bar is hidden; its height is `TRIGGER_STRIP_PX`. */
-.sill-bar-strip{ position:absolute; left:0; top:0; width:100%; }
+.shell-bar-strip{ position:absolute; left:0; top:0; width:100%; }
 
 /* The strip: the layer's full size, title groups at either end. The trailing edge keeps 2 pt, and
    the last item its own 8 pt: the clock's text ends 10 pt from the screen's edge (a Mac's 8 to 10). The Ds root under it draws the
    Space gradient at the Bar's tint alpha and cross-fades it on a workspace switch (design/21
    §3 and §5); the strip paints nothing of its own. */
-.sill-bar{ position:relative; display:flex; align-items:center; justify-content:space-between; height:var(--shell-bar-h);
+.shell-bar{ position:relative; display:flex; align-items:center; justify-content:space-between; height:var(--shell-bar-h);
   padding:0 var(--s-2) 0 var(--s-8); color:var(--f-ink-soft); transition:color var(--t-big) var(--e-out); }
 
-.sill-bar-group{ position:relative; display:flex; align-items:center; height:100%; gap:var(--s-4); }
+.shell-bar-group{ position:relative; display:flex; align-items:center; height:100%; gap:var(--s-4); }
 /* The status items sit flush against each other. */
-.sill-bar-status{ gap:0; }
+.shell-bar-status{ gap:0; }
 
 /* Digits keep their width, so the status items beside the clock do not move each minute. */
-.sill-bar-clock{ display:flex; font-variant-numeric:tabular-nums; }
+.shell-bar-clock{ display:flex; font-variant-numeric:tabular-nums; }
 
 /* The workspace group (ds WorkspacePills). */
-.sill-bar-spaces{ display:flex; align-items:center; margin-left:var(--s-6); }
+.shell-bar-spaces{ display:flex; align-items:center; margin-left:var(--s-6); }
 /* Mac-quiet: quire's pills are a segmented track with a raised current pill. The bar shows the
    workspaces as plain text: the track and the current pill's grounds are clear and the raise
    has no shadow (tokens only), so the current one is told by its full ink against the others'
    soft ink. */
-.sill-bar-spaces{ --surface:transparent; --surface-2:transparent; --shadow-current:none; }
+.shell-bar-spaces{ --surface:transparent; --surface-2:transparent; --shadow-current:none; }

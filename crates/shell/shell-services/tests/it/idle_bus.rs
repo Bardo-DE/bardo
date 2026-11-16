@@ -93,7 +93,7 @@ async fn idle_locks_at_screen_off_and_a_screensaver_inhibit_holds_it() {
     let env = Env {
         wayland: WaylandRoute::Socket(socket),
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
-        ..Env::isolated(Path::new("/nonexistent/sill-idle-live"))
+        ..Env::isolated(Path::new("/nonexistent/shell-idle-live"))
     };
     let links = IdleLinks {
         lock,

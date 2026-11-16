@@ -22,7 +22,7 @@ pub(crate) async fn run(
         let now = match switch(&connection, &ibus).await {
             Ok(name) => InputSwitch::Switched(name),
             Err(refusal) => {
-                eprintln!("sill-services: input_source: {refusal:?}");
+                eprintln!("shell-services: input_source: {refusal:?}");
                 InputSwitch::Refused(refusal)
             }
         };

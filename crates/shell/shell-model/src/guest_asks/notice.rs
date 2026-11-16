@@ -5,7 +5,7 @@ use crate::notifications::{ActionKey, NotesState, NotificationId, shown_with_act
 use super::model::{Ask, Computer, Verdict};
 
 /// The desktop entry the notifications carry; it names them among the notifications held.
-pub const NOTICE_ENTRY: &str = "sill-guest-asks";
+pub const NOTICE_ENTRY: &str = "shell-guest-asks";
 
 /// What an Allow button's key says before the computer.
 const ALLOW_PREFIX: &str = "allow-guest:";

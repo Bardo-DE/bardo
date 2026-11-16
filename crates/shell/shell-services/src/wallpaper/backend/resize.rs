@@ -172,7 +172,7 @@ mod tests {
 
     fn round_trip(name: &str) {
         let dir = std::env::temp_dir().join(format!(
-            "sill-wallpaper-resize-{}-{name}",
+            "shell-wallpaper-resize-{}-{name}",
             std::process::id()
         ));
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
@@ -210,7 +210,7 @@ mod tests {
 
     #[test]
     fn a_hair_thin_panorama_fills_the_target_without_a_huge_allocation() {
-        let dir = std::env::temp_dir().join(format!("sill-wallpaper-thin-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-wallpaper-thin-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
         let source = dir.join("thin.png");
         // 5000 x 1: scaled to cover a 400 x 225 output the old way it was about a gigabyte.
@@ -228,7 +228,7 @@ mod tests {
 
     #[test]
     fn an_output_beyond_the_pixel_cap_is_refused() {
-        let dir = std::env::temp_dir().join(format!("sill-wallpaper-huge-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-wallpaper-huge-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
         let source = dir.join("source.png");
         marked_source()
@@ -241,14 +241,14 @@ mod tests {
     #[test]
     fn a_missing_source_is_an_error_not_a_panic() {
         let dir =
-            std::env::temp_dir().join(format!("sill-wallpaper-missing-{}", std::process::id()));
+            std::env::temp_dir().join(format!("shell-wallpaper-missing-{}", std::process::id()));
         let cache_dir = dir.join("cache");
         assert!(ensure_cached(&dir.join("nope.png"), 10, 10, &cache_dir).is_err());
     }
 
     #[test]
     fn a_file_source_reuses_one_cache_entry_for_both_schemes() {
-        let dir = std::env::temp_dir().join(format!("sill-wallpaper-file-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-wallpaper-file-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
         let source = dir.join("source.png");
         marked_source()
@@ -265,7 +265,7 @@ mod tests {
 
     #[test]
     fn no_source_prepares_nothing() {
-        let cache_dir = std::env::temp_dir().join("sill-wallpaper-none-unused");
+        let cache_dir = std::env::temp_dir().join("shell-wallpaper-none-unused");
         assert_eq!(prepare(&WallpaperSource::None, 10, 10, &cache_dir), None);
     }
 }

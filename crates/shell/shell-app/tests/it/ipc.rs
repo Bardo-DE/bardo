@@ -17,7 +17,7 @@ fn temp_door(name: &str) -> (service_locator::Agent, service_locator::Listening)
     // Short on purpose: the socket path must fit sun_path (108 bytes) under any TMPDIR; the pid
     // and the clock already make it unique, and `name` is only for messages.
     let dir = std::env::temp_dir().join(format!(
-        "sill-ipc-{}-{}",
+        "shell-ipc-{}-{}",
         std::process::id(),
         std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)

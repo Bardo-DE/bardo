@@ -80,7 +80,7 @@ pub(crate) fn NightShiftRow() -> Element {
             plate: use_plate(),
             common: Common {
                 id: Some(ROW_ID.to_owned()),
-                extra_class: ExtraClass::parse("sill-cc-night").ok(),
+                extra_class: ExtraClass::parse("shell-cc-night").ok(),
                 ..Common::default()
             },
             trailing: rsx! {
@@ -93,9 +93,9 @@ pub(crate) fn NightShiftRow() -> Element {
                     },
                 }
             },
-            div { class: "sill-cc-night-line", "{face.line}" }
+            div { class: "shell-cc-night-line", "{face.line}" }
             if let Some(level) = face.warmth {
-                div { class: "sill-cc-night-warmth",
+                div { class: "shell-cc-night-warmth",
                     Slider {
                         label: "Colour Temperature".to_owned(),
                         value: level,
@@ -103,7 +103,7 @@ pub(crate) fn NightShiftRow() -> Element {
                             let _gone = warmth.send(NightShiftCommand::SetWarmth(warmth_at(to.0)));
                         },
                     }
-                    div { class: "sill-cc-night-ends",
+                    div { class: "shell-cc-night-ends",
                         span { "Less Warm" }
                         span { "More Warm" }
                     }

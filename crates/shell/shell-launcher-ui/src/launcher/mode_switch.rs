@@ -28,7 +28,7 @@ pub(crate) fn ModeSwitch(view: ModeView, onswitch: EventHandler<Mode>) -> Elemen
     let shortcut = action_shortcut(&ActionKeys::own(OwnAction::SwitchMode));
     let line = view.note.or(view.help);
     rsx! {
-        div { class: "sill-launcher-mode",
+        div { class: "shell-launcher-mode",
             if let Some(line) = line {
                 Label {
                     text: line,

@@ -56,7 +56,7 @@ mod tests {
 
     #[test]
     fn backlights_read_from_a_sysfs_like_tree() {
-        let root = std::env::temp_dir().join(format!("sill-backlight-{}", std::process::id()));
+        let root = std::env::temp_dir().join(format!("shell-backlight-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&root);
         let write = |dir: &str, files: &[(&str, &str)]| {
             let dir = root.join(dir);

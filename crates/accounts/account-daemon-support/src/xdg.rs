@@ -210,7 +210,7 @@ mod tests {
         );
         // Nowhere: named under /usr/share, as before.
         assert_eq!(
-            xdg.shipped_where("stoker/catalog", |_| false),
+            xdg.shipped_where("bardo/models/catalog", |_| false),
             PathBuf::from("/usr/share/bardo/models/catalog")
         );
     }

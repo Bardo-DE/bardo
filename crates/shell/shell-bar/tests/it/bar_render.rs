@@ -48,7 +48,7 @@ fn the_bar_shows_what_the_services_hold() {
         ("the Bar material", "data-material=\"bar\"", 1),
         ("the root draws the Space", "data-frame=\"tinted\"", 1),
         ("on the frame ground", "data-ground=\"frame\"", 1),
-        ("no tint layer of the bar's own", "sill-bar-tint", 0),
+        ("no tint layer of the bar's own", "shell-bar-tint", 0),
         // The system menu's glyph; Sound, Wi-Fi and Battery (`control_center.menu_bar_*`), then
         // the control center.
         ("five glyph items", "data-image=\"only\"", 5),

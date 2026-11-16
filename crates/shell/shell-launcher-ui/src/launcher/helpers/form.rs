@@ -73,7 +73,7 @@ pub(super) fn Fields(
                 }
             }
             FieldRow { label: "Uses", help: uses_help,
-                div { class: "sill-helper-apps",
+                div { class: "shell-helper-apps",
                     for app in offered.iter() {
                         {app_row(app, &ticked, &say)}
                     }
@@ -149,7 +149,7 @@ fn model_list(
                 None => rsx! {},
             };
             rsx! {
-                div { class: "sill-helper-models",
+                div { class: "shell-helper-models",
                     if groups.is_empty() {
                         Label { text: NO_MODELS, role: LabelRole::Secondary }
                     }

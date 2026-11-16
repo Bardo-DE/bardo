@@ -343,7 +343,7 @@ mod tests {
         let cases = [
             ("org.bardo.Mail", "mail"),
             ("org.bardo.Memory", "memory"),
-            ("org.bardo.ComputerUse", "cua"),
+            ("org.bardo.ComputerUse", "computeruse"),
             ("com.example.WorkLog", "worklog"),
         ];
         for (app, want) in cases {

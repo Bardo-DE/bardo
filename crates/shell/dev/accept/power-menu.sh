@@ -20,7 +20,7 @@
 # event through one fake-input client, with a real serial and the compositor's keyboard focus.
 #
 # Default steps:
-#   1. Warm: `sill-power-menu-<out>` exists from the start, hidden (no capture).
+#   1. Warm: `shell-power-menu-<out>` exists from the start, hidden (no capture).
 #   2. `bardo-shell power-menu open` shows the alert on its sheet: a capture with the sheet's pixels,
 #      into dev/out/power-menu.png. `close` hides it; `toggle` twice round-trips.
 #   3. Tab moves the keyboard to the next button: the frame differs from the opening's by the
@@ -68,7 +68,7 @@ start_menu_daemon() {
   : >"$RECORD"
   launch_daemon --session-dry-run "$RECORD" || return 1
   NAME=$(output_name) || return 1
-  MENU="sill-power-menu-$NAME"
+  MENU="shell-power-menu-$NAME"
   sleep 1
 }
 

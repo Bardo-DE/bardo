@@ -3,7 +3,7 @@
 //! §10.3.12). The surface is transparent everywhere but the pill and the tiles. The pill is the
 //! `Ds` root itself: a `Material::Dock` root in a box at the pill's rectangle, which draws the
 //! Space gradient at the Dock's tint alpha with the material stack's hairline, highlight and
-//! shadows (quire's tinted frame), its corner a squircle of `--sill-dock-pill-radius` (the macOS
+//! shadows (quire's tinted frame), its corner a squircle of `--shell-dock-pill-radius` (the macOS
 //! polish pass). The box around the root carries quire's dock metrics
 //! (`DockMetrics`: the tile's size and the floor), and the root's first child is quire's
 //! `DockFloor` (off unless `dock.floor` is on). Everything else hangs from the root in a layer
@@ -151,7 +151,7 @@ pub(super) fn dock(output: OutputInfo) -> Element {
     rsx! {
         div {
             id: "dock-pill",
-            class: "sill-dock-pill",
+            class: "shell-dock-pill",
             style: "{area_style(&shown.pill)};transform:translateY({px(slide)}px);{dock_metrics(&file.dock).style_attr()}",
             Ds {
                 sheet: Some(shell_kit::stylesheet()),
@@ -168,11 +168,11 @@ pub(super) fn dock(output: OutputInfo) -> Element {
                 AppStyle { css: DOCK_CSS }
                 DockFloor {}
                 div {
-                    class: "sill-dock-body",
+                    class: "shell-dock-body",
                     style: "height:{px(shown.pill.height)}px",
                 }
                 div {
-                    class: "sill-dock",
+                    class: "shell-dock",
                     onmounted: move |event| resolved.mounted(event),
                     style: surface_style(&shown.pill, width, rows.surface),
                     onmouseenter: move |event| send(PointerInput::Enter(point(&event))),
@@ -188,10 +188,10 @@ pub(super) fn dock(output: OutputInfo) -> Element {
                             send(PointerInput::Release(b, point(&event), modifier(&event, platform)));
                         }
                     },
-                    div { id: "dock-hit", class: "sill-dock-hit", style: area_style(&shown.hit) }
+                    div { id: "dock-hit", class: "shell-dock-hit", style: area_style(&shown.hit) }
                     if let Some(sep) = shown.separator {
                         div {
-                            class: "sill-dock-separator",
+                            class: "shell-dock-separator",
                             style: separator_style(sep, &rows),
                         }
                     }
@@ -205,7 +205,7 @@ pub(super) fn dock(output: OutputInfo) -> Element {
                         }
                     }
                     if file.dock.autohide {
-                        div { id: "dock-strip", class: "sill-dock-hit", style: area_style(&strip) }
+                        div { id: "dock-strip", class: "shell-dock-hit", style: area_style(&strip) }
                     }
                 }
             }
@@ -235,7 +235,7 @@ fn area_style(area: &Area) -> String {
 }
 
 /// The separator: centred in its gap, its middle on the rest tiles' middle; its height is
-/// `--sill-dock-separator-height` and the sheet centres it on `top`.
+/// `--shell-dock-separator-height` and the sheet centres it on `top`.
 fn separator_style(x: Cpx, rows: &Rows) -> String {
     let middle = px(rows.pill_top) + px(rows.pill_height) / 2.0;
     format!("left:{:.2}px;top:{middle:.2}px", px(x) - 0.5)

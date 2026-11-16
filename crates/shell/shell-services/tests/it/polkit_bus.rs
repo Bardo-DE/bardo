@@ -293,7 +293,7 @@ fn the_agent_registers_answers_fails_and_cancels_on_a_private_bus() {
 fn start(route: PolkitRoute) -> (watch::Receiver<Polkit>, Control<PolkitCommand>) {
     let env = Env {
         polkit: route,
-        ..Env::isolated(Path::new("/nonexistent/sill-polkit-live"))
+        ..Env::isolated(Path::new("/nonexistent/shell-polkit-live"))
     };
     let agent = spawn::<PolkitAgentService>(&tokio::runtime::Handle::current(), &env, ());
     (agent.state, agent.control)
@@ -305,7 +305,7 @@ fn a_made_up_request_takes_the_fake_secret_and_nothing_else() {
     rt.block_on(async {
         let (mut rx, control) = start(PolkitRoute {
             bus: Bus::system(BusRoute::Address(
-                "unix:path=/nonexistent/sill-test".to_owned(),
+                "unix:path=/nonexistent/shell-test".to_owned(),
             )),
             helper: HelperChoice::Use(HelperRoute::Missing),
             session: SessionChoice::Id("never".to_owned()),

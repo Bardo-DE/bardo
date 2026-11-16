@@ -10,7 +10,7 @@
 # personal.ics "Dentist" tomorrow at 09:00. `widgets.center = ["calendar",
 # "up_next"]`. The daemon is quit at the end.
 #
-#   1. `bardo-shell notifications open`: a capture of `sill-notification-center-<out>` shows the month
+#   1. `bardo-shell notifications open`: a capture of `shell-notification-center-<out>` shows the month
 #      with today on the accent disc (dev/out/calendar-casement.png; the output with the center
 #      open, dev/out/calendar-widget-casement.png).
 #   2. The center's Calendar tile is the Medium card (a today column beside the compact month): it
@@ -175,7 +175,7 @@ start_daemon() {
   write_settings false
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  CENTER="sill-notification-center-$NAME"
+  CENTER="shell-notification-center-$NAME"
   sleep 1.5
   echo "daemon on a private bus and runtime dir $RUNTIME; calendars in $CAL; $CENTER" >&2
 }

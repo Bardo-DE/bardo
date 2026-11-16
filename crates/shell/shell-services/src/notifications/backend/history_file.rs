@@ -99,7 +99,7 @@ mod tests {
 
     #[test]
     fn pixels_are_not_written_and_the_rest_round_trips() {
-        let dir = std::env::temp_dir().join(format!("sill-notes-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-notes-{}", std::process::id()));
         let path = dir.join("state/bardo/shell/notifications.json");
         let stored = for_disk(&state());
         assert_eq!(stored.version, STORED_VERSION);
@@ -126,7 +126,7 @@ mod tests {
 
     #[test]
     fn a_missing_broken_or_foreign_file_is_empty() {
-        let dir = std::env::temp_dir().join(format!("sill-notes-bad-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-notes-bad-{}", std::process::id()));
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
         assert_eq!(load(&dir.join("absent.json")), StoredHistory::default());
         let broken = dir.join("broken.json");

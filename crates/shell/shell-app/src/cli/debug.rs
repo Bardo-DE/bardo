@@ -24,13 +24,13 @@ use super::word::word;
 pub enum DebugAction {
     /// Frame statistics for every surface.
     Stats,
-    /// Move the pointer to X Y on SURFACE (`sill-dock-DP-1`).
+    /// Move the pointer to X Y on SURFACE (`shell-dock-DP-1`).
     Pointer { surface: String, x: i32, y: i32 },
     /// The pointer leaves SURFACE.
     Leave { surface: String },
     /// Render SURFACE to a PNG at PATH.
     Capture { surface: String, path: PathBuf },
-    /// Press and release a pointer button at X Y on SURFACE (`sill-bar-DP-1`).
+    /// Press and release a pointer button at X Y on SURFACE (`shell-bar-DP-1`).
     Click {
         surface: String,
         x: i32,
@@ -39,7 +39,7 @@ pub enum DebugAction {
         #[arg(long, value_parser = word::<PointerButton>(), default_value = PointerButton::Primary.slug())]
         button: PointerButton,
     },
-    /// Press a key on SURFACE as if typed (`sill-power-menu-DP-1`): KEY is a W3C key name or
+    /// Press a key on SURFACE as if typed (`shell-power-menu-DP-1`): KEY is a W3C key name or
     /// `Space`, then `+shift`, `+ctrl`, `+alt` or `+super` (`Tab`, `ArrowRight`, `k+ctrl`).
     Key {
         surface: String,
@@ -94,7 +94,7 @@ pub enum DebugAction {
         #[arg(value_parser = word::<FakeVerdict>())]
         verdict: FakeVerdict,
     },
-    /// Show a made-up polkit request (its stand-in helper accepts `sill-fake`).
+    /// Show a made-up polkit request (its stand-in helper accepts `shell-fake`).
     Polkit(PolkitArgs),
     /// Open the app switcher on made-up apps (desktop ids, the current one first).
     Switcher {

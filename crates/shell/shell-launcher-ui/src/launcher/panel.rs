@@ -178,7 +178,7 @@ pub(crate) fn launcher(output: OutputInfo) -> Element {
     rsx! {
         div {
             id: "panel",
-            class: "sill-launcher",
+            class: "shell-launcher",
             onkeydown: move |event| {
                 contacts.heard(&event);
                 root.root_key(&event);
@@ -189,7 +189,7 @@ pub(crate) fn launcher(output: OutputInfo) -> Element {
                 material: Material::Sheet,
                 AppStyle { css: LAUNCHER_CSS }
                 div {
-                    class: "sill-launcher-body",
+                    class: "shell-launcher-body",
                     onmounted: move |event| resolved.mounted(event),
                     style: "margin-left:{left}px;width:{width}px;height:{PANEL_HEIGHT}px",
                     if let Some(shown) = shown {
@@ -390,7 +390,7 @@ fn palette(
             }
         }
         div {
-            class: "sill-launcher-foot",
+            class: "shell-launcher-foot",
             onmounted: move |event| foot.on_mounted(event),
         }
         if let (Some(entries), Some(row)) = (actions, selected) {

@@ -32,7 +32,7 @@ pub fn PowerProfileControl() -> Element {
         ProfileDegraded::Because(reason) => Some(reason),
     };
     rsx! {
-        div { class: "sill-cc-profile",
+        div { class: "shell-cc-profile",
             SectionHeader { title: "Power Mode".to_owned(), value: degraded }
             SegmentedControl::<Profile> {
                 label: "Power Mode".to_owned(),

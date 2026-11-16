@@ -48,9 +48,9 @@ start_daemon() {
   launch_daemon || return 1
   DAEMON_PID=$DAEMON
   NAME=$(output_name) || return 1
-  SURFACES=("sill-bar-$NAME" "sill-dock-$NAME" "sill-osd-$NAME")
+  SURFACES=("shell-bar-$NAME" "shell-dock-$NAME" "shell-osd-$NAME")
   bardo-shell debug osd volume 60 >"$OUT_DIR/osd.log" 2>&1 || return 1
-  wait_surface "sill-osd-$NAME" 30 || { echo "the OSD never mapped" >&2; return 1; }
+  wait_surface "shell-osd-$NAME" 30 || { echo "the OSD never mapped" >&2; return 1; }
   sleep 1
 }
 
@@ -72,7 +72,7 @@ capture_all() {
   local surface
   for surface in "${SURFACES[@]}"; do
     case "$surface" in
-      sill-osd-*) show_osd "$surface" || return 1 ;;
+      shell-osd-*) show_osd "$surface" || return 1 ;;
     esac
     capture "$surface" "$OUT_DIR/$1-$surface.png" || { echo "cannot capture $surface" >&2; return 1; }
   done
@@ -81,10 +81,10 @@ capture_all() {
 # expect_all for every surface (reference $1, want $2, tag $3), the OSD shown again first: it
 # hides 1.5 s after a change, so it is not up when the bar's and the dock's polls are done.
 expect_styled() {
-  local SURFACES=("sill-bar-$NAME" "sill-dock-$NAME")
+  local SURFACES=("shell-bar-$NAME" "shell-dock-$NAME")
   expect_all "$1" "$2" "$3" || return 1
-  show_osd "sill-osd-$NAME" || return 1
-  SURFACES=("sill-osd-$NAME")
+  show_osd "shell-osd-$NAME" || return 1
+  SURFACES=("shell-osd-$NAME")
   expect_all "$1" "$2" "$3"
 }
 
@@ -131,7 +131,7 @@ PY
 wait_bar_height() {
   local height
   for _ in $(seq 100); do
-    capture "sill-bar-$NAME" "$OUT_DIR/geometry-bar.png" || { sleep 0.2; continue; }
+    capture "shell-bar-$NAME" "$OUT_DIR/geometry-bar.png" || { sleep 0.2; continue; }
     height=$(png_height "$OUT_DIR/geometry-bar.png")
     if [ "$2" = is ] && [ "$height" = "$1" ]; then return 0; fi
     if [ "$2" = is-not ] && [ "$height" != "$1" ]; then return 0; fi
@@ -143,7 +143,7 @@ wait_bar_height() {
 
 step_geometry() {
   local base
-  capture "sill-bar-$NAME" "$OUT_DIR/geometry-base.png" || return 1
+  capture "shell-bar-$NAME" "$OUT_DIR/geometry-base.png" || return 1
   base=$(png_height "$OUT_DIR/geometry-base.png")
   printf '.ds[data-surface=bar] { --shell-bar-h: 40px }\n' >"$CONFIG/bardo/shell/style.css"
   wait_bar_height "$base" is-not || return 1
@@ -164,7 +164,7 @@ build || exit 1
 scratch_new
 # A short runtime folder of its own: the agent socket's path must fit in 108 bytes.
 rm -rf "$RUNTIME"
-RUNTIME=$(mktemp -d /tmp/sill-rt.XXXXXX)
+RUNTIME=$(mktemp -d /tmp/shell-rt.XXXXXX)
 chmod 700 "$RUNTIME"
 : >"$OUT_DIR/capture.log"
 : >"$OUT_DIR/steps.log"

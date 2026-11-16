@@ -18,10 +18,10 @@ source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
 scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_BUILD/sill-target/debug/bardo-shell"
+  "$SCEN_BUILD/shell-target/debug/bardo-shell"
 
 export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+export CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 floor_shim bardo-shell-boots-on-casement bardo-shell   # bardo-shell takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"

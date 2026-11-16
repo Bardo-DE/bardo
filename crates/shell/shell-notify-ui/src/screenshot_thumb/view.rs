@@ -128,7 +128,7 @@ fn Column(
     };
     rsx! {
         div {
-            class: "sill-thumb-column",
+            class: "shell-thumb-column",
             style: "padding:{ROOM}px;",
             onkeydown: move |event: KeyboardEvent| {
                 if let Some(input) = thumb_key(&event.key()) {

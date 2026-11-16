@@ -6,7 +6,7 @@ use sandbox::AbsPath;
 use std::path::PathBuf;
 
 /// The name the agent sees the server under.
-pub const SERVER_NAME: &str = "quire";
+pub const SERVER_NAME: &str = "bardo";
 /// The bridge program's flag that names the socket.
 pub const SOCKET_FLAG: &str = "--host-socket";
 

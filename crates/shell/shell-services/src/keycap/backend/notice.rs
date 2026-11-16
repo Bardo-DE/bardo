@@ -6,7 +6,7 @@ use shell_model::notifications::{
 };
 
 /// The desktop entry the notices carry; it names them among the notifications held.
-const ENTRY: &str = "sill-keycap";
+const ENTRY: &str = "shell-keycap";
 
 /// The posting that tells the person `attention`, in place of `replaces` when one is shown.
 pub(crate) fn posting(attention: &Attention, replaces: Option<NotificationId>) -> Posting {

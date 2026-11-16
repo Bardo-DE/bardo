@@ -135,7 +135,7 @@ mod tests {
             static NEXT: AtomicU32 = AtomicU32::new(0);
             let n = NEXT.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir()
-                .join(format!("sill-services-{tag}-{}-{n}", std::process::id()));
+                .join(format!("shell-services-{tag}-{}-{n}", std::process::id()));
             let _ = fs::remove_dir_all(&path);
             fs::create_dir_all(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()));
             TempDir(path)

@@ -24,7 +24,7 @@ fn style(text: &str) -> UserStyle {
 
 fn temp_dir(tag: &str) -> PathBuf {
     let dir = std::env::temp_dir().join(format!(
-        "sill-daemon-styles-test-{tag}-{}",
+        "shell-daemon-styles-test-{tag}-{}",
         std::process::id()
     ));
     let _ = std::fs::remove_dir_all(&dir);
@@ -186,7 +186,7 @@ fn the_chosen_look_reaches_the_feed_with_its_folder_and_leaves_the_other_sheets(
     let keeper = keeper(own);
     keeper.publish(&watched(Sheet::Desktop, ".d { }"));
     let now = styles_of(&keeper);
-    assert_eq!(now.look.0, ".sill-bar { background: ivory; }\n");
+    assert_eq!(now.look.0, ".shell-bar { background: ivory; }\n");
     assert_eq!(now.homes.look, Some(folder));
     assert_eq!(now.desktop, style(".d { }"));
 

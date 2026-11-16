@@ -70,7 +70,7 @@ fn answers(running: &mut Running) -> Vec<CaptureCommand> {
 }
 
 fn on_screen(harness: &Harness) -> usize {
-    harness.count(".sill-eyedrop")
+    harness.count(".shell-eyedrop")
 }
 
 #[test]
@@ -98,9 +98,9 @@ fn it_exists_for_the_service_and_draws_nothing_until_a_picture_comes() {
 fn a_picture_draws_the_still_and_the_magnifier_follows_the_pointer() {
     let mut running = asked_with_picture_of("DP-1");
     assert_eq!(on_screen(&running.harness), 1);
-    assert_eq!(running.harness.count(".sill-eyedrop-still"), 1);
+    assert_eq!(running.harness.count(".shell-eyedrop-still"), 1);
     assert_eq!(
-        running.harness.count(".sill-eyedrop-loupe"),
+        running.harness.count(".shell-eyedrop-loupe"),
         0,
         "no pointer yet"
     );
@@ -108,9 +108,9 @@ fn a_picture_draws_the_still_and_the_magnifier_follows_the_pointer() {
     running.harness.send(Input::pointer_move(at(105.0, 55.0)));
     running.harness.advance(Duration::from_millis(100));
     let html = running.harness.html();
-    assert_eq!(running.harness.count(".sill-eyedrop-loupe"), 1);
+    assert_eq!(running.harness.count(".shell-eyedrop-loupe"), 1);
     assert_eq!(
-        running.harness.count(".sill-eyedrop-cell"),
+        running.harness.count(".shell-eyedrop-cell"),
         1,
         "the centre pixel is ringed"
     );

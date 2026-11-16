@@ -32,7 +32,7 @@ use shell_services::launch;
 use tokio::sync::watch;
 
 /// The token the probe hands the opener, so a stub can show it arrived.
-const TOKEN: &str = "sill-accept-files-token";
+const TOKEN: &str = "shell-accept-files-token";
 
 #[derive(Debug)]
 struct Args {

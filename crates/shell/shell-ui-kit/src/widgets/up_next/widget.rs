@@ -86,26 +86,26 @@ impl Widget for UpNext {
             (true, Some(_)) | (false, _) => None,
         };
         rsx! {
-            div { class: "sill-un",
-                div { class: "sill-un-day",
-                    span { class: "sill-un-weekday", "{face.day.weekday}" }
-                    span { class: "sill-un-date", "{face.day.date}" }
+            div { class: "shell-un",
+                div { class: "shell-un-day",
+                    span { class: "shell-un-weekday", "{face.day.weekday}" }
+                    span { class: "shell-un-date", "{face.day.date}" }
                 }
-                div { class: "sill-un-list",
+                div { class: "shell-un-list",
                     if let Some(empty) = empty {
-                        span { class: "sill-un-empty", {empty} }
+                        span { class: "shell-un-empty", {empty} }
                     }
                     for row in rows {
-                        div { class: "sill-un-row",
-                            span { class: "sill-un-bar", "data-hue": row.hue.slug() }
-                            div { class: "sill-un-text",
-                                span { class: "sill-un-title ds-truncate", {row.title} }
-                                span { class: "sill-un-when", {row.when} }
+                        div { class: "shell-un-row",
+                            span { class: "shell-un-bar", "data-hue": row.hue.slug() }
+                            div { class: "shell-un-text",
+                                span { class: "shell-un-title ds-truncate", {row.title} }
+                                span { class: "shell-un-when", {row.when} }
                             }
                         }
                     }
                     if let Some(quiet) = &face.quiet {
-                        span { class: "sill-un-quiet", "{quiet}" }
+                        span { class: "shell-un-quiet", "{quiet}" }
                     }
                 }
             }

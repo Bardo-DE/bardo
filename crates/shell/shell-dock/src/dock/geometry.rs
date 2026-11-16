@@ -19,7 +19,7 @@ pub fn dock_metrics(dock: &DockSettings) -> DockMetrics {
     }
 }
 
-/// The pill's corner: a squircle of nominal radius `--sill-dock-pill-radius` (quire's
+/// The pill's corner: a squircle of nominal radius `--shell-dock-pill-radius` (quire's
 /// `Corner::Squircle`; its extent is capped at half the pill's height).
 pub fn pill_corner(tokens: &DockTokens) -> Corner {
     Corner::Squircle(Px(f32::from(tokens.pill_radius)))

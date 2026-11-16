@@ -150,7 +150,7 @@ fn read_on_a_thread(child: &mut Child) -> Result<Receiver<Vec<u8>>, IndexFault> 
     let mut stdout = child.stdout.take().ok_or(IndexFault::Failed)?;
     let (tx, rx) = mpsc::channel();
     std::thread::Builder::new()
-        .name("sill-files-read".to_owned())
+        .name("shell-files-read".to_owned())
         .spawn(move || {
             let mut buf = [0u8; 8192];
             while let Ok(n) = stdout.read(&mut buf) {
@@ -317,7 +317,7 @@ mod tests {
     fn a_missing_program_and_a_cancelled_query_are_faults() {
         let cancel = Cancel::new();
         let query = Query::begin("x", &cancel);
-        let missing = run_within("sill-no-such-program", &[], Duration::from_secs(1), &query);
+        let missing = run_within("shell-no-such-program", &[], Duration::from_secs(1), &query);
         assert_eq!(missing, Err(IndexFault::NoProgram));
         let _newer = Query::begin("xy", &cancel);
         let cancelled = run_within("sleep", &args(&["5"]), Duration::from_secs(5), &query);

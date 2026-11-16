@@ -3,13 +3,13 @@
 //! An app is a desktop id for the launcher, an `app_id` for the compositor, bus names for D-Bus
 //! activation and an app name in its intents manifest. They are often different strings, and
 //! code that guesses one from another goes wrong. The app declares them in its desktop entry, in
-//! `X-Quire-` keys, and this is the one reader.
+//! `X-Bardo-` keys, and this is the one reader.
 
 use super::desktop_id::DesktopId;
 use crate::DesktopGroup;
 
-/// `X-Quire-WindowId=`: the `app_id` the app's windows carry.
-const WINDOW_ID_KEY: &str = "X-Quire-WindowId";
+/// `X-Bardo-WindowId=`: the `app_id` the app's windows carry.
+const WINDOW_ID_KEY: &str = "X-Bardo-WindowId";
 /// `X-Bardo-BusNames=`: a `;` list of the well-known names the app owns on the session bus.
 const BUS_NAMES_KEY: &str = "X-Bardo-BusNames";
 /// `X-Bardo-IntentsApp=`: the app name in the app's intents manifest.
@@ -22,7 +22,7 @@ const WM_CLASS_KEY: &str = "StartupWMClass";
 pub struct AppIdentity {
     /// The entry's desktop id: what the launcher starts and the dock keeps.
     pub desktop_id: DesktopId,
-    /// The `app_id` its windows carry: `X-Quire-WindowId`, else `StartupWMClass`, else the
+    /// The `app_id` its windows carry: `X-Bardo-WindowId`, else `StartupWMClass`, else the
     /// desktop id without its suffix.
     pub window_id: String,
     /// The well-known session-bus names it owns; empty when it declares none.

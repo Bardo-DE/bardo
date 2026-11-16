@@ -23,7 +23,7 @@ mod tests {
     #[test]
     fn the_wallpaper_fills_the_background_and_takes_the_pointer_for_its_menu() {
         let config = layer(&output(Some("DP-1")));
-        assert_eq!(config.namespace, "sill-wallpaper-DP-1");
+        assert_eq!(config.namespace, "shell-wallpaper-DP-1");
         assert_eq!(config.layer, LayerLevel::Background);
         assert_eq!(config.anchor, Anchor::ALL);
         assert_eq!(config.exclusive, ExclusiveZone::Ignore);

@@ -238,7 +238,7 @@ mod tests {
         assert_eq!(senders.replaceable(&other, &nameless, Some(unnamed)), None);
         assert_eq!(senders.replaceable(&mine, &volume, Some(shells)), None);
         assert_eq!(
-            senders.replaceable(&other, &app("sill-accounts"), Some(shells)),
+            senders.replaceable(&other, &app("shell-accounts"), Some(shells)),
             None
         );
         assert_eq!(senders.replaceable(&mine, &volume, None), None);

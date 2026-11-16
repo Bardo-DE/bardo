@@ -24,7 +24,7 @@ use super::widget::{DayLine, UpNextEntry, UpNextFace, UpNextRow};
 use crate::widgets::calendar::shown::weekday_name;
 
 /// How many whole event rows the card's body holds at its one size (Medium: one 164 px cell
-/// tall, 16 px gap, quire's card inset, the title row and `.sill-un-day` column already drawn):
+/// tall, 16 px gap, quire's card inset, the title row and `.shell-un-day` column already drawn):
 /// two before a third would clip.
 pub const EVENT_ROWS: usize = 2;
 

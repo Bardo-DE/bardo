@@ -2,7 +2,7 @@
 //! one `shell_bar::Bar` per output, fed by fixed `watch` channels (a Thursday afternoon, a
 //! 64 % battery, Wi-Fi joined to `home` with two more networks in range, Bluetooth headphones,
 //! the Balanced power mode, a track playing, three workspaces, two terminal windows), driven by
-//! layer-shell-host's `debug-inject` commands on stdin (`sill-bar-<output> click X Y`, `stats`,
+//! layer-shell-host's `debug-inject` commands on stdin (`shell-bar-<output> click X Y`, `stats`,
 //! `<surface> capture PATH`, `quit`). Commands the bar sends to the fake services are printed
 //! on stderr, never carried out.
 //!

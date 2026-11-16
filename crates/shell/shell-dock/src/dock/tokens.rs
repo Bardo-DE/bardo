@@ -1,6 +1,6 @@
 //! The dock's geometry tokens as the layout maths reads them. Each is a tuned token in
 //! `shell_kit::tokens::dock::DockToken` (`--dock-gap`, `--dock-pad`,
-//! `--sill-dock-pill-radius`, `--sill-dock-edge-clamp`), a look or the person's style sheet may
+//! `--shell-dock-pill-radius`, `--shell-dock-edge-clamp`), a look or the person's style sheet may
 //! move it, and the maths needs the number before the first layout. [`DockTokens::read`] takes
 //! the resolved length of a custom property (`ui_blitz::Resolved::length` on the surface's
 //! document, read again when the `Styles` signal changes); a token a sheet does not write, or
@@ -14,9 +14,9 @@ use ui_components::prelude::Px;
 pub const GAP: u16 = 8;
 /// `--dock-pad`'s shipped value: the pill's padding on every side.
 pub const PAD: u16 = 6;
-/// `--sill-dock-pill-radius`'s shipped value: the pill's squircle corner.
+/// `--shell-dock-pill-radius`'s shipped value: the pill's squircle corner.
 pub const PILL_RADIUS: u16 = 22;
-/// `--sill-dock-edge-clamp`'s shipped value: how close the pill gets to the output's sides.
+/// `--shell-dock-edge-clamp`'s shipped value: how close the pill gets to the output's sides.
 pub const EDGE_CLAMP: u16 = 8;
 
 /// The token values the dock's maths uses, in whole logical pixels.

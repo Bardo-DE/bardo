@@ -227,7 +227,7 @@ services! {
         /// The person's directories the services were started with (the icon theme's config, the
         /// widget placements' state folder).
         dirs: Dirs = env.dirs.clone()
-            => Dirs::under(std::path::Path::new("/nonexistent/sill-ui-kit-test"));
+            => Dirs::under(std::path::Path::new("/nonexistent/shell-ui-kit-test"));
         /// Where the docks' icons rest, for the compositor's minimise targets.
         dock_rects: DockRects = DockRects::default() => DockRects::default();
         /// Where the session service sends chosen actions (logind, or a dry run's record), for the

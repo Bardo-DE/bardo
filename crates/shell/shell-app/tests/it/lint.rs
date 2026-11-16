@@ -278,7 +278,7 @@ fn launcher_catcher_states() -> Vec<(&'static str, String)> {
     catcher.link.open(fake::output().id, String::new());
     catcher.harness.advance(Duration::from_millis(60));
     let shown = catcher.harness.html();
-    assert!(shown.contains("sill-launcher-catcher"), "{shown}");
+    assert!(shown.contains("shell-launcher-catcher"), "{shown}");
     vec![("shut", shut), ("shown", shown)]
 }
 
@@ -321,8 +321,8 @@ fn wallpaper_states() -> Vec<(&'static str, String)> {
     wallpaper.feeds.wallpaper.send_replace(Wallpapers {
         outputs: vec![WallpaperImage {
             output: OutputName("DP-1".to_owned()),
-            light: "/tmp/sill-wallpaper-lint/light.png".into(),
-            dark: "/tmp/sill-wallpaper-lint/dark.png".into(),
+            light: "/tmp/shell-wallpaper-lint/light.png".into(),
+            dark: "/tmp/shell-wallpaper-lint/dark.png".into(),
         }],
     });
     wallpaper.harness.advance(Duration::ZERO);
@@ -374,7 +374,7 @@ fn split_picker_states() -> Vec<(&'static str, String)> {
     picker.link.add(card("w3"));
     picker.harness.advance(Duration::from_millis(200));
     let offered = picker.harness.html();
-    assert!(offered.contains("sill-split-scrim"), "{offered}");
+    assert!(offered.contains("shell-split-scrim"), "{offered}");
     vec![("hidden", hidden), ("offered", offered)]
 }
 
@@ -406,7 +406,7 @@ fn eyedropper_states() -> Vec<(&'static str, String)> {
     sampler.harness.send(Input::pointer_move(at));
     sampler.harness.advance(Duration::from_millis(100));
     let pointed = sampler.harness.html();
-    assert!(pointed.contains("sill-eyedrop-loupe"), "{pointed}");
+    assert!(pointed.contains("shell-eyedrop-loupe"), "{pointed}");
     vec![("hidden", hidden), ("pointed", pointed)]
 }
 
@@ -432,7 +432,7 @@ fn force_quit_states() -> Vec<(&'static str, String)> {
     panel.link.open(fake::output().id);
     panel.harness.advance(Duration::from_millis(600));
     let listed = panel.harness.html();
-    assert!(listed.contains("sill-fq"), "{listed}");
+    assert!(listed.contains("shell-fq"), "{listed}");
     let button = panel
         .harness
         .centre("#force-quit-button")
@@ -548,7 +548,7 @@ fn capture_sheet_states() -> Vec<(&'static str, String)> {
         sheet.feeds.capture.send_replace(CapturePicker::default());
         sheet.harness.advance(Duration::from_millis(700));
     }
-    assert!(states[1].1.contains("sill-capture"), "{}", states[1].1);
+    assert!(states[1].1.contains("shell-capture"), "{}", states[1].1);
     states
 }
 
@@ -664,7 +664,7 @@ fn confirm_sheet_states() -> Vec<(&'static str, String)> {
         sheet.feeds.intents.send_replace(Intents::default());
         sheet.harness.advance(Duration::from_millis(700));
     }
-    assert!(states[2].1.contains("sill-confirm"), "{}", states[2].1);
+    assert!(states[2].1.contains("shell-confirm"), "{}", states[2].1);
     states
 }
 
@@ -682,7 +682,7 @@ fn voice_consent_states() -> Vec<(&'static str, String)> {
     });
     sheet.harness.advance(Duration::from_millis(700));
     states.push(("asking", sheet.harness.html()));
-    assert!(states[1].1.contains("sill-consent"), "{}", states[1].1);
+    assert!(states[1].1.contains("shell-consent"), "{}", states[1].1);
     states
 }
 
@@ -758,7 +758,7 @@ fn accounts_sheet_states() -> Vec<(&'static str, String)> {
         sheet.harness.advance(Duration::from_millis(700));
     }
     assert!(
-        states[1].1.contains("sill-accounts-window"),
+        states[1].1.contains("shell-accounts-window"),
         "{}",
         states[1].1
     );
@@ -979,7 +979,7 @@ fn the_surface_names_are_unique() {
     assert_eq!(names.len(), before, "two surfaces share a name");
 }
 
-/// The popups' names, which the rows above do not mount: `crates/sill-ui-kit`'s `BAR_MENU`,
+/// The popups' names, which the rows above do not mount: `crates/shell-ui-kit`'s `BAR_MENU`,
 /// `CONTROL_CENTER`, `DOCK_MENU` and `DESKTOP_MENU`, and the window menu's `WINDOW_MENU`.
 const POPUP_NAMES: &[&str] = &[
     "bar-menu",

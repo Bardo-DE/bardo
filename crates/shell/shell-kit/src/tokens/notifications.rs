@@ -69,17 +69,17 @@ pub enum NotificationToken {
         value = "320px"
     )]
     CenterWidth,
-    /// `--sill-notifications-position-right`: a banner's gap from the output's right edge (8).
+    /// `--shell-notifications-position-right`: a banner's gap from the output's right edge (8).
     #[token(
-        name = "sill-notifications-position-right",
-        input = "--sill-notifications-position-right-px",
+        name = "shell-notifications-position-right",
+        input = "--shell-notifications-position-right-px",
         value = "8px"
     )]
     PositionRight,
-    /// `--sill-notifications-position-top-gap`: a banner's gap from the bar's reserve (8).
+    /// `--shell-notifications-position-top-gap`: a banner's gap from the bar's reserve (8).
     #[token(
-        name = "sill-notifications-position-top-gap",
-        input = "--sill-notifications-position-top-gap-px",
+        name = "shell-notifications-position-top-gap",
+        input = "--shell-notifications-position-top-gap-px",
         value = "8px"
     )]
     PositionTopGap,

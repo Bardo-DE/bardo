@@ -70,7 +70,7 @@ mod tests {
 
     #[test]
     fn a_set_is_stored_and_the_mode_follows_the_feed() {
-        let dir = std::env::temp_dir().join(format!("sill-focus-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-focus-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let store = store(&dir);
         let rt = tokio::runtime::Runtime::new().unwrap_or_else(|e| panic!("{e}"));

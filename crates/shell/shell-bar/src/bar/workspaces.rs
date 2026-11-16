@@ -39,7 +39,7 @@ pub fn WorkspaceIndicator(output: OutputInfo) -> Element {
         return rsx! {};
     };
     rsx! {
-        div { class: "sill-bar-spaces",
+        div { class: "shell-bar-spaces",
             WorkspacePills { label: "Workspaces",
             for (index , workspace) in group.workspaces.into_iter().enumerate() {
                 WorkspacePill {

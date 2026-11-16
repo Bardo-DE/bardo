@@ -60,7 +60,7 @@ pub fn run(program: &str, args: &[String]) {
     {
         Ok(mut child) => {
             let reaped = std::thread::Builder::new()
-                .name("sill-palmrest-reaper".to_owned())
+                .name("shell-palmrest-reaper".to_owned())
                 .spawn(move || {
                     let _ = child.wait();
                 });

@@ -9,18 +9,18 @@ use ui_components::style::tokens::token::Token;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
 #[token(prefix = "", kind = tuned)]
 pub enum LauncherToken {
-    /// `--sill-launcher-top-bar-gap`: the least space between the bar and the panel (24).
+    /// `--shell-launcher-top-bar-gap`: the least space between the bar and the panel (24).
     #[token(
-        name = "sill-launcher-top-bar-gap",
-        input = "--sill-launcher-top-bar-gap-px",
+        name = "shell-launcher-top-bar-gap",
+        input = "--shell-launcher-top-bar-gap-px",
         value = "24px"
     )]
     TopBarGap,
-    /// `--sill-launcher-top-centre-bias`: how far above the output's 40% line the panel sits
+    /// `--shell-launcher-top-centre-bias`: how far above the output's 40% line the panel sits
     /// (230).
     #[token(
-        name = "sill-launcher-top-centre-bias",
-        input = "--sill-launcher-top-centre-bias-px",
+        name = "shell-launcher-top-centre-bias",
+        input = "--shell-launcher-top-centre-bias-px",
         value = "230px"
     )]
     TopCentreBias,

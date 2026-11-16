@@ -8,7 +8,7 @@
 # Default: casement (brought up and ended by start_compositor). Nothing changes a real radio,
 # level or profile: no switch or slider is ever pressed, and the only list the Wi-Fi pane asks for is a scan.
 #
-#   1. A debug click on the control center's item opens `sill-bar-<out>/popup` at the panel's
+#   1. A debug click on the control center's item opens `shell-bar-<out>/popup` at the panel's
 #      size (320 + the shadow room), its card 8 px inside the output's right edge (read from a
 #      screenshot); a second click closes it. Screenshot dev/out/control-center-casement.png.
 #   2. An outside click (the bar's empty middle) closes it; Escape (`bardo-shell debug key`: layer-shell-host's
@@ -366,7 +366,7 @@ start_nested_daemon() {
   write_settings
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  BAR="sill-bar-$NAME"
+  BAR="shell-bar-$NAME"
   POPUP="$BAR/popup"
   sleep 1.5
   mapfile -t ITEMS < <(status_items)
@@ -424,7 +424,7 @@ start_real_daemon() {
   local bar
   bar=$(output_name) || return 1
   [ "$bar" = "$NAME" ] || { echo "the bar is on '$bar', not '$NAME'" >&2; return 1; }
-  BAR="sill-bar-$NAME"
+  BAR="shell-bar-$NAME"
   POPUP="$BAR/popup"
   sleep 1.5
 }

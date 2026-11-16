@@ -279,7 +279,7 @@ mod tests {
         let mut wire = call();
         wire.hints.insert(
             "desktop-entry".to_owned(),
-            owned(Value::from("sill-accounts")),
+            owned(Value::from("shell-accounts")),
         );
         let posting = posting(wire).expect("a call within the hint ceiling"); // test-only
         assert_eq!(posting.app.desktop_entry, None);

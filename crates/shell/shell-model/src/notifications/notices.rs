@@ -86,7 +86,7 @@ mod tests {
         LiveBanner, NotesState, Notification, NotificationId, UnixMs,
     };
 
-    const ENTRY: &str = "sill-test";
+    const ENTRY: &str = "shell-test";
 
     fn key_of(name: &str) -> ActionKey {
         ActionKey(format!("press:{name}"))

@@ -25,7 +25,7 @@ pub fn collect(ctx: &mut HostCtx<ShellMsg>, outputs: &Outputs) -> Vec<SurfaceSta
         .collect()
 }
 
-/// The lock surfaces are the host's (layer-shell-host names each `sill-lock/<output>`), not a row of
+/// The lock surfaces are the host's (layer-shell-host names each `shell-lock/<output>`), not a row of
 /// `outputs`, so they are found by name.
 fn lock_surfaces(ctx: &mut HostCtx<ShellMsg>, outputs: &Outputs) -> Vec<(String, SurfaceId)> {
     outputs

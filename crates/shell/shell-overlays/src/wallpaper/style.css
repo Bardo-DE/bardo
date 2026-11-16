@@ -7,11 +7,11 @@
 /* The root is the viewport (`Ds { extent: RootExtent::Viewport }`, quire's root-frame rule),
    and the picture fills the root: placed against it, as Taffy places an
    absolute box against its parent (a browser, against the viewport: the same box). */
-.sill-wallpaper{ position:absolute; inset:0; overflow:hidden; background-color:var(--paper); }
+.shell-wallpaper{ position:absolute; inset:0; overflow:hidden; background-color:var(--paper); }
 
-.sill-wallpaper-layer{ position:absolute; inset:0; opacity:1;
+.shell-wallpaper-layer{ position:absolute; inset:0; opacity:1;
   transition:opacity var(--t-big) var(--e-out); }
 
-.sill-wallpaper-layer[*|data-layer=back]{ opacity:0; }
+.shell-wallpaper-layer[*|data-layer=back]{ opacity:0; }
 
-.sill-wallpaper-layer img{ display:block; width:100%; height:100%; object-fit:cover; }
+.shell-wallpaper-layer img{ display:block; width:100%; height:100%; object-fit:cover; }

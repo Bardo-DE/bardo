@@ -112,7 +112,7 @@ pub fn media_face(player: Option<&MediaPlayer>) -> MediaFace {
 pub fn MediaView(face: MediaFace, onpress: Option<EventHandler<Transport>>) -> Element {
     let MediaFace::Track(track) = face else {
         return rsx! {
-            div { class: "sill-cc-media",
+            div { class: "shell-cc-media",
                 NowPlayingTrack { art: None::<IconSource>, title: "Not Playing" }
             }
         };
@@ -128,12 +128,12 @@ pub fn MediaView(face: MediaFace, onpress: Option<EventHandler<Transport>>) -> E
     let abilities = track.abilities;
     let by = (!track.by.is_empty()).then(|| TextLine::from(track.by.clone()));
     rsx! {
-        div { class: "sill-cc-media",
-            div { class: "sill-cc-media-row",
-                div { class: "sill-cc-media-track",
+        div { class: "shell-cc-media",
+            div { class: "shell-cc-media-row",
+                div { class: "shell-cc-media-track",
                     NowPlayingTrack { art: art_of(&track.art), title: track.title.clone(), by }
                 }
-                div { class: "sill-cc-media-buttons",
+                div { class: "shell-cc-media-buttons",
                     Button {
                         bezel: Bezel::Toolbar, size: ControlSize::Large, image: ImagePosition::Only,
                         icon: Icon::SkipBack,

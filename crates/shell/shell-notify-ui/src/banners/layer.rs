@@ -24,8 +24,8 @@ pub const ROOM: u32 = 40;
 /// The card corner (design/13 §13.3.6: radius 16), which the regions follow.
 pub const CARD_RADIUS: i32 = 16;
 
-/// The margins that put a card `--sill-notifications-position-right` from the output's right
-/// edge and `--sill-notifications-position-top-gap` from the bar's reserve.
+/// The margins that put a card `--shell-notifications-position-right` from the output's right
+/// edge and `--shell-notifications-position-top-gap` from the bar's reserve.
 pub fn margin(tokens: &NotificationTokens) -> Margin {
     let room = i32::try_from(ROOM).unwrap_or(i32::MAX);
     let gap = i32::from(tokens.position_top_gap) - room;
@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn the_column_hangs_down_the_right_edge_and_takes_nothing_until_a_card_shows() {
         let config = layer(&output(Some("DP-1")), &NotificationTokens::default());
-        assert_eq!(config.namespace, "sill-banners-DP-1");
+        assert_eq!(config.namespace, "shell-banners-DP-1");
         assert_eq!(config.layer, LayerLevel::Overlay);
         assert_eq!(config.anchor, Anchor::TOP | Anchor::RIGHT | Anchor::BOTTOM);
         assert_eq!(config.size.width, LayerExtent::Px(320 + 2 * ROOM));

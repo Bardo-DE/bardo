@@ -111,4 +111,4 @@ pub enum Registration {
 }
 
 /// The secret a `FakeRequest`'s stand-in helper accepts (debug builds only).
-pub const FAKE_SECRET: &str = "sill-fake";
+pub const FAKE_SECRET: &str = "shell-fake";

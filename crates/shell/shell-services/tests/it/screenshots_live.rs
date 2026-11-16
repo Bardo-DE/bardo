@@ -21,7 +21,7 @@ const FIXTURE: &str = concat!(
 
 /// A fresh temp folder of this test's own.
 fn folder(name: &str) -> PathBuf {
-    let dir = std::env::temp_dir().join(format!("sill-shots-{name}-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("shell-shots-{name}-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).expect("a temp folder"); // test-only
     dir

@@ -37,7 +37,7 @@ use shell_ui_kit::root::SurfaceRoot;
 pub const BANNERS_CSS: &str = include_str!("style.css");
 
 /// The custom properties the column writes on itself, for the stylesheet lint.
-pub const BANNER_VARS: [&str; 1] = ["--sill-banner-room"];
+pub const BANNER_VARS: [&str; 1] = ["--shell-banner-room"];
 
 /// The most cards shown at once; the rest wait their turn.
 const STACK_MAX: usize = 3;
@@ -87,10 +87,10 @@ fn ColumnView(output: layer_shell_host::OutputId) -> Element {
         .into_iter()
         .filter_map(|entry| banner(column, &notes, entry))
         .collect();
-    let style = format!("--sill-banner-room:{ROOM}px;");
+    let style = format!("--shell-banner-room:{ROOM}px;");
     rsx! {
         div {
-            class: "sill-banners",
+            class: "shell-banners",
             onmounted: move |event| resolved.mounted(event),
             style,
             onkeydown: move |event: KeyboardEvent| {
@@ -121,7 +121,7 @@ fn banner(
     let pressed = note.clone();
     let swiped = EventHandler::new(move |()| column.input(DeckIn::Card(key, BannerIn::Swiped)));
     let element = rsx! {
-        div { id: part_id(id, CardPart::Whole), class: "sill-banner",
+        div { id: part_id(id, CardPart::Whole), class: "shell-banner",
             NoteCard {
                 note,
                 count: entry.card.count(),

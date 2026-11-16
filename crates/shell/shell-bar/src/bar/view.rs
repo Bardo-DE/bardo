@@ -74,10 +74,10 @@ pub(super) fn bar(output: OutputInfo) -> Element {
     let outside = move |input: Event| session.feed(BarInput::Bar { input, title: None });
     rsx! {
         div {
-            class: "sill-bar-root",
+            class: "shell-bar-root",
             onmouseenter: move |_| hide.feed(RevealEvent::Enter),
             onmouseleave: move |_| hide.feed(RevealEvent::Leave),
-        div { id: BODY_ID, class: "sill-bar-body", style: lifted_style,
+        div { id: BODY_ID, class: "shell-bar-body", style: lifted_style,
         Ds {
             sheet: Some(shell_kit::stylesheet()),
             appearance: popup_look.appearance,
@@ -90,18 +90,18 @@ pub(super) fn bar(output: OutputInfo) -> Element {
             custom_styles: root.custom_styles,
             AppStyle { css: BAR_CSS }
             div {
-                class: "sill-bar",
+                class: "shell-bar",
                 onmounted: move |event| resolved.mounted(event),
                 onpointerdown: move |_| outside(Event::OutsidePress),
                 onpointerup: move |_| outside(Event::Release(Target::Outside)),
-                div { class: "sill-bar-group",
+                div { class: "shell-bar-group",
                     SystemItem { output: output.clone() }
                     AppName { output: output.clone() }
                     AppMenuTitles { output: output.clone() }
                     WorkspaceIndicator { output: output.clone() }
                 }
                 StylesNotice {}
-                div { class: "sill-bar-group sill-bar-status",
+                div { class: "shell-bar-group shell-bar-status",
                     if !tray.items.is_empty() {
                         Tray { output: output.clone() }
                     }
@@ -115,7 +115,7 @@ pub(super) fn bar(output: OutputInfo) -> Element {
         }
         }
         if strip_up {
-            div { id: STRIP_ID, class: "sill-bar-strip", style: "height:{strip_px}px" }
+            div { id: STRIP_ID, class: "shell-bar-strip", style: "height:{strip_px}px" }
         }
         }
     }

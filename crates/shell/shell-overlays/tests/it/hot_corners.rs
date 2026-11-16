@@ -59,7 +59,7 @@ fn start(hot_corners: HotCornerSettings) -> (Harness, CornerLink) {
 /// the viewport's origin).
 fn inside(harness: &Harness) -> Point {
     harness
-        .centre(".sill-hot-corner")
+        .centre(".shell-hot-corner")
         .expect("the corner element is laid out")
 }
 

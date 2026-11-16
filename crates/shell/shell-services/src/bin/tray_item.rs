@@ -123,7 +123,7 @@ impl Item {
 
     #[zbus(property)]
     fn id(&self) -> String {
-        "sill-fake-item".to_owned()
+        "shell-fake-item".to_owned()
     }
 
     #[zbus(property)]

@@ -42,7 +42,7 @@ pub(crate) fn BluetoothPane(back: Option<EventHandler<()>>) -> Element {
     let empty = empty_title(&bluetooth, rows.len());
     let request = use_power_request();
     rsx! {
-        div { class: "sill-cc-detail",
+        div { class: "shell-cc-detail",
             PaneHeader {
                 title: "Bluetooth",
                 back: back_button(back),

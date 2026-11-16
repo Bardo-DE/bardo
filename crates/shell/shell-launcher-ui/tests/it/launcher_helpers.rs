@@ -82,7 +82,7 @@ fn a_selected_helper_opens_its_card_and_the_card_says_what_it_needs() {
     let mut open = on_research(Vec::new());
     assert_eq!(selected_title(&open.harness).as_deref(), Some("Research"));
     let h = &open.harness;
-    assert_eq!(h.count(".ds-palette-aside .sill-helper-card"), 1);
+    assert_eq!(h.count(".ds-palette-aside .shell-helper-card"), 1);
     let html = h.html();
     for says in [
         "Reads the news each morning",

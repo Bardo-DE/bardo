@@ -11,7 +11,7 @@
 # portal's screenshot call) a stand-in that copies the services' fixture PNG there; `xdg-open` and `gio` are stand-ins first on the daemon's PATH that log their
 # arguments; the output shot is grim on the nested socket only (no fallback).
 #
-#   1. `sill-screenshot-thumb-<out>` exists from the start, hidden (no capture).
+#   1. `shell-screenshot-thumb-<out>` exists from the start, hidden (no capture).
 #   2. `bardo-shell debug screenshot <temp>/Screenshot_a.png` shows it within 500 ms; screenshot
 #      dev/out/screenshot-thumb-casement.png while it holds.
 #   3. It hides after the hold (the thumbnail hold, 5200) plus the exit, and the file
@@ -118,7 +118,7 @@ TOML
   IN_ENV_EXTRA=(PATH="$STUBS:$PATH")
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  THUMB="sill-screenshot-thumb-$NAME"
+  THUMB="shell-screenshot-thumb-$NAME"
   sleep 1.5
   echo "daemon on a private bus and runtime dir $RUNTIME; watching $WATCHED; $THUMB" >&2
 }
@@ -133,7 +133,7 @@ folders = "$WATCHED"
 TOML
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  THUMB="sill-screenshot-thumb-$NAME"
+  THUMB="shell-screenshot-thumb-$NAME"
   sleep 1.5
 }
 

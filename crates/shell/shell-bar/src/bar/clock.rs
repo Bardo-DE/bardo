@@ -27,7 +27,7 @@ pub fn ClockItem(output: OutputInfo) -> Element {
         MenuBarItem {
             common: Common {
                 aria_label: Some("Notification Center".to_owned()),
-                extra_class: ExtraClass::parse("sill-bar-clock").ok(),
+                extra_class: ExtraClass::parse("shell-bar-clock").ok(),
                 ..Common::default()
             },
             shown: open,

@@ -118,7 +118,7 @@ fn serve_off_loop(
     };
     let dispatch = dispatch.clone();
     let spawned = std::thread::Builder::new()
-        .name("sill-ipc-conn".to_owned())
+        .name("shell-ipc-conn".to_owned())
         .spawn(move || {
             let _slot = slot;
             match own_user_stream(stream) {

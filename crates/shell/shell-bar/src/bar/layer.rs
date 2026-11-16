@@ -64,7 +64,7 @@ mod tests {
             MenuBarHiding::default(),
             &BarTokens::default(),
         );
-        assert_eq!(config.namespace, "sill-bar-DP-1");
+        assert_eq!(config.namespace, "shell-bar-DP-1");
         assert_eq!(config.layer, LayerLevel::Top);
         assert_eq!(config.anchor, Anchor::TOP | Anchor::LEFT | Anchor::RIGHT);
         assert_eq!(config.size.width, LayerExtent::Fill);

@@ -54,7 +54,7 @@ fn oversize_fields_are_cut_and_a_flood_of_hints_is_refused() {
         let mut hints = Hints::new();
         hints.insert(
             "desktop-entry".to_owned(),
-            owned(Value::from("sill-accounts")),
+            owned(Value::from("shell-accounts")),
         );
         // 512 x 512 RGBA, far past what a card draws.
         let side = 512i32;

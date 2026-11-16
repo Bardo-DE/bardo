@@ -34,7 +34,7 @@ fn catalogue(keys: Vec<KeySpec>) -> Catalogue {
     let file =
         ConfigFile::parse(&FilePath("shell/settings.toml".to_owned())).expect("a plain path");
     Catalogue::build(&[ProgramSchema {
-        app: AppId("bardo-shell".to_owned()),
+        app: AppId("shell".to_owned()),
         file,
         keys,
         foreign: Default::default(),

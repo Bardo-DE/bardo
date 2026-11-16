@@ -157,7 +157,7 @@ pub async fn desk() -> Option<Desk> {
     let bus = PrivateBus::start()?;
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
-        ..Env::isolated(Path::new("/nonexistent/sill-companion-bus"))
+        ..Env::isolated(Path::new("/nonexistent/shell-companion-bus"))
     };
     let (seat_publisher, seat_view) = seat();
     let (summons_tx, summons) = mpsc::unbounded_channel();

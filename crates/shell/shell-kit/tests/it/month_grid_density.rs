@@ -231,7 +231,7 @@ fn todays_compact_disc_is_a_circle_twice_its_number() {
 }
 
 /// The small widget with the month inside a row flex wrapper that does not stretch it, as bardo-shell's
-/// `.sill-cal` places it: unstretched, the month's own height must still fit the content box.
+/// `.shell-cal` places it: unstretched, the month's own height must still fit the content box.
 #[allow(non_snake_case)]
 fn WrappedSmallCalendar() -> Element {
     rsx! {

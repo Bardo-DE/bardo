@@ -31,7 +31,7 @@ for tool in pipewire wireplumber gdbus gst-launch-1.0 /usr/libexec/xdg-desktop-p
 done
 
 export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+export CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 # bardo-portal (built under build/) is the portal (a row in the caller list) and takes the screen (a floor row); both name its built image.
 floor_shim portal-bardo bardo-portal xdg-desktop-portal fake-shell
 # shellcheck source=/dev/null

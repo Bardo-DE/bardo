@@ -322,7 +322,7 @@ pub async fn desk_with(answer: BeginAnswer, is: VoicedIs) -> Option<Desk> {
     let env = Env {
         buses: Buses::new(BusRoute::Absent, BusRoute::Address(bus.address.clone())),
         callers: callers.clone(),
-        ..Env::isolated(Path::new("/nonexistent/sill-voice-bus"))
+        ..Env::isolated(Path::new("/nonexistent/shell-voice-bus"))
     };
     voiced
         .object_server()

@@ -41,7 +41,7 @@ fn the_grid_shows_what_the_services_hold() {
             "class=\"ds-module-panel-head\"",
             3,
         ),
-        ("no plate of bardo-shell's", "sill-cc-module", 0),
+        ("no plate of bardo-shell's", "shell-cc-module", 0),
         (
             "Wi-Fi, Bluetooth and Focus on",
             "data-state=\"on\" data-availability=\"enabled\" aria-pressed=\"true\"",
@@ -73,11 +73,7 @@ fn the_grid_shows_what_the_services_hold() {
         ),
         ("the battery's time", "2:05 remaining", 1),
         ("the power modes", ">Performance<", 1),
-        (
-            "no raw button of bardo-shell's",
-            "<button class=\"bardo-shell",
-            0,
-        ),
+        ("no raw button of the shell's", "<button class=\"shell", 0),
     ];
     for (name, needle, want) in cases {
         assert_eq!(count(&html, needle), want, "{name}: {needle}");
@@ -201,7 +197,7 @@ fn a_chevron_slides_its_pane_in_and_escape_unwinds() {
         Some("detail")
     );
     assert_eq!(
-        running.harness.count(".sill-cc-detail"),
+        running.harness.count(".shell-cc-detail"),
         1,
         "the Wi-Fi pane"
     );

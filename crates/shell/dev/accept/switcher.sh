@@ -20,7 +20,7 @@
 # Left step as Tab and Shift+Tab do. The script needs casement for the windows
 # (toplevel activation), which the headless KWin does not offer.
 #
-#   1. Warm: `sill-switcher-<out>` exists from the start, hidden (its capture fails).
+#   1. Warm: `shell-switcher-<out>` exists from the start, hidden (its capture fails).
 #   2. The quick tap: `next` + `commit` inside the delay switches to the previous app (demo goes
 #      Active, then, again, Inactive) with no panel frames; `next` alone with nothing held (the
 #      release came before the focus) switches too, with no panel, unless the nested seat
@@ -151,7 +151,7 @@ start_switcher_daemon() {
   backdrop_seed "$CONFIG" || return 1
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  SWITCHER="sill-switcher-$NAME"
+  SWITCHER="shell-switcher-$NAME"
   sleep 1
 }
 

@@ -152,7 +152,7 @@ fn a_chord_shows_the_apps_after_the_delay_with_the_previous_selected() {
         (names(&["Term", "Calc", "Edit"]), Some("Calc".to_owned()))
     );
     assert!(
-        running.harness.focus_of(".sill-switcher"),
+        running.harness.focus_of(".shell-switcher"),
         "the key target has the focus"
     );
     assert_eq!(sent(&mut running), vec![]);
@@ -339,7 +339,7 @@ fn made_up_apps_show_at_once_and_touch_no_window() {
         (names(&["Files", "Mail", "Notes"]), Some("Mail".to_owned()))
     );
     assert!(
-        running.harness.focus_of(".sill-switcher"),
+        running.harness.focus_of(".shell-switcher"),
         "focused at the ask"
     );
     running

@@ -146,7 +146,7 @@ fn PanelCard(
                 ..Common::default()
             },
             div {
-                class: "sill-fq",
+                class: "shell-fq",
                 tabindex: "0",
                 onmounted: move |event: MountedEvent| focus_soon(event.data()),
                 onkeydown: move |event: KeyboardEvent| {
@@ -154,13 +154,13 @@ fn PanelCard(
                         send.call(In::Escape);
                     }
                 },
-                div { class: "sill-fq-title", "Force Quit Applications" }
-                div { class: "sill-fq-byline",
+                div { class: "shell-fq-title", "Force Quit Applications" }
+                div { class: "shell-fq-byline",
                     "If an app doesn't respond for a while, select its name and click Force Quit."
                 }
-                div { class: "sill-fq-list",
+                div { class: "shell-fq-list",
                     if empty {
-                        div { class: "sill-fq-empty", "No apps are open." }
+                        div { class: "shell-fq-empty", "No apps are open." }
                     } else {
                         List::<String> {
                             label: "Applications",
@@ -174,7 +174,7 @@ fn PanelCard(
                         }
                     }
                 }
-                div { class: "sill-fq-footer",
+                div { class: "shell-fq-footer",
                     Button {
                         label: "Force Quit",
                         answers: Answers::Return,

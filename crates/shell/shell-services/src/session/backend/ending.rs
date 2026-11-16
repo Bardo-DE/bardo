@@ -11,7 +11,7 @@ use super::super::SessionLinks;
 use super::super::quit_apps::{LiveApps, OpenWindow, QuitOutcome, Scopes, quit_apps};
 
 /// The desktop entry the notice carries.
-const ENTRY: &str = "sill-session";
+const ENTRY: &str = "shell-session";
 
 /// Whether the action goes on to logind.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

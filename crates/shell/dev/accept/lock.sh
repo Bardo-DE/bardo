@@ -13,7 +13,7 @@
 #
 #   1. `bardo-shell lock`: `bardo-shell lock status` says locked within 1 s, and a second lock client
 #      (`session_locker`) is refused (exit 3) while bardo-shell holds the lock.
-#   2. A capture of every output's lock surface (`sill-lock/<out>`; `debug stats` does not list
+#   2. A capture of every output's lock surface (`shell-lock/<out>`; `debug stats` does not list
 #      lock surfaces); the prompt's output shows the clock and the field
 #      (dev/out/lock-casement.png), and its pixels differ from a clock-only surface's in the
 #      prompt's band.
@@ -59,8 +59,8 @@ output_names() {
 import json, sys
 for row in json.loads(sys.stdin.read())["v"]:
     s = row["surface"]
-    if s.startswith("sill-bar-") and "/" not in s:
-        print(s[len("sill-bar-"):])'
+    if s.startswith("shell-bar-") and "/" not in s:
+        print(s[len("shell-bar-"):])'
 }
 
 # `bardo-shell lock status`'s phase word (locked, locking, unlocked).
@@ -89,7 +89,7 @@ until_phase() {
 capture_lock() {
   local _
   for _ in 1 2 3; do
-    bardo-shell debug capture "sill-lock/$1" "$2" >>"$OUT_DIR/capture.log" 2>&1 && return 0
+    bardo-shell debug capture "shell-lock/$1" "$2" >>"$OUT_DIR/capture.log" 2>&1 && return 0
     grep -q "no surface" <(tail -n1 "$OUT_DIR/capture.log") && return 1
   done
   return 1
@@ -194,13 +194,13 @@ band = img.crop((w // 3, h * 70 // 100, 2 * w // 3, h * 97 // 100))
 print(sum(1 for v in band.tobytes() if v > 200))
 EOF
 )
-      echo "sill-lock/$name captured ($(python3 -c "from PIL import Image; print(Image.open('$OUT_DIR/lock-$name.png').size)")); bright pixels in the prompt band: $ink" | tee -a "$log" >&2
+      echo "shell-lock/$name captured ($(python3 -c "from PIL import Image; print(Image.open('$OUT_DIR/lock-$name.png').size)")); bright pixels in the prompt band: $ink" | tee -a "$log" >&2
       [ "$ink" -gt "$best" ] && { best=$ink; PROMPT_OUT=$name; }
     else
-      echo "sill-lock/$name: no capture" | tee -a "$log" >&2; ok=1
+      echo "shell-lock/$name: no capture" | tee -a "$log" >&2; ok=1
     fi
   done
-  bardo-shell debug stats | grep -c '"sill-lock/' | xargs -I{} echo "debug stats rows for lock surfaces: {}" | tee -a "$log" >&2
+  bardo-shell debug stats | grep -c '"shell-lock/' | xargs -I{} echo "debug stats rows for lock surfaces: {}" | tee -a "$log" >&2
   [ -n "$PROMPT_OUT" ] && cp "$OUT_DIR/lock-$PROMPT_OUT.png" "$SHOTS/lock-casement.png"
   cp "$OUT_DIR/lock-$PROMPT_OUT.png" "$OUT_DIR/idle.png" 2>/dev/null
   echo "the prompt is on $PROMPT_OUT: $SHOTS/lock-casement.png; backdrops written: $(find "$CACHE" -name '*-backdrop.png' | wc -l)" | tee -a "$log" >&2
@@ -215,7 +215,7 @@ step_refuse_shakes() {
   bardo-shell debug auth refuse >>"$log" 2>&1 || { cat "$log" >&2; return 1; }
   # The made-up check spins for 250 ms, then the field shakes for 420 ms and empties.
   for i in $(seq 12); do
-    if bardo-shell debug capture "sill-lock/$PROMPT_OUT" "$OUT_DIR/refuse-$i.png" >>"$OUT_DIR/capture.log" 2>&1; then
+    if bardo-shell debug capture "shell-lock/$PROMPT_OUT" "$OUT_DIR/refuse-$i.png" >>"$OUT_DIR/capture.log" 2>&1; then
       diff=$(band_diff "$OUT_DIR/idle.png" "$OUT_DIR/refuse-$i.png" 70 97)
       echo "$(( $(now_ms) - start )) ms: $diff pixels differ in the prompt band" >>"$log"
       [ "$diff" -gt 150 ] && moved=$(( moved + 1 ))

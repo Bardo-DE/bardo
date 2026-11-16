@@ -85,7 +85,7 @@ install_rest() {
   put_tree 644 "$ROOT/dist/skills" "$SHARE/bardo/skills"
   put_tree 644 "$ROOT/dist/intents" "$SHARE/bardo/intents"
   put_tree 644 "$ROOT/policy/presets" "$SHARE/bardo/actions/permissions"
-  for name in actiond companiond bardo-actions-mcp; do
+  for name in actiond companiond actions-mcp; do
     put 644 "$ROOT/dist/$name.toml" "$CONF_DIR/$name.toml" copy keep
   done
   if [ "$WITH_VOICE" = 1 ]; then put 644 "$ROOT/dist/voiced.toml" "$SYS_BARDO/voiced.toml" copy keep; fi

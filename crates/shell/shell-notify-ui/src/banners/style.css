@@ -1,8 +1,8 @@
 /* The banner column (design/20 §1.6, design/13 §13.3.6): quire's `BannerStack` in the
-   surface's corner, inside its transparent room for the Toast shadow (`--sill-banner-room`,
+   surface's corner, inside its transparent room for the Toast shadow (`--shell-banner-room`,
    `layer::ROOM`). The stack, the cards and their motion are quire's; this only places the
    stack. */
 
-.sill-banners{ position:absolute; top:0; right:0; bottom:0; left:0; display:flex; flex-direction:column;
-  align-items:flex-end; padding:var(--sill-banner-room); box-sizing:border-box; overflow:hidden; }
-.sill-banner{ display:flex; }
+.shell-banners{ position:absolute; top:0; right:0; bottom:0; left:0; display:flex; flex-direction:column;
+  align-items:flex-end; padding:var(--shell-banner-room); box-sizing:border-box; overflow:hidden; }
+.shell-banner{ display:flex; }

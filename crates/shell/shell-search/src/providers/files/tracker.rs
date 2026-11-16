@@ -162,7 +162,7 @@ fn fault_of(error: &zbus::Error) -> IndexFault {
 fn read_on_a_thread(mut reader: PipeReader) -> Option<Receiver<Vec<u8>>> {
     let (tx, rx) = mpsc::channel();
     std::thread::Builder::new()
-        .name("sill-tracker-read".to_owned())
+        .name("shell-tracker-read".to_owned())
         .spawn(move || {
             let mut buf = [0u8; 8192];
             while let Ok(n) = reader.read(&mut buf) {

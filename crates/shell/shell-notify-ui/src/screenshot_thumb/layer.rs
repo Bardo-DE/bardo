@@ -61,7 +61,7 @@ mod tests {
     #[test]
     fn the_thumbnail_sits_at_the_bottom_right_and_takes_its_card_only() {
         let config = layer(&output(Some("DP-1")), &ShellFile::default());
-        assert_eq!(config.namespace, "sill-screenshot-thumb-DP-1");
+        assert_eq!(config.namespace, "shell-screenshot-thumb-DP-1");
         assert_eq!(config.layer, LayerLevel::Overlay);
         assert_eq!(config.anchor, Anchor::BOTTOM | Anchor::RIGHT);
         assert_eq!(config.size.width, LayerExtent::Px(THUMB_WIDTH + 2 * ROOM));

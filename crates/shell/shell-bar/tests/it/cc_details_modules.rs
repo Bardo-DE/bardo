@@ -30,7 +30,7 @@ fn playing(playback: Playback, title: &str) -> shell_model::now_playing::Media {
     media
 }
 
-const TOGGLE: &str = ".sill-cc-media-buttons .ds-button:nth-child(2)";
+const TOGGLE: &str = ".shell-cc-media-buttons .ds-button:nth-child(2)";
 
 #[test]
 fn now_playing_morphs_its_button_cross_fades_the_track_and_steps_the_position() {
@@ -78,7 +78,10 @@ fn now_playing_morphs_its_button_cross_fades_the_track_and_steps_the_position() 
     let harness = &mut running.harness;
     harness.advance(ms(0));
     assert_eq!(harness.attr(TOGGLE, "aria-label").as_deref(), Some("Play"));
-    assert_eq!(harness.count(".sill-cc-media-buttons [*|data-morph=in]"), 1);
+    assert_eq!(
+        harness.count(".shell-cc-media-buttons [*|data-morph=in]"),
+        1
+    );
     assert_settles_to_zero_frames(harness);
     let held = harness.text_of(".ds-track-times .ds-label:first-child");
     harness.advance(ms(3_000));
@@ -114,7 +117,7 @@ fn a_player_without_a_length_shows_no_position() {
 
 // ---- Battery --------------------------------------------------------------------------------
 
-const RING: &str = ".sill-cc-batteries > .ds-battery-ring";
+const RING: &str = ".shell-cc-batteries > .ds-battery-ring";
 
 #[test]
 fn each_devices_ring_stands_at_its_level_when_the_center_opens() {

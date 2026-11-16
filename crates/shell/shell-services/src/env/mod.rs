@@ -195,7 +195,7 @@ impl Env {
                 helper: polkit_agent::HelperChoice::Use(
                     shell_model::polkit_agent::HelperRoute::Missing,
                 ),
-                session: polkit_agent::SessionChoice::Id("sill-test".to_owned()),
+                session: polkit_agent::SessionChoice::Id("shell-test".to_owned()),
             },
             session_actions: Arc::new(DryRunActions::new(DryRunOffers::Everything, None)),
             authenticator: Arc::new(FakeAuthenticator {
@@ -204,7 +204,7 @@ impl Env {
             }),
             passwd: Arc::new(FakePasswd(Person {
                 id: UserId(4242),
-                user: UserName("sill-test".to_owned()),
+                user: UserName("shell-test".to_owned()),
                 name: RealName("Test Person".to_owned()),
             })),
             children: RecordedChildren::shared(),

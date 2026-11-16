@@ -103,7 +103,7 @@ fn the_frame_is_the_card_and_its_room_and_a_press_picks_an_item() {
     let mut harness = Harness::new(app, HarnessConfig::new(viewport).with_clock(Clock::Virtual));
     harness.advance(Duration::from_millis(300));
     let frame = harness
-        .rect(".sill-popup-frame")
+        .rect(".shell-popup-frame")
         .expect("the frame is laid out"); // test-only
     let card = harness.rect(".ds-popover").expect("the card is laid out"); // test-only
     let px = |v: i32| f32::from(i16::try_from(v).unwrap_or(0));
@@ -166,12 +166,12 @@ fn a_popup_names_its_surface_and_draws_the_person_style_its_opener_handed_over()
 const OVERLAY_EXCEPTIONS: &[Exception] = &[
     Exception {
         rule: Rule::DsInternals,
-        selector: ".sill-popup-frame .ds-overlay",
+        selector: ".shell-popup-frame .ds-overlay",
         reason: "quire's overlay is the box a submenu is placed against; the room is its padding",
     },
     Exception {
         rule: Rule::DsInternals,
-        selector: ".sill-popup-frame .ds-overlay ~ .ds-overlay",
+        selector: ".shell-popup-frame .ds-overlay ~ .ds-overlay",
         reason: "a submenu's overlay covers the menu's, so its box is the menu's and the room",
     },
 ];

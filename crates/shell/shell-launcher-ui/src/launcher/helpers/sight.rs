@@ -21,8 +21,8 @@ pub(super) fn SightLine() -> Element {
     };
     let sentence = note.as_str().to_owned();
     rsx! {
-        div { class: "sill-helper-sight",
-            p { class: "sill-helper-notice", role: "status", "{sentence}" }
+        div { class: "shell-helper-sight",
+            p { class: "shell-helper-notice", role: "status", "{sentence}" }
             Button {
                 label: "Choose a model",
                 bezel: Bezel::Inline,

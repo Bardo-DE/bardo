@@ -102,7 +102,7 @@ fn SheetCard(view: SheetView, shown: bool, stage: Signal<SheetStage<SheetView>>)
                 ..Common::default()
             },
             div {
-                class: "sill-confirm",
+                class: "shell-confirm",
                 // The keyboard starts on the card, so Escape denies while it arms (nothing else
                 // takes focus then: the buttons are disabled). A key or a pointer move here
                 // makes the sheet wait again before it arms.
@@ -118,22 +118,22 @@ fn SheetCard(view: SheetView, shown: bool, stage: Signal<SheetStage<SheetView>>)
                 onmousemove: move |_| gate.send(GateIn::Activity),
                 "data-gesture": gesture_word(view.gesture),
                 "data-arm": if input == Availability::Enabled { "armed" } else { "arming" },
-                div { class: "sill-confirm-title", "{title}" }
-                div { class: "sill-confirm-byline", "{byline}" }
+                div { class: "shell-confirm-title", "{title}" }
+                div { class: "shell-confirm-byline", "{byline}" }
                 if let Some(editable) = view.brief.clone() {
                     {brief_body(brief, &editable, gate, input, send_brief)}
                 } else {
                     if !facts.is_empty() {
                         FactList { facts }
                     }
-                    div { class: "sill-confirm-notes",
+                    div { class: "shell-confirm-notes",
                         for (place , note) in view.notes.iter().enumerate() {
-                            div { key: "{place}", class: "sill-confirm-note", "{note}" }
+                            div { key: "{place}", class: "shell-confirm-note", "{note}" }
                         }
                     }
                     {held_line(&view, undo, input)}
                     {offered(&view, gate, input)}
-                    div { class: "sill-confirm-footer",
+                    div { class: "shell-confirm-footer",
                         {never(&view, gate, input)}
                         Button {
                             label: "Don't Allow",
@@ -150,7 +150,7 @@ fn SheetCard(view: SheetView, shown: bool, stage: Signal<SheetStage<SheetView>>)
                     }
                 }
                 if view.waiting > 0 {
-                    div { class: "sill-confirm-waiting", {waiting_words(view.waiting)} }
+                    div { class: "shell-confirm-waiting", {waiting_words(view.waiting)} }
                 }
             }
         }
@@ -204,7 +204,7 @@ fn offered(view: &SheetView, gate: MachineRef<AnswerGate>, input: Availability) 
         ),
     };
     rsx! {
-        div { class: "sill-confirm-offer",
+        div { class: "shell-confirm-offer",
             Button {
                 label,
                 availability: input,
@@ -256,7 +256,7 @@ fn allow(
         },
         Gesture::HoldToConfirm => rsx! {
             div {
-                class: "sill-confirm-hold",
+                class: "shell-confirm-hold",
                 "data-holding": if holding { "true" } else { "false" },
                 onmousedown: move |_| gate.send(GateIn::HoldBegan),
                 onmouseup: move |_| gate.send(GateIn::HoldEnded),

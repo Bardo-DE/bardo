@@ -50,7 +50,7 @@ fn Opened(output: OutputId, opening: Opening, shown: bool, on_hidden: EventHandl
     rsx! {
         ClickAway { onpress: move |()| catch.close() }
         div {
-            class: "sill-nc-scope",
+            class: "shell-nc-scope",
             onmounted: move |event| resolved.mounted(event),
             SidePanel {
                 label: TITLE.to_owned(),

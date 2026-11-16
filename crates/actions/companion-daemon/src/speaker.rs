@@ -203,7 +203,7 @@ mod tests {
         for (pid, leaf, main) in [
             (1, "bardo-shell.service", true),
             (2, "bardo-shell.service", false),
-            (3, "sill-shell.scope", false),
+            (3, "shell-shell.scope", false),
             (4, "app-org.bardo.Shell-1.scope", false),
             (5, "vte-spawn-abc.scope", false),
             (6, "tmux-spawn-abc.scope", false),

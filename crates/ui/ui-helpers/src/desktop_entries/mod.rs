@@ -9,7 +9,7 @@
 //!   (`kde/foo.desktop` is `kde-foo.desktop`, as the specification says);
 //! - [`load_entries`] and [`entry_for_window`]: the parsed entries and the one a window belongs to,
 //!   by the five rules of [`match_app`];
-//! - [`AppIdentity`]: the names one app is known by, read from `X-Quire-` keys of its entry.
+//! - [`AppIdentity`]: the names one app is known by, read from `X-Bardo-` keys of its entry.
 //!
 //! The matching, the id and the identity are pure. The walk and the loading read files, and only
 //! the folders they are given; [`XdgEnv::from_process`] is the one place that reads the

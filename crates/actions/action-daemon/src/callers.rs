@@ -45,6 +45,6 @@ mod tests {
             .expect("the shell's unit");
         assert_eq!(shell.app.name.as_str(), "org.bardo.Shell");
         assert_eq!(shell.role, Role::SheetHost);
-        assert!(table.resolve_unit("sill-shell.scope").is_none());
+        assert!(table.resolve_unit("shell-shell.scope").is_none());
     }
 }

@@ -67,14 +67,14 @@ fn open_it_is_quires_full_height_panel_at_the_right_edge() {
     );
     // The widgets follow the history in the one scrolling column, as macOS's Notification
     // Center does, rather than being pinned to the bottom.
-    let widgets = h.rect(".sill-nc-widgets").expect("the widgets slot");
-    let list = h.rect(".sill-nc-list").expect("the history");
+    let widgets = h.rect(".shell-nc-widgets").expect("the widgets slot");
+    let list = h.rect(".shell-nc-list").expect("the history");
     assert!(
         widgets.origin.y.0 >= list.origin.y.0 + list.size.height.0 - 0.5,
         "the widgets slot follows the history: {widgets:?} {list:?}"
     );
     assert_eq!(
-        h.attr(".sill-nc-column", "style"),
+        h.attr(".shell-nc-column", "style"),
         None,
         "the column's own stylesheet makes it scroll"
     );
@@ -85,27 +85,27 @@ fn the_history_is_grouped_by_app_collapsed_to_the_newest() {
     let running = opened(two_apps());
     let h = &running.harness;
     assert_eq!(
-        h.text_of(".sill-nc-head .ds-label").as_deref(),
+        h.text_of(".shell-nc-head .ds-label").as_deref(),
         Some("Notifications")
     );
     assert_eq!(
-        h.text_of(".sill-nc-head .ds-button").as_deref(),
+        h.text_of(".shell-nc-head .ds-button").as_deref(),
         Some("Clear All")
     );
     assert_eq!(h.count(".ds-group-header"), 2);
     assert_eq!(h.count(".ds-group-header"), 2);
     assert_eq!(
-        h.text_of(".sill-nc-item[*|data-group=mail] .ds-group-header-name")
+        h.text_of(".shell-nc-item[*|data-group=mail] .ds-group-header-name")
             .as_deref(),
         Some("Mail")
     );
     assert_eq!(
-        h.text_of(".sill-nc-item[*|data-group=mail] .ds-group-header-count")
+        h.text_of(".shell-nc-item[*|data-group=mail] .ds-group-header-count")
             .as_deref(),
         Some("3")
     );
     assert_eq!(
-        h.text_of(".sill-nc-item[*|data-group=chat] .ds-group-header-name")
+        h.text_of(".shell-nc-item[*|data-group=chat] .ds-group-header-name")
             .as_deref(),
         Some("Chat")
     );
@@ -116,7 +116,7 @@ fn the_history_is_grouped_by_app_collapsed_to_the_newest() {
     );
     assert_eq!(
         h.attr(
-            ".sill-nc-item[*|data-group=mail] .ds-notification",
+            ".shell-nc-item[*|data-group=mail] .ds-notification",
             "data-stack"
         )
         .as_deref(),
@@ -124,7 +124,7 @@ fn the_history_is_grouped_by_app_collapsed_to_the_newest() {
         "Mail's newest stands for three"
     );
     assert_eq!(
-        h.count(".sill-nc-item[*|data-group=mail] .ds-notification-layer"),
+        h.count(".shell-nc-item[*|data-group=mail] .ds-notification-layer"),
         2,
         "stacked over the rest"
     );
@@ -134,18 +134,18 @@ fn the_history_is_grouped_by_app_collapsed_to_the_newest() {
         "no swipe in the center"
     );
     assert_eq!(
-        h.text_of(&format!(".sill-nc-item[*|data-group=mail] {TOGGLE}"))
+        h.text_of(&format!(".shell-nc-item[*|data-group=mail] {TOGGLE}"))
             .as_deref(),
         Some("2 more")
     );
-    assert_eq!(h.count(".sill-nc-widgets"), 1);
+    assert_eq!(h.count(".shell-nc-widgets"), 1);
     assert_eq!(h.count(".ds-empty-state"), 0);
 }
 
 #[test]
 fn n_more_opens_the_group_and_show_less_closes_it() {
     let mut running = opened(two_apps());
-    let toggle = format!(".sill-nc-item[*|data-group=mail] {TOGGLE}");
+    let toggle = format!(".shell-nc-item[*|data-group=mail] {TOGGLE}");
     let more = running.harness.centre(&toggle).expect("N more");
     running.harness.send(Input::click(more));
     until(&mut running, |h| h.count(".ds-notification") == 4);
@@ -171,13 +171,13 @@ fn clear_and_clear_all_go_to_the_service() {
     let mut running = opened(two_apps());
     let clear = running
         .harness
-        .centre(&format!(".sill-nc-item[*|data-group=chat] {CLEAR}"))
+        .centre(&format!(".shell-nc-item[*|data-group=chat] {CLEAR}"))
         .expect("Chat's Clear");
     running.harness.send(Input::click(clear));
     let mut sent = commands_until(&mut running, 1);
     let all = running
         .harness
-        .centre(".sill-nc-head .ds-button")
+        .centre(".shell-nc-head .ds-button")
         .expect("Clear All");
     running.harness.send(Input::click(all));
     sent.extend(commands_until(&mut running, 1));
@@ -195,7 +195,7 @@ fn a_press_on_a_stack_opens_it_and_a_lone_cards_close_dismisses_it() {
     let mut running = opened(two_apps());
     let stack = running
         .harness
-        .centre(".sill-nc-item[*|data-group=mail] .ds-notification-plate")
+        .centre(".shell-nc-item[*|data-group=mail] .ds-notification-plate")
         .expect("Mail's stack");
     running.harness.send(Input::click(stack));
     until(&mut running, |h| h.count(".ds-notification") == 4);
@@ -206,12 +206,12 @@ fn a_press_on_a_stack_opens_it_and_a_lone_cards_close_dismisses_it() {
     );
     let chat = running
         .harness
-        .centre(".sill-nc-item[*|data-group=chat] .ds-notification-plate")
+        .centre(".shell-nc-item[*|data-group=chat] .ds-notification-plate")
         .expect("Chat's card");
     running.harness.send(Input::pointer_move(chat));
     until(&mut running, |h| {
         h.attr(
-            ".sill-nc-item[*|data-group=chat] .ds-notification",
+            ".shell-nc-item[*|data-group=chat] .ds-notification",
             "data-hover",
         )
         .as_deref()
@@ -220,7 +220,7 @@ fn a_press_on_a_stack_opens_it_and_a_lone_cards_close_dismisses_it() {
     advance(&mut running, 300);
     let close = running
         .harness
-        .centre(".sill-nc-item[*|data-group=chat] .ds-notification-close")
+        .centre(".shell-nc-item[*|data-group=chat] .ds-notification-close")
         .expect("its close button");
     running.harness.send(Input::click(close));
     assert_eq!(
@@ -239,7 +239,7 @@ fn an_empty_history_says_so_and_offers_no_clear_all() {
         h.text_of(".ds-empty-state").as_deref(),
         Some("No Notifications")
     );
-    assert_eq!(h.count(".sill-nc-head .ds-button"), 0);
+    assert_eq!(h.count(".shell-nc-head .ds-button"), 0);
     assert_eq!(h.count(".ds-group-header"), 0);
 }
 
@@ -247,7 +247,7 @@ fn an_empty_history_says_so_and_offers_no_clear_all() {
 fn the_footer_names_the_daemon_holding_the_name() {
     let mut running = opened(two_apps());
     assert_eq!(
-        running.harness.count(".sill-nc-foot"),
+        running.harness.count(".shell-nc-foot"),
         1,
         "passive until the daemon's policy"
     );
@@ -266,7 +266,7 @@ fn the_footer_names_the_daemon_holding_the_name() {
     });
     advance(&mut running, 40);
     assert_eq!(
-        running.harness.text_of(".sill-nc-foot").as_deref(),
+        running.harness.text_of(".shell-nc-foot").as_deref(),
         Some("Notifications are shown by plasmashell")
     );
     running.feeds.notifications.send_modify(|n| {
@@ -279,7 +279,7 @@ fn the_footer_names_the_daemon_holding_the_name() {
         }
     });
     advance(&mut running, 40);
-    assert_eq!(running.harness.count(".sill-nc-foot"), 0);
+    assert_eq!(running.harness.count(".shell-nc-foot"), 0);
 }
 
 #[test]
@@ -333,7 +333,7 @@ fn a_press_inside_the_panel_keeps_it_open() {
     let mut running = opened(two_apps());
     let title = running
         .harness
-        .centre(".sill-nc-head .ds-label")
+        .centre(".shell-nc-head .ds-label")
         .expect("the title");
     running.harness.send(Input::click(title));
     // Nothing should change, so nothing to wait on: a margin past the panel's exit time.

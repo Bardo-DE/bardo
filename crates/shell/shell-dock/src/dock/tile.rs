@@ -71,7 +71,7 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
     let shown = label.0 == Some(item.tile);
     rsx! {
         div {
-            class: "sill-dock-tile",
+            class: "shell-dock-tile",
             style: "left:{px(left)}px;top:{top}px;width:{side}px;height:{side}px",
             DockTile {
                 icon,
@@ -90,9 +90,9 @@ pub fn Tile(item: DockItem, left: Cpx, size: Cpx, badge: Option<Badge>) -> Eleme
             }
             if shown {
                 span {
-                    class: "sill-dock-label",
+                    class: "shell-dock-label",
                     style: "bottom:calc(100% - {rise}px + {LABEL_GAP}px)",
-                    span { class: "sill-dock-label-text", "{name}" }
+                    span { class: "shell-dock-label-text", "{name}" }
                 }
             }
         }

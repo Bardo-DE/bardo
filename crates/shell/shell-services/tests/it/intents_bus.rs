@@ -201,7 +201,7 @@ async fn desk_on(
         proc_root: procs.path().to_owned(),
         callers: callers.clone(),
         claims,
-        ..Env::isolated(Path::new("/nonexistent/sill-intents-bus"))
+        ..Env::isolated(Path::new("/nonexistent/shell-intents-bus"))
     };
     let (calls, shell_calls) = mpsc::unbounded_channel();
     let seat = spawn::<IntentsService>(
@@ -634,7 +634,7 @@ async fn a_name_somebody_else_owns_is_the_links_trouble() {
 async fn no_session_bus_is_no_sheet_and_not_a_crash() {
     let env = Env {
         claims: NameClaims::Claim,
-        ..Env::isolated(Path::new("/nonexistent/sill-intents-bus"))
+        ..Env::isolated(Path::new("/nonexistent/shell-intents-bus"))
     };
     let (calls, _rx) = mpsc::unbounded_channel();
     let seat = spawn::<IntentsService>(

@@ -82,7 +82,7 @@ pub enum DebugRequest {
     /// without `debug` (`dev/accept/lock.sh`, on the nested compositor only).
     Auth(FakeVerdict),
     /// Show a made-up polkit request (`dev/accept/polkit.sh`); the stand-in helper accepts
-    /// `sill-fake`.
+    /// `shell-fake`.
     Polkit(FakeRequest),
     /// Open the switcher on made-up apps, the current one first (`dev/accept/switcher.sh`): shown
     /// at once (no show delay), and Q, H and release act on no real window.
@@ -114,8 +114,8 @@ pub enum PointerButton {
     Middle,
 }
 
-/// The name a debug request addresses a surface by: its layer namespace (`sill-bar-DP-1`,
-/// `sill-dock-DP-1`), as layer-shell-host's `SurfaceName` spells it.
+/// The name a debug request addresses a surface by: its layer namespace (`shell-bar-DP-1`,
+/// `shell-dock-DP-1`), as layer-shell-host's `SurfaceName` spells it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SurfaceName(pub String);

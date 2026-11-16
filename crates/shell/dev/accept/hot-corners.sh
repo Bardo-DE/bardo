@@ -63,12 +63,12 @@ bottom_right_command = "touch $MARK"
 TOML
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  TOP_LEFT="sill-hot-corner-top-left-$NAME"
-  TOP_RIGHT="sill-hot-corner-top-right-$NAME"
-  BOTTOM_LEFT="sill-hot-corner-bottom-left-$NAME"
-  BOTTOM_RIGHT="sill-hot-corner-bottom-right-$NAME"
-  LAUNCHER="sill-launcher-$NAME"
-  CENTER="sill-notification-center-$NAME"
+  TOP_LEFT="shell-hot-corner-top-left-$NAME"
+  TOP_RIGHT="shell-hot-corner-top-right-$NAME"
+  BOTTOM_LEFT="shell-hot-corner-bottom-left-$NAME"
+  BOTTOM_RIGHT="shell-hot-corner-bottom-right-$NAME"
+  LAUNCHER="shell-launcher-$NAME"
+  CENTER="shell-notification-center-$NAME"
   sleep 1.5
   echo "daemon on a private bus and runtime dir $RUNTIME; corners $TOP_LEFT, $TOP_RIGHT, $BOTTOM_RIGHT (not $BOTTOM_LEFT)" >&2
 }

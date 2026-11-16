@@ -6,11 +6,11 @@
 fn the_center_draws_calendar_then_up_next_under_the_history() {
     let running = center_support::opened(center_support::two_apps());
     let h = &running.harness;
-    assert_eq!(h.count(".sill-nc-widgets > .ds-widget"), 2);
+    assert_eq!(h.count(".shell-nc-widgets > .ds-widget"), 2);
     let ids: Vec<_> = (1..=2)
         .map(|n| {
             h.attr(
-                &format!(".sill-nc-widgets > .ds-widget:nth-child({n})"),
+                &format!(".shell-nc-widgets > .ds-widget:nth-child({n})"),
                 "id",
             )
         })
@@ -22,14 +22,14 @@ fn the_center_draws_calendar_then_up_next_under_the_history() {
             Some("widget-up-next".to_owned()),
         ]
     );
-    let list = h.rect(".sill-nc-list").expect("the history");
+    let list = h.rect(".shell-nc-list").expect("the history");
     let first = h.rect("#widget-calendar").expect("the first widget");
     assert!(
         first.origin.y.0 >= list.origin.y.0 + list.size.height.0 - 0.5,
         "under the history: {list:?} {first:?}"
     );
     // A medium tile (296: two 140 cells and a gap) fills the center's 320 px column after the panel's padding.
-    let column = h.rect(".sill-nc-column").expect("the column");
+    let column = h.rect(".shell-nc-column").expect("the column");
     let tile = h.rect("#widget-up-next").expect("a medium tile");
     assert_eq!(tile.size.width.0.round(), 296.0);
     assert!(

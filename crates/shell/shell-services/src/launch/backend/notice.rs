@@ -8,7 +8,7 @@ use shell_model::notifications::{
 use crate::control::Control;
 
 /// The desktop entry the notices carry.
-const ENTRY: &str = "sill-launch";
+const ENTRY: &str = "shell-launch";
 
 /// Tells the person that an app did not open.
 #[derive(Debug, Clone)]

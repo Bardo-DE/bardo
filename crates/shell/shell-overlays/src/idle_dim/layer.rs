@@ -31,7 +31,7 @@ mod tests {
     fn the_dim_covers_the_output_and_takes_nothing() {
         let info = output(Some("DP-1"));
         let config = layer(&info);
-        assert_eq!(config.namespace, "sill-idle-dim-DP-1");
+        assert_eq!(config.namespace, "shell-idle-dim-DP-1");
         assert_eq!(config.layer, LayerLevel::Overlay);
         assert_eq!(
             config.anchor,

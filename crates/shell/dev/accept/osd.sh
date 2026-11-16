@@ -40,7 +40,7 @@ start_osd_daemon() {
   backdrop_seed "$CONFIG" || return 1
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  OSD="sill-osd-$NAME"
+  OSD="shell-osd-$NAME"
   sleep 1
 }
 

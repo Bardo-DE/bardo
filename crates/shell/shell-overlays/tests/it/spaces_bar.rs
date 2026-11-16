@@ -265,8 +265,8 @@ fn the_outputs_wallpaper_lies_under_the_pictures_and_another_outputs_does_not() 
     let image = |output: &str| Wallpapers {
         outputs: vec![WallpaperImage {
             output: OutputName(output.to_owned()),
-            light: "/tmp/sill-bar-wallpaper/light.png".into(),
-            dark: "/tmp/sill-bar-wallpaper/dark.png".into(),
+            light: "/tmp/shell-bar-wallpaper/light.png".into(),
+            dark: "/tmp/shell-bar-wallpaper/dark.png".into(),
         }],
     };
     running.feeds.wallpaper.send_replace(image("DP-2"));
@@ -276,5 +276,8 @@ fn the_outputs_wallpaper_lies_under_the_pictures_and_another_outputs_does_not() 
     running.harness.advance(Duration::from_millis(100));
     assert_eq!(backdrops(&running), 2);
     let html = running.harness.html();
-    assert!(html.contains("/tmp/sill-bar-wallpaper/light.png"), "{html}");
+    assert!(
+        html.contains("/tmp/shell-bar-wallpaper/light.png"),
+        "{html}"
+    );
 }

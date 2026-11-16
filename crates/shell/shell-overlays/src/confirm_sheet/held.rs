@@ -24,8 +24,8 @@ pub(super) fn held_line(
     };
     let (why, id) = (held.why.clone(), held.id.clone());
     rsx! {
-        div { class: "sill-confirm-held",
-            div { class: "sill-confirm-held-why", "{why}" }
+        div { class: "shell-confirm-held",
+            div { class: "shell-confirm-held-why", "{why}" }
             if held.undo {
                 Button {
                     label: "Undo",

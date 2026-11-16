@@ -41,7 +41,7 @@ pub fn font_rendering_for(max: Ppi) -> FontRendering {
 
 /// The file's name inside `fontconfig/conf.d`. `50-` so it sits after the distribution's
 /// defaults and before a person's own `9x-` files.
-pub const FILE_NAME: &str = "50-sill-rendering.conf";
+pub const FILE_NAME: &str = "50-shell-rendering.conf";
 
 /// The comment every file bardo-shell writes starts with: what marks a file as bardo-shell's to remove.
 pub const HEADER: &str = "<!-- Written by bardo-shell (display.font_rendering = auto).";

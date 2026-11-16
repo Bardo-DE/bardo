@@ -8,10 +8,10 @@ fn the_sections_follow_design_order_whatever_order_the_programs_were_read_in() {
     // Memory and Computer use come from almanac's and cua's own schemas, Assistant from docket's;
     // bardo-shell's rows of the same Assistant section have no schema yet, so a stand-in names them.
     sandbox.add_schema(
-        "sill-companion",
+        "shell-companion",
         &stand_in(
-            "sill-companion",
-            "sill-companion/companion.toml",
+            "shell-companion",
+            "shell-companion/companion.toml",
             "companion.summon",
             "Assistant",
         ),

@@ -26,7 +26,7 @@ pub(super) fn Jobs(model: HelpersModel) -> Element {
         return rsx! {};
     }
     rsx! {
-        div { class: "sill-helper-jobs",
+        div { class: "shell-helper-jobs",
             Label { text: "Jobs", style: LabelStyle::Headline }
             for job in card.view.jobs.iter().rev().take(SHOWN) {
                 {job_row(job, &card.view, &say)}
@@ -41,7 +41,7 @@ fn job_row(job: &JobLine, view: &HelperCardView, say: &Say) -> Element {
     let sign_in = match job.state {
         JobShown::NeedsSignIn => rsx! {
             Label { text: needs_sign_in_line(view), role: LabelRole::Secondary }
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 {sign_in_row(view, "helper-job-sign-in", say)}
             }
         },
@@ -50,7 +50,7 @@ fn job_row(job: &JobLine, view: &HelperCardView, say: &Say) -> Element {
         }
     };
     rsx! {
-        div { key: "{job.id}", class: "sill-helper-job",
+        div { key: "{job.id}", class: "shell-helper-job",
             Label { text: goal }
             Label { text: detail, role: LabelRole::Secondary, style: LabelStyle::Footnote }
             if let Some(answer) = answer {
@@ -80,7 +80,7 @@ pub(super) fn Latest(model: HelpersModel) -> Element {
         return rsx! {};
     }
     rsx! {
-        div { class: "sill-helper-latest",
+        div { class: "shell-helper-latest",
             Label { text: "Latest", style: LabelStyle::Headline }
             for (at , text) in said.into_iter().enumerate() {
                 Label { key: "{at}", text: text.to_owned(), role: LabelRole::Secondary }

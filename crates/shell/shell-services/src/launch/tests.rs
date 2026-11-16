@@ -46,7 +46,7 @@ fn index_with(id: &str, exec: &str) -> AppIndex {
 #[ignore = "needs a user systemd"]
 async fn a_launch_runs_in_a_real_systemd_scope_and_exits() {
     let (_apps_tx, apps_rx) =
-        tokio::sync::watch::channel(index_with("sill-launch-test", "/bin/true"));
+        tokio::sync::watch::channel(index_with("shell-launch-test", "/bin/true"));
     let rt = tokio::runtime::Handle::current();
     let scratch = shell_testkit::TempDir::new("launch-scope");
     let mut env = crate::env::Env::isolated(scratch.path());
@@ -64,7 +64,7 @@ async fn a_launch_runs_in_a_real_systemd_scope_and_exits() {
 
     control
         .send(LaunchCommand::Launch(LaunchRequest {
-            app: AppId("sill-launch-test".to_owned()),
+            app: AppId("shell-launch-test".to_owned()),
             action: DesktopAction::Default,
             files: Vec::new(),
             uris: Vec::new(),
@@ -224,16 +224,16 @@ async fn end_of(
 
 #[tokio::test]
 async fn a_launch_that_reaches_its_program_is_answered_with_its_timing() {
-    let (mut state, control, _scratch) = start_over_scratch(index_with("sill-timed", "/bin/true"));
+    let (mut state, control, _scratch) = start_over_scratch(index_with("shell-timed", "/bin/true"));
     let asked_at = monotonic_now();
     control
-        .send(ask("sill-timed"))
+        .send(ask("shell-timed"))
         .unwrap_or_else(|e| panic!("{e}"));
 
-    let LaunchDone::Spawned(timing) = end_of(&mut state, "sill-timed", asked_at).await else {
+    let LaunchDone::Spawned(timing) = end_of(&mut state, "shell-timed", asked_at).await else {
         panic!("the program did not start");
     };
-    assert_eq!(timing.app, AppId("sill-timed".to_owned()));
+    assert_eq!(timing.app, AppId("shell-timed".to_owned()));
     assert!(timing.requested_at >= asked_at);
     assert!(timing.spawned_at >= timing.requested_at);
     assert!(timing.pid.is_some(), "a program we started has a process");

@@ -4,7 +4,7 @@
 //! script writes one pointing at a marked test image before running this, so the real
 //! `shell_services::wallpaper::spawn` resizes and caches a real file the surface then shows.
 //! Driven by layer-shell-host's `debug-inject` commands on stdin (`stats`, `<surface> capture PATH`,
-//! `quit`; `sill-bar-demo`'s own convention, `bar_demo.rs`'s module doc).
+//! `quit`; `shell-bar-demo`'s own convention, `bar_demo.rs`'s module doc).
 //!
 //! `cargo run -p shell-overlays --example wallpaper_demo`
 

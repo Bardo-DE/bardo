@@ -111,11 +111,11 @@ fn control_center_css(token: ControlCenterSize, _scope: TokenScope) -> CssValue 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
 #[token(prefix = "", kind = tuned)]
 pub enum ControlCenterTuned {
-    /// `--sill-cc-bottom-margin`: the least space the panel keeps above the output's bottom edge
+    /// `--shell-cc-bottom-margin`: the least space the panel keeps above the output's bottom edge
     /// (16); past it the panel scrolls.
     #[token(
-        name = "sill-cc-bottom-margin",
-        input = "--sill-cc-bottom-margin-px",
+        name = "shell-cc-bottom-margin",
+        input = "--shell-cc-bottom-margin-px",
         value = "16px"
     )]
     BottomMargin,

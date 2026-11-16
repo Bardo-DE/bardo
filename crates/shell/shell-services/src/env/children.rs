@@ -99,7 +99,7 @@ mod tests {
     fn a_recorder_keeps_what_it_was_asked_to_start_and_starts_nothing() {
         let recorder = RecordedChildren::default();
         let start = Start {
-            argv: vec!["sill-no-such-opener".into(), "/h/a.pdf".into()],
+            argv: vec!["shell-no-such-opener".into(), "/h/a.pdf".into()],
             token: Some("t".to_owned()),
             group: ProcessGroup::Own,
         };

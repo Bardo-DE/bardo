@@ -98,7 +98,7 @@ mod tests {
     /// collection is one problem and costs only its own event.
     #[test]
     fn an_ics_provider_reads_files_and_collections() {
-        let dir = std::env::temp_dir().join(format!("sill-ics-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-ics-{}", std::process::id()));
         let collection = dir.join("dav");
         std::fs::create_dir_all(&collection).unwrap_or_else(|e| panic!("{e}"));
         let event = |uid: &str, day: &str| {

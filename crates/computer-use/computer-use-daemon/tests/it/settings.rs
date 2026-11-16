@@ -114,7 +114,7 @@ async fn a_settings_file_that_cannot_be_read_is_reported_and_the_next_directory_
     let blocked = tempfile::tempdir().unwrap();
     let etc = tempfile::tempdir().unwrap();
     // A directory stands in for a file that is there and cannot be read.
-    std::fs::create_dir_all(blocked.path().join("computer-use/settings.toml")).unwrap();
+    std::fs::create_dir_all(blocked.path().join("bardo/computer-use/settings.toml")).unwrap();
     write_atomically(etc.path(), "[cua.budget]\nspend_microusd = 1900\n");
     let env = |key: &str| match key {
         "XDG_CONFIG_HOME" => Some(blocked.path().display().to_string()),

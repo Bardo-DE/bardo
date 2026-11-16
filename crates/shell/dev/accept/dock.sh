@@ -16,7 +16,7 @@
 #   5. A secondary click on that tile (`surface_click --button secondary`: `bardo-shell debug click` on KWin,
 #      a real right press through casement's inject on casement) opens its context
 #      menu popup.
-#   6. The pill's corner is a squircle of `--sill-dock-pill-radius` (PILL_RADIUS, its shipped 22;
+#   6. The pill's corner is a squircle of `--shell-dock-pill-radius` (PILL_RADIUS, its shipped 22;
 #      the radius is a stylesheet token now, not a settings key): the pixel centred 6.5 px in from the
 #      pill's left edge and 1.5 px down from its top is the pill's (inside a 12 px squircle,
 #      whose edge crosses that row 5.4 px in, and outside a 22 px one, 7.7 px in: its extent is
@@ -92,7 +92,7 @@ first_tile_x() {
 
 # Waits up to 5 s for the dock's surface and sets DOCK to its name.
 await_dock() {
-  for _ in $(seq 50); do DOCK=$(surface_named sill-dock-); [ -n "$DOCK" ] && break; sleep 0.1; done
+  for _ in $(seq 50); do DOCK=$(surface_named shell-dock-); [ -n "$DOCK" ] && break; sleep 0.1; done
   [ -n "${DOCK:-}" ] || { echo "no dock surface in 'bardo-shell debug stats'" >&2; return 1; }
 }
 
@@ -272,7 +272,7 @@ top = min(y for y in range(mid + 1) if all(solid(cx, yy) for yy in range(y, mid 
 probe = (left + int(6.5 * scale), top + int(1.5 * scale))
 alpha = img.getpixel(probe)[3]
 print(f"pill {left},{top}..{right} (device px); at 6.5, 1.5 px inside its corner alpha {alpha}; "
-      f"squircle --sill-dock-pill-radius {radius}: {'PASS' if (alpha > 100) == (radius <= 13) else 'FAIL'}")
+      f"squircle --shell-dock-pill-radius {radius}: {'PASS' if (alpha > 100) == (radius <= 13) else 'FAIL'}")
 EOF
   grep -q ': PASS$' "$log"
 }
@@ -322,7 +322,7 @@ step_colour() {
 step_launcher() {
   bardo-shell launcher open --query foot >>"$OUT_DIR/launcher.log" 2>&1
   local name="" rc=1
-  for _ in $(seq 50); do name=$(surface_named sill-launcher-); [ -n "$name" ] && break; sleep 0.1; done
+  for _ in $(seq 50); do name=$(surface_named shell-launcher-); [ -n "$name" ] && break; sleep 0.1; done
   if [ -n "$name" ]; then
     # The surface exists in `debug stats` before its first frame is presented; retry the
     # capture rather than racing it with one fixed sleep.

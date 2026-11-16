@@ -21,7 +21,7 @@ pub(super) fn hot_corner(output: OutputInfo, corner: Corner) -> Element {
     rsx! {
         AppStyle { css: HOT_CORNERS_CSS }
         div {
-            class: "sill-hot-corner",
+            class: "shell-hot-corner",
             "data-surface": surface,
             onpointerenter: move |_| entering.enter(),
             onpointerleave: move |_| leaving.leave(),

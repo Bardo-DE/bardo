@@ -30,7 +30,7 @@ pub(super) fn catcher(output: OutputInfo) -> Element {
     rsx! {
         AppStyle { css: LAUNCHER_CSS }
         div {
-            class: "sill-launcher-catcher",
+            class: "shell-launcher-catcher",
             "data-surface": surface,
             onmousedown: move |_| link.close(),
         }

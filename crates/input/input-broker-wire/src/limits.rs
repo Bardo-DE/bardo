@@ -23,8 +23,8 @@ pub const MAX_POINTER_RELS: usize = 8;
 pub const MAX_POINTER_ABS: usize = 16;
 /// Properties on a pointer: a pad is a pointer and perhaps a button pad.
 pub const MAX_POINTER_PROPS: usize = 8;
-/// Bytes of a pointer's label: a uinput name is 80 bytes, and the suffix and a space take 17 and the
-/// terminator one.
+/// Bytes of a pointer's label on the wire. The broker cuts it further so the label, a space and the
+/// pointer suffix fit a uinput name (80 bytes with its terminator).
 pub const MAX_LABEL_BYTES: usize = 62;
 
 /// Devices one connection may have at once.

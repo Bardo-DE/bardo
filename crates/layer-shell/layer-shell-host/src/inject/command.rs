@@ -193,9 +193,9 @@ mod tests {
                 )),
             ),
             (
-                "sill-bar click 5 -1",
+                "shell-bar click 5 -1",
                 Ok(on(
-                    "sill-bar",
+                    "shell-bar",
                     DebugAction::Inject(Inject::Click {
                         at: Point { x: 5, y: -1 },
                         button: PointerButton::Primary,
@@ -323,8 +323,8 @@ mod tests {
             ("dock key Tabb", Err(CommandError::NotAKey("Tabb".into()))),
             ("bar stats", Ok(on("bar", DebugAction::Stats))),
             (
-                "sill-launcher-Virtual-1 focused",
-                Ok(on("sill-launcher-Virtual-1", DebugAction::Focused)),
+                "shell-launcher-Virtual-1 focused",
+                Ok(on("shell-launcher-Virtual-1", DebugAction::Focused)),
             ),
             (
                 "bar capture /tmp/a.png",

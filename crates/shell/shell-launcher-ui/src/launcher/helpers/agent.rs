@@ -37,12 +37,12 @@ pub(super) fn AppLine(view: HelperCardView) -> Element {
         rsx! {}
     };
     rsx! {
-        div { class: "sill-helper-app",
+        div { class: "shell-helper-app",
             Label { text: kind, role: LabelRole::Secondary }
             if let Some(login) = login_line(&view) {
                 Label { text: login, style: LabelStyle::Caption }
             }
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 {sign_in_row(&view, "helper-sign-in", &say)}
                 {sign_out}
             }

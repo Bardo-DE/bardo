@@ -251,103 +251,103 @@ fn requests() -> Vec<(Request, &'static str)> {
         ),
         (
             Request::Debug(DebugRequest::Pointer {
-                surface: surface("sill-dock-DP-1"),
+                surface: surface("shell-dock-DP-1"),
                 at: Point { x: 300, y: -1 },
             }),
-            r#"{"kind":"debug","v":{"kind":"pointer","v":{"surface":"sill-dock-DP-1","at":{"x":300,"y":-1}}}}"#,
+            r#"{"kind":"debug","v":{"kind":"pointer","v":{"surface":"shell-dock-DP-1","at":{"x":300,"y":-1}}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Leave {
-                surface: surface("sill-dock-DP-1"),
+                surface: surface("shell-dock-DP-1"),
             }),
-            r#"{"kind":"debug","v":{"kind":"leave","v":{"surface":"sill-dock-DP-1"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"leave","v":{"surface":"shell-dock-DP-1"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Capture {
-                surface: surface("sill-bar-DP-1"),
+                surface: surface("shell-bar-DP-1"),
                 path: PathBuf::from("/tmp/bar.png"),
             }),
-            r#"{"kind":"debug","v":{"kind":"capture","v":{"surface":"sill-bar-DP-1","path":"/tmp/bar.png"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"capture","v":{"surface":"shell-bar-DP-1","path":"/tmp/bar.png"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Click {
-                surface: surface("sill-bar-DP-1"),
+                surface: surface("shell-bar-DP-1"),
                 at: Point { x: 1200, y: 16 },
                 button: PointerButton::Primary,
             }),
-            r#"{"kind":"debug","v":{"kind":"click","v":{"surface":"sill-bar-DP-1","at":{"x":1200,"y":16},"button":"primary"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"click","v":{"surface":"shell-bar-DP-1","at":{"x":1200,"y":16},"button":"primary"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Click {
-                surface: surface("sill-dock-DP-1"),
+                surface: surface("shell-dock-DP-1"),
                 at: Point { x: 40, y: 30 },
                 button: PointerButton::Secondary,
             }),
-            r#"{"kind":"debug","v":{"kind":"click","v":{"surface":"sill-dock-DP-1","at":{"x":40,"y":30},"button":"secondary"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"click","v":{"surface":"shell-dock-DP-1","at":{"x":40,"y":30},"button":"secondary"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Click {
-                surface: surface("sill-dock-DP-1"),
+                surface: surface("shell-dock-DP-1"),
                 at: Point { x: 0, y: 0 },
                 button: PointerButton::Middle,
             }),
-            r#"{"kind":"debug","v":{"kind":"click","v":{"surface":"sill-dock-DP-1","at":{"x":0,"y":0},"button":"middle"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"click","v":{"surface":"shell-dock-DP-1","at":{"x":0,"y":0},"button":"middle"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Key {
-                surface: surface("sill-power-menu-DP-1"),
+                surface: surface("shell-power-menu-DP-1"),
                 key: KeySpec("ArrowRight".to_owned()),
                 action: KeyAction::Tap,
             }),
-            r#"{"kind":"debug","v":{"kind":"key","v":{"surface":"sill-power-menu-DP-1","key":"ArrowRight","action":"tap"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"key","v":{"surface":"shell-power-menu-DP-1","key":"ArrowRight","action":"tap"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Key {
-                surface: surface("sill-launcher-DP-1"),
+                surface: surface("shell-launcher-DP-1"),
                 key: KeySpec("k+ctrl".to_owned()),
                 action: KeyAction::Press,
             }),
-            r#"{"kind":"debug","v":{"kind":"key","v":{"surface":"sill-launcher-DP-1","key":"k+ctrl","action":"press"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"key","v":{"surface":"shell-launcher-DP-1","key":"k+ctrl","action":"press"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Key {
-                surface: surface("sill-launcher-DP-1"),
+                surface: surface("shell-launcher-DP-1"),
                 key: KeySpec("Tab+shift".to_owned()),
                 action: KeyAction::Release,
             }),
-            r#"{"kind":"debug","v":{"kind":"key","v":{"surface":"sill-launcher-DP-1","key":"Tab+shift","action":"release"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"key","v":{"surface":"shell-launcher-DP-1","key":"Tab+shift","action":"release"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::PointerPress {
-                surface: surface("sill-wallpaper-DP-1"),
+                surface: surface("shell-wallpaper-DP-1"),
                 at: Point { x: 900, y: 96 },
                 button: PointerButton::Primary,
             }),
-            r#"{"kind":"debug","v":{"kind":"pointer_press","v":{"surface":"sill-wallpaper-DP-1","at":{"x":900,"y":96},"button":"primary"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"pointer_press","v":{"surface":"shell-wallpaper-DP-1","at":{"x":900,"y":96},"button":"primary"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::PointerPress {
-                surface: surface("sill-dock-DP-1"),
+                surface: surface("shell-dock-DP-1"),
                 at: Point { x: 40, y: 30 },
                 button: PointerButton::Secondary,
             }),
-            r#"{"kind":"debug","v":{"kind":"pointer_press","v":{"surface":"sill-dock-DP-1","at":{"x":40,"y":30},"button":"secondary"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"pointer_press","v":{"surface":"shell-dock-DP-1","at":{"x":40,"y":30},"button":"secondary"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::PointerRelease {
-                surface: surface("sill-wallpaper-DP-1"),
+                surface: surface("shell-wallpaper-DP-1"),
                 at: Point { x: 0, y: 456 },
                 button: PointerButton::Primary,
             }),
-            r#"{"kind":"debug","v":{"kind":"pointer_release","v":{"surface":"sill-wallpaper-DP-1","at":{"x":0,"y":456},"button":"primary"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"pointer_release","v":{"surface":"shell-wallpaper-DP-1","at":{"x":0,"y":456},"button":"primary"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::PointerRelease {
-                surface: surface("sill-dock-DP-1"),
+                surface: surface("shell-dock-DP-1"),
                 at: Point { x: 0, y: 0 },
                 button: PointerButton::Middle,
             }),
-            r#"{"kind":"debug","v":{"kind":"pointer_release","v":{"surface":"sill-dock-DP-1","at":{"x":0,"y":0},"button":"middle"}}}"#,
+            r#"{"kind":"debug","v":{"kind":"pointer_release","v":{"surface":"shell-dock-DP-1","at":{"x":0,"y":0},"button":"middle"}}}"#,
         ),
         (
             Request::Debug(DebugRequest::Osd {
@@ -406,7 +406,7 @@ fn requests() -> Vec<(Request, &'static str)> {
 
 fn stats() -> SurfaceStats {
     SurfaceStats {
-        surface: surface("sill-bar-DP-1"),
+        surface: surface("shell-bar-DP-1"),
         frames: 12,
         callbacks: 12,
         commits: 13,
@@ -462,9 +462,9 @@ fn responses() -> Vec<(Response, &'static str)> {
         (
             Response::Failed(Failure {
                 kind: FailureKind::UnknownSurface,
-                message: "no surface sill-dock-HDMI-9".to_owned(),
+                message: "no surface shell-dock-HDMI-9".to_owned(),
             }),
-            r#"{"kind":"failed","v":{"kind":"unknown_surface","message":"no surface sill-dock-HDMI-9"}}"#,
+            r#"{"kind":"failed","v":{"kind":"unknown_surface","message":"no surface shell-dock-HDMI-9"}}"#,
         ),
         (
             Response::Status(StatusReport::Notifications(NotificationsStatus {

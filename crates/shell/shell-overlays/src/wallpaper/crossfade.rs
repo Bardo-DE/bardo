@@ -12,7 +12,7 @@ enum Front {
     B,
 }
 
-/// The two layers' current image — `None` shows nothing, so `.sill-wallpaper`'s own
+/// The two layers' current image — `None` shows nothing, so `.shell-wallpaper`'s own
 /// `--paper` background shows through — and which is in front.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Layers {

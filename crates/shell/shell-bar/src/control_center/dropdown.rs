@@ -35,7 +35,7 @@ pub fn ModuleDropdown(
     let body = super::modules::module(module).dropdown(&cx);
     rsx! {
         div {
-            class: "sill-cc",
+            class: "shell-cc",
             "data-drop": "module",
             tabindex: "-1",
             style: panel_style(cap),

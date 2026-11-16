@@ -245,7 +245,7 @@ mod tests {
             name,
             slot: "BottomRight".to_owned(),
             id: SurfaceId(id),
-            namespace: format!("sill-{name}-DP-1"),
+            namespace: format!("shell-{name}-DP-1"),
             size: LayerSize {
                 width: LayerExtent::Px(2),
                 height: LayerExtent::Px(2),

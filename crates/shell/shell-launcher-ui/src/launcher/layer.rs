@@ -128,7 +128,7 @@ mod tests {
     #[test]
     fn the_panel_is_a_warm_overlay_with_the_keyboard() {
         let panel = layer(&output(Some("DP-1")), &LauncherTokens::default());
-        assert_eq!(panel.namespace, "sill-launcher-DP-1");
+        assert_eq!(panel.namespace, "shell-launcher-DP-1");
         assert_eq!(panel.layer, LayerLevel::Overlay);
         assert_eq!(panel.anchor, Anchor::TOP);
         assert_eq!(

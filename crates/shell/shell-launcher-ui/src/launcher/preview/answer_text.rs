@@ -20,10 +20,10 @@ pub(super) fn answer_text(answer: &AnswerFacts) -> Element {
         .collect();
     let progress = preview_progress(answer);
     rsx! {
-        div { class: "sill-answer-text",
-            h2 { class: "sill-answer-title", "{answer.prompt}" }
+        div { class: "shell-answer-text",
+            h2 { class: "shell-answer-title", "{answer.prompt}" }
             for (at , line) in lines.iter().enumerate() {
-                p { key: "{at}", class: "sill-answer-line", {text(line)} }
+                p { key: "{at}", class: "shell-answer-line", {text(line)} }
             }
             ProgressList { shown: progress }
         }
@@ -41,14 +41,14 @@ fn ProgressList(shown: ProgressShown) -> Element {
     }
     let first = shown.earlier;
     rsx! {
-        div { class: "sill-answer-progress",
+        div { class: "shell-answer-progress",
             if shown.earlier > 0 {
-                p { class: "sill-answer-progress-line", "+{shown.earlier} earlier" }
+                p { class: "shell-answer-progress-line", "+{shown.earlier} earlier" }
             }
             for (at , line) in shown.lines.iter().enumerate() {
                 p {
                     key: "{first + at}",
-                    class: "sill-answer-progress-line",
+                    class: "shell-answer-progress-line",
                     {text(&runs_of(line))}
                 }
             }

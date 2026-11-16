@@ -3,7 +3,7 @@
 //! as `$XDG_DATA_DIRS/bardo/selectors/<app>.toml`, so Settings can check a stylesheet against
 //! every app's parts without linking any app (customization design section 7.3).
 //!
-//! The file is two keys: `app = "shell"` and `classes = ["shell-bar", "sill-bar-item", ...]`. A
+//! The file is two keys: `app = "shell"` and `classes = ["shell-bar", "shell-bar-item", ...]`. A
 //! class outside the app's own `<app>-` prefix is dropped on both write and read, so a file cannot
 //! claim a `ds-` name or another app's.
 

@@ -76,7 +76,7 @@ harness/scenario-build.sh --w2
 # 2. private checkouts of the shell and its host library (the scenarios run bardo-shell's scripts from there)
 #    bardo-shell (scenario-build.sh: checkouts) at $SCEN_SIB/shell
 # 3. the shell with its test features (the stand-in screen-brightness file)
-(cd $SCEN_SIB/shell && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p shell-app --features debug)
+(cd $SCEN_SIB/shell && CARGO_TARGET_DIR=$SCEN_BUILD/shell-target nice cargo build -p shell-app --features debug)
 # 4. the screen helper with the fixture caller table (a plain build identifies nobody)
 (cd $SCEN_SIB/computer-use && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command (action-accept: test builds)
@@ -149,14 +149,14 @@ DRAW_DIR=${W2_DRAW_DIR:-$REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0}
 
 require_models
 scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_BUILD/sill-target/debug/bardo-shell" "$CUAD" "$BRINGUP" "$QUIREDO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
-scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" casement-target sill-target cua-target docket-target
+  "$SCEN_BUILD/shell-target/debug/bardo-shell" "$CUAD" "$BRINGUP" "$QUIREDO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
+scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" casement-target shell-target cua-target docket-target
 [ -x "$BROWSER" ] || die "the browser $BROWSER is not there (set W2_BROWSER to Zen's program)"
 [ -s "$DRAW_DIR/main.js" ] || die "the drawing app is not built at $DRAW_DIR: run $WF/fixtures/w2/build-excalidraw.sh outside the jail"
 for tool in socat curl python3 busctl gdbus; do command -v "$tool" >/dev/null || die "$tool is missing"; done
 
 export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
-export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+export CARGO_TARGET_DIR="$SCEN_BUILD/shell-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 # bardo-compositor asks before a program watches the screen, types or lists windows, and nobody answers inside a scenario, so
 # the floor allows exactly the programs this run starts that take those powers: bardo-computer-use and bardo-compositorctl (the pictures).
 floor_shim w2-excalidraw bardo-shell bardo-computer-use bardo-compositorctl || die "could not write the permission floor"

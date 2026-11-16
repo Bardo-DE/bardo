@@ -399,7 +399,7 @@ mod tests {
     #[tokio::test]
     async fn a_program_that_cannot_start_falls_back_to_the_bare_command() {
         let argv = vec![
-            "sill-launch-test-no-such-binary-anywhere".to_owned(),
+            "shell-launch-test-no-such-binary-anywhere".to_owned(),
             "--".to_owned(),
             "/bin/true".to_owned(),
         ];

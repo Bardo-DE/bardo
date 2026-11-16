@@ -21,7 +21,7 @@ pub(super) fn HandoverRow(view: HelperCardView) -> Element {
     match handover_of(&view) {
         HandoverShown::Nothing => rsx! {},
         HandoverShown::OffersTerminal => rsx! {
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 Button {
                     label: OPEN_IN_TERMINAL,
                     bezel: Bezel::Inline,
@@ -31,7 +31,7 @@ pub(super) fn HandoverRow(view: HelperCardView) -> Element {
             }
         },
         HandoverShown::InTerminal => rsx! {
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 Label { text: IN_TERMINAL, role: LabelRole::Secondary }
                 Button {
                     label: BRING_BACK,

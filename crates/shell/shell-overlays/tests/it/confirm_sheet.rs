@@ -89,7 +89,7 @@ pub(crate) fn arming(queue: Vec<Pending>) -> Running {
     let mut running = start(fake::output().id);
     running.harness.advance(Duration::from_millis(40));
     ask(&mut running, queue);
-    settle(&mut running.harness, |h| h.count(".sill-confirm") == 1);
+    settle(&mut running.harness, |h| h.count(".shell-confirm") == 1);
     running
 }
 
@@ -118,7 +118,7 @@ fn with_no_question_it_draws_nothing() {
     let mut running = start(fake::output().id);
     running.harness.advance(Duration::from_millis(100));
     assert_eq!(running.harness.count(".ds-sheet"), 0);
-    assert_eq!(running.harness.count(".sill-confirm"), 0);
+    assert_eq!(running.harness.count(".shell-confirm"), 0);
 }
 
 #[test]
@@ -130,7 +130,7 @@ fn a_question_for_another_output_draws_nothing_here() {
         vec![pending(1, "c-1", "once_only", "press", "undoable_write")],
     );
     running.harness.advance(Duration::from_millis(400));
-    assert_eq!(running.harness.count(".sill-confirm"), 0);
+    assert_eq!(running.harness.count(".shell-confirm"), 0);
 }
 
 #[test]
@@ -156,11 +156,11 @@ fn a_question_draws_the_routers_words_on_a_narrow_centred_sheet() {
     );
     assert_eq!(h.count(".ds-scrim"), 0, "a sheet dims nothing");
     assert_eq!(
-        h.text_of(".sill-confirm-title").as_deref(),
+        h.text_of(".shell-confirm-title").as_deref(),
         Some("Archive a thread?")
     );
     assert_eq!(
-        h.text_of(".sill-confirm-byline").as_deref(),
+        h.text_of(".shell-confirm-byline").as_deref(),
         Some("The terminal wants to do this in Mail.")
     );
     let html = h.html();
@@ -168,7 +168,7 @@ fn a_question_draws_the_routers_words_on_a_narrow_centred_sheet() {
         assert!(html.contains(expected), "{expected:?} is on the sheet");
     }
     assert_eq!(
-        h.count(".sill-confirm-note"),
+        h.count(".shell-confirm-note"),
         2,
         "the reason and the effect"
     );
@@ -189,7 +189,10 @@ fn the_buttons_are_disabled_while_it_arms_and_a_press_then_answers_nothing() {
     )]);
     running.harness.advance(Duration::from_millis(100));
     assert_eq!(
-        running.harness.attr(".sill-confirm", "data-arm").as_deref(),
+        running
+            .harness
+            .attr(".shell-confirm", "data-arm")
+            .as_deref(),
         Some("arming")
     );
     for button in [ALLOW, DENY] {
@@ -208,7 +211,10 @@ fn the_buttons_are_disabled_while_it_arms_and_a_press_then_answers_nothing() {
     );
     running.harness.advance(Duration::from_millis(600));
     assert_eq!(
-        running.harness.attr(".sill-confirm", "data-arm").as_deref(),
+        running
+            .harness
+            .attr(".shell-confirm", "data-arm")
+            .as_deref(),
         Some("armed")
     );
 }
@@ -251,7 +257,7 @@ fn once_armed_allow_and_dont_allow_answer_and_only_once() {
         "undoable_write",
     )]);
     assert_eq!(
-        running.harness.count(".sill-confirm-offer"),
+        running.harness.count(".shell-confirm-offer"),
         0,
         "nothing else is offered"
     );
@@ -306,7 +312,7 @@ fn the_terminal_offer_is_a_button_that_answers_allowed_from_the_terminal() {
         "press",
         "undoable_write",
     )]);
-    assert_eq!(running.harness.count(".sill-confirm-offer"), 1);
+    assert_eq!(running.harness.count(".shell-confirm-offer"), 1);
     assert_eq!(
         running.harness.text_of(OFFER).as_deref(),
         Some("Allow from the terminal: this action, until logout")
@@ -359,7 +365,7 @@ fn a_destructive_action_asks_for_a_hold_not_a_press() {
     assert_eq!(
         running
             .harness
-            .attr(".sill-confirm", "data-gesture")
+            .attr(".shell-confirm", "data-gesture")
             .as_deref(),
         Some("hold")
     );
@@ -378,7 +384,7 @@ fn a_destructive_action_asks_for_a_hold_not_a_press() {
     assert_eq!(
         running
             .harness
-            .attr(".sill-confirm-hold", "data-holding")
+            .attr(".shell-confirm-hold", "data-holding")
             .as_deref(),
         Some("true")
     );
@@ -445,7 +451,7 @@ fn a_key_tap_on_the_hold_button_is_not_a_hold() {
     assert_eq!(
         running
             .harness
-            .attr(".sill-confirm-hold", "data-holding")
+            .attr(".shell-confirm-hold", "data-holding")
             .as_deref(),
         Some("false")
     );
@@ -460,7 +466,7 @@ fn the_next_question_enters_with_its_own_arming() {
         pending(2, "c-2", "once_only", "press", "undoable_write"),
     ]);
     assert_eq!(
-        running.harness.text_of(".sill-confirm-waiting").as_deref(),
+        running.harness.text_of(".shell-confirm-waiting").as_deref(),
         Some("1 more waiting")
     );
     click(&mut running, ALLOW);
@@ -474,9 +480,12 @@ fn the_next_question_enters_with_its_own_arming() {
         vec![pending(2, "c-2", "once_only", "press", "undoable_write")],
     );
     running.harness.advance(Duration::from_millis(100));
-    assert_eq!(running.harness.count(".sill-confirm-waiting"), 0);
+    assert_eq!(running.harness.count(".shell-confirm-waiting"), 0);
     assert_eq!(
-        running.harness.attr(".sill-confirm", "data-arm").as_deref(),
+        running
+            .harness
+            .attr(".shell-confirm", "data-arm")
+            .as_deref(),
         Some("arming"),
         "a new question never inherits the last one's armed buttons"
     );
@@ -502,10 +511,10 @@ fn a_question_that_goes_plays_the_sheet_out_then_draws_nothing() {
     ask(&mut running, Vec::new());
     running.harness.advance(Duration::from_millis(40));
     assert_eq!(
-        running.harness.count(".sill-confirm"),
+        running.harness.count(".shell-confirm"),
         1,
         "still playing its exit"
     );
-    settle(&mut running.harness, |h| h.count(".sill-confirm") == 0);
+    settle(&mut running.harness, |h| h.count(".shell-confirm") == 0);
     assert_eq!(running.harness.count(".ds-sheet"), 0);
 }

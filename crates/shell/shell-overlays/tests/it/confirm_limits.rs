@@ -15,7 +15,7 @@ use crate::confirm_sheet::{ALLOW, DENY, OFFER, answer, armed, arming, ask, click
 
 const NEVER: &str = "#confirm-never";
 const UNDO: &str = "#confirm-undo";
-const HELD_LINE: &str = ".sill-confirm-held-why";
+const HELD_LINE: &str = ".shell-confirm-held-why";
 
 const NEVER_OFFERED: &str = r#"{"never":"offered"}"#;
 const NEVER_WITHHELD: &str = r#"{"never":"withheld"}"#;
@@ -137,7 +137,7 @@ fn a_held_limit_is_a_line_with_undo_and_the_sheet_offers_no_always() {
     assert!(!h.html().contains("Always Allow"));
     let plain = armed(vec![limited("c-1", "once_only", NEVER_OFFERED)]);
     assert_eq!(
-        plain.harness.count(".sill-confirm-held"),
+        plain.harness.count(".shell-confirm-held"),
         0,
         "no limit, no line"
     );
@@ -153,16 +153,23 @@ fn undo_sends_the_undo_and_leaves_the_question_open() {
         vec![IntentsCommand::UndoLimit(entry("00000000000000a1"))],
         "the undo, and no answer"
     );
-    assert_eq!(running.harness.count(".sill-confirm"), 1, "the sheet stays");
+    assert_eq!(
+        running.harness.count(".shell-confirm"),
+        1,
+        "the sheet stays"
+    );
     // The service has said the entry is gone: the question loses its line and keeps its place.
     ask(
         &mut running,
         vec![limited("c-1", "once_only", NEVER_OFFERED)],
     );
     running.harness.advance(Duration::from_millis(100));
-    assert_eq!(running.harness.count(".sill-confirm-held"), 0);
+    assert_eq!(running.harness.count(".shell-confirm-held"), 0);
     assert_eq!(
-        running.harness.attr(".sill-confirm", "data-arm").as_deref(),
+        running
+            .harness
+            .attr(".shell-confirm", "data-arm")
+            .as_deref(),
         Some("armed"),
         "the same question is not armed again"
     );

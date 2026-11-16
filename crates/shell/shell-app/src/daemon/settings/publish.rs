@@ -44,7 +44,7 @@ mod settings_publish_tests {
 
     fn temp_dir(tag: &str) -> std::path::PathBuf {
         let dir = std::env::temp_dir().join(format!(
-            "sill-daemon-settings-test-{tag}-{}-{}",
+            "shell-daemon-settings-test-{tag}-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)

@@ -24,7 +24,7 @@ pub fn folder() -> &'static Path {
         // A test binary's own scratch space under target/; the demo's temp directory.
         let base =
             option_env!("CARGO_TARGET_TMPDIR").map_or_else(std::env::temp_dir, PathBuf::from);
-        let dir = base.join(format!("sill-launcher-m9-{}", std::process::id()));
+        let dir = base.join(format!("shell-launcher-m9-{}", std::process::id()));
         std::fs::create_dir_all(&dir).expect("a scratch folder"); // test-only
         write(&dir.join("m9-report.pdf"), &pdf(LIGHT));
         write(&dir.join("m9-shot.png"), &png());

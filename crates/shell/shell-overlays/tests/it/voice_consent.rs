@@ -53,7 +53,7 @@ fn up() -> Running {
     let mut running = start(fake::output().id);
     running.harness.advance(Duration::from_millis(40));
     asking(&mut running, true);
-    settle(&mut running.harness, |h| h.count(".sill-consent") == 1);
+    settle(&mut running.harness, |h| h.count(".shell-consent") == 1);
     running.harness.advance(Duration::from_millis(700));
     running
 }
@@ -80,7 +80,7 @@ fn a_question_for_another_output_draws_nothing_here() {
     running.harness.advance(Duration::from_millis(40));
     asking(&mut running, true);
     running.harness.advance(Duration::from_millis(400));
-    assert_eq!(running.harness.count(".sill-consent"), 0);
+    assert_eq!(running.harness.count(".shell-consent"), 0);
 }
 
 #[test]
@@ -134,5 +134,5 @@ fn the_sheet_leaves_once_the_service_stops_asking() {
     let mut running = up();
     asking(&mut running, false);
     settle(&mut running.harness, |h| h.count(".ds-sheet") == 0);
-    assert_eq!(running.harness.count(".sill-consent"), 0);
+    assert_eq!(running.harness.count(".shell-consent"), 0);
 }

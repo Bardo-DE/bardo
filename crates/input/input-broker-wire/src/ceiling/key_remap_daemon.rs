@@ -80,9 +80,14 @@ pub(super) fn pointer(maker: Maker, caps: &PointerCaps) -> Result<Plan, BadCaps>
     })
 }
 
-/// The label cut to fit, then the fixed suffix.
+/// Bytes of a uinput device name, the terminator included.
+const UINPUT_NAME_BYTES: usize = 80;
+
+/// The label cut to fit, then the fixed suffix: the label, a space and the suffix stay under a uinput
+/// name with its terminator.
 fn pointer_name(label: &str) -> String {
-    let mut cut = label.len().min(MAX_LABEL_BYTES);
+    let room = UINPUT_NAME_BYTES - 1 - POINTER_SUFFIX.len() - 1;
+    let mut cut = label.len().min(MAX_LABEL_BYTES).min(room);
     while !label.is_char_boundary(cut) {
         cut -= 1;
     }

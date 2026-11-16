@@ -79,7 +79,7 @@ fn contract<L: LogWrite>(mut log: L, digest: &memory_seal::SubKey) {
             .is_empty()
     );
     let other_app = TimelineFilter {
-        apps: vec![app("org.bardo.Files")],
+        apps: vec![app("org.quire.Files")],
         ..everyone()
     };
     assert!(
@@ -129,7 +129,7 @@ fn each_actor_filter_picks_its_own_kinds_and_the_terminal_has_a_bucket() {
         },
         Actor::Cli,
         Actor::App {
-            app: app("org.bardo.Mail"),
+            app: app("org.quire.Mail"),
         },
         Actor::ThirdParty {
             app: app("com.example.Notes"),

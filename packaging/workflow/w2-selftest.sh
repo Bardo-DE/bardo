@@ -250,7 +250,7 @@ printf 'start\t1000000000000\t1000\ncasement_up\t1005000000000\t1005\nstack_up\t
 cp "$scratch/drawings/good.excalidraw" "$run/out/lamp.excalidraw"
 printf '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0"/></svg>\n' >"$run/out/lamp.svg"
 cp "$scratch/bus.jsonl" "$run/bus.jsonl"
-printf '1030\tc-1\tstep\torg.bardo.Cua: Use an app on screen\tAllow once\tEnter\tanswered\n1040\tc-2\tbrief\torg.bardo.Companion: Check\tUse this brief (Allow once)\tEnter\tanswered\n' >"$run/sheets.tsv"
+printf '1030\tc-1\tstep\torg.bardo.ComputerUse: Use an app on screen\tAllow once\tEnter\tanswered\n1040\tc-2\tbrief\torg.bardo.Companion: Check\tUse this brief (Allow once)\tEnter\tanswered\n' >"$run/sheets.tsv"
 : >"$run/shots/01-pages-open.png"
 printf 'out/lamp.excalidraw\nout/lamp.svg\n' >"$run/files-made.txt"
 report=$("${PY[@]}" report --run "$run" --expected "$FIX/expected.json"); code "report: a good run exits 0" 0 $?

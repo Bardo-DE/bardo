@@ -410,7 +410,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         ),
     ] {
         std::fs::create_dir_all(dir.path().join("bardo/actions")).unwrap();
-        std::fs::write(dir.path().join(SETTINGS_FILE), text).unwrap();
+        std::fs::write(dir.path().join("bardo").join(SETTINGS_FILE), text).unwrap();
     }
     let env = |k: &str| match k {
         "XDG_CONFIG_HOME" => Some(home.path().display().to_string()),

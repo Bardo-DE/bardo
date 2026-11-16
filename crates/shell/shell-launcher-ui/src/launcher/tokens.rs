@@ -1,6 +1,6 @@
 //! The launcher's placement tokens as the layer maths reads them. Each is a tuned token in
-//! `shell_kit::tokens::launcher::LauncherToken` (`--sill-launcher-top-bar-gap`,
-//! `--sill-launcher-top-centre-bias`); the panel's place is needed before the first layout, so
+//! `shell_kit::tokens::launcher::LauncherToken` (`--shell-launcher-top-bar-gap`,
+//! `--shell-launcher-top-centre-bias`); the panel's place is needed before the first layout, so
 //! [`LauncherTokens::read`] takes the resolved length of a custom property
 //! (`ui_blitz::Resolved::length` on the surface's document, read again when the `Styles` signal
 //! changes) and a token a sheet does not write, or writes as `calc()`, is the shipped constant.
@@ -12,9 +12,9 @@ use shell_ui_kit::links::PanelPlace;
 use ui_components::prelude::Px;
 use ui_components::style::tokens::shell_scale::SHELL_SCALE;
 
-/// `--sill-launcher-top-bar-gap`'s shipped value.
+/// `--shell-launcher-top-bar-gap`'s shipped value.
 pub const TOP_BAR_GAP: u16 = 24;
-/// `--sill-launcher-top-centre-bias`'s shipped value.
+/// `--shell-launcher-top-centre-bias`'s shipped value.
 pub const TOP_CENTRE_BIAS: u16 = 230;
 
 /// The token values the panel's placement uses, in whole logical pixels.
@@ -103,7 +103,7 @@ mod tests {
 
     #[test]
     fn a_token_a_sheet_writes_beats_the_constant() {
-        let wrote = |name: &str| (name == "--sill-launcher-top-bar-gap-px").then_some(Px(40.0));
+        let wrote = |name: &str| (name == "--shell-launcher-top-bar-gap-px").then_some(Px(40.0));
         let tokens = LauncherTokens::read(wrote);
         assert_eq!(tokens.top_bar_gap, 40);
         assert_eq!(tokens.top_centre_bias, TOP_CENTRE_BIAS);

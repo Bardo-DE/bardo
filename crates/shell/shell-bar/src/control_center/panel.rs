@@ -83,7 +83,7 @@ pub(crate) fn control_center(
     let style = panel_style(cap);
     rsx! {
         div {
-            class: "sill-cc",
+            class: "shell-cc",
             tabindex: "-1",
             style,
             onmounted: move |event: MountedEvent| home.mounted(event),

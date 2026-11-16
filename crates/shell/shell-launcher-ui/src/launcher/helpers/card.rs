@@ -45,7 +45,7 @@ pub(crate) fn HelperCardPane(helper: Option<HelperId>) -> Element {
         },
     };
     rsx! {
-        div { class: "sill-helper-card", {body} }
+        div { class: "shell-helper-card", {body} }
     }
 }
 
@@ -94,9 +94,9 @@ fn CardBody(model: HelpersModel, helper: Option<HelperId>) -> Element {
             role,
         }
         SightLine {}
-        div { class: "sill-helper-buttons", {save} }
+        div { class: "shell-helper-buttons", {save} }
         if let Some(sentence) = &model.notice {
-            p { class: "sill-helper-notice", role: "status", "{sentence}" }
+            p { class: "shell-helper-notice", role: "status", "{sentence}" }
         }
         if let Some(id) = &helper {
             {removal_question(&model, id, &say)}
@@ -116,7 +116,7 @@ fn header(model: &HelpersModel, helper: Option<&HelperId>) -> Element {
         };
     };
     rsx! {
-        div { class: "sill-helper-head",
+        div { class: "shell-helper-head",
             Label { text: line.name.as_str().to_owned(), style: LabelStyle::Title }
             Label { text: line.doing.clone(), role: LabelRole::Secondary }
             if line.needs_you.is_some() {
@@ -165,9 +165,9 @@ fn removal_question(model: &HelpersModel, id: &HelperId, say: &Say) -> Element {
     let question = remove_question(&name);
     let (keep, remove, helper) = (say.clone(), say.clone(), id.clone());
     rsx! {
-        div { class: "sill-helper-ask", role: "alert",
+        div { class: "shell-helper-ask", role: "alert",
             p { "{question}" }
-            div { class: "sill-helper-buttons",
+            div { class: "shell-helper-buttons",
                 Button {
                     label: "Cancel",
                     common: Common { id: Some("helper-keep".to_owned()), ..Common::default() },

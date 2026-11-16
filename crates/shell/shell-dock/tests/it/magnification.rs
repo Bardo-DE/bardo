@@ -71,7 +71,7 @@ fn hover_trash(run: &mut SurfaceHarness<Dock>) {
 fn the_name_stands_above_the_magnified_tile_centred_on_it() {
     let mut run = dock();
     hover_trash(&mut run);
-    let label = edges(&run, ".sill-dock-label-text");
+    let label = edges(&run, ".shell-dock-label-text");
     let plate = edges(&run, &format!("{} .ds-dock-plate", tile("Trash")));
     let tile = edges(&run, &tile("Trash"));
     assert!(
@@ -95,5 +95,5 @@ fn the_name_stands_above_the_magnified_tile_centred_on_it() {
 #[test]
 fn no_name_is_up_until_a_tile_is_hovered() {
     let run = dock();
-    assert_eq!(run.harness.count(".sill-dock-label"), 0);
+    assert_eq!(run.harness.count(".shell-dock-label"), 0);
 }

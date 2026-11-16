@@ -104,7 +104,7 @@ fn percentile(sorted: &[Duration], p: usize) -> Duration {
 fn measure(rt: &tokio::runtime::Runtime, name: &str, index: AppIndex) {
     let apps = index.apps.len();
     // A scratch state folder: the bench's choices never reach the person's launcher history.
-    let scratch = std::env::temp_dir().join(format!("sill-search-bench-{}", std::process::id()));
+    let scratch = std::env::temp_dir().join(format!("shell-search-bench-{}", std::process::id()));
     let env = Env::isolated(&scratch);
     let search = spawn::<ResultsService>(
         rt.handle(),

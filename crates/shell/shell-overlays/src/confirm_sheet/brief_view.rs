@@ -79,9 +79,9 @@ pub(super) fn brief_body(
     let pieces = brief.pieces.clone();
     let too_long = text.read().len() > BRIEF_MAX_BYTES;
     rsx! {
-        div { class: "sill-brief-hint", "Edit it until it says what you want. Helpers will do what it says." }
+        div { class: "shell-brief-hint", "Edit it until it says what you want. Helpers will do what it says." }
         div {
-            class: "sill-brief-field",
+            class: "shell-brief-field",
             onscroll: move |event: ScrollEvent| {
                 let spot = ScrollSpot {
                     top: event.scroll_top(),
@@ -106,22 +106,22 @@ pub(super) fn brief_body(
             }
         }
         if too_long {
-            div { class: "sill-brief-note", "This is longer than helpers can take. Shorten it." }
+            div { class: "shell-brief-note", "This is longer than helpers can take. Shorten it." }
         }
         {flag_list(state, input)}
         if !pieces.is_empty() {
-            div { class: "sill-brief-pieces",
-                div { class: "sill-brief-heading", "Pieces" }
+            div { class: "shell-brief-pieces",
+                div { class: "shell-brief-heading", "Pieces" }
                 for (place , piece) in pieces.iter().enumerate() {
-                    div { key: "{place}", class: "sill-brief-piece", "{piece}" }
+                    div { key: "{place}", class: "shell-brief-piece", "{piece}" }
                 }
             }
         }
-        div { class: "sill-brief-next", "Next: helpers will work from this." }
+        div { class: "shell-brief-next", "Next: helpers will work from this." }
         if *reach.read() == Reach::Unseen {
-            div { class: "sill-brief-note", "Scroll to the end to use it." }
+            div { class: "shell-brief-note", "Scroll to the end to use it." }
         }
-        div { class: "sill-confirm-footer",
+        div { class: "shell-confirm-footer",
             Button {
                 label: "Cancel",
                 answers: Answers::Escape,
@@ -160,13 +160,13 @@ fn flag_list(state: BriefState, input: Availability) -> Element {
         return rsx! {};
     }
     rsx! {
-        div { class: "sill-brief-flags",
-            div { class: "sill-brief-heading", "Look at these" }
+        div { class: "shell-brief-flags",
+            div { class: "shell-brief-heading", "Look at these" }
             for (place , (flag , shown)) in rows.into_iter().enumerate() {
-                div { key: "{place}-{shown}", class: "sill-brief-flag",
-                    div { class: "sill-brief-flag-what",
+                div { key: "{place}-{shown}", class: "shell-brief-flag",
+                    div { class: "shell-brief-flag-what",
                         Label { text: TextLine::Runs(vec![TextRun::new(shown, RunTone::Underline)]) }
-                        div { class: "sill-brief-flag-why", "{flag.kind.sentence()}" }
+                        div { class: "shell-brief-flag-why", "{flag.kind.sentence()}" }
                     }
                     Button {
                         label: "Remove",

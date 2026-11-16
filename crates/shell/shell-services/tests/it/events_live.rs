@@ -18,7 +18,7 @@ struct Scratch(PathBuf);
 
 impl Scratch {
     fn new(tag: &str) -> Scratch {
-        let dir = std::env::temp_dir().join(format!("sill-{tag}-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-{tag}-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(dir.join("dav")).unwrap_or_else(|e| panic!("{e}"));
         Scratch(dir)

@@ -1,5 +1,5 @@
 //! Writing and removing bardo-shell's fontconfig snippet: `$XDG_CONFIG_HOME/fontconfig/conf.d/
-//! 50-sill-rendering.conf`. The decision is [`plan`] (pure); [`sync`] carries it out.
+//! 50-shell-rendering.conf`. The decision is [`plan`] (pure); [`sync`] carries it out.
 
 use std::path::{Path, PathBuf};
 
@@ -199,7 +199,7 @@ mod tests {
     /// real one.
     #[test]
     fn sync_writes_then_removes_cleanly() {
-        let dir = std::env::temp_dir().join(format!("sill-fontconfig-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-fontconfig-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         let rendering = Some(font_rendering_for(Ppi(163)));
         let path = dir.join("conf.d").join(FILE_NAME);

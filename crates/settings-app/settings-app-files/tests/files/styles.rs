@@ -59,7 +59,7 @@ fn the_classes_apps_publish_are_read_from_the_system_folders_then_the_persons() 
     write(
         &scratch,
         "system/bardo/selectors/shell.toml",
-        &parts("shell", "sill-bar"),
+        &parts("shell", "shell-bar"),
     );
     write(
         &scratch,
@@ -69,7 +69,7 @@ fn the_classes_apps_publish_are_read_from_the_system_folders_then_the_persons() 
     let found = published_classes(&DataHome(scratch.join("data")), &[scratch.join("system")]);
     assert_eq!(
         found,
-        [vec!["sill-bar".to_owned()], vec!["files-row".to_owned()]]
+        [vec!["shell-bar".to_owned()], vec!["files-row".to_owned()]]
     );
     assert!(published_classes(&DataHome(scratch.join("nowhere")), &[]).is_empty());
 }

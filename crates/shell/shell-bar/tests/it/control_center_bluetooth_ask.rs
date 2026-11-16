@@ -15,7 +15,7 @@ use ui_harness::{Harness, Input};
 
 /// The Bluetooth tile: the grid's second module (Wi-Fi, Bluetooth, Focus, ...).
 const TILE: &str = ".ds-module-grid > .ds-module-tile:nth-child(2)";
-const ALERT: &str = ".sill-cc > .ds-alert-stage";
+const ALERT: &str = ".shell-cc > .ds-alert-stage";
 const CANCEL: &str = ".ds-alert-slot:last-child .ds-button";
 const TURN_OFF: &str = ".ds-alert-slot:first-child .ds-button";
 
@@ -68,7 +68,7 @@ fn the_tile_asks_before_off_and_only_turn_off_or_return_sends_it() {
     // It covers the panel, and the keyboard is on Turn Off, the default.
     let (stage, panel) = (
         running.harness.rect(ALERT).expect("the stage"),
-        running.harness.rect(".sill-cc").expect("the panel"),
+        running.harness.rect(".shell-cc").expect("the panel"),
     );
     assert!(
         (stage.origin.y.0 - panel.origin.y.0).abs() < 0.5
@@ -109,7 +109,7 @@ fn the_tile_asks_before_off_and_only_turn_off_or_return_sends_it() {
     assert_settles_to_zero_frames(&mut running.harness);
 
     // The panel has the keyboard back: Escape now closes the control center.
-    assert!(running.harness.focus_of(".sill-cc"));
+    assert!(running.harness.focus_of(".shell-cc"));
     assert!(running.reports().is_empty());
     running.harness.send(Input::key(ShortcutKey::Escape));
     running.harness.advance(ms(400));
@@ -137,7 +137,7 @@ fn the_panes_switch_asks_too() {
     let mut running = center(|_| {});
     open(&mut running.harness, "Bluetooth details");
     assert_settles_to_zero_frames(&mut running.harness);
-    press(&mut running.harness, ".sill-cc-detail .ds-toggle");
+    press(&mut running.harness, ".shell-cc-detail .ds-toggle");
     asked(&mut running);
     assert_settles_to_zero_frames(&mut running.harness);
     // Escape answers the alert; the pane stays (its own Escape goes back).
@@ -147,7 +147,7 @@ fn the_panes_switch_asks_too() {
         running.harness.attr(".ds-panes", "data-shown").as_deref(),
         Some("detail")
     );
-    press(&mut running.harness, ".sill-cc-detail .ds-toggle");
+    press(&mut running.harness, ".shell-cc-detail .ds-toggle");
     asked(&mut running);
     press(&mut running.harness, TURN_OFF);
     answered(&mut running, OFF);

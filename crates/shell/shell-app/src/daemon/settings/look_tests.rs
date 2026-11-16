@@ -13,14 +13,15 @@ use super::{ChosenLook, LookSearch, chosen_look};
 use crate::daemon::settings::store::desktop_store;
 
 const PAPER: &str = "org.example.Paper";
-const SHEET: &str = ".sill-bar { background: ivory; }\n";
+const SHEET: &str = ".shell-bar { background: ivory; }\n";
 
 /// A scratch directory with a `config` (the quire folder) and a `data` root.
 pub struct Scratch(PathBuf);
 
 impl Scratch {
     pub fn new(tag: &str) -> Scratch {
-        let dir = std::env::temp_dir().join(format!("sill-look-test-{tag}-{}", std::process::id()));
+        let dir =
+            std::env::temp_dir().join(format!("shell-look-test-{tag}-{}", std::process::id()));
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{}: {e}", dir.display()));
         Scratch(dir)

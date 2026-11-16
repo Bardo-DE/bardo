@@ -199,7 +199,7 @@ impl Run {
 fn with_no_sheet_it_draws_nothing() {
     let mut run = start();
     run.running.harness.advance(Duration::from_millis(100));
-    assert_eq!(run.count(".sill-accounts-window"), 0);
+    assert_eq!(run.count(".shell-accounts-window"), 0);
     assert_eq!(run.count(".ds-sheet"), 0);
 }
 
@@ -207,14 +207,14 @@ fn with_no_sheet_it_draws_nothing() {
 fn a_sheet_for_another_output_draws_nothing_here() {
     let mut run = start_on(OutputId(99), Environment::default());
     run.open(PROVIDERS);
-    assert_eq!(run.count(".sill-accounts-window"), 0);
+    assert_eq!(run.count(".shell-accounts-window"), 0);
 }
 
 #[test]
 fn a_finished_add_draws_nothing() {
     let mut run = start();
     run.open(DONE);
-    assert_eq!(run.count(".sill-accounts-window"), 0);
+    assert_eq!(run.count(".shell-accounts-window"), 0);
 }
 
 #[test]
@@ -233,7 +233,7 @@ fn every_step_is_a_centred_window_with_its_title_in_a_titlebar_and_never_an_atta
         let mut run = start();
         run.open(json);
         let h = &run.running.harness;
-        assert_eq!(h.count(".sill-accounts-window"), 1, "{title}");
+        assert_eq!(h.count(".shell-accounts-window"), 1, "{title}");
         assert_eq!(h.count(".ds-sheet"), 0, "{title}: an attached sheet");
         assert_eq!(h.count(".ds-titlebar"), 1, "{title}");
         assert_eq!(
@@ -250,7 +250,7 @@ fn every_step_is_a_centred_window_with_its_title_in_a_titlebar_and_never_an_atta
             0,
             "{title}: nobody closes a dialog by a light"
         );
-        let window = h.rect(".sill-accounts-window").expect("laid out"); // test-only
+        let window = h.rect(".shell-accounts-window").expect("laid out"); // test-only
         let middle = (
             window.origin.x.0 + window.size.width.0 / 2.0,
             window.origin.y.0 + window.size.height.0 / 2.0,
@@ -531,7 +531,7 @@ fn a_long_provider_list_scrolls_inside_the_window_and_keeps_cancel_in_view() {
     let mut run = start();
     run.open(&many_providers(25));
     let h = &run.running.harness;
-    let window = h.rect(".sill-accounts-window").expect("laid out"); // test-only
+    let window = h.rect(".shell-accounts-window").expect("laid out"); // test-only
     let cancel = h
         .rect(".ds-acc-actions button")
         .expect("Cancel is laid out"); // test-only

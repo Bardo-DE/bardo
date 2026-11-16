@@ -151,7 +151,7 @@ mod tests {
                 "Apple Magic Keyboard (key-remap pointer)",
             ),
             ("", " (key-remap pointer)"),
-            (&long, &format!("{} (key-remap pointer)", "x".repeat(62))),
+            (&long, &format!("{} (key-remap pointer)", "x".repeat(59))),
             (&accented, &format!("{accented} (key-remap pointer)")),
         ];
         for &(original, want) in cases {
@@ -159,11 +159,11 @@ mod tests {
             assert_eq!(got, want, "{original:?}");
             assert!(got.len() < NAME_BYTES, "{original:?}: {} bytes", got.len());
         }
-        let on_a_boundary = format!("{}é", "x".repeat(61));
+        let on_a_boundary = format!("{}é", "x".repeat(58));
         let cut = twin_name(&on_a_boundary);
         assert_eq!(
             cut,
-            format!("{} (key-remap pointer)", "x".repeat(61)),
+            format!("{} (key-remap pointer)", "x".repeat(58)),
             "no split char"
         );
     }

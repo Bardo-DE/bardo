@@ -249,19 +249,19 @@ fn up_next_lists_the_next_events_in_order_with_their_colour() {
     ];
     let running = start(Kind::UpNext, ShellFile::default(), read(events));
     let h = &running.harness;
-    assert_eq!(h.count(".sill-un-row"), 2);
+    assert_eq!(h.count(".shell-un-row"), 2);
     assert_eq!(
-        h.text_of(".sill-un-row:first-child .sill-un-title")
+        h.text_of(".shell-un-row:first-child .shell-un-title")
             .as_deref(),
         Some("soon")
     );
     assert_eq!(
-        h.count(".sill-un-bar"),
+        h.count(".shell-un-bar"),
         2,
         "each row has its calendar's colour"
     );
-    assert_eq!(h.count(".sill-un-empty"), 0);
-    assert_eq!(h.count(".sill-un-quiet"), 0);
+    assert_eq!(h.count(".shell-un-empty"), 0);
+    assert_eq!(h.count(".shell-un-quiet"), 0);
     clean(&h.html());
 }
 
@@ -269,7 +269,7 @@ fn up_next_lists_the_next_events_in_order_with_their_colour() {
 fn up_next_says_when_there_is_nothing_and_why() {
     let empty = start(Kind::UpNext, ShellFile::default(), read(Vec::new()));
     assert_eq!(
-        empty.harness.text_of(".sill-un-empty").as_deref(),
+        empty.harness.text_of(".shell-un-empty").as_deref(),
         Some("No upcoming events")
     );
     clean(&empty.harness.html());
@@ -280,10 +280,10 @@ fn up_next_says_when_there_is_nothing_and_why() {
         Agenda::starting(now().date()),
     );
     assert_eq!(
-        off.harness.text_of(".sill-un-quiet").as_deref(),
+        off.harness.text_of(".shell-un-quiet").as_deref(),
         Some("Calendars are off")
     );
-    assert_eq!(off.harness.count(".sill-un-empty"), 0);
+    assert_eq!(off.harness.count(".shell-un-empty"), 0);
 
     let mut broken = read(Vec::new());
     broken.status = SourceStatus::Read {
@@ -295,7 +295,7 @@ fn up_next_says_when_there_is_nothing_and_why() {
     };
     let broken = start(Kind::UpNext, ShellFile::default(), broken);
     assert_eq!(
-        broken.harness.text_of(".sill-un-quiet").as_deref(),
+        broken.harness.text_of(".shell-un-quiet").as_deref(),
         Some("1 calendar file could not be read")
     );
 }

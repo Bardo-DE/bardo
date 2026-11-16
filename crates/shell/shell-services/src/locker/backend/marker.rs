@@ -1,7 +1,7 @@
 //! Re-locking after a crash: the lock surfaces are the shell's own, and a compositor keeps a
 //! session locked when its locker dies, so a bardo-shell that dies while locked leaves
 //! a locked, blank session.
-//! `dist/sill-session` restarts `bardo-shell run`; the new daemon must then lock again at once so the
+//! `dist/shell-session` restarts `bardo-shell run`; the new daemon must then lock again at once so the
 //! person gets a prompt. No protocol lets a client ask whether the session is locked, so the
 //! service keeps a marker file while its own lock is held: written as soon as a lock is asked
 //! for (before the compositor is asked to cover the session, so a crash in the gap still

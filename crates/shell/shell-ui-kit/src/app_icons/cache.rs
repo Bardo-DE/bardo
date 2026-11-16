@@ -182,7 +182,7 @@ mod tests {
     /// runtime in a unit test, so nothing is started either).
     #[test]
     fn a_made_raster_replaces_the_source() {
-        let dir = std::env::temp_dir().join(format!("sill-icon-cache-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shell-icon-cache-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap_or_else(|e| panic!("{e}"));
         let source = dir.join("app.png");

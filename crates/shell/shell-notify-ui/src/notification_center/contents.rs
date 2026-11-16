@@ -59,7 +59,7 @@ pub(super) fn Contents(output: OutputId) -> Element {
     rsx! {
         div {
             id: PANEL_ID,
-            class: "sill-nc-column",
+            class: "shell-nc-column",
             // The column holds the keyboard and shows it on the rows (their ring), not on itself.
             "data-focus": "highlight",
             // macOS's Notification Center rubber-bands (quire design/11 §11.3.7); the launcher's
@@ -78,7 +78,7 @@ pub(super) fn Contents(output: OutputId) -> Element {
                     run_out(ctx, rows, &history, out);
                 }
             },
-            div { class: "sill-nc-head",
+            div { class: "shell-nc-head",
                 Label { text: TITLE, style: LabelStyle::Title }
                 if !history.groups.is_empty() {
                     Button {
@@ -88,7 +88,7 @@ pub(super) fn Contents(output: OutputId) -> Element {
                     }
                 }
             }
-            div { class: "sill-nc-list",
+            div { class: "shell-nc-list",
                 if !drawn.any_rows() {
                     EmptyState { title: EMPTY, icon: Icon::Bell }
                 }
@@ -102,11 +102,11 @@ pub(super) fn Contents(output: OutputId) -> Element {
                 }
             }
             if let Some(line) = server_line(&server) {
-                div { class: "sill-nc-foot",
+                div { class: "shell-nc-foot",
                     Label { text: line, role: LabelRole::Tertiary, style: LabelStyle::Footnote }
                 }
             }
-            div { class: "sill-nc-widgets", CenterWidgets {} }
+            div { class: "shell-nc-widgets", CenterWidgets {} }
         }
     }
 }

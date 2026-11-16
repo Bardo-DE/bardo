@@ -39,7 +39,7 @@ fn a_pattern_matches_whole_segments_and_one_star_per_segment() {
         ),
         ("/usr/bin/bardo-shell-*", "/usr/bin/bardo-shell", false),
         ("/usr/bin/*-sill", "/usr/bin/a-sill", true),
-        ("/usr/bin/s*ll", "/usr/bin/bardo-shell", true),
+        ("/usr/bin/s*ll", "/usr/bin/shell", true),
         ("/usr/bin/s*ll", "/usr/bin/sl", false),
     ];
     for (pat, text, want) in cases {

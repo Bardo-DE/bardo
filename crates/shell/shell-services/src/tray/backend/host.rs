@@ -49,14 +49,14 @@ pub(crate) async fn run(
         BusRoute::Absent => return,
         // `Client::new()` reaches only the process's own session bus.
         BusRoute::Address(_) => {
-            eprintln!("sill-services: tray: the SNI host runs only on the usual session bus");
+            eprintln!("shell-services: tray: the SNI host runs only on the usual session bus");
             return;
         }
     }
     let client = match Client::new().await {
         Ok(client) => client,
         Err(error) => {
-            eprintln!("sill-services: tray: no session bus for the SNI host: {error}");
+            eprintln!("shell-services: tray: no session bus for the SNI host: {error}");
             return;
         }
     };
@@ -92,7 +92,7 @@ pub(crate) async fn run(
             },
             command = commands.recv(), if commands_open => match command {
                 Some(command) if calls.len() >= MAX_CALLS_IN_FLIGHT => {
-                    eprintln!("sill-services: tray: {} calls are waiting on apps; dropped {command:?}", calls.len());
+                    eprintln!("shell-services: tray: {} calls are waiting on apps; dropped {command:?}", calls.len());
                 }
                 Some(command) => {
                     let client = Arc::clone(&client);
@@ -100,7 +100,7 @@ pub(crate) async fn run(
                     calls.spawn(async move {
                         let sent = within(TRAY_CALL, "a tray app", handle_command(&client, bus.as_ref(), command)).await;
                         if let Err(error) = sent {
-                            eprintln!("sill-services: tray: {error}");
+                            eprintln!("shell-services: tray: {error}");
                         }
                     });
                 }
@@ -203,7 +203,7 @@ async fn handle_command(client: &Client, bus: Option<&zbus::Connection>, command
         },
     };
     if let Err(error) = result {
-        eprintln!("sill-services: tray: command failed: {error}");
+        eprintln!("shell-services: tray: command failed: {error}");
     }
 }
 

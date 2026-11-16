@@ -91,7 +91,7 @@ fn the_sheets_are_keyboard_exclusive_full_output_overlays() {
             radius,
             inflate: 0,
         };
-        assert_eq!(layer.namespace, format!("sill-{name}-DP-1"), "{name}");
+        assert_eq!(layer.namespace, format!("shell-{name}-DP-1"), "{name}");
         assert_eq!(layer.layer, LayerLevel::Overlay, "{name}");
         assert_eq!(layer.anchor, Anchor::ALL, "{name}");
         assert_eq!(

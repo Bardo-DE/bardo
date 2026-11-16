@@ -61,7 +61,7 @@ pub(crate) fn WifiPane(back: Option<EventHandler<()>>) -> Element {
     let empty = empty_title(&wifi, rows.len());
     let toggle = control.clone();
     rsx! {
-        div { class: "sill-cc-detail",
+        div { class: "shell-cc-detail",
             PaneHeader {
                 title: "Wi-Fi",
                 back: back_button(back),

@@ -63,7 +63,7 @@ fn entries() -> Vec<memory_eventlog::Entry> {
         Purpose::Digest,
     );
     let mut log = MemoryLog::new(&space("work"), ReplicaId([9; 16]), key.clone());
-    let rec = record(thing_body("org.bardo.Mail", "7f3a"), user("org.bardo.Mail"));
+    let rec = record(thing_body("org.quire.Mail", "7f3a"), user("org.quire.Mail"));
     log.append(NewHeader::of(&rec, NOW, &key), Some(rec.body.clone()))
         .expect("append");
     log.append(NewHeader::of(&rec, NOW, &key), None)
@@ -188,7 +188,7 @@ fn config_files_round_trip() {
     };
     rules.rules = vec![
         r("r-space", RuleScope::Space(space("work"))),
-        r("r-app", RuleScope::App(app("org.bardo.Mail"))),
+        r("r-app", RuleScope::App(app("org.quire.Mail"))),
         r(
             "r-kind",
             RuleScope::Kind(KindPattern::parse("mail.*").expect("k")),
@@ -197,7 +197,7 @@ fn config_files_round_trip() {
             "r-path",
             RuleScope::Path(PathGlob::parse("/home/u/Downloads/**").expect("g")),
         ),
-        r("r-thing", RuleScope::Thing(thing("org.bardo.Mail", "7f3a"))),
+        r("r-thing", RuleScope::Thing(thing("org.quire.Mail", "7f3a"))),
         r("r-actor", RuleScope::Actor(ActorKind::Unknown)),
     ];
     let text = rules_to_toml(&rules).expect("encode");

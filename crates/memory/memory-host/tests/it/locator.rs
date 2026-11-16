@@ -112,7 +112,7 @@ fn a_loosened_value_applies_only_once_the_person_confirmed_exactly_it() {
 
     // The file changes to another loose value: the old confirmation does not carry over.
     std::fs::write(
-        dir.path().join(SETTINGS_FILE),
+        dir.path().join("bardo").join(SETTINGS_FILE),
         "[memory.retention]\nsearch_days = 2\n",
     )
     .unwrap();
@@ -120,7 +120,7 @@ fn a_loosened_value_applies_only_once_the_person_confirmed_exactly_it() {
 
     // A value that is not looser needs nothing, and a confirmation the file no longer uses is kept.
     std::fs::write(
-        dir.path().join(SETTINGS_FILE),
+        dir.path().join("bardo").join(SETTINGS_FILE),
         "[memory.retention]\nsearch_days = 40\n",
     )
     .unwrap();
@@ -167,7 +167,7 @@ fn the_waiting_list_is_the_unconfirmed_loose_values_in_key_order() {
 
     // A value that is not looser, or not valid, never waits.
     std::fs::write(
-        dir.path().join(SETTINGS_FILE),
+        dir.path().join("bardo").join(SETTINGS_FILE),
         "[memory.retention]\nsearch_days = 40\nsession_days = 0\n",
     )
     .unwrap();

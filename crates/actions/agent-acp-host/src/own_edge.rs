@@ -7,7 +7,7 @@
 //!
 //! Anything else is not recognised and goes the usual way: another server, a tool we did not
 //! offer, no `_meta`, a kind that is not `other` or `fetch`, or a request that touches paths.
-//! Listing our own server's resources (`rawInput` is exactly `{"ServerName": "quire"}`, no
+//! Listing our own server's resources (`rawInput` is exactly `{"ServerName": "bardo"}`, no
 //! `_meta.mcp`) is recognised too: the edge serves tools only, so the list reveals nothing a
 //! `tools/list` does not.
 

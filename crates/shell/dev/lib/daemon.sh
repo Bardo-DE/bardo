@@ -47,7 +47,7 @@ sill_sent() {
 # `bardo-shell ARGS` made up to 6 times while it ends with "no reply within"; stdout and stderr stay apart.
 sill_patient() {
   local err out rc tries=0
-  err=$(mktemp "${TMPDIR:-/tmp}/sill-patient.XXXXXX") || { in_env "$BARDO_SHELL_BIN" "$@"; return; }
+  err=$(mktemp "${TMPDIR:-/tmp}/shell-patient.XXXXXX") || { in_env "$BARDO_SHELL_BIN" "$@"; return; }
   while :; do
     out=$(in_env "$BARDO_SHELL_BIN" "$@" 2>"$err")
     rc=$?
@@ -144,7 +144,7 @@ CAPTURE_COST_MS=
 capture_cost_ms() {
   if [ -z "$CAPTURE_COST_MS" ]; then
     local bar best=999999 t0 t
-    bar=$(surface_named sill-bar-)
+    bar=$(surface_named shell-bar-)
     for _ in 1 2 3; do
       t0=$(date +%s%N)
       bardo-shell debug capture "$bar" "$OUT_DIR/cost.png" >/dev/null 2>&1
@@ -186,8 +186,8 @@ for row in json.loads(sys.stdin.read())["v"]:
 output_name() {
   local bar
   for _ in $(seq 50); do
-    bar=$(surface_named sill-bar-)
-    [ -n "$bar" ] && { echo "${bar#sill-bar-}"; return 0; }
+    bar=$(surface_named shell-bar-)
+    [ -n "$bar" ] && { echo "${bar#shell-bar-}"; return 0; }
     sleep 0.1
   done
   echo "no bar in 'bardo-shell debug stats'" >&2

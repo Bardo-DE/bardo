@@ -394,7 +394,7 @@ unit_prefix bardo-shell
 LAUNCH_PREFIX=("${UNIT_PREFIX[@]}")
 if start_intentd && launch_daemon --proc-root "$PROC_ROOT"; then
   NAME=$(output_name) || exit 1
-  SHEET="sill-confirm-$NAME"
+  SHEET="shell-confirm-$NAME"
   # The daemon names the seat: serving, and the surface exists.
   await_field link serving 10 || status=1
   run_steps step_manifest_listed step_a_read_asks_nobody step_a_write_asks_and_allow_pins \
