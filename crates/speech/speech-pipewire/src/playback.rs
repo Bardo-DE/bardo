@@ -2,11 +2,11 @@
 //! side fills.
 
 use crate::format::format_pod;
-use speech_audio::{DeviceError, PlaybackStream};
 use pipewire as pw;
 use pw::properties::properties;
 use pw::spa;
 use pw::spa::pod::Pod;
+use speech_audio::{DeviceError, PlaybackStream};
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 use tokio::sync::{Notify, oneshot};

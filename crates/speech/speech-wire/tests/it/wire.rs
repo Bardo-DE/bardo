@@ -5,11 +5,11 @@ use account_capability::{Locality, ModelId};
 use account_core::{AccountId, AppName, DataClass, SpaceId};
 use action_vocab::UtteranceId;
 use action_wire::VoiceIntent;
-use speech_wire::*;
 use base_ids::Permille;
 use base_time::UnixSeconds;
 use inference_core::{InferRefusal, ModelError, Readiness, ServedBy};
 use serde::{Serialize, de::DeserializeOwned};
+use speech_wire::*;
 
 fn round<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(v: &T) -> String {
     let json = serde_json::to_string(v).expect("json");

@@ -6,13 +6,13 @@ use crate::engine::{Core, SttLink};
 use crate::link::LinkEvent;
 use crate::usage::UseSource;
 use crate::warm::Warm;
-use speech_audio::AudioDevice;
-use speech_loop::{Transcript, UtteranceEvent, UtteranceState};
-use speech_wire::{HeardSegment, HeardTail, HeardText, VoiceFault};
 use inference_client::Transport;
 use inference_core::{HeardDelta, InferEvent, InferReply, ModelError};
+use speech_audio::AudioDevice;
+use speech_loop::{Transcript, UtteranceEvent, UtteranceState};
 use speech_provider::{FRAME_SAMPLES, Frame512};
 use speech_vad::level_of;
+use speech_wire::{HeardSegment, HeardTail, HeardText, VoiceFault};
 
 impl<D: AudioDevice + 'static, T: Transport + 'static, W: Warm, U: UseSource> Core<D, T, W, U>
 where

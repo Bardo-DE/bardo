@@ -1,10 +1,10 @@
 //! What the voice service publishes: whether it reaches `voiced`, what the settings allow, where
 //! the hold stands and what the person has been told.
 
-use speech_wire::{CancelCause, VoiceFault, VoiceRefusal};
 use provenance::{AppName, UnixSeconds};
 use serde::{Deserialize, Serialize};
 use shell_launcher::WindowKey;
+use speech_wire::{CancelCause, VoiceFault, VoiceRefusal};
 use ui_core::word::Word;
 
 /// What the person said. `Debug` hides it: words must not reach logs or panics.

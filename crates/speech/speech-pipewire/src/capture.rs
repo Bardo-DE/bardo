@@ -2,11 +2,11 @@
 //! to the async side through a bounded queue.
 
 use crate::format::format_pod;
-use speech_audio::{CaptureStream, DeviceError, samples_of};
 use pipewire as pw;
 use pw::properties::properties;
 use pw::spa;
 use pw::spa::pod::Pod;
+use speech_audio::{CaptureStream, DeviceError, samples_of};
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};

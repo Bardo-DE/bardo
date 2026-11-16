@@ -12,11 +12,11 @@ mod step;
 mod tests;
 mod words;
 
-pub use speech_wire::{CancelCause, VoiceTrigger};
 pub use command::{VoiceCommand, VoiceEffect, VoiceEvent};
 pub use model::{
     AskScope, ConsentAnswer, Heard, HoldToTalk, Notice, Phase, Then, Voice, VoiceConsent,
     VoiceParams, Words,
 };
+pub use speech_wire::{CancelCause, VoiceTrigger};
 pub use step::step;
 pub use words::{listening_line, notice_line};

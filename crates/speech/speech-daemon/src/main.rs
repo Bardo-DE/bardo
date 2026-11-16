@@ -1,9 +1,9 @@
 //! The voiced binary: reads `voiced.toml`, then serves `org.bardo.Voice1` on the session bus over
 //! `PipeWire` until the bus closes.
 
+use clap::Parser;
 use speech_daemon::{ConfigError, FileUse, VoicedConfig};
 use speech_pipewire::PipeWireDevice;
-use clap::Parser;
 use std::process::ExitCode;
 
 /// The voice daemon.
@@ -80,12 +80,7 @@ fn main() -> ExitCode {
     };
     let usage = FileUse::sill_default(|name| std::env::var(name).ok());
     tracing::info!("serving");
-    match runtime.block_on(speech_daemon::serve(
-        config,
-        table,
-        PipeWireDevice,
-        usage,
-    )) {
+    match runtime.block_on(speech_daemon::serve(config, table, PipeWireDevice, usage)) {
         Ok(()) => ExitCode::SUCCESS,
         Err(why) => {
             tracing::error!("stopped: {why}");

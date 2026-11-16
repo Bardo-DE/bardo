@@ -8,10 +8,6 @@ use account_capability::{Locality, ModelId};
 use account_core::AccountId;
 use action_core::{Keep, TurnVia};
 use action_wire::VoiceIntent;
-use speech_wire::{
-    CancelCause, Envelope, HeardSegment, HeardTail, HeardText, MAX_FRAME, UtteranceEnd, VoiceBegin,
-    VoiceEvent as Frame, VoiceRefusal, VoiceTrigger,
-};
 use inference_core::ServedBy;
 use provenance::{SpaceId, UnixSeconds};
 use shell_launcher::WindowKey;
@@ -19,6 +15,10 @@ use shell_model::companion::CompanionCommand;
 use shell_model::voice::{
     AskScope, ConsentAnswer, Notice, Phase, VoiceCommand, VoiceConsent, VoiceParams,
     listening_line, notice_line,
+};
+use speech_wire::{
+    CancelCause, Envelope, HeardSegment, HeardTail, HeardText, MAX_FRAME, UtteranceEnd, VoiceBegin,
+    VoiceEvent as Frame, VoiceRefusal, VoiceTrigger,
 };
 
 fn served() -> ServedBy {

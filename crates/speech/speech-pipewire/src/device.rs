@@ -3,11 +3,11 @@
 use crate::capture::{CaptureData, FrameQueue, PipeWireCapture, run_capture};
 use crate::nodes::list_nodes;
 use crate::playback::{PipeWirePlayback, PlayShared, run_playback};
+use pipewire as pw;
 use speech_audio::{
     AudioDevice, AudioNode, CaptureFormat, DeviceError, NodeKind, PlaybackFormat, SNAPSHOT_BUDGET,
     Snapshot,
 };
-use pipewire as pw;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::oneshot;

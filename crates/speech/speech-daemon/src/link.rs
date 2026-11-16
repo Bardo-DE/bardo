@@ -6,9 +6,9 @@
 use account_capability::Tier;
 use account_core::DataClass;
 use account_match::Need;
-use speech_wire::VoiceFault;
 use inference_client::{InferSession, Transport, TransportError};
 use inference_core::{ClientFrame, InferEvent, InferRefusal, ModelError};
+use speech_wire::VoiceFault;
 use std::sync::Arc;
 use tokio::sync::mpsc;
 

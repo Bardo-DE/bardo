@@ -10,17 +10,17 @@ use account_match::Need;
 use account_match::SpeechNeed;
 use action_dbus::callers::Role;
 use action_wire::VoiceIntent;
-use speech_audio::{DeviceError, NodeKind};
-use speech_daemon::VoiceProxy;
-use speech_wire::{
-    CancelCause, HeardText, MicState, UtteranceEnd, VoiceEvent, VoiceFault, VoiceRefusal, VoiceUse,
-};
 use futures_util::FutureExt;
 use futures_util::StreamExt;
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
     ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, LangPick, ModelError,
     Readiness, RequestKind, TranscribeMode,
+};
+use speech_audio::{DeviceError, NodeKind};
+use speech_daemon::VoiceProxy;
+use speech_wire::{
+    CancelCause, HeardText, MicState, UtteranceEnd, VoiceEvent, VoiceFault, VoiceRefusal, VoiceUse,
 };
 use std::collections::BTreeSet;
 
@@ -559,8 +559,7 @@ async fn dictation_runs_in_process_over_the_device_seam_with_no_bus() {
     let (device, hand) = ScriptedDevice::with_a_microphone();
     let infer = ScriptedInfer::new(vec![transcript("hel", "hello", "hello world")]);
     let seen = infer.seen.clone();
-    let task =
-        tokio::spawn(async move { speech_daemon::dictate(&device, &infer, None).await });
+    let task = tokio::spawn(async move { speech_daemon::dictate(&device, &infer, None).await });
     while hand.feed(loud()) == 0 {
         tokio::task::yield_now().await;
     }

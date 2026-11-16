@@ -3,10 +3,10 @@
 use crate::support::infer::ScriptedInfer;
 use crate::support::*;
 use action_wire::VoiceIntent;
-use speech_daemon::{UtteranceProxy, VoiceProxy};
-use speech_wire::{CancelCause, SpeechEnd, UtteranceEnd, VoiceEvent, VoiceRefusal};
 use futures_util::FutureExt;
 use futures_util::StreamExt;
+use speech_daemon::{UtteranceProxy, VoiceProxy};
+use speech_wire::{CancelCause, SpeechEnd, UtteranceEnd, VoiceEvent, VoiceRefusal};
 
 async fn as_app(
     world: &World,

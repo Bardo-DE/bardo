@@ -4,8 +4,8 @@
 
 use std::sync::Arc;
 
-use speech_wire::{Envelope, UtteranceEnd, VoiceVocab};
 use caller_identity_dbus::caller_identity_core::RoleName;
+use speech_wire::{Envelope, UtteranceEnd, VoiceVocab};
 use tokio::sync::mpsc::UnboundedSender;
 use zbus::message::Type;
 use zbus::{Connection, MatchRule, MessageStream};

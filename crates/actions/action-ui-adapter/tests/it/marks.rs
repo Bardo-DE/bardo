@@ -6,11 +6,11 @@ use action_manifest::TitleTrust;
 use action_ui_adapter::*;
 use action_vocab::{UtteranceId, ViewName};
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial, VoiceIntent};
+use base_ids::Count;
+use provenance::{Integrity, Label, Labelled, Source, SpaceId};
 use speech_wire::{
     CancelCause, HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent,
 };
-use base_ids::Count;
-use provenance::{Integrity, Label, Labelled, Source, SpaceId};
 use ui_intents::{
     ChipKind, HeardEndMark, HeardMark, InputLevel, SummonAnswerMark, SummonOriginMark, Tally,
     ThingMark,

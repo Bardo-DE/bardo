@@ -4,9 +4,9 @@
 //! such as sill needs no daemon crate.
 
 use crate::error::VoiceError;
+use serde::de::DeserializeOwned;
 use speech_wire::{CancelCause, Envelope, VoiceVocab};
 pub use speech_wire::{FrameError, MAX_FRAME, Unframed, frame, seal, unframe};
-use serde::de::DeserializeOwned;
 use zbus::zvariant::OwnedObjectPath;
 
 /// The longest body any member takes, in bytes: room for `MAX_SPOKEN_BYTES` of text with every

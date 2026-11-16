@@ -14,14 +14,14 @@ use account_capability::LanguageTag;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use speech_audio::{AudioDevice, samples_of};
-use speech_dbus::speech_path;
-use speech_loop::{SpeechEffect, SpeechEvent, SpeechPhase, SpeechState, speech_step};
-use speech_wire::{SpeakWire, Speaking, SpeechEnd, VoiceFault, VoiceRefusal, VoiceUse};
 use inference_client::Transport;
 use inference_core::{
     ClientFrame, InferEvent, InferReply, InferRequest, ModelError, Readiness, SpeakRequest,
 };
+use speech_audio::{AudioDevice, samples_of};
+use speech_dbus::speech_path;
+use speech_loop::{SpeechEffect, SpeechEvent, SpeechPhase, SpeechState, speech_step};
+use speech_wire::{SpeakWire, Speaking, SpeechEnd, VoiceFault, VoiceRefusal, VoiceUse};
 use zbus::object_server::SignalEmitter;
 
 /// The most text one `Speak` may carry, in bytes.

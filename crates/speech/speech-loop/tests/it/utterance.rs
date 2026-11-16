@@ -3,9 +3,9 @@
 use account_capability::{Locality, ModelId};
 use account_core::AccountId;
 use action_wire::VoiceIntent;
+use inference_core::{ModelError, Readiness, ServedBy};
 use speech_loop::*;
 use speech_wire::*;
-use inference_core::{ModelError, Readiness, ServedBy};
 
 fn served() -> ServedBy {
     ServedBy {

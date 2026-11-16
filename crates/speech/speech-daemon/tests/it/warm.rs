@@ -6,9 +6,9 @@ use account_capability::Tier;
 use account_core::DataClass;
 use account_match::Need;
 use account_match::SpeechNeed;
-use speech_daemon::{TransportWarm, Warm};
 use inference_client::TransportError;
 use inference_core::Readiness;
+use speech_daemon::{TransportWarm, Warm};
 use std::collections::BTreeSet;
 
 async fn warm_with(answer: Option<Result<Readiness, TransportError>>) -> (Readiness, Vec<Opened>) {

@@ -7,10 +7,10 @@ use account_core::DataClass;
 use account_match::Need;
 use account_match::SpeechNeed;
 use action_wire::VoiceIntent;
-use speech_daemon::{SpeechProxy, VoiceProxy};
-use speech_wire::{SpeechEnd, VoiceEvent, VoiceRefusal};
 use futures_util::{FutureExt, StreamExt};
 use inference_core::{ClientFrame, InferRequest};
+use speech_daemon::{SpeechProxy, VoiceProxy};
+use speech_wire::{SpeechEnd, VoiceEvent, VoiceRefusal};
 use std::collections::BTreeSet;
 
 fn tts_need() -> Need {
@@ -145,8 +145,7 @@ async fn a_begin_barges_in_on_speech_first() {
         SpeechEnd::BargedIn
     );
     assert_eq!(events.next().await, Some(VoiceEvent::Opened));
-    eventually(|| *world.hand.log.faded.lock().expect("faded") == [speech_loop::FADE_MS])
-        .await;
+    eventually(|| *world.hand.log.faded.lock().expect("faded") == [speech_loop::FADE_MS]).await;
     assert!(
         world.seen.frames_of(0).contains(&ClientFrame::Cancel),
         "synthesis was cancelled"
@@ -228,10 +227,7 @@ async fn synthesis_refused_ends_the_speech_failed() {
         .expect("speak");
     let end = speech_end_of(&next_text(&mut finished).await);
     assert!(
-        matches!(
-            end,
-            SpeechEnd::Failed(speech_wire::VoiceFault::Refused(_))
-        ),
+        matches!(end, SpeechEnd::Failed(speech_wire::VoiceFault::Refused(_))),
         "{end:?}"
     );
     let status = status_of(&world.voice.status().await.expect("status"));

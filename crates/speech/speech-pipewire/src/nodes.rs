@@ -1,8 +1,8 @@
 //! One look at the registry: the audio nodes now present and the default source.
 
 use crate::default_source::DefaultSources;
-use speech_audio::{AudioNode, NodeId, NodeKind};
 use pipewire as pw;
+use speech_audio::{AudioNode, NodeId, NodeKind};
 use std::time::Duration;
 
 /// The node kind `PipeWire`'s `media.class` and name say.

@@ -9,17 +9,17 @@ use crate::warm::stt_need;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use speech_audio::{
-    AudioDevice, CaptureFormat, CaptureStream, SNAPSHOT_BUDGET, choose_capture, snapshot_before,
-};
-use speech_loop::CAPTURE_RATE;
-use speech_wire::{HeardText, VoiceFault};
 use inference_client::{InferSession, Transport};
 use inference_core::{
     AudioFrame, AudioRate, Base64Bytes, ClientFrame, InferEvent, InferReply, InferRequest,
     LangPick, ModelError, ServedBy, TranscribeBegin, TranscribeMode,
 };
+use speech_audio::{
+    AudioDevice, CaptureFormat, CaptureStream, SNAPSHOT_BUDGET, choose_capture, snapshot_before,
+};
+use speech_loop::CAPTURE_RATE;
 use speech_provider::FRAME_SAMPLES;
+use speech_wire::{HeardText, VoiceFault};
 
 /// What dictation heard.
 #[derive(Debug, Clone, PartialEq, Eq)]

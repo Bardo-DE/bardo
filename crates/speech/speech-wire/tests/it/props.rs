@@ -2,8 +2,8 @@
 //! four outcomes consistent with the four length bytes, and a stream cut anywhere reads back the
 //! same frames once the rest arrives.
 
-use speech_wire::{Level, MAX_FRAME, Unframed, VoiceEvent, frame, unframe};
 use proptest::prelude::*;
+use speech_wire::{Level, MAX_FRAME, Unframed, VoiceEvent, frame, unframe};
 
 fn events() -> impl Strategy<Value = Vec<VoiceEvent>> {
     prop::collection::vec(
