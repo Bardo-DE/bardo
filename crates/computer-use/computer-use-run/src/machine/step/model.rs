@@ -79,7 +79,7 @@ pub(super) fn model_blind(run: &mut Run, fx: &mut Vec<RunEffect>, words: Option<
         run,
         fx,
         CuaOutcome::Failed(FailReason::CannotSeeScreen),
-        said,
+        &said,
     );
 }
 
@@ -147,7 +147,7 @@ pub(super) fn proceed(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, want: F
         }
         ActionClass::Conclude => match &head.action {
             CuaAction::Finish { .. } => conclude(run, fx, n),
-            _ => ask(run, fx, n, head),
+            _ => ask(run, fx, n, &head),
         },
     }
 }

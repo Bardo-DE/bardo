@@ -1,3 +1,5 @@
+//! The task set on disk, read and checked as a whole.
+//!
 //! The task set on disk: `surfaces/*.toml` and `tasks/*.toml` under one directory, read and
 //! checked as a whole, so a task that names a screen that is not there fails when the set loads
 //! and not when a model happens to reach it.
@@ -45,7 +47,9 @@ pub struct Corpus {
 }
 
 fn files(dir: &Path) -> Result<Vec<PathBuf>, CorpusError> {
-    let read = std::fs::read_dir(dir).map_err(|_| CorpusError::Read(dir.to_owned()))?;
+    let read = std::fs::read_dir(dir)
+        .ok()
+        .ok_or_else(|| CorpusError::Read(dir.to_owned()))?;
     let mut paths: Vec<PathBuf> = read
         .filter_map(|e| e.ok().map(|e| e.path()))
         .filter(|p| p.extension().is_some_and(|x| x == "toml"))
@@ -55,7 +59,9 @@ fn files(dir: &Path) -> Result<Vec<PathBuf>, CorpusError> {
 }
 
 fn parse<T: serde::de::DeserializeOwned>(path: &Path) -> Result<T, CorpusError> {
-    let text = std::fs::read_to_string(path).map_err(|_| CorpusError::Read(path.to_owned()))?;
+    let text = std::fs::read_to_string(path)
+        .ok()
+        .ok_or_else(|| CorpusError::Read(path.to_owned()))?;
     toml::from_str(&text).map_err(|e| CorpusError::Parse {
         path: path.to_owned(),
         why: e.to_string(),
@@ -64,6 +70,10 @@ fn parse<T: serde::de::DeserializeOwned>(path: &Path) -> Result<T, CorpusError> 
 
 impl Corpus {
     /// Reads and checks the set under `dir`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CorpusError`] when a file cannot be read or parsed or the set contradicts itself.
     pub fn load(dir: &Path) -> Result<Corpus, CorpusError> {
         let mut surfaces = BTreeMap::new();
         for path in files(&dir.join("surfaces"))? {
@@ -107,6 +117,10 @@ impl Corpus {
     }
 
     /// The world of `task`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SetupError`] when the task names no surface or the surface cannot be started.
     pub fn arena(&self, task: &TaskDef) -> Result<Arena, SetupError> {
         let surface = self
             .surfaces

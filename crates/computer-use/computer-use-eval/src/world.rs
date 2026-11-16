@@ -72,6 +72,10 @@ impl EvalA11y {
 }
 
 impl A11ySource for EvalA11y {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn snapshot(
         &self,
         target: &A11yTarget,
@@ -121,11 +125,19 @@ impl AgentSeat for EvalSeat {
         Arc::clone(&self.keymap)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn attach(&self, _lease: &LeaseGrant, socket: EiSocket) -> Result<(), SeatError> {
         drop(socket);
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn perform(&self, lease: LeaseId, ops: &[InputOp]) -> Result<InputReceipt, SeatError> {
         if *self.emulation.lock().expect("emulation lock") == Emulation::Stopped {
             return Err(SeatError::Suspended);
@@ -140,11 +152,19 @@ impl AgentSeat for EvalSeat {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn emulation(&self, _lease: LeaseId, state: Emulation) -> Result<(), SeatError> {
         *self.emulation.lock().expect("emulation lock") = state;
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn detach(&self, _lease: LeaseId) -> Result<(), SeatError> {
         Ok(())
     }
@@ -175,6 +195,10 @@ pub struct EvalCaptureSession {
 impl WindowCapture for EvalCapture {
     type Session = EvalCaptureSession;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open(&self, _lease: &LeaseGrant) -> Result<EvalCaptureSession, CaptureError> {
         Ok(EvalCaptureSession {
             stage: Arc::clone(&self.stage),
@@ -185,6 +209,10 @@ impl WindowCapture for EvalCapture {
 }
 
 impl CaptureSession for EvalCaptureSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn frame(
         &mut self,
         _want: FrameWant,
@@ -208,6 +236,10 @@ impl CaptureSession for EvalCaptureSession {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn damage(&mut self) -> Result<DamageAt, CaptureError> {
         match self.stage.changed() {
             ScreenChange::Same => Err(CaptureError::SourceGone),
@@ -236,6 +268,10 @@ pub const WINDOW: &str = "w1";
 
 impl EvalDesktop {
     /// A desktop on a stock compositor's capabilities with the stage's window.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`DesktopError`] when the stage's window cannot be described.
     pub fn new(stage: Arc<Stage>) -> Result<EvalDesktop, DesktopError> {
         let ident =
             ToplevelIdent::parse(WINDOW).map_err(|e| DesktopError::Protocol(e.to_string()))?;
@@ -282,6 +318,10 @@ impl Desktop for EvalDesktop {
         self.inner.caps()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn windows(&self) -> Result<Vec<ToplevelInfo>, DesktopError> {
         Ok(vec![window_of(&self.stage, &self.ident)?])
     }

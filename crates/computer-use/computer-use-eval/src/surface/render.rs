@@ -52,8 +52,8 @@ impl Canvas {
     }
 
     fn put(&mut self, x: u32, y: u32, rgb: Rgb, clip: Clip) {
-        let Clip([l, t, r, b]) = clip;
-        if x < l || x >= r.min(self.w) || y < t || y >= b.min(self.h) {
+        let Clip([left, top, right, bottom]) = clip;
+        if x < left || x >= right.min(self.w) || y < top || y >= bottom.min(self.h) {
             return;
         }
         let at = ((y * self.w + x) * 4) as usize;
@@ -79,11 +79,16 @@ impl Canvas {
     fn text(&mut self, at: [u32; 2], text: &str, rgb: Rgb, clip: Clip) {
         for (n, c) in text.chars().enumerate() {
             let glyph = &GLYPHS[glyph_of(c)];
-            let left = at[0] + n as u32 * CELL_W;
+            let left = at[0] + u32::try_from(n).unwrap_or(u32::MAX) * CELL_W;
             for (row, bits) in glyph.iter().enumerate() {
                 for col in 0..8u32 {
                     if bits >> (7 - col) & 1 == 1 {
-                        let rect = [left + col * SCALE, at[1] + row as u32 * SCALE, SCALE, SCALE];
+                        let rect = [
+                            left + col * SCALE,
+                            at[1] + u32::try_from(row).unwrap_or(u32::MAX) * SCALE,
+                            SCALE,
+                            SCALE,
+                        ];
                         self.fill(rect, rgb, clip);
                     }
                 }
@@ -162,12 +167,18 @@ fn draw(canvas: &mut Canvas, placed: &Placed<'_>, focus: bool, surface: &Surface
                 w.min(canvas.w - x)
             });
             for (n, line) in wrap(&placed.text, room).iter().enumerate() {
-                canvas.text([x, top + n as u32 * (CELL_H + 4)], line, INK, clip);
+                canvas.text(
+                    [x, top + u32::try_from(n).unwrap_or(u32::MAX) * (CELL_H + 4)],
+                    line,
+                    INK,
+                    clip,
+                );
             }
         }
         Kind::Button => {
             canvas.fill(rect, BUTTON, clip);
-            let shown = placed.text.chars().count().min(columns(w)) as u32;
+            let shown =
+                u32::try_from(placed.text.chars().count().min(columns(w))).unwrap_or(u32::MAX);
             let left = x + (w.saturating_sub(shown * CELL_W)) / 2;
             canvas.text([left, top + pad], &placed.text, WHITE, clip);
         }

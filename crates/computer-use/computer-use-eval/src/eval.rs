@@ -80,6 +80,10 @@ fn served_by(served: Served) -> Result<Option<ServedBy>, SetupError> {
 }
 
 /// Plays every script of every picked task.
+///
+/// # Errors
+///
+/// Returns a [`SetupError`] when a picked task's world cannot be set up.
 pub async fn run_scripted(
     corpus: &Corpus,
     only: &[String],
@@ -115,6 +119,10 @@ pub async fn run_scripted(
 
 /// Plays a cassette back: each take on its task, and the verdict it earned compared with the
 /// one the take recorded.
+///
+/// # Errors
+///
+/// Returns a [`SetupError`] when a picked task's world cannot be set up.
 pub async fn run_cassette(
     corpus: &Corpus,
     cassette: &Cassette,
@@ -142,6 +150,10 @@ pub async fn run_cassette(
 }
 
 /// Plays every picked task `repeat` times against a model on `provider`.
+///
+/// # Errors
+///
+/// Returns a [`SetupError`] when a picked task's world cannot be set up.
 pub async fn run_live<P: Provider + 'static>(
     corpus: &Corpus,
     provider: Arc<P>,
@@ -183,9 +195,15 @@ pub struct Lot<'a> {
     pub spend_microusd: Option<u64>,
 }
 
+/// [`run_live`] for a model somewhere else, that stops early when `halt` says so.
+///
 /// [`run_live`] for a model somewhere else, that stops early: before each run `halt` is asked with
 /// the runs so far, and a reason ends the whole eval there (a spend refusal, a step budget). The
 /// runs played are kept; the reason comes back with them.
+///
+/// # Errors
+///
+/// Returns a [`SetupError`] when a picked task's world cannot be set up.
 pub async fn run_live_until<P: Provider + 'static>(
     corpus: &Corpus,
     provider: Arc<P>,
@@ -214,6 +232,10 @@ pub async fn run_live_until<P: Provider + 'static>(
 
 /// What the model sees first on each picked task, as PNG bytes under the task's id: for a person
 /// to look at the surfaces, and at what a model is shown of them.
+///
+/// # Errors
+///
+/// Returns a [`SetupError`] when a picked task's world cannot be set up.
 pub fn start_screens(
     corpus: &Corpus,
     only: &[String],

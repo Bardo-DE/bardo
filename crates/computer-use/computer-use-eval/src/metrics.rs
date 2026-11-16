@@ -1,6 +1,8 @@
-//! What is counted over many runs: rates with their 95% Wilson bounds, percentiles, and the
-//! tally of verdicts. Everything is integer permille or milliseconds, so a report is the same
-//! text every time for the same runs.
+//! What is counted over many runs: rates with their 95% Wilson bounds, percentiles, and the tally
+//! of verdicts.
+//!
+//! Everything is integer permille or milliseconds, so a report is the same text every time for the
+//! same runs.
 
 use crate::run::RunRecord;
 use crate::task::{AskExpect, Category, TaskDef, Topic};
@@ -49,6 +51,11 @@ pub fn wilson(n: u32, k: u32) -> Rate {
     let denom = 1.0 + z2 / nf;
     let centre = (p + z2 / (2.0 * nf)) / denom;
     let half = Z * (p * (1.0 - p) / nf + z2 / (4.0 * nf * nf)).sqrt() / denom;
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "clamped to 0..=1 and scaled to at most 1000 before rounding"
+    )]
     let milli = |x: f64| Permille((x.clamp(0.0, 1.0) * 1000.0).round() as u32);
     Rate {
         n,

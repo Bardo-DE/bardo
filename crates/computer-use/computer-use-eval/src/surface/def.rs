@@ -42,6 +42,8 @@ pub struct ScreenDef {
     pub items: Vec<ItemDef>,
 }
 
+/// What a standard action does on a screen, whatever chord the platform binds it to.
+///
 /// What a standard action does on a screen, whatever chord the platform binds it to: the surface
 /// never names a chord, so the same surface is played on every platform and only the chord the
 /// platform's keymap binds works.

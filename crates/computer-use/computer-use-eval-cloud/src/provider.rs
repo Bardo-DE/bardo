@@ -1,3 +1,5 @@
+//! A stoker [`Provider`] whose turns are inferd chat turns.
+//!
 //! A stoker [`Provider`] whose turns are inferd chat turns: one session per turn, opened as
 //! `Need::Llm` (chat, vision, and tools when the turn has some) on data class `Screen`, the
 //! request written with [`crate::request::chat`], the events read back into stoker's.
@@ -92,12 +94,16 @@ fn call_of(part: &inference_core::ToolCallPart) -> Result<sp::ToolCall, Provider
     let unreadable = |what: &str| ProviderError::Unreadable(what.to_owned());
     Ok(sp::ToolCall {
         id: sp::ToolCallId(part.id.0.clone()),
-        name: sp::ToolName::new(part.name.as_str()).map_err(|_| unreadable("a tool name"))?,
-        input: sp::JsonText::new(part.args.as_str()).map_err(|_| unreadable("tool arguments"))?,
+        name: sp::ToolName::new(part.name.as_str())
+            .ok()
+            .ok_or_else(|| unreadable("a tool name"))?,
+        input: sp::JsonText::new(part.args.as_str())
+            .ok()
+            .ok_or_else(|| unreadable("tool arguments"))?,
     })
 }
 
-fn fault(error: RequestFault) -> ProviderError {
+fn fault(error: &RequestFault) -> ProviderError {
     ProviderError::BadRequest(error.to_string())
 }
 
@@ -109,6 +115,10 @@ struct Seen {
 }
 
 impl<T: Transport> Provider for InferdProvider<T> {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn describe(&self) -> Result<Vec<sp::ModelInfo>, ProviderError> {
         Ok(Vec::new())
     }
@@ -118,7 +128,7 @@ impl<T: Transport> Provider for InferdProvider<T> {
         request: &sp::TurnRequest,
         sink: &mut K,
     ) -> Result<sp::TurnEnd, ProviderError> {
-        let asked = chat(request, self.tier, self.sampling).map_err(fault)?;
+        let asked = chat(request, self.tier, self.sampling).map_err(|e| fault(&e))?;
         let options = OpenOptions::default().with_usage(Usage::Interactive);
         let mut session = self
             .transport
@@ -152,7 +162,7 @@ impl<T: Transport> Provider for InferdProvider<T> {
                     seen.calls = true;
                     let _ = sink.event(TurnEvent::ToolCallDone(call_of(&part)?));
                 }
-                InferEvent::Finished(reply) => return self.finish(reply, seen, sink),
+                InferEvent::Finished(reply) => return self.finish(reply, &seen, sink),
                 _ => {}
             }
         }
@@ -163,7 +173,7 @@ impl<T> InferdProvider<T> {
     fn finish<K: TurnSink>(
         &self,
         reply: InferReply,
-        seen: Seen,
+        seen: &Seen,
         sink: &mut K,
     ) -> Result<sp::TurnEnd, ProviderError> {
         match reply {

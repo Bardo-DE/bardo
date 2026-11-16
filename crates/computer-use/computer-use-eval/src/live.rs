@@ -1,3 +1,5 @@
+//! A real computer-use model, reached the way inferd reaches one.
+//!
 //! A real computer-use model, reached the way inferd reaches one: stoker's `CuaSession` builds
 //! each step's prompt from the model's catalogue entry, a provider (an engine on this machine,
 //! over loopback HTTP) runs the turn, and the session reads the reply into actions. This is the
@@ -59,6 +61,11 @@ pub struct Plan {
 
 impl Plan {
     /// The plan for the entry in `text`, served by the engine under `served_name`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LiveError`] when `text` is not a catalogue entry or has no tool-using computer-use
+    /// profile.
     pub fn of(text: &str, served_name: &str, thinking: Thinking) -> Result<Plan, LiveError> {
         let entry: ModelEntry = parse_entry(text).map_err(|e| LiveError::Entry(e.to_string()))?;
         Plan::from_entry(&entry, served_name, thinking)
@@ -227,6 +234,10 @@ fn dropped_reason(reason: computer_use_parse::DropReason) -> DropReason {
 }
 
 impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn begin(&mut self, begin: CuaBegin) -> Result<(), CuaModelError> {
         let task = CuaTaskText {
             goal: begin.goal,
@@ -252,7 +263,8 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
             &self.plan.profile.rule,
             self.plan.profile.space,
         )
-        .map_err(|_| CuaModelError::Fatal)?;
+        .ok()
+        .ok_or(CuaModelError::Fatal)?;
         let pixels = &frame.0;
         let raw = RawFrame {
             pixels: &pixels.data,
@@ -260,7 +272,9 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
             stride: pixels.stride,
             format: pixels.format,
         };
-        let prepared = prepare(raw, &map, Encoding::Png).map_err(|_| CuaModelError::Fatal)?;
+        let prepared = prepare(raw, &map, Encoding::Png)
+            .ok()
+            .ok_or(CuaModelError::Fatal)?;
         let image = ImageInput {
             media: prepared.media,
             bytes: ImageBytes(prepared.bytes),

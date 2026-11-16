@@ -74,6 +74,11 @@ pub struct Surface {
 
 impl Surface {
     /// The surface on its `start` screen, with `setup` already done.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SurfaceError`] when `start` is not a screen or `setup` does something the surface
+    /// cannot.
     pub fn new(def: Arc<SurfaceDef>, start: &str, setup: &[Act]) -> Result<Surface, SurfaceError> {
         let screen = index_of(&def, start)?;
         let mut surface = Surface {

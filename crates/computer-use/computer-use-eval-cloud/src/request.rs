@@ -112,6 +112,10 @@ fn sampling(sampling: &sp::Sampling) -> pi::Sampling {
 }
 
 /// The chat request for `turn`, asked at `tier` for screen data.
+///
+/// # Errors
+///
+/// Returns a [`RequestFault`] when the turn cannot be written as a chat request.
 pub fn chat(
     turn: &sp::TurnRequest,
     tier: Tier,

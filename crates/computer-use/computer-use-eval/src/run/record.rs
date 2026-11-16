@@ -157,7 +157,7 @@ fn asked_at(log: &[GateNote], n: u32) -> bool {
 
 fn ended_word(ended: Ended) -> String {
     match ended {
-        Ended::Finished(outcome) => outcome_word(&outcome),
+        Ended::Finished(outcome) => outcome_word(outcome),
         Ended::Asked => "asked".to_owned(),
         Ended::Stuck => "stuck".to_owned(),
         Ended::TooLong => "too_long".to_owned(),
@@ -165,7 +165,7 @@ fn ended_word(ended: Ended) -> String {
 }
 
 /// The outcome as `kind` or `kind:detail` (`budget_out:stall`).
-fn outcome_word(outcome: &computer_use_bus::CuaOutcome) -> String {
+fn outcome_word(outcome: computer_use_bus::CuaOutcome) -> String {
     match serde_json::to_value(outcome) {
         Ok(serde_json::Value::Object(map)) => {
             let kind = map.get("kind").and_then(|k| k.as_str()).unwrap_or("?");

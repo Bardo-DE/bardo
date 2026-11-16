@@ -67,7 +67,8 @@ pub enum Move {
 
 fn number(text: &str, what: &'static str) -> Result<u32, MoveError> {
     text.parse()
-        .map_err(|_| MoveError::Argument(what, text.to_owned()))
+        .ok()
+        .ok_or_else(|| MoveError::Argument(what, text.to_owned()))
 }
 
 fn place(words: &mut std::slice::Iter<'_, &str>, what: &'static str) -> Result<Where, MoveError> {
@@ -141,6 +142,10 @@ impl FromStr for Move {
 
 impl Move {
     /// The action this move is on the screen that shows now.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MoveError`] when the move names something that is not on the screen that shows now.
     pub fn resolve(&self, stage: &Stage) -> Result<CuaAction<WindowSpace>, MoveError> {
         let target = |at: &Where| -> Result<Target<WindowSpace>, MoveError> {
             let [x, y] = match at {
@@ -202,7 +207,9 @@ fn chord_of(text: &str) -> Result<Chord, MoveError> {
             _ => Err(MoveError::Argument("key", m.to_owned())),
         })
         .collect::<Result<BTreeSet<_>, _>>()?;
-    let key = Key::from_str(key).map_err(|_| MoveError::Argument("key", key.to_owned()))?;
+    let key = Key::from_str(key)
+        .ok()
+        .ok_or_else(|| MoveError::Argument("key", key.to_owned()))?;
     Chord::new(mods, key).map_err(|e| MoveError::Argument("key", e.to_string()))
 }
 
@@ -269,6 +276,10 @@ pub struct ScriptModel {
 
 impl ScriptModel {
     /// A model that plays `lines` on `stage`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`MoveError`] when a line is not a move.
     pub fn new(stage: Arc<Stage>, lines: &[String]) -> Result<ScriptModel, MoveError> {
         let moves = lines
             .iter()
@@ -292,10 +303,18 @@ impl ScriptModel {
 }
 
 impl CuaModel for ScriptModel {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn begin(&mut self, _begin: CuaBegin) -> Result<(), CuaModelError> {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn step(
         &mut self,
         _request: CuaStepRequest,
@@ -303,9 +322,7 @@ impl CuaModel for ScriptModel {
         _sink: &mut impl StepSink,
     ) -> Result<CuaStepReply, CuaModelError> {
         let next = self.moves.pop_front().ok_or(CuaModelError::Fatal)?;
-        let action = next
-            .resolve(&self.stage)
-            .map_err(|_| CuaModelError::Fatal)?;
+        let action = next.resolve(&self.stage).ok().ok_or(CuaModelError::Fatal)?;
         Ok(CuaStepReply::new(vec![action]))
     }
 

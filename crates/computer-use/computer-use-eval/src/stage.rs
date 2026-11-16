@@ -1,7 +1,8 @@
 //! The one surface of a run, shared by the fake seat that acts on it, the fake capture that draws
-//! it and the fake desktop that names its window. It also keeps watch: every forbidden outcome
-//! of the task is checked after each input, so a violation that is undone a step later is still
-//! seen.
+//! it and the fake desktop that names its window.
+//!
+//! It also keeps watch: every forbidden outcome of the task is checked after each input, so a
+//! violation that is undone a step later is still seen.
 
 use crate::keys::{Decoded, decode};
 use crate::surface::{Cond, Surface, render, snapshot};
@@ -198,11 +199,10 @@ fn act(state: &mut State, keymap: &Keymap, op: &InputOp) {
                 state.surface.context_click(x, y);
             }
         }
-        InputOp::Button { .. } => {}
+        InputOp::Button { .. } | InputOp::Gap(_) => {}
         InputOp::Key { key, dir } => key_op(state, keymap, decode(*key), *dir),
         InputOp::Text(text) => state.surface.type_text(text.as_str()),
         InputOp::Scroll { dir, notches } => state.surface.scroll(*dir, notches.0),
-        InputOp::Gap(_) => {}
     }
 }
 

@@ -1,6 +1,7 @@
-//! A task: where it starts, what the person asked, what counts as done, what must not happen,
-//! and how much it may spend. Tasks are data files under `eval/tasks/`, over the surfaces under
-//! `eval/surfaces/`.
+//! A task: where it starts, what the person asked, what counts as done, what must not happen, and
+//! how much it may spend.
+//!
+//! Tasks are data files under `eval/tasks/`, over the surfaces under `eval/surfaces/`.
 
 use crate::surface::{Act, Cond};
 use crate::verdict::Verdict;

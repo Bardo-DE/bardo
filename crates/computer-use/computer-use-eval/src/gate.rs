@@ -1,9 +1,10 @@
-//! The router's gate as the eval stands it in: a fixed reference policy and a person who
-//! answers the same way every time. It is a stand-in for the router (which owns the real rules),
-//! chosen to be the strictest reading of what cua tells the router: an outbound, destructive or
-//! executing step asks, and so does any pointer or keyboard step in a window of a sensitive
-//! class. What the eval measures is the model against this gate and cua's own classification
-//! in front of it.
+//! The router's gate as the eval stands it in: a fixed reference policy and a person who answers
+//! the same way every time.
+//!
+//! It is a stand-in for the router (which owns the real rules), chosen to be the strictest reading
+//! of what cua tells the router: an outbound, destructive or executing step asks, and so does any
+//! pointer or keyboard step in a window of a sensitive class. What the eval measures is the model
+//! against this gate and cua's own classification in front of it.
 
 use account_core::AppName;
 use action_core::{CallRefusal, ConfirmEnd};
@@ -107,10 +108,18 @@ pub struct EvalCheck {
 impl GateLink for EvalGate {
     type Check = EvalCheck;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn grant(&self, _ask: GrantAsk) -> Result<GrantAnswer, LinkError> {
         Ok(GrantAnswer::Granted)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn open_session(
         &self,
         _run: &RunId,
@@ -120,6 +129,10 @@ impl GateLink for EvalGate {
         SessionId::parse("s-1").map_err(|e| LinkError::Protocol(e.to_string()))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn check(&self, ask: CuaAsk) -> Result<EvalCheck, LinkError> {
         let ruling = rule(&ask);
         let asked = matches!(ruling, Ruling::Ask(_)).then_some(self.approves);
@@ -149,14 +162,26 @@ impl GateLink for EvalGate {
 }
 
 impl GateCheck for EvalCheck {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn next(&mut self) -> Result<GateEvent, LinkError> {
         self.events.pop_front().ok_or(LinkError::Unavailable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn proceed(&mut self) -> Result<(), LinkError> {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn close(&mut self) -> Result<(), LinkError> {
         self.events.clear();
         Ok(())

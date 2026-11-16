@@ -64,6 +64,10 @@ fn tier_of(word: &str) -> Result<Tier, FlagError> {
 }
 
 fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
+    #[expect(
+        clippy::similar_names,
+        reason = "`argv` is the input and `args` the parsed result"
+    )]
     let mut args = Args {
         dir: PathBuf::from("eval"),
         entry: PathBuf::new(),
@@ -89,12 +93,14 @@ fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
             "--repeat" => {
                 args.repeat = value()?
                     .parse()
-                    .map_err(|_| FlagError::NotANumber("--repeat"))?;
+                    .ok()
+                    .ok_or(FlagError::NotANumber("--repeat"))?;
             }
             "--max-steps" => {
                 args.max_steps = value()?
                     .parse()
-                    .map_err(|_| FlagError::NotANumber("--max-steps"))?;
+                    .ok()
+                    .ok_or(FlagError::NotANumber("--max-steps"))?;
             }
             "--thinking" => {
                 args.thinking = match value()?.as_str() {
@@ -248,7 +254,7 @@ async fn run(args: Args) -> Result<(), RunError> {
         (steps_of(so_far) >= budget).then(|| format!("the step budget of {budget} was used"))
     })
     .await?;
-    let totals: Totals = watch.totals();
+    let totals = watch.totals();
     let charged = charged(&totals);
     let engine = format!(
         "{} through inferd on a private bus (Need::Llm with images on class screen, tier {:?}, the key held by accountd), thinking {:?}, sampling from the {}, {} run(s) per task; {} model turns, {} prompt and {} reply tokens, {} reported by the provider; {}; {}",

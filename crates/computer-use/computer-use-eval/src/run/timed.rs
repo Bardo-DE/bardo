@@ -5,9 +5,10 @@ use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepEvent, Step
 use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TokenUsage};
 use std::time::Instant;
 
-/// Whether a run's steps are timed. A script or a cassette is a made-up run: what its steps
-/// take is the harness's time on a busy machine, not a model's, so it is not measured and the
-/// report it makes is the same every time.
+/// Whether a run's steps are timed.
+///
+/// A script or a cassette is a made-up run: what its steps take is the harness's time on a busy
+/// machine, not a model's, so it is not measured and the report it makes is the same every time.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Stopwatch {
     /// The wall clock: a live model.

@@ -1,6 +1,7 @@
 //! What the eval keeps count of while it runs on a hosted model: tokens, turns, the charges the
-//! provider reported, and whether inferd said the spend cap was reached. These are for the
-//! report and for stopping.
+//! provider reported, and whether inferd said the spend cap was reached.
+//!
+//! These are for the report and for stopping.
 
 use inference_core::ChargeTotal;
 use model_provider::Money;

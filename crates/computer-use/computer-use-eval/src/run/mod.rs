@@ -38,6 +38,10 @@ pub enum SetupError {
 
 /// Plays the arena's task with `model` and keeps what happened under the name `player`, its
 /// steps timed by `stopwatch`.
+///
+/// # Errors
+///
+/// Returns a [`SetupError`] when the run's world cannot be set up.
 pub async fn play<M: CuaModel + 'static>(
     arena: &Arena,
     model: M,
@@ -52,6 +56,10 @@ pub async fn play<M: CuaModel + 'static>(
     let gate = EvalGate::new(arena.task.approves, std::sync::Arc::clone(&arena.log));
     let events = MemoryEvents::new();
     let rules = computer_use_fake::scene::rules();
+    #[expect(
+        clippy::similar_names,
+        reason = "a seam is what the run is built over, a seat is one of its parts"
+    )]
     let seam = Seam::<EvalSeams<Timed<M>>> {
         desktop: &desktop,
         seat: &seat,

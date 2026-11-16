@@ -1,6 +1,7 @@
 //! The keymap the fake seat announces: every printable ASCII character on its own key, and the
-//! named keys the surfaces answer to. A key code is only a number here, so `decode` turns it
-//! back into what it stands for.
+//! named keys the surfaces answer to.
+//!
+//! A key code is only a number here, so `decode` turns it back into what it stands for.
 
 use crate::surface::Stroke;
 use computer_use_seat_input::{Keycode, Keymap, KeymapEntry, Produces, ShiftLevel};

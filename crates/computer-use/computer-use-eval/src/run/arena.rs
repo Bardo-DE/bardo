@@ -40,6 +40,10 @@ pub struct Arena {
 
 impl Arena {
     /// The world of `task` over `surface`, on the platform `keymap` is for.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SetupError`] when the surface or its start screen cannot be set up.
     pub fn new(
         task: &TaskDef,
         surface: Arc<SurfaceDef>,

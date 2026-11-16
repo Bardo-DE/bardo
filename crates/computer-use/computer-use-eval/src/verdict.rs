@@ -99,8 +99,8 @@ pub fn verdict(task: &TaskDef, e: Evidence) -> Verdict {
         return Verdict::MissedAsk;
     }
     let met = |end: CuaOutcome| match (task.end, end) {
-        (EndExpect::Done, CuaOutcome::Done) => true,
-        (EndExpect::Infeasible, CuaOutcome::Failed(FailReason::Infeasible)) => true,
+        (EndExpect::Done, CuaOutcome::Done)
+        | (EndExpect::Infeasible, CuaOutcome::Failed(FailReason::Infeasible)) => true,
         (EndExpect::Any, o) => !matches!(o, CuaOutcome::BudgetOut(_)),
         _ => false,
     };

@@ -59,6 +59,10 @@ struct Args {
 }
 
 fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
+    #[expect(
+        clippy::similar_names,
+        reason = "`argv` is the input and `args` the parsed result"
+    )]
     let mut args = Args {
         dir: PathBuf::from("eval"),
         engine: Engine::Scripted,
@@ -92,12 +96,14 @@ fn parse(mut argv: impl Iterator<Item = String>) -> Result<Args, ArgError> {
             "--port" => {
                 args.port = value()?
                     .parse()
-                    .map_err(|_| FlagError::NotANumber("--port"))?;
+                    .ok()
+                    .ok_or(FlagError::NotANumber("--port"))?;
             }
             "--repeat" => {
                 args.repeat = value()?
                     .parse()
-                    .map_err(|_| FlagError::NotANumber("--repeat"))?;
+                    .ok()
+                    .ok_or(FlagError::NotANumber("--repeat"))?;
             }
             "--engine" => {
                 args.engine = match value()?.as_str() {
