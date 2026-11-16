@@ -30,7 +30,7 @@ struct StageProps {
     specimen: usize,
 }
 
-#[allow(non_snake_case)]
+#[expect(non_snake_case, reason = "a Dioxus component is named in CamelCase")]
 fn Stage(props: StageProps) -> Element {
     let body = (SPECIMENS[props.specimen].1)();
     rsx! {

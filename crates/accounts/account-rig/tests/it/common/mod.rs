@@ -1,6 +1,9 @@
 //! What the rig's integration tests share: a private bus, a scratch directory, a daemon process
 //! that is stopped by its PID. Nothing here reaches the real session, `~/.config` or `/etc`.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a helper shared by the test modules; each module uses some of them"
+)]
 
 pub mod bus;
 

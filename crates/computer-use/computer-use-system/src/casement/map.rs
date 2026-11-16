@@ -79,7 +79,7 @@ fn state_of(flag: ToplevelFlag) -> Option<ToplevelState> {
         ToplevelFlag::Maximized => Some(ToplevelState::Maximized),
         ToplevelFlag::Minimized => Some(ToplevelState::Minimized),
         ToplevelFlag::Activated => Some(ToplevelState::Activated),
-        _ => None,
+        ToplevelFlag::Fullscreen => None,
     }
 }
 

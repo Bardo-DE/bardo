@@ -48,7 +48,7 @@ impl CaptureBackend {
             CaptureBackend::StockToplevel(capture) => {
                 CaptureBackend::StockToplevel(capture.with_clock(clock))
             }
-            other => other,
+            CaptureBackend::QuireMasked(capture) => CaptureBackend::QuireMasked(capture),
         }
     }
 }

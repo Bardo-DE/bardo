@@ -100,6 +100,10 @@ struct Filesystem {
 
 #[interface(name = "org.freedesktop.UDisks2.Filesystem")]
 impl Filesystem {
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "the zbus interface macro reads the argument by its name"
+    )]
     async fn mount(
         &self,
         _options: HashMap<String, OwnedValue>,
@@ -167,12 +171,20 @@ struct Drive {
 
 #[interface(name = "org.freedesktop.UDisks2.Drive")]
 impl Drive {
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "the zbus interface macro reads the argument by its name"
+    )]
     fn eject(&self, _options: HashMap<String, OwnedValue>) {
         locked(&self.world)
             .calls
             .push(format!("eject {}", self.spec.node));
     }
 
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "the zbus interface macro reads the argument by its name"
+    )]
     fn power_off(&self, _options: HashMap<String, OwnedValue>) {
         locked(&self.world)
             .calls

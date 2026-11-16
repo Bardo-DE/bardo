@@ -22,6 +22,7 @@
 
 use crate::error::CoreError;
 use std::fmt;
+use std::fmt::Write as _;
 
 /// The launcher tag Flatpak writes into its own scopes' names.
 pub const FLATPAK_LAUNCHER: &str = "flatpak";
@@ -131,7 +132,8 @@ pub fn escape(text: &str) -> String {
         if plain && !(i == 0 && byte == b'.') {
             out.push(char::from(byte));
         } else {
-            out.push_str(&format!("\\x{byte:02x}"));
+            // A write to a `String` never fails.
+            let _ = write!(out, "\\x{byte:02x}");
         }
     }
     out

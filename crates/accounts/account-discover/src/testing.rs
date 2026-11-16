@@ -5,6 +5,7 @@ use account_http::http::{Method, Request, Response};
 use account_http::{Http, HttpError};
 use account_provider::DomainName;
 use std::collections::HashMap;
+use std::fmt::Write as _;
 use std::sync::Mutex;
 
 pub(crate) const ADDRESS: &str = "someone@example.test";
@@ -35,10 +36,11 @@ pub(crate) fn server(
     user: &str,
     auth: &[&str],
 ) -> String {
-    let auth: String = auth
-        .iter()
-        .map(|a| format!("<authentication>{a}</authentication>"))
-        .collect();
+    let mut auth_xml = String::new();
+    for a in auth {
+        // A write to a `String` never fails.
+        let _ = write!(auth_xml, "<authentication>{a}</authentication>");
+    }
     let tag = if kind == "smtp" {
         "outgoingServer"
     } else {
@@ -50,7 +52,7 @@ pub(crate) fn server(
            <port>{port}</port>
            <socketType>{socket}</socketType>
            <username>{user}</username>
-           {auth}
+           {auth_xml}
          </{tag}>"
     )
 }

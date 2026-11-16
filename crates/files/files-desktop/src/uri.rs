@@ -15,6 +15,7 @@
 //! ```
 
 use std::ffi::OsString;
+use std::fmt::Write as _;
 use std::os::unix::ffi::{OsStrExt, OsStringExt};
 use std::path::{Path, PathBuf};
 
@@ -111,7 +112,8 @@ pub fn file_uri(path: &Path) -> String {
         if byte.is_ascii_alphanumeric() || matches!(byte, b'/' | b'-' | b'.' | b'_' | b'~') {
             out.push(char::from(byte));
         } else {
-            out.push_str(&format!("%{byte:02X}"));
+            // A write to a `String` never fails.
+            let _ = write!(out, "%{byte:02X}");
         }
     }
     out

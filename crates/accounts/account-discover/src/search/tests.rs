@@ -60,7 +60,7 @@ async fn run(http: &Table, dns: &Records, set: &ProviderSet) -> Result<Outcome, 
 fn servers(outcome: Outcome) -> Found {
     match outcome {
         Outcome::Servers(found) => found,
-        other => panic!("{other:?}"),
+        Outcome::Provider(lead) => panic!("{lead:?}"),
     }
 }
 

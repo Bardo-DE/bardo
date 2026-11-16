@@ -4,6 +4,7 @@
 use base_ids::Px;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::fmt::Write as _;
 
 /// Milliseconds.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
@@ -74,7 +75,12 @@ impl TryFrom<String> for Digest32 {
 
 impl From<Digest32> for String {
     fn from(digest: Digest32) -> String {
-        digest.0.iter().map(|b| format!("{b:02x}")).collect()
+        let mut text = String::with_capacity(digest.0.len() * 2);
+        for b in digest.0 {
+            // A write to a `String` never fails.
+            let _ = write!(text, "{b:02x}");
+        }
+        text
     }
 }
 

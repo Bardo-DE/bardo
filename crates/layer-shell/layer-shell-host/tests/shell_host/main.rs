@@ -9,10 +9,16 @@ mod headless;
 // need to link the crate a second time to run them.
 #[cfg(feature = "debug-inject")]
 #[path = "../../examples/shared/dock.rs"]
-#[allow(dead_code)]
+#[allow(
+    dead_code,
+    reason = "the module is shared with the demos; the tests use part of it"
+)]
 mod dock;
 #[path = "../../examples/demo_lock/guard.rs"]
-#[allow(dead_code)]
+#[allow(
+    dead_code,
+    reason = "the module is shared with the demo; the tests use part of it"
+)]
 mod guard;
 
 /// Fails when a test file is added but not included above, or left as its own binary beside

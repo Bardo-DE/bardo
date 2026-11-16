@@ -10,6 +10,7 @@
 //! sizes the PNG (default 64). Driven by
 //! `wallpaper stats`, `wallpaper capture PATH`, `stats`, `quit` on stdin.
 
+use std::fmt::Write as _;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -127,7 +128,11 @@ fn png_file(bytes: &[u8]) -> Result<String, String> {
 
 /// A percent-encoded `data:` URL (RFC 2397 without base64; `LocalNet` decodes both).
 fn data_url(bytes: &[u8]) -> String {
-    let payload: String = bytes.iter().map(|b| format!("%{b:02X}")).collect();
+    let mut payload = String::new();
+    for b in bytes {
+        // A write to a `String` never fails.
+        let _ = write!(payload, "%{b:02X}");
+    }
     format!("data:image/png,{payload}")
 }
 

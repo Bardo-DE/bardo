@@ -21,7 +21,7 @@ pub(crate) struct Offered {
 pub(crate) fn offers(payload: &DragPayload) -> Vec<Offered> {
     match payload {
         DragPayload::Uris(uris) => {
-            let list: String = uris.iter().map(|uri| format!("{uri}\r\n")).collect();
+            let list: String = uris.iter().flat_map(|uri| [uri.as_str(), "\r\n"]).collect();
             let text = uris.join("\n");
             let mut offered = vec![Offered {
                 mime: URI_LIST_MIME.to_owned(),

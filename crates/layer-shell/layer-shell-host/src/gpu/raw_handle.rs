@@ -1,7 +1,10 @@
 //! The one module allowed `unsafe`: a wgpu surface from raw Wayland handles, and the
 //! `wl_display` as a `HasDisplayHandle` for `InstanceDescriptor` (GL needs it at instance
 //! creation).
-#![allow(unsafe_code)]
+#![expect(
+    unsafe_code,
+    reason = "a wgpu surface from raw Wayland handles is created through unsafe wgpu calls"
+)]
 
 use std::ffi::c_void;
 use std::ptr::NonNull;

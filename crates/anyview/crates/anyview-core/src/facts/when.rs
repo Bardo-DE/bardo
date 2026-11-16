@@ -5,6 +5,7 @@ use super::FactValue;
 use crate::source::ModTime;
 use jiff::Timestamp;
 use jiff::tz::{Offset, TimeZone};
+use std::fmt::Write as _;
 
 const NANOS_PER_SECOND: i64 = 1_000_000_000;
 const SECONDS_PER_DAY: i64 = 86_400;
@@ -179,7 +180,8 @@ impl FactTime {
             self.year
         );
         if let Some((hour, minute)) = self.clock {
-            text.push_str(&format!(" at {hour:02}:{minute:02}"));
+            // A write to a `String` never fails.
+            let _ = write!(text, " at {hour:02}:{minute:02}");
         }
         text
     }

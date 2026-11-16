@@ -144,7 +144,7 @@ mod tests {
             taken += *result.as_ref().unwrap_or(&0);
             match incoming.received(&buf, result) {
                 Arrival::Wait => {}
-                finished => break finished,
+                finished @ Arrival::Finished(_) => break finished,
             }
         };
         drop(reader);
