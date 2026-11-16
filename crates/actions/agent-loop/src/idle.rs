@@ -148,7 +148,6 @@ pub fn idle_step(
         }
         (_, IdleInput::InteractiveStarted) => IdlePhase::Busy,
         (IdlePhase::Busy, IdleInput::InteractiveEnded(at)) => IdlePhase::Quiet { since: at },
-        (phase, IdleInput::InteractiveEnded(_)) => phase,
         (phase, IdleInput::EpisodeClosed(job)) => {
             queue.push(job);
             phase
@@ -164,7 +163,7 @@ pub fn idle_step(
             effects.push(IdleEffect::Start(job.clone()));
             IdlePhase::Running { job, since }
         }
-        (phase, IdleInput::Tick(_)) => phase,
+        (phase, IdleInput::InteractiveEnded(_) | IdleInput::Tick(_)) => phase,
         (IdlePhase::Running { job, since }, IdleInput::NarrativeDone(done))
             if job.episode == done =>
         {

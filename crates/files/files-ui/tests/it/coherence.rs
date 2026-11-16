@@ -88,6 +88,7 @@ const POSES: [Pose; 14] = [
 ];
 
 /// The window in `pose`.
+#[expect(clippy::too_many_lines, reason = "one arm per pose of the window, each building its own scene")]
 fn page(pose: Pose) -> String {
     let dir = scratch_folder();
     let config = tempfile::tempdir().unwrap();

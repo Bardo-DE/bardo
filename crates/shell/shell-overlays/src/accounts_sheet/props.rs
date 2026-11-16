@@ -19,7 +19,8 @@
 use account_core::consent::{AskPurpose, ConsentAsk};
 use account_core::{AccountId, ProviderId, SessionToken};
 use account_sheet::{
-    Entry, FieldKind, FieldValue, ProblemKind as PorterProblem, ServiceState, SheetView,
+    Entry, FieldKind, FieldValue, ProblemKind as PorterProblem, ProviderRow, ReviewView,
+    ServiceState, SheetView, SignInView,
 };
 use shell_model::accounts::sheet::{CopyMark, Draft, ListKey, OpenSheet};
 use ui_components::components::content::provider_mark::MarkProvider;
@@ -155,85 +156,9 @@ impl Step {
 pub(super) fn step_of(sheet: &OpenSheet) -> Option<Step> {
     let draft = &sheet.draft;
     Some(match &sheet.view {
-        SheetView::Consent(ask) => Step::Consent(ConsentProps {
-            app: clipped(
-                &app_name(
-                    &ask.app,
-                    ask.app_label.as_ref().map(|label| label.0.as_str()),
-                ),
-                APP_NAME,
-            ),
-            request: request_phrase(ask.kind, ask.class, ask.usage),
-            choices: ask
-                .accounts
-                .iter()
-                .map(|choice| AccountChoice {
-                    key: ChoiceKey(choice.account.as_str().to_owned()),
-                    label: clipped(&choice.label.0, ACCOUNT_LABEL),
-                    provider: mark_of(choice.provider.as_str()),
-                })
-                .collect(),
-            chosen: draft
-                .chosen
-                .as_ref()
-                .map(|account| ChoiceKey(account.as_str().to_owned())),
-            session: ask.session.clone(),
-            purpose: Purpose::of(ask),
-        }),
-        SheetView::Providers(rows) => Step::Providers(ProvidersProps {
-            // The generic mail rows are ProviderList's own "Other…" (and the server form's
-            // protocol pop-up), so they are not listed twice; the other generic rows are.
-            providers: ranked(
-                rows.iter()
-                    .filter(|row| !reached_by_other(row))
-                    .map(|row| {
-                        let entry = ProviderEntry::new(
-                            ProviderKey(row.id.as_str().to_owned()),
-                            row.label.clone(),
-                            mark_of(&row.mark),
-                        );
-                        match face_of(row) {
-                            Some(face) => entry.faced(face),
-                            None => entry,
-                        }
-                    })
-                    .collect(),
-                &draft.query,
-            ),
-            query: draft.query.clone(),
-            cursor: draft.cursor.as_ref().map(|key| match key {
-                ListKey::Provider(id) => {
-                    ProviderPick::Provider(ProviderKey(id.as_str().to_owned()))
-                }
-                ListKey::Other => ProviderPick::Other,
-            }),
-        }),
-        SheetView::SignIn(form) => Step::SignIn(SignInProps {
-            provider: provider_name(&form.provider, form.row.as_ref()),
-            mark: mark_of(form.provider.as_str()),
-            fields: form_fields(draft, &form.provider),
-            // A refusal from accountd first; else what cannot be right in what is typed (a
-            // port that is no number), marked on its field as it is typed. An empty required
-            // field is not marked: Continue says it.
-            problem: form
-                .problem
-                .map(|problem| (problem.field, problem.problem))
-                .or_else(|| {
-                    draft
-                        .problem(&form.fields)
-                        .filter(|problem| problem.problem == PorterProblem::Invalid)
-                        .map(|problem| (problem.field, problem.problem))
-                })
-                .map(|(field, problem)| FieldProblem {
-                    role: role_of(field),
-                    kind: match problem {
-                        PorterProblem::Missing => ProblemKind::Missing,
-                        PorterProblem::Refused => ProblemKind::Refused,
-                        PorterProblem::Invalid => ProblemKind::Invalid,
-                    },
-                    attempt: Attempt(draft.submits.0),
-                }),
-        }),
+        SheetView::Consent(ask) => Step::Consent(consent_props(ask, draft)),
+        SheetView::Providers(rows) => Step::Providers(providers_props(rows, draft)),
+        SheetView::SignIn(form) => Step::SignIn(sign_in_props(form, draft)),
         SheetView::BrowserWait { provider, row, url } => Step::Browser {
             provider: provider_name(provider, row.as_ref()),
             shown: short_link(url),
@@ -251,29 +176,7 @@ pub(super) fn step_of(sheet: &OpenSheet) -> Option<Step> {
             url: url.as_str().to_owned(),
             copied: copy_state(draft),
         },
-        SheetView::Review(review) => Step::Review(ReviewProps {
-            account: clipped(&review.review.label.0, ACCOUNT_LABEL),
-            services: review
-                .review
-                .services
-                .iter()
-                .map(|row| ServiceLine {
-                    key: ServiceKey(service_key(row.kind)),
-                    name: row.kind.name().to_owned(),
-                    offer: match row.state {
-                        ServiceState::Offered(shipped) => ServiceOffer::Offered(switch(
-                            draft.toggle_of(row.kind).unwrap_or(shipped),
-                        )),
-                        ServiceState::Absent(reason) => ServiceOffer::Absent(absence_of(reason)),
-                    },
-                    limit: row.limit.map(limit_of),
-                })
-                .collect(),
-            allow: review.allow.as_ref().map(|app| {
-                let resolved = review.allow_label.as_ref().map(|label| label.0.as_str());
-                clipped(&app_name(app, resolved), APP_NAME)
-            }),
-        }),
+        SheetView::Review(review) => Step::Review(review_props(review, draft)),
         SheetView::Working { provider, row } => Step::Working {
             provider: provider_name(provider, row.as_ref()),
             waiting_for: waiting_on(row.as_ref()),
@@ -290,6 +193,124 @@ pub(super) fn step_of(sheet: &OpenSheet) -> Option<Step> {
         },
         SheetView::Done => return None,
     })
+}
+
+/// The consent step's props.
+fn consent_props(ask: &ConsentAsk, draft: &Draft) -> ConsentProps {
+    ConsentProps {
+        app: clipped(
+            &app_name(
+                &ask.app,
+                ask.app_label.as_ref().map(|label| label.0.as_str()),
+            ),
+            APP_NAME,
+        ),
+        request: request_phrase(ask.kind, ask.class, ask.usage),
+        choices: ask
+            .accounts
+            .iter()
+            .map(|choice| AccountChoice {
+                key: ChoiceKey(choice.account.as_str().to_owned()),
+                label: clipped(&choice.label.0, ACCOUNT_LABEL),
+                provider: mark_of(choice.provider.as_str()),
+            })
+            .collect(),
+        chosen: draft
+            .chosen
+            .as_ref()
+            .map(|account| ChoiceKey(account.as_str().to_owned())),
+        session: ask.session.clone(),
+        purpose: Purpose::of(ask),
+    }
+}
+
+/// The provider list step's props.
+fn providers_props(rows: &[ProviderRow], draft: &Draft) -> ProvidersProps {
+    ProvidersProps {
+        // The generic mail rows are ProviderList's own "Other…" (and the server form's
+        // protocol pop-up), so they are not listed twice; the other generic rows are.
+        providers: ranked(
+            rows.iter()
+                .filter(|row| !reached_by_other(row))
+                .map(|row| {
+                    let entry = ProviderEntry::new(
+                        ProviderKey(row.id.as_str().to_owned()),
+                        row.label.clone(),
+                        mark_of(&row.mark),
+                    );
+                    match face_of(row) {
+                        Some(face) => entry.faced(face),
+                        None => entry,
+                    }
+                })
+                .collect(),
+            &draft.query,
+        ),
+        query: draft.query.clone(),
+        cursor: draft.cursor.as_ref().map(|key| match key {
+            ListKey::Provider(id) => {
+                ProviderPick::Provider(ProviderKey(id.as_str().to_owned()))
+            }
+            ListKey::Other => ProviderPick::Other,
+        }),
+    }
+}
+
+/// The sign-in form step's props.
+fn sign_in_props(form: &SignInView, draft: &Draft) -> SignInProps {
+    SignInProps {
+        provider: provider_name(&form.provider, form.row.as_ref()),
+        mark: mark_of(form.provider.as_str()),
+        fields: form_fields(draft, &form.provider),
+        // A refusal from accountd first; else what cannot be right in what is typed (a
+        // port that is no number), marked on its field as it is typed. An empty required
+        // field is not marked: Continue says it.
+        problem: form
+            .problem
+            .map(|problem| (problem.field, problem.problem))
+            .or_else(|| {
+                draft
+                    .problem(&form.fields)
+                    .filter(|problem| problem.problem == PorterProblem::Invalid)
+                    .map(|problem| (problem.field, problem.problem))
+            })
+            .map(|(field, problem)| FieldProblem {
+                role: role_of(field),
+                kind: match problem {
+                    PorterProblem::Missing => ProblemKind::Missing,
+                    PorterProblem::Refused => ProblemKind::Refused,
+                    PorterProblem::Invalid => ProblemKind::Invalid,
+                },
+                attempt: Attempt(draft.submits.0),
+            }),
+    }
+}
+
+/// The review step's props.
+fn review_props(review: &ReviewView, draft: &Draft) -> ReviewProps {
+    ReviewProps {
+        account: clipped(&review.review.label.0, ACCOUNT_LABEL),
+        services: review
+            .review
+            .services
+            .iter()
+            .map(|row| ServiceLine {
+                key: ServiceKey(service_key(row.kind)),
+                name: row.kind.name().to_owned(),
+                offer: match row.state {
+                    ServiceState::Offered(shipped) => ServiceOffer::Offered(switch(
+                        draft.toggle_of(row.kind).unwrap_or(shipped),
+                    )),
+                    ServiceState::Absent(reason) => ServiceOffer::Absent(absence_of(reason)),
+                },
+                limit: row.limit.map(limit_of),
+            })
+            .collect(),
+        allow: review.allow.as_ref().map(|app| {
+            let resolved = review.allow_label.as_ref().map(|label| label.0.as_str());
+            clipped(&app_name(app, resolved), APP_NAME)
+        }),
+    }
 }
 
 /// The form's fields as drawn: what each holds, its choices, its hint and its group.
@@ -382,7 +403,6 @@ fn copy_state(draft: &Draft) -> bool {
 pub(super) fn role_of(kind: FieldKind) -> FieldRole {
     match kind {
         FieldKind::Address => FieldRole::Address,
-        FieldKind::Server => FieldRole::Server,
         FieldKind::Username => FieldRole::Username,
         FieldKind::Password => FieldRole::Password,
         FieldKind::AppPassword => FieldRole::AppPassword,
@@ -396,8 +416,8 @@ pub(super) fn role_of(kind: FieldKind) -> FieldRole {
         FieldKind::OutgoingSecurity => FieldRole::OutgoingSecurity,
         FieldKind::SessionUrl => FieldRole::SessionUrl,
         FieldKind::ServerUrl => FieldRole::ServerUrl,
-        // Any kind porter adds later: quire's form has no role of its own for it yet, so it is the
-        // plain server field.
+        // The server field, and any kind porter adds later: quire's form has no role of its own
+        // for it yet, so it is the plain server field.
         _ => FieldRole::Server,
     }
 }

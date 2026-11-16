@@ -69,11 +69,10 @@ impl GrantCaller {
         match self {
             GrantCaller::Companion => ActorKind::Companion,
             GrantCaller::Cua => ActorKind::Cua,
-            GrantCaller::Mcp(_) => ActorKind::Mcp,
             GrantCaller::Cli => ActorKind::Cli,
             GrantCaller::App(_) => ActorKind::App,
             // An editor drives us over ACP as an outside client; an agent we run is prov's `Acp`.
-            GrantCaller::Editor(_) | GrantCaller::Helper(_) => ActorKind::Mcp,
+            GrantCaller::Mcp(_) | GrantCaller::Editor(_) | GrantCaller::Helper(_) => ActorKind::Mcp,
             GrantCaller::AcpAgent(_) | GrantCaller::AcpHelper { .. } => ActorKind::Acp,
         }
     }

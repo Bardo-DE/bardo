@@ -168,6 +168,10 @@ pub enum LoopEffect {
 /// that only spoke). Inputs that do not fit the phase change nothing, so a late or duplicate event
 /// is harmless.
 #[must_use]
+#[expect(
+    clippy::match_same_arms,
+    reason = "a finished loop ignores everything, and the last arm ignores what does not fit the phase: two rules that agree"
+)]
 pub fn agent_step(state: LoopState, input: LoopInput) -> (LoopState, Vec<LoopEffect>) {
     use LoopPhase::{AwaitingCalls, AwaitingReader, Finished, Idle, Paused, Planning};
     match (state.phase, input) {
@@ -178,8 +182,7 @@ pub fn agent_step(state: LoopState, input: LoopInput) -> (LoopState, Vec<LoopEff
         }
         (_, LoopInput::Completed(note)) => (state, completion_effects(&note)),
         (Idle, LoopInput::Messaged) => ask_for_message(&state),
-        (Idle, LoopInput::Asked(turn)) => ask_planner(&state, turn),
-        (Planning, LoopInput::Asked(turn)) => ask_planner(&state, turn),
+        (Idle | Planning, LoopInput::Asked(turn)) => ask_planner(&state, turn),
         (_, LoopInput::Asked(turn)) => stay(LoopState {
             turn: Some(turn),
             ..state

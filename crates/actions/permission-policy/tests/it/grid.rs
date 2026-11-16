@@ -255,6 +255,7 @@ fn halted(r: &mut permission_policy::PolicyRequest) {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn each_row_value_decides_its_cell_in_either_mode() {
     use Cell::{Ask, Deny, Final, Judged};
     use Effect::{Destructive, Outbound, Read, UndoableWrite};

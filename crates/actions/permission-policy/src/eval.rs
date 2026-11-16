@@ -219,10 +219,9 @@ fn ask_reason(id: &PolicyId, c: &PolicyContext, whys: &BTreeMap<PolicyId, String
         }
         "cross-space" => AskReason::CrossSpace,
         "mass" => AskReason::Mass(c.count),
-        "ask-always" => AskReason::AskAlways,
+        "ask-always" | "limit-ask" => AskReason::AskAlways,
         "first-use" => AskReason::FirstUse,
         "tainted-always-asks" => AskReason::Tainted,
-        "limit-ask" => AskReason::AskAlways,
         "cli-asks" => AskReason::FromTerminal,
         "cli-destructive-asks" => AskReason::Effect(Effect::Destructive),
         "lasting-from-untrusted" => AskReason::LastingFromUntrusted,
@@ -241,10 +240,9 @@ fn cell_reason(effect: Effect, c: &PolicyContext) -> AskReason {
     let outside = matches!(c.coverage, crate::request::CoverageState::Outside);
     let tainted = c.planner == Integrity::Untrusted || untrusted_sink(c).is_some();
     match (effect, outside, tainted) {
-        (Effect::Read, _, _) => AskReason::Effect(effect),
+        (Effect::Read, _, _) | (_, false, false) => AskReason::Effect(effect),
         (_, true, _) => AskReason::OutsideTask,
         (_, false, true) => AskReason::Tainted,
-        (_, false, false) => AskReason::Effect(effect),
     }
 }
 

@@ -203,6 +203,7 @@ mod tests {
     }
 
     #[test]
+    #[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
     fn line_table() {
         let focus = |s: &str| Input::Remap(RemapInput::Focus(ProfileName::parse(s).unwrap()));
         let led = |led, lamp| Input::Led(LedEvent { led, lamp });

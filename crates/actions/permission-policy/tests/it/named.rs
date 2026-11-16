@@ -36,6 +36,7 @@ fn cells_that_ask_without_a_rule_say_why() {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn the_named_rules_of_the_table_ask_or_deny() {
     let rows: Vec<(&str, PolicyRequest, Cell, Option<AskReason>)> = vec![
         (

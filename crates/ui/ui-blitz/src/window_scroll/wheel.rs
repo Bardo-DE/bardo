@@ -146,8 +146,9 @@ fn pan(dx: f64, dy: f64, phase: GesturePhase, role: Role) -> Vec<PointerScroll> 
     });
     let lifted = match (role, phase) {
         (Role::Lift, _) => Some(PointerScroll::Lift),
-        (Role::TailEnd, _) => Some(PointerScroll::Stop),
-        (_, GesturePhase::Ended | GesturePhase::Cancelled) => Some(PointerScroll::Stop),
+        (Role::TailEnd, _) | (_, GesturePhase::Ended | GesturePhase::Cancelled) => {
+            Some(PointerScroll::Stop)
+        }
         (_, GesturePhase::Began | GesturePhase::Changed) => None,
     };
     moved.into_iter().chain(lifted).collect()

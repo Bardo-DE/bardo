@@ -120,6 +120,7 @@ fn agent_row() -> ProviderRow {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "one long scenario, read top to bottom")]
 fn every_sheet_view_becomes_the_props_of_its_part() {
     let consent = SheetView::Consent(ConsentAsk::new(
         app("org.bardo.Photos"),
@@ -627,6 +628,7 @@ fn the_words_follow_the_table() {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "one long scenario, read top to bottom")]
 fn the_server_form_becomes_choices_hints_and_parts() {
     use account_sheet::{Protocol, manual_form};
     use ui_shell::accounts::model::{Choice, FormPart};

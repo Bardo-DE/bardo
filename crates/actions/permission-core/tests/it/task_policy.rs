@@ -44,6 +44,7 @@ pub(crate) fn edit(f: impl FnOnce(&mut TaskPolicy)) -> TaskPolicy {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn task_policy_compare_table() {
     let outbound = ActionMatch::AppUpTo(app("org.bardo.Mail"), Effect::Outbound);
     let other_app = ActionMatch::AppUpTo(app("org.bardo.Files"), Effect::UndoableWrite);
@@ -239,6 +240,7 @@ pub(crate) fn labels(per_arg: Vec<(&str, Integrity)>) -> ArgLabels {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn covers_table() {
     let eve = Value::Entity(entity("mail.contact", "eve@evil.test"));
     let bob = Value::Text("bob@example.com".into());

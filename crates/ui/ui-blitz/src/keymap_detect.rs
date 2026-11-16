@@ -77,9 +77,8 @@ fn run_dconf_dump() -> Dumped {
         Ok(out) if out.status.success() && out.stdout.len() <= DUMP_LIMIT => {
             Dumped::Text(String::from_utf8_lossy(&out.stdout).into_owned())
         }
-        Ok(_) => Dumped::Failed,
         Err(err) if err.kind() == std::io::ErrorKind::NotFound => Dumped::NoDconf,
-        Err(_) => Dumped::Failed,
+        Ok(_) | Err(_) => Dumped::Failed,
     }
 }
 

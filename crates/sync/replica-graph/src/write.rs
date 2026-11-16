@@ -167,8 +167,7 @@ impl<H: Http> GraphReplica<H> {
             (Ok(None), ..) => return PutRefused::Transient(RetryAfter(1)),
         };
         let item = match (target, &remote) {
-            (Target::Existing(id), _) => id.clone(),
-            (Target::New(_), RemoteSide::Exists(id, _)) => id.clone(),
+            (Target::Existing(id), _) | (Target::New(_), RemoteSide::Exists(id, _)) => id.clone(),
             (Target::New(_), _) => RemoteId(String::new()),
         };
         PutRefused::Conflict(Conflict {

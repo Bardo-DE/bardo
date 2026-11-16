@@ -100,6 +100,7 @@ mod tests {
     }
 
     #[test]
+    #[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
     fn table() {
         let a = app("org.bardo.A");
         let b = app("org.bardo.B");

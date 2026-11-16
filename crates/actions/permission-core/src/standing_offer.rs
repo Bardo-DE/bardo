@@ -103,12 +103,20 @@ fn reason(reason: &AskReason, effect: Effect, undo: bool) -> Result<(), Withheld
         AskReason::Effect(_) | AskReason::FirstUse | AskReason::FromTerminal => Ok(()),
         AskReason::AskAlways => Err(Withheld::AsksEveryTime),
         AskReason::OutsideTask => Err(Withheld::OutsideTask),
-        AskReason::Tainted if risky(effect, undo) => Err(Withheld::UntrustedIntoSink),
-        AskReason::Tainted => Ok(()),
-        AskReason::UntrustedSink(sink) if risky(effect, undo) || leaves(*sink) => {
-            Err(Withheld::UntrustedIntoSink)
+        AskReason::Tainted => {
+            if risky(effect, undo) {
+                Err(Withheld::UntrustedIntoSink)
+            } else {
+                Ok(())
+            }
         }
-        AskReason::UntrustedSink(_) => Ok(()),
+        AskReason::UntrustedSink(sink) => {
+            if risky(effect, undo) || leaves(*sink) {
+                Err(Withheld::UntrustedIntoSink)
+            } else {
+                Ok(())
+            }
+        }
         AskReason::RuleOfTwo => Err(Withheld::UntrustedIntoSink),
         other @ (AskReason::CrossSpace
         | AskReason::Mass(_)

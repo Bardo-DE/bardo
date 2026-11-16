@@ -62,6 +62,7 @@ fn run(key: bool, steps: &[Step]) -> Vec<Out> {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn caps_lock_rule_table() {
     const PASSES: bool = false;
     const REMAPPED: bool = true;

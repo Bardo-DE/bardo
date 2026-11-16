@@ -103,6 +103,7 @@ fn bits_round_trip_through_the_test_mask() {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn classify_table() {
     let ev_kb = [EV_SYN, EV_KEY];
     let ev_combo = [EV_SYN, EV_KEY, EV_REL];

@@ -36,6 +36,7 @@ fn granted(r: &mut PolicyRequest) {
 use permission_policy::CoverageState;
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn terminal_grid() {
     use Cell::{Ask, Deny, Final};
     use Effect::{Destructive, Outbound, Read, UndoableWrite};

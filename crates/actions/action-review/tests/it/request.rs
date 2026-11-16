@@ -129,6 +129,7 @@ fn parse_table_quick() {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn parse_table_record() {
     let long = "x".repeat(201);
     let ok_long = "x".repeat(200);

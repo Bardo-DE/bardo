@@ -41,6 +41,7 @@ fn call_in<'a>(
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
 fn the_strongest_covering_limit_wins_and_the_floor_wins_a_tie() {
     let files = app("org.bardo.Files");
     let delete = name("files.file.delete");
