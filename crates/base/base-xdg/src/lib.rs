@@ -27,6 +27,17 @@ pub struct Xdg<F> {
     home: Option<PathBuf>,
 }
 
+/// The process's own environment, as [`Xdg::process`] reads it.
+pub type ProcessEnv = fn(&str) -> Option<String>;
+
+impl Xdg<ProcessEnv> {
+    /// The directories the running process's environment names. A daemon's `main` makes this one;
+    /// everything below it takes an `Xdg` so a test hands in its own.
+    pub fn process() -> Self {
+        Self::new(|name| std::env::var(name).ok())
+    }
+}
+
 impl<F: Fn(&str) -> Option<String>> Xdg<F> {
     /// The environment `var` answers (`HOME` and the XDG variables).
     pub fn new(var: F) -> Self {
@@ -44,6 +55,44 @@ impl<F: Fn(&str) -> Option<String>> Xdg<F> {
             (None, Some(home)) => Ok(home.join(fallback)),
             (None, None) => Err(PathError),
         }
+    }
+
+    /// `$XDG_CONFIG_HOME`, else `~/.config`.
+    ///
+    /// # Errors
+    /// Neither the variable nor `HOME` is an absolute path.
+    pub fn config_home(&self) -> Result<PathBuf, PathError> {
+        self.dir("XDG_CONFIG_HOME", ".config")
+    }
+
+    /// `$XDG_DATA_HOME`, else `~/.local/share`.
+    ///
+    /// # Errors
+    /// Neither the variable nor `HOME` is an absolute path.
+    pub fn data_home(&self) -> Result<PathBuf, PathError> {
+        self.dir("XDG_DATA_HOME", ".local/share")
+    }
+
+    /// `$XDG_STATE_HOME`, else `~/.local/state`.
+    ///
+    /// # Errors
+    /// Neither the variable nor `HOME` is an absolute path.
+    pub fn state_home(&self) -> Result<PathBuf, PathError> {
+        self.dir("XDG_STATE_HOME", ".local/state")
+    }
+
+    /// `$XDG_CACHE_HOME`, else `~/.cache`.
+    ///
+    /// # Errors
+    /// Neither the variable nor `HOME` is an absolute path.
+    pub fn cache_home(&self) -> Result<PathBuf, PathError> {
+        self.dir("XDG_CACHE_HOME", ".cache")
+    }
+
+    /// `$XDG_RUNTIME_DIR` when it is an absolute path. It has no fallback: a program that needs it
+    /// and finds none says so.
+    pub fn runtime_dir(&self) -> Option<PathBuf> {
+        self.var_dir("XDG_RUNTIME_DIR")
     }
 
     /// The absolute path the variable `name` names, if it names one (no fallback).
