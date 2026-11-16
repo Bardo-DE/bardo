@@ -2,7 +2,10 @@
 //! real where the test is about the real thing (`SQLCipher`, sealed files) and in memory where it
 //! is about the system around it (keys, the embedder, the callers).
 
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a subset of the shared support"
+)]
 
 pub mod bus;
 pub mod inferd;

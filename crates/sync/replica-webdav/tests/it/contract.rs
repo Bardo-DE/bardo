@@ -29,6 +29,10 @@ struct Memory(MemoryReplica);
 impl Harness for Memory {
     type R = MemoryReplica;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for",
+    )]
     async fn start(page: usize, limit: Option<u64>) -> Self {
         let features = StorageCap {
             access: Access::ReadWrite,

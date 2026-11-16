@@ -24,7 +24,7 @@ type LiveBackend = SystemBackend<
 
 struct Rig {
     _scratch: tempfile::TempDir,
-    _bus: PrivateBus,
+    bus: PrivateBus,
     _inferd: Option<zbus::Connection>,
     seen: Arc<Mutex<Seen>>,
     link: Arc<inference_client::DbusTransport>,
@@ -58,7 +58,7 @@ async fn rig(draft: Option<&str>) -> Rig {
     Rig {
         service: MemoryService::new(backend, RuleSet::standard()),
         _scratch: scratch,
-        _bus: bus,
+        bus,
         _inferd: daemon,
         seen,
         link,
@@ -236,7 +236,7 @@ async fn inferd_that_starts_later_is_found_at_the_next_call() {
     assert_eq!(ask().await, Err(EmbedError::Unavailable));
 
     let (fake, _seen) = FakeInferd::new("{}");
-    let daemon = connect(&rig._bus.address).await;
+    let daemon = connect(&rig.bus.address).await;
     fake.serve(&daemon).await;
     assert_eq!(ask().await, Ok(vec![FakeEmbedder::vector("x")]));
 }

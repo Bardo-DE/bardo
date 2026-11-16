@@ -55,6 +55,10 @@ const PASSES: u32 = 3;
 #[derive(Debug, Clone)]
 pub(crate) struct Sent {
     pub(super) id: NodeId,
+    #[expect(
+        clippy::struct_field_names,
+        reason = "the field is how many of the change's bytes are sent; the struct is the change being sent"
+    )]
     pub(super) sent: u64,
     pub(super) size: u64,
 }
@@ -326,9 +330,8 @@ impl Inner {
                 let _ = std::fs::remove_file(&to);
                 match (copied, now) {
                     // Written, sent or removed meanwhile: what it is now is looked at again.
-                    (_, None) => Ok(None),
+                    (_, None) | (Ok(()), Some(_)) => Ok(None),
                     (Err(why), Some(_)) => Err(why),
-                    (Ok(()), Some(_)) => Ok(None),
                 }
             }
         }
@@ -392,9 +395,9 @@ impl Inner {
     /// The drive took `op` (with `made`, only the item it makes: an earlier try made it with
     /// other bytes than these): the index says what the drive has now. The index is written to
     /// the disk after, by the sender, off the runtime's threads.
-    fn landed(self: &Arc<Self>, op: Op, written: Option<Written>, made: bool) {
+    fn landed(self: &Arc<Self>, op: &Op, written: Option<&Written>, made: bool) {
         // The bytes' lock first: no write is half-noted while they are taken as sent.
-        let lock = match &op {
+        let lock = match op {
             Op::Upload { file, .. } => Some(self.file_lock(*file)),
             _ => None,
         };
@@ -414,9 +417,9 @@ impl Inner {
                             ..
                         },
                         Some(written),
-                    ) = (&op, &written)
+                    ) = (op, written)
                     {
-                        let mut gone = Self::removed_there(&op, place, written);
+                        let mut gone = Self::removed_there(op, place, written);
                         gone.seq = index.take_seq();
                         changed.push(gone.id.clone());
                         index.edits.insert(gone.id.clone(), gone);
@@ -424,13 +427,13 @@ impl Inner {
                     if let Op::Upload {
                         snapshot: Some(path),
                         ..
-                    } = &op
+                    } = op
                     {
                         let _ = std::fs::remove_file(path);
                     }
                 }
                 Some(mut edit) => {
-                    self.took(&mut index, &mut edit, &op, written.as_ref(), made);
+                    self.took(&mut index, &mut edit, op, written, made);
                     if let (NodeId::Local(n), NodeId::Remote(_)) = (op.id(), &edit.id) {
                         aliased = Some((*n, edit.id.clone()));
                     }
@@ -479,6 +482,10 @@ impl Inner {
     /// Notes in `edit` what the drive has after it took `op`, under the index's lock (and an
     /// upload's bytes' lock). With `made`, the upload made the item and not with these bytes:
     /// it takes the drive's id and version, and its bytes are sent again over them.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one pass over the change kinds, each arm a short note into the index"
+    )]
     fn took(
         &self,
         index: &mut Index,
@@ -682,9 +689,9 @@ async fn snapshot(inner: &Arc<Inner>, mut op: Op) -> Option<Op> {
         return Some(op);
     };
     let (id, file, generation) = (id.clone(), *file, *generation);
-    let taker = Arc::clone(inner);
+    let worker = Arc::clone(inner);
     let taken =
-        tokio::task::spawn_blocking(move || taker.take_snapshot(&id, file, generation)).await;
+        tokio::task::spawn_blocking(move || worker.take_snapshot(&id, file, generation)).await;
     match taken {
         Ok(Ok(Some((path, taken_size)))) => {
             if let Op::Upload { snapshot, size, .. } = &mut op {
@@ -715,13 +722,13 @@ async fn snapshot(inner: &Arc<Inner>, mut op: Op) -> Option<Op> {
 /// none could be had now (tried again after a wait) or the change went meanwhile.
 async fn reserved(inner: &Arc<Inner>, sink: &dyn Sink, mut op: Op) -> Option<Op> {
     let id = op.id().clone();
-    let place = match &mut op {
-        Op::Folder { place, .. }
-        | Op::Upload {
-            to: UploadTo::New(place),
-            ..
-        } => place,
-        _ => return Some(op),
+    let (Op::Folder { place, .. }
+    | Op::Upload {
+        to: UploadTo::New(place),
+        ..
+    }) = &mut op
+    else {
+        return Some(op);
     };
     if place.id.is_some() {
         return Some(op);
@@ -776,8 +783,8 @@ async fn adopted(
                 ..
             },
             RemoteSide::Exists(id, version),
-        ) => (id, version),
-        (
+        )
+        | (
             Op::Upload {
                 to: UploadTo::Replace(id),
                 ..
@@ -846,6 +853,10 @@ async fn same_bytes(
 }
 
 /// Sends what was changed here, one step at a time, for as long as the drive lives.
+#[expect(
+    clippy::too_many_lines,
+    reason = "the sender loop: one pass of take, send, land and wait, each step short"
+)]
 pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
     loop {
         let next = {
@@ -955,7 +966,7 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
         }
         match result {
             Ok(written) => {
-                inner.landed(op, written, made);
+                inner.landed(&op, written.as_ref(), made);
                 // On the disk before the next step: what the drive has is never sent again.
                 let writer = Arc::clone(&inner);
                 if let Ok(Err(why)) = tokio::task::spawn_blocking(move || writer.flush_now()).await

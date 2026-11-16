@@ -17,11 +17,12 @@ pub const SHELL_APP: &str = "org.bardo.Shell";
 /// The app that is the System Settings app, detent (its row has the `settings` role).
 pub const SETTINGS_APP: &str = "org.bardo.Settings";
 
-/// almanac's caller for the process porter identified: cuad is the `cua` role, the shell the
-/// `sheet_host` role of [`SHELL_APP`], the router the `agent` role of [`ROUTER_APP`], the Settings
-/// app the `settings` role of [`SETTINGS_APP`]; any other
-/// row, or an app scope or Flatpak scope the table does not name, is that app. The fixed callers
-/// need the role as well as the app, so a row cannot make an app the router by naming it.
+/// almanac's caller for the process porter identified.
+///
+/// Cuad is the `cua` role, the shell the `sheet_host` role of [`SHELL_APP`], the router the `agent`
+/// role of [`ROUTER_APP`], the Settings app the `settings` role of [`SETTINGS_APP`]; any other row,
+/// or an app scope or Flatpak scope the table does not name, is that app. The fixed callers need
+/// the role as well as the app, so a row cannot make an app the router by naming it.
 #[must_use]
 pub fn caller_for(found: account_callers::Caller) -> Caller {
     let name = found.app.name.as_str();
@@ -40,8 +41,8 @@ pub fn caller_for(found: account_callers::Caller) -> Caller {
         | CallerRole::PorterDaemon
         | CallerRole::AiBroker
         | CallerRole::AgentLauncher
-        | CallerRole::Agent => Caller::App(found.app),
-        // The compositor, or a role a later porter adds: its own app's access, no fixed standing.
-        _ => Caller::App(found.app),
+        | CallerRole::Agent
+        // The compositor: its own app's access, no fixed standing.
+        | CallerRole::Compositor => Caller::App(found.app),
     }
 }

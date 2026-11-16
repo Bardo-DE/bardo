@@ -50,6 +50,10 @@ unit = "bardo-companiond.service"
 role = "agent"
 "#;
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "used as the `Option<Caller>` a table row holds"
+)]
 fn app(name: &str, isolation: Isolation) -> Option<Caller> {
     Some(Caller::App(AppId {
         name: AppName::parse(name).expect("app"),

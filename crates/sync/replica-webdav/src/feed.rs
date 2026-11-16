@@ -204,7 +204,7 @@ impl<H: Http> WebDavReplica<H> {
             }
         }
         let files = self.walk().await?;
-        Ok(self.first_walk(files))
+        Ok(self.first_walk(&files))
     }
 
     fn first_listing(&self, reported: Reported) -> Batch {
@@ -219,14 +219,14 @@ impl<H: Http> WebDavReplica<H> {
         }
     }
 
-    fn first_walk(&self, files: Vec<Entry>) -> Batch {
+    fn first_walk(&self, files: &[Entry]) -> Batch {
         let mut state = self.state();
         state.mode = Some(Mode::Tree);
         state.counter += 1;
         let end = Anchor(format!("tree:{}:{}", self.nonce, state.counter));
-        state.known = Some(known_of(&files, Some(end.clone())));
+        state.known = Some(known_of(files, Some(end.clone())));
         Batch {
-            changes: upserts(&self.root, &files),
+            changes: upserts(&self.root, files),
             end,
             truncated: false,
         }
@@ -236,8 +236,7 @@ impl<H: Http> WebDavReplica<H> {
     async fn since(&self, token: &str) -> Result<Batch, ReplicaError> {
         let reported = match self.report(token).await {
             Ok(reported) => reported,
-            Err(Report::Expired) => return Err(ReplicaError::AnchorExpired),
-            Err(Report::Unsupported) => return Err(ReplicaError::AnchorExpired),
+            Err(Report::Expired | Report::Unsupported) => return Err(ReplicaError::AnchorExpired),
             Err(Report::Failed(error)) => return Err(error),
         };
         let mut state = self.state();
@@ -329,7 +328,7 @@ impl<H: Http> WebDavReplica<H> {
             .folder_url()
             .ok_or(Report::Failed(ReplicaError::Gone))?;
         let response = self
-            .send(requests::sync(url, token).map_err(|e| Report::Failed(unreached(e)))?)
+            .send(requests::sync(&url, token).map_err(|e| Report::Failed(unreached(e)))?)
             .await
             .map_err(Report::Failed)?;
         let body = String::from_utf8_lossy(response.body()).into_owned();
@@ -344,7 +343,7 @@ impl<H: Http> WebDavReplica<H> {
     }
 
     fn reported(&self, body: &str) -> Result<Reported, Report> {
-        let status: Multistatus = parse_multistatus(body).map_err(|_| Report::Unsupported)?;
+        let status: Multistatus = parse_multistatus(body).ok().ok_or(Report::Unsupported)?;
         let reply = parse_sync_collection(&status);
         // A reply with no token cannot be continued: the server does not stand behind it.
         // A cut-short report that listed nothing made no progress: asking again at once could
@@ -352,7 +351,7 @@ impl<H: Http> WebDavReplica<H> {
         let (token, truncated) = match reply.end {
             SyncEnd::Complete(token) => (token, false),
             SyncEnd::Truncated(token) => (token, !reply.changes.is_empty()),
-            _ => return Err(Report::Expired),
+            SyncEnd::Missing => return Err(Report::Expired),
         };
         let removed = status
             .responses
@@ -385,7 +384,7 @@ impl<H: Http> WebDavReplica<H> {
                 .root
                 .collection_url(&folder)
                 .ok_or(ReplicaError::Gone)?;
-            let response = self.send(requests::list(url).map_err(unreached)?).await?;
+            let response = self.send(requests::list(&url).map_err(unreached)?).await?;
             let listed = self.listed(&response, &folder)?;
             for entry in listed {
                 match entry.kind {
@@ -409,7 +408,7 @@ impl<H: Http> WebDavReplica<H> {
             207 => {
                 let text = String::from_utf8_lossy(response.body());
                 let status = parse_multistatus(&text)
-                    .map_err(|_| ReplicaError::Transient(RetryAfter(30)))?;
+                    .ok().ok_or_else(|| ReplicaError::Transient(RetryAfter(30)))?;
                 Ok(entries(&self.root, &status))
             }
             404 if *folder != self.root.folder() => Ok(Vec::new()),
@@ -459,7 +458,7 @@ fn diff(
     now: &[Entry],
     at: base_time::UnixSeconds,
 ) -> Vec<Change> {
-    let changed: Vec<Entry> = now
+    let fresh: Vec<Entry> = now
         .iter()
         .filter(|e| {
             known
@@ -470,7 +469,7 @@ fn diff(
         .cloned()
         .collect();
     let present: BTreeSet<&RemoteId> = now.iter().map(|e| &e.id).collect();
-    let mut changes = upserts(root, &changed);
+    let mut changes = upserts(root, &fresh);
     changes.extend(
         known
             .files

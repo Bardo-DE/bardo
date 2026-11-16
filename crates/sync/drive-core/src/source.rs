@@ -3,7 +3,6 @@
 
 use account_capability::HashKind;
 use base_ids::Bytes;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use sync_core::{ByteRange, ExportError, RemoteId, Replica, ReplicaError};
@@ -50,8 +49,8 @@ impl From<ExportError> for CopyError {
         match error {
             ExportError::Unsupported => CopyError::NoFormat,
             ExportError::TooLarge => CopyError::TooLarge,
-            // a read that failed, and a failure a later sync-core adds
-            _ => CopyError::Failed,
+            // a read that failed
+            ExportError::Read(_) => CopyError::Failed,
         }
     }
 }

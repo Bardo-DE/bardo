@@ -97,7 +97,7 @@ mod tests {
         std::fs::write(&path, vec![7u8; 200_000]).expect("write");
         assert_eq!(
             of_file(HashKind::Md5, &path).expect("read"),
-            of_bytes(HashKind::Md5, &[7u8; 200_000])
+            of_bytes(HashKind::Md5, &vec![7u8; 200_000])
         );
     }
 }

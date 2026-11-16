@@ -122,7 +122,7 @@ async fn a_removed_folder_is_a_tombstone_for_every_file_in_it() {
         .iter()
         .map(|change| match change {
             Change::Tombstone(t) => t.id.0.clone(),
-            other => panic!("{other:?}"),
+            other @ Change::Upsert(_) => panic!("{other:?}"),
         })
         .collect();
     gone.sort();

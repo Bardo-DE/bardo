@@ -13,7 +13,6 @@ use account_callers::{Callers, ProcCallers};
 use memory_core::Refusal;
 use memory_service::Caller;
 use std::collections::BTreeMap;
-use std::future::Future;
 
 use std::sync::{Mutex, PoisonError};
 
@@ -74,11 +73,16 @@ impl ProcPeers {
 }
 
 impl Peers for ProcPeers {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Peers::caller_of` is an async trait method; the table is read without awaiting"
+    )]
     async fn caller_of(&self, sender: &str) -> Result<Caller, Refusal> {
         // An identity lookup that does not finish is a refusal, never a wait.
         let caller = tokio::time::timeout(LOOKUP_WAIT, self.callers.caller_of(sender))
             .await
-            .map_err(|_| Refusal::NotAllowed)?
+            .ok()
+            .ok_or(Refusal::NotAllowed)?
             .map(caller_for)
             .ok_or(Refusal::NotAllowed)?;
         self.seen

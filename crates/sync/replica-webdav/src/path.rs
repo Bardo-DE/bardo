@@ -129,8 +129,6 @@ mod tests {
 
     #[test]
     fn an_href_has_one_spelling_whatever_the_server_wrote() {
-        let root = root();
-        let want = RemoteId("/remote.php/dav/files/ada/Photos%20/a%20b.jpg".into());
         const CASES: &[&str] = &[
             "/remote.php/dav/files/ada/Photos%20/a%20b.jpg",
             "/remote.php/dav/files/ada/Photos /a b.jpg",
@@ -138,6 +136,8 @@ mod tests {
             "/remote.php/dav/files/ada/Photos%20/a%20b.jpg?x=1",
             "/remote.php/dav/files/ada/Photos%20/a%20b%2ejpg",
         ];
+        let root = root();
+        let want = RemoteId("/remote.php/dav/files/ada/Photos%20/a%20b.jpg".into());
         for href in CASES {
             assert_eq!(root.id_of(href).as_ref(), Some(&want), "{href}");
         }
@@ -157,7 +157,6 @@ mod tests {
 
     #[test]
     fn a_dataset_path_maps_to_an_id_and_back_and_may_not_climb_out() {
-        let root = root();
         const CASES: &[(&str, Option<&str>)] = &[
             (
                 "Originals/2026/IMG 1.HEIC",
@@ -171,6 +170,7 @@ mod tests {
             ("a/./b", None),
             ("a/", None),
         ];
+        let root = root();
         for (path, id) in CASES {
             let got = root.id_for(&ItemPath((*path).into()));
             assert_eq!(got.as_ref().map(|i| i.0.as_str()), *id, "{path:?}");

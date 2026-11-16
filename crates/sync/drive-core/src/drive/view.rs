@@ -100,7 +100,7 @@ impl Inner {
         }
     }
 
-    pub(super) fn top(&self) -> Node {
+    pub(super) fn top() -> Node {
         Node {
             id: NodeId::Top,
             parent: NodeId::Top,
@@ -259,7 +259,7 @@ impl Inner {
     pub(super) fn node(&self, id: &NodeId) -> Result<Option<Node>, DriveError> {
         let id = self.canonical(id);
         if id == NodeId::Top {
-            return Ok(Some(self.top()));
+            return Ok(Some(Self::top()));
         }
         let Some(parent) = self.parent_of(&id)? else {
             return Ok(None);

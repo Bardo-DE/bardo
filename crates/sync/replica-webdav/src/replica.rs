@@ -66,6 +66,7 @@ impl<H: Http> WebDavReplica<H> {
     }
 
     /// The same replica with feed pages of `size` changes (at least one).
+    #[must_use]
     pub fn with_page(self, size: usize) -> Self {
         Self {
             page: size.max(1),
@@ -123,13 +124,13 @@ impl<H: Http> WebDavReplica<H> {
 
     async fn quota_of_folder(&self) -> Result<Quota, ReplicaError> {
         let url = self.root.folder_url().ok_or(ReplicaError::Gone)?;
-        let response = self.send(requests::quota(url).map_err(unreached)?).await?;
+        let response = self.send(requests::quota(&url).map_err(unreached)?).await?;
         if response.status().as_u16() != 207 {
             return Err(read_error(&response, self.clock.now()));
         }
         let text = String::from_utf8_lossy(response.body());
         let status = parse_multistatus(&text)
-            .map_err(|_| ReplicaError::Transient(sync_core::RetryAfter(30)))?;
+            .ok().ok_or_else(|| ReplicaError::Transient(sync_core::RetryAfter(30)))?;
         let reported = account_dav_proto::quota(&status);
         let used = reported.used.unwrap_or(0);
         Ok(Quota {

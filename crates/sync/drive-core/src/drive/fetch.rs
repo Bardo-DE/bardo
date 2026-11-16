@@ -99,10 +99,11 @@ impl Transfer {
 }
 
 fn read_at(path: &PathBuf, offset: u64, len: u64) -> Result<Vec<u8>, ReadError> {
-    let file = std::fs::File::open(path).map_err(|_| ReadError::Cache)?;
-    let mut buffer = vec![0; usize::try_from(len).map_err(|_| ReadError::Cache)?];
+    let file = std::fs::File::open(path).ok().ok_or(ReadError::Cache)?;
+    let mut buffer = vec![0; usize::try_from(len).ok().ok_or(ReadError::Cache)?];
     file.read_exact_at(&mut buffer, offset)
-        .map_err(|_| ReadError::Cache)?;
+        .ok()
+        .ok_or(ReadError::Cache)?;
     Ok(buffer)
 }
 
@@ -158,7 +159,8 @@ impl Inner {
             .write(true)
             .open(&file)
             .and_then(|f| f.set_len(entry.size.0))
-            .map_err(|_| ReadError::Cache)?;
+            .ok()
+            .ok_or(ReadError::Cache)?;
         let (moved, _) = watch::channel(0);
         let transfer = Arc::new(Transfer {
             id: entry.id.clone(),
@@ -405,13 +407,12 @@ async fn finish(weak: Weak<Inner>, transfer: Arc<Transfer>) {
         let file = transfer.file.clone();
         let got = tokio::task::spawn_blocking(move || hash::of_file(kind, &file)).await;
         let Some(again) = weak.upgrade() else { return };
-        match got {
-            Ok(Ok(Some(got))) => Some((again, got.eq_ignore_ascii_case(&expected.0))),
+        if let Ok(Ok(Some(got))) = got {
+            Some((again, got.eq_ignore_ascii_case(&expected.0)))
+        } else {
             // The file went (the download was removed), or could not be read.
-            _ => {
-                again.retire(&transfer);
-                None
-            }
+            again.retire(&transfer);
+            None
         }
     } else {
         let same = inner
@@ -485,7 +486,8 @@ impl Drive {
         if let NodeId::Remote(remote) = id {
             let entry = inner
                 .entry(remote)
-                .map_err(|_| ReadError::Cache)?
+                .ok()
+                .ok_or(ReadError::Cache)?
                 .ok_or(ReadError::Gone)?;
             match entry.kind {
                 ItemKind::Folder => return Err(ReadError::Folder),
@@ -505,7 +507,7 @@ impl Drive {
                         return Err(error);
                     }
                 }
-                _ => {}
+                ItemKind::File => {}
             }
         } else if *id == NodeId::Top {
             return Err(ReadError::Folder);
@@ -562,7 +564,8 @@ impl Drive {
         for _ in 0..8 {
             let entry = inner
                 .entry_open(remote)
-                .map_err(|_| ReadError::Cache)?
+                .ok()
+                .ok_or(ReadError::Cache)?
                 .ok_or(ReadError::Gone)?;
             match &entry.kind {
                 ItemKind::Folder => return Err(ReadError::Folder),
@@ -576,7 +579,7 @@ impl Drive {
                         .min(link.len());
                     return Ok(link[from..to].to_vec());
                 }
-                _ => {}
+                ItemKind::File => {}
             }
             let end = offset.saturating_add(len).min(entry.size.0);
             if offset >= end {

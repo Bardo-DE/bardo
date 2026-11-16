@@ -61,6 +61,10 @@ impl Part {
         }
     }
 
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "a byte count's low bits do not matter in a progress fraction"
+    )]
     fn fraction(&self) -> Option<f64> {
         matches!(self.state, ItemState::Downloading | ItemState::Uploading).then(|| {
             match self.size {
@@ -188,6 +192,10 @@ impl Inner {
 /// A folder's state from its files': a conflict or an error when any is, then uploading or
 /// downloading (with the share of the moving bytes that moved) while any is, waiting while any
 /// waits, downloaded when all are, else cloud.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a byte count's low bits do not matter in a progress fraction"
+)]
 fn aggregate(parts: &[Part]) -> (ItemState, Option<f64>) {
     let any = |state: ItemState| parts.iter().any(|part| part.state == state);
     for state in [ItemState::Conflict, ItemState::Error] {

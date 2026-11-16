@@ -70,6 +70,12 @@ impl FakeInferd {
 
 #[zbus::interface(name = "org.bardo.Inference1")]
 impl FakeInferd {
+    #[expect(
+        clippy::unused_async,
+        clippy::unused_async_trait_impl,
+        clippy::used_underscore_binding,
+        reason = "a zbus interface method: the macro makes it async and names its arguments, with leading underscores for the ones it ignores"
+    )]
     async fn open(
         &self,
         _need: NeedArg,

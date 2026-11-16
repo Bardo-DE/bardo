@@ -26,9 +26,13 @@ pub(crate) fn roots(lookup: impl Fn(&str) -> Option<String>) -> Result<[PathBuf;
     ])
 }
 
-/// The directories as `lookup` (the environment, or a test's map) says: `XDG_DATA_HOME`
-/// (default `~/.local/share`), `XDG_CACHE_HOME` (`~/.cache`), `XDG_CONFIG_HOME` (`~/.config`)
-/// and the required `XDG_RUNTIME_DIR`.
+/// The directories as `lookup` (the environment, or a test's map) says.
+///
+/// `XDG_DATA_HOME` (default `~/.local/share`), `XDG_CACHE_HOME` (`~/.cache`), `XDG_CONFIG_HOME`
+/// (`~/.config`) and the required `XDG_RUNTIME_DIR`.
+///
+/// # Errors
+/// `XdgError` when `XDG_RUNTIME_DIR` is missing or a path is not absolute.
 pub fn dirs_from(lookup: impl Fn(&str) -> Option<String>) -> Result<Dirs, XdgError> {
     let [data, cache, config, runtime] = roots(lookup)?;
     Ok(Dirs::new(data, cache, config, runtime))

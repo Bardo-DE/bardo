@@ -40,9 +40,11 @@ use inference_client::DbusTransport;
 use std::sync::Arc;
 
 /// The link to inferd: the session bus connection `connection`, as inference-client's D-Bus
-/// transport. Nothing is called here: inferd is found (and started by activation) at the first
-/// `open`, so a daemon that starts before inferd, or without it, still starts and degrades as
-/// designed (lexical-only recall, no consolidation) until inferd answers.
+/// transport.
+///
+/// Nothing is called here: inferd is found (and started by activation) at the first `open`, so a
+/// daemon that starts before inferd, or without it, still starts and degrades as designed
+/// (lexical-only recall, no consolidation) until inferd answers.
 #[must_use]
 pub fn inferd_link(connection: &zbus::Connection) -> Arc<DbusTransport> {
     Arc::new(DbusTransport::over(connection.clone()))

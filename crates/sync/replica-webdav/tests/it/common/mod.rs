@@ -1,6 +1,6 @@
 //! The rig: a fake DAV server on loopback, reached through `RelayHttp` over a TCP dial with
 //! the credential added the way accountd's relay would add it. No network beyond loopback.
-#![allow(dead_code)]
+#![allow(dead_code, reason = "helpers shared by the test files; each file uses some of them")]
 
 use account_fake_servers::dav::Behaviour;
 use account_fake_servers::{DavHandle, FakeDav, Running};
@@ -11,7 +11,6 @@ use account_http_relay::{Dial, RelayHttp, RelayLimits};
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use replica_webdav::WebDavReplica;
-use std::future::Future;
 use sync_core::Clock;
 use tokio::net::TcpStream;
 
@@ -29,7 +28,7 @@ impl Dial for TcpDial {
     async fn dial(&self) -> Result<TcpStream, HttpError> {
         TcpStream::connect(("127.0.0.1", self.0))
             .await
-            .map_err(|_| HttpError::Unreachable)
+            .ok().ok_or(HttpError::Unreachable)
     }
 }
 

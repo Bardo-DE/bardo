@@ -22,7 +22,7 @@ impl Inner {
                 .filter(|e| e.kind.is_file())
                 .collect(),
             ItemKind::File => vec![entry],
-            _ => Vec::new(),
+            ItemKind::Online { .. } => Vec::new(),
         })
     }
 

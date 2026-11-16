@@ -39,9 +39,10 @@ pub struct Policy {
     pub sockets: Vec<PathBuf>,
 }
 
-/// How far the daemon confines itself (its Landlock sandbox), as the stable word the
-/// `Confinement` property of `org.bardo.Memory1.Control` carries. The words of
-/// [`Confinement::as_word`] are a public contract: the Settings app reads them.
+/// How far the daemon confines itself (its Landlock sandbox), as the stable word the `Confinement`
+/// property of `org.bardo.Memory1.Control` carries.
+///
+/// The words of [`Confinement::as_word`] are a public contract: the Settings app reads them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Confinement {
     /// Every restriction of the policy is in force.
@@ -127,6 +128,9 @@ pub fn policy_for(dirs: &Dirs, bus_address: Option<&str>) -> Policy {
 
 /// Makes the directories the daemon writes, so the policy can name them (Landlock rules name
 /// existing paths) and a first run needs nothing from outside the sandbox.
+///
+/// # Errors
+/// `std::io::Error` when a directory the policy names cannot be created.
 pub fn prepare(policy: &Policy) -> std::io::Result<()> {
     policy
         .writable
@@ -137,6 +141,9 @@ pub fn prepare(policy: &Policy) -> std::io::Result<()> {
 
 /// Applies `policy` to the calling thread and the threads it creates later. Says how far the
 /// kernel enforced it: never `Off`, which is for a test build that skipped the sandbox.
+///
+/// # Errors
+/// `SandboxError` when the kernel refuses to apply the ruleset.
 pub fn enforce(policy: &Policy) -> Result<Confinement, SandboxError> {
     let all_files = AccessFs::from_all(ABI_TOP);
     let status = Ruleset::default()

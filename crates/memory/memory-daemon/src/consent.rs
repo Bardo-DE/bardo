@@ -50,6 +50,10 @@ impl Consent {
 
     /// Records `values` (setting key to value) and reads the settings again. Nothing is recorded
     /// when any pair is refused.
+    ///
+    /// # Errors
+    /// `Refusal` when any pair is not a setting the person may confirm, or the store cannot be
+    /// written.
     pub fn confirm(&self, values: &BTreeMap<String, String>) -> Result<Loaded, Refusal> {
         // One writer at a time: the store is read, merged and replaced.
         let _one = self.writing.lock().unwrap_or_else(PoisonError::into_inner);

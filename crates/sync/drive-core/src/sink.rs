@@ -1,7 +1,6 @@
 //! Where a drive's changes go: sync-core's whole-drive writes, one step at a time.
 
 use crate::source::ReplicaSource;
-use std::future::Future;
 use std::pin::Pin;
 use sync_core::{
     BaseVersion, DriveWrite, Found, Place, PutRefused, RemoteId, Session, Upload, Written,

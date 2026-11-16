@@ -33,8 +33,10 @@ impl SpaceRegistry {
             Self::Porter(spaces) => {
                 let listed = tokio::time::timeout(REGISTRY_WAIT, spaces.list())
                     .await
-                    .map_err(|_| RegistryError::Unreachable)?
-                    .map_err(|_| RegistryError::Unreachable)?;
+                    .ok()
+                    .ok_or(RegistryError::Unreachable)?
+                    .ok()
+                    .ok_or(RegistryError::Unreachable)?;
                 let found = listed
                     .iter()
                     .any(|record| &SpaceId::linked(&record.id) == space);

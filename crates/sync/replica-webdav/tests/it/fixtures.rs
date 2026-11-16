@@ -8,7 +8,6 @@ use base_time::UnixSeconds;
 use base_url::WebUrl;
 use replica_webdav::WebDavReplica;
 use std::collections::BTreeMap;
-use std::future::Future;
 use std::sync::{Arc, Mutex};
 use sync_core::Clock;
 use sync_core::{

@@ -52,9 +52,9 @@ fn a_note_stands_until_it_is_struck_out() {
 #[test]
 fn a_removal_no_one_asked_about_keeps_everything_unless_a_choice_was_noted() {
     let notes = Removals::new(MemLedger::default());
-    let (removal, noted) = notes.begin_unasked(&space("new"));
+    let (removal, wrote) = notes.begin_unasked(&space("new"));
     assert_eq!(removal, Removal::KEEP_ALL);
-    noted.unwrap();
+    wrote.unwrap();
     assert_eq!(notes.open(), vec![(space("new"), Removal::KEEP_ALL)]);
 
     notes.begin(&space("asked"), DELETE_HISTORY).expect("note");

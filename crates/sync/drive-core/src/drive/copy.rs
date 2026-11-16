@@ -55,7 +55,8 @@ impl Drive {
             .ok_or(Reason::NotADocument)?;
         let taken: Vec<String> = inner
             .children(&folder)
-            .map_err(|_| Reason::CopyFailed)?
+            .ok()
+            .ok_or(Reason::CopyFailed)?
             .into_iter()
             .map(|node| node.name)
             .collect();
@@ -64,7 +65,8 @@ impl Drive {
         let n = held(&inner.index).take_local();
         AtomicWrite::PRIVATE
             .write(&inner.local_file(n), &bytes)
-            .map_err(|_| Reason::CopyFailed)?;
+            .ok()
+            .ok_or(Reason::CopyFailed)?;
         let made = now_secs();
         let dirty = Dirty {
             file: n,

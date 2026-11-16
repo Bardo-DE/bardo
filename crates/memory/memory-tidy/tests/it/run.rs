@@ -3,6 +3,10 @@
 use memory_core::*;
 use memory_tidy::consolidation::{self, RunEffect, RunEvent};
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of consolidation runs; each row is a short run and its expected result"
+)]
 #[test]
 fn consolidation_run_table() {
     use RunEffect as E;

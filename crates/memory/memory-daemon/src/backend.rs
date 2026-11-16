@@ -14,15 +14,15 @@ use memory_seal::{DbKey, KeyStore, Oo7Keys, Purpose, SpaceKey, derive};
 use memory_service::{Backend, BackendError, Listing, RegistryError};
 use memory_tidy::Consolidator;
 use rusqlite::Connection;
-use std::future::Future;
 use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 /// memoryd's seams over the real system: `SQLCipher` files under `dirs`, sealed or plain vaults,
-/// the OS's randomness and clock. The key store, the embedder and the consolidator are
-/// parameters whose defaults are the real ones (the Secret Service, inferd); a test names its own
-/// and keeps everything else real.
+/// the OS's randomness and clock.
+///
+/// The key store, the embedder and the consolidator are parameters whose defaults are the real ones
+/// (the Secret Service, inferd); a test names its own and keeps everything else real.
 #[derive(Debug)]
 pub struct SystemBackend<
     K = Oo7Keys,
@@ -65,6 +65,7 @@ impl<K, E, C> SystemBackend<K, E, C> {
 
     /// Where the desktop-wide Spaces are listed (closed until this is called: an app opens no
     /// desktop-wide Space).
+    #[must_use]
     pub fn with_registry(mut self, registry: SpaceRegistry) -> Self {
         self.registry = registry;
         self

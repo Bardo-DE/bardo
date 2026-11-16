@@ -1,6 +1,8 @@
-//! A drive held in memory: a [`MemoryListing`] of entries and a [`MemorySource`] of their bytes,
-//! which can be taken offline and made to fetch one chunk at a time, and a [`MemorySink`] that
-//! takes changes into both. For tests only.
+//! A drive held in memory.
+//!
+//! A [`MemoryListing`] of entries and a [`MemorySource`] of their bytes, which can be taken offline
+//! and made to fetch one chunk at a time, and a [`MemorySink`] that takes changes into both. For
+//! tests only.
 
 use crate::listing::{Entry, Listing, ListingError};
 use crate::sink::{Sending, Sink};
@@ -64,6 +66,9 @@ impl MemoryListing {
     }
 
     /// An online document `id` that opens at `url`, saved as `export`.
+    ///
+    /// # Panics
+    /// when `url` is not a valid web address.
     pub fn online(
         &self,
         id: &str,
@@ -289,8 +294,9 @@ struct SinkState {
 }
 
 /// The writes of a drive held in memory: what it takes changes a [`MemoryListing`] and a
-/// [`MemorySource`], as a drive's next listing pass would show it. It can refuse, refuse names,
-/// cut an upload off mid-way and hold its listing back.
+/// [`MemorySource`], as a drive's next listing pass would show it.
+///
+/// It can refuse, refuse names, cut an upload off mid-way and hold its listing back.
 #[derive(Debug)]
 pub struct MemorySink {
     listing: Arc<MemoryListing>,
@@ -650,7 +656,8 @@ impl Sink for MemorySink {
                 let chunk = upload
                     .content
                     .read(at, self.chunk)
-                    .map_err(|_| PutRefused::Transient(RetryAfter(0)))?;
+                    .ok()
+                    .ok_or_else(|| PutRefused::Transient(RetryAfter(0)))?;
                 {
                     let mut state = held(&self.state);
                     state.largest = state.largest.max(chunk.len() as u64);

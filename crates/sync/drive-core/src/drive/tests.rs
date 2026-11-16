@@ -1,9 +1,6 @@
 use super::*;
-use crate::Reason;
 use crate::testing::{MemoryListing, MemorySource};
 use base_testkit::Scratch;
-use std::time::Duration;
-use sync_core::ItemKind;
 
 struct Rig {
     dir: Scratch,
@@ -12,6 +9,10 @@ struct Rig {
     drive: Drive,
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the test pattern wraps on purpose; only the low byte of the index is wanted"
+)]
 fn bytes(n: usize, seed: u8) -> Vec<u8> {
     (0..n).map(|i| seed.wrapping_add(i as u8)).collect()
 }

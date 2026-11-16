@@ -116,7 +116,7 @@ impl NodeKind {
                 url: url.as_str().to_owned(),
                 export: export.clone(),
             },
-            _ => NodeKind::File,
+            ItemKind::File => NodeKind::File,
         }
     }
 }
@@ -551,7 +551,9 @@ impl Drive {
         source: Arc<dyn Source>,
         sink: Option<Arc<dyn Sink>>,
     ) -> Result<Drive, DriveError> {
-        let runtime = tokio::runtime::Handle::try_current().map_err(|_| DriveError::NoRuntime)?;
+        let runtime = tokio::runtime::Handle::try_current()
+            .ok()
+            .ok_or(DriveError::NoRuntime)?;
         std::fs::create_dir_all(config.cache.join("content"))?;
         std::fs::create_dir_all(config.cache.join("local"))?;
         let lock = lock(&config.cache, config.lock_wait).await?;
@@ -784,7 +786,7 @@ impl Drive {
     /// # Errors
     /// The listing could not be read.
     pub fn resolve(&self, path: &Path) -> Result<Option<Node>, DriveError> {
-        let mut at = self.inner.top();
+        let mut at = Inner::top();
         for part in path.components() {
             let Component::Normal(name) = part else {
                 continue;

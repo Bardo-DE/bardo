@@ -123,8 +123,10 @@ const FIRST_CONSOLIDATION: Duration = Duration::from_hours(1);
 const SYSTEM_CALLERS: &str = "/etc/bardo/memoryd-callers.toml";
 
 /// The test-only stand-in for [`SYSTEM_CALLERS`], honoured under the same gate as
-/// [`PROC_ROOT_VAR`]: a harness that fakes `/proc` must also say which units are the system's,
-/// because only the system's table gives a fixed role. A release build ignores it.
+/// [`PROC_ROOT_VAR`].
+///
+/// A harness that fakes `/proc` must also say which units are the system's, because only the
+/// system's table gives a fixed role. A release build ignores it.
 pub const SYSTEM_CALLERS_VAR: &str = "BARDO_MEMORYD_SYSTEM_CALLERS";
 
 /// The system callers file this build reads: [`SYSTEM_CALLERS`], or the variable's file in a
@@ -225,11 +227,10 @@ async fn run(
     let changes = LockChanges::on(&connection).await?;
     daemon.attach(connection);
     let mut duties = Duties::default();
-    let watcher = Arc::clone(&daemon);
-    duties.spawn(
-        "keyring",
-        async move { watcher.follow_keyring(changes).await },
-    );
+    let keyring_daemon = Arc::clone(&daemon);
+    duties.spawn("keyring", async move {
+        keyring_daemon.follow_keyring(changes).await
+    });
     let following = Arc::clone(&daemon);
     let blind = matches!(watched.state(), WatchState::Blind { .. });
     duties.spawn("settings", async move {
@@ -277,9 +278,14 @@ async fn run(
     Err(fault)
 }
 
-/// Starts the daemon over the environment `env` reads (the process environment in the binary, a
-/// map in a test): the sandbox first (Landlock restricts the calling thread and the threads made after it, so it
+/// Starts the daemon over the environment `env` reads (the process environment in the binary, a map
+/// in a test).
+///
+/// The sandbox first (Landlock restricts the calling thread and the threads made after it, so it
 /// comes before the runtime builds its workers), then the daemon.
+///
+/// # Errors
+/// `StartError` when the sandbox, the directories, the bus or the daemon cannot be set up.
 pub fn start(env: Env<'_>) -> Result<(), StartError> {
     let dirs = dirs_from(env)?;
     let selection = select(env(KEYS_VAR).as_deref(), TestKeys::THIS_BUILD);

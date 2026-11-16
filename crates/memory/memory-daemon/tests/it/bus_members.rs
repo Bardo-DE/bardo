@@ -18,6 +18,10 @@ use std::sync::{Arc, Mutex};
 struct Witness(Mutex<Vec<Call>>);
 
 impl Serve for Witness {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`Serve::serve` is an async trait method; the witness only records the call"
+    )]
     async fn serve(
         &self,
         _sender: &str,

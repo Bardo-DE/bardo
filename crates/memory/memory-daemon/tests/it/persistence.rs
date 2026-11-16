@@ -66,6 +66,10 @@ fn mentions(root: &Path, needle: &str) -> Vec<PathBuf> {
         .collect()
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one scenario told in order: write, restart, find everything again"
+)]
 #[tokio::test]
 async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     let scratch = tempfile::tempdir().expect("scratch");
@@ -128,8 +132,13 @@ async fn a_restarted_daemon_finds_everything_where_the_last_one_left_it() {
     let rules = rules_from_toml(&rules_text).expect("rules");
     assert_eq!(rules, rules_before);
     assert!(rules.rules.contains(&rule));
-    let second = MemoryService::new(backend(&dirs, &keys, Default::default()), rules);
-    metas.into_iter().for_each(|m| second.register(m));
+    let second = MemoryService::new(
+        backend(&dirs, &keys, memory_fake::ScriptedConsolidator::default()),
+        rules,
+    );
+    for meta in metas {
+        second.register(meta);
+    }
 
     let MemoryReply::Timeline(page) = ask(
         &second,
@@ -338,7 +347,7 @@ async fn deleting_a_space_destroys_its_key_removes_its_directories_and_anchors_i
     assert!(dirs.events_db(&SpaceId::desktop()).exists());
 
     // Removing a Space that is not there (just deleted, or never was) is not an error.
-    let after: TestBackend = backend(&dirs, &keys, Default::default());
+    let after: TestBackend = backend(&dirs, &keys, memory_fake::ScriptedConsolidator::default());
     assert_eq!(
         after.remove_space(&space("work")),
         Ok(()),
@@ -360,7 +369,7 @@ fn a_wrong_key_opens_neither_the_log_nor_the_index() {
     let scratch = tempfile::tempdir().expect("scratch");
     let dirs = dirs_in(scratch.path());
     let keys = SharedKeys::default();
-    let backend: TestBackend = backend(&dirs, &keys, Default::default());
+    let backend: TestBackend = backend(&dirs, &keys, memory_fake::ScriptedConsolidator::default());
     let (right, wrong) = (key_for(1), key_for(2));
     let id = space("work");
 
@@ -406,7 +415,7 @@ async fn the_index_file_is_created_with_its_schema_and_keeps_what_was_put_in_it(
     let scratch = tempfile::tempdir().expect("scratch");
     let dirs = dirs_in(scratch.path());
     let keys = SharedKeys::default();
-    let backend: TestBackend = backend(&dirs, &keys, Default::default());
+    let backend: TestBackend = backend(&dirs, &keys, memory_fake::ScriptedConsolidator::default());
     let key = key_for(3);
     let id = space("work");
     let embedder = FakeEmbedder::new();

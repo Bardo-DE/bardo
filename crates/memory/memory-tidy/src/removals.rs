@@ -37,8 +37,14 @@ pub trait RemovalLedger {
     /// The choice noted for `space`, if any.
     fn noted(&self, space: &SpaceId) -> Option<Removal>;
     /// Notes `removal` for `space`, replacing an earlier choice.
+    ///
+    /// # Errors
+    /// `LedgerError` when the note cannot be written down.
     fn set(&self, space: &SpaceId, removal: Removal) -> Result<(), LedgerError>;
     /// Strikes `space` out.
+    ///
+    /// # Errors
+    /// `LedgerError` when the note cannot be struck out.
     fn strike(&self, space: &SpaceId) -> Result<(), LedgerError>;
 }
 
@@ -61,6 +67,9 @@ impl<L: RemovalLedger> Removals<L> {
 
     /// Notes that `space` is being settled as the person chose; a choice noted earlier for it is
     /// replaced.
+    ///
+    /// # Errors
+    /// `LedgerError` when the note cannot be written down.
     pub fn begin(&self, space: &SpaceId, removal: Removal) -> Result<(), LedgerError> {
         self.ledger.set(space, removal)
     }
@@ -76,6 +85,9 @@ impl<L: RemovalLedger> Removals<L> {
     }
 
     /// Strikes `space` out: its memories are settled.
+    ///
+    /// # Errors
+    /// `LedgerError` when the note cannot be struck out.
     pub fn finish(&self, space: &SpaceId) -> Result<(), LedgerError> {
         self.ledger.strike(space)
     }
@@ -107,6 +119,9 @@ struct RemovalsFile {
 }
 
 /// The notes in `removals.toml` text.
+///
+/// # Errors
+/// `NotesFileError::Decode` when `text` is not a valid notes file.
 pub fn removals_from_toml(text: &str) -> Result<BTreeMap<SpaceId, Removal>, NotesFileError> {
     let file: RemovalsFile =
         toml::from_str(text).map_err(|e| NotesFileError::Decode(e.to_string()))?;
@@ -114,6 +129,9 @@ pub fn removals_from_toml(text: &str) -> Result<BTreeMap<SpaceId, Removal>, Note
 }
 
 /// `notes` as `removals.toml` text.
+///
+/// # Errors
+/// `NotesFileError` when the notes cannot be written as TOML.
 pub fn removals_to_toml(notes: &BTreeMap<SpaceId, Removal>) -> Result<String, NotesFileError> {
     let file = RemovalsFile {
         removed: notes

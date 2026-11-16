@@ -1,5 +1,4 @@
 use super::*;
-use crate::Reason;
 use crate::testing::{MemoryListing, MemorySink, MemorySource, Refuse, Took};
 use base_testkit::Scratch;
 

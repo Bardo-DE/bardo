@@ -21,12 +21,13 @@ fn loose_blocks(file: &TopicFile) -> Vec<String> {
     keys
 }
 
-/// A tidied file is acceptable when it is the same topic with the same facts: every fact keeps its
-/// id, author, label, links and date, and only the text of a fact that is not trusted may change
-/// (rewording a trusted fact is the person's to do, so a tidy cannot launder model words into
-/// it). The unstamped bullets and verbatim lines stay exactly as they were (a tidy adds no
-/// knowledge, and cannot plant a bullet for a later run to stamp). Headings and the title are
-/// free.
+/// A tidied file is acceptable when it is the same topic with the same facts.
+///
+/// Every fact keeps its id, author, label, links and date, and only the text of a fact that is not
+/// trusted may change (rewording a trusted fact is the person's to do, so a tidy cannot launder
+/// model words into it). The unstamped bullets and verbatim lines stay exactly as they were (a tidy
+/// adds no knowledge, and cannot plant a bullet for a later run to stamp). Headings and the title
+/// are free.
 #[must_use]
 pub fn tidy_accepts(current: &TopicFile, after: &TopicFile) -> bool {
     let facts = |file: &TopicFile| -> Vec<Fact> {

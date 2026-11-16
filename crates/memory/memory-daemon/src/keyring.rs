@@ -54,6 +54,9 @@ pub struct LockChanges {
 
 impl LockChanges {
     /// Subscribes on `connection`.
+    ///
+    /// # Errors
+    /// `zbus::Error` when the match rule cannot be added on `connection`.
     pub async fn on(connection: &zbus::Connection) -> zbus::Result<Self> {
         let stream = MessageStream::for_match_rule(rule(), connection, None).await?;
         Ok(Self { stream })

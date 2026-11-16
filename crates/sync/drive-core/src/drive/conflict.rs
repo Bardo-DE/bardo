@@ -103,7 +103,7 @@ impl Inner {
             let Ok(listed) = self.listing.entry(&item) else {
                 continue;
             };
-            changed.extend(self.meet(&id, listed));
+            changed.extend(self.meet(&id, listed.as_ref()));
         }
         if !changed.is_empty() {
             self.touched();
@@ -113,7 +113,7 @@ impl Inner {
     }
 
     /// Meets the change of `id` with the drive's entry of it, `listed`.
-    fn meet(&self, id: &NodeId, listed: Option<Entry>) -> Vec<NodeId> {
+    fn meet(&self, id: &NodeId, listed: Option<&Entry>) -> Vec<NodeId> {
         for _ in 0..TRIES {
             let Some(edit) = self.edit(id) else {
                 return Vec::new();
@@ -126,7 +126,7 @@ impl Inner {
                     .as_ref()
                     .is_some_and(|awaiting| awaiting.before.as_deref() == version)
             };
-            let step = match &listed {
+            let step = match listed {
                 None if edit.removed || behind(None) => return Vec::new(),
                 None => Step::Gone,
                 Some(entry)
@@ -155,7 +155,7 @@ impl Inner {
                 let met = match step {
                     Step::Gone => self.gone_from_the_drive(&mut index, edit, name),
                     Step::Newer(entry) => {
-                        self.newer_on_the_drive(&mut index, edit, &base, entry, name)
+                        self.newer_on_the_drive(&mut index, edit, &base, &entry, name)
                     }
                 };
                 // Its writers follow the bytes before anything can write again; who reads it
@@ -226,7 +226,7 @@ impl Inner {
         index: &mut Index,
         mut edit: Edit,
         base: &Base,
-        entry: Entry,
+        entry: &Entry,
         name: Option<String>,
     ) -> Met {
         let id = edit.id.clone();

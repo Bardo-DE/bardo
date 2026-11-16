@@ -8,12 +8,12 @@ use account_http::http::Request;
 use account_http::{HttpError, uri};
 use base_url::WebUrl;
 
-fn propfind(url: WebUrl, depth: Depth, props: &[&str]) -> Result<Request<Vec<u8>>, HttpError> {
-    Ok(bytes::propfind(uri(&url)?, depth, props))
+fn propfind(url: &WebUrl, depth: Depth, props: &[&str]) -> Result<Request<Vec<u8>>, HttpError> {
+    Ok(bytes::propfind(uri(url)?, depth, props))
 }
 
 /// A PROPFIND at depth 1 of what a listing needs.
-pub fn list(url: WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
+pub fn list(url: &WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
     propfind(
         url,
         Depth::One,
@@ -22,7 +22,7 @@ pub fn list(url: WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
 }
 
 /// A PROPFIND at depth 0 of what a listing needs, for one resource.
-pub fn stat(url: WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
+pub fn stat(url: &WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
     propfind(
         url,
         Depth::Zero,
@@ -31,7 +31,7 @@ pub fn stat(url: WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
 }
 
 /// A PROPFIND of the quota properties (RFC 4331).
-pub fn quota(url: WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
+pub fn quota(url: &WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
     propfind(
         url,
         Depth::Zero,
@@ -41,9 +41,9 @@ pub fn quota(url: WebUrl) -> Result<Request<Vec<u8>>, HttpError> {
 
 /// A sync-collection REPORT from `token` (empty for the first listing) over everything below
 /// the folder (RFC 6578 section 3.3, `sync-level` `infinite`), asking for what a listing reads.
-pub fn sync(url: WebUrl, token: &str) -> Result<Request<Vec<u8>>, HttpError> {
+pub fn sync(url: &WebUrl, token: &str) -> Result<Request<Vec<u8>>, HttpError> {
     Ok(bytes::sync_collection(
-        uri(&url)?,
+        uri(url)?,
         token,
         SyncLevel::Infinite,
         &[names::GETETAG, CONTENT_LENGTH, names::RESOURCETYPE],

@@ -426,7 +426,7 @@ impl Inner {
         match entry.kind {
             ItemKind::Folder => return Err(WriteError::Folder),
             ItemKind::Online { .. } => return Err(WriteError::NotAllowed),
-            _ => {}
+            ItemKind::File => {}
         }
         let size = keep.unwrap_or(entry.size.0).min(entry.size.0);
         let n = held(&self.index).take_local();

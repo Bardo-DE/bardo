@@ -141,15 +141,16 @@ pub fn free(name: &str, taken: impl Fn(&str) -> bool) -> String {
     if !taken(name) {
         return name.to_owned();
     }
-    (2..)
+    (2..=u32::MAX)
         .map(|n| numbered(name, n))
         .find(|candidate| !taken(candidate))
         .unwrap_or_else(|| name.to_owned())
 }
 
 /// The shown name of each of one folder's items, given in order oldest first (the drive's by id,
-/// then what this computer made) with each one's [`base_of`] name: the first of a name keeps it,
-/// the rest are numbered. Answers in the same order.
+/// then what this computer made) with each one's [`base_of`] name.
+///
+/// The first of a name keeps it, the rest are numbered. Answers in the same order.
 pub fn assign(bases: &[String]) -> Vec<String> {
     let mut taken: BTreeSet<&str> = BTreeSet::new();
     let mut first = vec![false; bases.len()];

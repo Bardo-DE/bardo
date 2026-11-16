@@ -296,6 +296,9 @@ impl<B: Backend, P: Peers> Daemon<B, P> {
     }
 
     /// Serves `call` as `caller`.
+    ///
+    /// # Errors
+    /// `MemoryError` when the call is not a request, or serving it fails.
     pub async fn serve_as(
         &self,
         caller: &Caller,

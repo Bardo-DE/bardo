@@ -122,13 +122,13 @@ impl<H: Http> WebDavReplica<H> {
     /// The version of the file at `id` now, or `None` when there is none.
     async fn current(&self, id: &RemoteId) -> Result<Option<RemoteVersion>, PutRefused> {
         let url = self.root.url_of(id).ok_or(PutRefused::Forbidden)?;
-        let stat = requests::stat(url).map_err(write_unreached)?;
+        let stat = requests::stat(&url).map_err(write_unreached)?;
         let response = self.write_send(stat).await?;
         match response.status().as_u16() {
             207 => {
                 let text = String::from_utf8_lossy(response.body());
                 let status =
-                    parse_multistatus(&text).map_err(|_| PutRefused::Transient(RetryAfter(30)))?;
+                    parse_multistatus(&text).ok().ok_or_else(|| PutRefused::Transient(RetryAfter(30)))?;
                 Ok(entries(&self.root, &status)
                     .into_iter()
                     .find(|e| e.id == *id && e.kind == Kind::File)

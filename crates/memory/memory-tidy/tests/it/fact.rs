@@ -4,6 +4,10 @@ use crate::support::*;
 use memory_core::*;
 use memory_tidy::fact::{self, FactEffect, FactEvent, FactLife};
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one table of fact states; each row is a short step and its expected state"
+)]
 #[test]
 fn fact_state_machine_table() {
     use FactEffect as E;
