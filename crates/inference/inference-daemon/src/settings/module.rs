@@ -76,6 +76,7 @@ impl<P: Peers> InferdSettings<P> {
     /// The same module, vouching for `folder` and the folders above it when it checks the
     /// program a row names: only the folders from `folder` down must be the person's or root's.
     /// For a test, whose own folder sits in a temporary folder everybody may write to.
+    #[must_use]
     pub fn programs_held_below(self, folder: impl Into<std::path::PathBuf>) -> Self {
         Self {
             programs_below: folder.into(),
@@ -205,7 +206,7 @@ impl<P: Peers> InferdSettings<P> {
             .filter_map(|(word, locality)| match locality {
                 Locality::OnDevice => Some((word, ON_THIS_COMPUTER.to_owned())),
                 Locality::LocalNetwork => Some((word, ON_YOUR_NETWORK.to_owned())),
-                _ => None,
+                Locality::Cloud { .. } => None,
             })
             .chain(
                 hosted
@@ -413,6 +414,10 @@ fn slot_label(slot: Slot) -> &'static str {
     }
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn failed(why: impl ToString) -> LiveError {
     LiveError::Failed(why.to_string())
 }
@@ -504,6 +509,10 @@ impl<P: Peers> LiveModule for InferdSettings<P> {
 }
 
 /// Serves the module at [`INFERENCE_SETTINGS_PATH`].
+///
+/// # Errors
+///
+/// Returns the bus error when the module cannot be served.
 pub async fn serve_settings<P: Peers>(
     connection: &zbus::Connection,
     module: InferdSettings<P>,

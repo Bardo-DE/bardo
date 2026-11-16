@@ -24,7 +24,8 @@ fn data_url(url: &str) -> Result<MessagePart, Unmapped> {
         .strip_suffix(";base64")
         .ok_or_else(|| Unmapped::of("a data URL that is not base64"))?;
     let bytes = serde_json::from_value::<Base64Bytes>(Value::String(data.to_owned()))
-        .map_err(|_| Unmapped::of("an image whose data is not base64"))?;
+        .ok()
+        .ok_or(Unmapped::of("an image whose data is not base64"))?;
     Ok(MessagePart::Image(ImagePart {
         media_type: media.to_owned(),
         source: ImageSource::Inline(bytes),
@@ -72,9 +73,11 @@ fn call(call: &Value) -> Result<MessagePart, Unmapped> {
     Ok(MessagePart::ToolCall(ToolCallPart {
         id: ToolCallId(text_of(call, "id").unwrap_or_default().to_owned()),
         name: ToolName::new(text_of(function, "name").unwrap_or_default())
-            .map_err(|_| Unmapped::of("a tool call whose name is not a tool name"))?,
+            .ok()
+            .ok_or(Unmapped::of("a tool call whose name is not a tool name"))?,
         args: JsonText::new(arguments)
-            .map_err(|_| Unmapped::of("a tool call whose arguments are not JSON"))?,
+            .ok()
+            .ok_or(Unmapped::of("a tool call whose arguments are not JSON"))?,
     }))
 }
 
@@ -157,13 +160,15 @@ fn tools(value: Option<&Value>) -> Result<Vec<ToolDecl>, Unmapped> {
                 .unwrap_or_else(|| serde_json::json!({ "type": "object", "properties": {} }));
             Ok(ToolDecl {
                 name: ToolName::new(text_of(function, "name").unwrap_or_default())
-                    .map_err(|_| Unmapped::of("a tool whose name is not a tool name"))?,
+                    .ok()
+                    .ok_or(Unmapped::of("a tool whose name is not a tool name"))?,
                 description: text_of(function, "description")
                     .unwrap_or_default()
                     .to_owned(),
                 params: SchemaText(
                     JsonText::new(schema.to_string())
-                        .map_err(|_| Unmapped::of("a tool whose schema is not JSON"))?,
+                        .ok()
+                        .ok_or(Unmapped::of("a tool whose schema is not JSON"))?,
                 ),
             })
         })
@@ -186,7 +191,8 @@ fn choice(value: Option<&Value>) -> Result<ToolChoice, Unmapped> {
                     .and_then(|f| text_of(f, "name"))
                     .unwrap_or_default(),
             )
-            .map_err(|_| Unmapped::of("a tool_choice whose name is not a tool name"))?,
+            .ok()
+            .ok_or(Unmapped::of("a tool_choice whose name is not a tool name"))?,
         )),
     }
 }
@@ -248,9 +254,14 @@ const MOST_TOP_LOGPROBS: u64 = 20;
 /// `logprobs` is carried for a `Choice` (a request with `guided_choice`): the options' shares
 /// come back as log-probabilities (see [`super::reply`]). On any other request it is dropped
 /// without a word, as before, and the reply has no `logprobs`.
+///
+/// # Errors
+///
+/// Returns [`Unmapped`] when the body is not a request inferd can carry out.
 pub fn parse(body: &[u8], class: DataClass) -> Result<Parsed, Unmapped> {
-    let root: Value =
-        serde_json::from_slice(body).map_err(|_| Unmapped::of("a body that is not JSON"))?;
+    let root: Value = serde_json::from_slice(body)
+        .ok()
+        .ok_or(Unmapped::of("a body that is not JSON"))?;
     let model = text_of(&root, "model")
         .ok_or_else(|| Unmapped::of("a request with no model"))?
         .to_owned();

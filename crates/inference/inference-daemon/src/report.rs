@@ -1,3 +1,5 @@
+//! What inferd tells accountd of a local runtime.
+//!
 //! What inferd tells accountd of a local runtime: the runtime is an account (Ollama, llama.cpp,
 //! LM Studio; design/31 section 3.3) that Settings lists and that goes `Offline`, never gone, when
 //! the runtime stops. It carries no secret: the provider's id, the models as `Discovered` claims,

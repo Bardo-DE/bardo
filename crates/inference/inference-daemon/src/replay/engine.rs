@@ -1,8 +1,9 @@
-//! The replay engine's server: an OpenAI-compatible HTTP server on a Unix socket, in this
-//! process, that answers `GET /health` and `POST /v1/chat/completions` from a [`Replayer`]. It is
-//! what stands where llama-server or vLLM would, behind the same socket path, so the real
-//! router, supervisor driver, runner and codec run unchanged. One connection serves one request,
-//! as `HttpClient` makes them. It opens no network socket and no file but the cassette's.
+//! The replay engine's server: an OpenAI-compatible HTTP server on a Unix socket, in this process,
+//! that answers `GET /health` and `POST /v1/chat/completions` from a [`Replayer`].
+//!
+//! It is what stands where llama-server or vLLM would, behind the same socket path, so the real
+//! router, supervisor driver, runner and codec run unchanged. One connection serves one request, as
+//! `HttpClient` makes them. It opens no network socket and no file but the cassette's.
 
 use super::record::Recorder;
 use super::render::{self, Delivery};

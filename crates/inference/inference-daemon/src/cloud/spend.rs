@@ -1,3 +1,5 @@
+//! What hosted models have been charged, per scope and period.
+//!
 //! What hosted models have been charged: a ledger of the charges providers reported and the tokens
 //! used, per scope (an account, an app) and period (a calendar day, a calendar month, in UTC), and
 //! the verdict the caps (`ai.spend.*`) give one more request.
@@ -104,7 +106,7 @@ impl Default for Document {
 
 /// What a ledger file holds.
 fn read_document(text: &str) -> Result<Document, ()> {
-    let document: Document = serde_json::from_str(text).map_err(|_| ())?;
+    let document: Document = serde_json::from_str(text).ok().ok_or_else(|| ())?;
     // A format a later inferd wrote: not guessed at.
     if document.format == FORMAT {
         Ok(document)

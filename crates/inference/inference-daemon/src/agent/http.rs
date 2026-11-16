@@ -1,8 +1,11 @@
+//! The least HTTP/1.1 a model client needs, over any byte stream.
+//!
 //! The least HTTP/1.1 a model client needs, over any byte stream: read one request (a
 //! `Content-Length` or chunked body, `Expect: 100-continue`), write one response (a JSON body, or
 //! an event stream sent chunked) and close. Every response says `Connection: close`, so there is
 //! no pipelining and no state between requests.
 
+use std::fmt::Write as _;
 use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 
 /// The largest request body read: a long agent conversation with its tool results.
@@ -126,7 +129,8 @@ async fn fill<S: AsyncRead + Unpin>(
         let n = stream
             .read(&mut chunk)
             .await
-            .map_err(|_| ReadError::Closed)?;
+            .ok()
+            .ok_or(ReadError::Closed)?;
         if n == 0 {
             return Err(if buffer.is_empty() {
                 ReadError::Closed
@@ -157,13 +161,16 @@ async fn read_chunked<S: AsyncRead + Unpin>(
             Box::pin(fill(stream, buffer, want)).await?;
         };
         let size_text = std::str::from_utf8(&buffer[..line_end])
-            .map_err(|_| ReadError::Malformed)?
+            .ok()
+            .ok_or(ReadError::Malformed)?
             .split(';')
             .next()
             .unwrap_or_default()
             .trim()
             .to_owned();
-        let size = usize::from_str_radix(&size_text, 16).map_err(|_| ReadError::Malformed)?;
+        let size = usize::from_str_radix(&size_text, 16)
+            .ok()
+            .ok_or(ReadError::Malformed)?;
         buffer.drain(..line_end + 2);
         if size == 0 {
             // Trailers, if any, end at a blank line; this client sends none that matter.
@@ -178,9 +185,16 @@ async fn read_chunked<S: AsyncRead + Unpin>(
     }
 }
 
-/// Reads one request. `admit` sees the request line and headers (the body not yet read) and
-/// says whether to go on: a refused request's body is never read, so a client without the
-/// session's token cannot make the daemon take in a large body.
+/// Reads one request.
+///
+/// `admit` sees the request line and headers (the body not yet read) and says whether to go on: a
+/// refused request's body is never read, so a client without the session's token cannot make the
+/// daemon take in a large body.
+///
+/// # Errors
+///
+/// Returns a [`ReadError`] when the stream ends early, the request is malformed or too large, or
+/// `admit` refuses it.
 pub async fn read_request<S: AsyncRead + AsyncWrite + Unpin>(
     stream: &mut S,
     admit: impl FnOnce(&Request) -> bool,
@@ -196,7 +210,9 @@ pub async fn read_request<S: AsyncRead + AsyncWrite + Unpin>(
         let want = buffer.len() + 1;
         Box::pin(fill(stream, &mut buffer, want)).await?;
     };
-    let head = std::str::from_utf8(&buffer[..head_end]).map_err(|_| ReadError::Malformed)?;
+    let head = std::str::from_utf8(&buffer[..head_end])
+        .ok()
+        .ok_or(ReadError::Malformed)?;
     let Head {
         method,
         target,
@@ -226,7 +242,7 @@ pub async fn read_request<S: AsyncRead + AsyncWrite + Unpin>(
     } else {
         let length = match named("content-length") {
             None => 0,
-            Some(text) => text.parse::<usize>().map_err(|_| ReadError::Malformed)?,
+            Some(text) => text.parse::<usize>().ok().ok_or(ReadError::Malformed)?,
         };
         if length > MAX_BODY {
             return Err(ReadError::TooLarge);
@@ -266,13 +282,17 @@ fn head(status: u16, content_type: &str, extra: &[(&str, String)], framing: &str
         reason(status)
     );
     for (name, value) in extra {
-        text.push_str(&format!("{name}: {value}\r\n"));
+        let _ = write!(text, "{name}: {value}\r\n");
     }
     text.push_str("\r\n");
     text
 }
 
 /// Writes a whole response with a JSON body.
+///
+/// # Errors
+///
+/// Returns the I/O error when the stream cannot be written.
 pub async fn write_json<S: AsyncWrite + Unpin>(
     stream: &mut S,
     status: u16,
@@ -287,6 +307,10 @@ pub async fn write_json<S: AsyncWrite + Unpin>(
 }
 
 /// Starts an event stream: the head, chunked, so [`write_chunk`] may follow.
+///
+/// # Errors
+///
+/// Returns the I/O error when the stream cannot be written.
 pub async fn start_stream<S: AsyncWrite + Unpin>(stream: &mut S) -> std::io::Result<()> {
     let text = head(
         200,
@@ -299,6 +323,10 @@ pub async fn start_stream<S: AsyncWrite + Unpin>(stream: &mut S) -> std::io::Res
 }
 
 /// One chunk of a chunked body, sent at once.
+///
+/// # Errors
+///
+/// Returns the I/O error when the stream cannot be written.
 pub async fn write_chunk<S: AsyncWrite + Unpin>(
     stream: &mut S,
     data: &[u8],
@@ -314,6 +342,10 @@ pub async fn write_chunk<S: AsyncWrite + Unpin>(
 }
 
 /// Ends a chunked body.
+///
+/// # Errors
+///
+/// Returns the I/O error when the stream cannot be written.
 pub async fn end_stream<S: AsyncWrite + Unpin>(stream: &mut S) -> std::io::Result<()> {
     stream.write_all(b"0\r\n\r\n").await?;
     stream.flush().await

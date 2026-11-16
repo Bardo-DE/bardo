@@ -1,10 +1,11 @@
 //! An account route: the agent's request goes to the account's provider as it was sent, with the
-//! real key in the provider's own header. The key is asked of accountd for this request, on a
-//! sealed descriptor, held in the client built for it, and dropped with it; it is in no reply,
-//! error, log line, audit line or bus message. What comes back is relayed as it arrives and
-//! read for its usage figures and, from a provider that reports one, its charge. The account's and
-//! the program's caps are asked before the request goes out, and what the provider counted is added
-//! to them when it ends.
+//! real key in the provider's own header.
+//!
+//! The key is asked of accountd for this request, on a sealed descriptor, held in the client built
+//! for it, and dropped with it; it is in no reply, error, log line, audit line or bus message. What
+//! comes back is relayed as it arrives and read for its usage figures and, from a provider that
+//! reports one, its charge. The account's and the program's caps are asked before the request goes
+//! out, and what the provider counted is added to them when it ends.
 //!
 //! Nothing of the request is mapped: tool calls and results, thinking, images, server tools and
 //! cache hints pass as the agent wrote them. The one change is `OpenAI` streaming, which asks for
@@ -126,11 +127,15 @@ fn upstream(head: Option<&ResponseHead>) -> Failure {
 fn body_for(request: &Request, shape: Shape, stream: bool) -> Result<String, Failure> {
     let invalid = || Failure::new(Cause::Invalid, "the body is not JSON text");
     if shape == Shape::OpenAi && stream {
-        let mut root: Value = serde_json::from_slice(&request.body).map_err(|_| invalid())?;
+        let mut root: Value = serde_json::from_slice(&request.body)
+            .ok()
+            .ok_or_else(|| invalid())?;
         root["stream_options"] = serde_json::json!({ "include_usage": true });
         return Ok(root.to_string());
     }
-    String::from_utf8(request.body.clone()).map_err(|_| invalid())
+    String::from_utf8(request.body.clone())
+        .ok()
+        .ok_or_else(|| invalid())
 }
 
 /// The headers the Anthropic API wants beside the key: the version the agent asked for, and its
@@ -204,6 +209,15 @@ pub async fn priced_ids(ctx: &Ctx, account: &AccountId) -> Vec<String> {
 }
 
 /// Forwards `request` to the account's provider and relays the reply.
+///
+/// # Errors
+///
+/// Returns a [`Failure`] when the provider cannot be reached or refuses, or the reply cannot be
+/// written to `out`.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one forward-and-relay sequence, each step needing the one before it"
+)]
 pub async fn run<S: AsyncWrite + Unpin + Send>(
     ctx: &Ctx,
     account: &AccountId,
@@ -237,13 +251,15 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
         ));
     }
     let model_id = ModelId::parse(&entry.id.0)
-        .map_err(|_| Failure::new(Cause::Upstream, "the catalogue entry has no usable id"))?;
+        .ok()
+        .ok_or_else(|| Failure::new(Cause::Upstream, "the catalogue entry has no usable id"))?;
     let body = body_for(request, shape, named.stream)?;
     let sent = u64::try_from(body.len()).unwrap_or(u64::MAX);
     let key = cloud
         .key(&grant)
         .await
-        .map_err(|_| Failure::new(Cause::Upstream, "the account's key could not be read"))?;
+        .ok()
+        .ok_or_else(|| Failure::new(Cause::Upstream, "the account's key could not be read"))?;
     let extra = match shape {
         Shape::Anthropic => anthropic_headers(request),
         Shape::OpenAi => Vec::new(),
@@ -351,7 +367,8 @@ async fn finish<S: AsyncWrite + Unpin>(
             Ok(status) => {
                 http::write_json(out, status.0, &[], &String::from_utf8_lossy(&relay.body))
                     .await
-                    .map_err(|_| Failure::new(Cause::Upstream, "the client went away"))
+                    .ok()
+                    .ok_or_else(|| Failure::new(Cause::Upstream, "the client went away"))
             }
             Err(_) => Err(Failure::new(
                 Cause::Upstream,

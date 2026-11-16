@@ -1,3 +1,5 @@
+//! What each AI account has spent on hosted models this month, and the monthly cap on it.
+//!
 //! What each AI account has spent on hosted models this month, and the monthly cap on it, as rows
 //! of inferd's settings module: `accounts.<id>.spend.month` ("Spent this month") and
 //! `accounts.<id>.spend.cap` ("Monthly limit"), one pair for each account reached over the
@@ -98,7 +100,7 @@ impl SpendRows {
             .unwrap_or(&account.provider);
         let help = match reported {
             Charges::PerReply => String::new(),
-            _ => format!(
+            Charges::NotReported => format!(
                 "{name} doesn't report what its replies cost, so {}.",
                 row.unreported
             ),

@@ -85,9 +85,10 @@ pub fn id_of(name: &str) -> Option<ModelId> {
     ModelId::parse(&slug).ok()
 }
 
-/// The models of `claims`, each with the name its runtime serves it under. A claim whose id no
-/// listed name makes is paired with the only listed name when there is exactly one of each, and
-/// is left out otherwise (it could not be asked for).
+/// The models of `claims`, each with the name its runtime serves it under.
+///
+/// A claim whose id no listed name makes is paired with the only listed name when there is exactly
+/// one of each, and is left out otherwise (it could not be asked for).
 pub fn pair(listing: &Listing, claims: &[Claim]) -> Vec<Probed> {
     let mut ids: Vec<&ModelId> = Vec::new();
     for id in claims.iter().filter_map(model_of) {

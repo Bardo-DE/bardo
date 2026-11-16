@@ -246,6 +246,7 @@ fn the_strictest_cap_of_the_four_decides() {
 
 #[test]
 fn a_ledger_opened_on_a_file_keeps_what_it_was_told_across_a_restart() {
+    use std::os::unix::fs::PermissionsExt;
     let dir = Scratch::new("inferd-spend");
     let file = dir.join("state").join("spend.json");
     let who = app("org.bardo.Companion");
@@ -274,7 +275,6 @@ fn a_ledger_opened_on_a_file_keeps_what_it_was_told_across_a_restart() {
     );
     let text = std::fs::read_to_string(&file).expect("the file");
     assert!(!text.contains("sk-"), "money and counts only: {text}");
-    use std::os::unix::fs::PermissionsExt;
     let mode = std::fs::metadata(&file).expect("meta").permissions().mode();
     assert_eq!(mode & 0o777, 0o600);
 }

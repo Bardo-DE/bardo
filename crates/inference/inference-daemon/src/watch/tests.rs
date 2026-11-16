@@ -1,7 +1,5 @@
 use super::*;
 use crate::probe::testing::{chat, found};
-use crate::probed::Standing;
-use crate::report::{ReportFault, Reports};
 use account_capability::Claim;
 use account_capability::LlmFeature;
 use account_core::AccountId;
@@ -151,7 +149,9 @@ impl Reports for Arc<Recorder> {
                 .push((runtime, standing, claims.len()));
             match *self.answer.lock().expect("lock") {
                 Some(fault) => Err(fault),
-                None => AccountId::parse(runtime.provider()).map_err(|_| ReportFault::Rejected),
+                None => AccountId::parse(runtime.provider())
+                    .ok()
+                    .ok_or(ReportFault::Rejected),
             }
         })
     }

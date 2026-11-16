@@ -1,3 +1,5 @@
+//! The model a replay engine stands in for.
+//!
 //! The model a replay engine stands in for: a catalog entry written here (a text-and-tools chat
 //! model with structured output, which is what the cassette's replies are), so routing sees a
 //! card like any other, and the engine's spec and socket like any other. Its figures are zero:

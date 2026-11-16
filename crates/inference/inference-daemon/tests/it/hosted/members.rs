@@ -5,7 +5,7 @@ use super::*;
 use account_dbus::Details;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
-use inference_core::{InferRefusal, ModelError, Readiness};
+use inference_core::{InferRefusal, ModelError};
 use inference_daemon::engines::Engines;
 use inference_daemon::peers::TablePeers;
 use inference_daemon::service::Inference;

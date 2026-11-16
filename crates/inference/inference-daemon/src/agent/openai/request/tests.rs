@@ -1,6 +1,5 @@
 use super::*;
 use base_ids::Tokens;
-use inference_core::Knob;
 use serde_json::json;
 
 fn read(body: &Value) -> Result<Parsed, Unmapped> {

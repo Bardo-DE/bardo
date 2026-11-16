@@ -1,3 +1,5 @@
+//! The AI accounts as inferd uses them, asked of accountd.
+//!
 //! The AI accounts as inferd uses them: accountd keeps the keys, the accounts and the permits
 //! (`org.bardo.Accounts1.Broker`), and inferd, the one daemon that sends a key to an AI company,
 //! asks it through `account-client-dbus`'s [`AiAccounts`]. [`AccountdBroker`] is both seams the rest of
@@ -41,13 +43,17 @@ impl AccountdBroker {
 
 /// What a failed call is to the one who asked: a refusal is final, an accountd that is not there
 /// or cannot answer now is "ask again at the next look".
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn fault_of(error: AiAccountsError) -> AccountdFault {
     match error {
         AiAccountsError::Refused(refusal) => AccountdFault::from(refusal),
         AiAccountsError::Link(LinkError::Unreachable) => AccountdFault::Unreachable,
         AiAccountsError::Link(LinkError::Malformed(_)) => AccountdFault::Unreadable,
         // A caller accountd does not know as the broker, or an argument it refused: final.
-        _ => AccountdFault::Refused,
+        AiAccountsError::Link(_) => AccountdFault::Refused,
     }
 }
 
@@ -110,8 +116,9 @@ impl Reports for AccountdBroker {
         standing: Standing,
     ) -> Boxed<'a, Result<AccountId, ReportFault>> {
         Box::pin(async move {
-            let provider =
-                ProviderId::parse(runtime.provider()).map_err(|_| ReportFault::Rejected)?;
+            let provider = ProviderId::parse(runtime.provider())
+                .ok()
+                .ok_or(ReportFault::Rejected)?;
             let state = match standing {
                 Standing::Online => AccountState::Ok,
                 Standing::Offline => AccountState::Offline,
@@ -151,8 +158,10 @@ impl AccountList {
 const RETRY: Duration = Duration::from_secs(2);
 
 /// Keeps `list` current and wakes `news` each time accountd says an AI account, a permit or a
-/// switch changed (so a listener reads `Places` again). It subscribes before it looks, asks
-/// again when accountd comes back after it went, and ends with the runtime.
+/// switch changed (so a listener reads `Places` again).
+///
+/// It subscribes before it looks, asks again when accountd comes back after it went, and ends with
+/// the runtime.
 pub fn follow(accounts: AiAccounts, list: AccountList, news: Arc<Notify>) {
     tokio::spawn(async move {
         loop {

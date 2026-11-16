@@ -52,12 +52,20 @@ pub struct Recorder {
 }
 
 impl EngineHost for Recorder {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn spawn(&self, id: &EngineId, _: &UnitSpec) -> Result<(), HostError> {
         self.stopped.lock().expect("lock").retain(|one| one != id);
         self.spawned.lock().expect("lock").push(id.clone());
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn stop(&self, id: &EngineId) -> Result<(), HostError> {
         self.stopped.lock().expect("lock").push(id.clone());
         self.gone.notify_waiters();
@@ -308,6 +316,10 @@ pub fn test_app() -> AppId {
 }
 
 impl World {
+    #[expect(
+        clippy::too_many_lines,
+        reason = "builds the whole test rig, each part needing the one before it"
+    )]
     pub async fn start(plan: Plan) -> World {
         let scratch = Scratch::new("inf");
         let catalog_dir = scratch.join("cat");
@@ -414,8 +426,8 @@ impl World {
         let specs: Vec<_> = models.iter().map(|m| m.spec.clone()).collect();
         let timing = plan.supervisor.unwrap_or_default();
         let log: LogLines = Arc::default();
-        let supervised = match &plan.processes {
-            None => Supervised::start(
+        let supervised = if plan.processes.is_none() {
+            Supervised::start(
                 specs,
                 timing,
                 Ports {
@@ -426,38 +438,36 @@ impl World {
                     probe: probes,
                     gpu,
                 },
-            ),
+            )
+        } else {
             // Real child processes (the scratch program), the real health probe over their
             // sockets, and inferd's log lines kept for the test to read.
-            Some(_) => {
-                let processes = ProcessHost::new().with_sockets(
-                    models
-                        .iter()
-                        .map(|m| (m.spec.id.clone(), m.socket.0.clone())),
-                );
-                let sink = Arc::clone(&log);
-                let diagnostics =
-                    processes
-                        .diagnostics()
-                        .logging_to(Log::to(move |level, text| {
-                            sink.lock().expect("lock").push((level, text.to_owned()));
-                        }));
-                let probe = HealthProbe::new(
-                    models
-                        .iter()
-                        .map(|m| (m.spec.id.clone(), m.socket.0.clone())),
-                );
-                Supervised::start_with(
-                    specs,
-                    timing,
-                    Ports {
-                        host: replays.host(processes),
-                        probe,
-                        gpu,
-                    },
-                    diagnostics,
-                )
-            }
+            let processes = ProcessHost::new().with_sockets(
+                models
+                    .iter()
+                    .map(|m| (m.spec.id.clone(), m.socket.0.clone())),
+            );
+            let sink = Arc::clone(&log);
+            let diagnostics = processes
+                .diagnostics()
+                .logging_to(Log::to(move |level, text| {
+                    sink.lock().expect("lock").push((level, text.to_owned()));
+                }));
+            let probe = HealthProbe::new(
+                models
+                    .iter()
+                    .map(|m| (m.spec.id.clone(), m.socket.0.clone())),
+            );
+            Supervised::start_with(
+                specs,
+                timing,
+                Ports {
+                    host: replays.host(processes),
+                    probe,
+                    gpu,
+                },
+                diagnostics,
+            )
         };
         // The rig runs on the real clock, so a running model says since when.
         let supervised = supervised.dated(std::time::SystemTime::now());

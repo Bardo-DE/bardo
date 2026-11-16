@@ -36,7 +36,7 @@ fn installed_row(roots: &Roots) -> (Row, PathBuf) {
         version: "b-test".into(),
         backend: "cpu".into(),
         seal,
-        entries: Default::default(),
+        entries: std::collections::BTreeMap::default(),
         venv_seal: None,
     }
     .write(&dir.join("installed.json"))

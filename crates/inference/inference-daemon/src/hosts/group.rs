@@ -1,8 +1,9 @@
-//! An engine's process group. Each engine is started as the leader of a group of its own
-//! (`process_group(0)`), so every process it forks (vLLM's `EngineCore`, multiprocessing's
-//! resource tracker) is in that group, and ending the engine signals the group: `SIGTERM`, a
-//! bounded wait, then `SIGKILL`. The group id is the pid of the child inferd itself created,
-//! never found by a name or a pattern.
+//! An engine's process group.
+//!
+//! Each engine is started as the leader of a group of its own (`process_group(0)`), so every
+//! process it forks (vLLM's `EngineCore`, multiprocessing's resource tracker) is in that group, and
+//! ending the engine signals the group: `SIGTERM`, a bounded wait, then `SIGKILL`. The group id is
+//! the pid of the child inferd itself created, never found by a name or a pattern.
 //!
 //! What covers each way an engine can end:
 //! - the supervisor stops or evicts it, or a start never becomes ready: [`end`] (the whole group,
@@ -65,7 +66,10 @@ pub async fn end(group: Pid, grace: Duration) {
 
 /// Makes the kernel send the child `SIGKILL` when the process that started it dies. It covers the
 /// child only, not its children; the group does that where inferd lives to run [`end`].
-#[allow(unsafe_code)]
+#[expect(
+    unsafe_code,
+    reason = "`pre_exec` is unsafe; the closure makes one async-signal-safe `prctl` call"
+)]
 pub fn die_with_parent(command: &mut Command) {
     // SAFETY: the closure makes one system call (`prctl`) between fork and exec, which is
     // async-signal-safe, and allocates nothing.

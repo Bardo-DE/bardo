@@ -1,8 +1,9 @@
-//! `org.bardo.Inference1` at `/org/bardo/Inference1`: the daemon's object. `Open` checks the
-//! caller (connection to pid to executable to caller), makes a socketpair, hands one end back as
-//! the reply descriptor and runs [`serve_session`] on the other, over the four seams: this
-//! session's router (which decides once and pins the runner), the shared engines, the session's
-//! turns and its audit sink. The introspection of this object is the checked-in
+//! `org.bardo.Inference1` at `/org/bardo/Inference1`: the daemon's object.
+//!
+//! `Open` checks the caller (connection to pid to executable to caller), makes a socketpair, hands
+//! one end back as the reply descriptor and runs [`serve_session`] on the other, over the four
+//! seams: this session's router (which decides once and pins the runner), the shared engines, the
+//! session's turns and its audit sink. The introspection of this object is the checked-in
 //! `dbus/org.bardo.Inference1.xml` (`tests/introspection.rs`).
 
 use self::error::InferError;
@@ -97,6 +98,7 @@ impl<P, O, C> Inference<P, O, C> {
     }
 
     /// The same object, whose `LocalEngines` tells which engines `found` has a program for.
+    #[must_use]
     pub fn engines_found(self, found: LocalEngines) -> Self {
         Self {
             local_engines: found,
@@ -106,6 +108,7 @@ impl<P, O, C> Inference<P, O, C> {
 
     /// The same object, which says `EnginesChanged` each time `news` is woken: an AI account
     /// appeared, went or changed state, so a listener reads `Places` again.
+    #[must_use]
     pub fn keys_news(self, news: Arc<tokio::sync::Notify>) -> Self {
         Self {
             keys_news: Some(news),
@@ -116,6 +119,7 @@ impl<P, O, C> Inference<P, O, C> {
     /// The same object, whose `Candidates`, `AddTailnetComputer` and guest methods work over the
     /// person's Tailscale network through `tailnet`. Without it the lists are empty and an
     /// addition answers that it is not available here.
+    #[must_use]
     pub fn tailnet(self, tailnet: Tailnet) -> Self {
         Self {
             tailnet: Some(tailnet),
@@ -125,6 +129,7 @@ impl<P, O, C> Inference<P, O, C> {
 
     /// The same object, whose `AddComputer` and `RemoveComputer` change the computers Settings
     /// added. Without it both answer that adding computers is not available.
+    #[must_use]
     pub fn computers(self, computers: Computers) -> Self {
         Self {
             computers: Some(Arc::new(computers)),
@@ -134,6 +139,7 @@ impl<P, O, C> Inference<P, O, C> {
 
     /// The same object, also serving `org.bardo.Inference1.Agents` to the agent launcher over
     /// these endpoints (`serve_on` puts it on the bus).
+    #[must_use]
     pub fn agents(self, agents: Agents) -> Self {
         Self {
             agents: Some(agents),
@@ -142,6 +148,7 @@ impl<P, O, C> Inference<P, O, C> {
     }
 
     /// The same object, whose `Rescan` reloads the settings from the file through `reload`.
+    #[must_use]
     pub fn reloading(self, reload: Reload) -> Self {
         Self {
             reload: Some(reload),
@@ -150,6 +157,7 @@ impl<P, O, C> Inference<P, O, C> {
     }
 
     /// The same object, whose `Rescan` also looks at once for the runtimes the person runs.
+    #[must_use]
     pub fn probing(self, probing: Probing) -> Self {
         Self {
             probing: Some(probing),
@@ -158,6 +166,7 @@ impl<P, O, C> Inference<P, O, C> {
     }
 
     /// The same object under the configured structured-output limits.
+    #[must_use]
     pub fn limited(self, limits: Limits) -> Self {
         Self { limits, ..self }
     }
@@ -232,6 +241,10 @@ fn not_configurable() -> fdo::Error {
     fdo::Error::NotSupported("inferd: this daemon has no settings file to write".into())
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn failed(why: impl ToString) -> fdo::Error {
     fdo::Error::Failed(why.to_string())
 }
@@ -679,7 +692,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
     ) -> Result<String, InferError> {
         self.settings_caller(&header).await?;
         let computers = self.computers.as_ref().ok_or(ComputerError::Unavailable)?;
-        let placed = computers.add(new_computer(name, models)?)?;
+        let placed = computers.add(&new_computer(name, models)?)?;
         InferenceServed::<Self>::engines_changed(&emitter)
             .await
             .map_err(failed)?;
@@ -781,7 +794,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
             .map(|model| model.id.clone())
             .filter(|id| !mine.contains(id) && catalogue.iter().any(|entry| entry.id.0 == *id))
             .collect();
-        let placed = computers.add_tailnet(NewTailnetComputer {
+        let placed = computers.add_tailnet(&NewTailnetComputer {
             label: found.name,
             node: node.clone(),
             models,
@@ -931,6 +944,10 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
             .collect())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn gpu(&self, _: Option<Header<'_>>) -> fdo::Result<String> {
         Ok(self.engines.gpu().slug().to_owned())
     }
@@ -1107,9 +1124,14 @@ pub fn refusal_slug(refusal: &InferRefusal) -> String {
     slug(refusal, "kind")
 }
 
-/// Serves `daemon` on `connection` under the bus name and path, and announces engine changes. The
-/// name is claimed once the connection takes calls ([`zbus_ready::serving`]). The daemon
-/// itself serves its settings module too: [`serve_with_settings`].
+/// Serves `daemon` on `connection` under the bus name and path, and announces engine changes.
+///
+/// The name is claimed once the connection takes calls ([`zbus_ready::serving`]). The daemon itself
+/// serves its settings module too: [`serve_with_settings`].
+///
+/// # Errors
+///
+/// Returns the bus error when the name cannot be claimed or an object cannot be served.
 pub async fn serve_on<P, O, C>(
     connection: &zbus::Connection,
     daemon: Inference<P, O, C>,
@@ -1122,9 +1144,15 @@ where
     serve_parts(connection, daemon, std::future::ready(Ok(()))).await
 }
 
+/// As [`serve_on`], with `settings` served before the name is claimed.
+///
 /// As [`serve_on`], with `settings` served at [`inference_dbus::inference::INFERENCE_SETTINGS_PATH`] before the
 /// name is claimed: whoever sees `org.bardo.Inference1` owned finds every object of it, the
 /// settings module among them.
+///
+/// # Errors
+///
+/// Returns the bus error when the name cannot be claimed or an object cannot be served.
 pub async fn serve_with_settings<P, O, C, S>(
     connection: &zbus::Connection,
     daemon: Inference<P, O, C>,

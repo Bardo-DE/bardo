@@ -1,7 +1,9 @@
 //! `inferd.toml` and the directories: where the catalog, the sockets, the audit file and the
-//! configuration are. The engine programs and the caller table come from the file, never from the
-//! environment (the one exception is llama.cpp's server at a fixed, root-held system path, see
-//! [`ProgramSearch`]); the directories come from the XDG variables (injected, so a test names its own).
+//! configuration are.
+//!
+//! The engine programs and the caller table come from the file, never from the environment (the one
+//! exception is llama.cpp's server at a fixed, root-held system path, see [`ProgramSearch`]); the
+//! directories come from the XDG variables (injected, so a test names its own).
 
 mod discover;
 
@@ -47,6 +49,10 @@ pub struct InferdConfig {
 impl InferdConfig {
     /// The configuration in `text`. An attached engine that is named wrongly (no `where`, a
     /// `url` that is not loopback, both a socket and a url) refuses the whole file.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigError`] when the text is not a configuration or an attached engine is named wrongly.
     pub fn from_toml(text: &str) -> Result<Self, ConfigError> {
         let config: Self = toml::from_str(text).map_err(ConfigError::Toml)?;
         config.engines.attached()?;
@@ -100,12 +106,14 @@ pub struct Dirs {
 impl Dirs {
     /// The directories for the variables `var` answers (`HOME`, `XDG_CONFIG_HOME`,
     /// `XDG_DATA_HOME`, `XDG_STATE_HOME`, `XDG_RUNTIME_DIR`, `HF_HOME`).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigError`] when a variable the directories need is missing.
     pub fn from_vars(var: impl Fn(&str) -> Option<String>) -> Result<Self, ConfigError> {
         let xdg = Xdg::new(var);
-        let dir = |name: &str, fallback: &str| {
-            xdg.dir(name, fallback)
-                .map_err(|_: PathError| ConfigError::NoDirs)
-        };
+        let dir =
+            |name: &str, fallback: &str| xdg.dir(name, fallback).ok().ok_or(ConfigError::NoDirs);
         let config = dir("XDG_CONFIG_HOME", ".config")?;
         let data = dir("XDG_DATA_HOME", ".local/share")?;
         let state = dir("XDG_STATE_HOME", ".local/state")?;
@@ -148,6 +156,10 @@ impl Dirs {
     }
 
     /// The directories of the process's environment.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConfigError`] when a variable the directories need is missing.
     pub fn from_env() -> Result<Self, ConfigError> {
         Self::from_vars(|name| std::env::var(name).ok())
     }

@@ -1,5 +1,4 @@
 use super::*;
-use crate::replay::cassette::Call;
 
 fn text(pieces: &[Vec<u8>]) -> String {
     String::from_utf8_lossy(&pieces.concat()).into_owned()

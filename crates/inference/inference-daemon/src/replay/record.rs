@@ -1,7 +1,9 @@
-//! The replay engine's request log: with `record = "<file>"` in the engine's table, every
-//! request body the engine receives is appended as one JSON line. THIS WRITES PROMPTS TO DISK,
-//! so the file is created 0600, the path comes from the table and nowhere else, and the key is
-//! accepted only on a replay engine. For acceptance runs that must show what the model was sent.
+//! The replay engine's request log: with `record = "<file>"` in the engine's table, every request
+//! body the engine receives is appended as one JSON line.
+//!
+//! THIS WRITES PROMPTS TO DISK, so the file is created 0600, the path comes from the table and
+//! nowhere else, and the key is accepted only on a replay engine. For acceptance runs that must
+//! show what the model was sent.
 
 use serde_json::Value;
 use std::io::Write;

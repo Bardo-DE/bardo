@@ -1,3 +1,5 @@
+//! inferd's parts, as a library so the daemon's modules are testable.
+//!
 //! inferd's parts, as a library so the daemon's modules are tested without a bus: the bridge to
 //! stoker's provider types, the fd session server (`serve`) and the real seams it is hosted over:
 //! the router (`engines`), the engine host (`engines`, `supervise`, `hosts`), the model turns (`runner`, which pins a session's turns to a model and adds the hosted and speech
@@ -57,7 +59,7 @@ use inference_router::testkit::entries;
 /// The lab engine (an OpenAI-compatible server on a socket) the attached-engine tests share.
 #[cfg(test)]
 // `say` and `chats` (tests/it/hosting/lab.rs) are used by no test yet; the allow stays for them.
-#[allow(dead_code)]
+#[allow(dead_code, reason = "`say` and `chats` are used by no test yet")]
 #[path = "../tests/it/hosting/lab.rs"]
 mod lab;
 

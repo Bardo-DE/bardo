@@ -39,9 +39,14 @@ pub struct Peek {
 }
 
 /// The model and stream flag of a request body, without reading the rest of it.
+///
+/// # Errors
+///
+/// Returns a [`Failure`] when the body is not JSON or names no model.
 pub fn peek(body: &[u8]) -> Result<Peek, Failure> {
     let root: Value = serde_json::from_slice(body)
-        .map_err(|_| Failure::new(Cause::Invalid, "the body is not JSON"))?;
+        .ok()
+        .ok_or_else(|| Failure::new(Cause::Invalid, "the body is not JSON"))?;
     let model = root
         .get("model")
         .and_then(Value::as_str)
@@ -212,7 +217,8 @@ async fn count_tokens<S: AsyncWrite + Unpin>(
 async fn reply_json<S: AsyncWrite + Unpin>(out: &mut S, body: &Value) -> Result<(), Failure> {
     http::write_json(out, 200, &[], &body.to_string())
         .await
-        .map_err(|_| Failure::new(Cause::Upstream, "the client went away"))
+        .ok()
+        .ok_or_else(|| Failure::new(Cause::Upstream, "the client went away"))
 }
 
 fn anthropic_model(id: &str) -> Value {

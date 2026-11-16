@@ -42,6 +42,11 @@ pub fn text_of<'a>(value: &'a Value, field: &str) -> Option<&'a str> {
 }
 
 /// A temperature given as a decimal, in thousandths.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "at least 0 and at most `u32::MAX` before rounding"
+)]
 fn permille(value: f64) -> Permille {
     Permille((value.max(0.0) * 1000.0).round().min(f64::from(u32::MAX)) as u32)
 }

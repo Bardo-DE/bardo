@@ -1,8 +1,9 @@
-//! The models of the runtimes the person runs themselves, as the daemon knows them now: the
-//! book `Engines` routes through beside the models it supervises. A runtime is `Online` while a
-//! probe finds it and `Offline` after (its models stay listed, with nothing to serve them; they
-//! are never forgotten for a runtime that stopped). The book is shared by every clone of the
-//! engines; `changed` wakes whoever tells listeners to read again.
+//! The models of the runtimes the person runs themselves, as the daemon knows them now: the book
+//! `Engines` routes through beside the models it supervises.
+//!
+//! A runtime is `Online` while a probe finds it and `Offline` after (its models stay listed, with
+//! nothing to serve them; they are never forgotten for a runtime that stopped). The book is shared
+//! by every clone of the engines; `changed` wakes whoever tells listeners to read again.
 
 use crate::probe::Runtime;
 use account_core::AccountId;

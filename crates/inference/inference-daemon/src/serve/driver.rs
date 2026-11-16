@@ -8,7 +8,6 @@ use inference_router::seams::{
     AuditSink, EngineFailed, EngineHost, Router, RunningTurn, Seams, TurnRunner, TurnStep,
 };
 use inference_router::session::{HeardAudio, Phase, SessionIn, SessionOut, SessionSpec, step};
-use std::future::Future;
 use std::os::fd::OwnedFd;
 use std::pin::Pin;
 use tokio::net::UnixStream;

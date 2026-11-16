@@ -113,7 +113,7 @@ fn tiers_of(ai: &AiConfig, mut tiers: TierMap, rejected: &mut Vec<String>) -> Ti
             ("auto", None) => tiers.autos.push(AutoRow {
                 kind,
                 tier,
-                mode: Default::default(),
+                mode: inference_core::AutoMode::default(),
             }),
             _ => {}
         }

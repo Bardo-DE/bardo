@@ -256,6 +256,10 @@ fn files_holding(dir: &Path, needle: &str) -> Vec<std::path::PathBuf> {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that plays one long scenario against a hosted model"
+)]
 async fn acceptance_7_a_chat_turn_goes_to_a_hosted_model_through_openrouter_and_no_key_is_on_the_bus()
  {
     let world = World::start(plan(vec![openrouter(&[COMPANION])], COMPANION)).await;

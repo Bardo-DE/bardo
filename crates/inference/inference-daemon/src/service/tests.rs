@@ -1,5 +1,4 @@
 use super::*;
-use account_core::DataClass;
 use zbus::zvariant::{OwnedValue, Value};
 
 fn options(pairs: &[(&str, &str)]) -> Details {

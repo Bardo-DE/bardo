@@ -10,16 +10,15 @@ use crate::testkit::{Recorder, models};
 use account_capability::ModelId;
 use account_capability::{Billing, Locality, Tier};
 use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
-use account_core::AccountId;
 use account_core::DataClass;
 use account_match::LlmNeed;
 use account_match::Need;
-use base_ids::{Permille, Tokens, TurnCount};
+use base_ids::{Tokens, TurnCount};
 use base_testkit::Scratch;
 use engine_supervisor::{FakeGpu, FakeReadyProbe, GpuMemory, Probe, SupervisorConfig};
 use inference_core::{
     AutoEvict, EngineLoad, InferRefusal, LicenceClass, ModelCard, ModelRef, Pick, PickRefusal,
-    Policy, Readiness, Slot, SwapCost, Why,
+    Readiness, Slot, SwapCost, Why,
 };
 use inference_router::router::{Decided, Listed, choose};
 use inference_router::session::SessionSpec;
@@ -349,7 +348,7 @@ async fn a_reload_changes_the_route_of_the_next_session_and_a_bad_file_changes_n
     std::fs::write(file.path(), "[ai\nbroken").expect("write");
     reload.now().unwrap_err();
     route().unwrap_err();
-    file.set("ai.model.text.balanced", "".into()).ok();
+    let _ = file.set("ai.model.text.balanced", "".into());
     std::fs::write(
         file.path(),
         "[ai.model.text]\nbalanced = \"local/tiny-chat\"\n",
@@ -420,9 +419,7 @@ fn the_warn_line_is_the_rows_permille() {
     }
 }
 
-use inference_core::{ChargeTotal, SpendCap, SpendVerdict, spend_verdict};
-use model_provider::Money;
-use rust_decimal::Decimal;
+use inference_core::{ChargeTotal, SpendVerdict, spend_verdict};
 
 fn companion() -> account_core::AppId {
     account_core::AppId {

@@ -52,7 +52,10 @@ pub fn spec(need: Need, class: DataClass) -> SessionSpec {
 }
 
 pub fn llm() -> Need {
-    Need::Llm(account_match::LlmNeed::new(Default::default(), Tokens(1)))
+    Need::Llm(account_match::LlmNeed::new(
+        std::collections::BTreeSet::default(),
+        Tokens(1),
+    ))
 }
 
 /// A router with one fixed answer.
@@ -76,6 +79,10 @@ impl FixedRouter {
 }
 
 impl Router for FixedRouter {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn route(&self, _spec: &SessionSpec) -> Result<RouteDecision, InferRefusal> {
         self.0.clone()
     }
@@ -193,11 +200,11 @@ impl AuditSink for Audit {
     fn record(
         &self,
         _spec: &SessionSpec,
-        served_by: &ServedBy,
+        served: &ServedBy,
         reply: &InferReply,
         carried: &Carried,
     ) {
-        assert_eq!(served_by, &served());
+        assert_eq!(served, &self::served());
         self.0.lock().expect("lock").push(reply.clone());
         self.1.lock().expect("lock").push(*carried);
     }

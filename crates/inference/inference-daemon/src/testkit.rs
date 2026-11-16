@@ -16,11 +16,19 @@ pub struct Recorder {
 }
 
 impl EngineHost for Recorder {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn spawn(&self, id: &EngineId, _: &UnitSpec) -> Result<(), HostError> {
         self.spawned.lock().expect("lock").push(id.clone());
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn stop(&self, id: &EngineId) -> Result<(), HostError> {
         self.stopped.lock().expect("lock").push(id.clone());
         self.gone.notify_waiters();

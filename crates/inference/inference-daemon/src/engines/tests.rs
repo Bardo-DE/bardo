@@ -1,18 +1,15 @@
 use super::*;
 use crate::supervise::Ports;
 use crate::testkit::{Recorder, models};
+use account_capability::Billing;
 use account_capability::ModelId;
-use account_capability::{Billing, Locality};
-use account_capability::{Capability, CuaEnv, LlmCap, LlmFeature, LlmWire, SpeechMode};
-use account_core::AccountId;
+use account_capability::{Capability, CuaEnv, LlmCap, LlmFeature, LlmWire};
 use account_match::{CuaNeed, LlmNeed, SpeechNeed};
 use base_ids::Tokens;
 use base_testkit::Scratch;
 use engine_supervisor::{
-    EngineFailure, EngineId, ExitCode, FakeGpu, FakeReadyProbe, GpuMemory, MonoMs, Probe,
-    SupervisorConfig,
+    EngineFailure, ExitCode, FakeGpu, FakeReadyProbe, GpuMemory, Probe, SupervisorConfig,
 };
-use inference_core::Slot;
 use inference_router::seams::Router;
 use model_catalog::MiB;
 
@@ -80,7 +77,7 @@ fn snapshot(states: &[(&str, EngineState)], now: u64) -> Snapshot {
             .iter()
             .map(|(id, state)| (EngineId((*id).into()), *state))
             .collect(),
-        failures: Default::default(),
+        failures: std::collections::BTreeMap::default(),
         now: Some(MonoMs(now)),
         gpu: None,
         ..Snapshot::default()
@@ -175,7 +172,7 @@ fn the_gpu_is_loading_while_an_engine_starts_busy_in_a_turn_and_idle_otherwise()
             "not yet stepped",
             Snapshot {
                 states: [(EngineId("a".into()), ready(0))].into(),
-                failures: Default::default(),
+                failures: std::collections::BTreeMap::default(),
                 now: None,
                 gpu: None,
                 ..Snapshot::default()

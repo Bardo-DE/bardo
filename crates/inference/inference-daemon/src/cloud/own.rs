@@ -1,3 +1,5 @@
+//! Servers of the person's own: accounts of the provider `openai-compatible`.
+//!
 //! Servers of the person's own: accounts of the provider `openai-compatible`, each a server at an
 //! address the person typed (a gateway, a llama.cpp or vLLM on their network) that speaks the
 //! `OpenAI` chat protocol. Each such account is its own provider here: its models are the ones the

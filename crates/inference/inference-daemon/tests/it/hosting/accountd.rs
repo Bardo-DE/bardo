@@ -150,7 +150,7 @@ impl FakeAccountd {
     }
 
     /// Changes what the person's account says of the apps, as a person does in Settings.
-    pub fn set_standing(&self, id: &str, standing: Standing) {
+    pub fn set_standing(&self, id: &str, standing: &Standing) {
         for account in self.accounts.lock().expect("lock").iter_mut() {
             if account.id == id {
                 account.standing = standing.clone();
@@ -327,7 +327,9 @@ impl Reports for FakeAccountd {
                 state.to_owned(),
                 claims.len(),
             ));
-            AccountId::parse(runtime.provider()).map_err(|_| ReportFault::Rejected)
+            AccountId::parse(runtime.provider())
+                .ok()
+                .ok_or(ReportFault::Rejected)
         })
     }
 }

@@ -153,9 +153,7 @@ async fn http(source: IpAddr, to: SocketAddr, request: &str) -> String {
         .expect("connect");
     stream.write_all(request.as_bytes()).await.expect("send");
     let mut answer = Vec::new();
-    within("the answer", stream.read_to_end(&mut answer))
-        .await
-        .ok();
+    let _ = within("the answer", stream.read_to_end(&mut answer)).await;
     String::from_utf8_lossy(&answer).into_owned()
 }
 

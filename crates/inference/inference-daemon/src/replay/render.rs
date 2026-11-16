@@ -5,6 +5,7 @@ use super::cassette::{Call, Reply};
 use super::replayer::ReplayError;
 use model_replay::{WireBody, WireEnd, WireReply};
 use serde_json::{Value, json};
+use std::fmt::Write as _;
 
 /// How the client asked to be answered (`stream` in the request body).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -34,7 +35,7 @@ fn chunk(data: &str) -> Vec<u8> {
     format!("{:x}\r\n{data}\r\n", data.len()).into_bytes()
 }
 
-fn frame(delta: Value, finish: Value) -> String {
+fn frame(delta: &Value, finish: &Value) -> String {
     let body = json!({"id": "replay", "object": "chat.completion.chunk", "model": "replay",
         "choices": [{"index": 0, "delta": delta, "finish_reason": finish}]});
     format!("data: {body}\n\n")
@@ -100,7 +101,7 @@ pub fn reply(reply: &Reply, delivery: Delivery) -> Vec<Vec<u8>> {
         (Reply::Fail(status), _) => error(*status, "replay_scripted", "replay: scripted failure"),
         (Reply::Wire(wire), _) => wire_reply(wire),
         (Reply::Text(text), Delivery::Stream) => {
-            stream(frame(json!({"content": text}), Value::Null), "stop")
+            stream(&frame(&json!({"content": text}), &Value::Null), "stop")
         }
         (Reply::Calls(calls), Delivery::Stream) => {
             let deltas: Vec<Value> = calls
@@ -109,12 +110,12 @@ pub fn reply(reply: &Reply, delivery: Delivery) -> Vec<Vec<u8>> {
                 .map(|(at, c)| call_json(at, c))
                 .collect();
             stream(
-                frame(json!({"tool_calls": deltas}), Value::Null),
+                &frame(&json!({"tool_calls": deltas}), &Value::Null),
                 "tool_calls",
             )
         }
         (Reply::Text(text), Delivery::Whole) => {
-            whole(json!({"role": "assistant", "content": text}), "stop")
+            whole(&json!({"role": "assistant", "content": text}), "stop")
         }
         (Reply::Calls(calls), Delivery::Whole) => {
             let made: Vec<Value> = calls
@@ -123,24 +124,24 @@ pub fn reply(reply: &Reply, delivery: Delivery) -> Vec<Vec<u8>> {
                 .map(|(at, c)| call_json(at, c))
                 .collect();
             whole(
-                json!({"role": "assistant", "content": null, "tool_calls": made}),
+                &json!({"role": "assistant", "content": null, "tool_calls": made}),
                 "tool_calls",
             )
         }
     }
 }
 
-fn stream(first: String, finish: &str) -> Vec<Vec<u8>> {
+fn stream(first: &str, finish: &str) -> Vec<Vec<u8>> {
     vec![
         SSE_HEAD.as_bytes().to_vec(),
-        chunk(&first),
-        chunk(&frame(json!({}), json!(finish))),
+        chunk(first),
+        chunk(&frame(&json!({}), &json!(finish))),
         chunk(USAGE),
         b"0\r\n\r\n".to_vec(),
     ]
 }
 
-fn whole(message: Value, finish: &str) -> Vec<Vec<u8>> {
+fn whole(message: &Value, finish: &str) -> Vec<Vec<u8>> {
     let body = json!({"id": "replay", "object": "chat.completion", "model": "replay",
         "choices": [{"index": 0, "message": message, "finish_reason": finish}],
         "usage": {"prompt_tokens": 1, "completion_tokens": 1}});
@@ -169,11 +170,10 @@ fn wire_reply(wire: &WireReply) -> Vec<Vec<u8>> {
                     .as_ref()
                     .map(|e| format!("event: {}\n", e.0))
                     .unwrap_or_default();
-                let data: String = one
-                    .data
-                    .split('\n')
-                    .map(|line| format!("data: {line}\n"))
-                    .collect();
+                let data = one.data.split('\n').fold(String::new(), |mut out, line| {
+                    let _ = writeln!(out, "data: {line}");
+                    out
+                });
                 chunk(&format!("{event}{data}\n"))
             });
             let end = match wire.end {

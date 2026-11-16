@@ -1,3 +1,5 @@
+//! One chat turn to a hosted model.
+//!
 //! One chat turn to a hosted model: the caps are asked again, the key is fetched from accountd
 //! for this turn only, the request goes out through stoker's `OpenAiCompat` driver over the TLS
 //! transport, the events stream back, and what the reply says it used and was charged is metered.
@@ -115,6 +117,10 @@ pub struct CloudModel<'a> {
 impl<'a> CloudModel<'a> {
     /// The request on `pin`'s model, with its `attachments`: refused `OverBudget` when the caps
     /// are asked again and say stop, failed `Unreadable` when an attachment cannot be read.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TurnError`] when the caps say stop or an attachment cannot be read.
     pub fn open(
         cloud: &'a Cloud,
         pin: &'a CloudPin,
@@ -125,7 +131,9 @@ impl<'a> CloudModel<'a> {
         if cloud.spend(pin.line, &pin.app, &pin.model) == SpendVerdict::Stop {
             return Err(InferRefusal::OverBudget.into());
         }
-        let frames = Frames::read(attachments).map_err(|_| ModelError::Unreadable)?;
+        let frames = Frames::read(attachments)
+            .ok()
+            .ok_or(ModelError::Unreadable)?;
         Ok(Self {
             cloud,
             pin,
@@ -195,7 +203,8 @@ impl Model for CloudModel<'_> {
         };
         let target = remote_target(&self.pin.model);
         let turn = bridge::chat_turn_for(&target, request, &self.frames)
-            .map_err(|_| InferRefusal::Unsupported)?;
+            .ok()
+            .ok_or(InferRefusal::Unsupported)?;
         self.run(turn, temperature, sink).await
     }
 
@@ -206,11 +215,16 @@ impl Model for CloudModel<'_> {
     ) -> Result<ChatReply, TurnError> {
         let target = remote_target(&self.pin.model);
         let turn = bridge::task_turn_for(&target, request, self.tier)
-            .map_err(|_| InferRefusal::Unsupported)?;
+            .ok()
+            .ok_or(InferRefusal::Unsupported)?;
         self.run(turn, Temperature::ProviderDefault, sink).await
     }
 
     /// A hosted model takes no embeddings.
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn embed(&self, _: &EmbedRequest) -> Result<EmbedReply, TurnError> {
         Err(InferRefusal::Unsupported.into())
     }

@@ -1,7 +1,9 @@
-//! Speech turns: the runners that connect a turn to a speech engine. The engines are stoker's
-//! `speech-provider` backends, closed enums in inferd: [`SttBackend`] is built (one arm,
-//! [`speech_host_client::SpeechHostClient`] over the engine's Unix socket; `stt.rs`); no text-to-speech
-//! backend exists. The audio rules every `Transcribe` turn obeys (`check_audio`, `audio_ms`, `AudioIn`) are `inference_router::audio`'s.
+//! Speech turns: the runners that connect a turn to a speech engine.
+//!
+//! The engines are stoker's `speech-provider` backends, closed enums in inferd: [`SttBackend`] is
+//! built (one arm, [`speech_host_client::SpeechHostClient`] over the engine's Unix socket;
+//! `stt.rs`); no text-to-speech backend exists. The audio rules every `Transcribe` turn obeys
+//! (`check_audio`, `audio_ms`, `AudioIn`) are `inference_router::audio`'s.
 //!
 //! inferd keeps no audio after a turn: frames live in the buffer of the running engine call
 //! and are dropped with it, on `Cancel` too.

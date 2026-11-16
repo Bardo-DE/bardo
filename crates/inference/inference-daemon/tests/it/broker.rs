@@ -75,6 +75,10 @@ impl Fault {
 impl BrokerServer for FakeBroker {
     type Error = Fault;
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn verdicts(
         &self,
         Call { .. }: Call<'_>,
@@ -109,17 +113,26 @@ impl BrokerServer for FakeBroker {
         Ok(vec![verdict_to_dbus(&granted), verdict_to_dbus(&asked)])
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn read_key(&self, Call { .. }: Call<'_>, grant: String) -> Result<OwnedFd, Fault> {
         match grant.as_str() {
             "g.1" => account_secrets::sealed_key(KEY)
                 .map(OwnedFd::from)
-                .map_err(|_| Fault::of("Unavailable")),
+                .ok()
+                .ok_or(Fault::of("Unavailable")),
             "g-off" => Err(Fault::of("Denied")),
             "g-sign-in" => Err(Fault::of("NeedsReauth")),
             _ => Err(Fault::of("UnknownGrant")),
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn accounts(&self, Call { .. }: Call<'_>) -> Result<Vec<RowArg>, Fault> {
         Ok(vec![
             ai_account_to_dbus(&AiAccountRow::new(
@@ -139,6 +152,10 @@ impl BrokerServer for FakeBroker {
         ])
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn servers(&self, Call { .. }: Call<'_>) -> Result<Vec<RowArg>, Fault> {
         let endpoint = ServiceEndpoint {
             family: Family::ChatCompletions,
@@ -153,6 +170,10 @@ impl BrokerServer for FakeBroker {
         ))])
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn read_server_key(
         &self,
         Call { .. }: Call<'_>,
@@ -161,11 +182,16 @@ impl BrokerServer for FakeBroker {
         match account.as_str() {
             "mine" => account_secrets::sealed_key(KEY)
                 .map(OwnedFd::from)
-                .map_err(|_| Fault::of("Unavailable")),
+                .ok()
+                .ok_or_else(|| Fault::of("Unavailable")),
             _ => Err(Fault::of("UnknownGrant")),
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn report_local(
         &self,
         Call { .. }: Call<'_>,

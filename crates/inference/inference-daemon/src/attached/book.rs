@@ -1,8 +1,9 @@
-//! The attached engines of the daemon and what the last look found of each. An attached engine is
-//! never started, stopped or evicted: it is in no supervisor, no warm budget and no eviction
-//! order, and a stop of the daemon does not reach it. It is looked at when a session opens
-//! ([`AttachedBook::reprobe_all`]) and when a model is wanted ([`AttachedBook::reprobe`]), and at
-//! no other time.
+//! The attached engines of the daemon and what the last look found of each.
+//!
+//! An attached engine is never started, stopped or evicted: it is in no supervisor, no warm budget
+//! and no eviction order, and a stop of the daemon does not reach it. It is looked at when a
+//! session opens ([`AttachedBook::reprobe_all`]) and when a model is wanted
+//! ([`AttachedBook::reprobe`]), and at no other time.
 
 use super::check::probe;
 use inference_core::{ComputerName, ModelRef, Readiness};
@@ -180,6 +181,10 @@ impl AttachedBook {
 
     /// Looks at `model` now and keeps what it found. A line is logged when what it found changed
     /// (never the token, and nothing of the data).
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`Outcome`] of the look.
     pub async fn reprobe(&self, model: &ModelRef) -> Outcome {
         let Some(local) = self.find(model) else {
             return Err(NotReady::Unanswered);

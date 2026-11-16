@@ -1,6 +1,8 @@
-//! Where a session's requests go: an API-key account at a provider, or a model on this computer
-//! (a supervised engine, a runtime the person runs, an engine they attached). The route also says
-//! which model ids the agent may name; an id it does not serve is an error, never a substitute.
+//! Where a session's requests go: an API-key account at a provider, or a model on this computer (a
+//! supervised engine, a runtime the person runs, an engine they attached).
+//!
+//! The route also says which model ids the agent may name; an id it does not serve is an error,
+//! never a substitute.
 
 use super::refusal::Refusal;
 use crate::settings::Settings;
@@ -41,12 +43,17 @@ pub struct Route {
 
 impl Route {
     /// The route a bus argument names.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the argument names no route.
     pub fn parse(arg: RouteArg) -> Result<Self, Refusal> {
         let (kind, id, mode, listed) = arg;
         let target = match kind.as_str() {
             ROUTE_ACCOUNT => Target::Account(
                 AccountId::parse(&id)
-                    .map_err(|_| Refusal::invalid("the route's account id is not an id"))?,
+                    .ok()
+                    .ok_or(Refusal::invalid("the route's account id is not an id"))?,
             ),
             ROUTE_MODEL if !id.is_empty() => Target::Model(id),
             ROUTE_MODEL => return Err(Refusal::invalid("the route's model id is empty")),
@@ -95,9 +102,14 @@ impl Route {
     }
 }
 
-/// The app a program's grants and spend are held under: `org.bardo.Agent.<program>`. The person
-/// grants an account to the program with `accountd add <provider> --allow
+/// The app a program's grants and spend are held under: `org.bardo.Agent.<program>`.
+///
+/// The person grants an account to the program with `accountd add <provider> --allow
 /// org.bardo.Agent.claude-code`; the launcher is the one that may ask inferd to act for it.
+///
+/// # Panics
+///
+/// Panics if a program name is not a valid app name element; [`AgentProgram`] only holds valid ones.
 #[must_use]
 pub fn agent_app(program: &AgentProgram) -> AppId {
     // A program is a lowercase letter then lowercase letters, digits and `-`: always one element.
@@ -108,6 +120,8 @@ pub fn agent_app(program: &AgentProgram) -> AppId {
     }
 }
 
+/// Whether data of `class` may go to `locality` under the settings in force.
+///
 /// Whether data of `class` may go to `locality` under the settings in force: a cloud account
 /// only when `ai.local_only` is off and the class's floor says anywhere; another machine of the
 /// person's only as the floor (and `ai.attached.my_network`) allow; this computer always.

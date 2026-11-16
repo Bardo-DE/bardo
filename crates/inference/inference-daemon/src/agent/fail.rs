@@ -1,6 +1,8 @@
 //! How a request the endpoint cannot serve is answered: a status and a coarse body in the error
-//! shape of the protocol the agent spoke. The body says what kind of thing went wrong and never
-//! quotes a provider's reply, a key, the token or the prompt.
+//! shape of the protocol the agent spoke.
+//!
+//! The body says what kind of thing went wrong and never quotes a provider's reply, a key, the
+//! token or the prompt.
 
 use inference_core::{ModelError, StopReason};
 use serde_json::{Value, json};
@@ -130,7 +132,7 @@ impl Failure {
             (Shape::Anthropic, Cause::Unauthenticated) => ("authentication_error", None),
             (Shape::Anthropic, Cause::Forbidden) => ("permission_error", None),
             (Shape::Anthropic, Cause::NotFound) => ("not_found_error", None),
-            (Shape::Anthropic, Cause::Invalid) => ("invalid_request_error", None),
+            (Shape::Anthropic | Shape::OpenAi, Cause::Invalid) => ("invalid_request_error", None),
             (Shape::Anthropic, Cause::TooLarge) => ("request_too_large", None),
             (Shape::Anthropic, Cause::SpendCap | Cause::RateLimited(_)) => {
                 ("rate_limit_error", None)
@@ -142,7 +144,6 @@ impl Failure {
             }
             (Shape::OpenAi, Cause::Forbidden) => ("permission_error", Some("permission_denied")),
             (Shape::OpenAi, Cause::NotFound) => ("invalid_request_error", Some("model_not_found")),
-            (Shape::OpenAi, Cause::Invalid) => ("invalid_request_error", None),
             (Shape::OpenAi, Cause::TooLarge) => {
                 ("invalid_request_error", Some("request_too_large"))
             }

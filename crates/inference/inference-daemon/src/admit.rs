@@ -1,6 +1,8 @@
-//! Person-first admission: who takes the next seat of a model's engine, and where a request
-//! waits when every seat is busy. Pure: state and a decision in, state and a decision out; no
-//! clock, no IO. [`crate::seats`] holds the state behind a lock and wakes the waiters.
+//! Person-first admission: who takes the next seat of a model's engine, and where a request waits
+//! when every seat is busy.
+//!
+//! Pure: state and a decision in, state and a decision out; no clock, no IO. [`crate::seats`] holds
+//! the state behind a lock and wakes the waiters.
 //!
 //! A *lane* is one running instance of an engine; a model with several instances has several
 //! lanes. A lane has a number of *seats* (parallel requests the engine takes at once: vLLM's

@@ -46,6 +46,10 @@ pub struct Hearing {
 
 impl Hearing {
     /// Plans and runs one voice chat, its events going to `sink`.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "one live pipeline turn: each stage feeds the next"
+    )]
     pub(crate) async fn run(
         &self,
         turns: &Turns,

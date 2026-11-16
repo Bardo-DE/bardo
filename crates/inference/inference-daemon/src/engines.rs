@@ -1,3 +1,5 @@
+//! The engine host and the book of models a session may be routed to.
+//!
 //! The engine host: stoker's `engine-supervisor` machine driven over an `EngineHost` (child
 //! processes today, systemd transient units later), with the GPU as a shared resource, and the
 //! book of models a session may be routed to. `Engines` is the one object the router, the
@@ -63,6 +65,8 @@ impl GpuState {
     }
 }
 
+/// The account a hosted model is picked under in `ai.model.<kind>.<tier>`.
+///
 /// The account a hosted model is picked under in `ai.model.<kind>.<tier>`: the person picks a
 /// model, not an account, and the account that serves it is whichever the app holds a grant on.
 /// Routing reads `cloud/<model>` as "this model, through the reach the app is granted".
@@ -492,6 +496,11 @@ impl Engines {
 
     /// Decides who answers a session, and what the runner is to be pinned to. A need no runner
     /// can serve yet (speaking) and a model that is not on this computer are `Unavailable`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`InferRefusal`] when no runner can serve the session or the model is not on this
+    /// computer.
     pub fn route(
         &self,
         spec: &SessionSpec,
@@ -503,6 +512,10 @@ impl Engines {
     }
 
     /// `route`, with the reason a named model could not serve when that is why it refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PickRefusal`] when no model can serve the session.
     pub fn route_detailed(
         &self,
         spec: &SessionSpec,
@@ -512,6 +525,10 @@ impl Engines {
     }
 
     /// `route_detailed` for an app that is offered the hosted models in `offered`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PickRefusal`] when no model can serve the session.
     pub fn route_with(
         &self,
         spec: &SessionSpec,
@@ -522,10 +539,16 @@ impl Engines {
             .map_err(Unplaced::into_pick)
     }
 
+    /// `route_with`, inside the places `allowed` names.
+    ///
     /// `route_with`, inside the places `allowed` names when it does: the models of other places
     /// are not candidates, the places are tried in the caller's order, and a request nothing in
     /// the set can serve is refused with the reason ([`Unplaced::NoPlace`]). `unchosen` says what
     /// a language request does when the person left the text slot unset ([`Unchosen`]).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Unplaced`] with the reason when nothing in the allowed places can serve the session.
     pub fn route_in(
         &self,
         spec: &SessionSpec,
@@ -537,9 +560,15 @@ impl Engines {
         self.route_as(spec, role, offered, allowed, unchosen, None)
     }
 
+    /// `route_in` for a session that names its own model.
+    ///
     /// `route_in` for a session that names its own model (`named`): for a language request it
     /// is the person's named choice for the text slot, so it is never overridden, a refusal
     /// names it and no other model stands in.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Unplaced`] with the reason when nothing in the allowed places can serve the session.
     pub fn route_as(
         &self,
         spec: &SessionSpec,
@@ -562,7 +591,14 @@ impl Engines {
 
     /// `route_as` for the asker `who`: Automatic chooses from that asker's pool (a helper's own,
     /// never the assistant's) and prefers a model another helper already uses.
-    #[allow(clippy::too_many_arguments)]
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Unplaced`] with the reason when nothing in the allowed places can serve the session.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "each argument is one part of the routing question, given by the caller"
+    )]
     pub fn route_for(
         &self,
         spec: &SessionSpec,
@@ -659,7 +695,7 @@ impl Engines {
             .into_iter()
             .map(|listed| Placed {
                 place: self.place_of(&listed.card),
-                serving: self.serving(&listed, offered),
+                serving: Self::serving(&listed, offered),
                 listed,
             })
             .collect()
@@ -667,7 +703,7 @@ impl Engines {
 
     /// Whether `listed` can take a request now: a model of this computer or a machine of the
     /// person's by its readiness, a hosted one while its account works.
-    fn serving(&self, listed: &Listed, offered: &Offered) -> Serving {
+    fn serving(listed: &Listed, offered: &Offered) -> Serving {
         let model = ModelRef {
             account: listed.card.account.clone(),
             model: listed.card.model.clone(),
@@ -742,8 +778,14 @@ impl Engines {
     }
 
     /// Warms the engine the route would pick for these arguments and answers its readiness
-    /// (`Inference1.Prepare`). Speech-to-text engines are CPU-only and cost no VRAM. A stopped
-    /// engine is asked for and answers `Loading`; the wait is the caller's next `Open`.
+    /// (`Inference1.Prepare`).
+    ///
+    /// Speech-to-text engines are CPU-only and cost no VRAM. A stopped engine is asked for and
+    /// answers `Loading`; the wait is the caller's next `Open`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`InferRefusal`] when no engine can serve the request.
     pub async fn prepare(
         &self,
         need: &Need,
@@ -754,6 +796,10 @@ impl Engines {
     }
 
     /// `prepare` for a caller of this role (only cuad may warm a computer-use model).
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`InferRefusal`] when no engine can serve the request.
     pub async fn prepare_as(
         &self,
         need: &Need,
@@ -771,12 +817,15 @@ impl Engines {
             None,
             None,
         )
-        .await
         .map_err(|refusal| refusal.into_pick().refusal)
     }
 
     /// `prepare` for this caller: the hosted models its grants reach are among the candidates (a
     /// hosted model is always ready, so there is nothing to warm for one).
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`InferRefusal`] when no engine can serve the request.
     pub async fn prepare_for(
         &self,
         need: &Need,
@@ -792,7 +841,14 @@ impl Engines {
 
     /// `prepare_for`, inside the places `allowed` names when it does, and for the model `named`
     /// when the session names its own.
-    #[allow(clippy::too_many_arguments)]
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`InferRefusal`] when no engine can serve the request.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "each argument is one part of the routing question, given by the caller"
+    )]
     pub async fn prepare_in(
         &self,
         need: &Need,
@@ -814,11 +870,13 @@ impl Engines {
             allowed,
             named,
         )
-        .await
     }
 
-    #[allow(clippy::too_many_arguments)]
-    async fn prepare_with(
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "each argument is one part of the routing question, given by the caller"
+    )]
+    fn prepare_with(
         &self,
         need: &Need,
         class: DataClass,
@@ -884,6 +942,10 @@ impl Engines {
 
     /// `availability_for`, inside the places `allowed` names when it does; nothing in the set
     /// able to serve is the refusal with its reason.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PlaceRefusal`] when nothing in the allowed places can serve.
     pub async fn availability_in(
         &self,
         need: &Need,
@@ -897,8 +959,13 @@ impl Engines {
     }
 
     /// Whether a session for `spec` can be routed inside `allowed`: the refusal with its reason
-    /// when no place of the set can serve. Any other refusal (consent, spend) is the session's
-    /// to tell, as it always was.
+    /// when no place of the set can serve.
+    ///
+    /// Any other refusal (consent, spend) is the session's to tell, as it always was.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PlaceRefusal`] when no place of the set can serve the session.
     pub async fn placement(
         &self,
         spec: &SessionSpec,
@@ -938,12 +1005,11 @@ impl Engines {
             Err(Unplaced::NoPlace(refusal)) => Err(refusal),
             Err(Unplaced::Other(pick)) => Ok(match pick.refusal {
                 InferRefusal::NeedsGrant => Availability::AvailableNeedsConsent,
-                InferRefusal::Denied | InferRefusal::OverBudget => Availability::Denied,
                 InferRefusal::Unsupported => Availability::Unsupported,
                 InferRefusal::RequiresCloud(_) | InferRefusal::Unavailable => {
                     Availability::NeedsAccount
                 }
-                // a variant a newer porter adds: not available to the app
+                // `Denied`, `OverBudget` and a variant a newer porter adds: not available to the app
                 _ => Availability::Denied,
             }),
         }

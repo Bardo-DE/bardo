@@ -1,3 +1,5 @@
+//! What an `Inference1` method answers instead of a value.
+//!
 //! What an `Inference1` method answers instead of a value: one of the bus's own errors under its
 //! real name, or, for a call that named its `places` and none of them can serve it,
 //! `org.bardo.Inference1.Error.NoAllowedPlace.<Reason>`.
@@ -113,15 +115,15 @@ pub fn note_words(note: &HardwareNote) -> String {
 }
 
 impl DBusError for InferError {
-    fn create_reply(&self, call: &Header<'_>) -> zbus::Result<Message> {
+    fn create_reply(&self, msg: &Header<'_>) -> zbus::Result<Message> {
         match self {
-            Self::Bus(error) => error.create_reply(call),
-            Self::NoPlace { refusal, name } => Message::error(call, name.clone())?.build(&(
+            Self::Bus(error) => error.create_reply(msg),
+            Self::NoPlace { refusal, name } => Message::error(msg, name.clone())?.build(&(
                 words_of(refusal.reason),
                 refusal.would_need.map_or("", |kind| kind.slug()),
             )),
             Self::Computer { words, name } => {
-                Message::error(call, name.clone())?.build(&(words.as_str(),))
+                Message::error(msg, name.clone())?.build(&(words.as_str(),))
             }
         }
     }

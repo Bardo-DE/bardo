@@ -151,14 +151,19 @@ pub struct Cassette {
 
 impl Cassette {
     /// The cassette in `text`: the header, then one entry per line. A blank line is skipped.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CassetteError`] when the header or a line is not valid.
     pub fn parse(text: &str) -> Result<Self, CassetteError> {
         let mut lines = text
             .lines()
             .enumerate()
             .filter(|(_, line)| !line.trim().is_empty());
         let (_, first) = lines.next().ok_or(CassetteError::Empty)?;
-        let header: CassetteHeader =
-            serde_json::from_str(first).map_err(|_| CassetteError::BadLine { line: 1 })?;
+        let header: CassetteHeader = serde_json::from_str(first)
+            .ok()
+            .ok_or(CassetteError::BadLine { line: 1 })?;
         if header.vocab != CassetteVersion::CURRENT {
             return Err(CassetteError::Version {
                 found: header.vocab,
@@ -167,9 +172,11 @@ impl Cassette {
         }
         let entries = lines
             .map(|(at, line)| {
-                serde_json::from_str(line).map_err(|_| CassetteError::BadLine {
-                    line: u32::try_from(at + 1).unwrap_or(u32::MAX),
-                })
+                serde_json::from_str(line)
+                    .ok()
+                    .ok_or_else(|| CassetteError::BadLine {
+                        line: u32::try_from(at + 1).unwrap_or(u32::MAX),
+                    })
             })
             .collect::<Result<Vec<Entry>, _>>()?;
         Ok(Self { header, entries })

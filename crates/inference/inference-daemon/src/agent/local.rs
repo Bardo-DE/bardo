@@ -1,3 +1,5 @@
+//! A model route that runs the agent's request on a model on this computer.
+//!
 //! A model route: the agent's request, read into inferd's chat request, runs on a model on this
 //! computer (a supervised engine, a runtime the person runs, an engine they attached) through
 //! the same turn path any app's session uses, and the reply is written back in the protocol the
@@ -88,8 +90,8 @@ impl<S: AsyncWrite + Unpin> Writing<'_, S> {
         let head = self.sse.begin();
         self.send(head).await;
         if !self.held.is_empty() {
-            let held = std::mem::take(&mut self.held);
-            let piece = self.sse.thought(&held);
+            let thoughts = std::mem::take(&mut self.held);
+            let piece = self.sse.thought(&thoughts);
             self.send(piece).await;
         }
     }
@@ -117,6 +119,15 @@ impl<S: AsyncWrite + Unpin> Writing<'_, S> {
 }
 
 /// Runs the request on the model `id` and writes the reply to `out`.
+///
+/// # Errors
+///
+/// Returns a [`Failure`] when the model cannot run the request or the reply cannot be written to
+/// `out`.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one request-to-reply sequence, each step needing the one before it"
+)]
 pub async fn run<S: AsyncWrite + Unpin + Send>(
     ctx: &Ctx,
     id: &str,
@@ -138,7 +149,11 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
     if engines.readiness(&model) == Readiness::Unavailable {
         return Err(gone());
     }
-    engines.want(model_ref.clone()).await.map_err(|_| gone())?;
+    engines
+        .want(model_ref.clone())
+        .await
+        .ok()
+        .ok_or_else(|| gone())?;
     let served = ServedBy {
         account: card.account.clone(),
         model: card.model.clone(),
@@ -237,5 +252,6 @@ pub async fn run<S: AsyncWrite + Unpin + Send>(
     };
     http::write_json(out, 200, &[], &body.to_string())
         .await
-        .map_err(|_| Failure::new(Cause::Upstream, "the client went away"))
+        .ok()
+        .ok_or_else(|| Failure::new(Cause::Upstream, "the client went away"))
 }

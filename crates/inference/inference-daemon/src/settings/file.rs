@@ -49,21 +49,37 @@ impl ConfigFile {
     }
 
     /// The configuration in the file; a missing file is the default.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`FileError`] when the file cannot be read or does not parse.
     pub fn read(&self) -> Result<InferdConfig, FileError> {
         InferdConfig::from_toml(&self.text()?)
             .map_err(|e| FileError::Toml(format!("{}: {e}", self.path.display())))
     }
 
     /// Sets the row at the dotted settings `path` to `value` and writes the file (to a sibling,
-    /// then renamed over it). The file is rewritten from its parsed form, so its comments are not
-    /// kept; a file that does not parse is left alone and is the error.
+    /// then renamed over it).
+    ///
+    /// The file is rewritten from its parsed form, so its comments are not kept; a file that does
+    /// not parse is left alone and is the error.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`FileError`] when the file does not parse or cannot be written.
     pub fn set(&self, path: &str, value: toml::Value) -> Result<(), FileError> {
         self.edit(|table| put(table, path, value))
     }
 
-    /// Sets `key` in the table at the dotted `table_path` to `value`, or removes it when `value`
-    /// is `None`. `key` is one key even where it holds dots (a helper's pool is
-    /// `"text.helper.<id>"` in `[ai.auto.pool]`). Written as `set` writes.
+    /// Sets `key` in the table at the dotted `table_path` to `value`, or removes it when `value` is
+    /// `None`.
+    ///
+    /// `key` is one key even where it holds dots (a helper's pool is `"text.helper.<id>"` in
+    /// `[ai.auto.pool]`). Written as `set` writes.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`FileError`] when the file does not parse or cannot be written.
     pub fn set_key(
         &self,
         table_path: &str,
@@ -169,7 +185,7 @@ impl Reload {
         Self {
             file,
             engines,
-            writing: Default::default(),
+            writing: std::sync::Arc::default(),
             programs: None,
         }
     }
@@ -203,6 +219,10 @@ impl Reload {
     }
 
     /// Reads the file and puts what it says in force. A file that does not read changes nothing.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ReloadFailed`] when the file cannot be read; nothing changes then.
     pub fn now(&self) -> Result<Reloaded, ReloadFailed> {
         let config = self.file.read().map_err(|e| ReloadFailed(e.to_string()))?;
         let resolved = resolve(&config);

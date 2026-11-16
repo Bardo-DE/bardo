@@ -105,7 +105,7 @@ impl Stream {
         out
     }
 
-    fn open_as(&mut self, kind: Open, block: Value) -> String {
+    fn open_as(&mut self, kind: Open, block: &Value) -> String {
         if self.open == kind {
             return String::new();
         }
@@ -149,14 +149,14 @@ impl SseOut for Stream {
     fn thought(&mut self, text: &str) -> String {
         let mut out = self.open_as(
             Open::Thinking,
-            json!({ "type": "thinking", "thinking": "", "signature": "" }),
+            &json!({ "type": "thinking", "thinking": "", "signature": "" }),
         );
         out.push_str(&self.delta(&json!({ "type": "thinking_delta", "thinking": text })));
         out
     }
 
     fn text(&mut self, text: &str) -> String {
-        let mut out = self.open_as(Open::Text, json!({ "type": "text", "text": "" }));
+        let mut out = self.open_as(Open::Text, &json!({ "type": "text", "text": "" }));
         out.push_str(&self.delta(&json!({ "type": "text_delta", "text": text })));
         out
     }

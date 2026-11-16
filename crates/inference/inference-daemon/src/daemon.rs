@@ -1,3 +1,5 @@
+//! inferd as one thing a program can run.
+//!
 //! inferd as one thing a program can run: [`Config`] says where everything is, [`Daemon::build`]
 //! reads the configuration and the catalog, starts the engine supervisor and the watchers and
 //! serves `org.bardo.Inference1`, and [`Daemon::run`] keeps it going until a stop is asked for
@@ -139,9 +141,11 @@ impl Config {
     }
 
     /// The configuration the process's environment gives; `config_file` is the command line's
-    /// `--config`, else the file under `$XDG_CONFIG_HOME`. The one place inferd reads the
-    /// environment: `HOME`, the XDG directories and `HF_HOME` (`Dirs::from_env`),
-    /// `BARDO_INFERD_TAILSCALE_SOCKET`, `BARDO_INFERD_PROC_ROOT` and `BARDO_INFERD_CALLERS`.
+    /// `--config`, else the file under `$XDG_CONFIG_HOME`.
+    ///
+    /// The one place inferd reads the environment: `HOME`, the XDG directories and `HF_HOME`
+    /// (`Dirs::from_env`), `BARDO_INFERD_TAILSCALE_SOCKET`, `BARDO_INFERD_PROC_ROOT` and
+    /// `BARDO_INFERD_CALLERS`.
     ///
     /// # Errors
     /// There is nowhere to put the sockets and files.
@@ -346,11 +350,17 @@ pub struct Daemon {
 
 impl Daemon {
     /// Reads the configuration and the catalog, starts the supervisor, the watchers and the
-    /// tailnet, and serves `org.bardo.Inference1`. Nothing starts an engine until a session asks
-    /// for its model. When this returns the name is owned and calls are answered.
+    /// tailnet, and serves `org.bardo.Inference1`.
+    ///
+    /// Nothing starts an engine until a session asks for its model. When this returns the name is
+    /// owned and calls are answered.
     ///
     /// # Errors
     /// See [`StartError`].
+    #[expect(
+        clippy::too_many_lines,
+        reason = "the start-up sequence: each step needs the one before it"
+    )]
     pub async fn build(config: Config) -> Result<Self, StartError> {
         let Config {
             dirs,
@@ -477,7 +487,7 @@ impl Daemon {
         }
         let peers = Arc::new(ProcPeers::with_root(
             connection.clone(),
-            callers.clone(),
+            &callers,
             &proc_root,
         ));
         // The AI keys are accountd's; inferd asks it for the permits an app holds and for the key
@@ -558,7 +568,8 @@ impl Daemon {
         )
         .spawn();
         let reload = Reload::new(file, engines.clone()).with_programs(live_programs.clone());
-        reload.clone().watch(RELOAD_EVERY);
+        // The watch task runs for the life of the daemon; nothing waits for it.
+        let _ = reload.clone().watch(RELOAD_EVERY);
         // Which engine programs this computer has, and where each came from.
         let found = config.engines_with(&dirs, &programs);
         let local_engines = LocalEngines::of(&found)
@@ -605,8 +616,9 @@ impl Daemon {
     }
 
     /// Serves until `stop` asks for a stop; then releases the bus name (no new caller finds the
-    /// daemon) and ends every engine's process group, all within `shutdown::BOUND`. A second
-    /// request, or the bound running out, kills every group at once.
+    /// daemon) and ends every engine's process group, all within `shutdown::BOUND`.
+    ///
+    /// A second request, or the bound running out, kills every group at once.
     ///
     /// # Errors
     /// See [`StopError`]: the stop was hurried, or took longer than its bound.

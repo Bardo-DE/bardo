@@ -3,7 +3,10 @@
 //! engine host is a recorder that starts nothing, so no process runs and no GPU is touched.
 //! `accountd` and `cloud` are the fakes of the hosted models: accountd on the bus, and a provider
 //! over TLS on loopback. `tailnet` is a fake Tailscale and the addresses of a test's computers.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a different part of this shared module"
+)]
 
 pub mod accountd;
 pub mod agent;

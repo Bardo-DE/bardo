@@ -17,7 +17,6 @@ use account_core::{AppId, AppName};
 use account_dbus::BusConnection;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
-use std::future::Future;
 use std::sync::{Mutex, PoisonError};
 
 /// What a caller may ask for, beyond what its data class and consent allow.
@@ -200,6 +199,7 @@ impl CallerTable {
     }
 
     /// The same table, naming `units` as the agent launcher's.
+    #[must_use]
     pub fn with_agent_launcher(self, units: BTreeSet<String>) -> Self {
         Self {
             agent_launcher: units.into_iter().map(Unit::from).collect(),
@@ -219,6 +219,11 @@ impl CallerTable {
 
     /// The table in TOML text. A `settings` entry that is neither a `.service` unit nor an app
     /// name is refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TableError`] when the text is not a table or a `settings` entry is neither a unit nor
+    /// an app name.
     pub fn from_toml_text(text: &str) -> Result<Self, TableError> {
         let table: Self = toml::from_str(text)?;
         if let Some(bad) = table.settings.iter().find(|e| settings_unit(e).is_none()) {
@@ -375,13 +380,13 @@ pub struct ProcPeers {
 impl ProcPeers {
     /// Resolves senders on `connection` through `table`.
     #[must_use]
-    pub fn new(connection: BusConnection, table: CallerTable) -> Self {
+    pub fn new(connection: BusConnection, table: &CallerTable) -> Self {
         Self::with_root(connection, table, &ProcRoot::Unset)
     }
 
     /// As [`ProcPeers::new`], reading the process tree `root` names.
     #[must_use]
-    pub fn with_root(connection: BusConnection, table: CallerTable, root: &ProcRoot) -> Self {
+    pub fn with_root(connection: BusConnection, table: &CallerTable, root: &ProcRoot) -> Self {
         let rows = table.rows();
         let callers = match root.honoured() {
             #[cfg(feature = "test-proc-root")]
@@ -433,6 +438,10 @@ impl TablePeers {
 }
 
 impl Peers for TablePeers {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn caller_of(&self, sender: &str) -> Option<Caller> {
         self.0
             .lock()

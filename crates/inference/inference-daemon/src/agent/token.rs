@@ -1,6 +1,8 @@
-//! The per-session secret an agent sends as its "API key". It is not the provider's key: it only
-//! lets a process that was told it reach the session's loopback listener. Random (32 bytes from
-//! the kernel), compared in constant time, and printed by nothing: `Debug` shows its length.
+//! The per-session secret an agent sends as its "API key".
+//!
+//! It is not the provider's key: it only lets a process that was told it reach the session's
+//! loopback listener. Random (32 bytes from the kernel), compared in constant time, and printed by
+//! nothing: `Debug` shows its length.
 
 use subtle::ConstantTimeEq;
 

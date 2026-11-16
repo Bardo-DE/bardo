@@ -129,9 +129,14 @@ pub enum AddedProblem {
 }
 
 impl AddedFile {
-    /// The file at `path`; a missing one is the empty list. One that is not a list of computers is
-    /// moved aside (`computers.toml.unusable`) and the list starts empty, so a later change does
-    /// not write over what the person may want back.
+    /// The file at `path`; a missing one is the empty list.
+    ///
+    /// One that is not a list of computers is moved aside (`computers.toml.unusable`) and the list
+    /// starts empty, so a later change does not write over what the person may want back.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`AddedProblem`] when the file cannot be read or moved aside.
     pub fn read(path: &Path) -> Result<Self, AddedProblem> {
         let text = match std::fs::read_to_string(path) {
             Ok(text) => text,
@@ -205,7 +210,9 @@ fn tailnet_engines(
     computer: &AddedComputer,
     sockets: &Path,
 ) -> Result<Vec<Attached>, &'static str> {
-    let node = NodeId::parse(node).map_err(|_| "not a computer on Tailscale")?;
+    let node = NodeId::parse(node)
+        .ok()
+        .ok_or_else(|| "not a computer on Tailscale")?;
     let socket = relay_socket(sockets, &node).ok_or("the way to it is too long")?;
     Ok(computer
         .models
@@ -235,6 +242,8 @@ pub fn hand_written(engines: &[Attached]) -> BTreeSet<ComputerName> {
         .collect()
 }
 
+/// What the file of added computers contributes next to the hand-written engines.
+///
 /// What the file of added computers contributes next to the hand-written engines: its engines
 /// without those whose computer or model the hand-written file already has (the hand-written
 /// file wins, and each one left out is said).
@@ -376,7 +385,7 @@ impl From<inference_tailnet::GuestError> for ComputerError {
             GuestError::NotAsking => ComputerError::NotAsking,
             GuestError::TooManyAsking => ComputerError::TooManyAsking,
             GuestError::TooMany => ComputerError::TooMany,
-            _ => ComputerError::NotSaved,
+            GuestError::NotSaved => ComputerError::NotSaved,
         }
     }
 }
@@ -444,7 +453,7 @@ enum Fallback<'a> {
 /// runs of characters one dash, no dash at either end. A label with none of those (a name in
 /// another script) is named by `fallback` instead, so no script is refused. The name is never
 /// shown (Settings shows the label); it only has to be stable and unique.
-fn slug_of(label: &str, fallback: Fallback<'_>) -> ComputerName {
+fn slug_of(label: &str, fallback: &Fallback<'_>) -> ComputerName {
     let mut slug = String::new();
     for c in label.chars() {
         if c.is_ascii_alphanumeric() {
@@ -513,7 +522,7 @@ fn usable_key(key: &SecretText) -> bool {
 /// `base` if nothing is `taken` by that name, else `base-2`, `base-3`, ... the first free: the
 /// names go in the order the computers were added, and the one chosen is stored, so it never
 /// changes.
-fn free_name(base: ComputerName, taken: impl Fn(&str) -> bool) -> ComputerName {
+fn free_name(base: &ComputerName, taken: impl Fn(&str) -> bool) -> ComputerName {
     let mut candidate = base.clone();
     let mut n = 1_u32;
     while taken(candidate.as_str()) {
@@ -522,7 +531,7 @@ fn free_name(base: ComputerName, taken: impl Fn(&str) -> bool) -> ComputerName {
         let stem = &base.as_str()[..base.as_str().len().min(LONGEST_LABEL - suffix.len())];
         candidate =
             ComputerName::parse(&format!("{stem}{suffix}")).unwrap_or_else(|_| base.clone());
-        if candidate == base {
+        if candidate == *base {
             break;
         }
     }
@@ -587,17 +596,25 @@ impl Computers {
     }
 
     fn save(&self, file: &AddedFile) -> Result<(), ComputerError> {
-        let text = toml::to_string_pretty(file).map_err(|_| ComputerError::NotSaved)?;
+        let text = toml::to_string_pretty(file)
+            .ok()
+            .ok_or(ComputerError::NotSaved)?;
         AtomicWrite::PRIVATE
             .write(&self.file, text.as_bytes())
-            .map_err(|_| ComputerError::NotSaved)
+            .ok()
+            .ok_or(ComputerError::NotSaved)
     }
 
     /// Adds a computer and its models: the checks of the hand-written file, then the keys, the
     /// file, and last the engines (so a refusal changes nothing). The place it is now.
-    pub fn add(&self, new: NewComputer) -> Result<PlaceId, ComputerError> {
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ComputerError`] when a check fails or the keys, the file or the engines cannot be
+    /// written; nothing changes then.
+    pub fn add(&self, new: &NewComputer) -> Result<PlaceId, ComputerError> {
         let label = clean_label(&new.label).ok_or(ComputerError::BadName)?;
-        let name = slug_of(&label, Fallback::Label);
+        let name = slug_of(&label, &Fallback::Label);
         if new.models.is_empty() {
             return Err(ComputerError::NoModels);
         }
@@ -613,7 +630,7 @@ impl Computers {
         if same_label || state.by_hand.contains(&name) {
             return Err(ComputerError::AlreadyThere);
         }
-        let name = free_name(name, |text| state.is_taken(text));
+        let name = free_name(&name, |text| state.is_taken(text));
         let mut taken: BTreeSet<String> = state
             .hand_models
             .iter()
@@ -635,7 +652,8 @@ impl Computers {
         let mut engines = Vec::new();
         for model in &new.models {
             let id = ModelId::parse(&model.id)
-                .map_err(|_| ComputerError::UnknownModel(model.id.clone()))?;
+                .ok()
+                .ok_or_else(|| ComputerError::UnknownModel(model.id.clone()))?;
             if !taken.insert(id.to_string()) {
                 return Err(ComputerError::ModelTaken(model.id.clone()));
             }
@@ -688,12 +706,18 @@ impl Computers {
         Ok(PlaceId::computer(&name))
     }
 
-    /// Adds a computer on the person's Tailscale network and the models it lends. Nothing else
-    /// is asked of the caller: no address and no key, since the relay at [`relay_socket`] leads
-    /// to it. A refusal changes nothing. The place it is now.
-    pub fn add_tailnet(&self, new: NewTailnetComputer) -> Result<PlaceId, ComputerError> {
+    /// Adds a computer on the person's Tailscale network and the models it lends.
+    ///
+    /// Nothing else is asked of the caller: no address and no key, since the relay at
+    /// [`relay_socket`] leads to it. A refusal changes nothing. The place it is now.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ComputerError`] when a check fails or the keys, the file or the engines cannot be
+    /// written; nothing changes then.
+    pub fn add_tailnet(&self, new: &NewTailnetComputer) -> Result<PlaceId, ComputerError> {
         let label = clean_label(&new.label).ok_or(ComputerError::BadName)?;
-        let name = slug_of(&label, Fallback::Node(&new.node));
+        let name = slug_of(&label, &Fallback::Node(&new.node));
         if new.models.is_empty() {
             return Err(ComputerError::NoModels);
         }
@@ -712,7 +736,7 @@ impl Computers {
         if known_node {
             return Err(ComputerError::AlreadyThere);
         }
-        let name = free_name(name, |text| state.is_taken(text));
+        let name = free_name(&name, |text| state.is_taken(text));
         let mut taken: BTreeSet<String> = state
             .hand_models
             .iter()
@@ -732,8 +756,9 @@ impl Computers {
         };
         let mut engines = Vec::new();
         for model in &new.models {
-            let id =
-                ModelId::parse(model).map_err(|_| ComputerError::UnknownModel(model.clone()))?;
+            let id = ModelId::parse(model)
+                .ok()
+                .ok_or_else(|| ComputerError::UnknownModel(model.clone()))?;
             if !taken.insert(id.to_string()) {
                 return Err(ComputerError::ModelTaken(model.clone()));
             }
@@ -812,13 +837,20 @@ impl Computers {
         true
     }
 
-    /// Removes a computer that was added here: its models, its keys, its place in the file. The
-    /// name is the computer's name or its place id (`computer:<name>`). One written by hand in the
-    /// settings file is refused. The node id of a computer on the Tailscale network, which the
+    /// Removes a computer that was added here: its models, its keys, its place in the file.
+    ///
+    /// The name is the computer's name or its place id (`computer:<name>`). One written by hand in
+    /// the settings file is refused. The node id of a computer on the Tailscale network, which the
     /// caller stops the relay of.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ComputerError`] when no computer has the name or it was written by hand.
     pub fn remove(&self, name: &str) -> Result<Option<NodeId>, ComputerError> {
         let text = name.strip_prefix("computer:").unwrap_or(name);
-        let name = ComputerName::parse(text).map_err(|_| ComputerError::NotThere)?;
+        let name = ComputerName::parse(text)
+            .ok()
+            .ok_or(ComputerError::NotThere)?;
         let mut state = self.state();
         let Some(gone) = state.file.computers.get(name.as_str()).cloned() else {
             return Err(if state.by_hand.contains(&name) {

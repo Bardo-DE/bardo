@@ -1,6 +1,8 @@
 //! The real seams of the engine supervisor: child processes, a health probe over the engine's
-//! socket, and `nvidia-smi`. The tests of the machine use stoker's fakes; these are exercised
-//! with harmless programs (`sleep`, a shell script) and never with an engine.
+//! socket, and `nvidia-smi`.
+//!
+//! The tests of the machine use stoker's fakes; these are exercised with harmless programs
+//! (`sleep`, a shell script) and never with an engine.
 //!
 //! `ProcessHost` is the unconfined host (models section 3.9: for desktops without systemd, and
 //! marked so). The systemd transient-unit host, which gives an engine its sandbox
@@ -37,6 +39,10 @@ use tokio::sync::{oneshot, watch};
 pub trait LaunchGuard: Send + Sync {
     /// `Ok` to start `program`, or why not. May read the whole of an install: it is called off the
     /// async threads.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`Cause`] when `program` may not be started.
     fn check(&self, program: &Path) -> Result<(), Cause>;
 }
 
@@ -68,11 +74,12 @@ const STDERR_GRACE: Duration = Duration::from_secs(1);
 /// before the group is killed. Under the unit's `TimeoutStopSec=20`.
 pub const STOP_GRACE: Duration = Duration::from_secs(5);
 
-/// Engines as child processes of the daemon. Told each engine's socket
-/// ([`ProcessHost::with_sockets`]) it looks at the path before it spawns: a path too long to bind
-/// or something that is not a socket is refused, a socket an earlier run left is removed. The
-/// standard error of every process is read (and passed on to ours); the last lines of it, and why
-/// a spawn was refused, are in the [`Diagnostics`] the driver reads.
+/// Engines as child processes of the daemon.
+///
+/// Told each engine's socket ([`ProcessHost::with_sockets`]) it looks at the path before it spawns:
+/// a path too long to bind or something that is not a socket is refused, a socket an earlier run
+/// left is removed. The standard error of every process is read (and passed on to ours); the last
+/// lines of it, and why a spawn was refused, are in the [`Diagnostics`] the driver reads.
 ///
 /// Each engine leads a process group of its own and dies with inferd (see [`group`]): ending it
 /// signals the whole group (`SIGTERM`, [`STOP_GRACE`], `SIGKILL`), dropping the host kills every
@@ -89,8 +96,9 @@ pub struct ProcessHost {
 type Table = Arc<Mutex<BTreeMap<EngineId, Running>>>;
 
 /// A handle on a [`ProcessHost`] that outlives the move of the host into the supervisor: it ends
-/// every engine when the daemon is told to stop ([`crate::shutdown`]). Once [`HostCloser::end_all`]
-/// has begun the host starts nothing more.
+/// every engine when the daemon is told to stop ([`crate::shutdown`]).
+///
+/// Once [`HostCloser::end_all`] has begun the host starts nothing more.
 #[derive(Clone)]
 pub struct HostCloser {
     running: Table,
@@ -174,6 +182,7 @@ impl ProcessHost {
     }
 
     /// The same, checking each of these engines' socket before it spawns.
+    #[must_use]
     pub fn with_sockets(self, sockets: impl IntoIterator<Item = (EngineId, PathBuf)>) -> Self {
         Self {
             sockets: sockets.into_iter().collect(),
@@ -333,6 +342,10 @@ impl EngineHost for ProcessHost {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn stop(&self, id: &EngineId) -> Result<(), HostError> {
         let stop = self
             .table()
@@ -364,9 +377,11 @@ impl EngineHost for ProcessHost {
 }
 
 /// `GET /health` over each engine's socket (llama-server and vLLM both answer it at the server
-/// root: 200 when ready, 503 while the model loads). A speech host does not speak HTTP: its
-/// engines are probed with the host protocol's `Hello` ([`HealthProbe::speech_hosts`]), which it
-/// answers once its model is loaded and it is accepting connections.
+/// root: 200 when ready, 503 while the model loads).
+///
+/// A speech host does not speak HTTP: its engines are probed with the host protocol's `Hello`
+/// ([`HealthProbe::speech_hosts`]), which it answers once its model is loaded and it is accepting
+/// connections.
 #[derive(Debug, Clone, Default)]
 pub struct HealthProbe {
     sockets: BTreeMap<EngineId, PathBuf>,
@@ -383,6 +398,7 @@ impl HealthProbe {
     }
 
     /// The same probe, asking these engines (speech hosts) `Hello` instead of `GET /health`.
+    #[must_use]
     pub fn speech_hosts(self, engines: impl IntoIterator<Item = EngineId>) -> Self {
         Self {
             speech: engines.into_iter().collect(),
@@ -461,10 +477,12 @@ async fn hello(socket: &std::path::Path) -> Probe {
     }
 }
 
-/// The GPU as `nvidia-smi` reports it: the total memory. What other programs use is not read
-/// (`used_by_others` is zero): `nvidia-smi` counts our own engines in it, and subtracting them
-/// needs per-process accounting that is not built. A GPU another program fills therefore shows
-/// as an engine that does not start, not as a refusal with numbers.
+/// The GPU as `nvidia-smi` reports it: the total memory.
+///
+/// What other programs use is not read (`used_by_others` is zero): `nvidia-smi` counts our own
+/// engines in it, and subtracting them needs per-process accounting that is not built. A GPU
+/// another program fills therefore shows as an engine that does not start, not as a refusal with
+/// numbers.
 #[derive(Debug, Clone)]
 pub struct NvidiaSmi {
     program: PathBuf,
@@ -479,6 +497,10 @@ impl NvidiaSmi {
 }
 
 /// The total of the first GPU from `--query-gpu=memory.total --format=csv,noheader,nounits`.
+///
+/// # Errors
+///
+/// Returns a [`GpuError`] when the text has no total.
 pub fn parse_total(text: &str) -> Result<MiB, GpuError> {
     text.lines()
         .next()
@@ -495,7 +517,8 @@ impl GpuProbe for NvidiaSmi {
             .stdin(Stdio::null())
             .output()
             .await
-            .map_err(|_| GpuError::Unavailable)?;
+            .ok()
+            .ok_or(GpuError::Unavailable)?;
         if !output.status.success() {
             return Err(GpuError::Unavailable);
         }

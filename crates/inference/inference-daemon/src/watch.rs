@@ -1,3 +1,5 @@
+//! The loop that keeps the probed runtimes current.
+//!
 //! The loop that keeps the probed runtimes current: at start, on `Rescan`, and on a timer whose
 //! wait doubles while nothing changes (to the longest the `[probe]` table allows) and starts over
 //! when something does.
@@ -85,9 +87,11 @@ pub const MISSES_TO_DOWN: u32 = 3;
 /// The wait before looking again at a runtime a slow look could not find (never over `base`).
 const DOUBT_WAIT: Duration = Duration::from_secs(2);
 
-/// Holds back the `Down` changes of a look in which a request timed out, until a runtime has
-/// been lost to timeouts [`MISSES_TO_DOWN`] looks in a row. `misses` is each runtime's count so
-/// far; the runtimes that answered start over. Whether any change was held back.
+/// Holds back the `Down` changes of a look in which a request timed out, until a runtime has been
+/// lost to timeouts [`MISSES_TO_DOWN`] looks in a row.
+///
+/// `misses` is each runtime's count so far; the runtimes that answered start over. Whether any
+/// change was held back.
 pub fn confirm(
     misses: &mut BTreeMap<Runtime, u32>,
     changes: Vec<Change>,
@@ -196,7 +200,7 @@ impl<H: Http + 'static> Watch<H> {
             timed_out,
         );
         self.doubtful = held;
-        let changed = !changes.is_empty();
+        let any_change = !changes.is_empty();
         for change in changes {
             match change {
                 Change::Up(found) => self.up(found),
@@ -206,7 +210,7 @@ impl<H: Http + 'static> Watch<H> {
         for runtime in Runtime::ALL {
             self.tell(runtime).await;
         }
-        changed
+        any_change
     }
 
     fn up(&mut self, found: Found) {

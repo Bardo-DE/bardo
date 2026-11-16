@@ -73,7 +73,7 @@ fn place(text: &str) -> PlaceId {
 fn a_computer_is_added_to_the_file_the_keys_and_the_book_and_reads_back_as_the_same_engines() {
     let rig = Rig::new("add");
     let computers = rig.computers(&[]);
-    let added = computers.add(studio(Some(KEY)));
+    let added = computers.add(&studio(Some(KEY)));
     assert_eq!(added, Ok(place("computer:studio-pc")));
 
     // The book: the engine, under the name the person gave.
@@ -124,6 +124,10 @@ fn a_computer_is_added_to_the_file_the_keys_and_the_book_and_reads_back_as_the_s
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of refused additions and the error each one gets"
+)]
 fn what_is_refused_changes_nothing_and_says_so_in_plain_words() {
     let rig = Rig::new("refuse");
     let computers = rig.computers(&[]);
@@ -207,7 +211,7 @@ fn what_is_refused_changes_nothing_and_says_so_in_plain_words() {
         ),
     ];
     for (what, new, want) in cases {
-        assert_eq!(computers.add(new), Err(want.clone()), "{what}");
+        assert_eq!(computers.add(&new), Err(want.clone()), "{what}");
         let words = want.to_string();
         for jargon in [
             "socket", "loopback", "toml", "key_file", "TOML", "API", "json",
@@ -224,14 +228,14 @@ fn what_is_refused_changes_nothing_and_says_so_in_plain_words() {
     let hand = Rig::new("refuse-hand");
     let computers = hand.computers(&[by_hand(Some("lab"))]);
     assert_eq!(
-        computers.add(one(entries::ATTACHED, ok, None)),
+        computers.add(&one(entries::ATTACHED, ok, None)),
         Err(ComputerError::ModelTaken(entries::ATTACHED.into()))
     );
     let same_name = NewComputer {
         label: "Lab".into(),
         models: vec![model("other-model", NewReach::Port(1), None)],
     };
-    assert_eq!(computers.add(same_name), Err(ComputerError::AlreadyThere));
+    assert_eq!(computers.add(&same_name), Err(ComputerError::AlreadyThere));
     assert!(hand.book.is_empty() && !hand.file().exists());
 }
 
@@ -247,10 +251,10 @@ fn a_model_can_be_on_one_computer_only_and_a_name_is_taken_once() {
         ],
     };
     assert_eq!(
-        computers.add(twice),
+        computers.add(&twice),
         Err(ComputerError::ModelTaken(entries::ATTACHED.into()))
     );
-    computers.add(studio(None)).unwrap();
+    computers.add(&studio(None)).unwrap();
     // The same name, however it is typed.
     for label in ["Studio PC", "studio pc", "  STUDIO-pc "] {
         let again = NewComputer {
@@ -258,7 +262,7 @@ fn a_model_can_be_on_one_computer_only_and_a_name_is_taken_once() {
             ..studio(None)
         };
         assert_eq!(
-            computers.add(again),
+            computers.add(&again),
             Err(ComputerError::AlreadyThere),
             "{label}"
         );
@@ -269,7 +273,7 @@ fn a_model_can_be_on_one_computer_only_and_a_name_is_taken_once() {
         ..studio(None)
     };
     assert_eq!(
-        computers.add(other),
+        computers.add(&other),
         Err(ComputerError::ModelTaken(entries::ATTACHED.into()))
     );
 }
@@ -282,7 +286,7 @@ fn a_computer_that_was_added_is_removed_with_its_models_and_its_keys_and_one_by_
     // test's catalogue has one attached entry, so add and remove it on a book without the hand one.
     let free = Rig::new("remove2");
     let computers_free = free.computers(&[]);
-    computers_free.add(studio(Some(KEY))).unwrap();
+    computers_free.add(&studio(Some(KEY))).unwrap();
     let key_path = free
         .keys()
         .join(format!("studio-pc--{}.key", entries::ATTACHED));
@@ -298,7 +302,7 @@ fn a_computer_that_was_added_is_removed_with_its_models_and_its_keys_and_one_by_
     let file = AddedFile::read(&free.file()).expect("reads");
     assert_eq!(file, AddedFile::default());
     // And it can be added again, by the name alone this time.
-    computers_free.add(studio(None)).unwrap();
+    computers_free.add(&studio(None)).unwrap();
     assert_eq!(computers_free.remove("studio-pc"), Ok(None));
 
     assert_eq!(computers.remove("lab"), Err(ComputerError::AddedByHand));
@@ -328,7 +332,7 @@ fn an_engine_on_another_machine_with_no_name_is_the_computer_other_computer_to_t
         label: "Other computer".into(),
         models: vec![model("other-model", NewReach::Port(1), None)],
     };
-    assert_eq!(computers.add(clash), Err(ComputerError::AlreadyThere));
+    assert_eq!(computers.add(&clash), Err(ComputerError::AlreadyThere));
 }
 
 #[test]
@@ -395,7 +399,7 @@ fn the_key_is_in_no_debug_output_no_error_and_no_file_but_its_own() {
     let computers = rig.computers(&[]);
     let new = studio(Some(KEY));
     assert!(!format!("{new:?}").contains(KEY));
-    computers.add(new).expect("added");
+    computers.add(&new).expect("added");
     assert!(!format!("{computers:?}").contains(KEY));
     assert!(!format!("{:?}", rig.book).contains(KEY));
     let mut holding = Vec::new();
@@ -413,7 +417,7 @@ fn the_key_is_in_no_debug_output_no_error_and_no_file_but_its_own() {
         models: vec![model(entries::ATTACHED, NewReach::Port(0), Some(KEY))],
         label: "Bench".into(),
     };
-    let refused = rig.computers(&[]).add(bad).expect_err("bad address");
+    let refused = rig.computers(&[]).add(&bad).expect_err("bad address");
     assert!(!format!("{refused:?} {refused}").contains(KEY));
 }
 
@@ -445,7 +449,7 @@ fn a_computer_on_the_network_is_kept_by_its_node_with_no_address_and_no_key() {
     let rig = tailnet_rig("tailnet-add");
     let computers = rig.computers(&[]);
     assert_eq!(
-        computers.add_tailnet(pi()),
+        computers.add_tailnet(&pi()),
         Ok(place("computer:raspberry-pi"))
     );
 
@@ -521,14 +525,14 @@ fn a_computer_on_the_network_is_kept_by_its_node_with_no_address_and_no_key() {
 fn a_computer_on_the_network_is_added_once_whatever_it_is_called() {
     let rig = tailnet_rig("tailnet-twice");
     let computers = rig.computers(&[]);
-    computers.add_tailnet(pi()).expect("added");
+    computers.add_tailnet(&pi()).expect("added");
     let renamed = NewTailnetComputer {
         label: "Kitchen".to_owned(),
         models: vec!["tiny-chat".to_owned()],
         ..pi()
     };
     assert_eq!(
-        computers.add_tailnet(renamed),
+        computers.add_tailnet(&renamed),
         Err(ComputerError::AlreadyThere)
     );
     // Another computer lending a model that is already taken is refused too.
@@ -538,7 +542,7 @@ fn a_computer_on_the_network_is_added_once_whatever_it_is_called() {
         models: vec!["tiny-chat".to_owned()],
     };
     assert_eq!(
-        computers.add_tailnet(other),
+        computers.add_tailnet(&other),
         Err(ComputerError::ModelTaken("tiny-chat".into()))
     );
     let nothing = NewTailnetComputer {
@@ -546,7 +550,7 @@ fn a_computer_on_the_network_is_added_once_whatever_it_is_called() {
         ..pi()
     };
     assert_eq!(
-        rig.computers(&[]).add_tailnet(nothing),
+        rig.computers(&[]).add_tailnet(&nothing),
         Err(ComputerError::NoModels)
     );
     let unknown = NewTailnetComputer {
@@ -555,7 +559,7 @@ fn a_computer_on_the_network_is_added_once_whatever_it_is_called() {
         models: vec!["no-such-model".to_owned()],
     };
     assert_eq!(
-        computers.add_tailnet(unknown),
+        computers.add_tailnet(&unknown),
         Err(ComputerError::UnknownModel("no-such-model".into()))
     );
 }
@@ -597,14 +601,14 @@ fn a_name_in_any_script_is_never_refused_and_its_place_is_the_same_every_time() 
             label: label.to_owned(),
             ..studio(None)
         };
-        assert_eq!(computers.add(new.clone()), Ok(place(want)), "{what}");
+        assert_eq!(computers.add(&new), Ok(place(want)), "{what}");
         // The label is what Settings shows; the name is the key of the file.
         let file = AddedFile::read(&rig.file()).expect("reads");
         let slug = want.trim_start_matches("computer:");
         assert_eq!(file.computers[slug].label, label.trim(), "{what}");
         // After a restart the same label is the same computer, not a new one.
         assert_eq!(
-            restarted(&rig, &[]).add(new),
+            restarted(&rig, &[]).add(&new),
             Err(ComputerError::AlreadyThere),
             "{what}"
         );
@@ -620,13 +624,13 @@ fn two_computers_with_the_same_name_in_ascii_are_told_apart_by_a_suffix_that_a_r
         node: node("nLAB"),
         models: vec!["tiny-chat".to_owned()],
     };
-    assert_eq!(computers.add_tailnet(lab), Ok(place("computer:lab")));
+    assert_eq!(computers.add_tailnet(&lab), Ok(place("computer:lab")));
     // Another computer whose name is "lab" in ASCII and Chinese: the same name, then `-2`.
     let by_hand = NewComputer {
         label: "Lab 實驗室".to_owned(),
         ..studio(None)
     };
-    assert_eq!(computers.add(by_hand), Ok(place("computer:lab-2")));
+    assert_eq!(computers.add(&by_hand), Ok(place("computer:lab-2")));
 
     // The file holds both names as stored keys.
     let file = AddedFile::read(&rig.file()).expect("reads");
@@ -669,7 +673,7 @@ fn a_computer_on_the_network_named_in_another_script_is_named_by_its_node() {
         models: vec!["tiny-chat".to_owned()],
     };
     assert_eq!(
-        computers.add_tailnet(chinese.clone()),
+        computers.add_tailnet(&chinese),
         Ok(place("computer:tailnet-nchen"))
     );
     // The same node again, called anything, is refused and keeps its name through a restart.
@@ -678,7 +682,7 @@ fn a_computer_on_the_network_named_in_another_script_is_named_by_its_node() {
         ..chinese
     };
     assert_eq!(
-        restarted(&rig, &[]).add_tailnet(renamed),
+        restarted(&rig, &[]).add_tailnet(&renamed),
         Err(ComputerError::AlreadyThere)
     );
     assert_eq!(
@@ -704,14 +708,14 @@ fn a_computer_on_the_network_that_has_the_name_of_one_written_by_hand_gets_a_suf
         node: node("nLAB"),
         models: vec!["tiny-chat".to_owned()],
     };
-    assert_eq!(computers.add_tailnet(lab), Ok(place("computer:lab-2")));
+    assert_eq!(computers.add_tailnet(&lab), Ok(place("computer:lab-2")));
 }
 
 #[test]
 fn removing_a_computer_on_the_network_says_which_one_so_its_relay_can_stop() {
     let rig = tailnet_rig("tailnet-remove");
     let computers = rig.computers(&[]);
-    computers.add_tailnet(pi()).expect("added");
+    computers.add_tailnet(&pi()).expect("added");
     assert_eq!(
         computers.remove("computer:raspberry-pi"),
         Ok(Some(node("nPI")))
@@ -728,7 +732,7 @@ fn removing_a_computer_on_the_network_says_which_one_so_its_relay_can_stop() {
 fn the_name_people_read_follows_tailscale_and_the_place_does_not_move() {
     let rig = tailnet_rig("tailnet-relabel");
     let computers = rig.computers(&[]);
-    computers.add_tailnet(pi()).expect("added");
+    computers.add_tailnet(&pi()).expect("added");
     let name = ComputerName::parse("raspberry-pi").unwrap();
     let same = BTreeMap::from([(node("nPI"), "Raspberry Pi".to_owned())]);
     assert!(!computers.relabel(&same), "nothing changed");

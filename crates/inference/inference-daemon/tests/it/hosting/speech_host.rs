@@ -1,3 +1,5 @@
+//! A fake speech host: the `bardo-speech-host` protocol.
+//!
 //! A fake speech host: the `bardo-speech-host` protocol (`speech_provider::host_wire`, a 4-byte length
 //! and JSON) served on a Unix socket, and an engine host that "runs" it when the supervisor
 //! spawns the speech engine. It plays the part of the real binary and never loads a model or a
@@ -6,7 +8,10 @@
 //! What it says: for the n-th audio chunk of an utterance, a `Partial` of the first n words of
 //! its script; on `End`, a `Final` of all of them and `Done`. What it records: every request it
 //! was begun with, the chunks and samples it received, its `Cancel`s and its `Hello`s.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test binary uses a different part of this shared module"
+)]
 
 use engine_supervisor::{EngineHost, EngineId, ExitCode, HostError, UnitSpec};
 use speech_provider::{
@@ -280,6 +285,10 @@ fn socket_of(unit: &UnitSpec) -> Option<PathBuf> {
 }
 
 impl EngineHost for SpeechEngines {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn spawn(&self, id: &EngineId, unit: &UnitSpec) -> Result<(), HostError> {
         lock(&self.units).push((id.clone(), unit.clone()));
         if self.refuse.load(Ordering::SeqCst) {
@@ -299,6 +308,10 @@ impl EngineHost for SpeechEngines {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn stop(&self, id: &EngineId) -> Result<(), HostError> {
         match lock(&self.running).remove(id) {
             Some(running) => {

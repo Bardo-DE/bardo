@@ -386,6 +386,10 @@ impl inference_core::ChatSink for Events {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that plays one long scenario of a spoken turn"
+)]
 async fn a_hear_then_answer_pipeline_hears_on_the_speech_host_and_answers_on_a_text_model() {
     let mut world_plan = plan_with_ears();
     world_plan.catalog.push(("tiny-chat.toml", entries::chat()));

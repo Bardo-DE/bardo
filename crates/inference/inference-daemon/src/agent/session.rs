@@ -1,7 +1,9 @@
 //! The open sessions: each a loopback listener task owned by the launcher connection that opened
-//! it. Closing a session (or the launcher's connection going away) aborts the task, which drops
-//! the listener and, with its join set, every request in flight and the provider connections
-//! behind them.
+//! it.
+//!
+//! Closing a session (or the launcher's connection going away) aborts the task, which drops the
+//! listener and, with its join set, every request in flight and the provider connections behind
+//! them.
 
 use super::route::Route;
 use super::token::Token;

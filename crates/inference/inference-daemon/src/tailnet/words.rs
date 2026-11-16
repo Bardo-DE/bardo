@@ -1,3 +1,5 @@
+//! The words a person reads about the Tailscale network.
+//!
 //! The words a person reads about the Tailscale network, written from the typed reasons the
 //! libraries return (`inference_tailnet::Refusal`, `DialError`, `account_tailscale::TailscaleError`).
 //! inferd owns the settings page and the answers to the asking computer, so the sentences live
@@ -39,7 +41,7 @@ pub fn refusal(refusal: &Refusal) -> &'static str {
 }
 
 /// Why Tailscale could not be asked.
-fn tailscale(error: &TailscaleError) -> &'static str {
+fn tailscale(error: TailscaleError) -> &'static str {
     match error {
         TailscaleError::NotInstalled => "Tailscale isn't installed on this computer.",
         TailscaleError::NotRunning => "Tailscale isn't running on this computer.",
@@ -57,7 +59,7 @@ fn tailscale(error: &TailscaleError) -> &'static str {
 #[must_use]
 pub fn fault(fault: &DialError) -> String {
     match fault {
-        DialError::Tailscale(error) => tailscale(error).to_owned(),
+        DialError::Tailscale(error) => tailscale(*error).to_owned(),
         DialError::NoSuchComputer => {
             "That computer is not on your Tailscale network any more.".to_owned()
         }

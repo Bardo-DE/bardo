@@ -1,3 +1,5 @@
+//! Engines the person already runs, named in `inferd.toml`.
+//!
 //! Engines the person already runs: `[engines.attached."<catalog id>"]` in `inferd.toml` names an
 //! engine (vLLM on a lab machine, reached through an SSH tunnel to a local Unix socket, or on a
 //! loopback port) that inferd uses and never starts, stops, evicts or kills.

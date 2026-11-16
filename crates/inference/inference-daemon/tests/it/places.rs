@@ -556,7 +556,6 @@ mod computers {
         ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRequest, MessagePart, OpenOptions,
         PlaceId, Policy, Role as ChatRole,
     };
-    use inference_daemon::peers::Caller;
     use inference_dbus::inference::COMPUTER_ERROR_PREFIX;
     use inference_dbus::inference::InferenceProxy;
     use std::path::Path;
@@ -813,7 +812,12 @@ mod computers {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a table of refusals and the sentence each one reaches Settings as"
+    )]
     async fn what_is_refused_reaches_settings_as_a_named_error_with_a_plain_sentence() {
+        type Case<'a> = (&'a str, Vec<(String, Details)>, &'a str, &'a str);
         let (world, lab) = world("refuse").await;
         let proxy = proxy(&world).await;
         let socket = lab.socket();
@@ -829,7 +833,6 @@ mod computers {
             "The key for \u{201c}{}\u{201d} cannot be used.",
             entries::ATTACHED
         );
-        type Case<'a> = (&'a str, Vec<(String, Details)>, &'a str, &'a str);
         let cases: Vec<Case<'_>> = vec![
             (
                 "no models",

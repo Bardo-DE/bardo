@@ -87,7 +87,7 @@ async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
         at: Target::Point(Point::<WindowSpace>::new(Coord(100), Coord(50))),
         button: Button::Left,
         count: ClickCount::One,
-        mods: Default::default(),
+        mods: std::collections::BTreeSet::default(),
     };
     assert!(
         events.contains(&InferEvent::ActionProposed(click.clone())),

@@ -12,6 +12,7 @@ use inference_core::{Period, Policy, SpendScope};
 use inference_daemon::peers::Role;
 use inference_dbus::inference::{AgentsProxy, EndpointArg};
 use serde_json::{Value, json};
+use std::fmt::Write as _;
 use std::path::Path;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
@@ -203,7 +204,7 @@ pub fn unchunk(raw: &[u8]) -> Vec<u8> {
     out
 }
 
-pub fn parse_reply(raw: Vec<u8>) -> Reply {
+pub fn parse_reply(raw: &[u8]) -> Reply {
     let split = raw
         .windows(4)
         .position(|w| w == b"\r\n\r\n")
@@ -251,9 +252,9 @@ pub async fn send(
     let mut request =
         format!("{method} {path} HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n");
     for (name, value) in headers {
-        request.push_str(&format!("{name}: {value}\r\n"));
+        let _ = write!(request, "{name}: {value}\r\n");
     }
-    request.push_str(&format!("Content-Length: {}\r\n\r\n{body}", body.len()));
+    let _ = write!(request, "Content-Length: {}\r\n\r\n{body}", body.len());
     within(
         &format!("the agent endpoint to take {method} {path}"),
         stream.write_all(request.as_bytes()),
@@ -264,13 +265,13 @@ pub async fn send(
     let read = tokio::time::timeout(DEADLINE, stream.read_to_end(&mut raw)).await;
     match read {
         Ok(read) => read.map(|_| ()).expect("read"),
-        Err(_) => panic!(
-            "waited {} s for the agent endpoint's whole reply to {method} {path}; it sent: {}",
+        Err(elapsed) => panic!(
+            "waited {} s for the agent endpoint's whole reply to {method} {path} ({elapsed}); it sent: {}",
             DEADLINE.as_secs(),
             String::from_utf8_lossy(&raw)
         ),
     }
-    parse_reply(raw)
+    parse_reply(&raw)
 }
 
 /// An Anthropic Messages request as the agent sends it.

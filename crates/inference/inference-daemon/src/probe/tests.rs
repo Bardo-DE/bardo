@@ -1,4 +1,4 @@
-use super::names::{Listing, id_of, pair};
+use super::names::id_of;
 use super::testing::{chat, embedding, found};
 use super::*;
 use account_capability::Locality;

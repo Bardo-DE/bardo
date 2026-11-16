@@ -186,7 +186,7 @@ impl Stream {
         self
     }
 
-    fn chunk(&self, choices: Value, usage: Option<Value>) -> String {
+    fn chunk(&self, choices: &Value, usage: Option<Value>) -> String {
         let mut body = json!({
             "id": self.id,
             "object": "chat.completion.chunk",
@@ -202,7 +202,7 @@ impl Stream {
 
     fn delta(&self, delta: &Value) -> String {
         self.chunk(
-            json!([{ "index": 0, "delta": delta, "finish_reason": null }]),
+            &json!([{ "index": 0, "delta": delta, "finish_reason": null }]),
             None,
         )
     }
@@ -231,7 +231,7 @@ impl SseOut for Stream {
         let mut out = String::new();
         if let Some(top) = self.top_logprobs {
             out.push_str(&self.chunk(
-                json!([{
+                &json!([{
                     "index": 0,
                     "delta": {},
                     "logprobs": logprobs_json(reply, top),
@@ -241,11 +241,11 @@ impl SseOut for Stream {
             ));
         }
         out.push_str(&self.chunk(
-            json!([{ "index": 0, "delta": {}, "finish_reason": finish_word(reply.stop) }]),
+            &json!([{ "index": 0, "delta": {}, "finish_reason": finish_word(reply.stop) }]),
             None,
         ));
         if self.include_usage {
-            out.push_str(&self.chunk(json!([]), Some(usage_json(reply))));
+            out.push_str(&self.chunk(&json!([]), Some(usage_json(reply))));
         }
         out.push_str("data: [DONE]\n\n");
         out

@@ -1,3 +1,5 @@
+//! Speech to text over the speech host.
+//!
 //! Speech to text over the speech host: [`SttBackend`] (the closed set of engines a `Transcribe`
 //! turn can run on, one arm so far), the adapters between inferd's audio and event types and
 //! stoker's, [`SpeechRunner::transcribe`], and [`Ears`], the `Transcriber` a pipeline's `Hear`
@@ -136,9 +138,14 @@ impl SpeechRunner {
         })
     }
 
-    /// A speech-to-text turn: audio in, `Heard` events into `sink`, the transcript out. The
-    /// audio is read as the host asks for it and ends when `audio` does (the person stopped
+    /// A speech-to-text turn: audio in, `Heard` events into `sink`, the transcript out.
+    ///
+    /// The audio is read as the host asks for it and ends when `audio` does (the person stopped
     /// talking); a sink answering `Stop` ends the turn early with what was heard so far.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ModelError`] when the engine fails or refuses the audio.
     pub async fn transcribe(
         &self,
         begin: &TranscribeBegin,
@@ -292,7 +299,8 @@ impl Transcriber for Ears {
         self.engines
             .want(model)
             .await
-            .map_err(|_| ModelError::Unreachable)?;
+            .ok()
+            .ok_or(ModelError::Unreachable)?;
         runner.transcribe(begin, audio, sink).await
     }
 }

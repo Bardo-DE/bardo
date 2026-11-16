@@ -1,3 +1,5 @@
+//! What a request cost and who is told.
+//!
 //! What a request cost and who is told: the tokens and the charge read from the provider's own
 //! usage figures (a charge only from a provider that reports one), counted against the account's
 //! and the program's caps, and one audit line. The line holds the program (as its app), the
@@ -178,6 +180,8 @@ pub enum End {
     Unknown,
 }
 
+/// What to count for a request, from what the provider reported.
+///
 /// What to count for a request: what the provider reported when the reply came whole with figures
 /// or came part way (a turn without a charge is unpriced, never worked out from a price), a turn
 /// of no tokens when the model may have run and no figure came, and nothing (`None`) when no model

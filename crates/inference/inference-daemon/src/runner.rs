@@ -1,11 +1,12 @@
-//! The model turns of one session. A turn is a task that pushes `TurnStep`s down a channel;
-//! dropping the turn aborts the task, which drops the HTTP future and closes the engine's stream.
-//! A chat, task or embedding turn is one path wherever the model is: a `inference_core::Model`
-//! (`inference_turns::local::LocalTurn` on a model of this computer, stoker's `OpenAiCompat` against
-//! the pinned model's engine wrapped in `Retrying`; `cloud::turn::CloudModel` on a hosted one),
-//! run by `inference_core::answer`. inferd owns retry (ARCHITECTURE section 2). What stays here is
-//! the daemon's half: what a session is pinned to, where a local request is seated and tried
-//! again, and a speech turn.
+//! The model turns of one session.
+//!
+//! A turn is a task that pushes `TurnStep`s down a channel; dropping the turn aborts the task,
+//! which drops the HTTP future and closes the engine's stream. A chat, task or embedding turn is
+//! one path wherever the model is: a `inference_core::Model` (`inference_turns::local::LocalTurn`
+//! on a model of this computer, stoker's `OpenAiCompat` against the pinned model's engine wrapped
+//! in `Retrying`; `cloud::turn::CloudModel` on a hosted one), run by `inference_core::answer`.
+//! inferd owns retry (ARCHITECTURE section 2). What stays here is the daemon's half: what a session
+//! is pinned to, where a local request is seated and tried again, and a speech turn.
 //!
 //! What a session is pinned to is decided by its router and read here through a [`Pin`] cell:
 //! `serve_session` calls the router once and the runner never sees the decision otherwise.
@@ -280,9 +281,8 @@ impl Job {
         else {
             return InferReply::Failed(ModelError::Unreachable);
         };
-        let frames = match Frames::read(attachments) {
-            Ok(frames) => frames,
-            Err(_) => return InferReply::Failed(ModelError::Unreadable),
+        let Ok(frames) = Frames::read(attachments) else {
+            return InferReply::Failed(ModelError::Unreadable);
         };
         match request {
             InferRequest::Chat(_) | InferRequest::Task(_) | InferRequest::Embed(_) => {

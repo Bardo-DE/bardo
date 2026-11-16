@@ -1,3 +1,5 @@
+//! A hosted model's transport: stoker's `HttpClient` with each body shaped first.
+//!
 //! A hosted model's transport: stoker's `HttpClient` (which speaks TLS for a `Tls` target, behind
 //! `model-http`'s `tls` feature, with `TlsRoots` choosing the trusted roots) wrapped so each body
 //! is first shaped by porter's request policy ([`BodyShape`]: sampling, a model's reasoning
@@ -12,7 +14,6 @@ use model_http::{
     BodySink, Exchange, HttpClient, HttpEndpoint, HttpError, HttpStatus, JsonBody, TlsRoots,
     Transport,
 };
-use std::future::Future;
 
 /// One turn's connection to a hosted model.
 #[derive(Clone)]

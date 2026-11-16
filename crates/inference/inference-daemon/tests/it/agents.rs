@@ -24,6 +24,10 @@ use tokio::net::TcpStream;
 // ---- the wire: the real key to the provider, the token to the agent ------------------------
 
 #[tokio::test(flavor = "multi_thread")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that plays one long scenario against the agent endpoint"
+)]
 async fn an_anthropic_chat_with_a_tool_call_and_result_streams_through_with_the_real_key() {
     let call = Chat::Call {
         name: "read_file",
@@ -504,7 +508,7 @@ async fn outside_the_grant_the_bus_gets_the_cause_and_the_agent_gets_403() {
         .accountd
         .as_ref()
         .expect("accountd")
-        .set_standing("anthropic", Standing::Denied);
+        .set_standing("anthropic", &Standing::Denied);
     let reply = messages(&endpoint, &body).await;
     assert_eq!(reply.status, 403);
     assert_eq!(reply.json()["error"]["type"], "permission_error");

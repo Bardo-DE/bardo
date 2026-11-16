@@ -1,14 +1,14 @@
-//! Stopping inferd on `SIGTERM` or `SIGINT` (`systemctl --user stop inferd` sends `SIGTERM`
-//! first). The daemon stops taking work (the bus name is released), ends every engine through the
-//! host's group stop (`SIGTERM` to the group, [`crate::hosts::STOP_GRACE`], `SIGKILL`) so no
-//! grandchild such as vLLM's `EngineCore` is left holding GPU memory, and exits 0.
+//! Stopping inferd on `SIGTERM` or `SIGINT` (`systemctl --user stop inferd` sends `SIGTERM` first).
+//!
+//! The daemon stops taking work (the bus name is released), ends every engine through the host's
+//! group stop (`SIGTERM` to the group, [`crate::hosts::STOP_GRACE`], `SIGKILL`) so no grandchild
+//! such as vLLM's `EngineCore` is left holding GPU memory, and exits 0.
 //!
 //! The whole of it is bounded by [`BOUND`], 15 s, under `TimeoutStopSec=20` in
 //! `dist/bardo-inferd.service`: past it every group is killed at once and the exit is an error. A second
 //! signal while shutting down does the same without waiting.
 
 use crate::hosts::HostCloser;
-use std::future::Future;
 use std::time::Duration;
 use tokio::signal::unix::{Signal, SignalKind, signal};
 
@@ -37,6 +37,10 @@ pub struct Signals {
 
 impl Signals {
     /// Starts listening.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the signal handlers cannot be installed.
     pub fn listen() -> std::io::Result<Self> {
         Ok(Self {
             term: signal(SignalKind::terminate())?,
@@ -77,6 +81,8 @@ impl Shutdown for tokio::sync::mpsc::UnboundedReceiver<()> {
     }
 }
 
+/// Waits for the first stop request, then winds the daemon down within `bound`.
+///
 /// Waits for the first request (a signal, in the binary), then runs `wind_down` (stop taking
 /// work), ends every engine of `engines`, all within `bound`; a second request, or the bound,
 /// kills every group and returns.

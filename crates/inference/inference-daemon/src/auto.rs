@@ -1,9 +1,11 @@
 //! The `ai.auto.*` settings rows (design/22 section 3.26): what Automatic does, whether it may
-//! unload an idle model, whether it says why. The daemon reads `[ai.auto]` of `inferd.toml`;
-//! `settings::resolve` calls [`AutoConfig::resolve`] and puts the policy into the settings the
-//! engines run under (`Engines::with_settings`). Nothing here reads a file or the environment. A
-//! value a row does not know falls back to the row's default, for that field only, and is named
-//! in [`ResolvedAuto::rejected`] so the daemon can log it once (as `[ai.structured]` does).
+//! unload an idle model, whether it says why.
+//!
+//! The daemon reads `[ai.auto]` of `inferd.toml`; `settings::resolve` calls [`AutoConfig::resolve`]
+//! and puts the policy into the settings the engines run under (`Engines::with_settings`). Nothing
+//! here reads a file or the environment. A value a row does not know falls back to the row's
+//! default, for that field only, and is named in [`ResolvedAuto::rejected`] so the daemon can log
+//! it once (as `[ai.structured]` does).
 
 use crate::settings::SwitchSaid;
 use inference_core::{AutoEvict, AutoMode, AutoPolicy};
@@ -43,7 +45,7 @@ pub struct ResolvedAuto {
 }
 
 fn pick<T: Default>(
-    said: &Option<String>,
+    said: Option<&str>,
     parse: impl Fn(&str) -> Option<T>,
     path: &'static str,
 ) -> (T, Option<&'static str>) {
@@ -59,8 +61,12 @@ fn pick<T: Default>(
 impl AutoConfig {
     /// The rows for this configuration.
     pub fn resolve(&self) -> ResolvedAuto {
-        let (mode, a) = pick(&self.mode, AutoMode::from_slug, MODE);
-        let (allow_evict, b) = pick(&self.allow_evict, AutoEvict::from_slug, ALLOW_EVICT);
+        let (mode, a) = pick(self.mode.as_deref(), AutoMode::from_slug, MODE);
+        let (allow_evict, b) = pick(
+            self.allow_evict.as_deref(),
+            AutoEvict::from_slug,
+            ALLOW_EVICT,
+        );
         let (show_reason, c) = match &self.show_reason {
             None => (true, None),
             Some(SwitchSaid::Switch(on)) => (*on, None),

@@ -3,7 +3,7 @@
 //! of theirs on a loopback port, is not inferd's to start or stop: both are refused in plain
 //! words, and neither is listed.
 
-use super::{Arc, Cause, EngineHost, EngineState, Engines, LocalModel, ModelRef, Weights};
+use super::{Arc, Cause, EngineState, Engines, LocalModel, ModelRef, Weights};
 use engine_spec::engine;
 use engine_supervisor::EngineFailure;
 use inference_dbus::inference::{RunState, RunningModel};
@@ -95,8 +95,7 @@ fn cause_of(failure: EngineFailure) -> Cause {
             tail: inference_router::startup::Tail::default(),
         },
         EngineFailure::BadProfile => Cause::BadProfile,
-        // never ready, or a failure a later supervisor adds
-        _ => Cause::NeverReady {
+        EngineFailure::NeverReady => Cause::NeverReady {
             tail: inference_router::startup::Tail::default(),
         },
     }

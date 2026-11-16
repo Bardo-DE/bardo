@@ -1,9 +1,10 @@
-//! The hosted models as the model picker lists them: every curated remote entry that fits a
-//! slot, grouped by company, whether or not the person has an account for it. An entry no
-//! account reaches is listed, unavailable with the reason "Add an account to use" (the schema's
-//! `unavailable`, which Settings greys and the module refuses to set), so the picker is company then
-//! model regardless of accounts. The label is the model's name alone, as a Mac menu shows it; the
-//! company is the group it sits under.
+//! The hosted models as the model picker lists them: every curated remote entry that fits a slot,
+//! grouped by company, whether or not the person has an account for it.
+//!
+//! An entry no account reaches is listed, unavailable with the reason "Add an account to use" (the
+//! schema's `unavailable`, which Settings greys and the module refuses to set), so the picker is
+//! company then model regardless of accounts. The label is the model's name alone, as a Mac menu
+//! shows it; the company is the group it sits under.
 
 use super::accountd::AccountVerdict;
 use super::models::{WIRES, known_providers, provider_of};
@@ -82,6 +83,8 @@ fn plain_name(label: &str) -> &str {
     }
 }
 
+/// The hosted models of `slot`, grouped by company.
+///
 /// The hosted models of `slot`, grouped by company (companies in the order the
 /// catalogue first names them, models in catalogue order), marked by `accounts`: every account of
 /// the person's, whatever the app's grant says.

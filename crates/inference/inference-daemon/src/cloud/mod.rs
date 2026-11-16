@@ -212,6 +212,10 @@ impl Cloud {
     }
 
     /// The key behind `grant`, fetched now.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`AccountdFault`] when accountd cannot be reached or refuses the grant.
     pub async fn key(&self, grant: &GrantId) -> Result<SecretText, AccountdFault> {
         self.0.accountd.key(grant).await
     }

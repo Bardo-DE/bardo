@@ -3,8 +3,7 @@ use base_testkit::Scratch;
 use engine_spec::ProgramPath;
 use engine_supervisor::{EnvPair, GpuAccess, Network, Sandbox};
 use model_catalog::EngineArg;
-use std::path::Path;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::AsyncWriteExt;
 use tokio::net::UnixListener;
 
 fn unit(program: &str, args: &[&str]) -> UnitSpec {

@@ -1,7 +1,9 @@
 //! Drives stoker's pure engine machine (`engine_supervisor::step`) with real time and the three
-//! seams (`EngineHost`, `ReadyProbe`, `GpuProbe`). One task owns the `Supervisor`; everything
-//! else talks to it through a [`Supervised`] handle (commands in, snapshots out), so the rest of
-//! inferd names none of the three seams' types and a test swaps them for stoker's fakes.
+//! seams (`EngineHost`, `ReadyProbe`, `GpuProbe`).
+//!
+//! One task owns the `Supervisor`; everything else talks to it through a [`Supervised`] handle
+//! (commands in, snapshots out), so the rest of inferd names none of the three seams' types and a
+//! test swaps them for stoker's fakes.
 //!
 //! An engine whose window is a launch flag is started with a window chosen at that moment, from the
 //! card's free memory and what the person set ([`Sizing`]); the machine's budget still counts it at
@@ -278,9 +280,15 @@ impl Supervised {
         self.sizing.set_lengths(lengths);
     }
 
+    /// Asks for the engine and waits until it is ready or has failed.
+    ///
     /// Asks for the engine and waits until it is ready (`Ok`) or fails (`Failed`, with the cause):
     /// at the next failure to start, which is the engine's exit when its process ends, not a
     /// timeout. Dropping the future abandons the wait, not the engine.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Failed`] with the cause when the engine fails to start.
     pub async fn want(&self, id: &EngineId) -> Result<(), Failed> {
         // Failures before this call do not fail it; one after it does.
         let (seen, released) = {
@@ -293,7 +301,8 @@ impl Supervised {
         let (ack, done) = oneshot::channel();
         self.commands
             .send(Command::Want(id.clone(), ack))
-            .map_err(|_| Failed::unknown())?;
+            .ok()
+            .ok_or_else(|| Failed::unknown())?;
         match done.await {
             Err(_) => return Err(Failed::unknown()),
             Ok(Err(cause)) => return Err(Failed { cause }),
@@ -327,7 +336,11 @@ impl Supervised {
             if let Some(verdict) = verdict {
                 return verdict;
             }
-            state.changed().await.map_err(|_| Failed::unknown())?;
+            state
+                .changed()
+                .await
+                .ok()
+                .ok_or_else(|| Failed::unknown())?;
         }
     }
 
@@ -384,8 +397,12 @@ pub struct Changes(watch::Receiver<Snapshot>);
 
 impl Changes {
     /// Resolves at the next change of any engine's state, or fails once the supervisor is gone.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Failed`] when the supervisor is gone.
     pub async fn next(&mut self) -> Result<(), Failed> {
-        self.0.changed().await.map_err(|_| Failed::unknown())
+        self.0.changed().await.ok().ok_or_else(|| Failed::unknown())
     }
 }
 

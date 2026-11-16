@@ -1,6 +1,8 @@
-//! What a failed request is told as, and what the log says about it. A failure ends the one
-//! request or session it hit and says why in plain words; the daemon and every other session go
-//! on. Pure: the engine's state and the memory numbers of the moment in, the error out.
+//! What a failed request is told as, and what the log says about it.
+//!
+//! A failure ends the one request or session it hit and says why in plain words; the daemon and
+//! every other session go on. Pure: the engine's state and the memory numbers of the moment in, the
+//! error out.
 
 use crate::admit::Priority;
 use base_ids::Bytes;
@@ -25,10 +27,12 @@ pub struct Moment {
     pub memory: Option<MemoryFacts>,
 }
 
-/// What a request that ended with `error` is told. A request the engine could not be reached for
-/// is told as the engine having stopped when it is not running now, and as running out of
-/// graphics memory when it is running and the card has less free than one more request needs.
-/// Any other error stands as it is: a refused prompt stays refused, a timeout stays a timeout.
+/// What a request that ended with `error` is told.
+///
+/// A request the engine could not be reached for is told as the engine having stopped when it is
+/// not running now, and as running out of graphics memory when it is running and the card has less
+/// free than one more request needs. Any other error stands as it is: a refused prompt stays
+/// refused, a timeout stays a timeout.
 #[must_use]
 pub fn explain(error: ModelError, moment: &Moment) -> ModelError {
     match (error, moment.engine, moment.memory) {
@@ -70,8 +74,9 @@ pub enum Retry {
 }
 
 /// The person's own request that was on an engine that stopped, before it sent anything, is run
-/// once more on another healthy instance of the same model (`others` of them). Nothing else is
-/// retried, and never on a different model: there is no quiet fallback.
+/// once more on another healthy instance of the same model (`others` of them).
+///
+/// Nothing else is retried, and never on a different model: there is no quiet fallback.
 #[must_use]
 pub fn retry(who: Priority, error: ModelError, spoke: Spoke, tried: Tried, others: usize) -> Retry {
     match (who, error, spoke, tried, others) {

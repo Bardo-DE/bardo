@@ -1,3 +1,5 @@
+//! What `OpenEndpoint` and `CloseEndpoint` answer instead of a value.
+//!
 //! What `OpenEndpoint` and `CloseEndpoint` answer instead of a value: a cause as the D-Bus error
 //! `org.bardo.Inference1.Error.<Cause>`, or one of the bus's own (`AccessDenied`, `InvalidArgs`)
 //! under its real name. Written by hand, as accountd's refusals are, so a client tells a cause
@@ -113,8 +115,8 @@ impl Refusal {
 }
 
 impl DBusError for Refusal {
-    fn create_reply(&self, call: &Header<'_>) -> zbus::Result<Message> {
-        Message::error(call, self.name.clone())?.build(&(self.text.as_str(),))
+    fn create_reply(&self, msg: &Header<'_>) -> zbus::Result<Message> {
+        Message::error(msg, self.name.clone())?.build(&(self.text.as_str(),))
     }
 
     fn name(&self) -> ErrorName<'_> {

@@ -1,11 +1,11 @@
-//! A private session bus for one test: its own `dbus-daemon` on an abstract socket, with a
-//! scratch HOME and runtime directory and no environment of the real session. Dropping it
-//! stops the daemon. Tests never reach the real bus.
+//! A private session bus for one test: its own `dbus-daemon` on an abstract socket, with a scratch
+//! HOME and runtime directory and no environment of the real session.
+//!
+//! Dropping it stops the daemon. Tests never reach the real bus.
 //!
 //! Every wait of a test has a deadline ([`within`], [`DEADLINE`]): a wait that does not end is a
 //! failure that names what it waited for, not a hang until the harness ends the test.
 
-use std::future::Future;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
@@ -22,7 +22,7 @@ pub const DEADLINE: Duration = base_testkit::GENEROUS;
 pub async fn within<T>(what: &str, future: impl Future<Output = T>) -> T {
     match tokio::time::timeout(DEADLINE, future).await {
         Ok(out) => out,
-        Err(_) => panic!("waited {} s for {what}", DEADLINE.as_secs()),
+        Err(elapsed) => panic!("waited {} s for {what} ({elapsed})", DEADLINE.as_secs()),
     }
 }
 

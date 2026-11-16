@@ -1,3 +1,5 @@
+//! The local model one probed model is, as a catalog entry.
+//!
 //! The local model one probed model is: a catalog entry written from what the probe read (as the
 //! replay engine's is), so routing sees a card like any other and the turn code finds the
 //! sampling, limits and tools it reads from an entry. Nothing starts: the model is served by the
@@ -123,9 +125,11 @@ fn capabilities_of(model: &Probed) -> Vec<Capability> {
         .collect()
 }
 
-/// The local model of one probed model of `runtime`, on `port`. `sockets` is where an engine's
-/// socket would go (the field is required of every model and unused here). `None` when the model
-/// is neither a language nor an embedding model, or its entry does not parse.
+/// The local model of one probed model of `runtime`, on `port`.
+///
+/// `sockets` is where an engine's socket would go (the field is required of every model and unused
+/// here). `None` when the model is neither a language nor an embedding model, or its entry does not
+/// parse.
 #[must_use]
 pub fn local_model(
     runtime: Runtime,

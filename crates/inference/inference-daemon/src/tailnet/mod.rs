@@ -61,7 +61,7 @@ struct Running {
     // Held for as long as lending is on; dropping them stops it.
     _observer: Observer,
     _lending: Lending,
-    _forward: JoinHandle<()>,
+    forward: JoinHandle<()>,
     _on: watch::Sender<bool>,
 }
 
@@ -178,6 +178,10 @@ impl Tailnet {
 
     /// Starts the relay that leads to the computer `node`, if there is none: the socket an
     /// engine on it is reached at.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the relay socket cannot be set up.
     pub fn ensure_relay(&self, node: &NodeId) -> std::io::Result<()> {
         let mut relays = self.0.relays.lock().unwrap_or_else(PoisonError::into_inner);
         if relays.contains_key(node) {
@@ -253,13 +257,13 @@ async fn supervise(
                 running = Some(Running {
                     _observer: observer,
                     _lending: lending,
-                    _forward: forward,
+                    forward,
                     _on: switch,
                 });
             }
             (false, true) => {
                 if let Some(stopped) = running.take() {
-                    stopped._forward.abort();
+                    stopped.forward.abort();
                 }
                 inner.listening.send_replace(Listening::default());
             }

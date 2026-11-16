@@ -5,7 +5,6 @@
 
 use account_dbus::accounts::{TailnetProxy, machine_from_dbus};
 use account_tailscale::Machine;
-use std::future::Future;
 use std::pin::Pin;
 
 /// A boxed future, so the seam can be a trait object.

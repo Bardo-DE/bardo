@@ -7,8 +7,7 @@ use account_core::DataClass;
 use account_core::consent::Usage;
 use base_testkit::Scratch;
 use inference_core::{
-    ChatMessage, ChatRequest, ImagePart, ImageSource, MessagePart, Role, SpeakRequest,
-    TranscribeBegin, TranscribeMode, VoiceName,
+    ChatMessage, ImagePart, ImageSource, MessagePart, Role, SpeakRequest, TranscribeMode, VoiceName,
 };
 use inference_router::seams::RunningTurn;
 use tokio::io::AsyncReadExt;

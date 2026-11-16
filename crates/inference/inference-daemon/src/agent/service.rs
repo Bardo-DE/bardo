@@ -1,7 +1,9 @@
-//! `org.bardo.Inference1.Agents` at `/org/bardo/Inference1`: the agent launcher's way to ask for
-//! an endpoint. The caller is derived from the bus connection, never sent; any role but the
-//! launcher is refused `AccessDenied`. A session lives as long as the connection that opened
-//! it: when that name leaves the bus, its sessions end.
+//! `org.bardo.Inference1.Agents` at `/org/bardo/Inference1`: the agent launcher's way to ask for an
+//! endpoint.
+//!
+//! The caller is derived from the bus connection, never sent; any role but the launcher is refused
+//! `AccessDenied`. A session lives as long as the connection that opened it: when that name leaves
+//! the bus, its sessions end.
 
 use super::open::OpenRequest;
 use super::refusal::{Cause, Refusal};

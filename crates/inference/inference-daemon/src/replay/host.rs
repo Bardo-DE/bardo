@@ -1,3 +1,5 @@
+//! Replay engines as an [`EngineHost`].
+//!
 //! Replay engines as an [`EngineHost`]: the engines the configuration names a cassette for are
 //! served in this process (a task on the engine's socket), every other engine goes to the host
 //! underneath (child processes). The supervisor, the health probe and the runner see no
@@ -58,10 +60,12 @@ impl<H> ReplayHost<H> {
     }
 
     fn start(&self, id: &EngineId, replaying: &Replaying) -> Result<(), HostError> {
-        let replayer = replaying.replayer.clone().map_err(|_| HostError::Refused)?;
+        let replayer = replaying.replayer.clone().ok().ok_or(HostError::Refused)?;
         // A socket left by an earlier run is ours to replace.
         let _ = std::fs::remove_file(&replaying.socket);
-        let listener = UnixListener::bind(&replaying.socket).map_err(|_| HostError::Refused)?;
+        let listener = UnixListener::bind(&replaying.socket)
+            .ok()
+            .ok_or(HostError::Refused)?;
         let (exit, _) = watch::channel(None);
         let task = tokio::spawn(serve(listener, replayer, replaying.record.clone()));
         if let Some(old) = self.live().insert(id.clone(), Live { task, exit }) {

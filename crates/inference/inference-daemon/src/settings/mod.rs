@@ -290,6 +290,10 @@ impl SpendLine {
 }
 
 /// What routing runs under.
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "each flag is one settings row the person switches on its own"
+)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Settings {
     /// `ai.local_only` and `ai.floor.<class>`.

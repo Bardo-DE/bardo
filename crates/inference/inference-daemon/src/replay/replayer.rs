@@ -1,6 +1,8 @@
-//! A loaded cassette and what has been answered from it. One [`Replayer`] lives as long as the
-//! daemon, not as long as an engine's process: an engine that unloads when idle and is started
-//! again goes on from where the script was, it does not play the `Once` entries a second time.
+//! A loaded cassette and what has been answered from it.
+//!
+//! One [`Replayer`] lives as long as the daemon, not as long as an engine's process: an engine that
+//! unloads when idle and is started again goes on from where the script was, it does not play the
+//! `Once` entries a second time.
 
 use super::cassette::{Cassette, Reply, Seen};
 use model_replay::CassetteError;
@@ -68,6 +70,10 @@ impl Replayer {
     }
 
     /// Reads the cassette at `path` (the one `inferd.toml` names; nothing looks elsewhere).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ReplayError`] when the file cannot be read or is not a cassette.
     pub fn load(path: &Path) -> Result<Self, ReplayError> {
         let shown = path.display().to_string();
         let text = std::fs::read_to_string(path).map_err(|e| ReplayError::Unreadable {
@@ -85,6 +91,10 @@ impl Replayer {
     }
 
     /// The reply for a chat request body, marking its entry used.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ReplayError`] when no unused entry answers the body.
     pub fn answer(&self, body: &Value) -> Result<Reply, ReplayError> {
         let mut used = self.used.lock().unwrap_or_else(PoisonError::into_inner);
         let at =

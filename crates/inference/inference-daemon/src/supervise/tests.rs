@@ -4,7 +4,7 @@
 use super::*;
 use crate::testkit::{Recorder, models};
 use base_testkit::Scratch;
-use engine_supervisor::{FakeGpu, FakeReadyProbe, Probe};
+use engine_supervisor::{FakeGpu, FakeReadyProbe};
 use inference_router::startup::{Level, Log};
 use std::sync::Mutex;
 
@@ -78,13 +78,14 @@ async fn a_listener_wakes_once_for_a_change_and_not_again_until_the_next() {
 
 #[tokio::test(start_paused = true)]
 async fn an_engine_that_answers_loading_is_waited_for() {
-    let scratch = Scratch::new("sup-loading");
-    let specs = specs(&scratch);
-    let id = specs[0].id.clone();
     // The probe says Loading twice, then Ready.
     #[derive(Debug, Clone)]
     struct Slow(Arc<Mutex<u32>>);
     impl ReadyProbe for Slow {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn probe(&self, _: &EngineId) -> Probe {
             let mut asked = self.0.lock().expect("lock");
             *asked += 1;
@@ -95,6 +96,9 @@ async fn an_engine_that_answers_loading_is_waited_for() {
             }
         }
     }
+    let scratch = Scratch::new("sup-loading");
+    let specs = specs(&scratch);
+    let id = specs[0].id.clone();
     let supervised = Supervised::start(
         specs,
         SupervisorConfig::default(),
@@ -162,9 +166,6 @@ async fn a_released_engine_stops_and_stays_stopped_until_wanted_again() {
 
 #[tokio::test(start_paused = true)]
 async fn a_wait_for_an_engine_the_person_stops_ends_with_that_instead_of_hanging() {
-    let scratch = Scratch::new("sup-release-wait");
-    let specs = specs(&scratch);
-    let id = specs[0].id.clone();
     // An engine that is always still loading, as the real probe takes its time.
     #[derive(Debug, Clone)]
     struct Loading;
@@ -174,6 +175,9 @@ async fn a_wait_for_an_engine_the_person_stops_ends_with_that_instead_of_hanging
             Probe::Loading
         }
     }
+    let scratch = Scratch::new("sup-release-wait");
+    let specs = specs(&scratch);
+    let id = specs[0].id.clone();
     let host = Recorder::default();
     let supervised = Supervised::start(
         specs,
@@ -213,6 +217,10 @@ struct Programmed {
 }
 
 impl EngineHost for Programmed {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn spawn(
         &self,
         _: &EngineId,
@@ -225,6 +233,10 @@ impl EngineHost for Programmed {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn stop(&self, _: &EngineId) -> Result<(), engine_supervisor::HostError> {
         self.gone.notify_waiters();
         Ok(())
@@ -310,6 +322,10 @@ async fn an_engine_in_use_is_not_unloaded() {
 struct Refusing(Diagnostics, Cause);
 
 impl EngineHost for Refusing {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn spawn(
         &self,
         id: &EngineId,
@@ -319,6 +335,10 @@ impl EngineHost for Refusing {
         Err(engine_supervisor::HostError::Refused)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn stop(&self, _: &EngineId) -> Result<(), engine_supervisor::HostError> {
         Err(engine_supervisor::HostError::NotRunning)
     }
@@ -482,6 +502,10 @@ async fn a_pump_that_changed_nothing_publishes_nothing_and_a_change_publishes_on
 async fn a_probe_that_fails_at_once_is_asked_again_only_when_its_turn_comes() {
     struct Counting(Arc<Mutex<u32>>);
     impl ReadyProbe for Counting {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this implementation has nothing to await"
+        )]
         async fn probe(&self, _: &EngineId) -> Probe {
             *self.0.lock().expect("lock") += 1;
             Probe::Down

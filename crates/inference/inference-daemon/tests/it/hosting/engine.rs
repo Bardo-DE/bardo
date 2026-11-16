@@ -164,14 +164,14 @@ fn chunk(data: &str) -> Vec<u8> {
     format!("{:x}\r\n{data}\r\n", data.len()).into_bytes()
 }
 
-fn frame(delta: Value, finish: Value) -> String {
+fn frame(delta: &Value, finish: &Value) -> String {
     let body = json!({"id": "c1", "object": "chat.completion.chunk", "model": "m",
         "choices": [{"index": 0, "delta": delta, "finish_reason": finish}]});
     format!("data: {body}\n\n")
 }
 
 /// A chunk whose choice also carries `logprobs`.
-fn frame_with_logprobs(delta: Value, logprobs: Value) -> String {
+fn frame_with_logprobs(delta: &Value, logprobs: &Value) -> String {
     let body = json!({"id": "c1", "object": "chat.completion.chunk", "model": "m",
         "choices": [{"index": 0, "delta": delta, "logprobs": logprobs, "finish_reason": null}]});
     format!("data: {body}\n\n")
@@ -186,9 +186,9 @@ fn stream_for(answer: &Chat) -> Vec<Vec<u8>> {
             pieces.extend(
                 deltas
                     .iter()
-                    .map(|text| chunk(&frame(json!({"content": text}), Value::Null))),
+                    .map(|text| chunk(&frame(&json!({"content": text}), &Value::Null))),
             );
-            pieces.push(chunk(&frame(json!({}), json!("stop"))));
+            pieces.push(chunk(&frame(&json!({}), &json!("stop"))));
         }
         Chat::Choose { text, top } => {
             let entry = |(token, probability): &(&str, f64)| json!({"token": token, "logprob": probability.ln(), "bytes": null});
@@ -196,45 +196,45 @@ fn stream_for(answer: &Chat) -> Vec<Vec<u8>> {
             first["top_logprobs"] = top.iter().map(entry).collect();
             let logprobs = json!({"content": [first], "refusal": null});
             pieces.push(chunk(&frame_with_logprobs(
-                json!({"content": text}),
-                logprobs,
+                &json!({"content": text}),
+                &logprobs,
             )));
-            pieces.push(chunk(&frame(json!({}), json!("stop"))));
+            pieces.push(chunk(&frame(&json!({}), &json!("stop"))));
         }
         Chat::ChooseGarbled(text) => {
             let logprobs =
                 json!({"content": [{"token": 7, "logprob": "high", "top_logprobs": "none"}]});
             pieces.push(chunk(&frame_with_logprobs(
-                json!({"content": text}),
-                logprobs,
+                &json!({"content": text}),
+                &logprobs,
             )));
-            pieces.push(chunk(&frame(json!({}), json!("stop"))));
+            pieces.push(chunk(&frame(&json!({}), &json!("stop"))));
         }
         Chat::Call { name, arguments } => {
             let delta = json!({"tool_calls": [{"index": 0, "id": "call_1", "type": "function",
                 "function": {"name": name, "arguments": arguments}}]});
-            pieces.push(chunk(&frame(delta, Value::Null)));
-            pieces.push(chunk(&frame(json!({}), json!("tool_calls"))));
+            pieces.push(chunk(&frame(&delta, &Value::Null)));
+            pieces.push(chunk(&frame(&json!({}), &json!("tool_calls"))));
         }
         Chat::ThinkSay(thoughts, says) => {
             pieces.extend(
                 thoughts
                     .iter()
-                    .map(|text| chunk(&frame(json!({"reasoning_content": text}), Value::Null))),
+                    .map(|text| chunk(&frame(&json!({"reasoning_content": text}), &Value::Null))),
             );
             pieces.extend(
                 says.iter()
-                    .map(|text| chunk(&frame(json!({"content": text}), Value::Null))),
+                    .map(|text| chunk(&frame(&json!({"content": text}), &Value::Null))),
             );
-            pieces.push(chunk(&frame(json!({}), json!("stop"))));
+            pieces.push(chunk(&frame(&json!({}), &json!("stop"))));
         }
         Chat::Think(deltas) => {
             pieces.extend(
                 deltas
                     .iter()
-                    .map(|text| chunk(&frame(json!({"reasoning_content": text}), Value::Null))),
+                    .map(|text| chunk(&frame(&json!({"reasoning_content": text}), &Value::Null))),
             );
-            pieces.push(chunk(&frame(json!({}), json!("stop"))));
+            pieces.push(chunk(&frame(&json!({}), &json!("stop"))));
         }
         Chat::Fail(_) | Chat::Hang => {}
     }
@@ -347,7 +347,10 @@ fn json_response(status: &str, body: &Value) -> Vec<u8> {
 fn vector(text: &str, dims: usize) -> Vec<f64> {
     let sum: u64 = text.bytes().map(u64::from).sum();
     (0..dims)
-        .map(|i| ((sum * (i as u64 + 1)) % 100) as f64 / 100.0)
+        .map(|i| {
+            let step = u64::try_from(i).unwrap_or(u64::MAX).wrapping_add(1);
+            f64::from(u32::try_from(sum.wrapping_mul(step) % 100).unwrap_or(0)) / 100.0
+        })
         .collect()
 }
 

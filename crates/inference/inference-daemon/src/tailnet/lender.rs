@@ -1,3 +1,5 @@
+//! What a computer of the person's is told when it connects.
+//!
 //! What a computer of the person's is told when it connects to this one and has passed the
 //! judgement of `inference_tailnet` (who it is, and that it is theirs): its hello, the list of the
 //! models lent, and chat.
@@ -32,7 +34,6 @@ use base_time::Clock;
 use inference_tailnet::{Approval, Guests, Hello, LentModel, Refusal, State, Visit, Visits};
 use inference_turns::audit::AuditOut;
 use serde_json::json;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
@@ -211,7 +212,8 @@ impl Lender {
         let hello = Hello::new(models, approval);
         http::write_json(out, 200, &[], &hello.to_json())
             .await
-            .map_err(|_| Failure::new(Cause::Upstream, "the computer went away"))
+            .ok()
+            .ok_or_else(|| Failure::new(Cause::Upstream, "the computer went away"))
     }
 
     async fn models<S: AsyncWrite + Unpin>(&self, out: &mut S) -> Result<(), Failure> {
@@ -225,7 +227,8 @@ impl Lender {
         let body = openai::models_json(&ids, self.clock.now().0);
         http::write_json(out, 200, &[], &body.to_string())
             .await
-            .map_err(|_| Failure::new(Cause::Upstream, "the computer went away"))
+            .ok()
+            .ok_or_else(|| Failure::new(Cause::Upstream, "the computer went away"))
     }
 
     async fn chat<S: AsyncWrite + Unpin + Send>(
@@ -251,7 +254,9 @@ impl Lender {
         })?;
         let unavailable = || Failure::new(Cause::Overloaded, "the model is not available");
         let ctx = Ctx {
-            program: AgentProgram::parse("computer").map_err(|_| unavailable())?,
+            program: AgentProgram::parse("computer")
+                .ok()
+                .ok_or_else(|| unavailable())?,
             app: guest_app(node),
             route: Route {
                 target: Target::Model(id.clone()),

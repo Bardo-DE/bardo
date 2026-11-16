@@ -4,11 +4,10 @@ use crate::speech_host::{FakeSpeechHost, Words};
 use crate::testkit::models;
 use account_core::consent::Usage;
 use base_testkit::Scratch;
-use inference_core::{AudioFrame, AudioRate, Base64Bytes, InferEvent};
+use inference_core::{AudioFrame, AudioRate, Base64Bytes};
 use inference_router::catalog::parse_entry_text;
 use inference_router::local::{EngineConfig, build};
 use inference_turns::pipeline::VecAudio;
-use std::ops::ControlFlow;
 use std::path::PathBuf;
 
 fn ears(scratch: &Scratch) -> LocalModel {

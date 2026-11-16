@@ -1,7 +1,6 @@
 use super::*;
 use crate::replay::cassette::{Cassette, TEST_HEADER};
 use serde_json::json;
-use tokio::net::UnixStream;
 
 fn replayer() -> Replayer {
     let text = format!(
@@ -19,7 +18,7 @@ fn request(method: &str, path: &str, body: Value) -> Request {
     }
 }
 
-fn flat(pieces: Vec<Vec<u8>>) -> String {
+fn flat(pieces: &[Vec<u8>]) -> String {
     String::from_utf8_lossy(&pieces.concat()).into_owned()
 }
 
@@ -27,9 +26,10 @@ fn flat(pieces: Vec<Vec<u8>>) -> String {
 fn routes_answer_health_chat_and_nothing_else() {
     let played = replayer();
     assert!(
-        flat(respond(&played, &request("GET", "/health", Value::Null))).starts_with("HTTP/1.1 200")
+        flat(&respond(&played, &request("GET", "/health", Value::Null)))
+            .starts_with("HTTP/1.1 200")
     );
-    let chat = flat(respond(
+    let chat = flat(&respond(
         &played,
         &request(
             "POST",
@@ -39,7 +39,7 @@ fn routes_answer_health_chat_and_nothing_else() {
     ));
     assert!(chat.contains("pong"), "{chat}");
     assert!(
-        flat(respond(
+        flat(&respond(
             &played,
             &request("POST", "/v1/embeddings", Value::Null)
         ))

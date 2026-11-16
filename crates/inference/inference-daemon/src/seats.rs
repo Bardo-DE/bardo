@@ -1,3 +1,5 @@
+//! The seats of the engines the daemon runs, shared by every session.
+//!
 //! The seats of the engines the daemon runs, shared by every session: a [`Gate`] holds the pure
 //! admission state ([`crate::admit`]) behind a lock and tells each waiting request when it has
 //! its turn and how many stand ahead of it. A request holds a [`Pass`]; dropping the pass (the
@@ -36,6 +38,8 @@ impl From<Place> for Standing {
     }
 }
 
+/// How many requests the engine launched with `args` takes at once.
+///
 /// How many requests the engine launched with `args` takes at once: vLLM's `--max-num-seqs`,
 /// llama.cpp's `--parallel` (or `-np`), as written in the launch arguments; one when they say
 /// nothing or the engine is not a chat engine.
@@ -77,7 +81,7 @@ impl Inner {
             lane
         };
         let promoted = self.admission.set_lane(lane, seats);
-        self.seat(promoted);
+        self.seat(&promoted);
         lane
     }
 
@@ -90,8 +94,8 @@ impl Inner {
 
     /// Tells the promoted requests they have a seat, and the rest of their lanes where they now
     /// stand.
-    fn seat(&mut self, promoted: Vec<Promoted>) {
-        for Promoted { ticket, lane } in &promoted {
+    fn seat(&mut self, promoted: &[Promoted]) {
+        for Promoted { ticket, lane } in promoted {
             self.tell_standing(*ticket, Standing::Seated);
             self.renumber(*lane);
         }
@@ -267,7 +271,7 @@ impl Drop for Pass {
         inner.by.remove(&ticket);
         let lane = inner.admission.lane_of(ticket);
         let promoted = inner.admission.leave(ticket);
-        inner.seat(promoted);
+        inner.seat(&promoted);
         if let Some(lane) = lane {
             inner.renumber(lane);
         }

@@ -8,6 +8,10 @@ use inference_router::local::NamedEngine;
 struct NoGpu;
 
 impl GpuProbe for NoGpu {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn memory(&self) -> Result<GpuMemory, GpuError> {
         Err(GpuError::Unavailable)
     }
@@ -16,9 +20,17 @@ impl GpuProbe for NoGpu {
 struct Never;
 
 impl EngineHost for Never {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn spawn(&self, _: &EngineId, _: &UnitSpec) -> Result<(), HostError> {
         Err(HostError::Refused)
     }
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this implementation has nothing to await"
+    )]
     async fn stop(&self, _: &EngineId) -> Result<(), HostError> {
         Err(HostError::NotRunning)
     }

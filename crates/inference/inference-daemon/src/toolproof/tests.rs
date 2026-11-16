@@ -1,5 +1,4 @@
 use super::*;
-use account_capability::LlmFeature;
 use account_capability::ModelId;
 use account_capability::{Locality, Tier};
 use account_core::AccountId;

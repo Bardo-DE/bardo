@@ -1,5 +1,4 @@
 use super::*;
-use model_provider::Money;
 
 fn account(id: &str, provider: &str, label: &str, network: bool) -> AiAccountRow {
     AiAccountRow::new(

@@ -1,6 +1,8 @@
 //! Whether an attached engine can answer now: `GET /v1/models` must list the name the catalogue
-//! serves the model under. Asked when a session opens and nowhere else (no background polling),
-//! and answered with the one thing that is wrong, typed.
+//! serves the model under.
+//!
+//! Asked when a session opens and nowhere else (no background polling), and answered with the one
+//! thing that is wrong, typed.
 
 use inference_router::attached::{NotReady, Target};
 use model_http::{
@@ -64,6 +66,10 @@ fn names_in(body: &[u8]) -> Option<Vec<String>> {
 }
 
 /// Asks the engine at `target` whether it serves `served` now.
+///
+/// # Errors
+///
+/// Returns [`NotReady`] saying what is wrong when the engine does not serve `served`.
 pub async fn probe(target: &Target, served: &str) -> Result<(), NotReady> {
     if let Some(path) = target.socket()
         && matches!(

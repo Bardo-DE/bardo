@@ -22,7 +22,6 @@ use account_match::Need;
 use account_wire::Refusal;
 use base_ids::Tokens;
 use std::fmt::Debug;
-use std::future::Future;
 use std::pin::Pin;
 
 /// A boxed future, so the seam can be a trait object.

@@ -135,6 +135,11 @@ fn refused(cause: Cause, text: &str) -> Refusal {
 
 impl Agents {
     /// Opens an endpoint for `owner` (the launcher's bus connection).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the route is not allowed for the program, the account holds no grant
+    /// or the endpoint cannot be set up.
     pub async fn open(&self, owner: &str, request: OpenRequest) -> Result<Endpoint, Refusal> {
         let engines = self.engines().clone();
         let settings = engines.settings();
@@ -145,7 +150,8 @@ impl Agents {
             ));
         }
         let program = AgentProgram::parse(&request.program)
-            .map_err(|_| Refusal::invalid("the program is not an agent program id"))?;
+            .ok()
+            .ok_or(Refusal::invalid("the program is not an agent program id"))?;
         let class: DataClass = crate::settings::from_slug(&request.class)
             .ok_or_else(|| Refusal::invalid("the class is not a data class"))?;
         let protocols: Vec<AgentProtocol> = request
@@ -176,10 +182,12 @@ impl Agents {
             random_hex::<8>().ok_or_else(|| refused(Cause::Unavailable, "no randomness"))?;
         let listener = TcpListener::bind((Ipv4Addr::LOCALHOST, 0))
             .await
-            .map_err(|_| refused(Cause::Unavailable, "no loopback port"))?;
+            .ok()
+            .ok_or_else(|| refused(Cause::Unavailable, "no loopback port"))?;
         let port = listener
             .local_addr()
-            .map_err(|_| refused(Cause::Unavailable, "no loopback port"))?
+            .ok()
+            .ok_or_else(|| refused(Cause::Unavailable, "no loopback port"))?
             .port();
         let ctx = Ctx {
             program,
@@ -256,6 +264,10 @@ async fn check_route(
 }
 
 /// The provider of `account` when `app` holds a grant on it for `class`.
+///
+/// # Errors
+///
+/// Returns a [`Refusal`] when `app` holds no grant on `account` for `class`.
 pub async fn granted_provider(
     cloud: &crate::cloud::Cloud,
     account: &AccountId,

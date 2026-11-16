@@ -4,13 +4,14 @@
 
 use super::wire::Wire;
 use inference_core::{InferEvent, InferReply, ModelError};
-use std::future::Future;
 use tokio::net::UnixStream;
 
-/// Runs `session` as a task of its own. If it panics, the panic ends here: `log` is called once
-/// (it says what the machine looked like, for the log), the client on `report` (another handle on
-/// the session's socket) is sent the end of its turn as `Interrupted`, and this returns. A
-/// session that ends any other way (it finished, or was aborted) is left alone.
+/// Runs `session` as a task of its own.
+///
+/// If it panics, the panic ends here: `log` is called once (it says what the machine looked like,
+/// for the log), the client on `report` (another handle on the session's socket) is sent the end of
+/// its turn as `Interrupted`, and this returns. A session that ends any other way (it finished, or
+/// was aborted) is left alone.
 pub async fn guarded<F>(session: F, report: UnixStream, log: impl FnOnce() -> String)
 where
     F: Future<Output = ()> + Send + 'static,

@@ -161,7 +161,7 @@ fn made_install(roots: &Roots) -> (Manifest, PathBuf) {
         version: "b-test".into(),
         backend: "cpu".into(),
         seal: seal.clone(),
-        entries: Default::default(),
+        entries: std::collections::BTreeMap::default(),
         venv_seal: None,
     }
     .write(&dir.join("installed.json"))
@@ -220,7 +220,10 @@ async fn an_install_of_ours_says_its_release_and_place_and_a_changed_one_says_so
         FixedClock(UnixSeconds(1_700_000_000)),
     )
     .reloading(reload)
-    .engines_found(LocalEngines::of(&Default::default()).with_installed(installed.clone()));
+    .engines_found(
+        LocalEngines::of(&inference_router::local::EngineConfig::default())
+            .with_installed(installed.clone()),
+    );
     let daemon = bus.connect().await;
     within("inferd to serve", serve_on(&daemon, inference))
         .await

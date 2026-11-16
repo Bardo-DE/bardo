@@ -83,7 +83,7 @@ impl Row {
             page: Page::Intelligence,
             section: Section(SECTION.to_owned()),
             exposure: Exposure::Advanced,
-            labels: Default::default(),
+            labels: ui_settings::schema::WordLabels::default(),
             agent: AgentSetting::HandsOff,
             unavailable: BTreeMap::new(),
             groups: BTreeMap::new(),

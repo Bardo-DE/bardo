@@ -121,6 +121,10 @@ pub(super) async fn write(
     reload.now().map_err(failed).map(|_| ())
 }
 
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "used as a `map_err` function, which hands the error over by value"
+)]
 fn failed(why: impl ToString) -> LiveError {
     LiveError::Failed(why.to_string())
 }
@@ -138,9 +142,15 @@ impl HelperPools {
         Self { reload }
     }
 
-    /// Sets the models Automatic chooses among for `helper` in `slot` and puts them in force. Each
-    /// must be a model inferd knows for the slot; none are added for the person. An empty list
+    /// Sets the models Automatic chooses among for `helper` in `slot` and puts them in force.
+    ///
+    /// Each must be a model inferd knows for the slot; none are added for the person. An empty list
     /// takes the helper off Automatic for the slot.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LiveError`] when a model is not one inferd knows for the slot or the change cannot
+    /// be put in force.
     pub async fn set(
         &self,
         slot: Slot,

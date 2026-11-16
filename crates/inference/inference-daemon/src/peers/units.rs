@@ -2,6 +2,8 @@
 
 use serde::{Deserialize, Serialize};
 
+/// A unit under `[apps]` or `agent_launcher`, by name alone or with its programs.
+///
 /// A unit under `[apps]` or `agent_launcher`: its name alone (`"bardo-memoryd.service"`, whose program
 /// the shared table knows: a daemon's `libexec/bardo/bardo-<name>`), or its name and the programs that
 /// may run in it, for a unit the name does not give a program for (a scope, a dotted service):

@@ -251,7 +251,7 @@ fn pcm() -> AudioFrame {
 }
 
 /// The replay text model: answers only a request that carries the words the fake ears heard.
-async fn replayed_text_model(scratch: &Scratch) -> (Turns, Listed) {
+fn replayed_text_model(scratch: &Scratch) -> (Turns, Listed) {
     let cassette = scratch.path().join("cassette.jsonl");
     let entry = r#"{"when":{"contains":["turn the lights off"]},"reply":{"kind":"text","v":"Lights are off."},"uses":"always"}"#;
     std::fs::write(&cassette, format!("{TEST_HEADER}\n{entry}\n")).expect("cassette");
@@ -285,7 +285,7 @@ async fn replayed_text_model(scratch: &Scratch) -> (Turns, Listed) {
 #[tokio::test]
 async fn a_voice_request_is_heard_by_one_model_and_answered_by_another_over_the_replay_engine() {
     let scratch = Scratch::new("pipeline-two");
-    let (turns, text) = replayed_text_model(&scratch).await;
+    let (turns, text) = replayed_text_model(&scratch);
     let ears = listed(card("local", "whisper", stt_cap()));
     let models = [ears, text];
     let planned = plan_for(
@@ -378,7 +378,7 @@ async fn a_voice_request_is_heard_by_one_model_and_answered_by_another_over_the_
 #[tokio::test]
 async fn show_reason_off_keeps_the_stage_notes_and_drops_the_whys() {
     let scratch = Scratch::new("pipeline-quiet");
-    let (turns, text) = replayed_text_model(&scratch).await;
+    let (turns, text) = replayed_text_model(&scratch);
     let models = [listed(card("local", "whisper", stt_cap())), text];
     let planned = plan_for(
         &audio_shape(DataClass::Prompt),
@@ -397,7 +397,7 @@ async fn show_reason_off_keeps_the_stage_notes_and_drops_the_whys() {
             VecAudio([pcm()].into()),
         )),
         chat: chat(),
-        names: Default::default(),
+        names: std::collections::BTreeMap::default(),
     };
     let fake = FakeEars {
         heard: Mutex::default(),
@@ -418,7 +418,7 @@ async fn show_reason_off_keeps_the_stage_notes_and_drops_the_whys() {
 #[tokio::test]
 async fn a_plan_with_a_stage_the_runner_does_not_run_is_refused_before_anything_is_announced() {
     let scratch = Scratch::new("pipeline-notyet");
-    let (turns, text) = replayed_text_model(&scratch).await;
+    let (turns, text) = replayed_text_model(&scratch);
     let kokoro = listed(card(
         "local",
         "kokoro",
@@ -440,7 +440,7 @@ async fn a_plan_with_a_stage_the_runner_does_not_run_is_refused_before_anything_
     let input = PipelineInput {
         audio: None,
         chat: chat(),
-        names: Default::default(),
+        names: std::collections::BTreeMap::default(),
     };
     let reply = run_pipeline(&planned, true, input, &fake, &turns, &mut events).await;
     assert_eq!(reply, InferReply::Refused(InferRefusal::Unsupported));

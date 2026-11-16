@@ -6,6 +6,8 @@ use inference_turns::structured::StructuredConfig;
 use inference_turns::structured::limits::Resolved;
 use serde::{Deserialize, Serialize};
 
+/// The `[ai]` table: every settings row of the `ai` domain at its settings path.
+///
 /// The `[ai]` table: every settings row of the `ai` domain at its settings path, as a settings
 /// writer lays a file out (`ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>`,
 /// `ai.auto.*`, `ai.spend.*`, `ai.length.*`, `ai.structured.*`). Values are the rows' slugs, resolved (and

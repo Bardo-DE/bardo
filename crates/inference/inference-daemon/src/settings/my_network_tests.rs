@@ -5,7 +5,6 @@ use super::*;
 use crate::config::InferdConfig;
 use account_capability::Locality;
 use account_core::DataClass;
-use inference_core::Floor;
 
 fn settings(text: &str) -> (Settings, Vec<String>) {
     let config = InferdConfig::from_toml(text).expect("config");

@@ -1,3 +1,5 @@
+//! `OpenAI` Chat Completions, as an agent speaks it.
+//!
 //! `OpenAI` Chat Completions, as an agent speaks it: the request read into inferd's chat request,
 //! and a reply (a JSON completion or a `data:` chunk stream ending in `[DONE]`) written from
 //! inferd's. Mapped: text and `image_url` data URLs, tool calls and tool messages, `system` and

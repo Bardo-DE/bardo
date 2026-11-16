@@ -1,11 +1,11 @@
 use super::*;
 use base_ids::Count;
 
-fn memory(free: u64, one_more: u64) -> Option<MemoryFacts> {
-    Some(MemoryFacts {
+fn memory(free: u64, one_more: u64) -> MemoryFacts {
+    MemoryFacts {
         free: Bytes(free),
         one_more: Bytes(one_more),
-    })
+    }
 }
 
 #[test]
@@ -14,20 +14,20 @@ fn an_unreachable_engine_is_told_as_stopped_or_as_out_of_memory_and_nothing_else
         (
             ModelError::Unreachable,
             EngineView::NotRunning,
-            memory(10, 1),
+            Some(memory(10, 1)),
             ModelError::EngineStopped,
         ),
         (
             ModelError::Unreachable,
             EngineView::Running,
-            memory(1, 10),
+            Some(memory(1, 10)),
             ModelError::OutOfMemory,
         ),
         // enough memory, or none read: the error stands
         (
             ModelError::Unreachable,
             EngineView::Running,
-            memory(10, 10),
+            Some(memory(10, 10)),
             ModelError::Unreachable,
         ),
         (
@@ -40,7 +40,7 @@ fn an_unreachable_engine_is_told_as_stopped_or_as_out_of_memory_and_nothing_else
         (
             ModelError::ContextOverflow,
             EngineView::NotRunning,
-            memory(1, 10),
+            Some(memory(1, 10)),
             ModelError::ContextOverflow,
         ),
         (
@@ -52,7 +52,7 @@ fn an_unreachable_engine_is_told_as_stopped_or_as_out_of_memory_and_nothing_else
         (
             ModelError::RateLimited(3),
             EngineView::Running,
-            memory(1, 10),
+            Some(memory(1, 10)),
             ModelError::RateLimited(3),
         ),
     ];
@@ -98,7 +98,7 @@ fn the_log_line_carries_the_numbers_of_the_moment() {
     let facts = HardwareFacts {
         helpers: Count(3),
         ahead: Count(2),
-        memory: memory(512 << 20, 2048 << 20),
+        memory: Some(memory(512 << 20, 2048 << 20)),
     };
     let line = log_line(
         "a reply failed",
