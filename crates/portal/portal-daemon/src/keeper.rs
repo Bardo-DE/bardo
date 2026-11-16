@@ -6,6 +6,7 @@
 
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
+use base_time::{Clock, SystemClock};
 use portal_core::{
     CastSource, DeviceKinds, Grant, InputGrant, Keep, Remembered, RestoreBook, RestoreToken,
     Screens, StandingGrant,
@@ -226,7 +227,5 @@ impl Keeper {
 
 /// Seconds since the Unix epoch, the clock grants are dated by.
 pub fn unix_now() -> u64 {
-    std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map_or(0, |elapsed| elapsed.as_secs())
+    u64::try_from(SystemClock.now().0).unwrap_or(0)
 }

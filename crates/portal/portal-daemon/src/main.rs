@@ -4,6 +4,8 @@
 use std::path::PathBuf;
 use std::process::ExitCode;
 
+use base_time::{Clock, SystemClock};
+use base_xdg::Xdg;
 use caller_identity_dbus::caller_identity_core::Table;
 use caller_identity_dbus::caller_identity_linux::{RealProc, TableFiles};
 use portal_daemon::access::ShellAsker;
@@ -95,11 +97,9 @@ fn with_person_rows(shipped: Table) -> Result<Table, String> {
 /// Where the portal keeps its state: `$XDG_STATE_HOME/bardo/portal`, or under `$HOME/.local/state`.
 /// The only place the environment is read for it; the libraries take the path.
 fn state_dir() -> PathBuf {
-    let base = std::env::var_os("XDG_STATE_HOME")
-        .map(PathBuf::from)
-        .filter(|p| p.is_absolute())
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".local/state")))
-        .unwrap_or_else(|| PathBuf::from("."));
+    let base = Xdg::process()
+        .state_home()
+        .unwrap_or_else(|_| PathBuf::from("."));
     base.join("bardo").join("portal")
 }
 
@@ -132,21 +132,14 @@ fn move_pre_bardo_folders() {
 /// Where an app's own name is found: the desktop entries in the data directories (the person's, the
 /// flatpak exports, then the system's), preferring the person's language.
 fn app_names() -> AppNames {
-    let absolute = |p: &PathBuf| p.is_absolute();
-    let data_home = std::env::var_os("XDG_DATA_HOME")
-        .map(PathBuf::from)
-        .filter(absolute)
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".local/share")));
-    let system = std::env::var("XDG_DATA_DIRS")
-        .ok()
-        .filter(|dirs| !dirs.is_empty())
-        .unwrap_or_else(|| "/usr/local/share:/usr/share".to_owned());
+    let xdg = Xdg::process();
+    let data_home = xdg.data_home().ok();
     let mut dirs: Vec<PathBuf> = Vec::new();
     if let Some(home) = data_home {
         dirs.push(home.join("flatpak/exports/share"));
         dirs.insert(0, home);
     }
-    dirs.extend(system.split(':').map(PathBuf::from).filter(absolute));
+    dirs.extend(xdg.data_dirs());
     dirs.push(PathBuf::from("/var/lib/flatpak/exports/share"));
     AppNames::new(dirs, locales())
 }
@@ -172,11 +165,9 @@ fn locales() -> Vec<String> {
 /// Where the desktop keeps its appearance: `$XDG_CONFIG_HOME/bardo/appearance.toml`, or under
 /// `$HOME/.config`.
 fn appearance_file() -> PathBuf {
-    let base = std::env::var_os("XDG_CONFIG_HOME")
-        .map(PathBuf::from)
-        .filter(|p| p.is_absolute())
-        .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config")))
-        .unwrap_or_else(|| PathBuf::from("."));
+    let base = Xdg::process()
+        .config_home()
+        .unwrap_or_else(|_| PathBuf::from("."));
     base.join("bardo").join("appearance.toml")
 }
 
@@ -186,13 +177,11 @@ fn appearance_file() -> PathBuf {
 /// for. Captures connect on `display`: a connection the compositor hands the portal first, the
 /// session's own display when it hands none. The colour picker is the shell's.
 fn screenshots(link: BusLink, display: DisplayName) -> ScreenshotSetup {
-    let pictures = std::env::var_os("HOME")
-        .map(|h| PathBuf::from(h).join("Pictures"))
+    let pictures = Xdg::process()
+        .home()
+        .map(|home| home.join("Pictures"))
         .unwrap_or_default();
-    let stamp = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .map(|d| d.as_secs().to_string())
-        .unwrap_or_default();
+    let stamp = SystemClock.now().0.to_string();
     ScreenshotSetup::new(
         OutputGrab::new(display, Box::new(LiveLayout), Box::new(ExtOpen)),
         pictures,

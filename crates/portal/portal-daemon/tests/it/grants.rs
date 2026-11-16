@@ -1,7 +1,7 @@
 //! NEW-PI-7: the person can see what the portal remembers and take it back, through the Settings
 //! app and nobody else. On a private bus; callers are introduced with the standing they would have.
 
-use std::time::{SystemTime, UNIX_EPOCH};
+use base_time::{Clock, SystemClock};
 
 use caller_identity_dbus::caller_identity_core::{Pin, Proof};
 use caller_identity_dbus::caller_identity_linux::fake::{introduced_program, introduced_service};
@@ -21,9 +21,7 @@ const APP: &str = "org.example.Meet";
 type Listed = Vec<(String, String, u32, u64)>;
 
 fn now() -> u64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |d| d.as_secs())
+    u64::try_from(SystemClock.now().0).unwrap_or(0)
 }
 
 fn as_settings_at(portal: &Portal, who: &Connection, proof: Proof) {

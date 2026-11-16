@@ -10,13 +10,13 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use crate::app_proof::RootHeld;
-use crate::fsread::read_text;
+use base_fs::{ReadCap, read_text_capped};
 
 /// The most characters of an app's name that is shown or sent to the shell.
 pub const MAX_LABEL_CHARS: usize = 64;
 
 /// The largest desktop entry that is read. Real ones are a few kilobytes.
-const MAX_ENTRY_BYTES: u64 = 64 * 1024;
+const MAX_ENTRY: ReadCap = ReadCap::kib(64);
 
 /// The most desktop entries one search by program looks at. Real machines have a few hundred; a
 /// folder with more is not one to trust a search of.
@@ -84,7 +84,7 @@ impl AppNames {
         }
         let found = self.dirs.iter().find_map(|dir| {
             let path = dir.join("applications").join(format!("{id}.desktop"));
-            let text = read_text(&path, MAX_ENTRY_BYTES).ok()?;
+            let text = read_text_capped(&path, MAX_ENTRY).ok()?;
             Some((path, text))
         });
         match found {
@@ -124,7 +124,7 @@ impl AppNames {
                     return Found::TooMany;
                 }
                 let path = item.path();
-                let Ok(text) = read_text(&path, MAX_ENTRY_BYTES) else {
+                let Ok(text) = read_text_capped(&path, MAX_ENTRY) else {
                     continue;
                 };
                 seen.insert(id.to_owned());
@@ -151,7 +151,7 @@ impl AppNames {
         }
         self.dirs.iter().find_map(|dir| {
             let path = dir.join("applications").join(format!("{id}.desktop"));
-            let text = read_text(&path, MAX_ENTRY_BYTES).ok()?;
+            let text = read_text_capped(&path, MAX_ENTRY).ok()?;
             entry_name(&text, &self.locales)
         })
     }

@@ -12,6 +12,7 @@ categories = ["os", "network-programming"]
 readme = "README.md"
 
 [dependencies]
+base-xdg = { path = "../../base/base-xdg" }
 # The transport, and only the transport. `interprocess` already unifies Unix domain sockets and
 # Windows named pipes behind one `Read + Write` stream, which is the half of this problem that
 # was solved; re-implementing it would be the mistake this crate exists to avoid making twice.

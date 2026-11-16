@@ -7,18 +7,18 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
+use base_fs::{ReadCap, read_text_capped};
 use portal_core::{
     Appearance, Contrast, Rgb, Scheme, SettingKey, SettingValue, SettingsRefusal, changes,
 };
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, StructureBuilder, Value};
 
-use crate::fsread::read_text;
 use crate::peers::RoleGuard;
 use crate::{PORTAL_PATH, TransomError};
 
 /// The largest appearance document that is read. The real one is a few hundred bytes.
-const MAX_DOCUMENT_BYTES: u64 = 64 * 1024;
+const MAX_DOCUMENT: ReadCap = ReadCap::kib(64);
 
 /// How long a read of the document may take before the last good appearance is used instead. A
 /// disk that hangs (a network home) must not hang the portal.
@@ -76,9 +76,9 @@ impl AppearanceSource for DesktopAppearance {
         let Some(path) = &self.path else {
             return Ok(UNCHOSEN);
         };
-        match read_text(path, MAX_DOCUMENT_BYTES) {
+        match read_text_capped(path, MAX_DOCUMENT) {
             Ok(text) => Ok(parse_appearance(&text)),
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(UNCHOSEN),
+            Err(e) if e.is_missing() => Ok(UNCHOSEN),
             Err(e) => Err(AppearanceError::Unreadable(e.to_string())),
         }
     }

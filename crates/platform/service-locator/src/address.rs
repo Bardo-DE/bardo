@@ -5,7 +5,8 @@
 //! a style preference: a rule that reads its own environment can only be checked on the machine
 //! it was written on, and for a cross-platform agent that is the one thing that must not be
 //! true. The macOS and Windows answers below are tested from whatever machine runs `cargo test`.
-
+use base_xdg::Xdg;
+use crate::Error;
 use crate::Error;
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
@@ -74,10 +75,17 @@ pub struct Environment {
 impl Environment {
     /// Read the real environment. [`crate::Agent::new`] does this for you.
     pub fn read() -> Self {
+        let xdg = Xdg::process();
         Self {
-            runtime_dir: std::env::var_os("XDG_RUNTIME_DIR").or_else(runtime_dir_by_uid),
+            runtime_dir: xdg
+                .runtime_dir()
+                .map(PathBuf::into_os_string)
+                .or_else(runtime_dir_by_uid),
             tmpdir: std::env::var_os("TMPDIR").or_else(|| std::env::var_os("TEMP")),
-            home: std::env::var_os("HOME").or_else(|| std::env::var_os("USERPROFILE")),
+            home: xdg
+                .home()
+                .map(|home| home.as_os_str().to_owned())
+                .or_else(|| std::env::var_os("USERPROFILE")),
             local_app_data: std::env::var_os("LOCALAPPDATA"),
             user: std::env::var("USER")
                 .or_else(|_| std::env::var("USERNAME"))

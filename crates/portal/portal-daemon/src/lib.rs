@@ -28,7 +28,6 @@ pub mod chooser;
 #[cfg(feature = "debug")]
 pub mod dev_rows;
 pub mod error;
-pub(crate) mod fsread;
 pub mod inhibit;
 pub mod keeper;
 pub mod link;

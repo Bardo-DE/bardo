@@ -3,16 +3,17 @@
 use std::path::PathBuf;
 use std::sync::Mutex;
 
+use base_fs::{NewFileMode, ReadCap, ReadError, read_text_capped, write_atomic};
+
 use portal_core::{
     DeviceKinds, Grant, InputGrant, Keep, RestoreBook, RestoreToken, Screens, StandingGrant,
 };
 
 use crate::chooser::source_from_wire;
-use crate::fsread::read_text;
 
 /// The largest restore file that is read. Far more than [`portal_core::MAX_GRANTS`] grants need;
 /// a bigger file is not one this program wrote.
-const MAX_FILE_BYTES: u64 = 4 * 1024 * 1024;
+const MAX_FILE: ReadCap = ReadCap::mib(4);
 
 /// Why the book could not be read or written.
 #[derive(Debug, thiserror::Error)]
@@ -30,97 +31,12 @@ pub trait RestoreStore: Send + Sync + std::fmt::Debug {
     /// The saved book; an empty one if nothing was saved.
     fn load(&self) -> Result<RestoreBook, StoreError>;
     /// Replace the saved book.
-    fn save(&self, book: &RestoreBook) -> Result<(), StoreError>;
-}
-
-/// A store in a file the caller names (a file in the user's state directory, mode 0600, because
-/// a token is a secret).
-#[derive(Debug)]
-pub struct FileStore {
-    path: PathBuf,
-}
-
-impl FileStore {
-    /// A store at `path`.
-    pub fn new(path: PathBuf) -> Self {
-        Self { path }
-    }
-
-    /// Where this store reads and writes.
-    pub fn path(&self) -> &std::path::Path {
-        &self.path
-    }
-}
-
-impl RestoreStore for FileStore {
-    /// The saved book. A file whose first line is not this version's is moved aside to
-    /// `<name>.bad` and reported as damaged; a line that cannot be read is skipped (loudly) and
-    /// a copy of the whole file is kept as `<name>.bad`, so a flaw in one line loses one grant and
-    /// never the rest, and nothing is lost without a trace.
-    fn load(&self) -> Result<RestoreBook, StoreError> {
-        let text = match read_text(&self.path, MAX_FILE_BYTES) {
-            Ok(text) => text,
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-                return Ok(RestoreBook::new());
-            }
-            // A file that is not text, not a regular file or far too large is not one we wrote.
-            Err(error)
-                if matches!(
-                    error.kind(),
-                    std::io::ErrorKind::InvalidData | std::io::ErrorKind::InvalidInput
-                ) =>
-            {
-                self.set_aside(Aside::Move);
-                return Err(StoreError::Damaged);
-            }
-            Err(error) => return Err(StoreError::Io(error)),
-        };
-        match decode(&text) {
-            Decoded::Book { book, skipped: 0 } => Ok(book),
-            Decoded::Book { book, skipped } => {
-                tracing::error!(
-                    skipped,
-                    "lines of the restore file could not be read and were left out; \
-                     a copy of the file is kept next to it"
-                );
-                self.set_aside(Aside::Copy);
-                Ok(book)
-            }
-            Decoded::OlderVersion => {
-                tracing::info!("the restore file is from an older version; its grants are dropped");
-                Ok(RestoreBook::new())
-            }
-            Decoded::Foreign => {
-                self.set_aside(Aside::Move);
-                Err(StoreError::Damaged)
-            }
-        }
-    }
-
     fn save(&self, book: &RestoreBook) -> Result<(), StoreError> {
-        use std::io::Write;
-        use std::os::unix::fs::OpenOptionsExt;
-
         if let Some(dir) = self.path.parent().filter(|d| !d.as_os_str().is_empty()) {
             std::fs::create_dir_all(dir)?;
         }
-        let beside = self.beside();
-        let mut file = std::fs::OpenOptions::new()
-            .write(true)
-            .create(true)
-            .truncate(true)
-            .mode(0o600)
-            .open(&beside)?;
-        file.write_all(encode(book).as_bytes())?;
-        file.sync_all()?;
-        drop(file);
-        std::fs::rename(&beside, &self.path)?;
-        // The rename is only on disk once the directory entry is: without this a power cut right
-        // after a save can bring the old book back.
-        if let Some(dir) = self.path.parent().filter(|d| !d.as_os_str().is_empty()) {
-            std::fs::File::open(dir)?.sync_all()?;
-        }
-        Ok(())
+        write_atomic(&self.path, encode(book).as_bytes(), NewFileMode::OwnerOnly)
+            .map_err(|error| StoreError::Io(error.source))
     }
 }
 
@@ -134,11 +50,6 @@ enum Aside {
 }
 
 impl FileStore {
-    /// The file a save is written to before it replaces the real one.
-    fn beside(&self) -> PathBuf {
-        self.with_suffix(".new")
-    }
-
     /// Where a file that could not be read is kept.
     pub fn bad_path(&self) -> PathBuf {
         self.with_suffix(".bad")
