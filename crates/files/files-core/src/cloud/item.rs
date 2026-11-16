@@ -43,7 +43,13 @@ impl Share {
         if ratio.is_nan() {
             return Share(0);
         }
-        Share((ratio.clamp(0.0, 1.0) * 1000.0).round() as u16)
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "clamped to 0..=1 and scaled to at most 1000 before rounding"
+        )]
+        let thousandths = (ratio.clamp(0.0, 1.0) * 1000.0).round() as u16;
+        Share(thousandths)
     }
 
     /// The share in thousandths, 0 to 1000.

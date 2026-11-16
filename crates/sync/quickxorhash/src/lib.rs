@@ -1,8 +1,9 @@
 //! Microsoft's `QuickXorHash`, the content hash `OneDrive` and Microsoft Graph report for each file
-//! (`file.hashes.quickXorHash`, base64 of the 20 bytes). The hash is 160 bits: each byte is
-//! xored in 11 bits further round than the one before, and the length is xored into the last
-//! 64 bits. Microsoft documents it with a reference implementation in C#; this one is checked
-//! against that one's outputs.
+//! (`file.hashes.quickXorHash`, base64 of the 20 bytes).
+//!
+//! The hash is 160 bits: each byte is xored in 11 bits further round than the one before, and the
+//! length is xored into the last 64 bits. Microsoft documents it with a reference implementation in
+//! C#; this one is checked against that one's outputs.
 //!
 //! [`QuickXorHash`] implements the `RustCrypto` [`digest`] traits, so it is used like any other
 //! hasher of that family:
@@ -66,8 +67,8 @@ impl OutputSizeUser for QuickXorHash {
 }
 
 impl Update for QuickXorHash {
-    fn update(&mut self, bytes: &[u8]) {
-        for &byte in bytes {
+    fn update(&mut self, data: &[u8]) {
+        for &byte in data {
             let cell = (self.shift / 64) as usize;
             let offset = self.shift % 64;
             let bits = if cell == 2 { 32 } else { 64 };
@@ -79,7 +80,7 @@ impl Update for QuickXorHash {
             }
             self.shift = (self.shift + SHIFT) % WIDTH;
         }
-        self.length = self.length.wrapping_add(bytes.len() as u64);
+        self.length = self.length.wrapping_add(data.len() as u64);
     }
 }
 

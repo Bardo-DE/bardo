@@ -33,6 +33,10 @@ impl ProfileName {
     }
 
     /// Validates `s` once, at the boundary.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`NameError`] when `s` is not a valid name.
     pub fn parse(s: &str) -> Result<Self, NameError> {
         match (s.len(), s.chars().find(|c| !is_name_char(*c))) {
             (0, _) => Err(NameError::Empty),

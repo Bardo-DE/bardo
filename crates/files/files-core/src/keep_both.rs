@@ -16,6 +16,10 @@ pub enum Split {
 
 /// `name` itself when `taken` does not hold it, else the first of `name 2`, `name 3`, ... that
 /// `taken` does not hold. Fails only when the number would make the name too long.
+///
+/// # Errors
+///
+/// Returns a [`NameError`] when the number would make the name too long.
 pub fn keep_both(
     name: &FileName,
     split: Split,

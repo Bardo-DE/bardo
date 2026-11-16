@@ -47,10 +47,15 @@ impl Framer {
         self.carry.len()
     }
 
-    /// The whole frames the chunk completes, in order; the rest is kept for the next chunk. Any
-    /// way of cutting the same bytes into chunks gives the same frames, a cut inside a sample
+    /// The whole frames the chunk completes, in order; the rest is kept for the next chunk.
+    ///
+    /// Any way of cutting the same bytes into chunks gives the same frames, a cut inside a sample
     /// included. A chunk that starts where nothing is carried restarts the count at its own
     /// position, so a gap in the audio is a gap in the numbers and not a shift.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`FramerError`] when the chunk is not whole samples of the format.
     pub fn push(&mut self, chunk: &AudioChunk) -> Result<Vec<FramedAt>, FramerError> {
         if chunk.format != INPUT {
             return Err(FramerError::WrongFormat);

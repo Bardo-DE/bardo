@@ -38,6 +38,10 @@ pub fn encode<T: Serialize>(msg: &T) -> Vec<u8> {
 }
 
 /// A message from one packet; the length is checked before any parsing.
+///
+/// # Errors
+///
+/// Returns a [`ProtocolError`] when the length is wrong or the bytes do not decode.
 pub fn decode<T: for<'de> Deserialize<'de>>(bytes: &[u8]) -> Result<T, ProtocolError> {
     if bytes.len() > MAX_PACKET {
         return Err(ProtocolError::TooLong(bytes.len()));

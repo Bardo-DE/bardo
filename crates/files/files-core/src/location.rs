@@ -21,6 +21,10 @@ pub struct FolderPath(PathBuf);
 
 impl FolderPath {
     /// `path`, when it is absolute.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`PathError`] when `path` is not absolute.
     pub fn new(path: impl Into<PathBuf>) -> Result<FolderPath, PathError> {
         let path = path.into();
         if path.is_absolute() {

@@ -118,7 +118,7 @@ fn energy_gate_table() {
 
 #[test]
 fn the_framer_cuts_whole_frames_and_numbers_them() {
-    let samples: Vec<i16> = (0..1300).map(|i| i as i16).collect();
+    let samples: Vec<i16> = (0..1300_i16).collect();
     let mut framer = Framer::new();
     let first = framer.push(&chunk(0, bytes(&samples[..1000]))).unwrap();
     assert_eq!(first.len(), 1);
@@ -155,9 +155,9 @@ fn the_framer_refuses_other_formats_and_joins_a_split_sample() {
     // The 512 samples arrive as one byte, then the rest: the split sample is not lost.
     let all = bytes(&[0x0102; 512]);
     assert_eq!(framer.push(&chunk(0, all[..1].to_vec())).unwrap(), vec![]);
-    let frames = framer.push(&chunk(0, all[1..].to_vec())).unwrap();
-    assert_eq!(frames.len(), 1);
-    assert!(frames[0].frame.samples().iter().all(|s| *s == 0x0102));
+    let rest = framer.push(&chunk(0, all[1..].to_vec())).unwrap();
+    assert_eq!(rest.len(), 1);
+    assert!(rest[0].frame.samples().iter().all(|s| *s == 0x0102));
 }
 
 #[test]

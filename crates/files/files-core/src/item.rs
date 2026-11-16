@@ -24,6 +24,10 @@ impl ItemRef {
     }
 
     /// The item an absolute `path` leads to (the path as given, links not resolved).
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`ItemError`] when `path` is not absolute.
     pub fn from_path(path: &Path) -> Result<ItemRef, ItemError> {
         let name = path.file_name().ok_or(ItemError::NoName)?;
         let parent = path.parent().ok_or(ItemError::NoName)?;

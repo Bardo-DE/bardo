@@ -17,6 +17,11 @@ pub struct OnlineUrl(String);
 
 impl OnlineUrl {
     /// `text`, when it is an `https:` or `http:` address with nothing stray in it.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`UrlError`] when `text` is not an `https:` or `http:` address or has something stray
+    /// in it.
     pub fn new(text: impl Into<String>) -> Result<OnlineUrl, UrlError> {
         let text = text.into();
         let web = text.starts_with("https://") || text.starts_with("http://");
