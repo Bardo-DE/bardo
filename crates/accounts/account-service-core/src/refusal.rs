@@ -11,7 +11,10 @@ pub fn provider_refusal(error: ProviderError) -> Refusal {
     match error {
         ProviderError::Unauthorized => Refusal::NeedsReauth,
         ProviderError::Forbidden => Refusal::Denied,
-        ProviderError::Unreachable | ProviderError::Unreadable => Refusal::Unavailable,
+        ProviderError::Unreachable
+        | ProviderError::Down(_)
+        | ProviderError::Unreadable
+        | ProviderError::Garbled(_) => Refusal::Unavailable,
         // The account is fine; it was never given this access. Not a fault to wait out.
         ProviderError::NeedsConsent => Refusal::NeedsConsent,
     }

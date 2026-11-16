@@ -26,8 +26,15 @@ pub enum ProviderFileError {
     AgentRows(ProviderId),
 }
 
+/// The error under a failed call, shared so [`ProviderError`] stays `Clone`.
+pub type Cause = std::sync::Arc<dyn std::error::Error + Send + Sync>;
+
 /// Why a call to a provider failed, in terms the account's state can take.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+///
+/// Two errors are equal when they are the same kind of failure: [`Self::Down`] is the kind
+/// [`Self::Unreachable`] is, and [`Self::Garbled`] the kind [`Self::Unreadable`] is; the cause
+/// does not count.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum ProviderError {
     /// The credential was refused: the account needs signing in again.
     #[error("credential refused")]
@@ -46,7 +53,43 @@ pub enum ProviderError {
     /// (`SignInMode::Extend`) changes the answer.
     #[error("access not given")]
     NeedsConsent,
+    /// The server could not be reached, and why.
+    #[error("unreachable")]
+    Down(#[source] Cause),
+    /// The server answered something this family cannot read, and why.
+    #[error("unreadable answer")]
+    Garbled(#[source] Cause),
 }
+
+impl ProviderError {
+    /// The server could not be reached because of `cause`.
+    pub fn down(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::Down(Cause::from(cause.into()))
+    }
+
+    /// The answer could not be read because of `cause`.
+    pub fn garbled(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::Garbled(Cause::from(cause.into()))
+    }
+
+    fn kind(&self) -> u8 {
+        match self {
+            Self::Unauthorized => 0,
+            Self::Forbidden => 1,
+            Self::Unreachable | Self::Down(_) => 2,
+            Self::Unreadable | Self::Garbled(_) => 3,
+            Self::NeedsConsent => 4,
+        }
+    }
+}
+
+impl PartialEq for ProviderError {
+    fn eq(&self, other: &Self) -> bool {
+        self.kind() == other.kind()
+    }
+}
+
+impl Eq for ProviderError {}
 
 /// What a failed call says to the person signing in: the one mapping every family uses.
 impl From<ProviderError> for account_sheet::SignInFault {
@@ -55,9 +98,11 @@ impl From<ProviderError> for account_sheet::SignInFault {
         match error {
             ProviderError::Unauthorized => SignInFault::Refused,
             ProviderError::Forbidden => SignInFault::Forbidden,
-            ProviderError::Unreachable => SignInFault::Unreachable,
+            ProviderError::Unreachable | ProviderError::Down(_) => SignInFault::Unreachable,
             // access that was not given ends as unreadable, as does any variant a newer porter adds
-            ProviderError::Unreadable | ProviderError::NeedsConsent => SignInFault::Unreadable,
+            ProviderError::Unreadable | ProviderError::Garbled(_) | ProviderError::NeedsConsent => {
+                SignInFault::Unreadable
+            }
         }
     }
 }

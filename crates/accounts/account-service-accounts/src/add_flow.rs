@@ -379,9 +379,11 @@ fn fault_of(error: ProviderError) -> SignInFault {
     match error {
         ProviderError::Unauthorized => SignInFault::Refused,
         ProviderError::Forbidden => SignInFault::Forbidden,
-        ProviderError::Unreachable => SignInFault::Unreachable,
+        ProviderError::Unreachable | ProviderError::Down(_) => SignInFault::Unreachable,
         // Access not given has no sign-in word of its own here: the sign-in ends as unreadable.
-        ProviderError::Unreadable | ProviderError::NeedsConsent => SignInFault::Unreadable,
+        ProviderError::Unreadable | ProviderError::Garbled(_) | ProviderError::NeedsConsent => {
+            SignInFault::Unreadable
+        }
     }
 }
 

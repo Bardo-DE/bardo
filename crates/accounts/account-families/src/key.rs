@@ -55,8 +55,7 @@ fn target_of(spec: &ProviderSpec) -> Result<(EndpointUrl, Family), ProviderError
         base.trim_end_matches('/'),
         check_path(&spec.id)
     ))
-    .ok()
-    .ok_or(ProviderError::Unreadable)?;
+    .map_err(ProviderError::garbled)?;
     Ok((url, family))
 }
 
@@ -113,8 +112,7 @@ pub(crate) async fn check<H: Http>(
 /// The models list of the server of the person's own at `server`: `<server address>/models`.
 pub(crate) fn models_url(server: &EndpointUrl) -> Result<EndpointUrl, ProviderError> {
     EndpointUrl::parse(&format!("{}/models", server.as_str().trim_end_matches('/')))
-        .ok()
-        .ok_or(ProviderError::Unreadable)
+        .map_err(ProviderError::garbled)
 }
 
 /// [`check`] of the server of the person's own at `server`, which speaks the `OpenAI` chat
@@ -135,20 +133,14 @@ async fn check_at<H: Http>(
     key: &SecretText,
 ) -> Result<(), ProviderError> {
     let request = request_to(Method::GET, url)
-        .ok()
-        .ok_or(ProviderError::Unreachable)?
+        .map_err(ProviderError::down)?
         .header(ACCEPT, "application/json");
     // A key that cannot be a header's value is never sent; the request fails as an unreachable
     // server would, as it did when the client refused it.
     let request = present_key(request, family, key)
         .body(Vec::new())
-        .ok()
-        .ok_or(ProviderError::Unreachable)?;
-    let response = http
-        .send(request)
-        .await
-        .ok()
-        .ok_or(ProviderError::Unreachable)?;
+        .map_err(ProviderError::down)?;
+    let response = http.send(request).await.map_err(ProviderError::down)?;
     match response.status().as_u16() {
         200..=299 => {
             if is_listing(response.body()) {
