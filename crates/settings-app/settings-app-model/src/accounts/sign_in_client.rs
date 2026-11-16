@@ -3,6 +3,7 @@
 //! text of a secret exists just while it is typed and on its way to the service.
 
 use super::module::ModuleId;
+use base_secret::SecretText;
 use super::rows::{CLIENTS, PREFIX};
 use crate::picker::Described;
 use ui_settings::schema::{KeyPath, KeySpec};
@@ -31,34 +32,6 @@ pub(super) fn standing_only(mut described: Described) -> Described {
     described
 }
 
-/// The text of a sign-in secret. Its `Debug` is written by hand and never prints the text, so no
-/// log line of an input or an effect that carries one can leak it.
-#[derive(Clone, PartialEq, Eq)]
-pub struct Secret(String);
-
-impl Secret {
-    /// The secret `text` makes, without the spaces and line breaks around a pasted one.
-    pub fn new(text: &str) -> Secret {
-        Secret(text.trim().to_owned())
-    }
-
-    /// Whether nothing was typed.
-    pub fn is_blank(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    /// The text, for the one place that sends it to the service.
-    pub fn into_text(self) -> String {
-        self.0
-    }
-}
-
-impl std::fmt::Debug for Secret {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("Secret(<hidden>)")
-    }
-}
-
 /// What a sign-in row holds, as far as the window may know.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ClientValue {
@@ -85,7 +58,7 @@ impl ClientValue {
     pub fn typed(&self, text: String) -> ClientText {
         match self {
             ClientValue::Text(_) => ClientText::Plain(text),
-            ClientValue::Secret { .. } => ClientText::Secret(Secret::new(&text)),
+            ClientValue::Secret { .. } => ClientText::Secret(SecretText::new(text.trim())),
         }
     }
 }
@@ -96,7 +69,7 @@ pub enum ClientText {
     /// Into a key.
     Plain(String),
     /// Into a secret.
-    Secret(Secret),
+    Secret(SecretText),
 }
 
 /// One bring-your-own sign-in key (or its secret): a text row.
@@ -126,7 +99,7 @@ pub(super) enum ClientChange {
     /// Write this key.
     Key(String),
     /// Write this secret.
-    NewSecret(Secret),
+    NewSecret(SecretText),
     /// Write the empty secret, which removes it.
     ClearSecret,
 }
@@ -167,7 +140,7 @@ impl SignInClient {
                 }
             }
             (ClientValue::Secret { set }, ClientText::Secret(secret)) => {
-                if secret.is_blank() {
+                if secret.expose().is_empty() {
                     None
                 } else if self.waits_for_key {
                     Some(ClientChange::KeyFirst)

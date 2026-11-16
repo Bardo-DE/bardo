@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use shell_model::auth::Secret;
+use base_secret::SecretText;
 use shell_model::polkit_agent::machine::MAX_TRIES;
 use shell_model::polkit_agent::{
     ActionId, Cookie, FAKE_SECRET, FakeRequest, HelperRoute, LastTry, Polkit, PolkitCommand,
@@ -164,7 +164,7 @@ fn answer(control: &shell_services::Control<PolkitCommand>, cookie: &str, text: 
     control
         .send(PolkitCommand::Answer {
             cookie: Cookie(cookie.to_owned()),
-            secret: Secret::new(text),
+            secret: SecretText::new(text),
         })
         .unwrap_or_else(|e| panic!("answer: {e}"));
 }

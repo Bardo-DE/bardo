@@ -29,6 +29,7 @@ inference-tailnet = {path = "../../inference/inference-tailnet"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
+base-secret = { path = "../../base/base-secret" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
 anyview-core = {path = "../../anyview/crates/anyview-core"}

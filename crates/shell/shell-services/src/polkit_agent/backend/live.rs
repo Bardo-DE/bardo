@@ -21,7 +21,8 @@
 use std::collections::{HashMap, VecDeque};
 use std::path::Path;
 
-use shell_model::auth::{Secret, UserName};
+use base_secret::SecretText;
+use shell_model::auth::UserName;
 use shell_model::polkit_agent::helper::helper_route;
 use shell_model::polkit_agent::{
     AuthRequest, Completion, Cookie, FakeRequest, HelperRoute, Identity, Origin, Polkit,
@@ -171,7 +172,7 @@ impl Live {
 
     /// Reduce `first` and whatever its effects report, then publish. `held` is the answer of an
     /// `Answered`, handed on by its `SendAnswer` or dropped here.
-    async fn feed(&mut self, first: PolkitEvent, mut held: Option<Secret>) {
+    async fn feed(&mut self, first: PolkitEvent, mut held: Option<SecretText>) {
         let mut pending = VecDeque::from([first]);
         while let Some(event) = pending.pop_front() {
             let (state, effects) = step(std::mem::take(&mut self.state), event);
@@ -187,7 +188,7 @@ impl Live {
     async fn perform(
         &mut self,
         effect: PolkitEffect,
-        held: &mut Option<Secret>,
+        held: &mut Option<SecretText>,
     ) -> Option<PolkitEvent> {
         match effect {
             PolkitEffect::Register => return Some(self.register().await),

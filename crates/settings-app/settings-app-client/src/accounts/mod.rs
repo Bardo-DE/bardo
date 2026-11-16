@@ -176,7 +176,7 @@ impl Machine for Accounts {
             AccountsEffect::SetSecret { row, secret } => match opened(row.module) {
                 Some(client) => {
                     let result = client
-                        .set(&row.path, &toml::Value::String(secret.into_text()))
+                        .set(&row.path, &toml::Value::String(secret.expose().to_owned()))
                         .await;
                     vec![answer(row, result)]
                 }

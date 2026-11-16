@@ -56,14 +56,15 @@ impl Authenticator for FakeAuthenticator {
 #[cfg(test)]
 mod tests {
     use super::{Authenticator, FakeAuthenticator, FakeRule};
-    use shell_model::auth::{Attempt, AuthFault, Outcome, Secret, UserName};
+    use base_secret::SecretText;
+    use shell_model::auth::{Attempt, AuthFault, Outcome, UserName};
     use std::time::Duration;
 
     #[test]
     fn the_fake_answers_by_its_rule() {
         let attempt = |text: &str| Attempt {
             user: UserName("ada".to_owned()),
-            secret: Secret::new(text),
+            secret: SecretText::new(text),
         };
         let fake = |rule| FakeAuthenticator {
             rule,
@@ -94,6 +95,6 @@ mod tests {
 
     #[test]
     fn a_secret_never_prints() {
-        assert_eq!(format!("{:?}", Secret::new("hunter2")), "Secret(..)");
+        assert_eq!(format!("{:?}", SecretText::new("hunter2")), "<redacted>");
     }
 }

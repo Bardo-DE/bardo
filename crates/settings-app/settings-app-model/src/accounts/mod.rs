@@ -43,7 +43,7 @@ pub use module::{ModuleId, ModuleRow, Source, Sources};
 pub use reads::Reads;
 pub use reauth_end::ReauthEnd;
 pub use setup::{ACCOUNTS_SETUP_SLUG, SignedIn, accounts_setup_offer, signed_in};
-pub use sign_in_client::{ClientText, ClientValue, Secret, SignInClient};
+pub use sign_in_client::{ClientText, ClientValue, SignInClient};
 pub use sign_out::SignOutEnd;
 pub use spend::{AccountSpend, Cents, SpendBar, SpendLine};
 pub use step::accounts_step;

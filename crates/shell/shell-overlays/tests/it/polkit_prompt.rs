@@ -159,7 +159,7 @@ fn enter_answers_with_what_was_typed_and_escape_dismisses() {
     };
     assert_eq!(cookie, &Cookie("c1".to_owned()));
     assert_eq!(secret.expose(), "shell-fake");
-    assert_eq!(format!("{secret:?}"), "Secret(..)", "never printed");
+    assert_eq!(format!("{secret:?}"), "<redacted>", "never printed");
     assert!(
         !running.harness.html().contains("shell-fake"),
         "the secret is not in the markup"

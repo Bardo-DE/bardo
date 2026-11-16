@@ -4,7 +4,7 @@ use super::add_account::AddEnd;
 use super::model::AccountKey;
 use super::module::{ModuleId, ModuleRow};
 use super::reauth_end::ReauthEnd;
-use super::sign_in_client::Secret;
+use base_secret::SecretText;
 use super::sign_out::SignOutEnd;
 
 /// What the caller must do.
@@ -22,7 +22,7 @@ pub enum AccountsEffect {
         /// The row.
         row: ModuleRow,
         /// The secret.
-        secret: Secret,
+        secret: SecretText,
     },
     /// Run the action at the row.
     Invoke(ModuleRow),

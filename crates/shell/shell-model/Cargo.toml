@@ -18,6 +18,7 @@ action-vocab = {path = "../../actions/action-vocab"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
+base-secret = { path = "../../base/base-secret" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 shell-launcher = {path = "../shell-launcher"}
@@ -37,7 +38,6 @@ desktop-protocols = {path = "../../wayland/desktop-protocols"}
 jiff = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
-zeroize = { workspace = true }
 
 [dev-dependencies]
 serde_json = { workspace = true }

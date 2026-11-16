@@ -8,7 +8,8 @@
 use std::process::Stdio;
 use std::time::Duration;
 
-use shell_model::auth::{Secret, UserName};
+use base_secret::SecretText;
+use shell_model::auth::UserName;
 use shell_model::polkit_agent::{
     Cookie, FAKE_SECRET, HelperLine, HelperRoute, opening, parse_helper_line,
 };
@@ -49,13 +50,13 @@ pub(crate) enum Driver {
 pub(crate) struct Run {
     pub cookie: Cookie,
     pub id: RunId,
-    answers: mpsc::UnboundedSender<Secret>,
+    answers: mpsc::UnboundedSender<SecretText>,
     task: JoinHandle<()>,
 }
 
 impl Run {
     /// Hand the answer to the run (dropped, and so zeroed, when the run is gone).
-    pub fn answer(&self, secret: Secret) {
+    pub fn answer(&self, secret: SecretText) {
         let _ = self.answers.send(secret);
     }
 }
@@ -119,7 +120,7 @@ pub(crate) fn start(
 /// How long the stand-in takes to check, so `Checking` is seen as it would be with PAM.
 const STAND_IN_CHECK: Duration = Duration::from_millis(300);
 
-async fn stand_in(report: Report, mut answers: mpsc::UnboundedReceiver<Secret>) {
+async fn stand_in(report: Report, mut answers: mpsc::UnboundedReceiver<SecretText>) {
     report.say(RunSaid::Line(HelperLine::PromptHidden(
         "Password: ".to_owned(),
     )));
@@ -141,7 +142,7 @@ async fn helper(
     user: &UserName,
     cookie: &Cookie,
     report: &Report,
-    answers: mpsc::UnboundedReceiver<Secret>,
+    answers: mpsc::UnboundedReceiver<SecretText>,
 ) -> std::io::Result<()> {
     let Some(opening) = opening(route, user, cookie) else {
         return Ok(());
@@ -182,7 +183,7 @@ async fn talk(
     mut write: impl AsyncWrite + Unpin,
     opening: &[String],
     report: &Report,
-    mut answers: mpsc::UnboundedReceiver<Secret>,
+    mut answers: mpsc::UnboundedReceiver<SecretText>,
 ) -> std::io::Result<()> {
     for line in opening {
         write.write_all(format!("{line}\n").as_bytes()).await?;
@@ -209,7 +210,7 @@ async fn talk(
 /// The answer and its newline, in a buffer zeroed when dropped (also on an error).
 async fn write_answer(
     write: &mut (impl AsyncWrite + Unpin),
-    secret: Secret,
+    secret: SecretText,
 ) -> std::io::Result<()> {
     let mut bytes = Wiped(Vec::with_capacity(secret.expose().len() + 1));
     bytes.0.extend_from_slice(secret.expose().as_bytes());

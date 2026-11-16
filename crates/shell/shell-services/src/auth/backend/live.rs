@@ -22,8 +22,9 @@ use std::time::Duration;
 use shell_model::auth::gate::step;
 use shell_model::auth::{
     Account, Attempt, Auth, AuthCommand, AuthPhase, Checks, FakeVerdict, GateIn, GateOut, Outcome,
-    Secret, Verdict,
+    Verdict,
 };
+use base_secret::SecretText;
 use tokio::runtime::Handle;
 use tokio::sync::{mpsc, watch};
 
@@ -113,7 +114,7 @@ impl Live {
         }
     }
 
-    fn submit(&mut self, secret: Secret) {
+    fn submit(&mut self, secret: SecretText) {
         let (next, out) = step(self.checks, GateIn::Submit);
         self.checks = next;
         if !out.contains(&GateOut::Check) {

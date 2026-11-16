@@ -16,6 +16,7 @@ inference-tailnet = {path = "../../inference/inference-tailnet"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
+base-secret = { path = "../../base/base-secret" }
 base-time = { path = "../../base/base-time" }
 memory-core = {path = "../../memory/memory-core"}
 keymap = {path = "../../keymap/keymap"}

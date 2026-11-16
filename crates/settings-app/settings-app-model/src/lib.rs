@@ -66,7 +66,7 @@ pub use accounts::{
     AccountsEffect, AccountsInput, AccountsNotice, AccountsPane, AccountsReady, AccountsState,
     AddEnd, Ask, Attention, CalendarDay, Cents, ClientText, ClientValue, DatasetName,
     GrantDecision, GrantScope, GrantSentence, HoldCounts, HoldEffect, HoldInput, Holds, ModuleId,
-    ModuleRow, Place, Reads, ReauthEnd, RemovalQuestion, Secret, SignInClient, SignOutEnd,
+    ModuleRow, Place, Reads, ReauthEnd, RemovalQuestion, SignInClient, SignOutEnd,
     SignedIn, Source, Sources, SpendBar, SpendLine, StorageQuota, SyncAdd, SyncBook, SyncHold,
     SyncNowEnd, SyncStatus, accounts_row_is_valued, accounts_setup_offer, accounts_step, hold_step,
     signed_in,

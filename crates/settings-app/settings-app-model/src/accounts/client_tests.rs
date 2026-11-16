@@ -1,6 +1,7 @@
 //! The sign-in keys and secrets: a secret waits for its key, is never kept, and is written only
 //! when something was typed.
 
+use base_secret::SecretText;
 use super::flow_tests::{ready_with, spec, state_of};
 use super::*;
 use ui_settings::schema::{KeyKind, KeyPath, KeySpec};
@@ -29,7 +30,7 @@ fn secret_row() -> ModuleRow {
 fn typed(text: &str) -> AccountsInput {
     AccountsInput::ClientEdited {
         row: secret_row(),
-        text: ClientText::Secret(Secret::new(text)),
+        text: ClientText::Secret(SecretText::new(text)),
     }
 }
 
@@ -50,7 +51,7 @@ fn a_secret_waits_for_its_key_and_says_so() {
         effects,
         [AccountsEffect::SetSecret {
             row: secret_row(),
-            secret: Secret::new("s3cret"),
+            secret: SecretText::new("s3cret"),
         }]
     );
 }
@@ -90,7 +91,7 @@ fn typing_replaces_a_secret_and_an_empty_field_changes_nothing() {
         effects,
         [AccountsEffect::SetSecret {
             row: secret_row(),
-            secret: Secret::new("new"),
+            secret: SecretText::new("new"),
         }],
         "the same standing, a new text: it is written, trimmed"
     );
@@ -154,7 +155,7 @@ fn clear_removes_a_set_secret_by_writing_nothing_and_only_that() {
 #[test]
 fn a_secret_never_prints_in_a_debug_line() {
     const TEXT: &str = "hunter2-hunter2";
-    let secret = Secret::new(TEXT);
+    let secret = SecretText::new(TEXT);
     let input = typed(TEXT);
     let (_, effects) = accounts_step(
         ready_with(google_keys(), &[("accounts.clients.google", "abc")]),
@@ -162,13 +163,13 @@ fn a_secret_never_prints_in_a_debug_line() {
     );
     for line in [
         format!("{secret:?}"),
-        format!("{:?}", ClientText::Secret(Secret::new(TEXT))),
+        format!("{:?}", ClientText::Secret(SecretText::new(TEXT))),
         format!("{input:?}"),
         format!("{effects:?}"),
         format!("{:#?}", effects),
     ] {
         assert!(!line.contains("hunter2"), "{line}");
-        assert!(line.contains("<hidden>"), "{line}");
+        assert!(line.contains("<redacted>"), "{line}");
     }
     assert_eq!(effects.len(), 1, "the effect that was printed is the write");
 }

@@ -9,9 +9,10 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
+use base_secret::SecretText;
 use shell_model::auth::{
     Attempt, Attempts, Auth, AuthCommand, AuthFault, AuthPhase, FakeVerdict, Outcome, RealName,
-    Secret, UserName,
+    UserName,
 };
 use shell_services::auth::{AuthService, PamHelper, pam};
 use shell_services::control::Control;
@@ -59,7 +60,7 @@ fn send(control: &Control<AuthCommand>, command: AuthCommand) {
 async fn wrong_once(auth: &mut watch::Receiver<Auth>, control: &Control<AuthCommand>, n: u32) {
     send(
         control,
-        AuthCommand::Submit(Secret::new(format!("wrong {n}"))),
+        AuthCommand::Submit(SecretText::new(format!("wrong {n}"))),
     );
     until(auth, "checking", |a| a.phase == AuthPhase::Checking).await;
     until(auth, "a verdict", |a| a.failures == Attempts(n)).await;
@@ -83,7 +84,7 @@ async fn many_wrongs_never_lock_out_and_the_right_one_opens() {
     until(&mut auth, "idle", |a| a.phase == AuthPhase::Idle).await;
     assert_eq!(auth.borrow().failures, Attempts(10));
     let started = Instant::now();
-    send(&control, AuthCommand::Submit(Secret::new(RIGHT)));
+    send(&control, AuthCommand::Submit(SecretText::new(RIGHT)));
     until(&mut auth, "accepted", |a| a.phase == AuthPhase::Accepted).await;
     println!(
         "the right secret after ten wrong opened in {:?}",
@@ -95,8 +96,8 @@ async fn many_wrongs_never_lock_out_and_the_right_one_opens() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn busy_while_checking_then_right_then_reset() {
     let (mut auth, control) = start(fake(300));
-    send(&control, AuthCommand::Submit(Secret::new("nope")));
-    send(&control, AuthCommand::Submit(Secret::new("nope again")));
+    send(&control, AuthCommand::Submit(SecretText::new("nope")));
+    send(&control, AuthCommand::Submit(SecretText::new("nope again")));
     until(&mut auth, "wrong", |a| a.phase == AuthPhase::Wrong).await;
     tokio::time::sleep(Duration::from_millis(400)).await;
     assert_eq!(
@@ -104,12 +105,12 @@ async fn busy_while_checking_then_right_then_reset() {
         Attempts(1),
         "the second submit was busy"
     );
-    send(&control, AuthCommand::Submit(Secret::new(RIGHT)));
+    send(&control, AuthCommand::Submit(SecretText::new(RIGHT)));
     until(&mut auth, "accepted", |a| a.phase == AuthPhase::Accepted).await;
     send(&control, AuthCommand::Reset);
     until(&mut auth, "idle", |a| a.phase == AuthPhase::Idle).await;
     // A check that a reset overtakes is dropped: its verdict never lands.
-    send(&control, AuthCommand::Submit(Secret::new("stale")));
+    send(&control, AuthCommand::Submit(SecretText::new("stale")));
     until(&mut auth, "checking", |a| a.phase == AuthPhase::Checking).await;
     send(&control, AuthCommand::Reset);
     tokio::time::sleep(Duration::from_millis(500)).await;
@@ -128,7 +129,7 @@ async fn an_unavailable_check_counts_nothing() {
         delay: Duration::ZERO,
     });
     let (mut auth, control) = start(failing);
-    send(&control, AuthCommand::Submit(Secret::new("x")));
+    send(&control, AuthCommand::Submit(SecretText::new("x")));
     until(&mut auth, "unavailable", |a| {
         a.phase == AuthPhase::Unavailable(AuthFault::ServiceError)
     })
@@ -156,7 +157,7 @@ fn helper(program: PathBuf, args: &[&str], timeout: Duration) -> PamHelper {
 fn attempt(secret: &str) -> Attempt {
     Attempt {
         user: UserName("nobody-here".to_owned()),
-        secret: Secret::new(secret),
+        secret: SecretText::new(secret),
     }
 }
 
@@ -204,7 +205,7 @@ fn pam_with_a_throwaway_account() {
             &service,
             &Attempt {
                 user: UserName(user.clone()),
-                secret: Secret::new(text),
+                secret: SecretText::new(text),
             },
         )
     };
