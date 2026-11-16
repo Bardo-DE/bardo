@@ -50,6 +50,7 @@ fn said(report: &action_live::acp::AcpFlowReport) -> &str {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn flow_a_with_an_agent_forwards_to_accounting_through_the_edge() {
     if !sandbox_here() {
         return;
@@ -75,6 +76,7 @@ async fn flow_a_with_an_agent_forwards_to_accounting_through_the_edge() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn a_refusal_stops_the_forward_and_the_agent_is_told_so() {
     if !sandbox_here() {
         return;
@@ -93,6 +95,7 @@ async fn a_refusal_stops_the_forward_and_the_agent_is_told_so() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn the_first_use_of_mail_asks_nothing_for_a_search_and_the_second_search_runs_too() {
     if !sandbox_here() {
         return;
@@ -116,6 +119,7 @@ async fn the_first_use_of_mail_asks_nothing_for_a_search_and_the_second_search_r
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn an_agent_that_reads_the_open_thread_and_is_refused_the_reply_passes() {
     if !sandbox_here() {
         return;
@@ -147,6 +151,7 @@ async fn an_agent_that_reads_the_open_thread_and_is_refused_the_reply_passes() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn an_agent_that_obeys_the_injected_thread_fails_the_flow_though_the_sheet_stops_it() {
     if !sandbox_here() {
         return;
@@ -200,6 +205,7 @@ fn files_under(root: &Path, out: &mut Vec<std::path::PathBuf>) {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn the_login_reaches_the_agents_home_and_is_gone_after_the_run() {
     if !sandbox_here() {
         return;
@@ -235,6 +241,7 @@ async fn the_login_reaches_the_agents_home_and_is_gone_after_the_run() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn an_agent_that_says_its_login_aloud_is_scrubbed_from_the_transcript_and_the_tree() {
     if !sandbox_here() {
         return;
@@ -269,6 +276,7 @@ async fn an_agent_that_says_its_login_aloud_is_scrubbed_from_the_transcript_and_
 /// The packaged `agent-live` as a process, as the owner starts it: the login must not appear on
 /// its stdout or stderr, in its traces or anywhere under its output directory.
 #[test]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 fn the_command_prints_and_writes_nothing_of_the_login() {
     if !sandbox_here() {
         return;

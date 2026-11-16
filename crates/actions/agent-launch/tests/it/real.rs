@@ -24,6 +24,7 @@ fn var(name: &str, value: &str) -> EnvVar {
 }
 
 #[tokio::test]
+#[ignore = "starts a real sandbox in the person's systemd user session (cgroup limits); run on a real login with --ignored"]
 async fn a_confined_process_speaks_lines_over_its_stdio_with_exactly_the_environment_given() {
     let Some(sandbox) = bwrap() else { return };
     let root = tempfile::tempdir().expect("scratch");
