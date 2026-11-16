@@ -315,7 +315,7 @@ impl Shared {
                 }
             }
             CastReply::Cancelled => Response::Cancelled,
-            _ => Response::Failed,
+            CastReply::Failed => Response::Failed,
         }
     }
 

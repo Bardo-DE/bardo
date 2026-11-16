@@ -153,11 +153,11 @@ impl Chooser for ShellChooser {
 fn multiple_to_wire(multiple: Multiple) -> u32 {
     match multiple {
         Multiple::One => 0,
-        _ => 1,
+        Multiple::Many => 1,
     }
 }
 
-pub(crate) fn call_failed(error: zbus::Error) -> ShellError {
+pub(crate) fn call_failed(error: &zbus::Error) -> ShellError {
     ShellError::Call(error.to_string())
 }
 
@@ -193,6 +193,11 @@ pub fn nobody_answers(error: &zbus::Error) -> bool {
 /// An answer that could not be had because there is nobody to ask (see [`ShellError::is_refusal`])
 /// becomes a cancel, which shares nothing and is the portal's plain "the person said no". Any other
 /// failure is still a failure.
+///
+/// # Errors
+///
+/// Returns the `answer` as it came, unless the error says no picker could be asked: that is a
+/// cancel, `Ok(None)`.
 pub fn unavailable_is_cancel(
     answer: Result<Option<Choice>, ShellError>,
 ) -> Result<Option<Choice>, ShellError> {
@@ -207,6 +212,11 @@ pub fn unavailable_is_cancel(
 
 /// Turn the shell's answer into a [`Choice`]. An empty list is a cancel (`Ok(None)`); a source of
 /// an unknown kind or a cursor value that is not one of the three modes is a bad answer.
+///
+/// # Errors
+///
+/// Returns [`ShellError::BadAnswer`] when a source is of an unknown kind, or the cursor value is
+/// not one of the three modes.
 pub fn answer_from_wire(
     sources: &[(String, String)],
     cursor: u32,

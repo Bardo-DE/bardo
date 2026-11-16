@@ -15,12 +15,12 @@ impl<B: Backend> Open<B> {
     pub(crate) fn plan(
         &mut self,
         cx: &Cx<'_, B>,
-        scope: ForgetScope,
+        scope: &ForgetScope,
     ) -> Result<ForgetPlanView, Refusal> {
         let now = cx.now();
         self.entries()?;
         let graph = self.fact_graph()?;
-        let plan = plan_forget(self.space(), &scope, &self.rt.log, &graph);
+        let plan = plan_forget(self.space(), scope, &self.rt.log, &graph);
         let digest = plan.digest();
         let token = token_for(&digest).ok_or_else(|| failed("no token for the plan"))?;
         let state = PlanState::planned(digest, now);

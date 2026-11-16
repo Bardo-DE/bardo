@@ -47,6 +47,10 @@ fn is_own_actor(actor: &Actor, app: &AppName) -> bool {
 
 /// Whether an app may record `record`: its own things (or searches) only, as itself.
 fn app_may_record(app: &AppName, record: &Record) -> bool {
+    #[expect(
+        clippy::match_same_arms,
+        reason = "the kinds that are not the app's own are listed, so a new kind is a decision; the last arm refuses any kind this build does not know"
+    )]
     let own_body = match &record.body {
         EventBody::Thing { .. } => record
             .body
@@ -65,13 +69,17 @@ fn app_may_record(app: &AppName, record: &Record) -> bool {
     own_body && is_own_actor(&record.actor, app)
 }
 
+#[expect(
+    clippy::match_same_arms,
+    reason = "the kinds a run may not record are listed, so a new kind is a decision; the last arm refuses any kind this build does not know"
+)]
 fn cuad_may_record(record: &Record) -> bool {
-    let run = match &record.actor {
-        Actor::Companion {
-            role: AgentRole::Cua { run },
-            ..
-        } => run,
-        _ => return false,
+    let Actor::Companion {
+        role: AgentRole::Cua { run },
+        ..
+    } = &record.actor
+    else {
+        return false;
     };
     match &record.body {
         EventBody::Area(p) => p.area == AreaTag::Cua,
@@ -117,6 +125,11 @@ fn app_may_explain(app: &AppName, claim: &FileWhyClaim) -> bool {
 
 /// May `caller` send `request`? Pure; the transport derived `caller`. A request that reaches
 /// into another app's own Space is `OutsideSpace` before anything else is asked.
+///
+/// # Errors
+///
+/// Returns [`Refusal::NotAllowed`] when the caller's class may not make the request, and the
+/// [`Refusal`] for a Space that is not open to it.
 pub fn allowed(caller: &Caller, request: &MemoryRequest) -> Result<(), Refusal> {
     space_is_open(caller, request)?;
     by_class(caller, request)

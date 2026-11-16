@@ -29,8 +29,16 @@ pub enum StoreError {
 /// The seam: load the book at start and save it after a change.
 pub trait RestoreStore: Send + Sync + std::fmt::Debug {
     /// The saved book; an empty one if nothing was saved.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StoreError`] when the saved book cannot be read or is not a book.
     fn load(&self) -> Result<RestoreBook, StoreError>;
     /// Replace the saved book.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`StoreError`] when the book cannot be written.
     fn save(&self, book: &RestoreBook) -> Result<(), StoreError>;
 }
 

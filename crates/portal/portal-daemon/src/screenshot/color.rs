@@ -43,6 +43,11 @@ impl ColorPicker for ShellColorPicker {
 
 /// Turn the shell's answer into a colour. No tuple is a cancel; one tuple whose channels are
 /// each in 0 to 1 is the colour; anything else is a bad answer.
+///
+/// # Errors
+///
+/// Returns [`ShellError::BadAnswer`] when more than one colour came back, or a channel is outside 0
+/// to 1.
 pub fn color_from_wire(picked: &[(f64, f64, f64)]) -> Result<Option<Rgb>, ShellError> {
     match picked {
         [] => Ok(None),

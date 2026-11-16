@@ -98,7 +98,7 @@ fn what_a_request_holds() {
             Claim::Everything,
         ),
         (
-            MemoryRequest::ConfirmSettings(Default::default()),
+            MemoryRequest::ConfirmSettings(std::collections::BTreeMap::default()),
             Claim::Everything,
         ),
         (MemoryRequest::PendingSettings, Claim::Nothing),

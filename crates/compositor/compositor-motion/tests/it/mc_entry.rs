@@ -22,7 +22,8 @@ fn dump(book: &MotionBook) -> String {
             let (scene, moving) = frame(book, at(*ms));
             format!("t={ms}ms {moving}\n{}", scene.text())
         })
-        .collect()
+        .collect::<Vec<_>>()
+        .concat()
 }
 
 /// The entry's ends are the table's own numbers.
@@ -106,6 +107,11 @@ const SPEED_CEILING: f64 = 1.25;
 #[test]
 fn a_microsecond_moves_no_value_by_more_than_the_speed_ceiling() {
     let book = entry(MotionLevel::Standard);
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_precision_loss,
+        reason = "a few hundred microseconds at a bounded speed: far inside i32 and exact in an f64"
+    )]
     let bound = |by_us: u64| Some((by_us as f64 * SPEED_CEILING).ceil() as i32);
     for by_us in [1, 10, 100] {
         let at_instants = INSTANTS_MS

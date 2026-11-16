@@ -62,6 +62,12 @@ const PIXELS_PER_TOKEN: u64 = 750;
 /// The arithmetic mirrors qwen-vl-utils (Apache-2.0) in `f64`, including Python's
 /// round-half-to-even, so the sizes agree with the reference on every row of
 /// `fixtures/smart_resize.csv`.
+///
+/// # Errors
+///
+/// Returns [`FitError::ZeroArea`] when the frame or the rule has no area,
+/// [`FitError::AspectTooExtreme`] when the aspect ratio is beyond what `SmartResize` accepts, and
+/// [`FitError::BelowMinimum`] when no side is left.
 pub fn fit(src: DeviceSize, rule: &ResizeRule) -> Result<Size<ImageSpace>, FitError> {
     if src.w == 0 || src.h == 0 {
         return Err(FitError::ZeroArea);
@@ -98,11 +104,11 @@ fn smart_resize(
     let floor_by = |n: f64| (n / f).floor() * f;
     let ceil_by = |n: f64| (n / f).ceil() * f;
     let (mut h_bar, mut w_bar) = (round_by(h).max(f), round_by(w).max(f));
-    if h_bar * w_bar > max_pixels.0 as f64 {
-        let beta = (h * w / max_pixels.0 as f64).sqrt();
+    if h_bar * w_bar > area_f64(max_pixels.0) {
+        let beta = (h * w / area_f64(max_pixels.0)).sqrt();
         (h_bar, w_bar) = (floor_by(h / beta), floor_by(w / beta));
-    } else if h_bar * w_bar < min_pixels.0 as f64 {
-        let beta = (min_pixels.0 as f64 / (h * w)).sqrt();
+    } else if h_bar * w_bar < area_f64(min_pixels.0) {
+        let beta = (area_f64(min_pixels.0) / (h * w)).sqrt();
         (h_bar, w_bar) = (ceil_by(h * beta), ceil_by(w * beta));
     }
     match (side(w_bar), side(h_bar)) {
@@ -111,7 +117,21 @@ fn smart_resize(
     }
 }
 
+/// A pixel budget as an `f64`, as the reference computes with it.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a pixel budget is far below 2^53, so it is exact in an f64"
+)]
+fn area_f64(pixels: u64) -> f64 {
+    pixels as f64
+}
+
 /// A computed side as a pixel count: at least one, and within `u32`.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the range check just above keeps the value within 1 to `u32::MAX`"
+)]
 fn side(value: f64) -> Option<u32> {
     (1.0..=f64::from(u32::MAX))
         .contains(&value)
@@ -124,7 +144,7 @@ fn long_edge(src: DeviceSize, max_edge: u32, max_pixels: u64) -> Result<(u32, u3
     }
     let (w, h) = (f64::from(src.w), f64::from(src.h));
     let by_edge = f64::from(max_edge) / w.max(h);
-    let by_area = (max_pixels as f64 / (w * h)).sqrt();
+    let by_area = (area_f64(max_pixels) / (w * h)).sqrt();
     let scale = by_edge.min(by_area).min(1.0);
     let (mut w_out, mut h_out) = (side((w * scale).floor()), side((h * scale).floor()));
     // The float scale can overshoot the area by a hair: step both sides down until it fits.

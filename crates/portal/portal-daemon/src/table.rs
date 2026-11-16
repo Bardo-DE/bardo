@@ -53,6 +53,11 @@ impl<E: Slot> Table<E> {
     /// admitted. A handle that is already open is left alone. When the table is full, sessions
     /// that never began and have waited longer than [`UNSTARTED_TTL`] are dropped to make room;
     /// the result is the handles dropped, whose session objects the caller takes off the bus.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal::AlreadyOpen`] when `key` is already in the book and [`Refusal::Full`]
+    /// when no room can be made for `tether`'s peer.
     pub fn create(
         &mut self,
         key: SessionKey,

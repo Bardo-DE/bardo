@@ -8,9 +8,9 @@ use crate::record::Stored;
 use crate::service::{Lease, MemoryService};
 use base_time::Clock;
 use memory_core::{
-    Count, EXPORT_FORMAT, ExportCounts, ExportManifest, ExportOptions, ExportedSpace, FactState,
-    ForgetScope, Head, MemoryOp, MemoryReply, MemoryRequest, Refusal, RunId, SpaceId,
-    VerificationKey,
+    Count, EXPORT_FORMAT, ExportCounts, ExportManifest, ExportOptions, ExportedSpace, FactId,
+    FactState, ForgetScope, Head, MemoryOp, MemoryReply, MemoryRequest, Refusal, RememberRule,
+    RuleId, RunId, Settlement, SpaceId, VerificationKey,
 };
 use memory_store::{LogRead, Vault, VaultPath};
 use std::io::Write;
@@ -36,6 +36,61 @@ struct Gathered {
 }
 
 impl<B: Backend> MemoryService<B> {
+    /// Makes `rule` the one with its id.
+    fn change_rule(&self, rule: RememberRule) -> MemoryReply {
+        let id = rule.id.clone();
+        self.set_rules(|rules| {
+            rules.rules.retain(|r| r.id != id);
+            rules.rules.push(rule);
+        });
+        self.audit_open(
+            self.backend().clock().now(),
+            &MemoryOp::RuleChanged { rule: id },
+        );
+        MemoryReply::Ok
+    }
+
+    /// Removes the rule with `id`.
+    fn drop_rule(&self, id: &RuleId) -> MemoryReply {
+        self.set_rules(|rules| rules.rules.retain(|r| &r.id != id));
+        self.audit_open(
+            self.backend().clock().now(),
+            &MemoryOp::RuleChanged { rule: id.clone() },
+        );
+        MemoryReply::Ok
+    }
+
+    /// Settles `fact` in the first Space that holds it.
+    async fn settle_anywhere(
+        &self,
+        caller: &Caller,
+        fact: &FactId,
+        settlement: Settlement,
+    ) -> Result<MemoryReply, Refusal> {
+        let mut busy = false;
+        for id in self.all_spaces() {
+            let mut lease = match self.checkout(caller, &id).await {
+                Ok(lease) => lease,
+                Err(Refusal::Busy) => {
+                    busy = true;
+                    continue;
+                }
+                Err(_) => continue,
+            };
+            let cx = self.cx(caller);
+            let Some(open) = lease.open() else { continue };
+            let known = open.stored()?.iter().any(|s| &s.fact.id == fact);
+            if known {
+                open.guard_topics()?;
+                open.settle(&cx, fact, settlement).await?;
+                open.accept_topics()?;
+                self.raise_all(open.outbox.drain(..));
+                return Ok(MemoryReply::Ok);
+            }
+        }
+        Err(not_found_or_busy(busy, Refusal::NoSuchFact))
+    }
+
     pub(crate) async fn dispatch(
         &self,
         caller: &Caller,
@@ -74,26 +129,8 @@ impl<B: Backend> MemoryService<B> {
                 .await
                 .map(MemoryReply::Relocated),
             R::Rules => Ok(MemoryReply::Rules(self.rules())),
-            R::SetRule(rule) => {
-                let id = rule.id.clone();
-                self.set_rules(|rules| {
-                    rules.rules.retain(|r| r.id != id);
-                    rules.rules.push(rule);
-                });
-                self.audit_open(
-                    self.backend().clock().now(),
-                    &MemoryOp::RuleChanged { rule: id },
-                );
-                Ok(MemoryReply::Ok)
-            }
-            R::RemoveRule(id) => {
-                self.set_rules(|rules| rules.rules.retain(|r| r.id != id));
-                self.audit_open(
-                    self.backend().clock().now(),
-                    &MemoryOp::RuleChanged { rule: id },
-                );
-                Ok(MemoryReply::Ok)
-            }
+            R::SetRule(rule) => Ok(self.change_rule(rule)),
+            R::RemoveRule(id) => Ok(self.drop_rule(&id)),
             R::Export(_) => Err(failed(
                 "an export needs a stream: use MemoryService::export",
             )),
@@ -103,30 +140,7 @@ impl<B: Backend> MemoryService<B> {
                     .ok_or_else(|| failed("no such plan"))?;
                 self.forget_in(caller, &id, &token).await
             }
-            R::Settle(fact, settlement) => {
-                let mut busy = false;
-                for id in self.all_spaces() {
-                    let mut lease = match self.checkout(caller, &id).await {
-                        Ok(lease) => lease,
-                        Err(Refusal::Busy) => {
-                            busy = true;
-                            continue;
-                        }
-                        Err(_) => continue,
-                    };
-                    let cx = self.cx(caller);
-                    let Some(open) = lease.open() else { continue };
-                    let known = open.stored()?.iter().any(|s| s.fact.id == fact);
-                    if known {
-                        open.guard_topics()?;
-                        open.settle(&cx, &fact, settlement).await?;
-                        open.accept_topics()?;
-                        self.raise_all(open.outbox.drain(..));
-                        return Ok(MemoryReply::Ok);
-                    }
-                }
-                Err(not_found_or_busy(busy, Refusal::NoSuchFact))
-            }
+            R::Settle(fact, settlement) => self.settle_anywhere(caller, &fact, settlement).await,
             R::Revert(run) => {
                 let id = self
                     .space_of_run(&run)
@@ -368,8 +382,8 @@ async fn run_in_space<B: Backend>(
         R::Mark(mark) => open.mark(mark).map(|()| MemoryReply::Ok),
         R::Search(q) => open.search(cx, &q).await.map(MemoryReply::Hits),
         R::Inject(q) => open.inject(cx, &q).await.map(MemoryReply::Hits),
-        R::Recent(_, q) => open.recent(cx, q).map(MemoryReply::Recent),
-        R::Entries(_, q) => open.entries_page(cx, q).map(MemoryReply::Entries),
+        R::Recent(_, q) => open.recent(cx, &q).map(MemoryReply::Recent),
+        R::Entries(_, q) => open.entries_page(cx, &q).map(MemoryReply::Entries),
         R::Facts(q) => open.facts(cx, &q).map(MemoryReply::Facts),
         R::Related(_, thing) => open.related(cx, &thing).map(MemoryReply::Related),
         R::Provenance(_, path) => open.provenance(cx, &path).map(MemoryReply::Provenance),
@@ -382,7 +396,7 @@ async fn run_in_space<B: Backend>(
         }
         R::Status(_) => open.status().map(MemoryReply::Status),
         R::Timeline(_, q) => open.timeline(cx, &q).map(MemoryReply::Timeline),
-        R::PlanForget(_, scope) => open.plan(cx, scope).map(MemoryReply::Plan),
+        R::PlanForget(_, scope) => open.plan(cx, &scope).map(MemoryReply::Plan),
         R::Pending(_) => open.pending(cx).map(MemoryReply::Pending),
         R::Consolidation(_) => open
             .last

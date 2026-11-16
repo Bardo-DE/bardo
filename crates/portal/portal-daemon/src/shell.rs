@@ -11,7 +11,6 @@
 //!
 //! Any step that fails is a refusal ([`ShellError::is_refusal`]), never a yes.
 
-
 use caller_identity_dbus::OwnerWatch;
 use caller_identity_dbus::caller_identity_core::roles;
 
@@ -54,10 +53,10 @@ impl Door {
             })?;
         let shell = Shell1Proxy::builder(&connection)
             .destination(owner)
-            .map_err(call_failed)?
+            .map_err(|error| call_failed(&error))?
             .build()
             .await
-            .map_err(call_failed)?;
+            .map_err(|error| call_failed(&error))?;
         Ok(Self { shell, watch })
     }
 }
@@ -78,7 +77,7 @@ pub(crate) async fn answered<T>(
         asked = call => match asked {
             Ok(answer) => Ok(answer),
             Err(error) if nobody_answers(&error) => Err(ShellError::Unavailable),
-            Err(error) => Err(call_failed(error)),
+            Err(error) => Err(call_failed(&error)),
         },
     }
 }

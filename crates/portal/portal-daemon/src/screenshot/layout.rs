@@ -8,6 +8,10 @@ use crate::capture::Job;
 /// The seam: which outputs exist and where they sit.
 pub trait OutputLayout: Send + Sync + std::fmt::Debug {
     /// Every output as a tile (its place on the canvas, negative coordinates allowed, and the size it covers; a frame of another size is stretched to fit, so screens of different sharpness share one picture), asking on the connection of `job`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ShotError`] when the outputs cannot be listed.
     fn outputs(&self, job: &Job) -> Result<Vec<Tile>, ShotError>;
 }
 

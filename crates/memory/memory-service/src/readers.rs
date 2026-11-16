@@ -116,7 +116,7 @@ impl<B: Backend> Open<B> {
     pub(crate) fn recent(
         &mut self,
         cx: &Cx<'_, B>,
-        q: RecentQuery,
+        q: &RecentQuery,
     ) -> Result<Vec<RecentEntry>, Refusal> {
         let mut filter = crate::open::any_filter();
         filter.kinds.clone_from(&q.kinds);

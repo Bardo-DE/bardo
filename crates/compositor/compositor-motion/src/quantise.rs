@@ -5,6 +5,10 @@ use compositor_core::geometry::SubPx;
 /// `x` logical pixels in whole sub-pixels, rounded half away from zero; saturating at `i32`'s
 /// range, and 0 for NaN.
 #[must_use]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the cast saturates, and a logical position is a few thousand pixels, far inside i32 at 120 to the pixel"
+)]
 pub fn quantise(x: f64) -> SubPx {
     SubPx((x * 120.0).round() as i32)
 }

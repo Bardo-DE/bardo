@@ -6,6 +6,10 @@ use files_core::OpFailure;
 use files_trash::TrashError;
 
 /// The failure an I/O error stands for; for `map_err`.
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "it is the argument of `map_err`, which hands the error over by value"
+)]
 pub(crate) fn io(err: io::Error) -> OpFailure {
     OpFailure::from_io(&err)
 }

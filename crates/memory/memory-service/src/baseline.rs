@@ -85,7 +85,7 @@ impl Baseline {
 
     /// The baseline without `gone`: forgetting a fact forgets it here too, so a pending edit's
     /// "before" cannot keep what the person erased.
-    pub(crate) fn without(&mut self, gone: &[FactId], tz: &chrono::FixedOffset) {
+    pub(crate) fn without(&mut self, gone: &[FactId], tz: chrono::FixedOffset) {
         for text in self.texts.values_mut() {
             let Ok(mut file) = parse_topic(text) else {
                 continue;
@@ -94,7 +94,7 @@ impl Baseline {
             file.blocks
                 .retain(|b| !matches!(b, Block::Fact(f) if gone.contains(&f.id)));
             if file.blocks.len() != before {
-                *text = render_topic(&file, tz);
+                *text = render_topic(&file, &tz);
             }
         }
     }

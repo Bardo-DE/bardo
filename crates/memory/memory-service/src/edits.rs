@@ -128,7 +128,7 @@ impl<B: Backend> Open<B> {
         &mut self,
         gone: &[memory_core::FactId],
     ) -> Result<(), Refusal> {
-        self.baseline.without(gone, self.rt.store.tz());
+        self.baseline.without(gone, *self.rt.store.tz());
         self.save_baseline()
     }
 }

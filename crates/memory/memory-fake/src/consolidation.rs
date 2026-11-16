@@ -14,6 +14,10 @@ fn run_id() -> RunId {
 }
 
 /// The event `seq` of the work Space's one replica.
+///
+/// # Panics
+///
+/// Panics only if the fixed text it parses stops being valid, which is a bug in this crate.
 #[must_use]
 pub fn consolidation_event(seq: u64) -> EventRef {
     EventRef {
@@ -38,6 +42,10 @@ fn ana_fact() -> Fact {
 
 /// The input of a consolidation run: Ana's fact, events 1 (trusted) and 2 (mail), and the
 /// `people/ana` topic file.
+///
+/// # Panics
+///
+/// Panics only if the fixed text it parses stops being valid, which is a bug in this crate.
 #[must_use]
 pub fn consolidation_input() -> ConsolidationInput {
     let event = |seq| InputEvent {
@@ -65,6 +73,11 @@ pub fn consolidation_input() -> ConsolidationInput {
 
 /// `people/ana` as the service reads it back: Ana's fact with its trailer, and a bullet of the
 /// person's own.
+///
+/// # Panics
+///
+/// Panics only if the fixed text it parses or encodes stops being valid, which is a bug in this
+/// crate.
 #[must_use]
 pub fn ana_topic_text() -> String {
     let file = TopicFile {
@@ -79,6 +92,10 @@ pub fn ana_topic_text() -> String {
 }
 
 /// The JSON of a link to event `seq`, as a model cites it.
+///
+/// # Panics
+///
+/// Panics only if the event link cannot be encoded as JSON, which is a bug in this crate.
 #[must_use]
 pub fn consolidation_event_link(seq: u64) -> String {
     serde_json::to_string(&Link::Event(consolidation_event(seq))).expect("json")

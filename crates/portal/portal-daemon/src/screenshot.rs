@@ -60,6 +60,10 @@ pub enum ShotError {
 /// The seam: how to start capturing one named output.
 pub trait OpenCapture: Send + Sync + std::fmt::Debug {
     /// A source for the output called `name`, on the connection of `job`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CaptureError`] when the output cannot be captured.
     fn open(&self, job: &Job, name: &str) -> Result<Box<dyn CaptureSource>, CaptureError>;
 }
 
@@ -88,6 +92,7 @@ impl FakeOpen {
     }
 
     /// Add the output `name`, served by `source`.
+    #[must_use]
     pub fn with(self, name: &str, source: impl CaptureSource + 'static) -> Self {
         self.sources
             .lock()
@@ -157,6 +162,10 @@ impl OutputGrab {
 
 impl OutputGrab {
     /// Grab the screens: one frame of every output.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ShotError`] when the outputs cannot be listed or an output cannot be captured.
     pub fn grab(&self) -> Result<Vec<Placed>, ShotError> {
         let job = Job::new(&self.display);
         self.layout
@@ -250,6 +259,11 @@ pub struct Canvas {
 const MAX_PIXELS: u64 = 1 << 27;
 
 /// Lay `shots` out on one opaque canvas at their places.
+///
+/// # Errors
+///
+/// Returns [`ShotError::NoOutputs`] when there is nothing to compose, and [`ShotError::TooLarge`]
+/// when the picture would be too large.
 pub fn compose(shots: &[Placed]) -> Result<Canvas, ShotError> {
     let left = shots.iter().map(|s| i64::from(s.origin.x)).min();
     let top = shots.iter().map(|s| i64::from(s.origin.y)).min();
@@ -317,36 +331,40 @@ fn paint(
     else {
         return Err(ShotError::Unreadable);
     };
-    let (w, h, stride) = (
+    let (src_w, src_h, stride) = (
         frame.size.width as usize,
         frame.size.height as usize,
         *stride as usize,
     );
-    if w == 0 || h == 0 || stride < w * 4 || bytes.len() < stride * h {
+    if src_w == 0 || src_h == 0 || stride < src_w * 4 || bytes.len() < stride * src_h {
         return Err(ShotError::BadFrame);
     }
     let (cover_w, cover_h) = (size.width as usize, size.height as usize);
     // Memory order of the channels in each 4-byte pixel: where red, green and blue sit.
-    let [r, g, b] = match format {
+    let [red, green, blue] = match format {
         PixelFormat::Argb8888 | PixelFormat::Xrgb8888 => [2, 1, 0],
         PixelFormat::Abgr8888 | PixelFormat::Xbgr8888 => [0, 1, 2],
     };
     // The source column each covered column shows.
-    let columns: Vec<usize> = (0..cover_w).map(|x| x * w / cover_w).collect();
+    let columns: Vec<usize> = (0..cover_w).map(|x| x * src_w / cover_w).collect();
     for row in 0..cover_h {
-        let from_row = row * h / cover_h;
-        let source = &bytes[from_row * stride..from_row * stride + w * 4];
+        let from_row = row * src_h / cover_h;
+        let source = &bytes[from_row * stride..from_row * stride + src_w * 4];
         let start = ((origin.1 + row) * canvas_width + origin.0) * 4;
         let target = &mut canvas[start..start + cover_w * 4];
         for (to, &column) in target.as_chunks_mut::<4>().0.iter_mut().zip(&columns) {
             let from = &source[column * 4..column * 4 + 4];
-            to.copy_from_slice(&[from[r], from[g], from[b], 255]);
+            to.copy_from_slice(&[from[red], from[green], from[blue], 255]);
         }
     }
     Ok(())
 }
 
 /// A PNG of the canvas.
+///
+/// # Errors
+///
+/// Returns [`ShotError::Encode`] when the picture cannot be encoded as PNG.
 pub fn encode_png(canvas: Canvas) -> Result<Vec<u8>, ShotError> {
     let Canvas {
         width,
@@ -363,17 +381,26 @@ pub fn encode_png(canvas: Canvas) -> Result<Vec<u8>, ShotError> {
 }
 
 /// The `file://` address of an absolute path, with every byte that is not plain percent-encoded.
+///
+/// # Errors
+///
+/// Returns [`ShotError::RelativePath`] when `path` is not absolute.
 pub fn file_uri(path: &Path) -> Result<String, ShotError> {
     if !path.is_absolute() {
         return Err(ShotError::RelativePath);
     }
+    const HEX_DIGITS: &[u8; 16] = b"0123456789ABCDEF";
     let mut uri = String::from("file://");
     for &byte in path.as_os_str().as_encoded_bytes() {
         match byte {
             b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'.' | b'_' | b'~' | b'/' => {
                 uri.push(char::from(byte));
             }
-            other => uri.push_str(&format!("%{other:02X}")),
+            other => {
+                uri.push('%');
+                uri.push(char::from(HEX_DIGITS[usize::from(other >> 4)]));
+                uri.push(char::from(HEX_DIGITS[usize::from(other & 0x0F)]));
+            }
         }
     }
     Ok(uri)
@@ -386,6 +413,11 @@ const NAME_TRIES: u32 = 100;
 ///
 /// The file is created, never overwritten, readable by its owner only (the home folder may be open
 /// to others), and appears under its final name only when it is whole. Returns the file's path.
+///
+/// # Errors
+///
+/// Returns a [`ShotError`] when the pictures folder is not absolute, there is no output, the
+/// capture or encoding fails, or the file cannot be written.
 pub fn take(setup: &ScreenshotSetup, seq: u32) -> Result<PathBuf, ShotError> {
     if !setup.pictures.is_absolute() {
         return Err(ShotError::RelativePath);
@@ -400,7 +432,7 @@ pub fn take(setup: &ScreenshotSetup, seq: u32) -> Result<PathBuf, ShotError> {
             .join(format!("Screenshot-{}-{n}.png", setup.stamp));
         match write_new(&path, &png) {
             Ok(()) => return Ok(path),
-            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => {}
             Err(e) => return Err(e.into()),
         }
     }

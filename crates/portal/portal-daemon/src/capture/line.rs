@@ -46,5 +46,10 @@ pub enum LineError {
 pub trait PortalLine: Send + Sync + fmt::Debug {
     /// The client end of a new connection, trusted for what the portal is. Blocks until the
     /// compositor answers, for at most [`LINE_DEADLINE`].
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LineError`] when the compositor refuses the portal a connection or none can be
+    /// made.
     fn open(&self) -> Result<OwnedFd, LineError>;
 }

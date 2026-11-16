@@ -288,8 +288,8 @@ impl<B: Backend> MemoryService<B> {
         let keys = self.backend.keys();
         let key = match keys.get(id).await {
             Ok(key) => key,
-            Err(KeyError::Missing) => keys.create(id).await.map_err(key_refusal)?,
-            Err(e) => return Err(key_refusal(e)),
+            Err(KeyError::Missing) => keys.create(id).await.map_err(|e| key_refusal(&e))?,
+            Err(e) => return Err(key_refusal(&e)),
         };
         let digest = derive(&key, id, Purpose::Digest);
         let meta = locked(&self.metas)
@@ -356,9 +356,8 @@ impl<B: Backend> MemoryService<B> {
         let mut records = waiting.into_iter();
         while let Some(record) = records.next() {
             match open.record(&cx, record.clone()).await {
-                Ok(_) => {}
                 // A record that can never be stored is dropped; the ones behind it still are.
-                Err(Refusal::Invalid(_)) => {}
+                Ok(_) | Err(Refusal::Invalid(_)) => {}
                 // A failure that may pass: this record and the rest wait for the next open.
                 Err(e) => {
                     let rest: Vec<Record> = std::iter::once(record).chain(records).collect();

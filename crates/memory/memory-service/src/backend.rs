@@ -60,8 +60,17 @@ pub trait Backend: Send + Sync {
     /// Removes everything a Space stored on disk (its log, index and files), after its key was
     /// destroyed. Called once, when the Space's deletion finishes; removing what is already gone
     /// is not an error.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`BackendError`] when the Space cannot be removed.
     fn remove_space(&self, space: &SpaceId) -> Result<(), BackendError>;
     /// Opens (or creates) the Space's event log, keyed from `key`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`BackendError`] when the log cannot be opened or created, or cannot be opened
+    /// with `key`.
     fn open_log(
         &self,
         space: &SpaceId,
@@ -69,8 +78,16 @@ pub trait Backend: Send + Sync {
         key: &SpaceKey,
     ) -> Result<Self::Log, BackendError>;
     /// Opens the Space's vault, sealed or plain as `meta.vault` says.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`BackendError`] when the vault cannot be opened, or cannot be opened with `key`.
     fn open_files(&self, meta: &SpaceMeta, key: &SpaceKey) -> Result<Self::Files, BackendError>;
     /// Opens the Space's recall index.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`BackendError`] when the index cannot be opened, or cannot be opened with `key`.
     fn open_index(&self, space: &SpaceId, key: &SpaceKey) -> Result<Self::Index, BackendError>;
     /// Whether the registry of desktop-wide Spaces lists `space`: asked before an app opens or
     /// provisions one. An implementation that talks to a service must bound the wait and answer

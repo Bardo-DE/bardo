@@ -38,7 +38,7 @@ impl Wire {
                 let stream = UnixStream::connect(&path).map_err(broken)?;
                 Connection::from_socket(stream).map_err(broken)?
             }
-            _ => {
+            Route::Path(_) => {
                 return Err(CaptureError::Connection(
                     "a display name must be a socket path".to_owned(),
                 ));

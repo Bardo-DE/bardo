@@ -66,6 +66,10 @@ impl SessionBook {
     /// open is left alone. When the book is full, sessions that never began and have waited
     /// longer than [`crate::peers::UNSTARTED_TTL`] are dropped to make room; the result is the
     /// handles dropped, whose session objects the caller takes off the bus.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the handle is already open or the book is full.
     pub fn create(
         &mut self,
         key: SessionKey,

@@ -78,7 +78,7 @@ pub fn is_refused<T>(result: &zbus::Result<T>) -> bool {
 /// The portal on a private bus, and the means to introduce callers to it.
 pub struct Portal {
     pub bus: PrivateBus,
-    _portal: Connection,
+    _connection: Connection,
     pub link: BusLink,
     pub peers: Arc<Peers>,
 }
@@ -97,7 +97,7 @@ pub async fn start_portal() -> Option<Portal> {
     let peers = link.peers().expect("callers can be told apart once served");
     Some(Portal {
         bus,
-        _portal: connection,
+        _connection: connection,
         link,
         peers,
     })
@@ -309,7 +309,7 @@ async fn only_the_portal_frontend_may_call_any_method() {
     #[cfg(not(feature = "debug"))]
     {
         as_frontend_at(&portal.peers, &weak, Proof::Exe);
-        refused.push(("a weak proof", &weak))
+        refused.push(("a weak proof", &weak));
     };
     for (who, caller) in refused {
         for (label, result) in every_method(caller).await {

@@ -24,21 +24,43 @@ fn lcg(state: &mut u64) -> i32 {
     (*state >> 33) as i32
 }
 
+/// A rounded, positive size as whole pixels.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a size of a few hundred pixels, positive by construction"
+)]
+fn pixels(size: f64) -> u32 {
+    size as u32
+}
+
 /// Each window's desktop rectangle and overview slot.
 pub fn journeys() -> Vec<(u64, LogicalRect, LogicalRect)> {
-    let mut s = 0x5EED_u64;
+    let mut seed = 0x5EED_u64;
     (0..WINDOWS)
-        .map(|i| {
-            let (w, h) = (320 + lcg(&mut s) % 700, 220 + lcg(&mut s) % 500);
-            let (x, y) = (lcg(&mut s) % (1920 - w), 24 + lcg(&mut s) % (1056 - h));
-            let k = 0.18 + f64::from(lcg(&mut s) % 100) / 1000.0;
-            let (ow, oh) = ((f64::from(w) * k).round(), (f64::from(h) * k).round());
-            let ox = 40 + (i % 10) as i32 * 186 + lcg(&mut s) % 3;
-            let oy = 200 + (i / 10) as i32 * 170;
+        .map(|index| {
+            let (width, height) = (320 + lcg(&mut seed) % 700, 220 + lcg(&mut seed) % 500);
+            let (left, top) = (
+                lcg(&mut seed) % (1920 - width),
+                24 + lcg(&mut seed) % (1056 - height),
+            );
+            let scale = 0.18 + f64::from(lcg(&mut seed) % 100) / 1000.0;
+            let (slot_w, slot_h) = (
+                (f64::from(width) * scale).round(),
+                (f64::from(height) * scale).round(),
+            );
+            let column = i32::try_from(index % 10).expect("a digit");
+            let slot_left = 40 + column * 186 + lcg(&mut seed) % 3;
+            let slot_top = 200 + i32::try_from(index / 10).expect("a few rows") * 170;
             (
-                i + 1,
-                rect(x, y, w as u32, h as u32),
-                rect(ox, oy, ow as u32, oh as u32),
+                index + 1,
+                rect(
+                    left,
+                    top,
+                    u32::try_from(width).expect("positive"),
+                    u32::try_from(height).expect("positive"),
+                ),
+                rect(slot_left, slot_top, pixels(slot_w), pixels(slot_h)),
             )
         })
         .collect()

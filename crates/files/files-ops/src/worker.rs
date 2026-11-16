@@ -58,6 +58,10 @@ pub struct Worker<T> {
 
 impl<T: Send + 'static> Worker<T> {
     /// Starts the queue's thread. Work uses `trash` for the Trash; events go to `sink`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the operating system's error when the queue's thread cannot be started.
     pub fn start(trash: Arc<dyn Trash>, sink: Arc<dyn Sink<T>>) -> io::Result<Worker<T>> {
         let (jobs, job_inbox) = channel();
         let (answers, answer_inbox) = channel();

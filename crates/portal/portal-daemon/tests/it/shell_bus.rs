@@ -48,14 +48,15 @@ impl StandIn {
     #[allow(clippy::too_many_arguments, reason = "the shell's own signature")]
     async fn pick_capture_source(
         &self,
-        _app_label: String,
-        _kinds: u32,
-        _multiple: u32,
-        _cursor_modes: Vec<u32>,
+        app_label: String,
+        kinds: u32,
+        multiple: u32,
+        cursor_modes: Vec<u32>,
         remembered: u32,
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &Connection,
     ) -> fdo::Result<(Vec<(String, String)>, u32)> {
+        let _ = (app_label, kinds, multiple, cursor_modes);
         from_portal(connection, &header).await?;
         // The picker's sentence: `request()` asks to be kept until taken back.
         if remembered != 2 {
@@ -68,10 +69,11 @@ impl StandIn {
 
     async fn pick_color(
         &self,
-        _app_label: String,
+        app_label: String,
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &Connection,
     ) -> fdo::Result<Vec<(f64, f64, f64)>> {
+        let _ = (app_label,);
         from_portal(connection, &header).await?;
         Ok(vec![(0.25, 0.5, 0.75)])
     }
@@ -79,15 +81,16 @@ impl StandIn {
     #[allow(clippy::too_many_arguments, reason = "the shell's own signature")]
     async fn ask_permission(
         &self,
-        _app_label: String,
-        _title: String,
-        _subtitle: String,
-        _body: String,
-        _grant_label: String,
-        _deny_label: String,
+        app_label: String,
+        title: String,
+        subtitle: String,
+        body: String,
+        grant_label: String,
+        deny_label: String,
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &Connection,
     ) -> fdo::Result<u32> {
+        let _ = (app_label, title, subtitle, body, grant_label, deny_label);
         from_portal(connection, &header).await?;
         Ok(0)
     }
@@ -150,16 +153,22 @@ async fn the_portal_asks_the_shell_from_the_connection_that_owns_its_name() {
         .await;
     assert!(refused.is_err(), "a stranger must be refused: {refused:?}");
 
-    let picked = tokio::time::timeout(SETTLE, chooser.pick(&request()))
+    let chosen = tokio::time::timeout(SETTLE, chooser.pick(&request()))
         .await
         .expect("answered in time")
         .expect("the shell answered the portal");
     assert_eq!(
-        picked.map(|c| c.sources),
+        chosen.map(|c| c.sources),
         Some(vec![CastSource::Output("DP-1".to_owned())])
     );
 
-    let question = Question::from_call("org.example.Meet", "Allow?", "", "", &Default::default());
+    let question = Question::from_call(
+        "org.example.Meet",
+        "Allow?",
+        "",
+        "",
+        &std::collections::HashMap::default(),
+    );
     let answered = tokio::time::timeout(SETTLE, asker.ask(&question))
         .await
         .expect("answered in time")

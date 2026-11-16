@@ -12,6 +12,10 @@ pub struct Scratch {
 
 impl Scratch {
     /// New empty roots.
+    ///
+    /// # Errors
+    ///
+    /// Returns the operating system's error when the temporary directory cannot be created.
     pub fn new() -> std::io::Result<Self> {
         let dir = TempDir::new()?;
         let root = dir.path();

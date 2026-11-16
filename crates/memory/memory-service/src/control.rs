@@ -60,7 +60,7 @@ impl<B: Backend> Open<B> {
                     self.space(),
                     e,
                     self.erase_cause(cx, e),
-                    self.derived_from(&stored, &self.event_ref(e)),
+                    Self::derived_from(&stored, &self.event_ref(e)),
                 )
             })
             .collect();

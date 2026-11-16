@@ -163,12 +163,20 @@ impl<W: Write> ExportWriter<W> {
     }
 
     /// `manifest.json`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the archive's writer.
     pub fn manifest(&mut self, manifest: &ExportManifest) -> std::io::Result<()> {
         let json = serde_json::to_vec_pretty(manifest).map_err(std::io::Error::other)?;
         self.entry(&manifest_path(), &json)
     }
 
     /// `<space>/events.jsonl`, one line per entry.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the archive's writer.
     pub fn events(&mut self, space: &SpaceId, lines: &[EventLine]) -> std::io::Result<()> {
         let mut text = String::new();
         for line in lines {
@@ -179,21 +187,37 @@ impl<W: Write> ExportWriter<W> {
     }
 
     /// One plain file of a Space (a topic, a pending fact, a procedure).
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the archive's writer.
     pub fn file(&mut self, space: &SpaceId, rel: &VaultPath, bytes: &[u8]) -> std::io::Result<()> {
         self.entry(&file_path(space, rel), bytes)
     }
 
     /// `<space>/digest.key`: the digest subkey in hex, only when the person ticked the box.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the archive's writer.
     pub fn digest_key(&mut self, space: &SpaceId, hex: &str) -> std::io::Result<()> {
         self.entry(&format!("{EXPORT_ROOT}/{space}/digest.key"), hex.as_bytes())
     }
 
     /// `rules.toml`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the archive's writer.
     pub fn rules(&mut self, toml: &str) -> std::io::Result<()> {
         self.entry(&rules_path(), toml.as_bytes())
     }
 
     /// Ends the archive and returns the output.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error of the archive's writer, which finishing the archive flushes.
     pub fn finish(self) -> std::io::Result<W> {
         self.builder.into_inner()
     }

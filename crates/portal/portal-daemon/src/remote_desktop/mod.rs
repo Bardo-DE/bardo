@@ -84,6 +84,7 @@ impl RemoteDesktopService {
     /// ids say (or, for an app with no id, which app it is), and no others. Use the screen-sharing
     /// service's keeper and prover, so both share one book and one list. Without it nothing is
     /// remembered.
+    #[must_use]
     pub fn with_memory(mut self, keeper: Arc<Keeper>, prover: Arc<dyn AppProver>) -> Self {
         self.memory = Some(Memory { keeper, prover });
         self
@@ -125,6 +126,10 @@ impl RemoteDesktopService {
     /// Opens the session `key` for `app_id`, hung on `tether`: it ends when either peer leaves the
     /// bus. The result is the handles dropped to make room (sessions that never began), whose
     /// session objects the caller takes off the bus.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`Refusal`] when the handle is already open or the book is full.
     pub fn create_for(
         &self,
         key: SessionKey,
@@ -292,6 +297,11 @@ impl RemoteDesktopService {
     }
 
     /// The one socket the app speaks EIS on, once the person has allowed the session.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ConnectError`] when there is no such session, it may not connect, it already
+    /// has, or the input connection cannot be made.
     pub async fn connect(&self, key: &SessionKey) -> Result<OwnedFd, ConnectError> {
         self.core.connect(key).await
     }
@@ -597,12 +607,20 @@ impl RemoteDesktopService {
 
     /// The device kinds served.
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn available_device_types(&self) -> u32 {
         DEVICE_TYPES
     }
 
     /// The interface version.
     #[zbus(property, name = "version")]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn version(&self) -> u32 {
         2
     }

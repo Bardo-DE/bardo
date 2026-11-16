@@ -63,6 +63,11 @@ impl InhibitHub {
     /// Hold a request, hung on `tether`. A request that cannot be held (too many, or the session
     /// could not be told) is not kept: the book never says something is held that the session was
     /// not told about.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`HoldError::TooMany`] when the peer holds as many as it may, and
+    /// [`HoldError::Effect`] when the change cannot be told to the session.
     pub async fn hold(
         &mut self,
         handle: RequestHandle,
@@ -84,6 +89,10 @@ impl InhibitHub {
     }
 
     /// Release a request; a handle not held does nothing.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`EffectError`] when the change cannot be told to the session.
     pub async fn release(&mut self, handle: &RequestHandle) -> Result<(), EffectError> {
         self.owners.remove(handle);
         let change = self.book.release(handle);

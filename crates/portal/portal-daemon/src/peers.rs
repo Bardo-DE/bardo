@@ -49,6 +49,13 @@ pub fn peers_on(connection: Connection, table: Table) -> Peers {
 /// well, which only a stand-in named in the person's own rows file (`BARDO_PORTAL_DEV_CALLERS`) has at
 /// that standing; that also lets in the real program at any proof, which a debug build wants. A
 /// release build lists only the first.
+#[cfg_attr(
+    not(feature = "debug"),
+    expect(
+        clippy::needless_pass_by_value,
+        reason = "the debug build consumes the role"
+    )
+)]
 pub(crate) fn need(role: RoleName) -> Vec<Requirement> {
     let real = Requirement::new(role.clone(), Proof::Full);
     #[cfg(feature = "debug")]
@@ -156,6 +163,10 @@ impl Creator {
     }
 
     /// `Ok` when the call with `header` comes from this creator, `AccessDenied` otherwise.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`fdo::Error::AccessDenied`] when the call is not from the peer that opened this.
     pub fn require_caller(&self, header: &Header<'_>) -> fdo::Result<()> {
         match (&self.0, header.sender()) {
             (Some(made), Some(now)) if made == now.as_str() => Ok(()),
@@ -207,6 +218,10 @@ impl RoleGuard {
 
     /// Let the call with `header` through if it comes from the guarded program. The result is
     /// the creator to record on a session or request the call opens.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`fdo::Error`] that refuses a caller who does not hold the role.
     pub async fn admit(&self, header: &Header<'_>) -> fdo::Result<Creator> {
         admit_role(&self.link, header, self.role.clone()).await?;
         Ok(Creator::of(header))
@@ -214,6 +229,11 @@ impl RoleGuard {
 
     /// As [`RoleGuard::admit`], and the call must also come from `creator`: the peer that
     /// opened the session or request it is about.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`fdo::Error`] that refuses a caller who does not hold the role, or who is not
+    /// `creator`.
     pub async fn admit_creator(&self, header: &Header<'_>, creator: &Creator) -> fdo::Result<()> {
         self.admit(header).await?;
         creator.require_caller(header)
@@ -279,6 +299,10 @@ pub fn departed(name: &str, old_owner: Option<&str>, new_owner: Option<&str>) ->
 
 /// Watch the bus on `connection` and end everything tied to a peer that leaves. The subscription
 /// is made before this returns, so no departure after it is missed.
+///
+/// # Errors
+///
+/// Returns a [`TransomError`] when the bus cannot be asked to report changes of name ownership.
 pub async fn spawn_watch(connection: &Connection) -> Result<(), TransomError> {
     let dbus = fdo::DBusProxy::new(connection).await?;
     let changes = dbus.receive_name_owner_changed().await?;

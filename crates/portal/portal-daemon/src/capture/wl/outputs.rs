@@ -89,11 +89,11 @@ impl Dispatch<wl_output::WlOutput, OutputId> for Wl {
         state: &mut Self,
         _: &wl_output::WlOutput,
         event: wl_output::Event,
-        id: &OutputId,
+        data: &OutputId,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
-        let seen = state.outputs.entry(id.0).or_default();
+        let seen = state.outputs.entry(data.0).or_default();
         match event {
             wl_output::Event::Name { name } => seen.name = Some(name),
             wl_output::Event::Geometry {

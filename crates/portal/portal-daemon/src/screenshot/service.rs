@@ -103,6 +103,7 @@ impl ScreenshotService {
     }
 
     /// This service letting through the callers `guard` admits. Without it, no wire call passes.
+    #[must_use]
     pub fn with_guard(mut self, guard: RoleGuard) -> Self {
         self.guard = guard;
         self
@@ -219,12 +220,20 @@ impl ScreenshotService {
 
     /// The screenshot targets offered: the whole screen.
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn available_targets(&self) -> u32 {
         1
     }
 
     /// The interface version.
     #[zbus(property, name = "version")]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn version(&self) -> u32 {
         3
     }

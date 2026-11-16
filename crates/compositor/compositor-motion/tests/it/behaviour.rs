@@ -150,8 +150,8 @@ fn reduced_motion_settles_at_once() {
                 (
                     SubPx(slot.origin.x * 120),
                     SubPx(slot.origin.y * 120),
-                    SubPx(slot.size.w as i32 * 120),
-                    SubPx(slot.size.h as i32 * 120)
+                    SubPx(i32::try_from(slot.size.w).expect("a small size") * 120),
+                    SubPx(i32::try_from(slot.size.h).expect("a small size") * 120)
                 ),
                 "{cause:?}: window {n} is in its slot at once"
             );

@@ -58,6 +58,11 @@ impl<B: Backend> MemoryService<B> {
 
     /// Sweeps one Space, holding only that Space. A Space the service no longer knows is
     /// `SpaceUnknown`: the sweep never provisions one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`Refusal::SpaceUnknown`] when the service does not know the Space,
+    /// [`Refusal::Busy`] when it cannot be opened, and any other [`Refusal`] the sweep meets.
     pub async fn sweep_space(&self, id: &SpaceId) -> Result<SweepReport, Refusal> {
         if !self.known().contains(id) {
             return Err(Refusal::SpaceUnknown);

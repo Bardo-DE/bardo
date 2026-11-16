@@ -22,6 +22,12 @@ use zbus::zvariant::{OwnedValue, Value};
 
 use crate::app_proof::{REMOTE, REMOTE_ID, REMOTE_PROGRAM, names_with_entries, program};
 
+/// Opens the session `key` for `app_id`: these tests look at what the session does next, not at
+/// the reply to opening it.
+fn open_session(service: &RemoteDesktopService, key: SessionKey, app_id: &str) {
+    let _ = service.create(key, app_id);
+}
+
 fn key(n: u32) -> SessionKey {
     SessionKey(format!("/org/freedesktop/portal/desktop/session/x/{n}"))
 }
@@ -66,7 +72,7 @@ fn a_session_is_opened_once_and_devices_are_chosen_before_start() {
 #[tokio::test]
 async fn the_person_allows_and_the_devices_are_those_chosen() {
     let (service, consent, _) = service(vec![Answer::Granted]);
-    service.create(key(1), "org.example.Remote");
+    open_session(&service, key(1), "org.example.Remote");
     service.select(&key(1), &types(1 | 4));
     let (response, results) = service.begin(&key(1)).await;
     assert_eq!(response, 0);
@@ -89,9 +95,9 @@ async fn the_person_allows_and_the_devices_are_those_chosen() {
 #[tokio::test]
 async fn no_choice_means_every_kind_and_bits_we_do_not_offer_are_dropped() {
     let (service, _, _) = service(vec![Answer::Granted, Answer::Granted]);
-    service.create(key(1), "a");
+    open_session(&service, key(1), "a");
     assert_eq!(devices_of(&service.begin(&key(1)).await.1), Some(7));
-    service.create(key(2), "b");
+    open_session(&service, key(2), "b");
     service.select(&key(2), &types(0xff));
     assert_eq!(devices_of(&service.begin(&key(2)).await.1), Some(7));
 }
@@ -99,10 +105,10 @@ async fn no_choice_means_every_kind_and_bits_we_do_not_offer_are_dropped() {
 #[tokio::test]
 async fn declining_ends_the_session_and_an_empty_script_declines() {
     let (service, _, eis) = service(vec![Answer::Denied]);
-    service.create(key(1), "a");
+    open_session(&service, key(1), "a");
     assert_eq!(service.begin(&key(1)).await.0, 1);
     assert!(service.is_empty(), "a declined session is gone");
-    service.create(key(2), "b");
+    open_session(&service, key(2), "b");
     assert_eq!(service.begin(&key(2)).await.0, 1, "nobody said yes");
     assert!(eis.asked().is_empty(), "no connection was asked for");
     assert_eq!(service.begin(&key(3)).await.0, 2, "no such session");
@@ -111,7 +117,7 @@ async fn declining_ends_the_session_and_an_empty_script_declines() {
 #[tokio::test]
 async fn an_app_without_a_name_is_still_named_to_the_person() {
     let (service, consent, _) = service(vec![Answer::Granted]);
-    service.create(key(1), "");
+    open_session(&service, key(1), "");
     service.begin(&key(1)).await;
     assert_eq!(consent.asked()[0].app_label, "An app");
 }
@@ -123,7 +129,7 @@ async fn a_socket_is_handed_out_only_after_the_person_allowed_it() {
         service.connect(&key(1)).await,
         Err(ConnectError::NoSession)
     ));
-    service.create(key(1), "a");
+    open_session(&service, key(1), "a");
     service.select(&key(1), &types(3));
     assert!(matches!(
         service.connect(&key(1)).await,
@@ -154,7 +160,7 @@ async fn a_socket_is_handed_out_only_after_the_person_allowed_it() {
 async fn each_session_has_its_own_number_for_the_compositor() {
     let (service, _, eis) = service(vec![Answer::Granted, Answer::Granted]);
     for n in [1, 2] {
-        service.create(key(n), "a");
+        open_session(&service, key(n), "a");
         service.begin(&key(n)).await;
         service.connect(&key(n)).await.expect("a socket");
     }
@@ -169,7 +175,7 @@ async fn the_question_names_the_input_and_only_the_yes_button_is_a_yes() {
     let (service, asker, _) = service(vec![Answer::Granted, Answer::Denied, Answer::Dismissed]);
     let mut responses = Vec::new();
     for n in 1..=3 {
-        service.create(key(n), "Remote");
+        open_session(&service, key(n), "Remote");
         service.select(&key(n), &types(3));
         responses.push(service.begin(&key(n)).await.0);
     }
@@ -205,7 +211,7 @@ impl Asker for Absent {
 async fn with_no_shell_to_ask_nothing_is_granted_and_the_session_can_be_asked_again() {
     let eis = Arc::new(FakeEis::new());
     let service = RemoteDesktopService::new(Box::new(Absent), Box::new(Arc::clone(&eis)));
-    service.create(key(1), "a");
+    open_session(&service, key(1), "a");
     assert_eq!(service.begin(&key(1)).await.0, 2);
     assert!(matches!(
         service.connect(&key(1)).await,
@@ -217,7 +223,7 @@ async fn with_no_shell_to_ask_nothing_is_granted_and_the_session_can_be_asked_ag
 #[tokio::test]
 async fn asking_for_no_device_at_all_asks_nothing() {
     let (service, consent, _) = service(vec![Answer::Granted]);
-    service.create(key(1), "a");
+    open_session(&service, key(1), "a");
     service.select(&key(1), &types(0));
     assert_eq!(service.begin(&key(1)).await.0, 2);
     assert!(consent.asked().is_empty());
@@ -252,7 +258,7 @@ async fn a_yes_belongs_to_the_session_it_was_asked_about() {
         Box::new(gate),
         Box::new(Arc::clone(&eis)),
     ));
-    service.create(key(1), "org.example.Meet");
+    open_session(&service, key(1), "org.example.Meet");
     let asking = tokio::spawn({
         let service = Arc::clone(&service);
         async move { service.begin(&key(1)).await }
@@ -260,7 +266,7 @@ async fn a_yes_belongs_to_the_session_it_was_asked_about() {
     entered.notified().await;
     // While the person is deciding the handle is closed and opened again by someone else.
     service.close(&key(1)).await;
-    service.create(key(1), "org.example.Other");
+    open_session(&service, key(1), "org.example.Other");
     proceed.notify_one();
     let (response, _) = asking.await.expect("the call ends");
     assert_eq!(response, 1, "the yes was for a session that is gone");
@@ -276,7 +282,7 @@ async fn a_yes_belongs_to_the_session_it_was_asked_about() {
 #[tokio::test]
 async fn a_session_has_one_socket_and_closing_it_takes_the_socket_back() {
     let (service, _, eis) = service(vec![Answer::Granted]);
-    service.create(key(1), "a");
+    open_session(&service, key(1), "a");
     service.begin(&key(1)).await;
     let fd = service.connect(&key(1)).await.expect("a socket");
     assert!(matches!(
@@ -301,7 +307,7 @@ async fn a_session_has_one_socket_and_closing_it_takes_the_socket_back() {
 #[tokio::test]
 async fn a_session_that_never_took_a_socket_has_nothing_to_take_back() {
     let (service, _, eis) = service(vec![Answer::Granted]);
-    service.create(key(1), "a");
+    open_session(&service, key(1), "a");
     service.begin(&key(1)).await;
     service.close(&key(1)).await;
     service.close(&key(2)).await;
@@ -359,7 +365,7 @@ async fn a_restarted_portal_counts_above_the_last_run_and_drops_its_leftovers() 
         let (service, _, eis) = service(vec![Answer::Granted]);
         service.forget_previous_run().await;
         assert_eq!(eis.ended_all(), 1, "the compositor is told at start");
-        service.create(key(1), "a");
+        open_session(&service, key(1), "a");
         service.begin(&key(1)).await;
         service.connect(&key(1)).await.expect("a socket");
         numbers.push(eis.asked()[0].0);
@@ -426,7 +432,7 @@ fn remember(bits: u32, token: Option<&RestoreToken>) -> Dict {
 
 /// Opens a session for an app that gives no id, selects, and begins.
 async fn begin_with(service: &RemoteDesktopService, n: u32, options: &Dict) -> (u32, Dict) {
-    service.create(key(n), "");
+    open_session(&service, key(n), "");
     service.select(&key(n), options);
     service.begin(&key(n)).await
 }
@@ -530,7 +536,7 @@ async fn an_app_that_is_not_shown_to_be_what_it_says_is_not_let_in_by_what_was_a
         Some(true)
     );
     let (stranger, asker, _dir) = remembering("/usr/bin/python3", vec![Answer::Granted], &keeper);
-    stranger.create(key(1), REMOTE_ID);
+    open_session(&stranger, key(1), REMOTE_ID);
     stranger.select(&key(1), &types(3));
     stranger.begin(&key(1)).await;
     assert_eq!(
@@ -549,7 +555,7 @@ async fn an_app_that_is_not_shown_to_be_what_it_says_is_asked_every_time() {
 
     // Another program says the remote app's id and offers its token.
     let (stranger, asker, _other) = remembering("/usr/bin/python3", vec![Answer::Granted], &keeper);
-    stranger.create(key(2), REMOTE_ID);
+    open_session(&stranger, key(2), REMOTE_ID);
     stranger.select(&key(2), &remember(3, Some(&token)));
     let (response, results) = stranger.begin(&key(2)).await;
     assert_eq!(response, 0);

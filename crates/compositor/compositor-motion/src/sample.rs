@@ -139,11 +139,21 @@ fn shadow(mode: Option<FrameMode>, emphasis: Emphasis) -> ShadowLevel {
 }
 
 /// An opacity 0 to 1 in thousandths, held to that range.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "clamped to 0 to 1000 just before"
+)]
 fn permille(opacity: f64) -> Fraction {
     Fraction((opacity * 1000.0).round().clamp(0.0, 1000.0) as u16)
 }
 
 /// `value` as whole logical pixels, never negative.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "held to zero or more first, and the cast saturates"
+)]
 fn whole(value: f64) -> u32 {
     value.round().max(0.0) as u32
 }

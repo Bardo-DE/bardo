@@ -100,6 +100,11 @@ impl std::fmt::Debug for PipewireSink {
 
 impl PipewireSink {
     /// Create the stream at `size` and wait until `PipeWire` has given it a node id.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SinkError`] when the PipeWire thread cannot be started or its stream cannot be
+    /// set up.
     pub fn open(size: Extent, cursor: CursorMode) -> Result<Self, SinkError> {
         let (ready_tx, ready_rx) = mpsc::channel();
         let (commands, inbox) = pw::channel::channel::<Command>();

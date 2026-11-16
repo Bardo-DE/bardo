@@ -73,8 +73,13 @@ impl Run<'_> {
         let mode = match how {
             How::Copy => Bring::Copy,
             How::Move => Bring::Move,
-            How::Drag if meta.dev() == disk => Bring::Move,
-            How::Drag => Bring::Copy,
+            How::Drag => {
+                if meta.dev() == disk {
+                    Bring::Move
+                } else {
+                    Bring::Copy
+                }
+            }
         };
         if meta.is_dir() && destination.as_path().starts_with(&from) {
             return Err(OpFailure::IntoItself);

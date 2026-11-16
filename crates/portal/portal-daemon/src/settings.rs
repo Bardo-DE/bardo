@@ -42,6 +42,10 @@ pub enum AppearanceError {
 /// it on a blocking thread.
 pub trait AppearanceSource: Send + Sync + std::fmt::Debug {
     /// The appearance right now.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`AppearanceError`] when the desktop's appearance cannot be read.
     fn current(&self) -> Result<Appearance, AppearanceError>;
 }
 
@@ -160,7 +164,7 @@ pub enum PortalError {
 }
 
 /// The reply for a caller the guard refused.
-fn refused(error: zbus::fdo::Error) -> PortalError {
+fn refused(error: &zbus::fdo::Error) -> PortalError {
     PortalError::NotAllowed(error.to_string())
 }
 
@@ -183,6 +187,11 @@ fn owned(value: SettingValue) -> Option<OwnedValue> {
 }
 
 /// One setting of `appearance`, ready for the reply; an unknown one is `NotFound`.
+///
+/// # Errors
+///
+/// Returns [`PortalError::NotFound`] when the namespace and key name no setting, and
+/// [`PortalError::Failed`] when the value has no wire form.
 pub fn read_setting(
     appearance: &Appearance,
     namespace: &str,
@@ -234,6 +243,7 @@ impl SettingsService {
     }
 
     /// This service letting through the callers `guard` admits. Without it, no wire call passes.
+    #[must_use]
     pub fn with_guard(mut self, guard: RoleGuard) -> Self {
         self.guard = guard;
         self
@@ -265,6 +275,10 @@ impl SettingsService {
 
     /// The appearance now, remembered as what apps last saw. When the document cannot be read the
     /// last good appearance stands; with none yet, the error.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`AppearanceError`] when the desktop's appearance cannot be read.
     pub async fn snapshot(&self) -> Result<Appearance, AppearanceError> {
         match self.read_now().await {
             Ok(now) => {
@@ -283,6 +297,10 @@ impl SettingsService {
 
     /// Look at the appearance again; the settings that differ from what apps last saw. The first
     /// look only sets the baseline. An unreadable document changes nothing.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`AppearanceError`] when the desktop's appearance cannot be read.
     pub async fn refresh(&self) -> Result<Vec<(SettingKey, SettingValue)>, AppearanceError> {
         let now = self.read_now().await?;
         let mut last = self.last();
@@ -306,9 +324,8 @@ pub fn spawn_watch(connection: zbus::Connection) {
 // property-change methods, which the crate's `missing_docs` would flag on a public impl.
 mod interface {
     use super::{
-        Duration, Namespaces, OwnedValue, PORTAL_PATH, PortalError,
-        SettingsService, SignalEmitter, TransomError, read_namespaces, read_setting, refused,
-        wire_value,
+        Duration, Namespaces, OwnedValue, PORTAL_PATH, PortalError, SettingsService, SignalEmitter,
+        TransomError, read_namespaces, read_setting, refused, wire_value,
     };
 
     /// The watcher loop behind [`spawn_watch`].
@@ -352,7 +369,10 @@ mod interface {
             namespaces: Vec<String>,
             #[zbus(header)] header: zbus::message::Header<'_>,
         ) -> Result<Namespaces, PortalError> {
-            self.guard.admit(&header).await.map_err(refused)?;
+            self.guard
+                .admit(&header)
+                .await
+                .map_err(|error| refused(&error))?;
             let appearance = self
                 .snapshot()
                 .await
@@ -367,7 +387,10 @@ mod interface {
             key: &str,
             #[zbus(header)] header: zbus::message::Header<'_>,
         ) -> Result<OwnedValue, PortalError> {
-            self.guard.admit(&header).await.map_err(refused)?;
+            self.guard
+                .admit(&header)
+                .await
+                .map_err(|error| refused(&error))?;
             let appearance = self
                 .snapshot()
                 .await
@@ -386,6 +409,10 @@ mod interface {
 
         /// The interface version.
         #[zbus(property, name = "version")]
+        #[expect(
+            clippy::unused_self,
+            reason = "a zbus property or method is read through `&self`"
+        )]
         fn version(&self) -> u32 {
             2
         }

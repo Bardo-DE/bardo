@@ -39,6 +39,10 @@ pub(crate) enum RecordState {
 
 impl RecordState {
     /// The record state of a run state; `None` for the states a run passes through.
+    #[expect(
+        clippy::match_same_arms,
+        reason = "the states that pass are listed, so a new state is a decision; the last arm covers any state this build does not know"
+    )]
     pub(crate) fn of(state: RunState) -> Option<Self> {
         match state {
             RunState::Proposed => Some(Self::Proposed),
@@ -99,6 +103,10 @@ pub(crate) struct RunRecord {
     pub skipped: Vec<SkippedHunk>,
 }
 
+#[expect(
+    clippy::trivially_copy_pass_by_ref,
+    reason = "serde's `skip_serializing_if` hands the field over by reference"
+)]
 fn is_zero(n: &u32) -> bool {
     *n == 0
 }

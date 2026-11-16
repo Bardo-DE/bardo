@@ -4,7 +4,7 @@ use memory_core::Refusal;
 use memory_seal::KeyError;
 
 /// A destroyed key is final (`SpaceUnknown`); only a store that may recover answers `Busy`.
-pub(crate) fn key_refusal(e: KeyError) -> Refusal {
+pub(crate) fn key_refusal(e: &KeyError) -> Refusal {
     match e {
         KeyError::Locked => Refusal::SpaceLocked,
         KeyError::Destroyed => Refusal::SpaceUnknown,
@@ -18,8 +18,8 @@ mod tests {
 
     #[test]
     fn a_destroyed_key_is_not_retryable() {
-        assert_eq!(key_refusal(KeyError::Destroyed), Refusal::SpaceUnknown);
-        assert_eq!(key_refusal(KeyError::Store("x".into())), Refusal::Busy);
-        assert_eq!(key_refusal(KeyError::Locked), Refusal::SpaceLocked);
+        assert_eq!(key_refusal(&KeyError::Destroyed), Refusal::SpaceUnknown);
+        assert_eq!(key_refusal(&KeyError::Store("x".into())), Refusal::Busy);
+        assert_eq!(key_refusal(&KeyError::Locked), Refusal::SpaceLocked);
     }
 }

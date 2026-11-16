@@ -34,13 +34,14 @@ impl StandIn {
     #[allow(clippy::too_many_arguments, reason = "the shell's own signature")]
     async fn ask_permission(
         &self,
-        _app_label: String,
-        _title: String,
-        _subtitle: String,
-        _body: String,
-        _grant_label: String,
-        _deny_label: String,
+        app_label: String,
+        title: String,
+        subtitle: String,
+        body: String,
+        grant_label: String,
+        deny_label: String,
     ) -> u32 {
+        let _ = (app_label, title, subtitle, body, grant_label, deny_label);
         self.asked.fetch_add(1, Ordering::SeqCst);
         match self.answers {
             Answers::Yes => 0,
@@ -156,7 +157,7 @@ async fn a_question_ends_as_a_no_when_the_shell_changes_while_it_is_open() {
     };
     let asker = Arc::new(ShellAsker::new(portal.link.clone()));
 
-    let (shell, asked) = stand_in(&portal, Answers::Never).await;
+    let (shell, asking) = stand_in(&portal, Answers::Never).await;
     as_shell(&portal.peers, &shell);
     let open = {
         let asker = Arc::clone(&asker);
@@ -164,13 +165,13 @@ async fn a_question_ends_as_a_no_when_the_shell_changes_while_it_is_open() {
     };
     // Wait until the shell has the question in front of it, then let it go.
     for _ in 0..100 {
-        if asked.load(Ordering::SeqCst) == 1 {
+        if asking.load(Ordering::SeqCst) == 1 {
             break;
         }
         tokio::time::sleep(Duration::from_millis(50)).await;
     }
     assert_eq!(
-        asked.load(Ordering::SeqCst),
+        asking.load(Ordering::SeqCst),
         1,
         "the question reached the shell"
     );

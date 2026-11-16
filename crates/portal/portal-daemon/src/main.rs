@@ -89,6 +89,10 @@ fn with_person_rows(shipped: Table) -> Result<Table, String> {
 
 /// A release build has no rows file of the person's: `shipped` as it is.
 #[cfg(not(feature = "debug"))]
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the debug build's version of this function can fail, and the caller matches on both"
+)]
 fn with_person_rows(shipped: Table) -> Result<Table, String> {
     Ok(shipped)
 }

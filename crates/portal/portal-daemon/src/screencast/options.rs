@@ -82,6 +82,10 @@ pub fn restore_token(options: &Dict) -> Option<RestoreToken> {
 }
 
 /// The `restore_data` to hand back for a token: `("quire", 1, <token>)`.
+///
+/// # Errors
+///
+/// Returns a [`ValueError`] when the token cannot be built as a bus value.
 pub fn restore_data(token: &RestoreToken) -> Result<OwnedValue, ValueError> {
     let structure = StructureBuilder::new()
         .add_field(VENDOR)
@@ -109,11 +113,15 @@ pub struct StreamInfo {
 pub fn source_type(source: &CastSource) -> u32 {
     match source {
         CastSource::Window(_) => 2,
-        _ => 1,
+        CastSource::Output(_) => 1,
     }
 }
 
 /// The reply's `streams`: `a(ua{sv})`, the node and its properties.
+///
+/// # Errors
+///
+/// Returns a [`ValueError`] when the streams cannot be built as a bus value.
 pub fn streams_value(streams: &[StreamInfo]) -> Result<OwnedValue, ValueError> {
     let signature = Signature::try_from("(ua{sv})")?;
     let mut array = Array::new(&signature);
@@ -139,6 +147,10 @@ pub fn streams_value(streams: &[StreamInfo]) -> Result<OwnedValue, ValueError> {
 
 /// The results of a granted Start: `streams`, and when a token is kept, `persist_mode` and
 /// `restore_data`.
+///
+/// # Errors
+///
+/// Returns a [`ValueError`] when the results cannot be built as a bus value.
 pub fn granted_results(
     streams: &[StreamInfo],
     kept: Option<(Keep, &RestoreToken)>,

@@ -23,8 +23,8 @@ pub fn remote_control_question(
         PersistMode::Keep(Keep::WhileRunning) => {
             format!(" {app_label} can do this again without asking until it quits.")
         }
-        // Until taken back, and any longer keep a later core adds: never say less than is kept.
-        _ => format!(
+        // Until taken back: never say less than is kept.
+        PersistMode::Keep(Keep::UntilRevoked) => format!(
             " {app_label} can do this again without asking, until you take it back in Settings."
         ),
     };

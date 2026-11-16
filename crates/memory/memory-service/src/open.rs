@@ -366,7 +366,7 @@ impl<B: Backend> Open<B> {
     }
 
     /// The links of a fact that name events, for the timeline's derived counts.
-    pub(crate) fn derived_from(&self, stored: &[Stored], event: &EventRef) -> Count {
+    pub(crate) fn derived_from(stored: &[Stored], event: &EventRef) -> Count {
         let n = stored
             .iter()
             .filter(|s| s.fact.links.contains(&Link::Event(event.clone())))

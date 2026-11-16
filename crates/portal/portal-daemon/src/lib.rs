@@ -162,6 +162,11 @@ impl Parts {
 
 /// Claim [`BUS_NAME`] on the session bus and serve the six interfaces.
 ///
+///
+/// # Errors
+///
+/// Returns a [`TransomError`] when the session bus cannot be reached or the portal cannot be put on
+/// it.
 /// The returned connection keeps the service alive; drop it to stop.
 pub async fn serve(parts: Parts) -> Result<zbus::Connection, TransomError> {
     serve_on(zbus::connection::Builder::session()?, parts).await
@@ -170,6 +175,10 @@ pub async fn serve(parts: Parts) -> Result<zbus::Connection, TransomError> {
 /// As [`serve`], on the bus `builder` connects to (a private bus, in tests).
 ///
 /// The interfaces are served first, the connection is attached to `parts.link`, and only then is
+///
+/// # Errors
+///
+/// Returns a [`TransomError`] when the bus cannot be reached or the portal cannot be put on it.
 /// the name claimed, so no call can arrive before the seams know which connection to ask from.
 pub async fn serve_on(
     builder: zbus::connection::Builder<'_>,

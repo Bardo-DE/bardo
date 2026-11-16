@@ -23,6 +23,10 @@ fn field(cell: &str) -> u64 {
     cell.parse().unwrap()
 }
 
+fn field32(cell: &str) -> u32 {
+    cell.parse().unwrap()
+}
+
 #[test]
 fn fit_matches_reference_smart_resize() {
     let path = concat!(env!("CARGO_MANIFEST_DIR"), "/../fixtures/smart_resize.csv");
@@ -30,14 +34,14 @@ fn fit_matches_reference_smart_resize() {
     let mut rows = 0;
     for line in csv.lines().skip(1) {
         let c: Vec<&str> = line.split(',').collect();
-        let rule = smart(field(c[2]) as u32, field(c[3]), field(c[4]));
+        let rule = smart(field32(c[2]), field(c[3]), field(c[4]));
         let src = DeviceSize {
-            w: field(c[1]) as u32,
-            h: field(c[0]) as u32,
+            w: field32(c[1]),
+            h: field32(c[0]),
         };
         let expected = match c[5] {
             "" => Err(FitError::AspectTooExtreme),
-            h => Ok(image(field(c[6]) as u32, field(h) as u32)),
+            h => Ok(image(field32(c[6]), field32(h))),
         };
         assert_eq!(fit(src, &rule), expected, "row {line}");
         rows += 1;

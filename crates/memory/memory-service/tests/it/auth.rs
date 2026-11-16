@@ -16,7 +16,7 @@ fn callers() -> [(&'static str, Caller); 4] {
     ]
 }
 
-fn yes(a: Result<(), Refusal>) -> bool {
+fn yes(a: &Result<(), Refusal>) -> bool {
     a.is_ok()
 }
 
@@ -113,7 +113,7 @@ fn recording_follows_the_caller_class() {
     ];
     for (name, request, want) in cases {
         for ((who, caller), want) in callers().into_iter().zip(want) {
-            assert_eq!(yes(allowed(&caller, &request)), want, "{name} by {who}");
+            assert_eq!(yes(&allowed(&caller, &request)), want, "{name} by {who}");
         }
     }
     assert_eq!(
@@ -156,21 +156,21 @@ fn explaining_files_and_marking_things() {
         })
     };
     let mail = caller_app(MAIL);
-    assert!(yes(allowed(&mail, &claim(MAIL, user(MAIL)))));
-    assert!(!yes(allowed(&mail, &claim("org.bardo.Files", user(MAIL)))));
-    assert!(!yes(allowed(&mail, &claim(MAIL, planner()))));
-    assert!(yes(allowed(
+    assert!(yes(&allowed(&mail, &claim(MAIL, user(MAIL)))));
+    assert!(!yes(&allowed(&mail, &claim("org.bardo.Files", user(MAIL)))));
+    assert!(!yes(&allowed(&mail, &claim(MAIL, planner()))));
+    assert!(yes(&allowed(
         &Caller::Router,
         &claim("org.bardo.Files", planner())
     )));
-    assert!(yes(allowed(&Caller::ShellUi, &claim(MAIL, user(MAIL)))));
-    assert!(!yes(allowed(&Caller::Cuad, &claim(MAIL, user(MAIL)))));
-    assert!(!yes(allowed(&Caller::Settings, &claim(MAIL, user(MAIL)))));
-    assert!(yes(allowed(&mail, &mark(MAIL))));
-    assert!(!yes(allowed(&mail, &mark("org.bardo.Files"))));
-    assert!(!yes(allowed(&Caller::Cuad, &mark(MAIL))));
-    assert!(!yes(allowed(&Caller::Settings, &mark(MAIL))));
-    assert!(yes(allowed(&Caller::ShellUi, &mark("org.bardo.Files"))));
+    assert!(yes(&allowed(&Caller::ShellUi, &claim(MAIL, user(MAIL)))));
+    assert!(!yes(&allowed(&Caller::Cuad, &claim(MAIL, user(MAIL)))));
+    assert!(!yes(&allowed(&Caller::Settings, &claim(MAIL, user(MAIL)))));
+    assert!(yes(&allowed(&mail, &mark(MAIL))));
+    assert!(!yes(&allowed(&mail, &mark("org.bardo.Files"))));
+    assert!(!yes(&allowed(&Caller::Cuad, &mark(MAIL))));
+    assert!(!yes(&allowed(&Caller::Settings, &mark(MAIL))));
+    assert!(yes(&allowed(&Caller::ShellUi, &mark("org.bardo.Files"))));
 }
 
 #[test]
@@ -236,7 +236,7 @@ fn reading_proposing_and_planning_belong_to_the_router_and_the_shell() {
     for request in &reads {
         for (who, caller) in callers() {
             assert_eq!(
-                yes(allowed(&caller, request)),
+                yes(&allowed(&caller, request)),
                 who == "router" || who == "shell",
                 "{request:?} by {who}"
             );
@@ -253,21 +253,21 @@ fn confirm() -> MemoryRequest {
 #[test]
 fn confirming_a_setting_is_the_settings_apps_alone() {
     for (who, caller) in callers() {
-        assert!(!yes(allowed(&caller, &confirm())), "{who}");
+        assert!(!yes(&allowed(&caller, &confirm())), "{who}");
     }
-    assert!(yes(allowed(&Caller::Settings, &confirm())));
+    assert!(yes(&allowed(&Caller::Settings, &confirm())));
 }
 
 #[test]
 fn the_waiting_settings_are_read_by_the_settings_app_and_the_shell_only() {
     for (who, caller) in callers() {
         assert_eq!(
-            yes(allowed(&caller, &MemoryRequest::PendingSettings)),
+            yes(&allowed(&caller, &MemoryRequest::PendingSettings)),
             who == "shell",
             "{who}"
         );
     }
-    assert!(yes(allowed(
+    assert!(yes(&allowed(
         &Caller::Settings,
         &MemoryRequest::PendingSettings
     )));
@@ -284,7 +284,7 @@ fn the_settings_app_is_refused_every_request_of_the_others() {
     ];
     for request in control_requests().iter().chain(&others) {
         assert!(
-            !yes(allowed(&Caller::Settings, request)),
+            !yes(&allowed(&Caller::Settings, request)),
             "{request:?} by settings"
         );
     }
@@ -295,7 +295,7 @@ fn the_settings_app_is_refused_every_request_of_the_others() {
 fn listing_the_spaces_is_the_routers_and_the_shells() {
     for (who, caller) in callers() {
         assert_eq!(
-            yes(allowed(&caller, &MemoryRequest::Spaces)),
+            yes(&allowed(&caller, &MemoryRequest::Spaces)),
             who == "router" || who == "shell",
             "Spaces by {who}"
         );
@@ -348,7 +348,7 @@ fn control_is_the_shells_alone() {
     for request in &control_requests() {
         for (who, caller) in callers() {
             assert_eq!(
-                yes(allowed(&caller, request)),
+                yes(&allowed(&caller, request)),
                 who == "shell",
                 "{request:?} by {who}"
             );
@@ -451,7 +451,7 @@ fn messages_and_episodes_are_recorded_by_the_router_and_a_run_reports_for_itself
     ];
     for (name, request, want) in cases {
         for ((who, caller), want) in callers().into_iter().zip(want) {
-            assert_eq!(yes(allowed(&caller, &request)), want, "{name} by {who}");
+            assert_eq!(yes(&allowed(&caller, &request)), want, "{name} by {who}");
         }
     }
 }
@@ -515,7 +515,7 @@ fn only_the_shell_settles_a_removed_spaces_memories() {
     ] {
         let request = MemoryRequest::RemoveSpace(space("work"), fate);
         for (who, caller) in callers() {
-            assert_eq!(yes(allowed(&caller, &request)), who == "shell", "{who}");
+            assert_eq!(yes(&allowed(&caller, &request)), who == "shell", "{who}");
         }
     }
 }
@@ -543,10 +543,10 @@ fn proposing_for_a_helper_is_the_routers_alone() {
     };
     for (who, caller) in callers() {
         assert_eq!(
-            yes(allowed(&caller, &propose(on_behalf.clone()))),
+            yes(&allowed(&caller, &propose(on_behalf.clone()))),
             who == "router",
             "{who}"
         );
     }
-    assert!(!yes(allowed(&Caller::Router, &propose(planner()))));
+    assert!(!yes(&allowed(&Caller::Router, &propose(planner()))));
 }

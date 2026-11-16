@@ -201,7 +201,16 @@ impl Step<'_> {
 
 /// `pose` as whole logical pixels.
 fn rect_of(pose: Pose) -> LogicalRect {
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the cast saturates, and a pose is a few thousand pixels"
+    )]
     let whole = |value: f64| value.round() as i32;
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "held to zero or more first, and the cast saturates"
+    )]
     let side = |value: f64| value.round().max(0.0) as u32;
     LogicalRect::new(
         LogicalPoint {

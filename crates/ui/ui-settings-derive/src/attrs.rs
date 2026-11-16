@@ -480,6 +480,12 @@ mod tests {
 
     #[test]
     fn provided_names_a_capability_and_goes_alone() {
+        const BAD: &[&str] = &[
+            "#[settings(label = \"L\", provided = \"look\", text)]",
+            "#[settings(label = \"L\", provided = \"look\", range = \"0..=9\")]",
+            "#[settings(label = \"L\", provided = \"\")]",
+        ];
+
         let attrs = first_field_attrs(
             "struct S { #[settings(label = \"L\", provided = \"look\")] f: Provided }",
         );
@@ -492,11 +498,6 @@ mod tests {
                 capability: "look".to_owned()
             }
         );
-        const BAD: &[&str] = &[
-            "#[settings(label = \"L\", provided = \"look\", text)]",
-            "#[settings(label = \"L\", provided = \"look\", range = \"0..=9\")]",
-            "#[settings(label = \"L\", provided = \"\")]",
-        ];
         for attr in BAD {
             let source = format!("struct S {{ {attr} f: Provided }}");
             let attrs = first_field_attrs(&source);

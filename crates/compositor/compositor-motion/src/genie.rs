@@ -74,13 +74,32 @@ struct Row {
     width: f64,
 }
 
+/// A strip count as an `f64`: a few dozen at most, so exact.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "a strip count is a few dozen, exact in an f64"
+)]
+fn exact(count: usize) -> f64 {
+    count as f64
+}
+
+/// A non-negative, rounded-up `value` as a count; the cast saturates, and NaN is 0.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the value is a rounded-up absolute distance, and the cast saturates"
+)]
+fn whole_count(value: f64) -> usize {
+    value as usize
+}
+
 /// `count` strips of `window` at `progress` (0 is the window as it is, 1 is all of it inside
 /// `tile`; held to that range), top strip first. At least one strip.
 #[must_use]
 pub fn strips(window: RectF, tile: RectF, progress: f64, count: usize) -> Vec<Strip> {
     let count = count.max(1);
     let shares: Vec<f64> = (0..=count)
-        .map(|index| index as f64 / count as f64)
+        .map(|index| exact(index) / exact(count))
         .collect();
     strips_at(window, tile, progress, &shares)
 }
@@ -114,7 +133,7 @@ pub fn strips_fine(
     let base = base.max(1);
     let progress = progress.clamp(0.0, 1.0);
     let step = tolerance.max(0.25) * 2.0;
-    let edges: Vec<f64> = (0..=base).map(|index| index as f64 / base as f64).collect();
+    let edges: Vec<f64> = (0..=base).map(|index| exact(index) / exact(base)).collect();
     let sides = |v: f64| {
         let row = row_at(window, tile, progress, v);
         (row.centre - row.width / 2.0, row.centre + row.width / 2.0)
@@ -124,7 +143,7 @@ pub fn strips_fine(
         .map(|pair| {
             let (above, below) = (sides(pair[0]), sides(pair[1]));
             let jump = (below.0 - above.0).abs().max((below.1 - above.1).abs());
-            ((jump / step).ceil() as usize).clamp(1, MAX_SPLIT)
+            whole_count((jump / step).ceil()).clamp(1, MAX_SPLIT)
         })
         .collect();
     let extra: usize = wanted.iter().map(|n| n - 1).sum();
@@ -143,7 +162,7 @@ pub fn strips_fine(
         .windows(2)
         .zip(&pieces)
         .flat_map(|(pair, count)| {
-            (0..*count).map(move |at| pair[0] + (pair[1] - pair[0]) * at as f64 / *count as f64)
+            (0..*count).map(move |at| pair[0] + (pair[1] - pair[0]) * exact(at) / exact(*count))
         })
         .chain([1.0])
         .collect();
@@ -162,9 +181,9 @@ pub fn whole_rows(strips: Vec<Strip>, row: impl Fn(f64) -> i32) -> Vec<Strip> {
         }
     }
     if kept.len() > 1 && kept.last().is_some_and(|last| rows_of(last) <= 0) {
-        let last = kept.pop().expect("a last strip");
-        let before = kept.pop().expect("a strip before it");
-        kept.push(joined(before, last));
+        if let (Some(last), Some(before)) = (kept.pop(), kept.pop()) {
+            kept.push(joined(before, last));
+        }
     }
     kept
 }
@@ -399,6 +418,10 @@ mod tests {
             bottom: top + 0.25,
             dst: RectF { x, y, w: 10.0, h },
         };
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "the test rows are a few pixels"
+        )]
         let row = |y: f64| y.round() as i32;
         let joined = whole_rows(
             vec![

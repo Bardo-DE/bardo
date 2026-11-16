@@ -331,10 +331,10 @@ pub(super) struct Copier {
 }
 
 impl Copier {
-    /// Start copying `source` (consumed) and wait for the compositor's buffer constraints.
+    /// Start copying `source` (destroyed once the session holds it) and wait for the compositor's buffer constraints.
     pub fn start(
         link: Link,
-        source: ExtImageCaptureSourceV1,
+        source: &ExtImageCaptureSourceV1,
         cursor: CursorMode,
     ) -> Result<Self, CaptureError> {
         let manager = link
@@ -351,7 +351,7 @@ impl Copier {
             CursorMode::Embedded => Options::PaintCursors,
             _ => Options::empty(),
         };
-        let session = manager.create_session(&source, options, &link.qh, ());
+        let session = manager.create_session(source, options, &link.qh, ());
         source.destroy();
         manager.destroy();
         let mut copier = Self {
@@ -625,12 +625,12 @@ impl Dispatch<wl_callback::WlCallback, Arc<OnceLock<()>>> for Wl {
         _: &mut Self,
         _: &wl_callback::WlCallback,
         event: wl_callback::Event,
-        answered: &Arc<OnceLock<()>>,
+        data: &Arc<OnceLock<()>>,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let wl_callback::Event::Done { .. } = event {
-            let _ = answered.set(());
+            let _ = data.set(());
         }
     }
 }
@@ -661,7 +661,7 @@ impl Dispatch<ExtForeignToplevelListV1, ()> for Wl {
 impl Dispatch<ExtForeignToplevelHandleV1, ()> for Wl {
     fn event(
         state: &mut Self,
-        handle: &ExtForeignToplevelHandleV1,
+        proxy: &ExtForeignToplevelHandleV1,
         event: ext_foreign_toplevel_handle_v1::Event,
         (): &(),
         _: &Connection,
@@ -670,7 +670,7 @@ impl Dispatch<ExtForeignToplevelHandleV1, ()> for Wl {
         let Some(seen) = state
             .toplevels
             .iter_mut()
-            .find(|t| t.handle.id() == handle.id())
+            .find(|t| t.handle.id() == proxy.id())
         else {
             return;
         };

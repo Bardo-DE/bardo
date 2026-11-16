@@ -99,6 +99,7 @@ impl FakeBackend {
 
     /// A backend for the same machine after the daemon restarted: the vaults (the files outlive
     /// the process) are the same, everything else (keys, log, index, clock) starts again.
+    #[must_use]
     pub fn restarted(&self, consolidator: ScriptedConsolidator) -> Self {
         let backend = Self::new(consolidator);
         *backend

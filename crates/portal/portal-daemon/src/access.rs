@@ -315,6 +315,10 @@ impl AccessService {
 
     /// The interface version.
     #[zbus(property, name = "version")]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn version(&self) -> u32 {
         1
     }

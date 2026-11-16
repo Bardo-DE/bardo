@@ -33,6 +33,11 @@ pub struct JpegQuality(u8);
 pub struct JpegQualityError(pub u8);
 
 impl JpegQuality {
+    /// A JPEG quality.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`JpegQualityError`] when `quality` is not from 1 to 100.
     pub fn new(quality: u8) -> Result<Self, JpegQualityError> {
         if (1..=100).contains(&quality) {
             Ok(Self(quality))
@@ -102,6 +107,11 @@ pub enum PrepError {
 /// The frame is read as opaque RGB (the alpha byte of `Argb8888` and `Abgr8888` is dropped: a
 /// window capture has no backdrop to blend with), resized with `fast_image_resize`'s default
 /// Lanczos3 filter when the map's image size differs from the frame, and encoded by `image`.
+///
+/// # Errors
+///
+/// Returns a [`PrepError`] when the frame does not match the map, the buffer is short, or the image
+/// cannot be resized or encoded.
 #[cfg(feature = "pixels")]
 pub fn prepare(
     raw: RawFrame<'_>,
@@ -109,7 +119,7 @@ pub fn prepare(
     enc: Encoding,
 ) -> Result<PreparedImage, PrepError> {
     check_geometry(&raw, map)?;
-    let rgb = to_rgb(&raw)?;
+    let rgb = to_rgb(&raw);
     let (w, h) = (map.image.w.0, map.image.h.0);
     let rgb = if (raw.size.w, raw.size.h) == (w, h) {
         rgb
@@ -163,23 +173,22 @@ fn channel_order(format: PixelFormat) -> [usize; 3] {
 }
 
 #[cfg(feature = "pixels")]
-fn to_rgb(raw: &RawFrame<'_>) -> Result<Vec<u8>, PrepError> {
-    let [r, g, b] = channel_order(raw.format);
-    let (w, h, stride) = (
+fn to_rgb(raw: &RawFrame<'_>) -> Vec<u8> {
+    let [red, green, blue] = channel_order(raw.format);
+    let (width, height, stride) = (
         raw.size.w as usize,
         raw.size.h as usize,
         raw.stride as usize,
     );
-    let rows = raw.pixels.chunks(stride).take(h);
-    Ok(rows
-        .flat_map(|row| {
-            row[..w * BYTES_PER_PIXEL]
-                .as_chunks::<BYTES_PER_PIXEL>()
-                .0
-                .iter()
-        })
-        .flat_map(|px| [px[r], px[g], px[b]])
-        .collect())
+    let rows = raw.pixels.chunks(stride).take(height);
+    rows.flat_map(|row| {
+        row[..width * BYTES_PER_PIXEL]
+            .as_chunks::<BYTES_PER_PIXEL>()
+            .0
+            .iter()
+    })
+    .flat_map(|px| [px[red], px[green], px[blue]])
+    .collect()
 }
 
 #[cfg(feature = "pixels")]

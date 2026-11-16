@@ -31,8 +31,16 @@ pub trait FrameSink: Send + std::fmt::Debug {
     fn node(&self) -> PwNode;
     /// Offer one frame. The sink keeps it as the picture to show: it goes out when a reader has a
     /// buffer free, and again at the stream's pace for as long as nothing newer comes.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SinkError`] when the frame cannot be handed to the stream.
     fn push(&mut self, frame: CapturedFrame) -> Result<(), SinkError>;
     /// Tell the sink the stream's size changed (the window was resized).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SinkError`] when the stream cannot take the new size.
     fn resize(&mut self, size: Extent) -> Result<(), SinkError>;
 }
 
@@ -87,6 +95,10 @@ impl<C: CaptureSource, S: FrameSink> Pump<C, S> {
 
     /// One turn: wait up to [`QUIET_TURN`] for a frame, resize the sink if the frame's size
     /// changed, push it.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SinkError`] when the sink cannot take a frame.
     pub fn turn(&mut self) -> Result<PumpOutcome, SinkError> {
         let frame = match self.source.next_frame(QUIET_TURN) {
             Ok(Arrival::Frame(frame)) => frame,

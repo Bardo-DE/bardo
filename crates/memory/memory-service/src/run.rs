@@ -39,23 +39,14 @@ pub(crate) struct Applied {
 }
 
 impl<B: Backend> Open<B> {
-    /// Runs consolidation now (the nightly tick's work, on demand).
-    pub(crate) async fn run_consolidation(&mut self, cx: &Cx<'_, B>) -> Result<DraftView, Refusal> {
-        if cx.settings.consolidate == ConsolidateWhen::Never {
-            return Err(failed(
-                "consolidation is turned off (memory.consolidation.when)",
-            ));
-        }
-        let now = cx.now();
-        let run = RunId::parse(&format!(
-            "c-{}",
-            const_hex::encode(self.entropy(cx, b"run"))
-        ))
-        .map_err(failed)?;
-        let cut = self.last.as_ref().map_or(Seq(0), |l| l.cut);
-        let mut state = RunState::Due;
-        let (s, _) = step(state, RunEvent::Start);
-        state = s;
+    /// What a run reads: the active facts, the recallable events after `cut`, and the topics, with
+    /// the log head it read up to.
+    fn gather_input(
+        &self,
+        run: &RunId,
+        now: memory_core::UnixSeconds,
+        cut: Seq,
+    ) -> Result<(ConsolidationInput, Seq), Refusal> {
         let entries = self.entries()?;
         let head = entries.last().map_or(cut, |e| e.header.seq);
         let input = ConsolidationInput {
@@ -89,6 +80,27 @@ impl<B: Backend> Open<B> {
                 .collect(),
             topics: self.input_topics()?,
         };
+        Ok((input, head))
+    }
+
+    /// Runs consolidation now (the nightly tick's work, on demand).
+    pub(crate) async fn run_consolidation(&mut self, cx: &Cx<'_, B>) -> Result<DraftView, Refusal> {
+        if cx.settings.consolidate == ConsolidateWhen::Never {
+            return Err(failed(
+                "consolidation is turned off (memory.consolidation.when)",
+            ));
+        }
+        let now = cx.now();
+        let run = RunId::parse(&format!(
+            "c-{}",
+            const_hex::encode(self.entropy(cx, b"run"))
+        ))
+        .map_err(failed)?;
+        let cut = self.last.as_ref().map_or(Seq(0), |l| l.cut);
+        let mut state = RunState::Due;
+        let (s, _) = step(state, RunEvent::Start);
+        state = s;
+        let (input, head) = self.gather_input(&run, now, cut)?;
         let (s, _) = step(state, RunEvent::InputReady);
         state = s;
         let draft: Draft = match cx.backend.consolidator().draft(input.clone()).await {

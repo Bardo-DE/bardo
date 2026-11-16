@@ -48,8 +48,12 @@ impl Backend for Refusing {
     fn open_files(&self, meta: &SpaceMeta, key: &SpaceKey) -> Result<SharedVault, BackendError> {
         self.inner.open_files(meta, key)
     }
-    fn open_index(&self, id: &SpaceId, key: &SpaceKey) -> Result<Index<ExactScan>, BackendError> {
-        self.inner.open_index(id, key)
+    fn open_index(
+        &self,
+        space: &SpaceId,
+        key: &SpaceKey,
+    ) -> Result<Index<ExactScan>, BackendError> {
+        self.inner.open_index(space, key)
     }
 }
 

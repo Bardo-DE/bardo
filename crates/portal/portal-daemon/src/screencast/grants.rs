@@ -104,6 +104,10 @@ impl GrantsService {
 }
 
 /// The screens a call names: `none` is `Some(None)`, a bad word `None`.
+#[expect(
+    clippy::option_option,
+    reason = "the outer option is whether the text names a choice at all, the inner whether the choice is any screen"
+)]
 fn screens_from_wire(text: &str) -> Option<Option<Screens>> {
     match text {
         "none" => Some(None),

@@ -127,10 +127,19 @@ pub trait CaptureSource: Send + std::fmt::Debug {
     /// static picture yields none) but not for ever: a source that does not answer within its
     /// deadline is [`CaptureError::TimedOut`]. Returns [`CaptureError::Ended`] once the source is
     /// gone.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`CaptureError::Ended`] when the source is gone, [`CaptureError::Stopped`] when it
+    /// was stopped, and another [`CaptureError`] when the frame cannot be copied.
     fn frame(&mut self) -> Result<CapturedFrame, CaptureError>;
     /// As [`CaptureSource::frame`], but gives up after `wait` with [`Arrival::Quiet`]. A request
     /// for a frame stays open across calls, so no change is missed between them. A source that
     /// never blocks has nothing to wait for and just serves its frame.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CaptureError`] as [`CaptureSource::frame`] does.
     fn next_frame(&mut self, wait: Duration) -> Result<Arrival, CaptureError> {
         let _ = wait;
         self.frame().map(Arrival::Frame)
@@ -174,6 +183,11 @@ pub struct ExtCapture {
 
 impl ExtCapture {
     /// Start capturing `source` on the connection of `job`, with the pointer left out.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CaptureError`] when the compositor does not offer capturing `source`, or the
+    /// connection fails.
     pub fn open(job: &Job, source: &CastSource) -> Result<Self, CaptureError> {
         Self::open_with(job, source, CursorMode::Hidden)
     }
@@ -181,6 +195,11 @@ impl ExtCapture {
     /// As [`ExtCapture::open`], with the pointer drawn into the picture when `cursor` is
     /// [`CursorMode::Embedded`]. The metadata mode captures without the pointer. A window that is
     /// already gone is [`CaptureError::Ended`].
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CaptureError`] when the compositor does not offer capturing `source`, or the
+    /// connection fails.
     pub fn open_with(
         job: &Job,
         source: &CastSource,
@@ -192,7 +211,7 @@ impl ExtCapture {
             CastSource::Window(id) => link.toplevel_source(id)?,
         };
         Ok(Self {
-            copier: Copier::start(link, wl_source, cursor)?,
+            copier: Copier::start(link, &wl_source, cursor)?,
         })
     }
 }

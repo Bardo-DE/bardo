@@ -23,21 +23,37 @@ pub struct SpacesFile {
 }
 
 /// `memory.toml` as text.
+///
+/// # Errors
+///
+/// Returns [`ConfigError::Encode`] when the rules cannot be written as TOML.
 pub fn rules_to_toml(rules: &RuleSet) -> Result<String, ConfigError> {
     toml::to_string(rules).map_err(|e| ConfigError::Encode(e.to_string()))
 }
 
 /// The rule set in `memory.toml` text.
+///
+/// # Errors
+///
+/// Returns [`ConfigError::Decode`] when `text` is not a valid rule set.
 pub fn rules_from_toml(text: &str) -> Result<RuleSet, ConfigError> {
     toml::from_str(text).map_err(|e| ConfigError::Decode(e.to_string()))
 }
 
 /// `spaces.toml` as text.
+///
+/// # Errors
+///
+/// Returns [`ConfigError::Encode`] when the file cannot be written as TOML.
 pub fn spaces_to_toml(file: &SpacesFile) -> Result<String, ConfigError> {
     toml::to_string(file).map_err(|e| ConfigError::Encode(e.to_string()))
 }
 
 /// The Spaces in `spaces.toml` text.
+///
+/// # Errors
+///
+/// Returns [`ConfigError::Decode`] when `text` is not a valid `spaces.toml`.
 pub fn spaces_from_toml(text: &str) -> Result<SpacesFile, ConfigError> {
     toml::from_str(text).map_err(|e| ConfigError::Decode(e.to_string()))
 }

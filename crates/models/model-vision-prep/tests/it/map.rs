@@ -193,6 +193,11 @@ proptest! {
     ) {
         // The image is at least as large as the window: a coarser image cannot give a pixel back.
         let m = map((ww, wh), (ww + grow_w, wh + grow_h), ModelSpace::Image);
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "a fraction of a window side up to 4000, never negative"
+        )]
         let (x, y) = ((f64::from(ww) * fx) as u32, (f64::from(wh) * fy) as u32);
         let back = m.image_to_window(m.window_to_image(win(x, y))).unwrap();
         prop_assert!(back.x.0.abs_diff(x) <= 1 && back.y.0.abs_diff(y) <= 1,

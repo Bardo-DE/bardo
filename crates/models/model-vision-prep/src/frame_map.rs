@@ -50,6 +50,11 @@ fn within(v: u32, num: u32, den: u32, limit: Coord) -> Option<Coord> {
 
 impl FrameMap {
     /// Fits the window's device-pixel size (logical times `scale` over 120) to `rule`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`FitError`] when the window has no area at a device scale, or the rule rejects the
+    /// size.
     pub fn new(
         window: Size<WindowSpace>,
         scale: Scale120,
@@ -75,6 +80,11 @@ impl FrameMap {
 
     /// Maps a point of the image the model was shown. A map built for a grid dialect refuses
     /// it with `GridMismatch`; a point at or past the image edge is `OutOfFrame`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MapError::GridMismatch`] when the map is for a grid dialect, and
+    /// [`MapError::OutOfFrame`] when the point is at or past the image edge.
     pub fn image_to_window(&self, p: Point<ImageSpace>) -> Result<Point<WindowSpace>, MapError> {
         match self.space {
             ModelSpace::Image => self.map_point(p.x, p.y, self.image.w, self.image.h),
@@ -83,6 +93,11 @@ impl FrameMap {
     }
 
     /// Maps a point of the normalised grid: the divisor is the grid's max, not the image size.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MapError::GridMismatch`] when the map is for an image dialect, and
+    /// [`MapError::OutOfFrame`] when the point is outside the grid.
     pub fn grid_to_window(&self, p: Point<GridSpace>) -> Result<Point<WindowSpace>, MapError> {
         match self.space {
             ModelSpace::Grid(max) => {
@@ -125,6 +140,11 @@ impl FrameMap {
     /// Maps a distance (a scroll) along either axis, by the width ratio: the resize keeps the
     /// aspect ratio, so the two axes agree to within rounding. A length in the wrong model
     /// space is `GridMismatch`; one already in window space passes through.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`MapError::GridMismatch`] when the length is in a model space other than the map's,
+    /// and [`MapError::OutOfFrame`] when it does not fit in window space.
     pub fn length_to_window<S: CoordSpace>(
         &self,
         l: Length<S>,

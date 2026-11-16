@@ -77,6 +77,7 @@ impl DisplayName {
 
     /// This display, with `line` asked first for a connection of the portal's own when the display
     /// is the session's. Where it hands none out, the session's display is used as before.
+    #[must_use]
     pub fn with_portal_line(self, line: Arc<dyn PortalLine>) -> Self {
         match self.0 {
             Target::Session { .. } => Self(Target::Session {

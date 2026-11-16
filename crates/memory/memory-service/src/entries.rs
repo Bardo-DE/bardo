@@ -31,7 +31,7 @@ impl<B: Backend> Open<B> {
     pub(crate) fn entries_page(
         &mut self,
         cx: &Cx<'_, B>,
-        q: EntriesQuery,
+        q: &EntriesQuery,
     ) -> Result<EntriesPage, Refusal> {
         let after = q.after.map_or(Seq(0), |c| c.0);
         let limit = usize::try_from(q.limit.0).unwrap_or(usize::MAX);

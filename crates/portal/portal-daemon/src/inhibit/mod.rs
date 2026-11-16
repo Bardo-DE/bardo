@@ -86,6 +86,10 @@ impl MonitorObject {
 
     /// The interface version.
     #[zbus(property, name = "version")]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn version(&self) -> u32 {
         1
     }
@@ -290,6 +294,10 @@ mod interface {
 
         /// The interface version.
         #[zbus(property, name = "version")]
+        #[expect(
+            clippy::unused_self,
+            reason = "a zbus property or method is read through `&self`"
+        )]
         fn version(&self) -> u32 {
             3
         }

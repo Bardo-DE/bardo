@@ -20,6 +20,12 @@ use std::collections::VecDeque;
 /// desktop named none, pid 0) whose name is the target's title; windows of equal title are told apart by size, and what is still ambiguous is
 /// [`A11yError::NoMatchingWindow`]. A process with no application on the bus is
 /// [`A11yError::NotExposed`].
+///
+/// # Errors
+///
+/// Returns [`A11yError::NoMatchingWindow`] when no single window matches the target,
+/// [`A11yError::NotExposed`] when the process has no application on the bus, and any other
+/// [`A11yError`] the tree reports while it is read.
 pub async fn read_window<T: AtspiTree>(
     tree: &T,
     target: &A11yTarget,

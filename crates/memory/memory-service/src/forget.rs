@@ -75,6 +75,10 @@ pub fn plan_forget(
         .iter()
         .map(|e| Link::Event(event_ref(space, e)))
         .collect();
+    #[expect(
+        clippy::match_same_arms,
+        reason = "the kinds that count for nothing are listed, so a new kind is a decision; the last arm covers any kind this build does not know"
+    )]
     let seeds: BTreeSet<FactId> = match scope {
         ForgetScope::Thing(thing) => {
             roots.push(Link::Thing(thing.clone()));
@@ -149,6 +153,10 @@ fn derived_closure(
 }
 
 /// Whether the (present) event is in what `scope` asks to forget.
+#[expect(
+    clippy::match_same_arms,
+    reason = "the `Fact` scope is named, so a new scope is a decision; the last arm covers any scope this build does not know"
+)]
 fn scope_matches(space: &SpaceId, scope: &ForgetScope, entry: &Entry) -> bool {
     let BodyState::Present(body) = &entry.body else {
         return false;

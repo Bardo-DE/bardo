@@ -68,6 +68,11 @@ impl Share {
     /// Blocks while connecting; call it off the async runtime. `ended` runs, on the stream's own
     /// thread, when a source goes away by itself (a window closed, a display unplugged); it does
     /// not run for a share that was dropped.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`OpenError`] when there is no source to share, a source cannot be captured, or
+    /// the stream or its thread cannot be started.
     pub fn open(
         job: &Job,
         sources: &[CastSource],

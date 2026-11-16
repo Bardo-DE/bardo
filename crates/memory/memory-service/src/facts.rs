@@ -133,7 +133,7 @@ impl<B: Backend> Open<B> {
                             self.space(),
                             en,
                             self.erase_cause(cx, en),
-                            self.derived_from(stored, e),
+                            Self::derived_from(stored, e),
                         ))
                     }),
             ),

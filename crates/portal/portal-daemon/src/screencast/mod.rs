@@ -86,6 +86,7 @@ impl ScreenCastService {
 
     /// This service remembering the apps `prover` shows to be what their ids say, and no others.
     /// Without it no app is remembered. Call it before the service is shared.
+    #[must_use]
     pub fn with_prover(mut self, prover: impl Into<Arc<dyn crate::app_proof::AppProver>>) -> Self {
         if let Some(shared) = Arc::get_mut(&mut self.shared) {
             shared.prover = prover.into();
@@ -243,18 +244,30 @@ impl ScreenCastService {
 
     /// The source types served: displays and windows (1 and 2).
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn available_source_types(&self) -> u32 {
         3
     }
 
     /// The cursor modes served: hidden, embedded, metadata (1, 2 and 4).
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn available_cursor_modes(&self) -> u32 {
         7
     }
 
     /// The interface version.
     #[zbus(property, name = "version")]
+    #[expect(
+        clippy::unused_self,
+        reason = "a zbus property or method is read through `&self`"
+    )]
     fn version(&self) -> u32 {
         5
     }

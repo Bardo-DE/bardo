@@ -34,12 +34,22 @@ impl Job {
     }
 
     /// Every output and window that can be captured now, as the compositor lists them.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CaptureError`] when the compositor connection cannot be made or cannot list the
+    /// sources.
     pub fn live_sources(&self) -> Result<Vec<CastSource>, CaptureError> {
         self.link()?.live_sources()
     }
 
     /// Every output the compositor lists now: its name, place in the logical space, mode, turn and
     /// scale. The compositor is asked afresh, so the list is current when it returns.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`CaptureError`] when the compositor connection cannot be made or cannot list the
+    /// outputs.
     pub fn output_facts(&self) -> Result<Vec<OutputFacts>, CaptureError> {
         self.link()?.output_facts()
     }

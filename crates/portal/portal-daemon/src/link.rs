@@ -33,6 +33,10 @@ impl BusLink {
     }
 
     /// The name-owning connection, or why there is none yet.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ShellError::Call`] when the portal is not on the bus yet.
     pub fn connection(&self) -> Result<zbus::Connection, ShellError> {
         self.connection
             .get()
