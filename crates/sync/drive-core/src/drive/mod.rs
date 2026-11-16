@@ -164,7 +164,7 @@ pub enum DriveError {
     Cache(#[from] std::io::Error),
     /// The drive was opened outside an async runtime, which its fetches run on.
     #[error("the drive needs an async runtime to fetch in")]
-    NoRuntime,
+    NoRuntime(#[source] tokio::runtime::TryCurrentError),
     /// Another drive is still open over the same cache directory; try again once it is gone.
     #[error("the cache is in use by a drive still open over it")]
     InUse,
@@ -551,9 +551,7 @@ impl Drive {
         source: Arc<dyn Source>,
         sink: Option<Arc<dyn Sink>>,
     ) -> Result<Drive, DriveError> {
-        let runtime = tokio::runtime::Handle::try_current()
-            .ok()
-            .ok_or(DriveError::NoRuntime)?;
+        let runtime = tokio::runtime::Handle::try_current().map_err(DriveError::NoRuntime)?;
         std::fs::create_dir_all(config.cache.join("content"))?;
         std::fs::create_dir_all(config.cache.join("local"))?;
         let lock = lock(&config.cache, config.lock_wait).await?;

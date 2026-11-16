@@ -75,8 +75,8 @@ pub enum WriteError {
     #[error("a folder cannot go inside itself")]
     Inside,
     /// Its bytes were needed and could not be read.
-    #[error("its bytes could not be read: {0}")]
-    Read(ReadError),
+    #[error("its bytes could not be read")]
+    Read(#[source] ReadError),
     /// The cache could not be written; the text is what went wrong.
     #[error("the cache could not be written: {0}")]
     Cache(String),

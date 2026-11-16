@@ -18,7 +18,7 @@ use sync_core::{ContentHash, ItemKind, RemoteId};
 use tokio::sync::{Notify, watch};
 
 /// Why a read gave no bytes.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ReadError {
     /// The drive could not be reached: the file downloads when it can be.
     #[error("the drive could not be reached")]
@@ -34,7 +34,7 @@ pub enum ReadError {
     Folder,
     /// The cache could not be read or written.
     #[error("the cache could not be used")]
-    Cache,
+    Cache(#[source] Option<Cause>),
     /// It changed on the drive while it downloaded: the bytes were dropped, and it downloads
     /// again when next asked.
     #[error("it changed on the drive while it downloaded")]
@@ -42,6 +42,26 @@ pub enum ReadError {
     /// The drive stopped sending it (a chunk took longer than its deadline).
     #[error("the drive stopped sending it")]
     Stalled,
+}
+
+/// The error that made a cache unusable. Two causes are equal when they say the same.
+#[derive(Debug, Clone, thiserror::Error)]
+#[error(transparent)]
+pub struct Cause(Arc<dyn std::error::Error + Send + Sync>);
+
+impl PartialEq for Cause {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.to_string() == other.0.to_string()
+    }
+}
+
+impl Eq for Cause {}
+
+impl ReadError {
+    /// The cache could not be used, because of `cause`.
+    pub(super) fn cache(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
+        ReadError::Cache(Some(Cause(Arc::new(cause))))
+    }
 }
 
 impl From<SourceError> for ReadError {
@@ -99,11 +119,10 @@ impl Transfer {
 }
 
 fn read_at(path: &PathBuf, offset: u64, len: u64) -> Result<Vec<u8>, ReadError> {
-    let file = std::fs::File::open(path).ok().ok_or(ReadError::Cache)?;
-    let mut buffer = vec![0; usize::try_from(len).ok().ok_or(ReadError::Cache)?];
+    let file = std::fs::File::open(path).map_err(ReadError::cache)?;
+    let mut buffer = vec![0; usize::try_from(len).map_err(ReadError::cache)?];
     file.read_exact_at(&mut buffer, offset)
-        .ok()
-        .ok_or(ReadError::Cache)?;
+        .map_err(ReadError::cache)?;
     Ok(buffer)
 }
 
@@ -159,8 +178,7 @@ impl Inner {
             .write(true)
             .open(&file)
             .and_then(|f| f.set_len(entry.size.0))
-            .ok()
-            .ok_or(ReadError::Cache)?;
+            .map_err(ReadError::cache)?;
         let (moved, _) = watch::channel(0);
         let transfer = Arc::new(Transfer {
             id: entry.id.clone(),
@@ -214,7 +232,7 @@ impl Inner {
     /// Ends `transfer` with `error`: when it is still its item's transfer, the item says why
     /// (a transfer cancelled or replaced says nothing of the one after it).
     fn failed(&self, transfer: &Arc<Transfer>, error: ReadError) {
-        transfer.fail(error);
+        transfer.fail(error.clone());
         let mut transfers = held(&self.transfers);
         if !Self::current_in(&transfers, transfer) {
             return;
@@ -423,7 +441,7 @@ async fn finish(weak: Weak<Inner>, transfer: Arc<Transfer>) {
         Some((inner, same))
     };
     let Some((inner, same)) = same else {
-        transfer.fail(ReadError::Cache);
+        transfer.fail(ReadError::Cache(None));
         return;
     };
     if same {
@@ -486,8 +504,7 @@ impl Drive {
         if let NodeId::Remote(remote) = id {
             let entry = inner
                 .entry(remote)
-                .ok()
-                .ok_or(ReadError::Cache)?
+                .map_err(ReadError::cache)?
                 .ok_or(ReadError::Gone)?;
             match entry.kind {
                 ItemKind::Folder => return Err(ReadError::Folder),
@@ -564,8 +581,7 @@ impl Drive {
         for _ in 0..8 {
             let entry = inner
                 .entry_open(remote)
-                .ok()
-                .ok_or(ReadError::Cache)?
+                .map_err(ReadError::cache)?
                 .ok_or(ReadError::Gone)?;
             match &entry.kind {
                 ItemKind::Folder => return Err(ReadError::Folder),
@@ -618,7 +634,7 @@ impl Drive {
                         drop(state);
                         return read_at(&transfer.file, offset, end - offset);
                     }
-                    if let Some(failure) = state.failure {
+                    if let Some(failure) = state.failure.clone() {
                         return Err(failure);
                     }
                     if state.cancelled {
