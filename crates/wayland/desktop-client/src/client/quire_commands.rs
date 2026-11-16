@@ -13,7 +13,7 @@ use desktop_protocols::client::bardo_shell_v1::bardo_shell_v1::BardoShellV1;
 use desktop_protocols::vocab::{PlaceTarget, Toggle, WireCode};
 
 use super::wire::Wire;
-use crate::command::{CommandRoute, DesktopCommand};
+use crate::command::{CommandRoute, DesktopCommand, SpaceTarget};
 use crate::error::CommandError;
 use crate::keys::{AppKey, SpaceKey, SurfaceKey, ToplevelKey};
 use crate::names::OutputName;
@@ -178,6 +178,30 @@ fn shell_since(
     Ok(shell)
 }
 
+/// Replaces the Space targets of the output `name` with `targets`.
+fn set_space_targets(
+    wire: &Wire,
+    route: CommandRoute,
+    name: &OutputName,
+    targets: Vec<SpaceTarget>,
+) -> Result<(), CommandError> {
+    let shell = shell_since(wire, route, 2)?;
+    let output = output(wire, name)?;
+    shell.space_target_clear(output);
+    for target in targets {
+        let rect = target.rect;
+        shell.space_target(
+            output,
+            target.space.as_str().to_owned(),
+            rect.x,
+            rect.y,
+            rect.w,
+            rect.h,
+        );
+    }
+    Ok(())
+}
+
 /// The commands that go to `bardo_shell_v1`.
 fn send_shell(wire: &Wire, command: DesktopCommand) -> Result<(), CommandError> {
     let route = command.route();
@@ -219,22 +243,7 @@ fn send_shell(wire: &Wire, command: DesktopCommand) -> Result<(), CommandError> 
         DesktopCommand::SetSpaceTargets {
             output: name,
             targets,
-        } => {
-            let shell = shell_since(wire, route, 2)?;
-            let output = output(wire, &name)?;
-            shell.space_target_clear(output);
-            for target in targets {
-                let rect = target.rect;
-                shell.space_target(
-                    output,
-                    target.space.as_str().to_owned(),
-                    rect.x,
-                    rect.y,
-                    rect.w,
-                    rect.h,
-                );
-            }
-        }
+        } => set_space_targets(wire, route, &name, targets)?,
         DesktopCommand::SetNewSpaceTarget { output: name, rect } => {
             let shell = shell_since(wire, route, 3)?;
             let output = output(wire, &name)?;

@@ -29,15 +29,15 @@ pub struct Context<B, A, S, C> {
 }
 
 /// Identifies the peer of `conn` and serves it until it ends. Never panics on what the peer sends.
-pub fn serve<B, A, S, C>(conn: OwnedFd, ctx: &Context<B, A, S, C>)
+pub fn serve<B, A, S, C>(conn: &OwnedFd, ctx: &Context<B, A, S, C>)
 where
     B: Backend,
     A: Authority,
     S: SeatSource,
     C: Monotonic + 'static,
 {
-    if let Some(caller) = identify(&conn, &ctx.authority) {
-        serve_caller(&conn, &caller, HANDSHAKE_TIMEOUT_MS, ctx);
+    if let Some(caller) = identify(conn, &ctx.authority) {
+        serve_caller(conn, &caller, HANDSHAKE_TIMEOUT_MS, ctx);
     }
 }
 

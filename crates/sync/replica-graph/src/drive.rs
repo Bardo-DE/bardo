@@ -114,7 +114,7 @@ impl<H: Http> GraphReplica<H> {
     }
 
     /// What a write that made or changed an item answered with: the item.
-    fn written(&self, response: &Response<Vec<u8>>) -> Result<(Written, DriveItem), PutRefused> {
+    fn written(response: &Response<Vec<u8>>) -> Result<(Written, DriveItem), PutRefused> {
         let item: DriveItem = serde_json::from_slice(response.body())
             .ok()
             .ok_or_else(again)?;
@@ -181,7 +181,7 @@ impl<H: Http> GraphReplica<H> {
     ) -> Result<Written, PutRefused> {
         match (response.status().as_u16(), to) {
             (200 | 201, _) => {
-                let (written, item) = self.written(&response)?;
+                let (written, item) = Self::written(&response)?;
                 self.remember(&item);
                 Ok(written)
             }
@@ -410,7 +410,7 @@ impl<H: Http> GraphReplica<H> {
         let response = self.write_send(make).await?;
         match response.status().as_u16() {
             200 | 201 => {
-                let (written, item) = self.written(&response)?;
+                let (written, item) = Self::written(&response)?;
                 self.remember(&item);
                 Ok(written)
             }
@@ -446,7 +446,7 @@ impl<H: Http> GraphReplica<H> {
         let response = self.write_send(patch).await?;
         match response.status().as_u16() {
             200 => {
-                let (written, item) = self.written(&response)?;
+                let (written, item) = Self::written(&response)?;
                 self.remember(&item);
                 Ok(written)
             }

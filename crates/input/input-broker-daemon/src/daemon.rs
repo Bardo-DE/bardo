@@ -162,7 +162,7 @@ where
         let spawned = std::thread::Builder::new()
             .name("connection".to_owned())
             .stack_size(THREAD_STACK_BYTES)
-            .spawn(move || admit(conn, ticket, &slots, &context));
+            .spawn(move || admit(&conn, ticket, &slots, &context));
         if let Err(why) = spawned {
             journal::note("spawn", &[kv("why", &why)]);
         }

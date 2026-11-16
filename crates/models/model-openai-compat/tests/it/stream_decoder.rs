@@ -119,8 +119,8 @@ fn end(stop: StopReason, usage: TurnUsage) -> TurnEnd {
     }
 }
 
-fn plain(stop: StopReason) -> Result<TurnEnd, CodecError> {
-    Ok(end(stop, TurnUsage::default()))
+fn plain(stop: StopReason) -> TurnEnd {
+    end(stop, TurnUsage::default())
 }
 
 #[test]
@@ -136,7 +136,7 @@ fn text_streams_and_ends_on_a_finish_reason() {
         got,
         Run {
             events: vec![text("Hel"), text("lo")],
-            outcome: plain(StopReason::EndTurn)
+            outcome: Ok(plain(StopReason::EndTurn))
         }
     );
 }
@@ -156,7 +156,7 @@ fn finish_reasons_map_to_stop_reasons() {
     ];
     for (reason, stop) in CASES {
         let got = run(&[chunk(json!({"content":"x"}), Some(reason))]);
-        assert_eq!(got.outcome, plain(*stop), "{reason}");
+        assert_eq!(got.outcome, Ok(plain(*stop)), "{reason}");
     }
 }
 
@@ -170,7 +170,7 @@ fn a_finish_reason_alone_closes_the_stream_and_done_adds_nothing() {
 #[test]
 fn done_without_a_finish_reason_closes_a_stream_that_had_chunks() {
     let got = run(&[chunk(json!({"content":"x"}), None), done()]);
-    assert_eq!(got.outcome, plain(StopReason::EndTurn));
+    assert_eq!(got.outcome, Ok(plain(StopReason::EndTurn)));
 }
 
 #[test]
@@ -294,7 +294,7 @@ fn content_may_be_an_array_of_parts_and_a_refusal_is_text() {
         chunk(json!({"content":null,"refusal":"I cannot"}), Some("stop")),
     ]);
     assert_eq!(got.events, vec![text("hello"), text("I cannot")]);
-    assert_eq!(got.outcome, plain(StopReason::EndTurn));
+    assert_eq!(got.outcome, Ok(plain(StopReason::EndTurn)));
 }
 
 #[test]
@@ -310,7 +310,7 @@ fn a_delta_less_choice_prelude_is_a_noop() {
         run(&frames),
         Run {
             events: vec![text("x")],
-            outcome: plain(StopReason::EndTurn)
+            outcome: Ok(plain(StopReason::EndTurn))
         }
     );
 }
@@ -344,7 +344,7 @@ fn a_call_streams_by_fragments_and_closes_at_tool_calls() {
             finished("call_1", "mail.search", "{\"q\":\"bill\"}")
         ]
     );
-    assert_eq!(got.outcome, plain(StopReason::ToolUse));
+    assert_eq!(got.outcome, Ok(plain(StopReason::ToolUse)));
 }
 
 #[test]
@@ -573,7 +573,7 @@ fn the_four_outcomes_of_a_malformed_call() {
             .iter()
             .any(|e| matches!(e, TurnEvent::ToolCallDone(_)))
     );
-    assert_eq!(cut.outcome, plain(StopReason::MaxTokens));
+    assert_eq!(cut.outcome, Ok(plain(StopReason::MaxTokens)));
     // Superseded: covered by the displaced call above. KeepOpen: a call waiting for a finish
     // stays open and is not delivered early.
     let open = run(&[chunk(
@@ -601,7 +601,7 @@ fn a_tool_turn_cut_by_max_tokens_keeps_calls_that_are_whole() {
         .filter(|e| matches!(e, TurnEvent::ToolCallDone(_)))
         .collect();
     assert_eq!(dones, vec![&finished("a", "f", "{\"x\":1}")]);
-    assert_eq!(got.outcome, plain(StopReason::MaxTokens));
+    assert_eq!(got.outcome, Ok(plain(StopReason::MaxTokens)));
 }
 
 #[test]
@@ -610,7 +610,7 @@ fn a_stop_reason_of_stop_after_calls_is_tool_use() {
         call_delta(0, Some("a"), Some("f"), Some("{}")),
         Some("stop"),
     )]);
-    assert_eq!(got.outcome, plain(StopReason::ToolUse));
+    assert_eq!(got.outcome, Ok(plain(StopReason::ToolUse)));
 }
 
 #[test]
@@ -620,7 +620,7 @@ fn done_closes_calls_when_no_finish_reason_came() {
         done(),
     ]);
     assert_eq!(got.events.last(), Some(&finished("a", "f", "{}")));
-    assert_eq!(got.outcome, plain(StopReason::ToolUse));
+    assert_eq!(got.outcome, Ok(plain(StopReason::ToolUse)));
 }
 
 #[test]
@@ -703,7 +703,7 @@ fn an_unknown_frame_is_skipped_and_a_known_one_with_a_wrong_type_is_defective() 
         got,
         Run {
             events: vec![text("x")],
-            outcome: plain(StopReason::EndTurn)
+            outcome: Ok(plain(StopReason::EndTurn))
         }
     );
     for defective in [

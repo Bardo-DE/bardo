@@ -272,9 +272,8 @@ impl ConfirmServer {
         OwnedObjectPath::try_from(path).map_err(|e| fdo::Error::Failed(e.to_string()))
     }
 
-    fn cancel(&self, id: String) -> fdo::Result<()> {
+    fn cancel(&self, id: String) {
         locked(&self.0.script).cancelled.push(id);
-        Ok(())
     }
 }
 

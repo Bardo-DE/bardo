@@ -93,7 +93,7 @@ struct Scene {
 
 impl Scene {
     /// A fake in `daemon`'s state, and the accounts already added.
-    async fn with(name: &str, daemon: Daemon, accounts: Vec<Account>) -> Self {
+    fn with(name: &str, daemon: Daemon, accounts: Vec<Account>) -> Self {
         let scratch = Scratch::new(&format!("tailnet-{name}"));
         let fake = FakeLocalApi::start(&scratch, daemon).expect("fake tailscale");
         let api = LocalApi::new(fake.socket()).with_program_dirs(Vec::new());
@@ -350,7 +350,7 @@ async fn until_stopped(api: &LocalApi) {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn adding_tailscale_when_it_is_running_files_an_account_that_holds_nothing() {
-    let scene = Scene::with("add-running", Daemon::Running(network()), vec![]).await;
+    let scene = Scene::with("add-running", Daemon::Running(network()), vec![]);
     let world = World::start(scene, false).await;
     let (code, faults) = world.add(&|_| {}).await;
     assert_eq!((code, faults.as_slice()), (0, &[][..]));
@@ -384,8 +384,7 @@ async fn adding_tailscale_when_it_is_signed_out_hands_over_its_own_page_and_wait
             auth_url: LOGIN_PAGE.to_owned(),
         },
         vec![],
-    )
-    .await;
+    );
     let world = World::start(scene, false).await;
     let pages = Mutex::new(Vec::new());
     let fake = world.scene.fake().handle();
@@ -421,7 +420,7 @@ async fn adding_tailscale_says_in_closed_words_why_it_could_not() {
         ("no-page", signed_out(""), SignInFault::SignedOut),
     ];
     for (name, daemon, want) in cases {
-        let scene = Scene::with(&format!("refuse-{name}"), daemon, vec![]).await;
+        let scene = Scene::with(&format!("refuse-{name}"), daemon, vec![]);
         let world = World::start(scene, false).await;
         let (code, faults) = world.add(&|_| {}).await;
         assert_eq!(faults, [want], "{name}");
@@ -430,7 +429,7 @@ async fn adding_tailscale_says_in_closed_words_why_it_could_not() {
     }
 
     // A user who may read Tailscale but not sign it in cannot be handed its page.
-    let scene = Scene::with("refuse-read-only", signed_out(LOGIN_PAGE), vec![]).await;
+    let scene = Scene::with("refuse-read-only", signed_out(LOGIN_PAGE), vec![]);
     scene.fake().set_read_only(true);
     let world = World::start(scene, false).await;
     let (_, faults) = world.add(&|_| {}).await;
@@ -438,7 +437,7 @@ async fn adding_tailscale_says_in_closed_words_why_it_could_not() {
     assert_eq!(world.scene.fake().logins(), 0);
 
     // Stopped: the socket is left behind and nobody answers on it.
-    let scene = Scene::with("refuse-stopped", Daemon::Running(network()), vec![]).await;
+    let scene = Scene::with("refuse-stopped", Daemon::Running(network()), vec![]);
     scene.fake().stop();
     until_stopped(&scene.api).await;
     let world = World::start(scene, false).await;
@@ -475,8 +474,7 @@ async fn adding_tailscale_twice_is_the_same_account() {
         "add-twice",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Ok)],
-    )
-    .await;
+    );
     let world = World::start(scene, false).await;
     let (_, faults) = world.add(&|_| {}).await;
     assert_eq!(faults, [SignInFault::AlreadyAdded]);
@@ -491,8 +489,7 @@ async fn the_account_follows_tailscale_while_it_is_added() {
         "follows",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Offline)],
-    )
-    .await;
+    );
     let world = World::start(scene, true).await;
     let fake = world.scene.fake().handle();
     // Running and signed in: working, at once.
@@ -541,8 +538,7 @@ async fn a_change_the_watch_did_not_announce_is_found_by_the_look_behind_it() {
         "backstop",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Ok)],
-    )
-    .await;
+    );
     let world = World::start(scene, true).await;
     let reader = world
         .client("org.example.Reader", CallerRole::Terminal)
@@ -564,8 +560,7 @@ async fn removing_the_account_does_not_sign_tailscale_out() {
         "remove",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Ok)],
-    )
-    .await;
+    );
     let world = World::start(scene, false).await;
     let id = account_core::AccountId::parse("tailscale").expect("id");
     world
@@ -596,8 +591,7 @@ async fn machines_lists_every_kind_of_computer_and_not_this_one() {
         "machines",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Ok)],
-    )
-    .await;
+    );
     let world = World::start(scene, true).await;
     let machines = world
         .machines_as(CallerRole::Terminal)
@@ -630,7 +624,7 @@ async fn machines_lists_every_kind_of_computer_and_not_this_one() {
 #[tokio::test(flavor = "multi_thread")]
 async fn machines_is_empty_with_no_account_and_with_one_that_is_not_working() {
     // No Tailscale account in porter: empty, though Tailscale is running.
-    let scene = Scene::with("empty-no-account", Daemon::Running(network()), vec![]).await;
+    let scene = Scene::with("empty-no-account", Daemon::Running(network()), vec![]);
     let world = World::start(scene, true).await;
     assert_eq!(
         world.machines_as(CallerRole::Terminal).await.expect("list"),
@@ -644,8 +638,7 @@ async fn machines_is_empty_with_no_account_and_with_one_that_is_not_working() {
             auth_url: LOGIN_PAGE.to_owned(),
         },
         vec![tailscale_account(AccountState::Ok)],
-    )
-    .await;
+    );
     let world = World::start(scene, true).await;
     assert!(
         world
@@ -660,8 +653,7 @@ async fn machines_is_empty_with_no_account_and_with_one_that_is_not_working() {
         "empty-offline",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Offline)],
-    )
-    .await;
+    );
     // Not followed, so the account stays as the registry has it.
     let world = World::start(scene, false).await;
     assert!(
@@ -679,8 +671,7 @@ async fn changed_fires_once_for_a_burst_and_again_for_the_next_change() {
         "burst",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Ok)],
-    )
-    .await;
+    );
     let world = World::start(scene, true).await;
     let reader = world
         .client("org.example.Reader", CallerRole::Terminal)
@@ -727,8 +718,7 @@ async fn who_may_read_the_computers() {
         "who-may-read",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Ok)],
-    )
-    .await;
+    );
     let world = World::start(scene, true).await;
     // Step 1, the refused: an app is refused, and so are the roles that are not a person's own
     // windows.
@@ -782,8 +772,7 @@ async fn a_renamed_computer_keeps_its_node_id() {
         "renamed",
         Daemon::Running(network()),
         vec![tailscale_account(AccountState::Ok)],
-    )
-    .await;
+    );
     let world = World::start(scene, true).await;
     let terminal = world.client("org.bardo.Temor", CallerRole::Terminal).await;
     let before = read(&terminal).await.expect("machines");

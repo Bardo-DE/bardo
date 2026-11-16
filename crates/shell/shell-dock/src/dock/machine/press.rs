@@ -93,10 +93,10 @@ pub(crate) fn step(
             DockEvent::PointerMove { at, zone, .. },
         ) if manhattan(origin, at) > p.drag_threshold.0 => {
             out.push(DockEffect::RequestFrames);
-            drag(dock, tile, origin, zone, now, p, out)
+            drag(&dock, tile, origin, zone, now, p, out)
         }
         (Press::Dragging { tile, origin, .. }, DockEvent::PointerMove { zone, .. }) => {
-            drag(dock, tile, origin, zone, now, p, out)
+            drag(&dock, tile, origin, zone, now, p, out)
         }
         (Press::Down { tile, button, .. }, DockEvent::Release { hit, modifier, .. }) => {
             let dock = DockState {
@@ -115,11 +115,11 @@ pub(crate) fn step(
                 DropZone::Remove => out.push(DockEffect::Unpin { tile }),
                 DropZone::Slot(to) => out.push(DockEffect::Reorder { tile, to }),
             }
-            drag_ended(dock, now, out)
+            drag_ended(&dock, now, out)
         }
         (Press::Dragging { .. }, DockEvent::Key(DockKey::Escape)) => {
             out.push(DockEffect::RequestFrames);
-            drag_ended(dock, now, out)
+            drag_ended(&dock, now, out)
         }
         (
             Press::Down {
@@ -181,7 +181,7 @@ fn beside_press(
 
 /// `dock` with `tile` dragged from `origin` over `zone`.
 fn drag(
-    dock: DockState,
+    dock: &DockState,
     tile: TileId,
     origin: Point,
     zone: DropZone,
@@ -196,7 +196,7 @@ fn drag(
                 origin,
                 over: zone,
             },
-            ..dock
+            ..*dock
         },
         zone,
         now,
@@ -206,11 +206,11 @@ fn drag(
 }
 
 /// The press ends with the drag: magnification resumes.
-fn drag_ended(dock: DockState, now: Stamp, out: &mut Vec<DockEffect>) -> DockState {
+fn drag_ended(dock: &DockState, now: Stamp, out: &mut Vec<DockEffect>) -> DockState {
     hover::thaw(
         DockState {
             press: Press::Up,
-            ..dock
+            ..*dock
         },
         now,
         out,

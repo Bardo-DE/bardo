@@ -119,7 +119,7 @@ fn events_come_out_in_the_order_pushed_with_their_origin_and_instant() {
         };
         input.push(
             id,
-            InputKind::Key {
+            &InputKind::Key {
                 code: KeyCode(code),
                 edge,
             },
@@ -152,10 +152,10 @@ fn a_key_is_an_xkb_keycode_and_the_count_is_the_keys_held_on_every_device() {
         code: KeyCode(code),
         edge: PressEdge::Release,
     };
-    input.push(a, press(30), at(1));
-    input.push(b, press(48), at(2));
-    input.push(a, release(30), at(3));
-    input.push(b, release(48), at(4));
+    input.push(a, &press(30), at(1));
+    input.push(b, &press(48), at(2));
+    input.push(a, &release(30), at(3));
+    input.push(b, &release(48), at(4));
     let events = input.drain();
     let seen: Vec<(u32, KeyState, u32)> = events
         .iter()
@@ -180,7 +180,7 @@ fn input_from_an_unplugged_device_is_dropped_and_its_held_keys_let_go() {
     let (mut input, id) = plugged(DeviceClass::Keyboard);
     input.push(
         id,
-        InputKind::Key {
+        &InputKind::Key {
             code: KeyCode(30),
             edge: PressEdge::Press,
         },
@@ -189,7 +189,7 @@ fn input_from_an_unplugged_device_is_dropped_and_its_held_keys_let_go() {
     input.unplug(id);
     input.push(
         id,
-        InputKind::Key {
+        &InputKind::Key {
             code: KeyCode(30),
             edge: PressEdge::Release,
         },
@@ -207,7 +207,7 @@ fn input_from_an_unplugged_device_is_dropped_and_its_held_keys_let_go() {
     input.drain();
     input.push(
         other,
-        InputKind::Key {
+        &InputKind::Key {
             code: KeyCode(31),
             edge: PressEdge::Press,
         },
@@ -225,7 +225,7 @@ fn pointer_motion_and_buttons_are_in_logical_pixels() {
     let (mut input, id) = plugged(DeviceClass::Pointer);
     input.push(
         id,
-        InputKind::Motion {
+        &InputKind::Motion {
             delta: SubPoint {
                 x: SubPx(60),
                 y: SubPx(-180),
@@ -235,14 +235,14 @@ fn pointer_motion_and_buttons_are_in_logical_pixels() {
     );
     input.push(
         id,
-        InputKind::MotionTo {
+        &InputKind::MotionTo {
             at: LogicalPoint { x: 640, y: 360 },
         },
         at(2),
     );
     input.push(
         id,
-        InputKind::Button {
+        &InputKind::Button {
             button: ButtonCode(0x110),
             edge: PressEdge::Press,
         },
@@ -284,7 +284,7 @@ fn a_wheel_detent_carries_value120_and_the_source() {
         },
         stopped: false,
     };
-    input.push(id, InputKind::Axis(frame), at(1));
+    input.push(id, &InputKind::Axis(frame), at(1));
     let events = input.drain();
     let InputEvent::PointerAxis { event } = &events[0] else {
         panic!("axis")
@@ -309,10 +309,10 @@ fn finger_scrolling_ends_with_a_zero_amount_and_has_no_detents() {
         px: SubPoint { x: px(2), y: px(3) },
         stopped: false,
     };
-    input.push(id, InputKind::Axis(moving), at(1));
+    input.push(id, &InputKind::Axis(moving), at(1));
     input.push(
         id,
-        InputKind::Axis(AxisFrame {
+        &InputKind::Axis(AxisFrame {
             stopped: true,
             ..moving
         }),
@@ -336,12 +336,12 @@ fn gestures_carry_fingers_deltas_scale_and_how_they_ended() {
     let (mut input, id) = plugged(DeviceClass::Touchpad);
     input.push(
         id,
-        InputKind::Swipe(GestureStep::Begin { fingers: 3 }),
+        &InputKind::Swipe(GestureStep::Begin { fingers: 3 }),
         at(1),
     );
     input.push(
         id,
-        InputKind::Swipe(GestureStep::Update(SwipeDelta {
+        &InputKind::Swipe(GestureStep::Update(SwipeDelta {
             delta: SubPoint {
                 x: px(4),
                 y: px(-2),
@@ -353,7 +353,7 @@ fn gestures_carry_fingers_deltas_scale_and_how_they_ended() {
         })),
         at(2),
     );
-    input.push(id, InputKind::Swipe(GestureStep::End(false)), at(3));
+    input.push(id, &InputKind::Swipe(GestureStep::End(false)), at(3));
     let pinch = PinchDelta {
         scale: Fraction(1250),
         rotation_millideg: 15_500,
@@ -362,14 +362,14 @@ fn gestures_carry_fingers_deltas_scale_and_how_they_ended() {
             y: SubPx(0),
         },
     };
-    input.push(id, InputKind::Pinch(GestureStep::Update(pinch)), at(4));
-    input.push(id, InputKind::Pinch(GestureStep::End(true)), at(5));
+    input.push(id, &InputKind::Pinch(GestureStep::Update(pinch)), at(4));
+    input.push(id, &InputKind::Pinch(GestureStep::End(true)), at(5));
     input.push(
         id,
-        InputKind::Hold(GestureStep::Begin { fingers: 2 }),
+        &InputKind::Hold(GestureStep::Begin { fingers: 2 }),
         at(6),
     );
-    input.push(id, InputKind::Hold(GestureStep::Update(())), at(7));
+    input.push(id, &InputKind::Hold(GestureStep::Update(())), at(7));
     let events = input.drain();
     assert_eq!(events.len(), 7);
     let InputEvent::GestureSwipeBegin { event } = &events[0] else {
@@ -411,9 +411,9 @@ fn touch_steps_carry_their_slot_and_place() {
         slot: 2,
         at: LogicalPoint { x: 100, y: 50 },
     };
-    input.push(id, InputKind::Touch(down), at(1));
-    input.push(id, InputKind::Touch(TouchStep::Up { slot: 2 }), at(2));
-    input.push(id, InputKind::Touch(TouchStep::Frame), at(3));
+    input.push(id, &InputKind::Touch(down), at(1));
+    input.push(id, &InputKind::Touch(TouchStep::Up { slot: 2 }), at(2));
+    input.push(id, &InputKind::Touch(TouchStep::Frame), at(3));
     let events = input.drain();
     let InputEvent::TouchDown { event } = &events[0] else {
         panic!("down")
@@ -434,12 +434,12 @@ fn a_lid_closing_is_a_switch_turning_on() {
     let (mut input, id) = plugged(DeviceClass::Switch);
     input.push(
         id,
-        InputKind::Switch(SwitchStep::Lid { closed: true }),
+        &InputKind::Switch(SwitchStep::Lid { closed: true }),
         at(1),
     );
     input.push(
         id,
-        InputKind::Switch(SwitchStep::Lid { closed: false }),
+        &InputKind::Switch(SwitchStep::Lid { closed: false }),
         at(2),
     );
     let events = input.drain();

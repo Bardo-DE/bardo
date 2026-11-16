@@ -201,7 +201,7 @@ async fn an_empty_engines_routes_nothing_and_is_idle() {
     assert_eq!(engines.gpu(), GpuState::Idle);
     assert!(engines.listed().is_empty());
     assert_eq!(
-        engines.prepare(&llm(), DataClass::Notes, Tier::Fast).await,
+        engines.prepare(&llm(), DataClass::Notes, Tier::Fast),
         Err(InferRefusal::Unavailable)
     );
 }
@@ -286,13 +286,13 @@ async fn prepare_warms_a_stopped_engine_and_a_later_prepare_says_ready() {
     let host = Recorder::default();
     let engines = start(&scratch, host.clone());
     assert_eq!(
-        engines.prepare(&llm(), DataClass::Notes, Tier::Fast).await,
+        engines.prepare(&llm(), DataClass::Notes, Tier::Fast),
         Ok(Readiness::Loading)
     );
     tokio::time::sleep(Duration::from_secs(1)).await;
     assert_eq!(host.spawned.lock().expect("lock").len(), 1);
     assert_eq!(
-        engines.prepare(&llm(), DataClass::Notes, Tier::Fast).await,
+        engines.prepare(&llm(), DataClass::Notes, Tier::Fast),
         Ok(Readiness::Ready)
     );
     assert_eq!(
@@ -302,14 +302,12 @@ async fn prepare_warms_a_stopped_engine_and_a_later_prepare_says_ready() {
     );
     // Refusals come back as refusals.
     assert_eq!(
-        engines.prepare(&cua(), DataClass::Screen, Tier::Fast).await,
+        engines.prepare(&cua(), DataClass::Screen, Tier::Fast),
         Err(InferRefusal::Denied),
         "an app may not warm a computer-use model"
     );
     assert_eq!(
-        engines
-            .prepare_as(&cua(), DataClass::Screen, Tier::Fast, Role::Cua)
-            .await,
+        engines.prepare_as(&cua(), DataClass::Screen, Tier::Fast, Role::Cua),
         Ok(Readiness::Loading)
     );
 }

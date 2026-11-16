@@ -243,8 +243,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// The run daemon said why the run that sent `report` ended: its roster line says it now, when
     /// the report was already seen (otherwise the report finds the reason when it comes).
-    pub fn run_ended(&mut self, report: provenance::MessageId, why: action_core::EndWhy) {
-        let Some(agent) = self.run_ends.learned(&report, why) else {
+    pub fn run_ended(&mut self, report: &provenance::MessageId, why: action_core::EndWhy) {
+        let Some(agent) = self.run_ends.learned(report, why) else {
             return;
         };
         if let Some(RosterDetail::Full(full)) = self.known.get_mut(&agent).map(|l| &mut l.detail) {

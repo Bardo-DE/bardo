@@ -57,7 +57,7 @@ impl Injector {
             }
             other => {
                 if let Some((class, kind)) = kind_of(other) {
-                    self.push(state, class, kind);
+                    self.push(state, class, &kind);
                 }
             }
         }
@@ -111,7 +111,7 @@ impl Injector {
         known.or_else(|| self.plug(state, class))
     }
 
-    fn push(&mut self, state: &mut State, class: DeviceClass, kind: InputKind) {
+    fn push(&mut self, state: &mut State, class: DeviceClass, kind: &InputKind) {
         let Some(device) = self.device(state, class) else {
             return;
         };
@@ -135,14 +135,14 @@ impl Injector {
         };
         let key = InputKind::Key { code, edge };
         match (shifted, edge) {
-            (false, _) => self.push(state, DeviceClass::Keyboard, key),
+            (false, _) => self.push(state, DeviceClass::Keyboard, &key),
             (true, PressEdge::Press) => {
-                self.push(state, DeviceClass::Keyboard, shift);
-                self.push(state, DeviceClass::Keyboard, key);
+                self.push(state, DeviceClass::Keyboard, &shift);
+                self.push(state, DeviceClass::Keyboard, &key);
             }
             (true, PressEdge::Release) => {
-                self.push(state, DeviceClass::Keyboard, key);
-                self.push(state, DeviceClass::Keyboard, shift);
+                self.push(state, DeviceClass::Keyboard, &key);
+                self.push(state, DeviceClass::Keyboard, &shift);
             }
         }
     }

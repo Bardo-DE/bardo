@@ -476,22 +476,27 @@ impl Tree {
                 }
             }
         } else {
-            if wants("getcontentlength") {
-                let _ = write!(
-                    out,
-                    "<d:getcontentlength>{}</d:getcontentlength>",
-                    node.body.len()
-                );
-            }
-            if wants("getcontenttype") {
-                let _ = write!(
-                    out,
-                    "<d:getcontenttype>{}</d:getcontenttype>",
-                    node.content_type
-                );
-            }
+            Self::item_props(&mut out, node, &wants);
         }
         out
+    }
+
+    /// The properties only an item (not a collection) has: its length and content type.
+    fn item_props(out: &mut String, node: &Node, wants: &dyn Fn(&str) -> bool) {
+        if wants("getcontentlength") {
+            let _ = write!(
+                out,
+                "<d:getcontentlength>{}</d:getcontentlength>",
+                node.body.len()
+            );
+        }
+        if wants("getcontenttype") {
+            let _ = write!(
+                out,
+                "<d:getcontenttype>{}</d:getcontenttype>",
+                node.content_type
+            );
+        }
     }
 
     /// `current-user-principal` on every collection, the home sets on the principal itself.

@@ -85,7 +85,7 @@ impl Resize {
         columns: &[TableColumn<C>],
         sort: Option<&Sort<C>>,
         on_sort: EventHandler<Sort<C>>,
-        fit: Option<Fit>,
+        fit: Option<&Fit>,
     ) -> Element {
         self.header_in(columns, 0..columns.len(), sort, on_sort, fit)
     }
@@ -100,7 +100,7 @@ impl Resize {
         span: Range<usize>,
         sort: Option<&Sort<C>>,
         on_sort: EventHandler<Sort<C>>,
-        fit: Option<Fit>,
+        fit: Option<&Fit>,
     ) -> Element {
         let heads: Vec<(Element, usize, Px, bool)> = columns
             .iter()
@@ -138,7 +138,7 @@ impl Resize {
                                     grab.set(Some((at, EdgeGrab::new(from, width))));
                                 },
                                 ondoubleclick: {
-                                    let (fit, owned) = (fit.clone(), owned.clone());
+                                    let (fit, owned) = (fit.cloned(), owned.clone());
                                     move |event: MouseEvent| {
                                         event.stop_propagation();
                                         if let Some(fit) = &fit {

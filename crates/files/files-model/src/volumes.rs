@@ -60,10 +60,14 @@ impl Browser {
     }
 
     /// A disk was opened, or could not be.
-    pub(crate) fn mounted(self, id: VolumeId, result: Result<FolderPath, MountFailure>) -> Stepped {
+    pub(crate) fn mounted(
+        self,
+        id: &VolumeId,
+        result: Result<FolderPath, MountFailure>,
+    ) -> Stepped {
         match result {
             Ok(folder) => self.go(Location::Folder(folder)),
-            Err(failure) => self.tell_volume(&id, VolumeTrouble::NotOpened(failure)),
+            Err(failure) => self.tell_volume(id, VolumeTrouble::NotOpened(failure)),
         }
     }
 
@@ -97,10 +101,10 @@ impl Browser {
     }
 
     /// A disk was ejected by force, or could not be: a failure is told, whatever it is.
-    pub(crate) fn force_ejected(self, id: VolumeId, result: Result<(), EjectFailure>) -> Stepped {
+    pub(crate) fn force_ejected(self, id: &VolumeId, result: Result<(), EjectFailure>) -> Stepped {
         match result {
             Ok(()) => (self, Vec::new()),
-            Err(failure) => self.tell_volume(&id, VolumeTrouble::NotEjected(failure)),
+            Err(failure) => self.tell_volume(id, VolumeTrouble::NotEjected(failure)),
         }
     }
 }

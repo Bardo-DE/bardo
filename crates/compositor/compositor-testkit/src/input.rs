@@ -40,7 +40,7 @@ impl<'a> FixtureInput<'a> {
     }
 
     /// `kind` from `device` at the fixture's now, then a pump.
-    fn push(&mut self, device: DeviceId, kind: InputKind) {
+    fn push(&mut self, device: DeviceId, kind: &InputKind) {
         let at = self.fixture.now();
         self.fixture.headless_mut().input().push(device, kind, at);
         self.fixture.pump();
@@ -48,52 +48,52 @@ impl<'a> FixtureInput<'a> {
 
     /// A key on `device`, then a pump.
     pub fn key(&mut self, device: DeviceId, code: KeyCode, edge: PressEdge) {
-        self.push(device, InputKind::Key { code, edge });
+        self.push(device, &InputKind::Key { code, edge });
     }
 
     /// Moves the pointer of `device` to `at`, then pumps.
     pub fn pointer_to(&mut self, device: DeviceId, at: LogicalPoint) {
-        self.push(device, InputKind::MotionTo { at });
+        self.push(device, &InputKind::MotionTo { at });
     }
 
     /// Moves the pointer of `device` by `delta` (a relative motion: what a mouse sends), then
     /// pumps.
     pub fn pointer_by(&mut self, device: DeviceId, delta: SubPoint) {
-        self.push(device, InputKind::Motion { delta });
+        self.push(device, &InputKind::Motion { delta });
     }
 
     /// A button on `device`, then a pump.
     pub fn button(&mut self, device: DeviceId, button: ButtonCode, edge: PressEdge) {
-        self.push(device, InputKind::Button { button, edge });
+        self.push(device, &InputKind::Button { button, edge });
     }
 
     /// One scroll frame on `device`, then a pump.
     pub fn axis(&mut self, device: DeviceId, frame: AxisFrame) {
-        self.push(device, InputKind::Axis(frame));
+        self.push(device, &InputKind::Axis(frame));
     }
 
     /// A swipe step on `device`, then a pump.
     pub fn swipe(&mut self, device: DeviceId, step: GestureStep<SubPoint>) {
-        self.push(device, InputKind::Swipe(step.map(SwipeDelta::from)));
+        self.push(device, &InputKind::Swipe(step.map(SwipeDelta::from)));
     }
 
     /// A pinch step on `device`, then a pump.
     pub fn pinch(&mut self, device: DeviceId, step: GestureStep<PinchDelta>) {
-        self.push(device, InputKind::Pinch(step));
+        self.push(device, &InputKind::Pinch(step));
     }
 
     /// A hold step on `device`, then a pump.
     pub fn hold(&mut self, device: DeviceId, step: GestureStep<()>) {
-        self.push(device, InputKind::Hold(step));
+        self.push(device, &InputKind::Hold(step));
     }
 
     /// A touch step on `device`, then a pump.
     pub fn touch(&mut self, device: DeviceId, step: TouchStep) {
-        self.push(device, InputKind::Touch(step));
+        self.push(device, &InputKind::Touch(step));
     }
 
     /// A switch change on `device`, then a pump.
     pub fn switch(&mut self, device: DeviceId, step: SwitchStep) {
-        self.push(device, InputKind::Switch(step));
+        self.push(device, &InputKind::Switch(step));
     }
 }

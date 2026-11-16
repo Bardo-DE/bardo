@@ -213,9 +213,7 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
     let place = attack.place(&router.seams.link.shown())?;
     router.seams.link.show_window(place.window.clone());
     let router = Arc::new(router);
-    let shell = AppName::parse("org.bardo.Shell")
-        .ok()
-        .ok_or(AttackFault::ShellName)?;
+    let shell = shell_name()?;
     let mut companion: Companion<_, _, _, Quiet> = Companion::new(
         Intents::over(InProcess::new(
             Arc::clone(&router),
@@ -290,6 +288,13 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
         ended,
         answer,
     })
+}
+
+/// The shell's own name, the app the companion answers to.
+fn shell_name() -> Result<AppName, AttackFault> {
+    AppName::parse("org.bardo.Shell")
+        .ok()
+        .ok_or(AttackFault::ShellName)
 }
 
 /// Whether the task ended showing the person an answer: done, with words or a shown handle in

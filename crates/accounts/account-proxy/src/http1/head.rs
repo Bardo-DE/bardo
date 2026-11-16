@@ -113,6 +113,26 @@ fn credential(auth: &RelayAuth, login: &str) -> Option<String> {
     }
 }
 
+/// How the body is framed, from the values of the `Content-Length` and `Transfer-Encoding`
+/// headers the request had.
+fn framing_of(lengths: &[&str], codings: &[&str]) -> Result<Framing, RelayFault> {
+    match (lengths, codings) {
+        ([], []) => Ok(Framing::None),
+        ([length], []) => {
+            let digits = !length.is_empty() && length.bytes().all(|b| b.is_ascii_digit());
+            match digits.then(|| length.parse::<u64>()) {
+                Some(Ok(0)) => Ok(Framing::None),
+                Some(Ok(n)) => Ok(Framing::Length(n)),
+                _ => Err(RelayFault::Protocol),
+            }
+        }
+        ([], [coding]) if coding.eq_ignore_ascii_case("chunked") => Ok(Framing::Chunked),
+        // Both, a repeated length or any other coding: the server might read the end of the
+        // body somewhere else than the relay does.
+        _ => Err(RelayFault::Protocol),
+    }
+}
+
 /// Reads `head` (request line and headers, through the blank line) and gives the head the
 /// server is sent: the target and `Host` checked against the plan's origin, the app's
 /// credentials dropped and the relay's added, and the framing of the body.
@@ -186,21 +206,7 @@ pub fn rewrite(head: &[u8], plan: &RelayPlan) -> Result<Rewritten, RelayFault> {
             _ => return Err(RelayFault::Protocol),
         }
     }
-    let framing = match (lengths.as_slice(), codings.as_slice()) {
-        ([], []) => Framing::None,
-        ([length], []) => {
-            let digits = !length.is_empty() && length.bytes().all(|b| b.is_ascii_digit());
-            match digits.then(|| length.parse::<u64>()) {
-                Some(Ok(0)) => Framing::None,
-                Some(Ok(n)) => Framing::Length(n),
-                _ => return Err(RelayFault::Protocol),
-            }
-        }
-        ([], [coding]) if coding.eq_ignore_ascii_case("chunked") => Framing::Chunked,
-        // Both, a repeated length or any other coding: the server might read the end of the
-        // body somewhere else than the relay does.
-        _ => return Err(RelayFault::Protocol),
-    };
+    let framing = framing_of(&lengths, &codings)?;
     // A repeated Depth could be read one way here and another by the server.
     let depth = match depths.as_slice() {
         [] => None,

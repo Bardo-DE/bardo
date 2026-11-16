@@ -786,13 +786,13 @@ impl Engines {
     /// # Errors
     ///
     /// Returns an [`InferRefusal`] when no engine can serve the request.
-    pub async fn prepare(
+    pub fn prepare(
         &self,
         need: &Need,
         class: DataClass,
         tier: Tier,
     ) -> Result<Readiness, InferRefusal> {
-        self.prepare_as(need, class, tier, Role::App).await
+        self.prepare_as(need, class, tier, Role::App)
     }
 
     /// `prepare` for a caller of this role (only cuad may warm a computer-use model).
@@ -800,7 +800,7 @@ impl Engines {
     /// # Errors
     ///
     /// Returns an [`InferRefusal`] when no engine can serve the request.
-    pub async fn prepare_as(
+    pub fn prepare_as(
         &self,
         need: &Need,
         class: DataClass,

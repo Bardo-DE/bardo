@@ -69,7 +69,7 @@ pub(crate) async fn watch<P, I, K>(
             continue;
         };
         if let Some((report, why)) = report_end(&text) {
-            companion.lock().await.run_ended(report, why);
+            companion.lock().await.run_ended(&report, why);
         }
     }
 }

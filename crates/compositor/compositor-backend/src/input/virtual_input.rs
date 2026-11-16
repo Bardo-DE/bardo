@@ -78,14 +78,14 @@ impl VirtualInput {
     pub fn push(
         &mut self,
         device: DeviceId,
-        kind: compositor_core::input::InputKind,
+        kind: &compositor_core::input::InputKind,
         at: compositor_core::time::Mono,
     ) {
         let Some(device) = self.devices.get(&device).cloned() else {
             return;
         };
         let stamp = EventStamp { device, at };
-        let event = self.event_of(stamp, &kind);
+        let event = self.event_of(stamp, kind);
         self.queue.push_back(event);
     }
 

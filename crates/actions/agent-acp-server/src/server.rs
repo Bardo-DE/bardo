@@ -143,7 +143,16 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
     pub async fn run(&mut self, transport: impl ConnectTo<Agent> + 'static) -> Result<(), Error> {
         let (tx, rx) = mpsc::unbounded();
         let builder = Agent.builder().name("bardo-agent-acp");
-        let builder = forward!(builder, tx, InitializeRequest, Initialize);
+        let initialize_tx = tx.clone();
+        let builder = builder.on_receive_request(
+            async move |_asked: InitializeRequest, responder, _cx| {
+                initialize_tx
+                    .unbounded_send(Inbound::Initialize(responder))
+                    .ok()
+                    .ok_or_else(Error::internal_error)
+            },
+            on_receive_request!(),
+        );
         let builder = forward!(builder, tx, NewSessionRequest, New);
         let builder = forward!(builder, tx, LoadSessionRequest, Load);
         let builder = forward!(builder, tx, ListSessionsRequest, List);
@@ -189,7 +198,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         match (self.readiness, inbound) {
             // Nothing to cancel between prompts.
             (_, Inbound::Cancel(_)) => Ok(()),
-            (_, Inbound::Initialize(_, responder)) => answer(responder, Ok(self.initialize())),
+            (_, Inbound::Initialize(responder)) => answer(responder, Ok(self.initialize())),
             (Readiness::Fresh, other) => other.refuse(fault::not_now("initialize first")),
             (Readiness::Ready, Inbound::New(asked, responder)) => {
                 answer(responder, self.new_session(*asked).await)

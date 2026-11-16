@@ -77,7 +77,7 @@ impl AcceptMail {
         }
     }
 
-    fn entity_ref(&self, id: EntityId, title: &str, sub: &str, label: &Label) -> EntityRef {
+    fn entity_ref(id: EntityId, title: &str, sub: &str, label: &Label) -> EntityRef {
         EntityRef {
             id,
             title: Self::labelled(title, label),
@@ -297,7 +297,7 @@ impl IntentProvider for AcceptMail {
             .filter_map(|t| {
                 let id = self.id("mail.thread", t.key)?;
                 Some(Hit {
-                    entity: self.entity_ref(id, t.subject, t.from, &own),
+                    entity: Self::entity_ref(id, t.subject, t.from, &own),
                     why: None,
                 })
             })

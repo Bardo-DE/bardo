@@ -372,7 +372,7 @@ impl Job for EditServers {
         let answers = answers.ok_or(())?;
         EditedServers::from_answers(answers, signed.endpoints.clone())
             .ok()
-            .ok_or_else(|| ())
+            .ok_or(())
     }
 }
 
@@ -636,13 +636,13 @@ impl<E: Ports> Accounts<'_, E> {
             _ => return person(link.input().await),
         };
         run.polling = false;
-        self.settled(job, run, polled)
+        Self::settled(job, run, polled)
     }
 
     /// What a sign-in's step is to the machine. A sign-in that skipped the consent screen
     /// (`signed_in_before`) and ended `Unreadable` (the provider handed back nothing to keep) is a
     /// fact of its own, told once: whether it is tried again is the machine's to say.
-    fn settled<J: Job>(&self, job: &J, run: &mut RunOf<E, J>, step: SignInStep) -> SheetEvent {
+    fn settled<J: Job>(job: &J, run: &mut RunOf<E, J>, step: SignInStep) -> SheetEvent {
         let before = matches!(
             (&step, job.adds(), &run.identity),
             (
@@ -675,7 +675,7 @@ impl<E: Ports> Accounts<'_, E> {
             Some(Ok(mut signin)) => {
                 let first = signin.next(SignInInput::Start).await;
                 run.signin = Some(signin);
-                self.settled(job, run, first)
+                Self::settled(job, run, first)
             }
             Some(Err(_)) | None => SheetEvent::SignIn(Progress::Failed(SignInFault::Unreadable)),
         }
@@ -754,7 +754,7 @@ impl<E: Ports> Accounts<'_, E> {
                 };
                 let first = signin.next(SignInInput::Start).await;
                 run.signin = Some(signin);
-                Some(self.settled(job, run, first))
+                Some(Self::settled(job, run, first))
             }
             other => {
                 let signin = run.signin.as_mut()?;
@@ -776,7 +776,7 @@ impl<E: Ports> Accounts<'_, E> {
                     }
                     return Some(SheetEvent::Duplicate);
                 }
-                Some(self.settled(job, run, step))
+                Some(Self::settled(job, run, step))
             }
         }
     }

@@ -51,11 +51,11 @@ fn with_hints(mut n: Notification, hints: Hints) -> Notification {
 fn run(
     state: NotesState,
     events: Vec<NotificationsEvent>,
-    policy: &NotificationsPolicy,
+    policy: NotificationsPolicy,
 ) -> (NotesState, Vec<NotificationsEffect>) {
     events
         .into_iter()
-        .fold((state, Vec::new()), |(s, _), e| step(s, e, policy))
+        .fold((state, Vec::new()), |(s, _), e| step(s, e, &policy))
 }
 
 /// The live banners' ids and each group's key and ids, in order.
@@ -103,7 +103,7 @@ fn three() -> NotesState {
             posted(note(2, "b")),
             posted(note(3, "a")),
         ],
-        &NotificationsPolicy::default(),
+        NotificationsPolicy::default(),
     )
     .0
 }
@@ -135,7 +135,7 @@ fn ids_count_up_replace_when_held_and_skip_zero() {
 #[test]
 fn a_post_shows_a_banner_enters_its_group_and_sounds() {
     let policy = NotificationsPolicy::default();
-    let (state, effects) = run(NotesState::default(), vec![posted(note(1, "a"))], &policy);
+    let (state, effects) = run(NotesState::default(), vec![posted(note(1, "a"))], policy);
     assert_eq!(shape(&state), (vec![1], groups(&[("a", &[1])])));
     assert_eq!(state.last_id, NotificationId(1));
     same_effects(&effects, &[SaveHistory, Sound(SoundHint::Default)], "first");
@@ -152,7 +152,7 @@ fn do_not_disturb_keeps_banners_and_sounds_back_except_the_shells_critical() {
         quiet: true,
         ..NotificationsPolicy::default()
     };
-    let (state, effects) = run(NotesState::default(), vec![posted(note(1, "a"))], &dnd);
+    let (state, effects) = run(NotesState::default(), vec![posted(note(1, "a"))], dnd);
     assert_eq!(shape(&state), (vec![], groups(&[("a", &[1])])));
     same_effects(&effects, &[SaveHistory], "dnd");
     let critical = Hints {
@@ -160,13 +160,13 @@ fn do_not_disturb_keeps_banners_and_sounds_back_except_the_shells_critical() {
         ..Hints::default()
     };
     let mut app_critical = with_hints(note(2, "a"), critical);
-    let (state, effects) = run(state, vec![posted(app_critical.clone())], &dnd);
+    let (state, effects) = run(state, vec![posted(app_critical.clone())], dnd);
     assert_eq!(shape(&state), (vec![], groups(&[("a", &[2, 1])])));
     same_effects(&effects, &[SaveHistory], "an app's critical is held back");
 
     app_critical.id = NotificationId(3);
     app_critical.app.desktop_entry = Some("shell-keycap".to_owned());
-    let (state, effects) = run(state, vec![posted(app_critical)], &dnd);
+    let (state, effects) = run(state, vec![posted(app_critical)], dnd);
     assert_eq!(
         shape(&state),
         (vec![3], groups(&[("shell-keycap", &[3]), ("a", &[2, 1])]))
@@ -181,7 +181,7 @@ fn do_not_disturb_keeps_banners_and_sounds_back_except_the_shells_critical() {
 #[test]
 fn a_timeout_leaves_the_history_and_a_transient_one_expires() {
     let policy = NotificationsPolicy::default();
-    let (state, effects) = run(three(), vec![BannerTimedOut(NotificationId(3))], &policy);
+    let (state, effects) = run(three(), vec![BannerTimedOut(NotificationId(3))], policy);
     assert_eq!(
         shape(&state),
         (vec![2, 1], groups(&[("a", &[3, 1]), ("b", &[2])]))
@@ -195,10 +195,10 @@ fn a_timeout_leaves_the_history_and_a_transient_one_expires() {
             ..Hints::default()
         },
     );
-    let (state, effects) = run(NotesState::default(), vec![posted(transient)], &policy);
+    let (state, effects) = run(NotesState::default(), vec![posted(transient)], policy);
     assert_eq!(shape(&state), (vec![1], vec![]));
     same_effects(&effects, &[Sound(SoundHint::Default)], "transient posted");
-    let (state, effects) = run(state, vec![BannerTimedOut(NotificationId(1))], &policy);
+    let (state, effects) = run(state, vec![BannerTimedOut(NotificationId(1))], policy);
     assert_eq!(shape(&state), (vec![], vec![]));
     same_effects(
         &effects,
@@ -213,11 +213,11 @@ fn a_timeout_leaves_the_history_and_a_transient_one_expires() {
             ..Hints::default()
         },
     );
-    let (posted, _) = run(NotesState::default(), vec![posted(alert)], &policy);
+    let (posted, _) = run(NotesState::default(), vec![posted(alert)], policy);
     let (state, effects) = run(
         posted.clone(),
         vec![BannerTimedOut(NotificationId(1))],
-        &policy,
+        policy,
     );
     assert_eq!(state, posted, "a persisting banner does not time out");
     same_effects(&effects, &[], "persists");
@@ -236,7 +236,7 @@ fn the_history_keeps_the_newest_up_to_its_cap() {
             posted(note(2, "b")),
             posted(note(3, "a")),
         ],
-        &policy,
+        policy,
     );
     assert_eq!(
         shape(&state),
@@ -249,7 +249,7 @@ fn a_replacement_moves_to_the_front_without_a_signal() {
     let policy = NotificationsPolicy::default();
     let mut again = note(1, "a");
     again.summary = "edited".to_owned();
-    let (state, effects) = run(three(), vec![posted(again)], &policy);
+    let (state, effects) = run(three(), vec![posted(again)], policy);
     assert_eq!(
         shape(&state),
         (vec![1, 3, 2], groups(&[("a", &[1, 3]), ("b", &[2])]))
@@ -293,7 +293,7 @@ fn closing_and_dismissing_remove_everywhere_with_their_reason() {
         ),
     ];
     for (case, event, want, effects) in cases {
-        let (state, got) = run(three(), vec![event], &policy);
+        let (state, got) = run(three(), vec![event], policy);
         assert_eq!(shape(&state), want, "{case}");
         same_effects(&got, &effects, case);
     }
@@ -302,8 +302,8 @@ fn closing_and_dismissing_remove_everywhere_with_their_reason() {
 #[test]
 fn dismiss_all_dismisses_the_banners_in_order_and_keeps_the_rest() {
     let policy = NotificationsPolicy::default();
-    let (state, _) = run(three(), vec![BannerTimedOut(NotificationId(1))], &policy);
-    let (state, effects) = run(state, vec![DismissedAll], &policy);
+    let (state, _) = run(three(), vec![BannerTimedOut(NotificationId(1))], policy);
+    let (state, effects) = run(state, vec![DismissedAll], policy);
     assert_eq!(shape(&state), (vec![], groups(&[("a", &[1])])));
     let closes: Vec<&NotificationsEffect> = effects
         .iter()
@@ -332,7 +332,7 @@ fn an_action_is_invoked_then_closes_unless_resident() {
         action: ActionKey("reply".to_owned()),
         token: Activation::NoToken,
     };
-    let (state, effects) = run(three(), vec![reply(2)], &policy);
+    let (state, effects) = run(three(), vec![reply(2)], policy);
     assert_eq!(shape(&state), (vec![3, 1], groups(&[("a", &[3, 1])])));
     same_effects(
         &effects,
@@ -352,8 +352,8 @@ fn an_action_is_invoked_then_closes_unless_resident() {
             ..Hints::default()
         },
     );
-    let (posted, _) = run(NotesState::default(), vec![posted(resident)], &policy);
-    let (state, effects) = run(posted.clone(), vec![reply(1)], &policy);
+    let (posted, _) = run(NotesState::default(), vec![posted(resident)], policy);
+    let (state, effects) = run(posted.clone(), vec![reply(1)], policy);
     assert_eq!(state, posted, "a resident one stays");
     same_effects(&effects, &[invoked(1)], "resident");
 
@@ -362,7 +362,7 @@ fn an_action_is_invoked_then_closes_unless_resident() {
         action: ActionKey("delete".to_owned()),
         token: Activation::NoToken,
     };
-    let (state, effects) = run(three(), vec![unknown], &policy);
+    let (state, effects) = run(three(), vec![unknown], policy);
     assert_eq!(state, three(), "an action it does not offer");
     same_effects(&effects, &[], "unknown action");
 }
@@ -373,7 +373,7 @@ fn clearing_a_group_or_everything_dismisses_what_it_held() {
     let (state, effects) = run(
         three(),
         vec![HistoryCleared(Clear::App(AppKey("a".to_owned())))],
-        &policy,
+        policy,
     );
     assert_eq!(shape(&state), (vec![2], groups(&[("b", &[2])])));
     same_effects(
@@ -385,7 +385,7 @@ fn clearing_a_group_or_everything_dismisses_what_it_held() {
         ],
         "app",
     );
-    let (state, effects) = run(three(), vec![HistoryCleared(Clear::All)], &policy);
+    let (state, effects) = run(three(), vec![HistoryCleared(Clear::All)], policy);
     assert_eq!(shape(&state), (vec![], vec![]));
     assert_eq!(
         effects
@@ -412,7 +412,7 @@ fn a_loaded_history_replaces_capped_and_keeps_ids_ahead() {
             }],
         },
     };
-    let (state, effects) = run(NotesState::default(), vec![Loaded(stored)], &policy);
+    let (state, effects) = run(NotesState::default(), vec![Loaded(stored)], policy);
     assert_eq!(shape(&state), (vec![], groups(&[("a", &[40])])));
     assert_eq!(state.last_id, NotificationId(40));
     same_effects(&effects, &[], "loaded");
@@ -427,7 +427,7 @@ fn the_server_status_is_published() {
     let (state, effects) = run(
         NotesState::default(),
         vec![NotificationsEvent::Server(status.clone())],
-        &NotificationsPolicy::default(),
+        NotificationsPolicy::default(),
     );
     assert_eq!(state.live.server, status);
     same_effects(&effects, &[], "server");
@@ -442,13 +442,13 @@ fn a_swipe_keeps_the_notification_in_the_center_unless_set_to_dismiss() {
         swipe: Swipe::Dismiss,
         ..NotificationsPolicy::default()
     };
-    let (timed_out, _) = run(three(), vec![BannerTimedOut(NotificationId(1))], &keep);
+    let (timed_out, _) = run(three(), vec![BannerTimedOut(NotificationId(1))], keep);
     let cases = [
         (
             "kept by default",
             three(),
             SwipedAway(NotificationId(3)),
-            &keep,
+            keep,
             (vec![2, 1], groups(&[("a", &[3, 1]), ("b", &[2])])),
             vec![],
         ),
@@ -456,7 +456,7 @@ fn a_swipe_keeps_the_notification_in_the_center_unless_set_to_dismiss() {
             "dismissed when set",
             three(),
             SwipedAway(NotificationId(3)),
-            &dismiss,
+            dismiss,
             (vec![2, 1], groups(&[("a", &[1]), ("b", &[2])])),
             vec![closed(3, CloseReason::Dismissed), SaveHistory],
         ),
@@ -464,7 +464,7 @@ fn a_swipe_keeps_the_notification_in_the_center_unless_set_to_dismiss() {
             "no banner",
             timed_out,
             SwipedAway(NotificationId(1)),
-            &keep,
+            keep,
             (vec![3, 2], groups(&[("a", &[3, 1]), ("b", &[2])])),
             vec![],
         ),
@@ -485,7 +485,7 @@ fn a_swipe_keeps_the_notification_in_the_center_unless_set_to_dismiss() {
     let (state, effects) = run(
         NotesState::default(),
         vec![posted(transient), SwipedAway(NotificationId(1))],
-        &keep,
+        keep,
     );
     assert_eq!(shape(&state), (vec![], vec![]));
     same_effects(&effects, &[closed(1, CloseReason::Dismissed)], "transient");

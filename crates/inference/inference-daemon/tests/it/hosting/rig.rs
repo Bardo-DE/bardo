@@ -618,7 +618,7 @@ impl World {
         let (tailscale, tailnet, tailnet_bus) = match plan.tailnet {
             None => (None, None, None),
             Some(tp) => {
-                let tailscale = FakeTailscale::start(&scratch.join("ts"), tp.network).await;
+                let tailscale = FakeTailscale::start(&scratch.join("ts"), tp.network);
                 // accountd keeps listing the computers (Tailnet1); this connection is its stand-in.
                 let held = bus.connect().await;
                 held.object_server()

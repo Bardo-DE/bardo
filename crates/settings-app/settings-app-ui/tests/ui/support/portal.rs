@@ -34,6 +34,10 @@ struct Portal {
 }
 
 #[zbus::interface(name = "org.bardo.Portal1")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro hands a method its arguments by value, whatever this one holds or does"
+)]
 impl Portal {
     fn list_grants(&self) -> Vec<Row> {
         self.rows.lock().expect("rows").clone()
@@ -50,7 +54,11 @@ impl Portal {
         Ok(u32::try_from(before - rows.len()).unwrap_or(u32::MAX))
     }
 
-    fn allow(&self, app_id: String, _screens: String, _input: u32) -> fdo::Result<()> {
+    #[expect(
+        unused_variables,
+        reason = "the argument is named for the D-Bus method's wire signature, and this stand-in ignores it"
+    )]
+    fn allow(&self, app_id: String, screens: String, input: u32) -> fdo::Result<()> {
         if self.refuse.swap(false, Ordering::SeqCst) {
             return Err(fdo::Error::Failed("not changed".to_owned()));
         }

@@ -336,7 +336,7 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
     });
     let frame = match kept {
         0 => {
-            let header = resize.header(&columns, sort.as_ref(), on_sort, fit);
+            let header = resize.header(&columns, sort.as_ref(), on_sort, fit.as_ref());
             let template = resize.template(&columns);
             let wide = resize.total(&columns).0;
             let items: Vec<(usize, Element, Option<OutlineRow>)> = drawn_rows
@@ -407,13 +407,19 @@ pub fn VirtualTable<C: Clone + PartialEq + 'static>(
             };
             let body = split::body(Panes {
                 held: Pane {
-                    head: resize.header_in(&columns, 0..kept, sort.as_ref(), on_sort, fit.clone()),
+                    head: resize.header_in(&columns, 0..kept, sort.as_ref(), on_sort, fit.as_ref()),
                     lines: lines(0..kept),
                     template: resize.template_in(&columns, 0..kept),
                     width: resize.total_in(&columns, 0..kept),
                 },
                 scrolling: Pane {
-                    head: resize.header_in(&columns, kept..all, sort.as_ref(), on_sort, fit),
+                    head: resize.header_in(
+                        &columns,
+                        kept..all,
+                        sort.as_ref(),
+                        on_sort,
+                        fit.as_ref(),
+                    ),
                     lines: lines(kept..all),
                     template: resize.template_in(&columns, kept..all),
                     width: resize.total_in(&columns, kept..all),

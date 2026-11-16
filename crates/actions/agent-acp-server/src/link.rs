@@ -5,11 +5,10 @@
 
 use crate::out;
 use agent_client_protocol::schema::v1::{
-    CancelNotification, InitializeRequest, InitializeResponse, ListSessionsRequest,
-    ListSessionsResponse, LoadSessionRequest, LoadSessionResponse, NewSessionRequest,
-    NewSessionResponse, PromptRequest, PromptResponse, RequestPermissionRequest,
-    RequestPermissionResponse, SessionNotification, SessionUpdate, SetSessionModeRequest,
-    SetSessionModeResponse,
+    CancelNotification, InitializeResponse, ListSessionsRequest, ListSessionsResponse,
+    LoadSessionRequest, LoadSessionResponse, NewSessionRequest, NewSessionResponse, PromptRequest,
+    PromptResponse, RequestPermissionRequest, RequestPermissionResponse, SessionNotification,
+    SessionUpdate, SetSessionModeRequest, SetSessionModeResponse,
 };
 use agent_client_protocol::{
     Client, ConnectionTo, Error, JsonRpcResponse, Responder, is_incoming_transport_closed,
@@ -27,9 +26,10 @@ use std::pin::pin;
 pub(crate) struct Gone;
 
 /// What the editor sent that the server serves. The requests are boxed: `initialize` alone is
-/// over a kilobyte, and every select over the channel would carry that size.
+/// over a kilobyte, and every select over the channel would carry that size. The `initialize`
+/// request itself is not kept: the answer does not depend on what the editor asked for.
 pub(crate) enum Inbound {
-    Initialize(Box<InitializeRequest>, Responder<InitializeResponse>),
+    Initialize(Responder<InitializeResponse>),
     New(Box<NewSessionRequest>, Responder<NewSessionResponse>),
     Load(Box<LoadSessionRequest>, Responder<LoadSessionResponse>),
     List(Box<ListSessionsRequest>, Responder<ListSessionsResponse>),
@@ -53,7 +53,7 @@ impl Inbound {
     /// Turns the request away with `error`. A cancel has no one to answer.
     pub(crate) fn refuse(self, error: Error) -> Result<(), Gone> {
         match self {
-            Inbound::Initialize(_, responder) => answer(responder, Err(error)),
+            Inbound::Initialize(responder) => answer(responder, Err(error)),
             Inbound::New(_, responder) => answer(responder, Err(error)),
             Inbound::Load(_, responder) => answer(responder, Err(error)),
             Inbound::List(_, responder) => answer(responder, Err(error)),

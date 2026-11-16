@@ -35,6 +35,10 @@ impl Browser {
         (next, effects)
     }
 
+    #[expect(
+        clippy::too_many_lines,
+        reason = "the one dispatch from each input to its handler: a line per input, and no logic to lift out"
+    )]
     fn stepped(self, input: Input, now: Now) -> Stepped {
         match input {
             Input::Click(..)
@@ -120,10 +124,10 @@ impl Browser {
             Input::SaveCopy => self.save_copy(),
             Input::CopiesSaved(copies) => self.copies_saved(copies),
             Input::OpenVolume(id) => self.open_volume(id),
-            Input::Mounted(id, result) => self.mounted(id, result),
+            Input::Mounted(id, result) => self.mounted(&id, result),
             Input::Eject(id) => self.eject(id),
             Input::Ejected(id, result) => self.ejected(id, result),
-            Input::ForceEjected(id, result) => self.force_ejected(id, result),
+            Input::ForceEjected(id, result) => self.force_ejected(&id, result),
             Input::TrashItems(items) => self.trash_items(items),
             Input::MakeFolder { parent, name } => self.make_folder(parent, name),
             Input::Bring {

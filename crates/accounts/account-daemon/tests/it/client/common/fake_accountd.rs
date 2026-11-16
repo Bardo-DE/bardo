@@ -318,12 +318,12 @@ struct Launcher {
 }
 
 #[zbus::interface(name = "org.bardo.Accounts1.Launcher")]
+#[expect(
+    clippy::needless_pass_by_value,
+    reason = "the zbus interface macro hands a method its arguments by value, whatever this one holds or does"
+)]
 impl Launcher {
-    fn register_launcher(
-        &self,
-        #[zbus(header)] header: Header<'_>,
-        programs: Vec<String>,
-    ) -> zbus::fdo::Result<()> {
+    fn register_launcher(&self, #[zbus(header)] header: Header<'_>, programs: Vec<String>) {
         *self.shared.launcher.lock().expect("lock") =
             header.sender().map(std::string::ToString::to_string);
         self.shared
@@ -332,7 +332,6 @@ impl Launcher {
             .expect("lock")
             .registered
             .extend(programs);
-        Ok(())
     }
 
     fn begin_session(&self, session: String) {

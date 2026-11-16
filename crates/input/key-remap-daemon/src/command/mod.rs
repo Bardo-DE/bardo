@@ -90,7 +90,7 @@ pub fn run(args: impl IntoIterator<Item = String>) -> ExitCode {
             eprintln!("{USAGE}");
             ExitCode::from(2)
         }
-        Some(command) => match execute(command, env) {
+        Some(command) => match execute(command, &env) {
             Ok(()) => ExitCode::SUCCESS,
             Err(e) => {
                 eprintln!("keycap: {e}");
@@ -100,11 +100,11 @@ pub fn run(args: impl IntoIterator<Item = String>) -> ExitCode {
     }
 }
 
-fn execute(command: Command, env: Env) -> Result<(), String> {
+fn execute(command: Command, env: &Env) -> Result<(), String> {
     match command {
-        Command::Daemon => daemon::run(&env),
+        Command::Daemon => daemon::run(env),
         Command::PrintConfig => print_out(DEFAULTS_TOML),
-        Command::CheckUinput => check_devices(&env),
+        Command::CheckUinput => check_devices(env),
         Command::Status => status::read_status(&env.runtime_dir).and_then(|s| {
             let lamp =
                 |keyboard: &Keyboard| caps_lamp::lamp_of(&env.sys_input, &keyboard.info.path);

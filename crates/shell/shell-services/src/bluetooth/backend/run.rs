@@ -118,7 +118,7 @@ async fn session(
             Some(signal) = next_opt(&mut live.removed) => {
                 if let Ok(args) = signal.args() {
                     let path = args.object_path().to_owned().into();
-                    handle_removed(tx, tracked, path, args.interfaces());
+                    handle_removed(tx, tracked, &path, args.interfaces());
                 }
             }
             Some(event) = internal_rx.recv() => {
@@ -316,20 +316,20 @@ async fn handle_added(
 fn handle_removed(
     tx: &Published<Bluetooth, BluetoothEvent>,
     tracked: &mut Tracked,
-    path: OwnedObjectPath,
+    path: &OwnedObjectPath,
     interfaces: &[zbus::names::InterfaceName<'_>],
 ) {
     let has = |iface: &str| interfaces.iter().any(|i| i.as_str() == iface);
 
     if has(DEVICE_IFACE) {
-        remove_device(tx, tracked, &path);
+        remove_device(tx, tracked, path);
         return;
     }
     if has(BATTERY_IFACE) {
-        if let Some(stop) = tracked.battery_stop.remove(&path) {
+        if let Some(stop) = tracked.battery_stop.remove(path) {
             let _ = stop.send(());
         }
-        if let Some(address) = tracked.address_of(&path) {
+        if let Some(address) = tracked.address_of(path) {
             tx.feed(BluetoothEvent::Battery {
                 address,
                 battery: BtBattery::Unknown,
@@ -337,7 +337,7 @@ fn handle_removed(
         }
         return;
     }
-    if Some(&path) == tracked.adapter_path.as_ref() {
+    if Some(path) == tracked.adapter_path.as_ref() {
         tx.feed(BluetoothEvent::Gone);
         *tracked = Tracked::default();
     }

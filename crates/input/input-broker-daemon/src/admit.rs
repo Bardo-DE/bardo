@@ -18,21 +18,21 @@ use std::os::fd::OwnedFd;
 
 /// Identifies `conn`, gives it a slot of its pool, and serves it until it ends. A caller whose pool
 /// is full is answered `TooMany`.
-pub fn admit<B, A, S, C>(conn: OwnedFd, ticket: Ticket, slots: &Slots, ctx: &Context<B, A, S, C>)
+pub fn admit<B, A, S, C>(conn: &OwnedFd, ticket: Ticket, slots: &Slots, ctx: &Context<B, A, S, C>)
 where
     B: Backend,
     A: Authority,
     S: SeatSource,
     C: Monotonic + 'static,
 {
-    let Some(caller) = identify(&conn, &ctx.authority) else {
+    let Some(caller) = identify(conn, &ctx.authority) else {
         return;
     };
     let bucket = Bucket::of(&caller, ctx.seat.active_uid());
     let taken = slots.take(bucket);
     drop(ticket);
     if let Ok(slot) = taken {
-        serve_caller(&conn, &caller, slot.bucket().handshake_ms(), ctx);
+        serve_caller(conn, &caller, slot.bucket().handshake_ms(), ctx);
     } else {
         journal::note(
             "refused",
@@ -41,6 +41,6 @@ where
                 kv("why", &"too many connections"),
             ],
         );
-        let _ = link::send_reply(&conn, &Reply::Refused(Reason::TooMany));
+        let _ = link::send_reply(conn, &Reply::Refused(Reason::TooMany));
     }
 }

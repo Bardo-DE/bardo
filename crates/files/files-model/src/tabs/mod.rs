@@ -244,25 +244,25 @@ impl Tabs {
     /// A new tab on the front tab's place, next to it and in front.
     fn new_tab(self) -> Stepped {
         let here = self.front.browser.location().clone();
-        self.opened(here)
+        self.opened(&here)
     }
 
     /// The selected folder in a new tab, next to the front one and in front.
     fn open_in_new_tab(self) -> Stepped {
         match self.front.browser.lone_folder() {
-            Some(folder) => self.opened(folder),
+            Some(folder) => self.opened(&folder),
             None => (self, Vec::new()),
         }
     }
 
-    fn opened(self, location: Location) -> Stepped {
+    fn opened(self, location: &Location) -> Stepped {
         let Tabs {
             front,
             mut others,
             at,
             next,
         } = self;
-        let (browser, effects) = front.browser.opened_like(&location);
+        let (browser, effects) = front.browser.opened_like(location);
         let id = TabId(next);
         others.insert(at.min(others.len()), front);
         let tabs = Tabs {

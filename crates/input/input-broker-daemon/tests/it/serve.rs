@@ -34,7 +34,7 @@ fn connect(ctx: &Arc<Ctx>) -> (Connection, std::thread::JoinHandle<()>) {
     // Both ends block: the client sends with DONTWAIT and waits with poll whatever the mode, and the
     // service end must wait in recv as the accepted socket of the real service does.
     let ctx = Arc::clone(ctx);
-    let thread = std::thread::spawn(move || serve(service, &ctx));
+    let thread = std::thread::spawn(move || serve(&service, &ctx));
     (
         Connection::over_with_timeout(client, Duration::from_secs(5)),
         thread,
@@ -169,7 +169,7 @@ fn raw(ctx: &Arc<Ctx>) -> (rustix::fd::OwnedFd, std::thread::JoinHandle<()>) {
     )
     .expect("socket pair");
     let ctx = Arc::clone(ctx);
-    (peer, std::thread::spawn(move || serve(service, &ctx)))
+    (peer, std::thread::spawn(move || serve(&service, &ctx)))
 }
 
 fn next_reply(peer: &rustix::fd::OwnedFd) -> Reply {

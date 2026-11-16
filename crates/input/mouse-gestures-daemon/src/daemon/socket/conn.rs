@@ -48,8 +48,9 @@ impl Conn {
         }
     }
 
-    /// Reads one packet into `buf`.
-    pub(super) fn read(&self, buf: &mut [u8; protocol::MAX_PACKET + 1]) -> Read {
+    /// Reads one packet into `buf`, which holds one byte more than the largest packet allowed so
+    /// that an oversize one is seen as such.
+    pub(super) fn read(&self, buf: &mut [u8]) -> Read {
         match rustix::net::recv(&self.fd, &mut *buf, RecvFlags::DONTWAIT) {
             Ok((0, _)) => Read::Closed,
             Ok((n, _)) => Read::Packet(protocol::decode(&buf[..n]).map_err(|e| e.to_string())),
