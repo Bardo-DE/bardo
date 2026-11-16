@@ -22,11 +22,9 @@ impl FrameReader {
             if let Some(frame) = self.buffer.take()? {
                 return Ok(frame);
             }
-            stream
-                .readable()
-                .await
-                .ok()
-                .ok_or(ProviderError::Unreachable)?;
+            if stream.readable().await.is_err() {
+                return Err(ProviderError::Unreachable);
+            }
             match stream.try_read_buf(&mut self.buffer.pending) {
                 // The host closed without saying `Done` or `Failed`.
                 Ok(0) => return Err(ProviderError::Unreachable),
@@ -42,11 +40,9 @@ pub async fn write<T: Serialize>(stream: &UnixStream, message: &T) -> Result<(),
     let frame = encode_frame(message).map_err(|e| ProviderError::BadRequest(e.to_string()))?;
     let mut rest = frame.as_slice();
     while !rest.is_empty() {
-        stream
-            .writable()
-            .await
-            .ok()
-            .ok_or(ProviderError::Unreachable)?;
+        if stream.writable().await.is_err() {
+            return Err(ProviderError::Unreachable);
+        }
         match stream.try_write(rest) {
             Ok(n) => rest = rest.get(n..).unwrap_or_default(),
             Err(e) if e.kind() == ErrorKind::WouldBlock => {}

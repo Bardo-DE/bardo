@@ -29,7 +29,8 @@ pub(crate) enum Ask {
 }
 
 fn param(name: &str) -> Result<ParamName, AppRefusal> {
-    ParamName::parse(name).ok().ok_or(AppRefusal::Unsupported)
+    ParamName::parse(name)
+        .map_err(|error| refusal(format!("{name} is not a parameter name: {error}")))
 }
 
 /// The key of the entity argument `name`, which must be of `kind` and belong to `app`.
@@ -103,8 +104,7 @@ pub(crate) fn ask(inv: &Invocation, app: &AppName) -> Result<Ask, AppRefusal> {
             format!("key:{path}")
                 .parse()
                 .map(Ask::OpenTarget)
-                .ok()
-                .ok_or_else(|| refusal(format!("{path} is not a setting")))
+                .map_err(|error| refusal(format!("{path} is not a setting: {error}")))
         }
         "settings.key.read" => {
             entity_arg(inv, app, "key", "settings.key").map(|key| Ask::ReadKey(KeyPath(key)))

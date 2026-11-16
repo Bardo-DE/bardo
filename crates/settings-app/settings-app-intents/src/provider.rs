@@ -277,13 +277,27 @@ impl IntentProvider for SettingsProvider {
             .cloned()
             .ok_or(UndoFault::Gone)?;
         let entry = self.catalogue.entry(&change.key).ok_or(UndoFault::Gone)?;
-        if self.current(entry).ok().ok_or(UndoFault::Conflict)? != change.after {
+        let current = match self.current(entry) {
+            Ok(current) => current,
+            Err(refused) => {
+                eprintln!(
+                    "bardo-settings: undo cannot read {}: {refused:?}",
+                    change.key.0
+                );
+                return Err(UndoFault::Conflict);
+            }
+        };
+        if current != change.after {
             self.journal().forget(&token);
             return Err(UndoFault::Conflict);
         }
-        save(&self.home, &change.file, &change.key, &change.before)
-            .ok()
-            .ok_or(UndoFault::Conflict)?;
+        if let Err(error) = save(&self.home, &change.file, &change.key, &change.before) {
+            eprintln!(
+                "bardo-settings: undo cannot write {}: {error}",
+                change.key.0
+            );
+            return Err(UndoFault::Conflict);
+        }
         self.journal().forget(&token);
         let _ = self.window.send(Notice::Reload);
         Ok(())

@@ -37,8 +37,8 @@ impl SpeechToText for SpeechHostClient {
 }
 
 async fn connect(socket: &HostSocket) -> Result<UnixStream, ProviderError> {
-    UnixStream::connect(&socket.0)
-        .await
-        .ok()
-        .ok_or(ProviderError::Unreachable)
+    match UnixStream::connect(&socket.0).await {
+        Ok(stream) => Ok(stream),
+        Err(_unreachable) => Err(ProviderError::Unreachable),
+    }
 }

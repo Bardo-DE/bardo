@@ -73,8 +73,8 @@ fn target_text_of(parameter: &[OwnedValue]) -> Option<SettingsTarget> {
     }
 }
 
-fn gone() -> fdo::Error {
-    fdo::Error::Failed("the Settings window has gone".to_owned())
+fn gone(window: settings_app_model::WindowGone) -> fdo::Error {
+    fdo::Error::Failed(window.to_string())
 }
 
 #[zbus::interface(name = "org.freedesktop.Application")]
@@ -88,8 +88,7 @@ impl Application {
         admit(&self.peers, &self.refusals, &header).await?;
         self.window
             .send(Notice::Raise(token_of(&platform_data)))
-            .ok()
-            .ok_or(gone())
+            .map_err(gone)
     }
 
     /// Settings opens no files.
@@ -120,22 +119,14 @@ impl Application {
             OPEN_ACCOUNT => self
                 .window
                 .send(Notice::OpenAccount(target_of(&parameter)))
-                .ok()
-                .ok_or(gone())?,
+                .map_err(gone)?,
             OPEN_PAGE => {
                 if let Some(page) = page_of(&parameter) {
-                    self.window
-                        .send(Notice::OpenPage(page))
-                        .ok()
-                        .ok_or(gone())?;
+                    self.window.send(Notice::OpenPage(page)).map_err(gone)?;
                 }
             }
             OPEN_TARGET => match target_text_of(&parameter) {
-                Some(target) => self
-                    .window
-                    .send(Notice::OpenTarget(target))
-                    .ok()
-                    .ok_or(gone())?,
+                Some(target) => self.window.send(Notice::OpenTarget(target)).map_err(gone)?,
                 None => eprintln!("bardo-settings: open-target needs page:, key: or account: text"),
             },
             _ => {
@@ -145,8 +136,7 @@ impl Application {
         }
         self.window
             .send(Notice::Raise(token_of(&platform_data)))
-            .ok()
-            .ok_or(gone())
+            .map_err(gone)
     }
 }
 
