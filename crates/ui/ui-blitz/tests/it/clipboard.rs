@@ -28,7 +28,10 @@ fn centre(harness: &Harness, selector: &str) -> Point {
 
 /// Two fields, each echoing its value below, and two buttons that copy and paste through the
 /// app's own clipboard calls.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Fields() -> Element {
     let mut from = use_signal(|| "hello quire".to_owned());
     let mut to = use_signal(String::new);

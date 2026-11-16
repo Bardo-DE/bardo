@@ -24,7 +24,10 @@ fn fade() -> Duration {
 
 /// A capsule over a 640 x 400 stage; `.log` counts what happened, and Escape-free: the stage
 /// click toggles `shown`.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Stage() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut shown = use_signal(|| true);
@@ -132,7 +135,10 @@ fn a_hide_fades_out_calls_on_hidden_once_and_lets_the_pointer_through() {
 }
 
 /// A media capsule: a button, the progress bar and the level; `.log` lists what each reported.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Media() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     rsx! {
@@ -218,7 +224,10 @@ fn a_media_capsule_gives_the_free_width_to_its_bar_and_reports_each_control() {
 
 /// A player's capsule on a stage `W` wide: play and the bar stay; the clock, the level and the
 /// export go in that order (clock last) as the stage narrows.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Thinning<const W: u32>() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

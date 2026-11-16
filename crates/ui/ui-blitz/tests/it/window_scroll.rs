@@ -145,7 +145,7 @@ mod eased {
         );
         let arrived = seen
             .iter()
-            .position(|x| (*x - 60.0).abs() < f32::EPSILON)
+            .position(|x| (*x - 60.0).abs() < f64::EPSILON)
             .expect("reaches 60 px");
         let by = Duration::from_millis(200);
         assert!(
@@ -185,7 +185,7 @@ mod eased {
         assert!(moving >= 3, "eased over frames: {seen:?}");
         let arrived = seen
             .iter()
-            .position(|x| (*x - 260.0).abs() < f32::EPSILON)
+            .position(|x| (*x - 260.0).abs() < f64::EPSILON)
             .expect("260 px");
         assert!(
             FRAME * u32::try_from(arrived).expect("small") <= Duration::from_millis(208),
@@ -989,7 +989,7 @@ mod native {
         assert!(
             frames
                 .iter()
-                .any(|(offset, _)| (*offset - 300.0).abs() < f32::EPSILON),
+                .any(|(offset, _)| (*offset - 300.0).abs() < f64::EPSILON),
             "a frame draws the jump: {frames:?}"
         );
         for (offset, seen) in &frames {

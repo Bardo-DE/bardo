@@ -23,7 +23,10 @@ const THREE: WifiState = WifiState::Joined {
 static STATE: GlobalSignal<WifiState> = Signal::global(|| THREE);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

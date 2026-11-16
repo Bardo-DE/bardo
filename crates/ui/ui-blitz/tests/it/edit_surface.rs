@@ -50,7 +50,10 @@ const LINE: f32 = 20.0;
 
 /// A surface over two paragraphs, the second with a hard line break and two text nodes, then a
 /// paragraph holding an inline chip (an atom).
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Editor() -> Element {
     let handle = use_edit_handle();
     HANDLE.with(|slot| *slot.borrow_mut() = Some(handle));
@@ -438,7 +441,10 @@ fn a_selection_over_an_atom_covers_its_box() {
 }
 
 /// A surface whose IME area follows what the app sets: the caret's rect, moved by a key.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Area() -> Element {
     let mut area = use_signal(|| rect(10.0, 12.0));
     rsx! {

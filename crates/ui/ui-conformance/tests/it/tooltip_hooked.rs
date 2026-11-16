@@ -54,7 +54,10 @@ fn Time() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -63,7 +66,10 @@ fn Page() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Dark() -> Element {
     rsx! {
         Ds { appearance: Appearance { theme: Theme::Dark, ..Appearance::default() }, material: Material::Window, extent: RootExtent::Viewport,

@@ -87,7 +87,7 @@ async fn tell_memory(
 
 /// What a removal does when memory is not there: carries on when it keeps everything, else stops.
 fn without_memory(removal: Removal) -> Result<(), String> {
-    if needs_memory(removal) {
+    if needs_memory(&removal) {
         Err(MEMORY_NOT_RUNNING.to_owned())
     } else {
         Ok(())

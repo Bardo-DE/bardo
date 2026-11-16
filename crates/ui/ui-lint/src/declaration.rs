@@ -132,7 +132,10 @@ pub fn offences(
     out
 }
 
-#[expect(clippy::too_many_arguments, reason = "the token walk carries its whole scan state; a bundle struct would only rename the arguments")]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "the token walk carries its whole scan state; a bundle struct would only rename the arguments"
+)]
 fn value_token(
     selector: &str,
     stroke_or_fill: bool,

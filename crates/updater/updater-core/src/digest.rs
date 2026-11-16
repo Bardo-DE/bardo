@@ -1,9 +1,9 @@
 //! SHA-256 digests as lower-case hex.
 
-use std::fmt::Write as _;
 use serde::{Deserialize, Deserializer};
 use sha2::{Digest, Sha256};
 use std::fmt;
+use std::fmt::Write as _;
 
 /// A SHA-256 digest: exactly 64 lower-case hex digits.
 #[derive(Clone, PartialEq, Eq, Hash)]

@@ -63,7 +63,9 @@ pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, Exp
 ///
 /// Returns `ExportFault` when the document cannot be written as JSON.
 pub fn to_json(export: &SessionExport) -> Result<String, ExportFault> {
-    serde_json::to_string_pretty(export).ok().ok_or(ExportFault::Malformed)
+    serde_json::to_string_pretty(export)
+        .ok()
+        .ok_or(ExportFault::Malformed)
 }
 
 /// The export in `json`; the version is read before the rest, so a newer document is
@@ -74,7 +76,9 @@ pub fn to_json(export: &SessionExport) -> Result<String, ExportFault> {
 /// Returns `ExportFault::UnknownVersion` for a document version this crate does not know, and
 /// `ExportFault::Malformed` when `json` is not a valid document of this form.
 pub fn from_json(json: &str) -> Result<SessionExport, ExportFault> {
-    let doc: serde_json::Value = serde_json::from_str(json).ok().ok_or(ExportFault::Malformed)?;
+    let doc: serde_json::Value = serde_json::from_str(json)
+        .ok()
+        .ok_or(ExportFault::Malformed)?;
     let version = doc
         .get("export_version")
         .and_then(serde_json::Value::as_u64)
@@ -83,5 +87,7 @@ pub fn from_json(json: &str) -> Result<SessionExport, ExportFault> {
     if version != EXPORT_VERSION {
         return Err(ExportFault::UnknownVersion(version));
     }
-    serde_json::from_value(doc).ok().ok_or(ExportFault::Malformed)
+    serde_json::from_value(doc)
+        .ok()
+        .ok_or(ExportFault::Malformed)
 }

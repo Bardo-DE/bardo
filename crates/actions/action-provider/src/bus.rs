@@ -256,7 +256,10 @@ mod tests {
 
     struct Nobody(ValidManifest);
 
-    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this fake never waits"
+    )]
     impl IntentProvider for Nobody {
         fn manifest(&self) -> &ValidManifest {
             &self.0
@@ -284,7 +287,10 @@ mod tests {
     /// Identifies nobody: the introspection needs the type, not a bus.
     struct NoCallers;
     impl Callers for NoCallers {
-        #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async and this fake never waits"
+        )]
         async fn caller_of(&self, _: &str) -> Option<action_dbus::callers::Caller> {
             None
         }

@@ -70,7 +70,8 @@ fn open(extra: Vec<CloudDrive>, state: DriveState) -> Rig {
     );
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
-    let launch = launch(dir.path(), config.path(), &opener).with_clouds(Arc::<FakeClouds>::clone(&clouds));
+    let launch =
+        launch(dir.path(), config.path(), &opener).with_clouds(Arc::<FakeClouds>::clone(&clouds));
     let mut harness = harness(launch);
     settle_until(&mut harness, |h| h.html().contains("zebra.png"));
     // The cloud thread has joined the news and read the rows once it has badged the one in the
@@ -304,8 +305,9 @@ fn save_a_copy_is_in_the_menu_of_an_online_row_only_and_selects_the_new_file() {
     );
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
-    let mut harness =
-        harness(launch(dir.path(), config.path(), &opener).with_clouds(Arc::<FakeClouds>::clone(&clouds)));
+    let mut harness = harness(
+        launch(dir.path(), config.path(), &opener).with_clouds(Arc::<FakeClouds>::clone(&clouds)),
+    );
     settle_until(&mut harness, |h| {
         h.html().contains("zebra.png") && h.count("[aria-label=\"In the cloud\"]") == 1
     });

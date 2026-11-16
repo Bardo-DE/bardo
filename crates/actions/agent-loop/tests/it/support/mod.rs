@@ -1,5 +1,8 @@
 //! Builders the machine tests share.
-#![allow(dead_code, reason = "shared test helpers: each test file uses only some of them")]
+#![allow(
+    dead_code,
+    reason = "shared test helpers: each test file uses only some of them"
+)]
 
 use action_core::*;
 use action_vocab::{Caller, TurnId};

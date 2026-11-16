@@ -116,8 +116,7 @@ mod tests {
         symlink(&real, &link).unwrap_or_else(|e| panic!("{e}"));
         write(&link, b"new", NewFileMode::OwnerOnly).unwrap_or_else(|e| panic!("{e}"));
         assert!(
-            std::fs::symlink_metadata(&link)
-                .is_ok_and(|m| m.file_type().is_symlink()),
+            std::fs::symlink_metadata(&link).is_ok_and(|m| m.file_type().is_symlink()),
             "the link is still a link"
         );
         assert_eq!(std::fs::read(&real).unwrap_or_default(), b"new");

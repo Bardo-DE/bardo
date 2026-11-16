@@ -9,7 +9,10 @@ use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,

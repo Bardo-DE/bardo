@@ -13,7 +13,10 @@ use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 /// The least the content beside the sidebar is drawn at.
 const LEAST_REST: f32 = 400.0;
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Kept() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -29,7 +32,10 @@ fn Kept() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Unkept() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

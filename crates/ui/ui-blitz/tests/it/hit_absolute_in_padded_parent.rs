@@ -25,7 +25,10 @@ thread_local! {
     static VARIANT: Cell<usize> = const { Cell::new(0) };
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let parent = VARIANTS[VARIANT.with(Cell::get)];
     let mut hits = use_signal(|| 0u32);

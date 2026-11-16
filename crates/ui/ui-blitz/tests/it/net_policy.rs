@@ -40,13 +40,19 @@ fn swatch_bytes() -> Vec<u8> {
     std::fs::read(swatch()).expect("read the swatch")
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn LocalImage() -> Element {
     let src = format!("file://{}", swatch().display());
     rsx! { img { class: "local", src } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn RemoteImage() -> Element {
     rsx! { img { class: "remote", src: "https://example.org/pixel.png" } }
 }
@@ -169,7 +175,10 @@ fn a_custom_policy_still_serves_the_app_its_own_files_without_asking() {
 
 /// The app's document and a frame inside it both ask for the same file, and the frame for a
 /// remote image too.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Framed() -> Element {
     let file = format!("file://{}", swatch().display());
     let body = format!(

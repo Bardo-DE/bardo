@@ -82,7 +82,10 @@ fn seams(window: &str) -> String {
     )
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn App() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, First {} }
@@ -105,7 +108,10 @@ fn open_message(subject: &str) -> Option<WindowHandle> {
     })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn First() -> Element {
     let mut opened = use_signal(Vec::<WindowHandle>::new);
     use_hook(|| {

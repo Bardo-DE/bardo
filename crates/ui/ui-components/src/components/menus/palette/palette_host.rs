@@ -37,6 +37,7 @@ pub(crate) fn hosted(
     shown: bool,
     onclose: EventHandler<PaletteClose>,
 ) -> Element {
+    let float = *float;
     match host {
         CommandPaletteHost::Surface => card,
         CommandPaletteHost::Overlay => {

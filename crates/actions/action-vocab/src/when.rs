@@ -26,7 +26,9 @@ fn day(head: &str) -> Result<NaiveDate, NotRfc3339> {
     if !shaped {
         return Err(NotRfc3339);
     }
-    NaiveDate::parse_from_str(head, "%Y-%m-%d").ok().ok_or(NotRfc3339)
+    NaiveDate::parse_from_str(head, "%Y-%m-%d")
+        .ok()
+        .ok_or(NotRfc3339)
 }
 
 /// The text read as a date alone or as a full instant (the separator may be `T`, `t` or a space,
@@ -43,7 +45,8 @@ fn read(text: &str) -> Result<Read, NotRfc3339> {
         10 => Ok(Read::Day(date)),
         _ => DateTime::parse_from_rfc3339(text)
             .map(Read::Instant)
-            .ok().ok_or(NotRfc3339),
+            .ok()
+            .ok_or(NotRfc3339),
     }
 }
 

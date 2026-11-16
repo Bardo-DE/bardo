@@ -24,7 +24,10 @@ fn main() -> Result<(), ui_blitz::LaunchError> {
     )
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn App() -> Element {
     use_hook(|| {
         let seconds = std::env::var("BARDO_EDIT_SECONDS").ok()?.parse().ok()?;

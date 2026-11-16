@@ -25,22 +25,34 @@ fn scene(block: &str) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn PositionedAfter() -> Element {
     scene("position:relative;")
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn StaticAfter() -> Element {
     scene("")
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn RaisedAfter() -> Element {
     scene("position:relative; z-index:1;")
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn LayerBelow() -> Element {
     rsx! {
         div { style: "position:relative; width:100px; height:100px; background:white",
@@ -97,7 +109,10 @@ fn a_layer_at_z_index_minus_one_goes_under_its_containers_own_background() {
 
 /// mailo's shape: a translucent selection layer, then the edit surface itself made positioned
 /// by the app's own class, its text over the layer.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn SurfaceAfterLayer() -> Element {
     rsx! {
         style { ".c-body{{position:relative;color:rgb(0,0,0);font-size:60px;line-height:80px}}" }
@@ -111,7 +126,10 @@ fn SurfaceAfterLayer() -> Element {
 }
 
 /// The same with the surface not positioned: the layer covers the text.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn StaticSurfaceAfterLayer() -> Element {
     rsx! {
         style { ".c-body{{color:rgb(0,0,0);font-size:60px;line-height:80px}}" }

@@ -885,7 +885,7 @@ fn state_change() -> WindowChange {
 #[test]
 fn the_handle_first_then_the_window_links_at_the_window_identifier() {
     let mut linker = Linker::default();
-    assert!(linker.listed(tk(1), id("a")).is_empty());
+    assert!(linker.listed(tk(1), &id("a")).is_empty());
     let events = linker.identified(obj(9), id("a"));
     assert_eq!(
         events,
@@ -921,7 +921,7 @@ fn the_window_first_holds_its_events_until_the_handle_names_it() {
     );
     assert!(linker.done(obj(9)).is_empty());
     assert_eq!(linker.key_of(obj(9)), None);
-    let events = linker.listed(tk(4), id("a"));
+    let events = linker.listed(tk(4), &id("a"));
     let want = vec![
         DesktopEvent::Window(WindowEvent::Opened(tk(4))),
         DesktopEvent::Window(WindowEvent::Changed {
@@ -942,17 +942,17 @@ fn windows_link_to_the_handle_of_their_own_identifier() {
     let mut linker = Linker::default();
     linker.identified(obj(1), id("a"));
     linker.identified(obj(2), id("b"));
-    linker.listed(tk(20), id("b"));
+    linker.listed(tk(20), &id("b"));
     assert_eq!(linker.key_of(obj(1)), None);
     assert_eq!(linker.key_of(obj(2)), Some(tk(20)));
-    linker.listed(tk(10), id("a"));
+    linker.listed(tk(10), &id("a"));
     assert_eq!(linker.key_of(obj(1)), Some(tk(10)));
 }
 
 #[test]
 fn a_closed_window_reports_once_and_a_waiting_one_is_forgotten() {
     let mut linker = Linker::default();
-    linker.listed(tk(1), id("a"));
+    linker.listed(tk(1), &id("a"));
     linker.identified(obj(9), id("a"));
     assert_eq!(
         linker.closed(obj(9)),
@@ -964,7 +964,7 @@ fn a_closed_window_reports_once_and_a_waiting_one_is_forgotten() {
     linker.identified(obj(10), id("never"));
     assert!(linker.closed(obj(10)).is_empty());
     assert!(
-        linker.listed(tk(2), id("never")).is_empty(),
+        linker.listed(tk(2), &id("never")).is_empty(),
         "nothing is waiting any more"
     );
 }
@@ -972,7 +972,7 @@ fn a_closed_window_reports_once_and_a_waiting_one_is_forgotten() {
 #[test]
 fn a_second_identifier_for_a_linked_window_is_ignored() {
     let mut linker = Linker::default();
-    linker.listed(tk(1), id("a"));
+    linker.listed(tk(1), &id("a"));
     linker.identified(obj(9), id("a"));
     assert!(linker.identified(obj(9), id("b")).is_empty());
     assert_eq!(linker.key_of(obj(9)), Some(tk(1)));
@@ -981,7 +981,7 @@ fn a_second_identifier_for_a_linked_window_is_ignored() {
 #[test]
 fn a_handle_that_closed_no_longer_links_new_windows() {
     let mut linker = Linker::default();
-    linker.listed(tk(1), id("a"));
+    linker.listed(tk(1), &id("a"));
     linker.unlisted(tk(1));
     assert!(linker.identified(obj(9), id("a")).is_empty());
     assert_eq!(linker.key_of(obj(9)), None);
@@ -994,7 +994,7 @@ fn linker_output_reduces_into_a_window_under_its_toplevel() {
     linker.identified(obj(9), id("a"));
     linker.change(obj(9), state_change());
     linker.done(obj(9));
-    events.extend(linker.listed(tk(1), id("a")));
+    events.extend(linker.listed(tk(1), &id("a")));
     let state = run(events);
     let w = state.quire.window(tk(1)).unwrap();
     assert_eq!(w.state, WindowStateKind::Filled);

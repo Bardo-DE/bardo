@@ -18,7 +18,10 @@ fn rows() -> Vec<ListItem<u8>> {
         .collect()
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Mounted() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -27,7 +30,10 @@ fn Mounted() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Manual() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

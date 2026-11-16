@@ -12,7 +12,10 @@ const CUT: &str = "white-space: nowrap; overflow: hidden; text-overflow: ellipsi
 const LONG: &str = "Quarterly report for the board meeting, final revised version three";
 const SHORT: &str = "Notes";
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Lines() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

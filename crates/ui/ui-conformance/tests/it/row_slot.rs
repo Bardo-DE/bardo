@@ -25,7 +25,10 @@ const FACE: AvatarFace = AvatarFace {
 };
 
 /// One scheduled row with a close button too, each press logged.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Scheduled() -> Element {
     let mut log = use_signal(Vec::<&str>::new);
     rsx! {

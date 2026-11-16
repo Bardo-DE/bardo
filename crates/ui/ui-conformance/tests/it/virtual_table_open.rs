@@ -2,8 +2,8 @@
 //! stays a pick); a table with no `onopen` lets Command-Down go on. Command-Up is never the table's, so
 //! an outer key handler (the app's keymap) hears it, while a plain Up moves the cursor.
 
-use std::fmt::Write as _;
 use dioxus::prelude::*;
+use std::fmt::Write as _;
 use ui_components::components::controls::scroller::handle::use_scroller;
 use ui_components::components::lists::table::model::TableColumn;
 use ui_components::components::lists::virtual_table::VirtualTable;
@@ -26,12 +26,18 @@ enum Listening {
     No,
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Heard() -> Element {
     page(Listening::Yes)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Unheard() -> Element {
     page(Listening::No)
 }

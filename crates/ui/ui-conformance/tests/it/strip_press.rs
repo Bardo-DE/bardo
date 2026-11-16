@@ -67,14 +67,20 @@ fn Page(layout: Layout) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Measuring() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, Page { layout: Layout::Measured } }
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Unmeasured() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, Page { layout: Layout::Absent } }

@@ -51,7 +51,9 @@ impl<H: Http> GraphReplica<H> {
             return Ok(created);
         }
         let again = || PutRefused::Transient(RetryAfter(30));
-        let session: Session = serde_json::from_slice(created.body()).ok().ok_or_else(again)?;
+        let session: Session = serde_json::from_slice(created.body())
+            .ok()
+            .ok_or_else(again)?;
         let upload = WebUrl::parse(&session.upload_url).ok().ok_or_else(again)?;
         let total = bytes.len();
         let mut sent = 0;

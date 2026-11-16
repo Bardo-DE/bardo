@@ -194,7 +194,7 @@ fn full_name(person: &Person) -> String {
         &name.suffix,
     ]
     .into_iter()
-    .filter_map(present)
+    .filter_map(|part| present(part.as_deref()))
     .collect();
     present(name.display_name.as_deref())
         .map(str::to_owned)

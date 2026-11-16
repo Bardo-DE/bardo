@@ -115,7 +115,9 @@ impl<H: Http> GraphReplica<H> {
 
     /// What a write that made or changed an item answered with: the item.
     fn written(&self, response: &Response<Vec<u8>>) -> Result<(Written, DriveItem), PutRefused> {
-        let item: DriveItem = serde_json::from_slice(response.body()).ok().ok_or_else(again)?;
+        let item: DriveItem = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or_else(again)?;
         let written = Written {
             id: RemoteId(item.id.clone()),
             version: RemoteVersion(item.etag.clone().unwrap_or_default()),
@@ -263,8 +265,9 @@ impl<H: Http> GraphReplica<H> {
         let response = self.write_send(get).await?;
         match response.status().as_u16() {
             200 => {
-                let status: SessionStatus =
-                    serde_json::from_slice(response.body()).ok().ok_or_else(again)?;
+                let status: SessionStatus = serde_json::from_slice(response.body())
+                    .ok()
+                    .ok_or_else(again)?;
                 Ok(status.from().map(|from| (url, from)))
             }
             404 | 410 => Ok(None),
@@ -305,7 +308,9 @@ impl<H: Http> GraphReplica<H> {
         if created.status().as_u16() != 200 {
             return Ok(Err(created));
         }
-        let session: SessionJson = serde_json::from_slice(created.body()).ok().ok_or_else(again)?;
+        let session: SessionJson = serde_json::from_slice(created.body())
+            .ok()
+            .ok_or_else(again)?;
         let url = WebUrl::parse(&session.upload_url).ok().ok_or_else(again)?;
         upload
             .progress
@@ -346,7 +351,8 @@ impl<H: Http> GraphReplica<H> {
             let chunk = upload
                 .content
                 .read(sent, self.uploads.chunk as u64)
-                .ok().ok_or_else(again)?;
+                .ok()
+                .ok_or_else(again)?;
             let last = sent + chunk.len() as u64 - 1;
             // The last chunk commits the file, with no `If-Match` looked at: asked first.
             if last + 1 == total

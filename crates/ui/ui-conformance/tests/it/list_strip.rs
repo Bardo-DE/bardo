@@ -82,17 +82,26 @@ fn Page(strip: Strip) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Hovered() -> Element {
     rsx! { Page { strip: Strip::Carried(None) } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Bare() -> Element {
     rsx! { Page { strip: Strip::Absent } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Revealed() -> Element {
     rsx! { Page { strip: Strip::Carried(Some(true)) } }
 }

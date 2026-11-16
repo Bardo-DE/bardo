@@ -65,7 +65,10 @@ fn groups(rows: Rows) -> PaletteGroups<u8> {
     ])
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Launcher() -> Element {
     let handle = use_palette_handle();
     use_hook(|| *HANDLE.write() = Some(handle));

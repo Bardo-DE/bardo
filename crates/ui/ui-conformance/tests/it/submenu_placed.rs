@@ -45,7 +45,10 @@ fn entries() -> Vec<MenuItem<u8>> {
     ]
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Floating() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,
@@ -62,7 +65,10 @@ fn Floating() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Inline() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window,

@@ -34,7 +34,10 @@ fn ms(n: u64) -> Duration {
 }
 
 /// A sibling that re-renders itself on a timer and does nothing else.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Idle() -> Element {
     let mut ticks = use_signal(|| 0u32);
     use_future(move || async move {
@@ -47,7 +50,10 @@ fn Idle() -> Element {
 }
 
 /// The Summon button shows the field (as mail's ⌘K does); Ctrl+J then sets its text from outside.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Case<const HOW: u8, const SIBLINGS: usize, const MOUNT: u8>() -> Element {
     let mut query = use_signal(String::new);
     let mut shown = use_signal(|| false);

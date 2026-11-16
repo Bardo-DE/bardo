@@ -21,7 +21,10 @@ static VOLUME: GlobalSignal<VolumeState> =
     Signal::global(|| VolumeState::Heard(VolumeWaves::Three));
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

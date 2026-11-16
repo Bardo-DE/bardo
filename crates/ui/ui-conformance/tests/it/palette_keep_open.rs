@@ -45,7 +45,10 @@ fn Page() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Opaque() -> Element {
     rsx! { Page {} }
 }

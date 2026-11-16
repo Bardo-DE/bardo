@@ -90,7 +90,7 @@ impl DockParams {
             slide_ms: autohide::SLIDE_MS,
             slide_distance: Cpx::px(gutter + (i32::from(dock.tile_size_px.0) + 2 * pad) + 8),
             spring_load_ms: SPRING_LOAD,
-            pill_blur_radius: crate::dock::geometry::pill_blur_radius(tokens),
+            pill_blur_radius: crate::dock::geometry::pill_blur_radius(*tokens),
         }
     }
 }

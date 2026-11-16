@@ -44,7 +44,10 @@ fn pane(part: f32, class: &'static str) -> SplitPane {
     SplitPane::new(share(part), rsx! { div { class: "{class}", "{class}" } })
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let body = match LAYOUT.with(Cell::get) {
         Layout::RowOfShares => rsx! {

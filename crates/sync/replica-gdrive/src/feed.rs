@@ -97,7 +97,9 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let token: StartToken = serde_json::from_slice(response.body()).ok().ok_or_else(busy)?;
+        let token: StartToken = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or_else(busy)?;
         Ok(token.token)
     }
 
@@ -132,7 +134,9 @@ impl<H: Http> GdriveReplica<H> {
             (_, true) => return Err(Self::resumed(&response, self.clock.now())),
             _ => return Err(read_error(&response, self.clock.now())),
         }
-        let list: FileList = serde_json::from_slice(response.body()).ok().ok_or_else(busy)?;
+        let list: FileList = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or_else(busy)?;
         let changes = self.apply_files(list.files).await?;
         let (place, more) = match list.next {
             Some(next) => (
@@ -172,7 +176,9 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(Self::resumed(&response, self.clock.now()));
         }
-        let list: ChangeList = serde_json::from_slice(response.body()).ok().ok_or_else(busy)?;
+        let list: ChangeList = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or_else(busy)?;
         let (next, more) = match (list.next, list.new_start) {
             (Some(next), _) => (next, More::More),
             (None, Some(start)) => (start, More::Done),
@@ -195,7 +201,9 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let file: File = serde_json::from_slice(response.body()).ok().ok_or_else(busy)?;
+        let file: File = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or_else(busy)?;
         Ok(file.id)
     }
 
@@ -224,7 +232,9 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let list: FileList = serde_json::from_slice(response.body()).ok().ok_or_else(busy)?;
+        let list: FileList = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or_else(busy)?;
         Ok(list.files)
     }
 
@@ -249,7 +259,9 @@ impl<H: Http> GdriveReplica<H> {
         if response.status().as_u16() != 200 {
             return Err(read_error(&response, self.clock.now()));
         }
-        let file: File = serde_json::from_slice(response.body()).ok().ok_or_else(busy)?;
+        let file: File = serde_json::from_slice(response.body())
+            .ok()
+            .ok_or_else(busy)?;
         Ok(file.id)
     }
 

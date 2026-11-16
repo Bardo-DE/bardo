@@ -82,7 +82,10 @@ async fn follow(
         Plan::Off | Plan::NoCalendars => Vec::new(),
     };
     let mut touches = Debounced::start(
-        &watched.iter().map(|path| Place::at(path)).collect::<Vec<_>>(),
+        &watched
+            .iter()
+            .map(|path| Place::at(path))
+            .collect::<Vec<_>>(),
         EventFilter::AnyChange,
         CALENDAR_QUIET,
     )

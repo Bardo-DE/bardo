@@ -12,7 +12,10 @@ const VIEW: Viewport = Viewport {
     scale_percent: 100,
 };
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Led() -> Element {
     let mut opened = use_signal(|| 0u32);
     rsx! {

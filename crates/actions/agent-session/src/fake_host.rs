@@ -76,12 +76,16 @@ impl FakeHost {
     }
 }
 
-#[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
+#[expect(
+    clippy::unused_async_trait_impl,
+    reason = "the trait method is async and this fake never waits"
+)]
 impl SessionHost for FakeHost {
     async fn open(&mut self, opening: Opening) -> Result<SessionId, HostFault> {
         self.minted += 1;
         let session = SessionId::parse(&format!("s-{}", self.minted))
-            .ok().ok_or(HostFault::NoSuchSession)?;
+            .ok()
+            .ok_or(HostFault::NoSuchSession)?;
         self.append(&session, SessionEntry::Opened(opening.clone()))
             .await?;
         let mut backend = FakeBackend::new(self.scripts.pop_front().unwrap_or_default());

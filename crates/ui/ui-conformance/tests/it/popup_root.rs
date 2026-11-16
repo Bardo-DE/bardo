@@ -45,12 +45,18 @@ fn Popup(extent: RootExtent) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Fitted() -> Element {
     rsx! { Popup { extent: RootExtent::Popup } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Plain() -> Element {
     rsx! { Popup { extent: RootExtent::Content } }
 }

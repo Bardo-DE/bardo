@@ -131,7 +131,10 @@ fn Rooted(root: SharedRoot) -> Element {
     clippy::needless_pass_by_value,
     reason = "a Dioxus component takes its props by value"
 )]
-#[expect(clippy::too_many_lines, reason = "one component that wires every part of the host around the app, in the order they are read")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one component that wires every part of the host around the app, in the order they are read"
+)]
 pub(crate) fn Host(props: HostProps) -> Element {
     let window = use_window();
     let signals = use_context_provider(|| HostSignals {

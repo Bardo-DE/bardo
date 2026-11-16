@@ -30,7 +30,10 @@ thread_local! {
     static ROWS: RefCell<Option<Signal<u8>>> = const { RefCell::new(None) };
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let open = use_signal(|| false);
     let rows = use_signal(|| 30u8);

@@ -140,7 +140,8 @@ impl RequestSender {
         let (reply, inbox) = oneshot::channel();
         self.0
             .send(Asked::Read(Read { query, reply }))
-            .ok().ok_or(ReadError)?;
+            .ok()
+            .ok_or(ReadError)?;
         Ok(Answer { inbox })
     }
 }

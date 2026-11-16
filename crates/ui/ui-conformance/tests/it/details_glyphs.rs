@@ -20,7 +20,10 @@ static ICON: GlobalSignal<Icon> = Signal::global(|| Icon::Volume);
 static SLASHED: GlobalSignal<bool> = Signal::global(|| false);
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Glyphs() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

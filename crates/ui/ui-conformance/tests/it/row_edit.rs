@@ -19,7 +19,10 @@ fn ms(n: u64) -> Duration {
 }
 
 /// Three folders; the second is being renamed. Everything the list and the rows hear is logged.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Folders() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut name = use_signal(|| "Receipts".to_owned());

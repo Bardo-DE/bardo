@@ -76,7 +76,10 @@ fn Card(drawn: Drawn) -> Element {
 }
 
 /// One step's column, with every event sent to `io`.
-#[expect(clippy::too_many_lines, reason = "one match arm per step of the sheet, each a small tree of the step's own part")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one match arm per step of the sheet, each a small tree of the step's own part"
+)]
 fn body(step: Step, io: Io) -> Element {
     let act = move |action: Option<SheetAction>| {
         if let Some(action) = action {

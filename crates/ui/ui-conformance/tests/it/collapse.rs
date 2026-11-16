@@ -31,12 +31,18 @@ fn Body() -> Element {
     rsx! { div { id: "body", style: collapse.style(Px(80.0)), "content" } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Standard() -> Element {
     stage(Motion::Standard)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Reduced() -> Element {
     stage(Motion::Reduced)
 }

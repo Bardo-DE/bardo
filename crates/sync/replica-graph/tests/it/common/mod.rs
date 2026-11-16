@@ -1,6 +1,9 @@
 //! The rig: a fake Graph drive on loopback, reached through `RelayHttp` over a TCP dial with
 //! the bearer added the way accountd's relay would add it. No network beyond loopback.
-#![allow(dead_code, reason = "shared test helpers: each test file uses only some of them")]
+#![allow(
+    dead_code,
+    reason = "shared test helpers: each test file uses only some of them"
+)]
 
 use account_fake_servers::Running;
 use account_http::http::header::{AUTHORIZATION, HeaderValue};
@@ -27,7 +30,8 @@ impl Dial for TcpDial {
     async fn dial(&self) -> Result<TcpStream, HttpError> {
         TcpStream::connect(("127.0.0.1", self.0))
             .await
-            .ok().ok_or(HttpError::Unreachable)
+            .ok()
+            .ok_or(HttpError::Unreachable)
     }
 }
 

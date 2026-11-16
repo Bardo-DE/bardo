@@ -82,12 +82,8 @@ mod tests {
 
     #[test]
     fn a_dropped_write_is_repeated_until_the_monitor_reports_it() {
-        let cases: &[(usize, bool, u16)] = &[
-            (0, true, 18),
-            (1, true, 18),
-            (2, true, 18),
-            (3, false, 20),
-        ];
+        let cases: &[(usize, bool, u16)] =
+            &[(0, true, 18), (1, true, 18), (2, true, 18), (3, false, 20)];
         for &(drop_writes, want, left_at) in cases {
             let fake = bus(0, drop_writes);
             let result = write_verified(&fake, DdcId(5), Feature::SpeakerVolume, 18);

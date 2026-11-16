@@ -23,7 +23,7 @@ fn spec(key: &str, kind: KeyKind) -> KeySpec {
         page: Page::Accounts,
         section: Section("Account".to_owned()),
         exposure: Exposure::Basic,
-        labels: WordLabels::default(),
+        labels: ui_settings::schema::WordLabels::default(),
         unavailable: BTreeMap::default(),
         groups: BTreeMap::default(),
         places: BTreeMap::default(),

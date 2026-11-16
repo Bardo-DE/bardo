@@ -20,21 +20,30 @@ fn render(root: fn() -> Element) -> Vec<Rc<dyn DocumentHost>> {
     seen.0.borrow().clone()
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Bare() -> Element {
     let host = ui_blitz::provide_host();
     consume_context::<Seen>().0.borrow_mut().push(host);
     rsx! {}
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Nested() -> Element {
     let host = ui_blitz::provide_host();
     consume_context::<Seen>().0.borrow_mut().push(host);
     rsx! { Inner {} }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Inner() -> Element {
     let host = ui_blitz::provide_host();
     consume_context::<Seen>().0.borrow_mut().push(host);
@@ -66,7 +75,10 @@ fn a_root_under_a_host_keeps_that_host() {
 
 #[test]
 fn a_document_without_a_host_has_none_of_the_optional_parts() {
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Unhosted() -> Element {
         let host = use_document_host();
         consume_context::<Seen>().0.borrow_mut().push(host);
@@ -86,7 +98,10 @@ struct Wrote(Rc<RefCell<Vec<Result<(), ClipboardError>>>>);
 
 #[test]
 fn a_bare_roots_clipboard_write_says_it_wrote_nothing_instead_of_succeeding() {
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Copier() -> Element {
         let _host = ui_blitz::provide_host();
         let result = write_text("ada@example.org");
@@ -102,7 +117,10 @@ fn a_bare_roots_clipboard_write_says_it_wrote_nothing_instead_of_succeeding() {
 
 #[test]
 fn the_host_is_there_for_a_task_on_the_root_scope() {
-    #[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+    #[expect(
+        non_snake_case,
+        reason = "a Dioxus component function is named in CamelCase"
+    )]
     fn Surface() -> Element {
         let _host = ui_blitz::provide_host();
         rsx! {}

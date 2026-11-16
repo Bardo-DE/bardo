@@ -71,7 +71,10 @@ fn sections(count: u8, here: u8, pick: EventHandler<u8>) -> Vec<SidebarSection<u
     ]
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut here = use_signal(|| 1u8);
     let pick = EventHandler::new(move |key: u8| {

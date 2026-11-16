@@ -28,7 +28,10 @@ fn battery(level: u16, power: BatteryPower) -> BatteryState {
 static STATE: GlobalSignal<BatteryState> = Signal::global(|| battery(800, BatteryPower::Battery));
 static MOTION: GlobalSignal<Motion> = Signal::global(|| Motion::Standard);
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance { motion: MOTION(), ..Appearance::default() }, material: Material::Window,

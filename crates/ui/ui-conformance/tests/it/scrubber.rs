@@ -23,7 +23,10 @@ fn ms(n: u64) -> Duration {
 
 /// A bar for a recording 200 s long, 200 px wide, so a pixel is five seconds; `.log` lists what
 /// the handlers heard.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut note = move |text: String| log.with_mut(|log| log.push(text));

@@ -418,7 +418,7 @@ fn arrow_at(side: Side, anchor: Rect, at: Point, panel: Size) -> (&'static str, 
     };
     match side {
         Side::Bottom | Side::Top => {
-            let x = anchor.origin.x.0 + anchor.panel.width.0 / 2.0 - at.x.0;
+            let x = anchor.origin.x.0 + anchor.size.width.0 / 2.0 - at.x.0;
             let word = if side == Side::Bottom {
                 "top"
             } else {
@@ -427,7 +427,7 @@ fn arrow_at(side: Side, anchor: Rect, at: Point, panel: Size) -> (&'static str, 
             (word, format!("left:{}px", clamp(x, panel.width.0)))
         }
         Side::Left | Side::Right => {
-            let y = anchor.origin.y.0 + anchor.panel.height.0 / 2.0 - at.y.0;
+            let y = anchor.origin.y.0 + anchor.size.height.0 / 2.0 - at.y.0;
             let word = if side == Side::Right { "left" } else { "right" };
             (word, format!("top:{}px", clamp(y, panel.height.0)))
         }

@@ -28,7 +28,10 @@ fn ms(n: u64) -> Duration {
     Duration::from_millis(n)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     let mut open = use_signal(|| true);
     rsx! {

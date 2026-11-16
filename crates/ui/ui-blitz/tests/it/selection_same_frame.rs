@@ -28,7 +28,10 @@ thread_local! {
 
 /// A paragraph the app edits, with a selection it draws itself: Shift+Right extends it, typing
 /// replaces it.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Editor() -> Element {
     let handle = use_edit_handle();
     HANDLE.with(|slot| *slot.borrow_mut() = Some(handle));

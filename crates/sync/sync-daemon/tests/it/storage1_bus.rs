@@ -86,7 +86,12 @@ async fn rig_over(writable: bool) -> Rig {
         )
         .await
     } else {
-        Drive::open(config, Arc::<MemoryListing>::clone(&listing), Arc::<MemorySource>::clone(&source)).await
+        Drive::open(
+            config,
+            Arc::<MemoryListing>::clone(&listing),
+            Arc::<MemorySource>::clone(&source),
+        )
+        .await
     }
     .expect("drive");
     let drive = Arc::new(LiveDrive::new(

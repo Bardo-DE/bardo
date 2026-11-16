@@ -1,10 +1,10 @@
 //! The pure half of wire cassettes: the scrubbed request a codec built, frames to bytes and back,
 //! and the plans that slice bytes into chunks.
 
-use std::fmt::Write as _;
 use model_http::{Exchange, Framing, HttpStatus, ResponseHead};
 use model_provider::JsonText;
 use serde_json::Value;
+use std::fmt::Write as _;
 
 use crate::canon::{canonical, digest_hex, len64};
 use crate::{ByteStep, ChunkPlan, HeadPrint, WireBody, WireFrame, WireRequest};

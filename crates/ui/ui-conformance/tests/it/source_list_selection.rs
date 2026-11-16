@@ -27,7 +27,10 @@ fn list(id: &'static str, focus: Option<&'static str>) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Stage() -> Element {
     rsx! {
         Ds {

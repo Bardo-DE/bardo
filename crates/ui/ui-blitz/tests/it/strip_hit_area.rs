@@ -85,27 +85,42 @@ fn Page(shown: Option<bool>, width: Width) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Hidden() -> Element {
     rsx! { Page { shown: Some(false), width: Width::Wide } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Visible() -> Element {
     rsx! { Page { shown: Some(true), width: Width::Wide } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn OnHover() -> Element {
     rsx! { Page { shown: None, width: Width::Wide } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn NarrowHidden() -> Element {
     rsx! { Page { shown: Some(false), width: Width::Narrow } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn NarrowVisible() -> Element {
     rsx! { Page { shown: Some(true), width: Width::Narrow } }
 }

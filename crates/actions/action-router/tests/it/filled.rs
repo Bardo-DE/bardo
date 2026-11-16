@@ -91,7 +91,10 @@ fn world(replies: Vec<MemoryReply>) -> (Router, Arc<Watcher>) {
     let mut router = router();
     router.seams.memory = FakeMemory::answering(replies);
     let watcher = Arc::new(Watcher::default());
-    router.seams.link.host(app(WATCHER), Arc::<Watcher>::clone(&watcher));
+    router
+        .seams
+        .link
+        .host(app(WATCHER), Arc::<Watcher>::clone(&watcher));
     router
         .state
         .lock()

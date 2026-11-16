@@ -35,12 +35,18 @@ fn page(theme: Theme, scheme: Scheme) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Light() -> Element {
     page(Theme::Light, Scheme::Light)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Dark() -> Element {
     page(Theme::Dark, Scheme::Dark)
 }

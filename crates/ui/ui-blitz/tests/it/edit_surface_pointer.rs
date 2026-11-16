@@ -44,7 +44,10 @@ fn at(x: f32, y: f32) -> Point {
 
 /// Two paragraphs in a surface that carries the app's own class and data, above a button
 /// outside it.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Editor() -> Element {
     let handle = use_edit_handle();
     HANDLE.with(|slot| *slot.borrow_mut() = Some(handle));

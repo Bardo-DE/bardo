@@ -291,7 +291,8 @@ impl<H: Http> GdriveReplica<H> {
             let chunk = upload
                 .content
                 .read(sent, self.uploads.chunk as u64)
-                .ok().ok_or_else(again)?;
+                .ok()
+                .ok_or_else(again)?;
             let last = sent + chunk.len() as u64 - 1;
             // The last chunk commits the file: what it replaces is asked about first.
             if last + 1 == total
@@ -412,8 +413,9 @@ impl<H: Http> GdriveReplica<H> {
         let response = self.write_send(get).await?;
         match response.status().as_u16() {
             200 => {
-                let ids: GeneratedIds =
-                    serde_json::from_slice(response.body()).ok().ok_or_else(again)?;
+                let ids: GeneratedIds = serde_json::from_slice(response.body())
+                    .ok()
+                    .ok_or_else(again)?;
                 Ok(ids.ids.into_iter().map(RemoteId).collect())
             }
             _ => Err(write_error(&response, self.clock.now())),

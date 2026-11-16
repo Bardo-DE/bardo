@@ -86,7 +86,10 @@ fn Labels() -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -187,7 +190,10 @@ fn a_row_that_keeps_the_list_open_yields_and_stays_until_a_row_that_closes_it() 
 }
 
 /// A list opened with a query already in its field, as a host that remembers the last one does.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Prefilled() -> Element {
     let mut query = use_signal(|| "tra".to_string());
     rsx! {
@@ -225,7 +231,10 @@ fn a_query_already_in_the_field_is_continued_not_prefixed() {
     assert_eq!(harness.text_of(".query").as_deref(), Some("trav"));
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Nothing() -> Element {
     rsx! {
         Ds { appearance: Appearance::default(), material: Material::Window, extent: RootExtent::Viewport,
@@ -276,7 +285,10 @@ fn query_of(harness: &Harness) -> String {
 }
 
 /// A list with the query echoed, so a test can see the field cleared.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Echo() -> Element {
     let mut query = use_signal(String::new);
     let mut open = use_signal(|| true);

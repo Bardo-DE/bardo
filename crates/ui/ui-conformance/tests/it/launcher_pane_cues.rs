@@ -86,7 +86,10 @@ fn content(pane: Pane) -> PaneContent {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Launcher() -> Element {
     let pane = PANE();
     let detail = use_detail(pane, TOUCH());

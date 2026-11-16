@@ -57,7 +57,10 @@ const VIEW: Viewport = Viewport {
 const CARD: &str = ".card{position:absolute;top:40px;left:40px}";
 
 /// A popup-like page: a frame holding a transparent Popover root with a card and a button in it.
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Page() -> Element {
     rsx! {
         style { {FRAME.get().css()} {CARD} }

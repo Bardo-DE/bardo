@@ -63,6 +63,8 @@ fn draw_group<T>(
     events: &StopEvents,
     motion: &ListMotion,
 ) -> Element {
+    // The row handlers outlive this call, so each row takes its own copy of the events.
+    let events = events.clone();
     let first = shown.first;
     let local = current.checked_sub(first);
     let (body, size) = match &shown.body {

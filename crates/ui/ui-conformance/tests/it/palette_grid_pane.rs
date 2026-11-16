@@ -47,7 +47,10 @@ fn log(harness: &Harness) -> String {
     harness.text_of(".log").unwrap_or_default()
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn GridPalette() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut note = move |line: String| log.with_mut(|log| log.push(line));
@@ -134,7 +137,10 @@ fn the_cursor_moves_through_the_grid_in_two_dimensions_and_leaves_it() {
     assert_eq!(log(&harness), "close,pick:20");
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn MorePalette() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut note = move |line: String| log.with_mut(|log| log.push(line));
@@ -237,7 +243,10 @@ fn caret_word(caret: Caret) -> &'static str {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn ClaimPalette() -> Element {
     let mut log = use_signal(Vec::<String>::new);
     let mut query = use_signal(String::new);
@@ -382,12 +391,18 @@ fn AsidePalette(host: CommandPaletteHost) -> Element {
     }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn OverlayAside() -> Element {
     rsx! { AsidePalette { host: CommandPaletteHost::Overlay } }
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn SurfaceAside() -> Element {
     rsx! { AsidePalette { host: CommandPaletteHost::Surface } }
 }
@@ -465,7 +480,10 @@ fn in_a_surface_the_results_narrow_by_the_pane() {
     );
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn LoneGrid() -> Element {
     let mut at = use_signal(|| None::<usize>);
     let mut picked = use_signal(|| None::<u8>);
@@ -522,7 +540,10 @@ fn a_grid_on_its_own_moves_with_the_arrows_and_stops_at_its_edges() {
     assert_eq!(harness.text_of(".picked").as_deref(), Some("Some(28)"));
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn LeavingPane() -> Element {
     let mut shown = use_signal(|| true);
     let mut gone = use_signal(|| false);

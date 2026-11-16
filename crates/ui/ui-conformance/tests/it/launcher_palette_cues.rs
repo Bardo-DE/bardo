@@ -84,7 +84,10 @@ fn groups(list: List, wider: u8) -> PaletteGroups<u8> {
     ])
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Launcher() -> Element {
     let list = LIST();
     rsx! {

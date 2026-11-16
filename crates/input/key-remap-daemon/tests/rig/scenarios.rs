@@ -329,7 +329,10 @@ fn a_lift_after_another_key_was_written_needs_no_neutral_tap() {
 /// One modifier held, one key tapped over it: `(profile, modifier, key, [modifier press, key
 /// press, key release, modifier release])`, as the wire sees each step.
 #[test]
-#[expect(clippy::too_many_lines, reason = "one long scenario, read top to bottom")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one long scenario, read top to bottom"
+)]
 fn one_modifier_and_one_key_in_each_profile() {
     type Case = (&'static str, &'static str, &'static str, [&'static str; 4]);
     const CASES: &[Case] = &[

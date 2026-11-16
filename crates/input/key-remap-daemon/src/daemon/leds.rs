@@ -124,9 +124,21 @@ mod tests {
     #[test]
     fn decode_table() {
         const CASES: &[(&str, InputEvent, Option<LedEvent>)] = &[
-            ("caps lock on", ev(EV_LED, 0x01, 1), Some(led(Led::Caps, true))),
-            ("caps lock off", ev(EV_LED, 0x01, 0), Some(led(Led::Caps, false))),
-            ("num lock on", ev(EV_LED, 0x00, 1), Some(led(Led::Num, true))),
+            (
+                "caps lock on",
+                ev(EV_LED, 0x01, 1),
+                Some(led(Led::Caps, true)),
+            ),
+            (
+                "caps lock off",
+                ev(EV_LED, 0x01, 0),
+                Some(led(Led::Caps, false)),
+            ),
+            (
+                "num lock on",
+                ev(EV_LED, 0x00, 1),
+                Some(led(Led::Num, true)),
+            ),
             (
                 "scroll lock on",
                 ev(EV_LED, 0x02, 1),

@@ -9,7 +9,10 @@ use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Both() -> Element {
     let views = vec![
         (0u8, "Day".to_owned()),

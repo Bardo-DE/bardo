@@ -156,7 +156,7 @@ fn an_unwritable_destination_loses_the_entry_and_never_the_turn() {
             &spec(),
             &served(),
             &InferReply::Cancelled,
-            &nothing(),
+            nothing(),
             Some(&Why::Named),
         ),
     );
@@ -165,7 +165,7 @@ fn an_unwritable_destination_loses_the_entry_and_never_the_turn() {
             &spec(),
             &served(),
             &InferReply::Cancelled,
-            &nothing(),
+            nothing(),
             Some(&Why::Named),
         ),
     );

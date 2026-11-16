@@ -36,7 +36,10 @@ fn height(n: u32) -> f32 {
         .map_or(40.0, |(_, h)| *h)
 }
 
-#[expect(non_snake_case, reason = "a Dioxus component function is named in CamelCase")]
+#[expect(
+    non_snake_case,
+    reason = "a Dioxus component function is named in CamelCase"
+)]
 fn Column() -> Element {
     let items: Vec<ListItem<u32>> = SHOWN()
         .into_iter()
