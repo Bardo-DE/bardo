@@ -50,12 +50,19 @@ pub struct ToplevelList {
 
 impl ToplevelList {
     /// Binds the list; the compositor announces its windows at the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the side queue cannot be made, when the compositor does not
+    /// advertise a global this binds, or when the flush fails.
     pub fn start(globals: &GlobalList) -> Result<ToplevelList, ClientError> {
         let (connection, queue) = side_queue::<Roster>(globals)?;
         let qh = queue.handle();
         let list = globals
             .bind::<ExtForeignToplevelListV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| ClientError::MissingGlobal("ext_foreign_toplevel_list_v1".to_owned()))?;
+            .map_err(|error| {
+                ClientError::MissingGlobal(format!("ext_foreign_toplevel_list_v1 ({error})"))
+            })?;
         connection
             .flush()
             .map_err(|error| ClientError::Dispatch(error.to_string()))?;
@@ -68,6 +75,10 @@ impl ToplevelList {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when flushing or dispatching on the side queue fails.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
@@ -93,6 +104,10 @@ impl ToplevelList {
     }
 
     /// Asks the compositor to stop (`stop`); it answers `finished`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the request cannot be flushed to the compositor.
     pub fn stop(&mut self) -> Result<(), ClientError> {
         self.list.stop();
         self.connection

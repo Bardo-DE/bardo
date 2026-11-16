@@ -80,11 +80,19 @@ pub struct LayerSurface {
 impl LayerSurface {
     /// Creates a surface and a layer surface for it on the compositor's choice of output, sets
     /// what `ask` says and makes the first commit (which asks for the initial configure).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when a required global is not advertised.
     pub fn create(client: &TestClient, ask: &LayerAsk) -> Result<LayerSurface, ClientError> {
         LayerSurface::create_on(client, ask, None)
     }
 
     /// As [`LayerSurface::create`], on `output` when one is named.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when a required global is not advertised.
     pub fn create_on(
         client: &TestClient,
         ask: &LayerAsk,
@@ -236,7 +244,7 @@ impl Dispatch<ZwlrLayerSurfaceV1, LayerLog> for ClientState {
         _: &mut Self,
         _: &ZwlrLayerSurfaceV1,
         event: zwlr_layer_surface_v1::Event,
-        log: &LayerLog,
+        data: &LayerLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -245,14 +253,14 @@ impl Dispatch<ZwlrLayerSurfaceV1, LayerLog> for ClientState {
                 serial,
                 width,
                 height,
-            } => log.with(|state| {
+            } => data.with(|state| {
                 state.configure = Some(LayerConfigure {
                     serial,
                     width,
                     height,
                 });
             }),
-            zwlr_layer_surface_v1::Event::Closed => log.with(|state| state.closed = true),
+            zwlr_layer_surface_v1::Event::Closed => data.with(|state| state.closed = true),
             _ => {}
         }
     }

@@ -70,6 +70,10 @@ impl BoundPointer {
 
 /// Binds `wl_seat` (version 7) and asks it for its pointer; the pointer exists once the seat's
 /// capabilities arrive, so the test pumps before it injects.
+///
+/// # Panics
+///
+/// Panics when the compositor does not advertise `wl_seat` at version 7.
 pub fn bind_pointer(client: &mut TestClient) -> BoundPointer {
     let log = PressLog::default();
     let seat: WlSeat = client
@@ -98,13 +102,13 @@ impl Dispatch<WlPointer, PressLog> for Host {
         _: &mut Self,
         _: &WlPointer,
         event: wl_pointer::Event,
-        log: &PressLog,
+        data: &PressLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         match event {
             wl_pointer::Event::Enter { serial, .. } => {
-                log.with(|seen| seen.enters.push(serial));
+                data.with(|seen| seen.enters.push(serial));
             }
             wl_pointer::Event::Button {
                 serial,
@@ -116,7 +120,7 @@ impl Dispatch<WlPointer, PressLog> for Host {
                     WEnum::Value(wl_pointer::ButtonState::Pressed) => PressEdge::Press,
                     _ => PressEdge::Release,
                 };
-                log.with(|seen| {
+                data.with(|seen| {
                     seen.buttons.push(PressSeen {
                         serial,
                         button,

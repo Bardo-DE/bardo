@@ -1,6 +1,8 @@
-//! `ext_workspace_manager_v1` as a client (P1-M2): the workspace groups and workspaces the
-//! compositor announced, with their ids, names, coordinates, states and capabilities, and the
-//! requests a switcher makes (which the compositor takes at `commit`).
+//! `ext_workspace_manager_v1` as a client (P1-M2).
+//!
+//! The workspace groups and workspaces the compositor announced, with their ids, names,
+//! coordinates, states and capabilities, and the requests a switcher makes (which the compositor
+//! takes at `commit`).
 //!
 //! Self-contained like `foreign_toplevel_list`: it reads its own events on a side queue of the
 //! client's connection, and binds every `wl_output` first so groups can name them.
@@ -77,16 +79,21 @@ pub struct WorkspaceWatch {
 impl WorkspaceWatch {
     /// Binds the first `wl_output` and the manager; the compositor announces its workspaces at
     /// the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the side queue cannot be made, when the compositor does not
+    /// advertise a global this binds, or when the flush fails.
     pub fn start(globals: &GlobalList) -> Result<WorkspaceWatch, ClientError> {
         let (connection, queue) = side_queue::<Roster>(globals)?;
         let qh = queue.handle();
         let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
         let output = globals
             .bind::<WlOutput, _, _>(&qh, 1..=4, ())
-            .map_err(|_| missing("wl_output"))?;
+            .map_err(|error| missing(&format!("wl_output ({error})")))?;
         let manager = globals
             .bind::<ExtWorkspaceManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("ext_workspace_manager_v1"))?;
+            .map_err(|error| missing(&format!("ext_workspace_manager_v1 ({error})")))?;
         connection
             .flush()
             .map_err(|error| ClientError::Dispatch(error.to_string()))?;
@@ -100,6 +107,10 @@ impl WorkspaceWatch {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when flushing or dispatching on the side queue fails.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
@@ -148,24 +159,41 @@ impl WorkspaceWatch {
     }
 
     /// Asks to activate workspace `index` (takes effect at [`commit`](Self::commit)).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no workspace is announced at `index`.
     pub fn activate(&mut self, index: usize) -> Result<(), ClientError> {
         self.space(index)?.handle.activate();
         self.flush()
     }
 
     /// Asks to deactivate workspace `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no workspace is announced at `index`.
     pub fn deactivate(&mut self, index: usize) -> Result<(), ClientError> {
         self.space(index)?.handle.deactivate();
         self.flush()
     }
 
     /// Asks to remove workspace `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no workspace is announced at `index`.
     pub fn remove(&mut self, index: usize) -> Result<(), ClientError> {
         self.space(index)?.handle.remove();
         self.flush()
     }
 
     /// Asks to assign workspace `index` to group `group`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no workspace is announced at `index` or no group at `group`, or when
+    /// the request cannot be flushed.
     pub fn assign(&mut self, index: usize, group: usize) -> Result<(), ClientError> {
         let group = self
             .roster
@@ -177,6 +205,11 @@ impl WorkspaceWatch {
     }
 
     /// Asks group `group` for a new workspace called `name`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no group is announced at `group`, or when the request cannot be
+    /// flushed.
     pub fn create_workspace(&mut self, group: usize, name: &str) -> Result<(), ClientError> {
         let group = self
             .roster
@@ -188,12 +221,20 @@ impl WorkspaceWatch {
     }
 
     /// `commit`: the requests made since the last commit take effect together.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the request cannot be flushed to the compositor.
     pub fn commit(&mut self) -> Result<(), ClientError> {
         self.manager.commit();
         self.flush()
     }
 
     /// Asks the compositor to stop (`stop`); it answers `finished`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the request cannot be flushed to the compositor.
     pub fn stop(&mut self) -> Result<(), ClientError> {
         self.manager.stop();
         self.flush()

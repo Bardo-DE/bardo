@@ -11,9 +11,13 @@ const INTERFACE: &str = "org.bardo.Compositor1";
 const CALL_PATIENCE: Duration = Duration::from_secs(10);
 
 /// The client end of a new `shell` connection.
+///
+/// # Errors
+///
+/// Returns a message when `DBUS_SESSION_BUS_ADDRESS` is not set, when the bus call fails, or when casement does not answer in time.
 pub fn shell() -> Result<OwnedFd, String> {
     let address = std::env::var("DBUS_SESSION_BUS_ADDRESS")
-        .map_err(|_| "DBUS_SESSION_BUS_ADDRESS is not set".to_owned())?;
+        .map_err(|error| format!("DBUS_SESSION_BUS_ADDRESS is not set: {error}"))?;
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -29,6 +33,6 @@ pub fn shell() -> Result<OwnedFd, String> {
     // The timeout's timer is made inside the runtime: tokio's timers need its context.
     runtime
         .block_on(async { tokio::time::timeout(CALL_PATIENCE, call).await })
-        .map_err(|_| "Connect did not answer".to_owned())?
+        .map_err(|elapsed| format!("Connect did not answer: {elapsed}"))?
         .map_err(|e| e.to_string())
 }

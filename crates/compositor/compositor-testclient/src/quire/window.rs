@@ -41,6 +41,10 @@ pub struct WindowManager {
 
 impl WindowManager {
     /// Binds the global at `version` (1 or 2; `quit` needs 2).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `bardo_window_manager_v1` at `version`.
     pub fn bind(client: &mut TestClient, version: u32) -> WindowManager {
         let quits = QuitLog::default();
         WindowManager {
@@ -126,12 +130,12 @@ impl Dispatch<BardoWindowManagerV1, QuitLog> for Host {
         _: &mut Self,
         _: &BardoWindowManagerV1,
         event: bardo_window_manager_v1::Event,
-        quits: &QuitLog,
+        data: &QuitLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if matches!(event, bardo_window_manager_v1::Event::Quit) {
-            quits.with(|count| *count += 1);
+            data.with(|count| *count += 1);
         }
     }
 }
@@ -141,7 +145,7 @@ impl Dispatch<BardoWindowV1, WindowLog> for Host {
         _: &mut Self,
         _: &BardoWindowV1,
         event: bardo_window_v1::Event,
-        log: &WindowLog,
+        data: &WindowLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -149,12 +153,12 @@ impl Dispatch<BardoWindowV1, WindowLog> for Host {
             bardo_window_v1::Event::Emphasis {
                 emphasis: WEnum::Value(emphasis),
             } => {
-                log.with(|seen| seen.emphasis.push(emphasis));
+                data.with(|seen| seen.emphasis.push(emphasis));
             }
             bardo_window_v1::Event::Placement {
                 mark: WEnum::Value(mark),
             } => {
-                log.with(|seen| seen.placement.push(mark));
+                data.with(|seen| seen.placement.push(mark));
             }
             _ => {}
         }

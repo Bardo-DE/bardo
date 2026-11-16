@@ -1,7 +1,9 @@
-//! The small `xdg` extensions around a toplevel (P0-H2): `xdg_wm_dialog_v1`,
-//! `xdg_toplevel_icon_manager_v1`, `xdg_toplevel_tag_manager_v1`, `xdg_system_bell_v1` and
-//! `xdg_foreign` v2 (exporter and importer). Each is a typed handle over the raw object; the
-//! raw object stays public so a test can send the request the protocol forbids.
+//! The small `xdg` extensions around a toplevel (P0-H2).
+//!
+//! They are `xdg_wm_dialog_v1`, `xdg_toplevel_icon_manager_v1`, `xdg_toplevel_tag_manager_v1`,
+//! `xdg_system_bell_v1` and `xdg_foreign` v2 (exporter and importer). Each is a typed handle over
+//! the raw object; the raw object stays public so a test can send the request the protocol
+//! forbids.
 
 use super::{Host, Shared, Toplevel};
 use crate::conn::TestClient;
@@ -33,6 +35,10 @@ pub struct WmDialog {
 
 impl WmDialog {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `xdg_wm_dialog_v1`.
     pub fn bind(client: &mut TestClient) -> WmDialog {
         WmDialog {
             manager: client
@@ -71,6 +77,10 @@ pub struct IconManager {
 
 impl IconManager {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `xdg_toplevel_icon_manager_v1`.
     pub fn bind(client: &mut TestClient) -> IconManager {
         let log = IconManagerLog::default();
         let manager = client
@@ -103,6 +113,10 @@ pub struct TagManager {
 
 impl TagManager {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `xdg_toplevel_tag_manager_v1`.
     pub fn bind(client: &mut TestClient) -> TagManager {
         TagManager {
             manager: client
@@ -129,6 +143,10 @@ pub struct SystemBell {
 
 impl SystemBell {
     /// Binds the global (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `xdg_system_bell_v1`.
     pub fn bind(client: &mut TestClient) -> SystemBell {
         SystemBell {
             bell: client
@@ -167,6 +185,10 @@ pub struct Foreign {
 
 impl Foreign {
     /// Binds both globals (version 1).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `zxdg_exporter_v2` or `zxdg_importer_v2`.
     pub fn bind(client: &mut TestClient) -> Foreign {
         Foreign {
             exporter: client
@@ -240,16 +262,16 @@ impl Dispatch<XdgToplevelIconManagerV1, IconManagerLog> for Host {
         _: &mut Self,
         _: &XdgToplevelIconManagerV1,
         event: xdg_toplevel_icon_manager_v1::Event,
-        log: &IconManagerLog,
+        data: &IconManagerLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         match event {
             xdg_toplevel_icon_manager_v1::Event::IconSize { size } => {
-                log.with(|seen| seen.sizes.push(size));
+                data.with(|seen| seen.sizes.push(size));
             }
             xdg_toplevel_icon_manager_v1::Event::Done => {
-                log.with(|seen| seen.done += 1);
+                data.with(|seen| seen.done += 1);
             }
             _ => {}
         }
@@ -261,13 +283,13 @@ impl Dispatch<ZxdgExportedV2, ExportedHandle> for Host {
         _: &mut Self,
         _: &ZxdgExportedV2,
         event: zxdg_exported_v2::Event,
-        handle: &ExportedHandle,
+        data: &ExportedHandle,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let zxdg_exported_v2::Event::Handle { handle: text } = event {
             // The handle is random, so the transcript names it without its text.
-            handle.with(|seen| *seen = Some(text));
+            data.with(|seen| *seen = Some(text));
         }
     }
 }
@@ -277,12 +299,12 @@ impl Dispatch<ZxdgImportedV2, ImportedLog> for Host {
         _: &mut Self,
         _: &ZxdgImportedV2,
         event: zxdg_imported_v2::Event,
-        log: &ImportedLog,
+        data: &ImportedLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if matches!(event, zxdg_imported_v2::Event::Destroyed) {
-            log.with(|seen| seen.destroyed += 1);
+            data.with(|seen| seen.destroyed += 1);
         }
     }
 }

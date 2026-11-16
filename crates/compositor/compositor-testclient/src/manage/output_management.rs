@@ -1,6 +1,8 @@
-//! `zwlr_output_manager_v1` as a client (P1-M1): the heads and modes the compositor announced,
-//! and wlr-randr-style configurations (enable or disable heads, set a mode, position, transform
-//! or scale, then apply or test) with the answer each got.
+//! `zwlr_output_manager_v1` as a client (P1-M1).
+//!
+//! The heads and modes the compositor announced, and wlr-randr-style configurations (enable or
+//! disable heads, set a mode, position, transform or scale, then apply or test) with the answer
+//! each got.
 //!
 //! Self-contained like `foreign_toplevel_list`: it binds the manager on a side queue and reads
 //! its events there.
@@ -155,12 +157,19 @@ pub struct OutputManager {
 
 impl OutputManager {
     /// Binds the manager; the compositor announces its heads at the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the side queue cannot be made, when the compositor does not
+    /// advertise a global this binds, or when the flush fails.
     pub fn start(globals: &GlobalList) -> Result<OutputManager, ClientError> {
         let (connection, queue) = side_queue::<Roster>(globals)?;
         let qh = queue.handle();
         let manager = globals
             .bind::<ZwlrOutputManagerV1, _, _>(&qh, 1..=4, ())
-            .map_err(|_| ClientError::MissingGlobal("zwlr_output_manager_v1".to_owned()))?;
+            .map_err(|error| {
+                ClientError::MissingGlobal(format!("zwlr_output_manager_v1 ({error})"))
+            })?;
         connection
             .flush()
             .map_err(|error| ClientError::Dispatch(error.to_string()))?;
@@ -174,6 +183,10 @@ impl OutputManager {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when flushing or dispatching on the side queue fails.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
@@ -214,6 +227,10 @@ impl OutputManager {
     }
 
     /// Asks the compositor to stop (`stop`); it answers `finished`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the request cannot be flushed to the compositor.
     pub fn stop(&mut self) -> Result<(), ClientError> {
         self.manager.stop();
         self.flush()
@@ -221,6 +238,11 @@ impl OutputManager {
 
     /// Builds a configuration of `plans` at `serial` (the last `done`'s when none is given) and
     /// sends `apply` or `test`. The answer arrives at a later pump ([`OutputManager::answer`]).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when a plan names a head that is not announced, or when the request cannot
+    /// be flushed.
     pub fn configure(
         &mut self,
         serial: Option<u32>,
@@ -256,6 +278,10 @@ impl OutputManager {
     }
 
     /// Builds a configuration that enables `name` twice, which the protocol forbids.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no head is announced as `name`, or when the request cannot be flushed.
     pub fn enable_twice(&mut self, name: &str) -> Result<(), ClientError> {
         let qh = self.queue.handle();
         let configuration =

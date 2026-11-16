@@ -1,6 +1,7 @@
-//! xdg toplevels (P0-H2): `xdg_wm_base` (it answers pings), `xdg_surface` and `xdg_toplevel`
-//! with a log of every configure, plus the press serials a pointer delivers (what a move,
-//! resize or popup grab must answer).
+//! xdg toplevels (P0-H2): `xdg_wm_base` (it answers pings), `xdg_surface` and `xdg_toplevel`.
+//!
+//! Each toplevel has a log of every configure, plus the press serials a pointer delivers (what a
+//! move, resize or popup grab must answer).
 //!
 //! The helper follows the connection core's pattern: `Dispatch<object, log>` for the client's
 //! [`Host`] type and one [`Shared`] log per object that the test reads. The transcript is
@@ -88,6 +89,10 @@ pub struct WmBase {
 
 impl WmBase {
     /// Binds `xdg_wm_base` at `version`.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `xdg_wm_base` at `version`.
     pub fn bind(client: &mut TestClient, version: u32) -> WmBase {
         let pings = Pings::default();
         let base = client
@@ -97,6 +102,10 @@ impl WmBase {
     }
 
     /// A new surface with the toplevel role (through a new `xdg_surface`). Nothing is committed.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wl_compositor`.
     pub fn toplevel(&self, client: &mut TestClient) -> Toplevel {
         let surface = client
             .create_surface()
@@ -257,15 +266,15 @@ impl Toplevel {
 impl Dispatch<XdgWmBase, Pings> for Host {
     fn event(
         _: &mut Self,
-        base: &XdgWmBase,
+        proxy: &XdgWmBase,
         event: xdg_wm_base::Event,
-        pings: &Pings,
+        data: &Pings,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let xdg_wm_base::Event::Ping { serial } = event {
-            pings.with(|seen| seen.push(serial));
-            base.pong(serial);
+            data.with(|seen| seen.push(serial));
+            proxy.pong(serial);
         }
     }
 }
@@ -275,12 +284,12 @@ impl Dispatch<XdgSurface, ToplevelLog> for Host {
         _: &mut Self,
         _: &XdgSurface,
         event: xdg_surface::Event,
-        log: &ToplevelLog,
+        data: &ToplevelLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let xdg_surface::Event::Configure { serial } = event {
-            log.with(|seen| {
+            data.with(|seen| {
                 let (size, states) = seen.pending.take().unwrap_or_default();
                 seen.configures.push(Configure {
                     serial,
@@ -306,7 +315,7 @@ impl Dispatch<XdgToplevel, ToplevelLog> for Host {
         _: &mut Self,
         _: &XdgToplevel,
         event: xdg_toplevel::Event,
-        log: &ToplevelLog,
+        data: &ToplevelLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -317,13 +326,13 @@ impl Dispatch<XdgToplevel, ToplevelLog> for Host {
                 states,
             } => {
                 let states = states_of(&states);
-                log.with(|seen| seen.pending = Some(((width, height), states)));
+                data.with(|seen| seen.pending = Some(((width, height), states)));
             }
             xdg_toplevel::Event::Close => {
-                log.with(|seen| seen.closes += 1);
+                data.with(|seen| seen.closes += 1);
             }
             xdg_toplevel::Event::ConfigureBounds { width, height } => {
-                log.with(|seen| seen.bounds = Some((width, height)));
+                data.with(|seen| seen.bounds = Some((width, height)));
             }
             xdg_toplevel::Event::WmCapabilities { capabilities } => {
                 let codes: Vec<u32> = capabilities
@@ -332,7 +341,7 @@ impl Dispatch<XdgToplevel, ToplevelLog> for Host {
                     .iter()
                     .map(|bytes| u32::from_ne_bytes(*bytes))
                     .collect();
-                log.with(|seen| seen.capabilities = codes);
+                data.with(|seen| seen.capabilities = codes);
             }
             _ => {}
         }

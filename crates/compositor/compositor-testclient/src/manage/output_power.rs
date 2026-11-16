@@ -107,12 +107,19 @@ pub struct OutputPowers {
 
 impl OutputPowers {
     /// Binds the manager and every output; the compositor answers at the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the side queue cannot be made, when the compositor does not
+    /// advertise a global this binds, or when the flush fails.
     pub fn start(globals: &GlobalList) -> Result<OutputPowers, ClientError> {
         let (connection, queue) = side_queue::<Seen>(globals)?;
         let qh = queue.handle();
         let manager = globals
             .bind::<ZwlrOutputPowerManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| ClientError::MissingGlobal("zwlr_output_power_manager_v1".to_owned()))?;
+            .map_err(|error| {
+                ClientError::MissingGlobal(format!("zwlr_output_power_manager_v1 ({error})"))
+            })?;
         let outputs = bind_outputs(globals, &qh);
         connection
             .flush()
@@ -130,11 +137,19 @@ impl OutputPowers {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when flushing or dispatching on the side queue fails.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.seen)
     }
 
     /// Asks for a control on the output called `name`; an error when no output said that name.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no output announced that name, or the request cannot be flushed.
     pub fn control(&mut self, name: &str) -> Result<ControlId, ClientError> {
         let output = output_named(&self.seen.outputs, name)
             .ok_or_else(|| ClientError::Dispatch(format!("no output named {name}")))?;
@@ -154,6 +169,10 @@ impl OutputPowers {
     }
 
     /// Asks for the control to light (`true`) or darken (`false`) its output.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when `id` names no control, or when the request cannot be flushed.
     pub fn set_mode(&mut self, id: ControlId, lit: bool) -> Result<(), ClientError> {
         let control = self.find(id)?;
         control.proxy.set_mode(if lit {
@@ -186,6 +205,10 @@ impl OutputPowers {
     }
 
     /// Destroys a control.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when `id` names no control, or when the request cannot be flushed.
     pub fn destroy(&mut self, id: ControlId) -> Result<(), ClientError> {
         let control = self.find(id)?;
         control.proxy.destroy();

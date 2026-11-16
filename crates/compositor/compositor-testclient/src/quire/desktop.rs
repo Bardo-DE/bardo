@@ -104,11 +104,21 @@ impl DesktopWatch {
     ///
     /// The manager is bound at the newest version the compositor serves (2); a client that
     /// wants version 1 behaviour uses [`DesktopWatch::start_at`].
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the side queue cannot be made, when the compositor does not
+    /// advertise a global this binds, or when the flush fails.
     pub fn start(globals: &GlobalList) -> Result<DesktopWatch, ClientError> {
         DesktopWatch::start_at(globals, 1..=2)
     }
 
     /// As [`DesktopWatch::start`], binding the manager at a version in `versions`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the side queue cannot be made, when the compositor does not
+    /// advertise a global this binds, or when the flush fails.
     pub fn start_at(
         globals: &GlobalList,
         versions: RangeInclusive<u32>,
@@ -118,16 +128,16 @@ impl DesktopWatch {
         let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
         let output = globals
             .bind::<WlOutput, _, _>(&qh, 1..=4, ())
-            .map_err(|_| missing("wl_output"))?;
+            .map_err(|error| missing(&format!("wl_output ({error})")))?;
         let seat = globals
             .bind::<WlSeat, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("wl_seat"))?;
+            .map_err(|error| missing(&format!("wl_seat ({error})")))?;
         let list = globals
             .bind::<ExtForeignToplevelListV1, _, _>(&qh, 1..=1, ())
             .ok();
         let manager = globals
             .bind::<BardoDesktopManagerV1, _, _>(&qh, versions, ())
-            .map_err(|_| missing("bardo_desktop_manager_v1"))?;
+            .map_err(|error| missing(&format!("bardo_desktop_manager_v1 ({error})")))?;
         connection
             .flush()
             .map_err(|error| ClientError::Dispatch(error.to_string()))?;
@@ -143,6 +153,10 @@ impl DesktopWatch {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when flushing or dispatching on the side queue fails.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
@@ -208,6 +222,10 @@ impl DesktopWatch {
     }
 
     /// `get_window_for` the window the list announced at `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn get_window_for(&mut self, index: usize) -> Result<(), ClientError> {
         let (handle, _) = self
             .roster
@@ -222,18 +240,30 @@ impl DesktopWatch {
     }
 
     /// `create_space` on the first output.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the request cannot be flushed to the compositor.
     pub fn create_space(&self) -> Result<(), ClientError> {
         self.manager.create_space(&self.output);
         self.flush()
     }
 
     /// `stop`: no more new objects; the compositor answers `finished`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the request cannot be flushed to the compositor.
     pub fn stop(&self) -> Result<(), ClientError> {
         self.manager.stop();
         self.flush()
     }
 
     /// A request on the app announced at `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no app is announced at `index`, or when the request cannot be flushed.
     pub fn app(&self, index: usize, request: AppRequest) -> Result<(), ClientError> {
         let object = &self
             .roster
@@ -254,6 +284,11 @@ impl DesktopWatch {
     }
 
     /// A request on the window announced at `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window (or, for `ToSpace`, no Space) is announced at the index,
+    /// or when the request cannot be flushed.
     pub fn window(&self, index: usize, request: WindowRequest) -> Result<(), ClientError> {
         let object = &self
             .roster
@@ -284,6 +319,11 @@ impl DesktopWatch {
     }
 
     /// A request on the Space announced at `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no Space is announced at `index`, or when the request cannot be
+    /// flushed.
     pub fn space(&self, index: usize, request: SpaceRequest) -> Result<(), ClientError> {
         let object = &self
             .roster

@@ -1,5 +1,6 @@
-//! The surface side of the P0-H1 protocols that have no module of their own in the frozen
-//! tree: `wl_compositor` and `wl_surface`, `wl_subcompositor` and `wl_subsurface` (this
+//! The surface side of the P0-H1 protocols that have no module of their own in the frozen tree.
+//!
+//! That is `wl_compositor` and `wl_surface`, `wl_subcompositor` and `wl_subsurface` (this
 //! module's own), raw `wl_shm` pools for geometry `shm_buffer` would never make, and the
 //! `wl_output`s with their xdg-output. Events are not logged here: the client's transcript has
 //! every one, and [`seen`] reads one object's.
@@ -88,6 +89,10 @@ pub struct Compositor {
 
 impl Compositor {
     /// Binds `wl_compositor` at exactly `version`.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wl_compositor` at `version`.
     #[must_use]
     pub fn bind(client: &TestClient, version: u32) -> Compositor {
         Compositor {
@@ -153,6 +158,10 @@ pub struct Subcompositor {
 
 impl Subcompositor {
     /// Binds `wl_subcompositor` at exactly `version`.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wl_subcompositor` at `version`.
     #[must_use]
     pub fn bind(client: &TestClient, version: u32) -> Subcompositor {
         Subcompositor {
@@ -186,6 +195,11 @@ pub struct RawPool {
 
 impl RawPool {
     /// A pool of `bytes` bytes on a `wl_shm` bound at `version` (1 or 2).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `wl_shm` at `version`, or when the memfd
+    /// cannot be created or sized.
     #[must_use]
     pub fn new(client: &TestClient, version: u32, bytes: usize) -> RawPool {
         let shm: WlShm = client
@@ -207,6 +221,10 @@ impl RawPool {
     }
 
     /// Writes `bytes` at `offset` in the pool.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the pool's memfd cannot be written.
     pub fn write(&self, offset: u64, bytes: &[u8]) {
         self.file
             .write_all_at(bytes, offset)
@@ -284,6 +302,10 @@ impl BoundOutput {
 
 /// Binds every advertised `wl_output` at `version` (one per plugged output), with the
 /// xdg-output of each when `with_xdg`.
+///
+/// # Errors
+///
+/// Returns an error when `with_xdg` is set and the xdg-output manager is not advertised.
 pub fn bind_outputs(
     client: &TestClient,
     version: u32,

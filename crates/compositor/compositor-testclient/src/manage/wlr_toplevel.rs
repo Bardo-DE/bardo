@@ -1,6 +1,7 @@
-//! `zwlr_foreign_toplevel_manager_v1` as a client (P1-M2): every window the compositor lists,
-//! with the title, app id, states and number of outputs it announced (as of the last `done`),
-//! and the requests a dock or switcher makes on a handle.
+//! `zwlr_foreign_toplevel_manager_v1` as a client (P1-M2).
+//!
+//! Every window the compositor lists, with the title, app id, states and number of outputs it
+//! announced (as of the last `done`), and the requests a dock or switcher makes on a handle.
 //!
 //! Self-contained like `foreign_toplevel_list`: it reads its own events on a side queue of the
 //! client's connection. It binds the seat and every `wl_output` first, so the compositor has
@@ -75,19 +76,24 @@ pub struct ToplevelWatch {
 impl ToplevelWatch {
     /// Binds the seat, the first `wl_output` and the manager; the compositor announces its
     /// windows at the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the side queue cannot be made, when the compositor does not
+    /// advertise a global this binds, or when the flush fails.
     pub fn start(globals: &GlobalList) -> Result<ToplevelWatch, ClientError> {
         let (connection, queue) = side_queue::<Roster>(globals)?;
         let qh = queue.handle();
         let missing = |name: &str| ClientError::MissingGlobal(name.to_owned());
         let seat = globals
             .bind::<WlSeat, _, _>(&qh, 1..=1, ())
-            .map_err(|_| missing("wl_seat"))?;
+            .map_err(|error| missing(&format!("wl_seat ({error})")))?;
         let output = globals
             .bind::<WlOutput, _, _>(&qh, 1..=4, ())
-            .map_err(|_| missing("wl_output"))?;
+            .map_err(|error| missing(&format!("wl_output ({error})")))?;
         let manager = globals
             .bind::<ZwlrForeignToplevelManagerV1, _, _>(&qh, 1..=3, ())
-            .map_err(|_| missing("zwlr_foreign_toplevel_manager_v1"))?;
+            .map_err(|error| missing(&format!("zwlr_foreign_toplevel_manager_v1 ({error})")))?;
         connection
             .flush()
             .map_err(|error| ClientError::Dispatch(error.to_string()))?;
@@ -102,6 +108,10 @@ impl ToplevelWatch {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when flushing or dispatching on the side queue fails.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.roster)
     }
@@ -117,6 +127,10 @@ impl ToplevelWatch {
     }
 
     /// Asks the compositor to stop (`stop`); it answers `finished`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the request cannot be flushed to the compositor.
     pub fn stop(&mut self) -> Result<(), ClientError> {
         self.manager.stop();
         self.flush()
@@ -129,46 +143,82 @@ impl ToplevelWatch {
     }
 
     /// `set_maximized` on window `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn maximize(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, |handle, _| handle.set_maximized())
     }
 
     /// `unset_maximized` on window `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn unmaximize(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, |handle, _| handle.unset_maximized())
     }
 
     /// `set_minimized` on window `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn minimize(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, |handle, _| handle.set_minimized())
     }
 
     /// `unset_minimized` on window `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn unminimize(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, |handle, _| handle.unset_minimized())
     }
 
     /// `set_fullscreen` on window `index`, on no output in particular.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn fullscreen(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, |handle, _| handle.set_fullscreen(None))
     }
 
     /// `unset_fullscreen` on window `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn unfullscreen(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, |handle, _| handle.unset_fullscreen())
     }
 
     /// `activate` window `index` on the client's seat.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn activate(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, ZwlrForeignToplevelHandleV1::activate)
     }
 
     /// `close` window `index`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn close(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, |handle, _| handle.close())
     }
 
     /// `set_rectangle` on window `index`: the tile `(x, y, w, h)` of `surface` stands for it.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn set_rectangle(
         &mut self,
         index: usize,
@@ -181,6 +231,10 @@ impl ToplevelWatch {
     }
 
     /// `destroy` window `index`'s handle.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no window is listed at `index`, or when the request cannot be flushed.
     pub fn destroy(&mut self, index: usize) -> Result<(), ClientError> {
         self.on(index, |handle, _| handle.destroy())
     }

@@ -55,6 +55,10 @@ pub struct LockSurface {
 
 impl Locker {
     /// Asks to lock the session.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the session lock manager is not advertised.
     pub fn request(client: &TestClient) -> Result<Locker, ClientError> {
         let manager: ExtSessionLockManagerV1 = client.bind(1..=1, LockPlain)?;
         let log = LockLog::default();
@@ -82,11 +86,19 @@ impl Locker {
     }
 
     /// Creates a surface covering the first output the compositor advertises.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no `wl_output` is advertised or a required global is missing.
     pub fn cover(&self, client: &TestClient) -> Result<LockSurface, ClientError> {
         self.cover_on(client, 0)
     }
 
     /// Creates a surface covering the `nth` output the compositor advertises (0 is the first).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when fewer than `nth + 1` outputs are advertised or a required global is missing.
     pub fn cover_on(&self, client: &TestClient, nth: usize) -> Result<LockSurface, ClientError> {
         let qh = client.qh();
         let compositor: WlCompositor = client.bind(1..=5, LockPlain)?;
@@ -197,11 +209,11 @@ impl Dispatch<ExtSessionLockV1, LockLog> for ClientState {
         _: &mut Self,
         _: &ExtSessionLockV1,
         event: ext_session_lock_v1::Event,
-        log: &LockLog,
+        data: &LockLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
-        let mut state = log.0.lock().unwrap_or_else(PoisonError::into_inner);
+        let mut state = data.0.lock().unwrap_or_else(PoisonError::into_inner);
         match event {
             ext_session_lock_v1::Event::Locked => state.locked = true,
             ext_session_lock_v1::Event::Finished => state.finished = true,
@@ -215,7 +227,7 @@ impl Dispatch<ExtSessionLockSurfaceV1, LockSurfaceLog> for ClientState {
         _: &mut Self,
         _: &ExtSessionLockSurfaceV1,
         event: ext_session_lock_surface_v1::Event,
-        log: &LockSurfaceLog,
+        data: &LockSurfaceLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -225,7 +237,7 @@ impl Dispatch<ExtSessionLockSurfaceV1, LockSurfaceLog> for ClientState {
             height,
         } = event
         {
-            *log.0.lock().unwrap_or_else(PoisonError::into_inner) = Some((serial, width, height));
+            *data.0.lock().unwrap_or_else(PoisonError::into_inner) = Some((serial, width, height));
         }
     }
 }

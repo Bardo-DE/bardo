@@ -25,6 +25,10 @@ pub struct CursorShape {
 
 impl CursorShape {
     /// Binds the manager (version 2 when offered) and gets the shape device of `pointer`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the cursor shape manager is not advertised.
     pub fn bind(client: &TestClient, pointer: &WlPointer) -> Result<CursorShape, ClientError> {
         let manager: WpCursorShapeManagerV1 = client.bind(1..=2, ShapePlain)?;
         let device = manager.get_pointer(pointer, &client.qh(), ShapePlain);

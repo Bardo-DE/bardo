@@ -57,12 +57,19 @@ pub struct GammaControls {
 
 impl GammaControls {
     /// Binds the manager and every output; the compositor answers at the fixture's next pump.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the side queue cannot be made, when the compositor does not
+    /// advertise a global this binds, or when the flush fails.
     pub fn start(globals: &GlobalList) -> Result<GammaControls, ClientError> {
         let (connection, queue) = side_queue::<Seen>(globals)?;
         let qh = queue.handle();
         let manager = globals
             .bind::<ZwlrGammaControlManagerV1, _, _>(&qh, 1..=1, ())
-            .map_err(|_| ClientError::MissingGlobal("zwlr_gamma_control_manager_v1".to_owned()))?;
+            .map_err(|error| {
+                ClientError::MissingGlobal(format!("zwlr_gamma_control_manager_v1 ({error})"))
+            })?;
         let outputs = bind_outputs(globals, &qh);
         connection
             .flush()
@@ -80,11 +87,19 @@ impl GammaControls {
     }
 
     /// Reads what arrived.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when flushing or dispatching on the side queue fails.
     pub fn pump(&mut self) -> Result<bool, ClientError> {
         pump_queue(&self.connection, &mut self.queue, &mut self.seen)
     }
 
     /// Asks for a control on the output called `name`; an error when no output said that name.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when no output announced that name, or the request cannot be flushed.
     pub fn control(&mut self, name: &str) -> Result<ControlId, ClientError> {
         let output = output_named(&self.seen.outputs, name)
             .ok_or_else(|| ClientError::Dispatch(format!("no output named {name}")))?;
@@ -113,6 +128,11 @@ impl GammaControls {
     }
 
     /// Sends a ramp: `red`, `green` and `blue` in turn, 16-bit native endian, in a memfd.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when the ramp cannot be written to its memfd, when `id` names no control,
+    /// or when the request cannot be flushed.
     pub fn set_ramp(
         &mut self,
         id: ControlId,
@@ -136,6 +156,10 @@ impl GammaControls {
     }
 
     /// Destroys a control (the compositor restores the identity curve).
+    ///
+    /// # Errors
+    ///
+    /// Returns an error when `id` names no control, or when the request cannot be flushed.
     pub fn destroy(&mut self, id: ControlId) -> Result<(), ClientError> {
         let control = self.find(id)?;
         control.proxy.destroy();

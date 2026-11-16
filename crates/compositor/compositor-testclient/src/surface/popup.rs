@@ -263,12 +263,12 @@ impl Dispatch<XdgSurface, PopupLog> for Host {
         _: &mut Self,
         _: &XdgSurface,
         event: xdg_surface::Event,
-        log: &PopupLog,
+        data: &PopupLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let xdg_surface::Event::Configure { serial } = event {
-            log.with(|seen| seen.serials.push(serial));
+            data.with(|seen| seen.serials.push(serial));
         }
     }
 }
@@ -278,7 +278,7 @@ impl Dispatch<XdgPopup, PopupLog> for Host {
         _: &mut Self,
         _: &XdgPopup,
         event: xdg_popup::Event,
-        log: &PopupLog,
+        data: &PopupLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -289,13 +289,13 @@ impl Dispatch<XdgPopup, PopupLog> for Host {
                 width,
                 height,
             } => {
-                log.with(|seen| seen.configures.push((x, y, width, height)));
+                data.with(|seen| seen.configures.push((x, y, width, height)));
             }
             xdg_popup::Event::PopupDone => {
-                log.with(|seen| seen.done += 1);
+                data.with(|seen| seen.done += 1);
             }
             xdg_popup::Event::Repositioned { token } => {
-                log.with(|seen| seen.repositioned.push(token));
+                data.with(|seen| seen.repositioned.push(token));
             }
             _ => {}
         }

@@ -103,6 +103,10 @@ pub struct ShellHandle {
 
 impl ShellHandle {
     /// Binds the global at `version` (1 to 7).
+    ///
+    /// # Panics
+    ///
+    /// Panics when the compositor does not advertise `bardo_shell_v1` to this client at `version`.
     pub fn bind(client: &mut TestClient, version: u32) -> ShellHandle {
         let log = ShellLog::default();
         let object = client
@@ -300,7 +304,7 @@ impl Dispatch<BardoShellV1, ShellLog> for Host {
         _: &mut Self,
         _: &BardoShellV1,
         event: bardo_shell_v1::Event,
-        log: &ShellLog,
+        data: &ShellLog,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
@@ -310,102 +314,75 @@ impl Dispatch<BardoShellV1, ShellLog> for Host {
                     WEnum::Value(mods) => mods.bits(),
                     WEnum::Unknown(raw) => raw,
                 };
-                log.with(|seen| seen.modifiers.push((surface, bits)));
+                data.with(|seen| seen.modifiers.push((surface, bits)));
             }
             bardo_shell_v1::Event::WindowMenu {
                 toplevel,
                 x,
                 y,
                 enabled,
-            } => log.with(|seen| {
+            } => data.with(|seen| {
                 seen.window_menus.push(WindowMenuSeen {
                     toplevel,
                     at: (x, y),
                     enabled,
                 });
             }),
-            bardo_shell_v1::Event::SplitChoose { first, side } => log.with(|seen| {
+            bardo_shell_v1::Event::SplitChoose { first, side } => data.with(|seen| {
                 seen.split_choices.push(SplitChoiceSeen {
                     first,
-                    side: match side {
-                        WEnum::Value(side) => Some(side),
-                        WEnum::Unknown(_) => None,
-                    },
+                    side: side.into_result().ok(),
                     candidates: Vec::new(),
                 });
             }),
-            bardo_shell_v1::Event::SplitCandidate { toplevel } => log.with(|seen| {
+            bardo_shell_v1::Event::SplitCandidate { toplevel } => data.with(|seen| {
                 if let Some(choice) = seen.split_choices.last_mut() {
                     choice.candidates.push(toplevel);
                 }
             }),
             bardo_shell_v1::Event::SplitChoiceEnd { first } => {
-                log.with(|seen| seen.split_ends.push(first));
+                data.with(|seen| seen.split_ends.push(first));
             }
             bardo_shell_v1::Event::OverviewState {
                 state, progress, ..
-            } => log.with(|seen| {
-                let state = match state {
-                    WEnum::Value(state) => Some(state),
-                    WEnum::Unknown(_) => None,
-                };
+            } => data.with(|seen| {
+                let state = state.into_result().ok();
                 seen.overview_states.push((state, progress));
             }),
-            bardo_shell_v1::Event::OverviewOutput { output, shown } => log.with(|seen| {
-                let shown = match shown {
-                    WEnum::Value(shown) => Some(shown),
-                    WEnum::Unknown(_) => None,
-                };
+            bardo_shell_v1::Event::OverviewOutput { output, shown } => data.with(|seen| {
+                let shown = shown.into_result().ok();
                 seen.overview_outputs.push((output, shown));
             }),
             bardo_shell_v1::Event::DropTarget { output, space_id } => {
-                log.with(|seen| seen.drop_targets.push((output, space_id)));
+                data.with(|seen| seen.drop_targets.push((output, space_id)));
             }
-            bardo_shell_v1::Event::DropTargetNew { output, over } => log.with(|seen| {
-                let over = match over {
-                    WEnum::Value(over) => Some(over),
-                    WEnum::Unknown(_) => None,
-                };
+            bardo_shell_v1::Event::DropTargetNew { output, over } => data.with(|seen| {
+                let over = over.into_result().ok();
                 seen.drop_targets_new.push((output, over));
             }),
             bardo_shell_v1::Event::WindowDragBegin { output, toplevel } => {
-                log.with(|seen| seen.drag_begins.push((output, toplevel)));
+                data.with(|seen| seen.drag_begins.push((output, toplevel)));
             }
             bardo_shell_v1::Event::WindowDragEnd {
                 output,
                 toplevel,
                 outcome,
-            } => log.with(|seen| {
-                let outcome = match outcome {
-                    WEnum::Value(outcome) => Some(outcome),
-                    WEnum::Unknown(_) => None,
-                };
+            } => data.with(|seen| {
+                let outcome = outcome.into_result().ok();
                 seen.drag_ends.push((output, toplevel, outcome));
             }),
-            bardo_shell_v1::Event::Reveal { edge, shown } => log.with(|seen| {
-                let edge = match edge {
-                    WEnum::Value(edge) => Some(edge),
-                    WEnum::Unknown(_) => None,
-                };
-                let shown = match shown {
-                    WEnum::Value(shown) => Some(shown),
-                    WEnum::Unknown(_) => None,
-                };
+            bardo_shell_v1::Event::Reveal { edge, shown } => data.with(|seen| {
+                let edge = edge.into_result().ok();
+                let shown = shown.into_result().ok();
                 seen.reveals.push((edge, shown));
             }),
             bardo_shell_v1::Event::RevealOnOutput {
                 output,
                 edge,
                 shown,
-            } => log.with(|seen| {
-                let edge = match edge {
-                    WEnum::Value(edge) => Some(edge),
-                    WEnum::Unknown(_) => None,
-                };
-                let shown = match shown {
-                    WEnum::Value(shown) => Some(shown),
-                    WEnum::Unknown(_) => None,
-                };
+            } => data.with(|seen| {
+                let edge = edge.into_result().ok();
+                let shown = shown.into_result().ok();
                 seen.reveals_on_outputs.push((output, edge, shown));
             }),
             _ => {}
@@ -418,12 +395,12 @@ impl Dispatch<WlOutput, Shared<Option<String>>> for Host {
         _: &mut Self,
         _: &WlOutput,
         event: wl_output::Event,
-        name: &Shared<Option<String>>,
+        data: &Shared<Option<String>>,
         _: &Connection,
         _: &QueueHandle<Self>,
     ) {
         if let wl_output::Event::Name { name: connector } = event {
-            name.with(|held| *held = Some(connector));
+            data.with(|held| *held = Some(connector));
         }
     }
 }
