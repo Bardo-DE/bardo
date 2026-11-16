@@ -74,11 +74,7 @@ impl<I: IntentsTransport, H: Borrow<Intents<I>> + Send + Sync> SessionLog for Ro
             Ok(StoredView::Rows { rows, next }) => Ok(LogPage {
                 rows: rows
                     .iter()
-                    .map(|r| {
-                        serde_json::from_str::<Logged>(&r.json)
-                            .ok()
-                            .ok_or(LogFault::Encode)
-                    })
+                    .map(|r| serde_json::from_str::<Logged>(&r.json).map_err(LogFault::encode))
                     .collect::<Result<_, _>>()?,
                 next: next.map(Seq),
             }),

@@ -26,14 +26,14 @@ const PAGE: PageSize = PageSize(Count(200));
 pub(crate) const MAX_LOG_PAGES: usize = 512;
 
 /// Why a session was not restored.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum RestoreFault {
     /// The router already holds this session.
     #[error("the session is already live")]
     Live,
     /// The log could not be read; nothing was restored.
     #[error("the session log could not be read")]
-    Log(LogFault),
+    Log(#[source] LogFault),
     /// The log is longer than a restore reads (`MAX_LOG_PAGES` pages), or never ends.
     #[error("the session log is too long to restore")]
     TooLong,

@@ -65,7 +65,7 @@ impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
     }
 
     fn thing(session: &SessionId) -> Result<EntityId, LogFault> {
-        session_thing(session).ok_or(LogFault::Encode)
+        session_thing(session).ok_or(LogFault::Unnamed)
     }
 
     /// What the router says about its own record: trusted, private to the Space.
@@ -84,8 +84,8 @@ impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
     fn record(&self, session: &SessionId, kind: &str, json: &str) -> Result<Record, LogFault> {
         let body = EventBody::Area(AreaPayload {
             area: AreaTag::Companion,
-            kind: KindTag::parse(kind).ok().ok_or(LogFault::Encode)?,
-            json: JsonText::parse(json).ok().ok_or(LogFault::Encode)?,
+            kind: KindTag::parse(kind).map_err(LogFault::encode)?,
+            json: JsonText::parse(json).map_err(LogFault::encode)?,
             things: vec![(
                 ThingView {
                     thing: Self::thing(session)?,
@@ -203,7 +203,7 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
         seq: Seq,
         entry: &SessionEntry,
     ) -> Result<Appended, LogFault> {
-        let encoded = encode(seq, entry).ok().ok_or(LogFault::Encode)?;
+        let encoded = encode(seq, entry).map_err(LogFault::encode)?;
         let (next, last) = if let Some(next) = self.cached(session) {
             (next, None)
         } else {

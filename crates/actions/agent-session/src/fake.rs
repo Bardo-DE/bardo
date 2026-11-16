@@ -217,7 +217,7 @@ impl SessionLog for MemoryLog {
             }
             *left -= 1;
         }
-        let encoded = encode(seq, entry).ok().ok_or(LogFault::Encode)?;
+        let encoded = encode(seq, entry).map_err(LogFault::encode)?;
         let mut all = self.bodies.lock().unwrap_or_else(PoisonError::into_inner);
         let rows = all.entry(session.clone()).or_default();
         let expected = Seq(rows.len() as u64);

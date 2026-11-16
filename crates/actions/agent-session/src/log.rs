@@ -10,10 +10,14 @@ use crate::codec::Logged;
 use crate::entry::{Seq, SessionEntry};
 use base_ids::Count;
 use provenance::SessionId;
+use std::sync::Arc;
 
 /// Why an append or a page failed. A taint entry that is refused for any of these refuses the
 /// reveal it guards (fail closed).
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+///
+/// Two faults are equal when they are the same kind of failure (an `OutOfOrder` also has to name
+/// the same position); the cause of an `Encode` is not compared.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum LogFault {
     /// The store holds a different next position.
     #[error("the log's next position is {expected:?}")]
@@ -29,8 +33,29 @@ pub enum LogFault {
     Unavailable,
     /// The entry could not be written as JSON.
     #[error("the entry could not be encoded")]
-    Encode,
+    Encode(#[source] Arc<dyn std::error::Error + Send + Sync>),
+    /// The session has no stored name.
+    #[error("the session has no stored name")]
+    Unnamed,
 }
+
+impl LogFault {
+    /// An `Encode` fault caused by `source`.
+    pub fn encode(source: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self::Encode(Arc::new(source))
+    }
+}
+
+impl PartialEq for LogFault {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::OutOfOrder { expected: a }, Self::OutOfOrder { expected: b }) => a == b,
+            _ => std::mem::discriminant(self) == std::mem::discriminant(other),
+        }
+    }
+}
+
+impl Eq for LogFault {}
 
 /// The acknowledgement of a durable append: the entry is stored, in order, and will be read back.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
