@@ -2,11 +2,13 @@
 //! start and after each request).
 
 use crate::backend::LocalBackend;
+use base_fs::atomic::AtomicWrite;
+use base_time::Clock;
 use memory_core::{ReplicaId, RuleSet, SpaceId, SpaceMeta, VaultKind};
-use memory_host::{read_config, write_private_atomic};
+use memory_host::read_config;
 use memory_recall::Embedder;
 use memory_service::{
-    Backend, Clock, ConfigError, MemoryService, SpacesFile, spaces_from_toml, spaces_to_toml,
+    Backend, ConfigError, MemoryService, SpacesFile, spaces_from_toml, spaces_to_toml,
 };
 use memory_tidy::Consolidator;
 
@@ -52,7 +54,9 @@ pub fn save_spaces<B: Backend>(
         spaces: service.metas(),
     })?;
     let path = dirs.spaces_toml();
-    write_private_atomic(&path, &text).map_err(|e| LocalError::File(e.to_string()))
+    AtomicWrite::PRIVATE
+        .write(&path, text.as_bytes())
+        .map_err(|e| LocalError::File(e.to_string()))
 }
 
 /// Registers a new Space (created now, with a fresh replica id) and saves `spaces.toml`.

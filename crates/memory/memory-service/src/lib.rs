@@ -3,7 +3,7 @@
 //! files, and `MemoryService` over a `Backend`. It drives the fact and consolidation machines,
 //! the prompt and the removal notes of `memory-tidy` over its seams.
 //!
-//! Pure over its seams (`Clock`, `KeyStore`, `Vault`, `LogWrite`, `SearchIndex`, `Embedder`,
+//! Pure over its seams (`base_time::Clock`, `KeyStore`, `Vault`, `LogWrite`, `SearchIndex`, `Embedder`,
 //! `memory_tidy::Consolidator`): the store seams come from `memory-store`, so the service links no SQLite,
 //! SQLCipher or OpenSSL, and builds wherever the stores do. Whoever builds a service picks the
 //! concrete stores by implementing [`Backend`] (`memory-local`, `memory-fake`, `memoryd`). The
@@ -33,7 +33,6 @@ mod auth;
 mod backend;
 mod baseline;
 mod caller;
-mod clock;
 mod config;
 mod control;
 mod dispatch;
@@ -73,7 +72,6 @@ mod timeline;
 pub use auth::allowed;
 pub use backend::{Backend, BackendError};
 pub use caller::Caller;
-pub use clock::Clock;
 pub use config::{
     ConfigError, SpacesFile, rules_from_toml, rules_to_toml, spaces_from_toml, spaces_to_toml,
 };

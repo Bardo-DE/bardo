@@ -60,7 +60,7 @@ fn defaults_come_from_home() {
 fn missing_roots_are_errors_not_guesses() {
     assert_eq!(
         dirs_from(lookup(&[("XDG_RUNTIME_DIR", "/run")])),
-        Err(XdgError::NoHome("XDG_DATA_HOME"))
+        Err(XdgError::NoHome(base_xdg::PathError))
     );
     assert_eq!(
         dirs_from(lookup(&[("HOME", "/home/u")])),

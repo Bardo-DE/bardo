@@ -11,12 +11,12 @@ use crate::peers::Peers;
 use crate::settings_watch::apply;
 use crate::signals::{Delivery, delivery_of};
 use account_core::SpaceChange;
+use base_fs::atomic::AtomicWrite;
 use memory_core::{
     DesktopSpace, Dirs, MemoryReply, MemoryRequest, PlanToken, Refusal, Removal, SpaceId, SpaceKind,
 };
 use memory_dbus::{Call, MemoryError, decode_request, encode_reply};
 use memory_dbus_serve::{Serve, Signal, emit_to};
-use memory_host::write_private_atomic;
 use memory_service::Caller;
 use memory_service::{
     Backend, MemoryService, ServiceEvent, SpacesFile, allowed, locked_status, rules_to_toml,
@@ -66,7 +66,7 @@ fn write_if_changed(path: &std::path::Path, text: &str, last: &Mutex<String>) {
     if *locked(last) == text {
         return;
     }
-    match write_private_atomic(path, text) {
+    match AtomicWrite::PRIVATE.write(path, text.as_bytes()) {
         Ok(()) => *locked(last) = text.to_owned(),
         // The daemon's one log path is standard error, prefixed with its name.
         Err(e) => eprintln!("memoryd: could not write {}: {e}", path.display()),

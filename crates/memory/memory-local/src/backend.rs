@@ -3,12 +3,13 @@
 use crate::index::open_index_file;
 use crate::none::{NoConsolidator, NoEmbedder};
 use crate::root::Root;
+use base_time::Clock;
 use memory_core::{Dirs, ReplicaId, SpaceId, SpaceMeta, VaultKind};
 use memory_eventlog::SqliteLog;
 use memory_files::{PlainDir, SealedDir, SpaceVault};
 use memory_recall::{Embedder, ExactScan, Index};
 use memory_seal::{DbKey, ProvidedKeys, Purpose, SpaceKey, derive};
-use memory_service::{Backend, BackendError, Clock, Listing, RegistryError};
+use memory_service::{Backend, BackendError, Listing, RegistryError};
 use memory_tidy::Consolidator;
 use std::sync::atomic::{AtomicU64, Ordering};
 
@@ -19,7 +20,8 @@ use std::sync::atomic::{AtomicU64, Ordering};
 /// use memory_client::{InProcess, Memory, Recorded};
 /// use memory_core::{AppId, Isolation, RuleSet, SpaceId, VaultKind};
 /// use memory_fake::{mail, mail_thread_archived};
-/// use memory_local::{LocalBackend, Root, SystemClock, create_space, open};
+/// use base_time::SystemClock;
+/// use memory_local::{LocalBackend, Root, create_space, open};
 /// use memory_seal::{ProvidedKeys, SpaceKey};
 /// use memory_service::Caller;
 /// use std::sync::Arc;

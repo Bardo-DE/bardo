@@ -1,7 +1,7 @@
 //! `FileKeys`: Space keys in one sealed file, for a jailed test that has no Secret Service.
 //!
 //! TEST ONLY (memoryd pulls this crate in only through its `test-keys` feature, off by default,
-//! never in a release or dist build). The file is replaced whole through `atomic-write-file`
+//! never in a release or dist build). The file is replaced whole through `base_fs::atomic::AtomicWrite`
 //! (temp file, fsync, rename, directory sync), so a crash leaves the old keys or the new ones.
 //!
 //! The file is
@@ -9,13 +9,12 @@
 //! sitting as plain text; it protects nothing from anyone who can read the file and this code.
 //! A production daemon must use the Secret Service (`Oo7Keys`).
 
-use atomic_write_file::AtomicWriteFile;
+use base_fs::atomic::AtomicWrite;
 use memory_core::{SpaceId, decode_lower_hex};
 use memory_seal::{
     Aad, KeyError, KeyStore, Nonce, Purpose, SpaceKey, SubKey, derive, seal, unseal,
 };
 use std::collections::BTreeMap;
-use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
@@ -94,12 +93,9 @@ impl FileKeys {
         let nonce = Nonce::random().map_err(store_error)?;
         let sealed =
             seal(&wrap_key(), &aad(), render(table).as_bytes(), nonce).map_err(store_error)?;
-        if let Some(dir) = self.path.parent() {
-            std::fs::create_dir_all(dir).map_err(store_error)?;
-        }
-        let mut file = AtomicWriteFile::open(&self.path).map_err(store_error)?;
-        file.write_all(&sealed).map_err(store_error)?;
-        file.commit().map_err(store_error)
+        AtomicWrite::PRIVATE
+            .write(&self.path, &sealed)
+            .map_err(store_error)
     }
 
     fn with<T>(

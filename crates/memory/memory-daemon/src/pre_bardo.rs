@@ -4,7 +4,7 @@
 //! folders hold into the new ones (see [`memory_core::Dirs`]), before it reads anything and before
 //! its sandbox is closed around the new folders.
 
-use crate::xdg::{XdgError, root};
+use crate::xdg::{XdgError, roots};
 use std::path::PathBuf;
 
 /// One thing to move: a folder's entries, or a single file.
@@ -15,13 +15,7 @@ enum Move {
 
 /// What moves, for the roots `lookup` names (the same ones [`crate::dirs_from`] reads).
 fn moves(lookup: &impl Fn(&str) -> Option<String>) -> Result<Vec<Move>, XdgError> {
-    let data = root(lookup, "XDG_DATA_HOME", ".local/share")?;
-    let cache = root(lookup, "XDG_CACHE_HOME", ".cache")?;
-    let config = root(lookup, "XDG_CONFIG_HOME", ".config")?;
-    let runtime = lookup("XDG_RUNTIME_DIR")
-        .filter(|v| !v.is_empty())
-        .map(PathBuf::from)
-        .ok_or(XdgError::NoRuntimeDir)?;
+    let [data, cache, config, runtime] = roots(lookup)?;
     let rules = config.join("bardo/memoryd");
     Ok(vec![
         Move::Folder(config.join("almanac"), config.join("bardo/memory")),

@@ -1,12 +1,12 @@
 //! `removals.toml`: the removal notes (`memory_tidy::RemovalLedger`) kept in a file. The
-//! file is replaced whole through `atomic-write-file` (temp file, fsync, rename), so a crash
+//! file is replaced whole through `base_fs` (temp file, fsync, rename), so a crash
 //! leaves the old notes or the new ones.
 
-use atomic_write_file::AtomicWriteFile;
+use base_fs::atomic::AtomicWrite;
+use base_fs::{ReadCap, read_text_capped};
 use memory_core::{Removal, SpaceId};
 use memory_tidy::{LedgerError, RemovalLedger, removals_from_toml, removals_to_toml};
 use std::collections::BTreeMap;
-use std::io::Write;
 use std::path::PathBuf;
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
@@ -20,7 +20,7 @@ pub struct FileLedger {
 impl FileLedger {
     /// The notes in `path`; a file that is missing or unreadable holds none.
     pub fn load(path: PathBuf) -> Self {
-        let open = std::fs::read_to_string(&path)
+        let open = read_text_capped(&path, ReadCap::mib(1))
             .ok()
             .and_then(|text| removals_from_toml(&text).ok())
             .unwrap_or_default();
@@ -36,10 +36,9 @@ impl FileLedger {
 
     fn write(&self, notes: &BTreeMap<SpaceId, Removal>) -> Result<(), LedgerError> {
         let text = removals_to_toml(notes).map_err(|e| LedgerError(Box::new(e)))?;
-        let mut file = AtomicWriteFile::open(&self.path).map_err(|e| LedgerError(Box::new(e)))?;
-        file.write_all(text.as_bytes())
-            .map_err(|e| LedgerError(Box::new(e)))?;
-        file.commit().map_err(|e| LedgerError(Box::new(e)))
+        AtomicWrite::SHARED
+            .write(&self.path, text.as_bytes())
+            .map_err(|e| LedgerError(Box::new(e)))
     }
 
     /// Applies `change` and rewrites the file when it changed anything.

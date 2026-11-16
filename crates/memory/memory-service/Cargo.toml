@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 const-hex = { workspace = true }
+base-time = { path = "../../base/base-time" }
 memory-core = {path = "../memory-core"}
 memory-seal = {path = "../memory-seal"}
 memory-search = {path = "../memory-search"}

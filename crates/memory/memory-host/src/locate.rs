@@ -1,7 +1,10 @@
 //! Where the settings file is: `$XDG_CONFIG_HOME/bardo/memory/settings.toml`, then
 //! `bardo/memory/settings.toml` under each of `$XDG_CONFIG_DIRS` (design/22 section 2). The first file that reads wins.
 
-use crate::files::write_private_atomic;
+use crate::files::CONFIG_CAP;
+use base_fs::atomic::AtomicWrite;
+use base_fs::read_text_capped;
+use base_xdg::Xdg;
 use memory_core::WaitingSetting;
 use memory_settings::{
     ConfirmError, Confirmations, Fallback, Loaded, MemorySettings, SETTINGS_FILE, Why, gate, read,
@@ -22,16 +25,12 @@ impl Locator {
     /// The directories named by `XDG_CONFIG_HOME` (else `$HOME/.config`) and `XDG_CONFIG_DIRS`
     /// (else `/etc/xdg`).
     pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> Self {
-        let home = env("XDG_CONFIG_HOME")
-            .filter(|v| !v.is_empty())
-            .map(PathBuf::from)
-            .unwrap_or_else(|| PathBuf::from(env("HOME").unwrap_or_default()).join(".config"));
-        let rest = env("XDG_CONFIG_DIRS")
-            .filter(|v| !v.is_empty())
-            .unwrap_or_else(|| "/etc/xdg".to_owned());
+        let xdg = Xdg::new(env);
         Self {
-            dirs: std::iter::once(home)
-                .chain(rest.split(':').map(PathBuf::from))
+            dirs: xdg
+                .config_home()
+                .into_iter()
+                .chain(xdg.config_dirs())
                 .map(|dir| dir.join("bardo"))
                 .collect(),
             confirmations: None,
@@ -64,7 +63,7 @@ impl Locator {
         self.dirs
             .iter()
             .map(|d| d.join(SETTINGS_FILE))
-            .find_map(|path| std::fs::read_to_string(path).ok())
+            .find_map(|path| read_text_capped(&path, CONFIG_CAP).ok())
     }
 
     /// The confirmations as stored now; a store that is not there is nothing confirmed, a store
@@ -73,7 +72,7 @@ impl Locator {
         let Some(file) = &self.confirmations else {
             return (Confirmations::default(), None);
         };
-        match std::fs::read_to_string(file) {
+        match read_text_capped(file, CONFIG_CAP) {
             Err(_) => (Confirmations::default(), None),
             Ok(text) => match Confirmations::parse(&text) {
                 Ok(found) => (found, None),
@@ -119,6 +118,8 @@ impl Locator {
         // never more.
         let (have, _) = self.stored();
         let text = have.with(values)?.to_toml()?;
-        write_private_atomic(file, &text).map_err(|e| ConfirmError::Store(e.to_string()))
+        AtomicWrite::PRIVATE
+            .write(file, text.as_bytes())
+            .map_err(|e| ConfirmError::Store(e.to_string()))
     }
 }

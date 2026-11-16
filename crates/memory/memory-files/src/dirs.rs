@@ -1,13 +1,12 @@
-//! `PlainDir` and `SealedDir`: the vaults on disk. Writes are a temporary file beside the
-//! target, fsync, then rename, so a crash never leaves half a file.
+//! `PlainDir` and `SealedDir`: the vaults on disk. Writes go through `base_fs`: a temporary file
+//! beside the target, fsync, then rename, so a crash never leaves half a file.
 
+use base_fs::atomic::AtomicWrite;
 use memory_core::SpaceId;
 use memory_seal::{Aad, Nonce, SubKey, seal, unseal};
 use memory_store::{Vault, VaultError, VaultPath};
-use std::fs::File;
-use std::io::{ErrorKind, Write};
+use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU64, Ordering};
 
 /// Plain markdown files under a directory (the vault of a Space that chose `plain`).
 #[derive(Debug, Clone)]
@@ -57,7 +56,7 @@ impl PlainDir {
             let name = entry.file_name();
             // Names that are not UTF-8, or are not vault paths, or are our own temporaries,
             // are not part of the vault.
-            let Some(name) = name.to_str().filter(|n| !n.starts_with(TEMP_PREFIX)) else {
+            let Some(name) = name.to_str().filter(|n| !is_staging(n)) else {
                 continue;
             };
             let child = format!("{rel}/{name}");
@@ -72,18 +71,10 @@ impl PlainDir {
     }
 }
 
-/// Temporary files are named with this prefix beside their target, and never listed.
-const TEMP_PREFIX: &str = ".almanac-tmp-";
-
-/// A name for a temporary file that two writers will not share.
-fn temp_name(target: &Path) -> PathBuf {
-    static COUNTER: AtomicU64 = AtomicU64::new(0);
-    let n = COUNTER.fetch_add(1, Ordering::Relaxed);
-    let file = target
-        .file_name()
-        .map(|f| f.to_string_lossy())
-        .unwrap_or_default();
-    target.with_file_name(format!("{TEMP_PREFIX}{}-{n}-{file}", std::process::id()))
+/// Whether `name` is the staging file of a write in progress (`base_fs`'s `.<name>.<pid>.<n>.tmp`):
+/// not part of the vault, and never listed.
+fn is_staging(name: &str) -> bool {
+    name.starts_with('.') && name.ends_with(".tmp")
 }
 
 impl Vault for PlainDir {
@@ -99,24 +90,9 @@ impl Vault for PlainDir {
     }
 
     fn write_atomic(&self, p: &VaultPath, bytes: &[u8]) -> Result<(), VaultError> {
-        let target = self.on_disk(p);
-        if let Some(parent) = target.parent() {
-            std::fs::create_dir_all(parent).map_err(io)?;
-        }
-        let temp = temp_name(&target);
-        let written = File::create(&temp).and_then(|mut file| {
-            file.write_all(bytes)?;
-            file.sync_all()
-        });
-        written
-            .and_then(|()| std::fs::rename(&temp, &target))
-            .inspect_err(|_| drop(std::fs::remove_file(&temp)))
-            .map_err(io)?;
-        // Persist the rename itself; a directory that cannot be synced is not an error.
-        if let Some(dir) = target.parent().and_then(|d| File::open(d).ok()) {
-            drop(dir.sync_all());
-        }
-        Ok(())
+        AtomicWrite::SHARED
+            .write(&self.on_disk(p), bytes)
+            .map_err(io)
     }
 
     fn remove(&self, p: &VaultPath) -> Result<(), VaultError> {

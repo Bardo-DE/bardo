@@ -21,6 +21,9 @@ test-proc-root = ["account-callers/test-proc-root"]
 
 [dependencies]
 old-folders = {path = "../../platform/old-folders"}
+base-fs = { path = "../../base/base-fs" }
+base-time = { path = "../../base/base-time" }
+base-xdg = { path = "../../base/base-xdg" }
 memory-core = {path = "../memory-core"}
 memory-seal = {path = "../memory-seal", features = ["oo7"]}
 memory-keyfile = {path = "../memory-keyfile", optional = true}
@@ -35,7 +38,6 @@ memory-infer = {path = "../memory-infer"}
 memory-tidy = {path = "../memory-tidy"}
 memory-settings = {path = "../memory-settings"}
 memory-watch = {path = "../memory-watch"}
-atomic-write-file = { workspace = true }
 memory-dbus = {path = "../memory-dbus"}
 memory-dbus-serve = {path = "../memory-dbus-serve"}
 account-core = {path = "../../accounts/account-core"}

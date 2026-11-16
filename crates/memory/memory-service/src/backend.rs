@@ -1,8 +1,8 @@
 //! The backend seam: everything the service needs that touches disk, keys, models or time.
 //! memoryd supplies the real one; memory-fake supplies in-memory ones.
 
-use crate::clock::Clock;
 use crate::registry::{Listing, RegistryError};
+use base_time::Clock;
 use memory_core::{ReplicaId, SpaceId, SpaceMeta};
 use memory_seal::{KeyError, KeyStore, SpaceKey};
 use memory_store::{Embedder, IndexFailure, LogError, LogWrite, SearchIndex, Vault, VaultError};

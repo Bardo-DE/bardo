@@ -1,6 +1,7 @@
 //! Config files are written whole and private, and a damaged file is never taken for an absent one.
 
-use memory_host::{read_config, write_private_atomic};
+use base_fs::atomic::AtomicWrite;
+use memory_host::read_config;
 
 #[test]
 fn config_files_are_written_whole_private_and_read_without_mistaking_damage_for_absence() {
@@ -9,8 +10,12 @@ fn config_files_are_written_whole_private_and_read_without_mistaking_damage_for_
     let path = dir.path().join("nested").join("memory.toml");
     assert_eq!(read_config(&path).expect("absent is fine"), None);
 
-    write_private_atomic(&path, "first = 1\n").expect("write");
-    write_private_atomic(&path, "second = 2\n").expect("rewrite");
+    AtomicWrite::PRIVATE
+        .write(&path, b"first = 1\n")
+        .expect("write");
+    AtomicWrite::PRIVATE
+        .write(&path, b"second = 2\n")
+        .expect("rewrite");
     assert_eq!(
         read_config(&path).expect("read").as_deref(),
         Some("second = 2\n")

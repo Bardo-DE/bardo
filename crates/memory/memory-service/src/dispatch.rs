@@ -2,11 +2,11 @@
 
 use crate::backend::Backend;
 use crate::caller::Caller;
-use crate::clock::Clock;
 use crate::export::{EventLine, ExportWriter};
 use crate::open::{Cx, Open, failed, log_refusal};
 use crate::record::Stored;
 use crate::service::{Lease, MemoryService};
+use base_time::Clock;
 use memory_core::{
     Count, EXPORT_FORMAT, ExportCounts, ExportManifest, ExportOptions, ExportedSpace, FactState,
     ForgetScope, Head, MemoryOp, MemoryReply, MemoryRequest, Refusal, RunId, SpaceId,

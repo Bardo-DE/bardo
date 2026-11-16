@@ -148,7 +148,7 @@ fn plain_dir_leaves_no_temporaries_and_hides_nothing_else() {
         .collect();
     assert_eq!(names, ["a.md"]);
     // A stray temporary from a crash is not a vault file.
-    std::fs::write(dir.path().join("facts/.almanac-tmp-1-0-a.md"), b"x").expect("stray");
+    std::fs::write(dir.path().join("facts/.a.md.1.0.tmp"), b"x").expect("stray");
     assert_eq!(
         vault.list(&p("facts")).expect("list"),
         vec![p("facts/a.md")]

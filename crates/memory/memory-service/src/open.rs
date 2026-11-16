@@ -4,9 +4,9 @@
 
 use crate::backend::{Backend, BackendError};
 use crate::caller::Caller;
-use crate::clock::Clock;
 use crate::forget::{FactGraph, FactNode};
 use crate::runtime::SpaceRuntime;
+use base_time::Clock;
 use memory_core::{
     Actor, ChainHealth, Count, Effect, EventBody, EventRef, Fact, FactId, FactState, Label, Link,
     MemoryOp, Record, Refusal, RuleSet, RunId, RunState, Seq, SpaceId, SystemPart, TopicPath,

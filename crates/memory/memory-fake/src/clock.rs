@@ -1,7 +1,7 @@
 //! The stepped test clock, and the instant every fixture uses.
 
+use base_time::Clock;
 use memory_core::UnixSeconds;
-use memory_service::Clock;
 use std::sync::atomic::{AtomicI64, Ordering};
 
 /// Every fixture happens at this instant (2026-09-21T10:13:20Z).

@@ -12,7 +12,7 @@ publish.workspace = true
 const-hex = { workspace = true }
 memory-core = {path = "../memory-core"}
 memory-seal = {path = "../memory-seal"}
-atomic-write-file = { workspace = true }
+base-fs = { path = "../../base/base-fs" }
 
 [dev-dependencies]
 tempfile = { workspace = true }
