@@ -52,7 +52,13 @@ fn offences(path: &Path) -> Vec<String> {
 }
 
 /// The crates whose sources the rule covers, next to this one.
-const CRATES: &[&str] = &["ui-components", "ui-core", "ui-style", "ui-motion", "ui-shell"];
+const CRATES: &[&str] = &[
+    "ui-components",
+    "ui-core",
+    "ui-style",
+    "ui-motion",
+    "ui-shell",
+];
 
 #[test]
 fn ds_reads_time_only_through_ds_time() {
