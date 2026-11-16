@@ -202,13 +202,13 @@ impl ChatCodec for LineCodec {
     }
 
     fn parse_models(&self, body: &[u8]) -> Result<Vec<ModelInfo>, CodecError> {
-        let text = std::str::from_utf8(body)
-            .ok()
-            .ok_or(CodecError::Unreadable)?;
+        let text = std::str::from_utf8(body).expect("the model list fixture is text");
         text.lines()
             .map(|line| {
                 let (name, ctx) = line.split_once(' ').ok_or(CodecError::Unreadable)?;
-                let ctx: u32 = ctx.parse().ok().ok_or(CodecError::Unreadable)?;
+                let ctx: u32 = ctx
+                    .parse()
+                    .expect("the model list fixture gives a context size");
                 Ok(ModelInfo {
                     name: ModelName(name.to_owned()),
                     loaded_context: Tokens(ctx),
@@ -227,8 +227,8 @@ impl ChatDecoder for LineDecoder {
             Some(("usage", u)) => {
                 let (i, o) = u.split_once(',').ok_or(CodecError::Unreadable)?;
                 self.usage = TurnUsage {
-                    input: Tokens(i.parse().ok().ok_or(CodecError::Unreadable)?),
-                    output: Tokens(o.parse().ok().ok_or(CodecError::Unreadable)?),
+                    input: Tokens(i.parse().expect("the usage fixture gives input tokens")),
+                    output: Tokens(o.parse().expect("the usage fixture gives output tokens")),
                     ..TurnUsage::default()
                 };
                 Ok(vec![TurnEvent::Usage(self.usage)])
@@ -284,19 +284,21 @@ impl EmbedCodec for VecCodec {
     }
 
     fn decode_embed(&self, served: ModelName, body: &[u8]) -> Result<EmbedEnd, CodecError> {
-        let text = std::str::from_utf8(body)
-            .ok()
-            .ok_or(CodecError::Unreadable)?;
+        let text = std::str::from_utf8(body).expect("the embedding fixture is text");
         let vectors = text
             .split(';')
             .filter(|v| !v.is_empty())
             .map(|v| {
-                v.split(',')
-                    .map(|n| n.parse::<f32>().ok().ok_or(CodecError::Unreadable))
-                    .collect::<Result<Vec<f32>, _>>()
-                    .map(EmbedVector)
+                EmbedVector(
+                    v.split(',')
+                        .map(|n| {
+                            n.parse::<f32>()
+                                .expect("the embedding fixture gives numbers")
+                        })
+                        .collect(),
+                )
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect();
         Ok(EmbedEnd {
             vectors,
             usage: TurnUsage::default(),
