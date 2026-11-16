@@ -63,10 +63,10 @@ fn an_answer_is_kept_by_the_id_and_a_no_is_not_asked_again() {
 #[test]
 fn only_a_computer_that_is_waiting_can_be_answered() {
     let guests = Guests::in_memory();
-    assert_eq!(
+    assert!(matches!(
         guests.answer(&node("nPI"), GuestAnswer::Allow, NOW),
         Err(GuestError::NotAsking)
-    );
+    ));
     assert_eq!(guests.state_of(&node("nPI")), None);
 }
 
@@ -100,10 +100,10 @@ fn the_questions_waiting_at_once_are_limited() {
     for n in 0..MOST_ASKS {
         guests.ask(&node(&format!("n{n}")), "x", NOW).unwrap();
     }
-    assert_eq!(
+    assert!(matches!(
         guests.ask(&node("nLAST"), "x", NOW),
         Err(GuestError::TooManyAsking)
-    );
+    ));
     // One that already waits is not a new question.
     assert_eq!(guests.ask(&node("n0"), "x", NOW), Ok(AskOutcome::Pending));
     guests.answer(&node("n0"), GuestAnswer::Deny, NOW).unwrap();
@@ -213,10 +213,10 @@ fn an_answer_that_cannot_be_saved_changes_nothing() {
     guests.on_event(move |_| {
         count.fetch_add(1, Ordering::SeqCst);
     });
-    assert_eq!(
+    assert!(matches!(
         guests.set(&node("nPI"), "pi", GuestAnswer::Allow, NOW),
-        Err(GuestError::NotSaved)
-    );
+        Err(GuestError::NotSaved(_))
+    ));
     assert_eq!(guests.state_of(&node("nPI")), None);
     assert_eq!(
         told.load(Ordering::SeqCst),
@@ -226,10 +226,10 @@ fn an_answer_that_cannot_be_saved_changes_nothing() {
     // A question waiting stays waiting when its answer could not be kept.
     guests.ask(&node("nOLD"), "old", NOW).unwrap();
     let before = told.load(Ordering::SeqCst);
-    assert_eq!(
+    assert!(matches!(
         guests.answer(&node("nOLD"), GuestAnswer::Allow, NOW),
-        Err(GuestError::NotSaved)
-    );
+        Err(GuestError::NotSaved(_))
+    ));
     assert_eq!(guests.asking().len(), 1);
     assert_eq!(told.load(Ordering::SeqCst), before);
 }

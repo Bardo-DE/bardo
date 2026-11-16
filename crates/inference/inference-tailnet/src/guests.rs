@@ -99,7 +99,7 @@ pub enum GuestEvent {
 }
 
 /// Why a change was not made.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum GuestError {
     /// The computer is not waiting for an answer.
     #[error("the computer is not waiting for an answer")]
@@ -112,7 +112,7 @@ pub enum GuestError {
     TooMany,
     /// The answer could not be written down.
     #[error("the answer could not be saved")]
-    NotSaved,
+    NotSaved(#[source] Box<dyn std::error::Error + Send + Sync>),
 }
 
 use crate::lending::{GuestAnswer, GuestRow, RowState};
@@ -267,13 +267,11 @@ impl Guests {
         let Some(path) = &self.path else {
             return Ok(());
         };
-        let text = toml::to_string_pretty(file)
-            .ok()
-            .ok_or(GuestError::NotSaved)?;
+        let text =
+            toml::to_string_pretty(file).map_err(|cause| GuestError::NotSaved(cause.into()))?;
         AtomicWrite::PRIVATE
             .write(path, text.as_bytes())
-            .ok()
-            .ok_or(GuestError::NotSaved)
+            .map_err(|cause| GuestError::NotSaved(cause.into()))
     }
 
     /// Notes that the computer `node`, called `name`, wants to use the models and has not been

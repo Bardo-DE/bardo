@@ -44,17 +44,20 @@ async fn a_hello_is_read_with_its_models_and_whether_approval_is_needed() {
 async fn a_refusal_is_read_as_the_code_the_computer_gave() {
     let body = r#"{"error":{"message":"any words","type":"refused","code":"waiting"}}"#;
     let stream = answering(json("403 Forbidden", body)).await;
-    assert_eq!(
+    assert!(matches!(
         greet(stream, "pi").await,
         Err(GreetError::Refused(Some(Refusal::Waiting)))
-    );
+    ));
 }
 
 #[tokio::test]
 async fn a_refusal_with_a_code_this_build_does_not_know_is_still_a_refusal() {
     let body = r#"{"error":{"message":"any words","type":"refused","code":"refused"}}"#;
     let stream = answering(json("403 Forbidden", body)).await;
-    assert_eq!(greet(stream, "pi").await, Err(GreetError::Refused(None)));
+    assert!(matches!(
+        greet(stream, "pi").await,
+        Err(GreetError::Refused(None))
+    ));
 }
 
 #[tokio::test]
@@ -68,7 +71,10 @@ async fn something_else_on_the_port_is_not_a_computer_that_lends() {
         json("404 Not Found", "nothing here"),
     ] {
         let stream = answering(response).await;
-        assert_eq!(greet(stream, "pi").await, Err(GreetError::NotLending));
+        assert!(matches!(
+            greet(stream, "pi").await,
+            Err(GreetError::NotLending)
+        ));
     }
 }
 
@@ -81,5 +87,8 @@ async fn a_connection_that_breaks_is_told_so() {
         drop(stream);
     });
     let stream = TcpStream::connect(at).await.unwrap();
-    assert_eq!(greet(stream, "pi").await, Err(GreetError::Broken));
+    assert!(matches!(
+        greet(stream, "pi").await,
+        Err(GreetError::Broken(_))
+    ));
 }

@@ -385,7 +385,7 @@ impl From<inference_tailnet::GuestError> for ComputerError {
             GuestError::NotAsking => ComputerError::NotAsking,
             GuestError::TooManyAsking => ComputerError::TooManyAsking,
             GuestError::TooMany => ComputerError::TooMany,
-            GuestError::NotSaved => ComputerError::NotSaved,
+            GuestError::NotSaved(_) => ComputerError::NotSaved,
         }
     }
 }

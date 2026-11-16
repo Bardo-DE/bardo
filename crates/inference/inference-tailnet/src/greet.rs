@@ -14,7 +14,7 @@ use tokio::net::TcpStream;
 const MOST: usize = 64 * 1024;
 
 /// Why a hello was not read.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum GreetError {
     /// The computer turned this one away: with the reason it gave (its code in the answer's
     /// body), or `None` for a code this build does not know.
@@ -25,7 +25,10 @@ pub enum GreetError {
     NotLending,
     /// The connection broke.
     #[error("the connection broke")]
-    Broken,
+    Broken(#[source] hyper::Error),
+    /// The request for the hello could not be built.
+    #[error("the request for the hello could not be built")]
+    Request(#[source] hyper::http::Error),
 }
 
 /// What a refusal body says: the refusal it carries (`Refused(None)` for a code not known here),
@@ -47,8 +50,7 @@ fn refusal_error(body: &[u8]) -> GreetError {
 pub async fn greet(stream: TcpStream, host: &str) -> Result<Hello, GreetError> {
     let (mut sender, connection) = http1::handshake::<_, Empty<Bytes>>(TokioIo::new(stream))
         .await
-        .ok()
-        .ok_or(GreetError::Broken)?;
+        .map_err(GreetError::Broken)?;
     let driver = tokio::spawn(async move {
         let _ = connection.await;
     });
@@ -57,19 +59,17 @@ pub async fn greet(stream: TcpStream, host: &str) -> Result<Hello, GreetError> {
         .uri(HELLO_PATH)
         .header(hyper::header::HOST, host)
         .body(Empty::<Bytes>::new())
-        .ok()
-        .ok_or(GreetError::Broken)?;
+        .map_err(GreetError::Request)?;
     let answer = async {
         let response = sender
             .send_request(request)
             .await
-            .ok()
-            .ok_or(GreetError::Broken)?;
+            .map_err(GreetError::Broken)?;
         let status = response.status();
         let mut body = response.into_body();
         let mut bytes = Vec::new();
         while let Some(frame) = body.frame().await {
-            let frame = frame.ok().ok_or(GreetError::Broken)?;
+            let frame = frame.map_err(GreetError::Broken)?;
             if let Some(data) = frame.data_ref() {
                 if bytes.len() + data.len() > MOST {
                     return Err(GreetError::NotLending);
