@@ -108,8 +108,10 @@ impl Notify for SocketNotify {
 }
 
 /// How often systemd wants a ping (half of `WatchdogSec`), from `$WATCHDOG_USEC` and
-/// `$WATCHDOG_PID` for the process `own_pid`: none when the period is missing, zero or not a
-/// number, or when the variable names another process.
+/// `$WATCHDOG_PID` for the process `own_pid`.
+///
+/// None when the period is missing, zero or not a number, or when the variable names another
+/// process.
 ///
 /// ```
 /// use compositor_app::notify::watchdog_period;

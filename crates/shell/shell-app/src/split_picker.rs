@@ -1,7 +1,8 @@
-//! The daemon's half of the Split View picker: the compositor's notes open, fill and close the
-//! offer on the link ([`apply`], called from [`crate::daemon::compositor::apply`]), the picker
-//! surfaces show it, and the answer comes back on the link. [`Outgoing`] sends each answer to the host as a
-//! command for the desktop arm.
+//! The daemon's half of the Split View picker.
+//!
+//! The compositor's notes open, fill and close the offer on the link ([`apply`], called from
+//! [`crate::daemon::compositor::apply`]), the picker surfaces show it, and the answer comes back on
+//! the link. [`Outgoing`] sends each answer to the host as a command for the desktop arm.
 
 use shell_model::desktop::{DesktopCommand, DesktopView, ShellNote, cards_of, output_of};
 use shell_ui_kit::links::{SplitAnswer, SplitAnswered, SplitPickerLink, SplitReply};

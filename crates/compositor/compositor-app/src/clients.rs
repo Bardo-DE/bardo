@@ -1,6 +1,7 @@
-//! Client connections: every client enters through here, with its role (I7), its identity and
-//! how well its program is known, whether it came through the public socket, a
-//! security-context listener, a privileged hand-out (P2) or a test kit socket pair.
+//! Client connections: every client enters through here, with its role (I7), its identity and how
+//! well its program is known, whether it came through the public socket.
+//!
+//! A security-context listener, a privileged hand-out (P2) or a test kit socket pair.
 
 use crate::core_loop;
 use crate::state::State;
@@ -105,9 +106,10 @@ pub fn insert_client(
     Ok(client)
 }
 
-/// The disconnects since the last call, as the events the model takes: the loop feeds them each
-/// turn (smithay announces a disconnect from a callback with no access to the state, so
-/// `ClientState` queues it: `compositor_wayland::client::GoneQueue`).
+/// The disconnects since the last call, as the events the model takes.
+///
+/// The loop feeds them each turn (smithay announces a disconnect from a callback with no access to
+/// the state, so `ClientState` queues it: `compositor_wayland::client::GoneQueue`).
 pub fn take_gone(state: &mut State) -> Vec<Event> {
     let gone = state.wl.clients.gone_queue().take();
     for client in &gone {

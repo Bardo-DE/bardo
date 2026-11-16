@@ -107,11 +107,12 @@ fn engine_of(engine: peer::Engine) -> Option<Engine> {
     }
 }
 
-/// The app a window of this program belongs to, for the Dock and the window list: the app a
-/// desktop service is, the app a sandbox attests, or the app the launcher's scope names for a
-/// program whose image the system owns. The scope name is a claim (anyone can start a scope
-/// under any name), so it only groups windows; consent never follows it (it binds to the
-/// image, `Subject`). A program the library could not vouch for belongs to no proven app.
+/// The app a window of this program belongs to, for the Dock and the window list.
+///
+/// The app a desktop service is, the app a sandbox attests, or the app the launcher's scope names
+/// for a program whose image the system owns. The scope name is a claim (anyone can start a scope
+/// under any name), so it only groups windows; consent never follows it (it binds to the image,
+/// `Subject`). A program the library could not vouch for belongs to no proven app.
 pub fn peer_of(standing: &Standing) -> PeerIdentity {
     let proven = match standing {
         // A test caller row names its app as the image would (the point of that file).
@@ -131,11 +132,13 @@ pub fn peer_of(standing: &Standing) -> PeerIdentity {
     proven.map_or(PeerIdentity::Unproven, PeerIdentity::Proven)
 }
 
-/// Whether the program is the desktop's sandbox launcher, the one program whose security
-/// contexts give their clients an app (CASW-04): it stands as the table's `sandbox_launcher`
-/// row (`/usr/bin/flatpak`), which has no unit, so the most a public-socket peer shows is its
-/// root-owned image (`Proof::Exe`). A same-user process that runs that image under a preloaded
-/// library looks the same; the library cannot see that at this proof.
+/// Whether the program is the desktop's sandbox launcher, the one program whose security contexts
+/// give their clients an app (CASW-04).
+///
+/// It stands as the table's `sandbox_launcher` row (`/usr/bin/flatpak`), which has no unit, so the
+/// most a public-socket peer shows is its root-owned image (`Proof::Exe`). A same-user process that
+/// runs that image under a preloaded library looks the same; the library cannot see that at this
+/// proof.
 #[must_use]
 pub fn maker_of(standing: &Standing) -> Maker {
     match standing {

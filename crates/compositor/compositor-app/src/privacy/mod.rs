@@ -1,6 +1,8 @@
-//! Per-app consent, the composition root's half: how the compositor and Settings keep in step
-//! with the model's book (`compositor_core::privilege`), and where the two privacy files are
-//! (`compositor-privacy`: the person's book, the administrator's floor).
+//! Per-app consent, the composition root's half.
+//!
+//! How the compositor and Settings keep in step with the model's book
+//! (`compositor_core::privilege`), and where the two privacy files are (`compositor-privacy`: the
+//! person's book, the administrator's floor).
 //!
 //! The book is read when casement starts and never again: the model's copy is the authority
 //! and the file is rewritten after every change. The floor is read at start and again when

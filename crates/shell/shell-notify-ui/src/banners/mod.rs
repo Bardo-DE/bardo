@@ -1,7 +1,8 @@
-//! Notification banners (design/20 §1.6, design/13 §13.3.6): one Overlay column per output,
-//! spawned hidden and kept warm like the OSD, shown only on the output the [`shell_ui_kit::links::BannerLink`] names
-//! while a card is up. Cards stack at the top right under the bar, newest first,
-//! macOS-style.
+//! Notification banners (design/20 §1.6, design/13 §13.3.6).
+//!
+//! One Overlay column per output, spawned hidden and kept warm like the OSD, shown only on the
+//! output the [`shell_ui_kit::links::BannerLink`] names while a card is up. Cards stack at the top
+//! right under the bar, newest first, macOS-style.
 //!
 //! The motion and the card are quire's (`BannerStack`, `NotificationCard`): a card slides in from
 //! the right, opens its body, actions and close button under the pointer, swipes away, and

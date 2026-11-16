@@ -39,13 +39,13 @@ impl Arrival {
     }
 }
 
-/// The desktop's own list of its programs: `/etc/bardo/desktop-callers.toml` and its drop-ins,
-/// and, in a build for the jail (`testing`, `debug-inject`) whose run has an injected folder
-/// (`--system-dir`), the test rows of `desktop-callers.toml` there, after them (`dev_callers`).
-/// This is the one place the table is made. A table that cannot be loaded (missing, or not owned
-/// by the administrator alone) is an empty one, where no program is one of the desktop's
-/// services: it is logged once and the compositor runs, with nobody privileged and the shell
-/// unable to connect.
+/// The desktop's own list of its programs: `/etc/bardo/desktop-callers.toml` and its drop-ins.
+///
+/// In a build for the jail (`testing`, `debug-inject`) whose run has an injected folder
+/// (`--system-dir`), the test rows of `desktop-callers.toml` there come after them (`dev_callers`).
+/// This is the one place the table is made. A table that cannot be loaded (missing, or not owned by
+/// the administrator alone) is an empty one, where no program is one of the desktop's services: it
+/// is logged once and the compositor runs, with nobody privileged and the shell unable to connect.
 #[must_use]
 pub fn desktop_table(system: &SystemDir) -> Table {
     with_test_rows(system_table(), system)

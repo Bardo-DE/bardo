@@ -1,6 +1,7 @@
 //! The center's list (design/13 §13.3.6 "Grouping by app": "the history groups by app, newest
-//! first, collapsed to the newest with 'N more'"): which rows each group shows, and which groups
-//! the person has opened.
+//! first, collapsed to the newest with 'N more'").
+//!
+//! Which rows each group shows, and which groups the person has opened.
 
 use shell_model::notifications::{AppKey, History, Notification, NotificationId};
 

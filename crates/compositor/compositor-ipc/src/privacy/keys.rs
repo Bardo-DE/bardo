@@ -240,10 +240,11 @@ fn filled(rows: &[PrivacyRow]) -> BTreeSet<&Subject> {
 }
 
 /// The keys of the module for `rows`: for each power, in the vocabulary's order, its rows (the
-/// person's with a switch and "Ask Again", the administrator's as read-outs), then a switch at
-/// [`ASK`] for each program in [`filled`] that has no row for it, or the line that says nobody
-/// has asked. Two rows that would share a name (a hash collision, which needs 2^24 programs)
-/// list the first only, so the schema never repeats a key.
+/// person's with a switch and "Ask Again", the administrator's as read-outs).
+///
+/// Then a switch at [`ASK`] for each program in [`filled`] that has no row for it, or the line that
+/// says nobody has asked. Two rows that would share a name (a hash collision, which needs 2^24
+/// programs) list the first only, so the schema never repeats a key.
 #[must_use]
 pub fn listed(rows: &[PrivacyRow]) -> Vec<Listed> {
     let mut seen = BTreeSet::new();

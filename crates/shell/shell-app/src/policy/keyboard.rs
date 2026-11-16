@@ -1,6 +1,8 @@
-//! The keycap service on the settings' side: `keyboard.overrides` as the typed
-//! [`UserOverrides`] ([`shell_settings::overrides`] parses the rows once), sent now and whenever
-//! the answer changes so the service re-chooses the focused window's profile.
+//! The keycap service on the settings' side.
+//!
+//! `keyboard.overrides` as the typed [`UserOverrides`] ([`shell_settings::overrides`] parses the
+//! rows once), sent now and whenever the answer changes so the service re-chooses the focused
+//! window's profile.
 
 use shell_model::keyboard::UserOverrides;
 use shell_model::keycap::KeycapCommand;

@@ -1,10 +1,11 @@
-//! The one place bardo-shell names layer-shell-host's session lock: `HostCtx::lock_session(LockConfig, factory)
-//! -> Result<LockId, LockError::{Unsupported, InProgress}>`, `unlock_session(LockId)`,
-//! `lock_surfaces(LockId)`, and `HostEvent::Lock { id, state: Locked | Unlocked | Finished }`.
-//! Lock surfaces are made on request, one per output (and for outputs added while locked); a
-//! lock document reads `layer_shell_host::use_lock()` (whose `unlock()` sends `unlock_and_destroy` at
-//! the next flush) and `use_lock_phase()`. A compositor without `ext-session-lock-v1` answers
-//! `Unsupported`.
+//! The one place bardo-shell names layer-shell-host's session lock.
+//!
+//! `HostCtx::lock_session(LockConfig, factory) -> Result<LockId, LockError::{Unsupported,
+//! InProgress}>`, `unlock_session(LockId)`, `lock_surfaces(LockId)`, and `HostEvent::Lock { id,
+//! state: Locked | Unlocked | Finished }`. Lock surfaces are made on request, one per output (and
+//! for outputs added while locked); a lock document reads `layer_shell_host::use_lock()` (whose
+//! `unlock()` sends `unlock_and_destroy` at the next flush) and `use_lock_phase()`. A compositor
+//! without `ext-session-lock-v1` answers `Unsupported`.
 //!
 //! [`SessionLockHost`] is the seam the daemon's lock logic is written against, so
 //! `crate::lock`'s table tests drive a fake host and never lock a session.

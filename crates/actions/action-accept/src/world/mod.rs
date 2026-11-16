@@ -1,7 +1,9 @@
-//! The acceptance world: a private bus, the real daemons as processes (accountd, inferd and memoryd as
-//! the packaged binaries of their repos, intentd, readerd and companiond), and the fakes on the
-//! bus around them: sill's `Confirm1` and a mail provider. The model is inferd's replay engine
-//! playing a cassette. Everything is scratch: HOME, every XDG directory and the bus.
+//! The acceptance world: a private bus, the real daemons as processes (accountd, inferd and memoryd
+//! as the packaged binaries of their repos, intentd, readerd and companiond).
+//!
+//! And the fakes on the bus around them: sill's `Confirm1` and a mail provider. The model is
+//! inferd's replay engine playing a cassette. Everything is scratch: HOME, every XDG directory and
+//! the bus.
 //!
 //! Teardown is certain: every daemon is a `Reaped` child (killed by PID and waited for on drop,
 //! with a watchdog if the test process itself dies) and the bus is `action-testbus`'s. Waits are

@@ -1,6 +1,8 @@
-//! What the `bardo-compositor` binary reads from the process environment to build a [`RunConfig`] from
-//! the parsed command line: where state and icons live, how X11 apps are served, the service
-//! manager's sockets and the session bus. `main` only parses arguments and calls [`run_config`].
+//! What the `bardo-compositor` binary reads from the process environment to build a [`RunConfig`]
+//! from the parsed command line.
+//!
+//! Where state and icons live, how X11 apps are served, the service manager's sockets and the
+//! session bus. `main` only parses arguments and calls [`run_config`].
 
 use crate::RunConfig;
 use crate::cli::{StartConfig, StartMode, XwaylandSource};

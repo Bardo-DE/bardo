@@ -41,8 +41,10 @@ struct Doing {
 }
 
 /// Follow the corner link on `rt` and carry out each hit's binding (read from `settings` at the
-/// hit, for the modifiers `held` holds then): an action goes to the host thread's interpreter, a
-/// command is run here, the rest through the services.
+/// hit, for the modifiers `held` holds then).
+///
+/// An action goes to the host thread's interpreter, a command is run here, the rest through the
+/// services.
 pub fn spawn_hits(
     rt: &Handle,
     links: Links,

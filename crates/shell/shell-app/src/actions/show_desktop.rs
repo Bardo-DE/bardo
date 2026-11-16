@@ -35,8 +35,9 @@ pub fn toggle(reach: &Reach) -> Response {
 }
 
 /// Show Desktop: when `stash` holds a window still minimised, unminimise the stash's minimised
-/// windows (in their order) and empty it; otherwise minimise every normal window on one of the
-/// `active` workspaces and stash them.
+/// windows (in their order) and empty it.
+///
+/// Otherwise minimise every normal window on one of the `active` workspaces and stash them.
 pub fn plan(
     windows: &[Toplevel],
     active: &[WorkspaceKey],

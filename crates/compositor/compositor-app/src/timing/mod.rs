@@ -1,7 +1,9 @@
-//! The timing lines: four plain `tracing` events at INFO, target `timing`, that say how long the
-//! desktop itself takes (a window from its client's connection to its first frame, a change of
-//! key window from the key press to the frame, the first X11 program, the login). The contract
-//! is `~/rs-wt/workflow-spec.md`; the desktop's `workflow/` scripts read the lines.
+//! The timing lines: four plain `tracing` events at INFO, target `timing`.
+//!
+//! That say how long the desktop itself takes (a window from its client's connection to its first
+//! frame, a change of key window from the key press to the frame, the first X11 program, the
+//! login). The contract is `~/rs-wt/workflow-spec.md`; the desktop's `workflow/` scripts read the
+//! lines.
 //!
 //! ```text
 //! window-ready app_id=<id> pid=<pid> connected_at=<ns> first_commit_at=<ns> first_frame_at=<ns> settled_at=<ns>

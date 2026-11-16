@@ -1,7 +1,8 @@
 //! The daemon's half of a window's menu: the compositor's note opens it on the link
-//! ([`crate::daemon::compositor::apply`]), the window menu surfaces show it, and an entry the
-//! person picked comes back on the link. [`Outgoing`] sends each pick to the host as a
-//! command for the desktop arm; a dismissal wrote nothing, so nothing is sent.
+//! ([`crate::daemon::compositor::apply`]), the window menu surfaces show it.
+//!
+//! And an entry the person picked comes back on the link. [`Outgoing`] sends each pick to the host
+//! as a command for the desktop arm; a dismissal wrote nothing, so nothing is sent.
 
 use shell_model::desktop::DesktopCommand;
 use shell_ui_kit::links::{WindowMenuLink, WindowMenuPick, WindowMenuPicked};

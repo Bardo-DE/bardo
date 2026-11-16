@@ -1,6 +1,7 @@
 //! The IPC server: an accept loop on a std thread that hands every connection to a thread of its
-//! own, which reads one request, forwards it to the host thread and writes the reply, or
-//! `Failed(Timeout)` after [`REPLY_TIMEOUT`].
+//! own, which reads one request, forwards it to the host thread and writes the reply.
+//!
+//! The reply is `Failed(Timeout)` after [`REPLY_TIMEOUT`].
 //!
 //! No client can hold another up: a connection that has not sent its whole line within
 //! [`READ_DEADLINE`] is cut, at most [`MAX_CONNECTIONS`] are served at once (more are closed

@@ -7,9 +7,10 @@
 
 use rustix::process::{Resource, Rlimit, getrlimit, setrlimit};
 
-/// The soft limit asked for: the connection cap (two descriptors each) and the device,
-/// buffer and timer descriptors of a busy session fit with room to spare, and it stays far
-/// from limits that slow programs that close every descriptor up to the limit.
+/// The soft limit asked for: the connection cap (two descriptors each) and the device, buffer and
+/// timer descriptors of a busy session fit with room to spare.
+///
+/// And it stays far from limits that slow programs that close every descriptor up to the limit.
 pub const WANTED_SOFT_LIMIT: u64 = 8192;
 
 /// What the limit should become, or `None` when it already is enough (or has no limit): the

@@ -54,9 +54,10 @@ pub struct HeadlessConfig {
     pub cost: RenderCostModel,
 }
 
-/// What a frame is drawn from: the elements for each renderer the backend can run (smithay's
-/// element types are generic over the renderer, so each gets its own method and the trait stays
-/// object-safe). Implement [`FrameElements`] instead where one generic method will do.
+/// What a frame is drawn from: the elements for each renderer the backend can run.
+///
+/// Smithay's element types are generic over the renderer, so each gets its own method and the
+/// trait stays object-safe. Implement [`FrameElements`] instead where one generic method will do.
 pub trait FrameSource {
     /// The elements for pixman, front first.
     fn pixman(&self, renderer: &mut PixmanRenderer) -> Vec<CasementElement<PixmanRenderer>>;

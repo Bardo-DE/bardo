@@ -1,8 +1,10 @@
-//! The daemon's half of the colour picker's eyedropper: while the capture service holds a colour
-//! question, ask the compositor for a still picture of each screen, hold the pictures on the link
-//! for the eyedropper surfaces to draw ([`apply_note`] takes each picture in), and tell the
-//! service an eyedropper exists while a surface does. [`spawn_follower`] follows the service and
-//! the link; a question nobody can point into (no picture could be made) is cancelled.
+//! The daemon's half of the colour picker's eyedropper.
+//!
+//! While the capture service holds a colour question, ask the compositor for a still picture of
+//! each screen, hold the pictures on the link for the eyedropper surfaces to draw ([`apply_note`]
+//! takes each picture in), and tell the service an eyedropper exists while a surface does.
+//! [`spawn_follower`] follows the service and the link; a question nobody can point into (no
+//! picture could be made) is cancelled.
 
 use layer_shell_host::HostHandle;
 use shell_model::capture_pick::{CaptureCommand, CapturePicker, EyedropIn, EyedropOut};
@@ -91,8 +93,9 @@ pub fn refuse(link: &EyedropperLink, capture: &Control<CaptureCommand>, command:
     }
 }
 
-/// Follow the capture service and the link on `rt` until the host or the service is gone: a
-/// colour question is put to the link, which says which pictures to ask the host's desktop arm
+/// Follow the capture service and the link on `rt` until the host or the service is gone.
+///
+/// A colour question is put to the link, which says which pictures to ask the host's desktop arm
 /// for, and the service is told whether an eyedropper surface exists.
 pub fn spawn_follower(rt: &Handle, links: &Links, services: &Services, host: HostHandle<ShellMsg>) {
     let link = links.eyedropper.clone();

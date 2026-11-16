@@ -1,8 +1,9 @@
-//! The compositor's edge reveals, on the daemon's side: in full screen the pointer resting at the
-//! top edge asks for that output's bar and at the bottom edge for its dock, and going away asks
-//! for them hidden. A version 7 compositor names the output; an older one does not, and then a
-//! reveal is for the focused window's output and a hide for every output. The surfaces follow
-//! [`EdgeLink`]; the compositor does the sliding.
+//! The compositor's edge reveals, on the daemon's side.
+//!
+//! In full screen the pointer resting at the top edge asks for that output's bar and at the bottom
+//! edge for its dock, and going away asks for them hidden. A version 7 compositor names the output;
+//! an older one does not, and then a reveal is for the focused window's output and a hide for every
+//! output. The surfaces follow [`EdgeLink`]; the compositor does the sliding.
 //!
 //! The daemon also tells the compositor what the bar does in full screen and how much motion the
 //! person allows ([`FullScreenPrefs`]), and writes which outputs show a full-screen Space, which

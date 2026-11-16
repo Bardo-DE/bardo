@@ -1,7 +1,8 @@
-//! Hold-to-talk from the daemon's side: the three edges of the hold (`bardo-shell voice ...`), which
-//! open the companion and start, finish or cancel the utterance, and the consent sheet's answer
-//! written into `settings.toml`. The machines run in the voice service
-//! (`shell_services::voice`); the settings keys are the ones `voiced` reads on every begin.
+//! Hold-to-talk from the daemon's side: the three edges of the hold (`bardo-shell voice ...`),
+//! which open the companion and start, finish or cancel the utterance.
+//!
+//! And the consent sheet's answer written into `settings.toml`. The machines run in the voice
+//! service (`shell_services::voice`); the settings keys are the ones `voiced` reads on every begin.
 
 use shell_ipc::response::Response;
 use shell_ipc::show::VoiceRequest;

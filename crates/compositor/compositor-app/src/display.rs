@@ -24,8 +24,9 @@ impl SharedDisplay {
 }
 
 /// Inserts a source over a duplicate of `display`'s poll fd into `event_loop` that dispatches
-/// client requests into the `State`; returns the shared display (its owner flushes clients
-/// after each loop turn).
+/// client requests into the `State`.
+///
+/// Returns the shared display (its owner flushes clients after each loop turn).
 pub fn attach_display(
     mut display: Display<State>,
     event_loop: &LoopHandle<'static, State>,

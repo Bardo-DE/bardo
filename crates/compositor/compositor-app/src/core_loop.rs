@@ -65,11 +65,12 @@ pub(crate) use idle::sync_inhibitors;
 pub use presence::Presence;
 pub(crate) use surfaces::resend_scale;
 
-/// Steps every event at the clock's now and carries out the effects ([`crate::exec::exec`]);
-/// a `Relayout` arranges once per feed (not once per event), retargets motion and asks the
-/// outputs for frames. An `Event::Input` (of any origin: the backend's queue, a virtual
-/// keyboard) is also told to the idle machine and then delivered to the clients by the reach
-/// table, the hit test and the seat, so every input takes the one path.
+/// Steps every event at the clock's now and carries out the effects ([`crate::exec::exec`]).
+///
+/// A `Relayout` arranges once per feed (not once per event), retargets motion and asks the outputs
+/// for frames. An `Event::Input` (of any origin: the backend's queue, a virtual keyboard) is also
+/// told to the idle machine and then delivered to the clients by the reach table, the hit test and
+/// the seat, so every input takes the one path.
 pub fn feed(state: &mut State, events: Vec<Event>) {
     if events.is_empty() {
         return;
@@ -572,9 +573,10 @@ fn spec_config(state: &State, name: &OutputName) -> Option<OutputConfig> {
     })
 }
 
-/// What happens once per loop turn: the input the backend queued is delivered, a locker that
-/// died is noticed (smithay has no callback for it), clients that left are told to the model,
-/// and agent keys waiting for the keyboard are looked at again. How many things moved.
+/// What happens once per loop turn: the input the backend queued is delivered, a locker that died
+/// is noticed (smithay has no callback for it), clients that left are told to the model.
+///
+/// And agent keys waiting for the keyboard are looked at again. How many things moved.
 pub fn turn(state: &mut State) -> usize {
     let events = session_lock::poll_locker(&mut state.wl.session_lock);
     let polled = events.len();
@@ -594,9 +596,10 @@ pub fn turn(state: &mut State) -> usize {
     drained + polled + departed + reported
 }
 
-/// Delivers the input the backend queued, in the order it came: each event is told to the
-/// model (`Event::Input`, for what listens) and then delivered to the clients by the reach
-/// table, the hit test and the seat. How many events there were.
+/// Delivers the input the backend queued, in the order it came.
+///
+/// Each event is told to the model (`Event::Input`, for what listens) and then delivered to the
+/// clients by the reach table, the hit test and the seat. How many events there were.
 pub fn drain_input(state: &mut State) -> usize {
     let BackendKind::Headless(backend) = &mut state.backend else {
         return 0;

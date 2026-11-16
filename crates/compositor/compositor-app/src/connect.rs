@@ -1,8 +1,9 @@
-//! `org.bardo.Compositor1.Connect` in the event loop (P2-Z): the D-Bus object proves each caller
-//! on the bus thread and forwards the call down a calloop channel, and [`answer`] decides it with
-//! the `State` in hand: the role the caller proved against the role it asked for
-//! (`compositor_agent::hand_out`), and the server end of the new socket inserted into the display
-//! as a client of that role.
+//! `org.bardo.Compositor1.Connect` in the event loop (P2-Z).
+//!
+//! The D-Bus object proves each caller on the bus thread and forwards the call down a calloop
+//! channel, and [`answer`] decides it with the `State` in hand: the role the caller proved against
+//! the role it asked for (`compositor_agent::hand_out`), and the server end of the new socket
+//! inserted into the display as a client of that role.
 //!
 //! `compositor-agent` makes the socket pair and the decision; only this crate can build a
 //! client's data (its key, its gone queue), so the insertion is here. Frozen at P2-Z; filled
@@ -45,9 +46,10 @@ pub fn attach(
     Ok(())
 }
 
-/// Decides one `Connect`: the role `ask.caller` proved against `ask.role`; on a grant the
-/// server end of a new socket pair is inserted as a client with that role (the model hears
-/// `ClientConnected`), and the client end is the reply.
+/// Decides one `Connect`: the role `ask.caller` proved against `ask.role`.
+///
+/// On a grant the server end of a new socket pair is inserted as a client with that role (the model
+/// hears `ClientConnected`), and the client end is the reply.
 pub fn answer(state: &mut State, ask: ConnectAsk) -> ConnectReply {
     if let Some(gone) = ask.gone {
         return answer_gone(state, &gone);
@@ -255,11 +257,12 @@ fn mint_lease(state: &mut State) -> LeaseId {
     lease
 }
 
-/// Decides one `FocusLease`: only the agent tier, only a lease from the bus connection that
-/// asked for it, and only one the model lets key its window (it is open, the screen is not
-/// locked, the window is not in the dock). The model raises and keys that window, bringing its
-/// Space and app back first; this is the lease's own path into focus, not an app activation
-/// (rule A7 is unchanged).
+/// Decides one `FocusLease`: only the agent tier, only a lease from the bus connection that asked
+/// for it.
+///
+/// And only one the model lets key its window (it is open, the screen is not locked, the window is
+/// not in the dock). The model raises and keys that window, bringing its Space and app back first;
+/// this is the lease's own path into focus, not an app activation (rule A7 is unchanged).
 pub fn answer_focus_lease(
     state: &mut State,
     ask: FocusLeaseAsk,
@@ -337,9 +340,11 @@ pub fn answer_end(state: &mut State, end: EndAsk, caller: &RoleName) -> ConnectR
     ConnectReply::Ended
 }
 
-/// The portal's or the agent tier's bus connection `gone.owner` left the bus (a restart, a
-/// crash): every remote socket and lease it asked for is closed and the keys and buttons held are let go, so an app does not
-/// keep injecting input into a session nobody is accounting for any more (NEW-PI-8).
+/// The portal's or the agent tier's bus connection `gone.owner` left the bus (a restart, a crash).
+///
+/// Every remote socket and lease it asked for is closed and the keys and buttons held are let go,
+/// so an app does not keep injecting input into a session nobody is accounting for any more
+/// (NEW-PI-8).
 pub fn answer_gone(state: &mut State, gone: &GoneAsk) -> ConnectReply {
     let ended = state.agent.remote.end_owner(&gone.owner);
     close(state, ended);

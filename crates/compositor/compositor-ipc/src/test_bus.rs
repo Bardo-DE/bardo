@@ -1,6 +1,7 @@
-//! A private dbus-daemon for tests that serve or listen on a bus: the repo's
-//! `dev/private-bus.conf`, no environment, no service directories, killed and reaped when
-//! dropped, so a failing test leaves nothing behind. Nothing here reaches the person's real
+//! A private dbus-daemon for tests that serve or listen on a bus.
+//!
+//! The repo's `dev/private-bus.conf`, no environment, no service directories, killed and reaped
+//! when dropped, so a failing test leaves nothing behind. Nothing here reaches the person's real
 //! session bus or the system bus. This crate's own tests and `compositor-testkit` share it.
 
 use std::io::{BufRead, BufReader};

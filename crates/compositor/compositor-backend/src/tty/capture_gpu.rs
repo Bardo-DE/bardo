@@ -119,9 +119,10 @@ pub trait CaptureGpu: std::fmt::Debug {
     }
 }
 
-/// Whether a closing window's last image is kept on the GPU (`true`: copied into a texture on the
-/// display GPU, never read back) rather than read back to the CPU and drawn from a memory buffer
-/// on any renderer, on a seat with `devices` open display devices, of
+/// Whether a closing window's last image is kept on the GPU rather than read back to the CPU.
+///
+/// `true` means copied into a texture on the display GPU, never read back; `false` means read back
+/// and drawn from a memory buffer on any renderer. The seat has `devices` open display devices, of
 /// which `lending` lend a renderer. A texture belongs to one GL context, so the GPU copy is for a
 /// seat whose only device lends its renderer: with none (software) or a second GPU, whose
 /// scanout would draw it from another context, the image is read back.

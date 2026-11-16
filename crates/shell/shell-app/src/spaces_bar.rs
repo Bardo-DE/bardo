@@ -1,9 +1,10 @@
-//! The daemon's half of Mission Control's Spaces bar: the compositor's notes raise and lower the
-//! bar on the link per output, bring the pictures of Spaces and say which Space a dragged window
-//! is over ([`apply_note`], called from [`crate::daemon::compositor::apply`]), the bar surfaces
-//! draw it, and a click comes back on the link. [`Outgoing`] sends each click's commands to the
-//! host for the desktop arm; [`spawn_outbox`] follows the bars' layouts
-//! and sends the drop targets and the requests for pictures.
+//! The daemon's half of Mission Control's Spaces bar.
+//!
+//! The compositor's notes raise and lower the bar on the link per output, bring the pictures of
+//! Spaces and say which Space a dragged window is over ([`apply_note`], called from
+//! [`crate::daemon::compositor::apply`]), the bar surfaces draw it, and a click comes back on the
+//! link. [`Outgoing`] sends each click's commands to the host for the desktop arm; [`spawn_outbox`]
+//! follows the bars' layouts and sends the drop targets and the requests for pictures.
 
 use layer_shell_host::HostHandle;
 use shell_model::desktop::{
@@ -40,10 +41,11 @@ pub fn apply(link: &SpacesBarLink, note: &OverviewNote) {
     }
 }
 
-/// What a note of the compositor's shell protocol does to the bar on `link`: the per-output
-/// overview, the tile under a dragged window, where a window drag begins and ends, and an answer to a request for a Space's picture
-/// are written to it; the overview as a whole goes through [`apply`]; every other note is not the
-/// bar's.
+/// What a note of the compositor's shell protocol does to the bar on `link`.
+///
+/// The per-output overview, the tile under a dragged window, where a window drag begins and ends,
+/// and an answer to a request for a Space's picture are written to it; the overview as a whole goes
+/// through [`apply`]; every other note is not the bar's.
 ///
 /// ```
 /// use shell_app::spaces_bar::apply_note;

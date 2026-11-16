@@ -34,9 +34,10 @@ pub fn device_settings(pointer: &PointerSettings, class: DeviceClass) -> DeviceS
 }
 
 /// `kind` with its scroll scaled by `factor` (thousandths of the device's own step, 1000 being
-/// unchanged): libinput scrolls by the device's step and has no setting for it, so the
-/// compositor scales the axis event where it takes it in. Anything but a scroll is returned
-/// as it was.
+/// unchanged).
+///
+/// Libinput scrolls by the device's step and has no setting for it, so the compositor scales the
+/// axis event where it takes it in. Anything but a scroll is returned as it was.
 ///
 /// ```
 /// use compositor_backend::input::scaled_scroll;

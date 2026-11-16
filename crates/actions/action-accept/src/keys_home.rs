@@ -1,6 +1,8 @@
-//! A durable, test-only home for the cloud AI key: one directory outside every repository that
-//! holds what accountd needs to know the `OpenRouter` account across worlds, so the owner types the
-//! key once (`dev/live/cloud-key.sh`) and every fresh world reuses it.
+//! A durable, test-only home for the cloud AI key.
+//!
+//! One directory outside every repository that holds what accountd needs to know the `OpenRouter`
+//! account across worlds, so the owner types the key once (`dev/live/cloud-key.sh`) and every fresh
+//! world reuses it.
 //!
 //! ```text
 //! DIR/                           0700

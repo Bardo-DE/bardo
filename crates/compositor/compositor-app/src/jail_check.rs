@@ -1,5 +1,6 @@
-//! The structural jail check (§6.1), compiled only under `testing` or `debug-inject`: a binary
-//! that can mint Physical, Virtual or Test input refuses to start unless it is inside
+//! The structural jail check (§6.1), compiled only under `testing` or `debug-inject`.
+//!
+//! A binary that can mint Physical, Virtual or Test input refuses to start unless it is inside
 //! `~/desktop/harness/jail.sh`. It only stats paths and reads `/proc/1/comm`; it never opens a
 //! device.
 

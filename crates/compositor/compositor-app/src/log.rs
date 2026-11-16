@@ -1,8 +1,10 @@
 //! Logging: smithay and casement log through `tracing`; the binary installs one subscriber.
 
-/// The filter when `BARDO_COMPOSITOR_LOG` is unset: `info`, with smithay's renderer lines that repeat for
-/// every surface at every frame when an import fails capped at errors, and its raw EGL entry
-/// point trace off. casement logs the cause once itself (`frame_faults`).
+/// The filter when `BARDO_COMPOSITOR_LOG` is unset.
+///
+/// `info`, with smithay's renderer lines that repeat for every surface at every frame when an
+/// import fails capped at errors, and its raw EGL entry point trace off. casement logs the cause
+/// once itself (`frame_faults`).
 pub const DEFAULT_FILTER: &str = "info,smithay::backend::egl::ffi=off,smithay::backend::renderer::element=error,smithay::backend::renderer::utils=error";
 
 /// Installs a stderr subscriber filtered by `filter` (an `EnvFilter` directive list such as `info`

@@ -6,10 +6,12 @@
 
 use compositor_core::output::Mode;
 
-/// The modes to try for a display that lists `listed`, in order and each once (by size and
-/// refresh rate): `wanted`, then `previous` (what it was showing), then the preferred mode,
-/// then the smallest listed mode, which is the likeliest to fit any link. A mode in `avoid`
-/// (one that was lit and then showed nothing) is left out unless nothing else is left.
+/// The modes to try for a display that lists `listed`, in order and each once (by size and refresh
+/// rate).
+///
+/// `wanted`, then `previous` (what it was showing), then the preferred mode, then the smallest
+/// listed mode, which is the likeliest to fit any link. A mode in `avoid` (one that was lit and
+/// then showed nothing) is left out unless nothing else is left.
 ///
 /// ```
 /// use compositor_backend::tty::mode_ladder;

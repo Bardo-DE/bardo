@@ -14,9 +14,10 @@ pub struct KindToggle {
     pub toggle: bool,
 }
 
-/// The claims that hold: one per (subject, kind), the highest [`crate::Provenance`] winning
-/// (the first of equals), in the order each (subject, kind) first appears; kinds toggled off
-/// become `Absent { TurnedOff }` at the winner's provenance.
+/// The claims that hold: one per (subject, kind), the highest [`crate::Provenance`] winning (the
+/// first of equals), in the order each (subject, kind) first appears.
+///
+/// Kinds toggled off become `Absent { TurnedOff }` at the winner's provenance.
 #[must_use]
 pub fn effective(claims: &[Claim], toggles: &[KindToggle]) -> Vec<Claim> {
     let winners = claims.iter().fold(Vec::<Claim>::new(), |mut held, claim| {

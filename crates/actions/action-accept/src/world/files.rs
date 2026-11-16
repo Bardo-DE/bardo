@@ -8,9 +8,10 @@ use std::path::Path;
 /// calling from this file alone, never from `inferd.toml`.
 pub const INFERD_CALLERS: &str = "[apps]\n\"org.bardo.Memory\" = [\"bardo-memoryd.service\"]\n\"org.bardo.Intents\" = [\"bardo-actiond.service\"]\n\"org.bardo.Companion\" = [\"bardo-companiond.service\", { unit = \"bardo-agent-acp.scope\", exe = [\"/usr/bin/bardo-agent-acp\"] }]\n\"org.bardo.Reader\" = [\"bardo-readerd.service\"]\n";
 
-/// accountd's caller table, a system file (its `callers.toml`): inferd is the AI broker, the one
-/// daemon that asks for the key behind a permit, and the launcher of external coding agents may
-/// call the `Launcher` interface.
+/// accountd's caller table, a system file (its `callers.toml`).
+///
+/// Inferd is the AI broker, the one daemon that asks for the key behind a permit, and the launcher
+/// of external coding agents may call the `Launcher` interface.
 pub const ACCOUNTD_CALLERS: &str = r#"[[caller]]
 app = "org.bardo.Inference"
 unit = "bardo-inferd.service"
@@ -47,9 +48,11 @@ const SYSTEM_CALLERS: [(&str, &str); 7] = [
     ),
 ];
 
-/// Writes the shipped callers files into `<root>/system/`: the harness is its own system, and only
-/// the system's file can give a fixed role (the shell's `sheet_host`), so these are the daemons'
-/// system files, not the person's (`<root>/config/bardo/actions`).
+/// Writes the shipped callers files into `<root>/system/`.
+///
+/// The harness is its own system, and only the system's file can give a fixed role (the shell's
+/// `sheet_host`), so these are the daemons' system files, not the person's
+/// (`<root>/config/bardo/actions`).
 pub fn write_system_callers(root: &Path) -> std::io::Result<()> {
     let dir = root.join("system");
     std::fs::create_dir_all(&dir)?;

@@ -11,8 +11,9 @@ use std::time::Duration;
 /// reaction is in the same loop turn as the event, so this is only a guard against a stale press.
 pub const DIRECT_WINDOW: Duration = Duration::from_millis(250);
 
-/// How soon after a press a request that changes the key window still counts as caused by it: a
-/// click on the dock or a chord the shell took goes to the shell, which asks the compositor a
+/// How soon after a press a request that changes the key window still counts as caused by it.
+///
+/// A click on the dock or a chord the shell took goes to the shell, which asks the compositor a
 /// round trip later (and a switcher that commits on release waits for the person).
 pub const REQUEST_WINDOW: Duration = Duration::from_secs(2);
 
@@ -110,10 +111,11 @@ pub fn press_in(events: &[Event], stamp_of: impl Fn(&InputEvent) -> Stamp) -> Op
 }
 
 /// The cause of a change of key window made at `now` in a turn of `feed`, and the stamp of the
-/// input event behind it ([`Stamp::NONE`] when there is none): a window or client coming or going
-/// is `other`; a request is `request`, with the press that probably started it when one came
-/// within [`REQUEST_WINDOW`]; anything else is the press that is within [`DIRECT_WINDOW`] (a
-/// chord is `keyboard`, a click `pointer`), else `other`.
+/// input event behind it ([`Stamp::NONE`] when there is none).
+///
+/// A window or client coming or going is `other`; a request is `request`, with the press that
+/// probably started it when one came within [`REQUEST_WINDOW`]; anything else is the press that is
+/// within [`DIRECT_WINDOW`] (a chord is `keyboard`, a click `pointer`), else `other`.
 #[must_use]
 pub fn cause_of(feed: FeedKind, press: Option<Press>, now: Stamp) -> (KeyCause, Stamp) {
     let within = |window: Duration| press.filter(|press| now.within(press.at, window));

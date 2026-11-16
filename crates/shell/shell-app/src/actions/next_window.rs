@@ -1,5 +1,6 @@
-//! The `next-window` action: the next window of the front app (Command+` on a Mac). The toplevel list
-//! is most recently activated first, so the window to bring forward is the front app's least
+//! The `next-window` action: the next window of the front app (Command+` on a Mac).
+//!
+//! The toplevel list is most recently activated first, so the window to bring forward is the front app's least
 //! recently used one on the front window's workspaces; with one window there is nothing to do.
 
 use shell_ipc::response::Response;

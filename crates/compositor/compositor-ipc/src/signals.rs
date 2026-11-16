@@ -1,8 +1,9 @@
-//! Process signals as the test hooks of `--drm-node` mode (P1-V2): `SIGUSR1` is "the session was
-//! paused", `SIGUSR2` is "the session was activated" (a VT switch away and back, simulated with
-//! no VT touched) and `SIGHUP` is "read one frame back". A thread with a current-thread tokio
-//! runtime waits for them and calls the [`SignalHandler`]; the compositor's loop never installs
-//! a signal handler itself.
+//! Process signals as the test hooks of `--drm-node` mode (P1-V2).
+//!
+//! `SIGUSR1` is "the session was paused", `SIGUSR2` is "the session was activated" (a VT switch
+//! away and back, simulated with no VT touched) and `SIGHUP` is "read one frame back". A thread
+//! with a current-thread tokio runtime waits for them and calls the [`SignalHandler`]; the
+//! compositor's loop never installs a signal handler itself.
 //!
 //! ```no_run
 //! use compositor_ipc::signals::{SignalHandler, SignalWatch};

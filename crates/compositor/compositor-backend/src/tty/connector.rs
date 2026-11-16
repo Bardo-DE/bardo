@@ -185,18 +185,20 @@ fn keyed_by_connector(facts: OutputFacts) -> OutputFacts {
     }
 }
 
-/// Whether variable refresh is on for an output: only when `asked_for` (`true` asks for it
-/// wherever it is possible) and when both the monitor and the CRTC can do it, so a commit never
-/// sets a property the device lacks.
+/// Whether variable refresh is on for an output.
+///
+/// Only when `asked_for` (`true` asks for it wherever it is possible) and when both the monitor and
+/// the CRTC can do it, so a commit never sets a property the device lacks.
 #[must_use]
 pub fn vrr_enabled(asked_for: bool, connector: &ConnectorFacts, crtc: &CrtcFacts) -> bool {
     asked_for && connector.vrr && crtc.vrr
 }
 
-/// What to commit for every attached connector of `resources`: the mode `wishes` asks for by
-/// connector name (the preferred mode otherwise), on the first CRTC that can drive it and is
-/// not taken, with variable refresh when `asked_for_vrr`. A connector with no mode is left dark, and
-/// so is one no CRTC is left for.
+/// What to commit for every attached connector of `resources`.
+///
+/// The mode `wishes` asks for by connector name (the preferred mode otherwise), on the first CRTC
+/// that can drive it and is not taken, with variable refresh when `asked_for_vrr`. A connector with
+/// no mode is left dark, and so is one no CRTC is left for.
 #[must_use]
 pub fn plan_outputs(
     resources: &KmsResources,

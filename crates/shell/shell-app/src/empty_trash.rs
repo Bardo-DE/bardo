@@ -1,6 +1,8 @@
-//! The daemon's half of the Empty Trash question: the `EmptyTrash` action opens it on the link
-//! (`actions::panel::empty_trash`), the surface shows it, and a yes empties the home Trash on a
-//! thread of its own (`shell_services::trash`). Cancel sends nothing, so nothing is erased.
+//! The daemon's half of the Empty Trash question.
+//!
+//! The `EmptyTrash` action opens it on the link (`actions::panel::empty_trash`), the surface shows
+//! it, and a yes empties the home Trash on a thread of its own (`shell_services::trash`). Cancel
+//! sends nothing, so nothing is erased.
 
 use shell_services::env::Dirs;
 use shell_ui_kit::links::EmptyTrashLink;

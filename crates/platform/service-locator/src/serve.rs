@@ -11,10 +11,11 @@ use interprocess::local_socket::{GenericFilePath, GenericNamespaced, ListenerOpt
 pub type Stream = interprocess::local_socket::Stream;
 
 /// The connection's file descriptor, for a caller that drives it itself rather than through
-/// [`Stream`]'s blocking `Read + Write`: an async runtime, which wants a non-blocking socket it can
-/// register (`set_nonblocking(true)` on `std::os::unix::net::UnixStream::from(fd)`, then
-/// `tokio::net::UnixStream::from_std`), or a process that passes the descriptor on with
-/// `SCM_RIGHTS`.
+/// [`Stream`]'s blocking `Read + Write`.
+///
+/// An async runtime, which wants a non-blocking socket it can register (`set_nonblocking(true)` on
+/// `std::os::unix::net::UnixStream::from(fd)`, then `tokio::net::UnixStream::from_std`), or a
+/// process that passes the descriptor on with `SCM_RIGHTS`.
 ///
 /// Unix only, because only a Unix socket has a descriptor to give. Connecting is never the part
 /// that waits: a Unix domain socket's `connect` completes against the listener's backlog at once,

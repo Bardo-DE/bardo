@@ -14,9 +14,11 @@ use std::time::Duration;
 /// the slowest rate a display has, far below what a person waits for a screen.
 pub const FLIP_DEADLINE: Duration = Duration::from_millis(500);
 
-/// How long an output may go without any flip landing, while frames are being asked for, before
-/// the display counts as frozen: the watchdog is then not fed, so the service manager restarts
-/// the session instead of leaving a dead screen.
+/// How long an output may go without any flip landing, while frames are being asked for, before the
+/// display counts as frozen.
+///
+/// The watchdog is then not fed, so the service manager restarts the session instead of leaving a
+/// dead screen.
 pub const STARVED_AFTER: Duration = Duration::from_secs(10);
 
 /// How many frames in a row may fail before the output is set up again.

@@ -1,4 +1,6 @@
-//! bardo-shell's own lock screen on the daemon's side: the follower that turns the locker's and the auth service's state into a wish to hold the
+//! bardo-shell's own lock screen on the daemon's side.
+//!
+//! The follower that turns the locker's and the auth service's state into a wish to hold the
 //! session lock or not, the host-thread half that takes and drops layer-shell-host's session lock
 //! through [`host::SessionLockHost`], and the prompt's output.
 //!
@@ -72,7 +74,9 @@ pub struct ShellLock {
     pub id: Option<LockId>,
 }
 
-/// Follow `services.locker.state` and `services.auth.state` on `rt` and send `ShellMsg::Lock(wish)`
+/// Follow the locker and auth service states on `rt` and send the lock wish to the host.
+///
+/// Follows `services.locker.state` and `services.auth.state` and sends `ShellMsg::Lock(wish)`
 /// to the host at start and whenever [`lock_wish`] changes (a `Released` after `Accepted` only once
 /// [`UNLOCK_BACKSTOP_MS`] has passed with the wish unchanged), until the host is gone.
 pub fn spawn_follower(rt: &Handle, services: &Services, host: HostHandle<ShellMsg>) {
@@ -184,10 +188,11 @@ pub fn prompt_among(now: PromptOutput, outputs: &Outputs) -> PromptOutput {
     }
 }
 
-/// A host event about the lock ([`host::lock_event`]): `Locked`, `Unlocked`, `Finished` to the
-/// locker service as `ShellLockEvent`s (and on `Unlocked` / `Finished` `AuthCommand::Reset`,
-/// forgetting the id); a lock surface gaining the keyboard ([`host::SessionLockHost::
-/// lock_surface_output`]) moves the [`LockLink`] there.
+/// A host event about the lock ([`host::lock_event`]).
+///
+/// `Locked`, `Unlocked`, `Finished` to the locker service as `ShellLockEvent`s (and on `Unlocked` /
+/// `Finished` `AuthCommand::Reset`, forgetting the id); a lock surface gaining the keyboard
+/// ([`host::SessionLockHost:: lock_surface_output`]) moves the [`LockLink`] there.
 pub fn on_host_event(
     host: &impl SessionLockHost,
     held: &mut ShellLock,

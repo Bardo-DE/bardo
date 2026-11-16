@@ -1,6 +1,7 @@
-//! Input devices: [`VirtualInput`], smithay's `InputBackend` over queued events, the same
-//! path libinput takes (11 §2.5), and the libinput settings seam ([`InputFeed::apply`], P1-Z), whose
-//! real adapter is behind feature `libinput`.
+//! Input devices: [`VirtualInput`], smithay's `InputBackend` over queued events, the same path
+//! libinput takes (11 §2.5), and the libinput settings seam ([`InputFeed::apply`], P1-Z).
+//!
+//! Whose real adapter is behind feature `libinput`.
 //!
 //! Physical, Virtual and Test origins are minted only under features `testing` or
 //! `debug-inject`: the functions that plug devices and push events exist only there, and a

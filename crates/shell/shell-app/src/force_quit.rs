@@ -1,7 +1,8 @@
-//! The daemon's half of the Force Quit Applications panel: the compositor's view of the desktop
-//! fills the list on the link (`daemon::events`), the panel surfaces show it, and the app the
-//! person confirmed comes back on the link. [`Outgoing`] sends each to the host as a command
-//! for the desktop arm.
+//! The daemon's half of the Force Quit Applications panel.
+//!
+//! The compositor's view of the desktop fills the list on the link (`daemon::events`), the panel
+//! surfaces show it, and the app the person confirmed comes back on the link. [`Outgoing`] sends
+//! each to the host as a command for the desktop arm.
 
 use shell_model::desktop::DesktopCommand;
 use shell_ui_kit::links::{ForceQuitAsk, ForceQuitAsked, ForceQuitLink};

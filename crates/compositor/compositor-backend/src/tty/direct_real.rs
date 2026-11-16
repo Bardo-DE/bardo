@@ -50,11 +50,12 @@ fn device_on(fd: &OwnedFd) -> io::Result<DrmDeviceFd> {
     Ok(DrmDeviceFd::new(DeviceFd::from(fd.try_clone()?)))
 }
 
-/// The seams of `--drm-node node`: the node opened directly and checked to be vkms, a session
-/// that moves only on the edge's word, the node as the one display device, no GPUs and no
-/// input; with the writeback connector when `writeback` asks. `mode` says how the node's outputs
-/// are drawn (`--safe`: by the CPU, with no GBM device opened). `handle`'s loop is woken whenever
-/// the edge sends a note.
+/// The seams of `--drm-node node`: the node opened directly and checked to be vkms, a session that
+/// moves only on the edge's word, the node as the one display device, no GPUs and no input.
+///
+/// With the writeback connector when `writeback` asks. `mode` says how the node's outputs are drawn
+/// (`--safe`: by the CPU, with no GBM device opened). `handle`'s loop is woken whenever the edge
+/// sends a note.
 pub fn direct_seams<D: 'static>(
     node: &Path,
     writeback: bool,

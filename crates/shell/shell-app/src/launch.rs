@@ -35,8 +35,9 @@ pub struct LaunchAsk {
     pub reply: SyncSender<Response>,
 }
 
-/// Begin `bardo-shell launch app` on the host thread, where surfaces can be asked for a token: an app
-/// that is not installed is refused at once, else the token is asked of the first dock (the
+/// Begin `bardo-shell launch app` on the host thread, where surfaces can be asked for a token.
+///
+/// An app that is not installed is refused at once, else the token is asked of the first dock (the
 /// surface a dock click comes from) and the rest is [`serve`]d on `runtime`.
 pub fn ask(
     ctx: &mut HostCtx<ShellMsg>,

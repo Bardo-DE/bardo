@@ -19,9 +19,11 @@ use compositor_core::gpu::{GpuChoice, plan_for};
 use smithay::backend::session::libseat::LibSeatSession;
 use smithay::reexports::calloop::LoopHandle;
 
-/// The seams of the machine casement runs on, with `root` as its `/sys` and `/dev`, `choice` as
-/// the `gpu.render` setting, `mode` as how outputs are drawn, and `handle`'s loop reading the
-/// seat, the udev monitor, the display devices and the input devices.
+/// The seams of the machine casement runs on, with `root` as its `/sys` and `/dev`, `choice` as the
+/// `gpu.render` setting, `mode` as how outputs are drawn.
+///
+/// And `handle`'s loop reading the seat, the udev monitor, the display devices and the input
+/// devices.
 ///
 /// In [`RenderMode::Software`] (`--safe`) the GPUs are not enumerated, no render plan is made,
 /// no format source is given (the formats would be read through a GBM device and an EGL

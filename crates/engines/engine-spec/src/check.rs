@@ -13,9 +13,10 @@ pub enum SpecError {
     WeightsNotAccepted { engine: &'static str },
 }
 
-/// Pure: whether each engine profile of `entry` is one its engine runs: an engine that needs a
-/// GPU share has an estimate, and the weights are a kind the engine reads (`command` has no
-/// `--model` for anything else). Run it after `parse_entry`.
+/// Pure: whether each engine profile of `entry` is one its engine runs.
+///
+/// An engine that needs a GPU share has an estimate, and the weights are a kind the engine reads
+/// (`command` has no `--model` for anything else). Run it after `parse_entry`.
 pub fn check_entry(entry: &ModelEntry) -> Result<(), SpecError> {
     for profile in &entry.engines {
         let spec = engine(profile.kind);

@@ -87,10 +87,11 @@ pub fn install_menu(router: &Router<FakeSeams>) -> Result<(), ManifestFileError>
     Ok(())
 }
 
-/// A router over the fakes, in the Space `work`, with the fixture and shipped manifests
-/// installed, a reviewer that allows everything (a hijacked judge), no confirmer answers, a
-/// writer that fails (no task policy), and the clock at the epoch. Tests replace what they
-/// need through `router.seams`.
+/// A router over the fakes, in the Space `work`, with the fixture and shipped manifests installed,
+/// a reviewer that allows everything (a hijacked judge), no confirmer answers.
+///
+/// A writer that fails (no task policy), and the clock at the epoch. Tests replace what they need
+/// through `router.seams`.
 pub fn fake_router(config: AgentConfig) -> Result<Router<FakeSeams>, FakeError> {
     fake_router_with(
         config,

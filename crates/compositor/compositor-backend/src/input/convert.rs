@@ -116,9 +116,10 @@ where
     })
 }
 
-/// A swipe update's movement before the touchpad's acceleration, in logical pixels: smithay's
-/// swipe event carries only the accelerated one, which the clients get, while the desktop's own
-/// swipes follow the fingers (`SwipeDelta`).
+/// A swipe update's movement before the touchpad's acceleration, in logical pixels.
+///
+/// Smithay's swipe event carries only the accelerated one, which the clients get, while the
+/// desktop's own swipes follow the fingers (`SwipeDelta`).
 pub trait SwipeUnaccelerated {
     /// The unaccelerated movement, horizontal then vertical.
     fn unaccelerated(&self) -> (f64, f64);

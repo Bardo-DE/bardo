@@ -1,7 +1,8 @@
-//! The center's keys (design/20 §1.6 keyboard `OnDemand`; design/06 Escape): Escape closes,
-//! Up and Down move a focus ring over the drawn rows (not wrapping), Return activates the
-//! focused row (its `default` action, or opens a collapsed group's "N more"), Delete dismisses
-//! it.
+//! The center's keys (design/20 §1.6 keyboard `OnDemand`; design/06 Escape).
+//!
+//! Escape closes, Up and Down move a focus ring over the drawn rows (not wrapping), Return
+//! activates the focused row (its `default` action, or opens a collapsed group's "N more"), Delete
+//! dismisses it.
 
 /// A key the center handles.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

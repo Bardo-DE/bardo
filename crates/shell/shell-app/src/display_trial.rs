@@ -1,8 +1,9 @@
 //! The daemon's half of the display trial: the compositor's notes open, restart and close the
-//! question on the link ([`apply`], called from [`crate::daemon::compositor::apply`]), the trial
-//! surface on the sheets' output shows it, and the answer comes back on the link.
-//! [`Outgoing`] sends each answer to the host as a command for the desktop
-//! arm. The compositor reverts by itself when the time runs out, so nothing here keeps time.
+//! question on the link ([`apply`], called from [`crate::daemon::compositor::apply`]).
+//!
+//! The trial surface on the sheets' output shows it, and the answer comes back on the link.
+//! [`Outgoing`] sends each answer to the host as a command for the desktop arm. The compositor
+//! reverts by itself when the time runs out, so nothing here keeps time.
 
 use shell_model::desktop::{DesktopCommand, ShellNote};
 use shell_ui_kit::links::{DisplayTrialLink, TrialAnswered, TrialReply};

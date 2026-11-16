@@ -1,7 +1,9 @@
-//! Following the desktop's colour scheme over the settings portal: a thread at the binary's edge
-//! that reads the scheme once and then tells the compositor each time it changes, as `sleep` and
-//! `signals` do for their buses. The compositor names no bus type: the one D-Bus crate is this
-//! one (A4). The scheme is `ui_style`'s own `Scheme` (no preference is light).
+//! Following the desktop's colour scheme over the settings portal.
+//!
+//! A thread at the binary's edge that reads the scheme once and then tells the compositor each time
+//! it changes, as `sleep` and `signals` do for their buses. The compositor names no bus type: the
+//! one D-Bus crate is this one (A4). The scheme is `ui_style`'s own `Scheme` (no preference is
+//! light).
 //!
 //! The source is a seam: [`SystemPrefsSource::Portal`] reaches the session bus; a test passes
 //! [`SystemPrefsSource::Fixed`] and never does.

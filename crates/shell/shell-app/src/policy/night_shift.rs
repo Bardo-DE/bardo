@@ -1,6 +1,7 @@
-//! Night Shift's policy from `display.night_warmth`: where bardo-shell warms the monitors itself over
-//! DDC/CI, casement's software night light is told to leave those alone, so they are not warmed
-//! twice, and keeps warming the rest.
+//! Night Shift's policy from `display.night_warmth`.
+//!
+//! Where bardo-shell warms the monitors itself over DDC/CI, casement's software night light is told
+//! to leave those alone, so they are not warmed twice, and keeps warming the rest.
 
 use shell_model::night_shift::NightShiftCommand;
 use shell_settings::{NightWarmthMode, ShellFile};

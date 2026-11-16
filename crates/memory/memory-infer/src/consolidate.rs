@@ -20,10 +20,12 @@ use std::sync::Arc;
 const CONTEXT: Tokens = Tokens(16_384);
 
 /// Drafts a consolidation through an inferd session (`Need::Llm`, `Task::Extract`,
-/// `Usage::Background`): the input is rendered as the prompt (`render_prompt`), the answer parsed
-/// into hunks (`parse_draft`, `Unparseable` on anything else), and the request carries the most
-/// sensitive data class among the labels of what it reads (`class_of`), so mail-derived facts
-/// stay on the device unless the person's grant says otherwise.
+/// `Usage::Background`).
+///
+/// The input is rendered as the prompt (`render_prompt`), the answer parsed into hunks
+/// (`parse_draft`, `Unparseable` on anything else), and the request carries the most sensitive data
+/// class among the labels of what it reads (`class_of`), so mail-derived facts stay on the device
+/// unless the person's grant says otherwise.
 #[derive(Debug)]
 pub struct InferdConsolidator<T: Transport> {
     transport: Arc<T>,

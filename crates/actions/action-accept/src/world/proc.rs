@@ -60,9 +60,11 @@ pub fn link_image(pid_dir: &Path, name: &str) -> std::io::Result<()> {
     std::os::unix::fs::symlink(format!("/usr/bin/{name}"), link)
 }
 
-/// Runs `work` with the harness process standing in as the app `app` (it is in the app's scope,
-/// a plain app of that name), then puts it back as the shell: every connection of the harness is
-/// one process, so who it is for the daemons is what the fake proc root says when they ask.
+/// Runs `work` with the harness process standing in as the app `app` (it is in the app's scope, a
+/// plain app of that name), then puts it back as the shell.
+///
+/// Every connection of the harness is one process, so who it is for the daemons is what the fake
+/// proc root says when they ask.
 pub async fn as_app<T>(world: &World, app: &str, work: impl std::future::Future<Output = T>) -> T {
     let (root, pid) = (world.dir.path(), std::process::id());
     place(root, pid, Cgroup::AppScope(app));

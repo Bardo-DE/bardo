@@ -20,9 +20,10 @@ pub enum SequenceFault {
 }
 
 /// `Ok` when no assistant message follows another, every tool call is answered before the next
-/// non-tool message (and before the conversation ends), and every tool result answers an earlier,
-/// still unanswered call. A tool call and its result are matched by id, so a second result for
-/// one call is an orphan.
+/// non-tool message (and before the conversation ends), and every tool result answers an earlier.
+///
+/// Still unanswered call. A tool call and its result are matched by id, so a second result for one
+/// call is an orphan.
 pub fn check(messages: &[Message]) -> Result<(), SequenceFault> {
     let mut pending: BTreeSet<&ToolCallId> = BTreeSet::new();
     let mut previous: Option<Role> = None;

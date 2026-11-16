@@ -28,9 +28,10 @@ pub fn keep_nothing() -> ContextKeep {
     }
 }
 
-/// sill's calls into intentd and companiond: the connection owns `org.bardo.Shell`, which
-/// `actiond.toml` gives the launcher, confirm and control roles and `companiond.toml` the
-/// right to speak for the person.
+/// sill's calls into intentd and companiond.
+///
+/// The connection owns `org.bardo.Shell`, which `actiond.toml` gives the launcher, confirm and
+/// control roles and `companiond.toml` the right to speak for the person.
 #[derive(Debug)]
 pub struct Launcher {
     /// intentd, as the launcher.
@@ -236,10 +237,12 @@ impl Answer {
     }
 }
 
-/// What memoryd holds of the Spaces `work` and `desktop` as the shell reads it (the shell's identity is this
-/// test process, placed in the fake proc root as sill): the recent entries, polled until
-/// every kind in `kinds` is among them (the audit kinds of `intentd`'s `record.rs`). intentd drains its audit queue into memoryd on a timer, so
-/// there is no event to wait on; the bound only turns a missing record into a failure.
+/// What memoryd holds of the Spaces `work` and `desktop` as the shell reads it (the shell's
+/// identity is this test process, placed in the fake proc root as sill).
+///
+/// The recent entries, polled until every kind in `kinds` is among them (the audit kinds of
+/// `intentd`'s `record.rs`). intentd drains its audit queue into memoryd on a timer, so there is no
+/// event to wait on; the bound only turns a missing record into a failure.
 pub async fn recorded(world: &World, kinds: &[&str]) -> Vec<memory_core::RecentEntry> {
     use memory_client::{DbusTransport, Memory};
     use memory_core::{BodyMode, RecentQuery, TrustFilter};

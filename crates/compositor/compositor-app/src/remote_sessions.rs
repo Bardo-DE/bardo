@@ -1,6 +1,7 @@
-//! The remote EIS connections that are open (`org.bardo.Compositor1.ConnectEis` and
-//! `LeaseWindow`), numbered one slot each (CASW-19) and findable by portal session or lease, so
-//! `EndEis` and `EndLease` can stop the input and close the compositor's end of each socket
+//! The remote EIS connections that are open (`org.bardo.Compositor1.ConnectEis` and `LeaseWindow`),
+//! numbered one slot each (CASW-19) and findable by portal session or lease.
+//!
+//! So `EndEis` and `EndLease` can stop the input and close the compositor's end of each socket
 //! (PORTAL-05).
 
 use compositor_agent::{RemoteFor, RemoteHandle, RemoteSlot, RemoteSlots};

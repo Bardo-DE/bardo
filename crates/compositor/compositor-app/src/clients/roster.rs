@@ -16,12 +16,13 @@ use std::os::unix::net::UnixStream;
 /// process), well under the soft limit `limits::raise_open_files` asks for.
 pub const MAX_CONNECTIONS: usize = 384;
 
-/// The last connections of the session's cap, kept for apps and services whose name is proven
-/// ("New 2"): a program nothing proves a name for is refused once the session holds
-/// `MAX_CONNECTIONS - RESERVED_FOR_PROVEN`, so a few hostile processes cannot fill the session
-/// and leave no room for the next program the person starts. The cap is still checked before
-/// anything is read from the program (it cannot yet be told apart then); the reserve is applied
-/// when its look has finished.
+/// The last connections of the session's cap, kept for apps and services whose name is proven ("New
+/// 2").
+///
+/// A program nothing proves a name for is refused once the session holds `MAX_CONNECTIONS -
+/// RESERVED_FOR_PROVEN`, so a few hostile processes cannot fill the session and leave no room for
+/// the next program the person starts. The cap is still checked before anything is read from the
+/// program (it cannot yet be told apart then); the reserve is applied when its look has finished.
 pub const RESERVED_FOR_PROVEN: usize = 32;
 
 /// Live connections one app (or one process, when no name is proven) may hold: browsers and
