@@ -339,6 +339,8 @@ fn kinds_without_a_back_end_show_their_type_size_and_date() {
 
 #[test]
 fn a_folder_counts_its_items_size_and_kinds() {
+    // The expected date is in UTC, whatever zone the machine is in (each test is its own process).
+    anyview_core::LocalZone::pin(0);
     let dir = tempfile::tempdir().unwrap();
     let write = |name: &str, bytes: &[u8]| std::fs::write(dir.path().join(name), bytes).unwrap();
     write("a.txt", b"one\ntwo\n");
