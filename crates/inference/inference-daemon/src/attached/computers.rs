@@ -322,6 +322,25 @@ pub struct NewTailnetComputer {
 #[error(transparent)]
 pub struct SaveFailed(Arc<dyn std::error::Error + Send + Sync>);
 
+/// The failure behind a refusal. Two causes are equal when they are the same one.
+#[derive(Debug, Clone, thiserror::Error)]
+#[error(transparent)]
+pub struct Because(Arc<dyn std::error::Error + Send + Sync>);
+
+impl Because {
+    fn of(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self(Arc::new(cause))
+    }
+}
+
+impl PartialEq for Because {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+impl Eq for Because {}
+
 impl PartialEq for SaveFailed {
     fn eq(&self, other: &Self) -> bool {
         Arc::ptr_eq(&self.0, &other.0)
@@ -354,6 +373,15 @@ pub enum ComputerError {
     /// The assistant does not know the model.
     #[error("The assistant does not know a model called \u{201c}{0}\u{201d}.")]
     UnknownModel(String),
+    /// The assistant does not know the model, because its id is not one.
+    #[error("The assistant does not know a model called \u{201c}{id}\u{201d}.")]
+    BadModelId {
+        /// The id as given.
+        id: String,
+        /// Why it is not an id.
+        #[source]
+        source: Because,
+    },
     /// The model is one that cannot be used from another computer.
     #[error("The model \u{201c}{0}\u{201d} cannot be used from another computer.")]
     ModelNotUsable(String),
@@ -371,6 +399,9 @@ pub enum ComputerError {
     /// The new list could not be saved.
     #[error("The computer could not be saved.")]
     NotSaved(#[source] SaveFailed),
+    /// There is no computer of that name, because it is not a name.
+    #[error("There is no computer with that name.")]
+    BadComputerName(#[source] Because),
     /// There is no computer of that name.
     #[error("There is no computer with that name.")]
     NotThere,
@@ -419,13 +450,13 @@ impl ComputerError {
             ComputerError::NoModels => "NoModels",
             ComputerError::TooMany => "TooMany",
             ComputerError::AlreadyThere => "AlreadyThere",
-            ComputerError::UnknownModel(_) => "UnknownModel",
+            ComputerError::UnknownModel(_) | ComputerError::BadModelId { .. } => "UnknownModel",
             ComputerError::ModelNotUsable(_) => "ModelNotUsable",
             ComputerError::ModelTaken(_) => "ModelTaken",
             ComputerError::BadAddress(_) => "BadAddress",
             ComputerError::BadKey(_) => "BadKey",
             ComputerError::NotSaved(_) => "NotSaved",
-            ComputerError::NotThere => "NotThere",
+            ComputerError::NotThere | ComputerError::BadComputerName(_) => "NotThere",
             ComputerError::AddedByHand => "AddedByHand",
             ComputerError::Unavailable => "Unavailable",
             ComputerError::NotOnTailscale => "NotOnTailscale",
@@ -670,9 +701,10 @@ impl Computers {
         let mut keys: Vec<(PathBuf, &SecretText)> = Vec::new();
         let mut engines = Vec::new();
         for model in &new.models {
-            let id = ModelId::parse(&model.id)
-                .ok()
-                .ok_or_else(|| ComputerError::UnknownModel(model.id.clone()))?;
+            let id = ModelId::parse(&model.id).map_err(|error| ComputerError::BadModelId {
+                id: model.id.clone(),
+                source: Because::of(error),
+            })?;
             if !taken.insert(id.to_string()) {
                 return Err(ComputerError::ModelTaken(model.id.clone()));
             }
@@ -772,9 +804,10 @@ impl Computers {
         };
         let mut engines = Vec::new();
         for model in &new.models {
-            let id = ModelId::parse(model)
-                .ok()
-                .ok_or_else(|| ComputerError::UnknownModel(model.clone()))?;
+            let id = ModelId::parse(model).map_err(|error| ComputerError::BadModelId {
+                id: model.clone(),
+                source: Because::of(error),
+            })?;
             if !taken.insert(id.to_string()) {
                 return Err(ComputerError::ModelTaken(model.clone()));
             }
@@ -865,8 +898,7 @@ impl Computers {
     pub fn remove(&self, name: &str) -> Result<Option<NodeId>, ComputerError> {
         let text = name.strip_prefix("computer:").unwrap_or(name);
         let name = ComputerName::parse(text)
-            .ok()
-            .ok_or(ComputerError::NotThere)?;
+            .map_err(|error| ComputerError::BadComputerName(Because::of(error)))?;
         let mut state = self.state();
         let Some(gone) = state.file.computers.get(name.as_str()).cloned() else {
             return Err(if state.by_hand.contains(&name) {

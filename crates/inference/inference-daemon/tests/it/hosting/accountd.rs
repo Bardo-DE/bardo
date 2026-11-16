@@ -328,8 +328,7 @@ impl Reports for FakeAccountd {
                 claims.len(),
             ));
             AccountId::parse(runtime.provider())
-                .ok()
-                .ok_or(ReportFault::Rejected)
+                .map_err(|error| ReportFault::Rejected(Arc::new(error)))
         })
     }
 }

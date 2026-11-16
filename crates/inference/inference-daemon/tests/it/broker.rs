@@ -341,13 +341,13 @@ async fn with_no_accountd_on_the_bus_a_question_is_ask_again_and_a_report_is_unr
         Err(AccountdFault::Unreachable)
     );
     assert!(broker.servers().await.is_empty());
-    assert_eq!(
+    assert!(matches!(
         broker
             .report(Runtime::Ollama, &[], Standing::Online)
             .await
             .map(drop),
-        Err(ReportFault::Unreachable)
-    );
+        Err(ReportFault::Unavailable(_))
+    ));
 }
 
 #[tokio::test(flavor = "multi_thread")]

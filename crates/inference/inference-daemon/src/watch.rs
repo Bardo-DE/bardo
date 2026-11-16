@@ -252,7 +252,10 @@ impl<H: Http + 'static> Watch<H> {
         let reported = self.reports.report(runtime, &claims, standing).await;
         // A rejection is final for this content (asking again would say the same); only a
         // report that did not get through is asked again.
-        let done = !matches!(reported, Err(ReportFault::Unreachable));
+        let done = !matches!(
+            reported,
+            Err(ReportFault::Unreachable | ReportFault::Unavailable(_))
+        );
         if let (true, Some(one)) = (done, self.installed.get_mut(&runtime)) {
             one.told = Told::Yes;
         }

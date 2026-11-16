@@ -211,7 +211,13 @@ fn what_is_refused_changes_nothing_and_says_so_in_plain_words() {
         ),
     ];
     for (what, new, want) in cases {
-        assert_eq!(computers.add(&new), Err(want.clone()), "{what}");
+        // A refusal is told by its bus name and its words: a cause behind it is not compared.
+        let got = computers.add(&new).expect_err(what);
+        assert_eq!(
+            (got.name(), got.to_string()),
+            (want.name(), want.to_string()),
+            "{what}"
+        );
         let words = want.to_string();
         for jargon in [
             "socket", "loopback", "toml", "key_file", "TOML", "API", "json",
@@ -311,10 +317,10 @@ fn a_computer_that_was_added_is_removed_with_its_models_and_its_keys_and_one_by_
         Err(ComputerError::AddedByHand)
     );
     assert_eq!(computers.remove("nowhere"), Err(ComputerError::NotThere));
-    assert_eq!(
+    assert!(matches!(
         computers.remove("Not A Name!"),
-        Err(ComputerError::NotThere)
-    );
+        Err(ComputerError::BadComputerName(_))
+    ));
     assert!(!rig.file().exists(), "a refused removal writes nothing");
 }
 

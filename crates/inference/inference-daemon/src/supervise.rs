@@ -301,8 +301,7 @@ impl Supervised {
         let (ack, done) = oneshot::channel();
         self.commands
             .send(Command::Want(id.clone(), ack))
-            .ok()
-            .ok_or_else(Failed::unknown)?;
+            .map_err(|mpsc::error::SendError(_)| Failed::unknown())?;
         match done.await {
             Err(_) => return Err(Failed::unknown()),
             Ok(Err(cause)) => return Err(Failed { cause }),
@@ -336,7 +335,12 @@ impl Supervised {
             if let Some(verdict) = verdict {
                 return verdict;
             }
-            state.changed().await.ok().ok_or_else(Failed::unknown)?;
+            #[expect(
+                clippy::map_err_ignore,
+                reason = "watch::error::RecvError carries nothing beyond the failure"
+            )]
+            let changed = state.changed().await.map_err(|_| Failed::unknown());
+            changed?;
         }
     }
 
@@ -397,8 +401,12 @@ impl Changes {
     /// # Errors
     ///
     /// Returns [`Failed`] when the supervisor is gone.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "watch::error::RecvError carries nothing beyond the failure"
+    )]
     pub async fn next(&mut self) -> Result<(), Failed> {
-        self.0.changed().await.ok().ok_or_else(Failed::unknown)
+        self.0.changed().await.map_err(|_| Failed::unknown())
     }
 }
 

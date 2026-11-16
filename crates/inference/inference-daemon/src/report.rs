@@ -12,15 +12,22 @@ use crate::probe::Runtime;
 use crate::probed::Standing;
 use account_capability::Claim;
 use account_core::AccountId;
+use std::error::Error;
 use std::fmt::Debug;
+use std::sync::Arc;
 
 /// Why a report was not taken.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum ReportFault {
-    /// The store could not take it now: ask again at the next look.
+    /// There is no store to report to: ask again at the next look.
+    #[error("there is no store to report to")]
     Unreachable,
+    /// The store could not take it now: ask again at the next look.
+    #[error("the store could not take the report now")]
+    Unavailable(#[source] Arc<dyn Error + Send + Sync>),
     /// The store did not accept it (an unknown provider, a claim it does not accept).
-    Rejected,
+    #[error("the store did not accept the report")]
+    Rejected(#[source] Arc<dyn Error + Send + Sync>),
 }
 
 /// accountd, as inferd reports a runtime to it.

@@ -117,8 +117,7 @@ impl Reports for AccountdBroker {
     ) -> Boxed<'a, Result<AccountId, ReportFault>> {
         Box::pin(async move {
             let provider = ProviderId::parse(runtime.provider())
-                .ok()
-                .ok_or(ReportFault::Rejected)?;
+                .map_err(|error| ReportFault::Rejected(Arc::new(error)))?;
             let state = match standing {
                 Standing::Online => AccountState::Ok,
                 Standing::Offline => AccountState::Offline,
@@ -128,8 +127,10 @@ impl Reports for AccountdBroker {
                 .await
                 .map_err(|error| match error {
                     AiAccountsError::Link(LinkError::Unreachable)
-                    | AiAccountsError::Refused(Refusal::Unavailable) => ReportFault::Unreachable,
-                    _ => ReportFault::Rejected,
+                    | AiAccountsError::Refused(Refusal::Unavailable) => {
+                        ReportFault::Unavailable(Arc::new(error))
+                    }
+                    _ => ReportFault::Rejected(Arc::new(error)),
                 })
         })
     }

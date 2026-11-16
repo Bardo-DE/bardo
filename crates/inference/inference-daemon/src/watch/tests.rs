@@ -5,7 +5,7 @@ use account_capability::LlmFeature;
 use account_core::AccountId;
 use account_fake_servers::{FakeModels, ModelDef, Wire, net::Bind};
 use account_http_reqwest::ReqwestHttp;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 
 fn up(runtime: Runtime, port: u16) -> Found {
     found(
@@ -147,11 +147,10 @@ impl Reports for Arc<Recorder> {
                 .lock()
                 .expect("lock")
                 .push((runtime, standing, claims.len()));
-            match *self.answer.lock().expect("lock") {
+            match self.answer.lock().expect("lock").clone() {
                 Some(fault) => Err(fault),
                 None => AccountId::parse(runtime.provider())
-                    .ok()
-                    .ok_or(ReportFault::Rejected),
+                    .map_err(|error| ReportFault::Rejected(Arc::new(error))),
             }
         })
     }
@@ -282,7 +281,9 @@ async fn a_report_accountd_did_not_get_is_asked_again_and_a_rejected_one_is_not(
     // A rejection is final for that content.
     let (engines, recorder) = (Engines::default(), Arc::new(Recorder::default()));
     let mut watch = self::watch(only_ollama(port_of(&fake)), &engines, &recorder);
-    recorder.fails_with(Some(ReportFault::Rejected));
+    recorder.fails_with(Some(ReportFault::Rejected(Arc::new(
+        std::io::Error::other("the store said no"),
+    ))));
     watch.look().await;
     watch.look().await;
     assert_eq!(recorder.told().len(), 1);
