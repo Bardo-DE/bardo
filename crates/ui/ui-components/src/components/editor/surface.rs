@@ -131,14 +131,12 @@ pub fn EditSurface(
             touch(&checker);
         }))
     };
-    {
-        let state = Rc::clone(&state);
-        use_drop(move || {
-            if let (Some(edit), Some(listener)) = (host.edit(), state.listener.take()) {
-                edit.ime().forget(listener);
-            }
-        })
-    };
+    let dropped = Rc::clone(&state);
+    use_drop(move || {
+        if let (Some(edit), Some(listener)) = (host.edit(), dropped.listener.take()) {
+            edit.ime().forget(listener);
+        }
+    });
 
     let mounted = {
         let ctx = ctx.clone();
