@@ -58,8 +58,7 @@ pub enum Command {
 fn seconds(text: &str) -> Result<Duration, String> {
     text.parse::<u64>()
         .map(Duration::from_secs)
-        .ok()
-        .ok_or_else(|| format!("`{text}` is not a whole number of seconds"))
+        .map_err(|e| format!("`{text}` is not a whole number of seconds: {e}"))
 }
 
 /// Runs `command` as the app on `connection`, handing every JSON line to `emit`; whether it

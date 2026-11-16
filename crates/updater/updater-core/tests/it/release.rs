@@ -56,7 +56,7 @@ fn hostile_and_broken_releases_are_refused_for_the_right_reason() {
         (
             "bad date",
             |d| d.date = "\"yesterday\"".into(),
-            |e| matches!(e, ReleaseError::BadDate(_)),
+            |e| matches!(e, ReleaseError::BadDate(..)),
         ),
         (
             "no files",

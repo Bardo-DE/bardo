@@ -94,8 +94,7 @@ impl Release {
             return Err(ReleaseError::Unreadable("it is too large".to_owned()));
         }
         let text = std::str::from_utf8(bytes)
-            .ok()
-            .ok_or_else(|| ReleaseError::Unreadable("it is not text".to_owned()))?;
+            .map_err(|e| ReleaseError::Unreadable(format!("it is not text: {e}")))?;
         let raw: Raw = toml::from_str(text).map_err(|e| ReleaseError::Unreadable(e.to_string()))?;
         Self::from_raw(raw)
     }
@@ -110,8 +109,7 @@ impl Release {
             .ok_or_else(|| ReleaseError::BadVersion(raw.version.clone()))?;
         let released = OffsetDateTime::parse(&raw.date, &Rfc3339)
             .map(|d| UnixSeconds(d.unix_timestamp()))
-            .ok()
-            .ok_or_else(|| ReleaseError::BadDate(raw.date.clone()))?;
+            .map_err(|source| ReleaseError::BadDate(raw.date.clone(), source))?;
         if raw.notes.len() > MAX_NOTES_BYTES {
             return Err(ReleaseError::NotesTooLong);
         }

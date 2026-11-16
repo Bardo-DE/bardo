@@ -16,7 +16,7 @@ pub enum ReleaseError {
     BadVersion(String),
     /// The date is not an RFC 3339 time.
     #[error("the release date is not valid: {0}")]
-    BadDate(String),
+    BadDate(String, #[source] time::error::Parse),
     /// The notes are longer than a Software Update page shows.
     #[error("the release notes are too long")]
     NotesTooLong,
