@@ -116,9 +116,16 @@ fn failure(failure: ExtractFailure) -> ModelError {
     }
 }
 
-/// Runs the turn (and the repair, when there is one) until a reply passes its check. `forward`
+/// Runs the turn (and the repair, when there is one) until a reply passes its check.
+///
+/// `forward`
 /// takes the thoughts as they stream (a `Stop` from it ends the turn); `touch` is called after
 /// each attempt, to tell the supervisor the engine is in use.
+///
+/// # Errors
+///
+/// Returns the [`ModelError`] of a turn that fails, or of a reply that is refused, unparseable,
+/// truncated or over budget even after the repair.
 pub async fn run<P: Provider>(
     provider: &P,
     checked: Checked,

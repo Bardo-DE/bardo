@@ -1,4 +1,6 @@
-//! One computer-use step over a model turn: stoker's `CuaSession` builds the prompt and reads the
+//! One computer-use step over a model turn.
+//!
+//! Stoker's `CuaSession` builds the prompt and reads the
 //! reply, and this module is the turn between them. It prepares the frame, runs the turn through
 //! a transcript sink, hands the transcript to `absorb_for` and, when that asks for a repair, runs
 //! one more turn with the request it returns.
@@ -52,8 +54,9 @@ fn unreadable() -> Failed {
     CuaStepFailure::ModelFailed(ModelError::Unreadable).into()
 }
 
-/// The session for a run on this model, or none when the model has no tool or text dialect (a
-/// vendor's wire needs the vendor's backend, not an engine on this computer).
+/// The session for a run on this model, or none when the model has no tool or text dialect.
+///
+/// A vendor's wire needs the vendor's backend, not an engine on this computer.
 /// A reply is never asked to be longer than `ceiling`.
 #[must_use]
 pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<CuaSession> {
@@ -84,7 +87,7 @@ pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<Cua
     // A model trained to think before it acts is run with its reasoning; any other answers plainly.
     let reasoning = match actions.answer {
         AnswerShape::ThinkActionCall => Reasoning::EngineDefault,
-        _ => Reasoning::Off,
+        AnswerShape::Free => Reasoning::Off,
     };
     let settings = TurnSettings {
         sampling: *model.sampling()?.for_reasoning(reasoning),
@@ -181,17 +184,28 @@ fn frame_image(
                 stride,
                 format,
             };
+            #[expect(
+                clippy::map_err_ignore,
+                reason = "an image that cannot be prepared is one Attachment error; the app is told no more"
+            )]
             let prepared = prepare(raw, map, Encoding::Png).map_err(|_| BridgeError::Attachment)?;
             Ok(bridge::image_input(prepared.media, prepared.bytes))
         }
     }
 }
 
-/// One step on the run's own session, which the step changes in place: the reply, with the step
+/// One step on the run's own session, which the step changes in place.
+///
+/// The reply, with the step
 /// remembered. Thoughts stream into `forward` as the turn runs, then an `ActionProposed` for each
 /// action; a `Stop` from it ends the turn (nobody is listening) or the proposals. A step that
 /// fails before its reply is absorbed leaves the session's history as it was, and one that fails
 /// after a repair gets its repair budget back, so the same step can be asked again.
+///
+/// # Errors
+///
+/// Returns [`Failed`] when the model has no readable catalog entry, the frame cannot be prepared,
+/// the turn fails or is cut, or the reply never parses.
 pub async fn step<P: Provider>(
     session: &mut CuaSession,
     model: &LocalModel,
@@ -201,6 +215,10 @@ pub async fn step<P: Provider>(
     mut forward: impl FnMut(InferEvent) -> ControlFlow<()> + Send,
 ) -> Result<CuaStepReply, Failed> {
     let caps = model.caps().ok_or_else(unreadable)?;
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a frame map that cannot be built is one Unreadable failure; the app is told no more"
+    )]
     let map = FrameMap::new(
         request.window.logical,
         request.window.scale,
@@ -208,6 +226,10 @@ pub async fn step<P: Provider>(
         caps.images.space,
     )
     .map_err(|_| unreadable())?;
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a frame that cannot be prepared is one Unreadable failure; the app is told no more"
+    )]
     let image = frame_image(request, frames, &map).map_err(|_| unreadable())?;
     let mut sent = session.request(&observation(request), &map, image);
     loop {

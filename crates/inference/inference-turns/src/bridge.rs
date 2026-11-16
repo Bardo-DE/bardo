@@ -1,4 +1,5 @@
-//! The seam between porter's wire types and stoker's provider types (`model-provider`):
+//! The seam between porter's wire types and stoker's provider types (`model-provider`).
+//!
 //! `ChatRequest` to `TurnRequest`, `ToolCallPart` to `ToolCall`, stoker's `TurnEvent` to
 //! `InferEvent`, `ProviderError` to `ModelError`. The mapping itself is
 //! `inference-bridge` (shared with inference-client's in-process engine host); what stays here is the

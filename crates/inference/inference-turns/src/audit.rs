@@ -1,6 +1,7 @@
-//! The audit trail of finished turns: who, through what, how much; never the content
-//! (`inference_core::AuditEntry`). One [`SessionAudit`] per session (it knows the app); the entries
-//! go to an [`AuditOut`]: nowhere, a JSON-lines file, or a test's memory.
+//! The audit trail of finished turns: who, through what, how much; never the content.
+//!
+//! The entries are `inference_core::AuditEntry`. One [`SessionAudit`] per session (it knows the
+//! app); the entries go to an [`AuditOut`]: nowhere, a JSON-lines file, or a test's memory.
 //!
 //! memoryd's `Record` is not the destination yet: it has no area tag for inference, and `prov`
 //! no system part for inferd (see FINDINGS), and porter does not depend on almanac. The file is
@@ -130,7 +131,7 @@ impl<O: AuditOut, C: Clock> SessionAudit<O, C> {
         spec: &SessionSpec,
         served: &ServedBy,
         reply: &InferReply,
-        carried: &Carried,
+        carried: Carried,
         why: Option<&Why>,
     ) -> AuditEntry {
         AuditEntry {
@@ -152,7 +153,7 @@ impl<O: AuditOut, C: Clock> SessionAudit<O, C> {
 impl<O: AuditOut, C: Clock> AuditSink for SessionAudit<O, C> {
     fn record(&self, spec: &SessionSpec, served: &ServedBy, reply: &InferReply, carried: &Carried) {
         self.out
-            .append(&self.entry(spec, served, reply, carried, None));
+            .append(&self.entry(spec, served, reply, *carried, None));
     }
 
     fn record_why(
@@ -164,7 +165,7 @@ impl<O: AuditOut, C: Clock> AuditSink for SessionAudit<O, C> {
         why: &Why,
     ) {
         self.out
-            .append(&self.entry(spec, served, reply, carried, Some(why)));
+            .append(&self.entry(spec, served, reply, *carried, Some(why)));
     }
 }
 

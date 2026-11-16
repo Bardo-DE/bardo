@@ -1,6 +1,7 @@
-//! The structured-output limits: what the settings rows `ai.structured.open_text`, `open_list`,
-//! `depth` and `repair_budget` (design/22 section 3.26, interface ask 143) say, as the values
-//! `structured` runs under.
+//! The structured-output limits that `structured` runs under.
+//!
+//! They are what the settings rows `ai.structured.open_text`, `open_list`,
+//! `depth` and `repair_budget` (design/22 section 3.26, interface ask 143) say.
 //!
 //! The daemon reads `[ai.structured]` of `inferd.toml` and passes the result down; nothing here
 //! reads a file or the environment. A value outside its row's range is not clamped: as every

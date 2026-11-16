@@ -114,6 +114,10 @@ impl<U: EngineUse> Model for LocalTurn<'_, U> {
         request: &ChatRequest,
         sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "any bridge failure is the one refusal Unsupported, which carries no cause"
+        )]
         let turn = bridge::chat_turn(self.model, request, self.frames)
             .map(|turn| self.within_ceiling(turn))
             .map_err(|_| InferRefusal::Unsupported)?;
@@ -126,6 +130,10 @@ impl<U: EngineUse> Model for LocalTurn<'_, U> {
         request: &TaskRequest,
         sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "any bridge failure is the one refusal Unsupported, which carries no cause"
+        )]
         let turn = bridge::task_turn(self.model, request, self.tier)
             .map(|turn| self.within_ceiling(turn))
             .map_err(|_| InferRefusal::Unsupported)?;

@@ -7,7 +7,6 @@ use model_provider::{
     ModelName, OutputShape, Part, ProviderError, Role, Script, ScriptedProvider, StopReason,
     TurnEnd, TurnEvent, TurnUsage,
 };
-use std::ops::ControlFlow;
 
 const SCORE: &str = r#"{"type":"object","additionalProperties":false,
     "properties":{"score":{"type":"integer","minimum":0,"maximum":10}},

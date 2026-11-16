@@ -12,8 +12,8 @@ use model_provider::{
     ToolCallId as CallId, TurnEnd, TurnEvent, TurnUsage,
 };
 use model_provider::{Part, Role, TurnRequest};
+use std::collections::BTreeSet;
 use std::io::Write;
-use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
 
 fn cua_model(scratch: &Scratch) -> LocalModel {
@@ -117,7 +117,7 @@ fn click_at(x: u32, y: u32) -> CuaAction<WindowSpace> {
         at: Target::Point(Point::new(Coord(x), Coord(y))),
         button: Button::Left,
         count: ClickCount::One,
-        mods: Default::default(),
+        mods: BTreeSet::default(),
     }
 }
 

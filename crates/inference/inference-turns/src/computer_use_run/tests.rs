@@ -13,6 +13,7 @@ use model_provider::{
     ModelName, Part, Script, ScriptedProvider, StopReason, ToolCall, ToolCallId, TurnEnd,
     TurnEvent, TurnUsage,
 };
+use std::collections::BTreeSet;
 use std::io::Write;
 use std::ops::ControlFlow;
 use std::os::fd::OwnedFd;
@@ -69,7 +70,7 @@ fn at(x: u32, y: u32) -> CuaAction<WindowSpace> {
         at: Target::Point(Point::new(Coord(x), Coord(y))),
         button: Button::Left,
         count: ClickCount::One,
-        mods: Default::default(),
+        mods: BTreeSet::default(),
     }
 }
 

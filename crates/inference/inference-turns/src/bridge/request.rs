@@ -27,6 +27,10 @@ pub fn local_target(model: &LocalModel) -> Target {
 
 /// The turn for a chat request. Sampling and the output limit the request leaves open come from
 /// the model's catalog entry.
+///
+/// # Errors
+///
+/// Returns a [`BridgeError`] when the request cannot be expressed as a turn for this model.
 pub fn chat_turn(
     model: &LocalModel,
     request: &pi::ChatRequest,
@@ -36,6 +40,10 @@ pub fn chat_turn(
 }
 
 /// A task as a chat turn: its instruction, then the text.
+///
+/// # Errors
+///
+/// Returns a [`BridgeError`] when the task cannot be expressed as a turn for this model.
 pub fn task_turn(
     model: &LocalModel,
     request: &pi::TaskRequest,
@@ -46,6 +54,11 @@ pub fn task_turn(
 
 /// The embedding turns of a request: the model's prefix for the request's role goes before every
 /// text, and the texts are cut into batches of the model's limit.
+///
+/// # Errors
+///
+/// Returns [`BridgeError::Unsupported`] when the model does not embed, and any other
+/// [`BridgeError`] the request's texts cause.
 pub fn embed_turns(
     model: &LocalModel,
     request: &pi::EmbedRequest,

@@ -1,4 +1,6 @@
-//! Model turns on an engine of this computer: stoker's `OpenAiCompat` (`Driver<OpenAiCodec,
+//! Model turns on an engine of this computer.
+//!
+//! Stoker's `OpenAiCompat` (`Driver<OpenAiCodec,
 //! HttpClient>`) against a [`LocalModel`]'s engine, wrapped in `Retrying` (the daemon owns retry,
 //! ARCHITECTURE section 2). A [`LocalTurn`] is a [`inference_core::Model`] made for one request on a
 //! local model: chat (validated and repaired when the request's shape asks), tasks and
@@ -26,7 +28,6 @@ use model_http::{HttpClient, Timeouts, WaitMs as HttpWaitMs};
 use model_openai_compat::{Flavor, OpenAiCodec, OpenAiCompat};
 use model_provider as sp;
 use model_provider::Retrying;
-use std::future::Future;
 use std::ops::ControlFlow;
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
@@ -139,7 +140,9 @@ where
     }
 }
 
-/// Runs `turn` on `provider` as a plain chat turn: each event goes to `events` as it comes (a
+/// Runs `turn` on `provider` as a plain chat turn.
+///
+/// Each event goes to `events` as it comes (a
 /// `Stop` from it ends the turn), `touch` is called while the turn runs (no more than every 250
 /// milliseconds; an app that starts no engine passes a closure that does nothing), and the reply
 /// is the gathered text, thought and tool calls with the turn's usage. The second value says why

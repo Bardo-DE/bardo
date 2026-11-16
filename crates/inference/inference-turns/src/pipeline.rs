@@ -1,4 +1,6 @@
-//! Running a plan stage by stage. Each stage is announced before it runs (`Why` when the person
+//! Running a plan stage by stage.
+//!
+//! Each stage is announced before it runs (`Why` when the person
 //! asked to see reasons, `Routed` for who it is sent to, and a `Stage` note for the footer), then
 //! run by the seam that serves its role: a [`Transcriber`] for `Hear`, a turn runner for `Answer`.
 //! The transcript joins the request as text, so the answer stage sees what the person said as
@@ -12,7 +14,6 @@ use inference_core::{
 use inference_router::audio::AudioIn;
 use inference_router::seams::{RunningTurn, TurnRunner, TurnStep};
 use std::collections::{BTreeMap, VecDeque};
-use std::future::Future;
 use std::ops::ControlFlow;
 
 /// What a speech-to-text stage runs on (stoker's `SpeechToText` behind the engine the stage's
@@ -33,8 +34,8 @@ pub trait Transcriber: Send + Sync {
 pub struct VecAudio(pub VecDeque<AudioFrame>);
 
 impl AudioIn for VecAudio {
-    async fn next(&mut self) -> Option<AudioFrame> {
-        self.0.pop_front()
+    fn next(&mut self) -> impl Future<Output = Option<AudioFrame>> + Send {
+        std::future::ready(self.0.pop_front())
     }
 }
 

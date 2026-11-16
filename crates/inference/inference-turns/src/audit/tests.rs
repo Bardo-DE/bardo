@@ -7,7 +7,8 @@ use base_ids::Count;
 use base_testkit::Scratch;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
-use inference_core::{ChatReply, EmbedReply, InferRefusal, ModelError, StopReason, Why};
+use inference_core::{ChatReply, EmbedReply, InferRefusal, ModelError, StopReason};
+use std::collections::BTreeSet;
 
 fn app() -> AppId {
     AppId {
@@ -51,7 +52,7 @@ fn nothing() -> Carried {
 
 fn spec() -> SessionSpec {
     SessionSpec {
-        need: account_match::Need::Llm(account_match::LlmNeed::new(Default::default(), Tokens(1))),
+        need: account_match::Need::Llm(account_match::LlmNeed::new(BTreeSet::default(), Tokens(1))),
         class: account_core::DataClass::Notes,
         tier: account_capability::Tier::Fast,
         usage: account_core::consent::Usage::Interactive,
