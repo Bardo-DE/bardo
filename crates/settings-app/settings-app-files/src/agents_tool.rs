@@ -91,8 +91,10 @@ impl AgentsTool {
             .command(&["list"])
             .stderr(Stdio::piped())
             .output()
-            .ok()
-            .ok_or_else(String::new)?;
+            .map_err(|error| {
+                tracing::warn!(error = %error, "could not run the assistants program");
+                String::new()
+            })?;
         if !out.status.success() {
             return Err(reason_of(&String::from_utf8_lossy(&out.stderr)));
         }
@@ -115,8 +117,10 @@ impl AgentsTool {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
             .spawn()
-            .ok()
-            .ok_or_else(String::new)?;
+            .map_err(|error| {
+                tracing::warn!(error = %error, "could not start the assistants program");
+                String::new()
+            })?;
         let mut said = String::new();
         if let Some(stdout) = child.stdout.take() {
             let mut lines = BufReader::new(stdout);
