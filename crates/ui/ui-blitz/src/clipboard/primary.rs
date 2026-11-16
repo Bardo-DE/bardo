@@ -34,19 +34,14 @@ pub(super) fn write(text: &str) -> Result<(), ClipboardError> {
         .lock()
         .unwrap_or_else(PoisonError::into_inner);
     if owner.is_none() {
-        *owner = Some(
-            arboard::Clipboard::new()
-                .ok()
-                .ok_or(ClipboardError::Unavailable)?,
-        );
+        *owner = Some(arboard::Clipboard::new().map_err(ClipboardError::Refused)?);
     }
     let clipboard = owner.as_mut().ok_or(ClipboardError::Unavailable)?;
     clipboard
         .set()
         .clipboard(LinuxClipboardKind::Primary)
         .text(text)
-        .ok()
-        .ok_or(ClipboardError::Unavailable)
+        .map_err(ClipboardError::Refused)
 }
 
 /// No primary selection here.

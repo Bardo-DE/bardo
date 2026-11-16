@@ -9,24 +9,31 @@ use std::fmt;
 pub const LOOK_JSON_MOST: usize = 1024;
 
 /// Why a text is not a look.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug)]
 pub enum LookJsonError {
     /// The text is longer than [`LOOK_JSON_MOST`] bytes.
     TooLong,
     /// The text is not JSON, or not a look.
-    Malformed,
+    Malformed(serde_json::Error),
 }
 
 impl fmt::Display for LookJsonError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
             LookJsonError::TooLong => "the look is longer than 1024 bytes",
-            LookJsonError::Malformed => "the text is not a Space look",
+            LookJsonError::Malformed(_) => "the text is not a Space look",
         })
     }
 }
 
-impl std::error::Error for LookJsonError {}
+impl std::error::Error for LookJsonError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            LookJsonError::TooLong => None,
+            LookJsonError::Malformed(cause) => Some(cause),
+        }
+    }
+}
 
 impl SpaceLook {
     /// The look as compact JSON. It is held to the dot limits first (one to three dots), so it
@@ -46,8 +53,7 @@ impl SpaceLook {
         }
         serde_json::from_str::<SpaceLook>(text)
             .map(clamp_look)
-            .ok()
-            .ok_or(LookJsonError::Malformed)
+            .map_err(LookJsonError::Malformed)
     }
 }
 
@@ -78,7 +84,7 @@ mod tests {
             !text.contains('\n') && !text.contains("  "),
             "compact: {text}"
         );
-        assert_eq!(SpaceLook::from_json(&text), Ok(look));
+        assert_eq!(SpaceLook::from_json(&text).expect("a look"), look);
     }
 
     #[test]
@@ -95,20 +101,19 @@ mod tests {
         };
         let text = look.to_json();
         assert!(text.len() <= LOOK_JSON_MOST, "{} bytes", text.len());
-        assert_eq!(
-            SpaceLook::from_json(&text).map(|look| look.dots.len()),
-            Ok(3)
-        );
+        assert_eq!(SpaceLook::from_json(&text).expect("a look").dots.len(), 3);
     }
 
     #[test]
     fn text_that_is_too_long_or_not_a_look_is_refused() {
         let long = format!("{{\"dots\":[],\"pad\":\"{}\"}}", "x".repeat(LOOK_JSON_MOST));
-        assert_eq!(SpaceLook::from_json(&long), Err(LookJsonError::TooLong));
+        assert!(matches!(
+            SpaceLook::from_json(&long),
+            Err(LookJsonError::TooLong)
+        ));
         for text in ["", "[1]", "{\"dots\":", "not json"] {
-            assert_eq!(
-                SpaceLook::from_json(text),
-                Err(LookJsonError::Malformed),
+            assert!(
+                matches!(SpaceLook::from_json(text), Err(LookJsonError::Malformed(_))),
                 "{text:?}"
             );
         }
@@ -116,6 +121,9 @@ mod tests {
 
     #[test]
     fn a_missing_key_takes_the_neutral_spaces() {
-        assert_eq!(SpaceLook::from_json("{}"), Ok(SpaceLook::default()));
+        assert_eq!(
+            SpaceLook::from_json("{}").expect("a look"),
+            SpaceLook::default()
+        );
     }
 }

@@ -233,11 +233,8 @@ mod tests {
             ("slot", Err(())),
         ];
         for (given, want) in cases {
-            let got = DataName::parse(given)
-                .map(DataName::attribute)
-                .ok()
-                .ok_or(());
-            assert_eq!(got, *want, "{given:?}");
+            let got = DataName::parse(given).map(DataName::attribute).ok();
+            assert_eq!(got, (*want).ok(), "{given:?}");
         }
     }
 
@@ -267,8 +264,8 @@ mod tests {
         for (given, want) in cases {
             let got = ExtraClass::parse(given);
             assert_eq!(
-                got.as_ref().map(ExtraClass::as_str).ok().ok_or(()),
-                *want,
+                got.as_ref().map(ExtraClass::as_str).ok(),
+                (*want).ok(),
                 "{given:?}"
             );
         }

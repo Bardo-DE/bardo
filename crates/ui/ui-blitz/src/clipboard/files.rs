@@ -207,19 +207,14 @@ pub(super) fn write_system(paths: &[PathBuf]) -> Result<(), super::ClipboardErro
         .lock()
         .unwrap_or_else(PoisonError::into_inner);
     if owner.is_none() {
-        *owner = Some(
-            arboard::Clipboard::new()
-                .ok()
-                .ok_or(super::ClipboardError::Unavailable)?,
-        );
+        *owner = Some(arboard::Clipboard::new().map_err(super::ClipboardError::Refused)?);
     }
     owner
         .as_mut()
         .ok_or(super::ClipboardError::Unavailable)?
         .set()
         .file_list(paths)
-        .ok()
-        .ok_or(super::ClipboardError::Unavailable)
+        .map_err(super::ClipboardError::Refused)
 }
 
 /// The system clipboard's `text/uri-list`, as the list's text (read on the capped worker).

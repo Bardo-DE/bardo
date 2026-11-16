@@ -110,7 +110,7 @@ fn the_apps_write_and_read_reach_the_same_clipboard() {
 
 #[test]
 fn outside_a_document_there_is_no_clipboard() {
-    assert_eq!(read_text(), Err(ClipboardError::NoHost));
+    assert!(matches!(read_text(), Err(ClipboardError::NoHost)));
 }
 
 #[test]

@@ -11,23 +11,23 @@ use std::ffi::c_void;
 use std::marker::PhantomData;
 use std::ptr::NonNull;
 use wayland_backend::client::Backend;
-use wayland_backend::client::ObjectId;
+use wayland_backend::client::{InvalidId, ObjectId};
 use wayland_client::protocol::wl_surface::WlSurface;
 use wayland_client::{Connection, Proxy};
 use wayland_protocols::xdg::shell::client::xdg_toplevel::XdgToplevel;
 
 /// Why a window's connection and surface could not be borrowed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub(crate) enum AdoptError {
     /// The window or the display is not Wayland's.
     #[error("the window is not a Wayland window")]
     ForeignWindow,
     /// libwayland does not know the surface as a `wl_surface`.
     #[error("the window's surface is not a live wl_surface")]
-    DeadSurface,
+    DeadSurface(#[source] InvalidId),
     /// libwayland does not know the pointer as an `xdg_toplevel`.
     #[error("the window's toplevel is not a live xdg_toplevel")]
-    DeadToplevel,
+    DeadToplevel(#[source] InvalidId),
 }
 
 /// A window's `wl_surface`, and a connection over the display it lives on, both borrowed from
@@ -67,11 +67,8 @@ impl Adopted<'_> {
         // proxy's class against `xdg_toplevel` and answers an error, not a bad object, on a
         // mismatch. Dropping the result destroys no protocol object.
         let id = unsafe { ObjectId::from_ptr(XdgToplevel::interface(), toplevel.as_ptr().cast()) }
-            .ok()
-            .ok_or(AdoptError::DeadToplevel)?;
-        XdgToplevel::from_id(&self.connection, id)
-            .ok()
-            .ok_or(AdoptError::DeadToplevel)
+            .map_err(AdoptError::DeadToplevel)?;
+        XdgToplevel::from_id(&self.connection, id).map_err(AdoptError::DeadToplevel)
     }
 }
 
@@ -96,11 +93,8 @@ pub(crate) fn adopt<'a>(
     // the proxy's class against `wl_surface` and answers an error, not a bad object, on a
     // mismatch.
     let id = unsafe { ObjectId::from_ptr(WlSurface::interface(), window.surface.as_ptr().cast()) }
-        .ok()
-        .ok_or(AdoptError::DeadSurface)?;
-    let surface = WlSurface::from_id(&connection, id)
-        .ok()
-        .ok_or(AdoptError::DeadSurface)?;
+        .map_err(AdoptError::DeadSurface)?;
+    let surface = WlSurface::from_id(&connection, id).map_err(AdoptError::DeadSurface)?;
     Ok(Adopted {
         connection,
         surface,

@@ -40,7 +40,7 @@ use std::sync::Arc;
 use ui_components::host::pasted::Pasted;
 
 /// Why the clipboard was not read or written.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum ClipboardError {
     /// Not called inside a ui-blitz document (`launch`, the harness): there is no clipboard to
     /// reach. Call it from a handler.
@@ -49,6 +49,9 @@ pub enum ClipboardError {
     /// The system clipboard refused, or holds no text.
     #[error("the clipboard is unavailable or holds no text")]
     Unavailable,
+    /// The system clipboard could not be opened or written.
+    #[error("the system clipboard could not be written")]
+    Refused(#[source] arboard::Error),
     /// The document has no window shell to reach the system clipboard through: a root
     /// [`provide_host`](crate::provide_host) wired by itself, not one `launch` built. Nothing was
     /// written.
@@ -158,11 +161,13 @@ impl Clipboard for System {
         match target {
             ClipboardTarget::Clipboard => {
                 let shell = self.shell().ok_or(ClipboardError::NoShell)?;
-                guarded(move || shell.set_clipboard_text(text).ok())
+                guarded(move || match shell.set_clipboard_text(text) {
+                    Ok(()) => Ok(()),
+                    Err(_refused) => Err(ClipboardError::Unavailable),
+                })
             }
-            ClipboardTarget::Primary => guarded(move || primary::write(&text).ok()),
+            ClipboardTarget::Primary => guarded(move || primary::write(&text)),
         }
-        .ok_or(ClipboardError::Unavailable)
     }
 
     fn read_files(&self) -> Option<ClipboardFiles> {
@@ -177,7 +182,7 @@ impl Clipboard for System {
 
     fn write_files(&self, files: &ClipboardFiles) -> Result<(), ClipboardError> {
         let paths = files.paths.clone();
-        guarded(move || files::write_system(&paths).ok()).ok_or(ClipboardError::Unavailable)
+        guarded(move || files::write_system(&paths))
     }
 
     fn read_html(&self) -> Option<Pasted> {
@@ -322,6 +327,6 @@ fn host() -> Result<Rc<dyn Clipboard>, ClipboardError> {
 /// Run a clipboard write, reading a panic as no answer: blitz-shell unwraps
 /// `arboard::Clipboard::new()`, which fails on a session with no clipboard at all. (Reads go
 /// through [`Reader`], which runs them on a worker thread, where a panic ends only that thread.)
-fn guarded<T>(call: impl FnOnce() -> Option<T>) -> Option<T> {
-    catch_unwind(AssertUnwindSafe(call)).ok().flatten()
+fn guarded(call: impl FnOnce() -> Result<(), ClipboardError>) -> Result<(), ClipboardError> {
+    catch_unwind(AssertUnwindSafe(call)).unwrap_or(Err(ClipboardError::Unavailable))
 }

@@ -112,7 +112,10 @@ fn a_bare_roots_clipboard_write_says_it_wrote_nothing_instead_of_succeeding() {
     let mut dom = VirtualDom::new(Copier);
     dom.provide_root_context(wrote.clone());
     dom.rebuild_in_place();
-    assert_eq!(*wrote.0.borrow(), [Err(ClipboardError::NoShell)]);
+    assert!(matches!(
+        wrote.0.borrow().as_slice(),
+        [Err(ClipboardError::NoShell)]
+    ));
 }
 
 #[test]

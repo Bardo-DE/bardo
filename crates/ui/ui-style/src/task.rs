@@ -30,11 +30,13 @@ pub fn spawn_in(scope: ScopeId, future: impl Future<Output = ()> + 'static) -> T
 /// `Gone` when the signal's owner has been dropped.
 pub fn try_set<T: 'static>(signal: Signal<T>, value: T) -> Result<(), Gone> {
     let mut signal = signal;
-    signal
-        .try_write()
-        .map(|mut slot| *slot = value)
-        .ok()
-        .ok_or(Gone)
+    match signal.try_write() {
+        Ok(mut slot) => {
+            *slot = value;
+            Ok(())
+        }
+        Err(_dropped) => Err(Gone),
+    }
 }
 
 /// Set `signal` to `value` when it differs, or report that its owner is gone.
@@ -42,8 +44,10 @@ pub fn try_set<T: 'static>(signal: Signal<T>, value: T) -> Result<(), Gone> {
 /// # Errors
 /// `Gone` when the signal's owner has been dropped.
 pub fn try_set_if_changed<T: PartialEq + 'static>(signal: Signal<T>, value: T) -> Result<(), Gone> {
-    if *signal.try_peek().ok().ok_or(Gone)? == value {
-        return Ok(());
+    match signal.try_peek() {
+        Ok(current) if *current == value => return Ok(()),
+        Ok(_) => {}
+        Err(_dropped) => return Err(Gone),
     }
     try_set(signal, value)
 }
@@ -53,9 +57,8 @@ pub fn try_set_if_changed<T: PartialEq + 'static>(signal: Signal<T>, value: T) -
 /// # Errors
 /// `Gone` when the signal's owner has been dropped.
 pub fn try_get<T: Clone + 'static>(signal: Signal<T>) -> Result<T, Gone> {
-    signal
-        .try_peek()
-        .map(|value| value.clone())
-        .ok()
-        .ok_or(Gone)
+    match signal.try_peek() {
+        Ok(value) => Ok(value.clone()),
+        Err(_dropped) => Err(Gone),
+    }
 }

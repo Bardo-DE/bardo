@@ -79,10 +79,9 @@ impl ThumbRequest {
     ///
     /// Returns `PdfTrouble::Unreadable` when the file's modification time cannot be read.
     pub fn key(&self) -> Result<ThumbKey, PdfTrouble> {
-        let modified = std::fs::metadata(&self.path)
-            .and_then(|meta| meta.modified())
-            .ok()
-            .ok_or(PdfTrouble::Unreadable)?;
+        let Ok(modified) = std::fs::metadata(&self.path).and_then(|meta| meta.modified()) else {
+            return Err(PdfTrouble::Unreadable);
+        };
         Ok(ThumbKey {
             path: self.path.clone(),
             modified,
