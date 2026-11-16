@@ -146,7 +146,7 @@ fn merged<D: SettingsDoc>(existing: Option<String>, body: &str) -> Result<String
         return Ok(body.to_owned());
     };
     match read::<D>(&text, D::FORMAT) {
-        Read::Garbled { .. } => Err(InTheWay),
+        Read::Garbled { .. } => Err(InTheWay(None)),
         Read::Loaded(loaded) => match D::FORMAT {
             Format::Toml => preserve::merge(&text, body, &loaded.unknown),
             _ => Ok(body.to_owned()),

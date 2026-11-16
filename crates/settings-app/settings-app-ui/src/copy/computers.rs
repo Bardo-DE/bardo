@@ -21,7 +21,7 @@ pub(crate) fn server_fault(fault: ServerFault) -> &'static str {
         ServerFault::NoReach => "Say where it answers: a number, or a connection file.",
         ServerFault::BothReach => "Use a number or a connection file, not both.",
         ServerFault::BadPort => "Where it answers must be a number from 1 to 65535.",
-        ServerFault::KeyFileUnreadable => {
+        ServerFault::KeyFileUnreadable(_) => {
             "The key file could not be read. Choose it again, or type the key."
         }
         ServerFault::KeyFileEmpty => "The key file is empty.",

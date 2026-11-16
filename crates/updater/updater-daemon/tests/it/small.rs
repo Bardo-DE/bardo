@@ -236,20 +236,20 @@ fn directories_come_from_the_xdg_variables_then_home() {
 #[test]
 fn command_line_table() {
     let table = [
-        (vec!["run"], Ok(Command::Run)),
-        (vec!["check"], Ok(Command::Check)),
-        (vec!["status"], Ok(Command::Status)),
-        (vec!["install"], Ok(Command::Install)),
-        (vec!["rollback"], Ok(Command::Rollback)),
-        (vec!["confirm"], Ok(Command::Confirm)),
-        (vec!["recover"], Ok(Command::Recover)),
-        (vec!["--help"], Ok(Command::Help)),
-        (vec![], Err(())),
-        (vec!["upgrade"], Err(())),
-        (vec!["check", "now"], Err(())),
+        (vec!["run"], Some(Command::Run)),
+        (vec!["check"], Some(Command::Check)),
+        (vec!["status"], Some(Command::Status)),
+        (vec!["install"], Some(Command::Install)),
+        (vec!["rollback"], Some(Command::Rollback)),
+        (vec!["confirm"], Some(Command::Confirm)),
+        (vec!["recover"], Some(Command::Recover)),
+        (vec!["--help"], Some(Command::Help)),
+        (vec![], None),
+        (vec!["upgrade"], None),
+        (vec!["check", "now"], None),
     ];
     for (args, expected) in table {
-        let got = parse(args.iter().map(|a| (*a).to_owned())).ok().ok_or(());
+        let got = parse(args.iter().map(|a| (*a).to_owned())).ok();
         assert_eq!(got, expected, "{args:?}");
     }
 }

@@ -39,13 +39,13 @@ pub(super) enum Input {
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub(super) enum Problem {
     #[error("{0:?} is not a time in milliseconds")]
-    Time(String),
+    Time(String, #[source] std::num::ParseIntError),
     #[error("unknown input {0:?}")]
     Verb(String),
     #[error("`{verb}` takes {shape}")]
     Shape { verb: String, shape: &'static str },
     #[error("{0:?} is not a device number")]
-    Device(String),
+    Device(String, #[source] std::num::ParseIntError),
     #[error("{0:?} is not a layout, use apple or pc")]
     Layout(String),
     #[error("{0:?} is not a key name")]
@@ -91,8 +91,7 @@ fn parse_line(line: &str) -> Result<Option<Step>, Problem> {
     let at = ms
         .parse::<u64>()
         .map(Mono::from_millis)
-        .ok()
-        .ok_or_else(|| Problem::Time(ms.to_owned()))?;
+        .map_err(|error| Problem::Time(ms.to_owned(), error))?;
     input_of(at, rest).map(|input| {
         Some(Step {
             text: words.join(" "),
@@ -159,8 +158,7 @@ fn remap_of(at: Mono, words: &[&str]) -> Result<RemapInput, Problem> {
 fn device_of(word: &str) -> Result<DeviceId, Problem> {
     word.parse()
         .map(DeviceId)
-        .ok()
-        .ok_or_else(|| Problem::Device(word.to_owned()))
+        .map_err(|error| Problem::Device(word.to_owned(), error))
 }
 
 fn led_of(word: &str) -> Result<Led, Problem> {
@@ -276,12 +274,15 @@ mod tests {
             (
                 "time is not a number",
                 "soon press 1 apple c",
-                Err(Problem::Time("soon".into())),
+                Err(Problem::Time(
+                    "soon".into(),
+                    "soon".parse::<u64>().unwrap_err(),
+                )),
             ),
             (
                 "negative time",
                 "-5 resume",
-                Err(Problem::Time("-5".into())),
+                Err(Problem::Time("-5".into(), "-5".parse::<u64>().unwrap_err())),
             ),
             ("time only", "10", Err(Problem::Verb(String::new()))),
             (
@@ -308,7 +309,10 @@ mod tests {
             (
                 "bad device",
                 "0 press one apple c",
-                Err(Problem::Device("one".into())),
+                Err(Problem::Device(
+                    "one".into(),
+                    "one".parse::<u8>().unwrap_err(),
+                )),
             ),
             (
                 "bad layout",

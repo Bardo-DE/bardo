@@ -22,7 +22,9 @@ pub(crate) fn merge(
     fresh: &str,
     unknown: &[UnknownKey],
 ) -> Result<String, InTheWay> {
-    let mut document = existing.parse::<DocumentMut>().ok().ok_or(InTheWay)?;
+    let mut document = existing
+        .parse::<DocumentMut>()
+        .map_err(|error| InTheWay(Some(error)))?;
     let Ok(typed) = fresh.parse::<DocumentMut>() else {
         return Ok(fresh.to_owned());
     };

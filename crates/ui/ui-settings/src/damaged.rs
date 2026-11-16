@@ -38,7 +38,7 @@ pub struct Saved {
 /// the file under a `.bad` name and writes a new one, instead of merging into it.
 #[derive(Debug, thiserror::Error)]
 #[error("a file that cannot be used is in the way")]
-pub(crate) struct InTheWay;
+pub(crate) struct InTheWay(#[source] pub(crate) Option<toml_edit::TomlError>);
 
 /// Why the file at `path` cannot be used, `None` when it is missing or `understood` accepts its
 /// text.

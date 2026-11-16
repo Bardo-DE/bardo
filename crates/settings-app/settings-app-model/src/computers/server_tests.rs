@@ -126,7 +126,7 @@ fn a_key_is_typed_or_read_from_its_file_only_when_asked() {
     );
     assert_eq!(
         file.secret(|_| Err(io::Error::other("gone"))),
-        Err(ServerFault::KeyFileUnreadable)
+        Err(ServerFault::KeyFileUnreadable(io::ErrorKind::Other))
     );
     assert_eq!(
         file.secret(|_| Ok("\n".to_owned())),

@@ -8,7 +8,7 @@ use pw::spa;
 use pw::spa::pod::Pod;
 use speech_audio::{DeviceError, PlaybackStream};
 use std::collections::VecDeque;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, PoisonError};
 use tokio::sync::{Notify, oneshot};
 
 /// Samples queued ahead of the playback device before `write` waits (two seconds at 24 kHz).
@@ -151,7 +151,11 @@ impl PlaybackStream for PipeWirePlayback {
             tokio::pin!(waiting);
             waiting.as_mut().enable();
             {
-                let mut ring = self.shared.ring.lock().ok().ok_or(DeviceError::Closed)?;
+                let mut ring = self
+                    .shared
+                    .ring
+                    .lock()
+                    .unwrap_or_else(PoisonError::into_inner);
                 if ring.samples.len() < PLAYBACK_AHEAD {
                     ring.samples.extend(samples.iter().copied());
                     return Ok(());

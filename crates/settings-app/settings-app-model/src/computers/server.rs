@@ -25,8 +25,8 @@ pub enum ServerFault {
     BothReach,
     /// The number is not 1 to 65535.
     BadPort,
-    /// The key file could not be read.
-    KeyFileUnreadable,
+    /// The key file could not be read, for this reason.
+    KeyFileUnreadable(io::ErrorKind),
     /// The key file has nothing in it.
     KeyFileEmpty,
 }
@@ -267,8 +267,7 @@ impl ServerDraft {
             KeyField::File(path) => {
                 let text = SecretText::new(
                     read(path)
-                        .ok()
-                        .ok_or(ServerFault::KeyFileUnreadable)?
+                        .map_err(|error| ServerFault::KeyFileUnreadable(error.kind()))?
                         .trim(),
                 );
                 if text.expose().is_empty() {
