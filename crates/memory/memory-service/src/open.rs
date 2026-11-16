@@ -100,9 +100,10 @@ pub(crate) fn failed(e: impl std::fmt::Display) -> Refusal {
 pub(crate) fn append_refusal(e: LogError) -> Refusal {
     match e {
         LogError::Full => Refusal::SpaceFull,
-        LogError::Sqlite(_) | LogError::Corrupt { .. } | LogError::Schema { .. } => {
-            Refusal::Unavailable
-        }
+        LogError::Sqlite(_)
+        | LogError::Corrupt { .. }
+        | LogError::Unreadable { .. }
+        | LogError::Schema { .. } => Refusal::Unavailable,
         other => log_refusal(other),
     }
 }

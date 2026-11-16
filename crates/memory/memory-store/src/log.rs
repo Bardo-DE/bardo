@@ -3,6 +3,7 @@
 use crate::chain::Entry;
 use crate::header::NewHeader;
 use memory_core::{Checkpoint, Count, EventBody, Head, Seq, ThingRef, TimelineQuery};
+use std::sync::Arc;
 
 /// A page of the log, newest first: the timeline's own query.
 pub type PageQuery = TimelineQuery;
@@ -18,8 +19,9 @@ pub enum RoleFilter {
     Source,
 }
 
-/// Why a log operation failed.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+/// Why a log operation failed. Two errors are equal when they are the same kind of failure and
+/// name the same place or value; the cause of an `Unreadable` is not compared.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum LogError {
     /// The key does not open the database.
     #[error("the event log is locked")]
@@ -36,6 +38,16 @@ pub enum LogError {
     /// SQLite said no.
     #[error("sqlite: {0}")]
     Sqlite(String),
+    /// A stored column does not read back (JSON that is not the value it should be, a kind that is
+    /// not a kind tag).
+    #[error("the event log holds an unreadable entry at {at:?}")]
+    Unreadable {
+        /// Where.
+        at: Seq,
+        /// What did not read.
+        #[source]
+        source: Arc<dyn std::error::Error + Send + Sync>,
+    },
     /// A schema version this build does not know.
     #[error("unknown event log schema {found}")]
     Schema {
@@ -49,6 +61,31 @@ pub enum LogError {
     #[error("no entry at {0:?}")]
     NoSuchEntry(Seq),
 }
+
+impl LogError {
+    /// A stored column of the entry at `at` that does not read, because of `source`.
+    pub fn unreadable(at: Seq, source: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self::Unreadable {
+            at,
+            source: Arc::new(source),
+        }
+    }
+}
+
+impl PartialEq for LogError {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Corrupt { at: a }, Self::Corrupt { at: b })
+            | (Self::Unreadable { at: a, .. }, Self::Unreadable { at: b, .. }) => a == b,
+            (Self::Sqlite(a), Self::Sqlite(b)) => a == b,
+            (Self::Schema { found: a }, Self::Schema { found: b }) => a == b,
+            (Self::NoSuchEntry(a), Self::NoSuchEntry(b)) => a == b,
+            _ => std::mem::discriminant(self) == std::mem::discriminant(other),
+        }
+    }
+}
+
+impl Eq for LogError {}
 
 /// Reading the log.
 pub trait LogRead {

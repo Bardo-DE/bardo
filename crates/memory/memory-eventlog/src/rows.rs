@@ -33,11 +33,14 @@ pub(crate) fn to_sql(n: u64) -> i64 {
 }
 
 /// A stored integer as a sequence number.
+#[expect(
+    clippy::map_err_ignore,
+    reason = "TryFromIntError carries nothing beyond the failure"
+)]
 pub(crate) fn seq(n: i64) -> Result<Seq, LogError> {
     u64::try_from(n)
         .map(Seq)
-        .ok()
-        .ok_or(LogError::Corrupt { at: Seq(0) })
+        .map_err(|_| LogError::Corrupt { at: Seq(0) })
 }
 
 pub(crate) fn array16(bytes: &[u8]) -> Option<[u8; 16]> {
@@ -120,12 +123,12 @@ impl Stored {
     /// Decodes the row; any column that does not parse is corruption at its sequence number.
     pub(crate) fn entry(self, replica: ReplicaId) -> Result<Entry, LogError> {
         let at = seq(self.seq)?;
-        let bad = |_| LogError::Corrupt { at };
         let digest = array32(&self.body_digest).ok_or(LogError::Corrupt { at })?;
         let body = match self.body {
-            Some(json) => {
-                BodyState::Present(serde_json::from_str::<EventBody>(&json).map_err(bad)?)
-            }
+            Some(json) => BodyState::Present(
+                serde_json::from_str::<EventBody>(&json)
+                    .map_err(|error| LogError::unreadable(at, error))?,
+            ),
             None => BodyState::Erased,
         };
         Ok(Entry {
@@ -134,13 +137,15 @@ impl Stored {
                 replica,
                 occurred: UnixSeconds(self.occurred),
                 recorded: UnixSeconds(self.recorded),
-                actor: serde_json::from_str(&self.actor).map_err(bad)?,
+                actor: serde_json::from_str(&self.actor)
+                    .map_err(|error| LogError::unreadable(at, error))?,
                 kind: KindTag::parse(&self.kind)
-                    .ok()
-                    .ok_or(LogError::Corrupt { at })?,
+                    .map_err(|error| LogError::unreadable(at, error))?,
                 effect: effect_of(self.effect).ok_or(LogError::Corrupt { at })?,
-                label: serde_json::from_str(&self.label).map_err(bad)?,
-                cause: serde_json::from_str(&self.cause).map_err(bad)?,
+                label: serde_json::from_str(&self.label)
+                    .map_err(|error| LogError::unreadable(at, error))?,
+                cause: serde_json::from_str(&self.cause)
+                    .map_err(|error| LogError::unreadable(at, error))?,
                 body_digest: Digest32(digest),
                 prev: link32(&self.prev, at)?,
             },

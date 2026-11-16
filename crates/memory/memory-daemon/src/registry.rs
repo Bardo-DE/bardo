@@ -27,16 +27,14 @@ impl SpaceRegistry {
     }
 
     /// Whether `space` is listed. A registry that does not answer within [`REGISTRY_WAIT`], or
-    /// answers badly, is [`RegistryError::Unreachable`].
+    /// answers badly, is [`RegistryError::Failed`].
     pub(crate) async fn is_listed(&self, space: &SpaceId) -> Result<Listing, RegistryError> {
         match self {
             Self::Porter(spaces) => {
                 let listed = tokio::time::timeout(REGISTRY_WAIT, spaces.list())
                     .await
-                    .ok()
-                    .ok_or(RegistryError::Unreachable)?
-                    .ok()
-                    .ok_or(RegistryError::Unreachable)?;
+                    .map_err(RegistryError::failed)?
+                    .map_err(RegistryError::failed)?;
                 let found = listed
                     .iter()
                     .any(|record| &SpaceId::linked(&record.id) == space);

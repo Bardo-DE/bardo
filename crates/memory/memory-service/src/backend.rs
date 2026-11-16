@@ -91,7 +91,7 @@ pub trait Backend: Send + Sync {
     fn open_index(&self, space: &SpaceId, key: &SpaceKey) -> Result<Self::Index, BackendError>;
     /// Whether the registry of desktop-wide Spaces lists `space`: asked before an app opens or
     /// provisions one. An implementation that talks to a service must bound the wait and answer
-    /// [`RegistryError::Unreachable`] when it expires. The default fails closed: a backend with
+    /// [`RegistryError::Failed`] when it expires. The default fails closed: a backend with
     /// no registry opens no desktop-wide Space for an app.
     fn is_listed(
         &self,
