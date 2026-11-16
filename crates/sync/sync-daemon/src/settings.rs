@@ -32,6 +32,7 @@ use drive_core::CacheLimit;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
+use toml_edit::{Array, DocumentMut, Item};
 use ui_settings::live::{
     Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve,
 };
@@ -473,29 +474,75 @@ fn read_drives(file: &Path, list: &str) -> BTreeSet<String> {
         .unwrap_or_default()
 }
 
-/// Writes to `file` that the drive `id` is in `[storage] <list>`, or not, keeping the rest of it,
-/// in one atomic write.
+/// Writes to `file` that the drive `id` is in `[storage] <list>`, or not, keeping the rest of it.
 fn write_drives(file: &Path, list: &str, id: &str, listed: bool) -> std::io::Result<()> {
-    let mut ids = read_drives(file, list);
-    if listed {
-        ids.insert(id.to_owned())
-    } else {
-        ids.remove(id)
-    };
-    let mut table = settings_text(file)
-        .and_then(|text| text.parse::<toml::Table>().ok())
-        .unwrap_or_default();
-    let storage = table
-        .entry("storage")
-        .or_insert_with(|| toml::Value::Table(toml::Table::new()));
-    if let toml::Value::Table(storage) = storage {
-        storage.insert(
-            list.to_owned(),
-            toml::Value::Array(ids.into_iter().map(toml::Value::String).collect()),
-        );
+    edit_storage(file, |storage| {
+        let mut ids: BTreeSet<String> = storage
+            .get(list)
+            .and_then(Item::as_array)
+            .map(|ids| {
+                ids.iter()
+                    .filter_map(|id| id.as_str().map(str::to_owned))
+                    .collect()
+            })
+            .unwrap_or_default();
+        match listed {
+            true => ids.insert(id.to_owned()),
+            false => ids.remove(id),
+        };
+        storage.insert(list, toml_edit::value(ids.into_iter().collect::<Array>()));
+    })
+}
+
+/// Edits the `[storage]` table of `file` and nothing else: the read, the edit and the rename
+/// happen under the file's lock (`base_fs::update_atomic`, the one every writer of the shared
+/// settings file takes), so another writer's key is never put back old, and every other
+/// section, key and comment keeps the text it had. A file that exists and does not parse as
+/// TOML (or whose `storage` is not a table) is left untouched and the error says so.
+fn edit_storage(
+    file: &Path,
+    edit: impl FnOnce(&mut dyn toml_edit::TableLike),
+) -> std::io::Result<()> {
+    if let Some(dir) = file.parent() {
+        std::fs::create_dir_all(dir)?;
     }
-    let text = toml::to_string(&table).map_err(std::io::Error::other)?;
-    base_fs::atomic::AtomicWrite::PRIVATE.write(file, text.as_bytes())
+    base_fs::update_atomic(
+        file,
+        base_fs::ReadCap::mib(1),
+        base_fs::NewFileMode::OwnerOnly,
+        |text| -> Result<String, std::io::Error> {
+            let mut doc: DocumentMut = text.unwrap_or_default().parse().map_err(|why| {
+                std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!("{} is not valid TOML, left as it is: {why}", file.display()),
+                )
+            })?;
+            let storage = doc
+                .as_table_mut()
+                .entry("storage")
+                .or_insert_with(|| {
+                    let mut made = toml_edit::Table::new();
+                    made.set_implicit(true);
+                    Item::Table(made)
+                })
+                .as_table_like_mut()
+                .ok_or_else(|| {
+                    std::io::Error::new(
+                        std::io::ErrorKind::InvalidData,
+                        format!(
+                            "{}: `storage` is not a table, left as it is",
+                            file.display()
+                        ),
+                    )
+                })?;
+            edit(storage);
+            Ok(doc.to_string())
+        },
+    )
+    .map_err(|why| match why {
+        base_fs::UpdateError::Edit(why) => why,
+        other => std::io::Error::other(other),
+    })
 }
 
 /// A drive's folder as people see it: each is a folder of `~/Cloud` ([`crate::paths::Paths`]).
@@ -508,20 +555,9 @@ fn shown_folder(path: &Path) -> String {
 
 /// Writes `limit` to `file`, keeping the rest of it.
 fn write_cache_limit(file: &Path, limit: CacheLimit) -> std::io::Result<()> {
-    let mut table = settings_text(file)
-        .and_then(|text| text.parse::<toml::Table>().ok())
-        .unwrap_or_default();
-    let storage = table
-        .entry("storage")
-        .or_insert_with(|| toml::Value::Table(toml::Table::new()));
-    if let toml::Value::Table(storage) = storage {
-        storage.insert(
-            "cache_limit".to_owned(),
-            toml::Value::String(limit.setting().to_string()),
-        );
-    }
-    let text = toml::to_string(&table).map_err(std::io::Error::other)?;
-    base_fs::atomic::AtomicWrite::PRIVATE.write(file, text.as_bytes())
+    edit_storage(file, |storage| {
+        storage.insert("cache_limit", toml_edit::value(limit.setting().to_string()));
+    })
 }
 
 /// Bytes as the row takes them: text of digits (or a whole number).
@@ -955,5 +991,55 @@ mod tests {
             BTreeSet::from(["one".to_owned()]),
             "kept"
         );
+    }
+
+    #[test]
+    fn a_file_that_does_not_parse_is_left_as_it_is_and_the_save_says_so() {
+        let dir = base_testkit::Scratch::new("syncd-settings-garbled");
+        let file = dir.join("syncd.toml");
+        let garbled = "[appearance\ntheme = \"dark\"\n";
+        std::fs::write(&file, garbled).expect("seed");
+        assert!(write_paused(&file, "one", true).is_err());
+        assert!(write_keep_all(&file, "one", true).is_err());
+        assert!(write_cache_limit(&file, CacheLimit::Automatic).is_err());
+        assert_eq!(std::fs::read_to_string(&file).expect("read"), garbled);
+    }
+
+    #[test]
+    fn a_save_keeps_the_other_sections_and_the_comments() {
+        let dir = base_testkit::Scratch::new("syncd-settings-keeps-rest");
+        let file = dir.join("syncd.toml");
+        let seeded = "# my settings\n[appearance]\ntheme = \"dark\" # night\n\n[storage]\n# drives\npaused = [\"a\"]\n";
+        std::fs::write(&file, seeded).expect("seed");
+        write_keep_all(&file, "b", true).expect("save");
+        let text = std::fs::read_to_string(&file).expect("read");
+        assert!(text.contains("# my settings"), "{text}");
+        assert!(text.contains("theme = \"dark\" # night"), "{text}");
+        assert!(text.contains("# drives"), "{text}");
+        assert_eq!(read_paused(&file), BTreeSet::from(["a".to_owned()]));
+        assert_eq!(read_keep_all(&file), BTreeSet::from(["b".to_owned()]));
+    }
+
+    #[test]
+    fn saves_of_different_keys_from_many_threads_all_land() {
+        let dir = base_testkit::Scratch::new("syncd-settings-interleaved");
+        let file = dir.join("syncd.toml");
+        let ids: Vec<String> = (0..8).map(|n| format!("drive{n}")).collect();
+        std::thread::scope(|scope| {
+            for id in &ids {
+                let file = &file;
+                scope.spawn(move || {
+                    write_keep_all(file, id, true).expect("keep all");
+                    write_paused(file, id, true).expect("paused");
+                });
+            }
+            scope.spawn(|| {
+                write_cache_limit(&file, CacheLimit::from_setting(5)).expect("limit");
+            });
+        });
+        let all: BTreeSet<String> = ids.into_iter().collect();
+        assert_eq!(read_keep_all(&file), all);
+        assert_eq!(read_paused(&file), all);
+        assert_eq!(read_cache_limit(&file), CacheLimit::from_setting(5));
     }
 }

@@ -14,7 +14,6 @@ zbus-ready = { path = "../../zbus-ready" }
 sync-bus = {path = "../sync-bus"}
 drive-core = {path = "../drive-core"}
 drive-fuse = {path = "../drive-fuse"}
-old-folders = {path = "../../platform/old-folders"}
 sync-core = {path = "../sync-core"}
 replica-gdrive = {path = "../replica-gdrive"}
 replica-graph = {path = "../replica-graph"}
@@ -56,6 +55,7 @@ thiserror = { workspace = true }
 # `signal`: SIGTERM unmounts the drives before the process ends.
 tokio = {version = "1", features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 toml = { workspace = true }
+toml_edit = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
