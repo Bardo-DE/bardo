@@ -92,15 +92,15 @@ impl Volumes for NoVolumes {
     }
 
     fn mount(&self, _id: &VolumeId) -> Result<FolderPath, MountFailure> {
-        Err(MountFailure::Gone)
+        Err(MountFailure::Gone(None))
     }
 
     fn eject(&self, _id: &VolumeId) -> Result<(), EjectFailure> {
-        Err(EjectFailure::Gone)
+        Err(EjectFailure::Gone(None))
     }
 
     fn force_eject(&self, _id: &VolumeId) -> Result<(), EjectFailure> {
-        Err(EjectFailure::Gone)
+        Err(EjectFailure::Gone(None))
     }
 
     fn watch(&self, _changed: Changed) -> Result<WatchGuard, VolumeError> {

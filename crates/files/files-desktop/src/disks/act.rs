@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use files_core::{EjectFailure, FolderPath, MountFailure, ProgramName, VolumeId};
+use files_core::{Cause, EjectFailure, FolderPath, MountFailure, ProgramName, VolumeId};
 
 use zbus::zvariant::Value;
 
@@ -41,13 +41,18 @@ impl Disks {
     /// `MountFailure::Gone` when the disk is no longer there, and `Other` when the service refuses
     /// or gives no usable folder.
     pub async fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
-        let filesystem = self.filesystem(id).await.ok().ok_or(MountFailure::Gone)?;
+        let filesystem = self
+            .filesystem(id)
+            .await
+            .map_err(|error| MountFailure::Gone(Some(Cause::new(error))))?;
         match filesystem.mount(HashMap::new()).await {
-            Ok(path) => FolderPath::new(path).ok().ok_or(MountFailure::Other),
+            Ok(path) => {
+                FolderPath::new(path).map_err(|error| MountFailure::Other(Some(Cause::new(error))))
+            }
             Err(error) => match Said::from_error(&error) {
-                Said::AlreadyMounted => self.mounted_at(id).await.ok_or(MountFailure::Other),
+                Said::AlreadyMounted => self.mounted_at(id).await.ok_or(MountFailure::Other(None)),
                 said @ (Said::Busy | Said::NotAllowed | Said::NotMounted | Said::Other) => {
-                    Err(said.mount_failure())
+                    Err(said.mount_failure(error))
                 }
             },
         }
@@ -78,14 +83,17 @@ impl Disks {
 
     /// `force`: unmount even though something has the disk open.
     async fn eject_with(&self, id: &VolumeId, force: bool) -> Result<(), EjectFailure> {
-        let filesystem = self.filesystem(id).await.ok().ok_or(EjectFailure::Gone)?;
+        let filesystem = self
+            .filesystem(id)
+            .await
+            .map_err(|error| EjectFailure::Gone(Some(Cause::new(error))))?;
         let mounts = self.mounts_of(id).await;
         match filesystem.unmount(unmount_options(force)).await {
             Ok(()) => {}
             Err(error) => match Said::from_error(&error) {
                 Said::NotMounted => {}
                 said @ (Said::Busy | Said::NotAllowed | Said::AlreadyMounted | Said::Other) => {
-                    return Err(said.eject_failure(self.programs_using(mounts).await));
+                    return Err(said.eject_failure(error, self.programs_using(mounts).await));
                 }
             },
         }
@@ -129,18 +137,16 @@ impl Disks {
         };
         let proxy = DriveProxy::builder(&self.connection)
             .path(drive.path)
-            .ok()
-            .ok_or(EjectFailure::Other)?
+            .map_err(|error| EjectFailure::Other(Some(Cause::new(error))))?
             .build()
             .await
-            .ok()
-            .ok_or(EjectFailure::Other)?;
+            .map_err(|error| EjectFailure::Other(Some(Cause::new(error))))?;
         let done = match (drive.can_power_off, drive.ejectable) {
             (true, _) => proxy.power_off(HashMap::new()).await,
             (false, true) => proxy.eject(HashMap::new()).await,
             (false, false) => return Ok(()),
         };
-        done.map_err(|error| Said::from_error(&error).eject_failure(Vec::new()))
+        done.map_err(|error| Said::from_error(&error).eject_failure(error, Vec::new()))
     }
 
     /// The drive behind the block device, with what it can do.

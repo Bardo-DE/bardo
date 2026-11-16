@@ -1,6 +1,6 @@
 //! The errors of this crate that are not about launching (those are in `launch/error.rs`).
 
-use files_core::{EjectFailure, MountFailure};
+use files_core::{Cause, EjectFailure, MountFailure};
 
 /// Why the disks could not be listed or watched.
 #[derive(Debug, thiserror::Error)]
@@ -65,21 +65,27 @@ impl Said {
     }
 
     /// As a failure to open.
-    pub(crate) fn mount_failure(self) -> MountFailure {
+    pub(crate) fn mount_failure(self, error: zbus::Error) -> MountFailure {
         match self {
             Said::NotAllowed => MountFailure::NotAllowed,
             Said::Busy | Said::NotMounted | Said::AlreadyMounted | Said::Other => {
-                MountFailure::Other
+                MountFailure::Other(Some(Cause::new(error)))
             }
         }
     }
 
     /// As a failure to eject, with the programs found when it is busy.
-    pub(crate) fn eject_failure(self, programs: Vec<files_core::ProgramName>) -> EjectFailure {
+    pub(crate) fn eject_failure(
+        self,
+        error: zbus::Error,
+        programs: Vec<files_core::ProgramName>,
+    ) -> EjectFailure {
         match self {
             Said::Busy => EjectFailure::InUse(programs),
             Said::NotAllowed => EjectFailure::NotAllowed,
-            Said::NotMounted | Said::AlreadyMounted | Said::Other => EjectFailure::Other,
+            Said::NotMounted | Said::AlreadyMounted | Said::Other => {
+                EjectFailure::Other(Some(Cause::new(error)))
+            }
         }
     }
 }

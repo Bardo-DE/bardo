@@ -90,7 +90,7 @@ impl Volumes for FakeVolumes {
     fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
         let mut state = self.lock();
         state.calls.push(VolumeCall::Mounted(id.clone()));
-        if let Some(failure) = state.mount_fails {
+        if let Some(failure) = state.mount_fails.clone() {
             return Err(failure);
         }
         let folder = FolderPath::new(format!("/run/media/fake/{}", id.as_str()))
@@ -99,7 +99,7 @@ impl Volumes for FakeVolumes {
             .volumes
             .iter_mut()
             .find(|volume| volume.id == *id)
-            .ok_or(MountFailure::Gone)?;
+            .ok_or(MountFailure::Gone(None))?;
         volume.mount = Some(folder.clone());
         Ok(folder)
     }
@@ -130,7 +130,7 @@ impl Volumes for FakeVolumes {
 fn take_away(state: &mut State, id: &VolumeId) -> Result<(), EjectFailure> {
     match state.volumes.iter().find(|volume| volume.id == *id) {
         Some(volume) if volume.can_eject => {}
-        Some(_) | None => return Err(EjectFailure::Gone),
+        Some(_) | None => return Err(EjectFailure::Gone(None)),
     }
     state.volumes.retain(|volume| volume.id != *id);
     Ok(())

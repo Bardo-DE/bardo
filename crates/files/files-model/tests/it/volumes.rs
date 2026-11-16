@@ -145,7 +145,7 @@ fn answers_go_to_the_disk_or_say_what_failed() {
         ),
         (
             "a failure for a disk that left is not told",
-            Input::Ejected(id("gone"), Err(EjectFailure::Gone)),
+            Input::Ejected(id("gone"), Err(EjectFailure::Gone(None))),
             vec![],
         ),
     ];

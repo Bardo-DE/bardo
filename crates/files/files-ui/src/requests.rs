@@ -106,8 +106,12 @@ impl Answer {
     /// # Errors
     ///
     /// Returns `ReadError` when the window closed before it answered.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a closed reply channel carries nothing beyond the window having closed"
+    )]
     pub async fn wait(self) -> Result<Reading, ReadError> {
-        self.inbox.await.ok().ok_or(ReadError)
+        self.inbox.await.map_err(|_| ReadError)
     }
 
     /// The reading, if it has arrived; for a caller that polls (a test driving a window).
@@ -136,12 +140,15 @@ impl RequestSender {
     /// # Errors
     ///
     /// Returns `ReadError` when the window is already closed.
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "a failed send carries only the question that was not delivered"
+    )]
     pub fn ask(&self, query: Query) -> Result<Answer, ReadError> {
         let (reply, inbox) = oneshot::channel();
         self.0
             .send(Asked::Read(Read { query, reply }))
-            .ok()
-            .ok_or(ReadError)?;
+            .map_err(|_| ReadError)?;
         Ok(Answer { inbox })
     }
 }

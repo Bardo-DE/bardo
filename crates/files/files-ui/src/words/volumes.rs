@@ -27,15 +27,15 @@ pub fn volume_trouble_words(name: &VolumeName, trouble: &VolumeTrouble) -> Strin
             EjectFailure::NotAllowed => {
                 format!("{disk} wasn\u{2019}t ejected because you don\u{2019}t have permission.")
             }
-            EjectFailure::Gone => format!("{disk} is not there any more."),
-            EjectFailure::Other => format!("{disk} wasn\u{2019}t ejected."),
+            EjectFailure::Gone(_) => format!("{disk} is not there any more."),
+            EjectFailure::Other(_) => format!("{disk} wasn\u{2019}t ejected."),
         },
         VolumeTrouble::NotOpened(failure) => match failure {
             MountFailure::NotAllowed => {
                 format!("{disk} wasn\u{2019}t opened because you don\u{2019}t have permission.")
             }
-            MountFailure::Gone => format!("{disk} is not there any more."),
-            MountFailure::Other => format!("{disk} couldn\u{2019}t be opened."),
+            MountFailure::Gone(_) => format!("{disk} is not there any more."),
+            MountFailure::Other(_) => format!("{disk} couldn\u{2019}t be opened."),
         },
     }
 }
@@ -90,12 +90,12 @@ mod tests {
             ),
             (
                 "ejected badly",
-                VolumeTrouble::NotEjected(EjectFailure::Other),
+                VolumeTrouble::NotEjected(EjectFailure::Other(None)),
                 "The disk \u{201c}STICK\u{201d} wasn\u{2019}t ejected.",
             ),
             (
                 "not opened",
-                VolumeTrouble::NotOpened(MountFailure::Other),
+                VolumeTrouble::NotOpened(MountFailure::Other(None)),
                 "The disk \u{201c}STICK\u{201d} couldn\u{2019}t be opened.",
             ),
         ];

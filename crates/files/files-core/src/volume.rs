@@ -3,6 +3,7 @@
 use std::fmt;
 
 use crate::FolderPath;
+use std::sync::Arc;
 
 /// What the system calls a volume, kept opaque: the same disk has the same id for as long as it
 /// is attached.
@@ -134,6 +135,27 @@ impl ProgramName {
     }
 }
 
+/// What the system reported when a volume could not be opened or ejected. Two causes are equal
+/// when they say the same.
+#[derive(Debug, Clone, thiserror::Error)]
+#[error(transparent)]
+pub struct Cause(Arc<dyn std::error::Error + Send + Sync>);
+
+impl Cause {
+    /// The report `source` made.
+    pub fn new(source: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Cause(Arc::new(source))
+    }
+}
+
+impl PartialEq for Cause {
+    fn eq(&self, other: &Self) -> bool {
+        self.0.to_string() == other.0.to_string()
+    }
+}
+
+impl Eq for Cause {}
+
 /// Why a volume was not ejected.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum EjectFailure {
@@ -145,24 +167,24 @@ pub enum EjectFailure {
     NotAllowed,
     /// The disk is gone already.
     #[error("The disk is not there any more.")]
-    Gone,
+    Gone(#[source] Option<Cause>),
     /// Anything else the system reported.
     #[error("The disk couldn't be ejected.")]
-    Other,
+    Other(#[source] Option<Cause>),
 }
 
 /// Why a volume was not opened.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum MountFailure {
     /// The system would not let this person open it.
     #[error("You don't have permission to open the disk.")]
     NotAllowed,
     /// The disk is gone.
     #[error("The disk is not there any more.")]
-    Gone,
+    Gone(#[source] Option<Cause>),
     /// Anything else the system reported.
     #[error("The disk couldn't be opened.")]
-    Other,
+    Other(#[source] Option<Cause>),
 }
 
 /// What went wrong with a volume, to be told to the person.

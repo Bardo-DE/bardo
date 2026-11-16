@@ -149,11 +149,14 @@ impl Run<'_> {
         let taken = |candidate: &FileName| {
             fs::symlink_metadata(destination.join(candidate).as_path()).is_ok()
         };
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "the name error says only that the numbered name is too long, which is the failure"
+        )]
         let another = || {
             keep_both(name, split, taken)
                 .map(Place::At)
-                .ok()
-                .ok_or(OpFailure::NameTooLong)
+                .map_err(|_| OpFailure::NameTooLong)
         };
         if !taken(name) {
             return Ok(Place::At(name.clone()));
