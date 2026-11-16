@@ -496,10 +496,11 @@ async fn a_change_made_here_waits_while_paused_then_uploads_and_is_downloaded_on
 
     rig.sink.hold();
     rig.drive.set_paused(false);
+    // The state turns to uploading before the first bytes move; the fraction is checked once they do.
     eventually("uploading", || {
-        files
-            .status(&id)
-            .is_some_and(|s| s.state == drive_core::ItemState::Uploading)
+        files.status(&id).is_some_and(|s| {
+            s.state == drive_core::ItemState::Uploading && s.fraction.is_some_and(|f| f > 0.0)
+        })
     })
     .await;
     let items = proxy
