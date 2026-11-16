@@ -9,6 +9,7 @@
 use crate::form;
 use crate::pkce::OAuthState;
 use account_core::SecretText;
+use std::sync::Arc;
 
 /// The most bytes of a redirect request that are read.
 pub const MAX_REDIRECT_BYTES: usize = 8 * 1024;
@@ -25,7 +26,7 @@ pub const STRAY_READ_SECONDS: u64 = 5;
 pub struct AuthCode(pub SecretText);
 
 /// Why a redirect was not accepted.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum LoopbackFault {
     /// The `state` is not this sign-in's.
     #[error("wrong state")]
@@ -45,6 +46,9 @@ pub enum LoopbackFault {
     /// Nobody came within [`REDIRECT_WAIT_SECONDS`].
     #[error("timed out waiting for the browser")]
     TimedOut,
+    /// The listener could not take the browser's connection.
+    #[error("could not accept the browser's connection")]
+    Accept(#[source] Arc<std::io::Error>),
 }
 
 /// The most header lines a redirect request may carry (a browser sends about twenty).
@@ -202,7 +206,7 @@ mod tests {
             "GET /?code={}&state=st-1 HTTP/1.1\r\n\r\n",
             "a".repeat(MAX_REDIRECT_BYTES)
         );
-        assert_eq!(parse(&long), Err(LoopbackFault::Oversized));
+        assert!(matches!(parse(&long), Err(LoopbackFault::Oversized)));
         let edge = format!("GET /?state=st-1&code={} HTTP/1.1\r\n\r\n", "a".repeat(100));
         assert!(edge.len() < MAX_REDIRECT_BYTES && parse(&edge).is_ok());
     }

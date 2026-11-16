@@ -67,6 +67,9 @@ pub enum SpaceFault {
     /// The file could not be written, or was refused at start.
     #[error("the Spaces file cannot be written")]
     Unsaved,
+    /// The write failed.
+    #[error("the Spaces file could not be saved")]
+    Write(#[source] base_fs::book::SaveFailed),
 }
 
 /// The Spaces as the daemon holds them.
@@ -294,8 +297,7 @@ impl SpaceBook {
         base_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
             .await
             .map(drop)
-            .ok()
-            .ok_or(SpaceFault::Unsaved)
+            .map_err(SpaceFault::Write)
     }
 }
 

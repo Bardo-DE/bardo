@@ -11,6 +11,7 @@
 //! password the person or the host gave, or the JMAP token the person typed for that server.
 
 use super::{GenericFlow, Lookup, Mid};
+use crate::fault;
 use crate::jmap;
 use account_core::{Credential, Family, LoginName, Restriction, SecretText};
 use account_family_kit::Move;
@@ -66,12 +67,12 @@ impl<L: Lookup> GenericFlow<L> {
         let address = label.0.as_str();
         let login = LoginName(typed.login().unwrap_or(address).to_owned());
         let built = match &typed {
-            Manual::Imap(servers) => mail_typed(Family::Imap, servers, address, &self.spec)
-                .ok()
-                .ok_or(SignInFault::Unreadable),
-            Manual::Pop3(servers) => mail_typed(Family::Pop3, servers, address, &self.spec)
-                .ok()
-                .ok_or(SignInFault::Unreadable),
+            Manual::Imap(servers) => {
+                mail_typed(Family::Imap, servers, address, &self.spec).map_err(fault)
+            }
+            Manual::Pop3(servers) => {
+                mail_typed(Family::Pop3, servers, address, &self.spec).map_err(fault)
+            }
             Manual::Jmap(server) => {
                 jmap::session(&self.io, &server.session, &login, &incoming).await
             }

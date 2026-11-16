@@ -106,10 +106,10 @@ impl DynLogin for Platform {
             let connect = if let Some(connect) = self.0.get() {
                 connect.clone()
             } else {
-                let read = tokio::task::spawn_blocking(RustlsConnect::platform)
-                    .await
-                    .ok()
-                    .ok_or(SignInFault::Unreachable)?;
+                // A reader thread that died has no roots to offer: the platform is unreachable.
+                let Ok(read) = tokio::task::spawn_blocking(RustlsConnect::platform).await else {
+                    return Err(SignInFault::Unreachable);
+                };
                 self.0.get_or_init(|| read).clone()
             };
             login(plan, &connect).await
@@ -120,10 +120,10 @@ impl DynLogin for Platform {
 async fn login<C: Connect>(plan: RelayPlan, connect: &C) -> Result<(), SignInFault> {
     let up = Arc::new(AtomicBool::new(false));
     let app = Probe(Arc::clone(&up));
-    let end = tokio::time::timeout(WITHIN, relay(plan, app, connect))
-        .await
-        .ok()
-        .ok_or(SignInFault::Unreachable)?;
+    // The elapsed time is the whole of a timeout's error: there is no cause to keep.
+    let Ok(end) = tokio::time::timeout(WITHIN, relay(plan, app, connect)).await else {
+        return Err(SignInFault::Unreachable);
+    };
     match (up.load(Ordering::Acquire), end) {
         (true, _) => Ok(()),
         (false, RelayEnd::Failed(fault)) => Err(fault_of(fault)),

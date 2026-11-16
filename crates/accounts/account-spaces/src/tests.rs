@@ -77,15 +77,18 @@ async fn ids_are_minted_not_named_and_survive_renames_and_restarts() {
 async fn changing_or_removing_a_space_that_is_not_there_is_refused() {
     let (mut book, _) = SpaceBook::open(None).await;
     let ghost = DesktopSpace::parse("ghost").expect("id");
-    assert_eq!(
+    assert!(matches!(
         book.rename(&ghost, name("x")).await,
         Err(SpaceFault::NotThere)
-    );
-    assert_eq!(
+    ));
+    assert!(matches!(
         book.set_look(&ghost, SpaceLook::default()).await,
         Err(SpaceFault::NotThere)
-    );
-    assert_eq!(book.remove(&ghost).await, Err(SpaceFault::NotThere));
+    ));
+    assert!(matches!(
+        book.remove(&ghost).await,
+        Err(SpaceFault::NotThere)
+    ));
 }
 
 #[tokio::test]
@@ -99,11 +102,11 @@ async fn creates_are_limited_per_app_within_the_window() {
             .unwrap_or_else(|e| panic!("create {n}: {e:?}"));
     }
     let late = start + Duration::from_secs(59);
-    assert_eq!(
+    assert!(matches!(
         book.create(&flood, name("x"), SpaceLook::default(), (late, NOW))
             .await,
         Err(SpaceFault::TooMany)
-    );
+    ));
     // Another app is not held back by it.
     book.create(&calm, name("y"), SpaceLook::default(), (late, NOW))
         .await
@@ -141,22 +144,22 @@ async fn a_counter_at_the_top_of_its_range_is_refused_and_not_wrapped() {
         .await
         .expect("the second to last number is still there");
     assert_eq!(made.as_str(), format!("space-{}", u64::MAX - 1));
-    assert_eq!(
+    assert!(matches!(
         book.create(&photos, name("More"), SpaceLook::default(), at)
             .await,
         Err(SpaceFault::Unsaved)
-    );
+    ));
     assert_eq!(book.list().len(), 1, "the refused create changed nothing");
 
     // A file that starts at the top: refused outright.
     let full = format!(r#"{{"version":{VERSION},"next":{},"spaces":[]}}"#, u64::MAX);
     std::fs::write(&file, &full).expect("write");
     let (mut book, _) = SpaceBook::open(Some(&store(&scratch))).await;
-    assert_eq!(
+    assert!(matches!(
         book.create(&photos, name("x"), SpaceLook::default(), at)
             .await,
         Err(SpaceFault::Unsaved)
-    );
+    ));
     assert_eq!(std::fs::read_to_string(&file).expect("read"), full);
 }
 

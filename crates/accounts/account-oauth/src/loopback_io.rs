@@ -7,6 +7,7 @@ use crate::loopback::{
     STRAY_READ_SECONDS, head_complete, parse_redirect,
 };
 use crate::pkce::OAuthState;
+use std::sync::Arc;
 use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
@@ -123,8 +124,7 @@ impl LoopbackServer {
             .listener
             .accept()
             .await
-            .ok()
-            .ok_or(LoopbackFault::Malformed)?;
+            .map_err(|error| LoopbackFault::Accept(Arc::new(error)))?;
         drop(self.listener);
         serve(&mut socket, expected).await
     }
@@ -136,8 +136,7 @@ impl LoopbackServer {
                 .listener
                 .accept()
                 .await
-                .ok()
-                .ok_or(LoopbackFault::Malformed)?;
+                .map_err(|error| LoopbackFault::Accept(Arc::new(error)))?;
             let limit = Duration::from_secs(STRAY_READ_SECONDS);
             let outcome = tokio::time::timeout(limit, serve(&mut socket, expected))
                 .await
@@ -263,7 +262,10 @@ mod tests {
             port,
             b"GET /?code=stolen&state=wrong HTTP/1.1\r\n\r\n".to_vec(),
         ));
-        assert_eq!(server.wait(&state()).await, Err(LoopbackFault::WrongState));
+        assert!(matches!(
+            server.wait(&state()).await,
+            Err(LoopbackFault::WrongState)
+        ));
         let page = client.await.expect("client");
         assert!(!page.contains("stolen"));
         TcpStream::connect(("127.0.0.1", port)).await.unwrap_err();
@@ -275,7 +277,10 @@ mod tests {
         let port = server.port();
         let huge = format!("GET /?code={} HTTP/1.1\r\n\r\n", "a".repeat(64 * 1024));
         let client = tokio::spawn(send_raw(port, huge.into_bytes()));
-        assert_eq!(server.wait(&state()).await, Err(LoopbackFault::Oversized));
+        assert!(matches!(
+            server.wait(&state()).await,
+            Err(LoopbackFault::Oversized)
+        ));
         let _ = client.await;
     }
 
@@ -283,7 +288,7 @@ mod tests {
     async fn a_silent_browser_times_out() {
         let server = LoopbackServer::bind().await.expect("bind");
         let outcome = server.wait_for(&state(), Duration::from_millis(50)).await;
-        assert_eq!(outcome, Err(LoopbackFault::TimedOut));
+        assert!(matches!(outcome, Err(LoopbackFault::TimedOut)));
     }
 
     async fn probe(port: u16, request: &str) -> String {
@@ -321,7 +326,10 @@ mod tests {
         for _ in 0..MAX_STRAY_REQUESTS {
             probe(port, "GET /?code=x&state=wrong HTTP/1.1\r\n\r\n").await;
         }
-        assert_eq!(wait.await.expect("join"), Err(LoopbackFault::WrongState));
+        assert!(matches!(
+            wait.await.expect("join"),
+            Err(LoopbackFault::WrongState)
+        ));
         TcpStream::connect(("127.0.0.1", port)).await.unwrap_err();
     }
 
@@ -329,7 +337,7 @@ mod tests {
     async fn wait_until_ends_at_its_deadline_and_a_dropped_wait_frees_the_port() {
         let server = LoopbackServer::bind().await.expect("bind");
         let outcome = server.wait_until(&state(), Duration::from_millis(50)).await;
-        assert_eq!(outcome, Err(LoopbackFault::TimedOut));
+        assert!(matches!(outcome, Err(LoopbackFault::TimedOut)));
 
         let server = LoopbackServer::bind().await.expect("bind");
         let port = server.port();
@@ -353,9 +361,8 @@ mod tests {
             "GET /?error=access_denied&state=st-1 HTTP/1.1\r\n\r\n",
         )
         .await;
-        assert_eq!(
-            wait.await.expect("join"),
-            Err(LoopbackFault::Refused("access_denied".into()))
+        assert!(
+            matches!(wait.await.expect("join"), Err(LoopbackFault::Refused(why)) if why == "access_denied")
         );
     }
 

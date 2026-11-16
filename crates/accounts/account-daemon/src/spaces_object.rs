@@ -51,26 +51,28 @@ fn fault(fault: SpaceFault) -> RefusedError {
              minute."
         )),
         // Unsaved.
-        SpaceFault::Unsaved => RefusedError::failed("The Spaces could not be saved."),
+        SpaceFault::Unsaved | SpaceFault::Write(_) => RefusedError::failed("The Spaces could not be saved."),
     }
 }
 
 fn space_arg(id: &str) -> Result<DesktopSpace, RefusedError> {
     DesktopSpace::parse(id)
-        .ok()
-        .ok_or_else(|| RefusedError::invalid("There is no such Space."))
+        .map_err(|e| RefusedError::invalid(format!("There is no such Space: {e}")))
 }
 
 fn name_arg(text: &str) -> Result<SpaceName, RefusedError> {
-    SpaceName::parse(text).ok().ok_or_else(|| {
-        RefusedError::invalid("A Space's name must have 1 to 64 characters and no line breaks.")
+    SpaceName::parse(text).map_err(|e| {
+        RefusedError::invalid(format!(
+            "A Space's name must have 1 to 64 characters and no line breaks: {e}"
+        ))
     })
 }
 
 fn look_arg(text: &str) -> Result<SpaceLook, RefusedError> {
     SpaceLook::parse(text)
-        .ok()
-        .ok_or_else(|| RefusedError::invalid("A Space's look must be at most 1024 bytes."))
+        .map_err(|e| {
+            RefusedError::invalid(format!("A Space's look must be at most 1024 bytes: {e}"))
+        })
 }
 
 impl<H: Host, C: Callers> SpacesObject<H, C> {
@@ -201,11 +203,11 @@ impl<H: Host, C: Callers> SpacesServer for SpacesObject<H, C> {
         look: String,
     ) -> Result<(), RefusedError> {
         let caller = self.registrar(&header).await?;
-        let id = DesktopSpace::parse(&id).ok().ok_or_else(|| {
-            RefusedError::invalid(
+        let id = DesktopSpace::parse(&id).map_err(|e| {
+            RefusedError::invalid(format!(
                 "A Space's id must be 1 to 64 lowercase letters, digits, '.', '_' or '-', \
-                 starting with a letter or digit, and not \"desktop\".",
-            )
+                 starting with a letter or digit, and not \"desktop\": {e}"
+            ))
         })?;
         let (name, look) = (name_arg(&name)?, look_arg(&look)?);
         let done = self

@@ -21,20 +21,18 @@ struct LoopbackHttp;
 
 impl Http for LoopbackHttp {
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
-        let (address, target) = split_loopback(&request.uri().to_string())
-            .ok()
-            .ok_or(HttpError::Unreachable)?;
+        let (address, target) =
+            split_loopback(&request.uri().to_string()).expect("a loopback request URL");
         let (head, body) = request.into_parts();
         let mut wire =
             account_fake_servers::http::Request::new(head.method.as_str(), &target).with_body(body);
         for (name, value) in &head.headers {
-            let value = value.to_str().ok().ok_or(HttpError::Malformed)?;
+            let value = value.to_str().expect("a header value that is text");
             wire = wire.with_header(name.as_str(), value);
         }
         let response = send(&address, Scheme::Http, &wire)
             .await
-            .ok()
-            .ok_or(HttpError::Unreachable)?;
+            .expect("the fake issuer answers");
         let answer = response.headers.iter().fold(
             account_http::http::Response::builder().status(response.status),
             |answer, (name, value)| answer.header(name.as_str(), value.as_str()),
@@ -185,10 +183,10 @@ async fn a_wrong_state_redirect_is_refused_and_nothing_is_exchanged() {
         port,
         b"GET /?code=stolen&state=not-ours HTTP/1.1\r\n\r\n".to_vec(),
     ));
-    assert_eq!(
+    assert!(matches!(
         server.wait(&pkce().state).await,
         Err(LoopbackFault::WrongState)
-    );
+    ));
     attacker.await.expect("task");
     assert_eq!(tokens_issued(&issuer), 0);
 }
@@ -202,10 +200,10 @@ async fn an_oversized_request_line_is_refused() {
         "a".repeat(32 * 1024)
     );
     let sender = tokio::spawn(raw(port, long.into_bytes()));
-    assert_eq!(
+    assert!(matches!(
         server.wait(&pkce().state).await,
         Err(LoopbackFault::Oversized)
-    );
+    ));
     sender.await.expect("task");
 }
 
@@ -237,7 +235,7 @@ async fn a_person_who_says_no_ends_the_sign_in_with_the_issuers_error() {
     issuer.set_consent(Consent::Deny);
     let pkce = pkce();
     let (_redirect, outcome, browser) = browse(&endpoints, &pkce).await;
-    assert_eq!(outcome, Err(LoopbackFault::Refused("access_denied".into())));
+    assert!(matches!(outcome, Err(LoopbackFault::Refused(why)) if why == "access_denied"));
     assert!(
         browser
             .await

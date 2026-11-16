@@ -1,6 +1,7 @@
 //! The three ways the servers of a generic account are found: from the address (`MailLookup`),
 //! from the server's name (`DavLookup`), and from the provider's own file (`FixedLookup`).
 
+use super::fault;
 use super::mail::{self, Looked};
 use super::sign_in::{Located, Lookup, Outcome, Seams};
 use super::{dav, jmap};
@@ -168,14 +169,10 @@ impl Lookup for MailLookup {
         let mut credential = Credential::Password(mid.password.clone());
         let built = match &manual {
             Manual::Imap(servers) => {
-                proto_mail::typed(Family::Imap, servers, &mid.login, seams.spec)
-                    .ok()
-                    .ok_or(SignInFault::Unreadable)
+                proto_mail::typed(Family::Imap, servers, &mid.login, seams.spec).map_err(fault)
             }
             Manual::Pop3(servers) => {
-                proto_mail::typed(Family::Pop3, servers, &mid.login, seams.spec)
-                    .ok()
-                    .ok_or(SignInFault::Unreadable)
+                proto_mail::typed(Family::Pop3, servers, &mid.login, seams.spec).map_err(fault)
             }
             Manual::Jmap(server) => {
                 if let Some(token) = &server.token {
@@ -243,10 +240,7 @@ impl Lookup for FixedLookup {
         let Some((address, password)) = address_and_password(&answers) else {
             return Outcome::Fail(SignInFault::Unreadable);
         };
-        match proto_mail::fixed(&address, seams.spec)
-            .ok()
-            .ok_or(SignInFault::Unreadable)
-        {
+        match proto_mail::fixed(&address, seams.spec).map_err(fault) {
             Ok((endpoints, claims)) => Outcome::Known(Located {
                 credential: Credential::Password(password),
                 label: address,

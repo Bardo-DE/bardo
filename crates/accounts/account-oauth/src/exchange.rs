@@ -10,10 +10,11 @@ use crate::pkce::Pkce;
 use account_core::{EndpointUrl, SecretText};
 use account_http::http::header::{ACCEPT, CONTENT_TYPE};
 use account_http::http::{Method, Response};
-use account_http::{Http, request_to};
+use account_http::{Http, HttpError, request_to};
 use account_provider::{ClientEntry, IssuerEndpoints};
 use base_time::UnixSeconds;
 use serde::Deserialize;
+use std::sync::Arc;
 
 /// A token endpoint's answer, as the issuer writes it. Secret fields redact in `Debug`.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -77,13 +78,16 @@ pub enum ExchangeFault {
 ///
 /// The plain calls return the fault alone, unchanged; a host that wants to show the issuer's reason
 /// (mailo does) calls the detailed one and reads `says`.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 #[error("{fault}")]
 pub struct ExchangeFailure {
     /// What it amounts to; the same value the plain call returns.
     pub fault: ExchangeFault,
     /// The issuer's own words, when its answer had an OAuth error body.
     pub says: Option<IssuerSays>,
+    /// The reader's own error, when the answer could not be read.
+    #[source]
+    pub cause: Option<Arc<dyn std::error::Error + Send + Sync>>,
 }
 
 impl ExchangeFailure {
@@ -95,7 +99,11 @@ impl ExchangeFailure {
 
 impl From<ExchangeFault> for ExchangeFailure {
     fn from(fault: ExchangeFault) -> Self {
-        Self { fault, says: None }
+        Self {
+            fault,
+            says: None,
+            cause: None,
+        }
     }
 }
 
@@ -238,7 +246,9 @@ pub async fn revoke<H: Http>(
     let Some(url) = &endpoints.revoke else {
         return Ok(());
     };
-    let response = send_form(http, url, &[("token", token.expose())]).await?;
+    let response = send_form(http, url, &[("token", token.expose())])
+        .await
+        .map_err(|failure| failure.fault)?;
     match response.status().as_u16() {
         200..=299 => Ok(()),
         401 => Err(ExchangeFault::Refused),
@@ -268,9 +278,11 @@ pub(crate) async fn token_call_detailed<H: Http>(
 fn read_tokens_detailed(response: &Response<Vec<u8>>) -> Result<TokenResponse, ExchangeFailure> {
     let fault = match response.status().as_u16() {
         200..=299 => {
-            return serde_json::from_slice(response.body())
-                .ok()
-                .ok_or_else(|| ExchangeFault::Unreadable.into());
+            return serde_json::from_slice(response.body()).map_err(|error| ExchangeFailure {
+                fault: ExchangeFault::Unreadable,
+                says: None,
+                cause: Some(Arc::new(error)),
+            });
         }
         401 => ExchangeFault::Refused,
         400 if oauth_error(response).as_deref() == Some("invalid_grant") => ExchangeFault::Refused,
@@ -280,28 +292,47 @@ fn read_tokens_detailed(response: &Response<Vec<u8>>) -> Result<TokenResponse, E
     Err(ExchangeFailure {
         fault,
         says: issuer_says(response),
+        cause: None,
     })
 }
 
 /// A form POST to `url`, sent over `http`. An endpoint that is not a web URL, a request that
-/// went nowhere: both are an issuer that cannot be reached.
+/// went nowhere: both are an issuer that cannot be reached, with the failure kept as the cause.
 async fn send_form<H: Http>(
     http: &H,
     url: &EndpointUrl,
     pairs: &[(&str, &str)],
-) -> Result<Response<Vec<u8>>, ExchangeFault> {
+) -> Result<Response<Vec<u8>>, ExchangeFailure> {
     let request = request_to(Method::POST, url)
-        .ok()
-        .ok_or(ExchangeFault::Unreachable)?
+        .map_err(unreached)?
         .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
         .header(ACCEPT, "application/json")
         .body(form::body(pairs).into_bytes())
-        .ok()
-        .ok_or(ExchangeFault::Unreachable)?;
-    http.send(request)
-        .await
-        .ok()
-        .ok_or(ExchangeFault::Unreachable)
+        .map_err(|error| ExchangeFailure {
+            fault: ExchangeFault::Unreachable,
+            says: None,
+            cause: Some(Arc::new(error)),
+        })?;
+    http.send(request).await.map_err(unreached)
+}
+
+/// What a request that could not be made or sent says about the issuer: an endpoint that is not a
+/// web URL, plain `http` to another computer and a connection that failed are an issuer that
+/// cannot be reached; an answer past the size cap is one that cannot be read.
+fn unreached(error: HttpError) -> ExchangeFailure {
+    let fault = match error {
+        HttpError::Unreachable
+        | HttpError::Tls
+        | HttpError::TimedOut
+        | HttpError::NotGranted
+        | HttpError::Malformed => ExchangeFault::Unreachable,
+        _ => ExchangeFault::Unreadable,
+    };
+    ExchangeFailure {
+        fault,
+        says: None,
+        cause: Some(Arc::new(error)),
+    }
 }
 
 #[cfg(test)]

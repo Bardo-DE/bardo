@@ -4,7 +4,7 @@
 use account_core::{EndpointUrl, LoginName, SecretText};
 use account_family_kit::Io;
 use account_family_kit::password::{basic, sensitive};
-use account_http::Http;
+use account_http::{Http, HttpError};
 use account_nextcloud_proto::Error;
 use account_nextcloud_proto::revoke::{self, Revoked};
 use account_provider::{ProviderError, RevokeOutcome};
@@ -17,22 +17,31 @@ pub(super) async fn revoke(
     login: &LoginName,
     password: &SecretText,
 ) -> Result<RevokeOutcome, ProviderError> {
-    let authorization = sensitive(&basic(&login.0, password))
-        .ok()
-        .ok_or(ProviderError::Unreadable)?;
-    let request = revoke::request(server, authorization)
-        .ok()
-        .ok_or(ProviderError::Unreadable)?;
-    let response = io
-        .http
-        .send(request)
-        .await
-        .ok()
-        .ok_or(ProviderError::Unreachable)?;
+    let authorization = sensitive(&basic(&login.0, password)).map_err(http_fault)?;
+    let request = revoke::request(server, authorization).map_err(proto_fault)?;
+    let response = io.http.send(request).await.map_err(http_fault)?;
     match revoke::revoked(server, &response) {
         Ok(Revoked::Done) => Ok(RevokeOutcome::Revoked),
         Ok(Revoked::Manual(page)) => Ok(RevokeOutcome::Manual(page)),
-        Err(Error::Unreachable) => Err(ProviderError::Unreachable),
-        Err(_) => Err(ProviderError::Unreadable),
+        Err(error) => Err(proto_fault(error)),
+    }
+}
+
+/// What a request that went nowhere says about the account.
+fn http_fault(error: HttpError) -> ProviderError {
+    match error {
+        HttpError::Unreachable | HttpError::Tls | HttpError::TimedOut | HttpError::NotGranted => {
+            ProviderError::Unreachable
+        }
+        // too large, malformed, and a failure a later account-http adds
+        _ => ProviderError::Unreadable,
+    }
+}
+
+/// What a request that could not be built or an answer that could not be read says about it.
+fn proto_fault(error: Error) -> ProviderError {
+    match error {
+        Error::Unreachable => ProviderError::Unreachable,
+        _ => ProviderError::Unreadable,
     }
 }

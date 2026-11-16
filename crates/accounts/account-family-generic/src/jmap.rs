@@ -6,7 +6,7 @@
 use super::fault;
 use account_capability::Claim;
 use account_core::{Credential, EndpointUrl, LoginName, ServiceEndpoint};
-use account_discover::parse_jmap_session;
+use account_discover::{DiscoverFault, parse_jmap_session};
 use account_family_kit::Io;
 use account_family_kit::password::{basic, fault_of, sensitive};
 use account_generic_proto::jmap;
@@ -29,8 +29,14 @@ pub(super) async fn session(
         jmap::request(url, sensitive(&authorization).map_err(fault_of)?).map_err(fault)?;
     let response = io.http.send(request).await.map_err(fault_of)?;
     let body = jmap::session_text(&response).map_err(fault)?;
-    let found = parse_jmap_session(body)
-        .ok()
-        .ok_or(SignInFault::Unreadable)?;
+    let found = parse_jmap_session(body).map_err(discover_fault)?;
     Ok((jmap::as_login(found.endpoints, login), found.claims))
+}
+
+/// What a session document the discovery step could not use means for a sign-in.
+fn discover_fault(fault: DiscoverFault) -> SignInFault {
+    match fault {
+        DiscoverFault::Unreachable => SignInFault::Unreachable,
+        DiscoverFault::NoServers | DiscoverFault::Unreadable => SignInFault::Unreadable,
+    }
 }
