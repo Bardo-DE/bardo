@@ -19,9 +19,10 @@ fn is_closed_source(problem: &str) -> bool {
     problem.contains("couldn't be used") && problem.contains("(os error")
 }
 
-/// The keymap of `platform`, with every problem found reading it in plain words (nothing to
-/// report without the `keycap` feature). Environment variables are read through `lookup`; the
-/// daemon's `main` passes the process's.
+/// The keymap of `platform`, with every problem found reading it in plain words.
+///
+/// Nothing is reported without the `keycap` feature. Environment variables are read through
+/// `lookup`; the daemon's `main` passes the process's.
 ///
 /// With the feature, the person's keymap comes from keycap's daemon, or its files when none
 /// answers; a daemon or file that is closed to cuad (its sandbox) leaves the conventional keymap

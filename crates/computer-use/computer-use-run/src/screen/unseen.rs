@@ -103,9 +103,11 @@ impl Withheld {
     }
 }
 
-/// The rectangles to mask for the secret nodes of a tree, the ones the model reads and the ones
-/// withheld from it alike. Withholding a node never takes its mask away: a toolkit can drop
-/// SHOWING on a password field that is on screen, or a field can stand partly off the window.
+/// The rectangles to mask for the secret nodes of a tree.
+///
+/// That covers the ones the model reads and the ones withheld from it alike. Withholding a node
+/// never takes its mask away: a toolkit can drop SHOWING on a password field that is on screen, or
+/// a field can stand partly off the window.
 #[must_use]
 pub fn secret_masks(seen: &A11ySnapshot, withheld: &Withheld) -> Vec<Rect<WindowSpace>> {
     secret_rects_of(

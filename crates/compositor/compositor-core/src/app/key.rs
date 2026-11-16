@@ -19,7 +19,8 @@ pub enum AppKey {
 impl AppKey {
     /// The key for a peer known as `peer` that declared `claimed`: the proven app when the
     /// peer's process proves one (`account_core::identity_of`), else the declared id, however
-    /// well it matches a real app's name.     #[must_use]
+    /// well it matches a real app's name.
+    #[must_use]
     pub fn of(peer: &PeerIdentity, claimed: &ClaimedId) -> AppKey {
         match peer {
             PeerIdentity::Proven(app) => AppKey::Proven(app.clone()),

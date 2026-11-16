@@ -29,7 +29,7 @@ pub fn engine_id(id: &str) -> EngineId {
 /// socket would go; it is used only when the attachment names no socket of its own.
 ///
 /// # Errors
-/// `AttachedError` when the catalogue has no entry for the attached id, or the entry has no OpenAI-
+/// `AttachedError` when the catalogue has no entry for the attached id, or the entry has no `OpenAI`-
 /// compatible chat engine.
 pub fn local_model(
     attached: &Attached,

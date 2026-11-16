@@ -117,9 +117,10 @@ text_id!(
 );
 
 text_id!(
-    /// One task: a docket `Session` for one prompt, worker or side conversation. A slug minted
-    /// by the companion service. It moved here from action-core so [`AgentRole::Worker`] and
-    /// [`AgentRef::Worker`] can name it.
+    /// One task: a docket `Session` for one prompt, worker or side conversation.
+    ///
+    /// A slug minted by the companion service. It moved here from action-core so
+    /// [`AgentRole::Worker`] and [`AgentRef::Worker`] can name it.
     ///
     /// [`AgentRole::Worker`]: crate::AgentRole::Worker
     /// [`AgentRef::Worker`]: crate::AgentRef::Worker

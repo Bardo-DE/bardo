@@ -1,8 +1,8 @@
 //! The merged picture of a Photoshop document, read from the file itself.
 //!
-//! A PSD is a 26-byte header, then three length-prefixed sections that are skipped (the colour
+//! A `PSD` is a 26-byte header, then three length-prefixed sections that are skipped (the colour
 //! mode data, the image resources, the layer and mask information), then the composite: a
-//! compression word and the channels as planes, raw or PackBits. A `PSB` (version 2) is the same
+//! compression word and the channels as planes, raw or `PackBits`. A `PSB` (version 2) is the same
 //! with an eight-byte length for the layer section and four-byte row lengths in the RLE table.
 //!
 //! The `psd` crate indexes the layer section before it reads the composite and panics on files

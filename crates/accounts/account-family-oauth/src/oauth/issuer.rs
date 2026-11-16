@@ -88,6 +88,10 @@ pub trait BrowserIssuer: Clone + Debug + Send + Sync + Sized + 'static {
     /// What porter's own token for `audience` is refreshed with (`None`: the whole grant) and
     /// its form, or `Forbidden` for an audience that is not the account's. No token minted this
     /// way leaves accountd: an app's or a relay's comes from [`BrowserIssuer::grant_token`].
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ProviderError`] when the audience is not the account's or no token can be made.
     fn porter_token<H>(
         &self,
         session: &OAuthSession<Self, H>,
@@ -96,6 +100,10 @@ pub trait BrowserIssuer: Clone + Debug + Send + Sync + Sized + 'static {
 
     /// What a token for a grant of `kind` to `audience` is refreshed with and its form, or why
     /// the grant is refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`ProviderError`] when the grant of `kind` to `audience` is refused.
     fn grant_token<H>(
         &self,
         session: &OAuthSession<Self, H>,

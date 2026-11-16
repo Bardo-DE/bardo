@@ -664,6 +664,11 @@ async fn register_collection(
 
 /// Serves the Secret Service on `connection` (which must be on the bus the clients use) and takes
 /// the name [`BUS_NAME`]: one empty collection `default`, aliased `default`.
+///
+/// # Errors
+///
+/// Returns an [`Error`] when the collection or the service cannot be registered on `connection`,
+/// or the name cannot be taken.
 pub async fn serve(connection: &Connection) -> Result<Shared, Error> {
     let shared = Shared::default();
     shared.make_collection("Default", "default");
