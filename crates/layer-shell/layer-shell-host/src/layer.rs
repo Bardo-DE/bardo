@@ -71,8 +71,8 @@ impl Anchor {
 impl std::ops::BitOr for Anchor {
     type Output = Anchor;
 
-    fn bitor(self, other: Anchor) -> Anchor {
-        self.union(other)
+    fn bitor(self, rhs: Anchor) -> Anchor {
+        self.union(rhs)
     }
 }
 

@@ -37,6 +37,10 @@ pub enum PopupEdge {
 /// The `xdg_positioner` constraint-adjustment flags: how the compositor may move or resize the
 /// popup if its unadjusted position would be (partly) off-screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "the flag set of `xdg_positioner.set_constraint_adjustment`, one switch per axis and kind"
+)]
 pub struct PopupAdjust {
     pub slide_x: bool,
     pub slide_y: bool,

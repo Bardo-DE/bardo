@@ -24,6 +24,10 @@ use std::sync::{Arc, Mutex, PoisonError};
 
 /// Which fakes to start, and how the mail ones are secured.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one independent on/off switch per fake server"
+)]
 pub struct Options {
     /// The scratch directory (made if missing).
     pub dir: PathBuf,

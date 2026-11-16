@@ -50,12 +50,14 @@ impl LauncherBuilder {
     }
 
     /// Starts commands with `spawn` instead of real processes.
+    #[must_use]
     pub fn spawn(mut self, spawn: Arc<dyn Spawn>) -> LauncherBuilder {
         self.spawn = spawn;
         self
     }
 
     /// Finds icons by name with `icons`.
+    #[must_use]
     pub fn icons(mut self, icons: Arc<dyn IconLookup>) -> LauncherBuilder {
         self.icons = icons;
         self

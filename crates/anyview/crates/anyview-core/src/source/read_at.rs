@@ -138,8 +138,8 @@ impl Read for ReadAtStream {
 }
 
 impl Seek for ReadAtStream {
-    fn seek(&mut self, to: SeekFrom) -> Result<u64> {
-        let (base, delta) = match to {
+    fn seek(&mut self, pos: SeekFrom) -> Result<u64> {
+        let (base, delta) = match pos {
             SeekFrom::Start(at) => (0, i128::from(at)),
             SeekFrom::Current(delta) => (self.at, i128::from(delta)),
             SeekFrom::End(delta) => (self.bytes.len().0, i128::from(delta)),

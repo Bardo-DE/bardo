@@ -73,7 +73,7 @@ where
 {
     fn event(
         state: &mut D,
-        feedback: &ZwpLinuxDmabufFeedbackV1,
+        proxy: &ZwpLinuxDmabufFeedbackV1,
         event: zwp_linux_dmabuf_feedback_v1::Event,
         _data: &(),
         _conn: &Connection,
@@ -85,7 +85,7 @@ where
             }
             // One set of feedback is all this needs; the format table fd is dropped with its
             // event.
-            zwp_linux_dmabuf_feedback_v1::Event::Done => feedback.destroy(),
+            zwp_linux_dmabuf_feedback_v1::Event::Done => proxy.destroy(),
             _ => {}
         }
     }

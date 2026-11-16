@@ -3,7 +3,7 @@
 //! the DOM's, so both are negated.
 
 use blitz_traits::events::{
-    BlitzWheelDelta, BlitzWheelEvent, MouseEventButtons, PointerCoords, UiEvent,
+    BlitzWheelDelta, BlitzWheelEvent, MouseEventButtons, Point, PointerCoords, UiEvent,
 };
 use keyboard_types::Modifiers;
 use smithay_client_toolkit::seat::pointer::AxisScroll;
@@ -79,7 +79,7 @@ pub(crate) fn wheel_event(
         },
         buttons,
         mods,
-        element: Default::default(),
+        element: Point::default(),
     })
 }
 

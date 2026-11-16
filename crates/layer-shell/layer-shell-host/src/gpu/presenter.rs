@@ -175,7 +175,9 @@ fn present_wgpu(
     overlay: &Overlay,
 ) -> Result<bool> {
     let frame = swapchain.acquire(gpu, target.buffer)?;
-    let view = frame.texture.create_view(&Default::default());
+    let view = frame
+        .texture
+        .create_view(&wgpu::TextureViewDescriptor::default());
     let mut encoder = gpu
         .device
         .device

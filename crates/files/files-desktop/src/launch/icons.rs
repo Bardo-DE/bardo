@@ -80,6 +80,7 @@ impl FakeIcons {
     }
 
     /// The same theme with the icon `name` at `file`.
+    #[must_use]
     pub fn with(mut self, name: &str, file: &str) -> FakeIcons {
         self.icons.insert(name.to_owned(), PathBuf::from(file));
         self

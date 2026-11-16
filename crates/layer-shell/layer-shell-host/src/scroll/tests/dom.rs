@@ -218,7 +218,10 @@ fn item_9a_an_inner_list_at_its_bottom_lets_the_page_scroll() {
     bench.stroke(1500.0, 100, OVER_LIST);
     let trace = bench.settle(&[list, Scroller::Viewport]);
     assert!(bench.offset(Scroller::Viewport) > 100.0, "the page moved");
-    assert!(trace.iter().all(|o| o[0] == 700.0), "the list never moved");
+    assert!(
+        trace.iter().all(|o| (o[0] - 700.0).abs() < 1e-3),
+        "the list never moved"
+    );
 }
 
 #[test]

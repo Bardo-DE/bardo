@@ -90,7 +90,8 @@ fn bar() -> Element {
                             height: 120,
                         },
                     };
-                    surface.open_popup(popup_config(), placement, HostRoot::new(panel));
+                    // The demo never closes the popup itself: the compositor's dismissal ends it.
+                    let _ = surface.open_popup(popup_config(), placement, HostRoot::new(panel));
                     print(json!({"event": "opened"}));
                 },
             }

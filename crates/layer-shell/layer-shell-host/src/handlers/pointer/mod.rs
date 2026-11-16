@@ -65,7 +65,7 @@ impl PointerHandler for HostState {
                     self.show_cursor(pointer, id);
                     self.palmrest.pointer_over(true);
                 }
-                PointerEventKind::Leave { serial: _ } => {
+                PointerEventKind::Leave { .. } => {
                     // A leave the compositor sends is always a leave for the document, even
                     // when the record already moved on (an enter elsewhere seen first).
                     let _ = self.depart(id);
@@ -75,18 +75,14 @@ impl PointerHandler for HostState {
                         self.palmrest.pointer_over(false);
                     }
                 }
-                PointerEventKind::Motion { time: _ } => {
+                PointerEventKind::Motion { .. } => {
                     self.input.position = pos;
                     self.pointer_moved(id, pos);
                     let at = self.document_pos(id, pos);
                     self.scroll_pointer(id, at);
                     self.show_cursor(pointer, id);
                 }
-                PointerEventKind::Press {
-                    button,
-                    serial,
-                    time: _,
-                } => {
+                PointerEventKind::Press { button, serial, .. } => {
                     self.input.last_serial = serial;
                     // Any press, the band's and a swallowed first mouse's too: the person
                     // reached for the pointer.
@@ -123,11 +119,7 @@ impl PointerHandler for HostState {
                         }
                     }
                 }
-                PointerEventKind::Release {
-                    button,
-                    serial: _,
-                    time: _,
-                } => {
+                PointerEventKind::Release { button, .. } => {
                     let Some(btn) = pointer::button_from_evdev(button) else {
                         continue;
                     };
@@ -147,8 +139,8 @@ impl PointerHandler for HostState {
                 PointerEventKind::Axis {
                     horizontal,
                     vertical,
-                    time: _,
                     source,
+                    ..
                 } => {
                     if !decide::reaches_document(self.input.zone) {
                         continue;

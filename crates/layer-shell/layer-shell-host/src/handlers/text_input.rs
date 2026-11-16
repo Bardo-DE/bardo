@@ -14,7 +14,7 @@ use wayland_protocols::wp::text_input::zv3::client::zwp_text_input_v3::{
 };
 
 use crate::handlers::surrounding;
-use crate::ime::{self, DeleteSurrounding, Preedit};
+use crate::ime::{self, DeleteSurrounding, PendingIme, Preedit};
 use crate::region::Rect;
 use crate::state::HostState;
 
@@ -72,19 +72,19 @@ impl Dispatch<ZwpTextInputV3, ()> for HostState {
         _qh: &QueueHandle<Self>,
     ) {
         match event {
-            zwp_text_input_v3::Event::Enter { surface: _ } => {
+            zwp_text_input_v3::Event::Enter { .. } => {
                 // A fresh focus starts with nothing pending. The compositor ignores `enable`
                 // sent while we had no text-input focus and resets it on `leave`, so what the
                 // document asked for is sent again now (a field focused before the keyboard
                 // arrived, as the launcher's is, would otherwise never reach the IME).
-                state.ime.pending = Default::default();
+                state.ime.pending = PendingIme::default();
                 if let Some(cursor_area) = state.ime.focus {
                     send_enabled(state, cursor_area, true);
                 }
             }
-            zwp_text_input_v3::Event::Leave { surface: _ } => {
+            zwp_text_input_v3::Event::Leave { .. } => {
                 // Nothing composed on the surface we are leaving belongs to the next one.
-                state.ime.pending = Default::default();
+                state.ime.pending = PendingIme::default();
                 surrounding::forget(state);
             }
             zwp_text_input_v3::Event::PreeditString {
@@ -114,7 +114,7 @@ impl Dispatch<ZwpTextInputV3, ()> for HostState {
                     after: after_length,
                 });
             }
-            zwp_text_input_v3::Event::Done { serial: _ } => {
+            zwp_text_input_v3::Event::Done { .. } => {
                 let pending = std::mem::take(&mut state.ime.pending);
                 let (events, rest) = ime::on_done(pending);
                 state.ime.pending = rest;

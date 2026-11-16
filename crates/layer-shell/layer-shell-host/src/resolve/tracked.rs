@@ -30,14 +30,14 @@ impl Tracked {
 
     /// Record `resolved` and report whether the compositor needs a new region (it differs
     /// from the one last recorded).
-    pub(crate) fn update(&mut self, resolved: &Option<Vec<Rect>>) -> bool {
+    pub(crate) fn update(&mut self, resolved: Option<&[Rect]>) -> bool {
         let Some(strips) = resolved else {
             return false;
         };
-        if self.last.as_deref() == Some(strips.as_slice()) {
+        if self.last.as_deref() == Some(strips) {
             return false;
         }
-        self.last = Some(strips.clone());
+        self.last = Some(strips.to_vec());
         true
     }
 }
@@ -58,18 +58,18 @@ mod tests {
         let a = Some(vec![PILL_RECT]);
         let b = Some(vec![Rect { x: 21, ..PILL_RECT }]);
         let mut t = Tracked::new();
-        assert!(t.update(&a), "first real resolution");
-        assert!(!t.update(&a), "same rect again");
-        assert!(t.update(&b), "rect moved");
-        assert!(!t.update(&b), "settled at the new rect");
-        assert!(!t.update(&None), "pending never forces a recommit");
+        assert!(t.update(a.as_deref()), "first real resolution");
+        assert!(!t.update(a.as_deref()), "same rect again");
+        assert!(t.update(b.as_deref()), "rect moved");
+        assert!(!t.update(b.as_deref()), "settled at the new rect");
+        assert!(!t.update(None), "pending never forces a recommit");
         // Pending did not overwrite what was last recorded: going back to `b` is still "same".
-        assert!(!t.update(&b), "pending kept the last real rect");
-        assert!(t.update(&a), "b -> a is a real change");
+        assert!(!t.update(b.as_deref()), "pending kept the last real rect");
+        assert!(t.update(a.as_deref()), "b -> a is a real change");
 
         let mut never_recorded = Tracked::new();
         assert!(
-            !never_recorded.update(&None),
+            !never_recorded.update(None),
             "a tracker that has never recorded anything treats pending as no change"
         );
 

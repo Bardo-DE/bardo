@@ -262,10 +262,10 @@ impl LayerShellHandler for Probe {
         _: &Connection,
         qh: &QueueHandle<Self>,
         _: &LayerSurface,
-        cfg: LayerSurfaceConfigure,
+        configure: LayerSurfaceConfigure,
         _: u32,
     ) {
-        self.size = (cfg.new_size.0.max(1), cfg.new_size.1.max(1));
+        self.size = (configure.new_size.0.max(1), configure.new_size.1.max(1));
         println!("configure {}x{}", self.size.0, self.size.1);
         self.draw(qh);
     }
@@ -281,12 +281,12 @@ impl WindowHandler for Probe {
         _: &Connection,
         qh: &QueueHandle<Self>,
         _: &Window,
-        cfg: WindowConfigure,
+        configure: WindowConfigure,
         _: u32,
     ) {
         self.size = (
-            cfg.new_size.0.map_or(400, std::num::NonZero::get),
-            cfg.new_size.1.map_or(300, std::num::NonZero::get),
+            configure.new_size.0.map_or(400, std::num::NonZero::get),
+            configure.new_size.1.map_or(300, std::num::NonZero::get),
         );
         println!("configure {}x{}", self.size.0, self.size.1);
         self.draw(qh);

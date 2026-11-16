@@ -263,6 +263,13 @@ mod tests {
     #[test]
     fn unset_opens_the_secret_service_in_the_daemons_namespace_without_touching_it() {
         let chosen = Chosen::open(Selection::SecretService, namespace(), "inferd").expect("chosen");
+        #[cfg_attr(
+            not(all(feature = "test-keys", unix)),
+            expect(
+                irrefutable_let_patterns,
+                reason = "without the `test-keys` feature the Secret Service is the only store"
+            )
+        )]
         let AnyKeys::Oo7(keys) = &chosen.keys else {
             panic!("the Secret Service");
         };

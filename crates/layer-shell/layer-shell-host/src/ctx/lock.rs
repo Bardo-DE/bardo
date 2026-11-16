@@ -5,6 +5,7 @@
 //!
 //! See FINDINGS F65.
 
+use std::collections::BTreeMap;
 use std::time::Duration;
 
 use calloop::timer::{TimeoutAction, Timer};
@@ -25,7 +26,7 @@ use crate::live::Live;
 use crate::lock::active::ActiveLock;
 use crate::lock::handle::LockHandle;
 use crate::lock::machine::{self, Ended, LockAction, LockInput, LockPhase};
-use crate::lock::retry::{Retry, retry};
+use crate::lock::retry::{Failures, Retry, retry};
 use crate::lock::{LockConfig, LockError, LockId};
 use crate::msg::Request;
 use crate::output::OutputInfo;
@@ -68,8 +69,8 @@ impl<M: 'static> HostCtx<M> {
             config,
             factory: Box::new(factory),
             phase: Live::new(LockPhase::Requested),
-            surfaces: Default::default(),
-            failures: Default::default(),
+            surfaces: BTreeMap::default(),
+            failures: Failures::default(),
             inbox: Vec::new(),
         });
         perform_all(self, actions);

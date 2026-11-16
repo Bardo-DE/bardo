@@ -24,6 +24,10 @@ fn parse_tls(text: &str) -> Result<Tls, String> {
 /// Fake servers for a jailed scenario (test tooling, never installed).
 #[derive(Debug, Parser)]
 #[command(name = "account-rig-servers", version)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "one independent on/off flag per fake server, as the command line spells them"
+)]
 struct Args {
     /// The scratch directory: rig.json and ca.pem go here.
     #[arg(long)]

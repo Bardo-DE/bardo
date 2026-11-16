@@ -42,10 +42,10 @@ impl<W: Window> IntentProvider for Files<W> {
         &self.manifest
     }
 
-    async fn perform(&self, call: Invocation) -> Result<Outcome, AppRefusal> {
-        let ask = ask_of(&call)?;
+    async fn perform(&self, inv: Invocation) -> Result<Outcome, AppRefusal> {
+        let ask = ask_of(&inv)?;
         let reply = self.window.ask(ask.clone()).await.map_err(refusal)?;
-        let shape = Shape { space: &call.space };
+        let shape = Shape { space: &inv.space };
         shape.outcome(&ask, reply)
     }
 

@@ -192,21 +192,21 @@ impl WindowHandler for Probe {
         _: &Connection,
         qh: &QueueHandle<Self>,
         _: &Window,
-        cfg: WindowConfigure,
+        configure: WindowConfigure,
         _: u32,
     ) {
-        let w = cfg.new_size.0.map_or(256, std::num::NonZero::get);
-        let h = cfg.new_size.1.map_or(256, std::num::NonZero::get);
+        let w = configure.new_size.0.map_or(256, std::num::NonZero::get);
+        let h = configure.new_size.1.map_or(256, std::num::NonZero::get);
         self.logical = (w, h);
         self.configured = true;
         let line = serde_json::json!({
             "event": "configure",
             "width": w,
             "height": h,
-            "sized": cfg.new_size.1.is_some(),
-            "maximized": cfg.is_maximized(),
-            "fullscreen": cfg.is_fullscreen(),
-            "bounds": cfg.suggested_bounds,
+            "sized": configure.new_size.1.is_some(),
+            "maximized": configure.is_maximized(),
+            "fullscreen": configure.is_fullscreen(),
+            "bounds": configure.suggested_bounds,
             "scale120": self.scale120,
         });
         println!("{line}");
@@ -217,7 +217,7 @@ impl WindowHandler for Probe {
 
 impl Dispatch<WpFractionalScaleV1, ()> for Probe {
     fn event(
-        probe: &mut Probe,
+        state: &mut Probe,
         _: &WpFractionalScaleV1,
         event: wp_fractional_scale_v1::Event,
         (): &(),
@@ -230,7 +230,7 @@ impl Dispatch<WpFractionalScaleV1, ()> for Probe {
                 serde_json::json!({"event": "preferred_scale", "scale120": scale})
             );
             let _ = std::io::stdout().flush();
-            probe.scale120 = scale;
+            state.scale120 = scale;
         }
     }
 }

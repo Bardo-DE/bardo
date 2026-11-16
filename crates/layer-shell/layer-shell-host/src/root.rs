@@ -37,6 +37,7 @@ impl HostRoot {
     /// Provide `value` as a root context, readable with `use_context::<T>()` anywhere in the
     /// surface. Shared data between surfaces travels as a `watch::Receiver` context read with
     /// `use_watch`, since a Signal belongs to one `VirtualDom`.
+    #[must_use]
     pub fn context<T: Clone + 'static>(mut self, value: T) -> HostRoot {
         self.contexts.push(Box::new(move |vdom: &VirtualDom| {
             vdom.provide_root_context(value);

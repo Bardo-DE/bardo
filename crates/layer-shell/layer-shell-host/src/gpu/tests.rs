@@ -298,8 +298,10 @@ impl Swatch {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING,
             view_formats: &[],
         });
-        let view = texture.create_view(&Default::default());
-        let mut encoder = device.device.create_command_encoder(&Default::default());
+        let view = texture.create_view(&wgpu::TextureViewDescriptor::default());
+        let mut encoder = device
+            .device
+            .create_command_encoder(&wgpu::CommandEncoderDescriptor::default());
         encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
             label: Some("swatch clear"),
             color_attachments: &[Some(wgpu::RenderPassColorAttachment {

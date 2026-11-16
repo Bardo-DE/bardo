@@ -10,6 +10,7 @@ use wayland_client::{Proxy, QueueHandle};
 
 use crate::csd::Zone;
 use crate::event::{HostEvent, KeyboardFocus};
+use crate::grab::PointerFacts;
 use crate::input::capability::CapabilityChange;
 use crate::input::focus::PointerFocus;
 use crate::input::pointer::PointerPos;
@@ -96,7 +97,9 @@ impl HostState {
         self.input.position = PointerPos::OUTSIDE;
         self.input.buttons = MouseEventButtons::None;
         self.input.zone = Zone::Document;
-        self.input.grab.update(|facts| *facts = Default::default());
+        self.input
+            .grab
+            .update(|facts| *facts = PointerFacts::default());
     }
 
     /// Release the keyboard and end what it was doing: the focused surface loses focus, the

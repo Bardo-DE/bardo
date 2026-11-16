@@ -205,8 +205,10 @@ fn present_once(
         wgpu::CurrentSurfaceTexture::Success(t) | wgpu::CurrentSurfaceTexture::Suboptimal(t) => t,
         other => return Err(format!("acquire: {other:?}")),
     };
-    let view = frame.texture.create_view(&Default::default());
-    let mut encoder = device.create_command_encoder(&Default::default());
+    let view = frame
+        .texture
+        .create_view(&wgpu::TextureViewDescriptor::default());
+    let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor::default());
     clear(&mut encoder, &view);
     gpu_queue.submit([encoder.finish()]);
     frame.present();
@@ -266,7 +268,7 @@ impl Dispatch<WlRegistry, GlobalListContents> for Probe {
 impl Dispatch<ZwlrLayerSurfaceV1, ()> for Probe {
     fn event(
         state: &mut Self,
-        layer: &ZwlrLayerSurfaceV1,
+        proxy: &ZwlrLayerSurfaceV1,
         event: zwlr_layer_surface_v1::Event,
         (): &(),
         _: &Connection,

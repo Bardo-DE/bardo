@@ -10,7 +10,7 @@ use tokio::signal::unix::{SignalKind, signal};
 /// A fake Secret Service for a jailed scenario.
 #[derive(Debug, Parser)]
 #[command(name = "account-rig-secrets", version)]
-struct Args {}
+struct Args;
 
 fn fail(why: impl std::fmt::Display) -> ExitCode {
     eprintln!("account-rig-secrets: {why}");

@@ -29,7 +29,7 @@ fn credential(refresh: &str) -> Credential {
         access: SecretText::new("an-access-token"),
         refresh: SecretText::new(refresh),
         expires_at: UnixSeconds(5),
-        granted: Default::default(),
+        granted: account_core::GrantedScopes::default(),
     }
 }
 

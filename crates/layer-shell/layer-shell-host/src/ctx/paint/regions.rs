@@ -38,13 +38,13 @@ pub(super) fn send_regions(
         (BlurSpec::None, _) | (BlurSpec::Region(_), false) => Some(Vec::new()),
     };
     let wl = surface.role.wl_surface();
-    if surface.regions.input.update(&input)
+    if surface.regions.input.update(input.as_deref())
         && let Some(rects) = &input
     {
         let region = region_of(compositor, rects);
         wl.set_input_region(region.as_ref().map(Region::wl_region));
     }
-    if surface.regions.blur.update(&blur)
+    if surface.regions.blur.update(blur.as_deref())
         && let Some(rects) = &blur
         && let Some(effect) = effect
     {

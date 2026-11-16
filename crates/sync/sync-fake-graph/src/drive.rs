@@ -259,12 +259,12 @@ impl Drive {
         self.seq += 1;
         let seq = self.seq;
         let mut at = Some(id.to_owned());
-        while let Some(current) = at {
+        while let Some(current) = at.take() {
             let Some(node) = self.nodes.get_mut(&current) else {
                 break;
             };
             node.changed = seq;
-            at = node.parent.clone();
+            at.clone_from(&node.parent);
         }
     }
 

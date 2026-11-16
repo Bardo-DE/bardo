@@ -98,7 +98,7 @@ mod tests {
         let (mut reader, writer) = std::io::pipe().expect("a pipe");
         let file = non_blocking(OwnedFd::from(writer)).expect("the flag is set");
         let mut writer: &File = &file;
-        let chunk = [1u8; 64 * 1024];
+        let chunk = vec![1u8; 64 * 1024];
         // No default pipe holds 64 MiB: a blocking descriptor would hang in this loop.
         let full = (0..1024).find_map(|_| match writer.write(&chunk) {
             Ok(_) => None,

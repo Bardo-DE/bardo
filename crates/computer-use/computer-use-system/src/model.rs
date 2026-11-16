@@ -58,6 +58,7 @@ impl<T: Transport> InferdCuaModel<T> {
     }
 
     /// The tier the session is opened on (`CuadConfig::tier`).
+    #[must_use]
     pub fn on_tier(self, tier: Tier) -> Self {
         Self { tier, ..self }
     }

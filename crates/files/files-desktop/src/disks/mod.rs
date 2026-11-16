@@ -68,7 +68,7 @@ impl Changes {
             match self.messages.next().await? {
                 Ok(_) => return Some(()),
                 // A message that could not be read says nothing about the disks.
-                Err(_) => continue,
+                Err(_) => {}
             }
         }
     }

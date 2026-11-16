@@ -11,10 +11,11 @@
 //!   effect (`SurfaceDocument::pointer_left`).
 
 use blitz_traits::events::{
-    BlitzPointerEvent, BlitzPointerId, MouseEventButton, MouseEventButtons, PointerCoords,
+    BlitzPointerEvent, BlitzPointerId, MouseEventButton, MouseEventButtons, Point, PointerCoords,
     PointerDetails, UiEvent,
 };
 use keyboard_types::Modifiers;
+use std::sync::Arc;
 
 use super::PointerPos;
 use super::button::buttons_after;
@@ -43,8 +44,8 @@ pub(crate) fn pointer_event(
         buttons,
         mods,
         details: PointerDetails::default(),
-        element: Default::default(),
-        active_pointers: Default::default(),
+        element: Point::default(),
+        active_pointers: Arc::default(),
     }
 }
 

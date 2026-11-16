@@ -230,6 +230,7 @@ impl FormField {
     }
 
     /// The same field with `hint` in its empty entry.
+    #[must_use]
     pub fn hinted(self, hint: impl Into<String>) -> Self {
         Self {
             hint: Some(hint.into()),
@@ -238,6 +239,7 @@ impl FormField {
     }
 
     /// The same field with `help` under its entry.
+    #[must_use]
     pub fn helped(self, help: impl Into<String>) -> Self {
         Self {
             help: Some(help.into()),

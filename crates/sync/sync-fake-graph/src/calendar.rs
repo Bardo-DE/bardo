@@ -29,7 +29,7 @@ struct Row {
 /// The calendars and their events.
 #[derive(Debug, Default)]
 pub struct Calendars {
-    calendars: Vec<Calendar>,
+    list: Vec<Calendar>,
     rows: Vec<Row>,
     seq: u64,
     /// Delta tokens older than this are dropped.
@@ -49,15 +49,15 @@ impl Calendars {
             hex_color: hex_color.to_owned(),
             color: color.to_owned(),
         };
-        match self.calendars.iter_mut().find(|c| c.id == id) {
+        match self.list.iter_mut().find(|c| c.id == id) {
             Some(held) => *held = next,
-            None => self.calendars.push(next),
+            None => self.list.push(next),
         }
     }
 
     /// Removes a calendar and its events.
     pub fn remove_calendar(&mut self, id: &str) {
-        self.calendars.retain(|c| c.id != id);
+        self.list.retain(|c| c.id != id);
         self.rows.retain(|r| r.calendar != id);
     }
 
@@ -229,7 +229,7 @@ fn delta(
     calendar: &str,
     request: &Request,
 ) -> Response {
-    if !state.calendars.iter().any(|c| c.id == calendar) {
+    if !state.list.iter().any(|c| c.id == calendar) {
         return error(404, "ErrorItemNotFound");
     }
     let page = request
@@ -303,7 +303,7 @@ pub fn answer(
     Some(match route(rest) {
         Route::List => {
             let value: Vec<Value> = state
-                .calendars
+                .list
                 .iter()
                 .map(|c| json!({"id": c.id, "name": c.name, "hexColor": c.hex_color, "color": c.color}))
                 .collect();

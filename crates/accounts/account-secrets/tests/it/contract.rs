@@ -98,7 +98,7 @@ async fn contract<F: Fixture>(fixture: F) {
                 access: SecretText::new("a"),
                 refresh: SecretText::new("r"),
                 expires_at: base_time::UnixSeconds(9),
-                granted: Default::default(),
+                granted: account_core::GrantedScopes::default(),
             },
         ),
         (
