@@ -7,7 +7,7 @@
 //! listens to the sheet at the same time, so closing the sheet ends the wait at once.
 
 use crate::Accounts;
-use crate::add_store::AllowFor;
+use crate::add_store::{AllowFor, StoreFault};
 use crate::edit::EditError;
 use crate::launcher::{Roster, program_of_spec};
 use crate::race::{Raced, race};
@@ -123,7 +123,7 @@ pub(crate) trait Job: Sync {
         signed: &Signed,
         answers: Option<&[FieldAnswer]>,
         choices: &[KindToggle],
-    ) -> impl Future<Output = Result<Self::Done, ()>> + Send;
+    ) -> impl Future<Output = Result<Self::Done, StoreFault>> + Send;
 }
 
 /// A new account.
@@ -193,11 +193,11 @@ impl Job for Add {
         signed: &Signed,
         _answers: Option<&[FieldAnswer]>,
         choices: &[KindToggle],
-    ) -> Result<AddDone, ()> {
+    ) -> Result<AddDone, StoreFault> {
         let spec = provider
             .and_then(|id| at.ctx.provider_of(id))
             .map(|provider| provider.spec().clone())
-            .ok_or(())?;
+            .ok_or(StoreFault::NoProvider)?;
         at.store_new(caller, &spec, signed, choices, self.allow.as_ref())
             .await
             .map(AddDone::Added)
@@ -242,7 +242,7 @@ impl Job for Reauthenticate {
         signed: &Signed,
         _answers: Option<&[FieldAnswer]>,
         _choices: &[KindToggle],
-    ) -> Result<(), ()> {
+    ) -> Result<(), StoreFault> {
         at.store_renewed(caller, &self.account, signed).await
     }
 }
@@ -293,7 +293,7 @@ impl Job for Extend {
         signed: &Signed,
         _answers: Option<&[FieldAnswer]>,
         _choices: &[KindToggle],
-    ) -> Result<(), ()> {
+    ) -> Result<(), StoreFault> {
         let given: Vec<account_capability::Capability> = at
             .ctx
             .catalog()
@@ -368,11 +368,9 @@ impl Job for EditServers {
         signed: &Signed,
         answers: Option<&[FieldAnswer]>,
         _choices: &[KindToggle],
-    ) -> Result<EditedServers, ()> {
-        let answers = answers.ok_or(())?;
-        EditedServers::from_answers(answers, signed.endpoints.clone())
-            .ok()
-            .ok_or(())
+    ) -> Result<EditedServers, StoreFault> {
+        let answers = answers.ok_or(StoreFault::NoAnswers)?;
+        EditedServers::from_answers(answers, signed.endpoints.clone()).map_err(StoreFault::Answers)
     }
 }
 
@@ -804,7 +802,10 @@ impl<E: Ports> Accounts<'_, E> {
                 run.stored = Some(done);
                 SheetEvent::Stored
             }
-            Err(()) => SheetEvent::StoreFailed,
+            Err(why) => {
+                eprintln!("accountd: a sign-in's result was not stored: {why}");
+                SheetEvent::StoreFailed
+            }
         }
     }
 }

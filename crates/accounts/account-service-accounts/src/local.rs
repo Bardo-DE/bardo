@@ -58,9 +58,10 @@ impl<E: Ports> Accounts<'_, E> {
         if spec.auth.kind != AuthKind::LocalRuntime {
             return Err(LocalFault::NotLocal);
         }
-        let id = AccountId::parse(provider.as_str())
-            .ok()
-            .ok_or(LocalFault::UnknownProvider)?;
+        // A provider id that is no account id is one no provider file has.
+        let Ok(id) = AccountId::parse(provider.as_str()) else {
+            return Err(LocalFault::UnknownProvider);
+        };
         self.ctx
             .transact(|registry| {
                 let capabilities = registry.effective_for(&id, &models);

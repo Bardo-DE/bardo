@@ -20,7 +20,7 @@ use account_service_core::consent::settle;
 use account_service_core::registry::{Asker, Registry};
 use account_service_core::{Audited, Ports};
 
-use account_secrets::Secrets;
+use account_secrets::{Secrets, SecretsError};
 use account_wire::{AccountsReply, Refusal};
 use base_time::Clock;
 use std::collections::HashSet;
@@ -140,6 +140,35 @@ impl Drop for Reservation<'_> {
     }
 }
 
+/// Why what a sign-in produced was not stored; nothing changed.
+#[derive(Debug, thiserror::Error)]
+pub(crate) enum StoreFault {
+    /// The sign-in is for no provider this service lists.
+    #[error("the sign-in is for no provider the service lists")]
+    NoProvider,
+    /// The job needs the person's answers and has none.
+    #[error("the sign-in needs the person's answers and has none")]
+    NoAnswers,
+    /// The person's answers do not make servers.
+    #[error("the answers do not make servers: {0:?}")]
+    Answers(account_sheet::FieldProblem),
+    /// A server the sign-in found is not one an account may hold.
+    #[error("a server the sign-in found is not usable")]
+    Endpoint,
+    /// The account is not in the registry.
+    #[error("the account is not held")]
+    UnknownAccount,
+    /// The sign-in was another person's.
+    #[error("the sign-in is not the account's own login")]
+    OtherPerson,
+    /// A credential could not be filed.
+    #[error("a credential could not be filed")]
+    Secret(#[source] SecretsError),
+    /// The registry refused the change or could not save it.
+    #[error("the registry did not take the change: {0:?}")]
+    Registry(Refusal),
+}
+
 impl<E: Ports> Accounts<'_, E> {
     fn reserved_ids(&self) -> MutexGuard<'_, HashSet<AccountId>> {
         self.state
@@ -173,9 +202,9 @@ impl<E: Ports> Accounts<'_, E> {
         signed: &Signed,
         choices: &[KindToggle],
         allow: Option<&AllowFor>,
-    ) -> Result<AccountId, ()> {
+    ) -> Result<AccountId, StoreFault> {
         if signed.endpoints.iter().any(|e| e.check().is_err()) {
-            return Err(());
+            return Err(StoreFault::Endpoint);
         }
         let off: Vec<KindToggle> = choices
             .iter()
@@ -202,10 +231,10 @@ impl<E: Ports> Accounts<'_, E> {
                 account: reservation.id.clone(),
                 purpose: *purpose,
             };
-            if self.ctx.secrets().put(&key, credential).await.is_err() {
+            if let Err(why) = self.ctx.secrets().put(&key, credential).await {
                 // Nothing more can be done for a secret that cannot be deleted.
                 let _ = self.ctx.secrets().delete_account(&reservation.id).await;
-                return Err(());
+                return Err(StoreFault::Secret(why));
             }
         }
         // The row, its toggles and its first grant are one transaction, and the only place a
@@ -255,12 +284,13 @@ impl<E: Ports> Accounts<'_, E> {
                 Ok((lines, account.id))
             })
             .await;
-        if let Ok(written) = stored {
-            Ok(written.value)
-        } else {
-            // Nothing more can be done for a secret that cannot be deleted.
-            let _ = self.ctx.secrets().delete_account(&reservation.id).await;
-            Err(())
+        match stored {
+            Ok(written) => Ok(written.value),
+            Err(refusal) => {
+                // Nothing more can be done for a secret that cannot be deleted.
+                let _ = self.ctx.secrets().delete_account(&reservation.id).await;
+                Err(StoreFault::Registry(refusal))
+            }
         }
     }
 
@@ -304,7 +334,7 @@ impl<E: Ports> Accounts<'_, E> {
         caller: &AppId,
         account: &AccountId,
         signed: &Signed,
-    ) -> Result<(), ()> {
+    ) -> Result<(), StoreFault> {
         let flight = self.ctx.flights().of(account);
         let _turn = flight.gate.lock().await;
         self.renew(caller, account, signed, &[]).await
@@ -324,7 +354,7 @@ impl<E: Ports> Accounts<'_, E> {
         account: &AccountId,
         signed: &Signed,
         given: &[Capability],
-    ) -> Result<(), ()> {
+    ) -> Result<(), StoreFault> {
         let flight = self.ctx.flights().of(account);
         let _turn = flight.gate.lock().await;
         let held = self
@@ -334,9 +364,9 @@ impl<E: Ports> Accounts<'_, E> {
             .iter()
             .find(|a| a.id == *account)
             .map(|a| a.endpoints.clone())
-            .ok_or(())?;
+            .ok_or(StoreFault::UnknownAccount)?;
         if !same_person(&held, &signed.endpoints) {
-            return Err(());
+            return Err(StoreFault::OtherPerson);
         }
         self.renew(caller, account, signed, given).await
     }
@@ -349,7 +379,7 @@ impl<E: Ports> Accounts<'_, E> {
         account: &AccountId,
         signed: &Signed,
         given: &[Capability],
-    ) -> Result<(), ()> {
+    ) -> Result<(), StoreFault> {
         let held = self
             .ctx
             .lock()
@@ -357,12 +387,12 @@ impl<E: Ports> Accounts<'_, E> {
             .iter()
             .find(|a| a.id == *account)
             .map(|a| a.endpoints.clone())
-            .ok_or(())?;
+            .ok_or(StoreFault::UnknownAccount)?;
         if !held.is_empty()
             && !signed.endpoints.is_empty()
             && logins(&held) != logins(&signed.endpoints)
         {
-            return Err(());
+            return Err(StoreFault::OtherPerson);
         }
         for (purpose, credential) in &signed.credentials {
             let key = SecretKey {
@@ -373,8 +403,7 @@ impl<E: Ports> Accounts<'_, E> {
                 .secrets()
                 .put(&key, credential)
                 .await
-                .ok()
-                .ok_or(())?;
+                .map_err(StoreFault::Secret)?;
         }
         self.ctx
             .transact(|registry| {
@@ -411,7 +440,7 @@ impl<E: Ports> Accounts<'_, E> {
             })
             .await
             .map(|_| ())
-            .map_err(drop)
+            .map_err(StoreFault::Registry)
     }
 }
 

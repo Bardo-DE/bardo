@@ -186,9 +186,7 @@ fn take_text(results: &mut Details, key: &str) -> Result<String, CoreError> {
     let value = results
         .remove(key)
         .ok_or_else(|| bad(&format!("the results hold no `{key}`")))?;
-    String::try_from(value)
-        .ok()
-        .ok_or_else(|| bad(&format!("`{key}` is not a string")))
+    String::try_from(value).map_err(|e| bad(&format!("`{key}` is not a string: {e}")))
 }
 
 fn take_path(results: &mut Details, key: &str) -> Result<OwnedObjectPath, CoreError> {
@@ -196,8 +194,7 @@ fn take_path(results: &mut Details, key: &str) -> Result<OwnedObjectPath, CoreEr
         .remove(key)
         .ok_or_else(|| bad(&format!("the results hold no `{key}`")))?;
     OwnedObjectPath::try_from(value)
-        .ok()
-        .ok_or_else(|| bad(&format!("`{key}` is not an object path")))
+        .map_err(|e| bad(&format!("`{key}` is not an object path: {e}")))
 }
 
 fn chosen(mut results: Details) -> Result<AccountsReply, CoreError> {
@@ -212,8 +209,7 @@ fn added(mut results: Details) -> Result<AccountsReply, CoreError> {
     let already = match results.remove(ALREADY_KEY) {
         None => false,
         Some(value) => bool::try_from(value)
-            .ok()
-            .ok_or(bad("`already_added` is not a bool"))?,
+            .map_err(|e| bad(&format!("`already_added` is not a bool: {e}")))?,
     };
     match (account_path(&id) == path.as_str(), already) {
         (true, false) => Ok(AccountsReply::Added(id)),

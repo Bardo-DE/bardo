@@ -44,9 +44,15 @@ impl Document {
 }
 
 /// A change to the uses was refused: the file could not be written, or was refused at start.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[error("the identity uses file cannot be written")]
-pub struct Unsaved;
+#[derive(Debug, thiserror::Error)]
+pub enum Unsaved {
+    /// The file on disk could not be read at start, so it is left as it is.
+    #[error("the identity uses file is read-only")]
+    ReadOnly,
+    /// The write failed.
+    #[error("the identity uses file cannot be written")]
+    Write(#[source] base_fs::book::SaveFailed),
+}
 
 /// The apps that use each identity, as accountd holds them.
 #[derive(Debug)]
@@ -107,8 +113,7 @@ impl UseBook {
         base_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
             .await
             .map(drop)
-            .ok()
-            .ok_or(Unsaved)
+            .map_err(Unsaved::Write)
     }
 }
 
@@ -130,7 +135,7 @@ impl UseBook {
     /// [`Unsaved`] when the book is read-only or the change could not be written.
     pub async fn record(&mut self, identity: IdentityId, app: AppName) -> Result<(), Unsaved> {
         if !self.writable {
-            return Err(Unsaved);
+            return Err(Unsaved::ReadOnly);
         }
         if self
             .doc
@@ -151,7 +156,7 @@ impl UseBook {
     /// [`Unsaved`] when the book is read-only or the change could not be written.
     pub async fn forget(&mut self, identity: &IdentityId) -> Result<(), Unsaved> {
         if !self.writable {
-            return Err(Unsaved);
+            return Err(Unsaved::ReadOnly);
         }
         if !self.doc.uses.contains_key(identity) {
             return Ok(());
