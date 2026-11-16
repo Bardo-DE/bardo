@@ -1,7 +1,9 @@
 use crate::support::v;
+use base_time::UnixSeconds;
+use base_xdg::Xdg;
 use std::ffi::OsString;
 use std::path::PathBuf;
-use updater_core::{Attempt, Outcome, UnixSeconds};
+use updater_core::{Attempt, Outcome};
 use updater_daemon::cli::{Command, parse};
 use updater_daemon::config::{Config, ConfigError};
 use updater_daemon::dirs::Dirs;
@@ -187,10 +189,10 @@ fn directories_come_from_the_xdg_variables_then_home() {
             pairs
                 .iter()
                 .find(|(k, _)| *k == name)
-                .map(|(_, v)| OsString::from(v))
+                .map(|(_, v)| (*v).to_owned())
         }
     };
-    let from_home = Dirs::resolve(env(&[("HOME", "/home/p")])).expect("dirs");
+    let from_home = Dirs::resolve(&Xdg::new(env(&[("HOME", "/home/p")]))).expect("dirs");
     assert_eq!(
         from_home.config_file,
         PathBuf::from("/home/p/.config/bardo/updater/config.toml")
@@ -204,12 +206,12 @@ fn directories_come_from_the_xdg_variables_then_home() {
         PathBuf::from("/home/p/.cache/bardo/updater")
     );
 
-    let set = Dirs::resolve(env(&[
+    let set = Dirs::resolve(&Xdg::new(env(&[
         ("HOME", "/home/p"),
         ("XDG_CONFIG_HOME", "/c"),
         ("XDG_STATE_HOME", "/s"),
         ("XDG_CACHE_HOME", "/k"),
-    ]))
+    ])))
     .expect("dirs");
     assert_eq!(
         set.config_file,
@@ -219,13 +221,16 @@ fn directories_come_from_the_xdg_variables_then_home() {
     assert_eq!(set.cache_dir, PathBuf::from("/k/bardo/updater"));
 
     // A relative XDG value is not a place; fall back to home.
-    let relative =
-        Dirs::resolve(env(&[("HOME", "/home/p"), ("XDG_CACHE_HOME", "cache")])).expect("dirs");
+    let relative = Dirs::resolve(&Xdg::new(env(&[
+        ("HOME", "/home/p"),
+        ("XDG_CACHE_HOME", "cache"),
+    ])))
+    .expect("dirs");
     assert_eq!(
         relative.cache_dir,
         PathBuf::from("/home/p/.cache/bardo/updater")
     );
-    assert!(Dirs::resolve(env(&[])).is_none());
+    assert!(Dirs::resolve(&Xdg::new(env(&[]))).is_none());
 }
 
 #[test]

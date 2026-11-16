@@ -1,11 +1,12 @@
 //! The daemon's own memory: `$XDG_STATE_HOME/bardo/updater/state.toml`, written atomically.
 
-use crate::fsutil::write_atomic;
+use base_fs::atomic::AtomicWrite;
+use base_time::UnixSeconds;
 use semver::Version;
 use serde::{Deserialize, Serialize};
 use std::io;
 use std::path::PathBuf;
-use updater_core::{Attempt, Outcome, Pending, UnixSeconds};
+use updater_core::{Attempt, Outcome, Pending};
 
 /// What is remembered between runs.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -77,7 +78,7 @@ impl StateStore {
         let mut state = self.load();
         change(&mut state);
         let text = toml::to_string(&state).map_err(io::Error::other)?;
-        write_atomic(&self.path, text.as_bytes())?;
+        AtomicWrite::SHARED.write(&self.path, text.as_bytes())?;
         Ok(state)
     }
 }

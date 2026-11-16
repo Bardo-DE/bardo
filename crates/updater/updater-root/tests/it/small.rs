@@ -2,8 +2,9 @@
 //! file operations and the reading of what is installed.
 
 use crate::support::{Recipe, Sandbox, build, v};
+use base_fs::atomic::AtomicWrite;
 use std::path::{Path, PathBuf};
-use updater_root::fsutil::{switch_link, write_atomic};
+use updater_root::fsutil::switch_link;
 use updater_root::keys::{KeyError, from_compiled, load_key};
 use updater_root::settings::{DEFAULT_PUBKEY_PATH, DEFAULT_ROOT, RootSettings, SettingsError};
 
@@ -117,8 +118,8 @@ fn links_are_switched_whole_and_files_replaced_whole() {
     assert!(!dir.path().join("current.new").exists());
 
     let file = dir.path().join("a/b.txt");
-    write_atomic(&file, b"one").expect("write");
-    write_atomic(&file, b"two").expect("replace");
+    AtomicWrite::SHARED.write(&file, b"one").expect("write");
+    AtomicWrite::SHARED.write(&file, b"two").expect("replace");
     assert_eq!(std::fs::read_to_string(&file).expect("read"), "two");
     assert!(!dir.path().join("a/b.txt.new").exists());
 }

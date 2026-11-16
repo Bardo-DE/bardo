@@ -1,4 +1,5 @@
-use updater_core::{Attempt, Due, Outcome, UnixSeconds, next_check};
+use base_time::UnixSeconds;
+use updater_core::{Attempt, Due, Outcome, next_check};
 
 const T: i64 = 1_800_000_000;
 const HOUR: i64 = 3600;

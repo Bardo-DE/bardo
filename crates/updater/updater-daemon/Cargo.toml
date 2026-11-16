@@ -13,6 +13,9 @@ name = "bardo-updater"
 path = "src/main.rs"
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
+base-time = { path = "../../base/base-time" }
+base-xdg = { path = "../../base/base-xdg" }
 updater-core = {path = "../updater-core"}
 updater-root = {path = "../updater-root"}
 old-folders = {path = "../../platform/old-folders"}

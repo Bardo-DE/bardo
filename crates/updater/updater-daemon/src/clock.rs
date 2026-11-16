@@ -1,14 +1,11 @@
 //! The wall clock and the per-computer jitter seed; the only readers of either.
 
-use std::time::{SystemTime, UNIX_EPOCH};
-use updater_core::{Sha256Hex, UnixSeconds};
+use base_time::{Clock, SystemClock, UnixSeconds};
+use updater_core::Sha256Hex;
 
 /// The time now.
 pub fn now() -> UnixSeconds {
-    let secs = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |d| i64::try_from(d.as_secs()).unwrap_or(i64::MAX));
-    UnixSeconds(secs)
+    SystemClock.now()
 }
 
 /// A stable number for this computer from its machine id text (any text will do).

@@ -1,11 +1,7 @@
 //! When the next daily check is due.
 
+use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
-
-/// Seconds since the Unix epoch.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
-#[serde(transparent)]
-pub struct UnixSeconds(pub i64);
 
 /// Between two checks that went well.
 pub const PERIOD_SECS: i64 = 24 * 60 * 60;

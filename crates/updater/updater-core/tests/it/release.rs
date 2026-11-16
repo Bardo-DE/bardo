@@ -1,5 +1,6 @@
 use crate::support::{Doc, f};
-use updater_core::{PathError, Release, ReleaseError, Sha256Hex, UnixSeconds};
+use base_time::UnixSeconds;
+use updater_core::{PathError, Release, ReleaseError, Sha256Hex};
 
 #[test]
 fn a_good_release_parses_with_everything_in_it() {

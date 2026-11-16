@@ -12,7 +12,8 @@ pub use system::{
     ALLOWED_SYSTEM_FILES, NameRule, SYSTEM_TREE, SystemFile, SystemRule, is_allowed_system_path,
 };
 
-use crate::{digest::Sha256Hex, schedule::UnixSeconds};
+use crate::digest::Sha256Hex;
+use base_time::UnixSeconds;
 use semver::Version;
 use serde::Deserialize;
 use std::collections::{BTreeMap, BTreeSet};

@@ -1,6 +1,6 @@
 //! Where the daemon keeps its own files, from the XDG variables.
 
-use std::ffi::OsString;
+use base_xdg::Xdg;
 use std::path::PathBuf;
 
 /// The three places the update service reads and writes as a person.
@@ -15,20 +15,13 @@ pub struct Dirs {
 }
 
 impl Dirs {
-    /// Resolves the places from `var`, which looks up an environment variable (so tests need not
-    /// touch the real environment). `None` when there is neither the XDG variable nor `HOME`.
-    pub fn resolve(var: impl Fn(&str) -> Option<OsString>) -> Option<Self> {
-        let under = |xdg: &str, fallback: &str| -> Option<PathBuf> {
-            var(xdg)
-                .filter(|v| !v.is_empty())
-                .map(PathBuf::from)
-                .filter(|p| p.is_absolute())
-                .or_else(|| var("HOME").map(|h| PathBuf::from(h).join(fallback)))
-        };
+    /// Resolves the places from `xdg` (a test hands in its own, so none touches the real
+    /// environment). `None` when there is neither the XDG variable nor `HOME`.
+    pub fn resolve<F: Fn(&str) -> Option<String>>(xdg: &Xdg<F>) -> Option<Self> {
         Some(Self {
-            config_file: under("XDG_CONFIG_HOME", ".config")?.join("bardo/updater/config.toml"),
-            state_file: under("XDG_STATE_HOME", ".local/state")?.join("bardo/updater/state.toml"),
-            cache_dir: under("XDG_CACHE_HOME", ".cache")?.join("bardo/updater"),
+            config_file: xdg.config_home().ok()?.join("bardo/updater/config.toml"),
+            state_file: xdg.state_home().ok()?.join("bardo/updater/state.toml"),
+            cache_dir: xdg.cache_home().ok()?.join("bardo/updater"),
         })
     }
 }

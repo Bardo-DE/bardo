@@ -2,7 +2,7 @@
 
 use crate::problem::Problem;
 use semver::Version;
-use updater_core::UnixSeconds;
+use base_time::UnixSeconds;
 
 /// Where the update flow is.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

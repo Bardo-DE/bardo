@@ -32,6 +32,7 @@ tar = {version = "0.4.46"}
 zstd = { workspace = true }
 
 [dev-dependencies]
+base-fs = { path = "../../base/base-fs" }
 tempfile = { workspace = true }
 
 [lints]

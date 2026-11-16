@@ -25,7 +25,7 @@ fn main() -> ExitCode {
     if command == Command::Recover {
         return recover_session();
     }
-    let Some(dirs) = Dirs::resolve(|name| std::env::var_os(name)) else {
+    let Some(dirs) = Dirs::resolve(&base_xdg::Xdg::process()) else {
         eprintln!("bardo-updater: cannot tell where your settings are (no home folder)");
         return exit(Exit::Failed);
     };

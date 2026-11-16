@@ -8,8 +8,9 @@
 //! nothing.
 
 use super::{Fetch, FetchError, Fetched, Source};
-use crate::fsutil::{sync_dir, write_atomic};
+use crate::fsutil::sync_dir;
 use crate::layout::{RECORD_RELEASE, RECORD_SIGNATURE};
+use base_fs::atomic::AtomicWrite;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::Path;
@@ -139,8 +140,8 @@ pub fn stage_with(
 ) -> Result<(), StageError> {
     let release = &fetched.release;
     fs::create_dir_all(dir)?;
-    write_atomic(&dir.join(RECORD_RELEASE), &fetched.bytes)?;
-    write_atomic(&dir.join(RECORD_SIGNATURE), fetched.signature.as_bytes())?;
+    AtomicWrite::SHARED.write(&dir.join(RECORD_RELEASE), &fetched.bytes)?;
+    AtomicWrite::SHARED.write(&dir.join(RECORD_SIGNATURE), fetched.signature.as_bytes())?;
     let url = source.versioned(&release.version, &release.bundle.name);
     let part = dir.join(format!("{}.part", release.bundle.name));
     let expected = release.bundle.size;
