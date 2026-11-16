@@ -93,6 +93,10 @@ impl Table {
     /// The table in `text`, cells separated by the declared `delimiter` or, when the rows say
     /// otherwise, by the separator they use (a semicolon, a pipe), and quoted the usual way
     /// (`"a,b"`, with `""` for a quote). Rows may differ in width.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TextError::Table`] when `text` is not a delimited table the reader can parse.
     pub fn parse(text: &str, delimiter: Delimiter, mode: HeaderMode) -> Result<Self, TextError> {
         let separator = separator::sniff(text, delimiter);
         let mut reader = csv::ReaderBuilder::new()
@@ -144,6 +148,10 @@ impl Table {
     /// The delimited file `src` names, indexed by record up to [`TABLE_BYTES`] of it; what is left
     /// out shows in [`Table::coverage`]. One pass over the bytes finds the record count, the
     /// widest row and the offset of every 64th record; the rows themselves are read when asked for.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the file cannot be read or is not a table the reader can parse.
     pub fn read(
         src: impl Into<Input>,
         delimiter: Delimiter,
@@ -154,6 +162,11 @@ impl Table {
 
     /// [`Table::read`], ended with [`TextError::Interrupted`] when `interrupt` says so: it is asked
     /// once per chunk of the file the index pass reads.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] as `read` does, and [`TextError::Interrupted`] when `interrupt` says
+    /// to stop.
     pub fn read_until(
         src: impl Into<Input>,
         delimiter: Delimiter,
@@ -252,6 +265,10 @@ impl Table {
 
     /// The table in a file's bytes, held whole: the encoding is detected, a byte-order mark
     /// skipped.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TextError::Table`] when the text is not a delimited table the reader can parse.
     pub fn parse_bytes(
         bytes: &[u8],
         delimiter: Delimiter,
@@ -285,6 +302,10 @@ impl Table {
 
     /// The data rows in `range`, cut to the rows that exist. A file's rows are parsed here, a
     /// window at a time, and the last windows are kept for the next ask.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the rows cannot be read from the file.
     pub fn rows(&self, range: Range<RowIndex>) -> Result<Vec<Vec<String>>, TextError> {
         match &self.rows {
             Rows::Held(rows) => {

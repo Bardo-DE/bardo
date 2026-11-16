@@ -43,6 +43,12 @@ pub struct EditText {
 impl EditText {
     /// Read the file at `path` whole. Refuses a file that is not a regular file, is larger than
     /// [`EDIT_BYTES`], or is not UTF-8. Blocking.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`EditRefusal::Unreadable`] when the file cannot be opened or read as a regular
+    /// file, [`EditRefusal::TooLarge`] when it is over the edit limit, and [`EditRefusal::NotUtf8`]
+    /// when it is not UTF-8 text.
     pub fn read(path: &Path) -> Result<EditText, EditRefusal> {
         let (file, meta) =
             anyview_fs::open_regular(path).map_err(|e| EditRefusal::Unreadable(e.kind()))?;
@@ -61,6 +67,11 @@ impl EditText {
     }
 
     /// The text of `bytes`, a whole file.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`EditRefusal::NotUtf8`] when the bytes are not UTF-8 text (UTF-16, a legacy
+    /// encoding, or bytes that are no text).
     pub fn from_bytes(mut bytes: Vec<u8>) -> Result<EditText, EditRefusal> {
         let detected = detect(&bytes, Coverage::Whole);
         if detected.codec != TextCodec::Unicode(TextEncoding::Utf8) {

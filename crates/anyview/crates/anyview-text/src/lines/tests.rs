@@ -9,7 +9,10 @@ fn window(text: &TextLines<impl ReadAt>, from: u32, to: u32) -> Vec<String> {
 }
 
 fn numbered(count: u32) -> String {
-    (0..count).map(|i| format!("line {i}\n")).collect()
+    (0..count)
+        .map(|i| format!("line {i}\n"))
+        .collect::<Vec<_>>()
+        .concat()
 }
 
 fn names(from: u32, to: u32) -> Vec<String> {

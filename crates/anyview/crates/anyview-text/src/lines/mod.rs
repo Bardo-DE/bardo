@@ -34,12 +34,21 @@ pub struct TextLines<B: ReadAt> {
 
 impl<B: ReadAt> TextLines<B> {
     /// Detects the encoding from the first [`DETECT_BYTES`] of `bytes` and indexes its lines.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the file cannot be read.
     pub fn open(bytes: B) -> Result<Self, TextError> {
         Self::open_until(bytes, &Deadline::NEVER)
     }
 
     /// [`TextLines::open`], ended with [`TextError::Interrupted`] when `interrupt` says so: it is
     /// asked once per chunk of the file the index pass reads.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the file cannot be read, and [`TextError::Interrupted`] when
+    /// `interrupt` says to stop.
     pub fn open_until(bytes: B, interrupt: &dyn Interrupt) -> Result<Self, TextError> {
         let head = read_range(&bytes, 0..DETECT_BYTES as u64)?; // a usize fits a u64
         let coverage = if bytes.len().0 > head.len() as u64 {
@@ -70,6 +79,10 @@ impl<B: ReadAt> TextLines<B> {
     /// cut to the lines that exist. A line longer than [`MAX_LINE_BYTES`] comes back cut there and
     /// ends in [`LINE_CUT`], so a file that is one enormous line costs the cap, not its size; the
     /// line numbers and offsets after it are unaffected.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the lines cannot be read from the file.
     pub fn lines(&self, range: Range<LineIndex>) -> Result<Vec<String>, TextError> {
         let raw = self.table.read(&self.bytes, range.start.0..range.end.0)?;
         Ok(raw

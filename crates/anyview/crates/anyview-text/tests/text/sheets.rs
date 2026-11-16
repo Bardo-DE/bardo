@@ -12,11 +12,13 @@ use support::{budget, rows, workbook, written};
 
 #[test]
 fn a_big_file_is_indexed_and_its_rows_are_read_where_they_are_asked_for() {
+    use std::fmt::Write as _;
+
     const ROWS: usize = 150_000;
     let dir = tempfile::tempdir().unwrap();
     let mut text = String::from("id,name\n");
     for n in 0..ROWS {
-        text.push_str(&format!("{n},row{n}\n"));
+        writeln!(text, "{n},row{n}").unwrap();
     }
     let (src, _) = written(dir.path(), "big.csv", text.as_bytes());
     let table = Table::read(src.on_disk(), Delimiter::Comma, HeaderMode::Detect).unwrap();
@@ -24,7 +26,10 @@ fn a_big_file_is_indexed_and_its_rows_are_read_where_they_are_asked_for() {
     assert_eq!(table.coverage(), Coverage::Whole);
     assert_eq!(table.header().map(<[String]>::len), Some(2));
     assert_eq!(
-        table.cell(anyview_text::RowIndex(ROWS as u32 - 1), 1),
+        table.cell(
+            anyview_text::RowIndex(u32::try_from(ROWS).expect("a small count") - 1),
+            1
+        ),
         format!("row{}", ROWS - 1)
     );
     let small = written(dir.path(), "small.csv", b"a,b\n1,2\n").0;

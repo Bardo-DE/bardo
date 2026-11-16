@@ -166,7 +166,9 @@ fn a_search_keeps_no_more_than_the_most_it_may() {
     assert_eq!(hits.len(), MAX_HITS);
     assert_eq!(
         hits.last().map(|h| h.line),
-        Some(LineIndex(MAX_HITS as u32 - 1))
+        Some(LineIndex(
+            u32::try_from(MAX_HITS).expect("a small count") - 1
+        ))
     );
 }
 

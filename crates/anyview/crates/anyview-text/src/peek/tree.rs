@@ -1,6 +1,6 @@
 //! The peek of JSON and JSON Lines: the top level of the tree.
 
-use super::head::{PEEK_LINES, expect_kind};
+use super::head::{PEEK_WINDOW, expect_kind};
 use super::tally::{Tally, grouped};
 use crate::encoding::{Coverage, TextCodec};
 use crate::error::TextError;
@@ -63,7 +63,7 @@ impl Peek for TreePeek {
             }
         };
         Ok(TreePeeked {
-            top: tree.children(&TreePath::root(), 0..PEEK_LINES as u32)?, // 40
+            top: tree.children(&TreePath::root(), 0..PEEK_WINDOW)?,
             keys: tree.top_level_keys(KEYS_NAMED),
             root,
             values,

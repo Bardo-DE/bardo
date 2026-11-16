@@ -155,7 +155,9 @@ pub fn mark_page(html: &str, needle: &Needle, current: Option<usize>) -> String 
         }
         out.push_str(html.get(copied..from).unwrap_or_default());
         if Some(number) == current {
-            out.push_str(&format!("<mark data-current=\"{number}\">"));
+            out.push_str("<mark data-current=\"");
+            out.push_str(&number.to_string());
+            out.push_str("\">");
         } else {
             out.push_str("<mark>");
         }

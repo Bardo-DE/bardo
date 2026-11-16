@@ -1,6 +1,6 @@
 //! The peek of a delimited table: its first rows and its shape.
 
-use super::head::{PEEK_LINES, expect_kind};
+use super::head::{PEEK_WINDOW, expect_kind};
 use super::tally::Tally;
 use crate::encoding::TextCodec;
 use crate::error::TextError;
@@ -167,7 +167,7 @@ fn of_table(
 ) -> Result<TablePeeked, TextError> {
     Ok(TablePeeked {
         header: table.header().map(<[String]>::to_vec),
-        rows: table.rows(RowIndex(0)..RowIndex(PEEK_LINES as u32))?, // 40
+        rows: table.rows(RowIndex(0)..RowIndex(PEEK_WINDOW))?,
         total_rows,
         columns: table.columns(),
         source,

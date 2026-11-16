@@ -26,6 +26,10 @@ impl<B: ReadAt> TextLines<B> {
     /// Every hit of `needle`, in file order, at most [`MAX_HITS`]. Reads the whole file once, in
     /// batches of lines. Blocking; when `stop` is raised it returns the hits found so far, which
     /// the caller that raised it no longer wants.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when a window of lines cannot be read.
     pub fn find(&self, needle: &Needle, stop: &Stop) -> Result<Vec<FindHit>, TextError> {
         let total = self.line_count();
         let mut hits = Vec::new();

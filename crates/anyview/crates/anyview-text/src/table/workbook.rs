@@ -158,8 +158,16 @@ fn civil_date(days: i64) -> String {
 /// A serial date-time as `YYYY-MM-DD` or `YYYY-MM-DD hh:mm:ss`.
 fn date_text(serial: f64) -> String {
     let days = serial.floor();
-    let seconds = ((serial - days) * 86_400.0).round() as i64; // a fraction of a day
-    let date = civil_date(days as i64); // `cell_text` passes only serials up to `LAST_SERIAL`
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a fraction of a day, in seconds, is below 86,400"
+    )]
+    let seconds = ((serial - days) * 86_400.0).round() as i64;
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "`cell_text` passes only serials up to `LAST_SERIAL`"
+    )]
+    let date = civil_date(days as i64);
     if seconds == 0 {
         date
     } else {
@@ -181,12 +189,12 @@ fn cell_text(data: &Data) -> String {
         Data::Float(f) if f.fract() == 0.0 && f.abs() < 1e15 => format!("{f:.0}"),
         Data::Float(f) => f.to_string(),
         Data::Bool(b) => b.to_string().to_uppercase(),
-        Data::DateTime(date)
-            if date.is_datetime() && (0.0..=LAST_SERIAL).contains(&date.as_f64()) =>
+        Data::DateTime(stamp)
+            if stamp.is_datetime() && (0.0..=LAST_SERIAL).contains(&stamp.as_f64()) =>
         {
-            date_text(date.as_f64())
+            date_text(stamp.as_f64())
         }
-        Data::DateTime(date) => date.as_f64().to_string(),
+        Data::DateTime(stamp) => stamp.as_f64().to_string(),
         Data::Error(error) => error.to_string(),
     }
 }
@@ -215,7 +223,7 @@ fn gather<'a>(
         }
         let (row, column) = cell.get_position();
         first_row = first_row.min(row);
-        if seen > left || row - first_row >= SHEET_ROWS as u32 {
+        if seen > left || row - first_row >= u32::try_from(SHEET_ROWS).unwrap_or(u32::MAX) {
             coverage = Coverage::Prefix;
             break;
         }
@@ -293,6 +301,10 @@ impl Workbook {
     /// The workbook the file `src` names. At most [`SHEET_ROWS`] rows are kept of a sheet and
     /// [`WORKBOOK_CELLS`] cells of the whole; what is cut is a sheet whose table says it was
     /// only a start. A file over [`WORKBOOK_BYTES`] is refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the file cannot be read, is not a workbook, or is too large.
     pub fn open(src: impl Into<Input>) -> Result<Self, TextError> {
         Workbook::open_until(src, &Deadline::NEVER)
     }
@@ -300,6 +312,11 @@ impl Workbook {
     /// [`Workbook::open`], ended with [`TextError::Interrupted`] when `interrupt` says so: it is
     /// asked every few thousand cells of an XLSX or XLSB sheet, and between sheets. An XLS or an
     /// ODS is built whole by calamine, which nothing here can end.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] as `open` does, and [`TextError::Interrupted`] when `interrupt` says
+    /// to stop.
     pub fn open_until(src: impl Into<Input>, interrupt: &dyn Interrupt) -> Result<Self, TextError> {
         Workbook::read(&src.into(), usize::MAX, WORKBOOK_CELLS, interrupt)
     }
@@ -307,11 +324,20 @@ impl Workbook {
     /// The start of the workbook the file `src` names, for a glance: its first sheet only, at
     /// most [`SHEET_ROWS`] rows and a million cells of it. [`Workbook::sheet_count`] still counts
     /// every sheet the file has.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the file cannot be read or is not a workbook.
     pub fn open_start(src: impl Into<Input>) -> Result<Self, TextError> {
         Workbook::open_start_until(src, &Deadline::NEVER)
     }
 
     /// [`Workbook::open_start`], ended as [`Workbook::open_until`] is.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] as `open_start` does, and [`TextError::Interrupted`] when
+    /// `interrupt` says to stop.
     pub fn open_start_until(
         src: impl Into<Input>,
         interrupt: &dyn Interrupt,

@@ -55,7 +55,8 @@ fn a_large_log_in_a_scratch_directory_is_counted_and_windowed() {
     let path = scratch.path().join("big.log");
     let log: String = (0..200_000)
         .map(|i| format!("2024-05-01 12:00:00 request {i} ok\n"))
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     std::fs::write(&path, &log).unwrap();
     let stamp = FileStamp {
         len: ByteLen(log.len() as u64),

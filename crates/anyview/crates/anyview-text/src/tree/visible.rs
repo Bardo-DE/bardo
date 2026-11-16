@@ -108,7 +108,7 @@ fn walk(tree: &Tree, row: TreeRow, path: &TreePath, open: &OpenNodes, cut: &mut 
             cut.skip -= run;
             return;
         }
-        let first = from + cut.skip as usize; // skip < run, a usize
+        let first = from + usize::try_from(cut.skip).unwrap_or(usize::MAX); // skip < run, a usize
         cut.skip = 0;
         let want = (to - first).min(usize::try_from(cut.take).unwrap_or(usize::MAX));
         if want == 0 {
@@ -282,7 +282,7 @@ mod tests {
         for (at, row) in rows.iter().enumerate() {
             assert_eq!(
                 tree().visible_index(&open, &row.path),
-                Some(at as u32),
+                Some(u32::try_from(at).expect("few rows")),
                 "row {at}"
             );
         }
@@ -301,7 +301,7 @@ mod tests {
             .opened(p(&[0, 2]))
             .opened(p(&[2]));
         let whole = tree().visible(&open, 0..u32::MAX);
-        for start in 0..whole.len() as u32 + 2 {
+        for start in 0..u32::try_from(whole.len()).expect("few rows") + 2 {
             for len in 0..5u32 {
                 let got = tree().visible(&open, start..start + len);
                 let want: Vec<_> = whole

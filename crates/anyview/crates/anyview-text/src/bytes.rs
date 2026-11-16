@@ -16,6 +16,10 @@ pub struct FileBytes {
 
 impl FileBytes {
     /// The file `src` names, with the length it has now.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TextError::Read`] when the file's size cannot be read.
     pub fn open(src: &Source) -> Result<Self, TextError> {
         let path = src.path().as_path().to_path_buf();
         let len = std::fs::metadata(&path)
@@ -32,6 +36,10 @@ impl FileBytes {
     /// The first `limit` bytes of the file `src` names: a file that seems no longer than that,
     /// so a window of lines of it is the file's start and nothing is indexed past it. A file
     /// shorter than `limit` is whole.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TextError::Read`] when the file's size cannot be read.
     pub fn first(src: &Source, limit: ByteLen) -> Result<Self, TextError> {
         let whole = FileBytes::open(src)?;
         Ok(FileBytes {

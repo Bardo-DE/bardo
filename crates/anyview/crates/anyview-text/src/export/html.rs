@@ -18,6 +18,10 @@ const PAGE_STYLE: &str = include_str!("print.css");
 ///
 /// Markdown is rendered (a local image becomes a `data:` URL, since the printer loads nothing
 /// else), source code is highlighted, plain text is kept as it is. Blocking: reads the file.
+///
+/// # Errors
+///
+/// Returns a [`TextError`] when the file cannot be read.
 pub fn printable_html(doc: &HtmlDoc, highlighter: &Highlighter) -> Result<String, TextError> {
     let (file, body) = match doc {
         HtmlDoc::Markdown(file) => {

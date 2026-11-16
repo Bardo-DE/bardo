@@ -187,6 +187,11 @@ impl<B: ReadAt> CodeLines<B> {
     /// 128 lines as the pass goes, so the next window near this one is cheap. `interrupt` is asked
     /// before every line is parsed: the pass ends with [`TextError::Interrupted`], and the states it
     /// saved up to there stay, so a window asked for again goes on from them.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TextError`] when the lines cannot be read, and [`TextError::Interrupted`] when
+    /// `interrupt` says to stop.
     pub fn highlight(
         &mut self,
         highlighter: &Highlighter,
@@ -198,7 +203,11 @@ impl<B: ReadAt> CodeLines<B> {
         if self.saved.is_empty() {
             return self.unstyled(start..end);
         }
-        let anchor = (start / CHECKPOINT_EVERY).min(self.saved.len() as u32 - 1); // checked non-empty
+        let anchor = (start / CHECKPOINT_EVERY).min(
+            u32::try_from(self.saved.len())
+                .unwrap_or(u32::MAX)
+                .saturating_sub(1),
+        ); // checked non-empty
         let mut state = self.saved[anchor as usize].clone();
         let mut line = anchor * CHECKPOINT_EVERY;
         let mut out = Vec::new();

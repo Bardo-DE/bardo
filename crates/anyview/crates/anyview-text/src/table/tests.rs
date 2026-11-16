@@ -88,7 +88,10 @@ fn row_windows_are_cut_to_the_rows_that_exist() {
         ("reversed", 6, 2, None, 0),
     ];
 
-    let text: String = (0..10).map(|i| format!("r{i},x\n")).collect();
+    let text: String = (0..10)
+        .map(|i| format!("r{i},x\n"))
+        .collect::<Vec<_>>()
+        .concat();
     let table = parse(&text, HeaderMode::Absent);
     // name, from, to, first row, count
     for (name, from, to, first, count) in CASES {
@@ -129,12 +132,14 @@ fn bytes_are_decoded_before_they_are_parsed() {
 /// Rows of `id,note` where every seventh note holds a comma and a line break, so a record is
 /// not a line.
 fn long_csv(rows: u32) -> String {
+    use std::fmt::Write as _;
+
     let mut text = String::from("id,note\n");
     for row in 0..rows {
         if row % 7 == 3 {
-            text.push_str(&format!("{row},\"line one\nline, two\"\n"));
+            writeln!(text, "{row},\"line one\nline, two\"").unwrap();
         } else {
-            text.push_str(&format!("{row},note {row}\n"));
+            writeln!(text, "{row},note {row}").unwrap();
         }
     }
     text

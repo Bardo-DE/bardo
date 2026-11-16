@@ -85,7 +85,8 @@ pub fn workbook_of_xml(
     };
     let overrides: String = (1..=sheets.len())
         .map(|n| format!(r#"<Override PartName="/xl/worksheets/sheet{n}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>"#))
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     put(
         "[Content_Types].xml",
         format!(
@@ -103,7 +104,8 @@ pub fn workbook_of_xml(
                 at + 1
             )
         })
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     put(
         "xl/workbook.xml",
         format!(
@@ -112,7 +114,8 @@ pub fn workbook_of_xml(
     );
     let rels: String = (1..=sheets.len())
         .map(|n| format!(r#"<Relationship Id="rId{n}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet{n}.xml"/>"#))
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     put(
         "xl/_rels/workbook.xml.rels",
         format!(
@@ -163,7 +166,11 @@ pub fn workbook(
                         .iter()
                         .enumerate()
                         .map(|(c, text)| {
-                            let at = format!("{}{}", (b'A' + c as u8) as char, r + 1);
+                            let at = format!(
+                                "{}{}",
+                                char::from(b'A' + u8::try_from(c).expect("few columns")),
+                                r + 1
+                            );
                             match text.parse::<f64>() {
                                 Ok(_) => format!(r#"<c r="{at}"><v>{text}</v></c>"#),
                                 Err(_) => {
@@ -173,10 +180,12 @@ pub fn workbook(
                                 }
                             }
                         })
-                        .collect();
+                        .collect::<Vec<_>>()
+                        .concat();
                     format!(r#"<row r="{}">{cells}</row>"#, r + 1)
                 })
-                .collect()
+                .collect::<Vec<_>>()
+                .concat()
         })
         .collect();
     workbook_of_xml(dir, name, &names, &data)

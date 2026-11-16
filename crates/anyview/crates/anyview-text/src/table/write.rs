@@ -50,6 +50,11 @@ impl Table {
     }
 
     /// The file's bytes with `edits` made to them. Blocking: the file is read through once.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the table is not a file, or the file cannot be written back as
+    /// it is.
     pub fn write_edited(&self, edits: &TableEdits) -> Result<Vec<u8>, TextError> {
         let Rows::Indexed(indexed) = &self.rows else {
             return Err(refusal("the table is not a file"));
@@ -263,7 +268,10 @@ fn rewrite(raw: &[u8], separator: u8, changed: &BTreeMap<u32, String>, lonely: b
             out.push(separator);
         }
         let original = spans.get(column).map(|span| &raw[span.clone()]);
-        match (changed.get(&(column as u32)), original) {
+        match (
+            changed.get(&u32::try_from(column).unwrap_or(u32::MAX)),
+            original,
+        ) {
             // a column is far below u32's range
             (Some(text), original) => {
                 let quoted = original.is_some_and(|bytes| bytes.first() == Some(&b'"'));

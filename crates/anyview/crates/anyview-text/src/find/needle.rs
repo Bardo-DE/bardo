@@ -108,8 +108,11 @@ impl Needle {
         let hit = text.get(from..to).unwrap_or_default();
         let before = text.get(..from).and_then(|head| head.chars().next_back());
         let after = text.get(to..).and_then(|tail| tail.chars().next());
-        !(hit.chars().next().is_some_and(in_word) && before.is_some_and(in_word))
-            && !(hit.chars().next_back().is_some_and(in_word) && after.is_some_and(in_word))
+        let runs_into_before =
+            hit.chars().next().is_some_and(in_word) && before.is_some_and(in_word);
+        let runs_into_after =
+            hit.chars().next_back().is_some_and(in_word) && after.is_some_and(in_word);
+        !runs_into_before && !runs_into_after
     }
 }
 

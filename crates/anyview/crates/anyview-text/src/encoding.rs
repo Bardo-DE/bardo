@@ -128,7 +128,7 @@ pub fn detect(head: &[u8], coverage: Coverage) -> Detected {
     if let Some((mark, encoding)) = MARKS.iter().find(|(mark, _)| head.starts_with(mark)) {
         return Detected {
             codec: TextCodec::Unicode(*encoding),
-            mark: mark.len() as u8, // 2 or 3
+            mark: u8::try_from(mark.len()).unwrap_or(0), // 2 or 3
         };
     }
     let utf8 = match (std::str::from_utf8(head), coverage) {

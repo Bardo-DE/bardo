@@ -10,6 +10,10 @@ use anyview_core::{ByteLen, FormatKind, Input, PeekBudget, Sniffed};
 /// pane's, not the budget's: the byte budget decides how much is read to find them.
 pub const PEEK_LINES: usize = 40;
 
+/// [`PEEK_LINES`] as the bound of a window of lines or rows.
+#[expect(clippy::cast_possible_truncation, reason = "40 fits a u32")]
+pub(crate) const PEEK_WINDOW: u32 = PEEK_LINES as u32;
+
 /// The start of a text file.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Head {

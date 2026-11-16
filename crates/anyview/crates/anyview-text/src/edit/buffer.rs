@@ -258,7 +258,7 @@ impl Buffer {
                 continue;
             }
             let within = self.piece_bytes(piece, 0..offset - at);
-            return before + within.iter().filter(|b| **b == b'\n').count();
+            return before + count_breaks(&within);
         }
         before
     }
@@ -488,6 +488,10 @@ fn merge(last: &Step, change: &Step) -> Step {
     }
 }
 
+#[expect(
+    clippy::naive_bytecount,
+    reason = "a piece of an edit buffer is short, and a counting crate is not worth a dependency"
+)]
 fn count_breaks(bytes: &[u8]) -> usize {
     bytes.iter().filter(|b| **b == b'\n').count()
 }

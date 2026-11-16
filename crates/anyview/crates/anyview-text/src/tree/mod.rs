@@ -199,6 +199,10 @@ fn scan_root(
 impl Tree {
     /// The document in `text`: one JSON value for `Json`, the values of its lines for
     /// `JsonLines`. A malformed one names its line and column.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when `text` is not a document of `format`.
     pub fn parse(text: &str, format: TreeFormat) -> Result<Self, TextError> {
         let end = text.len() as u64; // a usize fits a u64
         let bytes = text.as_bytes().to_vec();
@@ -216,6 +220,11 @@ impl Tree {
     /// The document in the file `src` names, scanning at most `limit` bytes of it, whatever its
     /// size: a file longer than that shows its start, and says so in the coverage it returns. A
     /// UTF-16 file is decoded and held, up to `limit`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the file cannot be read or is not a document of `format`, and
+    /// [`TextError::NoBudget`] when `limit` is zero.
     pub fn read(
         src: impl Into<Input>,
         format: TreeFormat,
@@ -226,6 +235,11 @@ impl Tree {
 
     /// [`Tree::read`], ended with [`TextError::Interrupted`] when `interrupt` says so: it is asked
     /// each time the scan reads a chunk of the file.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] as `read` does, and [`TextError::Interrupted`] when `interrupt` says
+    /// to stop.
     pub fn read_until(
         src: impl Into<Input>,
         format: TreeFormat,
@@ -273,6 +287,10 @@ impl Tree {
     }
 
     /// The document in a file's bytes: the encoding is detected, a byte-order mark skipped.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the bytes are not a document of `format`.
     pub fn parse_bytes(bytes: &[u8], format: TreeFormat) -> Result<Self, TextError> {
         let detected = detect(bytes, Coverage::Whole);
         let body = bytes.get(usize::from(detected.mark)..).unwrap_or_default();
@@ -491,6 +509,11 @@ impl Tree {
 
     /// The row for the node at `path`, labelled as the root when the path is empty and otherwise
     /// by the last step's key or index.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TextError::NoSuchNode`] when `path` names no node, and a [`TextError`] when its
+    /// text cannot be read.
     pub fn row(&self, path: &TreePath) -> Result<TreeRow, TextError> {
         let at = self.locate(path)?;
         let text = self.scalar_text(at.shape, &at.span)?;
@@ -500,6 +523,11 @@ impl Tree {
 
     /// The rows for the children of the node at `path` in `window`, cut to the children that
     /// exist. A scalar has none.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TextError::NoSuchNode`] when `path` names no node, and a [`TextError`] when its
+    /// children cannot be read.
     pub fn children(&self, path: &TreePath, window: Range<u32>) -> Result<Vec<TreeRow>, TextError> {
         let parent = self.locate(path)?;
         let Some(level) = parent.level else {

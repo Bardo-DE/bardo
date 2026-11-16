@@ -105,11 +105,17 @@ fn start_of(child: &Child) -> usize {
         .key
         .as_ref()
         .map_or(child.value.start, |key| key.start);
-    start as usize // an offset in a document held in memory fits a usize
+    offset(start)
 }
 
 fn bounds(range: &Range<u64>) -> Range<usize> {
-    range.start as usize..range.end as usize // an offset in a document held in memory fits a usize
+    offset(range.start)..offset(range.end)
+}
+
+/// An offset into a document held in memory, as an index: one too large for this computer's
+/// addresses reaches past the end.
+fn offset(at: u64) -> usize {
+    usize::try_from(at).unwrap_or(usize::MAX)
 }
 
 /// The literal a node of `shape` takes for the text the person typed, so the type of the node is
@@ -151,6 +157,10 @@ const NEW_KEY: &str = "key";
 
 impl TreeSession {
     /// The document in `text`, read as `format`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`TextError`] when the text is not a document of `format`.
     pub fn open(text: EditText, format: TreeFormat) -> Result<Self, TextError> {
         let (bytes, bom) = text.into_parts();
         let tree = read(&bytes, format)?;
@@ -242,6 +252,12 @@ impl TreeSession {
     }
 
     /// Change the value at `path` to what `typed` says, as the node's type allows.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TreeEditError::NotANumber`] or [`TreeEditError::NotTrueOrFalse`] when `typed` does
+    /// not fit the node, [`TreeEditError::NotEditable`] when the node has no value to type, and
+    /// [`TreeEditError::Text`] when the node is not in the document.
     pub fn set_value(&mut self, path: &TreePath, typed: &str) -> Result<(), TreeEditError> {
         let (span, shape) = self.value_of(path)?;
         let text = literal(shape, typed)?;
@@ -249,6 +265,11 @@ impl TreeSession {
     }
 
     /// Rename the key of the node at `path`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TreeEditError::NotEditable`] when the node has no key, and [`TreeEditError::Text`]
+    /// when it is not in the document.
     pub fn rename_key(&mut self, path: &TreePath, name: &str) -> Result<(), TreeEditError> {
         let around = self.tree.around(path)?;
         let key = around.this.key.ok_or(TreeEditError::NotEditable)?;
@@ -260,6 +281,11 @@ impl TreeSession {
 
     /// Take the node at `path` out of its container, with the comma and the white space that led
     /// to it.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TreeEditError::NotEditable`] when the node is not in the document or cannot be
+    /// removed, and [`TreeEditError::Text`] when the document cannot be read.
     pub fn delete(&mut self, path: &TreePath) -> Result<(), TreeEditError> {
         let around = self.tree.around(path).map_err(|e| {
             if e == TextError::NoSuchNode {
@@ -268,16 +294,16 @@ impl TreeSession {
                 TreeEditError::Text(e)
             }
         })?;
-        let this_end = around.this.value.end as usize; // a document in memory
+        let this_end = offset(around.this.value.end);
         let range = match (&around.prev, &around.next) {
             (_, Some(next)) => start_of(&around.this)..start_of(next),
-            (Some(prev), None) => prev.value.end as usize..this_end, // a document in memory
+            (Some(prev), None) => offset(prev.value.end)..this_end,
             (None, None) => match around.parent.level.as_ref().map(|level| level.form) {
                 Some(Form::Stream) => start_of(&around.this)..this_end,
                 Some(Form::Object | Form::Array) | None => {
                     // The container is left with nothing between its brackets.
                     let span = &around.parent.span;
-                    span.start as usize + 1..(span.end as usize).saturating_sub(1)
+                    offset(span.start) + 1..offset(span.end).saturating_sub(1)
                 }
             },
         };
@@ -287,6 +313,11 @@ impl TreeSession {
     /// Add a node below the one at `path`: a sibling after it, written with the separator the
     /// document uses between its nodes. A container with nothing in it takes the node inside
     /// itself, and the root takes it after its last. Returns the path of the new node.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`TreeEditError`] when the node is not in the document or a new sibling cannot be
+    /// put there.
     pub fn insert_below(&mut self, path: &TreePath) -> Result<TreePath, TreeEditError> {
         let here = self.tree.row(path)?;
         let count = here.children;
@@ -315,7 +346,7 @@ impl TreeSession {
             | Shape::Null
             | Shape::Unreadable => return Err(TreeEditError::NotEditable),
         };
-        let at = span.start as usize + 1; // a document in memory
+        let at = offset(span.start) + 1;
         self.splice(at..at, text.to_vec())?;
         Ok(path.child(0))
     }
@@ -329,18 +360,18 @@ impl TreeSession {
     ) -> Result<TreePath, TreeEditError> {
         let around = self.tree.around(path)?;
         let this_start = start_of(&around.this);
-        let this_end = around.this.value.end as usize; // a document in memory
+        let this_end = offset(around.this.value.end);
         let between =
             |from: usize, to: usize| self.bytes.get(from..to).unwrap_or_default().to_vec();
         let form = around.parent.level.as_ref().map(|level| level.form);
         let separator = match (&around.prev, &around.next) {
-            (Some(prev), _) => between(prev.value.end as usize, this_start),
+            (Some(prev), _) => between(offset(prev.value.end), this_start),
             (None, Some(next)) => between(this_end, start_of(next)),
             (None, None) => match form {
                 Some(Form::Stream) | None => b"\n".to_vec(),
                 Some(Form::Object | Form::Array) => {
                     let mut lead = b",".to_vec();
-                    lead.extend(between(around.parent.span.start as usize + 1, this_start));
+                    lead.extend(between(offset(around.parent.span.start) + 1, this_start));
                     lead
                 }
             },
@@ -352,7 +383,7 @@ impl TreeSession {
                     .ok()
                     .ok_or(TreeEditError::NotEditable)?;
                 added.extend_from_slice(name.as_bytes());
-                added.extend(between(key.end as usize, around.this.value.start as usize));
+                added.extend(between(offset(key.end), offset(around.this.value.start)));
                 added.extend_from_slice(b"null");
             }
             None => added.extend_from_slice(b"null"),

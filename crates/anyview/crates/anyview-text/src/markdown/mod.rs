@@ -40,7 +40,7 @@ fn options() -> Options {
 #[must_use]
 pub fn render(source: &str, env: &RenderEnv<'_>) -> Rendered {
     let parsed: Vec<_> = Parser::new_ext(source, options()).collect();
-    let (events, outline) = events::prepare(parsed, env);
+    let (events, outline) = events::prepare(&parsed, env);
     let mut out = String::with_capacity(source.len() * 2);
     html::push_html(&mut out, events.into_iter());
     Rendered { html: out, outline }

@@ -118,7 +118,7 @@ fn html<'a>(text: &str) -> Event<'a> {
 
 /// The events made safe and complete, and the outline of the headings met on the way.
 pub(super) fn prepare<'a>(
-    events: Vec<Event<'a>>,
+    events: &[Event<'a>],
     env: &RenderEnv<'_>,
 ) -> (Vec<Event<'a>>, Vec<Heading>) {
     let mut out = Vec::with_capacity(events.len());

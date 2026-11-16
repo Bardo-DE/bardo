@@ -414,7 +414,8 @@ fn the_added_languages_highlight_with_the_right_classes() {
 fn a_typescript_file_highlights_the_same_in_any_window() {
     let source: String = (0..400)
         .map(|n| format!("export const value{n}: number = {n}; /* a\n   comment */\n"))
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     let (h, mut whole) = code(&source, "typescript");
     let all = highlight(&h, &mut whole, 0, 800);
     let (h, mut windowed) = code(&source, "typescript");
@@ -462,7 +463,8 @@ fn the_packed_syntax_set_loads_with_the_default_and_the_added_syntaxes() {
 fn a_raised_stop_ends_a_window_and_the_next_ask_goes_on_without_it() {
     let source = (0..300)
         .map(|n| format!("let a{n} = {n};\n"))
-        .collect::<String>();
+        .collect::<Vec<_>>()
+        .concat();
     let (h, mut c) = code(&source, "rust");
     let stop = Stop::new();
     stop.request();

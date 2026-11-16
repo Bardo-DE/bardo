@@ -20,7 +20,8 @@ fn sheet_of(cells: &[&str]) -> String {
             let row: String = at.chars().filter(char::is_ascii_digit).collect();
             format!(r#"<row r="{row}"><c r="{at}" t="inlineStr"><is><t>x</t></is></c></row>"#)
         })
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     format!(r#"<dimension ref="A1:XFD1048576"/>{rows}"#)
 }
 
@@ -53,10 +54,12 @@ fn a_sheet_of_millions_of_cells_is_read_only_as_far_as_the_caps_reach() {
         .map(|r| {
             let cells: String = (0..20)
                 .map(|c| format!(r#"<c r="{}{r}"/>"#, (b'A' + c) as char))
-                .collect();
+                .collect::<Vec<_>>()
+                .concat();
             format!(r#"<row r="{r}">{cells}</row>"#)
         })
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     let (src, sniffed) = workbook_of_xml(dir.path(), "bomb.xlsx", &["Sheet"], &[rows]);
     let peeked = TablePeek::peek(&src.on_disk(), &sniffed, &budget(64 * 1024 * 1024)).unwrap();
     assert!(peeked.rows.len() <= 40);
@@ -70,7 +73,8 @@ fn a_sheet_with_more_rows_than_the_cap_keeps_the_start_and_says_so() {
     let dir = tempfile::tempdir().unwrap();
     let rows: String = (1..=SHEET_ROWS + 500)
         .map(|r| format!(r#"<row r="{r}"><c r="A{r}"><v>{r}</v></c></row>"#))
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     let (src, _) = workbook_of_xml(dir.path(), "tall.xlsx", &["Sheet"], &[rows]);
     let book = Workbook::open(src.on_disk()).unwrap();
     let table = &book.sheets()[0].table;
@@ -85,7 +89,8 @@ fn a_workbook_read_told_to_stop_ends_with_no_half_read_sheet() {
     let dir = tempfile::tempdir().unwrap();
     let rows: String = (1..=10_000)
         .map(|r| format!(r#"<row r="{r}"><c r="A{r}"><v>{r}</v></c></row>"#))
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     let (src, _) = workbook_of_xml(dir.path(), "stopped.xlsx", &["Sheet"], &[rows]);
     let stop = Stop::new();
     stop.request();
