@@ -91,15 +91,14 @@ fn model_fault(error: ModelError) -> ProviderError {
 }
 
 fn call_of(part: &inference_core::ToolCallPart) -> Result<sp::ToolCall, ProviderError> {
-    let unreadable = |what: &str| ProviderError::Unreadable(what.to_owned());
+    let unreadable = |what: &str, why: &dyn std::fmt::Display| {
+        ProviderError::Unreadable(format!("{what}: {why}"))
+    };
     Ok(sp::ToolCall {
         id: sp::ToolCallId(part.id.0.clone()),
-        name: sp::ToolName::new(part.name.as_str())
-            .ok()
-            .ok_or_else(|| unreadable("a tool name"))?,
+        name: sp::ToolName::new(part.name.as_str()).map_err(|e| unreadable("a tool name", &e))?,
         input: sp::JsonText::new(part.args.as_str())
-            .ok()
-            .ok_or_else(|| unreadable("tool arguments"))?,
+            .map_err(|e| unreadable("tool arguments", &e))?,
     })
 }
 
