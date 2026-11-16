@@ -225,12 +225,12 @@ impl Server {
     /// pass, as `poll` reports it. The subscriber may have left since the poll, so it is looked up
     /// by id and a missing one is skipped.
     fn receive(&mut self, id: ClientId) {
-        let mut buf = vec![0u8; protocol::MAX_PACKET + 1];
+        let mut buf = Box::new([0u8; protocol::MAX_PACKET + 1]);
         for _ in 0..PACKETS_PER_PASS {
             let Some(conn) = self.conns.get(&id) else {
                 return;
             };
-            match conn.read(&mut buf[..]) {
+            match conn.read(&mut buf) {
                 Read::Packet(heard) => self.feed(SocketEvent::Packet { id, heard }),
                 Read::Retry => {}
                 Read::Empty => return,

@@ -53,40 +53,64 @@ impl RefusedError {
     }
 
     /// A launcher's call accountd refuses, under the fault's own typed name.
-    pub(crate) fn launcher(fault: LauncherFault, why: impl Into<String>) -> Self {
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "passed by name to `map_err`, which hands over the error by value"
+    )]
+    pub(crate) fn launcher(fault: LauncherFault, why: impl ToString) -> Self {
         Self {
             name: ErrorName::try_from(launcher_fault_error_name_in(fault, ServiceRoot::Accounts))
                 .unwrap_or_else(|_| {
                     ErrorName::from_static_str_unchecked("org.freedesktop.DBus.Error.Failed")
                 }),
-            text: why.into(),
+            text: why.to_string(),
         }
     }
 
     /// An argument that is not what the interface says.
-    pub(crate) fn invalid(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::InvalidArgs(why.into()))
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "passed by name to `map_err`, which hands over the error by value"
+    )]
+    pub(crate) fn invalid(why: impl ToString) -> Self {
+        Self::bus(&fdo::Error::InvalidArgs(why.to_string()))
     }
 
     /// A caller the daemon will not answer.
-    pub(crate) fn access_denied(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::AccessDenied(why.into()))
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "passed by name to `map_err`, which hands over the error by value"
+    )]
+    pub(crate) fn access_denied(why: impl ToString) -> Self {
+        Self::bus(&fdo::Error::AccessDenied(why.to_string()))
     }
 
     /// An object that does not exist for this caller.
-    pub(crate) fn unknown_object(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::UnknownObject(why.into()))
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "passed by name to `map_err`, which hands over the error by value"
+    )]
+    pub(crate) fn unknown_object(why: impl ToString) -> Self {
+        Self::bus(&fdo::Error::UnknownObject(why.to_string()))
     }
 
     /// A caller that already has what it asks for under way (a sheet of that kind open):
     /// `org.freedesktop.DBus.Error.LimitsExceeded`.
-    pub(crate) fn busy(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::LimitsExceeded(why.into()))
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "passed by name to `map_err`, which hands over the error by value"
+    )]
+    pub(crate) fn busy(why: impl ToString) -> Self {
+        Self::bus(&fdo::Error::LimitsExceeded(why.to_string()))
     }
 
     /// Something the daemon could not do.
-    pub(crate) fn failed(why: impl Into<String>) -> Self {
-        Self::bus(&fdo::Error::Failed(why.into()))
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "passed by name to `map_err`, which hands over the error by value"
+    )]
+    pub(crate) fn failed(why: impl ToString) -> Self {
+        Self::bus(&fdo::Error::Failed(why.to_string()))
     }
 
     /// The error's D-Bus name.

@@ -38,9 +38,7 @@ pub(crate) async fn within<T>(
     limit: Duration,
     work: impl Future<Output = T>,
 ) -> Result<T, TimedOut> {
-    tokio::time::timeout(limit, work)
-        .await
-        .ok().ok_or(TimedOut)
+    tokio::time::timeout(limit, work).await.ok().ok_or(TimedOut)
 }
 
 /// Why a turn did not finish.

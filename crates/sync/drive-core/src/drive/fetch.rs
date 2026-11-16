@@ -507,7 +507,7 @@ impl Drive {
                         return Err(error);
                     }
                 }
-                ItemKind::File => {}
+                ItemKind::Online { .. } => {}
             }
         } else if *id == NodeId::Top {
             return Err(ReadError::Folder);

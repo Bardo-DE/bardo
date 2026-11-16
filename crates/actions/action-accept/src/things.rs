@@ -324,7 +324,9 @@ impl AcceptThings {
             actor: inv.actor.clone(),
             state: Sending::Held,
         };
-        let token = UndoToken::parse(&self.log.hold(message)).ok().ok_or(AppRefusal::Busy)?;
+        let token = UndoToken::parse(&self.log.hold(message))
+            .ok()
+            .ok_or(AppRefusal::Busy)?;
         let said = format!("Held {} for the undo window", inv.action.as_str());
         Ok(Self::done(&said, None, Undoable::Yes(token)))
     }

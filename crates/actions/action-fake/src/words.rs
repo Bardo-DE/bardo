@@ -38,8 +38,12 @@ impl WordsModel {
                 charge: None,
             },
             ServedBy {
-                account: AccountId::parse("local").ok().ok_or_else(|| malformed("account"))?,
-                model: ModelId::parse("words").ok().ok_or_else(|| malformed("model"))?,
+                account: AccountId::parse("local")
+                    .ok()
+                    .ok_or_else(|| malformed("account"))?,
+                model: ModelId::parse("words")
+                    .ok()
+                    .ok_or_else(|| malformed("model"))?,
                 locality: Locality::OnDevice,
             },
         ))))

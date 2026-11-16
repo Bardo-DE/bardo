@@ -88,7 +88,9 @@ pub fn check_dir(dir: &Path) -> Result<PathBuf, HomeFault> {
     if !dir.is_absolute() {
         return Err(HomeFault::NotAbsolute(dir.to_owned()));
     }
-    let meta = meta_of(dir).ok().ok_or_else(|| HomeFault::NotADirectory(dir.to_owned()))?;
+    let meta = meta_of(dir)
+        .ok()
+        .ok_or_else(|| HomeFault::NotADirectory(dir.to_owned()))?;
     if !meta.is_dir() {
         return Err(HomeFault::NotADirectory(dir.to_owned()));
     }
@@ -118,7 +120,9 @@ impl KeysHome {
             return Err(HomeFault::NotAFile(keys));
         }
         tight(&keys, &meta)?;
-        std::fs::metadata(real.join(REGISTRY)).ok().ok_or_else(empty)?;
+        std::fs::metadata(real.join(REGISTRY))
+            .ok()
+            .ok_or_else(empty)?;
         Ok(Self(real))
     }
 

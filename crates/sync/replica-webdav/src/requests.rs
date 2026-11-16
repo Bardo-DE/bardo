@@ -57,7 +57,7 @@ mod tests {
     #[test]
     fn the_report_asks_for_every_level_and_what_a_listing_reads_and_escapes_the_token() {
         let url = WebUrl::parse("http://127.0.0.1:1/dav/").expect("url");
-        let request = sync(url, "t&<1>").expect("request");
+        let request = sync(&url, "t&<1>").expect("request");
         let text = String::from_utf8(request.into_body()).expect("utf8");
         let doc = roxmltree::Document::parse(&text).expect("xml");
         let text_of = |name: &str| {

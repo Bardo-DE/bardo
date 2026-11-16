@@ -113,13 +113,7 @@ pub(super) fn reposition(
     token: u32,
 ) {
     let bounds = bounds_of(state, surface);
-    let events = on_reposition(
-        &mut state.wl.xdg_shell,
-        surface,
-        &positioner,
-        token,
-        bounds,
-    );
+    let events = on_reposition(&mut state.wl.xdg_shell, surface, &positioner, token, bounds);
     core_loop::feed(state, events);
 }
 

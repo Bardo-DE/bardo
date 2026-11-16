@@ -150,7 +150,7 @@ pub(super) fn take(state: &mut State, window: WindowId) {
     let style = state
         .render
         .closing
-        .get(window)
+        .get(&window)
         .map(|Kept { style, .. }| *style);
     let Some((size, scale)) = content_and_scale(state, window) else {
         return;

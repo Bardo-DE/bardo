@@ -6,6 +6,7 @@
 //! walls, and the companion learns that something runs elsewhere, never what.
 
 use crate::context::Reveal;
+use crate::planner::StepLine;
 use crate::run_end::EndWhy;
 use crate::spend::TaskTotals;
 use action_vocab::Handle;

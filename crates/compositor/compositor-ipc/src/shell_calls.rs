@@ -112,11 +112,18 @@ fn checked(call: &DbusCall) -> Result<(), ShellCallError> {
         what,
         text: text.to_owned(),
     };
-    BusName::try_from(call.service.as_str()).ok().ok_or_else(|| bad("service", &call.service))?;
-    ObjectPath::try_from(call.path.as_str()).ok().ok_or_else(|| bad("path", &call.path))?;
+    BusName::try_from(call.service.as_str())
+        .ok()
+        .ok_or_else(|| bad("service", &call.service))?;
+    ObjectPath::try_from(call.path.as_str())
+        .ok()
+        .ok_or_else(|| bad("path", &call.path))?;
     InterfaceName::try_from(call.interface.as_str())
-        .ok().ok_or_else(|| bad("interface", &call.interface))?;
-    MemberName::try_from(call.method.as_str()).ok().ok_or_else(|| bad("method", &call.method))?;
+        .ok()
+        .ok_or_else(|| bad("interface", &call.interface))?;
+    MemberName::try_from(call.method.as_str())
+        .ok()
+        .ok_or_else(|| bad("method", &call.method))?;
     match call.args.len() {
         given if given > MOST_ARGS => Err(ShellCallError::TooManyArgs {
             most: MOST_ARGS,

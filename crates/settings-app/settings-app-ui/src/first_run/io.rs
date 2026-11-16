@@ -3,6 +3,7 @@
 
 use crate::env::Env;
 use crate::files::{Edit, Files, apply};
+use settings_app_model::external::toml;
 
 /// inferd's row that keeps AI on this computer.
 const LOCAL_ONLY: &str = "ai.local_only";

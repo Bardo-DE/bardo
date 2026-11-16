@@ -12,6 +12,7 @@ use dioxus::prelude::*;
 use grid::pictures_grid;
 use header::picture_header;
 use settings_app_client::Wallpaper;
+use settings_app_model::external::toml;
 use settings_app_model::{AddOutcome, Picture, PictureSections, picture_sections};
 use std::collections::HashMap;
 use std::path::PathBuf;

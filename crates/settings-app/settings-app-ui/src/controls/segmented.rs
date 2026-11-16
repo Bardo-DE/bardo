@@ -1,6 +1,7 @@
 //! Three to five words: a segmented control.
 
 use dioxus::prelude::*;
+use settings_app_model::external::toml;
 use settings_app_model::word_label;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;

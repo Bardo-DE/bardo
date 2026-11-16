@@ -91,7 +91,8 @@ fn perform(host: &HostHandle<ShellMsg>, action: ShellAction) -> Result<(), Shell
     let (reply, answer) = mpsc::sync_channel(1);
     let request = request_of(action);
     host.send(ShellMsg::Ipc { request, reply })
-        .ok().ok_or_else(|| ShellFault::Failed("the shell is shutting down".to_owned()))?;
+        .ok()
+        .ok_or_else(|| ShellFault::Failed("the shell is shutting down".to_owned()))?;
     match answer.recv_timeout(REPLY_TIMEOUT + Duration::from_millis(500)) {
         Ok(response) => result_of(response),
         Err(_) => Err(ShellFault::Failed("the shell did not answer".to_owned())),

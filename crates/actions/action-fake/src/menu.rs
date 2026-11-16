@@ -186,7 +186,8 @@ impl IntentProvider for FakeMenu {
                     action: ActionRef {
                         app: app_name(),
                         name: provenance::ActionName::parse(&action)
-                            .ok().ok_or(AppRefusal::Unsupported)?,
+                            .ok()
+                            .ok_or(AppRefusal::Unsupported)?,
                     },
                     target: TargetValue::Nothing,
                     args: BTreeMap::default(),

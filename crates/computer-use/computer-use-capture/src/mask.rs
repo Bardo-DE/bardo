@@ -135,7 +135,7 @@ pub fn apply_masks(
     (
         PixelBuf {
             data: Arc::from(data),
-            ..buf
+            ..buf.clone()
         },
         applied,
     )

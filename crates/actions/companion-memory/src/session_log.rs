@@ -137,7 +137,7 @@ impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
                 .memory
                 .entries(self.space.clone(), query)
                 .await
-                .map_err(fault_of)?;
+                .map_err(|error| fault_of(&error))?;
             for entry in &page.entries {
                 count += 1;
                 last = entry.body.as_ref().map(|b| b.as_str().to_owned());
@@ -259,7 +259,7 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
                 .memory
                 .entries(self.space.clone(), query)
                 .await
-                .map_err(fault_of)?;
+                .map_err(|error| fault_of(&error))?;
             for entry in &page.entries {
                 if place >= start && rows.len() < want as usize {
                     let slug = entry.summary.kind.as_str().rsplit('.').next().unwrap_or("");
@@ -303,7 +303,7 @@ impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
                 .memory
                 .entries(self.space.clone(), query)
                 .await
-                .map_err(fault_of)?;
+                .map_err(|error| fault_of(&error))?;
             for entry in &page.entries {
                 let named = entry
                     .summary

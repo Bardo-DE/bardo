@@ -1,6 +1,7 @@
 //! Free text: a text field that stores when the caret leaves or Enter is pressed.
 
 use dioxus::prelude::*;
+use settings_app_model::external::toml;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
 

@@ -75,12 +75,12 @@ mod tests {
 
         let mut holding_nothing = Tracked::holding(Vec::new());
         assert!(
-            !holding_nothing.update(&Some(vec![])),
+            !holding_nothing.update(Some(&[])),
             "a tracker holding nothing does not resend nothing"
         );
-        assert!(holding_nothing.update(&Some(vec![PILL_RECT])));
-        assert!(holding_nothing.update(&Some(vec![])), "cleared");
+        assert!(holding_nothing.update(Some(&[PILL_RECT])));
+        assert!(holding_nothing.update(Some(&[])), "cleared");
         let mut fresh = Tracked::new();
-        assert!(fresh.update(&Some(vec![])), "fresh sends");
+        assert!(fresh.update(Some(&[])), "fresh sends");
     }
 }

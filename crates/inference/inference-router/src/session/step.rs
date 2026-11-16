@@ -574,7 +574,7 @@ fn in_turn(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
                 .collect(),
             )
         }
-        SessionIn::Closed => close(same(audio, queued)),
+        SessionIn::Closed => close(&same(audio, queued)),
         SessionIn::Routed(_) | SessionIn::EngineReady | SessionIn::EngineProgress(_) => {
             (same(audio, queued), vec![])
         }

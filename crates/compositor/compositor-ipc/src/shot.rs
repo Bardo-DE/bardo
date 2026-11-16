@@ -49,7 +49,8 @@ pub fn parse_shot(text: &str) -> Result<ShotArea, IpcError> {
         Some(("window", id)) => id
             .parse()
             .map(|id| ShotArea::Window(WindowId(id)))
-            .ok().ok_or_else(bad),
+            .ok()
+            .ok_or_else(bad),
         _ => Err(bad()),
     }
 }

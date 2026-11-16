@@ -76,10 +76,15 @@ impl Bridge {
             })?
         };
         let format = Fourcc::try_from(entry.format.0)
-            .ok().ok_or_else(|| refused("the picture format is not a known format"))?;
+            .ok()
+            .ok_or_else(|| refused("the picture format is not a known format"))?;
         let modifier = Modifier::from(entry.modifier.0);
-        let width = u32::try_from(mode.w).ok().ok_or_else(|| refused("the mode is negative"))?;
-        let height = u32::try_from(mode.h).ok().ok_or_else(|| refused("the mode is negative"))?;
+        let width = u32::try_from(mode.w)
+            .ok()
+            .ok_or_else(|| refused("the mode is negative"))?;
+        let height = u32::try_from(mode.h)
+            .ok()
+            .ok_or_else(|| refused("the mode is negative"))?;
         let mut allocator = GbmAllocator::new(gbm.clone(), GbmBufferFlags::RENDERING);
         let buffer = allocator
             .create_buffer(width, height, format, &[modifier])
@@ -195,7 +200,8 @@ fn wait_bounded(sync: &SyncPoint) -> Result<(), KmsError> {
         },
         None => sync
             .wait()
-            .ok().ok_or_else(|| refused("the render GPU was interrupted")),
+            .ok()
+            .ok_or_else(|| refused("the render GPU was interrupted")),
     }
 }
 

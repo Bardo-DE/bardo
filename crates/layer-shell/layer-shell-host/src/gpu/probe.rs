@@ -277,7 +277,7 @@ impl Dispatch<ZwlrLayerSurfaceV1, ()> for Probe {
     ) {
         match event {
             zwlr_layer_surface_v1::Event::Configure { serial, .. } => {
-                layer.ack_configure(serial);
+                proxy.ack_configure(serial);
                 state.mapping = Mapping::Configured;
             }
             zwlr_layer_surface_v1::Event::Closed => state.mapping = Mapping::Closed,

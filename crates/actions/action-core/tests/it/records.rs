@@ -11,9 +11,7 @@ use permission_core::{
     AlwaysOffer, AskReason, BreakerTrip, DenyCode, GrantCaller, PolicyId, ReasonCode, ReviewMark,
     Stage, VerdictKind, Withheld,
 };
-use provenance::{
-    Address, AgentRef, Effect, MessageKind, MessageText, ReportStatus, TaskId,
-};
+use provenance::{Address, AgentRef, Effect, MessageKind, MessageText, ReportStatus, TaskId};
 use serde::{Serialize, de::DeserializeOwned};
 use std::collections::BTreeSet;
 

@@ -17,7 +17,7 @@ use companion_wire::{
 };
 use inference_core::{
     ComputerName, ModelRef, PlaceEngine, PlaceId, PlaceKind, PlaceModel, PlaceRow, PlaceState,
-    };
+};
 use provenance::{AppName, HelperId, SpaceId};
 use shell_launcher::HelperControl;
 
