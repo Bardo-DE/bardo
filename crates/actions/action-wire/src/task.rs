@@ -47,13 +47,19 @@ impl TaskStart {
     /// [`ArgFault`] when `goal` is missing or not text, or `kind` is not one of the declared
     /// choices.
     pub fn from_args(args: &Args) -> Result<Self, ArgFault> {
-        let name = |n: &str| ParamName::parse(n).ok().ok_or(ArgFault::Missing);
-        let goal = match args.get(&name("goal")?).map(|a| &a.value) {
+        // A name that is not a parameter name names no argument.
+        let arg = |n: &str| {
+            ParamName::parse(n)
+                .ok()
+                .and_then(|name| args.get(&name))
+                .map(|a| &a.value)
+        };
+        let goal = match arg("goal") {
             Some(Value::Text(t)) if !t.is_empty() => MessageText::new(t.clone()),
             Some(Value::Text(_)) | None => return Err(ArgFault::Missing),
             Some(_) => return Err(ArgFault::WrongType),
         };
-        let kind = match args.get(&name("kind")?).map(|a| &a.value) {
+        let kind = match arg("kind") {
             None => TaskKind::Research,
             Some(Value::Choice(id)) => match id.as_str() {
                 "research" => TaskKind::Research,

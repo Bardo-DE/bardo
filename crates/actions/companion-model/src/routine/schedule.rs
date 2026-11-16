@@ -5,6 +5,7 @@
 use provenance::UnixSeconds;
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use std::num::ParseIntError;
 
 const DAY: i64 = 86_400;
 const HOUR: i64 = 3_600;
@@ -12,17 +13,17 @@ const HOUR: i64 = 3_600;
 const MOST_HOURS: u8 = 12;
 
 /// Why some words are not a schedule.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ScheduleFault {
-    /// Not a time of day.
+    /// Not a time of day (the number that would not read, when that was the trouble).
     #[error("say a time of day like 08:00")]
-    Time,
+    Time(#[source] Option<ParseIntError>),
     /// Not one of the ways to say when.
     #[error("say when like this: daily 08:00, weekdays 08:00 or every 2 hours")]
     Words,
     /// A number of hours that is out of range.
     #[error("say a number of hours from 1 to 12")]
-    Hours,
+    Hours(#[source] Option<ParseIntError>),
 }
 
 /// How far the local clock is from UTC, in seconds east, at the moment asked about.
@@ -53,7 +54,7 @@ impl TimeOfDay {
         if hour < 24 && minute < 60 {
             Ok(Self { hour, minute })
         } else {
-            Err(ScheduleFault::Time)
+            Err(ScheduleFault::Time(None))
         }
     }
 
@@ -63,12 +64,15 @@ impl TimeOfDay {
     ///
     /// Returns [`ScheduleFault`] when the input is not a valid schedule.
     pub fn parse(text: &str) -> Result<Self, ScheduleFault> {
-        let (hour, minute) = text.trim().split_once(':').ok_or(ScheduleFault::Time)?;
+        let (hour, minute) = text
+            .trim()
+            .split_once(':')
+            .ok_or(ScheduleFault::Time(None))?;
         if minute.len() != 2 {
-            return Err(ScheduleFault::Time);
+            return Err(ScheduleFault::Time(None));
         }
-        let hour = hour.parse().ok().ok_or(ScheduleFault::Time)?;
-        let minute = minute.parse().ok().ok_or(ScheduleFault::Time)?;
+        let hour = hour.parse().map_err(|e| ScheduleFault::Time(Some(e)))?;
+        let minute = minute.parse().map_err(|e| ScheduleFault::Time(Some(e)))?;
         Self::new(hour, minute)
     }
 
@@ -117,7 +121,7 @@ impl Hours {
         if (1..=MOST_HOURS).contains(&n) {
             Ok(Self(n))
         } else {
-            Err(ScheduleFault::Hours)
+            Err(ScheduleFault::Hours(None))
         }
     }
 }
@@ -166,7 +170,7 @@ impl Schedule {
             ["weekdays", time] => Ok(Schedule::Weekdays(TimeOfDay::parse(time)?)),
             ["every", "hour"] => Ok(Schedule::Every(Hours::new(1)?)),
             ["every", n, "hours"] => {
-                let n = n.parse().ok().ok_or(ScheduleFault::Hours)?;
+                let n = n.parse().map_err(|e| ScheduleFault::Hours(Some(e)))?;
                 Ok(Schedule::Every(Hours::new(n)?))
             }
             _ => Err(ScheduleFault::Words),

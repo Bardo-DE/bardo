@@ -20,9 +20,26 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::MutexGuard;
 
 /// A case's world could not be built: the fixture names something that is not valid.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-#[error("setup: {0}")]
-pub struct SetupFault(pub &'static str);
+#[derive(Debug, thiserror::Error)]
+#[error("setup: {what}")]
+pub struct SetupFault {
+    what: &'static str,
+    #[source]
+    cause: Option<Box<dyn std::error::Error + Send + Sync>>,
+}
+
+impl SetupFault {
+    fn new(what: &'static str) -> Self {
+        Self { what, cause: None }
+    }
+
+    fn because(what: &'static str, cause: impl std::error::Error + Send + Sync + 'static) -> Self {
+        Self {
+            what,
+            cause: Some(Box::new(cause)),
+        }
+    }
+}
 
 /// What a running case knows about the sessions it made.
 #[derive(Debug)]
@@ -42,9 +59,7 @@ pub(crate) fn state_of<S: Seams>(router: &Router<S>) -> MutexGuard<'_, RouterSta
 }
 
 fn name(text: &str) -> Result<AppName, SetupFault> {
-    AppName::parse(text)
-        .ok()
-        .ok_or(SetupFault("a fixture app name"))
+    AppName::parse(text).map_err(|e| SetupFault::because("a fixture app name", e))
 }
 
 /// The connection of the companion daemon.
@@ -164,8 +179,7 @@ fn grant_consent<S: Seams<Grants = MemoryGrants>>(
                 n += 1;
                 router.seams.grants().record(Grant {
                     id: GrantId::parse(&format!("g-eval-{n}"))
-                        .ok()
-                        .ok_or(SetupFault("a grant id"))?,
+                        .map_err(|e| SetupFault::because("a grant id", e))?,
                     key: ActionGrantKey {
                         caller: GrantCaller::Companion,
                         owner: app.clone(),
@@ -204,7 +218,7 @@ fn open<S: Rig>(
     ));
     match reply {
         IntentsReply::SessionOpened(opened) => Ok(opened),
-        _ => Err(SetupFault("a session did not open")),
+        _ => Err(SetupFault::new("a session did not open")),
     }
 }
 
@@ -291,7 +305,7 @@ pub(crate) fn install<S: Rig>(
             },
         ));
         if !matches!(reply, IntentsReply::TurnRecorded(_)) {
-            return Err(SetupFault("a turn was not recorded"));
+            return Err(SetupFault::new("a turn was not recorded"));
         }
     }
     // A case with no task policy has none whatever wrote one on the turns (a live writer did).
