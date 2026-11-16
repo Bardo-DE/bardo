@@ -188,7 +188,7 @@ pub enum CommandLineFault {
     NeedsValue(String),
     /// `--client` was given something that is not a client name.
     #[error("--client: not a client name")]
-    NotAClient,
+    NotAClient(#[source] account_core::CoreError),
     /// A flag this program does not have.
     #[error("unknown argument {0}")]
     Unknown(String),
@@ -215,8 +215,7 @@ impl Args {
                 "--client" => {
                     parsed.client = Some(
                         provenance::ClientName::parse(&value()?)
-                            .ok()
-                            .ok_or(CommandLineFault::NotAClient)?,
+                            .map_err(CommandLineFault::NotAClient)?,
                     );
                 }
                 other => return Err(CommandLineFault::Unknown(other.to_owned())),

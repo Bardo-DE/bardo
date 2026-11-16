@@ -9,9 +9,18 @@ use chrono::{DateTime, Datelike, NaiveDate, SecondsFormat, Timelike};
 use provenance::UnixSeconds;
 
 /// The text is not an RFC 3339 date or instant.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[error("not an RFC 3339 date or instant")]
-pub struct NotRfc3339;
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+pub enum NotRfc3339 {
+    /// The text is not shaped like a date or instant.
+    #[error("not an RFC 3339 date or instant")]
+    Shape,
+    /// `chrono` refused the text.
+    #[error("not an RFC 3339 date or instant")]
+    Text(#[source] chrono::ParseError),
+    /// A part of the date does not fit the number the date holds.
+    #[error("a part of the date is out of range")]
+    Range(#[source] std::num::TryFromIntError),
+}
 
 /// Nanoseconds a second holds before a leap second is counted in `chrono`.
 const SECOND_NANOS: u32 = 1_000_000_000;
@@ -24,11 +33,9 @@ fn day(head: &str) -> Result<NaiveDate, NotRfc3339> {
         _ => b.is_ascii_digit(),
     });
     if !shaped {
-        return Err(NotRfc3339);
+        return Err(NotRfc3339::Shape);
     }
-    NaiveDate::parse_from_str(head, "%Y-%m-%d")
-        .ok()
-        .ok_or(NotRfc3339)
+    NaiveDate::parse_from_str(head, "%Y-%m-%d").map_err(NotRfc3339::Text)
 }
 
 /// The text read as a date alone or as a full instant (the separator may be `T`, `t` or a space,
@@ -39,14 +46,13 @@ enum Read {
 }
 
 fn read(text: &str) -> Result<Read, NotRfc3339> {
-    let head = text.get(..10).ok_or(NotRfc3339)?;
+    let head = text.get(..10).ok_or(NotRfc3339::Shape)?;
     let date = day(head)?;
     match text.len() {
         10 => Ok(Read::Day(date)),
         _ => DateTime::parse_from_rfc3339(text)
             .map(Read::Instant)
-            .ok()
-            .ok_or(NotRfc3339),
+            .map_err(NotRfc3339::Text),
     }
 }
 
@@ -61,9 +67,9 @@ pub fn date(text: &str) -> Result<CivilDate, NotRfc3339> {
         Read::Instant(instant) => instant.date_naive(),
     };
     Ok(CivilDate {
-        year: i16::try_from(date.year()).ok().ok_or(NotRfc3339)?,
-        month: u8::try_from(date.month()).ok().ok_or(NotRfc3339)?,
-        day: u8::try_from(date.day()).ok().ok_or(NotRfc3339)?,
+        year: i16::try_from(date.year()).map_err(NotRfc3339::Range)?,
+        month: u8::try_from(date.month()).map_err(NotRfc3339::Range)?,
+        day: u8::try_from(date.day()).map_err(NotRfc3339::Range)?,
     })
 }
 

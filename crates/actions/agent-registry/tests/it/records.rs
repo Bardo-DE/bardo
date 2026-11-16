@@ -45,9 +45,12 @@ fn a_record_survives_its_text() {
 fn a_record_that_climbs_out_or_is_not_one_is_damaged() {
     for bad in [record("../agy"), record("/bin/sh")] {
         let text = bad.render().expect("render");
-        assert_eq!(Record::parse(&text), Err(RecordFault::Damaged));
+        assert_eq!(Record::parse(&text), Err(RecordFault::Invalid));
     }
-    assert_eq!(Record::parse("nonsense ="), Err(RecordFault::Damaged));
+    assert!(matches!(
+        Record::parse("nonsense ="),
+        Err(RecordFault::Damaged(_))
+    ));
 }
 
 #[test]

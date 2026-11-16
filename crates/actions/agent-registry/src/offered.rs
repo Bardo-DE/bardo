@@ -73,7 +73,10 @@ pub enum OfferedFault {
     Io,
     /// The file is not a record.
     #[error("the record is damaged")]
-    Damaged,
+    Damaged(#[source] toml::de::Error),
+    /// The record cannot be written as TOML.
+    #[error("the record cannot be written as TOML")]
+    Unwritable(#[source] toml::ser::Error),
 }
 
 impl Offered {
@@ -83,16 +86,16 @@ impl Offered {
     ///
     /// Returns [`OfferedFault::Damaged`] when `text` is not a valid record.
     pub fn parse(text: &str) -> Result<Self, OfferedFault> {
-        toml::from_str(text).ok().ok_or(OfferedFault::Damaged)
+        toml::from_str(text).map_err(OfferedFault::Damaged)
     }
 
     /// The record as the text kept in `offered.toml`.
     ///
     /// # Errors
     ///
-    /// Returns [`OfferedFault::Damaged`] when the record cannot be written as TOML.
+    /// Returns [`OfferedFault::Unwritable`] when the record cannot be written as TOML.
     pub fn render(&self) -> Result<String, OfferedFault> {
-        toml::to_string(self).ok().ok_or(OfferedFault::Damaged)
+        toml::to_string(self).map_err(OfferedFault::Unwritable)
     }
 
     /// The record that replaces `before` when `self` is written: its counter one past the one it

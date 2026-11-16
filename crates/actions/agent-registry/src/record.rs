@@ -49,9 +49,12 @@ pub enum RecordFault {
     /// Nothing installed there.
     #[error("that agent is not installed")]
     Missing,
-    /// The record is not one, or names a program outside its directory.
+    /// The text is not a record.
     #[error("the install record is damaged")]
-    Damaged,
+    Damaged(#[source] toml::de::Error),
+    /// The record names a program outside its directory, or a name or digest that is not valid.
+    #[error("the install record names something it may not")]
+    Invalid,
 }
 
 /// The file name of the record.
@@ -74,10 +77,10 @@ impl Record {
     ///
     /// # Errors
     ///
-    /// Returns [`RecordFault::Damaged`] when the text is not a record, or names a program outside
-    /// its directory, or a name or digest that is not valid.
+    /// Returns [`RecordFault::Damaged`] when the text is not a record, and [`RecordFault::Invalid`] when
+    /// it names a program outside its directory, or a name or digest that is not valid.
     pub fn parse(text: &str) -> Result<Self, RecordFault> {
-        let record: Self = toml::from_str(text).ok().ok_or(RecordFault::Damaged)?;
+        let record: Self = toml::from_str(text).map_err(RecordFault::Damaged)?;
         let named = Slug::parse(&record.id).is_ok() && Slug::parse(&record.version).is_ok();
         let stays = Path::new(&record.command)
             .components()
@@ -88,7 +91,7 @@ impl Record {
             .is_none_or(|d| Sha256Hex::parse(d).is_ok());
         (named && stays && digest)
             .then_some(record)
-            .ok_or(RecordFault::Damaged)
+            .ok_or(RecordFault::Invalid)
     }
 
     /// The program's path, given the version's directory.
