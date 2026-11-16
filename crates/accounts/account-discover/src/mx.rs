@@ -67,6 +67,10 @@ pub fn ispdb_candidates(host: &DomainName, domain: &DomainName) -> Vec<DomainNam
 }
 
 /// Asks DNS for `domain`'s MX records.
+///
+/// # Errors
+///
+/// The `DnsFault` the resolver reports when the query cannot be answered.
 pub async fn lookup_mx<D: Dns>(dns: &D, domain: &DomainName) -> Result<Vec<MxRecord>, DnsFault> {
     dns.mx(domain).await
 }

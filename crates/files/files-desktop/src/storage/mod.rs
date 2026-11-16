@@ -45,11 +45,19 @@ fn paths(items: &[ItemRef]) -> Vec<String> {
 impl Storage {
     /// The service syncd offers, over `connection`. Nothing is called yet, so a service that is
     /// not running is no failure here.
+    ///
+    /// # Errors
+    ///
+    /// `StorageError` when the proxy cannot be built on `connection`.
     pub async fn connect(connection: &Connection) -> Result<Storage, StorageError> {
         Storage::connect_to(connection, SERVICE).await
     }
 
     /// The service under another bus name (a stand-in on a private bus).
+    ///
+    /// # Errors
+    ///
+    /// `StorageError` when `name` is not a bus name or the proxy cannot be built.
     pub async fn connect_to(connection: &Connection, name: &str) -> Result<Storage, StorageError> {
         let proxy = StorageProxy::builder(connection)
             .destination(name.to_owned())?
@@ -59,6 +67,10 @@ impl Storage {
     }
 
     /// The drives the caller may see. A row this version cannot read is left out.
+    ///
+    /// # Errors
+    ///
+    /// `StorageError` when the service cannot be called, for instance because it is not running.
     pub async fn drives(&self) -> Result<Vec<CloudDrive>, StorageError> {
         let rows = self.proxy.drives().await?;
         Ok(rows
@@ -69,6 +81,10 @@ impl Storage {
 
     /// Where each of `items` stands. One the service has no word for, or this version cannot
     /// read, is left out.
+    ///
+    /// # Errors
+    ///
+    /// `StorageError` when the service cannot be called, for instance because it is not running.
     pub async fn items(
         &self,
         items: &[ItemRef],
@@ -83,11 +99,19 @@ impl Storage {
     }
 
     /// Download Now.
+    ///
+    /// # Errors
+    ///
+    /// `StorageError` when the service cannot be called, for instance because it is not running.
     pub async fn download(&self, items: &[ItemRef]) -> Result<Vec<Refused>, StorageError> {
         Ok(decode::refused(self.proxy.download(paths(items)).await?))
     }
 
     /// Remove Download.
+    ///
+    /// # Errors
+    ///
+    /// `StorageError` when the service cannot be called, for instance because it is not running.
     pub async fn remove_download(&self, items: &[ItemRef]) -> Result<Vec<Refused>, StorageError> {
         Ok(decode::refused(
             self.proxy.remove_download(paths(items)).await?,
@@ -95,12 +119,20 @@ impl Storage {
     }
 
     /// Save a Copy: each online document as a file next to it.
+    ///
+    /// # Errors
+    ///
+    /// `StorageError` when the service cannot be called, for instance because it is not running.
     pub async fn save_copy(&self, items: &[ItemRef]) -> Result<SavedCopies, StorageError> {
         let (saved, refused) = self.proxy.save_copy(paths(items)).await?;
         Ok(decode::copies(saved, refused))
     }
 
     /// Keep Downloaded, on (`keep`) or off.
+    ///
+    /// # Errors
+    ///
+    /// `StorageError` when the service cannot be called, for instance because it is not running.
     pub async fn keep(&self, items: &[ItemRef], keep: bool) -> Result<Vec<Refused>, StorageError> {
         let wire = self.proxy.keep(paths(items), keep).await?;
         Ok(decode::refused(wire))

@@ -25,6 +25,11 @@ impl fmt::Debug for HickoryDns {
 
 impl HickoryDns {
     /// A resolver from the system's configuration, or why there is none.
+    ///
+    /// # Errors
+    ///
+    /// `DnsFault::Unreachable` when the system's resolver configuration cannot be read or a
+    /// resolver cannot be built from it.
     pub fn system() -> Result<Self, DnsFault> {
         let mut builder = TokioResolver::builder_tokio().map_err(|_| DnsFault::Unreachable)?;
         builder.options_mut().timeout = PER_QUERY;

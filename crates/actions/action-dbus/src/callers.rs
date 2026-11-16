@@ -40,6 +40,10 @@ pub fn user_dir(domain: &str, env: &impl Fn(&str) -> Option<String>) -> PathBuf 
 /// The daemon's table: `/etc/bardo/<file>` with `<config>/bardo/actions/<file>` laid over it. A
 /// file that is missing is an empty table (nobody is identified); a file that does not parse is an
 /// error.
+///
+/// # Errors
+///
+/// `CallerFileError` when a file exists but cannot be read or does not parse.
 pub fn read_table(
     file: &str,
     env: &impl Fn(&str) -> Option<String>,
@@ -49,6 +53,10 @@ pub fn read_table(
 
 /// As [`read_table`], for a daemon of another domain: the person's file is
 /// `<config>/bardo/<domain>/<file>`.
+///
+/// # Errors
+///
+/// `CallerFileError` when a file exists but cannot be read or does not parse.
 pub fn read_table_in(
     domain: &str,
     file: &str,
@@ -62,6 +70,10 @@ pub fn read_table_in(
 
 /// As [`read_table`], with the system's file at `system` instead of under `/etc/bardo`: the
 /// acceptance harness is its own system, and a fixed role comes from no other file.
+///
+/// # Errors
+///
+/// `CallerFileError` when a file exists but cannot be read or does not parse.
 pub fn read_table_at(
     system: &Path,
     file: &str,
@@ -71,6 +83,10 @@ pub fn read_table_at(
 }
 
 /// As [`read_table_at`], for a daemon of another domain.
+///
+/// # Errors
+///
+/// `CallerFileError` when a file exists but cannot be read or does not parse.
 pub fn read_table_at_in(
     domain: &str,
     system: &Path,
@@ -147,6 +163,11 @@ impl From<Refused> for fdo::Error {
 }
 
 /// The caller behind `sender`, if it holds one of the `allowed` standings.
+///
+/// # Errors
+///
+/// `Refused::NoSender` when there is no `sender`, `Unknown` when no caller is known behind it, and
+/// `NotAllowed` when the caller holds none of the `allowed` standings.
 pub async fn require(
     callers: &impl Callers,
     sender: Option<&str>,

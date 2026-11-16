@@ -186,6 +186,11 @@ impl DesktopLauncher {
     /// Opens `targets` with `with`. `token` lets the app raise its window.
     ///
     /// Every app that can be started is; the first failure is returned after the others ran.
+    ///
+    /// # Errors
+    ///
+    /// `StartError` of the first app that could not be started; the apps after it were started all
+    /// the same.
     pub fn open(
         &self,
         targets: &[PathBuf],

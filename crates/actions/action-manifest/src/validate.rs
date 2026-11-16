@@ -251,6 +251,10 @@ fn filled_fits(p: &ParamDecl) -> bool {
 /// the app holds the send); an outbound action declares a recipient or destination parameter;
 /// a defaulted value fits its type; a parameter the router fills is optional text; every indexed kind declares `<kind>.open` (one read of one
 /// thing of the kind, nothing required), and any `<kind>.open` has that shape. Kinds named by an action are checked by the registry.
+///
+/// # Errors
+///
+/// `ManifestError` naming the first rule the manifest breaks.
 pub fn validate(manifest: Manifest) -> Result<ValidManifest, ManifestError> {
     if manifest.vocab > IntentsVocab::CURRENT {
         return Err(ManifestError::VocabTooNew(manifest.vocab));

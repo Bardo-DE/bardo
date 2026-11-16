@@ -81,11 +81,19 @@ impl Disks {
     }
 
     /// The disks over the system bus.
+    ///
+    /// # Errors
+    ///
+    /// `DiskError` when the system bus cannot be reached.
     pub async fn system(users: Arc<dyn DiskUsers>) -> Result<Disks, DiskError> {
         Ok(Disks::new(Connection::system().await?, users))
     }
 
     /// The disks to show, in the sidebar's order: external drives first, then others, by name.
+    ///
+    /// # Errors
+    ///
+    /// `DiskError` when the disk service cannot be asked.
     pub async fn list(&self) -> Result<Vec<Volume>, DiskError> {
         let objects = self.objects().await?;
         let mut volumes: Vec<Volume> = objects
@@ -106,6 +114,10 @@ impl Disks {
     /// A stream that yields whenever a disk came, went, was mounted or unmounted. Subscribed
     /// before it returns, so nothing between a [`list`](Disks::list) that follows and the first
     /// wait is missed.
+    ///
+    /// # Errors
+    ///
+    /// `DiskError` when the match rule cannot be built or the bus refuses the subscription.
     pub async fn changes(&self) -> Result<Changes, DiskError> {
         let rule = MatchRule::builder()
             .msg_type(Type::Signal)

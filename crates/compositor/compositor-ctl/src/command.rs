@@ -70,6 +70,11 @@ pub enum CommandError {
 
 /// What `args` (without the program name) ask for. A `debug` command's arguments are checked
 /// here, so a typo never reaches the bus.
+///
+/// # Errors
+///
+/// `CommandError` when there is no command, the command is unknown, or its arguments are missing or
+/// malformed.
 pub fn parse(args: &[String]) -> Result<Command, CommandError> {
     let (name, rest) = args.split_first().ok_or_else(|| {
         CommandError::BadArgument("no command (debug, shot, report, privacy)".to_owned())

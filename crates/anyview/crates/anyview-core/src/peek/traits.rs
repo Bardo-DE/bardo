@@ -20,6 +20,11 @@ pub trait Peek: 'static {
 
     /// Looks at `src` (a path, or any bytes a host injects), whose type `sniffed` established.
     /// Blocking: run it on a worker. Stays inside `budget` (bytes read, pixels decoded, time).
+    ///
+    /// # Errors
+    ///
+    /// A `CoreError` when the bytes cannot be read, are not what `sniffed` says, or go over
+    /// `budget`.
     fn peek(
         src: &Input,
         sniffed: &Sniffed,
@@ -29,6 +34,10 @@ pub trait Peek: 'static {
     /// [`Peek::peek`], told the box, in pixels, that what it draws is fitted into: a PDF's first
     /// page is rasterised for it. A format that draws nothing, or draws by the budget's pixels
     /// alone, ignores it, as this default does.
+    ///
+    /// # Errors
+    ///
+    /// The same errors as `Peek::peek`.
     fn peek_fitted(
         src: &Input,
         sniffed: &Sniffed,

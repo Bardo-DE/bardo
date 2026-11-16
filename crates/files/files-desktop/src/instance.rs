@@ -42,11 +42,20 @@ pub enum Claim {
 }
 
 /// A connection to the person's session bus, driven by the runtime the caller is in.
+///
+/// # Errors
+///
+/// `InstanceError` when the session bus cannot be reached.
 pub async fn session() -> Result<Connection, InstanceError> {
     Ok(Connection::session().await?)
 }
 
 /// Becomes the running app if none is, serving each request that arrives at `sink`.
+///
+/// # Errors
+///
+/// `InstanceError` when the object cannot be served, the name cannot be asked for, or the bus fails
+/// meanwhile.
 pub async fn claim(connection: &Connection, sink: Sink) -> Result<Claim, InstanceError> {
     // The object goes up before the names, so a call right after the name appears is answered.
     file_manager::serve(connection, sink).await?;
@@ -63,6 +72,11 @@ pub async fn claim(connection: &Connection, sink: Sink) -> Result<Claim, Instanc
 }
 
 /// Asks the running app to show `show`.
+///
+/// # Errors
+///
+/// `InstanceError` when the bus cannot be asked who owns the name or the running app cannot be
+/// called.
 pub async fn forward(connection: &Connection, show: &Show) -> Result<(), InstanceError> {
     let name = BusName::try_from(APP_NAME).map_err(zbus::Error::from)?;
     let owner = match DBusProxy::new(connection).await?.get_name_owner(name).await {

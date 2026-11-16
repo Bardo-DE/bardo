@@ -21,6 +21,10 @@ pub struct SpawnCommand {
 /// Starts programs.
 pub trait Spawn: Send + Sync {
     /// Starts `command` and does not wait for it.
+    ///
+    /// # Errors
+    ///
+    /// `StartError` when the process cannot be started.
     fn spawn(&self, command: &SpawnCommand) -> Result<(), StartError>;
 }
 

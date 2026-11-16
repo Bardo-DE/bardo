@@ -13,6 +13,10 @@ pub struct HelperId(String);
 
 impl HelperId {
     /// The id written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// `IdError` when `text` is empty, over 128 bytes, or holds a control character.
     pub fn parse(text: &str) -> Result<Self, IdError> {
         if !text.is_empty() && text.len() <= 128 && !text.chars().any(char::is_control) {
             Ok(Self(text.to_owned()))

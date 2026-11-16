@@ -31,6 +31,11 @@ impl Namespace {
     pub const PORTER: Self = Self(Cow::Borrowed("porter"));
 
     /// The namespace `text` names (`mailo/work`, `porter.accountd`).
+    ///
+    /// # Errors
+    ///
+    /// `NamespaceError` when `text` is empty or holds a control character, or is otherwise not a
+    /// namespace.
     pub fn parse(text: &str) -> Result<Self, NamespaceError> {
         match text {
             "" => Err(NamespaceError::Empty),

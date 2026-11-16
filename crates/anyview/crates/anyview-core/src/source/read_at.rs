@@ -19,6 +19,10 @@ pub trait ReadAt: Debug + Send + Sync {
 
     /// Reads into `buf` from `offset`, as [`std::io::Read::read`] does: it may fill less than
     /// `buf`, and gives `0` at the end.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of reading the source.
     fn read_at(&self, offset: u64, buf: &mut [u8]) -> Result<usize>;
 
     /// The size and modification time of these bytes as a file system reports them, for bytes that
@@ -33,6 +37,10 @@ pub trait ReadAt: Debug + Send + Sync {
     }
 
     /// The bytes in `range`, fewer when the source ends first.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of reading the source.
     fn read_range(&self, range: Range<u64>) -> Result<Vec<u8>> {
         let wanted = range.end.saturating_sub(range.start).min(self.len().0);
         if wanted == 0 {

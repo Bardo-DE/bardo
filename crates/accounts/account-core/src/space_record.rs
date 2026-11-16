@@ -19,6 +19,10 @@ pub struct SpaceName(String);
 
 impl SpaceName {
     /// The name `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `text` is blank, too long, or holds a control character.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         let ok = !text.trim().is_empty()
             && text.chars().count() <= SPACE_NAME_MAX_CHARS
@@ -45,6 +49,10 @@ pub struct SpaceLook(String);
 
 impl SpaceLook {
     /// The look `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `text` is longer than the look may be.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         if text.len() <= SPACE_LOOK_MAX_BYTES {
             Ok(Self(text.to_owned()))

@@ -31,6 +31,11 @@ pub struct AppEntry {
 
 impl AppEntry {
     /// The app described by the desktop file `text`.
+    ///
+    /// # Errors
+    ///
+    /// `EntryError::Unreadable` when `text` is not a desktop file, and the errors of
+    /// `AppEntry::from_file`.
     pub fn from_text(id: DesktopId, path: &Path, text: &str) -> Result<AppEntry, EntryError> {
         let file =
             DesktopFile::parse(text, DESKTOP_ENTRY_CAP).map_err(|_| EntryError::Unreadable)?;
@@ -38,6 +43,11 @@ impl AppEntry {
     }
 
     /// The app of an already parsed desktop file.
+    ///
+    /// # Errors
+    ///
+    /// `EntryError` when the file is not an app that can be started: it has no usable `Exec` line
+    /// or is not an application entry.
     pub fn from_file(
         id: DesktopId,
         path: &Path,

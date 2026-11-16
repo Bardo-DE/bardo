@@ -85,6 +85,10 @@ impl TryFrom<PageRangeWire> for PageRange {
 
 impl PageRange {
     /// Pages `first` to `last` inclusive, or why the range is reversed.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::PageRangeReversed` when `last` is before `first`.
     pub fn new(first: PageIndex, last: PageIndex) -> Result<Self, CoreError> {
         if last < first {
             return Err(CoreError::PageRangeReversed {

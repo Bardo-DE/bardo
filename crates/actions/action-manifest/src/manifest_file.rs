@@ -16,6 +16,11 @@ pub enum ManifestFileError {
 }
 
 /// Reads a manifest file and validates it.
+///
+/// # Errors
+///
+/// `ManifestFileError::Toml` when `text` is not a manifest in TOML, and `Invalid` when it breaks a
+/// rule of `validate`.
 pub fn parse(text: &str) -> Result<ValidManifest, ManifestFileError> {
     let manifest: Manifest =
         toml::from_str(text).map_err(|e| ManifestFileError::Toml(e.to_string()))?;

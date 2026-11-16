@@ -14,6 +14,10 @@ impl Mime {
     pub const OCTET_STREAM: Mime = Mime(Cow::Borrowed("application/octet-stream"));
 
     /// `text` as a media type, lower-cased, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError` when `text` is not a `type/subtype` media type.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         let lower = text.to_ascii_lowercase();
         let token = |part: &str| {

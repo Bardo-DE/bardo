@@ -21,21 +21,37 @@ impl<M> HostHandle<M> {
 
     /// Deliver `msg` to the event closure as `HostEvent::App`. Fails with `HostError::HostGone`
     /// after the host has exited.
+    ///
+    /// # Errors
+    ///
+    /// `HostError::HostGone` after the host has exited.
     pub fn send(&self, msg: M) -> Result<()> {
         self.post(HostMsg::App(msg))
     }
 
     /// Apply `op` to surface `id`, as `HostCtx::apply` would.
+    ///
+    /// # Errors
+    ///
+    /// `HostError::HostGone` after the host has exited.
     pub fn apply(&self, id: SurfaceId, op: impl Into<SurfaceOp>) -> Result<()> {
         self.post(HostMsg::Apply { id, op: op.into() })
     }
 
     /// Close surface `id`.
+    ///
+    /// # Errors
+    ///
+    /// `HostError::HostGone` after the host has exited.
     pub fn close(&self, id: SurfaceId) -> Result<()> {
         self.post(HostMsg::Close(id))
     }
 
     /// Close every surface and return from `Host::run`.
+    ///
+    /// # Errors
+    ///
+    /// `HostError::HostGone` after the host has exited.
     pub fn exit(&self) -> Result<()> {
         self.post(HostMsg::Exit)
     }

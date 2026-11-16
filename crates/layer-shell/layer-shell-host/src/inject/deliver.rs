@@ -27,6 +27,11 @@ impl<M: 'static> HostCtx<M> {
     /// and renders on the next flush; a capture renders now and writes the file before
     /// returning. `HostError::NoSurface` for an unknown id; a capture before the surface's first
     /// present is `HostError::Render`.
+    ///
+    /// # Errors
+    ///
+    /// `HostError::NoSurface` for an unknown `id`, and `HostError::Render` for a capture before the
+    /// surface's first present or when the file cannot be written.
     pub fn inject(&mut self, id: SurfaceId, inject: Inject) -> Result<Injected> {
         if !self.state.surfaces.contains_key(&id) {
             return Err(HostError::NoSurface(id));

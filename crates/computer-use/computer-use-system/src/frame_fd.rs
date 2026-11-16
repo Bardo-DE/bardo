@@ -15,6 +15,10 @@ pub struct FrameFdError(#[from] std::io::Error);
 /// descriptor sent with `SCM_RIGHTS` shares its offset with the receiver, who may `read` it), and
 /// sealed against writes and resizing so inferd can map it without a copy. The bytes never pass
 /// through JSON or the bus.
+///
+/// # Errors
+///
+/// `FrameFdError` when the memfd cannot be created, written, rewound or sealed.
 pub fn frame_fd(frame: &FrameAttachment) -> Result<OwnedFd, FrameFdError> {
     let fd = memfd_create(
         "cuad-frame",

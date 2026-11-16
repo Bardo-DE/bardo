@@ -40,6 +40,11 @@ pub struct BadMime(pub String);
 impl Mime {
     /// `text` as a mime type: a non-empty type and subtype around one `/`, and no whitespace
     /// or control characters (a `wl_data_source.offer` string is matched whole by the target).
+    ///
+    /// # Errors
+    ///
+    /// `BadMime` when `text` is not a `type/subtype` pair, or holds whitespace or a control
+    /// character.
     pub fn parse(text: &str) -> Result<Mime, BadMime> {
         let essence = text.split(';').next().unwrap_or_default();
         let well_formed = matches!(

@@ -57,6 +57,11 @@ pub(crate) fn ispdb_url(domain: &DomainName) -> String {
 ///
 /// The defaults of [`SearchOptions`]: `STARTTLS` accepted, POP3 ignored. The document's `OAuth2`
 /// offer is on the result either way.
+///
+/// # Errors
+///
+/// `DiscoverFault::Unreadable` when `xml` is not a configuration document, and `NoServers` when it
+/// names no usable server.
 pub fn parse_autoconfig(xml: &str, address: &str) -> Result<Found, DiscoverFault> {
     parse_autoconfig_with(xml, address, &SearchOptions::default())
 }
@@ -66,6 +71,11 @@ pub fn parse_autoconfig(xml: &str, address: &str) -> Result<Found, DiscoverFault
 /// count (a document of `STARTTLS` servers is `NoServers`); with `report_pop3` the document's
 /// POP3 servers are listed, and a document with POP3 and SMTP but no IMAP is a finding whose
 /// `endpoints` hold the SMTP server alone and whose `claims` are empty.
+///
+/// # Errors
+///
+/// `DiscoverFault::Unreadable` when `xml` is not a configuration document, and `NoServers` when it
+/// names no server that `options` accept.
 pub fn parse_autoconfig_with(
     xml: &str,
     address: &str,

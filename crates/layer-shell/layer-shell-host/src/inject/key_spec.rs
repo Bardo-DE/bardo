@@ -11,6 +11,11 @@ use super::KeyStroke;
 use super::command::CommandError;
 
 /// The keystroke `spec` names (`Tab`, `k+ctrl`, `Tab+shift`): the `key` verb's spelling.
+///
+/// # Errors
+///
+/// `CommandError::NotAKey` when the key has no name or code, and `NotAModifier` for a modifier word
+/// that is not one.
 pub fn parse_key(spec: &str) -> Result<KeyStroke, CommandError> {
     let mut parts = spec.split('+');
     let name = parts.next().unwrap_or_default();

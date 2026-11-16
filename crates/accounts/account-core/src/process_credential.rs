@@ -14,6 +14,10 @@ pub struct ProcessCredentialId(Box<str>);
 
 impl ProcessCredentialId {
     /// The id written as `text`.
+    ///
+    /// # Errors
+    ///
+    /// `IdError` when `text` is not a valid id.
     pub fn parse(text: &str) -> Result<Self, IdError> {
         if is_id(text) {
             Ok(Self(text.into()))

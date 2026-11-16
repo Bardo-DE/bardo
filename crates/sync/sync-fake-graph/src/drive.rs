@@ -294,6 +294,10 @@ impl Drive {
     }
 
     /// The folder at `names` below `from`, made as far as it is missing.
+    ///
+    /// # Errors
+    ///
+    /// `Refused` when a name on the way is taken by a file, or the folder `from` is not there.
     pub fn ensure(&mut self, from: &str, names: &[String]) -> Result<String, Refused> {
         names.iter().try_fold(from.to_owned(), |at, name| {
             match self
@@ -315,6 +319,10 @@ impl Drive {
     }
 
     /// Writes `bytes` as the file `name` in `parent`, replacing a file there.
+    ///
+    /// # Errors
+    ///
+    /// `Refused` when `parent` is not a folder, or the drive has no room for `bytes`.
     pub fn write(&mut self, parent: &str, name: &str, bytes: Vec<u8>) -> Result<String, Refused> {
         let existing = self.child(parent, name).map(|n| (n.id.clone(), n.size()));
         let old = existing.as_ref().map_or(0, |(_, size)| *size);
@@ -353,6 +361,10 @@ impl Drive {
     }
 
     /// Replaces the bytes of the file `id`.
+    ///
+    /// # Errors
+    ///
+    /// `Refused` when `id` is not a live file, or the drive has no room for `bytes`.
     pub fn replace(&mut self, id: &str, bytes: Vec<u8>) -> Result<(), Refused> {
         let (parent, name) = self
             .live(id)

@@ -35,6 +35,10 @@ pub struct ScopeName {
 impl ScopeName {
     /// The scope `launcher` (if any) starts for `run` of `app`. `app` is the id as written in
     /// its desktop entry, unescaped; `launcher` and `run` must each be one plain word.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `app` is empty or `launcher` or `run` is not one plain word.
     pub fn new(launcher: Option<&str>, app: &str, run: &str) -> Result<ScopeName, CoreError> {
         let malformed = |what, text: &str| CoreError::MalformedId {
             what,

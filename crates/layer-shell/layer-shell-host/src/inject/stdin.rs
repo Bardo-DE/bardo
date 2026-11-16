@@ -22,6 +22,11 @@ use crate::id::SurfaceId;
 use crate::state::HostState;
 
 /// Add a stdin source to the loop that parses each line and applies it. EOF on stdin exits.
+///
+/// # Errors
+///
+/// The I/O error of duplicating the standard input descriptor, and the error of adding the source
+/// to the loop.
 pub fn install<M: 'static>(ctx: &mut HostCtx<M>) -> Result<()> {
     let stdin: OwnedFd = std::io::stdin().as_fd().try_clone_to_owned()?;
     let mut pending = String::new();
@@ -47,6 +52,11 @@ pub fn install<M: 'static>(ctx: &mut HostCtx<M>) -> Result<()> {
 }
 
 /// Apply one command and print what it produced.
+///
+/// # Errors
+///
+/// The error of applying the command to a surface, for instance `HostError::NoSurface` for an
+/// unknown one.
 pub fn apply<M: 'static>(ctx: &mut HostCtx<M>, command: DebugCommand) -> Result<()> {
     match command {
         DebugCommand::Quit => ctx.exit(),

@@ -31,6 +31,10 @@ pub struct Ask {
 }
 
 /// A word of a closed set as the wire spells it (`files`, `background`, `fast`).
+///
+/// # Errors
+///
+/// A message naming `text` when it is not one of the words of `T`.
 pub fn word<T: DeserializeOwned>(text: &str) -> Result<T, String> {
     serde_json::from_value(Value::String(text.to_owned()))
         .map_err(|_| format!("`{text}` is not one of the words"))

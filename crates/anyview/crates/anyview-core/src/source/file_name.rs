@@ -9,6 +9,10 @@ pub struct FileName(String);
 
 impl FileName {
     /// `name`, or why it is not a file name.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::NameInvalid` when `name` is empty, `.` or `..`, or holds a separator or a NUL.
     pub fn new(name: &str) -> Result<Self, CoreError> {
         let separator = |c: char| matches!(c, '/' | '\\' | '\0');
         if name.is_empty() || name == "." || name == ".." || name.contains(separator) {

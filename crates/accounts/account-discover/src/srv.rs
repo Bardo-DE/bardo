@@ -37,6 +37,10 @@ pub fn srv_names(domain: &DomainName) -> [String; 5] {
 
 /// Asks the five names. A name with no records is empty; the lookup fails only when no name
 /// could be asked at all.
+///
+/// # Errors
+///
+/// The `DnsFault` of the lookups when none of the five names could be asked.
 pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswers, DnsFault> {
     let [imaps, imap, pop3s, submissions, submission] = srv_names(domain);
     let answers = [
@@ -65,6 +69,10 @@ pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswe
 
 /// The servers SRV records give for `address`: one incoming and one outgoing, or
 /// `NoServers`. POP3 is not looked at.
+///
+/// # Errors
+///
+/// `DiscoverFault::NoServers` when the records give no incoming and outgoing pair.
 pub fn found_from_srv(address: &str, answers: &SrvAnswers) -> Result<Found, DiscoverFault> {
     found_from_srv_with(address, answers, false)
 }
@@ -73,6 +81,10 @@ pub fn found_from_srv(address: &str, answers: &SrvAnswers) -> Result<Found, Disc
 /// [`Found::pop3`] (best first), and a domain with POP3 and submission records but no IMAP is a
 /// finding whose `endpoints` hold the submission server alone and whose `claims` are empty, as
 /// for a document. When it is off, nothing changes: such a domain is `NoServers`.
+///
+/// # Errors
+///
+/// `DiscoverFault::NoServers` when the records give no server `report_pop3` allows.
 pub fn found_from_srv_with(
     address: &str,
     answers: &SrvAnswers,

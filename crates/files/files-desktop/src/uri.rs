@@ -30,6 +30,10 @@ pub enum Uri {
 }
 
 /// What `text` points at.
+///
+/// # Errors
+///
+/// `UriError` when `text` has no scheme, or the scheme's rest is not a place the scheme can name.
 pub fn parse(text: &str) -> Result<Uri, UriError> {
     let (scheme, rest) = split_scheme(text).ok_or(UriError::NoScheme)?;
     match scheme.to_ascii_lowercase().as_str() {

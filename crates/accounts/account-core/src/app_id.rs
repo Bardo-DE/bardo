@@ -11,6 +11,10 @@ pub struct AppName(String);
 impl AppName {
     /// The name written as `text`: two or more dot-separated elements of `[A-Za-z0-9_-]`, each
     /// starting with a letter or `_`, at most 255 bytes (the D-Bus and Flatpak rule).
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `text` is not a valid app name.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         let element_ok = |element: &str| {
             let mut chars = element.chars();

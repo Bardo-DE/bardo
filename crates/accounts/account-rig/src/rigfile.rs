@@ -165,12 +165,20 @@ impl RigFile {
     }
 
     /// Writes the file under `dir` whole.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of encoding the file or writing it under `dir`.
     pub fn write(&self, dir: &Path) -> std::io::Result<()> {
         let text = serde_json::to_string_pretty(self).map_err(std::io::Error::other)?;
         base_fs::atomic::AtomicWrite::SHARED.write(&Self::path(dir), text.as_bytes())
     }
 
     /// Reads the file under `dir`.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of reading the file under `dir`, or of its text not being a rig file.
     pub fn read(dir: &Path) -> std::io::Result<Self> {
         let text = std::fs::read_to_string(Self::path(dir))?;
         serde_json::from_str(&text).map_err(std::io::Error::other)

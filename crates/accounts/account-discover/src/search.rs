@@ -98,6 +98,10 @@ impl fmt::Display for NotFound {
 
 /// Searches every source in order for `address`, stopping at the first usable answer, under the
 /// default [`SearchOptions`] (`STARTTLS` accepted, POP3 ignored).
+///
+/// # Errors
+///
+/// `NotFound` when no source names a usable answer.
 pub async fn discover_mail<H: Http, D: Dns>(
     http: &H,
     dns: &D,
@@ -111,6 +115,10 @@ pub async fn discover_mail<H: Http, D: Dns>(
 /// `STARTTLS` (a document, or SRV submission) is a miss and the next source is tried, as mailo
 /// did; with `report_pop3`, documents' POP3 servers come back on [`Found::pop3`] and a POP3-only
 /// document is a finding.
+///
+/// # Errors
+///
+/// `NotFound` when no source names a usable answer under `options`.
 pub async fn discover_mail_with<H: Http, D: Dns>(
     http: &H,
     dns: &D,

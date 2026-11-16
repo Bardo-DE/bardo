@@ -89,6 +89,11 @@ impl<M: 'static> HostCtx<M> {
     }
 
     /// Create a layer surface rendering `root`. `HostError::Unsupported` without layer-shell.
+    ///
+    /// # Errors
+    ///
+    /// `HostError::Unsupported` without layer-shell, and the error of making the surface's
+    /// presenter.
     pub fn spawn_layer(&mut self, config: LayerConfig, root: HostRoot) -> Result<SurfaceId> {
         let id = self.state.ids.next();
         spawn::layer(&mut self.state, id, config, root)?;
@@ -97,6 +102,10 @@ impl<M: 'static> HostCtx<M> {
     }
 
     /// Create an xdg toplevel rendering `root`.
+    ///
+    /// # Errors
+    ///
+    /// The error of making the surface's presenter.
     pub fn spawn_toplevel(&mut self, config: ToplevelConfig, root: HostRoot) -> Result<SurfaceId> {
         let id = self.state.ids.next();
         spawn::toplevel(&mut self.state, id, config, root);

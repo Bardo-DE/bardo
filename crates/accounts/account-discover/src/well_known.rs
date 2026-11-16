@@ -46,6 +46,11 @@ pub fn well_known_urls(domain: &DomainName, kind: CapabilityKind) -> Vec<Endpoin
 /// A redirect names the service's root (resolved against the asked URL, `https` only: a
 /// redirect to plain HTTP is `Unreadable`). A success, or `401` (a DAV server that wants a login
 /// before it says anything), means the service is at the asked URL itself. `404` is `NoServers`.
+///
+/// # Errors
+///
+/// A `DiscoverFault`: `NoServers` for `404` or a `kind` with no `.well-known` name, and
+/// `Unreadable` for a redirect that is not `https` or cannot be resolved, or any other status.
 pub fn well_known_found(
     kind: CapabilityKind,
     requested: &EndpointUrl,
@@ -76,6 +81,10 @@ pub fn well_known_found(
 /// Asks each `.well-known` URL for `kind` at `domain`, in order; the first that names a
 /// service wins. The `Http` implementation does not follow redirects, so a `Location` is read
 /// here.
+///
+/// # Errors
+///
+/// The `DiscoverFault` of the last URL tried when none of them names a service.
 pub async fn discover_well_known<H: Http>(
     http: &H,
     domain: &DomainName,
@@ -158,6 +167,11 @@ struct Session {
 /// The endpoints and capabilities a JMAP session resource names: the `apiUrl` as the JMAP
 /// endpoint, logged in as the session's `username`; mail (sending only when the submission
 /// capability is there), contacts and calendars when their capabilities are.
+///
+/// # Errors
+///
+/// `DiscoverFault::Unreadable` when `json` is not a JMAP session or its `apiUrl` is not an endpoint
+/// URL.
 pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
     let session: Session = serde_json::from_str(json).map_err(|_| DiscoverFault::Unreadable)?;
     if !session.capabilities.contains_key(CORE) {

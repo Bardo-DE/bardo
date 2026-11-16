@@ -39,6 +39,10 @@ pub struct Rig {
 
 impl Rig {
     /// Starts the issuer, plants its tokens, and starts the Graph fake over it.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of creating `options.dir`, or of starting the issuer or the Graph fake.
     pub async fn start(options: &Options) -> io::Result<Self> {
         std::fs::create_dir_all(&options.dir)?;
         let issuer = FakeIssuer::start().await?;

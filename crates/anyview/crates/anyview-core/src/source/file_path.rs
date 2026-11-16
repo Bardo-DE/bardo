@@ -15,6 +15,10 @@ pub struct FilePath(PathBuf);
 
 impl FilePath {
     /// `path` made absolute-normal, or why it is not absolute.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::PathNotAbsolute` when `path` is not absolute.
     pub fn new(path: impl AsRef<Path>) -> Result<Self, CoreError> {
         let path = path.as_ref();
         if !path.is_absolute() {

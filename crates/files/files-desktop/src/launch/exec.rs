@@ -125,6 +125,10 @@ impl ExecLine {
     ///
     /// Arguments are split at spaces; a double quote holds spaces in one argument, and inside it a
     /// backslash escapes `"`, `` ` ``, `$` and `\`. `%%` is a literal percent sign.
+    ///
+    /// # Errors
+    ///
+    /// `ExecError` when `text` has an unclosed quote, a bad escape or an unknown field code.
     pub fn parse(text: &str) -> Result<ExecLine, ExecError> {
         let mut args = Vec::new();
         let mut current = ArgBuilder::default();

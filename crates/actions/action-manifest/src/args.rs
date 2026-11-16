@@ -249,6 +249,11 @@ fn files(json: &Json) -> Read<Vec<FileRef>> {
 }
 
 /// What the action acts on, from the `target` key (absent: none).
+///
+/// # Errors
+///
+/// `TargetFault` when `given` is not a target the action takes, or is missing for an action that
+/// needs one.
 pub fn target_from_json(
     decl: &ActionDecl,
     given: Option<&Json>,
@@ -289,6 +294,11 @@ pub fn target_from_json(
 }
 
 /// The target and the arguments of one call, every argument labelled `label`.
+///
+/// # Errors
+///
+/// The `ArgFault` of the first argument that is missing, unknown or of the wrong type, and the
+/// `TargetFault` of the target.
 pub fn args_from_json(
     decl: &ActionDecl,
     arguments: Option<&Map<String, Json>>,

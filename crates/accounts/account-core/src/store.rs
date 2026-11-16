@@ -118,11 +118,21 @@ impl Persisted {
     }
 
     /// The document written by this build.
+    ///
+    /// # Errors
+    ///
+    /// `StoreFault::Unreadable` when the registry cannot be encoded as JSON.
     pub fn to_json(&self) -> Result<String, StoreFault> {
         serde_json::to_string_pretty(self).map_err(|e| StoreFault::Unreadable(e.to_string()))
     }
 
     /// The registry a stored document holds, migrated to this build's vocabulary.
+    ///
+    /// # Errors
+    ///
+    /// `StoreFault::Unreadable` when `text` is not JSON, has no vocabulary version, or is not a
+    /// registry, and the fault the migration to this build's vocabulary reports when the document
+    /// cannot be migrated.
     pub fn from_json(text: &str) -> Result<Self, StoreFault> {
         let document: Value =
             serde_json::from_str(text).map_err(|e| StoreFault::Unreadable(e.to_string()))?;

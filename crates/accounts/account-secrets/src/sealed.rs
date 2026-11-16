@@ -7,6 +7,10 @@ use std::os::fd::OwnedFd;
 /// `key` on an anonymous file, read position at the start, sealed against every change: no write,
 /// no growing, no shrinking, and no seal added or removed. A reader gets the key and cannot alter
 /// what another reader of the same file sees.
+///
+/// # Errors
+///
+/// The I/O error of creating the anonymous file, writing the key, rewinding it or sealing it.
 pub fn sealed_key(key: &str) -> io::Result<OwnedFd> {
     let fd = memfd_create(
         "porter-api-key",

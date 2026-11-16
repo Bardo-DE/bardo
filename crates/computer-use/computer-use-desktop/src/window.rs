@@ -20,6 +20,10 @@ pub struct IdentError;
 
 impl ToplevelIdent {
     /// Checks and wraps `text`.
+    ///
+    /// # Errors
+    ///
+    /// `IdentError` when `text` is empty, over 128 bytes, or holds a control character.
     pub fn parse(text: &str) -> Result<Self, IdentError> {
         if text.is_empty() || text.len() > 128 || text.chars().any(char::is_control) {
             Err(IdentError)

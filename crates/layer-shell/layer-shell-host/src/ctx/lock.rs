@@ -42,6 +42,10 @@ impl<M: 'static> HostCtx<M> {
     /// the keyboard. `HostEvent::Lock { id, state: Locked }` follows once the compositor has
     /// locked, or `Finished` when it refuses (another locker holds the lock).
     /// `LockError::Unsupported` without the protocol, `InProgress` while a lock of ours lasts.
+    ///
+    /// # Errors
+    ///
+    /// `LockError::Unsupported` without the protocol, and `InProgress` while a lock of ours lasts.
     pub fn lock_session(
         &mut self,
         config: LockConfig,

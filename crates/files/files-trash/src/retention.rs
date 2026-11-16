@@ -22,6 +22,10 @@ pub fn expired(items: Vec<TrashedItem>, now: SystemTime, keep: Duration) -> Vec<
 
 /// Erases for good the items that have been in `trash` more than `keep` before `now`, and says how
 /// many went.
+///
+/// # Errors
+///
+/// The `TrashError` of listing the Trash or of erasing the expired items.
 pub fn sweep(trash: &dyn Trash, now: SystemTime, keep: Duration) -> Result<usize, TrashError> {
     let old = expired(trash.list()?, now, keep);
     if old.is_empty() {

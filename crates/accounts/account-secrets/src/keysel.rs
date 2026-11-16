@@ -59,12 +59,21 @@ impl std::fmt::Display for KeysRefusal {
 impl std::error::Error for KeysRefusal {}
 
 /// Chooses the key store for this build from the value of the daemon's variable.
+///
+/// # Errors
+///
+/// `KeysRefusal` when the variable is set to something this build refuses; see `select_for`.
 pub fn select(var_value: Option<&str>) -> Result<Selection, KeysRefusal> {
     select_for(var_value, cfg!(feature = "test-keys"))
 }
 
 /// Chooses the key store, pure over the variable's value and whether the build has the file key
 /// store (`test_keys`: built with the `test-keys` feature; the shipped build is not).
+///
+/// # Errors
+///
+/// `KeysRefusal::NotFilePath` when `test_keys` is on and the value is not `file:<path>`, and
+/// `KeysRefusal::NotAbsolute` when the path is not absolute.
 pub fn select_for(var_value: Option<&str>, test_keys: bool) -> Result<Selection, KeysRefusal> {
     match (var_value, test_keys) {
         (None, _) => Ok(Selection::SecretService),
@@ -104,6 +113,11 @@ pub struct Chosen {
 impl Chosen {
     /// Opens the store `selection` names, filing under `namespace`. `said_prefix` starts the
     /// line about the choice: the daemon's name or its variable's (`"accountd"`, `"BARDO_ACCOUNTD_KEYS"`).
+    ///
+    /// # Errors
+    ///
+    /// `KeysRefusal` when `selection` names a store this build cannot open: a key file that cannot
+    /// be opened, or a file store in a build without the `test-keys` feature.
     pub fn open(
         selection: Selection,
         namespace: Namespace,

@@ -44,6 +44,10 @@ impl<S: CredentialStoreApi + Send + Sync + ?Sized + 'static> ChunkedStore<S> {
     /// caller stores whole begins with (a value that does is stored in parts all the same).
     ///
     /// An empty marker is [`ChunkError::EmptyMarker`].
+    ///
+    /// # Errors
+    ///
+    /// `ChunkError::EmptyMarker` when `marker` is empty.
     pub fn new(inner: Arc<S>, marker: &str, limit: Limit) -> std::result::Result<Self, ChunkError> {
         if marker.is_empty() {
             return Err(ChunkError::EmptyMarker);

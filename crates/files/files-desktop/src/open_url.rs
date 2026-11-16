@@ -33,6 +33,10 @@ trait OpenUri {
 
 /// Opens `url` in the person's browser. `parent_window` is empty: the window has no handle the
 /// portal could use.
+///
+/// # Errors
+///
+/// `OpenUrlError` when the portal cannot be reached or refuses the call.
 pub async fn open_url(connection: &Connection, url: &OnlineUrl) -> Result<(), OpenUrlError> {
     let portal = OpenUriProxy::new(connection).await?;
     portal

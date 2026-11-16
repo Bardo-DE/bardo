@@ -184,6 +184,10 @@ impl TimeRange {
     };
 
     /// From `start` to `end`, or to the end of the recording when `end` is `None`.
+    ///
+    /// # Errors
+    ///
+    /// `crate::CoreError::TimeRangeEmpty` when `end` is not after `start`.
     pub fn new(start: MediaTime, end: Option<MediaTime>) -> Result<Self, crate::CoreError> {
         match end {
             Some(end) if end <= start => Err(crate::CoreError::TimeRangeEmpty {

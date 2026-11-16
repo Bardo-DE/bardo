@@ -48,6 +48,10 @@ impl Door {
     }
 
     /// A new Wayland connection with the agent role.
+    ///
+    /// # Errors
+    ///
+    /// The D-Bus error of the call that asks for the connection.
     pub async fn agent_connection(&self) -> Result<OwnedFd, zbus::Error> {
         Ok(self.proxy.connect(AGENT).await?.into())
     }

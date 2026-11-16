@@ -69,6 +69,11 @@ pub enum CommandError {
 /// `<surface> focused`, `<surface> key <name>[+mods] [down|up]` (`Tab`, `k+ctrl`, `Tab+shift up`;
 /// a tap when neither `down` nor `up` is given).
 /// Global verbs win, so no surface may be named `stats` or `quit`.
+///
+/// # Errors
+///
+/// `CommandError` when the line is empty or names an unknown command, lacks an argument a verb
+/// needs, or has a coordinate, key, key action or button that does not parse.
 pub fn parse_command(line: &str) -> Result<DebugCommand, CommandError> {
     let words: Vec<&str> = line.split_whitespace().collect();
     match words.as_slice() {

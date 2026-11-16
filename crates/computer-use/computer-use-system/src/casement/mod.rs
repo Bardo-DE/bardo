@@ -43,6 +43,11 @@ pub struct CasementDesktop {
 impl CasementDesktop {
     /// The desktop over `fd`, a connection with the agent role from `door`. It binds the
     /// client's globals and learns the first window list before it returns.
+    ///
+    /// # Errors
+    ///
+    /// `DesktopError` when the Wayland globals cannot be bound or the first window list cannot be
+    /// read.
     pub async fn start(door: Door, fd: OwnedFd) -> Result<Self, DesktopError> {
         let windows = Arc::new(Mutex::new(Err(protocol("the window list is not read yet"))));
         let leases = Arc::new(Mutex::new(Leases::default()));

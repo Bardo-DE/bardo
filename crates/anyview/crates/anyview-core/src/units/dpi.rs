@@ -18,6 +18,10 @@ impl Dpi {
     pub const PRINT: Dpi = Dpi(300);
 
     /// `value` dpi, or why it is outside 1 to 2400.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::DpiOutOfRange` when `value` is outside 1 to 2400.
     pub fn new(value: u32) -> Result<Self, CoreError> {
         match u16::try_from(value) {
             Ok(dpi) if (1..=2400).contains(&dpi) => Ok(Dpi(dpi)),

@@ -35,6 +35,11 @@ impl Disks {
 
     /// Opens the disk, giving the folder it is at. The service asks the person to authorize when
     /// the system's rules say so.
+    ///
+    /// # Errors
+    ///
+    /// `MountFailure::Gone` when the disk is no longer there, and `Other` when the service refuses
+    /// or gives no usable folder.
     pub async fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
         let filesystem = self.filesystem(id).await.map_err(|_| MountFailure::Gone)?;
         match filesystem.mount(HashMap::new()).await {
@@ -50,6 +55,11 @@ impl Disks {
 
     /// Ejects the disk: unmounts it, then switches its drive off or ejects its media. A disk
     /// something has open is left alone, and the programs that were found come with the failure.
+    ///
+    /// # Errors
+    ///
+    /// `EjectFailure` when the disk cannot be unmounted or its drive cannot be switched off,
+    /// including when programs have it open.
     pub async fn eject(&self, id: &VolumeId) -> Result<(), EjectFailure> {
         self.eject_with(id, false).await
     }
@@ -57,6 +67,11 @@ impl Disks {
     /// Ejects the disk although programs may be using it: the service unmounts it with its
     /// `force` option (a lazy unmount of what is still open), then the drive is taken away as
     /// [`eject`](Disks::eject) does. Ask the person first.
+    ///
+    /// # Errors
+    ///
+    /// `EjectFailure` when the disk cannot be unmounted even by force, or its drive cannot be
+    /// switched off.
     pub async fn force_eject(&self, id: &VolumeId) -> Result<(), EjectFailure> {
         self.eject_with(id, true).await
     }

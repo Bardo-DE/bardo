@@ -120,6 +120,11 @@ pub struct ClaimedId(String);
 
 impl ClaimedId {
     /// The id written as `text`.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `text` is empty, over 255 bytes, or holds a control character
+    /// or a `/`.
     pub fn parse(text: &str) -> Result<ClaimedId, CoreError> {
         let printable = !text.chars().any(|c| c.is_control() || c == '/');
         if !text.is_empty() && text.len() <= 255 && printable {

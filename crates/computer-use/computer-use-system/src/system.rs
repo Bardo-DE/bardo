@@ -45,6 +45,10 @@ pub struct WaylandPair {
 
 impl WaylandPair {
     /// Connects to the compositor the environment names (`WAYLAND_DISPLAY`, `XDG_RUNTIME_DIR`).
+    ///
+    /// # Errors
+    ///
+    /// `ConnectError` when there is no compositor in the environment to connect to.
     pub fn connect_env() -> Result<Self, ConnectError> {
         Ok(Self {
             capture: Connection::connect_to_env()?,
@@ -87,6 +91,11 @@ impl Reached {
     /// The compositor `config` asks for. `Detect` takes casement when `org.bardo.Compositor1`
     /// has an owner on `bus`, else the environment's compositor, else none; `Only(Casement)`
     /// fails when casement is not there.
+    ///
+    /// # Errors
+    ///
+    /// `ReachError` when `config` asks for casement and it is not there, or no compositor can be
+    /// reached.
     pub async fn find(config: &CuadConfig, bus: &zbus::Connection) -> Result<Reached, ReachError> {
         match config.backend {
             BackendChoice::Only(BackendKind::Casement) => {

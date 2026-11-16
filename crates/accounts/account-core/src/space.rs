@@ -68,6 +68,11 @@ pub struct DesktopSpace(String);
 
 impl DesktopSpace {
     /// The id written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `text` is not an id, or is the id of the desktop-wide Space
+    /// itself.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         if is_id(text) && text != SpaceId::DESKTOP {
             Ok(Self(text.to_owned()))
@@ -103,6 +108,10 @@ impl SpaceId {
 
     /// The id written as `text`, or why it is not one: `desktop`, a slug, or
     /// `app:<app name>:<n>`.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `text` is neither an id nor an `app:<app name>:<n>` form.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         if is_id(text) || app_parts(text).is_some() {
             Ok(Self(text.to_owned()))
@@ -129,6 +138,10 @@ impl SpaceId {
     /// The id an app uses for its Space `local`, from the link its Spaces kit stores: a link
     /// names the desktop-wide Space (and a link that is not one is an error, never quietly the
     /// app's own Space); no link is the app's own Space.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `link` is given and is not a desktop-wide Space id.
     pub fn for_app(
         app: &AppName,
         local: LocalSpace,

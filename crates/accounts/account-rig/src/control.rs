@@ -165,6 +165,10 @@ impl Levers {
 }
 
 /// Binds the control endpoint on loopback and serves it on a task; its URL.
+///
+/// # Errors
+///
+/// The I/O error of binding the loopback listener.
 pub async fn serve_levers(levers: Levers) -> io::Result<(String, tokio::task::JoinHandle<()>)> {
     let listener = Listener::bind(&Bind::Port(0), "control").await?;
     let port = account_fake_servers::net::port_of(listener.address());
@@ -177,6 +181,11 @@ pub async fn serve_levers(levers: Levers) -> io::Result<(String, tokio::task::Jo
 }
 
 /// A request to a control endpoint, for the tests and for scenarios written in Rust.
+///
+/// # Errors
+///
+/// The I/O error of a `control` that is not a loopback address, or of connecting to it, sending the
+/// request or reading the answer.
 pub async fn call(control: &str, method: &str, target: &str, body: &[u8]) -> io::Result<Response> {
     let (address, _) = split_loopback(control)?;
     send(

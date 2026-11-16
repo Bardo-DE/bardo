@@ -54,6 +54,10 @@ impl Sequence {
 
     /// A sequence of `entries` pointing at the first one equal to `current`, or why it is not
     /// among them.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError` when `current` is not among `entries`.
     pub fn starting_at(
         entries: NonEmpty<FilePath>,
         current: &FilePath,

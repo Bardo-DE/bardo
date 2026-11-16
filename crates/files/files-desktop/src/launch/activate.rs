@@ -17,6 +17,10 @@ const ANSWER_WITHIN: Duration = Duration::from_secs(10);
 /// Asks an app, by its bus name, to open addresses.
 pub trait Activate: Send + Sync {
     /// Calls `org.freedesktop.Application.Open` on `bus_name` with `uris`.
+    ///
+    /// # Errors
+    ///
+    /// `StartError` when the app cannot be called over the bus.
     fn open(
         &self,
         bus_name: &str,

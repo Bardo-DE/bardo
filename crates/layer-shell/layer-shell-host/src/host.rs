@@ -44,6 +44,11 @@ impl<M: Send + 'static> Host<M> {
     /// Connect to the Wayland display (the session's, or the socket `HostConfig::route` hands over), bind the globals (layer-shell, blur, fractional scale,
     /// text input, cursor shape and activation are optional and degrade), and choose the
     /// backend. The GPU device is created on the first surface, validated by a first present.
+    ///
+    /// # Errors
+    ///
+    /// `HostError::Connect` when the Wayland display cannot be reached or its globals cannot be
+    /// read, and the error of a required global that is missing.
     pub fn connect(config: HostConfig) -> Result<Host<M>> {
         let conn = config.route.connect()?;
         let (globals, mut queue) = registry_queue_init::<HostState>(&conn)
@@ -113,6 +118,10 @@ impl<M: Send + 'static> Host<M> {
     /// the loop is turning (an idle loop beats too, and a loop stuck in a blocking call does
     /// not), so a service-manager watchdog is kept satisfied only while the shell is alive.
     /// Without this call the loop makes no wakeups of its own.
+    ///
+    /// # Errors
+    ///
+    /// The error of starting the beat thread.
     pub fn pulse(&self, every: crate::config::Ms) -> Result<Pulse> {
         crate::pulse::start(&self.ctx.handle, every.duration())
     }
@@ -124,6 +133,10 @@ impl<M: Send + 'static> Host<M> {
 
     /// Run until `HostCtx::exit`, `HostHandle::exit`, or a fatal error. `HostEvent::Started`
     /// comes first, after the initial outputs.
+    ///
+    /// # Errors
+    ///
+    /// The fatal error that ended the loop.
     pub fn run(
         self,
         mut on_event: impl FnMut(&mut HostCtx<M>, HostEvent<M>) + 'static,

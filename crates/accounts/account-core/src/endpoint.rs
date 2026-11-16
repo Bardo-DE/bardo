@@ -88,6 +88,11 @@ pub struct EndpointUrl(String);
 
 impl EndpointUrl {
     /// The URL written as `text`, or why it is not an endpoint URL.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError::MalformedId` when `text` is empty, over 2048 bytes, not printable ASCII, or not
+    /// a URL an endpoint can use.
     pub fn parse(text: &str) -> Result<Self, CoreError> {
         let bad = || CoreError::MalformedId {
             what: "endpoint url",
@@ -249,6 +254,12 @@ impl ServiceEndpoint {
     /// later because a computer has left the list, so it admits plain `http` for that family to
     /// an address only a tailnet hands out ([`Origin::is_tailnet`]), and to no other host. A
     /// relay never carries the family.
+    ///
+    /// # Errors
+    ///
+    /// An `EndpointFault` naming what is incoherent: a scheme that is not the family's protocol, a
+    /// TLS mode that does not go with the scheme, or a plain endpoint on a host that is not
+    /// loopback.
     pub fn check(&self) -> Result<(), EndpointFault> {
         let origin = self.url.origin();
         if self

@@ -80,6 +80,10 @@ fn names_of(path: &str) -> Vec<String> {
 
 impl FakeGraph {
     /// Binds a drive that accepts `Authorization: Bearer <token>`, over plain HTTP on loopback.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of binding the loopback listener.
     pub async fn bind(token: &str) -> io::Result<Self> {
         let listener = Listener::bind(&Bind::Port(0), "graph").await?;
         let port = account_fake_servers::net::port_of(listener.address());
@@ -101,6 +105,10 @@ impl FakeGraph {
     /// origin, as Graph's are on another host. That origin serves only those links and refuses
     /// (`401`) any request that carries an `Authorization` header; the drive's own origin does
     /// not serve them.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of binding either loopback listener.
     pub async fn bind_linked(token: &str) -> io::Result<Self> {
         let mut fake = Self::bind(token).await?;
         let links = Listener::bind(&Bind::Port(0), "graph-links").await?;
@@ -115,6 +123,10 @@ impl FakeGraph {
     /// Binds a drive (its links on its own origin, as [`FakeGraph::bind`]) that accepts
     /// every access token `issuer` has minted and not revoked, so a client that signs in to
     /// the fake issuer and refreshes is served; a token the issuer does not know is `401`.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of binding the loopback listener.
     pub async fn bind_issued(issuer: &IssuerHandle) -> io::Result<Self> {
         let mut fake = Self::bind("").await?;
         fake.shared.accepts = Accepts::Issued(issuer.clone());
@@ -122,6 +134,10 @@ impl FakeGraph {
     }
 
     /// [`FakeGraph::bind_issued`], serving on a task.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of binding the loopback listener.
     pub async fn start_issued(issuer: &IssuerHandle) -> io::Result<Running<GraphHandle>> {
         let fake = Self::bind_issued(issuer).await?;
         let handle = fake.handle();
@@ -129,6 +145,10 @@ impl FakeGraph {
     }
 
     /// Like [`FakeGraph::bind_linked`], serving on a task.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of binding either loopback listener.
     pub async fn start_linked(token: &str) -> io::Result<Running<GraphHandle>> {
         let fake = Self::bind_linked(token).await?;
         let handle = fake.handle();
@@ -143,6 +163,10 @@ impl FakeGraph {
     }
 
     /// Binds and serves on a task.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of binding the loopback listener.
     pub async fn start(token: &str) -> io::Result<Running<GraphHandle>> {
         let fake = Self::bind(token).await?;
         let handle = fake.handle();
@@ -171,6 +195,10 @@ impl GraphHandle {
 
     /// Creates or replaces the file at `path` below the app folder (folders on the way are made),
     /// as another device of the same account would.
+    ///
+    /// # Panics
+    ///
+    /// When a folder on `path` is already a file, or the drive has no room for `bytes`.
     pub fn put_file(&self, path: &str, bytes: &[u8]) {
         let names = names_of(path);
         let mut state = lock(&self.shared.state);
@@ -190,6 +218,10 @@ impl GraphHandle {
 
     /// Creates or replaces the file at `path` below the drive's root (folders on the way are
     /// made), as another device of the same account would.
+    ///
+    /// # Panics
+    ///
+    /// When a folder on `path` is already a file, or the drive has no room for `bytes`.
     pub fn put_root_file(&self, path: &str, bytes: &[u8]) {
         let names = names_of(path);
         let mut state = lock(&self.shared.state);
@@ -207,6 +239,10 @@ impl GraphHandle {
     }
 
     /// Makes the folders on `path` below the drive's root.
+    ///
+    /// # Panics
+    ///
+    /// When a name on `path` is already a file.
     pub fn make_root_folder(&self, path: &str) {
         lock(&self.shared.state)
             .drive
@@ -216,6 +252,10 @@ impl GraphHandle {
 
     /// Moves or renames the item at `from` below the drive's root to `to` (the folders on the
     /// way are made); `false` when there is nothing at `from` or `to` is inside it.
+    ///
+    /// # Panics
+    ///
+    /// When a name on the way to `to` is already a file.
     #[must_use]
     pub fn move_root_item(&self, from: &str, to: &str) -> bool {
         let target = names_of(to);

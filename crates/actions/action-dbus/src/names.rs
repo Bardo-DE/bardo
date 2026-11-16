@@ -53,6 +53,10 @@ pub fn answer_path(task: &TaskId) -> String {
 /// The session bus a daemon serves on: `$DBUS_SESSION_BUS_ADDRESS`, else the address of the bus
 /// that started this process by activation (`$DBUS_STARTER_ADDRESS`), else the default per-user
 /// socket. `env` reads the environment, so a test names its own bus.
+///
+/// # Errors
+///
+/// The D-Bus error of an address that cannot be parsed or a connection that cannot be made.
 pub async fn session_connection(
     env: &impl Fn(&str) -> Option<String>,
 ) -> zbus::Result<zbus::Connection> {

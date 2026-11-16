@@ -14,6 +14,11 @@ impl SurfaceHandle {
     /// meanwhile. Refused, and nothing sent, when the compositor would ignore it (`grab`'s
     /// serial rule): no button held, the press was on another surface, the pointer is not on
     /// this one, or this surface is not a toplevel.
+    ///
+    /// # Errors
+    ///
+    /// `GrabRefused` when the compositor would ignore the request: no button is held, the press was
+    /// on another surface, the pointer is not on this one, or this surface is not a toplevel.
     pub fn begin_move(&self) -> Result<(), GrabRefused> {
         self.grab_check()?;
         self.apply(WindowOp::BeginMove);
@@ -23,6 +28,10 @@ impl SurfaceHandle {
     /// Start resizing this toplevel from `edge` (`xdg_toplevel.resize`), under the same rule as
     /// [`SurfaceHandle::begin_move`]. A `Decorations::Client` window's resize band already does
     /// this in the host; this is for a frame that draws its own resize affordance.
+    ///
+    /// # Errors
+    ///
+    /// `GrabRefused` under the same rule as `SurfaceHandle::begin_move`.
     pub fn begin_resize(&self, edge: ResizeEdge) -> Result<(), GrabRefused> {
         self.grab_check()?;
         self.apply(WindowOp::BeginResize(edge));

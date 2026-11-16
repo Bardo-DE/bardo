@@ -13,19 +13,40 @@ pub trait Trash: Send + Sync {
     /// and matching each by its original path with the newest deletion time. An item that cannot
     /// be matched that way (two items of the same path thrown away within one second) is left
     /// out of the answer; it is in the Trash all the same.
+    ///
+    /// # Errors
+    ///
+    /// `TrashError` when an item cannot be moved to the Trash.
     fn trash(&self, items: &[ItemRef]) -> Result<Vec<TrashedItem>, TrashError>;
 
     /// Every item in the Trash, in no particular order. An item whose name or place cannot be
     /// read is left out.
+    ///
+    /// # Errors
+    ///
+    /// `TrashError` when the Trash cannot be read.
     fn list(&self) -> Result<Vec<TrashedItem>, TrashError>;
 
     /// Moves `items` back to where they came from. Nothing is moved when something is already
     /// in the place of any of them: that is [`TrashError::Occupied`].
+    ///
+    /// # Errors
+    ///
+    /// `TrashError::Occupied` when something is already in the place of any item, and another
+    /// `TrashError` when an item cannot be moved.
     fn put_back(&self, items: &[TrashedItem]) -> Result<(), TrashError>;
 
     /// Erases `items` for good.
+    ///
+    /// # Errors
+    ///
+    /// `TrashError` when an item cannot be erased.
     fn delete_for_good(&self, items: &[TrashedItem]) -> Result<(), TrashError>;
 
     /// Erases everything in the Trash for good.
+    ///
+    /// # Errors
+    ///
+    /// `TrashError` when the Trash cannot be emptied.
     fn empty(&self) -> Result<(), TrashError>;
 }

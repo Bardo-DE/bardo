@@ -85,6 +85,10 @@ impl ReachServer {
     }
 
     /// Serves `org.bardo.IntentReach1` on `connection`, at the object `IntentProvider1` is at.
+    ///
+    /// # Errors
+    ///
+    /// The D-Bus error of putting the object on `connection`.
     pub async fn serve(&self, connection: &zbus::Connection) -> zbus::Result<()> {
         connection
             .object_server()
@@ -94,6 +98,10 @@ impl ReachServer {
     }
 
     /// Emits `ReachChanged` on `connection`.
+    ///
+    /// # Errors
+    ///
+    /// The D-Bus error of building the emitter or sending the signal.
     pub async fn announce(&self, connection: &zbus::Connection) -> zbus::Result<()> {
         let emitter = SignalEmitter::new(connection, PROVIDER_PATH)?;
         Self::reach_changed(&emitter).await

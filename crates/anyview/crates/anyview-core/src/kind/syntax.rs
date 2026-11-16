@@ -12,6 +12,10 @@ pub struct SyntaxName(Cow<'static, str>);
 
 impl SyntaxName {
     /// `text` as a syntax name, lower-cased, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// `CoreError` when `text` is not a syntax name.
     pub fn new(text: &str) -> Result<Self, CoreError> {
         let lower = text.to_ascii_lowercase();
         let valid = !lower.is_empty()

@@ -111,6 +111,11 @@ pub enum RevokeReason {
 impl LeaseRequest {
     /// Whether this request may be granted for `info`: it names that window, and the window is
     /// not the shell's (a `Shell` window is never leasable, in any mode).
+    ///
+    /// # Errors
+    ///
+    /// `DesktopError::NoSuchWindow` when the request names another window, and the refusal for a
+    /// shell window, which is never leasable.
     pub fn check(&self, info: &ToplevelInfo) -> Result<(), DesktopError> {
         if info.ident != self.window {
             Err(DesktopError::NoSuchWindow)

@@ -47,6 +47,10 @@ pub struct Identity {
 impl Identity {
     /// Names process `pid` Flatpak app `app` under `proc_root`: its scope and its sandbox's
     /// metadata.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of creating the directories or writing the files under `proc_root`.
     pub fn write(proc_root: &Path, app: &str, pid: u32) -> io::Result<Self> {
         let dir = proc_root.join(pid.to_string());
         std::fs::create_dir_all(dir.join("root"))?;

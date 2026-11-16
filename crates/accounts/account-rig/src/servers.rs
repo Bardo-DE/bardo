@@ -134,6 +134,10 @@ impl Ollama {
     }
 
     /// Starts it again on the same port. `false` when it was running.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of binding the port again.
     pub async fn start(&self) -> io::Result<bool> {
         if self.is_running() {
             return Ok(false);
@@ -195,6 +199,10 @@ pub struct Rig {
 
 impl Rig {
     /// Starts what `options` asks for and writes the scratch CA into `options.dir`.
+    ///
+    /// # Errors
+    ///
+    /// The I/O error of creating `options.dir`, writing the CA, or binding and starting a server.
     pub async fn start(options: &Options) -> io::Result<Self> {
         std::fs::create_dir_all(&options.dir)?;
         std::fs::write(options.dir.join("ca.pem"), tls::CA_PEM)?;
