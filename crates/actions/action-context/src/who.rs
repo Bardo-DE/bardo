@@ -203,9 +203,10 @@ impl RouterState {
                 });
             }
             CallerRole::Mcp => {
-                let client = ClientName::parse(app.as_str())
-                    .ok()
-                    .ok_or(WireRefusal::Malformed)?;
+                let client = ClientName::parse(app.as_str()).map_err(|error| {
+                    tracing::warn!(error = %error, "an MCP caller's app is not a client name");
+                    WireRefusal::Malformed
+                })?;
                 (
                     Actor::Mcp {
                         client: client.clone(),
@@ -231,12 +232,14 @@ impl RouterState {
             existing.clone()
         } else {
             let n = self.mint();
-            let session = SessionId::parse(&format!("s-{n}"))
-                .ok()
-                .ok_or(WireRefusal::Malformed)?;
-            let task = TaskId::parse(&format!("t-{n}"))
-                .ok()
-                .ok_or(WireRefusal::Malformed)?;
+            let session = SessionId::parse(&format!("s-{n}")).map_err(|error| {
+                tracing::warn!(error = %error, "a minted session id is not a session id");
+                WireRefusal::Malformed
+            })?;
+            let task = TaskId::parse(&format!("t-{n}")).map_err(|error| {
+                tracing::warn!(error = %error, "a minted task id is not a task id");
+                WireRefusal::Malformed
+            })?;
             let mut record = SessionRecord::new(
                 task,
                 actor.clone(),

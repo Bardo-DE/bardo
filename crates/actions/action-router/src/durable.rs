@@ -108,8 +108,10 @@ impl<S: Seams> Router<S> {
         writer
             .append(self.seams.log(), id, &note)
             .await
-            .ok()
-            .ok_or(CallRefusal::NotRecorded)?;
+            .map_err(|error| {
+                tracing::warn!(error = %error, "the taint note could not be written to the log");
+                CallRefusal::NotRecorded
+            })?;
         if let Some(record) = self.locked().sessions.get_mut(id) {
             record.wal.tainted();
         }

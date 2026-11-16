@@ -51,9 +51,10 @@ pub fn assemble(
 ) -> Result<Message, SendRefusal> {
     let thread = match draft.thread {
         Some(thread) => thread,
-        None => ThreadId::parse(id.as_str())
-            .ok()
-            .ok_or(SendRefusal::Malformed(provenance::Fault::NoParts))?,
+        None => ThreadId::parse(id.as_str()).map_err(|error| {
+            tracing::warn!(error = %error, "a message id is not a thread id");
+            SendRefusal::Malformed(provenance::Fault::NoParts)
+        })?,
     };
     let parts = draft
         .parts

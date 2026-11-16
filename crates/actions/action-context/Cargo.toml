@@ -24,6 +24,7 @@ permission-policy = {path = "../permission-policy"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
 thiserror = { workspace = true }
+tracing = { workspace = true }
 futures-util = { workspace = true, features = ["std"] }
 futures-channel = { workspace = true, features = ["std"] }
 

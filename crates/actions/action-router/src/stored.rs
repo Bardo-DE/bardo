@@ -65,7 +65,10 @@ impl<S: Seams> Router<S> {
                         rows: page.rows.iter().filter_map(row).collect(),
                         next: page.next.map(|s| s.0),
                     }),
-                    Err(_) => IntentsReply::Refused(WireRefusal::NoSuchSession),
+                    Err(error) => {
+                        tracing::warn!(error = %error, "the session log could not be paged");
+                        IntentsReply::Refused(WireRefusal::NoSuchSession)
+                    }
                 }
             }
         }

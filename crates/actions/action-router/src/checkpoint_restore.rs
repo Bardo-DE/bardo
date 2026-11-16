@@ -79,7 +79,9 @@ fn missing(name: &str) -> AppRefusal {
             param,
             options: Vec::new(),
         },
-        Err(_) => AppRefusal::Unsupported,
+        Err(error) => {
+            AppRefusal::Failed(FailText(format!("{name} is not a parameter name: {error}")))
+        }
     }
 }
 
