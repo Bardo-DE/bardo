@@ -33,6 +33,9 @@ pub enum NoScores {
     /// the options is among the likeliest tokens, or nothing is left of them.
     #[error("the first-token probabilities cannot tell the options apart")]
     Unusable,
+    /// The shares made from them are not a set of option scores.
+    #[error("the first-token probabilities do not make option scores")]
+    Shares(#[source] pi::ScoresError),
 }
 
 /// What a turn asks the engine for: the first-token candidates when the app set the knob and the
@@ -97,8 +100,7 @@ pub fn option_scores(
             })
             .collect(),
     )
-    .ok()
-    .ok_or(NoScores::Unusable)
+    .map_err(NoScores::Shares)
 }
 
 #[cfg(test)]

@@ -20,8 +20,7 @@ use serde_json::{Value, json};
 /// A message naming `text` when it is not one of the words `T` accepts.
 pub fn word<T: DeserializeOwned>(text: &str) -> Result<T, String> {
     serde_json::from_value(Value::String(text.to_owned()))
-        .ok()
-        .ok_or_else(|| format!("`{text}` is not one of the words"))
+        .map_err(|e| format!("`{text}` is not one of the words: {e}"))
 }
 
 /// The need a command line names.
