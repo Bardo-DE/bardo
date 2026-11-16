@@ -40,28 +40,45 @@ impl std::fmt::Debug for DbusAccounts {
     }
 }
 
-fn fault(error: &LauncherError) -> AccountFault {
+fn fault(error: LauncherError) -> AccountFault {
+    let cause = AccountFault::source_of(error.clone());
     match error {
-        LauncherError::Link(LinkError::Unreachable) => AccountFault::Unreachable,
+        LauncherError::Link(LinkError::Unreachable) => AccountFault::Unreachable(cause),
         LauncherError::Refused(_)
         | LauncherError::Link(LinkError::Denied)
-        | LauncherError::Fault(LauncherFault::OnceGrant) => AccountFault::Refused,
-        _ => AccountFault::Other,
+        | LauncherError::Fault(LauncherFault::OnceGrant) => AccountFault::Refused(cause),
+        _ => AccountFault::Other(cause),
     }
 }
 
-fn bus_fault(error: &zbus::Error) -> AccountFault {
-    match error {
-        zbus::Error::MethodError(..) => AccountFault::Refused,
-        zbus::Error::InputOutput(_) => AccountFault::Unreachable,
-        _ => AccountFault::Other,
+fn bus_fault(error: zbus::Error) -> AccountFault {
+    match &error {
+        zbus::Error::MethodError(..) => AccountFault::Refused(AccountFault::source_of(error)),
+        zbus::Error::InputOutput(_) => AccountFault::Unreachable(AccountFault::source_of(error)),
+        _ => AccountFault::Other(AccountFault::source_of(error)),
     }
+}
+
+/// A name for the bus, which the value's own text gives; anything else is no name.
+#[derive(Debug, thiserror::Error)]
+enum BadReply {
+    #[error("the value does not serialise")]
+    Serialise(#[source] serde_json::Error),
+    #[error("the value is not a plain name")]
+    NotText,
+    #[error("the key was not given as a value")]
+    NotValue,
 }
 
 fn slug<T: serde::Serialize>(value: &T) -> Result<String, AccountFault> {
     match serde_json::to_value(value) {
         Ok(serde_json::Value::String(s)) => Ok(s),
-        _ => Err(AccountFault::Other),
+        Ok(_) => Err(AccountFault::Other(AccountFault::source_of(
+            BadReply::NotText,
+        ))),
+        Err(error) => Err(AccountFault::Other(AccountFault::source_of(
+            BadReply::Serialise(error),
+        ))),
     }
 }
 
@@ -76,11 +93,9 @@ impl DbusAccounts {
     /// revocation streams, or does not reach the agents interface.
     pub async fn connect(connection: &BusConnection) -> Result<Self, AccountFault> {
         let launcher = Bus::over(connection.clone()).launcher();
-        let requests = launcher.requests().await.map_err(|e| fault(&e))?;
-        let revocations = launcher.revocations().await.map_err(|e| fault(&e))?;
-        let agents = AgentsProxy::new(connection)
-            .await
-            .map_err(|e| bus_fault(&e))?;
+        let requests = launcher.requests().await.map_err(fault)?;
+        let revocations = launcher.revocations().await.map_err(fault)?;
+        let agents = AgentsProxy::new(connection).await.map_err(bus_fault)?;
         Ok(Self {
             launcher,
             agents,
@@ -92,24 +107,15 @@ impl DbusAccounts {
 
 impl Accounts for DbusAccounts {
     async fn register(&self, programs: &[AgentProgram]) -> Result<(), AccountFault> {
-        self.launcher
-            .register(programs)
-            .await
-            .map_err(|e| fault(&e))
+        self.launcher.register(programs).await.map_err(fault)
     }
 
     async fn begin_session(&self, session: &SessionToken) -> Result<(), AccountFault> {
-        self.launcher
-            .begin_session(session)
-            .await
-            .map_err(|e| fault(&e))
+        self.launcher.begin_session(session).await.map_err(fault)
     }
 
     async fn end_session(&self, session: &SessionToken) -> Result<(), AccountFault> {
-        self.launcher
-            .end_session(session)
-            .await
-            .map_err(|e| fault(&e))
+        self.launcher.end_session(session).await.map_err(fault)
     }
 
     async fn open_endpoint(
@@ -146,7 +152,7 @@ impl Accounts for DbusAccounts {
                 &HashMap::new(),
             )
             .await
-            .map_err(|e| bus_fault(&e))?;
+            .map_err(bus_fault)?;
         Ok(OpenedEndpoint {
             session,
             host,
@@ -157,10 +163,7 @@ impl Accounts for DbusAccounts {
     }
 
     async fn close_endpoint(&self, session: &str) -> Result<(), AccountFault> {
-        self.agents
-            .close_endpoint(session)
-            .await
-            .map_err(|e| bus_fault(&e))
+        self.agents.close_endpoint(session).await.map_err(bus_fault)
     }
 
     async fn request_key(
@@ -173,7 +176,7 @@ impl Accounts for DbusAccounts {
             .request_agent_key(program, class, Some(session))
             .await
             .map(|candidate| candidate.grant)
-            .map_err(|e| fault(&e))
+            .map_err(fault)
     }
 
     async fn issue(
@@ -186,13 +189,14 @@ impl Accounts for DbusAccounts {
             .launcher
             .issue_credential(permit, program)
             .await
-            .map_err(|e| fault(&e))?;
+            .map_err(fault)?;
         let ChildKey::Value { value: key, .. } = credential
             .child_key(key_env, KeyDelivery::Value)
-            .ok()
-            .ok_or(AccountFault::Other)?
+            .map_err(|error| AccountFault::Other(AccountFault::source_of(error)))?
         else {
-            return Err(AccountFault::Other);
+            return Err(AccountFault::Other(AccountFault::source_of(
+                BadReply::NotValue,
+            )));
         };
         Ok(Issued {
             id: credential.id().clone(),
@@ -201,10 +205,7 @@ impl Accounts for DbusAccounts {
     }
 
     async fn revoke(&self, id: &ProcessCredentialId) -> Result<(), AccountFault> {
-        self.launcher
-            .revoke_credential(id)
-            .await
-            .map_err(|e| fault(&e))
+        self.launcher.revoke_credential(id).await.map_err(fault)
     }
 
     async fn hear(&self) -> Option<Heard> {
@@ -240,6 +241,6 @@ impl Accounts for DbusAccounts {
             AskKind::Login => self.launcher.report_login(&ask.request, outcome).await,
             AskKind::Logout => self.launcher.report_logout(&ask.request, outcome).await,
         };
-        result.map_err(|e| fault(&e))
+        result.map_err(fault)
     }
 }

@@ -49,7 +49,7 @@ impl Accounts for LoginOnly {
         _class: DataClass,
         _protocol: AgentProtocol,
     ) -> Result<OpenedEndpoint, AccountFault> {
-        Err(AccountFault::Unreachable)
+        Err(AccountFault::Unreachable(None))
     }
 
     #[expect(
@@ -70,7 +70,7 @@ impl Accounts for LoginOnly {
         _class: DataClass,
         _session: &SessionToken,
     ) -> Result<GrantId, AccountFault> {
-        Err(AccountFault::Unreachable)
+        Err(AccountFault::Unreachable(None))
     }
 
     #[expect(
@@ -83,7 +83,7 @@ impl Accounts for LoginOnly {
         _program: &AgentProgram,
         _key_env: &EnvName,
     ) -> Result<Issued, AccountFault> {
-        Err(AccountFault::Unreachable)
+        Err(AccountFault::Unreachable(None))
     }
 
     #[expect(

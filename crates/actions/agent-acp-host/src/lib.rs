@@ -70,8 +70,8 @@ pub use intents_court::IntentsCourt;
 pub use models::{ModelId, ModelIdRefused, Models};
 pub use performer::{Performer, UndoNote};
 pub use spawn::{
-    AgentChild, LaunchPlan, SandboxStep, SessionMeta, SignIn, SignInRefused, Spawn, SpawnFault,
-    Spawned,
+    AgentChild, FaultSource, LaunchPlan, SandboxStep, SessionMeta, SignIn, SignInRefused, Spawn,
+    SpawnFault, Spawned,
 };
 pub use terminals::Terminals;
 pub use workdir::{Workdir, WorkdirFault};

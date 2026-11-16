@@ -116,7 +116,7 @@ impl FakeAccounts {
     fn note(&self, call: Call) -> Result<(), AccountFault> {
         locked(&self.state).calls.push(call);
         match self.mood {
-            Mood::Down => Err(AccountFault::Unreachable),
+            Mood::Down => Err(AccountFault::Unreachable(None)),
             _ => Ok(()),
         }
     }
@@ -168,7 +168,7 @@ impl Accounts for FakeAccounts {
     ) -> Result<OpenedEndpoint, AccountFault> {
         self.note(Call::Open(program.as_str().to_owned(), route.id.clone()))?;
         if self.mood == Mood::NoEndpoint {
-            return Err(AccountFault::Refused);
+            return Err(AccountFault::Refused(None));
         }
         Ok(OpenedEndpoint {
             session: "ep-1".to_owned(),

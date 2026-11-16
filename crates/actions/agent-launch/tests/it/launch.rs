@@ -298,7 +298,7 @@ async fn a_program_that_is_not_listed_starts_nothing_and_asks_nothing() {
         .spawn(&plan("gemini-cli", "s-1"))
         .await
         .expect_err("not listed");
-    assert_eq!(err, SpawnFault::NotAllowed);
+    assert!(matches!(err, SpawnFault::NotAllowed), "{err}");
     assert!(rig.accounts.calls().is_empty());
     assert!(rig.procs.runs().is_empty());
 }
@@ -307,13 +307,12 @@ async fn a_program_that_is_not_listed_starts_nothing_and_asks_nothing() {
 async fn a_failure_part_way_undoes_what_was_done() {
     // inferd will not open the endpoint: the session is ended and nothing runs.
     let mut rig = rig(ENDPOINT, Mood::NoEndpoint, true);
-    assert_eq!(
-        rig.spawn
-            .spawn(&plan("claude-code", "s-1"))
-            .await
-            .expect_err("refused"),
-        SpawnFault::Accounts
-    );
+    let refused = rig
+        .spawn
+        .spawn(&plan("claude-code", "s-1"))
+        .await
+        .expect_err("refused");
+    assert!(matches!(refused, SpawnFault::Accounts(_)), "{refused}");
     assert_eq!(
         rig.accounts.calls(),
         [
@@ -326,13 +325,12 @@ async fn a_failure_part_way_undoes_what_was_done() {
 
     // accountd is not there: no process, and the failed begin is all that was tried.
     let mut rig = rig_down();
-    assert_eq!(
-        rig.spawn
-            .spawn(&plan("claude-code", "s-1"))
-            .await
-            .expect_err("down"),
-        SpawnFault::Accounts
-    );
+    let down = rig
+        .spawn
+        .spawn(&plan("claude-code", "s-1"))
+        .await
+        .expect_err("down");
+    assert!(matches!(down, SpawnFault::Accounts(_)), "{down}");
     assert_eq!(rig.accounts.calls(), [Call::Begin("acp-s-1".into())]);
 
     // The process will not start after the endpoint opened: the endpoint is closed, the session

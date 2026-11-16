@@ -24,21 +24,58 @@ pub struct LaunchPlan {
     pub edge: Option<EdgeBind>,
 }
 
+/// The error underneath a [`SpawnFault`], kept so the chain can be walked.
+pub type FaultSource = Box<dyn std::error::Error + Send + Sync>;
+
 /// Why an agent did not start.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum SpawnFault {
     /// Agent programs are off, or this one is not configured.
     #[error("agent programs are off or this one is not configured")]
     NotAllowed,
-    /// The account service refused or is not there.
+    /// The account service refused or is not there, or what it lent is not usable.
     #[error("the account service did not give the agent what it needs")]
-    Accounts,
-    /// The sandbox could not be made, at this step.
+    Accounts(#[source] FaultSource),
+    /// The session's name is not one the launcher can use.
+    #[error("the session name is not usable")]
+    Session,
+    /// The sandbox could not be made, at this step, for a reason of the plan itself.
     #[error("the sandbox could not be made: {0}")]
     Sandbox(SandboxStep),
+    /// The sandbox could not be made, at this step, because something failed.
+    #[error("the sandbox could not be made: {step}")]
+    SandboxFailed {
+        /// The step that failed.
+        step: SandboxStep,
+        /// What failed.
+        #[source]
+        source: FaultSource,
+    },
     /// The process did not start.
     #[error("the process did not start")]
     Process,
+}
+
+impl SpawnFault {
+    /// The account service failed with `source`.
+    #[must_use]
+    pub fn accounts<E>(source: E) -> Self
+    where
+        E: std::error::Error + Send + Sync + 'static,
+    {
+        Self::Accounts(Box::new(source))
+    }
+
+    /// For `map_err`: a fault at sandbox `step` caused by the error it is given.
+    pub fn at<E>(step: SandboxStep) -> impl FnOnce(E) -> Self
+    where
+        E: std::error::Error + Send + Sync + 'static,
+    {
+        move |source| Self::SandboxFailed {
+            step,
+            source: Box::new(source),
+        }
+    }
 }
 
 /// The step of making a sandbox that failed.

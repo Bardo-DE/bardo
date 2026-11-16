@@ -21,8 +21,6 @@ pub fn launch(dir: &AgentsDir, id: &str, version: &str) -> Result<Launch, Launch
             why,
         })?;
     let home = dir.home(&slug);
-    std::fs::create_dir_all(&home)
-        .ok()
-        .ok_or(LaunchFault::Home)?;
+    std::fs::create_dir_all(&home).map_err(|error| LaunchFault::Home(Arc::new(error)))?;
     Ok(Launch::of(&record, &at, home))
 }

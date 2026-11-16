@@ -4,6 +4,7 @@
 use crate::record::{FILES, Record, RecordFault};
 use crate::slug::SlugRefused;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 /// How to start an installed agent.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -20,8 +21,9 @@ pub struct Launch {
     pub home: PathBuf,
 }
 
-/// Why an agent cannot be started from the agents directory.
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+/// Why an agent cannot be started from the agents directory. Two faults are equal when they are
+/// the same kind of failure.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum LaunchFault {
     /// The id or the version is not a name docket keeps agents under.
     #[error(transparent)]
@@ -38,8 +40,16 @@ pub enum LaunchFault {
     },
     /// The home could not be made.
     #[error("the agent's home could not be made")]
-    Home,
+    Home(#[source] Arc<std::io::Error>),
 }
+
+impl PartialEq for LaunchFault {
+    fn eq(&self, other: &Self) -> bool {
+        std::mem::discriminant(self) == std::mem::discriminant(other)
+    }
+}
+
+impl Eq for LaunchFault {}
 
 impl Launch {
     /// How to start the agent whose record is `record`, installed at `dir` (the version's

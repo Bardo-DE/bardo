@@ -13,18 +13,32 @@ use account_capability::{AgentProgram, AgentProtocol};
 use account_capability::{LoginOutcome, LoginRequestId};
 use account_core::{AccountId, DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
 
-/// Why a call to porter failed. Coarse on purpose: nothing of the other side's wording is kept.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+/// What was underneath an [`AccountFault`], when something was.
+pub type FaultSource = std::sync::Arc<dyn std::error::Error + Send + Sync>;
+
+/// Why a call to porter failed. Coarse on purpose: the kind says what the launcher does next, and
+/// the source (when there is one) is what the link reported, for logs.
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum AccountFault {
     /// The service is not there.
     #[error("the account service is not reachable")]
-    Unreachable,
+    Unreachable(#[source] Option<FaultSource>),
     /// It refused: the person said no, or this caller may not.
     #[error("the account service refused")]
-    Refused,
+    Refused(#[source] Option<FaultSource>),
     /// Anything else.
     #[error("the account service failed")]
-    Other,
+    Other(#[source] Option<FaultSource>),
+}
+
+impl AccountFault {
+    /// `source` as a fault's cause.
+    pub fn source_of<E>(source: E) -> Option<FaultSource>
+    where
+        E: std::error::Error + Send + Sync + 'static,
+    {
+        Some(std::sync::Arc::new(source))
+    }
 }
 
 /// What the endpoint serves, as the bus names it.
