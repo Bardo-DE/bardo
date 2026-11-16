@@ -3,12 +3,10 @@
 use super::theme_picture::{SIDE, picture_of};
 use crate::marked::marked;
 use dioxus::prelude::*;
-use settings_app_model::external::toml;
 use settings_app_model::word_label;
-use ui_components::components::content::icon_source::{ExternalIcon, IconSource};
 use ui_components::components::controls::radio_group::Arrangement;
 use ui_components::prelude::*;
-use ui_components::style::icon::render::{IconPx, IconSize};
+use ui_components::style::icon::render::IconPx;
 use ui_settings::schema::WordLabels;
 
 /// The order the choices are drawn in: light, dark, then the one that follows the desktop.

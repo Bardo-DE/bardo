@@ -8,7 +8,6 @@
 
 use action_core::CallProgress;
 use std::collections::VecDeque;
-use std::future::Future;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::task::{Poll, Waker};

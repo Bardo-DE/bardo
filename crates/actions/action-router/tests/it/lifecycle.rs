@@ -3,7 +3,6 @@
 //! rig below swaps the link, the reviewer and the confirmer for ones that do.
 
 use crate::support::*;
-use action_core::LinkFault;
 use action_core::*;
 use action_fake::{
     FakeMemory, FixedClock, MemoryGrants, RecordingSink, ScriptedReader, ScriptedWriter,

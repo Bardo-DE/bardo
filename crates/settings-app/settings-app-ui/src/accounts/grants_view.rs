@@ -11,7 +11,6 @@ use ui_components::components::lists::list::model::ListStyle;
 use ui_components::components::overlays::hover_card::parts::HoverCardPart;
 use ui_components::components::overlays::hover_card::target::{HoverTarget, TargetElement};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::stack::hover_hub::{HoverKey, HoverKind, use_hover_hub};
 
 /// Before a permission's path in the key of its hover target.

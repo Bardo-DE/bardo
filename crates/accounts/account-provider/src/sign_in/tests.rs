@@ -1,9 +1,9 @@
 use super::*;
 use account_capability::{AbsentReason, Provenance, Subject};
 use account_capability::{
-    Access, Capability, CapabilityKind, Delta, HashKind, StorageCap, StorageScope,
+    Access, Capability, Delta, HashKind, StorageCap, StorageScope,
 };
-use account_core::{Limit, LimitReason, SecretText};
+use account_core::{Limit, LimitReason};
 
 fn storage_claim() -> Claim {
     Claim {

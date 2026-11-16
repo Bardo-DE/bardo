@@ -19,7 +19,6 @@ use ui_components::components::content::label::LabelRole;
 use ui_components::components::controls::checkbox::Checkbox;
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// The bindings of `entry`: its list, or the old word a file written before the list holds.

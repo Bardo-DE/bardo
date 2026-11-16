@@ -10,7 +10,6 @@ use action_wire::{CallerId, IntentsReply, IntentsRequest, WidenAnswer, WidenAsk,
 use base_time::Clock as _;
 use permission_core::Floor;
 use permission_policy::Presets;
-use std::future::Future;
 use std::sync::{Arc, Mutex, MutexGuard, RwLock};
 
 /// The router over one set of seams.

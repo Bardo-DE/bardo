@@ -1,7 +1,6 @@
 //! A kind quire has no component for: its value, read-only, and where to change it.
 
 use dioxus::prelude::*;
-use settings_app_model::external::toml;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::prelude::*;
 

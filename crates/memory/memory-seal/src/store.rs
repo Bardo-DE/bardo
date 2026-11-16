@@ -2,7 +2,6 @@
 
 use crate::keys::SpaceKey;
 use memory_core::SpaceId;
-use std::future::Future;
 
 /// Why a key could not be had.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

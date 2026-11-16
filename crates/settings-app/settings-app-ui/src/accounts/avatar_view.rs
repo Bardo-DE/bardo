@@ -6,7 +6,6 @@ use dioxus::prelude::*;
 use settings_app_model::AccountProvider;
 use ui_components::components::content::avatar::{AvatarSize, AvatarTone, person_hue};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// Where the avatar is drawn: it is larger at the head of an account's detail than in the list.

@@ -110,7 +110,7 @@ mod tests {
     use computer_use_action::RunMode;
     use computer_use_bus::{CuaOutcome, RunStateSlug};
     use provenance::RunId;
-    use shell_launcher::{Cancel, Query, VecSink};
+    use shell_launcher::{Cancel, VecSink};
 
     use super::*;
 

@@ -17,7 +17,6 @@ use ui_components::components::controls::button_model::{Answers, Bezel};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 /// The page: what the update service says and the buttons that move it, or why there is none.
 #[component]

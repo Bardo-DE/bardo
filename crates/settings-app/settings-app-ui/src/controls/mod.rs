@@ -19,7 +19,6 @@ use menu::MenuControl;
 use picture::PictureControl;
 use rows::RowsControl;
 use segmented::SegmentedKey;
-use settings_app_model::external::toml;
 use settings_app_model::{Control as Kind, KeyEntry};
 use slider::SliderControl;
 use swatches::{SwatchControl, swatch_words};

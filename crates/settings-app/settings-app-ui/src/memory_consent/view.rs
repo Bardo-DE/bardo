@@ -7,7 +7,6 @@ use dioxus::prelude::*;
 use settings_app_model::{KeyEntry, kept_value};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// What waits for `entry`'s key, said in plain words with Confirm, and the line that says why

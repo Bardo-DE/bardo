@@ -282,7 +282,6 @@ fn pointer_enters_at(
     at: (i32, i32),
     clients: &[ClientId],
 ) -> Vec<usize> {
-    use compositor_core::geometry::LogicalPoint;
     let count = |fixture: &mut Fixture, id: ClientId| {
         events_of(fixture.client(id), "wl_pointer#")
             .iter()

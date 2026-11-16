@@ -11,11 +11,10 @@ use crate::running::RunningModels;
 use crate::system::Absent;
 use dioxus::prelude::*;
 use settings_app_model::{Live, Runtime};
-use ui_components::components::content::avatar::{Avatar, AvatarSize, AvatarTone, person_hue};
+use ui_components::components::content::avatar::{AvatarSize, AvatarTone, person_hue};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::{DataAttr, DataName};
 
 /// Where the list stands: the local runtimes accountd lists now, none when none runs.

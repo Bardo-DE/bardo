@@ -1,6 +1,6 @@
 //! The live module: the rows, and what the fake does with a set.
 
-use super::data::{POOL_KEY, PROGRAMS, ROWS, SLOT_ROWS};
+use super::data::{ROWS, SLOT_ROWS};
 use super::*;
 
 impl LiveModule for Inferd {

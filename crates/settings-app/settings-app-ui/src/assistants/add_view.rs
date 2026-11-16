@@ -8,7 +8,6 @@ use ui_components::components::controls::button_model::Answers;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// The sheet over the coding assistants: pick one, installed or on offer, name it, and read what

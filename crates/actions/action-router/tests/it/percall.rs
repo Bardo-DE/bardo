@@ -51,7 +51,7 @@ fn yes() -> ConfirmAnswer {
 
 /// Standing consent for the menu app (a first use asks otherwise, which is not under test here).
 fn grant_menu(router: &Router<action_fake::FakeSeams>) {
-    use account_core::consent::{Decision, Grant, GrantScope, Usage};
+    use account_core::consent::{Decision, Grant, Usage};
     use action_router::GrantStore;
     for (n, usage) in [Usage::Interactive, Usage::Background]
         .into_iter()

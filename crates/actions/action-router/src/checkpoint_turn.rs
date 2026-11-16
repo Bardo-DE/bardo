@@ -18,7 +18,6 @@ use agent_session::{Logged, Read, SessionEntry, SessionLog, resume_plan};
 use base_ids::Count;
 use base_time::Clock as _;
 use provenance::SessionId;
-use std::future::Future;
 
 /// Marks a session's workspace as being saved or restored; leaving the scope (or dropping the
 /// future that holds it) clears the mark.

@@ -21,7 +21,6 @@ use permission_core::{
     ActionGrantKey, ActionMatch, GrantCaller, GrantTarget, TaskPolicy, TaskPolicyState,
 };
 use provenance::{AgentRef, Integrity, SessionId, SpaceId, TaskId, UnixSeconds};
-use std::future::Future;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};
 
@@ -297,7 +296,7 @@ fn launcher() -> CallerId {
 
 /// Standing consent: the companion may use Mail's classes in `work`, always.
 fn standing_consent<R, W, K, L>(seams: &action_fake::FakeSeams<R, W, K, L>) {
-    use account_core::consent::{Decision, Grant, GrantScope, Usage};
+    use account_core::consent::{Decision, Grant, Usage};
     use action_router::GrantStore;
     for (n, class) in [provenance::DataClass::Mail, provenance::DataClass::Contacts]
         .into_iter()

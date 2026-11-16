@@ -208,7 +208,6 @@ mod tests {
     use memory_core::{EntryBody, EventRef, KindTag, ReplicaId, Seq, ThingView, UndoRef, UserText};
     use shell_launcher::{Cancel, VecSink};
     use shell_model::companion::Lookup;
-    use shell_services::control::Control;
 
     use super::*;
 

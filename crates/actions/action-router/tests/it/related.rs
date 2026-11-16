@@ -2,7 +2,7 @@
 //! the gate, labelled by what the relation says and never better than where it was found.
 
 use crate::support::*;
-use account_core::consent::{Decision, Grant, GrantScope, Usage};
+use account_core::consent::{Decision, Grant, Usage};
 use action_context::handles::HandleValue;
 use action_core::*;
 use action_fake::FakeSeams;

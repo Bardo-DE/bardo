@@ -5,7 +5,7 @@ use crate::policy::{ClassFloor, Floor};
 use crate::route::{Permit, RouteCandidate, TierChoice};
 use crate::spend::SpendVerdict;
 use account_capability::ModelId;
-use account_capability::{Billing, Locality};
+use account_capability::{Billing};
 use account_core::AccountId;
 
 pub(super) fn mref(name: &str) -> ModelRef {

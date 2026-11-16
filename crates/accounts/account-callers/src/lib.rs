@@ -102,7 +102,6 @@ pub const SYSTEMD_MANAGER: &str = "org.freedesktop.systemd1.Manager";
 
 use account_core::{AppId, AppName, Isolation};
 use serde::{Deserialize, Serialize};
-use std::future::Future;
 
 /// What a caller may ask for, beyond what its consent allows. It grows as the desktop gains
 /// processes with a standing of their own, so a match outside porter needs a `_` arm (an

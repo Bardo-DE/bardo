@@ -98,7 +98,7 @@ fn place_of(id: &ItemId, views: &[HistoryEntry]) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use anyview_core::{FilePath, FormatKind};
-    use shell_launcher::{FrecencyScore, ItemId, ProviderKind};
+    use shell_launcher::FrecencyScore;
 
     use super::*;
 

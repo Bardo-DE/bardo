@@ -7,7 +7,6 @@ use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim};
 use account_core::AccountId;
 use account_core::{Account, Audience, AuthKind, Credential, IssuedToken};
-use std::future::Future;
 
 /// What an account presents when it talks to its provider.
 #[derive(Debug, Clone, PartialEq, Eq)]

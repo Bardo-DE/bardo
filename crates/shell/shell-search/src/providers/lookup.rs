@@ -3,7 +3,6 @@
 //! back into async code; with no runtime (a plain test) a current-thread runtime is made for the
 //! one wait.
 
-use std::future::Future;
 
 use tokio::runtime::{Builder, Handle};
 

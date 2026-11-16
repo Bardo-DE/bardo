@@ -7,7 +7,6 @@ use settings_app_model::KeyEntry;
 use ui_components::components::fields::field_row::FieldGroup;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 /// "Hot Corners…" as a row with a chevron, and the sheet while it is open. `entries` are the
 /// four corner keys.

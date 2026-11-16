@@ -4,7 +4,6 @@
 use super::Smalls;
 use dioxus::prelude::*;
 use settings_app_model::{PictureTile, current_place};
-use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::lists::collection_view::{
     CollectionItem, CollectionSize, CollectionView, Flow, Thumbnail,
 };

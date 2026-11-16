@@ -120,7 +120,7 @@ mod tests {
     use companion_model::helper::HelperName;
     use companion_wire::HelpersView;
     use provenance::{HelperId, SpaceId};
-    use shell_launcher::{Cancel, Query, VecSink};
+    use shell_launcher::{Cancel, VecSink};
     use shell_model::companion::{HelpersModel, HelpersMsg, update_helpers};
 
     use super::*;

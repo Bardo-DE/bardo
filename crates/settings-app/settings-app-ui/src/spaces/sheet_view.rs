@@ -8,11 +8,8 @@ use settings_app_model::external::HistoryFate;
 use settings_app_model::{RemovalAsk, RemovalInput};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::{Answers, Bezel};
-use ui_components::components::controls::choice::Choice;
-use ui_components::components::controls::radio_group::RadioGroup;
 use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 /// What the sheet reports.
 #[derive(Clone, Copy, PartialEq)]

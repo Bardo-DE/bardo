@@ -11,9 +11,7 @@ use settings_app_model::{
     PageKind, RemovalStage, SpaceKey, SpaceRow, SpacesInput, SpacesReady, SpacesState,
 };
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
-use ui_components::components::overlays::empty_state::EmptyState;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// The Spaces the desktop keeps, with a Remove on each.

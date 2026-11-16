@@ -8,7 +8,6 @@ use settings_app_model::{Origin, ShortcutRow, ShortcutsInput};
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::fields::field_row::FieldRow;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// A row of the list.

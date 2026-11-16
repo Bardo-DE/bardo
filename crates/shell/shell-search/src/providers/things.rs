@@ -150,7 +150,6 @@ mod tests {
     use provenance::{AppName, EntityKey, EntityKind, Label, Labelled};
     use shell_launcher::{Cancel, Generation, VecSink};
     use shell_model::companion::Lookup;
-    use shell_services::control::Control;
 
     use super::*;
 

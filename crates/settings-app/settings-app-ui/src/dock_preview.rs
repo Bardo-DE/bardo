@@ -6,7 +6,6 @@ use crate::files::{Files, value_of};
 use crate::icons::DOCK_SAMPLE;
 use dioxus::prelude::*;
 use settings_app_model::PageModel;
-use settings_app_model::external::toml;
 use ui_components::prelude::IconTile;
 
 /// The key whose value sizes the tiles.

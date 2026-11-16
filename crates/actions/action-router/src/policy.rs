@@ -438,7 +438,6 @@ fn describe(w: &Widening) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use provenance::Effect;
 
     fn under(path: &str) -> TrustedPattern {
         TrustedPattern::Under(FileRef::parse(path).expect("file"))

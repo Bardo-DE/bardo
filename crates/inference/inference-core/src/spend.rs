@@ -127,7 +127,6 @@ pub fn spend_verdict(cap: &SpendCap, spent: &ChargeTotal) -> SpendVerdict {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_core::AccountId;
     use iso_currency::Currency;
 
     fn usd(cents: i64) -> Money {

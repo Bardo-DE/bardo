@@ -7,11 +7,9 @@ use crate::engine_install::{Board, GET};
 use crate::key_row::row_id;
 use dioxus::prelude::*;
 use settings_app_model::{ChoiceGap, EngineOfferInput, LocalView, PickerInput};
-use ui_components::components::controls::button::Button;
 use ui_components::components::fields::field_row::FieldRow;
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_settings::schema::KeyPath;
 

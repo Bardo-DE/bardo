@@ -6,12 +6,9 @@ use crate::copy::account_sync::{KEEP_HELP, hold_banner};
 use crate::copy::accounts::{removal, secret_standing};
 use dioxus::prelude::*;
 use settings_app_model::{ClientValue, HoldCounts, RemovalQuestion, SyncHold};
-use ui_components::components::controls::button::Button;
 use ui_components::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
-use ui_components::components::overlays::inline_banner::InlineBanner;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 use ui_settings::schema::ActionWeight;
 

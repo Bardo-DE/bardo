@@ -287,14 +287,13 @@ fn activity_row(entry: &action_core::UndoEntry, at: usize) -> Item {
 
 #[cfg(test)]
 mod tests {
-    use action_core::{ContextKeep, Keep, UndoEntry, UndoScope, UndoState};
+    use action_core::{ContextKeep, Keep, UndoEntry, UndoScope};
     use action_vocab::{
-        ActionRef, Args, CallRequest, CardActionId, LabelText, Origin, TargetValue, UndoId,
+        ActionRef, Args, CallRequest, LabelText, Origin, TargetValue, UndoId,
     };
     use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire};
     use provenance::{ActionName, Actor, AppName, Effect, TaskId, UnixSeconds};
-    use shell_launcher::{Cancel, Query, VecSink};
-    use shell_model::companion::{AnswerFacts, Busy};
+    use shell_launcher::{Cancel, VecSink};
 
     use super::*;
 

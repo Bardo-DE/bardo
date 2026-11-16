@@ -1,9 +1,6 @@
 use super::*;
 use crate::spec::{Discovery, Port};
-use account_capability::Capability;
-use account_capability::LlmWire;
 use account_capability::{Access, Ask, Delta, StorageScope};
-use account_core::{AuthKind, Family};
 
 const HEAD: &str = r#"
 id = "example"

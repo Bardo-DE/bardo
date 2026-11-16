@@ -141,8 +141,8 @@ fn keys_of(action: FileAction) -> ActionKeys {
 mod tests {
     use std::path::PathBuf;
 
-    use anyview_core::{FileAction, shortcut};
-    use shell_launcher::{ActionKeys, Activation, Mime, OpenTarget, UnixTime};
+    use anyview_core::{shortcut};
+    use shell_launcher::{UnixTime};
     use ui_core::vocab::Shortcut;
 
     use super::*;

@@ -9,7 +9,6 @@ use settings_app_model::{AutoPool, PickerInput, PoolEntry, PoolStanding};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::FieldRow;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_settings::schema::KeyPath;
 
 /// The list, or nothing when the module offers no list for the slot.

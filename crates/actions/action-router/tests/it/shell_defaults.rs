@@ -4,7 +4,7 @@
 //! data class to `app_own`, so `menu.item.activate` is `shell.menu.activate`'s twin.
 
 use crate::support::*;
-use account_core::consent::{Decision, Grant, GrantScope};
+use account_core::consent::{Decision, Grant};
 use action_core::*;
 use action_fake::{FakeMenu, MENU_MANIFEST, MenuItem, ScriptedConfirmer};
 use action_manifest::parse;

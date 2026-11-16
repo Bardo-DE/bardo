@@ -12,9 +12,7 @@ use dioxus::prelude::*;
 use settings_app_model::ExtensionRow;
 use ui_components::components::content::label::LabelRole;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
-use ui_components::components::overlays::empty_state::EmptyState;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::ExtraClass;
 
 /// The Extensions installed, read when the page is shown and again after each switch.

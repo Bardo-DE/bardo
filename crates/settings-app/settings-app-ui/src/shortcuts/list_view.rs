@@ -11,7 +11,6 @@ use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::FieldGroup;
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// The desktop's shortcuts.

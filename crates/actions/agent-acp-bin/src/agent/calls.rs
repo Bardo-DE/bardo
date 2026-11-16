@@ -2,7 +2,6 @@
 //! asked about again until they have ended. The reply of a call is given once.
 
 use std::collections::BTreeMap;
-use std::future::Future;
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;

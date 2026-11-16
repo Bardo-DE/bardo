@@ -18,7 +18,6 @@ use settings_app_model::{
 };
 use ui_components::components::chrome::split_view::model::{PaneSize, PaneSpec, SplitPane};
 use ui_components::components::chrome::split_view::view::SplitView;
-use ui_components::components::overlays::empty_state::EmptyState;
 use ui_components::prelude::*;
 
 /// The list's widths beside the detail: 280 to start, held between 220 and 380, never folded.

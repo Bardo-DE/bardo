@@ -1793,7 +1793,6 @@ async fn only_an_access_the_provider_asks_on_use_can_be_asked_for_later() {
 }
 
 fn whole_store() -> account_match::Need {
-    use account_capability::StorageScope;
     account_match::Need::Storage(account_match::StorageNeed::new(
         Access::ReadWrite,
         Delta::Poll,

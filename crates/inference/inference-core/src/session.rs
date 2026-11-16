@@ -2,7 +2,6 @@
 //! each transport supplies its own session; `account-fake` supplies a scripted one.
 
 use crate::event::{ClientFrame, InferEvent};
-use std::future::Future;
 
 /// Why a session could not carry a frame.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

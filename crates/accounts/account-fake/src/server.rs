@@ -5,7 +5,6 @@
 //! the scratch directory or loopback.
 
 use account_provider::ProviderSpec;
-use std::future::Future;
 use std::path::PathBuf;
 
 /// Where a fake server listens.

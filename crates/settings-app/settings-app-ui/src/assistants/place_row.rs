@@ -10,7 +10,6 @@ use ui_components::components::controls::disclosure::Disclosure;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::tokens::control_size::ControlSize;
 
 /// The model choice that lets the assistant decide.

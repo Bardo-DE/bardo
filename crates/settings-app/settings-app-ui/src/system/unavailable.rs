@@ -5,7 +5,6 @@ use crate::copy;
 use crate::copy::absence::Subject;
 use dioxus::prelude::*;
 use settings_app_model::Absence;
-use ui_components::components::overlays::empty_state::EmptyState;
 use ui_components::prelude::*;
 
 /// A page's place when it has nothing to show: `face` over `title`, then `words`, then `action`

@@ -215,7 +215,7 @@ pub fn grant_mail(router: &Router<FakeSeams>, in_space: &str) {
 
 /// Standing consent: `caller` may use Mail's classes in `in_space`, always.
 pub fn grant_mail_to(router: &Router<FakeSeams>, caller: GrantCaller, in_space: &str) {
-    use account_core::consent::{Decision, Grant, GrantScope, Usage};
+    use account_core::consent::{Decision, Grant, Usage};
     use action_router::GrantStore;
     for (n, class) in [DataClass::Mail, DataClass::Contacts]
         .into_iter()

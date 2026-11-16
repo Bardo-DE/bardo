@@ -14,7 +14,6 @@ use account_sheet::{
     UserCode,
 };
 use base_url::WebUrl;
-use std::future::Future;
 
 /// Why the sign-in was started.
 #[derive(Debug, Clone, PartialEq, Eq)]

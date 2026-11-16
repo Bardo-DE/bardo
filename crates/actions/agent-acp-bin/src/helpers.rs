@@ -12,7 +12,6 @@ use companion_wire::{HelperLine, JobLine, SayReply, ToldWire};
 use futures_util::StreamExt;
 use provenance::{HelperId, SessionId};
 use std::collections::{BTreeMap, VecDeque};
-use std::future::Future;
 
 /// How long the editor waits for the daemon to answer before it goes on without helpers.
 const ANSWER_WITHIN: std::time::Duration = std::time::Duration::from_secs(2);

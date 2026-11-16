@@ -18,7 +18,6 @@ use settings_app_model::{
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 /// The page: the switch and the networks, or why there are none.
 #[component]
