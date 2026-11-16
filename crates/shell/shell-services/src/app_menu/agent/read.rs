@@ -64,7 +64,7 @@ impl<T: Transport> MenuAgent<T> {
         }
         let nodes = read_layout(&self.connection, owner.as_str())
             .await
-            .map_err(|_| MenuFault::Failed("the app's menu could not be read".to_owned()))?;
+            .map_err(|why| MenuFault::failed("the app's menu could not be read", why))?;
         Ok(Some(Served {
             owner,
             menu: ServedMenu {
@@ -75,10 +75,10 @@ impl<T: Transport> MenuAgent<T> {
     }
 
     async fn owner_of(&self, name: &MenuName) -> Result<Option<OwnedUniqueName>, MenuFault> {
-        let failed = |_: zbus::Error| MenuFault::Failed("the bus could not be asked".to_owned());
+        let failed = |why: zbus::Error| MenuFault::failed("the bus could not be asked", why);
         let dbus = DBusProxy::new(&self.connection).await.map_err(failed)?;
         let name = BusName::try_from(name.0.as_str())
-            .map_err(|_| MenuFault::Failed("the menu name is not a bus name".to_owned()))?;
+            .map_err(|why| MenuFault::failed("the menu name is not a bus name", why))?;
         let owned = dbus.name_has_owner(name.clone()).await;
         if !owned.map_err(|e| failed(e.into()))? {
             return Ok(None);

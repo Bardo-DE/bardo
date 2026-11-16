@@ -36,6 +36,10 @@ pub const PLAYER_CALL: Duration = Duration::from_secs(3);
 pub const COMPANION_CALL: Duration = Duration::from_secs(10);
 
 /// Await `work` for at most `limit`; `what` names it in the error.
+#[expect(
+    clippy::map_err_ignore,
+    reason = "the elapsed-timer error carries nothing; `what` names the call that timed out"
+)]
 pub async fn within<T>(
     limit: Duration,
     what: &'static str,

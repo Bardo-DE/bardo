@@ -26,8 +26,24 @@ pub enum MenuFault {
     NotRunnable,
     /// The item is no longer what the router gated the call on.
     Changed,
-    /// Something else failed.
-    Failed(String),
+    /// Something else failed: `words` is what the person may be told, `cause` what went wrong
+    /// (for the log; it may carry the app's own text, so it is never shown).
+    Failed {
+        /// What the person may be told.
+        words: String,
+        /// What went wrong, for the log.
+        cause: String,
+    },
+}
+
+impl MenuFault {
+    /// A failure told as `words`, caused by `cause`.
+    pub(super) fn failed(words: &str, cause: impl std::fmt::Display) -> Self {
+        Self::Failed {
+            words: words.to_owned(),
+            cause: cause.to_string(),
+        }
+    }
 }
 
 /// What an activation did and what the table said it costs.
@@ -102,10 +118,12 @@ impl<T: Transport> MenuAgent<T> {
         let how = match now.route {
             Route::Own(own) => {
                 for command in own_commands(own, &now.target.app.0, &now.target.toplevels) {
-                    self.links
-                        .wl
-                        .send(command)
-                        .map_err(|_| MenuFault::Failed("the compositor is not there".to_owned()))?;
+                    self.links.wl.send(command).map_err(|_closed| {
+                        MenuFault::failed(
+                            "the compositor is not there",
+                            "the compositor's command channel is closed",
+                        )
+                    })?;
                 }
                 Activated::Own
             }
@@ -119,7 +137,7 @@ impl<T: Transport> MenuAgent<T> {
                 let owner = now.owner.ok_or(MenuFault::NoMenu)?;
                 wire::click(&self.connection, &owner, id)
                     .await
-                    .map_err(|_| MenuFault::Failed("the app could not be told".to_owned()))?;
+                    .map_err(|why| MenuFault::failed("the app could not be told", why))?;
                 Activated::Clicked
             }
         };
@@ -170,7 +188,7 @@ impl<T: Transport> MenuAgent<T> {
             .intents
             .manifests()
             .await
-            .map_err(|_| MenuFault::Failed("intentd could not be asked".to_owned()))?;
+            .map_err(|why| MenuFault::failed("intentd could not be asked", why))?;
         let actions: BTreeMap<ActionRef, _> = manifests
             .iter()
             .flat_map(|valid| {
@@ -213,5 +231,22 @@ fn runnable(row: &TrayMenuEntry) -> Result<Option<&MenuCommand>, MenuFault> {
             ..
         } if children.is_empty() => Ok(command.as_ref()),
         TrayMenuKind::Item { .. } | TrayMenuKind::Separator => Err(MenuFault::NotRunnable),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::MenuFault;
+
+    #[test]
+    fn a_failure_keeps_its_cause_apart_from_the_words() {
+        let fault = MenuFault::failed("the app could not be told", "the bus: no reply");
+        assert_eq!(
+            fault,
+            MenuFault::Failed {
+                words: "the app could not be told".to_owned(),
+                cause: "the bus: no reply".to_owned(),
+            }
+        );
     }
 }

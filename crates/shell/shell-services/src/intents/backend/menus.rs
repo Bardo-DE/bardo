@@ -92,6 +92,9 @@ fn refusal(fault: MenuFault) -> AppRefusal {
         MenuFault::NoSuchItem => failed("the menu has no such item"),
         MenuFault::NotRunnable => failed("the menu item is disabled or opens a submenu"),
         MenuFault::Changed => AppRefusal::ClassificationChanged,
-        MenuFault::Failed(why) => failed(&why),
+        MenuFault::Failed { words, cause } => {
+            eprintln!("bardo-shell: a menu ask failed: {words}: {cause}");
+            failed(&words)
+        }
     }
 }
