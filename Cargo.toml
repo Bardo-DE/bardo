@@ -338,6 +338,11 @@ incremental = true
 [profile.dev.package."*"]
 debug = false
 
+# Build scripts and proc macros (serde, zbus, thiserror derives) run inside the compile of nearly every
+# crate; optimised, they make each of those compiles faster. They are built once and kept.
+[profile.dev.build-override]
+opt-level = 3
+
 # Window-drawing tests (style, layout, text, raster) run unbearably slowly unoptimised.
 [profile.dev.package.anyrender]
 opt-level = 2

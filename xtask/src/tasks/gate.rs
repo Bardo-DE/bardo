@@ -47,6 +47,10 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
         // A gate builds each sha once: incremental state is only disk (about half the target
         // dir on a whole-workspace run) and is never reused.
         cmd.env("CARGO_INCREMENTAL", "0");
+        // No debug info in gate builds: smaller test binaries and faster links. A failing test
+        // still names its file and line (panic locations are compiled in), and the same setting
+        // on every step keeps one build of each crate.
+        cmd.env("CARGO_PROFILE_DEV_DEBUG", "false");
         if step.runs_tests {
             tests_root.apply(&mut cmd, step.args.iter().any(|a| a == "--doc"))?;
         }
