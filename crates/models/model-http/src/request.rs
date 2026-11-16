@@ -124,9 +124,10 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
     let mut headers = HeaderMap::new();
     headers.append(ACCEPT, HeaderValue::from_static(accept));
     if let Some(content_type) = parts.content_type {
-        let value = HeaderValue::from_str(content_type)
-            .ok()
-            .ok_or(HttpError::Connect)?;
+        let value = HeaderValue::from_str(content_type).map_err(|error| {
+            tracing::warn!(error = %error, "the content type is not a header value");
+            HttpError::Connect
+        })?;
         headers.append(CONTENT_TYPE, value);
     }
     let secret = |name: WireName, value: &str| {
@@ -135,8 +136,10 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
                 value.set_sensitive(true);
                 (name, value)
             })
-            .ok()
-            .ok_or(HttpError::Connect)
+            .map_err(|error| {
+                tracing::warn!(error = %error, "a header value cannot be written");
+                HttpError::Connect
+            })
     };
     let mut keyed = Vec::new();
     match &endpoint.auth {
@@ -156,16 +159,18 @@ pub fn prepare(endpoint: &HttpEndpoint, parts: Parts<'_>) -> Result<Prepared, Ht
             )?);
         }
         AuthHeader::Header { name, value } => {
-            let name = WireName::from_bytes(name.0.as_bytes())
-                .ok()
-                .ok_or(HttpError::Connect)?;
+            let name = WireName::from_bytes(name.0.as_bytes()).map_err(|error| {
+                tracing::warn!(error = %error, "the key header name is not a header name");
+                HttpError::Connect
+            })?;
             keyed.push(secret(name, value.expose())?);
         }
     }
     for extra in &endpoint.headers {
-        let name = WireName::from_bytes(extra.name.0.as_bytes())
-            .ok()
-            .ok_or(HttpError::Connect)?;
+        let name = WireName::from_bytes(extra.name.0.as_bytes()).map_err(|error| {
+            tracing::warn!(error = %error, "an extra header name is not a header name");
+            HttpError::Connect
+        })?;
         keyed.push(secret(name, extra.value.expose())?);
     }
     for (name, value) in keyed {

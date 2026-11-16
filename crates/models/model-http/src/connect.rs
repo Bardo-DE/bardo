@@ -53,8 +53,10 @@ fn build(endpoint: &HttpEndpoint, roots: &TlsRoots) -> Result<Client, HttpError>
     };
     secure(builder, &endpoint.target, roots)?
         .build()
-        .ok()
-        .ok_or(HttpError::Connect)
+        .map_err(|error| {
+            tracing::warn!(error = %error, "could not build the http client");
+            HttpError::Connect
+        })
 }
 
 #[cfg(feature = "tls")]
@@ -87,8 +89,10 @@ fn secure(
                 .iter()
                 .map(|cert| reqwest::Certificate::from_der(&cert.0))
                 .collect::<Result<Vec<_>, _>>()
-                .ok()
-                .ok_or(HttpError::Tls)?;
+                .map_err(|error| {
+                    tracing::warn!(error = %error, "a trusted root certificate was refused");
+                    HttpError::Tls
+                })?;
             Ok(builder.tls_certs_only(certs))
         }
     }

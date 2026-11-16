@@ -150,7 +150,10 @@ impl<T: Transport, S: WireSink> Transport for RecordingTransport<T, S> {
                     end: end_of(result, tee.consumer),
                 },
             };
-            self.sink.write(&recorded).ok().ok_or(HttpError::Broken)?;
+            self.sink.write(&recorded).map_err(|error| {
+                tracing::warn!(error = %error, "the recording sink refused an exchange");
+                HttpError::Broken
+            })?;
         }
         result
     }
