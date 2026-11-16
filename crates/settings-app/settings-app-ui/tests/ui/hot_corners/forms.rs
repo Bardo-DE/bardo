@@ -131,7 +131,7 @@ fn the_app_action_list_offers_only_what_needs_nothing_more_and_a_pick_stores_it(
     showing(
         &mut harness,
         "the list of actions",
-        "#hot-action-org-quire-mail-compose",
+        "#hot-action-org-bardo-mail-compose",
     );
     let html = harness.html();
     assert!(html.contains("Mail"), "grouped under the app:\n{html}");
@@ -141,7 +141,7 @@ fn the_app_action_list_offers_only_what_needs_nothing_more_and_a_pick_stores_it(
             "{left_out} needs a parameter or a target:\n{html}"
         );
     }
-    click(&mut harness, "#hot-action-org-quire-mail-compose");
+    click(&mut harness, "#hot-action-org-bardo-mail-compose");
     click(&mut harness, "#hot-corner-choose");
     assert_eq!(
         stored(&sandbox, "bottom_right"),

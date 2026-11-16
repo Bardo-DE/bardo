@@ -94,7 +94,7 @@ fn the_notes_of_every_style_file_are_counted_and_listed_with_their_file_and_line
         "Animates everything",
         "bardo/style.css, line 2",
         "Large shadows may slow the desktop",
-        "bardo/shell/style.css, line 2",
+        "shell/style.css, line 2",
     ] {
         assert!(html.contains(want), "{want} is in the sheet:\n{html}");
     }

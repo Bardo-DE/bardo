@@ -135,7 +135,7 @@ fn a_restart_that_fails_is_told_in_plain_words_and_the_setting_stays_off() {
 #[test]
 fn a_different_file_is_named_in_the_question_and_replaced_on_allow() {
     let sandbox = Sandbox::new("lending-differs");
-    sandbox.write(DROP_IN, "[Service]\nIPAddressAllow=10.0.0.0/8\n");
+    sandbox.write_config_raw(DROP_IN, "[Service]\nIPAddressAllow=10.0.0.0/8\n");
     let mut harness = asked(&sandbox);
     assert!(harness.html().contains("replaces it"), "{}", harness.html());
     click(&mut harness, ALLOW);
@@ -149,7 +149,7 @@ fn a_different_file_is_named_in_the_question_and_replaced_on_allow() {
 fn turning_it_off_takes_sharing_away_without_asking() {
     let sandbox = Sandbox::new("lending-off");
     sandbox.write("inference/inferd.toml", "[ai.tailnet]\nserve = true\n");
-    sandbox.write(DROP_IN, SHIPPED);
+    sandbox.write_config_raw(DROP_IN, SHIPPED);
     let mut harness = sandbox.harness(intelligence());
     scroll_into_view(&mut harness, &toggle());
     assert_eq!(checked(&harness).as_deref(), Some("true"));

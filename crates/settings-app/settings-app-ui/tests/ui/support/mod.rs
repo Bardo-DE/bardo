@@ -248,6 +248,13 @@ impl Sandbox {
         std::fs::write(path, text).expect("write");
     }
 
+    /// Puts `text` at `relative` under the config home as it stands (not a program's settings file).
+    pub fn write_config_raw(&self, relative: &str, text: &str) {
+        let path = self.config_home().0.join(relative);
+        std::fs::create_dir_all(path.parent().expect("a file has a parent")).expect("mkdir");
+        std::fs::write(path, text).expect("write");
+    }
+
     /// Puts `text` at `relative` under the data home.
     pub fn write_data(&self, relative: &str, text: &str) {
         let path = self.data_home().0.join(relative);
