@@ -139,7 +139,7 @@ impl<'a, B: Backend, A: Admission> Session<'a, B, A> {
         let over = self.created >= MAX_CREATES_PER_CONNECTION
             || match delivery {
                 Delivery::Handed => self.handed >= MAX_HANDED_PER_CONNECTION,
-                _ => self.slots.len() >= MAX_DEVICES_PER_CONNECTION,
+                Delivery::Proxied => self.slots.len() >= MAX_DEVICES_PER_CONNECTION,
             };
         if over {
             return Err(Refused::new(

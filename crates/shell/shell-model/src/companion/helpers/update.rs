@@ -263,6 +263,10 @@ fn card_missing(model: HelpersModel, id: &HelperId) -> HelpersModel {
 }
 
 /// A call was answered.
+#[expect(
+    clippy::match_same_arms,
+    reason = "the first arm must precede the catch-all Refused arm, so it cannot join the other arm that refreshes"
+)]
 fn replied(
     model: HelpersModel,
     asked: Asked,
@@ -384,7 +388,7 @@ fn toggled(draft: Draft, app: AppName) -> Draft {
 fn limited(draft: Draft, ceiling: Ceiling) -> Draft {
     let apps = match draft.reach {
         Reach::Chosen { apps, .. } => apps,
-        Reach::Unreadable => Default::default(),
+        Reach::Unreadable => std::collections::BTreeSet::default(),
     };
     Draft {
         reach: Reach::Chosen { apps, ceiling },

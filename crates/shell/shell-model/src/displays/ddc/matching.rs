@@ -45,11 +45,6 @@ mod tests {
 
     #[test]
     fn names_and_classes_parse_at_their_boundaries() {
-        assert_eq!(bus_number("i2c-5"), Some(DdcId(5)));
-        assert_eq!(bus_number("i2c-12"), Some(DdcId(12)));
-        assert_eq!(bus_number("i2c-"), None);
-        assert_eq!(bus_number("i2c-dev"), None);
-        assert_eq!(bus_number("spi-1"), None);
         const CLASSES: &[(&str, bool)] = &[
             ("0x030000\n", true),
             ("0x030200", true),
@@ -58,6 +53,11 @@ mod tests {
             ("030000", false),
             ("0x0c0330", false),
         ];
+        assert_eq!(bus_number("i2c-5"), Some(DdcId(5)));
+        assert_eq!(bus_number("i2c-12"), Some(DdcId(12)));
+        assert_eq!(bus_number("i2c-"), None);
+        assert_eq!(bus_number("i2c-dev"), None);
+        assert_eq!(bus_number("spi-1"), None);
         for &(class, want) in CLASSES {
             assert_eq!(is_display_class(class), want, "{class:?}");
         }

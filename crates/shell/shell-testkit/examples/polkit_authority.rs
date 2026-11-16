@@ -42,7 +42,11 @@ struct Authority {
 
 #[interface(name = "org.freedesktop.PolicyKit1.Authority")]
 impl Authority {
-    async fn register_authentication_agent(
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "zbus's generated code reads every parameter; the underscore only says the body does not"
+    )]
+    fn register_authentication_agent(
         &self,
         #[zbus(header)] header: Header<'_>,
         subject: Subject,
@@ -66,7 +70,7 @@ impl Authority {
         Ok(())
     }
 
-    async fn unregister_authentication_agent(
+    fn unregister_authentication_agent(
         &self,
         subject: Subject,
         object_path: String,

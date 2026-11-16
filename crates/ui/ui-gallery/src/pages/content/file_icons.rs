@@ -29,7 +29,7 @@ fn example(kind: FileKind) -> &'static str {
         FileKind::Font => "ttf",
         FileKind::DiskImage => "iso",
         FileKind::Program => "run",
-        _ => "xyz",
+        FileKind::Other => "xyz",
     }
 }
 

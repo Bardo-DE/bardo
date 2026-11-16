@@ -2,9 +2,10 @@
 //! a fake answered.
 
 use super::{
-    AsyncRead, AsyncWrite, AsyncWriteExt, BufReader, FakeAddress, Request,
-    Response, dial, io, read_body, read_head, tls,
+    AsyncRead, AsyncWrite, AsyncWriteExt, BufReader, FakeAddress, Request, Response, dial, io,
+    read_body, read_head, tls,
 };
+use std::fmt::Write as _;
 
 /// How a client reaches a fake.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -48,9 +49,9 @@ async fn exchange<S: AsyncRead + AsyncWrite + Unpin>(
         request.method, request.target
     );
     for (n, v) in &request.headers {
-        head.push_str(&format!("{n}: {v}\r\n"));
+        let _ = write!(head, "{n}: {v}\r\n");
     }
-    head.push_str(&format!("Content-Length: {}\r\n\r\n", request.body.len()));
+    let _ = write!(head, "Content-Length: {}\r\n\r\n", request.body.len());
     stream.write_all(head.as_bytes()).await?;
     stream.write_all(&request.body).await?;
     stream.flush().await?;

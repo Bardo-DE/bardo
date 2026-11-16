@@ -348,7 +348,7 @@ impl FakeLocalApi {
     /// # Errors
     ///
     /// Returns the I/O error if the socket cannot be bound in `dir`.
-    pub async fn start(dir: &Path, daemon: Daemon) -> io::Result<Self> {
+    pub fn start(dir: &Path, daemon: Daemon) -> io::Result<Self> {
         let (news, _) = broadcast::channel(256);
         let shared = Arc::new(Shared {
             inner: Mutex::new(Inner {
@@ -387,7 +387,7 @@ impl FakeLocalApi {
     /// # Errors
     ///
     /// Returns the I/O error if the socket cannot be bound again at its path.
-    pub async fn restart(&self) -> io::Result<()> {
+    pub fn restart(&self) -> io::Result<()> {
         self.stop();
         // A stale socket file is what a killed daemon leaves; the new one replaces it.
         let _ = std::fs::remove_file(&self.handle.socket);

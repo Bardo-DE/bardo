@@ -66,7 +66,8 @@ fn told(
     }
     let reachable = state.reached;
     match (command, reachable) {
-        (_, false) => (state, Vec::new()),
+        // Not reachable, or a backend report (told above): nothing to do.
+        (_, false) | (NightShiftCommand::Backend(_), true) => (state, Vec::new()),
         (NightShiftCommand::TurnOnUntilTomorrow, true) => turned_on(state, now),
         (NightShiftCommand::TurnOff, true) => match state.manual {
             Some(manual) => ended(state, manual),
@@ -97,7 +98,6 @@ fn told(
                 effects,
             )
         }
-        (NightShiftCommand::Backend(_), true) => (state, Vec::new()),
     }
 }
 

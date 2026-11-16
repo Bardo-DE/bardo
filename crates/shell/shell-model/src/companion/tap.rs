@@ -66,15 +66,9 @@ impl Machine for Tap {
 
     fn step(self, input: TapIn, at: Stamp, params: &TapParams, (): &()) -> (Tap, Vec<TapOut>) {
         match (self, input) {
-            (Tap::Rest, TapIn::Tap) => (
-                Tap::Armed {
-                    until: at.after(params.window.span()),
-                },
-                Vec::new(),
-            ),
             (Tap::Armed { until }, TapIn::Tap) if at <= until => (Tap::Rest, vec![TapOut::Summon]),
-            // A tap after the window is the first of a new pair.
-            (Tap::Armed { .. }, TapIn::Tap) => (
+            // The first tap of a pair: a tap at rest, or one after the window.
+            (Tap::Rest | Tap::Armed { .. }, TapIn::Tap) => (
                 Tap::Armed {
                     until: at.after(params.window.span()),
                 },

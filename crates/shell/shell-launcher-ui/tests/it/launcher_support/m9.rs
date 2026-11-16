@@ -3,6 +3,7 @@
 //! clipboard entry, emoji and the web fallback, each with the subject the real providers give
 //! it and their chords. Nothing here reads the person's home, index or clipboard.
 
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock, PoisonError, mpsc};
 
@@ -57,13 +58,12 @@ const HEAVY: Rings = Rings(6000);
 
 /// A one-page PDF of `rings` small stroked circles, written by hand (offsets counted below).
 fn pdf(rings: Rings) -> Vec<u8> {
-    let rings: String = (0..rings.0)
-        .map(|n| {
-            let (x, y) = (20 + (n * 7) % 160, 20 + (n * 13) % 220);
-            format!("{x} {y} m {} {y} {x} {} {x} {y} c S\n", x + 9, y + 9)
-        })
-        .collect();
-    let stream = format!("0.2 0.4 0.8 RG 0.3 w\n0.9 0.9 0.9 rg 20 20 160 220 re f\n{rings}");
+    let mut circles = String::new();
+    for n in 0..rings.0 {
+        let (x, y) = (20 + (n * 7) % 160, 20 + (n * 13) % 220);
+        let _ = writeln!(circles, "{x} {y} m {} {y} {x} {} {x} {y} c S", x + 9, y + 9);
+    }
+    let stream = format!("0.2 0.4 0.8 RG 0.3 w\n0.9 0.9 0.9 rg 20 20 160 220 re f\n{circles}");
     let objects = [
         "<< /Type /Catalog /Pages 2 0 R >>".to_owned(),
         "<< /Type /Pages /Kids [3 0 R] /Count 1 >>".to_owned(),

@@ -81,12 +81,12 @@ mod tests {
 
     #[test]
     fn each_sniffed_file_goes_to_its_decoder_or_is_refused_for_a_reason() {
+        // name, bytes, file name, result
+        type Case<'a> = (&'a str, &'a [u8], &'a str, Result<Codec, ImageError>);
         let png = include_bytes!("../../tests/fixtures/quadrants.png");
         let svg = include_bytes!("../../tests/fixtures/logo.svg");
         let jxl = include_bytes!("../../tests/fixtures/photo.jxl");
         let avif = include_bytes!("../../tests/fixtures/photo.avif");
-        // name, bytes, file name, result
-        type Case<'a> = (&'a str, &'a [u8], &'a str, Result<Codec, ImageError>);
         let cases: &[Case] = &[
             ("png", png, "a.png", Ok(Codec::Image(ImageFormat::Png))),
             ("svg", svg, "a.svg", Ok(Codec::Svg)),

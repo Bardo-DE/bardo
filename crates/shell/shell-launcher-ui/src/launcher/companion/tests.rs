@@ -19,6 +19,7 @@ fn run() -> RunId {
 
 /// Design/32 section 4.4's key table, by pane.
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
 fn companion_keys_table() {
     use CompanionKey as K;
     use CompanionOut as O;
@@ -373,10 +374,10 @@ fn answer_in(phase: companion_wire::AnswerPhase) -> shell_model::companion::Comp
 /// The pane by how far the selected answer is, and by there being no such answer.
 #[test]
 fn the_pane_follows_how_far_the_selected_answer_is() {
+    type Case = (&'static str, P, Pane);
     use action_core::ConfirmId;
     use companion_wire::{AnswerPhase as P, NeedsYou};
     let selected = Selected::Answer(task());
-    type Case = (&'static str, P, Pane);
     let cases: Vec<Case> = vec![
         ("thinking", P::Thinking, Pane::Thinking(task())),
         ("writing", P::Streaming, Pane::Thinking(task())),

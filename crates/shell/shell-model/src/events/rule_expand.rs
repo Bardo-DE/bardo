@@ -108,7 +108,7 @@ fn unfit(pattern: &Pattern) -> Vec<String> {
     let by_month = !pattern.months.is_empty();
     let month_days = !pattern.month_days.is_empty();
     let fits = match pattern.freq {
-        Freq::Daily | Freq::Weekly => !ordinal && !(month_days && pattern.freq == Freq::Weekly),
+        Freq::Daily | Freq::Weekly => !ordinal && (!month_days || pattern.freq != Freq::Weekly),
         Freq::Monthly => !(ordinal && month_days),
         Freq::Yearly => (by_month || (!ordinal && !plain)) && !(ordinal && month_days),
     };

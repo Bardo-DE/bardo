@@ -11,6 +11,7 @@ pub use client::*;
 use crate::net::{Listener, dial};
 use crate::tls;
 use account_fake::FakeAddress;
+use std::fmt::Write as _;
 use std::io;
 use std::sync::Arc;
 use tokio::io::{AsyncBufReadExt, AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt, BufReader};
@@ -60,6 +61,7 @@ impl Request {
     }
 
     /// With a body.
+    #[must_use]
     pub fn with_body(mut self, body: impl Into<Vec<u8>>) -> Self {
         self.body = body.into();
         self
@@ -154,6 +156,7 @@ impl Response {
     }
 
     /// A response with a content type and body.
+    #[must_use]
     pub fn typed(mut self, content_type: &str, body: impl Into<Vec<u8>>) -> Self {
         self.headers
             .push(("Content-Type".to_owned(), content_type.to_owned()));
@@ -293,13 +296,14 @@ pub(crate) async fn write_response<S: AsyncWrite + Unpin>(
             .unwrap_or("Status")
     );
     for (n, v) in &response.headers {
-        head.push_str(&format!("{n}: {v}\r\n"));
+        let _ = write!(head, "{n}: {v}\r\n");
     }
     let connection = if close { "close" } else { "keep-alive" };
-    head.push_str(&format!(
+    let _ = write!(
+        head,
         "Content-Length: {}\r\nConnection: {connection}\r\n\r\n",
         response.body.len()
-    ));
+    );
     stream.write_all(head.as_bytes()).await?;
     stream.write_all(&response.body).await?;
     stream.flush().await

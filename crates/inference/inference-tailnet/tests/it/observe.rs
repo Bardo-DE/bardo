@@ -33,7 +33,7 @@ async fn this_computer_is_seen_while_tailscale_is_running_and_signed_in() {
     // Not running (killed): not seen. Running again: seen.
     fake.stop();
     wait(&mut seen, Option::is_none, "to be gone").await;
-    fake.restart().await.unwrap();
+    fake.restart().unwrap();
     wait(&mut seen, Option::is_some, "to be back").await;
     drop(observer);
 }

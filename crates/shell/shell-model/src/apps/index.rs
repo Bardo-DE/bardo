@@ -290,11 +290,11 @@ pub(crate) mod tests {
 
     #[test]
     fn upserts_and_removals_keep_the_order() {
+        type Case<'a> = (&'a str, AppsEvent, Vec<(&'a str, &'a str)>);
         let base = step(
             AppIndex::default(),
             AppsEvent::Scanned(vec![app("b", "B"), app("d", "D")]),
         );
-        type Case<'a> = (&'a str, AppsEvent, Vec<(&'a str, &'a str)>);
         let cases: Vec<Case> = vec![
             (
                 "insert in the middle",

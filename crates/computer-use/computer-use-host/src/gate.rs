@@ -61,8 +61,8 @@ fn link_error(error: ClientError) -> LinkError {
         ClientError::Transport(TransportError::Closed) => LinkError::Unavailable,
         ClientError::Transport(other) => LinkError::Protocol(other.to_string()),
         ClientError::Refused(refusal) => LinkError::Refused(refusal),
-        // Unexpected, or a failure a later docket adds: the run stops, never proceeds.
-        _ => LinkError::Protocol("unexpected reply".to_owned()),
+        // Unexpected: the run stops, never proceeds.
+        ClientError::Unexpected => LinkError::Protocol("unexpected reply".to_owned()),
     }
 }
 
@@ -210,6 +210,10 @@ mod tests {
     }
 
     impl Transport for Scripted {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this scripted transport answers from memory"
+        )]
         async fn call(&self, request: IntentsRequest) -> Result<IntentsReply, TransportError> {
             self.asked.lock().expect("lock").push(request);
             self.replies
@@ -366,6 +370,10 @@ mod tests {
     }
 
     impl Transport for Watching {
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this scripted transport answers from memory"
+        )]
         async fn call(&self, request: IntentsRequest) -> Result<IntentsReply, TransportError> {
             self.asked.lock().expect("lock").push(request);
             self.opened
@@ -375,6 +383,10 @@ mod tests {
                 .ok_or(TransportError::Closed)
         }
 
+        #[expect(
+            clippy::unused_async_trait_impl,
+            reason = "the trait method is async; this scripted transport answers from memory"
+        )]
         async fn watch(&self, request: IntentsRequest) -> Result<Watched, TransportError> {
             self.asked.lock().expect("lock").push(request);
             let said = self.said.lock().expect("lock").drain(..).collect();

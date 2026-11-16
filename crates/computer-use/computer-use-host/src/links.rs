@@ -155,6 +155,7 @@ impl<M: MemoryTransport, I: IntentsTransport> DaemonLinks<M, I> {
     }
 
     /// The same links reading wall time from `now` (tests pin it).
+    #[must_use]
     pub fn reading_time_from(self, now: fn() -> UnixSeconds) -> Self {
         Self { now, ..self }
     }
@@ -189,8 +190,8 @@ fn router_error(error: ClientError) -> LinkError {
         ClientError::Transport(TransportError::Closed) => LinkError::Unavailable,
         ClientError::Transport(other) => LinkError::Protocol(other.to_string()),
         ClientError::Refused(refusal) => LinkError::Refused(refusal),
-        // Unexpected, or a failure a later docket adds: the run stops, never proceeds.
-        _ => LinkError::Protocol("unexpected reply".to_owned()),
+        // Unexpected: the run stops, never proceeds.
+        ClientError::Unexpected => LinkError::Protocol("unexpected reply".to_owned()),
     }
 }
 

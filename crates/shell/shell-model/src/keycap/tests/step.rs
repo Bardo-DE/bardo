@@ -30,6 +30,7 @@ fn connected() -> KeycapState {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
 fn the_state_follows_the_socket_and_the_unit() {
     use KeycapEvent::{Disconnected, Hello, Status as Update, UnitState as Unit};
     use KeycapState::{Failed, NotInstalled, Restarting, Unknown};

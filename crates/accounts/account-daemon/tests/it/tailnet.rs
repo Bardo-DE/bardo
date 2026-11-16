@@ -95,9 +95,7 @@ impl Scene {
     /// A fake in `daemon`'s state, and the accounts already added.
     async fn with(name: &str, daemon: Daemon, accounts: Vec<Account>) -> Self {
         let scratch = Scratch::new(&format!("tailnet-{name}"));
-        let fake = FakeLocalApi::start(&scratch, daemon)
-            .await
-            .expect("fake tailscale");
+        let fake = FakeLocalApi::start(&scratch, daemon).expect("fake tailscale");
         let api = LocalApi::new(fake.socket()).with_program_dirs(Vec::new());
         Self {
             fake: Some(fake),
@@ -529,7 +527,7 @@ async fn the_account_follows_tailscale_while_it_is_added() {
     })
     .await;
     // It comes back: working again, without anyone touching the account.
-    world.scene.fake().restart().await.expect("restart");
+    world.scene.fake().restart().expect("restart");
     eventually("the account to work after a restart", || {
         world.state() == Some(AccountState::Ok)
     })

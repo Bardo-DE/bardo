@@ -78,6 +78,10 @@ fn battery_only_while_discharging() {
 
 #[test]
 fn the_watches_follow_power_lock_and_never() {
+    const LOCKED: bool = true;
+    const UNLOCKED: bool = false;
+    use PowerSource::{Ac, Battery};
+    use Threshold::{Dim, LockedScreenOff as LockedOff, ScreenOff, Suspend};
     let times = IdleTimes {
         screen_off: pair(after(900), after(120)),
         suspend: pair(after(1_800), Timeout::Never),
@@ -89,10 +93,6 @@ fn the_watches_follow_power_lock_and_never() {
     };
     let no_dim = policy(times, 0, 0);
     let long_dim = policy(times, 300, 0);
-    const LOCKED: bool = true;
-    const UNLOCKED: bool = false;
-    use PowerSource::{Ac, Battery};
-    use Threshold::{Dim, LockedScreenOff as LockedOff, ScreenOff, Suspend};
     let cases: Vec<(&str, IdlePolicy, PowerSource, bool, Vec<Watch>)> = vec![
         ("off holds nothing", off, Ac, UNLOCKED, vec![]),
         (

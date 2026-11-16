@@ -68,11 +68,13 @@ impl MenuClient {
 pub fn menu_trust(owner: &MenuOwner, client: &MenuClient) -> bool {
     match (&client.reported, owner) {
         (_, MenuOwner::Unknown) => false,
-        // A service's standing carries no image, so it is known by its app key either way.
-        (_, MenuOwner::Service { app }) => *app == client.key,
+        // A service's standing carries no image, so it is known by its app key either way, and so
+        // is a sandbox the window's client reports no subject for.
+        (_, MenuOwner::Service { app }) | (None, MenuOwner::Sandboxed { app }) => {
+            *app == client.key
+        }
         (Some(subject), MenuOwner::Sandboxed { app }) => app == subject,
         (Some(subject), MenuOwner::Program { exe, .. }) => exe == subject,
-        (None, MenuOwner::Sandboxed { app }) => *app == client.key,
         (None, MenuOwner::Program { scope_app, .. }) => scope_app.as_ref() == Some(&client.key),
     }
 }

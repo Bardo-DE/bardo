@@ -243,6 +243,10 @@ impl<S: Seams> Drop for Cleanup<S> {
 
 /// Runs one run to its end: the machine's effects one at a time, each raced against the
 /// controls, the desktop's events and the clock; then the bookkeeping of its end.
+#[expect(
+    clippy::too_many_lines,
+    reason = "the race loop of one run and the bookkeeping of its end share the loop's locals"
+)]
 pub(crate) async fn drive<S: Seams>(
     shared: Arc<Shared<S>>,
     run: Run,

@@ -103,9 +103,8 @@ pub fn presented(note: &Notification, policy: &NotificationsPolicy) -> Presented
         || note.expiry == Expiry::Never
         || policy.style == Presentation::Alert;
     match (through, held_back, persists) {
-        (true, _, _) => Presented::Banner(BannerLife::Persists),
+        (true, _, _) | (false, false, true) => Presented::Banner(BannerLife::Persists),
         (false, true, _) => Presented::HistoryOnly,
-        (false, false, true) => Presented::Banner(BannerLife::Persists),
         (false, false, false) => Presented::Banner(BannerLife::Expires),
     }
 }

@@ -16,7 +16,7 @@ pub fn action_shortcut(keys: &ActionKeys) -> Option<Shortcut> {
     };
     let shortcut = match action {
         Action::Standard(standard) => Some(Shortcut::standard(*standard)),
-        own => OwnAction::of(own)
+        own @ Action::App(_) => OwnAction::of(own)
             .and_then(OwnAction::default_chord)
             .and_then(Shortcut::from_default_chord),
     };

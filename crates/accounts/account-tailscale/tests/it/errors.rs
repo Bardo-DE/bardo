@@ -41,7 +41,7 @@ async fn a_socket_nobody_listens_on_is_not_running() {
     assert_eq!(api.status().await, Err(TailscaleError::NotRunning));
     assert_eq!(api.start_login().await, Err(TailscaleError::NotRunning));
     // And it comes back where it was.
-    fake.restart().await.expect("restart");
+    fake.restart().expect("restart");
     api.status().await.unwrap();
 }
 

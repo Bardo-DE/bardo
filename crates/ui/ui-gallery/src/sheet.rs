@@ -3,6 +3,7 @@
 use crate::data_uri;
 use crate::registry;
 use crate::snapshot::Shot;
+use std::fmt::Write as _;
 use std::path::Path;
 use ui_components::prelude::*;
 
@@ -15,12 +16,13 @@ pub fn html(dir: &Path, shots: &[Shot]) -> std::io::Result<String> {
             .filter(|shot| shot.page == entry.page)
             .map(|shot| figure(dir, *shot))
             .collect::<std::io::Result<String>>()?;
-        body.push_str(&format!(
+        let _ = write!(
+            body,
             "<section id=\"{slug}\"><h2>{title}</h2><p>{lede}</p><div class=\"row\">{figures}</div></section>\n",
             slug = entry.page.slug(),
             title = escape(entry.title),
             lede = escape(entry.lede),
-        ));
+        );
     }
     let nav = registry::all()
         .map(|entry| {

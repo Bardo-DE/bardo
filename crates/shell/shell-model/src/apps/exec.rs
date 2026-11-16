@@ -51,14 +51,14 @@ enum Piece {
 ///
 /// Returns an [`ExecError`] when `exec` cannot be tokenised or a field code cannot be expanded.
 pub fn expand_exec(exec: &str, args: &ExecArgs) -> Result<Vec<String>, ExecError> {
-    let mut argv = Vec::new();
+    let mut command = Vec::new();
     for token in tokenize(exec)? {
-        argv.extend(expand_token(&token, args)?);
+        command.extend(expand_token(&token, args)?);
     }
-    if argv.is_empty() {
+    if command.is_empty() {
         return Err(ExecError::Empty);
     }
-    Ok(argv)
+    Ok(command)
 }
 
 /// Split on unquoted spaces and tabs; inside double quotes, `\` escapes the next character.
@@ -211,6 +211,7 @@ mod tests {
     }
 
     #[test]
+    #[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
     fn field_codes_and_quoting_expand_per_the_spec() {
         let cases: Vec<(&str, ExecArgs, Vec<&str>)> = vec![
             ("plain", none(), vec!["foot"]),

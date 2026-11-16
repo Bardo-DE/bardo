@@ -378,6 +378,7 @@ mod tests {
 
     /// Every row of design/32 section 4.1, and the rows its table leaves implicit.
     #[test]
+    #[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
     fn summon_table() {
         let mail = Some("org.bardo.Mail");
         let from_search = Summon::InLauncher {

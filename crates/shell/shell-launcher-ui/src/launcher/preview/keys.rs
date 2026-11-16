@@ -93,6 +93,10 @@ pub fn step_preview(
 }
 
 /// A key while the results (the field) have the keyboard.
+#[expect(
+    clippy::match_same_arms,
+    reason = "the passing arms are different cases (a typing Space, a Space with nothing to preview) and an earlier arm sits between them, so merging them would change which arm wins"
+)]
 fn in_results(
     state: PreviewState,
     key: PreviewKey,

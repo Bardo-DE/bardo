@@ -223,9 +223,9 @@ fn no_focused_window_is_the_default_profile() {
 
 #[test]
 fn focused_is_the_active_toplevel_and_its_entry() {
+    type Case<'a> = (&'a str, Toplevels, Option<(&'a str, Option<&'a str>)>);
     let index = index();
     let toplevels = |windows: Vec<Toplevel>| Toplevels { windows };
-    type Case<'a> = (&'a str, Toplevels, Option<(&'a str, Option<&'a str>)>);
     let cases: Vec<Case> = vec![
         ("no windows", toplevels(vec![]), None),
         (
@@ -329,6 +329,12 @@ fn the_wanted_profile_follows_the_active_window() {
 /// step, with the profile of the window underneath as the toplevels give it.
 #[test]
 fn the_shell_holding_the_keyboard_is_keymap_aware_over_any_window() {
+    type Step = (
+        &'static str,
+        Option<(u64, bool)>,
+        &'static str,
+        &'static str,
+    );
     let index = index();
     let standard = CategoryTable::standard();
     let own = OwnProfiles::standard();
@@ -339,12 +345,6 @@ fn the_shell_holding_the_keyboard_is_keymap_aware_over_any_window() {
     };
     let launcher = 10;
     let menu = 11;
-    type Step = (
-        &'static str,
-        Option<(u64, bool)>,
-        &'static str,
-        &'static str,
-    );
     // (what happened, the surface and what it did, the window underneath, the profile sent)
     let steps: Vec<Step> = vec![
         ("firefox alone", None, "plain", "default"),

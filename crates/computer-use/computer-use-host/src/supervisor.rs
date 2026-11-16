@@ -409,7 +409,7 @@ impl<S: Seams> Supervisor<S> {
     ///
     /// Returns a [`ControlRefusal`] when the caller may not make the call, the run is unknown, or
     /// the call does not apply to the run's phase.
-    pub async fn control(
+    pub fn control(
         &self,
         caller: CuaCaller,
         run: &RunId,
@@ -430,7 +430,7 @@ impl<S: Seams> Supervisor<S> {
     ///
     /// Returns a [`ControlRefusal`] when the caller may not answer, the run is unknown, or it is
     /// not waiting on `question`.
-    pub async fn answer(
+    pub fn answer(
         &self,
         caller: CuaCaller,
         run: &RunId,
@@ -452,7 +452,7 @@ impl<S: Seams> Supervisor<S> {
     /// # Errors
     ///
     /// Returns a [`ControlRefusal`] when the caller may not stop runs.
-    pub async fn stop_all(&self, caller: CuaCaller) -> Result<(), ControlRefusal> {
+    pub fn stop_all(&self, caller: CuaCaller) -> Result<(), ControlRefusal> {
         guard(caller, CuaMember::StopAll, self.settings().enabled)?;
         let state = self.shared.state();
         for live in state.live.values() {

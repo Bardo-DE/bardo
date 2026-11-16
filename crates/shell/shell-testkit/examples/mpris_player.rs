@@ -93,11 +93,11 @@ impl Player {
         let _ = self.playback_status_changed(&emitter).await;
     }
 
-    async fn next(&self) {
+    fn next(&self) {
         eprintln!("mpris_player: Next");
     }
 
-    async fn previous(&self) {
+    fn previous(&self) {
         eprintln!("mpris_player: Previous");
     }
 
@@ -117,21 +117,37 @@ impl Player {
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn can_play(&self) -> bool {
         true
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn can_pause(&self) -> bool {
         true
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn can_go_next(&self) -> bool {
         true
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn can_go_previous(&self) -> bool {
         true
     }

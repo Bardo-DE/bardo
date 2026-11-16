@@ -186,7 +186,7 @@ async fn choose(provider: &FilesProvider, row: &Item, args: &Args) {
             let env = Env::from_process();
             let notifications = shell_services::service::spawn::<
                 shell_services::NotificationsService,
-            >(&rt, &env, Default::default())
+            >(&rt, &env, shell_services::Answers::default())
             .control;
             let links = launch::LaunchLinks {
                 apps,

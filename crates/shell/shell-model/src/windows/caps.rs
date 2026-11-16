@@ -48,8 +48,8 @@ impl WorkspaceCaps {
 }
 
 impl FromIterator<WorkspaceCap> for WorkspaceCaps {
-    fn from_iter<I: IntoIterator<Item = WorkspaceCap>>(caps: I) -> Self {
-        let mut all: Vec<WorkspaceCap> = caps.into_iter().collect();
+    fn from_iter<I: IntoIterator<Item = WorkspaceCap>>(iter: I) -> Self {
+        let mut all: Vec<WorkspaceCap> = iter.into_iter().collect();
         all.sort();
         all.dedup();
         WorkspaceCaps(all)

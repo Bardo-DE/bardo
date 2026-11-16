@@ -2,6 +2,7 @@
 //! A value that is not a plain word is quoted. Nothing here is shown to a person.
 
 use std::fmt::Display;
+use std::fmt::Write as _;
 
 /// One `key=value` field. A function so that any `Display` value coerces at the call.
 pub fn kv<'a>(key: &'a str, value: &'a dyn Display) -> (&'a str, &'a dyn Display) {
@@ -18,9 +19,9 @@ pub fn line(event: &str, fields: &[(&str, &dyn Display)]) -> String {
                 .chars()
                 .all(|c| c.is_ascii_alphanumeric() || "-_./@:+".contains(c));
         if plain {
-            out.push_str(&format!(" {key}={text}"));
+            let _ = write!(out, " {key}={text}");
         } else {
-            out.push_str(&format!(" {key}={text:?}"));
+            let _ = write!(out, " {key}={text:?}");
         }
     }
     out

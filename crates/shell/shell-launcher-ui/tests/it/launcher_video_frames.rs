@@ -3,6 +3,7 @@
 #![cfg(feature = "media")]
 #![allow(clippy::unwrap_used, reason = "a test fails by panicking")]
 
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::UNIX_EPOCH;
@@ -38,13 +39,19 @@ fn scene() -> Scene {
     }
 }
 
+/// The lower-case hex of the MD5 of `bytes`: how the thumbnail specification names a file.
+fn md5_hex(bytes: &[u8]) -> String {
+    let mut hex = String::new();
+    for byte in Md5::digest(bytes) {
+        let _ = write!(hex, "{byte:02x}");
+    }
+    hex
+}
+
 /// The freedesktop thumbnail of `video` at `size`, as another program writes it: a 2 x 2 PNG named
 /// by the MD5 of the file's URI, saying whose it is and which version of it.
 fn write_thumbnail(cache: &Path, video: &Path, size: &str, uri: &str, mtime: u64) {
-    let name: String = Md5::digest(uri.as_bytes())
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect();
+    let name = md5_hex(uri.as_bytes());
     let folder = cache.join("thumbnails").join(size);
     std::fs::create_dir_all(&folder).unwrap();
     let mut bytes = Vec::new();
@@ -119,18 +126,12 @@ fn a_missing_or_stale_thumbnail_leaves_the_facts_card() {
     );
     // The name is the md5 of the URI it claims, so write the other file's name by hand: the chunk
     // that names another file under this file's name is stale too.
-    let name: String = Md5::digest(uri.as_bytes())
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect();
+    let name = md5_hex(uri.as_bytes());
     let liar = scene
         .cache
         .join("thumbnails/large")
         .join(format!("{name}.png"));
-    let other: String = Md5::digest(b"file:///elsewhere/clip.mp4")
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect();
+    let other = md5_hex(b"file:///elsewhere/clip.mp4");
     std::fs::rename(
         scene
             .cache

@@ -37,7 +37,7 @@ impl BarDrops {
     pub fn with_new(mut self, output: &str, over: Shown) -> BarDrops {
         match over {
             Shown::Shown => self.new_space.insert(output.to_owned()),
-            _ => self.new_space.remove(output),
+            Shown::Hidden => self.new_space.remove(output),
         };
         self
     }
@@ -48,7 +48,7 @@ impl BarDrops {
     pub fn with_dragging(mut self, output: &str, drag: Shown) -> BarDrops {
         match drag {
             Shown::Shown => self.dragging.insert(output.to_owned()),
-            _ => self.dragging.remove(output),
+            Shown::Hidden => self.dragging.remove(output),
         };
         self
     }

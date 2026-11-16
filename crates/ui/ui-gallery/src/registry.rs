@@ -22,6 +22,7 @@ pub struct Entry {
 }
 
 /// The entry for `page`: a `match`, so a new page without one does not compile.
+#[expect(clippy::too_many_lines, reason = "a table: one entry per page")]
 pub fn entry(page: Page) -> Entry {
     match page {
         Page::Tokens => Entry {

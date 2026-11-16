@@ -186,6 +186,10 @@ fn capability(shared: &Shared, secure: bool, stage: Stage) -> String {
 
 /// Runs one phase of a session; returns the stream when the client asked for STARTTLS and the
 /// fake agreed.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one match arm per IMAP command: the match is this fake's command table"
+)]
 async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
     stream: S,
     shared: &Shared,

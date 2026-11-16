@@ -75,7 +75,7 @@ fn Chrome(material: Material) -> Element {
                     for floor in measured {
                         Chip {
                             variant: ChipVariant::Status(floor.clears()),
-                            text: format!("{}, over {}: {:.2} (needs {})", floor.tint.label(), floor.backdrop.label(), floor.measured, floor.floor),
+                            text: format!("{}, over {}: {:.2} (needs {})", floor.tint.label(), floor.backdrop.label(), floor.measured, floor.required),
                         }
                     }
                 }

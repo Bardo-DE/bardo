@@ -153,7 +153,11 @@ mod tests {
         let path = Path::new("/p/Screenshot_1.png");
         let one = preview_name(path, 10, 1_000);
         assert_eq!(one, preview_name(path, 10, 1_000));
-        assert!(one.ends_with(".png"));
+        assert!(
+            std::path::Path::new(&one)
+                .extension()
+                .is_some_and(|ext| ext == "png")
+        );
         assert_ne!(one, preview_name(path, 11, 1_000));
         assert_ne!(one, preview_name(path, 10, 2_000));
         assert_ne!(

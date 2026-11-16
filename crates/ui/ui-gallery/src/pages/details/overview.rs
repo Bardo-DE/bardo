@@ -89,9 +89,9 @@ fn StateSection() -> Element {
 
 #[component]
 fn MorphSection() -> Element {
+    const STRENGTHS: [Icon; 3] = [Icon::WifiLow, Icon::Wifi, Icon::WifiHigh];
     let mut bars = use_signal(|| 0usize);
     let mut muted = use_signal(|| false);
-    const STRENGTHS: [Icon; 3] = [Icon::WifiLow, Icon::Wifi, Icon::WifiHigh];
     rsx! {
         Section { title: "MorphGlyph", note: "A glyph gives way by cross-fading within one family, or by drawing a slash on and off.",
             div { class: "g-detail-grid",

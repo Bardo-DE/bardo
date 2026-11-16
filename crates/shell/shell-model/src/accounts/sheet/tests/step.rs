@@ -149,6 +149,7 @@ fn case(name: &'static str, view: SheetView, actions: Vec<Do>, told: Vec<SheetIn
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
 fn what_the_person_does_is_what_accountd_is_told() {
     let failed = SheetView::Failed {
         provider: provider("nextcloud"),

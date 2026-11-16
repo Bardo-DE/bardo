@@ -294,9 +294,8 @@ fn actions() -> ActionIndex {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
 fn an_activation_costs_what_its_route_says() {
-    let notes = Identity::Verified(name("dev.notes"));
-    let command = |text: &str| Some(MenuCommand(text.to_owned()));
     type Case<'a> = (
         &'a str,
         ItemKey,
@@ -305,6 +304,8 @@ fn an_activation_costs_what_its_route_says() {
         Route,
         Effect,
     );
+    let notes = Identity::Verified(name("dev.notes"));
+    let command = |text: &str| Some(MenuCommand(text.to_owned()));
     let cases: Vec<Case> = vec![
         (
             "a verified app's own action takes that action's declared effect",
@@ -506,7 +507,10 @@ fn a_layout_is_read_for_a_few_rows_and_levels_and_short_labels() {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
 fn a_menu_is_shown_only_when_its_owner_is_the_windows_program() {
+    const SHOWN: bool = true;
+    const HIDDEN: bool = false;
     let client = |reported: Option<&str>| MenuClient {
         key: "dev.notes".to_owned(),
         reported: reported.map(str::to_owned),
@@ -521,8 +525,6 @@ fn a_menu_is_shown_only_when_its_owner_is_the_windows_program() {
     let service = |app: &str| MenuOwner::Service {
         app: app.to_owned(),
     };
-    const SHOWN: bool = true;
-    const HIDDEN: bool = false;
     // `(case, owner, the window's client, trusted)`
     let cases = [
         // No subject reported: the app key is what is compared.

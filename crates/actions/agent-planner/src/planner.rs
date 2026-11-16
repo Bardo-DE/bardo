@@ -178,6 +178,7 @@ impl<P: Transport> PlannerModel<P> {
 
     /// The same planner opening its inference sessions with `options`: who asks (a helper), and
     /// the one model it must run on. The assistant's own planner opens with none.
+    #[must_use]
     pub fn with_open_options(self, options: OpenOptions) -> Self {
         Self { options, ..self }
     }
@@ -188,6 +189,7 @@ impl<P: Transport> PlannerModel<P> {
     }
 
     /// The same planner with an agent's role after the fixed rules.
+    #[must_use]
     pub fn with_role(self, role: RoleText) -> Self {
         Self {
             role: Some(role),
@@ -196,11 +198,13 @@ impl<P: Transport> PlannerModel<P> {
     }
 
     /// The same planner asking for `tier` of model (the companion's is `Balanced`).
+    #[must_use]
     pub fn with_tier(self, tier: Tier) -> Self {
         Self { tier, ..self }
     }
 
     /// The actions this planner offers and reads calls by (the installed manifests).
+    #[must_use]
     pub fn with_catalogue(self, catalogue: Catalogue) -> Self {
         Self { catalogue, ..self }
     }

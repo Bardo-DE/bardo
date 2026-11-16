@@ -114,7 +114,6 @@ mod tests {
 
     #[test]
     fn the_panel_sits_slightly_above_centre_but_below_the_bar() {
-        let tokens = LauncherTokens::default();
         // max(24 + 24, round(0.4 H - 230)).
         const CASES: &[(i32, i32)] = &[
             (1080, 202),
@@ -125,6 +124,7 @@ mod tests {
             (1081, 202),
             (1082, 203),
         ];
+        let tokens = LauncherTokens::default();
         for &(height, want) in CASES {
             assert_eq!(panel_top(height, &tokens), want, "H {height}");
         }

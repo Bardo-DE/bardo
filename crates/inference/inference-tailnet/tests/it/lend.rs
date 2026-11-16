@@ -265,7 +265,7 @@ async fn tailscale_going_away_closes_the_listeners_and_coming_back_opens_them() 
         "listening to stop",
     )
     .await;
-    l.fake.restart().await.unwrap();
+    l.fake.restart().unwrap();
     wait(
         &mut listening,
         |now| !now.bound.is_empty(),

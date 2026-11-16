@@ -65,6 +65,10 @@ impl Host for FakeHost {
         (*helper == self.helper).then(|| HelperName::parse("Inbox").expect("name"))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this fake host answers from memory"
+    )]
     async fn post(&self, run: RunRequest) -> Option<JobId> {
         let mut log = self.log();
         log.posted.push(run);
@@ -75,6 +79,10 @@ impl Host for FakeHost {
         self.log().ends.get(&job).copied()
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this fake host answers from memory"
+    )]
     async fn read(&self, _: &[SpaceId]) -> Vec<RoutineRecord> {
         self.log().stored.clone()
     }
@@ -87,6 +95,10 @@ impl Host for FakeHost {
         self.log().said.push(text);
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this fake host answers from memory"
+    )]
     async fn events(&self, _: EventAsk) -> Vec<Seen> {
         std::mem::take(&mut self.log().events)
     }

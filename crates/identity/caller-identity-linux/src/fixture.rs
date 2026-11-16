@@ -82,6 +82,7 @@ impl FixtureProc {
 
     /// A file with the given contents and trust. Directories above it that the tree does not
     /// name yet are made root-only.
+    #[must_use]
     pub fn file(mut self, abs: &str, bytes: impl Into<Vec<u8>>, trust: FileTrust) -> FixtureProc {
         self = self.ensure_dirs(abs);
         self.nodes.insert(

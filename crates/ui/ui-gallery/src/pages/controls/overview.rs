@@ -142,7 +142,7 @@ fn Choosers() -> Element {
                     ShortcutField { label: "Live shortcut", value: shortcut(), onrecord: move |recorded| match recorded {
                         ShortcutRecorded::Chord(chord) => shortcut.set(Some(chord)),
                         ShortcutRecorded::Cleared => shortcut.set(None),
-                        _ => {}
+                        ShortcutRecorded::Cancelled => {}
                     } }
                 }
                 Specimen { name: "empty",

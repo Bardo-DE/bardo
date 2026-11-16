@@ -77,11 +77,10 @@ pub fn blur_region(actions: ActionsShown) -> RegionSpec {
 )]
 pub fn hit_for(foot: f32, actions: ActionsShown) -> PanelHit {
     match actions {
-        ActionsShown::Open => PanelHit::Whole,
         ActionsShown::Closed if foot >= 1.0 => PanelHit::Card {
             height: foot.ceil() as i32,
         },
-        ActionsShown::Closed => PanelHit::Whole,
+        ActionsShown::Open | ActionsShown::Closed => PanelHit::Whole,
     }
 }
 

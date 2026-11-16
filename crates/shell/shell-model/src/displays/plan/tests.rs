@@ -68,6 +68,13 @@ fn desk() -> Displays {
 
 #[test]
 fn brightness_goes_where_the_keys_point() {
+    type Case = (
+        &'static str,
+        KeysTarget,
+        Option<OutputName>,
+        LevelChange,
+        Vec<BrightnessAction>,
+    );
     let up = LevelChange::Step(Step::Up);
     let ddc = |id, value| {
         BrightnessAction::Ddc(Write {
@@ -81,13 +88,6 @@ fn brightness_goes_where_the_keys_point() {
         value,
     };
     let at = |n: &str| Some(OutputName(n.to_owned()));
-    type Case = (
-        &'static str,
-        KeysTarget,
-        Option<OutputName>,
-        LevelChange,
-        Vec<BrightnessAction>,
-    );
     let cases: Vec<Case> = vec![
         (
             "pointer on the monitor",

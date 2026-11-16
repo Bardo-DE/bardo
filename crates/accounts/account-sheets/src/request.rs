@@ -104,6 +104,10 @@ impl RequestServer for RequestObject {
     type Error = fdo::Error;
 
     /// Closes the sheet; no `Response` follows. Only the caller that started it may.
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; closing a sheet has nothing to await"
+    )]
     async fn close(&self, Call { header, .. }: Call<'_>) -> fdo::Result<()> {
         if header.sender().map(UniqueName::as_str) == Some(self.owner.as_str()) {
             if let Some(task) = self

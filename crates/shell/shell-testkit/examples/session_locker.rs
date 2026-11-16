@@ -221,7 +221,7 @@ impl Dispatch<ExtSessionLockV1, ()> for State {
 impl Dispatch<ExtSessionLockSurfaceV1, WlSurface> for State {
     fn event(
         state: &mut Self,
-        lock_surface: &ExtSessionLockSurfaceV1,
+        proxy: &ExtSessionLockSurfaceV1,
         event: ext_session_lock_surface_v1::Event,
         surface: &WlSurface,
         _: &Connection,
@@ -235,7 +235,7 @@ impl Dispatch<ExtSessionLockSurfaceV1, WlSurface> for State {
         else {
             return;
         };
-        lock_surface.ack_configure(serial);
+        proxy.ack_configure(serial);
         match painted_buffer(&state.shm, handle, width, height) {
             Ok(buffer) => {
                 surface.attach(Some(&buffer), 0, 0);

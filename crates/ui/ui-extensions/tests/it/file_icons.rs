@@ -182,10 +182,10 @@ fn your_changes_beat_the_chosen_pack_for_the_type_they_name_and_nothing_else() {
     );
     let db = db();
     let mime = MimeType::new("application/pdf").expect("a type");
-    let mine = scratch.path().join("mine.svg");
-    fs::write(&mine, SVG).expect("a picture");
+    let own_svg = scratch.path().join("mine.svg");
+    fs::write(&own_svg, SVG).expect("a picture");
     let changes = YourChanges::in_root(&person);
-    changes.set(&db.icon_name(&mime), &mine).expect("sets");
+    changes.set(&db.icon_name(&mime), &own_svg).expect("sets");
 
     let icons = built(&person, PAPER, &[]).icons;
 

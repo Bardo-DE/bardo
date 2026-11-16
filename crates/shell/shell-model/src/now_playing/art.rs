@@ -201,7 +201,12 @@ mod tests {
             local_art_cache_name(path, Duration::from_secs(10), 100),
             "stable"
         );
-        assert!(base.ends_with(".jpg"), "{base}");
+        assert!(
+            std::path::Path::new(&base)
+                .extension()
+                .is_some_and(|ext| ext == "jpg"),
+            "{base}"
+        );
         let others = [
             (
                 "later",
@@ -219,8 +224,8 @@ mod tests {
         for (name, other) in others {
             assert_ne!(other, base, "{name}");
         }
-        let bare = local_art_cache_name(Path::new("/tmp/cover"), Duration::ZERO, 1);
-        assert!(!bare.contains('.'), "{bare}");
+        let extensionless = local_art_cache_name(Path::new("/tmp/cover"), Duration::ZERO, 1);
+        assert!(!extensionless.contains('.'), "{extensionless}");
     }
 
     #[test]
@@ -228,7 +233,12 @@ mod tests {
         let a = art_cache_name("https://example.com/a.png");
         assert_eq!(a, art_cache_name("https://example.com/a.png"), "stable");
         assert_ne!(a, art_cache_name("https://example.com/b.png"), "distinct");
-        assert!(a.ends_with(".png"), "{a}");
+        assert!(
+            std::path::Path::new(&a)
+                .extension()
+                .is_some_and(|ext| ext == "png"),
+            "{a}"
+        );
         let bare = art_cache_name("https://i.scdn.co/image/ab67616d");
         assert!(!bare.contains('.'), "{bare}");
         assert!(!bare.contains('/'), "a file name, not a path: {bare}");

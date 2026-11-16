@@ -179,12 +179,12 @@ impl PanelCtx {
         let mut state = self.services.companion.state.clone();
         // A companion that never answers (no connection, the ask refused) must not keep this
         // waiting: past the deadline the selection simply stays where it is.
-        let waited = tokio::time::timeout(
+        let outcome = tokio::time::timeout(
             ANSWER_DEADLINE,
             state.wait_for(|companion| companion.front.is_some() && companion.front != before),
         )
         .await;
-        let front = match waited {
+        let front = match outcome {
             Ok(Ok(companion)) => companion.front.clone(),
             Ok(Err(_)) | Err(_) => None,
         };

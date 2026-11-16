@@ -27,7 +27,7 @@ struct Row {
 /// The calendars and their events.
 #[derive(Debug, Default)]
 pub struct Calendars {
-    calendars: Vec<Calendar>,
+    held: Vec<Calendar>,
     rows: Vec<Row>,
     seq: u64,
     /// Sync tokens older than this are dropped.
@@ -38,7 +38,7 @@ impl Calendars {
     /// Whether any calendar is set (until one is, the probe's one primary calendar answers).
     #[must_use]
     pub fn is_empty(&self) -> bool {
-        self.calendars.is_empty()
+        self.held.is_empty()
     }
 
     /// Adds the calendar `id`, or renames and recolours it.
@@ -48,15 +48,15 @@ impl Calendars {
             summary: summary.to_owned(),
             color: color.to_owned(),
         };
-        match self.calendars.iter_mut().find(|c| c.id == id) {
+        match self.held.iter_mut().find(|c| c.id == id) {
             Some(held) => *held = next,
-            None => self.calendars.push(next),
+            None => self.held.push(next),
         }
     }
 
     /// Removes a calendar and its events.
     pub fn remove_calendar(&mut self, id: &str) {
-        self.calendars.retain(|c| c.id != id);
+        self.held.retain(|c| c.id != id);
         self.rows.retain(|r| r.calendar != id);
     }
 
@@ -192,7 +192,7 @@ impl Calendars {
             .and_then(|n| usize::try_from(n).ok())
             .unwrap_or(0);
         let all: Vec<Value> = self
-            .calendars
+            .held
             .iter()
             .map(|c| {
                 json!({"kind": "calendar#calendarListEntry", "id": c.id, "summary": c.summary,
@@ -209,7 +209,7 @@ impl Calendars {
     }
 
     fn events_list(&self, calendar: &str, request: &Request) -> Response {
-        if !self.calendars.iter().any(|c| c.id == calendar) {
+        if !self.held.iter().any(|c| c.id == calendar) {
             return error(404, "notFound");
         }
         let page = request

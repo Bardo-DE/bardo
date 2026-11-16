@@ -136,13 +136,11 @@ fn walk(data: &[u8], reached: &mut usize) -> Option<PixelSize> {
         }
         *reached += length;
         if marker == 0xDA {
-            match end_of_scan(data, *reached) {
-                Some(end) => *reached = end,
-                None => {
-                    *reached = data.len();
-                    return None;
-                }
-            }
+            let Some(end) = end_of_scan(data, *reached) else {
+                *reached = data.len();
+                return None;
+            };
+            *reached = end;
         }
     }
 }

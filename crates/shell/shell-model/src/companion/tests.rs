@@ -13,8 +13,7 @@ use companion_wire::{
 use computer_use_action::RunMode;
 use computer_use_bus::{CuaOutcome, RunStateSlug};
 use provenance::{
-    ActionName, AppName, Effect, EntityId, EntityKey, EntityKind, Label, Labelled, RunId,
-    TaskId,
+    ActionName, AppName, Effect, EntityId, EntityKey, EntityKind, Label, Labelled, RunId, TaskId,
 };
 use shell_launcher::{Generation, LauncherMode, WindowKey};
 use ui_core::time::stamp::Stamp;
@@ -97,6 +96,7 @@ fn launcher_summon() -> Summon {
 
 /// Waiting beats acting beats working beats listening beats idle.
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
 fn presence_priority_table() {
     use CompanionPresence as P;
     type Case = (&'static str, Companion, CompanionPresence);
@@ -483,6 +483,7 @@ fn an_answer_keeps_its_prompt_and_its_session_through_updates() {
 
 #[test]
 fn a_card_press_is_busy_until_its_step_ends() {
+    type Case = (&'static str, AnswerPhase, StepWireState, bool);
     let send = CardActionId::parse("send").unwrap_or_else(|e| panic!("{e}"));
     let pressed = step_of(
         asked_state(),
@@ -496,7 +497,6 @@ fn a_card_press_is_busy_until_its_step_ends() {
         step: send_action(),
     };
     assert_eq!(pressed.answers[&task("t-1")].busy, acting);
-    type Case = (&'static str, AnswerPhase, StepWireState, bool);
     let cases: Vec<Case> = vec![
         (
             "pending",
@@ -609,13 +609,13 @@ fn the_answers_phase_follows_needs_you_and_back() {
 
 #[test]
 fn a_finished_task_whose_step_failed_says_so() {
+    type Case = (&'static str, AnswerFacts, &'static str);
     let facts = |phase, state, busy| AnswerFacts {
         busy,
         wire: sent_plan(phase, state),
         ..facts("t-1", AnswerPhase::Done)
     };
     let send = CardActionId::parse("send").unwrap_or_else(|e| panic!("{e}"));
-    type Case = (&'static str, AnswerFacts, &'static str);
     let cases: Vec<Case> = vec![
         (
             "a failed step is not a done task",
@@ -843,6 +843,7 @@ fn stop_all_pauses_the_runs_that_are_going_and_no_other() {
 
 #[test]
 fn a_rows_second_line_is_the_answer_by_phase_in_plain_words() {
+    type Case = (&'static str, AnswerFacts, &'static str);
     const CHECKING: &str = "I'll check my memory to see what I've remembered.";
     const ANSWER: &str = "The capital of Taiwan is **Taipei**. Remember it?";
     let said = |phase: AnswerPhase, lines: &[&str]| AnswerFacts {
@@ -861,7 +862,6 @@ fn a_rows_second_line_is_the_answer_by_phase_in_plain_words() {
         text: "Remember *this*?".to_owned(),
         choices: Vec::new(),
     });
-    type Case = (&'static str, AnswerFacts, &'static str);
     let cases: Vec<Case> = vec![
         (
             "done: the last line, not the first",

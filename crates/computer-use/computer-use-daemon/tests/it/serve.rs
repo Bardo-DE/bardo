@@ -528,7 +528,6 @@ async fn what_the_model_proposes_and_the_screen_asks_reaches_the_shell_and_no_on
     );
     fx.supervisor
         .stop_all(computer_use_bus::CuaCaller::Shell)
-        .await
         .unwrap();
 }
 
@@ -596,7 +595,6 @@ async fn a_program_that_took_the_shells_name_is_not_the_shell() {
     );
     fx.supervisor
         .stop_all(computer_use_bus::CuaCaller::Shell)
-        .await
         .unwrap();
 }
 

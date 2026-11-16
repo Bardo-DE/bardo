@@ -1,6 +1,7 @@
 use speech_wire::{
-    HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent as Frame,
-    VoiceFault, VoiceRefusal, };
+    HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent as Frame, VoiceFault,
+    VoiceRefusal,
+};
 
 use super::*;
 
@@ -167,11 +168,11 @@ fn a_levels_frame_changes_nothing_the_person_sees() {
 
 #[test]
 fn the_end_signal_with_words_waits_for_the_stream_and_any_other_end_finishes() {
+    type Case = (&'static str, UtteranceEnd, Notice);
     let listening = vec![started(), VoiceEvent::Began, partial("hi")];
     let (state, _) = run(ready(), listening.clone());
     let (after, effects) = step(state, VoiceEvent::Ended(heard_end("")));
     assert!(matches!(after.phase, Phase::Live(_)) && effects.is_empty());
-    type Case = (&'static str, UtteranceEnd, Notice);
     let cases: Vec<Case> = vec![
         ("nothing", UtteranceEnd::NothingHeard, Notice::NothingHeard),
         (

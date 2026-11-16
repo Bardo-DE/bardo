@@ -16,7 +16,7 @@ pub(super) fn step(state: IdleState, event: IdleEvent) -> Step {
         (IdleMode::Own, IdleEvent::Power(power)) => rewatch(IdleState { power, ..state }),
         (IdleMode::Own, IdleEvent::Inhibition(inhibition)) => inhibited(state, inhibition),
         (IdleMode::Own, IdleEvent::Lock(seen)) => lock_seen(state, seen),
-        (IdleMode::Own, IdleEvent::Idled(stage, now)) => idled(state, stage, now),
+        (IdleMode::Own, IdleEvent::Idled(threshold, now)) => idled(state, threshold, now),
         (IdleMode::Own, IdleEvent::Resumed(now)) => resumed(state, now),
         (IdleMode::Own, IdleEvent::SleepStarting(_)) => (
             IdleState {
@@ -164,8 +164,8 @@ fn forget_if_unlocked(state: IdleState) -> IdleState {
     }
 }
 
-fn idled(state: IdleState, stage: Threshold, now: Stamp) -> Step {
-    match (stage, state.phase) {
+fn idled(state: IdleState, threshold: Threshold, now: Stamp) -> Step {
+    match (threshold, state.phase) {
         (Threshold::Dim, IdlePhase::Active) => {
             let level = state.policy.dim.level;
             (

@@ -102,7 +102,6 @@ fn in_results(
                 }],
             )
         }
-        LauncherKey::Enter => (state, Vec::new()),
         LauncherKey::Tab => (filtered(next_filter(state.filter)), Vec::new()),
         LauncherKey::ShiftTab => (filtered(previous_filter(state.filter)), Vec::new()),
         LauncherKey::Actions if rows > 0 && actions > 0 => (
@@ -112,7 +111,8 @@ fn in_results(
             },
             Vec::new(),
         ),
-        LauncherKey::Actions => (state, Vec::new()),
+        // Enter with no row, and Actions with no row or nothing to act on, do nothing.
+        LauncherKey::Enter | LauncherKey::Actions => (state, Vec::new()),
         LauncherKey::Escape => (state, vec![LauncherOut::Close]),
     }
 }

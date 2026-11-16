@@ -168,7 +168,7 @@ fn facts_of(request: &ConfirmRequest) -> Vec<SheetFact> {
 
 fn detail_facts(detail: &ConfirmDetail) -> Vec<SheetFact> {
     match detail {
-        ConfirmDetail::Plain => Vec::new(),
+        ConfirmDetail::Plain | ConfirmDetail::Preview(_) => Vec::new(),
         ConfirmDetail::Recipients(who) => {
             let rows = who.iter().map(|shown| {
                 let (value, source) = shown_words(shown);
@@ -199,7 +199,6 @@ fn detail_facts(detail: &ConfirmDetail) -> Vec<SheetFact> {
             });
             capped(rows, things.len(), "Affects")
         }
-        ConfirmDetail::Preview(_) => Vec::new(),
     }
 }
 

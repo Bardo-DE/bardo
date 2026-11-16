@@ -177,19 +177,19 @@ fn issue_limited(
 }
 
 /// An access token alone, for the refresh token `kept`, which stays valid (Google's refresh).
-fn issue_access(state: &mut State, client_id: &str, scope: &str, kept: &str) -> Issued {
+fn issue_access(state: &mut State, client_id: &str, scope: &str, kept: &str) -> Tokens {
     let access = next(state, "fake-access");
     record_access(state, &access, client_id, scope);
     let body = json!({
         "access_token": access, "token_type": "Bearer", "expires_in": state.lifetime_s,
         "scope": scope,
     });
-    Ok((access, kept.to_owned(), body))
+    (access, kept.to_owned(), body)
 }
 
 /// A code's first tokens: Google issues a refresh token only to a code that asked for offline
 /// access.
-fn issue_for_code(state: &mut State, offline: bool, client_id: &str, scope: &str) -> Issued {
+fn issue_for_code(state: &mut State, offline: bool, client_id: &str, scope: &str) -> Tokens {
     match (state.style, offline) {
         (Style::Google, false) => {
             let access = next(state, "fake-access");
@@ -198,9 +198,9 @@ fn issue_for_code(state: &mut State, offline: bool, client_id: &str, scope: &str
                 "access_token": access, "token_type": "Bearer",
                 "expires_in": state.lifetime_s, "scope": scope,
             });
-            Ok((access, String::new(), body))
+            (access, String::new(), body)
         }
-        _ => Ok(issue(state, client_id, scope)),
+        _ => issue(state, client_id, scope),
     }
 }
 
@@ -241,7 +241,10 @@ fn token(shared: &Shared, request: &Request) -> Response {
     response
 }
 
-type Issued = Result<(String, String, serde_json::Value), Refused>;
+/// An access token, the refresh token that goes with it and the response body.
+type Tokens = (String, String, serde_json::Value);
+
+type Issued = Result<Tokens, Refused>;
 
 fn exchange_code(state: &mut State, request: &Request, client_id: &str) -> Issued {
     let form = |name: &str| request.form_value(name).unwrap_or_default();
@@ -259,7 +262,7 @@ fn exchange_code(state: &mut State, request: &Request, client_id: &str) -> Issue
             held.push(scope.to_owned());
         }
     }
-    issue_for_code(state, code.offline, client_id, &code.scope)
+    Ok(issue_for_code(state, code.offline, client_id, &code.scope))
 }
 
 /// Whether a grant of `held` (space separated) covers every scope of `asked`: each is held, or
@@ -301,7 +304,7 @@ fn refresh(state: &mut State, presented: &str, client_id: &str, asked: &str) -> 
         asked.to_owned()
     };
     if state.style == Style::Google {
-        return issue_access(state, client_id, &carried, presented);
+        return Ok(issue_access(state, client_id, &carried, presented));
     }
     // Rotation: the presented token is spent, a new one comes back, for the whole grant.
     state.refresh.remove(presented);

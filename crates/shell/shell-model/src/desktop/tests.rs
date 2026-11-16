@@ -18,6 +18,8 @@ fn a_repeated_global_keeps_its_highest_version() {
 
 #[test]
 fn each_backend_carries_what_its_protocols_can() {
+    const YES: bool = true;
+    const NO: bool = false;
     let window = || "w1".to_owned();
     let space = || SpaceId::parse("ws-1").unwrap_or_else(|e| panic!("{e}"));
     let commands: Vec<(&str, DesktopCommand)> = vec![
@@ -36,8 +38,6 @@ fn each_backend_carries_what_its_protocols_can() {
             },
         ),
     ];
-    const YES: bool = true;
-    const NO: bool = false;
     // Rows: activate, close, minimise, unminimise, place, to space, switch space, target.
     let table: &[(DesktopBackend, [bool; 8])] = &[
         (

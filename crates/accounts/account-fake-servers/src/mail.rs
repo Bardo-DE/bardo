@@ -153,7 +153,7 @@ pub fn unb64(text: &str) -> Option<String> {
 /// Whether credentials may be sent now: never in the clear when the server wants STARTTLS first.
 #[must_use]
 pub fn secure_enough(tls: Tls, active: bool) -> bool {
-    !(tls == Tls::StartTls && !active)
+    tls != Tls::StartTls || active
 }
 
 /// A CRLF line reader and writer over one stream.

@@ -67,9 +67,7 @@ fn tailscale() -> Account {
 impl World {
     async fn start(name: &str) -> Self {
         let dir = Scratch::new(&format!("client-tailnet-{name}"));
-        let fake = FakeLocalApi::start(&dir, Daemon::Running(network()))
-            .await
-            .expect("fake tailscale");
+        let fake = FakeLocalApi::start(&dir, Daemon::Running(network())).expect("fake tailscale");
         let api = LocalApi::new(fake.socket()).with_program_dirs(Vec::new());
         let bus = PrivateBus::start();
         let callers = Arc::new(TableCallers::new());

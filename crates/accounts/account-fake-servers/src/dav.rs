@@ -5,6 +5,7 @@
 
 use crate::http::{Request, Response};
 use std::collections::BTreeMap;
+use std::fmt::Write as _;
 
 /// What a node is.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -400,119 +401,124 @@ impl Tree {
                 Kind::AddressBook => "<card:addressbook/>",
                 _ => "",
             };
-            out.push_str(&if collection {
-                format!("<d:resourcetype><d:collection/>{extra}</d:resourcetype>")
+            if collection {
+                let _ = write!(
+                    out,
+                    "<d:resourcetype><d:collection/>{extra}</d:resourcetype>"
+                );
             } else {
-                "<d:resourcetype/>".to_owned()
-            });
+                out.push_str("<d:resourcetype/>");
+            }
         }
         if wants("getetag") {
-            out.push_str(&format!(
-                "<d:getetag>&quot;{:x}&quot;</d:getetag>",
-                node.changed
-            ));
+            let _ = write!(out, "<d:getetag>&quot;{:x}&quot;</d:getetag>", node.changed);
         }
         if wants("getlastmodified") {
             out.push_str("<d:getlastmodified>Mon, 05 Oct 2026 12:00:00 GMT</d:getlastmodified>");
         }
         if wants("fileid") {
-            out.push_str(&format!("<oc:fileid>{}</oc:fileid>", node.id));
+            let _ = write!(out, "<oc:fileid>{}</oc:fileid>", node.id);
         }
         if collection {
             let meta = self.meta.get(path);
             let name = meta
                 .and_then(|m| m.displayname.as_deref())
                 .unwrap_or_else(|| path.rsplit('/').next().unwrap_or(""));
-            out.push_str(&if wants("displayname") {
-                format!(
+            if wants("displayname") {
+                let _ = write!(
+                    out,
                     "<d:displayname>{}</d:displayname>",
                     account_dav_proto::escape(name)
-                )
-            } else {
-                String::new()
-            });
+                );
+            }
             if let (Some(color), Kind::Calendar(_), true) = (
                 meta.and_then(|m| m.color.as_deref()),
                 &node.kind,
                 wants("calendar-color"),
             ) {
-                out.push_str(&format!(
+                let _ = write!(
+                    out,
                     "<ic:calendar-color>{}</ic:calendar-color>",
                     account_dav_proto::escape(color)
-                ));
+                );
             }
             if let Some(principal) = &self.principal {
-                out.push_str(&self.principal_props(path, principal, requested));
+                out.push_str(&Self::principal_props(path, principal, requested));
             }
             if wants("sync-token") {
-                out.push_str(&format!(
-                    "<d:sync-token>{}</d:sync-token>",
-                    self.sync_token()
-                ));
+                let _ = write!(out, "<d:sync-token>{}</d:sync-token>", self.sync_token());
             }
             if matches!(node.kind, Kind::Calendar(_) | Kind::AddressBook) && wants("getctag") {
-                out.push_str(&format!("<cs:getctag>{}</cs:getctag>", self.sync_token()));
+                let _ = write!(out, "<cs:getctag>{}</cs:getctag>", self.sync_token());
             }
             if let (Kind::Calendar(component), true) =
                 (&node.kind, wants("supported-calendar-component-set"))
             {
-                out.push_str(&format!(
+                let _ = write!(
+                    out,
                     "<cal:supported-calendar-component-set><cal:comp name=\"{component}\"/></cal:supported-calendar-component-set>"
-                ));
+                );
             }
             if node.kind == Kind::Files {
                 if wants("quota-used-bytes") {
-                    out.push_str(&format!(
+                    let _ = write!(
+                        out,
                         "<d:quota-used-bytes>{}</d:quota-used-bytes>",
                         self.used_under(path)
-                    ));
+                    );
                 }
                 if wants("quota-available-bytes") {
-                    out.push_str(&format!(
+                    let _ = write!(
+                        out,
                         "<d:quota-available-bytes>{}</d:quota-available-bytes>",
                         self.available()
-                    ));
+                    );
                 }
             }
         } else {
             if wants("getcontentlength") {
-                out.push_str(&format!(
+                let _ = write!(
+                    out,
                     "<d:getcontentlength>{}</d:getcontentlength>",
                     node.body.len()
-                ));
+                );
             }
             if wants("getcontenttype") {
-                out.push_str(&format!(
+                let _ = write!(
+                    out,
                     "<d:getcontenttype>{}</d:getcontenttype>",
                     node.content_type
-                ));
+                );
             }
         }
         out
     }
 
     /// `current-user-principal` on every collection, the home sets on the principal itself.
-    fn principal_props(&self, path: &str, principal: &Principal, requested: &str) -> String {
+    fn principal_props(path: &str, principal: &Principal, requested: &str) -> String {
         let asked = |name: &str| requested.contains(name);
         let mut out = String::new();
         if asked("current-user-principal") {
-            out.push_str(&format!(
+            let _ = write!(
+                out,
                 "<d:current-user-principal><d:href>{}/</d:href></d:current-user-principal>",
                 account_dav_proto::escape(&principal.path)
-            ));
+            );
         }
         if path == principal.path {
             if asked("calendar-home-set") {
-                out.push_str(&format!(
+                let _ = write!(
+                    out,
                     "<cal:calendar-home-set><d:href>{}/</d:href></cal:calendar-home-set>",
                     account_dav_proto::escape(&principal.calendar_home)
-                ));
+                );
             }
             if asked("addressbook-home-set") {
-                out.push_str(&format!(
+                let _ = write!(
+                    out,
                     "<card:addressbook-home-set><d:href>{}/</d:href></card:addressbook-home-set>",
                     account_dav_proto::escape(&principal.addressbook_home)
-                ));
+                );
             }
         }
         out
@@ -564,12 +570,13 @@ impl Tree {
                 })
             });
             if matches {
-                out.push_str(&format!(
+                let _ = write!(
+                    out,
                     "<d:response><d:href>{}</d:href><d:propstat><d:prop><d:getetag>&quot;{:x}&quot;</d:getetag><cal:calendar-data>{}</cal:calendar-data></d:prop><d:status>HTTP/1.1 200 OK</d:status></d:propstat></d:response>",
                     account_dav_proto::escape(child_path),
                     child.changed,
                     account_dav_proto::escape(&text)
-                ));
+                );
             }
         }
         Self::multistatus(&out, "")
@@ -647,10 +654,11 @@ impl Tree {
             .filter(|(p, at)| *at > since && within(p))
         {
             if !self.nodes.contains_key(gone) {
-                out.push_str(&format!(
+                let _ = write!(
+                    out,
                     "<d:response><d:href>{}</d:href><d:status>HTTP/1.1 404 Not Found</d:status></d:response>",
                     account_dav_proto::escape(gone)
-                ));
+                );
             }
         }
         Self::multistatus(

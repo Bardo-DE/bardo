@@ -111,6 +111,7 @@ struct Case {
 }
 
 #[test]
+#[expect(clippy::too_many_lines, reason = "a table of cases for one function")]
 fn the_box_follows_the_router_and_asks_it_for_a_switch() {
     let flip = CompanionEvent::Mode(ModeMsg::Flip);
     let cases = vec![

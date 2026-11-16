@@ -77,6 +77,10 @@ fn line<'a>(program: &str, args: impl IntoIterator<Item = &'a str>) -> CommandLi
 mod tests {
     use super::{CommandLine, ShotKind, portal_command};
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "it is compared with `portal_command`, which returns an `Option`"
+    )]
     fn line(program: &str, args: &[&str]) -> Option<CommandLine> {
         Some(CommandLine {
             program: program.to_owned(),

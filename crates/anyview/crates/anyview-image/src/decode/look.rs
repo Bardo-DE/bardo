@@ -31,13 +31,14 @@ pub(crate) struct Looked {
 pub(crate) fn look(bytes: &[u8], sniffed: &Sniffed, area: PixelArea) -> Result<Looked, ImageError> {
     let ceiling = Ceiling::PEEK;
     match codec_for(sniffed)? {
-        Codec::Image(format) => match stills::animation(bytes, format, ceiling)? {
-            Some(frames) => look_at_frames(frames, bytes, format),
-            None => {
+        Codec::Image(format) => {
+            if let Some(frames) = stills::animation(bytes, format, ceiling)? {
+                look_at_frames(frames, bytes, format)
+            } else {
                 let (picture, colour) = stills::still(bytes, format, ceiling)?;
                 Ok(raster(picture, 1, Some(colour), ExifFacts::read(bytes)))
             }
-        },
+        }
         Codec::HighRange(format) => {
             let (picture, colour) = highrange::decode(bytes, format, ceiling)?;
             Ok(raster(picture, 1, Some(colour), ExifFacts::none()))

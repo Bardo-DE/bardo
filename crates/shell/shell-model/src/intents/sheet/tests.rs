@@ -320,7 +320,7 @@ mod view_tests {
             asker_words(&provenance::Actor::Unknown),
             "Something on this computer"
         );
-        let name: AppName = app("org.bardo.Mail");
+        let name = app("org.bardo.Mail");
         assert_eq!(app_words(&name), "Mail");
         assert_eq!(app_words(&app("org.bardo.Companion")), "Assistant");
         assert!(!why_words(&permission_core::AskReason::Mass(base_ids::Count(3))).is_empty());

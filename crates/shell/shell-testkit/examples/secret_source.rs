@@ -77,9 +77,9 @@ fn serve(socket: &Path, within: Duration) -> Result<(), Box<dyn std::error::Erro
     let manager = globals.bind::<ExtDataControlManagerV1, _, _>(&qh, 1..=1, ())?;
     let device = manager.get_data_device(&seat, &qh, ());
     let source = manager.create_data_source(&qh, ());
-    TYPES
-        .iter()
-        .for_each(|mime| source.offer((*mime).to_owned()));
+    for mime in TYPES {
+        source.offer((*mime).to_owned());
+    }
     device.set_selection(Some(&source));
     let mut state = State::default();
     queue.roundtrip(&mut state)?;

@@ -1,6 +1,10 @@
 use super::{ColorPreset, Controls, Feature, InputSource, Level, RgbGain, mute_value};
 use crate::volume::Mute;
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the rows of the fixtures are `Option<Level>`, and a read that worked is `Some`"
+)]
 fn level(value: u16, max: u16) -> Option<Level> {
     Some(Level { value, max })
 }

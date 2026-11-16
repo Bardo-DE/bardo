@@ -11,6 +11,10 @@ use super::model::{Attention, KeycapState};
 /// followed by `Failed` is `Failed` and one followed by `Active` and a new `Hello` is back to
 /// `Connected` without anyone being told.
 #[must_use]
+#[expect(
+    clippy::match_same_arms,
+    reason = "the arms are the machine's table, in the order they are tried: equal results of different events are different cases, and an earlier arm sits between the ones that coincide"
+)]
 pub fn step(state: KeycapState, event: KeycapEvent) -> KeycapState {
     match (state, event) {
         (_, KeycapEvent::Hello(status) | KeycapEvent::Status(status)) => {

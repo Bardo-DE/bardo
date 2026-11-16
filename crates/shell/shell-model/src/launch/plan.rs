@@ -34,7 +34,7 @@ pub fn launch_argv(
         wrapped.append(&mut command);
         command = wrapped;
     }
-    let mut argv = vec![
+    let mut line = vec![
         "systemd-run".to_owned(),
         "--user".to_owned(),
         "--scope".to_owned(),
@@ -42,8 +42,8 @@ pub fn launch_argv(
         format!("--unit={}", unit.0),
         "--".to_owned(),
     ];
-    argv.extend(command);
-    Ok(argv)
+    line.extend(command);
+    Ok(line)
 }
 
 /// The `Exec` line for `action`: the entry's own for [`DesktopAction::Default`], or the named
@@ -181,7 +181,11 @@ mod tests {
         assert_ne!(a, b);
         for unit in [&a, &b] {
             assert!(unit.0.starts_with("app-bardo-foot-"));
-            assert!(unit.0.ends_with(".scope"));
+            assert!(
+                std::path::Path::new(&unit.0)
+                    .extension()
+                    .is_some_and(|ext| ext == "scope")
+            );
             assert!(
                 unit.0.chars().all(|c| c.is_ascii_alphanumeric()
                     || matches!(c, '-' | '_' | '.' | '\\' | 'x' | ':')),

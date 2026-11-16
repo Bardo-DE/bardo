@@ -2,6 +2,7 @@
 //! takes first. The words are the app's own, so the caller labels the whole text untrusted.
 
 use crate::tray::{Check, TrayMenuEntry, TrayMenuKind};
+use std::fmt::Write as _;
 
 use super::route::ItemKey;
 use super::titles::{shown, titles};
@@ -59,10 +60,10 @@ fn rows_lines(rows: &[TrayMenuEntry], depth: usize, lines: &mut Vec<String>) {
             Check::Mixed => line.push_str(" (mixed)"),
         }
         if let Some(keys) = shortcut {
-            line.push_str(&format!(" keys={}", keys.0.join("+")));
+            let _ = write!(line, " keys={}", keys.0.join("+"));
         }
         if let Some(command) = command {
-            line.push_str(&format!(" command={}", command.0));
+            let _ = write!(line, " command={}", command.0);
         }
         lines.push(line);
         rows_lines(children, depth + 1, lines);

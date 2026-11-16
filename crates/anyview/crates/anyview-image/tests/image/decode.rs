@@ -235,9 +235,8 @@ fn the_size_a_header_declares_is_the_size_decoding_gives_upright() {
             continue;
         }
         let decoded = match decode(&src, &sniffed).unwrap() {
-            Decoded::Still(picture) => picture.size(),
+            Decoded::Still(picture) | Decoded::HeldStill { picture, .. } => picture.size(),
             Decoded::Animated(animation) => animation.frames.first().pixels.size(),
-            Decoded::HeldStill { picture, .. } => picture.size(),
         };
         assert_eq!(declared, Some(decoded), "{name}");
     }

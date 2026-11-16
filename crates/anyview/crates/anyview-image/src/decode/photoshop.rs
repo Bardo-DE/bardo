@@ -84,6 +84,10 @@ fn unpack_bits(source: &[u8], out: &mut [u8]) -> bool {
 /// channel after the colour is the transparency when the layer count is negative, which is how
 /// Photoshop says the merged picture has transparency; otherwise extra channels are saved
 /// selections and are ignored.
+#[expect(
+    clippy::too_many_lines,
+    reason = "reads the sections of the format in file order, each section needing the previous one's cursor"
+)]
 pub(super) fn composite(bytes: &[u8]) -> Result<(u32, u32, Vec<u8>), Gap> {
     let damaged = Gap::Damaged;
     if bytes.get(..4) != Some(b"8BPS") {
@@ -352,6 +356,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a table of document cases for one function"
+    )]
     fn a_composite_reads_whatever_the_layer_section_holds() {
         // name, doc, rgba of its two pixels
         let cases: Vec<(&str, Doc, [u8; 8])> = vec![

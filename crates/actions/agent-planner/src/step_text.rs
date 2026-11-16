@@ -13,6 +13,7 @@ use action_core::{
 };
 use action_manifest::{ArgsFault, TargetFault, TargetKind, Why};
 use action_vocab::{Handle, Value};
+use std::fmt::Write as _;
 
 fn json<T: serde::Serialize>(value: &T) -> String {
     serde_json::to_string(value).unwrap_or_default()
@@ -298,13 +299,17 @@ fn next_use(handles: &[Handle], seen: &Seen<'_>) -> String {
             Some(format!("{} can be used {used}", bounded(of_kind).join(" ")))
         })
         .collect();
-    clauses.iter().map(|c| format!("; {c}")).collect()
+    let mut out = String::new();
+    for clause in &clauses {
+        let _ = write!(out, "; {clause}");
+    }
+    out
 }
 
 /// A call that was not run because it repeats one with the same answer: when that answer is
 /// held, it is restated with where it goes next, so the repeat has nothing left to look for.
-fn held_line(head: &str, step: &StepLine, held: Held, seen: &Seen<'_>) -> String {
-    match (held, held_answer(step, seen)) {
+fn held_line(head: &str, step: &StepLine, how: Held, seen: &Seen<'_>) -> String {
+    match (how, held_answer(step, seen)) {
         (Held::Unchanged, Some((hs, list))) => {
             let names = bounded(hs.iter().map(|h| named(*h, seen.handles)).collect());
             let answer = if list {
@@ -317,8 +322,8 @@ fn held_line(head: &str, step: &StepLine, held: Held, seen: &Seen<'_>) -> String
                 next_use(&hs, seen)
             )
         }
-        (Held::Running, _) => format!("{head} not run: {}", held_text(held)),
-        _ => format!("{head} not run: {}; {INSTEAD}", held_text(held)),
+        (Held::Running, _) => format!("{head} not run: {}", held_text(how)),
+        _ => format!("{head} not run: {}; {INSTEAD}", held_text(how)),
     }
 }
 
@@ -473,7 +478,7 @@ fn step_line_raw(step: &StepLine, seen: &Seen<'_>) -> String {
         (_, StepEnd::Interrupted) => format!(
             "{head} interrupted by a restart: it may have run, it is not run again; check before asking again"
         ),
-        (_, StepEnd::Held(held)) => held_line(&head, step, *held, seen),
+        (_, StepEnd::Held(how)) => held_line(&head, step, *how, seen),
     }
 }
 

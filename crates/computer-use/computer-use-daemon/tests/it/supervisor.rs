@@ -46,7 +46,6 @@ async fn end_to_end_scripted_run_done() {
         QuestionId(1),
         Labelled::new(FORCED_YES.to_owned(), user_goal().label),
     )
-    .await
     .unwrap();
     let (end, signals) = ended_with(&mut events, &id).await;
     assert_eq!(end.outcome, CuaOutcome::Done);
@@ -221,7 +220,6 @@ async fn a_window_has_one_run_at_a_time() {
         Some(&first)
     );
     sup.control(CuaCaller::Shell, &first, CuaMember::Cancel)
-        .await
         .unwrap();
     ended(&mut events, &first).await;
     let second = sup.start(CuaCaller::Router, task()).await;
@@ -240,18 +238,15 @@ async fn the_person_answers_a_question_and_the_run_goes_on() {
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     let answer = || Labelled::new("the work one".to_owned(), user_goal().label);
     assert_eq!(
-        sup.answer(CuaCaller::Companion, &id, QuestionId(1), answer())
-            .await,
+        sup.answer(CuaCaller::Companion, &id, QuestionId(1), answer()),
         Err(ControlRefusal::NotPermitted),
         "only the shell answers"
     );
     assert_eq!(
-        sup.answer(CuaCaller::Shell, &id, QuestionId(7), answer())
-            .await,
+        sup.answer(CuaCaller::Shell, &id, QuestionId(7), answer()),
         Err(ControlRefusal::UnknownQuestion)
     );
     sup.answer(CuaCaller::Shell, &id, QuestionId(1), answer())
-        .await
         .unwrap();
     let end = ended(&mut events, &id).await;
     assert_eq!(end.outcome, CuaOutcome::Done);
@@ -282,27 +277,17 @@ async fn pause_resume_take_over_and_hand_back_move_a_run_through_its_phases() {
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
 
     let wrong = |member| sup.control(CuaCaller::Shell, &id, member);
+    assert_eq!(wrong(CuaMember::Resume), Err(ControlRefusal::WrongState));
+    assert_eq!(wrong(CuaMember::HandBack), Err(ControlRefusal::WrongState));
     assert_eq!(
-        wrong(CuaMember::Resume).await,
-        Err(ControlRefusal::WrongState)
-    );
-    assert_eq!(
-        wrong(CuaMember::HandBack).await,
-        Err(ControlRefusal::WrongState)
-    );
-    assert_eq!(
-        sup.control(CuaCaller::Other, &id, CuaMember::Pause).await,
+        sup.control(CuaCaller::Other, &id, CuaMember::Pause),
         Err(ControlRefusal::NotPermitted)
     );
 
     sup.control(CuaCaller::Shell, &id, CuaMember::Pause)
-        .await
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Paused(_))).await;
-    assert_eq!(
-        wrong(CuaMember::Pause).await,
-        Err(ControlRefusal::WrongState)
-    );
+    assert_eq!(wrong(CuaMember::Pause), Err(ControlRefusal::WrongState));
     assert_eq!(
         sup.lease_book()
             .slots
@@ -320,15 +305,12 @@ async fn pause_resume_take_over_and_hand_back_move_a_run_through_its_phases() {
     );
 
     sup.control(CuaCaller::Shell, &id, CuaMember::Resume)
-        .await
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     sup.control(CuaCaller::Companion, &id, CuaMember::TakeOver)
-        .await
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::TakenOver(..))).await;
     sup.control(CuaCaller::Router, &id, CuaMember::HandBack)
-        .await
         .unwrap();
     let end = ended(&mut events, &id).await;
     assert_eq!(end.outcome, CuaOutcome::Done, "the third reply finishes it");
@@ -350,7 +332,6 @@ async fn cancel_ends_a_run_whatever_it_is_waiting_on() {
     let id = sup.start(CuaCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     sup.control(CuaCaller::Shell, &id, CuaMember::Cancel)
-        .await
         .unwrap();
     let end = ended(&mut events, &id).await;
     assert_eq!(end.outcome, CuaOutcome::Cancelled(CancelledBy::User));
@@ -361,7 +342,7 @@ async fn cancel_ends_a_run_whatever_it_is_waiting_on() {
         }
     );
     assert_eq!(
-        sup.control(CuaCaller::Shell, &id, CuaMember::Cancel).await,
+        sup.control(CuaCaller::Shell, &id, CuaMember::Cancel),
         Err(ControlRefusal::WrongState),
         "a run that is over is not there to cancel"
     );
@@ -412,10 +393,10 @@ async fn stop_all_is_the_shells_kill_switch() {
     let id = sup.start(CuaCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     assert_eq!(
-        sup.stop_all(CuaCaller::Other).await,
+        sup.stop_all(CuaCaller::Other),
         Err(ControlRefusal::NotPermitted)
     );
-    sup.stop_all(CuaCaller::Shell).await.unwrap();
+    sup.stop_all(CuaCaller::Shell).unwrap();
     assert_eq!(
         ended(&mut events, &id).await.outcome,
         CuaOutcome::Cancelled(CancelledBy::KillSwitch)
@@ -487,7 +468,6 @@ async fn pausing_during_a_confirmation_takes_the_check_back() {
     until(&sup, &id, |p| matches!(p, RunPhase::Confirming(..))).await;
     assert_eq!(sup.gate().closes(), 0);
     sup.control(CuaCaller::Shell, &id, CuaMember::Pause)
-        .await
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Paused(_))).await;
     assert_eq!(sup.gate().closes(), 1, "the sheet comes down");
@@ -513,7 +493,7 @@ async fn the_callers_body_is_a_request_the_app_is_the_windows_and_limits_stay_in
         provenance::Integrity::Untrusted,
         "the planner's words are not the person's"
     );
-    sup.stop_all(CuaCaller::Shell).await.unwrap();
+    sup.stop_all(CuaCaller::Shell).unwrap();
 }
 
 #[tokio::test(start_paused = true)]

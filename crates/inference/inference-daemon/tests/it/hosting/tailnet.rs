@@ -35,9 +35,7 @@ pub struct FakeTailscale {
 impl FakeTailscale {
     pub async fn start(dir: &std::path::Path, network: Network) -> Self {
         std::fs::create_dir_all(dir).expect("tailscale dir");
-        let fake = FakeLocalApi::start(dir, Daemon::Running(network))
-            .await
-            .expect("fake tailscale");
+        let fake = FakeLocalApi::start(dir, Daemon::Running(network)).expect("fake tailscale");
         let api = LocalApi::new(fake.socket())
             .with_program_dirs(Vec::new())
             .with_timeout(base_testkit::GENEROUS);

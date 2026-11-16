@@ -78,7 +78,6 @@ pub fn parse_entry(text: &str) -> Result<ModelEntry, CatalogError> {
         (Serving::Attached(_), Locality::OnDevice, false) => {
             return Err(CatalogError::AttachedWithEngines);
         }
-        (Serving::Attached(_), Locality::OnDevice, true) => {}
         (Serving::Launched, Locality::OnDevice, true) => return Err(CatalogError::NoEngine),
         (Serving::Launched, Locality::Remote { .. }, false) => {
             return Err(CatalogError::RemoteWithEngines);
@@ -86,6 +85,7 @@ pub fn parse_entry(text: &str) -> Result<ModelEntry, CatalogError> {
         (Serving::Launched, Locality::Remote { reach }, true) if reach.is_empty() => {
             return Err(CatalogError::RemoteWithoutReach);
         }
+        // Attached with no engines, or launched on an engine (and, if remote, with a reach).
         _ => {}
     }
     let capabilities = file.capabilities();

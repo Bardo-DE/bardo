@@ -153,7 +153,7 @@ pub struct Drive {
     limit: Option<u64>,
     uploads: BTreeMap<String, Upload>,
     root: String,
-    my_drive: String,
+    my_drive_id: String,
     /// The documents larger than Drive exports.
     too_large: std::collections::BTreeSet<String>,
     /// How many more resumable chunks are taken before the next is refused (`503`, nothing
@@ -184,7 +184,7 @@ impl Default for Drive {
             limit: None,
             uploads: BTreeMap::new(),
             root,
-            my_drive,
+            my_drive_id: my_drive,
             too_large: std::collections::BTreeSet::new(),
             cut_after: None,
             reserved: std::collections::BTreeSet::new(),
@@ -197,21 +197,21 @@ impl Drive {
     pub fn resolve<'a>(&'a self, id: &'a str) -> &'a str {
         match id {
             ALIAS => &self.root,
-            MY_DRIVE => &self.my_drive,
+            MY_DRIVE => &self.my_drive_id,
             _ => id,
         }
     }
 
     /// Whether `id` is one of the two roots.
     pub fn is_root(&self, id: &str) -> bool {
-        id == self.root || id == self.my_drive
+        id == self.root || id == self.my_drive_id
     }
 
     /// Whether `id`'s parents lead to My Drive's root (removed nodes keep their parents).
     pub fn in_my_drive(&self, id: &str) -> bool {
         let mut at = self.nodes.get(id);
         while let Some(node) = at {
-            if node.id == self.my_drive {
+            if node.id == self.my_drive_id {
                 return true;
             }
             at = node.parent.as_deref().and_then(|p| self.nodes.get(p));

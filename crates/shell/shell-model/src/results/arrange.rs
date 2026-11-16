@@ -156,6 +156,7 @@ mod tests {
 
     #[test]
     fn every_ask_places_its_rows() {
+        type Case<'a> = (&'a str, Asked, Vec<(Section, Vec<&'a str>)>);
         let merged = vec![
             item(Apps, "Firefox", 900),
             item(Files, "firefox.pdf", 800),
@@ -164,7 +165,6 @@ mod tests {
         ];
         let frecency =
             Frecency::default().record(ItemKey::of(Apps, &ItemId("Firefox".to_owned())), NOW);
-        type Case<'a> = (&'a str, Asked, Vec<(Section, Vec<&'a str>)>);
         let cases: Vec<Case> = vec![
             (
                 "typed text: Top Hit, then sections",

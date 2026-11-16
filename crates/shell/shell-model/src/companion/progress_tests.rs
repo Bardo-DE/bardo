@@ -128,11 +128,11 @@ fn the_rows_second_line_falls_back_to_the_thinking_words() {
 
 #[test]
 fn the_preview_lists_the_newest_three_and_counts_the_rest() {
+    type Case = (&'static str, AnswerFacts, ProgressShown);
     let shown = |earlier: usize, lines: &[&str]| ProgressShown {
         earlier,
         lines: lines.iter().map(|line| (*line).to_owned()).collect(),
     };
-    type Case = (&'static str, AnswerFacts, ProgressShown);
     let cases: Vec<Case> = vec![
         ("none", said(AnswerPhase::Thinking, &[]), shown(0, &[])),
         ("one", said(AnswerPhase::Thinking, &["a"]), shown(0, &["a"])),

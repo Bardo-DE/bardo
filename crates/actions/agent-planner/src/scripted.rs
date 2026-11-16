@@ -57,6 +57,7 @@ impl ScriptedPlanner {
     }
 
     /// The same planner with the summaries it hands out, in order, one per `summarise`.
+    #[must_use]
     pub fn with_summaries(
         self,
         summaries: impl IntoIterator<Item = Result<Summarised, SummariseFault>>,
@@ -105,6 +106,10 @@ impl Planner for ScriptedPlanner {
         self.voice.role = Some(role);
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; the scripted planner answers from memory"
+    )]
     async fn converse(&self, view: &PlannerView) -> Result<PlannerReply, PlanFault> {
         let mut script = self.script();
         script.seen.push(view.clone());
@@ -114,10 +119,18 @@ impl Planner for ScriptedPlanner {
             .unwrap_or(Err(PlanFault::Unavailable))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; the scripted planner answers from memory"
+    )]
     async fn chat(&self, _request: ChatRequest) -> Result<ChatReply, PlanFault> {
         Err(PlanFault::Unavailable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; the scripted planner answers from memory"
+    )]
     async fn summarise(&self, _input: &SummaryInput) -> Result<Summarised, SummariseFault> {
         self.script()
             .summaries

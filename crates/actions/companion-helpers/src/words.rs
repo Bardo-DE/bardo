@@ -9,7 +9,7 @@ use companion_wire::HelperReply;
 fn reach_sentence(fault: &ReachFault) -> String {
     match fault {
         ReachFault::NoSuchApp(app) => format!("There is no app called {app}."),
-        _ => "Choose at least one app for it to use.".to_owned(),
+        ReachFault::NoApps => "Choose at least one app for it to use.".to_owned(),
     }
 }
 

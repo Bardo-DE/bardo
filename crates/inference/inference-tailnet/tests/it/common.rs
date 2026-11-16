@@ -94,7 +94,7 @@ impl Deref for Fake {
 /// A fake Tailscale running `daemon`, and a client of it that finds no Tailscale program.
 pub async fn fake(name: &str, daemon: Daemon) -> (Fake, LocalApi) {
     let dir = scratch(name);
-    let fake = FakeLocalApi::start(&dir, daemon).await.expect("fake");
+    let fake = FakeLocalApi::start(&dir, daemon).expect("fake");
     let api = LocalApi::new(fake.socket())
         .with_program_dirs(Vec::new())
         .with_timeout(Duration::from_secs(30));

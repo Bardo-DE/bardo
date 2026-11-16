@@ -42,10 +42,26 @@ fn session_path() -> fdo::Result<OwnedObjectPath> {
 #[interface(name = "org.freedesktop.login1.Manager")]
 impl Manager {
     #[zbus(name = "GetSessionByPID")]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "zbus's generated code reads every parameter; the underscore only says the body does not"
+    )]
     fn get_session_by_pid(&self, _pid: u32) -> fdo::Result<OwnedObjectPath> {
         session_path()
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "zbus's generated code reads every parameter; the underscore only says the body does not"
+    )]
     fn get_session(&self, _id: String) -> fdo::Result<OwnedObjectPath> {
         session_path()
     }
@@ -53,6 +69,10 @@ impl Manager {
     #[expect(
         clippy::needless_pass_by_value,
         reason = "a zbus method receives its arguments by value"
+    )]
+    #[expect(
+        clippy::used_underscore_binding,
+        reason = "zbus's generated code reads every parameter; the underscore only says the body does not"
     )]
     fn inhibit(
         &self,
@@ -69,6 +89,10 @@ impl Manager {
         Ok(OwnedFd::from(std::os::fd::OwnedFd::from(reader)))
     }
 
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn suspend(&self, interactive: bool) {
         say(&format!("suspend interactive={interactive}"));
     }
@@ -76,6 +100,10 @@ impl Manager {
     #[expect(
         clippy::needless_pass_by_value,
         reason = "a zbus method receives its arguments by value"
+    )]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
     )]
     fn lock_session(&self, id: String) {
         say(&format!("lock-session {id}"));
@@ -87,6 +115,10 @@ impl Manager {
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn idle_action(&self) -> String {
         "ignore".to_owned()
     }
@@ -100,11 +132,19 @@ struct Session;
 
 #[interface(name = "org.freedesktop.login1.Session")]
 impl Session {
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn set_idle_hint(&self, idle: bool) {
         say(&format!("idle-hint {idle}"));
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn id(&self) -> String {
         SESSION_ID.to_owned()
     }

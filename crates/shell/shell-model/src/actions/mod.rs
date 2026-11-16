@@ -175,6 +175,7 @@ fn action_with(effect: Effect) -> ActionId {
 /// What `id` is. Every action is a row here: the match has no wildcard, so a new `ActionId` is
 /// a compile error until it is described.
 #[must_use]
+#[expect(clippy::too_many_lines, reason = "a table: one row per `ActionId`")]
 pub fn def(id: ActionId) -> ActionDef {
     use ActionId as A;
     let row = |label, chord, effect| ActionDef {

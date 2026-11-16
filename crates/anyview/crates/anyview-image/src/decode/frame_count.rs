@@ -45,7 +45,6 @@ fn gif(bytes: &[u8]) -> Option<u32> {
     let mut count: u32 = 0;
     loop {
         match *bytes.get(at)? {
-            0x3B => return Some(count),
             0x21 => at = sub_blocks(bytes, at + 2)?,
             0x2C => {
                 let flags = *bytes.get(at + 9)?;
@@ -53,6 +52,7 @@ fn gif(bytes: &[u8]) -> Option<u32> {
                 at = sub_blocks(bytes, at + 10 + table_size(flags, 0x80) + 1)?;
                 count = count.saturating_add(1);
             }
+            // The trailer (`0x3B`), or a byte no block starts with: the count so far stands.
             _ => return Some(count),
         }
     }

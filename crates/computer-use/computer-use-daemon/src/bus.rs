@@ -93,7 +93,7 @@ impl<S: Seams, K: Callers> ManagerObject<S, K> {
 
     async fn stop_all(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
         let caller = caller_of(&self.who, &header).await;
-        Ok(self.supervisor.stop_all(caller).await?)
+        Ok(self.supervisor.stop_all(caller)?)
     }
 
     #[zbus(property)]
@@ -145,7 +145,7 @@ pub(crate) struct RunObject<S: Seams, K: Callers> {
 impl<S: Seams, K: Callers> RunObject<S, K> {
     async fn control(&self, member: CuaMember, header: &Header<'_>) -> Result<(), CuaError> {
         let caller = caller_of(&self.who, header).await;
-        Ok(self.supervisor.control(caller, &self.id, member).await?)
+        Ok(self.supervisor.control(caller, &self.id, member)?)
     }
 
     fn view(&self) -> fdo::Result<computer_use_host::RunView> {
@@ -180,8 +180,7 @@ impl<S: Seams, K: Callers> RunObject<S, K> {
         let words = Labelled::new(answer, Label::trusted_user());
         Ok(self
             .supervisor
-            .answer(caller, &self.id, QuestionId(question), words)
-            .await?)
+            .answer(caller, &self.id, QuestionId(question), words)?)
     }
 
     async fn take_over(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {

@@ -94,8 +94,7 @@ pub fn run_controls(state: RunState, place: RunMode, undoable: u32) -> Vec<RunCo
         RunState::Paused => &[C::Resume, C::TakeOver, C::Stop],
         RunState::NeedsYou => &[C::Stop],
         RunState::TakenOver => return vec![C::HandBack, C::Stop],
-        RunState::Done => &[],
-        RunState::Failed | RunState::Stopped | RunState::BudgetOut => &[],
+        RunState::Done | RunState::Failed | RunState::Stopped | RunState::BudgetOut => &[],
     };
     let undo = (!state.is_live() && undoable > 0).then_some(C::UndoAll);
     watch

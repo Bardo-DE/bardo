@@ -168,6 +168,10 @@ fn capabilities(shared: &Shared, secure: bool) -> Vec<&'static str> {
     caps
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one match arm per POP3 command: the match is this fake's command table"
+)]
 async fn phase<S: AsyncRead + AsyncWrite + Unpin>(
     stream: S,
     shared: &Shared,

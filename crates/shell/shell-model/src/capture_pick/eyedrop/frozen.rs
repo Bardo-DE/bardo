@@ -40,10 +40,9 @@ pub enum EyedropOut {
 #[must_use]
 pub fn eyedrop_step(frozen: Option<Frozen>, input: EyedropIn) -> (Option<Frozen>, Vec<EyedropOut>) {
     match (frozen, input) {
-        (_, EyedropIn::Asked(None)) => (None, Vec::new()),
+        (_, EyedropIn::Asked(None)) | (None, EyedropIn::Picture(..)) => (None, Vec::new()),
         (Some(held), EyedropIn::Asked(Some((id, _)))) if held.id == id => (Some(held), Vec::new()),
         (_, EyedropIn::Asked(Some((id, screens)))) => ask(id, screens),
-        (None, EyedropIn::Picture(..)) => (None, Vec::new()),
         (Some(held), EyedropIn::Picture(output, picture)) => arrive(held, output, picture),
     }
 }

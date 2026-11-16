@@ -120,7 +120,7 @@ fn leave_banners(state: &mut NotesState, ids: &[NotificationId]) -> Vec<Notifica
 /// An app's critical banners that have stood for [`APP_CRITICAL_HOLD_MS`] at `now` leave: an app
 /// cannot keep a banner on the screen for ever. The shell's own stay until acted on.
 pub(super) fn sweep(mut state: NotesState, now: UnixMs) -> Step {
-    let stale: Vec<NotificationId> = state
+    let expired: Vec<NotificationId> = state
         .live
         .banners
         .iter()
@@ -131,7 +131,7 @@ pub(super) fn sweep(mut state: NotesState, now: UnixMs) -> Step {
         })
         .map(|banner| banner.note.id)
         .collect();
-    let effects = leave_banners(&mut state, &stale);
+    let effects = leave_banners(&mut state, &expired);
     (state, effects)
 }
 

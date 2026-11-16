@@ -46,13 +46,13 @@ impl Notification {
     #[must_use]
     pub fn posted(id: NotificationId, arrived: UnixMs, posting: Posting) -> Notification {
         let Posting {
-            replaces: _,
             app,
             summary,
             body,
             actions,
             hints,
             expiry,
+            ..
         } = posting;
         Notification {
             id,
@@ -298,16 +298,16 @@ mod tests {
 
     #[test]
     fn wire_words_become_values() {
-        assert_eq!(Expiry::from_wire(-1), Expiry::Default);
-        assert_eq!(Expiry::from_wire(-7), Expiry::Default);
-        assert_eq!(Expiry::from_wire(0), Expiry::Never);
-        assert_eq!(Expiry::from_wire(3000), Expiry::Ms(3000));
         const URGENCY: &[(u8, NotifyUrgency)] = &[
             (0, NotifyUrgency::Low),
             (1, NotifyUrgency::Normal),
             (2, NotifyUrgency::Critical),
             (3, NotifyUrgency::Normal),
         ];
+        assert_eq!(Expiry::from_wire(-1), Expiry::Default);
+        assert_eq!(Expiry::from_wire(-7), Expiry::Default);
+        assert_eq!(Expiry::from_wire(0), Expiry::Never);
+        assert_eq!(Expiry::from_wire(3000), Expiry::Ms(3000));
         for &(byte, want) in URGENCY {
             assert_eq!(NotifyUrgency::from_wire(byte), want, "{byte}");
         }

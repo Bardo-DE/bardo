@@ -11,6 +11,7 @@
 //! read, is drawn from itself, as before. Nothing is copied: a copy would hold the whole picture
 //! in bardo-shell's cache and need scaling, which the specification's cache already is.
 
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 use anyview_core::{ByteLen, FilePath, FileStamp, ModTime};
@@ -123,10 +124,10 @@ fn stamp_of(path: &Path) -> Option<FileStamp> {
 /// Where the thumbnail of `file` is in `size_folder` of the thumbnail cache `root`: the MD5 of the
 /// file's address, as the specification names it (the same name the cache's writer gives).
 fn thumbnail_file(root: &Path, size_folder: &str, file: &FilePath) -> PathBuf {
-    let name: String = Md5::digest(file_uri(file).as_bytes())
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect();
+    let mut name = String::new();
+    for byte in Md5::digest(file_uri(file).as_bytes()) {
+        let _ = write!(name, "{byte:02x}");
+    }
     root.join(size_folder).join(format!("{name}.png"))
 }
 

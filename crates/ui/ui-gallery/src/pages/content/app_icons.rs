@@ -22,13 +22,13 @@ pub fn app_icon_in(
     style: IconStyle,
     tint: Tint,
 ) -> Option<IconSource> {
-    let side = 64u32;
-    let mut picture = RgbaImage::from_fn(side, side, |x, y| {
+    let edge = 64u32;
+    let mut picture = RgbaImage::from_fn(edge, edge, |x, y| {
         #[expect(
             clippy::cast_precision_loss,
             reason = "the icon is 64 pixels across, exact in f32"
         )]
-        let (fx, fy, extent) = (x as f32 + 0.5, y as f32 + 0.5, side as f32);
+        let (fx, fy, extent) = (x as f32 + 0.5, y as f32 + 0.5, edge as f32);
         let inside = rounded(fx, fy, extent, 14.0);
         let (dx, dy) = (fx - 32.0, fy - 34.0);
         let disc = dx * dx + dy * dy <= 11.0 * 11.0;

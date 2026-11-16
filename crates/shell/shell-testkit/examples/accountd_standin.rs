@@ -64,12 +64,12 @@ async fn serve(address: String) {
     let mut inputs = MessageStream::for_match_rule(rule, &accountd, None)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    let (proxy, forged) = (host(&accountd).await, host(&forger).await);
+    let (proxy, impostor) = (host(&accountd).await, host(&forger).await);
     say("ready");
     let mut lines = stdin_lines();
     loop {
         tokio::select! {
-            Some(line) = lines.recv() => command(&proxy, &forged, &line).await,
+            Some(line) = lines.recv() => command(&proxy, &impostor, &line).await,
             Some(Ok(message)) = next(&mut inputs) => {
                 if let Ok((handle, input)) = message.body().deserialize::<(String, String)>() {
                     say(&format!("input {handle} {input}"));

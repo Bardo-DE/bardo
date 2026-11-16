@@ -91,7 +91,6 @@ async fn cancel_drops_the_model_call_and_the_run_ends_cancelled() {
     let id = sup.start(CuaCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Thinking(_))).await;
     sup.control(CuaCaller::Shell, &id, CuaMember::Cancel)
-        .await
         .unwrap();
     let end = ended(&mut events, &id).await;
     assert_eq!(end.outcome, CuaOutcome::Cancelled(CancelledBy::User));
@@ -100,7 +99,7 @@ async fn cancel_drops_the_model_call_and_the_run_ends_cancelled() {
     // at once because the first let go of the model.
     let again = sup.start(CuaCaller::Router, task()).await.unwrap();
     until(&sup, &again, |p| matches!(p, RunPhase::Thinking(_))).await;
-    sup.stop_all(CuaCaller::Shell).await.unwrap();
+    sup.stop_all(CuaCaller::Shell).unwrap();
     ended(&mut events, &again).await;
 }
 
@@ -111,7 +110,6 @@ async fn pausing_a_run_that_is_thinking_stops_its_input_and_nothing_is_injected_
     let id = sup.start(CuaCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Thinking(_))).await;
     sup.control(CuaCaller::Shell, &id, CuaMember::Pause)
-        .await
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Paused(_))).await;
     assert!(
@@ -121,7 +119,6 @@ async fn pausing_a_run_that_is_thinking_stops_its_input_and_nothing_is_injected_
             .all(|e| !matches!(e, computer_use_fake::SeatEvent::Performed(..)))
     );
     sup.control(CuaCaller::Shell, &id, CuaMember::Cancel)
-        .await
         .unwrap();
     assert_eq!(
         ended(&mut events, &id).await.outcome,
@@ -141,7 +138,7 @@ async fn a_model_call_that_never_returns_is_given_up_on_and_counted() {
         failures.is_some_and(|n| n >= 1),
         "the call hit its deadline: {failures:?}"
     );
-    sup.stop_all(CuaCaller::Shell).await.unwrap();
+    sup.stop_all(CuaCaller::Shell).unwrap();
 }
 
 #[tokio::test(start_paused = true)]

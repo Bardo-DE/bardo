@@ -26,6 +26,10 @@ impl Stub {
         clippy::needless_pass_by_value,
         reason = "a zbus method receives its arguments by value"
     )]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn show_items(&self, uris: Vec<String>, startup_id: String) {
         record("ShowItems", &uris, &startup_id);
     }
@@ -34,6 +38,10 @@ impl Stub {
         clippy::needless_pass_by_value,
         reason = "a zbus method receives its arguments by value"
     )]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
+    )]
     fn show_folders(&self, uris: Vec<String>, startup_id: String) {
         record("ShowFolders", &uris, &startup_id);
     }
@@ -41,6 +49,10 @@ impl Stub {
     #[expect(
         clippy::needless_pass_by_value,
         reason = "a zbus method receives its arguments by value"
+    )]
+    #[expect(
+        clippy::unused_self,
+        reason = "zbus calls every method and property getter on the interface object"
     )]
     fn show_item_properties(&self, uris: Vec<String>, startup_id: String) {
         record("ShowItemProperties", &uris, &startup_id);

@@ -84,13 +84,13 @@ pub struct Floor {
     /// The ink's contrast ratio on the composited tint.
     pub measured: f64,
     /// What it has to clear: [`floor_for`] the material it was measured on.
-    pub floor: f64,
+    pub required: f64,
 }
 
 impl Floor {
-    /// Whether it clears [`Floor::floor`].
+    /// Whether it clears [`Floor::required`].
     pub fn clears(&self) -> bool {
-        self.measured >= self.floor
+        self.measured >= self.required
     }
 }
 
@@ -114,7 +114,7 @@ pub fn floors(material: Material, scheme: Scheme, tint_alpha: Alpha) -> Vec<Floo
             tint,
             backdrop,
             measured: ratio(&ink, &over(colour, backdrop.rgb())).unwrap_or(0.0),
-            floor,
+            required: floor,
         })
         .collect()
 }

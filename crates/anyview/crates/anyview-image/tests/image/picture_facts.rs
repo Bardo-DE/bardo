@@ -61,7 +61,8 @@ fn a_located_jpeg_lists_picture_camera_and_location_rows() {
 #[test]
 fn other_containers_list_what_their_exif_and_header_say() {
     // file, what the viewer can decode (so a colour row exists), rows that must be listed
-    let cases: [(&str, bool, &[(FactGroup, FactLabel, &str)]); 2] = [
+    type Case<'a> = (&'a str, bool, &'a [(FactGroup, FactLabel, &'a str)]);
+    let cases: [Case; 2] = [
         (
             "located.png",
             true,

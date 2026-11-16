@@ -134,6 +134,10 @@ fn summoned(
 }
 
 /// The events that only change what is published.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one arm per event that only changes what is published"
+)]
 fn bookkeeping(state: Companion, event: CompanionEvent) -> Companion {
     match event {
         CompanionEvent::Asked { task, prompt, .. } => turn_began(asked(state, task, prompt)),
@@ -394,6 +398,7 @@ impl<T: Clone> Lookup<T> {
     }
 
     /// More found for the ask in flight, those `same` as one already found left out.
+    #[must_use]
     pub fn extended(
         self,
         generation: Generation,
