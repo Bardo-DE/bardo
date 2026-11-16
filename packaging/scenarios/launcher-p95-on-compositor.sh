@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Scenario `launcher-p95-on-casement` (plan 20 §5.2, P0 exit): sill's launcher opens in under 100 ms
-# (p95) over 20 toggles on casement, in the jail.
+# Scenario `launcher-p95-on-compositor` (plan 20 §5.2, P0 exit): bardo-shell's launcher opens in under 100 ms
+# (p95) over 20 toggles on bardo-compositor, in the jail.
 #
-# sill's own accept-launcher measures it (`dev/accept/launcher.sh --only toggle`: 20 `sill launcher
+# bardo-shell's own accept-launcher measures it (`dev/accept/launcher.sh --only toggle`: 20 `bardo-shell launcher
 # toggle` round trips, each timed on the daemon's side). That script enforces its budget only on a
 # release build on a quiet host and otherwise prints the figure and passes; a phase gate must not pass
 # silently, so this scenario reads the printed `p95 N ms` and fails when N is 100 or more, or when no
@@ -14,13 +14,13 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_BUILD/sill-target/debug/sill"
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
+  "$SCEN_BUILD/sill-target/debug/bardo-shell"
 
 BUDGET_MS=100
-export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
-floor_shim launcher-p95   # no program here takes a power a floor row can allow: casement starts with an empty floor, so nothing waits on a question
+floor_shim launcher-p95   # no program here takes a power a floor row can allow: bardo-compositor starts with an empty floor, so nothing waits on a question
 OUT_DIR=$(scenario_out launcher-p95)
 
 rc=0
@@ -32,4 +32,4 @@ if [ -z "$p95" ]; then echo "FAIL no 'p50 .. p95 .. max' line: the toggle step d
 python3 -c "import sys; sys.exit(0 if float('$p95') < $BUDGET_MS else 1)" \
   || { echo "FAIL launcher open p95 $p95 ms is not under $BUDGET_MS ms"; exit 1; }
 if [ "$rc" != 0 ]; then echo "FAIL launcher.sh --only toggle exited $rc (p95 $p95 ms was in budget)"; exit 1; fi
-echo "PASS launcher open p95 $p95 ms < $BUDGET_MS ms over 20 toggles on casement"
+echo "PASS launcher open p95 $p95 ms < $BUDGET_MS ms over 20 toggles on bardo-compositor"

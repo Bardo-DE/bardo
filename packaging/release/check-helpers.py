@@ -1,4 +1,4 @@
-"""What slipway's install must have put on a computer before a release can be installed or gone back from:
+"""What bardo-updater's install must have put on a computer before a release can be installed or gone back from:
 three privileged programs and the one policy file that names them. Run with `python3 -I` through
 release/check-helpers.sh. Standard library only.
 
@@ -60,7 +60,7 @@ def problems(libexec, policy, root):
 
 
 def main(argv):
-    libexec, policy, root = "/usr/libexec", "/usr/share/polkit-1/actions/org.bardo.updater.policy", "/"
+    libexec, policy, root = "/usr/libexec/bardo", "/usr/share/polkit-1/actions/org.bardo.updater.policy", "/"
     args = iter(argv)
     for arg in args:
         if arg == "--libexec":

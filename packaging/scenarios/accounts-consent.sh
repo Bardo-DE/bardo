@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Scenario `accounts-consent` (design 31 §7.1 item on consent): an app asks to use the person's AI key, sill draws the
+# Scenario `accounts-consent` (design 31 §7.1 item on consent): an app asks to use the person's AI key, bardo-shell draws the
 # consent sheet (captured), and each answer gives the right permit, or none; a second request after Always asks nothing.
-# Since porter's step 5c the question is accountd's (org.bardo.Accounts1.Keys.RequestKey, the rig's `ai-keys request`):
-# accountd keeps the AI keys and their permits, and inferd asks it for the key behind a permit. Real accountd, inferd,
-# sill on casement, the rig's LLM API fake and Secret Service. Each case is its own app id
-# (account-rig-client --app-id), so one answer cannot stand in for another. The permits are read from accountd's settings
+# Since porter's step 5c the question is bardo-accountd's (org.bardo.Accounts1.Keys.RequestKey, the rig's `ai-keys request`):
+# bardo-accountd keeps the AI keys and their permits, and bardo-inferd asks it for the key behind a permit. Real bardo-accountd, bardo-inferd,
+# bardo-shell on bardo-compositor, the rig's LLM API fake and Secret Service. Each case is its own app id
+# (account-rig-client --app-id), so one answer cannot stand in for another. The permits are read from bardo-accountd's settings
 # module (`accounts.<id>.grant.<grant>` and its `.scope` row), as Settings reads them.
 #
-#   boot      casement, recorded bus, the rig, accountd, inferd (cloud models allowed for the class asked), sill; an OpenAI
+#   boot      bardo-compositor, recorded bus, the rig, bardo-accountd, bardo-inferd (cloud models allowed for the class asked), bardo-shell; an OpenAI
 #             key added through the add sheet (sheet_add_openai)
 #   always    Always Allow: granted, the permit is `always`; the same app asks again: granted at once, no sheet drawn
 #   once      Allow Once: granted, the permit is `once`; the app uses it (opens a session on the key with one prompt); a used
@@ -78,7 +78,7 @@ step_always() {
   sheet_gone || return 1
   [ "$(grant_field $app scope)" = always ] || { echo "the permit is $(grant_field $app scope), not always" >&2; return 1; }
   ask $app always2
-  asked_nothing always2 "the second request after Always Allow drew the consent sheet again: accountd's RequestKey (account-service choose.rs: ask_for builds a sheet from the fitting accounts and never reads the grants) asks every time" || return 1
+  asked_nothing always2 "the second request after Always Allow drew the consent sheet again: bardo-accountd's RequestKey (account-service choose.rs: ask_for builds a sheet from the fitting accounts and never reads the grants) asks every time" || return 1
   out=$(answered always2) || return 1
   case "$out" in *'"result":"granted"'*) ;; *) echo "the second request was not answered from the permit: $out" >&2; return 1 ;; esac
   sheet_hidden || { echo "a sheet was drawn for the second request" >&2; return 1; }
@@ -93,7 +93,7 @@ step_once() {
   case "$out" in *'"result":"granted"'*) ;; *) echo "not granted: $out" >&2; return 1 ;; esac
   sheet_gone || return 1
   [ "$(grant_field $app scope)" = once ] || { echo "the permit is $(grant_field $app scope), not once" >&2; return 1; }
-  # The use: a session on the key with a prompt. inferd reads the key (spending the once-permit) before the turn goes out;
+  # The use: a session on the key with a prompt. bardo-inferd reads the key (spending the once-permit) before the turn goes out;
   # the turn itself then fails at the network in the jail, which is fine: the read already happened. A refusal for want
   # of a hosted model ("unavailable") comes before the read, so it means the catalog is missing and nothing was tested.
   rigo $app llm --class files --prompt hello >"$OUT_DIR/once-use.log" 2>&1
@@ -147,7 +147,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_always step_once step_deny step_escape step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd inferd daemon rig-servers secrets add once-use; do
+  for f in bardo-accountd bardo-inferd daemon rig-servers secrets add once-use; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

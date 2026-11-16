@@ -2,7 +2,7 @@
 # Shared by install.sh, the check mode, harness/jail.sh and gate/desktop-gate.sh (sourced, never run):
 # which distro family this machine is, and who can do things as root.
 #
-#   distro_family [FILE]        fedora | debian | arch | other, from FILE (default $DESKTOP_OS_RELEASE,
+#   distro_family [FILE]        fedora | debian | arch | other, from FILE (default $BARDO_OS_RELEASE,
 #                               else /etc/os-release): ID and ID_LIKE decide (fedora/rhel, debian/ubuntu,
 #                               arch)
 #   distro_name [FILE]          the PRETTY_NAME of that file, or the family when it has none
@@ -15,7 +15,7 @@
 #                               as_root_hint and leave the step to the person.
 
 distro_family() {
-  local file=${1:-${DESKTOP_OS_RELEASE:-/etc/os-release}} ids
+  local file=${1:-${BARDO_OS_RELEASE:-/etc/os-release}} ids
   [ -r "$file" ] || { echo other; return 0; }
   ids=$( (ID='' ID_LIKE=''; . "$file" >/dev/null 2>&1; printf '%s %s' "${ID:-}" "${ID_LIKE:-}") )
   case " $ids " in
@@ -27,7 +27,7 @@ distro_family() {
 }
 
 distro_name() {
-  local file=${1:-${DESKTOP_OS_RELEASE:-/etc/os-release}} name=
+  local file=${1:-${BARDO_OS_RELEASE:-/etc/os-release}} name=
   [ ! -r "$file" ] || name=$( (PRETTY_NAME=''; . "$file" >/dev/null 2>&1; printf '%s' "${PRETTY_NAME:-}") )
   echo "${name:-$(distro_family "$file")}"
 }

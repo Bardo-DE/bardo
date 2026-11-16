@@ -8,7 +8,7 @@ import sys
 import tarfile
 
 out, case, key = sys.argv[1:4]
-GOOD = {"bin/tool": (b"#!/bin/sh\necho hi\n", 0o755), "share/quire/data.txt": (b"data\n", 0o644)}
+GOOD = {"bin/tool": (b"#!/bin/sh\necho hi\n", 0o755), "share/bardo/data.txt": (b"data\n", 0o644)}
 files = dict(GOOD)
 members = []          # extra raw tar members: (name, kind, data)
 exports = [("/usr/local/bin/tool", "bin/tool")]
@@ -18,7 +18,7 @@ size_delta = 0
 version, date, notes, legacy = "9.9.9", "2026-01-01T00:00:00Z", "forged", False
 
 if case == "extra":
-    members.append(("share/quire/unlisted.txt", "file", b"surprise\n"))
+    members.append(("share/bardo/unlisted.txt", "file", b"surprise\n"))
 elif case == "digest":
     listed_sha["bin/tool"] = "0" * 64
 elif case == "symlink":
@@ -36,7 +36,7 @@ elif case == "export-target":
 elif case == "export-dir":
     exports.append(("/usr/local/bin/dir", "share"))
 elif case == "system-good":
-    files["system/etc/pam.d/sill"] = (b"auth required pam_unix.so\n", 0o644)
+    files["system/etc/pam.d/bardo-shell"] = (b"auth required pam_unix.so\n", 0o644)
     system.append("/etc/pam.d/bardo-shell")
 elif case == "system-xdg-other":
     files["system/etc/xdg/other.toml"] = (b"x = 1\n", 0o644)
@@ -48,14 +48,14 @@ elif case == "system-unnamed":
     files["system/etc/polkit-1/rules.d/00-all.rules"] = (b"polkit.addRule(function () { return polkit.Result.YES; });\n", 0o644)
     system.append("/etc/polkit-1/rules.d/00-all.rules")
 elif case == "system-nested":
-    files["system/etc/pam.d/sub/sill"] = (b"x\n", 0o644)
-    system.append("/etc/pam.d/sub/sill")
+    files["system/etc/pam.d/sub/bardo-shell"] = (b"x\n", 0o644)
+    system.append("/etc/pam.d/sub/bardo-shell")
 elif case == "system-unlisted":
-    files["system/etc/pam.d/sill"] = (b"x\n", 0o644)
+    files["system/etc/pam.d/bardo-shell"] = (b"x\n", 0o644)
 elif case == "system-nosource":
     system.append("/etc/pam.d/bardo-shell")
 elif case == "reserved":
-    files[".slipway/release.toml"] = (b"x", 0o644)
+    files[".bardo-updater/release.toml"] = (b"x", 0o644)
 elif case == "mode-writable":
     files["bin/tool"] = (GOOD["bin/tool"][0], 0o775)
 elif case == "mode-unreadable":
@@ -101,7 +101,7 @@ os.remove(raw)
 bundle = open(os.path.join(out, "bundle.tar.zst"), "rb").read()
 lines = ['format = 1', f'version = "{version}"', f'date = "{date}"', f'notes = "{notes}"',
          f'bundle = {{ name = "bundle.tar.zst", sha256 = "{hashlib.sha256(bundle).hexdigest()}", size = {len(bundle) + size_delta} }}',
-         "", "[components]", 'casement = "abc"']
+         "", "[components]", 'compositor = "abc"']
 for name, (data, mode) in sorted(files.items()):
     lines += ["", "[[file]]", f'path = "{name}"', f'sha256 = "{listed_sha.get(name, hashlib.sha256(data).hexdigest())}"', f"mode = 0o{mode:o}"]
 for link, target in exports:

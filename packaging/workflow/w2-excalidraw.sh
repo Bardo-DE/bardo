@@ -71,7 +71,7 @@ mkdir -p "$RUN" || die "cannot make $RUN"
 
 # The jail clears its environment: hand it the W2_ variables, with the host's own paths for Zen and the drawing app.
 envs=(--env "W2_BROWSER=${W2_BROWSER:-$HOME/.local/opt/zen/zen}"
-      --env "W2_DRAW_DIR=${W2_DRAW_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/quire-workflow/excalidraw-0.18.0}")
+      --env "W2_DRAW_DIR=${W2_DRAW_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/bardo-workflow/excalidraw-0.18.0}")
 for name in $(compgen -e | grep '^W2_' | grep -vx 'W2_BROWSER\|W2_DRAW_DIR'); do
   envs+=(--env "$name=${!name}")
 done

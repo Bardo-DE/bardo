@@ -26,7 +26,7 @@
 # Optional: W1_PLANNER_MODEL (default qwen3-4b-instruct-2507-fp8), W1_SCREEN_MODEL (default holo4-35b-a3b-fp8),
 # W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_CASEMENT / _SILL / _CUA / _DOCKET
 # (build folders, default /mnt/data/cargo/w1-*), W1_CASEMENT, W1_FAKE_LOGIND, W1_SILL, W1_CUAD, W1_BRINGUP,
-# W1_QUIRE_DO (a program by path), W1_BROWSER_CMD, W1_SIB (the folder holding casement, sill, ...),
+# W1_QUIRE_DO (a program by path), W1_BROWSER_CMD, W1_SIB (the folder holding bardo-compositor, bardo-shell, ...),
 # W1_STOKER_CATALOG, W1_PROVIDERS, W1_SHOT_EVERY (seconds, default 120).
 #
 # Needs Blender, a browser (Zen, else Firefox), grim (optional, for pictures), python3 3.11+, curl, dbus-daemon and gdbus.
@@ -51,10 +51,10 @@ T_TOOLS=${W1_TARGET_CASEMENT_TOOLS:-/mnt/data/cargo/w1-casement-tools}
 T_SILL=${W1_TARGET_SILL:-/mnt/data/cargo/w1-sill}
 T_CUA=${W1_TARGET_CUA:-/mnt/data/cargo/w1-cua}
 T_DOCKET=${W1_TARGET_DOCKET:-/mnt/data/cargo/w1-docket}
-CASEMENT=${W1_CASEMENT:-$T_CASEMENT/debug/casement}
+CASEMENT=${W1_CASEMENT:-$T_CASEMENT/debug/bardo-compositor}
 FAKE_LOGIND=${W1_FAKE_LOGIND:-$T_TOOLS/debug/fake-logind}
-SILL=${W1_SILL:-$T_SILL/debug/sill}
-CUAD=${W1_CUAD:-$T_CUA/debug/cuad}
+SILL=${W1_SILL:-$T_SILL/debug/bardo-shell}
+CUAD=${W1_CUAD:-$T_CUA/debug/bardo-computer-use}
 BRINGUP=${W1_BRINGUP:-$T_DOCKET/debug/agent-bringup}
 QUIREDO=${W1_QUIRE_DO:-$T_DOCKET/debug/accept-bardo-do}
 
@@ -74,11 +74,11 @@ print_build() {
   cat <<EOF
 # Run these one at a time, nice, from the folder holding the checkouts ($SIB).
 # 1. the desktop window (a plain build: a test build refuses to run outside the jail)
-(cd $SIB/casement && CARGO_TARGET_DIR=$T_CASEMENT nice cargo build -p compositor-app -p compositor-ctl)
+(cd $SIB/bardo-compositor && CARGO_TARGET_DIR=$T_CASEMENT nice cargo build -p compositor-app -p compositor-ctl)
 # 2. the stand-in for the system's login service, in a folder of its own so test features do not reach step 1
-(cd $SIB/casement && CARGO_TARGET_DIR=$T_TOOLS nice cargo build -p compositor-testkit --bin fake-logind)
+(cd $SIB/bardo-compositor && CARGO_TARGET_DIR=$T_TOOLS nice cargo build -p compositor-testkit --bin fake-logind)
 # 3. the shell (bar, dock, launcher)
-(cd $SIB/sill && CARGO_TARGET_DIR=$T_SILL nice cargo build -p shell-app --features debug)
+(cd $SIB/bardo-shell && CARGO_TARGET_DIR=$T_SILL nice cargo build -p shell-app --features debug)
 # 4. the screen helper
 (cd $SIB/cua && CARGO_TARGET_DIR=$T_CUA nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command
@@ -301,25 +301,25 @@ write_floor() {
 }
 
 start_casement() {
-  local args=(--backend winit --clock wall --config-home "$RUN/casement-config") waited=0 line
+  local args=(--backend winit --clock wall --config-home "$RUN/bardo-compositor-config") waited=0 line
   [ -z "$FLOOR_DIR_GIVEN" ] || args+=(--system-dir "$FLOOR_DIR_GIVEN")
-  mkdir -p "$RUN/casement-config"
+  mkdir -p "$RUN/bardo-compositor-config"
   env HOME="$HOME_S" XDG_RUNTIME_DIR="$RT" WAYLAND_DISPLAY="$PARENT_WL" DBUS_SESSION_BUS_ADDRESS="$BUS" \
     DBUS_SYSTEM_BUS_ADDRESS="$BUS" XDG_CONFIG_HOME="$HOME_S/.config" XDG_DATA_HOME="$HOME_S/.local/share" \
     XDG_STATE_HOME="$HOME_S/.local/state" XDG_CACHE_HOME="$HOME_S/.cache" \
-    "$CASEMENT" "${args[@]}" >"$RUN/casement.log" 2>&1 </dev/null &
+    "$CASEMENT" "${args[@]}" >"$RUN/bardo-compositor.log" 2>&1 </dev/null &
   BARDO_COMPOSITOR_PID=$!
-  record casement "$BARDO_COMPOSITOR_PID"
+  record bardo-compositor "$BARDO_COMPOSITOR_PID"
   while [ "$waited" -lt 300 ]; do
-    kill -0 "$BARDO_COMPOSITOR_PID" 2>/dev/null || { tail -5 "$RUN/casement.log" >&2; die "the desktop window closed at start (see $RUN/casement.log)"; }
-    line=$(grep -ao 'listening on wayland-[0-9]*' "$RUN/casement.log" | head -1)
+    kill -0 "$BARDO_COMPOSITOR_PID" 2>/dev/null || { tail -5 "$RUN/bardo-compositor.log" >&2; die "the desktop window closed at start (see $RUN/bardo-compositor.log)"; }
+    line=$(grep -ao 'listening on wayland-[0-9]*' "$RUN/bardo-compositor.log" | head -1)
     WL_NAME=${line##* on }
     [ -n "$line" ] || WL_NAME=$(ls "$RT" 2>/dev/null | grep -E '^wayland-[0-9]+$' | head -1)
     [ -z "$WL_NAME" ] || [ ! -S "$RT/$WL_NAME" ] || break
     WL_NAME=""
     sleep 0.1; waited=$((waited + 1))
   done
-  [ -n "$WL_NAME" ] || die "the desktop window never opened a place for programs to join (see $RUN/casement.log)"
+  [ -n "$WL_NAME" ] || die "the desktop window never opened a place for programs to join (see $RUN/bardo-compositor.log)"
   stamp casement_up
   note "The desktop window is up."
 }
@@ -334,17 +334,17 @@ start_sill() {
     chmod 600 "$RUN/dev-callers.toml"
     flags+=(--dev-callers "$RUN/dev-callers.toml")
   fi
-  in_env "$SILL" run "${flags[@]}" >"$RUN/sill.log" 2>&1 </dev/null &
+  in_env "$SILL" run "${flags[@]}" >"$RUN/bardo-shell.log" 2>&1 </dev/null &
   BARDO_SHELL_PID=$!
-  record sill "$BARDO_SHELL_PID"
+  record bardo-shell "$BARDO_SHELL_PID"
   local i
   for i in $(seq 200); do
     in_env "$SILL" ping >/dev/null 2>&1 && return 0
     kill -0 "$BARDO_SHELL_PID" 2>/dev/null || break
     sleep 0.1
   done
-  tail -5 "$RUN/sill.log" >&2
-  die "the shell did not start (see $RUN/sill.log)"
+  tail -5 "$RUN/bardo-shell.log" >&2
+  die "the shell did not start (see $RUN/bardo-shell.log)"
 }
 
 bus_has_owner() {
@@ -355,18 +355,18 @@ bus_has_owner() {
 prepare_models() {
   local catalog=$RUN/catalog src=${W1_STOKER_CATALOG:-$SIB/stoker/catalog}
   [ -d "$src" ] || die "no model catalogue at $src (set W1_STOKER_CATALOG)"
-  mkdir -p "$catalog" "$AGENTS/config/inferd"
+  mkdir -p "$catalog" "$AGENTS/config/bardo/inference"
   cp "$src"/*.toml "$catalog/"
   [ -f "$catalog/$PLANNER_MODEL.toml" ] || die "the catalogue has no entry for $PLANNER_MODEL"
   [ -f "$catalog/$SCREEN_MODEL.toml" ] || die "the catalogue has no entry for $SCREEN_MODEL"
   # Each entry's parsers come from its own engine line: a model is added as catalogue data alone.
   "${PY[@]}" catalog --src "$src/$PLANNER_MODEL.toml" --out "$catalog/$PLANNER_MODEL.toml" --served "$PLANNER_SERVED" || die "cannot prepare $PLANNER_MODEL"
   "${PY[@]}" catalog --src "$src/$SCREEN_MODEL.toml" --out "$catalog/$SCREEN_MODEL.toml" --served "$SCREEN_SERVED" || die "cannot prepare $SCREEN_MODEL"
-  "${PY[@]}" inferd-config --planner-id "$PLANNER_MODEL" --planner-url "${W1_PLANNER_URL%/}" \
-    --screen-id "$SCREEN_MODEL" --screen-url "${W1_SCREEN_URL%/}" >"$AGENTS/config/inferd/inferd.toml"
-  mkdir -p "$HOME_S/.config/cua"
-  "${PY[@]}" cuad-settings --app "org.blender.Blender=${W1_BLENDER_ALLOW:-ask}" --app "$BROWSER_APP=ask" \
-    --steps "${W1_CUA_STEPS:-400}" --active-s "${W1_CUA_ACTIVE_S:-3600}" >"$HOME_S/.config/computer-use/settings.toml"
+  "${PY[@]}" bardo-inferd-config --planner-id "$PLANNER_MODEL" --planner-url "${W1_PLANNER_URL%/}" \
+    --screen-id "$SCREEN_MODEL" --screen-url "${W1_SCREEN_URL%/}" >"$AGENTS/config/bardo/inference/inferd.toml"
+  mkdir -p "$HOME_S/.config/bardo/computer-use"
+  "${PY[@]}" bardo-computer-use-settings --app "org.blender.Blender=${W1_BLENDER_ALLOW:-ask}" --app "$BROWSER_APP=ask" \
+    --steps "${W1_CUA_STEPS:-400}" --active-s "${W1_CUA_ACTIVE_S:-3600}" >"$HOME_S/.config/bardo/computer-use/settings.toml"
 }
 
 start_assistant() {
@@ -383,8 +383,8 @@ start_assistant() {
 
 # The assistant is started again with its model log on (the log path is its only change).
 restart_companion_with_log() {
-  local line pid envfile=$RUN/companiond.env exe waited=0
-  line=$(awk '$1 == "companiond" {print}' "$AGENTS/procs") pid=$(awk '{print $2}' <<<"$line")
+  local line pid envfile=$RUN/bardo-companiond.env exe waited=0
+  line=$(awk '$1 == "bardo-companiond" {print}' "$AGENTS/procs") pid=$(awk '{print $2}' <<<"$line")
   [ -n "$pid" ] || die "the assistant's service is not running"
   tr '\0' '\n' <"/proc/$pid/environ" | grep -v '^$' >"$envfile"
   exe=$(readlink "/proc/$pid/exe")
@@ -396,14 +396,14 @@ restart_companion_with_log() {
     mkdir -p "$1/proc/$$" "$1/proc/units"
     printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/%s.service\n" "$2" > "$1/proc/$$/cgroup"
     echo $$ > "$1/proc/units/$2.service"
-    shift 2; exec "$@"' _ "$AGENTS" companiond "$exe" >>"$AGENTS/logs/companiond.log" 2>&1 </dev/null &
+    shift 2; exec "$@"' _ "$AGENTS" bardo-companiond "$exe" >>"$AGENTS/logs/bardo-companiond.log" 2>&1 </dev/null &
   local new=$!
   waited=0
   until bus_has_owner org.bardo.Companion1; do
     kill -0 "$new" 2>/dev/null && [ "$waited" -lt 300 ] || die "the assistant did not come back with its log on"
     sleep 0.1; waited=$((waited + 1))
   done
-  { grep -v '^companiond ' "$AGENTS/procs"; echo "companiond $new $(proc_token "$new")"; } >"$AGENTS/procs.new" && mv "$AGENTS/procs.new" "$AGENTS/procs"
+  { grep -v '^bardo-companiond ' "$AGENTS/procs"; echo "bardo-companiond $new $(proc_token "$new")"; } >"$AGENTS/procs.new" && mv "$AGENTS/procs.new" "$AGENTS/procs"
 }
 
 start_screen_helper() {
@@ -424,11 +424,11 @@ unit = "bardo-shell.service"
 role = "sheet_host"
 EOF
   in_env bash -c 'mkdir -p "$1/proc/$$" "$1/proc/units"; printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-computer-use.service\n" > "$1/proc/$$/cgroup"; echo $$ > "$1/proc/units/bardo-computer-use.service"; exec env BARDO_COMPUTER_USE_TEST_PROC_ROOT="$1/proc" BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS="$2" "$3"' \
-    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$CUAD" >"$RUN/cuad.log" 2>&1 </dev/null &
+    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$CUAD" >"$RUN/bardo-computer-use.log" 2>&1 </dev/null &
   local cuad_pid=$!
-  record cuad "$cuad_pid"
+  record bardo-computer-use "$cuad_pid"
   sleep 2
-  kill -0 "$cuad_pid" 2>/dev/null || { tail -5 "$RUN/cuad.log" >&2; die "the screen helper did not start (see $RUN/cuad.log)"; }
+  kill -0 "$cuad_pid" 2>/dev/null || { tail -5 "$RUN/bardo-computer-use.log" >&2; die "the screen helper did not start (see $RUN/bardo-computer-use.log)"; }
 }
 
 start_page() {
@@ -462,7 +462,7 @@ shot() { # NAME
 SHOT_N=0
 
 window_seen() { # IDS AFTER_NS -> 0 when a window of those ids was shown after AFTER_NS
-  "${TIMING[@]}" wait --log-file "$RUN/casement.log" --app-ids "$1" --after-connected "${2:-0}" --timeout 0 >/dev/null 2>&1
+  "${TIMING[@]}" wait --log-file "$RUN/bardo-compositor.log" --app-ids "$1" --after-connected "${2:-0}" --timeout 0 >/dev/null 2>&1
 }
 
 post_turn() {
@@ -495,10 +495,10 @@ wait_for_file() {
     if [ "$blender_seen" = no ] && window_seen "blender,org.blender.blender" "$ASKED_NS"; then
       blender_seen=yes; stamp blender_open; shot blender-open; note "Blender is open."
     fi
-    if [ "$turn_seen" = no ] && epoch=$("${PY[@]}" first-turn --audit "$AGENTS/.local/state/quire/inferd/audit.jsonl" --since "$ASKED_EPOCH"); then
+    if [ "$turn_seen" = no ] && epoch=$("${PY[@]}" first-turn --audit "$AGENTS/.local/state/bardo/inference/audit.jsonl" --since "$ASKED_EPOCH"); then
       turn_seen=yes; stamp first_turn; note "The assistant has started thinking."
     fi
-    if [ "$screen_seen" = no ] && epoch=$("${PY[@]}" first-screen --audit "$AGENTS/.local/state/quire/inferd/audit.jsonl" --since "$ASKED_EPOCH"); then
+    if [ "$screen_seen" = no ] && epoch=$("${PY[@]}" first-screen --audit "$AGENTS/.local/state/bardo/inference/audit.jsonl" --since "$ASKED_EPOCH"); then
       screen_seen=yes; stamp first_screen_step; shot first-screen-step; note "The screen helper has started looking at the window."
     fi
     if [ "$ask_state" = none ] && [ -n "${ASK_PID:-}" ] && ! kill -0 "$ASK_PID" 2>/dev/null; then
@@ -579,7 +579,7 @@ main() {
   start_page
   local before; before=$(now_ns)
   start_browser
-  if "${TIMING[@]}" wait --log-file "$RUN/casement.log" --app-ids "$BROWSER_IDS" --after-connected "$before" --timeout 90 >/dev/null 2>&1; then
+  if "${TIMING[@]}" wait --log-file "$RUN/bardo-compositor.log" --app-ids "$BROWSER_IDS" --after-connected "$before" --timeout 90 >/dev/null 2>&1; then
     stamp page_open
   else
     note "(The page's window was not seen in the timing lines; carrying on.)"

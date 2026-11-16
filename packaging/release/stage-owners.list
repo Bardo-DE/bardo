@@ -1,41 +1,41 @@
 # Which paths each build job of the release may supply (re-audit NEW-ROOT-2). The pack job merges the stage tars of every job into
 # one tree and signs it; release/stage-owners.py refuses the merge when a tar holds a path outside its job's lines below,
 # or a path that two jobs both supply. So a build script that a dependency of one job runs cannot put a program or a unit
-# that root runs or the input service believes (turnstile, keycap, palmrest, their services, the udev rules, the callers table) into the signed bundle.
+# that root runs or the input service believes (input-broker, key-remap, mouse-gestures, their services, the udev rules, the callers table) into the signed bundle.
 #
 #   JOB PATTERN
 #
 # JOB is the matrix name in .github/workflows/release.yml (release/selftest.sh checks that the two agree). PATTERN is a path
-# below opt/quire/current in the stage, or components.d/NAME.txt; `*` stands for any run of characters inside one path
+# below opt/bardo/current in the stage, or components.d/NAME.txt; `*` stands for any run of characters inside one path
 # segment, `**` for anything. Every line names what the job's components install (release/build.sh and the installers it
 # runs): add a line with the file when a component starts to ship a new one, or the pack stops.
 #
-# Each program the system manager starts and the input service or the other services believe has a job of its own (turnstile,
-# keycap, palmrest), so nothing built beside one can reach another or its unit. Paths under system/ are copies bardo-updater-apply
-# places as root; the trust table system/etc/quire/desktop-callers.toml belongs to the session alone, and no other job's list
+# Each program the system manager starts and the input service or the other services believe has a job of its own (input-broker,
+# key-remap, mouse-gestures), so nothing built beside one can reach another or its unit. Paths under system/ are copies bardo-updater-apply
+# places as root; the trust table system/etc/bardo/desktop-callers.toml belongs to the session alone, and no other job's list
 # holds a pattern that matches it. A user unit that a row of the table names (and the portal frontend's drop-in) is a plain
 # system file under system/usr/lib/systemd/user, not a staged lib/systemd/user file that would be exported as a link, which the
 # unit manager's judge reads as writable (release/build.sh plain_units).
 
-casement components.d/casement.txt
-casement bin/casement
-casement bin/bardo-compositorctl
-casement share/quire/settings/compositor.settings.toml
-casement system/usr/lib/systemd/user/bardo-compositor.service
+compositor components.d/compositor.txt
+compositor bin/bardo-compositor
+compositor bin/bardo-compositorctl
+compositor share/bardo/settings/compositor.settings.toml
+compositor system/usr/lib/systemd/user/bardo-compositor.service
 
-sill components.d/sill.txt
-sill bin/sill
-sill system/usr/lib/systemd/user/bardo-shell.service
-sill share/quire/intents/org.bardo.Shell.toml
-sill share/quire/settings/shell.settings.toml
-sill share/quire/selectors/sill.toml
-sill share/quire/skills/focused-app-menus/**
-sill share/quire/skills/screenshots/**
-sill share/quire/skills/windows-spaces/**
-sill share/sill/keycap.toml
-sill system/etc/pam.d/sill
-sill system/etc/udev/rules.d/60-bardo-shell-ddc.rules
-sill system/etc/modules-load.d/bardo-shell-ddc.conf
+shell components.d/shell.txt
+shell bin/bardo-shell
+shell system/usr/lib/systemd/user/bardo-shell.service
+shell share/bardo/intents/org.bardo.Shell.toml
+shell share/bardo/settings/shell.settings.toml
+shell share/bardo/selectors/shell.toml
+shell share/bardo/skills/focused-app-menus/**
+shell share/bardo/skills/screenshots/**
+shell share/bardo/skills/windows-spaces/**
+shell share/bardo/shell/key-remap.toml
+shell system/etc/pam.d/bardo-shell
+shell system/etc/udev/rules.d/60-bardo-shell-ddc.rules
+shell system/etc/modules-load.d/bardo-shell-ddc.conf
 
 anyview components.d/anyview.txt
 anyview components.d/mpv.txt
@@ -47,9 +47,9 @@ anyview share/metainfo/*.xml
 anyview share/doc/anyview/**
 anyview share/dbus-1/services/*.service
 anyview share/icons/**
-anyview share/quire/helpers/anyview.toml
-anyview share/quire/intents/*.toml
-anyview share/quire/skills/files-viewer/**
+anyview share/bardo/helpers/anyview.toml
+anyview share/bardo/intents/*.toml
+anyview share/bardo/skills/files-viewer/**
 
 mailo components.d/mailo.txt
 mailo bin/mailo
@@ -57,62 +57,63 @@ mailo lib/systemd/user/mailo-watch.service
 mailo share/applications/mailo.desktop
 mailo share/icons/**
 mailo share/dbus-1/services/org.bardo.Mail.service
-mailo share/quire/intents/org.bardo.Mail.toml
-mailo share/quire/skills/mail/**
+mailo share/bardo/intents/org.bardo.Mail.toml
+mailo share/bardo/skills/mail/**
 
 files components.d/files.txt
-files bin/files
+files bin/bardo-files
 files share/applications/org.bardo.Files.desktop
 files share/dbus-1/services/org.bardo.Files.service
 files share/dbus-1/services/org.bardo.Files.FileManager1.service
-files share/quire/intents/org.bardo.Files.toml
-files share/quire/settings/files.settings.toml
+files share/bardo/intents/org.bardo.Files.toml
+files share/bardo/settings/files.settings.toml
 
-porter components.d/porter.txt
-porter libexec/quire/accountd
-porter lib/systemd/user/bardo-accountd.service
-porter lib/systemd/user/bardo-accountd.service.d/*
-porter system/usr/lib/systemd/user/bardo-accountd.service
-porter share/dbus-1/services/org.bardo.Accounts1.service
-porter share/porter/providers/*.toml
-porter share/porter/clients.toml
-porter system/etc/porter/callers.toml
-porter system/etc/porter/callers.toml.dist
+accounts components.d/accounts.txt
+accounts libexec/bardo/bardo-accountd
+accounts lib/systemd/user/bardo-accountd.service
+accounts lib/systemd/user/bardo-accountd.service.d/*
+accounts system/usr/lib/systemd/user/bardo-accountd.service
+accounts share/dbus-1/services/org.bardo.Accounts1.service
+accounts share/bardo/accounts/providers/*.toml
+accounts share/bardo/accounts/clients.toml
+accounts system/etc/bardo/accountd-callers.toml
+accounts system/etc/bardo/accountd-callers.toml.dist
 
-steward components.d/steward.txt
-steward libexec/quire/inferd
-steward lib/systemd/user/bardo-inferd.service
-steward lib/systemd/user/bardo-inferd.service.d/*
-steward system/usr/lib/systemd/user/bardo-inferd.service
-steward share/dbus-1/services/org.bardo.Inference1.service
-steward share/porter/inferd-tailnet.conf
-steward share/quire/settings/inference.settings.toml
-steward share/doc/porter/examples/inferd.toml
-steward share/doc/porter/examples/inferd-cloud.conf
-steward system/etc/porter/inferd-callers.toml
-steward system/etc/porter/inferd-callers.toml.dist
+inference components.d/inference.txt
+inference libexec/bardo/bardo-inferd
+inference lib/systemd/user/bardo-inferd.service
+inference lib/systemd/user/bardo-inferd.service.d/*
+inference system/usr/lib/systemd/user/bardo-inferd.service
+inference share/dbus-1/services/org.bardo.Inference1.service
+inference share/bardo/inference/tailnet.conf
+inference share/bardo/settings/inference.settings.toml
+inference share/doc/bardo/inference/inferd.toml
+inference share/doc/bardo/inference/inferd-cloud.conf
+inference system/etc/bardo/inferd-callers.toml
+inference system/etc/bardo/inferd-callers.toml.dist
 
-ferry components.d/ferry.txt
-ferry libexec/quire/syncd
-ferry libexec/quire/bardo-drive-mount
-ferry lib/systemd/user/bardo-syncd.service
-ferry lib/systemd/user/bardo-syncd.service.d/*
-ferry lib/systemd/user/bardo-drive-mount.service
-ferry lib/systemd/user/bardo-drive-mount.socket
-ferry lib/systemd/user/sockets.target.wants/bardo-drive-mount.socket
-ferry system/usr/lib/systemd/user/bardo-syncd.service
-ferry share/dbus-1/services/org.bardo.Sync1.service
+sync components.d/sync.txt
+sync libexec/bardo/bardo-syncd
+sync libexec/bardo/bardo-drive-mount
+sync lib/systemd/user/bardo-syncd.service
+sync lib/systemd/user/bardo-syncd.service.d/*
+sync lib/systemd/user/bardo-drive-mount.service
+sync lib/systemd/user/bardo-drive-mount.socket
+sync lib/systemd/user/sockets.target.wants/bardo-drive-mount.socket
+sync system/usr/lib/systemd/user/bardo-syncd.service
+sync share/dbus-1/services/org.bardo.Sync1.service
 
-agents components.d/stoker.txt
-agents components.d/almanac.txt
-agents components.d/docket.txt
-agents components.d/cua.txt
-agents libexec/quire/memoryd
-agents libexec/quire/intentd
-agents libexec/quire/companiond
-agents libexec/quire/readerd
-agents libexec/quire/bardo-actions-mcp
-agents libexec/quire/cuad
+agents components.d/models.txt
+agents components.d/memory.txt
+agents components.d/actions.txt
+agents components.d/computer-use.txt
+agents libexec/bardo/bardo-memoryd
+agents libexec/bardo/bardo-actiond
+agents libexec/bardo/bardo-companiond
+agents libexec/bardo/bardo-readerd
+agents libexec/bardo/bardo-actions-mcp
+agents libexec/bardo/bardo-computer-use
+agents libexec/bardo/bardo-engine-helper
 agents bin/bardo-do
 agents bin/bardo-agent-acp
 agents lib/systemd/user/*.service
@@ -123,49 +124,48 @@ agents system/usr/lib/systemd/user/bardo-companiond.service
 agents system/usr/lib/systemd/user/bardo-computer-use.service
 agents share/dbus-1/services/*.service
 agents share/dbus-1/interfaces/*
-agents share/quire/**
-agents share/stoker/**
+agents share/bardo/**
 agents share/bash-completion/**
 agents share/zsh/**
 agents share/fish/**
-agents system/etc/quire/memoryd-callers.toml
-agents system/etc/quire/actiond-callers.toml
-agents system/etc/quire/companiond-callers.toml
-agents system/etc/quire/readerd-callers.toml
-agents system/etc/quire/agent-acp-callers.toml
-agents system/etc/quire/computer-use-callers.toml
-agents system/etc/xdg/quire/*.toml
+agents system/etc/bardo/memoryd-callers.toml
+agents system/etc/bardo/actiond-callers.toml
+agents system/etc/bardo/companiond-callers.toml
+agents system/etc/bardo/readerd-callers.toml
+agents system/etc/bardo/agent-acp-callers.toml
+agents system/etc/bardo/computer-use-callers.toml
+agents system/etc/xdg/bardo/*.toml
 
-turnstile components.d/turnstile.txt
-turnstile bin/turnstile
-turnstile system/usr/lib/systemd/system/bardo-input-broker.socket
-turnstile system/usr/lib/systemd/system/bardo-input-broker.service
-turnstile system/etc/udev/rules.d/72-bardo-input-broker.rules
-turnstile system/etc/modules-load.d/turnstile.conf
+input-broker components.d/input-broker.txt
+input-broker bin/bardo-input-broker
+input-broker system/usr/lib/systemd/system/bardo-input-broker.socket
+input-broker system/usr/lib/systemd/system/bardo-input-broker.service
+input-broker system/etc/udev/rules.d/72-bardo-input-broker.rules
+input-broker system/etc/modules-load.d/bardo-input-broker.conf
 
-keycap components.d/keycap.txt
-keycap bin/keycap
-keycap share/keycap/keycap.plasma.toml
-keycap system/usr/lib/systemd/system/bardo-key-remap.service
-keycap system/etc/polkit-1/rules.d/bardo-key-remap.polkit.rules
-keycap system/usr/lib/keycap/keycap.toml
+key-remap components.d/key-remap.txt
+key-remap bin/bardo-key-remap
+key-remap share/bardo/key-remap/key-remap.plasma.toml
+key-remap system/usr/lib/systemd/system/bardo-key-remap.service
+key-remap system/etc/polkit-1/rules.d/bardo-key-remap.polkit.rules
+key-remap system/usr/lib/bardo/key-remap/key-remap.toml
 
-palmrest components.d/palmrest.txt
-palmrest bin/palmrest
-palmrest system/usr/lib/systemd/system/bardo-mouse-gestures.service
-palmrest system/etc/udev/rules.d/70-bardo-mouse-gestures.rules
-palmrest system/etc/modprobe.d/99-bardo-mouse-gestures.conf
+mouse-gestures components.d/mouse-gestures.txt
+mouse-gestures bin/bardo-mouse-gestures
+mouse-gestures system/usr/lib/systemd/system/bardo-mouse-gestures.service
+mouse-gestures system/etc/udev/rules.d/70-bardo-mouse-gestures.rules
+mouse-gestures system/etc/modprobe.d/99-bardo-mouse-gestures.conf
 
 small components.d/desktop.txt
-small components.d/detent.txt
-small components.d/transom.txt
-small components.d/slipway.txt
+small components.d/settings.txt
+small components.d/portal.txt
+small components.d/updater.txt
 small components.d/xwayland-satellite.txt
 small bin/bardo-session
-small bin/detent
-small bin/slipway
+small bin/bardo-settings
+small bin/bardo-updater
 small bin/xwayland-satellite
-small libexec/transom
+small libexec/bardo/bardo-portal
 small lib/systemd/user/bardo-session.target
 small system/usr/lib/systemd/user/org.bardo.Settings.service
 small system/usr/lib/systemd/user/bardo-portal.service
@@ -173,11 +173,11 @@ small system/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf
 small share/wayland-sessions/*.desktop
 small share/xdg-desktop-portal/bardo-portals.conf
 small share/xdg-desktop-portal/portals/bardo.portal
-small share/fonts/quire/*
-small share/quire/extensions/**
+small share/fonts/bardo/*
+small share/bardo/extensions/**
 small share/applications/org.bardo.Settings.desktop
-small share/quire/intents/org.bardo.Settings.toml
+small share/bardo/intents/org.bardo.Settings.toml
 small share/dbus-1/services/org.bardo.Settings.service
 small share/dbus-1/services/org.freedesktop.impl.portal.desktop.bardo.service
 small share/licenses/xwayland-satellite/*
-small system/etc/quire/desktop-callers.toml
+small system/etc/bardo/desktop-callers.toml

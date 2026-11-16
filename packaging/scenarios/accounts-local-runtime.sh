@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # Scenario `accounts-local-runtime` (design 31 §3.3, PLAN acceptance 6): a runtime on this computer is an account.
-# The rig's fake Ollama listens on 127.0.0.1; inferd (real, `[probe] ollama` set to the fake's port, a look a second)
-# finds it and reports it to accountd (Broker.ReportLocal, which accountd lets bardo-inferd.service make as the `ai_broker` of
-# dist/callers.toml; since porter's step 5c the registry of the AI accounts, the local runtimes among them, is accountd's);
-# the account `ollama` appears in accountd's settings module, its place is this computer, detent's Intelligence page lists
-# it; when the fake stops, inferd reports it offline: the account is `offline` and the page greys it. Real accountd, inferd and detent on casement; no sill (no sheet is needed).
+# The rig's fake Ollama listens on 127.0.0.1; bardo-inferd (real, `[probe] ollama` set to the fake's port, a look a second)
+# finds it and reports it to bardo-accountd (Broker.ReportLocal, which bardo-accountd lets bardo-inferd.service make as the `ai_broker` of
+# dist/callers.toml; since porter's step 5c the registry of the AI accounts, the local runtimes among them, is bardo-accountd's);
+# the account `ollama` appears in bardo-accountd's settings module, its place is this computer, bardo-settings's Intelligence page lists
+# it; when the fake stops, bardo-inferd reports it offline: the account is `offline` and the page greys it. Real bardo-accountd, bardo-inferd and bardo-settings on bardo-compositor; no bardo-shell (no sheet is needed).
 #
-#   boot       casement, recorded bus, the fake Ollama, Secret Service, accountd, inferd, detent (org.bardo.Settings);
-#              detent never starts a daemon, so every daemon its Accounts and Intelligence pages read runs first
-#   appears    the account `ollama` is in accountd's settings module and `ok`
+#   boot       bardo-compositor, recorded bus, the fake Ollama, Secret Service, bardo-accountd, bardo-inferd, bardo-settings (org.bardo.Settings);
+#              bardo-settings never starts a daemon, so every daemon its Accounts and Intelligence pages read runs first
+#   appears    the account `ollama` is in bardo-accountd's settings module and `ok`
 #   place      `accounts.ollama.place` is this_computer
-#   listed     detent's Intelligence page, under Models on this computer, lists it as Running (capture)
-#   offline    the fake is stopped (rig lever /ollama/stop); inferd's next look reports it offline to accountd and the account is
+#   listed     bardo-settings's Intelligence page, under Models on this computer, lists it as Running (capture)
+#   offline    the fake is stopped (rig lever /ollama/stop); bardo-inferd's next look reports it offline to bardo-accountd and the account is
 #              `offline`
-#   greyed     detent's page changes at the runtime's row: it reads Offline and is greyed (capture)
+#   greyed     bardo-settings's page changes at the runtime's row: it reads Offline and is greyed (capture)
 #   scan       the secret scan
 #
 # budget: 300
@@ -36,12 +36,12 @@ has_ollama() { ai_has_account ollama; }
 ollama_offline() { [ "$(ai_get accounts.ollama.state 2>/dev/null)" = offline ]; }
 detent_mapped() { [ -n "$(detent_frame 2>/dev/null)" ]; }
 
-# scroll_to_runtimes: the wheel over detent's page, a detent at a time, until the runtime's Manage button (the only
+# scroll_to_runtimes: the wheel over bardo-settings's page, a bardo-settings at a time, until the runtime's Manage button (the only
 # "Manage <name>" on the Intelligence page: the row of "Models on this computer") is inside the window (the page is longer
 # than the window and a wheel's distance depends on the toolkit, so the way is found, not counted; the second time the
 # same distance is gone). Sets RUNTIME_STEPS (how far it went) and RUNTIME_Y (the button's y in the output).
 RUNTIME_STEPS= RUNTIME_Y=
-runtime_button_y() { # prints the button's y in detent's window when it is inside the visible part
+runtime_button_y() { # prints the button's y in bardo-settings's window when it is inside the visible part
   local c cx cy; c=$(detent_centre button "Manage …") || return 1
   read -r cx cy <<<"$c"
   [ "$cy" -ge 70 ] && [ "$cy" -le $(( $1 - 40 )) ] && echo "$cy"
@@ -59,15 +59,15 @@ scroll_to_runtimes() {
       if runtime_button_y "$h" >/dev/null; then RUNTIME_STEPS=$i; break; fi
       bardo-compositorctl debug inject "axis vertical 15" >/dev/null; sleep 0.25
     done
-    [ -n "$RUNTIME_STEPS" ] || { echo "the Models on this computer row never came into view; detent shows:" >&2; detent_listing >&2; return 1; }
+    [ -n "$RUNTIME_STEPS" ] || { echo "the Models on this computer row never came into view; bardo-settings shows:" >&2; detent_listing >&2; return 1; }
   fi
   sleep 1.5
   cy=$(runtime_button_y "$h") || { echo "the Manage button is not in view where it was" >&2; return 1; }
   RUNTIME_Y=$((y + cy)); acc_shot .scroll
 }
 
-# reports: what inferd and accountd said of the looks, from their logs (the probe's report goes inferd -> accountd).
-reports() { tail -n 10 "$OUT_DIR/inferd.log" "$OUT_DIR/accountd.log"; }
+# reports: what bardo-inferd and bardo-accountd said of the looks, from their logs (the probe's report goes bardo-inferd -> bardo-accountd).
+reports() { tail -n 10 "$OUT_DIR/bardo-inferd.log" "$OUT_DIR/bardo-accountd.log"; }
 
 step_boot() {
   start_compositor || return 1
@@ -90,7 +90,7 @@ EOF
 
 step_appears() {
   acc_wait 30 has_ollama || {
-    echo "no ollama account in accountd 30 s after inferd should have found the fake and reported it; the logs say:" >&2
+    echo "no ollama account in bardo-accountd 30 s after bardo-inferd should have found the fake and reported it; the logs say:" >&2
     reports >&2
     return 1
   }
@@ -102,10 +102,10 @@ step_place() {
 }
 
 step_listed() {
-  # detent never starts a daemon: both modules its pages read must have an owner before it opens.
-  bus_has_owner org.bardo.Accounts1 && bus_has_owner org.bardo.Inference1 || { echo "accountd or inferd is not on the bus" >&2; return 1; }
+  # bardo-settings never starts a daemon: both modules its pages read must have an owner before it opens.
+  bus_has_owner org.bardo.Accounts1 && bus_has_owner org.bardo.Inference1 || { echo "bardo-accountd or bardo-inferd is not on the bus" >&2; return 1; }
   detent_start
-  acc_wait 30 detent_mapped || { echo "detent never mapped" >&2; return 1; }
+  acc_wait 30 detent_mapped || { echo "bardo-settings never mapped" >&2; return 1; }
   sleep 4; detent_focus
   detent_press option Intelligence; sleep 2
   scroll_to_runtimes; acc_shot 1-intelligence-online
@@ -114,10 +114,10 @@ step_listed() {
 
 step_offline() {
   rigctl POST /ollama/stop >/dev/null
-  acc_wait 20 ollama_offline || { echo "the fake Ollama stopped, inferd looks every second, but the account is $(ai_get accounts.ollama.state), not offline; the logs say:" >&2; reports >&2; return 1; }
+  acc_wait 20 ollama_offline || { echo "the fake Ollama stopped, bardo-inferd looks every second, but the account is $(ai_get accounts.ollama.state), not offline; the logs say:" >&2; reports >&2; return 1; }
 }
 
-# detent redraws the row when its next look at the accounts lands, which can be a few seconds after the
+# bardo-settings redraws the row when its next look at the accounts lands, which can be a few seconds after the
 # account went offline; one capture at a fixed time caught the old row about one run in three, so it looks again.
 step_greyed() {
   local i
@@ -146,7 +146,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_appears step_place step_listed step_offline step_greyed step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd inferd detent rig-servers secrets; do
+  for f in bardo-accountd bardo-inferd bardo-settings rig-servers secrets; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

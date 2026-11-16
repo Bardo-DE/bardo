@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the "sill (casement)" session: the session script, the portal choice for the quire
+# Install the "Bardo" session: the session script, the portal choice for the Bardo
 # desktop, the user target and the login-screen entry. Run as yourself; it never runs sudo (a
 # destination you cannot write stops it with the command to run as root). Safe to run again.
 #
@@ -8,11 +8,11 @@
 #   (flags: see install/lib.sh)
 #
 # Also installed, root-held, in <sysconfdir>/systemd/user (/etc/systemd/user): bardo-compositor.service and bardo-shell.service, from the
-# casement and sill crates of this tree (--tree), so the account service can trust the compositor and the
+# compositor and shell crates of this tree (--tree), so the account service can trust the compositor and the
 # shell as fixed roles (it accepts units only from root-held places, never ~/.config).
 # And, in the same place, xdg-desktop-portal.service.d/10-bardo.conf: a drop-in for the portal frontend's own unit that unsets the
-# loader variables, so the portal backend (transom) can prove the frontend is the real one (NEW-PI-1).
-# Not installed here: the casement, sill and transom (the portal backend) programs themselves (cargo xtask install, then cargo xtask install transom, and
+# loader variables, so the portal backend (bardo-portal) can prove the frontend is the real one (NEW-PI-1).
+# Not installed here: the bardo-compositor, bardo-shell and bardo-portal (the portal backend) programs themselves (cargo xtask install, then cargo xtask install portal, and
 # packages), other sessions (left untouched), and
 # anything under $HOME. install/uninstall.sh removes exactly the files listed below.
 set -euo pipefail
@@ -26,10 +26,10 @@ parse_flags "$@"
 [ "$dry" = 0 ] || echo "dry run: nothing below is executed"
 
 step "1/3 checks"
-for tool in casement sill; do
+for tool in bardo-compositor bardo-shell; do
   command -v "$tool" >/dev/null || note "WARNING: $tool is not on PATH; the session cannot start without it"
 done
-for pair in compositor:casement shell:sill; do
+for pair in compositor:bardo-compositor shell:bardo-shell; do
   name=${pair#*:}
   [ -f "$(unit_source "${pair%%:*}" "$name")" ] || note "WARNING: $(unit_source "${pair%%:*}" "$name") is missing; the session needs $name.service and cannot start $name without it (pass --tree if this is not the bardo tree's packaging folder)"
   # A copy in the person's own folder wins over the installed one and is not trusted by the account service.
@@ -37,7 +37,7 @@ for pair in compositor:casement shell:sill; do
     note "WARNING: ${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user/$name.service hides the installed unit and is not trusted by the account service; remove it"
   fi
 done
-[ -x "$prefix/libexec/transom" ] || [ -x /usr/libexec/bardo/bardo-portal ] || note "WARNING: transom is not installed (the repo's scripts/install.sh, or the top-level ./install.sh --only transom); screen sharing and screenshots need it"
+[ -x "$prefix/libexec/bardo/bardo-portal" ] || [ -x /usr/libexec/bardo/bardo-portal ] || note "WARNING: bardo-portal is not installed (the repo's scripts/install.sh, or the top-level ./install.sh --only portal); screen sharing and screenshots need it"
 portal_found=0
 for portal in /usr/libexec/xdg-desktop-portal /usr/lib/xdg-desktop-portal /usr/lib/*/xdg-desktop-portal; do
   [ ! -x "$portal" ] || portal_found=1
@@ -67,6 +67,6 @@ else
 fi
 
 step "done"
-note "Pick \"sill (casement)\" at the login screen. First-login checks (not testable without a login):"
-note "  the guard's real tty path, sill and transom against the real casement, the target, bardo-compositor.service and bardo-shell.service"
-note "  the activation environment, a screen share through transom (a browser, OBS), logout through sill's power menu."
+note "Pick \"Bardo\" at the login screen. First-login checks (not testable without a login):"
+note "  the guard's real tty path, bardo-shell and bardo-portal against the real bardo-compositor, the target, bardo-compositor.service and bardo-shell.service"
+note "  the activation environment, a screen share through bardo-portal (a browser, OBS), logout through the shell's power menu."

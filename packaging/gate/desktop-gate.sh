@@ -9,10 +9,10 @@
 # --merge   --self, plus the whole tree through ~/rs-wt/gate-lane-jailed.sh (it hands the bardo tree to its own gate), and the
 #           check that no trace of the removed compositor stack is left in the tree.
 # --phase   --merge, and additionally an entry of expected-skips.toml whose `closes` is P<n> or
-#           earlier must be gone: the list is empty at that phase's exit; and sill's own acceptance
-#           suite on casement (crates/shell/dev/accept.sh --compositor casement, its skips
-#           listed in sill-accept-skips.txt). The scenarios launcher-p95-on-casement and
-#           detent-on-casement-at-1.5 are the phase's other checks and run with every scenario.
+#           earlier must be gone: the list is empty at that phase's exit; and bardo-shell's own acceptance
+#           suite on bardo-compositor (crates/shell/dev/accept.sh --compositor casement, its skips
+#           listed in shell-accept-skips.txt). The scenarios launcher-p95-on-compositor and
+#           bardo-settings-on-casement-at-1.5 are the phase's other checks and run with every scenario.
 #
 # Exit codes (plan §6.1): 0 green; otherwise the worst step's code. Prints
 # "DESKTOP GATE GREEN (<tier>)" only when every step passed.
@@ -89,26 +89,26 @@ run_scenario() {
   return 0
 }
 
-# sill's own acceptance suite on casement (plan 20 §5.2: "sill's 19 minus listed WM-state steps"), from
-# this tree, every script in its own jail on a headless casement. Everything is
-# built outside the jail first (accept.sh --build: sill, the testkit's examples, shell-services' bins,
-# docket's intentd, casement's tools from this tree). Exit 0 and 2 (SKIP) are accepted; a SKIP
-# only for a script listed in sill-accept-skips.txt whose phase has not closed; any FAIL is rerun once,
+# bardo-shell's own acceptance suite on bardo-compositor (plan 20 §5.2: "bardo-shell's 19 minus listed WM-state steps"), from
+# this tree, every script in its own jail on a headless bardo-compositor. Everything is
+# built outside the jail first (accept.sh --build: bardo-shell, the testkit's examples, shell-services' bins,
+# docket's bardo-actiond, bardo-compositor's tools from this tree). Exit 0 and 2 (SKIP) are accepted; a SKIP
+# only for a script listed in shell-accept-skips.txt whose phase has not closed; any FAIL is rerun once,
 # alone and one at a time (a loaded host starves the timing-sensitive scripts), and says so.
 sill_accept() {
-  local work="$ROOT/build/sill-accept" sill="$TREE/crates/shell" log rc=0 name why closes
+  local work="$ROOT/build/sill-accept" shell_dir="$TREE/crates/shell" log rc=0 name why closes
   local -a failed=() skipped=()
   rm -rf "$work"; mkdir -p "$work"; log="$work/accept.log"
   export CARGO_TARGET_DIR="$work/target" BARDO_COMPOSITOR_TARGET="$work/casement-target" BARDO_COMPOSITOR_TOOLS="$work/casement-tools"
-  "$sill/dev/accept.sh" --compositor casement --build --out "$work/run" >"$log" 2>&1 || rc=$?
+  "$shell_dir/dev/accept.sh" --compositor casement --build --out "$work/run" >"$log" 2>&1 || rc=$?
   cat "$log"
-  [ "$rc" != 3 ] && [ "$rc" != 4 ] || { echo "  sill acceptance could not run (exit $rc)"; return "$rc"; }
+  [ "$rc" != 3 ] && [ "$rc" != 4 ] || { echo "  bardo-shell acceptance could not run (exit $rc)"; return "$rc"; }
   mapfile -t failed < <(sed -n 's/^FAIL \([a-z0-9-]*\) .*/\1/p' "$log")
   if [ "${#failed[@]}" -gt 0 ]; then
     echo "  RETRY ${failed[*]} (failed under the parallel run; one at a time now)"
     rc=0
     for name in "${failed[@]}"; do
-      "$sill/dev/accept.sh" --compositor casement --jobs 1 --out "$work/retry-$name" "$name" >"$work/retry-$name.log" 2>&1
+      "$shell_dir/dev/accept.sh" --compositor casement --jobs 1 --out "$work/retry-$name" "$name" >"$work/retry-$name.log" 2>&1
       case $? in
         0) echo "  retry PASS $name" ;;
         2) echo "  retry SKIP $name"; sed -n 's/^SKIP \([a-z0-9-]*\) .*/\1/p' "$work/retry-$name.log" >>"$work/retry-skips" ;;
@@ -120,8 +120,8 @@ sill_accept() {
   mapfile -t skipped < <({ sed -n 's/^SKIP \([a-z0-9-]*\) .*/\1/p' "$log"; cat "$work/retry-skips" 2>/dev/null; } | sort -u)
   rc=0
   for name in "${skipped[@]}"; do
-    read -r _ closes why < <(awk -v n="$name" '!/^#/ && $1 == n' "$HERE/sill-accept-skips.txt") || true
-    if [ -z "${closes:-}" ]; then echo "  unexpected SKIP: $name is not in sill-accept-skips.txt"; rc=1; continue; fi
+    read -r _ closes why < <(awk -v n="$name" '!/^#/ && $1 == n' "$HERE/shell-accept-skips.txt") || true
+    if [ -z "${closes:-}" ]; then echo "  unexpected SKIP: $name is not in shell-accept-skips.txt"; rc=1; continue; fi
     if [ "$closes" != never ] && phase_closed "$closes"; then echo "  $name still skips but $closes has closed"; rc=1; continue; fi
     echo "  expected skip: $name (closes $closes)"
   done
@@ -158,8 +158,8 @@ step "every trusted unit and the portal frontend's drop-in unset all loader vari
 step "no stand-in (fake feature) in what is built or shipped" "$HERE/check-no-fake.sh" || true
 step "nothing shipped opens /dev/uinput to the person or a group" "$HERE/check-no-uinput-access.sh" || true
 step "expected-skips resolve" skip_entries_resolve || true
-# The scenarios' artefacts are built outside the jail (plan A7); DESKTOP_GATE_NO_BUILD=1 skips it.
-if [ -z "${DESKTOP_GATE_NO_BUILD:-}" ]; then step "scenario artefacts (built outside the jail)" "$ROOT/harness/scenario-build.sh" || true; fi
+# The scenarios' artefacts are built outside the jail (plan A7); BARDO_GATE_NO_BUILD=1 skips it.
+if [ -z "${BARDO_GATE_NO_BUILD:-}" ]; then step "scenario artefacts (built outside the jail)" "$ROOT/harness/scenario-build.sh" || true; fi
 for s in "$ROOT"/scenarios/*.sh; do
   # A scenario with an `# opt-in:` header line is run on demand only (it needs a model, a browser...): the gate skips it.
   if grep -q '^# opt-in:' "$s"; then echo "  not run by the gate (opt-in): $(basename "$s" .sh)"; continue; fi
@@ -171,7 +171,7 @@ if [ "$tier" != self ]; then
   step "lane gate of the whole tree" lane_gate || true
   # Whatever failed before, this check still runs: a phase gate names every failure.
   if [ "$tier" = phase ]; then
-    step "sill acceptance on casement (dev/accept.sh --compositor casement)" sill_accept || true
+    step "bardo-shell acceptance on bardo-compositor (dev/accept.sh --compositor casement)" sill_accept || true
   fi
 fi
 

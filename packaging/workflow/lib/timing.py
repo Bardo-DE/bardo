@@ -17,8 +17,8 @@ Commands (run.sh uses them; selftest.sh runs them on fixtures):
   dialog-open --token T                ask the portal for a file chooser, print the instant asked
   summarize --raw FILE ...             the summary text, the trend and "where the time went"
 
-The sources of the timing lines are the user journal and the session's casement.log (the session
-script appends casement's stderr there); --log-file FILE (repeatable) replaces both, for tests.
+The sources of the timing lines are the user journal and the session's bardo-compositor.log (the session
+script appends bardo-compositor's stderr there); --log-file FILE (repeatable) replaces both, for tests.
 
 Exit codes: 0 done; 1 nothing found (wait timed out, no event); 2 bad usage or an unreadable input.
 """
@@ -85,7 +85,7 @@ def canonical(event):
 def state_log_text():
     base = os.environ.get("BARDO_SESSION_STATE") or os.path.join(os.environ.get("XDG_RUNTIME_DIR", ""), "bardo-session")
     try:
-        with open(os.path.join(base, "casement.log"), "rb") as handle:
+        with open(os.path.join(base, "bardo-compositor.log"), "rb") as handle:
             handle.seek(0, os.SEEK_END)
             handle.seek(max(0, handle.tell() - 8_000_000))
             return handle.read().decode(errors="replace")
@@ -120,7 +120,7 @@ def read_events(args):
 
 
 def add_source_options(parser):
-    parser.add_argument("--log-file", action="append", default=[], help="read this file instead of the journal and casement.log")
+    parser.add_argument("--log-file", action="append", default=[], help="read this file instead of the journal and bardo-compositor.log")
     parser.add_argument("--window", type=int, default=900, help="seconds of journal to read (default 900)")
     parser.add_argument("--boot", action="store_true", help="read the whole boot")
 

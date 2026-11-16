@@ -10,10 +10,10 @@ an access token the rig planted or the issuer minted) shows up where it must not
 --file / --dir   logs and state files to grep (bytes), a directory recursively.
 
 What a bus message may carry (the design lets exactly these through; every other hit fails the scan):
-  - the Secret Service: calls to org.freedesktop.secrets and their replies (accountd files and reads its
+  - the Secret Service: calls to org.freedesktop.secrets and their replies (bardo-accountd files and reads its
     credentials there, by design: the store is the one place they live);
-  - AccountsSheet1.Input, the unicast signal from the sheet host to accountd with the answers a person typed
-    (a password goes from the sheet to accountd once, by design);
+  - AccountsSheet1.Input, the unicast signal from the sheet host to bardo-accountd with the answers a person typed
+    (a password goes from the sheet to bardo-accountd once, by design);
   - org.bardo.Compositor.Debug1.Inject and its reply: the test typing the person's keys;
   - an ACCESS token (planted or minted) in the reply to Tokens.IssueToken: apps receive short-lived tokens.
 A refresh token, a password or an API key in any other message, or any secret in a log or a state file, is a hit.
@@ -112,9 +112,9 @@ def main():
             elif m["type"] == "method_return" and (dest, m.get("reply_cookie")) in to_secrets:
                 why = "the Secret Service reply"
             elif m["type"] == "signal" and m.get("interface") == "org.bardo.AccountsSheet1" and m.get("member") == "Input":
-                why = "the sheet host's Input to accountd"
+                why = "the sheet host's Input to bardo-accountd"
             elif m.get("interface") == "org.bardo.Compositor.Debug1" or (m["type"] == "method_return" and (dest, m.get("reply_cookie")) in to_inject):
-                why = "the test typing (casement Inject)"
+                why = "the test typing (bardo-compositor Inject)"
             elif is_issue_reply:
                 why = "the access token in IssueToken's reply"
             if why:

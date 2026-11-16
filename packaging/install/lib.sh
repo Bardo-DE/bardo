@@ -5,7 +5,7 @@
 #   --dry-run          print every step, change nothing
 #   --prefix DIR       where the script and its data go (default $PREFIX, else /usr/local)
 #   --destdir DIR      a staging root put in front of every path (default $DESTDIR, else none)
-#   --sysconfdir DIR   where the user target and the casement and sill units go, in DIR/systemd/user (default $SYSCONFDIR, else /etc)
+#   --sysconfdir DIR   where the user target and the compositor and shell units go, in DIR/systemd/user (default $SYSCONFDIR, else /etc)
 #   --sessions-dir DIR the display manager's wayland-sessions directory (default /usr/share/wayland-sessions)
 #   --tree DIR         the bardo tree (default $BARDO_TREE, else the parent of packaging/): crates/compositor/dist/bardo-compositor.service and
 #                      crates/shell/dist/bardo-shell.service are the units installed
@@ -15,7 +15,7 @@
 # bardo-compositor.service and bardo-shell.service are installed here, root-held, in DIR/systemd/user (/etc/systemd/user by default): the
 # account service trusts the compositor and the shell as fixed roles only when their unit files, and any drop-in, sit in
 # /etc/systemd/user, /usr/lib/systemd/user or /usr/local/lib/systemd/user, so never under ~/.config. Each is rendered with
-# the prefix's bin folder in ExecStart. casement's own installer also puts bardo-compositor.service under its prefix; the copy in
+# the prefix's bin folder in ExecStart. the compositor's own installer also puts bardo-compositor.service under its prefix; the copy in
 # DIR/systemd/user wins over it and is the same file.
 
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")/../session" && pwd)"
@@ -69,13 +69,13 @@ files() {
   echo "644 $SRC/bardo-session.target $sysconfdir/systemd/user/bardo-session.target"
   # Root-held, so the portal frontend's unit proves Full to the portal backend: it throws away the loader variables.
   echo "644 $SRC/xdg-desktop-portal.service.d/10-bardo.conf $sysconfdir/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf"
-  echo "644 $(unit_source compositor casement) $sysconfdir/systemd/user/bardo-compositor.service"
-  echo "644 $(unit_source shell sill) $sysconfdir/systemd/user/bardo-shell.service"
+  echo "644 $(unit_source compositor bardo-compositor) $sysconfdir/systemd/user/bardo-compositor.service"
+  echo "644 $(unit_source shell bardo-shell) $sysconfdir/systemd/user/bardo-shell.service"
   echo "644 $SRC/bardo.desktop $sessions_dir/bardo.desktop"
-  # quire's look Extensions (Editorial), picked under Settings > Look; every quire app finds them in <data dir>/quire/extensions.
+  # The desktop's look Extensions (Editorial), picked under Settings > Look; every app finds them in <data dir>/bardo/extensions.
   local f
   for f in "$tree"/crates/ui/extensions/*/*; do
-    [ -f "$f" ] && echo "644 $f $prefix/share/quire/extensions/${f#"$tree"/crates/ui/extensions/}"
+    [ -f "$f" ] && echo "644 $f $prefix/share/bardo/extensions/${f#"$tree"/crates/ui/extensions/}"
   done
 }
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Scenario `detent-on-casement-at-1.5` (plan 20 §5.2, P0 exit): detent maps, resizes and is crisp at
-# output scale 1.5 on a headless casement, in the jail.
+# Scenario `bardo-settings-on-casement-at-1.5` (plan 20 §5.2, P0 exit): bardo-settings maps, resizes and is crisp at
+# output scale 1.5 on a headless bardo-compositor, in the jail.
 #
-# detent (the Settings app, built from this tree by harness/scenario-build.sh) runs against casement's
+# bardo-settings (the Settings app, built from this tree by harness/scenario-build.sh) runs against bardo-compositor's
 # 2880x1620 headless output at scale 1.5 (1920x1080 logical). Steps, each waiting on what it needs:
-#   boot     casement up at scale 1.5, devices plugged
-#   map      detent maps at the 900x640 logical size it asks for (`debug windows`); the client's own
+#   boot     bardo-compositor up at scale 1.5, devices plugged
+#   map      bardo-settings maps at the 900x640 logical size it asks for (`debug windows`); the client's own
 #            protocol log (WAYLAND_DEBUG) shows preferred_scale(180) before it drew, wp_viewport destination
 #            900x640 and wl_shm buffers of 1350x960: the buffer is the physical size, round(logical x 1.5)
-#   resize   a bottom-right drag (the first press only focuses: detent's grab zones take the next, once the hover
+#   resize   a bottom-right drag (the first press only focuses: bardo-settings's grab zones take the next, once the hover
 #            is on the corner; a press the client did not take is released and repeated): the frame grows,
 #            the client gets a configure of the new size, the viewport destination follows and new wl_shm
 #            buffers of round-half-up(size x 1.5) are attached
@@ -24,15 +24,15 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-DETENT="$SCEN_BUILD/detent-target/debug/detent"
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
+DETENT="$SCEN_BUILD/detent-target/debug/bardo-settings"
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
 
-export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
-floor_shim detent-1.5 bardo-compositorctl detent casement   # bardo-compositorctl shot watches the screen; detent is the Settings app (both run from build/)
+floor_shim bardo-settings-1.5 bardo-compositorctl bardo-settings bardo-compositor   # bardo-compositorctl shot watches the screen; bardo-settings is the Settings app (both run from build/)
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
-OUT_DIR=$(scenario_out detent-1.5)
+OUT_DIR=$(scenario_out bardo-settings-1.5)
 BARDO_SETTINGS_PID=
 
 cleanup() {
@@ -50,10 +50,10 @@ wait_size() {
   echo "the window is $(window_size 2>&1), not $1" >&2
   return 1
 }
-# wait_log REGEX: up to 10 s for a line of detent's protocol log.
+# wait_log REGEX: up to 10 s for a line of bardo-settings's protocol log.
 wait_log() {
   for _ in $(seq 100); do grep -qE -e "$1" "$LOG" && return 0; sleep 0.1; done
-  echo "detent's log never showed: $1" >&2
+  echo "bardo-settings's log never showed: $1" >&2
   return 1
 }
 
@@ -67,7 +67,7 @@ step_boot() {
 step_map() {
   scratch_new
   mkdir -p "$SCRATCH/home" "$SCRATCH/data"
-  LOG="$OUT_DIR/detent.log"
+  LOG="$OUT_DIR/bardo-settings.log"
   nested env HOME="$SCRATCH/home" XDG_CONFIG_HOME="$SCRATCH/home/.config" XDG_DATA_HOME="$SCRATCH/data" \
     XDG_DATA_DIRS="$SCRATCH/data" WAYLAND_DEBUG=1 "$DETENT" --dev-callers "$FLOOR_DIR/desktop-callers.toml" >"$LOG" 2>&1 &
   BARDO_SETTINGS_PID=$!
@@ -79,11 +79,11 @@ step_map() {
 }
 
 window_active() { windows | python3 -c 'import json,sys; sys.exit(0 if json.load(sys.stdin)[0]["active"] else 1)'; }
-# resize_requested: detent has asked for an interactive resize (its corner zone took the press).
+# resize_requested: bardo-settings has asked for an interactive resize (its corner zone took the press).
 resize_requested() { grep -qE -e 'xdg_toplevel#[0-9]+\.resize\(' "$LOG"; }
 
 step_resize() {
-  # The first press only focuses the window (detent's edge zones take the first mouse); the next, once the
+  # The first press only focuses the window (bardo-settings's edge zones take the first mouse); the next, once the
   # window is active and the hover has reached the corner zone, makes the client ask for the resize. A
   # press that lands before the client's hover state catches up is released and tried again (up to 8).
   bardo-compositorctl debug inject "move 1000 500" "move 1405 855" "press left" "release left" >/dev/null || return 1
@@ -98,7 +98,7 @@ step_resize() {
     for _ in $(seq 20); do resize_requested && break 2; sleep 0.1; done
     bardo-compositorctl debug inject "release left" >/dev/null
   done
-  resize_requested || { echo "detent never asked for a resize in 8 presses on its corner" >&2; return 1; }
+  resize_requested || { echo "bardo-settings never asked for a resize in 8 presses on its corner" >&2; return 1; }
   # The compositor starts its grab when it handles the request, a little after the client sent it, and a
   # loaded host delays it: drag in small steps until the frame has grown, then release.
   local x=1405 y=855 size=
@@ -156,7 +156,7 @@ PY
 
 run_steps step_boot step_map step_resize step_crisp
 if [ "$STATUS" != 0 ]; then
-  echo "--- detent.log (tail)" >&2; tail -15 "$OUT_DIR/detent.log" >&2
-  [ -z "${BARDO_COMPOSITOR_ENV:-}" ] || { echo "--- casement.log (tail)" >&2; tail -20 "$(dirname "$BARDO_COMPOSITOR_ENV")/casement.log" >&2; }
+  echo "--- bardo-settings.log (tail)" >&2; tail -15 "$OUT_DIR/bardo-settings.log" >&2
+  [ -z "${BARDO_COMPOSITOR_ENV:-}" ] || { echo "--- bardo-compositor.log (tail)" >&2; tail -20 "$(dirname "$BARDO_COMPOSITOR_ENV")/bardo-compositor.log" >&2; }
 fi
 exit "$STATUS"

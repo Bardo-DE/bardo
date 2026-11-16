@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
-# Scenario `accounts-sync` (design 31 §6, porter 5fdeafa Sync1.Resolve): syncd mirrors a OneDrive app folder from the
+# Scenario `accounts-sync` (design 31 §6, porter 5fdeafa Sync1.Resolve): bardo-syncd mirrors a OneDrive app folder from the
 # rig's fake Graph, a two-sided edit makes a Conflict signal with its number, and the owning app settles it with
-# Sync1.Resolve keep_remote: the next cycle takes the remote. syncd (ferry's) has no accounts of
-# its own: it uses the accountd account the person signed in with, through account-client over org.bardo.Grants1, and keeps
-# only its own sync switches and mirrors. Real accountd and syncd (syncd runs Storage over Graph), ferry's rig (issuer and
-# Graph), sill as sheet host, detent for the Sync row. No network.
+# Sync1.Resolve keep_remote: the next cycle takes the remote. bardo-syncd (ferry's) has no accounts of
+# its own: it uses the bardo-accountd account the person signed in with, through account-client over org.bardo.Grants1, and keeps
+# only its own sync switches and mirrors. Real bardo-accountd and bardo-syncd (bardo-syncd runs Storage over Graph), ferry's rig (issuer and
+# Graph), bardo-shell as sheet host, bardo-settings for the Sync row. No network.
 #
-#   boot      as accounts-oauth-browser: a Microsoft-shaped identity added through the browser sign-in; syncd runs before
-#             detent opens (detent never starts a daemon)
-#   grant     Settings makes syncd's Files grant: detent starts, Accounts; the account (accountd's) is listed in syncd's rows with
-#             its files switch off and no Add Account button (syncd signs nobody in); the account's own switch "Keep this
-#             account's files on this computer" is turned on in the real window: accountd's consent sheet shows once, for that
-#             one account, no chooser (capture 2-consent, Tab to Always Allow, Return); `accounts.<id>.sync.files` is "on" in syncd's
-#             settings module (capture 6-sync-on) and accountd lists the permit (org.bardo.Sync, scope always) under the account;
+#   boot      as accounts-oauth-browser: a Microsoft-shaped identity added through the browser sign-in; bardo-syncd runs before
+#             bardo-settings opens (bardo-settings never starts a daemon)
+#   grant     Settings makes bardo-syncd's Files grant: bardo-settings starts, Accounts; the account (bardo-accountd's) is listed in bardo-syncd's rows with
+#             its files switch off and no Add Account button (bardo-syncd signs nobody in); the account's own switch "Keep this
+#             account's files on this computer" is turned on in the real window: bardo-accountd's consent sheet shows once, for that
+#             one account, no chooser (capture 2-consent, Tab to Always Allow, Return); `accounts.<id>.sync.files` is "on" in bardo-syncd's
+#             settings module (capture 6-sync-on) and bardo-accountd lists the permit (org.bardo.Sync, scope always) under the account;
 #             setting the switch on again asks nothing; the switch is then turned off (the permit is deleted) and on again, which
 #             asks again, once, and is answered the same way
-#   mirror    syncd reads grants again every 2 s (BARDO_SYNCD_RESCAN_S=2; the default is 600 s); the dataset
+#   mirror    bardo-syncd reads grants again every 2 s (BARDO_SYNCD_RESCAN_S=2; the default is 600 s); the dataset
 #             `<account segment>/storage_app_folder` is listed to its owner (org.bardo.Files); a file the rig puts on the drive
-#             (the remote edit lever /graph/put) shows in $XDG_DATA_HOME/porter/storage/<account>/
-#   conflict  the owner's watch joins syncd, then both sides edit the file within a moment; the next cycle (the poll is
+#             (the remote edit lever /graph/put) shows in $XDG_DATA_HOME/bardo/sync/storage/<account>/
+#   conflict  the owner's watch joins bardo-syncd, then both sides edit the file within a moment; the next cycle (the poll is
 #             60 s: a local change is found at the next one) finds the two edits: the watch sees a Conflict signal
 #             carrying a number
 #   resolve   Sync1.Resolve(dataset, number, keep_remote) from the owner: the local file becomes the remote's text and
@@ -43,8 +43,8 @@ SYNC_FILES_LABEL="Keep this account's files on this computer"
 cleanup() { acc_stop_all; stop_daemon; stop_compositor; scratch_drop; }
 trap cleanup EXIT
 
-# Syncd names an account by its object-path segment (underscores) in a dataset name and on disk. The account is accountd's
-# (ACCOUNT, set by sheet_add_microsoft); syncd has none of its own.
+# Syncd names an account by its object-path segment (underscores) in a dataset name and on disk. The account is bardo-accountd's
+# (ACCOUNT, set by sheet_add_microsoft); bardo-syncd has none of its own.
 SYNC_ACCOUNT=
 segment() { echo "${SYNC_ACCOUNT//[-.]/_}"; }
 folder() { echo "$DATA/porter/storage/$(segment)"; }
@@ -74,37 +74,37 @@ step_boot() {
   SYNC_ACCOUNT=$ACCOUNT
 }
 
-# The Sync group's Add Account button (accountd's add sheet) must still be on the page: detent reads syncd's
-# `accounts.sync.add` row. The grant step then turns on the files switch of the account accountd already holds.
+# The Sync group's Add Account button (bardo-accountd's add sheet) must still be on the page: bardo-settings reads bardo-syncd's
+# `accounts.sync.add` row. The grant step then turns on the files switch of the account bardo-accountd already holds.
 step_row() {
   frigctl POST "/graph/put?path=a.txt" "remote one" >/dev/null
   detent_start
-  acc_wait 30 detent_mapped || { echo "detent never mapped" >&2; tail -5 "$OUT_DIR/detent.log" >&2; return 1; }
+  acc_wait 30 detent_mapped || { echo "bardo-settings never mapped" >&2; tail -5 "$OUT_DIR/bardo-settings.log" >&2; return 1; }
   sleep 4
   detent_focus
   detent_press option Accounts; sleep 1; acc_shot 1-accounts-list
-  detent_centre button "Add Account" >/dev/null || { echo "the Sync row has no Add Account button (syncd serves accounts.sync.add; it shows:)" >&2; detent_listing >&2; return 1; }
+  detent_centre button "Add Account" >/dev/null || { echo "the Sync row has no Add Account button (bardo-syncd serves accounts.sync.add; it shows:)" >&2; detent_listing >&2; return 1; }
 }
 
 step_grant() {
   # The account's own switch, in the real window: it is the last row of the list (the Sync group comes last), named by the
-  # account accountd holds. It starts off; turning it on is syncd's first use of the account.
-  sync_has_account "$SYNC_ACCOUNT" || { echo "syncd lists no row for accountd's account $SYNC_ACCOUNT" >&2; return 1; }
+  # account bardo-accountd holds. It starts off; turning it on is bardo-syncd's first use of the account.
+  sync_has_account "$SYNC_ACCOUNT" || { echo "bardo-syncd lists no row for bardo-accountd's account $SYNC_ACCOUNT" >&2; return 1; }
   sync_off || { echo "accounts.$SYNC_ACCOUNT.sync.files is '$(sync_files)' before anything turned it on" >&2; return 1; }
   sleep 2; detent_press option "$(sync_label) …" -1; sleep 1; acc_shot 1-sync-account
   detent_press switch "$SYNC_FILES_LABEL"
-  sheet_await || { echo "accountd's consent sheet for syncd never showed: $(tail -5 "$OUT_DIR/syncd.log")" >&2; return 1; }
+  sheet_await || { echo "bardo-accountd's consent sheet for bardo-syncd never showed: $(tail -5 "$OUT_DIR/bardo-syncd.log")" >&2; return 1; }
   sheet_settled; sheet_shot 2-consent
   sync_consent_keys
   sheet_gone || { echo "the consent sheet did not go after the answer" >&2; return 1; }
-  acc_wait 30 sync_on || { acc_shot 5-sync-not-on; echo "allowing syncd did not switch the files on: accounts.$SYNC_ACCOUNT.sync.files is '$(sync_files)'" >&2; return 1; }
+  acc_wait 30 sync_on || { acc_shot 5-sync-not-on; echo "allowing bardo-syncd did not switch the files on: accounts.$SYNC_ACCOUNT.sync.files is '$(sync_files)'" >&2; return 1; }
   acc_shot 6-sync-on
-  # The permit is accountd's: syncd's `sync.files` reads it (an allowing grant of org.bardo.Sync for this account), and accountd's
-  # own settings module lists it under the account. Always Allow, not Allow Once: a once permit is spent by syncd's first relay.
-  [ "$(acc_permit_scope "$SYNC_ACCOUNT" $SYNC_APP)" = always ] || { echo "accountd's permit for $SYNC_APP on $SYNC_ACCOUNT is '$(acc_permit_scope "$SYNC_ACCOUNT" $SYNC_APP)', not always" >&2; return 1; }
+  # The permit is bardo-accountd's: bardo-syncd's `sync.files` reads it (an allowing grant of org.bardo.Sync for this account), and bardo-accountd's
+  # own settings module lists it under the account. Always Allow, not Allow Once: a once permit is spent by bardo-syncd's first relay.
+  [ "$(acc_permit_scope "$SYNC_ACCOUNT" $SYNC_APP)" = always ] || { echo "bardo-accountd's permit for $SYNC_APP on $SYNC_ACCOUNT is '$(acc_permit_scope "$SYNC_ACCOUNT" $SYNC_APP)', not always" >&2; return 1; }
   # Turning the switch on while the permit is held asks nothing (Keep::set_sync finds the grant): the answer is kept.
   sync_files_turn_on "$SYNC_ACCOUNT"; sleep 3
-  ! sheet_shown || { sheet_stray_escape; echo "a second consent sheet showed for an account syncd is already allowed" >&2; return 1; }
+  ! sheet_shown || { sheet_stray_escape; echo "a second consent sheet showed for an account bardo-syncd is already allowed" >&2; return 1; }
   # Off takes the permit back (revoke deletes it). On again is a new ask: RequestGrant draws the sheet every time it is asked.
   detent_press switch "$SYNC_FILES_LABEL"; sleep 1
   acc_wait 15 sync_off || { echo "the switch did not take the permit back: accounts.$SYNC_ACCOUNT.sync.files is '$(sync_files)'" >&2; return 1; }
@@ -117,18 +117,18 @@ step_grant() {
 }
 
 step_mirror() {
-  acc_wait 40 dataset_listed || { echo "syncd does not list $(segment)/storage_app_folder to $OWNER: $(frigc $OWNER datasets)" >&2; tail -10 "$OUT_DIR/syncd.log" >&2; return 1; }
-  acc_wait 90 local_is a.txt "remote one" || { echo "a.txt never reached $(folder): $(ls -la "$(folder)" 2>&1)" >&2; tail -10 "$OUT_DIR/syncd.log" >&2; return 1; }
+  acc_wait 40 dataset_listed || { echo "bardo-syncd does not list $(segment)/storage_app_folder to $OWNER: $(frigc $OWNER datasets)" >&2; tail -10 "$OUT_DIR/bardo-syncd.log" >&2; return 1; }
+  acc_wait 90 local_is a.txt "remote one" || { echo "a.txt never reached $(folder): $(ls -la "$(folder)" 2>&1)" >&2; tail -10 "$OUT_DIR/bardo-syncd.log" >&2; return 1; }
 }
 
 step_conflict() {
-  # The owner's watch joins syncd's roster first (a signal goes only to a connection syncd has heard from), then both
+  # The owner's watch joins bardo-syncd's roster first (a signal goes only to a connection bardo-syncd has heard from), then both
   # sides change the file within a moment, and the next cycle (poll 60 s, with jitter) finds the two edits.
   frigc_bg "$OUT_DIR/watch.log" $OWNER watch-conflicts --count 1 --timeout-s 200
   acc_wait 20 grep -q '"event":"watching"' "$OUT_DIR/watch.log" || { echo "the watch never started: $(cat "$OUT_DIR/watch.log")" >&2; return 1; }
   frigctl POST "/graph/put?path=a.txt" "remote two" >/dev/null
   printf 'local two' >"$(folder)/a.txt"
-  acc_wait 210 grep -q '"event":"conflict"' "$OUT_DIR/watch.log" || { echo "no Conflict signal: $(cat "$OUT_DIR/watch.log")" >&2; tail -10 "$OUT_DIR/syncd.log" >&2; return 1; }
+  acc_wait 210 grep -q '"event":"conflict"' "$OUT_DIR/watch.log" || { echo "no Conflict signal: $(cat "$OUT_DIR/watch.log")" >&2; tail -10 "$OUT_DIR/bardo-syncd.log" >&2; return 1; }
   NUMBER=$(python3 -I -c '
 import json, sys
 for l in open(sys.argv[1]):
@@ -156,7 +156,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_row step_grant step_mirror step_conflict step_resolve step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd syncd detent rig-servers sync-rig-servers secrets add watch resolve; do
+  for f in bardo-accountd bardo-syncd bardo-settings rig-servers sync-rig-servers secrets add watch resolve; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

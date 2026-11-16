@@ -1,0 +1,17 @@
+# The desktop's vendor settings for the keyboard map (bardo-key-remap): /usr/lib/bardo/key-remap/key-remap.toml.
+#
+# Caps Lock switches the input method (Ctrl+Space). A rule on a key pressed alone is refused when it arrives
+# from a person's own file over the socket (anyone's program could type with it), so it lives in a file only
+# root can write. This one is the vendor file: it lays over the built-in mapping and under the
+# administrator's /etc/bardo/key-remap/key-remap.toml, so only the difference is listed. Every install and release
+# replaces it; change the rules in /etc/bardo/key-remap/key-remap.toml, which is never touched.
+#
+# Shift+Caps Lock is the real Caps Lock (it toggles the lock itself). That rule used to live in the shell's user layer; it moved here
+# because bardo-key-remap refuses a trigger of Shift and a key in a person's file (NEW-PI-5): Shift is held for every capital letter, so only
+# Command, Option and Control make a shortcut there. its own tests and docs/personal-config.md show this pair of rules.
+
+[profile.default]
+rules = [
+  { when = "capslock", then = "ctrl+space" },
+  { when = "shift+capslock", then = "capslock" },
+]

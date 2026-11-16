@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Scenario `minimise-target-round-trip` (plan §4.14, FD-05, P2): the shell's minimise target round trip, in the jail.
 #
-# casement starts headless (1920x1080) with BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service" (a test-only,
+# bardo-compositor starts headless (1920x1080) with BARDO_COMPOSITOR_DEBUG_PEER_UNITS="compositor-probe=bardo-shell.service" (a test-only,
 # debug-inject-build override: no systemd in the jail), so a `compositor-probe` session can take the shell
 # connection through org.bardo.Compositor1.Connect("shell") and act as the dock's owner. Two probe sessions:
 #   W  a plain client that maps two toplevels (a and b) and minimises them (xdg_toplevel.set_minimized)
 #   S  the shell: shell-connect, a bottom-anchored layer surface given the dock role, then the targets
 # Steps, each waiting on a probe note or a bardo-compositorctl predicate, never on a fixed sleep:
-#   boot      casement up with the unit override
+#   boot      bardo-compositor up with the unit override
 #   windows   a and b map; their identifiers (w<id>) are read from `bardo-compositorctl debug windows`
 #   dock      S connects as the shell and its layer surface takes the dock role (no error note)
 #   set       a minimise target for a: `debug windows` shows minimise_target inside the dock's rectangle at the size given
@@ -15,7 +15,7 @@
 #   clear     the target for b is set, then cleared (minimise_target null); b minimised: its destination is not the
 #             old rectangle (the default, as with no dock)
 #
-# Needs casement 8383659f or later (this tree has it), plus two things the compositor-probe/debug bus must offer
+# Needs bardo-compositor 8383659f or later (this tree has it), plus two things the compositor-probe/debug bus must offer
 # (see the lane report): the probe session verb `minimise NAME` (xdg_toplevel.set_minimized on that toplevel) and
 # two fields on every `debug windows` row: "minimised" (bool) and "minimise_destination" ([x,y,w,h] global of the
 # last minimise, or null).
@@ -27,7 +27,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$HERE/../harness/lib/all.sh"
 source "$HERE/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/compositor-probe" \
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/compositor-probe" \
   "$SCEN_TOOLS/bin/fake-logind"
 
 export BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS" BARDO_COMPOSITOR_REPO="$SCEN_SIB/compositor"
@@ -98,7 +98,7 @@ step_windows() {
 step_dock() {
   probe_start S || return 1
   probe_do S shell-connect || return 1
-  shell_ok S || { echo "shell-connect was refused (is BARDO_COMPOSITOR_DEBUG_PEER_UNITS honoured by this casement build?):" >&2; probe_log S >&2; return 1; }
+  shell_ok S || { echo "shell-connect was refused (is BARDO_COMPOSITOR_DEBUG_PEER_UNITS honoured by this bardo-compositor build?):" >&2; probe_log S >&2; return 1; }
   probe_do S layer d level=top "size=${DOCK_W}x${DOCK_H}" anchor=bottom || return 1
   probe_do S shell-role dock d || return 1
   shell_ok S || { echo "the dock role was refused:" >&2; probe_log S >&2; return 1; }
@@ -148,7 +148,7 @@ for name in step_boot step_windows step_dock step_set step_minimise step_clear; 
   STEP_BUDGET=45 step "$name" "$name" || break
 done
 if [ "$STEP_WORST" != 0 ]; then
-  for f in "$(casement_state_dir)"/probe/*.log "$(casement_state_dir)"/casement.log; do
+  for f in "$(casement_state_dir)"/probe/*.log "$(casement_state_dir)"/bardo-compositor.log; do
     [ -f "$f" ] && { echo "--- $f (tail)" >&2; tail -25 "$f" >&2; }
   done
 fi

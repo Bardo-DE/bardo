@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
-# Two scenarios for the start check, with slipway's real programs on a throwaway computer (a CI container):
+# Two scenarios for the start check, with bardo-updater's real programs on a throwaway computer (a CI container):
 #
-#   good-starts-are-kept    install two releases, then two logins that each run `slipway recover` before the
-#                           compositor and `slipway confirm` after the shell answers: the newest release stays,
+#   good-starts-are-kept    install two releases, then two logins that each run `bardo-updater recover` before the
+#                           compositor and `bardo-updater confirm` after the shell answers: the newest release stays,
 #                           however many more computers restarts follow
 #   failed-starts-restore   install two releases, then restarts of the computer that never reach `confirm`: a start
 #                           repeated inside one restart is not counted, the third restart puts the previous release
-#                           back (`slipway recover` exits 5 and says so), and that release is then left alone
+#                           back (`bardo-updater recover` exits 5 and says so), and that release is then left alone
 #
 # What it fakes, and why: the health program counts restarts of the computer by reading the kernel's boot id, a path
 # it cannot be told otherwise, so a new boot id is bound over /proc/sys/kernel/random/boot_id for each restart (this
 # needs root and the right to mount, which `docker run --privileged` has). `pkexec` is a stand-in that runs the program
 # it is given, because the container is already root and has no polkit agent. Everything else is real: the signed
-# releases (a throwaway key, the repo's own pack.sh), bardo-updater-apply, bardo-updater-health, and `slipway`, as the session runs them.
+# releases (a throwaway key, the repo's own pack.sh), bardo-updater-apply, bardo-updater-health, and `bardo-updater`, as the session runs them.
 #
 #   release/health-scenarios.sh --helpers DIR --policy FILE --really
 #
-#   --helpers DIR  the built slipway, bardo-updater-apply, bardo-updater-rollback and bardo-updater-health
-#   --policy FILE  slipway's polkit file (installed, then checked, as release/smoke.sh does)
-#   --really       yes, this machine may be changed (/etc/slipway, /usr/libexec, /opt, a mount over /proc)
+#   --helpers DIR  the built bardo-updater, bardo-updater-apply, bardo-updater-rollback and bardo-updater-health
+#   --policy FILE  bardo-updater's polkit file (installed, then checked, as release/smoke.sh does)
+#   --really       yes, this machine may be changed (/etc/bardo, /usr/libexec, /opt, a mount over /proc)
 #
 # Exit: 0 both pass, 1 a check failed, 2 bad usage, not root, a tool missing, or the boot id cannot be replaced
 # (the scenarios cannot run here; CI treats that as a failure).
@@ -44,7 +44,7 @@ done
 for tool in python3 zstd minisign mount umount; do
   command -v "$tool" >/dev/null || { echo "health-scenarios.sh: $tool is not installed ($(install_hint "$tool"))" >&2; exit 2; }
 done
-for program in slipway bardo-updater-apply bardo-updater-rollback bardo-updater-health; do
+for program in bardo-updater bardo-updater-apply bardo-updater-rollback bardo-updater-health; do
   [ -x "$helpers/$program" ] || { echo "health-scenarios.sh: $helpers/$program is not there" >&2; exit 2; }
 done
 
@@ -53,14 +53,14 @@ tmp=$(mktemp -d)
 bound=no
 cleanup() {
   [ "$bound" = no ] || umount "$BOOT_ID" 2>/dev/null || true
-  rm -rf -- "${tmp:?}" /opt/quire-scenario-*
+  rm -rf -- "${tmp:?}" /opt/bardo-scenario-*
 }
 trap cleanup EXIT
 fail=0
 check() { echo "FAIL health scenarios: $*" >&2; fail=1; }
 
-# --- the machine: slipway's own install, a key, three signed releases, a fake pkexec, a boot id we control ---------
-for program in bardo-updater-apply bardo-updater-rollback bardo-updater-health; do install -Dm755 "$helpers/$program" "/usr/libexec/$program"; done
+# --- the machine: bardo-updater's own install, a key, three signed releases, a fake pkexec, a boot id we control ---------
+for program in bardo-updater-apply bardo-updater-rollback bardo-updater-health; do install -Dm755 "$helpers/$program" "/usr/libexec/bardo/$program"; done
 install -Dm644 "$policy" /usr/share/polkit-1/actions/org.bardo.updater.policy
 "$HERE/check-helpers.sh" >/dev/null
 
@@ -69,9 +69,9 @@ install -Dm644 "$tmp/key.pub" /usr/share/bardo/updater/release.pub
 : >"$tmp/exports.toml"
 printf 'A release made for a scenario.\n' >"$tmp/notes.txt"
 for version in 1.0.0 2.0.0 3.0.0; do
-  mkdir -p "$tmp/stage-$version/opt/quire/current/bin"
-  printf '#!/bin/sh\necho %s\n' "$version" >"$tmp/stage-$version/opt/quire/current/bin/tool"
-  chmod 755 "$tmp/stage-$version/opt/quire/current/bin/tool"
+  mkdir -p "$tmp/stage-$version/opt/bardo/current/bin"
+  printf '#!/bin/sh\necho %s\n' "$version" >"$tmp/stage-$version/opt/bardo/current/bin/tool"
+  chmod 755 "$tmp/stage-$version/opt/bardo/current/bin/tool"
   MINISIGN_KEY_FILE="$tmp/key.sec" MINISIGN_PASSWORD="" SOURCE_DATE_EPOCH=1790000000 \
     "$HERE/pack.sh" --stage "$tmp/stage-$version" --version "$version" --notes "$tmp/notes.txt" \
     --out "$tmp/release-$version" --exports "$tmp/exports.toml" >/dev/null
@@ -87,25 +87,25 @@ bound=yes
 [ "$(cat "$BOOT_ID")" = "$(cat "$tmp/boot_id")" ] || { echo "health-scenarios.sh: the replaced boot id is not what is read" >&2; exit 2; }
 
 restart_computer() { uuid >"$tmp/boot_id"; }
-# slipway ARGS...: the user program, as the session runs it: its own home, the stand-in pkexec first on the path.
-slipway() {
+# bardo-updater ARGS...: the user program, as the session runs it: its own home, the stand-in pkexec first on the path.
+bardo_updater() {
   env HOME="$tmp/home" XDG_STATE_HOME="$tmp/home/state" XDG_CONFIG_HOME="$tmp/home/config" XDG_CACHE_HOME="$tmp/home/cache" \
-    PATH="$tmp/bin:$PATH" "$helpers/slipway" "$@"
+    PATH="$tmp/bin:$PATH" "$helpers/bardo-updater" "$@"
 }
-# status_of ARGS...: the exit status of `slipway ARGS`, its words kept in $tmp/said.
-status_of() { local rc=0; slipway "$@" >"$tmp/said" 2>&1 || rc=$?; echo "$rc"; }
-expect() { # WANT WHAT ARGS...: `slipway ARGS` exits WANT
+# status_of ARGS...: the exit status of `bardo-updater ARGS`, its words kept in $tmp/said.
+status_of() { local rc=0; bardo_updater "$@" >"$tmp/said" 2>&1 || rc=$?; echo "$rc"; }
+expect() { # WANT WHAT ARGS...: `bardo-updater ARGS` exits WANT
   local want=$1 what=$2 got; shift 2
   got=$(status_of "$@")
-  [ "$got" = "$want" ] || check "$what: slipway $* exited $got, wanted $want ($(tr '\n' ' ' <"$tmp/said"))"
+  [ "$got" = "$want" ] || check "$what: bardo-updater $* exited $got, wanted $want ($(tr '\n' ' ' <"$tmp/said"))"
 }
 
 # fresh_machine NAME: an empty install root of its own, named by the system settings, with 1.0.0 then 2.0.0 installed.
 fresh_machine() {
-  root="/opt/quire-scenario-$1"
+  root="/opt/bardo-scenario-$1"
   rm -rf -- "$root" "$tmp/home"
   mkdir -p "$tmp/home"
-  install -d -m 755 /etc/slipway
+  install -d -m 755 /etc/bardo
   printf 'root = "%s"\npubkey_path = "/usr/share/bardo/updater/release.pub"\n' "$root" >/etc/bardo/updater.toml
   /usr/libexec/bardo/bardo-updater-apply "$tmp/release-1.0.0" >/dev/null
   /usr/libexec/bardo/bardo-updater-apply "$tmp/release-2.0.0" >/dev/null

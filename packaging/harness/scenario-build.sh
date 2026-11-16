@@ -4,23 +4,23 @@
 # `cargo build -p ...` run at the tree's root with its own target directory under build/ (test features differ from a
 # release's, so they never share one).
 #
-#   build/tools/bin/{casement,bardo-compositorctl,compositor-probe,compositor-shell-exec,fake-logind} casement's dev/bootstrap.sh --build-only
+#   build/tools/bin/{bardo-compositor,bardo-compositorctl,compositor-probe,compositor-shell-exec,fake-logind} bardo-compositor's dev/bootstrap.sh --build-only
 #   build/tools/bin/foot                                                 the host's (install foot from your distro), else, on Fedora only, its rpm (dnf download, unpacked)
-#   build/sill-target/debug/sill                                         sill with --features debug (the fake DDC)
-#   build/transom-target/debug/transom                                  transom (the portal backend), for portal-bardo; needs libpipewire-devel and clang
+#   build/sill-target/debug/bardo-shell                                         bardo-shell with --features debug (the fake DDC)
+#   build/transom-target/debug/bardo-portal                                  bardo-portal (the portal backend), for portal-bardo; needs libpipewire-devel and clang
 #   build/shell-host-target/debug/examples/demo_*                        layer-shell-host's real-input demos
-#   build/detent-target/debug/detent                                     detent with ui-blitz/debug-probe, for the accounts-* and detent-on-casement-at-1.5 scenarios
-#   build/sill-probe-target/debug/sill                                   sill with --features debug,ui-blitz/debug-probe (the accounts-* scenarios; the probe is linked but writes nothing for sill's surfaces)
-#   build/porter-target/debug/accountd                                   porter's accountd, a test-proc-root build
-#   build/ferry-target/debug/syncd                                       ferry's syncd, a test-proc-root build (the sync daemon left porter)
-#   build/ferry-target/debug/ferry-rig-{servers,client}                  ferry's test rig: the OAuth issuer + Graph fake, an app client for syncd
-#   build/steward-target/debug/inferd                                    steward's inferd, a test-proc-root build
-#   build/steward-target/debug/inference-rig-client                        steward's rig: an app opening an inferd session
+#   build/detent-target/debug/bardo-settings                                     bardo-settings with ui-blitz/debug-probe, for the accounts-* and bardo-settings-on-casement-at-1.5 scenarios
+#   build/sill-probe-target/debug/bardo-shell                                   bardo-shell with --features debug,ui-blitz/debug-probe (the accounts-* scenarios; the probe is linked but writes nothing for bardo-shell's surfaces)
+#   build/porter-target/debug/bardo-accountd                                   porter's bardo-accountd, a test-proc-root build
+#   build/ferry-target/debug/bardo-syncd                                       ferry's bardo-syncd, a test-proc-root build (the sync daemon left porter)
+#   build/ferry-target/debug/ferry-rig-{servers,client}                  ferry's test rig: the OAuth issuer + Graph fake, an app client for bardo-syncd
+#   build/steward-target/debug/bardo-inferd                                    steward's bardo-inferd, a test-proc-root build
+#   build/steward-target/debug/inference-rig-client                        steward's rig: an app opening an bardo-inferd session
 #   build/porter-target/debug/porter-rig-{servers,client,secrets}        porter's test rig: fakes, an app client, a fake Secret Service
 #
-#   scenario-build.sh --accounts   only what the accounts-* scenarios need (casement, detent, sill with the probe, porter and its rig, ferry and its rig, steward)
-#   scenario-build.sh --w2         only what scenarios/w2-excalidraw.sh needs (casement, sill, and the two below):
-#   build/cua-target/debug/cuad                                          cuad (the screen helper) with --features fixture-callers: a plain build identifies nobody
+#   scenario-build.sh --accounts   only what the accounts-* scenarios need (bardo-compositor, bardo-settings, bardo-shell with the probe, porter and its rig, ferry and its rig, steward)
+#   scenario-build.sh --w2         only what scenarios/w2-excalidraw.sh needs (bardo-compositor, bardo-shell, and the two below):
+#   build/cua-target/debug/bardo-computer-use                                          bardo-computer-use (the screen helper) with --features fixture-callers: a plain build identifies nobody
 #   build/docket-target/debug/{agent-bringup,accept-*}                  action-accept's test builds (the assistant's services on a fake /proc, bardo-do)
 #
 # Nothing is written into the tree.
@@ -82,7 +82,7 @@ fetch_foot() {
   chmod +x "$bin"
 }
 
-# detent is built with quire's ui-blitz `debug-probe` feature (a feature of a direct dependency, so detent's own manifest
+# bardo-settings is built with quire's ui-blitz `debug-probe` feature (a feature of a direct dependency, so bardo-settings's own manifest
 # is untouched): with BARDO_DEBUG_PROBE=<dir> set it lists its controls by role and name (harness/lib/accounts.sh,
 # detent_press). Never a release build.
 build_detent() {
@@ -94,7 +94,7 @@ build_sill() {
     built_at sill-target
 }
 
-# transom, --locked (the tree's Cargo.lock is never changed).
+# bardo-portal, --locked (the tree's Cargo.lock is never changed).
 build_transom() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/transom-target" cargo build -p portal-daemon --features debug --locked)
 }
@@ -112,15 +112,15 @@ build_shell_host() {
     --example demo_popup_keys --example demo_window --example probe_toplevel)
 }
 
-# Porter's accountd and test rig (account-rig). Test builds: `test-proc-root` makes each daemon read caller identities from
-# a fixture /proc tree (BARDO_ACCOUNTD_PROC_ROOT; ferry's syncd, below, reads BARDO_SYNCD_PROC_ROOT and steward's inferd BARDO_INFERD_PROC_ROOT),
+# Porter's bardo-accountd and test rig (account-rig). Test builds: `test-proc-root` makes each daemon read caller identities from
+# a fixture /proc tree (BARDO_ACCOUNTD_PROC_ROOT; ferry's bardo-syncd, below, reads BARDO_SYNCD_PROC_ROOT and steward's bardo-inferd BARDO_INFERD_PROC_ROOT),
 # because nothing in the jail runs in a systemd scope. A release build ignores the variables; the features are never default.
 build_porter() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/porter-target" cargo build -p account-daemon --features test-proc-root) || return 1
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/porter-target" cargo build -p account-rig)
 }
 
-# Ferry's syncd and test rig. syncd is a test build like porter's accountd: `test-proc-root` makes it read caller identities from a
+# Ferry's bardo-syncd and test rig. bardo-syncd is a test build like porter's bardo-accountd: `test-proc-root` makes it read caller identities from a
 # fixture /proc tree (BARDO_SYNCD_PROC_ROOT). One invocation per package: `-p a -p b --features a/f,b/f` once left a daemon without its
 # feature (the binary then ignores the variable and no caller is known). sync-rig gives sync-rig-servers (the issuer and Graph)
 # and sync-rig-client.
@@ -129,14 +129,14 @@ build_ferry() {
     && CARGO_TARGET_DIR="$SCEN_BUILD/ferry-target" cargo build -p sync-rig)
 }
 
-# Steward's inferd. A test build like porter's daemons: `test-proc-root` makes it read caller identities from a fixture /proc tree
+# Steward's bardo-inferd. A test build like porter's daemons: `test-proc-root` makes it read caller identities from a fixture /proc tree
 # (BARDO_INFERD_PROC_ROOT).
 build_steward() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/steward-target" cargo build -p inference-daemon --features test-proc-root \
     && CARGO_TARGET_DIR="$SCEN_BUILD/steward-target" cargo build -p inference-rig --bin inference-rig-client)
 }
 
-# cuad, the screen helper. The fixture-callers feature makes it read caller identities from a fake
+# bardo-computer-use, the screen helper. The fixture-callers feature makes it read caller identities from a fake
 # /proc (BARDO_COMPUTER_USE_TEST_PROC_ROOT): nothing in the jail runs in a systemd scope. A test build, never shipped.
 build_cuad() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/cua-target" nice cargo build -p computer-use-daemon --features fixture-callers) &&
@@ -150,7 +150,7 @@ build_docket() {
     built_at docket-target
 }
 
-# sill with the debug probe: the accounts-* scenarios read the accounts sheet through it.
+# bardo-shell with the debug probe: the accounts-* scenarios read the accounts sheet through it.
 build_sill_probe() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" cargo build -p shell-app --features debug,ui-blitz/debug-probe)
 }
@@ -161,23 +161,23 @@ if [ "$only_accounts" = 0 ] && [ "$only_w2" = 0 ] && [ ! -x "$SCEN_BUILD/tools/b
   exit 3
 fi
 
-stage "casement (bootstrap --build-only)" build_casement
+stage "bardo-compositor (bootstrap --build-only)" build_casement
 if [ "$only_w2" = 1 ]; then
-  stage "sill (--features debug)" build_sill
-  stage "cuad (--features fixture-callers)" build_cuad
+  stage "bardo-shell (--features debug)" build_sill
+  stage "bardo-computer-use (--features fixture-callers)" build_cuad
   stage "action-accept (the assistant's services, test builds)" build_docket
   echo "scenario-build: done for W2 ($SCEN_BUILD)"
   exit 0
 fi
 if [ "$only_accounts" = 0 ]; then
   stage "foot" fetch_foot
-  stage "sill (--features debug)" build_sill
+  stage "bardo-shell (--features debug)" build_sill
   stage "layer-shell-host demos" build_shell_host
-  stage "transom" build_transom
+  stage "bardo-portal" build_transom
 fi
-stage "detent (with the debug probe)" build_detent
-stage "sill with the debug probe" build_sill_probe
-stage "porter: accountd (test-proc-root) and account-rig" build_porter
-stage "ferry: syncd (test-proc-root) and sync-rig" build_ferry
-stage "steward: inferd (test-proc-root) and inference-rig-client" build_steward
+stage "bardo-settings (with the debug probe)" build_detent
+stage "bardo-shell with the debug probe" build_sill_probe
+stage "porter: bardo-accountd (test-proc-root) and account-rig" build_porter
+stage "ferry: bardo-syncd (test-proc-root) and sync-rig" build_ferry
+stage "steward: bardo-inferd (test-proc-root) and inference-rig-client" build_steward
 echo "scenario-build: done ($SCEN_BUILD)"

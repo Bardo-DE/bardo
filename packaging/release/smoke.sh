@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Install a packed release with slipway's privileged helper on THIS computer and check the result: slipway's
-# own install is complete (the three programs in /usr/libexec and the one polkit file, release/check-helpers.sh),
+# Install a packed release with bardo-updater's privileged helper on THIS computer and check the result: bardo-updater's
+# own install is complete (the three programs in /usr/libexec/bardo and the one polkit file, release/check-helpers.sh),
 # every export is a link to a file of the release, every system file is in place, `current` names the release,
 # every program's libraries resolve, and installing the same version again is refused. For a throwaway
-# machine (a CI container): it writes /etc/slipway, /opt/quire, /usr/local/bin, /usr/libexec, /usr/share and the
+# machine (a CI container): it writes /etc/bardo, /opt/bardo, /usr/local/bin, /usr/libexec, /usr/share and the
 # system folders as root. It refuses to run as anyone else, or without --really.
 #
 #   release/smoke.sh --release DIR --pubkey FILE --helpers DIR --policy FILE --really [--root DIR]
@@ -11,8 +11,8 @@
 #   --release DIR  the packed release (release.toml, release.toml.minisig, bundle.tar.zst)
 #   --pubkey FILE  the key it is signed with
 #   --helpers DIR  the built bardo-updater-apply, bardo-updater-rollback and bardo-updater-health
-#   --policy FILE  slipway's polkit file (dist/org.bardo.updater.policy), installed as slipway's install does
-#   --root DIR     the install root (default /opt/quire)
+#   --policy FILE  bardo-updater's polkit file (dist/org.bardo.updater.policy), installed as bardo-updater's install does
+#   --root DIR     the install root (default /opt/bardo)
 #   --really       yes, this machine may be changed
 #
 # Exit: 0 all checks pass, 1 a check failed, 2 bad usage, not root or a tool missing.
@@ -21,7 +21,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=release/lib.sh
 . "$HERE/lib.sh"
 usage() { sed -n '2,/^set -euo/p' "${BASH_SOURCE[0]}" | sed '$d' | sed 's/^# \{0,1\}//'; }
-release="" pub="" helpers="" policy="" root=/opt/quire really=0
+release="" pub="" helpers="" policy="" root=/opt/bardo really=0
 while [ $# -gt 0 ]; do
   case "$1" in
     --release) release=${2:?}; shift ;;
@@ -49,13 +49,13 @@ step "verify the release"
 
 step "install the key and the settings the helper reads"
 install -Dm644 "$pub" /usr/share/bardo/updater/release.pub
-install -d -m 755 /etc/slipway
+install -d -m 755 /etc/bardo
 printf 'root = "%s"\npubkey_path = "/usr/share/bardo/updater/release.pub"\n' "$root" >/etc/bardo/updater.toml
 
-step "slipway's own install: three programs and one polkit file"
+step "bardo-updater's own install: three programs and one polkit file"
 for program in bardo-updater-apply bardo-updater-rollback bardo-updater-health; do
   [ -x "$helpers/$program" ] || { echo "smoke.sh: $helpers/$program is not there" >&2; exit 2; }
-  install -Dm755 "$helpers/$program" "/usr/libexec/$program"
+  install -Dm755 "$helpers/$program" "/usr/libexec/bardo/$program"
 done
 install -Dm644 "$policy" /usr/share/polkit-1/actions/org.bardo.updater.policy
 "$HERE/check-helpers.sh"

@@ -8,7 +8,7 @@
 #   cmd:NAME     a program on PATH
 #   pc:NAME      a pkg-config module
 #   lib:SONAME   a shared library in the linker cache
-#   file:GLOB    a path (a glob; $DESKTOP_CHECK_ROOT, when set, goes in front: tests)
+#   file:GLOB    a path (a glob; $BARDO_CHECK_ROOT, when set, goes in front: tests)
 #   unit:NAME    a systemd unit file
 #   deb:NAME     an installed Debian package (satisfied where there is no dpkg)
 #   lang:CODE    a font that covers a language
@@ -29,7 +29,7 @@
 # them the same) and the two lines that give a source install the same program.
 XWAYLAND_SATELLITE_TAG=v0.8.3
 XWAYLAND_SATELLITE_CARGO_LINE="cargo install --locked --git https://github.com/Supreeeme/xwayland-satellite --tag $XWAYLAND_SATELLITE_TAG"
-# casement's own setting for the program's place (xwayland.satellite in compositor/settings.toml): a full path, no ~.
+# the compositor's own setting for the program's place (xwayland.satellite in compositor/settings.toml): a full path, no ~.
 XWAYLAND_SATELLITE_CONFIG_LINE="satellite = \"${HOME:-/home/YOU}/.cargo/bin/xwayland-satellite\""
 XWAYLAND_SATELLITE_APT_LINE="sudo apt install clang pkg-config libxcb1-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-res0-dev libxcb-cursor-dev"
 

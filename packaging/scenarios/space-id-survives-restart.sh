@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Scenario `space-id-survives-restart` (plan §4.14): a Space id is stable across a casement restart.
+# Scenario `space-id-survives-restart` (plan §4.14): a Space id is stable across a bardo-compositor restart.
 #
-# Needs casement 5d47b6d or later: `casement --state-home DIR` (headless writes DIR/spaces.toml) and
+# Needs bardo-compositor 5d47b6d or later: `bardo-compositor --state-home DIR` (headless writes DIR/spaces.toml) and
 # `compositor-probe workspaces` (one JSON line per ext-workspace workspace, in announce order:
 # {"active","group","id","name"}). Steps, each waiting on the probe's own `done`, never on a sleep:
 #   first    two outputs, state home A: the workspace ids are read (at least one per output, all
 #            present, all distinct)
-#   restart  casement is stopped by the pid in its env file and started again on the same state
+#   restart  bardo-compositor is stopped by the pid in its env file and started again on the same state
 #            home A and the same outputs: the same ids come back, in the same order
-#   fresh    casement started on an empty state home B: no id is one of A's
+#   fresh    bardo-compositor started on an empty state home B: no id is one of A's
 #
 # budget: 60
 # Exit: 0 pass | 1 a step failed | 2 outside the jail | 3 artefacts missing (harness/scenario-build.sh).
@@ -16,7 +16,7 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/compositor-probe" "$SCEN_TOOLS/bin/fake-logind"
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/compositor-probe" "$SCEN_TOOLS/bin/fake-logind"
 
 export BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS" BARDO_COMPOSITOR_REPO="$SCEN_SIB/compositor"
 floor_make space-id-survives-restart compositor-probe   # the probe lists the workspaces (ext_workspace_manager): a floor row for the built probe
@@ -33,7 +33,7 @@ mkdir -p "$STATE_A" "$STATE_B"
 cleanup() { stop_compositor || true; }
 trap cleanup EXIT
 
-# ids_to FILE: the workspace ids the running casement announces, one per line in announce order.
+# ids_to FILE: the workspace ids the running bardo-compositor announces, one per line in announce order.
 ids_to() {
   "$PROBE" workspaces >"$1.json" || { echo "compositor-probe workspaces failed:" >&2; cat "$1.json" >&2; return 1; }
   python3 -I -c '
@@ -49,7 +49,7 @@ for line in open(sys.argv[1]):
 ' "$1.json" >"$1"
 }
 
-# up STATE: a headless casement on the two outputs with STATE as its state home.
+# up STATE: a headless bardo-compositor on the two outputs with STATE as its state home.
 up() { start_compositor --outputs "$OUTPUTS" --state-home "$1" --system-dir "$FLOOR_DIR"; }
 
 step_first() {

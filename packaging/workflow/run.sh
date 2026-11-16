@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Real-app workflow timing: how fast apps open, how fast windows switch, how fast the file dialog and the
 # login are, on YOUR real login and your real GPU. On demand only: not the gate, not CI, not the jail.
-# Run it in a terminal inside the sill (casement) session. About 15 minutes for everything.
+# Run it in a terminal inside the bardo-shell (bardo-compositor) session. About 15 minutes for everything.
 #
 #   workflow/run.sh [--apps firefox,foot,...] [--rounds N] [--part launch|switch|dialog|login|checks|all]
 #
@@ -9,18 +9,18 @@
 #   --rounds  warm launches per app after the first one (default 5)
 #   --part    which measurement to run (default all)
 #
-# Needs sill (with `sill launch --print-timing`) and python3 (3.11 or newer). The dialog part needs gdbus
+# Needs bardo-shell (with `bardo-shell launch --print-timing`) and python3 (3.11 or newer). The dialog part needs gdbus
 # and the switch, dialog and checks parts need you at the keyboard. It never installs anything: a missing app
-# is skipped, with the command that would install it. Results: ${XDG_STATE_HOME:-~/.local/state}/quire-workflow/<stamp>/
+# is skipped, with the command that would install it. Results: ${XDG_STATE_HOME:-~/.local/state}/bardo-workflow/<stamp>/
 # (raw.tsv, summary.txt, answers.txt). See workflow/README.md.
 #
-# Exit: 0 finished, 1 some measurement failed (see the lines marked FAILED), 2 bad usage, not the casement
+# Exit: 0 finished, 1 some measurement failed (see the lines marked FAILED), 2 bad usage, not the bardo-compositor
 # session, or a tool is missing.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PY=(python3 -I "$HERE/lib/timing.py")
 ROUNDS=5 ONLY="" PART=all FAILS=0
-ROOT="${XDG_STATE_HOME:-$HOME/.local/state}/quire-workflow"
+ROOT="${XDG_STATE_HOME:-$HOME/.local/state}/bardo-workflow"
 OUT="" RAW="" ANSWERS="" ERR=""
 READY=()
 OPEN=()
@@ -53,12 +53,12 @@ wants() { [ "$PART" = all ] || [ "$PART" = "$1" ]; }
 
 require_session() {
   [ -z "${JAIL_SCRATCH:-}" ] || die "this is the test jail; run it on your real login"
-  [ -n "${WAYLAND_DISPLAY:-}" ] || die "no Wayland display: run it in a terminal inside the sill (casement) session"
-  [ "${XDG_CURRENT_DESKTOP:-}" = quire ] || [ -n "${BARDO_COMPOSITOR_SOCKET:-}" ] || pgrep -u "$USER" -x casement >/dev/null \
-    || die "this is not the sill (casement) session; log in to it first"
+  [ -n "${WAYLAND_DISPLAY:-}" ] || die "no Wayland display: run it in a terminal inside the bardo-shell (bardo-compositor) session"
+  [ "${XDG_CURRENT_DESKTOP:-}" = quire ] || [ -n "${BARDO_COMPOSITOR_SOCKET:-}" ] || pgrep -u "$USER" -x bardo-compositor >/dev/null \
+    || die "this is not the bardo-shell (bardo-compositor) session; log in to it first"
   command -v python3 >/dev/null || die "python3 is missing"
   python3 -c 'import tomllib' 2>/dev/null || die "python3 is older than 3.11 (no tomllib)"
-  command -v sill >/dev/null || die "sill is not on PATH"
+  command -v bardo-shell >/dev/null || die "bardo-shell is not on PATH"
   if wants switch || wants dialog || wants checks; then
     [ -t 0 ] || die "this part needs you at the keyboard (run it in a terminal)"
   fi
@@ -88,7 +88,7 @@ load_apps() {
     split_app "$line"
     case "$STATE" in
       ok) READY+=("$line") ;;
-      nodesktop) note "Skipping $TITLE: $BINARY is installed but has no desktop entry, so sill cannot launch it." ;;
+      nodesktop) note "Skipping $TITLE: $BINARY is installed but has no desktop entry, so bardo-shell cannot launch it." ;;
       *) note "Skipping $TITLE: not installed. To install: $HINT" ;;
     esac
   done < <("${PY[@]}" apps --file "$HERE/apps.toml" ${ONLY:+--only "$ONLY"})
@@ -118,10 +118,10 @@ record_gpu() { # KEY PHASE ROUND BARDO_SHELL_PID WINDOW_PID
 launch_once() { # KEY DESKTOP_ID APP_IDS TIMEOUT KIND PHASE ROUND; PHASE - = start it, record nothing
   local key=$1 id=$2 ids=$3 timeout=$4 kind=$5 phase=$6 round=$7 out line unit pid requested ready rows wpid
   LAST_UNIT=- LAST_PID=-
-  if ! out=$(sill launch "$id" --print-timing 2>"$ERR"); then
-    fail "$key: sill could not launch it ($(head -1 "$ERR"))"; return 1
+  if ! out=$(bardo-shell launch "$id" --print-timing 2>"$ERR"); then
+    fail "$key: bardo-shell could not launch it ($(head -1 "$ERR"))"; return 1
   fi
-  line=$("${PY[@]}" pick launch <<<"$out") || { fail "$key: sill printed no timing line"; return 1; }
+  line=$("${PY[@]}" pick launch <<<"$out") || { fail "$key: bardo-shell printed no timing line"; return 1; }
   read -r unit pid requested < <("${PY[@]}" field "$line" unit pid requested_at)
   LAST_UNIT=$unit LAST_PID=$pid
   if ! ready=$("${PY[@]}" wait --app-ids "$ids" --pid "$pid" --after-connected "$requested" --timeout "$timeout" --window 300); then
@@ -131,7 +131,7 @@ launch_once() { # KEY DESKTOP_ID APP_IDS TIMEOUT KIND PHASE ROUND; PHASE - = sta
   rows=$("${PY[@]}" rows --kind launch --launch "$line" --ready "$ready" --app "$key" --phase "$phase" --round "$round")
   printf '%s\n' "$rows" >>"$RAW"
   read -r wpid < <("${PY[@]}" field "$ready" pid)
-  # An app started over D-Bus has no unit and no pid of sill's: close the window's process instead.
+  # An app started over D-Bus has no unit and no pid of bardo-shell's: close the window's process instead.
   if [ "$LAST_PID" = 0 ] || [ "$LAST_PID" = - ]; then LAST_PID=$wpid; fi
   record_gpu "$key" "$phase" "$round" "$pid" "$wpid"
   if [ "$kind" = x11 ] && [ "$phase" = cold ]; then
@@ -205,7 +205,7 @@ part_dialog() {
 
 part_login() {
   say "Login: this boot's session-ready line"
-  "${PY[@]}" login --boot >>"$RAW" || fail "no session-ready line in this boot's journal or casement.log (a build without the timing lines?)"
+  "${PY[@]}" login --boot >>"$RAW" || fail "no session-ready line in this boot's journal or bardo-compositor.log (a build without the timing lines?)"
 }
 
 # ---- short checks

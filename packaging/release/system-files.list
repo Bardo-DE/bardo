@@ -3,37 +3,35 @@
 #   exact   the file is named exactly NAME
 #   ending  any plain name that ends in NAME and is longer than it
 #
-# A committed copy of slipway-core's ALLOWED_SYSTEM_FILES (crates/updater/updater-core/src/release/system.rs), in the same
+# A committed copy of updater-core's ALLOWED_SYSTEM_FILES (crates/updater/updater-core/src/release/system.rs), in the same
 # order. release.py reads it for pack and verify, so `system/` holding a path no rule here names fails the pack, and
-# release/check-system-list.sh compares it with slipway's source (the workflow runs that). slipway's privileged helper
+# release/check-system-list.sh compares it with bardo-updater's source (the workflow runs that). bardo-updater's privileged helper
 # is installed by hand and is not replaced by a release, so a file added here also needs a new helper on every
-# computer: change this list only together with slipway, never alone. The four turnstile rules are slipway's
-# input-service change (its FINDINGS 25, commit c36aaa0): until the pinned slipway has them, `check-system-list.sh`
+# computer: change this list only together with bardo-updater, never alone. The four input-service rules are bardo-updater's
+# input-service change (its FINDINGS 25, commit c36aaa0): until the pinned bardo-updater has them, `check-system-list.sh`
 # fails against that pin, so this file and the pin move in the same step. /usr/lib/bardo/key-remap/key-remap.toml is the
-# desktop's vendor defaults for the keyboard daemon (slipway's 18th rule); /etc/keycap stays the administrator's and
+# desktop's vendor defaults for the keyboard daemon (bardo-updater's 18th rule); /etc/bardo/key-remap stays the administrator's and
 # no release places a file there. bardo-mouse-gestures.service is the touchpad daemon's system unit (owner decision 2026-10-17: a system
 # service like keycap), and the two /usr/lib/systemd/user rules are how a user unit named by a row of
 # dist/desktop-callers.toml, and the portal frontend's drop-in, reach the computer as plain root-owned files (a link into
 # /opt/bardo/current reads as writable to the unit manager's judge, so such a unit never proves `Full`; release/build.sh
-# `plain_units`). All three need a new slipway helper on every computer, and slipway's list changes with them, in this order.
-/etc/pam.d                 exact   sill
+# `plain_units`). All three need a new bardo-updater helper on every computer, and bardo-updater's list changes with them, in this order.
+/etc/pam.d                 exact   bardo-shell
 /etc/udev/rules.d          exact   60-bardo-shell-ddc.rules
 /etc/modules-load.d        exact   bardo-shell-ddc.conf
 /usr/lib/systemd/system    exact   bardo-key-remap.service
 /etc/udev/rules.d          exact   70-bardo-key-remap.rules
 /etc/polkit-1/rules.d      exact   bardo-key-remap.polkit.rules
-/etc/modules-load.d        exact   keycap.conf
-/usr/lib/keycap            exact   keycap.toml
+/etc/modules-load.d        exact   bardo-key-remap.conf
+/usr/lib/bardo/key-remap   exact   key-remap.toml
 /usr/lib/systemd/system    exact   bardo-input-broker.socket
 /usr/lib/systemd/system    exact   bardo-input-broker.service
 /etc/udev/rules.d          exact   72-bardo-input-broker.rules
-/etc/modules-load.d        exact   turnstile.conf
+/etc/modules-load.d        exact   bardo-input-broker.conf
 /etc/udev/rules.d          exact   70-bardo-mouse-gestures.rules
 /etc/modprobe.d            exact   99-bardo-mouse-gestures.conf
 /usr/lib/systemd/system    exact   bardo-mouse-gestures.service
 /usr/lib/systemd/user      ending  .service
 /usr/lib/systemd/user/xdg-desktop-portal.service.d exact 10-bardo.conf
-/etc/porter                exact   callers.toml
-/etc/porter                exact   inferd-callers.toml
 /etc/bardo                 ending  -callers.toml
 /etc/xdg/bardo             ending  .toml

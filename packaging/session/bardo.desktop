@@ -1,8 +1,8 @@
 [Desktop Entry]
 # A wayland-sessions entry for session/bardo-session. install/install.sh writes it with Exec
 # set to the installed path (@BINDIR@ below).
-Name=sill (casement)
-Comment=casement as the compositor with sill as the shell
+Name=Bardo
+Comment=The Bardo desktop
 Exec=@BINDIR@/bardo-session
 Type=Application
 DesktopNames=bardo

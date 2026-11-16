@@ -1,4 +1,4 @@
-"""What the accounts-regress scenarios measure in a capture (a PNG of sill's sheet surface or of the output).
+"""What the accounts-regress scenarios measure in a capture (a PNG of bardo-shell's sheet surface or of the output).
 
   pixels.py card PNG                       "X0 Y0 X1 Y1 W H": the sheet's card (the box of its fully opaque pixels) and the capture's size
   pixels.py same A B [--box X0,Y0,X1,Y1]   exit 0 when the two captures draw the same pixels (in the box)

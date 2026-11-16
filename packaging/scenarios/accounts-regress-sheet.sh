@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Scenario `accounts-regress-sheet`: the add-account sheet and the consent window, as accounts-hunt found them
-# wrong (probes 1, 2, 3 and 6) and sill 245cc25 fixed them. Each step fails when its bug comes back. Real accountd,
-# sill drawing the sheets, the rigs' fake mail and Graph (porter's and ferry's); no probe of sill's surfaces exists (see harness/lib/regress.sh),
-# so a check reads the bus record (what accountd shows the sheet, what the keys made it send) or compares captures.
+# wrong (probes 1, 2, 3 and 6) and bardo-shell 245cc25 fixed them. Each step fails when its bug comes back. Real bardo-accountd,
+# bardo-shell drawing the sheets, the rigs' fake mail and Graph (porter's and ferry's); no probe of bardo-shell's surfaces exists (see harness/lib/regress.sh),
+# so a check reads the bus record (what bardo-accountd shows the sheet, what the keys made it send) or compares captures.
 #
-#   boot      casement, recorded bus, rig, accountd with 14 filler providers (at least 24 rows: the shipped providers
-#             that can sign in, Fake Mail and its alias, the fillers) and an alias of Fake Mail, inferd, sill
+#   boot      bardo-compositor, recorded bus, rig, bardo-accountd with 14 filler providers (at least 24 rows: the shipped providers
+#             that can sign in, Fake Mail and its alias, the fillers) and an alias of Fake Mail, bardo-inferd, bardo-shell
 #   S4        20 or more provider rows: the card stays inside the surface, and a click at Cancel's place (relative to the card)
 #             sends Dismiss and closes the sheet [pixels + bus]
 #   S2        "Google" + Return picks `google`, not `google-ai` [bus: Input pick]
@@ -14,7 +14,7 @@
 #             the same title, one with another label draws another [capture of the card's title band]
 #   S6        Microsoft with no client id (the client goes between the list and the pick: porter 1c9a8e8 leaves a clientless provider off the list): the failure is `needs_client_id`; Return (Done, the default) dismisses; Tab
 #             twice then Return still dismisses, so there is no Try Again between Back and Done [bus: Input]
-#   add       one OpenAI key added through the same sheet, for the consent window (the consent question is accountd's)
+#   add       one OpenAI key added through the same sheet, for the consent window (the consent question is bardo-accountd's)
 #   S5        an agent's app id is shown as written: `org.example.Agent.Zq-Bx` and its lowercase twin draw different
 #             headings [captures of the consent window]
 #   S3        a long app id: two ids that agree on their first 28 characters draw the same window (cut with an
@@ -48,7 +48,7 @@ step_boot() {
   local n
   regress_boot || return 1
   provider_copy alias-mail "Fake Mail" fake-mail
-  # The add list is accountd's: the shipped providers that can sign in, Fake Mail and its alias, and 14 fillers (S4 needs
+  # The add list is bardo-accountd's: the shipped providers that can sign in, Fake Mail and its alias, and 14 fillers (S4 needs
   # 20 rows or more). Lettered, so "Filler A" matches one provider only.
   for n in a b c d e f g h i j k l m n; do provider_copy "filler-$n" "Filler ${n^^}" fake-mail; done
   accountd_start || return 1
@@ -79,7 +79,7 @@ step_s4_cancel_stays() {
 # Google is listed (and "Google" + Return picks it, not google-ai) only once a Google client is registered. The
 # shipped file is the jail's /usr/share overlay; the files are read again each time a sheet opens.
 acc_clients_google() {
-  mkdir -p /usr/share/porter
+  mkdir -p /usr/share/bardo/accounts
   printf '[[client]]\nissuer = "google"\nchannel = "stable"\nclient_id = "rig.apps.googleusercontent.com"\n' >/usr/share/bardo/accounts/clients.toml
 }
 
@@ -185,7 +185,7 @@ step_s7_browser_wait() {
     : >"$RIG_DIR/opened.log"
     open_sheet || return 1
     sheet_type Micro; sleep 0.5; sheet_key Enter
-    acc_wait 20 test -s "$RIG_DIR/opened.log" || { echo "sill never opened the browser" >&2; return 1; }
+    acc_wait 20 test -s "$RIG_DIR/opened.log" || { echo "bardo-shell never opened the browser" >&2; return 1; }
     sleep 2.5; sheet_shot s7-wait-$i
     cp "$RIG_DIR/opened.log" "$OUT_DIR/opened-$i.log"
     close_sheet
@@ -201,7 +201,7 @@ step_scan() { scan_end; }
 run_steps step_boot step_s4_cancel_stays step_s2_google step_s1_other step_s5_titles step_s6_no_client step_add \
   step_s5_agent_id step_s3_long_id step_s7_browser_wait step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd inferd daemon rig-servers sync-rig-servers secrets add; do
+  for f in bardo-accountd bardo-inferd daemon rig-servers sync-rig-servers secrets add; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

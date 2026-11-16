@@ -1,17 +1,17 @@
-# What the accounts-* scenarios share: porter's real accountd, ferry's syncd, steward's inferd, porter's test rig
+# What the accounts-* scenarios share: porter's real bardo-accountd, ferry's bardo-syncd, steward's bardo-inferd, porter's test rig
 # (account-rig-servers: the fakes, account-rig-secrets: a fake Secret Service, account-rig-client: an app), ferry's test rig
-# (sync-rig-servers: the OAuth issuer and the Graph fake, sync-rig-client: an app talking to syncd) and inference-rig-client (an app opening an inferd session) on the
-# private bus casement's dev/up.sh made, with sill drawing the sheets. Sourced after harness/lib/all.sh,
-# harness/lib/scenario.sh and sill's dev/lib/all.sh (it uses their in_env, sill, surface_named, capture ...).
+# (sync-rig-servers: the OAuth issuer and the Graph fake, sync-rig-client: an app talking to bardo-syncd) and inference-rig-client (an app opening an bardo-inferd session) on the
+# private bus bardo-compositor's dev/up.sh made, with bardo-shell drawing the sheets. Sourced after harness/lib/all.sh,
+# harness/lib/scenario.sh and bardo-shell's dev/lib/all.sh (it uses their in_env, bardo-shell, surface_named, capture ...).
 #
-# Identity. The daemons (inferd is steward's, from build/steward-target) are test-proc-root builds: they name the process behind a bus connection from
-# $PROC/<pid>/cgroup (BARDO_ACCOUNTD_PROC_ROOT, BARDO_SYNCD_PROC_ROOT, BARDO_INFERD_PROC_ROOT; syncd is ferry's, from build/ferry-target), because nothing in the jail runs
+# Identity. The daemons (bardo-inferd is steward's, from build/steward-target) are test-proc-root builds: they name the process behind a bus connection from
+# $PROC/<pid>/cgroup (BARDO_ACCOUNTD_PROC_ROOT, BARDO_SYNCD_PROC_ROOT, BARDO_INFERD_PROC_ROOT; bardo-syncd is ferry's, from build/ferry-target), because nothing in the jail runs
 # in a systemd scope; the role of each is the system caller table, porter's dist copy at $ACC_SYSTEM_CALLERS
 # (BARDO_ACCOUNTD_SYSTEM_CALLERS: the jail cannot write /etc/bardo/accountd-callers.toml, and a person's own file gives no fixed role);
-# inferd's is $BARDO_INFERD_SYSTEM_CALLERS (BARDO_INFERD_CALLERS, in place of /etc/bardo/inferd-callers.toml: porter
-# reads no [callers] from inferd.toml since CALLER-INFERD; steward's dist/inferd-callers.toml is its shipped copy).
+# bardo-inferd's is $BARDO_INFERD_SYSTEM_CALLERS (BARDO_INFERD_CALLERS, in place of /etc/bardo/inferd-callers.toml: porter
+# reads no [callers] from bardo-inferd.toml since CALLER-INFERD; steward's dist/inferd-callers.toml is its shipped copy).
 # `acc_identity UNIT PID` writes a unit's cgroup (bardo-shell.service, bardo-syncd.service, bardo-inferd.service) and, for a service
-# unit, its main pid ($PROC/units/<unit>); `acc_app APP PID` names detent the Settings unit (org.bardo.Settings.service)
+# unit, its main pid ($PROC/units/<unit>); `acc_app APP PID` names bardo-settings the Settings unit (org.bardo.Settings.service)
 # and any other app a Flatpak (its scope and $PROC/<pid>/root/.flatpak-info).
 #
 # Every process is stopped by its PID (acc_stop_all); nothing is found by name.
@@ -25,23 +25,23 @@ ACC_BG=()
 
 # acc_need: the artefacts exist (exit 3 with the fix otherwise).
 acc_need() {
-  scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-    "$SCEN_BUILD/sill-probe-target/debug/sill" "$ARIG/accountd" "$AFER/syncd" "$ASTW/inferd" \
+  scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
+    "$SCEN_BUILD/sill-probe-target/debug/bardo-shell" "$ARIG/bardo-accountd" "$AFER/bardo-syncd" "$ASTW/bardo-inferd" \
     "$ARIG/account-rig-servers" "$ARIG/account-rig-client" "$ARIG/account-rig-secrets" "$ASTW/inference-rig-client" \
     "$AFER/sync-rig-servers" "$AFER/sync-rig-client" \
     "$SCEN_SIB/accounts/providers/microsoft.toml" "$SCEN_SIB/accounts/dist/callers.toml" "$@"
 }
 
-# acc_env: the variables every accounts scenario sets before sourcing sill's lib (BARDO_COMPOSITOR_REPO and BARDO_COMPOSITOR_DIR
+# acc_env: the variables every accounts scenario sets before sourcing bardo-shell's lib (BARDO_COMPOSITOR_REPO and BARDO_COMPOSITOR_DIR
 # become the stand-in checkout floor_shim makes).
 acc_env() {
-  export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+  export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
   export CARGO_TARGET_DIR="$SCEN_BUILD/sill-probe-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
   # The rig's programs take no power; bardo-compositorctl's `shot` (acc_shot) takes the screen and the window list, so those are the
   # floor's only rows and nothing waits on a question (an unanswered ask stops the capture after ~29 s, and its dialog
-  # covers the page). The caller list names sill (at its pin) as the shell, detent as Settings and the porter daemons by
-  # their roles, for casement and for sill (floor_sill_callers before launch_daemon).
-  FLOOR_SILL_TARGET="$SCEN_BUILD/sill-probe-target" floor_shim accounts sill detent accountd inferd syncd casement bardo-compositorctl || return 1
+  # covers the page). The caller list names bardo-shell (at its pin) as the shell, bardo-settings as Settings and the porter daemons by
+  # their roles, for bardo-compositor and for bardo-shell (floor_sill_callers before launch_daemon).
+  FLOOR_SILL_TARGET="$SCEN_BUILD/sill-probe-target" floor_shim accounts bardo-shell bardo-settings bardo-accountd bardo-inferd bardo-syncd bardo-compositor bardo-compositorctl || return 1
 }
 
 # Where the scenario keeps things; set by acc_dirs after scratch_new.
@@ -50,7 +50,7 @@ acc_dirs() {
   RIG_DIR="$OUT_DIR/rig"; PROC="$RIG_DIR/proc"; PROV="$RIG_DIR/providers"; BIN_DIR="$RIG_DIR/bin"
   ACC_SYSTEM_CALLERS="$RIG_DIR/system-callers.toml"
   BARDO_INFERD_SYSTEM_CALLERS="$RIG_DIR/inferd-callers.toml"
-  mkdir -p "$RIG_DIR" "$PROC" "$PROV" "$BIN_DIR" "$CONFIG/porter" "$CONFIG/quire" "$STATE/porter"
+  mkdir -p "$RIG_DIR" "$PROC" "$PROV" "$BIN_DIR" "$CONFIG/bardo/accounts" "$CONFIG/bardo" "$STATE/bardo/accounts"
 }
 
 # acc_bg LOG CMD...: runs CMD in the background in the daemon environment with this log; sets ACC_LAST to its pid.
@@ -93,8 +93,8 @@ bus_has_owner() {
 }
 
 # --- identity ------------------------------------------------------------------------------------------------
-# The Settings app is known by its unit: detent running as org.bardo.Settings.service and being that unit's
-# main process (accountd asks systemd; with a fixture proc root it reads $PROC/units/<unit>).
+# The Settings app is known by its unit: bardo-settings running as org.bardo.Settings.service and being that unit's
+# main process (bardo-accountd asks systemd; with a fixture proc root it reads $PROC/units/<unit>).
 SETTINGS_UNIT=org.bardo.Settings.service
 
 acc_identity() { # LEAF PID: a unit's cgroup; a service unit also gets its main pid ($PROC/units/<unit>)
@@ -169,11 +169,11 @@ acc_config() {
   cp "$SCEN_SIB"/accounts/providers/*.toml "$PROV/"
 }
 
-# acc_clients_for_issuer: the shipped clients.toml (/usr/share/porter, the jail's throwaway overlay) pointing the
+# acc_clients_for_issuer: the shipped clients.toml (/usr/share/bardo/accounts, the jail's throwaway overlay) pointing the
 # Microsoft client at the fake issuer of ferry's rig (the one its Graph fake accepts tokens from; ferry_rig_start first): porter takes endpoints that leave the issuer only from the shipped file, never
 # from the person's own (sec-4).
 acc_clients_for_issuer() {
-  mkdir -p /usr/share/porter
+  mkdir -p /usr/share/bardo/accounts
   cat >/usr/share/bardo/accounts/clients.toml <<EOF
 [[client]]
 issuer = "microsoft"
@@ -202,35 +202,35 @@ acc_providers_only() {
 }
 
 # --- the daemons ---------------------------------------------------------------------------------------------
-# Since porter's step 5c accountd holds every account: the identities, the AI keys with their permits and switches (its
-# Keys interface), and the local runtimes inferd's probe reports to it (Broker.ReportLocal, a call only the `ai_broker`
-# role may make: bardo-inferd.service in dist/callers.toml). inferd (org.bardo.Inference1) holds no key; it serves the models
-# and the spend rows (`accounts.<id>.spend.*`) of the accounts accountd lists. syncd (ferry's) has no accounts of
-# its own: it uses accountd's through account-client over org.bardo.Grants1. A page that reads a daemon never starts it (detent's live/io.rs answers NotRunning), so a scenario
+# Since porter's step 5c bardo-accountd holds every account: the identities, the AI keys with their permits and switches (its
+# Keys interface), and the local runtimes bardo-inferd's probe reports to it (Broker.ReportLocal, a call only the `ai_broker`
+# role may make: bardo-inferd.service in dist/callers.toml). bardo-inferd (org.bardo.Inference1) holds no key; it serves the models
+# and the spend rows (`accounts.<id>.spend.*`) of the accounts bardo-accountd lists. bardo-syncd (ferry's) has no accounts of
+# its own: it uses bardo-accountd's through account-client over org.bardo.Grants1. A page that reads a daemon never starts it (bardo-settings's live/io.rs answers NotRunning), so a scenario
 # starts every daemon its page reads before opening the page.
-# Each daemon reads its caller table at startup only: acc_config installs callers.toml before accountd and syncd start,
-# inferd_write_config writes inferd's own system table ($BARDO_INFERD_SYSTEM_CALLERS) before inferd starts.
+# Each daemon reads its caller table at startup only: acc_config installs callers.toml before bardo-accountd and bardo-syncd start,
+# inferd_write_config writes bardo-inferd's own system table ($BARDO_INFERD_SYSTEM_CALLERS) before bardo-inferd starts.
 
 # acc_ca_env: SSL_CERT_FILE=<the rig's CA> when the rig made one, else nothing (one word per line, for `env`).
 acc_ca_env() { [ ! -f "$RIG_DIR/servers/ca.pem" ] || echo "SSL_CERT_FILE=$RIG_DIR/servers/ca.pem"; }
 
 # acc_ship_providers: the provider files of $PROV (the pin's, with the rig's brand and fake-host files) into the jail's
-# /usr/share overlay, the Shipped layer. inferd and syncd have no --providers: they read the first XDG_DATA_DIRS entry
+# /usr/share overlay, the Shipped layer. bardo-inferd and bardo-syncd have no --providers: they read the first XDG_DATA_DIRS entry
 # that has porter/providers (the jail pins XDG_DATA_DIRS to /usr/share, so a host install under /usr/local/share
-# cannot shadow it) and $XDG_DATA_HOME/porter/providers, and a person's layer may not point a shipped provider at
+# cannot shadow it) and $XDG_DATA_HOME/bardo/accounts/providers, and a person's layer may not point a shipped provider at
 # another server.
 acc_ship_providers() {
   mkdir -p /usr/share/bardo/accounts/providers
   cp "$PROV"/*.toml /usr/share/bardo/accounts/providers/
 }
 
-# accountd_start: the real accountd on the private bus, over the fake Secret Service, trusting the rig's CA.
+# accountd_start: the real bardo-accountd on the private bus, over the fake Secret Service, trusting the rig's CA.
 BARDO_ACCOUNTD_PID=
 accountd_start() {
   local ca; ca=$(acc_ca_env)
-  acc_bg "$OUT_DIR/accountd.log" env BARDO_ACCOUNTD_PROC_ROOT="$PROC" BARDO_ACCOUNTD_SYSTEM_CALLERS="$ACC_SYSTEM_CALLERS" ${ca:+"$ca"} "$ARIG/accountd" --providers "$PROV"
+  acc_bg "$OUT_DIR/bardo-accountd.log" env BARDO_ACCOUNTD_PROC_ROOT="$PROC" BARDO_ACCOUNTD_SYSTEM_CALLERS="$ACC_SYSTEM_CALLERS" ${ca:+"$ca"} "$ARIG/bardo-accountd" --providers "$PROV"
   BARDO_ACCOUNTD_PID=$ACC_LAST
-  acc_wait 20 bus_has_owner org.bardo.Accounts1 || { echo "accountd never took org.bardo.Accounts1:" >&2; cat "$OUT_DIR/accountd.log" >&2; return 1; }
+  acc_wait 20 bus_has_owner org.bardo.Accounts1 || { echo "bardo-accountd never took org.bardo.Accounts1:" >&2; cat "$OUT_DIR/bardo-accountd.log" >&2; return 1; }
   acc_identity bardo-accountd.service "$BARDO_ACCOUNTD_PID"
 }
 accountd_stop() { [ -z "$BARDO_ACCOUNTD_PID" ] || acc_kill "$BARDO_ACCOUNTD_PID"; BARDO_ACCOUNTD_PID=; }
@@ -239,39 +239,39 @@ BARDO_SYNCD_PID=
 syncd_start() {
   local ca; ca=$(acc_ca_env)
   acc_ship_providers
-  acc_bg "$OUT_DIR/syncd.log" env BARDO_SYNCD_PROC_ROOT="$PROC" BARDO_ACCOUNTD_SYSTEM_CALLERS="$ACC_SYSTEM_CALLERS" BARDO_SYNCD_RESCAN_S="${BARDO_SYNCD_RESCAN_S:-2}" ${ca:+"$ca"} "$AFER/syncd"
+  acc_bg "$OUT_DIR/bardo-syncd.log" env BARDO_SYNCD_PROC_ROOT="$PROC" BARDO_ACCOUNTD_SYSTEM_CALLERS="$ACC_SYSTEM_CALLERS" BARDO_SYNCD_RESCAN_S="${BARDO_SYNCD_RESCAN_S:-2}" ${ca:+"$ca"} "$AFER/bardo-syncd"
   BARDO_SYNCD_PID=$ACC_LAST
   acc_identity bardo-syncd.service "$BARDO_SYNCD_PID"
-  acc_wait 20 bus_has_owner org.bardo.Sync1 || { echo "syncd never took org.bardo.Sync1:" >&2; cat "$OUT_DIR/syncd.log" >&2; return 1; }
+  acc_wait 20 bus_has_owner org.bardo.Sync1 || { echo "bardo-syncd never took org.bardo.Sync1:" >&2; cat "$OUT_DIR/bardo-syncd.log" >&2; return 1; }
 }
 syncd_stop() { [ -z "$BARDO_SYNCD_PID" ] || acc_kill "$BARDO_SYNCD_PID"; BARDO_SYNCD_PID=; }
 
-# inferd_write_config: $CONFIG/inferd/inferd.toml is what is on stdin (tables of the scenario: [probe], [ai] ...), and
-# $BARDO_INFERD_SYSTEM_CALLERS is inferd's caller table, in the shape of porter's dist/inferd-callers.toml: inferd serves its
+# inferd_write_config: $CONFIG/bardo/inference/inferd.toml is what is on stdin (tables of the scenario: [probe], [ai] ...), and
+# $BARDO_INFERD_SYSTEM_CALLERS is bardo-inferd's caller table, in the shape of porter's dist/inferd-callers.toml: bardo-inferd serves its
 # settings module (the spend rows) to the unit org.bardo.Settings.service and its places to the shell (bardo-shell.service); an
-# app in a Flatpak or app scope needs no row. The file is inferd's own folder's, where Settings looks for it. Call it
+# app in a Flatpak or app scope needs no row. The file is bardo-inferd's own folder's, where Settings looks for it. Call it
 # before inferd_start.
 inferd_write_config() {
-  mkdir -p "$CONFIG/inferd"
-  cat >"$CONFIG/inferd/inferd.toml"
+  mkdir -p "$CONFIG/bardo/inference"
+  cat >"$CONFIG/bardo/inference/inferd.toml"
   printf 'settings = ["%s"]\nshell = ["bardo-shell.service"]\n' "$SETTINGS_UNIT" >"$BARDO_INFERD_SYSTEM_CALLERS"
 }
 
 BARDO_INFERD_PID=
-inferd_start() { # needs $CONFIG/inferd/inferd.toml and $BARDO_INFERD_SYSTEM_CALLERS (inferd_write_config)
-  # The model catalog of this tree's stoker, where inferd reads it ($XDG_DATA_HOME/stoker/catalog): without
+inferd_start() { # needs $CONFIG/bardo/inference/inferd.toml and $BARDO_INFERD_SYSTEM_CALLERS (inferd_write_config)
+  # The model catalog of this tree's stoker, where bardo-inferd reads it ($XDG_DATA_HOME/bardo/models/catalog): without
   # it no hosted model is known, so a turn on an AI key is refused before the key is ever read.
-  mkdir -p "$DATA/stoker/catalog"
-  cp "$SCEN_SIB"/models/catalog/*.toml "$DATA/stoker/catalog/"
+  mkdir -p "$DATA/bardo/models/catalog"
+  cp "$SCEN_SIB"/models/catalog/*.toml "$DATA/bardo/models/catalog/"
   local ca; ca=$(acc_ca_env)
   acc_ship_providers
-  acc_bg "$OUT_DIR/inferd.log" env BARDO_INFERD_PROC_ROOT="$PROC" BARDO_INFERD_CALLERS="$BARDO_INFERD_SYSTEM_CALLERS" ${ca:+"$ca"} "$ASTW/inferd"
+  acc_bg "$OUT_DIR/bardo-inferd.log" env BARDO_INFERD_PROC_ROOT="$PROC" BARDO_INFERD_CALLERS="$BARDO_INFERD_SYSTEM_CALLERS" ${ca:+"$ca"} "$ASTW/bardo-inferd"
   BARDO_INFERD_PID=$ACC_LAST
   acc_identity bardo-inferd.service "$BARDO_INFERD_PID"
-  acc_wait 20 bus_has_owner org.bardo.Inference1 || { echo "inferd never took org.bardo.Inference1:" >&2; cat "$OUT_DIR/inferd.log" >&2; return 1; }
+  acc_wait 20 bus_has_owner org.bardo.Inference1 || { echo "bardo-inferd never took org.bardo.Inference1:" >&2; cat "$OUT_DIR/bardo-inferd.log" >&2; return 1; }
 }
 
-# sill_start: sill (the sheet host) on the same bus; its pid is named bardo-shell.service (and is that unit's main pid), the sheet host's unit.
+# sill_start: bardo-shell (the sheet host) on the same bus; its pid is named bardo-shell.service (and is that unit's main pid), the sheet host's unit.
 sill_start() {
   cat >"$BIN_DIR/xdg-open" <<EOF
 #!/usr/bin/env bash
@@ -281,18 +281,18 @@ echo "\$1" >>"$RIG_DIR/opened.log"
 curl -sL --max-time 10 -o "$RIG_DIR/browser-last.html" "\$1" >>"$RIG_DIR/browser.log" 2>&1
 EOF
   chmod +x "$BIN_DIR/xdg-open"
-  mkdir -p "$CONFIG/sill"; : >"$CONFIG/shell/settings.toml"
+  mkdir -p "$CONFIG/bardo/shell"; : >"$CONFIG/bardo/shell/settings.toml"
   backdrop_seed "$CONFIG" || return 1
-  # sill is built with ui-blitz's debug-probe (scenario-build.sh): every window of it lists its controls in $SPROBE.
-  SPROBE="$SCRATCH/sill-probe"; mkdir -p "$SPROBE"
+  # bardo-shell is built with ui-blitz's debug-probe (scenario-build.sh): every window of it lists its controls in $SPROBE.
+  SPROBE="$SCRATCH/bardo-shell-probe"; mkdir -p "$SPROBE"
   IN_ENV_EXTRA=("PATH=$BIN_DIR:$PATH" "BARDO_DEBUG_PROBE=$SPROBE")
-  # sill names itself to accountd within its first moments (its accounts service asks NeedingReauth as it connects, and a
+  # bardo-shell names itself to bardo-accountd within its first moments (its accounts service asks NeedingReauth as it connects, and a
   # refused first ask is not repeated), so its identity is written by the shell that execs it, before it exists.
   LAUNCH_PREFIX=(bash -c 'mkdir -p "$0/$$" "$0/units"; echo "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service" >"$0/$$/cgroup"; echo "$$" >"$0/units/bardo-shell.service"; exec "$@"' "$PROC")
   floor_sill_callers
   launch_daemon || return 1
   NAME=$(output_name) || return 1
-  SHEET="sill-accounts-sheet-$NAME"
+  SHEET="bardo-shell-accounts-sheet-$NAME"
 }
 
 # --- an app --------------------------------------------------------------------------------------------------
@@ -316,44 +316,44 @@ rigc_bg() {
   local log=$1 app=$2; shift 2
   acc_bg "$log" "$ARIG/account-rig-client" --app-id "$app" --proc-root "$PROC" "$@"
 }
-# rigo APP-ID NEED ARGS...: inference-rig-client as that app, opening an inferd session (the same identity fixture).
+# rigo APP-ID NEED ARGS...: inference-rig-client as that app, opening an bardo-inferd session (the same identity fixture).
 rigo() {
   local app=$1; shift
   in_env "$ASTW/inference-rig-client" --app-id "$app" --proc-root "$PROC" open "$@"
 }
 
-# --- the sheet, as sill draws it -----------------------------------------------------------------------------
+# --- the sheet, as bardo-shell draws it -----------------------------------------------------------------------------
 # sheet_shown: the sheet's surface draws something now.
 sheet_shown() {
-  sill debug capture "$SHEET" "$OUT_DIR/.probe.png" >/dev/null 2>&1 && [ "$(opaque_pixels "$OUT_DIR/.probe.png")" -gt 1000 ]
+  bardo-shell debug capture "$SHEET" "$OUT_DIR/.probe.png" >/dev/null 2>&1 && [ "$(opaque_pixels "$OUT_DIR/.probe.png")" -gt 1000 ]
 }
 sheet_hidden() { ! sheet_shown; }
 sheet_await() { acc_wait "${1:-15}" sheet_shown || { echo "the sheet never showed" >&2; return 1; }; }
 sheet_gone() { acc_wait "${1:-15}" sheet_hidden || { echo "the sheet never went" >&2; return 1; }; }
 # sheet_shot NAME: a capture of the sheet into the scenario's output dir.
-sheet_shot() { sill debug capture "$SHEET" "$OUT_DIR/$1.png" >>"$OUT_DIR/capture.log" 2>&1; }
-sheet_key() { sill debug key "$SHEET" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
+sheet_shot() { bardo-shell debug capture "$SHEET" "$OUT_DIR/$1.png" >>"$OUT_DIR/capture.log" 2>&1; }
+sheet_key() { bardo-shell debug key "$SHEET" "$1" >>"$OUT_DIR/keys.log" 2>&1; }
 # sheet_settle [SECONDS]: wait until two captures 0.2 s apart are the same picture, so what was typed has been
 # drawn (the list filtered) before the next key. A fixed sleep after typing flaked under a loaded gate.
 sheet_settle() {
   local until=$(( SECONDS + ${1:-8} )) a="$OUT_DIR/.settle-a.png" b="$OUT_DIR/.settle-b.png"
-  sill debug capture "$SHEET" "$a" >/dev/null 2>&1 || return 0
+  bardo-shell debug capture "$SHEET" "$a" >/dev/null 2>&1 || return 0
   while (( SECONDS < until )); do
     sleep 0.2
-    sill debug capture "$SHEET" "$b" >/dev/null 2>&1 || return 0
+    bardo-shell debug capture "$SHEET" "$b" >/dev/null 2>&1 || return 0
     cmp -s "$a" "$b" && return 0
     mv -f "$b" "$a"
   done
   echo "the sheet kept changing" >&2
 }
-# sheet_type TEXT: one `sill debug key` per character (layer-shell-host e411b25 types the US shifted symbols, `@` among them, with
+# sheet_type TEXT: one `bardo-shell debug key` per character (layer-shell-host e411b25 types the US shifted symbols, `@` among them, with
 # Shift held; the pin has it).
 sheet_type() {
   local text=$1 i c
   for (( i = 0; i < ${#text}; i++ )); do
     c=${text:i:1}
     case "$c" in " ") c=Space ;; esac
-    sill debug key "$SHEET" "$c" >>"$OUT_DIR/keys.log" 2>&1 || { echo "sill debug key refused '$c'" >&2; return 1; }
+    bardo-shell debug key "$SHEET" "$c" >>"$OUT_DIR/keys.log" 2>&1 || { echo "bardo-shell debug key refused '$c'" >&2; return 1; }
   done
 }
 
@@ -366,11 +366,11 @@ monitor_start() {
 }
 monitor_stop() { [ -z "$MONITOR_PID" ] || acc_kill "$MONITOR_PID"; MONITOR_PID=; }
 
-# --- asking accountd as an app, with nothing but busctl ------------------------------------------------------
-# as_app APP-ID CMD...: runs CMD as a process that accountd names APP-ID (written for the pid that becomes CMD, so the pid
+# --- asking bardo-accountd as an app, with nothing but busctl ------------------------------------------------------
+# as_app APP-ID CMD...: runs CMD as a process that bardo-accountd names APP-ID (written for the pid that becomes CMD, so the pid
 # the bus reports is CMD's). Any app but Settings is a Flatpak. Settings is its service unit's main process: while CMD
-# runs, the unit's pid file ($PROC/units/<unit>) holds CMD's pid, and the previous pid (detent's) is put back after, so
-# detent itself is refused for the length of the call and not after.
+# runs, the unit's pid file ($PROC/units/<unit>) holds CMD's pid, and the previous pid (bardo-settings's) is put back after, so
+# bardo-settings itself is refused for the length of the call and not after.
 as_app() {
   local app=$1; shift
   # shellcheck disable=SC2016  # the script is for the inner bash, which expands it
@@ -396,9 +396,9 @@ as_app() {
 }
 
 # settings_describe_at BUS PATH / settings_get_at BUS PATH KEY: a daemon's settings module (org.bardo.SettingsModule1), read
-# as the Settings app. Three daemons serve one: accountd (every account: identities, AI keys with their permits and
-# switches, local runtimes; /org/bardo/Accounts1/settings), inferd (only the spend rows, `accounts.<id>.spend.*`, of the
-# accounts accountd lists; /org/bardo/Inference1/settings) and syncd (ferry's: what it keeps of accountd's accounts, /org/bardo/Sync1/settings).
+# as the Settings app. Three daemons serve one: bardo-accountd (every account: identities, AI keys with their permits and
+# switches, local runtimes; /org/bardo/Accounts1/settings), bardo-inferd (only the spend rows, `accounts.<id>.spend.*`, of the
+# accounts bardo-accountd lists; /org/bardo/Inference1/settings) and bardo-syncd (ferry's: what it keeps of bardo-accountd's accounts, /org/bardo/Sync1/settings).
 settings_describe_at() {
   as_app org.bardo.Settings busctl --address="$BUS" --json=short call "$1" "$2" \
     org.bardo.SettingsModule1 Describe | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["data"][0])'
@@ -420,13 +420,13 @@ ACC_SET=/org/bardo/Accounts1/settings
 SYNC_SET=/org/bardo/Sync1/settings
 settings_describe() { settings_describe_at org.bardo.Accounts1 $ACC_SET; }
 settings_get() { settings_get_at org.bardo.Accounts1 $ACC_SET "$1"; }
-# The AI accounts (keys, permits, switches, local runtimes) are rows of accountd's module beside the identities'.
+# The AI accounts (keys, permits, switches, local runtimes) are rows of bardo-accountd's module beside the identities'.
 ai_describe() { settings_describe; }
 ai_get() { settings_get "$1"; }
 sync_describe() { settings_describe_at org.bardo.Sync1 $SYNC_SET; }
 sync_get() { settings_get_at org.bardo.Sync1 $SYNC_SET "$1"; }
 sync_press() { settings_press_at org.bardo.Sync1 $SYNC_SET "$1"; }
-# acc_press KEY: an action row of accountd's module (Internet Accounts owns Sign in again: accounts.<id>.reauth).
+# acc_press KEY: an action row of bardo-accountd's module (Internet Accounts owns Sign in again: accounts.<id>.reauth).
 acc_press() { settings_press_at org.bardo.Accounts1 $ACC_SET "$1"; }
 
 # ai_has_account ID / has_key MODULE ID: the module lists an `accounts.<id>.` row.
@@ -529,7 +529,7 @@ scan_begin() { monitor_start; sleep 0.5; }
 scan_end() {
   local args=() s files=()
   sleep 0.5; monitor_stop
-  # What accountd kept (the registry and the audit file), for whoever reads the run afterwards.
+  # What bardo-accountd kept (the registry and the audit file), for whoever reads the run afterwards.
   rm -rf "$OUT_DIR/state-after"; cp -r "$STATE" "$OUT_DIR/state-after" 2>/dev/null
   while read -r s; do
     [ -n "$s" ] || continue
@@ -567,7 +567,7 @@ sheet_add_microsoft() {
   acc_add_start org.bardo.Mail
   sheet_await || return 1; sheet_settled; sleep 1
   sheet_type Micro; sleep 0.5; sheet_key Enter
-  acc_wait 20 test -s "$RIG_DIR/opened.log" || { echo "sill never opened the browser: $(cat "$OUT_DIR/add.log")" >&2; return 1; }
+  acc_wait 20 test -s "$RIG_DIR/opened.log" || { echo "bardo-shell never opened the browser: $(cat "$OUT_DIR/add.log")" >&2; return 1; }
   sleep 3; sheet_key Enter
   local response
   response=$(acc_add_response 30) || { echo "AddAccount never answered: $(cat "$OUT_DIR/add.log")" >&2; return 1; }
@@ -575,9 +575,9 @@ sheet_add_microsoft() {
   sheet_gone
 }
 
-# sheet_add_openai: the whole add flow of an OpenAI key through the sheet (an AI key is added like any account: accountd
-# draws the add sheet for Manager.AddAccount, the key goes sheet -> accountd -> Secret Service and the rig's LLM API fake
-# checks it with its models list). Needs the rig started with --llm-api, acc_provider_openai_on_rig, accountd and sill.
+# sheet_add_openai: the whole add flow of an OpenAI key through the sheet (an AI key is added like any account: bardo-accountd
+# draws the add sheet for Manager.AddAccount, the key goes sheet -> bardo-accountd -> Secret Service and the rig's LLM API fake
+# checks it with its models list). Needs the rig started with --llm-api, acc_provider_openai_on_rig, bardo-accountd and bardo-shell.
 # Sets ACCOUNT to the new account.
 sheet_add_openai() {
   acc_add_start org.bardo.Companion
@@ -604,28 +604,28 @@ sheet_enter_until() {
   "$@" >/dev/null 2>&1
 }
 
-# sync_files_turn_on ACCOUNT: Settings turns syncd's "Keep this account's files on this computer" on for an account accountd holds
-# (Set accounts.<id>.sync.files s "on"), in the background: the call returns only after the person answers, because syncd's
-# Keep::set_sync awaits Grants1.RequestGrant. syncd has no accounts of its own: when accountd holds no allowing grant of syncd's for
-# the account, syncd asks (ConsentOffer.account is the account) and accountd draws its consent sheet for that one account (no
+# sync_files_turn_on ACCOUNT: Settings turns bardo-syncd's "Keep this account's files on this computer" on for an account bardo-accountd holds
+# (Set accounts.<id>.sync.files s "on"), in the background: the call returns only after the person answers, because bardo-syncd's
+# Keep::set_sync awaits Grants1.RequestGrant. bardo-syncd has no accounts of its own: when bardo-accountd holds no allowing grant of bardo-syncd's for
+# the account, bardo-syncd asks (ConsentOffer.account is the account) and bardo-accountd draws its consent sheet for that one account (no
 # chooser, no sign-in); one already held is not asked again. The answer is sync_consent_keys.
 sync_files_turn_on() {
   { as_app org.bardo.Settings busctl --address="$BUS" --json=short call org.bardo.Sync1 $SYNC_SET org.bardo.SettingsModule1 Set sv \
       "accounts.$1.sync.files" s on >"$OUT_DIR/switch-on.log" 2>&1; } &
   ACC_PIDS+=("$!")
 }
-# sync_consent_keys: accountd's consent sheet for syncd's grant is up: Tab moves to Always Allow (Allow Once is first) and Return
-# presses it, so the answer is kept as an `always` permit. Return alone is Allow Once, a permit accountd spends on its first use
-# (account-service-grants relay.rs open_authenticated -> spend_once): syncd's first relay to Graph would take it back and the mirror
+# sync_consent_keys: bardo-accountd's consent sheet for bardo-syncd's grant is up: Tab moves to Always Allow (Allow Once is first) and Return
+# presses it, so the answer is kept as an `always` permit. Return alone is Allow Once, a permit bardo-accountd spends on its first use
+# (account-service-grants relay.rs open_authenticated -> spend_once): bardo-syncd's first relay to Graph would take it back and the mirror
 # would stop at the supervisor's next look.
 sync_consent_keys() {
   sheet_settled; sleep 1
   sheet_key Tab; sheet_key Enter
 }
 
-# acc_permit_ids ACCOUNT APP: the ids of the permits (`accounts.<id>.grant.<grant>`) APP holds on ACCOUNT, as accountd's
-# settings module lists them (the `.app` row of each permit is the app's name). accountd keeps every grant of an account
-# there, AI or not; the apps using an identity (`used_by`) are Identities1.RegisterUse's list and name nobody syncd asked for.
+# acc_permit_ids ACCOUNT APP: the ids of the permits (`accounts.<id>.grant.<grant>`) APP holds on ACCOUNT, as bardo-accountd's
+# settings module lists them (the `.app` row of each permit is the app's name). bardo-accountd keeps every grant of an account
+# there, AI or not; the apps using an identity (`used_by`) are Identities1.RegisterUse's list and name nobody bardo-syncd asked for.
 acc_permit_ids() {
   local gid
   settings_describe 2>/dev/null | python3 -I -c '
@@ -648,7 +648,7 @@ SYNC_APP=org.bardo.Sync
 # sheet_stray_escape: a sheet nobody expected is closed (so one failed check does not leave its sheet to take the next step's keys).
 sheet_stray_escape() { sheet_shown && { sheet_key Escape; sheet_gone 8; }; }
 
-# ai_request_start APP LOG: the app asks accountd for a permit to use the person's AI keys (account-rig-client ai-keys request),
+# ai_request_start APP LOG: the app asks bardo-accountd for a permit to use the person's AI keys (account-rig-client ai-keys request),
 # in the background; its one result line lands in LOG: {"result":"granted","permit":..} or {"result":"refused","refusal":..}.
 ai_request_start() { rigc_bg "$OUT_DIR/$2.log" "$1" ai-keys request --class "${3:-files}"; }
 
@@ -662,7 +662,7 @@ sheet_grant() {
   sheet_gone
 }
 
-# identity_of_account ID: the Identities1 id of an accountd account, as `identities list` prints it (the account's id when
+# identity_of_account ID: the Identities1 id of an bardo-accountd account, as `identities list` prints it (the account's id when
 # the list names none).
 identity_of_account() {
   rigc "${2:-org.bardo.Mail}" identities list 2>/dev/null | python3 -I -c '
@@ -677,22 +677,22 @@ for line in sys.stdin:
 print(want)' "$1"
 }
 
-# detent_start: detent (the Settings app, built at its pin) on casement, on the private bus, named org.bardo.Settings
+# detent_start: bardo-settings (the Settings app, built at its pin) on bardo-compositor, on the private bus, named org.bardo.Settings
 # (the role `settings` of the caller table). Its window is captured with `bardo-compositorctl shot --output` (acc_shot).
 BARDO_SETTINGS_PID= PROBE_DIR=
 detent_start() {
-  local data="$SCRATCH/detent-data"
-  # The programs' schemas, as detent's own tests seed them (its pages are made of schemas: without them the sidebar
+  local data="$SCRATCH/bardo-settings-data"
+  # The programs' schemas, as bardo-settings's own tests seed them (its pages are made of schemas: without them the sidebar
   # lists only Accounts).
-  mkdir -p "$data/quire/settings" "$STATE/detent"
-  cp "$SCEN_SIB"/settings-app/fixtures/schemas/*.toml "$data/quire/settings/"
+  mkdir -p "$data/bardo/settings" "$STATE/bardo/settings"
+  cp "$SCEN_SIB"/settings-app/fixtures/schemas/*.toml "$data/bardo/settings/"
   # --first-run is skipped: the mark says it ran.
-  echo ran >"$STATE/detent/first-run"
-  # Not through `nested` (a function: the background job would be its subshell, not detent, and the identity written
+  echo ran >"$STATE/bardo/settings/first-run"
+  # Not through `nested` (a function: the background job would be its subshell, not bardo-settings, and the identity written
   # below must be for the process that holds the bus connection).
   PROBE_DIR="$SCRATCH/probe"; mkdir -p "$PROBE_DIR"
   env BARDO_DEBUG_PROBE="$PROBE_DIR" WAYLAND_DISPLAY="$WL" XDG_RUNTIME_DIR="$(dirname "$WL")" HOME="$HOME_DIR" XDG_CONFIG_HOME="$CONFIG" XDG_DATA_HOME="$data" XDG_DATA_DIRS="$data" XDG_STATE_HOME="$STATE" \
-    XDG_CACHE_HOME="$CACHE" DBUS_SESSION_BUS_ADDRESS="$BUS" "$SCEN_BUILD/detent-target/debug/detent" --dev-callers "$FLOOR_DIR/desktop-callers.toml" >"$OUT_DIR/detent.log" 2>&1 &
+    XDG_CACHE_HOME="$CACHE" DBUS_SESSION_BUS_ADDRESS="$BUS" "$SCEN_BUILD/detent-target/debug/bardo-settings" --dev-callers "$FLOOR_DIR/desktop-callers.toml" >"$OUT_DIR/bardo-settings.log" 2>&1 &
   BARDO_SETTINGS_PID=$!
   ACC_PIDS+=("$BARDO_SETTINGS_PID")
   acc_app org.bardo.Settings "$BARDO_SETTINGS_PID"
@@ -701,7 +701,7 @@ detent_start() {
 # acc_shot NAME: the whole output, as the compositor composes it (bardo-compositorctl shot --output).
 acc_shot() { bardo-compositorctl shot --output HEADLESS-1 "$OUT_DIR/$1.png" >>"$OUT_DIR/shot.log" 2>&1; }
 
-# detent_frame: "X Y W H" of detent's window in the output (bardo-compositorctl debug windows, the first window).
+# detent_frame: "X Y W H" of bardo-settings's window in the output (bardo-compositorctl debug windows, the first window).
 detent_frame() {
   bardo-compositorctl debug windows | python3 -I -c '
 import json, sys
@@ -718,7 +718,7 @@ casement_tap() {
   sleep 0.7
 }
 
-# detent_click RX RY: a left click at (RX, RY) relative to detent's window origin. A negative RX counts from the window's
+# detent_click RX RY: a left click at (RX, RY) relative to bardo-settings's window origin. A negative RX counts from the window's
 # right edge. Only for what has no name (see detent_press for the rest).
 detent_click() {
   local x y w h
@@ -728,13 +728,13 @@ detent_click() {
   casement_tap $((x + rx)) $((y + $2))
 }
 
-# --- detent's controls by role and name ----------------------------------------------------------------------------
-# detent runs with BARDO_DEBUG_PROBE (detent_start), built with ui-blitz's `debug-probe` feature (scenario-build.sh):
+# --- bardo-settings's controls by role and name ----------------------------------------------------------------------------
+# bardo-settings runs with BARDO_DEBUG_PROBE (detent_start), built with ui-blitz's `debug-probe` feature (scenario-build.sh):
 # its window lists every control by ARIA role and accessible name with its box (quire's ui-blitz probe). A scenario
 # presses "button Manage", never a place. The roles are the ones the markup has: button, switch, option (a sidebar row),
 # checkbox, textbox ...; the name is the aria-label, else the visible text.
 
-# detent_centre ROLE NAME [NTH]: "X Y", the control's centre in detent's window; exit 1 when there is none (detent not
+# detent_centre ROLE NAME [NTH]: "X Y", the control's centre in bardo-settings's window; exit 1 when there is none (bardo-settings not
 # started yet: none). NTH counts from 1 in document order; -1 is the last (an alert's button, after the page's of the same
 # name).
 detent_centre() { [ -n "$BARDO_SETTINGS_PID" ] || return 1; python3 -I "$ACC_LIB/probe-find.py" "$PROBE_DIR" "$BARDO_SETTINGS_PID" "$1" "$2" ${3:+--nth "$3"}; }
@@ -742,7 +742,7 @@ detent_centre() { [ -n "$BARDO_SETTINGS_PID" ] || return 1; python3 -I "$ACC_LIB
 # detent_state ROLE NAME [NTH]: the control's state words (checked, pressed, selected, expanded, disabled, or -).
 detent_state() { [ -n "$BARDO_SETTINGS_PID" ] || return 1; python3 -I "$ACC_LIB/probe-find.py" "$PROBE_DIR" "$BARDO_SETTINGS_PID" "$1" "$2" ${3:+--nth "$3"} --state; }
 
-# detent_listing: what detent shows now, one control per line (role x y w h state name).
+# detent_listing: what bardo-settings shows now, one control per line (role x y w h state name).
 detent_listing() { [ -z "$BARDO_SETTINGS_PID" ] || cat "$PROBE_DIR/$DETENT_PID-0.tsv" 2>/dev/null; }
 
 # detent_press ROLE NAME [NTH]: waits for the control, waits until it stands still (two reads 0.3 s apart agree: a page
@@ -755,7 +755,7 @@ detent_press() {
     sleep 0.1
   done
   [ -n "${c2:-}" ] && [ "$c1" = "$c2" ] || {
-    echo "detent shows no $role \"$name\" (it shows:)" >&2; detent_listing >&2; return 1
+    echo "bardo-settings shows no $role \"$name\" (it shows:)" >&2; detent_listing >&2; return 1
   }
   read -r x y w h < <(detent_frame) || return 1
   read -r cx cy <<<"$c1"
@@ -765,14 +765,14 @@ detent_press() {
     [ "$cy" -lt $((h - 16)) ] && break
     bardo-compositorctl debug inject "move $((x + cx)) $((y + h / 2))" "axis vertical 15" >/dev/null || return 1
     sleep 0.5
-    c1=$(detent_centre "$role" "$name" $nth) || { echo "detent lost $role \"$name\" while scrolling to it" >&2; return 1; }
+    c1=$(detent_centre "$role" "$name" $nth) || { echo "bardo-settings lost $role \"$name\" while scrolling to it" >&2; return 1; }
     read -r cx cy <<<"$c1"
   done
   [ "$cy" -lt $((h - 16)) ] || { echo "detent_press: $role \"$name\" stays below the window (y $cy of $h) after scrolling" >&2; return 1; }
   casement_tap $((x + cx)) $((y + cy))
 }
 
-# detent_focus: the first press into a window only focuses it (detent's own grab zones take the next), so one harmless
+# detent_focus: the first press into a window only focuses it (bardo-settings's own grab zones take the next), so one harmless
 # click on the title bar's text makes the following clicks count.
 detent_focus() { detent_click 450 14; }
 
@@ -793,7 +793,7 @@ acc_provider_openai_on_rig() {
   sed -e "s#https://api.openai.com/v1#$(rigj llm_api.api_url)#" "$SCEN_SIB/accounts/providers/openai.toml" >"$PROV/openai.toml"
 }
 
-# sheet_click X Y: a click at surface coordinates (the sheet is drawn at the output's size) through `sill debug click`.
-sheet_click() { sill debug click "$SHEET" "$1" "$2" >>"$OUT_DIR/keys.log" 2>&1; sleep 0.4; }
+# sheet_click X Y: a click at surface coordinates (the sheet is drawn at the output's size) through `bardo-shell debug click`.
+sheet_click() { bardo-shell debug click "$SHEET" "$1" "$2" >>"$OUT_DIR/keys.log" 2>&1; sleep 0.4; }
 # sheet_replace X Y TEXT: click the text field at (X, Y), select its content and type TEXT.
 sheet_replace() { sheet_click "$1" "$2"; sheet_key a+ctrl; sheet_type "$3"; sleep 0.3; }

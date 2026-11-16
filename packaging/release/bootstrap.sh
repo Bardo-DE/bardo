@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# First install of the desktop on a machine: fetches the latest release, checks it, and hands it to slipway's
-# privileged helper. Run slipway's scripts/install.sh with --pubkey first: it installs three programs in
+# First install of the desktop on a machine: fetches the latest release, checks it, and hands it to bardo-updater's
+# privileged helper. Run bardo-updater's scripts/install.sh with --pubkey first: it installs three programs in
 # /usr/libexec (bardo-updater-apply installs a release, bardo-updater-rollback goes back and asks for the administrator's
 # password, bardo-updater-health keeps the record of which starts went well), the one polkit file that names them and
 # the key at /usr/share/bardo/updater/release.pub. This script checks all of that (release/check-helpers.sh) before it
@@ -38,13 +38,13 @@ done
 for tool in curl python3 zstd minisign; do
   command -v "$tool" >/dev/null || { echo "bootstrap.sh: $tool is not installed ($(install_hint "$tool"))" >&2; exit 2; }
 done
-[ -f "$pub" ] || { echo "bootstrap.sh: no key at $pub: run slipway's scripts/install.sh --pubkey FILE first" >&2; exit 2; }
+[ -f "$pub" ] || { echo "bootstrap.sh: no key at $pub: run bardo-updater's scripts/install.sh --pubkey FILE first" >&2; exit 2; }
 if [ "$verify_only" = 0 ]; then
-  [ -x "$helper" ] || { echo "bootstrap.sh: no $helper: run slipway's scripts/install.sh --pubkey FILE first" >&2; exit 2; }
+  [ -x "$helper" ] || { echo "bootstrap.sh: no $helper: run bardo-updater's scripts/install.sh --pubkey FILE first" >&2; exit 2; }
   command -v pkexec >/dev/null || { echo "bootstrap.sh: pkexec is not installed ($(install_hint polkit))" >&2; exit 2; }
   if ! complete=$("$HERE/check-helpers.sh" 2>&1); then
     echo "$complete" >&2
-    echo "bootstrap.sh: slipway's install is not complete: run its scripts/install.sh --bin-dir DIR --pubkey FILE again (release/README.md, First install)" >&2
+    echo "bootstrap.sh: bardo-updater's install is not complete: run its scripts/install.sh --bin-dir DIR --pubkey FILE again (release/README.md, First install)" >&2
     exit 2
   fi
 fi

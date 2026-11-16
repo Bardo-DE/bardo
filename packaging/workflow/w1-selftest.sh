@@ -34,8 +34,8 @@ out=$("${W1[@]}" --print-build 2>&1); code "print-build: exit 0" 0 $?
 for p in "-p compositor-app -p compositor-ctl" "--bin fake-logind" "-p shell-app --features debug" "-p computer-use-daemon --features fixture-callers" "-p action-accept --bins"; do
   has "print-build: $p" "$out" "$p"
 done
-has "print-build: casement is a plain build" "$out" "a plain build"
-lacks "print-build: casement has no test feature" "$(grep 'bardo-compositorctl' <<<"$out")" "debug-inject"
+has "print-build: bardo-compositor is a plain build" "$out" "a plain build"
+lacks "print-build: bardo-compositor has no test feature" "$(grep 'bardo-compositorctl' <<<"$out")" "debug-inject"
 out=$(env -u W1_PLANNER_URL -u W1_SCREEN_URL WAYLAND_DISPLAY=wayland-0 "${W1[@]}" 2>&1); code "no model: refused, exit 2" 2 $?
 has "no model: names the assistant model" "$out" "W1_PLANNER_URL"
 has "no model: names the screen model" "$out" "W1_SCREEN_URL"
@@ -93,14 +93,14 @@ lacks "catalog: the old serving line is gone" "$entry" "launched"
 has "catalog: the rest is kept" "$entry" '[text_out]'
 python3 -I -c 'import tomllib,sys; tomllib.loads(open(sys.argv[1]).read())' "$scratch/out.toml" && ok "catalog: still valid" || bad "catalog: still valid"
 
-cfg=$("${PY[@]}" inferd-config --planner-id plan --planner-url http://127.0.0.1:8090 --screen-id see --screen-url http://127.0.0.1:8091)
-has "inferd settings: planner engine" "$cfg" '[engines.attached."plan"]'
-has "inferd settings: planner address" "$cfg" 'url = "http://127.0.0.1:8090"'
-has "inferd settings: screen slot" "$cfg" '[ai.model.computer_use]'
-has "inferd settings: floors stay near" "$cfg" 'screen = "local_network"'
-lacks "inferd settings: nothing may go anywhere" "$cfg" '"anywhere"'
-python3 -I -c 'import tomllib,sys; tomllib.loads(sys.stdin.read())' <<<"$cfg" && ok "inferd settings: valid" || bad "inferd settings: valid"
-cua=$("${PY[@]}" cuad-settings --app org.blender.Blender=ask --app app.zen_browser.zen=ask)
+cfg=$("${PY[@]}" bardo-inferd-config --planner-id plan --planner-url http://127.0.0.1:8090 --screen-id see --screen-url http://127.0.0.1:8091)
+has "bardo-inferd settings: planner engine" "$cfg" '[engines.attached."plan"]'
+has "bardo-inferd settings: planner address" "$cfg" 'url = "http://127.0.0.1:8090"'
+has "bardo-inferd settings: screen slot" "$cfg" '[ai.model.computer_use]'
+has "bardo-inferd settings: floors stay near" "$cfg" 'screen = "local_network"'
+lacks "bardo-inferd settings: nothing may go anywhere" "$cfg" '"anywhere"'
+python3 -I -c 'import tomllib,sys; tomllib.loads(sys.stdin.read())' <<<"$cfg" && ok "bardo-inferd settings: valid" || bad "bardo-inferd settings: valid"
+cua=$("${PY[@]}" bardo-computer-use-settings --app org.blender.Blender=ask --app app.zen_browser.zen=ask)
 has "screen helper settings: on" "$cua" 'enabled = "on"'
 has "screen helper settings: Blender listed" "$cua" 'app = "org.blender.Blender"'
 
@@ -130,9 +130,9 @@ printf "Couldn't do that: no.\n" >"$scratch/turn.txt"
 
 # ---- the report from a canned run
 run="$scratch/run"
-mkdir -p "$run/out" "$run/shots" "$run/agents/.local/state/quire/inferd"
+mkdir -p "$run/out" "$run/shots" "$run/agents/.local/state/bardo/inference"
 cp "$FIX/stamps.tsv" "$FIX/trace.jsonl" "$run/"
-cp "$FIX/audit.jsonl" "$run/agents/.local/state/quire/inferd/audit.jsonl"
+cp "$FIX/audit.jsonl" "$run/agents/.local/state/bardo/inference/audit.jsonl"
 cp "$FIX/glb-reading-pass.txt" "$run/glb-reading.txt"
 : >"$run/out/lamp.glb"; : >"$run/shots/01-page.png"
 printf 'out/lamp.glb\nhome/part-a.blend\nhome/part-b.blend\n' >"$run/files-made.txt"

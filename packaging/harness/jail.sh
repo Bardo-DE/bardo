@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The one jail (casement-scope 11 §1.2, freeze plan §6.1).
+# The one jail (bardo-compositor-scope 11 §1.2, freeze plan §6.1).
 #
 #   jail.sh [--bind DIR]... [--scratch DIR] [--fabricate-gpus N] [--env K=V]... [--net-none] -- CMD...
 #
@@ -113,7 +113,7 @@ vulkan_icd=$(lavapipe_icd)
 
 uid=$(id -u)
 if [ -z "$scratch" ]; then
-  root="${DESKTOP_JAIL_ROOT:-${XDG_CACHE_HOME:-$HOME/.cache}/desktop-jail}"
+  root="${BARDO_JAIL_ROOT:-${XDG_CACHE_HOME:-$HOME/.cache}/desktop-jail}"
   mkdir -p "$root"
   scratch=$(mktemp -d "$root/run.XXXXXX")
   own_scratch=1

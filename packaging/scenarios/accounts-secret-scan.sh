@@ -7,21 +7,21 @@
 #             a refresh token in a log, an API key in a state file and a password in the registry each fail it; the
 #             flows the design allows (Secret Service, the sheet's Input, an access token in IssueToken's reply,
 #             the test's typing) pass. A scan that cannot fail proves nothing.
-#   boot      casement, recorded bus, the rig with its LLM API fake (a bearer key), Secret Service, accountd, inferd, sill
-#   api-key   an AI company's account is added through accountd's add sheet (add-account) with the planted API key
-#             (openai.toml pointed at the fake): the key goes sheet -> accountd -> Secret Service and the fake accepted
-#             it (models list). Since porter's step 5c the AI keys are accountd's, as every account is
+#   boot      bardo-compositor, recorded bus, the rig with its LLM API fake (a bearer key), Secret Service, bardo-accountd, bardo-inferd, bardo-shell
+#   api-key   an AI company's account is added through bardo-accountd's add sheet (add-account) with the planted API key
+#             (openai.toml pointed at the fake): the key goes sheet -> bardo-accountd -> Secret Service and the fake accepted
+#             it (models list). Since porter's step 5c the AI keys are bardo-accountd's, as every account is
 #   scan      the real record of this run is clean, and the scan SAW the key where the design lets it be (the sheet's
 #             Input and the Secret Service), so it can see
 #
-# What the scan cannot see (reported, not hidden): (1) the legs of a relay that are TLS to a server (accountd to the IMAP,
+# What the scan cannot see (reported, not hidden): (1) the legs of a relay that are TLS to a server (bardo-accountd to the IMAP,
 # SMTP, POP3, Graph or LLM API fake): encrypted on the wire, and the rig's own record of what it received lives outside
-# the jail's views of accountd; (2) a secret in a process's memory or in a core dump; (3) text drawn on a sheet (a
+# the jail's views of bardo-accountd; (2) a secret in a process's memory or in a core dump; (3) text drawn on a sheet (a
 # password is dots; a capture is a picture, not scanned); (4) anything an app sends the fake over a socket it opened
 # itself; (5) IssueToken's access token is allowed to reach the app by design and is scanned for only elsewhere.
 # What it does see: every message on the private bus (both directions, unicast signals included, as the bus config lets
 # a monitor eavesdrop), the app side of every relay as account-rig-client prints it (a log in the scenario's out dir), all
-# daemon and sill logs, the registry, the audit file, the config and data trees.
+# daemon and bardo-shell logs, the registry, the audit file, the config and data trees.
 #
 # budget: 240
 # Exit: 0 pass | 1 a step failed | 2 outside the jail | 3 artefacts missing (harness/scenario-build.sh --accounts).
@@ -56,7 +56,7 @@ step_control() {
   scan --bus "$d/clean.jsonl" --secret "$pw" --pattern 'fake-refresh-[0-9]+' || { echo "a clean record failed the scan" >&2; return 1; }
   # a password in a call to a daemon other than the Secret Service: a hit
   msg method_call :1.5 org.bardo.Accounts1 org.bardo.Accounts1.Manager AddAccount 3 null "[\"$pw\"]" >"$d/leak-bus.jsonl"
-  scan --bus "$d/leak-bus.jsonl" --secret "$pw" && { echo "a password in an accountd call passed the scan" >&2; return 1; }
+  scan --bus "$d/leak-bus.jsonl" --secret "$pw" && { echo "a password in an bardo-accountd call passed the scan" >&2; return 1; }
   # the same in a call to the Secret Service, in the sheet's Input, in the test's typing: allowed
   { msg method_call :1.5 org.freedesktop.secrets org.freedesktop.Secret.Collection CreateItem 4 null "[\"$pw\"]"
     msg signal :1.9 :1.7 org.bardo.AccountsSheet1 Input 5 null "[\"h\",\"$pw\"]"
@@ -102,18 +102,18 @@ step_api_key() {
   response=$(acc_add_response 30) || { echo "AddAccount never answered: $(cat "$OUT_DIR/add.log")" >&2; return 1; }
   acc_added "$response" || { echo "AddAccount answered $response" >&2; return 1; }
   sheet_gone || return 1
-  ai_has_account "$ACCOUNT" || { echo "accountd's settings module lists no account $ACCOUNT after the add" >&2; return 1; }
+  ai_has_account "$ACCOUNT" || { echo "bardo-accountd's settings module lists no account $ACCOUNT after the add" >&2; return 1; }
 }
 
 step_scan() {
   scan_end || return 1
-  grep -q 'the sheet host.s Input to accountd' "$OUT_DIR/secret-scan.txt" && grep -q 'Secret Service call' "$OUT_DIR/secret-scan.txt" \
+  grep -q 'the sheet host.s Input to bardo-accountd' "$OUT_DIR/secret-scan.txt" && grep -q 'Secret Service call' "$OUT_DIR/secret-scan.txt" \
     || { echo "the scan did not see the API key where the design lets it go (sheet Input, Secret Service): it cannot see" >&2; cat "$OUT_DIR/secret-scan.txt" >&2; return 1; }
 }
 
 run_steps step_control step_boot step_api_key step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd inferd daemon rig-servers secrets add; do
+  for f in bardo-accountd bardo-inferd daemon rig-servers secrets add; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

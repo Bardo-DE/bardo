@@ -2,7 +2,7 @@
 
   sheet-bus.py BUS.JSONL [--from N] [--count]    one line per message: INDEX KIND JSON
 
-KIND is open, update or close (accountd to sill: the SheetView the sheet draws) or input (sill to accountd: what the
+KIND is open, update or close (bardo-accountd to bardo-shell: the SheetView the sheet draws) or input (bardo-shell to bardo-accountd: what the
 person did). INDEX counts those messages from 0; a scenario remembers --count before an action and reads `--from`
 that after it, so a check sees only what the action caused.
 """

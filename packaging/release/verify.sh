@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Check a packed release the way slipway will: the signature on release.toml, the bundle's size and
+# Check a packed release the way bardo-updater will: the signature on release.toml, the bundle's size and
 # digest, every file's digest and mode, nothing in the bundle that is not listed, no links, clean paths,
 # exports under the allowed directories and pointing at bundle files.
 #

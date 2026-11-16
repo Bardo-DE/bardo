@@ -3,7 +3,7 @@
 
 Standard library only; run it as `python3 -I workflow/lib/w2.py <command> ...`. Nothing here starts a
 program or opens a socket. w2-selftest.sh runs it all on canned input, with no session. The parts W1 already has
-(model lists, catalogue rewrite, inferd and cuad settings, the guard's words, the file server, stage times) are
+(model lists, catalogue rewrite, bardo-inferd and bardo-computer-use settings, the guard's words, the file server, stage times) are
 w1.py's; a command this file does not know is handed to it.
 
 Commands:
@@ -496,7 +496,7 @@ def services_stopped(run):
     run = Path(run)
     found = []
     logs = sorted((run / "agent-logs").glob("*.log")) if (run / "agent-logs").is_dir() else []
-    logs += [run / n for n in ("cuad.log", "daemon.log", "casement-up.log") if (run / n).is_file()]
+    logs += [run / n for n in ("bardo-computer-use.log", "daemon.log", "bardo-compositor-up.log") if (run / n).is_file()]
     for log in logs:
         hits = [l.strip() for l in log.read_text(errors="replace").splitlines() if any(w in l for w in STOP_WORDS)]
         if hits:
@@ -509,7 +509,7 @@ def build_report(run, expected):
     run = Path(run)
     stamps = w1.read_stamps(run / "stamps.tsv")
     trace = w1.read_jsonl(run / "trace.jsonl")
-    audit = w1.read_jsonl(run / "agents/.local/state/quire/inferd/audit.jsonl")
+    audit = w1.read_jsonl(run / "agents/.local/state/bardo/inference/audit.jsonl")
     started = stamps.get("start", (0, 0))[1]
     steps = [s for s in w1.screen_steps(audit) if s[0] >= started]
 

@@ -6,7 +6,7 @@
 #   release/check-ldd.sh [--stage DIR] [--ignore REGEX]
 #
 #   --stage DIR     the tree to scan (default build/release/stage under this repo, or give an installed
-#                   /opt/bardo/current); libraries in DIR/opt/quire/current/lib, DIR/lib and DIR/lib64
+#                   /opt/bardo/current); libraries in DIR/opt/bardo/current/lib, DIR/lib and DIR/lib64
 #                   are found as the installed program would find them
 #   --ignore REGEX  a library name (extended regex) that may be missing, for one that is loaded on demand
 #
@@ -31,7 +31,7 @@ command -v ldd >/dev/null || { echo "check-ldd.sh: ldd is not installed" >&2; ex
 stage=$(cd "$stage" && pwd -P)
 
 libs=""
-for d in "$stage/opt/quire/current/lib" "$stage/opt/quire/current/lib64" "$stage/lib" "$stage/lib64"; do
+for d in "$stage/opt/bardo/current/lib" "$stage/opt/bardo/current/lib64" "$stage/lib" "$stage/lib64"; do
   [ ! -d "$d" ] || libs="$libs:$d"
 done
 export LD_LIBRARY_PATH="${libs#:}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"

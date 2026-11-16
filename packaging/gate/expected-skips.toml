@@ -4,6 +4,6 @@
 # FINDINGS ids are placeholders until the merge applies the rows (S0-D report).
 
 [[skip]]
-scenario = "keycap-yields-and-regrabs"
+scenario = "bardo-key-remap-yields-and-regrabs"
 finding = "FD-06"
 closes = "P4"

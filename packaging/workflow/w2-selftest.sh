@@ -36,12 +36,12 @@ out=$("${SCEN[@]}" --nonsense 2>&1); code "scenario options: an unknown option i
 out=$("${SCEN[@]}" --timeout abc 2>&1); code "scenario options: a timeout that is no number is refused" 64 $?
 out=$("${SCEN[@]}" --print-build 2>&1); code "print-build: exit 0" 0 $?
 has "print-build: the one-line way" "$out" "harness/scenario-build.sh --w2"
-has "print-build: casement's test build" "$out" "dev/bootstrap.sh --build-only"
-has "print-build: sill with its test features" "$out" "-p shell-app --features debug"
+has "print-build: bardo-compositor's test build" "$out" "dev/bootstrap.sh --build-only"
+has "print-build: bardo-shell with its test features" "$out" "-p shell-app --features debug"
 has "print-build: the screen helper with the fixture callers" "$out" "-p computer-use-daemon --features fixture-callers"
 has "print-build: the assistant's services as test builds" "$out" "-p action-accept --bins"
 has "print-build: the drawing app" "$out" "build-excalidraw.sh"
-lacks "print-build: not W1's plain casement build" "$out" "-p compositor-ctl"
+lacks "print-build: not W1's plain bardo-compositor build" "$out" "-p compositor-ctl"
 lacks "print-build: not W1's folders" "$out" "/mnt/data/cargo/w1"
 if [ -z "$(bash -c "source '$ROOT/harness/lib/jail.sh'; jail_violations")" ]; then
   echo "skip: this is the jail; the outside-the-jail checks are not run"
@@ -69,7 +69,7 @@ has "a socket that is not there: says start the bridge" "$out" "start the bridge
 # ---- the gate leaves it out; the floor knows the screen helper
 grep -q '^# opt-in:' "${SCEN[0]}" && ok "scenario: carries the opt-in line" || bad "scenario: carries the opt-in line"
 grep -q "grep -q '^# opt-in:'" "$ROOT/gate/desktop-gate.sh" && ok "gate: skips opt-in scenarios" || bad "gate: skips opt-in scenarios"
-grep -q 'cuad) echo screen keys windows' "$ROOT/harness/lib/casement-floor.sh" && ok "floor: cuad takes screen, keys, windows" || bad "floor: cuad takes screen, keys, windows"
+grep -q 'bardo-computer-use) echo screen keys windows' "$ROOT/harness/lib/compositor-floor.sh" && ok "floor: bardo-computer-use takes screen, keys, windows" || bad "floor: bardo-computer-use takes screen, keys, windows"
 grep -q -- '--w2' "$ROOT/harness/scenario-build.sh" && ok "scenario-build: has --w2" || bad "scenario-build: has --w2"
 
 # ---- the request and the browser profile
@@ -241,11 +241,11 @@ has "sheets: the unanswered one reads none" "$sheets" '"answer": "none"'
 
 # ---- the report from a canned run
 run="$scratch/run"
-mkdir -p "$run/out" "$run/shots" "$run/agents/.local/state/quire/inferd"
+mkdir -p "$run/out" "$run/shots" "$run/agents/.local/state/bardo/inference"
 cp "$FIX/trace.jsonl" "$run/"
-# a row in the shape companiond writes (by, n, tier, class, shape, route, answer, took_ms, tokens, messages)
-echo '{"by":"companiond","n":10,"tier":"balanced","class":"prompt","shape":"text","route":["routed to local/x"],"messages":[{"role":"system","text":"You are the assistant of this desktop. Be brief."}],"answer":{"kind":"replied","v":{"text":"Starting.","calls":[{"name":"org_bardo_Companion-companion_task_start","args":"{\"goal\": \"Get the specs of the lamp on this page\", \"kind\": \"research\"}"}],"stop":"tool_use"}},"took_ms":1208,"input_tokens":3122,"output_tokens":41}' >>"$run/trace.jsonl"
-cp "$FIX/audit.jsonl" "$run/agents/.local/state/quire/inferd/audit.jsonl"
+# a row in the shape bardo-companiond writes (by, n, tier, class, shape, route, answer, took_ms, tokens, messages)
+echo '{"by":"bardo-companiond","n":10,"tier":"balanced","class":"prompt","shape":"text","route":["routed to local/x"],"messages":[{"role":"system","text":"You are the assistant of this desktop. Be brief."}],"answer":{"kind":"replied","v":{"text":"Starting.","calls":[{"name":"org_bardo_Companion-companion_task_start","args":"{\"goal\": \"Get the specs of the lamp on this page\", \"kind\": \"research\"}"}],"stop":"tool_use"}},"took_ms":1208,"input_tokens":3122,"output_tokens":41}' >>"$run/trace.jsonl"
+cp "$FIX/audit.jsonl" "$run/agents/.local/state/bardo/inference/audit.jsonl"
 printf 'start\t1000000000000\t1000\ncasement_up\t1005000000000\t1005\nstack_up\t1010000000000\t1010\npage_open\t1015000000000\t1015\nasked\t1020000000000\t1020\nfirst_turn\t1025000000000\t1025\nfirst_screen_step\t1030000000000\t1030\ndrawing_saved\t1100000000000\t1100\nsvg_saved\t1110000000000\t1110\nfinished\t1120000000000\t1120\n' >"$run/stamps.tsv"
 cp "$scratch/drawings/good.excalidraw" "$run/out/lamp.excalidraw"
 printf '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0"/></svg>\n' >"$run/out/lamp.svg"
@@ -267,10 +267,10 @@ has "report: stage since start" "$(tr -s ' ' <<<"$report")" "| drawing file save
 has "report: screen looks counted" "$report" "3 looks at the screen by screen-model"
 has "report: picture listed" "$report" "shots/01-pages-open.png"
 [ -s "$run/report.md" ] && ok "report: report.md written" || bad "report: report.md written"
-mkdir -p "$run/agent-logs"; printf 'started\nthread x has overflowed its stack\nfatal runtime error: stack overflow, aborting\n' >"$run/agent-logs/companiond.log"
+mkdir -p "$run/agent-logs"; printf 'started\nthread x has overflowed its stack\nfatal runtime error: stack overflow, aborting\n' >"$run/agent-logs/bardo-companiond.log"
 report=$("${PY[@]}" report --run "$run" --expected "$FIX/expected.json"); code "report: a service that crashed fails the run" 1 $?
 has "report: Services that stopped heading" "$report" "## Services that stopped"
-has "report: names the crashed service" "$report" "- companiond.log: fatal runtime error: stack overflow, aborting"
+has "report: names the crashed service" "$report" "- bardo-companiond.log: fatal runtime error: stack overflow, aborting"
 rm -rf "$run/agent-logs"
 rm -f "$run/out/lamp.svg"
 report=$("${PY[@]}" report --run "$run" --expected "$FIX/expected.json"); code "report: no svg does not fail the run" 0 $?

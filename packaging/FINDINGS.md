@@ -262,9 +262,9 @@ check first is listed under "Not verified" at the end of this section.
 - guard.log moved from `$XDG_RUNTIME_DIR` (erased at the end of the session, which is when it is needed) to
   `${XDG_STATE_HOME:-$HOME/.local/state}/desktop-session/`, created at start, moved to `guard.log.1` once past 256 KiB.
   casement.log stays in the runtime folder (the drop-in appends to it and the socket name is read from it).
-  `DESKTOP_SESSION_STATE` (tests) still puts both in one folder.
+  `BARDO_SESSION_STATE` (tests) still puts both in one folder.
 - When the guard ends the session it prints `pkexec /usr/libexec/slipway-rollback` (only where that program is
-  installed; `DESKTOP_SESSION_ROLLBACK_HELPER` overrides the path for tests). That command asks for the administrator's
+  installed; `BARDO_SESSION_ROLLBACK_HELPER` overrides the path for tests). That command asks for the administrator's
   password, by the owner's decision.
 - **Not closed, needs a decision (slipway FINDINGS 22):** slipway counts different boots, so a crash loop inside one boot
   (login screen, log in, guard ends the session, log in again) is not rolled back until the computer restarts; the manual
@@ -601,8 +601,8 @@ screen or changes the displays (casement ARCHITECTURE "Consent"). Nobody answers
 - **ROOT-17 leftovers.** `install -d` without a mode in `install/install.sh`, `install/fonts.sh`, `release/smoke.sh` and `release/health-scenarios.sh` now says `-m 755`, and
   `install/install.sh` and `install/system.sh` set `umask 022`, so a root umask of 077 no longer makes `<prefix>/share/xdg-desktop-portal` a 0700 folder.
 - **ROOT-14 finished: the session settings file is data.** `~/.config/desktop-session/session.env` was sourced as shell (everything it set exported, before the session
-  had started). `read_settings` now reads lines `NAME=VALUE` and takes only `DESKTOP_SESSION_QUICK_SECS`, `DESKTOP_SESSION_FIRST_RUN_DELAY` (whole numbers) and
-  `DESKTOP_SESSION_BACKEND_ARGS`; anything else is ignored with a line in the log, and nothing in the file is run. The other `DESKTOP_SESSION_*` knobs (casement command,
+  had started). `read_settings` now reads lines `NAME=VALUE` and takes only `BARDO_SESSION_QUICK_SECS`, `BARDO_SESSION_FIRST_RUN_DELAY` (whole numbers) and
+  `BARDO_SESSION_BACKEND_ARGS`; anything else is ignored with a line in the log, and nothing in the file is run. The other `DESKTOP_SESSION_*` knobs (casement command,
   stubs, state folder) stay environment-only, which is how the harness sets them. Test: `gate/installer-check.sh` 3e takes the function out of the script and runs it on a
   file that holds a command, a `$(...)`, `PATH=` and a bad number. Still open, not ours: porter's unit-path check (porter ask in the ROOT-14 entry above, on hold);
   `CASEMENT_SESSION_ARGS` in the user manager is same-user writable and casement refuses a floor not owned by root, so no bypass.

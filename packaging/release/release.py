@@ -1,5 +1,5 @@
 """The release bundle: pack a staged tree into release.toml + bundle.tar.zst (signed), and verify one
-the way slipway does. Run with `python3 -I` through release/pack.sh and release/verify.sh; standard
+the way bardo-updater does. Run with `python3 -I` through release/pack.sh and release/verify.sh; standard
 library only (tomllib, tarfile, hashlib), plus the zstd and minisign programs.
 
 Format 1: see release/README.md. The rules below are the whole contract:
@@ -21,14 +21,14 @@ import tarfile
 import stat as S
 import tomllib
 
-PREFIX = "opt/quire/current"
+PREFIX = "opt/bardo/current"
 BUNDLE = "bundle.tar.zst"
-# semver.org without build metadata (slipway refuses it, and leading zeros).
+# semver.org without build metadata (bardo-updater refuses it, and leading zeros).
 _ID = r"(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-" + _ID + r"(\." + _ID + r")*)?$")
 DATE = re.compile(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
 SHA = re.compile(r"^[0-9a-f]{64}$")
-# slipway's limits (updater-core), checked in pack and in verify.
+# bardo-updater's limits (updater-core), checked in pack and in verify.
 MAX_BUNDLE = 8 << 30
 MAX_FILES = 100000
 MAX_NOTES = 16 * 1024
@@ -40,16 +40,16 @@ PART = re.compile(r"^[A-Za-z0-9._+@=,~-]+$")
 EXPORT_ROOTS = (
     "/usr/share/wayland-sessions", "/usr/share/xdg-desktop-portal", "/usr/share/dbus-1/services",
     "/usr/lib/systemd/user", "/usr/share/applications", "/usr/local/bin",
-    "/usr/share/bardo", "/usr/share/porter", "/usr/share/stoker", "/usr/share/fonts",
+    "/usr/share/bardo", "/usr/share/fonts",
 )
 # A staged directory that maps to the same path under /usr, with no listing needed.
 AUTO_EXPORT_DIRS = (
     "share/wayland-sessions", "share/xdg-desktop-portal", "share/dbus-1/services", "lib/systemd/user",
-    "share/applications", "share/quire", "share/porter", "share/stoker", "share/fonts",
+    "share/applications", "share/bardo", "share/fonts",
 )
 # The tree of files bardo-updater-apply copies (not links) to a system folder. A file is accepted only when a rule of
 # system-files.list names it: that file is a committed copy of updater-core's ALLOWED_SYSTEM_FILES
-# (release/system.rs), checked against slipway's source by check-system-list.sh.
+# (release/system.rs), checked against bardo-updater's source by check-system-list.sh.
 SYSTEM_TREE = "system"
 SYSTEM_LIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "system-files.list")
 SYSTEM_NAME = re.compile(r"^[A-Za-z0-9+@_-][A-Za-z0-9._+@-]*$")
@@ -86,8 +86,8 @@ def clean_path(path, what="path"):
     for part in path.split("/"):
         if part in ("", ".", "..") or not PART.match(part):
             raise Refused(f"{what} {path!r}: not a clean relative path")
-    if path.split("/")[0] == ".slipway":
-        raise Refused(f"{what} {path!r}: .slipway is reserved")
+    if path.split("/")[0] == ".bardo-updater":
+        raise Refused(f"{what} {path!r}: .bardo-updater is reserved")
     return path
 
 
@@ -162,7 +162,7 @@ def walk_stage(stage):
     top = os.path.join(stage, *PREFIX.split("/"))
     if not os.path.isdir(top):
         raise Refused(f"no staged tree at {top}")
-    for here, allowed in ((stage, "opt"), (os.path.join(stage, "opt"), "quire"), (os.path.join(stage, "opt", "quire"), "current")):
+    for here, allowed in ((stage, "opt"), (os.path.join(stage, "opt"), "bardo"), (os.path.join(stage, "opt", "bardo"), "current")):
         extra = sorted(set(os.listdir(here)) - {allowed})
         if extra:
             raise Refused(f"{here}: files outside {PREFIX}: {', '.join(extra)}")
@@ -262,8 +262,8 @@ def sign(path):
     if not key:
         raise Refused("MINISIGN_KEY_FILE is not set")
     password = os.environ.get("MINISIGN_PASSWORD", "")
-    # -H: prehashed (the ED kind slipway requires); minisign 0.11 and later do it by default, older ones need the flag.
-    subprocess.run(["minisign", "-S", "-H", "-s", key, "-m", path, "-x", path + ".minisig", "-t", "quire desktop release"],
+    # -H: prehashed (the ED kind bardo-updater requires); minisign 0.11 and later do it by default, older ones need the flag.
+    subprocess.run(["minisign", "-S", "-H", "-s", key, "-m", path, "-x", path + ".minisig", "-t", "bardo desktop release"],
                    input=(password + "\n").encode(), check=True)
     check_prehashed(path + ".minisig")
 
@@ -295,7 +295,7 @@ def pack(a):
 # ------------------------------------------------------------------------------------------- verify
 
 def check_prehashed(sig_path):
-    """The signature line must decode to the prehashed kind 'ED' (a legacy 'Ed' one is refused by slipway)."""
+    """The signature line must decode to the prehashed kind 'ED' (a legacy 'Ed' one is refused by bardo-updater)."""
     try:
         lines = open(sig_path, encoding="utf-8").read().split("\n")
         raw = base64.b64decode(lines[1], validate=True)
@@ -461,7 +461,7 @@ def check_installed(directory, root, base="/"):
     print(f"installed {doc['version']}: {len(doc.get('export', []))} exports and {len(doc.get('system', []))} system files in place")
 
 
-def slipway_system_rules(source):
+def updater_system_rules(source):
     """The rules of updater-core's ALLOWED_SYSTEM_FILES in the text of release/system.rs, as (folder, kind, name)."""
     block = re.search(r"ALLOWED_SYSTEM_FILES[^=]*=\s*\[(.*?)\n\];", source, re.S)
     if not block:
@@ -474,17 +474,17 @@ def slipway_system_rules(source):
 
 
 def check_system_list(source_path):
-    """Fails unless system-files.list holds exactly the rules of slipway's source, in the same order."""
+    """Fails unless system-files.list holds exactly the rules of bardo-updater's source, in the same order."""
     with open(source_path, encoding="utf-8") as f:
-        theirs = slipway_system_rules(f.read())
+        theirs = updater_system_rules(f.read())
     if theirs != SYSTEM_RULES:
         ours, other = set(SYSTEM_RULES), set(theirs)
         extra = sorted(" ".join(r) for r in ours - other)
         missing = sorted(" ".join(r) for r in other - ours)
-        raise Refused("release/system-files.list differs from slipway's ALLOWED_SYSTEM_FILES: "
-                      f"only here: {extra or 'nothing'}; only in slipway: {missing or 'nothing'}"
+        raise Refused("release/system-files.list differs from bardo-updater's ALLOWED_SYSTEM_FILES: "
+                      f"only here: {extra or 'nothing'}; only in bardo-updater: {missing or 'nothing'}"
                       + ("" if ours != other else " (same rules, different order)"))
-    print(f"system-files.list matches slipway's ALLOWED_SYSTEM_FILES ({len(theirs)} rules)")
+    print(f"system-files.list matches bardo-updater's ALLOWED_SYSTEM_FILES ({len(theirs)} rules)")
 
 
 def main(argv):

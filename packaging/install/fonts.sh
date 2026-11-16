@@ -2,9 +2,9 @@
 # The colour emoji font (sourced by install.sh, never run). Our renderer draws only COLRv1 colour fonts. Fedora's
 # google-noto-color-emoji-fonts is one; Ubuntu's fonts-noto-color-emoji and Arch's noto-fonts-emoji are the bitmap
 # build, which draws nothing for us. So the desktop ships Noto-COLRv1.ttf (OFL, see fonts/README.md) and puts it
-# in <prefix>/share/fonts/quire/ unless fontconfig already knows a COLRv1 Noto Color Emoji.
+# in <prefix>/share/fonts/bardo/ unless fontconfig already knows a COLRv1 Noto Color Emoji.
 #
-# Needs from the caller: HERE (the desktop repo), prefix, destdir. DESKTOP_FONTS_SRC overrides the directory the
+# Needs from the caller: HERE (the desktop repo), prefix, destdir. BARDO_FONTS_SRC overrides the directory the
 # font comes from (tests).
 #
 #   emoji_font_dir        where it goes (without the destdir)
@@ -13,8 +13,8 @@
 #   install_emoji_font    copy the font and its licence, then `fc-cache -f` the directory (not when staged)
 #   emoji_font_commands   the commands, as root would run them, for when the directory is not writable by you
 
-emoji_font_src() { echo "${DESKTOP_FONTS_SRC:-$HERE/fonts}"; }
-emoji_font_dir() { echo "$prefix/share/fonts/quire"; }
+emoji_font_src() { echo "${BARDO_FONTS_SRC:-$HERE/fonts}"; }
+emoji_font_dir() { echo "$prefix/share/fonts/bardo"; }
 
 emoji_font_state() {
   local target=$destdir$(emoji_font_dir)/Noto-COLRv1.ttf listing

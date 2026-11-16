@@ -3,7 +3,7 @@
 `Noto-COLRv1.ttf` is Noto Color Emoji in the COLRv1 build, the only colour emoji format our renderer can
 draw. Fedora ships it as `google-noto-color-emoji-fonts`; Ubuntu (`fonts-noto-color-emoji`) and Arch
 (`noto-fonts-emoji`) ship the bitmap build, which draws nothing for us. `install.sh` puts this file in
-`<prefix>/share/fonts/quire/` unless fontconfig already lists a `Noto-COLRv1` font.
+`<prefix>/share/fonts/bardo/` unless fontconfig already lists a `Noto-COLRv1` font.
 
 | File | Source | sha256 |
 |---|---|---|

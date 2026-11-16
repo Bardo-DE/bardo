@@ -3,11 +3,11 @@
 #
 # bardo-updater.service, the software update service (the daily check, the notice, the Software Update page),
 # is wanted here so it runs in every login without anyone enabling it: its own [Install] section is
-# never acted on by a person's install, and nothing else starts it. A computer without slipway has no such
+# never acted on by a person's install, and nothing else starts it. A computer without bardo-updater has no such
 # unit and the line does nothing. The service orders itself after graphical-session.target, so it starts once
-# this session is up. It is not what confirms a good start: the shell does that by running `slipway confirm`.
+# this session is up. It is not what confirms a good start: the shell does that by running `bardo-updater confirm`.
 [Unit]
-Description=sill (casement) session
+Description=Bardo session
 Documentation=man:systemd.special(7)
 BindsTo=graphical-session.target
 Before=graphical-session.target

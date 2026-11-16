@@ -1,7 +1,7 @@
 # The desktop's own processes: which program is which, and the role it plays.
 #
 # Installed root-owned as /etc/bardo/desktop-callers.toml (root:root 0644, in a root-owned folder) by the
-# desktop's installer and by every release (a system file slipway places). An administrator or a developer
+# desktop's installer and by every release (a system file bardo-updater places). An administrator or a developer
 # adds rows in /etc/bardo/desktop-callers.d/*.toml; nobody's own folder is read. Without this file the update
 # service, the portal backend and the input service refuse every caller.
 #
@@ -15,7 +15,7 @@
 # A unit named here must be a plain root-owned file (and any drop-in too): the unit manager's judge reads a symlink, whose mode
 # is 0777, as a file anyone could change, and such a unit never proves `Full`. A release therefore places these units as system
 # files (release/build.sh `plain_units`) and install/install.sh copies them to /etc/systemd/user; the system units
-# (palmrest, keycap, turnstile) are copied to /usr/lib/systemd/system.
+# (bardo-mouse-gestures, bardo-key-remap, bardo-input-broker) are copied to /usr/lib/systemd/system.
 # A row with no `unit` is a program known by its image alone; its ceiling is `Exe`. Only `settings` (a second
 # row, for Settings started by a launcher), `updater_cli`, `sandbox_launcher` and `manager` have such a row.
 # `exe` is required, every path is absolute, and a `*` stands for any run of characters inside one path segment.
@@ -29,7 +29,7 @@
 app  = "org.bardo.Shell"
 unit = "bardo-shell.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/sill",
+  "/opt/bardo/releases/*/bin/bardo-shell",
   "/opt/bardo/current/bin/bardo-shell",
   "/usr/local/bin/bardo-shell",
   "/usr/bin/bardo-shell",
@@ -42,11 +42,10 @@ role = "shell"
 app  = "org.bardo.Portal"
 unit = "bardo-portal.service"
 exe  = [
-  "/opt/bardo/releases/*/libexec/transom",
+  "/opt/bardo/releases/*/libexec/bardo/bardo-portal",
   "/opt/bardo/current/libexec/bardo/bardo-portal",
-  "/usr/local/libexec/transom",
+  "/usr/local/libexec/bardo/bardo-portal",
   "/usr/libexec/bardo/bardo-portal",
-  "/opt/bardo/releases/*/bin/transom",
 ]
 role = "portal"
 
@@ -66,9 +65,9 @@ role = "portal_frontend"
 app  = "org.bardo.Compositor"
 unit = "bardo-compositor.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/casement",
+  "/opt/bardo/releases/*/bin/bardo-compositor",
   "/opt/bardo/current/bin/bardo-compositor",
-  "/usr/local/bin/casement",
+  "/usr/local/bin/bardo-compositor",
   "/usr/bin/bardo-compositor",
 ]
 role = "compositor"
@@ -78,9 +77,9 @@ role = "compositor"
 app  = "org.bardo.Agent"
 unit = "bardo-computer-use.service"
 exe  = [
-  "/opt/bardo/releases/*/libexec/quire/cuad",
-  "/opt/bardo/current/libexec/quire/cuad",
-  "/usr/local/libexec/quire/cuad",
+  "/opt/bardo/releases/*/libexec/bardo/bardo-computer-use",
+  "/opt/bardo/current/libexec/bardo/bardo-computer-use",
+  "/usr/local/libexec/bardo/bardo-computer-use",
   "/usr/libexec/bardo/bardo-computer-use",
 ]
 role = "agent_tier"
@@ -90,9 +89,9 @@ role = "agent_tier"
 app  = "org.bardo.Settings"
 unit = "org.bardo.Settings.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/detent",
+  "/opt/bardo/releases/*/bin/bardo-settings",
   "/opt/bardo/current/bin/bardo-settings",
-  "/usr/local/bin/detent",
+  "/usr/local/bin/bardo-settings",
   "/usr/bin/bardo-settings",
 ]
 role = "settings"
@@ -102,9 +101,9 @@ role = "settings"
 [[peer]]
 app  = "org.bardo.Settings"
 exe  = [
-  "/opt/bardo/releases/*/bin/detent",
+  "/opt/bardo/releases/*/bin/bardo-settings",
   "/opt/bardo/current/bin/bardo-settings",
-  "/usr/local/bin/detent",
+  "/usr/local/bin/bardo-settings",
   "/usr/bin/bardo-settings",
 ]
 role = "settings"
@@ -114,21 +113,21 @@ role = "settings"
 app  = "org.bardo.Updates"
 unit = "bardo-updater.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/slipway",
+  "/opt/bardo/releases/*/bin/bardo-updater",
   "/opt/bardo/current/bin/bardo-updater",
   "/usr/local/bin/bardo-updater",
-  "/usr/bin/slipway",
+  "/usr/bin/bardo-updater",
 ]
 role = "updater"
 
-# The slipway command line. A program: it has no unit, so its ceiling is Exe.
+# The bardo-updater command line. A program: it has no unit, so its ceiling is Exe.
 [[peer]]
 app  = "org.bardo.Updater"
 exe  = [
-  "/opt/bardo/releases/*/bin/slipway",
+  "/opt/bardo/releases/*/bin/bardo-updater",
   "/opt/bardo/current/bin/bardo-updater",
   "/usr/local/bin/bardo-updater",
-  "/usr/bin/slipway",
+  "/usr/bin/bardo-updater",
 ]
 role = "updater_cli"
 
@@ -137,10 +136,10 @@ role = "updater_cli"
 app  = "org.bardo.MouseGestures"
 unit = "bardo-mouse-gestures.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/palmrest",
-  "/opt/bardo/current/bin/palmrest",
+  "/opt/bardo/releases/*/bin/bardo-mouse-gestures",
+  "/opt/bardo/current/bin/bardo-mouse-gestures",
   "/usr/local/bin/bardo-mouse-gestures",
-  "/usr/bin/palmrest",
+  "/usr/bin/bardo-mouse-gestures",
 ]
 role = "pad_daemon"
 
@@ -149,10 +148,10 @@ role = "pad_daemon"
 app  = "org.bardo.KeyRemap"
 unit = "bardo-key-remap.service"
 exe  = [
-  "/opt/bardo/releases/*/bin/keycap",
+  "/opt/bardo/releases/*/bin/bardo-key-remap",
   "/opt/bardo/current/bin/bardo-key-remap",
   "/usr/local/bin/bardo-key-remap",
-  "/usr/bin/keycap",
+  "/usr/bin/bardo-key-remap",
 ]
 role = "keymap_daemon"
 
@@ -161,9 +160,9 @@ role = "keymap_daemon"
 app  = "org.bardo.Accounts"
 unit = "bardo-accountd.service"
 exe  = [
-  "/opt/bardo/releases/*/libexec/quire/accountd",
-  "/opt/bardo/current/libexec/quire/accountd",
-  "/usr/local/libexec/quire/accountd",
+  "/opt/bardo/releases/*/libexec/bardo/bardo-accountd",
+  "/opt/bardo/current/libexec/bardo/bardo-accountd",
+  "/usr/local/libexec/bardo/bardo-accountd",
   "/usr/libexec/bardo/bardo-accountd",
 ]
 role = "accounts"
@@ -173,9 +172,9 @@ role = "accounts"
 app  = "org.bardo.Inference"
 unit = "bardo-inferd.service"
 exe  = [
-  "/opt/bardo/releases/*/libexec/quire/inferd",
-  "/opt/bardo/current/libexec/quire/inferd",
-  "/usr/local/libexec/quire/inferd",
+  "/opt/bardo/releases/*/libexec/bardo/bardo-inferd",
+  "/opt/bardo/current/libexec/bardo/bardo-inferd",
+  "/usr/local/libexec/bardo/bardo-inferd",
   "/usr/libexec/bardo/bardo-inferd",
 ]
 role = "inference"
@@ -185,9 +184,9 @@ role = "inference"
 app  = "org.bardo.Sync"
 unit = "bardo-syncd.service"
 exe  = [
-  "/opt/bardo/releases/*/libexec/quire/syncd",
-  "/opt/bardo/current/libexec/quire/syncd",
-  "/usr/local/libexec/quire/syncd",
+  "/opt/bardo/releases/*/libexec/bardo/bardo-syncd",
+  "/opt/bardo/current/libexec/bardo/bardo-syncd",
+  "/usr/local/libexec/bardo/bardo-syncd",
   "/usr/libexec/bardo/bardo-syncd",
 ]
 role = "sync"
@@ -197,9 +196,9 @@ role = "sync"
 app  = "org.bardo.Intents"
 unit = "bardo-actiond.service"
 exe  = [
-  "/opt/bardo/releases/*/libexec/quire/intentd",
-  "/opt/bardo/current/libexec/quire/intentd",
-  "/usr/local/libexec/quire/intentd",
+  "/opt/bardo/releases/*/libexec/bardo/bardo-actiond",
+  "/opt/bardo/current/libexec/bardo/bardo-actiond",
+  "/usr/local/libexec/bardo/bardo-actiond",
   "/usr/libexec/bardo/bardo-actiond",
 ]
 role = "router"
@@ -209,9 +208,9 @@ role = "router"
 app  = "org.bardo.Companion"
 unit = "bardo-companiond.service"
 exe  = [
-  "/opt/bardo/releases/*/libexec/quire/companiond",
-  "/opt/bardo/current/libexec/quire/companiond",
-  "/usr/local/libexec/quire/companiond",
+  "/opt/bardo/releases/*/libexec/bardo/bardo-companiond",
+  "/opt/bardo/current/libexec/bardo/bardo-companiond",
+  "/usr/local/libexec/bardo/bardo-companiond",
   "/usr/libexec/bardo/bardo-companiond",
 ]
 role = "companion"
@@ -221,9 +220,9 @@ role = "companion"
 app  = "org.bardo.Memory"
 unit = "bardo-memoryd.service"
 exe  = [
-  "/opt/bardo/releases/*/libexec/quire/memoryd",
-  "/opt/bardo/current/libexec/quire/memoryd",
-  "/usr/local/libexec/quire/memoryd",
+  "/opt/bardo/releases/*/libexec/bardo/bardo-memoryd",
+  "/opt/bardo/current/libexec/bardo/bardo-memoryd",
+  "/usr/local/libexec/bardo/bardo-memoryd",
   "/usr/libexec/bardo/bardo-memoryd",
 ]
 role = "memory"

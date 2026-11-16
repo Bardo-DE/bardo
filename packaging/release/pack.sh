@@ -3,7 +3,7 @@
 #
 #   release/pack.sh --stage DIR --version X --notes FILE --out DIR [--exports FILE] [--components FILE]
 #
-#   --stage DIR       the destdir build.sh staged into; DIR/opt/quire/current is what is packed
+#   --stage DIR       the destdir build.sh staged into; DIR/opt/bardo/current is what is packed
 #   --version X       semver, no leading v
 #   --notes FILE      plain-text release notes
 #   --out DIR         where the three files go

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Scenario `accounts-typed-server` (porter's manual-server form, accounts PLAN §8): when the lookup of an address finds no
-# server, accountd asks for one by hand (protocol, host, security, port, outgoing server, login name) and the account added
-# from it logs in through the relay. sill draws the form (its dd048640 maps the new fields) and the scenario fills it in with
+# server, bardo-accountd asks for one by hand (protocol, host, security, port, outgoing server, login name) and the account added
+# from it logs in through the relay. bardo-shell draws the form (its dd048640 maps the new fields) and the scenario fills it in with
 # clicks and keys; the server is the rig's fake POP3 with STARTTLS on its own port, the outgoing one its fake SMTP with
-# STARTTLS. Real accountd, sill on casement, the rig's fake Secret Service. Since porter's accounts split (Phase B) accountd
+# STARTTLS. Real bardo-accountd, bardo-shell on bardo-compositor, the rig's fake Secret Service. Since porter's accounts split (Phase B) bardo-accountd
 # no longer relays an app to the mail server (the app signs in itself, with the password Identities1 hands it), so the typed
-# port is checked where accountd keeps it: the account's endpoints in its registry.
+# port is checked where bardo-accountd keeps it: the account's endpoints in its registry.
 #
 # The address is a Fastmail one on purpose: the lookup runs offline in the jail, and a lookup that cannot reach anything
 # is answered `failed: unreachable` (no form) -- the typed form is offered only when the lookup MISSES. An address a shipped
@@ -15,7 +15,7 @@
 # After a pop-up's value is chosen the sheet takes no keys until it is clicked again (Tab and typed text are lost), so each
 # field is focused with a click (positions are the sheet's, the output being 1920x1080).
 #
-#   boot      casement, recorded bus, the fakes (POP3 and SMTP, STARTTLS), Secret Service, accountd, sill
+#   boot      bardo-compositor, recorded bus, the fakes (POP3 and SMTP, STARTTLS), Secret Service, bardo-accountd, bardo-shell
 #   form      AddAccount for generic-imap: the address and password form (capture); submitting a claimed address brings
 #             the typed-server form (capture): the protocol pop-up reads IMAP and the server is guessed imap.fastmail.com
 #   typed     POP3 chosen (the server guess becomes pop.fastmail.com), the host, STARTTLS, the fake's port, the outgoing
@@ -111,7 +111,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_form step_typed step_stored step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd daemon rig-servers secrets add offer use; do
+  for f in bardo-accountd daemon rig-servers secrets add offer use; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

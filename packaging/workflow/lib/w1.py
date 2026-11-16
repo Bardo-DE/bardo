@@ -10,8 +10,8 @@ Commands:
   loopback URL                      "host port" of a loopback http URL; exit 1 for anything else
   served                            stdin: a /v1/models answer -> the model names it lists, one per line
   catalog --src F --out F ...       a catalogue entry as an engine on another computer (attached)
-  inferd-config ...                 the text of inferd's configuration for this run
-  cuad-settings ...                 the text of the computer-use settings for this run
+  bardo-inferd-config ...                 the text of bardo-inferd's configuration for this run
+  bardo-computer-use-settings ...                 the text of the computer-use settings for this run
   sentence --outdir DIR             the sentence the person says to the assistant
   serve --dir D --port-file F       serve D on 127.0.0.1 (free port, written to F) until stopped;
                                     --mount /PREFIX/=FOLDER (repeatable) serves a folder under a path instead
@@ -185,7 +185,7 @@ def cmd_catalog(args):
 
 
 def inferd_config_text(planner, screen):
-    """inferd's configuration for the run: two engines on other computers, nothing started here.
+    """bardo-inferd's configuration for the run: two engines on other computers, nothing started here.
 
     planner and screen are (catalogue id, loopback URL) pairs.
     """
@@ -508,7 +508,7 @@ def build_report(run, expected):
     run = Path(run)
     stamps = read_stamps(run / "stamps.tsv")
     trace = read_jsonl(run / "trace.jsonl")
-    audit = read_jsonl(run / "agents/.local/state/quire/inferd/audit.jsonl")
+    audit = read_jsonl(run / "agents/.local/state/bardo/inference/audit.jsonl")
     started = stamps.get("start", (0, 0))[1]
     steps = [s for s in screen_steps(audit) if s[0] >= started]
     glbs = sorted((run / "out").glob("*.glb")) if (run / "out").is_dir() else []
@@ -621,9 +621,9 @@ def build_parser():
             (["--served"], {"required": True}),
             (["--tool-parser"], {"default": "", "help": "default: the entry's own engine line"}),
             (["--reasoning-parser"], {"default": ""}))
-    command("inferd-config", cmd_inferd_config, (["--planner-id"], {"required": True}), (["--planner-url"], {"required": True}),
+    command("bardo-inferd-config", cmd_inferd_config, (["--planner-id"], {"required": True}), (["--planner-url"], {"required": True}),
             (["--screen-id"], {"required": True}), (["--screen-url"], {"required": True}))
-    command("cuad-settings", cmd_cuad_settings, (["--app"], {"action": "append", "default": [], "help": "APP=ask|always"}),
+    command("bardo-computer-use-settings", cmd_cuad_settings, (["--app"], {"action": "append", "default": [], "help": "APP=ask|always"}),
             (["--steps"], {"type": int, "default": 400}), (["--active-s"], {"type": int, "default": 3600}))
     command("sentence", cmd_sentence, (["--outdir"], {"required": True}))
     command("serve", cmd_serve, (["--dir"], {"default": ""}), (["--mount"], {"action": "append", "default": [], "help": "/PREFIX/=FOLDER"}),

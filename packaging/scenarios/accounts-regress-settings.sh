@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
-# Scenario `accounts-regress-detent`: detent's Accounts pane, as accounts-hunt found it wrong (probes 4, 5 and 6) and
-# detent 06f5829 fixed it. detent runs with ui-blitz's debug probe (BARDO_DEBUG_PROBE), so its controls are read by role and
-# name; what is only text (the line under a row) is measured in the capture. Real accountd, sill (the sheet host), detent at
+# Scenario `accounts-regress-settings`: bardo-settings's Accounts pane, as accounts-hunt found it wrong (probes 4, 5 and 6) and
+# bardo-settings 06f5829 fixed it. bardo-settings runs with ui-blitz's debug probe (BARDO_DEBUG_PROBE), so its controls are read by role and
+# name; what is only text (the line under a row) is measured in the capture. Real bardo-accountd, bardo-shell (the sheet host), bardo-settings at
 # its pin, the rigs' fake mail and Graph (porter's and ferry's).
 #
-#   boot      a password account (Fake Mail) and a browser account (Microsoft) added through accountd's sheet, an OpenAI key
+#   boot      a password account (Fake Mail) and a browser account (Microsoft) added through bardo-accountd's sheet, an OpenAI key
 #             added through the same sheet, a permit for an app on the key (the permits and their Revoke are the AI keys', and
-#             accountd's since porter's step 5c); the Accounts pane reads accountd, inferd (spend rows) and (if it runs) syncd
+#             bardo-accountd's since porter's step 5c); the Accounts pane reads bardo-accountd, bardo-inferd (spend rows) and (if it runs) bardo-syncd
 #   D1        the list's rows are named by their account, read apart ("<account>, <provider>"), and every detail button
 #             names what it acts on: "Revoke <app> ...", "Sign in again <account>", "Remove account <account>", never the
 #             bare word [probe listing]
 #   D2        the sidebar search "acc" keeps Accounts and drops Dock [probe listing]
 #   D3        Sign in again's line follows the account's `sign_in` row: the browser account's line is longer than the
-#             password account's (the plain line was one for both before) [accountd's sign_in key, and the ink of the inline help line
+#             password account's (the plain line was one for both before) [bardo-accountd's sign_in key, and the ink of the inline help line
 #             in the row's label column, measured in the capture; the text itself is not read]
 #   D4        the remove question's answer "Remove account" is legible: WCAG contrast of its text on its fill is at least
 #             4.5, in the light theme and in the dark [pixels of the capture, the button's box from the probe]
 #
-# Not asserted, screenshot only: the exact words of D3's lines (the probe lists controls, and the line is not one; detent's
+# Not asserted, screenshot only: the exact words of D3's lines (the probe lists controls, and the line is not one; bardo-settings's
 # own tests assert the words).
 #
 # budget: 200
@@ -32,12 +32,12 @@ acc_need
 acc_env
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
-OUT_DIR=$(scenario_out accounts-regress-detent)
+OUT_DIR=$(scenario_out accounts-regress-settings)
 
 cleanup() { acc_stop_all; stop_daemon; stop_compositor; scratch_drop; }
 trap cleanup EXIT
 
-# buttons: the names of detent's buttons now, one per line.
+# buttons: the names of bardo-settings's buttons now, one per line.
 buttons() { detent_listing | awk -F'\t' '$1 == "button" { print $7 }'; }
 # options: the sidebar's rows now.
 options() { detent_listing | awk -F'\t' '$1 == "option" { print $7 }'; }
@@ -65,10 +65,10 @@ step_boot() {
   AI_ACCOUNT=$ACCOUNT
   sheet_grant org.bardo.Companion grant || return 1
   detent_start
-  acc_wait 30 detent_mapped || { echo "detent never mapped" >&2; tail -5 "$OUT_DIR/detent.log" >&2; return 1; }
+  acc_wait 30 detent_mapped || { echo "bardo-settings never mapped" >&2; tail -5 "$OUT_DIR/bardo-settings.log" >&2; return 1; }
   sleep 4
   detent_focus
-  # accountd lists the AI key beside the identities; the sign-in rows below are the identities'.
+  # bardo-accountd lists the AI key beside the identities; the sign-in rows below are the identities'.
   ACCOUNTS=($(accounts_now | tr ' ' '\n' | grep -vxF -- "$AI_ACCOUNT"))
   echo "accounts: ${ACCOUNTS[*]}" >&2
   [ "${#ACCOUNTS[@]}" = 2 ]
@@ -106,7 +106,7 @@ step_d1_names() {
 }
 
 # The line under Sign in again is inline help (quire's FieldRow shows its help under the label unless a page asks for an info
-# button, and detent does not). The row is a probed group named by its label, so the help line is measured where it is
+# button, and bardo-settings does not). The row is a probed group named by its label, so the help line is measured where it is
 # drawn: the ink in the row's label column (the box of the row up to the Sign in again button, which is the same title for
 # both accounts), in the capture of the account's page. Text is not read, only how much of it there is.
 help_ink() { # NTH: the ink in the label column of the Sign in again row on the NTHth ada@rig.test account's detail
@@ -164,7 +164,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_d2_search step_d1_names step_d3_reauth step_d4_remove_legible step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd inferd daemon detent rig-servers sync-rig-servers secrets add; do
+  for f in bardo-accountd bardo-inferd daemon bardo-settings rig-servers sync-rig-servers secrets add; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

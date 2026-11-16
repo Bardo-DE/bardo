@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Scenario `shell-host-on-casement-and-kwin` (plan §4.14): layer-shell-host's accept scripts pass on casement.
+# Scenario `shell-host-on-compositor-and-kwin` (plan §4.14): layer-shell-host's accept scripts pass on bardo-compositor.
 #
-# The casement half: layer-shell-host's eight real-input scripts (scripts/dev/accept-*.sh) run one after the
-# other, each as `COMPOSITOR=casement`, in this jail. The scripts start their own headless casement
-# through casement's dev/up.sh and drive it through `bardo-compositorctl debug inject`; this scenario only
-# supplies the artefacts (built outside by harness/scenario-build.sh, A7), the casement tools, foot
+# The bardo-compositor half: layer-shell-host's eight real-input scripts (scripts/dev/accept-*.sh) run one after the
+# other, each as `COMPOSITOR=bardo-compositor`, in this jail. The scripts start their own headless bardo-compositor
+# through bardo-compositor's dev/up.sh and drive it through `bardo-compositorctl debug inject`; this scenario only
+# supplies the artefacts (built outside by harness/scenario-build.sh, A7), the bardo-compositor tools, foot
 # and the demos' CPU backend, and reads each script's verdict. Each script's exit code is its
 # verdict: 0 passed, anything else failed (their PASS/FAIL lines are printed for the ones that did).
 #
@@ -24,17 +24,17 @@ SH="$SCEN_SIB/layer-shell"
 # The demos were built into build/shell-host-target (scenario-build.sh); the accept scripts find them through CARGO_TARGET_DIR.
 export CARGO_TARGET_DIR="$SCEN_BUILD/shell-host-target"
 EXAMPLES="$CARGO_TARGET_DIR/debug/examples"
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$SCEN_TOOLS/bin/compositor-shell-exec" \
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$SCEN_TOOLS/bin/compositor-shell-exec" \
   "$SCEN_TOOLS/bin/foot" "$SH/scripts/dev/lib/compositor.sh" \
   "$EXAMPLES/demo_hover" "$EXAMPLES/demo_scroll" "$EXAMPLES/demo_ime" "$EXAMPLES/demo_swipe" \
   "$EXAMPLES/demo_switcher" "$EXAMPLES/demo_drag" "$EXAMPLES/demo_lock" "$EXAMPLES/demo_popup_keys" \
   "$EXAMPLES/demo_window" "$EXAMPLES/probe_toplevel"
 
-export COMPOSITOR=casement BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
+export COMPOSITOR=bardo-compositor BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
 # accept-ime runs fcitx5, which takes the input method and the virtual keyboard; accept-lock locks with demo_lock (a floor row for the built demo).
 # The demos that map the shell's surfaces are rows of the caller list as the shell; the ones that keep an exclusive keyboard
 # (accept-modifiers, accept-ime) start through compositor-shell-exec, which asks for the shell's connection and so holds the
-# role itself (harness/lib/casement-floor.sh).
+# role itself (harness/lib/compositor-floor.sh).
 floor_shim shell-host-on-casement fcitx5 compositor-shell-exec demo_lock demo_hover demo_scroll demo_ime demo_swipe demo_switcher demo_drag demo_popup_keys
 export BARDO_LAYER_SHELL_HOST_BACKEND=cpu FOOT="$SCEN_TOOLS/bin/foot"
 OUT_DIR=$(scenario_out shell-host-on-casement)
@@ -62,9 +62,9 @@ for name in "${SCRIPTS[@]}"; do
   done
   secs=$(( $(date +%s) - start ))
   if [ "$rc" = 0 ]; then
-    echo "PASS accept-$name on casement (${secs}s)"
+    echo "PASS accept-$name on bardo-compositor (${secs}s)"
   else
-    echo "FAIL accept-$name on casement (exit $rc, ${secs}s)"
+    echo "FAIL accept-$name on bardo-compositor (exit $rc, ${secs}s)"
     grep -E '^(PASS|FAIL) ' "$OUT_DIR/$name.log" | sed 's/^/    /' | cut -c1-200
     tail -15 "$OUT_DIR/$name.log" | sed 's/^/    | /' | cut -c1-200
     STATUS=1

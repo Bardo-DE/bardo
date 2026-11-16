@@ -9,8 +9,8 @@
 # so a fallback follows its primary.
 #
 #   binary       the program that must be on PATH (Flatpak and Snap exports count as installed too)
-#   desktop_ids  desktop entry ids to try, without ".desktop", in order; sill launch takes one of these.
-#                An empty list means the program has no desktop entry and cannot be launched by sill.
+#   desktop_ids  desktop entry ids to try, without ".desktop", in order; bardo-shell launch takes one of these.
+#                An empty list means the program has no desktop entry and cannot be launched by bardo-shell.
 #   app_ids      extra window ids to match (the entry's StartupWMClass and the id itself always count)
 #   package      the distribution package that provides the program: apt (Ubuntu), dnf (Fedora),
 #                pacman (Arch); only the install hint printed for a missing app uses it
@@ -103,7 +103,7 @@ desktop_ids = ["xterm", "debian-xterm"]
 package = { apt = "xterm", dnf = "xterm", pacman = "xterm" }
 
 [[app.candidate]]
-# xeyes ships no desktop entry on any of the three, so sill cannot launch it: run.sh reports that and
+# xeyes ships no desktop entry on any of the three, so bardo-shell cannot launch it: run.sh reports that and
 # skips. It is listed because the brief asked for it as the fallback.
 binary = "xeyes"
 desktop_ids = []

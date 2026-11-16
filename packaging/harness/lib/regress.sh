@@ -1,9 +1,9 @@
 # What the accounts-regress-* scenarios share (on top of harness/lib/accounts.sh): checks that fail the step, the sheet's
 # traffic read from the recorded bus, and measurements of a capture. Sourced after accounts.sh.
 #
-# How a sheet is observed. sill draws it through layer-shell-host, which never runs ui-blitz's debug probe (BARDO_DEBUG_PROBE
-# writes nothing for any sill surface: only a window of a quire app does), so there is no list of its controls. What is
-# read instead: what accountd tells it (Open/Update, the SheetView) and what the person's keys made it send back (Input),
+# How a sheet is observed. bardo-shell draws it through layer-shell-host, which never runs ui-blitz's debug probe (BARDO_DEBUG_PROBE
+# writes nothing for any bardo-shell surface: only a window of a quire app does), so there is no list of its controls. What is
+# read instead: what bardo-accountd tells it (Open/Update, the SheetView) and what the person's keys made it send back (Input),
 # both in the bus record (sheet-bus.py); and the capture of its surface (pixels.py): where the card is, whether two
 # captures are the same pixels, where the dark text lies. Text is never read: a text check compares two captures that
 # differ only in what is being tested.
@@ -46,7 +46,7 @@ card_top() { local x0 y0 x1; read -r x0 y0 x1 _ < <(sheet_card "$1") || return 1
 # same_shot A B [BOX]: two captures draw the same pixels (in the box).
 same_shot() { px same "$OUT_DIR/$1.png" "$OUT_DIR/$2.png" ${3:+--box "$3"} >/dev/null; }
 
-# ask APP LOG: an app asks for a permit to use the person's AI keys (ai-keys request: accountd's consent sheet) in the
+# ask APP LOG: an app asks for a permit to use the person's AI keys (ai-keys request: bardo-accountd's consent sheet) in the
 # background; the answer lands in LOG.
 ask() { ai_request_start "$1" "$2"; }
 
@@ -55,7 +55,7 @@ provider_copy() {
   sed -e "s/^id = .*/id = \"$1\"/" -e "s/^label = .*/label = \"$2\"/" "$PROV/$3.toml" >"$PROV/$1.toml"
 }
 
-# regress_boot: casement, the recorded bus, porter's rig (mail, the LLM API for an AI key) and ferry's (the issuer and Graph for Microsoft), Secret Service, the
+# regress_boot: bardo-compositor, the recorded bus, porter's rig (mail, the LLM API for an AI key) and ferry's (the issuer and Graph for Microsoft), Secret Service, the
 # provider files. The scenario starts the daemons itself.
 regress_boot() {
   start_compositor || return 1
@@ -69,7 +69,7 @@ regress_boot() {
   acc_config; acc_fake_mail_provider; acc_provider_openai_on_rig
 }
 
-# accounts_now: every account id in accountd's settings module (identities and AI keys), space separated.
+# accounts_now: every account id in bardo-accountd's settings module (identities and AI keys), space separated.
 accounts_now() {
   settings_describe | python3 -I -c '
 import json, sys
@@ -80,7 +80,7 @@ for k in json.load(sys.stdin)["key"]:
 print(" ".join(ids))'
 }
 
-# detent_mapped: detent's window is up.
+# detent_mapped: bardo-settings's window is up.
 detent_mapped() { [ -n "$(detent_frame 2>/dev/null)" ]; }
-# dkey NAME: a real key press into the focused window (detent) through casement's inject.
+# dkey NAME: a real key press into the focused window (bardo-settings) through bardo-compositor's inject.
 dkey() { bardo-compositorctl debug inject "key $1 down" "sleep 30" "key $1 up" "sleep 150" >/dev/null; sleep 0.25; }

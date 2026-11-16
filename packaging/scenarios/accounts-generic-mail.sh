@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
 # Scenario `accounts-generic-mail` (accounts PLAN §8, design 31 §7.1): a password mail account is added through
-# accountd's sheet as sill draws it, against fake IMAP and SMTP servers, and an app continues as that identity. Since
-# porter's accounts split (Phase B) accountd holds identities only: it no longer relays an app to the IMAP server, so the
+# bardo-accountd's sheet as bardo-shell draws it, against fake IMAP and SMTP servers, and an app continues as that identity. Since
+# porter's accounts split (Phase B) bardo-accountd holds identities only: it no longer relays an app to the IMAP server, so the
 # app's side is "Continue as" (Identities1.Offer, a sheet) and "I use this identity" (RegisterUse), and Settings lists the app
-# under the identity. Real accountd, real sill on casement, the rig's fakes (account-rig-servers) and its fake Secret
+# under the identity. Real bardo-accountd, real bardo-shell on bardo-compositor, the rig's fakes (account-rig-servers) and its fake Secret
 # Service; no network (harness/lib/accounts.sh says how each is set up).
 #
-#   boot      casement, a recorded private bus, the fakes (IMAP and SMTP over implicit TLS, a scratch CA that accountd
-#             trusts through SSL_CERT_FILE), the fake Secret Service, accountd, sill; sill is the sheet host
-#   list      an app asks AddAccount: sill draws the provider list (capture)
+#   boot      bardo-compositor, a recorded private bus, the fakes (IMAP and SMTP over implicit TLS, a scratch CA that bardo-accountd
+#             trusts through SSL_CERT_FILE), the fake Secret Service, bardo-accountd, bardo-shell; bardo-shell is the sheet host
+#   list      an app asks AddAccount: bardo-shell draws the provider list (capture)
 #   sign-in   "Fake" filters the list, Return picks it; the address and the password are typed (through the
 #             compositor), Return sends them, the review step shows Mail, Return is Done: the add-account answers `added`
-#   listed    accountd's settings module says the account is `ok` and labelled with the address
+#   listed    bardo-accountd's settings module says the account is `ok` and labelled with the address
 #   identity  an app (account-rig-client) lists the identities (the account is there), asks "Continue as" (the sheet is drawn,
 #             capture; Return picks the first) and gets the account's address back, says it uses the identity, and the
-#             identity's `used_by` row in accountd's settings module names the app. The IMAP login the app makes itself
+#             identity's `used_by` row in bardo-accountd's settings module names the app. The IMAP login the app makes itself
 #             with the password Identities1 hands it (TakePassword) is not driven: the rig's client has no command for it
 #   scan      no planted secret outside the places the design lets it through (harness/lib/secret-scan.py)
 #
 # The provider is a brand file ("Fake Mail", discovery fixed) and not "Other..." (generic-imap): that provider
 # finds servers by autoconfig over HTTPS on 443 or asks a host and dials 993 and 587, none of which a jail can
-# bind (ports under 1024); the typed-port form of porter's manual-server answers it and sill's mapping of it is
+# bind (ports under 1024); the typed-port form of porter's manual-server answers it and bardo-shell's mapping of it is
 # the open piece (see accounts-typed-server).
 #
 # budget: 180
@@ -103,7 +103,7 @@ step_scan() { scan_end; }
 
 run_steps step_boot step_list step_sign_in step_listed step_identity step_scan
 if [ "$STATUS" != 0 ]; then
-  for f in accountd daemon rig-servers secrets add offer use; do
+  for f in bardo-accountd daemon rig-servers secrets add offer use; do
     [ -f "$OUT_DIR/$f.log" ] && { echo "--- $f.log (tail)" >&2; tail -15 "$OUT_DIR/$f.log" >&2; }
   done
 fi

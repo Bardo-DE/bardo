@@ -3,13 +3,13 @@
 # specs and a dimensioned front view drawn in a drawing app with a few helpers, and the drawing is saved.
 #
 # The drawing app is Excalidraw, built offline (workflow/fixtures/w2/build-excalidraw.sh): no GPU, no account, no
-# network. It runs here, in the test jail on the headless test build of casement, because a dev-built shell is not
-# trusted on a real login; in the jail the dev caller rows make sill and cuad trusted. Nobody presses a button: this
-# script answers the confirmation sheets through sill's debug keys, and records every one in the report.
+# network. It runs here, in the test jail on the headless test build of bardo-compositor, because a dev-built shell is not
+# trusted on a real login; in the jail the dev caller rows make bardo-shell and bardo-computer-use trusted. Nobody presses a button: this
+# script answers the confirmation sheets through bardo-shell's debug keys, and records every one in the report.
 #
-#   what runs:  casement (headless) + sill + the assistant's services + the screen helper (cuad) + Zen with two tabs
+#   what runs:  bardo-compositor (headless) + bardo-shell + the assistant's services + the screen helper (bardo-computer-use) + Zen with two tabs
 #               (the lamp page at /lamp/, the drawing app at /draw/, both served on loopback inside the jail)
-#   the screen: the assistant drives the drawing app only through the screen (cuad). Nothing here calls the drawing app;
+#   the screen: the assistant drives the drawing app only through the screen (bardo-computer-use). Nothing here calls the drawing app;
 #               the saved file is read once, afterwards, to check it.
 #
 # Not part of the gate: it needs a screen model (the opt-in line below). Run it with workflow/w2-excalidraw.sh, which
@@ -24,7 +24,7 @@
 # Optional: W2_PLANNER_MODEL (default qwen3-4b-instruct-2507-fp8), W2_SCREEN_MODEL (default holo4-35b-a3b-fp8),
 # W2_PLANNER_SERVED / W2_SCREEN_SERVED, W2_BROWSER (default $JAIL_REAL_HOME/.local/opt/zen/zen), W2_BROWSER_APP
 # (the window id, default app.zen_browser.zen), W2_DRAW_DIR (the offline build, default
-# $JAIL_REAL_HOME/.cache/quire-workflow/excalidraw-0.18.0), W2_STOKER_CATALOG, W2_PROVIDERS, W2_SHOT_EVERY (seconds,
+# $JAIL_REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0), W2_STOKER_CATALOG, W2_PROVIDERS, W2_SHOT_EVERY (seconds,
 # default 120), W2_CUA_STEPS (default 300), W2_CUA_ACTIVE_S (default 1800), W2_AFTER_SAVE_S (how long to keep waiting for
 # the turn to end after the drawing is saved, default 300), W2_CLICK_PAGE (1, the default: the person clicks into the
 # lamp page, so the browser is the active app; 0: no click, so the screen helper has to ask the compositor for focus).
@@ -64,17 +64,17 @@ say() { printf '\n== %s\n' "$*"; }
 note() { printf '%s\n' "$*"; }
 
 # print_build: the builds this scenario needs. They are the test builds the other scenarios use (scenario-build.sh),
-# not the plain builds of the W1 rig: casement with its test features, sill with --features debug, cuad with the
+# not the plain builds of the W1 rig: bardo-compositor with its test features, bardo-shell with --features debug, bardo-computer-use with the
 # fixture caller table, and the assistant's services as action-accept builds (fixture identities from a fake /proc).
 print_build() {
   cat <<EOF
 # W2 runs in the test jail, so it needs the TEST builds. Run this outside the jail, from $SCEN_ROOT (it nices itself):
 harness/scenario-build.sh --w2
 # which builds, one at a time, into $SCEN_BUILD:
-# 1. casement with its test features (headless output, the test control), bardo-compositorctl and fake-logind
+# 1. bardo-compositor with its test features (headless output, the test control), bardo-compositorctl and fake-logind
 (cd $SCEN_SIB/compositor && CARGO_TARGET_DIR=$SCEN_BUILD/casement-target BARDO_COMPOSITOR_TOOLS=$SCEN_BUILD/tools nice dev/bootstrap.sh --build-only)
-# 2. private checkouts of the shell and its host library (the scenarios run sill's scripts from there)
-#    sill (scenario-build.sh: checkouts) at $SCEN_SIB/shell
+# 2. private checkouts of the shell and its host library (the scenarios run bardo-shell's scripts from there)
+#    bardo-shell (scenario-build.sh: checkouts) at $SCEN_SIB/shell
 # 3. the shell with its test features (the stand-in screen-brightness file)
 (cd $SCEN_SIB/shell && CARGO_TARGET_DIR=$SCEN_BUILD/sill-target nice cargo build -p shell-app --features debug)
 # 4. the screen helper with the fixture caller table (a plain build identifies nobody)
@@ -140,26 +140,26 @@ require_models() {
 }
 
 DK="$SCEN_BUILD/docket-target/debug"
-CUAD="$SCEN_BUILD/cua-target/debug/cuad"
+CUAD="$SCEN_BUILD/cua-target/debug/bardo-computer-use"
 BRINGUP="$DK/agent-bringup"
 QUIREDO="$DK/accept-bardo-do"
 REAL_HOME=${JAIL_REAL_HOME:-$HOME}
 BROWSER=${W2_BROWSER:-$REAL_HOME/.local/opt/zen/zen}
-DRAW_DIR=${W2_DRAW_DIR:-$REAL_HOME/.cache/quire-workflow/excalidraw-0.18.0}
+DRAW_DIR=${W2_DRAW_DIR:-$REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0}
 
 require_models
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_BUILD/sill-target/debug/sill" "$CUAD" "$BRINGUP" "$QUIREDO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
+  "$SCEN_BUILD/sill-target/debug/bardo-shell" "$CUAD" "$BRINGUP" "$QUIREDO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
 scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" casement-target sill-target cua-target docket-target
 [ -x "$BROWSER" ] || die "the browser $BROWSER is not there (set W2_BROWSER to Zen's program)"
 [ -s "$DRAW_DIR/main.js" ] || die "the drawing app is not built at $DRAW_DIR: run $WF/fixtures/w2/build-excalidraw.sh outside the jail"
 for tool in socat curl python3 busctl gdbus; do command -v "$tool" >/dev/null || die "$tool is missing"; done
 
-export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
-# casement asks before a program watches the screen, types or lists windows, and nobody answers inside a scenario, so
-# the floor allows exactly the programs this run starts that take those powers: cuad and bardo-compositorctl (the pictures).
-floor_shim w2-excalidraw sill cuad bardo-compositorctl || die "could not write the permission floor"
+# bardo-compositor asks before a program watches the screen, types or lists windows, and nobody answers inside a scenario, so
+# the floor allows exactly the programs this run starts that take those powers: bardo-computer-use and bardo-compositorctl (the pictures).
+floor_shim w2-excalidraw bardo-shell bardo-computer-use bardo-compositorctl || die "could not write the permission floor"
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out w2-excalidraw)
@@ -208,7 +208,7 @@ wait_for() {
   return 1
 }
 
-snap() { # NAME: a picture of the desktop, from casement's own capture
+snap() { # NAME: a picture of the desktop, from bardo-compositor's own capture
   [ "$SHOTS" = yes ] || return 0
   SHOT_N=$((SHOT_N + 1))
   shot "$RUN/shots/$(printf '%02d' "$SHOT_N")-$1.png" >/dev/null 2>&1 || true
@@ -243,19 +243,19 @@ PLANNER_SERVED="" SCREEN_SERVED=""
 prepare_models() {
   local catalog=$RUN/catalog src=${W2_STOKER_CATALOG:-$SCEN_SIB/models/catalog}
   [ -d "$src" ] || { note "No model catalogue at $src (set W2_STOKER_CATALOG)."; return 3; }
-  mkdir -p "$catalog" "$AGENTS/config/inferd"
+  mkdir -p "$catalog" "$AGENTS/config/bardo/inference"
   cp "$src"/*.toml "$catalog/"
   [ -f "$catalog/$PLANNER_MODEL.toml" ] || { note "The catalogue has no entry for $PLANNER_MODEL."; return 3; }
   [ -f "$catalog/$SCREEN_MODEL.toml" ] || { note "The catalogue has no entry for $SCREEN_MODEL."; return 3; }
   # Each entry's parsers come from its own engine line: a model is added as catalogue data alone.
   "${PY1[@]}" catalog --src "$src/$PLANNER_MODEL.toml" --out "$catalog/$PLANNER_MODEL.toml" --served "$PLANNER_SERVED" || return 3
   "${PY1[@]}" catalog --src "$src/$SCREEN_MODEL.toml" --out "$catalog/$SCREEN_MODEL.toml" --served "$SCREEN_SERVED" || return 3
-  "${PY1[@]}" inferd-config --planner-id "$PLANNER_MODEL" --planner-url "http://127.0.0.1:$PLANNER_PORT" \
-    --screen-id "$SCREEN_MODEL" --screen-url "http://127.0.0.1:$SCREEN_PORT" >"$AGENTS/config/inferd/inferd.toml" || return 3
-  mkdir -p "$CONFIG/cua"
+  "${PY1[@]}" bardo-inferd-config --planner-id "$PLANNER_MODEL" --planner-url "http://127.0.0.1:$PLANNER_PORT" \
+    --screen-id "$SCREEN_MODEL" --screen-url "http://127.0.0.1:$SCREEN_PORT" >"$AGENTS/config/bardo/inference/inferd.toml" || return 3
+  mkdir -p "$CONFIG/bardo/computer-use"
   # The browser is allowed outright: nobody is here to answer, and the jail is the boundary.
-  "${PY1[@]}" cuad-settings --app "$BROWSER_APP=ask" --steps "${W2_CUA_STEPS:-300}" --active-s "${W2_CUA_ACTIVE_S:-1800}" \
-    >"$CONFIG/computer-use/settings.toml"
+  "${PY1[@]}" bardo-computer-use-settings --app "$BROWSER_APP=ask" --steps "${W2_CUA_STEPS:-300}" --active-s "${W2_CUA_ACTIVE_S:-1800}" \
+    >"$CONFIG/bardo/computer-use/settings.toml"
 }
 
 # ---- the bus record and the sheets nobody is here to press
@@ -265,15 +265,15 @@ monitor_start() {
   MONITOR_PID=$!
 }
 
-# intents_field NAME: one field of `sill intents status` (showing: the id of the sheet on screen, empty when none).
+# intents_field NAME: one field of `bardo-shell intents status` (showing: the id of the sheet on screen, empty when none).
 intents_field() {
-  sill intents status 2>/dev/null | python3 -I -c '
+  bardo-shell intents status 2>/dev/null | python3 -I -c '
 import json, sys
 r = json.loads(sys.stdin.read())["v"]["v"]
 v = r[sys.argv[1]]
 print(" ".join(v) if isinstance(v, list) else ("" if v is None else v))' "$1"
 }
-sheet_key() { sill debug key "$SHEET" "$@" >>"$RUN/keys.log" 2>&1; }
+sheet_key() { bardo-shell debug key "$SHEET" "$@" >>"$RUN/keys.log" 2>&1; }
 
 # answer_sheets: in the background until $RUN/.stop. Every sheet that shows is answered "Allow once" (for the brief sheet,
 # "Use this brief": the sheet sends the field's words back as its answer, which is what confirms it) once it is armed, and
@@ -290,7 +290,7 @@ answer_sheets() {
     done
     [ -n "$info" ] || info=$(printf 'step\tpress\tunknown\tnot in the bus record')
     IFS=$'\t' read -r kind gesture app action <<<"$info"
-    sleep 2   # a sheet that has just appeared answers nothing until it has been still for a moment (sill's own script waits 1 s)
+    sleep 2   # a sheet that has just appeared answers nothing until it has been still for a moment (bardo-shell's own script waits 1 s)
     tries=0 keys="" got=""
     # Answered only when the bus carries the sheet's reply; keys are sent again, 3 s apart, until it does.
     while [ ! -e "$RUN/.stop" ]; do
@@ -315,7 +315,7 @@ answer_sheets() {
 
 # ---- the steps
 
-in_app_env() { # CMD...: in the desktop's environment, with the compositor's own runtime folder (cuad and the browser want it)
+in_app_env() { # CMD...: in the desktop's environment, with the compositor's own runtime folder (bardo-computer-use and the browser want it)
   in_env env XDG_RUNTIME_DIR="$(dirname "$WL")" "$@"
 }
 
@@ -331,7 +331,7 @@ step_boot() {
   build || return 1
   monitor_start
   stamp casement_up
-  # sill takes the floor's caller rows as the person's own (peephole's Proof::Dev) and, with them, the assistant's router.
+  # bardo-shell takes the floor's caller rows as the person's own (peephole's Proof::Dev) and, with them, the assistant's router.
   { cat "$FLOOR_DIR/desktop-callers.toml"
     printf '\n[[peer]]\napp = "org.bardo.Intents"\nrole = "router"\nexe = ["%s"]\n' "$(readlink -f "$DK/accept-actiond")"
   } >"$RUN/dev-callers.toml"
@@ -340,7 +340,7 @@ step_boot() {
   launch_daemon || return 1
   BARDO_SHELL_PID=$DAEMON
   NAME=$(output_name) || return 1
-  SHEET="sill-confirm-$NAME"
+  SHEET="bardo-shell-confirm-$NAME"
   note "The desktop and the shell are up."
 }
 
@@ -356,9 +356,9 @@ step_stack() {
   local providers=${W2_PROVIDERS:-$SCEN_SIB/accounts/providers} extra=()
   [ ! -d "$providers" ] || extra+=(--providers "$providers")
   # The screen helper's action, installed where the router reads apps' actions (as cua's installer does under
-  # <prefix>/share/quire/intents): without it the assistant has no way to use an app on the screen.
-  mkdir -p "$AGENTS/data/quire/intents"
-  cp "$SCEN_SIB/computer-use/manifests/org.bardo.ComputerUse.toml" "$AGENTS/data/quire/intents/" || return 1
+  # <prefix>/share/bardo/intents): without it the assistant has no way to use an app on the screen.
+  mkdir -p "$AGENTS/data/bardo/intents"
+  cp "$SCEN_SIB/computer-use/manifests/org.bardo.ComputerUse.toml" "$AGENTS/data/bardo/intents/" || return 1
   env -u DBUS_SESSION_BUS_ADDRESS -u DBUS_SYSTEM_BUS_ADDRESS "$BRINGUP" up --bus "$BUS" --root "$AGENTS" \
     --shell-pid "$BARDO_SHELL_PID" --catalog "$RUN/catalog" "${extra[@]}" >"$RUN/bringup.log" 2>&1 \
     || { tail -8 "$RUN/bringup.log" >&2; return 1; }
@@ -375,8 +375,8 @@ proc_token() { sed 's/.*) //' "/proc/$1/stat" 2>/dev/null | cut -d' ' -f20; }
 
 # The assistant is started again with its model log on (the log path is its only change). As in the W1 rig.
 restart_companion_with_log() {
-  local line pid envfile=$RUN/companiond.env exe waited=0 new
-  line=$(awk '$1 == "companiond" {print}' "$AGENTS/procs") pid=$(awk '{print $2}' <<<"$line")
+  local line pid envfile=$RUN/bardo-companiond.env exe waited=0 new
+  line=$(awk '$1 == "bardo-companiond" {print}' "$AGENTS/procs") pid=$(awk '{print $2}' <<<"$line")
   [ -n "$pid" ] || { echo "the assistant's service is not running" >&2; return 1; }
   tr '\0' '\n' <"/proc/$pid/environ" | grep -v '^$' >"$envfile"
   exe=$(readlink "/proc/$pid/exe")
@@ -388,14 +388,14 @@ restart_companion_with_log() {
     mkdir -p "$1/proc/$$" "$1/proc/units"
     printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/%s.service\n" "$2" > "$1/proc/$$/cgroup"
     echo $$ > "$1/proc/units/$2.service"
-    shift 2; exec "$@"' _ "$AGENTS" companiond "$exe" >>"$AGENTS/logs/companiond.log" 2>&1 </dev/null &
+    shift 2; exec "$@"' _ "$AGENTS" bardo-companiond "$exe" >>"$AGENTS/logs/bardo-companiond.log" 2>&1 </dev/null &
   new=$!
   waited=0
   until bus_has_owner org.bardo.Companion1; do
     kill -0 "$new" 2>/dev/null && [ "$waited" -lt 300 ] || { echo "the assistant did not come back with its log on" >&2; return 1; }
     sleep 0.1; waited=$((waited + 1))
   done
-  { grep -v '^companiond ' "$AGENTS/procs"; echo "companiond $new $(proc_token "$new")"; } >"$AGENTS/procs.new" && mv "$AGENTS/procs.new" "$AGENTS/procs"
+  { grep -v '^bardo-companiond ' "$AGENTS/procs"; echo "bardo-companiond $new $(proc_token "$new")"; } >"$AGENTS/procs.new" && mv "$AGENTS/procs.new" "$AGENTS/procs"
 }
 
 # The reader (it reads pages for the assistant) is not one of the bring-up's daemons: started here as its own unit in the fake
@@ -403,18 +403,18 @@ restart_companion_with_log() {
 start_reader() {
   local -a E
   local new waited=0
-  mapfile -t E < <(grep -v '^COMPANIOND_' "$RUN/companiond.env")
+  mapfile -t E < <(grep -v '^COMPANIOND_' "$RUN/bardo-companiond.env")
   setsid env -i "${E[@]}" BARDO_READERD_PROC_ROOT="$AGENTS/proc" BARDO_READERD_SYSTEM_CALLERS="$AGENTS/system/readerd-callers.toml" /bin/bash -c '
     mkdir -p "$1/proc/$$" "$1/proc/units"
     printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/%s.service\n" "$2" > "$1/proc/$$/cgroup"
     echo $$ > "$1/proc/units/$2.service"
-    shift 2; exec "$@"' _ "$AGENTS" readerd "$DK/accept-readerd" >>"$AGENTS/logs/readerd.log" 2>&1 </dev/null &
+    shift 2; exec "$@"' _ "$AGENTS" bardo-readerd "$DK/accept-readerd" >>"$AGENTS/logs/bardo-readerd.log" 2>&1 </dev/null &
   new=$!
   until bus_has_owner org.bardo.Reader1; do
-    kill -0 "$new" 2>/dev/null && [ "$waited" -lt 300 ] || { tail -5 "$AGENTS/logs/readerd.log" >&2; echo "the reader did not start" >&2; return 1; }
+    kill -0 "$new" 2>/dev/null && [ "$waited" -lt 300 ] || { tail -5 "$AGENTS/logs/bardo-readerd.log" >&2; echo "the reader did not start" >&2; return 1; }
     sleep 0.1; waited=$((waited + 1))
   done
-  echo "readerd $new $(proc_token "$new")" >>"$AGENTS/procs"
+  echo "bardo-readerd $new $(proc_token "$new")" >>"$AGENTS/procs"
 }
 
 bus_has_owner() {
@@ -440,16 +440,16 @@ unit = "bardo-shell.service"
 role = "sheet_host"
 EOF
   in_app_env bash -c 'mkdir -p "$1/proc/$$" "$1/proc/units"; printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-computer-use.service\n" > "$1/proc/$$/cgroup"; echo $$ > "$1/proc/units/bardo-computer-use.service"; exec env BARDO_COMPUTER_USE_TEST_PROC_ROOT="$1/proc" BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS="$2" "$3"' \
-    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$CUAD" >"$RUN/cuad.log" 2>&1 </dev/null &
+    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$CUAD" >"$RUN/bardo-computer-use.log" 2>&1 </dev/null &
   local pid=$!
-  record cuad "$pid"
+  record bardo-computer-use "$pid"
   sleep 2
   # What the screen helper reads to tell who is calling: the fake /proc's processes and units, kept for the report.
   { find "$AGENTS/proc" -maxdepth 2 | sed "s|$AGENTS/||" | sort
     for u in "$AGENTS"/proc/units/*; do printf '%s %s\n' "${u##*/}" "$(cat "$u")"; done
     for c in "$AGENTS"/proc/[0-9]*/cgroup; do printf '%s %s\n' "$c" "$(cat "$c")"; done | sed "s|$AGENTS/||"
   } >"$RUN/proc-tree.txt" 2>&1
-  kill -0 "$pid" 2>/dev/null || { tail -5 "$RUN/cuad.log" >&2; echo "the screen helper did not start (see $RUN/cuad.log)" >&2; return 1; }
+  kill -0 "$pid" 2>/dev/null || { tail -5 "$RUN/bardo-computer-use.log" >&2; echo "the screen helper did not start (see $RUN/bardo-computer-use.log)" >&2; return 1; }
 }
 
 LAMP_URL="" DRAW_URL=""
@@ -474,14 +474,14 @@ step_pages() {
     "$BROWSER" --profile "$profile" --no-remote --name "$BROWSER_APP" "$LAMP_URL" "$DRAW_URL" \
     >"$RUN/browser.log" 2>&1 </dev/null &
   record browser $!
-  if "${TIMING[@]}" wait --log-file "$(dirname "$BARDO_COMPOSITOR_ENV")/casement.log" \
+  if "${TIMING[@]}" wait --log-file "$(dirname "$BARDO_COMPOSITOR_ENV")/bardo-compositor.log" \
        --app-ids "$BROWSER_APP,zen,zen-browser,app.zen_browser.zen" --after-connected "$before" --timeout 120 >/dev/null 2>&1; then
     stamp page_open
   else
     note "(The browser's window was not seen in the timing lines; carrying on.)"
   fi
   sleep 5
-  # A person reading the page has clicked into it, which makes the browser the active app (casement keys a newly
+  # A person reading the page has clicked into it, which makes the browser the active app (bardo-compositor keys a newly
   # mapped window only when its app is already active). The click lands in the page's right margin, clear of the
   # centred text, the browser's left sidebar and the notification column.
   # W2_CLICK_PAGE=0 leaves it out, to test the screen helper asking the compositor for focus instead.
@@ -512,7 +512,7 @@ post_turn() {
 }
 
 window_seen() { # IDS AFTER_NS
-  "${TIMING[@]}" wait --log-file "$(dirname "$BARDO_COMPOSITOR_ENV")/casement.log" --app-ids "$1" --after-connected "${2:-0}" --timeout 0 >/dev/null 2>&1
+  "${TIMING[@]}" wait --log-file "$(dirname "$BARDO_COMPOSITOR_ENV")/bardo-compositor.log" --app-ids "$1" --after-connected "${2:-0}" --timeout 0 >/dev/null 2>&1
 }
 
 ASKED_NS=0 ASKED_EPOCH=0
@@ -522,7 +522,7 @@ step_ask_and_wait() {
   ASKED_NS=$("${TIMING[@]}" now) ASKED_EPOCH=$(date +%s)
   stamp asked
   post_turn
-  local audit=$AGENTS/.local/state/quire/inferd/audit.jsonl
+  local audit=$AGENTS/.local/state/bardo/inference/audit.jsonl
   local deadline=$((SECONDS + TIMEOUT)) next_shot=$((SECONDS + SHOT_EVERY)) next_stall=$SECONDS saved_at="" rc
   local turn_seen=no screen_seen=no svg_seen=no drawing_seen=no ask_state=none last_sheets=0 f s size prev=-1 stable=0
   while [ "$SECONDS" -lt "$deadline" ]; do
@@ -582,8 +582,8 @@ step_report() {
   stamp finished
   snap end
   # The model log's audit and the services' logs, where the report looks for them.
-  mkdir -p "$RUN/agents/.local/state/quire/inferd"
-  cp "$AGENTS/.local/state/quire/inferd/audit.jsonl" "$RUN/agents/.local/state/quire/inferd/audit.jsonl" 2>/dev/null || true
+  mkdir -p "$RUN/agents/.local/state/bardo/inference"
+  cp "$AGENTS/.local/state/bardo/inference/audit.jsonl" "$RUN/agents/.local/state/bardo/inference/audit.jsonl" 2>/dev/null || true
   [ ! -d "$AGENTS/logs" ] || cp -r "$AGENTS/logs" "$RUN/agent-logs" 2>/dev/null || true
   (cd "$RUN" && find out "${HOME_DIR#"$RUN"/}" -type f -newer .start \( -name '*.excalidraw' -o -name '*.svg' -o -name '*.png' -o -name '*.json' \) \
      -not -path '*/.config/*' -not -path '*/.cache/*' 2>/dev/null | sort) >"$RUN/files-made.txt" 2>/dev/null || true
@@ -611,7 +611,7 @@ s_ask() { guard step_ask_and_wait; }
 run_steps s_boot s_models s_stack s_pages s_ask step_report
 if [ "$HALT" != 0 ]; then
   echo "--- daemon.log (tail)" >&2; tail -20 "$RUN/daemon.log" >&2 2>/dev/null
-  echo "--- casement-up.log (tail)" >&2; tail -20 "$RUN/casement-up.log" >&2 2>/dev/null
+  echo "--- bardo-compositor-up.log (tail)" >&2; tail -20 "$RUN/bardo-compositor-up.log" >&2 2>/dev/null
   [ "$HALT" = 3 ] && exit 3
   exit 1
 fi

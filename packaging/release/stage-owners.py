@@ -11,8 +11,8 @@
 The workflow downloads each artifact into its own folder (no merging), so a build job cannot pass its tar off as another
 job's by what it names a file.
 
-The tar is what `tar -C build/release -cf stage-JOB.tar stage components.d` makes: members are stage/opt/quire/current/PATH
-and components.d/NAME.txt. A MANIFEST pattern is PATH below opt/quire/current (or components.d/NAME.txt); `*` is any run of
+The tar is what `tar -C build/release -cf stage-JOB.tar stage components.d` makes: members are stage/opt/bardo/current/PATH
+and components.d/NAME.txt. A MANIFEST pattern is PATH below opt/bardo/current (or components.d/NAME.txt); `*` is any run of
 characters inside one segment, `**` anything.
 """
 import os
@@ -21,9 +21,9 @@ import stat
 import sys
 import tarfile
 
-CURRENT = "stage/opt/quire/current"
+CURRENT = "stage/opt/bardo/current"
 # Folders a tar may hold besides the ones inside CURRENT: the two it is made from and the ones on the way to CURRENT.
-BARE_DIRS = {"stage", "stage/opt", "stage/opt/quire", "components.d"}
+BARE_DIRS = {"stage", "stage/opt", "stage/opt/bardo", "components.d"}
 
 
 def glob_regex(pattern):
@@ -93,7 +93,7 @@ def check(manifest, folders):
     faults, seen = [], {}
     for folder in folders:
         base = os.path.basename(os.path.normpath(folder))
-        match = re.fullmatch(r"stage-([A-Za-z0-9_]+)", base)
+        match = re.fullmatch(r"stage-([A-Za-z0-9_-]+)", base)
         if not match or match.group(1) not in jobs:
             faults.append(f"{base}: not the artifact of a job {manifest} knows ({', '.join(sorted(jobs))})")
             continue

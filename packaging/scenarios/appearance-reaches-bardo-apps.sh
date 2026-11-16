@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# Scenario `appearance-reaches-quire-apps` (plan §4.14, the second half of appearance-reaches-apps; FD-08, P1):
-# an appearance change written to `bardo/appearance.toml` reaches a quire app that is not sill,
-# running on the jailed headless casement.
+# Scenario `appearance-reaches-bardo-apps` (plan §4.14, the second half of appearance-reaches-apps; FD-08, P1):
+# an appearance change written to `bardo/appearance.toml` reaches a quire app that is not bardo-shell,
+# running on the jailed headless bardo-compositor.
 #
-# The app is detent (the Settings app, built from this tree by harness/scenario-build.sh): a quire ds
+# The app is bardo-settings (the Settings app, built from this tree by harness/scenario-build.sh): a quire ds
 # root that follows `bardo/appearance.toml` through ui-settings' watch. The change is made the way a
 # settings app makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one). The proof is
 # pixels: `bardo-compositorctl shot --output` (P1-C1: the output's last frame through the debug bus), cropped to the
 # window's frame from `bardo-compositorctl debug windows`, its mean luminance compared. Nothing is read from the app.
 #
-#   boot      casement up (1920x1080, scale 1), devices plugged
-#   baseline  theme = "light", detent started: it maps 900x640 and its window interior is light (mean luminance >= 150)
+#   boot      bardo-compositor up (1920x1080, scale 1), devices plugged
+#   baseline  theme = "light", bardo-settings started: it maps 900x640 and its window interior is light (mean luminance >= 150)
 #   dark      theme = "dark" is written: the window interior turns dark (<= 100, at least 60 below the baseline), no restart
 #   light     the file returns to light: the interior returns to the baseline (within 12)
-#   alive     the same detent pid is running throughout and the window is still mapped at 900x640
+#   alive     the same bardo-settings pid is running throughout and the window is still mapped at 900x640
 #
 # Each wait is on the window (`debug windows`) or on a fresh shot, polled up to 20 s, never a fixed sleep.
 # Thresholds are on the window interior inset 24 px from its frame, so the frame, shadow and desktop are not measured.
@@ -23,12 +23,12 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-DETENT="$SCEN_BUILD/detent-target/debug/detent"
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
+DETENT="$SCEN_BUILD/detent-target/debug/bardo-settings"
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" "$DETENT"
 
-export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
-floor_shim appearance-quire bardo-compositorctl detent casement   # bardo-compositorctl shot watches the screen; detent is the Settings app (both run from build/)
+floor_shim appearance-quire bardo-compositorctl bardo-settings bardo-compositor   # bardo-compositorctl shot watches the screen; bardo-settings is the Settings app (both run from build/)
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out appearance-quire)
@@ -44,7 +44,7 @@ trap cleanup EXIT
 
 # The appearance file, as the settings app writes it.
 write_theme() {
-  mkdir -p "$SCRATCH/home/.config/quire"
+  mkdir -p "$SCRATCH/home/.config/bardo"
   printf '[appearance]\ntheme = "%s"\n' "$1" >"$SCRATCH/home/.config/bardo/appearance.toml"
 }
 
@@ -96,11 +96,11 @@ step_baseline() {
   mkdir -p "$SCRATCH/home" "$SCRATCH/data"
   write_theme light
   nested env HOME="$SCRATCH/home" XDG_CONFIG_HOME="$SCRATCH/home/.config" XDG_DATA_HOME="$SCRATCH/data" \
-    XDG_DATA_DIRS="$SCRATCH/data" "$DETENT" --dev-callers "$FLOOR_DIR/desktop-callers.toml" >"$OUT_DIR/detent.log" 2>&1 &
+    XDG_DATA_DIRS="$SCRATCH/data" "$DETENT" --dev-callers "$FLOOR_DIR/desktop-callers.toml" >"$OUT_DIR/bardo-settings.log" 2>&1 &
   BARDO_SETTINGS_PID=$!
   local i
   for i in $(seq 100); do [ "$(frame 2>/dev/null | cut -d, -f3,4)" = 900,640 ] && break; sleep 0.1; done
-  [ "$(frame 2>/dev/null | cut -d, -f3,4)" = 900,640 ] || { echo "detent never mapped at 900x640" >&2; return 1; }
+  [ "$(frame 2>/dev/null | cut -d, -f3,4)" = 900,640 ] || { echo "bardo-settings never mapped at 900x640" >&2; return 1; }
   bardo-compositorctl debug wait settled --timeout 10000 >/dev/null
   wait_lum base 'lum >= 150' || return 1
   BASE_LUM=$LUM
@@ -120,14 +120,14 @@ step_light() {
 }
 
 step_alive() {
-  kill -0 "$BARDO_SETTINGS_PID" 2>/dev/null || { echo "detent exited during the run" >&2; return 1; }
+  kill -0 "$BARDO_SETTINGS_PID" 2>/dev/null || { echo "bardo-settings exited during the run" >&2; return 1; }
   [ "$(frame | cut -d, -f3,4)" = 900,640 ] || { echo "the window is no longer 900x640" >&2; return 1; }
 }
 
 run_steps step_boot step_baseline step_dark step_light step_alive
 if [ "$STATUS" != 0 ]; then
-  echo "--- detent.log (tail)" >&2; tail -15 "$OUT_DIR/detent.log" >&2
-  [ -z "${BARDO_COMPOSITOR_ENV:-}" ] || { echo "--- casement.log (tail)" >&2; tail -20 "$(dirname "$BARDO_COMPOSITOR_ENV")/casement.log" >&2; }
+  echo "--- bardo-settings.log (tail)" >&2; tail -15 "$OUT_DIR/bardo-settings.log" >&2
+  [ -z "${BARDO_COMPOSITOR_ENV:-}" ] || { echo "--- bardo-compositor.log (tail)" >&2; tail -20 "$(dirname "$BARDO_COMPOSITOR_ENV")/bardo-compositor.log" >&2; }
   echo "--- shots in the scratch dir: $OUT_DIR" >&2
 fi
 exit "$STATUS"

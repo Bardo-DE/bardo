@@ -6,14 +6,14 @@
 #                                everything needed to run (and, unless --runtime-only, to build) is there,
 #                                1 otherwise. What is only recommended never changes the exit.
 #
-# Overrides, for tests: DESKTOP_OS_RELEASE (the os-release file), DESKTOP_CHECK_ROOT (put in front of every
-# file: check), DESKTOP_LDCONFIG (the ldconfig program), PATH.
+# Overrides, for tests: BARDO_OS_RELEASE (the os-release file), BARDO_CHECK_ROOT (put in front of every
+# file: check), BARDO_LDCONFIG (the ldconfig program), PATH.
 
 RUSTUP_LINE="curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
 
 # lib_cached SONAME: the linker cache lists the library.
 lib_cached() {
-  local program=${DESKTOP_LDCONFIG:-} listing
+  local program=${BARDO_LDCONFIG:-} listing
   if [ -z "$program" ]; then
     program=$(command -v ldconfig 2>/dev/null || true)
     [ -n "$program" ] || for program in /sbin/ldconfig /usr/sbin/ldconfig; do [ -x "$program" ] && break; done
@@ -31,7 +31,7 @@ check_alt() {
     cmd) command -v "$arg" >/dev/null ;;
     pc) command -v pkg-config >/dev/null && pkg-config --exists "$arg" ;;
     lib) lib_cached "$arg" ;;
-    file) compgen -G "${DESKTOP_CHECK_ROOT:-}$arg" >/dev/null ;;
+    file) compgen -G "${BARDO_CHECK_ROOT:-}$arg" >/dev/null ;;
     unit)
       command -v systemctl >/dev/null || return 1
       out=$(systemctl list-unit-files "$arg" --no-legend 2>/dev/null || true)

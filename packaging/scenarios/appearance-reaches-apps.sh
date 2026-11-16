@@ -1,31 +1,31 @@
 #!/usr/bin/env bash
 # Scenario `appearance-reaches-apps` (plan §4.14): an appearance change through ui-settings reaches
-# every running app, live, on a headless casement in the jail.
+# every running app, live, on a headless bardo-compositor in the jail.
 #
-# The apps are the sill daemon's surfaces (bar and Dock): each is a quire ds root that follows
+# The apps are the bardo-shell daemon's surfaces (bar and Dock): each is a quire ds root that follows
 # `bardo/appearance.toml` through ui-settings' watch. The change is made the way a settings app
 # makes it, by writing the file in the scratch XDG_CONFIG_HOME (never a real one); the proof is each
-# surface's own capture (`sill debug capture`), compared by pixels. Quire apps outside sill need
-# a screenshot of casement (P1-C1): that is the scenario `appearance-reaches-quire-apps`.
+# surface's own capture (`bardo-shell debug capture`), compared by pixels. Quire apps outside bardo-shell need
+# a screenshot of bardo-compositor (P1-C1): that is the scenario `appearance-reaches-bardo-apps`.
 #
 #   baseline  theme = "light": every surface captured
 #   dark      theme = "dark" is written: every surface changes (>= 0.4% of its pixels) with no restart
 #   light     the file returns to light: every surface returns to its baseline (< 0.2% differ)
 #   alive     the same daemon pid answers `ping` throughout
 #
-# Each wait is on the capture, polled up to 20 s (wait_look, expect_all: sill's dev/lib/pixels.sh), never a fixed sleep.
+# Each wait is on the capture, polled up to 20 s (wait_look, expect_all: bardo-shell's dev/lib/pixels.sh), never a fixed sleep.
 # budget: 120
 # Exit: 0 pass | 1 a step failed | 2 outside the jail | 3 artefacts missing (harness/scenario-build.sh).
 set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_BUILD/sill-target/debug/sill"
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
+  "$SCEN_BUILD/sill-target/debug/bardo-shell"
 
-export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
-floor_shim appearance-reaches-apps sill   # sill takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
+floor_shim appearance-reaches-apps bardo-shell   # bardo-shell takes no power a floor row can allow (no rows, nothing waits on a question); the caller list names it as the shell
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out appearance-reaches-apps)
@@ -41,7 +41,7 @@ trap cleanup EXIT
 
 # The appearance file, as the settings app writes it.
 write_theme() {
-  mkdir -p "$CONFIG/quire"
+  mkdir -p "$CONFIG/bardo"
   printf '[appearance]\ntheme = "%s"\n' "$1" >"$CONFIG/bardo/appearance.toml"
 }
 
@@ -57,7 +57,7 @@ step_baseline() {
   launch_daemon || return 1
   DAEMON_PID=$DAEMON
   name=$(output_name) || return 1
-  SURFACES=("sill-bar-$name" "sill-dock-$name")
+  SURFACES=("bardo-shell-bar-$name" "bardo-shell-dock-$name")
   # Settled: the bar and the Dock finish their first animations before the baseline is taken.
   for surface in "${SURFACES[@]}"; do await_frames_settled "$surface" 20 || { echo "$surface never settled" >&2; return 1; }; done
   for surface in "${SURFACES[@]}"; do capture "$surface" "$OUT_DIR/base-$surface.png" || return 1; done

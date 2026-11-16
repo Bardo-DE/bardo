@@ -49,7 +49,7 @@ expect unknown "$(distro_family "$(osr unknown 'ID=plan9')")" other
 expect absent "$(distro_family "$tmp/no-such-file")" other
 expect name "$(distro_name "$(osr named 'ID=arch
 PRETTY_NAME="Arch Linux"')")" "Arch Linux"
-expect "DESKTOP_OS_RELEASE" "$(DESKTOP_OS_RELEASE=$(osr viaenv 'ID=arch') distro_family)" arch
+expect "BARDO_OS_RELEASE" "$(BARDO_OS_RELEASE=$(osr viaenv 'ID=arch') distro_family)" arch
 
 # 2. the package table.
 expect debian-xz "$(family_packages debian xz)" xz-utils
@@ -80,9 +80,9 @@ if [ "$(id -u)" != 0 ]; then
   expect dnf-line "$(install_line fedora gcc make)" "asroot dnf install gcc make "
   expect apt-line "$(install_line debian build-essential)" "asroot apt install build-essential "
   expect pacman-line "$(install_line arch base-devel)" "asroot pacman -S base-devel "
-  hint=$(DESKTOP_OS_RELEASE=$(osr hint-u 'ID=ubuntu') install_hint bwrap polkit)
+  hint=$(BARDO_OS_RELEASE=$(osr hint-u 'ID=ubuntu') install_hint bwrap polkit)
   expect hint-ubuntu "$hint" "asroot apt install bubblewrap polkitd pkexec "
-  hint=$(DESKTOP_OS_RELEASE=$(osr hint-x 'ID=plan9') install_hint bwrap)
+  hint=$(BARDO_OS_RELEASE=$(osr hint-x 'ID=plan9') install_hint bwrap)
   contains hint-other-dnf "$hint" "fedora: asroot dnf install bubblewrap"
   contains hint-other-apt "$hint" "debian: asroot apt install bubblewrap"
   contains hint-other-pacman "$hint" "arch: asroot pacman -S bubblewrap"
@@ -126,7 +126,7 @@ expect build-tree "$(BARDO_TREE=$tmp/trees/pinned PATH=$tmp/cargobin:$PATH build
 expect build-tree-plain "$(BARDO_TREE=$tmp/trees/plain CARGO_TARGET_DIR=$tmp/t PATH=$tmp/cargobin:$PATH build_tree -p compositor-app)" \
   "cwd=/ TC= FLAGS=unset TARGET=$tmp/t build --release --locked --manifest-path $tmp/trees/plain/Cargo.toml --config net.git-fetch-with-cli=true -p compositor-app"
 # one cargo run for every package of the parts, each package once
-expect build-parts "$(BARDO_TREE=$tmp/trees/plain PATH=$tmp/cargobin:$PATH build_parts casement sill)" \
+expect build-parts "$(BARDO_TREE=$tmp/trees/plain PATH=$tmp/cargobin:$PATH build_parts compositor shell)" \
   "cwd=/ TC= FLAGS=unset TARGET=$tmp/trees/plain/target build --release --locked --manifest-path $tmp/trees/plain/Cargo.toml --config net.git-fetch-with-cli=true -p compositor-app -p compositor-ctl -p shell-app"
 expect no-packages "$(BARDO_TREE=$tmp/trees/plain PATH=$tmp/cargobin:$PATH build_parts callers session)" ""
 
@@ -138,8 +138,8 @@ run_machine() { # OS-RELEASE-CONTENT [ARGS]: the check on the machine as it is n
   local content=$1
   shift
   machine_rc=0
-  machine_out=$(PATH=$bin DESKTOP_OS_RELEASE=$(osr machine-os "$content") DESKTOP_CHECK_ROOT=$root \
-    DESKTOP_LDCONFIG=$tmp/no-ldconfig SUDO=asroot run_check "$@" 2>&1) || machine_rc=$?
+  machine_out=$(PATH=$bin BARDO_OS_RELEASE=$(osr machine-os "$content") BARDO_CHECK_ROOT=$root \
+    BARDO_LDCONFIG=$tmp/no-ldconfig SUDO=asroot run_check "$@" 2>&1) || machine_rc=$?
 }
 printf '#!/bin/sh\nexit 1\n' >"$bin/dpkg"; chmod +x "$bin/dpkg"   # dbus-user-session is not installed
 run_machine 'ID=ubuntu
@@ -164,8 +164,8 @@ mkdir -p "$root/usr/libexec" "$root/usr/share/vulkan/icd.d"
 for portal in xdg-desktop-portal xdg-desktop-portal-gtk; do : >"$root/usr/libexec/$portal"; done
 : >"$root/usr/share/vulkan/icd.d/lvp_icd.json"
 machine_rc=0
-machine_out=$(PATH=$bin DESKTOP_OS_RELEASE=$(osr machine-os 'ID=ubuntu
-ID_LIKE=debian') DESKTOP_CHECK_ROOT=$root DESKTOP_LDCONFIG=$tmp/ldconfig SUDO=asroot run_check --runtime-only 2>&1) || machine_rc=$?
+machine_out=$(PATH=$bin BARDO_OS_RELEASE=$(osr machine-os 'ID=ubuntu
+ID_LIKE=debian') BARDO_CHECK_ROOT=$root BARDO_LDCONFIG=$tmp/ldconfig SUDO=asroot run_check --runtime-only 2>&1) || machine_rc=$?
 expect full-rc "$machine_rc" 0
 contains full-all-there "$machine_out" "all there"
 lacks full-nothing-missing "$(printf '%s\n' "$machine_out" | sed -n '/needed to run/,/recommended/p')" "missing:"

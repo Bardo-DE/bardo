@@ -5,8 +5,8 @@
 # Commands a person or a unit starts by name.
 
 [[export]]
-link = "/usr/local/bin/casement"
-target = "bin/casement"
+link = "/usr/local/bin/bardo-compositor"
+target = "bin/bardo-compositor"
 
 [[export]]
 link = "/usr/local/bin/bardo-compositorctl"
@@ -14,28 +14,28 @@ target = "bin/bardo-compositorctl"
 
 [[export]]
 link = "/usr/local/bin/bardo-shell"
-target = "bin/sill"
+target = "bin/bardo-shell"
 
 [[export]]
 link = "/usr/local/bin/bardo-session"
 target = "bin/bardo-session"
 
 [[export]]
-link = "/usr/local/bin/detent"
-target = "bin/detent"
+link = "/usr/local/bin/bardo-settings"
+target = "bin/bardo-settings"
 
 [[export]]
 link = "/usr/local/bin/bardo-key-remap"
-target = "bin/keycap"
+target = "bin/bardo-key-remap"
 
 # The input service's unit starts this link (bardo-input-broker.service: ExecStart=/usr/local/bin/bardo-input-broker).
 [[export]]
 link = "/usr/local/bin/bardo-input-broker"
-target = "bin/turnstile"
+target = "bin/bardo-input-broker"
 
 [[export]]
 link = "/usr/local/bin/bardo-mouse-gestures"
-target = "bin/palmrest"
+target = "bin/bardo-mouse-gestures"
 
 [[export]]
 link = "/usr/local/bin/anyview"
@@ -46,12 +46,12 @@ link = "/usr/local/bin/mailo"
 target = "bin/mailo"
 
 [[export]]
-link = "/usr/local/bin/files"
-target = "bin/files"
+link = "/usr/local/bin/bardo-files"
+target = "bin/bardo-files"
 
 [[export]]
 link = "/usr/local/bin/bardo-updater"
-target = "bin/slipway"
+target = "bin/bardo-updater"
 
 [[export]]
 link = "/usr/local/bin/xwayland-satellite"

@@ -3,10 +3,10 @@
 # even when the pointer drifts a little between the press and the release, as a hand's does.
 # A deliberate press-drag-release onto the item still picks it (the menu is not just broken).
 #
-# The jail, a headless casement and the sill daemon on one private bus come up as in
-# sill-boots-on-casement. Nothing owns org.bardo.Settings on the private bus, so a pick of
-# "Change Wallpaper…" shows as sill's log line "opening Settings".
-#   boot      casement up, the daemon answers `ping`, the wallpaper has drawn
+# The jail, a headless bardo-compositor and the bardo-shell daemon on one private bus come up as in
+# bardo-shell-boots-on-casement. Nothing owns org.bardo.Settings on the private bus, so a pick of
+# "Change Wallpaper…" shows as bardo-shell's log line "opening Settings".
+#   boot      bardo-compositor up, the daemon answers `ping`, the wallpaper has drawn
 #   jitter    right press, a 2 px drift down-right, release: no Settings
 #   still     right press and release at one point: no Settings
 #   drag      right press, a drag well into the item, release: Settings is asked for
@@ -17,12 +17,12 @@ set -uo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/all.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/../harness/lib/scenario.sh"
 require_jail
-scenario_need "$SCEN_TOOLS/bin/casement" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_BUILD/sill-target/debug/sill"
+scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
+  "$SCEN_BUILD/sill-target/debug/bardo-shell"
 
-export BARDO_SHELL_COMPOSITOR=casement BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
+export BARDO_SHELL_COMPOSITOR=bardo-compositor BARDO_SHELL_PREBUILT=1 BARDO_SHELL_PROFILE=debug
 export CARGO_TARGET_DIR="$SCEN_BUILD/sill-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
-floor_shim desktop-menu-click sill
+floor_shim desktop-menu-click bardo-shell
 # shellcheck source=/dev/null
 source "$SCEN_SIB/shell/dev/lib/all.sh"
 OUT_DIR=$(scenario_out desktop-menu-click)
@@ -59,7 +59,7 @@ step_boot() {
   floor_sill_callers
   launch_daemon || return 1
   local wall
-  wall=$(wait_for 300 surface_named sill-wallpaper-) || { echo "no wallpaper surface" >&2; return 1; }
+  wall=$(wait_for 300 surface_named bardo-shell-wallpaper-) || { echo "no wallpaper surface" >&2; return 1; }
   wait_for 300 frames_drawn "$wall" >/dev/null || { echo "the wallpaper never drew" >&2; return 1; }
   sleep 1
 }

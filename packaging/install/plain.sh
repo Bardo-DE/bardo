@@ -20,9 +20,9 @@ tree=$(tree_root)
 prefix=${PREFIX:-/usr/local}
 target=${CARGO_TARGET_DIR:-$tree/target}
 export CARGO_TARGET_DIR=$target
-log=${XDG_STATE_HOME:-$HOME/.local/state}/desktop-install.log
+log=${XDG_STATE_HOME:-$HOME/.local/state}/bardo/install.log
 
-all=(callers porter steward ferry stoker almanac docket cua detent casement sill transom turnstile keycap files palmrest session)
+all=(old-layout callers accounts inference sync models memory actions computer-use settings compositor shell portal input-broker key-remap files mouse-gestures session)
 
 [ "${1:-}" != parts ] || { echo "${all[*]}"; exit 0; }
 
@@ -32,19 +32,20 @@ all=(callers porter steward ferry stoker almanac docket cua detent casement sill
 install_part() {
   local c=$tree/crates p=$prefix d=$desktop
   case $1 in
+    old-layout) sudo "$d/install/old-layout.sh" --prefix "$p" --sysconfdir /etc ;;
     callers) sudo "$d/install/system.sh" callers ;;
-    porter) sudo env CARGO_TARGET_DIR="$target" "$c/accounts/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
-    steward) sudo env CARGO_TARGET_DIR="$target" "$c/inference/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
-    ferry) sudo env CARGO_TARGET_DIR="$target" "$c/sync/scripts/install.sh" --prefix "$p" --no-build ;;
-    stoker) "$c/models/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
-    almanac) "$c/memory/scripts/install.sh" --prefix "$p" --no-build ;;
-    docket) "$c/actions/scripts/install.sh" --prefix "$p" --no-build ;;
-    cua) "$c/computer-use/scripts/install.sh" --prefix "$p" --no-build ;;
-    detent) sudo env PREFIX="$p" BARDO_SETTINGS_BIN="$target/release/detent" "$c/settings-app/scripts/install.sh" ;;
-    casement) sudo env CARGO_TARGET_DIR="$target" "$c/compositor/scripts/install.sh" --prefix "$p" --locked --no-build ;;
-    sill) "$c/shell/dist/install.sh" --no-build ;;
-    transom) sudo env CARGO_TARGET_DIR="$target" "$c/portal/scripts/install.sh" --prefix "$p" --no-build ;;
-    turnstile | keycap | palmrest) sudo env CARGO_TARGET_DIR="$target" "$d/install/system.sh" "$1" --prefix "$p" --tree "$tree" ;;
+    accounts) sudo env CARGO_TARGET_DIR="$target" "$c/accounts/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    inference) sudo env CARGO_TARGET_DIR="$target" "$c/inference/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    sync) sudo env CARGO_TARGET_DIR="$target" "$c/sync/scripts/install.sh" --prefix "$p" --no-build ;;
+    models) "$c/models/scripts/install.sh" --prefix "$p" --sysconfdir /etc --no-build ;;
+    memory) "$c/memory/scripts/install.sh" --prefix "$p" --no-build ;;
+    actions) "$c/actions/scripts/install.sh" --prefix "$p" --no-build ;;
+    computer-use) "$c/computer-use/scripts/install.sh" --prefix "$p" --no-build ;;
+    settings) sudo env PREFIX="$p" BARDO_SETTINGS_BIN="$target/release/bardo-settings" "$c/settings-app/scripts/install.sh" ;;
+    compositor) sudo env CARGO_TARGET_DIR="$target" "$c/compositor/scripts/install.sh" --prefix "$p" --locked --no-build ;;
+    shell) "$c/shell/dist/install.sh" --no-build ;;
+    portal) sudo env CARGO_TARGET_DIR="$target" "$c/portal/scripts/install.sh" --prefix "$p" --no-build ;;
+    input-broker | key-remap | mouse-gestures) sudo env CARGO_TARGET_DIR="$target" "$d/install/system.sh" "$1" --prefix "$p" --tree "$tree" ;;
     # Its installer builds as you and asks for sudo itself only when the prefix is not yours.
     files) BARDO_FILES_PREFIX=$p "$c/files/dist/install.sh" --no-build ;;
     session) sudo "$d/install/install.sh" --prefix "$p" --sysconfdir /etc --tree "$tree" ;;
@@ -91,9 +92,9 @@ for part in "${parts[@]}"; do quietly "$part" install_part "$part"; done
 
 # Your user manager outlives a logout, so it would keep the units it read before this install and the
 # background services' old programs. Reload it, restart the services that are running (the session's
-# own casement, sill and transom wait for the next login; Settings and the apps for their next start)
+# own compositor, shell and portal wait for the next login; Settings and the apps for their next start)
 # and start the sockets the install linked in sockets.target.wants.
-daemons=(accountd inferd syncd memoryd intentd companiond readerd cuad bardo-actions-mcp bardo-agent)
+daemons=(bardo-accountd bardo-inferd bardo-syncd bardo-memoryd bardo-actiond bardo-companiond bardo-readerd bardo-computer-use bardo-actions-mcp bardo-agent)
 reload_user() {
   systemctl --user daemon-reload &&
     systemctl --user try-restart "${daemons[@]/%/.service}" &&
@@ -107,4 +108,4 @@ if systemctl --user show-environment >/dev/null 2>&1; then
   quietly services reload_user
 fi
 echo
-echo "  installed to $prefix. Log out and back in to \"sill (casement)\" to use it."
+echo "  installed to $prefix. Log out and back in to \"Bardo\" to use it."

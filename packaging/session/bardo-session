@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
-# bardo-session: a login with casement as the compositor and sill as the shell ("sill (casement)").
+# bardo-session: a login with bardo-compositor as the compositor and bardo-shell as the shell ("Bardo").
 # Run by the display manager (session/bardo.desktop). Installed by install/install.sh; the
 # first-login checks that need a real login are listed in the final lines of install/install.sh.
 #
-# casement runs as the user unit bardo-compositor.service (shipped by the casement repo, Type=notify): porter's
-# accountd proves the `compositor` caller role only for the main process of that unit, so a bare child
+# bardo-compositor runs as the user unit bardo-compositor.service (shipped by the bardo-compositor repo, Type=notify): porter's
+# bardo-accountd proves the `compositor` caller role only for the main process of that unit, so a bare child
 # would not be trusted. This script starts it with `systemctl --user start bardo-compositor.service`, which
-# returns once casement has said READY=1, and then watches the unit. When the unit ends cleanly
+# returns once bardo-compositor has said READY=1, and then watches the unit. When the unit ends cleanly
 # (Result=success, a logout) the session is over; when it fails the crash guard below decides. Logout
-# (a TERM to this script) stops the unit. With BARDO_SESSION_NESTED=1 (tests: no systemd) casement is
+# (a TERM to this script) stops the unit. With BARDO_SESSION_NESTED=1 (tests: no systemd) bardo-compositor is
 # instead this script's direct child, with the same guard.
 #
 # How the unit is driven, nothing under ~/.config or /etc, and no drop-in at all: bardo-compositor.service and bardo-shell.service are
 # installed root-held under the system user-unit folder (/etc/systemd/user or /usr/lib/systemd/user; install/install.sh puts
-# them there), because porter's accountd gives the compositor and shell roles only to a unit whose file and every drop-in
+# them there), because porter's bardo-accountd gives the compositor and shell roles only to a unit whose file and every drop-in
 # sit in such folders (a drop-in under $XDG_RUNTIME_DIR, which any program of the person can write, would make it
 # distrust the unit). So the session imports its environment into the user manager first, then passes this run's
 # arguments to the unit through the manager's environment: `systemctl --user set-environment BARDO_COMPOSITOR_SESSION_ARGS=...`
@@ -21,17 +21,17 @@
 # the session ends, on every way out. The unit restarts itself on a failure (Restart=on-failure); this script watches it
 # and stops it the moment it leaves the running state, before the restart fires, so the guard below stays the only
 # thing that decides. Where casement's socket is: the unit's STATUS= text ("listening on wayland-1"); its log is in the
-# journal (`journalctl --user -u casement`), and the direct-child path keeps writing $STATE/casement.log.
+# journal (`journalctl --user -u bardo-compositor`), and the direct-child path keeps writing $STATE/bardo-compositor.log.
 # A drop-in left by an earlier version of this script ($XDG_RUNTIME_DIR/systemd/user/bardo-compositor.service.d/session.conf) is
 # removed once at the start, so it cannot shadow the unit.
-# What runs beside it, once casement's socket exists, and why each:
-#   sill run                      bar, dock, launcher, control centre, notifications, lock, polkit; as the
+# What runs beside it, once bardo-compositor's socket exists, and why each:
+#   bardo-shell run                      bar, dock, launcher, control centre, notifications, lock, polkit; as the
 #                                 installed user service bardo-shell.service (`systemctl --user start bardo-shell.service`,
-#                                 Type=exec): porter's accountd, the companion's daemons (memoryd, intentd)
-#                                 and casement admit the shell only as that unit's main process. A stale
+#                                 Type=exec): porter's bardo-accountd, the companion's daemons (bardo-memoryd, bardo-actiond)
+#                                 and bardo-compositor admit the shell only as that unit's main process. A stale
 #                                 bardo-shell.service is stopped first; if the unit is missing or cannot start, the
 #                                 session stays up without a shell
-#   (no portal process: xdg-desktop-portal and transom, the quire desktop's portal backend, are
+#   (no portal process: xdg-desktop-portal and bardo-portal, the Bardo desktop's portal backend, are
 #                                 started by D-Bus activation on the first portal call, as bardo-portal.service;
 #                                 bardo-portals.conf routes ScreenCast, Screenshot, Settings, RemoteDesktop
 #                                 and Inhibit to it for XDG_CURRENT_DESKTOP=bardo)
@@ -42,55 +42,55 @@
 #                                 them, one line in the log names the package to install for this distro
 #   the input method              fcitx5 when installed (XMODIFIERS only), else ibus-daemon (GTK_IM_MODULE,
 #                                 QT_IM_MODULE and XMODIFIERS set to ibus, and ibus-daemon started)
-#   systemd-inhibit               holds logind's handle-power-key, so the power key opens sill's
+#   systemd-inhibit               holds logind's handle-power-key, so the power key opens bardo-shell's
 #                                 power menu instead of powering off
-#   detent --first-run            the welcome window of Settings, 5 s in, once per login (it exits at
+#   bardo-settings --first-run            the welcome window of Settings, 5 s in, once per login (it exits at
 #                                 once when it has run); not respawned
-# sill, ksecretd, ibus and the inhibitor are restarted when they exit (five exits within ten
+# bardo-shell, ksecretd, ibus and the inhibitor are restarted when they exit (five exits within ten
 # seconds each, then given up). ksecretd, ibus and the inhibitor are children of this script,
-# ended by PID when casement ends; sill is watched as its unit (the unit restarts it on a failure, and it is started
+# ended by PID when bardo-compositor ends; bardo-shell is watched as its unit (the unit restarts it on a failure, and it is started
 # again here when it ends cleanly) and ended with `systemctl --user stop bardo-shell.service`. All start again with the next
-# casement. Nothing is looked up or killed by name. When the session ends, graphical-session.target is stopped with
-# bardo-session.target, which ends every unit PartOf= it (transom, the portal frontend); one an earlier login left
-# up is ended before the first casement starts.
+# bardo-compositor. Nothing is looked up or killed by name. When the session ends, graphical-session.target is stopped with
+# bardo-session.target, which ends every unit PartOf= it (bardo-portal, the portal frontend); one an earlier login left
+# up is ended before the first bardo-compositor starts.
 #
-# The crash-loop guard. A casement run that lasts less than QUICK seconds (default 20) is a quick
+# The crash-loop guard. A bardo-compositor run that lasts less than QUICK seconds (default 20) is a quick
 # exit; a longer run clears the count. Three quick exits in a row switch the session to
-# `casement --safe` (pixman, no effects, one output). A quick exit of the safe run, or a safe
-# casement that cannot start, ends the session with status 1 and a notice in the guard log; your
-# other session stays available at the login screen. When updates are managed here (slipway and its
+# `bardo-compositor --safe` (pixman, no effects, one output). A quick exit of the safe run, or a safe
+# bardo-compositor that cannot start, ends the session with status 1 and a notice in the guard log; your
+# other session stays available at the login screen. When updates are managed here (bardo-updater and its
 # rollback program are installed) the notice also says how to go back to the previous version by hand.
 # Every decision is appended to guard.log, which is kept across logins in
 # ${XDG_STATE_HOME:-$HOME/.local/state}/bardo-session/ (the runtime folder is erased when the session
 # ends, and this log is what explains a session that ended); it is rotated once, at 256 KiB.
-# Before the first casement starts, the script waits (at most 20 s) for logind to make this session the seat's active
-# one: until then the login screen's compositor still holds the display and casement would open it without master.
-# Before the first casement starts, `slipway recover` runs (not in a nested test run, and only when slipway is
+# Before the first bardo-compositor starts, the script waits (at most 20 s) for logind to make this session the seat's active
+# one: until then the login screen's compositor still holds the display and bardo-compositor would open it without master.
+# Before the first bardo-compositor starts, `bardo-updater recover` runs (not in a nested test run, and only when bardo-updater is
 # installed): it puts the previous version back when the latest update failed to start in several different
 # restarts of the computer. Exit 5 means it did, and the session then starts that version.
 #
 # Settings a person may change: ~/.config/bardo-session/session.env (lines NAME=VALUE, read as data first; only
 # BARDO_SESSION_QUICK_SECS, BARDO_SESSION_FIRST_RUN_DELAY and BARDO_SESSION_BACKEND_ARGS count). The same variables, and the
 # others below, are how the harness drives this script, through its environment:
-#   BARDO_SESSION_CASEMENT_CMD   the casement command (default: casement); words, no quoting. Only the nested,
+#   BARDO_SESSION_CASEMENT_CMD   the bardo-compositor command (default: bardo-compositor); words, no quoting. Only the nested,
 #                                  direct-child path uses it: the unit's program is fixed in bardo-compositor.service
 #   BARDO_SESSION_BACKEND_ARGS   its arguments before --safe (default: --backend tty); the unit gets them as
 #                                  BARDO_COMPOSITOR_SESSION_ARGS in the user manager's environment
 #   BARDO_SESSION_QUICK_SECS     the quick-exit limit (default 20)
-#   BARDO_SESSION_STATE          where guard.log and casement.log both go (tests; default: guard.log in
-#                                  ${XDG_STATE_HOME:-$HOME/.local/state}/bardo-session, casement.log in
+#   BARDO_SESSION_STATE          where guard.log and bardo-compositor.log both go (tests; default: guard.log in
+#                                  ${XDG_STATE_HOME:-$HOME/.local/state}/bardo-session, bardo-compositor.log in
 #                                  $XDG_RUNTIME_DIR/bardo-session)
 #   BARDO_SESSION_ROLLBACK_HELPER  the program that goes back to the previous version, named in the notice
 #                                  when the guard ends the session (default /usr/libexec/bardo/bardo-updater-rollback)
-#   BARDO_SESSION_STUBS          a directory of stand-in programs (sill, pam_kwallet_init,
+#   BARDO_SESSION_STUBS          a directory of stand-in programs (bardo-shell, pam_kwallet_init,
 #                                  busctl, ksecretd, gnome-keyring-daemon, ibus-daemon, systemd-inhibit,
-#                                  systemctl, detent) that, with
+#                                  systemctl, bardo-settings) that, with
 #                                  BARDO_SESSION_NESTED=1, makes the components start from there (tests)
-#   BARDO_SESSION_FIRST_RUN_DELAY  seconds before detent --first-run (default 5)
-#   BARDO_SESSION_NESTED=1       no systemd (casement is a direct child), no login-shell re-exec, no sill (tests)
-#   BARDO_SESSION_UNIT           the casement unit (default bardo-compositor.service)
-# Set by this script in the user manager (not by you): BARDO_COMPOSITOR_SESSION_ARGS, the arguments of the casement run now
-# starting, and BARDO_SESSION_MODE, `normal` or `safe` (the run is `casement --safe`, the crash guard's last step); both are
+#   BARDO_SESSION_FIRST_RUN_DELAY  seconds before bardo-settings --first-run (default 5)
+#   BARDO_SESSION_NESTED=1       no systemd (bardo-compositor is a direct child), no login-shell re-exec, no bardo-shell (tests)
+#   BARDO_SESSION_UNIT           the bardo-compositor unit (default bardo-compositor.service)
+# Set by this script in the user manager (not by you): BARDO_COMPOSITOR_SESSION_ARGS, the arguments of the bardo-compositor run now
+# starting, and BARDO_SESSION_MODE, `normal` or `safe` (the run is `bardo-compositor --safe`, the crash guard's last step); both are
 # unset when the session ends. The shell reads the mode: in `safe` it does not tell the update service that the version
 # started well, because a computer that only gets to the safe fallback has not (NEW-ROOT-4). The shell is a user service,
 # so it sees the variable through the manager's environment, like the session variables above; the nested test path
@@ -99,7 +99,7 @@
 #
 # bardo-compositor.service and bardo-shell.service come from their repos (dist/); install/install.sh renders them for the prefix and
 # puts them in the system user-unit folder. This script writes no unit file and no drop-in.
-# X11 apps: casement starts xwayland-satellite itself when it is installed (its default), so nothing is passed; the
+# X11 apps: bardo-compositor starts xwayland-satellite itself when it is installed (its default), so nothing is passed; the
 # display it names (its ready status or its log) becomes DISPLAY for the shell and every program it starts.
 set -euo pipefail
 
@@ -111,7 +111,7 @@ log() { printf 'bardo-session: %s\n' "$*" >&2; }
 # line in the log when the second stage has not begun within LOGIN_SHELL_SECS. The second stage marks that it began
 # with a file named after this script's PID, which the exec chain keeps.
 login_shell_secs=60
-login_marker="${XDG_RUNTIME_DIR:-/nonexistent}/desktop-session-login-shell.$$"
+login_marker="${XDG_RUNTIME_DIR:-/nonexistent}/bardo-session-login-shell.$$"
 if [ "${1:-}" != --in-login-shell ] && [ -n "${SHELL:-}" ] && [ -z "${BARDO_SESSION_NESTED:-}" ]; then
     session_pid=$$
     (
@@ -154,26 +154,33 @@ read_settings() {
         esac
     done <"$file"
 }
-read_settings "${XDG_CONFIG_HOME:-$HOME/.config}/bardo-session/session.env"
+# Temporary: delete in the release after everyone has logged in once. The settings file used to live in
+# ~/.config/desktop-session/; it moves to ~/.config/bardo/session/ unless the new one is already there.
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bardo/session"
+old_config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/desktop-session"
+if [ -f "$old_config_dir/session.env" ] && [ ! -e "$config_dir/session.env" ]; then
+    mkdir -p "$config_dir" && mv -n -- "$old_config_dir/session.env" "$config_dir/session.env" && rmdir "$old_config_dir" 2>/dev/null || true
+fi
+read_settings "$config_dir/session.env"
 
 nested="${BARDO_SESSION_NESTED:-}"
 quick_secs="${BARDO_SESSION_QUICK_SECS:-20}"
 stubs="${BARDO_SESSION_STUBS:-}"
 first_run_delay="${BARDO_SESSION_FIRST_RUN_DELAY:-5}"
-state="${BARDO_SESSION_STATE:-${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is not set}/bardo-session}"
-guard_state="${BARDO_SESSION_STATE:-${XDG_STATE_HOME:-${HOME:?HOME is not set}/.local/state}/bardo-session}"
+state="${BARDO_SESSION_STATE:-${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is not set}/bardo/session}"
+guard_state="${BARDO_SESSION_STATE:-${XDG_STATE_HOME:-${HOME:?HOME is not set}/.local/state}/bardo/session}"
 # A log kept across logins must not grow without bound: past this size it is moved to guard.log.1 (one generation).
 guard_log_max=262144
-rollback_helper="${BARDO_SESSION_ROLLBACK_HELPER:-/usr/libexec/bardo-updater-rollback}"
-read -r -a casement_cmd <<<"${BARDO_SESSION_CASEMENT_CMD:-casement}"
-read -r -a backend_args <<<"${DESKTOP_SESSION_BACKEND_ARGS---backend tty}"
-unit="${BARDO_SESSION_UNIT:-casement.service}"
+rollback_helper="${BARDO_SESSION_ROLLBACK_HELPER:-/usr/libexec/bardo/bardo-updater-rollback}"
+read -r -a casement_cmd <<<"${BARDO_SESSION_CASEMENT_CMD:-bardo-compositor}"
+read -r -a backend_args <<<"${BARDO_SESSION_BACKEND_ARGS---backend tty}"
+unit="${BARDO_SESSION_UNIT:-bardo-compositor.service}"
 # The arguments of this run, which bardo-compositor.service reads as $BARDO_COMPOSITOR_SESSION_ARGS from the user manager's environment.
 session_args_var=BARDO_COMPOSITOR_SESSION_ARGS
-# Which kind of run this is, for the shell: normal, or safe (casement --safe). Same route as the arguments.
+# Which kind of run this is, for the shell: normal, or safe (bardo-compositor --safe). Same route as the arguments.
 session_mode_var=BARDO_SESSION_MODE
 # What an earlier version of this script wrote: a drop-in in the runtime folder. It would shadow the unit's ExecStart
-# and make accountd distrust the unit, so it is removed at the start (remove_old_dropin).
+# and make bardo-accountd distrust the unit, so it is removed at the start (remove_old_dropin).
 old_dropin_dir="${XDG_RUNTIME_DIR:?XDG_RUNTIME_DIR is not set}/systemd/user/$unit.d"
 mkdir -p "$state" "$guard_state"
 guard_log="$guard_state/guard.log"
@@ -236,10 +243,10 @@ on_term() {
 trap on_term TERM INT HUP
 
 # The socket name casement logs ("casement: listening on wayland-1"); empty if it has not yet.
-socket_of() { sed -n 's/^casement: listening on //p' "$1" | head -n 1; }
+socket_of() { sed -n 's/^\(casement\|bardo-compositor\): listening on //p' "$1" | head -n 1; }
 
 # The X11 display casement logs ("casement: X11 display :0", before the socket's line); empty when X11 is not served.
-display_of() { sed -n 's/^casement: X11 display //p' "$1" | head -n 1; }
+display_of() { sed -n 's/^\(casement\|bardo-compositor\): X11 display //p' "$1" | head -n 1; }
 
 # The environment D-Bus activation and systemd user units see (portals, autostart, Flatpak).
 publish_environment() {
@@ -362,12 +369,12 @@ wallet() {
     log "nothing keeps saved passwords here and no program for it is installed: $(secrets_hint)"
 }
 
-# sill as the user service bardo-shell.service (installed root-held beside bardo-compositor.service, Type=exec, so it has a
-# real main process). Porter's accountd and the companion's daemons (memoryd, intentd) admit the shell, and
-# casement gives it the Shell role, only as the main process of that unit; a scope has no main process
+# bardo-shell as the user service bardo-shell.service (installed root-held beside bardo-compositor.service, Type=exec, so it has a
+# real main process). Porter's bardo-accountd and the companion's daemons (bardo-memoryd, bardo-actiond) admit the shell, and
+# bardo-compositor gives it the Shell role, only as the main process of that unit; a scope has no main process
 # to check, so it could not be proved. A bardo-shell.service left over from a crashed session is stopped first;
 # if the unit is not installed or cannot be started that is logged and the session carries on without a shell:
-# sill never runs without its unit identity. The environment: the user manager already holds the session variables
+# bardo-shell never runs without its unit identity. The environment: the user manager already holds the session variables
 # (import_unit_environment: PATH among them; publish_environment: WAYLAND_DISPLAY), and a user service gets the
 # manager's environment. This function runs as the respawn loop's child: it returns when the unit ends cleanly (the
 # loop restarts it with its exit guard; the unit restarts itself after a failure and is waited on through that),
@@ -406,7 +413,7 @@ sill_shell() {
 
 first_run() {
     sleep "$first_run_delay"
-    "$(bin detent)" --first-run || log "detent --first-run exited with $?"
+    "$(bin bardo-settings)" --first-run || log "bardo-settings --first-run exited with $?"
 }
 
 # Start the components against the casement whose socket is $1 (a name in XDG_RUNTIME_DIR) and whose X11 display is
@@ -418,17 +425,17 @@ start_components() {
     [ -z "$nested" ] || [ -n "$stubs" ] || return 0
     wallet & component_pids+=("$!")
     keep_running power-key "$(bin systemd-inhibit)" --what=handle-power-key --who=bardo-session \
-        --why="the power key opens sill's power menu" --mode=block sleep infinity
+        --why="the power key opens bardo-shell's power menu" --mode=block sleep infinity
     if [ -n "$ibus_daemon" ] && have ibus-daemon; then keep_running ibus "$(bin ibus-daemon)" --xim --replace; fi
     if have systemctl; then
-        keep_running sill sill_shell
+        keep_running bardo-shell sill_shell
     else
-        keep_running sill "$(bin sill)" run
+        keep_running bardo-shell "$(bin bardo-shell)" run
     fi
-    if have detent; then first_run & component_pids+=("$!"); fi
+    if have bardo-settings; then first_run & component_pids+=("$!"); fi
 }
 
-# --- casement as the unit bardo-compositor.service (the real session) ---------------------------------------
+# --- bardo-compositor as the unit bardo-compositor.service (the real session) ---------------------------------------
 
 # Take this run's arguments and mode out of the user manager's environment (harmless when they are not there).
 unset_session_args() {
@@ -436,15 +443,15 @@ unset_session_args() {
 }
 
 # End the graphical session in the user manager. Stopping bardo-session.target alone leaves
-# graphical-session.target up: the portal frontend, sill and other units name it Requisite=, and systemd counts
+# graphical-session.target up: the portal frontend, bardo-shell and other units name it Requisite=, and systemd counts
 # that as a need, so its StopWhenUnneeded= never fires. It then outlives the login, and so do the units that are
-# PartOf= it (transom, xdg-desktop-portal), still holding the old Wayland socket. Stopping it stops them too.
+# PartOf= it (bardo-portal, xdg-desktop-portal), still holding the old Wayland socket. Stopping it stops them too.
 stop_session_targets() {
     systemctl --user stop bardo-session.target graphical-session.target 2>/dev/null || true
 }
 
 # A graphical session left by a login that ended without stop_session_targets (a killed session, an older version
-# of this script): ended once before the first casement starts, so no unit of it serves this login.
+# of this script): ended once before the first bardo-compositor starts, so no unit of it serves this login.
 end_stale_session() {
     [ -z "$nested" ] || return 0
     systemctl --user is-active --quiet graphical-session.target 2>/dev/null || return 0
@@ -468,8 +475,8 @@ remove_old_dropin() {
     systemctl --user daemon-reload 2>/dev/null || true
 }
 
-# The environment casement and what it starts must see, set in the user manager before the start.
-# WAYLAND_DISPLAY is not among them: casement makes the socket and publish_environment adds it.
+# The environment bardo-compositor and what it starts must see, set in the user manager before the start.
+# WAYLAND_DISPLAY is not among them: bardo-compositor makes the socket and publish_environment adds it.
 import_unit_environment() {
     local vars="XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE MOZ_ENABLE_WAYLAND \
 QT_QPA_PLATFORM GDK_BACKEND XMODIFIERS GTK_IM_MODULE QT_IM_MODULE XDG_DATA_DIRS XDG_SEAT XDG_VTNR XDG_SESSION_ID \
@@ -494,7 +501,7 @@ set_session_args() {
 
 # Tell the shell which kind of run this is (MODE: normal or safe): in the user manager's environment, where the shell's
 # unit reads it when it starts (a restart of the shell by the manager sees it too), and in this script's own, for the
-# direct children of the nested test path. Set before each casement start, so a fallback to --safe changes it before
+# direct children of the nested test path. Set before each bardo-compositor start, so a fallback to --safe changes it before
 # the shell starts again.
 set_session_mode() {
     export "$session_mode_var=$1"
@@ -507,7 +514,7 @@ unit_status() { systemctl --user show "$unit" -p StatusText --value 2>/dev/null;
 status_socket() { sed -n 's/^listening on \([^ ]*\).*/\1/p' <<<"$1" | head -n 1; }
 status_display() { sed -n 's/^listening on [^ ]* X11 display \([^ ]*\).*/\1/p' <<<"$1" | head -n 1; }
 
-# Run the casement unit (extra args "$@") to its end; sets run_status. The unit's Result and
+# Run the bardo-compositor unit (extra args "$@") to its end; sets run_status. The unit's Result and
 # ExecMainStatus say how it ended; a signal or a start that failed is a nonzero status. The unit restarts itself
 # after a failure, so the moment it is no longer active it is stopped (which cancels that restart) and the
 # guard decides what runs next.
@@ -515,7 +522,7 @@ run_unit_to_end() {
     local socket="" status="" key value active="" result="" mainstatus=0 tries=0
     set_session_args "$@" || { run_status=1; return; }
     systemctl --user reset-failed "$unit" 2>/dev/null || true
-    # Blocks until casement has said READY=1 (Type=notify), or fails if it never does.
+    # Blocks until bardo-compositor has said READY=1 (Type=notify), or fails if it never does.
     if ! systemctl --user start "$unit"; then
         systemctl --user stop "$unit" 2>/dev/null || true
         run_status=1
@@ -544,11 +551,11 @@ run_unit_to_end() {
     [ "$result" = success ] || [ "$run_status" != 0 ] || run_status=1
 }
 
-# --- casement as this script's direct child (BARDO_SESSION_NESTED=1: tests, no systemd) -------------
+# --- bardo-compositor as this script's direct child (BARDO_SESSION_NESTED=1: tests, no systemd) -------------
 
 run_child_to_end() {
-    local log_file="$state/casement.log" socket="" tries=0
-    # Standard error is casement's log and where it names its socket; kept for the guard.
+    local log_file="$state/compositor.log" socket="" tries=0
+    # Standard error is bardo-compositor's log and where it names its socket; kept for the guard.
     "${casement_cmd[@]}" "${backend_args[@]}" "$@" 2>"$log_file" &
     casement_pid=$!
     while [ -z "$socket" ] && kill -0 "$casement_pid" 2>/dev/null && [ "$tries" -lt 300 ]; do
@@ -561,10 +568,10 @@ run_child_to_end() {
     casement_pid=
 }
 
-# Run one casement (extra args "$@") to its end; sets run_status and run_secs.
+# Run one bardo-compositor (extra args "$@") to its end; sets run_status and run_secs.
 run_casement() {
     local started
-    : >"$state/casement.log"
+    : >"$state/compositor.log"
     started=$(date +%s)
     if [ -n "$nested" ]; then
         run_child_to_end "$@"
@@ -575,21 +582,21 @@ run_casement() {
     run_secs=$(($(date +%s) - started))
     stop_components
     if [ -n "$nested" ]; then
-        cat "$state/casement.log" >&2
+        cat "$state/compositor.log" >&2
     else
         journalctl --user -u "$unit" --since "@$started" --no-pager -o cat >&2 2>/dev/null || true
     fi
 }
 
-# Before any casement starts: if the latest update has failed to start in several different restarts of the
-# computer, slipway puts the previous version back (exit 5) and this session starts that one. It needs no
+# Before any bardo-compositor starts: if the latest update has failed to start in several different restarts of the
+# computer, bardo-updater puts the previous version back (exit 5) and this session starts that one. It needs no
 # password and no running update service. Skipped in a nested test run (no system to roll back) and where
-# slipway is not installed. Its own words go to guard.log; the rest of the session never waits on its answer.
+# bardo-updater is not installed. Its own words go to guard.log; the rest of the session never waits on its answer.
 recover_update() {
     local status=0
     [ -z "$nested" ] || return 0
-    have slipway || return 0
-    "$(bin slipway)" recover >>"$guard_log" 2>&1 || status=$?
+    have bardo-updater || return 0
+    "$(bin bardo-updater)" recover >>"$guard_log" 2>&1 || status=$?
     case "$status" in
         0) ;;
         5) guard "the latest update did not start; the previous version was put back" ;;
@@ -606,7 +613,7 @@ manual_way_back() {
     guard "what happened is written in $guard_log"
 }
 
-# The login screen's compositor holds the display until logind hands the seat to this session; a casement started
+# The login screen's compositor holds the display until logind hands the seat to this session; a bardo-compositor started
 # before that opens the display without master, and (before it learnt to ask again) stayed black. Waits for the
 # seat's active session to be this one, at most 20 s (a seat that never says, or a login without a seat, is not
 # waited on). Skipped in a nested test run.
@@ -628,7 +635,7 @@ wait_for_seat() {
         sleep 0.2
         tries=$((tries + 1))
     done
-    guard "the seat did not become this session's, or the login screen did not let go, in 20 s (${greeter:-$active}); starting casement anyway"
+    guard "the seat did not become this session's, or the login screen did not let go, in 20 s (${greeter:-$active}); starting bardo-compositor anyway"
 }
 
 # The id of a greeter session still on this seat, or nothing; fails when the seat cannot be read.
@@ -652,32 +659,32 @@ mode=normal
 while :; do
     set_session_mode "$mode"
     if [ "$mode" = safe ]; then
-        guard "starting casement --safe (pixman, no effects, one output)"
+        guard "starting bardo-compositor --safe (pixman, no effects, one output)"
         run_casement --safe
     else
-        guard "starting casement (quick exits so far: $quick)"
+        guard "starting bardo-compositor (quick exits so far: $quick)"
         run_casement
     fi
     if [ "$run_status" = 0 ]; then
-        guard "casement ended cleanly after ${run_secs}s: the session is over"
+        guard "bardo-compositor ended cleanly after ${run_secs}s: the session is over"
         [ -n "$nested" ] || stop_unit
         exit 0
     fi
-    guard "casement exited $run_status after ${run_secs}s (mode: $mode)"
+    guard "bardo-compositor exited $run_status after ${run_secs}s (mode: $mode)"
     if [ "$run_secs" -ge "$quick_secs" ]; then
         quick=0
         continue
     fi
     if [ "$mode" = safe ]; then
-        guard "casement --safe exited quickly too"
-        guard "casement --safe failed too: the crash guard ends the session (your other session stays available at the login screen)"
+        guard "bardo-compositor --safe exited quickly too"
+        guard "bardo-compositor --safe failed too: the crash guard ends the session (your other session stays available at the login screen)"
         manual_way_back
         [ -n "$nested" ] || stop_unit
         exit 1
     fi
     quick=$((quick + 1))
     if [ "$quick" -ge 3 ]; then
-        guard "three quick exits in a row: switching to casement --safe"
+        guard "three quick exits in a row: switching to bardo-compositor --safe"
         mode=safe
     fi
     sleep 1

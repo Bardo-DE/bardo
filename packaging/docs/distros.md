@@ -20,7 +20,7 @@ git clone https://github.com/Bardo-DE/bardo.git && cd bardo && cargo xtask insta
 cargo xtask install --check   # what this machine lacks, with the line that installs it (same as ./install.sh --check)
 ```
 
-Ubuntu, Fedora and Arch use the same commands. You need rustup, which gives you cargo; `cargo xtask` runs from anywhere in the tree. `cargo xtask install` builds everything as you, then installs it (sudo asks once). Log out and back in to "sill (casement)" afterwards.
+Ubuntu, Fedora and Arch use the same commands. You need rustup, which gives you cargo; `cargo xtask` runs from anywhere in the tree. `cargo xtask install` builds everything as you, then installs it (sudo asks once). Log out and back in to "bardo-shell (bardo-compositor)" afterwards.
 
 ## What the installer checks
 
@@ -32,7 +32,7 @@ building from source.
 It looks for:
 
 - **To run the session**: a way to ask for administrator rights (polkit), the desktop portals (file chooser,
-  screenshots, screen sharing; the backend that answers screenshots and screen sharing is transom, which the
+  screenshots, screen sharing; the backend that answers screenshots and screen sharing is bardo-portal, which the
   installer builds and puts in place), Xwayland, a place to keep saved passwords (gnome-keyring or KWallet), bubblewrap
   (the sandbox for agents), fuse3 (cloud drives in Files open their files when you open them), curl, xdg-utils, the Vulkan loader and a Vulkan driver. On Ubuntu also
   `dbus-user-session`, which minimal installs lack.
@@ -45,7 +45,7 @@ It looks for:
   its PulseAudio layer and WirePlumber (sound, screen sharing), ddcutil (brightness of external monitors),
   at-spi2-core (reading other apps' windows, which the assistant's helper for apps that are not ours needs; the installer
   tells you when it is missing), an input method (fcitx5 or ibus), PackageKit and CJK fonts.
-  `xwayland-satellite` runs older X11 apps; casement starts it by itself when it is installed. The prebuilt release
+  `xwayland-satellite` runs older X11 apps; bardo-compositor starts it by itself when it is installed. The prebuilt release
   includes it on every distribution. Fedora and Arch package it; Ubuntu 24.04 does not (see below).
 
 Everything the check prints comes from one file, `install/packages.sh`. The harness and the gate use it for their
@@ -101,7 +101,7 @@ Every package name above, and those in `release/deps.sh`, was looked up on 2026-
 ### X11 apps on Ubuntu
 
 `xwayland-satellite` (MPL-2.0, from `github.com/Supreeeme/xwayland-satellite`) is a separate program that
-casement starts when it is installed. Fedora (`xwayland-satellite`, 0.8.2 on Fedora 43 to 45) and Arch
+bardo-compositor starts when it is installed. Fedora (`xwayland-satellite`, 0.8.2 on Fedora 43 to 45) and Arch
 (`xwayland-satellite`) package it; Ubuntu 24.04 does not, and `--check` says so. The prebuilt release has it, so a
 bundle install needs nothing more. For a source install on Ubuntu, you build it yourself, once. It needs Rust from
 rustup (Ubuntu's own Rust is older than the 1.85 it asks for), the Xwayland package from the table above (it needs
@@ -112,10 +112,10 @@ sudo apt install clang pkg-config libxcb1-dev libxcb-composite0-dev libxcb-randr
 cargo install --locked --git https://github.com/Supreeeme/xwayland-satellite --tag v0.8.3
 ```
 
-That puts `xwayland-satellite` in `~/.cargo/bin`, which the session's search path may not include. casement has a
+That puts `xwayland-satellite` in `~/.cargo/bin`, which the session's search path may not include. bardo-compositor has a
 setting for the program's place, so point it there with one line in your own `~/.config/compositor/settings.toml`
 (or `$XDG_CONFIG_HOME/compositor/settings.toml`), under the heading `[xwayland]`, with your own home folder written out
-in full (casement does not expand `~`):
+in full (bardo-compositor does not expand `~`):
 
 ```
 [xwayland]
@@ -131,7 +131,7 @@ You write that file yourself: the installer never runs the two lines above and n
 Our renderer draws only the COLRv1 build of Noto Color Emoji. Fedora ships that. Ubuntu
 (`fonts-noto-color-emoji`) and Arch (`noto-fonts-emoji`) ship the older bitmap build, which shows nothing for us.
 So the repo carries the COLRv1 font (`fonts/`, with its licence and source) and `install.sh` puts it in
-`<prefix>/share/fonts/quire/` and refreshes the font cache, unless fontconfig already lists a `Noto-COLRv1`
+`<prefix>/share/fonts/bardo/` and refreshes the font cache, unless fontconfig already lists a `Noto-COLRv1`
 font. Use a prefix of `/usr` or `/usr/local`, which fontconfig searches by default.
 
 ## Running AI on this computer
@@ -151,8 +151,8 @@ reads that list when it starts, so after installing, press **Start using it** in
 (asking first, since a conversation that is open stops).
 
 vLLM is not looked for. If you run it, install it into a Python environment of your own (for example
-`uv venv ~/vllm && uv pip install --python ~/vllm vllm`) and name that Python in `~/.config/inferd/inferd.toml`
-(or `$XDG_CONFIG_HOME/inferd/inferd.toml`):
+`uv venv ~/vllm && uv pip install --python ~/vllm vllm`) and name that Python in `~/.config/bardo/inference/bardo-inferd.toml`
+(or `$XDG_CONFIG_HOME/bardo/inference/bardo-inferd.toml`):
 
 ```
 [engines]
@@ -161,10 +161,10 @@ vllm_python = "/home/YOU/vllm/bin/python"
 
 ## Picking the session at login
 
-The installer puts the entry **sill (casement)** in `/usr/share/wayland-sessions`.
+The installer puts the entry **bardo-shell (bardo-compositor)** in `/usr/share/wayland-sessions`.
 
 - **GDM** (Ubuntu, Fedora Workstation): choose your user, click the gear at the lower right of the password
-  screen, pick **sill (casement)**, then type the password. GDM remembers the choice for next time.
+  screen, pick **bardo-shell (bardo-compositor)**, then type the password. GDM remembers the choice for next time.
 - **SDDM** (Fedora KDE, Arch with SDDM): use the session drop-down on the login screen (lower left in most themes).
   It remembers your last choice.
 - **No display manager** (typical on Arch): log in on a text console and start the session from your shell's
@@ -216,10 +216,10 @@ them fails to start on Ubuntu with a "namespace" error, the same two fixes apply
 
 ## Updates
 
-Updates come from slipway, a program of its own. Its installer puts three programs in `/usr/libexec`
+Updates come from bardo-updater, a program of its own. Its installer puts three programs in `/usr/libexec`
 (`bardo-updater-apply`, `bardo-updater-rollback`, `bardo-updater-health`) and one polkit file, `org.bardo.updater.policy`, that names them,
 the same on Ubuntu, Fedora and Arch. A newer signed release installs without a password for the person at the keyboard;
-going back to an earlier version asks for the administrator's password. The session wants slipway's update service in every
+going back to an earlier version asks for the administrator's password. The session wants bardo-updater's update service in every
 login, so the daily check asks before it installs anything.
 
 If an update does not start, the session puts the previous version back by itself after several restarts of the computer, and
@@ -230,16 +230,16 @@ at once by hand, open a text console (Ctrl+Alt+F3) and run:
 pkexec /usr/libexec/bardo/bardo-updater-rollback
 ```
 
-slipway never places or reloads an AppArmor profile, so the Ubuntu note below is unchanged by it. It needs polkit, which
+bardo-updater never places or reloads an AppArmor profile, so the Ubuntu note below is unchanged by it. It needs polkit, which
 the install lines above already include (`polkit` on Fedora and Arch, `polkitd pkexec` on Ubuntu).
 
 ## Where things go
 
-`./install.sh` takes `--prefix` (default `/usr/local`), `--sysconfdir` (default `/etc`), `--destdir`, `--tree` (the bardo tree; default the parent of `packaging/`) and `--no-build`. porter goes
+`./install.sh` takes `--prefix` (default `/usr/local`), `--sysconfdir` (default `/etc`), `--destdir`, `--tree` (the bardo tree; default the parent of `packaging/`) and `--no-build`. The accounts service goes
 under the same prefix as the rest: its daemons find the providers, the client table and the model catalog under the
 first `$XDG_DATA_DIRS` entry that has them (default `/usr/local/share:/usr/share`), and its caller tables in
-`/etc/porter` (steward installs inferd and its caller table there too; ferry, which has syncd, writes nothing under `/etc`). The session script, the desktop target and the login entry
-are installed by `install/install.sh`, which `./install.sh` runs last. casement and its user unit are installed by
+`/etc/bardo` (the inference part installs bardo-inferd and its caller table there too; the sync part, which has bardo-syncd, writes nothing under `/etc`). The session script, the desktop target and the login entry
+are installed by `install/install.sh`, which `./install.sh` runs last. bardo-compositor and its user unit are installed by
 `crates/compositor/scripts/install.sh`, which `./install.sh` runs too. Both print the exact command to run as root when they
 cannot write a place (`/etc`, `/usr/share/wayland-sessions`) themselves.
 
@@ -248,9 +248,9 @@ cannot write a place (`/etc`, `/usr/share/wayland-sessions`) themselves.
 The same on Ubuntu, Fedora and Arch (all three run systemd and udev; no package is needed, so there are no apt, dnf or pacman lines).
 `/dev/uinput` is the file a program writes to make a keyboard or a mouse, and with it any program of yours could type into any window. The
 desktop closes it: the device rule `72-bardo-input-broker.rules` makes it root-only and takes off the tag (`uaccess`) that some distributions and
-game packages add, and one small service (`turnstile`, started when something asks for it) makes the virtual devices for the keyboard map
+game packages add, and one small service (`bardo-input-broker`, started when something asks for it) makes the virtual devices for the keyboard map
 and the touchpad program, and for nobody else. Its socket accepts any local program; who gets a device is decided by which program is asking,
 from `/etc/bardo/desktop-callers.toml`. Nothing in the desktop gives that file to a group, so a keyboard-map install left over from before
-(`/etc/udev/rules.d/70-bardo-key-remap.rules`, `/etc/systemd/system/bardo-key-remap.service.d/10-uinput.conf`) should be removed; `install/system.sh keycap`
-says so when it finds them. The same part places keycap's vendor file, `/usr/lib/bardo/key-remap/key-remap.toml` (Caps Lock switches the input method), on every family; `/etc/bardo/key-remap/key-remap.toml` stays the administrator's and nothing here writes it. On Fedora the files are labelled with `restorecon` when SELinux is on. On Ubuntu no AppArmor profile is placed.
+(`/etc/udev/rules.d/70-bardo-key-remap.rules`, `/etc/systemd/system/bardo-key-remap.service.d/10-uinput.conf`) should be removed; `install/system.sh bardo-key-remap`
+says so when it finds them. The same part places bardo-key-remap's vendor file, `/usr/lib/bardo/key-remap/key-remap.toml` (Caps Lock switches the input method), on every family; `/etc/bardo/key-remap/key-remap.toml` stays the administrator's and nothing here writes it. On Fedora the files are labelled with `restorecon` when SELinux is on. On Ubuntu no AppArmor profile is placed.
 Services that were running before the list of programs was installed read it only when they start: log out and in once.
