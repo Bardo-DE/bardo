@@ -73,6 +73,10 @@ fn notification() -> Posting {
 }
 
 /// Every request variant, with the exact line it is written as.
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 fn requests() -> Vec<(Request, &'static str)> {
     vec![
         (Request::Ping, r#"{"kind":"ping"}"#),
@@ -427,6 +431,10 @@ fn stats() -> SurfaceStats {
     }
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 fn responses() -> Vec<(Response, &'static str)> {
     vec![
         (Response::Pong, r#"{"kind":"pong"}"#),

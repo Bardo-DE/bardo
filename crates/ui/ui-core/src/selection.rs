@@ -10,7 +10,10 @@
 //! how: it replaces the selection, toggles the row in it, or extends it from the anchor.
 
 // A selection is a list of ranges, and often holds just one: `vec![a..b]` is meant.
-#![allow(clippy::single_range_in_vec_init)]
+#![allow(
+    clippy::single_range_in_vec_init,
+    reason = "a selection is a list of ranges, and often holds just one: `vec![a..b]` is meant"
+)]
 
 use crate::command::holds_primary;
 use keyboard_types::Modifiers;
@@ -288,6 +291,10 @@ mod tests {
     }
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+    )]
     fn a_pick_replaces_toggles_or_extends_from_the_anchor() {
         use PickHow::{Extend, Replace, Toggle};
         // (name, picks in order, wanted ranges, anchor, cursor)

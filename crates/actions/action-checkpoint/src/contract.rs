@@ -59,6 +59,10 @@ fn apply(root: &WorkRoot, session: &SessionId, n: u32, expect: PlanDigest) -> Ap
 }
 
 /// Runs every rule against `store` over `bench`.
+///
+/// # Panics
+///
+/// Panics when the store breaks a rule: that is how the checks report a failure.
 pub async fn run<S: CheckpointStore, W: Workbench>(store: &S, bench: &W) {
     let root = bench.root();
     let session = SessionId::parse("s-contract").expect("session");

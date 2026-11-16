@@ -354,7 +354,10 @@ impl From<ConnectError> for fdo::Error {
 #[zbus::interface(name = "org.freedesktop.impl.portal.RemoteDesktop")]
 impl RemoteDesktopService {
     /// Open a session.
-    #[allow(clippy::too_many_arguments)] // the portal's own signature plus the bus context
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the portal's own signature plus the bus context"
+    )]
     async fn create_session(
         &self,
         handle: ObjectPath<'_>,
@@ -523,7 +526,10 @@ impl RemoteDesktopService {
     }
 
     /// A touch begins.
-    #[allow(clippy::too_many_arguments)] // the portal's own signature plus the bus context
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the portal's own signature plus the bus context"
+    )]
     async fn notify_touch_down(
         &self,
         session_handle: ObjectPath<'_>,
@@ -540,7 +546,10 @@ impl RemoteDesktopService {
     }
 
     /// A touch moves.
-    #[allow(clippy::too_many_arguments)] // the portal's own signature plus the bus context
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the portal's own signature plus the bus context"
+    )]
     async fn notify_touch_motion(
         &self,
         session_handle: ObjectPath<'_>,

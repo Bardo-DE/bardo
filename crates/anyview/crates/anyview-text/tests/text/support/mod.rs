@@ -1,6 +1,9 @@
 //! Loading fixtures the way the viewer meets files: a `Source` on disk and what sniffing made of it.
 // Each test crate uses some of these helpers, and none of them is a `#[test]` function.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a test support module holds helpers that not every test file uses"
+)]
 
 use anyview_core::{
     ByteLen, FileHead, FileName, FilePath, FileStamp, ModTime, PeekBudget, PixelArea, SniffStep,

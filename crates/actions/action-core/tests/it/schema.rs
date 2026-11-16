@@ -5,6 +5,10 @@ use action_core::*;
 use action_vocab::{ActionRef, CallId, CharCount, ChoiceId, Value};
 use base_ids::Count;
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFault>)> {
     let a = entity("mail.thread", "a");
     let b = entity("mail.thread", "b");

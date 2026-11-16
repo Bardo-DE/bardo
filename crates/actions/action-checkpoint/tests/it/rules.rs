@@ -24,12 +24,13 @@ fn held(points: &[(u32, i64)]) -> Vec<Saved> {
 
 #[test]
 fn retention_drops_what_is_beyond_the_last_n_or_older_than_the_days() {
+    type Held = Vec<(u32, i64)>;
+
     let fresh_21: Vec<(u32, i64)> = (1..=21).map(|id| (id, 1)).collect();
     let mixed: Vec<(u32, i64)> = (1..=21)
         .map(|id| (id, if id == 5 { 20 } else { 1 }))
         .collect();
     // (name, held, last, days, dropped)
-    type Held = Vec<(u32, i64)>;
     let rows: [(&str, Held, u32, u32, Vec<u32>); 9] = [
         ("the 21st point drops the first", fresh_21, 20, 14, vec![1]),
         (

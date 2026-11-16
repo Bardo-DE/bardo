@@ -18,6 +18,10 @@ impl WorkRoot {
     }
 
     /// The session's workspace as a root; a workspace that steps up with `..` is refused.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`AbsPathError`] when the workspace is not an absolute path or steps up with `..`.
     pub fn of(workspace: &Workspace) -> Result<Self, AbsPathError> {
         AbsPath::parse(workspace.as_str()).map(Self)
     }

@@ -58,6 +58,10 @@ fn plain(extra: &str) -> String {
 
 /// Every way a file is refused whole, named by what is wrong with it.
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+)]
 fn a_file_that_does_not_make_sense_is_refused_whole() {
     let long = "x".repeat(65);
     let login = |more: &str| entry(&format!("route = \"login\"\n{more}"));
@@ -419,16 +423,6 @@ fn resume_names_the_session_and_the_claude_code_profile_has_the_well_known_flag(
 
 #[test]
 fn a_command_line_a_terminal_saw_is_the_app_and_conversation_it_picks_up() {
-    use companion_model::SeenCommand;
-    let file = AgentsFile::parse(concat!(
-        "[[agent]]\nprogram = \"claude-code\"\ncommand = \"/usr/bin/claude\"\nroute = \"login\"\n",
-        "profile = \"claude-code\"\n",
-        "[[agent]]\nprogram = \"plain\"\ncommand = \"/usr/bin/plain\"\nroute = \"login\"\n",
-        "[[agent]]\nprogram = \"flagged\"\ncommand = \"/opt/flagged\"\nroute = \"login\"\n",
-        "resume = [\"--session={session}\", \"--go\"]\n",
-    ))
-    .expect("parses");
-    // The line, and the program (or none) and id it must give.
     const CASES: &[(&str, Option<(&str, &str)>)] = &[
         (
             "/usr/bin/claude --resume ab-1",
@@ -446,6 +440,17 @@ fn a_command_line_a_terminal_saw_is_the_app_and_conversation_it_picks_up() {
         ("/usr/bin/claude --resume -x", None),
         ("/usr/bin/plain --resume ab-1", None),
     ];
+
+    use companion_model::SeenCommand;
+    let file = AgentsFile::parse(concat!(
+        "[[agent]]\nprogram = \"claude-code\"\ncommand = \"/usr/bin/claude\"\nroute = \"login\"\n",
+        "profile = \"claude-code\"\n",
+        "[[agent]]\nprogram = \"plain\"\ncommand = \"/usr/bin/plain\"\nroute = \"login\"\n",
+        "[[agent]]\nprogram = \"flagged\"\ncommand = \"/opt/flagged\"\nroute = \"login\"\n",
+        "resume = [\"--session={session}\", \"--go\"]\n",
+    ))
+    .expect("parses");
+    // The line, and the program (or none) and id it must give.
     for (line, want) in CASES {
         let seen = SeenCommand::parse(line.split(' ').map(str::to_owned).collect()).expect(line);
         let got = file

@@ -89,6 +89,12 @@ mod tests {
 
     #[test]
     fn the_start_of_a_file_reads_as_a_shorter_file() {
+        const CASES: &[(&str, u64, u64, &[u8])] = &[
+            ("shorter than the file", 4, 4, b"0123"),
+            ("exactly the file", 10, 10, b"0123456789"),
+            ("longer than the file", 99, 10, b"0123456789"),
+        ];
+
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("a.txt");
         std::fs::write(&path, b"0123456789").unwrap();
@@ -100,11 +106,6 @@ mod tests {
             },
         );
         // name, limit, length it reports, what a read of everything gives
-        const CASES: &[(&str, u64, u64, &[u8])] = &[
-            ("shorter than the file", 4, 4, b"0123"),
-            ("exactly the file", 10, 10, b"0123456789"),
-            ("longer than the file", 99, 10, b"0123456789"),
-        ];
         for (name, limit, len, bytes) in CASES {
             let start = FileBytes::first(&src, ByteLen(*limit)).unwrap();
             assert_eq!(start.len(), ByteLen(*len), "{name}: length");

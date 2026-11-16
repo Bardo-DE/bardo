@@ -42,6 +42,11 @@ pub struct BriefText(String);
 
 impl BriefText {
     /// The brief written as `text`, or why it is not one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`BriefFault::Empty`] when `text` is blank and [`BriefFault::TooLong`] when it is
+    /// longer than the brief limit.
     pub fn parse(text: &str) -> Result<Self, BriefFault> {
         if text.trim().is_empty() {
             return Err(BriefFault::Empty);

@@ -43,7 +43,7 @@ pub fn next_id(notes: &[CheckpointNote]) -> CheckpointId {
         .filter_map(|note| match &note.event {
             CheckpointEvent::Taken(id) => Some(id.0),
             CheckpointEvent::Restored { safety, .. } => Some(safety.0),
-            _ => None,
+            CheckpointEvent::Skipped(_) => None,
         })
         .max()
         .unwrap_or(0);

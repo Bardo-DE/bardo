@@ -30,6 +30,11 @@ pub enum WorkPathError {
 
 impl WorkPath {
     /// `text` as a path inside the workspace.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`WorkPathError`] when `text` is empty, holds a NUL character, starts with `/`, or
+    /// has an empty, `.` or `..` step.
     pub fn parse(text: &str) -> Result<WorkPath, WorkPathError> {
         if text.is_empty() {
             return Err(WorkPathError::Empty);

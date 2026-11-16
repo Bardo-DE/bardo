@@ -124,6 +124,11 @@ const WINDOW_SECONDS: i64 = 60;
 /// Money the model turns have spent (`charge_turn`) counts against `spend` here, so a session over
 /// its cap, or whose spend cannot be counted, makes no more calls. The wall budget counts from the
 /// session's start; the per-minute budget counts calls in a one-minute window.
+///
+/// # Errors
+///
+/// Returns the [`BudgetKind`] of the first budget the call would pass: its own limit, the
+/// per-minute window, or the turn spend that [`check_turn`] reports.
 pub fn charge(
     ledger: &Ledger,
     budget: &Budget,

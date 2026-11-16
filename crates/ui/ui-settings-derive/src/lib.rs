@@ -18,9 +18,12 @@ mod shape;
 use proc_macro::TokenStream;
 use syn::{DeriveInput, parse_macro_input};
 
-/// `#[derive(SettingsRow)]` on the struct that is one row of a `Vec<Row>` settings key: emits
-/// `SettingsRow` (its columns) and `ListElement` (so a `Vec<Row>` field is a
-/// `KeyKind::Rows`). Each field needs `#[settings(label = "...")]`, and a text field may add
+/// `#[derive(SettingsRow)]` on the struct that is one row of a `Vec<Row>` settings key.
+///
+/// Emits `SettingsRow` (its columns) and `ListElement` (so a `Vec<Row>` field is a
+/// `KeyKind::Rows`).
+///
+/// Each field needs `#[settings(label = "...")]`, and a text field may add
 /// `pattern = "..."`; a field is `String` (a text column) or a `Word` enum (a choice column).
 #[proc_macro_derive(SettingsRow, attributes(settings))]
 pub fn derive_settings_row(input: TokenStream) -> TokenStream {

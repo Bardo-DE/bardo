@@ -37,9 +37,6 @@ fn text_is_split_at_line_feeds_and_a_final_one_ends_the_last_line() {
 
 #[test]
 fn a_window_returns_exactly_the_requested_lines_at_every_anchor_boundary() {
-    let text = TextLines::open(Vec::<u8>::from(numbered(300))).unwrap();
-    assert_eq!(text.line_count(), 300);
-    // name, from, to
     const CASES: &[(&str, u32, u32)] = &[
         ("first line", 0, 1),
         ("start", 0, 10),
@@ -50,6 +47,10 @@ fn a_window_returns_exactly_the_requested_lines_at_every_anchor_boundary() {
         ("the last line", 299, 300),
         ("everything", 0, 300),
     ];
+
+    let text = TextLines::open(Vec::<u8>::from(numbered(300))).unwrap();
+    assert_eq!(text.line_count(), 300);
+    // name, from, to
     for (name, from, to) in CASES {
         assert_eq!(window(&text, *from, *to), names(*from, *to), "{name}");
     }

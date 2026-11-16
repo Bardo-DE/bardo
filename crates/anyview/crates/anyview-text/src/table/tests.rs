@@ -79,9 +79,6 @@ fn ragged_rows_keep_their_cells_and_the_width_is_the_widest() {
 
 #[test]
 fn row_windows_are_cut_to_the_rows_that_exist() {
-    let text: String = (0..10).map(|i| format!("r{i},x\n")).collect();
-    let table = parse(&text, HeaderMode::Absent);
-    // name, from, to, first row, count
     const CASES: &[(&str, u32, u32, Option<&str>, usize)] = &[
         ("start", 0, 3, Some("r0"), 3),
         ("middle", 4, 6, Some("r4"), 2),
@@ -90,6 +87,10 @@ fn row_windows_are_cut_to_the_rows_that_exist() {
         ("empty", 5, 5, None, 0),
         ("reversed", 6, 2, None, 0),
     ];
+
+    let text: String = (0..10).map(|i| format!("r{i},x\n")).collect();
+    let table = parse(&text, HeaderMode::Absent);
+    // name, from, to, first row, count
     for (name, from, to, first, count) in CASES {
         let window = table.rows(RowIndex(*from)..RowIndex(*to)).unwrap();
         assert_eq!(window.len(), *count, "{name}");
@@ -264,6 +265,10 @@ fn set(table: &Table, edits: &mut TableEdits, position: u32, column: u32, text: 
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 fn a_table_written_after_edits_changes_only_what_was_edited() {
     type Change = fn(&Table, &mut TableEdits);
     // name, the file, the change, the file after

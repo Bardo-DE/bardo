@@ -104,7 +104,7 @@ fn handle() -> Value {
     })
 }
 
-fn or_handle(inner: Value) -> Value {
+fn or_handle(inner: &Value) -> Value {
     json!({ "anyOf": [inner, handle()] })
 }
 
@@ -130,7 +130,7 @@ fn of_type(ty: &ParamType) -> Value {
             if !*multiline && let Value::Object(fields) = &mut text {
                 fields.insert("pattern".into(), json!("^[^\\n]*$"));
             }
-            or_handle(text)
+            or_handle(&text)
         }
         ParamType::Integer { min, max } => shaped(&Shape::Integer {
             min: *min,
@@ -164,13 +164,13 @@ fn of_type(ty: &ParamType) -> Value {
                 .collect();
             shaped(&Shape::Choice(ids))
         }
-        ParamType::Entity(kind) => or_handle(entity(kind)),
+        ParamType::Entity(kind) => or_handle(&entity(kind)),
         ParamType::Entities(kind) => json!({
             "type": "array",
-            "items": or_handle(entity(kind)),
+            "items": or_handle(&entity(kind)),
         }),
-        ParamType::File => or_handle(json!({ "type": "string" })),
-        ParamType::Url => or_handle(json!({ "type": "string", "format": "uri" })),
+        ParamType::File => or_handle(&json!({ "type": "string" })),
+        ParamType::Url => or_handle(&json!({ "type": "string", "format": "uri" })),
         ParamType::Dynamic(_) => json!({ "type": "string" }),
     }
 }

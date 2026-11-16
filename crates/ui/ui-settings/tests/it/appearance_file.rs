@@ -108,6 +108,10 @@ fn a_damaged_file_is_the_defaults_and_says_so() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+)]
 fn a_bad_value_costs_only_its_own_field() {
     // Every row also sets a field to something other than its default, so a loader that threw
     // the whole file away on the bad value would fail it.

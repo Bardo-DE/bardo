@@ -15,6 +15,10 @@ const WHOLE: FindOptions = FindOptions::DEFAULT.with_whole_words(true);
 const BOTH: FindOptions = EXACT.with_whole_words(true);
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+)]
 fn a_phrase_is_found_in_a_line_under_each_option_and_never_overlaps() {
     // name, phrase, options, line text, hits as (from, to)
     type Case = (

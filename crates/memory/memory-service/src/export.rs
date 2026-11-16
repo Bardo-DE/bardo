@@ -29,7 +29,10 @@ pub enum ErasedTag {
 
 /// An event's body in `events.jsonl`: the typed body, or the string `"erased"`.
 // The typed body is the stored one as it is; boxing it would complicate every match.
-#[allow(clippy::large_enum_variant)]
+#[allow(
+    clippy::large_enum_variant,
+    reason = "the typed body is the stored one as it is; boxing it would complicate every match"
+)]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ExportedBody {

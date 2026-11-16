@@ -21,6 +21,12 @@ pub struct WebUrl(String);
 
 impl WebUrl {
     /// The URL written as `text`, or why it is not a web URL.
+    ///
+    /// # Errors
+    ///
+    /// Returns an [`IdError`] when `text` is too long, holds a character that is not printable
+    /// ASCII or a `#`, is not a URL with a scheme and host, or is plain `http` to a computer other
+    /// than this one.
     pub fn parse(text: &str) -> Result<Self, IdError> {
         let bad = || IdError::malformed("web url", text);
         let usable = text.len() <= MAX_LEN

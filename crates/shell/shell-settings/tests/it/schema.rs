@@ -129,7 +129,6 @@ fn idle_times_are_bounded_in_their_units() {
 
 #[test]
 fn deep_links_resolve_through_the_schemas() {
-    let all = schemas();
     const CASES: &[(&str, &str)] = &[
         ("magnification", "dock.magnification"),
         ("natural scrolling", "scroll.natural"),
@@ -137,6 +136,8 @@ fn deep_links_resolve_through_the_schemas() {
         ("automatically hide the dock", "dock.autohide"),
         ("hide and show the menu bar", "bar.autohide"),
     ];
+
+    let all = schemas();
     for &(query, want) in CASES {
         assert_eq!(
             deep_link_path(&all, query).map(|p| p.0),

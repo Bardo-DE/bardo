@@ -24,6 +24,10 @@ type Case = (
 );
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 fn the_corner_follows_its_table() {
     use CornerIn::*;
     let dwelling = |t| Corner::Dwelling { until: Stamp(t) };

@@ -3,7 +3,7 @@
 //! and a close gives it all back.
 
 // The scripted agent is agent-acp-host's; this file uses part of it.
-#[allow(dead_code)]
+#[allow(dead_code, reason = "this file uses part of the scripted agent")]
 #[path = "../../../agent-acp-host/tests/it/client/agent.rs"]
 mod agent;
 

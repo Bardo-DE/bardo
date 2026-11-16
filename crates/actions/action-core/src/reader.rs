@@ -163,6 +163,12 @@ pub enum SchemaFault {
 }
 
 /// Whether `value` is an answer of shape `schema`.
+///
+/// # Errors
+///
+/// Returns the [`SchemaFault`] that says how `value` fails `schema`: the wrong type, a choice or
+/// number out of its set or range, text or a list that is too long, or a record with a missing or
+/// unknown field.
 pub fn conforms(value: &Value, schema: &ValueSchema) -> Result<(), SchemaFault> {
     match (value, schema) {
         (Value::Choice(id), ValueSchema::Choice(options)) => options
@@ -217,6 +223,11 @@ impl ValueSchema {
     /// The schema in stoker's structured-output vocabulary, so inferd renders it for the engine
     /// (JSON Schema, GBNF or a regex) and owns validation, repair and retry. Entities are named
     /// by [`entity_choice_text`].
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SchemaFault::NotRepresentable`] when a record field has a name that cannot be a
+    /// field name, and any fault of a nested schema.
     pub fn shape(&self) -> Result<Shape, SchemaFault> {
         let count = |n: usize| model_provider::Count(u32::try_from(n).unwrap_or(u32::MAX));
         match self {
@@ -266,6 +277,10 @@ impl ValueSchema {
 impl ValueSchema {
     /// The schema as JSON Schema text (stoker's `Shape::to_json_schema`, plain dialect): what the
     /// reader sends inferd as the shape of its reply.
+    ///
+    /// # Errors
+    ///
+    /// Returns the [`SchemaFault`] that [`ValueSchema::shape`] reports.
     pub fn json_schema(&self) -> Result<String, SchemaFault> {
         Ok(self
             .shape()?

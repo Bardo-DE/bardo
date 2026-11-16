@@ -153,7 +153,10 @@ impl SessionObject {
 #[zbus::interface(name = "org.freedesktop.impl.portal.ScreenCast")]
 impl ScreenCastService {
     /// Open a session. `options` is empty today; the reply carries `session_id`.
-    #[allow(clippy::too_many_arguments)] // the portal's own signature plus the bus context
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the portal's own signature plus the bus context"
+    )]
     async fn create_session(
         &self,
         handle: ObjectPath<'_>,
@@ -214,7 +217,10 @@ impl ScreenCastService {
 
     /// Ask the person if the token did not resolve, open the stream, reply with `streams` and,
     /// when persisting, `restore_data`.
-    #[allow(clippy::too_many_arguments)] // the portal's own signature plus the bus context
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the portal's own signature plus the bus context"
+    )]
     async fn start(
         &self,
         handle: ObjectPath<'_>,

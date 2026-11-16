@@ -188,7 +188,9 @@ fn the_log_folds_why_door_and_stage_events() {
         InferEvent::Routed(served("claude-haiku-4-5", cloud())),
         stage(StageRole::Answer, "claude-haiku-4-5", cloud(), Why::Warm),
     ];
-    events.iter().for_each(|e| log.event(e));
+    for event in &events {
+        log.event(event);
+    }
     let notes = log.notes();
     assert_eq!(
         footer_line(&notes),
@@ -229,7 +231,7 @@ fn reasons_off_leave_the_model_and_the_door_and_an_eviction_stays() {
 #[test]
 fn a_pipeline_gives_one_note_per_stage_and_a_bare_routed_one_answer() {
     let mut log = RouteLog::default();
-    [
+    for event in [
         InferEvent::Routed(served("whisper", Locality::OnDevice)),
         stage(StageRole::Hear, "whisper", Locality::OnDevice, Why::Named),
         InferEvent::Why(Why::Nearest),
@@ -240,9 +242,9 @@ fn a_pipeline_gives_one_note_per_stage_and_a_bare_routed_one_answer() {
             Locality::OnDevice,
             Why::Nearest,
         ),
-    ]
-    .iter()
-    .for_each(|e| log.event(e));
+    ] {
+        log.event(&event);
+    }
     assert_eq!(
         footer_line(&log.notes()),
         "Heard by Whisper · Answered by Gemma 4 (closest to you)"
@@ -260,7 +262,7 @@ fn a_pipeline_gives_one_note_per_stage_and_a_bare_routed_one_answer() {
 fn a_voice_turn_has_two_routed_and_one_answer_line() {
     // Porter's voice-chat order: Routed, Stage(Hear), Heard.., Routed, Stage(Answer), deltas, end.
     let mut log = RouteLog::default();
-    [
+    for event in [
         InferEvent::Routed(served("whisper", Locality::OnDevice)),
         stage(StageRole::Hear, "whisper", Locality::OnDevice, Why::Named),
         InferEvent::Routed(served("gemma-4", Locality::OnDevice)),
@@ -269,9 +271,9 @@ fn a_voice_turn_has_two_routed_and_one_answer_line() {
         InferEvent::Finished(inference_core::InferReply::Refused(
             inference_core::InferRefusal::Unavailable,
         )),
-    ]
-    .iter()
-    .for_each(|e| log.event(e));
+    ] {
+        log.event(&event);
+    }
     let notes = log.notes();
     assert_eq!(notes.len(), 2);
     let line = footer_line(&notes);

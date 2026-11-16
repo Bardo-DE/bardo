@@ -1,5 +1,8 @@
 //! Fixtures: the agents.toml of each route, and a launcher wired to the fakes.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a test support module holds helpers that not every test file uses"
+)]
 
 use agent_acp_host::LaunchPlan;
 use agent_acp_host::fake::{ChannelWire, pipe};

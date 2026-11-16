@@ -21,6 +21,11 @@ pub struct SkillId(String);
 
 impl SkillId {
     /// `text` as an id.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SkillIdError`] when `text` is empty, too long, or holds anything but lower-case
+    /// letters, digits and `-`.
     pub fn parse(text: &str) -> Result<Self, SkillIdError> {
         let fits = !text.is_empty() && text.len() <= SKILL_ID_MAX;
         let chars = text

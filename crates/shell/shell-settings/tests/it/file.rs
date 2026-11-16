@@ -180,6 +180,14 @@ fn a_retired_key_is_reported_unknown() {
 /// only that key's default.
 #[test]
 fn idle_seconds_and_minutes_are_plain_integers_both_ways() {
+    const WRITTEN: &[(&str, &str, i64)] = &[
+        ("session", "lock_grace_s", 12),
+        ("idle", "screen_off_ac_min", 20),
+        ("idle", "screen_off_battery_min", 3),
+        ("idle", "suspend_ac_min", 0),
+        ("idle", "suspend_battery_min", 45),
+    ];
+
     use shell_settings::{Mins, Secs};
     let dir = TempDir::new("idle-units");
     let text = "[session]\nlock_grace_s = 12\n\
@@ -202,13 +210,6 @@ fn idle_seconds_and_minutes_are_plain_integers_both_ways() {
             .unwrap_or_else(|e| panic!("{e}"));
     let tree: toml::Table = toml::from_str(&written).unwrap_or_else(|e| panic!("{e}"));
     let at = |table: &str, key: &str| tree.get(table).and_then(|t| t.get(key)).cloned();
-    const WRITTEN: &[(&str, &str, i64)] = &[
-        ("session", "lock_grace_s", 12),
-        ("idle", "screen_off_ac_min", 20),
-        ("idle", "screen_off_battery_min", 3),
-        ("idle", "suspend_ac_min", 0),
-        ("idle", "suspend_battery_min", 45),
-    ];
     for &(table, key, value) in WRITTEN {
         assert_eq!(
             at(table, key),

@@ -45,7 +45,7 @@ async fn from_portal(connection: &Connection, header: &Header<'_>) -> fdo::Resul
 
 #[zbus::interface(name = "org.bardo.Shell1")]
 impl StandIn {
-    #[allow(clippy::too_many_arguments)] // the shell's own signature
+    #[allow(clippy::too_many_arguments, reason = "the shell's own signature")]
     async fn pick_capture_source(
         &self,
         _app_label: String,
@@ -76,7 +76,7 @@ impl StandIn {
         Ok(vec![(0.25, 0.5, 0.75)])
     }
 
-    #[allow(clippy::too_many_arguments)] // the shell's own signature
+    #[allow(clippy::too_many_arguments, reason = "the shell's own signature")]
     async fn ask_permission(
         &self,
         _app_label: String,

@@ -212,6 +212,10 @@ fn consolidation_events(service: &MemoryService<FakeBackend>) -> Vec<String> {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+)]
 async fn session_entries_never_reach_recall_but_recent_entries_and_export_return_them() {
     let service = service();
     ask(

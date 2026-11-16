@@ -1,4 +1,7 @@
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a test support module holds helpers that not every test file uses"
+)]
 
 use memory_core::*;
 use memory_service::Caller;

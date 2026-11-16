@@ -294,7 +294,7 @@ impl AccessService {
 impl AccessService {
     /// Ask the person a yes-or-no question about an app. The `icon` and `choices` options are
     /// not used: the shell shows the app by its own icon and the question has no extra choices.
-    #[allow(clippy::too_many_arguments)] // the portal's own signature
+    #[allow(clippy::too_many_arguments, reason = "the portal's own signature")]
     async fn access_dialog(
         &self,
         handle: ObjectPath<'_>,

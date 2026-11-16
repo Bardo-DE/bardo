@@ -152,6 +152,10 @@ const SESSION: &str = "org.freedesktop.impl.portal.Session";
 pub const REQUEST_PATH: &str = "/org/freedesktop/portal/desktop/request/x/r";
 
 /// Every method of every portal interface, called as `who`; each with its label.
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 async fn every_method(who: &Connection) -> Vec<(&'static str, zbus::Result<Message>)> {
     let (handle, session) = (
         path(REQUEST_PATH),

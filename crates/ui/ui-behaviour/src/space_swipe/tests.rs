@@ -216,6 +216,10 @@ fn the_row_follows_the_fingers() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+)]
 fn a_lift_finishes_to_the_committed_space() {
     let changed = |dx| SwipeIn::Changed { dx };
     check(

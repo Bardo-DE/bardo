@@ -359,6 +359,8 @@ fn a_frame_lists_windows_bottom_first_on_each_output_in_key_order() {
 
 #[test]
 fn a_window_is_drawn_with_its_look_and_its_committed_size() {
+    use compositor_motion::ShadowLevel::{Inactive, Key, None};
+
     let a = arranged(&[
         (1, "HEADLESS-1", rect(0, 0, 400, 300)),
         (2, "HEADLESS-1", rect(0, 0, 400, 300)),
@@ -389,7 +391,6 @@ fn a_window_is_drawn_with_its_look_and_its_committed_size() {
         let w = placed(&frame, n).expect("drawn");
         (w.emphasis, w.shadow, w.corner.0, w.committed)
     };
-    use compositor_motion::ShadowLevel::{Inactive, Key, None};
     assert_eq!(
         row(1),
         (

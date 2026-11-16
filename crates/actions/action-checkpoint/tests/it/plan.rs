@@ -62,6 +62,8 @@ fn files_are_split_into_changed_added_and_removed() {
 
 #[test]
 fn the_digest_is_stable_under_order_and_differs_on_any_change() {
+    type Files<'a> = &'a [(&'a str, &'a str)];
+
     let base = plan_restore(
         &listing(&[("a", "1"), ("b", "2"), ("c", "3")]),
         &listing(&[("a", "9"), ("d", "4")]),
@@ -75,7 +77,6 @@ fn the_digest_is_stable_under_order_and_differs_on_any_change() {
     let now = &[("a", "1"), ("b", "2"), ("c", "3")][..];
     let then = &[("a", "9"), ("d", "4")][..];
     // Each variant changes one thing a person would care about.
-    type Files<'a> = &'a [(&'a str, &'a str)];
     let variants: [(&str, Files, Files); 6] = [
         (
             "another file is changed",

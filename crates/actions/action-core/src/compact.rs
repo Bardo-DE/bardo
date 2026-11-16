@@ -79,6 +79,11 @@ fn cited(text: &str) -> Vec<Option<u64>> {
 impl SummaryText {
     /// A model's words as a summary, when they are not empty, fit, and cite (as `#n`) only
     /// handles in `held`: what the planner had been shown.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SummaryFault`] when the words are empty, longer than the summary limit, or cite
+    /// a handle that is not in `held`.
     pub fn parse(words: &str, held: &[Handle]) -> Result<Self, SummaryFault> {
         let words = words.trim();
         if words.is_empty() {

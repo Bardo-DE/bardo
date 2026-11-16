@@ -81,6 +81,10 @@ mod tests {
     );
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+    )]
     fn copy_paste_undo_and_spaces_follow_the_platform() {
         let shift = Modifiers::SHIFT;
         let cases: Vec<Case> = vec![

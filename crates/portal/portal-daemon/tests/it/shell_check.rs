@@ -31,7 +31,7 @@ enum Answers {
 
 #[zbus::interface(name = "org.bardo.Shell1")]
 impl StandIn {
-    #[allow(clippy::too_many_arguments)] // the shell's own signature
+    #[allow(clippy::too_many_arguments, reason = "the shell's own signature")]
     async fn ask_permission(
         &self,
         _app_label: String,

@@ -1,5 +1,8 @@
 //! Builders the tests share; labels come from prov's constructors.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "a test support module holds helpers that not every test file uses"
+)]
 
 use account_core::{AppName, DataClass};
 use action_manifest::{

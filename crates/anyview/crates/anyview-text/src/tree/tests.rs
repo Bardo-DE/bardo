@@ -1,6 +1,6 @@
 use super::*;
-use anyview_core::work::Stop;
 use anyview_core::FileName;
+use anyview_core::work::Stop;
 
 fn json(text: &str) -> Tree {
     Tree::parse(text, TreeFormat::Json).unwrap()
@@ -262,13 +262,14 @@ fn a_single_value_cut_by_the_limit_is_over_budget() {
 
 #[test]
 fn json_lines_past_the_limit_count_only_whole_lines() {
-    let text = "1\n22\n333\n4444\n";
-    // name, limit, coverage, lines counted
     const CASES: &[(&str, u64, Coverage, u32)] = &[
         ("all of it", 99, Coverage::Whole, 4),
         ("a cut inside a line", 8, Coverage::Prefix, 2),
         ("a cut after a line break", 9, Coverage::Prefix, 3),
     ];
+
+    let text = "1\n22\n333\n4444\n";
+    // name, limit, coverage, lines counted
     for (name, limit, coverage, count) in CASES {
         let input = Input::from((FileName::new("a.jsonl").unwrap(), text.as_bytes().to_vec()));
         let (tree, got) = Tree::read(&input, TreeFormat::JsonLines, ByteLen(*limit)).unwrap();
@@ -384,6 +385,10 @@ mod editing {
     type Change = fn(&mut TreeSession);
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+    )]
     fn an_edit_changes_only_the_bytes_of_what_was_edited() {
         // name, the document, the change, the document after
         let cases: Vec<(&str, &str, Change, &str)> = vec![

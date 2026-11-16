@@ -28,7 +28,20 @@ fn cost(effect: Effect, entities: u32, depth: u8, reviewed: bool) -> Cost {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 fn budget_charge_table() {
+    type Case = (
+        &'static str,
+        Ledger,
+        Budget,
+        Cost,
+        i64,
+        Result<(), BudgetKind>,
+    );
+
     let start = at(1_000);
     let fresh = Ledger::new(start);
     let tight = Budget {
@@ -49,14 +62,6 @@ fn budget_charge_table() {
         f(&mut l);
         l
     };
-    type Case = (
-        &'static str,
-        Ledger,
-        Budget,
-        Cost,
-        i64,
-        Result<(), BudgetKind>,
-    );
     let cases: Vec<Case> = vec![
         (
             "a read is within every budget",

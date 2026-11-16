@@ -166,7 +166,10 @@ mod interface {
     #[zbus::interface(name = "org.freedesktop.impl.portal.Inhibit")]
     impl InhibitService {
         /// Hold a request until its request object is closed.
-        #[allow(clippy::too_many_arguments)] // the portal's own signature plus the bus context
+        #[allow(
+            clippy::too_many_arguments,
+            reason = "the portal's own signature plus the bus context"
+        )]
         async fn inhibit(
             &self,
             handle: ObjectPath<'_>,
@@ -206,7 +209,10 @@ mod interface {
         }
 
         /// Start watching the session state (screen locked, idle); returns the response code.
-        #[allow(clippy::too_many_arguments)] // the portal's own signature plus the bus context
+        #[allow(
+            clippy::too_many_arguments,
+            reason = "the portal's own signature plus the bus context"
+        )]
         async fn create_monitor(
             &self,
             handle: ObjectPath<'_>,

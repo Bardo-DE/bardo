@@ -9,6 +9,10 @@ fn digest(n: u8) -> PlanDigest {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 fn plan_state_machine_table() {
     use PlanEffect as E;
     use PlanEvent as V;

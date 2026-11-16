@@ -115,6 +115,10 @@ mod tests {
     use super::*;
 
     #[test]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+    )]
     fn previews_summarise_containers_and_quote_and_cut_strings() {
         let long = "x".repeat(100);
         let cut = format!("\"{}…\"", "x".repeat(80));

@@ -220,6 +220,10 @@ fn a_range_past_the_end_is_cut() {
 }
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a test that builds one scenario step by step; splitting it would hide the order of its steps"
+)]
 fn the_added_languages_highlight_with_the_right_classes() {
     use TokenClass::*;
     // case, syntax name, source, (text, class) pairs that must appear in the first lines

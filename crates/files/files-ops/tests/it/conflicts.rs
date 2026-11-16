@@ -57,6 +57,8 @@ fn the_question_says_what_is_taken_and_how_many_come_after() {
 
 #[test]
 fn replace_puts_the_old_one_in_the_trash() {
+    use files_trash::Trash;
+
     let rig = rig_with_clashes();
     let mut host = Script::answering(&[Resolution::for_rest(Answer::Replace)]);
     assert_eq!(copy_all(&rig, &mut host), Finish::Done);
@@ -64,7 +66,6 @@ fn replace_puts_the_old_one_in_the_trash() {
     assert_eq!(rig.read("dest/a.txt"), "new a");
     assert_eq!(rig.read("dest/b.txt"), "new b");
     assert_eq!(rig.names("dest"), ["a.txt", "b.txt", "c.txt"]);
-    use files_trash::Trash;
     assert_eq!(
         rig.trash.list().unwrap().len(),
         2,

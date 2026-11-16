@@ -2,10 +2,14 @@
 
 use crate::support::*;
 use memory_core::*;
-use memory_service::space::self;
+use memory_service::space;
 use memory_service::*;
 
 #[test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "a table of cases, one row each; splitting it would only scatter the rows"
+)]
 fn space_state_machine_table() {
     use SpaceEffect as E;
     use SpaceEvent as V;
