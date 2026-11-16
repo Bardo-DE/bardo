@@ -44,11 +44,11 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOCKET="$(cd "$HERE/.." && pwd)"
 TREE="$(cd "$DOCKET/../.." && pwd)"   # the bardo tree
 CRATES="$TREE/crates"
-PORTER="$CRATES/porter"
-STEWARD="$CRATES/steward"
-ALMANAC="$CRATES/almanac"
-STOKER="$CRATES/stoker"
-CUA="$CRATES/cua"
+PORTER="$CRATES/accounts"
+STEWARD="$CRATES/inference"
+ALMANAC="$CRATES/memory"
+STOKER="$CRATES/models"
+CUA="$CRATES/computer-use"
 
 PREFIX="${PREFIX:-$HOME/.local}"
 DRY=0
@@ -84,18 +84,18 @@ MANIFEST="$STATE/quire-dev/install-dev.manifest"
 
 # Binary -> the repo and package that builds it.
 BINARIES=(
-  "intentd docket intentd"
-  "companiond docket companiond"
-  "readerd docket readerd"
-  "actions-mcp docket actions-mcp"
+  "intentd docket action-daemon"
+  "companiond docket companion-daemon"
+  "readerd docket agent-reader-daemon"
+  "actions-mcp docket action-mcp"
   "quire-do docket action-cli"
-  "docket-eval docket docket-eval"
+  "docket-eval docket action-eval"
   "docket-agent docket agent-acp-bin"
   "docket-net-forward docket agent-acp-bin"
   "docket-net-enter docket agent-acp-bin"
-  "memoryd almanac memoryd"
-  "inferd steward inferd"
-  "accountd porter accountd"
+  "memoryd almanac memory-daemon"
+  "inferd steward inference-daemon"
+  "accountd porter account-daemon"
 )
 
 # The installed set: "kind source dest" per line. Kinds: bin (copied, mode 755), unit and dbus
@@ -153,7 +153,7 @@ build_plan() {
     plan_tree data "$dir/dist/settings" "$DATA/quire/settings"
   done
   plan data "$STEWARD/dist/inferd.settings.toml" "$DATA/quire/settings/inferd.settings.toml"
-  plan data "$ALMANAC/crates/almanac-settings/schema/almanac.settings.toml" "$DATA/quire/settings/almanac.settings.toml"
+  plan data "$ALMANAC/memory-settings/schema/almanac.settings.toml" "$DATA/quire/settings/almanac.settings.toml"
   plan_tree data "$PORTER/providers" "$DATA/porter/providers"
   plan_tree data "$STOKER/catalog" "$DATA/stoker/catalog"
   local cfg

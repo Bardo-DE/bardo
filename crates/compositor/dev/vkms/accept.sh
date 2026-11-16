@@ -42,14 +42,14 @@
 # PID this script started, never by name.
 set -euo pipefail
 
-root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../casement" && pwd)
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../compositor" && pwd)
 # shellcheck source=dev/lib/packages.sh
 source "$root/dev/lib/packages.sh"
 tools="${CASEMENT_TOOLS:-$root/dev/out/tools}/bin"
 idle_seconds="${CASEMENT_VKMS_IDLE_SECONDS:-600}"
 device_name="${CASEMENT_VKMS_DEVICE:-casement}"
 cfs="/sys/kernel/config/vkms/$device_name"
-golden="$root/crates/casement-testkit/tests/golden/scenes/empty-desktop-1024x768"
+golden="$root/compositor-testkit/tests/golden/scenes/empty-desktop-1024x768"
 extra_connector="hotplug1"
 
 refuse() { echo "vkms/accept.sh: refusing: $*" >&2; exit 2; }

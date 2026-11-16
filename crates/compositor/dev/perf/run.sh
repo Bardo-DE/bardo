@@ -12,7 +12,7 @@
 #
 # Owner: P0-T-dev.
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../casement" && pwd)
+root=$(cd "$(dirname "$0")/../../../compositor" && pwd)
 cd "$root"
 # shellcheck source=dev/lib/jail.sh
 source "$root/dev/lib/jail.sh"

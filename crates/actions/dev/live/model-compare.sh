@@ -15,7 +15,7 @@
 # the "fact" answer) goes to stdout and to <scratch>/comparison.md.
 # The scratch directory holds traces, which contain prompts: delete it when done.
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../docket" && pwd)
+root=$(cd "$(dirname "$0")/../../../actions" && pwd)
 
 keys=""
 models=""

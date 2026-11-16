@@ -86,7 +86,7 @@ hooks yet, 5 a short run.
 | modeset | casement, started with `--backend tty --drm-node <vkms card>`, reports one lit output with a mode and a flip count above zero within 30 s |
 | idle | for 600 s with no clients: casement stays up, **missed vblanks do not increase**, and flips advance at least 90% of `seconds x refresh` |
 | hotplug | connecting the `hotplug1` connector (configfs `status` = 1) gives two outputs within 15 s, disconnecting it (2) gives one again, casement alive |
-| writeback | SIGHUP makes casement read one frame back through the vkms writeback connector; `writeback-compare` holds it to `crates/casement-testkit/tests/golden/scenes/empty-desktop-1024x768.png` (pixman, empty desktop at 1024x768) within 3 steps per channel on all but 2000 pixels per million |
+| writeback | SIGHUP makes casement read one frame back through the vkms writeback connector; `writeback-compare` holds it to `crates/compositor/compositor-testkit/tests/golden/scenes/empty-desktop-1024x768.png` (pixman, empty desktop at 1024x768) within 3 steps per channel on all but 2000 pixels per million |
 | dpms | `wlopm --off` reports the output `off` and the flips stop for 3 s; `wlopm --on` reports `on` and the flips restart |
 | vt | SIGUSR1 (session paused) reports the seat `lent` and the flips stop; SIGUSR2 (activated) reports the seat `held`, the one output back on, flips running |
 

@@ -6,10 +6,10 @@
 # private one (start_compositor refuses to go on if it would be the real one): the daemon's session and
 # system bus addresses both name it, and its polkit agent is pointed at it by `sill run
 # --polkit-bus` (a debug build's flag,
-# crates/sill/src/run_args.rs, with --polkit-helper and --polkit-session). There,
+# crates/shell/shell-app/src/run_args.rs, with --polkit-helper and --polkit-session). There,
 # examples/polkit_authority.rs plays polkitd's Authority (records the registration, sends
 # BeginAuthentication and CancelAuthentication on command, prints each call's result), and
-# crates/sill-services/src/bin/polkit_helper.rs plays polkit-agent-helper-1 (the helper protocol; accepts
+# crates/shell/shell-services/src/bin/polkit_helper.rs plays polkit-agent-helper-1 (the helper protocol; accepts
 # `sill-fake`, refuses anything else, runs no PAM). The daemon gets its own XDG_RUNTIME_DIR and
 # a scratch XDG_CONFIG_HOME. Keys are `sill debug key SURFACE KEY`: layer-shell-host's `Inject::Key`,
 # which enters the prompt where a real xkb key does, whether or not the compositor gave it the

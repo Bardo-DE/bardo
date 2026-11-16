@@ -27,13 +27,13 @@ cd "$(dirname "$0")/.."
 # D-Bus requests, and never its media player: it reaches neither libmpv binding.
 # The surface crates never depend on one another and none depends on `sill`; the daemon is the one
 # crate that names them all.
-PURE="dioxus dioxus-core zbus wayland-client tokio libpulse-binding layer-shell-host ds ui-shell shell-kit ui-blitz ui-harness blitz-dom"
-UI_FREE="dioxus dioxus-core blitz-dom layer-shell-host ds ui-shell shell-kit ui-blitz ui-harness"
+PURE="dioxus dioxus-core zbus wayland-client tokio libpulse-binding layer-shell-host ui-components ui-shell shell-kit ui-blitz ui-harness blitz-dom"
+UI_FREE="dioxus dioxus-core blitz-dom layer-shell-host ui-components ui-shell shell-kit ui-blitz ui-harness"
 SURFACES=(shell-overlays shell-notify-ui shell-dock shell-launcher-ui shell-bar)
 # The other surfaces, and the binary, for one surface crate.
 others() {
   local self="$1" c
-  for c in "${SURFACES[@]}" sill; do [ "$c" = "$self" ] || printf '%s ' "$c"; done
+  for c in "${SURFACES[@]}" shell-app; do [ "$c" = "$self" ] || printf '%s ' "$c"; done
 }
 RULES=(
   "shell-launcher: $PURE"
@@ -42,10 +42,10 @@ RULES=(
   "shell-ipc: $PURE"
   "shell-services: $UI_FREE"
   "shell-search: $UI_FREE"
-  "shell-kit: shell-launcher shell-model shell-settings shell-ipc shell-services shell-search shell-testkit shell-ui-kit ${SURFACES[*]} sill zbus tokio wayland-client libpulse-binding layer-shell-host ui-blitz blitz-dom"
-  "shell-testkit: shell-launcher shell-model shell-settings shell-ipc shell-services shell-search shell-kit shell-ui-kit ${SURFACES[*]} sill"
-  "shell-ui-kit: ${SURFACES[*]} sill"
-  "sill: mpv-wgpu-player rsmpv"
+  "shell-kit: shell-launcher shell-model shell-settings shell-ipc shell-services shell-search shell-testkit shell-ui-kit ${SURFACES[*]} shell-app zbus tokio wayland-client libpulse-binding layer-shell-host ui-blitz blitz-dom"
+  "shell-testkit: shell-launcher shell-model shell-settings shell-ipc shell-services shell-search shell-kit shell-ui-kit ${SURFACES[*]} shell-app"
+  "shell-ui-kit: ${SURFACES[*]} shell-app"
+  "shell-app: mpv-wgpu-player rsmpv"
 )
 for surface in "${SURFACES[@]}"; do
   RULES+=("$surface: $(others "$surface")")
@@ -80,21 +80,21 @@ done
 # A dependency on a crate not listed is a leak; so is one the crate no longer has, so the table
 # stays exact. Dev dependencies are outside it (a test may reach further than the crate does).
 EDGES=(
-  "shell-launcher: memory-core action-core action-vocab ui-core prov"
+  "shell-launcher: memory-core action-core action-vocab ui-core provenance"
   "shell-testkit:"
-  "shell-kit: ds ui-core ui-shell"
-  "shell-model: memory-core desktop-protocols companion-model companion-wire computer-use-action computer-use-bus action-core action-manifest permission-core action-vocab action-wire ui-core ui-helpers key-remap-proto account-capability account-core account-ids inference-core account-sheet prov shell-launcher agent-voice-wire"
+  "shell-kit: ui-components ui-core ui-shell"
+  "shell-model: memory-core desktop-protocols companion-model companion-wire computer-use-action computer-use-bus action-core action-manifest permission-core action-vocab action-wire ui-core ui-helpers key-remap-proto account-capability account-core account-ids inference-core account-sheet provenance shell-launcher agent-voice-wire"
   "shell-settings: ui-core ui-settings key-remap-proto shell-launcher shell-model"
   "shell-ipc: ui-core shell-launcher shell-model"
-  "shell-services: memory-core memory-dbus anyview-core anyview-platform desktop-protocols companion-model companion-wire computer-use-action computer-use-bus computer-use-dbus desktop-client action-client action-core action-dbus action-manifest permission-core action-provider action-vocab action-wire ui-core ui-helpers ui-settings inference-client key-remap-proto account-client account-client-dbus sync-bus account-core account-dbus account-ids inference-core account-sheet inference-tailnet account-tailscale account-wire prov shell-launcher shell-model agent-voice-dbus agent-voice-wire"
-  "shell-search: memory-core anyview-core anyview-store companion-model companion-wire computer-use-action action-core action-manifest permission-core action-vocab ui-core ui-settings prov shell-launcher shell-model shell-services"
-  "shell-ui-kit: companion-wire computer-use-action action-core action-manifest permission-core action-vocab ds ui-behaviour ui-blitz ui-core ui-harness ui-settings key-remap-client account-capability account-core prov layer-shell-host shell-launcher shell-model shell-search shell-services shell-settings shell-kit"
-  "shell-bar: ds ui-blitz ui-settings layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
-  "shell-dock: ds ui-blitz layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
-  "shell-launcher-ui: memory-core anyview-core anyview-fs anyview-image anyview-peek anyview-platform companion-model companion-wire action-core permission-core action-vocab ds ui-behaviour ui-blitz prov layer-shell-host shell-launcher shell-model shell-search shell-services shell-settings shell-kit shell-ui-kit"
-  "shell-notify-ui: ds ui-blitz ui-settings layer-shell-host shell-model shell-services shell-settings shell-kit shell-ui-kit"
-  "shell-overlays: ds ui-behaviour ui-settings ui-shell account-capability account-core account-ids account-sheet layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
-  "sill: ds ui-blitz ui-core ui-extensions ui-lint ui-settings prov layer-shell-host shell-verbs shell-bar shell-dock shell-ipc shell-launcher shell-launcher-ui shell-model shell-notify-ui shell-overlays shell-search shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-services: memory-core memory-dbus anyview-core anyview-platform desktop-protocols companion-model companion-wire computer-use-action computer-use-bus computer-use-dbus desktop-client action-client action-core action-dbus action-manifest permission-core action-provider action-vocab action-wire ui-core ui-helpers ui-settings inference-client key-remap-proto account-client account-client-dbus sync-bus account-core account-dbus account-ids inference-core account-sheet inference-tailnet account-tailscale account-wire provenance shell-launcher shell-model agent-voice-dbus agent-voice-wire"
+  "shell-search: memory-core anyview-core anyview-store companion-model companion-wire computer-use-action action-core action-manifest permission-core action-vocab ui-core ui-settings provenance shell-launcher shell-model shell-services"
+  "shell-ui-kit: companion-wire computer-use-action action-core action-manifest permission-core action-vocab ui-components ui-behaviour ui-blitz ui-core ui-harness ui-settings key-remap-client account-capability account-core provenance layer-shell-host shell-launcher shell-model shell-search shell-services shell-settings shell-kit"
+  "shell-bar: ui-components ui-blitz ui-settings layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-dock: ui-components ui-blitz layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-launcher-ui: memory-core anyview-core anyview-fs anyview-image anyview-peek anyview-platform companion-model companion-wire action-core permission-core action-vocab ui-components ui-behaviour ui-blitz provenance layer-shell-host shell-launcher shell-model shell-search shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-notify-ui: ui-components ui-blitz ui-settings layer-shell-host shell-model shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-overlays: ui-components ui-behaviour ui-settings ui-shell account-capability account-core account-ids account-sheet layer-shell-host shell-launcher shell-model shell-services shell-settings shell-kit shell-ui-kit"
+  "shell-app: ui-components ui-blitz ui-core ui-extensions ui-lint ui-settings provenance layer-shell-host shell-verbs shell-bar shell-dock shell-ipc shell-launcher shell-launcher-ui shell-model shell-notify-ui shell-overlays shell-search shell-services shell-settings shell-kit shell-ui-kit"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -111,7 +111,7 @@ for edge in "${EDGES[@]}"; do
 done
 
 # Every workspace member has a row above, so a new crate cannot slip in unchecked.
-for member in $(cargo metadata --no-deps --format-version 1 2>/dev/null | grep -o '"name":"sill[a-z-]*"' | cut -d'"' -f4 | sort -u); do
+for member in $(cargo metadata --no-deps --format-version 1 2>/dev/null | grep -oE '"name":"shell-(app|bar|dock|ipc|kit|launcher|launcher-ui|model|notify-ui|overlays|search|services|settings|testkit|ui-kit)"' | cut -d'"' -f4 | sort -u); do
   printf '%s\n' "${EDGES[@]}" | grep -q "^$member:" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done
 

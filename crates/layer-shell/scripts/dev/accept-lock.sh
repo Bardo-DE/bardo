@@ -21,7 +21,7 @@
 #                 gets (locked and unlocks, or finished) is reported, as the compositor's policy
 # Each step prints PASS/FAIL; logs are in scripts/dev/out/lock-*.
 set -uo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
 COMPOSITOR="${COMPOSITOR:-casement}"
 # shellcheck source=scripts/dev/lib/compositor.sh

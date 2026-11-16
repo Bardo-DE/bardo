@@ -1,7 +1,7 @@
 # Test clients for the acceptance scripts: `casement-probe session` processes, each driven through
 # a fifo (commands in, one line each) and read through its log (the client's protocol transcript,
 # `< object#id.event(args)`, and its own `probe: ...` notes). Scripts wait on log lines, with a
-# bound, never on sleeps: see crates/casement-testclient/src/bin/probe/command.rs for the commands.
+# bound, never on sleeps: see crates/compositor/compositor-testclient/src/bin/probe/command.rs for the commands.
 #
 #   probe_start NAME            start a client named NAME and wait until it has connected
 #   probe_do NAME COMMAND...    send one command line and wait until the client has run it;

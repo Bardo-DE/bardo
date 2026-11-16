@@ -16,7 +16,7 @@
 #
 #   toggle: open latency, panel and idle frames (p95 < 100 ms over 20 toggles)
 #     1. 20 `sill launcher toggle` round trips, each timed on the daemon's own side
-#        (`crates/sill/src/daemon.rs`'s `launcher.open_latency_ms` line). Asserts p95 < 100 ms;
+#        (`crates/shell/shell-app/src/daemon.rs`'s `launcher.open_latency_ms` line). Asserts p95 < 100 ms;
 #        prints p50/p95/max.
 #     2. The panel exists after a toggle (`sill debug capture <launcher panel>`), and after the
 #        closing toggle, 5 s idle adds 0 frames to every launcher surface.
@@ -64,7 +64,7 @@
 #        dev/out/launcher-v2-{preview-pdf,preview-image,preview-text,show-more,pane-focus,
 #        emoji}-fixtures.png.
 #     A step that needs rows from the files or emoji provider exits 2 (SKIP) while that provider
-#     answers nothing on this branch; `crates/sill-launcher-ui/tests/launcher_preview.rs` proves the
+#     answers nothing on this branch; `crates/shell/shell-launcher-ui/tests/launcher_preview.rs` proves the
 #     same steps over fixtures.
 #
 #   files: the launcher's Documents

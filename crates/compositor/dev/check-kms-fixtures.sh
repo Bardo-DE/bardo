@@ -2,7 +2,7 @@
 # Phase tier: every recorded KMS fixture has the shape of `KmsResources` (the FakeKms suite
 # replays them in full: tests/it/tty/kms.rs). Never touches hardware.
 set -euo pipefail
-dir="$(cd "$(dirname "$0")/.." && pwd)/crates/casement-testkit/fixtures/kms"
+dir="$(cd "$(dirname "$0")/.." && pwd)/compositor-testkit/fixtures/kms"
 count=0
 for file in "$dir"/*.json; do
   [ -e "$file" ] || continue

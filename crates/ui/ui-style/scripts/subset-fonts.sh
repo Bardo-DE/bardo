@@ -8,8 +8,8 @@
 #
 # Run from anywhere; needs `uv` (fonttools and brotli are fetched into a throwaway tool env).
 # With no arguments every WOFF2 is converted; name files to convert only those:
-#   crates/ds-style/scripts/subset-fonts.sh
-#   crates/ds-style/scripts/subset-fonts.sh noto-serif-normal-400-700-latin.woff2
+#   crates/ui/ui-style/scripts/subset-fonts.sh
+#   crates/ui/ui-style/scripts/subset-fonts.sh noto-serif-normal-400-700-latin.woff2
 #
 # Noto Serif (the serif face, mailo gaps 3) has no Google Fonts WOFF2 in the repository's
 # history: its WOFF2s were cut from the OFL variable files Fedora ships

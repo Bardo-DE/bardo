@@ -7,7 +7,7 @@
 # would use): the nested session shares the real PipeWire default sink, which may be somebody's
 # headphones, and a brightness key there could reach a real monitor over DDC/CI, so nothing here
 # moves a real level. `sill display volume|brightness` take the same path to the OSD after
-# their service call (crates/sill/src/osd.rs, `after_display`).
+# their service call (crates/shell/shell-app/src/osd.rs, `after_display`).
 #
 #   1. Warm: the OSD surface exists from the start, hidden (no capture).
 #   2. `sill debug osd volume 60` shows it: a capture with the card's pixels within 200 ms.

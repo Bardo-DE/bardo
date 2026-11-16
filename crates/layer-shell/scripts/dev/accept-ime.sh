@@ -29,7 +29,7 @@
 # Logs: scripts/dev/out/ime-*.log; ime-trace.log / ime-launcher-trace.log are the clients'
 # WAYLAND_DEBUG=client traces filtered to zwp_text_input_v3 and wl_keyboard.
 set -uo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"

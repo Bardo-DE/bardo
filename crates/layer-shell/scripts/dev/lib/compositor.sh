@@ -14,7 +14,7 @@
 # `lib/windows.sh`. State (A8) never goes into the checkout under casement: it lives in the
 # jail's scratch directory, scripts/dev/out/casement-<script>/ (git-ignored, kept after the run).
 #
-# Environment (casement): CASEMENT_DIR the casement checkout (default: ../casement beside this
+# Environment (casement): CASEMENT_DIR the casement checkout (default: ../compositor beside this
 # repo), CASEMENT_TOOLS its dev/out/tools (built by dev/bootstrap.sh --build-only outside the jail),
 # SHELL_HOST_BACKEND the demos' backend (default cpu: no GPU in the jail; `gpu` runs the F80
 # adapter fallback instead), CASEMENT_DMABUF none|soft (default none), CASEMENT_CLOCK wall|stepped
@@ -30,7 +30,7 @@ case "$COMPOSITOR" in
   kwin | casement) ;;
   *) echo "COMPOSITOR must be kwin or casement, not '$COMPOSITOR'" >&2; exit 64 ;;
 esac
-CASEMENT_DIR="${CASEMENT_DIR:-$COMP_ROOT/../casement}"
+CASEMENT_DIR="${CASEMENT_DIR:-$COMP_ROOT/../compositor}"
 export COMPOSITOR CASEMENT_DIR
 COMP_ENV="${COMP_ENV:-}"
 

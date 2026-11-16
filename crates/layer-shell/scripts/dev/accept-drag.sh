@@ -25,7 +25,7 @@
 #                        text foot typed into its terminal (the dragged file's path)
 # Each step prints PASS/FAIL; logs are scripts/dev/out/drag*.log.
 set -uo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"

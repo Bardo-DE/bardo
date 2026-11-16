@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Every backticked repo path in the repo docs (ARCHITECTURE.md, FINDINGS.md, CONVENTIONS.md,
-# QUIRKS.md) that starts with crates/, dev/, scripts/, or wlcs-casement/
+# QUIRKS.md) that starts with crates/, dev/, scripts/, or wlcs-compositor/
 # exists. A trailing `:line` or `#anchor` is stripped; paths holding `<`, `*`, `{` or an ellipsis
 # are patterns, not paths, and are skipped.
 set -euo pipefail
@@ -13,7 +13,7 @@ for doc in ARCHITECTURE.md FINDINGS.md CONVENTIONS.md QUIRKS.md; do
     path="${path%%#*}"
     path=$(printf '%s' "$path" | sed -E 's/:[0-9]+(-[0-9]+)?$//')
     if [ ! -e "$path" ]; then echo "MISSING: $doc names \`$path\`"; fail=1; fi
-  done < <(grep -oE '`(crates|dev|scripts|wlcs-casement)/[^` ]*`' "$doc" | tr -d '`' | sort -u)
+  done < <(grep -oE '`(crates|dev|scripts|wlcs-compositor)/[^` ]*`' "$doc" | tr -d '`' | sort -u)
 done
 [ "$fail" = 0 ] && echo "holds: every doc path exists"
 exit "$fail"

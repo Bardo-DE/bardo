@@ -2,4 +2,4 @@
 /target-*
 /dev/out
 .claude/
-/wlcs-casement/target
+/wlcs-compositor/target

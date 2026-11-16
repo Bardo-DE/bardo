@@ -18,7 +18,7 @@
 #                  (skipped, not failed, without ext-background-effect-v1)
 # Logs and the trace: scripts/dev/out/swipe-*.log.
 set -uo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"

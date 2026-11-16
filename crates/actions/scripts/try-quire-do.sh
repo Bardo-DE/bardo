@@ -30,7 +30,7 @@ cleanup() {
 trap cleanup EXIT
 
 mkdir -p "$world/data/quire/intents" "$world/config" "$world/bin"
-cp crates/docket-fake/fixtures/manifests/org.quire.Mail.intents.toml "$world/data/quire/intents/org.quire.Mail.toml"
+cp action-fake/fixtures/manifests/org.quire.Mail.intents.toml "$world/data/quire/intents/org.quire.Mail.toml"
 cp manifests/org.quire.Memory.toml "$world/data/quire/intents/org.quire.Memory.toml"
 cat > "$world/bus.conf" <<CONF
 <!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-Bus Bus Configuration 1.0//EN"

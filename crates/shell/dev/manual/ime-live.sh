@@ -32,7 +32,7 @@ case "${1:-start}" in
     : >"$IN"
     rm -f "$PIPE" "$DEMO_PID" "$TAIL_PID"
     mkfifo "$PIPE" || exit 1
-    cd "$(dirname "${BASH_SOURCE[0]}")/../../../sill"
+    cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell"
     cargo build -q -p shell-launcher-ui --example launcher_demo || exit 1
     WAYLAND_DISPLAY=wayland-0 "${CARGO_TARGET_DIR:-target}/debug/examples/launcher_demo" <"$PIPE" >"$D/ime-demo.log" 2>&1 &
     echo $! >"$DEMO_PID"

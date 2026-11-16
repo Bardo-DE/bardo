@@ -39,7 +39,7 @@ for rule in "${RULES[@]}"; do
 done
 
 # Every crate forbids unsafe: the workspace lint is the rule, and each crate must inherit it.
-for manifest in caller-identity-core/Cargo.toml peephole/Cargo.toml caller-identity-dbus/Cargo.toml; do
+for manifest in caller-identity-core/Cargo.toml caller-identity-linux/Cargo.toml caller-identity-dbus/Cargo.toml; do
   if ! grep -q '^workspace = true' "$manifest"; then
     echo "BOUNDARY: $manifest does not inherit the workspace lints (unsafe_code = forbid)"
     fail=1

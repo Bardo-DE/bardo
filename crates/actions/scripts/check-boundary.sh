@@ -64,11 +64,11 @@ LAYERS=(
   "agent-reader:C"
   "action-fake:C"
   "action-checkpoint-git:C"
-  "docket-acp:C"
+  "agent-acp-server:C"
   "agent-acp-host:C"
   "action-host:C"
   "agent-launch:C"
-  "docket-agents:C"
+  "agent-install:C"
   "action-settings:C"
   "action-dbus:C"
   "action-client:C"
@@ -83,18 +83,18 @@ LAYERS=(
   # app / daemon / test binary
   "agent-acp-bin:A"
   "agent-inapp:A"
-  "docket-eval:A"
+  "action-eval:A"
   "action-testbus:A"
   "action-accept:A"
   # operator tools over the acceptance world (docket-live, docket-bringup)
-  "docket-live:A"
-  "actions-mcp:A"
+  "action-live:A"
+  "action-mcp:A"
   "action-cli:A"
   "action-ui-adapter:A"
-  "intentd:A"
-  "companiond:A"
-  "readerd:A"
-  "voiced:A"
+  "action-daemon:A"
+  "companion-daemon:A"
+  "agent-reader-daemon:A"
+  "agent-voice-daemon:A"
 )
 
 # KNOWN: the only allowance. One row per breach: "<crate> <key> <lane that removes it>".
@@ -123,7 +123,7 @@ P_BANNED_SRC=(
   'tokio::|\btokio::'
 )
 # UI words banned, as identifiers, in C-tier src/ (each is matched as a whole word).
-C_BANNED_UI=(Label Help Sheet SettingRow ds_settings)
+C_BANNED_UI=(Label Help Sheet SettingRow ui_settings)
 # Environment reads banned in A-tier library code (everything but main.rs and src/bin/).
 A_BANNED_ENV='\benv::(var|var_os|vars|vars_os)\b'
 
@@ -267,7 +267,7 @@ self_test() {
   local tmp out rc=0
   tmp=$(mktemp -d) || return 1
   trap 'rm -rf "$tmp"' RETURN
-  cp -r Cargo.toml Cargo.lock rust-toolchain.toml crates "$tmp/" || return 1
+  cp -r ../../Cargo.toml ../../Cargo.lock ../../rust-toolchain.toml ../../crates "$tmp/" || return 1
   [ -d .cargo ] && cp -r .cargo "$tmp/"
   out=$(layers_check "$tmp") || { echo "self-test: the unmodified copy must pass"; echo "$out"; return 1; }
   # expect <seeded file> <text appended> <expected output line> <what>
@@ -278,19 +278,19 @@ self_test() {
     grep -q "^LAYER: $3" <<<"$out" || { echo "self-test: no '$3' line for: $4"; rc=1; }
     cp "$tmp/seed.bak" "$tmp/$1"
   }
-  expect crates/voice-wire/src/lib.rs '\npub fn seeded() { let _ = std::fs::read("x"); }\n' \
+  expect crates/actions/agent-voice-wire/src/lib.rs '\npub fn seeded() { let _ = std::fs::read("x"); }\n' \
     'agent-voice-wire src:std::fs' 'std::fs in a P crate'
-  expect crates/docket-log/Cargo.toml '\n[dependencies.intentd]\npath = "../intentd"\n' \
-    'action-log dep:intentd' 'a C crate depending on an A crate'
-  expect crates/actions-tools/src/lib.rs '\npub use serde_json;\n' \
+  expect crates/actions/action-log/Cargo.toml '\n[dependencies.action-daemon]\npath = "../action-daemon"\n' \
+    'action-log dep:action-daemon' 'a C crate depending on an A crate'
+  expect crates/actions/action-tools/src/lib.rs '\npub use serde_json;\n' \
     'action-tools reexport:ext' 'a whole external crate re-exported'
-  expect crates/actions-tools/src/lib.rs '\npub use std::collections::*;\n' \
+  expect crates/actions/action-tools/src/lib.rs '\npub use std::collections::*;\n' \
     'action-tools reexport:glob' 'a glob re-export'
   # A crate missing from LAYERS.
-  mkdir -p "$tmp/crates/seeded/src" && : >"$tmp/crates/seeded/src/lib.rs"
-  printf '[package]\nname = "seeded"\nversion = "0.0.0"\nedition = "2024"\n' >"$tmp/crates/seeded/Cargo.toml"
+  mkdir -p "$tmp/crates/actions/seeded/src" && : >"$tmp/crates/actions/seeded/src/lib.rs"
+  printf '[package]\nname = "seeded"\nversion = "0.0.0"\nedition = "2024"\n' >"$tmp/crates/actions/seeded/Cargo.toml"
   cp "$tmp/Cargo.toml" "$tmp/seed.bak"
-  sed -i 's#^  "crates/docket-core",#  "crates/docket-core",\n  "crates/seeded",#' "$tmp/Cargo.toml"
+  sed -i 's#^    "crates/actions/action-core",#    "crates/actions/action-core",\n    "crates/actions/seeded",#' "$tmp/Cargo.toml"
   out=$(layers_check "$tmp") && { echo "self-test: a crate missing from LAYERS was not caught"; rc=1; }
   grep -q '^LAYER: seeded missing-layer' <<<"$out" || { echo "self-test: no missing-layer line for seeded"; rc=1; }
   cp "$tmp/seed.bak" "$tmp/Cargo.toml"
@@ -341,7 +341,7 @@ RULES=(
   "companion-core: $EFFECTS toml"
   # Installs agents from the registry: reads files and runs curl and npm as processes, so no bus,
   # runtime, network library or Cedar. It reads its own records as TOML.
-  "docket-agents: $EFFECTS"
+  "agent-install: $EFFECTS"
   # The registry values and the two small records as text: no disk, bus, runtime, network or Cedar.
   "agent-registry: $EFFECTS"
   "agent-loop: $EFFECTS toml"
@@ -371,7 +371,7 @@ RULES=(
   "agent-acp-core: $EFFECTS toml"
   # The ACP server edge: the lib is portable; no bus, HTTP, Cedar or MCP SDK. The protocol's types
   # and the JSON-RPC connection come from agent-client-protocol.
-  "docket-acp: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
+  "agent-acp-server: zbus zvariant reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # The ACP client edge, an external agent as a session backend: it reaches the router only through
   # action-client (its `InProcess` transport is a dev-dependency): the host of an external agent calls
   # the same Intents1 every caller does. Same bans as the server edge.
@@ -415,7 +415,7 @@ RULES=(
   "action-fake: $NO_CEDAR"
   # The model tap: the watch seam in action-dbus (so zbus comes with it) and the exchange type in action-core.
   "action-trace: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
-  "docket-eval: $NO_CEDAR"
+  "action-eval: $NO_CEDAR"
   # The suite as values: the case and attack formats, the judgement, the scores and the summary. No router, so no Cedar; no bus, runtime or network.
   "action-eval-core: $EFFECTS"
   # Test only: a private bus for the daemons' tests; nothing of the router, Cedar or the effects.
@@ -427,23 +427,23 @@ RULES=(
   "action-cli: action-router permission-policy action-review cedar-policy reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp"
   "action-ui-adapter: zbus zvariant tokio reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify rmcp"
   # The edge reaches rmcp, tokio and, as a bus client of intentd (action-client `dbus`), zbus; nothing else of the effects.
-  "actions-mcp: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify"
+  "action-mcp: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite notify"
   # The settings reader is pure but for reading the file: no bus, no runtime, no watcher (intentd
   # owns the directory watch), so actions-mcp, which may not link one, can share the reader.
   "action-settings: $EFFECTS"
   # The daemons reach the bus and a runtime; none reaches HTTP, an embedding runtime or the MCP
   # SDK. memory-client hosts the service only behind its `in_process` feature, so none reaches SQLite.
-  "intentd: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
-  "companiond: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
-  "readerd: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
+  "action-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
+  "companion-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
+  "agent-reader-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite rmcp"
   # Test only: the acceptance run links the docket daemons to run them as processes (memoryd and inferd are built by build.rs, not linked); no HTTP,
   # audio, embedding runtime or MCP SDK.
   # (The acceptance run starts the actions-mcp bridge as a process for the ACP engine, so it links rmcp through it.)
   "action-accept: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
   # Test only: the operator tools run the acceptance world; the same bans as action-accept.
-  "docket-live: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
+  "action-live: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
   "action-log: $EFFECTS toml"
-  "voiced: reqwest hyper hyper-util rustls ort fastembed rusqlite rmcp cedar-policy"
+  "agent-voice-daemon: reqwest hyper hyper-util rustls ort fastembed rusqlite rmcp cedar-policy"
 )
 fail=0
 
@@ -478,7 +478,7 @@ layers_check . || fail=1
 
 # docket sits below cua and sill in the repo order (stoker, porter, almanac, docket, cua, sill):
 # nothing of theirs may enter any tree of this workspace, dev-dependencies included.
-THEIRS="cuad computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input maskcap quire-agent-protocol"
+THEIRS="computer-use-daemon computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input computer-use-capture quire-agent-protocol"
 workspace_tree=$(cargo tree --workspace -e normal,build,dev --prefix none --all-features 2>/dev/null | awk '{print $1}' | sort -u)
 theirs_found=0
 for name in $THEIRS; do
@@ -488,7 +488,7 @@ for name in $THEIRS; do
     fail=1
   fi
 done
-if grep -q '^sill-' <<<"$workspace_tree"; then
+if grep -q '^shell-' <<<"$workspace_tree"; then
   echo "LEAK: the workspace depends on a sill crate, which sits above docket"
   theirs_found=1
   fail=1
@@ -502,9 +502,9 @@ fi
 # `*_PROC_ROOT` or `DOCKET_MODEL_TRACE`. porter reads a fixture tree only with account-callers's
 # `test-proc-root`, which action-dbus's `fixture-callers` forwards (that one line is the only
 # mention allowed); action-accept, docket-live and tests' dev-dependencies turn it on.
-leaks=$(grep -rnE 'PROC_ROOT|DOCKET_MODEL_TRACE|test-proc-root|test-model-trace' crates \
-  --include='*.rs' --include=Cargo.toml --exclude-dir=action-accept --exclude-dir=docket-live --exclude-dir=tests \
-  | grep -vE '^crates/docket-dbus/Cargo.toml:[0-9]+:fixture-callers = \["account-callers/test-proc-root"\]$' || true)
+leaks=$(grep -rnE 'PROC_ROOT|DOCKET_MODEL_TRACE|test-proc-root|test-model-trace' */ \
+  --include='*.rs' --include=Cargo.toml --exclude-dir=action-accept --exclude-dir=action-live --exclude-dir=tests \
+  | grep -vE '^action-dbus/Cargo.toml:[0-9]+:fixture-callers = \["account-callers/test-proc-root"\]$' || true)
 if [ -n "$leaks" ]; then
   echo "TEST SWITCH: a shipped crate names a harness switch:"
   echo "$leaks"
@@ -515,20 +515,20 @@ fi
 
 # action-trace writes prompts to disk and is test and acceptance support: only the harness
 # (action-accept and docket-live) lists it as a dependency, so no shipped crate has code that could write one.
-trace_users=$(grep -lE '^action-trace[[:space:]]*=' crates/*/Cargo.toml \
-  | grep -vE '^crates/(action-accept|docket-live|action-trace)/Cargo.toml$' || true)
+trace_users=$(grep -lE '^action-trace[[:space:]]*=' */Cargo.toml \
+  | grep -vE '^(action-accept|action-live|action-trace)/Cargo.toml$' || true)
 if [ -n "$trace_users" ]; then
-  echo "TEST SUPPORT: a crate other than action-accept and docket-live depends on action-trace:"
+  echo "TEST SUPPORT: a crate other than action-accept and action-live depends on action-trace:"
   echo "$trace_users"
   fail=1
 else
-  echo "action-trace is a dependency of action-accept and docket-live alone"
+  echo "action-trace is a dependency of action-accept and action-live alone"
 fi
 
 # Built as the installer builds it (`-p` each shipped package, no dev-dependencies), no shipped
 # package turns on the fixture tree. (A whole-workspace build unifies action-accept's features, so
 # the installer never builds one.)
-for pkg in intentd companiond readerd actions-mcp action-cli agent-acp-bin voiced; do
+for pkg in action-daemon companion-daemon agent-reader-daemon action-mcp action-cli agent-acp-bin agent-voice-daemon; do
   # `-e features` elides the edge a package's own feature makes; the feature list per package
   # (`{p} {f}`) shows it.
   # A tree cargo could not print would read as "off": that is an error, not a pass.
@@ -548,7 +548,7 @@ done
 # checked above). The rows are matched from a here-string, not a pipe: under pipefail, `grep -q`
 # leaving early would kill printf and fail the check at random.
 rule_rows=$(printf '%s\n' "${RULES[@]}")
-for member in $(sed -n 's#^  "crates/\(.*\)",$#\1#p' Cargo.toml); do
+for member in $(sed -n 's#^    "crates/actions/\(.*\)",$#\1#p' ../../Cargo.toml); do
   grep -q "^$member:" <<<"$rule_rows" || { echo "ERROR: $member has no row in RULES"; fail=1; }
 done
 

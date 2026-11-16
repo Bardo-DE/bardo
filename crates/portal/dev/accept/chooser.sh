@@ -9,7 +9,7 @@
 # Needs TRANSOM_BIN and TRANSOM_COMPOSITOR_ENV (a headless compositor with an output named in
 # $TRANSOM_OUTPUT, default HEADLESS-1).
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../transom" && pwd)
+root=$(cd "$(dirname "$0")/../../../portal" && pwd)
 # shellcheck source=dev/lib/jail.sh
 source "$root/dev/lib/jail.sh"
 require_jail

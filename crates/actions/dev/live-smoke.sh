@@ -17,7 +17,7 @@
 # [safety] (must hold whatever the model does) or [capability] (the model did not get the job
 # done). The transcript holds every request each daemon sent a model and what it said (the model
 # tap, DOCKET_MODEL_TRACE), the answer's phases, the sheets and what the mail app did.
-# --catalog DIR: the model catalogue copied into the scratch world (default: ../stoker/catalog, absolute;
+# --catalog DIR: the model catalogue copied into the scratch world (default: ../models/catalog, absolute;
 # inferd there reads $XDG_DATA_HOME/stoker/catalog, which is scratch). Copied, never linked.
 # Exit: 0 every flow passed, 1 one failed, 2 the run could not start.
 set -euo pipefail
@@ -25,7 +25,7 @@ cd "$(dirname "$0")/.."
 root=$(pwd)
 
 engine=scripted
-catalog=$(cd "$root/../stoker/catalog" 2>/dev/null && pwd || true)
+catalog=$(cd "$root/../models/catalog" 2>/dev/null && pwd || true)
 args=()
 while [ $# -gt 0 ]; do
   case "$1" in

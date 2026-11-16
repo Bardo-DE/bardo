@@ -85,12 +85,12 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# SANS-IO PROTOCOL CRATES: every `crates/*-proto` is sans-IO: request builders return
+# SANS-IO PROTOCOL CRATES: every `*-proto` folder of this domain is sans-IO: request builders return
 # `http::Request<Vec<u8>>`, parsers take `&http::Response<Vec<u8>>`, and the caller sends and
 # reads the clock. So none reaches the HTTP seam (account-http), a runtime (tokio) or an HTTP client
 # (reqwest), and none has an `async fn`. The crates are found by name, so a new one is checked
 # without a row here; the crates they may depend on are in EDGES.
-for dir in crates/*-proto; do
+for dir in *-proto; do
   crate="$(basename "$dir")"
   if ! cargo tree -p "$crate" --depth 0 >/dev/null 2>&1; then
     echo "ERROR: cargo tree cannot resolve $crate; the sans-IO rule was not checked"
@@ -148,7 +148,7 @@ declare -A FAMILY_EDGES=(
   [tailnet]="account-family-kit account-core account-capability account-sheet account-ids account-http account-provider account-tailscale"
   [set]="account-family-kit account-family-nextcloud account-family-generic account-family-oauth account-core account-capability account-sheet account-ids account-discover account-http account-http-reqwest account-provider account-tailscale"
 )
-family_features=$(awk '/^\[features\]/{f=1;next} /^\[/{f=0} f && /^[A-Za-z0-9_-]+ *=/{sub(/ *=.*/,""); if ($0!="default") print}' crates/porter-families/Cargo.toml)
+family_features=$(awk '/^\[features\]/{f=1;next} /^\[/{f=0} f && /^[A-Za-z0-9_-]+ *=/{sub(/ *=.*/,""); if ($0!="default") print}' account-families/Cargo.toml)
 for feature in $family_features; do
   if [ -z "${FAMILY_FORBIDS[$feature]+set}" ] || [ -z "${FAMILY_EDGES[$feature]+set}" ]; then
     echo "ERROR: account-families feature $feature has no row in FAMILY_FORBIDS or FAMILY_EDGES; its boundary was not checked"
@@ -181,7 +181,7 @@ done
 
 # ONE CLIENT: reqwest is named by account-http-reqwest and by no other crate of this workspace. Every
 # other crate that sends over a direct connection takes `ReqwestHttp` from it.
-named=$(grep -lE '^reqwest[ .=]' crates/*/Cargo.toml | grep -v '^crates/porter-http-reqwest/' || true)
+named=$(grep -lE '^reqwest[ .=]' */Cargo.toml | grep -v '^account-http-reqwest/' || true)
 if [ -n "$named" ]; then
   echo "LEAK: reqwest is named outside account-http-reqwest: $named"
   fail=1
@@ -193,8 +193,8 @@ fi
 # cannot see std, so these are checked by name: no file, process, socket or environment access.
 STD_EFFECTS='std::(fs|io|env|process|net|os)\b|\b(File|Command|TcpStream|UnixStream)::'
 PURE_FILES=(
-  "crates/porter-core/src/identity.rs"
-  "crates/porter-ids/src/clock.rs"
+  "account-core/src/identity.rs"
+  "account-ids/src/clock.rs"
 )
 for file in "${PURE_FILES[@]}"; do
   if [ ! -f "$file" ]; then
@@ -212,7 +212,7 @@ done
 # environment access is named anywhere in either crate (a dependency rule cannot see std's own
 # modules).
 for pure in account-ids account-core; do
-  if grep -rnE 'std::(fs|process|env)\b' "crates/$pure/src"; then
+  if grep -rnE 'std::(fs|process|env)\b' "$pure/src"; then
     echo "LEAK: $pure's source reaches std's file, process or environment access"
     fail=1
   else
@@ -225,7 +225,7 @@ done
 # itself gives it a `Config` and nothing else. The binaries (main.rs) and the test-only files are
 # outside the rule; `std::env::temp_dir` is a scratch name in tests, not a read of a variable.
 # The awk remembers the last `fn` it saw, which is the function the next line is in.
-env_reads=$(find crates/accountd/src -name '*.rs' \
+env_reads=$(find account-daemon/src -name '*.rs' \
   ! -name main.rs ! -name tests.rs ! -name testing.rs ! -name testkit.rs ! -path '*/tests/*' -print0 \
   | xargs -0 awk '
     FNR == 1 { current = "" }
@@ -247,7 +247,7 @@ fi
 
 # account-daemon-support reads no environment variable at all: what a daemon or an app knows is passed in
 # (account-daemon-support takes the lookup). Its test helpers are outside the rule, as above.
-lib_env_reads=$(find crates/porter-daemon/src -name '*.rs' ! -name tests.rs ! -name testkit.rs ! -path '*/testkit/*' -print0 \
+lib_env_reads=$(find account-daemon-support/src -name '*.rs' ! -name tests.rs ! -name testkit.rs ! -path '*/testkit/*' -print0 \
   | xargs -0 grep -nE 'env::(var|var_os|vars|vars_os|args|args_os|current_dir|home_dir)\b' | grep -vE '^[^:]*:[0-9]+:[[:space:]]*//' || true)
 if [ -n "$lib_env_reads" ]; then
   echo "$lib_env_reads"
@@ -262,7 +262,7 @@ fi
 # it, if any); the allowlist is otherwise empty, and every crate is covered.
 ratchet() {
   local what="$1" pattern="$2" home="${3:-}" hits
-  hits=$(grep -rniE --include='*.rs' -e "$pattern" crates | grep -v "^${home:-/nonexistent}" || true)
+  hits=$(grep -rniE --include='*.rs' -e "$pattern" */ ../base/base-testkit | grep -v "^${home:-/nonexistent}" || true)
   if [ -n "$hits" ]; then
     echo "$hits"
     echo "LEAK: $what is back; use ${4:-the crate that replaced it}"
@@ -271,11 +271,11 @@ ratchet() {
     echo "deleted: $what is not in any crate"
   fi
 }
-ratchet "a hand-rolled percent encoder or decoder" 'fn percent_(en|de)code\b' "" "porter_ids::percent"
+ratchet "a hand-rolled percent encoder or decoder" 'fn percent_(en|de)code\b' "" "account_ids::percent"
 ratchet "hand-rolled civil-date arithmetic" '(days_from_civil|civil_from_days|719_468)' "" "chrono"
 ratchet "a hand-written MD5 (its first round constant)" '0xd76aa478' "" "md-5"
-ratchet "an XOAUTH2 format string" '(\\x01|\\u\{1\})auth=Bearer|auth=Bearer \{|"auth=Bearer' "crates/porter-core/src/token.rs" "porter_core::token"
-ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? )?struct Scratch\b' "crates/test-kit/" "test_kit::Scratch"
+ratchet "an XOAUTH2 format string" '(\\x01|\\u\{1\})auth=Bearer|auth=Bearer \{|"auth=Bearer' "account-core/src/token.rs" "account_core::token"
+ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? )?struct Scratch\b' "../base/base-testkit/" "base_testkit::Scratch"
 
 # The allowed edges between our own crates: each crate's DIRECT normal and build path
 # dependencies (all features), and nothing else. A dependency not listed is a leak; so is one
@@ -327,7 +327,7 @@ EDGES=(
   "account-family-nextcloud: account-family-kit account-nextcloud-proto account-dav-proto account-core account-capability account-sheet account-provider account-http"
   "account-family-generic: account-family-kit account-generic-proto account-core account-capability account-sheet account-provider account-http account-discover account-proxy"
   "account-family-oauth: account-family-kit account-oauth-probe-proto account-core account-capability account-sheet account-ids account-provider account-http account-http-reqwest account-oauth"
-  "accountd: ui-settings account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth account-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
+  "account-daemon: ui-settings account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth account-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
   "account-rig: account-fake-secret-service account-client account-core account-capability account-wire account-ids account-callers account-fake account-fake-servers base-testkit account-client-dbus"
   "account-fake-secret-service:"
 )
@@ -352,17 +352,17 @@ done
 # account-client-inproc the service. account-rig (test tooling) uses account-dbus's sync group; its
 # row goes with it.
 HIDDEN=(
-  "account-dbus: accountd account-client-dbus account-sheets"
-  "account-callers: accountd account-rig account-sheets"
-  "account-service-core: accountd account-client-inproc account-fake account-identities account-service account-service-accounts account-service-grants account-settings account-sheets"
-  "account-service-accounts: accountd account-client-inproc account-service account-service-grants"
+  "account-dbus: account-daemon account-client-dbus account-sheets"
+  "account-callers: account-daemon account-rig account-sheets"
+  "account-service-core: account-daemon account-client-inproc account-fake account-identities account-service account-service-accounts account-service-grants account-settings account-sheets"
+  "account-service-accounts: account-daemon account-client-inproc account-service account-service-grants"
   "account-service-grants: account-client-inproc account-service"
-  "account-service: accountd account-client-inproc account-fake"
-  "account-identities: accountd"
-  "account-spaces: accountd"
-  "account-settings: accountd"
-  "account-store: accountd"
-  "account-sheets: accountd"
+  "account-service: account-daemon account-client-inproc account-fake"
+  "account-identities: account-daemon"
+  "account-spaces: account-daemon"
+  "account-settings: account-daemon"
+  "account-store: account-daemon"
+  "account-sheets: account-daemon"
 )
 for row in "${HIDDEN[@]}"; do
   hidden="${row%%:*}"
@@ -380,10 +380,10 @@ done
 
 # CLIENT TESTS: a client crate builds, and is semver-checked, without building a daemon. No
 # `[dev-dependencies]` section (target-specific ones too) of a account-client* crate names a daemon
-# or a service crate; the tests that need accountd are accountd's (crates/accountd/tests/it/client).
+# or a service crate; the tests that need accountd are accountd's (account-daemon/tests/it/client).
 client_dev=""
-for manifest in crates/porter-client*/Cargo.toml; do
-  named=$(awk '/^\[/ { dev = ($0 ~ /dev-dependencies\]$/) } dev && /^(accountd|syncd|ferry-[a-z-]*|account-service[a-z-]*)[ .=]/ { print $1 }' "$manifest")
+for manifest in account-client*/Cargo.toml; do
+  named=$(awk '/^\[/ { dev = ($0 ~ /dev-dependencies\]$/) } dev && /^(account-daemon|sync-daemon|sync-[a-z-]*|drive-[a-z-]*|account-service[a-z-]*)[ .=]/ { print $1 }' "$manifest")
   if [ -n "$named" ]; then
     client_dev="$client_dev$manifest: $(echo $named)"$'\n'
   fi
@@ -396,16 +396,16 @@ else
   echo "boundary holds: no account-client* crate has a daemon or a service crate as a dev-dependency"
 fi
 
-# `porter_dbus::accounts` is named only where accountd's interfaces are served or called: the
+# `account_dbus::accounts` is named only where accountd's interfaces are served or called: the
 # daemons, the sheet crate and the bus transport of the client.
-accounts_users=$(grep -rlE --include='*.rs' 'porter_dbus::(accounts|\{[^}]*accounts)' crates \
-  | grep -vE '^crates/(accountd|account-sheets|account-client-dbus|account-dbus)/' || true)
+accounts_users=$(grep -rlE --include='*.rs' 'account_dbus::(accounts|\{[^}]*accounts)' */ \
+  | grep -vE '^(account-daemon|account-sheets|account-client-dbus|account-dbus)/' || true)
 if [ -n "$accounts_users" ]; then
   echo "$accounts_users"
-  echo "LEAK: porter_dbus::accounts is named outside the daemons and the client's bus transport"
+  echo "LEAK: account_dbus::accounts is named outside the daemons and the client's bus transport"
   fail=1
 else
-  echo "boundary holds: porter_dbus::accounts is named by the daemons and the client's bus transport alone"
+  echo "boundary holds: account_dbus::accounts is named by the daemons and the client's bus transport alone"
 fi
 
 # accountd's test-only knob (`ACCOUNTD_PROC_ROOT`, feature `test-proc-root`) is never on in a
@@ -420,7 +420,7 @@ fi
 # accountd's file key store (`ACCOUNTD_KEYS=file:`, feature `test-keys`, account-secrets'
 # `FileSecrets`) keeps credentials as plain text: neither crate's default build, nor accountd's
 # whole normal dependency tree, may have the feature on.
-for crate in accountd account-secrets; do
+for crate in account-daemon account-secrets; do
   if cargo tree -p "$crate" -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -q 'test-keys'; then
     echo "LEAK: $crate's default build enables test-keys"
     fail=1
@@ -431,8 +431,8 @@ done
 
 # account-callers' test-only caller fixtures (feature `test-proc-root`, which turns on peephole's
 # `fake`) are never in a daemon's normal dependency tree.
-for crate in accountd; do
-  if cargo tree -p "$crate" -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
+for crate in account-daemon; do
+  if cargo tree -p "$crate" -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|caller-identity-linux) ' | grep -Eq 'test-proc-root|fake'; then
     echo "LEAK: $crate's default build enables account-callers test-proc-root or peephole fake"
     fail=1
   else
@@ -445,8 +445,8 @@ done
 # Sync1 and Storage1) are ferry's, in a repo of its own that pins porter by git rev. No manifest
 # here names one of ferry's crates, and no dependency tree of the workspace (normal, build or dev)
 # reaches one.
-FERRY_CRATES='syncd|sync-fakes|storage-[a-z]+|ferry-[a-z-]+'
-named=$(grep -lE "^($FERRY_CRATES)[ .=]" Cargo.toml crates/*/Cargo.toml || true)
+FERRY_CRATES='sync-daemon|sync-fakes|replica-[a-z]+|sync-[a-z-]+|drive-[a-z-]+'
+named=$(grep -lE "^($FERRY_CRATES)[ .=]" */Cargo.toml || true)
 reached=$(cargo tree --workspace -e normal,build,dev --prefix none 2>/dev/null \
   | awk '{print $1}' | grep -xE "$FERRY_CRATES" | sort -u | tr '\n' ' ')
 if [ -n "$named" ] || [ -n "$reached" ]; then
@@ -457,7 +457,7 @@ else
 fi
 
 # Every workspace member has a row above, so a new crate cannot slip in unchecked.
-for member in $(sed -n 's#^  "crates/\(.*\)",$#\1#p' Cargo.toml); do
+for member in $(sed -n 's#^    "crates/accounts/\(.*\)",$#\1#p' ../../Cargo.toml); do
   printf '%s\n' "${EDGES[@]}" | grep -q "^$member:" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done
 
@@ -490,15 +490,15 @@ done
 # account-rig is test tooling (the rig a jailed scenario drives porter with): no other crate of
 # ours names it, not even as a dev dependency, it is never published, and nothing in dist/ (the
 # units, the packaging) mentions it, so it is never installed.
-for manifest in crates/*/Cargo.toml; do
-  [ "$manifest" = "crates/porter-rig/Cargo.toml" ] && continue
+for manifest in */Cargo.toml; do
+  [ "$manifest" = "account-rig/Cargo.toml" ] && continue
   if grep -q 'account-rig' "$manifest"; then
     echo "LEAK: $manifest names account-rig"
     fail=1
   fi
 done
-if ! grep -q '^publish.workspace = true' crates/porter-rig/Cargo.toml \
-  || ! grep -q '^publish = false' Cargo.toml; then
+if ! grep -q '^publish.workspace = true' account-rig/Cargo.toml \
+  || ! grep -q '^publish = false' ../../Cargo.toml; then
   echo "LEAK: account-rig is publishable"
   fail=1
 fi
@@ -523,8 +523,8 @@ shipped=$(for package in $shipped_programs; do
 done | sort -u)
 grow_leaks=""
 for crate in $shipped; do
-  [ -f "crates/$crate/src/lib.rs" ] && [ ! -f "crates/$crate/src/daemon.rs" ] || continue
-  found=$(find "crates/$crate/src" -name '*.rs' ! -name 'tests.rs' ! -name '*_tests.rs' ! -name 'testing.rs' \
+  [ -f "$crate/src/lib.rs" ] && [ ! -f "$crate/src/daemon.rs" ] || continue
+  found=$(find "$crate/src" -name '*.rs' ! -name 'tests.rs' ! -name '*_tests.rs' ! -name 'testing.rs' \
     ! -name 'testkit.rs' ! -path '*/tests/*' ! -path '*/testkit/*' ! -path '*/testing/*' -print0 \
     | xargs -0 awk '
       FNR == 1 { exhaustive = 1 }

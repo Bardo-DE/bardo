@@ -8,7 +8,7 @@
 #   exit 0 all steps passed, 1 a step failed, 2 not runnable (outside the jail, or not filled yet),
 #   3 a tool is missing.
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../transom" && pwd)
+root=$(cd "$(dirname "$0")/../../../portal" && pwd)
 # shellcheck source=dev/lib/jail.sh
 source "$root/dev/lib/jail.sh"
 require_jail

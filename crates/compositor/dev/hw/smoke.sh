@@ -47,4 +47,4 @@ fi
 
 echo "smoke.sh: recorded into $out"
 echo "Hand the directory to a casement lane: it turns drm/ and drm_info.json into"
-echo "crates/casement-testkit/fixtures/kms/*.json (the shape of KmsResources)."
+echo "crates/compositor/compositor-testkit/fixtures/kms/*.json (the shape of KmsResources)."

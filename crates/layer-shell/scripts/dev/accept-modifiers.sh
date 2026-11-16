@@ -26,7 +26,7 @@
 #               `Shown`), not a close and a fresh spawn.
 # Each case prints PASS/FAIL; logs are scripts/dev/out/modifiers-*.log.
 set -uo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerate crates/sill-search/data/emoji-keywords.tsv from Unicode CLDR's English emoji
+# Regenerate crates/shell/shell-search/data/emoji-keywords.tsv from Unicode CLDR's English emoji
 # annotations (the launcher's emoji search by keyword).
 #
 # Source: CLDR common/annotations/en.xml, Unicode-3.0. A development script: the output is checked in.

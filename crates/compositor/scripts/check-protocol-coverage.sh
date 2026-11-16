@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 # New global, new test file: every protocol module
-# crates/casement-wayland/src/<p>.rs has crates/casement-testkit/tests/it/protocol/<p>.rs and a
+# compositor-wayland/src/<p>.rs has compositor-testkit/tests/it/protocol/<p>.rs and a
 # `mod <p>;` line in that directory's mod.rs; every module named in
-# crates/casement-testkit/tests/golden/globals.txt (`<interface> <version> <module>` per line)
+# compositor-testkit/tests/golden/globals.txt (`<interface> <version> <module>` per line)
 # is one of those covered modules.
 set -euo pipefail
 shopt -s nullglob
 cd "$(dirname "$0")/.."
-src=crates/casement-wayland/src
-tests=crates/casement-testkit/tests/it/protocol
-globals=crates/casement-testkit/tests/golden/globals.txt
+src=compositor-wayland/src
+tests=compositor-testkit/tests/it/protocol
+globals=compositor-testkit/tests/golden/globals.txt
 fail=0
 
 if [ ! -d "$src" ]; then

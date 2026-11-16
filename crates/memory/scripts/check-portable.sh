@@ -15,10 +15,10 @@ CORE=(
   "memory-core"
   "memory-seal"
   "memory-store"
-  "eventlog"
-  "memfiles"
+  "memory-eventlog"
+  "memory-files"
   "memory-files-format"
-  "recall"
+  "memory-recall"
   "memory-settings"
   "memory-tidy"
   "memory-search"
@@ -34,13 +34,13 @@ FORBIDDEN='zbus|zvariant|inotify|notify|landlock|oo7|secret-service'
 TARGETS=(x86_64-apple-darwin x86_64-pc-windows-gnu x86_64-pc-windows-msvc)
 # Crates without C dependencies check on every target; the SQLCipher ones need that target's C
 # toolchain (and OpenSSL's cross build), which a Linux box lacks, so they are only reported.
-PURE_RUST=(memory-core memory-seal memory-store memfiles memory-settings memory-watch)
+PURE_RUST=(memory-core memory-seal memory-store memory-files memory-settings memory-watch)
 # blake3 builds C and assembly SIMD for x86_64 targets, which needs the target's C compiler too;
 # its `pure` feature (through each crate's `pure-hash`) is a plain-Rust build for the check.
 declare -A PURE_HASH=(
   [memory-seal]="pure-hash"
   [memory-store]="memory-seal/pure-hash"
-  [memfiles]="memory-seal/pure-hash"
+  [memory-files]="memory-seal/pure-hash"
   [memory-watch]="pure-hash"
 )
 

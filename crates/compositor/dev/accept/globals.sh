@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Acceptance script 'globals' (20-FREEZE-PLAN §4.3, P0): the globals a public client sees on
 # casement's headless session are exactly the golden list
-# crates/casement-testkit/tests/golden/globals.txt: one output, two outputs (wl_output once each),
+# crates/compositor/compositor-testkit/tests/golden/globals.txt: one output, two outputs (wl_output once each),
 # and with --dmabuf soft (the extra zwp_linux_dmabuf_v1 row). Prints PASS|SKIP|FAIL per step and
 # exits with the plan's codes. Calls require_jail first.
 #
@@ -17,7 +17,7 @@ source "$root/dev/lib/compositor.sh"
 # shellcheck source=dev/lib/assert.sh
 source "$root/dev/lib/assert.sh"
 
-golden="$root/crates/casement-testkit/tests/golden/globals.txt"
+golden="$root/compositor-testkit/tests/golden/globals.txt"
 [ -f "$golden" ] || { echo "globals.sh: $golden is missing" >&2; exit 3; }
 trap stop_compositor EXIT
 

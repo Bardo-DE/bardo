@@ -26,7 +26,7 @@ cd "$(dirname "$0")/.."
 LAYERS=(
   "computer-use-desktop: P"
   "computer-use-types: P"
-  "maskcap: P"
+  "computer-use-capture: P"
   "computer-use-seat-input: P"
   "computer-use-a11y-tree: P"
   "computer-use-a11y-atspi: C"
@@ -38,9 +38,9 @@ LAYERS=(
   "computer-use-dbus: C"
   "computer-use-fake: C"
   "computer-use-system: C"
-  "cua-eval: A"
-  "cua-eval-cloud: A"
-  "cuad: A"
+  "computer-use-eval: A"
+  "computer-use-eval-cloud: A"
+  "computer-use-daemon: A"
 )
 
 # KNOWN: a violation that exists today, with the plan lane (~/rs-wt/agent-layers/PLAN.md) that
@@ -49,7 +49,7 @@ LAYERS=(
 # `Role::SheetHost` is a action-core wire name; cua names it only in test code, which the bans
 # skip, so it needs no row.
 KNOWN=(
-  "cua-eval-cloud: env-var: C5.3"
+  "computer-use-eval-cloud: env-var: C5.3"
 )
 
 # BANS: "name|tiers|extended regex" over the non-test source of a crate of those tiers. A line
@@ -66,7 +66,7 @@ BANS=(
   'reqwest|P|\breqwest\b'
   'zbus|P|\bzbus\b'
   'rustix|P|\brustix\b'
-  'ui-words|PC|\b(Help|Sheet|SettingRow)|ds[-_]settings'
+  'ui-words|PC|\b(Help|Sheet|SettingRow)|ui[-_]settings'
   # Outside main.rs and the src/bin programs; the environment is read once, at the entry point.
   'env-var|A|\benv::(var|var_os|vars|vars_os)\b'
 )
@@ -81,7 +81,7 @@ BANS=(
 EFFECTS="zbus zvariant tokio reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
 RULES=(
   "computer-use-desktop: $EFFECTS"
-  "maskcap: $EFFECTS"
+  "computer-use-capture: $EFFECTS"
   "computer-use-seat-input: $EFFECTS"
   "computer-use-a11y-tree: $EFFECTS"
   # The backends: each reaches its own stack and nothing else. The AT-SPI backend is the one
@@ -92,8 +92,8 @@ RULES=(
   # The bus bodies: serde, plus the vocabulary crates named in ONLY below. The capability crates
   # (accessibility, input, capture) are not reachable, so a consumer that reads the bodies
   # (sill, the D-Bus codec) links none of them; the leaf types they share live in computer-use-types.
-  "computer-use-types: $EFFECTS computer-use-a11y-tree computer-use-seat-input maskcap"
-  "computer-use-bus: $EFFECTS computer-use-a11y-tree computer-use-seat-input maskcap"
+  "computer-use-types: $EFFECTS computer-use-a11y-tree computer-use-seat-input computer-use-capture"
+  "computer-use-bus: $EFFECTS computer-use-a11y-tree computer-use-seat-input computer-use-capture"
   "computer-use-run: $EFFECTS"
   # The run executor as a library: a runtime and the docket/almanac client traits, but no bus
   # (their `dbus` features are the daemon's), no backend and no file watcher.
@@ -106,11 +106,11 @@ RULES=(
   # The eval is a tool, not a daemon: it reaches the fakes (reis), a runtime and, for the live path,
   # an HTTP client to an engine on this machine; never a bus, a wayland connection, the
   # accessibility stack, a database or the policy engine.
-  "cua-eval: zbus zvariant wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
+  "computer-use-eval: zbus zvariant wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # The cloud eval is the eval plus the bus to inferd (zbus through inference-client): a stoker Provider whose
   # turns are inferd chat turns, so a hosted model's key stays in accountd. It reaches no wayland
   # connection, accessibility stack, database or policy engine.
-  "cua-eval-cloud: wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
+  "computer-use-eval-cloud: wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
   # The system adapters reach what the daemon does, minus the daemon's own tree: the bus, a
   # runtime, wayland, EIS and AT-SPI; never HTTP, an embedding runtime, the MCP SDK or the policy
   # engine.
@@ -120,7 +120,7 @@ RULES=(
   # and cuad asks it through `Intents1.Gate` (SPEC C10): cuad has no edge to `permission-policy`
   # (LAYERS above), and action-client's `InProcess` (which links action-router, hence cedar) is
   # behind its `in_process` feature, which only cuad's tests turn on (a dev-dependency).
-  "cuad: reqwest hyper hyper-util rustls pipewire ort fastembed rmcp cedar-policy"
+  "computer-use-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rmcp cedar-policy"
 )
 
 tier_of() {
@@ -135,12 +135,12 @@ rank() { case "$1" in P) echo 0 ;; C) echo 1 ;; A) echo 2 ;; *) echo 9 ;; esac; 
 # regex $3. A file whose path matches the regex $4 is skipped.
 scan_source() {
   local root="$1" crate="$2" regex="$3" skip="${4:-^$}" file
-  [ -d "$root/crates/$crate/src" ] || return 0
+  [ -d "$root/$crate/src" ] || return 0
   while IFS= read -r file; do
     [[ "$file" =~ $skip ]] && continue
     sed '/^[[:space:]]*#\[cfg(test)\]/q' "$file" | grep -nE "$regex" \
       | grep -vE '^[0-9]+:[[:space:]]*//' | sed "s#^#$file:#"
-  done < <(find "$root/crates/$crate/src" -name '*.rs' ! -name tests.rs ! -path '*/tests/*' | sort)
+  done < <(find "$root/$crate/src" -name '*.rs' ! -name tests.rs ! -path '*/tests/*' | sort)
 }
 
 # Runs every source ban on crate $2 under root $1; prints "ban: hit" lines.
@@ -168,11 +168,11 @@ if [ "${1:-}" = "--self-test" ]; then
   tmp=$(mktemp -d)
   trap 'rm -rf "$tmp"' EXIT
   LAYERS=("p-crate: P" "c-crate: C" "a-crate: A")
-  for c in p-crate c-crate a-crate; do mkdir -p "$tmp/crates/$c/src"; done
-  printf 'pub fn f() { let _ = std::fs::read("x"); }\n' >"$tmp/crates/p-crate/src/lib.rs"
-  printf 'pub fn f() { let _ = std::fs::read("x"); }\npub struct SettingRow;\n' >"$tmp/crates/c-crate/src/lib.rs"
-  printf 'pub fn f() { let _ = std::env::var("X"); }\n' >"$tmp/crates/a-crate/src/lib.rs"
-  printf 'fn main() { let _ = std::env::var("X"); }\n' >"$tmp/crates/a-crate/src/main.rs"
+  for c in p-crate c-crate a-crate; do mkdir -p "$tmp/$c/src"; done
+  printf 'pub fn f() { let _ = std::fs::read("x"); }\n' >"$tmp/p-crate/src/lib.rs"
+  printf 'pub fn f() { let _ = std::fs::read("x"); }\npub struct SettingRow;\n' >"$tmp/c-crate/src/lib.rs"
+  printf 'pub fn f() { let _ = std::env::var("X"); }\n' >"$tmp/a-crate/src/lib.rs"
+  printf 'fn main() { let _ = std::env::var("X"); }\n' >"$tmp/a-crate/src/main.rs"
   p_hits=$(source_violations "$tmp" p-crate)
   c_hits=$(source_violations "$tmp" c-crate)
   a_hits=$(source_violations "$tmp" a-crate)
@@ -189,7 +189,7 @@ fail=0
 long_files=0
 [ "${1:-}" = "--long-files" ] && long_files=1
 
-members=$(sed -n '/^members = \[/,/^\]/s#^  "crates/\(.*\)",$#\1#p' Cargo.toml)
+members=$(sed -n '/^members = \[/,/^\]/s#^    "crates/computer-use/\(.*\)",$#\1#p' ../../Cargo.toml | grep -vE '^computer-use-(action|parse|session|vendors)$')
 
 # Every workspace member has a row in LAYERS, and every row names a crate, so a new crate cannot
 # slip in unchecked. Every member also has a row in RULES.
@@ -200,7 +200,7 @@ for crate in $members; do
 done
 for row in "${LAYERS[@]}"; do
   crate="${row%%:*}"
-  [ -f "crates/$crate/Cargo.toml" ] || { echo "ERROR: LAYERS names $crate, which has no crates/$crate/Cargo.toml"; fail=1; }
+  [ -f "$crate/Cargo.toml" ] || { echo "ERROR: LAYERS names $crate, which has no $crate/Cargo.toml"; fail=1; }
 done
 
 # Dependencies point down only: a crate's DIRECT normal and build path dependencies (all
@@ -229,7 +229,7 @@ done
 # drafts of a report), account-core and inference-core (counts, money, step and served-by ids) and
 # prov (labels). None of them is a capability crate.
 ONLY=(
-  "computer-use-bus: memory-core computer-use-action computer-use-desktop computer-use-types action-core action-gate-wire action-vocab model-provider account-core account-ids inference-core prov"
+  "computer-use-bus: memory-core computer-use-action computer-use-desktop computer-use-types action-core action-gate-wire action-vocab model-provider account-core account-ids inference-core provenance"
 )
 for entry in "${ONLY[@]}"; do
   crate="${entry%%:*}"
@@ -272,7 +272,7 @@ done
 
 # Source files over 500 lines: reported on request, not a failure yet.
 if [ "$long_files" -eq 1 ]; then
-  find crates -name '*.rs' -path '*/src/*' -not -path '*/target/*' -print0 \
+  find . -name '*.rs' -path '*/src/*' -not -path '*/target/*' -print0 \
     | xargs -0 wc -l | awk '$1 > 500 && $2 != "total" {print "LONG: " $2 " has " $1 " lines"}'
 fi
 
@@ -313,7 +313,7 @@ for name in $THEIRS; do
     fail=1
   fi
 done
-if printf '%s\n' "$workspace_tree" | grep -q '^sill-'; then
+if printf '%s\n' "$workspace_tree" | grep -q '^shell-'; then
   echo "LEAK: the workspace depends on a sill crate, which sits above cua"
   theirs_found=1
   fail=1
@@ -325,7 +325,7 @@ fi
 # cuad's `fixture-callers` is a security switch: with it on, cuad takes who is calling from a
 # process tree and callers file the harness names. Built as the installer builds it (`-p` each
 # installed package, no dev-dependencies), no shipped package turns it on.
-for pkg in cuad; do
+for pkg in computer-use-daemon; do
   # Each package's enabled features (`{f}`): `-e features` elides the edge a package's own feature makes.
   if cargo tree -p "$pkg" -e normal,build --prefix none --format '{p} {f}' 2>/dev/null \
     | grep -qE 'fixture-callers|test-proc-root'; then
@@ -338,12 +338,12 @@ done
 
 # No shipped source names the harness's variables, apart from the two constants, each behind
 # `#[cfg(feature = "fixture-callers")]` on the line before.
-leaks=$(grep -rnE 'CUAD_TEST_|PROC_ROOT' crates --include='*.rs' --exclude-dir=tests \
-  | grep -vE '^crates/cuad/src/callers.rs:[0-9]+:pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR): &str = "CUAD_TEST_(SYSTEM_CALLERS|PROC_ROOT)";$' \
-  | grep -vE '^crates/cuad/src/callers.rs:[0-9]+:.*env\(PROC_ROOT_VAR\)' || true)
-for line in $(grep -nE '^pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR)' crates/cuad/src/callers.rs | cut -d: -f1); do
-  sed -n "$((line - 1))p" crates/cuad/src/callers.rs | grep -qx '#\[cfg(feature = "fixture-callers")\]' \
-    || leaks="$leaks"$'\n'"crates/cuad/src/callers.rs:$line: not behind the fixture-callers cfg"
+leaks=$(grep -rnE 'CUAD_TEST_|PROC_ROOT' */ --include='*.rs' --exclude-dir=tests \
+  | grep -vE '^computer-use-daemon/src/callers.rs:[0-9]+:pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR): &str = "CUAD_TEST_(SYSTEM_CALLERS|PROC_ROOT)";$' \
+  | grep -vE '^computer-use-daemon/src/callers.rs:[0-9]+:.*env\(PROC_ROOT_VAR\)' || true)
+for line in $(grep -nE '^pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR)' computer-use-daemon/src/callers.rs | cut -d: -f1); do
+  sed -n "$((line - 1))p" computer-use-daemon/src/callers.rs | grep -qx '#\[cfg(feature = "fixture-callers")\]' \
+    || leaks="$leaks"$'\n'"computer-use-daemon/src/callers.rs:$line: not behind the fixture-callers cfg"
 done
 if [ -n "${leaks//$'\n'/}" ]; then
   echo "TEST SWITCH: a shipped crate names a harness switch:"

@@ -93,13 +93,13 @@ OUT_DIR="$SILL_OUT_ROOT/accept-control-center"
 SHOTS="$SILL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
 # The panel's popup: the card (`--cc-width`, 320) plus the transparent
-# shadow room on each side (`SIDE` in crates/sill-bar/src/bar/popup.rs, read from the source so
+# shadow room on each side (`SIDE` in crates/shell/shell-bar/src/bar/popup.rs, read from the source so
 # the script follows it) plus the card's own hairline border, a pixel or two a side. A pixel
 # count is not a design value, so the check is a range: [card + 2 * room, + 2 * 4], the 8 being
 # the most a hairline plus rounding can add. (It was a hard 376 and failed at 378.)
 PANEL_CARD_W=320
 PANEL_SIDE=$(sed -n 's/^pub(crate) const SIDE: i32 = \([0-9]*\);.*/\1/p' \
-  "$SILL_REPO/crates/sill-bar/src/bar/popup.rs")
+  "$SILL_REPO/shell-bar/src/bar/popup.rs")
 PANEL_SIDE="${PANEL_SIDE:-28}"
 PANEL_POPUP_MIN=$(( PANEL_CARD_W + 2 * PANEL_SIDE ))
 PANEL_POPUP_MAX=$(( PANEL_POPUP_MIN + 8 ))

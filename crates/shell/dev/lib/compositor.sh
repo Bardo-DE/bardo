@@ -10,9 +10,9 @@
 # One set of helpers answers for both: start_compositor / stop_compositor, set_scale,
 # require_scale, output_scale, output_size, shot, maximised_height and nested (a command in the
 # compositor's environment); input.sh has start_input / input / key / click.
-SILL_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../sill" && pwd)"
-SILL_TREE="$(cd "$SILL_REPO/../../../sill" && pwd)"   # the bardo tree
-SHELL_HOST_DEV="${SHELL_HOST_DEV:-$SILL_REPO/../shell-host/scripts/dev}"
+SILL_REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell" && pwd)"
+SILL_TREE="$(cd "$SILL_REPO/../.." && pwd)"   # the bardo tree
+SHELL_HOST_DEV="${SHELL_HOST_DEV:-$SILL_REPO/../layer-shell/scripts/dev}"
 if [ ! -x "$SHELL_HOST_DEV/kwin-virtual.sh" ]; then
   echo "dev: layer-shell-host's harness not found at $SHELL_HOST_DEV (set SHELL_HOST_DEV)" >&2
   exit 1
@@ -45,7 +45,7 @@ budgets_why() {
   [ "$SILL_PROFILE" = release ] || { echo "a $SILL_PROFILE build; run with SILL_PROFILE=release"; return; }
   echo "host load $(cut -d' ' -f1 /proc/loadavg) is past its $(nproc) cores"
 }
-HOST_REPO="$(cd "$SHELL_HOST_DEV/../../../sill" && pwd)"
+HOST_REPO="$(cd "$SHELL_HOST_DEV/../.." && pwd)"
 KWIN_ENV="$SHELL_HOST_DEV/.kwin-env"
 SIZE="${SIZE:-1920x1080}"
 WL=
@@ -54,7 +54,7 @@ BUS=
 # tools dev/bootstrap.sh built there OUTSIDE the jail (casement, casementctl, casement-probe,
 # fake-logind in dev/out/tools/bin; nothing inside the jail calls cargo). CASEMENT_ENV is the env
 # file of the session start_casement made.
-CASEMENT_REPO="${CASEMENT_REPO:-$SILL_TREE/crates/casement}"
+CASEMENT_REPO="${CASEMENT_REPO:-$SILL_TREE/crates/compositor}"
 CASEMENT_TOOLS="${CASEMENT_TOOLS:-$CASEMENT_REPO/dev/out/tools}"
 CASEMENT_ENV=
 # Casement's own bus (Debug1 lives on it): BUS is the script's, which a script that starts a bus per

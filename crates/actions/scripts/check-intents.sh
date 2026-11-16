@@ -9,13 +9,13 @@
 # usage: scripts/check-intents.sh [repository dir]       (default: the repository this file is in)
 # environment:
 #   DOCKET_EVAL  a built docket-eval binary to run instead of building one
-#   DOCKET_DIR   the docket checkout to build it from (default: ../docket beside the repository)
+#   DOCKET_DIR   the docket checkout to build it from (default: the bardo tree this repository folder is in)
 set -euo pipefail
 repo=${1:-$(cd "$(dirname "$0")/.." && pwd)}
 if [ -n "${DOCKET_EVAL:-}" ]; then
   exec "$DOCKET_EVAL" --check-app "$repo"
 fi
-docket=${DOCKET_DIR:-$repo/../docket}
+docket=${DOCKET_DIR:-$repo/../..}
 if [ ! -f "$docket/Cargo.toml" ]; then
   echo "check-intents: no docket checkout at $docket (set DOCKET_DIR, or DOCKET_EVAL to a built docket-eval)" >&2
   exit 2

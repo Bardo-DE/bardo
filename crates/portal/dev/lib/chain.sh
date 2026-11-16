@@ -49,7 +49,7 @@ transom_state_dir() {
 start_chain() {
   require_jail
   local root state envfile=""
-  root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../transom" && pwd)
+  root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../portal" && pwd)
   while [ $# -gt 0 ]; do
     case "$1" in
       --env) envfile=${2:?--env needs a file}; shift 2 ;;

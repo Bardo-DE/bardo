@@ -11,7 +11,7 @@
 # into <tools>/shim-target. <tools> is $CASEMENT_TOOLS, else dev/out/tools (the dir that
 # dev/bootstrap.sh and dev/wlcs/run.sh use too), so a lane can keep it outside its checkout.
 set -euo pipefail
-cd "$(dirname "$0")/../../../casement"
+cd "$(dirname "$0")/../../../compositor"
 sha=2b385328366de5db19521b9b3eef81861430d984
 # $CASEMENT_TOOLS moves the tools directory (dev/bootstrap.sh passes it); else dev/out/tools.
 tools="${CASEMENT_TOOLS:-$PWD/dev/out/tools}"
@@ -35,6 +35,6 @@ fi
 echo "wlcs built at $sha: $dir/wlcs"
 
 target="${CARGO_TARGET_DIR:-$tools/shim-target}"
-CARGO_TARGET_DIR="$target" cargo build --manifest-path wlcs-casement/Cargo.toml
+CARGO_TARGET_DIR="$target" cargo build --manifest-path wlcs-compositor/Cargo.toml
 cp "$target/debug/libwlcs_casement.so" "$tools/libwlcs_casement.so"
 echo "shim built: $tools/libwlcs_casement.so"

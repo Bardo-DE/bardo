@@ -1,6 +1,6 @@
-"""Writes crates/cua-eval/src/font_data.rs: the 95 printable ASCII glyphs as 8x16 bitmaps, cut
+"""Writes crates/computer-use/computer-use-eval/src/font_data.rs: the 95 printable ASCII glyphs as 8x16 bitmaps, cut
 from Hack Regular (MIT) at 13 px with no anti-aliasing. Run: uv run --with pillow
-scripts/dev/gen-eval-font.py <Hack-Regular.ttf> > crates/cua-eval/src/font_data.rs"""
+scripts/dev/gen-eval-font.py <Hack-Regular.ttf> > crates/computer-use/computer-use-eval/src/font_data.rs"""
 import sys
 from PIL import Image, ImageDraw, ImageFont
 

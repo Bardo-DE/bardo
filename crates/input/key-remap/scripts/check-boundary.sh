@@ -50,14 +50,14 @@ EDGES=(
   # keycap also links peephole (who the socket's peer is) and input-broker-client (the root service
   # that makes its virtual devices), both by tag; neither brings a bus or an async runtime. latchkey
   # (feature guard) holds the socket guard keycap shares with palmrest.
-  "keycap: chordkit key-remap-client key-remap-core key-remap-proto key-remap-evdev latchkey notify peephole caller-identity-core rustix thiserror input-broker-client"
+  "key-remap-daemon: keymap key-remap-client key-remap-core key-remap-proto key-remap-evdev service-locator notify caller-identity-linux caller-identity-core rustix thiserror input-broker-client"
   # key-remap-evdev: the evdev and uinput ioctls and the node drain that keycap and key-remap-devtest
   # share; the safe input-linux handles and rustix reads, nothing of keycap's own.
   "key-remap-evdev: input-linux rustix thiserror"
   # key-remap-client: what an app links to read the desktop keymap. The protocol, chordkit's pure core
   # and its bounded file reader (keymap-fs), and rustix for the SOCK_SEQPACKET socket std
   # lacks; no runtime, no file watcher. shell-verbs names the shell's verbs in the handled table.
-  "key-remap-client: chordkit keymap-fs key-remap-proto rustix shell-verbs"
+  "key-remap-client: keymap keymap-fs key-remap-proto rustix shell-verbs"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -75,7 +75,7 @@ done
 
 # Every workspace member has a row above, so a new crate cannot slip in unchecked. key-remap-devtest
 # is a test-only harness and outside the table.
-for member in $(sed -n 's#^members = \[\(.*\)\]#\1#p' Cargo.toml | tr -d '", ' | sed 's#crates/#\n#g' | grep .); do
+for member in $(sed -n 's#^    "crates/input/\(key-remap-.*\)",$#\1#p' ../../../Cargo.toml); do
   [ "$member" = key-remap-devtest ] && continue
   grep -q "^$member:" <<<"$(printf '%s\n' "${EDGES[@]}")" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done

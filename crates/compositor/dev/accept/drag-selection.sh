@@ -7,7 +7,7 @@
 #
 # Owner: P0-accept (fills the P0-H5 stub).
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../casement" && pwd)
+root=$(cd "$(dirname "$0")/../../../compositor" && pwd)
 # shellcheck source=dev/lib/accept.sh
 source "$root/dev/lib/accept.sh"
 

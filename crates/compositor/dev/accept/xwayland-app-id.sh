@@ -7,7 +7,7 @@
 #
 # Owner: P1-X1.
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../casement" && pwd)
+root=$(cd "$(dirname "$0")/../../../compositor" && pwd)
 # shellcheck source=dev/lib/accept.sh
 source "$root/dev/lib/accept.sh"
 # shellcheck source=dev/lib/x11probe.sh

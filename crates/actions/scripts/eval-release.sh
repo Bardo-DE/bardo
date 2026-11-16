@@ -28,7 +28,7 @@
 # AllowJudged cells to Ask (a presets/default/grid.cedar change) until it passes is NOT automated: read the
 # report and the traces, then change the policy by hand.
 #
-# --catalog DIR: the model catalogue copied into the scratch world (default: ../stoker/catalog, absolute;
+# --catalog DIR: the model catalogue copied into the scratch world (default: ../models/catalog, absolute;
 # inferd there reads $XDG_DATA_HOME/stoker/catalog, which is scratch). Copied, never linked.
 # Exit: 0 every case met what it expected (and every target held), 1 not, 2 the run could not start.
 set -euo pipefail
@@ -36,7 +36,7 @@ cd "$(dirname "$0")/.."
 root=$(pwd)
 
 engine=scripted
-catalog=$(cd "$root/../stoker/catalog" 2>/dev/null && pwd || true)
+catalog=$(cd "$root/../models/catalog" 2>/dev/null && pwd || true)
 label=
 extra=()
 while [ $# -gt 0 ]; do

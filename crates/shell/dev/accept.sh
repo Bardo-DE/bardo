@@ -28,7 +28,7 @@
 # (an artefact is missing: run with --build, outside the jail) | 4 a script overran its bound.
 #
 # Environment: SILL_PROFILE (debug, the default, or release), CARGO_TARGET_DIR, CASEMENT_REPO (the
-# casement crate, default crates/casement of this tree), CASEMENT_TARGET (its cargo target dir, for --build),
+# casement crate, default crates/compositor of this tree), CASEMENT_TARGET (its cargo target dir, for --build),
 # CASEMENT_TOOLS, SILL_JAIL (the jail script).
 set -uo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)

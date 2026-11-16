@@ -15,7 +15,7 @@
 # The person's answers are `sill debug key SURFACE KEY`: layer-shell-host's Inject::Key, which enters
 # the sheet where an xkb key does, whether or not the compositor gave it the keyboard.
 #
-# docket is built from $DOCKET_DIR (default crates/docket of this tree) into its own target
+# docket is built from $DOCKET_DIR (default crates/actions of this tree) into its own target
 # directory, $OUT_DIR/docket-target (override with DOCKET_TARGET), never docket's own.
 #
 #   1. `quire-do apps` lists `shell`, and `quire-do shell --list` its actions.
@@ -38,9 +38,9 @@
 # Usage: dev/accept/confirm.sh
 set -uo pipefail
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO="$(cd "$SELF/../../../sill" && pwd)"
+REPO="$(cd "$SELF/../../../shell" && pwd)"
 PRIVATE_DEV="$(mktemp -d)"
-cp -r "${SHELL_HOST_DEV:-$REPO/../shell-host/scripts/dev}" "$PRIVATE_DEV/dev"
+cp -r "${SHELL_HOST_DEV:-$REPO/../layer-shell/scripts/dev}" "$PRIVATE_DEV/dev"
 rm -f "$PRIVATE_DEV/dev/.kwin-env"
 export SHELL_HOST_DEV="$PRIVATE_DEV/dev"
 # shellcheck source=dev/lib/all.sh
@@ -48,7 +48,7 @@ source "$SELF/../lib/all.sh"
 OUT_DIR="$SILL_OUT_ROOT/accept-confirm"
 SHOTS="$SILL_SHOTS"
 mkdir -p "$OUT_DIR" "$SHOTS"
-DOCKET_DIR="${DOCKET_DIR:-$SILL_REPO/../docket}"
+DOCKET_DIR="${DOCKET_DIR:-$SILL_REPO/../actions}"
 DOCKET_TARGET="${DOCKET_TARGET:-$OUT_DIR/docket-target}"
 INTENTD="$DOCKET_TARGET/debug/accept-intentd"
 QUIRE_DO="$DOCKET_TARGET/debug/quire-do"

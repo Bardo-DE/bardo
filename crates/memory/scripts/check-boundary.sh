@@ -33,9 +33,9 @@ LAYERS=(
   "memory-seal: P"
   "memory-keyfile: C"
   "memory-host: C"
-  "eventlog: C"
-  "memfiles: C"
-  "recall: C"
+  "memory-eventlog: C"
+  "memory-files: C"
+  "memory-recall: C"
   "memory-watch: C"
   "memory-infer: C"
   "memory-dbus: C"
@@ -43,7 +43,7 @@ LAYERS=(
   "memory-client: C"
   "memory-fake: C"
   "memory-local: C"
-  "memoryd: A"
+  "memory-daemon: A"
 )
 
 # KNOWN: a violation that exists today, with the plan lane (~/rs-wt/agent-layers/PLAN.md) that
@@ -94,10 +94,10 @@ RULES=(
   "memory-seal: $EFFECTS rusqlite notify"
   "memory-keyfile: $EFFECTS rusqlite notify"
   "memory-store: $EFFECTS $STORAGE notify"
-  "eventlog: $EFFECTS notify"
-  "memfiles: $EFFECTS rusqlite notify"
+  "memory-eventlog: $EFFECTS notify"
+  "memory-files: $EFFECTS rusqlite notify"
   "memory-files-format: $EFFECTS $STORAGE notify"
-  "recall: $EFFECTS notify"
+  "memory-recall: $EFFECTS notify"
   "memory-settings: $EFFECTS $STORAGE notify"
   "memory-tidy: $EFFECTS $STORAGE notify"
   "memory-search: $EFFECTS $STORAGE notify"
@@ -114,7 +114,7 @@ RULES=(
   "memory-local: $EFFECTS notify"
   # The daemon reaches the bus, a runtime, the keyring and the file watch. It never reaches HTTP,
   # an embedding runtime, the MCP SDK or the policy engine (inferd is the model, over the bus).
-  "memoryd: reqwest hyper ort fastembed rmcp cedar-policy"
+  "memory-daemon: reqwest hyper ort fastembed rmcp cedar-policy"
 )
 
 tier_of() {
@@ -129,12 +129,12 @@ rank() { case "$1" in P) echo 0 ;; C) echo 1 ;; A) echo 2 ;; *) echo 9 ;; esac; 
 # regex $3. A file whose path matches the regex $4 is skipped.
 scan_source() {
   local root="$1" crate="$2" regex="$3" skip="${4:-^$}" file
-  [ -d "$root/crates/$crate/src" ] || return 0
+  [ -d "$root/$crate/src" ] || return 0
   while IFS= read -r file; do
     [[ "$file" =~ $skip ]] && continue
     sed '/^[[:space:]]*#\[cfg(test)\]/q' "$file" | grep -nE "$regex" \
       | grep -vE '^[0-9]+:[[:space:]]*//' | sed "s#^#$file:#"
-  done < <(find "$root/crates/$crate/src" -name '*.rs' ! -name tests.rs ! -path '*/tests/*' | sort)
+  done < <(find "$root/$crate/src" -name '*.rs' ! -name tests.rs ! -path '*/tests/*' | sort)
 }
 
 # Runs every source ban on crate $2 under root $1; prints "ban: hit" lines.
@@ -162,11 +162,11 @@ if [ "${1:-}" = "--self-test" ]; then
   tmp=$(mktemp -d)
   trap 'rm -rf "$tmp"' EXIT
   LAYERS=("p-crate: P" "c-crate: C" "a-crate: A")
-  for c in p-crate c-crate a-crate; do mkdir -p "$tmp/crates/$c/src"; done
-  printf 'pub fn f() { let _ = std::fs::read("x"); }\n' >"$tmp/crates/p-crate/src/lib.rs"
-  printf 'pub fn f() { let _ = std::fs::read("x"); }\npub struct SettingRow;\n' >"$tmp/crates/c-crate/src/lib.rs"
-  printf 'pub fn f() { let _ = std::env::var("X"); }\n' >"$tmp/crates/a-crate/src/lib.rs"
-  printf 'fn main() { let _ = std::env::var("X"); }\n' >"$tmp/crates/a-crate/src/main.rs"
+  for c in p-crate c-crate a-crate; do mkdir -p "$tmp/$c/src"; done
+  printf 'pub fn f() { let _ = std::fs::read("x"); }\n' >"$tmp/p-crate/src/lib.rs"
+  printf 'pub fn f() { let _ = std::fs::read("x"); }\npub struct SettingRow;\n' >"$tmp/c-crate/src/lib.rs"
+  printf 'pub fn f() { let _ = std::env::var("X"); }\n' >"$tmp/a-crate/src/lib.rs"
+  printf 'fn main() { let _ = std::env::var("X"); }\n' >"$tmp/a-crate/src/main.rs"
   p_hits=$(source_violations "$tmp" p-crate)
   c_hits=$(source_violations "$tmp" c-crate)
   a_hits=$(source_violations "$tmp" a-crate)
@@ -183,7 +183,7 @@ fail=0
 long_files=0
 [ "${1:-}" = "--long-files" ] && long_files=1
 
-members=$(sed -n '/^members = \[/,/^\]/s#^  "crates/\(.*\)",$#\1#p' Cargo.toml)
+members=$(sed -n '/^members = \[/,/^\]/s#^    "crates/memory/\(.*\)",$#\1#p' ../../Cargo.toml)
 
 # Every workspace member has a row in LAYERS and in RULES, and every row names a crate, so a new
 # crate cannot slip in unchecked.
@@ -194,7 +194,7 @@ for crate in $members; do
 done
 for row in "${LAYERS[@]}"; do
   crate="${row%%:*}"
-  [ -f "crates/$crate/Cargo.toml" ] || { echo "ERROR: LAYERS names $crate, which has no crates/$crate/Cargo.toml"; fail=1; }
+  [ -f "$crate/Cargo.toml" ] || { echo "ERROR: LAYERS names $crate, which has no $crate/Cargo.toml"; fail=1; }
 done
 
 # Dependencies point down only: a crate's DIRECT normal and build path dependencies (all
@@ -244,7 +244,7 @@ done
 
 # Source files over 500 lines: reported on request, not a failure yet.
 if [ "$long_files" -eq 1 ]; then
-  find crates -name '*.rs' -path '*/src/*' -not -path '*/target/*' -print0 \
+  find . -name '*.rs' -path '*/src/*' -not -path '*/target/*' -print0 \
     | xargs -0 wc -l | awk '$1 > 500 && $2 != "total" {print "LONG: " $2 " has " $1 " lines"}'
 fi
 
@@ -277,7 +277,7 @@ for rule in "${RULES[@]}"; do
 done
 
 # Nothing of almanac's reaches another area's repo.
-for banned in action-core action-router intentd computer-use-run computer-use-bus cuad companion-wire; do
+for banned in action-core action-router action-daemon computer-use-run computer-use-bus computer-use-daemon companion-wire; do
   if cargo tree --workspace -i "$banned" -e normal,build,dev 2>/dev/null | grep -q .; then
     echo "LEAK: the workspace depends on $banned (almanac stores other areas' payloads opaquely)"
     fail=1
@@ -297,7 +297,7 @@ fi
 # The test-only features are never on in a default build (a dist build uses default features):
 # memoryd's `test-keys` and `test-proc-root`; `test-keys` is what brings memory-keyfile in.
 enabled=$(cargo tree -p memory-daemon -e normal,build -f '{p} [{f}]' --prefix none 2>/dev/null \
-  | grep -E '^memoryd ' | grep -oE '\[[^]]*\]' | tr ',[]' '\n\n\n')
+  | grep -E '^memory-daemon ' | grep -oE '\[[^]]*\]' | tr ',[]' '\n\n\n')
 if printf '%s\n' "$enabled" | grep -qE '^test-'; then
   echo "TEST FEATURE: a default build of memoryd enables: $(printf '%s\n' "$enabled" | grep -E '^test-' | tr '\n' ' ')"
   fail=1

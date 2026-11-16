@@ -23,7 +23,7 @@
 #   capture          two detents over `#capture`: its onwheel sees both, the list does not move
 # Each step prints PASS/FAIL; the log is scripts/dev/out/scroll.log.
 set -uo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
 # shellcheck source=scripts/dev/lib/compositor.sh
 source "$DEV/lib/compositor.sh"

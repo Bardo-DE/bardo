@@ -15,7 +15,7 @@ cd "$(dirname "$0")/.."
 # daemon. The palmrest socket's messages come from the `mouse-gestures-proto` crate, which is not the
 # daemon (`palmrest`, forbidden below) and depends on serde and thiserror only.
 RULES=(
-  "layer-shell-host: zbus libpulse-binding ds-native ui-settings ui-core palmrest"
+  "layer-shell-host: zbus libpulse-binding ds-native ui-settings ui-core mouse-gestures-daemon"
 )
 fail=0
 

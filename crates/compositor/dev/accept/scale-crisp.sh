@@ -4,7 +4,7 @@
 # output's scale (a 3-pixel checkerboard in a buffer 1.5 times the size, under a viewport
 # destination in logical pixels): in the captured frame every square must be exactly 3 physical
 # pixels, opaque black or white, before and after a maximise and an unmaximise. The first frame also
-# equals the golden crates/casement-testkit/tests/golden/scenes/one-window-1.5x.png (the same scene
+# equals the golden crates/compositor/compositor-testkit/tests/golden/scenes/one-window-1.5x.png (the same scene
 # the testkit shoots: a 400x300 gradient window, the pointer in the corner) byte for byte.
 # The client is casement's own test client, the artefact a jail has; the quire and layer-shell-host demo
 # windows are the consumer scripts' (layer-shell-host's scripts/dev/accept-*.sh, run with
@@ -12,11 +12,11 @@
 #
 # Owner: P0-accept (fills the P0-H1 stub).
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../casement" && pwd)
+root=$(cd "$(dirname "$0")/../../../compositor" && pwd)
 # shellcheck source=dev/lib/accept.sh
 source "$root/dev/lib/accept.sh"
 
-golden="$root/crates/casement-testkit/tests/golden/scenes/one-window-1.5x.png"
+golden="$root/compositor-testkit/tests/golden/scenes/one-window-1.5x.png"
 [ -f "$golden" ] || { echo "scale-crisp.sh: the golden $golden is missing" >&2; exit 2; }
 crisp="$root/dev/lib/crisp.py"
 APP=org.example.scene

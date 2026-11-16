@@ -15,7 +15,7 @@
 # Builds the tool (its own Cargo workspace, not layer-shell-host's); a no-op once it is up to date, and
 # a stale binary never lacks a command the scripts use.
 set -euo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 ENV_FILE="$ROOT/scripts/dev/.kwin-env"
 if [ ! -f "$ENV_FILE" ]; then
   echo "fake-input.sh: no $ENV_FILE; run scripts/dev/kwin-virtual.sh start first" >&2

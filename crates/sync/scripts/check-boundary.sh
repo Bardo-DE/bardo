@@ -62,7 +62,7 @@ done
 # ONE CLIENT: reqwest is named by no crate of this workspace. A program that sends over a direct
 # connection takes account-http-reqwest's `ReqwestHttp`, and the sync crates send through the
 # `Http` seam they are handed.
-named=$(grep -lE '^reqwest[ .=]' crates/*/Cargo.toml || true)
+named=$(grep -lE '^reqwest[ .=]' */Cargo.toml || true)
 if [ -n "$named" ]; then
   echo "LEAK: reqwest is named in this workspace: $named"
   fail=1
@@ -75,7 +75,7 @@ fi
 # it, if any); the allowlist is otherwise empty, and every crate is covered.
 ratchet() {
   local what="$1" pattern="$2" home="${3:-}" hits
-  hits=$(grep -rniE --include='*.rs' -e "$pattern" crates | grep -v "^${home:-/nonexistent}" || true)
+  hits=$(grep -rniE --include='*.rs' -e "$pattern" */ | grep -v "^${home:-/nonexistent}" || true)
   if [ -n "$hits" ]; then
     echo "$hits"
     echo "LEAK: $what is back; use ${4:-the crate that replaced it}"
@@ -87,7 +87,7 @@ ratchet() {
 ratchet "a hand-rolled percent encoder or decoder" 'fn percent_(en|de)code\b' "" "porter_ids::percent"
 ratchet "hand-rolled civil-date arithmetic" '(days_from_civil|civil_from_days|719_468)' "" "chrono"
 ratchet "a hand-written MD5 (its first round constant)" '0xd76aa478' "" "md-5"
-ratchet "a second Windows-to-IANA zone table" 'Pacific Standard Time", *"America/Los_Angeles' "crates/windows-zones/" "windows_zones::iana"
+ratchet "a second Windows-to-IANA zone table" 'Pacific Standard Time", *"America/Los_Angeles' "windows-zones/" "windows_zones::iana"
 ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? )?struct Scratch\b' "" "test_kit::Scratch"
 
 # ACCOUNTS ONLY THROUGH PORTER-CLIENT: accounts, grants, tokens and relays are accountd's. No crate
@@ -99,7 +99,7 @@ ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? 
 ACCOUNT_STACK="account-service account-service-core account-service-accounts account-service-grants account-secrets account-store account-sheets account-families account-family-oauth account-provider account-client-inproc account-identities account-settings"
 TOOLING="sync-rig sync-fake-graph sync-fakes"
 stack_leaks=""
-for manifest in crates/*/Cargo.toml; do
+for manifest in */Cargo.toml; do
   crate=$(basename "$(dirname "$manifest")")
   case " $TOOLING " in *" $crate "*) continue ;; esac
   reached=$(cargo tree -p "$crate" -e normal,build --prefix none 2>/dev/null | awk '{print $1}' | sort -u)
@@ -134,7 +134,7 @@ EDGES=(
   "sync-fake-graph: account-core account-fake account-fake-servers account-ids account-provider quickxorhash"
   "sync-rig: sync-bus sync-fake-graph account-dbus account-fake-servers account-rig"
   "sync-fakes: sync-bus account-dbus"
-  "syncd: ui-settings account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus account-fs account-http account-http-relay sync-bus drive-core drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
+  "sync-daemon: ui-settings account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus account-fs account-http account-http-relay sync-bus drive-core drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -151,7 +151,7 @@ for edge in "${EDGES[@]}"; do
 done
 
 # Every workspace member has a row above, so a new crate cannot slip in unchecked.
-for member in $(sed -n 's#^  "crates/\(.*\)",$#\1#p' Cargo.toml); do
+for member in $(sed -n 's#^    "crates/sync/\(.*\)",$#\1#p' ../../Cargo.toml); do
   printf '%s\n' "${EDGES[@]}" | grep -q "^$member:" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done
 
@@ -160,7 +160,7 @@ done
 # inside itself gives it a `Config` and nothing else. The binary (main.rs) and the test-only files
 # are outside the rule; `std::env::temp_dir` is a scratch name in tests, not a read of a variable.
 # The awk remembers the last `fn` it saw, which is the function the next line is in.
-env_reads=$(find crates/syncd/src -name '*.rs' \
+env_reads=$(find sync-daemon/src -name '*.rs' \
   ! -name main.rs ! -name tests.rs ! -name testing.rs ! -name testkit.rs ! -path '*/tests/*' -print0 \
   | xargs -0 awk '
     FNR == 1 { current = "" }
@@ -190,7 +190,7 @@ else
 fi
 # account-callers' test-only caller fixtures (feature `test-proc-root`, which turns on peephole's
 # `fake`) are never in syncd's normal dependency tree.
-if cargo tree -p sync-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
+if cargo tree -p sync-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|caller-identity-linux) ' | grep -Eq 'test-proc-root|fake'; then
   echo "LEAK: syncd's default build enables account-callers test-proc-root or peephole fake"
   fail=1
 else
@@ -200,15 +200,15 @@ fi
 # Test tooling is never a dependency (normal or build) of a program: nothing names sync-rig at
 # all, it is never published, and nothing in dist/ mentions it. The fakes (sync-fake-graph,
 # sync-fakes) are named only as dev dependencies, or by sync-rig, which is test tooling itself.
-for manifest in crates/*/Cargo.toml; do
-  [ "$manifest" = "crates/ferry-rig/Cargo.toml" ] && continue
+for manifest in */Cargo.toml; do
+  [ "$manifest" = "sync-rig/Cargo.toml" ] && continue
   if grep -q 'sync-rig' "$manifest"; then
     echo "LEAK: $manifest names sync-rig"
     fail=1
   fi
 done
 for fake in sync-fake-graph sync-fakes; do
-  named=$(awk -v fake="$fake" '/^\[/ { dev = ($0 ~ /dev-dependencies\]$/) } !dev && $1 == fake && FILENAME != "crates/ferry-rig/Cargo.toml" { print FILENAME }' crates/*/Cargo.toml)
+  named=$(awk -v fake="$fake" '/^\[/ { dev = ($0 ~ /dev-dependencies\]$/) } !dev && $1 == fake && FILENAME != "sync-rig/Cargo.toml" { print FILENAME }' */Cargo.toml)
   if [ -n "$named" ]; then
     echo "LEAK: $fake is a normal dependency of: $named"
     fail=1
@@ -216,7 +216,7 @@ for fake in sync-fake-graph sync-fakes; do
     echo "test-only: $fake is a dev dependency at most, outside sync-rig"
   fi
 done
-if ! grep -q '^publish.workspace = true' crates/ferry-rig/Cargo.toml || ! grep -q '^publish = false' Cargo.toml; then
+if ! grep -q '^publish.workspace = true' sync-rig/Cargo.toml || ! grep -q '^publish = false' ../../Cargo.toml; then
   echo "LEAK: sync-rig is publishable"
   fail=1
 fi
@@ -241,8 +241,8 @@ shipped=$(for package in $shipped_programs; do
 done | sort -u)
 grow_leaks=""
 for crate in $shipped; do
-  [ -f "crates/$crate/src/lib.rs" ] && [ ! -f "crates/$crate/src/daemon.rs" ] || continue
-  found=$(find "crates/$crate/src" -name '*.rs' ! -name 'tests.rs' ! -name '*_tests.rs' ! -name 'testing.rs' \
+  [ -f "$crate/src/lib.rs" ] && [ ! -f "$crate/src/daemon.rs" ] || continue
+  found=$(find "$crate/src" -name '*.rs' ! -name 'tests.rs' ! -name '*_tests.rs' ! -name 'testing.rs' \
     ! -name 'testkit.rs' ! -path '*/tests/*' ! -path '*/testkit/*' ! -path '*/testing/*' -print0 \
     | xargs -0 awk '
       FNR == 1 { exhaustive = 1 }

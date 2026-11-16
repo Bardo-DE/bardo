@@ -3,14 +3,14 @@
 #
 #   dev/accept/run.sh [extra nextest args, e.g. a test name filter]
 #
-# This is the same test the gate runs (`crates/docket-accept/tests/it/flows.rs`, part of
+# This is the same test the gate runs (`crates/actions/action-accept/tests/it/flows.rs`, part of
 # `cargo nextest run --workspace` under `~/rs-wt/gate-lane-jailed.sh`); this script only runs it
 # alone, for working on it. The build happens outside the jail, the test archive runs inside
 # ~/desktop/harness/jail.sh: no /dev/input, no /dev/dri, no network, a scratch HOME. The test
 # itself makes a private dbus-daemon, kills every process it starts by PID, and names nothing of
 # the real session.
 set -euo pipefail
-here=$(cd "$(dirname "$0")/../../../docket" && pwd)
+here=$(cd "$(dirname "$0")/../../../actions" && pwd)
 cd "$here"
 target=${CARGO_TARGET_DIR:-$(dirname "$here")/accept-target}
 export CARGO_TARGET_DIR=$target

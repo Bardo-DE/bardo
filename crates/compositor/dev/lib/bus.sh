@@ -19,7 +19,7 @@ _CASEMENT_BUS_SH=1
 source "$(dirname "${BASH_SOURCE[0]}")/jail.sh"
 
 # casement_root: the checkout.
-casement_root() { (cd "$(dirname "${BASH_SOURCE[0]}")/../../../casement" && pwd); }
+casement_root() { (cd "$(dirname "${BASH_SOURCE[0]}")/../../../compositor" && pwd); }
 
 # casement_tool NAME: the path of a bootstrapped tool; exit 3 (environment incomplete) says how
 # to build it.

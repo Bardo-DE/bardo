@@ -10,7 +10,7 @@
 # Exit: 0 pass; 1 a test failed or none ran; 2 could not run safely; 3 artefacts missing (the
 # fix is printed); 64 usage.
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../casement" && pwd)
+root=$(cd "$(dirname "$0")/../../../compositor" && pwd)
 # shellcheck source=dev/lib/jail.sh
 source "$root/dev/lib/jail.sh"
 require_jail

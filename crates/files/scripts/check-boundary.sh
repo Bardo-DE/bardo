@@ -38,9 +38,9 @@ for line in sys.stdin.read().split("\n"):
 PURE = {"files-core", "files-model"}
 # ui-helpers is allowed in the pure crates for its `mime` module (names and types as data); the rest of
 # the quire crates are I/O or UI.
-io = re.compile(r"^(tokio.*|async-.*|futures.*|notify.*|trash|rustix|nix|libc|xattr|zbus.*|docket.*|dioxus.*|ds-(?!helpers$).*|ds)$")
-bus = re.compile(r"^(zbus.*|docket.*|porter.*|ferry.*|peephole.*|prov)$")
-ui = re.compile(r"^(dioxus.*|blitz.*|ds|ds-(?!helpers$|peer$).*)$")
+io = re.compile(r"^(tokio.*|async-.*|futures.*|notify.*|trash|rustix|nix|libc|xattr|zbus.*|action-.*|agent-.*|companion-.*|permission-.*|dioxus.*|ui-(?!helpers$).*)$")
+bus = re.compile(r"^(zbus.*|action-.*|agent-.*|companion-.*|permission-.*|account-.*|inference-.*|sync-.*|drive-.*|replica-.*|caller-identity-.*|provenance)$")
+ui = re.compile(r"^(dioxus.*|blitz.*|ui-(?!helpers$|peer$).*)$")
 meta = json.loads(sys.argv[1])
 bad = []
 

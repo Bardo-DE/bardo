@@ -13,8 +13,8 @@ cache=${CACHE:-$HOME/rs-wt/v-host/cache}
 model=${MODEL_DIR:-$cache/model}
 export SHERPA_ONNX_LIB_DIR=$cache/install/lib
 export LD_LIBRARY_PATH=$SHERPA_ONNX_LIB_DIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-cargo build --release --manifest-path "$here/crates/speech-host-sherpa/Cargo.toml"
-target=${CARGO_TARGET_DIR:-$here/crates/speech-host-sherpa/target}
+cargo build --release --manifest-path "$here/../speech/speech-host-sherpa/Cargo.toml"
+target=${CARGO_TARGET_DIR:-$here/../speech/speech-host-sherpa/target}
 threads=4,6,8
 if [ "${1:-}" = --threads ]; then threads=$2; shift 2; fi
 if [ $# -eq 0 ]; then set -- "$model/test_wavs/en.wav" "$model/test_wavs/zh.wav"; fi

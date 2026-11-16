@@ -28,7 +28,7 @@
 #
 # A replay engine plays a cassette instead of running a program (acceptance runs, machines with
 # no GPU). It exists only when named here; the file is read from this path and from nowhere else.
-# The model is served under the table's name. See crates/inferd/tests/cassettes for the format.
+# The model is served under the table's name. See crates/inference/inference-daemon/tests/cassettes for the format.
 # [engines.scripted]
 # replay = "/path/to/cassette.jsonl"
 # record = "/path/to/sent.jsonl"  # WRITES EVERY PROMPT THIS ENGINE RECEIVES TO DISK, one JSON line

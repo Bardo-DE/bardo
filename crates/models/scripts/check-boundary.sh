@@ -19,6 +19,16 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
+# The crates this script checks live in four domain folders (models, speech, engines and the
+# computer-use crates that are pure); crate_dir NAME prints the folder of NAME (or NAME/sub) from here.
+crate_dir() {
+  local d
+  for d in . ../speech ../engines ../computer-use; do
+    [ -d "$d/${1%%/*}" ] && { echo "$d/$1"; return; }
+  done
+  echo "./$1"
+}
+
 # LAYERS: crate -> tier. Every workspace member and every excluded crate has exactly one row.
 LAYERS=(
   "computer-use-action: P"
@@ -136,12 +146,13 @@ rank() { case "$1" in P) echo 0 ;; C) echo 1 ;; A) echo 2 ;; *) echo 9 ;; esac; 
 # Prints "file:line: text" for each non-test source line of crate $2 under root $1 that matches
 # regex $3.
 scan_source() {
-  local root="$1" crate="$2" regex="$3" file
-  [ -d "$root/crates/$crate/src" ] || return 0
+  local root="$1" crate="$2" regex="$3" file dir
+  if [ "$root" = . ]; then dir=$(crate_dir "$crate"); else dir="$root/$crate"; fi
+  [ -d "$dir/src" ] || return 0
   while IFS= read -r file; do
     sed '/^[[:space:]]*#\[cfg(test)\]/q' "$file" | grep -nE "$regex" \
       | grep -vE '^[0-9]+:[[:space:]]*//' | sed "s#^#$file:#"
-  done < <(find "$root/crates/$crate/src" -name '*.rs' ! -name tests.rs ! -path '*/tests/*' | sort)
+  done < <(find "$dir/src" -name '*.rs' ! -name tests.rs ! -path '*/tests/*' | sort)
 }
 
 # Runs every source ban on crate $2 under root $1; prints "ban: hit" lines.
@@ -166,9 +177,9 @@ known_lane() { # crate ban -> lane, empty when not listed
 if [ "${1:-}" = "--self-test" ]; then
   tmp=$(mktemp -d)
   trap 'rm -rf "$tmp"' EXIT
-  mkdir -p "$tmp/crates/model-provider/src" "$tmp/crates/speech-host-client/src"
-  printf 'pub fn f() { let _ = std::fs::read("x"); }\n' >"$tmp/crates/model-provider/src/lib.rs"
-  printf 'pub fn f() { let _ = std::fs::read("x"); }\n' >"$tmp/crates/speech-host-client/src/lib.rs"
+  mkdir -p "$tmp/model-provider/src" "$tmp/speech-host-client/src"
+  printf 'pub fn f() { let _ = std::fs::read("x"); }\n' >"$tmp/model-provider/src/lib.rs"
+  printf 'pub fn f() { let _ = std::fs::read("x"); }\n' >"$tmp/speech-host-client/src/lib.rs"
   p_hits=$(source_violations "$tmp" model-provider)
   c_hits=$(source_violations "$tmp" speech-host-client)
   if ! grep -q '^fs: ' <<<"$p_hits"; then
@@ -187,8 +198,8 @@ fail=0
 long_files=0
 [ "${1:-}" = "--long-files" ] && long_files=1
 
-members=$(sed -n '/^members = \[/,/^\]/s#^  "crates/\(.*\)",$#\1#p' Cargo.toml)
-excluded=$(sed -n '/^exclude = \[/,/^\]/s#^  "crates/\(.*\)",$#\1#p' Cargo.toml)
+members=$(sed -n '/^members = \[/,/^\]/s#^    "crates/\(models\|speech\|engines\|computer-use\)/\(.*\)",$#\2#p' ../../Cargo.toml | grep -E '^(model-|speech-|engine-|computer-use-(action|parse|session|vendors)$)')
+excluded=$(sed -n "/^exclude = \\[/,/^\\]/s#^    'crates/\\(speech\\)/\\(.*\\)',\$#\\2#p" ../../Cargo.toml)
 
 # Every crate has a row in LAYERS, and every row names a crate, so a new crate cannot slip in
 # unchecked. The fuzz targets are nested, so they are named here by their path under `crates/`.
@@ -198,7 +209,7 @@ for crate in $members $excluded computer-use-parse/fuzz; do
 done
 for row in "${LAYERS[@]}"; do
   crate="${row%%:*}"
-  [ -f "crates/$crate/Cargo.toml" ] || { echo "ERROR: LAYERS names $crate, which has no crates/$crate/Cargo.toml"; fail=1; }
+  [ -f "$(crate_dir "$crate")/Cargo.toml" ] || { echo "ERROR: LAYERS names $crate, which has no Cargo.toml in its folder"; fail=1; }
 done
 
 # Crate dependency graph, from the manifests alone: a crate's DIRECT normal and build path
@@ -209,7 +220,7 @@ direct_path_deps() {
     cargo tree -p "$1" --depth 1 -e normal,build --prefix none --all-features 2>/dev/null \
       | grep '(/' | awk '{print $1}' | grep -vx "$1" | sort -u
   else
-    cargo metadata --manifest-path "crates/$1/Cargo.toml" --format-version 1 --no-deps 2>/dev/null \
+    cargo metadata --manifest-path "$(crate_dir "$1")/Cargo.toml" --format-version 1 --no-deps 2>/dev/null \
       | python3 -c 'import json,sys
 for d in json.load(sys.stdin)["packages"][0]["dependencies"]:
     if d.get("path") and d["kind"] in (None, "build"): print(d["name"])' | sort -u
@@ -260,7 +271,7 @@ done
 
 # Source files over 500 lines: reported on request, not a failure yet.
 if [ "$long_files" -eq 1 ]; then
-  find crates -name '*.rs' -path '*/src/*' -not -path '*/target/*' -print0 \
+  find . ../speech ../engines -name '*.rs' -path '*/src/*' -not -path '*/target/*' -print0 \
     | xargs -0 wc -l | awk '$1 > 500 && $2 != "total" {print "LONG: " $2 " has " $1 " lines"}'
 fi
 
@@ -289,7 +300,7 @@ done
 
 # The excluded crates are checked from their own manifests.
 for crate in $excluded computer-use-parse/fuzz; do
-  manifest="crates/$crate/Cargo.toml"
+  manifest="$(crate_dir "$crate")/Cargo.toml"
   leaked=0
   # The whole tree when it resolves. When it does not, say so and check what the manifest names
   # directly: the path dependencies are workspace members whose own trees the rows above check,

@@ -17,8 +17,8 @@ EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service inter
 RULES=(
   "inference-core: $EFFECTS"
   "inference-bridge: $EFFECTS"
-  "inference-router: $EFFECTS inferd"
-  "inference-turns: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings inferd"
+  "inference-router: $EFFECTS inference-daemon"
+  "inference-turns: zbus zvariant ureq oo7 keyring secret-service interprocess latchkey ui-settings inference-daemon"
   "inference-tailnet: $EFFECTS"
   "inference-client: $EFFECTS"
   "inference-probe: $EFFECTS"
@@ -51,7 +51,7 @@ done
 
 # ONE CLIENT: reqwest is named by account-http-reqwest (porter's crate) and by no crate of this
 # workspace; inferd takes `ReqwestHttp` from it.
-named=$(grep -lE '^reqwest[ .=]' crates/*/Cargo.toml || true)
+named=$(grep -lE '^reqwest[ .=]' */Cargo.toml || true)
 if [ -n "$named" ]; then
   echo "LEAK: reqwest is named in this workspace: $named"
   fail=1
@@ -64,7 +64,7 @@ fi
 # itself gives it a `Config` and nothing else. The binary (main.rs) and the test-only files are
 # outside the rule; `std::env::temp_dir` is a scratch name in tests, not a read of a variable.
 # The awk remembers the last `fn` it saw, which is the function the next line is in.
-env_reads=$(find crates/inferd/src -name '*.rs' \
+env_reads=$(find inference-daemon/src -name '*.rs' \
   ! -name main.rs ! -name tests.rs ! -name testing.rs ! -name testkit.rs ! -path '*/tests/*' -print0 \
   | xargs -0 awk '
     FNR == 1 { current = "" }
@@ -86,7 +86,7 @@ fi
 
 # The inference libraries (inference-router, inference-turns) read no environment variable at all: what a
 # daemon or an app knows is passed in. Their test helpers are outside the rule, as above.
-lib_env_reads=$(find crates/porter-router/src crates/porter-turns/src -name '*.rs' ! -name tests.rs ! -name testkit.rs ! -path '*/testkit/*' -print0 \
+lib_env_reads=$(find inference-router/src inference-turns/src -name '*.rs' ! -name tests.rs ! -name testkit.rs ! -path '*/testkit/*' -print0 \
   | xargs -0 grep -nE 'env::(var|var_os|vars|vars_os|args|args_os|current_dir|home_dir)\b' | grep -vE '^[^:]*:[0-9]+:[[:space:]]*//' || true)
 if [ -n "$lib_env_reads" ]; then
   echo "$lib_env_reads"
@@ -101,7 +101,7 @@ fi
 # it, if any); the allowlist is otherwise empty, and every crate is covered.
 ratchet() {
   local what="$1" pattern="$2" home="${3:-}" hits
-  hits=$(grep -rniE --include='*.rs' -e "$pattern" crates | grep -v "^${home:-/nonexistent}" || true)
+  hits=$(grep -rniE --include='*.rs' -e "$pattern" */ | grep -v "^${home:-/nonexistent}" || true)
   if [ -n "$hits" ]; then
     echo "$hits"
     echo "LEAK: $what is back; use ${4:-the crate that replaced it}"
@@ -121,7 +121,7 @@ ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? 
 # Dev dependencies are outside it. steward depends on porter by git rev; porter never depends on
 # steward.
 EDGES=(
-  "inferd: computer-use-action computer-use-parse computer-use-session computer-use-vendors ui-settings engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus account-fs account-http account-http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"
+  "inference-daemon: computer-use-action computer-use-parse computer-use-session computer-use-vendors ui-settings engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus account-fs account-http account-http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"
   "inference-client: model-http model-openai-compat model-provider model-wire inference-bridge account-callers account-capability account-core account-dbus account-fs account-ids inference-core account-match inference-tailnet account-tailscale inference-turns account-wire inference-dbus"
   "inference-probe: account-capability account-http account-ids account-provider"
   "inference-bridge: model-catalog model-openai-compat model-provider account-capability account-core account-ids inference-core account-match model-vision-prep"
@@ -147,7 +147,7 @@ for edge in "${EDGES[@]}"; do
 done
 
 # Every workspace member has a row above, so a new crate cannot slip in unchecked.
-for member in $(sed -n 's#^  "crates/\(.*\)",$#\1#p' Cargo.toml); do
+for member in $(sed -n 's#^    "crates/inference/\(.*\)",$#\1#p' ../../Cargo.toml); do
   printf '%s\n' "${EDGES[@]}" | grep -q "^$member:" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done
 
@@ -167,7 +167,7 @@ if cargo tree -p inference-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/nu
 else
   echo "test-only: inferd's default build does not include test-keys"
 fi
-if cargo tree -p inference-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|peephole) ' | grep -Eq 'test-proc-root|fake'; then
+if cargo tree -p inference-daemon -e normal --prefix none -f '{p} {f}' 2>/dev/null | grep -E '^(account-callers|caller-identity-linux) ' | grep -Eq 'test-proc-root|fake'; then
   echo "LEAK: inferd's default build enables account-callers test-proc-root or peephole fake"
   fail=1
 else
@@ -188,8 +188,8 @@ shipped=$(for package in $shipped_programs; do
 done | sort -u)
 grow_leaks=""
 for crate in $shipped; do
-  [ -f "crates/$crate/src/lib.rs" ] && [ ! -f "crates/$crate/src/daemon.rs" ] || continue
-  found=$(find "crates/$crate/src" -name '*.rs' ! -name 'tests.rs' ! -name '*_tests.rs' ! -name 'testing.rs' \
+  [ -f "$crate/src/lib.rs" ] && [ ! -f "$crate/src/daemon.rs" ] || continue
+  found=$(find "$crate/src" -name '*.rs' ! -name 'tests.rs' ! -name '*_tests.rs' ! -name 'testing.rs' \
     ! -name 'testkit.rs' ! -path '*/tests/*' ! -path '*/testkit/*' ! -path '*/testing/*' -print0 \
     | xargs -0 awk '
       FNR == 1 { exhaustive = 1 }

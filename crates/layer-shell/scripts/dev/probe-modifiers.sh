@@ -11,7 +11,7 @@
 # modifiers the document saw on its mouse events (`drag: mods enter|move ..`), and KWin's
 # keyboard focus. Nothing passes or fails: it is a probe, and FINDINGS records what it showed.
 set -uo pipefail
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../shell-host" && pwd)"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../layer-shell" && pwd)"
 DEV="$ROOT/scripts/dev"
 OUT="$DEV/out"
 mkdir -p "$OUT"

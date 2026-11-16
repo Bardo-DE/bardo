@@ -13,7 +13,7 @@
 set -euo pipefail
 [ $# -ge 3 ] || { echo "usage: step.sh RUN NAME CMD..." >&2; exit 64; }
 run=$1 name=$2; shift 2
-root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../casement" && pwd)
+root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../compositor" && pwd)
 dir="$root/dev/out/$run"
 mkdir -p "$dir"
 log="$dir/$name.log"

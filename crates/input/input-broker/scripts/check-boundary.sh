@@ -16,13 +16,13 @@ reaches() {
     echo "$tree" | grep -E "^($2) " || true
 }
 
-bad=$(reaches input-broker-wire 'zbus|tokio|async-std|smol|peephole[a-z-]*|rustix|libc|input-linux[a-z-]*|listenfd|nix')
+bad=$(reaches input-broker-wire 'zbus|tokio|async-std|smol|peephole[a-z-]*|caller-identity-[a-z]*|rustix|libc|input-linux[a-z-]*|listenfd|nix')
 [ -z "$bad" ] || { echo "check-boundary: input-broker-wire reaches: $bad"; exit 1; }
 
-bad=$(reaches input-broker-client 'zbus|tokio|async-std|smol|peephole[a-z-]*|input-linux[a-z-]*|listenfd|nix')
+bad=$(reaches input-broker-client 'zbus|tokio|async-std|smol|peephole[a-z-]*|caller-identity-[a-z]*|input-linux[a-z-]*|listenfd|nix')
 [ -z "$bad" ] || { echo "check-boundary: input-broker-client reaches: $bad"; exit 1; }
 
-bad=$(reaches turnstile 'zbus|tokio|async-std|smol|caller-identity-dbus')
-[ -z "$bad" ] || { echo "check-boundary: turnstile reaches: $bad"; exit 1; }
+bad=$(reaches input-broker-daemon 'zbus|tokio|async-std|smol|caller-identity-dbus')
+[ -z "$bad" ] || { echo "check-boundary: input-broker-daemon reaches: $bad"; exit 1; }
 
 echo "check-boundary: ok"

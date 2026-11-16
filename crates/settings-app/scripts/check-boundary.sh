@@ -56,7 +56,7 @@ done
 # refuses a use of the files, the services, porter, almanac, docket or the bus in a view
 # (ARCHITECTURE.md "The fence"). The EDGES row below is the exact list of what it may name.
 DIRECT=(
-  "settings-app-ui: settings-app-files settings-app-system sync-bus account-client account-core account-dbus inference-core account-provider memory-core action-core action-settings action-dbus action-provider docket-agents agent-registry account-ids account-capability account-match account-wire account-sheet inference-tailnet account-tailscale action-vocab action-manifest action-wire action-gate-wire permission-core companion-model zbus"
+  "settings-app-ui: settings-app-files settings-app-system sync-bus account-client account-core account-dbus inference-core account-provider memory-core action-core action-settings action-dbus action-provider agent-install agent-registry account-ids account-capability account-match account-wire account-sheet inference-tailnet account-tailscale action-vocab action-manifest action-wire action-gate-wire permission-core companion-model zbus"
 )
 for rule in "${DIRECT[@]}"; do
   crate="${rule%%:*}"
@@ -83,7 +83,7 @@ EDGES=(
   "settings-app-testkit:"
   "settings-app-callers: ui-settings"
   "settings-app-model: memory-core action-core action-manifest action-settings action-vocab ui-helpers ui-settings account-capability account-core account-ids inference-core account-sheet inference-tailnet account-tailscale"
-  "settings-app-files: agent-registry settings-app-model docket-agents action-settings ui-extensions ui-helpers ui-settings"
+  "settings-app-files: agent-registry settings-app-model agent-install action-settings ui-extensions ui-helpers ui-settings"
   "settings-app-client: settings-app-files settings-app-model settings-app-system ui-settings inference-core account-provider"
   "settings-app-intents: settings-app-callers settings-app-client settings-app-files settings-app-model action-core action-dbus action-manifest action-provider action-vocab action-wire ui-peer ui-settings account-core account-ids prov"
   "settings-app-system: memory-core anyview-core anyview-fs anyview-image anyview-platform desktop-protocols desktop-client settings-app-callers settings-app-files settings-app-model ui-peer ui-settings engine-install engine-manifest engine-probe engine-spec inference-client model-catalog account-callers account-client account-client-dbus account-core account-dbus inference-tailnet account-tailscale account-wire inference-dbus sync-bus"

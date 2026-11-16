@@ -47,7 +47,7 @@ case "${1:-}" in
   *) echo "usage: dev/accept/screenshot.sh [--real-input]" >&2; exit 2 ;;
 esac
 SHOTS="$SILL_SHOTS"
-FIXTURE="$SILL_REPO/crates/sill-services/tests/fixtures/shots/Screenshot_fixture.png"
+FIXTURE="$SILL_REPO/shell-services/tests/fixtures/shots/Screenshot_fixture.png"
 SIZE=1920x1080
 WIDTH=${SIZE%x*}
 HEIGHT=${SIZE#*x}

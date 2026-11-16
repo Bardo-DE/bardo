@@ -1,7 +1,7 @@
 # cua's settings schema in the design/22 format (section 9.2). Installed to
 # $XDG_DATA_DIRS/quire/settings/cua.settings.toml; `cuad --write-schema <dir>` writes it for a local
 # install. The values live in $XDG_CONFIG_HOME/cua/settings.toml, for example `[cua]` then
-# `enabled = true`; cuad reads them live (crates/cuad/src/settings). Every row is hands-off
+# `enabled = true`; cuad reads them live (crates/computer-use/computer-use-daemon/src/settings). Every row is hands-off
 # for an agent (no `agent = "settable"`): cua.* is never agent-settable, so the companion can never
 # switch computer use on for itself. The rows design/22 section 5 puts on the Intelligence page are
 # Computer use's four; the spending cap is Advanced. Not here, because nothing reads them yet:

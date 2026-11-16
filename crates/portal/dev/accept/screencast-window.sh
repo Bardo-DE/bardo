@@ -10,7 +10,7 @@
 # TRANSOM_TEST_WINDOW (the identifier of an open window) and TRANSOM_TEST_WINDOW_SIZE (its
 # logical size, WxH). A consumer: gst-launch-1.0 with pipewiresrc.
 set -euo pipefail
-root=$(cd "$(dirname "$0")/../../../transom" && pwd)
+root=$(cd "$(dirname "$0")/../../../portal" && pwd)
 # shellcheck source=dev/lib/jail.sh
 source "$root/dev/lib/jail.sh"
 require_jail

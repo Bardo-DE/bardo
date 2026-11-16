@@ -141,7 +141,7 @@ wait_demo() {
 # target directory so layer-shell-host's is left alone.
 build_switcher() {
   build || return 1
-  CARGO_TARGET_DIR="$HOST_TARGET" cargo build --manifest-path "$HOST_REPO/Cargo.toml" \
+  CARGO_TARGET_DIR="$HOST_TARGET" cargo build --manifest-path "$SILL_TREE/Cargo.toml" \
     -p layer-shell-host --features debug-inject --example demo_window >>"$OUT_DIR/build.log" 2>&1 || {
     echo "demo_window build failed (see $OUT_DIR/build.log)" >&2; return 1; }
 }

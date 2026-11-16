@@ -8,7 +8,7 @@
 # SAFETY. A confirmed action would really log out, restart, shut down or suspend the machine if it
 # reached logind. The daemon is started with `sill run --session-dry-run RECORD`: a debug build
 # then takes every session action through a dry run that only prints and records the chosen one,
-# never logind (crates/sill/src/run_args.rs, crates/sill-services/src/env/session_actions.rs).
+# never logind (crates/shell/shell-app/src/run_args.rs, crates/shell/shell-services/src/env/session_actions.rs).
 # Before a button is ever pressed, the script proves the dry run is in force from the daemon's own
 # log (the "dry run, recording to" line, and `power_menu.backend=dry-run` with no
 # `power_menu.backend=live`); without that proof the pressing steps are skipped (exit 2), never run.

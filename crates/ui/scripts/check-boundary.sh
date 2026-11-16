@@ -46,7 +46,7 @@ RULES=(
   "ui-motion: dioxus zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-lint: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-shell: zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ds: keymap-kde keymap-gnome zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
+  "ui-components: keymap-kde keymap-gnome zbus notify tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-settings: dioxus tokio blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-settings-page: zbus tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
   "ui-extensions: dioxus zbus tokio winit blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
@@ -96,19 +96,19 @@ EDGES=(
   "ui-lint: ui-core ui-style"
   "ui-intents: ui-core"
   "ui-behaviour: ui-core"
-  "ds: ui-core ui-intents ui-motion ui-style"
-  "ui-shell: ds ui-core ui-motion ui-style"
+  "ui-components: ui-core ui-intents ui-motion ui-style"
+  "ui-shell: ui-components ui-core ui-motion ui-style"
   "ui-settings: ui-core ui-helpers ui-peer ui-style ui-settings-derive"
-  "ui-settings-page: ds ui-settings"
+  "ui-settings-page: ui-components ui-settings"
   "ui-extensions: ui-core ui-helpers ui-settings ui-style"
   "ui-peer:"
   "ui-helpers: ui-peer"
   "ui-desktop: ui-peer"
-  "ui-blitz: blitz-embed ds ui-desktop ui-helpers ui-peer ui-emoji"
-  "ui-harness: blitz-embed ds ui-blitz ui-core"
-  "ds-gallery: ds ui-core ui-harness ui-lint ui-blitz ui-settings ui-shell"
+  "ui-blitz: blitz-embed ui-components ui-desktop ui-helpers ui-peer ui-emoji"
+  "ui-harness: blitz-embed ui-components ui-blitz ui-core"
+  "ui-gallery: ui-components ui-core ui-harness ui-lint ui-blitz ui-settings ui-shell"
   "ui-conformance:"
-  "icons: ds ui-style ui-settings"
+  "ui-icon-tool: ui-components ui-style ui-settings"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -127,7 +127,7 @@ done
 # ui-conformance is test-only: no normal or build edge at all (the EDGES row above), and its
 # dev-dependencies are the crates it tests through, never the lower crates directly.
 DEV_EDGES=(
-  "ui-conformance: ds ui-shell ui-lint ui-settings ui-blitz ui-harness"
+  "ui-conformance: ui-components ui-shell ui-lint ui-settings ui-blitz ui-harness"
 )
 for edge in "${DEV_EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -149,7 +149,7 @@ done
 # (components::app) are named by nothing but themselves and assembly. Doc links count. The layers
 # that became crates (ui-core, ui-style, ui-motion, ui-lint, ui-shell) are kept by EDGES above and
 # by cargo itself: a `pub(crate)` item cannot be named across a crate boundary.
-DS=crates/ds/src
+DS=ui-components/src
 LAYERS=(
   "host: focus edit file_drop keys machine spell window stack root components assembly"
   "focus edit file_drop keys machine spell window: stack root components assembly"
@@ -203,12 +203,12 @@ fi
 # `pub use` at either root introduces a name outside the allowed set below and fails here.
 # The three facades (`pub use ds_core as base;`, `ds_style as style`, `ds_motion as motion`) are the
 # only crate re-exports.
-ROOT_ALLOWED_DS="pub use crate assembly selectors kit KIT kits stylesheet component_sheets ds_core base ds_style style ds_motion motion as"
+ROOT_ALLOWED_DS="pub use crate assembly selectors kit KIT kits stylesheet component_sheets ui_core base ui_style style ui_motion motion as"
 ROOT_ALLOWED_DS_SHELL="pub use crate kit KIT kits stylesheet component_sheets"
-for root in "ds:$ROOT_ALLOWED_DS" "ui-shell:$ROOT_ALLOWED_DS_SHELL"; do
+for root in "ui-components:$ROOT_ALLOWED_DS" "ui-shell:$ROOT_ALLOWED_DS_SHELL"; do
   crate="${root%%:*}"
   read -r -a allowed <<<"${root#*:}"
-  lib="crates/$crate/src/lib.rs"
+  lib="$crate/src/lib.rs"
   # Every `pub use` statement, comments removed, reduced to its identifier tokens.
   tokens=$(sed 's://.*$::' "$lib" | tr '\n' ' ' | grep -o 'pub use[^;]*;' | grep -o '[A-Za-z_][A-Za-z_0-9]*\|\*' | sort -u)
   outside=$(comm -23 <(printf '%s\n' "$tokens") <(printf '%s\n' "${allowed[@]}" | sort -u))
@@ -233,7 +233,7 @@ fi
 # root manifest's revision or tag (it once lagged a toolchain bump, and later the chordkit rows lagged
 # a chordkit move, and a consumer noticed both).
 for crate in $(grep -E '^[A-Za-z0-9_-]+ *= *\{.*git = ' docs/workspace-deps.toml | cut -d= -f1 | tr -d ' '); do
-  root=$(grep -E "^$crate *=" Cargo.toml | grep -oE '(rev|tag) = "[^"]+"' | head -1)
+  root=$(grep -E "^$crate *=" ../../Cargo.toml | grep -oE '(rev|tag) = "[^"]+"' | head -1)
   doc=$(grep -E "^$crate *=" docs/workspace-deps.toml | grep -oE '(rev|tag) = "[^"]+"' | head -1)
   if [ -n "$root" ] && [ "$root" = "$doc" ]; then
     echo "pins hold: docs/workspace-deps.toml names $crate at the root manifest's $root"

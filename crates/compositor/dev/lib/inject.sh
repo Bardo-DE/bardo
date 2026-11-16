@@ -3,7 +3,7 @@
 # prints the `ok <line>` each one is answered with. With no arguments the lines come from stdin,
 # so layer-shell-host's `printf 'move 300 200\npress left\n' | fake-input.sh` becomes
 # `printf ... | inject`. Exit 1 when casement refused a line (nothing was injected then).
-# The grammar is documented in crates/casement-ipc/src/inject.rs.
+# The grammar is documented in crates/compositor/compositor-ipc/src/inject.rs.
 #
 # Owner: P0-T-dev. Sourceable. Reads the session from $DBUS_SESSION_BUS_ADDRESS, or the newest
 # run's env file.
