@@ -91,16 +91,18 @@ pub(crate) async fn task_for<S: Seams>(
         DefaultMode::Auto => choose_mode(supervisor.settings().default_mode, &caps)
             .ok_or(ControlRefusal::ModeUnsupported)?,
     };
-    let windows = supervisor.desktop().windows().await;
-    if let Err(error) = &windows {
-        eprintln!("cuad: the desktop did not list its windows: {error}");
-    }
+    // The listing failure is reported here, once; to the caller the windows are just unknown.
+    let windows = match supervisor.desktop().windows().await {
+        Ok(windows) => Some(windows),
+        Err(error) => {
+            tracing::warn!(%error, "the desktop did not list its windows");
+            None
+        }
+    };
     let allows = supervisor.apps();
     let (target, app) = match (&request.window, &request.app) {
         (Some(ident), _) => {
-            // The listing failure was reported above; to the caller the window is just unknown.
             let window = windows
-                .ok()
                 .ok_or(ControlRefusal::WindowUnknown)?
                 .into_iter()
                 .find(|w| &w.ident == ident)
@@ -109,7 +111,7 @@ pub(crate) async fn task_for<S: Seams>(
         }
         (None, Some(app)) => {
             // A desktop that cannot list its windows cannot say the app is not open.
-            let open = windows.as_deref().ok();
+            let open = windows.as_deref();
             if let Some(window) = open.and_then(|windows| window_of_app(windows, app)) {
                 (TaskTarget::Window(window.ident.clone()), app.clone())
             } else {
@@ -122,7 +124,7 @@ pub(crate) async fn task_for<S: Seams>(
             }
         }
         (None, None) => {
-            let windows = windows.ok().ok_or(ControlRefusal::BadTask)?;
+            let windows = windows.ok_or(ControlRefusal::BadTask)?;
             let focused = windows
                 .iter()
                 .find(|w| usable(w) && w.state.contains(&ToplevelState::Activated));

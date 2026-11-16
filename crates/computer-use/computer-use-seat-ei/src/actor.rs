@@ -90,9 +90,13 @@ impl Link {
         self.tx
             .send(make(tx))
             .await
-            .ok()
-            .ok_or(SeatError::NotConnected)?;
-        rx.await.ok().ok_or(SeatError::NotConnected)?
+            .map_err(|mpsc::error::SendError(_)| SeatError::NotConnected)?;
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "oneshot::error::RecvError carries nothing beyond the failure"
+        )]
+        let answer = rx.await.map_err(|_| SeatError::NotConnected);
+        answer?
     }
 }
 
@@ -119,7 +123,12 @@ pub(super) async fn spawn(
             }
         })
         .map_err(|e| SeatError::Protocol(e.to_string()))?;
-    let keymap = ready_rx.await.ok().ok_or(SeatError::NotConnected)??;
+    #[expect(
+        clippy::map_err_ignore,
+        reason = "oneshot::error::RecvError carries nothing beyond the failure"
+    )]
+    let ready = ready_rx.await.map_err(|_| SeatError::NotConnected);
+    let keymap = ready??;
     Ok((
         Link {
             lease: lease.id,

@@ -74,9 +74,12 @@ impl Shared {
     /// The pixels the compositor wrote.
     pub(crate) fn read(&self) -> Result<computer_use_capture::PixelBuf, CaptureError> {
         let stride = self.size.0 * BPP;
+        #[expect(
+            clippy::map_err_ignore,
+            reason = "TryFromIntError carries nothing beyond the failure: the frame is too big"
+        )]
         let len = usize::try_from(u64::from(stride) * u64::from(self.size.1))
-            .ok()
-            .ok_or(CaptureError::Format)?;
+            .map_err(|_| CaptureError::Format)?;
         let mut data = vec![0u8; len];
         let mut filled = 0;
         while filled < len {
