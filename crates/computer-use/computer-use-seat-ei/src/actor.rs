@@ -90,8 +90,9 @@ impl Link {
         self.tx
             .send(make(tx))
             .await
-            .map_err(|_| SeatError::NotConnected)?;
-        rx.await.map_err(|_| SeatError::NotConnected)?
+            .ok()
+            .ok_or(SeatError::NotConnected)?;
+        rx.await.ok().ok_or(SeatError::NotConnected)?
     }
 }
 
@@ -118,7 +119,7 @@ pub(super) async fn spawn(
             }
         })
         .map_err(|e| SeatError::Protocol(e.to_string()))?;
-    let keymap = ready_rx.await.map_err(|_| SeatError::NotConnected)??;
+    let keymap = ready_rx.await.ok().ok_or(SeatError::NotConnected)??;
     Ok((
         Link {
             lease: lease.id,

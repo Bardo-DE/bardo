@@ -259,8 +259,13 @@ impl Conn {
                 if !inside {
                     return Err(SeatError::OutsideLease);
                 }
-                let abs = self.interface::<ei::PointerAbsolute>(&self.hands.pointer)?;
-                abs.motion_absolute(x as f32, y as f32);
+                let abs = Self::interface::<ei::PointerAbsolute>(&self.hands.pointer)?;
+                #[expect(
+                    clippy::cast_precision_loss,
+                    reason = "pixel positions on a screen are far below 2^24, where f32 is exact"
+                )]
+                let (fx, fy) = (x as f32, y as f32);
+                abs.motion_absolute(fx, fy);
                 self.frame(&self.hands.pointer);
             }
             InputOp::Button { button, dir } => {
@@ -273,8 +278,7 @@ impl Conn {
                     Press::Down => ButtonState::Press,
                     Press::Up => ButtonState::Released,
                 };
-                self.interface::<ei::Button>(&self.hands.button)?
-                    .button(code, state);
+                Self::interface::<ei::Button>(&self.hands.button)?.button(code, state);
                 self.frame(&self.hands.button);
             }
             InputOp::Key { key, dir } => {
@@ -282,8 +286,7 @@ impl Conn {
                     Press::Down => KeyState::Press,
                     Press::Up => KeyState::Released,
                 };
-                self.interface::<ei::Keyboard>(&self.hands.keyboard)?
-                    .key(key.0, state);
+                Self::interface::<ei::Keyboard>(&self.hands.keyboard)?.key(key.0, state);
                 self.frame(&self.hands.keyboard);
             }
             InputOp::Scroll { dir, notches } => {
@@ -294,8 +297,7 @@ impl Conn {
                     ScrollDir::Left => (-n, 0),
                     ScrollDir::Right => (n, 0),
                 };
-                self.interface::<ei::Scroll>(&self.hands.scroll)?
-                    .scroll_discrete(x, y);
+                Self::interface::<ei::Scroll>(&self.hands.scroll)?.scroll_discrete(x, y);
                 self.frame(&self.hands.scroll);
             }
             // No Unicode text path over EI is offered (S10).
@@ -312,7 +314,7 @@ impl Conn {
         self.link.flush().map_err(protocol)
     }
 
-    fn interface<T: ei::Interface>(&self, device: &Device) -> Result<T, SeatError> {
+    fn interface<T: ei::Interface>(device: &Device) -> Result<T, SeatError> {
         device
             .interface::<T>()
             .ok_or_else(|| SeatError::Protocol(format!("device lost {}", T::NAME)))

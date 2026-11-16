@@ -52,9 +52,8 @@ impl EiSeat {
 }
 
 /// The link of `lease`, or `NotConnected`.
-fn of_lease(slot: &Option<Link>, lease: LeaseId) -> Result<&Link, SeatError> {
-    slot.as_ref()
-        .filter(|l| l.lease == lease)
+fn of_lease(slot: Option<&Link>, lease: LeaseId) -> Result<&Link, SeatError> {
+    slot.filter(|l| l.lease == lease)
         .ok_or(SeatError::NotConnected)
 }
 
@@ -90,7 +89,7 @@ impl AgentSeat for EiSeat {
 
     async fn perform(&self, lease: LeaseId, ops: &[InputOp]) -> Result<InputReceipt, SeatError> {
         let mut slot = self.link.lock().await;
-        let link = of_lease(&slot, lease)?;
+        let link = of_lease(slot.as_ref(), lease)?;
         let generation = link.generation();
         // Dropped before it ends (cancel, pause, the kill chord, a deadline): the thread stops
         // between ops and refuses what is still queued.
@@ -113,21 +112,21 @@ impl AgentSeat for EiSeat {
 
     async fn emulation(&self, lease: LeaseId, state: Emulation) -> Result<(), SeatError> {
         let slot = self.link.lock().await;
-        of_lease(&slot, lease)?
+        of_lease(slot.as_ref(), lease)?
             .ask(|reply| Cmd::Emulation(state, reply))
             .await
     }
 
     async fn rebind(&self, lease: LeaseId, frame: GlobalRect) -> Result<(), SeatError> {
         let slot = self.link.lock().await;
-        of_lease(&slot, lease)?
+        of_lease(slot.as_ref(), lease)?
             .ask(|reply| Cmd::Rebind(frame, reply))
             .await
     }
 
     async fn detach(&self, lease: LeaseId) -> Result<(), SeatError> {
         let mut slot = self.link.lock().await;
-        let result = of_lease(&slot, lease)?.ask(Cmd::Detach).await;
+        let result = of_lease(slot.as_ref(), lease)?.ask(Cmd::Detach).await;
         slot.take();
         result
     }

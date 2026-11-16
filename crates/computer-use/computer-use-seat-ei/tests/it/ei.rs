@@ -3,7 +3,7 @@
 use base_ids::Px;
 use computer_use_action::{Button, Coord, Notches, Point, ScrollDir, TypedText};
 use computer_use_desktop::{
-    EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Ms, SeatIsolation, ToplevelInfo,
+    EiOrigin, GlobalCoord, GlobalRect, LeaseGrant, LeaseId, Ms, SeatIsolation,
 };
 use computer_use_fake::{EisEvent, FakeEis, scene};
 use computer_use_seat_ei::EiSeat;
@@ -14,7 +14,7 @@ use computer_use_seat_input::{
 const LEASE: LeaseId = LeaseId(7);
 
 fn grant(ei: EiOrigin, seat: SeatIsolation, x: i32, y: i32) -> LeaseGrant {
-    let mut window: ToplevelInfo = scene::window();
+    let mut window = scene::window();
     window.geometry = GlobalRect {
         x: GlobalCoord(x),
         y: GlobalCoord(y),
