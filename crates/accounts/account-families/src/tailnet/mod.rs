@@ -52,6 +52,10 @@ impl Provider for TailnetProvider {
         &self.spec
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`discover` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn discover(
         &self,
         _account: &Account,
@@ -61,6 +65,10 @@ impl Provider for TailnetProvider {
         Ok(Vec::new())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`open` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn open(
         &self,
         _account: &AccountId,
@@ -83,6 +91,10 @@ impl Provider for TailnetProvider {
         )))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`revoke` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn revoke(
         &self,
         _account: &Account,
@@ -94,6 +106,10 @@ impl Provider for TailnetProvider {
 }
 
 impl ProviderSession for TailnetSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`access_token` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn access_token(&self, _audience: &Audience) -> Result<IssuedToken, ProviderError> {
         Err(ProviderError::Forbidden)
     }

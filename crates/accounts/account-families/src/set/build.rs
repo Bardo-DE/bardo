@@ -3,6 +3,7 @@
 //! otherwise.
 
 use super::{Built, FamilyIo};
+use crate::dispatch::DynProvider;
 use account_core::AuthKind;
 use account_family_generic::{DavLookup, FixedLookup, GenericProvider, Lookup, MailLookup};
 use account_family_nextcloud::NextcloudProvider;
@@ -29,20 +30,20 @@ pub(super) fn nextcloud(spec: ProviderSpec, io: &FamilyIo) -> Built {
 /// are found is the lookup its discovery names: an address (autoconfig, or a JMAP server the
 /// person types), a server's name (`.well-known`), or the file's own servers.
 pub(super) fn generic(spec: ProviderSpec, io: &FamilyIo) -> Built {
-    fn serving<L: Lookup>(spec: ProviderSpec, io: &FamilyIo) -> Built {
+    fn serving<L: Lookup>(spec: ProviderSpec, io: &FamilyIo) -> Box<dyn DynProvider> {
         let provider = GenericProvider::<L>::new(spec, io.http.clone(), io.dns.clone());
-        Ok(Box::new(provider.with_providers(io.providers.clone())))
+        Box::new(provider.with_providers(io.providers.clone()))
     }
     match (spec.auth.kind, &spec.discovery) {
         (
             AuthKind::Password | AuthKind::AppPassword,
             Discovery::Autoconfig | Discovery::JmapSession,
-        ) => serving::<MailLookup>(spec, io),
+        ) => Ok(serving::<MailLookup>(spec, io)),
         (AuthKind::Password | AuthKind::AppPassword, Discovery::WellKnown) => {
-            serving::<DavLookup>(spec, io)
+            Ok(serving::<DavLookup>(spec, io))
         }
         (AuthKind::Password | AuthKind::AppPassword, Discovery::Fixed) => {
-            serving::<FixedLookup>(spec, io)
+            Ok(serving::<FixedLookup>(spec, io))
         }
         _ => Err(Box::new(spec)),
     }
@@ -51,16 +52,20 @@ pub(super) fn generic(spec: ProviderSpec, io: &FamilyIo) -> Built {
 /// OAuth, when `spec` signs in by PKCE at an issuer it has rules for (Google, Microsoft) or one
 /// whose data says who answered ([`Standard`]).
 pub(super) fn oauth(spec: ProviderSpec, io: &FamilyIo) -> Built {
-    fn serving<R: BrowserIssuer>(rules: R, spec: ProviderSpec, io: &FamilyIo) -> Built {
+    fn serving<R: BrowserIssuer>(
+        rules: R,
+        spec: ProviderSpec,
+        io: &FamilyIo,
+    ) -> Box<dyn DynProvider> {
         let clock = std::sync::Arc::clone(&io.clock);
         let env = OAuthEnv::<ReqwestHttp>::with_client_files(io.clients.clone(), clock);
-        Ok(Box::new(OAuthProvider::with_env(rules, spec, env)))
+        Box::new(OAuthProvider::with_env(rules, spec, env))
     }
     match (spec.auth.kind, spec.auth.issuer) {
-        (AuthKind::OAuthPkce, Some(Issuer::Google)) => serving(Google, spec, io),
-        (AuthKind::OAuthPkce, Some(Issuer::Microsoft)) => serving(Microsoft, spec, io),
+        (AuthKind::OAuthPkce, Some(Issuer::Google)) => Ok(serving(Google, spec, io)),
+        (AuthKind::OAuthPkce, Some(Issuer::Microsoft)) => Ok(serving(Microsoft, spec, io)),
         (AuthKind::OAuthPkce, Some(issuer)) if Standard::serves(issuer) => {
-            serving(Standard::of(issuer), spec, io)
+            Ok(serving(Standard::of(issuer), spec, io))
         }
         _ => Err(Box::new(spec)),
     }

@@ -1,5 +1,6 @@
-//! The requests as `http::Request<String>` (feature `http`), and as `http::Request<Vec<u8>>` in
-//! [`bytes`]: the bodies of the crate root with their method, `Depth` and `Content-Type`. The URI
+//! The requests as `http::Request<String>` (feature `http`), and as `http::Request<Vec<u8>>`.
+//!
+//! The latter are in [`bytes`]: the bodies of the crate root with their method, `Depth` and `Content-Type`. The URI
 //! is the caller's, already resolved.
 
 use crate::{Depth, Multiget, SyncLevel};

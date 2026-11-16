@@ -1,6 +1,9 @@
 //! What the family tests share: an HTTP client that sends only to the fakes, and a person who
 //! answers sheets.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test file uses a part of the shared helpers, so some are unused in each"
+)]
 
 #[cfg(feature = "generic")]
 pub mod mail;
@@ -50,7 +53,8 @@ impl Fakes {
 impl Http for Fakes {
     async fn send(&self, mut request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         let url = base_url::WebUrl::parse(&request.uri().to_string())
-            .map_err(|_| HttpError::Malformed)?;
+            .ok()
+            .ok_or(HttpError::Malformed)?;
         let origin = url.origin();
         self.sent
             .lock()
@@ -65,7 +69,8 @@ impl Http for Fakes {
                 .ok_or(HttpError::Unreachable)?;
             *request.uri_mut() = format!("http://127.0.0.1:{}{}", place.port, url.path())
                 .parse()
-                .map_err(|_| HttpError::Malformed)?;
+                .ok()
+                .ok_or(HttpError::Malformed)?;
         }
         self.inner.send(request).await
     }
@@ -245,6 +250,10 @@ pub async fn open_page(url: &str) {
 }
 
 impl SheetLink for TestLink {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`update` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
         self.react(&view);
         Ok(())
@@ -262,6 +271,10 @@ impl Sheets for TestSheets {
         self.consent.consent(ask, window).await
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`conversation` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn conversation(&self, open: SheetOpen) -> Result<TestLink, SheetFault> {
         let person = self
             .people

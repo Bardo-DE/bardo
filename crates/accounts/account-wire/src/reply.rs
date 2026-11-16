@@ -6,9 +6,10 @@ use serde::{Deserialize, Serialize};
 
 /// One reply from accountd, matching its [`crate::AccountsRequest`].
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-// `Chosen` grew past clippy's threshold with `Restriction::signed_in`; boxing it would change a variant
-// every consumer matches, for a reply that is built once per request.
-#[allow(clippy::large_enum_variant)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "`Chosen` grew past clippy's threshold with `Restriction::signed_in`; boxing it would change a variant every consumer matches, for a reply that is built once per request"
+)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum AccountsReply {
     /// For `Choose`: the account picked, with its new grant.

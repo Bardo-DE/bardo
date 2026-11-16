@@ -19,6 +19,11 @@ pub struct Envelope<T> {
 }
 
 /// One frame for `body`, at this build's vocabulary version.
+///
+/// # Errors
+///
+/// Fails with [`FrameError::Malformed`] when `body` cannot be written as JSON, and with
+/// [`FrameError::TooLong`] when the frame would exceed the protocol's limit.
 pub fn encode_frame<T: Serialize>(body: &T) -> Result<Vec<u8>, FrameError> {
     let envelope = Envelope {
         vocab: VocabVersion::CURRENT,
@@ -34,6 +39,11 @@ pub fn encode_frame<T: Serialize>(body: &T) -> Result<Vec<u8>, FrameError> {
 
 /// The first frame in `buffer` and how many bytes of the buffer it used, or `None` while the
 /// buffer holds only part of one.
+///
+/// # Errors
+///
+/// Fails with [`FrameError::TooLong`] when the frame's declared length exceeds the protocol's
+/// limit, and with [`FrameError::Malformed`] when its body is not an envelope of `T`.
 pub fn decode_frame<T: DeserializeOwned>(
     buffer: &[u8],
 ) -> Result<Option<(Envelope<T>, usize)>, FrameError> {

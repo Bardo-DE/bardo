@@ -5,7 +5,9 @@ use crate::grants::Grants;
 use crate::link::{AccountsLink, GrantsLink};
 use std::sync::Arc;
 
-/// The app's handle. `T` is the transport: the bus (`account-client-dbus`) or the service hosted in
+/// The app's handle on the account service.
+///
+/// `T` is the transport: the bus (`account-client-dbus`) or the service hosted in
 /// process (`account-client-inproc`). A domain accessor exists only over a transport that carries
 /// the domain, so a call a transport cannot serve does not compile.
 #[derive(Debug)]

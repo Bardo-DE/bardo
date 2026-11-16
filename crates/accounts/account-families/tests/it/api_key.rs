@@ -381,6 +381,10 @@ async fn a_key_account_holds_a_claim_for_each_agent_program_its_file_names() {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one long scenario read top to bottom; splitting it would hide the order of its steps"
+)]
 async fn a_server_of_the_persons_own_is_asked_for_its_address_and_an_optional_key() {
     use account_core::{Family, Tls};
     use account_sheet::{FieldProblem, ProblemKind, form_problem_among};

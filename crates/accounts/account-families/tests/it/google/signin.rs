@@ -80,6 +80,10 @@ fn get<'a>(query: &'a [(String, String)], name: &str) -> Option<&'a str> {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one long scenario read top to bottom; splitting it would hide the order of its steps"
+)]
 async fn a_loopback_sign_in_reviews_what_google_allows_then_hands_over_the_credential() {
     let rig = Rig::new(PLAIN).await;
     let (mut signin, step) = to_review(&rig).await;
@@ -327,7 +331,7 @@ async fn an_api_not_switched_on_and_a_refused_service_are_told_apart() {
     let (claims, endpoints) = review(step);
     let reason = |kind| match offer_of(&claims, kind) {
         Offer::Absent { reason, .. } => *reason,
-        other => panic!("{kind:?}: {other:?}"),
+        other @ Offer::Present(_) => panic!("{kind:?}: {other:?}"),
     };
     // The owner can fix the first (enable the API); a personal account has no administrator.
     assert_eq!(reason(K::Calendar), AbsentReason::UnverifiedBuild);

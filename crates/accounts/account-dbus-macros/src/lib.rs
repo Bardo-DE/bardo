@@ -81,8 +81,8 @@ struct Member {
 fn expand(args: &TokenStream2, mut item: ItemTrait) -> syn::Result<TokenStream2> {
     let interface = interface_name(args)?;
     let proxy = item.ident.clone();
-    let server = format_ident!("{proxy}Server");
-    let served = format_ident!("{proxy}Served");
+    let server_trait = format_ident!("{proxy}Server");
+    let served_struct = format_ident!("{proxy}Served");
     let vis = item.vis.clone();
 
     let mut members = Vec::new();
@@ -99,15 +99,15 @@ fn expand(args: &TokenStream2, mut item: ItemTrait) -> syn::Result<TokenStream2>
     }
 
     let server_methods = members.iter().filter_map(Member::server_method);
-    let served_members = members.iter().map(|m| m.served_member(&server, &vis));
+    let served_members = members.iter().map(|m| m.served_member(&server_trait, &vis));
     let unserved_methods = members.iter().filter_map(Member::unserved_method);
-    let server_doc = format!(
+    let trait_doc = format!(
         "The daemon's side of `{interface}`: what the object that answers implements, and \
-         registers as [`{served}`]. Each method is given the [`Call`](::account_dbus::Call) of the message \
+         registers as [`{served_struct}`]. Each method is given the [`Call`](::account_dbus::Call) of the message \
          first."
     );
-    let served_doc = format!(
-        "The zbus object that serves `{interface}` from an `S` that implements [`{server}`]. \
+    let struct_doc = format!(
+        "The zbus object that serves `{interface}` from an `S` that implements [`{server_trait}`]. \
          Register it with `ObjectServer::at`; its signals are emitted through it."
     );
 
@@ -115,23 +115,23 @@ fn expand(args: &TokenStream2, mut item: ItemTrait) -> syn::Result<TokenStream2>
         #[::zbus::proxy(#args)]
         #item
 
-        #[doc = #server_doc]
-        #vis trait #server: ::core::marker::Send + ::core::marker::Sync + 'static {
+        #[doc = #trait_doc]
+        #vis trait #server_trait: ::core::marker::Send + ::core::marker::Sync + 'static {
             /// What a method answers instead of its value.
             type Error: ::zbus::DBusError + ::core::marker::Send;
             #(#server_methods)*
         }
 
-        #[doc = #served_doc]
+        #[doc = #struct_doc]
         #[derive(Debug)]
-        #vis struct #served<S>(pub S);
+        #vis struct #served_struct<S>(pub S);
 
         #[::zbus::interface(name = #interface)]
-        impl<S: #server> #served<S> {
+        impl<S: #server_trait> #served_struct<S> {
             #(#served_members)*
         }
 
-        impl #served<::account_dbus::Unserved> {
+        impl #served_struct<::account_dbus::Unserved> {
             /// Writes this interface's introspection into `xml`, as an `<interface>` element one
             /// level in: a document collects its interfaces' own.
             #vis fn introspect(xml: &mut ::std::string::String) {
@@ -143,7 +143,7 @@ fn expand(args: &TokenStream2, mut item: ItemTrait) -> syn::Result<TokenStream2>
             }
         }
 
-        impl #server for ::account_dbus::Unserved {
+        impl #server_trait for ::account_dbus::Unserved {
             type Error = ::zbus::fdo::Error;
             #(#unserved_methods)*
         }

@@ -65,6 +65,11 @@ impl<T: AccountsLink> Accounts<T> {
     /// Opens the add-account sheet; the account added. An account the person signs in to that was
     /// already here is [`AccountsError::AlreadyAdded`] with its id: nothing was added, and the app
     /// may ask for a grant of it.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`AccountsError`] when the person cancels the sheet, the sign-in fails or
+    /// the service cannot be reached.
     pub async fn add(
         &self,
         hint: ProviderHint,
@@ -75,6 +80,11 @@ impl<T: AccountsLink> Accounts<T> {
 
     /// Opens the sheet that signs a granted account in again (its refresh token was revoked, a
     /// password changed). An account the app holds no grant for is not one it can see.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`AccountsError`] when the person cancels the sheet, the sign-in fails or
+    /// the app holds no grant for `account`.
     pub async fn reauthenticate(
         &self,
         account: &AccountId,
@@ -90,6 +100,11 @@ impl<T: ServerEdits> Accounts<T> {
     /// it, the login name or the password changed. Nothing is stored: the app keeps the
     /// servers, the name and the new password the [`EditedServers`] carries (`into_parts`). Ask
     /// [`account_sheet::servers_editable`] first to decide whether to offer the edit at all.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`EditError`] when the person cancels the form, the servers cannot be
+    /// reached or refuse the login, or the service cannot be reached.
     pub async fn edit_servers(
         &self,
         edit: EditServers,
@@ -102,17 +117,30 @@ impl<T: ServerEdits> Accounts<T> {
 impl<T: AccountWatch> Accounts<T> {
     /// The accounts that need signing in again now, with their labels. Asking is also how
     /// accountd learns this connection, which it then sends every account's `State` changes.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`LinkError`] when the service cannot be reached or does not answer.
     pub async fn needing_reauth(&self) -> Result<Vec<NeedsReauth>, LinkError> {
         self.link.needing_reauth().await
     }
 
     /// One account as accountd shows it to the shell.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`LinkError`] when the service cannot be reached, or does not know `account`.
     pub async fn view(&self, account: &AccountRef) -> Result<AccountView, LinkError> {
         self.link.view(account).await
     }
 
     /// Opens the sheet that signs `account` in again, for the shell, which knows an account by
     /// its object only.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`AccountsError`] when the person cancels the sheet, the sign-in fails or
+    /// the service does not know `account`.
     pub async fn reauthenticate_shown(
         &self,
         account: &AccountRef,
@@ -124,12 +152,18 @@ impl<T: AccountWatch> Accounts<T> {
     /// The accounts added and removed, and every change of an account's state (an account that
     /// needs signing in again is one such change, and so is its recovery), from now on. Subscribe
     /// before reading [`Accounts::needing_reauth`], so no change falls between the two.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`LinkError`] when the service cannot be reached or does not answer.
     pub async fn watch(&self) -> Result<Changes<AccountChange>, LinkError> {
         self.link.watch().await
     }
 }
 
-/// The object accountd serves an account at, as a signal names it. A lossy spelling of the id
+/// The object accountd serves an account at, as a signal names it.
+///
+/// A lossy spelling of the id
 /// (a legal object-path segment): good as a directory name and for asking [`Accounts::view`], not
 /// to be turned back into an [`AccountId`].
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

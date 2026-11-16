@@ -18,7 +18,6 @@ use account_core::{
 use account_match::Need;
 use account_sheet::{EditServers, EditedServers};
 use account_wire::ParentWindow;
-use std::future::Future;
 
 /// The accounts domain: signing an account in through the sheet.
 pub trait AccountsLink: Send + Sync + 'static {

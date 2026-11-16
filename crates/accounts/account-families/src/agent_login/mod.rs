@@ -61,6 +61,10 @@ impl Provider for AgentLoginProvider {
         &self.spec
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`discover` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn discover(
         &self,
         _account: &Account,
@@ -69,6 +73,10 @@ impl Provider for AgentLoginProvider {
         Ok(claims(&self.spec))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`open` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn open(
         &self,
         _account: &AccountId,
@@ -87,6 +95,10 @@ impl Provider for AgentLoginProvider {
         Ok(Conversation::new(AgentLoginFlow::new(self.spec.clone())))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`revoke` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn revoke(
         &self,
         _account: &Account,
@@ -97,6 +109,10 @@ impl Provider for AgentLoginProvider {
 }
 
 impl ProviderSession for AgentLoginSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`access_token` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn access_token(&self, _audience: &Audience) -> Result<IssuedToken, ProviderError> {
         // The agent's login is the agent's: there is nothing here to make a token from.
         Err(ProviderError::Forbidden)

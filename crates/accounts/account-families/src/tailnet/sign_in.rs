@@ -163,9 +163,9 @@ impl Flow for TailnetFlow {
         }
     }
 
-    async fn resume(&mut self, waiting: Waiting, input: SignInInput) -> Move<Waiting> {
+    async fn resume(&mut self, mid: Waiting, input: SignInInput) -> Move<Waiting> {
         match input {
-            SignInInput::Poll => self.poll(waiting.waited).await,
+            SignInInput::Poll => self.poll(mid.waited).await,
             _ => Move::Fail(SignInFault::Unreadable),
         }
     }

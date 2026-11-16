@@ -52,7 +52,7 @@ fn port_of(base: &str) -> u16 {
 struct Mail {
     autoconfig: Running<AutoconfigHandle>,
     provider: GenericProvider,
-    _servers: MailWorld,
+    servers: MailWorld,
 }
 
 /// The password the fake mail servers have planted.
@@ -83,7 +83,7 @@ async fn mail_as(user: &str, dns: FakeDns) -> Mail {
             dns,
         )
         .with_connect(servers.wire()),
-        _servers: servers,
+        servers,
     }
 }
 
@@ -211,6 +211,7 @@ async fn srv_records_find_the_servers_when_no_document_is_published() {
 
 #[tokio::test]
 async fn a_domain_that_publishes_nothing_gets_a_question_for_the_server() {
+    use FieldKind::*;
     let dns = FakeDns::new().with_mx(
         "fake.test",
         vec![MxRecord {
@@ -233,7 +234,6 @@ async fn a_domain_that_publishes_nothing_gets_a_question_for_the_server() {
             _ => None,
         })
         .collect();
-    use FieldKind::*;
     assert_eq!(
         questions,
         vec![
@@ -442,6 +442,10 @@ struct FakeJmap {
 }
 
 impl account_http::Http for FakeJmap {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`send` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn send(
         &self,
         request: account_http::http::Request<Vec<u8>>,
@@ -710,7 +714,7 @@ async fn signing_in_again_to_a_mail_account_asks_the_form_and_finishes_without_a
 }
 
 struct Dav {
-    dav: Running<DavHandle>,
+    server: Running<DavHandle>,
     wellknown: Running<AutoconfigHandle>,
     provider: GenericProvider<DavLookup>,
 }
@@ -745,7 +749,7 @@ async fn dav_with(address_book: bool) -> Dav {
         FakeDns::new(),
     );
     Dav {
-        dav,
+        server: dav,
         wellknown,
         provider,
     }
@@ -820,7 +824,7 @@ async fn a_dav_account_is_found_from_the_servers_name_by_well_known() {
         ]
     );
     // The password went to the DAV server only, and with the PROPFIND that checked it.
-    let hits = world.dav.hits();
+    let hits = world.server.hits();
     assert!(hits.iter().all(|h| h.authorization.is_some()), "{hits:?}");
     assert_eq!(
         world
@@ -837,7 +841,7 @@ async fn a_dav_account_is_found_from_the_servers_name_by_well_known() {
 #[tokio::test]
 async fn an_address_with_a_path_is_the_root_of_both_services() {
     let world = dav().await;
-    let root = format!("{}/dav/calendar/", world.dav.base_url());
+    let root = format!("{}/dav/calendar/", world.server.base_url());
     let mut signin = world.provider.sign_in(add()).expect("sign-in");
     let steps = drive(&mut signin, dav_person(&root, "bob", "hunter2")).await;
     let signed = done(&steps);
@@ -1431,8 +1435,8 @@ fn srv_at(imap: &str, smtp: &str) -> FakeDns {
 async fn counted(dns: FakeDns) -> (Mail, GenericProvider, Counted) {
     let mail = mail_with(dns).await;
     let counted = Counted {
-        wire: mail._servers.wire(),
-        dials: Default::default(),
+        wire: mail.servers.wire(),
+        dials: std::sync::Arc::default(),
     };
     let provider = mail.provider.clone().with_connect(counted.clone());
     (mail, provider, counted)
@@ -1531,6 +1535,7 @@ async fn srv_servers_within_the_domain_still_have_the_password_tried_before_the_
 
 #[tokio::test]
 async fn signing_in_again_uses_srv_servers_outside_the_domain_only_when_the_account_has_them() {
+    use account_provider::SignIn as _;
     let (_mail, provider, counted) =
         counted(srv_at("imap.elsewhere.test", "smtp.elsewhere.test")).await;
     let again = |endpoints| {
@@ -1543,7 +1548,6 @@ async fn signing_in_again_uses_srv_servers_outside_the_domain_only_when_the_acco
 
     // Servers the account never had: the person is asked for the server, nothing is dialled
     // before the answer.
-    use account_provider::SignIn as _;
     let mut signin = provider.sign_in(again(Vec::new())).expect("sign-in");
     let first = signin.next(SignInInput::Start).await;
     assert!(matches!(first, SignInStep::AskFields(_)), "{first:?}");

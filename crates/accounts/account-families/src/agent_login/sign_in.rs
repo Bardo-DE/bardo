@@ -23,6 +23,10 @@ impl AgentLoginFlow {
 impl Flow for AgentLoginFlow {
     type Mid = ();
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`start` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn start(&mut self) -> Move<()> {
         Move::Review(Signed::new(
             AccountLabel(self.spec.label.clone()),
@@ -34,6 +38,10 @@ impl Flow for AgentLoginFlow {
     }
 
     /// The flow never waits for an answer, so one is not the person's.
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`resume` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn resume(&mut self, (): (), _input: SignInInput) -> Move<()> {
         Move::Fail(SignInFault::Unreadable)
     }

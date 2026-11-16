@@ -55,7 +55,8 @@ fn target_of(spec: &ProviderSpec) -> Result<(EndpointUrl, Family), ProviderError
         base.trim_end_matches('/'),
         check_path(&spec.id)
     ))
-    .map_err(|_| ProviderError::Unreadable)?;
+    .ok()
+    .ok_or(ProviderError::Unreadable)?;
     Ok((url, family))
 }
 
@@ -112,7 +113,8 @@ pub(crate) async fn check<H: Http>(
 /// The models list of the server of the person's own at `server`: `<server address>/models`.
 pub(crate) fn models_url(server: &EndpointUrl) -> Result<EndpointUrl, ProviderError> {
     EndpointUrl::parse(&format!("{}/models", server.as_str().trim_end_matches('/')))
-        .map_err(|_| ProviderError::Unreadable)
+        .ok()
+        .ok_or(ProviderError::Unreadable)
 }
 
 /// [`check`] of the server of the person's own at `server`, which speaks the `OpenAI` chat
@@ -133,17 +135,20 @@ async fn check_at<H: Http>(
     key: &SecretText,
 ) -> Result<(), ProviderError> {
     let request = request_to(Method::GET, url)
-        .map_err(|_| ProviderError::Unreachable)?
+        .ok()
+        .ok_or(ProviderError::Unreachable)?
         .header(ACCEPT, "application/json");
     // A key that cannot be a header's value is never sent; the request fails as an unreachable
     // server would, as it did when the client refused it.
     let request = present_key(request, family, key)
         .body(Vec::new())
-        .map_err(|_| ProviderError::Unreachable)?;
+        .ok()
+        .ok_or(ProviderError::Unreachable)?;
     let response = http
         .send(request)
         .await
-        .map_err(|_| ProviderError::Unreachable)?;
+        .ok()
+        .ok_or(ProviderError::Unreachable)?;
     match response.status().as_u16() {
         200..=299 => {
             if is_listing(response.body()) {
@@ -249,6 +254,10 @@ impl KeySession {
 }
 
 impl ProviderSession for KeySession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`access_token` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn access_token(&self, _audience: &Audience) -> Result<IssuedToken, ProviderError> {
         Err(ProviderError::Forbidden)
     }

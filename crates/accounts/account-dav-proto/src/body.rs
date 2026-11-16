@@ -3,6 +3,7 @@
 //! hrefs) are escaped on the way in.
 
 use crate::names::{CALDAV, CARDDAV, DAV, split};
+use std::fmt::Write as _;
 
 const HEAD: &str = r#"<?xml version="1.0" encoding="utf-8"?>"#;
 
@@ -80,10 +81,10 @@ pub fn multiget(kind: Multiget, hrefs: &[&str]) -> String {
         Multiget::Addressbook => ("addressbook-multiget", CARDDAV, "address-data"),
         Multiget::Calendar => ("calendar-multiget", CALDAV, "calendar-data"),
     };
-    let hrefs: String = hrefs
-        .iter()
-        .map(|h| format!("<d:href>{}</d:href>", escape(h)))
-        .collect();
+    let hrefs = hrefs.iter().fold(String::new(), |mut out, h| {
+        let _ = write!(out, "<d:href>{}</d:href>", escape(h));
+        out
+    });
     format!(
         r#"{HEAD}<c:{element} xmlns:d="{DAV}" xmlns:c="{ns}"><d:prop><d:getetag/><c:{data}/></d:prop>{hrefs}</c:{element}>"#
     )

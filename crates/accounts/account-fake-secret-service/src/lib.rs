@@ -236,6 +236,10 @@ impl Service {
         Ok((path(&collection_path(&name)), path(NONE)))
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the `#[interface]` method must take the bus argument by value, as zbus decodes it"
+    )]
     fn search_items(
         &self,
         attributes: HashMap<String, String>,
@@ -248,17 +252,31 @@ impl Service {
         (found, Vec::new())
     }
 
+    #[expect(
+        clippy::unused_self,
+        clippy::needless_pass_by_value,
+        reason = "the `#[interface]` method must take the bus argument by value, as zbus decodes it, and this fake never holds a lock state"
+    )]
     fn unlock(&self, objects: Vec<ObjectPath<'_>>) -> (Vec<OwnedObjectPath>, OwnedObjectPath) {
         let all = objects.iter().map(|o| path(o.as_str())).collect();
         (all, path(NONE))
     }
 
+    #[expect(
+        clippy::unused_self,
+        clippy::needless_pass_by_value,
+        reason = "the `#[interface]` method must take the bus argument by value, as zbus decodes it, and this fake never holds a lock state"
+    )]
     fn lock(&self, objects: Vec<ObjectPath<'_>>) -> (Vec<OwnedObjectPath>, OwnedObjectPath) {
         // Nothing here ever locks: nothing was locked.
         let _ = objects;
         (Vec::new(), path(NONE))
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the `#[interface]` method must take the bus argument by value, as zbus decodes it"
+    )]
     fn get_secrets(
         &self,
         items: Vec<ObjectPath<'_>>,
@@ -288,6 +306,10 @@ impl Service {
         alias_target(&self.shared, name).map_or_else(|| path(NONE), |c| path(&collection_path(&c)))
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the `#[interface]` method must take the bus argument by value, as zbus decodes it"
+    )]
     fn set_alias(&self, name: &str, collection: ObjectPath<'_>) {
         let prefix = format!("{ROOT}/collection/");
         let Some(target) = collection.as_str().strip_prefix(&prefix) else {
@@ -380,6 +402,10 @@ impl Collection {
         Ok(path(NONE))
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the `#[interface]` method must take the bus argument by value, as zbus decodes it"
+    )]
     fn search_items(&self, attributes: HashMap<String, String>) -> Vec<OwnedObjectPath> {
         self.shared.matching(&self.name, &attributes)
     }
@@ -475,6 +501,10 @@ impl Collection {
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "the `#[interface]` property getter must take `&self`; this fake is never locked"
+    )]
     fn locked(&self) -> bool {
         false
     }
@@ -489,6 +519,10 @@ impl Collection {
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "the `#[interface]` property getter must take `&self`; the fake keeps no modification time"
+    )]
     fn modified(&self) -> u64 {
         now()
     }
@@ -542,6 +576,10 @@ impl Item {
         Ok(path(NONE))
     }
 
+    #[expect(
+        clippy::needless_pass_by_value,
+        reason = "the `#[interface]` method must take the bus argument by value, as zbus decodes it"
+    )]
     fn get_secret(&self, session: ObjectPath<'_>) -> Result<Secret, SecretError> {
         if !self.shared.session_is_open(session.as_str()) {
             return Err(SecretError::NoSession(session.to_string()));
@@ -570,6 +608,10 @@ impl Item {
     }
 
     #[zbus(property)]
+    #[expect(
+        clippy::unused_self,
+        reason = "the `#[interface]` property getter must take `&self`; this fake is never locked"
+    )]
     fn locked(&self) -> bool {
         false
     }

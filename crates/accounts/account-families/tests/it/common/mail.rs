@@ -2,7 +2,10 @@
 //! per connection security, one planted login, and a connector that sends whatever the account
 //! names (`imap.fake.test:993`, `mail.fake.test:1143`) to the fake of the same protocol and
 //! security on this computer.
-#![allow(dead_code)]
+#![allow(
+    dead_code,
+    reason = "each test file uses a part of the shared helpers, so some are unused in each"
+)]
 
 use account_core::{EndpointProtocol, Tls};
 use account_fake_servers::net::{Bind, port_of};
@@ -25,7 +28,7 @@ struct Ports {
 }
 
 impl Ports {
-    fn of(&self, tls: Tls) -> u16 {
+    fn of(self, tls: Tls) -> u16 {
         match tls {
             Tls::Implicit => self.implicit,
             Tls::StartTls => self.starttls,

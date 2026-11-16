@@ -44,7 +44,7 @@ async fn bearer_for(rig: &Rig, scope: &str, audience_slug: &str) -> String {
                 access: SecretText::new("stale"),
                 refresh: SecretText::new(refresh),
                 expires_at: UnixSeconds(0),
-                granted: Default::default(),
+                granted: account_core::GrantedScopes::default(),
             }),
         )
         .await
@@ -172,6 +172,10 @@ async fn the_scopes_asked_cover_every_drive_call_the_replica_makes() {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::too_many_lines,
+    reason = "one long scenario read top to bottom; splitting it would hide the order of its steps"
+)]
 async fn the_scopes_asked_cover_the_photos_upload_and_the_picker_and_each_alone_covers_its_own() {
     let rig = Rig::new(PLAIN).await;
     let scope = asked(&rig).await;

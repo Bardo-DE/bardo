@@ -1,5 +1,6 @@
-//! The provider files a daemon serves, and the family that serves each. Files are read from
-//! the directories in order, a later directory's file replacing an earlier one's of the same
+//! The provider files a daemon serves, and the family that serves each.
+//!
+//! Files are read from the directories in order, a later directory's file replacing an earlier one's of the same
 //! id (the user's over the system's); a file that does not parse is skipped and named, never
 //! fatal. The person's own file may not change where a shipped provider signs in or which
 //! servers it reaches ([`Layer::Person`]). A provider whose sign-in no built family serves (a
@@ -260,10 +261,18 @@ impl FamilyIo {
 pub struct NoResolver;
 
 impl Dns for NoResolver {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`srv` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn srv(&self, _name: &str) -> Result<Vec<SrvRecord>, DnsFault> {
         Err(DnsFault::Unreachable)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`mx` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn mx(&self, _domain: &DomainName) -> Result<Vec<MxRecord>, DnsFault> {
         Err(DnsFault::Unreachable)
     }
@@ -289,6 +298,10 @@ static FAMILIES: &[Build] = &[
 ];
 
 /// The family that serves `spec` through `io`, or the spec back when none is built for it.
+///
+/// # Errors
+///
+/// Gives the spec back, boxed, when no built family serves it.
 pub fn family_of(
     spec: ProviderSpec,
     io: &FamilyIo,
@@ -319,9 +332,10 @@ pub fn served(
     (families, unserved)
 }
 
-/// The local runtimes among the providers no family serves (`ollama`, `llama-cpp`, `lm-studio`):
-/// they sign in through nothing, and inferd hosts them (`with_local_runtimes`), so the service
-/// keeps them in its catalogue.
+/// The local runtimes among the providers no family serves.
+///
+/// They are `ollama`, `llama-cpp` and `lm-studio`: they sign in through nothing, and inferd hosts
+/// them (`with_local_runtimes`), so the service keeps them in its catalogue.
 #[must_use]
 pub fn local_runtimes(unserved: &[ProviderSpec]) -> Vec<ProviderSpec> {
     unserved

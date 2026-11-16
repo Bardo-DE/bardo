@@ -1,6 +1,7 @@
-//! Discovery (feature `discover`): where an account's calendars, address books and files are,
-//! from an endpoint a person typed. [`Walk`] is the one state machine for it, with no IO: it
-//! yields the next request, takes the reply, and ends with what it found, so the caller keeps
+//! Discovery (feature `discover`): where an account's calendars, address books and files are.
+//!
+//! The place is found from an endpoint a person typed. [`Walk`] is the one state machine for it,
+//! with no IO: it yields the next request, takes the reply, and ends with what it found, so the caller keeps
 //! only the sending (and the credential every request needs).
 //!
 //! The walk is RFC 5397 and 4791/6352: PROPFIND the endpoint for `current-user-principal` and
@@ -235,6 +236,11 @@ impl Walk {
     }
 
     /// Takes the reply to the last request. An error ends the walk.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`Error`] when the reply is a refusal (401 or 403), another failing
+    /// status, or a success whose body is not a multistatus.
     pub fn advance(&mut self, reply: &Response<Vec<u8>>) -> Result<Next, Error> {
         let stage = std::mem::replace(&mut self.stage, Stage::Done);
         match stage {
@@ -420,9 +426,9 @@ fn origin(uri: &Uri) -> Option<(String, String, u16)> {
 fn read(reply: &Response<Vec<u8>>) -> Result<Multistatus, Error> {
     match reply.status().as_u16() {
         401 | 403 => Err(Error::Unauthorized),
-        200..=299 => {
-            parse_multistatus(&String::from_utf8_lossy(reply.body())).map_err(|_| Error::Unreadable)
-        }
+        200..=299 => parse_multistatus(&String::from_utf8_lossy(reply.body()))
+            .ok()
+            .ok_or(Error::Unreadable),
         other => Err(Error::Status(other)),
     }
 }

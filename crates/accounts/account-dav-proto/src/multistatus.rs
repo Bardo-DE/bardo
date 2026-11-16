@@ -63,6 +63,11 @@ pub struct Multistatus {
 ///
 /// A document type declaration is refused rather than expanded (roxmltree's default): a server
 /// has no reason to send one, and entity expansion is how an XML reply is made to eat memory.
+///
+/// # Errors
+///
+/// Fails with [`Error::Xml`] when `xml` is not well-formed (or has a document type
+/// declaration), and with [`Error::NotMultistatus`] when its root is not `DAV:multistatus`.
 pub fn parse_multistatus(xml: &str) -> Result<Multistatus, Error> {
     let doc = Document::parse(xml).map_err(|e| Error::Xml(e.to_string()))?;
     let root = doc.root_element();

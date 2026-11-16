@@ -109,8 +109,9 @@ impl Http for Wire {
         if request.uri().to_string().starts_with(GRAPH) {
             return Ok(self.graph.answer(&request));
         }
-        let (address, target) =
-            split_loopback(&request.uri().to_string()).map_err(|_| HttpError::Unreachable)?;
+        let (address, target) = split_loopback(&request.uri().to_string())
+            .ok()
+            .ok_or(HttpError::Unreachable)?;
         let mut wire = account_fake_servers::http::Request::new(request.method().as_str(), &target);
         for (name, value) in request.headers() {
             if let Ok(value) = value.to_str() {
@@ -127,7 +128,8 @@ impl Http for Wire {
         }
         let response = send(&address, Scheme::Http, &wire)
             .await
-            .map_err(|_| HttpError::Unreachable)?;
+            .ok()
+            .ok_or(HttpError::Unreachable)?;
         let answer = response
             .headers
             .iter()

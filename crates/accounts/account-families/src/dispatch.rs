@@ -13,7 +13,6 @@ use account_provider::{
 };
 use account_sheet::SignInInput;
 use std::fmt::Debug;
-use std::future::Future;
 use std::pin::Pin;
 
 type BoxFut<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;

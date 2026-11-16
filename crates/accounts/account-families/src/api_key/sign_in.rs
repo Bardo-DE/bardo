@@ -38,8 +38,8 @@ impl<H> ApiKeyFlow<H> {
     fn held_server(&self) -> Option<ServiceEndpoint> {
         match &self.mode {
             SignInMode::Reauthenticate { endpoints, .. } => own_server(endpoints).cloned(),
-            SignInMode::Add => None,
-            // a variant a newer porter adds: no held server, so the person is asked for one
+            // `Add`, or a variant a newer porter adds: no held server, so the person is asked
+            // for one
             _ => None,
         }
     }
@@ -161,6 +161,10 @@ impl<H: Http + 'static> ApiKeyFlow<H> {
 impl<H: Http + 'static> Flow for ApiKeyFlow<H> {
     type Mid = ();
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`start` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn start(&mut self) -> Move<()> {
         Move::Next(SignInStep::AskFields(self.form()), ())
     }

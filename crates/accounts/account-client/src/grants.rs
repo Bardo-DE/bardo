@@ -61,6 +61,10 @@ impl<T> Clone for Grants<T> {
 
 impl<T: GrantsLink> Grants<T> {
     /// Whether an account can meet `need` for this app, and which.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the service cannot be reached or refuses the question.
     pub async fn find(
         &self,
         need: &Need,
@@ -87,6 +91,11 @@ impl<T: GrantsLink> Grants<T> {
 
     /// Shows the chooser and consent sheet for `offer` (for the one account it names, when it
     /// names one, without a chooser); the account the user picked, granted.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the person declines, no account can be granted or
+    /// the service cannot be reached.
     pub async fn request_grant(
         &self,
         offer: &ConsentOffer,
@@ -96,6 +105,10 @@ impl<T: GrantsLink> Grants<T> {
     }
 
     /// The grants this app holds.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the service cannot be reached.
     pub async fn grants(&self) -> Result<Vec<Grant>, GrantsError> {
         self.link.grants().await
     }
@@ -103,6 +116,11 @@ impl<T: GrantsLink> Grants<T> {
     /// The accounts the person has, for a porter daemon that keeps a switch per account (the sync
     /// daemon's Settings rows). accountd answers a porter daemon, Settings and the shell only: an
     /// app learns of accounts through its grants.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the service cannot be reached or does not answer
+    /// this caller.
     pub async fn accounts(&self) -> Result<Vec<ListedAccount>, GrantsError> {
         self.link.accounts().await
     }
@@ -111,6 +129,11 @@ impl<T: GrantsLink> Grants<T> {
     /// when it is first used, for `kinds` (the whole of a drive, for "Show in Files"). The call
     /// waits for the person; on Allow the account claims the access, so a need of it fits the
     /// account from then on.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the person declines, the sign-in fails or the
+    /// service cannot be reached.
     pub async fn extend_access(
         &self,
         account: &AccountId,
@@ -122,6 +145,10 @@ impl<T: GrantsLink> Grants<T> {
 
     /// Whether `provider` asks some access of `kind` only on use, which [`Grants::extend_access`]
     /// can ask for.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the service cannot be reached or does not know `provider`.
     pub async fn asks_on_use(
         &self,
         provider: &ProviderId,
@@ -131,6 +158,11 @@ impl<T: GrantsLink> Grants<T> {
     }
 
     /// Withdraws one of this app's own grants.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the service cannot be reached or the app holds no
+    /// such grant.
     pub async fn revoke(&self, grant: &GrantId) -> Result<(), GrantsError> {
         self.link.revoke(grant).await
     }
@@ -141,6 +173,11 @@ impl<T: GrantsLink> Grants<T> {
     /// `220` and an `EHLO` reply that offers no `AUTH` and no `STARTTLS`, and the HTTP one takes
     /// plain HTTP/1.1 requests (the relay adds `Authorization`, refuses any other origin and
     /// strips the app's own `Authorization`).
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the grant is refused or unknown, the endpoint is not
+    /// one of the account's, or the relay cannot be opened.
     pub async fn open_authenticated(
         &self,
         grant: &GrantId,
@@ -155,6 +192,12 @@ impl<T: GrantsLink> Grants<T> {
     /// HTTP/1.1 on the stream and adds **no** credential (the link carries its own), drops any
     /// `Authorization` the app writes and refuses any other origin. An origin the file does not
     /// declare is `Refused(EndpointNotGranted)`.
+    ///
+    /// # Errors
+    ///
+    /// Fails with [`GrantsError`] when the grant is refused or unknown, the origin is not
+    /// declared by the provider file (`Refused(EndpointNotGranted)`), or the relay cannot
+    /// be opened.
     pub async fn open_linked(
         &self,
         grant: &GrantId,

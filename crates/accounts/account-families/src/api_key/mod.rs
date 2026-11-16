@@ -100,6 +100,10 @@ impl<H: Http + 'static> Provider for ApiKeyProvider<H> {
         Ok(crate::key::claims(&self.spec))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`open` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn open(
         &self,
         account: &AccountId,
@@ -117,6 +121,10 @@ impl<H: Http + 'static> Provider for ApiKeyProvider<H> {
         )))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "`revoke` implements an async trait method, and this implementation has nothing to wait for"
+    )]
     async fn revoke(
         &self,
         _account: &Account,
