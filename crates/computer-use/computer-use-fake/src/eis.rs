@@ -69,6 +69,10 @@ pub struct FakeEis {
 
 impl FakeEis {
     /// A server and the client socket that talks to it.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the socket pair or the EIS context cannot be made.
     pub fn pair() -> std::io::Result<(FakeEis, EiSocket)> {
         let (server, client) = UnixStream::pair()?;
         Ok((
@@ -136,14 +140,14 @@ struct Session {
 fn press(state: eis::button::ButtonState) -> Press {
     match state {
         eis::button::ButtonState::Press => Press::Down,
-        _ => Press::Up,
+        eis::button::ButtonState::Released => Press::Up,
     }
 }
 
 fn key_press(state: eis::keyboard::KeyState) -> Press {
     match state {
         eis::keyboard::KeyState::Press => Press::Down,
-        _ => Press::Up,
+        eis::keyboard::KeyState::Released => Press::Up,
     }
 }
 
@@ -192,6 +196,10 @@ impl Session {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "absolute pointer positions the fake sees are screen pixels, far inside i32"
+)]
 fn log_request(log: &mut Vec<EisEvent>, keymap: &str, request: EisRequest) -> ControlFlow<()> {
     let event = match request {
         EisRequest::Disconnect => return ControlFlow::Break(()),

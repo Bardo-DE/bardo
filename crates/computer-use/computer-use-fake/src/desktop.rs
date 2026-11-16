@@ -60,6 +60,10 @@ impl FakeDesktop {
     }
 
     /// Queues an event for `next_event`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn raise(&self, event: DesktopEvent) {
         let mut events = self.events.lock().expect("fake desktop lock");
         events.queue.push_back(event);
@@ -69,6 +73,10 @@ impl FakeDesktop {
     }
 
     /// What it was asked to do, in order.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn calls(&self) -> Vec<DesktopCall> {
         self.calls.lock().expect("fake desktop lock").clone()
     }
@@ -83,6 +91,10 @@ impl Desktop for FakeDesktop {
         self.caps
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "Desktop declares `windows` async; the fake has nothing to await"
+    )]
     async fn windows(&self) -> Result<Vec<ToplevelInfo>, DesktopError> {
         Ok(self.windows.lock().expect("fake desktop lock").clone())
     }
@@ -102,6 +114,10 @@ impl Desktop for FakeDesktop {
 }
 
 impl LeaseControl for FakeDesktop {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LeaseControl declares `lease` async; the fake has nothing to await"
+    )]
     async fn lease(&self, req: LeaseRequest) -> Result<Leased, DesktopError> {
         let info = self
             .windows
@@ -144,22 +160,38 @@ impl LeaseControl for FakeDesktop {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LeaseControl declares `release` async; the fake has nothing to await"
+    )]
     async fn release(&self, lease: LeaseId) -> Result<(), DesktopError> {
         self.note(DesktopCall::Released(lease));
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LeaseControl declares `suspend` async; the fake has nothing to await"
+    )]
     async fn suspend(&self, lease: LeaseId, why: Suspend) -> Result<(), DesktopError> {
         self.note(DesktopCall::Suspended(lease, why));
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LeaseControl declares `resume` async; the fake has nothing to await"
+    )]
     async fn resume(&self, lease: LeaseId) -> Result<(), DesktopError> {
         self.note(DesktopCall::Resumed(lease));
         Ok(())
     }
 
     /// Only a casement desktop can be asked: the leased window becomes the activated one.
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LeaseControl declares `focus` async; the fake has nothing to await"
+    )]
     async fn focus(&self, lease: LeaseId) -> Result<(), DesktopError> {
         if self.caps.kind != BackendKind::Casement {
             return Err(DesktopError::Unsupported);
@@ -185,6 +217,10 @@ impl LeaseControl for FakeDesktop {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "LeaseControl declares `glow` async; the fake has nothing to await"
+    )]
     async fn glow(&self, lease: LeaseId, glow: GlowState) -> Result<(), DesktopError> {
         self.note(DesktopCall::Glow(lease, glow));
         Ok(())

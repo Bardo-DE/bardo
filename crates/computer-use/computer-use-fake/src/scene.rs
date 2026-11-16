@@ -26,11 +26,21 @@ use provenance::{
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
+/// The Space the samples live in.
+///
+/// # Panics
+///
+/// Panics if the literal Space id does not parse (a bug).
 #[must_use]
 pub fn space() -> SpaceId {
     SpaceId::parse("desktop").unwrap()
 }
 
+/// The app the sample window belongs to.
+///
+/// # Panics
+///
+/// Panics if the literal app name does not parse (a bug).
 #[must_use]
 pub fn app() -> AppName {
     AppName::parse("org.mozilla.firefox").unwrap()
@@ -45,7 +55,7 @@ pub fn frame(seq: u64) -> Frame {
             format: PixelFormat::Xbgr8888,
             size: DeviceSize { w: 100, h: 80 },
             stride: 400,
-            data: Arc::from(vec![seq as u8; 400 * 80]),
+            data: Arc::from(vec![u8::try_from(seq % 256).unwrap_or_default(); 400 * 80]),
         },
         logical: Size::new(Coord(100), Coord(80)),
         scale: Scale120(120),
@@ -58,6 +68,11 @@ pub fn frame(seq: u64) -> Frame {
     }
 }
 
+/// A focused native window of [`app`] with a sign-in title.
+///
+/// # Panics
+///
+/// Panics if the literal window id does not parse (a bug).
 #[must_use]
 pub fn window() -> ToplevelInfo {
     ToplevelInfo {
@@ -82,6 +97,11 @@ pub fn window() -> ToplevelInfo {
     }
 }
 
+/// A model reply that carries just `action`.
+///
+/// # Errors
+///
+/// Never returns an error; the `Result` is the shape a scripted reply has.
 pub fn reply(action: CuaAction<WindowSpace>) -> Result<CuaStepReply, CuaModelError> {
     Ok(CuaStepReply::new(vec![action]))
 }
@@ -97,6 +117,10 @@ pub fn click() -> CuaAction<WindowSpace> {
 }
 
 /// Ctrl+A: an action that sends keys (the fake keymap has `a`).
+///
+/// # Panics
+///
+/// Panics if the literal chord does not parse (a bug).
 #[must_use]
 pub fn ctrl_a() -> CuaAction<WindowSpace> {
     CuaAction::Key {
@@ -106,6 +130,11 @@ pub fn ctrl_a() -> CuaAction<WindowSpace> {
     }
 }
 
+/// An action that finishes the run as done.
+///
+/// # Panics
+///
+/// Panics if the literal summary is rejected (a bug).
 #[must_use]
 pub fn finish() -> CuaAction<WindowSpace> {
     CuaAction::Finish {
@@ -158,12 +187,21 @@ pub fn world_over(
 }
 
 /// The screen rules the daemon ships, parsed from the same file.
+///
+/// # Panics
+///
+/// Panics if the shipped rules file does not parse (a bug a test catches).
 #[must_use]
 pub fn rules() -> Rules {
     toml::from_str(include_str!("../../dist/screen-rules.toml"))
         .expect("the shipped screen rules read")
 }
 
+/// A run task for the sample window.
+///
+/// # Panics
+///
+/// Panics if a literal id does not parse (a bug).
 #[must_use]
 pub fn task() -> CuaTask {
     CuaTask {
@@ -188,6 +226,11 @@ pub fn task() -> CuaTask {
     }
 }
 
+/// A run started on `kind`, as `Run::start` leaves it.
+///
+/// # Panics
+///
+/// Panics if a literal id does not parse (a bug).
 #[must_use]
 pub fn started(kind: BackendKind) -> Run {
     let env = RunEnv::new(&CuaConfig::default(), BackendCaps::of(kind), rules());

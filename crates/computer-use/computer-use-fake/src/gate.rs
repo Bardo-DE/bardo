@@ -72,27 +72,44 @@ impl FakePdp {
     }
 
     /// Opens this session for every run (`s-1` when not set), as the router would.
+    #[must_use]
     pub fn opening(mut self, session: SessionId) -> Self {
         self.session = Some(session);
         self
     }
 
     /// How many checks were taken back with `close`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn closes(&self) -> u32 {
         *self.closes.lock().expect("fake gate lock")
     }
 
     /// The runs it opened a session for, in order, with their Space.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn opened(&self) -> Vec<(RunId, SpaceId)> {
         self.opened.lock().expect("fake gate lock").clone()
     }
 
     /// Every action it was asked about, in order.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn checks(&self) -> Vec<CuaAsk> {
         self.checks.lock().expect("fake gate lock").clone()
     }
 
     /// Every consent it was asked for.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn grant_asks(&self) -> Vec<GrantAsk> {
         self.grant_asks.lock().expect("fake gate lock").clone()
     }
@@ -111,11 +128,19 @@ pub struct FakeCheck {
 
 impl FakeCheck {
     /// How many times `close` was called.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn closed(&self) -> u32 {
         *self.closed.lock().expect("fake gate lock")
     }
 
     /// How many times `proceed` was called.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn proceeded(&self) -> u32 {
         *self.proceeded.lock().expect("fake gate lock")
     }
@@ -137,6 +162,10 @@ impl GateLink for FakePdp {
             .unwrap_or(GrantAnswer::Granted))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "GateLink declares `open_session` async; the fake has nothing to await"
+    )]
     async fn open_session(
         &self,
         run: &RunId,
@@ -153,6 +182,10 @@ impl GateLink for FakePdp {
             .unwrap_or_else(|| SessionId::parse("s-1").expect("a session id")))
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "GateLink declares `check` async; the fake has nothing to await"
+    )]
     async fn check(&self, ask: CuaAsk) -> Result<FakeCheck, LinkError> {
         self.checks.lock().expect("fake gate lock").push(ask);
         let verdict = self
@@ -187,11 +220,19 @@ impl GateCheck for FakeCheck {
         }
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "GateCheck declares `proceed` async; the fake has nothing to await"
+    )]
     async fn proceed(&mut self) -> Result<(), LinkError> {
         *self.proceeded.lock().expect("fake gate lock") += 1;
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "GateCheck declares `close` async; the fake has nothing to await"
+    )]
     async fn close(&mut self) -> Result<(), LinkError> {
         *self.closed.lock().expect("fake gate lock") += 1;
         self.events.clear();

@@ -26,6 +26,10 @@ impl MemoryEvents {
     }
 
     /// Queues a message for the run's inbox.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn deliver(&self, line: InboundLine) {
         self.inbox
             .lock()
@@ -34,22 +38,38 @@ impl MemoryEvents {
     }
 
     /// From now on the log refuses every record, as a memoryd that is away does.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn refuse_records(&self) {
         *self.refusing.lock().expect("memory events lock") = true;
     }
 
     /// The records, in order.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn records(&self) -> Vec<CuaRecord> {
         self.records.lock().expect("memory events lock").clone()
     }
 
     /// The reports sent, in order, with the session each was sent for.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn sent(&self) -> Vec<(SessionId, MessageDraft)> {
         self.sent.lock().expect("memory events lock").clone()
     }
 }
 
 impl RecordSink for MemoryEvents {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "RecordSink declares `record` async; the fake has nothing to await"
+    )]
     async fn record(&self, record: CuaRecord) -> Result<(), LinkError> {
         if *self.refusing.lock().expect("memory events lock") {
             return Err(LinkError::Unavailable);
@@ -63,6 +83,10 @@ impl RecordSink for MemoryEvents {
 }
 
 impl MessageLink for MemoryEvents {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "MessageLink declares `send` async; the fake has nothing to await"
+    )]
     async fn send(&self, session: SessionId, draft: MessageDraft) -> Result<Delivery, LinkError> {
         let mut sent = self.sent.lock().expect("memory events lock");
         let id = MessageId::parse(&format!("m-{}", sent.len() + 1)).expect("a well-formed id");
@@ -78,6 +102,10 @@ impl MessageLink for MemoryEvents {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "MessageLink declares `inbox` async; the fake has nothing to await"
+    )]
     async fn inbox(&self, ask: InboxAsk) -> Result<Vec<InboundLine>, LinkError> {
         let _ = ask;
         Ok(self

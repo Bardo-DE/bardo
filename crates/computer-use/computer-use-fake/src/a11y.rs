@@ -27,6 +27,10 @@ pub struct FakeA11y {
 
 impl FakeA11y {
     /// Answers with the fixture's snapshot.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the bundled fixture does not parse as a snapshot (a bug a test catches).
     #[must_use]
     pub fn fixture(which: Fixture) -> Self {
         let text = match which {
@@ -57,6 +61,10 @@ impl FakeA11y {
 }
 
 impl A11ySource for FakeA11y {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "A11ySource declares `snapshot` async; the fake has nothing to await"
+    )]
     async fn snapshot(
         &self,
         target: &A11yTarget,

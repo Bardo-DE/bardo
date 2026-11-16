@@ -33,16 +33,28 @@ impl FakeCapture {
     }
 
     /// The windows a session was opened on, in order.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn opened(&self) -> Vec<ToplevelIdent> {
         self.opened.lock().expect("fake capture lock").clone()
     }
 
     /// Makes the next `open` wait for ever, like a compositor that never sends the constraints.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn stall_next_open(&self) {
         *self.stall.lock().expect("fake capture lock") = true;
     }
 
     /// Makes the next `open` fail with `error`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn refuse_next(&self, error: CaptureError) {
         *self.refuse.lock().expect("fake capture lock") = Some(error);
     }
@@ -88,6 +100,10 @@ impl WindowCapture for FakeCapture {
 }
 
 impl CaptureSession for FakeCaptureSession {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "CaptureSession declares `frame` async; the fake has nothing to await"
+    )]
     async fn frame(
         &mut self,
         want: FrameWant,
@@ -98,6 +114,10 @@ impl CaptureSession for FakeCaptureSession {
         self.frames.pop_front().ok_or(CaptureError::SourceGone)
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "CaptureSession declares `damage` async; the fake has nothing to await"
+    )]
     async fn damage(&mut self) -> Result<DamageAt, CaptureError> {
         self.damage.pop_front().ok_or(CaptureError::SourceGone)
     }

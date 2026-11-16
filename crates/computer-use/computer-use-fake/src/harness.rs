@@ -58,19 +58,32 @@ pub enum HarnessError {
 /// The most inputs a harness run takes before it gives up.
 const MAX_INPUTS: usize = 2_000;
 
-/// Drives `run` to its end over `world`: carry out each effect against the fake that owns it,
-/// feed the answer back as a `RunInput`, advance the clock only when a fake says time passes.
+/// Drives `run` to its end over `world`.
+///
+/// Carry out each effect against the fake that owns it, feed the answer back as a `RunInput`,
+/// advance the clock only when a fake says time passes.
 ///
 /// `run` is a run as `Run::start` left it, in `Granting` (its first effect, the consent, is
 /// carried out here); a finished one is returned as it is. Whatever the machine waits for
 /// that no fake will send (the person's answer, a confirmation nobody shows) is `Stuck`.
+///
+/// # Errors
+///
+/// Returns [`HarnessError::Stuck`] when the run waits for something no fake will send, and
+/// [`HarnessError::TooManySteps`] when it takes more inputs than the harness allows.
 pub async fn run_harness(run: Run, world: &mut World) -> Result<HarnessReport, HarnessError> {
     run_harness_answering(run, world, Vec::new()).await
 }
 
-/// [`run_harness`] with a scripted person: each question the run asks (the model's own, or one a
-/// sensitive window forces) is answered with the next of `answers`, in order. Once they are
-/// used up, a question is left unanswered and the run is `Stuck`.
+/// [`run_harness`] with a scripted person.
+///
+/// Each question the run asks (the model's own, or one a sensitive window forces) is answered with
+/// the next of `answers`, in order. Once they are used up, a question is left unanswered and the
+/// run is `Stuck`.
+///
+/// # Errors
+///
+/// Returns [`HarnessError`] as [`run_harness`] does.
 pub async fn run_harness_answering(
     run: Run,
     world: &mut World,

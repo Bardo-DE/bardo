@@ -51,6 +51,11 @@ impl FakeSeat {
     }
 
     /// The same seat with the fake EIS server's US keymap, so key actions resolve.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the bundled US keymap does not parse (a bug a test catches).
+    #[must_use]
     pub fn with_us_keymap(self) -> Self {
         let keymap =
             Keymap::parse_xkb(crate::eis_keymap::US_KEYMAP).expect("the fake US keymap parses");
@@ -61,21 +66,37 @@ impl FakeSeat {
     }
 
     /// Makes the next `perform` fail with `error`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn fail_next(&self, error: SeatError) {
         *self.fail_next.lock().expect("fake seat lock") = Some(error);
     }
 
     /// Makes the next `attach` wait for ever, like a server that never finishes its handshake.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn stall_next_attach(&self) {
         *self.stall_attach.lock().expect("fake seat lock") = true;
     }
 
     /// Everything that happened, in order.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn events(&self) -> Vec<SeatEvent> {
         self.log.lock().expect("fake seat lock").clone()
     }
 
     /// The frames the seat was told the window moved to, in order.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the lock was poisoned by a panic on another thread.
     pub fn rebinds(&self) -> Vec<(LeaseId, GlobalRect)> {
         self.rebinds.lock().expect("fake seat lock").clone()
     }
@@ -107,6 +128,10 @@ impl AgentSeat for FakeSeat {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "AgentSeat declares `perform` async; the fake has nothing to await"
+    )]
     async fn perform(&self, lease: LeaseId, ops: &[InputOp]) -> Result<InputReceipt, SeatError> {
         if let Some(error) = self.fail_next.lock().expect("fake seat lock").take() {
             return Err(error);
@@ -128,12 +153,20 @@ impl AgentSeat for FakeSeat {
         })
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "AgentSeat declares `emulation` async; the fake has nothing to await"
+    )]
     async fn emulation(&self, lease: LeaseId, state: Emulation) -> Result<(), SeatError> {
         *self.emulation.lock().expect("fake seat lock") = state;
         self.push(SeatEvent::Emulation(lease, state));
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "AgentSeat declares `rebind` async; the fake has nothing to await"
+    )]
     async fn rebind(&self, lease: LeaseId, frame: GlobalRect) -> Result<(), SeatError> {
         self.rebinds
             .lock()
@@ -142,6 +175,10 @@ impl AgentSeat for FakeSeat {
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "AgentSeat declares `detach` async; the fake has nothing to await"
+    )]
     async fn detach(&self, lease: LeaseId) -> Result<(), SeatError> {
         self.push(SeatEvent::Detached(lease));
         Ok(())
@@ -153,7 +190,6 @@ mod tests {
     use super::*;
     use computer_use_action::{Button, Coord, Point};
     use computer_use_seat_input::Press;
-    use std::future::Future;
     use std::pin::pin;
     use std::task::{Context, Poll, Waker};
 

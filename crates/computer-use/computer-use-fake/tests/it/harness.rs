@@ -43,7 +43,7 @@ fn frame(seq: u64) -> Frame {
             format: PixelFormat::Xbgr8888,
             size: DeviceSize { w: 100, h: 80 },
             stride: 400,
-            data: Arc::from(vec![seq as u8; 400 * 80]),
+            data: Arc::from(vec![u8::try_from(seq % 256).unwrap_or_default(); 400 * 80]),
         },
         logical: Size::new(Coord(100), Coord(80)),
         scale: Scale120(120),

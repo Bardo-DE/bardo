@@ -28,7 +28,6 @@ use provenance::{
     SessionId, Source, SpaceId,
 };
 use std::collections::BTreeSet;
-use std::future::Future;
 use std::pin::pin;
 use std::sync::Arc;
 use std::task::{Context, Poll, Waker};

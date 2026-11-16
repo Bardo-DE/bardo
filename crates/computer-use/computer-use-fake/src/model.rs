@@ -77,6 +77,11 @@ impl ScriptedModel {
     /// action wins. Points are taken as window pixels (the replayed frames are the window at
     /// scale 1), so a recorded click lands where it was recorded. An interaction that ended in
     /// a provider error replays as that error; one that no dialect reads is `NotAStep`.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ScriptError::NotAStep`] for an interaction that ended in a reply no dialect reads as
+    /// an action.
     pub fn from_cassette(cassette: &Cassette) -> Result<Self, ScriptError> {
         let script = cassette
             .interactions
@@ -103,19 +108,35 @@ impl ScriptedModel {
 }
 
 impl CuaModel for ScriptedModel {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "CuaModel declares `reach` async; the fake has nothing to await"
+    )]
     async fn reach(&mut self) -> ModelReach {
         self.reach
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "CuaModel declares `sight` async; the fake has nothing to await"
+    )]
     async fn sight(&mut self) -> ModelSight {
         self.sight
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "CuaModel declares `begin` async; the fake has nothing to await"
+    )]
     async fn begin(&mut self, begin: CuaBegin) -> Result<(), CuaModelError> {
         self.began.push(begin);
         Ok(())
     }
 
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "CuaModel declares `step` async; the fake has nothing to await"
+    )]
     async fn step(
         &mut self,
         request: CuaStepRequest,

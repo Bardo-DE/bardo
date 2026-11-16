@@ -1,4 +1,8 @@
-#![allow(dead_code, unused_imports)] // each test binary uses a subset of the shared builders
+#![allow(
+    dead_code,
+    unused_imports,
+    reason = "each test binary uses a subset of the shared builders"
+)]
 //! The scenes of `computer_use_fake::scene`, and an executor for futures that never wait.
 
 pub use computer_use_fake::scene::*;
