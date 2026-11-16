@@ -101,9 +101,10 @@ fn plant(server: &Server) -> Planted {
     let plan = google.my_drive_document("Docs/Plan", DOC);
     let budget = google.my_drive_document("Budget", SHEET);
     let survey = google.my_drive_document("Survey", FORM);
-    google.my_drive_shortcut("Docs/Budget link", &budget);
+    // The shortcut and the shared file are looked up by name, so their ids are not kept.
+    let _ = google.my_drive_shortcut("Docs/Budget link", &budget);
     google.drive_put_file("app.bin", b"app");
-    google.drive_shared_file("from a friend.pdf", b"pdf");
+    let _ = google.drive_shared_file("from a friend.pdf", b"pdf");
     Planted {
         plan,
         budget,

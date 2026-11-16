@@ -7,7 +7,9 @@ use crate::support::{Rig, focus, press};
 fn chord(profile: &str, keys: &[&str]) -> Vec<&'static str> {
     let mut rig = Rig::new();
     rig.feed(focus(profile));
-    keys.iter().for_each(|k| drop(rig.feed(press(0, k))));
+    for k in keys {
+        drop(rig.feed(press(0, k)));
+    }
     let mut down = rig.down();
     down.sort_unstable();
     down

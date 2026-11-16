@@ -91,7 +91,8 @@ fn Editor() -> Element {
     let dir = DICT
         .with(|dict| dict.borrow().clone())
         .expect("a dictionary");
-    provide_with(
+    // Providing is the point: the service is read from the context by the edit surface.
+    let _ = provide_with(
         SpellConfig {
             dictionaries: vec![dir.clone()],
             user: dir.join("user"),

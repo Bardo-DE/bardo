@@ -133,11 +133,11 @@ mod tests {
     use ui_components::components::content::level_glyph::vocab::LevelGlyph;
     use ui_components::prelude::*;
 
-    fn level(percent: u16, mute: Mute) -> Option<Level> {
-        Some(Level {
+    fn level(percent: u16, mute: Mute) -> Level {
+        Level {
             percent: Percent(percent),
             mute,
-        })
+        }
     }
 
     /// A level as the tables spell it: percent and mute, or none.
@@ -186,7 +186,7 @@ mod tests {
             ),
         ];
         for &(kind, at, glyph, fill) in CASES {
-            let at = at.and_then(|(p, m)| level(p, m));
+            let at = at.map(|(p, m)| level(p, m));
             let card = card_level(kind, at);
             assert_eq!(card.glyph, glyph, "{kind:?} {at:?}");
             assert_eq!(card.value, Fraction(fill), "{kind:?} {at:?}");
@@ -231,7 +231,7 @@ mod tests {
                 OsdKind::Volume,
                 live,
                 None,
-                level(40, Mute::Muted),
+                Some(level(40, Mute::Muted)),
             ),
             ("no sink", OsdKind::Volume, live, None, None),
             (
@@ -239,7 +239,7 @@ mod tests {
                 OsdKind::Brightness,
                 live,
                 Some(&hdmi),
-                level(49, Mute::Audible),
+                Some(level(49, Mute::Audible)),
             ),
             (
                 "a display with none",
@@ -254,7 +254,7 @@ mod tests {
                 OsdKind::Brightness,
                 fixed,
                 Some(&other),
-                level(70, Mute::Audible),
+                Some(level(70, Mute::Audible)),
             ),
         ];
         for (name, kind, source, output, want) in cases {

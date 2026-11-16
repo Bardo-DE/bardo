@@ -88,7 +88,7 @@ mod tests {
         wakeup.wait_past(seen, Duration::from_secs(5));
         assert!(started.elapsed() < Duration::from_secs(2));
         assert_eq!(wakeup.generation(), seen + 1);
-        thread.join().ok();
+        thread.join().expect("the waking thread ends cleanly");
     }
 
     #[test]

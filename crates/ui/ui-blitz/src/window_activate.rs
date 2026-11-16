@@ -75,18 +75,16 @@ mod tests {
     use raw_window_handle::{WaylandDisplayHandle, XlibDisplayHandle};
     use std::ptr::NonNull;
 
-    fn wayland() -> Option<RawDisplayHandle> {
-        Some(RawDisplayHandle::Wayland(WaylandDisplayHandle::new(
-            NonNull::dangling(),
-        )))
+    fn wayland() -> RawDisplayHandle {
+        RawDisplayHandle::Wayland(WaylandDisplayHandle::new(NonNull::dangling()))
     }
 
-    fn x11() -> Option<RawDisplayHandle> {
-        Some(RawDisplayHandle::Xlib(XlibDisplayHandle::new(None, 0)))
+    fn x11() -> RawDisplayHandle {
+        RawDisplayHandle::Xlib(XlibDisplayHandle::new(None, 0))
     }
 
-    fn token(raw: &str) -> Option<String> {
-        Some(raw.to_owned())
+    fn token(raw: &str) -> String {
+        raw.to_owned()
     }
 
     #[test]
@@ -94,32 +92,32 @@ mod tests {
         let cases = [
             (
                 "a token on wayland is handed to the compositor",
-                route(token("abc"), wayland()),
+                route(Some(token("abc")), Some(wayland())),
                 Route::Token("abc".to_owned()),
             ),
             (
                 "no token on wayland is a plain focus",
-                route(None, wayland()),
+                route(None, Some(wayland())),
                 Route::Focus,
             ),
             (
                 "no token on x11 is a plain focus",
-                route(None, x11()),
+                route(None, Some(x11())),
                 Route::Focus,
             ),
             (
                 "an empty token is no token",
-                route(token(""), wayland()),
+                route(Some(token("")), Some(wayland())),
                 Route::Focus,
             ),
             (
                 "x11 focuses through winit whatever the token",
-                route(token("abc"), x11()),
+                route(Some(token("abc")), Some(x11())),
                 Route::Focus,
             ),
             (
                 "a window with no display handle is focused through winit",
-                route(token("abc"), None),
+                route(Some(token("abc")), None),
                 Route::Focus,
             ),
         ];

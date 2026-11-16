@@ -106,6 +106,7 @@ pub fn reply(card: &ModelCard, text: &str, stop: StopReason) -> ChatReply {
     )
 }
 
+#[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
 impl Model for Scripted {
     fn card(&self) -> &ModelCard {
         &self.card

@@ -48,6 +48,7 @@ impl FakeBackend {
     }
 }
 
+#[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
 impl SessionBackend for FakeBackend {
     fn kind(&self) -> BackendKind {
         BackendKind::Fake
@@ -188,6 +189,7 @@ impl Default for MemoryLog {
     }
 }
 
+#[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
 impl SessionLog for MemoryLog {
     async fn append(
         &self,

@@ -309,7 +309,7 @@ mod tests {
             other.quit().unwrap();
         })
         .join()
-        .ok();
+        .expect("the worker thread ends cleanly");
         assert_eq!(woken.load(Ordering::SeqCst), 3);
         let kinds: Vec<&str> = handle
             .take()

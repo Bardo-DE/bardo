@@ -52,7 +52,7 @@ impl Buttons {
     }
 
     /// Nothing is down: the virtual device was recreated and starts clean.
-    pub(crate) fn forget(self) -> Self {
+    pub(crate) fn forget() -> Self {
         Self::default()
     }
 }
@@ -165,8 +165,9 @@ mod tests {
 
     #[test]
     fn forgetting_writes_nothing_and_clears_everything() {
-        let held = Buttons::default().observe(A, &[btn(LEFT, 1)]).forget();
-        assert_eq!(held, Buttons::default());
+        let held = Buttons::default().observe(A, &[btn(LEFT, 1)]);
+        assert_ne!(held, Buttons::default(), "something is down first");
+        assert_eq!(Buttons::forget(), Buttons::default());
     }
 
     #[test]

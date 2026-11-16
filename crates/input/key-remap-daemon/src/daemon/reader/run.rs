@@ -1,6 +1,7 @@
 //! The loop: wait, then mail, devices, gates, status.
 
 use super::Reader;
+use super::rescan::{Lookout, SafetyLook};
 use super::twins::Passed;
 use crate::DeviceId;
 use crate::daemon::clock;
@@ -74,8 +75,8 @@ impl<E: Emitter> Reader<E> {
             }
         }
         if self.safety.due(clock::now()) {
-            self.looking = std::mem::take(&mut self.looking).everything();
-            self.safety = self.safety.done(clock::now());
+            self.looking = Lookout::everything();
+            self.safety = SafetyLook::done(clock::now());
         }
         self.look();
         if ready.leds {

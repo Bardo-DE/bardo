@@ -53,7 +53,7 @@ impl Unknowns {
     }
 
     /// The config changed: every name may be reported again.
-    pub(super) fn reset(self) -> Self {
+    pub(super) fn reset() -> Self {
         Self::default()
     }
 }
@@ -91,10 +91,8 @@ mod tests {
         Layers::builtin_only().with_user(user).resolve().0
     }
 
-    fn line(s: &str) -> Option<String> {
-        Some(format!(
-            "keycap: profile \"{s}\" is not defined; using default"
-        ))
+    fn line(s: &str) -> String {
+        format!("keycap: profile \"{s}\" is not defined; using default")
     }
 
     #[test]
@@ -156,11 +154,11 @@ mod tests {
                         notice.map(|notice| notice.line())
                     }
                     Step::ConfigChanged => {
-                        unknowns = unknowns.clone().reset();
+                        unknowns = Unknowns::reset();
                         None
                     }
                 };
-                assert_eq!(got, want.and_then(line), "{case}, step {i}");
+                assert_eq!(got, want.map(line), "{case}, step {i}");
             }
         }
     }
@@ -189,7 +187,7 @@ mod tests {
                 .count(),
             MAX_LISTED
         );
-        let (again, _) = unknowns.reset().note(&name("n0"), &profiles);
+        let (again, _) = Unknowns::reset().note(&name("n0"), &profiles);
         assert_eq!(
             again.listed.len(),
             1,

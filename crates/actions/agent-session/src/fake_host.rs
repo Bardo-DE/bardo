@@ -76,6 +76,7 @@ impl FakeHost {
     }
 }
 
+#[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
 impl SessionHost for FakeHost {
     async fn open(&mut self, opening: Opening) -> Result<SessionId, HostFault> {
         self.minted += 1;

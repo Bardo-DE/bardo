@@ -24,7 +24,8 @@ type Running = SurfaceHarness<Switcher>;
 /// Ask the switcher on the test output, taken at this instant: the next `advance` runs the
 /// woken switcher at `harness.now()` before it steps any timer.
 fn ask(running: &mut Running, ask: SwitcherAsk) {
-    running.link.ask(fake::output().id, ask);
+    // The serial the link hands back is not needed: these tests read the switcher's output.
+    let _ = running.link.ask(fake::output().id, ask);
 }
 
 /// The commands sent so far, drained.

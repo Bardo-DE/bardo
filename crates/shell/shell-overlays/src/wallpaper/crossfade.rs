@@ -80,16 +80,16 @@ impl Layers {
 mod tests {
     use super::Layers;
 
-    fn image(name: &str) -> Option<String> {
-        Some(format!("file:///{name}.png"))
+    fn image(name: &str) -> String {
+        format!("file:///{name}.png")
     }
 
     #[test]
     fn starting_at_shows_the_same_image_on_both_layers_with_a_in_front() {
-        let layers = Layers::starting_at(image("sea"));
+        let layers = Layers::starting_at(Some(image("sea")));
         let rendered = layers.render();
-        assert_eq!(rendered[0], ("a", None, image("sea")));
-        assert_eq!(rendered[1], ("b", Some("back"), image("sea")));
+        assert_eq!(rendered[0], ("a", None, Some(image("sea"))));
+        assert_eq!(rendered[1], ("b", Some("back"), Some(image("sea"))));
     }
 
     #[test]
@@ -102,37 +102,37 @@ mod tests {
 
     #[test]
     fn showing_the_same_image_again_changes_nothing() {
-        let layers = Layers::starting_at(image("sea"));
-        let again = layers.clone().show(image("sea"));
+        let layers = Layers::starting_at(Some(image("sea")));
+        let again = layers.clone().show(Some(image("sea")));
         assert_eq!(layers, again);
     }
 
     #[test]
     fn a_new_image_goes_on_the_hidden_layer_and_becomes_the_front() {
-        let layers = Layers::starting_at(image("sea")).show(image("mountain"));
+        let layers = Layers::starting_at(Some(image("sea"))).show(Some(image("mountain")));
         let rendered = layers.render();
         // "a" was in front showing "sea"; the new image goes on "b", which then fronts.
-        assert_eq!(rendered[0], ("a", Some("back"), image("sea")));
-        assert_eq!(rendered[1], ("b", None, image("mountain")));
+        assert_eq!(rendered[0], ("a", Some("back"), Some(image("sea"))));
+        assert_eq!(rendered[1], ("b", None, Some(image("mountain"))));
     }
 
     #[test]
     fn the_front_alternates_every_change_so_both_layers_keep_their_own_node() {
-        let layers = Layers::starting_at(image("one"))
-            .show(image("two"))
-            .show(image("three"));
+        let layers = Layers::starting_at(Some(image("one")))
+            .show(Some(image("two")))
+            .show(Some(image("three")));
         let rendered = layers.render();
         // "one" -> "two" put "two" on "b" (front); "two" -> "three" then puts "three" on "a"
         // (front), leaving "two" behind on "b" — each change alternates which node changes.
-        assert_eq!(rendered[0], ("a", None, image("three")));
-        assert_eq!(rendered[1], ("b", Some("back"), image("two")));
+        assert_eq!(rendered[0], ("a", None, Some(image("three"))));
+        assert_eq!(rendered[1], ("b", Some("back"), Some(image("two"))));
     }
 
     #[test]
     fn a_scheme_change_to_no_image_fades_out_to_paper() {
-        let layers = Layers::starting_at(image("sea")).show(None);
+        let layers = Layers::starting_at(Some(image("sea"))).show(None);
         let rendered = layers.render();
         assert_eq!(rendered[1], ("b", None, None));
-        assert_eq!(rendered[0], ("a", Some("back"), image("sea")));
+        assert_eq!(rendered[0], ("a", Some("back"), Some(image("sea"))));
     }
 }

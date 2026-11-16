@@ -147,7 +147,7 @@ fn a_changed_sheet_or_turn_on_again_clears_the_guard() {
     let state = scratch("clear");
     let broken = styles(".boom{}");
     for _ in 0..2 {
-        StylesGuard::begin(&state, "mailo", &broken);
+        drop(StylesGuard::begin(&state, "mailo", &broken));
     }
     let off = StylesGuard::begin(&state, "mailo", &broken);
     assert!(!off.load());
@@ -162,7 +162,7 @@ fn a_changed_sheet_or_turn_on_again_clears_the_guard() {
     );
     // Turn On Again with the very same sheets also forgets them.
     for _ in 0..2 {
-        StylesGuard::begin(&state, "shell", &broken);
+        drop(StylesGuard::begin(&state, "shell", &broken));
     }
     let off = StylesGuard::begin(&state, "shell", &broken);
     assert!(!off.load());

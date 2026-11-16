@@ -112,10 +112,6 @@ fn log(harness: &Harness) -> String {
     harness.text_of(".log").unwrap_or_default()
 }
 
-fn some(value: &str) -> Option<String> {
-    Some(value.to_owned())
-}
-
 #[test]
 fn files_over_a_target_light_it_and_moving_off_dims_it() {
     let mut harness = harness();
@@ -138,7 +134,7 @@ fn files_over_a_target_light_it_and_moving_off_dims_it() {
     ))));
     let offered = harness.drop_answer();
     assert_eq!(offered, DropAcceptance::Copy);
-    assert_eq!(lights(&harness), (some("target"), some("accepts")));
+    assert_eq!(lights(&harness), (Some("target".to_owned()), Some("accepts".to_owned())));
     assert_eq!(
         harness.text_of(".composer-drag").as_deref(),
         Some("over:report.pdf,photo.jpg")
@@ -149,7 +145,7 @@ fn files_over_a_target_light_it_and_moving_off_dims_it() {
     }));
     let off = harness.drop_answer();
     assert_eq!(off, DropAcceptance::Refuse, "nothing to drop on: refused");
-    assert_eq!(lights(&harness), (some("accepts"), some("accepts")));
+    assert_eq!(lights(&harness), (Some("accepts".to_owned()), Some("accepts".to_owned())));
     assert_eq!(harness.text_of(".composer-drag").as_deref(), Some("idle"));
 
     harness.send(Input::FileDrag(FileDragInput::Left));
@@ -203,7 +199,7 @@ fn the_innermost_target_takes_the_drop() {
     harness.send(Input::FileDrag(FileDragInput::Offered(Offer::Files(
         files(),
     ))));
-    assert_eq!(lights(&harness), (some("accepts"), some("target")));
+    assert_eq!(lights(&harness), (Some("accepts".to_owned()), Some("target".to_owned())));
 
     harness.send(Input::FileDrag(FileDragInput::Dropped {
         modifiers: Modifiers::empty(),

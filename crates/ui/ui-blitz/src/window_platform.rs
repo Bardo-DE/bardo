@@ -97,8 +97,8 @@ mod tests {
         format!("{:?}", attributes.platform)
     }
 
-    fn token(raw: &str) -> Option<ActivationToken> {
-        Some(ActivationToken::from_raw(raw.to_owned()))
+    fn token(raw: &str) -> ActivationToken {
+        ActivationToken::from_raw(raw.to_owned())
     }
 
     #[test]
@@ -108,7 +108,7 @@ mod tests {
             DisplayServer::Wayland,
             WindowAttributes::default(),
             Some(&id),
-            token("wl-token-1"),
+            Some(token("wl-token-1")),
         );
         let text = platform_of(&attributes);
         assert!(text.contains("WindowAttributesWayland"), "{text}");
@@ -123,7 +123,7 @@ mod tests {
             DisplayServer::X11,
             WindowAttributes::default(),
             Some(&id),
-            token("x-startup-1"),
+            Some(token("x-startup-1")),
         );
         let text = platform_of(&attributes);
         assert!(text.contains("WindowAttributesX11"), "{text}");
@@ -137,7 +137,7 @@ mod tests {
             DisplayServer::Wayland,
             WindowAttributes::default(),
             None,
-            token("wl-token-2"),
+            Some(token("wl-token-2")),
         );
         let text = platform_of(&attributes);
         assert!(text.contains("wl-token-2"), "{text}");

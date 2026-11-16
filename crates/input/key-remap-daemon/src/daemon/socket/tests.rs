@@ -380,7 +380,9 @@ fn a_flood_from_one_client_is_all_delivered_in_order_without_starving_the_others
     assert_eq!(recv(&other), Some(hello(running())));
 
     let names: Vec<String> = (0..40).map(|i| format!("p{i}")).collect();
-    names.iter().for_each(|n| send(&flooder, &focus(n)));
+    for n in &names {
+        send(&flooder, &focus(n));
+    }
     let got = h.requests(names.len());
     let want: Vec<Request> = names
         .iter()

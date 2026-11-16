@@ -150,7 +150,8 @@ impl Sub {
         }
         // The offsets the step wrote are the ones this frame draws: a component that windows
         // over them renders for them now, not after the draw.
-        self.phase.publish_scrolls();
+        // How many signals changed is not needed: the render that follows reads them.
+        let _ = self.phase.publish_scrolls();
         self.hand_over(event_loop)
     }
 

@@ -119,7 +119,7 @@ where
         render(&self.context.snapshot())
     }
 
-    async fn summon(&self, serial: u64, origin: String) -> fdo::Result<String> {
+    fn summon(&self, serial: u64, origin: String) -> fdo::Result<String> {
         render(&self.summon.summon(SummonSerial(serial), parse(&origin)?))
     }
 
@@ -154,7 +154,7 @@ where
 
     // The ids-then-metas split has no provider method yet: nothing resolves keys. (A plain
     // comment: a doc comment would land in the introspection.)
-    async fn resolve(&self, keys: String) -> fdo::Result<String> {
+    fn resolve(&self, keys: String) -> fdo::Result<String> {
         let _ = keys;
         Err(fdo::Error::NotSupported(
             "this provider resolves no keys".into(),
@@ -256,6 +256,7 @@ mod tests {
 
     struct Nobody(ValidManifest);
 
+    #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
     impl IntentProvider for Nobody {
         fn manifest(&self) -> &ValidManifest {
             &self.0
@@ -283,6 +284,7 @@ mod tests {
     /// Identifies nobody: the introspection needs the type, not a bus.
     struct NoCallers;
     impl Callers for NoCallers {
+        #[expect(clippy::unused_async_trait_impl, reason = "the trait method is async and this fake never waits")]
         async fn caller_of(&self, _: &str) -> Option<action_dbus::callers::Caller> {
             None
         }

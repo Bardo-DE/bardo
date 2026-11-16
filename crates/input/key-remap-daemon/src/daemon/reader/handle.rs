@@ -2,6 +2,8 @@
 
 use super::Reader;
 use super::rescan::Lookout;
+use super::unknown::Unknowns;
+use crate::daemon::buttons::Buttons;
 use crate::daemon::clock;
 use crate::daemon::devices::{DeviceEffect, Devices, drive};
 use crate::daemon::discover::{Hotplug, Identity, scan};
@@ -38,7 +40,7 @@ impl<E: Emitter> Reader<E> {
             }
             Message::Hotplug(Hotplug::Rescan) => {
                 eprintln!("keycap: device events were missed; looking at every keyboard again");
-                self.looking = std::mem::take(&mut self.looking).everything();
+                self.looking = Lookout::everything();
             }
             Message::Hotplug(Hotplug::Gone(path)) => {
                 if let Some(id) = self.devices.id_of(&path) {
@@ -66,9 +68,9 @@ impl<E: Emitter> Reader<E> {
                 let (unknowns, notice) =
                     std::mem::take(&mut self.unknowns).note(&profile, &self.profiles);
                 self.unknowns = unknowns;
-                notice
-                    .iter()
-                    .for_each(|notice| eprintln!("{}", notice.line()));
+                if let Some(notice) = notice {
+                    eprintln!("{}", notice.line());
+                }
                 // A name the settings do not define writes as `default` (profiles.resolve), is
                 // logged once, and is taken up if a later config defines it.
                 self.feed(RemapInput::Focus(profile));
@@ -118,7 +120,7 @@ impl<E: Emitter> Reader<E> {
         warnings.iter().for_each(log_warning);
         self.profiles = profiles;
         self.devices = std::mem::take(&mut self.devices).with_overrides(self.layers.overrides());
-        self.unknowns = std::mem::take(&mut self.unknowns).reset();
+        self.unknowns = Unknowns::reset();
         warnings
     }
 
@@ -236,7 +238,7 @@ impl<E: Emitter> Reader<E> {
         }
         // The new device has nothing down, so what the releases would write is not written.
         self.machine = std::mem::take(&mut self.machine).forgotten(&self.profiles);
-        self.buttons = std::mem::take(&mut self.buttons).forget();
+        self.buttons = Buttons::forget();
     }
 
     /// `id`'s keys and buttons are released on the wire: it was unplugged, or its queue

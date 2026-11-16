@@ -742,8 +742,8 @@ mod tags {
         Harness::new(Reader, config)
     }
 
-    fn tag(text: &str) -> Option<FrameTag> {
-        Some(FrameTag::new(text))
+    fn tag(text: &str) -> FrameTag {
+        FrameTag::new(text)
     }
 
     #[test]
@@ -766,12 +766,12 @@ mod tags {
             vec![
                 (
                     Some(first),
-                    tag("msg-1"),
+                    Some(tag("msg-1")),
                     "https://example.org/first.png".to_owned()
                 ),
                 (
                     Some(second),
-                    tag("msg-2"),
+                    Some(tag("msg-2")),
                     "https://example.org/second.png".to_owned()
                 ),
             ]

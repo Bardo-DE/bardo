@@ -77,9 +77,9 @@ fn the_list_is_the_apps_of_the_reported_windows_most_recently_active_first() {
             .with(Protocol::WlrForeignToplevelManagement),
     );
     for (key, app) in [(1, "term"), (2, "calc"), (3, "edit"), (4, "calc")] {
-        opens(key, app)
-            .into_iter()
-            .for_each(|event| desktop.script(event));
+        for event in opens(key, app) {
+            desktop.script(event);
+        }
     }
     desktop.advance_all();
     let first = project_toplevels(Toplevels::default(), desktop.state());
@@ -101,7 +101,8 @@ fn the_list_is_the_apps_of_the_reported_windows_most_recently_active_first() {
         .windows
         .send_modify(|wl| wl.toplevels = toplevels);
     running.harness.advance(Duration::from_millis(40));
-    running
+    // The serial the link hands back is not needed here.
+    let _ = running
         .link
         .ask(fake::output().id, SwitcherAsk::Chord(Dir::Next));
     running.harness.advance(Duration::from_millis(400));

@@ -117,25 +117,25 @@ mod tests {
         InputEvent { kind, code, value }
     }
 
-    const fn led(led: Led, lamp: bool) -> Option<LedEvent> {
-        Some(LedEvent { led, lamp })
+    const fn led(led: Led, lamp: bool) -> LedEvent {
+        LedEvent { led, lamp }
     }
 
     #[test]
     fn decode_table() {
         const CASES: &[(&str, InputEvent, Option<LedEvent>)] = &[
-            ("caps lock on", ev(EV_LED, 0x01, 1), led(Led::Caps, true)),
-            ("caps lock off", ev(EV_LED, 0x01, 0), led(Led::Caps, false)),
-            ("num lock on", ev(EV_LED, 0x00, 1), led(Led::Num, true)),
+            ("caps lock on", ev(EV_LED, 0x01, 1), Some(led(Led::Caps, true))),
+            ("caps lock off", ev(EV_LED, 0x01, 0), Some(led(Led::Caps, false))),
+            ("num lock on", ev(EV_LED, 0x00, 1), Some(led(Led::Num, true))),
             (
                 "scroll lock on",
                 ev(EV_LED, 0x02, 1),
-                led(Led::Scroll, true),
+                Some(led(Led::Scroll, true)),
             ),
             (
                 "any non-zero value lights it",
                 ev(EV_LED, 0x01, 7),
-                led(Led::Caps, true),
+                Some(led(Led::Caps, true)),
             ),
             ("LED_MISC is not registered", ev(EV_LED, 0x03, 1), None),
             ("LED_MAIL is not registered", ev(EV_LED, 0x09, 1), None),

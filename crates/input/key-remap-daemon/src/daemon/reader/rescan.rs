@@ -37,7 +37,7 @@ impl Lookout {
     }
 
     /// Events were lost, or the safety look is due.
-    pub(super) fn everything(self) -> Self {
+    pub(super) fn everything() -> Self {
         Lookout::Everything
     }
 
@@ -80,7 +80,7 @@ impl SafetyLook {
     }
 
     /// Done at `now`: the next is `SAFETY_EVERY` later.
-    pub(super) fn done(self, now: Mono) -> Self {
+    pub(super) fn done(now: Mono) -> Self {
         Self::after(now)
     }
 }
@@ -108,7 +108,7 @@ mod tests {
         );
         assert!(burst.wants(&p("/dev/input/event4")));
         assert!(!burst.wants(&p("/dev/input/event9")));
-        let all = burst.everything().appeared(p("/dev/input/event5"));
+        let all = Lookout::everything().appeared(p("/dev/input/event5"));
         assert_eq!(all, Lookout::Everything);
         assert!(all.wants(&p("/dev/input/event9")));
         assert!(!Lookout::Nothing.wants(&p("/dev/input/event3")));
@@ -125,7 +125,7 @@ mod tests {
         );
         let late = t0.after(Duration::from_secs(31));
         assert!(look.due(late));
-        let next = look.done(late);
+        let next = SafetyLook::done(late);
         assert!(!next.due(late.after(Duration::from_secs(29))));
         assert!(next.due(late.after(Duration::from_secs(30))));
     }
