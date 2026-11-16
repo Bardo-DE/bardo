@@ -1,6 +1,5 @@
 use super::*;
 use crate::datasets::pim::items_in;
-use crate::journal::Journal;
 use crate::testing::scratch;
 use base_time::UnixSeconds;
 use sync_core::{

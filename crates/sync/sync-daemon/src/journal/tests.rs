@@ -3,7 +3,7 @@ use crate::testing::scratch;
 use base_ids::Bytes;
 use base_time::UnixSeconds;
 use sync_core::{
-    Acknowledgement, Anchor, BaseVersion, Conflict, ContentHash, ItemPath, ItemState, RemoteSide,
+    Acknowledgement, Anchor, BaseVersion, Conflict, ContentHash, ItemState, RemoteSide,
     RemoteVersion, Tombstone, TombstoneOrigin,
 };
 

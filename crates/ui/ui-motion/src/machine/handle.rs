@@ -2,7 +2,7 @@
 
 use super::state::MachineState;
 use super::waking::Waking;
-use dioxus::core::{ScopeId, queue_effect};
+use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 use std::collections::VecDeque;
 use ui_core::machine::{Elapsed, Machine};

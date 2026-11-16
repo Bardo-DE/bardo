@@ -27,7 +27,6 @@ use ui_components::base::press::Press;
 use ui_components::components::controls::button_model::ImagePosition;
 use ui_components::host::measure::use_rect;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::style::icon::classify::ChromaLimit;
 
 use super::dbusmenu::has_rows;
@@ -169,12 +168,10 @@ fn TrayButtonView(
 #[cfg(test)]
 mod tests {
     use super::TrayButtonView;
-    use dioxus::core::VirtualDom;
     use dioxus::prelude::*;
     use shell_kit::bar::pointer::BarPointer;
     use shell_model::tray::{TrayIcon, TrayItem, TrayItemId, TrayStatus};
     use ui_components::prelude::*;
-    use ui_components::root::common::Common;
     use ui_lint::{LintConfig, Profile, Rule, markup};
 
     fn fake_item(name: &str) -> TrayItem {

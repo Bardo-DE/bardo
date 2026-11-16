@@ -15,7 +15,6 @@ use account_core::consent::Usage;
 use account_core::{Candidate, DataClass, Family, ServiceEndpoint};
 use account_match::Need;
 use account_match::{PhotosNeed, StorageNeed};
-use std::future::Future;
 use std::sync::Arc;
 
 /// What a Storage grant of syncd's is for.

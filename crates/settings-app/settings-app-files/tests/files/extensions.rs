@@ -10,7 +10,7 @@ use settings_app_model::{
 use settings_app_testkit::{
     Scratch, install_file_icons, install_look, install_torn_look, install_your_changes,
 };
-use ui_settings::schema::{FilePath, KeyKind};
+use ui_settings::schema::{FilePath, ForeignTables, KeyKind};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const PAPER: &str = "org.example.Paper";
@@ -141,7 +141,7 @@ fn a_stored_look_nothing_installed_has_is_kept_on_load() {
     let file = ConfigFile::parse(&FilePath("bardo/appearance.toml".to_owned())).expect("file");
     let spec = FileSpec {
         file,
-        foreign: Default::default(),
+        foreign: ForeignTables::default(),
         keys: vec![key(
             "appearance.look",
             KeyKind::Provided {

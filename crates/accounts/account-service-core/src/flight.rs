@@ -144,7 +144,7 @@ mod tests {
             access: SecretText::new("access"),
             refresh: SecretText::new(refresh),
             expires_at: UnixSeconds(10),
-            granted: Default::default(),
+            granted: account_core::GrantedScopes::default(),
         }
     }
 

@@ -522,8 +522,8 @@ impl DriveSet {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use drive_core::RemoteId;
     use drive_core::testing::{MemoryListing, MemorySource};
-    use drive_core::{DriveConfig, RemoteId};
 
     #[tokio::test]
     async fn changes_missed_tell_of_every_tracked_item_again() {

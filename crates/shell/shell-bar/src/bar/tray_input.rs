@@ -6,7 +6,6 @@ use dioxus::html::geometry::WheelDelta;
 use shell_model::tray::{ScrollAxis, ScrollDelta, TrayCommand, TrayIcon, TrayItemId, TrayMenuIcon};
 use shell_services::tray::{IconArt, icon_art};
 use ui_components::base::press::{PointerButton, Press};
-use ui_components::components::menus::item::item::MenuImage;
 use ui_components::prelude::*;
 use ui_components::style::icon::classify::ChromaLimit;
 use ui_components::style::icon::classify::IconKind;
@@ -145,7 +144,6 @@ mod tests {
     use shell_services::tray::IconArt;
     use std::path::PathBuf;
     use ui_components::base::press::{PointerButton, Press};
-    use ui_components::components::menus::item::item::MenuImage;
     use ui_components::prelude::*;
     use ui_components::style::icon::classify::ChromaLimit;
 

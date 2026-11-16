@@ -34,7 +34,6 @@ use super::PimKind;
 use super::discover::{DiscoverError, Found};
 use account_capability::{Capability, PimTransport};
 use account_core::{Candidate, ServiceEndpoint};
-use std::future::Future;
 use sync_core::{More, RemoteItem, ReplicaError, Tombstone};
 
 /// A position in a collection's change feed, in the source's own type.

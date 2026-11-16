@@ -11,7 +11,6 @@ use action_vocab::Clock;
 use agent_session::SheetChoice;
 use permission_core::AlwaysOffer;
 use provenance::{Confidentiality, ConfirmReceipt, InputProof};
-use std::future::Future;
 
 /// What an app implements to ask its person.
 ///

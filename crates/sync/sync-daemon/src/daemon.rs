@@ -31,7 +31,6 @@ use account_dbus::BusTarget;
 use base_time::SystemClock;
 use base_xdg::PathError;
 use drive_fuse::Mounter;
-use std::future::Future;
 use std::path::PathBuf;
 use std::sync::Arc;
 use tokio::sync::watch;

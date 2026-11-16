@@ -110,6 +110,7 @@ mod tests {
         bluetooth_status, bluetooth_tile_status, device_detail, focus_status, network_detail,
         profile_label, wifi_status,
     };
+    use shell_model::attempt::Attempts;
     use shell_model::bluetooth::{
         Bluetooth, BtAddress, BtBattery, BtConnection, BtDevice, BtKind, BtPairing, BtPower,
     };
@@ -160,7 +161,7 @@ mod tests {
             presence: Presence::Present,
             power: BtPower::On,
             devices,
-            connect: Default::default(),
+            connect: Attempts::default(),
         };
         let connected = |name| device(name, BtConnection::Connected, BtBattery::Unknown);
         assert_eq!(bluetooth_status(&Bluetooth::default()), "Unavailable");

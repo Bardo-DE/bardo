@@ -12,7 +12,6 @@ use account_http_reqwest::ReqwestHttp;
 use base_testkit::Scratch;
 use base_time::UnixSeconds;
 use base_url::WebUrl;
-use std::future::Future;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use sync_core::{
     Blob, ByteRange, ChangePage, Cursor, Folders, ItemKind, ItemPath, PutItem, PutRefused, Quota,

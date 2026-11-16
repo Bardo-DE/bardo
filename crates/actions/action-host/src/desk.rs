@@ -10,7 +10,6 @@ use agent_session::{DeskFault, SheetChoice, SheetDesk};
 use futures_channel::oneshot;
 use provenance::SessionId;
 use std::collections::BTreeMap;
-use std::future::Future;
 use std::sync::{Arc, Mutex, PoisonError};
 
 /// A sheet waiting for its answer.

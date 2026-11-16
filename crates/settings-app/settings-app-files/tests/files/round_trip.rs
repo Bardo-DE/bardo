@@ -3,9 +3,11 @@
 use settings_app_files::{ConfigHome, FilesError, load, save};
 use settings_app_model::{ConfigFile, FileSpec};
 use settings_app_testkit::Scratch;
+use std::collections::BTreeMap;
 use toml::Value;
 use ui_settings::schema::{
-    Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+    AgentSetting, Exposure, FilePath, ForeignTables, Help, KeyKind, KeyPath, KeySpec, Label, Page,
+    Section, WordLabels,
 };
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
@@ -22,11 +24,11 @@ pub(crate) fn key(path: &str, kind: KeyKind, default: Value) -> KeySpec {
         page: Page::Dock,
         section: Section("S".to_owned()),
         exposure: Exposure::Basic,
-        labels: Default::default(),
-        agent: Default::default(),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        labels: WordLabels::default(),
+        agent: AgentSetting::default(),
+        unavailable: BTreeMap::default(),
+        groups: BTreeMap::default(),
+        places: BTreeMap::default(),
         note: None,
     }
 }
@@ -39,7 +41,7 @@ pub(crate) fn spec() -> FileSpec {
     let file = ConfigFile::parse(&FilePath("acme/settings.toml".to_owned())).expect("file");
     FileSpec {
         file,
-        foreign: Default::default(),
+        foreign: ForeignTables::default(),
         keys: vec![
             key("dock.bounce", KeyKind::Toggle, Value::Boolean(true)),
             key(

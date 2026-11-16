@@ -14,7 +14,6 @@ use shell_services::IntentsService;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Bezel;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 
 use super::cc_module::{CcCx, CcModule, Span};
 use crate::control_center::modules::use_plate;

@@ -176,7 +176,7 @@ mod offers {
     use super::name;
     use crate::accounts::{Account, AccountKey, AccountSpend, AccountStatus, AccountsPane, Place};
     use crate::assistants::{PlaceRef, offers_for};
-    use crate::picker::{Busy, ChoiceSection, KindRows, ModelRow, Ready};
+    use crate::picker::{AutoPool, Busy, ChoiceSection, KindRows, LocalAsk, ModelRow, Ready};
     use account_sheet::ProviderGroup;
     use std::collections::BTreeMap;
     use ui_settings::schema::{KeyPath, WordLabels};
@@ -204,8 +204,8 @@ mod offers {
                     places: BTreeMap::new(),
                     note: None,
                     value: String::new(),
-                    pool: Default::default(),
-                    local: Default::default(),
+                    pool: AutoPool::default(),
+                    local: LocalAsk::default(),
                 }],
             }],
             busy: Busy::Idle,

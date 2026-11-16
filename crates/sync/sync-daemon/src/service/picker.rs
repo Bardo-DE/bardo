@@ -27,7 +27,6 @@ use account_dbus::Call;
 #[cfg(feature = "photos-picker")]
 use account_wire::Refusal;
 use std::collections::BTreeMap;
-use std::future::Future;
 use std::sync::{Arc, Mutex, PoisonError};
 #[cfg(feature = "photos-picker")]
 use sync_bus::SYNC_PATH;

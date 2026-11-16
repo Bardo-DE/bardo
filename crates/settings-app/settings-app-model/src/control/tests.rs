@@ -1,8 +1,9 @@
 use super::{Control, FileOnly};
+use std::collections::BTreeMap;
 use toml::Value;
 use ui_settings::schema::{
-    ActionLabel, ActionWeight, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page,
-    Section,
+    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
+    LiveAction, Page, Section, WordLabels,
 };
 
 fn spec(kind: KeyKind, default: Value) -> KeySpec {
@@ -17,11 +18,11 @@ fn spec(kind: KeyKind, default: Value) -> KeySpec {
         page: Page::Appearance,
         section: Section(String::new()),
         exposure: Exposure::Basic,
-        labels: Default::default(),
-        agent: Default::default(),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        labels: WordLabels::default(),
+        agent: AgentSetting::default(),
+        unavailable: BTreeMap::default(),
+        groups: BTreeMap::default(),
+        places: BTreeMap::default(),
         note: None,
     }
 }

@@ -1,6 +1,6 @@
 //! The bound on every bus call.
 
-use std::future::{Future, poll_fn};
+use std::future::poll_fn;
 use std::pin::{Pin, pin};
 use std::task::Poll;
 use std::time::Duration;

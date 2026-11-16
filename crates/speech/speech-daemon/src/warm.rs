@@ -11,7 +11,6 @@ use account_match::SpeechNeed;
 use inference_client::{DbusTransport, OpenOptions, Transport};
 use inference_core::Readiness;
 use std::collections::BTreeSet;
-use std::future::Future;
 
 /// The speech-to-text need: the one thing voiced asks of inferd for hearing.
 pub(crate) fn stt_need() -> Need {

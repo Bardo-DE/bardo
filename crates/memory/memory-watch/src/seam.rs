@@ -3,7 +3,6 @@
 
 use crate::observed::Observed;
 use memory_core::SpacePath;
-use std::future::Future;
 
 /// Why watching failed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

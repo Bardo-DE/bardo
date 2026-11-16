@@ -13,7 +13,6 @@ use account_core::Candidate;
 use account_core::consent::Usage;
 use account_match::Need;
 use account_match::PimNeed;
-use std::future::Future;
 use std::sync::Arc;
 
 /// The need syncd asks accounts to meet: to read the collections and poll them.

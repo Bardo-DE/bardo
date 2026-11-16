@@ -13,7 +13,6 @@ use shell_model::night_shift::{
 };
 use shell_services::NightShiftService;
 use ui_components::prelude::*;
-use ui_components::root::common::Common;
 use ui_components::root::pass_through::ExtraClass;
 
 use super::use_plate;

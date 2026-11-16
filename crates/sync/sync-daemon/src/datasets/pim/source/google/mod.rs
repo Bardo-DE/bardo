@@ -193,7 +193,6 @@ pub(super) fn id_in(url: &WebUrl) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_http::http::Response;
 
     fn response(status: u16, body: &str) -> Response<Vec<u8>> {
         Response::builder()

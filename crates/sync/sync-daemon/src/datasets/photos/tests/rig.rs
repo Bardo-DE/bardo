@@ -14,7 +14,6 @@ use base_time::SystemClock;
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use replica_webdav::WebDavReplica;
-use std::future::Future;
 use std::path::PathBuf;
 use std::sync::Arc;
 use sync_core::Clock;

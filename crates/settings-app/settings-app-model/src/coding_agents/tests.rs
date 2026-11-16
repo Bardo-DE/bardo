@@ -3,7 +3,7 @@ use action_settings::{AgentRow, Agents, Found, KNOWN, ModelState, Offers, SignIn
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use ui_settings::schema::{
-    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
+    AgentSetting, Exposure, Help, KeyPath, Label, Page, Section, WordLabels,
 };
 
 pub(super) fn path(text: &str) -> KeyPath {

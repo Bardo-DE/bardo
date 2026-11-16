@@ -3,7 +3,6 @@
 
 use crate::live::Live;
 use std::collections::VecDeque;
-use std::future::Future;
 use std::pin::Pin;
 
 /// Work that runs on the window's executor and ends when its pane is no longer followed.

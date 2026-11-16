@@ -5,8 +5,10 @@ use settings_app_model::{
     Block, Catalogue, ConfigFile, Control, HOT_CORNERS_CONTROL, ProgramSchema, advanced_sections,
     basic_sections, blocks,
 };
+use std::collections::BTreeMap;
 use ui_settings::schema::{
-    AppId, ControlName, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+    AgentSetting, AppId, ControlName, Exposure, FilePath, ForeignTables, Help, KeyKind, KeyPath,
+    KeySpec, Label, Page, Section, WordLabels,
 };
 
 fn key(path: &str, kind: KeyKind, marked: bool, exposure: Exposure) -> KeySpec {
@@ -21,11 +23,11 @@ fn key(path: &str, kind: KeyKind, marked: bool, exposure: Exposure) -> KeySpec {
         page: Page::Dock,
         section: Section("Hot Corners".to_owned()),
         exposure,
-        labels: Default::default(),
-        agent: Default::default(),
-        unavailable: Default::default(),
-        groups: Default::default(),
-        places: Default::default(),
+        labels: WordLabels::default(),
+        agent: AgentSetting::default(),
+        unavailable: BTreeMap::default(),
+        groups: BTreeMap::default(),
+        places: BTreeMap::default(),
         note: None,
     }
 }
@@ -37,7 +39,7 @@ fn catalogue(keys: Vec<KeySpec>) -> Catalogue {
         app: AppId("shell".to_owned()),
         file,
         keys,
-        foreign: Default::default(),
+        foreign: ForeignTables::default(),
         footnotes: Vec::new(),
     }])
 }

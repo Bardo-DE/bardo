@@ -4,7 +4,7 @@ use super::programs::{ProgramRow, ProgramsEffect, ProgramsInput, program_rows, p
 use crate::{Described, Live};
 use std::collections::BTreeMap;
 use ui_settings::schema::{
-    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
 };
 
 fn spec(path: &str, kind: KeyKind, exposure: Exposure, section: &str) -> KeySpec {
@@ -19,7 +19,7 @@ fn spec(path: &str, kind: KeyKind, exposure: Exposure, section: &str) -> KeySpec
         page: Page::Intelligence,
         section: Section(section.to_owned()),
         exposure,
-        labels: Default::default(),
+        labels: WordLabels::default(),
         agent: AgentSetting::HandsOff,
         unavailable: BTreeMap::new(),
         groups: BTreeMap::new(),

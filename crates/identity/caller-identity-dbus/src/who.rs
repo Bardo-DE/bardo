@@ -72,7 +72,7 @@ impl<P: ProcFs + Clone + 'static> BusPeers<P, ManagerLink<P>> {
             manager,
             attest: Attest::default(),
             #[cfg(feature = "fake")]
-            introduced: Default::default(),
+            introduced: std::sync::Mutex::default(),
         }
     }
 }

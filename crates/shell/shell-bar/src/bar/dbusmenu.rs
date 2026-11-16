@@ -6,7 +6,6 @@
 use shell_model::tray::{Check as TrayCheck, Chord, TrayMenuEntry, TrayMenuIcon, TrayMenuKind};
 use shell_model::units::Visibility;
 use ui_components::components::menus::export::Chord as ExportChord;
-use ui_components::components::menus::item::item::MenuImage;
 use ui_components::prelude::Check as DsCheck;
 use ui_components::prelude::*;
 

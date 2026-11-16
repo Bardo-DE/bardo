@@ -149,8 +149,10 @@ mod tests {
     use crate::entry::KeyEntry;
     use crate::page::PageSlug;
     use crate::page_kind::PageKind;
+    use std::collections::BTreeMap;
     use ui_settings::schema::{
         AgentSetting, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+        WordLabels,
     };
 
     fn page(kind: Page, titles: &[&str]) -> PageModel {
@@ -189,11 +191,11 @@ mod tests {
             page: Page::Appearance,
             section: Section("Style".to_owned()),
             exposure: Exposure::Basic,
-            labels: Default::default(),
+            labels: WordLabels::default(),
             agent: AgentSetting::HandsOff,
-            unavailable: Default::default(),
-            groups: Default::default(),
-            places: Default::default(),
+            unavailable: BTreeMap::default(),
+            groups: BTreeMap::default(),
+            places: BTreeMap::default(),
             note: None,
         };
         let file = ConfigFile::parse(&FilePath("bardo/appearance.toml".to_owned()));

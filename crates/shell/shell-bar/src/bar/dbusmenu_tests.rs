@@ -6,7 +6,6 @@ use shell_model::tray::{
     TrayMenuKind, TrayStatus, step,
 };
 use shell_model::units::Visibility;
-use ui_components::components::menus::item::item::MenuImage;
 use ui_components::prelude::Check as DsCheck;
 use ui_components::prelude::*;
 

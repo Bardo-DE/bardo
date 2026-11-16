@@ -9,7 +9,6 @@ use caller_identity_core::{
 };
 use caller_identity_linux::{ProcFs, path_trust};
 use std::collections::HashMap;
-use std::future::Future;
 use std::path::Path;
 use zbus::Connection;
 use zbus::fdo::PropertiesProxy;

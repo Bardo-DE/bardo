@@ -295,7 +295,7 @@ async fn build(photos: PhotosGrant, media: Media, picker_only: bool) -> Rig {
                 access: SecretText::new(SECRET_ACCESS),
                 refresh: SecretText::new(SECRET_REFRESH),
                 expires_at: UnixSeconds(1),
-                granted: Default::default(),
+                granted: account_core::GrantedScopes::default(),
             },
         )
         .await

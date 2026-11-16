@@ -111,6 +111,7 @@ impl CcModule for BluetoothCc {
 #[cfg(test)]
 mod tests {
     use super::{adapter_availability, power_of, power_state};
+    use shell_model::attempt::Attempts;
     use shell_model::bluetooth::{Bluetooth, BtPower};
     use shell_model::units::Presence;
     use ui_components::prelude::*;
@@ -121,7 +122,7 @@ mod tests {
             presence: Presence::Present,
             power: BtPower::On,
             devices: Vec::new(),
-            connect: Default::default(),
+            connect: Attempts::default(),
         };
         assert_eq!(
             adapter_availability(&Bluetooth::default()),

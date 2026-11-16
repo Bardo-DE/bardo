@@ -11,7 +11,6 @@ pub use memory::MemoryDataset;
 
 use account_capability::HashKind;
 use sha2::{Digest, Sha256};
-use std::future::Future;
 use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, LocalId, Scanned};
 
 /// A dataset's name: a slug (`photos_originals`, `pim`), one path component and one word of a

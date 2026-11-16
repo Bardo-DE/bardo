@@ -31,7 +31,7 @@ pub(super) fn spec(key: &str, label: &str, kind: KeyKind) -> KeySpec {
         page: Page::Accounts,
         section: Section("Nextcloud".to_owned()),
         exposure: Exposure::Basic,
-        labels: Default::default(),
+        labels: WordLabels::default(),
         unavailable: BTreeMap::default(),
         groups: BTreeMap::default(),
         places: BTreeMap::default(),

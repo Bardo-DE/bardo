@@ -196,6 +196,7 @@ impl CcModule for BatteryCc {
 mod tests {
     use super::{DeviceRing, device_rings};
     use shell_kit::battery::device_glyph::Device;
+    use shell_model::attempt::Attempts;
     use shell_model::battery::{Battery, Charge};
     use shell_model::bluetooth::{
         Bluetooth, BtAddress, BtBattery, BtConnection, BtDevice, BtKind, BtPairing, BtPower,
@@ -241,7 +242,7 @@ mod tests {
                     BtBattery::Level(Percent(20)),
                 ),
             ],
-            connect: Default::default(),
+            connect: Attempts::default(),
         };
         let ring = |key: &str, level, power, label: &str, device| DeviceRing {
             key: key.to_owned(),
