@@ -50,6 +50,15 @@ pub(crate) fn psd_cost(bytes: &[u8]) -> Result<(PixelSize, u64), ImageError> {
     Ok((size, channels * depth_bytes + 8))
 }
 
+/// What a decoder said when it panicked, if it said it as text.
+fn panic_text(payload: &(dyn std::any::Any + Send)) -> &str {
+    payload
+        .downcast_ref::<&str>()
+        .copied()
+        .or_else(|| payload.downcast_ref::<String>().map(String::as_str))
+        .unwrap_or("no reason given")
+}
+
 /// The flattened picture a Photoshop file stores beside its layers. The composite is read from the
 /// file itself; the `psd` crate is asked only about what that reader does not handle. The crate
 /// indexes and unwraps on bytes it has not checked, so a file that breaks it is reported as
@@ -65,8 +74,12 @@ pub(crate) fn psd(bytes: &[u8], ceiling: Ceiling) -> Result<(Rgba8, ColourInfo),
                 ::psd::Psd::from_bytes(bytes).map_err(|e| decode_error(format!("{e:?}")))?;
             Ok((document.width(), document.height(), document.rgba()))
         }))
-        .ok()
-        .ok_or_else(|| decode_error("the Photoshop file is damaged"))??,
+        .map_err(|panic| {
+            decode_error(format!(
+                "the Photoshop file is damaged: the decoder stopped on it ({})",
+                panic_text(panic.as_ref())
+            ))
+        })??,
     };
     let size = PixelSize {
         width: PixelLen(width),
