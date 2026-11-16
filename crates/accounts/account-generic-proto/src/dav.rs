@@ -79,7 +79,7 @@ pub fn probe(
     url: &EndpointUrl,
     authorization: HeaderValue,
 ) -> Result<(Walk, Request<Vec<u8>>), Error> {
-    let uri: Uri = web(url)?.as_str().parse().map_err(|_| Error::Unreadable)?;
+    let uri: Uri = web(url)?.as_str().parse().ok().ok_or(Error::Unreadable)?;
     let (walk, mut request) = Walk::start(uri, Reach::Principal, &[], Scope::SameOrigin);
     request.headers_mut().insert(AUTHORIZATION, authorization);
     Ok((walk, request))

@@ -206,7 +206,8 @@ impl Engine {
         let fetched =
             tokio::task::spawn_blocking(move || fetch::latest(&*engine.ctx.fetch, &source, &*auth))
                 .await
-                .map_err(|_| Problem::Other)?;
+                .ok()
+                .ok_or(Problem::Other)?;
         match fetched {
             Ok(fetched) => {
                 self.record_check(Outcome::Succeeded);
@@ -316,7 +317,8 @@ impl Engine {
         let (engine, staged) = (Arc::clone(self), dir.clone());
         let outcome = tokio::task::spawn_blocking(move || engine.ctx.elevate.install(&staged))
             .await
-            .map_err(|_| Problem::Other)?;
+            .ok()
+            .ok_or(Problem::Other)?;
         let report = match outcome {
             Ok(report) => report,
             Err(failure) => {
@@ -404,7 +406,8 @@ impl Engine {
             })
         })
         .await
-        .map_err(|_| Problem::Other)?
+        .ok()
+        .ok_or(Problem::Other)?
     }
 
     async fn rollback(self: &Arc<Self>) -> Result<(), Problem> {
@@ -412,7 +415,8 @@ impl Engine {
         let engine = Arc::clone(self);
         let report = tokio::task::spawn_blocking(move || engine.ctx.elevate.rollback())
             .await
-            .map_err(|_| Problem::Other)?
+            .ok()
+            .ok_or(Problem::Other)?
             .map_err(|failure| {
                 tracing::warn!("rolling back failed: {failure}");
                 match Problem::from_apply(&failure) {

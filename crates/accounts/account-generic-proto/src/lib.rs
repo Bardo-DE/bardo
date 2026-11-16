@@ -44,10 +44,12 @@ pub enum Error {
 
 /// `url` as a web URL: `https`, or `http` to this computer.
 pub(crate) fn web(url: &EndpointUrl) -> Result<WebUrl, Error> {
-    WebUrl::try_from(url).map_err(|_| match url.origin().scheme {
-        UrlScheme::Http => Error::Insecure,
-        _ => Error::Unreadable,
-    })
+    WebUrl::try_from(url)
+        .ok()
+        .ok_or_else(|| match url.origin().scheme {
+            UrlScheme::Http => Error::Insecure,
+            _ => Error::Unreadable,
+        })
 }
 
 /// A `GET` or other bodiless request to `url`, with `authorization` when given.
@@ -61,7 +63,8 @@ pub(crate) fn bodiless(
         .method(method)
         .uri(url.as_str())
         .body(Vec::new())
-        .map_err(|_| Error::Unreadable)?;
+        .ok()
+        .ok_or(Error::Unreadable)?;
     if let Some(authorization) = authorization {
         request.headers_mut().insert(AUTHORIZATION, authorization);
     }

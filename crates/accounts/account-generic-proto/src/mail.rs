@@ -133,7 +133,7 @@ pub fn fixed(
         .iter()
         .filter_map(|row| row.endpoint.as_ref().map(|url| (row.family, url)))
         .map(|(family, url)| {
-            let url = EndpointUrl::parse(url).map_err(|_| Error::Unreadable)?;
+            let url = EndpointUrl::parse(url).ok().ok_or(Error::Unreadable)?;
             let endpoint = ServiceEndpoint {
                 family,
                 tls: tls_of_scheme(&url).ok_or(Error::Unreadable)?,
@@ -143,7 +143,8 @@ pub fn fixed(
             endpoint
                 .check()
                 .map(|()| endpoint)
-                .map_err(|_| Error::Unreadable)
+                .ok()
+                .ok_or(Error::Unreadable)
         })
         .collect::<Result<Vec<_>, _>>()?;
     if endpoints.is_empty() {

@@ -131,9 +131,7 @@ impl FileStore {
         if let Err(StoreError::Fault(fault)) = self.load_blocking() {
             return Err(StoreError::Fault(fault));
         }
-        self.file
-            .write(&text)
-            .map_err(|_: io::Error| StoreError::Unavailable)
+        self.file.write(&text).ok().ok_or(StoreError::Unavailable)
     }
 }
 
@@ -142,7 +140,8 @@ impl RegistryStore for FileStore {
         let store = self.clone();
         tokio::task::spawn_blocking(move || store.load_blocking())
             .await
-            .map_err(|_| StoreError::Unavailable)?
+            .ok()
+            .ok_or(StoreError::Unavailable)?
     }
 
     async fn save(&self, state: &Persisted) -> Result<(), StoreError> {
@@ -150,7 +149,8 @@ impl RegistryStore for FileStore {
         let state = state.clone();
         tokio::task::spawn_blocking(move || store.save_blocking(&state))
             .await
-            .map_err(|_| StoreError::Unavailable)?
+            .ok()
+            .ok_or(StoreError::Unavailable)?
     }
 }
 

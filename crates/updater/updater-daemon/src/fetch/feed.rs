@@ -42,7 +42,8 @@ fn get(
 ) -> Result<Fetched, FeedError> {
     let bytes = read_small(fetch.open(index_url)?, MAX_INDEX_BYTES as u64)?;
     let signature = String::from_utf8(read_small(fetch.open(signature_url)?, MAX_SIGNATURE_BYTES)?)
-        .map_err(|_| SignError::BadSignature)?;
+        .ok()
+        .ok_or(SignError::BadSignature)?;
     auth.authenticate(&bytes, &signature)?;
     let release = Release::parse(&bytes)?;
     Ok(Fetched {

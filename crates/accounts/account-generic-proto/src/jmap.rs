@@ -30,7 +30,9 @@ pub fn session_text(response: &Response<Vec<u8>>) -> Result<&str, Error> {
         500..=599 => return Err(Error::Unreachable),
         _ => return Err(Error::Unreadable),
     }
-    std::str::from_utf8(response.body()).map_err(|_| Error::Unreadable)
+    std::str::from_utf8(response.body())
+        .ok()
+        .ok_or(Error::Unreadable)
 }
 
 /// The session's endpoints, logged in as `login`: the session names the login it knows the

@@ -25,7 +25,8 @@ impl Frame512 {
     pub fn new(samples: &[i16]) -> Result<Self, FrameLenError> {
         <[i16; FRAME_SAMPLES]>::try_from(samples)
             .map(Self)
-            .map_err(|_| FrameLenError(samples.len()))
+            .ok()
+            .ok_or_else(|| FrameLenError(samples.len()))
     }
 
     #[must_use]

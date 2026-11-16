@@ -24,7 +24,8 @@ impl Wanted {
         }
         Version::parse(text)
             .map(Self)
-            .map_err(|_| Problem::NotAVersion)
+            .ok()
+            .ok_or(Problem::NotAVersion)
     }
 
     /// Whether `offered` is the version that was shown; [`Problem::VersionChanged`] when it is not.

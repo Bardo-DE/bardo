@@ -71,7 +71,7 @@ impl ReplayProvider {
     }
 
     fn pick(&self, got: &RequestPrint) -> Result<Interaction, ReplayError> {
-        let mut cursor = self.cursor.lock().map_err(|_| ReplayError::Exhausted)?;
+        let mut cursor = self.cursor.lock().ok().ok_or(ReplayError::Exhausted)?;
         let picked = pick(&self.cassette.interactions, self.mode, &mut cursor, got);
         if let Err(miss) = &picked {
             cursor.misses.push(miss.clone());
@@ -257,7 +257,7 @@ impl<P: Provider, C: CassetteSink> Provider for RecordingProvider<P, C> {
                 events: tee.seen,
                 end: end.clone(),
             };
-            self.sink.write(&interaction).map_err(|_| {
+            self.sink.write(&interaction).ok().ok_or_else(|| {
                 ProviderError::Unreadable("the cassette sink refused the write".into())
             })?;
             end

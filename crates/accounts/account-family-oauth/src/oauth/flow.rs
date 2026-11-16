@@ -159,7 +159,7 @@ impl AuthorizePlan {
             &self.grant.scopes,
             ask,
         );
-        WebUrl::parse(&target).map_err(|_| SignInFault::Unreadable)
+        WebUrl::parse(&target).ok().ok_or(SignInFault::Unreadable)
     }
 }
 
@@ -186,7 +186,8 @@ impl<R: BrowserIssuer, H: Http + 'static> BrowserFlow<R, H> {
         )?;
         let server = LoopbackServer::bind()
             .await
-            .map_err(|_| SignInFault::Unreachable)?;
+            .ok()
+            .ok_or(SignInFault::Unreachable)?;
         let redirect = server.redirect_uri();
         let url = plan.authorize(&redirect, &AuthorizeAsk::of(&self.start))?;
         let expected: OAuthState = plan.pkce.state.clone();

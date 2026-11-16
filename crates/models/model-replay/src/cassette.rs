@@ -136,7 +136,10 @@ impl Cassette {
             .iter()
             .enumerate()
             .try_for_each(|(at, interaction)| {
-                check_sequence(&interaction.events).map_err(|_| CassetteError::BadSequence {
+                if check_sequence(&interaction.events).is_ok() {
+                    return Ok(());
+                }
+                Err(CassetteError::BadSequence {
                     line: u32::try_from(at + 2).unwrap_or(u32::MAX),
                 })
             })
@@ -164,8 +167,9 @@ pub(crate) fn read_jsonl<I: DeserializeOwned>(
         .enumerate()
         .filter(|(_, l)| !l.trim().is_empty());
     let (_, first) = lines.next().ok_or(CassetteError::Empty)?;
-    let header: CassetteHeader =
-        serde_json::from_str(first).map_err(|_| CassetteError::BadLine { line: 1 })?;
+    let header: CassetteHeader = serde_json::from_str(first)
+        .ok()
+        .ok_or(CassetteError::BadLine { line: 1 })?;
     if header.vocab != CassetteVersion::CURRENT {
         return Err(CassetteError::Version {
             found: header.vocab,
@@ -174,9 +178,11 @@ pub(crate) fn read_jsonl<I: DeserializeOwned>(
     }
     let items = lines
         .map(|(at, line)| {
-            serde_json::from_str(line).map_err(|_| CassetteError::BadLine {
-                line: u32::try_from(at + 1).unwrap_or(u32::MAX),
-            })
+            serde_json::from_str(line)
+                .ok()
+                .ok_or_else(|| CassetteError::BadLine {
+                    line: u32::try_from(at + 1).unwrap_or(u32::MAX),
+                })
         })
         .collect::<Result<Vec<I>, _>>()?;
     Ok((header, items))

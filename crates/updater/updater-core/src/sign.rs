@@ -45,15 +45,18 @@ impl PublicKey {
         } else {
             minisign_verify::PublicKey::from_base64(trimmed)
         };
-        key.map(Self).map_err(|_| SignError::BadKey)
+        key.map(Self).ok().ok_or(SignError::BadKey)
     }
 }
 
 impl Authenticator for PublicKey {
     fn authenticate(&self, message: &[u8], signature: &str) -> Result<(), SignError> {
-        let signature = Signature::decode(signature).map_err(|_| SignError::BadSignature)?;
+        let signature = Signature::decode(signature)
+            .ok()
+            .ok_or(SignError::BadSignature)?;
         self.0
             .verify(message, &signature, false)
-            .map_err(|_| SignError::NotSigned)
+            .ok()
+            .ok_or(SignError::NotSigned)
     }
 }

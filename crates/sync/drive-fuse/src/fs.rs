@@ -169,7 +169,8 @@ impl DriveFs {
         let (folder, name) = self.named(parent, name)?;
         self.drive
             .lookup(&folder, name)
-            .map_err(|_| Errno::EIO)?
+            .ok()
+            .ok_or(Errno::EIO)?
             .map(|node| node.id)
             .ok_or(Errno::ENOENT)
     }
@@ -185,7 +186,8 @@ impl DriveFs {
         let attrs = self
             .drive
             .attrs(id)
-            .map_err(|_| Errno::EIO)?
+            .ok()
+            .ok_or(Errno::EIO)?
             .ok_or(Errno::ENOENT)?;
         Ok(Attr {
             ino: self.drive.ino(id),
@@ -206,7 +208,8 @@ impl DriveFs {
         let node = self
             .drive
             .lookup(&folder, name)
-            .map_err(|_| Errno::EIO)?
+            .ok()
+            .ok_or(Errno::EIO)?
             .ok_or(Errno::ENOENT)?;
         self.attr_of(&node.id)
     }
@@ -251,7 +254,7 @@ impl DriveFs {
                 name: "..".into(),
             },
         ];
-        for node in self.drive.children(&id).map_err(|_| Errno::EIO)? {
+        for node in self.drive.children(&id).ok().ok_or(Errno::EIO)? {
             entries.push(DirEntry {
                 ino: self.drive.ino(&node.id),
                 folder: node.kind == NodeKind::Folder,
@@ -396,7 +399,8 @@ impl DriveFs {
             && self
                 .drive
                 .lookup(&folder, new_name)
-                .map_err(|_| Errno::EIO)?
+                .ok()
+                .ok_or(Errno::EIO)?
                 .is_some()
         {
             return Err(Errno::EEXIST);
