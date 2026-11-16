@@ -59,7 +59,6 @@ LAYERS=(
   "engine-probe: C"
   "engine-install: C"
   # Excluded from the workspace (they need a runtime outside the pinned block).
-  "speech-vad-silero: C"
   "speech-host-sherpa: A"
   # The fuzz targets of computer-use-parse (nightly only, their own `[workspace]` table).
   "computer-use-parse/fuzz: A"
@@ -99,7 +98,7 @@ BANS=(
 # keep checking default features. Nothing here reaches porter: stoker is portable.
 PORTER="account-core inference-core account-client account-provider"
 EFFECTS="tokio hyper hyper-util rustls zbus zvariant reqwest ureq wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify cedar-policy rmcp"
-# Audio devices belong to the voice daemon (docket's voiced), never to the speech crates; and no
+# Audio devices belong to the voice stack (speech-audio, speech-pipewire, speech-daemon), never to the crates checked here; and no
 # TTS stack with a GPL grapheme step is ever linked: Kokoro runs as its own process (voice.md 0.3).
 AUDIO_DEVICES="pipewire libpulse-binding libpulse-simple-binding cpal"
 GPL_TTS="espeak-rs espeak-ng espeak-ng-sys piper-rs"
@@ -198,7 +197,9 @@ fail=0
 long_files=0
 [ "${1:-}" = "--long-files" ] && long_files=1
 
-members=$(sed -n '/^members = \[/,/^\]/s#^    "crates/\(models\|speech\|engines\|computer-use\)/\(.*\)",$#\2#p' ../../Cargo.toml | grep -E '^(model-|speech-|engine-|computer-use-(action|parse|session|vendors)$)')
+# The voice stack (speech-audio, -daemon, -dbus, -loop, -pipewire, -wire) is checked by crates/actions/scripts/check-boundary.sh, which reads the whole workspace.
+VOICE_STACK="speech-(audio|daemon|dbus|loop|pipewire|wire)"
+members=$(sed -n '/^members = \[/,/^\]/s#^    "crates/\(models\|speech\|engines\|computer-use\)/\(.*\)",$#\2#p' ../../Cargo.toml | grep -E '^(model-|speech-|engine-|computer-use-(action|parse|session|vendors)$)' | grep -vxE "$VOICE_STACK")
 excluded=$(sed -n "/^exclude = \\[/,/^\\]/s#^    'crates/\\(speech\\)/\\(.*\\)',\$#\\2#p" ../../Cargo.toml)
 
 # Every crate has a row in LAYERS, and every row names a crate, so a new crate cannot slip in

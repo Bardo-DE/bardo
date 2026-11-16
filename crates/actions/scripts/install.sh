@@ -64,7 +64,7 @@ extra_arg() {
   case "$1" in
     --with-voice)
       WITH_VOICE=1
-      BINARIES+=("bardo-voiced|agent-voice-daemon|libexec")
+      BINARIES+=("bardo-voiced|speech-daemon|libexec")
       UNITS+=(bardo-voiced); DBUS_NAMES+=(Voice1); CALLERS+=(voiced) ;;
     *) return 1 ;;
   esac

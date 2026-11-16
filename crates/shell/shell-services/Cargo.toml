@@ -45,8 +45,8 @@ action-dbus = {path = "../../actions/action-dbus"}
 action-client = {path = "../../actions/action-client", features = ["dbus"]}
 action-provider = {path = "../../actions/action-provider", features = ["dbus"]}
 companion-wire = {path = "../../actions/companion-wire"}
-agent-voice-wire = {path = "../../actions/agent-voice-wire"}
-agent-voice-dbus = {path = "../../actions/agent-voice-dbus"}
+speech-wire = {path = "../../speech/speech-wire"}
+speech-dbus = {path = "../../speech/speech-dbus"}
 computer-use-bus = {path = "../../computer-use/computer-use-bus"}
 computer-use-dbus = {path = "../../computer-use/computer-use-dbus"}
 memory-core = {path = "../../memory/memory-core"}

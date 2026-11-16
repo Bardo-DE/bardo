@@ -2,7 +2,7 @@
 //! (`Voice1.Utterance.Attach`), reads the `VoiceEvent` frames and hands the words to ds's
 //! prompt or dictation machine. The mapping from a frame to what a field does with it is pure.
 
-use agent_voice_wire::{UtteranceEnd, VoiceEvent};
+use speech_wire::{UtteranceEnd, VoiceEvent};
 use ui_intents::{HeardEndMark, HeardMark, InputLevel};
 
 /// The field's view of one frame; frames a field has no use for (`Opened`, `Waiting`) give none.

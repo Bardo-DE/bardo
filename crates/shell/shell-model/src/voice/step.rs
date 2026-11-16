@@ -2,7 +2,7 @@
 //! or an end makes of them.
 
 use action_core::{ContextKeep, Keep, TurnVia};
-use agent_voice_wire::{CancelCause, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal};
+use speech_wire::{CancelCause, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal};
 use provenance::SpaceId;
 
 use super::command::{VoiceCommand, VoiceEffect, VoiceEvent};
@@ -87,7 +87,7 @@ fn told(state: Voice, command: VoiceCommand) -> (Voice, Vec<VoiceEffect>) {
 fn start(
     state: Voice,
     scope: AskScope,
-    trigger: agent_voice_wire::VoiceTrigger,
+    trigger: speech_wire::VoiceTrigger,
 ) -> (Voice, Vec<VoiceEffect>) {
     let allowed = matches!(state.params.hold_to_talk, HoldToTalk::HoldCommand)
         && !matches!(state.params.consent, VoiceConsent::Declined);

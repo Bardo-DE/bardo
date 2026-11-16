@@ -1,6 +1,6 @@
 //! What tells the voice service things, what happens in it, and what that asks of the outside.
 
-use agent_voice_wire::{
+use speech_wire::{
     CancelCause, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal, VoiceTrigger,
 };
 

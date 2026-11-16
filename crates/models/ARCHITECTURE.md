@@ -38,14 +38,13 @@ trait), section 6 (copy the recipe).
 | `speech-provider` | audio and text types, `SpeechToText`, `TextToSpeech`, `AudioSource`/`AudioSink`, `VoiceActivity`, `SpeechCaps`, the host wire and its framing; feature `testing`: `ScriptedStt`, `ScriptedTts`, `ScriptedVad` | none |
 | `speech-vad` | `EnergyGate`, `Framer`, `level_of`, the `endpoint` machine | none |
 | `speech-host-client` | `SpeechHostClient: SpeechToText` over the host's Unix socket | yes (the socket, when filled) |
-| `speech-vad-silero` | `SileroVad: VoiceActivity` over `ort`; **excluded from the workspace** | the runtime |
 | `bardo-speech-host` | the STT engine binary: sherpa-onnx (built without TTS) behind a Unix socket; **excluded from the workspace**, runs only as a confined engine unit | the runtime and the socket |
 
 `scripts/check-boundary.sh` holds a LAYERS table: every crate is **P** (pure: no `std::fs`/`env`/`process`/`net`,
 no clock reads, no sleeps, no `tokio`, `hyper`, `reqwest`, `zbus` or `rustix`, no UI words), **C** (client/IO: may
 do IO, no `Label`, `Help`, `Sheet` or `SettingRow`) or **A** (wiring). A crate depends on its own tier or below.
-Today every crate is P except `engine-probe`, `engine-install`, `speech-host-client`, `bardo-speech-host` and
-`speech-vad-silero` (C) and `speech-host-sherpa` (A). `model-http` is P with KNOWN rows: its feature-gated reqwest client (reqwest and tokio in
+Today every crate is P except `engine-probe`, `engine-install`, `speech-host-client`, `bardo-speech-host`
+(C) and `speech-host-sherpa` (A). `model-http` is P with KNOWN rows: its feature-gated reqwest client (reqwest and tokio in
 the source) is the one violation, removed when the client moves to its own crate (plan lane T1.2). `--self-test` seeds a `std::fs` call in a P crate and
 checks the script fails; `--long-files` reports source files over 500 lines.
 
@@ -72,7 +71,6 @@ The direct edges in use (documentation; dev-dependencies are outside it):
 | `speech-provider` | `model-provider` |
 | `speech-vad` | `speech-provider` |
 | `speech-host-client` | `model-provider`, `speech-provider` |
-| `speech-vad-silero` (excluded) | `speech-provider`, `speech-vad` |
 | `bardo-speech-host` (excluded) | `speech-provider` |
 
 External boundaries: the pure crates (everything but `model-http`, the one io crate) never reach `tokio`,
@@ -96,7 +94,7 @@ manifests (their direct edges and the same lists), and they alone may reach `ort
 Downstream, porter's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-provider`,
 `computer-use-session`, `model-catalog`, `engine-supervisor`, `model-http`, `model-wire`,
 `model-openai-compat`, `model-extract`, `speech-provider` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); docket's `voiced` takes
-`speech-vad` and `speech-vad-silero`; inference-core takes `computer-use-action` only. cuad, almanac, docket and sill do not name
+`speech-vad`; inference-core takes `computer-use-action` only. cuad, almanac, docket and sill do not name
 stoker.
 
 ## 2. Modules
@@ -124,7 +122,7 @@ stoker.
 | `speech-provider` | `audio`, `text` < `vad`, `stt`, `tts`, `caps` < `host_wire` < `testing` (feature `testing`) |
 | `speech-vad` | `level` < `energy`, `framer` < `endpoint` |
 | `speech-host-client` | `lib` |
-| `speech-vad-silero`, `bardo-speech-host` | `lib` (and `main` for the host) |
+| `bardo-speech-host` | `lib` (and `main` for the host) |
 
 ## 3. One home per concept
 
@@ -176,7 +174,7 @@ stoker.
 | recognised and spoken text, languages and voices | `speech-provider::text` (`HeardText`, `SpokenText`, `Lang`, `VoiceId`) |
 | what a speech model can do | `speech-provider::SpeechCaps` |
 | the inferd to `bardo-speech-host` wire and its framing | `speech-provider::host_wire` |
-| voice-activity detection, loudness, endpointing | `speech-vad` (`EnergyGate`, `level_of`, `endpoint`); the Silero model in `speech-vad-silero` |
+| voice-activity detection, loudness, endpointing | `speech-vad` (`EnergyGate`, `level_of`, `endpoint`) |
 | the speech request wire of OpenAI-compatible servers | `model-openai-compat::audio` |
 | speech cassettes | `model-replay::speech` |
 | the chat-completions wire | `model-openai-compat::codec` |
@@ -317,7 +315,7 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 | `speech-provider`: every type, the checked names, `AudioChunk::{samples, duration}`, the host framing, the `testing` fakes | built, tested (round trips, pinned JSON, redaction, duration table, the fakes' scripts) |
 | `speech-vad`: types, defaults, `level_of`, `EnergyGate`, `Framer::push`, `endpoint` | built, tested (level rows, gate table, framer proptest, endpoint table, the chain over synthetic audio) |
 | `speech-host-client`: types | built; both trait bodies stubbed |
-| `speech-vad-silero`, `bardo-speech-host` | skeletons (excluded from the workspace); every body stubbed |
+| `bardo-speech-host` | skeletons (excluded from the workspace); every body stubbed |
 | `model-replay::speech`: cassette format, round trip | built, tested; the prints, `SpeechReplay` and `RecordingSpeech` stubbed |
 
 ## 6. Recipes
@@ -444,9 +442,9 @@ run by hand against the user's own engine.
   ```
 
 - **No `unsafe`** anywhere (`unsafe_code = "deny"`).
-- **Excluded crates**: `speech-vad-silero` and `bardo-speech-host` are workspace `exclude`s and
-  `deny.toml` `[graph] exclude`s, so the gate's clippy and test never build them (the runtimes
-  they need are not in the pinned block). Build one by hand with
+- **Excluded crates**: `bardo-speech-host` (the `speech-host-sherpa` crate) is a workspace `exclude` and a
+  `deny.toml` `[graph] exclude`, so the gate's clippy and test never build it (the runtimes
+  they need are not in the pinned block). Build it by hand with
   `cargo build --manifest-path crates/<name>/Cargo.toml`; their `Cargo.lock` and `target/` stay
   untracked. They join the workspace if the runtime joins the pinned block and the gate can
   build it.

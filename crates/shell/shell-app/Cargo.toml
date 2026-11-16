@@ -45,7 +45,7 @@ toml = { workspace = true }
 tempfile.workspace = true
 serde_json = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
-agent-voice-wire = {path = "../../actions/agent-voice-wire"}
+speech-wire = {path = "../../speech/speech-wire"}
 zbus-ready = {path = "../../zbus-ready"}
 ui-harness = {path = "../../ui/ui-harness"}
 shell-testkit = {path = "../shell-testkit"}

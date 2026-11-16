@@ -6,7 +6,7 @@ use action_manifest::TitleTrust;
 use action_ui_adapter::*;
 use action_vocab::{UtteranceId, ViewName};
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial, VoiceIntent};
-use agent_voice_wire::{
+use speech_wire::{
     CancelCause, HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent,
 };
 use base_ids::Count;

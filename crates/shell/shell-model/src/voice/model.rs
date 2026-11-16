@@ -1,7 +1,7 @@
 //! What the voice service publishes: whether it reaches `voiced`, what the settings allow, where
 //! the hold stands and what the person has been told.
 
-use agent_voice_wire::{CancelCause, VoiceFault, VoiceRefusal};
+use speech_wire::{CancelCause, VoiceFault, VoiceRefusal};
 use provenance::{AppName, UnixSeconds};
 use serde::{Deserialize, Serialize};
 use shell_launcher::WindowKey;

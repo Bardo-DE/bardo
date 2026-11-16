@@ -12,4 +12,4 @@
 # audio indicator will show the microphone in use while it runs, and only then.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-exec cargo run --quiet -p agent-voice-daemon --example voice_capture_try -- "${@:-list}"
+exec cargo run --quiet -p speech-daemon --example voice_capture_try -- "${@:-list}"

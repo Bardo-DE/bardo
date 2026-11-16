@@ -12,7 +12,7 @@ mod step;
 mod tests;
 mod words;
 
-pub use agent_voice_wire::{CancelCause, VoiceTrigger};
+pub use speech_wire::{CancelCause, VoiceTrigger};
 pub use command::{VoiceCommand, VoiceEffect, VoiceEvent};
 pub use model::{
     AskScope, ConsentAnswer, Heard, HoldToTalk, Notice, Phase, Then, Voice, VoiceConsent,

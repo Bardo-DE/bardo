@@ -1,6 +1,6 @@
 //! What the person reads about voice: the line for a refusal and the placeholder while listening.
 
-use agent_voice_wire::{VoiceFault, VoiceRefusal};
+use speech_wire::{VoiceFault, VoiceRefusal};
 
 use super::model::{Notice, Phase};
 

@@ -10,8 +10,8 @@ use std::os::fd::OwnedFd;
 use std::sync::Arc;
 
 use action_wire::VoiceIntent;
-use agent_voice_dbus::{UtteranceProxy, VoiceProxy};
-use agent_voice_wire::{
+use speech_dbus::{UtteranceProxy, VoiceProxy};
+use speech_wire::{
     CancelCause, UtteranceEnd, VoiceBegin, VoiceEvent as Frame, VoiceRefusal, VoiceTrigger, seal,
 };
 use provenance::{SpaceId, UnixSeconds};

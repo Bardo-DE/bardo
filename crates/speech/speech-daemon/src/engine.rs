@@ -1,0 +1,193 @@
+//! The daemon's one loop. Everything that changes state happens here, in one task: bus commands,
+//! capture frames, inferd events and playback reports are all inputs to it, and the two pure
+//! machines of `speech-loop` decide what each input does. A command is answered as soon as it is
+//! decided; slow things (opening the engine, warming it, playing) run in their own tasks and come
+//! back as events, so a cold engine never delays a `Begin`.
+
+use crate::command::{Caller, Command};
+use crate::error::VoiceError;
+use crate::frames::Frames;
+use crate::link::{Link, LinkEvent};
+use crate::peer::Peers;
+use crate::playback::{Played, Player};
+use crate::sink::EventSink;
+use crate::talk::Say;
+use crate::usage::UseSource;
+use crate::warm::Warm;
+use crate::watch::{Deadline, Leaving};
+use action_wire::VoiceIntent;
+use speech_audio::{AudioDevice, AudioNode, CaptureStream};
+use speech_loop::{PcmBuffer, UtteranceState};
+use speech_wire::{CancelCause, HeardSegment, HeardTail, UtteranceEnd, VoiceTarget};
+use inference_client::Transport;
+use inference_core::Readiness;
+use std::future::pending;
+use std::sync::{Arc, Mutex};
+use tokio::sync::mpsc;
+
+/// The speech-to-text session of the utterance.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum SttLink {
+    /// Still warming; audio is buffered.
+    Cold {
+        /// The audio ended while the engine was cold: send its end once the engine is ready.
+        end_pending: bool,
+    },
+    /// Ready for audio.
+    Ready,
+}
+
+impl SttLink {
+    pub(crate) fn is_ready(self) -> bool {
+        matches!(self, Self::Ready)
+    }
+}
+
+/// What the loop knows of the one utterance it holds (the last one stays until the next begins,
+/// so a late `Release` or `Attach` finds its object).
+#[derive(Debug)]
+pub(crate) struct Utt {
+    pub n: u64,
+    pub caller: String,
+    pub intent: VoiceIntent,
+    pub since: base_time::UnixSeconds,
+    pub state: UtteranceState,
+    pub sink: EventSink,
+    pub attached: Option<(String, EventSink)>,
+    pub route: Option<VoiceTarget>,
+    pub committed: Vec<HeardSegment>,
+    pub partial: Option<HeardTail>,
+    pub ended: Option<UtteranceEnd>,
+    pub carry: Frames,
+    pub pcm: PcmBuffer,
+    pub tail_left: Option<usize>,
+    pub sent: u64,
+    pub engine: SttLink,
+    pub dictation: Option<crate::frames::Dictation>,
+}
+
+/// The loop's state.
+pub(crate) struct Core<D: AudioDevice + 'static, T: Transport + 'static, W: Warm, U: UseSource>
+where
+    T::Session: 'static,
+{
+    pub conn: zbus::Connection,
+    pub handle: crate::command::Handle,
+    pub peers: Peers,
+    pub device: Arc<D>,
+    pub transport: Arc<T>,
+    pub warm: Arc<W>,
+    pub usage: U,
+    pub earcons: bool,
+    pub input: Option<String>,
+    pub max_hold: std::time::Duration,
+    pub deadline: Deadline,
+    pub leaving: Leaving,
+    pub counter: u64,
+    pub utt: Option<Utt>,
+    pub node: Option<AudioNode>,
+    pub capture: Option<D::Capture>,
+    pub stt: Option<Link>,
+    pub cur: Vec<i16>,
+    pub say: Say,
+    pub player: Player,
+    pub played: mpsc::UnboundedReceiver<Played>,
+    pub stt_ready: Arc<Mutex<Readiness>>,
+    pub tts_ready: Readiness,
+}
+
+async fn capture_next<C: CaptureStream>(capture: &mut Option<C>) -> Option<Vec<i16>> {
+    match capture {
+        Some(stream) => stream.next().await,
+        None => pending().await,
+    }
+}
+
+async fn link_next(link: &mut Option<Link>) -> Option<LinkEvent> {
+    match link {
+        Some(link) => link.rx.recv().await,
+        None => pending().await,
+    }
+}
+
+impl<D: AudioDevice + 'static, T: Transport + 'static, W: Warm, U: UseSource> Core<D, T, W, U>
+where
+    T::Session: 'static,
+{
+    /// Runs until the inbox closes.
+    pub async fn run(mut self, mut inbox: mpsc::Receiver<Command>) {
+        loop {
+            tokio::select! {
+                command = inbox.recv() => match command {
+                    Some(command) => self.command(command).await,
+                    None => return,
+                },
+                frame = capture_next(&mut self.capture) => self.audio(frame).await,
+                event = link_next(&mut self.stt) => self.stt_event(event).await,
+                event = link_next(&mut self.say.link) => self.tts_event(event).await,
+                Some(played) = self.played.recv() => self.played(played).await,
+                () = self.deadline.expired() => self.hold_over(CancelCause::TooLong).await,
+                () = self.leaving.left() => self.hold_over(CancelCause::Shell).await,
+            }
+        }
+    }
+
+    async fn command(&mut self, command: Command) {
+        match command {
+            Command::Begin {
+                caller,
+                begin,
+                reply,
+            } => {
+                let _ = reply.send(self.begin(&caller, begin).await);
+            }
+            Command::Speak {
+                caller,
+                wire,
+                reply,
+            } => {
+                let _ = reply.send(self.speak(&caller, wire).await);
+            }
+            Command::Hush { caller, reply } => {
+                let _ = reply.send(self.hush(&caller).await);
+            }
+            Command::Prepare { caller, reply } => self.prepare(&caller, reply),
+            Command::Status { reply } => {
+                let _ = reply.send(self.status_text());
+            }
+            Command::Route {
+                n,
+                caller,
+                target,
+                reply,
+            } => {
+                let _ = reply.send(self.route(n, &caller, target).await);
+            }
+            Command::Attach { n, caller, reply } => {
+                let _ = reply.send(self.attach(n, &caller).await);
+            }
+            Command::Release { n, caller, reply } => {
+                let _ = reply.send(self.release(n, &caller).await);
+            }
+            Command::Cancel {
+                n,
+                caller,
+                cause,
+                reply,
+            } => {
+                let _ = reply.send(self.cancel(n, &caller, cause).await);
+            }
+            Command::StopSpeech { n, caller, reply } => {
+                let _ = reply.send(self.stop_speech(n, &caller).await);
+            }
+        }
+    }
+
+    /// The utterance `n` if it is the one held and `caller` began it.
+    pub fn owned_utt(&self, n: u64, caller: &Caller) -> Result<&Utt, VoiceError> {
+        match &self.utt {
+            Some(utt) if utt.n == n && utt.caller == caller.unique => Ok(utt),
+            _ => Err(speech_wire::VoiceRefusal::NotAllowed.into()),
+        }
+    }
+}

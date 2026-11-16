@@ -1,0 +1,24 @@
+[package]
+name = "speech-loop"
+description = "The voice step machines, pure: one utterance (the mic is open only in three states), speech output with barge-in, the sentencer and the audio buffer."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+speech-wire = {path = "../speech-wire"}
+account-core = {path = "../../accounts/account-core"}
+action-wire = {path = "../../actions/action-wire"}
+inference-core = {path = "../../inference/inference-core"}
+speech-provider = {path = "../speech-provider"}
+serde = { workspace = true, features = ["derive"] }
+
+[dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

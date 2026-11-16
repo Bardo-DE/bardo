@@ -19,7 +19,7 @@ cd "$(dirname "$0")/.."
 PORTABLE=(
   action-vocab action-manifest permission-core companion-model action-core action-gate-wire action-wire agent-skills agent-skills-disk permission-policy action-review action-context action-gate action-router
   action-tools companion-wire companion-core agent-loop agent-planner companion-tasks agent-native agent-session action-checkpoint agent-acp-server action-client action-fake action-eval action-eval-core
-  agent-models agent-reader companion-memory-core companion-memory agent-registry action-host agent-inapp agent-voice-wire agent-voice-loop agent-voice-audio
+  agent-models agent-reader companion-memory-core companion-memory agent-registry action-host agent-inapp speech-wire speech-loop speech-audio
 )
 # What must never be in a portable crate's tree: a bus, or a Linux-only kernel interface.
 FORBIDDEN='zbus|zvariant|inotify|landlock|pipewire|notify|libspa'

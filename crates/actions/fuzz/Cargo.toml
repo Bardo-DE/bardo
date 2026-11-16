@@ -26,7 +26,7 @@ action-eval = { path = "../action-eval" }
 action-fake = { path = "../action-fake" }
 action-eval-core = { path = "../action-eval-core" }
 provenance = { git = "https://github.com/Bardo-DE/prov", rev = "5106c0c2f502711411ba82c72b32c7e543b9cc4d" }
-agent-voice-wire = { path = "../agent-voice-wire" }
+speech-wire = { path = "../../speech/speech-wire" }
 
 [[bin]]
 name = "parse_verdict"

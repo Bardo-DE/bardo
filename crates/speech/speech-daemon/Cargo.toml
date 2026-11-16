@@ -1,0 +1,65 @@
+[package]
+name = "speech-daemon"
+description = "The voice daemon: the only process that opens the microphone, serves org.bardo.Voice1, and runs the voice machines. The audio device is the speech-audio seam; the PipeWire backend is speech-pipewire."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+account-match = {path = "../../accounts/account-match"}
+account-capability = {path = "../../accounts/account-capability"}
+base-time = { path = "../../base/base-time" }
+speech-loop = {path = "../speech-loop"}
+speech-audio = {path = "../speech-audio"}
+speech-wire = {path = "../speech-wire"}
+speech-dbus = {path = "../speech-dbus"}
+action-wire = {path = "../../actions/action-wire"}
+account-core = {path = "../../accounts/account-core"}
+inference-core = {path = "../../inference/inference-core"}
+inference-client = {features = ["dbus"], path = "../../inference/inference-client"}
+action-dbus = {path = "../../actions/action-dbus"}
+action-procroot = {path = "../../actions/action-procroot"}
+speech-pipewire = {path = "../speech-pipewire", optional = true}
+futures-util = { workspace = true, features = ["std"] }
+speech-vad = {path = "../speech-vad"}
+speech-provider = {path = "../speech-provider"}
+zbus = {version = "5.19", default-features = false, features = ["tokio"]}
+tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
+clap = {version = "4", default-features = false, features = ["derive", "std", "help", "usage", "error-context"]}
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+toml = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+action-log = {path = "../../actions/action-log"}
+zbus-ready = { path = "../../zbus-ready" }
+
+[features]
+default = ["pipewire"]
+# `speech-pipewire`, the shipped audio backend (needs libpipewire and libclang to build). The
+# daemon binary and the by-hand example need it; the library without it is the machines and
+# `dictate`, so a test or another backend builds with `--no-default-features`.
+pipewire = ["dep:speech-pipewire"]
+
+[[bin]]
+name = "bardo-voiced"
+path = "src/main.rs"
+required-features = ["pipewire"]
+
+[[example]]
+name = "voice_capture_try"
+required-features = ["pipewire"]
+
+[dev-dependencies]
+action-vocab = {path = "../../actions/action-vocab"}
+action-dbus = {path = "../../actions/action-dbus", features = ["fixture-callers"]}
+action-testbus = {path = "../../actions/action-testbus"}
+inference-core = {features = ["testing"], path = "../../inference/inference-core"}
+tempfile = { workspace = true }
+futures-util = { workspace = true, features = ["std"] }
+
+[lints]
+workspace = true

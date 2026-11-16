@@ -1,4 +1,4 @@
-use agent_voice_wire::{
+use speech_wire::{
     CancelCause, HeardSegment, HeardTail, HeardText, Level, UtteranceEnd, VoiceEvent as Frame,
     VoiceFault, VoiceRefusal, VoiceTrigger,
 };

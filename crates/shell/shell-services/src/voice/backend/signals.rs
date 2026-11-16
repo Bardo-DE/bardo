@@ -4,7 +4,7 @@
 
 use std::sync::Arc;
 
-use agent_voice_wire::{Envelope, UtteranceEnd, VoiceVocab};
+use speech_wire::{Envelope, UtteranceEnd, VoiceVocab};
 use caller_identity_dbus::caller_identity_core::RoleName;
 use tokio::sync::mpsc::UnboundedSender;
 use zbus::message::Type;
@@ -13,7 +13,7 @@ use zbus::{Connection, MatchRule, MessageStream};
 use super::run::Inbound;
 use crate::callers::{Claim, Peers, SignalSenders};
 use crate::stream::next;
-use agent_voice_dbus::{UTTERANCE_PREFIX, VOICE_BUS};
+use speech_dbus::{UTTERANCE_PREFIX, VOICE_BUS};
 
 /// The role the caller table gives voiced's program. Owning `org.bardo.Voice1` proves nothing: any
 /// process may claim a name nobody owns yet, so a signal or a call counts as voiced's only when

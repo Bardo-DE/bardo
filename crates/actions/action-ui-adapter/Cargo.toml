@@ -16,7 +16,7 @@ action-manifest = {path = "../action-manifest"}
 action-vocab = {path = "../action-vocab"}
 action-provider = {path = "../action-provider"}
 companion-wire = {path = "../companion-wire"}
-agent-voice-wire = {path = "../agent-voice-wire"}
+speech-wire = {path = "../../speech/speech-wire"}
 ui-intents = {path = "../../ui/ui-intents"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}

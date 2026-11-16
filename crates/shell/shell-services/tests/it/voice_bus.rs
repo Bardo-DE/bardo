@@ -8,7 +8,7 @@ use account_capability::{Locality, ModelId};
 use account_core::AccountId;
 use action_core::{Keep, TurnVia};
 use action_wire::VoiceIntent;
-use agent_voice_wire::{
+use speech_wire::{
     CancelCause, Envelope, HeardSegment, HeardTail, HeardText, MAX_FRAME, UtteranceEnd, VoiceBegin,
     VoiceEvent as Frame, VoiceRefusal, VoiceTrigger,
 };
@@ -65,7 +65,7 @@ async fn a_hold_begins_hears_partials_releases_and_asks_the_companion_what_it_he
         })
         .await;
     let sent: Envelope<VoiceBegin> = serde_json::from_str(&begin).unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(sent.vocab, agent_voice_wire::VoiceVocab::CURRENT);
+    assert_eq!(sent.vocab, speech_wire::VoiceVocab::CURRENT);
     assert_eq!(
         sent.body,
         VoiceBegin {

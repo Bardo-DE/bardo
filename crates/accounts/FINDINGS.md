@@ -2322,7 +2322,6 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
 - `ProviderError::{PaymentRequired(ProviderDetail), AuthRejected(ProviderDetail)}`; a bare 401 is still `Unauthorized`; `retry_class` is `Never` for both. `ProviderDetail { status, message }` is redacted and cut to 240 characters.
 - `Constraint::JsonObject` and `OutputShape::JsonObject` (`model-extract` picks it after `JsonSchema` and `Gbnf`, only for an object-shaped reply, puts the schema in the system prompt and still validates). `enforceable(flavor)` lists it for every flavor.
 - `cua_parse::SCROLL_PIXELS_RULE`; catalogue entries `holo-3.1-9b`, `holo4-35b-a3b-fp8` (both `json_schema`), `deepseek-v4-pro` (`json_object`), `muse-spark-1.3-contributor`.
-- `speech-vad-silero`: `SileroConfig.runtime: OnnxRuntimePath`, `OrtInfer::load(dylib, model)`, no env read. **Porter does not depend on this crate** (grep for silero, speech-vad and ORT_DYLIB_PATH finds nothing in code), so there is nothing to pass and no `Config::from_env` change; the person's `ORT_DYLIB_PATH` is unaffected. (inferd's speech host takes its libraries from `speech_host_libs`, a different path.)
 - Internal only, no porter change: `cua-parse` tools take a `ToolDialect` instead of a `holo` bool, Holo's `finish` reads `text` when there is no `summary`, `cua-vendors` `AnthropicTool`, tests moved to `tests/it`.
 
 **Changes.**

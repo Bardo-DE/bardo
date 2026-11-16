@@ -7,7 +7,7 @@
 #   dev/fuzz.sh all 300              # every target, 300 seconds each
 #
 # Targets (fuzz/fuzz_targets): parse_verdict (a reviewer's reply; never an allow but for the exact
-# shapes), tool_args (a tool call's arguments read by a real action's types), unframe (agent-voice-wire's
+# shapes), tool_args (a tool call's arguments read by a real action's types), unframe (speech-wire's
 # event fd), companion_wire (Companion1 bodies), leaked_call (a call written as words), case_files
 # (corpus and planner-case TOML).
 #

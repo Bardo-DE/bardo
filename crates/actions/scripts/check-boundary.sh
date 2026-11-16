@@ -44,9 +44,9 @@ LAYERS=(
   "agent-session:P"
   "action-checkpoint:P"
   "action-tools:P"
-  "agent-voice-wire:P"
-  "agent-voice-loop:P"
-  "agent-voice-audio:P"
+  "speech-wire:P"
+  "speech-loop:P"
+  "speech-audio:P"
   "companion-memory-core:P"
   "agent-acp-core:P"
   "agent-registry:P"
@@ -74,8 +74,8 @@ LAYERS=(
   "action-client:C"
   "action-provider:C"
   "companion-client:C"
-  "agent-voice-dbus:C"
-  "agent-voice-pipewire:C"
+  "speech-dbus:C"
+  "speech-pipewire:C"
   "action-log:C"
   "action-procroot:C"
   # test and acceptance support: the model tap writes prompts to disk, so no shipped crate lists it
@@ -94,7 +94,7 @@ LAYERS=(
   "action-daemon:A"
   "companion-daemon:A"
   "agent-reader-daemon:A"
-  "agent-voice-daemon:A"
+  "speech-daemon:A"
 )
 
 # KNOWN: the only allowance. One row per breach: "<crate> <key> <lane that removes it>".
@@ -278,8 +278,8 @@ self_test() {
     grep -q "^LAYER: $3" <<<"$out" || { echo "self-test: no '$3' line for: $4"; rc=1; }
     cp "$tmp/seed.bak" "$tmp/$1"
   }
-  expect crates/actions/agent-voice-wire/src/lib.rs '\npub fn seeded() { let _ = std::fs::read("x"); }\n' \
-    'agent-voice-wire src:std::fs' 'std::fs in a P crate'
+  expect crates/speech/speech-wire/src/lib.rs '\npub fn seeded() { let _ = std::fs::read("x"); }\n' \
+    'speech-wire src:std::fs' 'std::fs in a P crate'
   expect crates/actions/action-log/Cargo.toml '\n[dependencies.action-daemon]\npath = "../action-daemon"\n' \
     'action-log dep:action-daemon' 'a C crate depending on an A crate'
   expect crates/actions/action-tools/src/lib.rs '\npub use serde_json;\n' \
@@ -307,7 +307,7 @@ cd "$(dirname "$0")/.."
 # RULES: what a crate reaches through ANY path (transitive, default features).
 #
 # The pure crates (action-vocab, action-manifest, permission-core, companion-model, action-core, action-gate-wire, action-wire, permission-policy, action-review, action-context, action-gate, action-router, companion-wire,
-# agent-loop, agent-voice-wire, agent-voice-loop, agent-voice-audio) never reach a bus, a runtime, an HTTP client, an audio or
+# agent-loop, speech-wire, speech-loop, speech-audio) never reach a bus, a runtime, an HTTP client, an audio or
 # display or accessibility stack, a database, a file watcher, an embedding runtime or the MCP SDK.
 # Only permission-policy reaches cedar-policy, and the crates above it (action-router, the fakes and
 # the daemons that run the router; action-client only behind its `in_process` feature). Only bardo-actions-mcp reaches rmcp. action-core
@@ -398,14 +398,14 @@ RULES=(
   "companion-memory: $EFFECTS"
   # The audit records as almanac events and the bounded queue: values only, no client, bus or runtime.
   "companion-memory-core: $EFFECTS toml"
-  "agent-voice-wire: $EFFECTS toml"
-  "agent-voice-loop: $EFFECTS toml"
+  "speech-wire: $EFFECTS toml"
+  "speech-loop: $EFFECTS toml"
   # The audio device seam as values and traits: no runtime, bus or audio stack (futures-util only, for the expiry race).
-  "agent-voice-audio: $EFFECTS toml"
+  "speech-audio: $EFFECTS toml"
   # The PipeWire backend: libpipewire and tokio, nothing of the bus, HTTP, a database or the policy engine.
-  "agent-voice-pipewire: zbus zvariant reqwest hyper hyper-util rustls oo7 ort fastembed rusqlite rmcp cedar-policy"
+  "speech-pipewire: zbus zvariant reqwest hyper hyper-util rustls oo7 ort fastembed rusqlite rmcp cedar-policy"
   # The caller's side of Voice1: zbus (with its tokio feature) and nothing of the microphone or speech engines.
-  "agent-voice-dbus: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
+  "speech-dbus: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
   # zbus lives in action-dbus, and in action-client only behind its `dbus` feature.
   "action-dbus: reqwest hyper hyper-util rustls pipewire oo7 ort fastembed rusqlite rmcp cedar-policy"
   # A client never links the router: `InProcess` (feature `in_process`) is the one way in.
@@ -443,7 +443,7 @@ RULES=(
   # Test only: the operator tools run the acceptance world; the same bans as action-accept.
   "action-live: reqwest hyper hyper-util rustls pipewire ort fastembed rusqlite"
   "action-log: $EFFECTS toml"
-  "agent-voice-daemon: reqwest hyper hyper-util rustls ort fastembed rusqlite rmcp cedar-policy"
+  "speech-daemon: reqwest hyper hyper-util rustls ort fastembed rusqlite rmcp cedar-policy"
 )
 fail=0
 
@@ -528,7 +528,7 @@ fi
 # Built as the installer builds it (`-p` each shipped package, no dev-dependencies), no shipped
 # package turns on the fixture tree. (A whole-workspace build unifies action-accept's features, so
 # the installer never builds one.)
-for pkg in action-daemon companion-daemon agent-reader-daemon action-mcp action-cli agent-acp-bin agent-voice-daemon; do
+for pkg in action-daemon companion-daemon agent-reader-daemon action-mcp action-cli agent-acp-bin speech-daemon; do
   # `-e features` elides the edge a package's own feature makes; the feature list per package
   # (`{p} {f}`) shows it.
   # A tree cargo could not print would read as "off": that is an error, not a pass.

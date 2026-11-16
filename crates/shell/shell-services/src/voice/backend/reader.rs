@@ -2,7 +2,7 @@
 //! one by one, until it closes. A frame that does not decode is skipped (the next one is
 //! whole); a frame over the cap cannot be skipped, so the stream is closed and the loop told.
 
-use agent_voice_wire::{Unframed, VoiceEvent as Frame, unframe};
+use speech_wire::{Unframed, VoiceEvent as Frame, unframe};
 use tokio::io::AsyncReadExt;
 use tokio::net::UnixStream;
 use tokio::sync::mpsc::UnboundedSender;

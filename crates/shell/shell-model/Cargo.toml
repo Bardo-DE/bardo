@@ -28,7 +28,7 @@ ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 key-remap-proto = {path = "../../input/key-remap-proto"}
 action-core = {path = "../../actions/action-core"}
 companion-wire = {path = "../../actions/companion-wire"}
-agent-voice-wire = {path = "../../actions/agent-voice-wire"}
+speech-wire = {path = "../../speech/speech-wire"}
 computer-use-bus = {path = "../../computer-use/computer-use-bus"}
 memory-core = {path = "../../memory/memory-core"}
 provenance = {path = "../../provenance/provenance"}

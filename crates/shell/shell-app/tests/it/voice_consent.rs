@@ -4,7 +4,7 @@
 //! the next hold either begun (Allow) or never attempted (Not Now). Never the person's `~/.config`.
 
 use crate::voice_support::{BeginAnswer, Desk, desk_or_return};
-use agent_voice_wire::{VoiceRefusal, VoiceTrigger};
+use speech_wire::{VoiceRefusal, VoiceTrigger};
 use shell_app::policy::Policy;
 use shell_app::policy::voice::VoiceBridge;
 use shell_app::voice::write_consent;

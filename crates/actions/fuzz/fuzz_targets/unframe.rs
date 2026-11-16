@@ -2,7 +2,7 @@
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;
-use agent_voice_wire::{MAX_FRAME, Unframed, VoiceEvent, unframe};
+use speech_wire::{MAX_FRAME, Unframed, VoiceEvent, unframe};
 
 fuzz_target!(|bytes: &[u8]| {
     let mut rest = bytes;
