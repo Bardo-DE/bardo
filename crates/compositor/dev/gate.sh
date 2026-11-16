@@ -22,13 +22,13 @@ case "$tier" in
   fast)
     step clippy   cargo clippy "$@" --all-targets --all-features -- -D warnings
     step archive  cargo nextest archive "$@" --all-features --archive-file "dev/out/$run/tests.tar.zst"
-    step test     "${jail[@]}" cargo-nextest nextest run --profile fast --archive-file "dev/out/$run/tests.tar.zst" --workspace-remap "$PWD" ;;
+    step test     "${jail[@]}" cargo-nextest nextest run --profile gate --archive-file "dev/out/$run/tests.tar.zst" --workspace-remap "$PWD" ;;
   merge|phase)
     step clippy   cargo clippy --workspace --all-targets --all-features -- -D warnings
     step deny     cargo deny check licenses
     step doc      cargo test --doc --workspace --all-features
     step archive  cargo nextest archive --workspace --all-features --archive-file "dev/out/$run/tests.tar.zst"
-    step test     "${jail[@]}" cargo-nextest nextest run --profile "$tier" --archive-file "dev/out/$run/tests.tar.zst" --workspace-remap "$PWD"
+    step test     "${jail[@]}" cargo-nextest nextest run --profile gate --archive-file "dev/out/$run/tests.tar.zst" --workspace-remap "$PWD"
     step accept   "${jail[@]}" dev/accept.sh --jobs 8 ;;
   *) echo "gate: unknown tier '$tier' (fast|merge|phase)" >&2; exit 64 ;;
 esac
