@@ -102,6 +102,10 @@ impl Rgba8 {
 /// A commit counter that names content rather than counting changes: FNV-1a over `bytes`.
 /// Elements whose content is a pure function of a few values (a colour, a region) use it, so
 /// equal content gives an equal counter and the damage tracker redraws nothing.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "the hash is folded to the platform width on purpose"
+)]
 pub(crate) fn fingerprint(bytes: impl IntoIterator<Item = u8>) -> CommitCounter {
     let hash = bytes
         .into_iter()

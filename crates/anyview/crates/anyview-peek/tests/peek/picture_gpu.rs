@@ -29,6 +29,11 @@ fn app() -> Element {
     }
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a pixel position inside the screenshot"
+)]
 #[test]
 fn a_picture_is_uploaded_to_the_device_and_drawn_from_it() {
     let (src, sniffed) = fixture(Home::Image, "quadrants.png");

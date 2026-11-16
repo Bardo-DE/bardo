@@ -12,6 +12,10 @@ use smithay::utils::{Physical, Point};
 use ui_core::geometry::scale::Scale;
 
 /// Where global `point` is on `view`, in physical pixels and not rounded.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 pub(super) fn exact(point: LogicalPoint, view: &OutputView) -> Point<f64, Physical> {
     let along = |at: i32, origin: i32| {
         let relative = i64::from(at) - i64::from(origin);
@@ -29,10 +33,18 @@ mod tests {
     use compositor_core::geometry::{LogicalRect, LogicalSize, PhysicalSize};
 
     /// The far edge of a piece smithay draws from `corner` over `logical` pixels at `scale`.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+    )]
     fn far_edge(corner: f64, logical: i32, scale: f64) -> i32 {
         (corner + f64::from(logical) * scale).round() as i32
     }
 
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+    )]
     #[test]
     fn pieces_that_share_an_edge_share_it_in_pixels_at_every_scale() {
         for numerator in [120, 150, 180, 240, 300] {

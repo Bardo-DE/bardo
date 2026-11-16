@@ -33,6 +33,10 @@ use ui_components::style::icon::render::IconPx;
 pub use parts::{Part, Parts};
 
 // The page is rasterised for the box the card fits it into; the two must stay one size.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pane sizes in pixels are far below 2^24"
+)]
 const _: () = {
     let mine = crate::looking::PANE_FIT;
     assert!(

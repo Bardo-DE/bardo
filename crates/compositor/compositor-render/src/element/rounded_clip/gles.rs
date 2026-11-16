@@ -200,6 +200,14 @@ pub(crate) fn bake_corners(
 }
 
 /// The shader's uniforms for `texture` placed as `mask` says.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 fn uniforms(texture: &GlesTexture, mask: Mask) -> [Uniform<'static>; 5] {
     let (src, dst) = (mask.src, mask.dst);
     let size = texture.size();

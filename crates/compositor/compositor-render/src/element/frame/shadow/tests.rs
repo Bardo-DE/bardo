@@ -34,6 +34,10 @@ fn pixel(r: &Raster, x: u32, y: u32) -> [u8; 4] {
     [r.argb[at], r.argb[at + 1], r.argb[at + 2], r.argb[at + 3]]
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a test measure in pixels: small, and not negative where it is unsigned"
+)]
 #[test]
 fn a_corner_is_the_size_of_the_margin_and_reach_at_the_scale() {
     let layers = quire_like();
@@ -209,6 +213,10 @@ fn the_cut_out_starts_half_a_pixel_inside_the_edge() {
 }
 
 /// The old full raster of a square-cornered shadow at one pixel to a logical pixel.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn reference(layers: &[ShadowLayer], width: u32, height: u32) -> Raster {
     let margin = MARGIN as f32;
     let (w, h) = (width + 2 * MARGIN, height + 2 * MARGIN);
@@ -239,6 +247,14 @@ fn reference(layers: &[ShadowLayer], width: u32, height: u32) -> Raster {
 
 /// Every pixel the pieces draw for a window `width` by `height` at scale one, with its place in
 /// the old raster.
+#[expect(
+    clippy::cast_sign_loss,
+    reason = "a test measure in pixels: small, and not negative where it is unsigned"
+)]
+#[expect(
+    clippy::cast_possible_wrap,
+    reason = "a margin or size of a few pixels, far below i32::MAX"
+)]
 fn assembled(made: &Tiles, width: u32, height: u32) -> Vec<((u32, u32), [u8; 4])> {
     let mut out = Vec::new();
     for s in slices(
@@ -354,6 +370,15 @@ fn a_tiny_windows_whole_raster_is_lighter_than_its_cropped_tiles() {
     );
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a test measure in pixels: small, and not negative where it is unsigned"
+)]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 #[test]
 fn a_whole_raster_is_cut_out_and_sized_to_its_window_at_each_scale() {
     let layers = quire_like();

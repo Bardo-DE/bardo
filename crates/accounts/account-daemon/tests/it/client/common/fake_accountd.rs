@@ -353,7 +353,10 @@ impl Launcher {
             .retain(|open| *open != session);
     }
 
-    #[expect(clippy::too_many_arguments, reason = "mirrors the D-Bus method RequestAgentKey, which takes this many arguments")]
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "mirrors the D-Bus method RequestAgentKey, which takes this many arguments"
+    )]
     async fn request_agent_key(
         &self,
         #[zbus(header)] header: Header<'_>,

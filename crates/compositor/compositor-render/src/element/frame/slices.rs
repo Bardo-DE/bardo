@@ -211,6 +211,10 @@ mod tests {
         assert!(odd.iter().any(|s| s.piece == Piece::Edge(Side::Top)));
     }
 
+    #[expect(
+        clippy::cast_possible_wrap,
+        reason = "a margin or size of a few pixels, far below i32::MAX"
+    )]
     #[test]
     fn the_corners_are_mirror_images() {
         let all = slices(LogicalSize { w: 400, h: 300 }, 70);

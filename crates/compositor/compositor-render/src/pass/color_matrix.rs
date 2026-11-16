@@ -46,6 +46,10 @@ impl ColorMatrix {
     }
 
     /// Column-major `f32`s, as a GLSL `mat3` uniform takes them.
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the shader takes f32 and the matrix entries are small"
+    )]
     #[must_use]
     pub fn column_major(self) -> [f32; 9] {
         std::array::from_fn(|i| self.0[i % 3][i / 3] as f32)

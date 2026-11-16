@@ -51,6 +51,10 @@ impl FakeInstance {
 }
 
 impl Instance for FakeInstance {
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async and this implementation has nothing to wait for"
+    )]
     async fn claim(&self, request: &Request) -> Result<Claim, PlatformError> {
         locked(&self.claimed).push(request.clone());
         match self.role {

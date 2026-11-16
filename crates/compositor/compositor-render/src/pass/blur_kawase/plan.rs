@@ -136,6 +136,10 @@ impl KawasePlan {
     /// let look = BlurLook { sigma: 10.0, ..BlurLook::MATERIAL };
     /// assert_eq!(look.plan(1.0).reach(), 31);
     /// ```
+    #[expect(
+        clippy::cast_possible_truncation,
+        reason = "the value is a small whole number (sigma is bounded by the plan)"
+    )]
     #[must_use]
     pub fn reach(&self) -> i32 {
         let sigmas = (REACH_SIGMAS * self.sigma()).round();
@@ -195,6 +199,10 @@ fn level_scale(passes: u8) -> f32 {
 }
 
 /// An output scale as a float.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "narrows a scale (between 1 and 8 in practice) to the shader precision"
+)]
 fn scale_f32(scale: f64) -> f32 {
     // The cast narrows a scale (between 1 and 8 in practice) to the shader's precision.
     scale as f32

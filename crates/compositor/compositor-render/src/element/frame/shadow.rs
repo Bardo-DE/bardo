@@ -32,12 +32,21 @@ pub(crate) struct Tiles {
 }
 
 /// The sigma of a layer's blur, in logical pixels.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn sigma(layer: &ShadowLayer) -> f32 {
     (layer.blur as f32 / 2.0).max(0.5)
 }
 
 /// How far into the window a corner tile must reach for the straight edge to take over from it
 /// without a seam: past the curve and the blur, from where the layers' shapes start.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 pub(crate) fn inner_reach(layers: &[ShadowLayer], radius: u32) -> u32 {
     layers
         .iter()
@@ -55,6 +64,10 @@ pub(crate) fn inner_reach(layers: &[ShadowLayer], radius: u32) -> u32 {
 
 /// The tiles of a shadow made of `layers` (first drawn first) round a window whose corners have
 /// `radius`, at `scale`.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 pub(crate) fn tiles(layers: &[ShadowLayer], radius: u32, scale: Scale) -> Tiles {
     let per = scale.numerator() as f32 / Scale::DENOMINATOR as f32;
     let inner = inner_reach(layers, radius);
@@ -79,12 +92,29 @@ pub(crate) fn tiles(layers: &[ShadowLayer], radius: u32, scale: Scale) -> Tiles 
 }
 
 /// How many pixels `logical` is at `per` pixels to a logical pixel, at least one.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn pixels(logical: u32, per: f32) -> usize {
     ((logical as f32 * per).round() as usize).max(1)
 }
 
 /// The corner tile in the corner's own frame (`u` and `v` grow inward from the tile's outer
 /// corner), for layers moved by `offsets`.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 fn corner_local(
     layers: &[ShadowLayer],
     offsets: &[(i32, i32)],
@@ -146,6 +176,10 @@ fn distance(p: (f32, f32), edge: (f32, f32), round: f32) -> f32 {
 }
 
 /// A normalised Gaussian over `2 * pad + 1` taps.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn kernel(sigma: f32, pad: usize) -> Vec<f32> {
     let raw: Vec<f32> = (0..=2 * pad)
         .map(|k| {
@@ -160,6 +194,10 @@ fn kernel(sigma: f32, pad: usize) -> Vec<f32> {
 /// One layer's blurred alpha over a `side` square corner tile: the exact coverage of the
 /// rounded corner, blurred along rows and then along columns. Only the tile and the rows the
 /// blur reads from are ever held, never a window.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn field(layer: &ShadowLayer, off: (i32, i32), radius: u32, per: f32, side: usize) -> Vec<f32> {
     let grow = layer.spread as f32;
     let edge = (off.0 as f32 - grow, off.1 as f32 - grow);
@@ -172,6 +210,15 @@ fn field(layer: &ShadowLayer, off: (i32, i32), radius: u32, per: f32, side: usiz
 /// point in logical pixels from the outline's corner, negative inside), blurred along rows and
 /// then along columns. The coverage is computed over a margin of three sigma round the grid so
 /// the blur has no edge.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn blurred(
     layer: &ShadowLayer,
     (cols, rows): (usize, usize),
@@ -255,6 +302,14 @@ pub(crate) const STRIP_PAD: u32 = (STRIP_ACROSS - 1) / 2;
 /// The strip for `side`: the blurred straight edge from `MARGIN` outside to `EDGE_DEPTH` inside,
 /// [`STRIP_ACROSS`] identical pixels wide. A top or left strip runs outside first; a bottom or
 /// right one is the other way round, so every strip reads outwards in the direction of the screen.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 fn strip(layers: &[ShadowLayer], side: Side, per: f32) -> Raster {
     let n = pixels(MARGIN + EDGE_DEPTH, per);
     let across = STRIP_ACROSS as usize;

@@ -29,6 +29,10 @@ pub(crate) const CONFIRM_BRIEF: &str = "companion.brief.confirm";
 /// helpers (proposing), and giving a job only once the person keeps at least one. Every other
 /// card is offered as before. Offering them nowhere else keeps the planner's action list short:
 /// the list is cut to a budget, and two long cards no one can use would push out the last apps'.
+#[expect(
+    clippy::match_same_arms,
+    reason = "a table with a row for each action and setting; rows that agree are still separate rows"
+)]
 pub(crate) fn offered_here(card: &ActionCard, keeps: Keeps) -> bool {
     if card.action.app.as_str() != COMPANION_APP {
         return true;

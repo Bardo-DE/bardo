@@ -44,6 +44,10 @@ fn why_a_job_stopped_is_kept_for_as_many_jobs_as_the_answers() {
     assert_eq!(answers.why(JobId(1)), Some("why 1"));
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a notice number of a test is small"
+)]
 #[test]
 fn the_sentences_told_are_numbered_and_the_oldest_let_go() {
     let mut told = ToldLog::default();

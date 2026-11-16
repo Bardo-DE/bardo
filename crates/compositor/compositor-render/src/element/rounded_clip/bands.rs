@@ -35,6 +35,11 @@ pub(super) struct Plan {
 }
 
 /// The step `coverage` (0 to 1) is drawn at.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "coverage is within 0..=1, so the level is within 0..=LEVELS"
+)]
 fn level_of(coverage: f32) -> u8 {
     (coverage * f32::from(LEVELS))
         .round()
@@ -43,6 +48,10 @@ fn level_of(coverage: f32) -> u8 {
 
 /// The pixels of `shape`'s corner squares (output pixels) by how they draw: full runs along
 /// a row, and single partial pixels by level.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn corner_pieces(shape: &ClipShape) -> (Vec<Rect>, BTreeMap<u8, Vec<Rect>>) {
     let mut runs = Vec::new();
     let mut partial: BTreeMap<u8, Vec<Rect>> = BTreeMap::new();
@@ -214,6 +223,10 @@ mod tests {
 
     /// Every pixel of the window is drawn at the shape's coverage, to the nearest step, once
     /// at most; at three scales and two places.
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+    )]
     #[test]
     fn every_pixel_draws_at_the_shapes_coverage() {
         for (scale, x, y) in [(120, 0, 0), (180, 0, 0), (240, 0, 0), (180, 33, 17)] {

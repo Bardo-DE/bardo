@@ -33,6 +33,10 @@ fn app(name: &str) -> AppId {
     AppId::new(name).unwrap_or_else(|e| panic!("{e}"))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a table cell and the assertions it is compared with are `Option<Action>`"
+)]
 fn std_action(action: StandardAction) -> Option<Action> {
     Some(Action::Standard(action))
 }
@@ -45,6 +49,10 @@ type Case = (
     Option<StandardAction>,
 );
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one test that sets a scenario up and checks it step by step"
+)]
 #[test]
 fn resolution_follows_platform_and_context() {
     use StandardAction as S;

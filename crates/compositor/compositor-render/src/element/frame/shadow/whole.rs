@@ -38,6 +38,14 @@ fn rounded(p: (f32, f32), rect: (f32, f32, f32, f32), round: f32) -> f32 {
 /// covering the window and `MARGIN` logical pixels on every side, with the window's own shape
 /// cut out. It is drawn at the size of the window plus twice the margin, from the outline's
 /// corner minus the margin.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 pub(crate) fn full(layers: &[ShadowLayer], radius: u32, size: LogicalSize, scale: Scale) -> Raster {
     let per = scale.numerator() as f32 / Scale::DENOMINATOR as f32;
     let (w, h) = (size.w as f32, size.h as f32);

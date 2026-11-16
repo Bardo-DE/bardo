@@ -13,6 +13,10 @@ fn peeked(home: Home, name: &str) -> AnyPeeked {
     peek(&src, &sniffed, &pane_budget())
 }
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one test that sets a scenario up and checks it step by step"
+)]
 #[test]
 fn every_fixture_peeks_into_the_body_of_its_kind() {
     // name, home, file, kind, body word, a check on the body that the word does not make

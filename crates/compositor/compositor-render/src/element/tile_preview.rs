@@ -149,6 +149,15 @@ fn physical(rect: LogicalRect, view: &OutputView) -> PhysicalRect {
 /// One corner's square, `radius` logical pixels a side at `scale`: the plate's colour where the
 /// circle of that radius, centred on the plate's inside corner of the square, covers the pixel,
 /// anti-aliased by the signed distance to the circle. ARGB8888, premultiplied.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a colour channel: rounded, within 0..=255 by construction or by the clamp before it"
+)]
 fn corner_raster(corner: Corner, radius: u32, fill: Rgba8, scale: Scale) -> Raster {
     let side = buffer_size(
         LogicalSize {

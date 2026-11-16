@@ -26,10 +26,18 @@ fn temor() -> AppId {
     AppId::new("temor").unwrap_or_else(|e| panic!("{e}"))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a table cell and the assertions it is compared with are `Option<Action>`"
+)]
 fn standard(action: StandardAction) -> Option<Action> {
     Some(Action::Standard(action))
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a table cell and the assertions it is compared with are `Option<Action>`"
+)]
 fn app(id: &str) -> Option<Action> {
     Some(Action::App(action(id)))
 }

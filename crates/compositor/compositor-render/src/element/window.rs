@@ -24,9 +24,10 @@ use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::utils::Scale;
 use ui_core::vocab::Fraction;
 
-/// `placed`'s surface tree (subsurfaces, then the root) drawn at its sampled place and opacity
-/// on `view`, front first, with its blur v0 behind it when it asked for one. Empty when the
-/// book has no surface for it.
+/// `placed`'s surface tree (subsurfaces, then the root) drawn at its sampled place and opacity on
+/// `view`, front first, with its blur v0 behind it when it asked for one.
+///
+/// Empty when the book has no surface for it.
 ///
 /// The tree is drawn so that the root's window geometry origin lands at the sampled place, at
 /// its committed size, except while the window is in a minimise flight: then every surface of
@@ -93,9 +94,11 @@ pub(crate) fn window_blur(
     )
 }
 
-/// `placed`'s surface tree as surface elements, front first, laid out at its real size with the
-/// window geometry's top-left at `placed`'s place (a flight stretches them afterwards, see
-/// [`window_elements`]). Empty when the book has no surface for it.
+/// `placed`'s surface tree as surface elements, front first.
+///
+/// They are laid out at their real size with the window geometry's top-left at `placed`'s place (a
+/// flight stretches them afterwards, see [`window_elements`]). Empty when the book has no surface
+/// for it.
 pub fn window_surfaces<R: Compositor>(
     placed: &PlacedWindow,
     view: &OutputView,
@@ -127,6 +130,10 @@ pub fn flight_ratio(placed: &PlacedWindow, root: &WlSurface) -> (f64, f64) {
 
 /// Where `root`'s top-left is when its window geometry's top-left is at `at` and the tree is
 /// stretched by `ratio` about that point: the geometry's offset inside the tree stretches too.
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 fn scaled_origin(root: &WlSurface, at: SubPoint, ratio: (f64, f64)) -> SubPoint {
     let loc = geometry_origin(root);
     let back = |offset: i32, by: f64| (f64::from(SubPx::of_logical(offset).0) * by).round() as i32;
@@ -137,8 +144,9 @@ fn scaled_origin(root: &WlSurface, at: SubPoint, ratio: (f64, f64)) -> SubPoint 
 }
 
 /// Where `placed`'s content is, in global logical pixels: its place, at the size of its window
-/// geometry (its committed size when it declared none). The frame is drawn round it and the
-/// hit test reads it, so the two agree.
+/// geometry (its committed size when it declared none).
+///
+/// The frame is drawn round it and the hit test reads it, so the two agree.
 #[must_use]
 pub fn window_content(placed: &PlacedWindow, root: &WlSurface) -> LogicalRect {
     let size = geometry_size(root).map_or(placed.committed, |size| LogicalSize {
@@ -154,9 +162,10 @@ pub fn window_content(placed: &PlacedWindow, root: &WlSurface) -> LogicalRect {
     )
 }
 
-/// Where `placed`'s content is drawn under `effect`: [`window_content`], at the sampled size
-/// while a window in a minimise flight is scaled to it. The frame goes round this, and a title
-/// is made for its titlebar.
+/// Where `placed`'s content is drawn under `effect`: [`window_content`], at the sampled size while
+/// a window in a minimise flight is scaled to it.
+///
+/// The frame goes round this, and a title is made for its titlebar.
 #[must_use]
 pub fn window_drawn(
     placed: &PlacedWindow,

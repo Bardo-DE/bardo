@@ -175,7 +175,7 @@ fn walk(dir: &Path, depth: usize, found: &mut Vec<PathBuf>) {
 /// Whether the file name contains `COLRv1` (any case) and ends in `.ttf` or `.otf`.
 #[expect(
     clippy::case_sensitive_file_extension_comparisons,
-    reason = "`name` is lowercased just above",
+    reason = "`name` is lowercased just above"
 )]
 fn named_for_colrv1(path: &Path) -> bool {
     let name = path

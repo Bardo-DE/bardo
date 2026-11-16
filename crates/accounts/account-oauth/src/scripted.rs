@@ -25,7 +25,7 @@ impl Scripted {
 
 #[expect(
     clippy::unnecessary_wraps,
-    reason = "a scripted reply is a `Result` like the failures it is listed beside",
+    reason = "a scripted reply is a `Result` like the failures it is listed beside"
 )]
 pub(crate) fn answer(status: u16, body: &str) -> Result<Response<Vec<u8>>, HttpError> {
     Ok(Response::builder()
@@ -37,7 +37,7 @@ pub(crate) fn answer(status: u16, body: &str) -> Result<Response<Vec<u8>>, HttpE
 impl Http for Scripted {
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "the trait method is async and this implementation has nothing to wait for",
+        reason = "the trait method is async and this implementation has nothing to wait for"
     )]
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         self.seen.lock().expect("lock").push(request);

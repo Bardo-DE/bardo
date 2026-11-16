@@ -32,6 +32,11 @@ pub(super) fn over(dst: &mut Px, colour: FrameColour, cover: f32) {
 }
 
 /// The pixel's bytes, B G R A.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "a colour channel: rounded, within 0..=255 by construction or by the clamp before it"
+)]
 pub(super) fn bytes(px: Px) -> [u8; 4] {
     let level = |v: f32| (v.clamp(0.0, 1.0) * 255.0).round() as u8;
     [level(px[2]), level(px[1]), level(px[0]), level(px[3])]
@@ -69,6 +74,10 @@ const STROKE: f32 = 0.6;
 const HAIRLINE: f32 = 0.5;
 
 /// Where a light's centre is in the titlebar, in logical pixels (the geometry's rule).
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 fn centre(metrics: &FrameMetrics, light: Light) -> (f32, f32) {
     let index = Light::ALL.iter().position(|l| *l == light).unwrap_or(0) as f32;
     let step = (metrics.light + metrics.gap) as f32;
@@ -81,6 +90,10 @@ fn centre(metrics: &FrameMetrics, light: Light) -> (f32, f32) {
 
 /// The titlebar over `width` logical pixels at `scale`: its ground with the top corners rounded,
 /// the rule along its foot, the lights.
+#[expect(
+    clippy::cast_precision_loss,
+    reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+)]
 pub(crate) fn titlebar(
     look: &FrameLook,
     metrics: &FrameMetrics,

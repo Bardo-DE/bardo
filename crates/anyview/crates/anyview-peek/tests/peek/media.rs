@@ -32,6 +32,10 @@ fn row(slug: &'static str, text: &str) -> (&'static str, String) {
 /// Every format read, with the rows its header gave. These are the values `ffprobe` reports for
 /// the same files (the fixtures were made with ffmpeg; see the commit that added them), except that
 /// the bitrate is the file's size over its length.
+#[expect(
+    clippy::too_many_lines,
+    reason = "one test that sets a scenario up and checks it step by step"
+)]
 #[test]
 fn each_format_lists_what_its_header_says() {
     let cases: Vec<(&str, Home, bool, Rows)> = vec![

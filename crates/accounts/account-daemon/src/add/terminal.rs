@@ -152,7 +152,7 @@ impl<T: Terminal> Sheets for TerminalSheets<T> {
 
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "the trait method is async and this implementation has nothing to wait for",
+        reason = "the trait method is async and this implementation has nothing to wait for"
     )]
     async fn consent(&self, ask: ConsentAsk, _window: &ParentWindow) -> ConsentAnswer {
         let target = self
@@ -292,7 +292,7 @@ impl<T: Terminal> TerminalLink<T> {
 impl<T: Terminal> SheetLink for TerminalLink<T> {
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "the trait method is async and this implementation has nothing to wait for",
+        reason = "the trait method is async and this implementation has nothing to wait for"
     )]
     async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
         let terminal = &self.inner.terminal;

@@ -52,6 +52,10 @@ fn our_terminal_takes_super_and_ctrl_shift_as_one_primary() {
 
 type FormCase = (&'static str, Platform, Context, &'static str, bool);
 
+#[expect(
+    clippy::too_many_lines,
+    reason = "one test that sets a scenario up and checks it step by step"
+)]
 #[test]
 fn the_primary_form_holds_whether_or_not_anything_is_bound() {
     let ours = on(Desktop::Ours);

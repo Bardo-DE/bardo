@@ -57,6 +57,11 @@ impl ClipShape {
     /// assert_eq!(shape.coverage(100.0, 50.0), 1.0);
     /// assert_eq!(shape.coverage(199.5, 99.5), 0.0);
     /// ```
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+    )]
     #[must_use]
     pub fn new(rect: PhysicalRect, logical_radius: u32, scale: Scale) -> ClipShape {
         let wanted = (f64::from(logical_radius) * scale.as_f64()).round() as u32;
@@ -132,6 +137,10 @@ impl ClipShape {
     /// inside, 0 outside, a ramp about one pixel wide across the edge. The corners [`Rounding`]
     /// names are round; the others are square. A frameless shape covers everything outside its
     /// rectangle and changes only the pixels of its corner squares.
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+    )]
     #[must_use]
     pub fn coverage(&self, px: f32, py: f32) -> f32 {
         let (x, y) = (self.rect.x as f32, self.rect.y as f32);
@@ -219,6 +228,10 @@ mod tests {
         assert_eq!(ClipShape::new(tiny, 10, Scale(120)).radius(), 3);
     }
 
+    #[expect(
+        clippy::cast_precision_loss,
+        reason = "pixel sizes, offsets and counts here are far below 2^24, which f32 holds exactly"
+    )]
     #[test]
     fn coverage_is_one_inside_zero_outside_and_a_half_on_the_curve() {
         let on_curve = |r: f32| {

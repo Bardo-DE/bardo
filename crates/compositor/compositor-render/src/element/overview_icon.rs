@@ -41,9 +41,11 @@ fn arrival(full: u32, drawn: u32, rest: u32) -> f64 {
     }
 }
 
-/// Where `icon` goes while its window's content is drawn at `content` (`full` is the window's
-/// size on the desktop): the layout's offset from the slot's bottom middle, scaled by how far
-/// the window has arrived, and the icon grown and faded by the same. Nothing before it starts.
+/// Where `icon` goes while its window's content is drawn at `content` (`full` is the window's size
+/// on the desktop).
+///
+/// The layout's offset from the slot's bottom middle, scaled by how far the window has arrived, and
+/// the icon grown and faded by the same. Nothing before it starts.
 ///
 /// ```
 /// use compositor_core::WindowId;
@@ -63,6 +65,10 @@ fn arrival(full: u32, drawn: u32, rest: u32) -> f64 {
 /// assert_eq!((at_rest.at, at_rest.alpha), (icon.rest, 1.0));
 /// assert!(icon_place(&icon, rect(0, 0, 400, 600), full).is_none());
 /// ```
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "a rounded pixel length or offset of an output: far inside the range of the target type, and not negative where it is unsigned"
+)]
 #[must_use]
 pub fn icon_place(
     icon: &OverviewIcon,
@@ -97,9 +103,11 @@ pub fn icon_place(
     })
 }
 
-/// `window`'s `icon` drawn at `place`: its raster uploaded once (kept until Mission Control closes) and
-/// scaled by the GPU to the rectangle. Nothing for a raster that is not the size `rest` needs at
-/// the output's scale, or a place off this output.
+/// `window`'s `icon` drawn at `place`: its raster uploaded once (kept until Mission Control closes)
+/// and scaled by the GPU to the rectangle.
+///
+/// Nothing for a raster that is not the size `rest` needs at the output's scale, or a place off
+/// this output.
 pub fn icon_element<R: Compositor>(
     window: WindowId,
     icon: &OverviewIcon,

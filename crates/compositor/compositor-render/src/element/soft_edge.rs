@@ -25,6 +25,11 @@ impl Weight {
     pub const FULL: Weight = Weight(STEPS);
 
     /// The step nearest `coverage` (0 to 1); none when that is nothing.
+    #[expect(
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss,
+        reason = "coverage is within 0..=1, so the step count is within 0..=STEPS"
+    )]
     #[must_use]
     pub fn of(coverage: f64) -> Option<Weight> {
         let steps = (coverage * f64::from(STEPS))

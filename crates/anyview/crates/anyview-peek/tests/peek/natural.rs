@@ -9,6 +9,10 @@ use anyview_peek::{is_audio, natural_size};
 use std::time::{Duration, Instant};
 use support::{Home, path};
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the table compares each size with the `Option<PixelSize>` a peek gives"
+)]
 fn size(width: u32, height: u32) -> Option<PixelSize> {
     Some(PixelSize {
         width: PixelLen(width),

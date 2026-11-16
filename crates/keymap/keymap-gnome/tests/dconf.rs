@@ -22,6 +22,10 @@ fn press(keymap: &Keymap, text: &str) -> Option<Action> {
     )
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "a table cell and the assertions it is compared with are `Option<Action>`"
+)]
 fn standard(action: StandardAction) -> Option<Action> {
     Some(Action::Standard(action))
 }

@@ -42,7 +42,7 @@ impl TableCallers {
 impl Callers for TableCallers {
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "the trait method is async and this implementation has nothing to wait for",
+        reason = "the trait method is async and this implementation has nothing to wait for"
     )]
     async fn caller_of(&self, sender: &str) -> Option<Caller> {
         self.0

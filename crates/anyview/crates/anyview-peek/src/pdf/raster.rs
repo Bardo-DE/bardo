@@ -43,6 +43,7 @@ impl Peek for PdfPeek {
         Self::peek_fitted(src, sniffed, budget, PANE_FIT)
     }
 
+    #[expect(clippy::cast_precision_loss, reason = "pixel sizes are far below 2^24")]
     fn peek_fitted(
         src: &Input,
         sniffed: &Sniffed,

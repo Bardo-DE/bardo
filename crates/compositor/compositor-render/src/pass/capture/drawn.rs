@@ -68,9 +68,10 @@ fn inverse(transform: Transform) -> Transform {
     }
 }
 
-/// The part of the upright image of `upright` pixels that `view`'s source rectangle covers:
-/// each edge is rounded to the nearest pixel and kept inside the image, and the part is at
-/// least one pixel on a side while the image has any.
+/// The part of the upright image of `upright` pixels that `view`'s source rectangle covers.
+///
+/// Each edge is rounded to the nearest pixel and kept inside the image, and the part is at least
+/// one pixel on a side while the image has any.
 ///
 /// ```
 /// use compositor_core::geometry::PhysicalSize;
@@ -81,6 +82,10 @@ fn inverse(transform: Transform) -> Transform {
 /// let part = crop_pixels(PhysicalSize { w: 8, h: 8 }, &view);
 /// assert_eq!((part.x, part.y, part.w, part.h), (2, 0, 4, 8));
 /// ```
+#[expect(
+    clippy::cast_possible_truncation,
+    reason = "clamped to 0..=limit first, and limit is a pixel length"
+)]
 #[must_use]
 pub fn crop_pixels(upright: PhysicalSize, view: &DrawnView) -> PhysicalRect {
     let scale = f64::from(view.buffer_scale.max(1));

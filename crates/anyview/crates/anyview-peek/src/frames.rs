@@ -41,6 +41,12 @@ impl StillSource for NoStills {
 }
 
 /// `picture` reduced so it fits the pixels `budget` allows.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
+    reason = "the square root of a pixel count fits u32 and is not negative"
+)]
 pub(crate) fn reduced(picture: Rgba8, budget: &PeekBudget) -> Rgba8 {
     let area = budget.pixels.0.min(budget.bytes.0 / 4);
     // The longest edge a square of the budget's pixels allows.

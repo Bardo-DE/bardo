@@ -113,7 +113,7 @@ async fn request(
 
 #[expect(
     clippy::too_many_lines,
-    reason = "one scenario read top to bottom: ask once, then reach the server through the descriptor",
+    reason = "one scenario read top to bottom: ask once, then reach the server through the descriptor"
 )]
 #[tokio::test(flavor = "multi_thread")]
 async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor() {
