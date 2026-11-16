@@ -1,8 +1,9 @@
 //! Callers, seats and contexts the tests share.
 
+use base_time::ManualMonotonic;
 use caller_identity_core::{CgroupPath, ExePath, Pid, Proof, RoleName, Uid};
 use input_broker_daemon::backend::fake::FakeBackend;
-use input_broker_daemon::clock::ManualClock;
+use input_broker_daemon::clock::Uptime;
 use input_broker_daemon::identity::fake::FixedAuthority;
 use input_broker_daemon::identity::seat::FixedSeat;
 use input_broker_daemon::identity::{ActiveUid, Caller, Credential};
@@ -44,7 +45,7 @@ pub(crate) fn keycap() -> Caller {
     )
 }
 
-pub(crate) type TestContext = Context<FakeBackend, FixedAuthority, FixedSeat, ManualClock>;
+pub(crate) type TestContext = Context<FakeBackend, FixedAuthority, FixedSeat, ManualMonotonic>;
 
 /// A context where every peer is `caller` and `USER` is at the seat.
 pub(crate) fn context(caller: Caller) -> (Arc<TestContext>, FakeBackend) {
@@ -53,7 +54,7 @@ pub(crate) fn context(caller: Caller) -> (Arc<TestContext>, FakeBackend) {
         backend: backend.clone(),
         authority: FixedAuthority::naming(caller),
         seat: FixedSeat(ActiveUid(Some(USER))),
-        clock: ManualClock::new(),
+        clock: Uptime::new(ManualMonotonic::new()),
     };
     (Arc::new(ctx), backend)
 }

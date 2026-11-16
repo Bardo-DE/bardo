@@ -10,7 +10,7 @@
 //! keycap's are made to a fixed shape and handed over as descriptors.
 //!
 //! The seams are traits with fakes: [`backend::Backend`] (the kernel), [`identity::Authority`] (who
-//! is calling), [`identity::SeatSource`] (who is logged in) and [`clock::Clock`]. The tests drive
+//! is calling), [`identity::SeatSource`] (who is logged in) and [`clock::Uptime`]. The tests drive
 //! the whole service over a socket pair with the fakes and touch no device.
 #![forbid(unsafe_code)]
 
@@ -31,7 +31,8 @@ pub mod slots;
 mod tally;
 
 use backend::real::UinputBackend;
-use clock::Monotonic;
+use base_time::SystemMonotonic;
+use clock::Uptime;
 use daemon::{Daemon, DaemonError, Settings};
 use identity::peephole_authority::PeepholeAuthority;
 use identity::seat::SeatFile;
@@ -55,7 +56,7 @@ pub fn run() -> Result<(), RunError> {
         backend: UinputBackend::default(),
         authority: PeepholeAuthority::system(),
         seat: SeatFile::system(),
-        clock: Monotonic::new(),
+        clock: Uptime::new(SystemMonotonic),
     };
     Daemon::new(listener, context, Settings::default()).run()?;
     Ok(())

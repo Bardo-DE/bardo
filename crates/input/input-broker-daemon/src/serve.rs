@@ -2,12 +2,13 @@
 //! [`Session`] until the peer leaves, is refused, or says something that does not parse.
 
 use crate::backend::Backend;
-use crate::clock::Clock;
+use crate::clock::Uptime;
 use crate::identity::{Authority, Caller, SeatSource};
 use crate::journal::{self, kv};
 use crate::link::{self, Inbox, Incoming};
 use crate::policy::CallerAdmission;
 use crate::session::{Handled, Outgoing, Refused, Session};
+use base_time::Monotonic;
 use input_broker_wire::limits::HANDSHAKE_TIMEOUT_MS;
 use input_broker_wire::{Reason, Reply, decode_request};
 use std::ops::ControlFlow;
@@ -24,7 +25,7 @@ pub struct Context<B, A, S, C> {
     /// Says who is logged in.
     pub seat: S,
     /// Tells the time.
-    pub clock: C,
+    pub clock: Uptime<C>,
 }
 
 /// Identifies the peer of `conn` and serves it until it ends. Never panics on what the peer sends.
@@ -33,7 +34,7 @@ where
     B: Backend,
     A: Authority,
     S: SeatSource,
-    C: Clock,
+    C: Monotonic + 'static,
 {
     if let Some(caller) = identify(&conn, &ctx.authority) {
         serve_caller(conn, caller, HANDSHAKE_TIMEOUT_MS, ctx);
@@ -63,7 +64,7 @@ pub fn serve_caller<B, A, S, C>(
     B: Backend,
     A: Authority,
     S: SeatSource,
-    C: Clock,
+    C: Monotonic + 'static,
 {
     let admission = CallerAdmission {
         caller: &caller,

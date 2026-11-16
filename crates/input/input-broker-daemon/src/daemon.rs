@@ -9,7 +9,6 @@
 
 use crate::admit::admit;
 use crate::backend::Backend;
-use crate::clock::Clock;
 use crate::identity::{Authority, SeatSource};
 use crate::idle::Idle;
 use crate::journal::{self, kv};
@@ -17,6 +16,7 @@ use crate::link;
 use crate::pending::{Caps, Pending};
 use crate::serve::Context;
 use crate::slots::Slots;
+use base_time::Monotonic;
 use input_broker_wire::{Reason, Reply};
 use rustix::event::{PollFd, PollFlags, Timespec, poll};
 use rustix::io::Errno;
@@ -82,7 +82,7 @@ where
     B: Backend,
     A: Authority,
     S: SeatSource,
-    C: Clock,
+    C: Monotonic + 'static,
 {
     /// A service on `listener`, a listening `SOCK_SEQPACKET` socket.
     pub fn new(listener: OwnedFd, context: Context<B, A, S, C>, settings: Settings) -> Self {

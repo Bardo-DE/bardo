@@ -1,10 +1,11 @@
 //! The accept loop on a real socket in a scratch folder.
 
 use crate::support::{USER, listed, palmrest};
+use base_time::SystemMonotonic;
 use caller_identity_core::Uid;
 use input_broker_client::{Broker, ClientError, Create, DeviceSource, Made, Reason, Session};
 use input_broker_daemon::backend::fake::FakeBackend;
-use input_broker_daemon::clock::Monotonic;
+use input_broker_daemon::clock::Uptime;
 use input_broker_daemon::daemon::{Daemon, Settings};
 use input_broker_daemon::identity::fake::FixedAuthority;
 use input_broker_daemon::identity::seat::FixedSeat;
@@ -202,7 +203,7 @@ fn start_capped<A: Authority>(
         backend: kernel.clone(),
         authority,
         seat: FixedSeat(ActiveUid(Some(USER))),
-        clock: Monotonic::new(),
+        clock: Uptime::new(SystemMonotonic),
     };
     let settings = Settings {
         idle: Duration::from_millis(idle_ms),

@@ -125,7 +125,7 @@ fn the_seat_is_read_at_each_request_not_once() {
         backend: kernel.clone(),
         authority: FixedAuthority::naming(keycap()),
         seat: FixedSeat(ActiveUid(None)),
-        clock: input_broker_daemon::clock::ManualClock::new(),
+        clock: input_broker_daemon::clock::Uptime::new(base_time::ManualMonotonic::new()),
     });
     let (mut client, thread) = connect(&ctx);
     assert!(matches!(
@@ -143,7 +143,7 @@ fn a_peer_that_cannot_be_identified_is_refused_before_anything_else() {
         backend: kernel.clone(),
         authority: FixedAuthority::failing(),
         seat: FixedSeat(ActiveUid(Some(USER))),
-        clock: input_broker_daemon::clock::ManualClock::new(),
+        clock: input_broker_daemon::clock::Uptime::new(base_time::ManualMonotonic::new()),
     });
     let (mut client, thread) = connect(&ctx);
     // Either the refusal arrives, or the connection is already shut: never a device.

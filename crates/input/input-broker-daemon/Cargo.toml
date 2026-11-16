@@ -26,6 +26,8 @@ required-features = ["fake"]
 fake = []
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
+base-time = { path = "../../base/base-time" }
 rustix = {version = "1.1", default-features = false, features = ["event", "fs", "net", "std"]}
 input-broker-wire = {path = "../input-broker-wire"}
 thiserror = { workspace = true }

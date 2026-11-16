@@ -4,13 +4,13 @@
 //! identification still comes before counting (NEW-PI-6).
 
 use crate::backend::Backend;
-use crate::clock::Clock;
 use crate::identity::{Authority, SeatSource};
 use crate::journal::{self, kv};
 use crate::link;
 use crate::pending::Ticket;
 use crate::serve::{Context, identify, serve_caller};
 use crate::slots::{Bucket, Slots};
+use base_time::Monotonic;
 use input_broker_wire::{Reason, Reply};
 use std::os::fd::OwnedFd;
 
@@ -21,7 +21,7 @@ where
     B: Backend,
     A: Authority,
     S: SeatSource,
-    C: Clock,
+    C: Monotonic + 'static,
 {
     let Some(caller) = identify(&conn, &ctx.authority) else {
         return;

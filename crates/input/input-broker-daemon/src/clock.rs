@@ -1,62 +1,27 @@
 //! Time as an argument: the service reads the clock in one place.
 
+use base_time::Monotonic;
 use input_broker_wire::Millis;
-use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
-/// A source of monotonic milliseconds.
-pub trait Clock: Send + Sync + 'static {
-    /// Milliseconds since some fixed moment; never goes back.
-    fn now(&self) -> Millis;
-}
-
-/// The real clock, counting from when it was made.
-#[derive(Debug, Clone, Copy)]
-pub struct Monotonic {
+/// Milliseconds since a [`Monotonic`] clock was first read: the counter the wire crate's rate
+/// limiter and idle timer compare.
+#[derive(Debug, Clone)]
+pub struct Uptime<M> {
+    clock: M,
     start: Instant,
 }
 
-impl Monotonic {
-    /// A clock that reads zero now.
-    pub fn new() -> Self {
-        Self {
-            start: Instant::now(),
-        }
-    }
-}
-
-impl Default for Monotonic {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Clock for Monotonic {
-    fn now(&self) -> Millis {
-        Millis(u64::try_from(self.start.elapsed().as_millis()).unwrap_or(u64::MAX))
-    }
-}
-
-/// A clock a test moves by hand.
-#[derive(Debug, Default)]
-pub struct ManualClock {
-    now: AtomicU64,
-}
-
-impl ManualClock {
-    /// A clock at zero.
-    pub fn new() -> Self {
-        Self::default()
+impl<M: Monotonic> Uptime<M> {
+    /// A counter that reads zero now.
+    pub fn new(clock: M) -> Self {
+        let start = clock.now();
+        Self { clock, start }
     }
 
-    /// Moves the clock forward by `ms`.
-    pub fn advance(&self, ms: u64) {
-        self.now.fetch_add(ms, Ordering::SeqCst);
-    }
-}
-
-impl Clock for ManualClock {
-    fn now(&self) -> Millis {
-        Millis(self.now.load(Ordering::SeqCst))
+    /// Milliseconds since the counter was made; never goes back.
+    pub fn now(&self) -> Millis {
+        let since = self.clock.now().saturating_duration_since(self.start);
+        Millis(u64::try_from(since.as_millis()).unwrap_or(u64::MAX))
     }
 }

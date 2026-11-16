@@ -1,13 +1,13 @@
 //! Who is logged in on the seat: the `ACTIVE_UID` line of logind's file, the same fact keycap reads.
 
+use base_fs::{ReadCap, read_text_capped};
 use caller_identity_core::Uid;
-use std::io::Read;
 use std::path::PathBuf;
 
 /// Where logind records the seat's state.
 pub const SEAT_FILE: &str = "/run/systemd/seats/seat0";
 /// The most of the seat file that is read: it holds a few short lines.
-const MAX_SEAT_BYTES: u64 = 4096;
+const MAX_SEAT: ReadCap = ReadCap::bytes(4096);
 
 /// The user of the active session, if there is one (there is none before anyone logs in).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -39,11 +39,8 @@ impl SeatFile {
 
 impl SeatSource for SeatFile {
     fn active_uid(&self) -> ActiveUid {
-        let mut text = String::new();
-        let read = std::fs::File::open(&self.path)
-            .and_then(|f| f.take(MAX_SEAT_BYTES).read_to_string(&mut text));
-        match read {
-            Ok(_) => parse_active_uid(&text),
+        match read_text_capped(&self.path, MAX_SEAT) {
+            Ok(text) => parse_active_uid(&text),
             Err(_) => ActiveUid(None),
         }
     }
