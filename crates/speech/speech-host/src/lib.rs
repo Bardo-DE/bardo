@@ -24,10 +24,14 @@ pub use recognizer::{Finished, Recognizer};
 pub use serve::{bind_private, serve_connection, serve_listener, serve_with};
 pub use session::Session;
 
-#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, Clone, thiserror::Error)]
 pub enum HostError {
     #[error("the socket cannot be bound")]
-    Bind,
+    Bind(#[source] std::sync::Arc<std::io::Error>),
+    #[error("the socket path holds a file that is not a socket")]
+    NotSocket,
+    #[error("the socket path has no file name")]
+    NoSocketName,
     #[error("the model directory does not load")]
     Model,
 }

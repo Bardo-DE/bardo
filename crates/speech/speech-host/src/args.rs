@@ -26,6 +26,18 @@ pub enum ArgsError {
     Missing(&'static str),
     #[error("argument {0} is not a valid value")]
     Invalid(&'static str),
+    #[error("argument {name} is not a whole number")]
+    NotNumber {
+        name: &'static str,
+        #[source]
+        source: std::num::ParseIntError,
+    },
+    #[error("argument {name} is out of range")]
+    OutOfRange {
+        name: &'static str,
+        #[source]
+        source: std::num::TryFromIntError,
+    },
     #[error("unknown argument {0}")]
     Unknown(String),
 }
@@ -62,12 +74,14 @@ impl Seen {
     }
 }
 
-fn positive<T: TryFrom<u64> + PartialEq + Default>(
+fn positive<T: TryFrom<u64, Error = std::num::TryFromIntError> + PartialEq + Default>(
     name: &'static str,
     text: &str,
 ) -> Result<T, ArgsError> {
-    let n: u64 = text.parse().ok().ok_or(ArgsError::Invalid(name))?;
-    let value = T::try_from(n).ok().ok_or(ArgsError::Invalid(name))?;
+    let n: u64 = text
+        .parse()
+        .map_err(|source| ArgsError::NotNumber { name, source })?;
+    let value = T::try_from(n).map_err(|source| ArgsError::OutOfRange { name, source })?;
     if value == T::default() {
         return Err(ArgsError::Invalid(name));
     }
@@ -167,7 +181,10 @@ mod tests {
             ),
             (
                 "--socket /s --model-dir /m --threads x --chunk-ms 80",
-                ArgsError::Invalid(THREADS),
+                ArgsError::NotNumber {
+                    name: THREADS,
+                    source: "x".parse::<u64>().expect_err("x is not a number"),
+                },
             ),
             (
                 "--socket /s --model-dir /m --threads 0 --chunk-ms 80",
@@ -175,11 +192,17 @@ mod tests {
             ),
             (
                 "--socket /s --model-dir /m --threads 70000 --chunk-ms 80",
-                ArgsError::Invalid(THREADS),
+                ArgsError::OutOfRange {
+                    name: THREADS,
+                    source: u16::try_from(70_000_u64).expect_err("70000 is over a u16"),
+                },
             ),
             (
                 "--socket /s --model-dir /m --threads -1 --chunk-ms 80",
-                ArgsError::Invalid(THREADS),
+                ArgsError::NotNumber {
+                    name: THREADS,
+                    source: "-1".parse::<u64>().expect_err("-1 is not unsigned"),
+                },
             ),
             (
                 "--socket /s --model-dir /m --threads 4 --chunk-ms 0",
@@ -187,7 +210,10 @@ mod tests {
             ),
             (
                 "--socket /s --model-dir /m --threads 4 --chunk-ms 80ms",
-                ArgsError::Invalid(CHUNK_MS),
+                ArgsError::NotNumber {
+                    name: CHUNK_MS,
+                    source: "80ms".parse::<u64>().expect_err("80ms is not a number"),
+                },
             ),
             (
                 "--socket /s --model-dir /m --threads 4 --chunk-ms",

@@ -421,7 +421,10 @@ fn a_regular_file_at_the_socket_path_is_never_removed() {
     let dir = scratch("file");
     let path = dir.join("precious");
     std::fs::write(&path, b"mine").expect("write");
-    assert_eq!(crate::bind_private(&path).err(), Some(HostError::Bind));
+    assert!(matches!(
+        crate::bind_private(&path).err(),
+        Some(HostError::NotSocket)
+    ));
     assert_eq!(std::fs::read(&path).expect("read"), b"mine");
     std::fs::remove_dir_all(dir).expect("cleanup");
 }
@@ -434,7 +437,7 @@ fn serve_without_an_engine_says_model() {
         threads: ThreadCount(1),
         chunk: AudioMs(560),
     };
-    assert_eq!(serve(&args), Err(HostError::Model));
+    assert!(matches!(serve(&args), Err(HostError::Model)));
 }
 
 fn scratch(tag: &str) -> PathBuf {

@@ -19,13 +19,13 @@ use crate::{HostArgs, HostError, Recognizer, Session};
 /// stale file is replaced in one step.
 ///
 /// # Errors
-/// [`HostError::Bind`] when `path` is some other kind of file or the socket cannot be created,
+/// [`HostError::NotSocket`] when `path` is some other kind of file, [`HostError::Bind`] when the socket cannot be created,
 /// restricted or moved into place.
 pub fn bind_private(path: &Path) -> Result<UnixListener, HostError> {
     if std::fs::symlink_metadata(path).is_ok_and(|meta| !meta.file_type().is_socket()) {
-        return Err(HostError::Bind);
+        return Err(HostError::NotSocket);
     }
-    let name = path.file_name().ok_or(HostError::Bind)?;
+    let name = path.file_name().ok_or(HostError::NoSocketName)?;
     let parent = path.parent().filter(|p| !p.as_os_str().is_empty());
     let staging = parent
         .unwrap_or_else(|| Path::new("."))
@@ -33,25 +33,26 @@ pub fn bind_private(path: &Path) -> Result<UnixListener, HostError> {
     match std::fs::remove_dir_all(&staging) {
         Ok(()) => {}
         Err(e) if e.kind() == io::ErrorKind::NotFound => {}
-        Err(_) => return Err(HostError::Bind),
+        Err(e) => return Err(bind_fault(e)),
     }
     DirBuilder::new()
         .mode(0o700)
         .create(&staging)
-        .ok()
-        .ok_or(HostError::Bind)?;
+        .map_err(bind_fault)?;
     let staged = staging.join("s");
     let bound = bind_staged(&staged, path);
     let _ = std::fs::remove_dir_all(&staging);
     bound
 }
 
+fn bind_fault(error: io::Error) -> HostError {
+    HostError::Bind(std::sync::Arc::new(error))
+}
+
 fn bind_staged(staged: &Path, path: &Path) -> Result<UnixListener, HostError> {
-    let listener = UnixListener::bind(staged).ok().ok_or(HostError::Bind)?;
-    std::fs::set_permissions(staged, std::fs::Permissions::from_mode(0o600))
-        .ok()
-        .ok_or(HostError::Bind)?;
-    std::fs::rename(staged, path).ok().ok_or(HostError::Bind)?;
+    let listener = UnixListener::bind(staged).map_err(bind_fault)?;
+    std::fs::set_permissions(staged, std::fs::Permissions::from_mode(0o600)).map_err(bind_fault)?;
+    std::fs::rename(staged, path).map_err(bind_fault)?;
     Ok(listener)
 }
 
