@@ -76,12 +76,31 @@ impl<K: Clone + PartialEq> RosterState<K> {
 }
 
 /// Why a stay could not happen.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug)]
 pub enum StayError {
     /// The roster holds no row with that key: never listed, or already dropped after its exit.
     UnknownKey,
-    /// The roster's owner is gone (the list unmounted); only the hook reports this.
-    Unmounted,
+    /// The roster's owner is gone (the list unmounted); only the hook reports this. Holds why the
+    /// state could not be read.
+    Unmounted(Box<dyn std::error::Error + Send + Sync>),
+}
+
+impl std::fmt::Display for StayError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::UnknownKey => f.write_str("the roster holds no row with that key"),
+            Self::Unmounted(_) => f.write_str("the roster's state is gone"),
+        }
+    }
+}
+
+impl std::error::Error for StayError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::UnknownKey => None,
+            Self::Unmounted(source) => Some(source.as_ref()),
+        }
+    }
 }
 
 /// How a row leaves the roster.
