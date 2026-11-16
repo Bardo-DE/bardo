@@ -165,13 +165,18 @@ async fn joining(connection: &Connection, attempt: &Attempt) -> Result<(), JoinF
     let mut started = false;
     let ended = loop {
         let Some(change) = next(&mut changes).await else {
-            break Err(could_not(ssid));
+            break Err(could_not(ssid, &"the state signal ended"));
         };
         let Ok(args) = change.args() else { continue };
         match join_verdict(*args.new_state(), *args.reason(), started, security) {
             JoinVerdict::Done => break Ok(()),
             JoinVerdict::WrongPassword => break Err(JoinFailure::WrongPassword),
-            JoinVerdict::CouldNot => break Err(could_not(ssid)),
+            JoinVerdict::CouldNot => {
+                break Err(could_not(
+                    ssid,
+                    &format!("the network refused it (reason {:?})", args.reason()),
+                ));
+            }
             JoinVerdict::Going => started = true,
             JoinVerdict::Waiting => {}
         }

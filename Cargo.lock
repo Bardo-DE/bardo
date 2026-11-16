@@ -78,23 +78,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "account-calendar"
-version = "0.1.0"
-dependencies = [
- "account-dav-proto",
- "account-fake-servers",
- "account-http",
- "account-http-relay",
- "base-url",
- "base64 0.22.1",
- "chrono",
- "serde_json",
- "thiserror 2.0.21",
- "tokio",
- "zbus",
-]
-
-[[package]]
 name = "account-callers"
 version = "0.1.0"
 dependencies = [
@@ -246,7 +229,6 @@ dependencies = [
  "base-url",
  "base-xdg",
  "clap",
- "old-folders",
  "rustix 1.1.6",
  "serde",
  "serde_json",
@@ -1167,7 +1149,6 @@ dependencies = [
  "inference-client",
  "inference-core",
  "inference-dbus",
- "old-folders",
  "provenance",
  "serde",
  "serde_json",
@@ -1574,27 +1555,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "action-ui-adapter"
-version = "0.1.0"
-dependencies = [
- "account-capability",
- "account-core",
- "action-core",
- "action-manifest",
- "action-provider",
- "action-vocab",
- "action-wire",
- "base-ids",
- "companion-wire",
- "inference-core",
- "permission-core",
- "provenance",
- "speech-wire",
- "thiserror 2.0.21",
- "ui-intents",
-]
-
-[[package]]
 name = "action-vocab"
 version = "0.1.0"
 dependencies = [
@@ -1846,58 +1806,6 @@ dependencies = [
  "serde_json",
  "serde_with",
  "strum",
-]
-
-[[package]]
-name = "agent-inapp"
-version = "0.1.0"
-dependencies = [
- "account-capability",
- "account-core",
- "account-match",
- "account-wire",
- "action-client",
- "action-context",
- "action-core",
- "action-fake",
- "action-host",
- "action-manifest",
- "action-provider",
- "action-review",
- "action-router",
- "action-store",
- "action-vocab",
- "action-wire",
- "agent-loop",
- "agent-models",
- "agent-planner",
- "agent-reader",
- "agent-session",
- "agent-skills",
- "agent-skills-disk",
- "base-ids",
- "base-path",
- "base-time",
- "companion-memory",
- "companion-memory-core",
- "companion-tasks",
- "companion-wire",
- "computer-use-action",
- "futures-channel",
- "futures-util",
- "inference-client",
- "inference-core",
- "memory-client",
- "memory-core",
- "memory-fake",
- "memory-service",
- "permission-core",
- "permission-policy",
- "provenance",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
 ]
 
 [[package]]
@@ -2543,17 +2451,12 @@ dependencies = [
  "action-wire",
  "anyview-core",
  "anyview-platform",
- "anyview-plugin",
- "anyview-plugin-protocol",
  "base-fs",
  "base-ids",
  "dirs 6.0.0",
- "futures-util",
  "log",
  "md-5 0.10.6",
- "memfd",
  "percent-encoding",
- "plugin-host",
  "png",
  "provenance",
  "serde_json",
@@ -2563,30 +2466,7 @@ dependencies = [
  "tokio",
  "toml",
  "ui-core",
- "ui-extensions",
- "ui-settings",
  "zbus",
-]
-
-[[package]]
-name = "anyview-plugin"
-version = "0.1.0"
-dependencies = [
- "anyview-core",
- "anyview-plugin-protocol",
- "plugin-host",
- "serde",
- "thiserror 2.0.21",
-]
-
-[[package]]
-name = "anyview-plugin-protocol"
-version = "0.1.0"
-dependencies = [
- "plugin-host",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2595,9 +2475,6 @@ version = "0.1.0"
 dependencies = [
  "anyview-core",
  "base-fs",
- "base-time",
- "log",
- "rustix 1.1.6",
  "serde",
  "serde_json",
  "tempfile",
@@ -4274,7 +4151,6 @@ dependencies = [
  "key-remap-client",
  "keymap",
  "nix 0.31.3",
- "old-folders",
  "rustix 1.1.6",
  "serde",
  "shell-verbs",
@@ -4643,7 +4519,6 @@ dependencies = [
  "memory-fake",
  "memory-service",
  "model-provider",
- "old-folders",
  "permission-core",
  "provenance",
  "rust_decimal",
@@ -7776,7 +7651,6 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-dbus",
- "account-fake-servers",
  "account-match",
  "account-tailscale",
  "account-wire",
@@ -7787,17 +7661,11 @@ dependencies = [
  "base-url",
  "base-xdg",
  "computer-use-action",
- "inference-bridge",
  "inference-core",
  "inference-daemon",
  "inference-dbus",
  "inference-router",
  "inference-tailnet",
- "inference-turns",
- "model-http",
- "model-openai-compat",
- "model-provider",
- "model-wire",
  "rustix 1.1.6",
  "serde",
  "serde_json",
@@ -7892,7 +7760,6 @@ dependencies = [
  "model-replay",
  "model-vision-prep",
  "model-wire",
- "old-folders",
  "rust_decimal",
  "rustix 1.1.6",
  "serde",
@@ -8788,13 +8655,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "keymap-macos"
-version = "0.1.0"
-dependencies = [
- "keymap",
-]
-
-[[package]]
 name = "keyring-core"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9552,7 +9412,6 @@ dependencies = [
  "memory-store",
  "memory-tidy",
  "memory-watch",
- "old-folders",
  "rusqlite",
  "serde",
  "serde_json",
@@ -10074,7 +9933,6 @@ dependencies = [
  "input-linux",
  "mouse-gestures-proto",
  "notify",
- "old-folders",
  "rustix 1.1.6",
  "serde",
  "serde_json",
@@ -10733,13 +10591,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2e5a6c098c7a3b6547378093f5cc30bc54fd361ce711e05293a5cc589562739b"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "old-folders"
-version = "0.1.0"
-dependencies = [
- "tempfile",
 ]
 
 [[package]]
@@ -11600,7 +11451,6 @@ dependencies = [
  "base-xdg",
  "caller-identity-dbus",
  "image",
- "old-folders",
  "pipewire",
  "portal-core",
  "rustix 1.1.6",
@@ -14711,7 +14561,6 @@ dependencies = [
  "hex",
  "mime_guess",
  "nanohtml2text",
- "old-folders",
  "replica-gdrive",
  "replica-graph",
  "replica-webdav",
@@ -14728,6 +14577,7 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "toml",
+ "toml_edit",
  "ui-settings",
  "windows-zones",
  "zbus",
@@ -15701,7 +15551,6 @@ dependencies = [
  "futures-timer",
  "notify",
  "objc2-core-foundation",
- "old-folders",
  "serde",
  "serde_json",
  "tempfile",
@@ -15725,18 +15574,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.119",
-]
-
-[[package]]
-name = "ui-settings-page"
-version = "0.1.0"
-dependencies = [
- "dioxus",
- "dioxus-ssr",
- "toml",
- "ui-components",
- "ui-lint",
- "ui-settings",
 ]
 
 [[package]]
@@ -15926,7 +15763,6 @@ dependencies = [
  "base-time",
  "base-xdg",
  "caller-identity-dbus",
- "old-folders",
  "semver",
  "serde",
  "tar",
