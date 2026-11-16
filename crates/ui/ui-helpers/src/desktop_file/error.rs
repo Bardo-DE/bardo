@@ -1,6 +1,6 @@
 //! Why a desktop file was not read.
 
-use crate::ReadCap;
+use base_fs::ReadCap;
 
 /// A desktop file that was refused whole.
 ///

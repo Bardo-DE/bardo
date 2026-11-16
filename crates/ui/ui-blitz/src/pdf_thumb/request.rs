@@ -2,12 +2,12 @@
 
 use super::cache;
 use super::raster::rasterise;
+use base_fs::{ReadCap, ReadError, read_capped};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::SystemTime;
 use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
 use ui_components::prelude::*;
-use ui_helpers::{ReadCap, ReadError, read_capped};
 
 /// The largest side a thumbnail is rasterised at, in device pixels: a preview pane at 3x, and a
 /// cap so a huge `size` cannot ask vello_cpu for a poster.

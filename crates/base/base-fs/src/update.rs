@@ -1,10 +1,10 @@
 //! Changing a file's text where two writers cannot lose each other's change.
 
-use crate::files::cap::ReadCap;
-use crate::files::flock::Flock;
-use crate::files::read::{ReadError, read_text_capped};
-use crate::files::write::{NewFileMode, WriteError, publish};
-use crate::files::{link, lock};
+use crate::cap::ReadCap;
+use crate::flock::Flock;
+use crate::read::{ReadError, read_text_capped};
+use crate::write::{NewFileMode, WriteError, publish};
+use crate::{link, lock};
 use std::ffi::OsString;
 use std::io;
 use std::path::{Path, PathBuf};

@@ -4,13 +4,11 @@
 //! and the floor still read, because what the administrator set holds for every run.
 
 use super::floor_files::FloorFiles;
+use base_fs::{NewFileMode, ReadCap, ReadError, WriteError, move_aside, read_capped, write_atomic};
 use compositor_core::privilege::UnixSeconds;
 use std::fmt::Debug;
 use std::os::unix::fs::{DirBuilderExt, MetadataExt, PermissionsExt};
 use std::path::{Path, PathBuf};
-use ui_helpers::{
-    NewFileMode, ReadCap, ReadError, WriteError, move_aside, read_capped, write_atomic,
-};
 
 /// The largest book or floor file read (the model's own limit, `MAX_FILE_BYTES`).
 pub(super) const FILE_CAP: ReadCap = ReadCap::kib(64);
@@ -245,7 +243,10 @@ impl PrivacyStore for FilePrivacyStore {
     }
 
     fn set_book_aside(&mut self, at: UnixSeconds) -> Result<(), StoreError> {
-        let kept = move_aside(&self.files.book, ui_helpers::UnixSeconds(at.0))?;
+        let kept = move_aside(
+            &self.files.book,
+            base_time::UnixSeconds(i64::try_from(at.0).unwrap_or(i64::MAX)),
+        )?;
         tracing::warn!(
             kept = %kept.display(),
             "the privacy book was damaged; it was kept under another name and a new one started"

@@ -20,14 +20,14 @@ pub(crate) fn io_error(op: StoreOp, path: &Path, error: &io::Error) -> StoreErro
 
 /// The most a store file may be: the history holds a few hundred paths and a record one, so a
 /// file over this is not one the store wrote.
-const STORE_FILE_CAP: ui_helpers::ReadCap = ui_helpers::ReadCap::mib(16);
+const STORE_FILE_CAP: base_fs::ReadCap = base_fs::ReadCap::mib(16);
 
 /// The JSON in `path`, or `None` when the file (or a directory above it) does not exist.
 /// Anything else that keeps it from being read is an error, never "absent": a FIFO or a folder at
 /// the path, or a refused read, is `Io` (left as it is), and a file over [`STORE_FILE_CAP`] is
 /// `Corrupt` (a writer moves it aside before writing a fresh one).
 pub(crate) fn read_json<T: DeserializeOwned>(path: &Path) -> Result<Option<T>, StoreError> {
-    let bytes = match ui_helpers::read_capped(path, STORE_FILE_CAP) {
+    let bytes = match base_fs::read_capped(path, STORE_FILE_CAP) {
         Ok(bytes) => bytes,
         Err(error) => return read_failed(path, error),
     };
@@ -41,26 +41,26 @@ pub(crate) fn read_json<T: DeserializeOwned>(path: &Path) -> Result<Option<T>, S
 
 // `ReadError` is `non_exhaustive`: a failure this crate cannot name yet is a refused read, so
 // the file is left as it is.
-fn read_failed<T>(path: &Path, error: ui_helpers::ReadError) -> Result<Option<T>, StoreError> {
+fn read_failed<T>(path: &Path, error: base_fs::ReadError) -> Result<Option<T>, StoreError> {
     match error {
-        ui_helpers::ReadError::NotFound { .. } => Ok(None),
-        ui_helpers::ReadError::NotRegular { .. } => Err(io_error(
+        base_fs::ReadError::NotFound { .. } => Ok(None),
+        base_fs::ReadError::NotRegular { .. } => Err(io_error(
             StoreOp::Read,
             path,
             &io::Error::from(io::ErrorKind::InvalidInput),
         )),
-        ui_helpers::ReadError::TooBig { .. } => Err(StoreError::Corrupt {
+        base_fs::ReadError::TooBig { .. } => Err(StoreError::Corrupt {
             path: path.to_path_buf(),
             reason: error.to_string(),
         }),
-        ui_helpers::ReadError::Io { source, .. } => Err(io_error(StoreOp::Read, path, &source)),
-        other @ ui_helpers::ReadError::NotText { .. } => {
+        base_fs::ReadError::Io { source, .. } => Err(io_error(StoreOp::Read, path, &source)),
+        other @ base_fs::ReadError::NotText { .. } => {
             Err(io_error(StoreOp::Read, path, &io::Error::other(other)))
         }
     }
 }
 
-/// Writes `value` as the whole content of `path` with quire's `ui_helpers::write_atomic`: a
+/// Writes `value` as the whole content of `path` with quire's `base_fs::write_atomic`: a
 /// uniquely named temporary file beside it, synced, renamed over `path`, and the directory synced
 /// so the rename survives a crash. A concurrent reader opens either the old file or the new one,
 /// and two writers in this process take turns. A new file is its owner's alone; the directory is
@@ -73,15 +73,18 @@ pub(crate) fn write_json<T: Serialize>(path: &Path, value: &T) -> Result<(), Sto
         reason: error.to_string(),
     })?;
     bytes.push(b'\n');
-    ui_helpers::write_atomic(path, &bytes, ui_helpers::NewFileMode::OwnerOnly)
+    base_fs::write_atomic(path, &bytes, base_fs::NewFileMode::OwnerOnly)
         .map_err(|error| io_error(StoreOp::Write, &error.path, &error.source))
 }
 
 /// Moves the damaged store file at `path` aside, to `<name>.bad-<at>` beside it, so a fresh one
 /// can be written without losing the person's bytes. Returns where it went.
 pub(crate) fn move_aside(path: &Path, at: u64) -> Result<PathBuf, StoreError> {
-    ui_helpers::move_aside(path, ui_helpers::UnixSeconds(at))
-        .map_err(|error| io_error(StoreOp::Rename, &error.path, &error.source))
+    base_fs::move_aside(
+        path,
+        base_time::UnixSeconds(i64::try_from(at).unwrap_or(i64::MAX)),
+    )
+    .map_err(|error| io_error(StoreOp::Rename, &error.path, &error.source))
 }
 
 /// The folder `path` and every missing one above it, readable by its owner alone.

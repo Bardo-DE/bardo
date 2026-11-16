@@ -4,7 +4,8 @@ use super::desktop_id::DesktopId;
 use super::identity::AppIdentity;
 use super::match_app::{AppKeys, match_app};
 use super::walk::{first_of_each_id, walk_applications};
-use crate::{DESKTOP_ENTRY_CAP, DesktopFile, read_text_capped};
+use crate::{DESKTOP_ENTRY_CAP, DesktopFile};
+use base_fs::read_text_capped;
 use std::path::PathBuf;
 
 /// A parsed desktop entry with the id its place gave it.

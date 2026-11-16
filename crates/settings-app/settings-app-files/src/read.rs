@@ -1,7 +1,7 @@
 //! The one way this crate reads a person's file as text.
 
+use base_fs::{ReadCap, ReadError, read_text_capped};
 use std::path::Path;
-use ui_helpers::{ReadCap, ReadError, read_text_capped};
 
 /// The most a settings file may hold: the cap quire's own settings reader uses. Hand-edited
 /// settings are a few KiB; a megabyte is already a mistake, and a bigger file (or a pipe or a

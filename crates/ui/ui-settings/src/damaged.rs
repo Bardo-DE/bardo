@@ -4,9 +4,10 @@
 
 use crate::error::SettingsError;
 use crate::lenient::{FileText, file_text};
+use base_fs::{ReadCap, move_aside};
+use base_time::UnixSeconds;
 use std::fmt;
 use std::path::{Path, PathBuf};
-use ui_helpers::{ReadCap, UnixSeconds, move_aside};
 use ui_style::space::list::Epoch;
 
 /// A file that exists and could not be read or understood: not text, too big, not a regular
@@ -67,7 +68,7 @@ pub(crate) fn keep_damaged(
     if damage(path, cap, understood).is_none() {
         Ok(Saved::default())
     } else {
-        let at = UnixSeconds(u64::try_from(Epoch::now().0).unwrap_or(0));
+        let at = UnixSeconds(Epoch::now().0);
         Ok(Saved {
             kept_at: Some(move_aside(path, at)?),
         })

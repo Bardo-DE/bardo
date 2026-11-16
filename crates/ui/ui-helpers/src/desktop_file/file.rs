@@ -3,7 +3,7 @@
 use super::error::DesktopFileError;
 use super::group::DesktopGroup;
 use super::parse::parse_text;
-use crate::ReadCap;
+use base_fs::ReadCap;
 
 /// The group a desktop entry's own keys live in.
 const ENTRY_GROUP: &str = "Desktop Entry";

@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 keymap = {path = "../../keymap/keymap"}
 settings-app-model = {path = "../settings-app-model"}
 agent-registry = {path = "../../actions/agent-registry"}

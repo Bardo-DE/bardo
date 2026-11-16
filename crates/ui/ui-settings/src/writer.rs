@@ -11,9 +11,9 @@ use crate::error::SettingsError;
 use crate::lenient::SETTINGS_CAP;
 use crate::schema::KeyPath;
 use crate::store::Store;
+use base_fs::{NewFileMode, UpdateError, update_atomic};
 use std::path::{Path, PathBuf};
 use toml_edit::{DocumentMut, InlineTable, Item, Table, TableLike, Value};
-use ui_helpers::{NewFileMode, UpdateError, update_atomic};
 
 /// One change to a settings file.
 #[derive(Debug, Clone, PartialEq)]
@@ -53,7 +53,7 @@ impl SettingsWriter {
     /// other byte of the file as it was. The key keeps its place, spacing and trailing comment
     /// when it is already there. A table value is written as an inline table
     /// (`consent = { given = 1760000000 }`). The read, the edit and the write happen under the
-    /// file's lock ([`ui_helpers::update_atomic`]): a crash cannot leave half a file and a
+    /// file's lock ([`base_fs::update_atomic`]): a crash cannot leave half a file and a
     /// directory watch sees one rename.
     ///
     /// A file that is there and cannot be used, or is not valid TOML, or a key under a value that

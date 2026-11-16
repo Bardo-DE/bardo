@@ -4,11 +4,11 @@
 
 use crate::error::{FilesError, reason_of};
 use crate::values::ConfigHome;
+use base_fs::{NewFileMode, ReadCap, ReadError, read_text_capped, update_atomic};
 use key_remap_client::{KeycapSource, system_bindings};
 use keymap::{Keymap, KeymapSource, Watch};
 use settings_app_model::{KeymapText, KeymapTexts, MachineLayer, desktop_keymap};
 use std::path::{Path, PathBuf};
-use ui_helpers::{NewFileMode, ReadCap, ReadError, read_text_capped, update_atomic};
 
 /// The most keycap reads of a keymap file; a larger one is not used, so it is not written over.
 const MAX_BYTES: ReadCap = ReadCap::kib(32);

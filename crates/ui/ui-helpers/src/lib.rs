@@ -1,7 +1,7 @@
 //! Missing helpers, and the safe file reader and writer every quire crate shares.
 //!
 //! The file half ([`read_capped`], [`write_atomic`], [`update_atomic`], [`move_aside`]) is UI-free:
-//! it needs only `std` (and `rustix` for the file lock on Unix), so a core crate with no window,
+//! it needs only `std`, so a core crate with no window,
 //! bus or runtime can read and write a person's files with the same guarantees as quire's
 //! settings code. [`DesktopFile`] is the matching reader for the text of a freedesktop `.desktop`
 //! file (pure: the text comes in, capped, from [`read_text_capped`] or anywhere else).
@@ -76,7 +76,6 @@ mod catalog;
 mod desktop_entries;
 mod desktop_file;
 mod family;
-mod files;
 mod helpers;
 mod install_line;
 mod installer;
@@ -96,10 +95,6 @@ pub use desktop_file::{
     DESKTOP_ENTRY_CAP, DesktopFile, DesktopFileError, DesktopGroup, EntryLocale,
 };
 pub use family::Family;
-pub use files::{
-    NewFileMode, ReadCap, ReadError, UnixSeconds, UpdateError, WriteError, move_aside, read_capped,
-    read_text_capped, update_atomic, write_atomic,
-};
 pub use helpers::Helpers;
 pub use install_line::InstallLine;
 pub use installer::{BoxFuture, FakeInstaller, Install, PackageKit, Request, StandIn, Timeouts};

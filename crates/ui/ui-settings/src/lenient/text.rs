@@ -1,8 +1,8 @@
 //! A settings file's bytes as text: the one place a settings file is read, so a file that is
 //! missing is told apart from one that is there and cannot be used.
 
+use base_fs::{ReadCap, ReadError, read_text_capped};
 use std::path::Path;
-use ui_helpers::{ReadCap, ReadError, read_text_capped};
 
 /// The most a settings file may hold. Hand-edited settings are a few KiB; a megabyte is already
 /// a mistake, and a bigger file would stall startup in the key-by-key reader.

@@ -20,8 +20,8 @@ quire-desktop = ["dep:action-provider", "dep:action-core", "dep:action-dbus", "d
 testing = ["dep:tempfile"]
 
 [dependencies]
+base-fs = { path = "../../../base/base-fs" }
 # Capped reads and atomic writes of the thumbnail and cover caches: quire's, shared by the desktop's apps.
-ui-helpers = {default-features = false, path = "../../../ui/ui-helpers"}
 anyview-core = {path = "../anyview-core"}
 anyview-plugin = {path = "../anyview-plugin"}
 anyview-plugin-protocol = {path = "../anyview-plugin-protocol"}

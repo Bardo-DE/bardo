@@ -19,6 +19,7 @@ path = "src/main.rs"
 required-features = ["tty", "libinput"]
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 compositor-core = {path = "../compositor-core"}
 compositor-layout = {path = "../compositor-layout"}
 compositor-motion = {path = "../compositor-motion"}
@@ -33,7 +34,6 @@ compositor-privacy = {path = "../compositor-privacy"}
 desktop-protocols = {path = "../../wayland/desktop-protocols", features = ["server"]}
 shell-verbs = {path = "../../wayland/shell-verbs"}
 account-core = {path = "../../accounts/account-core"}
-ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 ui-core = {path = "../../ui/ui-core", default-features = false}
 ui-settings = {path = "../../ui/ui-settings", default-features = false, features = ["quire-desktop"]}
 keymap = {path = "../../keymap/keymap"}

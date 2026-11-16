@@ -3,8 +3,8 @@
 use std::path::PathBuf;
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
+use base_fs::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 use files_core::{FolderPath, FolderPrefs};
-use ui_helpers::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 
 use super::{PrefBook, PrefsStore};
 use crate::error::PrefsError;

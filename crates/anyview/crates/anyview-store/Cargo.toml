@@ -9,9 +9,10 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-time = { path = "../../../base/base-time" }
+base-fs = { path = "../../../base/base-fs" }
 anyview-core = {path = "../anyview-core"}
 # Capped reads, atomic writes and moving a damaged file aside: quire's, shared by the desktop's apps.
-ui-helpers = {default-features = false, path = "../../../ui/ui-helpers"}
 log = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

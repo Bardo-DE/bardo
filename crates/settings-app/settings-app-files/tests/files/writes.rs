@@ -3,11 +3,11 @@
 
 use crate::round_trip::{home, read_file, save_key, spec, word, write_file};
 use action_settings::{ModelChoice, OwnComputer, PlaceName, Places};
+use base_fs::{NewFileMode, ReadCap, update_atomic};
 use settings_app_files::{ConfigHome, load_places, save_places};
 use std::os::unix::fs::{PermissionsExt, symlink};
 use std::sync::Arc;
 use std::time::Duration;
-use ui_helpers::{NewFileMode, ReadCap, update_atomic};
 
 #[test]
 fn a_private_file_stays_private() {

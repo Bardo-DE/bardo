@@ -7,9 +7,9 @@
 
 use std::path::{Path, PathBuf};
 
+use base_fs::{ReadCap, read_capped};
 use image::{ExtendedColorType, ImageEncoder};
 use shell_model::tray::{Pixmap, TRAY_ICON_FILE_MAX_BYTES, TrayIcon, theme_icon_name};
-use ui_helpers::{ReadCap, read_capped};
 
 /// What a status item's icon is, as far as this side can tell.
 #[derive(Debug, Clone, PartialEq, Eq)]

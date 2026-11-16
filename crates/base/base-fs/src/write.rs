@@ -1,7 +1,7 @@
 //! Writing a file so that a reader sees the old bytes or the new ones, never a mixture, and so
 //! that the new ones survive a power cut.
 
-use crate::files::{link, lock};
+use crate::{link, lock};
 use std::ffi::{OsStr, OsString};
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};

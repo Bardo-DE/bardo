@@ -6,12 +6,12 @@ use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::sync::{Mutex, PoisonError};
 
+use base_fs::{ReadCap, read_text_capped};
 use jiff::tz::TimeZone;
 use shell_model::events::{
     CalendarName, EventsError, IcsError, IcsEvent, IcsPlace, Window, is_task_list, occurrences,
     parse_ics, unsupported_parts,
 };
-use ui_helpers::{ReadCap, read_text_capped};
 
 use super::provider::ProviderRead;
 

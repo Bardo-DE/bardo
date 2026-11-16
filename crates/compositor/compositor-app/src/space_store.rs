@@ -20,9 +20,9 @@ mod writer;
 
 pub use writer::BackgroundSpaceStore;
 
+use base_fs::{NewFileMode, ReadCap, read_text_capped};
 use compositor_core::space::{SpaceFile, SpaceFileError};
 use std::path::{Path, PathBuf};
-use ui_helpers::{NewFileMode, ReadCap, read_text_capped};
 
 /// The largest Spaces file read: a few hundred Spaces are tens of kilobytes, and a file past this
 /// is not ours (a FIFO or a device at the path is refused too, so start-up cannot hang on it).
@@ -145,7 +145,7 @@ pub(crate) fn write_atomic(path: &Path, text: &str) -> Result<(), SpaceStoreErro
             source,
         })?;
     }
-    ui_helpers::write_atomic(path, text.as_bytes(), NewFileMode::OwnerOnly).map_err(|error| {
+    base_fs::write_atomic(path, text.as_bytes(), NewFileMode::OwnerOnly).map_err(|error| {
         SpaceStoreError::Io {
             path: error.path,
             source: error.source,

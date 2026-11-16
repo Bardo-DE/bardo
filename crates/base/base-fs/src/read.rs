@@ -1,6 +1,6 @@
 //! Reading a file with a size cap, from a regular file only.
 
-use crate::files::cap::ReadCap;
+use crate::cap::ReadCap;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};

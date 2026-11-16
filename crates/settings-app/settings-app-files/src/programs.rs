@@ -2,11 +2,12 @@
 //! the way the shell does and draw its icon.
 
 use crate::desktop_paths::{app_id, desktop_files};
+use base_fs::read_text_capped;
 use settings_app_model::{DesktopApp, EntryVisibility, OriginRule, ProgramBook, SchemaOrigin};
 use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use ui_helpers::{DESKTOP_ENTRY_CAP, DesktopFile, read_text_capped};
+use ui_helpers::{DESKTOP_ENTRY_CAP, DesktopFile};
 
 /// The size an entry's icon is looked up at; the page draws it small and the theme gives the
 /// nearest it has.

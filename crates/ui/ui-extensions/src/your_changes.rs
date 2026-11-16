@@ -14,10 +14,10 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use ui_helpers::mime::IconName;
-use ui_helpers::{
+use base_fs::{
     NewFileMode, ReadCap, ReadError, WriteError, read_capped, read_text_capped, write_atomic,
 };
+use ui_helpers::mime::IconName;
 
 use crate::file_icons::PICTURE_CAP_BYTES;
 use crate::search::Search;

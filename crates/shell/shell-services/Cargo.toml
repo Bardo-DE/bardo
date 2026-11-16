@@ -17,6 +17,7 @@ publish.workspace = true
 dev-callers = ["caller-identity-dbus/dev-rows", "action-dbus/fixture-callers"]
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 action-wire = {path = "../../actions/action-wire"}
 companion-model = {path = "../../actions/companion-model"}

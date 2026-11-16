@@ -2,7 +2,7 @@
 //! from its text: groups, keys, localized keys, the value escapes and the `;` lists.
 //!
 //! Nothing here reads a file: the text arrives as a `&str` (or bytes) and is refused over the
-//! caller's [`crate::ReadCap`], so a core crate reads the file with [`crate::read_text_capped`]
+//! caller's [`base_fs::ReadCap`], so a core crate reads the file with [`base_fs::read_text_capped`]
 //! and hands it over. A line that is not a comment, a group header or a `Key=value` pair, and a
 //! pair before the first group, is skipped and counted ([`DesktopFile::skipped_lines`]); one bad
 //! line never costs the entry.

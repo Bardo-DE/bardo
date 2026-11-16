@@ -10,8 +10,8 @@
 use std::io;
 use std::path::{Path, PathBuf};
 
+use base_fs::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 use serde::{Deserialize, Serialize};
-use ui_helpers::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 
 use crate::xdg;
 

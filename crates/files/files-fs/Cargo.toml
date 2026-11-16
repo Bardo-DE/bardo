@@ -13,7 +13,7 @@ publish.workspace = true
 testing = []
 
 [dependencies]
-ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
+base-fs = { path = "../../base/base-fs" }
 files-core = {path = "../files-core"}
 notify = { workspace = true }
 thiserror = { workspace = true }

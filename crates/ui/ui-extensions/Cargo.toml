@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 ui-core = {path = "../ui-core"}
 ui-settings = {path = "../ui-settings", default-features = false}
 # The kinds, folder kinds, extension label and the type-to-kind table the standard set is.

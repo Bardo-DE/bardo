@@ -5,8 +5,8 @@ use super::footnote::Footnote;
 use std::io;
 use std::path::{Path, PathBuf};
 
+use base_fs::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 use serde::{Deserialize, Serialize};
-use ui_helpers::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 
 use super::agent::never_settable_violation;
 use super::key::KeySpec;
@@ -91,7 +91,7 @@ impl Schema {
     }
 
     /// Writes `<app-id>.settings.toml` into `dir` (creating it if needed) through
-    /// [`ui_helpers::write_atomic`], the same mechanism every settings file in this workspace
+    /// [`base_fs::write_atomic`], the same mechanism every settings file in this workspace
     /// uses (design/22-SETTINGS.md section 2).
     pub fn write_to(&self, dir: &Path) -> io::Result<PathBuf> {
         std::fs::create_dir_all(dir)?;

@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-fs = { path = "../../base/base-fs" }
 ui-peer = {path = "../ui-peer"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
@@ -16,10 +17,9 @@ toml = { workspace = true }
 zbus = {version = "5.19", optional = true}
 
 # `update_atomic` locks a sidecar file between programs.
-[target.'cfg(unix)'.dependencies]
-rustix = {version = "1", default-features = false, features = ["std", "fs"]}
 
 [dev-dependencies]
+base-time = { path = "../../base/base-time" }
 # The tests' runtime; the crate itself names none (zbus brings its own executor).
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros"]}
 # The tests run zbus on that runtime (the fake PackageKit sleeps with tokio inside a zbus

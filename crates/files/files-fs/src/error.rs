@@ -63,7 +63,7 @@ pub enum PrefsError {
     Folder(#[source] io::Error),
     /// The file can't be written.
     #[error("How folders are shown can't be saved.")]
-    Write(#[source] ui_helpers::WriteError),
+    Write(#[source] base_fs::WriteError),
 }
 
 /// Why the cloud drives could not be asked.

@@ -11,9 +11,9 @@ use crate::lenient::{FileText, Loaded, Read, SETTINGS_CAP, file_text, read, read
 use crate::preserve;
 use crate::root::{AppName, ConfigRoot};
 use crate::watch::Watch;
+use base_fs::{NewFileMode, UpdateError, update_atomic, write_atomic};
 use std::path::PathBuf;
 use ui_core::spawner::Spawner;
-use ui_helpers::{NewFileMode, UpdateError, update_atomic, write_atomic};
 
 /// One program's settings directory.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -84,7 +84,7 @@ impl Store {
     /// trailing comment. A key `D` owns and no longer writes (a `None`, a removed map entry) is
     /// taken out. Other formats, and a file that is not there, get `doc` as encoded.
     ///
-    /// The read, the merge and the write happen under the file's lock ([`ui_helpers::update_atomic`]):
+    /// The read, the merge and the write happen under the file's lock ([`base_fs::update_atomic`]):
     /// writers in this process and in other programs take turns, and the bytes land in a uniquely
     /// named temporary file beside it, are flushed and renamed into place, so a crash mid-write
     /// cannot leave a half-written file and a directory watch sees one rename. A symlinked

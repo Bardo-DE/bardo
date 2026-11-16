@@ -20,10 +20,10 @@ pub enum SettingsError {
     /// The value could not be written as JSON.
     #[error("encoding settings as JSON: {0}")]
     EncodeJson(#[from] serde_json::Error),
-    /// A file there could not be read as text under the size cap (see [`ui_helpers::ReadError`]);
+    /// A file there could not be read as text under the size cap (see [`base_fs::ReadError`]);
     /// it is left as it was.
     #[error(transparent)]
-    Read(#[from] ui_helpers::ReadError),
+    Read(#[from] base_fs::ReadError),
     /// A file could not take the edit: it is not valid TOML, or the key sits inside a value that
     /// is not a table. It is left as it was.
     #[error("{path}: {reason}")]
@@ -44,8 +44,8 @@ pub enum SettingsError {
     },
 }
 
-impl From<ui_helpers::WriteError> for SettingsError {
-    fn from(error: ui_helpers::WriteError) -> Self {
+impl From<base_fs::WriteError> for SettingsError {
+    fn from(error: base_fs::WriteError) -> Self {
         SettingsError::Io {
             path: error.path,
             source: error.source,

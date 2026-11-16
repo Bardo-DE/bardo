@@ -6,16 +6,16 @@
 //! itself. A missing file is a first run (or an empty Today). A file that is there and cannot be
 //! used is never taken for a missing one: the app runs on defaults in memory, the file is left
 //! as it was, and the first save moves it aside to `<name>.bad-<seconds>`. Reads are capped and
-//! never block on a FIFO, and every write is durable and atomic (`ui_helpers::write_atomic`).
+//! never block on a FIFO, and every write is durable and atomic (`base_fs::write_atomic`).
 
 use crate::damaged::{DamagedFile, Saved, keep_damaged};
 use crate::error::SettingsError;
 use crate::lenient::{FileText, file_text};
 use crate::root::{AppName, ConfigRoot};
+use base_fs::{NewFileMode, ReadCap, write_atomic};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::path::{Path, PathBuf};
-use ui_helpers::{NewFileMode, ReadCap, write_atomic};
 use ui_style::space::list::{Epoch, Spaces, Today};
 
 const SPACES_FILE: &str = "spaces.json";

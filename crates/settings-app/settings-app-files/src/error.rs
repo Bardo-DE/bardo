@@ -1,7 +1,7 @@
 //! A write that did not happen, and a file that could not be used.
 
+use base_fs::{ReadError, UpdateError, WriteError};
 use std::path::{Path, PathBuf};
-use ui_helpers::{ReadError, UpdateError, WriteError};
 
 /// What stopped a save. The messages are for the person (they appear in a toast): plain words,
 /// the file named, no protocol or format names.

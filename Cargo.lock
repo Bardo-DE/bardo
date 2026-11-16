@@ -2551,9 +2551,9 @@ name = "anyview-fs"
 version = "0.1.0"
 dependencies = [
  "anyview-core",
+ "base-fs",
  "rustix 1.1.6",
  "tempfile",
- "ui-helpers",
 ]
 
 [[package]]
@@ -2619,6 +2619,7 @@ dependencies = [
  "anyview-platform",
  "anyview-plugin",
  "anyview-plugin-protocol",
+ "base-fs",
  "base-ids",
  "dirs 6.0.0",
  "futures-util",
@@ -2637,7 +2638,6 @@ dependencies = [
  "toml",
  "ui-core",
  "ui-extensions",
- "ui-helpers",
  "ui-settings",
  "zbus",
 ]
@@ -2668,13 +2668,14 @@ name = "anyview-store"
 version = "0.1.0"
 dependencies = [
  "anyview-core",
+ "base-fs",
+ "base-time",
  "log",
  "rustix 1.1.6",
  "serde",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",
- "ui-helpers",
 ]
 
 [[package]]
@@ -3121,8 +3122,11 @@ name = "base-fs"
 version = "0.1.0"
 dependencies = [
  "base-testkit",
+ "base-time",
+ "rustix 1.1.6",
  "serde",
  "serde_json",
+ "thiserror 2.0.21",
  "tokio",
 ]
 
@@ -4331,6 +4335,7 @@ name = "compositor-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-fs",
  "calloop",
  "compositor-agent",
  "compositor-backend",
@@ -4360,7 +4365,6 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "ui-core",
- "ui-helpers",
  "ui-settings",
  "x11rb",
 ]
@@ -4489,13 +4493,14 @@ dependencies = [
 name = "compositor-privacy"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-time",
  "compositor-core",
  "desktop-protocols",
  "rustix 1.1.6",
  "tempfile",
  "thiserror 2.0.21",
  "tracing",
- "ui-helpers",
 ]
 
 [[package]]
@@ -6567,13 +6572,13 @@ dependencies = [
 name = "files-fs"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "files-core",
  "files-fs",
  "notify",
  "tempfile",
  "thiserror 2.0.21",
  "toml",
- "ui-helpers",
 ]
 
 [[package]]
@@ -13078,6 +13083,7 @@ dependencies = [
  "action-settings",
  "agent-install",
  "agent-registry",
+ "base-fs",
  "freedesktop-icons",
  "key-remap-client",
  "keymap",
@@ -13625,6 +13631,7 @@ dependencies = [
  "anyview-core",
  "anyview-platform",
  "async-trait",
+ "base-fs",
  "base-ids",
  "bluez-proxy",
  "caller-identity-dbus",
@@ -15374,6 +15381,7 @@ dependencies = [
  "anyrender",
  "anyrender_vello_hybrid",
  "arboard",
+ "base-fs",
  "blitz-dom",
  "blitz-embed",
  "blitz-html",
@@ -15497,6 +15505,7 @@ dependencies = [
 name = "ui-extensions"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
  "plugin-host",
  "serde",
  "thiserror 2.0.21",
@@ -15560,7 +15569,8 @@ dependencies = [
 name = "ui-helpers"
 version = "0.1.0"
 dependencies = [
- "rustix 1.1.6",
+ "base-fs",
+ "base-time",
  "serde",
  "thiserror 2.0.21",
  "tokio",
@@ -15624,6 +15634,8 @@ dependencies = [
 name = "ui-settings"
 version = "0.1.0"
 dependencies = [
+ "base-fs",
+ "base-time",
  "dioxus",
  "futures-timer",
  "notify",
@@ -15638,7 +15650,6 @@ dependencies = [
  "toml_edit",
  "ui-components",
  "ui-core",
- "ui-helpers",
  "ui-peer",
  "ui-settings-derive",
  "ui-style",

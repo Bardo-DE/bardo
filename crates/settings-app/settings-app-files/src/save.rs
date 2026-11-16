@@ -3,10 +3,10 @@
 use crate::error::FilesError;
 use crate::read::SETTINGS_CAP;
 use crate::values::ConfigHome;
+use base_fs::{NewFileMode, update_atomic};
 use settings_app_model::ConfigFile;
 use std::path::Path;
 use toml_edit::{DocumentMut, Item, Table, Value};
-use ui_helpers::{NewFileMode, update_atomic};
 use ui_settings::schema::KeyPath;
 
 /// Sets `path` in `table` (a real or inline table), making the tables on the way, and leaves
