@@ -62,7 +62,8 @@ pub async fn build(
     };
     let forwarder = sibling("bardo-agent-net-forward").ok_or(AgentFault::NoForwarder)?;
     // Without the exec stage the agent is held by the sandbox alone: say so, never hide it.
-    let enter = sibling("bardo-agent-net-enter").filter(|p| std::path::Path::new(p.as_str()).exists());
+    let enter =
+        sibling("bardo-agent-net-enter").filter(|p| std::path::Path::new(p.as_str()).exists());
     if enter.is_none() {
         eprintln!(
             "bardo-agent: no bardo-agent-net-enter beside this program: the kernel does not limit the agent's files or network"

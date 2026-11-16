@@ -112,7 +112,9 @@ async fn a_caller_sees_what_it_owns_settings_sees_all_and_status_carries_quota_a
     let photos = rig
         .hub
         .register(name("a1/photos_originals"), owned_by("org.bardo.Photos"));
-    let _pim = rig.hub.register(name("a1/pim"), owned_by("org.bardo.Shell"));
+    let _pim = rig
+        .hub
+        .register(name("a1/pim"), owned_by("org.bardo.Shell"));
     photos.publish(StatusSnapshot {
         anchor_age: Some(12),
         pending: 3,
@@ -239,7 +241,9 @@ async fn progress_and_conflict_go_only_to_callers_who_may_see_the_dataset() {
     let photos = rig
         .hub
         .register(name("a1/photos_originals"), owned_by("org.bardo.Photos"));
-    let pim = rig.hub.register(name("a1/pim"), owned_by("org.bardo.Shell"));
+    let pim = rig
+        .hub
+        .register(name("a1/pim"), owned_by("org.bardo.Shell"));
     let app = client(&rig.bus, &rig.known, "org.bardo.Photos", CallerRole::App).await;
     let sill = client(&rig.bus, &rig.known, "org.bardo.Shell", CallerRole::App).await;
     let (app_proxy, sill_proxy) = (proxy(&app).await, proxy(&sill).await);

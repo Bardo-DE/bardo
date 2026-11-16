@@ -56,8 +56,10 @@ fn both_are_served_before_anyone_logs_in() {
 #[test]
 fn refusals_table() {
     use Refusal::*;
-    let user_palmrest = "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service";
-    let user_keycap = "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-key-remap.service";
+    let user_palmrest =
+        "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service";
+    let user_keycap =
+        "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-key-remap.service";
     let table: Vec<(&str, Kind, Caller, ActiveUid, Refusal)> = vec![
         (
             "not in the table",

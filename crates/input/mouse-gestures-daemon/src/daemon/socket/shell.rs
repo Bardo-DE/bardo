@@ -116,7 +116,7 @@ mod tests {
             ),
             (
                 "a scope",
-                format!("{MANAGER_1000}/app.slice/app-sill-1.scope"),
+                format!("{MANAGER_1000}/app.slice/app-bardo-1.scope"),
                 Claim::Other,
             ),
         ];

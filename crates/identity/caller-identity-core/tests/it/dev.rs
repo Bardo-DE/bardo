@@ -126,7 +126,10 @@ mod with_feature {
             [RowOrigin::Shipped, RowOrigin::Shipped, RowOrigin::Dev]
         );
         // A process running the shipped image is judged by the shipped row, not as Dev.
-        let standing = judge(&facts(in_sill_unit(), root_only("/usr/bin/bardo-shell")), &table);
+        let standing = judge(
+            &facts(in_sill_unit(), root_only("/usr/bin/bardo-shell")),
+            &table,
+        );
         assert_eq!(
             standing,
             Standing::Service {

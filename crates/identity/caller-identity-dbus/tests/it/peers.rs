@@ -13,7 +13,8 @@ use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess};
 
 const IMAGE: &str = "/usr/bin/bardo-shell";
 const FRAGMENT: &str = "/usr/lib/systemd/user/bardo-shell.service";
-const CGROUP: &str = "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service\n";
+const CGROUP: &str =
+    "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-shell.service\n";
 
 const TABLE: &str = r#"
 [[peer]]

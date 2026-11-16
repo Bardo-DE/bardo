@@ -21,7 +21,9 @@ fn the_unified_line_is_picked_out_of_a_hybrid_file() {
 #[test]
 fn only_a_unit_name_is_a_unit_leaf() {
     assert_eq!(
-        cg("/a/b/bardo-shell.service").unit_leaf().map(|u| u.to_string()),
+        cg("/a/b/bardo-shell.service")
+            .unit_leaf()
+            .map(|u| u.to_string()),
         Some("bardo-shell.service".to_owned())
     );
     assert_eq!(
@@ -31,7 +33,11 @@ fn only_a_unit_name_is_a_unit_leaf() {
         Some("session-3.scope".to_owned())
     );
     assert!(cg("/a/b/app.slice").unit_leaf().is_none());
-    assert!(cg("/a/b/bardo-shell.service (deleted)").unit_leaf().is_none());
+    assert!(
+        cg("/a/b/bardo-shell.service (deleted)")
+            .unit_leaf()
+            .is_none()
+    );
 }
 
 #[test]

@@ -60,7 +60,11 @@ fn who_sees_a_dataset_by_role_and_ownership() {
             caller("org.bardo.Photos", CallerRole::Agent),
             false,
         ),
-        ("cua", caller("org.bardo.ComputerUse", CallerRole::Cua), false),
+        (
+            "cua",
+            caller("org.bardo.ComputerUse", CallerRole::Cua),
+            false,
+        ),
     ];
     for (who, caller, sees) in cases {
         assert_eq!(access.admits(&caller), sees, "{who}");

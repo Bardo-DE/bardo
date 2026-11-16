@@ -496,7 +496,10 @@ mod session_bus {
         let (result, calls, _) = run().await;
         let error = result.expect_err("failed job");
         assert!(matches!(error, LendingError::RestartFailed(_)), "{error:?}");
-        assert_eq!(calls, ["Reload", "RestartUnit bardo-inferd.service replace"]);
+        assert_eq!(
+            calls,
+            ["Reload", "RestartUnit bardo-inferd.service replace"]
+        );
     }
 
     #[tokio::test]

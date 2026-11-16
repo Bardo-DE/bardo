@@ -118,7 +118,8 @@ fn only_the_trusted_unit_under_the_users_manager_claims_the_shell() {
         ),
         (
             "a manager of another user than the slice",
-            "/user.slice/user-999.slice/user@1000.service/session.slice/bardo-shell.service".to_owned(),
+            "/user.slice/user-999.slice/user@1000.service/session.slice/bardo-shell.service"
+                .to_owned(),
             Claim::Other,
         ),
         (

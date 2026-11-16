@@ -136,9 +136,7 @@ async fn smoke_agent(
         }
         failed |= !r.failures.is_empty();
         if r.failures.iter().any(|f| f.kind == Kind::Setup) {
-            eprintln!(
-                "agent-live: the agent did not come up; the remaining flows are not started"
-            );
+            eprintln!("agent-live: the agent did not come up; the remaining flows are not started");
             break;
         }
     }

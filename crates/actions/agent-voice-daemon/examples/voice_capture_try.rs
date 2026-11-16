@@ -18,7 +18,9 @@ use std::time::{Duration, Instant};
 
 /// The override to try: `BARDO_VOICED_INPUT`, standing in for `input = "..."` in voiced.toml.
 fn configured_input() -> Option<String> {
-    std::env::var("BARDO_VOICED_INPUT").ok().filter(|v| !v.is_empty())
+    std::env::var("BARDO_VOICED_INPUT")
+        .ok()
+        .filter(|v| !v.is_empty())
 }
 
 async fn list(device: &PipeWireDevice) -> ExitCode {

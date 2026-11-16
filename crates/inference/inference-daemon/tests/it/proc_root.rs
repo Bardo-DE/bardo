@@ -100,7 +100,10 @@ fn start(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> Daemon {
         .env("BARDO_INFERD_PROC_ROOT", proc_root)
         .env("BARDO_INFERD_CALLERS", &system)
         // A Tailscale nobody serves: this computer's real one is never asked.
-        .env("BARDO_INFERD_TAILSCALE_SOCKET", scratch.join("no-tailscale.sock"))
+        .env(
+            "BARDO_INFERD_TAILSCALE_SOCKET",
+            scratch.join("no-tailscale.sock"),
+        )
         .arg("--config")
         .arg(&config)
         .stdin(Stdio::null())

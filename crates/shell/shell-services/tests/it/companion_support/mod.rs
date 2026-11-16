@@ -343,7 +343,8 @@ pub fn entry(id: u64, said: &str, state: UndoState) -> UndoEntry {
 }
 
 pub fn run_path(id: &str) -> OwnedObjectPath {
-    OwnedObjectPath::try_from(format!("/org/bardo/ComputerUse1/run/{id}")).unwrap_or_else(|e| panic!("{e}"))
+    OwnedObjectPath::try_from(format!("/org/bardo/ComputerUse1/run/{id}"))
+        .unwrap_or_else(|e| panic!("{e}"))
 }
 
 pub fn timeline_entry(seq: u64) -> TimelineEntry {

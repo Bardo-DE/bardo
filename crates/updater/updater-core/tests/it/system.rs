@@ -58,12 +58,18 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ("/etc/modprobe.d/blacklist.conf", false),
         ("/usr/lib/systemd/system/evil.service", false),
         ("/usr/lib/systemd/system/bardo-input-broker.timer", false),
-        ("/usr/lib/systemd/system/bardo-input-broker.service.d", false),
+        (
+            "/usr/lib/systemd/system/bardo-input-broker.service.d",
+            false,
+        ),
         ("/etc/udev/rules.d/73-bardo-input-broker.rules", false),
         ("/usr/lib/systemd/system/bardo-mouse-gestures.socket", false),
         ("/usr/lib/systemd/user/bardo-shell.target", false),
         ("/usr/lib/systemd/user/.service", false),
-        ("/usr/lib/systemd/user/bardo-shell.service.d/10-evil.conf", false),
+        (
+            "/usr/lib/systemd/user/bardo-shell.service.d/10-evil.conf",
+            false,
+        ),
         (
             "/usr/lib/systemd/user/xdg-desktop-portal.service.d/20-evil.conf",
             false,
@@ -349,7 +355,11 @@ fn system_files_are_placed_kept_replaced_removed_or_left_alone() {
         ),
         (
             "dropped but replaced by a link: leave alone",
-            plan(&[], &[gone], &[("/etc/pam.d/bardo-shell", SystemFound::Foreign)]),
+            plan(
+                &[],
+                &[gone],
+                &[("/etc/pam.d/bardo-shell", SystemFound::Foreign)],
+            ),
             vec![],
         ),
     ];

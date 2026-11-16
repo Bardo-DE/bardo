@@ -44,7 +44,9 @@ fn cuad_is_the_one_computer_use_caller_and_an_app_entry_cannot_claim_its_unit() 
 
 #[test]
 fn the_agent_launcher_is_the_unit_the_table_names_and_an_app_entry_cannot_claim_it() {
-    let launcher = table().resolve("bardo-agent-acp.service").expect("the launcher");
+    let launcher = table()
+        .resolve("bardo-agent-acp.service")
+        .expect("the launcher");
     assert_eq!(
         named(&launcher),
         (
@@ -182,9 +184,13 @@ fn the_table_is_rows_of_the_shared_table_with_cuad_first() {
     );
     assert_eq!(rows.callers.len(), 7);
     // The first row for cuad's unit is cuad's, not the sneaky app's.
-    let cuad = rows.resolve_unit("bardo-computer-use.service").expect("cuad");
+    let cuad = rows
+        .resolve_unit("bardo-computer-use.service")
+        .expect("cuad");
     assert_eq!(cuad.role, account_callers::CallerRole::Cua);
-    let launcher = rows.resolve_unit("bardo-agent-acp.service").expect("launcher");
+    let launcher = rows
+        .resolve_unit("bardo-agent-acp.service")
+        .expect("launcher");
     assert_eq!(launcher.role, account_callers::CallerRole::AgentLauncher);
 }
 

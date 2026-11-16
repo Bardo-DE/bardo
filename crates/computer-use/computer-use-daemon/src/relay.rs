@@ -23,7 +23,13 @@ where
     B: serde::Serialize + zbus::zvariant::DynamicType,
 {
     let _ = connection
-        .emit_signal(None::<&str>, path, "org.bardo.ComputerUse1.Run", member, body)
+        .emit_signal(
+            None::<&str>,
+            path,
+            "org.bardo.ComputerUse1.Run",
+            member,
+            body,
+        )
         .await;
 }
 

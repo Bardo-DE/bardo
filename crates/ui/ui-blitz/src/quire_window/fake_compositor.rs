@@ -4,7 +4,7 @@
 
 use super::proto::server::{
     bardo_window_manager_v1::{self, BardoWindowManagerV1},
-    bardo_window_v1::{self, FrameMode, BardoWindowV1},
+    bardo_window_v1::{self, BardoWindowV1, FrameMode},
 };
 use std::os::unix::net::UnixStream;
 use std::sync::atomic::{AtomicBool, Ordering};

@@ -11,8 +11,8 @@
 //! ```
 //! use account_core::ScopeName;
 //!
-//! let written = ScopeName::new(Some("sill"), "com.example.my-app", "4").expect("plain words");
-//! assert_eq!(written.to_string(), r"app-sill-com.example.my\x2dapp-4.scope");
+//! let written = ScopeName::new(Some("bardo"), "com.example.my-app", "4").expect("plain words");
+//! assert_eq!(written.to_string(), r"app-bardo-com.example.my\x2dapp-4.scope");
 //! let read = ScopeName::parse(&written.to_string()).expect("a scope name");
 //! assert_eq!(read, written);
 //! assert_eq!(read.app(), "com.example.my-app");

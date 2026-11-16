@@ -18,7 +18,7 @@ pub(super) fn manager_answers(runtime: Option<&Path>) -> bool {
 /// The longest part of a program's name kept in its unit name.
 const STEM_LIMIT: usize = 32;
 
-/// The unit name of the scope for `program` (as named, path or not): `app-casement-<name>-<pid>-
+/// The unit name of the scope for `program` (as named, path or not): `app-bardo-<name>-<pid>-
 /// <nonce>.scope`. The compositor's `pid` keeps a new run's names apart from the scopes of an
 /// earlier run that still holds programs; the `nonce` counts this run's starts. Anything in the
 /// name outside ASCII letters and digits is `_`.
@@ -26,8 +26,8 @@ const STEM_LIMIT: usize = 32;
 /// ```
 /// use compositor_app::spawn::unit_for;
 ///
-/// assert_eq!(unit_for("/usr/bin/foot", 41, 3), "app-casement-foot-41-3.scope");
-/// assert_eq!(unit_for("my term!", 1, 1), "app-casement-my_term_-1-1.scope");
+/// assert_eq!(unit_for("/usr/bin/foot", 41, 3), "app-bardo-foot-41-3.scope");
+/// assert_eq!(unit_for("my term!", 1, 1), "app-bardo-my_term_-1-1.scope");
 /// ```
 pub fn unit_for(program: &str, pid: u32, nonce: u32) -> String {
     let base = Path::new(program)
@@ -42,7 +42,7 @@ pub fn unit_for(program: &str, pid: u32, nonce: u32) -> String {
             false => '_',
         })
         .collect();
-    format!("app-casement-{stem}-{pid}-{nonce}.scope")
+    format!("app-bardo-{stem}-{pid}-{nonce}.scope")
 }
 
 /// `argv` run in the scope `unit`.
@@ -50,7 +50,7 @@ pub fn unit_for(program: &str, pid: u32, nonce: u32) -> String {
 /// ```
 /// use compositor_app::spawn::scope_argv;
 ///
-/// let got = scope_argv(&["foot".to_owned()], "app-casement-foot-1-1.scope");
+/// let got = scope_argv(&["foot".to_owned()], "app-bardo-foot-1-1.scope");
 /// assert_eq!(got[0], "systemd-run");
 /// assert_eq!(got.last().map(String::as_str), Some("foot"));
 /// ```
@@ -81,10 +81,10 @@ mod tests {
     fn a_unit_name_has_only_letters_digits_and_dashes_of_its_own() {
         // program, want
         let cases = [
-            ("foot", "app-casement-foot-7-2.scope"),
-            ("/usr/bin/kitty", "app-casement-kitty-7-2.scope"),
-            ("a.b c", "app-casement-a_b_c-7-2.scope"),
-            ("", "app-casement-program-7-2.scope"),
+            ("foot", "app-bardo-foot-7-2.scope"),
+            ("/usr/bin/kitty", "app-bardo-kitty-7-2.scope"),
+            ("a.b c", "app-bardo-a_b_c-7-2.scope"),
+            ("", "app-bardo-program-7-2.scope"),
         ];
         for (program, want) in cases {
             assert_eq!(unit_for(program, 7, 2), want, "{program:?}");
@@ -92,7 +92,7 @@ mod tests {
         let long = "x".repeat(100);
         assert_eq!(
             unit_for(&long, 7, 2).len(),
-            "app-casement--7-2.scope".len() + STEM_LIMIT
+            "app-bardo--7-2.scope".len() + STEM_LIMIT
         );
     }
 }

@@ -102,6 +102,6 @@ fn main() {
     for sibling in &SIBLINGS {
         let binary = build(sibling, &root, &target.join(sibling.bin));
         let name = sibling.bin.to_uppercase();
-        println!("cargo:rustc-env=ACCEPT_{name}={}", binary.display());
+        println!("cargo:rustc-env=BARDO_ACCEPT_{name}={}", binary.display());
     }
 }

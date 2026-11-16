@@ -122,7 +122,10 @@ fn keycap_in_its_system_unit_with_a_root_owned_image_and_a_proven_unit_is_listed
     let caller = authority(keycap_world(), KEYCAP_CGROUP, image)
         .identify(&conn)
         .expect("identified");
-    assert_eq!(caller.cgroup.as_str(), "/system.slice/bardo-key-remap.service");
+    assert_eq!(
+        caller.cgroup.as_str(),
+        "/system.slice/bardo-key-remap.service"
+    );
     assert_eq!(
         caller.image.map(|image| image.to_text()).as_deref(),
         Some("/usr/local/bin/bardo-key-remap")
@@ -242,7 +245,8 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
 #[test]
 fn palmrest_is_served_only_as_its_proven_system_unit() {
     let cgroup = "0::/system.slice/bardo-mouse-gestures.service\n";
-    let image = || FixtureImage::Present("/usr/local/bin/bardo-mouse-gestures", FileTrust::RootOnly);
+    let image =
+        || FixtureImage::Present("/usr/local/bin/bardo-mouse-gestures", FileTrust::RootOnly);
     let unit = format!(
         "[Service]\nExecStart=/usr/local/bin/bardo-mouse-gestures\nUnsetEnvironment={}\n",
         unset()

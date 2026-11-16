@@ -42,7 +42,7 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
     ),
     (
         "sill's launcher scope",
-        "app-sill-org.bardo.Mail-12.scope",
+        "app-bardo-org.bardo.Mail-12.scope",
         Sandbox::Native,
         Some(("org.bardo.Mail", Isolation::Unsandboxed)),
     ),
@@ -54,7 +54,7 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
     ),
     (
         "an escaped dash in the id",
-        r"app-sill-com.example.my_app\x2d2-4.scope",
+        r"app-bardo-com.example.my_app\x2d2-4.scope",
         Sandbox::Native,
         Some(("com.example.my_app-2", Isolation::Unsandboxed)),
     ),
@@ -72,7 +72,7 @@ const IDENTITIES: &[(&str, &str, Sandbox, Proves)] = &[
     ),
     (
         "sill's scope for a non-reverse-DNS id",
-        "app-sill-foot-1.scope",
+        "app-bardo-foot-1.scope",
         Sandbox::Native,
         None,
     ),

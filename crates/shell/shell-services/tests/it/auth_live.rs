@@ -193,7 +193,9 @@ fn pam_with_a_throwaway_account() {
         std::env::var("BARDO_SHELL_PAM_TEST_USER"),
         std::env::var("BARDO_SHELL_PAM_TEST_SECRET"),
     ) else {
-        println!("skipped: BARDO_SHELL_PAM_TEST_USER and BARDO_SHELL_PAM_TEST_SECRET name no throwaway account");
+        println!(
+            "skipped: BARDO_SHELL_PAM_TEST_USER and BARDO_SHELL_PAM_TEST_SECRET name no throwaway account"
+        );
         return;
     };
     let service = pam::service(Path::exists);

@@ -25,10 +25,7 @@ const REGISTRY: &str = "https://cdn.agentclientprotocol.com/registry/v1/latest/r
 
 /// The command line.
 #[derive(Debug, Parser)]
-#[command(
-    name = "bardo-agents",
-    about = "Coding agents from the agent registry"
-)]
+#[command(name = "bardo-agents", about = "Coding agents from the agent registry")]
 struct Cli {
     /// The agents directory.
     #[arg(long, global = true, value_name = "DIR")]

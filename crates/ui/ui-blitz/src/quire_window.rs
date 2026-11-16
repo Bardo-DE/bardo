@@ -8,7 +8,7 @@
 
 use crate::wayland_surface::{AdoptError, Adopted};
 use proto::client::bardo_window_manager_v1::BardoWindowManagerV1;
-use proto::client::bardo_window_v1::{FrameMode, BardoWindowV1};
+use proto::client::bardo_window_v1::{BardoWindowV1, FrameMode};
 use std::ffi::c_void;
 use std::ptr::NonNull;
 use ui_components::style::tokens::shape::Radius;

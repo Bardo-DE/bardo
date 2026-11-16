@@ -6,7 +6,7 @@ use settings_app_testkit::Scratch;
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
 
-const BIN: &str = env!("CARGO_BIN_EXE_detent");
+const BIN: &str = env!("CARGO_BIN_EXE_bardo-settings");
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 
 /// How long a run that should exit at once is given.

@@ -266,7 +266,9 @@ async fn main() -> ExitCode {
     }
     let missed = played.checks.iter().filter(|c| !c.met()).count();
     if missed > 0 {
-        eprintln!("computer-use-eval: {missed} script(s) did not reach the verdict they were written for");
+        eprintln!(
+            "computer-use-eval: {missed} script(s) did not reach the verdict they were written for"
+        );
         return ExitCode::from(1);
     }
     ExitCode::SUCCESS

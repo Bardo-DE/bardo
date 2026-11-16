@@ -68,10 +68,14 @@ pub fn permit(env: &LockEnv) -> Result<(), String> {
         return Err(format!("{} has no {MARKER}", runtime.display()));
     }
     if env.session_runtime.as_deref() == Some(runtime) {
-        return Err("BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME is the session's XDG_RUNTIME_DIR".to_owned());
+        return Err(
+            "BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME is the session's XDG_RUNTIME_DIR".to_owned(),
+        );
     }
     if env.login_runtime.as_deref() == Some(runtime) {
-        return Err("BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME is the login session's /run/user/<uid>".to_owned());
+        return Err(
+            "BARDO_LAYER_SHELL_HOST_LOCK_RUNTIME is the login session's /run/user/<uid>".to_owned(),
+        );
     }
     if socket.parent() != Some(runtime) {
         return Err(format!(

@@ -62,7 +62,9 @@ fn an_engine_with_no_listed_program_cannot_start() {
 }
 
 fn socket(name: &str) -> SocketPath {
-    SocketPath(PathBuf::from(format!("/run/user/1000/bardo/inference/{name}.sock")))
+    SocketPath(PathBuf::from(format!(
+        "/run/user/1000/bardo/inference/{name}.sock"
+    )))
 }
 
 fn args(unit: &UnitSpec) -> Vec<&str> {

@@ -32,7 +32,11 @@ fn a_pattern_matches_whole_segments_and_one_star_per_segment() {
             false,
         ),
         ("/opt/*/bin/bardo-shell", "/opt/x/bin/bardo-shell", true),
-        ("/usr/bin/bardo-shell-*", "/usr/bin/bardo-shell-helper", true),
+        (
+            "/usr/bin/bardo-shell-*",
+            "/usr/bin/bardo-shell-helper",
+            true,
+        ),
         ("/usr/bin/bardo-shell-*", "/usr/bin/bardo-shell", false),
         ("/usr/bin/*-sill", "/usr/bin/a-sill", true),
         ("/usr/bin/s*ll", "/usr/bin/bardo-shell", true),
@@ -77,7 +81,10 @@ fn image_paths_are_absolute_plain_and_never_deleted() {
     ] {
         assert!(ExePath::new(bad).is_err(), "{bad:?}");
     }
-    assert_eq!(path("/usr/bin/bardo-shell").file_name(), Some("bardo-shell"));
+    assert_eq!(
+        path("/usr/bin/bardo-shell").file_name(),
+        Some("bardo-shell")
+    );
 }
 
 #[test]

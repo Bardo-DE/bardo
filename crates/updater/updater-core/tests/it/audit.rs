@@ -49,14 +49,18 @@ fn every_way_a_bundle_can_lie_is_caught() {
         ),
         (
             "changed file",
-            |a| a.admit_file("bin/bardo-compositor", &digest("evil")).map(drop),
+            |a| {
+                a.admit_file("bin/bardo-compositor", &digest("evil"))
+                    .map(drop)
+            },
             |e| matches!(e, AuditError::DigestMismatch(_)),
         ),
         (
             "file twice",
             |a| {
                 a.admit_file("bin/bardo-compositor", &digest("casement"))?;
-                a.admit_file("bin/bardo-compositor", &digest("casement")).map(drop)
+                a.admit_file("bin/bardo-compositor", &digest("casement"))
+                    .map(drop)
             },
             |e| matches!(e, AuditError::Duplicate(_)),
         ),

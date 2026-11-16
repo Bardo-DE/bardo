@@ -44,7 +44,11 @@ pub fn move_pre_bardo_folders(dirs: &Dirs) {
         (&dirs.cache_dir, false),
     ];
     for (path, is_file) in pairs {
-        let new = if is_file { path.parent() } else { Some(path.as_path()) };
+        let new = if is_file {
+            path.parent()
+        } else {
+            Some(path.as_path())
+        };
         let Some(new) = new else { continue };
         // `<base>/bardo/updater` -> `<base>/bardo-updater`.
         let Some(base) = new.parent().and_then(std::path::Path::parent) else {
@@ -62,10 +66,7 @@ pub fn move_pre_bardo_folders(dirs: &Dirs) {
             }
             Ok(_) => {}
             Err(error) => {
-                eprintln!(
-                    "bardo-updater: could not move {}: {error}",
-                    old.display()
-                );
+                eprintln!("bardo-updater: could not move {}: {error}", old.display());
             }
         }
     }

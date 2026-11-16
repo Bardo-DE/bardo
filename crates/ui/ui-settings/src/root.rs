@@ -145,7 +145,6 @@ fn xdg_dir(app: AppName, xdg: Option<&OsStr>, home: Option<&OsStr>) -> Option<Pa
 mod tests {
     use super::{AppName, ConfigRoot, app_folder, xdg_dir};
     use std::ffi::OsStr;
-    use std::path::Path;
     use std::path::{Path, PathBuf};
 
     struct Case {

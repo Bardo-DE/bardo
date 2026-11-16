@@ -21,7 +21,7 @@ use desktop_protocols::client::bardo_window_v1::bardo_window_manager_v1::{
     self, BardoWindowManagerV1,
 };
 use desktop_protocols::client::bardo_window_v1::bardo_window_v1::{
-    self, PlaceTarget as WirePlaceTarget, BardoWindowV1,
+    self, BardoWindowV1, PlaceTarget as WirePlaceTarget,
 };
 use desktop_protocols::vocab::WireCode;
 use wayland_client::globals::{BindError, GlobalList};

@@ -528,9 +528,10 @@ fn each_file_of_the_input_service_is_placed_and_the_system_is_told_once() {
 fn a_failing_or_missing_tool_is_a_note_and_never_stops_an_install() {
     let mut recipe = Recipe::new("0.1.0");
     let dest = "/usr/lib/systemd/system/bardo-input-broker.socket";
-    recipe
-        .listed
-        .push(("system/usr/lib/systemd/system/bardo-input-broker.socket", "socket"));
+    recipe.listed.push((
+        "system/usr/lib/systemd/system/bardo-input-broker.socket",
+        "socket",
+    ));
     recipe.system.push(dest);
 
     // (what the tools answer, notes expected)
@@ -563,7 +564,11 @@ fn what_the_system_is_told_follows_the_paths_that_changed() {
     // (case, changes, the commands as text)
     let table: Vec<(&str, Vec<Change>, Vec<&str>)> = vec![
         ("nothing changed", vec![], vec![]),
-        ("a login service", vec![placed("/etc/pam.d/bardo-shell")], vec![]),
+        (
+            "a login service",
+            vec![placed("/etc/pam.d/bardo-shell")],
+            vec![],
+        ),
         (
             "a unit",
             vec![placed("/usr/lib/systemd/system/other.service")],
@@ -593,12 +598,16 @@ fn what_the_system_is_told_follows_the_paths_that_changed() {
         ),
         (
             "the touchpad daemon is placed: read again, then enabled and started",
-            vec![placed("/usr/lib/systemd/system/bardo-mouse-gestures.service")],
+            vec![placed(
+                "/usr/lib/systemd/system/bardo-mouse-gestures.service",
+            )],
             vec!["daemon-reload", "enable --now bardo-mouse-gestures.service"],
         ),
         (
             "the touchpad daemon is removed: read again, not started",
-            vec![removed("/usr/lib/systemd/system/bardo-mouse-gestures.service")],
+            vec![removed(
+                "/usr/lib/systemd/system/bardo-mouse-gestures.service",
+            )],
             vec!["daemon-reload"],
         ),
         (

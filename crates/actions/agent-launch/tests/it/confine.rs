@@ -94,7 +94,10 @@ fn the_report_line_is_read_strictly() {
             b"bardo-sandbox-enter: landlock=none\n",
             Some(LandlockLevel::None),
         ),
-        (b"bardo-sandbox-enter: landlock=full", Some(LandlockLevel::Full)),
+        (
+            b"bardo-sandbox-enter: landlock=full",
+            Some(LandlockLevel::Full),
+        ),
         (
             b"bardo-sandbox-enter: landlock=full\r\n",
             Some(LandlockLevel::Full),

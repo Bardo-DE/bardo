@@ -41,7 +41,10 @@ fn main() -> ExitCode {
         .args(args)
         .env("WAYLAND_SOCKET", fd.to_string())
         .exec();
-    eprintln!("compositor-shell-exec: {}: {why}", program.to_string_lossy());
+    eprintln!(
+        "compositor-shell-exec: {}: {why}",
+        program.to_string_lossy()
+    );
     ExitCode::from(126)
 }
 

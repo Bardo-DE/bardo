@@ -4,7 +4,10 @@ use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
 /// The caller's side. The service is cuad's name, set per proxy with the run's path.
-#[zbus::proxy(interface = "org.bardo.ComputerUse1.Run", default_service = "org.bardo.ComputerUse1")]
+#[zbus::proxy(
+    interface = "org.bardo.ComputerUse1.Run",
+    default_service = "org.bardo.ComputerUse1"
+)]
 pub trait Run {
     /// Stops the run.
     fn cancel(&self) -> zbus::Result<()>;

@@ -24,7 +24,7 @@ fn install_under(scratch: &Scratch, prefix: &str) -> PathBuf {
         .env("PATH", std::env::var_os("PATH").unwrap_or_default())
         .env("DESTDIR", &stage)
         .env("PREFIX", prefix)
-        .env("BARDO_SETTINGS_BIN", env!("CARGO_BIN_EXE_detent"))
+        .env("BARDO_SETTINGS_BIN", env!("CARGO_BIN_EXE_bardo-settings"))
         .status()
         .expect("bash runs the installer");
     assert!(status.success(), "the installer failed");

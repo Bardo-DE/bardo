@@ -97,7 +97,11 @@ fn endpoint_only_starts_the_forwarder_first_and_binds_one_socket() {
     ));
     assert!(has(
         &args,
-        &["--bind", "/run/user/1000/bardo/sandbox/ep.sock", INSIDE_SOCKET]
+        &[
+            "--bind",
+            "/run/user/1000/bardo/sandbox/ep.sock",
+            INSIDE_SOCKET
+        ]
     ));
     let tail: Vec<&str> = args
         .iter()

@@ -216,7 +216,7 @@ fn a_hidden_image_is_a_service_only_at_the_cgroup() {
     );
     let f = facts("/user.slice/app.slice/other.service", Exe::Hidden);
     assert_eq!(judge(&f, &table()), unverified(None, WhyNot::ImageHidden));
-    let f = facts("/user.slice/app.slice/app-sill-1.scope", Exe::Hidden);
+    let f = facts("/user.slice/app.slice/app-bardo-1.scope", Exe::Hidden);
     assert_eq!(judge(&f, &table()), unverified(None, WhyNot::ImageHidden));
 }
 

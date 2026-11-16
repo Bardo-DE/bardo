@@ -190,7 +190,10 @@ fn helped(socket: &Path, path: &Path) -> std::io::Result<Through> {
         .ok_or_else(|| {
             std::io::Error::new(
                 std::io::ErrorKind::InvalidInput,
-                format!("{} has no folder name bardo-drive-mount takes", path.display()),
+                format!(
+                    "{} has no folder name bardo-drive-mount takes",
+                    path.display()
+                ),
             )
         })?;
     Ok(Through {

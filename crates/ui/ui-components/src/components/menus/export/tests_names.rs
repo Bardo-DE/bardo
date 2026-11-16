@@ -51,7 +51,10 @@ fn a_chord_round_trips_for_every_key() {
 fn an_app_id_makes_a_bus_name() {
     let cases: &[(&str, Result<&str, AddressError>)] = &[
         ("dev.mailo.Mailo", Ok("org.bardo.AppMenu.dev.mailo.Mailo")),
-        ("org.bardo.Settings", Ok("org.bardo.AppMenu.org.bardo.Settings")),
+        (
+            "org.bardo.Settings",
+            Ok("org.bardo.AppMenu.org.bardo.Settings"),
+        ),
         ("Alacritty", Ok("org.bardo.AppMenu.Alacritty")),
         (
             "com.1password.app",

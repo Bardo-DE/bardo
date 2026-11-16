@@ -4,10 +4,10 @@ use super::{FLATPAK_LAUNCHER, ScopeName, escape, unescape};
 const WRITTEN: &[(&str, Option<&str>, &str, &str, &str)] = &[
     (
         "sill's launch",
-        Some("sill"),
+        Some("bardo"),
         "org.bardo.Mail",
         "12",
-        "app-sill-org.bardo.Mail-12.scope",
+        "app-bardo-org.bardo.Mail-12.scope",
     ),
     (
         "no launcher tag",
@@ -18,17 +18,17 @@ const WRITTEN: &[(&str, Option<&str>, &str, &str, &str)] = &[
     ),
     (
         "a dash in the id",
-        Some("sill"),
+        Some("bardo"),
         "com.example.my_app-2",
         "4",
-        r"app-sill-com.example.my_app\x2d2-4.scope",
+        r"app-bardo-com.example.my_app\x2d2-4.scope",
     ),
     (
         "a space, a slash and a leading dot",
-        Some("sill"),
+        Some("bardo"),
         ".my app/x",
         "1",
-        r"app-sill-\x2emy\x20app\x2fx-1.scope",
+        r"app-bardo-\x2emy\x20app\x2fx-1.scope",
     ),
     (
         "a non-ASCII id",
@@ -94,7 +94,7 @@ fn flatpak_is_its_tag_and_a_decimal_run() {
     let flatpak = |unit: &str| ScopeName::parse(unit).is_some_and(|name| name.is_flatpak());
     assert!(flatpak("app-flatpak-org.mozilla.firefox-9.scope"));
     assert!(!flatpak("app-flatpak-org.mozilla.firefox-a3.scope"));
-    assert!(!flatpak("app-sill-org.mozilla.firefox-9.scope"));
+    assert!(!flatpak("app-bardo-org.mozilla.firefox-9.scope"));
 }
 
 #[test]

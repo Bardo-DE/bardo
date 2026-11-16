@@ -23,7 +23,10 @@ fn explicit_variables_win() {
     ]))
     .expect("dirs");
     assert_eq!(dirs.memory().to_str(), Some("/d/bardo/memory"));
-    assert_eq!(dirs.memory_toml().to_str(), Some("/f/bardo/memoryd/memory.toml"));
+    assert_eq!(
+        dirs.memory_toml().to_str(),
+        Some("/f/bardo/memoryd/memory.toml")
+    );
     let work = SpaceId::parse("work").expect("space");
     assert_eq!(
         dirs.index_db(&work).to_str(),

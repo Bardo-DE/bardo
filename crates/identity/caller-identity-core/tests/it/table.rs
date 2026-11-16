@@ -38,7 +38,8 @@ fn the_golden_table_reads_into_typed_rows() {
     assert_eq!(rows[0].name.as_deref(), Some("The shell"));
     assert_eq!(rows[0].exe.len(), 2);
     assert!(
-        rows[0].matches_image(&ExePath::new("/opt/bardo/releases/9/bin/bardo-shell").expect("a path"))
+        rows[0]
+            .matches_image(&ExePath::new("/opt/bardo/releases/9/bin/bardo-shell").expect("a path"))
     );
     assert!(!rows[0].matches_image(&ExePath::new("/usr/bin/bardo-updater").expect("a path")));
     assert_eq!(rows[1].unit, None);

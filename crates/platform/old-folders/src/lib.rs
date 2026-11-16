@@ -80,10 +80,19 @@ mod tests {
 
         let done = move_once(&old, &new).expect("move");
         assert_eq!(done, Moved { moved: 2, kept: 1 });
-        assert_eq!(std::fs::read_to_string(new.join("clients.toml")).expect("kept"), "new");
-        assert_eq!(std::fs::read_to_string(new.join("callers.toml")).expect("moved"), "old");
+        assert_eq!(
+            std::fs::read_to_string(new.join("clients.toml")).expect("kept"),
+            "new"
+        );
+        assert_eq!(
+            std::fs::read_to_string(new.join("callers.toml")).expect("moved"),
+            "old"
+        );
         assert!(new.join("providers").is_dir());
-        assert!(old.exists(), "the old folder still holds the entry the new one already had");
+        assert!(
+            old.exists(),
+            "the old folder still holds the entry the new one already had"
+        );
 
         std::fs::remove_file(old.join("clients.toml")).expect("clear");
         assert_eq!(move_once(&old, &new).expect("again"), Moved::default());
@@ -94,7 +103,10 @@ mod tests {
     fn a_missing_old_folder_is_nothing_to_do() {
         let dir = tempfile::tempdir().expect("scratch");
         let new = dir.path().join("new");
-        assert_eq!(move_once(&dir.path().join("none"), &new).expect("move"), Moved::default());
+        assert_eq!(
+            move_once(&dir.path().join("none"), &new).expect("move"),
+            Moved::default()
+        );
         assert!(!new.exists());
     }
 

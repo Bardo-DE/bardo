@@ -11,7 +11,10 @@ fn a_good_release_parses_with_everything_in_it() {
     assert_eq!(release.bundle.size, 123);
     assert_eq!(release.components["casement"], "e616a79");
     assert_eq!(release.files.len(), 2);
-    assert_eq!(release.file("bin/bardo-compositor").map(|f| f.mode), Some(0o644));
+    assert_eq!(
+        release.file("bin/bardo-compositor").map(|f| f.mode),
+        Some(0o644)
+    );
     assert_eq!(release.exports.len(), 1);
 }
 

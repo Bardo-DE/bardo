@@ -17,7 +17,10 @@ fn the_configuration_has_defaults_and_overrides() {
     let missing = Config::load(&dir.path().join("none.toml")).expect("missing is fine");
     assert_eq!(missing, Config::default());
     assert_eq!(missing.root, PathBuf::from("/opt/bardo"));
-    assert_eq!(missing.settings_command, "bardo-settings --page software-update");
+    assert_eq!(
+        missing.settings_command,
+        "bardo-settings --page software-update"
+    );
     assert_eq!(missing.name, "Quire");
 
     let file = dir.path().join("config.toml");
@@ -196,7 +199,10 @@ fn directories_come_from_the_xdg_variables_then_home() {
         from_home.state_file,
         PathBuf::from("/home/p/.local/state/bardo/updater/state.toml")
     );
-    assert_eq!(from_home.cache_dir, PathBuf::from("/home/p/.cache/bardo/updater"));
+    assert_eq!(
+        from_home.cache_dir,
+        PathBuf::from("/home/p/.cache/bardo/updater")
+    );
 
     let set = Dirs::resolve(env(&[
         ("HOME", "/home/p"),
@@ -205,14 +211,20 @@ fn directories_come_from_the_xdg_variables_then_home() {
         ("XDG_CACHE_HOME", "/k"),
     ]))
     .expect("dirs");
-    assert_eq!(set.config_file, PathBuf::from("/c/bardo/updater/config.toml"));
+    assert_eq!(
+        set.config_file,
+        PathBuf::from("/c/bardo/updater/config.toml")
+    );
     assert_eq!(set.state_file, PathBuf::from("/s/bardo/updater/state.toml"));
     assert_eq!(set.cache_dir, PathBuf::from("/k/bardo/updater"));
 
     // A relative XDG value is not a place; fall back to home.
     let relative =
         Dirs::resolve(env(&[("HOME", "/home/p"), ("XDG_CACHE_HOME", "cache")])).expect("dirs");
-    assert_eq!(relative.cache_dir, PathBuf::from("/home/p/.cache/bardo/updater"));
+    assert_eq!(
+        relative.cache_dir,
+        PathBuf::from("/home/p/.cache/bardo/updater")
+    );
     assert!(Dirs::resolve(env(&[])).is_none());
 }
 

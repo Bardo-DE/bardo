@@ -92,7 +92,10 @@ fn the_service_has_only_settings_that_keep_fusermount3_working() {
             .find(|(k, _)| *k == key)
             .map(|(_, v)| v)
     };
-    assert_eq!(value("ExecStart"), Some("/usr/libexec/bardo/bardo-drive-mount"));
+    assert_eq!(
+        value("ExecStart"),
+        Some("/usr/libexec/bardo/bardo-drive-mount")
+    );
     assert_eq!(value("IPAddressDeny"), Some("any"));
     assert_eq!(value("KeyringMode"), Some("private"));
     assert_eq!(value("UMask"), Some("0077"));

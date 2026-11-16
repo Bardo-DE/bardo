@@ -136,7 +136,10 @@ impl Dirs {
             sockets: runtime.join("bardo").join("inference"),
             audit: state.join("bardo").join("inference").join("audit.jsonl"),
             spend: state.join("bardo").join("inference").join("spend.json"),
-            tool_proofs: state.join("bardo").join("inference").join("tool-proofs.json"),
+            tool_proofs: state
+                .join("bardo")
+                .join("inference")
+                .join("tool-proofs.json"),
             computers: state.join("bardo").join("inference").join("computers.toml"),
             computer_keys: state.join("bardo").join("inference").join("computer-keys"),
             guests: state.join("bardo").join("inference").join("guests.toml"),

@@ -155,7 +155,8 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
 
     // The shell listens before the run exists: the first id is known, and a signal sent before
     // anyone listens is gone.
-    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
+    let path =
+        zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
     let run_s = run_proxy(&shell, &path).await;
     let mut asked = run_s.receive_ask_user().await.unwrap();
     let mut finished = run_s.receive_finished().await.unwrap();
@@ -198,10 +199,16 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
     let stranger = named(&fx, Who::Stranger).await;
     let run_x = run_proxy(&stranger, &path).await;
     let refused = run_x.answer(1, "x").await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
+    assert_eq!(
+        refusal_name(&refused),
+        "org.bardo.ComputerUse1.Error.NotPermitted"
+    );
     let run_p = run_proxy(&planner, &path).await;
     let refused = run_p.answer(1, "x").await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
+    assert_eq!(
+        refusal_name(&refused),
+        "org.bardo.ComputerUse1.Error.NotPermitted"
+    );
     let refused = run_s.answer(9, "x").await.unwrap_err();
     assert_eq!(
         refusal_name(&refused),
@@ -286,7 +293,10 @@ async fn start_and_stop_are_refused_to_the_wrong_callers_with_their_error_names(
         );
     }
     let refused = manager(&stranger).await.stop_all().await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
+    assert_eq!(
+        refusal_name(&refused),
+        "org.bardo.ComputerUse1.Error.NotPermitted"
+    );
 
     // A body that is not this vocabulary's is a bad task.
     let refused = manager(&planner)
@@ -294,9 +304,15 @@ async fn start_and_stop_are_refused_to_the_wrong_callers_with_their_error_names(
         .start("{\"vocab\":7,\"body\":{}}")
         .await
         .unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.BadTask");
+    assert_eq!(
+        refusal_name(&refused),
+        "org.bardo.ComputerUse1.Error.BadTask"
+    );
     let refused = manager(&planner).await.start("not json").await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.BadTask");
+    assert_eq!(
+        refusal_name(&refused),
+        "org.bardo.ComputerUse1.Error.BadTask"
+    );
     assert_eq!(fx.supervisor.started(), 0);
 
     // The shell's kill switch ends what runs.
@@ -469,7 +485,8 @@ async fn what_the_model_proposes_and_the_screen_asks_reaches_the_shell_and_no_on
     let planner = named(&fx, Who::Planner).await;
     let shell = named(&fx, Who::Shell).await;
     let stranger = named(&fx, Who::Stranger).await;
-    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
+    let path =
+        zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
     let mut shell_asked = run_proxy(&shell, &path)
         .await
         .receive_ask_user()
@@ -516,7 +533,8 @@ async fn a_program_that_took_the_shells_name_is_not_the_shell() {
     let fx = fixture(vec![reply(ask()), reply(finish())]).await;
     let planner = named(&fx, Who::Planner).await;
     let squatter = named(&fx, Who::Squatter).await;
-    let path = zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
+    let path =
+        zbus::zvariant::OwnedObjectPath::try_from("/org/bardo/ComputerUse1/run/r_1").unwrap();
     let spy = run_proxy(&squatter, &path).await;
     let mut spy_asked = spy.receive_ask_user().await.unwrap();
     let mut spy_proposed = spy.receive_action_proposed().await.unwrap();
@@ -529,7 +547,10 @@ async fn a_program_that_took_the_shells_name_is_not_the_shell() {
         .start(&start_body(task()))
         .await
         .unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
+    assert_eq!(
+        refusal_name(&refused),
+        "org.bardo.ComputerUse1.Error.NotPermitted"
+    );
     assert_eq!(fx.supervisor.started(), 0);
 
     manager(&planner)
@@ -565,7 +586,10 @@ async fn a_program_that_took_the_shells_name_is_not_the_shell() {
         "the thoughts are the shell's"
     );
     let refused = spy.answer(1, "yes").await.unwrap_err();
-    assert_eq!(refusal_name(&refused), "org.bardo.ComputerUse1.Error.NotPermitted");
+    assert_eq!(
+        refusal_name(&refused),
+        "org.bardo.ComputerUse1.Error.NotPermitted"
+    );
     fx.supervisor
         .stop_all(computer_use_bus::CuaCaller::Shell)
         .await

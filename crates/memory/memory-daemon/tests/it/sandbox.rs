@@ -53,7 +53,11 @@ fn the_policy_writes_the_memory_directories_and_nothing_else() {
     );
     // The person's settings directory is read, never written.
     assert_eq!(policy.read_dirs, vec![PathBuf::from("/cfg/bardo/memory")]);
-    assert!(!policy.writable.contains(&PathBuf::from("/cfg/bardo/memory")));
+    assert!(
+        !policy
+            .writable
+            .contains(&PathBuf::from("/cfg/bardo/memory"))
+    );
     assert_eq!(policy.sockets, vec![PathBuf::from("/run/user/7/bus")]);
     for tree in &policy.readable {
         assert!(

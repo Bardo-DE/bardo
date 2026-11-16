@@ -53,20 +53,38 @@ pub const ALLOWED_SYSTEM_FILES: [SystemRule; 19] = [
     // The shell's login service.
     rule("/etc/pam.d", NameRule::Exact("bardo-shell")),
     // Brightness over the monitor's own bus.
-    rule("/etc/udev/rules.d", NameRule::Exact("60-bardo-shell-ddc.rules")),
-    rule("/etc/modules-load.d", NameRule::Exact("bardo-shell-ddc.conf")),
+    rule(
+        "/etc/udev/rules.d",
+        NameRule::Exact("60-bardo-shell-ddc.rules"),
+    ),
+    rule(
+        "/etc/modules-load.d",
+        NameRule::Exact("bardo-shell-ddc.conf"),
+    ),
     // The keyboard daemon: its unit (in the vendor folder, /etc stays the administrator's), its device
     // rule, the rule that lets the person restart it and the modules it needs.
-    rule("/usr/lib/systemd/system", NameRule::Exact("bardo-key-remap.service")),
-    rule("/etc/udev/rules.d", NameRule::Exact("70-bardo-key-remap.rules")),
+    rule(
+        "/usr/lib/systemd/system",
+        NameRule::Exact("bardo-key-remap.service"),
+    ),
+    rule(
+        "/etc/udev/rules.d",
+        NameRule::Exact("70-bardo-key-remap.rules"),
+    ),
     rule(
         "/etc/polkit-1/rules.d",
         NameRule::Exact("bardo-key-remap.polkit.rules"),
     ),
-    rule("/etc/modules-load.d", NameRule::Exact("bardo-key-remap.conf")),
+    rule(
+        "/etc/modules-load.d",
+        NameRule::Exact("bardo-key-remap.conf"),
+    ),
     // The desktop's vendor defaults for the keyboard daemon (the Caps Lock rule), read under the
     // administrator's file. /etc/bardo/key-remap stays the administrator's: no release places a file there.
-    rule("/usr/lib/bardo/key-remap", NameRule::Exact("key-remap.toml")),
+    rule(
+        "/usr/lib/bardo/key-remap",
+        NameRule::Exact("key-remap.toml"),
+    ),
     // The input service that owns the virtual keyboard device: its two units (socket-activated), the
     // rule that takes the device node away from the person's session, and the module it needs.
     rule(
@@ -77,12 +95,24 @@ pub const ALLOWED_SYSTEM_FILES: [SystemRule; 19] = [
         "/usr/lib/systemd/system",
         NameRule::Exact("bardo-input-broker.service"),
     ),
-    rule("/etc/udev/rules.d", NameRule::Exact("72-bardo-input-broker.rules")),
-    rule("/etc/modules-load.d", NameRule::Exact("bardo-input-broker.conf")),
+    rule(
+        "/etc/udev/rules.d",
+        NameRule::Exact("72-bardo-input-broker.rules"),
+    ),
+    rule(
+        "/etc/modules-load.d",
+        NameRule::Exact("bardo-input-broker.conf"),
+    ),
     // The touchpad daemon (a system service, as the keyboard daemon is): its device rule, its module
     // options and its unit in the vendor folder.
-    rule("/etc/udev/rules.d", NameRule::Exact("70-bardo-mouse-gestures.rules")),
-    rule("/etc/modprobe.d", NameRule::Exact("99-bardo-mouse-gestures.conf")),
+    rule(
+        "/etc/udev/rules.d",
+        NameRule::Exact("70-bardo-mouse-gestures.rules"),
+    ),
+    rule(
+        "/etc/modprobe.d",
+        NameRule::Exact("99-bardo-mouse-gestures.conf"),
+    ),
     rule(
         "/usr/lib/systemd/system",
         NameRule::Exact("bardo-mouse-gestures.service"),

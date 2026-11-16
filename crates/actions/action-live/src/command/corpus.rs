@@ -289,8 +289,7 @@ pub(super) async fn corpus(
                 .collect()
         })
         .unwrap_or_default();
-    over.iter()
-        .for_each(|line| eprintln!("agent-live: {line}"));
+    over.iter().for_each(|line| eprintln!("agent-live: {line}"));
     Ok(match (misses.is_empty(), over.is_empty()) {
         (true, true) => ExitCode::SUCCESS,
         _ => ExitCode::from(1),
