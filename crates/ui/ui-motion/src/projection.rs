@@ -1,8 +1,9 @@
-//! Where a throw would come to rest if nothing caught it ([FLUID]; design/27 section 3.12 rule
-//! 3): the scroll view's deceleration, `r = 0.998` of the speed kept per millisecond, projects a
-//! release at `p` moving at `v` to `p + v·r/(1-r)` (in pixels per millisecond), about
-//! `p + 0.5 s × v`. A thrown thing lands on the endpoint nearest that projection, not nearest
-//! where the finger let go, so a flick carries it even from 30 % of the way.
+//! Where a throw would come to rest if nothing caught it ([FLUID]; design/27 section 3.12 rule 3).
+//!
+//! The scroll view's deceleration, `r = 0.998` of the speed kept per millisecond, projects a
+//! release at `p` moving at `v` to `p + v·r/(1-r)` (in pixels per millisecond), about `p + 0.5 s ×
+//! v`. A thrown thing lands on the endpoint nearest that projection, not nearest where the finger
+//! let go, so a flick carries it even from 30 % of the way.
 
 use super::velocity::Velocity;
 use ui_core::geometry::units::Px;

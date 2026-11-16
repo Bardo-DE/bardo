@@ -1,7 +1,9 @@
-//! Removing an account: syncd forgets everything of it: its running datasets, its journals and
-//! anchors (`<state>/bardo/sync/sync/<account>`, the drive listing's `storage_drive` among them), its
-//! mirrors (`<data>/bardo/sync/vdir/<account>`), its
-//! photos library (`<data>/bardo/sync/photos/<account>`) and its app folder mirror
+//! Removing an account.
+//!
+//! Syncd forgets everything of it: its running datasets, its journals and anchors
+//! (`<state>/bardo/sync/sync/<account>`, the drive listing's `storage_drive` among them), its
+//! mirrors (`<data>/bardo/sync/vdir/<account>`), its photos library
+//! (`<data>/bardo/sync/photos/<account>`) and its app folder mirror
 //! (`<data>/bardo/sync/storage/<account>`), and its drive's downloaded files
 //! (`<cache>/bardo/sync/drives/<account>`).
 //!

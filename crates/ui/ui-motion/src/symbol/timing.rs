@@ -1,6 +1,7 @@
-//! How long a Rust-driven symbol motion takes, on the same duration and easing tokens as the
-//! stylesheet's (design/35-SYMBOL-EFFECTS.md section 3): the part driver's counterpart of an
-//! `Anim`'s recipe row, since a motion inside an SVG has no keyframes for the stylesheet to play.
+//! How long a Rust-driven symbol motion takes, on the same duration and easing tokens as the stylesheet's (design/35-SYMBOL-EFFECTS.md section 3).
+//!
+//! The part driver's counterpart of an `Anim`'s recipe row, since a motion inside an SVG has no
+//! keyframes for the stylesheet to play.
 
 use super::route::PartRun;
 use crate::detail::tween::TweenSpec;

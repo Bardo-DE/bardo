@@ -1,6 +1,7 @@
-//! The pane switch as a pure machine: which of two panes is shown, and while
-//! a switch plays, which one is arriving. The component feeds it the pane its caller asks for
-//! and the settle of each round; every decision about what is drawn and what plays is here.
+//! The pane switch as a pure machine: which of two panes is shown, and while a switch plays, which one is arriving.
+//!
+//! The component feeds it the pane its caller asks for and the settle of each round; every decision
+//! about what is drawn and what plays is here.
 
 use crate::anim::Anim;
 use ui_core::word::Word;

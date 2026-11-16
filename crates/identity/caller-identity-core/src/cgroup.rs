@@ -102,9 +102,10 @@ fn is_word(text: &str) -> bool {
     !text.is_empty() && text.bytes().all(|b| b.is_ascii_alphanumeric())
 }
 
-/// The app a launcher's scope names, as a **claim**: `app-[<launcher>-]<id>-<n>.scope` anywhere
-/// in the path. Anyone may run `systemd-run --user --scope -u app-<id>-1`, so this is for display
-/// and grouping, never for authorisation. Flatpak's own scopes name nobody here.
+/// The app a launcher's scope names, as a **claim**: `app-[<launcher>-]<id>-<n>.scope` anywhere in the path.
+///
+/// Anyone may run `systemd-run --user --scope -u app-<id>-1`, so this is for display and grouping,
+/// never for authorisation. Flatpak's own scopes name nobody here.
 #[must_use]
 pub fn scope_app(cgroup: &CgroupPath) -> Option<AppKey> {
     cgroup.segments().find_map(|segment| {

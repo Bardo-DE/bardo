@@ -1,7 +1,9 @@
-//! A whole drive, listed: every file, folder and online document of a Storage account's drive
-//! (`OneDrive`'s, or My Drive), kept by id in a journal of its own (`storage_drive`) for Files to
-//! show and, in S2, for the file system to serve. Only listed: no byte is downloaded here, and
-//! it does not go through the eager [`crate::engine::Engine`], which downloads every file whole.
+//! A whole drive, listed.
+//!
+//! Every file, folder and online document of a Storage account's drive (`OneDrive`'s, or My Drive),
+//! kept by id in a journal of its own (`storage_drive`) for Files to show and, in S2, for the file
+//! system to serve. Only listed: no byte is downloaded here, and it does not go through the eager
+//! [`crate::engine::Engine`], which downloads every file whole.
 //!
 //! - [`DriveJournal`]: the entries (id, parent, name, kind, size, hash, version, modified), the
 //!   anchor and the replica's tree, one transaction per page; paths are built when read, so a

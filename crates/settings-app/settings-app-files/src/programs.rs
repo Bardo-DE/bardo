@@ -93,8 +93,8 @@ fn system_bins(rule: &OriginRule) -> Vec<PathBuf> {
     found
 }
 
-/// Every application entry under `dirs`, in the order of precedence, each with whether its folder
-/// is one `rule` finds only an administrator can change: only such an entry may name a program.
+/// Every application entry under `dirs`, in the order of precedence, each with whether its folder is one `rule` finds only an administrator can change: only such an entry may name a program.
+///
 /// A directory that is not there, and a file that cannot be read, is over the entry cap or is not
 /// text, are skipped.
 #[must_use]

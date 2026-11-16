@@ -13,9 +13,10 @@ use permission_core::AlwaysOffer;
 use provenance::{Confidentiality, ConfirmReceipt, InputProof};
 use std::future::Future;
 
-/// What an app implements to ask its person. Draw `request` (it names the action, the effect,
-/// the count, the concrete change and why it asks) and answer when they have chosen. Dropping
-/// the future withdraws the sheet.
+/// What an app implements to ask its person.
+///
+/// Draw `request` (it names the action, the effect, the count, the concrete change and why it asks)
+/// and answer when they have chosen. Dropping the future withdraws the sheet.
 pub trait ConfirmSheet: Send + Sync {
     /// Asks the person. `None` is a sheet closed without an answer.
     fn ask(&self, request: &ConfirmRequest) -> impl Future<Output = Option<SheetChoice>> + Send;

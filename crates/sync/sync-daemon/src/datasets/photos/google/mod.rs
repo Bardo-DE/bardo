@@ -1,6 +1,8 @@
-//! Google Photos as syncd carries it (design/31 R1: Photos is an upload target and a picker
-//! import, never a library mirror; the build asks only the scopes `photoslibrary.appendonly` and
-//! `photospicker.mediaitems.readonly`). Run, as the Graph Photos datasets are, for a Photos grant
+//! Google Photos as syncd carries it.
+//!
+//! Design/31 R1: Photos is an upload target and a picker import, never a library mirror; the
+//! build asks only the scopes `photoslibrary.appendonly` and `photospicker.mediaitems.readonly`.
+//! Run, as the Graph Photos datasets are, for a Photos grant
 //! on a Google account: the account's Photos row in Settings.
 //!
 //! - **Upload** (`upload`, `ledger`, `api`): the dataset `google_photos_upload`. The files

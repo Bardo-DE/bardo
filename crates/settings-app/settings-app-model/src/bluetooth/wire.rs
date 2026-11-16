@@ -55,9 +55,10 @@ pub fn is_under_adapter(path: &str, adapter: &str) -> bool {
 /// What `BlueZ` says about a device it hears all the time: its signal, and what it broadcasts.
 const NOISE: [&str; 4] = ["RSSI", "TxPower", "ManufacturerData", "ServiceData"];
 
-/// Whether a `PropertiesChanged` of `interface` that changed `names` is worth reading `BlueZ` again
-/// for: not a device's constantly changing signal strength, which would have the page reading all
-/// the time while devices are nearby.
+/// Whether a `PropertiesChanged` of `interface` that changed `names` is worth reading `BlueZ` again for.
+///
+/// Not a device's constantly changing signal strength, which would have the page reading all the
+/// time while devices are nearby.
 #[must_use]
 pub fn bt_change_matters(interface: &str, names: &[&str]) -> bool {
     !(interface == "org.bluez.Device1" && names.iter().all(|name| NOISE.contains(name)))

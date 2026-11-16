@@ -1,6 +1,6 @@
-//! A spring as a timeline (design/05-MOTION.md section 14): one leg of its closed-form motion,
-//! which has no length of its own and ends when it comes to rest. Its frame is where to draw
-//! it: a position, a velocity, and whether it is still moving.
+//! A spring as a timeline (design/05-MOTION.md section 14): one leg of its closed-form motion, which has no length of its own and ends when it comes to rest.
+//!
+//! Its frame is where to draw it: a position, a velocity, and whether it is still moving.
 
 use super::Timeline;
 use crate::spring::{Leg, SpringPhase, SpringTuning, State};
@@ -11,9 +11,10 @@ use ui_core::time::FRAME_TICK;
 /// slowest damping a spring may have, 0.05, rings out well inside it).
 const LONGEST: Duration = Duration::from_secs(30);
 
-/// How many logical pixels one of a spring's units draws: 1 for a spring in pixels, a segment's
-/// width for one counted in segments. It scales a hand's velocity into the spring's units and
-/// decides when the spring is close enough to rest.
+/// How many logical pixels one of a spring's units draws: 1 for a spring in pixels, a segment's width for one counted in segments.
+///
+/// It scales a hand's velocity into the spring's units and decides when the spring is close enough
+/// to rest.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct PxPerUnit(pub f32);
 

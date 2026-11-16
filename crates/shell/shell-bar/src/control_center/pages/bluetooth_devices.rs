@@ -1,11 +1,11 @@
-//! The Bluetooth page: the radio `Toggle` in its header, then `listed_devices` as rows (kind
-//! glyph on a disc, the accent disc when connected, name,
-//! [`crate::control_center::device_detail`], a connected device's battery at the
-//! end); choosing a paired device sends `BluetoothCommand::Connect` or `Disconnect`. The
-//! connect's stamp (`Bluetooth.connect`) is the connecting row's phase: its glyph breathes, its
-//! disc seals when it connects, it shakes when it fails
-//! ([`crate::control_center::item_phase`]). Pairing a new device is Settings'
-//! ("Bluetooth Settings…" at the foot).
+//! The Bluetooth page.
+//!
+//! The radio `Toggle` in its header, then `listed_devices` as rows (kind glyph on a disc, the
+//! accent disc when connected, name, [`crate::control_center::device_detail`], a connected device's
+//! battery at the end); choosing a paired device sends `BluetoothCommand::Connect` or `Disconnect`.
+//! The connect's stamp (`Bluetooth.connect`) is the connecting row's phase: its glyph breathes, its
+//! disc seals when it connects, it shakes when it fails ([`crate::control_center::item_phase`]).
+//! Pairing a new device is Settings' ("Bluetooth Settings…" at the foot).
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;

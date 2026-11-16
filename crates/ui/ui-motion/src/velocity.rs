@@ -1,7 +1,6 @@
-//! How fast a person's hand was moving when it let go (design/27 section 3.12 rule 2): logical
-//! pixels per second along the axis the motion runs, signed (right and down are positive). A
-//! whole number, so [`crate::detail::touch::Contact`] that carries one keeps `Eq` and
-//! `Hash`.
+//! How fast a person's hand was moving when it let go (design/27 section 3.12 rule 2): logical pixels per second along the axis the motion runs, signed (right and down are positive).
+//!
+//! A whole number, so [`crate::detail::touch::Contact`] that carries one keeps `Eq` and `Hash`.
 
 use super::swipe::Speed;
 use ui_style::tokens::delay::DelayToken;
@@ -35,8 +34,9 @@ struct Sample {
     when: std::time::Instant,
 }
 
-/// Measures a drag's release velocity from its last two moves (a drag's `onpointermove` feeds
-/// it, its `onpointerup` reads it). Pure: the caller hands in the instants, from `ui_components::base::time::clock::now`.
+/// Measures a drag's release velocity from its last two moves (a drag's `onpointermove` feeds it, its `onpointerup` reads it).
+///
+/// Pure: the caller hands in the instants, from `ui_components::base::time::clock::now`.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct VelocityMeter {
     last: Option<Sample>,

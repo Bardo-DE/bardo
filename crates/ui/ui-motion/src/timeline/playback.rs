@@ -1,6 +1,8 @@
-//! The frame driver under every Rust-played [`Timeline`]: a run advanced by a task that asks for
-//! a frame every `FRAME_TICK` while it moves and stops when it settles (R3), starting a new run
-//! from where the caller says (R10). [`use_playback`] is the handle a component moves by hand.
+//! The frame driver under every Rust-played [`Timeline`].
+//!
+//! A run advanced by a task that asks for a frame every `FRAME_TICK` while it moves and stops when
+//! it settles (R3), starting a new run from where the caller says (R10). [`use_playback`] is the
+//! handle a component moves by hand.
 
 use super::Timeline;
 use dioxus::core::{Task, current_scope_id};

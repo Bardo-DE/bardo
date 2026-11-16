@@ -1,13 +1,14 @@
-//! An operation as the service reports it, and the token that lets a pending loop run
-//! (design/26-DETAILS.md R4): a loop needs a [`PendingToken`], and a token needs a start. There
-//! is no way to write a pending loop without one.
+//! An operation as the service reports it, and the token that lets a pending loop run (design/26-DETAILS.md R4): a loop needs a [`PendingToken`], and a token needs a start.
+//!
+//! There is no way to write a pending loop without one.
 
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::{Duration, Instant};
 
-/// A running operation's ticket: when it started. Made only by [`PendingToken::start`], in the
-/// handler or service callback that started the operation; each start is a new operation, so a
-/// new start restarts the loop.
+/// A running operation's ticket: when it started.
+///
+/// Made only by [`PendingToken::start`], in the handler or service callback that started the
+/// operation; each start is a new operation, so a new start restarts the loop.
 ///
 /// ```
 /// use ui_components::motion::detail::operation::{Operation, PendingToken};

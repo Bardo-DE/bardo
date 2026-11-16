@@ -62,9 +62,9 @@ pub enum GrantDecision {
     Refused,
 }
 
-/// A permission's sentence, taken apart: "Companion can use Language model" or "Mail can't use
-/// Language model (this session)". The module words the row this way and publishes no separate
-/// rows for the app or the service.
+/// A permission's sentence, taken apart: "Companion can use Language model" or "Mail can't use Language model (this session)".
+///
+/// The module words the row this way and publishes no separate rows for the app or the service.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct GrantSentence {
     /// The app, as the sentence names it.

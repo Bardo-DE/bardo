@@ -1,6 +1,7 @@
-//! A dataset is the local side of a sync: what is held here, how to read it, how to store what
-//! the replica has. The engine runs one over a [`sync_core::Replica`]; the real ones (the PIM
-//! mirror W6e, Photos W6f) implement this trait, and tests implement it over memory.
+//! A dataset is the local side of a sync: what is held here, how to read it, how to store what the replica has.
+//!
+//! The engine runs one over a [`sync_core::Replica`]; the real ones (the PIM mirror W6e, Photos
+//! W6f) implement this trait, and tests implement it over memory.
 
 #[cfg(any(test, feature = "testing"))]
 mod memory;

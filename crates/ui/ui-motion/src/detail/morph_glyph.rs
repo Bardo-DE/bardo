@@ -1,5 +1,6 @@
-//! `MorphGlyph`: a glyph that cross-fades into the next one it is given, as two stacked layers,
-//! each its own `svg` in an HTML wrapper the stylesheet can fade (design/26-DETAILS.md section
+//! `MorphGlyph`: a glyph that cross-fades into the next one it is given.
+//!
+//! It is two stacked layers, each its own `svg` in an HTML wrapper the stylesheet can fade (design/26-DETAILS.md section
 //! 3.2, design/30 section 1.3).
 
 use super::level::use_level;

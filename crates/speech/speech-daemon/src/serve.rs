@@ -166,10 +166,11 @@ where
     })
 }
 
-/// Serves `org.bardo.Voice1` on the session bus over a device: registers the three
-/// interfaces, derives each caller's role from the connection, runs `speech-loop` and talks to
-/// inferd through inference-client. `usage` is where the person's voice settings are read. Returns
-/// when the bus closes, or with an error if the loop dies first.
+/// Serves `org.bardo.Voice1` on the session bus over a device.
+///
+/// Registers the three interfaces, derives each caller's role from the connection, runs `speech-
+/// loop` and talks to inferd through inference-client. `usage` is where the person's voice settings
+/// are read. Returns when the bus closes, or with an error if the loop dies first.
 pub async fn serve<D: AudioDevice + 'static>(
     config: VoicedConfig,
     callers: CallerTable,

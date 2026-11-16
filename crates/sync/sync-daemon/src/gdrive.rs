@@ -1,9 +1,9 @@
-//! The Google Drive replica as syncd runs it: one authenticated relay stream per connection from
-//! accountd's `Tokens.OpenAuthenticated` ([`RelayDial`]), so syncd never holds the
-//! Google token. The relay adds `Authorization: Bearer` and reaches the endpoint's origin
+//! The Google Drive replica as syncd runs it: one authenticated relay stream per connection from accountd's `Tokens.OpenAuthenticated` ([`RelayDial`]), so syncd never holds the Google token.
+//!
+//! The relay adds `Authorization: Bearer` and reaches the endpoint's origin
 //! (`https://www.googleapis.com`), which serves the API (`/drive/v3`) and the upload host
-//! (`/upload/drive/v3`) alike: a resumable session's URL is on the same origin, so no second
-//! relay and no linked origin is needed (unlike Graph, whose upload URLs are on other hosts).
+//! (`/upload/drive/v3`) alike: a resumable session's URL is on the same origin, so no second relay
+//! and no linked origin is needed (unlike Graph, whose upload URLs are on other hosts).
 //! [`gdrive_replica`] builds the replica of a dataset's folder in the account's app data folder.
 
 use crate::webdav::BuildError;
@@ -16,8 +16,10 @@ use replica_gdrive::GdriveReplica;
 use std::sync::Arc;
 use sync_core::Clock;
 
-/// The replica of `folder` (a path in the app data folder, `Photos/Originals`; empty for the
-/// folder itself) of the account the grant covers, over relays accountd opens to `endpoint`
+/// The replica of `folder` of the account the grant covers.
+///
+/// `folder` is a path in the app data folder, `Photos/Originals`; empty for the folder itself.
+/// It runs over relays accountd opens to `endpoint`
 /// (the `google_drive` row's, `https://www.googleapis.com/drive/v3`).
 pub fn gdrive_replica<T: GrantsLink>(
     accounts: Arc<Grants<T>>,

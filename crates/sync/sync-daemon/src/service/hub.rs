@@ -171,9 +171,10 @@ struct Entry {
     cycles: Cycles,
 }
 
-/// How many cycles a dataset's driver has begun and finished since it was registered. A cycle
-/// that began after a moment is one that saw everything done before it: read `begun` at that
-/// moment, and wait for `ended` to pass it (cycles run one at a time, so the cycle that ends
+/// How many cycles a dataset's driver has begun and finished since it was registered.
+///
+/// A cycle that began after a moment is one that saw everything done before it: read `begun` at
+/// that moment, and wait for `ended` to pass it (cycles run one at a time, so the cycle that ends
 /// next after those that had begun is the first to begin later).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct Cycles {

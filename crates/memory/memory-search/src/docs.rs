@@ -93,10 +93,12 @@ impl EventDoc {
     }
 }
 
-/// The documents `body` contributes: messages and episodes through `index_texts` (each part
-/// with its own label), things by their title and subtitle, searches by their text, under the
-/// header's label. Other bodies are not searched, and a body that is not for recall
-/// ([`Recallable::No`]) contributes nothing whatever its shape.
+/// The documents `body` contributes.
+///
+/// Messages and episodes through `index_texts` (each part with its own label), things by their
+/// title and subtitle, searches by their text, under the header's label. Other bodies are not
+/// searched, and a body that is not for recall ([`Recallable::No`]) contributes nothing whatever
+/// its shape.
 #[must_use]
 pub fn event_docs(event: &EventRef, header_label: &Label, body: &EventBody) -> Vec<EventDoc> {
     if Recallable::of_body(body) == Recallable::No {

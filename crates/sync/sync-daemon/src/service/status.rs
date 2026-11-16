@@ -87,9 +87,10 @@ pub fn status_details(status: &StatusSnapshot) -> Details {
     details
 }
 
-/// What `NeedsConfirmation` carries for `dataset`: `{discard: t, held: t, account: s}` while
-/// held (`account` is the account's object path, where Settings opens it), empty when the hold
-/// ended (the signal's dataset argument says which).
+/// What `NeedsConfirmation` carries for `dataset`.
+///
+/// `{discard: t, held: t, account: s}` while held (`account` is the account's object path, where
+/// Settings opens it), empty when the hold ended (the signal's dataset argument says which).
 #[must_use]
 pub fn held_details(dataset: &DatasetName, held: Option<&MassDelete>) -> Details {
     let mut details = Details::new();

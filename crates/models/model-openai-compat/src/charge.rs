@@ -19,8 +19,8 @@ struct UsageText<'a> {
     cost: Option<&'a RawValue>,
 }
 
-/// The charge in a stream chunk or a whole reply body, in US dollars, read from the number's own
-/// text so no float rounds it.
+/// The charge in a stream chunk or a whole reply body, in US dollars, read from the number's own text so no float rounds it.
+///
 /// Absent, not a number, negative or too large for a decimal is `None`: a charge that cannot be
 /// read is a missing charge, never a failed turn.
 #[must_use]

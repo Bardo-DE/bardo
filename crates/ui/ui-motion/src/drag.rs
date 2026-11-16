@@ -5,9 +5,10 @@ use dioxus::prelude::*;
 use ui_core::geometry::units::{Point, Px, Rect};
 use ui_core::vocab::Fraction;
 
-/// How far a press travels, straight-line, before content becomes a drag rather than a click:
-/// 3 px (design/30-CATALOGUE.md section 1.4). Named so a component that hands its drag to the
-/// host (the screenshot thumbnail) and its test agree on one number.
+/// How far a press travels, straight-line, before content becomes a drag rather than a click: 3 px (design/30-CATALOGUE.md section 1.4).
+///
+/// Named so a component that hands its drag to the host (the screenshot thumbnail) and its test
+/// agree on one number.
 pub const DRAG_THRESHOLD: Px = Px(3.0);
 
 /// The same for dragging a window by its titlebar: 4 px.
@@ -198,9 +199,9 @@ fn hit(targets: &[Rect], at: Point) -> Option<usize> {
     })
 }
 
-/// Where a pointer at `x` sits along `track`, in thousandths, clamped to the track and
-/// rounded to the nearest multiple of `step` (a zero step is continuous): the Slider's value
-/// while its thumb is dragged (design/04-COMPONENTS.md section 5).
+/// Where a pointer at `x` sits along `track`, in thousandths, clamped to the track and rounded to the nearest multiple of `step` (a zero step is continuous).
+///
+/// The Slider's value while its thumb is dragged (design/04-COMPONENTS.md section 5).
 #[must_use]
 pub fn fraction_along(track: Rect, x: Px, step: Fraction) -> Fraction {
     let width = track.size.width.0;

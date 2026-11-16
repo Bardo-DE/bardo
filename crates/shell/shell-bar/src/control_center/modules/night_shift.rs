@@ -1,7 +1,8 @@
-//! The Night Shift row under the Display module's brightness (macOS's Night Shift): a switch that
-//! warms the screen until tomorrow, a line that says what it is doing, and, while it warms or
-//! will, the colour temperature from Less Warm to More Warm. It reads and commands the Night
-//! Shift service; the schedule (times, "Always") is casement's night light, set in Settings.
+//! The Night Shift row under the Display module's brightness (macOS's Night Shift).
+//!
+//! A switch that warms the screen until tomorrow, a line that says what it is doing, and, while it
+//! warms or will, the colour temperature from Less Warm to More Warm. It reads and commands the
+//! Night Shift service; the schedule (times, "Always") is casement's night light, set in Settings.
 //! Nothing is drawn while casement's settings cannot be reached.
 
 use dioxus::prelude::*;

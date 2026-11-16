@@ -150,10 +150,12 @@ fn google_photos(account: &Account) -> bool {
     uploads && has_endpoint(account, Family::GooglePhotosUpload)
 }
 
-/// What syncd can keep of `account`: the app folder when the account offers Storage over Graph
-/// or the Google Drive app data folder (the stores syncd mirrors), and Photos besides when that
-/// store takes resumable uploads, which original photos need; for a Google account, Photos is
-/// the upload target and the picker import, whatever its Drive offers.
+/// What syncd can keep of `account`.
+///
+/// The app folder when the account offers Storage over Graph or the Google Drive app data folder
+/// (the stores syncd mirrors), and Photos besides when that store takes resumable uploads, which
+/// original photos need; for a Google account, Photos is the upload target and the picker import,
+/// whatever its Drive offers.
 #[must_use]
 pub fn sync_offers(account: &Account) -> Vec<SyncClass> {
     let storage = account

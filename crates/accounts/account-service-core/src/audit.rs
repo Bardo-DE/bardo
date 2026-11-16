@@ -1,6 +1,7 @@
-//! What accountd records about its own decisions (design/31 §4.5 "Audit", porter PLAN §2.3):
-//! one line per event, never a value. An entry names ids, kinds, audiences and endpoints; there
-//! is no field that could hold a secret, so a log of them cannot leak one.
+//! What accountd records about its own decisions (design/31 §4.5 "Audit", porter PLAN §2.3): one line per event, never a value.
+//!
+//! An entry names ids, kinds, audiences and endpoints; there is no field that could hold a secret,
+//! so a log of them cannot leak one.
 //!
 //! Where the line goes is a seam, [`AuditSink`], so the daemon appends `audit.jsonl`, an app
 //! hosting porter appends its own, and tests collect entries.

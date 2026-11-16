@@ -20,10 +20,11 @@ use std::marker::PhantomData;
 use std::ops::Deref;
 use std::sync::{Arc, Mutex, MutexGuard};
 
-/// The seams a service is built over, named once: its providers (protocol code), its secrets,
-/// the host that draws its sheets, a clock, the store its registry lives in between runs and the
-/// sink its audit lines go to. A domain is written for any `E: Ports` instead of repeating the
-/// six.
+/// The seams a service is built over, named once.
+///
+/// Its providers (protocol code), its secrets, the host that draws its sheets, a clock, the store
+/// its registry lives in between runs and the sink its audit lines go to. A domain is written for
+/// any `E: Ports` instead of repeating the six.
 pub trait Ports {
     /// Protocol code: signs an account in and mints its tokens.
     type Provider: Provider;

@@ -1,6 +1,7 @@
-//! A spring described the way [FLUID] and `SwiftUI` describe one (design/05-MOTION.md section 14):
-//! a damping ratio and a response, not a duration. A spring has no length; it ends when it comes
-//! to rest, and a new target mid-flight starts from where it is at the speed it has.
+//! A spring described the way [FLUID] and `SwiftUI` describe one (design/05-MOTION.md section 14): a damping ratio and a response, not a duration.
+//!
+//! A spring has no length; it ends when it comes to rest, and a new target mid-flight starts from
+//! where it is at the speed it has.
 //!
 //! This file is the vocabulary and the closed-form motion of one leg, as pure arithmetic; the
 //! frame driver is `use_spring`.
@@ -35,9 +36,9 @@ impl Millis {
     }
 }
 
-/// A spring: how much it is damped (1.0 critical, below that it overshoots) and its response,
-/// the period it would swing at undamped, which reads as how quick it feels. Only
-/// [`crate::spring_spec::SpringSpec`] makes one, so no caller picks a raw damping.
+/// A spring: how much it is damped (1.0 critical, below that it overshoots) and its response, the period it would swing at undamped, which reads as how quick it feels.
+///
+/// Only [`crate::spring_spec::SpringSpec`] makes one, so no caller picks a raw damping.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct SpringTuning {
     damping: Ratio,
@@ -77,9 +78,10 @@ pub struct State {
     pub velocity: f64,
 }
 
-/// One leg of a spring's motion: from `start` toward `target` under `spring`. A retarget ends
-/// the leg and starts another from the state the old one has at that instant, which is what
-/// keeps position and velocity continuous (design/27 section 3.12 rule 4).
+/// One leg of a spring's motion: from `start` toward `target` under `spring`.
+///
+/// A retarget ends the leg and starts another from the state the old one has at that instant, which
+/// is what keeps position and velocity continuous (design/27 section 3.12 rule 4).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Leg {
     /// Where the leg began and how fast.

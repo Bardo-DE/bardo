@@ -3,11 +3,11 @@
 use super::moment::Moment;
 use super::touch::Touch;
 
-/// One state change as a primitive plays it: its [`Moment`], who caused it, and which change it
-/// is (so a primitive starts once per change, and a re-render replays nothing, R1). Only
-/// [`crate::detail::use_detail::use_detail`] makes one, from a state's own
-/// [`crate::detail::detailed::Detailed`]
-/// table: a component cannot hand a primitive a moment its table does not name.
+/// One state change as a primitive plays it: its [`Moment`], who caused it, and which change it is (so a primitive starts once per change, and a re-render replays nothing, R1).
+///
+/// Only [`crate::detail::use_detail::use_detail`] makes one, from a state's own
+/// [`crate::detail::detailed::Detailed`] table: a component cannot hand a primitive a moment its
+/// table does not name.
 ///
 /// ```compile_fail,E0451
 /// // A cue cannot be written by hand.

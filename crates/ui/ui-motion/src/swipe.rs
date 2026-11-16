@@ -1,10 +1,11 @@
-//! Swipe to dismiss as a pure machine (design/13 section 13.3.6 "Swipe right to
-//! dismiss"): a pointer drag moves the card 1:1 to the right and a quarter of the distance to
-//! the left; released past the distance or the speed threshold it flies out to the right from
-//! where it is, and under both it springs back. A horizontal scroll (a touchpad, a mouse's
-//! tilt wheel) is summed into the same offset and decided the same way once the deltas stop,
-//! since Blitz carries no scroll phase: each delta moves the quiet deadline, and the machine's wake
-//! at that deadline is the decision.
+//! Swipe to dismiss as a pure machine (design/13 section 13.3.6 "Swipe right to dismiss").
+//!
+//! A pointer drag moves the card 1:1 to the right and a quarter of the distance to the left;
+//! released past the distance or the speed threshold it flies out to the right from where it is,
+//! and under both it springs back. A horizontal scroll (a touchpad, a mouse's tilt wheel) is summed
+//! into the same offset and decided the same way once the deltas stop, since Blitz carries no
+//! scroll phase: each delta moves the quiet deadline, and the machine's wake at that deadline is
+//! the decision.
 //!
 //! [`SwipeState`] is a `Machine`: it decides, and `use_swipe` runs it and draws the offset.
 

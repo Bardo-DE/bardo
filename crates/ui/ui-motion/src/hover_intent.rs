@@ -1,7 +1,7 @@
-//! The hover-card intent machine: wait for intent, stay warm, never mark read, never fetch
-//! (design/06-INTERACTIONS.md section 3). A `Machine`: an event and the time in, the next state
-//! and the effects out; the open and close deadlines are in the state, so its wake is the one
-//! timer and a stale wake changes nothing.
+//! The hover-card intent machine: wait for intent, stay warm, never mark read, never fetch (design/06-INTERACTIONS.md section 3).
+//!
+//! A `Machine`: an event and the time in, the next state and the effects out; the open and close
+//! deadlines are in the state, so its wake is the one timer and a stale wake changes nothing.
 
 use std::time::Duration;
 use ui_core::machine::{Elapsed, Machine};

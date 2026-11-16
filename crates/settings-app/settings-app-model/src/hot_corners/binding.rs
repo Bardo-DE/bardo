@@ -243,9 +243,10 @@ pub fn corner_value(bindings: &[HotBinding]) -> Value {
     Value::Array(bindings.iter().map(HotBinding::to_value).collect())
 }
 
-/// Whether a corner's key can hold `value`: a word of the old form this build knows, or a list in
-/// which every row is a binding it can carry out. Anything else is kept as written and shown
-/// read-only, as every control does with a value it cannot hold.
+/// Whether a corner's key can hold `value`: a word of the old form this build knows, or a list in which every row is a binding it can carry out.
+///
+/// Anything else is kept as written and shown read-only, as every control does with a value it
+/// cannot hold.
 #[must_use]
 pub fn corner_admits(value: &Value) -> bool {
     match value {

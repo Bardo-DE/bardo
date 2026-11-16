@@ -1,10 +1,11 @@
-//! A surface's presence driven by the caller's `shown` (the OSD card, the screenshot thumbnail,
-//! the preview pane): entering, present, leaving, then hidden with `on_hidden` at the exit's
-//! settle, and a show while it leaves taking the hide back. The rules are the pure [`Life`]
-//! machine in `step`, run by `use_machine`; a surface whose life something else decides runs it
-//! itself. Present keeps the entrance declared in each surface's CSS, so the entrance's settle
-//! timer (wall clock) never cancels an entrance the frame clock is still playing, and a
-//! taken-back hide plays `hold` (Blitz at the pin keeps a cancelled animation's last value).
+//! A surface's presence driven by the caller's `shown` (the OSD card, the screenshot thumbnail, the preview pane).
+//!
+//! Entering, present, leaving, then hidden with `on_hidden` at the exit's settle, and a show while
+//! it leaves taking the hide back. The rules are the pure [`Life`] machine in `step`, run by
+//! `use_machine`; a surface whose life something else decides runs it itself. Present keeps the
+//! entrance declared in each surface's CSS, so the entrance's settle timer (wall clock) never
+//! cancels an entrance the frame clock is still playing, and a taken-back hide plays `hold` (Blitz
+//! at the pin keeps a cancelled animation's last value).
 
 use super::spec::PresenceSpec;
 use super::step::change;
@@ -24,9 +25,10 @@ pub struct Presented {
     pub alias: EntranceAlias,
 }
 
-/// A surface's presence and entrance alias for this render, driven by `shown`: a change of
-/// `shown` steps the machine at once (so the render draws the new phase), and its settle timer
-/// is the machine's wake. `on_hidden` runs when the exit has settled.
+/// A surface's presence and entrance alias for this render, driven by `shown`.
+///
+/// A change of `shown` steps the machine at once (so the render draws the new phase), and its
+/// settle timer is the machine's wake. `on_hidden` runs when the exit has settled.
 #[must_use]
 pub fn use_presence(
     shown: bool,

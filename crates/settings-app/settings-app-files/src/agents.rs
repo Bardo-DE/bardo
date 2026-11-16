@@ -47,9 +47,9 @@ pub fn save_agent_choice(
     })
 }
 
-/// The coding assistants installed in docket's folder, whether `agents.toml` lists them or not:
-/// each id with its last installed version, in name order. Only files are read; nothing is
-/// started and no network is used.
+/// The coding assistants installed in docket's folder, whether `agents.toml` lists them or not: each id with its last installed version, in name order.
+///
+/// Only files are read; nothing is started and no network is used.
 #[must_use]
 pub fn installed_agents(data: &DataHome) -> Vec<FoundAgent> {
     let dir = AgentsDir::at(&data.0.join(AGENTS_DIR));

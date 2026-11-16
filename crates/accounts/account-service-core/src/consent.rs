@@ -11,9 +11,10 @@ use account_wire::AccountsReply;
 use account_wire::Refusal;
 use base_time::UnixSeconds;
 
-/// The sheet to show for `need`, or `None` when no account fits. `only` narrows the sheet to that
-/// one account (no chooser). `session` is the open launcher session the request was made in,
-/// which lets the sheet offer "This session only".
+/// The sheet to show for `need`, or `None` when no account fits.
+///
+/// `only` narrows the sheet to that one account (no chooser). `session` is the open launcher
+/// session the request was made in, which lets the sheet offer "This session only".
 #[must_use]
 pub fn ask_for(
     registry: &Registry,
@@ -48,10 +49,12 @@ pub fn ask_for(
     })
 }
 
-/// Records `answer` in `registry` and gives the reply. `only` is the account the ask was narrowed
-/// to: a Don't Allow is recorded for it alone. An `Allow` for an account that was not
-/// offered is treated as dismissed, and so is one whose scope is a session other than the one
-/// the ask carried (`session`): a sheet cannot make a session scope the ask did not offer.
+/// Records `answer` in `registry` and gives the reply.
+///
+/// `only` is the account the ask was narrowed to: a Don't Allow is recorded for it alone. An
+/// `Allow` for an account that was not offered is treated as dismissed, and so is one whose scope
+/// is a session other than the one the ask carried (`session`): a sheet cannot make a session scope
+/// the ask did not offer.
 pub fn settle(
     registry: &mut Registry,
     need: &Need,

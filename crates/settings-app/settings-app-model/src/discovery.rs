@@ -41,11 +41,11 @@ pub fn discover(dirs: &[PathBuf]) -> Discovery {
     discover_under(dirs, &OriginRule::Ownership)
 }
 
-/// Every schema under `dirs` (`ui_settings::schema::data_dirs`: the system's directories, then
-/// `$XDG_DATA_HOME`'s, in the order of trust), the folders judged by `rule`. `ui_settings` admits
-/// a schema only for its own program and location (the first one found for a program wins, so the
-/// user's directory never replaces an installed schema) and reports the rest on stderr. One it
-/// admits that this app cannot use (an unknown version, a `file` that is not
+/// Every schema under `dirs` (`ui_settings::schema::data_dirs`: the system's directories, then `$XDG_DATA_HOME`'s, in the order of trust), the folders judged by `rule`.
+///
+/// `ui_settings` admits a schema only for its own program and location (the first one found for a
+/// program wins, so the user's directory never replaces an installed schema) and reports the rest
+/// on stderr. One it admits that this app cannot use (an unknown version, a `file` that is not
 /// `<app-dir>/<name>.toml`) is skipped and returned as a warning.
 ///
 /// A key's `agent` mark is that of the schema admitted here, and is honoured only when its folder

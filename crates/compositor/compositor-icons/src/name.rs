@@ -3,8 +3,8 @@
 /// The longest icon name accepted, in bytes. Theme names are short; a longer one is not a name.
 const NAME_LIMIT: usize = 128;
 
-/// A plain icon name, the kind an icon theme is searched by: ASCII letters, digits and `-`, `_`,
-/// `.` and `+`, not empty, not starting with a dot (no `.hidden`, no `..`), at most 128 bytes.
+/// A plain icon name, the kind an icon theme is searched by: ASCII letters, digits and `-`, `_`, `.` and `+`, not empty, not starting with a dot (no `.hidden`, no `..`), at most 128 bytes.
+///
 /// A `/` is never in one, so a name cannot lead out of the theme folders.
 ///
 /// A client chooses the names it sets through `xdg_toplevel_icon`, so this is the edge that keeps

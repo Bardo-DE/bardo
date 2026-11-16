@@ -12,9 +12,10 @@ use dioxus::prelude::*;
 use ui_style::appearance::motion::MotionLevel;
 use ui_style::icon::posed::Thousandths;
 
-/// What the wrapper wears for `effect`'s stylesheet share: an `a-<anim>` class and the restart
-/// alias. It changes on a change of the effect's trigger, activity or visibility, never on a
-/// render that changes nothing. A button whose icon turns while it is busy wears exactly this.
+/// What the wrapper wears for `effect`'s stylesheet share: an `a-<anim>` class and the restart alias.
+///
+/// It changes on a change of the effect's trigger, activity or visibility, never on a render that
+/// changes nothing. A button whose icon turns while it is busy wears exactly this.
 #[must_use]
 pub fn use_symbol_attrs(effect: SymbolEffect) -> SymbolAttrs {
     let mut memory = use_hook(|| CopyValue::new(Memory::default()));
@@ -45,9 +46,10 @@ fn plan(was: Option<PartRun>, run: PartRun, gesture: PlanFor, level: MotionLevel
 #[derive(Debug, Clone, Copy)]
 struct PlanFor(ui_style::icon::parts::PartGesture);
 
-/// How far through its cycle the part driver is, in thousandths: 1000 at rest. A `Once` run plays
-/// when its trigger changes (never on the first render), a `While` run plays from the moment it
-/// is active until it is not, and under Reduced nothing plays (R7).
+/// How far through its cycle the part driver is, in thousandths: 1000 at rest.
+///
+/// A `Once` run plays when its trigger changes (never on the first render), a `While` run plays
+/// from the moment it is active until it is not, and under Reduced nothing plays (R7).
 #[must_use]
 pub fn use_part_progress(route: Route) -> Thousandths {
     let env = use_level();

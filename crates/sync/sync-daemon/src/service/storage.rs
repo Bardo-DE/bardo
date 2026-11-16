@@ -443,9 +443,9 @@ impl<C: Callers> StorageServer for StorageObject<C> {
     }
 }
 
-/// Serves `org.bardo.Storage1` at [`STORAGE_PATH`] on `connection` over `drives`, with
-/// `callers` saying who calls and `apps` the apps that may see the person's files. Call it
-/// before [`super::serve`], which claims the name once every object is there.
+/// Serves `org.bardo.Storage1` at [`STORAGE_PATH`] on `connection` over `drives`, with `callers` saying who calls and `apps` the apps that may see the person's files.
+///
+/// Call it before [`super::serve`], which claims the name once every object is there.
 pub async fn serve_storage<C: Callers>(
     connection: &Connection,
     drives: DriveSet,

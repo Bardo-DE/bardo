@@ -1,6 +1,7 @@
-//! A share going round: from nothing to whole once, or from nothing to whole again and again for
-//! as long as it is let run (design/35-SYMBOL-EFFECTS.md section 3). The frame is how far along
-//! the curve one cycle is, in thousandths; a timeline at rest stands at 1000, the end of a cycle.
+//! A share going round: from nothing to whole once, or from nothing to whole again and again for as long as it is let run (design/35-SYMBOL-EFFECTS.md section 3).
+//!
+//! The frame is how far along the curve one cycle is, in thousandths; a timeline at rest stands at
+//! 1000, the end of a cycle.
 
 use super::Timeline;
 use super::ease::Ease;

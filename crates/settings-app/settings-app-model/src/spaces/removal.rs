@@ -69,9 +69,9 @@ impl RemovalAsk {
     }
 }
 
-/// Whether `removal` deletes what only memory holds, so that it has to wait for memory when memory
-/// is not running (a removal that keeps everything has nothing to tell it): no Space is removed with
-/// memories or history left behind that the person asked to delete.
+/// Whether `removal` deletes what only memory holds, so that it has to wait for memory when memory is not running (a removal that keeps everything has nothing to tell it).
+///
+/// No Space is removed with memories or history left behind that the person asked to delete.
 #[must_use]
 pub fn needs_memory(removal: &Removal) -> bool {
     removal.memories == MemoryFate::Delete || removal.history == HistoryFate::Delete

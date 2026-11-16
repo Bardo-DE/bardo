@@ -1,10 +1,9 @@
-//! The Display module: a [`crate::control_center::LevelModule`] with the `Sun` glyph,
-//! "Display" as its title, and the brightness, over the Night Shift row ([`super::night_shift`]).
-//! The brightness reads no service: the caller
-//! ([`super::Module`], the bar's display dropdown) passes the bar output's brightness
-//! (`Displays::target`, then `Displays::brightness`), sends `DisplaysCommand::SetBrightness {
-//! output, level }` from `on_change`, and passes `Disabled` when the target is
-//! `BrightnessTarget::None`.
+//! The Display module: a [`crate::control_center::LevelModule`] with the `Sun` glyph, "Display" as its title, and the brightness, over the Night Shift row ([`super::night_shift`]).
+//!
+//! The brightness reads no service: the caller ([`super::Module`], the bar's display dropdown)
+//! passes the bar output's brightness (`Displays::target`, then `Displays::brightness`), sends
+//! `DisplaysCommand::SetBrightness { output, level }` from `on_change`, and passes `Disabled` when
+//! the target is `BrightnessTarget::None`.
 
 use dioxus::prelude::*;
 use ui_components::components::content::level_glyph::vocab::LevelGlyph;

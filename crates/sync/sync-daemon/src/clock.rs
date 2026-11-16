@@ -5,9 +5,10 @@
 
 use base_time::{Clock, SystemClock};
 
-/// The system clock, running `scale` times faster than real time (see
-/// `scheduler::Settings::time_scale`); with a scale of 1 it is exactly [`SystemClock`]. Every
-/// `Wall` in a process counts from the same start, so the engines of one test agree on the time.
+/// The system clock, running `scale` times faster than real time (see `scheduler::Settings::time_scale`); with a scale of 1 it is exactly [`SystemClock`].
+///
+/// Every `Wall` in a process counts from the same start, so the engines of one test agree on the
+/// time.
 #[derive(Debug, Clone, Copy)]
 pub struct Wall {
     scale: u32,

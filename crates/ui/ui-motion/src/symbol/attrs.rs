@@ -1,7 +1,8 @@
-//! What a symbol's wrapper carries for the stylesheet's share of an effect: the animation class,
-//! the restart alias and whether it stands hidden. A pure step over the last render's memory, so
-//! a table pins when an effect fires: on a change of its trigger, activity or visibility, never
-//! on a render that changes nothing (design/35-SYMBOL-EFFECTS.md section 2).
+//! What a symbol's wrapper carries for the stylesheet's share of an effect: the animation class, the restart alias and whether it stands hidden.
+//!
+//! A pure step over the last render's memory, so a table pins when an effect fires: on a change of
+//! its trigger, activity or visibility, never on a render that changes nothing (design/35-SYMBOL-
+//! EFFECTS.md section 2).
 
 use super::effect::{SymbolEffect, TransitionEffect};
 use super::route::{loop_anim, once_anim};

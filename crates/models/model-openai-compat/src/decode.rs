@@ -33,9 +33,11 @@ enum Phase {
     Finished(StopReason),
 }
 
-/// Turns SSE data frames into turn events. Tool-call argument fragments are joined per index and
-/// checked as JSON; `[DONE]`, or a finish reason followed by the usage chunk, ends the stream; a
-/// malformed frame is `Unreadable`, never a panic.
+/// Turns SSE data frames into turn events.
+///
+/// Tool-call argument fragments are joined per index and checked as JSON; `[DONE]`, or a finish
+/// reason followed by the usage chunk, ends the stream; a malformed frame is `Unreadable`, never a
+/// panic.
 ///
 /// Servers differ in small ways that the decoder accepts all at once: reasoning as
 /// `reasoning_content` or `reasoning` (the first wins when both are present), `content` as a string

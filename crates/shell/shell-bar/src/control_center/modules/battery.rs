@@ -1,11 +1,12 @@
-//! The Battery module: the bar item's battery glyph and level in its header, one quire
-//! `BatteryRing` per device (this computer, then each connected Bluetooth device that
-//! reports a battery; design/26 5.2.9 G27), the time left, then the power profile's
-//! [`super::PowerProfileControl`]. The center was just opened, so every ring sweeps in from empty
-//! with its percentage counting in step. Without a battery or a device's (a desktop) only the
-//! control shows; without either the module is absent. Reads `use_service::<BatteryService>`,
-//! `use_service::<BluetoothService>`, `use_service::<PowerProfileService>` and
-//! `bar.battery_low_percent`.
+//! The Battery module.
+//!
+//! The bar item's battery glyph and level in its header, one quire `BatteryRing` per device (this
+//! computer, then each connected Bluetooth device that reports a battery; design/26 5.2.9 G27), the
+//! time left, then the power profile's [`super::PowerProfileControl`]. The center was just opened,
+//! so every ring sweeps in from empty with its percentage counting in step. Without a battery or a
+//! device's (a desktop) only the control shows; without either the module is absent. Reads
+//! `use_service::<BatteryService>`, `use_service::<BluetoothService>`,
+//! `use_service::<PowerProfileService>` and `bar.battery_low_percent`.
 
 use dioxus::prelude::*;
 use shell_kit::battery::device_glyph::Device;

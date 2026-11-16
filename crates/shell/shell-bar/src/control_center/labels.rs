@@ -84,9 +84,11 @@ pub fn network_detail(access_point: &AccessPoint, saved: Saved) -> String {
     .to_owned()
 }
 
-/// A device row's detail: "Connected", "Connecting…", "Not connected" (paired) or "" (not
-/// paired), then " · 80%" when a device that is not connected reports a battery (a connected
-/// one's battery is the row's trailing ring, design/26 G21).
+/// A device row's detail.
+///
+/// "Connected", "Connecting…", "Not connected" (paired) or "" (not paired), then " · 80%" when a
+/// device that is not connected reports a battery (a connected one's battery is the row's trailing
+/// ring, design/26 G21).
 #[must_use]
 pub fn device_detail(device: &BtDevice) -> String {
     let state = match (device.connection, device.pairing) {

@@ -1,7 +1,7 @@
-//! The Wi-Fi tile: a quire `ModuleTile` whose press turns the radio on or off,
-//! [`crate::control_center::wifi_status`] as its line, and its chevron to the network
-//! list (`Detail::Wifi`). Reads `use_service::<WifiService>` and
-//! `use_service::<NetworkService>`; sends `WifiCommand::Radio`.
+//! The Wi-Fi tile: a quire `ModuleTile` whose press turns the radio on or off, [`crate::control_center::wifi_status`] as its line, and its chevron to the network list (`Detail::Wifi`).
+//!
+//! Reads `use_service::<WifiService>` and `use_service::<NetworkService>`; sends
+//! `WifiCommand::Radio`.
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;

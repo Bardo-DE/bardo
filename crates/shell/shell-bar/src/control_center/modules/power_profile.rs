@@ -1,7 +1,9 @@
-//! The power profile: a quire `SegmentedControl<Profile>` over `PowerProfiles::offered`
-//! (labels from [`crate::control_center::profile_label`]), set with
-//! `ProfileCommand::Set`; `ProfileDegraded::Because` shown as a `SectionHeader` value. Absent
-//! when power-profiles-daemon is. Reads `use_service::<PowerProfileService>`.
+//! The power profile.
+//!
+//! A quire `SegmentedControl<Profile>` over `PowerProfiles::offered` (labels from
+//! [`crate::control_center::profile_label`]), set with `ProfileCommand::Set`;
+//! `ProfileDegraded::Because` shown as a `SectionHeader` value. Absent when power-profiles-daemon
+//! is. Reads `use_service::<PowerProfileService>`.
 
 use dioxus::prelude::*;
 use shell_model::power_profile::{Profile, ProfileCommand, ProfileDegraded};

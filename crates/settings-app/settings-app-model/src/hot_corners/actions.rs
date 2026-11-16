@@ -65,9 +65,9 @@ impl HotKnown {
     }
 }
 
-/// The actions of the manifest `text` that a corner can run: for everyone, not kept for the person
-/// alone, acting on nothing in particular and with no parameter that must be given. A text that
-/// is not a valid manifest offers none.
+/// The actions of the manifest `text` that a corner can run: for everyone, not kept for the person alone, acting on nothing in particular and with no parameter that must be given.
+///
+/// A text that is not a valid manifest offers none.
 #[must_use]
 pub fn actions_of(text: &str) -> Vec<HotActionChoice> {
     let Ok(parsed) = toml::from_str::<Manifest>(text) else {

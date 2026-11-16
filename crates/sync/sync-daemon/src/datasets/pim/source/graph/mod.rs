@@ -1,9 +1,10 @@
-//! The Microsoft Graph calendar source: `GET /me/calendars` for the collections, and per
-//! calendar `GET /me/calendars/{id}/events/delta` for the changes, with `@odata.deltaLink` as the
-//! cursor and `@removed` items as deletes. Every request goes through the relay accountd opens
-//! (`Tokens.OpenAuthenticated`), exactly as the Graph storage mirror does, so syncd never holds
-//! the Microsoft token. Events are converted to iCalendar by [`convert`] (pure) and arrive with
-//! their bytes: the engine's fetch costs no request.
+//! The Microsoft Graph calendar source.
+//!
+//! `GET /me/calendars` for the collections, and per calendar `GET /me/calendars/{id}/events/delta`
+//! for the changes, with `@odata.deltaLink` as the cursor and `@removed` items as deletes. Every
+//! request goes through the relay accountd opens (`Tokens.OpenAuthenticated`), exactly as the Graph
+//! storage mirror does, so syncd never holds the Microsoft token. Events are converted to iCalendar
+//! by [`convert`] (pure) and arrive with their bytes: the engine's fetch costs no request.
 //!
 //! **Unverified against Microsoft's own documentation** (not vendored): that `events/delta` on a
 //! single calendar is served as used here (Graph documents `calendarView/delta`, which expands

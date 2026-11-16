@@ -1,8 +1,9 @@
-//! Runs one engine on the scheduler's wake-ups: ask the scheduler what is next, sleep until it,
-//! run the cycle, publish the status. Everything that decides is `scheduler` (pure); this is the
-//! loop around it. The network is a seam (`watch::Receiver<Network>`; `NetworkManager` is the
-//! daemon's to read, never a test's), a push signal is a `Notify`, the pause switch and the
-//! account's removal come through the hub's [`Handle`].
+//! Runs one engine on the scheduler's wake-ups: ask the scheduler what is next, sleep until it, run the cycle, publish the status.
+//!
+//! Everything that decides is `scheduler` (pure); this is the loop around it. The network is a seam
+//! (`watch::Receiver<Network>`; `NetworkManager` is the daemon's to read, never a test's), a push
+//! signal is a `Notify`, the pause switch and the account's removal come through the hub's
+//! [`Handle`].
 
 use crate::dataset::Dataset;
 use crate::engine::{Engine, Outcome, Report, SyncError};

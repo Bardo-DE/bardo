@@ -50,9 +50,11 @@ pub enum PageOut {
     Close,
 }
 
-/// `page` after `input`: Open from the grid slides to the detail (from a detail page it switches
-/// with no slide); Back and Escape from a detail slide to the grid; Back on the grid does
-/// nothing; Escape on the grid closes.
+/// `page` after `input`.
+///
+/// Open from the grid slides to the detail (from a detail page it switches with no slide); Back and
+/// Escape from a detail slide to the grid; Back on the grid does nothing; Escape on the grid
+/// closes.
 #[must_use]
 pub fn step_page(page: CcPage, input: PageInput) -> (CcPage, Slide, PageOut) {
     match (page, input) {

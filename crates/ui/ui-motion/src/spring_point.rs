@@ -1,8 +1,8 @@
-//! A spring in two dimensions (design/05 section 14.3): two springs, one per axis,
-//! moved together. A dragged widget springs into its snap cell and the others glide aside;
-//! retargeting mid-glide keeps each axis's position and velocity, a hand's release hands each
-//! axis the velocity along it, Reduced is critically damped with no thrown velocity, and nothing
-//! asks for frames at rest.
+//! A spring in two dimensions (design/05 section 14.3): two springs, one per axis, moved together.
+//!
+//! A dragged widget springs into its snap cell and the others glide aside; retargeting mid-glide
+//! keeps each axis's position and velocity, a hand's release hands each axis the velocity along it,
+//! Reduced is critically damped with no thrown velocity, and nothing asks for frames at rest.
 
 use super::projection::Throw;
 use super::spring::SpringPhase;
@@ -142,9 +142,9 @@ pub fn use_spring_point_motion(at: Point) -> SpringPointMotion {
     }
 }
 
-/// A two-dimensional spring that follows `target` (a widget's cell): it stands there on mount
-/// and glides to each new target from where it is, at the speed it has, on the spring `spec`
-/// chooses. For a throw into a cell, use [`use_spring_point_motion`] and `go` with the release.
+/// A two-dimensional spring that follows `target` (a widget's cell): it stands there on mount and glides to each new target from where it is, at the speed it has, on the spring `spec` chooses.
+///
+/// For a throw into a cell, use [`use_spring_point_motion`] and `go` with the release.
 #[must_use]
 pub fn use_spring_point(target: Point, spec: SpringSpec) -> PointFrame {
     let motion = use_spring_point_motion(target);

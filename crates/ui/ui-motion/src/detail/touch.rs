@@ -1,7 +1,8 @@
-//! Who caused a moment (design/26-DETAILS.md R5): only a person's own contact may spend an
-//! overshoot. A [`Contact`] is proof of that contact. With feature `dioxus` the only public way
-//! to get one is from the event a pointer or key handler receives (`touch_event`), so a remote
-//! change cannot claim it.
+//! Who caused a moment (design/26-DETAILS.md R5): only a person's own contact may spend an overshoot.
+//!
+//! A [`Contact`] is proof of that contact. With feature `dioxus` the only public way to get one is
+//! from the event a pointer or key handler receives (`touch_event`), so a remote change cannot
+//! claim it.
 
 use crate::velocity::Velocity;
 
@@ -10,9 +11,10 @@ use crate::velocity::Velocity;
 #[cfg(feature = "dioxus")]
 pub use super::touch_event::Handled;
 
-/// Proof that the person touched the element in this moment. It has no public constructor but
-/// `Contact::from_event` (feature `dioxus`), which takes the event a handler was given, so a
-/// contact cannot be written by hand: its fields are private.
+/// Proof that the person touched the element in this moment.
+///
+/// It has no public constructor but `Contact::from_event` (feature `dioxus`), which takes the event
+/// a handler was given, so a contact cannot be written by hand: its fields are private.
 ///
 /// A contact also carries the velocity the hand had when it let go (design/27 section 3.12):
 /// zero for a click or a key, the drag's release velocity for a throw

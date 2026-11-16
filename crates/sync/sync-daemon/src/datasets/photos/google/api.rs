@@ -50,9 +50,10 @@ pub enum ApiError {
     },
 }
 
-/// The media type Google Photos should treat `name`'s bytes as, by extension (`mime_guess`'s
-/// table; its HEIC, HEIF and AVIF entries are what Photos takes). Only an image or a video type is
-/// sent as such: any other extension, and none, is `application/octet-stream`.
+/// The media type Google Photos should treat `name`'s bytes as, by extension (`mime_guess`'s table; its HEIC, HEIF and AVIF entries are what Photos takes).
+///
+/// Only an image or a video type is sent as such: any other extension, and none, is
+/// `application/octet-stream`.
 #[must_use]
 pub fn mime_of(name: &str) -> &'static str {
     mime_guess::from_path(name)

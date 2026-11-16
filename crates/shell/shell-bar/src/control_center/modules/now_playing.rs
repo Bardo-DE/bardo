@@ -1,7 +1,7 @@
-//! The Now Playing module: `Media::current`'s track on the module's panel, drawn by
-//! [`shell_ui_kit::now_playing::MediaView`]; a press sends
-//! `MediaCommand::Press`. Reads `use_service::<NowPlayingService>`; asks the service to re-read the
-//! position when it opens, so the bar starts from where the track is now.
+//! The Now Playing module: `Media::current`'s track on the module's panel, drawn by [`shell_ui_kit::now_playing::MediaView`]; a press sends `MediaCommand::Press`.
+//!
+//! Reads `use_service::<NowPlayingService>`; asks the service to re-read the position when it
+//! opens, so the bar starts from where the track is now.
 
 use super::cc_module::{BarItemFace, CcCx, CcModule, Span};
 use crate::bar::{BarMenu, StatusIcon};

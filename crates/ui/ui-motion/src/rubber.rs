@@ -1,6 +1,6 @@
-//! The rubber band (design/30-CATALOGUE.md section 1.3): past a limit a drag follows the pointer
-//! by a share of the overshoot, and springs back on release. Swipe resistance and the host's
-//! scroll physics read it; a slider does not stretch.
+//! The rubber band (design/30-CATALOGUE.md section 1.3): past a limit a drag follows the pointer by a share of the overshoot, and springs back on release.
+//!
+//! Swipe resistance and the host's scroll physics read it; a slider does not stretch.
 
 use ui_core::geometry::units::Px;
 use ui_style::appearance::motion::MotionLevel;
@@ -8,9 +8,10 @@ use ui_style::appearance::motion::MotionLevel;
 /// The share of the overshoot the content follows (macOS's scroll rubber band, conf M).
 pub const RUBBER_SHARE: f32 = 0.55;
 
-/// How far the content is drawn past a limit when the pointer is `past` beyond it. Not past the
-/// limit (zero or negative) it draws nothing extra. Under Reduced motion there is no band:
-/// the limit is a hard stop.
+/// How far the content is drawn past a limit when the pointer is `past` beyond it.
+///
+/// Not past the limit (zero or negative) it draws nothing extra. Under Reduced motion there is no
+/// band: the limit is a hard stop.
 #[must_use]
 pub fn resist(past: Px, level: MotionLevel) -> Px {
     match level {

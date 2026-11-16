@@ -38,11 +38,12 @@ pub fn exponential(base: u32, steps: u32, cap: u32) -> u32 {
     u32::try_from(delay.min(u64::from(cap))).unwrap_or(cap)
 }
 
-/// How long a supervisor waits before it looks again: the `rescan` interval when its last look
-/// went well (`failures` is 0), else a backoff from 5 s (doubling per failed look in a row) that
-/// never passes `rescan`. A grant that could not be mirrored for a passing reason (a slow
-/// machine, a full disk for a moment, accountd not yet up) is tried again in seconds, not at
-/// the next ten-minute rescan.
+/// How long a supervisor waits before it looks again.
+///
+/// The `rescan` interval when its last look went well (`failures` is 0), else a backoff from 5 s
+/// (doubling per failed look in a row) that never passes `rescan`. A grant that could not be
+/// mirrored for a passing reason (a slow machine, a full disk for a moment, accountd not yet up) is
+/// tried again in seconds, not at the next ten-minute rescan.
 #[must_use]
 pub fn next_look(rescan: std::time::Duration, failures: u32) -> std::time::Duration {
     if failures == 0 {

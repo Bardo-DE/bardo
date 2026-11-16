@@ -6,9 +6,10 @@ use crate::catalogue::SectionModel;
 /// The Memory section of the Intelligence page, the one the line sits under.
 pub const MEMORY_SECTION: &str = "Memory";
 
-/// How far memory confines itself, as it names it on the bus (the `Confinement` property). The
-/// words are memory's public contract. Hand-written rather than a `Word`: a word this build does
-/// not know is a value too, and memory not being there is the same value, since neither gets a
+/// How far memory confines itself, as it names it on the bus (the `Confinement` property).
+///
+/// The words are memory's public contract. Hand-written rather than a `Word`: a word this build
+/// does not know is a value too, and memory not being there is the same value, since neither gets a
 /// line.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Confinement {

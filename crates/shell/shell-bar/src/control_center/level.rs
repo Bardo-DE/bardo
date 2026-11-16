@@ -1,10 +1,11 @@
-//! The one level control the Sound and Display modules share: quire's `ModulePanel` headed by
-//! the title alone, as on the Mac (no glyph, no percentage: the knob carries the glyph and the
-//! slider says its value to assistive technology), over quire's `Slider` in its `Mac` look: the
-//! Control Center's slider, a Regular well (22) under a 20 knob that carries the level's glyph,
-//! click to jump, drag the knob, arrows to step (quire design/29 §16). The look is chosen here
-//! and nowhere else ([`LOOK`]). The OSD draws the same level through quire's `Osd`, as the
-//! bezel's sixteen squares.
+//! The one level control the Sound and Display modules share.
+//!
+//! Quire's `ModulePanel` headed by the title alone, as on the Mac (no glyph, no percentage: the
+//! knob carries the glyph and the slider says its value to assistive technology), over quire's
+//! `Slider` in its `Mac` look: the Control Center's slider, a Regular well (22) under a 20 knob
+//! that carries the level's glyph, click to jump, drag the knob, arrows to step (quire design/29
+//! §16). The look is chosen here and nowhere else ([`LOOK`]). The OSD draws the same level through
+//! quire's `Osd`, as the bezel's sixteen squares.
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;

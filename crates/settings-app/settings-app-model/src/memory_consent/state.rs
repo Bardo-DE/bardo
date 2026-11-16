@@ -86,9 +86,9 @@ pub enum Trouble {
     Failed,
 }
 
-/// The pairs of `set` that memory reports as waiting with exactly that value: the ones the person
-/// just set that were looser than the shipped value, so saving them is the confirmation. A pair
-/// memory does not report waiting is not looser (or is already confirmed) and is left out.
+/// The pairs of `set` that memory reports as waiting with exactly that value: the ones the person just set that were looser than the shipped value, so saving them is the confirmation.
+///
+/// A pair memory does not report waiting is not looser (or is already confirmed) and is left out.
 #[must_use]
 pub fn to_confirm(waiting: &[WaitingSetting], set: &[SettingPair]) -> Vec<SettingPair> {
     set.iter()

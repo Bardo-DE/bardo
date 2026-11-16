@@ -128,10 +128,12 @@ fn stamp(text: &str) -> Option<String> {
     local(text).ok().map(|t| format!("{t}Z"))
 }
 
-/// Text from an HTML body, by `nanohtml2text`: tags dropped, block ends as line breaks, `<style>`
-/// and `<script>` contents left out, named and numeric entities decoded, a `>` inside a quoted
-/// attribute not taken for the end of its tag. Line ends are `\n`, a no-break space is a space, a
-/// line's trailing blanks are cut, and no more than one blank line is kept.
+/// Text from an HTML body, by `nanohtml2text`.
+///
+/// Tags dropped, block ends as line breaks, `<style>` and `<script>` contents left out, named and
+/// numeric entities decoded, a `>` inside a quoted attribute not taken for the end of its tag. Line
+/// ends are `\n`, a no-break space is a space, a line's trailing blanks are cut, and no more than
+/// one blank line is kept.
 pub fn html_text(html: &str) -> String {
     let text = nanohtml2text::html2text(html)
         .replace("\r\n", "\n")

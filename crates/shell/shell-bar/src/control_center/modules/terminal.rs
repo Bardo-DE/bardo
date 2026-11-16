@@ -1,10 +1,10 @@
-//! The Terminal module: what the terminal (`bardo-do`) may do without asking, and the way back
-//! when intentd's breaker paused it. Each action the person allowed from the confirmation sheet
-//! ("Allow from the terminal: this action, until logout") is a row with its Revoke; a terminal
-//! the breaker paused after too many refusals in a row shows why and a "Resume the terminal"
-//! button (`Control.Resume`). The data is intentd's, read through the intents service; nothing is
-//! drawn while there is nothing to say (no grant, no pause), and opening the control center reads
-//! the grants again.
+//! The Terminal module: what the terminal (`bardo-do`) may do without asking, and the way back when intentd's breaker paused it.
+//!
+//! Each action the person allowed from the confirmation sheet ("Allow from the terminal: this
+//! action, until logout") is a row with its Revoke; a terminal the breaker paused after too many
+//! refusals in a row shows why and a "Resume the terminal" button (`Control.Resume`). The data is
+//! intentd's, read through the intents service; nothing is drawn while there is nothing to say (no
+//! grant, no pause), and opening the control center reads the grants again.
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;

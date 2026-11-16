@@ -3,9 +3,10 @@
 use crate::{DesktopEntry, IconName, Pixels, RgbaBuffer, ThemeLookup, Want, decode, entry_for};
 use std::path::{Path, PathBuf};
 
-/// Looks icons up: in the toplevel's own pixels, its icon name, the app's desktop entry, then the
-/// app id as an icon name. A place that has nothing, or a file that does not decode, passes the
-/// question on to the next one.
+/// Looks icons up: in the toplevel's own pixels, its icon name, the app's desktop entry, then the app id as an icon name.
+///
+/// A place that has nothing, or a file that does not decode, passes the question on to the next
+/// one.
 ///
 /// Only a desktop entry may name an icon by a path. The names a toplevel sets and its app id are
 /// names of a theme's icons, never paths ([`IconName`]).

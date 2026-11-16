@@ -1,6 +1,6 @@
-//! `org.bardo.SettingsModule1` at `/org/bardo/Sync1/settings`, served through quire's
-//! `ui_settings::live`: the accounts the person has (accountd's) and what syncd keeps of them. Only
-//! the `Settings` role may `Get`, `Describe` or `Set`, as in accountd's module.
+//! `org.bardo.SettingsModule1` at `/org/bardo/Sync1/settings`, served through quire's `ui_settings::live`: the accounts the person has (accountd's) and what syncd keeps of them.
+//!
+//! Only the `Settings` role may `Get`, `Describe` or `Set`, as in accountd's module.
 //!
 //! One group of rows per account accountd lists: `accounts.<id>.label`, `.provider` and `.state`
 //! (read-outs), `.sync.files` and `.sync.photos` (what syncd keeps of the account, shown for what
@@ -820,10 +820,11 @@ impl<T: GrantsLink + AccountsLink, C> SyncSettings<T, C> {
     }
 }
 
-/// Serves the module at [`SETTINGS_PATH`]. From then on, each time a drive comes to need more
-/// room than there is to keep everything downloaded, or no longer does, its account's
-/// "Keep Everything Downloaded" row is told of, so the pane draws its line again; nothing is
-/// told while that stands still.
+/// Serves the module at [`SETTINGS_PATH`].
+///
+/// From then on, each time a drive comes to need more room than there is to keep everything
+/// downloaded, or no longer does, its account's "Keep Everything Downloaded" row is told of, so the
+/// pane draws its line again; nothing is told while that stands still.
 pub async fn serve_settings<T: GrantsLink + AccountsLink, C: Callers>(
     connection: &Connection,
     module: SyncSettings<T, C>,

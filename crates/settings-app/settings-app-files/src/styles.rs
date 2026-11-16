@@ -47,10 +47,11 @@ fn folders_in(parent: &Path, skip: Option<&str>) -> Vec<String> {
     folders
 }
 
-/// The style files under `home` that exist and can be read: the desktop-wide one first, then each
-/// program of the desktop (a folder inside `bardo`), then each program outside it (a folder of
-/// `home`), each in the order of their names. A file that is missing or cannot be read is left
-/// out, as is a folder that cannot be listed.
+/// The style files under `home` that exist and can be read.
+///
+/// The desktop-wide one first, then each program of the desktop (a folder inside `bardo`), then
+/// each program outside it (a folder of `home`), each in the order of their names. A file that is
+/// missing or cannot be read is left out, as is a folder that cannot be listed.
 #[must_use]
 pub fn read_style_sheets(home: &ConfigHome) -> Vec<StyleSheet> {
     let level = home.0.join(DESKTOP_FOLDER);
@@ -68,10 +69,11 @@ pub fn read_style_sheets(home: &ConfigHome) -> Vec<StyleSheet> {
     desktop.into_iter().chain(own).chain(foreign).collect()
 }
 
-/// The classes each installed app publishes for a style to rely on, one list per app: what the
-/// apps installed under `system` data directories and under `data` (the person's) put in their
-/// `bardo/selectors` folders. A style that uses one of these is not using an internal selector.
-/// The directories are named by the caller, so a test reads only its own.
+/// The classes each installed app publishes for a style to rely on, one list per app.
+///
+/// What the apps installed under `system` data directories and under `data` (the person's) put in
+/// their `bardo/selectors` folders. A style that uses one of these is not using an internal
+/// selector. The directories are named by the caller, so a test reads only its own.
 #[must_use]
 pub fn published_classes(data: &DataHome, system: &[PathBuf]) -> Vec<Vec<String>> {
     let dirs: Vec<PathBuf> = system

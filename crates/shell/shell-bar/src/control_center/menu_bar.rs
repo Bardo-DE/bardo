@@ -1,14 +1,16 @@
-//! Which modules also sit in the bar as their own items (macOS's "Show in Menu Bar",
-//! `control_center.menu_bar_*`), and in what order, pure. Each such item opens a dropdown
-//! holding the same module component the control center shows (`PopupBody::Module`).
+//! Which modules also sit in the bar as their own items (macOS's "Show in Menu Bar", `control_center.menu_bar_*`), and in what order, pure.
+//!
+//! Each such item opens a dropdown holding the same module component the control center shows
+//! (`PopupBody::Module`).
 
 use shell_settings::{ControlCenterModule, ControlCenterSettings};
 
 use super::modules::module;
 
-/// The modules that can be bar items, left to right as the bar draws them: the status items
-/// the bar always had keep their order (Sound, then Wi-Fi, then Battery), the new ones join
-/// around them, and the control center's own item and the clock follow at the right end.
+/// The modules that can be bar items, left to right as the bar draws them.
+///
+/// The status items the bar always had keep their order (Sound, then Wi-Fi, then Battery), the new
+/// ones join around them, and the control center's own item and the clock follow at the right end.
 pub const MENU_BAR_ORDER: [ControlCenterModule; 6] = [
     ControlCenterModule::NowPlaying,
     ControlCenterModule::Display,

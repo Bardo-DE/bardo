@@ -112,8 +112,9 @@ pub async fn list_once<R: DriveReplica>(
     }
 }
 
-/// Lists `replica` into `journal` now and then every `every`, for as long as the task lives. A
-/// drive that asked to wait is listed again when it said; one whose access is missing, whose
+/// Lists `replica` into `journal` now and then every `every`, for as long as the task lives.
+///
+/// A drive that asked to wait is listed again when it said; one whose access is missing, whose
 /// sign-in was refused or that is gone is looked at again after `every`. The storage supervisor
 /// ends the task when the grant goes; the journal stays.
 pub async fn keep_listing<R: DriveReplica>(journal: DriveJournal, replica: R, every: Duration) {
@@ -122,9 +123,10 @@ pub async fn keep_listing<R: DriveReplica>(journal: DriveJournal, replica: R, ev
     keep_listing_told(Arc::new(journal), replica, every, paused, wanted, |_| {}).await;
 }
 
-/// [`keep_listing`] over a journal shared with the drive's files, telling `told` how each pass
-/// ended. While `paused` says so no pass runs (a paused drive reads no changes); told by
-/// `wanted` (the drive's files sent a change, or met a newer version), it lists at once.
+/// [`keep_listing`] over a journal shared with the drive's files, telling `told` how each pass ended.
+///
+/// While `paused` says so no pass runs (a paused drive reads no changes); told by `wanted` (the
+/// drive's files sent a change, or met a newer version), it lists at once.
 pub async fn keep_listing_told<R: DriveReplica>(
     journal: Arc<DriveJournal>,
     replica: R,

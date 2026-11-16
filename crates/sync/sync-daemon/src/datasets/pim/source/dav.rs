@@ -1,7 +1,9 @@
-//! The `CalDAV` and `CardDAV` source: today's behaviour behind the seam. Collections come from the
-//! principal and home sets ([`super::super::discover`]), each collection's feed is account-dav-proto's
-//! sync-collection (or the etag walk) through a [`WebDavReplica`] over the account's relay; its
-//! upserts carry no content, so the engine fetches each item, as before.
+//! The `CalDAV` and `CardDAV` source: today's behaviour behind the seam.
+//!
+//! Collections come from the principal and home sets ([`super::super::discover`]), each
+//! collection's feed is account-dav-proto's sync-collection (or the etag walk) through a
+//! [`WebDavReplica`] over the account's relay; its upserts carry no content, so the engine fetches
+//! each item, as before.
 
 use super::super::PimKind;
 use super::super::discover::{DiscoverError, Found, discover};

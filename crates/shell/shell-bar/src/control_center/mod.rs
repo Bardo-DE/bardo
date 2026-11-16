@@ -1,8 +1,9 @@
-//! The control center (design/20 §1.5, design/13 §13.3.7): a popover from its bar status item,
-//! drawn in the bar's one reusable popup (so it takes part in the bar's hover switch: it is
-//! `BarMenu::ControlCenter`, its body `PopupBody::ControlCenter`), 320 wide, a two-column grid
-//! of module tiles (`control_center.*`), sliders spanning both columns, capped at
-//! `output_h - bar_h - --shell-cc-bottom-margin` and scrolling past that.
+//! The control center (design/20 §1.5, design/13 §13.3.7).
+//!
+//! A popover from its bar status item, drawn in the bar's one reusable popup (so it takes part in
+//! the bar's hover switch: it is `BarMenu::ControlCenter`, its body `PopupBody::ControlCenter`),
+//! 320 wide, a two-column grid of module tiles (`control_center.*`), sliders spanning both columns,
+//! capped at `output_h - bar_h - --shell-cc-bottom-margin` and scrolling past that.
 //!
 //! Modules, in `control_center.modules` order: Wi-Fi, Bluetooth, Focus, Display (brightness),
 //! Sound (volume and the output's name), Now Playing, Appearance (a theme control and accent circles),

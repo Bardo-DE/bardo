@@ -1,7 +1,8 @@
-//! The bar's geometry tokens as the layout maths reads them: the bar's height
-//! (`--shell-bar-h`, quire's `SHELL_SCALE.bar`) and the status items' box (`--bar-status-box`,
-//! the `MenuBarItem` sheet's fallback). The maths needs them before the first layout, so
-//! [`BarTokens::read`] takes the resolved length of a custom property
+//! The bar's geometry tokens as the layout maths reads them.
+//!
+//! The bar's height (`--shell-bar-h`, quire's `SHELL_SCALE.bar`) and the status items' box (`--bar-
+//! status-box`, the `MenuBarItem` sheet's fallback). The maths needs them before the first layout,
+//! so [`BarTokens::read`] takes the resolved length of a custom property
 //! (`ui_blitz::Resolved::length` on the surface's document, read again when the `Styles` signal
 //! changes) and a token a sheet does not write, or writes as `calc()`, is the shipped value. The
 //! status glyph (`--bar-status-glyph`) is only drawn, never computed with, so it has no constant.

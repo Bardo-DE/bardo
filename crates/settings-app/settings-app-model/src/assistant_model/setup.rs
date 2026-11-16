@@ -21,9 +21,11 @@ pub enum SetupAvailability {
     NotYet,
 }
 
-/// Whether `action` can be taken. Continue waits until the assistant's row can be used (a
-/// model, Local with its model, Automatic with a model to choose from), and while a pick is being
-/// written or waits on an account; Skip never waits.
+/// Whether `action` can be taken.
+///
+/// Continue waits until the assistant's row can be used (a model, Local with its model, Automatic
+/// with a model to choose from), and while a pick is being written or waits on an account; Skip
+/// never waits.
 #[must_use]
 pub fn setup_availability(state: &PickerState, action: SetupAction) -> SetupAvailability {
     match action {

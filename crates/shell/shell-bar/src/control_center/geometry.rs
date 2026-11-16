@@ -1,6 +1,8 @@
-//! The control center's grid and cap (design/13 §13.3.7, design/29: width 320, two columns,
-//! gap 10, padding 10, sliders spanning both columns; height fits content, at most
-//! `output_h - bar_h - 16`, then scrolls), pure. The width, gap and padding are `--cc-*` tokens
+//! The control center's grid and cap, pure.
+//!
+//! The design (design/13 §13.3.7, design/29): width 320, two columns, gap 10, padding 10,
+//! sliders spanning both columns; height fits content, at most `output_h - bar_h - 16`, then
+//! scrolls. The width, gap and padding are `--cc-*` tokens
 //! (`CONTROL_CENTER`), the bar's height is [`BarTokens`] and the margin is
 //! `--shell-cc-bottom-margin`. The popup's size is layer-shell-host's content fit, not computed here.
 
@@ -32,9 +34,10 @@ struct Cursor {
     column: u16,
 }
 
-/// `modules` laid out in order, `columns` wide: a `One` module takes the next free column of
-/// the current row; a `Row` module starts a new row (leaving any free column of the current row
-/// empty) and fills it.
+/// `modules` laid out in order, `columns` wide.
+///
+/// A `One` module takes the next free column of the current row; a `Row` module starts a new row
+/// (leaving any free column of the current row empty) and fills it.
 #[must_use]
 pub fn place(modules: &[ControlCenterModule], columns: u16) -> Vec<Placed> {
     let columns = columns.max(1);

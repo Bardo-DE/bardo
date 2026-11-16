@@ -1,6 +1,7 @@
-//! The roster as one hook: [`RosterState`] run by [`use_machine`]. Its settle deadlines are the
-//! machine's wake, so the hook owns no timer; it passes the consumer's keys in on every render
-//! and reads the rows back.
+//! The roster as one hook: [`RosterState`] run by [`use_machine`].
+//!
+//! Its settle deadlines are the machine's wake, so the hook owns no timer; it passes the consumer's
+//! keys in on every render and reads the rows back.
 //!
 //! Rows leave in batches: every key that starts leaving in one go plays the exit together, and
 //! when the exit has settled they are dropped at once and the rows below heal by the heights the
@@ -133,11 +134,12 @@ impl<K: Clone + PartialEq + 'static> Roster<K> {
     }
 }
 
-/// A roster over `keys`, which the consumer passes on every render. The first render shows
-/// every key present; after that a change in `keys` reconciles: new keys enter, and a key that
-/// goes missing leaves as `spec.leave` says (keys missing at once are one batch). The reconcile
-/// happens in the render, so the rows to draw are right in the render that lists them; the
-/// settle timers are the machine's wake, started after the render.
+/// A roster over `keys`, which the consumer passes on every render.
+///
+/// The first render shows every key present; after that a change in `keys` reconciles: new keys
+/// enter, and a key that goes missing leaves as `spec.leave` says (keys missing at once are one
+/// batch). The reconcile happens in the render, so the rows to draw are right in the render that
+/// lists them; the settle timers are the machine's wake, started after the render.
 #[must_use]
 pub fn use_roster<K: Clone + PartialEq + 'static>(keys: Vec<K>, spec: RosterSpec<K>) -> Roster<K> {
     let roster = use_roster_from(&keys, spec);
@@ -145,10 +147,12 @@ pub fn use_roster<K: Clone + PartialEq + 'static>(keys: Vec<K>, spec: RosterSpec
     roster
 }
 
-/// A roster showing `seed` present, which lists nothing itself: the surface that runs it sends
-/// each render's keys with [`Roster::list_from_render`], and may start exits first with
-/// [`Roster::leave_from_render`] (a list that mounts only the rows near its viewport, where a key
-/// that is merely out of the window is dropped at once and one the caller removed plays its exit).
+/// A roster showing `seed` present, which lists nothing itself.
+///
+/// The surface that runs it sends each render's keys with [`Roster::list_from_render`], and may
+/// start exits first with [`Roster::leave_from_render`] (a list that mounts only the rows near its
+/// viewport, where a key that is merely out of the window is dropped at once and one the caller
+/// removed plays its exit).
 pub fn use_roster_from<K: Clone + PartialEq + 'static>(
     seed: &[K],
     spec: RosterSpec<K>,

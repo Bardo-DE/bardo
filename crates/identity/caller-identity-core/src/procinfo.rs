@@ -40,9 +40,10 @@ pub fn parse_flatpak_info(info: &str) -> Option<SandboxFacts> {
     })
 }
 
-/// The snap a kernel security label names: the `AppArmor` label of a snap starts `snap.` (for
-/// example `snap.firefox.firefox (enforce)`). The bus hands the label as bytes with a final NUL.
-/// Other labels (`SELinux` contexts, `unconfined`) state no sandbox of ours.
+/// The snap a kernel security label names: the `AppArmor` label of a snap starts `snap.` (for example `snap.firefox.firefox (enforce)`).
+///
+/// The bus hands the label as bytes with a final NUL. Other labels (`SELinux` contexts,
+/// `unconfined`) state no sandbox of ours.
 #[must_use]
 pub fn parse_security_label(label: &[u8]) -> Option<SandboxFacts> {
     let end = label.iter().position(|b| *b == 0).unwrap_or(label.len());

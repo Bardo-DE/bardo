@@ -132,9 +132,10 @@ pub fn app_folder_store(candidate: &Candidate) -> Option<AppFolderStore<'_>> {
         .or_else(|| by(Family::GoogleDrive).map(AppFolderStore::Drive))
 }
 
-/// The two Google Photos endpoints of a candidate, upload API and picker. Each stands alone: an
-/// account where the person granted only the picker scope has no upload endpoint (accountd's
-/// family leaves it out), and the other way round. `None` when it has neither.
+/// The two Google Photos endpoints of a candidate, upload API and picker.
+///
+/// Each stands alone: an account where the person granted only the picker scope has no upload
+/// endpoint (accountd's family leaves it out), and the other way round. `None` when it has neither.
 #[must_use]
 pub fn google_photos_endpoints(
     candidate: &Candidate,

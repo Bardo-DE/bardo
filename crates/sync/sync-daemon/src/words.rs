@@ -1,7 +1,7 @@
-//! The words Files shows for a drive's items and folders, written from the typed reasons
-//! drive-core, drive-fuse and bardo-drive-mount return. syncd serves `org.bardo.Storage1`
-//! and the sync settings rows, so the sentences live here and nowhere in those
-//! libraries.
+//! The words Files shows for a drive's items and folders, written from the typed reasons drive-core, drive-fuse and bardo-drive-mount return.
+//!
+//! syncd serves `org.bardo.Storage1` and the sync settings rows, so the sentences live here and
+//! nowhere in those libraries.
 
 use drive_core::Reason;
 use drive_fuse::MountError;

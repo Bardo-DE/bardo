@@ -1,7 +1,8 @@
-//! A lock that can be held across an await, for the one place the service needs it (saving the
-//! registry). account-service depends on no executor (`scripts/check-boundary.sh` holds it to
-//! that), so this is a small first-in-first-out lock over `std` alone, not `tokio::sync::Mutex`.
-//! A waiter that is dropped leaves the queue and passes its turn on.
+//! A lock that can be held across an await, for the one place the service needs it (saving the registry).
+//!
+//! account-service depends on no executor (`scripts/check-boundary.sh` holds it to that), so this
+//! is a small first-in-first-out lock over `std` alone, not `tokio::sync::Mutex`. A waiter that is
+//! dropped leaves the queue and passes its turn on.
 
 use std::collections::VecDeque;
 use std::future::Future;

@@ -16,9 +16,10 @@ use account_match::PimNeed;
 use std::future::Future;
 use std::sync::Arc;
 
-/// The need syncd asks accounts to meet: to read the collections and poll them. A task list asks
-/// for no more than a full listing can give (`Delta::None`), because Google Tasks has no change
-/// token and its feed polls by update time; a list that does better fits too.
+/// The need syncd asks accounts to meet: to read the collections and poll them.
+///
+/// A task list asks for no more than a full listing can give (`Delta::None`), because Google Tasks
+/// has no change token and its feed polls by update time; a list that does better fits too.
 #[must_use]
 pub fn need_of(kind: PimKind) -> Need {
     let need = |delta| PimNeed::new(Access::Read, delta);

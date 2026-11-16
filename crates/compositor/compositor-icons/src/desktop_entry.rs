@@ -39,10 +39,10 @@ pub fn parse(text: &str) -> DesktopEntry {
     }
 }
 
-/// The entry of the app whose windows carry `app_id`, searching `dirs` (the `applications`
-/// folders, subfolders too, most important first) by `ui_helpers::match_app`'s five rules: the
-/// file's id, the id in any case, `StartupWMClass`, the id's last labels, the Flatpak id. Nothing
-/// when no file does.
+/// The entry of the app whose windows carry `app_id`, searching `dirs` (the `applications` folders, subfolders too, most important first) by `ui_helpers::match_app`'s five rules.
+///
+/// The file's id, the id in any case, `StartupWMClass`, the id's last labels, the Flatpak id.
+/// Nothing when no file does.
 #[must_use]
 pub fn entry_for(dirs: &[PathBuf], app_id: &str) -> Option<DesktopEntry> {
     let entries = load_entries(dirs);

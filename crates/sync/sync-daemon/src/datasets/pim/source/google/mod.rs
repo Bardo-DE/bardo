@@ -1,7 +1,9 @@
-//! The Google sources: Calendar, People (contacts) and Tasks, each a [`PimSource`] and a
-//! [`Feed`] behind the seam, all through the relay accountd opens
-//! (`Tokens.OpenAuthenticated`) to the capability's endpoint, so syncd never holds the Google
-//! token. One module per API, each with a pure converter to the vdir's formats:
+//! The Google sources.
+//!
+//! Calendar, People (contacts) and Tasks, each a [`PimSource`] and a [`Feed`] behind the seam, all
+//! through the relay accountd opens (`Tokens.OpenAuthenticated`) to the capability's endpoint, so
+//! syncd never holds the Google token. One module per API, each with a pure converter to the vdir's
+//! formats:
 //!
 //! | API | collections | changes | converter |
 //! |---|---|---|---|

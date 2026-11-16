@@ -149,12 +149,13 @@ pub enum Transient {
     No,
 }
 
-/// The variables that make a process load code the image does not name: the dynamic loader's,
-/// and the search paths of the libraries a desktop program opens (`GLib`, GTK, `GStreamer`, Mesa,
-/// EGL, GBM, VA-API, Vulkan). `systemctl --user set-environment` and
-/// `~/.config/environment.d` put them in the environment of every user unit, so a root-owned
-/// image is fixed but the code it loads is not. A unit proves `Full` only when its
-/// `UnsetEnvironment=` holds every one of them.
+/// The variables that make a process load code the image does not name.
+///
+/// The dynamic loader's, and the search paths of the libraries a desktop program opens (`GLib`,
+/// GTK, `GStreamer`, Mesa, EGL, GBM, VA-API, Vulkan). `systemctl --user set-environment` and
+/// `~/.config/environment.d` put them in the environment of every user unit, so a root-owned image
+/// is fixed but the code it loads is not. A unit proves `Full` only when its `UnsetEnvironment=`
+/// holds every one of them.
 ///
 /// systemd.exec(5) applies `UnsetEnvironment=` last, after the manager's environment,
 /// `Environment=` and `EnvironmentFile=`, so nothing set anywhere else survives it. A unit

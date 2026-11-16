@@ -1,6 +1,7 @@
-//! The voice marks (agent-spec voice.md section 3.6): where a summon came from, what a field hears
-//! while the person speaks, and which dictation a field is answering. Plain values: the voice
-//! wire's own types are converted into these by `action-ui-adapter`, so quire never links an agent crate.
+//! The voice marks (agent-spec voice.md section 3.6): where a summon came from, what a field hears while the person speaks, and which dictation a field is answering.
+//!
+//! Plain values: the voice wire's own types are converted into these by `action-ui-adapter`, so
+//! quire never links an agent crate.
 
 use std::fmt;
 use ui_core::vocab::InputLevel;

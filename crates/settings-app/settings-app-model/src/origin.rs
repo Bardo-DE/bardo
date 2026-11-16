@@ -9,10 +9,10 @@ const ROOT: u32 = 0;
 /// The mode bits that let a group or anyone else write into a folder.
 const GROUP_OR_OTHER_WRITE: u32 = 0o022;
 
-/// Whether the person's own account (or a program running as them) could have written the
-/// schemas in a folder. Only a schema from a folder they cannot write may mark a key
-/// agent-settable: a schema they can write is theirs to display and to edit by, never a grant to
-/// an agent.
+/// Whether the person's own account (or a program running as them) could have written the schemas in a folder.
+///
+/// Only a schema from a folder they cannot write may mark a key agent-settable: a schema they can
+/// write is theirs to display and to edit by, never a grant to an agent.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SchemaOrigin {
     /// A folder owned by root and writable by nobody else.

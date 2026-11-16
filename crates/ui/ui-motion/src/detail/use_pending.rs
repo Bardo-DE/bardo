@@ -8,10 +8,10 @@ use crate::timeline::playback::{Playback, use_playback};
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
 
-/// The frame `op`'s loop shows now: `Idle` with no operation, else a step every
-/// `--t-spin-step` from the first frame on, for as long as the operation runs; `Idle` again the
-/// moment it ends. `spec` is the look the caller draws the frame with ([`PendingFrame::lit`]);
-/// the timing does not depend on it.
+/// The frame `op`'s loop shows now: `Idle` with no operation, else a step every `--t-spin-step` from the first frame on, for as long as the operation runs; `Idle` again the moment it ends.
+///
+/// `spec` is the look the caller draws the frame with ([`PendingFrame::lit`]); the timing does not
+/// depend on it.
 ///
 /// Each run is one frame long: it ends at the instant the next frame is due, and the render that
 /// frame causes starts the run from there, at the operation's own age.

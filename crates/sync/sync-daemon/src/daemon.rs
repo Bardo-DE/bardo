@@ -1,7 +1,9 @@
-//! syncd as one thing a program can run: [`Config`] says where everything is, [`Daemon::build`]
-//! loads the caller tables, starts the supervisors that keep the mirrors and serves
-//! `org.bardo.Sync1`, and [`Daemon::run`] keeps it going until told to stop. The binary reads
-//! its arguments, asks [`Config::from_env`] for the environment's answers and calls these.
+//! syncd as one thing a program can run.
+//!
+//! [`Config`] says where everything is, [`Daemon::build`] loads the caller tables, starts the
+//! supervisors that keep the mirrors and serves `org.bardo.Sync1`, and [`Daemon::run`] keeps it
+//! going until told to stop. The binary reads its arguments, asks [`Config::from_env`] for the
+//! environment's answers and calls these.
 //!
 //! syncd reaches accounts only through account-client: over the bus, accountd's `Grants1`, in the
 //! daemon ([`Daemon::build`]), and over whatever transport a test hands to

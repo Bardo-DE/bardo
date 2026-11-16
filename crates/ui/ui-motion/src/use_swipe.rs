@@ -1,6 +1,7 @@
-//! The swipe machine as a hook: [`SwipeState`] run by [`use_machine`], fed from a card's pointer
-//! and wheel events. The quiet spell after a scroll is the machine's own deadline, so the hook has
-//! no timer of its own.
+//! The swipe machine as a hook: [`SwipeState`] run by [`use_machine`], fed from a card's pointer and wheel events.
+//!
+//! The quiet spell after a scroll is the machine's own deadline, so the hook has no timer of its
+//! own.
 
 use super::machine::{MachineRef, use_machine};
 use super::swipe::{SwipeEffect, SwipeInput, SwipeMetrics, SwipeState};

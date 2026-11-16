@@ -1,10 +1,12 @@
-//! The Sound module: a [`crate::control_center::LevelModule`] headed by the bar item's
-//! volume glyph, the output device's name as its title, and the level, whose speaker draws the
-//! same `VolumeState` (the module and the bar read one source). It reads no service:
-//! the caller ([`super::Module`], the bar's volume dropdown) passes `volume_glyph(&volume)` and
-//! `Volume::level` and sends `VolumeCommand::SetLevel` from `on_change`, so the same component
-//! serves anywhere a level is shown. Choosing another output device needs a sink list and a
-//! `SetSink` the volume service does not have; it is left for later.
+//! The Sound module.
+//!
+//! A [`crate::control_center::LevelModule`] headed by the bar item's volume glyph, the output
+//! device's name as its title, and the level, whose speaker draws the same `VolumeState` (the
+//! module and the bar read one source). It reads no service: the caller ([`super::Module`], the
+//! bar's volume dropdown) passes `volume_glyph(&volume)` and `Volume::level` and sends
+//! `VolumeCommand::SetLevel` from `on_change`, so the same component serves anywhere a level is
+//! shown. Choosing another output device needs a sink list and a `SetSink` the volume service does
+//! not have; it is left for later.
 
 use dioxus::prelude::*;
 use ui_components::components::content::status::volume::VolumeState;

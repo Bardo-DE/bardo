@@ -1,6 +1,7 @@
-//! The scheduler (design/31 §6.1 "Scheduler"), pure: the clock, the network and each dataset's
-//! history are inputs, wake-ups are output. One scheduler per syncd; the driver
-//! (`crate::driver`) sleeps until what this says and asks again when an input changes.
+//! The scheduler (design/31 §6.1 "Scheduler"), pure: the clock, the network and each dataset's history are inputs, wake-ups are output.
+//!
+//! One scheduler per syncd; the driver (`crate::driver`) sleeps until what this says and asks again
+//! when an input changes.
 //!
 //! - Push where a replica declares it: a push signal wakes the dataset after a short batching
 //!   window (a burst of signals is one cycle); a slow safety poll still runs.
@@ -219,9 +220,11 @@ pub fn next_wake(inputs: &Inputs, now: UnixSeconds, source: &mut Jitter) -> Wake
     if due <= now { Wake::Now } else { Wake::At(due) }
 }
 
-/// Batches wake-ups: sorted by time, each group starts at its earliest and takes every wake
-/// within `window` seconds of it, and fires at the group's latest time, so nothing runs before
-/// its own time and one wake-up serves the group.
+/// Batches wake-ups.
+///
+/// Sorted by time, each group starts at its earliest and takes every wake within `window` seconds
+/// of it, and fires at the group's latest time, so nothing runs before its own time and one wake-up
+/// serves the group.
 pub fn coalesce<K: Clone>(wakes: &[(K, UnixSeconds)], window: u32) -> Vec<(UnixSeconds, Vec<K>)> {
     let mut sorted: Vec<&(K, UnixSeconds)> = wakes.iter().collect();
     sorted.sort_by_key(|(_, at)| *at);

@@ -1,12 +1,13 @@
-//! The Graph replica as syncd runs it: the same relays as the `WebDAV` replica
-//! ([`RelayDial`]: one authenticated stream per connection, from `OpenAuthenticated`
-//! on the account service syncd hosts itself), so the replica never holds the Microsoft token. The
-//! relay adds `Authorization: Bearer` and reaches the endpoint's origin
+//! The Graph replica as syncd runs it.
+//!
+//! The same relays as the `WebDAV` replica ([`RelayDial`]: one authenticated stream per connection,
+//! from `OpenAuthenticated` on the account service syncd hosts itself), so the replica never holds
+//! the Microsoft token. The relay adds `Authorization: Bearer` and reaches the endpoint's origin
 //! (`https://graph.microsoft.com`). Each new connection asks the service for a token, which
-//! refreshes the account's sign-in; a refresh the issuer refuses leaves the account
-//! `NeedsReauth` and the dial fails. A connection kept idle holds the bearer it was opened with:
-//! when that has lapsed the server answers `401`, and `RelayHttp` drops the kept connections and
-//! sends the request again on a new one, which carries a fresh bearer.
+//! refreshes the account's sign-in; a refresh the issuer refuses leaves the account `NeedsReauth`
+//! and the dial fails. A connection kept idle holds the bearer it was opened with: when that has
+//! lapsed the server answers `401`, and `RelayHttp` drops the kept connections and sends the
+//! request again on a new one, which carries a fresh bearer.
 //!
 //! Graph's pre-authenticated links (an upload session's `uploadUrl`, the `downloadUrl` a content
 //! request redirects to) are on other hosts. Requests to them go through [`RelayDial::linked`]:
@@ -33,8 +34,10 @@ type MakeLinked<T> = Box<dyn Fn(&Origin) -> RelayHttp<RelayDial<T>> + Send + Syn
 /// over a linked one.
 pub type GraphHttp<T> = Routed<RelayHttp<RelayDial<T>>, RelayHttp<RelayDial<T>>, MakeLinked<T>>;
 
-/// The replica of `folder` (a path in the app folder, `Photos/Originals`; empty for the app
-/// folder itself) of the account the grant covers, over relays the account service opens to
+/// The replica of `folder` of the account the grant covers.
+///
+/// `folder` is a path in the app folder, `Photos/Originals`; empty for the app folder itself.
+/// It runs over relays the account service opens to
 /// `endpoint` and, for the links Graph hands out, to the origins of those links.
 pub fn graph_replica<T: GrantsLink + 'static>(
     accounts: Arc<Grants<T>>,

@@ -1,7 +1,8 @@
-//! A share driven frame by frame from Rust, for what the stylesheet cannot reach inside an SVG
-//! (design/26-DETAILS.md section 4.1): a follower of a target on the easing tokens' own curves
-//! (`CubicBezier::at`). A determinate value that changes (a battery ring's arc, a slash drawn
-//! on) moves to its new value and nothing sweeps in on first show (design/30 section 1.3).
+//! A share driven frame by frame from Rust, for what the stylesheet cannot reach inside an SVG (design/26-DETAILS.md section 4.1).
+//!
+//! A follower of a target on the easing tokens' own curves (`CubicBezier::at`). A determinate value
+//! that changes (a battery ring's arc, a slash drawn on) moves to its new value and nothing sweeps
+//! in on first show (design/30 section 1.3).
 
 use ui_style::tokens::{easing::EasingToken, timing::DurationToken};
 
@@ -14,9 +15,9 @@ pub struct TweenSpec {
     pub easing: EasingToken,
 }
 
-/// The share of a tween that follows `target`: it stands there on mount, and each time `target`
-/// changes it moves there from wherever it is now, over `spec`. Under Reduced it jumps (R7). Asks
-/// for frames only while it moves (R3).
+/// The share of a tween that follows `target`: it stands there on mount, and each time `target` changes it moves there from wherever it is now, over `spec`.
+///
+/// Under Reduced it jumps (R7). Asks for frames only while it moves (R3).
 #[cfg(feature = "dioxus")]
 #[must_use]
 pub fn use_tween(target: ui_core::vocab::Fraction, spec: TweenSpec) -> ui_core::vocab::Fraction {

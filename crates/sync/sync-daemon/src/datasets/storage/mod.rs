@@ -1,6 +1,8 @@
-//! Storage as syncd runs it: the supervisor that turns a grant on a Microsoft or Google account
-//! into a running mirror (the daemon half of W6c, Photos W6f's Graph wiring, and the Google
-//! Drive app data folder and Google Photos).
+//! Storage as syncd runs it.
+//!
+//! The supervisor that turns a grant on a Microsoft or Google account into a running mirror (the
+//! daemon half of W6c, Photos W6f's Graph wiring, and the Google Drive app data folder and Google
+//! Photos).
 //!
 //! - `folder`: [`FolderDataset`], a plain directory as a two-way dataset.
 //! - `grants`: which accounts syncd holds a Storage grant for ([`StorageGrants`]).

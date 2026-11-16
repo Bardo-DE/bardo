@@ -1,7 +1,8 @@
-//! Which spring a motion runs on, decided by who moved it (design/27 section 3.12 rule 2;
-//! [FLUID]): critical damping for a tap, a key or anything remote, 0.8 only when a hand let go
-//! with momentum toward the target. [`SpringSpec::for_touch`] is the only way to a spring, so no
-//! caller writes a raw damping.
+//! Which spring a motion runs on, decided by who moved it (design/27 section 3.12 rule 2; [FLUID]).
+//!
+//! Critical damping for a tap, a key or anything remote, 0.8 only when a hand let go with momentum
+//! toward the target. [`SpringSpec::for_touch`] is the only way to a spring, so no caller writes a
+//! raw damping.
 
 use super::spring::{Millis, Ratio, SpringTuning};
 use super::velocity::Velocity;

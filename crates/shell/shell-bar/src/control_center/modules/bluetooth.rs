@@ -1,6 +1,8 @@
-//! The Bluetooth tile: a quire `ModuleTile` whose press powers the adapter on or off,
-//! [`crate::control_center::bluetooth_tile_status`] ("On", "Off") as its line, and its
-//! chevron to the device list (`Detail::Bluetooth`). Reads `use_service::<BluetoothService>`; sends
+//! The Bluetooth tile.
+//!
+//! A quire `ModuleTile` whose press powers the adapter on or off,
+//! [`crate::control_center::bluetooth_tile_status`] ("On", "Off") as its line, and its chevron to
+//! the device list (`Detail::Bluetooth`). Reads `use_service::<BluetoothService>`; sends
 //! `BluetoothCommand::Power`, asking first before off ([`super::bluetooth_ask`]).
 
 use dioxus::prelude::*;

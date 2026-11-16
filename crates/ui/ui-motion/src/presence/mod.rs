@@ -1,6 +1,7 @@
-//! Where an item is in its life: hidden, entering, present, or leaving by some exit
-//! (design/04-COMPONENTS.md "Motion states", design/05-MOTION.md section 8). The rows of a
-//! roster carry one; a surface its caller shows and hides gets one from [`use_presence`].
+//! Where an item is in its life: hidden, entering, present, or leaving by some exit (design/04-COMPONENTS.md "Motion states", design/05-MOTION.md section 8).
+//!
+//! The rows of a roster carry one; a surface its caller shows and hides gets one from
+//! [`use_presence`].
 
 pub(crate) mod exit;
 mod model;

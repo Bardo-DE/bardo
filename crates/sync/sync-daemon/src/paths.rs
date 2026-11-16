@@ -1,7 +1,7 @@
-//! Where syncd reads and writes, resolved from the environment (PLAN §2.3): the one place the
-//! daemon names a path, so a test can give it scratch directories. An account is named on disk
-//! by its object-path segment (`base_ids::object_segment`), the form the account's
-//! directories are named in, so a wipe needs no map back to the id.
+//! Where syncd reads and writes, resolved from the environment (PLAN §2.3): the one place the daemon names a path, so a test can give it scratch directories.
+//!
+//! An account is named on disk by its object-path segment (`base_ids::object_segment`), the form
+//! the account's directories are named in, so a wipe needs no map back to the id.
 
 pub use base_xdg::PathError;
 use base_xdg::Xdg;
@@ -169,8 +169,9 @@ pub const BUILD: Build = if cfg!(feature = "test-proc-root") {
 /// release build ignores the variable.
 pub const HONOURS_PROC_ROOT: bool = cfg!(feature = "test-proc-root");
 
-/// How often the supervisors read grants again (`BARDO_SYNCD_RESCAN_S`, whole seconds, at least 1),
-/// for a test build only, so a scenario need not wait the default ten minutes for a grant it
+/// How often the supervisors read grants again.
+///
+/// Read from `BARDO_SYNCD_RESCAN_S` (whole seconds, at least 1), for a test build only, so a scenario need not wait the default ten minutes for a grant it
 /// just made. A release build ignores the variable; so does a value that is not a number of
 /// seconds. The default is `default`, and no build has a shorter one.
 pub fn rescan(build: Build, value: Option<String>, default: Duration) -> Duration {

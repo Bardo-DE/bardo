@@ -61,11 +61,13 @@ fn slug(kind: PimKind, dir: &str) -> String {
     }
 }
 
-/// Names for `found`, in order. A calendar is its segment and an address book its segment plus
-/// `-contacts`, always, so a calendar and an address book of one account never share a
-/// directory whatever order they are found in. Two of one kind that would share a directory (or
-/// a slug, which is only lowercasing of it) all get the same name plus a short hash of their
-/// URL, so the names depend on the set and never on the order the server lists it in.
+/// Names for `found`, in order.
+///
+/// A calendar is its segment and an address book its segment plus `-contacts`, always, so a
+/// calendar and an address book of one account never share a directory whatever order they are
+/// found in. Two of one kind that would share a directory (or a slug, which is only lowercasing of
+/// it) all get the same name plus a short hash of their URL, so the names depend on the set and
+/// never on the order the server lists it in.
 #[must_use]
 pub fn plan(kind: PimKind, found: Vec<Found>) -> Vec<Planned> {
     let names: Vec<(String, String)> = found

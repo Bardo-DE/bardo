@@ -39,9 +39,10 @@ impl Warm for FixedWarm {
     }
 }
 
-/// Warms through inference-client's [`Transport::prepare`]: `Inference1.Prepare` when the
-/// transport is the session bus. A refusal (`Denied`) and an absent inferd (`Unreachable`) both
-/// read as `Unavailable`, so the shell sees one answer for "cannot hear now".
+/// Warms through inference-client's [`Transport::prepare`]: `Inference1.Prepare` when the transport is the session bus.
+///
+/// A refusal (`Denied`) and an absent inferd (`Unreachable`) both read as `Unavailable`, so the
+/// shell sees one answer for "cannot hear now".
 #[derive(Debug, Clone)]
 pub struct TransportWarm<T> {
     transport: T,

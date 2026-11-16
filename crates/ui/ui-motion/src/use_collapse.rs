@@ -1,5 +1,5 @@
-//! Collapse (design/30-CATALOGUE.md section 1.3): a disclosure's content opens and closes by
-//! its height and opacity over `--t-move --e-in-out`, from the height the caller measured.
+//! Collapse (design/30-CATALOGUE.md section 1.3): a disclosure's content opens and closes by its height and opacity over `--t-move --e-in-out`, from the height the caller measured.
+//!
 //! Under Reduced it is instant.
 
 use crate::detail::tween::{TweenSpec, use_tween};

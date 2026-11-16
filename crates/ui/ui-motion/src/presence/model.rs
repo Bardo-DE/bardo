@@ -7,10 +7,10 @@ use ui_style::appearance::motion::MotionLevel;
 
 use crate::anim::Anim;
 
-/// Which of its entrance's two names a surface plays: flipped on each showing, so the entrance
-/// restarts even where the engine kept the element's styles (design/05 section 9 rule 2). A
-/// surface present again after its hide was taken back plays `hold` instead (`Held`): the exit
-/// it drops is replaced by an animation that moves nothing, not by a second entrance.
+/// Which of its entrance's two names a surface plays: flipped on each showing, so the entrance restarts even where the engine kept the element's styles (design/05 section 9 rule 2).
+///
+/// A surface present again after its hide was taken back plays `hold` instead (`Held`): the exit it
+/// drops is replaced by an animation that moves nothing, not by a second entrance.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
 pub enum EntranceAlias {
     A,

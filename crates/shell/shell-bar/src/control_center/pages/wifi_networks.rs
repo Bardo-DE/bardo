@@ -1,4 +1,6 @@
-//! The Wi-Fi page: the radio `Toggle` in its header, then `listed_networks` as rows (signal
+//! The Wi-Fi page.
+//!
+//! The radio `Toggle` in its header, then `listed_networks` as rows (signal
 //! glyph by strength on a disc, the accent disc for the network in use, name,
 //! [`crate::control_center::network_detail`], a lock for a secured one); choosing a
 //! saved network sends `WifiCommand::Connect`, a new one opens Settings' Wi-Fi page (no

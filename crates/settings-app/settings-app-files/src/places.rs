@@ -30,9 +30,10 @@ pub fn load_places(home: &ConfigHome) -> PlacesLoaded {
     read_places(&text)
 }
 
-/// Writes `places` into docket's settings file: each key of the `assistant` table in one edit
-/// and one rename (docket's directory watch never sees some of the keys changed and not the
-/// others), and nothing else in the file.
+/// Writes `places` into docket's settings file.
+///
+/// Each key of the `assistant` table in one edit and one rename (docket's directory watch never
+/// sees some of the keys changed and not the others), and nothing else in the file.
 pub fn save_places(home: &ConfigHome, places: &Places) -> Result<(), FilesError> {
     let file = file()?;
     let table: toml::Table =

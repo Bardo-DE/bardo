@@ -1,7 +1,7 @@
-//! A keyframe played once per new cue of one moment: Shake for a Failure (design/26-DETAILS.md
-//! R6), and a content cross-fade for a part's in-place change. The same
-//! cue never replays; a new one replays the identical motion, never a bigger one; Reduced plays
-//! nothing (R7), the still state carries it (R8).
+//! A keyframe played once per new cue of one moment: Shake for a Failure (design/26-DETAILS.md R6), and a content cross-fade for a part's in-place change.
+//!
+//! The same cue never replays; a new one replays the identical motion, never a bigger one; Reduced
+//! plays nothing (R7), the still state carries it (R8).
 
 use super::cue::Cue;
 use super::level::use_level;
@@ -48,8 +48,9 @@ pub fn use_shake(cue: Cue) -> PulseKey {
     use_once(Anim::ShakeX, &[Moment::Failure], Some(cue))
 }
 
-/// The incoming content's `fade` at `--t-quick` once per new Preview, Change or Failure cue: what
-/// a part that swaps its content in place (the preview pane's media) plays instead of its
+/// The incoming content's `fade` at `--t-quick` once per new Preview, Change or Failure cue.
+///
+/// What a part that swaps its content in place (the preview pane's media) plays instead of its
 /// entrance. Nothing under Reduced: the content snaps (R7).
 #[must_use]
 pub fn use_cross_fade(cue: Option<Cue>) -> PulseKey {

@@ -1,8 +1,9 @@
-//! What syncd keeps of the accounts the person has. The accounts are accountd's: syncd lists
-//! them, asks accountd for the grants it needs and reads its own, all through account-client
-//! (`Grants`, `Accounts`), over the bus in the daemon and in process in tests. syncd holds no
-//! account, no token and no sign-in of its own; what it keeps is a switch per account and class
-//! in the grants accountd holds for it.
+//! What syncd keeps of the accounts the person has.
+//!
+//! The accounts are accountd's: syncd lists them, asks accountd for the grants it needs and reads
+//! its own, all through account-client (`Grants`, `Accounts`), over the bus in the daemon and in
+//! process in tests. syncd holds no account, no token and no sign-in of its own; what it keeps is a
+//! switch per account and class in the grants accountd holds for it.
 //!
 //! - [`Keep::set_sync`]: the sync switches. On asks accountd for the grant of the class
 //!   (`Grants::request_grant`): accountd's consent sheet shows the first time and its answer is

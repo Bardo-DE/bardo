@@ -4,10 +4,11 @@ use dioxus::prelude::*;
 use ui_core::machine::Machine;
 use ui_core::time::stamp::{FrameClock, Stamp};
 
-/// A machine's state and the clock its [`Stamp`]s count on. Copy: a signal and a clock. The
-/// caller of [`use_machine_in`](super::use_machine_in) makes one with [`use_machine_state`], and
-/// may put it in a context, read it from a sibling, persist it, or write it: the hook follows
-/// the state's `wake()` whatever wrote it.
+/// A machine's state and the clock its [`Stamp`]s count on.
+///
+/// Copy: a signal and a clock. The caller of [`use_machine_in`](super::use_machine_in) makes one
+/// with [`use_machine_state`], and may put it in a context, read it from a sibling, persist it, or
+/// write it: the hook follows the state's `wake()` whatever wrote it.
 pub struct MachineState<M: Machine> {
     /// The state.
     pub state: Signal<M>,
@@ -36,9 +37,10 @@ impl<M: Machine> std::fmt::Debug for MachineState<M> {
     }
 }
 
-/// A machine state seeded by `initial`, which is given the stamp of this moment. The clock is the
-/// root's [`FrameClock`] when a daemon provides one as context (so every machine on the surface
-/// counts from the daemon's origin), else one that starts now.
+/// A machine state seeded by `initial`, which is given the stamp of this moment.
+///
+/// The clock is the root's [`FrameClock`] when a daemon provides one as context (so every machine
+/// on the surface counts from the daemon's origin), else one that starts now.
 pub fn use_machine_state<M: Machine>(initial: impl FnOnce(Stamp) -> M) -> MachineState<M> {
     let clock =
         use_hook(|| try_consume_context::<FrameClock>().unwrap_or_else(FrameClock::started));

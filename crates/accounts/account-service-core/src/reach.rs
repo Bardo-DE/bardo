@@ -29,13 +29,13 @@ use account_core::{Account, EndpointUrl, Family, PathReach, Reach, ReachMethods,
 use account_provider::ProviderSpec;
 use account_wire::Refusal;
 
-/// The endpoint of `account` for a relay to `origin`, an origin that is not one of the account's
-/// endpoints but that a row of `kind` declares: the home endpoint's own endpoint with the
-/// origin's address, so the family and login are the row's and nothing else changes.
-/// `linked` says which declaration it is: `linked_origins` (relayed with nothing added), or
-/// `auth_origins` (relayed with the bearer).
-/// `EndpointNotGranted` for any origin the file does not declare, one with a path, or one on
-/// another scheme than the endpoint it belongs to.
+/// The endpoint of `account` for a relay to `origin`, an origin that is not one of the account's endpoints but that a row of `kind` declares.
+///
+/// The home endpoint's own endpoint with the origin's address, so the family and login are the
+/// row's and nothing else changes. `linked` says which declaration it is: `linked_origins` (relayed
+/// with nothing added), or `auth_origins` (relayed with the bearer). `EndpointNotGranted` for any
+/// origin the file does not declare, one with a path, or one on another scheme than the endpoint it
+/// belongs to.
 pub fn declared_endpoint(
     account: &Account,
     spec: &ProviderSpec,

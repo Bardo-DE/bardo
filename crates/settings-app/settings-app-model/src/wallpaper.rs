@@ -145,10 +145,11 @@ pub fn current_place(tiles: &[PictureTile]) -> Option<usize> {
         .position(|tile| tile.mark == PictureMark::Current)
 }
 
-/// The sections for the pictures `found`, with `current` marked. The current picture is always
-/// the section's `current`, even when it lies outside every folder looked in, so the person sees
-/// what is on the desktop; an empty `current` marks none. A picture the person added is not
-/// offered twice among the system's.
+/// The sections for the pictures `found`, with `current` marked.
+///
+/// The current picture is always the section's `current`, even when it lies outside every folder
+/// looked in, so the person sees what is on the desktop; an empty `current` marks none. A picture
+/// the person added is not offered twice among the system's.
 #[must_use]
 pub fn picture_sections(found: &[Picture], current: &str) -> PictureSections {
     let current_path = (!current.is_empty()).then(|| PathBuf::from(current));

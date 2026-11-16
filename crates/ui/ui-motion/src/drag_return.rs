@@ -1,7 +1,8 @@
-//! A dragged thing going home (design/27 section 3.12 rule 3; design/10 for the dock): while a
-//! hand drags it, it follows 1:1 as an offset from its place; let go where it does not drop, it
-//! springs back to its place on a two-dimensional spring, each axis starting at the velocity the
-//! hand had along it. Picked up again on the way, it follows from where it is.
+//! A dragged thing going home (design/27 section 3.12 rule 3; design/10 for the dock).
+//!
+//! While a hand drags it, it follows 1:1 as an offset from its place; let go where it does not
+//! drop, it springs back to its place on a two-dimensional spring, each axis starting at the
+//! velocity the hand had along it. Picked up again on the way, it follows from where it is.
 //!
 //! The dock's tile return is the first user (bardo-shell wires the drag and draws the offset).
 

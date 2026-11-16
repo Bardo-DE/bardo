@@ -9,13 +9,14 @@ use std::collections::BTreeMap;
 use ui_settings::schema::KeyPath;
 use ui_settings::{InvalidKey, Loaded};
 
-/// What `spec`'s file holds: every valid value laid over the keys' defaults. A missing file is
-/// the defaults; a bad value costs only its own key (its default is used and it is reported in
-/// `invalid`); a key no schema describes is reported in `unknown` and is not part of the
-/// result, so the next save drops it. A file that is there and cannot be read (no permission,
-/// not text, not an ordinary file, over a megabyte) is not a missing one: it shows the
-/// defaults and is reported as the one invalid key of the whole file, and [`crate::save`]
-/// refuses to write over it. Reading never fails.
+/// What `spec`'s file holds: every valid value laid over the keys' defaults.
+///
+/// A missing file is the defaults; a bad value costs only its own key (its default is used and it
+/// is reported in `invalid`); a key no schema describes is reported in `unknown` and is not part of
+/// the result, so the next save drops it. A file that is there and cannot be read (no permission,
+/// not text, not an ordinary file, over a megabyte) is not a missing one: it shows the defaults and
+/// is reported as the one invalid key of the whole file, and [`crate::save`] refuses to write over
+/// it. Reading never fails.
 #[must_use]
 pub fn load(home: &ConfigHome, spec: &FileSpec) -> Loaded<FileValues> {
     let path = home.path_of(&spec.file);

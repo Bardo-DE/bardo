@@ -1,6 +1,7 @@
-//! The Focus tile: Do Not Disturb as a quire `ModuleTile` (the `Moon` glyph),
-//! [`crate::control_center::focus_status`] as its line. Reads `use_focus_mode`; a click asks for
-//! the shell's `ToggleFocus` action, which writes `settings.toml`.
+//! The Focus tile: Do Not Disturb as a quire `ModuleTile` (the `Moon` glyph), [`crate::control_center::focus_status`] as its line.
+//!
+//! Reads `use_focus_mode`; a click asks for the shell's `ToggleFocus` action, which writes
+//! `settings.toml`.
 
 use dioxus::prelude::*;
 use shell_kit::prelude::*;

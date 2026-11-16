@@ -1,8 +1,10 @@
-//! The spring driver (design/05-MOTION.md section 14): a [`Spring`] played on a `Playback`, on
-//! this thread's frame clock (`ui_components::base::time::clock`), asking for a frame every `FRAME_TICK` while it moves
-//! and nothing once it rests (design/26 R3). A new target mid-flight starts a new leg from the
-//! exact state the old one has at that instant, so position and velocity never jump; a hand's
-//! release hands its velocity to the leg (design/27 section 3.12).
+//! The spring driver (design/05-MOTION.md section 14).
+//!
+//! A [`Spring`] played on a `Playback`, on this thread's frame clock
+//! (`ui_components::base::time::clock`), asking for a frame every `FRAME_TICK` while it moves and
+//! nothing once it rests (design/26 R3). A new target mid-flight starts a new leg from the exact
+//! state the old one has at that instant, so position and velocity never jump; a hand's release
+//! hands its velocity to the leg (design/27 section 3.12).
 
 use super::spring::{Leg, SpringPhase, State};
 use super::spring_spec::SpringSpec;
@@ -100,10 +102,11 @@ pub fn use_spring_motion(at: f32, scale: PxPerUnit) -> SpringMotion {
     }
 }
 
-/// A spring that follows `target`: it stands there on mount, and each time `target` changes it
-/// springs there from where it is, at the speed it has, on the spring `spec` chooses (critical
-/// for a remote change or a tap, 0.8 for a throw toward it; critical under Reduced). Asks for
-/// frames only while it moves.
+/// A spring that follows `target`.
+///
+/// It stands there on mount, and each time `target` changes it springs there from where it is, at
+/// the speed it has, on the spring `spec` chooses (critical for a remote change or a tap, 0.8 for a
+/// throw toward it; critical under Reduced). Asks for frames only while it moves.
 #[must_use]
 pub fn use_spring(target: f32, spec: SpringSpec, scale: PxPerUnit) -> SpringFrame {
     let motion = use_spring_motion(target, scale);

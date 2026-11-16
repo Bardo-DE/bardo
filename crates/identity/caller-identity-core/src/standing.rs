@@ -3,11 +3,13 @@
 use crate::facts::{Engine, Pin};
 use crate::ids::{AppKey, ExePath, RoleName};
 
-/// How much was shown about a service. Ordered by strength: `Full` includes everything below it,
-/// and `Unit` ranks above `Exe` because the manager's word on a unit (its definition, its loader
-/// variables, a root-only program) shows more than an image read alone, though `Unit` lacks the
-/// image read itself. With feature `dev-rows` the ladder has one more step at the bottom, `Dev`;
-/// a build without the feature has exactly `Cgroup < Exe < Unit < Full`.
+/// How much was shown about a service.
+///
+/// Ordered by strength: `Full` includes everything below it, and `Unit` ranks above `Exe` because
+/// the manager's word on a unit (its definition, its loader variables, a root-only program) shows
+/// more than an image read alone, though `Unit` lacks the image read itself. With feature `dev-
+/// rows` the ladder has one more step at the bottom, `Dev`; a build without the feature has exactly
+/// `Cgroup < Exe < Unit < Full`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[non_exhaustive]
 pub enum Proof {

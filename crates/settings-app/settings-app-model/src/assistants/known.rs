@@ -5,10 +5,11 @@ use crate::computers::ComputerRow;
 use account_sheet::ProviderGroup;
 use action_settings::{Known, KnownPlace, PlaceName};
 
-/// The cloud accounts accountd lists that are signed in: an account of the Intelligence group
-/// that is not a program on this computer, and does not need signing in again. Each carries its
-/// provider's name, which the confirmation says. The person's other computers are the ones the
-/// assistant's service lists (`computers`); the ones only the setting holds are not shown.
+/// The cloud accounts accountd lists that are signed in: an account of the Intelligence group that is not a program on this computer, and does not need signing in again.
+///
+/// Each carries its provider's name, which the confirmation says. The person's other computers are
+/// the ones the assistant's service lists (`computers`); the ones only the setting holds are not
+/// shown.
 #[must_use]
 pub fn known_of(pane: &AccountsPane, computers: &[ComputerRow]) -> Known {
     let own = computers

@@ -82,10 +82,12 @@ fn rank(title: &str) -> usize {
         .unwrap_or(INTELLIGENCE_SECTIONS.len())
 }
 
-/// The blocks of `page`. Every page lists its sections as the schemas gave them, except
-/// Intelligence: its sections follow design/22's order and the model picker sits right after
-/// Models (the runtimes first, then the picker), or where Models would be when no schema has that
-/// section; and Accounts, whose live pane comes first.
+/// The blocks of `page`.
+///
+/// Every page lists its sections as the schemas gave them, except Intelligence: its sections follow
+/// design/22's order and the model picker sits right after Models (the runtimes first, then the
+/// picker), or where Models would be when no schema has that section; and Accounts, whose live pane
+/// comes first.
 #[must_use]
 pub fn blocks(page: &PageModel) -> Vec<Block> {
     let corners = corner_keys(page);

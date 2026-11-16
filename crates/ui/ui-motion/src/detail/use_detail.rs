@@ -30,9 +30,10 @@ impl<S> Detail<S> {
     }
 }
 
-/// Track `state`: the first frame is `S::first`, and each change after is `S::moment(old, new)`,
-/// caused by `touch`. The same state rendered again is the same cue, so nothing replays (R1).
-/// Moments never queue: the newest supersedes (R11).
+/// Track `state`: the first frame is `S::first`, and each change after is `S::moment(old, new)`, caused by `touch`.
+///
+/// The same state rendered again is the same cue, so nothing replays (R1). Moments never queue: the
+/// newest supersedes (R11).
 pub fn use_detail<S: Detailed>(state: S, touch: Touch) -> Detail<S> {
     // The last state seen lives in a plain value, not a signal: the change is noticed while
     // rendering, and a signal written during render would schedule a second render for nothing.

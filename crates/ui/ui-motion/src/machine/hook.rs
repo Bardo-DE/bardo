@@ -10,10 +10,10 @@ use dioxus::prelude::*;
 use ui_core::machine::Machine;
 use ui_core::time::stamp::Stamp;
 
-/// Run a machine `M` that starts at `initial(stamp of now)`, on `params`, giving each output to
-/// `on_out` with the machine so it can send a follow-up. `ctx` is read at every step, including
-/// the step a wake causes. The machine steps on [`MachineRef::send`] and whenever it asked to
-/// wake; a machine at rest runs no timer.
+/// Run a machine `M` that starts at `initial(stamp of now)`, on `params`, giving each output to `on_out` with the machine so it can send a follow-up.
+///
+/// `ctx` is read at every step, including the step a wake causes. The machine steps on
+/// [`MachineRef::send`] and whenever it asked to wake; a machine at rest runs no timer.
 pub fn use_machine<M: Machine>(
     initial: impl FnOnce(Stamp) -> M,
     params: M::Params,
@@ -23,8 +23,8 @@ pub fn use_machine<M: Machine>(
     use_machine_in(use_machine_state(initial), params, ctx, on_out)
 }
 
-/// Run a machine over `held`, which the caller made with [`use_machine_state`] and owns: it can
-/// read or write the state elsewhere, and the timer follows the state's `wake()` whoever wrote it.
+/// Run a machine over `held`, which the caller made with [`use_machine_state`] and owns: it can read or write the state elsewhere, and the timer follows the state's `wake()` whoever wrote it.
+///
 /// Otherwise as [`use_machine`].
 pub fn use_machine_in<M: Machine>(
     held: MachineState<M>,

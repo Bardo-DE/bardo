@@ -152,9 +152,10 @@ pub fn search<R: SpaceReader>(
     resolve_all(r, &fused)
 }
 
-/// A search cut to a token budget. Over `Both`, facts and event documents are ranked apart and
-/// merged by reciprocal rank, so neither drowns the other; then `fit_budget` takes hits in order
-/// while they fit.
+/// A search cut to a token budget.
+///
+/// Over `Both`, facts and event documents are ranked apart and merged by reciprocal rank, so
+/// neither drowns the other; then `fit_budget` takes hits in order while they fit.
 pub fn inject<R: SpaceReader>(
     r: &R,
     vector: Option<&Vector>,

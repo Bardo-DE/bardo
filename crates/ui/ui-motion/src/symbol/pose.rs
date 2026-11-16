@@ -1,6 +1,7 @@
-//! Where a part is in its gesture, as pure arithmetic a table pins (design/35-SYMBOL-EFFECTS.md
-//! section 3): the pose of one part at a share of a cycle, in thousandths. Every gesture starts
-//! and ends at rest, so a cycle that finishes leaves the icon as Lucide drew it.
+//! Where a part is in its gesture, as pure arithmetic a table pins (design/35-SYMBOL-EFFECTS.md section 3): the pose of one part at a share of a cycle, in thousandths.
+//!
+//! Every gesture starts and ends at rest, so a cycle that finishes leaves the icon as Lucide drew
+//! it.
 
 use ui_style::icon::parts::{PartGesture, Tenths};
 use ui_style::icon::posed::{PartPose, Thousandths};

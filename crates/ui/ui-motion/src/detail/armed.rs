@@ -1,10 +1,11 @@
-//! A press kept for the change it causes (design/26-DETAILS.md R5). A control's press and the
-//! state change it asks for arrive in different renders: the press in a handler, the new state
-//! when the service answers. An [`Armed`] keeps the press's [`Contact`] until a change spends it,
-//! so that change (and only that one) may spring. A Pending change passes the press on to the
-//! operation's end, so the success of a join the person clicked springs however long it took; a
-//! press that changes nothing goes stale after [`STALE`], and a later change from elsewhere is
-//! `Touch::Remote`.
+//! A press kept for the change it causes (design/26-DETAILS.md R5).
+//!
+//! A control's press and the state change it asks for arrive in different renders: the press in a
+//! handler, the new state when the service answers. An [`Armed`] keeps the press's [`Contact`]
+//! until a change spends it, so that change (and only that one) may spring. A Pending change passes
+//! the press on to the operation's end, so the success of a join the person clicked springs however
+//! long it took; a press that changes nothing goes stale after [`STALE`], and a later change from
+//! elsewhere is `Touch::Remote`.
 
 use super::cue::Cue;
 use super::moment::Moment;

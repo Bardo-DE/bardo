@@ -1,5 +1,6 @@
-//! The role names of this desktop's own processes, so nobody types the strings twice. The
-//! shipped table (`dist/desktop-callers.toml`) names every one of them; the desktop gate checks
+//! The role names of this desktop's own processes, so nobody types the strings twice.
+//!
+//! The shipped table (`dist/desktop-callers.toml`) names every one of them; the desktop gate checks
 //! that each role string used in code exists in the table it ships.
 
 use crate::ids::RoleName;
