@@ -56,7 +56,7 @@ impl Document {
 }
 
 /// Why a change to the Spaces was refused.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum SpaceFault {
     /// No Space has that id.
     #[error("no such Space")]

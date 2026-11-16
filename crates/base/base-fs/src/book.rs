@@ -9,16 +9,18 @@ use crate::atomic::AtomicFile;
 use serde::Serialize;
 
 /// The document could not be written; the held one is as it was.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct SaveFailed;
-
-impl std::fmt::Display for SaveFailed {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str("the document could not be written")
-    }
+#[derive(Debug, thiserror::Error)]
+pub enum SaveFailed {
+    /// The new document could not be turned into text.
+    #[error("the document could not be serialized")]
+    Serialize(#[source] serde_json::Error),
+    /// The task that writes the file did not finish.
+    #[error("the task that writes the document did not finish")]
+    Task(#[source] tokio::task::JoinError),
+    /// The file could not be written.
+    #[error("the document could not be written")]
+    Write(#[source] std::io::Error),
 }
-
-impl std::error::Error for SaveFailed {}
 
 /// One saved change: the document before it and after it, as the registry's own
 /// `Committed { before, after }` says it.
@@ -48,16 +50,12 @@ where
     D: Serialize + Clone,
 {
     if let Some(file) = file {
-        let text = serde_json::to_string_pretty(&after)
-            .ok()
-            .ok_or(SaveFailed)?;
+        let text = serde_json::to_string_pretty(&after).map_err(SaveFailed::Serialize)?;
         let file = file.clone();
         tokio::task::spawn_blocking(move || file.write(&text))
             .await
-            .ok()
-            .ok_or(SaveFailed)?
-            .ok()
-            .ok_or(SaveFailed)?;
+            .map_err(SaveFailed::Task)?
+            .map_err(SaveFailed::Write)?;
     }
     let before = std::mem::replace(held, after.clone());
     Ok(Committed { before, after })
@@ -93,10 +91,10 @@ mod tests {
         std::fs::create_dir(scratch.join("doc.json")).expect("dir");
         let file = AtomicFile::new(scratch.path().to_path_buf(), "doc.json");
         let mut held = vec![1];
-        assert_eq!(
+        assert!(matches!(
             commit(Some(&file), &mut held, vec![2]).await,
-            Err(SaveFailed)
-        );
+            Err(SaveFailed::Write(_))
+        ));
         assert_eq!(held, [1]);
     }
 
