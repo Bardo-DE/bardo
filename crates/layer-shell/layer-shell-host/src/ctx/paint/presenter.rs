@@ -67,7 +67,10 @@ fn gpu_presenter<M: 'static>(ctx: &mut HostCtx<M>, id: SurfaceId) -> Result<Pres
         let pref = follow_compositor(&ctx.adapter, compositor);
         state.gpu = Some(GpuContext::new(instance, &wgpu_surface, &pref)?);
     }
-    Ok(Presenter::Wgpu(Box::new(Swapchain::new(wgpu_surface, opaque))))
+    Ok(Presenter::Wgpu(Box::new(Swapchain::new(
+        wgpu_surface,
+        opaque,
+    ))))
 }
 
 fn surface_wl(state: &HostState, id: SurfaceId) -> Result<WlSurface> {
