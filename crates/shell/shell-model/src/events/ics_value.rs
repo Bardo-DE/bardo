@@ -79,17 +79,17 @@ pub(super) fn parse_date(value: &str) -> Result<Date, ValueError> {
     if value.len() != 8 {
         return Err(bad());
     }
-    let year = i16::try_from(digits(0, 4)?).map_err(|_| bad())?;
-    let month = i8::try_from(digits(4, 6)?).map_err(|_| bad())?;
-    let day = i8::try_from(digits(6, 8)?).map_err(|_| bad())?;
-    Date::new(year, month, day).map_err(|_| bad())
+    let year = i16::try_from(digits(0, 4)?).ok().ok_or_else(bad)?;
+    let month = i8::try_from(digits(4, 6)?).ok().ok_or_else(bad)?;
+    let day = i8::try_from(digits(6, 8)?).ok().ok_or_else(bad)?;
+    Date::new(year, month, day).ok().ok_or_else(bad)
 }
 
 /// `20260927T090000` (a leap second read as :59).
 pub(super) fn parse_date_time(value: &str) -> Result<DateTime, ValueError> {
     let bad = || ValueError::DateTime(value.to_owned());
     let (day, clock) = value.split_once(['T', 't']).ok_or_else(bad)?;
-    let date = parse_date(day).map_err(|_| bad())?;
+    let date = parse_date(day).ok().ok_or_else(bad)?;
     let part = |from: usize| -> Result<i8, ValueError> {
         clock
             .get(from..from + 2)
@@ -100,7 +100,9 @@ pub(super) fn parse_date_time(value: &str) -> Result<DateTime, ValueError> {
     if clock.len() != 6 {
         return Err(bad());
     }
-    let time = Time::new(part(0)?, part(2)?, part(4)?.min(59), 0).map_err(|_| bad())?;
+    let time = Time::new(part(0)?, part(2)?, part(4)?.min(59), 0)
+        .ok()
+        .ok_or_else(bad)?;
     Ok(date.to_datetime(time))
 }
 
@@ -138,7 +140,7 @@ pub(super) fn parse_duration(value: &str) -> Result<i64, ValueError> {
             ('S', Clock::Time) => 1,
             _ => return Err(bad()),
         };
-        let count: i64 = number.parse().map_err(|_| bad())?;
+        let count: i64 = number.parse().ok().ok_or_else(bad)?;
         total = total.saturating_add(count.saturating_mul(unit));
         number.clear();
     }
@@ -193,7 +195,7 @@ mod tests {
             ("P1H", Err(())),
         ];
         for (text, want) in cases {
-            assert_eq!(parse_duration(text).map_err(|_| ()), want, "{text:?}");
+            assert_eq!(parse_duration(text).map_err(drop), want, "{text:?}");
         }
     }
 

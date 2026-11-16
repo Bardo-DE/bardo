@@ -65,7 +65,8 @@ pub(crate) fn psd(bytes: &[u8], ceiling: Ceiling) -> Result<(Rgba8, ColourInfo),
                 ::psd::Psd::from_bytes(bytes).map_err(|e| decode_error(format!("{e:?}")))?;
             Ok((document.width(), document.height(), document.rgba()))
         }))
-        .map_err(|_| decode_error("the Photoshop file is damaged"))??,
+        .ok()
+        .ok_or_else(|| decode_error("the Photoshop file is damaged"))??,
     };
     let size = PixelSize {
         width: PixelLen(width),

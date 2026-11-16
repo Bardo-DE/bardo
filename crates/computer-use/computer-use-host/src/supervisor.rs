@@ -309,7 +309,8 @@ impl<S: Seams> Supervisor<S> {
                 .desktop
                 .windows()
                 .await
-                .map_err(|_| ControlRefusal::WindowUnknown)?;
+                .ok()
+                .ok_or(ControlRefusal::WindowUnknown)?;
             let window = known
                 .iter()
                 .find(|w| &w.ident == ident)
@@ -336,7 +337,8 @@ impl<S: Seams> Supervisor<S> {
                 state.leases = state
                     .leases
                     .claim(ident, &id)
-                    .map_err(|_| ControlRefusal::LeaseHeld)?;
+                    .ok()
+                    .ok_or(ControlRefusal::LeaseHeld)?;
             }
             state.next += 1;
             id
@@ -397,7 +399,8 @@ impl<S: Seams> Supervisor<S> {
         let live = state.live.get(run).ok_or(ControlRefusal::WrongState)?;
         live.control
             .send(input)
-            .map_err(|_| ControlRefusal::WrongState)
+            .ok()
+            .ok_or(ControlRefusal::WrongState)
     }
 
     /// A control call on one run: cancel, pause, resume, take over, hand back.

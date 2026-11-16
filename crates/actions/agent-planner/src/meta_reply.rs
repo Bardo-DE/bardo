@@ -79,7 +79,9 @@ pub(crate) fn is_meta(name: &str) -> bool {
 /// The words of a `quire_answer`: plain, not empty, and not a call written as words. A reply
 /// that is none of these is unreadable, like a question that is none of them.
 pub(crate) fn answer_text(call: &ToolCallPart) -> Result<String, PlanFault> {
-    let args: Json = serde_json::from_str(call.args.as_str()).map_err(|_| PlanFault::Unreadable)?;
+    let args: Json = serde_json::from_str(call.args.as_str())
+        .ok()
+        .ok_or(PlanFault::Unreadable)?;
     let text = args
         .get("text")
         .and_then(Json::as_str)

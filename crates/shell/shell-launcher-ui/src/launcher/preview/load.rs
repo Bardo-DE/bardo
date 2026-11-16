@@ -89,7 +89,7 @@ impl ViewerLook {
 
 impl Look for ViewerLook {
     fn at(&self, path: &Path) -> Result<Arc<AnyPeeked>, PreviewFault> {
-        let file = FilePath::new(path).map_err(|_| PreviewFault::Unreadable)?;
+        let file = FilePath::new(path).ok().ok_or(PreviewFault::Unreadable)?;
         let peeking = anyview_peek::Peeking::pane()
             .with_budget(PANE_BUDGET)
             .with_stills(Arc::clone(&self.frames));

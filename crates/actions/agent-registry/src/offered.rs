@@ -83,7 +83,7 @@ impl Offered {
     ///
     /// Returns [`OfferedFault::Damaged`] when `text` is not a valid record.
     pub fn parse(text: &str) -> Result<Self, OfferedFault> {
-        toml::from_str(text).map_err(|_| OfferedFault::Damaged)
+        toml::from_str(text).ok().ok_or(OfferedFault::Damaged)
     }
 
     /// The record as the text kept in `offered.toml`.
@@ -92,7 +92,7 @@ impl Offered {
     ///
     /// Returns [`OfferedFault::Damaged`] when the record cannot be written as TOML.
     pub fn render(&self) -> Result<String, OfferedFault> {
-        toml::to_string(self).map_err(|_| OfferedFault::Damaged)
+        toml::to_string(self).ok().ok_or(OfferedFault::Damaged)
     }
 
     /// The record that replaces `before` when `self` is written: its counter one past the one it

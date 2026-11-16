@@ -98,7 +98,7 @@ const PIN: &str = "dock.pin:";
 const UNPIN: &str = "dock.unpin:";
 
 pub(super) fn param(name: &str) -> Result<ParamName, AppRefusal> {
-    ParamName::parse(name).map_err(|_| AppRefusal::Unsupported)
+    ParamName::parse(name).ok().ok_or(AppRefusal::Unsupported)
 }
 
 /// The text argument `name`, when given.

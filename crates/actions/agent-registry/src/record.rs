@@ -77,7 +77,7 @@ impl Record {
     /// Returns [`RecordFault::Damaged`] when the text is not a record, or names a program outside
     /// its directory, or a name or digest that is not valid.
     pub fn parse(text: &str) -> Result<Self, RecordFault> {
-        let record: Self = toml::from_str(text).map_err(|_| RecordFault::Damaged)?;
+        let record: Self = toml::from_str(text).ok().ok_or(RecordFault::Damaged)?;
         let named = Slug::parse(&record.id).is_ok() && Slug::parse(&record.version).is_ok();
         let stays = Path::new(&record.command)
             .components()

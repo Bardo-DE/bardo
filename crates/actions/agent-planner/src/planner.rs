@@ -382,8 +382,9 @@ impl<P: Transport> PlannerModel<P> {
             .catalogue
             .named(call.name.as_str())
             .ok_or_else(|| ReplyFault::NoSuchTool(plain_name(call.name.as_str())))?;
-        let json: Json =
-            serde_json::from_str(call.args.as_str()).map_err(|_| ReplyFault::NotJson)?;
+        let json: Json = serde_json::from_str(call.args.as_str())
+            .ok()
+            .ok_or(ReplyFault::NotJson)?;
         if let Some(fault) = outside_known(&known_values(&tool.action(), view), &json) {
             return Err(fault);
         }

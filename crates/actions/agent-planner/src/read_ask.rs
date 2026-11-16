@@ -35,7 +35,9 @@ fn read_ask(args: &Json) -> Result<ReaderAsk, ReadFault> {
     }
     let task: ReaderTask = part(args, "task", ReadFault::Task)?;
     let want: ValueSchema = match args.get("want") {
-        Some(want) => serde_json::from_value(settle_want(want)?).map_err(|_| ReadFault::Want)?,
+        Some(want) => serde_json::from_value(settle_want(want)?)
+            .ok()
+            .ok_or(ReadFault::Want)?,
         None => return Err(ReadFault::Want),
     };
     Ok(ReaderAsk { inputs, want, task })

@@ -69,7 +69,8 @@ pub fn decode_request(bytes: &[u8]) -> Result<HelperRequest, ProtocolError> {
     let text = |field: &[u8]| {
         std::str::from_utf8(field)
             .map(str::to_owned)
-            .map_err(|_| ProtocolError::Encoding)
+            .ok()
+            .ok_or(ProtocolError::Encoding)
     };
     Ok(HelperRequest {
         service: PamService(text(service)?),

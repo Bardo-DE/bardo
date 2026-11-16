@@ -140,7 +140,7 @@ impl FloorFiles {
                 &std::io::Error::new(std::io::ErrorKind::InvalidData, "larger than 64 KiB"),
             ));
         }
-        String::from_utf8(bytes).map_err(|_| {
+        String::from_utf8(bytes).ok().ok_or_else(|| {
             untrusted_io(
                 path,
                 &std::io::Error::new(std::io::ErrorKind::InvalidData, "not text"),

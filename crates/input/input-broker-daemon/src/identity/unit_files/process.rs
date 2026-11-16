@@ -39,8 +39,11 @@ pub fn check<P: ProcFs>(fs: &P, pid: Pid) -> Result<(), ProcessFault> {
             &fs.proc_root().join(pid.to_string()).join("status"),
             STATUS_CAP,
         )
-        .map_err(|_| ProcessFault::Unreadable("its status"))?;
-    let status = String::from_utf8(status).map_err(|_| ProcessFault::Unreadable("its status"))?;
+        .ok()
+        .ok_or(ProcessFault::Unreadable("its status"))?;
+    let status = String::from_utf8(status)
+        .ok()
+        .ok_or(ProcessFault::Unreadable("its status"))?;
     match tracer_of(&status) {
         Some(0) => Ok(()),
         Some(_) => Err(ProcessFault::Traced),

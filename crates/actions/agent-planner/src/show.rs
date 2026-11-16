@@ -58,7 +58,9 @@ pub(crate) fn finish_output(
     call: &ToolCallPart,
     view: &PlannerView,
 ) -> Result<(ModelOutput, Vec<Handle>), PlanFault> {
-    let args: Json = serde_json::from_str(call.args.as_str()).map_err(|_| PlanFault::Unreadable)?;
+    let args: Json = serde_json::from_str(call.args.as_str())
+        .ok()
+        .ok_or(PlanFault::Unreadable)?;
     Ok(match shown(&args, view) {
         Ok(show) => (ModelOutput::Finish, show),
         Err(fault) => (ModelOutput::Unread(fault), Vec::new()),

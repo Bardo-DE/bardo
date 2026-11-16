@@ -142,7 +142,8 @@ fn register(handle: &UInputHandle<OwnedFd>, spec: &DeviceSpec) -> io::Result<()>
     }
     // The label only a process that can open the node can set: whom the device is made for.
     let label = CString::new(spec.maker.to_string())
-        .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "a label with a NUL byte"))?;
+        .ok()
+        .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "a label with a NUL byte"))?;
     handle.set_phys(&label)?;
     let id = InputId {
         bustype: BUS_VIRTUAL,

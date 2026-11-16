@@ -225,7 +225,8 @@ impl UnitText {
                     .read_capped(path, UNIT_FILE_CAP)
                     .map_err(|e| read_fault(path, &e))?;
                 let text = String::from_utf8(bytes)
-                    .map_err(|_| NotUnit::Read(format!("{} is not text", path.display())))?;
+                    .ok()
+                    .ok_or_else(|| NotUnit::Read(format!("{} is not text", path.display())))?;
                 Ok(acc.fold(&text))
             })
     }
