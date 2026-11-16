@@ -14,6 +14,10 @@ impl World {
     /// A connection to the bus that is a process of its own, placed in `cgroup`: through
     /// `accept-bus-relay`, so the daemons identify it apart from the harness process (which is
     /// the shell). An agent host the harness runs in-process connects this way.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the relay cannot be started or its socket set up.
     pub async fn connect_as(&self, relay: &Path, cgroup: Cgroup<'_>) -> zbus::Connection {
         let socket = self
             .address()
@@ -72,6 +76,10 @@ impl World {
     /// it starts through `sh`, which waits for a line on stdin, so its pid (kept by `exec`) is
     /// placed in a `vte-spawn-*` scope of the scratch proc root before the program exists. Its
     /// environment is the scratch one and the private bus, nothing else.
+    ///
+    /// # Panics
+    ///
+    /// Panics when `bardo-do` cannot be started or its pipes are missing.
     pub async fn quire_do(&self, binary: &Path, words: &[&str]) -> std::process::Output {
         use std::io::{Read, Write};
         let mut process = Reaped::spawn(

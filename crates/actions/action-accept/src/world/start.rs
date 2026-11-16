@@ -27,6 +27,10 @@ fn intentd_only(connection: &zbus::Connection, root: &Path) -> std::sync::Arc<Id
 
 /// Waits until `name` has an owner on the bus. Subscribes first, so an owner that appears
 /// between the check and the wait is not missed.
+///
+/// # Panics
+///
+/// Panics when the bus proxy cannot be made, the subscription fails or `name` is not a bus name.
 pub async fn until_owned(connection: &zbus::Connection, name: &str) {
     let dbus = DBusProxy::new(connection).await.expect("dbus");
     let mut changes = dbus
@@ -62,6 +66,10 @@ impl World {
 
     /// [`World::start`] with any model source and options: a cassette or a real engine, the
     /// scratch root kept or not, the daemons' model tap on or off.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the scratch root, its directories or the runtime link cannot be made.
     pub async fn start_model(
         binaries: &Binaries,
         consent: Consent,

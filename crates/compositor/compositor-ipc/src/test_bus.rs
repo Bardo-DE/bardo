@@ -18,6 +18,10 @@ pub struct PrivateBus {
 
 impl PrivateBus {
     /// Starts the daemon and reads the address it listens on; panics when it cannot (tests only).
+    ///
+    /// # Panics
+    ///
+    /// Panics when `dbus-daemon` cannot be started or prints no address.
     #[must_use]
     pub fn start() -> PrivateBus {
         let config = concat!(env!("CARGO_MANIFEST_DIR"), "/../dev/private-bus.conf");
@@ -41,6 +45,10 @@ impl PrivateBus {
     }
 
     /// A new client connection on this bus.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the connection cannot be made.
     pub async fn client(&self) -> Connection {
         zbus::connection::Builder::address(self.address.as_str())
             .expect("address")
@@ -58,6 +66,10 @@ impl Drop for PrivateBus {
 }
 
 /// The unique bus name of `connection`.
+///
+/// # Panics
+///
+/// Panics when `connection` has no unique name.
 #[must_use]
 pub fn name_of(connection: &Connection) -> String {
     connection

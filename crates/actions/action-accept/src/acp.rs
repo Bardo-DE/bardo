@@ -33,6 +33,11 @@ impl std::fmt::Debug for AcpEditor {
 
 impl AcpEditor {
     /// Starts `binary` (`accept-acp`) on `world`'s bus.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the process cannot be started or its pipes are missing: this is test harness
+    /// code, and a run that cannot start has nothing to report.
     pub async fn start(world: &World, binary: &Path) -> AcpEditor {
         let dir = world.dir.path();
         let mut command = Command::new(binary);

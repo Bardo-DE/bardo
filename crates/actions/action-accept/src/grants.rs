@@ -9,6 +9,10 @@ use provenance::{SpaceId, SpaceScope, UnixSeconds};
 
 /// The grants of the companion for `app`'s classes (mail's are `mail` and `contacts`) in `space`, for
 /// interactive use, as the JSON intentd reads.
+///
+/// # Panics
+///
+/// Panics when `space` or an id is not valid.
 #[must_use]
 pub fn standing_json(space: &str, app: App) -> String {
     // An editor's session asks under the editor's own name (the app behind its connection), and

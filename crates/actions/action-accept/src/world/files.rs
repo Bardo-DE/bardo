@@ -131,6 +131,10 @@ role = "agent"
 "#;
 
 /// Writes `text` to `path`, making its directories.
+///
+/// # Panics
+///
+/// Panics when the directories cannot be made or the file cannot be written.
 pub fn write(path: &Path, text: &str) {
     std::fs::create_dir_all(path.parent().expect("a parent")).expect("dirs");
     std::fs::write(path, text).expect("file");

@@ -34,6 +34,10 @@ impl Cgroup<'_> {
 /// In a service unit it is that unit's main process (`<root>/proc/units/<name>.service`, the
 /// fixture's stand-in for the systemd manager's `MainPID`, which is all a caller table's service
 /// row names).
+///
+/// # Panics
+///
+/// Panics when the proc root cannot be written.
 pub fn place(root: &Path, pid: u32, cgroup: Cgroup<'_>) {
     write(&root.join(format!("proc/{pid}/cgroup")), &cgroup.line());
     match cgroup {

@@ -44,6 +44,10 @@ pub struct Launcher {
 
 impl Launcher {
     /// The launcher of `world`.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the proxy to the bus cannot be made.
     pub async fn of(world: &World) -> Launcher {
         let connection = world.sill.clone();
         Launcher {
@@ -75,6 +79,10 @@ impl Launcher {
     }
 
     /// Opens a front conversation in the Space `work`.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the bus call fails or its reply is not a `SessionOpened`.
     pub async fn open(&self) -> SessionOpened {
         let open = SessionOpen {
             space: SpaceId::parse("work").expect("space"),
@@ -98,6 +106,10 @@ impl Launcher {
 
     /// The person says `text`: intentd records the turn, companiond is asked. Returns the answer
     /// being watched, subscribed before the loop can say anything.
+    ///
+    /// # Panics
+    ///
+    /// Panics when a call to intentd or companiond fails.
     pub async fn say(&self, opened: &SessionOpened, text: &str) -> Answer {
         let id = Box::pin(within(
             "Session.Turn to answer",
@@ -186,6 +198,10 @@ impl Answer {
     }
 
     /// The answer as it stands now.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the call fails or its reply is not an `AnswerWire`.
     pub async fn view(&self) -> AnswerWire {
         let text = within("Answer.View to answer", self.proxy.view())
             .await
@@ -196,6 +212,10 @@ impl Answer {
     /// Every distinct view the answer takes, in order, until `stop` says one is the last. The
     /// initial view and every `Updated` payload count, so a phase that passes quickly (a sheet
     /// answered at once) is still in the list.
+    ///
+    /// # Panics
+    ///
+    /// Panics when the answer does not settle (see [`Answer::try_history_until`]).
     pub async fn history_until(&mut self, stop: impl Fn(&AnswerWire) -> bool) -> Vec<AnswerWire> {
         match self.try_history_until(stop).await {
             Ok(seen) => seen,
@@ -249,6 +269,10 @@ impl Answer {
 /// The recent entries, polled until every kind in `kinds` is among them (the audit kinds of
 /// `intentd`'s `record.rs`). intentd drains its audit queue into memoryd on a timer, so there is no
 /// event to wait on; the bound only turns a missing record into a failure.
+///
+/// # Panics
+///
+/// Panics when the entries do not include every kind in `kinds` within the wait.
 pub async fn recorded(world: &World, kinds: &[&str]) -> Vec<memory_core::RecentEntry> {
     use memory_client::{DbusTransport, Memory};
     use memory_core::{BodyMode, RecentQuery, TrustFilter};

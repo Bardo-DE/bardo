@@ -47,6 +47,10 @@ pub const GIVE_UP: Duration = Duration::from_secs(60);
 ///
 /// Every call over the bus and every wait on a peer goes through it: a zbus method call has no
 /// timeout of its own, and a peer that never answers would hold the test for ever.
+///
+/// # Panics
+///
+/// Panics when `wait` takes longer than [`GIVE_UP`].
 pub async fn within<T>(what: &str, wait: impl std::future::Future<Output = T>) -> T {
     tokio::time::timeout(GIVE_UP, wait)
         .await
@@ -178,6 +182,10 @@ pub struct Options {
 }
 
 /// Copies the run's catalogue into the scratch root; a missing source is a failed start.
+///
+/// # Panics
+///
+/// Panics when the catalogue cannot be copied from `from`.
 pub fn copy_catalog(from: Option<&Path>, root: &Path) {
     if let Some(from) = from {
         crate::catalog::copy_entries(from, &crate::catalog::world_dir(root))
