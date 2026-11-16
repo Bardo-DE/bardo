@@ -28,13 +28,13 @@ status-level = "fail"
 final-status-level = "slow"
 
 [test-groups]
-# agent-live's hostile worlds each start a sandbox, a private bus and a fake model server.
+# action-live's hostile worlds each start a sandbox, a private bus and a fake model server.
 hostile-worlds = { max-threads = 6 }
 
 [[profile.default.overrides]]
-filter = "package(agent-live) & test(/^hostile::/)"
+filter = "package(action-live) & test(/^hostile::/)"
 test-group = "hostile-worlds"
 
 [[profile.gate.overrides]]
-filter = "package(agent-live) & test(/^hostile::/)"
+filter = "package(action-live) & test(/^hostile::/)"
 test-group = "hostile-worlds"
