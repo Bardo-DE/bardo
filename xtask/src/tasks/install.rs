@@ -104,9 +104,9 @@ mod tests {
             ),
             (
                 "some parts",
-                request(false, false, false, &["sill", "detent"]),
+                request(false, false, false, &["shell", "settings"]),
                 "install/plain.sh",
-                vec!["install", "sill", "detent"],
+                vec!["install", "shell", "settings"],
             ),
             (
                 "build",
@@ -116,9 +116,9 @@ mod tests {
             ),
             (
                 "build a part",
-                request(true, false, false, &["sill"]),
+                request(true, false, false, &["shell"]),
                 "install/plain.sh",
-                vec!["build", "sill"],
+                vec!["build", "shell"],
             ),
             (
                 "check",
@@ -146,8 +146,8 @@ mod tests {
     fn rejects_flags_that_do_not_go_together() {
         let bad = [
             ("two flags", request(true, true, false, &[])),
-            ("check with a part", request(false, true, false, &["sill"])),
-            ("parts with a part", request(false, false, true, &["sill"])),
+            ("check with a part", request(false, true, false, &["shell"])),
+            ("parts with a part", request(false, false, true, &["shell"])),
         ];
         for (name, req) in bad {
             assert!(plan(&req).is_err(), "{name}");
