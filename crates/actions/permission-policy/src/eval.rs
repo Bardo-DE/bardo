@@ -14,7 +14,9 @@ use provenance::{Effect, Integrity};
 use serde::Serialize;
 use serde_json::{Value, json};
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use std::error::Error;
 use std::str::FromStr;
+use std::sync::Arc;
 
 /// The serde slug of a closed set: a bare string, or the `kind` of a tagged one.
 fn slug<T: Serialize>(value: &T) -> String {
@@ -99,7 +101,7 @@ fn entities(
     schema: &Schema,
 ) -> Result<(EntityUid, EntityUid, Entities), FaultCause> {
     let facts = &request.resource;
-    let named = || FaultCause::Entities;
+    let named = || FaultCause::Name;
     let caller = uid("Quire::Caller", request.principal.caller.as_str()).ok_or_else(named)?;
     let app = uid("Quire::App", facts.app.as_str()).ok_or_else(named)?;
     let act = uid("Quire::Act", facts.action.as_str()).ok_or_else(named)?;
@@ -113,8 +115,7 @@ fn entities(
         HashMap::from([("kind".to_owned(), string(slug(&request.principal.kind)))]),
         HashSet::new(),
     )
-    .ok()
-    .ok_or(FaultCause::Entities)?;
+    .map_err(entities_fault)?;
     let act_entity = Entity::new(
         act.clone(),
         HashMap::from([
@@ -125,13 +126,15 @@ fn entities(
         ]),
         HashSet::from([app.clone()]),
     )
-    .ok()
-    .ok_or(FaultCause::Entities)?;
+    .map_err(entities_fault)?;
     let app_entity = Entity::new_no_attrs(app, HashSet::new());
     let all = Entities::from_entities([caller_entity, act_entity, app_entity], Some(schema))
-        .ok()
-        .ok_or(FaultCause::Entities)?;
+        .map_err(entities_fault)?;
     Ok((caller, act, all))
+}
+
+fn entities_fault(error: impl Error + Send + Sync + 'static) -> FaultCause {
+    FaultCause::Entities(Arc::new(error))
 }
 
 /// What one query said.
@@ -160,11 +163,9 @@ fn query(
     let action_uid = uid("Quire::Action", action).ok_or_else(|| fault(FaultCause::Action))?;
     let context =
         Context::from_json_value(context_json(&request.context), Some((schema, &action_uid)))
-            .ok()
-            .ok_or_else(|| fault(FaultCause::Context))?;
+            .map_err(|error| fault(FaultCause::Context(Arc::new(error))))?;
     let cedar = Request::new(caller, action_uid, act, context, Some(schema))
-        .ok()
-        .ok_or_else(|| fault(FaultCause::Request))?;
+        .map_err(|error| fault(FaultCause::Request(Arc::new(error))))?;
     let response = Authorizer::new().is_authorized(&cedar, policies, &entities);
     let errors = response.diagnostics().errors().count();
     if errors > 0 {

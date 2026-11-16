@@ -83,13 +83,13 @@ fn a_policy_that_errors_asks_with_the_failure_and_never_permits() {
         ruled.ruling,
         permission_core::Ruling::Ask(vec![permission_core::AskReason::EvaluationFailed])
     );
-    assert_eq!(
-        ruled.faults,
+    assert!(matches!(
+        ruled.faults.as_slice(),
         [permission_policy::EvalFault {
             query: "perform_unasked",
             cause: permission_policy::FaultCause::Policies(1),
         }]
-    );
+    ));
     assert!(
         support::pdp()
             .pdp

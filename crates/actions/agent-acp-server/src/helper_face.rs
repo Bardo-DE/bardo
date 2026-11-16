@@ -8,7 +8,7 @@
 use crate::calls;
 use crate::helper_replay;
 use crate::helpers::{HelperRow, Helpers};
-use crate::link::{Gone, Link};
+use crate::link::{Gone, Link, chain};
 use crate::mode::Mode;
 use crate::out;
 use crate::server::{Known, Server, Turns};
@@ -73,11 +73,9 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             .open_job(&row.id)
             .await
             .map_err(|refusal| fault::invalid(&refusal.0))?;
-        self.host
-            .resume(&session)
-            .await
-            .ok()
-            .ok_or_else(|| fault::internal("the job could not be started"))?;
+        self.host.resume(&session).await.map_err(|error| {
+            fault::internal(&format!("the job could not be started: {}", chain(&error)))
+        })?;
         let mode = Mode::default();
         let helper = Some(row.id);
         let turns = Turns::Here;
@@ -113,8 +111,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         let jobs = self.helpers.jobs(&row.id);
         for update in helper_replay::recent(&row.name, &jobs) {
             link.update(&row.session, update)
-                .ok()
-                .ok_or_else(|| fault::internal("the connection closed"))?;
+                .map_err(|error| fault::internal(&chain(&error)))?;
         }
         if !self.roster.contains_key(&row.session) {
             self.host

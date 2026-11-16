@@ -28,7 +28,7 @@ pub enum LineFault {
     },
     /// The line is not UTF-8.
     #[error("a line that is not text")]
-    NotText,
+    NotText(#[source] std::string::FromUtf8Error),
     /// The stream failed.
     #[error("the stream failed: {0}")]
     Io(#[from] std::io::Error),
@@ -75,7 +75,7 @@ fn text_of(mut bytes: Vec<u8>) -> Result<String, LineFault> {
     if bytes.last() == Some(&b'\r') {
         bytes.pop();
     }
-    String::from_utf8(bytes).ok().ok_or(LineFault::NotText)
+    String::from_utf8(bytes).map_err(LineFault::NotText)
 }
 
 /// The lines of `reader` as the SDK reads them: blank lines skipped, and the stream ends, with a

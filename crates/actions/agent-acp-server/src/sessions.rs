@@ -6,7 +6,7 @@
 use crate::helper_face::{helper_asked, space_of};
 use crate::helpers::Helpers;
 use crate::history;
-use crate::link::Link;
+use crate::link::{Link, chain};
 use crate::mode::Mode;
 use crate::out;
 use crate::server::{Known, Server, Turns};
@@ -38,10 +38,12 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         &self,
         session: &SessionId,
     ) -> Result<(Vec<agent_session::Logged>, ResumePlan), Error> {
-        let rows = read_all(&self.log, session)
-            .await
-            .ok()
-            .ok_or_else(|| fault::internal("the session log could not be read"))?;
+        let rows = read_all(&self.log, session).await.map_err(|error| {
+            fault::internal(&format!(
+                "the session log could not be read: {}",
+                chain(&error)
+            ))
+        })?;
         let plan = resume_plan(&rows).ok().ok_or_else(fault::unknown_session)?;
         let claim = Claimant {
             role: CallerRole::Editor,
@@ -66,8 +68,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         let n = self.mint();
         let opening = Opening {
             task: TaskId::parse(&format!("acp-t-{n}"))
-                .ok()
-                .ok_or_else(|| fault::internal("no task"))?,
+                .map_err(|error| fault::internal(&format!("no task: {}", chain(&error))))?,
             space: space_of(&cwd),
             opener: Some(self.editor.clone()),
             agent: Some(AgentRef::Companion),
@@ -79,12 +80,12 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             label: None,
             rewind: action_core::Rewind::default(),
         };
-        let session = self
-            .host
-            .open(opening)
-            .await
-            .ok()
-            .ok_or_else(|| fault::internal("the session could not be opened"))?;
+        let session = self.host.open(opening).await.map_err(|error| {
+            fault::internal(&format!(
+                "the session could not be opened: {}",
+                chain(&error)
+            ))
+        })?;
         let mode = Mode::default();
         let (helper, turns) = (None, Turns::Here);
         self.roster.insert(
@@ -122,8 +123,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         }
         for update in history::replay(&rows, &plan) {
             link.update(&session, update)
-                .ok()
-                .ok_or_else(|| fault::internal("the connection closed"))?;
+                .map_err(|error| fault::internal(&chain(&error)))?;
         }
         if !self.roster.contains_key(&session) {
             self.host
@@ -154,14 +154,16 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         let wanted = asked.cwd.as_deref().map(workspace).transpose()?;
         let skip: usize = match asked.cursor.as_deref() {
             None => 0,
-            Some(c) => c.parse().ok().ok_or_else(|| fault::invalid("bad cursor"))?,
+            Some(c) => c
+                .parse()
+                .map_err(|error| fault::invalid(&format!("bad cursor: {error}")))?,
         };
-        let stored = self
-            .log
-            .sessions()
-            .await
-            .ok()
-            .ok_or_else(|| fault::internal("the session log could not be read"))?;
+        let stored = self.log.sessions().await.map_err(|error| {
+            fault::internal(&format!(
+                "the session log could not be read: {}",
+                chain(&error)
+            ))
+        })?;
         let mut infos: Vec<SessionInfo> = wanted
             .as_ref()
             .map(|w| self.helper_infos(w))

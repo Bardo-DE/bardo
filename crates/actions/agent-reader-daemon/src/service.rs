@@ -65,8 +65,10 @@ impl<P: InferTransport, I: IntentsTransport> ReaderService<P, I> {
                 .intents
                 .session_resolve(session.clone(), *handle)
                 .await
-                .ok()
-                .ok_or(ReaderError::ModelUnavailable)?;
+                .map_err(|error| {
+                    tracing::warn!(%error, "the reader could not fetch an input");
+                    ReaderError::ModelUnavailable
+                })?;
             inputs.push(Quarantined::new(Labelled {
                 value: resolved.text,
                 label: resolved.label,

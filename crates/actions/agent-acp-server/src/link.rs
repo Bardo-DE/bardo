@@ -21,9 +21,21 @@ use provenance::SessionId;
 use std::pin::pin;
 
 /// The editor has gone: nothing more can be said to it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 #[error("the editor closed the connection")]
-pub(crate) struct Gone;
+pub(crate) struct Gone(#[source] pub(crate) Error);
+
+/// `error` and its causes as one line, for the text of a wire error.
+pub(crate) fn chain(error: &dyn std::error::Error) -> String {
+    let mut text = error.to_string();
+    let mut next = error.source();
+    while let Some(cause) = next {
+        text.push_str(": ");
+        text.push_str(&cause.to_string());
+        next = cause.source();
+    }
+    text
+}
 
 /// What the editor sent that the server serves. The requests are boxed: `initialize` alone is
 /// over a kilobyte, and every select over the channel would carry that size. The `initialize`
@@ -46,7 +58,7 @@ pub(crate) fn answer<T: JsonRpcResponse>(
     responder: Responder<T>,
     result: Result<T, Error>,
 ) -> Result<(), Gone> {
-    responder.respond_with_result(result).ok().ok_or(Gone)
+    responder.respond_with_result(result).map_err(Gone)
 }
 
 impl Inbound {
@@ -103,7 +115,7 @@ impl Link {
     /// Sends `session/update` for `session`.
     pub(crate) fn update(&self, session: &SessionId, update: SessionUpdate) -> Result<(), Gone> {
         let note = SessionNotification::new(out::wire_id(session), update);
-        self.cx.send_notification(note).ok().ok_or(Gone)
+        self.cx.send_notification(note).map_err(Gone)
     }
 
     /// Sends the permission `request`. Its answer comes on the returned channel; dropping the

@@ -14,7 +14,7 @@
 
 use crate::covered::Covered;
 use crate::helpers::{Helpers, NoHelpers};
-use crate::link::{Gone, Inbound, Link, answer};
+use crate::link::{Gone, Inbound, Link, answer, chain};
 use crate::mode::Mode;
 use account_core::AppName;
 use action_vocab::Clock;
@@ -66,8 +66,7 @@ macro_rules! forward {
         $builder.on_receive_request(
             async move |asked: $request, responder, _cx| {
                 tx.unbounded_send(Inbound::$variant(Box::new(asked), responder))
-                    .ok()
-                    .ok_or_else(Error::internal_error)
+                    .map_err(|error| fault::internal(&chain(&error)))
             },
             on_receive_request!(),
         )
@@ -148,8 +147,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             async move |_asked: InitializeRequest, responder, _cx| {
                 initialize_tx
                     .unbounded_send(Inbound::Initialize(responder))
-                    .ok()
-                    .ok_or_else(Error::internal_error)
+                    .map_err(|error| fault::internal(&chain(&error)))
             },
             on_receive_request!(),
         );
@@ -162,8 +160,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             .on_receive_notification(
                 async move |cancel: CancelNotification, _cx| {
                     tx.unbounded_send(Inbound::Cancel(cancel))
-                        .ok()
-                        .ok_or_else(Error::internal_error)
+                        .map_err(|error| fault::internal(&chain(&error)))
                 },
                 on_receive_notification!(),
             )

@@ -58,13 +58,13 @@ impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P,
             tracing::warn!(%refused, "refused a caller that is not intentd");
             return Err(refused.into());
         }
-        let session = SessionId::parse(&session).ok().ok_or_else(|| {
-            tracing::warn!("refused a request whose session is not an id");
-            fdo::Error::InvalidArgs("not a session id".into())
+        let session = SessionId::parse(&session).map_err(|error| {
+            tracing::warn!(%error, "refused a request whose session is not an id");
+            fdo::Error::InvalidArgs(format!("not a session id: {error}"))
         })?;
-        let ask: ReaderAsk = serde_json::from_str(&ask).ok().ok_or_else(|| {
+        let ask: ReaderAsk = serde_json::from_str(&ask).map_err(|error| {
             tracing::warn!("refused a request that is not a reader ask");
-            fdo::Error::InvalidArgs("not a reader ask".into())
+            fdo::Error::InvalidArgs(format!("not a reader ask: {error}"))
         })?;
         let answer: Result<Value, ReaderError> = self.service.extract_in(&session, ask).await;
         // Which way it failed, never what was read or said.
