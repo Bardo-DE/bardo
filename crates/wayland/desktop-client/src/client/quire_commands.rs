@@ -31,9 +31,11 @@ pub(super) fn carries(command: &DesktopCommand, quire_arm: bool) -> bool {
 
 /// The generated enum with the vocab value's code (the two are tested to agree).
 fn generated<V: WireCode, G: TryFrom<u32>>(value: V) -> Result<G, CommandError> {
-    G::try_from(value.code())
-        .ok()
-        .ok_or_else(|| CommandError::Code(value.code()))
+    // The generated enums' `TryFrom<u32>` has nothing to say beyond the code `Code` carries.
+    let Ok(generated) = G::try_from(value.code()) else {
+        return Err(CommandError::Code(value.code()));
+    };
+    Ok(generated)
 }
 
 fn window(wire: &Wire, key: ToplevelKey) -> Result<&BardoDesktopWindowV1, CommandError> {

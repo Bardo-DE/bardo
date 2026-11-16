@@ -46,9 +46,13 @@ impl ShmFile {
 
     /// Reads the whole buffer back.
     pub(super) fn read_pixels(&self) -> Result<Vec<u8>, WireError> {
-        let length = usize::try_from(u64::from(self.stride) * u64::from(self.size.h))
-            .ok()
-            .ok_or_else(too_big)?;
+        let length =
+            usize::try_from(u64::from(self.stride) * u64::from(self.size.h)).map_err(|e| {
+                io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    format!("the capture buffer does not fit a wl_shm pool: {e}"),
+                )
+            })?;
         let mut pixels = vec![0u8; length];
         self.file.read_exact_at(&mut pixels, 0)?;
         Ok(pixels)
