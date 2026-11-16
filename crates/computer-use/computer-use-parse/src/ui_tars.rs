@@ -103,7 +103,10 @@ fn action<S: CoordSpace>(ctx: Ctx, call: &Call<'_>) -> Result<CuaAction<S>, Drop
             by: ScrollBy::Notches(Notches(SCROLL_NOTCHES)),
         }),
         "wait" => Ok(CuaAction::Wait {
-            for_ms: WaitMs::new(WAIT_MS).ok().ok_or(DropReason::BadNumber)?,
+            for_ms: match WaitMs::new(WAIT_MS) {
+                Ok(wait) => wait,
+                Err(_out_of_range) => return Err(DropReason::BadNumber),
+            },
         }),
         "finished" => Ok(CuaAction::Finish {
             outcome: FinishOutcome::Done,
@@ -158,6 +161,9 @@ fn numbers(value: &str) -> Result<Vec<u32>, DropReason> {
     untagged
         .split(|c: char| c.is_whitespace() || matches!(c, ',' | '(' | ')' | '[' | ']'))
         .filter(|word| !word.is_empty())
-        .map(|word| word.parse::<u32>().ok().ok_or(DropReason::BadNumber))
+        .map(|word| match word.parse::<u32>() {
+            Ok(number) => Ok(number),
+            Err(_not_a_number) => Err(DropReason::BadNumber),
+        })
         .collect()
 }

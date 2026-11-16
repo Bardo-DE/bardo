@@ -165,7 +165,10 @@ fn whole(value: &Value) -> Verdict<u32> {
                 .map(|f| f as u64)
         })
         .ok_or(DropReason::BadNumber)?;
-    u32::try_from(n).ok().ok_or(DropReason::BadNumber)
+    let Ok(number) = u32::try_from(n) else {
+        return Err(DropReason::BadNumber);
+    };
+    Ok(number)
 }
 
 /// A point by one prefix after another: `{prefix}coordinate: [x, y]`, else `{prefix}x` and
@@ -275,9 +278,9 @@ pub(crate) fn scroll<S: CoordSpace>(
                         .map(|f| f as i64)
                 })
                 .ok_or(DropReason::BadNumber)?;
-            let magnitude = u32::try_from(signed.unsigned_abs())
-                .ok()
-                .ok_or(DropReason::BadNumber)?;
+            let Ok(magnitude) = u32::try_from(signed.unsigned_abs()) else {
+                return Err(DropReason::BadNumber);
+            };
             if magnitude == 0 {
                 return Err(DropReason::BadNumber);
             }

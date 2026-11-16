@@ -57,7 +57,10 @@ pub fn from_words<S: AsRef<str>>(words: &[S]) -> Result<Chord, DropReason> {
     } else {
         mods
     };
-    Chord::new(mods, key).ok().ok_or(DropReason::BadArgument)
+    let Ok(chord) = Chord::new(mods, key) else {
+        return Err(DropReason::BadArgument);
+    };
+    Ok(chord)
 }
 
 fn modifier(word: &str) -> Option<Modifier> {

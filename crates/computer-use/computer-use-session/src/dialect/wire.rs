@@ -47,10 +47,10 @@ impl ActionDialect for Wire {
         if reply.calls.is_empty() {
             return finished_by_talking(&reply.text);
         }
-        self.0
-            .decode(&reply.calls, &reply.safety)
-            .ok()
-            .ok_or(ParseError::Malformed { at: ByteOffset(0) })
+        match self.0.decode(&reply.calls, &reply.safety) {
+            Ok(parsed) => Ok(parsed),
+            Err(_wire) => Err(ParseError::Malformed { at: ByteOffset(0) }),
+        }
     }
 }
 
@@ -63,7 +63,9 @@ fn finished_by_talking(text: &str) -> Result<Parsed, ParseError> {
         .filter(|c| !c.is_control() || matches!(c, '\n' | '\t'))
         .take(Summary::MAX_CHARS as usize)
         .collect();
-    let summary = Summary::new(text).ok().ok_or(ParseError::NoAction)?;
+    let Ok(summary) = Summary::new(text) else {
+        return Err(ParseError::NoAction);
+    };
     if summary.as_str().is_empty() {
         return Err(ParseError::NoAction);
     }
