@@ -39,8 +39,9 @@ fn physical(node: &AudioNode) -> bool {
 }
 
 /// The source to capture: the configured `input` if that physical node exists, else `PipeWire`'s
-/// default source if it is a physical node, else the first physical source. A monitor or a sink is
-/// never returned, whatever the override or the metadata names.
+/// default source if it is a physical node, else the first physical source.
+///
+/// A monitor or a sink is never returned, whatever the override or the metadata names.
 #[must_use]
 pub fn choose_capture<'a>(
     nodes: &'a [AudioNode],

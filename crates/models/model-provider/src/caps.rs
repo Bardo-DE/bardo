@@ -60,8 +60,9 @@ pub enum Constraint {
     JsonObject,
 }
 
-/// Whether a server still calls tools when a response format is set on the same request. Some
-/// servers suppress tool calls then (`response_format` plus `tools`); the extraction mode
+/// Whether a server still calls tools when a response format is set on the same request.
+///
+/// Some servers suppress tool calls then (`response_format` plus `tools`); the extraction mode
 /// picks its route by it. A property of the engine flavor, not of the model.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

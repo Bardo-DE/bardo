@@ -124,10 +124,12 @@ enum Changed {
     Gone,
 }
 
-/// On the host thread: make `held` match `wish`. Held and none held: `AuthCommand::Reset`,
-/// the [`LockLink`] to the main display, `lock_session(factory())`, and on a refusal
-/// `LockerCommand::Shell(Refused)` (an `InProgress` lock is adopted as held instead). Released
-/// and one held: `unlock_session`. Anything else: nothing.
+/// On the host thread: make `held` match `wish`.
+///
+/// Held and none held: `AuthCommand::Reset`, the [`LockLink`] to the main display,
+/// `lock_session(factory())`, and on a refusal `LockerCommand::Shell(Refused)` (an `InProgress`
+/// lock is adopted as held instead). Released and one held: `unlock_session`. Anything else:
+/// nothing.
 pub fn apply(
     host: &mut impl SessionLockHost,
     held: &mut ShellLock,
@@ -169,9 +171,11 @@ fn main_display(outputs: &Outputs) -> PromptOutput {
 }
 
 /// Where the prompt is once the outputs are `outputs`: where it was while that output is still
-/// there, else the main display. A prompt named for an output that was unplugged would otherwise
-/// be drawn nowhere, and the session would have no field to type a password into until the
-/// compositor happened to move the keyboard.
+/// there, else the main display.
+///
+/// A prompt named for an output that was unplugged would otherwise be drawn nowhere, and the
+/// session would have no field to type a password into until the compositor happened to move the
+/// keyboard.
 #[must_use]
 pub fn prompt_among(now: PromptOutput, outputs: &Outputs) -> PromptOutput {
     match now {

@@ -126,11 +126,12 @@ enum Poll {
     Reported,
 }
 
-/// The one display device of `--drm-node` mode: present at start, never added or removed. There
-/// is no udev monitor in this mode, so a hotplug (a vkms connector connected through configfs)
-/// would never be heard; instead the device is reported `Changed` once every
-/// [`POLL_EVERY`] + 1 turns of the backend, and the backend reads its connectors again. A look
-/// that finds nothing new reports nothing.
+/// The one display device of `--drm-node` mode: present at start, never added or removed.
+///
+/// There is no udev monitor in this mode, so a hotplug (a vkms connector connected through
+/// configfs) would never be heard; instead the device is reported `Changed` once every
+/// [`POLL_EVERY`] + 1 turns of the backend, and the backend reads its connectors again. A look that
+/// finds nothing new reports nothing.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FixedNode {
     node: DevicePath,

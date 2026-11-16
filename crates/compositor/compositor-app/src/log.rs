@@ -5,9 +5,10 @@
 /// point trace off. casement logs the cause once itself (`frame_faults`).
 pub const DEFAULT_FILTER: &str = "info,smithay::backend::egl::ffi=off,smithay::backend::renderer::element=error,smithay::backend::renderer::utils=error";
 
-/// Installs a stderr subscriber filtered by `filter` (an `EnvFilter` directive list such as
-/// `info` or `casement=debug`; the binary reads it from `BARDO_COMPOSITOR_LOG`). Called once by the
-/// binary; tests install none.
+/// Installs a stderr subscriber filtered by `filter` (an `EnvFilter` directive list such as `info`
+/// or `casement=debug`; the binary reads it from `BARDO_COMPOSITOR_LOG`).
+///
+/// Called once by the binary; tests install none.
 pub fn init(filter: &str) {
     let installed = tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::new(filter))

@@ -1,6 +1,8 @@
 //! The guards of a socket served to every local account: who may connect, who is the shell, whose
-//! turn it is to complain and how long a listener pauses. Policy-free mechanics: the table of
-//! callers, the caps and the messages stay with the daemon that serves the socket.
+//! turn it is to complain and how long a listener pauses.
+//!
+//! Policy-free mechanics: the table of callers, the caps and the messages stay with the daemon that
+//! serves the socket.
 //!
 //! Unix only, behind the `guard` feature, because the caller check is peephole's.
 

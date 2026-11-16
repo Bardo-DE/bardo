@@ -1,6 +1,7 @@
 //! bardo-shell's own idle on the daemon's side: the idle service's config from `idle.*` and
-//! `session.lock_grace_s` ([`policy_of`]), sent now and on every change ([`IdleBridge`]). The
-//! service resolves the kind of session itself and is `Off` anywhere but a bardo-shell session.
+//! `session.lock_grace_s` ([`policy_of`]), sent now and on every change ([`IdleBridge`]).
+//!
+//! The service resolves the kind of session itself and is `Off` anywhere but a bardo-shell session.
 //!
 //! The daemon's [`IdleTimesSource`] can fix the times instead of the settings: a `debug` build's
 //! `bardo-shell run --idle-times <screen_off_s>,<suspend_s>` (0 never, [`test_times`]) uses those
@@ -25,6 +26,7 @@ const LOCKED_SCREEN_OFF: IdleSecs = IdleSecs(60);
 
 /// The idle config `file` makes: the four `*_min` keys times 60 (0 is `Never`); the lock and
 /// `session.lock_grace_s` in seconds, and the dim and the lock screen's own time as constants.
+///
 /// Each value is held to its key's range, so a hand-edited file cannot ask for an hour of grace.
 #[must_use]
 pub fn policy_of(file: &ShellFile) -> IdleConfig {

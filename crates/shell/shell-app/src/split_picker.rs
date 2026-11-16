@@ -9,9 +9,10 @@ use tokio::sync::watch;
 
 use crate::outgoing::Outgoing;
 
-/// What a note of the Split View choice does to the offer on `link`. `view` is the desktop as it
-/// is now: it names the first window's output and the words of each window on offer. Any other
-/// note changes nothing.
+/// What a note of the Split View choice does to the offer on `link`.
+///
+/// `view` is the desktop as it is now: it names the first window's output and the words of each
+/// window on offer. Any other note changes nothing.
 ///
 /// ```
 /// use shell_app::split_picker::apply;

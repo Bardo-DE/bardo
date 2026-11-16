@@ -1,7 +1,8 @@
-//! The rows the center draws, in order, and what a press, Return or Delete on one asks for,
-//! pure. Each group is its header (quire's `GroupHeader`: the app, the count, "N more" or "Show
-//! less", Clear) and then its cards: a collapsed group of several is its newest card stacked over
-//! the rest (macOS: a press on the stack opens it, its close clears the group).
+//! The rows the center draws, in order, and what a press, Return or Delete on one asks for, pure.
+//!
+//! Each group is its header (quire's `GroupHeader`: the app, the count, "N more" or "Show less",
+//! Clear) and then its cards: a collapsed group of several is its newest card stacked over the rest
+//! (macOS: a press on the stack opens it, its close clears the group).
 
 use shell_model::notifications::{ActionKey, AppKey, NotificationId};
 
@@ -39,9 +40,10 @@ pub enum CenterRow {
     },
 }
 
-/// What a row is, for the center's `List`: a header by its group, a card by its
-/// notification. Not by its `Stack`, which changes as the group folds, so the newest card stays
-/// put when a group opens or closes.
+/// What a row is, for the center's `List`: a header by its group, a card by its notification.
+///
+/// Not by its `Stack`, which changes as the group folds, so the newest card stays put when a group
+/// opens or closes.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum RowKey {
     Head(AppKey),

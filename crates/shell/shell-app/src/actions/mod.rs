@@ -1,10 +1,11 @@
-//! The shell's actions, carried out: the one interpreter. Every entrance (a menu, a corner, a
-//! launcher row, the command line, an agent) hands it an [`Ask`] and where it came from; it owns
-//! the three decisions an entrance used to make for itself: which output a panel opens on
-//! ([`Outputs::open_on`](crate::outputs::Outputs::open_on), unless the origin names one), the
-//! activation token of a launch (asked of the origin's surface, always), and whether a power action
-//! asks first or happens at once (`SessionAction::route`). What an action is, is
-//! `shell_model::actions`'s; this is where its `Effect` is matched.
+//! The shell's actions, carried out: the one interpreter.
+//!
+//! Every entrance (a menu, a corner, a launcher row, the command line, an agent) hands it an
+//! [`Ask`] and where it came from; it owns the three decisions an entrance used to make for itself:
+//! which output a panel opens on ([`Outputs::open_on`](crate::outputs::Outputs::open_on), unless
+//! the origin names one), the activation token of a launch (asked of the origin's surface, always),
+//! and whether a power action asks first or happens at once (`SessionAction::route`). What an
+//! action is, is `shell_model::actions`'s; this is where its `Effect` is matched.
 //!
 //! It runs on the host thread, which holds the surfaces a token is asked of. A surface's ask
 //! arrives on the `ActionLink` and is forwarded here by [`spawn_asks`]; a client's arrives as
@@ -124,9 +125,10 @@ fn settings(
     )
 }
 
-/// Re-read `settings.toml` and both `style.css` files and publish them: the bar and every surface pick them
-/// up through the settings feed, the scroll engine through `ctx`. Dock pins are not re-read here: the pins
-/// service watches its own file.
+/// Re-read `settings.toml` and both `style.css` files and publish them: the bar and every surface
+/// pick them up through the settings feed, the scroll engine through `ctx`.
+///
+/// Dock pins are not re-read here: the pins service watches its own file.
 pub fn reload(ctx: &mut HostCtx<ShellMsg>, reach: &Reach) -> Response {
     crate::daemon::settings::reload(reach.store, reach.settings);
     reach.styles.reload();

@@ -5,8 +5,9 @@ use std::fmt;
 use std::time::Duration;
 
 /// A reading of `CLOCK_MONOTONIC` in nanoseconds: the number a script reads with
-/// `time.clock_gettime_ns(time.CLOCK_MONOTONIC)`. `Stamp(0)` is "no such moment" (a line says 0
-/// where an input did not cause a change).
+/// `time.clock_gettime_ns(time.CLOCK_MONOTONIC)`.
+///
+/// `Stamp(0)` is "no such moment" (a line says 0 where an input did not cause a change).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub struct Stamp(pub u64);
 

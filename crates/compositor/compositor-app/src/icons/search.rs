@@ -4,8 +4,9 @@ use base_xdg::Xdg;
 use std::path::PathBuf;
 
 /// Where app icons are looked for: through the desktop entries in these folders, most important
-/// first, and the installed icon themes. (No icons are looked for or drawn, in the jail and the
-/// test kit, when there is no `IconSearch`.)
+/// first, and the installed icon themes.
+///
+/// (No icons are looked for or drawn, in the jail and the test kit, when there is no `IconSearch`.)
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct IconSearch {
     /// The `applications` folders, most important first.

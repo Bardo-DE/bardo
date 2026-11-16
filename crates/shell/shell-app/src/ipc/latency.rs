@@ -10,7 +10,9 @@ pub fn log_open_latency(elapsed: Duration) {
 }
 
 /// The stderr line for one `bardo-shell launcher toggle`'s latency, `elapsed` since the IPC request
-/// arrived. Its own function (rather than inlined in [`log_open_latency`]) so
+/// arrived.
+///
+/// Its own function (rather than inlined in [`log_open_latency`]) so
 /// `crates/shell/shell-app/tests/latency.rs` can check the arithmetic without a wall clock.
 #[must_use]
 pub fn open_latency_line(elapsed: Duration) -> String {

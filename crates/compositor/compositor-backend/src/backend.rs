@@ -50,9 +50,11 @@ impl BackendKind {
     }
 }
 
-/// The verbs the headless, winit and tty backends share. The defaults are the answers of a
-/// backend with no renderer of its own to draw a capture with (winit): nothing to offer and every
-/// draw refused. A call site that needs one backend's own methods matches [`BackendKind`] instead.
+/// The verbs the headless, winit and tty backends share.
+///
+/// The defaults are the answers of a backend with no renderer of its own to draw a capture with
+/// (winit): nothing to offer and every draw refused. A call site that needs one backend's own
+/// methods matches [`BackendKind`] instead.
 pub trait Backend {
     /// The connectors plugged at start, once (start-up and hotplug are one code path).
     fn announce(&mut self) -> Vec<ConnectorEvent>;

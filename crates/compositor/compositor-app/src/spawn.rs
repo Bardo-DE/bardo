@@ -1,6 +1,8 @@
-//! Starting programs (A5, P1-Z): the `Spawner` seam. A binding's program (`Effect::Spawn`) and
-//! xwayland-satellite go through it, so no code in the compositor calls `Command` itself and a
-//! test asserts what would have started (`compositor-testkit`'s `FakeSpawner`).
+//! Starting programs (A5, P1-Z): the `Spawner` seam.
+//!
+//! A binding's program (`Effect::Spawn`) and xwayland-satellite go through it, so no code in the
+//! compositor calls `Command` itself and a test asserts what would have started
+//! (`compositor-testkit`'s `FakeSpawner`).
 //!
 //! A program inherits the descriptors in [`SpawnSpec::pass`] (the listening sockets
 //! xwayland-satellite takes): the real spawner clears their close-on-exec flag, and the
@@ -33,9 +35,10 @@ use compositor_core::input::Argv;
 use compositor_core::time::Mono;
 use std::os::fd::OwnedFd;
 
-/// The variables a service manager sets for the service itself. A program casement starts is
-/// not that service, and one that kept them would talk to the manager as the compositor
-/// (`NOTIFY_SOCKET`, `WATCHDOG_*`) or take its descriptors (`LISTEN_*`).
+/// The variables a service manager sets for the service itself.
+///
+/// A program casement starts is not that service, and one that kept them would talk to the manager
+/// as the compositor (`NOTIFY_SOCKET`, `WATCHDOG_*`) or take its descriptors (`LISTEN_*`).
 pub const SERVICE_VARS: [&str; 6] = [
     "NOTIFY_SOCKET",
     "WATCHDOG_USEC",

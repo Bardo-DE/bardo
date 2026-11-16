@@ -24,9 +24,10 @@ pub enum Urgency {
     Background,
 }
 
-/// What a text is for: asymmetric models (nomic, e5, Qwen3-embedding) embed a search query and
-/// an indexed passage differently. Mirrors `inference-core`'s `EmbedRole`; recall names no porter
-/// type, so memoryd maps the two.
+/// What a text is for: asymmetric models (nomic, e5, Qwen3-embedding) embed a search query and an
+/// indexed passage differently.
+///
+/// Mirrors `inference-core`'s `EmbedRole`; recall names no porter type, so memoryd maps the two.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EmbedRole {
     /// A search query.
@@ -40,8 +41,9 @@ pub enum EmbedRole {
 pub struct MaxBatch(pub u32);
 
 /// The text a model wants in front of an input of each role (`search_query: `); both empty for a
-/// symmetric model. It lives on the card so an index and its queries cannot disagree. Mirrors
-/// `EmbedCap.prompts`.
+/// symmetric model.
+///
+/// It lives on the card so an index and its queries cannot disagree. Mirrors `EmbedCap.prompts`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub struct PromptPrefixes {
     /// Before a search query.

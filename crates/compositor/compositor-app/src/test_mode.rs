@@ -1,6 +1,7 @@
-//! The hooks of the vkms test mode (P1-V2): what `casement --backend tty --drm-node PATH` adds
-//! for `dev/vkms/accept.sh`, and nothing else. A test mode, not a feature: it is built only when
-//! `--drm-node` is given.
+//! The hooks of the vkms test mode (P1-V2): what `casement --backend tty --drm-node PATH` adds for
+//! `dev/vkms/accept.sh`, and nothing else.
+//!
+//! A test mode, not a feature: it is built only when `--drm-node` is given.
 //!
 //! * `SIGUSR1` and `SIGUSR2` are the session paused and activated, sent into the tty session
 //!   through its [`SleepLink`] (the path a suspend takes), so a "VT switch" runs the same

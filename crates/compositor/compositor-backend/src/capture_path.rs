@@ -1,6 +1,8 @@
-//! Which way a capture frame reaches the client's buffer (wave-2026-10-15/dmabuf): drawn by
-//! the GPU straight into a dma-buf, or read back and copied. One pure function, so the choice
-//! is a table and not a set of `if`s at each of the places that answer a frame.
+//! Which way a capture frame reaches the client's buffer (wave-2026-10-15/dmabuf): drawn by the GPU
+//! straight into a dma-buf, or read back and copied.
+//!
+//! One pure function, so the choice is a table and not a set of `if`s at each of the places that
+//! answer a frame.
 //!
 //! ```
 //! use compositor_backend::capture_path::direct;

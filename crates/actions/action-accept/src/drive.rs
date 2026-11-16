@@ -1,6 +1,7 @@
 //! The launcher's side of the run, over the bus: what sill and the launcher do for the person.
-//! Open a conversation, record the turn with intentd, hand it to companiond, and watch the
-//! answer object until it is done. Every step is a call or a signal on the private bus.
+//!
+//! Open a conversation, record the turn with intentd, hand it to companiond, and watch the answer
+//! object until it is done. Every step is a call or a signal on the private bus.
 
 use crate::world::{GIVE_UP, World, within};
 use account_core::AppName;

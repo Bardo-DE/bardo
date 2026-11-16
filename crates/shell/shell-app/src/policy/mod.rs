@@ -1,6 +1,7 @@
-//! The bridges from the settings to the services: a [`Policy`] says what one service should be
-//! told for a settings file, and [`follow`] tells it at start and again whenever the answer
-//! changes. The services that could touch the person's session stay passive until the first.
+//! The bridges from the settings to the services: a [`Policy`] says what one service should be told
+//! for a settings file, and [`follow`] tells it at start and again whenever the answer changes.
+//!
+//! The services that could touch the person's session stay passive until the first.
 
 pub mod calendar;
 pub mod clipboard;

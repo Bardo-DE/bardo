@@ -1,7 +1,8 @@
 //! The companion from the daemon's side: what a summon finds focused, the four verbs of
-//! `bardo-shell companion`, and the launcher effects the summon's machine asks for. The machines
-//! themselves run in the companion service (`shell_services::companion`); this is the host
-//! thread's part, which owns the outputs and the launcher link.
+//! `bardo-shell companion`, and the launcher effects the summon's machine asks for.
+//!
+//! The machines themselves run in the companion service (`shell_services::companion`); this is the
+//! host thread's part, which owns the outputs and the launcher link.
 //!
 //! A summon's launcher effects come off the service on a channel and are handed to the host
 //! thread as [`ShellMsg::Summon`], which [`apply`] carries out on the launcher link: open the

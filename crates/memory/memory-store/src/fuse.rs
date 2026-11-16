@@ -66,8 +66,9 @@ pub fn fuse_rrf(lists: &[Vec<Ranked>], k: RrfK) -> Vec<Fused> {
 /// Characters per token the chunker assumes.
 pub const CHARS_PER_TOKEN: u32 = 4;
 
-/// Splits `text` into chunks of at most `max_tokens` (estimated at four characters a token),
-/// on whitespace, never inside a word; a word longer than the limit is a chunk of its own.
+/// Splits `text` into chunks of at most `max_tokens` (estimated at four characters a token), on
+/// whitespace, never inside a word; a word longer than the limit is a chunk of its own.
+///
 /// Whitespace between words is normalised to single spaces.
 #[must_use]
 pub fn chunk(text: &str, max_tokens: u32) -> Vec<Chunk> {

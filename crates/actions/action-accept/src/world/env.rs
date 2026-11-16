@@ -48,9 +48,11 @@ fn engine_cache(root: Option<&Path>) -> Vec<(&'static str, String)> {
     .unwrap_or_default()
 }
 
-/// What only one daemon is told. memoryd's packaged binary runs a test build: its keys are a file
-/// (there is no Secret Service on the private bus), its sandbox stays ON, and accountd, inferd and memoryd read
-/// their callers from the scratch fake proc root instead of `/proc`.
+/// What only one daemon is told.
+///
+/// memoryd's packaged binary runs a test build: its keys are a file (there is no Secret Service on
+/// the private bus), its sandbox stays ON, and accountd, inferd and memoryd read their callers from
+/// the scratch fake proc root instead of `/proc`.
 pub fn extra_env(dir: &Path, name: &str, daemon: DaemonEnv<'_>) -> Vec<(&'static str, String)> {
     let proc_root = dir.join("proc").display().to_string();
     let system = |unit: &str| {

@@ -80,10 +80,11 @@ impl Serving {
     }
 }
 
-/// [`spawn`], but answering every request through `dispatch` instead of a running host. `dispatch`
-/// is handed the request and a reply channel; it may answer synchronously or hand the channel to
-/// another thread, exactly as [`dispatch_via_host`] hands it to [`HostHandle::send`]. Each
-/// connection gets its own clone.
+/// [`spawn`], but answering every request through `dispatch` instead of a running host.
+///
+/// `dispatch` is handed the request and a reply channel; it may answer synchronously or hand the
+/// channel to another thread, exactly as [`dispatch_via_host`] hands it to [`HostHandle::send`].
+/// Each connection gets its own clone.
 pub fn spawn_with(
     door: impl Into<Door>,
     dispatch: impl Fn(Request, mpsc::SyncSender<Response>) + Clone + Send + 'static,

@@ -1,7 +1,9 @@
-//! The one way a command prints its answer to stdout. Rust's `println!` panics when the reader
-//! has gone (`bardo-shell ping | head -c0`: "failed printing to stdout: Broken pipe"); a
-//! command line tool should end quietly instead, as the reader asked for no more. [`emit`] writes
-//! through any [`Write`] so the closed-pipe case is a unit test over a writer that fails.
+//! The one way a command prints its answer to stdout.
+//!
+//! Rust's `println!` panics when the reader has gone (`bardo-shell ping | head -c0`: "failed
+//! printing to stdout: Broken pipe"); a command line tool should end quietly instead, as the reader
+//! asked for no more. [`emit`] writes through any [`Write`] so the closed-pipe case is a unit test
+//! over a writer that fails.
 
 use std::io::{self, ErrorKind, Write};
 use std::process::ExitCode;

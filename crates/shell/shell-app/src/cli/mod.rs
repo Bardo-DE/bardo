@@ -1,6 +1,7 @@
 //! The command line: clap's grammar per verb group, and [`request`], the one pure mapping from a
-//! parsed command to the IPC request it sends. `run`, `style` and the hidden `auth-check` helper
-//! are not requests.
+//! parsed command to the IPC request it sends.
+//!
+//! `run`, `style` and the hidden `auth-check` helper are not requests.
 
 use std::path::PathBuf;
 use std::process::ExitCode;

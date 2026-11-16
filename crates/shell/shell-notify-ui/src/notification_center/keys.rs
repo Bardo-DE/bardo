@@ -21,10 +21,12 @@ pub enum CenterOut {
     Dismiss(usize),
 }
 
-/// `focus` (the drawn row with the focus ring, if any) after `key` over `rows` drawn rows, and
-/// what the panel must do. Down from none focuses the first row, Up from none the last; a focus
-/// past the rows (they shrank) is clamped first; with no rows only Escape does anything.
-/// Dismissing keeps the ring on the same index, clamped to the rows that remain.
+/// `focus` (the drawn row with the focus ring, if any) after `key` over `rows` drawn rows, and what
+/// the panel must do.
+///
+/// Down from none focuses the first row, Up from none the last; a focus past the rows (they shrank)
+/// is clamped first; with no rows only Escape does anything. Dismissing keeps the ring on the same
+/// index, clamped to the rows that remain.
 #[must_use]
 pub fn step_keys(
     focus: Option<usize>,

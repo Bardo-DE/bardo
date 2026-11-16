@@ -1,8 +1,10 @@
-//! A short name for a world's runtime directory. A Unix socket's path is at most 107 bytes, and a
-//! scratch root kept under a lane or run directory is already most of that, so an engine's socket
-//! (`<run>/inferd/vllm-<model id>.sock`) would not fit. `XDG_RUNTIME_DIR` is therefore a link in
-//! `/tmp` named after the scratch root, pointing at `<scratch>/run`: the sockets still live in the
-//! scratch root, only the name every daemon is given is short.
+//! A short name for a world's runtime directory.
+//!
+//! A Unix socket's path is at most 107 bytes, and a scratch root kept under a lane or run directory
+//! is already most of that, so an engine's socket (`<run>/inferd/vllm-<model id>.sock`) would not
+//! fit. `XDG_RUNTIME_DIR` is therefore a link in `/tmp` named after the scratch root, pointing at
+//! `<scratch>/run`: the sockets still live in the scratch root, only the name every daemon is given
+//! is short.
 
 use fnv::FnvHasher;
 use std::hash::Hasher;

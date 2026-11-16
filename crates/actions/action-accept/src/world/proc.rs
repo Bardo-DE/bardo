@@ -29,9 +29,11 @@ impl Cgroup<'_> {
     }
 }
 
-/// Puts process `pid` in the fake proc root `<root>/proc`, in `cgroup`. In a service unit it is
-/// that unit's main process (`<root>/proc/units/<name>.service`, the fixture's stand-in for the
-/// systemd manager's `MainPID`, which is all a caller table's service row names).
+/// Puts process `pid` in the fake proc root `<root>/proc`, in `cgroup`.
+///
+/// In a service unit it is that unit's main process (`<root>/proc/units/<name>.service`, the
+/// fixture's stand-in for the systemd manager's `MainPID`, which is all a caller table's service
+/// row names).
 pub fn place(root: &Path, pid: u32, cgroup: Cgroup<'_>) {
     write(&root.join(format!("proc/{pid}/cgroup")), &cgroup.line());
     match cgroup {
@@ -45,9 +47,10 @@ pub fn place(root: &Path, pid: u32, cgroup: Cgroup<'_>) {
     }
 }
 
-/// Links `<pid_dir>/exe` to `/usr/bin/<name>`: a named scope has no main process, so the program
-/// it runs is what its caller row matches (`exe`). A unit's main process needs none: the fixture
-/// gives it the image its row names.
+/// Links `<pid_dir>/exe` to `/usr/bin/<name>`: a named scope has no main process, so the program it
+/// runs is what its caller row matches (`exe`).
+///
+/// A unit's main process needs none: the fixture gives it the image its row names.
 pub fn link_image(pid_dir: &Path, name: &str) -> std::io::Result<()> {
     let link = pid_dir.join("exe");
     match std::fs::remove_file(&link) {
@@ -74,9 +77,11 @@ pub fn unit_main(root: &Path, name: &str) -> Option<String> {
     std::fs::read_to_string(root.join(format!("proc/units/{name}.service"))).ok()
 }
 
-/// Puts back the main process of service unit `name` that [`unit_main`] read (nothing: removes
-/// the row). A process placed in a unit by [`place`] takes the unit's main pid; this gives it
-/// back to the daemon that really is the unit.
+/// Puts back the main process of service unit `name` that [`unit_main`] read (nothing: removes the
+/// row).
+///
+/// A process placed in a unit by [`place`] takes the unit's main pid; this gives it back to the
+/// daemon that really is the unit.
 pub fn restore_unit(root: &Path, name: &str, main: Option<String>) {
     let row = root.join(format!("proc/units/{name}.service"));
     match main {

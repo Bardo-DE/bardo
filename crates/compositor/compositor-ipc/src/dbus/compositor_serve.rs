@@ -101,11 +101,12 @@ impl CallerSetup {
     }
 }
 
-/// Starts serving Compositor1 on the bus at `address` (the session bus; the caller reads it
-/// from its environment), telling callers apart as `setup` says. The channel carries the calls
-/// for the event loop to answer, at most [`CONNECT_QUEUE`] at a time; the connection is
-/// casement's handle on the bus (keep it, or the name is released when the last clone goes).
-/// The thread behind it lives as long as the process.
+/// Starts serving Compositor1 on the bus at `address` (the session bus; the caller reads it from
+/// its environment), telling callers apart as `setup` says.
+///
+/// The channel carries the calls for the event loop to answer, at most [`CONNECT_QUEUE`] at a time;
+/// the connection is casement's handle on the bus (keep it, or the name is released when the last
+/// clone goes). The thread behind it lives as long as the process.
 pub fn serve_compositor_at(
     address: &str,
     setup: CallerSetup,

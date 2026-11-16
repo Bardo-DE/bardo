@@ -1,8 +1,9 @@
-//! The open-file limit (NEW-CAS-1). Every client connection costs the compositor descriptors
-//! (its socket, the handle on its process, the buffers it shares), and a user service starts
-//! with a soft limit of 1024. The soft limit is raised at start, never past the hard limit: a
-//! limit of a million would make every program the compositor starts (which inherits it) pay
-//! for it.
+//! The open-file limit (NEW-CAS-1).
+//!
+//! Every client connection costs the compositor descriptors (its socket, the handle on its process,
+//! the buffers it shares), and a user service starts with a soft limit of 1024. The soft limit is
+//! raised at start, never past the hard limit: a limit of a million would make every program the
+//! compositor starts (which inherits it) pay for it.
 
 use rustix::process::{Resource, Rlimit, getrlimit, setrlimit};
 

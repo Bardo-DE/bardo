@@ -19,9 +19,11 @@ pub(super) fn manager_answers(runtime: Option<&Path>) -> bool {
 const STEM_LIMIT: usize = 32;
 
 /// The unit name of the scope for `program` (as named, path or not): `app-bardo-<name>-<pid>-
-/// <nonce>.scope`. The compositor's `pid` keeps a new run's names apart from the scopes of an
-/// earlier run that still holds programs; the `nonce` counts this run's starts. Anything in the
-/// name outside ASCII letters and digits is `_`.
+/// <nonce>.scope`.
+///
+/// The compositor's `pid` keeps a new run's names apart from the scopes of an earlier run that
+/// still holds programs; the `nonce` counts this run's starts. Anything in the name outside ASCII
+/// letters and digits is `_`.
 ///
 /// ```
 /// use compositor_app::spawn::unit_for;

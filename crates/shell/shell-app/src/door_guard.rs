@@ -1,8 +1,10 @@
-//! The single-instance lock file, watched. The lock belongs to a file, and a cache cleaner or a
-//! tidy-minded person can delete that file: the next `bardo-shell` would lock a new one and start a second
-//! daemon beside this one, which then unlinks this daemon's socket for its own. latchkey's rule for
-//! a daemon is to ask `displaced()` now and then and to stop when it is displaced; [`spawn`] is that
-//! question, asked on the daemon's async runtime every [`STANDING_EVERY`].
+//! The single-instance lock file, watched.
+//!
+//! The lock belongs to a file, and a cache cleaner or a tidy-minded person can delete that file:
+//! the next `bardo-shell` would lock a new one and start a second daemon beside this one, which
+//! then unlinks this daemon's socket for its own. latchkey's rule for a daemon is to ask
+//! `displaced()` now and then and to stop when it is displaced; [`spawn`] is that question, asked
+//! on the daemon's async runtime every [`STANDING_EVERY`].
 //!
 //! A displaced shell does what a shell whose bus name was taken does ([`crate::name_guard`]): says
 //! so in one line, ends the host and hands the daemon the line, which becomes its failure. The

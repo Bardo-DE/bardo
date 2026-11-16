@@ -1,6 +1,7 @@
-//! The app icons under the windows in Mission Control: where the desktop entries are looked
-//! for ([`IconSearch`]) and the icons found for the windows on show ([`IconBook`]). The finding,
-//! decoding and caching is `compositor-icons`; the drawing is `compositor-render`.
+//! The app icons under the windows in Mission Control: where the desktop entries are looked for
+//! ([`IconSearch`]) and the icons found for the windows on show ([`IconBook`]).
+//!
+//! The finding, decoding and caching is `compositor-icons`; the drawing is `compositor-render`.
 
 pub(crate) mod book;
 mod search;

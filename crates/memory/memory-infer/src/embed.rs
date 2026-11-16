@@ -21,9 +21,11 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 /// Embeds through inferd: `Need::Embeddings` for the card's vector length, `InferRequest::Embed`
-/// with `Usage::Background` for indexing. inferd puts the model's query and document prefixes in
-/// front itself (the card carries them only so the index can tell when they changed), and the
-/// vectors must have the card's length: a model that answers otherwise is another vector space.
+/// with `Usage::Background` for indexing.
+///
+/// inferd puts the model's query and document prefixes in front itself (the card carries them only
+/// so the index can tell when they changed), and the vectors must have the card's length: a model
+/// that answers otherwise is another vector space.
 ///
 /// **Data classes.** A session and an `EmbedRequest` carry one data class, and inferd applies
 /// that class's floor (mail, voice and prompts stay on this computer). [`Embedder::embed_classed`]

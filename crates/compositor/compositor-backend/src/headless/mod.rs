@@ -1,6 +1,7 @@
-//! The headless backend: virtual outputs rendered offscreen, a vblank source on the session
-//! clock, a render-cost model, and [`crate::VirtualInput`] on the same input path libinput
-//! takes. What every test and every jailed run uses (11 §2).
+//! The headless backend: virtual outputs rendered offscreen, a vblank source on the session clock,
+//! a render-cost model, and [`crate::VirtualInput`] on the same input path libinput takes.
+//!
+//! What every test and every jailed run uses (11 §2).
 
 mod bare;
 mod cost;
@@ -66,9 +67,11 @@ pub trait FrameSource {
     fn dummy(&self, renderer: &mut DummyRenderer) -> Vec<CasementElement<DummyRenderer>>;
 }
 
-/// What a frame is drawn from, written once for every renderer: the elements, front first, for
-/// any [`Compositor`]. Every implementor is a [`FrameSource`] through the blanket impl; a source
-/// that wraps another (`Cursorless`) implements [`FrameSource`] by hand.
+/// What a frame is drawn from, written once for every renderer: the elements, front first, for any
+/// [`Compositor`].
+///
+/// Every implementor is a [`FrameSource`] through the blanket impl; a source that wraps another
+/// (`Cursorless`) implements [`FrameSource`] by hand.
 pub trait FrameElements {
     /// The elements, front first, for `renderer`.
     fn elements<R: Compositor>(&self, renderer: &mut R) -> Vec<CasementElement<R>>;
@@ -564,9 +567,11 @@ pub struct PresentedFrame {
     pub bare: Option<RgbaFrame>,
 }
 
-/// A presented frame's pixels. Every renderer reads back `Abgr8888` (RGBA byte order), so
-/// pixman and llvmpipe frames compare byte for byte (SP2). (The plan's sketch held renderer
-/// images; a read-back is what screenshots and goldens use: FINDINGS.)
+/// A presented frame's pixels.
+///
+/// Every renderer reads back `Abgr8888` (RGBA byte order), so pixman and llvmpipe frames compare
+/// byte for byte (SP2). (The plan's sketch held renderer images; a read-back is what screenshots
+/// and goldens use: FINDINGS.)
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FramePixels {
     /// Read back from pixman or GLES.

@@ -128,9 +128,10 @@ pub(crate) fn publish(
     commit(&staged, target)
 }
 
-/// A staging name beside `target` that no other write is using: `.<name>.<pid>.<n>.tmp`, a dot
-/// file ending in `.tmp`, so no scan for the real files lists it. The name is only proposed; the
-/// writer creates the file exclusively and asks again on a clash.
+/// A staging name beside `target` that no other write is using: `.<name>.<pid>.<n>.tmp`, a dot file
+/// ending in `.tmp`, so no scan for the real files lists it.
+///
+/// The name is only proposed; the writer creates the file exclusively and asks again on a clash.
 pub fn staging_beside(target: &Path) -> PathBuf {
     let number = STAGED.fetch_add(1, Ordering::Relaxed);
     let mut name = OsString::from(".");

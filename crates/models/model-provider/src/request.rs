@@ -151,9 +151,11 @@ pub enum ToolChoice {
     Named(ToolName),
 }
 
-/// What shape the reply must take. `Regex`, `Lark`, `Gbnf` and `Choice` are for local engines
-/// only: llama-server takes GBNF (not Lark), vLLM's guided backends take regex, choice and
-/// Lark. `Choice` is a reply that is exactly one of the listed strings.
+/// What shape the reply must take.
+///
+/// `Regex`, `Lark`, `Gbnf` and `Choice` are for local engines only: llama-server takes GBNF (not
+/// Lark), vLLM's guided backends take regex, choice and Lark. `Choice` is a reply that is exactly
+/// one of the listed strings.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum OutputShape {

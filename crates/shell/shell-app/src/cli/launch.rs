@@ -1,5 +1,7 @@
-//! `bardo-shell launch DESKTOP-ID [--print-timing]`: open an installed app exactly as a click in the
-//! dock does. The running shell does the launch and answers once the app's process exists; with
+//! `bardo-shell launch DESKTOP-ID [--print-timing]`: open an installed app exactly as a click in
+//! the dock does.
+//!
+//! The running shell does the launch and answers once the app's process exists; with
 //! `--print-timing` the timing line is printed on stdout.
 //!
 //! Exit codes: 0 launched, 1 the app could not be opened (one sentence on stderr), 2 no installed

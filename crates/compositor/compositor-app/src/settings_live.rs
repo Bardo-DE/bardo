@@ -21,9 +21,10 @@ use smithay::reexports::calloop::channel::{self, Event as ChannelEvent};
 use std::path::Path;
 use ui_core::spawner::Spawner;
 
-/// `current` with the parts that follow the file taken from `doc`: the pointer's settings, the
-/// key repeat, the keyboard layout and the night light. Everything else, the keymap's bindings
-/// among it, stays.
+/// `current` with the parts that follow the file taken from `doc`: the pointer's settings, the key
+/// repeat, the keyboard layout and the night light.
+///
+/// Everything else, the keymap's bindings among it, stays.
 ///
 /// ```
 /// use compositor_app::config::CasementDoc;

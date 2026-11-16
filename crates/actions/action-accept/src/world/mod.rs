@@ -35,12 +35,14 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 use tokio::sync::mpsc;
 
-/// How long a wait for a bus event may take before the test fails instead of hanging. Shorter than
-/// the 2 minutes nextest allows a test (`.config/nextest.toml`), so the failure names what was
-/// waited for instead of being a bare kill.
+/// How long a wait for a bus event may take before the test fails instead of hanging.
+///
+/// Shorter than the 2 minutes nextest allows a test (`.config/nextest.toml`), so the failure names
+/// what was waited for instead of being a bare kill.
 pub const GIVE_UP: Duration = Duration::from_secs(60);
 
 /// Runs `wait`, failing the test, naming `what` it waited for, if it takes longer than [`GIVE_UP`].
+///
 /// Every call over the bus and every wait on a peer goes through it: a zbus method call has no
 /// timeout of its own, and a peer that never answers would hold the test for ever.
 pub async fn within<T>(what: &str, wait: impl std::future::Future<Output = T>) -> T {

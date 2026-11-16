@@ -179,8 +179,9 @@ fn spawn_of(verb: ShellVerb) -> BindingAction {
 }
 
 /// Every binding `keymap` gives the compositor's actions, one per chord, actions in
-/// `StandardAction::all` order and each action's chords best first. A chord casement cannot
-/// see as a key press is left out.
+/// `StandardAction::all` order and each action's chords best first.
+///
+/// A chord casement cannot see as a key press is left out.
 #[must_use]
 pub fn bindings_of(keymap: &Keymap) -> Bindings {
     Bindings(

@@ -1,6 +1,8 @@
-//! The Space actions (`bardo-shell workspace prev|next|overview`, palmrest's swipes). A step activates the neighbour of the
-//! active workspace through the compositor service; at either end nothing happens. The overview
-//! opens Mission Control on the desktop's own compositor, and is refused on any other.
+//! The Space actions (`bardo-shell workspace prev|next|overview`, palmrest's swipes).
+//!
+//! A step activates the neighbour of the active workspace through the compositor service; at either
+//! end nothing happens. The overview opens Mission Control on the desktop's own compositor, and is
+//! refused on any other.
 
 use shell_ipc::response::Response;
 use shell_model::desktop::{DesktopCommand, open_mission_control};

@@ -31,9 +31,11 @@ pub enum StopError {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct StopRequested;
 
-/// Starts the watcher; the channel yields one [`StopRequested`] when `SIGTERM` or `SIGINT`
-/// arrives (again for each later one). Returns once the handlers are installed, so a signal sent
-/// after this is heard. The thread lives for the process.
+/// Starts the watcher; the channel yields one [`StopRequested`] when `SIGTERM` or `SIGINT` arrives
+/// (again for each later one).
+///
+/// Returns once the handlers are installed, so a signal sent after this is heard. The thread lives
+/// for the process.
 pub fn watch() -> Result<Channel<StopRequested>, StopError> {
     let (sender, channel) = channel::channel();
     let (ready_tx, ready) = mpsc::channel();

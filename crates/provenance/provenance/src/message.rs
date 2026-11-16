@@ -108,9 +108,10 @@ pub enum Part {
     Undo(UndoHandle),
 }
 
-/// A message, as the router stamped it. `from` is set by the transport or daemon from the
-/// caller, never taken from the sender's body (compare [`Actor`]); [`Message::sender_matches`]
-/// checks the stamp against the actor.
+/// A message, as the router stamped it.
+///
+/// `from` is set by the transport or daemon from the caller, never taken from the sender's body
+/// (compare [`Actor`]); [`Message::sender_matches`] checks the stamp against the actor.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Message {
     /// This message.

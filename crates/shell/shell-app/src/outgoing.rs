@@ -1,8 +1,9 @@
 //! What the shell's surfaces send back for the desktop to carry out: a window menu pick, a Split
 //! View answer, the display trial's answer, a confirmed force quit, a click in the Spaces bar.
-//! Each rides an `Outbox` on its link; one forwarder, [`forward`], hands every item to the host
-//! as the commands it means. A link that sends is registered once, by implementing
-//! [`Outgoing`], and listed in [`spawn_all`].
+//!
+//! Each rides an `Outbox` on its link; one forwarder, [`forward`], hands every item to the host as
+//! the commands it means. A link that sends is registered once, by implementing [`Outgoing`], and
+//! listed in [`spawn_all`].
 
 use layer_shell_host::HostHandle;
 use shell_model::desktop::DesktopCommand;

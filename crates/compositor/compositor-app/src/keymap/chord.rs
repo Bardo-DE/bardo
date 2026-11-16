@@ -37,9 +37,11 @@ const FUNCTION_KEYS: [NamedKey; 24] = [
 /// The first keysym of the Unicode range: `0x0100_0000 + code point`.
 const UNICODE_BASE: u32 = 0x0100_0000;
 
-/// The casement chord that `chord` means: Super is Command (the key arrives as the logo key),
-/// Alt is Option. `None` for a chord casement cannot see as a key press (a tapped modifier,
-/// or a function key past F24).
+/// The casement chord that `chord` means: Super is Command (the key arrives as the logo key), Alt
+/// is Option.
+///
+/// `None` for a chord casement cannot see as a key press (a tapped modifier, or a function key past
+/// F24).
 ///
 /// chordkit writes `Shift+=` as `+` and `Shift+/` as `?`; the keyboard reports the unshifted
 /// key with Shift held, so those two are written back that way.

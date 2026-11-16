@@ -1,7 +1,9 @@
 //! A document kept in memory and in a file: the one way the Spaces and the identity uses save a
-//! change. [`commit`] writes the new document on the blocking pool and holds it in memory only
-//! once it is on disk, so a change that could not be saved is not kept. It tells nobody: the
-//! [`Committed`] it returns is for the caller to pass on, after the document is swapped in.
+//! change.
+//!
+//! [`commit`] writes the new document on the blocking pool and holds it in memory only once it is
+//! on disk, so a change that could not be saved is not kept. It tells nobody: the [`Committed`] it
+//! returns is for the caller to pass on, after the document is swapped in.
 
 use crate::atomic::AtomicFile;
 use serde::Serialize;
@@ -29,8 +31,10 @@ pub struct Committed<D> {
 }
 
 /// Saves `after` to `file` (none: only in memory) and, once it is on disk, holds it in place of
-/// `held`. A document that cannot be written leaves `held` as it was. The caller wakes whoever
-/// follows the document after this returns, never from inside the save.
+/// `held`.
+///
+/// A document that cannot be written leaves `held` as it was. The caller wakes whoever follows the
+/// document after this returns, never from inside the save.
 pub async fn commit<D>(
     file: Option<&AtomicFile>,
     held: &mut D,

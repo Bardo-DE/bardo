@@ -20,8 +20,10 @@ use crate::sync_kinds::{KeyValueCap, PushCap};
 use serde::{Deserialize, Serialize};
 
 /// The list of capability kinds, handed to the macro named `$callback`, which sees every row as
-/// `$(#[doc])* Variant(CapabilityStruct, NeedStruct, "Name" $(, ai)?),`. The need structs are
-/// named for the expansion site: only account-match, which defines them, expands them.
+/// `$(#[doc])* Variant(CapabilityStruct, NeedStruct, "Name" $(, ai)?),`.
+///
+/// The need structs are named for the expansion site: only account-match, which defines them,
+/// expands them.
 #[macro_export]
 macro_rules! capability_kinds {
     ($callback:ident) => {
@@ -77,9 +79,11 @@ macro_rules! capability_kind_is_ai {
 }
 
 /// What a kind is, as a type: its [`CapabilityKind`], the name a person reads and whether the AI
-/// broker routes it. One zero-sized type per kind lives in [`service`] (the calendar, the contacts
-/// and the tasks share one capability struct, so the struct cannot be the kind). account-match's
-/// `Asks` adds the need that asks for it.
+/// broker routes it.
+///
+/// One zero-sized type per kind lives in [`service`] (the calendar, the contacts and the tasks
+/// share one capability struct, so the struct cannot be the kind). account-match's `Asks` adds the
+/// need that asks for it.
 pub trait Service {
     /// The kind.
     const KIND: CapabilityKind;

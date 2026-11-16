@@ -53,9 +53,11 @@ pub enum PromptCache {
     Fresh,
 }
 
-/// What a request tells vLLM beyond the shared fields. The constrained-decoding backend is not
-/// among them: since vLLM 0.12 it is a serve-time flag (`--structured-outputs-config.backend`), so
-/// it belongs to the engine's command line (`engine-supervisor`), not to a request.
+/// What a request tells vLLM beyond the shared fields.
+///
+/// The constrained-decoding backend is not among them: since vLLM 0.12 it is a serve-time flag
+/// (`--structured-outputs-config.backend`), so it belongs to the engine's command line
+/// (`engine-supervisor`), not to a request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct VllmExtras {
     /// The scheduling priority of this request (`priority`; lower runs first). It acts only

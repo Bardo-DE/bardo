@@ -1,6 +1,8 @@
-//! Telling the update service the release in use started well. The service keeps the previous
-//! release until one has been confirmed, and takes a release back if sessions on it keep not
-//! reaching a working desktop; so a session that did reach one says so, with `bardo-updater confirm`.
+//! Telling the update service the release in use started well.
+//!
+//! The service keeps the previous release until one has been confirmed, and takes a release back if
+//! sessions on it keep not reaching a working desktop; so a session that did reach one says so,
+//! with `bardo-updater confirm`.
 //!
 //! "Reached one" is: the shell has run for [`SETTLE`] on the person's own session bus, its host
 //! thread (the connection to the compositor) still answers, and nothing has taken it down. A
@@ -76,9 +78,11 @@ fn confirm_command(program: PathBuf) -> Start {
     }
 }
 
-/// After [`SETTLE`], confirm the release if the host answers. Only on the usual session bus and
-/// not in the safe fallback: a shell run on a private bus (a test, a development script) says
-/// nothing about the installed release, and one run in the safe compositor says nothing good.
+/// After [`SETTLE`], confirm the release if the host answers.
+///
+/// Only on the usual session bus and not in the safe fallback: a shell run on a private bus (a
+/// test, a development script) says nothing about the installed release, and one run in the safe
+/// compositor says nothing good.
 pub fn spawn_confirmation(rt: &Handle, env: &Env, host: HostHandle<ShellMsg>) {
     match speaks(env.buses.session.route(), env.session_mode) {
         Speaks::NotTheInstalled => return,

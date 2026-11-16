@@ -11,8 +11,9 @@ use smithay::utils::{Physical, Size, Transform};
 use ui_core::geometry::scale::Scale;
 
 /// The transform the damage tracker draws a winit window with: smithay's GLES framebuffer on the
-/// window's surface is y-flipped, and the flip undoes it (what anvil's winit backend does). It is
-/// the window's own: the output the model and the clients see stays `Normal`, so a capture of
+/// window's surface is y-flipped, and the flip undoes it (what anvil's winit backend does).
+///
+/// It is the window's own: the output the model and the clients see stays `Normal`, so a capture of
 /// it is upright and never flipped twice.
 pub const HOST_TRANSFORM: Transform = Transform::Flipped180;
 

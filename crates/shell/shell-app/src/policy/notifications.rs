@@ -25,9 +25,10 @@ pub fn policy_of(n: &NotificationsSettings, focus: bool) -> NotificationsPolicy 
     }
 }
 
-/// The notifications service's policy from the settings and `focus`. The focus mode comes from
-/// the focus link rather than `notifications.dnd` in the file, so Do Not Disturb takes effect as
-/// the control center sets it, before the file round-trips.
+/// The notifications service's policy from the settings and `focus`.
+///
+/// The focus mode comes from the focus link rather than `notifications.dnd` in the file, so Do Not
+/// Disturb takes effect as the control center sets it, before the file round-trips.
 #[derive(Debug)]
 pub struct NotificationsBridge {
     pub focus: watch::Receiver<bool>,

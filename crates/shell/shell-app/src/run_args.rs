@@ -1,6 +1,8 @@
-//! `bardo-shell run`'s options and the [`Env`] they make. A build without the `debug` feature takes
-//! none and always runs on the process's own seams ([`Env::from_process`]); a `debug` build's
-//! dev scripts swap single seams for stand-ins with flags, never with environment variables.
+//! `bardo-shell run`'s options and the [`Env`] they make.
+//!
+//! A build without the `debug` feature takes none and always runs on the process's own seams
+//! ([`Env::from_process`]); a `debug` build's dev scripts swap single seams for stand-ins with
+//! flags, never with environment variables.
 
 use shell_services::env::Env;
 

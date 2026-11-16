@@ -1,10 +1,11 @@
-//! Telling the service manager the shell is alive. The unit is `Type=notify` with a watchdog: the
-//! manager restarts the shell when it hears nothing for `WatchdogSec`. `READY=1` is sent once the
-//! host has started, and `WATCHDOG=1` every [`PING_EVERY`] by a thread of its own, but only while
-//! the host loop's pulse (`layer_shell_host::Host::pulse`) has moved since the last look: a loop stuck
-//! in a blocking call stops the pings, and the manager restarts the shell; an idle loop still
-//! beats, so a quiet desktop is never restarted. Without `NOTIFY_SOCKET` (a run by hand) every
-//! send does nothing.
+//! Telling the service manager the shell is alive.
+//!
+//! The unit is `Type=notify` with a watchdog: the manager restarts the shell when it hears nothing
+//! for `WatchdogSec`. `READY=1` is sent once the host has started, and `WATCHDOG=1` every
+//! [`PING_EVERY`] by a thread of its own, but only while the host loop's pulse
+//! (`layer_shell_host::Host::pulse`) has moved since the last look: a loop stuck in a blocking call
+//! stops the pings, and the manager restarts the shell; an idle loop still beats, so a quiet
+//! desktop is never restarted. Without `NOTIFY_SOCKET` (a run by hand) every send does nothing.
 
 use std::os::linux::net::SocketAddrExt;
 use std::os::unix::net::{SocketAddr, UnixDatagram};

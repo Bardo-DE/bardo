@@ -2,9 +2,11 @@
 
 use std::fmt;
 
-/// The most bytes a read takes from one file. The caller chooses it for the file's kind: a
-/// settings file has no business being megabytes, a document can be large. A file over the cap is
-/// refused whole ([`crate::ReadError::TooBig`]), never cut short.
+/// The most bytes a read takes from one file.
+///
+/// The caller chooses it for the file's kind: a settings file has no business being megabytes, a
+/// document can be large. A file over the cap is refused whole ([`crate::ReadError::TooBig`]),
+/// never cut short.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ReadCap(u64);
 

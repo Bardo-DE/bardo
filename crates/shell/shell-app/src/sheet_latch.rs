@@ -1,8 +1,10 @@
-//! Where the sheets open. The questions that ask the person something (polkit, confirm, voice
-//! consent, accounts, capture, permission, the display trial) open on the focused window's output,
-//! else the first output (the daemon does not know the pointer's), like a panel
-//! (`Outputs::open_on`). They must not follow the focus afterwards: a sheet takes clicks on its
-//! card only, so a click beside it changes the focus, and the question would jump outputs.
+//! Where the sheets open.
+//!
+//! The questions that ask the person something (polkit, confirm, voice consent, accounts, capture,
+//! permission, the display trial) open on the focused window's output, else the first output (the
+//! daemon does not know the pointer's), like a panel (`Outputs::open_on`). They must not follow the
+//! focus afterwards: a sheet takes clicks on its card only, so a click beside it changes the focus,
+//! and the question would jump outputs.
 //!
 //! One latch on the host thread decides it for all seven. [`spawn_follower`] nudges the host
 //! (`ShellMsg::Sheets`) whenever a source of questions changes; [`SheetLatch::next`] takes the

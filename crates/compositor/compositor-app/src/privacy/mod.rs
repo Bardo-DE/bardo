@@ -42,10 +42,11 @@ fn injected_owner() -> Owner {
 }
 
 /// How the model takes a program whose image the person can write, given `standing` (what
-/// `clients::client_standing` made of it: asked every time, never named by a record). A build
-/// for the jail takes one that the floor in an injected folder names as that program, so a
-/// scenario can pre-approve what it runs from its build folder; every other build, and every
-/// floor not injected, leaves `standing` as it is. This is the second exception beside
+/// `clients::client_standing` made of it: asked every time, never named by a record).
+///
+/// A build for the jail takes one that the floor in an injected folder names as that program, so a
+/// scenario can pre-approve what it runs from its build folder; every other build, and every floor
+/// not injected, leaves `standing` as it is. This is the second exception beside
 /// [`injected_owner`], and like it exists only under `testing` or `debug-inject`.
 #[must_use]
 pub fn writable_image(

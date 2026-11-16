@@ -23,9 +23,11 @@ const MACHINE_DIR: &str = "key-remap-machine";
 const FILE: &str = "keymap";
 const SOCKET: &str = "key-remap.sock";
 
-/// The keymap source of `home`. The real home reads the environment (`$BARDO_KEY_REMAP_SOCKET`,
-/// `$BARDO_KEY_REMAP_CONFIG_DIR`, `$XDG_CONFIG_HOME`); a stand-in directory reads only inside itself, and
-/// no daemon answers there, so a test or a jail never reaches the real machine's keymap.
+/// The keymap source of `home`.
+///
+/// The real home reads the environment (`$BARDO_KEY_REMAP_SOCKET`, `$BARDO_KEY_REMAP_CONFIG_DIR`,
+/// `$XDG_CONFIG_HOME`); a stand-in directory reads only inside itself, and no daemon answers there,
+/// so a test or a jail never reaches the real machine's keymap.
 #[must_use]
 pub fn source_for(home: Option<&Path>) -> KeycapSource {
     match home {
@@ -69,9 +71,10 @@ impl Live {
     }
 }
 
-/// Reads the keymap into the model's settings now, and again whenever it changes. The bindings
-/// already in the settings (casement's own `[bindings]`) stay first. A watch that cannot start
-/// is logged and the keymap read once is kept.
+/// Reads the keymap into the model's settings now, and again whenever it changes.
+///
+/// The bindings already in the settings (casement's own `[bindings]`) stay first. A watch that
+/// cannot start is logged and the keymap read once is kept.
 pub fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate::StartError> {
     let source = source_for(home);
     let (sender, receiver) = channel::channel::<()>();

@@ -59,11 +59,13 @@ pub fn write_system_callers(root: &Path) -> std::io::Result<()> {
     Ok(())
 }
 
-/// inferd's configuration. A cassette: the replay engine `scripted` playing the scratch cassette
-/// (recording its requests when `record` names a file). A live source: the owner's body as it is.
-/// A cassette also names the replay engine's model for every tier of the text slot: with no
-/// default planner, a tier with no row is refused as no model chosen. The callers are not here:
-/// they are inferd's system file (`inferd-callers.toml`).
+/// inferd's configuration.
+///
+/// A cassette: the replay engine `scripted` playing the scratch cassette (recording its requests
+/// when `record` names a file). A live source: the owner's body as it is. A cassette also names the
+/// replay engine's model for every tier of the text slot: with no default planner, a tier with no
+/// row is refused as no model chosen. The callers are not here: they are inferd's system file
+/// (`inferd-callers.toml`).
 #[must_use]
 pub fn inferd_toml(root: &Path, model: &ModelSource, record: Option<&Path>) -> String {
     match model {
@@ -84,9 +86,11 @@ pub fn inferd_toml(root: &Path, model: &ModelSource, record: Option<&Path>) -> S
 /// The person's choice for the replay engine's world: its model at every tier of the text slot.
 const SCRIPTED_TEXT: &str = "[ai.model.text]\nfast = \"local/scripted\"\nbalanced = \"local/scripted\"\nbest = \"local/scripted\"\n";
 
-/// memoryd's callers file: the units that may call it, with the roles the router and the shell
-/// are told apart by. The shell is `bardo-shell.service` only; the run places the test process
-/// in that unit, as its main process.
+/// memoryd's callers file: the units that may call it, with the roles the router and the shell are
+/// told apart by.
+///
+/// The shell is `bardo-shell.service` only; the run places the test process in that unit, as its
+/// main process.
 pub const MEMORY_CALLERS: &str = r#"[[caller]]
 app = "org.bardo.Intents"
 unit = "bardo-actiond.service"

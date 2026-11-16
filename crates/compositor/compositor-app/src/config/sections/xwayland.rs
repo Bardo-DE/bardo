@@ -18,9 +18,11 @@ pub enum XwaylandUse {
     Off,
 }
 
-/// `xwayland.*`: how older X11 apps are served. Unlike the other sections it has no part in the
-/// model's `CasementSettings` (it is read once, at start, by `main`), so its `Default` is written
-/// here and `crate::xwayland::resolve` is its conversion.
+/// `xwayland.*`: how older X11 apps are served.
+///
+/// Unlike the other sections it has no part in the model's `CasementSettings` (it is read once, at
+/// start, by `main`), so its `Default` is written here and `crate::xwayland::resolve` is its
+/// conversion.
 #[derive(
     Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ui_settings::SettingsSchema,
 )]

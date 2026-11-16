@@ -1,8 +1,10 @@
-//! The editor's side of an ACP run: `bardo-agent-acp` as a process on the private bus, spoken to over
-//! its stdin and stdout by a scripted peer. The process is placed in the fake proc root as the
-//! scope it is started in (`bardo-agent-acp.scope`, a plain agent of the app `org.bardo.Acp`), which
-//! is how intentd, inferd and memoryd know it: the callers files and tables the world writes name
-//! that scope (`org.bardo.Acp` is an editor and a companion in the shipped `actiond.toml`).
+//! The editor's side of an ACP run: `bardo-agent-acp` as a process on the private bus, spoken to
+//! over its stdin and stdout by a scripted peer.
+//!
+//! The process is placed in the fake proc root as the scope it is started in
+//! (`bardo-agent-acp.scope`, a plain agent of the app `org.bardo.Acp`), which is how intentd,
+//! inferd and memoryd know it: the callers files and tables the world writes name that scope
+//! (`org.bardo.Acp` is an editor and a companion in the shipped `actiond.toml`).
 
 use crate::world::{Cgroup, DaemonEnv, GIVE_UP, World, env_of, extra_env, place};
 use action_testbus::Reaped;

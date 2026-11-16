@@ -1,11 +1,12 @@
-//! The shell's names on the session bus. `org.bardo.Shell` (the shell's own actions) and
-//! `org.bardo.Confirm1` (the confirmation sheet) are asked for without queueing: a program that
-//! already owns either is not waited for, and the shell does not run beside it. The portal asks the
-//! person through the owner of `org.bardo.Shell`, so a program that took the name during a restart
-//! must not be left holding it while the shell goes on without. [`spawn`] watches the seat and,
-//! when a name is taken, says so in one line, ends the host and hands the daemon the line, which
-//! becomes its failure. The unit restarts the shell a second later, and the name is asked for
-//! again.
+//! The shell's names on the session bus.
+//!
+//! `org.bardo.Shell` (the shell's own actions) and `org.bardo.Confirm1` (the confirmation sheet)
+//! are asked for without queueing: a program that already owns either is not waited for, and the
+//! shell does not run beside it. The portal asks the person through the owner of `org.bardo.Shell`,
+//! so a program that took the name during a restart must not be left holding it while the shell
+//! goes on without. [`spawn`] watches the seat and, when a name is taken, says so in one line, ends
+//! the host and hands the daemon the line, which becomes its failure. The unit restarts the shell a
+//! second later, and the name is asked for again.
 
 use std::sync::mpsc;
 

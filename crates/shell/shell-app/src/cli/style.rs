@@ -1,7 +1,9 @@
-//! `bardo-shell style check [FILE]`: what `ui_lint::user_stylesheet` says about the person's `style.css`
-//! (or `FILE`), one line per note with its line and column. Reading the file is the only effect;
-//! the report is [`check`], pure over the text. It never asks the daemon, which loads the file
-//! whatever this says. The exit code is non-zero only for text that is not well-formed CSS.
+//! `bardo-shell style check [FILE]`: what `ui_lint::user_stylesheet` says about the person's
+//! `style.css` (or `FILE`), one line per note with its line and column.
+//!
+//! Reading the file is the only effect; the report is [`check`], pure over the text. It never asks
+//! the daemon, which loads the file whatever this says. The exit code is non-zero only for text
+//! that is not well-formed CSS.
 
 use std::io::ErrorKind;
 use std::path::PathBuf;

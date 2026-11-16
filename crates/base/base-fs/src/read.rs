@@ -6,9 +6,11 @@ use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use std::string::FromUtf8Error;
 
-/// Why a file was not read. [`ReadError::NotFound`] is the only variant that means the file is
-/// absent; every other one means something is there that this read could not take, and a caller
-/// must not treat it as absent (and so must not overwrite it with defaults).
+/// Why a file was not read.
+///
+/// [`ReadError::NotFound`] is the only variant that means the file is absent; every other one means
+/// something is there that this read could not take, and a caller must not treat it as absent (and
+/// so must not overwrite it with defaults).
 #[derive(Debug, thiserror::Error)]
 pub enum ReadError {
     /// There is no file at the path.

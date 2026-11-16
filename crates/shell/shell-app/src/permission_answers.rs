@@ -1,7 +1,8 @@
-//! The daemon's half of the compositor's permission question: what the person answers on the
-//! sheet reaches the compositor as a command for the desktop arm. The capture service holds the
-//! question and its sheet (`shell_services::capture_pick`); the arm lives on the host's thread, so
-//! [`spawn`] carries each answer there.
+//! The daemon's half of the compositor's permission question: what the person answers on the sheet
+//! reaches the compositor as a command for the desktop arm.
+//!
+//! The capture service holds the question and its sheet (`shell_services::capture_pick`); the arm
+//! lives on the host's thread, so [`spawn`] carries each answer there.
 
 use layer_shell_host::HostHandle;
 use shell_model::desktop::DesktopCommand;

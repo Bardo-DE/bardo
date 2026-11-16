@@ -263,9 +263,11 @@ fn keyboard(state: &mut State, target: &KeyboardTarget) {
     pointer_constraints::on_keyboard_focus(&pointer, left.as_ref(), followed.as_ref());
 }
 
-/// A popup's grab ended (a press outside it, or the client closed it): the keyboard grab is
-/// dropped and the keyboard goes where the model says. Smithay hands it to the popup's root
-/// surface, which may be a bar that never asked for the keyboard.
+/// A popup's grab ended (a press outside it, or the client closed it): the keyboard grab is dropped
+/// and the keyboard goes where the model says.
+///
+/// Smithay hands it to the popup's root surface, which may be a bar that never asked for the
+/// keyboard.
 pub fn end_popup_keyboard(state: &mut State) {
     let keyboard = state.wl.seat.keyboard.clone();
     keyboard.unset_grab(state);

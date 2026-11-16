@@ -1,7 +1,9 @@
 //! The daemon's half of the idle dim: the dim surfaces (`shell_overlays::IdleDim`, one per output,
-//! spawned warm and hidden) are mapped only while the idle service publishes `Idle.dim = Dimmed(_)`. The surface itself follows
-//! the same `Idle.dim` to fade in and snap out; this side only maps and unmaps, so an awake output
-//! has no dim surface on screen at all.
+//! spawned warm and hidden) are mapped only while the idle service publishes `Idle.dim =
+//! Dimmed(_)`.
+//!
+//! The surface itself follows the same `Idle.dim` to fade in and snap out; this side only maps and
+//! unmaps, so an awake output has no dim surface on screen at all.
 //!
 //! [`spawn_follower`] watches `services.idle.state` and sends `ShellMsg::Dim` whenever the dim
 //! changes; [`apply`] sets every dim surface's visibility from it ([`visibility_of`]). A new

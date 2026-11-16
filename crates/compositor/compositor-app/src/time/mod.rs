@@ -1,6 +1,7 @@
 //! The only clock readers in casement (row B8): `Instant::now`, smithay's `Clock::now` and
-//! calloop's `Timer` appear nowhere else. The model takes `Mono` as an argument; this module
-//! decides what `Mono` is.
+//! calloop's `Timer` appear nowhere else.
+//!
+//! The model takes `Mono` as an argument; this module decides what `Mono` is.
 //!
 //! The virtual clock (tests, `--clock stepped`) is compositor-core's `VirtualClock` shared with
 //! a calloop event source ([`VirtualTimerSource`], 21-FREEZE-AMENDMENTS A1, SP3): calloop's own

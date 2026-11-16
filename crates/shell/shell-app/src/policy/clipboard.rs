@@ -1,6 +1,8 @@
 //! The clipboard service's policy from `launcher.*` (history on or off; its length and the largest
-//! image are constants). The service is passive until the first, which is sent at start and again whenever the
-//! settings change it.
+//! image are constants).
+//!
+//! The service is passive until the first, which is sent at start and again whenever the settings
+//! change it.
 
 use shell_model::clipboard::{ClipPolicy, ClipboardCommand, EntryCap, ImageCap};
 use shell_settings::{LauncherSettings, ShellFile};

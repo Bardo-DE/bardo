@@ -1,9 +1,11 @@
-//! Which processes own an X11 app's windows, for force quit. Satellite makes one Wayland window
-//! per X11 window under the `WM_CLASS` as its app id and forwards nothing else, so the owner is
-//! asked of the X server: each top-level window's class, and the process the server read from
-//! the window's connection (`xres`). What is left here is the decision, which is pure: an
-//! app's windows are those whose class names it, their processes are what gets signalled, and
-//! satellite, this process, init and pid 0 never are. The X server is `xres::XServer`.
+//! Which processes own an X11 app's windows, for force quit.
+//!
+//! Satellite makes one Wayland window per X11 window under the `WM_CLASS` as its app id and
+//! forwards nothing else, so the owner is asked of the X server: each top-level window's class, and
+//! the process the server read from the window's connection (`xres`). What is left here is the
+//! decision, which is pure: an app's windows are those whose class names it, their processes are
+//! what gets signalled, and satellite, this process, init and pid 0 never are. The X server is
+//! `xres::XServer`.
 
 use compositor_core::app::AppKey;
 use rustix::process::RawPid;

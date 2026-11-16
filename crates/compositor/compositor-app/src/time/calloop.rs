@@ -30,8 +30,10 @@ pub fn arm(handle: &LoopHandle<'static, State>, wall: &WallClock, due: Due) {
 }
 
 /// Runs `then` once, on the loop, `delay` from now (a pause that is not the model's: a listener
-/// resting after a failed accept). The loop's data type is the caller's, so a test can use a
-/// bare one. A timer that cannot be armed is logged and `then` never runs.
+/// resting after a failed accept).
+///
+/// The loop's data type is the caller's, so a test can use a bare one. A timer that cannot be armed
+/// is logged and `then` never runs.
 pub fn after<D: 'static>(
     handle: &LoopHandle<'static, D>,
     delay: Duration,

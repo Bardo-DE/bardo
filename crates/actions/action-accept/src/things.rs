@@ -1,10 +1,12 @@
 //! The acceptance run's fake apps other than mail: an app whose manifest, not its code, says what
-//! it can do. Each app is a manifest (`dev/accept/fixtures/org.bardo.<App>.toml`) and a few
-//! things to find; the provider reads the manifest to know what an action is. A read that
-//! takes nothing and returns things is a search over the titles; a read of one thing returns its
-//! words; any other action is held for the undo window, as a real app holds a send or a change
-//! it can take back. Nothing here knows what a note or a file is, so a flow over one of these
-//! apps tests the harness and not the app.
+//! it can do.
+//!
+//! Each app is a manifest (`dev/accept/fixtures/org.bardo.<App>.toml`) and a few things to find;
+//! the provider reads the manifest to know what an action is. A read that takes nothing and returns
+//! things is a search over the titles; a read of one thing returns its words; any other action is
+//! held for the undo window, as a real app holds a send or a change it can take back. Nothing here
+//! knows what a note or a file is, so a flow over one of these apps tests the harness and not the
+//! app.
 //!
 //! What the things say is somebody else's words: every list and every read is labelled
 //! untrusted, from the source the app's manifest names for its content.

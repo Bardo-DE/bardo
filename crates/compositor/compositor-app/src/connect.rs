@@ -116,9 +116,10 @@ fn portal_only(caller: &RoleName) -> Result<(), ConnectRefusal> {
     }
 }
 
-/// Decides one `ConnectEis`: only the portal may have a remote EIS socket. On a grant
-/// the server end becomes an event-loop source whose input is fed to the model tagged as the
-/// remote origin of portal session `remote.session`, with a device slot of its own (minted
+/// Decides one `ConnectEis`: only the portal may have a remote EIS socket.
+///
+/// On a grant the server end becomes an event-loop source whose input is fed to the model tagged as
+/// the remote origin of portal session `remote.session`, with a device slot of its own (minted
 /// here, one per connection: CASW-19); the client end is the reply.
 pub fn answer_remote(
     state: &mut State,
@@ -285,8 +286,10 @@ pub fn answer_focus_lease(
 }
 
 /// Decides one `EndLease`: only the agent tier may end a lease, and only from the bus connection
-/// that asked for it. Its socket is taken out of the loop, what it held is let go, and the model
-/// forgets the lease. A lease that is not open is not an error.
+/// that asked for it.
+///
+/// Its socket is taken out of the loop, what it held is let go, and the model forgets the lease. A
+/// lease that is not open is not an error.
 pub fn answer_end_lease(
     state: &mut State,
     end: EndLeaseAsk,
@@ -316,10 +319,12 @@ fn end_lease_of(state: &mut State, owner_of: RemoteFor) {
     }
 }
 
-/// Decides one `EndEis`: only the portal may end a session. Every socket handed out for
-/// `end.session` is taken out of the loop (its server end closes, so the app is disconnected and
-/// sends nothing more), and the keys and buttons it still held are released. A session with no
-/// open socket is not an error: the portal may end one that already hung up.
+/// Decides one `EndEis`: only the portal may end a session.
+///
+/// Every socket handed out for `end.session` is taken out of the loop (its server end closes, so
+/// the app is disconnected and sends nothing more), and the keys and buttons it still held are
+/// released. A session with no open socket is not an error: the portal may end one that already
+/// hung up.
 pub fn answer_end(state: &mut State, end: EndAsk, caller: &RoleName) -> ConnectReply {
     if let Err(why) = portal_only(caller) {
         return ConnectReply::Refused(why);

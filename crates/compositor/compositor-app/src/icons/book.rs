@@ -25,9 +25,10 @@ struct Waiting {
     stand_in: RasterImage,
 }
 
-/// The icons found for the windows of one Mission Control, by window and pixel edge. The files
-/// are read on a thread of their own: an icon not found yet is drawn as its plate, and replaces
-/// it the frame after it is.
+/// The icons found for the windows of one Mission Control, by window and pixel edge.
+///
+/// The files are read on a thread of their own: an icon not found yet is drawn as its plate, and
+/// replaces it the frame after it is.
 #[derive(Debug)]
 pub struct IconBook {
     /// Looks icons up; none when icons are off.

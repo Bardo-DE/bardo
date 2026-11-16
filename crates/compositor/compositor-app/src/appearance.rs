@@ -1,10 +1,11 @@
 //! The person's light or dark scheme and their Reduce transparency choice, read from quire's
-//! `appearance.toml` through ui-settings and followed while casement runs. The transparency is
-//! quire's `appearance.transparency` (`system` or `reduced`; a file without it is `system`), the
-//! one desktop-wide setting the shell reads too: `reduced` draws every blur as its mostly opaque
-//! stand-in in the scheme's paper ([`blur_finish`]), at the next frame. The server-side window frame is drawn in it
-//! (`core_loop::frames::styles` reads `state.render.scheme` every frame, so a change shows at
-//! the next vblank).
+//! `appearance.toml` through ui-settings and followed while casement runs.
+//!
+//! The transparency is quire's `appearance.transparency` (`system` or `reduced`; a file without it
+//! is `system`), the one desktop-wide setting the shell reads too: `reduced` draws every blur as
+//! its mostly opaque stand-in in the scheme's paper ([`blur_finish`]), at the next frame. The
+//! server-side window frame is drawn in it (`core_loop::frames::styles` reads `state.render.scheme`
+//! every frame, so a change shows at the next vblank).
 //!
 //! `appearance.theme = "system"` follows the desktop: the scheme is read from the settings
 //! portal once, when the theme first is `system` (at start or after the file changes to it), and

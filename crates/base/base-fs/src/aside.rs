@@ -8,8 +8,11 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 /// Rename the file at `path` to `<name>.bad-<seconds>` beside it (with `-1`, `-2`, ... when that
-/// name is taken) and return the new path. Call this before writing over a file that exists but
-/// could not be read or understood (the caller reads the clock, so a test names the instant), so the person's bytes are never lost to a default.
+/// name is taken) and return the new path.
+///
+/// Call this before writing over a file that exists but could not be read or understood (the caller
+/// reads the clock, so a test names the instant), so the person's bytes are never lost to a
+/// default.
 ///
 /// A symlink is moved as the link it is. The rename takes the same per-path turn as
 /// [`crate::write_atomic`].

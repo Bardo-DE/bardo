@@ -318,9 +318,11 @@ impl AppLink for FakeLink {
     }
 }
 
-/// Every fake, public so a test reads what each recorded. The reviewer, the writer and the clock
-/// are parameters whose defaults are the fakes: a live run puts the real cascade, the real
-/// writer and the system clock in their places and keeps every other fake.
+/// Every fake, public so a test reads what each recorded.
+///
+/// The reviewer, the writer and the clock are parameters whose defaults are the fakes: a live run
+/// puts the real cascade, the real writer and the system clock in their places and keeps every
+/// other fake.
 #[derive(Debug)]
 pub struct FakeSeams<
     R = ScriptedReviewer,

@@ -1,7 +1,8 @@
-//! The daemon's half of launching: ask layer-shell-host for an xdg-activation token on behalf of the
-//! surface the click came from, then hand the request to the launch service. `bardo-shell launch` goes
-//! through the same two steps ([`ask`] on the host thread, [`serve`] off it) and is answered with
-//! the launch's timing.
+//! The daemon's half of launching: ask layer-shell-host for an xdg-activation token on behalf of
+//! the surface the click came from, then hand the request to the launch service.
+//!
+//! `bardo-shell launch` goes through the same two steps ([`ask`] on the host thread, [`serve`] off
+//! it) and is answered with the launch's timing.
 
 use std::sync::mpsc::SyncSender;
 
@@ -77,9 +78,10 @@ pub fn ask(
     ));
 }
 
-/// Wait for the token (as long as a dock click would), start the launch, and answer `ask` when
-/// the service has published how it ended. Silent when it does not within the IPC server's reply
-/// time: the server has answered by then.
+/// Wait for the token (as long as a dock click would), start the launch, and answer `ask` when the
+/// service has published how it ended.
+///
+/// Silent when it does not within the IPC server's reply time: the server has answered by then.
 pub async fn serve(
     ask: LaunchAsk,
     control: Control<LaunchCommand>,

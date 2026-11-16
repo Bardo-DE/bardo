@@ -19,9 +19,11 @@ use zbus::fdo;
 /// The standing of a sender, as a future the bus thread awaits.
 pub type WhoFuture<'a> = Pin<Box<dyn Future<Output = Result<Standing, WhoError>> + Send + 'a>>;
 
-/// The seam that says who a bus sender is. The real one is [`BusPeers`]; a test makes a sender
-/// stand as a chosen caller (`BusPeers::introduce`), and a test-only build can name units for
-/// jailed peers (`DebugPeerUnits`).
+/// The seam that says who a bus sender is.
+///
+/// The real one is [`BusPeers`]; a test makes a sender stand as a chosen caller
+/// (`BusPeers::introduce`), and a test-only build can name units for jailed peers
+/// (`DebugPeerUnits`).
 pub trait CallerCheck: Debug + Send + Sync + 'static {
     /// The standing of the unique bus name `sender`. An error is an unknown caller.
     fn who<'a>(&'a self, sender: &'a str) -> WhoFuture<'a>;
@@ -65,9 +67,10 @@ pub fn role_for_connection(role: &ConnectionRole) -> Option<RoleName> {
 }
 
 /// Proves that `sender` holds one of `roles`, all the way: the image and the unit as the manager
-/// states it (`Proof::Full`), with either kind of pin (a bus may not offer a process
-/// descriptor). A caller that is not one of them is refused with the one fixed sentence, and the
-/// refusal is logged once with the roles asked and the standing found.
+/// states it (`Proof::Full`), with either kind of pin (a bus may not offer a process descriptor).
+///
+/// A caller that is not one of them is refused with the one fixed sentence, and the refusal is
+/// logged once with the roles asked and the standing found.
 pub async fn require(
     check: &dyn CallerCheck,
     sender: Option<&str>,

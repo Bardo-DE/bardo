@@ -30,9 +30,10 @@ const FIRST_SWITCH_SYM: u32 = 0x1008_fe01;
 /// `XF86Switch_VT_12`.
 const LAST_SWITCH_SYM: u32 = 0x1008_fe0c;
 
-/// The VT a key press asks for, from the symbols the keymap gives it with the modifiers
-/// applied (`modified`) and without (`raw`). `ctrl_alt` is whether Control and Alt are both held,
-/// the only modifiers a VT switch cares about.
+/// The VT a key press asks for, from the symbols the keymap gives it with the modifiers applied
+/// (`modified`) and without (`raw`).
+///
+/// `ctrl_alt` is whether Control and Alt are both held, the only modifiers a VT switch cares about.
 ///
 /// The keymap's own `XF86Switch_VT_n` wins. Where the keymap has none (a layout without the
 /// server-control group, or a keyboard whose F-row sends media keys until Fn is held), plain

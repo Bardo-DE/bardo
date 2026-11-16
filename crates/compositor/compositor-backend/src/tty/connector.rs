@@ -35,9 +35,11 @@ pub enum EdidError {
     BadChecksum,
 }
 
-/// The make, model and serial an EDID base block reports. The make is the three-letter
-/// manufacturer id, the model the monitor-name descriptor (the product code in hex when there is
-/// none) and the serial the serial-text descriptor, else the numeric serial when it is not zero.
+/// The make, model and serial an EDID base block reports.
+///
+/// The make is the three-letter manufacturer id, the model the monitor-name descriptor (the product
+/// code in hex when there is none) and the serial the serial-text descriptor, else the numeric
+/// serial when it is not zero.
 ///
 /// ```
 /// use compositor_backend::tty::parse_edid;
@@ -136,10 +138,12 @@ pub fn output_facts(connector: &ConnectorFacts) -> OutputFacts {
 }
 
 /// The facts of every attached connector of `resources`, by connector, with keys that are all
-/// different. Two displays that report the same make, model and serial (a dock or a KVM that
-/// fakes the EDID, cheap clones) would share one key, and the second would never be set up.
-/// The one on the connector whose name sorts first keeps the EDID key, so the settings stored
-/// for it stay valid; each other one is keyed by its connector, as a display with no serial is.
+/// different.
+///
+/// Two displays that report the same make, model and serial (a dock or a KVM that fakes the EDID,
+/// cheap clones) would share one key, and the second would never be set up. The one on the
+/// connector whose name sorts first keeps the EDID key, so the settings stored for it stay valid;
+/// each other one is keyed by its connector, as a display with no serial is.
 ///
 /// ```
 /// use compositor_backend::tty::{KmsResources, attached_outputs};

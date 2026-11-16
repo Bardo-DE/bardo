@@ -1,8 +1,9 @@
-//! A scripted `org.bardo.Confirm1` server: sill's role in the acceptance run. It owns the two
-//! names sill owns (`org.bardo.Confirm1` and `org.bardo.Shell`), so intentd derives the
-//! `confirm` role for it from `actiond.toml` exactly as it would for sill. Every request it is
-//! shown is kept for the test and handed out on a channel; the verdict comes from a queue the
-//! test fills (the sheet's answer: Allow with a receipt, or the person saying no).
+//! A scripted `org.bardo.Confirm1` server: sill's role in the acceptance run.
+//!
+//! It owns the two names sill owns (`org.bardo.Confirm1` and `org.bardo.Shell`), so intentd derives
+//! the `confirm` role for it from `actiond.toml` exactly as it would for sill. Every request it is
+//! shown is kept for the test and handed out on a channel; the verdict comes from a queue the test
+//! fills (the sheet's answer: Allow with a receipt, or the person saying no).
 
 use account_core::consent::GrantScope;
 use action_core::{ConfirmAnswer, ConfirmEnd, ConfirmRequest};

@@ -1,11 +1,12 @@
 //! Accepting connections on a listening socket without letting a failed accept end the session
-//! (NEW-CAS-1, NEW-CASB-1). smithay's listening sources return the `accept` error from
-//! `process_events`, and calloop ends `EventLoop::run` with it: one `EMFILE` (a program that
-//! opens connections until the descriptors are gone), `ENFILE`, `ECONNABORTED` or `ENOMEM` from
-//! an unprivileged peer would take the whole session down. [`insert`] wraps such a source so
-//! the error is logged, the listener rests for a moment (a level-triggered listener whose
-//! accept keeps failing would otherwise spin the loop) and then listens again; the clients
-//! already connected never notice.
+//! (NEW-CAS-1, NEW-CASB-1).
+//!
+//! smithay's listening sources return the `accept` error from `process_events`, and calloop ends
+//! `EventLoop::run` with it: one `EMFILE` (a program that opens connections until the descriptors
+//! are gone), `ENFILE`, `ECONNABORTED` or `ENOMEM` from an unprivileged peer would take the whole
+//! session down. [`insert`] wraps such a source so the error is logged, the listener rests for a
+//! moment (a level-triggered listener whose accept keeps failing would otherwise spin the loop) and
+//! then listens again; the clients already connected never notice.
 
 use smithay::reexports::calloop::{
     EventSource, LoopHandle, Poll, PostAction, Readiness, RegistrationToken, Token, TokenFactory,
@@ -37,9 +38,10 @@ impl<S, D: 'static> fmt::Debug for Surviving<S, D> {
     }
 }
 
-/// Inserts `source` into the loop behind `handle` so that an accept error rests it for `rest`
-/// and is logged, instead of ending the loop. `callback` gets each accepted stream as it
-/// would from `source` itself.
+/// Inserts `source` into the loop behind `handle` so that an accept error rests it for `rest` and
+/// is logged, instead of ending the loop.
+///
+/// `callback` gets each accepted stream as it would from `source` itself.
 pub fn insert<S, D, F>(
     handle: &LoopHandle<'static, D>,
     source: S,

@@ -1,8 +1,9 @@
 //! The test-only seams of the daemons, read from the environment by the harness's mains alone: each
 //! takes the environment `main` hands in.
+//!
 //! The shipped daemons carry none of this: their `main` passes the defaults (the system's `/proc`,
-//! no model tap) and no environment variable can change either. The world sets these variables
-//! on the processes it spawns (`world::spawn`).
+//! no model tap) and no environment variable can change either. The world sets these variables on
+//! the processes it spawns (`world::spawn`).
 
 use account_callers::ProcRoot;
 use action_dbus::InferWatch;

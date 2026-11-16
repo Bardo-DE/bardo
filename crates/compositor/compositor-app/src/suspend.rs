@@ -1,6 +1,8 @@
 //! Suspend on a tty seat (P1-T): the machine going to sleep reaches the session as a pause, and
-//! waking as a return, so the displays are re-modeset after the sleep. `compositor_ipc::sleep`
-//! hears logind on the system bus; this file joins it to the session's [`SleepLink`].
+//! waking as a return, so the displays are re-modeset after the sleep.
+//!
+//! `compositor_ipc::sleep` hears logind on the system bus; this file joins it to the session's
+//! [`SleepLink`].
 
 use crate::state::State;
 use compositor_backend::BackendKind;
@@ -42,10 +44,11 @@ pub fn watch(link: SleepLink, bus: Option<String>) -> Result<SleepWatch, SleepEr
     SleepWatch::start(bus, Linked(link))
 }
 
-/// Starts hearing logind on `bus` when the backend is a seat whose session can hear it. The
-/// watcher lives as long as the returned handle; a seat that cannot hear a suspend, or a bus
-/// that cannot be reached, is logged and the run goes on without (displays then come back from
-/// a sleep as the kernel left them).
+/// Starts hearing logind on `bus` when the backend is a seat whose session can hear it.
+///
+/// The watcher lives as long as the returned handle; a seat that cannot hear a suspend, or a bus
+/// that cannot be reached, is logged and the run goes on without (displays then come back from a
+/// sleep as the kernel left them).
 pub fn attach(state: &mut State, bus: Option<String>) -> Option<SleepWatch> {
     let BackendKind::Tty(tty) = &mut state.backend else {
         return None;

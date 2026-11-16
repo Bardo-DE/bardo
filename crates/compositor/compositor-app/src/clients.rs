@@ -119,9 +119,11 @@ pub fn take_gone(state: &mut State) -> Vec<Event> {
         .collect()
 }
 
-/// Whether the session takes one more connection on a public or sandbox socket, before anything
-/// is read from the program behind it. A refusal is logged at each doubling of the count, so a
-/// flood does not fill the journal. The caller drops the stream when there is no room.
+/// Whether the session takes one more connection on a public or sandbox socket, before anything is
+/// read from the program behind it.
+///
+/// A refusal is logged at each doubling of the count, so a flood does not fill the journal. The
+/// caller drops the stream when there is no room.
 pub fn room_in_session(state: &mut State) -> Room {
     let room = state.roster.room();
     note_refusal(state, room);

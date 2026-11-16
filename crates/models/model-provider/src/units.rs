@@ -82,9 +82,10 @@ unit!(
     ServerStatus(u16)
 );
 
-/// A setting that is either left to the engine (or the model's catalog default) or set to a
-/// value. Written out in full in the catalog and on the wire (an `Option` would let a file leave a
-/// field out unnoticed).
+/// A setting that is either left to the engine (or the model's catalog default) or set to a value.
+///
+/// Written out in full in the catalog and on the wire (an `Option` would let a file leave a field
+/// out unnoticed).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Knob<T> {

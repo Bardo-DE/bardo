@@ -28,9 +28,10 @@ pub enum CrossSupport {
     Refuse,
 }
 
-/// The route for a buffer that lives on `source` under `plan`, when the render GPU takes
-/// foreign buffers directly. A `source` the plan does not name is refused: nothing can say
-/// which GPU holds the buffer.
+/// The route for a buffer that lives on `source` under `plan`, when the render GPU takes foreign
+/// buffers directly.
+///
+/// A `source` the plan does not name is refused: nothing can say which GPU holds the buffer.
 ///
 /// ```
 /// use compositor_backend::gpu::{ImportRoute, route_for};
@@ -64,9 +65,10 @@ pub fn route_with(source: &DrmNodeId, plan: &RenderPlan, cross: CrossSupport) ->
 }
 
 /// The node a client's dma-buf is tagged with: the device of the feedback tranche the client
-/// allocated from, which the dmabuf handler passes to `Dmabuf::set_node`. A target the plan
-/// does not name (a stale tranche) is tagged with the render GPU, the only GPU the compositor
-/// knows to hold it.
+/// allocated from, which the dmabuf handler passes to `Dmabuf::set_node`.
+///
+/// A target the plan does not name (a stale tranche) is tagged with the render GPU, the only GPU
+/// the compositor knows to hold it.
 ///
 /// ```
 /// use compositor_backend::gpu::tag_node;

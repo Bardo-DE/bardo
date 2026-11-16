@@ -59,8 +59,10 @@ pub struct TokenLogprob {
 }
 
 /// The top-k candidates for the first token of the answer, in the engine's order (most likely
-/// first). For a reasoning model it is the first token after the thinking; a codec that cannot
-/// tell leaves it out.
+/// first).
+///
+/// For a reasoning model it is the first token after the thinking; a codec that cannot tell leaves
+/// it out.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 pub struct FirstTokenLogprobs {
     pub top: Vec<TokenLogprob>,

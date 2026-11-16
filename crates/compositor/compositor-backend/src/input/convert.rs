@@ -24,8 +24,10 @@ const SUB_PER_LOGICAL: f64 = 120.0;
 const XKB_OFFSET: u32 = 8;
 
 /// What `event` is, in our words; none for a device appearing or going, a tablet tool (P2), a
-/// hold's update and the backend's own special events. An absolute position (a touchscreen, a
-/// tablet in mouse mode) is placed in `extent`, the desktop's union of outputs.
+/// hold's update and the backend's own special events.
+///
+/// An absolute position (a touchscreen, a tablet in mouse mode) is placed in `extent`, the
+/// desktop's union of outputs.
 ///
 /// ```
 /// use compositor_backend::input::input_kind_of;

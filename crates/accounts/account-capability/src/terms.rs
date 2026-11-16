@@ -69,8 +69,10 @@ word_flag!(
 
 /// When the person is asked for a capability's access: at sign-in with everything else, or only
 /// when something first uses it (the whole of a drive, asked when the person turns on "Show in
-/// Files"). A provider file's row says `ask = "on_use"` for the second; the first is the
-/// default and is not written.
+/// Files").
+///
+/// A provider file's row says `ask = "on_use"` for the second; the first is the default and is not
+/// written.
 #[derive(
     Debug, Clone, Copy, Default, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize,
 )]

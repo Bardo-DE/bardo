@@ -8,9 +8,10 @@ use crate::gpu::{GpuError, format_table};
 use compositor_core::gpu::{DrmNodeId, FeedbackPlan, FormatEntry, RenderPlan, feedback_for};
 use std::collections::{BTreeMap, BTreeSet};
 
-/// The formats the primary planes in front of each GPU's lit-able outputs accept, by the GPU
-/// that scans the output out (`plan.scanout`). A connector the plan does not place, and a
-/// disconnected one, add nothing.
+/// The formats the primary planes in front of each GPU's lit-able outputs accept, by the GPU that
+/// scans the output out (`plan.scanout`).
+///
+/// A connector the plan does not place, and a disconnected one, add nothing.
 ///
 /// ```
 /// use compositor_backend::tty::{TtyDevices, scanout_formats};
