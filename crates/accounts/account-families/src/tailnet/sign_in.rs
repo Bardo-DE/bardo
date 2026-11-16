@@ -46,7 +46,9 @@ pub struct Waiting {
 fn fault_of(error: TailscaleError) -> SignInFault {
     match error {
         TailscaleError::NotInstalled => SignInFault::NotInstalled,
-        TailscaleError::NotRunning | TailscaleError::TimedOut => SignInFault::NotRunning,
+        TailscaleError::NotRunning | TailscaleError::Transport(_) | TailscaleError::TimedOut => {
+            SignInFault::NotRunning
+        }
         TailscaleError::Refused => SignInFault::NotAllowed,
         TailscaleError::SignedOut => SignInFault::SignedOut,
         _ => SignInFault::Unreadable,

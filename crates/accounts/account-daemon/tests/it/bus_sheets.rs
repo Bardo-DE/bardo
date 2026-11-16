@@ -241,8 +241,11 @@ async fn a_link_reports_closed_when_the_host_goes() {
         .await
         .expect("open");
     rig.host_connection.close().await.expect("close");
-    assert_eq!(link.input().await, Err(SheetFault::Closed));
-    assert_eq!(link.update(SheetView::Done).await, Err(SheetFault::Closed));
+    assert!(matches!(link.input().await, Err(SheetFault::Closed)));
+    assert!(matches!(
+        link.update(SheetView::Done).await,
+        Err(SheetFault::Closed | SheetFault::Refused(_))
+    ));
 }
 
 /// rel-11: an app has one sheet of a kind open at a time. A second ask while the first is open

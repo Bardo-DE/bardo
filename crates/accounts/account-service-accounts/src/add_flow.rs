@@ -832,8 +832,8 @@ fn finish<J: Job>(
 /// leaving, as [`person`] reads it; no host at all is nobody to ask.
 fn left(fault: SheetFault) -> Refusal {
     match fault {
-        SheetFault::Closed => Refusal::Dismissed,
-        SheetFault::Unavailable => Refusal::Unavailable,
+        SheetFault::Closed | SheetFault::Refused(_) => Refusal::Dismissed,
+        SheetFault::Unavailable | SheetFault::Unreachable(_) => Refusal::Unavailable,
     }
 }
 

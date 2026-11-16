@@ -52,9 +52,9 @@ async fn a_scripted_conversation_shows_its_views_and_reads_its_inputs_then_close
     link.update(SheetView::Providers(vec![]))
         .await
         .expect("update");
-    assert_eq!(link.input().await, Ok(SheetInput::Back));
-    assert_eq!(link.input().await, Ok(SheetInput::Dismiss));
-    assert_eq!(link.input().await, Err(SheetFault::Closed));
+    assert_eq!(link.input().await.expect("back"), SheetInput::Back);
+    assert_eq!(link.input().await.expect("dismiss"), SheetInput::Dismiss);
+    assert!(matches!(link.input().await, Err(SheetFault::Closed)));
     assert_eq!(
         log.shown(),
         vec![SheetView::Done, SheetView::Providers(vec![])]
@@ -65,7 +65,7 @@ async fn a_scripted_conversation_shows_its_views_and_reads_its_inputs_then_close
             view: SheetView::Done,
         })
         .await;
-    assert_eq!(none.err(), Some(SheetFault::Unavailable));
+    assert!(matches!(none.err(), Some(SheetFault::Unavailable)));
 }
 
 #[tokio::test]

@@ -19,7 +19,7 @@ pub struct SheetOpen {
 }
 
 /// Why a conversation could not go on.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum SheetFault {
     /// No sheet host is reachable (sill is not running, no app draws).
     #[error("no sheet host reachable")]
@@ -27,6 +27,24 @@ pub enum SheetFault {
     /// The host closed the sheet or left.
     #[error("sheet closed")]
     Closed,
+    /// The host could not be reached: the bus refused a call that finds or checks it.
+    #[error("sheet host could not be reached")]
+    Unreachable(#[source] Box<dyn std::error::Error + Send + Sync>),
+    /// The host did not take a call on an open sheet (it is gone, or it refused).
+    #[error("sheet host did not take the call")]
+    Refused(#[source] Box<dyn std::error::Error + Send + Sync>),
+}
+
+impl SheetFault {
+    /// The host could not be reached, because of `cause`.
+    pub fn unreachable(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::Unreachable(cause.into())
+    }
+
+    /// The host did not take a call, because of `cause`.
+    pub fn refused(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
+        Self::Refused(cause.into())
+    }
 }
 
 /// Shows sheets for accountd and returns what the person did.

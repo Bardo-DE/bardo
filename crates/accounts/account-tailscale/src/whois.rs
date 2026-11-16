@@ -101,9 +101,7 @@ impl WhoIs {
         };
         Ok(Self {
             node: WhoIsNode {
-                id: NodeId::parse(&node.id)
-                    .ok()
-                    .ok_or(TailscaleError::Malformed)?,
+                id: NodeId::parse(&node.id).map_err(TailscaleError::unreadable)?,
                 dns: node.name.trim_end_matches('.').to_owned(),
                 user: UserId(node.user),
                 sharer: Some(node.sharer).filter(|id| *id != 0).map(UserId),

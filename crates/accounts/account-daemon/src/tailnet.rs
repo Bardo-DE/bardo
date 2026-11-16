@@ -71,6 +71,7 @@ pub(crate) fn state_of(answer: &Result<Status, TailscaleError>) -> Option<Accoun
         Err(
             TailscaleError::NotInstalled
             | TailscaleError::NotRunning
+            | TailscaleError::Transport(_)
             | TailscaleError::Refused
             | TailscaleError::TimedOut,
         ) => Some(AccountState::Offline),

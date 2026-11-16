@@ -123,8 +123,8 @@ impl LocalApi {
     }
 
     /// What a failed dial of the socket comes to.
-    fn refused_by(&self, kind: ErrorKind) -> TailscaleError {
-        match kind {
+    fn refused_by(&self, error: std::io::Error) -> TailscaleError {
+        match error.kind() {
             ErrorKind::NotFound => {
                 if self.installed() {
                     TailscaleError::NotRunning
@@ -133,7 +133,7 @@ impl LocalApi {
                 }
             }
             ErrorKind::PermissionDenied => TailscaleError::Refused,
-            _ => TailscaleError::NotRunning,
+            _ => TailscaleError::transport(error),
         }
     }
 
@@ -145,11 +145,10 @@ impl LocalApi {
     ) -> Result<hyper::Response<Incoming>, TailscaleError> {
         let stream = UnixStream::connect(&self.socket)
             .await
-            .map_err(|e| self.refused_by(e.kind()))?;
+            .map_err(|error| self.refused_by(error))?;
         let (mut sender, connection) = http1::handshake::<_, Full<Bytes>>(TokioIo::new(stream))
             .await
-            .ok()
-            .ok_or(TailscaleError::NotRunning)?;
+            .map_err(TailscaleError::transport)?;
         // The connection ends when the response and the sender are dropped, or tailscaled stops.
         tokio::spawn(async move {
             let _ = connection.await;
@@ -159,13 +158,11 @@ impl LocalApi {
             .uri(target)
             .header(hyper::header::HOST, LOCALAPI_HOST)
             .body(Full::new(Bytes::new()))
-            .ok()
-            .ok_or(TailscaleError::Malformed)?;
+            .map_err(TailscaleError::unreadable)?;
         let response = sender
             .send_request(request)
             .await
-            .ok()
-            .ok_or(TailscaleError::NotRunning)?;
+            .map_err(TailscaleError::transport)?;
         match response.status() {
             StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => Err(TailscaleError::Refused),
             _ => Ok(response),
@@ -180,7 +177,7 @@ impl LocalApi {
             let mut body = response.into_body();
             let mut bytes = Vec::new();
             while let Some(frame) = body.frame().await {
-                let frame = frame.ok().ok_or(TailscaleError::NotRunning)?;
+                let frame = frame.map_err(TailscaleError::transport)?;
                 if let Some(data) = frame.data_ref() {
                     if bytes.len() + data.len() > MAX_ANSWER {
                         return Err(TailscaleError::Malformed);
@@ -307,7 +304,7 @@ impl Watch {
             }
             match self.body.frame().await {
                 None => return Ok(None),
-                Some(Err(_)) => return Err(TailscaleError::NotRunning),
+                Some(Err(error)) => return Err(TailscaleError::transport(error)),
                 Some(Ok(frame)) => {
                     if let Some(data) = frame.data_ref() {
                         if self.buffer.len() + data.len() > MAX_LINE {
