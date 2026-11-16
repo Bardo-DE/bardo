@@ -47,14 +47,14 @@ async fn changed_reaches_the_peers_that_may_read_and_not_one_that_was_refused() 
     daemon.request_name(NAME).await.expect("name");
 
     // The spy asks the bus for every `Changed`, as any app may.
-    let rule = MatchRule::builder()
+    let match_rule = MatchRule::builder()
         .msg_type(Type::Signal)
         .interface(INTERFACE)
         .expect("interface")
         .member("Changed")
         .expect("member")
         .build();
-    let mut heard = MessageStream::for_match_rule(rule, &spy, None)
+    let mut heard = MessageStream::for_match_rule(match_rule, &spy, None)
         .await
         .expect("subscribed");
     let spy_client = LiveClient::new(&spy, NAME, PATH, AnyOwner).expect("proxy");

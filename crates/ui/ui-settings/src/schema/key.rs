@@ -301,6 +301,10 @@ impl KeySpec {
     }
 
     /// Refuses `value` when it names an unavailable choice, with the reason.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ChoiceUnavailable`], with the reason, when `value` names an unavailable choice.
     pub fn check_available(&self, value: &toml::Value) -> Result<(), ChoiceUnavailable> {
         match (self.unavailable_reason(value), value.as_str()) {
             (Some(reason), Some(word)) => Err(ChoiceUnavailable {
@@ -319,6 +323,10 @@ impl KeySpec {
 ///
 /// Pure: takes the words, returns the kind. The derive's `kind_of::<T>()` (`crate::schema`)
 /// is the only caller that reaches for a `Word`'s variants to get them.
+///
+/// # Panics
+///
+/// Panics when `words` is empty: a settings enum has at least one variant.
 #[must_use]
 pub fn kind_from_variants(mut words: Vec<String>) -> KeyKind {
     match words.len() {
@@ -363,7 +371,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "at least one variant")]
     fn no_variant_panics() {
-        kind_from_variants(Vec::new());
+        drop(kind_from_variants(Vec::new()));
     }
 }
 

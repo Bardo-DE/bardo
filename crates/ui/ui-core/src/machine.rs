@@ -82,11 +82,11 @@ mod tests {
         type Params = u64;
         type Ctx = ();
 
-        fn step(self, input: In, at: Stamp, hold: &u64, (): &()) -> (Lamp, Vec<Out>) {
+        fn step(self, input: In, at: Stamp, params: &u64, (): &()) -> (Lamp, Vec<Out>) {
             match (self, input) {
                 (_, In::Press) => (
                     Lamp::On {
-                        until: at.after(Ms(*hold)),
+                        until: at.after(Ms(*params)),
                     },
                     if self == Lamp::Off {
                         vec![Out::Light(true)]
@@ -159,11 +159,11 @@ mod tests {
         type Params = u64;
         type Ctx = Occupancy;
 
-        fn step(self, input: In, at: Stamp, delay: &u64, at_home: &Occupancy) -> (Bell, Vec<Out>) {
-            match (self, input, at_home) {
+        fn step(self, input: In, at: Stamp, params: &u64, cx: &Occupancy) -> (Bell, Vec<Out>) {
+            match (self, input, cx) {
                 (Bell::Quiet, In::Press, _) => (
                     Bell::Pressed {
-                        until: at.after(Ms(*delay)),
+                        until: at.after(Ms(*params)),
                     },
                     vec![],
                 ),

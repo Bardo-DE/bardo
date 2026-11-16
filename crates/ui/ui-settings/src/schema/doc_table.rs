@@ -32,6 +32,11 @@ const CLOSE: &str = " -->";
 
 /// `doc` with every marked table rewritten from `schemas`. Text outside the markers is returned
 /// as it was; a doc with no markers comes back unchanged.
+///
+/// # Errors
+///
+/// Returns [`DocTableError::NoKeys`] when a marker names a domain no schema has a key in, and
+/// [`DocTableError::Unterminated`] when a `keys:begin` has no `keys:end`.
 pub fn regenerate(doc: &str, schemas: &[Schema]) -> Result<String, DocTableError> {
     let mut out = String::with_capacity(doc.len());
     let mut open: Option<String> = None;
@@ -101,7 +106,7 @@ fn row(key: &KeySpec) -> String {
     };
     let agent = match key.agent {
         AgentSetting::Settable => "may set",
-        _ => "",
+        AgentSetting::HandsOff => "",
     };
     let cells = [
         format!("`{}`", key.path.0),
@@ -184,7 +189,7 @@ mod tests {
             app: AppId("shell".to_owned()),
             file: FilePath("shell/settings.toml".to_owned()),
             version: 1,
-            foreign: Default::default(),
+            foreign: crate::schema::ForeignTables::default(),
             pages: Vec::new(),
             key: vec![
                 key(

@@ -12,15 +12,15 @@ pub struct Px(pub f32);
 
 impl Add for Px {
     type Output = Px;
-    fn add(self, other: Px) -> Px {
-        Px(self.0 + other.0)
+    fn add(self, rhs: Px) -> Px {
+        Px(self.0 + rhs.0)
     }
 }
 
 impl Sub for Px {
     type Output = Px;
-    fn sub(self, other: Px) -> Px {
-        Px(self.0 - other.0)
+    fn sub(self, rhs: Px) -> Px {
+        Px(self.0 - rhs.0)
     }
 }
 

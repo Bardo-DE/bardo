@@ -107,6 +107,10 @@ pub fn candidates(env: &AssetsEnv) -> Vec<AssetsDir> {
 
 /// The repository's own set; only a debug build has it.
 #[cfg(debug_assertions)]
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "the release build has no such set, and the caller handles both"
+)]
 fn dev_assets() -> Option<PathBuf> {
     Some(PathBuf::from(DEV_ASSETS))
 }

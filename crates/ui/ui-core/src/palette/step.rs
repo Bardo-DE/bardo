@@ -18,7 +18,7 @@ impl Machine for PaletteState {
             PaletteState::Closed => closed(&input),
             PaletteState::Open {
                 query, selection, ..
-            } => open(query, selection, input, params),
+            } => open(query, selection, input, *params),
         }
     }
 
@@ -47,7 +47,7 @@ fn open(
     query: TypedText,
     selection: PaletteIndex,
     input: PaletteIn,
-    params: &PaletteParams,
+    params: PaletteParams,
 ) -> Step {
     let this = PaletteState::open(query.clone(), selection);
     match input {
@@ -68,7 +68,7 @@ fn open(
 }
 
 /// `row` run, with the palette closed after it; nothing when there is no such row.
-fn run(this: PaletteState, row: PaletteIndex, params: &PaletteParams) -> Step {
+fn run(this: PaletteState, row: PaletteIndex, params: PaletteParams) -> Step {
     if row.0 < params.rows {
         (
             PaletteState::Closed,

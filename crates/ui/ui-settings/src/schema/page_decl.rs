@@ -36,6 +36,10 @@ pub enum Listing {
 
 impl Listing {
     /// Whether this is the default, which a written declaration leaves out.
+    #[expect(
+        clippy::trivially_copy_pass_by_ref,
+        reason = "serde's `skip_serializing_if` hands the field over by reference"
+    )]
     fn is_default(&self) -> bool {
         *self == Listing::default()
     }

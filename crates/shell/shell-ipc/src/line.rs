@@ -13,6 +13,11 @@ use crate::error::IpcError;
 pub const MAX_LINE: usize = 64 * 1024;
 
 /// `message` as one line, trailing newline included.
+///
+/// # Errors
+///
+/// Returns [`IpcError::Malformed`] when the message cannot be written as JSON, and
+/// [`IpcError::TooLong`] when the line would pass the limit.
 pub fn encode<T: Serialize>(message: &T) -> Result<String, IpcError> {
     let mut line = serde_json::to_string(message)?;
     line.push('\n');
@@ -21,6 +26,11 @@ pub fn encode<T: Serialize>(message: &T) -> Result<String, IpcError> {
 
 /// The one message `line` holds. Surrounding whitespace (the newline) is ignored; anything else
 /// that is not exactly one `T` is `Malformed`.
+///
+/// # Errors
+///
+/// Returns [`IpcError::TooLong`] when `line` is over the limit, and [`IpcError::Malformed`] when it
+/// is not exactly one message of type `T`.
 pub fn decode<T: DeserializeOwned>(line: &str) -> Result<T, IpcError> {
     if line.len() > MAX_LINE {
         return Err(IpcError::TooLong { limit: MAX_LINE });
@@ -29,6 +39,11 @@ pub fn decode<T: DeserializeOwned>(line: &str) -> Result<T, IpcError> {
 }
 
 /// Read one line from `reader` and decode it. Reads at most [`MAX_LINE`] bytes.
+///
+/// # Errors
+///
+/// Returns [`IpcError::Io`] when the stream fails, [`IpcError::Closed`] when the peer closes it
+/// before a whole line arrives, and the errors of [`decode`] for the line itself.
 pub fn read_message<T: DeserializeOwned>(reader: &mut impl BufRead) -> Result<T, IpcError> {
     let mut line = String::new();
     let limit = u64::try_from(MAX_LINE + 1).unwrap_or(u64::MAX);
@@ -43,6 +58,10 @@ pub fn read_message<T: DeserializeOwned>(reader: &mut impl BufRead) -> Result<T,
 }
 
 /// Encode `message` and write it as one line, then flush.
+///
+/// # Errors
+///
+/// Returns the errors of [`encode`], and [`IpcError::Io`] when the stream fails.
 pub fn write_message<T: Serialize>(writer: &mut impl Write, message: &T) -> Result<(), IpcError> {
     writer.write_all(encode(message)?.as_bytes())?;
     writer.flush()?;

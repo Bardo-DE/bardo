@@ -53,8 +53,14 @@ impl Machine for Phase {
 
     /// The switcher after `input` at `at`, over an MRU list of `count` apps. An empty list is no
     /// switcher: the machine goes to [`Phase::Hidden`], hiding the panel if it was shown.
-    fn step(self, input: SwIn, at: Stamp, p: &SwitcherParams, count: &usize) -> (Self, Vec<SwOut>) {
-        phase_step(self, input, at, *count, p)
+    fn step(
+        self,
+        input: SwIn,
+        at: Stamp,
+        params: &SwitcherParams,
+        cx: &usize,
+    ) -> (Self, Vec<SwOut>) {
+        phase_step(self, input, at, *cx, params)
     }
 
     fn wake(&self) -> Option<Stamp> {

@@ -28,6 +28,10 @@ pub enum LiveSchemaError {
 
 impl LiveSchema {
     /// The JSON `Describe` returns.
+    ///
+    /// # Panics
+    ///
+    /// Panics only if the schema cannot be written as JSON, which its field types rule out.
     #[must_use]
     pub fn to_json(&self) -> String {
         serde_json::to_string(self)
@@ -35,6 +39,11 @@ impl LiveSchema {
     }
 
     /// The schema `text` holds, checked ([`LiveSchema::check`]).
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LiveSchemaError::Parse`] when `text` is not a schema, and the errors of
+    /// [`LiveSchema::check`].
     pub fn from_json(text: &str) -> Result<LiveSchema, LiveSchemaError> {
         let schema: LiveSchema =
             serde_json::from_str(text).map_err(|e| LiveSchemaError::Parse(e.to_string()))?;
@@ -43,6 +52,11 @@ impl LiveSchema {
 
     /// The same never-settable check a file schema gets (`Schema::from_toml`, through
     /// [`never_settable_violation`]), plus: no key twice.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LiveSchemaError::NeverSettable`] when a key under a never-settable prefix is
+    /// marked agent-settable, and [`LiveSchemaError::Duplicate`] when a key appears twice.
     pub fn check(&self) -> Result<(), LiveSchemaError> {
         if let Some(key) = never_settable_violation(&self.key) {
             return Err(LiveSchemaError::NeverSettable(key.path.clone()));

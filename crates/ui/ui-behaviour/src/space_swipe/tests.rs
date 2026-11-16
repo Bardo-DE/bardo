@@ -121,12 +121,12 @@ fn the_rubber_band_gives_a_quarter_capped_at_a_quarter_page() {
 fn run(
     start: Swipe,
     script: &[(u64, SwipeIn)],
-    params: &SwipeParams,
+    params: SwipeParams,
 ) -> (Swipe, Vec<SwipeOut>, Option<Stamp>) {
     let (state, outs) = script
         .iter()
         .fold((start, Vec::new()), |(s, mut all), &(at, input)| {
-            let (s, out) = s.step(input, Stamp(at), params, &());
+            let (s, out) = s.step(input, Stamp(at), &params, &());
             all.extend(out);
             (s, all)
         });
@@ -144,7 +144,7 @@ type Case = (
     Option<Stamp>,
 );
 
-fn check(cases: Vec<Case>, params: &SwipeParams) {
+fn check(cases: Vec<Case>, params: SwipeParams) {
     for (name, start, script, state, outs, wake) in cases {
         assert_eq!(run(start, &script, params), (state, outs, wake), "{name}");
     }
@@ -159,7 +159,7 @@ fn the_row_follows_the_fingers() {
                 (0, SwipeIn::Began { source }),
                 (10, SwipeIn::Changed { dx }),
             ],
-            &FOUR,
+            FOUR,
         );
         let Swipe::Tracking {
             from: 1,
@@ -195,7 +195,7 @@ fn the_row_follows_the_fingers() {
     let (state, outs, wake) = run(
         Swipe::Idle { at: 0 },
         &[(0, MOUSE), (10, SwipeIn::Changed { dx: 400 })],
-        &FOUR,
+        FOUR,
     );
     assert!(
         matches!(
@@ -324,7 +324,7 @@ fn a_lift_finishes_to_the_committed_space() {
                 None,
             ),
         ],
-        &FOUR,
+        FOUR,
     );
 }
 
@@ -393,14 +393,14 @@ fn go_slides_and_redirects() {
                 Some(Stamp(300)),
             ),
         ],
-        &FOUR,
+        FOUR,
     );
 }
 
 #[test]
 fn a_swipe_catches_a_slide_where_it_is() {
     // 0.6 to 1.0 over 400 ms; at 200 ms the ease-out-cubic has covered 0.875 of 0.4.
-    let (state, outs, wake) = run(finishing(0, 1, 600, 0, 0), &[(200, MOUSE)], &FOUR);
+    let (state, outs, wake) = run(finishing(0, 1, 600, 0, 0), &[(200, MOUSE)], FOUR);
     assert!(
         matches!(
             state,
@@ -422,7 +422,7 @@ fn strays_change_nothing() {
         run(
             Swipe::Idle { at: 1 },
             &[(0, MOUSE), (10, SwipeIn::Changed { dx })],
-            &FOUR,
+            FOUR,
         )
         .0
     };
@@ -503,7 +503,7 @@ fn reduced_motion_settles_at_once_with_no_live_slide() {
                 None,
             ),
         ],
-        &FOUR_REDUCED,
+        FOUR_REDUCED,
     );
 }
 
@@ -533,7 +533,7 @@ fn a_touchpad_page_is_400_px_and_its_flick_commits_the_same_way() {
             ],
             Some(Stamp(240)),
         )],
-        &FOUR,
+        FOUR,
     );
 }
 

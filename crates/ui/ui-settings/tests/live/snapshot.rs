@@ -35,15 +35,15 @@ impl LiveModule for Vanishing {
     async fn describe(&self) -> LiveSchema {
         self.inner.describe().await
     }
-    async fn get(&self, path: &KeyPath) -> Result<toml::Value, LiveError> {
-        if path.0 == self.gone {
-            Err(LiveError::UnknownKey(path.0.clone()))
+    async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
+        if key.0 == self.gone {
+            Err(LiveError::UnknownKey(key.0.clone()))
         } else {
-            self.inner.get(path).await
+            self.inner.get(key).await
         }
     }
-    async fn set(&self, path: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
-        self.inner.set(path, value).await
+    async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
+        self.inner.set(key, value).await
     }
 }
 
@@ -61,11 +61,11 @@ impl LiveModule for Closed {
     async fn describe(&self) -> LiveSchema {
         self.0.describe().await
     }
-    async fn get(&self, path: &KeyPath) -> Result<toml::Value, LiveError> {
-        self.0.get(path).await
+    async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
+        self.0.get(key).await
     }
-    async fn set(&self, path: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
-        self.0.set(path, value).await
+    async fn set(&self, key: &KeyPath, value: toml::Value) -> Result<(), LiveError> {
+        self.0.set(key, value).await
     }
 }
 

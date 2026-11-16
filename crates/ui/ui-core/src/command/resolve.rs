@@ -63,6 +63,10 @@ mod tests {
         }
     }
 
+    #[expect(
+        clippy::unnecessary_wraps,
+        reason = "it stands in a table beside `space`, which can fail: every case returns an Option"
+    )]
     fn standard(action: StandardAction) -> Option<Action> {
         Some(Action::Standard(action))
     }

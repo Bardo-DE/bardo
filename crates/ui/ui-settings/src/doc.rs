@@ -24,6 +24,10 @@ pub enum Format {
 
 impl Format {
     /// `value` as this format's text.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the value cannot be written in the document's format.
     pub fn encode<T: Serialize>(self, value: &T) -> Result<String, SettingsError> {
         Ok(match self {
             Format::Toml => toml::to_string(value)?,

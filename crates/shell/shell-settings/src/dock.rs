@@ -15,6 +15,10 @@ use ui_settings::schema::Page;
     file = "shell/settings.toml", domain = "dock", page = Page::Dock,
     footnote(section = "Hiding", text = "The Dock shows again when the pointer reaches the edge."),
 )]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "a settings table: every bool is its own key the person can flip, and no state machine hides in them"
+)]
 pub struct DockSettings {
     #[settings(
         label = "Size",

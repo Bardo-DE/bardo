@@ -191,7 +191,8 @@ fn a_schema_file_from_before_the_mark_loads_every_key_hands_off() {
         .lines()
         .filter(|line| !line.starts_with("agent = "))
         .map(|line| format!("{line}\n"))
-        .collect();
+        .collect::<Vec<_>>()
+        .concat();
     let schema = Schema::from_toml(&old).unwrap_or_else(|e| panic!("{old}: {e}"));
     assert!(!schema.key.is_empty());
     assert!(schema.key.iter().all(|k| k.agent == AgentSetting::HandsOff));
@@ -320,11 +321,11 @@ mod unavailable {
             page: Page::Intelligence,
             section: Section("Text".to_owned()),
             exposure: Exposure::Basic,
-            labels: Default::default(),
-            agent: Default::default(),
-            unavailable: Default::default(),
-            groups: Default::default(),
-            places: Default::default(),
+            labels: ui_settings::schema::WordLabels::default(),
+            agent: ui_settings::schema::AgentSetting::default(),
+            unavailable: std::collections::BTreeMap::default(),
+            groups: std::collections::BTreeMap::default(),
+            places: std::collections::BTreeMap::default(),
             note: None,
             control: None,
         }
@@ -413,9 +414,9 @@ mod groups {
             page: Page::Intelligence,
             section: Section("Text".to_owned()),
             exposure: Exposure::Basic,
-            labels: Default::default(),
-            agent: Default::default(),
-            unavailable: Default::default(),
+            labels: ui_settings::schema::WordLabels::default(),
+            agent: ui_settings::schema::AgentSetting::default(),
+            unavailable: std::collections::BTreeMap::default(),
             groups: groups
                 .iter()
                 .map(|(word, group)| {
@@ -425,7 +426,7 @@ mod groups {
                     )
                 })
                 .collect(),
-            places: Default::default(),
+            places: std::collections::BTreeMap::default(),
             note: None,
             control: None,
         }
@@ -554,11 +555,11 @@ mod places {
             page: Page::Intelligence,
             section: Section("Text".to_owned()),
             exposure: Exposure::Basic,
-            labels: Default::default(),
-            agent: Default::default(),
-            unavailable: Default::default(),
-            groups: Default::default(),
-            places: Default::default(),
+            labels: ui_settings::schema::WordLabels::default(),
+            agent: ui_settings::schema::AgentSetting::default(),
+            unavailable: std::collections::BTreeMap::default(),
+            groups: std::collections::BTreeMap::default(),
+            places: std::collections::BTreeMap::default(),
             note: None,
             control: None,
         }

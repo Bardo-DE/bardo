@@ -40,6 +40,11 @@ impl PublishedParts {
     }
 
     /// The TOML text this writes as `<app>.toml`.
+    ///
+    /// # Panics
+    ///
+    /// Panics only if the parts cannot be written as TOML, which two strings and a list of strings
+    /// rule out.
     #[must_use]
     pub fn to_toml(&self) -> String {
         toml::to_string(self).expect("two strings and a list of strings are TOML")
@@ -47,12 +52,20 @@ impl PublishedParts {
 
     /// The parts `text` holds, with any class outside the app's prefix dropped, or why it does
     /// not parse.
+    ///
+    /// # Errors
+    ///
+    /// Returns the parser's message when `text` is not a valid parts file.
     pub fn from_toml(text: &str) -> Result<PublishedParts, String> {
         let raw: PublishedParts = toml::from_str(text).map_err(|error| error.to_string())?;
         Ok(PublishedParts::new(&raw.app, raw.classes))
     }
 
     /// Writes `<app>.toml` into `dir` (creating it), atomically: an app's `--write-selectors`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the directory or the file cannot be written.
     pub fn write_to(&self, dir: &Path) -> io::Result<PathBuf> {
         std::fs::create_dir_all(dir)?;
         let target = dir.join(format!("{}.toml", self.app));
@@ -119,15 +132,15 @@ fn admit(path: &Path, found: &[PublishedParts]) -> Result<PublishedParts, String
 /// then `$XDG_DATA_HOME/bardo/selectors` last, with the environment handed in.
 #[must_use]
 pub fn parts_dirs_from(
-    xdg_data_home: Option<std::ffi::OsString>,
-    xdg_data_dirs: Option<std::ffi::OsString>,
-    home: Option<std::ffi::OsString>,
+    xdg_data_home: Option<&std::ffi::OsStr>,
+    xdg_data_dirs: Option<&std::ffi::OsStr>,
+    home: Option<&std::ffi::OsStr>,
 ) -> Vec<PathBuf> {
-    xdg::search_dirs(xdg_data_dirs.as_deref())
+    xdg::search_dirs(xdg_data_dirs)
         .into_iter()
         .chain(xdg::base_dir(
-            xdg_data_home.as_deref(),
-            home.as_deref(),
+            xdg_data_home,
+            home,
             xdg::DATA_HOME_UNDER_HOME,
         ))
         .map(|base| base.join("bardo").join("selectors"))
@@ -138,8 +151,8 @@ pub fn parts_dirs_from(
 #[must_use]
 pub fn parts_dirs() -> Vec<PathBuf> {
     parts_dirs_from(
-        std::env::var_os("XDG_DATA_HOME"),
-        std::env::var_os("XDG_DATA_DIRS"),
-        std::env::var_os("HOME"),
+        std::env::var_os("XDG_DATA_HOME").as_deref(),
+        std::env::var_os("XDG_DATA_DIRS").as_deref(),
+        std::env::var_os("HOME").as_deref(),
     )
 }

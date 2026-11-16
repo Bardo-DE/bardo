@@ -29,6 +29,10 @@ pub enum ControlCenterModule {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "control_center", page = Page::Appearance)]
+#[expect(
+    clippy::struct_excessive_bools,
+    reason = "a settings table: every bool is its own key the person can flip, and no state machine hides in them"
+)]
 pub struct ControlCenterSettings {
     #[settings(
         label = "Modules",

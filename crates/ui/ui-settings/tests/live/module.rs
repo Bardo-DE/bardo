@@ -25,7 +25,7 @@ pub fn spec(path: &str, kind: KeyKind, default: toml::Value) -> KeySpec {
         page: Page::Accounts,
         section: Section("Accounts".to_owned()),
         exposure: Exposure::Basic,
-        labels: Default::default(),
+        labels: ui_settings::schema::WordLabels::default(),
         agent: AgentSetting::HandsOff,
         unavailable: BTreeMap::default(),
         groups: BTreeMap::default(),

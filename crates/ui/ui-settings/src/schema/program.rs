@@ -74,6 +74,10 @@ pub struct Schema {
 
 impl Schema {
     /// The TOML text this schema writes as `<app-id>.settings.toml`.
+    ///
+    /// # Panics
+    ///
+    /// Panics only if the schema cannot be written as TOML, which its field types rule out.
     #[must_use]
     pub fn to_toml(&self) -> String {
         toml::to_string(self)
@@ -84,6 +88,10 @@ impl Schema {
     /// [`AGENT_NEVER_SETTABLE`](super::AGENT_NEVER_SETTABLE) prefix that is marked
     /// `agent = "settable"` is an error, so a schema file any program installs cannot make
     /// the companion's own limits, computer use or a lock agent-settable.
+    ///
+    /// # Errors
+    ///
+    /// Returns the parser's message when `text` is not a valid schema.
     pub fn from_toml(text: &str) -> Result<Schema, String> {
         let schema: Schema = toml::from_str(text).map_err(|e| e.to_string())?;
         match never_settable_violation(&schema.key) {
@@ -98,6 +106,10 @@ impl Schema {
     /// Writes `<app-id>.settings.toml` into `dir` (creating it if needed) through
     /// [`base_fs::write_atomic`], the same mechanism every settings file in this workspace
     /// uses (design/22-SETTINGS.md section 2).
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the directory or the file cannot be written.
     pub fn write_to(&self, dir: &Path) -> io::Result<PathBuf> {
         std::fs::create_dir_all(dir)?;
         let target = dir.join(format!("{}.settings.toml", self.app.0));
@@ -109,6 +121,10 @@ impl Schema {
     /// Writes `<app-id>.<part>.settings.toml` into `dir`: the schema of a second file the same
     /// program owns, which [`discover`] admits beside its `<app-id>.settings.toml`
     /// (`bardo.extensions.settings.toml` for `bardo/extensions.toml`).
+    ///
+    /// # Errors
+    ///
+    /// Returns the I/O error when the directory or the file cannot be written.
     pub fn write_part_to(&self, dir: &Path, part: &str) -> io::Result<PathBuf> {
         std::fs::create_dir_all(dir)?;
         let target = dir.join(format!("{}.{part}.settings.toml", self.app.0));
@@ -227,9 +243,9 @@ fn admit(path: &Path, found: &[Schema]) -> Result<Schema, String> {
 #[must_use]
 pub fn data_dirs() -> Vec<PathBuf> {
     data_dirs_from(
-        std::env::var_os("XDG_DATA_HOME"),
-        std::env::var_os("XDG_DATA_DIRS"),
-        std::env::var_os("HOME"),
+        std::env::var_os("XDG_DATA_HOME").as_deref(),
+        std::env::var_os("XDG_DATA_DIRS").as_deref(),
+        std::env::var_os("HOME").as_deref(),
     )
 }
 
@@ -240,25 +256,31 @@ pub fn data_dirs() -> Vec<PathBuf> {
 /// itself. The XDG rules (`crate::xdg`) apply: an empty or relative value is ignored.
 #[must_use]
 pub fn data_dirs_from(
-    xdg_data_home: Option<std::ffi::OsString>,
-    xdg_data_dirs: Option<std::ffi::OsString>,
-    home: Option<std::ffi::OsString>,
+    xdg_data_home: Option<&std::ffi::OsStr>,
+    xdg_data_dirs: Option<&std::ffi::OsStr>,
+    home: Option<&std::ffi::OsStr>,
 ) -> Vec<PathBuf> {
-    xdg::search_dirs(xdg_data_dirs.as_deref())
+    xdg::search_dirs(xdg_data_dirs)
         .into_iter()
         .chain(xdg::base_dir(
-            xdg_data_home.as_deref(),
-            home.as_deref(),
+            xdg_data_home,
+            home,
             xdg::DATA_HOME_UNDER_HOME,
         ))
         .map(|base| base.join("bardo").join("settings"))
         .collect()
 }
 
-/// `--write-schema <dir>` (section 9.2: "developers run `cargo run -p <app> -- --write-schema
-/// <dir>` for a local install"), a helper a program's own `main` wires into its argument
-/// parsing. Returns `Ok(true)` (and has written the file) when `args` asked for it, `Ok(false)`
-/// when the flag was absent so the caller's normal startup should continue.
+/// The `--write-schema <dir>` flag (section 9.2: "developers run
+/// `cargo run -p <app> -- --write-schema <dir>` for a local install"), a helper a program's own
+/// `main` wires into its argument parsing.
+///
+/// Returns `Ok(true)` (and has written the file) when `args` asked for it, `Ok(false)` when the
+/// flag was absent so the caller's normal startup should continue.
+///
+/// # Errors
+///
+/// Returns the I/O error when the schema file cannot be written.
 pub fn maybe_write_schema(schema: &Schema, args: &[String]) -> io::Result<bool> {
     let Some(position) = args.iter().position(|arg| arg == "--write-schema") else {
         return Ok(false);
@@ -285,7 +307,7 @@ mod tests {
             app: AppId("bardo".to_owned()),
             file: FilePath("bardo/appearance.toml".to_owned()),
             version: 1,
-            foreign: Default::default(),
+            foreign: crate::schema::ForeignTables::default(),
             pages: Vec::default(),
             key: vec![crate::schema::KeySpec {
                 ends: None,
@@ -299,11 +321,11 @@ mod tests {
                 page: Page::Appearance,
                 section: crate::schema::Section("Appearance".to_owned()),
                 exposure: Exposure::Basic,
-                labels: Default::default(),
-                agent: Default::default(),
-                unavailable: Default::default(),
-                groups: Default::default(),
-                places: Default::default(),
+                labels: crate::schema::WordLabels::default(),
+                agent: crate::schema::AgentSetting::default(),
+                unavailable: std::collections::BTreeMap::default(),
+                groups: std::collections::BTreeMap::default(),
+                places: std::collections::BTreeMap::default(),
                 note: None,
                 control: None,
             }],
@@ -485,7 +507,11 @@ mod tests {
         for (name, home, dirs, user, want) in cases {
             let want: Vec<std::path::PathBuf> =
                 want.into_iter().map(std::path::PathBuf::from).collect();
-            assert_eq!(data_dirs_from(home, dirs, user), want, "{name}");
+            assert_eq!(
+                data_dirs_from(home.as_deref(), dirs.as_deref(), user.as_deref()),
+                want,
+                "{name}"
+            );
         }
     }
 

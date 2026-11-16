@@ -81,7 +81,8 @@ fn assert_kept_then_saved(scratch: &Scratch, original: &[u8], what: &str) {
             .file_name()
             .and_then(|name| name.to_str())
             .is_some_and(|name| name.starts_with("spaces.json.bad-")),
-        "{what}: {aside:?}"
+        "{what}: {}",
+        aside.display()
     );
     assert_eq!(std::fs::read(&aside).expect("kept"), original, "{what}");
     assert!(
@@ -264,7 +265,10 @@ fn a_huge_settings_file_is_refused_whole_and_left_alone() {
 fn a_settings_file_with_a_hostile_number_of_keys_is_refused_whole() {
     let scratch = Scratch::new();
     std::fs::create_dir_all(scratch.app_dir()).expect("dir");
-    let text: String = (0..6_000).map(|n| format!("key{n} = 1\n")).collect();
+    let text: String = (0..6_000)
+        .map(|n| format!("key{n} = 1\n"))
+        .collect::<Vec<_>>()
+        .concat();
     std::fs::write(scratch.app_dir().join(FILE), text).expect("write");
     let loaded = scratch.store().load::<AppearanceFile>();
     assert_eq!(loaded.value, AppearanceFile::default());

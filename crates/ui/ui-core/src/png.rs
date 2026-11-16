@@ -231,7 +231,12 @@ impl Bits {
             .iter()
             .rposition(|&base| base <= length)
             .unwrap_or(0);
-        self.literal(257 + index as u16);
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "the index is below 29, the size of the length table"
+        )]
+        let symbol = 257 + index as u16;
+        self.literal(symbol);
         self.push(
             u32::from(length - LENGTH_BASE[index]),
             u32::from(LENGTH_EXTRA[index]),
@@ -244,7 +249,12 @@ impl Bits {
             .iter()
             .rposition(|&base| base <= distance)
             .unwrap_or(0);
-        self.code(index as u32, 5);
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "the index is below 30, the size of the distance table"
+        )]
+        let symbol = index as u32;
+        self.code(symbol, 5);
         self.push(
             u32::from(distance - DISTANCE_BASE[index]),
             u32::from(DISTANCE_EXTRA[index]),

@@ -78,6 +78,6 @@ pub fn schema() -> Schema {
         pages: parts.iter().flat_map(|s| s.pages.clone()).collect(),
         footnotes: parts.iter().flat_map(|s| s.footnotes.clone()).collect(),
         key: parts.into_iter().flat_map(|s| s.key).collect(),
-        foreign: Default::default(),
+        foreign: ui_settings::schema::ForeignTables::default(),
     }
 }

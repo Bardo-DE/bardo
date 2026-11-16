@@ -156,6 +156,11 @@ impl SpacesStorage {
     /// needed. A `spaces.json` already there that cannot be read as Spaces is first moved aside
     /// to `spaces.json.bad-<seconds>`: [`Saved::kept_at`] says where. (A file in an older layout
     /// that `boot_spaces` imported through its `raw_fix` is kept the same way, as a backup.)
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the file cannot be written, or an unreadable one cannot be
+    /// moved aside.
     pub fn save_spaces<P: Serialize + DeserializeOwned, R: Serialize + DeserializeOwned>(
         &self,
         spaces: &Spaces<P, R>,
@@ -198,6 +203,11 @@ impl SpacesStorage {
     /// Write `today` to `today.json` (readable by the person only), creating the directory if
     /// needed. A `today.json` already there that cannot be read as Today is first moved aside
     /// to `today.json.bad-<seconds>`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the file cannot be written, or an unreadable one cannot be
+    /// moved aside.
     pub fn save_today<I: Serialize + DeserializeOwned, K: Serialize + DeserializeOwned>(
         &self,
         today: &Today<I, K>,

@@ -33,6 +33,11 @@ impl Shortcut {
     /// A shortcut of the app's own, modifiers put in the Mac's order; refused with chordkit's
     /// plain-words [`Conflict`] when this desktop keeps the combination for itself or a standard
     /// action has it (design/27 section 6.2: never repurpose one).
+    ///
+    /// # Errors
+    ///
+    /// Returns chordkit's [`Conflict`] when this desktop keeps the combination for itself or a
+    /// standard action has it.
     pub fn custom(keys: impl IntoIterator<Item = ShortcutKey>) -> Result<Shortcut, Conflict> {
         let shortcut = Shortcut(normalized(keys));
         let (Some(chord), Some((app, action))) = (shortcut.default_chord(), probe()) else {

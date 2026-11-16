@@ -33,6 +33,10 @@ pub struct EmptyReason;
 
 impl UiOnlyReason {
     /// `text`, trimmed, when it says something.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`EmptyReason`] when `text` has no words in it.
     pub fn new(text: impl AsRef<str>) -> Result<Self, EmptyReason> {
         match text.as_ref().trim() {
             "" => Err(EmptyReason),

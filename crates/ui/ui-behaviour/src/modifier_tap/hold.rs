@@ -123,7 +123,9 @@ impl Machine for HoldKey {
             (HoldKey::Down { until }, HoldIn::Edge(KeyEdge::CommandUp)) if at < until => {
                 said(HoldKey::Rest, HoldOut::Tap)
             }
-            (HoldKey::Down { .. }, HoldIn::Edge(KeyEdge::CommandUp)) => silent(HoldKey::Rest),
+            (HoldKey::Down { .. } | HoldKey::Chorded, HoldIn::Edge(KeyEdge::CommandUp)) => {
+                silent(HoldKey::Rest)
+            }
             (
                 HoldKey::Down { .. },
                 HoldIn::Edge(KeyEdge::OtherKey | KeyEdge::Escape | KeyEdge::Pointer),
@@ -143,7 +145,6 @@ impl Machine for HoldKey {
             (HoldKey::Talking { until }, HoldIn::Elapsed) if at >= until => {
                 said(HoldKey::Chorded, HoldOut::End)
             }
-            (HoldKey::Chorded, HoldIn::Edge(KeyEdge::CommandUp)) => silent(HoldKey::Rest),
             (state, _) => silent(state),
         }
     }

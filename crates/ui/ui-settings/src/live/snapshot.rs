@@ -25,6 +25,10 @@ impl Snapshot {
     /// A key that answered [`LiveError::UnknownKey`] went away since the schema was read: it is
     /// dropped from the schema as well, so the two agree. Any other failure is the read's failure.
     /// A key in `reads` that the schema does not list is ignored.
+    ///
+    /// # Errors
+    ///
+    /// Returns the first [`LiveError`] a read gave, other than [`LiveError::UnknownKey`].
     pub fn from_reads(
         mut schema: LiveSchema,
         reads: impl IntoIterator<Item = (KeyPath, Result<toml::Value, LiveError>)>,

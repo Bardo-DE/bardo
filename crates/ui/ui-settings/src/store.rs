@@ -96,6 +96,11 @@ impl Store {
     ///
     /// A file already there that cannot be used (see [`Store::load`]) or is not this document at
     /// all is first moved aside to `<name>.bad-<seconds>`; [`Saved::kept_at`] says where.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when there is no config directory, or the file cannot be
+    /// written.
     pub fn save<D: SettingsDoc>(&self, doc: &D) -> Result<Saved, SettingsError> {
         let dir = self.require_dir()?;
         std::fs::create_dir_all(&dir).map_err(|source| SettingsError::Io {

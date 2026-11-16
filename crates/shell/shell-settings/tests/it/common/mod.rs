@@ -37,8 +37,8 @@ pub fn doc() -> String {
 }
 
 /// The `Key` column of every data row between `heading` and `next_heading`, in file order. A
-/// data row is `| \`dotted.key\` | ... |`; the header and separator rows do not start their
-/// first cell with a backtick. (The same parse as ui-settings' `tests/keys.rs`.)
+/// data row is a table row whose first cell is the key in backticks; the header and separator rows
+/// do not start their first cell with a backtick. (The same parse as ui-settings' `tests/keys.rs`.)
 pub fn keys_in_section(doc: &str, heading: &str, next_heading: &str) -> Vec<String> {
     let start = doc
         .find(heading)

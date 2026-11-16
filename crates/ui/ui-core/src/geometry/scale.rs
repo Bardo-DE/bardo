@@ -44,8 +44,13 @@ impl Scale {
     #[must_use]
     pub fn from_factor(factor: f64) -> Option<Scale> {
         let valid = factor.is_finite() && factor > 0.0;
-        // Bounded by the validity check and `max(1.0)`, so the cast cannot truncate or wrap.
-        valid.then(|| Scale((factor * f64::from(Scale::DENOMINATOR)).round().max(1.0) as u32))
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "bounded by the validity check and `max(1.0)`; the cast saturates"
+        )]
+        let numerator = (factor * f64::from(Scale::DENOMINATOR)).round().max(1.0) as u32;
+        valid.then_some(Scale(numerator))
     }
 
     /// The numerator, never zero: a zero scale would make one device pixel infinitely wide.

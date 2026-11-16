@@ -38,6 +38,10 @@ impl SettingsWriter {
     }
 
     /// A writer for the file `D` is stored in inside `store`'s directory.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the store has no config directory for `D`.
     pub fn of<D: SettingsDoc>(store: &Store) -> Result<SettingsWriter, SettingsError> {
         store
             .path::<D>()
@@ -60,12 +64,22 @@ impl SettingsWriter {
     ///
     /// A file that is there and cannot be used, or is not valid TOML, or a key under a value that
     /// is not a table, is left alone and reported. A directory that is not there is made.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the file cannot be read, is not valid TOML, or cannot take
+    /// the edit.
     pub fn patch(&self, key: &KeyPath, value: &toml::Value) -> Result<(), SettingsError> {
         self.patch_all(&[(key.clone(), value.clone())])
     }
 
     /// Applies every edit, in order, under one lock and in one atomic write. If any edit fails
     /// nothing is written.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the file cannot be read, is not valid TOML, or cannot take
+    /// the edits.
     pub fn patch_all(&self, edits: &[(KeyPath, toml::Value)]) -> Result<(), SettingsError> {
         let edits: Vec<Edit> = edits
             .iter()
@@ -78,12 +92,22 @@ impl SettingsWriter {
     /// and leaves every other byte as it was. A key that is not there, or a table on its path
     /// that is not there, is already unset: the file stays as it is. The tables on the way stay,
     /// even when the key was their last. Same lock and atomic write as [`patch`](Self::patch).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the file cannot be read, is not valid TOML, or cannot take
+    /// the edit.
     pub fn unset(&self, key: &KeyPath) -> Result<(), SettingsError> {
         self.apply(&[Edit::Unset(key.clone())])
     }
 
     /// Applies every edit, in order, under one lock and in one atomic write. If any edit fails
     /// nothing is written.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SettingsError`] when the file cannot be read, is not valid TOML, or cannot take
+    /// the edits.
     pub fn apply(&self, edits: &[Edit]) -> Result<(), SettingsError> {
         if let Some(dir) = self.path.parent() {
             std::fs::create_dir_all(dir).map_err(|source| SettingsError::Io {

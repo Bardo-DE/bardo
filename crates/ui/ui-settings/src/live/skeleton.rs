@@ -165,6 +165,10 @@ pub struct Served {
 impl Served {
     /// Sends `Changed(key, value)` from the module's object path to the peers `permit` let read,
     /// and to no one else.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LiveError`] when the change signal cannot be sent.
     pub async fn changed(&self, key: &KeyPath, value: &toml::Value) -> Result<(), LiveError> {
         let emitter = SignalEmitter::new(&self.connection, self.path.clone())?;
         for reader in self.readers.present(&self.connection).await {
@@ -189,6 +193,11 @@ impl Served {
 /// The module's schema is checked first ([`LiveSchema::check`](super::LiveSchema::check)): a
 /// module that marks a never-settable key agent-settable is not exported. The caller still
 /// requests its well-known bus name.
+///
+/// # Errors
+///
+/// Returns a [`LiveError`] when the module's schema does not check, or the object cannot be served
+/// on `connection`.
 pub async fn serve<M: LiveModule>(
     connection: &Connection,
     path: &str,

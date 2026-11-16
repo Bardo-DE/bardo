@@ -89,8 +89,13 @@ impl Scroll {
     /// Scrolled the least that shows row `index` of rows `pitch` apart.
     #[must_use]
     pub fn reveal_row(self, index: usize, pitch: Px) -> Scroll {
+        #[expect(
+            clippy::cast_precision_loss,
+            reason = "a row index is far below 2^24, so it is exact in an f32"
+        )]
+        let start = index as f32 * pitch.0;
         self.reveal(ScrollSpan {
-            start: index as f32 * pitch.0,
+            start,
             length: pitch.0,
         })
     }
@@ -103,7 +108,17 @@ impl Scroll {
         if len == 0 || pitch.0 <= 0.0 {
             return 0..0;
         }
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "held to zero or more first, and the cast saturates"
+        )]
         let first = (self.offset.0.max(0.0) / pitch.0).floor() as usize;
+        #[expect(
+            clippy::cast_possible_truncation,
+            clippy::cast_sign_loss,
+            reason = "held to zero or more first, and the cast saturates"
+        )]
         let past = ((self.offset.0.max(0.0) + self.viewport.0.max(0.0)) / pitch.0).ceil() as usize;
         let start = first.min(len).saturating_sub(overscan);
         let end = past.max(first).saturating_add(overscan).min(len);

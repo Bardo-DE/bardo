@@ -65,9 +65,8 @@ impl Machine for Tap {
 
     fn step(self, input: TapIn, at: Stamp, params: &TapParams, (): &()) -> (Tap, Vec<TapOut>) {
         match (self, input) {
-            (Tap::Rest, TapIn::Tap) => (armed(at, params), Vec::new()),
             (Tap::Armed { until }, TapIn::Tap) if at <= until => (Tap::Rest, vec![TapOut::Summon]),
-            (Tap::Armed { .. }, TapIn::Tap) => (armed(at, params), Vec::new()),
+            (Tap::Rest | Tap::Armed { .. }, TapIn::Tap) => (armed(at, params), Vec::new()),
             (Tap::Armed { until }, TapIn::Elapsed) if at >= until => (Tap::Rest, Vec::new()),
             (state, _) => (state, Vec::new()),
         }

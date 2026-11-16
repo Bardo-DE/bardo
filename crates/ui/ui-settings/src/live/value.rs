@@ -16,6 +16,10 @@ use zbus::zvariant::Value;
 use super::LiveError;
 
 /// The variant `v` carrying `value`.
+///
+/// # Errors
+///
+/// Returns [`LiveError::BadValue`] when `value` has no wire form.
 pub fn to_wire(value: &toml::Value) -> Result<Value<'static>, LiveError> {
     match value {
         toml::Value::Boolean(on) => Ok(Value::Bool(*on)),
@@ -34,6 +38,10 @@ pub fn to_wire(value: &toml::Value) -> Result<Value<'static>, LiveError> {
 }
 
 /// The value a received variant `v` carries.
+///
+/// # Errors
+///
+/// Returns [`LiveError::BadValue`] when `value` is not one a setting can hold.
 pub fn from_wire(value: &Value<'_>) -> Result<toml::Value, LiveError> {
     match value {
         Value::Bool(on) => Ok(toml::Value::Boolean(*on)),

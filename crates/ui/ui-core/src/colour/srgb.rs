@@ -40,9 +40,18 @@ impl From<Srgb> for LinearRgb {
 impl From<LinearRgb> for Srgb {
     /// Clamped into the gamut and rounded to the nearest byte.
     fn from(LinearRgb(channels): LinearRgb) -> Self {
-        // In range after `encode`'s clamp: 0..=255.
-        Srgb(channels.map(|channel| (encode(channel) * 255.0).round() as u8))
+        Srgb(channels.map(|channel| byte(encode(channel))))
     }
+}
+
+/// An encoded channel 0 to 1 as a byte.
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "in range after `encode`'s clamp: 0 to 255"
+)]
+fn byte(encoded: f64) -> u8 {
+    (encoded * 255.0).round() as u8
 }
 
 #[cfg(test)]

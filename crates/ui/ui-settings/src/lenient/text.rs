@@ -37,6 +37,6 @@ fn reason(error: &ReadError) -> String {
         ReadError::TooBig { cap, .. } => format!("too large (over {cap})"),
         ReadError::NotText { source, .. } => format!("not text: {source}"),
         ReadError::Io { source, .. } => format!("cannot be read: {source}"),
-        other => other.to_string(),
+        ReadError::NotFound { .. } => error.to_string(),
     }
 }

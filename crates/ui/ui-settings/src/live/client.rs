@@ -65,6 +65,10 @@ impl LiveClient {
     /// A client of the module at `path` on the peer named `destination`
     /// (`org.bardo.Accounts1`, ...), whose owner `check` vouches for. Touches the bus only when
     /// first used.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LiveError`] when the proxy for the module cannot be made.
     pub fn new(
         connection: &Connection,
         destination: &str,
@@ -87,6 +91,11 @@ impl LiveClient {
     /// The module's schema (checked: a schema that breaks the never-settable rule is refused here
     /// too, so a misbehaving daemon cannot hand the Settings app an agent-settable `accounts.` key;
     /// a schema over the [`limits`] is refused as well).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LiveError`] when the call fails, the owner of the name is not the right program,
+    /// or the reply is not a valid schema.
     pub async fn describe(&self) -> Result<LiveSchema, LiveError> {
         bounded(self.timeouts.read, async {
             describe_on(&self.link.proxy().await?).await
@@ -94,6 +103,12 @@ impl LiveClient {
         .await
     }
 
+    /// One key's value.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LiveError::UnknownKey`] when the module has no such key, and another
+    /// [`LiveError`] when the call fails or the owner of the name is not the right program.
     pub async fn get(&self, key: &KeyPath) -> Result<toml::Value, LiveError> {
         bounded(self.timeouts.read, async {
             get_on(&self.link.proxy().await?, key).await
@@ -104,6 +119,11 @@ impl LiveClient {
     /// The module's schema and every value, read once. A module that predates `Snapshot`
     /// answers `UnknownMethod`; the client then reads `describe` and each key itself, dropping
     /// a key that went away, so it gets the same shape (without the one-read guarantee).
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LiveError`] when the schema or a value cannot be read: the call fails, the owner
+    /// of the name is not the right program, or a reply is not valid.
     pub async fn snapshot(&self) -> Result<Snapshot, LiveError> {
         bounded(self.timeouts.read, async {
             snapshot_on(&self.link.proxy().await?).await
@@ -115,6 +135,11 @@ impl LiveClient {
     /// without `Snapshot`.
     ///
     /// The whole read has one read deadline, not one per key.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LiveError`] when the schema or a value cannot be read: the call fails, the owner
+    /// of the name is not the right program, or a reply is not valid.
     pub async fn snapshot_by_parts(&self) -> Result<Snapshot, LiveError> {
         bounded(self.timeouts.read, async {
             parts_on(&self.link.proxy().await?).await
@@ -123,6 +148,12 @@ impl LiveClient {
     }
 
     /// Sets a key. The owner is checked before the value is put on the wire.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`LiveError::NotPermitted`] when the caller is not the Settings role,
+    /// [`LiveError::UnknownKey`], [`LiveError::BadValue`] or [`LiveError::Unavailable`] when the
+    /// module refuses the value, and another [`LiveError`] when the call fails.
     pub async fn set(&self, key: &KeyPath, value: &toml::Value) -> Result<(), LiveError> {
         let wire = to_wire(value)?;
         bounded(self.timeouts.action, async {
@@ -132,6 +163,10 @@ impl LiveClient {
     }
 
     /// Runs an action key (`KeyKind::Live`): a `Set` of `true`.
+    ///
+    /// # Errors
+    ///
+    /// Returns the errors of [`LiveClient::set`].
     pub async fn invoke(&self, key: &KeyPath) -> Result<(), LiveError> {
         self.set(key, &toml::Value::Boolean(true)).await
     }
@@ -143,6 +178,10 @@ impl LiveClient {
     ///
     /// The stream hears the owner that passed the check and no other: when the name changes hands
     /// it goes quiet, and a new `changes()` checks the new owner.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`LiveError`] when the subscription to the module's changes cannot be made.
     pub async fn changes(&self) -> Result<Changes, LiveError> {
         bounded(self.timeouts.read, async {
             let proxy = self.link.proxy().await?;

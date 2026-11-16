@@ -89,14 +89,20 @@ fn today_lives_in_the_state_directory_and_boots_pruned() {
     let disk = storage(&scratch);
     let mut today: Today<u32> = Today::default();
     today.opened(SpaceId(0), 1, Epoch(0));
-    today.opened(SpaceId(0), 2, Epoch(IDLE.as_secs() as i64));
+    today.opened(
+        SpaceId(0),
+        2,
+        Epoch(i64::try_from(IDLE.as_secs()).expect("a short wait")),
+    );
     disk.save_today(&today).expect("saves");
     let state = ConfigRoot::Scratch(scratch.root().to_path_buf())
         .state_dir(AppName::desktop("notes"))
         .expect("dir");
     assert!(state.join("today.json").exists());
     assert!(!disk_dir(&scratch).join("today.json").exists());
-    let booted: Today<u32> = disk.boot_today(Epoch(IDLE.as_secs() as i64 + 5));
+    let booted: Today<u32> = disk.boot_today(Epoch(
+        i64::try_from(IDLE.as_secs()).expect("a short wait") + 5,
+    ));
     assert_eq!(booted.entries.len(), 1);
     let stored: Today<u32> = disk.load_today();
     assert_eq!(stored, booted, "the prune was written back");

@@ -60,8 +60,8 @@ impl CornerKeys {
 }
 
 impl FromIterator<CornerKey> for CornerKeys {
-    fn from_iter<I: IntoIterator<Item = CornerKey>>(keys: I) -> Self {
-        keys.into_iter()
+    fn from_iter<I: IntoIterator<Item = CornerKey>>(iter: I) -> Self {
+        iter.into_iter()
             .fold(CornerKeys::default(), CornerKeys::with)
     }
 }

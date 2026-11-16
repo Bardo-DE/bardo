@@ -32,7 +32,13 @@ impl Machine for Corner {
             (Corner::Armed, CornerIn::Enter) => quiet(Corner::Dwelling {
                 until: at.after_span(params.dwell),
             }),
-            (Corner::Dwelling { .. }, CornerIn::Leave) => quiet(Corner::Armed),
+            (
+                Corner::Dwelling { .. }
+                | Corner::Spent {
+                    rearm: Rearm::Over, ..
+                },
+                CornerIn::Leave,
+            ) => quiet(Corner::Armed),
             (Corner::Dwelling { until }, CornerIn::Elapsed) if at >= until => (
                 Corner::Spent {
                     pointer: Inside::In,
@@ -43,12 +49,6 @@ impl Machine for Corner {
                 vec![CornerOut::Fire],
             ),
             (Corner::Spent { rearm, .. }, CornerIn::Enter) => spent(Inside::In, rearm),
-            (
-                Corner::Spent {
-                    rearm: Rearm::Over, ..
-                },
-                CornerIn::Leave,
-            ) => quiet(Corner::Armed),
             (Corner::Spent { rearm, .. }, CornerIn::Leave) => spent(Inside::Out, rearm),
             (
                 Corner::Spent {

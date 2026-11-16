@@ -98,7 +98,7 @@ impl LiveModule for Witness {
     }
 }
 
-fn not_the_service<T>(answer: Result<T, LiveError>) -> bool {
+fn not_the_service<T>(answer: &Result<T, LiveError>) -> bool {
     matches!(answer, Err(LiveError::NotTheService(_)))
 }
 
@@ -118,13 +118,13 @@ async fn a_refused_owner_is_sent_nothing_and_no_secret() {
     let client = LiveClient::new(&settings, NAME, PATH, roster.clone()).expect("client");
     let secret = toml::Value::String("hunter2".to_owned());
 
-    assert!(not_the_service(client.set(&key(CLIENT), &secret).await));
-    assert!(not_the_service(client.invoke(&key(REMOVE)).await));
-    assert!(not_the_service(client.snapshot().await));
-    assert!(not_the_service(client.snapshot_by_parts().await));
-    assert!(not_the_service(client.describe().await));
-    assert!(not_the_service(client.get(&key(TOGGLE)).await));
-    assert!(not_the_service(client.changes().await));
+    assert!(not_the_service(&client.set(&key(CLIENT), &secret).await));
+    assert!(not_the_service(&client.invoke(&key(REMOVE)).await));
+    assert!(not_the_service(&client.snapshot().await));
+    assert!(not_the_service(&client.snapshot_by_parts().await));
+    assert!(not_the_service(&client.describe().await));
+    assert!(not_the_service(&client.get(&key(TOGGLE)).await));
+    assert!(not_the_service(&client.changes().await));
     assert_eq!(
         witness.asked.load(Ordering::SeqCst),
         0,
@@ -174,7 +174,7 @@ async fn a_new_owner_of_the_name_is_checked_again() {
     assert!(first.release_name(NAME).await.expect("released"));
     second.request_name(NAME).await.expect("name");
     let secret = toml::Value::String("hunter2".to_owned());
-    assert!(not_the_service(client.set(&key(CLIENT), &secret).await));
+    assert!(not_the_service(&client.set(&key(CLIENT), &secret).await));
     assert_eq!(roster.asked().len(), 2, "the new owner was asked");
     assert!(at_second.set.lock().expect("set").is_empty());
     assert_eq!(at_second.asked.load(Ordering::SeqCst), 0);

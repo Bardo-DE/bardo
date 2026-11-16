@@ -133,8 +133,14 @@ impl Wire for TomlWire {
                 (held != *given).then_some(toml::Value::Integer(held))
             }
             toml::Value::Float(given) if !given.is_nan() => {
+                #[expect(
+                    clippy::cast_precision_loss,
+                    reason = "a limit is far below 2^53, so it is exact in an f64"
+                )]
                 let held = given.clamp(bounds.min as f64, bounds.max as f64);
-                (held != *given).then_some(toml::Value::Float(held))
+                // `clamp` returns the given value as it was, or a bound: a changed bit pattern is
+                // a value that moved.
+                (held.to_bits() != given.to_bits()).then_some(toml::Value::Float(held))
             }
             _ => None,
         }

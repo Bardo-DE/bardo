@@ -56,6 +56,11 @@ fn fit(lightness: f64, chroma: f64, hue: f64) -> f64 {
     chroma.max(0.0)
 }
 
+#[expect(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    reason = "the range check keeps the rounded value within 0 to 255"
+)]
 fn channel_byte(encoded: f64) -> u8 {
     let rounded = js_round(encoded * 255.0);
     if (0.0..=255.0).contains(&rounded) {

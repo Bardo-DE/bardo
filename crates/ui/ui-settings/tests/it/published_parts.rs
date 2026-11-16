@@ -59,8 +59,8 @@ fn every_app_is_found_once_and_a_misnamed_file_is_skipped() {
 #[test]
 fn the_directories_are_the_system_ones_then_the_persons() {
     let dirs = parts_dirs_from(
-        Some("/home/p/.local/share".into()),
-        Some("/usr/local/share:/usr/share".into()),
+        Some(std::ffi::OsStr::new("/home/p/.local/share")),
+        Some(std::ffi::OsStr::new("/usr/local/share:/usr/share")),
         None,
     );
     assert_eq!(
