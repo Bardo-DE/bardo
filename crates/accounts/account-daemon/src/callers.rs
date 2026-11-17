@@ -2,9 +2,10 @@
 //! share (`account_callers::Callers`, with `ProcCallers` for the real bus). [`TableCallers`] is the
 //! table-backed one for tests and for hosts that know their clients.
 
+use account_callers::Caller;
 pub use account_callers::Callers;
-use account_callers::{Caller, CallerRole};
 use account_core::AppId;
+use caller_role_types::CallerRole;
 use std::collections::BTreeMap;
 use std::sync::{Mutex, PoisonError};
 

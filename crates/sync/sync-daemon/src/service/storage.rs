@@ -20,8 +20,9 @@
 //!   ten times a second, each changed item with the folders above it.
 
 use super::errors::RefusedError;
-use account_callers::{Caller, CallerRole, Callers};
+use account_callers::{Caller, Callers};
 use account_dbus::Details;
+use caller_role_types::CallerRole;
 use dbus_kit::Call;
 use drive_fs::{Node, NodeId, NodeKind, Reason, Status};
 use std::collections::{BTreeMap, BTreeSet};

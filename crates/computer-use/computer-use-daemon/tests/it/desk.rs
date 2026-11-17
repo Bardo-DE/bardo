@@ -5,12 +5,13 @@ use account_core::AppName;
 use action_client::{DbusTransport, Intents};
 use action_core::{ConfirmAnswer, GrantScope};
 use action_daemon::{AcpGate, IntentdConfig, ProcRoot, serve_on_gated};
-use action_dbus::callers::{CallerTable, Identity, Role};
+use action_dbus::callers::{CallerTable, Identity};
 use action_fake::{ScriptedConfirmer, fake_router};
 use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
 use action_router::Router;
 use action_vocab::CallerRole;
 use action_wire::SessionOpen;
+use caller_role_types::CallerRole as Role;
 use computer_use_action::{CuaAction, WindowSpace};
 use computer_use_action::{RunMode, WindowTrust};
 use computer_use_bus::{

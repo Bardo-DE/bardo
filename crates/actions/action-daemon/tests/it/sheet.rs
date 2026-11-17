@@ -8,9 +8,10 @@ use crate::support::bus::PrivateBus;
 use crate::support::world::{app, introduce};
 use action_core::*;
 use action_daemon::{IntentdConfig, SheetConfirmer};
-use action_dbus::callers::{Identity, Role};
+use action_dbus::callers::Identity;
 use action_vocab::{LabelText, Seconds};
 use base_ids::Count;
+use caller_role_types::CallerRole;
 use permission_core::{ACP_AGENT_APP, AskReason};
 use provenance::{Actor, ConfirmReceipt, Effect, InputProof, SpaceId, UnixSeconds};
 use std::sync::Arc;
@@ -303,8 +304,8 @@ async fn a_process_that_is_not_the_shells_unit_is_never_asked() {
     // shell is a plain app (porter gives a scope row no fixed role), an agent is not the sheet
     // host, and a process nothing identifies is nobody: none is asked, none allows.
     for (what, standing) in [
-        ("a scope claiming the shell", Some(Role::App)),
-        ("an agent claiming the shell", Some(Role::Agent)),
+        ("a scope claiming the shell", Some(CallerRole::App)),
+        ("an agent claiming the shell", Some(CallerRole::Agent)),
         ("an unknown process", None),
     ] {
         let desk = desk().await;

@@ -27,6 +27,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 thiserror = { workspace = true }
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [features]
 # `inferd_transport`: the one place a daemon makes its inferd link (intentd, companiond, readerd),

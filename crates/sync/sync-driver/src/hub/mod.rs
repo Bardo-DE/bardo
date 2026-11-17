@@ -6,8 +6,9 @@
 use crate::resolve::{
     Confirm, ConfirmError, ConflictNumber, How, Settle, SettleError, SyncNowError,
 };
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_core::AppName;
+use caller_role_types::CallerRole;
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use sync_core::{MassDelete, Quota, StoredConflict};

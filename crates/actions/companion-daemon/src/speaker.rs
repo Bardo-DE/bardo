@@ -22,9 +22,10 @@
 use account_callers::ProcRoot;
 use account_core::AppName;
 use action_dbus::BusConnection;
-use action_dbus::callers::{Caller, Callers, Identity, Role};
+use action_dbus::callers::{Caller, Callers, Identity};
 use action_procroot::{own_uid, terminal_scope};
 use action_wire::TerminalScope;
+use caller_role_types::CallerRole;
 use companion_core::{Call, Speaker, permits};
 use std::sync::Arc;
 use zbus::fdo::{self, DBusProxy};
@@ -75,10 +76,12 @@ pub(crate) fn speaker_of(
     terminal: Option<TerminalScope>,
 ) -> Option<Speaker> {
     match named {
-        Some(caller) if caller.role == Role::SheetHost && &caller.app.name == shell => {
+        Some(caller) if caller.role == CallerRole::SheetHost && &caller.app.name == shell => {
             Some(Speaker::Shell)
         }
-        Some(caller) if caller.role == Role::Agent && caller.app.name.as_str() == EDITOR_APP => {
+        Some(caller)
+            if caller.role == CallerRole::Agent && caller.app.name.as_str() == EDITOR_APP =>
+        {
             Some(Speaker::Editor)
         }
         Some(_) => None,

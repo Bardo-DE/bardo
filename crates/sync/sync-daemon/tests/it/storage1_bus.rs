@@ -5,8 +5,8 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_core::AppName;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::{ACCESS_DENIED, Known, client, error_name, eventually};
 use drive_fs::testing::{MemoryListing, MemorySink, MemorySource, Took};

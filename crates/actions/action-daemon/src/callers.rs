@@ -45,7 +45,7 @@ pub fn read_at(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use action_dbus::callers::Role;
+    use caller_role_types::CallerRole;
 
     #[test]
     fn the_shipped_file_reads_and_gives_the_shell_the_sheet_host_role_by_its_unit() {
@@ -54,7 +54,7 @@ mod tests {
             .resolve_unit("bardo-shell.service")
             .expect("the shell's unit");
         assert_eq!(shell.app.name.as_str(), "org.bardo.Shell");
-        assert_eq!(shell.role, Role::SheetHost);
+        assert_eq!(shell.role, CallerRole::SheetHost);
         assert!(table.resolve_unit("shell-shell.scope").is_none());
     }
 }

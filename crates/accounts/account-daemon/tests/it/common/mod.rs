@@ -12,7 +12,7 @@ pub mod host;
 pub use account_fake::{mail_account, storage_account};
 pub use host::SheetHost;
 
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_core::AccountId;
 use account_core::{AppId, AppName, Credential, Isolation, SecretKey, SecretPurpose, SecretText};
 use account_daemon::{BusSheets, Options, TableCallers, serve_with};
@@ -28,6 +28,7 @@ use account_wire::names::{SHEET_BUS, SHEET_PATH};
 use base_testkit::Scratch;
 use base_time::FixedClock;
 use bus::PrivateBus;
+use caller_role_types::CallerRole;
 use host::HostLog;
 use std::sync::Arc;
 

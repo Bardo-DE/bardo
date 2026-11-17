@@ -5,12 +5,12 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_core::{AccountState, SecretKey, SecretPurpose};
 use account_dbus::accounts::IdentitiesProxy;
 use account_secrets::{Secrets, SecretsError};
 use account_service_core::audit::AuditEvent;
 use base_testkit::Scratch;
+use caller_role_types::CallerRole;
 use common::*;
 use settings_dbus::{AnyOwner, LiveClient, LiveError, Snapshot};
 use settings_types::schema::KeyPath;

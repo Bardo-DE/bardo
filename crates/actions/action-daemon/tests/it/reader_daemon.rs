@@ -11,11 +11,12 @@ use account_core::{AppName, DataClass};
 use action_client::{DbusTransport, Intents};
 use action_core::*;
 use action_daemon::{Cadence, FileGrants, IntentdConfig, Setup, start};
-use action_dbus::callers::{Identity, Role};
+use action_dbus::callers::Identity;
 use action_vocab::{CallerRole, ChoiceId, Handle, Value};
 use action_wire::{ReadAsk, RecallAsk, RecallView, SessionOpen};
 use agent_reader_daemon::{ReaderHost, ReaderService, serve_on};
 use base_ids::{Count, Tokens};
+use caller_role_types::CallerRole as Role;
 use memory_core::{
     InjectQuery, MemoryItem, MemoryReply, MemoryRequest, RecallHit, RecallOver, RecallWhy,
     TrustFilter, UserText,

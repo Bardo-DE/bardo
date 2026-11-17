@@ -8,7 +8,6 @@ use crate::support::infer::words;
 use crate::support::world::*;
 use account_callers::ProcRoot;
 use action_core::*;
-use action_dbus::callers::Role;
 use action_dbus::{CompanionAnswerProxy, CompanionProxy, Details};
 use action_vocab::{Caller, CallerRole, Origin, WindowKey};
 use action_wire::{
@@ -16,6 +15,7 @@ use action_wire::{
     StoredView, TerminalScope,
 };
 use base_time::Clock as _;
+use caller_role_types::CallerRole as Role;
 use companion_daemon::serve_on_rooted;
 use companion_wire::{AnswerPhase, AskWire};
 use futures_util::lock::Mutex;

@@ -8,7 +8,6 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_capability::CapabilityKind;
 use account_capability::Offer;
 use account_core::{AccountId, ProviderId};
@@ -26,6 +25,7 @@ use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_sheet::{SheetInput, SheetView};
 use base_time::FixedClock;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::host::{HostLog, SheetHost, send_input};
 use common::{Shared, Tap, caller, contains};

@@ -11,8 +11,9 @@ pub mod infer;
 
 use account_capability::{Locality, ModelId};
 use account_core::AccountId;
-use action_dbus::callers::{Identity, Role};
+use action_dbus::callers::Identity;
 use action_testbus::PrivateBus;
+use caller_role_types::CallerRole;
 use device::{Hand, ScriptedDevice};
 use infer::{ScriptedInfer, Seen};
 use inference_core::testing::{Script, ScriptStep};
@@ -207,7 +208,7 @@ pub async fn world_with(options: Options, config: VoicedConfig) -> World {
     let running = speech_daemon::start(daemon, config, seams)
         .await
         .expect("serves");
-    let shell = named(&bus, &who, SHELL, Role::SheetHost).await;
+    let shell = named(&bus, &who, SHELL, CallerRole::SheetHost).await;
     let voice = VoiceProxy::new(&shell).await.expect("proxy");
     World {
         bus,
@@ -223,7 +224,12 @@ pub async fn world_with(options: Options, config: VoicedConfig) -> World {
 
 /// A client that owns `name` and is introduced as the app `name` with `role` (the shell's unit
 /// is `SheetHost`, an app's scope a plain `App`).
-pub async fn named(bus: &PrivateBus, who: &Identity, name: &str, role: Role) -> zbus::Connection {
+pub async fn named(
+    bus: &PrivateBus,
+    who: &Identity,
+    name: &str,
+    role: CallerRole,
+) -> zbus::Connection {
     let connection = bus.connect().await;
     connection.request_name(name).await.expect("name");
     who.introduce_app(&connection, name, role);
@@ -233,12 +239,12 @@ pub async fn named(bus: &PrivateBus, who: &Identity, name: &str, role: Role) -> 
 impl World {
     /// A plain app's connection.
     pub async fn app(&self, name: &str) -> zbus::Connection {
-        named(&self.bus, &self.who, name, Role::App).await
+        named(&self.bus, &self.who, name, CallerRole::App).await
     }
 
     /// A connection that is a shell's unit (another than the first).
     pub async fn shell_named(&self, name: &str) -> zbus::Connection {
-        named(&self.bus, &self.who, name, Role::SheetHost).await
+        named(&self.bus, &self.who, name, CallerRole::SheetHost).await
     }
 }
 

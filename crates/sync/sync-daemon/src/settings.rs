@@ -22,11 +22,12 @@
 use crate::keep::{
     ContinueError, Keep, Snapshot, SwitchError, SyncClass, drive_allowed, sync_allowed, sync_offers,
 };
-use account_callers::{CallerRole, Callers};
+use account_callers::Callers;
 use account_client::{AccountsLink, GrantsLink};
 use account_core::AccountId;
 use account_core::{Account, Family};
 use account_wire::ParentWindow;
+use caller_role_types::CallerRole;
 use drive_fs::CacheLimit;
 use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
 use settings_types::schema::{

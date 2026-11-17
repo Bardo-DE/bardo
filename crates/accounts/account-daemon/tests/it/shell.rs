@@ -4,10 +4,10 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_core::AccountState;
 use account_dbus::Details;
 use account_dbus::accounts::{AccountProxy, ManagerProxy};
+use caller_role_types::CallerRole;
 use common::*;
 use std::time::Duration;
 

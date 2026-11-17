@@ -88,7 +88,11 @@ async fn a_proposed_routine_waits_for_the_shell_to_accept_or_decline_it() {
     .await
     .expect("serving");
     as_shell(&who, &shell);
-    who.introduce_app(&editor, "org.bardo.Acp", action_dbus::callers::Role::Agent);
+    who.introduce_app(
+        &editor,
+        "org.bardo.Acp",
+        caller_role_types::CallerRole::Agent,
+    );
 
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),
@@ -219,7 +223,11 @@ async fn the_editor_bridge_speaks_in_a_helpers_conversation_and_a_stranger_or_an
     .await
     .expect("serving");
     as_shell(&who, &shell);
-    who.introduce_app(&editor, "org.bardo.Acp", action_dbus::callers::Role::Agent);
+    who.introduce_app(
+        &editor,
+        "org.bardo.Acp",
+        caller_role_types::CallerRole::Agent,
+    );
 
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),

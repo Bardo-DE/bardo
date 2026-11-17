@@ -14,13 +14,14 @@
 //!   to take it down).
 
 use crate::app_names::AppNames;
-use account_callers::{CallerRole, Callers};
+use account_callers::Callers;
 use account_core::consent::{ConsentAnswer, ConsentAsk};
 use account_dbus::accounts::AccountsSheetProxy;
 use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
 use account_sheet::{ReviewView, SheetInput, SheetView};
 use account_wire::ParentWindow;
 use account_wire::names::SHEET_BUS;
+use caller_role_types::CallerRole;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};

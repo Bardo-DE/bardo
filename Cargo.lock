@@ -87,6 +87,7 @@ dependencies = [
  "caller-identity-core",
  "caller-identity-dbus",
  "caller-identity-linux",
+ "caller-role-types",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -221,6 +222,7 @@ dependencies = [
  "base-testkit",
  "base-time",
  "base-xdg",
+ "caller-role-types",
  "clap",
  "dbus-kit",
  "http-core",
@@ -744,6 +746,7 @@ dependencies = [
  "account-sheet",
  "account-wire",
  "base-testkit",
+ "caller-role-types",
  "dbus-kit",
  "serde_json",
  "tokio",
@@ -1042,6 +1045,7 @@ dependencies = [
  "base-testkit",
  "base-time",
  "base-xdg",
+ "caller-role-types",
  "companion-memory",
  "companion-memory-core",
  "companion-model",
@@ -1087,6 +1091,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-xdg",
+ "caller-role-types",
  "inference-client",
  "inference-core",
  "inference-dbus",
@@ -3495,6 +3500,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "caller-role-types"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "calloop"
 version = "0.14.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3945,6 +3957,7 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
+ "caller-role-types",
  "companion-core",
  "companion-helpers",
  "companion-model",
@@ -4531,6 +4544,7 @@ dependencies = [
  "base-ids",
  "base-testkit",
  "base-time",
+ "caller-role-types",
  "computer-use-action",
  "computer-use-bus",
  "computer-use-capture",
@@ -6386,6 +6400,7 @@ dependencies = [
  "action-wire",
  "base-ids",
  "base-testkit",
+ "caller-role-types",
  "dbus-kit",
  "files-core",
  "files-desktop",
@@ -7806,6 +7821,7 @@ dependencies = [
  "base-time",
  "base-url",
  "base-xdg",
+ "caller-role-types",
  "clap",
  "computer-use-action",
  "dbus-kit",
@@ -9523,6 +9539,7 @@ dependencies = [
  "base-time",
  "base-xdg",
  "blake3",
+ "caller-role-types",
  "clap",
  "dbus-kit",
  "getrandom 0.4.3",
@@ -14207,6 +14224,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-time",
+ "caller-role-types",
  "clap",
  "dbus-kit",
  "futures-util",
@@ -14897,6 +14915,7 @@ dependencies = [
  "base-url",
  "base-xdg",
  "base64 0.22.1",
+ "caller-role-types",
  "clap",
  "dbus-kit",
  "drive-fs",

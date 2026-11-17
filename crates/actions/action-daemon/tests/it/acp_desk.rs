@@ -12,13 +12,14 @@ use action_core::{
     ConfirmRequest, Confirmer, EditorRoute, Gesture, GrantScope, TaintNote,
 };
 use action_daemon::{AcpGate, IntentdConfig, ProcRoot, SheetConfirmer};
-use action_dbus::callers::{Identity, Role};
+use action_dbus::callers::Identity;
 use action_dbus::{CONFIRM_PATH, ConfirmProxy, INTENTS_BUS};
 use action_host::EditorDesk;
 use action_vocab::{LabelText, Seconds};
 use agent_acp_bin::confirm::ConfirmObject;
 use agent_session::{SheetChoice, SheetDesk};
 use base_ids::Count;
+use caller_role_types::CallerRole;
 use provenance::{Actor, ClientName, Effect, SessionId, SpaceId};
 use std::sync::Arc;
 
@@ -55,7 +56,7 @@ impl Fixture {
             agent_acp_bin::callers::shipped(),
             proc.clone(),
         ));
-        acp_who.introduce_app(&intentd, "org.bardo.Intents", Role::Agent);
+        acp_who.introduce_app(&intentd, "org.bardo.Intents", CallerRole::Agent);
         let desk = EditorDesk::new();
         acp.object_server()
             .at(
@@ -83,8 +84,8 @@ impl Fixture {
             action_daemon::callers::shipped(),
             proc.clone(),
         ));
-        who.introduce_app(&sill_connection, "org.bardo.Shell", Role::SheetHost);
-        who.introduce_app(&acp, ACP, Role::Agent);
+        who.introduce_app(&sill_connection, "org.bardo.Shell", CallerRole::SheetHost);
+        who.introduce_app(&acp, ACP, CallerRole::Agent);
         let confirmer = SheetConfirmer::trusting(intentd.clone(), config, who)
             .gated(gate, &ProcRoot::Honoured(proc));
         let stranger = bus.connect().await;

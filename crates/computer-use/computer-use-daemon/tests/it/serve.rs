@@ -6,7 +6,8 @@
 
 use crate::support::bus::PrivateBus;
 use crate::support::enabled;
-use action_dbus::callers::{Identity, Role};
+use action_dbus::callers::Identity;
+use caller_role_types::CallerRole;
 use computer_use_action::{CuaAction, Summary};
 use computer_use_bus::{BudgetBody, CuaEnvelope, CuaOutcome, CuaTask, RunEnd, WindowBody};
 use computer_use_daemon::{Supervisor, serve_on_with, shipped_callers};
@@ -41,13 +42,13 @@ enum Who {
 }
 
 impl Who {
-    fn standing(self) -> (&'static str, Role) {
+    fn standing(self) -> (&'static str, CallerRole) {
         match self {
-            Who::Router => ("org.bardo.Intents", Role::Agent),
-            Who::Planner => ("org.bardo.Companion1", Role::Agent),
-            Who::Shell => ("org.bardo.Shell", Role::SheetHost),
-            Who::Stranger => ("org.example.Stranger", Role::App),
-            Who::Squatter => ("org.example.Squatter", Role::App),
+            Who::Router => ("org.bardo.Intents", CallerRole::Agent),
+            Who::Planner => ("org.bardo.Companion1", CallerRole::Agent),
+            Who::Shell => ("org.bardo.Shell", CallerRole::SheetHost),
+            Who::Stranger => ("org.example.Stranger", CallerRole::App),
+            Who::Squatter => ("org.example.Squatter", CallerRole::App),
         }
     }
 

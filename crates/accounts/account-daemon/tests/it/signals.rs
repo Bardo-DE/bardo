@@ -3,9 +3,9 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_dbus::accounts::AccountProxy;
 use account_dbus::accounts::account_path;
+use caller_role_types::CallerRole;
 use common::*;
 use settings_types::schema::KeyPath;
 use std::time::Duration;

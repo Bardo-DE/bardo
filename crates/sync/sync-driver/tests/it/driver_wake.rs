@@ -3,9 +3,10 @@
 //! run late by as long as the computer slept.
 
 use super::rig::*;
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_capability::{Delta, StorageCap};
 use account_core::{AppId, AppName, Isolation};
+use caller_role_types::CallerRole;
 use std::sync::Arc;
 use std::time::Duration;
 use sync_driver::Driver;

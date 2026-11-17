@@ -9,7 +9,6 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_core::AccountId;
 use account_core::{
@@ -22,6 +21,7 @@ use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::hosted::{Hosted, Link, Service, host, keep};
 use common::{Known, client, eventually};

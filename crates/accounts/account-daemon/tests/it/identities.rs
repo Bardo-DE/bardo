@@ -5,7 +5,6 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_capability::CapabilityKind;
 use account_core::consent::{AskPurpose, ConsentAnswer, GrantScope};
 use account_core::{AccountId, ProviderId};
@@ -16,6 +15,7 @@ use account_service_core::audit::AuditEvent;
 use account_sheet::{SheetInput, SheetView};
 use account_wire::Refusal;
 use base_testkit::Scratch;
+use caller_role_types::CallerRole;
 use common::*;
 use std::io::Read;
 use std::path::PathBuf;

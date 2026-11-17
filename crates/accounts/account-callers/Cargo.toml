@@ -20,6 +20,7 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 # The table's reader, behind the feature that only the daemons turn on.
 toml = { workspace = true, optional = true }
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [features]
 # The caller table read from `callers.toml` files (`load_callers`): accountd's and syncd's.

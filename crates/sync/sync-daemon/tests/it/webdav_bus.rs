@@ -7,7 +7,6 @@
 use crate::common;
 use base_time::SystemClock;
 
-use account_callers::CallerRole;
 use account_capability::CapabilityKind;
 use account_capability::StorageScope;
 use account_client::Grants;
@@ -25,6 +24,7 @@ use account_fake_servers::{FakeNextcloud, NextcloudHandle, Running};
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::hosted::{Link, host};
 use common::{Known, client};

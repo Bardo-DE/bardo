@@ -18,10 +18,10 @@
 
 use crate::BusConnection;
 pub use account_callers::{
-    Caller, CallerFileError, CallerRole as Role, CallerTable, Callers, ProcCallers, load_callers,
-    table_from_toml,
+    Caller, CallerFileError, CallerTable, Callers, ProcCallers, load_callers, table_from_toml,
 };
 use base_xdg::Xdg;
+use caller_role_types::CallerRole;
 use std::path::{Path, PathBuf};
 use zbus::fdo;
 
@@ -108,13 +108,13 @@ pub struct Standing {
     /// The app of the caller's row.
     pub app: &'static str,
     /// The role of the caller's row.
-    pub role: Role,
+    pub role: CallerRole,
 }
 
 impl Standing {
     /// The standing of `role` in the app `app`.
     #[must_use]
-    pub const fn new(app: &'static str, role: Role) -> Self {
+    pub const fn new(app: &'static str, role: CallerRole) -> Self {
         Self { app, role }
     }
 
@@ -126,12 +126,12 @@ impl Standing {
 }
 
 /// intentd, the router: the `agent` role of the app `org.bardo.Intents`.
-pub const INTENTD: Standing = Standing::new("org.bardo.Intents", Role::Agent);
+pub const INTENTD: Standing = Standing::new("org.bardo.Intents", CallerRole::Agent);
 /// companiond, the assistant: the `agent` role of the app `org.bardo.Companion1`. It is the only
 /// caller of the agent host's `HandOver`.
-pub const COMPANIOND: Standing = Standing::new("org.bardo.Companion1", Role::Agent);
+pub const COMPANIOND: Standing = Standing::new("org.bardo.Companion1", CallerRole::Agent);
 /// sill, the shell and the sheet host: the `sheet_host` role of the app `org.bardo.Shell`.
-pub const SHELL: Standing = Standing::new("org.bardo.Shell", Role::SheetHost);
+pub const SHELL: Standing = Standing::new("org.bardo.Shell", CallerRole::SheetHost);
 
 /// The table of a process that answers intentd alone and reads no file: one row, intentd's unit.
 ///
@@ -245,7 +245,7 @@ impl Identity {
 
     /// Says that the connection `connection` is the app `app` with `role`, ahead of what `/proc`
     /// says: a test's stand-in for the unit or scope its process would be in.
-    pub fn introduce_app(&self, connection: &BusConnection, app: &str, role: Role) {
+    pub fn introduce_app(&self, connection: &BusConnection, app: &str, role: CallerRole) {
         use account_core::{AppId, AppName, Isolation};
         let (Some(unique), Ok(name)) = (connection.unique_name(), AppName::parse(app)) else {
             return;

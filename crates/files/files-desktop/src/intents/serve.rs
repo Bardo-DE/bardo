@@ -46,9 +46,9 @@ pub async fn offer_for_router<W: Window>(
     window: Arc<W>,
     router: &Connection,
 ) -> Result<(), IntentError> {
-    use action_dbus::callers::Role;
+    use caller_role_types::CallerRole;
     let callers = Identity::on_system(connection.clone(), intentd_only());
-    callers.introduce_app(router, "org.bardo.Intents", Role::Agent);
+    callers.introduce_app(router, "org.bardo.Intents", CallerRole::Agent);
     serve(connection, window, callers).await
 }
 

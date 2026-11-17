@@ -132,8 +132,8 @@ fn the_test_proc_root_feature_is_not_a_default_feature() {
 
 #[test]
 fn the_sample_caller_table_gives_settings_the_sheet_host_and_both_daemons_their_roles() {
-    use account_callers::CallerRole;
     use account_core::AppName;
+    use caller_role_types::CallerRole;
     let table = account_callers::table_from_toml(&dist("callers.toml")).expect("the sample reads");
     let app = |name: &str| AppName::parse(name).expect("name");
     // Settings is its unit (sec-3 a): an app scope named `org.bardo.Settings` is only an app.
@@ -236,7 +236,7 @@ fn nothing_that_ships_names_the_file_key_store() {
 
 #[test]
 fn no_shipped_row_grants_the_agent_launcher_role_and_the_sample_shows_how_a_machine_lists_it() {
-    use account_callers::CallerRole;
+    use caller_role_types::CallerRole;
     let shipped = dist("callers.toml");
     let table = account_callers::table_from_toml(&shipped).expect("the sample reads");
     assert!(

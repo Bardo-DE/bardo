@@ -5,7 +5,7 @@
 
 use super::common;
 
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_capability::{Access, CapabilityKind, Delta, StorageScope};
 use account_client::{
     AuthenticatedStream, ConsentOffer, Found, Grants, GrantsError, LinkError, NoAccount, Porter,
@@ -16,6 +16,7 @@ use account_core::{AccountId, DataClass, ProviderId};
 use account_fake::Scripted;
 use account_match::{Need, StorageNeed};
 use account_wire::{ParentWindow, Refusal};
+use caller_role_types::CallerRole;
 use common::accountd::{Daemon, named};
 
 fn need() -> Need {

@@ -1,0 +1,15 @@
+[package]
+name = "caller-role-types"
+description = "The roles a caller of a desktop daemon can have: one vocabulary for the caller tables and for every daemon's permission predicates."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = { workspace = true, features = ["derive"] }
+
+[lints]
+workspace = true

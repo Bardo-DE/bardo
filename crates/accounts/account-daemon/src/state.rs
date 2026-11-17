@@ -6,13 +6,14 @@
 use crate::callers::Callers;
 use crate::errors::RefusedError;
 use crate::host::Host;
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_core::ProviderHint;
 use account_core::ProviderId;
 use account_families::set::ProviderNames;
 use account_sheets::{AppNames, RequestObjects};
 use account_wire::{ParentWindow, Refusal};
 use base_time::{Clock, Monotonic};
+use caller_role_types::CallerRole;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 use tokio::sync::mpsc;
@@ -230,7 +231,7 @@ impl<H, C> std::fmt::Debug for Core<H, C> {
 #[cfg(test)]
 mod tests {
     use super::{Standing, Turned};
-    use account_callers::CallerRole;
+    use caller_role_types::CallerRole;
 
     const ALL: [Standing; 6] = [
         Standing::Any,

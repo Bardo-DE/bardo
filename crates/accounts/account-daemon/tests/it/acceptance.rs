@@ -8,11 +8,11 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_core::{SecretKey, SecretPurpose};
 use account_dbus::accounts::account_path;
 use account_dbus::accounts::{AccountProxy, IdentitiesProxy};
 use account_secrets::{Secrets, SecretsError};
+use caller_role_types::CallerRole;
 use common::*;
 use settings_dbus::{AnyOwner, LiveClient};
 use settings_types::schema::KeyPath;

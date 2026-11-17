@@ -121,8 +121,9 @@ fn entry_name(text: &str) -> Option<AppTitle> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_callers::{CallerRole, CallerRow};
+    use account_callers::CallerRow;
     use base_testkit::Scratch;
+    use caller_role_types::CallerRole;
     use std::path::Path;
 
     fn app(text: &str) -> AppName {

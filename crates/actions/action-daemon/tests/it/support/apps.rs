@@ -13,13 +13,14 @@ use action_core::{
 };
 use action_daemon::IntentdConfig;
 use action_dbus::BusConnection;
-use action_dbus::callers::{Identity, Role};
+use action_dbus::callers::Identity;
 use action_fake::{FakeMail, MailThread};
 use action_manifest::ValidManifest;
 use action_provider::{ContextSource, IntentProvider, SummonTarget, serve_on_with};
 use action_vocab::{CallerRole, EntityRef, UndoToken};
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
 use base_ids::Count;
+use caller_role_types::CallerRole as Role;
 use provenance::{Actor, EntityId, Label, SpaceId};
 use std::collections::{BTreeSet, VecDeque};
 use std::sync::{Arc, Mutex};

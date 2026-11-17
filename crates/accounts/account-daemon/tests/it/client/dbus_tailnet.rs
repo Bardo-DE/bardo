@@ -5,7 +5,7 @@
 
 use super::common;
 
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_client::LinkError;
 use account_client_dbus::Bus;
 use account_core::{
@@ -23,6 +23,7 @@ use account_tailscale::LocalApi;
 use account_tailscale::{Machine, MachineOwner};
 use base_testkit::Scratch;
 use base_time::FixedClock;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use std::sync::Arc;
 use std::time::Duration;

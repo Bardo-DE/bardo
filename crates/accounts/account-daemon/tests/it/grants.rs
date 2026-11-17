@@ -7,7 +7,6 @@
 use crate::common;
 use crate::launcher_register::error_name;
 
-use account_callers::CallerRole;
 use account_capability::{Access, Delta, StorageScope};
 use account_core::consent::{ConsentAnswer, Grant, GrantScope};
 use account_core::{
@@ -25,6 +24,7 @@ use account_proxy::RustlsConnect;
 use account_service_core::audit::{AuditEvent, ProxyOutcome};
 use account_sheet::SheetInput;
 use account_wire::AccountsReply;
+use caller_role_types::CallerRole;
 use common::*;
 use std::io::{Read, Write};
 use zbus::zvariant::{OwnedValue, Value};

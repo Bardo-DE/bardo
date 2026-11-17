@@ -2,10 +2,11 @@
 
 use crate::testing::scratch;
 use crate::{DeviceId, PhotoLibrary, PhotosWiring, start};
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_capability::{Access as Rights, Delta, HashKind, StorageCap, StorageScope};
 use account_core::{AppId, AppName, Isolation};
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use std::path::Path;
 use std::sync::Arc;
 use sync_core::MemoryReplica;

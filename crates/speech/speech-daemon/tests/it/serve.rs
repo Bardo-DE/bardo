@@ -8,8 +8,8 @@ use account_capability::Tier;
 use account_core::DataClass;
 use account_match::Need;
 use account_match::SpeechNeed;
-use action_dbus::callers::Role;
 use action_wire::VoiceIntent;
+use caller_role_types::CallerRole;
 use futures_util::FutureExt;
 use futures_util::StreamExt;
 use inference_core::testing::{Script, ScriptStep};
@@ -46,9 +46,9 @@ async fn only_the_shell_begins_and_nothing_opens_for_anyone_else() {
     let stranger = world.bus.connect().await;
     let app = world.app(MAILO).await;
     let scope = world.bus.connect().await;
-    world.who.introduce_app(&scope, SHELL, Role::App);
+    world.who.introduce_app(&scope, SHELL, CallerRole::App);
     let agent = world.bus.connect().await;
-    world.who.introduce_app(&agent, SHELL, Role::Agent);
+    world.who.introduce_app(&agent, SHELL, CallerRole::Agent);
     for connection in [&stranger, &app, &scope, &agent] {
         let voice = VoiceProxy::new(connection).await.expect("proxy");
         let refused = voice

@@ -53,6 +53,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 zbus = {workspace = true, features = ["tokio"]}
 serde_json = { workspace = true }
 blake3 = { workspace = true }
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
 account-wire = {path = "../../accounts/account-wire"}

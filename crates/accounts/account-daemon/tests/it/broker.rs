@@ -4,13 +4,13 @@
 use crate::launcher_register::error_name;
 use crate::launcher_rig::*;
 
-use account_callers::CallerRole;
 use account_capability::CapabilityKind;
 use account_core::consent::{Decision, GrantScope, Verdict};
 use account_core::{AccountState, AppId, AppName, Isolation};
 use account_daemon::launcher::LoginTiming;
 use account_dbus::accounts::{BrokerProxy, verdict_from_dbus};
 use account_service_core::audit::AuditEvent;
+use caller_role_types::CallerRole;
 use rustix::fs::{SealFlags, fcntl_get_seals};
 use std::io::Read;
 use zbus::export::futures_core::Stream;

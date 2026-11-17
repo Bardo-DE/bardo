@@ -249,13 +249,13 @@ async fn a_provider_answers_nobody_but_intentd() {
     who.introduce_app(
         &lookalike,
         "org.bardo.Intents",
-        action_dbus::callers::Role::App,
+        caller_role_types::CallerRole::App,
     );
     let agent = bus.connect().await;
     who.introduce_app(
         &agent,
         "org.bardo.Companion1",
-        action_dbus::callers::Role::Agent,
+        caller_role_types::CallerRole::Agent,
     );
     for caller in [&lookalike, &agent] {
         let proxy = IntentProviderProxy::builder(caller)

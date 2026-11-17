@@ -6,7 +6,7 @@
 
 use crate::common;
 
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim, Offer, Provenance, Subject};
 use account_client::{GrantsError, LinkError};
@@ -25,6 +25,7 @@ use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::caller as caller_of;
 use common::hosted::{Link, Service, host, keep};

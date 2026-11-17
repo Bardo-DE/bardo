@@ -11,8 +11,9 @@
 
 use crate::config::{VoiceRole, VoicedConfig};
 use account_core::AppName;
-use action_dbus::callers::{Caller, Callers, Identity, Role};
+use action_dbus::callers::{Caller, Callers, Identity};
 use action_procroot::own_uid;
+use caller_role_types::CallerRole;
 use std::sync::Arc;
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
@@ -20,8 +21,9 @@ use zbus::names::BusName;
 /// The role `caller` has: the shell when the table gives it `sheet_host` and the configuration
 /// lists its app as the shell. `App` is never derived: it is whoever a route names.
 pub(crate) fn derive(config: &VoicedConfig, caller: &Caller) -> Option<VoiceRole> {
-    (caller.role == Role::SheetHost && config.role_of(&caller.app.name) == Some(VoiceRole::Shell))
-        .then_some(VoiceRole::Shell)
+    (caller.role == CallerRole::SheetHost
+        && config.role_of(&caller.app.name) == Some(VoiceRole::Shell))
+    .then_some(VoiceRole::Shell)
 }
 
 /// Derives the roles of the connections on one bus.

@@ -6,9 +6,10 @@
 //! fixed role; a scope is never more than a plain app.
 
 use action_dbus::callers::{
-    Caller, CallerFileError, CallerTable, Callers, INTENTD, Identity, Role, SHELL, Standing,
+    Caller, CallerFileError, CallerTable, Callers, INTENTD, Identity, SHELL, Standing,
     read_table_in, table_from_toml,
 };
+use caller_role_types::CallerRole;
 use computer_use_bus::CuaCaller;
 use std::path::PathBuf;
 
@@ -18,7 +19,7 @@ pub const FILE: &str = "computer-use-callers.toml";
 const SHIPPED: &str = include_str!("../../dist/computer-use-callers.toml");
 
 /// companiond, the planner: the `agent` role of the app `org.bardo.Companion1`.
-pub const COMPANION: Standing = Standing::new("org.bardo.Companion1", Role::Agent);
+pub const COMPANION: Standing = Standing::new("org.bardo.Companion1", CallerRole::Agent);
 
 /// The standing each caller class needs, in the order they are tried. The shell is docket's
 /// [`SHELL`] and the router docket's [`INTENTD`], so cuad and the daemons beside it agree on who
@@ -115,7 +116,7 @@ mod tests {
     use super::*;
     use account_core::{AppId, AppName, Isolation};
 
-    fn caller(app: &str, role: Role) -> Caller {
+    fn caller(app: &str, role: CallerRole) -> Caller {
         Caller {
             app: AppId {
                 name: AppName::parse(app).expect("an app name"),
@@ -130,37 +131,37 @@ mod tests {
         let cases = [
             (
                 "the router",
-                caller("org.bardo.Intents", Role::Agent),
+                caller("org.bardo.Intents", CallerRole::Agent),
                 CuaCaller::Router,
             ),
             (
                 "the planner",
-                caller("org.bardo.Companion1", Role::Agent),
+                caller("org.bardo.Companion1", CallerRole::Agent),
                 CuaCaller::Companion,
             ),
             (
                 "the shell",
-                caller("org.bardo.Shell", Role::SheetHost),
+                caller("org.bardo.Shell", CallerRole::SheetHost),
                 CuaCaller::Shell,
             ),
             (
                 "an app scope called like the shell",
-                caller("org.bardo.Shell", Role::App),
+                caller("org.bardo.Shell", CallerRole::App),
                 CuaCaller::Other,
             ),
             (
                 "the router's name with the shell's role",
-                caller("org.bardo.Intents", Role::SheetHost),
+                caller("org.bardo.Intents", CallerRole::SheetHost),
                 CuaCaller::Other,
             ),
             (
                 "a stranger",
-                caller("org.example.Evil", Role::App),
+                caller("org.example.Evil", CallerRole::App),
                 CuaCaller::Other,
             ),
             (
                 "a stranger with a fixed role",
-                caller("org.example.Evil", Role::SheetHost),
+                caller("org.example.Evil", CallerRole::SheetHost),
                 CuaCaller::Other,
             ),
         ];

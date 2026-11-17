@@ -5,7 +5,7 @@
 
 use crate::common::bus::PrivateBus;
 
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_capability::CapabilityKind;
 use account_capability::StorageScope;
 use account_core::{
@@ -28,6 +28,7 @@ use account_service::AccountService;
 use account_service_core::registry::Registry;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use std::sync::Arc;
 use std::time::Duration;
 

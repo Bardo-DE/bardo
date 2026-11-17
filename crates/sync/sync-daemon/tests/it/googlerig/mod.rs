@@ -10,7 +10,6 @@
 use crate::common::bus::PrivateBus;
 use crate::common::hosted::{Link, host};
 use crate::common::{Known, PhotosGrant, client};
-use account_callers::CallerRole;
 use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim, Offer, Provenance, Subject};
 use account_client::Grants;
@@ -31,6 +30,7 @@ use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_daemon::keep::sync_app;

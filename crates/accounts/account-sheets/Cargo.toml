@@ -20,6 +20,7 @@ account-provider = {path = "../account-provider"}
 serde_json = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {workspace = true, features = ["tokio"]}
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}

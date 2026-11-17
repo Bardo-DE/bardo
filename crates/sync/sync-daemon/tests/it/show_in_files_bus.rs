@@ -11,7 +11,6 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_capability::KindToggle;
 use account_capability::{CapabilityKind, StorageScope};
 use account_capability::{Claim, Offer, Provenance, Subject};
@@ -27,6 +26,7 @@ use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use account_sheet::SheetInput;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::hosted::{Hosted, Link, Service, host_with};
 use common::{Known, client};

@@ -48,6 +48,7 @@ toml = { workspace = true }
 tracing = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 dbus-kit = { path = "../../bus/dbus-kit" }
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [features]
 # Span export over OTLP (action-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.

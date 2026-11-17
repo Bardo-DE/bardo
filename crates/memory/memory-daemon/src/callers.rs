@@ -7,7 +7,7 @@
 //! over it — and [`caller_for`] that turns a porter role into one of almanac's callers. The router, the shell, cuad and the Settings app are the four fixed
 //! callers; every other identified process is an app.
 
-use account_callers::CallerRole;
+use caller_role_types::CallerRole;
 use memory_service::Caller;
 
 /// The app that is intentd, the action router (its row has the `agent` role).

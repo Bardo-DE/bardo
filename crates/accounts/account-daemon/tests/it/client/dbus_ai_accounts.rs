@@ -5,7 +5,7 @@
 
 use super::common;
 
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_capability::{CapabilityKind, StorageScope};
 use account_client::{AiAccountsError, LinkError};
 use account_client_dbus::Bus;
@@ -21,6 +21,7 @@ use account_service_core::registry::Registry;
 use account_wire::Refusal;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use std::sync::Arc;
 

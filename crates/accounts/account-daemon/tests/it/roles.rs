@@ -4,11 +4,11 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_dbus::Details;
 use account_dbus::accounts::account_path;
 use account_dbus::accounts::{AccountProxy, ManagerProxy};
 use account_wire::Refusal;
+use caller_role_types::CallerRole;
 use common::*;
 use zbus::zvariant::ObjectPath;
 

@@ -10,6 +10,7 @@ publish.workspace = true
 
 [dependencies]
 account-callers = {path = "../../accounts/account-callers"}
+caller-role-types = {path = "../../identity/caller-role-types"}
 account-core = {path = "../../accounts/account-core"}
 base-time = { path = "../../base/base-time" }
 sync-core = {path = "../sync-core"}

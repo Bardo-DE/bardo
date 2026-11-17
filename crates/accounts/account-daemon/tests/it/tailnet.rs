@@ -7,7 +7,6 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_core::ProviderId;
 use account_core::{Account, AccountLabel, AccountState, AuthKind, Restriction};
 use account_daemon::{BusSheets, Options, TableCallers, TailnetWatch, serve_with};
@@ -23,6 +22,7 @@ use account_tailscale::LocalApi;
 use account_tailscale::{Machine, MachineOwner};
 use base_testkit::{Deadline, Scratch};
 use base_time::FixedClock;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::host::{HostLog, SheetHost, send_input};
 use common::{Shared, caller, error_name, eventually};

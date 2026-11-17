@@ -45,6 +45,7 @@ thiserror = { workspace = true }
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 toml = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}

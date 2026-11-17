@@ -36,6 +36,7 @@ thiserror = { workspace = true }
 tracing = { workspace = true }
 action-log = {path = "../../actions/action-log"}
 dbus-kit = { path = "../../bus/dbus-kit" }
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [features]
 default = ["pipewire"]

@@ -12,9 +12,10 @@
 //! names for it, or any identified app scope.
 
 use account_callers::ProcRoot;
-use account_callers::{CallerRole, CallerRow, Install, ProcCallers, installed};
+use account_callers::{CallerRow, Install, ProcCallers, installed};
 use account_core::{AppId, AppName};
 use account_dbus::BusConnection;
+use caller_role_types::CallerRole;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::{Mutex, PoisonError};

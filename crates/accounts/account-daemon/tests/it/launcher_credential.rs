@@ -8,7 +8,6 @@ use crate::launcher_register::error_name;
 use crate::launcher_rig::*;
 use base_ids::word::word as word_of;
 
-use account_callers::CallerRole;
 use account_core::GrantId;
 use account_core::consent::{Decision, GrantScope};
 use account_daemon::launcher::LoginTiming;
@@ -18,6 +17,7 @@ use account_dbus::accounts::refusal_error_name_in;
 use account_service_core::audit::{AuditEvent, CredentialEnd};
 use account_wire::LauncherFault;
 use account_wire::Refusal;
+use caller_role_types::CallerRole;
 use rustix::fs::{SealFlags, fcntl_get_seals};
 use std::io::Read;
 use zbus::export::futures_core::Stream;

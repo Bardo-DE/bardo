@@ -288,7 +288,11 @@ async fn the_editor_bridge_reads_the_helpers_and_changes_nothing_and_a_stranger_
     .await
     .expect("serving");
     as_shell(&who, &shell);
-    who.introduce_app(&editor, "org.bardo.Acp", action_dbus::callers::Role::Agent);
+    who.introduce_app(
+        &editor,
+        "org.bardo.Acp",
+        caller_role_types::CallerRole::Agent,
+    );
 
     let form = HelperForm {
         name: HelperName::parse("Research").expect("name"),

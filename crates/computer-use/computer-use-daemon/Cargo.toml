@@ -55,6 +55,7 @@ tracing = { workspace = true }
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 zbus = {workspace = true, features = ["tokio"]}
 futures-util = { workspace = true, features = ["std"] }
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}

@@ -8,7 +8,6 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_capability::StorageScope;
 use account_capability::{CapabilityKind, Claim, Offer, Provenance, Subject};
 use account_core::{
@@ -26,6 +25,7 @@ use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::caller as caller_of;
 use common::hosted::host;

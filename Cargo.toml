@@ -200,6 +200,7 @@ members = [
     "crates/identity/caller-identity-linux",
     "crates/identity/caller-identity-dbus",
     "crates/identity/caller-identity-core",
+    "crates/identity/caller-role-types",
     "crates/accounts/account-daemon",
     "crates/accounts/account-dav-proto",
     "crates/accounts/account-fake-secret-service",

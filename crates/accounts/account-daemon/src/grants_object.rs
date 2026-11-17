@@ -22,7 +22,7 @@ use crate::errors::RefusedError;
 use crate::host::Host;
 use crate::request::departed;
 use crate::state::{Core, Standing, window};
-use account_callers::{Caller, CallerRole};
+use account_callers::Caller;
 use account_capability::CapabilityKind;
 use account_core::consent::Usage;
 use account_core::{AccountId, DataClass, EndpointUrl, GrantId, ProviderId};
@@ -34,6 +34,7 @@ use account_dbus::accounts::{
 use account_match::Need;
 use account_wire::{AccountsRequest, Refusal};
 use base_ids::word::word;
+use caller_role_types::CallerRole;
 use dbus_kit::Call;
 use std::sync::Arc;
 use zbus::fdo::DBusProxy;

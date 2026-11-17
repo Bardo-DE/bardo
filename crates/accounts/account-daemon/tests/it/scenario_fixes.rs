@@ -4,10 +4,10 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_dbus::Details;
 use account_dbus::accounts::{AccountProxy, Sheet};
 use account_sheet::SheetInput;
+use caller_role_types::CallerRole;
 use common::*;
 use settings_dbus::Changes;
 use std::time::Duration;

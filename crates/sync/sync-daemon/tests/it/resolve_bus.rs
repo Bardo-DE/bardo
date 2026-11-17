@@ -4,10 +4,10 @@
 
 use crate::common;
 
-use account_callers::CallerRole;
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use account_core::AppName;
 use base_time::UnixSeconds;
+use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::{INVALID_ARGS, Known, NO_FITTING, client, error_name};
 use std::collections::BTreeSet;

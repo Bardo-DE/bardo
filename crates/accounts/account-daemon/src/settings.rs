@@ -14,7 +14,6 @@ use crate::callers::Callers;
 use crate::host::Host;
 use crate::launcher::SignOutNews;
 use crate::state::Core;
-use account_callers::CallerRole;
 use account_capability::CapabilityKind;
 use account_core::ProviderId;
 use account_core::{
@@ -34,6 +33,7 @@ use account_wire::AccountsReply;
 use account_wire::ParentWindow;
 use account_wire::names::ACCOUNTS_SETTINGS_PATH;
 use base_fs::atomic::AtomicFile;
+use caller_role_types::CallerRole;
 use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Snapshot, Verdict, serve};
 use settings_types::schema::KeyPath;
 use std::sync::Arc;

@@ -122,7 +122,7 @@ async fn rig(answer: &str) -> Rig {
     who.introduce_app(
         &intentd,
         "org.bardo.Intents",
-        action_dbus::callers::Role::Agent,
+        caller_role_types::CallerRole::Agent,
     );
     Rig {
         _dir: dir,
@@ -158,7 +158,7 @@ async fn an_answer_out_of_schema_crosses_the_bus_as_the_error_it_is() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn only_the_process_in_intentds_unit_is_answered() {
-    use action_dbus::callers::Role;
+    use caller_role_types::CallerRole as Role;
     let rig = rig("receipt").await;
     // An unknown process, a scope that claims intentd's app (a plain app), and an agent of
     // another app are all refused: the reader says it is unavailable.

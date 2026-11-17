@@ -33,6 +33,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 toml = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 dbus-kit = { path = "../../bus/dbus-kit" }
+caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
 files-desktop = { path = ".", features = ["testing"] }
