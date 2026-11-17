@@ -63,14 +63,14 @@ pub use desk::{
     SayFromPerson,
 };
 pub use drive::{MOST_TASK_DEPTH, refusal_of};
-pub use fault::ServeFault;
+pub use fault::ServeError;
 pub use handoff::Handoff;
 pub use helpers::{conversation_voice, helper_query, helper_records_of, open_options, role_text};
 pub use memory::{episodes_of, hits_of, primer_of, profile_of};
 pub use one_run::LiveRuns;
 pub use read::answer_read;
 pub use recover::{
-    RecentSource, ReplayFault, RouterRecent, rebuild_from, recent_events, recover, replay_of,
+    RecentSource, ReplayError, RouterRecent, rebuild_from, recent_events, recover, replay_of,
     restart_query,
 };
 pub use resume::Restarted;

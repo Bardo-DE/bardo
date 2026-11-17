@@ -8,7 +8,7 @@ use action_fake::{FixedClock, MailThread, ScriptedReviewer, ScriptedWriter, fake
 use action_vocab::{ActionRef, CallRequest, CallerRole, LabelText, Origin, TargetValue, TurnId};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen};
 use agent_session::{
-    BackendKind, LogFault, Opening, PageSize, Read, Seq, SessionEntry, SessionLog,
+    BackendKind, LogError, Opening, PageSize, Read, Seq, SessionEntry, SessionLog,
 };
 use base_ids::Count;
 use companion_memory::MemorySessionLog;
@@ -135,13 +135,13 @@ async fn a_position_the_store_does_not_hold_is_refused_out_of_order() {
     log.append(&id, Seq(0), &opening()).await.expect("opened");
     assert_eq!(
         log.append(&id, Seq(5), &turn(1)).await,
-        Err(LogFault::OutOfOrder { expected: Seq(1) })
+        Err(LogError::OutOfOrder { expected: Seq(1) })
     );
     // A second writer with no cache reads the end of the log and agrees.
     let second = log_over(&service);
     assert_eq!(
         second.append(&id, Seq(0), &turn(9)).await,
-        Err(LogFault::OutOfOrder { expected: Seq(1) })
+        Err(LogError::OutOfOrder { expected: Seq(1) })
     );
     second.append(&id, Seq(1), &turn(1)).await.expect("next");
 }
@@ -152,11 +152,11 @@ async fn no_memory_is_unavailable_never_a_silent_ack() {
     let id = session("s-1");
     assert_eq!(
         log.append(&id, Seq(0), &opening()).await,
-        Err(LogFault::Unavailable)
+        Err(LogError::Unavailable)
     );
     assert_eq!(
         log.page(&id, None, PageSize(Count(10))).await,
-        Err(LogFault::Unavailable)
+        Err(LogError::Unavailable)
     );
 }
 
@@ -205,7 +205,7 @@ async fn an_acknowledgement_lost_on_the_way_is_not_written_twice() {
     log.append(&id, Seq(0), &opening()).await.expect("opened");
     assert_eq!(
         log.append(&id, Seq(1), &turn(1)).await,
-        Err(LogFault::Unavailable),
+        Err(LogError::Unavailable),
         "stored, unacknowledged: the writer cannot know"
     );
     // The same entry again at the same position: the store holds exactly that, so it is done.

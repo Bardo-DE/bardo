@@ -1,7 +1,7 @@
 //! How a turn ended, from where the task's loop stands: pure.
 
 use agent_loop::{FinishedAs, LoopPhase, LoopState};
-use agent_planner::PlanFault;
+use agent_planner::PlanError;
 use agent_session::TurnEnd;
 use companion_tasks::Failure;
 
@@ -26,7 +26,7 @@ fn failed(failure: Option<&Failure>) -> TurnEnd {
     match failure {
         Some(
             Failure::Model(
-                PlanFault::Declined(_) | PlanFault::NoModelChosen | PlanFault::NoModelUsesApps,
+                PlanError::Declined(_) | PlanError::NoModelChosen | PlanError::NoModelUsesApps,
             )
             | Failure::Refused(_),
         ) => TurnEnd::Refused,

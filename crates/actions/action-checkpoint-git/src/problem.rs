@@ -1,16 +1,16 @@
 //! What went wrong in a git command, kept for the operator's log. Never shown to a person: the
-//! words on a sheet come from `StoreFault`, and git's own stderr can name paths and secrets.
+//! words on a sheet come from `CheckpointStoreError`, and git's own stderr can name paths and secrets.
 
-use crate::run::GitFault;
+use crate::run::GitRunError;
 use std::fmt;
 use std::sync::Arc;
 
 /// Why a git command did not give what was wanted.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum GitCause {
+pub enum GitCauseError {
     /// Git could not be run to its end.
     #[error(transparent)]
-    Run(#[from] GitFault),
+    Run(#[from] GitRunError),
     /// It ended without success.
     #[error("git ended with status {code:?}: {stderr}")]
     Exit {
@@ -24,27 +24,27 @@ pub enum GitCause {
 /// A failed command: which git subcommand, and why.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("git {command}: {cause}")]
-pub struct GitProblem {
+pub struct GitError {
     /// The subcommand (`add`, `update-ref`), without its arguments.
     pub command: String,
     /// Why it failed.
     #[source]
-    pub cause: GitCause,
+    pub cause: GitCauseError,
 }
 
 /// A function the daemon supplies to hear of problems.
-type Sink = Arc<dyn Fn(&GitProblem) + Send + Sync>;
+type Sink = Arc<dyn Fn(&GitError) + Send + Sync>;
 
 /// Where problems go: a function the daemon supplies, or nowhere.
 #[derive(Clone, Default)]
 pub(crate) struct Report(Option<Sink>);
 
 impl Report {
-    pub(crate) fn to(sink: impl Fn(&GitProblem) + Send + Sync + 'static) -> Self {
+    pub(crate) fn to(sink: impl Fn(&GitError) + Send + Sync + 'static) -> Self {
         Self(Some(Arc::new(sink)))
     }
 
-    pub(crate) fn tell(&self, problem: &GitProblem) {
+    pub(crate) fn tell(&self, problem: &GitError) {
         if let Some(sink) = &self.0 {
             sink(problem);
         }

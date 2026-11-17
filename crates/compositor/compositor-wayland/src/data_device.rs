@@ -1,7 +1,7 @@
 //! `wl_data_device_manager`: the clipboard and drag and drop. Selection focus follows
 //! keyboard focus; a drag can end on a layer surface.
 
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::Event;
 use compositor_core::geometry::LogicalPoint;
 use smithay::input::{Seat, SeatHandler};
@@ -114,12 +114,12 @@ pub fn on_drop(part: &mut DataDevicePart, at: LogicalPoint) -> Vec<Event> {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_selection_focus<D>(
     display: &DisplayHandle,
     seat: &Seat<D>,
     client: Option<Client>,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: SeatHandler + DataDeviceHandler + PrimarySelectionHandler + 'static,
 {

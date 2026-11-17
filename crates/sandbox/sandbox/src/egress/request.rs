@@ -1,7 +1,7 @@
 //! The one request line the proxy understands, read with every size bounded. `CONNECT host:port`
 //! (https) and `METHOD http://host[:port]/... HTTP/1.x` (plain http); anything else is refused.
 
-use super::host::{Host, HostFault};
+use super::host::{EgressHostError, Host};
 use crate::forward::Duplex;
 use std::io;
 use std::time::{Duration, Instant};
@@ -16,7 +16,7 @@ pub const HEAD_DEADLINE: Duration = Duration::from_secs(10);
 /// Why a request was not understood. Every one is answered with a plain 400, except a stream
 /// that closed before it said anything, which is just dropped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum BadRequest {
+pub enum BadRequestError {
     /// A line or the whole head is longer than allowed.
     #[error("the request is too long")]
     TooLong,
@@ -43,7 +43,7 @@ pub enum BadRequest {
     BadPort,
     /// The host is not valid.
     #[error("the host is not valid: {0}")]
-    BadHost(HostFault),
+    BadHost(EgressHostError),
     /// Not a proxy request: a path without a host, an `https://` URI, or user information.
     #[error("this is not a proxy request for http or CONNECT")]
     NotProxy,
@@ -110,32 +110,32 @@ fn first_line_too_long(bytes: &[u8]) -> bool {
 /// Reads until the blank line that ends the headers, within `wait` and `MAX_HEAD`.
 ///
 /// # Errors
-/// Returns the `BadRequest` for a head that is too long, late, cut off, empty, or unreadable.
-pub fn read_head<S: Duplex>(stream: &mut S, wait: Duration) -> Result<Head, BadRequest> {
+/// Returns the `BadRequestError` for a head that is too long, late, cut off, empty, or unreadable.
+pub fn read_head<S: Duplex>(stream: &mut S, wait: Duration) -> Result<Head, BadRequestError> {
     let deadline = Instant::now() + wait;
     let mut bytes: Vec<u8> = Vec::new();
     let mut chunk = [0_u8; 4096];
     loop {
         if let Some(end) = head_end(&bytes) {
             return if end > MAX_HEAD {
-                Err(BadRequest::TooLong)
+                Err(BadRequestError::TooLong)
             } else {
                 Ok(Head { bytes, end })
             };
         }
         if bytes.len() >= MAX_HEAD || first_line_too_long(&bytes) {
-            return Err(BadRequest::TooLong);
+            return Err(BadRequestError::TooLong);
         }
         let left = deadline.saturating_duration_since(Instant::now());
         if left.is_zero() {
-            return Err(BadRequest::Timeout);
+            return Err(BadRequestError::Timeout);
         }
         stream
             .limit_reads(Some(left))
-            .map_err(|e| BadRequest::Io(e.kind()))?;
+            .map_err(|e| BadRequestError::Io(e.kind()))?;
         match stream.read(&mut chunk) {
-            Ok(0) if bytes.is_empty() => return Err(BadRequest::Closed),
-            Ok(0) => return Err(BadRequest::Truncated),
+            Ok(0) if bytes.is_empty() => return Err(BadRequestError::Closed),
+            Ok(0) => return Err(BadRequestError::Truncated),
             Ok(n) => bytes.extend_from_slice(&chunk[..n]),
             Err(e) if e.kind() == io::ErrorKind::Interrupted => {}
             Err(e)
@@ -144,42 +144,42 @@ pub fn read_head<S: Duplex>(stream: &mut S, wait: Duration) -> Result<Head, BadR
                     io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut
                 ) =>
             {
-                return Err(BadRequest::Timeout);
+                return Err(BadRequestError::Timeout);
             }
-            Err(e) => return Err(BadRequest::Io(e.kind())),
+            Err(e) => return Err(BadRequestError::Io(e.kind())),
         }
     }
 }
 
-fn port_of(text: &str) -> Result<u16, BadRequest> {
+fn port_of(text: &str) -> Result<u16, BadRequestError> {
     let digits = !text.is_empty() && text.len() <= 5 && text.bytes().all(|b| b.is_ascii_digit());
     match text.parse::<u16>() {
         Ok(port) if digits && port != 0 => Ok(port),
-        _ => Err(BadRequest::BadPort),
+        _ => Err(BadRequestError::BadPort),
     }
 }
 
-fn host_of(text: &str) -> Result<Host, BadRequest> {
+fn host_of(text: &str) -> Result<Host, BadRequestError> {
     Host::parse(text).map_err(|fault| match fault {
-        HostFault::Empty => BadRequest::NoHost,
-        other => BadRequest::BadHost(other),
+        EgressHostError::Empty => BadRequestError::NoHost,
+        other => BadRequestError::BadHost(other),
     })
 }
 
 /// `host`, `host:port`, `[v6]` or `[v6]:port`; `default` is the port when there is none.
-fn authority(text: &str, default: Option<u16>) -> Result<Target, BadRequest> {
+fn authority(text: &str, default: Option<u16>) -> Result<Target, BadRequestError> {
     let (host, port) = match text.strip_prefix('[') {
         Some(inner) => {
-            let (addr, rest) = inner.split_once(']').ok_or(BadRequest::Malformed)?;
+            let (addr, rest) = inner.split_once(']').ok_or(BadRequestError::Malformed)?;
             let port = match rest {
                 "" => None,
-                _ => Some(rest.strip_prefix(':').ok_or(BadRequest::Malformed)?),
+                _ => Some(rest.strip_prefix(':').ok_or(BadRequestError::Malformed)?),
             };
             (format!("[{addr}]"), port)
         }
         None => match text.rsplit_once(':') {
             // An IPv6 address without brackets would be cut at its last colon.
-            Some((host, _)) if host.contains(':') => return Err(BadRequest::Malformed),
+            Some((host, _)) if host.contains(':') => return Err(BadRequestError::Malformed),
             Some((host, port)) => (host.to_owned(), Some(port)),
             None => (text.to_owned(), None),
         },
@@ -187,7 +187,7 @@ fn authority(text: &str, default: Option<u16>) -> Result<Target, BadRequest> {
     let port = match (port, default) {
         (Some(text), _) => port_of(text)?,
         (None, Some(port)) => port,
-        (None, None) => return Err(BadRequest::BadPort),
+        (None, None) => return Err(BadRequestError::BadPort),
     };
     Ok(Target {
         host: host_of(&host)?,
@@ -196,16 +196,16 @@ fn authority(text: &str, default: Option<u16>) -> Result<Target, BadRequest> {
 }
 
 /// The absolute `http://` target's authority, or why it is not one.
-fn http_authority(target: &str) -> Result<&str, BadRequest> {
-    let scheme = target.get(..7).ok_or(BadRequest::NotProxy)?;
+fn http_authority(target: &str) -> Result<&str, BadRequestError> {
+    let scheme = target.get(..7).ok_or(BadRequestError::NotProxy)?;
     if !scheme.eq_ignore_ascii_case("http://") {
-        return Err(BadRequest::NotProxy);
+        return Err(BadRequestError::NotProxy);
     }
     let rest = &target[7..];
     let end = rest.find(['/', '?', '#']).unwrap_or(rest.len());
     let auth = &rest[..end];
     if auth.contains('@') {
-        return Err(BadRequest::NotProxy);
+        return Err(BadRequestError::NotProxy);
     }
     Ok(auth)
 }
@@ -214,30 +214,30 @@ fn http_authority(target: &str) -> Result<&str, BadRequest> {
 /// [`MAX_LINE`]. The headers are not read, only bounded.
 ///
 /// # Errors
-/// Returns the `BadRequest` for a head with an over-long line, a malformed request line, a target
+/// Returns the `BadRequestError` for a head with an over-long line, a malformed request line, a target
 /// without a valid host, or a port that is not 1 to 65535.
-pub fn parse_head(head: &[u8]) -> Result<Request, BadRequest> {
+pub fn parse_head(head: &[u8]) -> Result<Request, BadRequestError> {
     if head
         .split(|b| *b == b'\n')
         .any(|line| line.len() > MAX_LINE)
     {
-        return Err(BadRequest::TooLong);
+        return Err(BadRequestError::TooLong);
     }
     let line_end = head
         .windows(2)
         .position(|w| w == b"\r\n")
-        .ok_or(BadRequest::Malformed)?;
+        .ok_or(BadRequestError::Malformed)?;
     let Ok(line) = std::str::from_utf8(&head[..line_end]) else {
-        return Err(BadRequest::Malformed);
+        return Err(BadRequestError::Malformed);
     };
     let words: Vec<&str> = line.split(' ').collect();
     let &[method, target, version] = words.as_slice() else {
-        return Err(BadRequest::Malformed);
+        return Err(BadRequestError::Malformed);
     };
     let method_ok =
         !method.is_empty() && method.len() <= 16 && method.bytes().all(|b| b.is_ascii_uppercase());
     if !method_ok || !matches!(version, "HTTP/1.0" | "HTTP/1.1") || target.is_empty() {
-        return Err(BadRequest::Malformed);
+        return Err(BadRequestError::Malformed);
     }
     if method == "CONNECT" {
         return authority(target, None).map(Request::Tunnel);

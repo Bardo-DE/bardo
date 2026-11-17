@@ -7,7 +7,7 @@ use smithay_client_toolkit::shell::xdg::window::Window;
 
 use crate::state::HostState;
 use crate::toplevel::to_wire_edge;
-use layer_shell_hooks::GrabRefused;
+use layer_shell_hooks::GrabError;
 use layer_shell_types::{Fullscreen, Maximize, ResizeEdge, SurfaceId, WindowOp};
 
 /// The `xdg_toplevel` request for `op` on toplevel `id`'s `window`. A move or resize the compositor would ignore is refused here with a log line (a
@@ -49,9 +49,9 @@ pub(crate) fn begin_move(
     state: &HostState,
     id: SurfaceId,
     window: &Window,
-) -> Result<(), GrabRefused> {
+) -> Result<(), GrabError> {
     let serial = state.input.grab.serial_for(id)?;
-    let seat = state.input.seat.as_ref().ok_or(GrabRefused::NoSeat)?;
+    let seat = state.input.seat.as_ref().ok_or(GrabError::NoSeat)?;
     window.move_(seat, serial);
     // The compositor owns the button from here; its release never reaches us.
     state.input.grab.update(|facts| facts.press = None);
@@ -64,9 +64,9 @@ pub(crate) fn begin_resize(
     id: SurfaceId,
     window: &Window,
     edge: ResizeEdge,
-) -> Result<(), GrabRefused> {
+) -> Result<(), GrabError> {
     let serial = state.input.grab.serial_for(id)?;
-    let seat = state.input.seat.as_ref().ok_or(GrabRefused::NoSeat)?;
+    let seat = state.input.seat.as_ref().ok_or(GrabError::NoSeat)?;
     window.resize(seat, serial, to_wire_edge(edge));
     state.input.grab.update(|facts| facts.press = None);
     Ok(())

@@ -380,7 +380,7 @@ async fn a_prompt_class_request_to_a_cloud_only_route_is_refused_by_the_floor() 
     assert_eq!(
         events,
         vec![InferEvent::Finished(InferReply::Refused(
-            inference_core::InferRefusal::RequiresCloud(DataClass::Prompt)
+            inference_core::InferRefusedError::RequiresCloud(DataClass::Prompt)
         ))]
     );
     assert!(world.audit.entries().is_empty(), "nothing ran");

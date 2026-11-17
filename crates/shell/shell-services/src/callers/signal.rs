@@ -6,7 +6,7 @@
 
 use std::collections::VecDeque;
 
-use caller_identity_dbus::caller_identity_core::Refused;
+use caller_identity_dbus::caller_identity_core::NotHeldError;
 use zbus::message::Header;
 use zbus::names::OwnedUniqueName;
 
@@ -71,7 +71,7 @@ impl SignalSenders {
     }
 
     /// Say that `sender` was refused and remember it, so that it is not said again.
-    fn refuse<T>(&mut self, sender: Option<&str>, claims: &[Claim<T>], refused: Refused) {
+    fn refuse<T>(&mut self, sender: Option<&str>, claims: &[Claim<T>], refused: NotHeldError) {
         log_refusal(sender, claims, refused);
         if let Some(name) = sender {
             self.refused.remember(name);

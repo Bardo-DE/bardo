@@ -4,9 +4,9 @@
 use std::sync::Arc;
 
 use files_core::{
-    Entry, FileName, FolderPath, ItemRef, Location, OpEvent, OpFailure, OpPlan, TrashedItem,
+    Entry, FileName, FolderPath, ItemRef, Location, OpError, OpEvent, OpPlan, TrashedItem,
 };
-use files_model::{Change, Input, ListFailure, TabId};
+use files_model::{Change, FolderListError, Input, TabId};
 use files_ops::{Job, Sink};
 use files_trash::TrashError;
 use tokio::sync::mpsc::UnboundedSender;
@@ -52,11 +52,11 @@ pub(super) fn row_of(item: TrashedItem) -> Option<Entry> {
 }
 
 /// The failure a Trash error is to the browser.
-pub(super) fn failure_of(err: TrashError) -> ListFailure {
+pub(super) fn failure_of(err: TrashError) -> FolderListError {
     match err {
-        TrashError::NoPermission => ListFailure::NoPermission,
-        TrashError::NotFound => ListFailure::NotFound,
-        TrashError::Occupied | TrashError::Other => ListFailure::Other,
+        TrashError::NoPermission => FolderListError::NoPermission,
+        TrashError::NotFound => FolderListError::NotFound,
+        TrashError::Occupied | TrashError::Other => FolderListError::Other,
     }
 }
 
@@ -74,7 +74,7 @@ impl Edge {
             Some(queue) => {
                 queue.submit(job, tab);
             }
-            None => self.say(Heard::Told(OpFailure::Other.to_string())),
+            None => self.say(Heard::Told(OpError::Other.to_string())),
         }
     }
 }

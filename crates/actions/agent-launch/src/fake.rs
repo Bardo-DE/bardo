@@ -1,8 +1,8 @@
 //! For tests: the accounts service as a script (`FakeAccounts`) and the process seam as a recorder
 //! (`FakeProcs`). No bus, no process, no clock.
 
-use crate::accounts::{AccountFault, Accounts, Heard, Issued, LoginAsk, OpenedEndpoint, RouteWish};
-use crate::procs::{Proc, ProcFault, Procs};
+use crate::accounts::{AccountError, Accounts, Heard, Issued, LoginAsk, OpenedEndpoint, RouteWish};
+use crate::procs::{Proc, ProcError, Procs};
 use account_capability::LoginOutcome;
 use account_capability::{AgentProgram, AgentProtocol, EnvName};
 use account_core::{DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
@@ -113,10 +113,10 @@ impl FakeAccounts {
         locked(&self.state).heard.push_back(heard);
     }
 
-    fn note(&self, call: Call) -> Result<(), AccountFault> {
+    fn note(&self, call: Call) -> Result<(), AccountError> {
         locked(&self.state).calls.push(call);
         match self.mood {
-            Mood::Down => Err(AccountFault::Unreachable(None)),
+            Mood::Down => Err(AccountError::Unreachable(None)),
             _ => Ok(()),
         }
     }
@@ -133,7 +133,7 @@ impl Accounts for FakeAccounts {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn register(&self, programs: &[AgentProgram]) -> Result<(), AccountFault> {
+    async fn register(&self, programs: &[AgentProgram]) -> Result<(), AccountError> {
         self.note(Call::Register(
             programs.iter().map(|p| p.as_str().to_owned()).collect(),
         ))
@@ -143,7 +143,7 @@ impl Accounts for FakeAccounts {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn begin_session(&self, session: &SessionToken) -> Result<(), AccountFault> {
+    async fn begin_session(&self, session: &SessionToken) -> Result<(), AccountError> {
         self.note(Call::Begin(session.as_str().to_owned()))
     }
 
@@ -151,7 +151,7 @@ impl Accounts for FakeAccounts {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn end_session(&self, session: &SessionToken) -> Result<(), AccountFault> {
+    async fn end_session(&self, session: &SessionToken) -> Result<(), AccountError> {
         self.note(Call::End(session.as_str().to_owned()))
     }
 
@@ -165,10 +165,10 @@ impl Accounts for FakeAccounts {
         route: &RouteWish,
         _class: DataClass,
         _protocol: AgentProtocol,
-    ) -> Result<OpenedEndpoint, AccountFault> {
+    ) -> Result<OpenedEndpoint, AccountError> {
         self.note(Call::Open(program.as_str().to_owned(), route.id.clone()))?;
         if self.mood == Mood::NoEndpoint {
-            return Err(AccountFault::Refused(None));
+            return Err(AccountError::Refused(None));
         }
         Ok(OpenedEndpoint {
             session: "ep-1".to_owned(),
@@ -183,7 +183,7 @@ impl Accounts for FakeAccounts {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn close_endpoint(&self, session: &str) -> Result<(), AccountFault> {
+    async fn close_endpoint(&self, session: &str) -> Result<(), AccountError> {
         self.note(Call::Close(session.to_owned()))
     }
 
@@ -196,7 +196,7 @@ impl Accounts for FakeAccounts {
         program: &AgentProgram,
         _class: DataClass,
         _session: &SessionToken,
-    ) -> Result<GrantId, AccountFault> {
+    ) -> Result<GrantId, AccountError> {
         self.note(Call::Permit(program.as_str().to_owned()))?;
         Ok(GrantId::parse("permit-1").expect("the fake's permit id is valid"))
     }
@@ -210,7 +210,7 @@ impl Accounts for FakeAccounts {
         _permit: &GrantId,
         program: &AgentProgram,
         _key_env: &EnvName,
-    ) -> Result<Issued, AccountFault> {
+    ) -> Result<Issued, AccountError> {
         self.note(Call::Issue(program.as_str().to_owned()))?;
         Ok(Issued {
             id: ProcessCredentialId::parse("cred-1").expect("the fake's credential id is valid"),
@@ -222,7 +222,7 @@ impl Accounts for FakeAccounts {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn revoke(&self, id: &ProcessCredentialId) -> Result<(), AccountFault> {
+    async fn revoke(&self, id: &ProcessCredentialId) -> Result<(), AccountError> {
         self.note(Call::Revoke(id.as_str().to_owned()))
     }
 
@@ -238,7 +238,7 @@ impl Accounts for FakeAccounts {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn report(&self, ask: &LoginAsk, outcome: LoginOutcome) -> Result<(), AccountFault> {
+    async fn report(&self, ask: &LoginAsk, outcome: LoginOutcome) -> Result<(), AccountError> {
         self.note(Call::Report(ask.request.as_str().to_owned(), outcome))
     }
 }
@@ -327,8 +327,8 @@ impl Procs for FakeProcs {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn start(&mut self, run: &AgentRun) -> Result<(ChannelWire, FakeProc), ProcFault> {
-        let wire = self.wires.pop_front().ok_or(ProcFault::Spawn)?;
+    async fn start(&mut self, run: &AgentRun) -> Result<(ChannelWire, FakeProc), ProcError> {
+        let wire = self.wires.pop_front().ok_or(ProcError::Spawn)?;
         let index = {
             let mut ran = locked(&self.seen.0);
             ran.runs.push(run.clone());

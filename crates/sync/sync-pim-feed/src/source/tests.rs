@@ -50,7 +50,7 @@ fn the_source_is_chosen_by_the_capabilitys_transport_never_by_the_provider() {
             (
                 PimKind::Contacts,
                 contacts(P::Graph),
-                Err(NoSource {
+                Err(NoSourceError {
                     kind: PimKind::Contacts,
                     transport: P::Graph,
                 }),
@@ -74,7 +74,7 @@ fn the_source_is_chosen_by_the_capabilitys_transport_never_by_the_provider() {
             (
                 PimKind::Tasks,
                 Capability::Tasks(cap(P::CalDav)),
-                Err(NoSource {
+                Err(NoSourceError {
                     kind: PimKind::Tasks,
                     transport: P::CalDav,
                 }),
@@ -82,7 +82,7 @@ fn the_source_is_chosen_by_the_capabilitys_transport_never_by_the_provider() {
             (
                 PimKind::Tasks,
                 Capability::Tasks(cap(P::Graph)),
-                Err(NoSource {
+                Err(NoSourceError {
                     kind: PimKind::Tasks,
                     transport: P::Graph,
                 }),
@@ -90,7 +90,7 @@ fn the_source_is_chosen_by_the_capabilitys_transport_never_by_the_provider() {
             (
                 PimKind::Calendar,
                 calendar(P::Jmap),
-                Err(NoSource {
+                Err(NoSourceError {
                     kind: PimKind::Calendar,
                     transport: P::Jmap,
                 }),

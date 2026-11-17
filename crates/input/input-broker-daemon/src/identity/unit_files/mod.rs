@@ -29,7 +29,7 @@ use caller_identity_core::{
 };
 use caller_identity_linux::{ProcFs, path_trust};
 use directives::ServiceSettings;
-pub use process::ProcessFault;
+pub use process::ProcessError;
 use std::io;
 use std::path::{Path, PathBuf};
 
@@ -65,7 +65,7 @@ const TRANSIENT_DIR: &str = "/run/systemd/transient";
 
 /// Why a caller could not be shown to be the real unit.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum NotUnit {
+pub enum NotUnitError {
     /// The control group's last part is not a service.
     #[error("not in a service's control group")]
     NoUnit,
@@ -74,7 +74,7 @@ pub enum NotUnit {
     Place,
     /// The process itself shows a fault.
     #[error("{0}")]
-    Process(#[from] ProcessFault),
+    Process(#[from] ProcessError),
     /// A unit file could not be read.
     #[error("a unit file could not be read: {0}")]
     Read(String),
@@ -154,14 +154,14 @@ fn resolved<P: ProcFs>(fs: &P, dir: &Path) -> Option<PathBuf> {
 ///
 /// # Errors
 ///
-/// Returns [`NotUnit::NoUnit`] when the process is not in a service unit, and another [`NotUnit`]
+/// Returns [`NotUnitError::NoUnit`] when the process is not in a service unit, and another [`NotUnitError`]
 /// when its unit file cannot be read.
-pub fn facts<P: ProcFs>(fs: &P, pid: Pid, cgroup: &CgroupPath) -> Result<UnitFacts, NotUnit> {
-    let name = cgroup.unit_leaf().ok_or(NotUnit::NoUnit)?;
+pub fn facts<P: ProcFs>(fs: &P, pid: Pid, cgroup: &CgroupPath) -> Result<UnitFacts, NotUnitError> {
+    let name = cgroup.unit_leaf().ok_or(NotUnitError::NoUnit)?;
     if !name.as_str().ends_with(".service") {
-        return Err(NotUnit::NoUnit);
+        return Err(NotUnitError::NoUnit);
     }
-    let manager = Manager::of(cgroup).ok_or(NotUnit::Place)?;
+    let manager = Manager::of(cgroup).ok_or(NotUnitError::Place)?;
     process::check(fs, pid)?;
     let files = UnitText::find(fs, manager, &name)?;
     let settings = files.settings(fs)?;
@@ -191,7 +191,7 @@ struct UnitText {
 }
 
 impl UnitText {
-    fn find<P: ProcFs>(fs: &P, manager: Manager, name: &UnitName) -> Result<Self, NotUnit> {
+    fn find<P: ProcFs>(fs: &P, manager: Manager, name: &UnitName) -> Result<Self, NotUnitError> {
         let mut fragment = Fragment::Missing;
         let mut order = Vec::new();
         for dir in manager.dirs(fs) {
@@ -217,15 +217,16 @@ impl UnitText {
         })
     }
 
-    fn settings<P: ProcFs>(&self, fs: &P) -> Result<ServiceSettings, NotUnit> {
+    fn settings<P: ProcFs>(&self, fs: &P) -> Result<ServiceSettings, NotUnitError> {
         self.order
             .iter()
             .try_fold(ServiceSettings::default(), |acc, path| {
                 let bytes = fs
                     .read_capped(path, UNIT_FILE_CAP)
                     .map_err(|e| read_fault(path, &e))?;
-                let text = String::from_utf8(bytes)
-                    .map_err(|e| NotUnit::Read(format!("{} is not text: {e}", path.display())))?;
+                let text = String::from_utf8(bytes).map_err(|e| {
+                    NotUnitError::Read(format!("{} is not text: {e}", path.display()))
+                })?;
                 Ok(acc.fold(&text))
             })
     }
@@ -237,7 +238,7 @@ fn drop_in_files<P: ProcFs>(
     fs: &P,
     manager: Manager,
     name: &UnitName,
-) -> Result<(DropIns, Vec<PathBuf>), NotUnit> {
+) -> Result<(DropIns, Vec<PathBuf>), NotUnitError> {
     let mut summary = DropIns::None;
     let mut files = Vec::new();
     for dir in manager.dirs(fs) {
@@ -253,13 +254,13 @@ fn drop_in_files<P: ProcFs>(
         }
     }
     if files.len() > DROP_IN_MAX {
-        return Err(NotUnit::Read("too many drop-in files".to_owned()));
+        return Err(NotUnitError::Read("too many drop-in files".to_owned()));
     }
     Ok((summary, files))
 }
 
 /// The `*.conf` files directly in `folder`; none when it does not exist.
-fn conf_files<P: ProcFs>(fs: &P, folder: &Path) -> Result<Vec<PathBuf>, NotUnit> {
+fn conf_files<P: ProcFs>(fs: &P, folder: &Path) -> Result<Vec<PathBuf>, NotUnitError> {
     match fs.list_dir(folder) {
         Ok(mut files) => {
             files.retain(|p| p.extension().is_some_and(|e| e == "conf"));
@@ -271,7 +272,7 @@ fn conf_files<P: ProcFs>(fs: &P, folder: &Path) -> Result<Vec<PathBuf>, NotUnit>
 }
 
 /// The trust of `path` and every folder above it; `None` when there is no such file.
-fn trust_if_present<P: ProcFs>(fs: &P, path: &Path) -> Result<Option<FileTrust>, NotUnit> {
+fn trust_if_present<P: ProcFs>(fs: &P, path: &Path) -> Result<Option<FileTrust>, NotUnitError> {
     match path_trust(fs, path) {
         Ok(trust) => Ok(Some(trust)),
         Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(None),
@@ -279,13 +280,18 @@ fn trust_if_present<P: ProcFs>(fs: &P, path: &Path) -> Result<Option<FileTrust>,
     }
 }
 
-fn trust_of_file<P: ProcFs>(fs: &P, path: &Path) -> Result<FileTrust, NotUnit> {
-    trust_if_present(fs, path)?.ok_or_else(|| NotUnit::Read(format!("{} vanished", path.display())))
+fn trust_of_file<P: ProcFs>(fs: &P, path: &Path) -> Result<FileTrust, NotUnitError> {
+    trust_if_present(fs, path)?
+        .ok_or_else(|| NotUnitError::Read(format!("{} vanished", path.display())))
 }
 
 /// Whether the system manager has a run-time unit of this name; a user's run-time units sit in a
 /// folder the service cannot read, and the process checks stand for them.
-fn transient<P: ProcFs>(fs: &P, manager: Manager, name: &UnitName) -> Result<Transient, NotUnit> {
+fn transient<P: ProcFs>(
+    fs: &P,
+    manager: Manager,
+    name: &UnitName,
+) -> Result<Transient, NotUnitError> {
     if manager == Manager::User {
         return Ok(Transient::No);
     }
@@ -296,6 +302,6 @@ fn transient<P: ProcFs>(fs: &P, manager: Manager, name: &UnitName) -> Result<Tra
     })
 }
 
-fn read_fault(path: &Path, error: &io::Error) -> NotUnit {
-    NotUnit::Read(format!("{}: {}", path.display(), error.kind()))
+fn read_fault(path: &Path, error: &io::Error) -> NotUnitError {
+    NotUnitError::Read(format!("{}: {}", path.display(), error.kind()))
 }

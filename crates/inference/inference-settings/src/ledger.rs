@@ -104,7 +104,7 @@ impl Default for Document {
 
 /// Why a ledger document could not be used.
 #[derive(Debug, thiserror::Error)]
-enum LedgerFault {
+enum LedgerError {
     /// The document is not a ledger.
     #[error("the file is not a ledger")]
     Json(#[source] serde_json::Error),
@@ -126,13 +126,13 @@ fn chain(error: &dyn std::error::Error) -> String {
 }
 
 /// What a ledger file holds.
-fn read_document(text: &str) -> Result<Document, LedgerFault> {
-    let document: Document = serde_json::from_str(text).map_err(LedgerFault::Json)?;
+fn read_document(text: &str) -> Result<Document, LedgerError> {
+    let document: Document = serde_json::from_str(text).map_err(LedgerError::Json)?;
     // A format a later inferd wrote: not guessed at.
     if document.format == FORMAT {
         Ok(document)
     } else {
-        Err(LedgerFault::Format)
+        Err(LedgerError::Format)
     }
 }
 

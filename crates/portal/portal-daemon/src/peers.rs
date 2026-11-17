@@ -17,7 +17,7 @@ use std::pin::pin;
 use std::time::Duration;
 
 use caller_identity_dbus::caller_identity_core::{
-    Proof, Refused, Requirement, RoleName, Table, roles,
+    NotHeldError, Proof, Requirement, RoleName, Table, roles,
 };
 use caller_identity_dbus::caller_identity_linux::RealProc;
 use caller_identity_dbus::{BusPeers, ManagerCheck, ManagerLink, Offload, access_denied};
@@ -245,7 +245,7 @@ impl RoleGuard {
 async fn admit_role(link: &BusLink, header: &Header<'_>, role: RoleName) -> fdo::Result<()> {
     let Some(peers) = link.peers() else {
         tracing::warn!("a call arrived before callers could be told apart, so it is refused");
-        return Err(access_denied(Refused::Unknown));
+        return Err(access_denied(NotHeldError::Unknown));
     };
     let wanted = need(role.clone());
     let sender = header.sender().map(zbus::names::UniqueName::as_str);

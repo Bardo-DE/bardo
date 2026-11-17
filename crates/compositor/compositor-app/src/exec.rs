@@ -184,7 +184,7 @@ pub fn shell_note(state: &mut State, note: &ShellNote) {
 }
 
 /// Logs a protocol module's failure: the loop degrades, it does not stop.
-fn log(result: Result<(), WaylandFault>) {
+fn log(result: Result<(), WaylandError>) {
     if let Err(fault) = result {
         tracing::warn!(%fault, "an effect failed");
     }

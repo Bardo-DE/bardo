@@ -19,7 +19,7 @@ pub mod jmap;
 pub mod mail;
 
 use account_capability::{Claim, Offer, Provenance, Subject};
-use account_core::{CoreError, EndpointFault, EndpointUrl};
+use account_core::{CoreError, EndpointError, EndpointUrl};
 use account_provider::ProviderSpec;
 use base_url::{UrlScheme, WebUrl};
 use http::header::AUTHORIZATION;
@@ -54,7 +54,7 @@ pub enum Error {
     Text(#[source] std::str::Utf8Error),
     /// An endpoint whose security does not go with its address.
     #[error("not an endpoint the account can use")]
-    Endpoint(#[source] EndpointFault),
+    Endpoint(#[source] EndpointError),
 }
 
 /// `url` as a web URL: `https`, or `http` to this computer.

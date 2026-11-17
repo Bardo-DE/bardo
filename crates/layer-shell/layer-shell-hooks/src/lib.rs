@@ -24,7 +24,7 @@ mod watch;
 mod wheel_feed;
 
 pub use drag::{DragIcon, DragSpec};
-pub use grab::{GrabRecord, GrabRefused, PointerFacts, Press, grab_serial};
+pub use grab::{GrabError, GrabRecord, PointerFacts, Press, grab_serial};
 pub use handle::{
     HandleParts, RoleKind, SurfaceHandle, use_frame_tick, use_input_modality, use_modifiers,
     use_surface, use_surface_scale, use_toplevel_state, use_wheel,

@@ -4,8 +4,9 @@ use super::use_keys_provider;
 use dioxus::prelude::*;
 use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{
-    Action, AppAction, AppId, Chord, Conflict, Context, DefaultChord, Desktop, KeyInput, Keymap,
-    KeymapSource, Overrides, Platform, Registration, SourceError, StandardAction, SystemBinding,
+    Action, AppAction, AppId, Chord, ConflictError, Context, DefaultChord, Desktop, KeyInput,
+    Keymap, KeymapSource, Overrides, Platform, Registration, SourceError, StandardAction,
+    SystemBinding,
 };
 use std::cell::RefCell;
 use std::sync::{Arc, Mutex};
@@ -105,7 +106,7 @@ fn a_refused_registration_is_not_remembered() {
     let taken = row("mail.copy", "Primary+C");
     let refused = state.register(&mail(), &rows(&[taken]));
     assert!(
-        matches!(refused, Err(Conflict::Standard { .. })),
+        matches!(refused, Err(ConflictError::Standard { .. })),
         "{refused:?}"
     );
     state.reload();
@@ -216,7 +217,7 @@ fn an_app_forgoes_what_it_does_not_offer_and_never_what_every_app_honours() {
     let tab = row("mail.tab", "Primary+T");
     let refused = state.register(&mail(), &rows(std::slice::from_ref(&tab)));
     assert!(
-        matches!(refused, Err(Conflict::Standard { .. })),
+        matches!(refused, Err(ConflictError::Standard { .. })),
         "{refused:?}"
     );
     let forgoing = Registration::new(&mail())
@@ -235,7 +236,7 @@ fn an_app_forgoes_what_it_does_not_offer_and_never_what_every_app_honours() {
     let universal = Registration::new(&mail()).forgo(StandardAction::Copy);
     let refused = state.register(&mail(), &universal);
     assert!(
-        matches!(refused, Err(Conflict::Universal { .. })),
+        matches!(refused, Err(ConflictError::Universal { .. })),
         "{refused:?}"
     );
 }

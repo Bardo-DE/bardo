@@ -73,7 +73,7 @@ enum Refusal {
     ZBus(zbus::Error),
     #[zbus(name = "Computer.NotOnTailscale")]
     NotOnTailscale(String),
-    #[zbus(name = "Computer.NotAnswering")]
+    #[zbus(name = "Computer.NotAnsweringError")]
     NotAnswering(String),
     #[zbus(name = "Computer.NotAsking")]
     NotAsking(String),
@@ -93,7 +93,7 @@ impl Inference {
         match name {
             None => Ok(()),
             Some("NotOnTailscale") => Err(Refusal::NotOnTailscale(words)),
-            Some("NotAnswering") => Err(Refusal::NotAnswering(words)),
+            Some("NotAnsweringError") => Err(Refusal::NotAnswering(words)),
             Some("NotAsking") => Err(Refusal::NotAsking(words)),
             Some(_) => Err(Refusal::TooManyAsking(words)),
         }

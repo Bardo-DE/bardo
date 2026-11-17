@@ -14,7 +14,7 @@ static ROWS: OnceLock<Table> = OnceLock::new();
 
 /// Why the person's rows could not be taken up.
 #[derive(Debug, thiserror::Error)]
-pub enum DevRowsFault {
+pub enum DevRowsError {
     /// The file is not the person's own plain file, or it does not parse.
     #[error("{0}")]
     Load(#[from] LoadError),
@@ -32,9 +32,9 @@ pub fn load_dev_rows(path: &Path) -> Result<Table, LoadError> {
 
 /// Reads `path` and makes its rows part of every [`desktop_peers`](crate::desktop_peers) from now on.
 /// Call it once, at start, before any peers are made.
-pub fn use_dev_rows(path: &Path) -> Result<(), DevRowsFault> {
+pub fn use_dev_rows(path: &Path) -> Result<(), DevRowsError> {
     let rows = load_dev_rows(path)?;
-    ROWS.set(rows).map_err(|_| DevRowsFault::Twice)
+    ROWS.set(rows).map_err(|_| DevRowsError::Twice)
 }
 
 /// The shipped table with the person's rows after it (a row never takes a unit the shipped table

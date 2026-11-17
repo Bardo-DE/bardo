@@ -8,7 +8,7 @@
 use crate::SandboxState;
 use crate::env::sandbox_env;
 use crate::output::{Shown, shown};
-use crate::sandbox::{Argv, ExitReport, Job, Network, RunSpec, Sandbox, StartFault};
+use crate::sandbox::{Argv, ExitReport, Job, Network, RunSpec, Sandbox, StartError};
 use base_path::AbsPath;
 use std::collections::BTreeMap;
 
@@ -67,10 +67,10 @@ impl Launch {
 
 /// Why a terminal call failed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ShellFault {
+pub enum ShellError {
     /// The command did not start.
     #[error(transparent)]
-    Start(#[from] StartFault),
+    Start(#[from] StartError),
     /// No such terminal (never made, or released).
     #[error("no such terminal")]
     NoSuchTerminal,
@@ -166,11 +166,11 @@ impl<S: Sandbox> Shell<S> {
     /// Starts a command in the sandbox and returns its terminal.
     ///
     /// # Errors
-    /// Returns `ShellFault::TooMany` at the terminal limit, and the start fault when the sandbox cannot
+    /// Returns `ShellError::TooMany` at the terminal limit, and the start fault when the sandbox cannot
     /// start the command.
-    pub fn create(&mut self, launch: &Launch) -> Result<TermId, ShellFault> {
+    pub fn create(&mut self, launch: &Launch) -> Result<TermId, ShellError> {
         if self.terms.len() >= MAX_TERMINALS {
-            return Err(ShellFault::TooMany);
+            return Err(ShellError::TooMany);
         }
         let limit = limit_of(launch.limit);
         let spec = RunSpec {
@@ -190,9 +190,9 @@ impl<S: Sandbox> Shell<S> {
     /// The output so far, and the exit if there is one.
     ///
     /// # Errors
-    /// Returns `ShellFault::NoSuchTerminal` when `id` is not open.
-    pub fn output(&mut self, id: TermId) -> Result<Snapshot, ShellFault> {
-        let term = self.terms.get_mut(&id).ok_or(ShellFault::NoSuchTerminal)?;
+    /// Returns `ShellError::NoSuchTerminal` when `id` is not open.
+    pub fn output(&mut self, id: TermId) -> Result<Snapshot, ShellError> {
+        let term = self.terms.get_mut(&id).ok_or(ShellError::NoSuchTerminal)?;
         let exit = term.job.exit();
         Ok(Snapshot {
             shown: shown(&term.job.output(), term.limit),
@@ -203,18 +203,18 @@ impl<S: Sandbox> Shell<S> {
     /// Blocks until the command ends.
     ///
     /// # Errors
-    /// Returns `ShellFault::NoSuchTerminal` when `id` is not open.
-    pub fn wait(&mut self, id: TermId) -> Result<ExitReport, ShellFault> {
-        let term = self.terms.get_mut(&id).ok_or(ShellFault::NoSuchTerminal)?;
+    /// Returns `ShellError::NoSuchTerminal` when `id` is not open.
+    pub fn wait(&mut self, id: TermId) -> Result<ExitReport, ShellError> {
+        let term = self.terms.get_mut(&id).ok_or(ShellError::NoSuchTerminal)?;
         Ok(term.job.wait())
     }
 
     /// Kills the command; the terminal stays valid, so its output can still be read.
     ///
     /// # Errors
-    /// Returns `ShellFault::NoSuchTerminal` when `id` is not open.
-    pub fn kill(&mut self, id: TermId) -> Result<(), ShellFault> {
-        let term = self.terms.get_mut(&id).ok_or(ShellFault::NoSuchTerminal)?;
+    /// Returns `ShellError::NoSuchTerminal` when `id` is not open.
+    pub fn kill(&mut self, id: TermId) -> Result<(), ShellError> {
+        let term = self.terms.get_mut(&id).ok_or(ShellError::NoSuchTerminal)?;
         term.job.kill();
         Ok(())
     }
@@ -222,9 +222,9 @@ impl<S: Sandbox> Shell<S> {
     /// Kills the command and forgets the terminal.
     ///
     /// # Errors
-    /// Returns `ShellFault::NoSuchTerminal` when `id` is not open.
-    pub fn release(&mut self, id: TermId) -> Result<(), ShellFault> {
-        let mut term = self.terms.remove(&id).ok_or(ShellFault::NoSuchTerminal)?;
+    /// Returns `ShellError::NoSuchTerminal` when `id` is not open.
+    pub fn release(&mut self, id: TermId) -> Result<(), ShellError> {
+        let mut term = self.terms.remove(&id).ok_or(ShellError::NoSuchTerminal)?;
         term.job.kill();
         Ok(())
     }

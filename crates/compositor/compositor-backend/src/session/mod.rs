@@ -6,4 +6,4 @@
 
 mod seam;
 
-pub use seam::SessionFault;
+pub use seam::SessionError;

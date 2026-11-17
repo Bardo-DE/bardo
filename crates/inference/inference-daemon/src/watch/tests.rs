@@ -122,7 +122,7 @@ fn the_wait_doubles_while_nothing_changes_and_starts_over_when_something_does() 
 #[derive(Debug, Default)]
 struct Recorder {
     told: Mutex<Vec<(Runtime, Standing, usize)>>,
-    answer: Mutex<Option<ReportFault>>,
+    answer: Mutex<Option<ReportError>>,
 }
 
 impl Recorder {
@@ -130,7 +130,7 @@ impl Recorder {
         self.told.lock().expect("lock").clone()
     }
 
-    fn fails_with(&self, fault: Option<ReportFault>) {
+    fn fails_with(&self, fault: Option<ReportError>) {
         *self.answer.lock().expect("lock") = fault;
     }
 }
@@ -141,7 +141,7 @@ impl Reports for Arc<Recorder> {
         runtime: Runtime,
         claims: &'a [Claim],
         standing: Standing,
-    ) -> crate::cloud::accountd::Boxed<'a, Result<AccountId, ReportFault>> {
+    ) -> crate::cloud::accountd::Boxed<'a, Result<AccountId, ReportError>> {
         Box::pin(async move {
             self.told
                 .lock()
@@ -150,7 +150,7 @@ impl Reports for Arc<Recorder> {
             match self.answer.lock().expect("lock").clone() {
                 Some(fault) => Err(fault),
                 None => AccountId::parse(runtime.provider())
-                    .map_err(|error| ReportFault::Rejected(Arc::new(error))),
+                    .map_err(|error| ReportError::Rejected(Arc::new(error))),
             }
         })
     }
@@ -262,7 +262,7 @@ async fn a_report_accountd_did_not_get_is_asked_again_and_a_rejected_one_is_not(
     let (engines, recorder) = (Engines::default(), Arc::new(Recorder::default()));
     let mut watch = watch(only_ollama(port_of(&fake)), &engines, &recorder);
 
-    recorder.fails_with(Some(ReportFault::Unreachable));
+    recorder.fails_with(Some(ReportError::Unreachable));
     watch.look().await;
     // The models are served whether or not accountd heard.
     assert_eq!(engines.listed().len(), 1);
@@ -285,7 +285,7 @@ async fn a_report_accountd_did_not_get_is_asked_again_and_a_rejected_one_is_not(
     // A rejection is final for that content.
     let (engines, recorder) = (Engines::default(), Arc::new(Recorder::default()));
     let mut watch = self::watch(only_ollama(port_of(&fake)), &engines, &recorder);
-    recorder.fails_with(Some(ReportFault::Rejected(Arc::new(
+    recorder.fails_with(Some(ReportError::Rejected(Arc::new(
         std::io::Error::other("the store said no"),
     ))));
     watch.look().await;

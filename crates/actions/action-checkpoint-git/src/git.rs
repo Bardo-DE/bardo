@@ -3,9 +3,9 @@
 use crate::files::{inside_repository, person_excludes};
 use crate::names::{PLAN, index_file, ref_name};
 use crate::parse::{object_id, staged_listing, tree_listing};
-use crate::problem::{GitCause, GitProblem, Report};
-use crate::run::{GitCommand, GitFault, GitOut, Limits, run_git};
-use action_checkpoint::{StoreFault, TreeListing, WorkRoot};
+use crate::problem::{GitCauseError, GitError, Report};
+use crate::run::{GitCommand, GitOut, GitRunError, Limits, run_git};
+use action_checkpoint::{CheckpointStoreError, TreeListing, WorkRoot};
 use action_core::CheckpointId;
 use base_path::AbsPath;
 use provenance::SessionId;
@@ -81,7 +81,7 @@ impl GitStore {
     /// Where the cause of a failed command goes (the operator's log): the subcommand, how it
     /// ended and the tail of its standard error. Never put it in front of a person.
     #[must_use]
-    pub fn with_problems(mut self, sink: impl Fn(&GitProblem) + Send + Sync + 'static) -> Self {
+    pub fn with_problems(mut self, sink: impl Fn(&GitError) + Send + Sync + 'static) -> Self {
         self.report = Report::to(sink);
         self
     }
@@ -100,7 +100,7 @@ impl GitStore {
         args: Vec<String>,
         env: &[(String, String)],
         stdin: Option<Vec<u8>>,
-    ) -> Result<GitOut, crate::run::GitFault> {
+    ) -> Result<GitOut, crate::run::GitRunError> {
         let mut all = self.before(root);
         all.extend(args);
         let mut vars = self.env.clone();
@@ -126,7 +126,7 @@ impl GitStore {
         root: &WorkRoot,
         args: &[&str],
         env: &[(String, String)],
-    ) -> Result<Vec<u8>, StoreFault> {
+    ) -> Result<Vec<u8>, CheckpointStoreError> {
         self.ok_with(root, strings(args), env, None).await
     }
 
@@ -137,30 +137,30 @@ impl GitStore {
         args: Vec<String>,
         env: &[(String, String)],
         stdin: Option<Vec<u8>>,
-    ) -> Result<Vec<u8>, StoreFault> {
+    ) -> Result<Vec<u8>, CheckpointStoreError> {
         let command = args.first().cloned().unwrap_or_default();
         match self.exec(root, args, env, stdin).await {
             Ok(out) if out.succeeded() => Ok(out.stdout),
             Ok(out) => {
                 let (code, stderr) = (out.status.code(), lossy(&out.stderr));
-                self.tell(command, GitCause::Exit { code, stderr });
-                Err(StoreFault::Failed)
+                self.tell(command, GitCauseError::Exit { code, stderr });
+                Err(CheckpointStoreError::Failed)
             }
             // Too many files to list is the folder being too large, not a git failure.
-            Err(GitFault::TooMuchOutput) => {
-                self.tell(command, GitCause::Run(GitFault::TooMuchOutput));
-                Err(StoreFault::TooLarge)
+            Err(GitRunError::TooMuchOutput) => {
+                self.tell(command, GitCauseError::Run(GitRunError::TooMuchOutput));
+                Err(CheckpointStoreError::TooLarge)
             }
             Err(fault) => {
-                self.tell(command, GitCause::Run(fault));
-                Err(StoreFault::Failed)
+                self.tell(command, GitCauseError::Run(fault));
+                Err(CheckpointStoreError::Failed)
             }
         }
     }
 
     /// Tells the sink why `command` failed.
-    fn tell(&self, command: String, cause: GitCause) {
-        self.report.tell(&GitProblem { command, cause });
+    fn tell(&self, command: String, cause: GitCauseError) {
+        self.report.tell(&GitError { command, cause });
     }
 
     /// The repository the actions service keeps every point in: under `index_dir`, never the folder's `.git`.
@@ -186,19 +186,22 @@ impl GitStore {
 
     /// The folder is inside a repository's work tree (a `.git` in it or above it, looked for
     /// without running git); otherwise `NoHistory`. Then the shadow repository exists.
-    pub(crate) async fn require_repository(&self, root: &WorkRoot) -> Result<(), StoreFault> {
+    pub(crate) async fn require_repository(
+        &self,
+        root: &WorkRoot,
+    ) -> Result<(), CheckpointStoreError> {
         let folder = PathBuf::from(root.path().as_str());
         let inside = tokio::task::spawn_blocking(move || inside_repository(&folder))
             .await
             .map_err(|error| failed("the folder check did not finish", &error))?;
         if !inside {
-            return Err(StoreFault::NoHistory);
+            return Err(CheckpointStoreError::NoHistory);
         }
         self.ensure_shadow().await
     }
 
     /// Makes `shadow.git` (bare, no templates, so no hooks) if it is not there yet.
-    async fn ensure_shadow(&self) -> Result<(), StoreFault> {
+    async fn ensure_shadow(&self) -> Result<(), CheckpointStoreError> {
         let (dir, shadow) = (self.index_dir.as_str().to_owned(), self.shadow());
         let ready = {
             let shadow = shadow.clone();
@@ -211,7 +214,7 @@ impl GitStore {
         match ready {
             Ok(Ok(true)) => return Ok(()),
             Ok(Ok(false)) => {}
-            _ => return Err(StoreFault::Failed),
+            _ => return Err(CheckpointStoreError::Failed),
         }
         let args = strings(&["init", "--bare", "--quiet", "--template=", &shadow]);
         let mut env = self.env.clone();
@@ -232,12 +235,12 @@ impl GitStore {
             Ok(out) if out.succeeded() => Ok(()),
             Ok(out) => {
                 let (code, stderr) = (out.status.code(), lossy(&out.stderr));
-                self.tell("init".to_owned(), GitCause::Exit { code, stderr });
-                Err(StoreFault::Failed)
+                self.tell("init".to_owned(), GitCauseError::Exit { code, stderr });
+                Err(CheckpointStoreError::Failed)
             }
             Err(fault) => {
                 self.tell("init".to_owned(), fault.into());
-                Err(StoreFault::Failed)
+                Err(CheckpointStoreError::Failed)
             }
         }
     }
@@ -249,7 +252,7 @@ impl GitStore {
         &self,
         root: &WorkRoot,
         env: &[(String, String)],
-    ) -> Result<(), StoreFault> {
+    ) -> Result<(), CheckpointStoreError> {
         let ignored = self
             .ok(
                 root,
@@ -270,14 +273,14 @@ impl GitStore {
         &self,
         session: &SessionId,
         stem: &str,
-    ) -> Result<Vec<(String, String)>, StoreFault> {
+    ) -> Result<Vec<(String, String)>, CheckpointStoreError> {
         let dir = self.index_dir.as_str().to_owned();
         let made = {
             let dir = dir.clone();
             tokio::task::spawn_blocking(move || std::fs::create_dir_all(dir)).await
         };
         if !matches!(made, Ok(Ok(()))) {
-            return Err(StoreFault::Failed);
+            return Err(CheckpointStoreError::Failed);
         }
         let file = format!("{dir}/{}", index_file(session, stem));
         Ok(vec![("GIT_INDEX_FILE".to_owned(), file)])
@@ -289,7 +292,7 @@ impl GitStore {
         root: &WorkRoot,
         session: &SessionId,
         id: CheckpointId,
-    ) -> Result<String, StoreFault> {
+    ) -> Result<String, CheckpointStoreError> {
         let spec = format!("{}^{{tree}}", ref_name(session, id));
         let args = vec![
             "rev-parse".to_owned(),
@@ -300,10 +303,10 @@ impl GitStore {
         match self.exec(root, args, &[], None).await {
             Ok(out) if out.succeeded() => object_id(&out.stdout)
                 .map_err(|error| failed("rev-parse printed no object id", &error)),
-            Ok(_) => Err(StoreFault::NoSuchPoint),
+            Ok(_) => Err(CheckpointStoreError::NoSuchPoint),
             Err(fault) => {
                 self.tell("rev-parse".to_owned(), fault.into());
-                Err(StoreFault::Failed)
+                Err(CheckpointStoreError::Failed)
             }
         }
     }
@@ -313,7 +316,7 @@ impl GitStore {
         &self,
         root: &WorkRoot,
         tree: &str,
-    ) -> Result<TreeListing, StoreFault> {
+    ) -> Result<TreeListing, CheckpointStoreError> {
         let args = vec![
             "ls-tree".to_owned(),
             "-r".to_owned(),
@@ -330,7 +333,7 @@ impl GitStore {
         &self,
         root: &WorkRoot,
         session: &SessionId,
-    ) -> Result<TreeListing, StoreFault> {
+    ) -> Result<TreeListing, CheckpointStoreError> {
         let env = self.index_env(session, PLAN).await?;
         self.drop_ignored(root, &env).await?;
         self.ok(root, &["add", "-A", "--", "."], &env).await?;
@@ -353,9 +356,9 @@ pub(crate) fn log_cause(what: &str, error: &dyn std::error::Error) {
 }
 
 /// [`log_cause`], then the failure the store reports for it.
-pub(crate) fn failed(what: &str, error: &dyn std::error::Error) -> StoreFault {
+pub(crate) fn failed(what: &str, error: &dyn std::error::Error) -> CheckpointStoreError {
     log_cause(what, error);
-    StoreFault::Failed
+    CheckpointStoreError::Failed
 }
 
 /// Standard error as text, whatever bytes it holds.

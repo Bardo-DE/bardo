@@ -19,7 +19,7 @@ use account_service::AccountService;
 use account_service_accounts::AgentFault;
 use account_service_core::audit::AuditEvent;
 use account_service_core::registry::Registry;
-use account_sheet::host::{SheetFault, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetOpen, Sheets};
 use account_wire::{AccountsReply, ParentWindow, Refusal};
 use base_time::FixedClock;
 use std::sync::Arc;
@@ -321,8 +321,8 @@ impl Sheets for Held {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn conversation(&self, _open: SheetOpen) -> Result<ScriptedLink, SheetFault> {
-        Err(SheetFault::Unavailable)
+    async fn conversation(&self, _open: SheetOpen) -> Result<ScriptedLink, SheetError> {
+        Err(SheetError::Unavailable)
     }
 
     async fn consent(&self, ask: ConsentAsk, _window: &ParentWindow) -> ConsentAnswer {

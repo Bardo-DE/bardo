@@ -15,10 +15,10 @@ use account_capability::{Locality, ModelId};
 use account_core::AccountId;
 use action_client::Transport as IntentsTransport;
 use action_core::{HandOver, HandRefusal, HandReply};
-use action_store::Stop;
+use action_store::WaitStopError;
 use action_vocab::Clock;
 use agent_loop::{LoopInput, ModelOutput};
-use agent_planner::{PlanFault, Planner};
+use agent_planner::{PlanError, Planner};
 use companion_wire::{RefusalWire, RouteNote, WhyWord};
 use inference_core::{AGENT_ACCOUNT, DeclinedBecause, ModelLabel, ServedBy, StageRole};
 use permission_core::ProgramName;
@@ -33,9 +33,9 @@ pub trait Handoff: std::fmt::Debug + Send + Sync {
 }
 
 /// The agent the person chose, when `fault` is inferd declining the request because they did.
-pub(crate) fn chosen_agent(fault: &PlanFault) -> Option<ProgramName> {
+pub(crate) fn chosen_agent(fault: &PlanError) -> Option<ProgramName> {
     match fault {
-        PlanFault::Declined(declined) if declined.because == DeclinedBecause::AgentChosen => {
+        PlanError::Declined(declined) if declined.because == DeclinedBecause::AgentChosen => {
             declined
                 .model
                 .agent_program()
@@ -100,8 +100,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         )
         .await;
         match asked {
-            Err(Stop::Cancelled) => vec![LoopInput::Cancelled],
-            Err(Stop::TimedOut) => self.not_handed(
+            Err(WaitStopError::Cancelled) => vec![LoopInput::Cancelled],
+            Err(WaitStopError::TimedOut) => self.not_handed(
                 task,
                 &HandRefusal::Failed {
                     message: "The coding agent took too long to answer.".to_owned(),
@@ -129,11 +129,11 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         tracing::warn!(%task, why = ?refusal, "the coding agent did not take the turn");
         let (shown, fault) = match refusal {
             HandRefusal::TurnedOff | HandRefusal::NotSetUp => {
-                (RefusalWire::NoModel, PlanFault::NoModelChosen)
+                (RefusalWire::NoModel, PlanError::NoModelChosen)
             }
             other => (
                 RefusalWire::Failed(other.sentence()),
-                PlanFault::Unavailable,
+                PlanError::Unavailable,
             ),
         };
         if let Some(rt) = self.runtimes.get_mut(task) {
@@ -150,8 +150,8 @@ mod tests {
     use companion_wire::footer_line;
     use inference_core::{Declined, ModelRef};
 
-    fn declined(model: ModelRef, because: DeclinedBecause) -> PlanFault {
-        PlanFault::Declined(Box::new(Declined { model, because }))
+    fn declined(model: ModelRef, because: DeclinedBecause) -> PlanError {
+        PlanError::Declined(Box::new(Declined { model, because }))
     }
 
     #[test]
@@ -177,7 +177,7 @@ mod tests {
                 declined(model, DeclinedBecause::NotInstalled),
                 None,
             ),
-            ("no model", PlanFault::NoModelChosen, None),
+            ("no model", PlanError::NoModelChosen, None),
         ];
         for (name, fault, expected) in rows {
             let got = chosen_agent(&fault);

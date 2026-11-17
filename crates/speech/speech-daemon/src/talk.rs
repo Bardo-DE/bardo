@@ -21,7 +21,7 @@ use inference_core::{
 use speech_audio::{AudioDevice, samples_of};
 use speech_dbus::speech_path;
 use speech_loop::{SpeechEffect, SpeechEvent, SpeechPhase, SpeechState, speech_step};
-use speech_wire::{SpeakWire, Speaking, SpeechEnd, VoiceFault, VoiceRefusal, VoiceUse};
+use speech_wire::{SpeakWire, Speaking, SpeechEnd, VoiceError, VoiceFault, VoiceUse};
 use zbus::object_server::SignalEmitter;
 
 /// The most text one `Speak` may carry, in bytes.
@@ -109,10 +109,10 @@ where
         mut wire: SpeakWire,
     ) -> Result<String, VoiceError> {
         if !self.may_speak(caller, &wire) {
-            return Err(VoiceRefusal::NotAllowed.into());
+            return Err(VoiceError::NotAllowed.into());
         }
         if self.usage.now() == VoiceUse::Off {
-            return Err(VoiceRefusal::Disabled.into());
+            return Err(VoiceError::Disabled.into());
         }
         wire.class = class_for(caller, wire.class);
         if wire.text.0.len() > MAX_SPOKEN_BYTES {
@@ -122,7 +122,7 @@ where
             )));
         }
         if self.say.active.len() >= MAX_ACTIVE_SPEECHES {
-            return Err(VoiceRefusal::Busy.into());
+            return Err(VoiceError::Busy.into());
         }
         self.counter += 1;
         let n = self.counter;
@@ -161,7 +161,7 @@ where
 
     pub(crate) async fn hush(&mut self, caller: &Caller) -> Result<(), VoiceError> {
         if !caller.is_shell() {
-            return Err(VoiceRefusal::NotAllowed.into());
+            return Err(VoiceError::NotAllowed.into());
         }
         self.hush_all().await;
         Ok(())
@@ -189,14 +189,14 @@ where
         } else if self.say.done.contains(&n) && caller.is_shell() {
             Ok(())
         } else {
-            Err(VoiceRefusal::NotAllowed.into())
+            Err(VoiceError::NotAllowed.into())
         }
     }
 
     /// `Prepare`: answered by a task, so a cold engine never holds the loop.
     pub(crate) fn prepare(&mut self, caller: &Caller, reply: Reply<Result<String, VoiceError>>) {
         if !caller.is_shell() {
-            let _ = reply.send(Err(VoiceRefusal::NotAllowed.into()));
+            let _ = reply.send(Err(VoiceError::NotAllowed.into()));
             return;
         }
         let (warm, ready) = (

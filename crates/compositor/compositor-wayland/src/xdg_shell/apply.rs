@@ -2,7 +2,7 @@
 
 use super::XdgShellPart;
 use crate::convert::size_to;
-use crate::states::WaylandFault;
+use crate::states::WaylandError;
 use compositor_core::geometry::LogicalSize;
 use compositor_core::{
     ClientKey, ConfigureSize, ConfigureSpec, PopupKey, ToplevelStates, WindowId,
@@ -53,18 +53,18 @@ pub(super) fn apply_spec(state: &mut ToplevelState, spec: &ConfigureSpec) {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_configure(
     part: &mut XdgShellPart,
     window: WindowId,
     spec: &ConfigureSpec,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let toplevel = part
         .toplevels
         .get(&window)
-        .ok_or(WaylandFault::UnknownWindow(window))?;
+        .ok_or(WaylandError::UnknownWindow(window))?;
     if !toplevel.alive() {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     toplevel.with_pending_state(|state| apply_spec(state, spec));
     if toplevel.is_initial_configure_sent() {
@@ -77,14 +77,14 @@ pub fn apply_configure(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_close(part: &mut XdgShellPart, window: WindowId) -> Result<(), WaylandFault> {
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_close(part: &mut XdgShellPart, window: WindowId) -> Result<(), WaylandError> {
     let toplevel = part
         .toplevels
         .get(&window)
-        .ok_or(WaylandFault::UnknownWindow(window))?;
+        .ok_or(WaylandError::UnknownWindow(window))?;
     if !toplevel.alive() {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     toplevel.send_close();
     Ok(())
@@ -95,12 +95,12 @@ pub fn apply_close(part: &mut XdgShellPart, window: WindowId) -> Result<(), Wayl
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_ping(part: &mut XdgShellPart, client: ClientKey) -> Result<(), WaylandFault> {
-    let shell = part.clients.get(&client).ok_or(WaylandFault::SurfaceGone)?;
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_ping(part: &mut XdgShellPart, client: ClientKey) -> Result<(), WaylandError> {
+    let shell = part.clients.get(&client).ok_or(WaylandError::SurfaceGone)?;
     match shell.send_ping(SERIAL_COUNTER.next_serial()) {
         Ok(()) | Err(PingError::PingAlreadyPending(_)) => Ok(()),
-        Err(PingError::DeadSurface) => Err(WaylandFault::SurfaceGone),
+        Err(PingError::DeadSurface) => Err(WaylandError::SurfaceGone),
     }
 }
 
@@ -108,19 +108,19 @@ pub fn apply_ping(part: &mut XdgShellPart, client: ClientKey) -> Result<(), Wayl
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_popup_done(part: &mut XdgShellPart, popup: PopupKey) -> Result<(), WaylandFault> {
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_popup_done(part: &mut XdgShellPart, popup: PopupKey) -> Result<(), WaylandError> {
     let surface = part
         .popup_surfaces
         .get(&popup)
-        .ok_or(WaylandFault::SurfaceGone)?
+        .ok_or(WaylandError::SurfaceGone)?
         .clone();
     if !surface.alive() {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     let kind = PopupKind::Xdg(surface.clone());
     if let Ok(root) = find_popup_root_surface(&kind) {
-        PopupManager::dismiss_popup(&root, &kind).map_err(WaylandFault::PopupGone)
+        PopupManager::dismiss_popup(&root, &kind).map_err(WaylandError::PopupGone)
     } else {
         surface.send_popup_done();
         Ok(())

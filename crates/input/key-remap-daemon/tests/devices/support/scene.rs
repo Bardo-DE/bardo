@@ -1,7 +1,7 @@
 //! One device test's surroundings: its scratch directory, the daemon, the client and the output
 //! reader built on it, and the failure report written when the test panics.
 
-use key_remap_devtest::{Client, Daemon, DaemonSpec, Failure, Output, Scratch};
+use key_remap_devtest::{Client, Daemon, DaemonSpec, DevtestError, Output, Scratch};
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
@@ -19,7 +19,7 @@ const GATE: &str = "BARDO_KEY_REMAP_DEVICE_TESTS";
 const ARTIFACTS: &str = "BARDO_KEY_REMAP_TEST_ARTIFACTS";
 
 /// Unwraps a harness result, naming the step.
-pub fn ok<T>(result: Result<T, Failure>, step: &str) -> T {
+pub fn ok<T>(result: Result<T, DevtestError>, step: &str) -> T {
     result.unwrap_or_else(|e| panic!("{step}: {e}"))
 }
 

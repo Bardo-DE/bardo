@@ -64,7 +64,7 @@ fn a_name_over_sixty_four_characters_has_no_tool() {
             .expect("action");
     assert_eq!(
         tool_name(&memory.manifest().app, &action),
-        Err(ToolFault::TooLong)
+        Err(ToolError::TooLong)
     );
 }
 

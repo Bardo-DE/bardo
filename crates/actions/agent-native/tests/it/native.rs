@@ -9,7 +9,7 @@ use action_vocab::{Caller, CallerRole, TurnId, Workspace};
 use action_wire::{CallerId, IntentsReply, IntentsRequest};
 use agent_session::fake::MemoryLog;
 use agent_session::{
-    BackendEvent, BackendKind, CallEvent, DeskFault, EndCause, Opening, Read, Seq, SessionEntry,
+    BackendEvent, BackendKind, CallEvent, DeskError, EndCause, Opening, Read, Seq, SessionEntry,
     SessionHost, SheetChoice, SheetDesk, Standing, TurnEnd, read_all,
 };
 use provenance::{AgentRef, UnixSeconds};
@@ -282,7 +282,7 @@ impl SheetDesk for Canned {
         )
     }
 
-    fn answer(&self, _id: &action_core::ConfirmId, choice: SheetChoice) -> Result<(), DeskFault> {
+    fn answer(&self, _id: &action_core::ConfirmId, choice: SheetChoice) -> Result<(), DeskError> {
         self.0.lock().expect("lock").push(choice);
         Ok(())
     }

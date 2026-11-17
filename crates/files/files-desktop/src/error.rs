@@ -1,6 +1,6 @@
 //! The errors of this crate that are not about launching (those are in `launch/error.rs`).
 
-use files_core::{Cause, EjectFailure, MountFailure};
+use files_core::{EjectError, MountError, VolumeCauseError};
 
 /// Why the disks could not be listed or watched.
 #[derive(Debug, thiserror::Error)]
@@ -65,11 +65,11 @@ impl Said {
     }
 
     /// As a failure to open.
-    pub(crate) fn mount_failure(self, error: zbus::Error) -> MountFailure {
+    pub(crate) fn mount_failure(self, error: zbus::Error) -> MountError {
         match self {
-            Said::NotAllowed => MountFailure::NotAllowed,
+            Said::NotAllowed => MountError::NotAllowed,
             Said::Busy | Said::NotMounted | Said::AlreadyMounted | Said::Other => {
-                MountFailure::Other(Some(Cause::new(error)))
+                MountError::Other(Some(VolumeCauseError::new(error)))
             }
         }
     }
@@ -79,12 +79,12 @@ impl Said {
         self,
         error: zbus::Error,
         programs: Vec<files_core::ProgramName>,
-    ) -> EjectFailure {
+    ) -> EjectError {
         match self {
-            Said::Busy => EjectFailure::InUse(programs),
-            Said::NotAllowed => EjectFailure::NotAllowed,
+            Said::Busy => EjectError::InUse(programs),
+            Said::NotAllowed => EjectError::NotAllowed,
             Said::NotMounted | Said::AlreadyMounted | Said::Other => {
-                EjectFailure::Other(Some(Cause::new(error)))
+                EjectError::Other(Some(VolumeCauseError::new(error)))
             }
         }
     }
@@ -92,7 +92,7 @@ impl Said {
 
 /// Why the window would not do what was asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum Refusal {
+pub enum WindowError {
     /// The window is closed.
     #[error("Files isn\u{2019}t open any more.")]
     Closed,

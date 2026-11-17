@@ -2,7 +2,7 @@
 //!
 //! A peer can be slow, crashed, wedged behind a password prompt or simply absent, and a bus
 //! call has no timeout of its own. Wrapping the call in [`within`] gives it one: the call either
-//! answers inside its [`Deadline`] or ends as [`NotAnswering`], which a screen shows as "X is not
+//! answers inside its [`Deadline`] or ends as [`NotAnsweringError`], which a screen shows as "X is not
 //! answering" instead of spinning forever.
 //!
 //! The deadlines are named, one per kind of wait ([`Deadline::READ`], [`Deadline::START`],
@@ -10,7 +10,7 @@
 //! duration. This is the peer-facing layer over [`crate::timeout::within`], which takes a bare
 //! duration. No runtime and no bus: a wall-clock delay and a future.
 
-use crate::timeout::{TimedOut, within as bounded};
+use crate::timeout::{TimeoutError, within as bounded};
 use std::time::Duration;
 
 /// How long a call to a peer may take before it counts as not answering.
@@ -49,12 +49,12 @@ impl Deadline {
 /// manager is not answering."
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("{peer} is not answering")]
-pub struct NotAnswering {
+pub struct NotAnsweringError {
     peer: &'static str,
     after: Duration,
 }
 
-impl NotAnswering {
+impl NotAnsweringError {
     /// Who did not answer, as a screen names it ("The installer").
     #[must_use]
     pub fn peer(&self) -> &'static str {
@@ -76,20 +76,20 @@ impl NotAnswering {
 ///
 /// # Errors
 ///
-/// Returns `NotAnswering` when `work` does not finish before the deadline.
+/// Returns `NotAnsweringError` when `work` does not finish before the deadline.
 pub async fn within<T>(
     deadline: Deadline,
     peer: &'static str,
     work: impl Future<Output = T>,
-) -> Result<T, NotAnswering> {
+) -> Result<T, NotAnsweringError> {
     bounded(deadline.duration(), work)
         .await
-        .map_err(|TimedOut { after }| NotAnswering { peer, after })
+        .map_err(|TimeoutError { after }| NotAnsweringError { peer, after })
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{Deadline, NotAnswering, within};
+    use super::{Deadline, NotAnsweringError, within};
     use std::future::pending;
     use std::time::Duration;
 
@@ -117,7 +117,7 @@ mod tests {
             tokio::time::sleep(Duration::from_secs(30)).await;
         };
         let started = std::time::Instant::now();
-        let got: Result<(), NotAnswering> = within(SHORT, "Accounts", slow).await;
+        let got: Result<(), NotAnsweringError> = within(SHORT, "Accounts", slow).await;
         assert!(got.is_err());
         assert!(started.elapsed() < Duration::from_secs(5));
     }

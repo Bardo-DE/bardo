@@ -4,7 +4,7 @@
 //! when the person is away, and never steers anything by itself.
 
 use crate::best_effort::best_effort;
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::linger::{LINGER, finished};
 use crate::runtime::{Companion, Narration, REMEMBERED};
 use crate::seams::Surface;
@@ -72,14 +72,14 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// Ends `task`: called when its loop finishes.
-    pub(crate) async fn finish(&mut self, task: &TaskId) -> Result<(), ServeFault> {
+    pub(crate) async fn finish(&mut self, task: &TaskId) -> Result<(), ServeError> {
         let how = match self.tasks.get(task).map(|s| s.phase) {
             Some(LoopPhase::Finished(how)) => how,
             _ => FinishedAs::Done,
         };
         let episode = self.episode_of(task, how);
         let Some(rt) = self.runtimes.get(task).cloned() else {
-            return Err(ServeFault::UnknownSession);
+            return Err(ServeError::UnknownSession);
         };
         if how == FinishedAs::Failed {
             tracing::warn!(

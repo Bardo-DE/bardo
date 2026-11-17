@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 /// Why one query could not be answered.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum FaultCause {
+pub enum QueryError {
     /// A principal, app or action name is not a Cedar name.
     #[error("a name of the request is not a Cedar name")]
     Name,
@@ -32,12 +32,12 @@ pub enum FaultCause {
 /// One query that failed: which, and why.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error("query `{query}`")]
-pub struct EvalFault {
+pub struct EvalError {
     /// The Cedar action of the query (`perform`, `perform_unasked`, ...).
     pub query: &'static str,
     /// What failed.
     #[source]
-    pub cause: FaultCause,
+    pub cause: QueryError,
 }
 
 /// A ruling and the faults met reaching it. Empty `faults` is the ordinary case.
@@ -46,5 +46,5 @@ pub struct Ruled {
     /// The ruling, fail-safe: a faulted query counts as not permitted.
     pub ruling: Ruling,
     /// Every query that faulted, in the order asked.
-    pub faults: Vec<EvalFault>,
+    pub faults: Vec<EvalError>,
 }

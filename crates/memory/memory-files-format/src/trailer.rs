@@ -20,7 +20,7 @@ const CLOSE: &str = " -->";
 
 /// Why a trailer was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum TrailerFault {
+pub enum TrailerError {
     /// Not `  <!-- ... -->`.
     #[error("not a comment")]
     NotAComment,
@@ -38,27 +38,27 @@ pub enum TrailerFault {
     Duplicate(&'static str),
     /// A value is not well-formed.
     #[error("bad value for {0}")]
-    BadValue(&'static str, #[source] Option<Cause>),
+    BadValue(&'static str, #[source] Option<TrailerCauseError>),
 }
 
 /// The error that made a value bad. Two causes are equal when they say the same.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error(transparent)]
-pub struct Cause(Arc<dyn std::error::Error + Send + Sync>);
+pub struct TrailerCauseError(Arc<dyn std::error::Error + Send + Sync>);
 
-impl Cause {
+impl TrailerCauseError {
     pub(crate) fn of(error: impl std::error::Error + Send + Sync + 'static) -> Self {
         Self(Arc::new(error))
     }
 }
 
-impl PartialEq for Cause {
+impl PartialEq for TrailerCauseError {
     fn eq(&self, other: &Self) -> bool {
         self.0.to_string() == other.0.to_string()
     }
 }
 
-impl Eq for Cause {}
+impl Eq for TrailerCauseError {}
 
 fn escape(text: &str) -> String {
     text.replace('%', "%25")
@@ -109,16 +109,16 @@ pub fn render_trailer(fact: &Fact) -> String {
 ///
 /// # Errors
 ///
-/// Returns a [`TrailerFault`] when a key is missing or a value is not valid.
-pub fn parse_trailer(line: &str, text: FactText) -> Result<Fact, TrailerFault> {
+/// Returns a [`TrailerError`] when a key is missing or a value is not valid.
+pub fn parse_trailer(line: &str, text: FactText) -> Result<Fact, TrailerError> {
     let inner = line
         .strip_prefix(OPEN)
         .and_then(|rest| rest.strip_suffix(CLOSE))
-        .ok_or(TrailerFault::NotAComment)?;
+        .ok_or(TrailerError::NotAComment)?;
     let mut fields = Fields::default();
     for part in inner.split(';') {
         let part = part.strip_prefix(' ').unwrap_or(part);
-        let (key, value) = part.split_once(": ").ok_or(TrailerFault::NotAComment)?;
+        let (key, value) = part.split_once(": ").ok_or(TrailerError::NotAComment)?;
         fields.set(key, unescape(value))?;
     }
     fields.into_fact(text)
@@ -135,7 +135,7 @@ struct Fields {
 }
 
 impl Fields {
-    fn set(&mut self, key: &str, value: String) -> Result<(), TrailerFault> {
+    fn set(&mut self, key: &str, value: String) -> Result<(), TrailerError> {
         let (slot, name) = match key {
             "fact" => (&mut self.id, "fact"),
             "at" => (&mut self.at, "at"),
@@ -143,25 +143,25 @@ impl Fields {
             "label" => (&mut self.label, "label"),
             "from" => (&mut self.from, "from"),
             "supersedes" => (&mut self.supersedes, "supersedes"),
-            "valid" | "origin" => return Err(TrailerFault::Reserved(key.to_owned())),
-            other => return Err(TrailerFault::UnknownKey(other.to_owned())),
+            "valid" | "origin" => return Err(TrailerError::Reserved(key.to_owned())),
+            other => return Err(TrailerError::UnknownKey(other.to_owned())),
         };
         if slot.replace(value).is_some() {
-            return Err(TrailerFault::Duplicate(name));
+            return Err(TrailerError::Duplicate(name));
         }
         Ok(())
     }
 
-    fn into_fact(self, text: FactText) -> Result<Fact, TrailerFault> {
-        let need = |v: Option<String>, k| v.ok_or(TrailerFault::MissingKey(k));
+    fn into_fact(self, text: FactText) -> Result<Fact, TrailerError> {
+        let need = |v: Option<String>, k| v.ok_or(TrailerError::MissingKey(k));
         let id = FactId::parse(&need(self.id, "fact")?)
-            .map_err(|e| TrailerFault::BadValue("fact", Some(Cause::of(e))))?;
+            .map_err(|e| TrailerError::BadValue("fact", Some(TrailerCauseError::of(e))))?;
         let at = need(self.at, "at")?;
         let parsed = at
             .parse::<Timestamp>()
-            .map_err(|e| TrailerFault::BadValue("at", Some(Cause::of(e))))?;
+            .map_err(|e| TrailerError::BadValue("at", Some(TrailerCauseError::of(e))))?;
         if render_at(parsed) != at {
-            return Err(TrailerFault::BadValue("at", None));
+            return Err(TrailerError::BadValue("at", None));
         }
         let by: Actor = from_json(&need(self.by, "by")?, "by")?;
         let label: Label = from_json(&need(self.label, "label")?, "label")?;
@@ -187,8 +187,9 @@ impl Fields {
 fn from_json<T: serde::de::DeserializeOwned>(
     text: &str,
     key: &'static str,
-) -> Result<T, TrailerFault> {
-    serde_json::from_str(text).map_err(|e| TrailerFault::BadValue(key, Some(Cause::of(e))))
+) -> Result<T, TrailerError> {
+    serde_json::from_str(text)
+        .map_err(|e| TrailerError::BadValue(key, Some(TrailerCauseError::of(e))))
 }
 
 fn escaped_json<T: serde::Serialize>(value: &T) -> String {

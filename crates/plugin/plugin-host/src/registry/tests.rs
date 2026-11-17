@@ -1,9 +1,9 @@
 use super::*;
-use crate::fixture::{Cap, Tool, ToolFault, manifest_text, probe};
+use crate::fixture::{Cap, Tool, ToolError, manifest_text, probe};
 use crate::manifest::{Manifest, ManifestError};
 
 type Plugins = Registry<Tool>;
-type Reason = ManifestError<Cap, ToolFault>;
+type Reason = ManifestError<Cap, ToolError>;
 
 const SUPPORTED: u32 = 1;
 

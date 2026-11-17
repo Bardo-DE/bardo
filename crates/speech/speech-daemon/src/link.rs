@@ -7,7 +7,7 @@ use account_capability::Tier;
 use account_core::DataClass;
 use account_match::Need;
 use inference_client::{InferSession, Transport, TransportError};
-use inference_core::{ClientFrame, InferEvent, InferRefusal, ModelError};
+use inference_core::{ClientFrame, InferEvent, InferRefusedError, ModelError};
 use speech_wire::VoiceFault;
 use std::sync::Arc;
 use tokio::sync::mpsc;
@@ -39,7 +39,7 @@ pub(crate) fn fault_of(error: &TransportError) -> VoiceFault {
         "inferd session could not be opened"
     );
     match error {
-        TransportError::Denied(_) => VoiceFault::Refused(InferRefusal::Denied),
+        TransportError::Denied(_) => VoiceFault::Refused(InferRefusedError::Denied),
         TransportError::Unreachable => VoiceFault::Engine(ModelError::Unreachable),
         _ => VoiceFault::Engine(ModelError::Unreadable),
     }

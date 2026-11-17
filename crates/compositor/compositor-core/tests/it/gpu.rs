@@ -5,7 +5,7 @@
 use compositor_core::OutputName;
 use compositor_core::gpu::{
     BootVga, ByPathId, DrmNodeId, FormatEntry, FormatTable, Fourcc, GpuChoice, GpuFacts, Modifier,
-    OutputRoute, PlanRefusal, RenderPlan, TrancheUse, VendorFact, bridge_format, feedback_for,
+    OutputRoute, PlanError, RenderPlan, TrancheUse, VendorFact, bridge_format, feedback_for,
     plan_for,
 };
 use std::collections::BTreeMap;
@@ -173,15 +173,15 @@ fn the_setting_naming_the_gpu_detection_picks_changes_nothing() {
 
 #[test]
 fn no_gpu_and_an_unknown_override_are_refused() {
-    assert_eq!(plan_for(&[], &GpuChoice::Auto), Err(PlanRefusal::NoGpu));
+    assert_eq!(plan_for(&[], &GpuChoice::Auto), Err(PlanError::NoGpu));
     let unknown = ByPathId::parse("0000:ff:00.0").expect("by-path id");
     assert_eq!(
         plan_for(&[], &GpuChoice::ByPath(unknown.clone())),
-        Err(PlanRefusal::UnknownGpu(unknown.clone()))
+        Err(PlanError::UnknownGpu(unknown.clone()))
     );
     assert_eq!(
         plan_for(&laptop(&[]), &GpuChoice::ByPath(unknown.clone())),
-        Err(PlanRefusal::UnknownGpu(unknown)),
+        Err(PlanError::UnknownGpu(unknown)),
         "a GPU that is not there is refused even when others are"
     );
 }

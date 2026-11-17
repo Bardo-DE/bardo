@@ -17,15 +17,15 @@ use toml_edit::{DocumentMut, Item, Table, Value};
 /// the file under a `.bad` name and writes a new one, instead of merging into it.
 #[derive(Debug, thiserror::Error)]
 #[error("a file that cannot be used is in the way")]
-pub struct InTheWay(#[source] pub Option<toml_edit::TomlError>);
+pub struct InTheWayError(#[source] pub Option<toml_edit::TomlError>);
 
 /// `fresh` (the typed document as TOML text) laid over `existing`, keeping the keys in `unknown`
 /// and all formatting. `fresh` text that does not parse (the encoder writes only valid TOML) is
 /// returned as it is.
-pub fn merge(existing: &str, fresh: &str, unknown: &[UnknownKey]) -> Result<String, InTheWay> {
+pub fn merge(existing: &str, fresh: &str, unknown: &[UnknownKey]) -> Result<String, InTheWayError> {
     let mut document = existing
         .parse::<DocumentMut>()
-        .map_err(|error| InTheWay(Some(error)))?;
+        .map_err(|error| InTheWayError(Some(error)))?;
     let Ok(typed) = fresh.parse::<DocumentMut>() else {
         return Ok(fresh.to_owned());
     };

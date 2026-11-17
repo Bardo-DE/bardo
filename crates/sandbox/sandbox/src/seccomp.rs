@@ -20,7 +20,7 @@
 
 /// Why no filter could be made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum SeccompFault {
+pub enum SeccompError {
     /// This CPU architecture has no system call table here.
     #[error("no seccomp table for this architecture")]
     Unsupported,
@@ -241,17 +241,17 @@ impl Rule {
     clippy::map_err_ignore,
     reason = "the only failure is the one-byte overflow, which `TooLong` says in full"
 )]
-fn jump(from: usize, to: usize) -> Result<u8, SeccompFault> {
-    u8::try_from(to - from - 1).map_err(|_| SeccompFault::TooLong)
+fn jump(from: usize, to: usize) -> Result<u8, SeccompError> {
+    u8::try_from(to - from - 1).map_err(|_| SeccompError::TooLong)
 }
 
 /// The default filter, as the bytes bubblewrap reads from its `--seccomp` descriptor.
 ///
 /// # Errors
-/// Returns `SeccompFault::Unsupported` on an architecture without a system call table, and
-/// `SeccompFault::TooLong` when the program outgrows a one-byte jump.
-pub fn default_filter() -> Result<Vec<u8>, SeccompFault> {
-    let table = TABLE.as_ref().ok_or(SeccompFault::Unsupported)?;
+/// Returns `SeccompError::Unsupported` on an architecture without a system call table, and
+/// `SeccompError::TooLong` when the program outgrows a one-byte jump.
+pub fn default_filter() -> Result<Vec<u8>, SeccompError> {
+    let table = TABLE.as_ref().ok_or(SeccompError::Unsupported)?;
     let rules: Vec<Rule> = table
         .deny
         .iter()

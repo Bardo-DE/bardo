@@ -16,4 +16,4 @@ pub mod store;
 pub mod unpack;
 pub mod uv;
 
-pub use install::{InstallFault, Offer, Standing, Want, install, offers, standing};
+pub use install::{InstallError, Offer, Standing, Want, install, offers, standing};

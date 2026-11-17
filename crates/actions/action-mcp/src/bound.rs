@@ -7,7 +7,7 @@
 
 use crate::edge::{failed, listed, rmcp_tool};
 use action_tools::{
-    EDGE_LINE_MAX, EDGE_TOKEN_ENV, EdgeOp, EdgeReply, EdgeRequest, EdgeToken, ToolFault,
+    EDGE_LINE_MAX, EDGE_TOKEN_ENV, EdgeOp, EdgeReply, EdgeRequest, EdgeToken, ToolError,
 };
 use rmcp::model::{
     CallToolRequestParams, CallToolResponse, CallToolResult, ContentBlock, ErrorData,
@@ -30,13 +30,13 @@ pub struct BoundEdge {
 /// Why the token could not be read from the environment.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("{EDGE_TOKEN_ENV} is missing or not a session token")]
-pub struct NoToken;
+pub struct NoTokenError;
 
 /// The fixed fault a failed step answers with; the cause goes to the log, not to the peer.
-fn unavailable<E: std::fmt::Display>(step: &'static str) -> impl FnOnce(E) -> ToolFault {
+fn unavailable<E: std::fmt::Display>(step: &'static str) -> impl FnOnce(E) -> ToolError {
     move |error| {
         tracing::warn!(error = %error, step, "the router's edge socket could not be asked");
-        ToolFault::Unavailable
+        ToolError::Unavailable
     }
 }
 
@@ -50,19 +50,19 @@ impl BoundEdge {
     /// A bridge to `socket` with the token the environment names.
     ///
     /// # Errors
-    /// Returns [`NoToken`] when the environment has no token or it is not a session token.
+    /// Returns [`NoTokenError`] when the environment has no token or it is not a session token.
     pub fn from_env(
         socket: PathBuf,
         env: &impl Fn(&str) -> Option<String>,
-    ) -> Result<Self, NoToken> {
+    ) -> Result<Self, NoTokenError> {
         let token = env(EDGE_TOKEN_ENV)
             .and_then(|t| EdgeToken::parse(&t))
-            .ok_or(NoToken)?;
+            .ok_or(NoTokenError)?;
         Ok(Self::new(socket, token))
     }
 
     /// One request and its reply. Any trouble with the socket is the router being unavailable.
-    async fn ask(&self, op: EdgeOp) -> Result<EdgeReply, ToolFault> {
+    async fn ask(&self, op: EdgeOp) -> Result<EdgeReply, ToolError> {
         let request = EdgeRequest {
             token: self.token.clone(),
             op,
@@ -122,7 +122,7 @@ impl ServerHandler for BoundEdge {
         let result = match self.ask(op).await {
             Ok(EdgeReply::Done(value)) => CallToolResult::success(vec![ContentBlock::json(value)?]),
             Ok(EdgeReply::Failed(fault)) | Err(fault) => failed(&fault),
-            Ok(EdgeReply::Refused | EdgeReply::Tools(_)) => failed(&ToolFault::Unavailable),
+            Ok(EdgeReply::Refused | EdgeReply::Tools(_)) => failed(&ToolError::Unavailable),
         };
         Ok(result.into())
     }

@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use files_core::{ByteSize, FolderPath, FolderPrefs, ItemRef, Location, ViewMode};
 use files_fs::PrefsStore;
-use files_model::{Effect, Input, ListFailure, TabId};
+use files_model::{Effect, FolderListError, Input, TabId};
 use files_ui::edge::{Edge, Heard, Seams};
 
 use super::edge::{file, folder, name, next, rig};
@@ -79,7 +79,7 @@ fn get_info_reads_the_facts_or_says_why_not() {
         next(&mut rig.inbox),
         Heard::Tab(
             TabId::FIRST,
-            Input::InfoRead(missing, Err(ListFailure::NotFound))
+            Input::InfoRead(missing, Err(FolderListError::NotFound))
         )
     );
 }

@@ -5,7 +5,7 @@ use super::*;
 use account_dbus::Details;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
-use inference_core::{InferRefusal, ModelError};
+use inference_core::{InferRefusedError, ModelError};
 use inference_daemon::Engines;
 use inference_daemon::Inference;
 use inference_daemon::TablePeers;
@@ -217,7 +217,7 @@ async fn a_request_of_the_wrong_kind_for_the_session_is_refused_and_the_session_
     let events = until_finished(&mut session).await;
     assert!(
         events.contains(&InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unsupported
+            InferRefusedError::Unsupported
         ))),
         "{events:?}"
     );

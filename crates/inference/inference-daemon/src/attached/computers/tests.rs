@@ -374,7 +374,7 @@ fn a_file_that_is_not_a_list_of_computers_is_kept_aside_and_the_list_starts_empt
     std::fs::create_dir_all(rig.file().parent().expect("dir")).expect("dir");
     std::fs::write(rig.file(), "computers = 3\n").expect("write");
     let problem = AddedFile::read(&rig.file()).expect_err("unusable");
-    let AddedProblem::Unusable { aside, .. } = &problem else {
+    let AddedError::Unusable { aside, .. } = &problem else {
         panic!("unusable, got {problem:?}");
     };
     assert_eq!(

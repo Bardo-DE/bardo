@@ -3,7 +3,7 @@
 //! `Package`, `ErrorCode` and `Finished` signals (the interface XML `PackageKit` ships in
 //! `/usr/share/dbus-1/interfaces`). The crate docs say why this route and not `Modify2`.
 
-use super::transaction::{Budget, Fault, PEER, Report, transact};
+use super::transaction::{Budget, PEER, Report, TransactionError, transact};
 use super::{BoxFuture, Install, Request, Timeouts};
 use crate::outcome::{Missing, Outcome};
 use base_time::deadline::within;
@@ -100,7 +100,7 @@ async fn run(
     connection: &Connection,
     request: &Request,
     timeouts: Timeouts,
-) -> Result<Outcome, Fault> {
+) -> Result<Outcome, TransactionError> {
     for name in &request.candidates {
         match resolve(connection, name.as_str(), timeouts).await? {
             Found::Installed => return Ok(Outcome::Installed),
@@ -111,7 +111,11 @@ async fn run(
     Ok(Outcome::NotFound(request.missing.clone()))
 }
 
-async fn resolve(connection: &Connection, name: &str, timeouts: Timeouts) -> Result<Found, Fault> {
+async fn resolve(
+    connection: &Connection,
+    name: &str,
+    timeouts: Timeouts,
+) -> Result<Found, TransactionError> {
     let budget = Budget {
         quick: timeouts.step,
         method: timeouts.step,
@@ -153,7 +157,7 @@ async fn install_id(
     connection: &Connection,
     id: String,
     timeouts: Timeouts,
-) -> Result<Outcome, Fault> {
+) -> Result<Outcome, TransactionError> {
     let budget = Budget {
         quick: timeouts.step,
         method: timeouts.install,
@@ -176,10 +180,10 @@ async fn install_id(
 
 /// A failed transaction as an outcome: a `PackageKit` that did not answer or went away is a failure
 /// in plain words, a bus-level failure is [`classify_bus`].
-fn classify(fault: &Fault, missing: &Missing) -> Outcome {
+fn classify(fault: &TransactionError, missing: &Missing) -> Outcome {
     match fault {
-        Fault::Bus(error) => classify_bus(error, missing),
-        Fault::Silent(_) | Fault::Gone => Outcome::Failed(fault.to_string()),
+        TransactionError::Bus(error) => classify_bus(error, missing),
+        TransactionError::Silent(_) | TransactionError::Gone => Outcome::Failed(fault.to_string()),
     }
 }
 

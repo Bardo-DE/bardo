@@ -1,8 +1,8 @@
 //! What the capture managers know, without a wire: the sources made, the sessions running and
 //! the frames asked for. Pure, so the bookkeeping is tested without a display.
 
-use super::{CaptureFailure, CaptureRequest, CaptureSessionId, CaptureSourceId};
-use crate::states::WaylandFault;
+use super::{CaptureError, CaptureRequest, CaptureSessionId, CaptureSourceId};
+use crate::states::WaylandError;
 use compositor_core::OutputKey;
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::time::Mono;
@@ -48,16 +48,16 @@ impl CaptureBook {
     ///
     /// # Errors
     ///
-    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+    /// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
     pub fn add_session(
         &mut self,
         source: CaptureSourceId,
-    ) -> Result<CaptureSessionId, WaylandFault> {
+    ) -> Result<CaptureSessionId, WaylandError> {
         let output = self
             .sources
             .get(&source)
             .cloned()
-            .ok_or(WaylandFault::UnknownCapture(source.0))?;
+            .ok_or(WaylandError::UnknownCapture(source.0))?;
         let id = CaptureSessionId(self.mint());
         self.sessions.insert(id, output);
         Ok(id)
@@ -74,17 +74,17 @@ impl CaptureBook {
     ///
     /// # Errors
     ///
-    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+    /// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
     pub fn request_frame(
         &mut self,
         session: CaptureSessionId,
         buffer: PhysicalSize,
-    ) -> Result<CaptureRequest, WaylandFault> {
+    ) -> Result<CaptureRequest, WaylandError> {
         let output = self
             .sessions
             .get(&session)
             .cloned()
-            .ok_or(WaylandFault::UnknownCapture(session.0))?;
+            .ok_or(WaylandError::UnknownCapture(session.0))?;
         self.pending.insert(session, buffer);
         Ok(CaptureRequest {
             output,
@@ -96,11 +96,11 @@ impl CaptureBook {
     ///
     /// # Errors
     ///
-    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-    pub fn frame_ready(&mut self, session: CaptureSessionId, at: Mono) -> Result<(), WaylandFault> {
+    /// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+    pub fn frame_ready(&mut self, session: CaptureSessionId, at: Mono) -> Result<(), WaylandError> {
         self.pending
             .remove(&session)
-            .ok_or(WaylandFault::UnknownCapture(session.0))?;
+            .ok_or(WaylandError::UnknownCapture(session.0))?;
         self.delivered.insert(session, at);
         Ok(())
     }
@@ -109,16 +109,16 @@ impl CaptureBook {
     ///
     /// # Errors
     ///
-    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+    /// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
     pub fn frame_failed(
         &mut self,
         session: CaptureSessionId,
-        why: CaptureFailure,
-    ) -> Result<(), WaylandFault> {
+        why: CaptureError,
+    ) -> Result<(), WaylandError> {
         self.pending
             .remove(&session)
-            .ok_or(WaylandFault::UnknownCapture(session.0))?;
-        if why == CaptureFailure::OutputGone {
+            .ok_or(WaylandError::UnknownCapture(session.0))?;
+        if why == CaptureError::OutputGone {
             self.drop_session(session);
         }
         Ok(())
@@ -207,9 +207,9 @@ mod tests {
         for session in [kept, ended] {
             book.request_frame(session, SIZE).expect("request");
         }
-        book.frame_failed(kept, CaptureFailure::BufferMismatch)
+        book.frame_failed(kept, CaptureError::BufferMismatch)
             .expect("failed");
-        book.frame_failed(ended, CaptureFailure::OutputGone)
+        book.frame_failed(ended, CaptureError::OutputGone)
             .expect("failed");
         assert!(book.sessions.contains_key(&kept));
         assert!(!book.sessions.contains_key(&ended));

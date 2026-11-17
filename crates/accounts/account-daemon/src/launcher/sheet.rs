@@ -20,7 +20,7 @@ use account_dbus::Details;
 use account_dbus::accounts::sheet::SheetKind;
 use account_match::llm_need;
 use account_wire::AccountsReply;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use account_wire::{ParentWindow, Refusal};
 use std::sync::Arc;
 use zbus::message::Header;
@@ -53,7 +53,7 @@ impl<H: Host, C: Callers> Core<H, C> {
             let session = SessionToken::parse(session).map_err(RefusedError::invalid)?;
             if !self.launchers.session_open(&owner, &session) {
                 return Err(RefusedError::launcher(
-                    LauncherFault::UnknownSession,
+                    LauncherWireError::UnknownSession,
                     "this connection holds no such session open",
                 ));
             }
@@ -61,7 +61,7 @@ impl<H: Host, C: Callers> Core<H, C> {
         };
         if !self.launchers.holds(&owner, &program) {
             return Err(RefusedError::launcher(
-                LauncherFault::NotRegistered,
+                LauncherWireError::NotRegistered,
                 "this connection has not registered that program",
             ));
         }

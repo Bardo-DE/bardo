@@ -1,6 +1,6 @@
 //! The router's memory seam over memoryd.
 
-use action_core::{LinkFault, MemoryLink};
+use action_core::{LinkError, MemoryLink};
 use memory_client::{ClientError, Memory, Transport};
 use memory_core::{HistoryFate, MemoryFate, MemoryReply, MemoryRequest, Removal};
 use provenance::SpaceId;
@@ -21,14 +21,14 @@ impl<T: Transport> MemoryServiceLink<T> {
 }
 
 impl<T: Transport> MemoryLink for MemoryServiceLink<T> {
-    async fn ask(&self, request: MemoryRequest) -> Result<MemoryReply, LinkFault> {
+    async fn ask(&self, request: MemoryRequest) -> Result<MemoryReply, LinkError> {
         match self.memory.ask(request).await {
             Ok(reply) => Ok(reply),
             // A refusal is memoryd's answer, not a failure of the link: the router decides what
             // it means.
             Err(ClientError::Refused(refusal)) => Ok(MemoryReply::Refused(refusal)),
-            Err(ClientError::Transport(_)) => Err(LinkFault::Unavailable),
-            Err(ClientError::Unexpected) => Err(LinkFault::Malformed),
+            Err(ClientError::Transport(_)) => Err(LinkError::Unavailable),
+            Err(ClientError::Unexpected) => Err(LinkError::Malformed),
         }
     }
 

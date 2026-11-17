@@ -1,6 +1,6 @@
 //! What a piece of work reports as it goes and when it ends.
 
-use crate::{Conflict, Location, OpFailure, Progress, Summary};
+use crate::{Conflict, Location, OpError, Progress, Summary};
 
 /// How a piece of work ended.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -10,7 +10,7 @@ pub enum Finish {
     /// It was stopped (cancelled, or answered Stop); what was done stays done.
     Stopped,
     /// It failed at some point; what was done before stays done.
-    Failed(OpFailure),
+    Failed(OpError),
 }
 
 /// A piece of work that ended.

@@ -9,7 +9,7 @@ use action_context::wal::Writer;
 use action_vocab::CallerRole;
 use action_wire::{CallerId, IntentsRequest};
 use agent_session::{
-    Claimant, LogFault, Logged, PageSize, PlanRefusal, Seq, SessionLog, Standing, may_restore_plan,
+    Claimant, LogError, Logged, PageSize, PlanError, Seq, SessionLog, Standing, may_restore_plan,
     resume_plan,
 };
 use base_ids::Count;
@@ -22,24 +22,24 @@ const PAGE: PageSize = PageSize(Count(200));
 
 /// The most pages one session's log is read in, so at most `MAX_LOG_PAGES * 200` rows (about
 /// 100,000). A log that goes on longer, or whose `next` never ends, is not restored:
-/// [`RestoreFault::TooLong`].
+/// [`RestoreError::TooLong`].
 pub(crate) const MAX_LOG_PAGES: usize = 512;
 
 /// Why a session was not restored.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum RestoreFault {
+pub enum RestoreError {
     /// The router already holds this session.
     #[error("the session is already live")]
     Live,
     /// The log could not be read; nothing was restored.
     #[error("the session log could not be read")]
-    Log(#[source] LogFault),
+    Log(#[source] LogError),
     /// The log is longer than a restore reads (`MAX_LOG_PAGES` pages), or never ends.
     #[error("the session log is too long to restore")]
     TooLong,
     /// The log holds no session of this name, or no longer holds its opening.
     #[error("the log holds no such session")]
-    Unknown(PlanRefusal),
+    Unknown(PlanError),
     /// The session is stored but belongs to another caller: told to nobody, the request is
     /// answered as for an unknown session.
     #[error("the log holds no such session")]
@@ -59,7 +59,7 @@ pub struct Restored {
 
 impl<S: Seams> Router<S> {
     /// Every row of `id`'s log, oldest first, in at most `MAX_LOG_PAGES` pages.
-    pub(crate) async fn rows_of(&self, id: &SessionId) -> Result<Vec<Logged>, RestoreFault> {
+    pub(crate) async fn rows_of(&self, id: &SessionId) -> Result<Vec<Logged>, RestoreError> {
         read_pages(self.seams.log(), id, MAX_LOG_PAGES).await
     }
 
@@ -70,9 +70,9 @@ impl<S: Seams> Router<S> {
     ///
     /// # Errors
     ///
-    /// [`RestoreFault`] when the session cannot be restored: it is unknown to the log or its log
+    /// [`RestoreError`] when the session cannot be restored: it is unknown to the log or its log
     /// cannot be read.
-    pub async fn restore_session(&self, id: &SessionId) -> Result<Restored, RestoreFault> {
+    pub async fn restore_session(&self, id: &SessionId) -> Result<Restored, RestoreError> {
         self.restore_for(id, None).await
     }
 
@@ -82,16 +82,16 @@ impl<S: Seams> Router<S> {
         &self,
         id: &SessionId,
         claimant: Option<Claimant<'_>>,
-    ) -> Result<Restored, RestoreFault> {
+    ) -> Result<Restored, RestoreError> {
         if self.locked().sessions.contains_key(id) {
-            return Err(RestoreFault::Live);
+            return Err(RestoreError::Live);
         }
         let rows = self.rows_of(id).await?;
-        let plan = resume_plan(&rows).map_err(RestoreFault::Unknown)?;
+        let plan = resume_plan(&rows).map_err(RestoreError::Unknown)?;
         if let Some(claim) = claimant
             && !may_restore_plan(claim, &plan)
         {
-            return Err(RestoreFault::NotYours);
+            return Err(RestoreError::NotYours);
         }
         let now = self.seams.clock().now();
         let mut rebuilt = rebuild(id, &plan, now);
@@ -112,7 +112,7 @@ impl<S: Seams> Router<S> {
         };
         let mut st = self.locked();
         if st.sessions.contains_key(id) {
-            return Err(RestoreFault::Live);
+            return Err(RestoreError::Live);
         }
         st.reserve(rebuilt.reserve);
         if rebuilt.record.wal.is_on() {
@@ -141,8 +141,8 @@ impl<S: Seams> Router<S> {
     ///
     /// # Errors
     ///
-    /// [`LogFault`] when the log cannot list its sessions.
-    pub async fn adopt_sessions(&self) -> Result<Vec<SessionId>, LogFault> {
+    /// [`LogError`] when the log cannot list its sessions.
+    pub async fn adopt_sessions(&self) -> Result<Vec<SessionId>, LogError> {
         let ids = self.seams.log().sessions().await?;
         let top = ids.iter().map(|i| number_of(i.as_str())).max().unwrap_or(0);
         self.locked().reserve(top);
@@ -177,18 +177,18 @@ async fn read_pages<L: SessionLog>(
     log: &L,
     id: &SessionId,
     most: usize,
-) -> Result<Vec<Logged>, RestoreFault> {
+) -> Result<Vec<Logged>, RestoreError> {
     let mut rows = Vec::new();
     let mut from: Option<Seq> = None;
     for _ in 0..most {
-        let page = log.page(id, from, PAGE).await.map_err(RestoreFault::Log)?;
+        let page = log.page(id, from, PAGE).await.map_err(RestoreError::Log)?;
         rows.extend(page.rows);
         match page.next {
             Some(next) => from = Some(next),
             None => return Ok(rows),
         }
     }
-    Err(RestoreFault::TooLong)
+    Err(RestoreError::TooLong)
 }
 
 /// The session a request names, if it names one.
@@ -265,7 +265,7 @@ mod tests {
             _session: &SessionId,
             seq: Seq,
             _entry: &SessionEntry,
-        ) -> Result<Appended, LogFault> {
+        ) -> Result<Appended, LogError> {
             Ok(Appended { seq })
         }
 
@@ -278,7 +278,7 @@ mod tests {
             _session: &SessionId,
             _from: Option<Seq>,
             _size: PageSize,
-        ) -> Result<LogPage, LogFault> {
+        ) -> Result<LogPage, LogError> {
             Ok(LogPage {
                 rows: Vec::new(),
                 next: Some(Seq(1)),
@@ -289,7 +289,7 @@ mod tests {
             clippy::unused_async_trait_impl,
             reason = "the trait method is async; this implementation has nothing to await"
         )]
-        async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
+        async fn sessions(&self) -> Result<Vec<SessionId>, LogError> {
             Ok(Vec::new())
         }
     }
@@ -299,7 +299,7 @@ mod tests {
         let id = SessionId::parse("s-1").expect("session");
         assert_eq!(
             read_pages(&Endless, &id, 3).await,
-            Err(RestoreFault::TooLong)
+            Err(RestoreError::TooLong)
         );
     }
 }

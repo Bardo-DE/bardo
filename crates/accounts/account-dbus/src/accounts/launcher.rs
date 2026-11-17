@@ -17,7 +17,7 @@
 //! that accountd ended it.
 //!
 //! Errors are `org.bardo.Accounts1.Error.<Name>`: the refusals of [`crate::accounts::refusal_error_name`] and the
-//! launcher's own, [`LauncherFault`](crate::accounts::LauncherFault).
+//! launcher's own, [`LauncherWireError`](crate::accounts::LauncherWireError).
 
 use crate::Details;
 use dbus_kit::bus_interface;
@@ -33,7 +33,7 @@ use zbus::zvariant::{OwnedFd, OwnedObjectPath};
 pub trait Launcher {
     /// Registers the connection as the launcher of these agent programs (`AgentProgram` ids). The
     /// registration lives as long as the connection. One launcher per program, first wins: a
-    /// program a live connection already holds is `AlreadyRegistered` (`LauncherFault`);
+    /// program a live connection already holds is `AlreadyRegistered` (`LauncherWireError`);
     /// registering a program the caller holds is a no-op, and later calls add more programs.
     fn register_launcher(&self, programs: &[&str]) -> zbus::Result<()>;
     /// Opens a launcher session (a `SessionToken` id the launcher chose, usually an ACP

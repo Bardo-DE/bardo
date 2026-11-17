@@ -87,14 +87,14 @@ pub enum HelperLine {
 /// A line that is not the protocol.
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
 #[error("not a polkit helper line: {0:?}")]
-pub struct UnknownLine(pub String);
+pub struct UnknownLineError(pub String);
 
 /// `line` (its newline stripped; the text after the word kept as sent, trailing space and all).
 ///
 /// # Errors
 ///
-/// Returns [`UnknownLine`] when `line` does not start with a word the helper writes.
-pub fn parse_helper_line(line: &str) -> Result<HelperLine, UnknownLine> {
+/// Returns [`UnknownLineError`] when `line` does not start with a word the helper writes.
+pub fn parse_helper_line(line: &str) -> Result<HelperLine, UnknownLineError> {
     type Make = fn(String) -> HelperLine;
     let worded: [(&str, Make); 4] = [
         ("PAM_PROMPT_ECHO_OFF ", HelperLine::PromptHidden),
@@ -109,7 +109,7 @@ pub fn parse_helper_line(line: &str) -> Result<HelperLine, UnknownLine> {
         (Some(parsed), _) => Ok(parsed),
         (None, "SUCCESS") => Ok(HelperLine::Success),
         (None, "FAILURE") => Ok(HelperLine::Failure),
-        (None, _) => Err(UnknownLine(line.to_owned())),
+        (None, _) => Err(UnknownLineError(line.to_owned())),
     }
 }
 
@@ -118,7 +118,7 @@ mod tests {
     use std::path::{Path, PathBuf};
 
     use super::{
-        HelperLine, HelperOpening, HelperRoute, UnknownLine, helper_route, opening,
+        HelperLine, HelperOpening, HelperRoute, UnknownLineError, helper_route, opening,
         parse_helper_line,
     };
     use crate::auth::UserName;
@@ -192,7 +192,7 @@ mod tests {
             ),
             ("SUCCESS", Ok(HelperLine::Success)),
             ("FAILURE", Ok(HelperLine::Failure)),
-            ("MAYBE", Err(UnknownLine("MAYBE".to_owned()))),
+            ("MAYBE", Err(UnknownLineError("MAYBE".to_owned()))),
         ];
         for (line, want) in cases {
             assert_eq!(parse_helper_line(line), want, "{line:?}");

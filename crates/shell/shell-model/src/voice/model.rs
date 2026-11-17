@@ -5,7 +5,7 @@ use base_words::Word;
 use provenance::{AppName, UnixSeconds};
 use serde::{Deserialize, Serialize};
 use shell_launcher::WindowKey;
-use speech_wire::{CancelCause, VoiceFault, VoiceRefusal};
+use speech_wire::{CancelCause, VoiceError, VoiceFault};
 
 /// What the person said. `Debug` hides it: words must not reach logs or panics.
 #[derive(Clone, PartialEq, Eq, Default)]
@@ -127,7 +127,7 @@ pub enum Notice {
     #[default]
     None,
     /// `voiced` refused the hold.
-    Refused(VoiceRefusal),
+    Refused(VoiceError),
     /// `voiced` is not on the bus.
     Unreachable,
     /// The hold ended with no words.

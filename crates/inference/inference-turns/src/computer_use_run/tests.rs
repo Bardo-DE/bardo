@@ -5,7 +5,7 @@ use computer_use_action::{
     Button, ClickCount, ComputerUseAction, Coord, Point, Scale120, Size, Target, WindowSpace,
 };
 use inference_core::{
-    AttachIndex, FrameImage, FrameLayout, InferEvent, InferRefusal, MediaType, StepIndex,
+    AttachIndex, FrameImage, FrameLayout, InferEvent, InferRefusedError, MediaType, StepIndex,
     WindowGeometry,
 };
 use inference_router::testkit::models;
@@ -307,7 +307,7 @@ fn only_screen_data_enters_a_computer_use_session() {
     ] {
         assert_eq!(
             check_class(class),
-            Err(InferRefusal::Unsupported),
+            Err(InferRefusedError::Unsupported),
             "{class:?}"
         );
     }

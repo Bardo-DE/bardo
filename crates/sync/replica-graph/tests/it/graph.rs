@@ -12,8 +12,8 @@ use http_relay::{RelayHttp, RelayLimits};
 use replica_graph::{GraphReplica, Uploads};
 use sync_core::Clock;
 use sync_core::{
-    BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, PutItem, PutRefused,
-    PutTarget, RemoteId, RemoteSide, RemoteVersion, Replica as _, ReplicaError, RetryAfter,
+    BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, PutError, PutItem, PutTarget,
+    RemoteId, RemoteSide, RemoteVersion, Replica as _, ReplicaError, RetryAfter,
 };
 use sync_fake_graph::GraphHandle;
 use sync_fake_graph::{CHUNK_UNIT, Knobs};
@@ -215,7 +215,7 @@ async fn a_session_carries_its_conditions_so_a_stale_or_taken_target_is_a_confli
         .await;
     assert_eq!(
         refused,
-        Err(PutRefused::Conflict(Conflict {
+        Err(PutError::Conflict(Conflict {
             item: id.clone(),
             base: BaseVersion::At(first),
             remote: RemoteSide::Changed(theirs.clone()),
@@ -229,7 +229,7 @@ async fn a_session_carries_its_conditions_so_a_stale_or_taken_target_is_a_confli
         .await;
     assert_eq!(
         taken,
-        Err(PutRefused::Conflict(Conflict {
+        Err(PutError::Conflict(Conflict {
             item: id.clone(),
             base: BaseVersion::Absent,
             remote: RemoteSide::Exists(id, theirs),
@@ -250,7 +250,7 @@ async fn a_remote_edit_between_the_listing_and_the_write_is_a_conflict_never_an_
     server.graph.put_file("doc.txt", b"remote edit");
     let now = RemoteVersion(server.graph.etag("doc.txt").expect("etag"));
     let conflict = |base: &RemoteVersion| {
-        Err::<(), PutRefused>(PutRefused::Conflict(Conflict {
+        Err::<(), PutError>(PutError::Conflict(Conflict {
             item: id.clone(),
             base: BaseVersion::At(base.clone()),
             remote: RemoteSide::Changed(now.clone()),
@@ -276,7 +276,7 @@ async fn a_remote_edit_between_the_listing_and_the_write_is_a_conflict_never_an_
         .await;
     assert_eq!(
         late.map(|_| ()),
-        Err(PutRefused::Conflict(Conflict {
+        Err(PutError::Conflict(Conflict {
             item: id.clone(),
             base: BaseVersion::At(now),
             remote: RemoteSide::Deleted(RemoteVersion(sync_core::DELETED.into())),
@@ -400,7 +400,7 @@ async fn throttling_is_a_transient_with_the_wait_the_server_named() {
         replica
             .put(new_item("a.jpg", b"x"), BaseVersion::Absent)
             .await,
-        Err(PutRefused::Transient(RetryAfter(9)))
+        Err(PutError::Transient(RetryAfter(9)))
     );
     assert!(replica.quota().await.is_ok(), "the throttle ran out");
 }
@@ -417,7 +417,7 @@ async fn without_the_relays_bearer_every_request_is_refused_and_the_replica_neve
     assert_eq!(bare.quota().await, Err(ReplicaError::Unauthorized));
     assert_eq!(
         bare.put(new_item("a.jpg", b"x"), BaseVersion::Absent).await,
-        Err(PutRefused::Unauthorized)
+        Err(PutError::Unauthorized)
     );
     assert!(
         server

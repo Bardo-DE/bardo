@@ -4,7 +4,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use files_core::{EjectFailure, FolderPath, MountFailure, ProgramName, VolumeId, VolumeKind};
+use files_core::{EjectError, FolderPath, MountError, ProgramName, VolumeId, VolumeKind};
 use files_desktop::disks::FakeUsers;
 use files_desktop::{DiskUsers, Disks, NoUsers};
 
@@ -178,7 +178,7 @@ async fn opening_a_disk_the_person_may_not_open_says_so() {
     let rig = rig(Arc::new(NoUsers)).await;
     rig.world.lock().unwrap().deny = true;
     let failed = within(rig.disks.mount(&id("sdc1"))).await;
-    assert_eq!(failed, Err(MountFailure::NotAllowed));
+    assert_eq!(failed, Err(MountError::NotAllowed));
 }
 
 #[tokio::test]
@@ -206,7 +206,7 @@ async fn a_busy_disk_stays_and_the_programs_using_it_come_with_the_failure() {
     let failed = within(rig.disks.eject(&id("sdb1"))).await;
     assert_eq!(
         failed,
-        Err(EjectFailure::InUse(vec![ProgramName::new("vlc")]))
+        Err(EjectError::InUse(vec![ProgramName::new("vlc")]))
     );
     // The drive is not switched off while its disk is open.
     let calls = rig.world.lock().unwrap().calls.clone();

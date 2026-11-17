@@ -1,7 +1,7 @@
 //! Go to Folder: the sheet, the typed path, the check and the arrival.
 
 use files_core::{FolderPath, Location};
-use files_model::{Browser, Effect, GoTo, GoToProblem, Input, ListFailure, expand};
+use files_model::{Browser, Effect, FolderListError, GoTo, GoToError, Input, expand};
 
 use crate::common::*;
 
@@ -18,7 +18,7 @@ fn knowing_home() -> Browser {
     loaded(vec![folder("Projects")]).with_home(home_path())
 }
 
-fn asking(draft: &str, problem: Option<GoToProblem>, checking: Option<&str>) -> GoTo {
+fn asking(draft: &str, problem: Option<GoToError>, checking: Option<&str>) -> GoTo {
     GoTo::Asking {
         draft: draft.to_owned(),
         problem,
@@ -35,7 +35,7 @@ type GoToCase<'a> = (
     &'a str,
     &'a str,
     Option<&'a FolderPath>,
-    Result<&'a str, GoToProblem>,
+    Result<&'a str, GoToError>,
 );
 
 #[test]
@@ -58,25 +58,20 @@ fn a_typed_path_means_a_folder() {
             Some(&home),
             Ok("/home/p/Projects/x"),
         ),
-        (
-            "tilde with no home",
-            "~/x",
-            None,
-            Err(GoToProblem::NotFound),
-        ),
+        ("tilde with no home", "~/x", None, Err(GoToError::NotFound)),
         (
             "another person's tilde",
             "~root",
             Some(&home),
-            Err(GoToProblem::NotFound),
+            Err(GoToError::NotFound),
         ),
         (
             "a relative path",
             "Projects",
             Some(&home),
-            Err(GoToProblem::NotFound),
+            Err(GoToError::NotFound),
         ),
-        ("nothing", "", Some(&home), Err(GoToProblem::NotFound)),
+        ("nothing", "", Some(&home), Err(GoToError::NotFound)),
     ];
     for (label, text, home, want) in cases {
         let want = want.map(path);
@@ -104,7 +99,7 @@ fn typing_changes_the_text_and_forgets_the_complaint() {
     );
     assert_eq!(
         browser.go_to(),
-        &asking("nope", Some(GoToProblem::NotFound), None)
+        &asking("nope", Some(GoToError::NotFound), None)
     );
     let (browser, _) = browser.step(typed("/tmp"), at(0));
     assert_eq!(browser.go_to(), &asking("/tmp", None, None));
@@ -133,10 +128,10 @@ fn a_path_that_is_no_path_stays_open_with_the_words() {
     assert!(effects.is_empty());
     assert_eq!(
         browser.go_to(),
-        &asking("Projects", Some(GoToProblem::NotFound), None)
+        &asking("Projects", Some(GoToError::NotFound), None)
     );
     assert_eq!(
-        GoToProblem::NotFound.to_string(),
+        GoToError::NotFound.to_string(),
         "The folder can't be found."
     );
 }
@@ -146,22 +141,22 @@ fn the_answer_decides_between_arriving_and_staying() {
     let there = path("/home/p/Projects");
     let ask = vec![Input::GoToFolder, typed("~/Projects"), Input::GoToSubmit];
     // label, answer, whether we arrive, the sheet after
-    let cases: Vec<(&str, Result<(), ListFailure>, Option<GoTo>)> = vec![
+    let cases: Vec<(&str, Result<(), FolderListError>, Option<GoTo>)> = vec![
         ("it is there", Ok(()), None),
         (
             "not found",
-            Err(ListFailure::NotFound),
-            Some(asking("~/Projects", Some(GoToProblem::NotFound), None)),
+            Err(FolderListError::NotFound),
+            Some(asking("~/Projects", Some(GoToError::NotFound), None)),
         ),
         (
             "a file",
-            Err(ListFailure::NotAFolder),
-            Some(asking("~/Projects", Some(GoToProblem::NotFound), None)),
+            Err(FolderListError::NotAFolder),
+            Some(asking("~/Projects", Some(GoToError::NotFound), None)),
         ),
         (
             "not allowed",
-            Err(ListFailure::NoPermission),
-            Some(asking("~/Projects", Some(GoToProblem::NoPermission), None)),
+            Err(FolderListError::NoPermission),
+            Some(asking("~/Projects", Some(GoToError::NoPermission), None)),
         ),
     ];
     for (label, answer, sheet) in cases {

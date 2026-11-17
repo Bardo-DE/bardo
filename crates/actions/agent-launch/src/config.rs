@@ -65,11 +65,11 @@ use crate::reach::Reach;
 use action_core::Rewind;
 use agent_acp_host::{ModelId, SignIn};
 use agent_registry::dirs::AgentsDir;
-use agent_registry::launch::LaunchFault;
+use agent_registry::launch::LaunchError;
 use base_path::AbsPath;
 use permission_core::ProgramName;
 use sandbox::NetworkMode;
-use sandbox::egress::HostFault;
+use sandbox::egress::EgressHostError;
 
 use account_capability::{AgentProgram, AgentProtocol, EnvName};
 use account_core::DataClass;
@@ -170,7 +170,7 @@ struct File {
 
 /// Why `agents.toml` was not accepted.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ConfigFault {
+pub enum ConfigError {
     /// Not TOML, or a field of the wrong type or an unknown one.
     #[error("agents.toml is not valid: {0}")]
     Syntax(String),
@@ -192,7 +192,7 @@ pub enum ConfigFault {
         /// The entry as written.
         entry: String,
         /// What is wrong with it.
-        why: Box<HostFault>,
+        why: Box<EgressHostError>,
     },
     /// Two entries for one program.
     #[error("agent `{0}` is listed twice")]
@@ -203,7 +203,7 @@ pub enum ConfigFault {
         /// The program as written.
         program: String,
         /// What is wrong.
-        why: Box<LaunchFault>,
+        why: Box<LaunchError>,
     },
 }
 
@@ -308,9 +308,9 @@ impl AgentsFile {
     ///
     /// # Errors
     ///
-    /// Returns a [`ConfigFault`] when `text` is not valid TOML for the file, an entry is wrong, an
+    /// Returns a [`ConfigError`] when `text` is not valid TOML for the file, an entry is wrong, an
     /// `allow` or `deny` entry is not a usable site, or a program is listed twice.
-    pub fn parse(text: &str) -> Result<Self, ConfigFault> {
+    pub fn parse(text: &str) -> Result<Self, ConfigError> {
         Self::parse_in(text, None)
     }
 
@@ -318,17 +318,17 @@ impl AgentsFile {
     ///
     /// # Errors
     ///
-    /// Returns a [`ConfigFault`] as `parse` does; an entry that needs a registry install is checked
+    /// Returns a [`ConfigError`] as `parse` does; an entry that needs a registry install is checked
     /// against `dir`.
-    pub fn parse_in(text: &str, dir: Option<&AgentsDir>) -> Result<Self, ConfigFault> {
+    pub fn parse_in(text: &str, dir: Option<&AgentsDir>) -> Result<Self, ConfigError> {
         let file: File =
-            toml::from_str(text).map_err(|e| ConfigFault::Syntax(e.message().to_owned()))?;
+            toml::from_str(text).map_err(|e| ConfigError::Syntax(e.message().to_owned()))?;
         let mut entries = BTreeMap::new();
         for raw in file.agent {
             let written = raw.program.clone();
             let entry = check::check(raw, dir)?;
             if entries.insert(entry.program.clone(), entry).is_some() {
-                return Err(ConfigFault::Twice(written));
+                return Err(ConfigError::Twice(written));
             }
         }
         Ok(Self { entries })

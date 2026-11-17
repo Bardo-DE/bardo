@@ -52,7 +52,7 @@ pub use code::{
     tokens_html,
 };
 pub use edit::{
-    Buffer, EDIT_BYTES, EditRefusal, EditStamp, EditText, Motion, Preedit, Revision, Selection,
+    Buffer, EDIT_BYTES, EditError, EditStamp, EditText, Motion, Preedit, Revision, Selection,
     Session,
 };
 pub use encoding::{Coverage, DETECT_BYTES, Detected, LegacyEncoding, TextCodec, detect};

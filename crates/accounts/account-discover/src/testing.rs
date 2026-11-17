@@ -1,6 +1,6 @@
 //! Fakes of the two seams, and the document builders the tests share.
 
-use crate::dns::{Dns, DnsFault, MxRecord, SrvRecord};
+use crate::dns::{Dns, DnsError, MxRecord, SrvRecord};
 use account_provider::DomainName;
 use http_core::http::{Method, Request, Response};
 use http_core::{Http, HttpError};
@@ -133,15 +133,15 @@ impl Dns for Records {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async and this implementation has nothing to wait for"
     )]
-    async fn srv(&self, name: &str) -> Result<Vec<SrvRecord>, DnsFault> {
+    async fn srv(&self, name: &str) -> Result<Vec<SrvRecord>, DnsError> {
         self.asked
             .lock()
             .expect("asked")
             .push(format!("SRV {name}"));
         if self.down {
-            Err(DnsFault::Unreachable)
+            Err(DnsError::Unreachable)
         } else {
-            self.srv.get(name).cloned().ok_or(DnsFault::NoRecords)
+            self.srv.get(name).cloned().ok_or(DnsError::NoRecords)
         }
     }
 
@@ -149,18 +149,18 @@ impl Dns for Records {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async and this implementation has nothing to wait for"
     )]
-    async fn mx(&self, domain: &DomainName) -> Result<Vec<MxRecord>, DnsFault> {
+    async fn mx(&self, domain: &DomainName) -> Result<Vec<MxRecord>, DnsError> {
         self.asked
             .lock()
             .expect("asked")
             .push(format!("MX {domain}"));
         if self.down {
-            Err(DnsFault::Unreachable)
+            Err(DnsError::Unreachable)
         } else {
             self.mx
                 .get(domain.as_str())
                 .cloned()
-                .ok_or(DnsFault::NoRecords)
+                .ok_or(DnsError::NoRecords)
         }
     }
 }

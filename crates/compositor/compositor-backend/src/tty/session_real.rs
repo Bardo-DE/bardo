@@ -13,7 +13,7 @@ use super::session::{SessionNote, TtySession};
 use super::sleep::{SleepInbox, SleepLink, sleep_channel};
 use super::udev::DevicePath;
 use super::vt::VtNumber;
-use crate::session::SessionFault;
+use crate::session::SessionError;
 use rustix::fs::OFlags;
 use smithay::backend::session::libseat::LibSeatSession;
 use smithay::backend::session::{Event as SeatEvent, Session};
@@ -47,10 +47,10 @@ impl RealSession {
     ///
     /// # Errors
     ///
-    /// Returns [`SessionFault::Unavailable`] when no seat is available or the loop cannot listen
+    /// Returns [`SessionError::Unavailable`] when no seat is available or the loop cannot listen
     /// for it.
-    pub fn open<D: 'static>(handle: &LoopHandle<'static, D>) -> Result<RealSession, SessionFault> {
-        let unavailable = SessionFault::Unavailable;
+    pub fn open<D: 'static>(handle: &LoopHandle<'static, D>) -> Result<RealSession, SessionError> {
+        let unavailable = SessionError::Unavailable;
         let (seat, notifier) =
             LibSeatSession::new().map_err(|error| unavailable(seat_refused(&error)))?;
         let pending = Rc::new(RefCell::new(Vec::new()));
@@ -115,23 +115,23 @@ fn note_of(event: SeatEvent) -> SessionNote {
 }
 
 impl TtySession for RealSession {
-    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionFault> {
+    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionError> {
         if !self.seat.is_active() {
-            return Err(SessionFault::Inactive);
+            return Err(SessionError::Inactive);
         }
         self.seat
             .open(path.as_path(), OFlags::RDWR)
             .map_err(|error| {
-                SessionFault::DeniedOpen(format!("{}: {error}", path.as_path().display()))
+                SessionError::DeniedOpen(format!("{}: {error}", path.as_path().display()))
             })
     }
 
-    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault> {
+    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionError> {
         let vt = i32::try_from(vt.0)
-            .map_err(|error| SessionFault::Unavailable(format!("no VT {}: {error}", vt.0)))?;
+            .map_err(|error| SessionError::Unavailable(format!("no VT {}: {error}", vt.0)))?;
         self.seat
             .change_vt(vt)
-            .map_err(|error| SessionFault::Unavailable(error.to_string()))
+            .map_err(|error| SessionError::Unavailable(error.to_string()))
     }
 
     fn notes(&mut self) -> Vec<SessionNote> {

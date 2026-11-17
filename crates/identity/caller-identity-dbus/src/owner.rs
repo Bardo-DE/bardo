@@ -4,8 +4,8 @@ use crate::BUS_TIMEOUT;
 use crate::error::WhoError;
 use crate::manager::UnitSource;
 use crate::who::BusPeers;
-use base_time::timeout::{TimedOut, within};
-use caller_identity_core::{Refused, Requirement};
+use base_time::timeout::{TimeoutError, within};
+use caller_identity_core::{NotHeldError, Requirement};
 use caller_identity_linux::ProcFs;
 use std::future::poll_fn;
 use std::pin::Pin;
@@ -41,18 +41,21 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         &self,
         name: &str,
         need: &[Requirement],
-    ) -> Result<OwnedUniqueName, Refused> {
+    ) -> Result<OwnedUniqueName, NotHeldError> {
         #[expect(
             clippy::map_err_ignore,
             reason = "Refused never says which check failed, so it carries no cause"
         )]
-        let owner = self.owner_name(name).await.map_err(|_| Refused::Unknown)?;
+        let owner = self
+            .owner_name(name)
+            .await
+            .map_err(|_| NotHeldError::Unknown)?;
         self.require(Some(&owner), need).await?;
         #[expect(
             clippy::map_err_ignore,
             reason = "Refused never says which check failed, so it carries no cause"
         )]
-        let unique = OwnedUniqueName::try_from(owner).map_err(|_| Refused::Unknown);
+        let unique = OwnedUniqueName::try_from(owner).map_err(|_| NotHeldError::Unknown);
         unique
     }
 
@@ -70,7 +73,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             bus.receive_name_owner_changed_with_args(&[(0, name)]),
         )
         .await
-        .map_err(|TimedOut { .. }| WhoError::Timeout)?
+        .map_err(|TimeoutError { .. }| WhoError::Timeout)?
         .map_err(WhoError::Bus)?;
         Ok(OwnerWatch { stream })
     }

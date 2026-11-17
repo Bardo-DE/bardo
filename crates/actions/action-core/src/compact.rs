@@ -38,7 +38,7 @@ impl Covers {
 
 /// Why a model's summary was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum SummaryFault {
+pub enum SummaryError {
     /// It said nothing.
     #[error("the summary is empty")]
     Empty,
@@ -82,21 +82,21 @@ impl SummaryText {
     ///
     /// # Errors
     ///
-    /// Returns a [`SummaryFault`] when the words are empty, longer than the summary limit, or cite
+    /// Returns a [`SummaryError`] when the words are empty, longer than the summary limit, or cite
     /// a handle that is not in `held`.
-    pub fn parse(words: &str, held: &[Handle]) -> Result<Self, SummaryFault> {
+    pub fn parse(words: &str, held: &[Handle]) -> Result<Self, SummaryError> {
         let words = words.trim();
         if words.is_empty() {
-            return Err(SummaryFault::Empty);
+            return Err(SummaryError::Empty);
         }
         if words.chars().count() > SUMMARY_MAX_CHARS {
-            return Err(SummaryFault::TooLong);
+            return Err(SummaryError::TooLong);
         }
         for number in cited(words) {
             match number {
                 Some(n) if held.iter().any(|h| h.0 == n) => {}
-                Some(n) => return Err(SummaryFault::UnknownHandle(n)),
-                None => return Err(SummaryFault::UnknownHandle(u64::MAX)),
+                Some(n) => return Err(SummaryError::UnknownHandle(n)),
+                None => return Err(SummaryError::UnknownHandle(u64::MAX)),
             }
         }
         Ok(SummaryText(words.to_owned()))

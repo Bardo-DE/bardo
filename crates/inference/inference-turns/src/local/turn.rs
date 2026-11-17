@@ -6,8 +6,8 @@ use crate::bridge::{self, BridgeError, Frames};
 use crate::structured::{self, Checked, Shaping};
 use account_capability::Tier;
 use inference_core::{
-    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
-    ModelCard, ServedBy, StopReason, TaskRequest, TurnError, TurnUsage,
+    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusedError,
+    Model, ModelCard, ServedBy, StopReason, TaskRequest, TurnError, TurnUsage,
 };
 use inference_router::local::LocalModel;
 use inference_settings::structured::Limits;
@@ -52,7 +52,7 @@ impl<U: EngineUse> LocalTurn<'_, U> {
         sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
         let Some(provider) = chat_provider(self.model) else {
-            return Err(InferRefusal::Unsupported.into());
+            return Err(InferRefusedError::Unsupported.into());
         };
         if let Shaping::Checked(checked) = shaping {
             return self.checked(&provider, *checked, turn, sink).await;
@@ -110,9 +110,9 @@ impl<U: EngineUse> LocalTurn<'_, U> {
     clippy::needless_pass_by_value,
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
-fn unsupported(error: BridgeError) -> InferRefusal {
+fn unsupported(error: BridgeError) -> InferRefusedError {
     tracing::warn!(error = %error, "a request could not be turned into a model turn");
-    InferRefusal::Unsupported
+    InferRefusedError::Unsupported
 }
 
 impl<U: EngineUse> Model for LocalTurn<'_, U> {
@@ -147,10 +147,10 @@ impl<U: EngineUse> Model for LocalTurn<'_, U> {
     async fn embed(&self, request: &EmbedRequest) -> Result<EmbedReply, TurnError> {
         let model = self.model;
         let Some(flavor) = model.flavor else {
-            return Err(InferRefusal::Unsupported.into());
+            return Err(InferRefusedError::Unsupported.into());
         };
         let Ok(turns) = bridge::embed_turns(model, request) else {
-            return Err(InferRefusal::Unsupported.into());
+            return Err(InferRefusedError::Unsupported.into());
         };
         let provider = OpenAiCodec::new(flavor).provider(client(model));
         let mut vectors = Vec::new();

@@ -13,7 +13,7 @@
 
 use super::code_of;
 use super::shell::BardoShellPart;
-use super::shell_permission::{ANSWER_NOT_BEFORE, AnsweredTooSoon};
+use super::shell_permission::{ANSWER_NOT_BEFORE, AnsweredTooSoonError};
 use compositor_core::Event;
 use compositor_core::time::Mono;
 use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1::{self, BardoShellV1};
@@ -82,22 +82,22 @@ pub fn apply_end(part: &mut BardoShellPart, trial: TrialId) {
 ///
 /// An answer for a trial that is not open, and one with a code the XML does not name, changes
 /// nothing; one that comes less than [`ANSWER_NOT_BEFORE`] after the question was first sent is the
-/// shell's fault (`AnsweredTooSoon`) and settles nothing: the trial stays open.
+/// shell's fault (`AnsweredTooSoonError`) and settles nothing: the trial stays open.
 ///
 /// # Errors
 ///
-/// Returns [`AnsweredTooSoon`] when the answer arrives before it was asked for.
+/// Returns [`AnsweredTooSoonError`] when the answer arrives before it was asked for.
 pub fn on_answer(
     part: &BardoShellPart,
     trial: u32,
     answer: WEnum<bardo_shell_v1::TrialAnswer>,
     now: Mono,
-) -> Result<Vec<Event>, AnsweredTooSoon> {
+) -> Result<Vec<Event>, AnsweredTooSoonError> {
     let Some(open) = part.trial.filter(|open| open.id.get() == trial) else {
         return Ok(Vec::new());
     };
     if now.since(open.sent_at) < ANSWER_NOT_BEFORE {
-        return Err(AnsweredTooSoon);
+        return Err(AnsweredTooSoonError);
     }
     let Some(answer) = code_of(answer).and_then(|code| TrialAnswer::from_code(code).ok()) else {
         return Ok(Vec::new());

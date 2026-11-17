@@ -19,7 +19,7 @@ use provenance::{HelperId, SessionId};
 
 /// Why the host of the agent apps gave no reply.
 #[derive(Debug, thiserror::Error)]
-enum LinkFault {
+enum LinkError {
     #[error("{0}")]
     Bus(#[from] zbus::Error),
     #[error("{0}")]
@@ -49,7 +49,7 @@ impl AppsLink {
         reply.ok()
     }
 
-    async fn asked(&self, ask: &AppsAsk) -> Result<AppsReply, LinkFault> {
+    async fn asked(&self, ask: &AppsAsk) -> Result<AppsReply, LinkError> {
         let body = serde_json::to_string(ask)?;
         let host = AgentHostProxy::new(&self.connection).await?;
         let call = host.apps_begin(&body).await?;

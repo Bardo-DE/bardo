@@ -6,10 +6,10 @@ use crate::attest::Attest;
 use crate::error::{WhoError, access_denied};
 use crate::manager::{ManagerLink, SYSTEMD, UnitSource};
 use crate::offload::Offload;
-use base_time::timeout::{TimedOut, within};
+use base_time::timeout::{TimeoutError, within};
 use caller_identity_core::procinfo::parse_security_label;
 use caller_identity_core::{
-    Facts, Pid, Proof, Refused, Requirement, SandboxFacts, Standing, Table, Uid, UnitFacts,
+    Facts, NotHeldError, Pid, Proof, Requirement, SandboxFacts, Standing, Table, Uid, UnitFacts,
     UnitName, WhyNot, judge,
 };
 use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
@@ -165,8 +165,8 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         &self,
         sender: Option<&str>,
         need: &[Requirement],
-    ) -> Result<Standing, Refused> {
-        let sender = sender.ok_or(Refused::NoSender)?;
+    ) -> Result<Standing, NotHeldError> {
+        let sender = sender.ok_or(NotHeldError::NoSender)?;
         let ask_units = need.iter().any(|r| r.at_least >= Proof::Unit);
         #[expect(
             clippy::map_err_ignore,
@@ -175,7 +175,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         let standing = self
             .standing(sender, ask_units)
             .await
-            .map_err(|_| Refused::Unknown)?;
+            .map_err(|_| NotHeldError::Unknown)?;
         standing.holds(need).cloned()
     }
 
@@ -256,7 +256,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
             .map_err(WhoError::Bus)?;
         let owner = within(BUS_TIMEOUT, bus.get_name_owner(name))
             .await
-            .map_err(|TimedOut { .. }| WhoError::Timeout)?
+            .map_err(|TimeoutError { .. }| WhoError::Timeout)?
             .map_err(bus_error)?;
         Ok(owner.as_str().to_owned())
     }
@@ -290,7 +290,7 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
     ) -> Result<ConnectionCredentials, WhoError> {
         within(BUS_TIMEOUT, bus.get_connection_credentials(name.clone()))
             .await
-            .map_err(|TimedOut { .. }| WhoError::Timeout)?
+            .map_err(|TimeoutError { .. }| WhoError::Timeout)?
             .map_err(bus_error)
     }
 

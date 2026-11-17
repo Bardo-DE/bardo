@@ -6,7 +6,7 @@
 
 use crate::seams::Surface;
 use crate::shared::Shared;
-use action_store::{Stop, stop_after, until, within};
+use action_store::{WaitStopError, stop_after, until, within};
 use action_vocab::{Clock, Millis};
 use provenance::TaskId;
 use std::time::Duration;
@@ -18,7 +18,7 @@ pub(crate) async fn bounded<K: Clock, S: Surface, T>(
     task: &TaskId,
     span: Duration,
     work: impl Future<Output = T>,
-) -> Result<T, Stop> {
+) -> Result<T, WaitStopError> {
     let cancel = shared.cancel_of(task);
     let stop = stop_after(clock.after(millis(span)), cancel.cancelled());
     // Boxed so the waited future lives on the heap: inline it would sit one more layer deep on the
@@ -31,7 +31,7 @@ pub(crate) async fn timed<K: Clock, T>(
     clock: &K,
     span: Duration,
     work: impl Future<Output = T>,
-) -> Result<T, Stop> {
+) -> Result<T, WaitStopError> {
     // Boxed for the same reason as in `bounded`.
     within(clock.after(millis(span)), Box::pin(work)).await
 }

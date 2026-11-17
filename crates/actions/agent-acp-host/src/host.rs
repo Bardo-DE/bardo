@@ -20,7 +20,7 @@ use action_vocab::TurnId;
 use agent_acp_core::cause::Step;
 use agent_acp_core::court::{Court, OpenAgent};
 use agent_session::{
-    BackendEvent, BackendFault, BackendKind, EndCause, HostFault, Opening, ResumePlan,
+    AgentHostError, BackendError, BackendEvent, BackendKind, EndCause, Opening, ResumePlan,
     SessionBackend, SessionExport, SessionHost, SheetChoice, SheetDesk, StartSession, TurnEnd,
 };
 use companion_model::{RunsIn, WatchedAgent};
@@ -29,7 +29,7 @@ use provenance::SessionId;
 use std::pin::{Pin, pin};
 
 type Recording =
-    Pin<Box<dyn Future<Output = Result<TurnId, agent_acp_core::court::CourtFault>> + Send>>;
+    Pin<Box<dyn Future<Output = Result<TurnId, agent_acp_core::court::CourtError>> + Send>>;
 
 /// A turn the router is recording and the agent has not yet been given.
 struct Opening2 {
@@ -106,8 +106,8 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     /// did not, or would not. The agent clears its own login.
     ///
     /// # Errors
-    /// Returns a [`BackendFault`] when no agent is running or the connection to it is gone.
-    pub async fn log_out(&mut self) -> Result<bool, BackendFault> {
+    /// Returns a [`BackendError`] when no agent is running or the connection to it is gone.
+    pub async fn log_out(&mut self) -> Result<bool, BackendError> {
         self.backend.log_out().await
     }
 
@@ -116,20 +116,20 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     /// the app and its own id for the conversation. The router refuses while a turn is running.
     ///
     /// # Errors
-    /// Returns a [`HostFault`] when `session` is not this host's or the router will not hand the
+    /// Returns a [`AgentHostError`] when `session` is not this host's or the router will not hand the
     /// session to a terminal.
     pub async fn hand_to_terminal(
         &mut self,
         session: &SessionId,
         agent: WatchedAgent,
-    ) -> Result<(), HostFault> {
+    ) -> Result<(), AgentHostError> {
         self.mine(session)?;
         self.court
             .hand(session, RunsIn::Terminal, Some(agent))
             .await
             .map_err(|error| {
                 tracing::debug!(%error, "the router would not hand the session over");
-                BackendFault::Unavailable
+                BackendError::Unavailable
             })?;
         self.pending = None;
         self.running = None;
@@ -144,15 +144,15 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
     /// session, as it was.
     ///
     /// # Errors
-    /// Returns a [`HostFault`] when this host already has a session, the router does not hold
+    /// Returns a [`AgentHostError`] when this host already has a session, the router does not hold
     /// `session` as a watch session, or the agent fails to start on it.
     pub async fn take_back(
         &mut self,
         session: SessionId,
         opening: Opening,
-    ) -> Result<WatchedAgent, HostFault> {
+    ) -> Result<WatchedAgent, AgentHostError> {
         if self.session.is_some() {
-            return Err(BackendFault::Busy.into());
+            return Err(BackendError::Busy.into());
         }
         let agent = self
             .court
@@ -160,7 +160,7 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
             .await
             .ok()
             .flatten()
-            .ok_or(BackendFault::Unavailable)?;
+            .ok_or(BackendError::Unavailable)?;
         let started = self
             .backend
             .start(StartSession {
@@ -185,10 +185,10 @@ impl<X: Seams, D: SheetDesk> AgentHost<X, D> {
         &self.backend
     }
 
-    fn mine(&self, session: &SessionId) -> Result<(), HostFault> {
+    fn mine(&self, session: &SessionId) -> Result<(), AgentHostError> {
         (self.session.as_ref() == Some(session))
             .then_some(())
-            .ok_or(HostFault::NoSuchSession)
+            .ok_or(AgentHostError::NoSuchSession)
     }
 
     fn is_terminal(&self) -> bool {
@@ -217,9 +217,9 @@ fn program_of(opening: &Opening) -> Option<permission_core::ProgramName> {
 }
 
 impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
-    async fn open(&mut self, opening: Opening) -> Result<SessionId, HostFault> {
+    async fn open(&mut self, opening: Opening) -> Result<SessionId, AgentHostError> {
         if self.session.is_some() {
-            return Err(BackendFault::Busy.into());
+            return Err(BackendError::Busy.into());
         }
         let program = program_of(&opening)
             .ok_or_else(|| Step::Opening.unavailable(&"it is not for an agent program"))?;
@@ -263,18 +263,18 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
         clippy::unused_async_trait_impl,
         reason = "`SessionHost::resume` is async; this host has no resume and answers at once"
     )]
-    async fn resume(&mut self, _session: &SessionId) -> Result<ResumePlan, HostFault> {
-        Err(HostFault::NoSuchSession)
+    async fn resume(&mut self, _session: &SessionId) -> Result<ResumePlan, AgentHostError> {
+        Err(AgentHostError::NoSuchSession)
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "`SessionHost::turn` is async; this host only stages the turn for `next_event`"
     )]
-    async fn turn(&mut self, session: &SessionId, turn: UserTurn) -> Result<(), HostFault> {
+    async fn turn(&mut self, session: &SessionId, turn: UserTurn) -> Result<(), AgentHostError> {
         self.mine(session)?;
         if self.pending.is_some() {
-            return Err(BackendFault::Busy.into());
+            return Err(BackendError::Busy.into());
         }
         // The router records what the person said, and may ask the person about it (a turn that
         // widens the task): that wait happens in `next_event`, where a sheet can be shown.
@@ -284,7 +284,10 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
         Ok(())
     }
 
-    async fn next_event(&mut self, session: &SessionId) -> Result<Option<BackendEvent>, HostFault> {
+    async fn next_event(
+        &mut self,
+        session: &SessionId,
+    ) -> Result<Option<BackendEvent>, AgentHostError> {
         self.mine(session)?;
         loop {
             if let Some(pending) = self.pending.as_mut() {
@@ -346,19 +349,19 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
         session: &SessionId,
         id: &ConfirmId,
         choice: SheetChoice,
-    ) -> Result<(), HostFault> {
+    ) -> Result<(), AgentHostError> {
         self.mine(session)?;
         self.desk.answer(id, choice)?;
         Ok(())
     }
 
-    async fn cancel(&mut self, session: &SessionId) -> Result<(), HostFault> {
+    async fn cancel(&mut self, session: &SessionId) -> Result<(), AgentHostError> {
         self.mine(session)?;
         self.backend.cancel().await;
         Ok(())
     }
 
-    async fn close(&mut self, session: &SessionId, _cause: EndCause) -> Result<(), HostFault> {
+    async fn close(&mut self, session: &SessionId, _cause: EndCause) -> Result<(), AgentHostError> {
         self.mine(session)?;
         self.pending = None;
         if let Some(turn) = self.running.take() {
@@ -378,14 +381,14 @@ impl<X: Seams, D: SheetDesk> SessionHost for AgentHost<X, D> {
         &mut self,
         _session: &SessionId,
         _at: agent_session::Seq,
-    ) -> Result<SessionId, HostFault> {
-        Err(HostFault::NoSuchSession)
+    ) -> Result<SessionId, AgentHostError> {
+        Err(AgentHostError::NoSuchSession)
     }
 
     fn export(
         &self,
         _session: &SessionId,
-    ) -> impl Future<Output = Result<SessionExport, HostFault>> + Send {
-        std::future::ready(Err(HostFault::NoSuchSession))
+    ) -> impl Future<Output = Result<SessionExport, AgentHostError>> + Send {
+        std::future::ready(Err(AgentHostError::NoSuchSession))
     }
 }

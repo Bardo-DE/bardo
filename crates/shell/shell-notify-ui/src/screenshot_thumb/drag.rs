@@ -43,7 +43,7 @@ pub fn file_drag(picture: &ThumbPicture, look: GhostLook) -> Option<DragSpec> {
 mod tests {
     use std::path::PathBuf;
 
-    use layer_shell_types::{DragAction, DragActions, DragOutcome, DragPayload, DragRefused};
+    use layer_shell_types::{DragAction, DragActions, DragError, DragOutcome, DragPayload};
     use ui_components::components::content::image_source::ImageSize;
     use ui_components::prelude::*;
 
@@ -70,7 +70,7 @@ mod tests {
             (DragOutcome::Cancelled, DragEnd::Cancelled),
             (
                 DragOutcome::Unsupported {
-                    why: DragRefused::NoPress,
+                    why: DragError::NoPress,
                 },
                 DragEnd::Refused,
             ),

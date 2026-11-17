@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use files_core::{FileName, FolderPath, ItemRef, Location, OpKind};
 
-use crate::error::Refusal;
+use crate::error::WindowError;
 
 /// One thing asked of Files. Paths are full paths; the window decides what a path is (a folder to
 /// open, a file to point at).
@@ -108,5 +108,5 @@ pub enum Reply {
 pub trait Window: Send + Sync + 'static {
     /// Carries out `ask` and answers. Changes are queued on the window's own queue of work and
     /// answered once queued, not once done.
-    fn ask(&self, ask: Ask) -> impl Future<Output = Result<Reply, Refusal>> + Send;
+    fn ask(&self, ask: Ask) -> impl Future<Output = Result<Reply, WindowError>> + Send;
 }

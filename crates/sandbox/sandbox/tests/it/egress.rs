@@ -4,8 +4,8 @@
 
 use sandbox::egress::request::MAX_LINE;
 use sandbox::egress::{
-    BadRequest, EgressPolicy, Entry, Gate, Host, HostFault, HostPattern, Journal, Outcome,
-    PolicyFault, Ports, Refusal, Request, Resolver, Target, parse_head, read_head,
+    BadRequest, EgressHostError, EgressPolicy, EgressRefusedError, Entry, Gate, Host, HostPattern,
+    Journal, Outcome, PolicyFault, Ports, Request, Resolver, Target, parse_head, read_head,
 };
 use std::io::{self, Read, Write};
 use std::net::{IpAddr, TcpListener};
@@ -29,7 +29,7 @@ fn host(text: &str) -> Host {
 #[test]
 fn patterns_parse_or_name_the_fault() {
     let ok = |text: &str, want: HostPattern| (text.to_owned(), Ok(want));
-    let bad = |text: &str, fault: HostFault| (text.to_owned(), Err(fault));
+    let bad = |text: &str, fault: EgressHostError| (text.to_owned(), Err(fault));
     let long = format!("{}.com", "a".repeat(64));
     let rows = [
         ok(
@@ -51,26 +51,26 @@ fn patterns_parse_or_name_the_fault() {
         ok("192.0.2.7", HostPattern::Addr(ip("192.0.2.7"))),
         ok("[2001:db8::1]", HostPattern::Addr(ip("2001:db8::1"))),
         ok("::ffff:192.0.2.7", HostPattern::Addr(ip("192.0.2.7"))),
-        bad("", HostFault::Empty),
-        bad(".", HostFault::Empty),
-        bad("*", HostFault::BareStar),
-        bad("*.", HostFault::BareStar),
-        bad("a*.example.com", HostFault::StarNotLeading),
-        bad("foo.*.com", HostFault::StarNotLeading),
-        bad("*.*.com", HostFault::StarNotLeading),
-        bad("example.*", HostFault::StarNotLeading),
-        bad("exa mple.com", HostFault::Whitespace),
-        bad(" example.com", HostFault::Whitespace),
-        bad("example.com\n", HostFault::Whitespace),
-        bad("b\u{fc}cher.example", HostFault::NonAscii),
-        bad("*.b\u{fc}cher.example", HostFault::NonAscii),
-        bad("a..b", HostFault::EmptyLabel),
-        bad(".example.com", HostFault::EmptyLabel),
-        bad("exa/mple.com", HostFault::BadChar),
-        bad("host:80", HostFault::BadChar),
-        bad("example.123", HostFault::Numeric),
-        bad("127.1", HostFault::Numeric),
-        bad(&long, HostFault::TooLong),
+        bad("", EgressHostError::Empty),
+        bad(".", EgressHostError::Empty),
+        bad("*", EgressHostError::BareStar),
+        bad("*.", EgressHostError::BareStar),
+        bad("a*.example.com", EgressHostError::StarNotLeading),
+        bad("foo.*.com", EgressHostError::StarNotLeading),
+        bad("*.*.com", EgressHostError::StarNotLeading),
+        bad("example.*", EgressHostError::StarNotLeading),
+        bad("exa mple.com", EgressHostError::Whitespace),
+        bad(" example.com", EgressHostError::Whitespace),
+        bad("example.com\n", EgressHostError::Whitespace),
+        bad("b\u{fc}cher.example", EgressHostError::NonAscii),
+        bad("*.b\u{fc}cher.example", EgressHostError::NonAscii),
+        bad("a..b", EgressHostError::EmptyLabel),
+        bad(".example.com", EgressHostError::EmptyLabel),
+        bad("exa/mple.com", EgressHostError::BadChar),
+        bad("host:80", EgressHostError::BadChar),
+        bad("example.123", EgressHostError::Numeric),
+        bad("127.1", EgressHostError::Numeric),
+        bad(&long, EgressHostError::TooLong),
     ];
     for (text, want) in rows {
         assert_eq!(HostPattern::parse(&text), want, "{text:?}");
@@ -86,10 +86,10 @@ fn policy(allow: &[&str], deny: &[&str], ports: Ports) -> EgressPolicy {
 fn a_policy_needs_an_allow_list_and_real_ports() {
     assert_eq!(
         EgressPolicy::new(Vec::new(), vec![pattern("a.example")], Ports::default()),
-        Err(PolicyFault::NoAllow)
+        Err(PolicyError::NoAllow)
     );
-    assert_eq!(Ports::new(Vec::new()), Err(PolicyFault::BadPorts));
-    assert_eq!(Ports::new(vec![443, 0]), Err(PolicyFault::BadPorts));
+    assert_eq!(Ports::new(Vec::new()), Err(PolicyError::BadPorts));
+    assert_eq!(Ports::new(vec![443, 0]), Err(PolicyError::BadPorts));
     assert!(Ports::default().allows(443) && Ports::default().allows(80));
     assert!(!Ports::default().allows(22));
 }
@@ -107,36 +107,43 @@ fn verdicts_by_name_port_and_literal() {
         &["bad.cdn.example.net", "*.evil.example.net", "203.0.113.200"],
         Ports::default(),
     );
-    let rows: Vec<(&str, u16, Result<(), Refusal>)> = vec![
+    let rows: Vec<(&str, u16, Result<(), EgressRefusedError>)> = vec![
         ("api.example.com", 443, Ok(())),
         ("api.example.com", 80, Ok(())),
         ("API.EXAMPLE.COM.", 443, Ok(())),
-        ("api.example.com", 22, Err(Refusal::Port)),
-        ("api.example.com", 8443, Err(Refusal::Port)),
-        ("example.com", 443, Err(Refusal::NotListed)),
-        ("www.api.example.com", 443, Err(Refusal::NotListed)),
+        ("api.example.com", 22, Err(EgressRefusedError::Port)),
+        ("api.example.com", 8443, Err(EgressRefusedError::Port)),
+        ("example.com", 443, Err(EgressRefusedError::NotListed)),
+        (
+            "www.api.example.com",
+            443,
+            Err(EgressRefusedError::NotListed),
+        ),
         ("x.cdn.example.net", 443, Ok(())),
         ("a.b.cdn.example.net", 443, Ok(())),
-        ("cdn.example.net", 443, Err(Refusal::NotListed)),
-        ("xcdn.example.net", 443, Err(Refusal::NotListed)),
-        ("bad.cdn.example.net", 443, Err(Refusal::Denied)),
-        ("x.evil.example.net", 443, Err(Refusal::Denied)),
+        ("cdn.example.net", 443, Err(EgressRefusedError::NotListed)),
+        ("xcdn.example.net", 443, Err(EgressRefusedError::NotListed)),
+        ("bad.cdn.example.net", 443, Err(EgressRefusedError::Denied)),
+        ("x.evil.example.net", 443, Err(EgressRefusedError::Denied)),
         ("203.0.113.9", 443, Ok(())),
-        ("198.51.100.1", 443, Err(Refusal::NotListed)),
-        ("[::1]", 443, Err(Refusal::NotListed)),
-        ("127.0.0.1", 443, Err(Refusal::NotListed)),
-        ("203.0.113.200", 443, Err(Refusal::Denied)),
-        ("203.0.113.9", 22, Err(Refusal::Port)),
+        ("198.51.100.1", 443, Err(EgressRefusedError::NotListed)),
+        ("[::1]", 443, Err(EgressRefusedError::NotListed)),
+        ("127.0.0.1", 443, Err(EgressRefusedError::NotListed)),
+        ("203.0.113.200", 443, Err(EgressRefusedError::Denied)),
+        ("203.0.113.9", 22, Err(EgressRefusedError::Port)),
         ("::ffff:203.0.113.9", 443, Ok(())),
-        ("localhost", 443, Err(Refusal::NotListed)),
-        ("1.example.org", 443, Err(Refusal::NotListed)),
+        ("localhost", 443, Err(EgressRefusedError::NotListed)),
+        ("1.example.org", 443, Err(EgressRefusedError::NotListed)),
     ];
     for (name, port, want) in rows {
         assert_eq!(p.check(&host(name), port), want, "{name}:{port}");
     }
     let other = policy(&["a.example"], &[], Ports::new(vec![8443]).expect("ports"));
     assert_eq!(other.check(&host("a.example"), 8443), Ok(()));
-    assert_eq!(other.check(&host("a.example"), 443), Err(Refusal::Port));
+    assert_eq!(
+        other.check(&host("a.example"), 443),
+        Err(EgressRefusedError::Port)
+    );
 }
 
 #[test]
@@ -176,7 +183,7 @@ fn addresses_in_special_ranges_are_refused_unless_listed_exactly() {
     for addr in special {
         assert_eq!(
             p.check_addr(ip(addr)),
-            Err(Refusal::SpecialAddress),
+            Err(EgressRefusedError::SpecialAddress),
             "{addr}"
         );
     }
@@ -197,7 +204,10 @@ fn addresses_in_special_ranges_are_refused_unless_listed_exactly() {
     for addr in fine {
         assert_eq!(p.check_addr(ip(addr)), Ok(()), "{addr}");
     }
-    assert_eq!(p.check_addr(ip("203.0.113.200")), Err(Refusal::Denied));
+    assert_eq!(
+        p.check_addr(ip("203.0.113.200")),
+        Err(EgressRefusedError::Denied)
+    );
 }
 
 fn target(name: &str, port: u16) -> Target {
@@ -219,7 +229,7 @@ fn request_heads_parse_or_name_the_fault() {
     );
     let tunnel = |name, port| Ok(Request::Tunnel(target(name, port)));
     let relay = |name, port| Ok(Request::Relay(target(name, port)));
-    let rows: Vec<(String, Result<Request, BadRequest>)> = vec![
+    let rows: Vec<(String, Result<Request, BadRequestError>)> = vec![
         (
             "CONNECT api.example.com:443 HTTP/1.1\r\nHost: api.example.com:443\r\n\r\n".into(),
             tunnel("api.example.com", 443),
@@ -246,83 +256,83 @@ fn request_heads_parse_or_name_the_fault() {
         ),
         (
             "CONNECT api.example.com HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::BadPort),
+            Err(BadRequestError::BadPort),
         ),
         (
             "CONNECT api.example.com:0 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::BadPort),
+            Err(BadRequestError::BadPort),
         ),
         (
             "CONNECT api.example.com:99999 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::BadPort),
+            Err(BadRequestError::BadPort),
         ),
         (
             "CONNECT api.example.com:+80 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::BadPort),
+            Err(BadRequestError::BadPort),
         ),
         (
             "CONNECT api.example.com: HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::BadPort),
+            Err(BadRequestError::BadPort),
         ),
         (
             "CONNECT :443 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::NoHost),
+            Err(BadRequestError::NoHost),
         ),
         (
             "GET http:///x HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::NoHost),
+            Err(BadRequestError::NoHost),
         ),
         (
             "CONNECT ::1:443 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::Malformed),
+            Err(BadRequestError::Malformed),
         ),
         (
             "CONNECT [::1]x HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::Malformed),
+            Err(BadRequestError::Malformed),
         ),
         (
             "CONNECT [::1:443 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::Malformed),
+            Err(BadRequestError::Malformed),
         ),
         (
             "CONNECT bad!host:443 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::BadHost(HostFault::BadChar)),
+            Err(BadRequestError::BadHost(EgressHostError::BadChar)),
         ),
         (
             "CONNECT 127.1:80 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::BadHost(HostFault::Numeric)),
+            Err(BadRequestError::BadHost(EgressHostError::Numeric)),
         ),
         (
             "GET /path HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::NotProxy),
+            Err(BadRequestError::NotProxy),
         ),
         (
             "GET https://api.example.com/ HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::NotProxy),
+            Err(BadRequestError::NotProxy),
         ),
         (
             "GET http://user@api.example.com/ HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::NotProxy),
+            Err(BadRequestError::NotProxy),
         ),
         (
             "GET http://api.example.com/ HTTP/2\r\n\r\n".into(),
-            Err(BadRequest::Malformed),
+            Err(BadRequestError::Malformed),
         ),
         (
             "get http://api.example.com/ HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::Malformed),
+            Err(BadRequestError::Malformed),
         ),
         (
             "GET http://api.example.com/\r\n\r\n".into(),
-            Err(BadRequest::Malformed),
+            Err(BadRequestError::Malformed),
         ),
         (
             "CONNECT a b:443 HTTP/1.1\r\n\r\n".into(),
-            Err(BadRequest::Malformed),
+            Err(BadRequestError::Malformed),
         ),
-        ("garbage\r\n\r\n".into(), Err(BadRequest::Malformed)),
-        (String::new(), Err(BadRequest::Malformed)),
-        (long, Err(BadRequest::TooLong)),
+        ("garbage\r\n\r\n".into(), Err(BadRequestError::Malformed)),
+        (String::new(), Err(BadRequestError::Malformed)),
+        (long, Err(BadRequestError::TooLong)),
     ];
     for (head, want) in rows {
         let shown: String = head.chars().take(60).collect();
@@ -330,7 +340,7 @@ fn request_heads_parse_or_name_the_fault() {
     }
     assert_eq!(
         parse_head(b"GET \xff HTTP/1.1\r\n\r\n"),
-        Err(BadRequest::Malformed)
+        Err(BadRequestError::Malformed)
     );
 }
 
@@ -349,7 +359,7 @@ fn reading_a_head_is_bounded_in_size_and_time() {
     near.write_all(&vec![b'a'; MAX_LINE + 10]).expect("write");
     assert_eq!(
         read_head(&mut far, Duration::from_secs(5)),
-        Err(BadRequest::TooLong)
+        Err(BadRequestError::TooLong)
     );
 
     let (mut near, mut far) = UnixStream::pair().expect("pair");
@@ -360,14 +370,14 @@ fn reading_a_head_is_bounded_in_size_and_time() {
     near.write_all(line.repeat(600).as_bytes()).expect("write");
     assert_eq!(
         read_head(&mut far, Duration::from_secs(5)),
-        Err(BadRequest::TooLong)
+        Err(BadRequestError::TooLong)
     );
 
     let (near, mut far) = UnixStream::pair().expect("pair");
     drop(near);
     assert_eq!(
         read_head(&mut far, Duration::from_secs(5)),
-        Err(BadRequest::Closed)
+        Err(BadRequestError::Closed)
     );
 
     let (mut near, mut far) = UnixStream::pair().expect("pair");
@@ -375,14 +385,14 @@ fn reading_a_head_is_bounded_in_size_and_time() {
     drop(near);
     assert_eq!(
         read_head(&mut far, Duration::from_secs(5)),
-        Err(BadRequest::Truncated)
+        Err(BadRequestError::Truncated)
     );
 
     let (mut near, mut far) = UnixStream::pair().expect("pair");
     near.write_all(b"GET http://a").expect("write");
     assert_eq!(
         read_head(&mut far, Duration::from_millis(150)),
-        Err(BadRequest::Timeout)
+        Err(BadRequestError::Timeout)
     );
     drop(near);
 }
@@ -555,31 +565,31 @@ fn refusals_answer_in_plain_text_and_never_connect() {
             format!("CONNECT other.example.test:{port} HTTP/1.1\r\n\r\n"),
             "HTTP/1.1 403 Forbidden",
             Some("other.example.test"),
-            Outcome::Refused(Refusal::NotListed),
+            Outcome::Refused(EgressRefusedError::NotListed),
         ),
         (
             "CONNECT files.example.test:22 HTTP/1.1\r\n\r\n".to_owned(),
             "HTTP/1.1 403 Forbidden",
             Some("files.example.test:22"),
-            Outcome::Refused(Refusal::Port),
+            Outcome::Refused(EgressRefusedError::Port),
         ),
         (
             format!("CONNECT 10.0.0.1:{port} HTTP/1.1\r\n\r\n"),
             "HTTP/1.1 403 Forbidden",
             Some("10.0.0.1"),
-            Outcome::Refused(Refusal::NotListed),
+            Outcome::Refused(EgressRefusedError::NotListed),
         ),
         (
             format!("CONNECT rebind.example.test:{port} HTTP/1.1\r\n\r\n"),
             "HTTP/1.1 403 Forbidden",
             Some("rebind.example.test"),
-            Outcome::Refused(Refusal::SpecialAddress),
+            Outcome::Refused(EgressRefusedError::SpecialAddress),
         ),
         (
             format!("GET http://mixed.example.test:{port}/ HTTP/1.1\r\n\r\n"),
             "HTTP/1.1 403 Forbidden",
             Some("mixed.example.test"),
-            Outcome::Refused(Refusal::SpecialAddress),
+            Outcome::Refused(EgressRefusedError::SpecialAddress),
         ),
         (
             format!("CONNECT gone.example.test:{port} HTTP/1.1\r\n\r\n"),

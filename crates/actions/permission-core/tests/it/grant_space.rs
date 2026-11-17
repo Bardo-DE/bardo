@@ -48,7 +48,7 @@ fn an_app_space_is_open_to_its_owner_alone() {
     assert_eq!(space_access(&own, &mine), SpaceAccess::Open);
     assert_eq!(
         space_access(&own, &theirs),
-        SpaceAccess::Refused(SpaceRefusal {
+        SpaceAccess::Refused(SpaceError {
             space: space("app:org.bardo.Mail:3"),
             owner: mine.clone(),
         })

@@ -52,7 +52,7 @@ pub use ai_accounts::AiAccountsError;
 pub use ai_keys::AiKeysError;
 pub use authenticated::AuthenticatedStream;
 pub use changes::Changes;
-pub use error::{LinkError, Malformed, MalformedError, Unwritable};
+pub use error::{LinkError, Malformed, MalformedError, UnwritableError};
 pub use found::{ConsentOffer, Found, NoAccount, found};
 pub use grants::{Grants, GrantsError, ListedAccount};
 pub use handle::AccountClient;

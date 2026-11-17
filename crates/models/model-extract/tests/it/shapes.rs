@@ -1,4 +1,4 @@
-use model_provider::{ChoiceText, Extract, JsonText, Shape, ShapeFault};
+use model_provider::{ChoiceText, Extract, JsonText, Shape, ShapeError};
 
 /// A hand-written output type, as the five or six real ones will be.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -13,10 +13,10 @@ impl Extract for Verdict {
         clippy::map_err_ignore,
         reason = "a shape fault never carries the reply: the model's text may be untrusted"
     )]
-    fn read(json: &JsonText) -> Result<Self, ShapeFault> {
+    fn read(json: &JsonText) -> Result<Self, ShapeError> {
         serde_json::from_str(json.as_str())
             .map(Verdict)
-            .map_err(|_| ShapeFault::NotJson)
+            .map_err(|_| ShapeError::NotJson)
     }
 }
 

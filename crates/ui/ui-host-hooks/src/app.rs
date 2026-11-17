@@ -7,19 +7,19 @@ use dioxus::prelude::*;
 /// The app's event loop has ended: a request to it is refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("the app's event loop has ended")]
-pub struct AppEnded;
+pub struct AppEndedError;
 
 /// Ends the app: what a window's root reads with [`use_app_control`]. The renderer's own handle
 /// (`ui_blitz::AppHandle`) provides it, and does the rest of what an app asks from outside its
 /// documents.
 #[derive(Clone)]
 pub struct AppControl {
-    quit: Arc<dyn Fn() -> Result<(), AppEnded> + Send + Sync>,
+    quit: Arc<dyn Fn() -> Result<(), AppEndedError> + Send + Sync>,
 }
 
 impl AppControl {
     /// A control whose [`quit`](AppControl::quit) calls `quit`.
-    pub fn new(quit: impl Fn() -> Result<(), AppEnded> + Send + Sync + 'static) -> Self {
+    pub fn new(quit: impl Fn() -> Result<(), AppEndedError> + Send + Sync + 'static) -> Self {
         AppControl {
             quit: Arc::new(quit),
         }
@@ -29,8 +29,8 @@ impl AppControl {
     ///
     /// # Errors
     ///
-    /// [`AppEnded`] when the loop has already ended, which is the same as the windows being closed.
-    pub fn quit(&self) -> Result<(), AppEnded> {
+    /// [`AppEndedError`] when the loop has already ended, which is the same as the windows being closed.
+    pub fn quit(&self) -> Result<(), AppEndedError> {
         (self.quit)()
     }
 }

@@ -3,7 +3,7 @@
 //! allow, ask about or refuse.
 
 use crate::args::{CallArgs, JsonFlag, UndoWhich};
-use crate::exit::{Failure, of_client, of_refusal, of_undo};
+use crate::exit::{ExitError, of_client, of_refusal, of_undo};
 use crate::outcome::{context_json, dry_run_json, hits_json, outcome_json};
 use crate::params::{Reading, StdinSlot, arguments, target};
 use crate::resolve::{Apps, slug, visible};
@@ -78,7 +78,7 @@ pub fn apps(apps: &Apps) -> Printed {
 }
 
 /// One app's actions.
-pub fn list(apps: &Apps, word: &str) -> Result<Printed, Failure> {
+pub fn list(apps: &Apps, word: &str) -> Result<Printed, ExitError> {
     let app = apps.app(word)?;
     let rows: Vec<Value> = visible(app).map(|a| schema::action_row(app, a)).collect();
     Ok(Printed {
@@ -88,13 +88,13 @@ pub fn list(apps: &Apps, word: &str) -> Result<Printed, Failure> {
 }
 
 /// One action's parameters as a JSON Schema.
-pub fn describe(apps: &Apps, app: &str, action: &str) -> Result<Printed, Failure> {
+pub fn describe(apps: &Apps, app: &str, action: &str) -> Result<Printed, ExitError> {
     let app = apps.app(app)?;
     let decl = apps
         .action(app, action)
         .ok()
         .filter(|a| a.reach != action_manifest::AgentReach::Hidden)
-        .ok_or_else(|| Failure::usage(format!("{} has no action {action:?}", slug(&app.app))))?;
+        .ok_or_else(|| ExitError::usage(format!("{} has no action {action:?}", slug(&app.app))))?;
     let document = schema::described(app, decl)?;
     let human = format!(
         "{} ({:?}): {}\n{}",
@@ -131,7 +131,7 @@ pub async fn call<T: Transport>(
     apps: &Apps,
     args: &CallArgs,
     stdin: &mut StdinSlot,
-) -> Result<Printed, Failure> {
+) -> Result<Printed, ExitError> {
     let app = apps.app(&args.app)?;
     let decl = apps.action(app, &args.action)?;
     let mut reading = Reading {
@@ -180,7 +180,7 @@ pub async fn search<T: Transport>(
     apps: &Apps,
     word: &str,
     text: &str,
-) -> Result<Printed, Failure> {
+) -> Result<Printed, ExitError> {
     let app = apps.app(word)?;
     let all = intents
         .search(SearchAsk {
@@ -206,9 +206,9 @@ pub async fn context<T: Transport>(
     intents: &Intents<T>,
     apps: &Apps,
     word: &str,
-) -> Result<Printed, Failure> {
+) -> Result<Printed, ExitError> {
     let app = apps.app(word)?;
-    let own = SessionId::parse("s-0").map_err(|e| Failure::usage_because("no session", &e))?;
+    let own = SessionId::parse("s-0").map_err(|e| ExitError::usage_because("no session", &e))?;
     let view = intents
         .context(own, app.app.clone())
         .await
@@ -223,7 +223,7 @@ pub async fn context<T: Transport>(
 pub async fn undo<T: Transport>(
     intents: &Intents<T>,
     which: UndoWhich,
-) -> Result<Printed, Failure> {
+) -> Result<Printed, ExitError> {
     let id = match which {
         UndoWhich::Entry(n) => UndoId(n),
         UndoWhich::Last => intents
@@ -237,7 +237,7 @@ pub async fn undo<T: Transport>(
             .iter()
             .find(|e| e.state == UndoState::Available)
             .map(|e| e.id)
-            .ok_or_else(|| Failure::usage("nothing from this terminal can be undone"))?,
+            .ok_or_else(|| ExitError::usage("nothing from this terminal can be undone"))?,
     };
     intents
         .undo(id)

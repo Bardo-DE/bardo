@@ -1,7 +1,7 @@
 //! A keyboard that exists only as a uinput device: what a person's hands do, from a test.
 
 use crate::event::{EV_ABS, EV_KEY, EV_LED, EV_REL, EV_SYN, Event, LED_CAPSL, encode};
-use crate::failure::{Failure, errno, io};
+use crate::failure::{DevtestError, errno, io};
 use crate::keys::{KEYS, code_of};
 use crate::sysfs::{node_of_sysname, registered, wait_for};
 use key_remap_evdev::{self as sys, AbsInfo, AbsSetup, BitSet, InputId, UinputSetup, drain};
@@ -102,7 +102,7 @@ impl FakeKeyboard {
     ///
     /// Returns a [`Failure`] when `/dev/uinput` cannot be opened, the device cannot be set up or
     /// created, or its node does not appear in time.
-    pub fn create(spec: &FakeSpec) -> Result<Self, Failure> {
+    pub fn create(spec: &FakeSpec) -> Result<Self, DevtestError> {
         let fd = rustix::fs::open(
             UINPUT,
             OFlags::RDWR | OFlags::NONBLOCK | OFlags::CLOEXEC,
@@ -116,7 +116,7 @@ impl FakeKeyboard {
         sys::dev_create(&fd, setup(spec), &abs).map_err(io("UI_DEV_SETUP, UI_DEV_CREATE"))?;
         let sysname = sys::sysname(&fd).map_err(io("UI_GET_SYSNAME"))?;
         let node = wait_for(NODE_WAIT, || node_of_sysname(&sysname)).ok_or_else(|| {
-            Failure::new(format!(
+            DevtestError::new(format!(
                 "the fake keyboard {:?} ({sysname}) has no /dev/input node after {NODE_WAIT:?}",
                 spec.name
             ))
@@ -146,7 +146,7 @@ impl FakeKeyboard {
     /// # Errors
     ///
     /// Returns a [`Failure`] when the batch cannot be written in full.
-    pub fn emit(&self, events: &[Event]) -> Result<(), Failure> {
+    pub fn emit(&self, events: &[Event]) -> Result<(), DevtestError> {
         let mut frame = events.to_vec();
         frame.push(Event::SYNC);
         let bytes = encode(&frame);
@@ -155,15 +155,16 @@ impl FakeKeyboard {
         if n == bytes.len() {
             Ok(())
         } else {
-            Err(Failure::new(format!(
+            Err(DevtestError::new(format!(
                 "short write to the fake keyboard: {n} of {} bytes",
                 bytes.len()
             )))
         }
     }
 
-    fn key(&self, name: &str, value: i32) -> Result<(), Failure> {
-        let code = code_of(name).ok_or_else(|| Failure::new(format!("no key named {name:?}")))?;
+    fn key(&self, name: &str, value: i32) -> Result<(), DevtestError> {
+        let code =
+            code_of(name).ok_or_else(|| DevtestError::new(format!("no key named {name:?}")))?;
         self.emit(&[Event::key(code, value)])
     }
 
@@ -172,7 +173,7 @@ impl FakeKeyboard {
     /// # Errors
     ///
     /// Returns a [`Failure`] when `name` is not a known key or the event cannot be written.
-    pub fn press(&self, name: &str) -> Result<(), Failure> {
+    pub fn press(&self, name: &str) -> Result<(), DevtestError> {
         self.key(name, 1)
     }
 
@@ -181,7 +182,7 @@ impl FakeKeyboard {
     /// # Errors
     ///
     /// Returns a [`Failure`] when `name` is not a known key or the event cannot be written.
-    pub fn release(&self, name: &str) -> Result<(), Failure> {
+    pub fn release(&self, name: &str) -> Result<(), DevtestError> {
         self.key(name, 0)
     }
 
@@ -190,7 +191,7 @@ impl FakeKeyboard {
     /// # Errors
     ///
     /// Returns a [`Failure`] when either event fails, as [`Self::press`] and [`Self::release`].
-    pub fn tap(&self, name: &str) -> Result<(), Failure> {
+    pub fn tap(&self, name: &str) -> Result<(), DevtestError> {
         self.press(name)?;
         self.release(name)
     }
@@ -200,7 +201,7 @@ impl FakeKeyboard {
     /// # Errors
     ///
     /// Returns a [`Failure`] when any key of `names` fails to press or release.
-    pub fn chord(&self, names: &[&str]) -> Result<(), Failure> {
+    pub fn chord(&self, names: &[&str]) -> Result<(), DevtestError> {
         names.iter().try_for_each(|n| self.press(n))?;
         names.iter().rev().try_for_each(|n| self.release(n))
     }
@@ -223,14 +224,14 @@ impl FakeKeyboard {
     ///
     /// Returns a [`Failure`] listing the events seen when the LED is not written as `value` within
     /// `wait`.
-    pub fn expect_led(&self, code: u16, value: i32, wait: Duration) -> Result<(), Failure> {
+    pub fn expect_led(&self, code: u16, value: i32, wait: Duration) -> Result<(), DevtestError> {
         let mut seen = Vec::new();
         let hit = wait_for(wait, || {
             seen.extend(self.leds());
             seen.contains(&(code, value)).then_some(())
         });
         hit.ok_or_else(|| {
-            Failure::new(format!(
+            DevtestError::new(format!(
                 "LED {code} was not set to {value} within {wait:?}; LED writes seen: {seen:?}"
             ))
         })

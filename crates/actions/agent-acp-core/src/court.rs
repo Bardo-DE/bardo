@@ -32,7 +32,7 @@ pub enum Ruled {
 
 /// Why the router would not open or follow a session.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum CourtFault {
+pub enum CourtError {
     /// The router refused the request.
     #[error("the router refused")]
     Refused,
@@ -89,7 +89,7 @@ pub trait Court: Send + Clone + 'static {
     fn open(
         &mut self,
         open: OpenAgent,
-    ) -> impl Future<Output = Result<SessionId, CourtFault>> + Send;
+    ) -> impl Future<Output = Result<SessionId, CourtError>> + Send;
 
     /// Records the person's turn, from which the task policy derives, and says which turn it is.
     /// May wait for the person (a turn that widens the task asks).
@@ -97,7 +97,7 @@ pub trait Court: Send + Clone + 'static {
         &mut self,
         session: &SessionId,
         text: &str,
-    ) -> impl Future<Output = Result<TurnId, CourtFault>> + Send;
+    ) -> impl Future<Output = Result<TurnId, CourtError>> + Send;
 
     /// Says the agent's turn is over, however it ended (`Session.TurnEnded`). A router that
     /// cannot be told ends the turn by time. The default says nothing.
@@ -132,7 +132,7 @@ pub trait Court: Send + Clone + 'static {
         _session: &SessionId,
         _to: RunsIn,
         _agent: Option<WatchedAgent>,
-    ) -> impl Future<Output = Result<Option<WatchedAgent>, CourtFault>> + Send {
-        async { Err(CourtFault::Unavailable) }
+    ) -> impl Future<Output = Result<Option<WatchedAgent>, CourtError>> + Send {
+        async { Err(CourtError::Unavailable) }
     }
 }

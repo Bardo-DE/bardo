@@ -24,7 +24,7 @@ use account_service_accounts::{Launchers as LaunchersSeam, LoginEnd, NoLauncher,
 use account_service_core::audit::AuditSink;
 use account_service_core::audit::{AuditEntry, AuditEvent};
 use account_wire::names::ACCOUNTS_PATH;
-use account_wire::{AskKind, LauncherFault};
+use account_wire::{AskKind, LauncherWireError};
 use base_time::Clock;
 use base_time::SystemClock;
 use base_time::UnixSeconds;
@@ -227,7 +227,7 @@ impl Launchers {
         &self,
         owner: &str,
         programs: &[AgentProgram],
-    ) -> Result<(), LauncherFault> {
+    ) -> Result<(), LauncherWireError> {
         let rivals: Vec<String> = {
             let state = held(&self.state);
             programs
@@ -251,7 +251,7 @@ impl Launchers {
                 .is_some_and(|holder| holder != owner && !gone.contains(holder))
         });
         if taken {
-            return Err(LauncherFault::AlreadyRegistered);
+            return Err(LauncherWireError::AlreadyRegistered);
         }
         for program in programs {
             state.programs.insert(program.clone(), owner.to_owned());
@@ -282,13 +282,13 @@ impl Launchers {
         &self,
         owner: &str,
         session: SessionToken,
-    ) -> Result<(), LauncherFault> {
+    ) -> Result<(), LauncherWireError> {
         let mut state = held(&self.state);
         if !state.programs.values().any(|holder| holder == owner) {
-            return Err(LauncherFault::NotRegistered);
+            return Err(LauncherWireError::NotRegistered);
         }
         match state.sessions.get(&session) {
-            Some(holder) if holder != owner => Err(LauncherFault::SessionTaken),
+            Some(holder) if holder != owner => Err(LauncherWireError::SessionTaken),
             Some(_) => Ok(()),
             None => {
                 state.sessions.insert(session, owner.to_owned());
@@ -303,14 +303,14 @@ impl Launchers {
         &self,
         owner: &str,
         session: &SessionToken,
-    ) -> Result<(), LauncherFault> {
+    ) -> Result<(), LauncherWireError> {
         let mut state = held(&self.state);
         match state.sessions.get(session) {
             Some(holder) if holder == owner => {
                 state.sessions.remove(session);
                 Ok(())
             }
-            _ => Err(LauncherFault::UnknownSession),
+            _ => Err(LauncherWireError::UnknownSession),
         }
     }
 
@@ -474,7 +474,7 @@ impl Launchers {
 
 fn unknown() -> RefusedError {
     RefusedError::launcher(
-        LauncherFault::UnknownRequest,
+        LauncherWireError::UnknownRequest,
         "no such request for this connection",
     )
 }

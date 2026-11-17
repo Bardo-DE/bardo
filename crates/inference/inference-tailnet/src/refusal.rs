@@ -5,7 +5,7 @@
 /// Why a request was refused. `Display` says what was refused, in terms of the program; the
 /// words for a person are not here.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum Refusal {
+pub enum TailnetError {
     /// The request came from the lending computer itself.
     #[error("the request came from the lending computer itself")]
     ThisComputer,
@@ -41,13 +41,13 @@ pub enum Refusal {
     Off,
 }
 
-impl Refusal {
+impl TailnetError {
     /// The HTTP status the refusal is answered with.
     #[must_use]
     pub fn status(&self) -> u16 {
         match self {
-            Refusal::Busy | Refusal::TooManyAsking => 429,
-            Refusal::Off | Refusal::CouldNotCheck | Refusal::NotKept => 503,
+            TailnetError::Busy | TailnetError::TooManyAsking => 429,
+            TailnetError::Off | TailnetError::CouldNotCheck | TailnetError::NotKept => 503,
             _ => 403,
         }
     }
@@ -56,17 +56,17 @@ impl Refusal {
     #[must_use]
     pub fn slug(&self) -> &'static str {
         match self {
-            Refusal::ThisComputer => "this_computer",
-            Refusal::Unknown => "unknown",
-            Refusal::CouldNotCheck => "could_not_check",
-            Refusal::Tagged => "tagged",
-            Refusal::Shared => "shared",
-            Refusal::Denied => "denied",
-            Refusal::Waiting => "waiting",
-            Refusal::TooManyAsking => "too_many_asking",
-            Refusal::NotKept => "not_kept",
-            Refusal::Busy => "busy",
-            Refusal::Off => "off",
+            TailnetError::ThisComputer => "this_computer",
+            TailnetError::Unknown => "unknown",
+            TailnetError::CouldNotCheck => "could_not_check",
+            TailnetError::Tagged => "tagged",
+            TailnetError::Shared => "shared",
+            TailnetError::Denied => "denied",
+            TailnetError::Waiting => "waiting",
+            TailnetError::TooManyAsking => "too_many_asking",
+            TailnetError::NotKept => "not_kept",
+            TailnetError::Busy => "busy",
+            TailnetError::Off => "off",
         }
     }
 
@@ -77,18 +77,18 @@ impl Refusal {
     }
 
     /// Every refusal, for tables.
-    pub const ALL: [Refusal; 11] = [
-        Refusal::ThisComputer,
-        Refusal::Unknown,
-        Refusal::CouldNotCheck,
-        Refusal::Tagged,
-        Refusal::Shared,
-        Refusal::Denied,
-        Refusal::Waiting,
-        Refusal::TooManyAsking,
-        Refusal::NotKept,
-        Refusal::Busy,
-        Refusal::Off,
+    pub const ALL: [TailnetError; 11] = [
+        TailnetError::ThisComputer,
+        TailnetError::Unknown,
+        TailnetError::CouldNotCheck,
+        TailnetError::Tagged,
+        TailnetError::Shared,
+        TailnetError::Denied,
+        TailnetError::Waiting,
+        TailnetError::TooManyAsking,
+        TailnetError::NotKept,
+        TailnetError::Busy,
+        TailnetError::Off,
     ];
 }
 
@@ -98,9 +98,9 @@ mod tests {
 
     #[test]
     fn what_is_waiting_or_busy_is_not_a_forbidden() {
-        assert_eq!(Refusal::Waiting.status(), 403);
-        assert_eq!(Refusal::Busy.status(), 429);
-        assert_eq!(Refusal::Off.status(), 503);
-        assert_eq!(Refusal::Denied.status(), 403);
+        assert_eq!(TailnetError::Waiting.status(), 403);
+        assert_eq!(TailnetError::Busy.status(), 429);
+        assert_eq!(TailnetError::Off.status(), 503);
+        assert_eq!(TailnetError::Denied.status(), 403);
     }
 }

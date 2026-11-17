@@ -126,7 +126,7 @@ pub(crate) fn bus_error(error: &BusError) -> TransportError {
     // inferd's plain refusal of a call about computers or guests.
     if let Some((name, words)) = inference_dbus::inference::computer_refusal_of(error) {
         return TransportError::Computer {
-            reason: crate::error::ComputerReason::from_name(&name),
+            reason: crate::error::ComputerError::from_name(&name),
             words,
         };
     }

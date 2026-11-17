@@ -4,7 +4,7 @@
 
 use crate::support::*;
 use action_manifest::{
-    ActionDecl, ArgSink, ArgsFault, ParamDecl, ParamNeed, TargetKind, args_from_json,
+    ActionDecl, ArgSink, ArgsError, ParamDecl, ParamNeed, TargetKind, args_from_json,
 };
 use action_vocab::{CharCount, ParamType, Value, plain_text};
 use proptest::prelude::*;
@@ -127,7 +127,7 @@ proptest! {
         let given: Map<String, Json> = [(name.clone(), value)].into_iter().collect();
         prop_assert_eq!(
             args_from_json(&d, Some(&given), &trusted()).err(),
-            Some(ArgsFault::Unknown(name))
+            Some(ArgsError::Unknown(name))
         );
     }
 

@@ -16,16 +16,16 @@ struct Counted(u64);
 
 #[derive(Debug, PartialEq, Eq, thiserror::Error)]
 #[error("the budget allows no bytes")]
-struct NoBudget;
+struct NoBudgetError;
 
 impl Peek for FakeText {
     const KIND: FormatKind = FormatKind::PlainText;
     type Peeked = Counted;
-    type Error = NoBudget;
+    type Error = NoBudgetError;
 
-    fn peek(src: &Input, _: &Sniffed, budget: &PeekBudget) -> Result<Counted, NoBudget> {
+    fn peek(src: &Input, _: &Sniffed, budget: &PeekBudget) -> Result<Counted, NoBudgetError> {
         match budget.bytes.0.min(src.stamp().len.0) {
-            0 => Err(NoBudget),
+            0 => Err(NoBudgetError),
             read => Ok(Counted(read)),
         }
     }

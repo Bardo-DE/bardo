@@ -6,7 +6,7 @@
 //! ranges and pointer properties, so the device the service makes can never register a key below
 //! `BTN_MISC`. A pointer whose request has nothing left after the cut is refused.
 
-use super::{BadCaps, Plan, Route};
+use super::{BadCapsError, Plan, Route};
 use crate::codes::{
     ABS_MAX, KEY_MAX, LED_CAPSL, LED_NUML, LED_SCROLLL, REL_HWHEEL, REL_HWHEEL_HI_RES, REL_MAX,
     REL_WHEEL, REL_WHEEL_HI_RES, REL_X, REL_Y,
@@ -56,13 +56,13 @@ pub(super) fn keyboard(maker: Maker) -> Plan {
     }
 }
 
-pub(super) fn pointer(maker: Maker, caps: &PointerCaps) -> Result<Plan, BadCaps> {
+pub(super) fn pointer(maker: Maker, caps: &PointerCaps) -> Result<Plan, BadCapsError> {
     let buttons = sorted(caps.buttons.iter().copied().filter(|&c| is_button(c)));
     let rels = sorted(caps.rels.iter().copied().filter(|&c| c <= REL_MAX));
     let props = sorted(caps.props.iter().copied().filter(|&p| p <= PROP_MAX));
     let abs = axes(&caps.abs)?;
     if buttons.is_empty() && rels.is_empty() && abs.is_empty() {
-        return Err(BadCaps::EmptyPointer);
+        return Err(BadCapsError::EmptyPointer);
     }
     Ok(Plan {
         spec: DeviceSpec {
@@ -102,7 +102,7 @@ fn sorted(codes: impl Iterator<Item = u16>) -> Vec<u16> {
 }
 
 /// Axes with a known code and a sane range, one per code; anything else refuses the request.
-fn axes(requested: &[AbsAxis]) -> Result<Vec<AbsAxis>, BadCaps> {
+fn axes(requested: &[AbsAxis]) -> Result<Vec<AbsAxis>, BadCapsError> {
     let mut out: Vec<AbsAxis> = Vec::with_capacity(requested.len());
     for axis in requested {
         let sane = axis.code <= ABS_MAX
@@ -112,7 +112,7 @@ fn axes(requested: &[AbsAxis]) -> Result<Vec<AbsAxis>, BadCaps> {
                 .all(|v| v.unsigned_abs() <= AXIS_LIMIT.unsigned_abs())
             && (0..=AXIS_LIMIT).contains(&axis.resolution);
         if !sane {
-            return Err(BadCaps::BadAxis(axis.code));
+            return Err(BadCapsError::BadAxis(axis.code));
         }
         if out.iter().all(|a| a.code != axis.code) {
             out.push(*axis);

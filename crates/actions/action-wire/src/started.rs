@@ -19,15 +19,15 @@ pub struct TerminalScope(String);
 /// Why a name is not a terminal scope.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("not the scope of a terminal's child")]
-pub struct NotATerminalScope;
+pub struct NotATerminalScopeError;
 
 impl TerminalScope {
     /// The scope a cgroup path ends in, if it is a terminal's.
     ///
     /// # Errors
     ///
-    /// [`NotATerminalScope`] when the last component of `cgroup` is not a terminal's scope.
-    pub fn from_cgroup(cgroup: &str) -> Result<Self, NotATerminalScope> {
+    /// [`NotATerminalScopeError`] when the last component of `cgroup` is not a terminal's scope.
+    pub fn from_cgroup(cgroup: &str) -> Result<Self, NotATerminalScopeError> {
         let leaf = cgroup.rsplit('/').next().unwrap_or_default();
         Self::try_from(leaf.to_owned())
     }
@@ -40,14 +40,14 @@ impl TerminalScope {
 }
 
 impl TryFrom<String> for TerminalScope {
-    type Error = NotATerminalScope;
+    type Error = NotATerminalScopeError;
 
     fn try_from(name: String) -> Result<Self, Self::Error> {
         let plain = name.len() <= LONGEST && name.chars().all(|c| c.is_ascii_graphic());
         if plain && !name.contains('/') && is_terminal_scope(&name) {
             Ok(Self(name))
         } else {
-            Err(NotATerminalScope)
+            Err(NotATerminalScopeError)
         }
     }
 }

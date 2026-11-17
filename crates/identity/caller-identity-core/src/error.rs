@@ -21,7 +21,7 @@ impl IdError {
 /// What is wrong with one `[[peer]]` row.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[non_exhaustive]
-pub enum RowFault {
+pub enum RowError {
     /// A field is not a valid id.
     #[error("{0}")]
     Id(#[from] IdError),
@@ -63,7 +63,7 @@ pub enum TableError {
         /// The row's `app`, as written.
         app: String,
         /// What is wrong with it.
-        fault: RowFault,
+        fault: RowError,
     },
     /// Two rows name the same unit.
     #[error("two rows name the unit {0}")]
@@ -74,7 +74,7 @@ pub enum TableError {
 /// caller learns must not say which check failed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[non_exhaustive]
-pub enum Refused {
+pub enum NotHeldError {
     /// The message carried no sender.
     #[error("no sender")]
     NoSender,

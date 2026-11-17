@@ -12,8 +12,8 @@ pub mod proxy;
 pub mod request;
 pub mod resolve;
 
-pub use host::{Host, HostFault, HostPattern};
-pub use policy::{DEFAULT_PORTS, EgressPolicy, PolicyFault, Ports, Refusal, special};
+pub use host::{EgressHostError, Host, HostPattern};
+pub use policy::{DEFAULT_PORTS, EgressPolicy, EgressRefusedError, PolicyError, Ports, special};
 pub use proxy::{Entry, Gate, Journal, Outcome, Proxy, Silent};
-pub use request::{BadRequest, Head, Request, Target, parse_head, read_head};
+pub use request::{BadRequestError, Head, Request, Target, parse_head, read_head};
 pub use resolve::{Resolver, SystemResolver};

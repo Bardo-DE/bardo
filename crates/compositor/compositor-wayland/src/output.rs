@@ -3,7 +3,7 @@
 //!
 //! (Not in the plan's module list; `GlobalKind::Output` needs a home: FINDINGS.)
 
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::output::{EdidFacts, EdidSerial, Mode, PhysicalMm};
 use compositor_core::{OutputKey, OutputName};
@@ -154,12 +154,12 @@ fn apply_state(output: &Output, wire: &OutputWire) {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_plug<D>(
     part: &mut OutputPart,
     display: &DisplayHandle,
     wire: &OutputWire,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: GlobalDispatch<WlOutput, WlOutputData> + 'static,
 {
@@ -184,8 +184,8 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_change(part: &mut OutputPart, wire: &OutputWire) -> Result<(), WaylandFault> {
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_change(part: &mut OutputPart, wire: &OutputWire) -> Result<(), WaylandError> {
     match part.outputs.get(&wire.key) {
         Some(output) => apply_state(output, wire),
         None => {
@@ -200,12 +200,12 @@ pub fn apply_change(part: &mut OutputPart, wire: &OutputWire) -> Result<(), Wayl
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_unplug(
     part: &mut OutputPart,
     display: &DisplayHandle,
     key: &OutputKey,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     if let Some(remove) = part.removers.remove(key) {
         (remove.0)(display);
     }

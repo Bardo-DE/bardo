@@ -1,5 +1,5 @@
 //! What a status the replica did not expect means to the contract: a read that failed
-//! ([`ReplicaError`]) or a write that was refused ([`PutRefused`]). Drive throttles with `429`,
+//! ([`ReplicaError`]) or a write that was refused ([`PutError`]). Drive throttles with `429`,
 //! `503` and, as a `403`, the reasons `rateLimitExceeded` and `userRateLimitExceeded`; a full
 //! account is a `403 storageQuotaExceeded`. A day's limit of requests or uploads used up
 //! (`dailyLimitExceeded`, `quotaExceeded`) is waited out for [`DAY_LIMIT`].
@@ -8,7 +8,7 @@ use crate::json::ErrorBody;
 use base_time::UnixSeconds;
 use http_core::http::Response;
 use sync_core::status::{self, retry_after};
-use sync_core::{ExportError, PutRefused, ReplicaError, RetryAfter};
+use sync_core::{ExportError, PutError, ReplicaError, RetryAfter};
 
 /// How long to wait when a day's limit is used up: an hour, then again.
 pub const DAY_LIMIT: RetryAfter = RetryAfter(3600);
@@ -57,16 +57,16 @@ pub fn export_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> ExportErr
 }
 
 /// A write answered with `response`, which was not a success or a precondition failure.
-pub fn write_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> PutRefused {
+pub fn write_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> PutError {
     let why = reason(response);
     match response.status().as_u16() {
-        403 if why.as_deref() == Some("storageQuotaExceeded") => PutRefused::Quota,
-        403 | 429 if day_limit(why.as_deref()) => PutRefused::Transient(DAY_LIMIT),
-        403 if throttled(why.as_deref()) => PutRefused::Transient(retry_after(response, now)),
-        401 => PutRefused::Unauthorized,
-        409 => PutRefused::Declined,
-        400 | 403 | 405 | 413 => PutRefused::Forbidden,
-        _ => PutRefused::Transient(retry_after(response, now)),
+        403 if why.as_deref() == Some("storageQuotaExceeded") => PutError::Quota,
+        403 | 429 if day_limit(why.as_deref()) => PutError::Transient(DAY_LIMIT),
+        403 if throttled(why.as_deref()) => PutError::Transient(retry_after(response, now)),
+        401 => PutError::Unauthorized,
+        409 => PutError::Declined,
+        400 | 403 | 405 | 413 => PutError::Forbidden,
+        _ => PutError::Transient(retry_after(response, now)),
     }
 }
 
@@ -150,38 +150,38 @@ mod tests {
 
     #[test]
     fn a_refused_write_is_classed_by_its_status_and_reason() {
-        const CASES: &[(u16, Option<&str>, Option<&str>, PutRefused)] = &[
-            (403, None, Some("storageQuotaExceeded"), PutRefused::Quota),
+        const CASES: &[(u16, Option<&str>, Option<&str>, PutError)] = &[
+            (403, None, Some("storageQuotaExceeded"), PutError::Quota),
             (
                 403,
                 None,
                 Some("insufficientFilePermissions"),
-                PutRefused::Forbidden,
+                PutError::Forbidden,
             ),
             (
                 403,
                 Some("9"),
                 Some("userRateLimitExceeded"),
-                PutRefused::Transient(RetryAfter(9)),
+                PutError::Transient(RetryAfter(9)),
             ),
-            (400, None, None, PutRefused::Forbidden),
-            (401, None, None, PutRefused::Unauthorized),
-            (409, None, None, PutRefused::Declined),
-            (413, None, None, PutRefused::Forbidden),
+            (400, None, None, PutError::Forbidden),
+            (401, None, None, PutError::Unauthorized),
+            (409, None, None, PutError::Declined),
+            (413, None, None, PutError::Forbidden),
             (
                 403,
                 None,
                 Some("dailyLimitExceeded"),
-                PutRefused::Transient(DAY_LIMIT),
+                PutError::Transient(DAY_LIMIT),
             ),
             (
                 403,
                 None,
                 Some("quotaExceeded"),
-                PutRefused::Transient(DAY_LIMIT),
+                PutError::Transient(DAY_LIMIT),
             ),
-            (429, Some("7"), None, PutRefused::Transient(RetryAfter(7))),
-            (502, None, None, PutRefused::Transient(RETRY)),
+            (429, Some("7"), None, PutError::Transient(RetryAfter(7))),
+            (502, None, None, PutError::Transient(RETRY)),
         ];
         for (status, retry, reason, want) in CASES {
             let got = write_error(&answer(*status, *retry, *reason), UnixSeconds(0));

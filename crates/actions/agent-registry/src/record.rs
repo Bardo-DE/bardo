@@ -46,7 +46,7 @@ pub struct Record {
 
 /// Why a record was not read. Two faults are equal when they are the same kind of failure.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum RecordFault {
+pub enum RecordError {
     /// Nothing installed there, or the file could not be read.
     #[error("that agent is not installed")]
     Missing(#[source] Arc<std::io::Error>),
@@ -58,13 +58,13 @@ pub enum RecordFault {
     Invalid,
 }
 
-impl PartialEq for RecordFault {
+impl PartialEq for RecordError {
     fn eq(&self, other: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(other)
     }
 }
 
-impl Eq for RecordFault {}
+impl Eq for RecordError {}
 
 /// The file name of the record.
 pub const FILE: &str = "installed.toml";
@@ -86,10 +86,10 @@ impl Record {
     ///
     /// # Errors
     ///
-    /// Returns [`RecordFault::Damaged`] when the text is not a record, and [`RecordFault::Invalid`] when
+    /// Returns [`RecordError::Damaged`] when the text is not a record, and [`RecordError::Invalid`] when
     /// it names a program outside its directory, or a name or digest that is not valid.
-    pub fn parse(text: &str) -> Result<Self, RecordFault> {
-        let record: Self = toml::from_str(text).map_err(RecordFault::Damaged)?;
+    pub fn parse(text: &str) -> Result<Self, RecordError> {
+        let record: Self = toml::from_str(text).map_err(RecordError::Damaged)?;
         let named = Slug::parse(&record.id).is_ok() && Slug::parse(&record.version).is_ok();
         let stays = Path::new(&record.command)
             .components()
@@ -100,7 +100,7 @@ impl Record {
             .is_none_or(|d| Sha256Hex::parse(d).is_ok());
         (named && stays && digest)
             .then_some(record)
-            .ok_or(RecordFault::Invalid)
+            .ok_or(RecordError::Invalid)
     }
 
     /// The program's path, given the version's directory.

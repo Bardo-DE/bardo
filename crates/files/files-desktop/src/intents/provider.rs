@@ -20,7 +20,7 @@ use provenance::{Actor, Confidentiality, EntityId, Integrity, Label, Labelled, S
 
 use super::args::ask_of;
 use super::ask::{Ask, Reply, Undoing, Window};
-use crate::error::Refusal;
+use crate::error::WindowError;
 
 /// Answers the router's calls from the window.
 pub(super) struct Files<W> {
@@ -29,11 +29,11 @@ pub(super) struct Files<W> {
 }
 
 /// What the router is told when the window would not.
-fn refusal(why: Refusal) -> AppRefusal {
+fn refusal(why: WindowError) -> AppRefusal {
     match why {
-        Refusal::Closed => AppRefusal::Busy,
-        Refusal::Gone => AppRefusal::Failed(FailText(why.to_string())),
-        Refusal::Failed(words) => AppRefusal::Failed(FailText(words)),
+        WindowError::Closed => AppRefusal::Busy,
+        WindowError::Gone => AppRefusal::Failed(FailText(why.to_string())),
+        WindowError::Failed(words) => AppRefusal::Failed(FailText(words)),
     }
 }
 
@@ -63,8 +63,8 @@ impl<W: Window> IntentProvider for Files<W> {
         };
         match self.window.ask(Ask::Undo(undoing)).await {
             Ok(_) => Ok(()),
-            Err(Refusal::Closed) => Err(UndoFault::AppUnavailable),
-            Err(Refusal::Gone | Refusal::Failed(_)) => Err(UndoFault::Gone),
+            Err(WindowError::Closed) => Err(UndoFault::AppUnavailable),
+            Err(WindowError::Gone | WindowError::Failed(_)) => Err(UndoFault::Gone),
         }
     }
 

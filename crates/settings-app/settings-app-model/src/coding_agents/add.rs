@@ -4,7 +4,7 @@
 
 use super::add_choice::{AddAction, Candidate, Listing, Presence, Step, said_line};
 use crate::outside::Assistant;
-use action_settings::{AddFault, AgentRow, NewAgent, Source, edit_agent_add};
+use action_settings::{AddError, AgentRow, NewAgent, Source, edit_agent_add};
 
 /// Why Add did not add the assistant.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -12,7 +12,7 @@ pub enum AddRefusal {
     /// No installed assistant is waiting to be offered, so none is picked.
     NothingNew,
     /// The actions service refused the entry, or could not write it.
-    Fault(AddFault),
+    Fault(AddError),
     /// The download failed, and the downloader said this.
     DownloadSaid(String),
     /// The download failed and nothing says why.
@@ -299,7 +299,7 @@ impl AddForm {
 
     /// The form with the refusal of the write shown.
     #[must_use]
-    pub fn refused(mut self, fault: AddFault) -> Self {
+    pub fn refused(mut self, fault: AddError) -> Self {
         self.step = Step::Idle;
         self.refusal = Some(AddRefusal::Fault(fault));
         self

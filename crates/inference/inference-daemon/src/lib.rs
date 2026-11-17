@@ -58,7 +58,7 @@ mod watch;
 
 pub use agent::Agents;
 pub use attached::{
-    AddedFile, Attached, AttachedBook, Computers, KeyFileProblem, NotReady, Reach, Site, Target,
+    AddedFile, Attached, AttachedBook, Computers, KeyFileError, NotReady, Reach, Site, Target,
     models as attached_models, probe as probe_attached,
 };
 pub use broker::{AccountList, AccountdBroker, follow as follow_accounts};
@@ -75,7 +75,7 @@ pub use peers::{CallerTable, TablePeers};
 pub use probe::{Found, ProbeConfig, Probed, Runtime};
 pub use probed::Standing;
 pub use replay::Replays;
-pub use report::{NoReports, ReportFault, Reports};
+pub use report::{NoReports, ReportError, Reports};
 pub use runner::{Pin, Pinned, Turns};
 pub use serve::{guarded, serve_session};
 pub use service::{Inference, serve_on, serve_with_settings};

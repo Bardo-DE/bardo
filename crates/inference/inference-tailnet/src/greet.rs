@@ -2,7 +2,7 @@
 //! [`crate::Dialer`]).
 
 use crate::hello::{HELLO_PATH, Hello};
-use crate::refusal::Refusal;
+use crate::refusal::TailnetError;
 use http_body_util::{BodyExt, Empty};
 use hyper::body::Bytes;
 use hyper::client::conn::http1;
@@ -19,7 +19,7 @@ pub enum GreetError {
     /// The computer turned this one away: with the reason it gave (its code in the answer's
     /// body), or `None` for a code this build does not know.
     #[error("the computer refused: {}", .0.map_or("a reason this build does not know", |r| r.slug()))]
-    Refused(Option<Refusal>),
+    Refused(Option<TailnetError>),
     /// Something answered that does not lend models.
     #[error("the answer is not a lending computer's")]
     NotLending,
@@ -38,7 +38,7 @@ fn refusal_error(body: &[u8]) -> GreetError {
         .ok()
         .and_then(|value| value.get("error")?.get("code")?.as_str().map(str::to_owned));
     code.map_or(GreetError::NotLending, |code| {
-        GreetError::Refused(Refusal::from_slug(&code))
+        GreetError::Refused(TailnetError::from_slug(&code))
     })
 }
 

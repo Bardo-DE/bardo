@@ -10,7 +10,7 @@ use account_match::{DimsNeed, EmbedNeed};
 use base_ids::Dims;
 use inference_client::{Transport, TransportError};
 use inference_core::{
-    EmbedReply, EmbedRequest, EmbedRole as WireRole, InferRefusal, InferReply, InferRequest,
+    EmbedReply, EmbedRequest, EmbedRole as WireRole, InferRefusedError, InferReply, InferRequest,
     ModelError,
 };
 use memory_store::{
@@ -142,15 +142,15 @@ fn fatal(why: impl Into<String>) -> EmbedError {
     clippy::match_same_arms,
     reason = "the wildcard stands for reasons the accounts service adds later (the enum is non-exhaustive); the named arms are the known ones"
 )]
-pub(crate) fn refusal(why: InferRefusal) -> EmbedError {
+pub(crate) fn refusal(why: InferRefusedError) -> EmbedError {
     match why {
-        InferRefusal::Unavailable => EmbedError::Unavailable,
-        InferRefusal::RequiresCloud(_)
-        | InferRefusal::NeedsGrant
-        | InferRefusal::Denied
-        | InferRefusal::OverBudget
-        | InferRefusal::Unsupported => EmbedError::Refused(why.to_string()),
-        // The accounts service may add reasons (`InferRefusal` is non-exhaustive); one not named is a refusal.
+        InferRefusedError::Unavailable => EmbedError::Unavailable,
+        InferRefusedError::RequiresCloud(_)
+        | InferRefusedError::NeedsGrant
+        | InferRefusedError::Denied
+        | InferRefusedError::OverBudget
+        | InferRefusedError::Unsupported => EmbedError::Refused(why.to_string()),
+        // The accounts service may add reasons (`InferRefusedError` is non-exhaustive); one not named is a refusal.
         _ => EmbedError::Refused(why.to_string()),
     }
 }

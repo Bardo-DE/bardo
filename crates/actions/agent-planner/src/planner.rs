@@ -20,7 +20,7 @@ use crate::render::messages_with;
 use crate::role::RoleText;
 use crate::seam::Planner;
 use crate::show::finish_output;
-use crate::summarise::{SummariseFault, Summarised};
+use crate::summarise::{SummariseError, Summarised};
 use crate::voice::Voice;
 use account_capability::LlmFeature;
 use account_capability::Tier;
@@ -35,7 +35,7 @@ use base_ids::Tokens;
 use companion_wire::{RouteLog, RouteNote};
 use inference_client::Transport;
 use inference_core::{
-    ChatReply, ChatRequest, ClientFrame, Declined, InferEvent, InferRefusal, InferReply,
+    ChatReply, ChatRequest, ClientFrame, Declined, InferEvent, InferRefusedError, InferReply,
     InferRequest, InferSession, OpenOptions, ReplyShape, ServedBy, StopReason, ToolCall, ToolDecl,
 };
 use serde_json::Value as Json;
@@ -58,7 +58,7 @@ pub const TOOL_RELATED: &str = "bardo_related";
 
 /// Why the planner gave nothing usable.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
-pub enum PlanFault {
+pub enum PlanError {
     /// No model could be reached or it refused.
     #[error("no planner model")]
     Unavailable,
@@ -255,9 +255,9 @@ impl<P: Transport> PlannerModel<P> {
     ///
     /// # Errors
     ///
-    /// Returns a [`PlanFault`] when no model answers, the reply cannot be read, or the model wrote
+    /// Returns a [`PlanError`] when no model answers, the reply cannot be read, or the model wrote
     /// a call as words.
-    pub async fn plan(&self, view: &PlannerView) -> Result<ModelOutput, PlanFault> {
+    pub async fn plan(&self, view: &PlannerView) -> Result<ModelOutput, PlanError> {
         let reply = self.converse(view).await?;
         Ok(match (reply.said, reply.then) {
             (Some(words), ModelOutput::Finish) => ModelOutput::Say(words),
@@ -269,11 +269,11 @@ impl<P: Transport> PlannerModel<P> {
     ///
     /// # Errors
     ///
-    /// Returns a [`PlanFault`] when no model is chosen or reachable, or its reply is unusable.
+    /// Returns a [`PlanError`] when no model is chosen or reachable, or its reply is unusable.
     pub async fn chat_routed(
         &self,
         request: ChatRequest,
-    ) -> Result<(ChatReply, Vec<RouteNote>), PlanFault> {
+    ) -> Result<(ChatReply, Vec<RouteNote>), PlanError> {
         let need = Need::Llm(LlmNeed::new(
             BTreeSet::from([LlmFeature::Chat, LlmFeature::Tools]),
             CONTEXT,
@@ -303,14 +303,14 @@ impl<P: Transport> PlannerModel<P> {
                         "the planner's model finished without a chat reply"
                     );
                     return Err(match (&other, route.declined()) {
-                        (InferReply::Refused(InferRefusal::NoModelChosen), _) => {
-                            PlanFault::NoModelChosen
+                        (InferReply::Refused(InferRefusedError::NoModelChosen), _) => {
+                            PlanError::NoModelChosen
                         }
-                        (InferReply::Refused(InferRefusal::NoModelUsesApps), _) => {
-                            PlanFault::NoModelUsesApps
+                        (InferReply::Refused(InferRefusedError::NoModelUsesApps), _) => {
+                            PlanError::NoModelUsesApps
                         }
-                        (_, Some(declined)) => PlanFault::Declined(Box::new(declined.clone())),
-                        (_, None) => PlanFault::Unavailable,
+                        (_, Some(declined)) => PlanError::Declined(Box::new(declined.clone())),
+                        (_, None) => PlanError::Unavailable,
                     });
                 }
                 _ => {}
@@ -319,13 +319,13 @@ impl<P: Transport> PlannerModel<P> {
     }
 
     /// The reply as the loop's output.
-    fn read(&self, reply: ChatReply, view: &PlannerView) -> Result<PlannerReply, PlanFault> {
+    fn read(&self, reply: ChatReply, view: &PlannerView) -> Result<PlannerReply, PlanError> {
         if matches!(
             reply.stop,
             StopReason::MaxTokens | StopReason::ContentFilter
         ) {
             tracing::warn!(stop = ?reply.stop, "the planner's reply stopped early");
-            return Err(PlanFault::Unreadable);
+            return Err(PlanError::Unreadable);
         }
         // The person never reads an id the model repeated from its view ("t-179"): said as what it is.
         let mut said = Some(without_ids(&bounded(reply.text.trim()))).filter(|t| !t.is_empty());
@@ -333,7 +333,7 @@ impl<P: Transport> PlannerModel<P> {
         // calls beside it the words are dropped, alone the turn fails with a name for it.
         said = match (said, reply.tool_calls.is_empty()) {
             (Some(words), true) if leaked_call(&words).is_some() => {
-                return Err(PlanFault::CallInText);
+                return Err(PlanError::CallInText);
             }
             (Some(words), false) if leaked_call(&words).is_some() => None,
             (said, _) => said,
@@ -365,7 +365,7 @@ impl<P: Transport> PlannerModel<P> {
                 None if said.is_some() => (ModelOutput::Finish, Vec::new()),
                 None => {
                     tracing::warn!("the planner's reply had no words and no call");
-                    return Err(PlanFault::Unreadable);
+                    return Err(PlanError::Unreadable);
                 }
             }
         };
@@ -441,18 +441,18 @@ impl<P: Transport> Planner for PlannerModel<P> {
         self.role = Some(role);
     }
 
-    async fn converse(&self, view: &PlannerView) -> Result<PlannerReply, PlanFault> {
+    async fn converse(&self, view: &PlannerView) -> Result<PlannerReply, PlanError> {
         let (reply, route) = self.chat_routed(self.request(view)).await?;
         let mut said = self.read(reply, view)?;
         said.route = route;
         Ok(said)
     }
 
-    async fn chat(&self, request: ChatRequest) -> Result<ChatReply, PlanFault> {
+    async fn chat(&self, request: ChatRequest) -> Result<ChatReply, PlanError> {
         self.chat_routed(request).await.map(|(reply, _)| reply)
     }
 
-    async fn summarise(&self, input: &SummaryInput) -> Result<Summarised, SummariseFault> {
+    async fn summarise(&self, input: &SummaryInput) -> Result<Summarised, SummariseError> {
         self.summary_of(input).await
     }
 }
@@ -484,8 +484,8 @@ pub(crate) fn log_unreadable(what: &str, error: &serde_json::Error) {
 }
 
 /// A model that could not be used: the daemon's log says at which stage and why (the accounts service
-/// error, never the prompt), the loop sees [`PlanFault::Unavailable`].
-fn unavailable(stage: &str, error: &dyn std::fmt::Display) -> PlanFault {
+/// error, never the prompt), the loop sees [`PlanError::Unavailable`].
+fn unavailable(stage: &str, error: &dyn std::fmt::Display) -> PlanError {
     tracing::warn!(stage, %error, "the planner's model could not be used");
-    PlanFault::Unavailable
+    PlanError::Unavailable
 }

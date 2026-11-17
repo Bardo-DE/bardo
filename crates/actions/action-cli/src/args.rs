@@ -2,7 +2,7 @@
 //! into the command, the global flags and the raw `--param value` pairs. Which app, action and
 //! parameters exist is `resolve`'s and `params`'s business, from the manifests.
 
-use crate::exit::Failure;
+use crate::exit::ExitError;
 use crate::sessions::SessionsCmd;
 use provenance::{SessionId, SpaceId};
 use std::collections::BTreeSet;
@@ -123,7 +123,7 @@ impl Scan {
     }
 }
 
-fn scan(words: &[String]) -> Result<Scan, Failure> {
+fn scan(words: &[String]) -> Result<Scan, ExitError> {
     let mut out = Scan::default();
     let mut iter = words.iter();
     while let Some(word) = iter.next() {
@@ -134,7 +134,7 @@ fn scan(words: &[String]) -> Result<Scan, Failure> {
                 }
                 "--" => out.positional.extend(iter.by_ref().cloned()),
                 short if short.len() > 1 && short.starts_with('-') => {
-                    return Err(Failure::usage(format!("unknown option {short}")));
+                    return Err(ExitError::usage(format!("unknown option {short}")));
                 }
                 _ => out.positional.push(word.clone()),
             }
@@ -154,7 +154,7 @@ fn scan(words: &[String]) -> Result<Scan, Failure> {
                 None => iter
                     .next()
                     .cloned()
-                    .ok_or_else(|| Failure::usage(format!("--{other} needs a value")))?,
+                    .ok_or_else(|| ExitError::usage(format!("--{other} needs a value")))?,
             };
             if other == "session" {
                 out.session = Some(value);
@@ -168,18 +168,18 @@ fn scan(words: &[String]) -> Result<Scan, Failure> {
     Ok(out)
 }
 
-fn session_word(word: &str) -> Result<SessionId, Failure> {
+fn session_word(word: &str) -> Result<SessionId, ExitError> {
     SessionId::parse(word)
-        .map_err(|e| Failure::usage_because(format!("{word:?} is not a session id"), &e))
+        .map_err(|e| ExitError::usage_because(format!("{word:?} is not a session id"), &e))
 }
 
-fn command(scan: &Scan) -> Result<Command, Failure> {
+fn command(scan: &Scan) -> Result<Command, ExitError> {
     let words: Vec<&str> = scan.positional.iter().map(String::as_str).collect();
-    let no_flags = |what: &str| -> Result<(), Failure> {
+    let no_flags = |what: &str| -> Result<(), ExitError> {
         if scan.params.is_empty() {
             Ok(())
         } else {
-            Err(Failure::usage(format!("{what} takes no parameters")))
+            Err(ExitError::usage(format!("{what} takes no parameters")))
         }
     };
     if scan.has("version") {
@@ -188,27 +188,27 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
     match words.as_slice() {
         _ if scan.has("help") => Ok(Command::Help),
         [] | ["undo"] if scan.has("last") => Ok(Command::Undo(UndoWhich::Last)),
-        [] => Err(Failure::usage("no command given (try: bardo-do --help)")),
+        [] => Err(ExitError::usage("no command given (try: bardo-do --help)")),
         ["apps"] => no_flags("apps").map(|()| Command::Apps),
-        ["apps", ..] => Err(Failure::usage("apps takes no arguments")),
+        ["apps", ..] => Err(ExitError::usage("apps takes no arguments")),
         ["skills"] => no_flags("skills").map(|()| Command::Skills),
-        ["skills", ..] => Err(Failure::usage("skills takes no arguments")),
+        ["skills", ..] => Err(ExitError::usage("skills takes no arguments")),
         ["describe", app, action] => Ok(Command::Describe {
             app: (*app).to_owned(),
             action: (*action).to_owned(),
         }),
-        ["describe", ..] => Err(Failure::usage("usage: bardo-do describe <app> <action>")),
+        ["describe", ..] => Err(ExitError::usage("usage: bardo-do describe <app> <action>")),
         ["ask", text @ ..] if !text.is_empty() => no_flags("ask").and_then(|()| {
             Ok(Command::Ask {
                 text: text.join(" "),
                 space: match scan.space.as_deref() {
                     None => SpaceId::desktop(),
                     Some(id) => SpaceId::parse(id)
-                        .map_err(|e| Failure::usage_because("--space is not a Space id", &e))?,
+                        .map_err(|e| ExitError::usage_because("--space is not a Space id", &e))?,
                 },
             })
         }),
-        ["ask"] => Err(Failure::usage("usage: bardo-do ask <text>")),
+        ["ask"] => Err(ExitError::usage("usage: bardo-do ask <text>")),
         ["sessions"] => no_flags("sessions").map(|()| Command::Sessions(SessionsCmd::List)),
         ["sessions", "load", id] => no_flags("sessions load")
             .and_then(|()| session_word(id))
@@ -218,10 +218,10 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 [] => None,
                 [(name, row)] if name == "at" => Some(
                     row.parse::<u64>()
-                        .map_err(|e| Failure::usage_because("--at is not a row number", &e))?,
+                        .map_err(|e| ExitError::usage_because("--at is not a row number", &e))?,
                 ),
                 _ => {
-                    return Err(Failure::usage(
+                    return Err(ExitError::usage(
                         "usage: bardo-do sessions fork <id> [--at <row>]",
                     ));
                 }
@@ -231,14 +231,14 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 at,
             }))
         }
-        ["sessions", ..] => Err(Failure::usage(
+        ["sessions", ..] => Err(ExitError::usage(
             "usage: bardo-do sessions | sessions load <id> | sessions fork <id> [--at <row>]",
         )),
         ["undo", id] => id
             .parse::<u64>()
             .map(|n| Command::Undo(UndoWhich::Entry(n)))
-            .map_err(|e| Failure::usage_because(format!("{id:?} is not an undo id"), &e)),
-        ["undo", ..] => Err(Failure::usage("usage: bardo-do undo <undo-id> | --last")),
+            .map_err(|e| ExitError::usage_because(format!("{id:?} is not an undo id"), &e)),
+        ["undo", ..] => Err(ExitError::usage("usage: bardo-do undo <undo-id> | --last")),
         [app] if scan.has("list") => Ok(Command::List {
             app: (*app).to_owned(),
         }),
@@ -246,11 +246,11 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
             app: (*app).to_owned(),
             text: text.join(" "),
         }),
-        [_, "search"] => Err(Failure::usage("usage: bardo-do <app> search <text>")),
+        [_, "search"] => Err(ExitError::usage("usage: bardo-do <app> search <text>")),
         [app, "context"] => no_flags("context").map(|()| Command::Context {
             app: (*app).to_owned(),
         }),
-        [_] => Err(Failure::usage(
+        [_] => Err(ExitError::usage(
             "usage: bardo-do <app> <action> …, or bardo-do <app> --list",
         )),
         [app, action, targets @ ..] => Ok(Command::Call(CallArgs {
@@ -262,7 +262,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
                 .as_deref()
                 .map(SessionId::parse)
                 .transpose()
-                .map_err(|e| Failure::usage_because("--session is not a session id", &e))?,
+                .map_err(|e| ExitError::usage_because("--session is not a session id", &e))?,
             params: scan.params.clone(),
             targets: targets.iter().map(|t| (*t).to_owned()).collect(),
         })),
@@ -275,7 +275,7 @@ fn command(scan: &Scan) -> Result<Command, Failure> {
 ///
 /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
 /// says what is wrong.
-pub fn parse(words: &[String]) -> Result<Parsed, Failure> {
+pub fn parse(words: &[String]) -> Result<Parsed, ExitError> {
     // A shell's half-typed words (`--`, `-`, `--to=`) are not a command line: they pass as typed.
     if let Some((first, typed)) = words.split_first()
         && first == "__complete"

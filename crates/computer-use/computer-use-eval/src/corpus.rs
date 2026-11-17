@@ -216,17 +216,17 @@ fn check_surface(name: &str, def: &SurfaceDef) -> Result<(), CorpusError> {
 
 /// A jump or a condition names a screen the surface does not have.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-enum Dangling {
+enum DanglingError {
     #[error("goto {0}: no such screen")]
     Goto(String),
     #[error("screen {0}: no such screen")]
     Condition(String),
 }
 
-fn check_act(def: &SurfaceDef, act: &Act) -> Result<(), Dangling> {
+fn check_act(def: &SurfaceDef, act: &Act) -> Result<(), DanglingError> {
     match act {
         Act::Goto(id) if !def.screens.iter().any(|s| &s.id == id) => {
-            Err(Dangling::Goto(id.clone()))
+            Err(DanglingError::Goto(id.clone()))
         }
         Act::When(w) => {
             check_cond(def, &w.cond)?;
@@ -239,10 +239,10 @@ fn check_act(def: &SurfaceDef, act: &Act) -> Result<(), Dangling> {
     }
 }
 
-fn check_cond(def: &SurfaceDef, cond: &Cond) -> Result<(), Dangling> {
+fn check_cond(def: &SurfaceDef, cond: &Cond) -> Result<(), DanglingError> {
     match cond {
         Cond::Screen(id) if !def.screens.iter().any(|s| &s.id == id) => {
-            Err(Dangling::Condition(id.clone()))
+            Err(DanglingError::Condition(id.clone()))
         }
         Cond::Not(inner) => check_cond(def, inner),
         _ => Ok(()),

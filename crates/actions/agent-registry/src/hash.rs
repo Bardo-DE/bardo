@@ -9,7 +9,7 @@ pub struct Sha256Hex(String);
 /// Why a digest was not accepted.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("a SHA-256 is 64 hex digits")]
-pub struct DigestRefused;
+pub struct DigestError;
 
 impl Sha256Hex {
     /// The digest of `bytes`.
@@ -40,13 +40,13 @@ impl Sha256Hex {
     ///
     /// # Errors
     ///
-    /// Returns [`DigestRefused`] when `text` is not 64 hexadecimal digits.
-    pub fn parse(text: &str) -> Result<Self, DigestRefused> {
+    /// Returns [`DigestError`] when `text` is not 64 hexadecimal digits.
+    pub fn parse(text: &str) -> Result<Self, DigestError> {
         let text = text.trim().to_ascii_lowercase();
         if text.len() == 64 && text.bytes().all(|b| b.is_ascii_hexdigit()) {
             Ok(Self(text))
         } else {
-            Err(DigestRefused)
+            Err(DigestError)
         }
     }
 

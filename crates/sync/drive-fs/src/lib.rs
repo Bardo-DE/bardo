@@ -50,7 +50,7 @@ pub use drive::{
 };
 pub use limit::{AUTOMATIC_FLOOR, CacheLimit};
 pub use listing::{Entry, Listing, ListingError};
-pub use reason::Reason;
+pub use reason::SkipError;
 pub use sink::{Sending, Sink};
 pub use source::{CopyError, Exporting, Fetching, ReplicaSource, Source, SourceError};
 pub use sync_core::{ContentHash, RemoteId};

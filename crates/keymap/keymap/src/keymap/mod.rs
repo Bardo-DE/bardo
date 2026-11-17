@@ -20,7 +20,7 @@ use crate::reserved::reserved_reason;
 use crate::source::SystemBinding;
 use crate::standard_action::StandardAction;
 
-pub use conflict::Conflict;
+pub use conflict::ConflictError;
 use layers::{Binding, Entry, Layer, upsert};
 pub use registration::Registration;
 use resolved::Resolved;

@@ -40,5 +40,5 @@ pub use computers::{
     relay_socket,
 };
 pub use inference_router::attached::{
-    Attached, AttachedError, KeyFileProblem, NotReady, Reach, Site, Target, models,
+    Attached, AttachedError, KeyFileError, NotReady, Reach, Site, Target, models,
 };

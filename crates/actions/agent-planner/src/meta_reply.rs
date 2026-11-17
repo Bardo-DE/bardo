@@ -9,7 +9,7 @@ use crate::planner::{
 use crate::read_ask::read_output;
 use account_core::AppName;
 use action_core::{HandleShape, OneOf, PlannerView, ReplyFault};
-use action_manifest::{ArgsFault, RELATION_ARG, Why};
+use action_manifest::{ArgError, ArgsError, RELATION_ARG};
 use action_vocab::{Args, CallRequest, Handle, Origin, ParamName, TargetValue, Value};
 use agent_loop::{Availability, ModelOutput, PlannedCall, choose_tier, leaked_call};
 use inference_core::ToolCall;
@@ -42,9 +42,9 @@ pub(crate) fn plain_name(name: &str) -> String {
 }
 
 /// An argument fault that names nothing the model wrote but a plain name.
-pub(crate) fn plain_fault(fault: ArgsFault) -> ArgsFault {
+pub(crate) fn plain_fault(fault: ArgsError) -> ArgsError {
     match fault {
-        ArgsFault::Unknown(name) => ArgsFault::Unknown(plain_name(&name)),
+        ArgsError::Unknown(name) => ArgsError::Unknown(plain_name(&name)),
         other => other,
     }
 }
@@ -80,31 +80,31 @@ pub(crate) fn is_meta(name: &str) -> bool {
 
 /// The words of a `bardo_answer`: plain, not empty, and not a call written as words. A reply
 /// that is none of these is unreadable, like a question that is none of them.
-pub(crate) fn answer_text(call: &ToolCall) -> Result<String, PlanFault> {
+pub(crate) fn answer_text(call: &ToolCall) -> Result<String, PlanError> {
     let args: Json = serde_json::from_str(call.input.as_str()).map_err(|error| {
         log_unreadable("an answer's arguments", &error);
-        PlanFault::Unreadable
+        PlanError::Unreadable
     })?;
     let text = args
         .get("text")
         .and_then(Json::as_str)
         .map(|t| bounded(t.trim()))
         .filter(|t| !t.is_empty())
-        .ok_or(PlanFault::Unreadable)?;
+        .ok_or(PlanError::Unreadable)?;
     match leaked_call(&text) {
-        Some(_) => Err(PlanFault::CallInText),
+        Some(_) => Err(PlanError::CallInText),
         None => Ok(without_ids(&text)),
     }
 }
 
-pub(crate) fn meta_output(call: &ToolCall, view: &PlannerView) -> Result<ModelOutput, PlanFault> {
+pub(crate) fn meta_output(call: &ToolCall, view: &PlannerView) -> Result<ModelOutput, PlanError> {
     let args = match serde_json::from_str::<Json>(call.input.as_str()) {
         Ok(args) => args,
         Err(error) => {
             log_unreadable("a meta call's arguments", &error);
             return match call.name.as_str() {
                 TOOL_READ | TOOL_RELATED => Ok(ModelOutput::Unread(ReplyFault::NotJson)),
-                _ => Err(PlanFault::Unreadable),
+                _ => Err(PlanError::Unreadable),
             };
         }
     };
@@ -120,16 +120,16 @@ fn param(name: &str) -> Option<ParamName> {
     ParamName::parse(name).ok()
 }
 
-fn wrong(name: &str, why: Why) -> ModelOutput {
+fn wrong(name: &str, why: ArgError) -> ModelOutput {
     match param(name) {
-        Some(param) => ModelOutput::Unread(ReplyFault::Args(ArgsFault::Wrong { param, why })),
+        Some(param) => ModelOutput::Unread(ReplyFault::Args(ArgsError::Wrong { param, why })),
         None => ModelOutput::Unread(ReplyFault::NotJson),
     }
 }
 
 fn missing(name: &str) -> ModelOutput {
     match param(name) {
-        Some(param) => ModelOutput::Unread(ReplyFault::Args(ArgsFault::Missing(param))),
+        Some(param) => ModelOutput::Unread(ReplyFault::Args(ArgsError::Missing(param))),
         None => ModelOutput::Unread(ReplyFault::NotJson),
     }
 }
@@ -147,20 +147,20 @@ fn related_output(args: &Json, view: &PlannerView) -> ModelOutput {
         return missing(RELATION_ARG);
     };
     let Some((target, kind)) = related_subject(of, view) else {
-        return wrong("of", Why::Type);
+        return wrong("of", ArgError::Type);
     };
     let kind = &kind;
     let Some(card) = view.actions.iter().find(|card| {
         matches!(&card.on, action_manifest::TargetKind::One(k) if k == kind)
             && card.related.iter().any(|r| r.name.as_str() == relation)
     }) else {
-        return wrong(RELATION_ARG, Why::Range);
+        return wrong(RELATION_ARG, ArgError::Range);
     };
     let (Some(name), Some(choice)) = (
         param(RELATION_ARG),
         action_vocab::ChoiceId::parse(relation).ok(),
     ) else {
-        return wrong(RELATION_ARG, Why::Range);
+        return wrong(RELATION_ARG, ArgError::Range);
     };
     let Some(tier) = choose_tier(&Availability {
         typed: true,
@@ -197,7 +197,7 @@ const ASK_CHOICE_TEXT: usize = 80;
 
 /// A question as the schema allows it: bounded text and at most six bounded choices, every one a
 /// string. Anything else is an unreadable reply, not a question trimmed to fit.
-fn question(args: &Json) -> Result<ModelOutput, PlanFault> {
+fn question(args: &Json) -> Result<ModelOutput, PlanError> {
     let text = args
         .get("text")
         .and_then(Json::as_str)
@@ -205,7 +205,7 @@ fn question(args: &Json) -> Result<ModelOutput, PlanFault> {
         .map(plain)
         .map(|t| without_ids(&t))
         .filter(|t| !t.trim().is_empty())
-        .ok_or(PlanFault::Unreadable)?;
+        .ok_or(PlanError::Unreadable)?;
     let choices = match args.get("choices") {
         None => Vec::new(),
         Some(Json::Array(items)) if items.len() <= ASK_CHOICES => items
@@ -215,10 +215,10 @@ fn question(args: &Json) -> Result<ModelOutput, PlanFault> {
                     .filter(|c| c.chars().count() <= ASK_CHOICE_TEXT)
                     .map(plain)
                     .map(|t| without_ids(&t))
-                    .ok_or(PlanFault::Unreadable)
+                    .ok_or(PlanError::Unreadable)
             })
             .collect::<Result<Vec<_>, _>>()?,
-        Some(_) => return Err(PlanFault::Unreadable),
+        Some(_) => return Err(PlanError::Unreadable),
     };
     Ok(ModelOutput::Ask { text, choices })
 }

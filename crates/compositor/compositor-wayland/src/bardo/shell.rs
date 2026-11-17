@@ -15,7 +15,7 @@ use super::space_shot::SpaceShotPart;
 use super::{shell_overview, shell_screen, shell_space, shell_split, shell_trial};
 use crate::foreign_toplevel_list::{identifier_of, window_of_identifier};
 use crate::handler::{EventSink, OutputLookup};
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use account_core::SpaceId;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::overview_drag::SpaceTargets;
@@ -268,16 +268,20 @@ where
                 match shell_permission::on_answer(state.bardo_shell_part(), ask, answer, now, wall)
                 {
                     Ok(events) => state.feed(events),
-                    Err(fault) => resource
-                        .post_error(bardo_shell_v1::Error::AnsweredTooSoon, fault.to_string()),
+                    Err(fault) => resource.post_error(
+                        bardo_shell_v1::Error::AnsweredTooSoonError,
+                        fault.to_string(),
+                    ),
                 }
             }
             bardo_shell_v1::Request::DisplaysTrialAnswer { trial, answer } => {
                 let now = state.bardo_shell_now();
                 match shell_trial::on_answer(state.bardo_shell_part(), trial, answer, now) {
                     Ok(events) => state.feed(events),
-                    Err(fault) => resource
-                        .post_error(bardo_shell_v1::Error::AnsweredTooSoon, fault.to_string()),
+                    Err(fault) => resource.post_error(
+                        bardo_shell_v1::Error::AnsweredTooSoonError,
+                        fault.to_string(),
+                    ),
                 }
             }
             bardo_shell_v1::Request::SetFullScreenBar { mode } => {
@@ -437,8 +441,8 @@ pub fn on_layer_gone(part: &mut BardoShellPart, layer: LayerKey) {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_note(part: &mut BardoShellPart, note: &ShellNote) -> Result<(), WaylandFault> {
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_note(part: &mut BardoShellPart, note: &ShellNote) -> Result<(), WaylandError> {
     match note {
         ShellNote::Role(layer, role) => {
             if let Some(AskedRole { surface, output }) = part.asked.remove(layer) {

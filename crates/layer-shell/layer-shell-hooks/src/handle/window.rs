@@ -5,7 +5,7 @@ use layer_shell_types::{
 };
 
 use super::{RoleKind, SurfaceHandle};
-use crate::grab::GrabRefused;
+use crate::grab::GrabError;
 
 impl SurfaceHandle {
     /// Start moving this toplevel with the pointer (`xdg_toplevel.move`): call it from the
@@ -17,9 +17,9 @@ impl SurfaceHandle {
     ///
     /// # Errors
     ///
-    /// `GrabRefused` when the compositor would ignore the request: no button is held, the press was
+    /// `GrabError` when the compositor would ignore the request: no button is held, the press was
     /// on another surface, the pointer is not on this one, or this surface is not a toplevel.
-    pub fn begin_move(&self) -> Result<(), GrabRefused> {
+    pub fn begin_move(&self) -> Result<(), GrabError> {
         self.grab_check()?;
         self.apply(WindowOp::BeginMove);
         Ok(())
@@ -31,8 +31,8 @@ impl SurfaceHandle {
     ///
     /// # Errors
     ///
-    /// `GrabRefused` under the same rule as `SurfaceHandle::begin_move`.
-    pub fn begin_resize(&self, edge: ResizeEdge) -> Result<(), GrabRefused> {
+    /// `GrabError` under the same rule as `SurfaceHandle::begin_move`.
+    pub fn begin_resize(&self, edge: ResizeEdge) -> Result<(), GrabError> {
         self.grab_check()?;
         self.apply(WindowOp::BeginResize(edge));
         Ok(())
@@ -78,9 +78,9 @@ impl SurfaceHandle {
         self.toplevel.get()
     }
 
-    fn grab_check(&self) -> Result<(), GrabRefused> {
+    fn grab_check(&self) -> Result<(), GrabError> {
         if self.kind != RoleKind::Toplevel {
-            return Err(GrabRefused::NotAToplevel);
+            return Err(GrabError::NotAToplevel);
         }
         self.grab.serial_for(self.id).map(drop)
     }

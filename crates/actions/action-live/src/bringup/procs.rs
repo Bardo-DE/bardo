@@ -86,7 +86,7 @@ impl Record {
 
 /// Why the file cannot be read.
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
-pub enum ProcsFault {
+pub enum ProcsError {
     /// A line is not `name pid start`.
     #[error("a line of the procs file is not `name pid start`: {0:?}")]
     Line(String),
@@ -108,8 +108,8 @@ pub fn render(records: &[Record]) -> String {
 ///
 /// # Errors
 ///
-/// Returns a [`ProcsFault`] when a line is not a record.
-pub fn parse(text: &str) -> Result<Vec<Record>, ProcsFault> {
+/// Returns a [`ProcsError`] when a line is not a record.
+pub fn parse(text: &str) -> Result<Vec<Record>, ProcsError> {
     let line = |line: &str| {
         let mut words = line.split_whitespace();
         let record = (|| {
@@ -121,7 +121,7 @@ pub fn parse(text: &str) -> Result<Vec<Record>, ProcsFault> {
         })();
         record
             .filter(|_| words.next().is_none())
-            .ok_or_else(|| ProcsFault::Line(line.to_owned()))
+            .ok_or_else(|| ProcsError::Line(line.to_owned()))
     };
     text.lines()
         .filter(|l| !l.trim().is_empty())
@@ -133,13 +133,13 @@ pub fn parse(text: &str) -> Result<Vec<Record>, ProcsFault> {
 ///
 /// # Errors
 ///
-/// Returns a [`ProcsFault`] when the file cannot be read or is not records.
-pub fn read(root: &Path) -> Result<Vec<Record>, ProcsFault> {
+/// Returns a [`ProcsError`] when the file cannot be read or is not records.
+pub fn read(root: &Path) -> Result<Vec<Record>, ProcsError> {
     let path = file(root);
     match std::fs::read_to_string(&path) {
         Ok(text) => parse(&text),
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Vec::new()),
-        Err(e) => Err(ProcsFault::Io(path, e.to_string())),
+        Err(e) => Err(ProcsError::Io(path, e.to_string())),
     }
 }
 

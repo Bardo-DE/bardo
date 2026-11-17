@@ -15,7 +15,7 @@ use http_core::{HeaderText, Http, request, webdav};
 use sync_core::DELETED;
 use sync_core::status::write_unreached;
 use sync_core::{
-    BaseVersion, Conflict, PutItem, PutRefused, PutTarget, RemoteId, RemoteSide, RemoteVersion,
+    BaseVersion, Conflict, PutError, PutItem, PutTarget, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter,
 };
 
@@ -24,19 +24,19 @@ impl<H: Http> WebDavReplica<H> {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         let (id, creating) = match &item.target {
             PutTarget::New(path) => (self.root.id_for(path), true),
             PutTarget::Existing(id) => (self.root.item_path(id).map(|_| id.clone()), false),
         };
-        let id = id.ok_or(PutRefused::Forbidden)?;
+        let id = id.ok_or(PutError::Forbidden)?;
         let guard = match (&base, creating) {
             (_, true) => Some(("If-None-Match", "*".to_owned())),
             (BaseVersion::At(seen), false) => Some(("If-Match", seen.0.clone())),
             // An existing item written on the belief that it is absent: it is not.
             (BaseVersion::Absent, false) => return Err(self.conflict(&id, &base).await),
         };
-        let url = self.root.url_of(&id).ok_or(PutRefused::Forbidden)?;
+        let url = self.root.url_of(&id).ok_or(PutError::Forbidden)?;
         let put = guard
             .into_iter()
             .fold(
@@ -62,11 +62,11 @@ impl<H: Http> WebDavReplica<H> {
         &self,
         item: &RemoteId,
         base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    ) -> Result<RemoteVersion, PutError> {
         let BaseVersion::At(seen) = &base else {
             return Err(self.conflict(item, &base).await);
         };
-        let url = self.root.url_of(item).ok_or(PutRefused::Forbidden)?;
+        let url = self.root.url_of(item).ok_or(PutError::Forbidden)?;
         let delete = request(Method::DELETE, &url)
             .header("If-Match", seen.0.as_str())
             .body(Vec::new())
@@ -79,12 +79,12 @@ impl<H: Http> WebDavReplica<H> {
         }
     }
 
-    async fn write_send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, PutRefused> {
+    async fn write_send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, PutError> {
         self.http.send(request).await.map_err(write_unreached)
     }
 
     /// Makes each folder between the dataset's and `id`. A folder that exists (`405`) is fine.
-    async fn make_parents(&self, id: &RemoteId) -> Result<(), PutRefused> {
+    async fn make_parents(&self, id: &RemoteId) -> Result<(), PutError> {
         for folder in parents_of(&self.root, id) {
             if self.state().folders.contains(&folder) {
                 continue;
@@ -92,7 +92,7 @@ impl<H: Http> WebDavReplica<H> {
             let url = self
                 .root
                 .collection_url(&folder)
-                .ok_or(PutRefused::Forbidden)?;
+                .ok_or(PutError::Forbidden)?;
             let mkcol = request(webdav::mkcol(), &url)
                 .body(Vec::new())
                 .map_err(|e| write_unreached(e.into()))?;
@@ -120,15 +120,15 @@ impl<H: Http> WebDavReplica<H> {
     }
 
     /// The version of the file at `id` now, or `None` when there is none.
-    async fn current(&self, id: &RemoteId) -> Result<Option<RemoteVersion>, PutRefused> {
-        let url = self.root.url_of(id).ok_or(PutRefused::Forbidden)?;
+    async fn current(&self, id: &RemoteId) -> Result<Option<RemoteVersion>, PutError> {
+        let url = self.root.url_of(id).ok_or(PutError::Forbidden)?;
         let stat = requests::stat(&url).map_err(write_unreached)?;
         let response = self.write_send(stat).await?;
         match response.status().as_u16() {
             207 => {
                 let text = String::from_utf8_lossy(response.body());
                 let status = parse_multistatus(&text)
-                    .map_err(|error| PutRefused::failed(RetryAfter(30), error))?;
+                    .map_err(|error| PutError::failed(RetryAfter(30), error))?;
                 Ok(entries(&self.root, &status)
                     .into_iter()
                     .find(|e| e.id == *id && e.kind == Kind::File)
@@ -140,7 +140,7 @@ impl<H: Http> WebDavReplica<H> {
     }
 
     /// The conflict a refused write is: what the server has at `id` now.
-    async fn conflict(&self, id: &RemoteId, base: &BaseVersion) -> PutRefused {
+    async fn conflict(&self, id: &RemoteId, base: &BaseVersion) -> PutError {
         let remote = match (self.current(id).await, base) {
             (Err(refused), _) => return refused,
             (Ok(Some(version)), BaseVersion::Absent) => RemoteSide::Exists(id.clone(), version),
@@ -149,9 +149,9 @@ impl<H: Http> WebDavReplica<H> {
                 RemoteSide::Deleted(RemoteVersion(DELETED.to_owned()))
             }
             // The item was there a moment ago and is gone now: the write can be tried again.
-            (Ok(None), BaseVersion::Absent) => return PutRefused::Transient(RetryAfter(1)),
+            (Ok(None), BaseVersion::Absent) => return PutError::Transient(RetryAfter(1)),
         };
-        PutRefused::Conflict(Conflict {
+        PutError::Conflict(Conflict {
             item: id.clone(),
             base: base.clone(),
             remote,

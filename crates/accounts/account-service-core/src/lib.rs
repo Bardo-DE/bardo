@@ -7,9 +7,9 @@
 //! A seam's failure is a small value with a plain sentence:
 //!
 //! ```
-//! use account_sheet::host::SheetFault;
+//! use account_sheet::host::SheetError;
 //!
-//! assert_eq!(SheetFault::Closed.to_string(), "sheet closed");
+//! assert_eq!(SheetError::Closed.to_string(), "sheet closed");
 //! ```
 //!
 //! This crate depends on no executor, so the file store lives in `account-store`.

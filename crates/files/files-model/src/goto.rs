@@ -6,7 +6,7 @@ use files_core::{FolderPath, Location};
 
 use crate::browser::Browser;
 use crate::effect::Effect;
-use crate::error::{GoToProblem, ListFailure};
+use crate::error::{FolderListError, GoToError};
 
 type Stepped = (Browser, Vec<Effect>);
 
@@ -21,7 +21,7 @@ pub enum GoTo {
         /// The text in the field.
         draft: String,
         /// Why the last try failed; gone when the text changes.
-        problem: Option<GoToProblem>,
+        problem: Option<GoToError>,
         /// The folder the last try is waiting to hear about.
         checking: Option<FolderPath>,
     },
@@ -31,8 +31,8 @@ pub enum GoTo {
 /// Nothing is read from the disk; whether the folder is there is asked of the caller.
 ///
 /// # Errors
-/// [`GoToProblem::NotFound`] when `text` is neither `~` (with a `home` known) nor a full path.
-pub fn expand(text: &str, home: Option<&FolderPath>) -> Result<FolderPath, GoToProblem> {
+/// [`GoToError::NotFound`] when `text` is neither `~` (with a `home` known) nor a full path.
+pub fn expand(text: &str, home: Option<&FolderPath>) -> Result<FolderPath, GoToError> {
     let text = text.trim();
     let path: Option<PathBuf> = match text.strip_prefix('~') {
         Some("") => home.map(|home| home.as_path().to_path_buf()),
@@ -42,7 +42,7 @@ pub fn expand(text: &str, home: Option<&FolderPath>) -> Result<FolderPath, GoToP
         None => Some(PathBuf::from(text)),
     };
     path.and_then(|path| FolderPath::new(path).ok())
-        .ok_or(GoToProblem::NotFound)
+        .ok_or(GoToError::NotFound)
 }
 
 impl Browser {
@@ -116,7 +116,7 @@ impl Browser {
     pub(crate) fn folder_checked(
         self,
         folder: FolderPath,
-        result: Result<(), ListFailure>,
+        result: Result<(), FolderListError>,
     ) -> Stepped {
         let GoTo::Asking { draft, .. } = &self.goto else {
             return (self, Vec::new());
@@ -136,10 +136,10 @@ impl Browser {
             .go(Location::Folder(folder)),
             Err(failure) => {
                 let problem = match failure {
-                    ListFailure::NoPermission => GoToProblem::NoPermission,
-                    ListFailure::NotFound | ListFailure::NotAFolder | ListFailure::Other => {
-                        GoToProblem::NotFound
-                    }
+                    FolderListError::NoPermission => GoToError::NoPermission,
+                    FolderListError::NotFound
+                    | FolderListError::NotAFolder
+                    | FolderListError::Other => GoToError::NotFound,
                 };
                 let goto = GoTo::Asking {
                     draft: draft.clone(),

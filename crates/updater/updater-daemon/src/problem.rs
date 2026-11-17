@@ -1,6 +1,6 @@
 //! What went wrong, in words a person can act on. Nothing here names a protocol or a tool.
 
-use crate::elevate::ApplyFailure;
+use crate::elevate::ApplyError;
 use crate::fetch::{FeedError, FetchError, StageError};
 use crate::keys::KeyError;
 
@@ -95,7 +95,7 @@ impl Problem {
 
     /// From the exit status of the privileged helper (see `bardo-updater-apply --help`).
     #[must_use]
-    pub fn from_apply(failure: &ApplyFailure) -> Self {
+    pub fn from_apply(failure: &ApplyError) -> Self {
         match failure.code {
             Some(126 | 127) => Self::NotAllowed,
             Some(3) => Self::NothingToInstall,

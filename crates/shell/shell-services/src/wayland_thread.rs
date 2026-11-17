@@ -18,7 +18,7 @@ use wayland_client::globals::{GlobalError, GlobalList, GlobalListContents, regis
 use wayland_client::protocol::wl_registry::WlRegistry;
 use wayland_client::{Connection, Dispatch, QueueHandle};
 
-use crate::env::{WaylandRoute, WaylandUnreached};
+use crate::env::{WaylandRoute, WaylandUnreachedError};
 
 /// Which connection an event came from: the service drops what an older one says.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -124,9 +124,9 @@ pub(crate) fn start<F: Follow>(
 
 /// Why the thread is not following a compositor (said by kind, never with content).
 #[derive(Debug, thiserror::Error)]
-enum Refusal {
+enum WaylandThreadError {
     #[error("{0}")]
-    Unreached(#[from] WaylandUnreached),
+    Unreached(#[from] WaylandUnreachedError),
     #[error("the registry: {0}")]
     Registry(#[from] GlobalError),
     #[error("the event loop: {0}")]
@@ -151,7 +151,7 @@ fn follow<F: Follow>(
     start: F::Start,
     orders: channel::Channel<F::Order>,
     tell: Tell<F::Event>,
-) -> Result<(), Refusal> {
+) -> Result<(), WaylandThreadError> {
     let conn = display.connect()?;
     let (globals, queue) = registry_queue_init::<F>(&conn)?;
     let mut event_loop = EventLoop::<F>::try_new()?;

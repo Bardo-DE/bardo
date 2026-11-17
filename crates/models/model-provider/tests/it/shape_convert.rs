@@ -4,7 +4,7 @@ use crate::support;
 
 use base_ids::Count;
 use model_provider::{
-    CharCount, ChoiceText, Field, FieldName, SchemaDialect, SchemaText, Shape, ShapeFault, Variant,
+    CharCount, ChoiceText, Field, FieldName, SchemaDialect, SchemaText, Shape, ShapeError, Variant,
     VariantName, sanitize_schema,
 };
 use proptest::prelude::*;
@@ -210,7 +210,7 @@ fn gbnf_refuses_what_it_cannot_say() {
         Shape::Record(vec![field("on", choice(&[]))]),
         Shape::OrHandle(Box::new(choice(&[]))),
     ] {
-        assert_eq!(shape.to_gbnf(), Err(ShapeFault::NotRepresentable));
+        assert_eq!(shape.to_gbnf(), Err(ShapeError::NotRepresentable));
     }
 }
 

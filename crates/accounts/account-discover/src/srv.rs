@@ -7,8 +7,8 @@
 //! when the implicit ones are absent, and are marked `Tls::StartTls`. The login is the whole
 //! address, since SRV says nothing about it.
 
-use crate::dns::{Dns, DnsFault, SrvRecord};
-use crate::found::{DiscoverFault, Found, Pop3Server, Source};
+use crate::dns::{Dns, DnsError, SrvRecord};
+use crate::found::{DiscoverError, Found, Pop3Server, Source};
 use crate::mail::{imap_claim, imap_endpoint, smtp_endpoint};
 use account_core::{LoginName, ServiceEndpoint, Tls};
 use account_provider::DomainName;
@@ -40,8 +40,8 @@ pub fn srv_names(domain: &DomainName) -> [String; 5] {
 ///
 /// # Errors
 ///
-/// The `DnsFault` of the lookups when none of the five names could be asked.
-pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswers, DnsFault> {
+/// The `DnsError` of the lookups when none of the five names could be asked.
+pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswers, DnsError> {
     let [imaps, imap, pop3s, submissions, submission] = srv_names(domain);
     let answers = [
         dns.srv(&imaps).await,
@@ -52,7 +52,7 @@ pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswe
     ];
     let reached = answers
         .iter()
-        .any(|a| !a.as_ref().is_err_and(DnsFault::is_unreachable));
+        .any(|a| !a.as_ref().is_err_and(DnsError::is_unreachable));
     let [imaps, imap, pop3s, submissions, submission] = answers.map(Result::unwrap_or_default);
     if reached {
         Ok(SrvAnswers {
@@ -63,7 +63,7 @@ pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswe
             submission,
         })
     } else {
-        Err(DnsFault::Unreachable)
+        Err(DnsError::Unreachable)
     }
 }
 
@@ -72,8 +72,8 @@ pub async fn lookup_srv<D: Dns>(dns: &D, domain: &DomainName) -> Result<SrvAnswe
 ///
 /// # Errors
 ///
-/// `DiscoverFault::NoServers` when the records give no incoming and outgoing pair.
-pub fn found_from_srv(address: &str, answers: &SrvAnswers) -> Result<Found, DiscoverFault> {
+/// `DiscoverError::NoServers` when the records give no incoming and outgoing pair.
+pub fn found_from_srv(address: &str, answers: &SrvAnswers) -> Result<Found, DiscoverError> {
     found_from_srv_with(address, answers, false)
 }
 
@@ -86,12 +86,12 @@ pub fn found_from_srv(address: &str, answers: &SrvAnswers) -> Result<Found, Disc
 ///
 /// # Errors
 ///
-/// `DiscoverFault::NoServers` when the records give no server `report_pop3` allows.
+/// `DiscoverError::NoServers` when the records give no server `report_pop3` allows.
 pub fn found_from_srv_with(
     address: &str,
     answers: &SrvAnswers,
     report_pop3: bool,
-) -> Result<Found, DiscoverFault> {
+) -> Result<Found, DiscoverError> {
     let login = || LoginName(address.to_owned());
     let incoming = best(&answers.imaps, Tls::Implicit, &login(), imap_endpoint)
         .or_else(|| best(&answers.imap, Tls::StartTls, &login(), imap_endpoint));
@@ -105,7 +105,7 @@ pub fn found_from_srv_with(
     let (endpoints, claims) = match (incoming, outgoing) {
         (Some(imap), Some(smtp)) => (vec![imap, smtp], vec![imap_claim()]),
         (None, Some(smtp)) if !pop3.is_empty() => (vec![smtp], Vec::new()),
-        _ => return Err(DiscoverFault::NoServers),
+        _ => return Err(DiscoverError::NoServers),
     };
     Ok(Found {
         endpoints,

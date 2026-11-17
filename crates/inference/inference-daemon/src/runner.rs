@@ -23,8 +23,8 @@ use crate::speech::{ChannelAudio, SpeechRunner};
 use crate::supervise::Supervised;
 use account_capability::Tier;
 use inference_core::{
-    Asker, AudioFrame, ChatRequest, InferRefusal, InferReply, InferRequest, ModelError, ServedBy,
-    TranscribeBegin, answer,
+    Asker, AudioFrame, ChatRequest, InferRefusedError, InferReply, InferRequest, ModelError,
+    ServedBy, TranscribeBegin, answer,
 };
 use inference_router::local::LocalModel;
 use inference_router::seams::{TurnRunner, TurnStep};
@@ -208,7 +208,7 @@ impl TurnRunner for Turns {
             let mut sink = ToSession::new(steps.clone());
             let reply = match &turns.hearing {
                 Some(hearing) => hearing.run(&turns, chat, heard, &mut sink).await,
-                None => refused(InferRefusal::Unsupported),
+                None => refused(InferRefusedError::Unsupported),
             };
             let _ = steps.send(TurnStep::Done(reply));
         });
@@ -237,7 +237,7 @@ impl Drop for AbortOnDrop {
     }
 }
 
-fn refused(refusal: InferRefusal) -> InferReply {
+fn refused(refusal: InferRefusedError) -> InferReply {
     InferReply::Refused(refusal)
 }
 
@@ -315,7 +315,7 @@ impl Job {
                     .await
             }
             // speaking has no runner, and a variant a newer the accounts service adds: refused as unsupported
-            _ => refused(InferRefusal::Unsupported),
+            _ => refused(InferRefusedError::Unsupported),
         };
         self.explained(&model, reply).await
     }
@@ -330,7 +330,7 @@ impl Job {
     ) -> InferReply {
         let Some(runner) = SpeechRunner::for_model(model, served.clone(), self.engines.clone())
         else {
-            return refused(InferRefusal::Unsupported);
+            return refused(InferRefusedError::Unsupported);
         };
         let mut sink = ToSession::new(self.steps.clone());
         match runner.transcribe(begin, &mut audio, &mut sink).await {

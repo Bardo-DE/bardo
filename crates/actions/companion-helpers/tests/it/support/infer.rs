@@ -7,7 +7,7 @@ use account_match::Need;
 use base_ids::Tokens;
 use inference_client::{Transport, TransportError};
 use inference_core::{
-    ChatReply, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
+    ChatReply, ChatRequest, ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest,
     InferSession, JsonText, OpenOptions, ServedBy, SessionError, StopReason, ToolCall, ToolCallId,
     ToolName, TurnUsage,
 };
@@ -27,7 +27,7 @@ pub enum Say {
     /// These events first (a `Why`, a `Stage`, a `Declined`), then the inner reply.
     Routed(Vec<InferEvent>, Box<Say>),
     /// Ends in a refusal, which a `Declined` event just before it explains.
-    Refuse(InferRefusal),
+    Refuse(InferRefusedError),
     /// The inner reply, after the model has been waited on once: a pull of the planner's answer
     /// is pending on its first poll.
     Late(Box<Say>),

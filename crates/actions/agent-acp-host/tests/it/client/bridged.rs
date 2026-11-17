@@ -280,7 +280,7 @@ async fn a_call_dropped_and_asked_again_with_its_number_is_one_call_at_the_route
 async fn the_host_runs_one_agent_session_of_an_agent_program() {
     use super::rig::{Fakes, wired_over};
     use agent_acp_host::AgentHost;
-    use agent_session::{BackendKind, HostFault, SessionHost};
+    use agent_session::{AgentHostError, BackendKind, SessionHost};
     let wired = wired_over::<Fakes>(agent_acp_host::fake::FakeFiles::new(), Setup::default());
     let mut host = AgentHost::new(wired.backend, wired.court, wired.desk, false);
     let mut native = super::rig::opening("/work/app");
@@ -293,7 +293,10 @@ async fn the_host_runs_one_agent_session_of_an_agent_program() {
         .await
         .expect("open");
     let again = Box::pin(host.open(super::rig::opening("/work/app"))).await;
-    assert!(matches!(again, Err(HostFault::Backend(_))), "{again:?}");
+    assert!(
+        matches!(again, Err(AgentHostError::Backend(_))),
+        "{again:?}"
+    );
     // Fork, export and resume are not served.
     host.resume(&session).await.unwrap_err();
     host.export(&session).await.unwrap_err();

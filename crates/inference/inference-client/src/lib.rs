@@ -29,7 +29,7 @@ mod tailnet_lending;
 mod transport;
 
 pub use computers::{ComputerReach, NewComputer, NewComputerModel};
-pub use error::{ClientError, ComputerReason, TransportError};
+pub use error::{ClientError, ComputerError, TransportError};
 #[cfg(feature = "dbus")]
 pub use guests::{GuestChange, GuestChanges};
 pub use inference::Inference;

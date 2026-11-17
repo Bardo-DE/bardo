@@ -18,7 +18,7 @@ use std::sync::Arc;
 /// Two faults are equal when they are the same kind of failure (an `OutOfOrder` also has to name
 /// the same position); the cause of an `Encode` is not compared.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum LogFault {
+pub enum LogError {
     /// The store holds a different next position.
     #[error("the log's next position is {expected:?}")]
     OutOfOrder {
@@ -39,14 +39,14 @@ pub enum LogFault {
     Unnamed,
 }
 
-impl LogFault {
+impl LogError {
     /// An `Encode` fault caused by `source`.
     pub fn encode(source: impl std::error::Error + Send + Sync + 'static) -> Self {
         Self::Encode(Arc::new(source))
     }
 }
 
-impl PartialEq for LogFault {
+impl PartialEq for LogError {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::OutOfOrder { expected: a }, Self::OutOfOrder { expected: b }) => a == b,
@@ -55,7 +55,7 @@ impl PartialEq for LogFault {
     }
 }
 
-impl Eq for LogFault {}
+impl Eq for LogError {}
 
 /// The acknowledgement of a durable append: the entry is stored, in order, and will be read back.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -81,11 +81,11 @@ pub struct LogPage {
 ///
 /// # Errors
 ///
-/// Returns the `LogFault` of the first page that cannot be read.
+/// Returns the `LogError` of the first page that cannot be read.
 pub async fn read_all<L: SessionLog>(
     log: &L,
     session: &SessionId,
-) -> Result<Vec<Logged>, LogFault> {
+) -> Result<Vec<Logged>, LogError> {
     const PAGE: PageSize = PageSize(Count(200));
     let mut rows = Vec::new();
     let mut from = None;
@@ -107,7 +107,7 @@ impl<L: SessionLog> SessionLog for std::sync::Arc<L> {
         session: &SessionId,
         seq: Seq,
         entry: &SessionEntry,
-    ) -> impl Future<Output = Result<Appended, LogFault>> + Send {
+    ) -> impl Future<Output = Result<Appended, LogError>> + Send {
         L::append(self, session, seq, entry)
     }
 
@@ -116,11 +116,11 @@ impl<L: SessionLog> SessionLog for std::sync::Arc<L> {
         session: &SessionId,
         from: Option<Seq>,
         size: PageSize,
-    ) -> impl Future<Output = Result<LogPage, LogFault>> + Send {
+    ) -> impl Future<Output = Result<LogPage, LogError>> + Send {
         L::page(self, session, from, size)
     }
 
-    fn sessions(&self) -> impl Future<Output = Result<Vec<SessionId>, LogFault>> + Send {
+    fn sessions(&self) -> impl Future<Output = Result<Vec<SessionId>, LogError>> + Send {
         L::sessions(self)
     }
 }
@@ -133,7 +133,7 @@ pub trait SessionLog: Send + Sync {
         session: &SessionId,
         seq: Seq,
         entry: &SessionEntry,
-    ) -> impl Future<Output = Result<Appended, LogFault>> + Send;
+    ) -> impl Future<Output = Result<Appended, LogError>> + Send;
 
     /// The rows of `session` from position `from` (the start when `None`), oldest first, at most
     /// `size`. Bodies come back as `decode` reads them: what cannot be read is a row, not a fault.
@@ -142,9 +142,9 @@ pub trait SessionLog: Send + Sync {
         session: &SessionId,
         from: Option<Seq>,
         size: PageSize,
-    ) -> impl Future<Output = Result<LogPage, LogFault>> + Send;
+    ) -> impl Future<Output = Result<LogPage, LogError>> + Send;
 
     /// Every session that has an opening in the log, oldest first: what a daemon reads at start
     /// so that a session it opens next never takes the name of one the log already holds.
-    fn sessions(&self) -> impl Future<Output = Result<Vec<SessionId>, LogFault>> + Send;
+    fn sessions(&self) -> impl Future<Output = Result<Vec<SessionId>, LogError>> + Send;
 }

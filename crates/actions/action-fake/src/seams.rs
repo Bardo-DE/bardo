@@ -10,7 +10,7 @@ use crate::scripted::{
 use crate::simple::{MemoryGrants, RecordingSink};
 use account_core::AppName;
 use action_checkpoint::MemoryStore;
-use action_core::LinkFault;
+use action_core::LinkError;
 use action_core::PolicyWriter;
 use action_core::{
     AppRefusal, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
@@ -294,7 +294,7 @@ impl AppLink for FakeLink {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkFault> {
+    async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkError> {
         // The fakes have no windows of their own (ds answers context in a real app): a test
         // sets one with `show_window`.
         self.window
@@ -302,26 +302,26 @@ impl AppLink for FakeLink {
             .ok()
             .and_then(|window| window.clone())
             .filter(|snapshot| snapshot.app == *app)
-            .ok_or(LinkFault::Unavailable)
+            .ok_or(LinkError::Unavailable)
     }
 
-    async fn preview(&self, app: &AppName, id: &EntityId) -> Result<Preview, LinkFault> {
+    async fn preview(&self, app: &AppName, id: &EntityId) -> Result<Preview, LinkError> {
         if self.is_mail(app) {
             Ok(self.mail.preview(id).await)
         } else if self.is_files(app) {
             Ok(self.files.preview(id).await)
         } else {
-            Err(LinkFault::Unavailable)
+            Err(LinkError::Unavailable)
         }
     }
 
-    async fn suggest(&self, app: &AppName, ask: SuggestAsk) -> Result<Vec<EntityRef>, LinkFault> {
+    async fn suggest(&self, app: &AppName, ask: SuggestAsk) -> Result<Vec<EntityRef>, LinkError> {
         if self.is_mail(app) {
             Ok(self.mail.suggest(ask).await)
         } else if self.is_files(app) {
             Ok(self.files.suggest(ask).await)
         } else {
-            Err(LinkFault::Unavailable)
+            Err(LinkError::Unavailable)
         }
     }
 }

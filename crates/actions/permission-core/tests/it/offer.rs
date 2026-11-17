@@ -392,7 +392,7 @@ fn a_read_scope_covers_its_action_only_and_never_the_pseudo_app() {
 fn a_damaged_standing_text_is_a_typed_fault_not_an_empty_list() {
     for text in ["{", "[1]", "{\"not\": \"a list\"}"] {
         assert!(
-            matches!(decode_standing(text), Err(StandingFileFault::Decode(_))),
+            matches!(decode_standing(text), Err(StandingFileError::Decode(_))),
             "{text:?}"
         );
     }

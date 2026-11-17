@@ -6,7 +6,7 @@ use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::consent::Usage;
 use account_match::Need;
-use inference_core::{ClientFrame, InferRefusal, InferReply, InferRequest, ModelError, Task};
+use inference_core::{ClientFrame, InferRefusedError, InferReply, InferRequest, ModelError, Task};
 use memory_core::DataClass;
 use memory_fake::{consolidation_event_link, consolidation_input};
 use memory_infer::InferdConsolidator;
@@ -57,12 +57,15 @@ async fn consolidation_error(reply: InferReply) -> ConsolidateError {
 async fn the_consolidator_maps_every_refusal_and_failure() {
     use ConsolidateError::{Busy, Unavailable, Unparseable};
     for (refusal, expected) in [
-        (InferRefusal::Unavailable, Unavailable),
-        (InferRefusal::RequiresCloud(DataClass::Mail), Unavailable),
-        (InferRefusal::NeedsGrant, Unavailable),
-        (InferRefusal::Denied, Unavailable),
-        (InferRefusal::Unsupported, Unavailable),
-        (InferRefusal::OverBudget, Busy),
+        (InferRefusedError::Unavailable, Unavailable),
+        (
+            InferRefusedError::RequiresCloud(DataClass::Mail),
+            Unavailable,
+        ),
+        (InferRefusedError::NeedsGrant, Unavailable),
+        (InferRefusedError::Denied, Unavailable),
+        (InferRefusedError::Unsupported, Unavailable),
+        (InferRefusedError::OverBudget, Busy),
     ] {
         assert_eq!(
             consolidation_error(InferReply::Refused(refusal)).await,

@@ -1,7 +1,7 @@
 //! Work under way: undo, what is shown from start to finish, questions and how a change ended.
 
 use files_core::{
-    Answer, Bring, ByteSize, Conflict, Finish, OpEvent, OpFailure, OpKind, Progress, Resolution,
+    Answer, Bring, ByteSize, Conflict, Finish, OpError, OpEvent, OpKind, Progress, Resolution,
 };
 use files_model::{Effect, Input, Question, Work};
 
@@ -88,8 +88,8 @@ fn what_a_change_said_when_it_ended() {
         (
             "failed",
             OpKind::Move,
-            Finish::Failed(OpFailure::NoSpace),
-            vec![Effect::Tell(OpFailure::NoSpace)],
+            Finish::Failed(OpError::NoSpace),
+            vec![Effect::Tell(OpError::NoSpace)],
         ),
     ];
     for (why, kind, finish, want) in table {

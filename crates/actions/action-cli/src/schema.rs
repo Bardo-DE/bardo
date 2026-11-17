@@ -4,7 +4,7 @@
 //! The command line's forms are the schema's forms: a thing is the text `<kind>:<key>`, a link or a
 //! path is text, a decimal and a duration are the text typed.
 
-use crate::exit::{Exit, Failure};
+use crate::exit::{Exit, ExitError};
 use crate::resolve::{short_name, slug};
 use action_manifest::{ActionDecl, Manifest, ParamDecl, ParamNeed};
 use action_vocab::ParamType;
@@ -48,9 +48,9 @@ fn shape_of_type(ty: &ParamType) -> Shape {
     }
 }
 
-fn field(param: &ParamDecl) -> Result<Field, Failure> {
+fn field(param: &ParamDecl) -> Result<Field, ExitError> {
     let name = FieldName::new(param.name.as_str()).map_err(|e| {
-        Failure::because(
+        ExitError::because(
             Exit::Usage,
             format!("{} cannot be described as a schema field", param.name),
             &e,
@@ -72,7 +72,7 @@ fn field(param: &ParamDecl) -> Result<Field, Failure> {
 ///
 /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
 /// says what is wrong.
-pub fn shape(action: &ActionDecl) -> Result<Shape, Failure> {
+pub fn shape(action: &ActionDecl) -> Result<Shape, ExitError> {
     action
         .params
         .iter()
@@ -87,10 +87,10 @@ pub fn shape(action: &ActionDecl) -> Result<Shape, Failure> {
 ///
 /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
 /// says what is wrong.
-pub fn json_schema(action: &ActionDecl) -> Result<Value, Failure> {
+pub fn json_schema(action: &ActionDecl) -> Result<Value, ExitError> {
     let rendered = shape(action)?.to_json_schema(SchemaDialect::Plain);
     serde_json::from_str(rendered.0.as_str())
-        .map_err(|e| Failure::because(Exit::Usage, "the schema did not render", &e))
+        .map_err(|e| ExitError::because(Exit::Usage, "the schema did not render", &e))
 }
 
 fn type_word(ty: &ParamType) -> &'static str {
@@ -150,7 +150,7 @@ pub fn action_row(app: &Manifest, action: &ActionDecl) -> Value {
 ///
 /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
 /// says what is wrong.
-pub fn described(app: &Manifest, action: &ActionDecl) -> Result<Value, Failure> {
+pub fn described(app: &Manifest, action: &ActionDecl) -> Result<Value, ExitError> {
     let mut row = action_row(app, action);
     if let Value::Object(map) = &mut row {
         map.insert("vocab".into(), json!(action_vocab::IntentsVocab::CURRENT));

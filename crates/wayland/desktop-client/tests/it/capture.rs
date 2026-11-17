@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 
-use desktop_client::capture::{CaptureEvent, CaptureFailure, CapturePhase, Captures, ShmFormat};
+use desktop_client::capture::{CaptureError, CaptureEvent, CapturePhase, Captures, ShmFormat};
 use desktop_client::{DesktopState, Rect, Size};
 use desktop_protocols::vocab::Transform;
 
@@ -48,7 +48,7 @@ fn no_readable_format_fails_the_capture() {
     ]);
     assert_eq!(
         phase(&state, 1),
-        CapturePhase::Failed(CaptureFailure::NoShmFormat)
+        CapturePhase::Failed(CaptureError::NoShmFormat)
     );
 
     let state = run([
@@ -61,7 +61,7 @@ fn no_readable_format_fails_the_capture() {
     ]);
     assert_eq!(
         phase(&state, 1),
-        CapturePhase::Failed(CaptureFailure::NoShmFormat)
+        CapturePhase::Failed(CaptureError::NoShmFormat)
     );
 }
 
@@ -76,7 +76,7 @@ fn no_size_or_an_empty_size_fails_the_capture() {
         events.push(cap(cid(1), CaptureEvent::ConstraintsDone));
         assert_eq!(
             phase(&run(events), 1),
-            CapturePhase::Failed(CaptureFailure::BufferConstraints),
+            CapturePhase::Failed(CaptureError::BufferConstraints),
             "{size:?}"
         );
     }
@@ -122,23 +122,23 @@ fn ready_before_the_constraints_fails() {
     )]);
     assert_eq!(
         phase(&state, 1),
-        CapturePhase::Failed(CaptureFailure::BufferConstraints)
+        CapturePhase::Failed(CaptureError::BufferConstraints)
     );
 }
 
 #[test]
 fn failure_at_any_stage_is_kept() {
     let mut events = negotiation(1);
-    events.push(cap(cid(1), CaptureEvent::Failed(CaptureFailure::Stopped)));
+    events.push(cap(cid(1), CaptureEvent::Failed(CaptureError::Stopped)));
     assert_eq!(
         phase(&run(events), 1),
-        CapturePhase::Failed(CaptureFailure::Stopped)
+        CapturePhase::Failed(CaptureError::Stopped)
     );
 
-    let state = run([cap(cid(2), CaptureEvent::Failed(CaptureFailure::Unknown))]);
+    let state = run([cap(cid(2), CaptureEvent::Failed(CaptureError::Unknown))]);
     assert_eq!(
         phase(&state, 2),
-        CapturePhase::Failed(CaptureFailure::Unknown)
+        CapturePhase::Failed(CaptureError::Unknown)
     );
 }
 
@@ -153,7 +153,7 @@ fn a_finished_session_ignores_later_events() {
         },
     ));
     let ready = run(events.clone());
-    events.push(cap(cid(1), CaptureEvent::Failed(CaptureFailure::Stopped)));
+    events.push(cap(cid(1), CaptureEvent::Failed(CaptureError::Stopped)));
     events.push(cap(cid(1), CaptureEvent::Transform(Transform::Flipped)));
     assert_eq!(run(events), ready);
 }
@@ -169,7 +169,7 @@ fn take_ready_hands_out_a_finished_capture_once() {
         },
     ));
     events.extend(negotiation(2));
-    events.push(cap(cid(3), CaptureEvent::Failed(CaptureFailure::Stopped)));
+    events.push(cap(cid(3), CaptureEvent::Failed(CaptureError::Stopped)));
     let captures: Captures = run(events).captures;
 
     // Still going: not taken, not removed.
@@ -184,7 +184,7 @@ fn take_ready_hands_out_a_finished_capture_once() {
     assert!(again.is_none());
 
     let (captures, failed) = captures.take_ready(cid(3));
-    assert_eq!(failed, Some(Err(CaptureFailure::Stopped)));
+    assert_eq!(failed, Some(Err(CaptureError::Stopped)));
     assert!(captures.get(cid(3)).is_none());
 
     let (_, unknown) = captures.take_ready(cid(99));

@@ -2,7 +2,7 @@
 
 use base_ids::Count;
 use model_provider::{
-    CharCount, ChoiceText, Field, FieldName, JsonText, Shape, ShapeFault, ShapeKind, Variant,
+    CharCount, ChoiceText, Field, FieldName, JsonText, Shape, ShapeError, ShapeKind, Variant,
     VariantName,
 };
 
@@ -21,8 +21,8 @@ fn json(text: &str) -> JsonText {
     JsonText::new(text).unwrap()
 }
 
-fn mismatch(at: &str, want: ShapeKind) -> Result<(), ShapeFault> {
-    Err(ShapeFault::Mismatch { at: name(at), want })
+fn mismatch(at: &str, want: ShapeKind) -> Result<(), ShapeError> {
+    Err(ShapeError::Mismatch { at: name(at), want })
 }
 
 fn record() -> Shape {
@@ -123,7 +123,7 @@ fn faults_name_the_field_and_never_the_value() {
     let cases = [
         (
             r#"{"verdict":"deny","items":[]}"#,
-            Err(ShapeFault::Missing {
+            Err(ShapeError::Missing {
                 field: name("score"),
             }),
         ),
@@ -148,7 +148,7 @@ fn faults_name_the_field_and_never_the_value() {
     let fault = record().check(&json(&hostile)).unwrap_err();
     assert_eq!(
         fault,
-        ShapeFault::Unknown {
+        ShapeError::Unknown {
             field: name("root")
         }
     );
@@ -261,11 +261,11 @@ fn tagged_values() {
     assert_eq!(shape.check(&json(r#"{"v":3,"kind":"snooze"}"#)), Ok(()));
     assert_eq!(
         shape.check(&json(r#"{"kind":"snooze"}"#)),
-        Err(ShapeFault::Missing { field: name("v") })
+        Err(ShapeError::Missing { field: name("v") })
     );
     assert_eq!(
         shape.check(&json(r#"{"v":3}"#)),
-        Err(ShapeFault::Missing {
+        Err(ShapeError::Missing {
             field: name("kind")
         })
     );
@@ -326,7 +326,7 @@ fn an_entity_or_handle_checks_the_entity_by_its_fields() {
     );
     assert_eq!(
         one.check(&json(r#"{"app":"files","kind":"file"}"#)),
-        Err(ShapeFault::Missing { field: name("key") })
+        Err(ShapeError::Missing { field: name("key") })
     );
     // A list of them.
     let many = Shape::List {

@@ -8,7 +8,7 @@ use crate::AuditRecord;
 
 /// Why a call to an app or to memory got no answer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-pub enum LinkFault {
+pub enum LinkError {
     /// The app is not running and could not be started.
     #[error("unavailable")]
     Unavailable,
@@ -33,7 +33,7 @@ pub trait MemoryLink: Send + Sync {
     fn ask(
         &self,
         request: MemoryRequest,
-    ) -> impl Future<Output = Result<MemoryReply, LinkFault>> + Send;
+    ) -> impl Future<Output = Result<MemoryReply, LinkError>> + Send;
 
     /// Deletes what memory keeps for a Space that was removed, rather than moving it to any other
     /// Space. Answers whether memory deleted them. A link without that operation answers

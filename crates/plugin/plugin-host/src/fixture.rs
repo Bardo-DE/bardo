@@ -16,7 +16,7 @@ pub(crate) enum Cap {
 
 /// The test host's reasons to refuse an entry.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub(crate) enum ToolFault {
+pub(crate) enum ToolError {
     #[error("handles nothing")]
     HandlesNothing(Cap),
 }
@@ -39,12 +39,12 @@ struct Raw {
 
 impl Provides for Tool {
     type Capability = Cap;
-    type Fault = ToolFault;
+    type Fault = ToolError;
 
-    fn parse(entry: Entry) -> Result<Tool, Refusal<ToolFault>> {
+    fn parse(entry: Entry) -> Result<Tool, Refusal<ToolError>> {
         let raw: Raw = entry.read()?;
         if raw.kinds.is_empty() {
-            return Err(Refusal::Fault(ToolFault::HandlesNothing(raw.capability)));
+            return Err(Refusal::Fault(ToolError::HandlesNothing(raw.capability)));
         }
         Ok(Tool {
             capability: raw.capability,

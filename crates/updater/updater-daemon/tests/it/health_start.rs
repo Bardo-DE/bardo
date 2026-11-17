@@ -2,7 +2,7 @@ use crate::support::{Accept, Recipe, Sandbox, build, v};
 use std::path::Path;
 use std::sync::Mutex;
 use updater_core::{LoginSession, Pending, PendingStage};
-use updater_daemon::elevate::{ApplyFailure, Elevate, Recovery};
+use updater_daemon::elevate::{ApplyError, Elevate, Recovery};
 use updater_daemon::health::{Health, on_start};
 use updater_daemon::report::Report;
 use updater_daemon::state::StateStore;
@@ -14,28 +14,28 @@ struct Recording<'a> {
 }
 
 impl Elevate for Recording<'_> {
-    fn install(&self, _: &Path) -> Result<Report, ApplyFailure> {
+    fn install(&self, _: &Path) -> Result<Report, ApplyError> {
         self.calls.lock().expect("lock").push("install");
         Ok(Report::default())
     }
 
-    fn rollback(&self) -> Result<Report, ApplyFailure> {
+    fn rollback(&self) -> Result<Report, ApplyError> {
         self.calls.lock().expect("lock").push("rollback");
         Ok(Report::default())
     }
 
     /// The health helper, having decided the release has used up its boots: it goes back.
-    fn recover(&self) -> Result<Recovery, ApplyFailure> {
+    fn recover(&self) -> Result<Recovery, ApplyError> {
         self.calls.lock().expect("lock").push("recover");
         updater_root::apply::rollback(&self.sandbox.layout, &Accept)
             .map(|applied| Recovery::Restored(Report::from(&applied)))
-            .map_err(|e| ApplyFailure {
+            .map_err(|e| ApplyError {
                 code: Some(e.exit_code() as i32),
                 detail: e.to_string(),
             })
     }
 
-    fn confirmed(&self) -> Result<(), ApplyFailure> {
+    fn confirmed(&self) -> Result<(), ApplyError> {
         self.calls.lock().expect("lock").push("confirmed");
         Ok(())
     }
@@ -171,29 +171,29 @@ fn nothing_pending_means_nothing_happens() {
 }
 
 /// A health helper with a fixed answer.
-struct Answers(Result<Recovery, ApplyFailure>);
+struct Answers(Result<Recovery, ApplyError>);
 
 impl Elevate for Answers {
-    fn install(&self, _: &Path) -> Result<Report, ApplyFailure> {
+    fn install(&self, _: &Path) -> Result<Report, ApplyError> {
         Ok(Report::default())
     }
 
-    fn rollback(&self) -> Result<Report, ApplyFailure> {
+    fn rollback(&self) -> Result<Report, ApplyError> {
         Ok(Report::default())
     }
 
-    fn recover(&self) -> Result<Recovery, ApplyFailure> {
+    fn recover(&self) -> Result<Recovery, ApplyError> {
         self.0.clone()
     }
 
-    fn confirmed(&self) -> Result<(), ApplyFailure> {
+    fn confirmed(&self) -> Result<(), ApplyError> {
         Ok(())
     }
 }
 
 #[test]
 fn a_failed_rollback_is_not_reported_as_restored() {
-    let broken = Answers(Err(ApplyFailure {
+    let broken = Answers(Err(ApplyError {
         code: Some(1),
         detail: "disk".into(),
     }));

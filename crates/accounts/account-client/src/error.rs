@@ -23,7 +23,7 @@ pub enum LinkError {
     Invalid,
     /// An argument could not be written for the wire.
     #[error("an argument could not be written")]
-    Unwritable(#[source] Unwritable),
+    Unwritable(#[source] UnwritableError),
     /// The other side sent something that is not the accounts service's protocol.
     #[error("the other side did not speak the protocol")]
     Malformed(#[source] MalformedError),
@@ -93,19 +93,19 @@ impl Eq for MalformedError {}
 /// Why an argument could not be written for the wire. Two are equal when they are the same error.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error(transparent)]
-pub struct Unwritable(Arc<dyn std::error::Error + Send + Sync>);
+pub struct UnwritableError(Arc<dyn std::error::Error + Send + Sync>);
 
-impl Unwritable {
+impl UnwritableError {
     /// The failure to write an argument.
     pub fn new(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
         Self(Arc::new(cause))
     }
 }
 
-impl PartialEq for Unwritable {
+impl PartialEq for UnwritableError {
     fn eq(&self, other: &Self) -> bool {
         Arc::ptr_eq(&self.0, &other.0)
     }
 }
 
-impl Eq for Unwritable {}
+impl Eq for UnwritableError {}

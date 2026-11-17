@@ -10,7 +10,7 @@ use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::{ACCESS_DENIED, Known, client, error_name, eventually};
 use drive_fs::testing::{MemoryListing, MemorySink, MemorySource, Took};
-use drive_fs::{Drive, DriveConfig, NodeId, Reason};
+use drive_fs::{Drive, DriveConfig, NodeId, SkipError};
 use std::collections::BTreeSet;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -245,8 +245,11 @@ async fn download_keep_and_remove_act_and_refuse_with_the_words_files_shows() {
         .await
         .expect("download");
     assert_eq!(refused.len(), 2, "{refused:?}");
-    assert_eq!(refused[&at("Plan.gdoc")], words::reason(Reason::OnlineOnly));
-    assert_eq!(refused[&at("Nope")], words::reason(Reason::NotOnADrive));
+    assert_eq!(
+        refused[&at("Plan.gdoc")],
+        words::reason(SkipError::OnlineOnly)
+    );
+    assert_eq!(refused[&at("Nope")], words::reason(SkipError::NotOnADrive));
     eventually("the report is downloaded", || {
         rig.drive
             .drive
@@ -279,7 +282,7 @@ async fn download_keep_and_remove_act_and_refuse_with_the_words_files_shows() {
     assert_eq!(refused.len(), 1, "{refused:?}");
     assert_eq!(
         refused[&at("Kept/Photo.jpg")],
-        words::reason(Reason::KeptWithFolder)
+        words::reason(SkipError::KeptWithFolder)
     );
     assert_eq!(
         state_of(&proxy, "Work/Report.pdf").await.as_deref(),
@@ -291,7 +294,7 @@ async fn download_keep_and_remove_act_and_refuse_with_the_words_files_shows() {
         .expect("keep off");
     assert_eq!(
         refused[&at("Kept/Photo.jpg")],
-        words::reason(Reason::KeptWithFolder)
+        words::reason(SkipError::KeptWithFolder)
     );
 
     rig.source.set_offline(true);
@@ -301,7 +304,9 @@ async fn download_keep_and_remove_act_and_refuse_with_the_words_files_shows() {
         .download(vec![at("Work/Notes.txt")])
         .await
         .expect("download");
-    assert!(refused.is_empty() || refused[&at("Work/Notes.txt")] == words::reason(Reason::Offline));
+    assert!(
+        refused.is_empty() || refused[&at("Work/Notes.txt")] == words::reason(SkipError::Offline)
+    );
     eventually("offline, it says it downloads when connected", || {
         rig.drive
             .drive
@@ -309,7 +314,7 @@ async fn download_keep_and_remove_act_and_refuse_with_the_words_files_shows() {
             .ok()
             .flatten()
             .and_then(|n| rig.drive.drive.status(&n.id))
-            .is_some_and(|s| s.reason == Some(Reason::Offline))
+            .is_some_and(|s| s.reason == Some(SkipError::Offline))
     })
     .await;
 }
@@ -338,7 +343,7 @@ async fn only_the_shell_and_settings_pause_a_drive() {
         .await
         .expect("pause");
     assert_eq!(refused.len(), 1);
-    assert_eq!(refused["two"], words::reason(Reason::NoDrive));
+    assert_eq!(refused["two"], words::reason(SkipError::NoDrive));
     let drives = proxy.drives().await.expect("drives");
     assert_eq!(
         text(&drives[0].1, DRIVE_KEY_STATE).as_deref(),
@@ -460,15 +465,15 @@ async fn save_a_copy_writes_the_document_next_to_it_and_refuses_what_has_no_file
     assert_eq!(refused.len(), 3, "{refused:?}");
     assert_eq!(
         refused[&at("Survey.glink")],
-        words::reason(Reason::NoFileFormat)
+        words::reason(SkipError::NoFileFormat)
     );
     assert_eq!(
         refused[&at("Work/Report.pdf")],
-        words::reason(Reason::NotADocument)
+        words::reason(SkipError::NotADocument)
     );
     assert_eq!(
         refused[&at("Nope.gdoc")],
-        words::reason(Reason::NotOnADrive)
+        words::reason(SkipError::NotOnADrive)
     );
     let items = proxy.items(vec![at("Plan.docx")]).await.expect("items");
     let copy = &items[&at("Plan.docx")];
@@ -599,5 +604,5 @@ async fn a_file_changed_here_and_on_the_drive_shows_both_in_conflict_each_naming
         .remove_download(vec![mine.clone()])
         .await
         .expect("remove");
-    assert_eq!(refused[&mine], words::reason(Reason::Conflict));
+    assert_eq!(refused[&mine], words::reason(SkipError::Conflict));
 }

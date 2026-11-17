@@ -139,26 +139,26 @@ impl ProgramName {
 /// when they say the same.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error(transparent)]
-pub struct Cause(Arc<dyn std::error::Error + Send + Sync>);
+pub struct VolumeCauseError(Arc<dyn std::error::Error + Send + Sync>);
 
-impl Cause {
+impl VolumeCauseError {
     /// The report `source` made.
     pub fn new(source: impl std::error::Error + Send + Sync + 'static) -> Self {
         Cause(Arc::new(source))
     }
 }
 
-impl PartialEq for Cause {
+impl PartialEq for VolumeCauseError {
     fn eq(&self, other: &Self) -> bool {
         self.0.to_string() == other.0.to_string()
     }
 }
 
-impl Eq for Cause {}
+impl Eq for VolumeCauseError {}
 
 /// Why a volume was not ejected.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum EjectFailure {
+pub enum EjectError {
     /// Something has files on it open; the programs are listed when they could be found.
     #[error("One or more programs may be using the disk.")]
     InUse(Vec<ProgramName>),
@@ -167,31 +167,31 @@ pub enum EjectFailure {
     NotAllowed,
     /// The disk is gone already.
     #[error("The disk is not there any more.")]
-    Gone(#[source] Option<Cause>),
+    Gone(#[source] Option<VolumeCauseError>),
     /// Anything else the system reported.
     #[error("The disk couldn't be ejected.")]
-    Other(#[source] Option<Cause>),
+    Other(#[source] Option<VolumeCauseError>),
 }
 
 /// Why a volume was not opened.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum MountFailure {
+pub enum MountError {
     /// The system would not let this person open it.
     #[error("You don't have permission to open the disk.")]
     NotAllowed,
     /// The disk is gone.
     #[error("The disk is not there any more.")]
-    Gone(#[source] Option<Cause>),
+    Gone(#[source] Option<VolumeCauseError>),
     /// Anything else the system reported.
     #[error("The disk couldn't be opened.")]
-    Other(#[source] Option<Cause>),
+    Other(#[source] Option<VolumeCauseError>),
 }
 
 /// What went wrong with a volume, to be told to the person.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum VolumeTrouble {
     /// It was not ejected.
-    NotEjected(EjectFailure),
+    NotEjected(EjectError),
     /// It was not opened.
-    NotOpened(MountFailure),
+    NotOpened(MountError),
 }

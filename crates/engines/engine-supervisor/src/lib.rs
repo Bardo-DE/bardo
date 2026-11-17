@@ -59,6 +59,6 @@ pub use host::{EngineHost, GpuError, GpuProbe, HostError, ReadyProbe};
 pub use state::{Attempt, EngineFailure, EngineId, EngineState, ExitCode, MonoMs, Probe};
 pub use step::{Supervisor, SupervisorConfig, SupervisorIn, SupervisorOut, step};
 pub use unit::{
-    EnvPair, GpuAccess, MissingProgram, Network, Sandbox, SocketPath, UnitSpec, Window, command,
-    command_with_window,
+    EnvPair, GpuAccess, MissingProgramError, Network, Sandbox, SocketPath, UnitSpec, Window,
+    command, command_with_window,
 };

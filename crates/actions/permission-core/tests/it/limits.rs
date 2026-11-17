@@ -181,7 +181,7 @@ fn a_level_that_allows_is_not_a_limit() {
     );
     assert_eq!(
         LimitLevel::try_from(Level::AlwaysAllow),
-        Err(NotATightening)
+        Err(NotATighteningError)
     );
     // Strength is the order of the variants.
     assert_eq!(Level::AlwaysAllow.over(Level::AlwaysAsk), Level::AlwaysAsk);
@@ -286,7 +286,7 @@ fn the_floor_clamps_strictness_and_locks_entries() {
         }],
         rows: Vec::new(),
     };
-    assert_eq!(Floor::from_file(bad), Err(FloorFault::ActionWithoutApp));
+    assert_eq!(Floor::from_file(bad), Err(FloorError::ActionWithoutApp));
 }
 
 #[test]

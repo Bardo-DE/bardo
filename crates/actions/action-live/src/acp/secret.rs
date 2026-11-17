@@ -21,7 +21,7 @@ const SHORTEST: usize = 8;
 
 /// Why the credentials could not be staged.
 #[derive(Debug, thiserror::Error)]
-pub enum StageFault {
+pub enum StageError {
     /// The source did not read.
     #[error("--acp-credentials: {0}")]
     Read(String),
@@ -42,11 +42,11 @@ impl Credentials {
     ///
     /// # Errors
     ///
-    /// Returns a [`StageFault`] when the credentials file cannot be read or the copy cannot be written.
-    pub fn stage(source: &CredentialsSource, home: &Path) -> Result<(Self, Redactor), StageFault> {
-        let bytes = std::fs::read(&source.from).map_err(|e| StageFault::Read(e.to_string()))?;
+    /// Returns a [`StageError`] when the credentials file cannot be read or the copy cannot be written.
+    pub fn stage(source: &CredentialsSource, home: &Path) -> Result<(Self, Redactor), StageError> {
+        let bytes = std::fs::read(&source.from).map_err(|e| StageError::Read(e.to_string()))?;
         let at = home.join(&source.at);
-        let write = |e: std::io::Error| StageFault::Write(e.to_string());
+        let write = |e: std::io::Error| StageError::Write(e.to_string());
         if let Some(dir) = at.parent() {
             std::fs::DirBuilder::new()
                 .recursive(true)

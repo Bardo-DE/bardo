@@ -1,6 +1,6 @@
 //! Checking skills against the registered manifests, and choosing which to show a session.
 
-use crate::fault::Unresolved;
+use crate::fault::UnresolvedError;
 use crate::skill::Skill;
 use account_core::AppName;
 use action_core::{SkillCard, SkillId};
@@ -52,7 +52,7 @@ pub struct Hidden {
     /// Which skill.
     pub id: SkillId,
     /// What is missing.
-    pub why: Unresolved,
+    pub why: UnresolvedError,
 }
 
 /// The skills of a desktop whose `uses` all exist, and those hidden for a missing action.
@@ -72,7 +72,7 @@ impl Library {
             match reach(&skill, manifests) {
                 Reach::Missing(action) => library.hidden.push(Hidden {
                     id: skill.id,
-                    why: Unresolved::Missing(action),
+                    why: UnresolvedError::Missing(action),
                 }),
                 Reach::Reachable | Reach::Hidden(_) => library.skills.push(skill),
             }
@@ -151,7 +151,7 @@ pub fn preselect<'a>(offered: &[&'a Skill], at: &Situation, room: usize) -> Vec<
 
 /// Why a load was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum LoadRefusal {
+pub enum LoadError {
     /// Three skills are already loaded in this task.
     #[error("this task has already loaded {LOAD_MAX} skills")]
     OverCap,
@@ -169,17 +169,17 @@ impl Loaded {
     /// Admits `id` whose body is `bytes` long, or refuses beyond the cap or the budget.
     ///
     /// # Errors
-    /// [`LoadRefusal::OverCap`] when the most skills that may be loaded already are;
-    /// [`LoadRefusal::OverBudget`] when the body would not fit what is left of the byte budget.
-    pub fn admit(&mut self, id: &SkillId, bytes: usize) -> Result<(), LoadRefusal> {
+    /// [`LoadError::OverCap`] when the most skills that may be loaded already are;
+    /// [`LoadError::OverBudget`] when the body would not fit what is left of the byte budget.
+    pub fn admit(&mut self, id: &SkillId, bytes: usize) -> Result<(), LoadError> {
         if self.0.iter().any(|(i, _)| i == id) {
             return Ok(());
         }
         if self.0.len() >= LOAD_MAX {
-            return Err(LoadRefusal::OverCap);
+            return Err(LoadError::OverCap);
         }
         if self.bytes() + bytes > BODY_BUDGET_BYTES {
-            return Err(LoadRefusal::OverBudget);
+            return Err(LoadError::OverBudget);
         }
         self.0.push((id.clone(), bytes));
         Ok(())

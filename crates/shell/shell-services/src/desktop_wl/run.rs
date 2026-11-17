@@ -16,7 +16,7 @@ use wayland_client::Connection;
 use wayland_client::backend::WaylandError;
 
 use super::bardo::bardo_view;
-use super::command::{Refusal, desktop_of, wire_of};
+use super::command::{CommandError, desktop_of, wire_of};
 use super::commands::{forward_commands, park_commands};
 use super::publish::Publish;
 use super::{subjects, toplevels, workspaces};
@@ -89,7 +89,7 @@ impl Wlr {
     fn execute(&mut self, command: &WlCommand) {
         let state = self.client.state();
         let wire = desktop_of(command, state)
-            .ok_or(Refusal::Unsupported)
+            .ok_or(CommandError::Unsupported)
             .and_then(|command| wire_of(&command, state));
         match wire {
             Ok(requests) => {
@@ -100,7 +100,7 @@ impl Wlr {
                     }
                 }
             }
-            Err(Refusal::Unsupported) => {}
+            Err(CommandError::Unsupported) => {}
             Err(refusal) => eprintln!("bardo-shell: desktop_wl: {refusal}"),
         }
     }

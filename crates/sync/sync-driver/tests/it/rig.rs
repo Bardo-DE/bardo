@@ -5,7 +5,7 @@ use base_time::UnixSeconds;
 use std::sync::Arc;
 use sync_core::{
     BaseVersion, Blob, ByteRange, ChangePage, ConflictRule, Cursor, ItemPath, MemoryReplica,
-    PutItem, PutRefused, PutTarget, Quota, RemoteId, RemoteVersion, Replica, ReplicaError,
+    PutError, PutItem, PutTarget, Quota, RemoteId, RemoteVersion, Replica, ReplicaError,
 };
 use sync_engine::clock::ManualClock;
 use sync_engine::dataset::{MemoryDataset, replica_hash};
@@ -41,15 +41,11 @@ impl Replica for Shared {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         self.0.put(item, base).await
     }
 
-    async fn remove(
-        &self,
-        item: &RemoteId,
-        base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    async fn remove(&self, item: &RemoteId, base: BaseVersion) -> Result<RemoteVersion, PutError> {
         self.0.remove(item, base).await
     }
 

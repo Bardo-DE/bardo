@@ -59,11 +59,11 @@ impl From<LimitLevel> for Level {
 }
 
 impl TryFrom<Level> for LimitLevel {
-    type Error = NotATightening;
+    type Error = NotATighteningError;
 
     fn try_from(level: Level) -> Result<Self, Self::Error> {
         match level {
-            Level::AlwaysAllow => Err(NotATightening),
+            Level::AlwaysAllow => Err(NotATighteningError),
             Level::AlwaysAsk => Ok(LimitLevel::AlwaysAsk),
             Level::Never => Ok(LimitLevel::Never),
         }
@@ -73,7 +73,7 @@ impl TryFrom<Level> for LimitLevel {
 /// An always-allow is not a limit.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("an always-allow is not a limit")]
-pub struct NotATightening;
+pub struct NotATighteningError;
 
 /// Who a limit binds: every agent, or one caller.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -158,21 +158,21 @@ pub struct Said(String);
 /// Why text is not a saying.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("words kept with a limit are 1 to 160 characters on one line")]
-pub struct SaidFault;
+pub struct SaidError;
 
 impl Said {
     /// `text` as a saying.
     ///
     /// # Errors
     ///
-    /// Returns `SaidFault` when `text` is not a valid saying.
-    pub fn parse(text: &str) -> Result<Self, SaidFault> {
+    /// Returns `SaidError` when `text` is not a valid saying.
+    pub fn parse(text: &str) -> Result<Self, SaidError> {
         let text = text.trim();
         // The words are drawn on a sheet and in the activity view: the same marks that a
         // reviewer's reason may not hold (controls, bidirectional overrides, hidden marks) are
         // refused here too.
         if text.is_empty() || text.chars().count() > 160 || !plain_text(text, &[]) {
-            Err(SaidFault)
+            Err(SaidError)
         } else {
             Ok(Self(text.to_owned()))
         }
@@ -186,7 +186,7 @@ impl Said {
 }
 
 impl TryFrom<String> for Said {
-    type Error = SaidFault;
+    type Error = SaidError;
 
     fn try_from(text: String) -> Result<Self, Self::Error> {
         Self::parse(&text)

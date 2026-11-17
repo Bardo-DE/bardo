@@ -6,7 +6,7 @@
 use crate::carried::Carried;
 use crate::session::{HeardAudio, RouteDecision, Routing, SessionSpec};
 use inference_core::{
-    AudioFrame, ChatRequest, InferEvent, InferRefusal, InferReply, InferRequest, ModelRef,
+    AudioFrame, ChatRequest, InferEvent, InferRefusedError, InferReply, InferRequest, ModelRef,
     PickRefusal, Why,
 };
 use std::os::fd::OwnedFd;
@@ -18,7 +18,7 @@ pub trait Router: Send + Sync {
     fn route(
         &self,
         spec: &SessionSpec,
-    ) -> impl Future<Output = Result<RouteDecision, InferRefusal>> + Send;
+    ) -> impl Future<Output = Result<RouteDecision, InferRefusedError>> + Send;
 
     /// `route` with the reason, and the named model that could not serve when that is why it
     /// refused. A router that has no reason to give is as good as named and announces nothing.

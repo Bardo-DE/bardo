@@ -13,7 +13,7 @@ use action_context::index::IndexAction;
 use action_context::index::IndexEvent;
 use action_context::labels::app_label;
 use action_context::state::RouterState;
-use action_core::LinkFault;
+use action_core::LinkError;
 use action_core::{Hit, IndexBatch, IndexEntry, SearchAsk, SearchScope, SuggestAsk};
 use action_manifest::TitleTrust;
 use action_vocab::{CallerRole, EntityRef};
@@ -166,7 +166,7 @@ impl<S: Seams> Router<S> {
     pub(crate) async fn run_preview(&self, id: &EntityId) -> IntentsReply {
         if !self.seams.link().running(&id.app).await {
             return refuse(WireRefusal::Call(link_refusal(
-                LinkFault::Unavailable,
+                LinkError::Unavailable,
                 &id.app,
             )));
         }

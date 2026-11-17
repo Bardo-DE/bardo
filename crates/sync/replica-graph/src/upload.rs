@@ -16,7 +16,7 @@ use http_core::http::header::CONTENT_TYPE;
 use http_core::http::{Method, Response};
 use http_core::{Http, request};
 use sync_core::status::write_unreached;
-use sync_core::{PutRefused, RetryAfter};
+use sync_core::{PutError, RetryAfter};
 
 impl<H: Http> GraphReplica<H> {
     /// Sends `bytes` in an upload session. A refusal at any step is returned as the response, for
@@ -26,7 +26,7 @@ impl<H: Http> GraphReplica<H> {
         target: &Target,
         guard: Option<&str>,
         bytes: Vec<u8>,
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         let (url, behaviour) = match target {
             Target::New(names) => (
                 self.addr.path(Some(names), Some("createUploadSession"), ""),
@@ -38,7 +38,7 @@ impl<H: Http> GraphReplica<H> {
             ),
         };
         let body = format!(r#"{{"item":{{"@microsoft.graph.conflictBehavior":"{behaviour}"}}}}"#);
-        let create = request(Method::POST, &url.ok_or(PutRefused::Forbidden)?)
+        let create = request(Method::POST, &url.ok_or(PutError::Forbidden)?)
             .header(CONTENT_TYPE, "application/json");
         let create = match guard {
             Some(tag) => create.header("If-Match", tag),
@@ -74,6 +74,6 @@ impl<H: Http> GraphReplica<H> {
                 return Ok(response);
             }
         }
-        Err(PutRefused::Transient(RetryAfter(30)))
+        Err(PutError::Transient(RetryAfter(30)))
     }
 }

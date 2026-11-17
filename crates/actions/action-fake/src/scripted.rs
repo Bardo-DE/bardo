@@ -5,7 +5,7 @@ use action_core::{
     ActionCard, ConfirmAnswer, ConfirmEnd, ConfirmId, ConfirmRequest, Confirmer, PolicyWriter,
     Reader, ReaderAsk, ReaderError, UserTurn,
 };
-use action_core::{LinkFault, MemoryLink};
+use action_core::{LinkError, MemoryLink};
 use action_review::{ReviewReason, ReviewRequest, ReviewVerdict, Reviewer};
 use action_vocab::Value;
 use memory_core::{MemoryReply, MemoryRequest};
@@ -266,7 +266,7 @@ impl MemoryLink for FakeMemory {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn ask(&self, request: MemoryRequest) -> Result<MemoryReply, LinkFault> {
+    async fn ask(&self, request: MemoryRequest) -> Result<MemoryReply, LinkError> {
         with(&self.requests, |r| r.push(request));
         Ok(with(&self.replies, VecDeque::pop_front).unwrap_or(MemoryReply::Ok))
     }

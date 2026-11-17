@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use files_core::{FileName, FolderPath, ItemRef, Location};
 use files_fs::{FolderEvent, ListError, Lister};
-use files_model::{Change, Input, ListFailure, TabId};
+use files_model::{Change, FolderListError, Input, TabId};
 
 use super::{Edge, Heard, ops};
 
@@ -21,7 +21,7 @@ impl Edge {
         if started.is_err() {
             self.say(Heard::Tab(
                 tab,
-                Input::FolderChecked(failed, Err(ListFailure::Other)),
+                Input::FolderChecked(failed, Err(FolderListError::Other)),
             ));
         }
     }
@@ -43,7 +43,7 @@ impl Edge {
         if started.is_err() {
             self.say(Heard::Tab(
                 tab,
-                Input::Listed(failed, Err(ListFailure::Other)),
+                Input::Listed(failed, Err(FolderListError::Other)),
             ));
         }
     }
@@ -59,7 +59,7 @@ impl Edge {
         if started.is_err() {
             self.say(Heard::Tab(
                 tab,
-                Input::InfoRead(failed, Err(ListFailure::Other)),
+                Input::InfoRead(failed, Err(FolderListError::Other)),
             ));
         }
     }
@@ -75,7 +75,7 @@ impl Edge {
         if started.is_err() {
             self.say(Heard::Tab(
                 tab,
-                Input::DetailsRead(failed, Err(ListFailure::Other)),
+                Input::DetailsRead(failed, Err(FolderListError::Other)),
             ));
         }
     }
@@ -102,12 +102,12 @@ impl Edge {
 }
 
 /// The failure a listing error is to the browser.
-fn failure_of(err: ListError) -> ListFailure {
+fn failure_of(err: ListError) -> FolderListError {
     match err {
-        ListError::NotFound => ListFailure::NotFound,
-        ListError::NoPermission => ListFailure::NoPermission,
-        ListError::NotAFolder => ListFailure::NotAFolder,
-        ListError::Other(_) => ListFailure::Other,
+        ListError::NotFound => FolderListError::NotFound,
+        ListError::NoPermission => FolderListError::NoPermission,
+        ListError::NotAFolder => FolderListError::NotAFolder,
+        ListError::Other(_) => FolderListError::Other,
     }
 }
 

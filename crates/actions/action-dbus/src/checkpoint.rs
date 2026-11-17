@@ -13,7 +13,7 @@ pub trait Checkpoint {
     /// The session's restore points, oldest first (`CheckpointList` JSON).
     fn list(&self, session: &str) -> zbus::Result<String>;
 
-    /// What restoring `point` would change (`Result<RestorePlan, CheckpointFault>` JSON). Read-only.
+    /// What restoring `point` would change (`Result<RestorePlan, CheckpointError>` JSON). Read-only.
     fn plan(&self, session: &str, point: u32) -> zbus::Result<String>;
 
     /// Opens a session that only keeps restore points for an agent the caller watches

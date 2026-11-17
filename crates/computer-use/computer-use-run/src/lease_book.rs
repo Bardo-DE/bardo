@@ -27,7 +27,7 @@ pub struct Slot {
 /// Another run holds the window, or the run holds another window.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, thiserror::Error)]
 #[error("the lease is held by {by}")]
-pub struct LeaseHeld {
+pub struct LeaseHeldError {
     /// The run in the way.
     pub by: RunId,
 }
@@ -44,15 +44,15 @@ impl LeaseBook {
     /// already holds a window (the holder in the way is named).
     ///
     /// # Errors
-    /// [`LeaseHeld`] when another run holds `window` or `run` already holds a window.
-    pub fn claim(&self, window: &ToplevelIdent, run: &RunId) -> Result<LeaseBook, LeaseHeld> {
+    /// [`LeaseHeldError`] when another run holds `window` or `run` already holds a window.
+    pub fn claim(&self, window: &ToplevelIdent, run: &RunId) -> Result<LeaseBook, LeaseHeldError> {
         if let Some(slot) = self.slots.get(window) {
-            return Err(LeaseHeld {
+            return Err(LeaseHeldError {
                 by: slot.run.clone(),
             });
         }
         if let Some(slot) = self.slots.values().find(|slot| slot.run == *run) {
-            return Err(LeaseHeld {
+            return Err(LeaseHeldError {
                 by: slot.run.clone(),
             });
         }

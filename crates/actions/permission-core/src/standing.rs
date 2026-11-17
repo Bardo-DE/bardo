@@ -20,15 +20,15 @@ pub struct Domain(String);
 /// Why text is not a host name.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("a domain is 1 to 253 letters, digits, dots and hyphens")]
-pub struct DomainFault;
+pub struct DomainError;
 
 impl Domain {
     /// `text` as a domain.
     ///
     /// # Errors
     ///
-    /// Returns `DomainFault` when `text` is not a host name.
-    pub fn parse(text: &str) -> Result<Self, DomainFault> {
+    /// Returns `DomainError` when `text` is not a host name.
+    pub fn parse(text: &str) -> Result<Self, DomainError> {
         let lower = text.trim_end_matches('.').to_ascii_lowercase();
         let ok = !lower.is_empty()
             && lower.len() <= 253
@@ -40,7 +40,7 @@ impl Domain {
         if ok {
             Ok(Self(lower))
         } else {
-            Err(DomainFault)
+            Err(DomainError)
         }
     }
 
@@ -52,7 +52,7 @@ impl Domain {
 }
 
 impl TryFrom<String> for Domain {
-    type Error = DomainFault;
+    type Error = DomainError;
 
     fn try_from(text: String) -> Result<Self, Self::Error> {
         Self::parse(&text)
@@ -78,15 +78,15 @@ pub enum Recipient {
 /// Why text is not an address.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("an address is a name, one @ and a domain")]
-pub struct AddressFault;
+pub struct AddressError;
 
 impl Recipient {
     /// `text` as an address.
     ///
     /// # Errors
     ///
-    /// Returns `AddressFault` when `text` is not an address.
-    pub fn address(text: &str) -> Result<Self, AddressFault> {
+    /// Returns `AddressError` when `text` is not an address.
+    pub fn address(text: &str) -> Result<Self, AddressError> {
         let lower = text.trim().to_ascii_lowercase();
         match lower.split_once('@') {
             Some((name, host))
@@ -97,7 +97,7 @@ impl Recipient {
             {
                 Ok(Self::Address(lower))
             }
-            _ => Err(AddressFault),
+            _ => Err(AddressError),
         }
     }
 
@@ -128,7 +128,7 @@ pub struct CommandPrefix(Vec<String>);
 
 /// Why text is not a command prefix.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum CommandFault {
+pub enum CommandError {
     /// No words.
     #[error("a command prefix needs at least one word")]
     Empty,
@@ -151,15 +151,15 @@ impl CommandPrefix {
     ///
     /// # Errors
     ///
-    /// Returns `CommandFault` when `text` is empty or holds a control character or a shell
+    /// Returns `CommandError` when `text` is empty or holds a control character or a shell
     /// operator.
-    pub fn parse(text: &str) -> Result<Self, CommandFault> {
+    pub fn parse(text: &str) -> Result<Self, CommandError> {
         if !plain(text) {
-            return Err(CommandFault::Shell);
+            return Err(CommandError::Shell);
         }
         let words: Vec<String> = text.split_whitespace().map(str::to_owned).collect();
         if words.is_empty() {
-            Err(CommandFault::Empty)
+            Err(CommandError::Empty)
         } else {
             Ok(Self(words))
         }
@@ -182,7 +182,7 @@ impl CommandPrefix {
 }
 
 impl TryFrom<String> for CommandPrefix {
-    type Error = CommandFault;
+    type Error = CommandError;
 
     fn try_from(text: String) -> Result<Self, Self::Error> {
         Self::parse(&text)
@@ -288,7 +288,7 @@ pub struct StandingGrantId(String);
 /// Why text is not a standing grant id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("a standing grant id is `sg-` and 16 hex digits")]
-pub struct StandingIdFault;
+pub struct StandingIdError;
 
 impl StandingGrantId {
     /// The id of the grant for `caller` and `scope`.
@@ -315,15 +315,15 @@ impl StandingGrantId {
     ///
     /// # Errors
     ///
-    /// Returns `StandingIdFault` when `text` is not a standing grant id.
-    pub fn parse(text: &str) -> Result<Self, StandingIdFault> {
+    /// Returns `StandingIdError` when `text` is not a standing grant id.
+    pub fn parse(text: &str) -> Result<Self, StandingIdError> {
         match text.strip_prefix("sg-") {
             Some(hex)
                 if hex.len() == 16 && hex.chars().all(|c| matches!(c, '0'..='9' | 'a'..='f')) =>
             {
                 Ok(Self(text.to_owned()))
             }
-            _ => Err(StandingIdFault),
+            _ => Err(StandingIdError),
         }
     }
 
@@ -335,7 +335,7 @@ impl StandingGrantId {
 }
 
 impl TryFrom<String> for StandingGrantId {
-    type Error = StandingIdFault;
+    type Error = StandingIdError;
 
     fn try_from(text: String) -> Result<Self, Self::Error> {
         Self::parse(&text)
@@ -396,7 +396,7 @@ pub fn held_without(
 
 /// Why a standing-grant file's text could not be read or made.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum StandingFileFault {
+pub enum StandingFileError {
     /// The text is not a list of standing grants.
     #[error("not a list of standing grants: {0}")]
     Decode(String),
@@ -410,12 +410,12 @@ pub enum StandingFileFault {
 ///
 /// # Errors
 ///
-/// Returns `StandingFileFault::Decode` when a non-empty text is not a list of standing grants.
-pub fn decode_standing(text: &str) -> Result<Vec<StandingGrant>, StandingFileFault> {
+/// Returns `StandingFileError::Decode` when a non-empty text is not a list of standing grants.
+pub fn decode_standing(text: &str) -> Result<Vec<StandingGrant>, StandingFileError> {
     match text.trim() {
         "" => Ok(Vec::new()),
         json => {
-            serde_json::from_str(json).map_err(|why| StandingFileFault::Decode(why.to_string()))
+            serde_json::from_str(json).map_err(|why| StandingFileError::Decode(why.to_string()))
         }
     }
 }
@@ -425,7 +425,7 @@ pub fn decode_standing(text: &str) -> Result<Vec<StandingGrant>, StandingFileFau
 ///
 /// # Errors
 ///
-/// Returns `StandingFileFault::Encode` when the grants cannot be turned into text.
-pub fn encode_standing(grants: &[StandingGrant]) -> Result<String, StandingFileFault> {
-    serde_json::to_string_pretty(grants).map_err(|why| StandingFileFault::Encode(why.to_string()))
+/// Returns `StandingFileError::Encode` when the grants cannot be turned into text.
+pub fn encode_standing(grants: &[StandingGrant]) -> Result<String, StandingFileError> {
+    serde_json::to_string_pretty(grants).map_err(|why| StandingFileError::Encode(why.to_string()))
 }

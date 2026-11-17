@@ -62,7 +62,7 @@ fn an_app_without_fonts_takes_the_fonts_chord_and_others_keep_it() {
         let mut plain = Keymap::conventional(platform);
         let refused = plain.register(&temor(), &[(fonts.clone(), chord("Primary+T"))]);
         assert!(
-            matches!(refused, Err(Conflict::Standard { .. })),
+            matches!(refused, Err(ConflictError::Standard { .. })),
             "{name}: {refused:?}"
         );
 
@@ -147,7 +147,7 @@ fn universal_actions_cannot_be_forgone_and_nothing_is_registered() {
         let mut keymap = Keymap::conventional(Platform::MacOs);
         let result = keymap.register_with(&registration);
         assert!(
-            matches!(&result, Err(Conflict::Universal { action, .. }) if *action == gone),
+            matches!(&result, Err(ConflictError::Universal { action, .. }) if *action == gone),
             "{gone:?}: {result:?}"
         );
         assert_eq!(
@@ -156,7 +156,7 @@ fn universal_actions_cannot_be_forgone_and_nothing_is_registered() {
         );
         assert_eq!(gone.reach(), Reach::Universal);
     }
-    let words = Conflict::Universal {
+    let words = ConflictError::Universal {
         action: StandardAction::Copy,
         meaning: StandardAction::Copy.label(),
         app: "temor".into(),
@@ -242,7 +242,7 @@ fn a_fallback_is_checked_where_it_is_live() {
     assert!(
         matches!(
             result,
-            Err(Conflict::Standard {
+            Err(ConflictError::Standard {
                 action: StandardAction::Copy,
                 ..
             })
@@ -334,7 +334,7 @@ fn a_default_that_cannot_fire_in_a_terminal_falls_back() {
 
 /// Registers `rows` (id, default, fallback) for temor on other Linux, returning the keymap and
 /// the result.
-fn register_rows(rows: &[(&str, &str, Option<&str>)]) -> (Keymap, Result<(), Conflict>) {
+fn register_rows(rows: &[(&str, &str, Option<&str>)]) -> (Keymap, Result<(), ConflictError>) {
     let mut registration = Registration::new(&temor());
     for (id, first, fallback) in rows {
         registration = match fallback {
@@ -460,7 +460,7 @@ fn both_defaults_colliding_refuses_the_row_and_the_batch() {
     assert!(
         matches!(
             result,
-            Err(Conflict::Standard {
+            Err(ConflictError::Standard {
                 action: StandardAction::SpaceLeft,
                 ..
             })
@@ -482,7 +482,7 @@ fn a_fallback_with_no_form_where_the_default_had_one_is_refused() {
         Some("Primary+Alt+Shift+Left"),
     )]);
     assert!(
-        matches!(result, Err(Conflict::Standard { .. })),
+        matches!(result, Err(ConflictError::Standard { .. })),
         "{result:?}"
     );
     assert!(keymap.chords_of(&Action::App(pane_left())).is_empty());

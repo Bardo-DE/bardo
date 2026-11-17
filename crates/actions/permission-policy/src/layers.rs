@@ -65,13 +65,13 @@ impl fmt::Display for PolicyOrigin {
 /// Why a policy file could not be read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{message}")]
-pub struct ReadFault {
+pub struct ReadError {
     /// What kind of failure it was.
     pub kind: ErrorKind,
     message: String,
 }
 
-impl From<&std::io::Error> for ReadFault {
+impl From<&std::io::Error> for ReadError {
     fn from(error: &std::io::Error) -> Self {
         Self {
             kind: error.kind(),
@@ -89,7 +89,7 @@ pub struct PolicySource {
     pub origin: PolicyOrigin,
     /// The Cedar text, or why the file could not be read. An unreadable source is refused by its
     /// layer like a bad one, so a file that cannot be read never loosens the set.
-    pub text: Result<String, ReadFault>,
+    pub text: Result<String, ReadError>,
 }
 
 impl PolicySource {
@@ -117,7 +117,7 @@ impl PolicySource {
 
     /// A file that could not be read, and why.
     #[must_use]
-    pub fn unreadable(layer: Layer, path: PathBuf, why: ReadFault) -> Self {
+    pub fn unreadable(layer: Layer, path: PathBuf, why: ReadError) -> Self {
         Self {
             layer,
             origin: PolicyOrigin::File(path),

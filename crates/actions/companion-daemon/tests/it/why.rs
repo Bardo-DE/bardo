@@ -20,8 +20,8 @@ use companion_wire::{
 use futures_util::StreamExt;
 use futures_util::lock::Mutex;
 use inference_core::{
-    Declined, DeclinedBecause, Door, InferEvent, InferRefusal, ModelLabel, ModelRef, ProviderId,
-    StageNote, StageRole, Why,
+    Declined, DeclinedBecause, Door, InferEvent, InferRefusedError, ModelLabel, ModelRef,
+    ProviderId, StageNote, StageRole, Why,
 };
 use provenance::AgentRef;
 use std::sync::Arc;
@@ -96,7 +96,7 @@ async fn a_named_model_that_cannot_serve_is_a_refusal_that_says_which_and_why() 
     };
     let mut w = world(vec![Say::Routed(
         vec![InferEvent::Declined(declined)],
-        Box::new(Say::Refuse(InferRefusal::Unavailable)),
+        Box::new(Say::Refuse(InferRefusedError::Unavailable)),
     )]);
     let opened = w.open("work").await;
     Box::pin(w.say(&opened.session, "hello")).await;
@@ -112,7 +112,7 @@ async fn a_named_model_that_cannot_serve_is_a_refusal_that_says_which_and_why() 
 
 #[tokio::test]
 async fn no_model_chosen_asks_the_person_to_choose_one() {
-    let mut w = world(vec![Say::Refuse(InferRefusal::NoModelChosen)]);
+    let mut w = world(vec![Say::Refuse(InferRefusedError::NoModelChosen)]);
     let opened = w.open("work").await;
     Box::pin(w.say(&opened.session, "hello")).await;
     let view: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");
@@ -122,7 +122,7 @@ async fn no_model_chosen_asks_the_person_to_choose_one() {
 
 #[tokio::test]
 async fn automatic_with_no_model_that_uses_apps_says_so_in_plain_words() {
-    let mut w = world(vec![Say::Refuse(InferRefusal::NoModelUsesApps)]);
+    let mut w = world(vec![Say::Refuse(InferRefusedError::NoModelUsesApps)]);
     let opened = w.open("work").await;
     Box::pin(w.say(&opened.session, "hello")).await;
     let view: AnswerWire = w.companion.shared.answer(&opened.task).expect("answer");

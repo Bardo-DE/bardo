@@ -17,7 +17,7 @@ const KEPT: usize = 8;
 /// The call asked about was never started, or was collected already.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("no such turn")]
-pub struct NoSuchTurn;
+pub struct NoSuchTurnError;
 
 /// The calls of one kind that are running or waiting to be collected.
 pub struct Calls<T> {
@@ -61,17 +61,17 @@ impl<T: Clone + Send + Sync + 'static> Calls<T> {
 
     /// The reply of the call `id` once it has ended, waiting up to [`WAIT`] for it: `None` while
     /// it is still working. `lost` is the reply of a call whose task ended without one.
-    pub async fn wait(&self, id: &str, lost: T) -> Result<Option<T>, NoSuchTurn> {
+    pub async fn wait(&self, id: &str, lost: T) -> Result<Option<T>, NoSuchTurnError> {
         // An id that is not a number is the id of no turn.
         let Ok(id) = id.parse::<u64>() else {
-            return Err(NoSuchTurn);
+            return Err(NoSuchTurnError);
         };
         let mut reply = self
             .running
             .lock()
             .ok()
             .and_then(|running| running.get(&id).cloned())
-            .ok_or(NoSuchTurn)?;
+            .ok_or(NoSuchTurnError)?;
         let ended = tokio::time::timeout(WAIT, reply.wait_for(Option::is_some)).await;
         let collected = match ended {
             Ok(Ok(value)) => value.clone(),

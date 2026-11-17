@@ -20,7 +20,7 @@ use crate::computer_use_run::{ComputerUseRun, StepJob};
 use engine_supervisor::EngineId;
 use inference_core::{
     ChatReply, ChatSink, ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply,
-    InferEvent, InferRefusal, InferReply, ModelError, ServedBy,
+    InferEvent, InferRefusedError, InferReply, ModelError, ServedBy,
 };
 use inference_router::local::LocalModel;
 use inference_router::seams::TurnStep;
@@ -154,7 +154,7 @@ pub async fn run_turn<P: sp::Provider>(
     served: &ServedBy,
     events: impl FnMut(InferEvent) -> ControlFlow<()> + Send,
     touch: impl FnMut() + Send,
-) -> (Result<ChatReply, ModelError>, Option<bridge::NoScores>) {
+) -> (Result<ChatReply, ModelError>, Option<bridge::NoScoresError>) {
     let mut sink = Forward {
         events,
         touch,
@@ -177,7 +177,7 @@ pub async fn run_chat<P: sp::Provider>(
     served: &ServedBy,
     events: impl FnMut(InferEvent) -> ControlFlow<()> + Send,
     touch: impl FnMut() + Send,
-) -> (InferReply, Option<bridge::NoScores>) {
+) -> (InferReply, Option<bridge::NoScoresError>) {
     let (reply, why) = run_turn(provider, turn, served, events, touch).await;
     (
         match reply {
@@ -190,13 +190,13 @@ pub async fn run_chat<P: sp::Provider>(
 
 /// Says in the daemon's log why a reply that asked for option shares has none: the reply is the
 /// same without them and the app is not told (a Choice's answer never depends on its scores).
-pub fn note_no_scores(why: Option<bridge::NoScores>) {
+pub fn note_no_scores(why: Option<bridge::NoScoresError>) {
     if let Some(why) = why {
         eprintln!("inferd: choice scores: none: {why}");
     }
 }
 
-fn refused(refusal: InferRefusal) -> InferReply {
+fn refused(refusal: InferRefusedError) -> InferReply {
     InferReply::Refused(refusal)
 }
 
@@ -255,7 +255,7 @@ impl<U: EngineUse> LocalTurns<U> {
             .unwrap_or_else(PoisonError::into_inner)
             .clone();
         let (Some(mut run), Some(provider)) = (run, chat_provider(model)) else {
-            return refused(InferRefusal::Unsupported);
+            return refused(InferRefusedError::Unsupported);
         };
         let mut sink = ToSession {
             steps: self.steps.clone(),

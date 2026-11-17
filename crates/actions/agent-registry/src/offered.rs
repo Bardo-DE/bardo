@@ -18,7 +18,7 @@
 //! The record is the agent's own words, shown to the person and trusted for nothing: the ids the
 //! person picks are checked again by the agent when the next session opens.
 
-use crate::slug::SlugRefused;
+use crate::slug::SlugError;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -67,10 +67,10 @@ pub struct Offered {
 /// Why a record was not read or written. Two faults are equal when they are the same kind of
 /// failure.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum OfferedFault {
+pub enum OfferedError {
     /// The id is not a name the actions service keeps agents under.
     #[error("the agent's name is not one actions service keeps records under")]
-    Name(#[source] SlugRefused),
+    Name(#[source] SlugError),
     /// The file could not be read or written.
     #[error("the record could not be read or written")]
     Io(#[source] Arc<std::io::Error>),
@@ -82,31 +82,31 @@ pub enum OfferedFault {
     Unwritable(#[source] toml::ser::Error),
 }
 
-impl PartialEq for OfferedFault {
+impl PartialEq for OfferedError {
     fn eq(&self, other: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(other)
     }
 }
 
-impl Eq for OfferedFault {}
+impl Eq for OfferedError {}
 
 impl Offered {
     /// Reads the text of `offered.toml`.
     ///
     /// # Errors
     ///
-    /// Returns [`OfferedFault::Damaged`] when `text` is not a valid record.
-    pub fn parse(text: &str) -> Result<Self, OfferedFault> {
-        toml::from_str(text).map_err(OfferedFault::Damaged)
+    /// Returns [`OfferedError::Damaged`] when `text` is not a valid record.
+    pub fn parse(text: &str) -> Result<Self, OfferedError> {
+        toml::from_str(text).map_err(OfferedError::Damaged)
     }
 
     /// The record as the text kept in `offered.toml`.
     ///
     /// # Errors
     ///
-    /// Returns [`OfferedFault::Unwritable`] when the record cannot be written as TOML.
-    pub fn render(&self) -> Result<String, OfferedFault> {
-        toml::to_string(self).map_err(OfferedFault::Unwritable)
+    /// Returns [`OfferedError::Unwritable`] when the record cannot be written as TOML.
+    pub fn render(&self) -> Result<String, OfferedError> {
+        toml::to_string(self).map_err(OfferedError::Unwritable)
     }
 
     /// The record that replaces `before` when `self` is written: its counter one past the one it

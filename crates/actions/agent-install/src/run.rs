@@ -5,7 +5,7 @@ use std::process::Command;
 
 /// Why a program did not run to success.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum RunFault {
+pub enum RunError {
     /// The program could not be started.
     #[error("{program} could not be started")]
     Start {
@@ -26,8 +26,8 @@ pub trait Run {
     ///
     /// # Errors
     ///
-    /// Returns [`RunFault`] when the program did not run to success.
-    fn run(&self, program: &str, args: &[String], dir: &Path) -> Result<(), RunFault>;
+    /// Returns [`RunError`] when the program did not run to success.
+    fn run(&self, program: &str, args: &[String], dir: &Path) -> Result<(), RunError>;
 }
 
 /// Runs the real program.
@@ -35,18 +35,18 @@ pub trait Run {
 pub struct System;
 
 impl Run for System {
-    fn run(&self, program: &str, args: &[String], dir: &Path) -> Result<(), RunFault> {
+    fn run(&self, program: &str, args: &[String], dir: &Path) -> Result<(), RunError> {
         let status = Command::new(program)
             .args(args)
             .current_dir(dir)
             .status()
-            .map_err(|source| RunFault::Start {
+            .map_err(|source| RunError::Start {
                 program: program.to_owned(),
                 source: std::sync::Arc::new(source),
             })?;
         status
             .success()
             .then_some(())
-            .ok_or_else(|| RunFault::Failed(program.to_owned()))
+            .ok_or_else(|| RunError::Failed(program.to_owned()))
     }
 }

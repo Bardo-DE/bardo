@@ -13,6 +13,6 @@ mod request;
 pub use ask_kind::AskKind;
 pub use error::FrameError;
 pub use frame::{Envelope, MAX_FRAME, decode_frame, encode_frame};
-pub use launcher_fault::LauncherFault;
+pub use launcher_fault::LauncherWireError;
 pub use reply::{AccountsReply, Refusal};
 pub use request::{AccountsRequest, ParentWindow};

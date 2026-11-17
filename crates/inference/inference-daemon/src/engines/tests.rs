@@ -196,13 +196,13 @@ async fn an_empty_engines_routes_nothing_and_is_idle() {
         engines
             .route(&spec(llm(), DataClass::Notes), CallerRole::App)
             .err(),
-        Some(InferRefusal::Unavailable)
+        Some(InferRefusedError::Unavailable)
     );
     assert_eq!(engines.gpu(), GpuState::Idle);
     assert!(engines.listed().is_empty());
     assert_eq!(
         engines.prepare(&llm(), DataClass::Notes, Tier::Fast),
-        Err(InferRefusal::Unavailable)
+        Err(InferRefusedError::Unavailable)
     );
 }
 
@@ -275,7 +275,7 @@ async fn the_session_router_writes_the_pin_the_runner_reads() {
     let none = nothing_here().router(empty.clone(), CallerRole::App);
     assert_eq!(
         none.route(&spec(llm(), DataClass::Notes)).await.err(),
-        Some(InferRefusal::Unavailable)
+        Some(InferRefusedError::Unavailable)
     );
     assert!(empty.get().is_none());
 }
@@ -303,7 +303,7 @@ async fn prepare_warms_a_stopped_engine_and_a_later_prepare_says_ready() {
     // Refusals come back as refusals.
     assert_eq!(
         engines.prepare(&computer_use(), DataClass::Screen, Tier::Fast),
-        Err(InferRefusal::Denied),
+        Err(InferRefusedError::Denied),
         "an app may not warm a computer-use model"
     );
     assert_eq!(
@@ -325,7 +325,7 @@ async fn only_computer_use_daemon_is_routed_a_computer_use_need() {
         engines
             .route(&spec(computer_use(), DataClass::Screen), CallerRole::App)
             .err(),
-        Some(InferRefusal::Denied)
+        Some(InferRefusedError::Denied)
     );
     let (decision, _) = engines
         .route(

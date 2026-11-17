@@ -21,4 +21,6 @@ pub use atomic_file::{read_optional, write_atomic};
 pub use clock::SystemClock;
 pub use grant_file::{GrantFileError, read_grant_file, read_grant_list, write_grant_list};
 pub use grant_lock::WriteLock;
-pub use wait::{Cancel, Stop, ThreadSleep, Waits, stop_after, thread_sleep, until, within};
+pub use wait::{
+    Cancel, ThreadSleep, WaitStopError, Waits, stop_after, thread_sleep, until, within,
+};

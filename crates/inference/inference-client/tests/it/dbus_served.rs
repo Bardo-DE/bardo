@@ -22,7 +22,7 @@ use inference_client::{DbusTransport, InferSession, Inference};
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
     AttachIndex, ClientFrame, ComputerUseBegin, ComputerUseStepReply, EmbedReply, EmbedRequest,
-    EmbedRole, EmbedVector, ImageSource, InferEvent, InferRefusal, InferReply, InferRequest,
+    EmbedRole, EmbedVector, ImageSource, InferEvent, InferRefusedError, InferReply, InferRequest,
     Readiness, RequestKind, ServedBy, TurnUsage,
 };
 use inference_router::session::RouteDecision;
@@ -154,7 +154,7 @@ async fn a_class_the_session_was_not_opened_for_is_refused_by_the_machine() {
     assert_eq!(
         session.next().await,
         Ok(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unsupported
+            InferRefusedError::Unsupported
         ))),
         "the request carries Notes on a Public session"
     );
@@ -225,7 +225,7 @@ async fn a_computer_use_run_needs_its_begin_and_its_frame_rides_as_a_memfd() {
     assert_eq!(
         session.next().await,
         Ok(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unsupported
+            InferRefusedError::Unsupported
         ))),
         "a step before a begin"
     );

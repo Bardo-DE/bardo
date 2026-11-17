@@ -140,7 +140,7 @@ use account_fake::{MemoryStore, RecordingAudit, ScriptedSheets};
 use account_families::DynProvider;
 use account_secrets::{MemorySecrets, Secrets, SecretsError};
 use account_service::AccountService;
-use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetLink, SheetOpen, Sheets};
 use account_wire::ParentWindow;
 use base_time::FixedClock;
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender, unbounded_channel};
@@ -280,13 +280,13 @@ impl SheetLink for TestLink {
         clippy::unused_async_trait_impl,
         reason = "`update` implements an async trait method, and this implementation has nothing to wait for"
     )]
-    async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
+    async fn update(&mut self, view: SheetView) -> Result<(), SheetError> {
         self.react(&view);
         Ok(())
     }
 
-    async fn input(&mut self) -> Result<SheetInput, SheetFault> {
-        self.rx.recv().await.ok_or(SheetFault::Closed)
+    async fn input(&mut self) -> Result<SheetInput, SheetError> {
+        self.rx.recv().await.ok_or(SheetError::Closed)
     }
 }
 
@@ -301,13 +301,13 @@ impl Sheets for TestSheets {
         clippy::unused_async_trait_impl,
         reason = "`conversation` implements an async trait method, and this implementation has nothing to wait for"
     )]
-    async fn conversation(&self, open: SheetOpen) -> Result<TestLink, SheetFault> {
+    async fn conversation(&self, open: SheetOpen) -> Result<TestLink, SheetError> {
         let person = self
             .people
             .lock()
             .expect("people")
             .pop_front()
-            .ok_or(SheetFault::Unavailable)?;
+            .ok_or(SheetError::Unavailable)?;
         let (tx, rx) = unbounded_channel();
         let link = TestLink {
             person,

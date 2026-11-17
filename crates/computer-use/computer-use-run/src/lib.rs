@@ -83,7 +83,7 @@ pub use chord_scope::{acts_on_desktop, standard_actions_of};
 pub use config::{ComputerUseConfig, Days, DefaultMode, SettleLimits};
 pub use effect_class::classify_effect;
 pub use exec::{Collected, Deadline, Exec, Outlet, Progress, Seam, Step, StepNote, deadline_of};
-pub use lease_book::{LeaseBook, LeaseHeld, Slot, SlotState};
+pub use lease_book::{LeaseBook, LeaseHeldError, Slot, SlotState};
 pub use machine::acquire::{AcquireFailure, AcquirePhase, AcquireWhy};
 pub use machine::effect::{ComputerUseSignal, HintSource, RunEffect};
 pub use machine::input::{CheckResult, ModelReply, Moved, RunInput};

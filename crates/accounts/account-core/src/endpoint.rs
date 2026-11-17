@@ -18,7 +18,7 @@ mod reach;
 mod server_address;
 
 pub use reach::{PathReach, Reach, ReachMethods};
-pub use server_address::{ServerAddress, ServerAddressFault, server_address, server_address_shape};
+pub use server_address::{ServerAddress, ServerAddressError, server_address, server_address_shape};
 
 /// One server of an account, as an app or the relay needs to reach it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -205,7 +205,7 @@ base_ids::string_newtype!(EndpointUrl, CoreError);
 
 /// Why an endpoint is not one accounts service will use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum EndpointFault {
+pub enum EndpointError {
     /// The family does not speak the URL's scheme, or has no relay protocol.
     #[error("the family does not speak that scheme")]
     SchemeMismatch,
@@ -257,23 +257,23 @@ impl ServiceEndpoint {
     ///
     /// # Errors
     ///
-    /// An `EndpointFault` naming what is incoherent: a scheme that is not the family's protocol, a
+    /// An `EndpointError` naming what is incoherent: a scheme that is not the family's protocol, a
     /// TLS mode that does not go with the scheme, or a plain endpoint on a host that is not
     /// loopback.
-    pub fn check(&self) -> Result<(), EndpointFault> {
+    pub fn check(&self) -> Result<(), EndpointError> {
         let origin = self.url.origin();
         if self
             .protocol()
             .is_some_and(|p| Some(p) != EndpointProtocol::of_scheme(origin.scheme))
         {
-            return Err(EndpointFault::SchemeMismatch);
+            return Err(EndpointError::SchemeMismatch);
         }
         if !admits(origin.scheme, self.tls) {
-            return Err(EndpointFault::TlsMismatch);
+            return Err(EndpointError::TlsMismatch);
         }
         let own_server = self.family == Family::ChatCompletions && origin.is_tailnet();
         if self.tls == Tls::Plain && !origin.is_loopback() && !own_server {
-            Err(EndpointFault::PlainOffLoopback)
+            Err(EndpointError::PlainOffLoopback)
         } else {
             Ok(())
         }

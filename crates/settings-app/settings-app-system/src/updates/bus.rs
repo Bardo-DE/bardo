@@ -4,7 +4,7 @@
 use super::wire::wire_of;
 use crate::bus::{Pinned, ToAbsence, absence_of, because, connect, pinned, relay};
 use account_dbus::{BusFailure, classify};
-use base_time::deadline::{NotAnswering, within};
+use base_time::deadline::{NotAnsweringError, within};
 use base_time::{Clock, SystemClock};
 use settings_app_link::Ticks;
 use settings_app_link::bus::BusSource;
@@ -86,7 +86,7 @@ async fn proxy(running: &Pinned) -> Result<UpdatesProxy<'_>, zbus::Error> {
 }
 
 /// Who did not answer, as the page says it.
-fn silent(_error: NotAnswering) -> Absence {
+fn silent(_error: NotAnsweringError) -> Absence {
     Absence::Failed
 }
 

@@ -5,7 +5,7 @@
 //! a fork is the router's to write.
 
 use crate::exec::Printed;
-use crate::exit::{Failure, of_client};
+use crate::exit::{ExitError, of_client};
 use action_client::{Intents, Transport};
 use action_vocab::IntentsVocab;
 use action_wire::{StoredAsk, StoredView};
@@ -34,7 +34,7 @@ pub enum SessionsCmd {
 async fn rows<T: Transport>(
     intents: &Intents<T>,
     session: &SessionId,
-) -> Result<Vec<Logged>, Failure> {
+) -> Result<Vec<Logged>, ExitError> {
     const PAGE: u32 = 200;
     let mut all = Vec::new();
     let mut from = None;
@@ -52,7 +52,7 @@ async fn rows<T: Transport>(
             StoredView::Rows { rows, next } => {
                 for row in rows {
                     let logged = serde_json::from_str::<Logged>(&row.json).map_err(|e| {
-                        Failure::because(
+                        ExitError::because(
                             crate::exit::Exit::Unavailable,
                             "a stored row is unreadable",
                             &e,
@@ -66,7 +66,7 @@ async fn rows<T: Transport>(
                 }
             }
             StoredView::Sessions(_) | StoredView::Forked(_) => {
-                return Err(Failure::new(
+                return Err(ExitError::new(
                     crate::exit::Exit::Unavailable,
                     "the router answered something else than rows",
                 ));
@@ -109,13 +109,13 @@ fn plan_line(session: &SessionId, plan: &ResumePlan) -> String {
 }
 
 /// `sessions`: one line each, oldest first.
-pub async fn list<T: Transport>(intents: &Intents<T>) -> Result<Printed, Failure> {
+pub async fn list<T: Transport>(intents: &Intents<T>) -> Result<Printed, ExitError> {
     let StoredView::Sessions(all) = intents
         .session_stored(StoredAsk::List)
         .await
         .map_err(|e| of_client(&e))?
     else {
-        return Err(Failure::new(
+        return Err(ExitError::new(
             crate::exit::Exit::Unavailable,
             "the router answered something else than a list",
         ));
@@ -156,10 +156,10 @@ fn entry_line(entry: &SessionEntry) -> Option<String> {
 pub async fn load<T: Transport>(
     intents: &Intents<T>,
     session: &SessionId,
-) -> Result<Printed, Failure> {
+) -> Result<Printed, ExitError> {
     let all = rows(intents, session).await?;
     let document = export(session, &all)
-        .map_err(|e| Failure::new(crate::exit::Exit::Unavailable, e.to_string()))?;
+        .map_err(|e| ExitError::new(crate::exit::Exit::Unavailable, e.to_string()))?;
     let human = document
         .entries
         .iter()
@@ -178,14 +178,14 @@ pub async fn fork<T: Transport>(
     intents: &Intents<T>,
     session: &SessionId,
     at: Option<u64>,
-) -> Result<Printed, Failure> {
+) -> Result<Printed, ExitError> {
     let at = match at {
         Some(at) => at,
         None => rows(intents, session)
             .await?
             .last()
             .map(|row| row.seq.0)
-            .ok_or_else(|| Failure::new(crate::exit::Exit::Usage, "that session has no rows"))?,
+            .ok_or_else(|| ExitError::new(crate::exit::Exit::Usage, "that session has no rows"))?,
     };
     let view = intents
         .session_stored(StoredAsk::Fork {
@@ -195,7 +195,7 @@ pub async fn fork<T: Transport>(
         .await
         .map_err(|e| of_client(&e))?;
     let StoredView::Forked(child) = view else {
-        return Err(Failure::new(
+        return Err(ExitError::new(
             crate::exit::Exit::Unavailable,
             "the router answered something else than a fork",
         ));

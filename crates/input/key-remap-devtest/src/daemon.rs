@@ -1,7 +1,7 @@
 //! The real `key_remap` binary as a child process, with every path it touches in a scratch
 //! directory and `sd_notify` going to a socket the harness reads.
 
-use crate::failure::{Failure, io};
+use crate::failure::{DevtestError, io};
 use crate::notify::Notifications;
 use std::fs::File;
 use std::path::{Path, PathBuf};
@@ -40,8 +40,8 @@ impl Daemon {
     ///
     /// Returns a [`Failure`] when a directory, the seat file, the notify socket or the log cannot
     /// be made, or the process cannot be spawned.
-    pub fn start(spec: &DaemonSpec<'_>) -> Result<Self, Failure> {
-        let dir = |name: &str| -> Result<PathBuf, Failure> {
+    pub fn start(spec: &DaemonSpec<'_>) -> Result<Self, DevtestError> {
+        let dir = |name: &str| -> Result<PathBuf, DevtestError> {
             let path = spec.scratch.join(name);
             std::fs::create_dir_all(&path).map_err(io(format!("creating {}", path.display())))?;
             Ok(path)
@@ -133,11 +133,11 @@ impl Daemon {
     ///
     /// Returns a [`Failure`] naming the exit status when the process has exited, or when its state
     /// cannot be read.
-    pub fn assert_alive(&mut self) -> Result<(), Failure> {
+    pub fn assert_alive(&mut self) -> Result<(), DevtestError> {
         match self.child.try_wait() {
             Ok(None) => Ok(()),
-            Ok(Some(status)) => Err(Failure::new(format!("the daemon exited: {status}"))),
-            Err(e) => Err(Failure::new(format!("waiting for the daemon: {e}"))),
+            Ok(Some(status)) => Err(DevtestError::new(format!("the daemon exited: {status}"))),
+            Err(e) => Err(DevtestError::new(format!("waiting for the daemon: {e}"))),
         }
     }
 
@@ -146,7 +146,7 @@ impl Daemon {
     /// # Errors
     ///
     /// Returns a [`Failure`] when `READY=1` does not arrive within `within`.
-    pub fn wait_ready(&mut self, within: Duration) -> Result<Duration, Failure> {
+    pub fn wait_ready(&mut self, within: Duration) -> Result<Duration, DevtestError> {
         let deadline = self.started + within;
         loop {
             if let Some(at) = self.notifications.times_of("READY=1").first() {
@@ -155,7 +155,7 @@ impl Daemon {
             self.assert_alive()
                 .map_err(|e| e.during("waiting for READY=1"))?;
             if Instant::now() >= deadline {
-                return Err(Failure::new(format!(
+                return Err(DevtestError::new(format!(
                     "no READY=1 within {within:?} of the spawn; notifications: {:?}",
                     self.notifications
                         .all()
@@ -173,7 +173,7 @@ impl Daemon {
     /// # Errors
     ///
     /// Returns a [`Failure`] when the process cannot be killed or reaped.
-    pub fn kill(&mut self) -> Result<(), Failure> {
+    pub fn kill(&mut self) -> Result<(), DevtestError> {
         self.child.kill().map_err(io("killing the daemon"))?;
         self.child
             .wait()

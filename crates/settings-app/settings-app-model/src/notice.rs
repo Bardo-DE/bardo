@@ -34,15 +34,15 @@ pub enum Notice {
 
 /// There is no window to tell: the app is closing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct WindowGone;
+pub struct WindowGoneError;
 
-impl fmt::Display for WindowGone {
+impl fmt::Display for WindowGoneError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("the Settings window has gone")
     }
 }
 
-impl std::error::Error for WindowGone {}
+impl std::error::Error for WindowGoneError {}
 
 /// The notices that wait, and who is still on either end.
 #[derive(Debug)]
@@ -103,11 +103,11 @@ impl Outbox {
     ///
     /// # Errors
     ///
-    /// Returns [`WindowGone`] when the window has gone.
-    pub fn send(&self, notice: Notice) -> Result<(), WindowGone> {
+    /// Returns [`WindowGoneError`] when the window has gone.
+    pub fn send(&self, notice: Notice) -> Result<(), WindowGoneError> {
         let mut queue = locked(&self.queue);
         if queue.receiver_gone {
-            return Err(WindowGone);
+            return Err(WindowGoneError);
         }
         if queue.waiting.len() >= NOTICE_INBOX {
             drop(queue);

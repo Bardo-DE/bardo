@@ -3,13 +3,13 @@
 use std::time::Duration;
 
 use files_core::{
-    Behaviour, Bring, CloudDrive, CloudItem, EjectFailure, Entry, FileName, FolderPath,
-    FolderPrefs, Info, ItemRef, Location, MountFailure, OpEvent, Refused, Resolution, SavedCopies,
-    Sort, ViewMode, Volume, VolumeId,
+    Behaviour, Bring, CloudDrive, CloudItem, EjectError, Entry, FileName, FolderPath, FolderPrefs,
+    Info, ItemRef, Location, MountError, OpEvent, Refused, Resolution, SavedCopies, Sort, ViewMode,
+    Volume, VolumeId,
 };
 
 use crate::app::AppPick;
-use crate::error::ListFailure;
+use crate::error::FolderListError;
 use crate::ops::DropHow;
 use crate::tabs::TabId;
 
@@ -58,7 +58,7 @@ pub enum Change {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Input {
     /// The answer to `Effect::List`.
-    Listed(Location, Result<Vec<Entry>, ListFailure>),
+    Listed(Location, Result<Vec<Entry>, FolderListError>),
     /// A live change from `Effect::Watch`.
     Changed(Location, Change),
     /// The answer to `Effect::LoadPrefs`.
@@ -97,7 +97,7 @@ pub enum Input {
     /// Put the Go to Folder sheet away (Escape, Cancel).
     GoToCancel,
     /// The answer to `Effect::CheckFolder`.
-    FolderChecked(FolderPath, Result<(), ListFailure>),
+    FolderChecked(FolderPath, Result<(), FolderListError>),
     /// Read the folder again.
     Reload,
     /// Open the selection (Return, double-click, ⌘↓).
@@ -124,13 +124,13 @@ pub enum Input {
     /// Open Get Info on the folder shown, whatever is selected (the background's menu).
     GetInfoFolder,
     /// The answer to `Effect::ReadInfo`.
-    InfoRead(ItemRef, Result<Info, ListFailure>),
+    InfoRead(ItemRef, Result<Info, FolderListError>),
     /// Put Get Info away (Escape, Done).
     CloseInfo,
     /// Show the preview pane, or put it away (Shift+Command+P).
     TogglePreview,
     /// The answer to `Effect::ReadDetails`.
-    DetailsRead(ItemRef, Result<Info, ListFailure>),
+    DetailsRead(ItemRef, Result<Info, FolderListError>),
     /// An arrow or jump key.
     MoveCursor(Direction, Modifier),
     /// A typed character, to jump to a name.
@@ -213,13 +213,13 @@ pub enum Input {
     /// Open a disk from the sidebar: go to it, mounting it first when it is not.
     OpenVolume(VolumeId),
     /// The answer to `Effect::MountVolume`.
-    Mounted(VolumeId, Result<FolderPath, MountFailure>),
+    Mounted(VolumeId, Result<FolderPath, MountError>),
     /// Eject a disk (its button in the sidebar).
     Eject(VolumeId),
     /// The answer to `Effect::EjectVolume`.
-    Ejected(VolumeId, Result<(), EjectFailure>),
+    Ejected(VolumeId, Result<(), EjectError>),
     /// The answer to `Effect::ForceEjectVolume`. A failure is only told, never asked again.
-    ForceEjected(VolumeId, Result<(), EjectFailure>),
+    ForceEjected(VolumeId, Result<(), EjectError>),
     /// Move these items to the Trash, wherever they are (another program asked).
     TrashItems(Vec<ItemRef>),
     /// Make a folder in `parent`, called `name` or, when none is given, `untitled folder` (another

@@ -24,7 +24,7 @@ pub struct Mime(String);
 /// Why a string is not a mime type.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("not a mime type: {0:?}")]
-pub struct BadMime(pub String);
+pub struct BadMimeError(pub String);
 
 impl Mime {
     /// `text` as a mime type: a non-empty type and subtype around one `/`, and no whitespace
@@ -32,9 +32,9 @@ impl Mime {
     ///
     /// # Errors
     ///
-    /// `BadMime` when `text` is not a `type/subtype` pair, or holds whitespace or a control
+    /// `BadMimeError` when `text` is not a `type/subtype` pair, or holds whitespace or a control
     /// character.
-    pub fn parse(text: &str) -> Result<Mime, BadMime> {
+    pub fn parse(text: &str) -> Result<Mime, BadMimeError> {
         let essence = text.split(';').next().unwrap_or_default();
         let well_formed = matches!(
             essence.split_once('/'),
@@ -43,7 +43,7 @@ impl Mime {
         if well_formed {
             Ok(Mime(text.to_owned()))
         } else {
-            Err(BadMime(text.to_owned()))
+            Err(BadMimeError(text.to_owned()))
         }
     }
 
@@ -82,7 +82,7 @@ pub enum DragOutcome {
     /// (`wl_data_source.cancelled`).
     Cancelled,
     /// The drag never started.
-    Unsupported { why: DragRefused },
+    Unsupported { why: DragError },
 }
 
 /// What the target did with a dropped payload.
@@ -96,7 +96,7 @@ pub enum DragAction {
 /// Why a drag did not start.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, thiserror::Error)]
 #[serde(rename_all = "snake_case")]
-pub enum DragRefused {
+pub enum DragError {
     /// No pointer button is held: a drag starts from a press that is still down.
     #[error("no pointer button is held")]
     NoPress,
@@ -157,7 +157,7 @@ mod tests {
             (DragOutcome::Cancelled, r#"{"kind":"cancelled"}"#),
             (
                 DragOutcome::Unsupported {
-                    why: DragRefused::NoPress,
+                    why: DragError::NoPress,
                 },
                 r#"{"kind":"unsupported","v":{"why":"no_press"}}"#,
             ),

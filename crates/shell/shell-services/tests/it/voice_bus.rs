@@ -18,7 +18,7 @@ use shell_model::voice::{
 };
 use speech_wire::{
     CancelCause, Envelope, HeardSegment, HeardTail, HeardText, MAX_FRAME, UtteranceEnd, VoiceBegin,
-    VoiceEvent as Frame, VoiceRefusal, VoiceTrigger,
+    VoiceError, VoiceEvent as Frame, VoiceTrigger,
 };
 
 fn served() -> ServedBy {
@@ -150,7 +150,7 @@ async fn needs_consent_opens_the_sheet_and_each_answer_is_the_consent_to_write()
         (ConsentAnswer::NotNow, VoiceConsent::Declined),
         (ConsentAnswer::Allow, VoiceConsent::Given(UnixSeconds(0))),
     ] {
-        let mut desk = desk_or_return!(BeginAnswer::Refuse(VoiceRefusal::NeedsConsent));
+        let mut desk = desk_or_return!(BeginAnswer::Refuse(VoiceError::NeedsConsent));
         desk.seated().await;
         desk.send(start());
         desk.state(|v| v.sheet.then_some(())).await;
@@ -211,7 +211,7 @@ async fn a_declined_consent_never_calls_begin() {
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_missing_microphone_is_said_plainly() {
-    let mut desk = desk_or_return!(BeginAnswer::Refuse(VoiceRefusal::MicUnavailable));
+    let mut desk = desk_or_return!(BeginAnswer::Refuse(VoiceError::MicUnavailable));
     desk.seated().await;
     desk.send(start());
     let notice = desk
@@ -220,7 +220,7 @@ async fn a_missing_microphone_is_said_plainly() {
             notice => Some(notice),
         })
         .await;
-    assert_eq!(notice, Notice::Refused(VoiceRefusal::MicUnavailable));
+    assert_eq!(notice, Notice::Refused(VoiceError::MicUnavailable));
     assert_eq!(notice_line(notice), "No microphone is available.");
     assert_eq!(
         line_of(&desk).as_deref(),

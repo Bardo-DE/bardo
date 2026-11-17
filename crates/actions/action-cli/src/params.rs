@@ -5,7 +5,7 @@
 //! checked here only far enough to say what is wrong; the router checks it again against the same
 //! manifest, and labels it `Untrusted, Source::Cli`.
 
-use crate::exit::Failure;
+use crate::exit::ExitError;
 use crate::resolve::Apps;
 use crate::when;
 use account_core::AppName;
@@ -37,13 +37,13 @@ impl StdinSlot {
         Self(Some(stdin))
     }
 
-    fn take(&mut self) -> Result<String, Failure> {
+    fn take(&mut self) -> Result<String, ExitError> {
         match self.0.take() {
             Some(Stdin::Text(text)) => Ok(text),
-            Some(Stdin::Closed) => Err(Failure::usage(
+            Some(Stdin::Closed) => Err(ExitError::usage(
                 "`-` reads standard input, and nothing was piped in",
             )),
-            None => Err(Failure::usage("standard input (`-`) can be read once")),
+            None => Err(ExitError::usage("standard input (`-`) can be read once")),
         }
     }
 }
@@ -75,11 +75,11 @@ fn handle(raw: &str) -> Option<Handle> {
 }
 
 /// `<kind>:<key>`, or a bare key when the kind is known from the declaration.
-fn entity(kind: &EntityKind, reading: &Reading<'_>, raw: &str) -> Result<EntityId, Failure> {
+fn entity(kind: &EntityKind, reading: &Reading<'_>, raw: &str) -> Result<EntityId, ExitError> {
     let key = match raw.split_once(':') {
         Some((named, key)) if EntityKind::parse(named).as_ref() == Ok(kind) => key,
         Some((named, _)) if EntityKind::parse(named).is_ok() => {
-            return Err(Failure::usage(format!(
+            return Err(ExitError::usage(format!(
                 "{raw:?} is a {named}, and a {kind} is wanted"
             )));
         }
@@ -88,9 +88,9 @@ fn entity(kind: &EntityKind, reading: &Reading<'_>, raw: &str) -> Result<EntityI
     let app = reading
         .apps
         .owner_of(kind, reading.owner)
-        .ok_or_else(|| Failure::usage(format!("no installed app declares {kind}")))?;
+        .ok_or_else(|| ExitError::usage(format!("no installed app declares {kind}")))?;
     let key = EntityKey::parse(key)
-        .map_err(|e| Failure::usage_because(format!("{key:?} is not a key of a {kind}"), &e))?;
+        .map_err(|e| ExitError::usage_because(format!("{key:?} is not a key of a {kind}"), &e))?;
     Ok(EntityId {
         app,
         kind: kind.clone(),
@@ -103,7 +103,7 @@ fn text(
     multiline: bool,
     reading: &mut Reading<'_>,
     raw: &str,
-) -> Result<Value, Failure> {
+) -> Result<Value, ExitError> {
     let body = if raw == "-" {
         let piped = reading.stdin.take()?;
         let piped = piped.strip_suffix('\n').unwrap_or(&piped);
@@ -112,10 +112,13 @@ fn text(
         raw.to_owned()
     };
     if body.chars().count() > max.0 as usize {
-        return Err(Failure::usage(format!("longer than {} characters", max.0)));
+        return Err(ExitError::usage(format!(
+            "longer than {} characters",
+            max.0
+        )));
     }
     if !multiline && body.contains('\n') {
-        return Err(Failure::usage("this takes one line"));
+        return Err(ExitError::usage("this takes one line"));
     }
     Ok(Value::Text(body))
 }
@@ -126,8 +129,8 @@ fn text(
 ///
 /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
 /// says what is wrong.
-pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Value, Failure> {
-    let usage = |why: String| Failure::usage(why);
+pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Value, ExitError> {
+    let usage = |why: String| ExitError::usage(why);
     if handle(raw).is_some() && matches!(ty, ParamType::Entities(_)) {
         return Err(usage(
             "a list of things takes things, not a held handle".to_owned(),
@@ -156,16 +159,16 @@ pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Val
             .ok_or_else(|| usage(format!("expected a whole number from {min} to {max}"))),
         ParamType::Decimal { scale } => when::decimal(raw, *scale)
             .map(Value::Decimal)
-            .map_err(|e| Failure::usage_of(&e)),
+            .map_err(|e| ExitError::usage_of(&e)),
         ParamType::Date => when::date(raw)
             .map(Value::Date)
-            .map_err(|e| Failure::usage_of(&e)),
+            .map_err(|e| ExitError::usage_of(&e)),
         ParamType::DateTime => when::instant(raw)
             .map(Value::DateTime)
-            .map_err(|e| Failure::usage_of(&e)),
+            .map_err(|e| ExitError::usage_of(&e)),
         ParamType::Duration => when::duration(raw)
             .map(Value::Duration)
-            .map_err(|e| Failure::usage_of(&e)),
+            .map_err(|e| ExitError::usage_of(&e)),
         ParamType::Choice(options) => options
             .iter()
             .find(|o| o.id.as_str() == raw)
@@ -179,7 +182,9 @@ pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Val
         ParamType::File => file(raw).map(Value::File),
         ParamType::Url => Url::parse(raw)
             .map(|_| Value::Url(raw.to_owned()))
-            .map_err(|e| Failure::usage_because("expected a link such as https://example.org", &e)),
+            .map_err(|e| {
+                ExitError::usage_because("expected a link such as https://example.org", &e)
+            }),
     }
 }
 
@@ -189,11 +194,11 @@ pub fn value(ty: &ParamType, reading: &mut Reading<'_>, raw: &str) -> Result<Val
 ///
 /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the failure
 /// says what is wrong.
-pub fn file(raw: &str) -> Result<FileRef, Failure> {
+pub fn file(raw: &str) -> Result<FileRef, ExitError> {
     let path = std::path::absolute(raw)
-        .map_err(|e| Failure::usage_because(format!("{raw:?} is not a path"), &e))?;
+        .map_err(|e| ExitError::usage_because(format!("{raw:?} is not a path"), &e))?;
     FileRef::parse(&path.to_string_lossy())
-        .map_err(|e| Failure::usage_because(format!("{raw:?} is not a usable path"), &e))
+        .map_err(|e| ExitError::usage_because(format!("{raw:?} is not a usable path"), &e))
 }
 
 /// What the action acts on, from the words after its name.
@@ -206,31 +211,31 @@ pub fn target(
     decl: &ActionDecl,
     reading: &Reading<'_>,
     words: &[String],
-) -> Result<TargetValue, Failure> {
+) -> Result<TargetValue, ExitError> {
     match (&decl.on, words) {
         (TargetKind::Nothing, []) => Ok(TargetValue::Nothing),
-        (TargetKind::Nothing, _) => {
-            Err(Failure::usage("this action acts on nothing in particular"))
-        }
-        (TargetKind::Text, _) => Err(Failure::usage(
+        (TargetKind::Nothing, _) => Err(ExitError::usage(
+            "this action acts on nothing in particular",
+        )),
+        (TargetKind::Text, _) => Err(ExitError::usage(
             "this action acts on a live text field, which a terminal cannot name",
         )),
         (TargetKind::One(kind), [one]) => {
             entity(kind, reading, one).map(|e| TargetValue::Entities(vec![e]))
         }
-        (TargetKind::One(kind), _) => Err(Failure::usage(format!("name exactly one {kind}"))),
+        (TargetKind::One(kind), _) => Err(ExitError::usage(format!("name exactly one {kind}"))),
         (TargetKind::Many(kind), [_, ..]) => words
             .iter()
             .map(|w| entity(kind, reading, w))
             .collect::<Result<Vec<_>, _>>()
             .map(TargetValue::Entities),
-        (TargetKind::Many(kind), []) => Err(Failure::usage(format!("name at least one {kind}"))),
+        (TargetKind::Many(kind), []) => Err(ExitError::usage(format!("name at least one {kind}"))),
         (TargetKind::Files, [_, ..]) => words
             .iter()
             .map(|w| file(w))
             .collect::<Result<Vec<_>, _>>()
             .map(TargetValue::Files),
-        (TargetKind::Files, []) => Err(Failure::usage("name at least one file")),
+        (TargetKind::Files, []) => Err(ExitError::usage("name at least one file")),
     }
 }
 
@@ -244,7 +249,7 @@ pub fn arguments(
     decl: &ActionDecl,
     reading: &mut Reading<'_>,
     given: &[(String, String)],
-) -> Result<Args, Failure> {
+) -> Result<Args, ExitError> {
     let mut by_name: BTreeMap<ParamName, Vec<&str>> = BTreeMap::new();
     for (name, raw) in given {
         let declared = ParamName::parse(name)
@@ -261,7 +266,7 @@ pub fn arguments(
                 } else {
                     format!("it takes: {}", known.join(" "))
                 };
-                Failure::usage(format!(
+                ExitError::usage(format!(
                     "--{} is not a parameter of {} ({takes})",
                     name.replace('_', "-"),
                     decl.name,
@@ -274,7 +279,7 @@ pub fn arguments(
         let flag = format!("--{}", param.name.as_str().replace('_', "-"));
         let Some(words) = by_name.get(&param.name) else {
             if param.need == ParamNeed::Required {
-                return Err(Failure::usage(format!("{flag} is required")));
+                return Err(ExitError::usage(format!("{flag} is required")));
             }
             continue;
         };
@@ -284,10 +289,10 @@ pub fn arguments(
                 .map(|w| value(&param.ty, reading, w))
                 .collect::<Result<Vec<_>, _>>()
                 .map(merge)
-                .map_err(|e| Failure::usage(format!("{flag}: {}", e.what)))?,
+                .map_err(|e| ExitError::usage(format!("{flag}: {}", e.what)))?,
             (_, [one]) => value(&param.ty, reading, one)
-                .map_err(|e| Failure::usage(format!("{flag}: {}", e.what)))?,
-            (_, _) => return Err(Failure::usage(format!("{flag} was given twice"))),
+                .map_err(|e| ExitError::usage(format!("{flag}: {}", e.what)))?,
+            (_, _) => return Err(ExitError::usage(format!("{flag} was given twice"))),
         };
         args.insert(
             param.name.clone(),

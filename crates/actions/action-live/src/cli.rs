@@ -3,7 +3,7 @@
 
 use crate::acp::AcpSpec;
 use crate::acp::spec::{
-    CLAUDE_CREDENTIALS_AT, CredentialsSource, RegistryPick, SpecFault, Task, network_of,
+    CLAUDE_CREDENTIALS_AT, CredentialsSource, RegistryPick, SpecError, Task, network_of,
 };
 use crate::engine::{Engine, EngineError};
 use clap::error::{ContextKind, ContextValue, ErrorKind};
@@ -139,8 +139,8 @@ pub enum UsageError {
     Planner(String),
 }
 
-impl From<SpecFault> for UsageError {
-    fn from(fault: SpecFault) -> Self {
+impl From<SpecError> for UsageError {
+    fn from(fault: SpecError) -> Self {
         UsageError::Acp(fault.to_string())
     }
 }
@@ -428,7 +428,7 @@ impl AcpFlags {
             _ => return Err(need("--acp-command <program>, or --acp-agent (not both)")),
         };
         if let Some(route) = self.route.filter(|r| r != "login") {
-            return Err(SpecFault::Route(route).into());
+            return Err(SpecError::Route(route).into());
         }
         let fallback = registry.as_ref().map_or("claude-code", |p| p.id.as_str());
         let program = self.program.unwrap_or_else(|| fallback.to_owned());
@@ -450,7 +450,7 @@ impl AcpFlags {
         for pair in self.set {
             let (name, value) = pair
                 .split_once('=')
-                .ok_or_else(|| SpecFault::Set(pair.clone()))?;
+                .ok_or_else(|| SpecError::Set(pair.clone()))?;
             spec.set.push((name.to_owned(), value.to_owned()));
         }
         spec.credentials = self.credentials.map(|from| CredentialsSource {

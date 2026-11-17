@@ -8,7 +8,7 @@ use crate::common;
 use account_core::SecretText;
 use account_daemon::BusSheets;
 use account_dbus::accounts::{ManagerProxy, Sheet};
-use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetLink, SheetOpen, Sheets};
 use account_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput, SheetView};
 use account_wire::ParentWindow;
 use caller_role_types::CallerRole;
@@ -243,10 +243,10 @@ async fn a_link_reports_closed_when_the_host_goes() {
         .await
         .expect("open");
     rig.host_connection.close().await.expect("close");
-    assert!(matches!(link.input().await, Err(SheetFault::Closed)));
+    assert!(matches!(link.input().await, Err(SheetError::Closed)));
     assert!(matches!(
         link.update(SheetView::Done).await,
-        Err(SheetFault::Closed | SheetFault::Refused(_))
+        Err(SheetError::Closed | SheetError::Refused(_))
     ));
 }
 

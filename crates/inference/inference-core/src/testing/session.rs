@@ -3,7 +3,7 @@
 //! (the shape of the model layer's `ScriptedStt`).
 
 use crate::{
-    ClientFrame, InferEvent, InferRefusal, InferReply, InferSession, RequestKind, SessionError,
+    ClientFrame, InferEvent, InferRefusedError, InferReply, InferSession, RequestKind, SessionError,
 };
 use std::collections::VecDeque;
 
@@ -101,7 +101,7 @@ impl InferSession for FakeInferSession {
                     None => self
                         .ready
                         .push_back(InferEvent::Finished(InferReply::Refused(
-                            InferRefusal::Unsupported,
+                            InferRefusedError::Unsupported,
                         ))),
                 }
             }

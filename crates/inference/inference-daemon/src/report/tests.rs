@@ -9,6 +9,6 @@ async fn with_no_key_store_every_report_is_unreachable() {
         NoReports
             .report(Runtime::Ollama, &claims, Standing::Online)
             .await,
-        Err(ReportFault::Unreachable)
+        Err(ReportError::Unreachable)
     ));
 }

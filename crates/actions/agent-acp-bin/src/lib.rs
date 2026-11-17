@@ -1,7 +1,7 @@
 //! The library behind the actions service's two agent-facing programs, so the acceptance harness can run them
 //! under its own name.
 //!
-//! - [`serve`], [`LiveFault`], [`BUS_NAME`]: `bardo-agent-acp`, the ACP server edge on stdio. It hosts
+//! - [`serve`], [`LiveError`], [`BUS_NAME`]: `bardo-agent-acp`, the ACP server edge on stdio. It hosts
 //!   its own companion over the session bus and serves the editor's connection.
 //! - [`entry::bardo_agent`]: `bardo-agent`, the host that runs one configured coding agent as a
 //!   The actions session under the launcher's sandbox. The host itself (`agent`) is private.
@@ -56,7 +56,7 @@ pub type LiveHost =
 
 /// Why the process could not serve.
 #[derive(Debug, thiserror::Error)]
-pub enum LiveFault {
+pub enum LiveError {
     /// The session bus, or the name on it.
     #[error("bus: {0}")]
     Bus(String),
@@ -77,11 +77,11 @@ pub enum LiveFault {
 ///
 /// # Errors
 ///
-/// [`LiveFault`] when the callers cannot be read or the service cannot be set up or served.
+/// [`LiveError`] when the callers cannot be read or the service cannot be set up or served.
 pub async fn serve(
     trace: action_dbus::InferWatch,
     env: &impl Fn(&str) -> Option<String>,
-) -> Result<(), LiveFault> {
+) -> Result<(), LiveError> {
     serve_on(trace, Callers::default(), env).await
 }
 
@@ -106,9 +106,9 @@ async fn serve_on(
     trace: action_dbus::InferWatch,
     seams: Callers,
     env: &impl Fn(&str) -> Option<String>,
-) -> Result<(), LiveFault> {
-    let editor = AppName::parse(BUS_NAME).map_err(|e| LiveFault::App(BUS_NAME.to_owned(), e))?;
-    let bus = |e: zbus::Error| LiveFault::Bus(e.to_string());
+) -> Result<(), LiveError> {
+    let editor = AppName::parse(BUS_NAME).map_err(|e| LiveError::App(BUS_NAME.to_owned(), e))?;
+    let bus = |e: zbus::Error| LiveError::Bus(e.to_string());
     let connection = dbus_kit::connect::session_from_env(env)
         .await
         .map_err(bus)?;
@@ -119,7 +119,7 @@ async fn serve_on(
         Some(system) => callers::read_at(system, env),
         None => callers::read(env),
     }
-    .map_err(|e| LiveFault::Callers(e.to_string()))?;
+    .map_err(|e| LiveError::Callers(e.to_string()))?;
     let who = Arc::new(Identity::on(
         connection.clone(),
         table,
@@ -135,7 +135,7 @@ async fn serve_on(
         .map_err(bus)?;
     dbus_kit::ready::serving(&connection).await.map_err(bus)?;
     connection.request_name(BUS_NAME).await.map_err(bus)?;
-    let shell = AppName::parse(SHELL).map_err(|e| LiveFault::App(SHELL.to_owned(), e))?;
+    let shell = AppName::parse(SHELL).map_err(|e| LiveError::App(SHELL.to_owned(), e))?;
     let companion = Companion::new(
         Intents::over(DbusTransport::new(connection.clone())),
         PlannerModel::new(action_dbus::inferd_transport(&connection, trace)),

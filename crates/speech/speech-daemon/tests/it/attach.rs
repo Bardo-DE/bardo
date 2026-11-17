@@ -6,7 +6,7 @@ use action_wire::VoiceIntent;
 use futures_util::FutureExt;
 use futures_util::StreamExt;
 use speech_daemon::{UtteranceProxy, VoiceProxy};
-use speech_wire::{CancelCause, SpeechEnd, UtteranceEnd, VoiceEvent, VoiceRefusal};
+use speech_wire::{CancelCause, SpeechEnd, UtteranceEnd, VoiceError, VoiceEvent};
 
 async fn as_app(
     world: &World,
@@ -42,7 +42,7 @@ async fn the_routed_app_attaches_once_and_is_replayed_what_was_heard() {
     // Not routed yet: nobody may attach.
     assert_eq!(
         refusal(theirs.attach().await.expect_err("refused")),
-        VoiceRefusal::NotAllowed
+        VoiceError::NotAllowed
     );
     // Only the Begin caller routes.
     assert_eq!(
@@ -52,7 +52,7 @@ async fn the_routed_app_attaches_once_and_is_replayed_what_was_heard() {
                 .await
                 .expect_err("refused")
         ),
-        VoiceRefusal::NotAllowed
+        VoiceError::NotAllowed
     );
     utterance.route(&route_to(MAILO, 1)).await.expect("route");
 
@@ -66,12 +66,12 @@ async fn the_routed_app_attaches_once_and_is_replayed_what_was_heard() {
     let strangers = as_app(&world, &stranger, &path.clone().into()).await;
     assert_eq!(
         refusal(strangers.attach().await.expect_err("refused")),
-        VoiceRefusal::NotAllowed
+        VoiceError::NotAllowed
     );
     let mut attached = Events::new(theirs.attach().await.expect("attach"));
     assert_eq!(
         refusal(theirs.attach().await.expect_err("busy")),
-        VoiceRefusal::Busy
+        VoiceError::Busy
     );
     // It starts with the committed segments (and the mic state), then follows.
     let replay = attached
@@ -83,7 +83,7 @@ async fn the_routed_app_attaches_once_and_is_replayed_what_was_heard() {
     // Only the Begin caller ends the hold.
     assert_eq!(
         refusal(theirs.release().await.expect_err("refused")),
-        VoiceRefusal::NotAllowed
+        VoiceError::NotAllowed
     );
     utterance.release().await.expect("release");
     for _ in 0..tail_frames() {
@@ -143,7 +143,7 @@ async fn the_attached_app_may_cancel_and_may_speak_to_its_utterance() {
                 .await
                 .expect_err("refused")
         ),
-        VoiceRefusal::NotAllowed,
+        VoiceError::NotAllowed,
         "not an utterance it is attached to"
     );
 

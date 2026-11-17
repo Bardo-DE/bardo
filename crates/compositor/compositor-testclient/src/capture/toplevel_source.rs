@@ -27,7 +27,7 @@ use wayland_protocols::ext::image_copy_capture::v1::client::{
 };
 use wire::{Pending, Wire};
 
-pub use super::{CaptureFailure, CursorMode};
+pub use super::{CaptureError, CursorMode};
 
 /// A finished frame, as rows of R, G, B, A bytes.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -209,7 +209,7 @@ impl WindowCapture {
     }
 
     /// The finished frame, or why it failed; `None` while it is still going. Takes it.
-    pub fn take(&mut self) -> Option<Result<WindowFrame, CaptureFailure>> {
+    pub fn take(&mut self) -> Option<Result<WindowFrame, CaptureError>> {
         self.wire.finished.take()
     }
 

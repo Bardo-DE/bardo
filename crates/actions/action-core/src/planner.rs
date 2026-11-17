@@ -171,7 +171,7 @@ pub enum ReplyFault {
     /// Its arguments were not JSON.
     NotJson,
     /// Its arguments did not fit the action's manifest.
-    Args(action_manifest::ArgsFault),
+    Args(action_manifest::ArgsError),
     /// An argument named a value the planner was not offered for this turn (`options` are the
     /// ones it was).
     NotOneOf {

@@ -130,17 +130,15 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
                 report.uploaded += 1;
                 Ok(())
             }
-            Err(PutRefused::Conflict(conflict)) => self.refused_upload(row, conflict, report).await,
-            Err(PutRefused::Quota) => Err(Halt::Stop(Outcome::QuotaFull)),
-            Err(PutRefused::Forbidden | PutRefused::NameRefused | PutRefused::Declined) => {
+            Err(PutError::Conflict(conflict)) => self.refused_upload(row, conflict, report).await,
+            Err(PutError::Quota) => Err(Halt::Stop(Outcome::QuotaFull)),
+            Err(PutError::Forbidden | PutError::NameRefused | PutError::Declined) => {
                 report.refused += 1;
                 Ok(())
             }
-            Err(PutRefused::Unauthorized) => Err(Halt::Stop(Outcome::Unauthorized)),
+            Err(PutError::Unauthorized) => Err(Halt::Stop(Outcome::Unauthorized)),
             Err(
-                PutRefused::Transient(after)
-                | PutRefused::InUse(after)
-                | PutRefused::Failed(after, _),
+                PutError::Transient(after) | PutError::InUse(after) | PutError::Failed(after, _),
             ) => Err(Halt::Stop(Outcome::Retry(after))),
         }
     }
@@ -171,28 +169,23 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
         match self.replica.remove(id, row.base.clone()).await {
             Ok(version) => self.removed(row, id, &version, Acknowledgement::Pending, report),
             // Already deleted there: the goal is reached.
-            Err(PutRefused::Conflict(Conflict {
+            Err(PutError::Conflict(Conflict {
                 remote: RemoteSide::Deleted(version),
                 ..
             })) => self.removed(row, id, &version, Acknowledgement::Acknowledged, report),
-            Err(PutRefused::Conflict(conflict)) => {
+            Err(PutError::Conflict(conflict)) => {
                 let ops = self.conflict_ops(row, conflict, report);
                 Ok(self.journal.apply(&ops)?)
             }
             Err(
-                PutRefused::Quota
-                | PutRefused::Forbidden
-                | PutRefused::NameRefused
-                | PutRefused::Declined,
+                PutError::Quota | PutError::Forbidden | PutError::NameRefused | PutError::Declined,
             ) => {
                 report.refused += 1;
                 Ok(())
             }
-            Err(PutRefused::Unauthorized) => Err(Halt::Stop(Outcome::Unauthorized)),
+            Err(PutError::Unauthorized) => Err(Halt::Stop(Outcome::Unauthorized)),
             Err(
-                PutRefused::Transient(after)
-                | PutRefused::InUse(after)
-                | PutRefused::Failed(after, _),
+                PutError::Transient(after) | PutError::InUse(after) | PutError::Failed(after, _),
             ) => Err(Halt::Stop(Outcome::Retry(after))),
         }
     }

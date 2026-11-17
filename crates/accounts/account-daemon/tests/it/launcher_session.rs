@@ -17,14 +17,14 @@ use account_dbus::accounts::sheet::{SheetKind, reply_of};
 use account_dbus::accounts::{ServiceRoot, Sheet};
 use account_fake::Scripted;
 use account_wire::AccountsReply;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use zbus::export::futures_core::Stream;
 
 fn session(id: &str) -> SessionToken {
     SessionToken::parse(id).expect("session")
 }
 
-fn fault(fault: LauncherFault) -> String {
+fn fault(fault: LauncherWireError) -> String {
     launcher_fault_error_name_in(fault, ServiceRoot::Accounts)
 }
 
@@ -54,7 +54,7 @@ async fn sessions_belong_to_the_connection_that_began_them() {
                 .await
                 .expect_err("not registered")
         ),
-        fault(LauncherFault::NotRegistered)
+        fault(LauncherWireError::NotRegistered)
     );
     first
         .proxy
@@ -72,7 +72,7 @@ async fn sessions_belong_to_the_connection_that_began_them() {
         .expect("registered");
     assert_eq!(
         error_name(second.proxy.begin_session("s1").await.expect_err("taken")),
-        fault(LauncherFault::SessionTaken)
+        fault(LauncherWireError::SessionTaken)
     );
     assert_eq!(
         error_name(
@@ -82,7 +82,7 @@ async fn sessions_belong_to_the_connection_that_began_them() {
                 .await
                 .expect_err("not its own")
         ),
-        fault(LauncherFault::UnknownSession)
+        fault(LauncherWireError::UnknownSession)
     );
     first.proxy.end_session("s1").await.expect("ended");
     assert_eq!(
@@ -93,7 +93,7 @@ async fn sessions_belong_to_the_connection_that_began_them() {
                 .await
                 .expect_err("ended already")
         ),
-        fault(LauncherFault::UnknownSession)
+        fault(LauncherWireError::UnknownSession)
     );
     // A key asked for in a session the connection does not hold open is refused before a sheet.
     assert_eq!(
@@ -104,7 +104,7 @@ async fn sessions_belong_to_the_connection_that_began_them() {
                 .await
                 .expect_err("no such session")
         ),
-        fault(LauncherFault::UnknownSession)
+        fault(LauncherWireError::UnknownSession)
     );
 }
 
@@ -183,7 +183,7 @@ async fn a_key_asked_for_an_unregistered_program_is_refused_before_a_sheet() {
                 .await
                 .expect_err("not registered")
         ),
-        fault(LauncherFault::NotRegistered)
+        fault(LauncherWireError::NotRegistered)
     );
     assert!(rig.sheets.asked().is_empty());
 }

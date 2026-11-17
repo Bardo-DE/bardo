@@ -24,12 +24,12 @@ pub struct LaunchPlan {
     pub edge: Option<EdgeBind>,
 }
 
-/// The error underneath a [`SpawnFault`], kept so the chain can be walked.
+/// The error underneath a [`SpawnError`], kept so the chain can be walked.
 pub type FaultSource = Box<dyn std::error::Error + Send + Sync>;
 
 /// Why an agent did not start.
 #[derive(Debug, thiserror::Error)]
-pub enum SpawnFault {
+pub enum SpawnError {
     /// Agent programs are off, or this one is not configured.
     #[error("agent programs are off or this one is not configured")]
     NotAllowed,
@@ -41,12 +41,12 @@ pub enum SpawnFault {
     Session,
     /// The sandbox could not be made, at this step, for a reason of the plan itself.
     #[error("the sandbox could not be made: {0}")]
-    Sandbox(SandboxStep),
+    Sandbox(SandboxStepError),
     /// The sandbox could not be made, at this step, because something failed.
     #[error("the sandbox could not be made: {step}")]
     SandboxFailed {
         /// The step that failed.
-        step: SandboxStep,
+        step: SandboxStepError,
         /// What failed.
         #[source]
         source: FaultSource,
@@ -56,7 +56,7 @@ pub enum SpawnFault {
     Process,
 }
 
-impl SpawnFault {
+impl SpawnError {
     /// The account service failed with `source`.
     #[must_use]
     pub fn accounts<E>(source: E) -> Self
@@ -67,7 +67,7 @@ impl SpawnFault {
     }
 
     /// For `map_err`: a fault at sandbox `step` caused by the error it is given.
-    pub fn at<E>(step: SandboxStep) -> impl FnOnce(E) -> Self
+    pub fn at<E>(step: SandboxStepError) -> impl FnOnce(E) -> Self
     where
         E: std::error::Error + Send + Sync + 'static,
     {
@@ -80,7 +80,7 @@ impl SpawnFault {
 
 /// The step of making a sandbox that failed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum SandboxStep {
+pub enum SandboxStepError {
     /// The network mode is not one the launcher can make.
     #[error("the network mode is not supported here")]
     NetworkMode,
@@ -140,14 +140,14 @@ const SIGN_IN_MAX: usize = 64;
 /// Why a sign-in id was not accepted.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("a sign-in method is 1 to 64 letters, digits, - _ or .")]
-pub struct SignInRefused;
+pub struct SignInError;
 
 impl SignIn {
     /// A short id: letters, digits, `-`, `_` and `.`.
     ///
     /// # Errors
-    /// Returns [`SignInRefused`] when `text` is empty, over 64 bytes, or has any other character.
-    pub fn parse(text: &str) -> Result<Self, SignInRefused> {
+    /// Returns [`SignInError`] when `text` is empty, over 64 bytes, or has any other character.
+    pub fn parse(text: &str) -> Result<Self, SignInError> {
         let fine = !text.is_empty()
             && text.len() <= SIGN_IN_MAX
             && text
@@ -156,7 +156,7 @@ impl SignIn {
         if fine {
             Ok(Self(text.to_owned()))
         } else {
-            Err(SignInRefused)
+            Err(SignInError)
         }
     }
 
@@ -203,5 +203,5 @@ pub trait Spawn: Send {
     fn spawn(
         &mut self,
         plan: &LaunchPlan,
-    ) -> impl Future<Output = Result<Spawned<Self::Transport, Self::Child>, SpawnFault>> + Send;
+    ) -> impl Future<Output = Result<Spawned<Self::Transport, Self::Child>, SpawnError>> + Send;
 }

@@ -3,7 +3,7 @@
 
 use crate::intents::{ClientError, Intents};
 use crate::transport::Transport;
-use action_core::{CheckpointFault, CheckpointId, CheckpointList, RestorePlan, Rewind};
+use action_core::{CheckpointError, CheckpointId, CheckpointList, RestorePlan, Rewind};
 use action_vocab::{TurnId, Workspace};
 use action_wire::{IntentsReply, IntentsRequest};
 use companion_model::{RunsIn, WatchedAgent, WatchedLine, Watching};
@@ -35,7 +35,7 @@ impl<T: Transport> Intents<T> {
         &self,
         session: SessionId,
         id: CheckpointId,
-    ) -> Result<Result<RestorePlan, CheckpointFault>, ClientError> {
+    ) -> Result<Result<RestorePlan, CheckpointError>, ClientError> {
         self.ask(
             IntentsRequest::CheckpointPlan { session, id },
             |r| match r {

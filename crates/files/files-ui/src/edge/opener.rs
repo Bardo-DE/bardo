@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use files_core::OnlineUrl;
 use files_model::AppPick;
 
-use crate::error::OpenFailure;
+use crate::error::OpenError;
 
 /// Which app opens the files.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -26,18 +26,18 @@ pub trait Opener: Send + Sync {
     ///
     /// # Errors
     ///
-    /// Returns an `OpenFailure`, in words a person reads, when the files cannot be opened.
-    fn open(&self, targets: Vec<PathBuf>, with: OpenAs) -> Result<(), OpenFailure>;
+    /// Returns an `OpenError`, in words a person reads, when the files cannot be opened.
+    fn open(&self, targets: Vec<PathBuf>, with: OpenAs) -> Result<(), OpenError>;
 
     /// Opens Accounts in Settings, for a cloud drive that needs signing in. An opener that cannot
     /// says so in words.
     ///
     /// # Errors
     ///
-    /// Returns an `OpenFailure`, in words a person reads, when Accounts cannot be opened; the
+    /// Returns an `OpenError`, in words a person reads, when Accounts cannot be opened; the
     /// default always fails.
-    fn open_accounts(&self) -> Result<(), OpenFailure> {
-        Err(OpenFailure(
+    fn open_accounts(&self) -> Result<(), OpenError> {
+        Err(OpenError(
             "Accounts can\u{2019}t be opened from here. Open Settings and choose Accounts."
                 .to_owned(),
         ))
@@ -48,10 +48,10 @@ pub trait Opener: Send + Sync {
     ///
     /// # Errors
     ///
-    /// Returns an `OpenFailure`, in words a person reads, when the address cannot be opened; the
+    /// Returns an `OpenError`, in words a person reads, when the address cannot be opened; the
     /// default always fails.
-    fn open_url(&self, _url: &OnlineUrl) -> Result<(), OpenFailure> {
-        Err(OpenFailure(
+    fn open_url(&self, _url: &OnlineUrl) -> Result<(), OpenError> {
+        Err(OpenError(
             "Online documents can\u{2019}t be opened from here.".to_owned(),
         ))
     }

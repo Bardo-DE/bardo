@@ -8,11 +8,13 @@ pub use account_capability::ModelId;
 pub use account_core::{AccountId, SecretText, SignInWay};
 pub use account_sheet::ProviderGroup;
 pub use action_settings::{
-    AddFault, AgentChoice, AgentRow, Agents, ChoiceFault, CloudAccount, CloudAllowed, ModelChoice,
+    AddFault, AgentChoice, AgentRow, Agents, ChoiceError, CloudAccount, CloudAllowed, ModelChoice,
     NewAgent, OwnComputer, PlaceKind, PlaceName, kind_label,
 };
 pub use base_ids::word::word;
-pub use inference_core::{ComputerName, Declined, DeclinedBecause, InferRefusal, ModelRef, Why};
+pub use inference_core::{
+    ComputerName, Declined, DeclinedBecause, InferRefusedError, ModelRef, Why,
+};
 pub use inference_tailnet::{Approval, ComputerCandidate, GuestAnswer, GuestRow, RowState};
 pub use keymap::{Action, StandardAction};
 pub use memory_core::{HistoryFate, MemoryFate};

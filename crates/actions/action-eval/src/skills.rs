@@ -13,7 +13,7 @@
 use crate::check::{CheckError, CheckReport, Found, Level, walk};
 use action_manifest::ValidManifest;
 use action_manifest::parse;
-use agent_skills::{Origin, Reach, SkillFault, load_dir, reach};
+use agent_skills::{Origin, Reach, SkillError, load_dir, reach};
 use agent_skills_disk::DiskFolder;
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -142,6 +142,6 @@ pub fn check_skills(
     Ok(report)
 }
 
-fn fault_words(fault: &SkillFault) -> String {
+fn fault_words(fault: &SkillError) -> String {
     format!("not a valid skill: {fault}")
 }

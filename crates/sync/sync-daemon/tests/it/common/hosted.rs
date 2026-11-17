@@ -16,7 +16,7 @@ use account_fake::{FakeProvider, MemoryStore, RecordingAudit, ScriptedLink, Scri
 use account_secrets::MemorySecrets;
 use account_service::AccountService;
 use account_service_core::registry::Registry;
-use account_sheet::host::{SheetFault, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetOpen, Sheets};
 use account_wire::ParentWindow;
 use base_time::FixedClock;
 use std::sync::Arc;
@@ -54,7 +54,7 @@ impl Sheets for Person {
     fn conversation(
         &self,
         open: SheetOpen,
-    ) -> impl std::future::Future<Output = Result<Self::Link, SheetFault>> + Send {
+    ) -> impl std::future::Future<Output = Result<Self::Link, SheetError>> + Send {
         self.inner.conversation(open)
     }
 }

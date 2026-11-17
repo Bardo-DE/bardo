@@ -34,7 +34,7 @@ use account_core::{AccountLabel, DataClass, Identity, IdentityId, IdentityKind};
 use account_dbus::Details;
 use account_dbus::accounts::sheet::SheetKind;
 use account_dbus::accounts::{IdentitiesServed, IdentitiesServer, identity_to_dbus};
-use account_identities::Unsaved;
+use account_identities::UnsavedError;
 use account_secrets::sealed_key;
 use account_service_core::registry::Registry;
 use account_wire::Refusal;
@@ -91,7 +91,7 @@ fn identity_arg(text: &str) -> Result<IdentityId, RefusedError> {
     clippy::needless_pass_by_value,
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
-fn unsaved(why: Unsaved) -> RefusedError {
+fn unsaved(why: UnsavedError) -> RefusedError {
     RefusedError::failed(format!(
         "The list of apps could not be saved: {}",
         crate::errors::chain(&why)

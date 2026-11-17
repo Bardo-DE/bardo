@@ -10,7 +10,7 @@ use common::{Replica, Server};
 use replica_gdrive::{CHUNK_UNIT, Root, Uploads};
 use std::sync::Mutex;
 use sync_core::{
-    BaseVersion, Content, DriveWrite, Place, Progress, PutRefused, RemoteSide, Session, Unheard,
+    BaseVersion, Content, DriveWrite, Place, Progress, PutError, RemoteSide, Session, Unheard,
     Upload, UploadTo, Written,
 };
 
@@ -37,7 +37,7 @@ async fn send(
     to: UploadTo,
     base: BaseVersion,
     content: &Content,
-) -> Result<Written, PutRefused> {
+) -> Result<Written, PutError> {
     replica
         .upload(Upload {
             to,
@@ -147,7 +147,7 @@ async fn folders_files_renames_and_the_trash_keep_ids_and_check_their_base() {
         &content(&dir, "c", b"three"),
     )
     .await;
-    let Err(PutRefused::Conflict(conflict)) = &stale else {
+    let Err(PutError::Conflict(conflict)) = &stale else {
         panic!("{stale:?}")
     };
     assert_eq!(conflict.remote, RemoteSide::Changed(again.version.clone()));
@@ -162,11 +162,11 @@ async fn folders_files_renames_and_the_trash_keep_ids_and_check_their_base() {
     let stale = replica
         .relocate(&file.id, &at(&again), &place(None, "c.txt"))
         .await;
-    assert!(matches!(stale, Err(PutRefused::Conflict(_))), "{stale:?}");
+    assert!(matches!(stale, Err(PutError::Conflict(_))), "{stale:?}");
     assert!(replica.accepts_name("a:b?") && !replica.accepts_name(""));
 
     let stale = replica.trash(&file.id, &at(&again)).await;
-    assert!(matches!(stale, Err(PutRefused::Conflict(_))), "{stale:?}");
+    assert!(matches!(stale, Err(PutError::Conflict(_))), "{stale:?}");
     replica
         .trash(&file.id, &at(&moved))
         .await
@@ -205,7 +205,7 @@ async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_repli
     };
     let cut = drive(&server, uploads).upload(upload(None)).await;
     assert!(
-        matches!(cut, Err(PutRefused::Transient(_) | PutRefused::Failed(..))),
+        matches!(cut, Err(PutError::Transient(_) | PutError::Failed(..))),
         "{cut:?}"
     );
     let session = kept.session().expect("the session is kept for a resume");
@@ -242,7 +242,7 @@ async fn an_item_made_under_a_reserved_id_is_found_again_and_never_made_twice() 
     let made = replica.make_folder(&folder).await.expect("a folder");
     assert_eq!(made.id, ids[0]);
     let again = replica.make_folder(&folder).await;
-    let Err(PutRefused::Conflict(conflict)) = &again else {
+    let Err(PutError::Conflict(conflict)) = &again else {
         panic!("{again:?}")
     };
     assert_eq!(
@@ -275,7 +275,7 @@ async fn an_item_made_under_a_reserved_id_is_found_again_and_never_made_twice() 
             &bytes,
         )
         .await;
-        let Err(PutRefused::Conflict(conflict)) = &again else {
+        let Err(PutError::Conflict(conflict)) = &again else {
             panic!("{again:?}")
         };
         assert_eq!(
@@ -328,7 +328,7 @@ async fn a_session_replacing_a_file_changed_meanwhile_stops_before_its_last_chun
             progress: &changing,
         })
         .await;
-    assert!(matches!(stale, Err(PutRefused::Conflict(_))), "{stale:?}");
+    assert!(matches!(stale, Err(PutError::Conflict(_))), "{stale:?}");
     assert_eq!(
         server.google.my_drive_file("big.bin"),
         Some(b"theirs".to_vec())

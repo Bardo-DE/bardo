@@ -5,7 +5,7 @@
 //! `Done { undo }` or `Failed`. Nothing here decides what is allowed.
 
 use crate::deadline::timed;
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::plan::phase_of;
 use crate::runtime::Companion;
 use crate::seams::Surface;
@@ -67,13 +67,13 @@ impl Acting {
 ///
 /// # Errors
 ///
-/// Returns [`ServeFault::NoSuchCard`] when `text` names no card.
-pub fn card_id(text: &str) -> Result<CardActionId, ServeFault> {
+/// Returns [`ServeError::NoSuchCard`] when `text` names no card.
+pub fn card_id(text: &str) -> Result<CardActionId, ServeError> {
     // Text that is neither form names no card: a lookup that missed, not a failure with a cause.
     serde_json::from_str::<CardActionId>(text)
         .ok()
         .or_else(|| CardActionId::parse(text).ok())
-        .ok_or(ServeFault::NoSuchCard)
+        .ok_or(ServeError::NoSuchCard)
 }
 
 impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S> {
@@ -81,15 +81,15 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns [`ServeFault::NoSuchCard`] when the answer offers no card by that id, or a
-    /// [`ServeFault`] from the router.
+    /// Returns [`ServeError::NoSuchCard`] when the answer offers no card by that id, or a
+    /// [`ServeError`] from the router.
     pub async fn begin_act(
         &mut self,
         task: &TaskId,
         card: &CardActionId,
-    ) -> Result<Acting, ServeFault> {
-        let rt = self.runtimes.get(task).ok_or(ServeFault::UnknownSession)?;
-        let card = rt.card(card).cloned().ok_or(ServeFault::NoSuchCard)?;
+    ) -> Result<Acting, ServeError> {
+        let rt = self.runtimes.get(task).ok_or(ServeError::UnknownSession)?;
+        let card = rt.card(card).cloned().ok_or(ServeError::NoSuchCard)?;
         let (session, window, id) = (rt.session.clone(), rt.window.clone(), rt.next_call);
         let started = timed(
             &self.clock,
@@ -99,9 +99,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         )
         .await;
         let watch = match started {
-            Ok(watch) => watch.map_err(ServeFault::Router)?,
+            Ok(watch) => watch.map_err(ServeError::Router)?,
             Err(_) => {
-                return Err(ServeFault::Router(ClientError::Transport(
+                return Err(ServeError::Router(ClientError::Transport(
                     TransportError::Bus("the router did not answer in time".to_owned()),
                 )));
             }
@@ -130,16 +130,16 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the task is unknown or finished.
+    /// Returns a [`ServeError`] when the task is unknown or finished.
     pub fn propose(
         &mut self,
         task: &TaskId,
         body: companion_wire::AnswerBody,
-    ) -> Result<(), ServeFault> {
+    ) -> Result<(), ServeError> {
         let rt = self
             .runtimes
             .get_mut(task)
-            .ok_or(ServeFault::UnknownSession)?;
+            .ok_or(ServeError::UnknownSession)?;
         rt.proposal = Some(body);
         rt.acts = crate::plan::Plan::default();
         rt.phase = AnswerPhase::Done;
@@ -240,6 +240,6 @@ mod tests {
     fn a_card_is_named_by_its_id_or_the_json_of_it() {
         assert_eq!(card_id("send").expect("bare").as_str(), "send");
         assert_eq!(card_id("\"send\"").expect("json").as_str(), "send");
-        assert_eq!(card_id(""), Err(ServeFault::NoSuchCard));
+        assert_eq!(card_id(""), Err(ServeError::NoSuchCard));
     }
 }

@@ -24,7 +24,7 @@ const MOST: u32 = pi::MOST_CANDIDATES;
 
 /// Why a reply has no scores, for a note in the daemon's log. Never an error for the app.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum NoScores {
+pub enum NoScoresError {
     /// The engine reported no first-token probabilities (hosted providers have none, and an
     /// engine can leave them out of a stream).
     #[error("the engine gave no first-token probabilities")]
@@ -66,12 +66,12 @@ pub(crate) fn asked_options(turn: &sp::TurnRequest) -> Option<Vec<String>> {
 /// did not ask, else the shares or why there are none.
 ///
 /// # Errors
-/// The inner `Err` is the [`NoScores`] of [`option_scores`].
+/// The inner `Err` is the [`NoScoresError`] of [`option_scores`].
 #[must_use]
 pub fn turn_scores(
     turn: &sp::TurnRequest,
     first_token: Option<&FirstTokenLogprobs>,
-) -> Option<Result<pi::OptionScores, NoScores>> {
+) -> Option<Result<pi::OptionScores, NoScoresError>> {
     let options = asked_options(turn)?;
     Some(option_scores(&options, first_token))
 }
@@ -79,17 +79,17 @@ pub fn turn_scores(
 /// The share of each of `options` in the order given, adding up to 1000, or why there is none.
 ///
 /// # Errors
-/// [`NoScores::EngineGaveNone`] when the engine reported no first-token log probabilities, and
-/// [`NoScores::Unusable`] when they do not cover the options or do not add up to shares.
+/// [`NoScoresError::EngineGaveNone`] when the engine reported no first-token log probabilities, and
+/// [`NoScoresError::Unusable`] when they do not cover the options or do not add up to shares.
 pub fn option_scores(
     options: &[String],
     first_token: Option<&FirstTokenLogprobs>,
-) -> Result<pi::OptionScores, NoScores> {
-    let first_token = first_token.ok_or(NoScores::EngineGaveNone)?;
+) -> Result<pi::OptionScores, NoScoresError> {
+    let first_token = first_token.ok_or(NoScoresError::EngineGaveNone)?;
     let names: Vec<&str> = options.iter().map(String::as_str).collect();
     let shares = first_token
         .option_permille(&names)
-        .ok_or(NoScores::Unusable)?;
+        .ok_or(NoScoresError::Unusable)?;
     pi::OptionScores::new(
         options
             .iter()
@@ -100,7 +100,7 @@ pub fn option_scores(
             })
             .collect(),
     )
-    .map_err(NoScores::Shares)
+    .map_err(NoScoresError::Shares)
 }
 
 #[cfg(test)]

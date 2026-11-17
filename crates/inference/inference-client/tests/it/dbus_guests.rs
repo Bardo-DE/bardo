@@ -12,7 +12,7 @@ use account_tailscale::NodeId;
 use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use inference_client::{
-    ClientError, ComputerReason, DbusTransport, GuestChange, Inference, TransportError,
+    ClientError, ComputerError, DbusTransport, GuestChange, Inference, TransportError,
 };
 use inference_tailnet::{Approval, CandidateModel, GuestAsk, RowState};
 use inference_tailnet::{GuestAnswer, GuestRow};
@@ -389,7 +389,7 @@ async fn a_refusal_comes_back_as_a_typed_reason_with_the_sentence() {
             .answer_guest(&node("nPI"), GuestAnswer::Allow)
             .await,
         Err(ClientError::Transport(TransportError::Computer {
-            reason: ComputerReason::NotAsking,
+            reason: ComputerError::NotAsking,
             words: "That computer is not asking to use this computer's models.".to_owned(),
         }))
     );
@@ -404,7 +404,7 @@ async fn a_refusal_comes_back_as_a_typed_reason_with_the_sentence() {
             .answer_guest(&node("nPI"), GuestAnswer::Deny)
             .await,
         Err(ClientError::Transport(TransportError::Computer {
-            reason: ComputerReason::Other("Unheard".to_owned()),
+            reason: ComputerError::Other("Unheard".to_owned()),
             words: "Something new.".to_owned(),
         }))
     );

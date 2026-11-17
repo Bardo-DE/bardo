@@ -6,7 +6,7 @@
 //! module holds it.
 
 use base_secret::SecretText;
-use inference_router::attached::key::{KeyFile, KeyFileProblem};
+use inference_router::attached::key::{KeyFile, KeyFileError};
 use std::io::Read;
 use std::os::unix::fs::MetadataExt;
 
@@ -19,32 +19,32 @@ const LONGEST: u64 = 4096;
 /// that is read; a symlink is followed to the file it names (and that file is checked).
 ///
 /// # Errors
-/// `KeyFileProblem` when the file is missing, cannot be read, is not a regular file private to
+/// `KeyFileError` when the file is missing, cannot be read, is not a regular file private to
 /// the person, or is not usable text.
-pub fn read_key(key: &KeyFile) -> Result<SecretText, KeyFileProblem> {
+pub fn read_key(key: &KeyFile) -> Result<SecretText, KeyFileError> {
     let mut file = std::fs::File::open(key.path()).map_err(|e| match e.kind() {
-        std::io::ErrorKind::NotFound => KeyFileProblem::Missing,
-        kind => KeyFileProblem::Unreadable(kind),
+        std::io::ErrorKind::NotFound => KeyFileError::Missing,
+        kind => KeyFileError::Unreadable(kind),
     })?;
     let meta = file
         .metadata()
-        .map_err(|e| KeyFileProblem::Unreadable(e.kind()))?;
+        .map_err(|e| KeyFileError::Unreadable(e.kind()))?;
     if !meta.is_file() {
-        return Err(KeyFileProblem::NotAFile);
+        return Err(KeyFileError::NotAFile);
     }
     let mode = meta.mode() & 0o777;
     if mode & 0o077 != 0 {
-        return Err(KeyFileProblem::NotPrivate { mode });
+        return Err(KeyFileError::NotPrivate { mode });
     }
     if meta.uid() != rustix::process::geteuid().as_raw() {
-        return Err(KeyFileProblem::NotYours);
+        return Err(KeyFileError::NotYours);
     }
     let mut bytes = Vec::new();
     file.by_ref()
         .take(LONGEST + 1)
         .read_to_end(&mut bytes)
-        .map_err(|e| KeyFileProblem::Unreadable(e.kind()))?;
-    let text = String::from_utf8(bytes).map_err(KeyFileProblem::NotText)?;
+        .map_err(|e| KeyFileError::Unreadable(e.kind()))?;
+    let text = String::from_utf8(bytes).map_err(KeyFileError::NotText)?;
     let token = text.trim();
     let fits = !token.is_empty()
         && u64::try_from(token.len()).is_ok_and(|len| len <= LONGEST)
@@ -52,7 +52,7 @@ pub fn read_key(key: &KeyFile) -> Result<SecretText, KeyFileProblem> {
     if fits {
         Ok(SecretText::new(token))
     } else {
-        Err(KeyFileProblem::Unusable)
+        Err(KeyFileError::Unusable)
     }
 }
 

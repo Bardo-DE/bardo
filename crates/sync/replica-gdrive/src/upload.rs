@@ -14,7 +14,7 @@ use http_core::http::header::CONTENT_TYPE;
 use http_core::http::{Method, Response};
 use http_core::{HeaderText, Http, request};
 use sync_core::status::write_unreached;
-use sync_core::{PutRefused, RetryAfter};
+use sync_core::{PutError, RetryAfter};
 
 impl<H: Http> GdriveReplica<H> {
     /// Sends `bytes` in a resumable session: a new file described by `meta`, or new content for
@@ -25,7 +25,7 @@ impl<H: Http> GdriveReplica<H> {
         over: Option<&str>,
         meta: &str,
         bytes: Vec<u8>,
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         let pairs = [("uploadType", "resumable"), ("fields", FILE_FIELDS)];
         let start = match over {
             None => self.addr.upload("files", &pairs),
@@ -34,7 +34,7 @@ impl<H: Http> GdriveReplica<H> {
                 &pairs,
             ),
         };
-        let mut open = request(Method::POST, &start.ok_or(PutRefused::Forbidden)?)
+        let mut open = request(Method::POST, &start.ok_or(PutError::Forbidden)?)
             .header(CONTENT_TYPE, "application/json; charset=UTF-8")
             .header("X-Upload-Content-Type", "application/octet-stream")
             .header("X-Upload-Content-Length", bytes.len().to_string());
@@ -52,7 +52,7 @@ impl<H: Http> GdriveReplica<H> {
             .header("location")
             .and_then(link)
             .filter(|url| Some(url.origin()) == self.addr.origin())
-            .ok_or(PutRefused::Transient(RetryAfter(30)))?;
+            .ok_or(PutError::Transient(RetryAfter(30)))?;
         let total = bytes.len();
         let mut sent = 0;
         for chunk in bytes.chunks(self.uploads.chunk) {
@@ -68,6 +68,6 @@ impl<H: Http> GdriveReplica<H> {
                 return Ok(response);
             }
         }
-        Err(PutRefused::Transient(RetryAfter(30)))
+        Err(PutError::Transient(RetryAfter(30)))
     }
 }

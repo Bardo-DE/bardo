@@ -89,7 +89,7 @@ fn a_dot_target_or_port_zero_is_not_offered() {
     };
     assert_eq!(
         found_from_srv(ADDRESS, &answers),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
     DomainName::parse(".").unwrap_err();
 }
@@ -102,7 +102,7 @@ fn a_missing_side_is_no_servers() {
     };
     assert_eq!(
         found_from_srv(ADDRESS, &only_imap),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
     let only_smtp = SrvAnswers {
         submissions: vec![srv(0, 0, 465, "s.example.test")],
@@ -110,7 +110,7 @@ fn a_missing_side_is_no_servers() {
     };
     assert_eq!(
         found_from_srv(ADDRESS, &only_smtp),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
 }
 
@@ -156,7 +156,7 @@ async fn lookup_fails_only_when_nothing_could_be_asked() {
     };
     assert_eq!(
         lookup_srv(&dns, &name("example.test")).await,
-        Err(DnsFault::Unreachable)
+        Err(DnsError::Unreachable)
     );
     let empty = lookup_srv(&Records::default(), &name("example.test")).await;
     assert_eq!(empty, Ok(SrvAnswers::default()));
@@ -202,11 +202,11 @@ fn pop3_only_srv_is_a_finding_under_report_with_the_smtp_endpoint_alone() {
 fn pop3_only_srv_is_no_servers_under_ignore_and_by_default() {
     assert_eq!(
         found_from_srv_with(ADDRESS, &pop3_only(), false),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
     assert_eq!(
         found_from_srv(ADDRESS, &pop3_only()),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
 }
 
@@ -228,7 +228,7 @@ fn pop3_without_submission_or_with_only_port_zero_is_still_no_servers() {
     answers.submissions.clear();
     assert_eq!(
         found_from_srv_with(ADDRESS, &answers, true),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
     let dead = SrvAnswers {
         pop3s: vec![srv(0, 0, 0, "dead.example.test")],
@@ -237,7 +237,7 @@ fn pop3_without_submission_or_with_only_port_zero_is_still_no_servers() {
     };
     assert_eq!(
         found_from_srv_with(ADDRESS, &dead, true),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
 }
 

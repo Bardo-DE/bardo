@@ -62,9 +62,9 @@ pub(crate) fn ispdb_url(domain: &DomainName) -> String {
 ///
 /// # Errors
 ///
-/// `DiscoverFault::Unreadable` when `xml` is not a configuration document, and `NoServers` when it
+/// `DiscoverError::Unreadable` when `xml` is not a configuration document, and `NoServers` when it
 /// names no usable server.
-pub fn parse_autoconfig(xml: &str, address: &str) -> Result<Found, DiscoverFault> {
+pub fn parse_autoconfig(xml: &str, address: &str) -> Result<Found, DiscoverError> {
     parse_autoconfig_with(xml, address, &SearchOptions::default())
 }
 
@@ -78,14 +78,14 @@ pub fn parse_autoconfig(xml: &str, address: &str) -> Result<Found, DiscoverFault
 ///
 /// # Errors
 ///
-/// `DiscoverFault::Unreadable` when `xml` is not a configuration document, and `NoServers` when it
+/// `DiscoverError::Unreadable` when `xml` is not a configuration document, and `NoServers` when it
 /// names no server that `options` accept.
 pub fn parse_autoconfig_with(
     xml: &str,
     address: &str,
     options: &SearchOptions,
-) -> Result<Found, DiscoverFault> {
-    let config = config::parse(xml).map_err(DiscoverFault::unparsed)?;
+) -> Result<Found, DiscoverError> {
+    let config = config::parse(xml).map_err(DiscoverError::unparsed)?;
     select(&config, address, *options)
 }
 
@@ -103,7 +103,7 @@ fn select(
     config: &ClientConfig,
     address: &str,
     options: SearchOptions,
-) -> Result<Found, DiscoverFault> {
+) -> Result<Found, DiscoverError> {
     let tries = tries(options.starttls_only);
     let oauth_ok = options.oauth_only_ok;
     let incoming = pick(
@@ -131,7 +131,7 @@ fn select(
     let (endpoints, claims) = match (incoming, outgoing) {
         (Some(imap), Some(smtp)) => (vec![imap, smtp], vec![imap_claim()]),
         (None, Some(smtp)) if !pop3.is_empty() => (vec![smtp], Vec::new()),
-        _ => return Err(DiscoverFault::NoServers),
+        _ => return Err(DiscoverError::NoServers),
     };
     Ok(Found {
         endpoints,

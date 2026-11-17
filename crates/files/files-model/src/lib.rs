@@ -63,7 +63,7 @@ pub use cloud::{
     CloudMenu, DOWNLOAD_FAILED_WORDS, KeptMark, NO_ADDRESS_WORDS, OFFLINE_WORDS, ROWS_ASKED,
 };
 pub use effect::{Effect, OpenTarget};
-pub use error::{GoToProblem, ListFailure, RenameProblem};
+pub use error::{FolderListError, GoToError, RenameError};
 pub use goto::{GoTo, expand};
 pub use history::History;
 pub use input::{Change, Direction, Input, Modifier, Now};

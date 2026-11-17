@@ -42,13 +42,13 @@ mod state;
 mod tool;
 
 pub use agent::{
-    Access, AgentRun, Bind, INSIDE_FORWARDER, INSIDE_SOCKET, Overlay, ProtectFault,
+    Access, AgentRun, Bind, INSIDE_FORWARDER, INSIDE_SOCKET, Overlay, ProtectError,
     agent_bwrap_args,
 };
 pub use apparmor::{RESTRICT_USERNS, namespaces_refused, refusal_at};
 pub use bwrap::{BwrapSandbox, Detected, bwrap_args};
 pub use bwrap_job::BwrapJob;
-pub use enter::{EnterFault, EnterPlan, INSIDE_ENTER, LandlockLevel, NetRule};
+pub use enter::{EnterError, EnterPlan, INSIDE_ENTER, LandlockLevel, NetRule};
 pub use env::{SANDBOX_HOME, SANDBOX_PATH, dropped, sandbox_env};
 pub use fds::inherited_fds;
 pub use harden::{AcceptNoLimits, Bytes, Hardening, LimitPolicy, Limits};
@@ -58,10 +58,10 @@ pub use output::{Shown, Tail, shown};
 pub use profile::Profile;
 pub use redact::{MASK, redact};
 pub use sandbox::{
-    Argv, Captured, EnvVar, ExitReport, Job, KILLED, Network, RunSpec, Sandbox, StartFault,
+    Argv, Captured, EnvVar, ExitReport, Job, KILLED, Network, RunSpec, Sandbox, StartError,
 };
-pub use seccomp::{SeccompFault, default_filter};
-pub use state::{CannotSandbox, SandboxState};
+pub use seccomp::{SeccompError, default_filter};
+pub use state::{CannotSandboxError, SandboxState};
 pub use tool::{
-    DEFAULT_KEEP, Launch, MAX_KEEP, MAX_TERMINALS, Shell, ShellFault, Snapshot, TermId,
+    DEFAULT_KEEP, Launch, MAX_KEEP, MAX_TERMINALS, Shell, ShellError, Snapshot, TermId,
 };

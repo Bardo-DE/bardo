@@ -186,7 +186,7 @@ pub fn intentd_only() -> CallerTable {
 
 /// Why a caller was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum Refused {
+pub enum CallerRefusedError {
     /// The message names no sender.
     #[error("no sender")]
     NoSender,
@@ -198,8 +198,8 @@ pub enum Refused {
     NotAllowed,
 }
 
-impl From<Refused> for fdo::Error {
-    fn from(refused: Refused) -> Self {
+impl From<CallerRefusedError> for fdo::Error {
+    fn from(refused: CallerRefusedError) -> Self {
         fdo::Error::AccessDenied(refused.to_string())
     }
 }
@@ -214,13 +214,16 @@ pub async fn require(
     callers: &impl Callers,
     sender: Option<&str>,
     allowed: &[Standing],
-) -> Result<Caller, Refused> {
-    let sender = sender.ok_or(Refused::NoSender)?;
-    let caller = callers.caller_of(sender).await.ok_or(Refused::Unknown)?;
+) -> Result<Caller, CallerRefusedError> {
+    let sender = sender.ok_or(CallerRefusedError::NoSender)?;
+    let caller = callers
+        .caller_of(sender)
+        .await
+        .ok_or(CallerRefusedError::Unknown)?;
     if allowed.iter().any(|standing| standing.held_by(&caller)) {
         Ok(caller)
     } else {
-        Err(Refused::NotAllowed)
+        Err(CallerRefusedError::NotAllowed)
     }
 }
 

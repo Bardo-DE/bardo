@@ -69,16 +69,16 @@ pub(crate) fn json<T: serde::Serialize>(value: &T) -> String {
 fn a_name_and_a_role_are_the_persons_words_and_bounded() {
     let long_name = "n".repeat(41);
     let long_role = "r".repeat(601);
-    let names: Vec<(&str, &str, Result<&str, HelperTextFault>)> = vec![
+    let names: Vec<(&str, &str, Result<&str, HelperTextError>)> = vec![
         ("a plain name", "Research", Ok("Research")),
         ("trimmed", "  Inbox \n", Ok("Inbox")),
-        ("empty", "  ", Err(HelperTextFault::Empty)),
+        ("empty", "  ", Err(HelperTextError::Empty)),
         (
             "too long",
             long_name.as_str(),
-            Err(HelperTextFault::TooLong),
+            Err(HelperTextError::TooLong),
         ),
-        ("two lines", "In\nbox", Err(HelperTextFault::NotText)),
+        ("two lines", "In\nbox", Err(HelperTextError::NotText)),
     ];
     for (what, text, want) in names {
         let got = HelperName::parse(text);
@@ -89,9 +89,9 @@ fn a_name_and_a_role_are_the_persons_words_and_bounded() {
         );
     }
     Role::parse("Reads the mail.\nSays what needs me.").unwrap();
-    assert_eq!(Role::parse(""), Err(HelperTextFault::Empty));
-    assert_eq!(Role::parse(&long_role), Err(HelperTextFault::TooLong));
-    assert_eq!(Role::parse("a\u{7}b"), Err(HelperTextFault::NotText));
+    assert_eq!(Role::parse(""), Err(HelperTextError::Empty));
+    assert_eq!(Role::parse(&long_role), Err(HelperTextError::TooLong));
+    assert_eq!(Role::parse("a\u{7}b"), Err(HelperTextError::NotText));
 }
 
 #[test]
@@ -169,12 +169,12 @@ fn only_a_free_or_model_less_helper_takes_a_job() {
 #[test]
 fn a_goal_is_words_that_fit_and_its_debug_shows_no_words() {
     GoalText::parse("compare the three offers").unwrap();
-    assert_eq!(GoalText::parse(" "), Err(GoalFault::Empty));
-    assert_eq!(GoalText::parse(&"g".repeat(1_001)), Err(GoalFault::TooLong));
+    assert_eq!(GoalText::parse(" "), Err(GoalError::Empty));
+    assert_eq!(GoalText::parse(&"g".repeat(1_001)), Err(GoalError::TooLong));
     // A goal of fewer characters that is too many bytes is too long too.
     assert_eq!(
         GoalText::parse(&"\u{4e2d}".repeat(700)),
-        Err(GoalFault::TooLong)
+        Err(GoalError::TooLong)
     );
     let shown = format!("{:?}", GoalText::parse("secret plan").expect("goal"));
     assert!(!shown.contains("secret"), "{shown}");
@@ -218,7 +218,7 @@ fn a_reach_is_the_named_apps_up_to_the_chosen_ceiling_and_nothing_else() {
     }
     assert_eq!(
         reach_policy(&[], Ceiling::Look, &space("work"), &installed),
-        Err(ReachFault::NoApps)
+        Err(ReachError::NoApps)
     );
     assert_eq!(
         reach_policy(
@@ -227,7 +227,7 @@ fn a_reach_is_the_named_apps_up_to_the_chosen_ceiling_and_nothing_else() {
             &space("work"),
             &installed
         ),
-        Err(ReachFault::NoSuchApp("org.bardo.Chat".to_owned()))
+        Err(ReachError::NoSuchApp("org.bardo.Chat".to_owned()))
     );
 }
 

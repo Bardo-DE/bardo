@@ -4,9 +4,9 @@
 
 use crate::router::Router;
 use crate::seams::Seams;
-use action_checkpoint::{CheckpointStore, PlanAsk, StoreFault, WorkRoot};
+use action_checkpoint::{CheckpointStore, CheckpointStoreError, PlanAsk, WorkRoot};
 use action_core::{
-    CheckpointEvent, CheckpointFault, CheckpointId, CheckpointList, CheckpointNote, CheckpointRow,
+    CheckpointError, CheckpointEvent, CheckpointId, CheckpointList, CheckpointNote, CheckpointRow,
     RestorePlan, Retention, SavedState,
 };
 use action_vocab::{CallerRole, Workspace};
@@ -31,12 +31,12 @@ pub(crate) fn was_saved(notes: &[CheckpointNote], id: CheckpointId) -> bool {
 }
 
 /// A store's refusal as the wire tells it.
-pub(crate) fn fault_of(fault: &StoreFault) -> CheckpointFault {
+pub(crate) fn fault_of(fault: &CheckpointStoreError) -> CheckpointError {
     match fault {
-        StoreFault::NoHistory => CheckpointFault::NoHistory,
-        StoreFault::NoSuchPoint => CheckpointFault::NoSuchPoint,
-        StoreFault::PlanStale => CheckpointFault::PlanStale,
-        _ => CheckpointFault::Failed,
+        CheckpointStoreError::NoHistory => CheckpointError::NoHistory,
+        CheckpointStoreError::NoSuchPoint => CheckpointError::NoSuchPoint,
+        CheckpointStoreError::PlanStale => CheckpointError::PlanStale,
+        _ => CheckpointError::Failed,
     }
 }
 
@@ -131,14 +131,14 @@ impl<S: Seams> Router<S> {
         view: &View,
         session: &SessionId,
         id: CheckpointId,
-    ) -> Result<RestorePlan, CheckpointFault> {
+    ) -> Result<RestorePlan, CheckpointError> {
         let root = view
             .cwd
             .as_ref()
             .and_then(|cwd| WorkRoot::of(cwd).ok())
-            .ok_or(CheckpointFault::NoHistory)?;
+            .ok_or(CheckpointError::NoHistory)?;
         if !was_saved(&view.notes, id) {
-            return Err(CheckpointFault::NoSuchPoint);
+            return Err(CheckpointError::NoSuchPoint);
         }
         let ask = PlanAsk {
             root,
@@ -148,7 +148,7 @@ impl<S: Seams> Router<S> {
         match self.seams.checkpoints().plan(ask).await {
             Ok(plan) => Ok(plan),
             // The log names it and the store does not hold it: it was cleared.
-            Err(StoreFault::NoSuchPoint) => Err(CheckpointFault::Gone),
+            Err(CheckpointStoreError::NoSuchPoint) => Err(CheckpointError::Gone),
             Err(other) => Err(fault_of(&other)),
         }
     }

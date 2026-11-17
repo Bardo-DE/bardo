@@ -16,7 +16,7 @@ pub const EXECUTE_AS: Effect = Effect::Execute;
 /// Why a command cannot run in the sandbox.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, thiserror::Error)]
 #[serde(rename_all = "snake_case")]
-pub enum CannotSandbox {
+pub enum CannotSandboxError {
     /// No sandbox program (`bwrap`) is installed.
     #[error("no sandbox program is installed")]
     NotInstalled,
@@ -50,5 +50,5 @@ pub enum SandboxState {
     /// It can.
     Ready,
     /// It cannot, for this reason.
-    Cannot(CannotSandbox),
+    Cannot(CannotSandboxError),
 }

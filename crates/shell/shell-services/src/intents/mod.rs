@@ -31,7 +31,7 @@ use crate::service::Run;
 use shell_model::intents::IntentsService;
 use shell_model::service::ServiceIo;
 
-pub use backend::{ManifestFault, manifest, menus};
+pub use backend::{ManifestLoadError, manifest, menus};
 
 /// One `Perform` of a shell action, and where to say how it went.
 #[derive(Debug)]

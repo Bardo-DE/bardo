@@ -41,14 +41,14 @@ pub use print::{
 pub use provider::{
     CassetteSink, RecordingProvider, ReplayError, ReplayMode, ReplayProvider, SinkError,
 };
-pub use sequence::{StreamFault, check_sequence};
+pub use sequence::{StreamError, check_sequence};
 pub use speech::{
     AudioDigest, AudioPrint, RecordingSpeech, SpeechCassette, SpeechCassetteSink,
     SpeechInteraction, SpeechReplay, SttPrint, TextDigest, TextPrint, TtsPrint,
 };
 pub use wire::{
     ByteStep, ChunkPlan, HeadPrint, WireBody, WireCassette, WireEnd, WireExchange, WireFrame,
-    WireHeader, WireMiss, WireReply, WireRequest, WireSink,
+    WireHeader, WireMissError, WireReply, WireRequest, WireSink,
 };
 pub use wire_record::RecordingTransport;
 pub use wire_replay::ReplayTransport;

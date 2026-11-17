@@ -83,7 +83,7 @@ pub struct AgentRun {
 
 /// Why a path cannot be protected.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum ProtectFault {
+pub enum ProtectError {
     /// The path is not strictly inside the working directory.
     #[error("a protected path must be inside the working directory")]
     OutsideCwd,
@@ -149,15 +149,15 @@ impl AgentRun {
     /// workspace); skipping never makes the sandbox more open than without the path.
     ///
     /// # Errors
-    /// Returns `ProtectFault::OutsideCwd` when `path` is not strictly inside `cwd`.
-    pub fn with_protect(mut self, path: AbsPath) -> Result<Self, ProtectFault> {
+    /// Returns `ProtectError::OutsideCwd` when `path` is not strictly inside `cwd`.
+    pub fn with_protect(mut self, path: AbsPath) -> Result<Self, ProtectError> {
         let inside = path
             .as_str()
             .strip_prefix(self.cwd.as_str())
             .is_some_and(|rest| rest.starts_with('/'))
             || self.cwd.is_root() && !path.is_root();
         if !inside {
-            return Err(ProtectFault::OutsideCwd);
+            return Err(ProtectError::OutsideCwd);
         }
         self.protect.push(path);
         Ok(self)

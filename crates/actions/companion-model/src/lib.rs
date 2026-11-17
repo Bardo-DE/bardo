@@ -14,6 +14,6 @@ pub mod helper;
 pub mod routine;
 
 pub use hand::{
-    AppSessionId, AppSessionIdError, HandNote, RunsIn, SeenCommand, SeenCommandFault, WatchOwner,
+    AppSessionId, AppSessionIdError, HandNote, RunsIn, SeenCommand, SeenCommandError, WatchOwner,
     WatchedAgent, WatchedLine, Watching,
 };

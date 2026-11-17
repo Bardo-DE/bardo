@@ -16,7 +16,7 @@
 
 use crate::consent::{self, Admission, ConsentHandler, Held, Mortal, Pushed};
 use crate::handler::OutputLookup;
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::output::{OutputChangeSet, Requester};
 use compositor_core::policy::GlobalKind;
 use compositor_core::privilege::PowerOutcome;
@@ -161,13 +161,13 @@ pub fn on_released(part: &mut OutputPowerPart, output: &OutputKey) -> Vec<Event>
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_mode(
     part: &mut OutputPowerPart,
     output: &OutputKey,
     power: bool,
-) -> Result<(), WaylandFault> {
-    let control = part.objects.get(output).ok_or(WaylandFault::SurfaceGone)?;
+) -> Result<(), WaylandError> {
+    let control = part.objects.get(output).ok_or(WaylandError::SurfaceGone)?;
     control.mode(wire_mode(power));
     part.shown.insert(output.clone(), power);
     Ok(())

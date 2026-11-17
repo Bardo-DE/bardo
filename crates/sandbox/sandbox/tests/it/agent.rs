@@ -347,7 +347,7 @@ fn a_protected_path_is_bound_read_only_after_the_workspace() {
     ] {
         assert_eq!(
             base.clone().with_protect(abs(&bad)).err(),
-            Some(sandbox::ProtectFault::OutsideCwd),
+            Some(sandbox::ProtectError::OutsideCwd),
             "step refused: {bad}"
         );
     }

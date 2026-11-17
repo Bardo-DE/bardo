@@ -58,7 +58,7 @@ fn answers_table() {
             "a choice nobody offered",
             "everything",
             ValueSchema::Choice(vec![c("receipt")]),
-            Err(ReaderError::OutOfSchema(SchemaFault::NotInSet)),
+            Err(ReaderError::OutOfSchema(SchemaError::NotInSet)),
         ),
         (
             "a wrapped integer",
@@ -70,13 +70,13 @@ fn answers_table() {
             "an integer out of range",
             r#"{"answer": 40}"#,
             ValueSchema::Integer { min: 1, max: 5 },
-            Err(ReaderError::OutOfSchema(SchemaFault::OutOfRange)),
+            Err(ReaderError::OutOfSchema(SchemaError::OutOfRange)),
         ),
         (
             "an integer that is text",
             r#"{"answer": "4"}"#,
             ValueSchema::Integer { min: 1, max: 5 },
-            Err(ReaderError::OutOfSchema(SchemaFault::WrongType)),
+            Err(ReaderError::OutOfSchema(SchemaError::WrongType)),
         ),
         (
             "a date",
@@ -92,7 +92,7 @@ fn answers_table() {
             "a date that is words",
             r#"{"answer": "next friday"}"#,
             ValueSchema::Date,
-            Err(ReaderError::OutOfSchema(SchemaFault::WrongType)),
+            Err(ReaderError::OutOfSchema(SchemaError::WrongType)),
         ),
         (
             "an instant",
@@ -110,7 +110,7 @@ fn answers_table() {
             "a text that runs on",
             r#"{"answer": "Booked and then some more"}"#,
             ValueSchema::Text { max: CharCount(10) },
-            Err(ReaderError::OutOfSchema(SchemaFault::TooLong)),
+            Err(ReaderError::OutOfSchema(SchemaError::TooLong)),
         ),
         (
             "entities the ask offered",
@@ -122,7 +122,7 @@ fn answers_table() {
             "an entity it did not",
             r#"{"answer": ["org.bardo.Mail/mail.thread/t9"]}"#,
             among,
-            Err(ReaderError::OutOfSchema(SchemaFault::NotInSet)),
+            Err(ReaderError::OutOfSchema(SchemaError::NotInSet)),
         ),
         (
             "a record",
@@ -145,7 +145,7 @@ fn answers_table() {
             "a record with a field missing",
             r#"{"total": 120, "kind": "hotel"}"#,
             record(),
-            Err(ReaderError::OutOfSchema(SchemaFault::MissingField(p(
+            Err(ReaderError::OutOfSchema(SchemaError::MissingField(p(
                 "when",
             )))),
         ),
@@ -153,7 +153,7 @@ fn answers_table() {
             "a record with a field of its own",
             r#"{"total": 1, "when": "2026-10-03", "kind": "hotel", "forward_to": "eve@evil.test"}"#,
             record(),
-            Err(ReaderError::OutOfSchema(SchemaFault::UnknownField(p(
+            Err(ReaderError::OutOfSchema(SchemaError::UnknownField(p(
                 "forward_to",
             )))),
         ),
@@ -173,7 +173,7 @@ fn answers_table() {
                 of: Box::new(ValueSchema::Integer { min: 0, max: 9 }),
                 max: base_ids::Count(3),
             },
-            Err(ReaderError::OutOfSchema(SchemaFault::TooMany)),
+            Err(ReaderError::OutOfSchema(SchemaError::TooMany)),
         ),
         (
             "prose around the JSON",

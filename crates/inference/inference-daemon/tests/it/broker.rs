@@ -19,7 +19,7 @@ use inference_daemon::Runtime;
 use inference_daemon::Standing;
 use inference_daemon::{AccountList, AccountdBroker, follow_accounts as follow};
 use inference_daemon::{Accountd, AccountdFault};
-use inference_daemon::{ReportFault, Reports};
+use inference_daemon::{ReportError, Reports};
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
 use zbus::zvariant::OwnedFd;
@@ -346,7 +346,7 @@ async fn with_no_accountd_on_the_bus_a_question_is_ask_again_and_a_report_is_unr
             .report(Runtime::Ollama, &[], Standing::Online)
             .await
             .map(drop),
-        Err(ReportFault::Unavailable(_))
+        Err(ReportError::Unavailable(_))
     ));
 }
 

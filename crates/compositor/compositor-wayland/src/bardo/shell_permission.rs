@@ -40,7 +40,7 @@ pub const ANSWER_NOT_BEFORE: Duration = Duration::from_millis(500);
 /// sent it is at fault.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("the answer came before the question could have been read")]
-pub struct AnsweredTooSoon;
+pub struct AnsweredTooSoonError;
 
 /// A question that was sent to the shell and is not settled.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -114,24 +114,24 @@ pub fn apply_withdraw(part: &mut BardoShellPart, ask: AskId) {
 ///
 /// An answer for a question the part has not sent or has settled, and one with a code the XML does
 /// not name, changes nothing; one that comes less than [`ANSWER_NOT_BEFORE`] after the question was
-/// sent is the shell's fault (`AnsweredTooSoon`) and settles nothing: the question stays open.
+/// sent is the shell's fault (`AnsweredTooSoonError`) and settles nothing: the question stays open.
 /// `wall` is the date the answer is stamped with.
 ///
 /// # Errors
 ///
-/// Returns [`AnsweredTooSoon`] when the answer arrives before it was asked for.
+/// Returns [`AnsweredTooSoonError`] when the answer arrives before it was asked for.
 pub fn on_answer(
     part: &mut BardoShellPart,
     ask: u32,
     answer: WEnum<bardo_shell_v1::Answer>,
     now: Mono,
     wall: UnixSeconds,
-) -> Result<Vec<Event>, AnsweredTooSoon> {
+) -> Result<Vec<Event>, AnsweredTooSoonError> {
     let Some(at) = part.asks.iter().position(|sent| sent.ask.get() == ask) else {
         return Ok(Vec::new());
     };
     if now.since(part.asks[at].sent_at) < ANSWER_NOT_BEFORE {
-        return Err(AnsweredTooSoon);
+        return Err(AnsweredTooSoonError);
     }
     let Some(answer) = code_of(answer).and_then(|code| Answer::from_code(code).ok()) else {
         return Ok(Vec::new());

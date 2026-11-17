@@ -245,33 +245,38 @@ fn text_fields_keep_typing_keys_from_app_actions() {
     assert_eq!(keymap.resolve(&j, Context::Terminal), None);
 }
 
-type Refusal = (&'static str, Platform, &'static str, fn(&Conflict) -> bool);
+type Refusal = (
+    &'static str,
+    Platform,
+    &'static str,
+    fn(&ConflictError) -> bool,
+);
 
 #[test]
 fn registration_refuses_reserved_standard_and_taken_chords() {
     let cases: &[Refusal] = &[
         ("ours super+space", ours(), "Super+Space", |c| {
-            matches!(c, Conflict::Reserved { .. })
+            matches!(c, ConflictError::Reserved { .. })
         }),
         ("ours bare super", ours(), "Super", |c| {
-            matches!(c, Conflict::Reserved { .. })
+            matches!(c, ConflictError::Reserved { .. })
         }),
         ("ours ctrl+3", ours(), "Ctrl+3", |c| {
-            matches!(c, Conflict::Reserved { .. })
+            matches!(c, ConflictError::Reserved { .. })
         }),
         (
             "ours ctrl+space via primary-free",
             ours(),
             "Ctrl+Space",
-            |c| matches!(c, Conflict::Reserved { .. }),
+            |c| matches!(c, ConflictError::Reserved { .. }),
         ),
         ("windows win+n", Platform::Windows, "Super+N", |c| {
-            matches!(c, Conflict::Reserved { .. })
+            matches!(c, ConflictError::Reserved { .. })
         }),
         ("windows primary+c", Platform::Windows, "Primary+C", |c| {
             matches!(
                 c,
-                Conflict::Standard {
+                ConflictError::Standard {
                     action: StandardAction::Copy,
                     ..
                 }
@@ -280,7 +285,7 @@ fn registration_refuses_reserved_standard_and_taken_chords() {
         ("ours primary+s", ours(), "Primary+S", |c| {
             matches!(
                 c,
-                Conflict::Standard {
+                ConflictError::Standard {
                     action: StandardAction::Save,
                     ..
                 }
@@ -338,12 +343,12 @@ fn two_apps_cannot_share_a_chord_and_foreign_ids_are_refused() {
     let second = (app_action("notes.capture"), default_chord("Primary+Alt+J"));
     assert!(matches!(
         keymap.register(&app("notes"), &[second]),
-        Err(Conflict::Taken { held_by, .. }) if held_by == "mail.compose"
+        Err(ConflictError::Taken { held_by, .. }) if held_by == "mail.compose"
     ));
     let foreign = (app_action("notes.capture"), default_chord("Primary+Alt+M"));
     assert!(matches!(
         keymap.register(&app("mail"), &[foreign]),
-        Err(Conflict::ForeignAction { .. })
+        Err(ConflictError::ForeignAction { .. })
     ));
 }
 

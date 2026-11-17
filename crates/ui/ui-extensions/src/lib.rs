@@ -106,7 +106,7 @@ mod your_changes;
 pub use capability::Capability;
 pub use choices::{Choices, Chosen, Stale, choices_for, chosen};
 pub use extensions_file::{ExtensionsFile, ExtensionsSettings, OffRow, Power, extensions_schema};
-pub use fault::Fault;
+pub use fault::EntryError;
 pub use file_icons::{
     Built, FileFacts, FileIcons, FolderFacts, IconFolder, IconPick, PICTURE_CAP_BYTES, Pictures,
 };

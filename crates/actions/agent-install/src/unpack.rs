@@ -13,7 +13,7 @@ use std::path::{Component, Path, PathBuf};
 
 /// Why an archive was not unpacked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum UnpackFault {
+pub enum UnpackError {
     /// Not a kind the actions service unpacks (`.tar.gz`, `.tgz` and `.zip` are).
     #[error("this kind of archive cannot be unpacked here")]
     Kind,
@@ -28,8 +28,8 @@ pub enum UnpackFault {
     Damaged(String),
 }
 
-fn damaged(why: impl std::fmt::Display) -> UnpackFault {
-    UnpackFault::Damaged(why.to_string())
+fn damaged(why: impl std::fmt::Display) -> UnpackError {
+    UnpackError::Damaged(why.to_string())
 }
 
 /// How much an archive may hold.
@@ -64,14 +64,14 @@ enum Kind {
     clippy::case_sensitive_file_extension_comparisons,
     reason = "archive names are matched as published, in lower case; a name in another case is refused as an unknown kind"
 )]
-fn kind(name: &str) -> Result<Kind, UnpackFault> {
+fn kind(name: &str) -> Result<Kind, UnpackError> {
     let name = name.split(['?', '#']).next().unwrap_or(name);
     if name.ends_with(".tar.gz") || name.ends_with(".tgz") {
         Ok(Kind::TarGz)
     } else if name.ends_with(".zip") {
         Ok(Kind::Zip)
     } else {
-        Err(UnpackFault::Kind)
+        Err(UnpackError::Kind)
     }
 }
 
@@ -99,10 +99,10 @@ impl Budget {
     }
 
     /// Counts one more entry.
-    fn entry(&mut self) -> Result<(), UnpackFault> {
+    fn entry(&mut self) -> Result<(), UnpackError> {
         self.entries += 1;
         if self.entries > self.limits.entries {
-            return Err(UnpackFault::TooLarge(format!(
+            return Err(UnpackError::TooLarge(format!(
                 "more than {} entries",
                 self.limits.entries
             )));
@@ -112,7 +112,7 @@ impl Budget {
 
     /// Writes `from` into the new file at `to`, counting the bytes actually written and stopping
     /// at the first byte over a limit.
-    fn write(&mut self, from: &mut impl Read, to: &Path) -> Result<(), UnpackFault> {
+    fn write(&mut self, from: &mut impl Read, to: &Path) -> Result<(), UnpackError> {
         let room = self
             .limits
             .entry
@@ -122,13 +122,13 @@ impl Budget {
             std::io::copy(&mut from.take(room.saturating_add(1)), &mut file).map_err(damaged)?;
         self.written = self.written.saturating_add(copied);
         if copied > self.limits.entry {
-            return Err(UnpackFault::TooLarge(format!(
+            return Err(UnpackError::TooLarge(format!(
                 "a file is larger than {} bytes",
                 self.limits.entry
             )));
         }
         if copied > room {
-            return Err(UnpackFault::TooLarge(format!(
+            return Err(UnpackError::TooLarge(format!(
                 "more than {} bytes in all",
                 self.limits.total
             )));
@@ -141,8 +141,8 @@ impl Budget {
 /// made, or is an empty folder. Nothing is left in `into` when this fails.
 ///
 /// # Errors
-/// See [`UnpackFault`].
-pub fn unpack(name: &str, archive: &Path, into: &Path, limits: &Limits) -> Result<(), UnpackFault> {
+/// See [`UnpackError`].
+pub fn unpack(name: &str, archive: &Path, into: &Path, limits: &Limits) -> Result<(), UnpackError> {
     let kind = kind(name)?;
     let mut stage_name = into
         .file_name()
@@ -165,7 +165,7 @@ pub fn unpack(name: &str, archive: &Path, into: &Path, limits: &Limits) -> Resul
 }
 
 /// Puts the staged folder in place of `into`, which is absent or empty.
-fn settle(stage: &Path, into: &Path) -> Result<(), UnpackFault> {
+fn settle(stage: &Path, into: &Path) -> Result<(), UnpackError> {
     match std::fs::remove_dir(into) {
         Ok(()) => {}
         Err(why) if why.kind() == std::io::ErrorKind::NotFound => {}
@@ -174,7 +174,7 @@ fn settle(stage: &Path, into: &Path) -> Result<(), UnpackFault> {
     std::fs::rename(stage, into).map_err(damaged)
 }
 
-fn tar_gz(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), UnpackFault> {
+fn tar_gz(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), UnpackError> {
     let file = File::open(archive).map_err(damaged)?;
     let mut tarball = tar::Archive::new(GzDecoder::new(BufReader::new(file)));
     for entry in tarball.entries().map_err(damaged)? {
@@ -183,9 +183,9 @@ fn tar_gz(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), Unpack
         let kind = entry.header().entry_type();
         let named = entry.path().map_err(damaged)?.into_owned();
         if !(kind.is_file() || kind.is_dir()) {
-            return Err(UnpackFault::Path(named.display().to_string()));
+            return Err(UnpackError::Path(named.display().to_string()));
         }
-        let rel = inside(&named).ok_or_else(|| UnpackFault::Path(named.display().to_string()))?;
+        let rel = inside(&named).ok_or_else(|| UnpackError::Path(named.display().to_string()))?;
         let target = into.join(rel);
         if kind.is_dir() {
             std::fs::create_dir_all(&target).map_err(damaged)?;
@@ -201,7 +201,7 @@ fn tar_gz(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), Unpack
     Ok(())
 }
 
-fn zip(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), UnpackFault> {
+fn zip(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), UnpackError> {
     let file = File::open(archive).map_err(damaged)?;
     let mut zipped = zip::ZipArchive::new(BufReader::new(file)).map_err(damaged)?;
     for n in 0..zipped.len() {
@@ -213,7 +213,7 @@ fn zip(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), UnpackFau
             .enclosed_name()
             .and_then(|p| inside(&p))
             .filter(|_| !link)
-            .ok_or(UnpackFault::Path(shown))?;
+            .ok_or(UnpackError::Path(shown))?;
         let target = into.join(rel);
         if file.is_dir() {
             std::fs::create_dir_all(&target).map_err(damaged)?;
@@ -229,7 +229,7 @@ fn zip(archive: &Path, into: &Path, budget: &mut Budget) -> Result<(), UnpackFau
     Ok(())
 }
 
-fn set_mode(path: &Path, mode: Option<u32>) -> Result<(), UnpackFault> {
+fn set_mode(path: &Path, mode: Option<u32>) -> Result<(), UnpackError> {
     use std::os::unix::fs::PermissionsExt;
     let Some(mode) = mode else { return Ok(()) };
     let perms = std::fs::Permissions::from_mode(mode & 0o777);

@@ -7,9 +7,9 @@ use super::rig::{CWD, opening, turn, write};
 use action_manifest::ValidManifest;
 use action_vocab::TurnId;
 use agent_acp_core::call::{AgentCall, StageId};
-use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
+use agent_acp_core::court::{Court, CourtError, OpenAgent, Ruled};
 use agent_acp_host::fake::{FakeFiles, FakeSpawn};
-use agent_acp_host::{AcpBackend, EdgeFault, Parts, Performer, Seams, ToolsOffer};
+use agent_acp_host::{AcpBackend, EdgeError, Parts, Performer, Seams, ToolsOffer};
 use agent_session::{SessionBackend, StartSession};
 use futures_util::future::pending;
 use provenance::SessionId;
@@ -34,15 +34,15 @@ impl Court for Silent {
         clippy::unused_async_trait_impl,
         reason = "`Court::open` is async; this court never answers, so there is nothing to wait for"
     )]
-    async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtFault> {
-        Err(CourtFault::Unavailable)
+    async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtError> {
+        Err(CourtError::Unavailable)
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "`Court::turn` is async; this court never answers, so there is nothing to wait for"
     )]
-    async fn turn(&mut self, _session: &SessionId, _text: &str) -> Result<TurnId, CourtFault> {
+    async fn turn(&mut self, _session: &SessionId, _text: &str) -> Result<TurnId, CourtError> {
         Ok(TurnId(1))
     }
 
@@ -172,7 +172,7 @@ async fn a_tool_edge_that_cannot_be_made_is_reported_not_swallowed() {
     };
     let mut w = backend(Some(offer));
     start(&mut w).await;
-    assert_eq!(w.backend.edge_fault(), Some(EdgeFault::Io));
+    assert_eq!(w.backend.edge_fault(), Some(EdgeError::Io));
     let mut plain = backend(None);
     start(&mut plain).await;
     assert_eq!(

@@ -3,7 +3,7 @@
 //! recommended, and a model the user mapped to a tier is only marked as theirs.
 
 use crate::asker::Chooser;
-use crate::error::InferRefusal;
+use crate::error::InferRefusedError;
 use crate::pick::{AutoMode, Pick};
 use crate::readiness::Readiness;
 use crate::route::TierChoice;
@@ -277,23 +277,23 @@ impl TierMap {
     /// This map for a request that carries tools: Automatic leaves out the models in `failed`
     /// (those that did not show they can make a valid tool call). A named model stays whatever
     /// `failed` says. When the pick serving `kind` at `tier` is Automatic over a pool and every
-    /// model of it failed, the answer is [`InferRefusal::NoModelUsesApps`].
+    /// model of it failed, the answer is [`InferRefusedError::NoModelUsesApps`].
     ///
     /// # Errors
     ///
-    /// [`InferRefusal`] when every model the pick would use for `kind` at `tier` has already
+    /// [`InferRefusedError`] when every model the pick would use for `kind` at `tier` has already
     /// failed.
     pub fn for_tools(
         &self,
         kind: Slot,
         tier: Tier,
         failed: &BTreeSet<ModelRef>,
-    ) -> Result<Self, InferRefusal> {
+    ) -> Result<Self, InferRefusedError> {
         if let Some(Pick::Auto { pool, .. }) = self.pick_serving(kind, tier)
             && !pool.is_empty()
             && pool.iter().all(|model| failed.contains(model))
         {
-            return Err(InferRefusal::NoModelUsesApps);
+            return Err(InferRefusedError::NoModelUsesApps);
         }
         Ok(Self {
             rows: self.rows.clone(),
@@ -838,7 +838,7 @@ mod tests {
         );
         assert_eq!(
             auto.for_tools(Slot::Text, Tier::Fast, &failed(&[&a, &b, &c])),
-            Err(InferRefusal::NoModelUsesApps)
+            Err(InferRefusedError::NoModelUsesApps)
         );
         let mut named = TierMap::automatic(Slot::Text, vec![a.clone()]);
         named.rows.push(TierRow {

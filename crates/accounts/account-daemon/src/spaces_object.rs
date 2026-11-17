@@ -21,7 +21,7 @@ use account_core::{DesktopSpace, SpaceChange, SpaceLook, SpaceName};
 use account_dbus::Details;
 use account_dbus::accounts::{SpacesServed, SpacesServer};
 use account_service_core::audit::AuditEvent;
-use account_spaces::{CREATES_PER_WINDOW, SpaceFault};
+use account_spaces::{CREATES_PER_WINDOW, SpaceError};
 use account_wire::names::SPACES_PATH;
 use base_ids::word::word as word_of;
 use base_time::Clock;
@@ -44,15 +44,15 @@ impl<H, C> SpacesObject<H, C> {
 }
 
 /// What a refused change is told, in plain words.
-fn fault(fault: SpaceFault) -> RefusedError {
+fn fault(fault: SpaceError) -> RefusedError {
     match fault {
-        SpaceFault::NotThere => RefusedError::invalid("There is no such Space."),
-        SpaceFault::TooMany => RefusedError::busy(format!(
+        SpaceError::NotThere => RefusedError::invalid("There is no such Space."),
+        SpaceError::TooMany => RefusedError::busy(format!(
             "Too many new Spaces at once: at most {CREATES_PER_WINDOW} a minute. Try again in a \
              minute."
         )),
-        SpaceFault::Unsaved => RefusedError::failed("The Spaces could not be saved."),
-        SpaceFault::Write(why) => RefusedError::failed(format!(
+        SpaceError::Unsaved => RefusedError::failed("The Spaces could not be saved."),
+        SpaceError::Write(why) => RefusedError::failed(format!(
             "The Spaces could not be saved: {}",
             crate::errors::chain(&why)
         )),

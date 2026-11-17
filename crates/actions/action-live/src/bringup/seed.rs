@@ -18,7 +18,7 @@ const OWNED_TABLES: [&str; 3] = ["engines", "probe", "callers"];
 
 /// Why the person's extra `inferd.toml` rows are refused.
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
-pub enum ExtraFault {
+pub enum ExtraError {
     /// The text is not TOML.
     #[error("not valid TOML: {0}")]
     Toml(String),
@@ -33,13 +33,13 @@ pub enum ExtraFault {
 ///
 /// # Errors
 ///
-/// Returns an [`ExtraFault`] when `extra` is not rows that can follow the fixed ones.
-pub fn inferd_toml(root: &Path, extra: &str) -> Result<String, ExtraFault> {
+/// Returns an [`ExtraError`] when `extra` is not rows that can follow the fixed ones.
+pub fn inferd_toml(root: &Path, extra: &str) -> Result<String, ExtraError> {
     let table: toml::Table = extra
         .parse()
-        .map_err(|e: toml::de::Error| ExtraFault::Toml(e.to_string()))?;
+        .map_err(|e: toml::de::Error| ExtraError::Toml(e.to_string()))?;
     if let Some(owned) = OWNED_TABLES.iter().find(|name| table.contains_key(**name)) {
-        return Err(ExtraFault::Owned(owned));
+        return Err(ExtraError::Owned(owned));
     }
     let body = format!("{NO_LOCAL_ENGINE}\n{extra}");
     let model = action_accept::world::ModelSource::Live(body);

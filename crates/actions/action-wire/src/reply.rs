@@ -5,7 +5,7 @@ use crate::bodies::{
 };
 use crate::task::SessionOpened;
 use action_core::{
-    CallRefusal, CheckpointFault, CheckpointList, ContextView, Delivery, HandleCard, Hit,
+    CallRefusal, CheckpointError, CheckpointList, ContextView, Delivery, HandleCard, Hit,
     InboundLine, KillSwitch, Outcome, Preview, RestorePlan, Reveal, UndoEntry, UndoFault,
 };
 use action_gate_wire::GateAnswer;
@@ -62,7 +62,7 @@ pub enum IntentsReply {
     /// A session's restore points.
     Checkpoints(Box<CheckpointList>),
     /// What restoring a point would change, or why that cannot be said.
-    CheckpointPlan(Result<RestorePlan, CheckpointFault>),
+    CheckpointPlan(Result<RestorePlan, CheckpointError>),
     /// A watch session was opened (`Checkpoint.Watch`).
     CheckpointWatching(SessionId),
     /// A terminal named the agent app it watches (`Checkpoint.WatchAgent`): the watch session

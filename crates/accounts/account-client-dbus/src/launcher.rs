@@ -46,7 +46,7 @@ use account_dbus::accounts::{
 };
 use account_wire::AccountsReply;
 use account_wire::AskKind;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use account_wire::Refusal;
 use base_ids::word::{from_word, word as word_of};
 use futures_util::StreamExt;
@@ -58,7 +58,7 @@ pub enum LauncherError {
     /// accountd refused the call for a reason of the launcher interface (a request, a program, a
     /// permit, a credential or a session that is not the connection's to use).
     #[error("{0}")]
-    Fault(LauncherFault),
+    Fault(LauncherWireError),
     /// accountd refused the permit or the account for a reason an app also meets: `UnknownGrant`,
     /// `AudienceNotGranted` (the permit is not for `org.bardo.Agent.<program>`), `NeedsReauth`,
     /// `Denied` (the person turned the account off), `Unavailable`.
@@ -166,7 +166,7 @@ impl Launcher {
     /// Opens `session`, the span a permit "for this session only" lasts (the launcher names it,
     /// usually from an ACP session id). It belongs to this connection, which must have
     /// registered a program, and ends at [`Launcher::end_session`] or when the connection
-    /// leaves the bus. A session another connection holds is [`LauncherFault::SessionTaken`];
+    /// leaves the bus. A session another connection holds is [`LauncherWireError::SessionTaken`];
     /// beginning one this connection holds is a no-op.
     ///
     /// # Errors
@@ -185,7 +185,7 @@ impl Launcher {
     /// Ends a session this connection began: accountd removes the permits scoped to it and ends
     /// the process credentials under them (`CredentialEnd::SessionClosed`), telling this
     /// connection of each in [`Launcher::revocations`] so the launcher can end the processes. A
-    /// session that is not open for this connection is [`LauncherFault::UnknownSession`].
+    /// session that is not open for this connection is [`LauncherWireError::UnknownSession`].
     ///
     /// # Errors
     ///
@@ -284,7 +284,7 @@ impl Launcher {
 
     /// Ends a credential this connection was issued, because the process that held it exited or
     /// was killed: accountd forgets it. Not for a credential accountd
-    /// ended itself (that is [`LauncherFault::UnknownCredential`]).
+    /// ended itself (that is [`LauncherWireError::UnknownCredential`]).
     ///
     /// # Errors
     ///
@@ -317,7 +317,7 @@ impl Launcher {
     }
 
     /// Registers the programs this connection launches, for as long as it lives. A program
-    /// another live connection holds is [`LauncherFault::AlreadyRegistered`] and none of the list
+    /// another live connection holds is [`LauncherWireError::AlreadyRegistered`] and none of the list
     /// is taken; registering a program this connection holds is a no-op, and a later call adds
     /// more.
     ///

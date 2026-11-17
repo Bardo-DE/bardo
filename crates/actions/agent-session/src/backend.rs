@@ -39,7 +39,7 @@ impl std::fmt::Display for Choices {
 
 /// Why a backend could not do what it was asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum BackendFault {
+pub enum BackendError {
     /// Not started, or already closed.
     #[error("the backend is not running a session")]
     NotRunning,
@@ -173,16 +173,16 @@ pub trait SessionBackend: Send {
     fn start(
         &mut self,
         open: StartSession,
-    ) -> impl Future<Output = Result<(), BackendFault>> + Send;
+    ) -> impl Future<Output = Result<(), BackendError>> + Send;
 
     /// Takes a session back from its plan.
     fn resume(
         &mut self,
         plan: &ResumePlan,
-    ) -> impl Future<Output = Result<Resumed, BackendFault>> + Send;
+    ) -> impl Future<Output = Result<Resumed, BackendError>> + Send;
 
     /// Gives it the person's turn; its events follow from `next_event`.
-    fn turn(&mut self, turn: UserTurn) -> impl Future<Output = Result<(), BackendFault>> + Send;
+    fn turn(&mut self, turn: UserTurn) -> impl Future<Output = Result<(), BackendError>> + Send;
 
     /// The next event of the turn in progress; `None` when there is none.
     fn next_event(&mut self) -> impl Future<Output = Option<BackendEvent>> + Send;
@@ -196,31 +196,31 @@ pub trait SessionBackend: Send {
 
 /// Why the host could not do what it was asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum HostFault {
+pub enum AgentHostError {
     /// No such session.
     #[error("no such session")]
     NoSuchSession,
     /// Its log has no plan.
     #[error("the session cannot be resumed: {0}")]
-    Plan(#[from] crate::plan::PlanRefusal),
+    Plan(#[from] crate::plan::PlanError),
     /// Its standing takes no turn (closed, blocked).
     #[error("the session takes no turn")]
     NotOpen,
     /// The log refused an entry.
     #[error("the log failed: {0}")]
-    Log(#[from] crate::log::LogFault),
+    Log(#[from] crate::log::LogError),
     /// The backend failed.
     #[error("the backend failed: {0}")]
-    Backend(#[from] BackendFault),
+    Backend(#[from] BackendError),
     /// The session could not be forked there.
     #[error("the session cannot be forked: {0}")]
-    Fork(#[from] crate::fork::ForkFault),
+    Fork(#[from] crate::fork::ForkError),
     /// The session could not be exported.
     #[error("the session cannot be exported: {0}")]
-    Export(#[from] crate::export::ExportFault),
+    Export(#[from] crate::export::ExportError),
     /// No open sheet by that id.
     #[error("no such sheet")]
-    Desk(#[from] crate::desk::DeskFault),
+    Desk(#[from] crate::desk::DeskError),
 }
 
 /// The registry of sessions: it writes the log, owns the backends, and answers the edges (the
@@ -232,26 +232,26 @@ pub trait SessionHost: Send {
     fn open(
         &mut self,
         opening: Opening,
-    ) -> impl Future<Output = Result<SessionId, HostFault>> + Send;
+    ) -> impl Future<Output = Result<SessionId, AgentHostError>> + Send;
 
     /// The plan a session would resume from, and the session resumed on its backend.
     fn resume(
         &mut self,
         session: &SessionId,
-    ) -> impl Future<Output = Result<ResumePlan, HostFault>> + Send;
+    ) -> impl Future<Output = Result<ResumePlan, AgentHostError>> + Send;
 
     /// The person's turn, recorded and handed to the backend.
     fn turn(
         &mut self,
         session: &SessionId,
         turn: UserTurn,
-    ) -> impl Future<Output = Result<(), HostFault>> + Send;
+    ) -> impl Future<Output = Result<(), AgentHostError>> + Send;
 
     /// The next event of the session's turn in progress.
     fn next_event(
         &mut self,
         session: &SessionId,
-    ) -> impl Future<Output = Result<Option<BackendEvent>, HostFault>> + Send;
+    ) -> impl Future<Output = Result<Option<BackendEvent>, AgentHostError>> + Send;
 
     /// The person's choice on the sheet `id`, which an event handed to the edge.
     fn answer_sheet(
@@ -259,29 +259,31 @@ pub trait SessionHost: Send {
         session: &SessionId,
         id: &ConfirmId,
         choice: SheetChoice,
-    ) -> impl Future<Output = Result<(), HostFault>> + Send;
+    ) -> impl Future<Output = Result<(), AgentHostError>> + Send;
 
     /// Cancels the turn in progress.
-    fn cancel(&mut self, session: &SessionId)
-    -> impl Future<Output = Result<(), HostFault>> + Send;
+    fn cancel(
+        &mut self,
+        session: &SessionId,
+    ) -> impl Future<Output = Result<(), AgentHostError>> + Send;
 
     /// Closes the session for `cause`.
     fn close(
         &mut self,
         session: &SessionId,
         cause: EndCause,
-    ) -> impl Future<Output = Result<(), HostFault>> + Send;
+    ) -> impl Future<Output = Result<(), AgentHostError>> + Send;
 
     /// A new session from this one's entries up to `at`.
     fn fork(
         &mut self,
         session: &SessionId,
         at: Seq,
-    ) -> impl Future<Output = Result<SessionId, HostFault>> + Send;
+    ) -> impl Future<Output = Result<SessionId, AgentHostError>> + Send;
 
     /// The session as a document.
     fn export(
         &self,
         session: &SessionId,
-    ) -> impl Future<Output = Result<SessionExport, HostFault>> + Send;
+    ) -> impl Future<Output = Result<SessionExport, AgentHostError>> + Send;
 }

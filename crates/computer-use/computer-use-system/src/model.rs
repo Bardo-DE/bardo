@@ -88,13 +88,13 @@ fn transport_failure(error: TransportError) -> ComputerUseModelError {
 fn failed_turn(reply: &InferReply, blind: Option<&str>) -> ComputerUseModelError {
     match reply {
         InferReply::Failed(error) => ComputerUseStepFailure::ModelFailed(*error).into(),
-        InferReply::Refused(InferRefusal::NoModelSeesScreen) => {
+        InferReply::Refused(InferRefusedError::NoModelSeesScreen) => {
             ComputerUseModelError::CannotSeeScreen
         }
-        InferReply::Refused(InferRefusal::Unavailable) if blind.is_some() => {
+        InferReply::Refused(InferRefusedError::Unavailable) if blind.is_some() => {
             ComputerUseModelError::CannotSeeScreen
         }
-        InferReply::Refused(InferRefusal::Unavailable) | InferReply::Cancelled => {
+        InferReply::Refused(InferRefusedError::Unavailable) | InferReply::Cancelled => {
             ComputerUseModelError::Transient
         }
         InferReply::Refused(_)
@@ -257,7 +257,10 @@ fn sight_of(places: &[PlaceRow]) -> ModelSight {
 impl<T: Transport> InferdComputerUseModel<T> {
     /// A turn ended without its reply: sorted, and the sentence kept when it is about the screen.
     fn ended(&mut self, reply: &InferReply) -> ComputerUseModelError {
-        if matches!(reply, InferReply::Refused(InferRefusal::NoModelSeesScreen)) {
+        if matches!(
+            reply,
+            InferReply::Refused(InferRefusedError::NoModelSeesScreen)
+        ) {
             self.blind = Some(NO_MODEL_SEES_SCREEN.to_owned());
         }
         failed_turn(reply, self.blind.as_deref())

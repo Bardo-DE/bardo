@@ -4,7 +4,7 @@
 
 use crate::BUS_TIMEOUT;
 use crate::error::UnitError;
-use base_time::timeout::{TimedOut, within};
+use base_time::timeout::{TimeoutError, within};
 use caller_identity_core::{
     DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
 };
@@ -59,7 +59,7 @@ impl<P: ProcFs> ManagerLink<P> {
         );
         let reply = within(BUS_TIMEOUT, call)
             .await
-            .map_err(|TimedOut { .. }| UnitError::Timeout)?
+            .map_err(|TimeoutError { .. }| UnitError::Timeout)?
             .map_err(UnitError::Bus)?;
         reply.body().deserialize().map_err(UnitError::Bus)
     }
@@ -80,7 +80,7 @@ impl<P: ProcFs> ManagerLink<P> {
         let interface = InterfaceName::try_from(interface).map_err(|e| UnitError::Bus(e.into()))?;
         within(BUS_TIMEOUT, proxy.get_all(interface))
             .await
-            .map_err(|TimedOut { .. }| UnitError::Timeout)?
+            .map_err(|TimeoutError { .. }| UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))
             .map(Props)
     }

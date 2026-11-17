@@ -4,7 +4,7 @@
 
 use super::support::{ALLOWLIST, ENDPOINT, HANDOFF, LOGIN, plan, rig};
 use account_core::ProcessCredentialId;
-use agent_acp_host::{AgentChild, Spawn, SpawnFault};
+use agent_acp_host::{AgentChild, Spawn, SpawnError};
 use agent_launch::fake::{Call, FakeAccounts, Mood};
 use agent_launch::{Heard, Supervisor};
 use sandbox::{Access, AgentNet, AgentRun, NetworkMode, Profile, agent_bwrap_args};
@@ -298,7 +298,7 @@ async fn a_program_that_is_not_listed_starts_nothing_and_asks_nothing() {
         .spawn(&plan("gemini-cli", "s-1"))
         .await
         .expect_err("not listed");
-    assert!(matches!(err, SpawnFault::NotAllowed), "{err}");
+    assert!(matches!(err, SpawnError::NotAllowed), "{err}");
     assert!(rig.accounts.calls().is_empty());
     assert!(rig.procs.runs().is_empty());
 }
@@ -312,7 +312,7 @@ async fn a_failure_part_way_undoes_what_was_done() {
         .spawn(&plan("claude-code", "s-1"))
         .await
         .expect_err("refused");
-    assert!(matches!(refused, SpawnFault::Accounts(_)), "{refused}");
+    assert!(matches!(refused, SpawnError::Accounts(_)), "{refused}");
     assert_eq!(
         rig.accounts.calls(),
         [
@@ -330,7 +330,7 @@ async fn a_failure_part_way_undoes_what_was_done() {
         .spawn(&plan("claude-code", "s-1"))
         .await
         .expect_err("down");
-    assert!(matches!(down, SpawnFault::Accounts(_)), "{down}");
+    assert!(matches!(down, SpawnError::Accounts(_)), "{down}");
     assert_eq!(rig.accounts.calls(), [Call::Begin("acp-s-1".into())]);
 
     // The process will not start after the endpoint opened: the endpoint is closed, the session

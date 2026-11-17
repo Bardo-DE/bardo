@@ -3,9 +3,9 @@
 //! resolves as quoted content (`Session.Display`), so what a handle holds is never taken for the
 //! planner's words or for an instruction.
 
-use crate::planner::{PlanFault, log_unreadable};
+use crate::planner::{PlanError, log_unreadable};
 use action_core::{HandleShape, PlannerView, ReplyFault};
-use action_manifest::{ArgsFault, Why};
+use action_manifest::{ArgError, ArgsError};
 use action_vocab::{Handle, ParamName};
 use agent_loop::ModelOutput;
 use inference_core::ToolCall;
@@ -17,9 +17,9 @@ pub(crate) const MOST_SHOWN: usize = 8;
 /// The name of the list in `bardo_finish`'s arguments.
 const SHOW: &str = "show";
 
-fn wrong(why: Why) -> ReplyFault {
+fn wrong(why: ArgError) -> ReplyFault {
     match ParamName::parse(SHOW) {
-        Ok(param) => ReplyFault::Args(ArgsFault::Wrong { param, why }),
+        Ok(param) => ReplyFault::Args(ArgsError::Wrong { param, why }),
         Err(_) => ReplyFault::NotJson,
     }
 }
@@ -31,19 +31,22 @@ fn shown(args: &Json, view: &PlannerView) -> Result<Vec<Handle>, ReplyFault> {
     let Some(list) = args.get(SHOW) else {
         return Ok(Vec::new());
     };
-    let items = list.as_array().ok_or_else(|| wrong(Why::Type))?;
+    let items = list.as_array().ok_or_else(|| wrong(ArgError::Type))?;
     if items.len() > MOST_SHOWN {
-        return Err(wrong(Why::Range));
+        return Err(wrong(ArgError::Range));
     }
     let mut out: Vec<Handle> = Vec::new();
     for item in items {
-        let handle = item.as_u64().map(Handle).ok_or_else(|| wrong(Why::Type))?;
+        let handle = item
+            .as_u64()
+            .map(Handle)
+            .ok_or_else(|| wrong(ArgError::Type))?;
         let text = view
             .handles
             .iter()
             .any(|c| c.handle == handle && c.shape == HandleShape::Text);
         if !text {
-            return Err(wrong(Why::Range));
+            return Err(wrong(ArgError::Range));
         }
         if !out.contains(&handle) {
             out.push(handle);
@@ -57,10 +60,10 @@ fn shown(args: &Json, view: &PlannerView) -> Result<Vec<Handle>, ReplyFault> {
 pub(crate) fn finish_output(
     call: &ToolCall,
     view: &PlannerView,
-) -> Result<(ModelOutput, Vec<Handle>), PlanFault> {
+) -> Result<(ModelOutput, Vec<Handle>), PlanError> {
     let args: Json = serde_json::from_str(call.input.as_str()).map_err(|error| {
         log_unreadable("a finish's arguments", &error);
-        PlanFault::Unreadable
+        PlanError::Unreadable
     })?;
     Ok(match shown(&args, view) {
         Ok(show) => (ModelOutput::Finish, show),

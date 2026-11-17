@@ -17,7 +17,9 @@
 use crate::Bus;
 use crate::failure::{ai_accounts_error, link_error};
 use account_capability::Claim;
-use account_client::{AiAccountsError, Changes, LinkError, Malformed, MalformedError, Unwritable};
+use account_client::{
+    AiAccountsError, Changes, LinkError, Malformed, MalformedError, UnwritableError,
+};
 use account_core::consent::Usage;
 use account_core::{AccountId, AccountState, AiAccountRow, AppId, DataClass, GrantId};
 use account_core::{LlmVerdict, OwnServerRow, ProviderId, SecretText};
@@ -184,7 +186,7 @@ impl AiAccounts {
         state: AccountState,
     ) -> Result<AccountId, AiAccountsError> {
         let claims = serde_json::to_string(claims)
-            .map_err(|e| AiAccountsError::Link(LinkError::Unwritable(Unwritable::new(e))))?;
+            .map_err(|e| AiAccountsError::Link(LinkError::Unwritable(UnwritableError::new(e))))?;
         let id = self
             .bus
             .broker()

@@ -10,7 +10,7 @@
 use crate::BUS_TIMEOUT;
 use crate::error::UnitError;
 use crate::manager::{SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH};
-use base_time::timeout::{TimedOut, within};
+use base_time::timeout::{TimeoutError, within};
 use caller_identity_core::{Pid, Uid};
 use std::sync::Mutex;
 use zbus::Connection;
@@ -39,7 +39,7 @@ impl SystemManager {
         }
         let connection = within(BUS_TIMEOUT, Connection::system())
             .await
-            .map_err(|TimedOut { .. }| UnitError::Timeout)?
+            .map_err(|TimeoutError { .. }| UnitError::Timeout)?
             .map_err(UnitError::Bus)?;
         *self
             .connection
@@ -62,14 +62,14 @@ impl SystemManager {
         let name = BusName::try_from(SYSTEMD).map_err(|e| UnitError::Bus(e.into()))?;
         let owner = within(BUS_TIMEOUT, bus.get_name_owner(name))
             .await
-            .map_err(|TimedOut { .. }| UnitError::Timeout)?
+            .map_err(|TimeoutError { .. }| UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))?;
         let owner_pid = within(
             BUS_TIMEOUT,
             bus.get_connection_unix_process_id(owner.clone().into()),
         )
         .await
-        .map_err(|TimedOut { .. }| UnitError::Timeout)?
+        .map_err(|TimeoutError { .. }| UnitError::Timeout)?
         .map_err(|e| UnitError::Bus(e.into()))?;
         if owner_pid != 1 {
             return Err(UnitError::Malformed(
@@ -89,7 +89,7 @@ impl SystemManager {
         );
         let path: OwnedObjectPath = within(BUS_TIMEOUT, call)
             .await
-            .map_err(|TimedOut { .. }| UnitError::Timeout)?
+            .map_err(|TimeoutError { .. }| UnitError::Timeout)?
             .map_err(UnitError::from_get_unit)?
             .body()
             .deserialize()
@@ -124,7 +124,7 @@ async fn property(
         InterfaceName::from_static_str(interface).map_err(|e| UnitError::Bus(e.into()))?;
     let value = within(BUS_TIMEOUT, properties.get(interface, name))
         .await
-        .map_err(|TimedOut { .. }| UnitError::Timeout)?
+        .map_err(|TimeoutError { .. }| UnitError::Timeout)?
         .map_err(|e| UnitError::Bus(e.into()))?;
     Ok(Value::from(value))
 }

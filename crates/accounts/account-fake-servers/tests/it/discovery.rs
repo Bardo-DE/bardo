@@ -1,6 +1,6 @@
 //! The autoconfig, DNS and model-list fakes driven with a minimal client.
 
-use account_discover::{Dns, DnsFault, MxRecord, SrvRecord};
+use account_discover::{Dns, DnsError, MxRecord, SrvRecord};
 use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Request, Scheme, send};
 use account_fake_servers::{FakeAutoconfig, FakeDns, FakeModels, ModelDef, Wire, autoconfig_xml};
@@ -89,14 +89,14 @@ async fn dns_answers_from_its_table_and_records_what_was_asked() {
     assert_eq!(dns.srv("_imaps._tcp.fake.test").await, Ok(vec![imaps]));
     assert_eq!(
         dns.srv("_imap._tcp.fake.test").await,
-        Err(DnsFault::NoRecords)
+        Err(DnsError::NoRecords)
     );
     let domain = DomainName::parse("FAKE.test").expect("name");
     assert_eq!(dns.mx(&domain).await, Ok(vec![mx]));
     assert_eq!(
         dns.mx(&DomainName::parse("other.test").expect("name"))
             .await,
-        Err(DnsFault::NoRecords)
+        Err(DnsError::NoRecords)
     );
     assert_eq!(
         dns.asked(),
@@ -109,7 +109,7 @@ async fn dns_answers_from_its_table_and_records_what_was_asked() {
     );
 
     let dead = FakeDns::new().with_mx("fake.test", vec![]).unreachable();
-    assert_eq!(dead.mx(&domain).await, Err(DnsFault::Unreachable));
+    assert_eq!(dead.mx(&domain).await, Err(DnsError::Unreachable));
 }
 
 #[tokio::test]

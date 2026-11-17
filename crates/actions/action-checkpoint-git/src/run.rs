@@ -37,7 +37,7 @@ const STDERR_TAIL: usize = 4096;
 
 /// Why git could not be run to its end (a command that ran and failed is a [`GitOut`]).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum GitFault {
+pub enum GitRunError {
     /// The process did not start: no git, or no such folder.
     #[error("git could not be started")]
     Spawn,
@@ -105,26 +105,29 @@ impl GitOut {
 }
 
 /// Reads `pipe` to its end; more than `max` bytes is `TooMuchOutput`, without reading the rest.
-async fn read_bounded<R: AsyncRead + Unpin>(pipe: &mut R, max: usize) -> Result<Vec<u8>, GitFault> {
+async fn read_bounded<R: AsyncRead + Unpin>(
+    pipe: &mut R,
+    max: usize,
+) -> Result<Vec<u8>, GitRunError> {
     let cap = u64::try_from(max).unwrap_or(u64::MAX).saturating_add(1);
     let mut out = Vec::new();
     pipe.take(cap).read_to_end(&mut out).await.map_err(|why| {
         tracing::warn!(error = %why, "git's output could not be read");
-        GitFault::Io
+        GitRunError::Io
     })?;
     if out.len() > max {
-        return Err(GitFault::TooMuchOutput);
+        return Err(GitRunError::TooMuchOutput);
     }
     Ok(out)
 }
 
 /// Reads `pipe` to its end and keeps the last [`STDERR_TAIL`] bytes.
-async fn read_tail<R: AsyncRead + Unpin>(pipe: &mut R) -> Result<Vec<u8>, GitFault> {
+async fn read_tail<R: AsyncRead + Unpin>(pipe: &mut R) -> Result<Vec<u8>, GitRunError> {
     let (mut tail, mut chunk) = (Vec::new(), [0u8; 1024]);
     loop {
         let n = pipe.read(&mut chunk).await.map_err(|why| {
             tracing::warn!(error = %why, "git's errors could not be read");
-            GitFault::Io
+            GitRunError::Io
         })?;
         if n == 0 {
             return Ok(tail);
@@ -139,7 +142,7 @@ async fn read_tail<R: AsyncRead + Unpin>(pipe: &mut R) -> Result<Vec<u8>, GitFau
 
 /// Runs the `git` found on `PATH` as a child process; a command dropped before it ends is killed,
 /// and so is one that passes its deadline or its output limit.
-pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitFault> {
+pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitRunError> {
     let mut process = Command::new("git");
     process
         .args(&cmd.args)
@@ -158,12 +161,12 @@ pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitFault> {
     process.envs(cmd.env.iter().map(|(k, v)| (k, v)));
     let mut child = process.spawn().map_err(|why| {
         tracing::warn!(kind = ?why.kind(), "git could not be started");
-        GitFault::Spawn
+        GitRunError::Spawn
     })?;
     let (Some(mut stdout), Some(mut stderr)) = (child.stdout.take(), child.stderr.take()) else {
         let _ = child.kill().await;
         tracing::warn!("git's pipes were not set up");
-        return Err(GitFault::Io);
+        return Err(GitRunError::Io);
     };
     let pipe = child.stdin.take();
     let input = cmd.stdin;
@@ -173,7 +176,7 @@ pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitFault> {
             let _ = pipe.write_all(&bytes).await;
             let _ = pipe.shutdown().await;
         }
-        Ok::<(), GitFault>(())
+        Ok::<(), GitRunError>(())
     };
     let limits = cmd.limits;
     let work = async {
@@ -184,9 +187,9 @@ pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitFault> {
         )?;
         let status = child.wait().await.map_err(|why| {
             tracing::warn!(kind = ?why.kind(), "git could not be waited for");
-            GitFault::Io
+            GitRunError::Io
         })?;
-        Ok::<GitOut, GitFault>(GitOut {
+        Ok::<GitOut, GitRunError>(GitOut {
             status,
             stdout: out,
             stderr: err,
@@ -194,7 +197,7 @@ pub(crate) async fn run_git(cmd: GitCommand) -> Result<GitOut, GitFault> {
     };
     let done = tokio::time::timeout(limits.deadline, work)
         .await
-        .unwrap_or(Err(GitFault::TimedOut));
+        .unwrap_or(Err(GitRunError::TimedOut));
     if done.is_err() {
         let _ = child.kill().await;
     }

@@ -16,7 +16,7 @@
 
 use crate::client::ClientState;
 use crate::consent::{Held, Mortal, Pushed};
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::ClientKey;
 use compositor_core::geometry::LogicalSize;
 use compositor_core::lock::LockEvent;
@@ -247,9 +247,9 @@ pub fn poll_locker(part: &mut SessionLockPart) -> Vec<Event> {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_locked(part: &mut SessionLockPart) -> Result<(), WaylandFault> {
-    let locker = part.pending.take().ok_or(WaylandFault::SurfaceGone)?;
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_locked(part: &mut SessionLockPart) -> Result<(), WaylandError> {
+    let locker = part.pending.take().ok_or(WaylandError::SurfaceGone)?;
     part.held = Some(locker.ext_session_lock().clone());
     locker.lock();
     Ok(())
@@ -264,15 +264,15 @@ pub fn apply_finished(part: &mut SessionLockPart) {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_lock_configure(
     part: &mut SessionLockPart,
     output: &OutputKey,
     size: LogicalSize,
-) -> Result<(), WaylandFault> {
-    let surface = part.surfaces.get(output).ok_or(WaylandFault::SurfaceGone)?;
+) -> Result<(), WaylandError> {
+    let surface = part.surfaces.get(output).ok_or(WaylandError::SurfaceGone)?;
     if !surface.alive() {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     surface.with_pending_state(|state| state.size = Some((size.w, size.h).into()));
     surface.send_configure();

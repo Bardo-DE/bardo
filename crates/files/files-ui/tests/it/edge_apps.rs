@@ -2,7 +2,7 @@
 
 use std::path::PathBuf;
 
-use files_model::{AppPick, Effect, Input, ListFailure, OpenTarget, TabId};
+use files_model::{AppPick, Effect, FolderListError, Input, OpenTarget, TabId};
 use files_ui::OpenAs;
 use files_ui::edge::Heard;
 
@@ -45,7 +45,7 @@ fn a_folder_is_checked_on_a_thread_and_the_answer_comes_back() {
         next(&mut rig.inbox),
         Heard::Tab(
             TabId::FIRST,
-            Input::FolderChecked(gone, Err(ListFailure::NotFound))
+            Input::FolderChecked(gone, Err(FolderListError::NotFound))
         )
     );
 }

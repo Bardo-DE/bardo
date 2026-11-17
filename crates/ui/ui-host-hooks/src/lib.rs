@@ -18,7 +18,7 @@ mod spawner;
 pub mod styles_guard;
 mod window;
 
-pub use app::{AppControl, AppEnded, use_app_control};
+pub use app::{AppControl, AppEndedError, use_app_control};
 pub use focus::FocusFallback;
 pub use host::{StandaloneHost, provide_host, set_standalone_host};
 pub use resolved::{

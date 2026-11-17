@@ -11,7 +11,7 @@ use account_client_dbus::{AskKind, Bus, Launcher, LauncherError};
 use account_core::DataClass;
 use account_core::SessionToken;
 use account_dbus::BusStream;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use account_wire::Refusal;
 use common::bus::PrivateBus;
 use common::fake_accountd::{FakeAccountd, Sheets};
@@ -92,7 +92,7 @@ async fn the_launcher_registers_hears_a_login_and_a_logout_and_reports_each_once
             rig.launcher
                 .report_login(&ask.request, LoginOutcome::Ready)
                 .await,
-            Err(LauncherError::Fault(LauncherFault::UnknownRequest))
+            Err(LauncherError::Fault(LauncherWireError::UnknownRequest))
         );
     }
     assert_eq!(

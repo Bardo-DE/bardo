@@ -2,7 +2,7 @@
 //! the first key after `enable` must reach the input method, not the document (SP1 A5).
 
 use crate::seat::KeyDelivery;
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::Event;
 use compositor_core::time::Mono;
 use smithay::input::{Seat, SeatHandler};
@@ -109,13 +109,13 @@ pub fn settle_keys<D: SeatHandler + 'static>(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_text_focus<D: SeatHandler + 'static>(
     seat: &Seat<D>,
     focus: Option<&WlSurface>,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     if focus.is_some_and(|surface| !surface.is_alive()) {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     let text = seat.text_input();
     if text.focus().as_ref() == focus {
@@ -137,12 +137,12 @@ pub fn apply_text_focus<D: SeatHandler + 'static>(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_preedit<D: SeatHandler + 'static>(
     seat: &Seat<D>,
     text: &str,
     cursor: (i32, i32),
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     with_field(seat, |field| {
         field.preedit_string(Some(text.to_owned()), cursor.0, cursor.1);
     })
@@ -152,11 +152,11 @@ pub fn apply_preedit<D: SeatHandler + 'static>(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_commit_string<D: SeatHandler + 'static>(
     seat: &Seat<D>,
     text: &str,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     with_field(seat, |field| field.commit_string(Some(text.to_owned())))
 }
 
@@ -165,9 +165,9 @@ pub fn apply_commit_string<D: SeatHandler + 'static>(
 fn with_field<D: SeatHandler + 'static>(
     seat: &Seat<D>,
     send: impl Fn(&ZwpTextInputV3),
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let handle = seat.text_input();
-    let mut reached = Err(WaylandFault::SurfaceGone);
+    let mut reached = Err(WaylandError::SurfaceGone);
     handle.with_active_text_input(|field, _| {
         send(field);
         reached = Ok(());

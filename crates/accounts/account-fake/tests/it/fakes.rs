@@ -36,7 +36,7 @@ async fn an_account_that_needs_a_secret_cannot_open_without_one() {
 #[tokio::test]
 async fn a_scripted_conversation_shows_its_views_and_reads_its_inputs_then_closes() {
     use account_fake::ScriptedSheets;
-    use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+    use account_sheet::host::{SheetError, SheetLink, SheetOpen, Sheets};
     use account_sheet::{SheetInput, SheetView};
     use account_wire::ParentWindow;
     let sheets =
@@ -54,7 +54,7 @@ async fn a_scripted_conversation_shows_its_views_and_reads_its_inputs_then_close
         .expect("update");
     assert_eq!(link.input().await.expect("back"), SheetInput::Back);
     assert_eq!(link.input().await.expect("dismiss"), SheetInput::Dismiss);
-    assert!(matches!(link.input().await, Err(SheetFault::Closed)));
+    assert!(matches!(link.input().await, Err(SheetError::Closed)));
     assert_eq!(
         log.shown(),
         vec![SheetView::Done, SheetView::Providers(vec![])]
@@ -65,7 +65,7 @@ async fn a_scripted_conversation_shows_its_views_and_reads_its_inputs_then_close
             view: SheetView::Done,
         })
         .await;
-    assert!(matches!(none.err(), Some(SheetFault::Unavailable)));
+    assert!(matches!(none.err(), Some(SheetError::Unavailable)));
 }
 
 #[tokio::test]

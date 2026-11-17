@@ -2,7 +2,7 @@
 //! consent answered from a script, and conversations that read their inputs from one.
 
 use account_core::consent::{ConsentAnswer, ConsentAsk, GrantScope};
-use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetLink, SheetOpen, Sheets};
 use account_sheet::{SheetInput, SheetView};
 use account_wire::ParentWindow;
 use std::collections::VecDeque;
@@ -108,7 +108,7 @@ impl SheetLink for ScriptedLink {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
+    async fn update(&mut self, view: SheetView) -> Result<(), SheetError> {
         lock(&self.shown).push(view);
         Ok(())
     }
@@ -117,8 +117,8 @@ impl SheetLink for ScriptedLink {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn input(&mut self) -> Result<SheetInput, SheetFault> {
-        self.inputs.pop_front().ok_or(SheetFault::Closed)
+    async fn input(&mut self) -> Result<SheetInput, SheetError> {
+        self.inputs.pop_front().ok_or(SheetError::Closed)
     }
 }
 
@@ -136,10 +136,10 @@ impl Sheets for ScriptedSheets {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn conversation(&self, open: SheetOpen) -> Result<ScriptedLink, SheetFault> {
+    async fn conversation(&self, open: SheetOpen) -> Result<ScriptedLink, SheetError> {
         let inputs = lock(&self.conversations)
             .pop_front()
-            .ok_or(SheetFault::Unavailable)?;
+            .ok_or(SheetError::Unavailable)?;
         lock(&self.asked.shown).push(open.view);
         Ok(ScriptedLink {
             inputs: inputs.into(),

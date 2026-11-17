@@ -1,6 +1,6 @@
 //! One skill: `skill.toml` and `SKILL.md` parsed and checked as pure functions of their text.
 
-use crate::fault::SkillFault;
+use crate::fault::SkillError;
 use account_core::AppName;
 use action_core::{SkillCard, SkillId, SkillIdError, SkillText};
 use action_vocab::ActionRef;
@@ -99,23 +99,23 @@ impl Skill {
     }
 }
 
-fn use_ref(text: &str) -> Result<ActionRef, SkillFault> {
-    let bad = |source| SkillFault::BadUse(text.to_owned(), source);
+fn use_ref(text: &str) -> Result<ActionRef, SkillError> {
+    let bad = |source| SkillError::BadUse(text.to_owned(), source);
     let (app, name) = text
         .split_once(':')
-        .ok_or_else(|| SkillFault::UseNoColon(text.to_owned()))?;
+        .ok_or_else(|| SkillError::UseNoColon(text.to_owned()))?;
     Ok(ActionRef {
         app: AppName::parse(app).map_err(bad)?,
         name: ActionName::parse(name).map_err(bad)?,
     })
 }
 
-fn kind(text: &str) -> Result<EntityKind, SkillFault> {
-    EntityKind::parse(text).map_err(|source| SkillFault::BadKind(text.to_owned(), source))
+fn kind(text: &str) -> Result<EntityKind, SkillError> {
+    EntityKind::parse(text).map_err(|source| SkillError::BadKind(text.to_owned(), source))
 }
 
-fn id(text: &str) -> Result<SkillId, SkillFault> {
-    SkillId::parse(text).map_err(|SkillIdError| SkillFault::BadId(text.to_owned()))
+fn id(text: &str) -> Result<SkillId, SkillError> {
+    SkillId::parse(text).map_err(|SkillIdError| SkillError::BadId(text.to_owned()))
 }
 
 /// What `skill.toml` says, checked.
@@ -136,12 +136,12 @@ pub struct Facts {
 /// Parses `skill.toml`.
 ///
 /// # Errors
-/// [`SkillFault`] when the text is not valid TOML, its `vocab` is not 1, or an id or action
+/// [`SkillError`] when the text is not valid TOML, its `vocab` is not 1, or an id or action
 /// reference in it is not valid.
-pub fn parse_facts(text: &str) -> Result<Facts, SkillFault> {
-    let raw: SkillToml = toml::from_str(text).map_err(|e| SkillFault::Toml(e.to_string()))?;
+pub fn parse_facts(text: &str) -> Result<Facts, SkillError> {
+    let raw: SkillToml = toml::from_str(text).map_err(|e| SkillError::Toml(e.to_string()))?;
     if raw.vocab != 1 {
-        return Err(SkillFault::Vocab(raw.vocab));
+        return Err(SkillError::Vocab(raw.vocab));
     }
     Ok(Facts {
         id: id(&raw.id)?,
@@ -190,9 +190,9 @@ fn unquote(value: &str) -> &str {
 /// are skipped, as the open Agent Skills layout allows), then the body.
 ///
 /// # Errors
-/// [`SkillFault::NoFrontMatter`] when the text has no `---` front matter;
-/// [`SkillFault::MissingKey`] when it lacks `name` or `description`.
-pub fn parse_doc(text: &str) -> Result<Doc, SkillFault> {
+/// [`SkillError::NoFrontMatter`] when the text has no `---` front matter;
+/// [`SkillError::MissingKey`] when it lacks `name` or `description`.
+pub fn parse_doc(text: &str) -> Result<Doc, SkillError> {
     let text = text.strip_prefix('\u{feff}').unwrap_or(text);
     let mut rows = text.split_inclusive('\n');
     let mut offset = 0;
@@ -202,11 +202,11 @@ pub fn parse_doc(text: &str) -> Result<Doc, SkillFault> {
         Some(row.trim_end())
     };
     if next() != Some("---") {
-        return Err(SkillFault::NoFrontMatter);
+        return Err(SkillError::NoFrontMatter);
     }
     let (mut name, mut description) = (None, None);
     loop {
-        let line = next().ok_or(SkillFault::NoFrontMatter)?;
+        let line = next().ok_or(SkillError::NoFrontMatter)?;
         if line == "---" {
             break;
         }
@@ -223,8 +223,8 @@ pub fn parse_doc(text: &str) -> Result<Doc, SkillFault> {
         }
     }
     Ok(Doc {
-        name: name.ok_or(SkillFault::MissingKey("name"))?,
-        description: description.ok_or(SkillFault::MissingKey("description"))?,
+        name: name.ok_or(SkillError::MissingKey("name"))?,
+        description: description.ok_or(SkillError::MissingKey("description"))?,
         body: text.get(offset..).unwrap_or_default().trim().to_owned(),
     })
 }
@@ -233,11 +233,11 @@ pub fn parse_doc(text: &str) -> Result<Doc, SkillFault> {
 /// format: ids agree, sizes, non-empty body.
 ///
 /// # Errors
-/// [`SkillFault`] when the ids do not agree with `dir`, the description is too long, the body is
+/// [`SkillError`] when the ids do not agree with `dir`, the description is too long, the body is
 /// empty or the body is too large.
-pub fn assemble(dir: &str, facts: Facts, doc: Doc, origin: Origin) -> Result<Skill, SkillFault> {
+pub fn assemble(dir: &str, facts: Facts, doc: Doc, origin: Origin) -> Result<Skill, SkillError> {
     if facts.id.as_str() != dir || doc.name != dir {
-        return Err(SkillFault::IdMismatch {
+        return Err(SkillError::IdMismatch {
             dir: dir.to_owned(),
             toml: facts.id.to_string(),
             md: doc.name,
@@ -245,13 +245,13 @@ pub fn assemble(dir: &str, facts: Facts, doc: Doc, origin: Origin) -> Result<Ski
     }
     let chars = doc.description.chars().count();
     if chars > DESCRIPTION_MAX_CHARS {
-        return Err(SkillFault::DescriptionTooLong(chars));
+        return Err(SkillError::DescriptionTooLong(chars));
     }
     if doc.body.is_empty() {
-        return Err(SkillFault::EmptyBody);
+        return Err(SkillError::EmptyBody);
     }
     if doc.body.len() > BODY_MAX_BYTES {
-        return Err(SkillFault::BodyTooLarge(doc.body.len()));
+        return Err(SkillError::BodyTooLarge(doc.body.len()));
     }
     Ok(Skill {
         id: facts.id,
@@ -268,7 +268,7 @@ pub fn assemble(dir: &str, facts: Facts, doc: Doc, origin: Origin) -> Result<Ski
 /// Both files' text to a skill.
 ///
 /// # Errors
-/// [`SkillFault`] from [`parse_facts`], [`parse_doc`] or [`assemble`].
-pub fn parse(dir: &str, toml: &str, md: &str, origin: Origin) -> Result<Skill, SkillFault> {
+/// [`SkillError`] from [`parse_facts`], [`parse_doc`] or [`assemble`].
+pub fn parse(dir: &str, toml: &str, md: &str, origin: Origin) -> Result<Skill, SkillError> {
     assemble(dir, parse_facts(toml)?, parse_doc(md)?, origin)
 }

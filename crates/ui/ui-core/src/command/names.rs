@@ -29,17 +29,17 @@ pub struct UiOnlyReason(String);
 /// A reason with no words in it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("a UI-only command needs a reason")]
-pub struct EmptyReason;
+pub struct EmptyReasonError;
 
 impl UiOnlyReason {
     /// `text`, trimmed, when it says something.
     ///
     /// # Errors
     ///
-    /// Returns [`EmptyReason`] when `text` has no words in it.
-    pub fn new(text: impl AsRef<str>) -> Result<Self, EmptyReason> {
+    /// Returns [`EmptyReasonError`] when `text` has no words in it.
+    pub fn new(text: impl AsRef<str>) -> Result<Self, EmptyReasonError> {
         match text.as_ref().trim() {
-            "" => Err(EmptyReason),
+            "" => Err(EmptyReasonError),
             words => Ok(UiOnlyReason(words.to_owned())),
         }
     }
@@ -52,9 +52,9 @@ impl UiOnlyReason {
 }
 
 impl TryFrom<String> for UiOnlyReason {
-    type Error = EmptyReason;
+    type Error = EmptyReasonError;
 
-    fn try_from(text: String) -> Result<Self, EmptyReason> {
+    fn try_from(text: String) -> Result<Self, EmptyReasonError> {
         UiOnlyReason::new(text)
     }
 }

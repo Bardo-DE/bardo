@@ -15,7 +15,7 @@ use account_dbus::accounts::ServiceRoot;
 use account_dbus::accounts::launcher_fault_error_name_in;
 use account_service_accounts::{Launchers as _, LoginEnd};
 use account_service_core::audit::AuditEvent;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use base_time::Clock;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicI64, Ordering};
@@ -117,7 +117,7 @@ async fn a_login_goes_to_the_registrant_alone_and_ready_sets_the_account_ok() {
                 .await
                 .expect_err("spent")
         ),
-        launcher_fault_error_name_in(LauncherFault::UnknownRequest, ServiceRoot::Accounts)
+        launcher_fault_error_name_in(LauncherWireError::UnknownRequest, ServiceRoot::Accounts)
     );
     assert!(
         tokio::time::timeout(std::time::Duration::from_millis(200), next(&mut overheard))

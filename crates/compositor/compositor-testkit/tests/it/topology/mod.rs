@@ -11,7 +11,7 @@ use compositor_backend::gpu::{
     route_for, route_with, tag_node,
 };
 use compositor_core::gpu::{
-    ByPathId, DrmNodeId, GpuChoice, PlanRefusal, RenderPlan, TrancheUse, feedback_for, plan_for,
+    ByPathId, DrmNodeId, GpuChoice, PlanError, RenderPlan, TrancheUse, feedback_for, plan_for,
 };
 use compositor_testkit::gpu::{
     ARGB8888, FabricatedSysRoot, GpuTopology, SoftGraphicsApi, XRGB8888,
@@ -88,7 +88,7 @@ fn the_override_picks_the_render_gpu_and_the_stack_opens_what_the_plan_names() {
     let refused = GpuStack::start(&mut nodes, &GpuChoice::ByPath(unknown.clone()));
     assert!(matches!(
         refused,
-        Err(GpuError::Plan(PlanRefusal::UnknownGpu(id))) if id == unknown
+        Err(GpuError::Plan(PlanError::UnknownGpu(id))) if id == unknown
     ));
 }
 
@@ -322,7 +322,7 @@ fn the_stack_replans_without_an_unplugged_gpu() {
     let refused = stack.unplugged(&gone, &mut nodes, &choice);
     assert!(matches!(
         refused,
-        Err(GpuError::Plan(PlanRefusal::UnknownGpu(id))) if id == by_path
+        Err(GpuError::Plan(PlanError::UnknownGpu(id))) if id == by_path
     ));
 
     let stack = GpuStack::start(&mut nodes, &GpuChoice::Auto).expect("auto still plans");

@@ -169,7 +169,7 @@ pub enum RunError {
     /// A build that can mint test input refused to start outside the jail.
     #[cfg(any(feature = "testing", feature = "debug-inject"))]
     #[error("{0}")]
-    Jail(#[from] crate::jail_check::JailRefusal),
+    Jail(#[from] crate::jail_check::JailError),
 }
 
 impl RunError {

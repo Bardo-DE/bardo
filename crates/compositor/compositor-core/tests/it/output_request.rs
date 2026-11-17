@@ -48,7 +48,7 @@ fn a_mode_the_display_does_not_offer_is_refused() {
     want.mode = Some(odd);
     assert_eq!(
         resolve_change(&facts, &config, &want),
-        Err(OutputRefusal::ModeNotOffered(odd))
+        Err(OutputError::ModeNotOffered(odd))
     );
 }
 
@@ -61,7 +61,7 @@ fn a_scale_outside_what_outputs_take_is_refused() {
         want.scale = Some(Scale(numerator));
         assert_eq!(
             resolve_change(&facts, &config, &want),
-            Err(OutputRefusal::ScaleOutOfRange(Scale(numerator)))
+            Err(OutputError::ScaleOutOfRange(Scale(numerator)))
         );
     }
 }
@@ -161,11 +161,7 @@ fn a_position_far_outside_any_arrangement_is_refused() {
         if fine {
             assert!(resolved.is_ok(), "{name}");
         } else {
-            assert_eq!(
-                resolved,
-                Err(OutputRefusal::PositionOutOfRange(at)),
-                "{name}"
-            );
+            assert_eq!(resolved, Err(OutputError::PositionOutOfRange(at)), "{name}");
         }
     }
 }
@@ -199,7 +195,7 @@ fn a_request_cannot_darken_the_last_lit_output() {
     let all_dark = [(a.clone(), dark), (b.clone(), dark)];
     assert_eq!(
         keeps_one_lit(book, &all_dark),
-        Err(OutputRefusal::NoneLeftLit)
+        Err(OutputError::NoneLeftLit)
     );
     let swap = [
         (a.clone(), OutputChangeSet::none().with_power(true)),

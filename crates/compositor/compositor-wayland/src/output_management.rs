@@ -19,7 +19,7 @@ pub use configuration::{ConfigData, ConfigHeadData, HeldConclusion, on_resolved}
 pub use heads::{HeadData, ModeData};
 
 use crate::consent::{ConsentHandler, Held};
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::output::{
     OutputChangeSet, OutputConfig, OutputFacts, Requester, keeps_one_lit, resolve_change,
 };
@@ -251,12 +251,12 @@ pub fn on_configuration(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_heads<D>(
     part: &mut OutputManagementPart,
     display: &DisplayHandle,
     outputs: &OutputBook,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: Dispatch<ZwlrOutputHeadV1, HeadData> + Dispatch<ZwlrOutputModeV1, ModeData> + 'static,
 {
@@ -270,7 +270,7 @@ where
     for entry in &mut part.managers {
         let result = match display.get_client(entry.manager.id()) {
             Ok(client) => sync_manager::<D>(display, &client, entry, outputs, serial),
-            Err(_) => Err(WaylandFault::SurfaceGone),
+            Err(_) => Err(WaylandError::SurfaceGone),
         };
         outcome = outcome.and(result);
     }
@@ -298,7 +298,7 @@ fn sync_manager<D>(
     entry: &mut ManagerEntry,
     outputs: &OutputBook,
     serial: ConfigSerial,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: Dispatch<ZwlrOutputHeadV1, HeadData> + Dispatch<ZwlrOutputModeV1, ModeData> + 'static,
 {

@@ -18,7 +18,7 @@ pub(crate) fn bom_mark(bom: bool) -> &'static [u8] {
 
 /// Why a file is not edited.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum EditRefusal {
+pub enum EditError {
     /// The file is not UTF-8 text (it is UTF-16, or in a legacy encoding, or has bytes that are
     /// no text): saving it back would change more than the person typed.
     #[error("the file is not UTF-8 text")]
@@ -49,22 +49,22 @@ impl EditText {
     ///
     /// # Errors
     ///
-    /// Returns [`EditRefusal::Unreadable`] when the file cannot be opened or read as a regular
-    /// file, [`EditRefusal::TooLarge`] when it is over the edit limit, and [`EditRefusal::NotUtf8`]
+    /// Returns [`EditError::Unreadable`] when the file cannot be opened or read as a regular
+    /// file, [`EditError::TooLarge`] when it is over the edit limit, and [`EditError::NotUtf8`]
     /// when it is not UTF-8 text.
-    pub fn read(path: &Path) -> Result<EditText, EditRefusal> {
+    pub fn read(path: &Path) -> Result<EditText, EditError> {
         let (file, meta) =
-            anyview_fs::open_regular(path).map_err(|e| EditRefusal::Unreadable(e.kind()))?;
+            anyview_fs::open_regular(path).map_err(|e| EditError::Unreadable(e.kind()))?;
         if meta.len() > EDIT_BYTES {
-            return Err(EditRefusal::TooLarge);
+            return Err(EditError::TooLarge);
         }
         let mut bytes = Vec::with_capacity(usize::try_from(meta.len()).unwrap_or(0));
         // One byte more than allowed: a file that grew since it was measured is still refused.
         file.take(EDIT_BYTES + 1)
             .read_to_end(&mut bytes)
-            .map_err(|e| EditRefusal::Unreadable(e.kind()))?;
+            .map_err(|e| EditError::Unreadable(e.kind()))?;
         if bytes.len() as u64 > EDIT_BYTES {
-            return Err(EditRefusal::TooLarge);
+            return Err(EditError::TooLarge);
         }
         EditText::from_bytes(bytes)
     }
@@ -73,19 +73,19 @@ impl EditText {
     ///
     /// # Errors
     ///
-    /// Returns [`EditRefusal::NotUtf8`] when the bytes are not UTF-8 text (UTF-16, a legacy
+    /// Returns [`EditError::NotUtf8`] when the bytes are not UTF-8 text (UTF-16, a legacy
     /// encoding, or bytes that are no text).
-    pub fn from_bytes(mut bytes: Vec<u8>) -> Result<EditText, EditRefusal> {
+    pub fn from_bytes(mut bytes: Vec<u8>) -> Result<EditText, EditError> {
         let detected = detect(&bytes, Coverage::Whole);
         if detected.codec != TextCodec::Unicode(TextEncoding::Utf8) {
-            return Err(EditRefusal::NotUtf8);
+            return Err(EditError::NotUtf8);
         }
         let bom = detected.mark != 0;
         if bom {
             bytes = bytes.split_off(usize::from(detected.mark));
         }
         // The detector looked at the bytes before a mark too, but not past it.
-        std::str::from_utf8(&bytes).map_err(EditRefusal::InvalidUtf8)?;
+        std::str::from_utf8(&bytes).map_err(EditError::InvalidUtf8)?;
         Ok(EditText { bytes, bom })
     }
 

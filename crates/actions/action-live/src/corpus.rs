@@ -9,7 +9,7 @@ use crate::engine::{Engine, EngineError, scripted_cassette};
 use crate::inferd_world::InferdWorld;
 use crate::stage::{Asker, asker};
 use crate::trace_dir::{TraceDir, TraceDirError};
-use crate::warm::WarmFault;
+use crate::warm::WarmError;
 use crate::warm_bus::warm_up;
 use account_capability::{Billing, Locality, ModelId};
 use account_core::AccountId;
@@ -106,7 +106,7 @@ pub enum CorpusError {
     ModelCard(&'static str),
     /// A model did not come up before the run started.
     #[error(transparent)]
-    Warm(#[from] WarmFault),
+    Warm(#[from] WarmError),
     /// A trace could not be written.
     #[error(transparent)]
     Trace(#[from] TraceDirError),

@@ -8,7 +8,7 @@
 //! accountd for that one turn and meters the reply against `[ai.spend]`. A turn refused on a
 //! spend cap is counted in the [`Watch`] so the run can stop.
 
-use crate::request::{RequestFault, SamplingFrom, chat};
+use crate::request::{RequestError, SamplingFrom, chat};
 use crate::watch::Watch;
 use account_capability::LlmFeature;
 use account_capability::Tier;
@@ -19,7 +19,7 @@ use account_match::Need;
 use base_ids::Tokens;
 use inference_client::{OpenOptions, Transport, TransportError};
 use inference_core::{
-    ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, InferSession, ModelError,
+    ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest, InferSession, ModelError,
 };
 use model_provider as sp;
 use model_provider::{Provider, ProviderError, TurnEvent, TurnSink};
@@ -90,7 +90,7 @@ fn model_fault(error: ModelError) -> ProviderError {
     }
 }
 
-fn fault(error: &RequestFault) -> ProviderError {
+fn fault(error: &RequestError) -> ProviderError {
     ProviderError::BadRequest(error.to_string())
 }
 
@@ -185,7 +185,7 @@ impl<T> InferdProvider<T> {
                     first_token: None,
                 })
             }
-            InferReply::Refused(InferRefusal::OverBudget) => {
+            InferReply::Refused(InferRefusedError::OverBudget) => {
                 self.watch.refuse_spend();
                 Err(ProviderError::Refused("a spend cap was reached".to_owned()))
             }

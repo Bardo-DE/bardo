@@ -495,8 +495,8 @@ async fn the_reader_answers_a_closed_set_plainly_and_any_text_as_a_handle() {
     .await;
     assert_eq!(
         wrong,
-        IntentsReply::Refused(WireRefusal::Read(ReadFault::OutOfSchema(
-            SchemaFault::OutOfRange
+        IntentsReply::Refused(WireRefusal::Read(ReadError::OutOfSchema(
+            SchemaError::OutOfRange
         ))),
         "an answer outside the schema"
     );
@@ -524,14 +524,14 @@ async fn a_read_that_gives_no_answer_says_why() {
     };
     router.seams.reader = ScriptedReader::answering(vec![
         Err(ReaderError::Unparseable),
-        Err(ReaderError::OutOfSchema(SchemaFault::NotRepresentable)),
+        Err(ReaderError::OutOfSchema(SchemaError::NotRepresentable)),
         Err(ReaderError::ModelUnavailable),
     ]);
     let rows = [
-        (Handle(999), ReadFault::NotHeld),
-        (h, ReadFault::Unparseable),
-        (h, ReadFault::OutOfSchema(SchemaFault::NotRepresentable)),
-        (h, ReadFault::Unavailable),
+        (Handle(999), ReadError::NotHeld),
+        (h, ReadError::Unparseable),
+        (h, ReadError::OutOfSchema(SchemaError::NotRepresentable)),
+        (h, ReadError::Unavailable),
     ];
     for (input, fault) in rows {
         assert_eq!(
@@ -569,19 +569,19 @@ async fn a_thing_given_to_a_read_is_held_but_not_text_and_a_stranger_is_not_held
     let rows = [
         (
             vec![thread],
-            ReadFault::NotText {
+            ReadError::NotText {
                 handle: thread,
                 shape: HandleShape::Entity(kind.clone()),
             },
         ),
         (
             vec![text, thread],
-            ReadFault::NotText {
+            ReadError::NotText {
                 handle: thread,
                 shape: HandleShape::Entity(kind),
             },
         ),
-        (vec![Handle(999), thread], ReadFault::NotHeld),
+        (vec![Handle(999), thread], ReadError::NotHeld),
     ];
     for (inputs, fault) in rows {
         assert_eq!(

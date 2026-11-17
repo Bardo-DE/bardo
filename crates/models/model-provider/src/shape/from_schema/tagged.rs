@@ -2,7 +2,7 @@
 
 use serde_json::Value;
 
-use super::{ANNOTATIONS, Found, Node, Refused, read};
+use super::{ANNOTATIONS, Found, Node, SchemaKeywordError, read};
 use crate::{FieldName, IdentError, Shape, Variant, VariantName};
 
 /// One property of a tagged arm: its name, the one string it allows (if it is a one-string
@@ -78,7 +78,7 @@ fn tag_position(arms: &[[Prop<'_>; 2]]) -> Option<usize> {
 }
 
 pub(super) fn tagged(node: &mut Node, key: &str, items: &[Value]) -> Found<Shape> {
-    let bad = |node: &Node| node.refuse(Refused::BadTagged);
+    let bad = |node: &Node| node.refuse(SchemaKeywordError::BadTagged);
     let arms: Vec<[Prop<'_>; 2]> = items
         .iter()
         .map(arm)

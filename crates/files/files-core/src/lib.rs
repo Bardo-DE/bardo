@@ -45,7 +45,7 @@ pub use cloud::{
 pub use conflict::{Answer, Bring, Conflict, Resolution};
 pub use entry::{Entry, EntryKind, LinkTo, Special};
 pub use error::{ItemError, PathError};
-pub use failure::OpFailure;
+pub use failure::OpError;
 pub use info::Info;
 pub use item::ItemRef;
 pub use keep_both::{Split, keep_both};
@@ -58,6 +58,6 @@ pub use trashed::{TrashId, TrashedItem};
 pub use ui_helpers::mime::{FileName, MimeError, MimeType, NameError};
 pub use view::{FolderPrefs, Sort, SortKey, SortOrder, ViewMode};
 pub use volume::{
-    Cause, EjectFailure, MountFailure, ProgramName, Volume, VolumeId, VolumeKind, VolumeName,
+    Cause, EjectError, MountError, ProgramName, Volume, VolumeId, VolumeKind, VolumeName,
     VolumeTrouble,
 };

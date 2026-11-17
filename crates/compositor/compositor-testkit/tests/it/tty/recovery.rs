@@ -3,9 +3,9 @@
 //! failing and a screen that stays dead (the watchdog is then not fed).
 
 use compositor_backend::BackendError;
-use compositor_backend::SessionFault;
+use compositor_backend::SessionError;
 use compositor_backend::tty::{
-    CommitVerdict, DevicePath, Health, Kms, KmsCommit, KmsError, KmsOpener, KmsRefusal,
+    CommitVerdict, DevicePath, Health, Kms, KmsCommit, KmsError, KmsOpener, KmsRefusedError,
     KmsResources, Lighting, NoGpus, PresentOutcome, Presented, QueueOutcome, QueuedFrame, Scanout,
     ScanoutSet, ScanoutSurface, SeatState, SessionNote, TtyBackend, TtyNote, TtySeams, TtySession,
     VtNumber,
@@ -48,11 +48,11 @@ impl Script {
 }
 
 impl TtySession for Script {
-    fn open_device(&mut self, _path: &DevicePath) -> Result<OwnedFd, SessionFault> {
-        Err(SessionFault::Inactive)
+    fn open_device(&mut self, _path: &DevicePath) -> Result<OwnedFd, SessionError> {
+        Err(SessionError::Inactive)
     }
 
-    fn switch_vt(&mut self, _vt: VtNumber) -> Result<(), SessionFault> {
+    fn switch_vt(&mut self, _vt: VtNumber) -> Result<(), SessionError> {
         Ok(())
     }
 
@@ -89,7 +89,7 @@ impl Kms for Picky {
                 .any(|mode| mode.size == output.mode.size && mode.refresh == output.mode.refresh)
         });
         if refused {
-            Err(KmsError::Refused(KmsRefusal::Bandwidth))
+            Err(KmsError::Refused(KmsRefusedError::Bandwidth))
         } else {
             self.inner.commit(commit)
         }

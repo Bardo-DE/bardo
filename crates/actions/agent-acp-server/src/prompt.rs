@@ -4,7 +4,7 @@
 
 use crate::calls;
 use crate::helpers::Helpers;
-use crate::link::{Gone, Inbound, Link, Settled, answer, settled, unknown_session};
+use crate::link::{EditorGoneError, Inbound, Link, Settled, answer, settled, unknown_session};
 use crate::mode::Mode;
 use crate::out;
 use crate::permission;
@@ -19,7 +19,7 @@ use agent_client_protocol::schema::v1::{
     ContentBlock, Error, PromptRequest, PromptResponse, RequestPermissionRequest,
     RequestPermissionResponse, StopReason,
 };
-use agent_session::{BackendEvent, HostFault, SessionHost, SessionLog, TurnEnd};
+use agent_session::{AgentHostError, BackendEvent, SessionHost, SessionLog, TurnEnd};
 use futures_util::future::{Either, select};
 use provenance::SessionId;
 use std::pin::pin;
@@ -39,10 +39,10 @@ fn spoken(blocks: &[ContentBlock]) -> Option<String> {
     (!joined.trim().is_empty()).then_some(joined)
 }
 
-fn refused(fault: &HostFault) -> Error {
+fn refused(fault: &AgentHostError) -> Error {
     match fault {
-        HostFault::NotOpen => fault::not_now("the session takes no turn"),
-        HostFault::NoSuchSession => fault::unknown_session(),
+        AgentHostError::NotOpen => fault::not_now("the session takes no turn"),
+        AgentHostError::NoSuchSession => fault::unknown_session(),
         _ => fault::internal("the turn could not be started"),
     }
 }
@@ -65,7 +65,11 @@ pub(crate) enum Reply {
 
 /// A message that arrived while a turn runs: a cancel for this session stops it, any other
 /// request is turned away.
-fn heard(session: &SessionId, inbound: Inbound, turn: &mut Turn) -> Result<Vec<Order>, Gone> {
+fn heard(
+    session: &SessionId,
+    inbound: Inbound,
+    turn: &mut Turn,
+) -> Result<Vec<Order>, EditorGoneError> {
     match inbound {
         Inbound::Cancel(cancel) => Ok(if &*cancel.session_id.0 == session.as_str() {
             turn.cancelled()
@@ -84,7 +88,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         link: &mut Link,
         asked: PromptRequest,
         responder: Responder<PromptResponse>,
-    ) -> Result<(), Gone> {
+    ) -> Result<(), EditorGoneError> {
         match self.begin(asked).await {
             Err(error) => answer(responder, Err(error)),
             Ok(Begun::AtHelper(session, turn)) => {
@@ -141,7 +145,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         responder: Responder<PromptResponse>,
         session: SessionId,
         turn: UserTurn,
-    ) -> Result<(), Gone> {
+    ) -> Result<(), EditorGoneError> {
         let result = match self.helpers.say(&session, turn).await {
             Ok(words) => {
                 if !words.trim().is_empty() {
@@ -159,7 +163,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         link: &mut Link,
         session: &SessionId,
         turn: &mut Turn,
-    ) -> Result<Finish, Gone> {
+    ) -> Result<Finish, EditorGoneError> {
         loop {
             let orders = match turn.wants() {
                 Wants::Over(finish) => return Ok(finish),
@@ -200,7 +204,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         session: &SessionId,
         request: RequestPermissionRequest,
         turn: &mut Turn,
-    ) -> Result<Reply, Gone> {
+    ) -> Result<Reply, EditorGoneError> {
         let mut waiting = link.ask(request);
         loop {
             let listened = {
@@ -233,7 +237,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         link: &Link,
         session: &SessionId,
         orders: Vec<Order>,
-    ) -> Result<(), Gone> {
+    ) -> Result<(), EditorGoneError> {
         for order in orders {
             match order {
                 Order::Update(update) => link.update(session, *update)?,

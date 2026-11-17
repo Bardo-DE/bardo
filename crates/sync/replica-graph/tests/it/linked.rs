@@ -16,7 +16,7 @@ use http_relay::{RelayHttp, RelayLimits, Routed};
 use replica_graph::{GraphReplica, Uploads};
 use sync_core::Clock;
 use sync_core::{
-    BaseVersion, Blob, ByteRange, Change, Cursor, ItemPath, PutItem, PutRefused, PutTarget,
+    BaseVersion, Blob, ByteRange, Change, Cursor, ItemPath, PutError, PutItem, PutTarget,
     Replica as _, ReplicaError,
 };
 use sync_fake_graph::{CHUNK_UNIT, Knobs};
@@ -197,10 +197,7 @@ async fn an_origin_the_declaration_does_not_name_is_never_reached() {
         .put(item("big.bin", big()), BaseVersion::Absent)
         .await;
     assert!(
-        matches!(
-            refused,
-            Err(PutRefused::Transient(_) | PutRefused::Failed(..))
-        ),
+        matches!(refused, Err(PutError::Transient(_) | PutError::Failed(..))),
         "{refused:?}"
     );
     assert_eq!(graph.file("big.bin"), None);

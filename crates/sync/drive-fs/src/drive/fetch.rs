@@ -2,7 +2,7 @@
 //! the start, and a read that waits for the chunk it needs (asked for before the rest).
 
 use super::{Drive, Failure, Inner, NodeId, held};
-use crate::Reason;
+use crate::SkipError;
 use crate::hash;
 use crate::index::Row;
 use crate::listing::Entry;
@@ -34,7 +34,7 @@ pub enum ReadError {
     Folder,
     /// The cache could not be read or written.
     #[error("the cache could not be used")]
-    Cache(#[source] Option<Cause>),
+    Cache(#[source] Option<CacheCauseError>),
     /// It changed on the drive while it downloaded: the bytes were dropped, and it downloads
     /// again when next asked.
     #[error("it changed on the drive while it downloaded")]
@@ -47,20 +47,20 @@ pub enum ReadError {
 /// The error that made a cache unusable. Two causes are equal when they say the same.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error(transparent)]
-pub struct Cause(Arc<dyn std::error::Error + Send + Sync>);
+pub struct CacheCauseError(Arc<dyn std::error::Error + Send + Sync>);
 
-impl PartialEq for Cause {
+impl PartialEq for CacheCauseError {
     fn eq(&self, other: &Self) -> bool {
         self.0.to_string() == other.0.to_string()
     }
 }
 
-impl Eq for Cause {}
+impl Eq for CacheCauseError {}
 
 impl ReadError {
     /// The cache could not be used, because of `cause`.
     pub(super) fn cache(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
-        ReadError::Cache(Some(Cause(Arc::new(cause))))
+        ReadError::Cache(Some(CacheCauseError(Arc::new(cause))))
     }
 }
 
@@ -244,7 +244,7 @@ impl Inner {
         held(&self.errors).insert(
             transfer.id.clone(),
             Failure {
-                reason: Reason::Offline,
+                reason: SkipError::Offline,
                 transient: matches!(error, ReadError::Offline | ReadError::Stalled),
             },
         );

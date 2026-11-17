@@ -26,7 +26,7 @@ const REGISTRY: &str = "state/bardo/accounts/registry.json";
 
 /// Why a directory cannot be the home.
 #[derive(Debug, thiserror::Error)]
-pub enum HomeFault {
+pub enum HomeError {
     /// The path is not absolute.
     #[error("--keys-home {0} is not an absolute path")]
     NotAbsolute(PathBuf),
@@ -58,15 +58,15 @@ pub enum HomeFault {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct KeysHome(PathBuf);
 
-fn meta_of(path: &Path) -> Result<std::fs::Metadata, HomeFault> {
-    std::fs::symlink_metadata(path).map_err(|e| HomeFault::Io(path.to_owned(), e))
+fn meta_of(path: &Path) -> Result<std::fs::Metadata, HomeError> {
+    std::fs::symlink_metadata(path).map_err(|e| HomeError::Io(path.to_owned(), e))
 }
 
-fn tight(path: &Path, meta: &std::fs::Metadata) -> Result<(), HomeFault> {
+fn tight(path: &Path, meta: &std::fs::Metadata) -> Result<(), HomeError> {
     let mode = meta.permissions().mode() & 0o777;
     match mode & 0o077 {
         0 => Ok(()),
-        _ => Err(HomeFault::LooseMode(path.to_owned(), mode)),
+        _ => Err(HomeError::LooseMode(path.to_owned(), mode)),
     }
 }
 
@@ -82,20 +82,20 @@ fn git_root(dir: &Path) -> Option<PathBuf> {
 ///
 /// # Errors
 ///
-/// Returns [`HomeFault`] when `dir` is not absolute, is not a directory, is open to group or
+/// Returns [`HomeError`] when `dir` is not absolute, is not a directory, is open to group or
 /// others, cannot be resolved, or lies inside a git work tree.
-pub fn check_dir(dir: &Path) -> Result<PathBuf, HomeFault> {
+pub fn check_dir(dir: &Path) -> Result<PathBuf, HomeError> {
     if !dir.is_absolute() {
-        return Err(HomeFault::NotAbsolute(dir.to_owned()));
+        return Err(HomeError::NotAbsolute(dir.to_owned()));
     }
     let meta = meta_of(dir)?;
     if !meta.is_dir() {
-        return Err(HomeFault::NotADirectory(dir.to_owned()));
+        return Err(HomeError::NotADirectory(dir.to_owned()));
     }
     tight(dir, &meta)?;
-    let real = std::fs::canonicalize(dir).map_err(|e| HomeFault::Io(dir.to_owned(), e))?;
+    let real = std::fs::canonicalize(dir).map_err(|e| HomeError::Io(dir.to_owned(), e))?;
     match git_root(&real) {
-        Some(root) => Err(HomeFault::InsideGit(dir.to_owned(), root)),
+        Some(root) => Err(HomeError::InsideGit(dir.to_owned(), root)),
         None => Ok(real),
     }
 }
@@ -105,16 +105,16 @@ impl KeysHome {
     ///
     /// # Errors
     ///
-    /// Returns [`HomeFault`] when `dir` fails [`check_dir`] or does not hold a private keys file
+    /// Returns [`HomeError`] when `dir` fails [`check_dir`] or does not hold a private keys file
     /// and the account registry.
-    pub fn open(dir: &Path) -> Result<Self, HomeFault> {
+    pub fn open(dir: &Path) -> Result<Self, HomeError> {
         let real = check_dir(dir)?;
         let keys = real.join(KEYS_FILE);
-        let empty = |source| HomeFault::Empty(dir.to_owned(), source);
+        let empty = |source| HomeError::Empty(dir.to_owned(), source);
         // Metadata only: the harness never opens the key file.
         let meta = std::fs::symlink_metadata(&keys).map_err(empty)?;
         if !meta.is_file() {
-            return Err(HomeFault::NotAFile(keys));
+            return Err(HomeError::NotAFile(keys));
         }
         tight(&keys, &meta)?;
         std::fs::metadata(real.join(REGISTRY)).map_err(empty)?;

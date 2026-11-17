@@ -1,7 +1,7 @@
 //! Registering an app's actions: refused when the chord is not the app's to take.
 
 use super::Keymap;
-use super::conflict::Conflict;
+use super::conflict::ConflictError;
 use super::effective::effective;
 use super::layers::{Binding, Entry, Layer, upsert};
 use super::registration::{Registration, Row};
@@ -29,7 +29,7 @@ impl Keymap {
         &mut self,
         app: &AppId,
         actions: &[(AppAction, DefaultChord)],
-    ) -> Result<(), Conflict> {
+    ) -> Result<(), ConflictError> {
         let registration = actions
             .iter()
             .fold(Registration::new(app), |registration, (action, chord)| {
@@ -46,20 +46,20 @@ impl Keymap {
     ///
     /// Returns a [`Conflict`] naming the first default chord the platform already gives another
     /// action; nothing is registered then.
-    pub fn register_with(&mut self, registration: &Registration) -> Result<(), Conflict> {
+    pub fn register_with(&mut self, registration: &Registration) -> Result<(), ConflictError> {
         let app = registration.app();
         if let Some(foreign) = registration.rows().iter().find(|r| r.action.app() != *app) {
-            return Err(Conflict::ForeignAction {
+            return Err(ConflictError::ForeignAction {
                 action: foreign.action.id().to_owned(),
                 app: app.as_str().to_owned(),
             });
         }
         let mut staged = forgone_entries(app, registration.forgone())?;
         let mut refused: Vec<AppAction> = Vec::new();
-        let mut first: Option<Conflict> = None;
+        let mut first: Option<ConflictError> = None;
         // Defaults first, so a fallback never takes a chord another row's default wants; then
         // the fallbacks of the rows whose default collided, in declaration order.
-        let mut collided: Vec<(&Row, Conflict)> = Vec::new();
+        let mut collided: Vec<(&Row, ConflictError)> = Vec::new();
         for row in registration.rows() {
             match self.check(row, row.binding, &staged) {
                 Ok(()) => stage(&mut staged, row, row.binding),
@@ -117,7 +117,7 @@ impl Keymap {
         (covers && self.check(row, alone, staged).is_ok()).then_some(alone)
     }
 
-    fn check(&self, row: &Row, binding: Binding, staged: &[Entry]) -> Result<(), Conflict> {
+    fn check(&self, row: &Row, binding: Binding, staged: &[Entry]) -> Result<(), ConflictError> {
         let wanting = Action::App(row.action.clone());
         let live: Vec<Entry> = self
             .entries
@@ -132,7 +132,7 @@ impl Keymap {
             };
             let shown = concrete.display(self.platform);
             if let Some(reason) = reserved_reason(self.platform, concrete) {
-                return Err(Conflict::Reserved {
+                return Err(ConflictError::Reserved {
                     shown,
                     wanted_by: wanting.id(),
                     reason,
@@ -151,7 +151,7 @@ impl Keymap {
 
 /// The entries that unbind the standard actions an app does not offer; a universal action is
 /// refused.
-fn forgone_entries(app: &AppId, forgone: &[StandardAction]) -> Result<Vec<Entry>, Conflict> {
+fn forgone_entries(app: &AppId, forgone: &[StandardAction]) -> Result<Vec<Entry>, ConflictError> {
     forgone
         .iter()
         .map(|action| match action.reach() {
@@ -160,7 +160,7 @@ fn forgone_entries(app: &AppId, forgone: &[StandardAction]) -> Result<Vec<Entry>
                 layer: Layer::Forgone,
                 chords: Vec::new(),
             }),
-            Reach::Universal => Err(Conflict::Universal {
+            Reach::Universal => Err(ConflictError::Universal {
                 action: *action,
                 meaning: action.label(),
                 app: app.as_str().to_owned(),
@@ -169,15 +169,15 @@ fn forgone_entries(app: &AppId, forgone: &[StandardAction]) -> Result<Vec<Entry>
         .collect()
 }
 
-fn clash(shown: String, held: Action, wanting: &Action) -> Conflict {
+fn clash(shown: String, held: Action, wanting: &Action) -> ConflictError {
     match held {
-        Action::Standard(action) => Conflict::Standard {
+        Action::Standard(action) => ConflictError::Standard {
             shown,
             action,
             meaning: action.label(),
             wanted_by: wanting.id(),
         },
-        other @ Action::App(_) => Conflict::Taken {
+        other @ Action::App(_) => ConflictError::Taken {
             shown,
             held_by: other.id(),
             wanted_by: wanting.id(),

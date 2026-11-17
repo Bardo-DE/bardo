@@ -25,7 +25,7 @@ use shell_services::seat::{SeatPublisher, seat};
 use shell_services::service::spawn;
 use shell_testkit::PrivateBus;
 use speech_wire::{
-    CancelCause, Envelope, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal, VoiceVocab, frame, seal,
+    CancelCause, Envelope, UtteranceEnd, VoiceError, VoiceEvent as Frame, VoiceVocab, frame, seal,
 };
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
@@ -46,7 +46,7 @@ pub enum BeginAnswer {
     /// Open an utterance.
     Open,
     /// Refuse.
-    Refuse(VoiceRefusal),
+    Refuse(VoiceError),
     /// Decide as `voiced` does: from the `[voice]` table of this settings file.
     FromSettings(PathBuf),
 }
@@ -150,36 +150,36 @@ enum Refused {
     Malformed(String),
 }
 
-impl From<VoiceRefusal> for Refused {
-    fn from(refusal: VoiceRefusal) -> Refused {
+impl From<VoiceError> for Refused {
+    fn from(refusal: VoiceError) -> Refused {
         let why = refusal.to_string();
         match refusal {
-            VoiceRefusal::Disabled => Refused::Disabled(why),
-            VoiceRefusal::NeedsConsent => Refused::NeedsConsent(why),
-            VoiceRefusal::Busy => Refused::Busy(why),
-            VoiceRefusal::NotAllowed => Refused::NotAllowed(why),
-            VoiceRefusal::NoModel => Refused::NoModel(why),
-            VoiceRefusal::MicUnavailable => Refused::MicUnavailable(why),
+            VoiceError::Disabled => Refused::Disabled(why),
+            VoiceError::NeedsConsent => Refused::NeedsConsent(why),
+            VoiceError::Busy => Refused::Busy(why),
+            VoiceError::NotAllowed => Refused::NotAllowed(why),
+            VoiceError::NoModel => Refused::NoModel(why),
+            VoiceError::MicUnavailable => Refused::MicUnavailable(why),
         }
     }
 }
 
 /// What `voiced` makes of a settings file: `hold_to_talk = "off"` is off, `consent` of `given`
 /// (or a table with a `given` key) is on, `declined` is off, anything else needs consent.
-fn refusal_of_settings(path: &Path) -> Option<VoiceRefusal> {
+fn refusal_of_settings(path: &Path) -> Option<VoiceError> {
     let text = std::fs::read_to_string(path).unwrap_or_default();
     let table: toml::Table = text.parse().unwrap_or_default();
     let Some(voice) = table.get("voice").and_then(toml::Value::as_table) else {
-        return Some(VoiceRefusal::NeedsConsent);
+        return Some(VoiceError::NeedsConsent);
     };
     if voice.get("hold_to_talk").and_then(toml::Value::as_str) == Some("off") {
-        return Some(VoiceRefusal::Disabled);
+        return Some(VoiceError::Disabled);
     }
     match voice.get("consent") {
         Some(toml::Value::String(s)) if s == "given" => None,
         Some(toml::Value::Table(t)) if t.contains_key("given") => None,
-        Some(toml::Value::String(s)) if s == "declined" => Some(VoiceRefusal::Disabled),
-        _ => Some(VoiceRefusal::NeedsConsent),
+        Some(toml::Value::String(s)) if s == "declined" => Some(VoiceError::Disabled),
+        _ => Some(VoiceError::NeedsConsent),
     }
 }
 

@@ -4,7 +4,7 @@
 //! answers) and hands each session the next scripted backend. Fork is not scripted.
 
 use crate::backend::{
-    BackendEvent, CallEvent, HostFault, SessionBackend, SessionHost, SheetChoice, StartSession,
+    AgentHostError, BackendEvent, CallEvent, SessionBackend, SessionHost, SheetChoice, StartSession,
 };
 use crate::entry::{EndCause, Opening, Seq, SessionEntry};
 use crate::export::{SessionExport, export};
@@ -59,7 +59,11 @@ impl FakeHost {
         self
     }
 
-    async fn append(&mut self, session: &SessionId, entry: SessionEntry) -> Result<(), HostFault> {
+    async fn append(
+        &mut self,
+        session: &SessionId,
+        entry: SessionEntry,
+    ) -> Result<(), AgentHostError> {
         let seq = match self.next_seq.get(session) {
             Some(seq) => *seq,
             None => Seq(read_all(&*self.log, session).await?.len() as u64),
@@ -69,10 +73,10 @@ impl FakeHost {
         Ok(())
     }
 
-    fn backend(&mut self, session: &SessionId) -> Result<&mut FakeBackend, HostFault> {
+    fn backend(&mut self, session: &SessionId) -> Result<&mut FakeBackend, AgentHostError> {
         self.backends
             .get_mut(session)
-            .ok_or(HostFault::NoSuchSession)
+            .ok_or(AgentHostError::NoSuchSession)
     }
 }
 
@@ -81,7 +85,7 @@ impl FakeHost {
     reason = "the trait method is async and this fake never waits"
 )]
 impl SessionHost for FakeHost {
-    async fn open(&mut self, opening: Opening) -> Result<SessionId, HostFault> {
+    async fn open(&mut self, opening: Opening) -> Result<SessionId, AgentHostError> {
         self.minted += 1;
         let session = SessionId::parse(&format!("s-{}", self.minted))
             .expect("`s-` and a number is a session id");
@@ -98,7 +102,7 @@ impl SessionHost for FakeHost {
         Ok(session)
     }
 
-    async fn resume(&mut self, session: &SessionId) -> Result<ResumePlan, HostFault> {
+    async fn resume(&mut self, session: &SessionId) -> Result<ResumePlan, AgentHostError> {
         let rows = read_all(&*self.log, session).await?;
         let plan = resume_plan(&rows)?;
         if !self.backends.contains_key(session) {
@@ -110,9 +114,9 @@ impl SessionHost for FakeHost {
         Ok(plan)
     }
 
-    async fn turn(&mut self, session: &SessionId, turn: UserTurn) -> Result<(), HostFault> {
+    async fn turn(&mut self, session: &SessionId, turn: UserTurn) -> Result<(), AgentHostError> {
         if self.closed.contains(session) {
-            return Err(HostFault::NotOpen);
+            return Err(AgentHostError::NotOpen);
         }
         self.backend(session)?;
         self.append(session, SessionEntry::Turn(turn.clone()))
@@ -122,7 +126,10 @@ impl SessionHost for FakeHost {
         Ok(())
     }
 
-    async fn next_event(&mut self, session: &SessionId) -> Result<Option<BackendEvent>, HostFault> {
+    async fn next_event(
+        &mut self,
+        session: &SessionId,
+    ) -> Result<Option<BackendEvent>, AgentHostError> {
         let event = self.backend(session)?.next_event().await;
         match &event {
             Some(BackendEvent::Call(CallEvent::Started(open))) => {
@@ -143,30 +150,30 @@ impl SessionHost for FakeHost {
         session: &SessionId,
         id: &ConfirmId,
         choice: SheetChoice,
-    ) -> Result<(), HostFault> {
+    ) -> Result<(), AgentHostError> {
         self.backend(session)?;
         self.sheets.push((id.clone(), choice));
         Ok(())
     }
 
-    async fn cancel(&mut self, session: &SessionId) -> Result<(), HostFault> {
+    async fn cancel(&mut self, session: &SessionId) -> Result<(), AgentHostError> {
         self.backend(session)?.cancel().await;
         self.cancelled.push(session.clone());
         Ok(())
     }
 
-    async fn close(&mut self, session: &SessionId, cause: EndCause) -> Result<(), HostFault> {
+    async fn close(&mut self, session: &SessionId, cause: EndCause) -> Result<(), AgentHostError> {
         self.append(session, SessionEntry::Closed(cause)).await?;
         self.backend(session)?.close().await;
         self.closed.insert(session.clone());
         Ok(())
     }
 
-    async fn fork(&mut self, _session: &SessionId, _at: Seq) -> Result<SessionId, HostFault> {
-        Err(HostFault::NoSuchSession)
+    async fn fork(&mut self, _session: &SessionId, _at: Seq) -> Result<SessionId, AgentHostError> {
+        Err(AgentHostError::NoSuchSession)
     }
 
-    async fn export(&self, session: &SessionId) -> Result<SessionExport, HostFault> {
+    async fn export(&self, session: &SessionId) -> Result<SessionExport, AgentHostError> {
         let rows = read_all(&*self.log, session).await?;
         Ok(export(session, &rows)?)
     }

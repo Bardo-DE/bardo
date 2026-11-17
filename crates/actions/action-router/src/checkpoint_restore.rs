@@ -12,10 +12,10 @@ use crate::router::Router;
 use crate::seams::Seams;
 use account_core::AppName;
 use action_checkpoint::{
-    ApplyAsk, CheckpointStore, DropAsk, PlanAsk, StoreFault, TakeAsk, WorkRoot,
+    ApplyAsk, CheckpointStore, CheckpointStoreError, DropAsk, PlanAsk, TakeAsk, WorkRoot,
 };
 use action_core::{
-    AppRefusal, CheckpointEvent, CheckpointFault, CheckpointId, CheckpointNote, FailText, Follow,
+    AppRefusal, CheckpointError, CheckpointEvent, CheckpointId, CheckpointNote, FailText, Follow,
     Invocation, Outcome, PlanDigest, Preview, TurnState, Undoable,
 };
 use action_vocab::{Args, CallRequest, CallerRole, LabelText, ParamName, TurnId, Value};
@@ -42,14 +42,14 @@ fn app() -> Option<AppName> {
 }
 
 /// A refusal in the sheet's words (`4.6`): typed causes in, plain sentences out, no tool named.
-fn say(fault: &CheckpointFault) -> AppRefusal {
+fn say(fault: &CheckpointError) -> AppRefusal {
     let words = match fault {
-        CheckpointFault::NoSuchPoint => "There is no such restore point.",
-        CheckpointFault::Gone => "That restore point was cleared.",
-        CheckpointFault::TurnRunning => "Wait for this turn to finish",
-        CheckpointFault::PlanStale => "Files changed while you were deciding. Look again.",
-        CheckpointFault::NoHistory => "This folder can't keep restore points.",
-        CheckpointFault::Failed => "The restore could not be completed.",
+        CheckpointError::NoSuchPoint => "There is no such restore point.",
+        CheckpointError::Gone => "That restore point was cleared.",
+        CheckpointError::TurnRunning => "Wait for this turn to finish",
+        CheckpointError::PlanStale => "Files changed while you were deciding. Look again.",
+        CheckpointError::NoHistory => "This folder can't keep restore points.",
+        CheckpointError::Failed => "The restore could not be completed.",
     };
     AppRefusal::Failed(FailText(words.to_owned()))
 }
@@ -174,12 +174,12 @@ impl<S: Seams> Router<S> {
         let record = st
             .sessions
             .get(session)
-            .ok_or_else(|| say(&CheckpointFault::NoSuchPoint))?;
+            .ok_or_else(|| say(&CheckpointError::NoSuchPoint))?;
         let root = record
             .cwd
             .as_ref()
             .and_then(|cwd| WorkRoot::of(cwd).ok())
-            .ok_or_else(|| say(&CheckpointFault::NoHistory))?;
+            .ok_or_else(|| say(&CheckpointError::NoHistory))?;
         Ok((root, record.checkpoints.clone()))
     }
 
@@ -189,7 +189,7 @@ impl<S: Seams> Router<S> {
         let stepping = self.locked().stepping.contains(session);
         match (self.turn_state(session), stepping) {
             (TurnState::Idle, false) => Ok(()),
-            _ => Err(say(&CheckpointFault::TurnRunning)),
+            _ => Err(say(&CheckpointError::TurnRunning)),
         }
     }
 
@@ -206,7 +206,7 @@ impl<S: Seams> Router<S> {
         let (root, notes) = self.restore_target(&ask.session)?;
         self.restore_clear(&ask.session)?;
         if !crate::checkpoint_read::was_saved(&notes, ask.point) {
-            return Err(say(&CheckpointFault::NoSuchPoint));
+            return Err(say(&CheckpointError::NoSuchPoint));
         }
         let plan = self
             .seams
@@ -218,11 +218,11 @@ impl<S: Seams> Router<S> {
             })
             .await
             .map_err(|fault| match fault {
-                StoreFault::NoSuchPoint => say(&CheckpointFault::Gone),
+                CheckpointStoreError::NoSuchPoint => say(&CheckpointError::Gone),
                 other => say(&crate::checkpoint_read::fault_of(&other)),
             })?;
         if plan.digest != ask.digest {
-            return Err(say(&CheckpointFault::PlanStale));
+            return Err(say(&CheckpointError::PlanStale));
         }
         let provider = app().ok_or(AppRefusal::Unsupported)?;
         Ok(Preview::Facts(crate::checkpoint_sheet::restore_sheet(
@@ -241,14 +241,14 @@ impl<S: Seams> Router<S> {
         let ask = ask_of(&inv)?;
         let (root, notes) = self.restore_target(&ask.session)?;
         let Some(_step) = self.begin_step(&ask.session) else {
-            return Err(say(&CheckpointFault::TurnRunning));
+            return Err(say(&CheckpointError::TurnRunning));
         };
         // The mark is taken first, so no turn's save starts while this checks the turn.
         if self.turn_state(&ask.session) == TurnState::Running {
-            return Err(say(&CheckpointFault::TurnRunning));
+            return Err(say(&CheckpointError::TurnRunning));
         }
         if !crate::checkpoint_read::was_saved(&notes, ask.point) {
-            return Err(say(&CheckpointFault::NoSuchPoint));
+            return Err(say(&CheckpointError::NoSuchPoint));
         }
         let cfg = self.agent_config();
         let store = self.seams.checkpoints();
@@ -257,7 +257,7 @@ impl<S: Seams> Router<S> {
             .await
             .map_err(|fault| say(&crate::checkpoint_read::fault_of(&fault)))?;
         if !held.iter().any(|saved| saved.id == ask.point) {
-            return Err(say(&CheckpointFault::Gone));
+            return Err(say(&CheckpointError::Gone));
         }
         let safety = self.next_point(&ask.session, &held);
         store
@@ -278,7 +278,7 @@ impl<S: Seams> Router<S> {
                 expect: ask.digest,
             })
             .await;
-        if matches!(applied, Err(StoreFault::Partial)) {
+        if matches!(applied, Err(CheckpointStoreError::Partial)) {
             // Some files were written: the safety point is the way back, and it stays.
             return Err(AppRefusal::Failed(FailText(
                 "The restore stopped part-way. Your files from before it are kept as a restore point."

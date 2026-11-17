@@ -1,6 +1,6 @@
 //! A desktop's end of the socket: `Hello`, `Status`, `Focus`, `Resume`.
 
-use crate::failure::{Failure, errno};
+use crate::failure::{DevtestError, errno};
 use key_remap_client::Heard;
 use key_remap_proto::{
     self as protocol, Grab, PROTOCOL_VERSION, Status, Steer, ToClient, ToDaemon,
@@ -33,7 +33,7 @@ impl Client {
     ///
     /// Returns a [`Failure`] when the socket cannot be made or reached before the deadline, `Hello`
     /// does not arrive, or its version is not the one this harness speaks.
-    pub fn connect(socket: &Path, log: Option<&Path>) -> Result<Self, Failure> {
+    pub fn connect(socket: &Path, log: Option<&Path>) -> Result<Self, DevtestError> {
         let deadline = Instant::now() + CONNECT_WAIT;
         let fd = loop {
             let fd = rustix::net::socket(AddressFamily::UNIX, SocketType::SEQPACKET, None)
@@ -45,7 +45,7 @@ impl Client {
                     std::thread::sleep(Duration::from_millis(20));
                 }
                 Err(e) => {
-                    return Err(Failure::new(format!(
+                    return Err(DevtestError::new(format!(
                         "connecting to {}: {e} (after {CONNECT_WAIT:?})",
                         socket.display()
                     )));
@@ -74,7 +74,7 @@ impl Client {
                 client.status = status;
                 Ok(client)
             }
-            other => Err(Failure::new(format!(
+            other => Err(DevtestError::new(format!(
                 "the first packet should be Hello with version {PROTOCOL_VERSION}: {other:?}"
             ))),
         }
@@ -97,7 +97,7 @@ impl Client {
     ///
     /// Returns a [`Failure`] when the receive timeout cannot be set, the socket fails, or a packet
     /// does not decode.
-    pub fn recv(&mut self, wait: Duration) -> Result<Heard, Failure> {
+    pub fn recv(&mut self, wait: Duration) -> Result<Heard, DevtestError> {
         set_socket_timeout(
             &self.fd,
             Timeout::Recv,
@@ -109,9 +109,9 @@ impl Client {
             Ok((0, _)) | Err(Errno::CONNRESET) => Ok(Heard::Closed),
             Ok((n, _)) => protocol::decode(&buf[..n])
                 .map(Heard::Message)
-                .map_err(|e| Failure::new(format!("undecodable packet: {e}"))),
+                .map_err(|e| DevtestError::new(format!("undecodable packet: {e}"))),
             Err(Errno::AGAIN) => Ok(Heard::Silence),
-            Err(e) => Err(Failure::new(format!("receiving: {e}"))),
+            Err(e) => Err(DevtestError::new(format!("receiving: {e}"))),
         }
     }
 
@@ -120,7 +120,7 @@ impl Client {
     /// # Errors
     ///
     /// Returns a [`Failure`] when the socket cannot send the message.
-    pub fn send(&self, message: &ToDaemon) -> Result<(), Failure> {
+    pub fn send(&self, message: &ToDaemon) -> Result<(), DevtestError> {
         rustix::net::send(&self.fd, &protocol::encode(message), SendFlags::NOSIGNAL)
             .map(drop)
             .map_err(errno("sending"))
@@ -133,9 +133,9 @@ impl Client {
     ///
     /// Returns a [`Failure`] when `profile` is not a valid profile name, or the message cannot be
     /// sent.
-    pub fn focus(&self, profile: &str) -> Result<(), Failure> {
+    pub fn focus(&self, profile: &str) -> Result<(), DevtestError> {
         let profile = protocol::ProfileName::parse(profile)
-            .map_err(|e| Failure::new(format!("profile name {profile:?}: {e}")))?;
+            .map_err(|e| DevtestError::new(format!("profile name {profile:?}: {e}")))?;
         self.send(&ToDaemon::Steer(Steer::Focus { profile }))
     }
 
@@ -144,7 +144,7 @@ impl Client {
     /// # Errors
     ///
     /// Returns a [`Failure`] when the message cannot be sent.
-    pub fn resume(&self) -> Result<(), Failure> {
+    pub fn resume(&self) -> Result<(), DevtestError> {
         self.send(&ToDaemon::Steer(Steer::Resume))
     }
 
@@ -166,7 +166,7 @@ impl Client {
         what: &str,
         wait: Duration,
         matches: impl Fn(&Status) -> bool,
-    ) -> Result<Status, Failure> {
+    ) -> Result<Status, DevtestError> {
         let deadline = Instant::now() + wait;
         let mut heard = vec![summary(&self.status)];
         loop {
@@ -175,7 +175,7 @@ impl Client {
             }
             let left = deadline.saturating_duration_since(Instant::now());
             if left.is_zero() {
-                return Err(Failure::new(format!(
+                return Err(DevtestError::new(format!(
                     "status never became {what} within {wait:?}; heard: {}",
                     heard.join(" -> ")
                 )));
@@ -189,7 +189,7 @@ impl Client {
                 Heard::Message(other) => self.write_log(&format!("{other:?}")),
                 Heard::Silence => {}
                 Heard::Closed => {
-                    return Err(Failure::new(format!(
+                    return Err(DevtestError::new(format!(
                         "the daemon closed the connection while waiting for {what}; heard: {}",
                         heard.join(" -> ")
                     )));
@@ -203,7 +203,12 @@ impl Client {
     /// # Errors
     ///
     /// Returns a [`Failure`] under the same conditions as [`Self::wait_status`].
-    pub fn wait_grab(&mut self, name: &str, grab: Grab, wait: Duration) -> Result<Status, Failure> {
+    pub fn wait_grab(
+        &mut self,
+        name: &str,
+        grab: Grab,
+        wait: Duration,
+    ) -> Result<Status, DevtestError> {
         self.wait_status(&format!("{name} {grab:?}"), wait, |s| {
             s.keyboards
                 .iter()

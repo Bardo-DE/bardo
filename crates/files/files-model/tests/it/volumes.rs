@@ -1,7 +1,7 @@
 //! Disks in the sidebar: the list, opening and ejecting, and what is told when it fails.
 
 use files_core::{
-    EjectFailure, FolderPath, Location, MountFailure, ProgramName, Volume, VolumeId, VolumeKind,
+    EjectFailure, FolderPath, Location, MountError, ProgramName, Volume, VolumeId, VolumeKind,
     VolumeName, VolumeTrouble,
 };
 use files_model::{BusyDisk, Effect, Input, Question};
@@ -38,8 +38,8 @@ fn told(name: &str, trouble: VolumeTrouble) -> Effect {
     }
 }
 
-fn busy_with_vlc() -> EjectFailure {
-    EjectFailure::InUse(vec![ProgramName::new("vlc")])
+fn busy_with_vlc() -> EjectError {
+    EjectError::InUse(vec![ProgramName::new("vlc")])
 }
 
 fn with_volumes() -> files_model::Browser {
@@ -109,10 +109,10 @@ fn answers_go_to_the_disk_or_say_what_failed() {
         ),
         (
             "not mounted: told",
-            Input::Mounted(id("card"), Err(MountFailure::NotAllowed)),
+            Input::Mounted(id("card"), Err(MountError::NotAllowed)),
             vec![told(
                 "CARD",
-                VolumeTrouble::NotOpened(MountFailure::NotAllowed),
+                VolumeTrouble::NotOpened(MountError::NotAllowed),
             )],
         ),
         (
@@ -127,10 +127,10 @@ fn answers_go_to_the_disk_or_say_what_failed() {
         ),
         (
             "not allowed: told",
-            Input::Ejected(id("stick"), Err(EjectFailure::NotAllowed)),
+            Input::Ejected(id("stick"), Err(EjectError::NotAllowed)),
             vec![told(
                 "STICK",
-                VolumeTrouble::NotEjected(EjectFailure::NotAllowed),
+                VolumeTrouble::NotEjected(EjectError::NotAllowed),
             )],
         ),
         (
@@ -145,7 +145,7 @@ fn answers_go_to_the_disk_or_say_what_failed() {
         ),
         (
             "a failure for a disk that left is not told",
-            Input::Ejected(id("gone"), Err(EjectFailure::Gone(None))),
+            Input::Ejected(id("gone"), Err(EjectError::Gone(None))),
             vec![],
         ),
     ];

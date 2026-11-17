@@ -24,7 +24,7 @@ const MAX_OUTPUT_BYTES: u64 = 1 << 20;
 /// A helper run that did not succeed.
 #[derive(Clone, Debug, PartialEq, Eq, thiserror::Error)]
 #[error("the update helper failed ({code:?}): {detail}")]
-pub struct ApplyFailure {
+pub struct ApplyError {
     /// Its exit code, `None` when it could not be started, was killed or ran out of time.
     pub code: Option<i32>,
     /// The last line it printed on its error output.
@@ -46,28 +46,28 @@ pub trait Elevate: Send + Sync {
     ///
     /// # Errors
     ///
-    /// [`ApplyFailure`] when the helper refuses or fails to install the release.
-    fn install(&self, staged: &Path) -> Result<Report, ApplyFailure>;
+    /// [`ApplyError`] when the helper refuses or fails to install the release.
+    fn install(&self, staged: &Path) -> Result<Report, ApplyError>;
     /// Goes back to the previous release because the person asked to (the system asks for the
     /// administrator's password).
     ///
     /// # Errors
     ///
-    /// [`ApplyFailure`] when the helper is refused, not authorised or fails.
-    fn rollback(&self) -> Result<Report, ApplyFailure>;
+    /// [`ApplyError`] when the helper is refused, not authorised or fails.
+    fn rollback(&self) -> Result<Report, ApplyError>;
     /// Notes a start of the current release and goes back to the previous one if it has failed to start
     /// in too many boots (no password: the helper decides from what only it can see).
     ///
     /// # Errors
     ///
-    /// [`ApplyFailure`] when the helper fails.
-    fn recover(&self) -> Result<Recovery, ApplyFailure>;
+    /// [`ApplyError`] when the helper fails.
+    fn recover(&self) -> Result<Recovery, ApplyError>;
     /// Records that the session started well on the current release.
     ///
     /// # Errors
     ///
-    /// [`ApplyFailure`] when the helper fails.
-    fn confirmed(&self) -> Result<(), ApplyFailure>;
+    /// [`ApplyError`] when the helper fails.
+    fn confirmed(&self) -> Result<(), ApplyError>;
 }
 
 /// Where the three privileged programs are.
@@ -106,7 +106,7 @@ struct Finished {
     err: String,
 }
 
-fn failure(why: &impl ToString) -> ApplyFailure {
+fn failure(why: &impl ToString) -> ApplyError {
     ApplyFailure {
         code: None,
         detail: why.to_string(),
@@ -156,7 +156,7 @@ impl Pkexec {
         }
     }
 
-    fn start(&self, helper: &Path, args: &[&std::ffi::OsStr]) -> Result<Finished, ApplyFailure> {
+    fn start(&self, helper: &Path, args: &[&std::ffi::OsStr]) -> Result<Finished, ApplyError> {
         let mut child = Command::new(&self.program)
             .arg(helper)
             .args(args)
@@ -184,7 +184,7 @@ impl Pkexec {
         })
     }
 
-    fn run(&self, helper: &Path, args: &[&OsStr]) -> Result<Report, ApplyFailure> {
+    fn run(&self, helper: &Path, args: &[&OsStr]) -> Result<Report, ApplyError> {
         let finished = self.start(helper, args)?;
         if finished.status.success() {
             return Ok(Report::parse(&finished.out));
@@ -193,7 +193,7 @@ impl Pkexec {
     }
 }
 
-fn refused(finished: &Finished) -> ApplyFailure {
+fn refused(finished: &Finished) -> ApplyError {
     let detail = finished
         .err
         .lines()
@@ -208,15 +208,15 @@ fn refused(finished: &Finished) -> ApplyFailure {
 }
 
 impl Elevate for Pkexec {
-    fn install(&self, staged: &Path) -> Result<Report, ApplyFailure> {
+    fn install(&self, staged: &Path) -> Result<Report, ApplyError> {
         self.run(&self.helpers.install, &[staged.as_os_str()])
     }
 
-    fn rollback(&self) -> Result<Report, ApplyFailure> {
+    fn rollback(&self) -> Result<Report, ApplyError> {
         self.run(&self.helpers.rollback, &[])
     }
 
-    fn recover(&self) -> Result<Recovery, ApplyFailure> {
+    fn recover(&self) -> Result<Recovery, ApplyError> {
         let finished = self.start(&self.helpers.health, &[OsStr::new("recover")])?;
         match finished.status.code() {
             Some(0) => Ok(Recovery::Fine),
@@ -227,7 +227,7 @@ impl Elevate for Pkexec {
         }
     }
 
-    fn confirmed(&self) -> Result<(), ApplyFailure> {
+    fn confirmed(&self) -> Result<(), ApplyError> {
         let finished = self.start(&self.helpers.health, &[OsStr::new("confirmed")])?;
         if finished.status.success() {
             Ok(())

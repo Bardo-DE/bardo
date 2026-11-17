@@ -11,7 +11,7 @@ use action_dbus::{Bus, BusConnection, introspection};
 use action_fake::fake_router;
 use action_vocab::CallerRole;
 use action_wire::CallerId;
-use agent_reader_daemon::{ReaderHost, ReaderService, ServeFault, serve_on};
+use agent_reader_daemon::{ReaderHost, ReaderService, ServeError, serve_on};
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
@@ -77,5 +77,5 @@ async fn the_served_interface_is_the_declared_one_and_the_name_is_claimed_once()
 
     let second = bus.connect().await;
     let again = serve_on(&second, service(), nobody(&second, scratch.path())).await;
-    assert!(matches!(again, Err(ServeFault::Bus(_))), "{again:?}");
+    assert!(matches!(again, Err(ServeError::Bus(_))), "{again:?}");
 }

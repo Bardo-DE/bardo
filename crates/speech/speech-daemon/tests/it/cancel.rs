@@ -121,7 +121,7 @@ async fn a_stranger_may_not_cancel_whatever_the_cause() {
         .cancel(&cause_wire(CancelCause::Shell))
         .await
         .expect_err("refused");
-    assert_eq!(refusal(error), speech_wire::VoiceRefusal::NotAllowed);
+    assert_eq!(refusal(error), speech_wire::VoiceError::NotAllowed);
     assert_eq!(world.hand.open_now(), 1);
 }
 

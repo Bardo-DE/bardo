@@ -19,7 +19,8 @@ use super::spawn::SignIn;
 use action_core::{Reveal, TurnVia, UserTurn};
 use action_vocab::{Caller, TurnId};
 use agent_session::{
-    BackendEvent, BackendFault, BackendKind, HostFault, Opening, SessionHost, SheetDesk, TurnEnd,
+    AgentHostError, BackendError, BackendEvent, BackendKind, Opening, SessionHost, SheetDesk,
+    TurnEnd,
 };
 use companion_model::helper::{HandFault, SignInHow, SignInWay, TerminalLogin, UntrustedWords};
 use companion_model::{AppSessionId, WatchedAgent};
@@ -143,13 +144,13 @@ impl<H: Hosts> std::fmt::Debug for HelperAgent<H> {
     }
 }
 
-fn wants_sign_in(fault: &HostFault) -> bool {
+fn wants_sign_in(fault: &AgentHostError) -> bool {
     matches!(
         fault,
-        HostFault::Backend(
-            BackendFault::SignInNeeded
-                | BackendFault::SignInChoose(_)
-                | BackendFault::SignInUnsupported
+        AgentHostError::Backend(
+            BackendError::SignInNeeded
+                | BackendError::SignInChoose(_)
+                | BackendError::SignInUnsupported
         )
     )
 }

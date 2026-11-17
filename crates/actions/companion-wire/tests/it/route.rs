@@ -6,8 +6,8 @@ use companion_wire::{
     Reached, RouteLog, RouteNote, WhyWord, declined_text, footer_line, model_name, provider_name,
 };
 use inference_core::{
-    Declined, DeclinedBecause, Door, InferEvent, InferRefusal, ModelLabel, ModelRef, ProviderId,
-    ServedBy, StageNote, StageRole, Why,
+    Declined, DeclinedBecause, Door, InferEvent, InferRefusedError, ModelLabel, ModelRef,
+    ProviderId, ServedBy, StageNote, StageRole, Why,
 };
 
 fn model(id: &str) -> ModelRef {
@@ -269,7 +269,7 @@ fn a_voice_turn_has_two_routed_and_one_answer_line() {
         stage(StageRole::Answer, "gemma-4", Locality::OnDevice, Why::Named),
         InferEvent::TextDelta("hi".into()),
         InferEvent::Finished(inference_core::InferReply::Refused(
-            inference_core::InferRefusal::Unavailable,
+            inference_core::InferRefusedError::Unavailable,
         )),
     ] {
         log.event(&event);
@@ -307,13 +307,13 @@ fn a_declined_model_says_which_and_why() {
         ),
         (
             DeclinedBecause::Blocked {
-                refusal: InferRefusal::OverBudget,
+                refusal: InferRefusedError::OverBudget,
             },
             "Kimi K2.6 cannot answer: its spend cap is reached.",
         ),
         (
             DeclinedBecause::Blocked {
-                refusal: InferRefusal::NoModelChosen,
+                refusal: InferRefusedError::NoModelChosen,
             },
             "Kimi K2.6 cannot answer: no model is chosen yet.",
         ),
@@ -331,7 +331,7 @@ fn a_declined_model_says_which_and_why() {
         ),
         (
             DeclinedBecause::Blocked {
-                refusal: InferRefusal::NoModelSeesScreen,
+                refusal: InferRefusedError::NoModelSeesScreen,
             },
             "Kimi K2.6 cannot answer: no model here can see the screen.",
         ),

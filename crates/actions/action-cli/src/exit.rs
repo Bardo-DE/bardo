@@ -87,7 +87,7 @@ fn chain(error: &dyn std::error::Error) -> String {
 /// router's own words (a serialised refusal) for a program reading `--json`.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
 #[error("{what}")]
-pub struct Failure {
+pub struct ExitError {
     /// The exit code.
     pub exit: Exit,
     /// What happened, for a person.
@@ -96,7 +96,7 @@ pub struct Failure {
     pub detail: Value,
 }
 
-impl Failure {
+impl ExitError {
     /// A failure with a sentence and no detail.
     pub fn new(exit: Exit, what: impl Into<String>) -> Self {
         Self {
@@ -112,22 +112,22 @@ impl Failure {
         what: impl std::fmt::Display,
         cause: &dyn std::error::Error,
     ) -> Self {
-        Failure::new(exit, format!("{what}: {}", chain(cause)))
+        ExitError::new(exit, format!("{what}: {}", chain(cause)))
     }
 
     /// A usage error that has a cause, as [`Failure::because`] writes it.
     pub fn usage_because(what: impl std::fmt::Display, cause: &dyn std::error::Error) -> Self {
-        Failure::because(Exit::Usage, what, cause)
+        ExitError::because(Exit::Usage, what, cause)
     }
 
     /// A usage error that is its cause's own words, with the causes beneath it.
     pub fn usage_of(cause: &dyn std::error::Error) -> Self {
-        Failure::usage(chain(cause))
+        ExitError::usage(chain(cause))
     }
 
     /// A usage error: the command line is wrong.
     pub fn usage(what: impl Into<String>) -> Self {
-        Failure::new(Exit::Usage, what)
+        ExitError::new(Exit::Usage, what)
     }
 
     /// The error object of `--json`.
@@ -145,14 +145,14 @@ impl Failure {
     }
 }
 
-fn with_detail<T: serde::Serialize>(mut failure: Failure, detail: &T) -> Failure {
+fn with_detail<T: serde::Serialize>(mut failure: ExitError, detail: &T) -> ExitError {
     failure.detail = serde_json::to_value(detail).unwrap_or(Value::Null);
     failure
 }
 
 /// How a call ended, when it did not end well: which code, and in which words.
 #[must_use]
-pub fn of_refusal(refusal: &CallRefusal) -> Failure {
+pub fn of_refusal(refusal: &CallRefusal) -> ExitError {
     let (exit, what) = match refusal {
         CallRefusal::App(AppRefusal::NeedsParam { param, .. }) => {
             (Exit::Usage, format!("the app needs {param}"))
@@ -199,7 +199,7 @@ pub fn of_refusal(refusal: &CallRefusal) -> Failure {
             "the session's record could not be kept, so nothing was done".to_owned(),
         ),
     };
-    with_detail(Failure::new(exit, what), refusal)
+    with_detail(ExitError::new(exit, what), refusal)
 }
 
 fn slug<T: serde::Serialize>(value: &T) -> String {
@@ -211,35 +211,35 @@ fn slug<T: serde::Serialize>(value: &T) -> String {
 
 /// A request that did not give the reply its caller wanted.
 #[must_use]
-pub fn of_client(error: &ClientError) -> Failure {
+pub fn of_client(error: &ClientError) -> ExitError {
     match error {
         ClientError::Transport(TransportError::Closed) => {
-            Failure::new(Exit::Unavailable, "bardo-actiond is not running")
+            ExitError::new(Exit::Unavailable, "bardo-actiond is not running")
         }
         ClientError::Transport(TransportError::Bus(why)) => {
-            Failure::new(Exit::Unavailable, format!("the bus failed: {why}"))
+            ExitError::new(Exit::Unavailable, format!("the bus failed: {why}"))
         }
         ClientError::Transport(TransportError::Malformed(_)) | ClientError::Unexpected => {
-            Failure::new(
+            ExitError::new(
                 Exit::Unavailable,
                 "bardo-actiond answered something unexpected",
             )
         }
         ClientError::Refused(WireRefusal::Call(refusal)) => of_refusal(refusal),
         ClientError::Refused(WireRefusal::NotAllowed) => {
-            Failure::new(Exit::Refused, "refused: a terminal may not do that")
+            ExitError::new(Exit::Refused, "refused: a terminal may not do that")
         }
         ClientError::Refused(WireRefusal::NoSuchSession) => {
-            Failure::new(Exit::Unavailable, "the terminal's session is gone")
+            ExitError::new(Exit::Unavailable, "the terminal's session is gone")
         }
         ClientError::Refused(WireRefusal::Malformed) => {
-            Failure::new(Exit::Usage, "bardo-actiond could not read the request")
+            ExitError::new(Exit::Usage, "bardo-actiond could not read the request")
         }
         ClientError::Refused(WireRefusal::Send(_) | WireRefusal::Read(_)) => {
-            Failure::new(Exit::AppFailed, "the request was refused")
+            ExitError::new(Exit::AppFailed, "the request was refused")
         }
         // A failure this build does not know yet: report the link as not answering properly.
-        _ => Failure::new(
+        _ => ExitError::new(
             Exit::Unavailable,
             "bardo-actiond answered something unexpected",
         ),
@@ -248,13 +248,13 @@ pub fn of_client(error: &ClientError) -> Failure {
 
 /// How an undo that reached the app ended badly.
 #[must_use]
-pub fn of_undo(fault: UndoFault) -> Failure {
+pub fn of_undo(fault: UndoFault) -> ExitError {
     match fault {
-        UndoFault::Gone => Failure::usage("there is nothing to undo for that"),
-        UndoFault::Conflict => Failure::new(
+        UndoFault::Gone => ExitError::usage("there is nothing to undo for that"),
+        UndoFault::Conflict => ExitError::new(
             Exit::AppFailed,
             "the thing changed since, so the app cannot take it back",
         ),
-        UndoFault::AppUnavailable => Failure::new(Exit::Unavailable, "the app is not available"),
+        UndoFault::AppUnavailable => ExitError::new(Exit::Unavailable, "the app is not available"),
     }
 }

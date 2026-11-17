@@ -23,7 +23,7 @@ pub struct SessionExport {
 
 /// Why an export or an import failed.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ExportFault {
+pub enum ExportError {
     /// A row could not be read; an export that dropped it would say less than the log.
     #[error("the entry at {0:?} cannot be read")]
     Unreadable(Seq),
@@ -39,14 +39,14 @@ pub enum ExportFault {
 ///
 /// # Errors
 ///
-/// Returns `ExportFault::Unreadable` when a row cannot be read: an export that dropped it would say
+/// Returns `ExportError::Unreadable` when a row cannot be read: an export that dropped it would say
 /// less than the log.
-pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, ExportFault> {
+pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, ExportError> {
     let mut entries = Vec::new();
     for row in rows {
         match &row.read {
             Read::Entry(e) => entries.push(e.as_ref().clone()),
-            Read::Unreadable(_) => return Err(ExportFault::Unreadable(row.seq)),
+            Read::Unreadable(_) => return Err(ExportError::Unreadable(row.seq)),
         }
     }
     Ok(SessionExport {
@@ -61,9 +61,9 @@ pub fn export(session: &SessionId, rows: &[Logged]) -> Result<SessionExport, Exp
 ///
 /// # Errors
 ///
-/// Returns `ExportFault` when the document cannot be written as JSON.
-pub fn to_json(export: &SessionExport) -> Result<String, ExportFault> {
-    serde_json::to_string_pretty(export).map_err(|error| ExportFault::Malformed(error.to_string()))
+/// Returns `ExportError` when the document cannot be written as JSON.
+pub fn to_json(export: &SessionExport) -> Result<String, ExportError> {
+    serde_json::to_string_pretty(export).map_err(|error| ExportError::Malformed(error.to_string()))
 }
 
 /// The export in `json`; the version is read before the rest, so a newer document is
@@ -71,18 +71,18 @@ pub fn to_json(export: &SessionExport) -> Result<String, ExportFault> {
 ///
 /// # Errors
 ///
-/// Returns `ExportFault::UnknownVersion` for a document version this crate does not know, and
-/// `ExportFault::Malformed` when `json` is not a valid document of this form.
-pub fn from_json(json: &str) -> Result<SessionExport, ExportFault> {
+/// Returns `ExportError::UnknownVersion` for a document version this crate does not know, and
+/// `ExportError::Malformed` when `json` is not a valid document of this form.
+pub fn from_json(json: &str) -> Result<SessionExport, ExportError> {
     let doc: serde_json::Value =
-        serde_json::from_str(json).map_err(|error| ExportFault::Malformed(error.to_string()))?;
+        serde_json::from_str(json).map_err(|error| ExportError::Malformed(error.to_string()))?;
     let version = doc
         .get("export_version")
         .and_then(serde_json::Value::as_u64)
         .and_then(|v| u32::try_from(v).ok())
-        .ok_or_else(|| ExportFault::Malformed("no export_version".to_owned()))?;
+        .ok_or_else(|| ExportError::Malformed("no export_version".to_owned()))?;
     if version != EXPORT_VERSION {
-        return Err(ExportFault::UnknownVersion(version));
+        return Err(ExportError::UnknownVersion(version));
     }
-    serde_json::from_value(doc).map_err(|error| ExportFault::Malformed(error.to_string()))
+    serde_json::from_value(doc).map_err(|error| ExportError::Malformed(error.to_string()))
 }

@@ -18,7 +18,7 @@
 //! * Every answer carries a [`Why`], a closed enum of facts, never a judgement.
 
 use crate::choice::{LicenceClass, ModelRef};
-use crate::error::InferRefusal;
+use crate::error::InferRefusedError;
 use crate::policy::Policy;
 use crate::readiness::Readiness;
 use crate::route::{Chosen, RouteAsk, RouteCandidate, admit, billing_rank, chosen_of, closeness};
@@ -267,7 +267,7 @@ pub enum DeclinedBecause {
     /// The hard rules refuse it (`ai.local_only`, the floor, consent, spend).
     Blocked {
         /// The refusal `admit` gave.
-        refusal: InferRefusal,
+        refusal: InferRefusedError,
     },
     /// Its weights are not on this computer.
     NotInstalled,
@@ -296,13 +296,13 @@ pub struct Declined {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PickRefusal {
     /// The typed refusal the session ends with.
-    pub refusal: InferRefusal,
+    pub refusal: InferRefusedError,
     /// Set when the pick named a model: which, and why it could not serve.
     pub declined: Option<Declined>,
 }
 
-impl From<InferRefusal> for PickRefusal {
-    fn from(refusal: InferRefusal) -> Self {
+impl From<InferRefusedError> for PickRefusal {
+    fn from(refusal: InferRefusedError) -> Self {
         Self {
             refusal,
             declined: None,
@@ -337,7 +337,7 @@ pub fn pick(
             pool,
         } => {
             if pool.is_empty() {
-                return Err(PickRefusal::from(InferRefusal::NoModelChosen));
+                return Err(PickRefusal::from(InferRefusedError::NoModelChosen));
             }
             let pooled: Vec<PickCandidate> = candidates
                 .iter()
@@ -357,7 +357,7 @@ fn picked(candidate: &PickCandidate, why: Why) -> Picked {
     }
 }
 
-fn declined(model: &ModelRef, because: DeclinedBecause, refusal: InferRefusal) -> PickRefusal {
+fn declined(model: &ModelRef, because: DeclinedBecause, refusal: InferRefusedError) -> PickRefusal {
     PickRefusal {
         refusal,
         declined: Some(Declined {
@@ -378,14 +378,14 @@ fn named(
         return Err(declined(
             model,
             DeclinedBecause::AgentChosen,
-            InferRefusal::Unavailable,
+            InferRefusedError::Unavailable,
         ));
     }
     let Some(found) = candidates.iter().find(|c| c.model_ref() == *model) else {
         return Err(declined(
             model,
             DeclinedBecause::NotListed,
-            InferRefusal::Unavailable,
+            InferRefusedError::Unavailable,
         ));
     };
     if let Err(refusal) = admit(ask, [&found.route], policy) {
@@ -404,7 +404,7 @@ fn named(
         _ => None,
     };
     match blocked {
-        Some(because) => Err(declined(model, because, InferRefusal::Unavailable)),
+        Some(because) => Err(declined(model, because, InferRefusedError::Unavailable)),
         None => Ok(picked(found, Why::Named)),
     }
 }
@@ -486,7 +486,7 @@ fn auto(
     ranked.sort_by_key(|c| key(c));
     let (first, rest) = ranked
         .split_first()
-        .ok_or(PickRefusal::from(InferRefusal::Unavailable))?;
+        .ok_or(PickRefusal::from(InferRefusedError::Unavailable))?;
     Ok(picked(first, why_auto(first, rest.first().copied())))
 }
 

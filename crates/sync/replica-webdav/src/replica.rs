@@ -14,7 +14,7 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 use sync_core::Clock;
 use sync_core::status::{read_error, unreached};
 use sync_core::{
-    BaseVersion, Blob, ByteRange, ChangePage, Cursor, PutItem, PutRefused, Quota, RemoteId,
+    BaseVersion, Blob, ByteRange, ChangePage, Cursor, PutError, PutItem, Quota, RemoteId,
     RemoteVersion, Replica, ReplicaError,
 };
 
@@ -155,15 +155,11 @@ impl<H: Http> Replica for WebDavReplica<H> {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         self.write(item, base).await
     }
 
-    async fn remove(
-        &self,
-        item: &RemoteId,
-        base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    async fn remove(&self, item: &RemoteId, base: BaseVersion) -> Result<RemoteVersion, PutError> {
         self.delete(item, base).await
     }
 

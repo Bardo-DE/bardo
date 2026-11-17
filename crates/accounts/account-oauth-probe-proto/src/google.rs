@@ -9,7 +9,7 @@
 //! owner can fix it), a Workspace administrator turned the service off (`TenantConsent`), or a
 //! personal account that has no such service (`ProviderOffersNone`).
 
-use crate::Failure;
+use crate::ProbeError;
 use account_capability::{
     AbsentReason, Capability, CapabilityKind, Claim, Offer, Provenance, Subject,
 };
@@ -73,13 +73,13 @@ pub fn verdict(
     granted: &Capability,
     address: &str,
     answer: &Response<Vec<u8>>,
-) -> Result<Claim, Failure> {
+) -> Result<Claim, ProbeError> {
     let absent = |reason| Offer::Absent { kind, reason };
     Ok(match answer.status().as_u16() {
         200..=299 => claim(Offer::Present(granted.clone()), Provenance::Probed),
         403 => claim(absent(refusal_reason(answer, address)), Provenance::Probed),
         404 => claim(absent(AbsentReason::NotOnServer), Provenance::Probed),
-        status => return Err(Failure::Status(status)),
+        status => return Err(ProbeError::Status(status)),
     })
 }
 
@@ -186,7 +186,7 @@ mod tests {
                 ..
             }
         ));
-        assert!(matches!(claim(500), Err(Failure::Status(500))));
+        assert!(matches!(claim(500), Err(ProbeError::Status(500))));
     }
 
     #[test]

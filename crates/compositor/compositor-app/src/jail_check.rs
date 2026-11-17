@@ -11,7 +11,7 @@ use std::path::Path;
 
 /// Why a binary that can mint test input will not start.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-pub enum JailRefusal {
+pub enum JailError {
     /// The build refuses every backend but headless.
     #[error("this build refuses every backend but headless")]
     Backend,
@@ -25,14 +25,14 @@ pub enum JailRefusal {
 ///
 /// # Errors
 ///
-/// Returns [`JailRefusal`] when the backend is not headless or the process is outside the jail.
-pub fn require_start(config: &StartConfig, root: &Path) -> Result<(), JailRefusal> {
+/// Returns [`JailError`] when the backend is not headless or the process is outside the jail.
+pub fn require_start(config: &StartConfig, root: &Path) -> Result<(), JailError> {
     if config.backend != BackendChoice::Headless {
-        return Err(JailRefusal::Backend);
+        return Err(JailError::Backend);
     }
     match breach(root, rustix::process::getuid().as_raw()) {
         None => Ok(()),
-        Some(breach) => Err(JailRefusal::Outside(breach)),
+        Some(breach) => Err(JailError::Outside(breach)),
     }
 }
 
@@ -69,11 +69,11 @@ mod tests {
     fn a_start_outside_the_jail_or_on_a_real_backend_is_refused() {
         assert_eq!(
             require_start(&start("headless"), jail_tree("systemd\n").path()),
-            Err(JailRefusal::Outside(JailBreach::NotPidNamespace))
+            Err(JailError::Outside(JailBreach::NotPidNamespace))
         );
         assert_eq!(
             require_start(&start("tty"), jail_tree("bwrap\n").path()),
-            Err(JailRefusal::Backend)
+            Err(JailError::Backend)
         );
     }
 }

@@ -8,7 +8,7 @@ use action_checkpoint_git::GitStore;
 use action_review::InferReviewer;
 use action_router::{NoLog, Seams};
 use action_store::SystemClock;
-use agent_session::{Appended, LogFault, LogPage, PageSize, Seq, SessionEntry, SessionLog};
+use agent_session::{Appended, LogError, LogPage, PageSize, Seq, SessionEntry, SessionLog};
 use companion_memory::{MemoryServiceLink, MemorySessionLog};
 use companion_memory_core::QueuedSink;
 use provenance::SessionId;
@@ -33,7 +33,7 @@ impl<M: memory_client::Transport> SessionLog for DaemonLog<M> {
         session: &SessionId,
         seq: Seq,
         entry: &SessionEntry,
-    ) -> Result<Appended, LogFault> {
+    ) -> Result<Appended, LogError> {
         match self {
             DaemonLog::Memory(log) => log.append(session, seq, entry).await,
             DaemonLog::Off(log) => log.append(session, seq, entry).await,
@@ -45,14 +45,14 @@ impl<M: memory_client::Transport> SessionLog for DaemonLog<M> {
         session: &SessionId,
         from: Option<Seq>,
         size: PageSize,
-    ) -> Result<LogPage, LogFault> {
+    ) -> Result<LogPage, LogError> {
         match self {
             DaemonLog::Memory(log) => log.page(session, from, size).await,
             DaemonLog::Off(log) => log.page(session, from, size).await,
         }
     }
 
-    async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
+    async fn sessions(&self) -> Result<Vec<SessionId>, LogError> {
         match self {
             DaemonLog::Memory(log) => log.sessions().await,
             DaemonLog::Off(log) => log.sessions().await,

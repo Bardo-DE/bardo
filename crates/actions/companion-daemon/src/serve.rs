@@ -19,7 +19,7 @@ use action_wire::{SessionOpen, StartedFrom};
 use agent_planner::Planner;
 use companion_core::{Call, Speaker};
 use companion_helpers::RoutineDesk;
-use companion_tasks::{Change, ServeFault};
+use companion_tasks::{Change, ServeError};
 use companion_wire::AskWire;
 use futures_util::lock::Mutex;
 use provenance::{AgentRef, SessionId, SpaceId, TaskId};
@@ -29,9 +29,9 @@ use zbus::message::Header;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
-fn failed(error: ServeFault) -> fdo::Error {
+fn failed(error: ServeError) -> fdo::Error {
     match error {
-        ServeFault::UnknownSession | ServeFault::NoSuchCard => {
+        ServeError::UnknownSession | ServeError::NoSuchCard => {
             fdo::Error::InvalidArgs(error.to_string())
         }
         other => fdo::Error::Failed(other.to_string()),
@@ -274,8 +274,8 @@ impl<P: Planner + 'static, I: IntentsTransport + 'static, K: Clock + 'static>
     clippy::needless_pass_by_value,
     reason = "used as `map_err(bus)` at every call, which passes the error by value"
 )]
-fn bus(error: zbus::Error) -> ServeFault {
-    ServeFault::Bus(error.to_string())
+fn bus(error: zbus::Error) -> ServeError {
+    ServeError::Bus(error.to_string())
 }
 
 /// Forwards what the loop wrote to the bus: answer objects appear, change and go away, and the
@@ -379,14 +379,14 @@ async fn forward<P, I, K>(
 /// changes. With none, its routine calls say routines are not kept here.
 ///
 /// # Errors
-/// `ServeFault` when the name cannot be claimed or an object cannot be served on `connection`.
+/// `ServeError` when the name cannot be claimed or an object cannot be served on `connection`.
 pub async fn serve_with_routines<P, I, K>(
     connection: &BusConnection,
     companion: Arc<Mutex<Companiond<P, I, K>>>,
     who: Arc<Identity>,
     proc_root: ProcRoot,
     routines: Option<Arc<dyn RoutineDesk>>,
-) -> Result<(), ServeFault>
+) -> Result<(), ServeError>
 where
     P: Planner + 'static,
     I: IntentsTransport + 'static,
@@ -449,7 +449,7 @@ where
     dbus_kit::ready::serving(connection).await.map_err(bus)?;
     dbus_kit::name::claim(connection, COMPANION_BUS)
         .await
-        .map_err(|error| ServeFault::Bus(error.to_string()))?;
+        .map_err(|error| ServeError::Bus(error.to_string()))?;
     tokio::spawn(forward(
         connection.clone(),
         shared,

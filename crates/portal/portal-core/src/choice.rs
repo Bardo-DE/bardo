@@ -97,7 +97,7 @@ pub struct Choice {
 
 /// Why an answer was not acceptable.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
-pub enum ChoiceRefusal {
+pub enum ChoiceError {
     /// Nothing was picked.
     #[error("nothing was picked")]
     Empty,
@@ -119,30 +119,30 @@ impl ChoiceRequest {
     /// Check an answer against the request.
     ///
     /// # Errors
-    /// [`ChoiceRefusal`] when nothing, too many, a wrong kind, a cursor mode not offered, or the
+    /// [`ChoiceError`] when nothing, too many, a wrong kind, a cursor mode not offered, or the
     /// same source twice was picked.
     pub fn accept(
         &self,
         sources: Vec<CastSource>,
         cursor: CursorMode,
-    ) -> Result<Choice, ChoiceRefusal> {
+    ) -> Result<Choice, ChoiceError> {
         if sources.is_empty() {
-            return Err(ChoiceRefusal::Empty);
+            return Err(ChoiceError::Empty);
         }
         if self.offer.multiple == Multiple::One && sources.len() > 1 {
-            return Err(ChoiceRefusal::TooMany);
+            return Err(ChoiceError::TooMany);
         }
         if !sources.iter().all(|s| self.offer.kinds.offers(s)) {
-            return Err(ChoiceRefusal::WrongKind);
+            return Err(ChoiceError::WrongKind);
         }
         let mut seen = sources.clone();
         seen.sort();
         seen.dedup();
         if seen.len() != sources.len() {
-            return Err(ChoiceRefusal::Duplicate);
+            return Err(ChoiceError::Duplicate);
         }
         if !self.offer.cursor_modes.contains(&cursor) {
-            return Err(ChoiceRefusal::CursorNotAllowed);
+            return Err(ChoiceError::CursorNotAllowed);
         }
         Ok(Choice { sources, cursor })
     }

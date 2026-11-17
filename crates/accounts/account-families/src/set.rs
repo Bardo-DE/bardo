@@ -21,7 +21,7 @@ pub use provider_names::ProviderNames;
 use crate::dispatch::DynProvider;
 use crate::{agent_login, api_key, tailnet};
 use account_core::{AuthKind, EndpointUrl};
-use account_discover::{Dns, DnsFault, HickoryDns, MxRecord, SrvRecord};
+use account_discover::{Dns, DnsError, HickoryDns, MxRecord, SrvRecord};
 use account_family_generic::SharedDns;
 use account_family_oauth::ClientFiles;
 use account_provider::{DomainName, ProviderFileError, ProviderSet, ProviderSpec, parse_provider};
@@ -39,12 +39,12 @@ pub struct Loaded {
     /// The providers, one per id.
     pub specs: Vec<ProviderSpec>,
     /// Files skipped, each with why.
-    pub skipped: Vec<(PathBuf, SkipReason)>,
+    pub skipped: Vec<(PathBuf, SkipError)>,
 }
 
 /// Why a provider file was skipped; each keeps what failed, and its text is what is logged.
 #[derive(Debug, thiserror::Error)]
-pub enum SkipReason {
+pub enum SkipError {
     /// The file could not be read.
     #[error(transparent)]
     Unreadable(#[from] std::io::Error),
@@ -116,7 +116,7 @@ pub fn load_specs(dirs: &[(Layer, PathBuf)]) -> Loaded {
 fn keeps_shipped_trust(
     loaded: &[ProviderSpec],
     spec: ProviderSpec,
-) -> Result<ProviderSpec, SkipReason> {
+) -> Result<ProviderSpec, SkipError> {
     let shipped = loaded
         .iter()
         .find(|s| s.id == spec.id)
@@ -127,7 +127,7 @@ fn keeps_shipped_trust(
                 .find(|s| s.id == spec.id)
         });
     match shipped.and_then(|shipped| widened(&shipped, &spec)) {
-        Some(what) => Err(SkipReason::WouldWiden {
+        Some(what) => Err(SkipError::WouldWiden {
             id: spec.id.to_string(),
             what,
         }),
@@ -178,7 +178,7 @@ fn widened(shipped: &ProviderSpec, file: &ProviderSpec) -> Option<&'static str> 
     None
 }
 
-fn read(file: &Path) -> Result<ProviderSpec, SkipReason> {
+fn read(file: &Path) -> Result<ProviderSpec, SkipError> {
     let text = std::fs::read_to_string(file)?;
     let spec = parse_provider(&text)?;
     let stem = file
@@ -188,7 +188,7 @@ fn read(file: &Path) -> Result<ProviderSpec, SkipReason> {
     if spec.id.as_str() == stem {
         Ok(spec)
     } else {
-        Err(SkipReason::NameIsNotId(spec.id.to_string()))
+        Err(SkipError::NameIsNotId(spec.id.to_string()))
     }
 }
 
@@ -265,16 +265,16 @@ impl Dns for NoResolver {
         clippy::unused_async_trait_impl,
         reason = "`srv` implements an async trait method, and this implementation has nothing to wait for"
     )]
-    async fn srv(&self, _name: &str) -> Result<Vec<SrvRecord>, DnsFault> {
-        Err(DnsFault::Unreachable)
+    async fn srv(&self, _name: &str) -> Result<Vec<SrvRecord>, DnsError> {
+        Err(DnsError::Unreachable)
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "`mx` implements an async trait method, and this implementation has nothing to wait for"
     )]
-    async fn mx(&self, _domain: &DomainName) -> Result<Vec<MxRecord>, DnsFault> {
-        Err(DnsFault::Unreachable)
+    async fn mx(&self, _domain: &DomainName) -> Result<Vec<MxRecord>, DnsError> {
+        Err(DnsError::Unreachable)
     }
 }
 
@@ -423,17 +423,17 @@ mod tests {
         assert_eq!(loaded.specs[0].label, "Mine");
         assert_eq!(loaded.skipped.len(), 2);
         // Each reason keeps what failed, not its text.
-        let reasons: Vec<&SkipReason> = loaded.skipped.iter().map(|(_, why)| why).collect();
+        let reasons: Vec<&SkipError> = loaded.skipped.iter().map(|(_, why)| why).collect();
         assert!(
             reasons
                 .iter()
-                .any(|why| matches!(why, SkipReason::Malformed(_))),
+                .any(|why| matches!(why, SkipError::Malformed(_))),
             "{reasons:?}"
         );
         assert!(
             reasons
                 .iter()
-                .any(|why| matches!(why, SkipReason::NameIsNotId(id) if id == "nextcloud")),
+                .any(|why| matches!(why, SkipError::NameIsNotId(id) if id == "nextcloud")),
             "{reasons:?}"
         );
     }
@@ -555,7 +555,7 @@ mod tests {
                     panic!("{name} {system}: one skipped: {:?}", loaded.skipped);
                 };
                 assert!(
-                    matches!(why, SkipReason::WouldWiden { what: got, .. } if *got == what),
+                    matches!(why, SkipError::WouldWiden { what: got, .. } if *got == what),
                     "{name}: {why}"
                 );
             }

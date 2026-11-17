@@ -8,8 +8,8 @@ use memory_core::Integrity;
 use memory_core::{Count, DegradedWhy, IndexView};
 pub use memory_store::SearchQuery;
 use memory_store::{
-    EmbedRole, Fused, IndexEvent, IndexFailure, RrfK, SpaceCheck, Urgency, Vector, chunk, fuse_rrf,
-    step,
+    EmbedRole, Fused, IndexEvent, RrfK, SearchIndexError, SpaceCheck, Urgency, Vector, chunk,
+    fuse_rrf, step,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Mutex;
@@ -34,12 +34,12 @@ impl From<rusqlite::Error> for IndexError {
     }
 }
 
-impl From<IndexError> for IndexFailure {
+impl From<IndexError> for SearchIndexError {
     fn from(e: IndexError) -> Self {
         match e {
-            IndexError::Embed(e) => IndexFailure::Embed(e),
-            IndexError::CardMismatch => IndexFailure::CardMismatch,
-            IndexError::Sqlite(why) => IndexFailure::Storage(why),
+            IndexError::Embed(e) => SearchIndexError::Embed(e),
+            IndexError::CardMismatch => SearchIndexError::CardMismatch,
+            IndexError::Sqlite(why) => SearchIndexError::Storage(why),
         }
     }
 }

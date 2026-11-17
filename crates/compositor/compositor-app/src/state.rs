@@ -20,7 +20,7 @@ use compositor_layout::{Arrangement, LayoutKnobs, RustScene};
 use compositor_motion::MotionBook;
 use compositor_render::{ChromeLayer, CursorDraw, CursorShape, TextureBook};
 use compositor_wayland::{
-    ClientMint, GlobalFilter, WaylandFault, WaylandStates, alpha_modifier, background_effect,
+    ClientMint, GlobalFilter, WaylandError, WaylandStates, alpha_modifier, background_effect,
     bardo, bardo_window, capture_source, color_management, commit_timing, compositor, content_type,
     cursor_shape, data_device, dmabuf, ext_data_control, fifo, foreign_toplevel_list,
     fractional_scale, gamma, idle_inhibit, idle_notify, image_capture, input_method, layer_shell,
@@ -184,7 +184,7 @@ pub enum StartError {
     Backend(#[from] BackendError),
     /// A protocol could not start (the keymap).
     #[error("wayland: {0}")]
-    Wayland(#[from] WaylandFault),
+    Wayland(#[from] WaylandError),
     /// The settings document could not be read.
     #[error("config: {0}")]
     Config(#[from] ConfigError),

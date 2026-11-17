@@ -119,7 +119,7 @@ pub struct Hardening {
     /// toolchain that lives outside `/usr` (`/nix`, a version manager under a home directory).
     pub extra_ro: Vec<AbsPath>,
     /// Whether the sandbox starts although a descriptor above 2 would be inherited, chosen by
-    /// the person; otherwise it refuses to start (`StartFault::InheritedFds`).
+    /// the person; otherwise it refuses to start (`StartError::InheritedFds`).
     pub inherited_fds: bool,
 }
 

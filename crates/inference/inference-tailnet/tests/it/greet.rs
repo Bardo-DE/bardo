@@ -1,6 +1,6 @@
 //! Reading a hello from a computer that answers one.
 
-use inference_tailnet::{Approval, GreetError, Hello, LentModel, Refusal, greet};
+use inference_tailnet::{Approval, GreetError, Hello, LentModel, TailnetError, greet};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
 
@@ -46,7 +46,7 @@ async fn a_refusal_is_read_as_the_code_the_computer_gave() {
     let stream = answering(json("403 Forbidden", body)).await;
     assert!(matches!(
         greet(stream, "pi").await,
-        Err(GreetError::Refused(Some(Refusal::Waiting)))
+        Err(GreetError::Refused(Some(TailnetError::Waiting)))
     ));
 }
 

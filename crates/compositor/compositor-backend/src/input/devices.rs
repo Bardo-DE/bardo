@@ -21,7 +21,7 @@
 
 pub use compositor_core::settings::AccelProfile;
 
-use crate::session::SessionFault;
+use crate::session::SessionError;
 use base_ids::Fraction;
 
 /// What one device is configured with.
@@ -90,7 +90,7 @@ pub enum Applied {
 pub enum InputError {
     /// The seat refused to open an input device.
     #[error("session: {0}")]
-    Session(#[from] SessionFault),
+    Session(#[from] SessionError),
     /// The input system could not start.
     #[error("input: {0}")]
     Io(#[from] std::io::Error),

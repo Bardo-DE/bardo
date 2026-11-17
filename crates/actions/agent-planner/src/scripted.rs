@@ -1,15 +1,15 @@
 //! A planner that plays what it was given, for tests of everything that drives a planner (the task
 //! loop, the evaluation harness) and have no use for a transport. It keeps the catalogue, the
 //! choices and the voice it is set to, hands out its scripted turns in order, and remembers the
-//! views it was shown. Out of turns, a planner turn is [`PlanFault::Unavailable`]; it has no
+//! views it was shown. Out of turns, a planner turn is [`PlanError::Unavailable`]; it has no
 //! chat model, so a chat or a summary it was not given is unavailable too.
 
 use crate::catalogue::Catalogue;
 use crate::choices::ParamChoices;
-use crate::planner::{PlanFault, PlannerReply};
+use crate::planner::{PlanError, PlannerReply};
 use crate::role::RoleText;
 use crate::seam::Planner;
-use crate::summarise::{SummariseFault, Summarised};
+use crate::summarise::{SummariseError, Summarised};
 use crate::voice::Voice;
 use action_core::PlannerView;
 use agent_loop::SummaryInput;
@@ -20,8 +20,8 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 /// The turns a [`ScriptedPlanner`] has left to play, and the views it was shown.
 #[derive(Debug, Default)]
 struct Script {
-    turns: VecDeque<Result<PlannerReply, PlanFault>>,
-    summaries: VecDeque<Result<Summarised, SummariseFault>>,
+    turns: VecDeque<Result<PlannerReply, PlanError>>,
+    summaries: VecDeque<Result<Summarised, SummariseError>>,
     seen: Vec<PlannerView>,
 }
 
@@ -50,7 +50,7 @@ impl Default for ScriptedPlanner {
 
 impl ScriptedPlanner {
     /// A planner that plays `turns` in order, one per `converse`.
-    pub fn playing(turns: impl IntoIterator<Item = Result<PlannerReply, PlanFault>>) -> Self {
+    pub fn playing(turns: impl IntoIterator<Item = Result<PlannerReply, PlanError>>) -> Self {
         let planner = Self::default();
         planner.script().turns.extend(turns);
         planner
@@ -60,7 +60,7 @@ impl ScriptedPlanner {
     #[must_use]
     pub fn with_summaries(
         self,
-        summaries: impl IntoIterator<Item = Result<Summarised, SummariseFault>>,
+        summaries: impl IntoIterator<Item = Result<Summarised, SummariseError>>,
     ) -> Self {
         self.script().summaries.extend(summaries);
         self
@@ -110,32 +110,32 @@ impl Planner for ScriptedPlanner {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; the scripted planner answers from memory"
     )]
-    async fn converse(&self, view: &PlannerView) -> Result<PlannerReply, PlanFault> {
+    async fn converse(&self, view: &PlannerView) -> Result<PlannerReply, PlanError> {
         let mut script = self.script();
         script.seen.push(view.clone());
         script
             .turns
             .pop_front()
-            .unwrap_or(Err(PlanFault::Unavailable))
+            .unwrap_or(Err(PlanError::Unavailable))
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; the scripted planner answers from memory"
     )]
-    async fn chat(&self, _request: ChatRequest) -> Result<ChatReply, PlanFault> {
-        Err(PlanFault::Unavailable)
+    async fn chat(&self, _request: ChatRequest) -> Result<ChatReply, PlanError> {
+        Err(PlanError::Unavailable)
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; the scripted planner answers from memory"
     )]
-    async fn summarise(&self, _input: &SummaryInput) -> Result<Summarised, SummariseFault> {
+    async fn summarise(&self, _input: &SummaryInput) -> Result<Summarised, SummariseError> {
         self.script()
             .summaries
             .pop_front()
-            .unwrap_or(Err(SummariseFault::Model(PlanFault::Unavailable)))
+            .unwrap_or(Err(SummariseError::Model(PlanError::Unavailable)))
     }
 }
 
@@ -166,7 +166,7 @@ mod tests {
         );
         assert_eq!(
             planner.chat(request).await.err(),
-            Some(PlanFault::Unavailable)
+            Some(PlanError::Unavailable)
         );
         assert_eq!(planner.seen(), Vec::new());
     }

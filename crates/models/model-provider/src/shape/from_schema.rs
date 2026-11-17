@@ -24,7 +24,7 @@
 //! Annotations (`title`, `description`, `default`, `examples`, `$schema`, `$id`, `$comment`,
 //! `deprecated`, `readOnly`, `writeOnly`) are ignored; every other keyword the reader does not
 //! consume (`pattern`, `$ref`, `allOf`, `minItems` above 0, an open object, a number, a boolean)
-//! is a `SchemaRefusal`.
+//! is a `SchemaError`.
 
 use core::fmt;
 use std::sync::Arc;
@@ -69,7 +69,7 @@ pub struct KeywordText(pub String);
 
 /// Why one schema node is refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum Refused {
+pub enum SchemaKeywordError {
     #[error("the text is not JSON")]
     NotJson,
     #[error("a schema is a JSON object here (a boolean schema has no shape)")]
@@ -98,22 +98,22 @@ pub enum Refused {
 /// same place for the same reason (the error behind one, when there is one, is not compared).
 #[derive(Debug, Clone, thiserror::Error)]
 #[error("{at}: {why}")]
-pub struct SchemaRefusal {
+pub struct SchemaError {
     pub at: SchemaPath,
-    pub why: Refused,
+    pub why: SchemaKeywordError,
     /// The error that made this refusal, when another one did (a text that is not JSON, a
     /// property name that is not one).
     #[source]
     pub cause: Option<Arc<dyn std::error::Error + Send + Sync>>,
 }
 
-impl PartialEq for SchemaRefusal {
+impl PartialEq for SchemaError {
     fn eq(&self, other: &Self) -> bool {
         self.at == other.at && self.why == other.why
     }
 }
 
-impl Eq for SchemaRefusal {}
+impl Eq for SchemaError {}
 
 const ANNOTATIONS: &[&str] = &[
     "title",
@@ -128,7 +128,7 @@ const ANNOTATIONS: &[&str] = &[
     "writeOnly",
 ];
 
-type Found<T> = Result<T, SchemaRefusal>;
+type Found<T> = Result<T, SchemaError>;
 
 /// A schema node being read: its keywords, consumed as they are used, and where it is.
 struct Node {
@@ -140,16 +140,16 @@ struct Node {
 
 impl Node {
     fn open(value: &Value, at: String, left: u32, limits: SchemaLimits) -> Found<Node> {
-        let refuse = |why| SchemaRefusal {
+        let refuse = |why| SchemaError {
             at: SchemaPath(at.clone()),
             why,
             cause: None,
         };
         let Value::Object(map) = value else {
-            return Err(refuse(Refused::NotASchema));
+            return Err(refuse(SchemaKeywordError::NotASchema));
         };
         if left == 0 {
-            return Err(refuse(Refused::TooDeep));
+            return Err(refuse(SchemaKeywordError::TooDeep));
         }
         let mut map = map.clone();
         for k in ANNOTATIONS {
@@ -163,7 +163,7 @@ impl Node {
         })
     }
 
-    fn refuse(&self, why: Refused) -> SchemaRefusal {
+    fn refuse(&self, why: SchemaKeywordError) -> SchemaError {
         SchemaRefusal {
             at: SchemaPath(self.at.clone()),
             why,
@@ -188,14 +188,17 @@ impl Node {
             .map(|v| {
                 v.as_u64()
                     .and_then(|n| u32::try_from(n).ok())
-                    .ok_or_else(|| self.refuse(Refused::BadBound))
+                    .ok_or_else(|| self.refuse(SchemaKeywordError::BadBound))
             })
             .transpose()
     }
 
     fn integer(&mut self, key: &str) -> Found<Option<i64>> {
         self.take(key)
-            .map(|v| v.as_i64().ok_or_else(|| self.refuse(Refused::BadBound)))
+            .map(|v| {
+                v.as_i64()
+                    .ok_or_else(|| self.refuse(SchemaKeywordError::BadBound))
+            })
             .transpose()
     }
 
@@ -203,7 +206,9 @@ impl Node {
     fn done(self, shape: Shape) -> Found<Shape> {
         match self.map.keys().next() {
             None => Ok(shape),
-            Some(key) => Err(self.refuse(Refused::Unsupported(KeywordText(key.clone())))),
+            Some(key) => {
+                Err(self.refuse(SchemaKeywordError::Unsupported(KeywordText(key.clone()))))
+            }
         }
     }
 }
@@ -214,16 +219,16 @@ impl Shape {
     ///
     /// # Errors
     ///
-    /// Returns [`SchemaRefusal`] when `schema` is not JSON, is nested deeper than the limits allow,
+    /// Returns [`SchemaError`] when `schema` is not JSON, is nested deeper than the limits allow,
     /// or says something the vocabulary cannot.
     pub fn from_json_schema(
         schema: &SchemaText,
         limits: SchemaLimits,
-    ) -> Result<Shape, SchemaRefusal> {
+    ) -> Result<Shape, SchemaError> {
         let value: Value =
-            serde_json::from_str(schema.0.as_str()).map_err(|error| SchemaRefusal {
+            serde_json::from_str(schema.0.as_str()).map_err(|error| SchemaError {
                 at: SchemaPath(String::new()),
-                why: Refused::NotJson,
+                why: SchemaKeywordError::NotJson,
                 cause: Some(Arc::new(error)),
             })?;
         read(Node::open(&value, String::new(), limits.depth.0, limits)?)
@@ -247,10 +252,10 @@ fn read(mut node: Node) -> Found<Shape> {
     match node.take("type") {
         Some(Value::String(name)) => typed(node, &name),
         Some(Value::Array(names)) => nullable_type(node, &names),
-        Some(_) => Err(node.refuse(Refused::UnsupportedType)),
+        Some(_) => Err(node.refuse(SchemaKeywordError::UnsupportedType)),
         None => Err(match node.map.keys().next() {
-            Some(key) => node.refuse(Refused::Unsupported(KeywordText(key.clone()))),
-            None => node.refuse(Refused::NoType),
+            Some(key) => node.refuse(SchemaKeywordError::Unsupported(KeywordText(key.clone()))),
+            None => node.refuse(SchemaKeywordError::NoType),
         }),
     }
 }
@@ -273,7 +278,7 @@ fn choice(node: Node, values: &Value) -> Found<Shape> {
     });
     match items {
         Some(items) if !items.is_empty() => node.done(Shape::Choice(items)),
-        _ => Err(node.refuse(Refused::BadEnum)),
+        _ => Err(node.refuse(SchemaKeywordError::BadEnum)),
     }
 }
 
@@ -283,7 +288,7 @@ fn typed(mut node: Node, name: &str) -> Found<Shape> {
         "integer" => integer(&mut node)?,
         "array" => array(&mut node)?,
         "object" => object(&mut node)?,
-        _ => return Err(node.refuse(Refused::UnsupportedType)),
+        _ => return Err(node.refuse(SchemaKeywordError::UnsupportedType)),
     };
     node.done(shape)
 }
@@ -292,11 +297,11 @@ fn typed(mut node: Node, name: &str) -> Found<Shape> {
 fn nullable_type(mut node: Node, names: &[Value]) -> Found<Shape> {
     let null = Value::String("null".into());
     let [first, second] = names else {
-        return Err(node.refuse(Refused::UnsupportedType));
+        return Err(node.refuse(SchemaKeywordError::UnsupportedType));
     };
     let name = match (first, second) {
         (other, n) | (n, other) if *n == null && *other != null => other,
-        _ => return Err(node.refuse(Refused::UnsupportedType)),
+        _ => return Err(node.refuse(SchemaKeywordError::UnsupportedType)),
     };
     node.map.insert("type".into(), name.clone());
     let at = node.at.clone();
@@ -313,10 +318,14 @@ fn string(node: &mut Node) -> Found<Shape> {
     match node.take("format") {
         Some(Value::String(f)) if f == "date" => Ok(Shape::Date),
         Some(Value::String(f)) if f == "date-time" => Ok(Shape::DateTime),
-        Some(_) => Err(node.refuse(Refused::Unsupported(KeywordText("format".into())))),
+        Some(_) => Err(node.refuse(SchemaKeywordError::Unsupported(KeywordText(
+            "format".into(),
+        )))),
         None => {
             if node.count("minLength")?.is_some_and(|n| n > 0) {
-                return Err(node.refuse(Refused::Unsupported(KeywordText("minLength".into()))));
+                return Err(node.refuse(SchemaKeywordError::Unsupported(KeywordText(
+                    "minLength".into(),
+                ))));
             }
             let max = node.count("maxLength")?.unwrap_or(node.limits.open_text.0);
             Ok(Shape::Text {
@@ -347,24 +356,28 @@ fn integer(node: &mut Node) -> Found<Shape> {
     let max = bound(high, below, i64::min, i64::MAX);
     match (min, max) {
         (Some(min), Some(max)) if min <= max => Ok(Shape::Integer { min, max }),
-        _ => Err(node.refuse(Refused::BadBound)),
+        _ => Err(node.refuse(SchemaKeywordError::BadBound)),
     }
 }
 
 fn array(node: &mut Node) -> Found<Shape> {
     if node.count("minItems")?.is_some_and(|n| n > 0) {
-        return Err(node.refuse(Refused::Unsupported(KeywordText("minItems".into()))));
+        return Err(node.refuse(SchemaKeywordError::Unsupported(KeywordText(
+            "minItems".into(),
+        ))));
     }
     if node
         .take("uniqueItems")
         .is_some_and(|v| v != Value::Bool(false))
     {
-        return Err(node.refuse(Refused::Unsupported(KeywordText("uniqueItems".into()))));
+        return Err(node.refuse(SchemaKeywordError::Unsupported(KeywordText(
+            "uniqueItems".into(),
+        ))));
     }
     let max = node.count("maxItems")?.unwrap_or(node.limits.open_list.0);
     let items = node
         .take("items")
-        .ok_or_else(|| node.refuse(Refused::NoType))?;
+        .ok_or_else(|| node.refuse(SchemaKeywordError::NoType))?;
     let of = read(node.child(&items, &["items"])?)?;
     Ok(Shape::List {
         of: Box::new(of),
@@ -374,7 +387,7 @@ fn array(node: &mut Node) -> Found<Shape> {
 
 fn object(node: &mut Node) -> Found<Shape> {
     if node.take("additionalProperties") != Some(Value::Bool(false)) {
-        return Err(node.refuse(Refused::OpenObject));
+        return Err(node.refuse(SchemaKeywordError::OpenObject));
     }
     let required = match node.take("required") {
         None => Vec::new(),
@@ -382,16 +395,16 @@ fn object(node: &mut Node) -> Found<Shape> {
             .into_iter()
             .map(|n| n.as_str().map(str::to_owned))
             .collect::<Option<Vec<_>>>()
-            .ok_or_else(|| node.refuse(Refused::BadName))?,
-        Some(_) => return Err(node.refuse(Refused::BadName)),
+            .ok_or_else(|| node.refuse(SchemaKeywordError::BadName))?,
+        Some(_) => return Err(node.refuse(SchemaKeywordError::BadName)),
     };
     let properties = match node.take("properties") {
         None => Map::new(),
         Some(Value::Object(properties)) => properties,
-        Some(_) => return Err(node.refuse(Refused::NotASchema)),
+        Some(_) => return Err(node.refuse(SchemaKeywordError::NotASchema)),
     };
     if required.iter().any(|name| !properties.contains_key(name)) {
-        return Err(node.refuse(Refused::BadName));
+        return Err(node.refuse(SchemaKeywordError::BadName));
     }
     let mut sorted: Vec<(&String, &Value)> = properties.iter().collect();
     sorted.sort_by(|a, b| a.0.cmp(b.0));
@@ -400,7 +413,7 @@ fn object(node: &mut Node) -> Found<Shape> {
         .map(|(name, schema)| {
             let name_ok = FieldName::new(name.clone());
             let child = node.child(schema, &["properties", name])?;
-            let name = name_ok.map_err(|IdentError| child.refuse(Refused::BadName))?;
+            let name = name_ok.map_err(|IdentError| child.refuse(SchemaKeywordError::BadName))?;
             let shape = read(child)?;
             let shape = match shape {
                 optional @ Shape::Optional(_) => optional,
@@ -416,7 +429,7 @@ fn object(node: &mut Node) -> Found<Shape> {
 /// `anyOf` or `oneOf`: an optional (one alternative is null), a shape or a handle, or a tagged enum.
 fn alternatives_of(mut node: Node, key: &str, alternatives: &Value) -> Found<Shape> {
     let Value::Array(items) = alternatives else {
-        return Err(node.refuse(Refused::BadTagged));
+        return Err(node.refuse(SchemaKeywordError::BadTagged));
     };
     let null = |v: &Value| {
         v.as_object().is_some_and(|m| {

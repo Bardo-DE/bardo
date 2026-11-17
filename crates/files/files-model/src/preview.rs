@@ -10,7 +10,7 @@ use files_core::{ByteSize, Entry, EntryKind, Info, ItemRef, LinkTo};
 
 use crate::browser::Browser;
 use crate::effect::Effect;
-use crate::error::ListFailure;
+use crate::error::FolderListError;
 
 type Stepped = (Browser, Vec<Effect>);
 
@@ -98,7 +98,11 @@ impl Browser {
 
     /// The answer to [`Effect::ReadDetails`]. One for an item the pane is not about is ignored,
     /// and so is a failure: the pane then shows what the row already says.
-    pub(crate) fn details_read(self, item: &ItemRef, result: Result<Info, ListFailure>) -> Stepped {
+    pub(crate) fn details_read(
+        self,
+        item: &ItemRef,
+        result: Result<Info, FolderListError>,
+    ) -> Stepped {
         let current = self.previewed_item();
         match result {
             Ok(info) if current.as_ref() == Some(item) => (

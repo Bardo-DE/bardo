@@ -4,7 +4,7 @@
 
 use crate::best_effort::best_effort;
 use crate::desk::HelperDesk;
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::handoff::Handoff;
 use crate::helpers::AsHelper;
 use crate::seams::Surface;
@@ -315,14 +315,14 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router refuses the session or does not answer.
-    pub async fn open(&mut self, open: SessionOpen) -> Result<SessionOpened, ServeFault> {
+    /// Returns a [`ServeError`] when the router refuses the session or does not answer.
+    pub async fn open(&mut self, open: SessionOpen) -> Result<SessionOpened, ServeError> {
         self.refresh_catalogue().await;
         let opened = self
             .intents
             .session_open(open.clone())
             .await
-            .map_err(ServeFault::Router)?;
+            .map_err(ServeError::Router)?;
         self.adopt(&opened, &open);
         self.record(
             &opened.session,
@@ -369,9 +369,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns [`ServeFault::UnknownSession`] when no task runs on `session`.
-    pub async fn close(&mut self, session: SessionId) -> Result<(), ServeFault> {
-        let task = self.task_of(&session).ok_or(ServeFault::UnknownSession)?;
+    /// Returns [`ServeError::UnknownSession`] when no task runs on `session`.
+    pub async fn close(&mut self, session: SessionId) -> Result<(), ServeError> {
+        let task = self.task_of(&session).ok_or(ServeError::UnknownSession)?;
         let live = self
             .tasks
             .get(&task)
@@ -415,9 +415,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns [`ServeFault::UnknownSession`] when no task runs on the session,
-    /// [`ServeFault::Finished`] when it is over, or a [`ServeFault`] from the router.
-    pub async fn ask(&mut self, ask: AskWire) -> Result<String, ServeFault> {
+    /// Returns [`ServeError::UnknownSession`] when no task runs on the session,
+    /// [`ServeError::Finished`] when it is over, or a [`ServeError`] from the router.
+    pub async fn ask(&mut self, ask: AskWire) -> Result<String, ServeError> {
         let begun = self.begin_ask(ask)?;
         self.record(&begun.session, &begun.asked).await;
         self.run_interactive(&begun.task, begun.first).await?;
@@ -429,18 +429,18 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns [`ServeFault::UnknownSession`] when no task runs on the session, or
-    /// [`ServeFault::Finished`] when it is over.
-    pub fn begin_ask(&mut self, ask: AskWire) -> Result<Begun, ServeFault> {
+    /// Returns [`ServeError::UnknownSession`] when no task runs on the session, or
+    /// [`ServeError::Finished`] when it is over.
+    pub fn begin_ask(&mut self, ask: AskWire) -> Result<Begun, ServeError> {
         let task = self
             .task_of(&ask.session)
-            .ok_or(ServeFault::UnknownSession)?;
+            .ok_or(ServeError::UnknownSession)?;
         let phase = self.tasks.get(&task).map(|s| s.phase);
         if matches!(phase, Some(LoopPhase::Finished(_))) {
-            return Err(ServeFault::Finished);
+            return Err(ServeError::Finished);
         }
         let Some(rt) = self.runtimes.get_mut(&task) else {
-            return Err(ServeFault::UnknownSession);
+            return Err(ServeError::UnknownSession);
         };
         let turn = ask.turn;
         let asked = SessionRecord::Asked {
@@ -479,8 +479,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
-    pub async fn run_begun(&mut self, begun: Begun) -> Result<(), ServeFault> {
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
+    pub async fn run_begun(&mut self, begun: Begun) -> Result<(), ServeError> {
         self.record(&begun.session, &begun.asked).await;
         self.run_interactive(&begun.task, begun.first).await
     }

@@ -2,9 +2,9 @@
 //! kill and release always work.
 
 use base_path::AbsPath;
-use sandbox::CannotSandbox;
+use sandbox::CannotSandboxError;
 use sandbox::fake::{FakeSandbox, Script};
-use sandbox::{Argv, ExitReport, Launch, MAX_TERMINALS, Network, Shell, ShellFault, StartFault};
+use sandbox::{Argv, ExitReport, Launch, MAX_TERMINALS, Network, Shell, ShellError, StartError};
 
 fn launch(line: &[&str]) -> Launch {
     let words: Vec<String> = line.iter().map(|s| (*s).to_owned()).collect();
@@ -36,15 +36,15 @@ fn the_sandbox_gets_the_command_cwd_filtered_env_and_no_network() {
 #[test]
 fn a_withheld_sandbox_refuses_and_runs_nothing() {
     for why in [
-        CannotSandbox::NotInstalled,
-        CannotSandbox::NamespacesDenied,
-        CannotSandbox::RestrictedByAppArmor,
+        CannotSandboxError::NotInstalled,
+        CannotSandboxError::NamespacesDenied,
+        CannotSandboxError::RestrictedByAppArmor,
     ] {
         let (sandbox, seen) = FakeSandbox::withheld(why);
         let mut shell = Shell::new(sandbox);
         assert_eq!(
             shell.create(&launch(&["ls"])),
-            Err(ShellFault::Start(StartFault::Cannot(why)))
+            Err(ShellError::Start(StartError::Cannot(why)))
         );
         assert!(seen.started().is_empty());
         assert_eq!(shell.open(), 0);
@@ -91,8 +91,8 @@ fn kill_keeps_the_terminal_and_release_frees_it_and_both_kill_the_job() {
 
     shell.release(second).expect("release");
     assert!(seen.killed()[1]);
-    assert_eq!(shell.output(second), Err(ShellFault::NoSuchTerminal));
-    assert_eq!(shell.release(second), Err(ShellFault::NoSuchTerminal));
+    assert_eq!(shell.output(second), Err(ShellError::NoSuchTerminal));
+    assert_eq!(shell.release(second), Err(ShellError::NoSuchTerminal));
 }
 
 #[test]
@@ -111,5 +111,5 @@ fn too_many_terminals_are_refused() {
     for _ in 0..MAX_TERMINALS {
         shell.create(&launch(&["true"])).expect("created");
     }
-    assert_eq!(shell.create(&launch(&["true"])), Err(ShellFault::TooMany));
+    assert_eq!(shell.create(&launch(&["true"])), Err(ShellError::TooMany));
 }

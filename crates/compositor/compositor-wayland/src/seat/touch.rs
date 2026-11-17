@@ -3,7 +3,7 @@
 use super::SurfaceAt;
 use super::edge::{time_of, whole_of};
 use crate::convert::serial_to;
-use crate::states::WaylandFault;
+use crate::states::WaylandError;
 use compositor_core::InputSerial;
 use compositor_core::input::TouchStep;
 use compositor_core::time::Mono;
@@ -60,7 +60,7 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_touch<D>(
     seat: &Seat<D>,
     state: &mut D,
@@ -68,12 +68,12 @@ pub fn apply_touch<D>(
     focus: Option<SurfaceAt>,
     serial: InputSerial,
     time: Mono,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: SeatHandler + 'static,
     D::TouchFocus: From<smithay::reexports::wayland_server::protocol::wl_surface::WlSurface>,
 {
-    let touch = seat.get_touch().ok_or(WaylandFault::SurfaceGone)?;
+    let touch = seat.get_touch().ok_or(WaylandError::SurfaceGone)?;
     let time = time_of(time);
     let points = Points::of(seat);
     match step {

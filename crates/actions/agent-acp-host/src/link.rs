@@ -36,7 +36,7 @@ const DEPTH: usize = 32;
 /// The agent has closed the connection, or it ended: nothing more can be said to it or heard from it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("the agent closed the connection")]
-pub(super) struct Gone;
+pub(super) struct LinkGoneError;
 
 /// How to answer one request of the agent's. The answer is held as JSON and checked by the SDK
 /// against the response type of the method.
@@ -136,7 +136,7 @@ impl Link {
         clippy::map_err_ignore,
         reason = "a closed channel inside the handler is answered to the agent as a plain internal error"
     )]
-    pub(super) async fn connect(transport: impl ConnectTo<Client>) -> Result<Self, Gone> {
+    pub(super) async fn connect(transport: impl ConnectTo<Client>) -> Result<Self, LinkGoneError> {
         let (tx, rx) = mpsc::channel(DEPTH);
         let (up_tx, up_rx) = oneshot::channel();
         let builder = Client.builder().name("actions");
@@ -222,7 +222,7 @@ impl Link {
         clippy::map_err_ignore,
         reason = "a closed channel inside the handler is answered to the agent as a plain internal error"
     )]
-    pub(super) fn prompt(&self, request: PromptRequest) -> Result<(), Gone> {
+    pub(super) fn prompt(&self, request: PromptRequest) -> Result<(), LinkGoneError> {
         let mut tx = self.tx.clone();
         self.cx
             .send_request(request)
@@ -238,7 +238,7 @@ impl Link {
     }
 
     /// Sends `session/cancel` for the agent's `session`.
-    pub(super) fn cancel(&self, session: &SessionId) -> Result<(), Gone> {
+    pub(super) fn cancel(&self, session: &SessionId) -> Result<(), LinkGoneError> {
         self.cx
             .send_notification(CancelNotification::new(session.clone()))
             .map_err(|error| {
@@ -253,14 +253,14 @@ impl Link {
     pub(super) async fn answer<T: Send>(
         &mut self,
         sent: SentRequest<T>,
-    ) -> Result<Result<T, Error>, Gone> {
+    ) -> Result<Result<T, Error>, LinkGoneError> {
         let mut answer = pin!(sent.block_task());
         loop {
             match select(answer.as_mut(), self.rx.next()).await {
                 Either::Left((Err(error), _))
                     if is_incoming_transport_closed(&error) || is_connection_terminated(&error) =>
                 {
-                    return Err(Gone);
+                    return Err(LinkGoneError);
                 }
                 Either::Left((result, _)) => return Ok(result),
                 Either::Right((
@@ -270,7 +270,7 @@ impl Link {
                     let _ = reply.respond_with_error(fault::not_now("not now"));
                 }
                 Either::Right((Some(_), _)) => {}
-                Either::Right((None, _)) => return Err(Gone),
+                Either::Right((None, _)) => return Err(LinkGoneError),
             }
         }
     }

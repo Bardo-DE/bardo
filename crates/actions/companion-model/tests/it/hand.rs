@@ -1,7 +1,7 @@
 //! The watched-agent shapes: an app's conversation id is one plain word, a seen command line is
 //! bounded and does not print its words.
 
-use companion_model::{AppSessionId, SeenCommand, SeenCommandFault};
+use companion_model::{AppSessionId, SeenCommand, SeenCommandError};
 use serde::{Serialize, de::DeserializeOwned};
 
 fn round<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(value: &T) -> String {
@@ -31,13 +31,13 @@ fn an_app_conversation_id_is_one_plain_word_and_a_seen_command_line_is_bounded()
     serde_json::from_str::<AppSessionId>("\"-x\"").unwrap_err();
 
     let words = |n: usize, each: usize| vec!["w".repeat(each); n];
-    let line_cases: &[(Vec<String>, Result<(), SeenCommandFault>)] = &[
+    let line_cases: &[(Vec<String>, Result<(), SeenCommandError>)] = &[
         (words(1, 3), Ok(())),
         (words(256, 1), Ok(())),
-        (vec![], Err(SeenCommandFault::Empty)),
-        (words(257, 1), Err(SeenCommandFault::TooManyWords)),
-        (words(2, 40_000), Err(SeenCommandFault::TooLong)),
-        (vec!["a\0b".to_owned()], Err(SeenCommandFault::Nul)),
+        (vec![], Err(SeenCommandError::Empty)),
+        (words(257, 1), Err(SeenCommandError::TooManyWords)),
+        (words(2, 40_000), Err(SeenCommandError::TooLong)),
+        (vec!["a\0b".to_owned()], Err(SeenCommandError::Nul)),
     ];
     for (given, want) in line_cases {
         assert_eq!(SeenCommand::parse(given.clone()).map(drop), *want);

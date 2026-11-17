@@ -6,8 +6,7 @@ use super::moved::Moved;
 use crate::effect::{CoreNote, Effect};
 use crate::ids::OutputKey;
 use crate::output::{
-    GammaRamp, OutputChangeSet, OutputConfig, OutputRefusal, Requester, keeps_one_lit,
-    resolve_change,
+    GammaRamp, OutputChangeSet, OutputConfig, OutputError, Requester, keeps_one_lit, resolve_change,
 };
 
 impl Model {
@@ -23,7 +22,7 @@ impl Model {
         by: Requester,
     ) -> Moved {
         let Some(plugged) = self.outputs.0.get(&output).cloned() else {
-            let refusal = OutputRefusal::UnknownOutput(output);
+            let refusal = OutputError::UnknownOutput(output);
             return Moved::of(self).with(Effect::Note(CoreNote::RefusedOutput(refusal)));
         };
         let resolved =

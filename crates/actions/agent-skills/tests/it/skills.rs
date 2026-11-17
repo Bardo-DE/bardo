@@ -5,8 +5,8 @@ use account_core::AppName;
 use action_core::SkillId;
 use action_manifest::{AgentReach, ValidManifest};
 use agent_skills::{
-    BODY_BUDGET_BYTES, Found, LOAD_MAX, Library, LoadRefusal, Loaded, Origin, Reach, Roots,
-    Situation, SkillFault, discover, load_dir, parse, parse_doc, parse_facts, preselect, reach,
+    BODY_BUDGET_BYTES, Found, LOAD_MAX, Library, LoadError, Loaded, Origin, Reach, Roots,
+    Situation, SkillError, discover, load_dir, parse, parse_doc, parse_facts, preselect, reach,
     uses_first,
 };
 use agent_skills::{FolderError, SkillFolder};
@@ -70,11 +70,11 @@ fn skill_toml_table() {
         let got = parse_facts(&text);
         match (&got, want) {
             (Ok(_), Ok(()))
-            | (Err(SkillFault::Vocab(_)), Err("vocab"))
-            | (Err(SkillFault::BadId(_)), Err("bad id"))
-            | (Err(SkillFault::Toml(_)), Err("toml"))
-            | (Err(SkillFault::BadUse(..) | SkillFault::UseNoColon(_)), Err("bad use"))
-            | (Err(SkillFault::BadKind(..)), Err("bad kind")) => {}
+            | (Err(SkillError::Vocab(_)), Err("vocab"))
+            | (Err(SkillError::BadId(_)), Err("bad id"))
+            | (Err(SkillError::Toml(_)), Err("toml"))
+            | (Err(SkillError::BadUse(..) | SkillError::UseNoColon(_)), Err("bad use"))
+            | (Err(SkillError::BadKind(..)), Err("bad kind")) => {}
             _ => panic!("{text}\n=> {got:?}, wanted {want:?}"),
         }
     }
@@ -82,7 +82,7 @@ fn skill_toml_table() {
 
 #[test]
 fn skill_md_table() {
-    type Expected = Result<(&'static str, &'static str, &'static str), SkillFault>;
+    type Expected = Result<(&'static str, &'static str, &'static str), SkillError>;
     let cases: Vec<(&str, Expected)> = vec![
         (
             "---\nname: x\ndescription: Does x.\n---\n# Title\n\nText.\n",
@@ -96,22 +96,22 @@ fn skill_md_table() {
             "---\r\nname: x\r\ndescription: d\r\n---\r\nText\r\n",
             Ok(("x", "d", "Text")),
         ),
-        ("# no front matter\n", Err(SkillFault::NoFrontMatter)),
+        ("# no front matter\n", Err(SkillError::NoFrontMatter)),
         (
             "---\nname: x\ndescription: d\n",
-            Err(SkillFault::NoFrontMatter),
+            Err(SkillError::NoFrontMatter),
         ),
         (
             "---\ndescription: d\n---\nb",
-            Err(SkillFault::MissingKey("name")),
+            Err(SkillError::MissingKey("name")),
         ),
         (
             "---\nname: x\n---\nb",
-            Err(SkillFault::MissingKey("description")),
+            Err(SkillError::MissingKey("description")),
         ),
         (
             "---\nname: x\ndescription:\n---\nb",
-            Err(SkillFault::MissingKey("description")),
+            Err(SkillError::MissingKey("description")),
         ),
     ];
     for (text, want) in cases {
@@ -127,7 +127,7 @@ fn rules_of_the_format_table() {
     let exact_description = "d".repeat(160);
     let exact_body = "b".repeat(8192);
     let big_body = "b".repeat(8193);
-    let cases: Vec<(&str, String, String, Result<(), SkillFault>)> = vec![
+    let cases: Vec<(&str, String, String, Result<(), SkillError>)> = vec![
         ("a", toml_for("a", ""), md_for("a", "d", "body"), Ok(())),
         (
             "a",
@@ -139,25 +139,25 @@ fn rules_of_the_format_table() {
             "a",
             toml_for("a", ""),
             md_for("a", &long_description, "body"),
-            Err(SkillFault::DescriptionTooLong(161)),
+            Err(SkillError::DescriptionTooLong(161)),
         ),
         (
             "a",
             toml_for("a", ""),
             md_for("a", "d", &big_body),
-            Err(SkillFault::BodyTooLarge(8193)),
+            Err(SkillError::BodyTooLarge(8193)),
         ),
         (
             "a",
             toml_for("a", ""),
             md_for("a", "d", ""),
-            Err(SkillFault::EmptyBody),
+            Err(SkillError::EmptyBody),
         ),
         (
             "a",
             toml_for("b", ""),
             md_for("a", "d", "x"),
-            Err(SkillFault::IdMismatch {
+            Err(SkillError::IdMismatch {
                 dir: "a".into(),
                 toml: "b".into(),
                 md: "a".into(),
@@ -167,7 +167,7 @@ fn rules_of_the_format_table() {
             "a",
             toml_for("a", ""),
             md_for("c", "d", "x"),
-            Err(SkillFault::IdMismatch {
+            Err(SkillError::IdMismatch {
                 dir: "a".into(),
                 toml: "a".into(),
                 md: "c".into(),
@@ -177,7 +177,7 @@ fn rules_of_the_format_table() {
             "dir",
             toml_for("a", ""),
             md_for("a", "d", "x"),
-            Err(SkillFault::IdMismatch {
+            Err(SkillError::IdMismatch {
                 dir: "dir".into(),
                 toml: "a".into(),
                 md: "a".into(),
@@ -407,7 +407,7 @@ fn a_task_loads_at_most_three_and_a_repeat_is_free() {
     for id in &ids[..3] {
         assert_eq!(loaded.admit(id, 10), Ok(()));
     }
-    assert_eq!(loaded.admit(&ids[3], 10), Err(LoadRefusal::OverCap));
+    assert_eq!(loaded.admit(&ids[3], 10), Err(LoadError::OverCap));
     assert_eq!(
         loaded.admit(&ids[0], 10),
         Ok(()),
@@ -508,7 +508,7 @@ fn loads_stop_at_the_byte_budget_and_a_reload_is_free() {
     let id = |s: &str| SkillId::parse(s).expect("id");
     let mut loaded = Loaded::default();
     assert_eq!(loaded.admit(&id("a"), 8000), Ok(()));
-    assert_eq!(loaded.admit(&id("b"), 8000), Err(LoadRefusal::OverBudget));
+    assert_eq!(loaded.admit(&id("b"), 8000), Err(LoadError::OverBudget));
     assert_eq!(
         loaded.admit(&id("c"), 4288),
         Ok(()),
@@ -520,6 +520,6 @@ fn loads_stop_at_the_byte_budget_and_a_reload_is_free() {
         Ok(()),
         "a reload costs nothing"
     );
-    assert_eq!(loaded.admit(&id("d"), 1), Err(LoadRefusal::OverBudget));
+    assert_eq!(loaded.admit(&id("d"), 1), Err(LoadError::OverBudget));
     assert_eq!(loaded.ids(), [&id("a"), &id("c")]);
 }

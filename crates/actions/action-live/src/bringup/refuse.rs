@@ -30,7 +30,7 @@ impl Own {
 
 /// Why `up` will not start.
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
-pub enum Refusal {
+pub enum BringUpError {
     /// The root is relative.
     #[error("--root {0} is not an absolute path")]
     RootNotAbsolute(PathBuf),
@@ -65,19 +65,22 @@ pub enum Refusal {
 /// # Errors
 ///
 /// Returns a [`Refusal`] when the root is one the harness does not own.
-pub fn check_root(root: &Path, own: &Own) -> Result<(), Refusal> {
+pub fn check_root(root: &Path, own: &Own) -> Result<(), BringUpError> {
     if !root.is_absolute() {
-        return Err(Refusal::RootNotAbsolute(root.to_owned()));
+        return Err(BringUpError::RootNotAbsolute(root.to_owned()));
     }
     if root.components().any(|c| c == Component::ParentDir) {
-        return Err(Refusal::RootDotDot(root.to_owned()));
+        return Err(BringUpError::RootDotDot(root.to_owned()));
     }
     let broad = root.parent().is_none() || own.home.as_deref() == Some(root);
     if broad {
-        return Err(Refusal::RootTooBroad(root.to_owned()));
+        return Err(BringUpError::RootTooBroad(root.to_owned()));
     }
     match root.ancestors().find(|p| p.join(".git").exists()) {
-        Some(checkout) => Err(Refusal::RootInGit(root.to_owned(), checkout.to_owned())),
+        Some(checkout) => Err(BringUpError::RootInGit(
+            root.to_owned(),
+            checkout.to_owned(),
+        )),
         None => Ok(()),
     }
 }
@@ -106,19 +109,19 @@ fn real_path(path: &str) -> bool {
 /// # Errors
 ///
 /// Returns a [`Refusal`] when the address is one the harness does not own.
-pub fn check_bus(bus: &str, own: &Own) -> Result<(), Refusal> {
+pub fn check_bus(bus: &str, own: &Own) -> Result<(), BringUpError> {
     if !bus.starts_with("unix:") {
-        return Err(Refusal::BusNotUnix(bus.to_owned()));
+        return Err(BringUpError::BusNotUnix(bus.to_owned()));
     }
     let mine = paths_of(bus);
     for real in [&own.session_bus, &own.system_bus].into_iter().flatten() {
         let shares = paths_of(real).iter().any(|p| mine.contains(p));
         if real == bus || shares {
-            return Err(Refusal::BusIsOwn(real.clone()));
+            return Err(BringUpError::BusIsOwn(real.clone()));
         }
     }
     if mine.iter().any(|p| real_path(p)) {
-        Err(Refusal::BusLooksReal(bus.to_owned()))
+        Err(BringUpError::BusLooksReal(bus.to_owned()))
     } else {
         Ok(())
     }

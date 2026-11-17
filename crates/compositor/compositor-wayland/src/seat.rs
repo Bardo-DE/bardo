@@ -30,7 +30,7 @@ pub use under::{Candidate, surface_under};
 use crate::convert::serial_to;
 use crate::seat_keymap::{KeymapBook, xkb_config};
 use crate::serial::{PressRecord, SerialBook};
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::geometry::{LogicalPoint, SubPoint};
 use compositor_core::input::{ButtonCode, GestureStep, KeyCode, Origin, PinchDelta};
 use compositor_core::settings::KeyboardSettings;
@@ -84,12 +84,12 @@ impl<D: SeatHandler + 'static> SeatPart<D> {
     ///
     /// # Errors
     ///
-    /// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+    /// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
     pub fn new(
         display: &DisplayHandle,
         role_filter: GlobalFilter,
         keyboard: &KeyboardSettings,
-    ) -> Result<SeatPart<D>, WaylandFault>
+    ) -> Result<SeatPart<D>, WaylandError>
     where
         D: GlobalDispatch<WlSeat, SeatGlobalData<D>>,
         <D as SeatHandler>::PointerFocus: WaylandFocus,
@@ -104,7 +104,7 @@ impl<D: SeatHandler + 'static> SeatPart<D> {
         let (rate, delay) = repeat_wire(keyboard);
         let keyboard = seat
             .add_keyboard(xkb, delay, rate)
-            .map_err(|error| WaylandFault::Keymap(error.to_string()))?;
+            .map_err(|error| WaylandError::Keymap(error.to_string()))?;
         let touch = seat.add_touch();
         Ok(SeatPart {
             state,
@@ -212,17 +212,17 @@ pub fn on_cursor_image(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_keyboard_focus<D>(
     seat: &Seat<D>,
     state: &mut D,
     focus: Option<D::KeyboardFocus>,
     serial: InputSerial,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: SeatHandler + 'static,
 {
-    let keyboard = seat.get_keyboard().ok_or(WaylandFault::SurfaceGone)?;
+    let keyboard = seat.get_keyboard().ok_or(WaylandError::SurfaceGone)?;
     keyboard.set_focus(state, focus, serial_to(serial));
     Ok(())
 }
@@ -236,18 +236,18 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the seat has no keyboard.
+/// Returns [`WaylandError`] when the seat has no keyboard.
 pub fn apply_key<D, T>(
     seat: &Seat<D>,
     state: &mut D,
     delivery: KeyDelivery,
     to_focus: bool,
     filter: impl FnOnce(&mut D, &ModifiersState, KeysymHandle<'_>) -> FilterResult<T>,
-) -> Result<Option<T>, WaylandFault>
+) -> Result<Option<T>, WaylandError>
 where
     D: SeatHandler<KeyboardFocus = WlSurface> + 'static,
 {
-    let keyboard = seat.get_keyboard().ok_or(WaylandFault::SurfaceGone)?;
+    let keyboard = seat.get_keyboard().ok_or(WaylandError::SurfaceGone)?;
     let code = edge::keycode_of(delivery.code);
     let key_state = edge::key_state_of(delivery.edge);
     if !to_focus {
@@ -275,13 +275,13 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 /// change reaches clients that are already bound).
-pub fn apply_repeat_info<D>(seat: &Seat<D>, keyboard: &KeyboardSettings) -> Result<(), WaylandFault>
+pub fn apply_repeat_info<D>(seat: &Seat<D>, keyboard: &KeyboardSettings) -> Result<(), WaylandError>
 where
     D: SeatHandler + 'static,
 {
-    let handle = seat.get_keyboard().ok_or(WaylandFault::SurfaceGone)?;
+    let handle = seat.get_keyboard().ok_or(WaylandError::SurfaceGone)?;
     let (rate, delay) = repeat_wire(keyboard);
     handle.change_repeat_info(rate, delay);
     Ok(())

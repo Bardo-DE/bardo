@@ -7,7 +7,7 @@
 //! in the pinned block, so [`ispdb_candidates`] offers each parent of the host instead and the
 //! ISPDB's 404 answers the question the list would have.
 
-use crate::dns::{Dns, DnsFault, MxRecord};
+use crate::dns::{Dns, DnsError, MxRecord};
 use account_core::ProviderId;
 use account_provider::{DomainMatch, DomainName, ProviderSet};
 
@@ -70,8 +70,8 @@ pub fn ispdb_candidates(host: &DomainName, domain: &DomainName) -> Vec<DomainNam
 ///
 /// # Errors
 ///
-/// The `DnsFault` the resolver reports when the query cannot be answered.
-pub async fn lookup_mx<D: Dns>(dns: &D, domain: &DomainName) -> Result<Vec<MxRecord>, DnsFault> {
+/// The `DnsError` the resolver reports when the query cannot be answered.
+pub async fn lookup_mx<D: Dns>(dns: &D, domain: &DomainName) -> Result<Vec<MxRecord>, DnsError> {
     dns.mx(domain).await
 }
 

@@ -17,7 +17,7 @@ use agent_skills::{Roots, discover};
 use agent_skills_disk::DiskFolder;
 use companion_helpers::{Hub, HubHost, RoutineDesk, Routines, Timers, TokioSpawn};
 use companion_model::helper::{AgentApps, HelperCard};
-use companion_tasks::ServeFault;
+use companion_tasks::ServeError;
 use futures_util::StreamExt;
 use futures_util::lock::Mutex;
 use std::path::PathBuf;
@@ -60,12 +60,12 @@ pub type Daemon = Companiond<PlannerModel<InferLink>, DbusTransport>;
 /// connection keeps serving until it closes.
 ///
 /// # Errors
-/// `ServeFault` when the daemon cannot start: see [`start_with_agents`].
+/// `ServeError` when the daemon cannot start: see [`start_with_agents`].
 pub async fn start(
     connection: &BusConnection,
     config: CompaniondConfig,
     callers: CallerTable,
-) -> Result<Arc<Mutex<Daemon>>, ServeFault> {
+) -> Result<Arc<Mutex<Daemon>>, ServeError> {
     Box::pin(start_with(
         connection,
         config,
@@ -80,14 +80,14 @@ pub async fn start(
 /// can come from. A directory that does not load is named on stderr and left out.
 ///
 /// # Errors
-/// `ServeFault` when the daemon cannot start: see [`start_with_agents`].
+/// `ServeError` when the daemon cannot start: see [`start_with_agents`].
 pub async fn start_with(
     connection: &BusConnection,
     config: CompaniondConfig,
     skills: &Roots,
     seams: HarnessSeams,
     callers: CallerTable,
-) -> Result<Arc<Mutex<Daemon>>, ServeFault> {
+) -> Result<Arc<Mutex<Daemon>>, ServeError> {
     Box::pin(start_with_agents(
         connection, config, skills, seams, callers, None,
     ))
@@ -100,7 +100,7 @@ pub async fn start_with(
 /// With none, such a job fails at once, and every other helper is unaffected.
 ///
 /// # Errors
-/// `ServeFault` when the companion cannot be built or `org.bardo.Companion1` cannot be claimed on
+/// `ServeError` when the companion cannot be built or `org.bardo.Companion1` cannot be claimed on
 /// `connection`.
 pub async fn start_with_agents(
     connection: &BusConnection,
@@ -109,7 +109,7 @@ pub async fn start_with_agents(
     seams: HarnessSeams,
     callers: CallerTable,
     agents: Option<Arc<dyn AgentApps>>,
-) -> Result<Arc<Mutex<Daemon>>, ServeFault> {
+) -> Result<Arc<Mutex<Daemon>>, ServeError> {
     let found = discover(skills, &DiskFolder);
     for rejected in &found.rejected {
         tracing::warn!(
@@ -220,30 +220,30 @@ pub async fn start_with_agents(
 /// its `main` passes in), served until the bus closes.
 ///
 /// # Errors
-/// `ServeFault` when the configuration cannot be read, the session bus is unreachable or serving
+/// `ServeError` when the configuration cannot be read, the session bus is unreachable or serving
 /// fails.
-pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), ServeFault> {
+pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), ServeError> {
     Box::pin(run_with(HarnessSeams::default(), env)).await
 }
 
 /// [`run`] with the seams the acceptance harness's mains choose.
 ///
 /// # Errors
-/// `ServeFault` when the configuration cannot be read, the session bus is unreachable or serving
+/// `ServeError` when the configuration cannot be read, the session bus is unreachable or serving
 /// fails.
 pub async fn run_with(
     seams: HarnessSeams,
     env: &impl Fn(&str) -> Option<String>,
-) -> Result<(), ServeFault> {
-    let config = CompaniondConfig::from_env(env).map_err(|e| ServeFault::Config(e.to_string()))?;
+) -> Result<(), ServeError> {
+    let config = CompaniondConfig::from_env(env).map_err(|e| ServeError::Config(e.to_string()))?;
     let connection = dbus_kit::connect::session_from_env(env)
         .await
-        .map_err(|e| ServeFault::Bus(e.to_string()))?;
+        .map_err(|e| ServeError::Bus(e.to_string()))?;
     let callers = match &seams.system_callers {
         Some(system) => crate::callers::read_at(system, env),
         None => crate::callers::read(env),
     }
-    .map_err(|e| ServeFault::Config(e.to_string()))?;
+    .map_err(|e| ServeError::Config(e.to_string()))?;
     // The agent apps that are helpers run in the host the bus starts (`bardo-agent --serve`); the
     // tests that start a daemon of their own pass a scripted host or none (`start_with_agents`).
     let agents: Arc<dyn AgentApps> = Arc::new(AppsLink::new(connection.clone()));

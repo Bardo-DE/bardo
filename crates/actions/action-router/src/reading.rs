@@ -9,8 +9,8 @@ use action_context::handle_views::context_view;
 use action_context::handles::{HandleTable, HandleValue};
 use action_context::labels::{absorb, fold_labels};
 use action_context::session::SessionState;
-use action_core::LinkFault;
-use action_core::{CallRefusal, ContextSnapshot, ReadFault, Reader, Reveal, Selection, conforms};
+use action_core::LinkError;
+use action_core::{CallRefusal, ContextSnapshot, ReadError, Reader, Reveal, Selection, conforms};
 use action_vocab::{Handle, Value};
 use action_wire::{Displayed, IntentsReply, ReadAsk, Resolved, WireRefusal};
 use provenance::{Integrity, Label, Labelled, Quarantined, SessionId, Source};
@@ -20,10 +20,10 @@ fn refuse(why: WireRefusal) -> IntentsReply {
 }
 
 /// How a call to an app that could not answer reads to its caller.
-pub(crate) fn link_refusal(fault: LinkFault, app: &AppName) -> CallRefusal {
+pub(crate) fn link_refusal(fault: LinkError, app: &AppName) -> CallRefusal {
     match fault {
-        LinkFault::Timeout => CallRefusal::Timeout,
-        LinkFault::Unavailable | LinkFault::Malformed => CallRefusal::AppUnavailable(app.clone()),
+        LinkError::Timeout => CallRefusal::Timeout,
+        LinkError::Unavailable | LinkError::Malformed => CallRefusal::AppUnavailable(app.clone()),
     }
 }
 
@@ -45,12 +45,12 @@ fn texts(value: &Value, into: &mut Vec<String>) {
 fn text_input(
     handles: &HandleTable,
     handle: Handle,
-) -> Result<(Quarantined<String>, Label), ReadFault> {
-    let card = handles.card(handle).ok_or(ReadFault::NotHeld)?;
+) -> Result<(Quarantined<String>, Label), ReadError> {
+    let card = handles.card(handle).ok_or(ReadError::NotHeld)?;
     handles
         .resolve_text(handle)
         .zip(handles.label(handle).cloned())
-        .ok_or(ReadFault::NotText {
+        .ok_or(ReadError::NotText {
             handle,
             shape: card.shape,
         })
@@ -128,7 +128,7 @@ impl<S: Seams> Router<S> {
             let Some(record) = st.sessions.get_mut(id) else {
                 return refuse(WireRefusal::NoSuchSession);
             };
-            let held: Result<Vec<_>, ReadFault> = ask
+            let held: Result<Vec<_>, ReadError> = ask
                 .ask
                 .inputs
                 .iter()
@@ -164,7 +164,7 @@ impl<S: Seams> Router<S> {
             Err(error) => return refuse(WireRefusal::Read(error.into())),
         };
         if let Err(fault) = conforms(&value, &ask.ask.want) {
-            return refuse(WireRefusal::Read(ReadFault::OutOfSchema(fault)));
+            return refuse(WireRefusal::Read(ReadError::OutOfSchema(fault)));
         }
         let mut words = Vec::new();
         texts(&value, &mut words);
@@ -199,7 +199,7 @@ impl<S: Seams> Router<S> {
         }
         if !self.seams.link().running(&app).await {
             return refuse(WireRefusal::Call(link_refusal(
-                LinkFault::Unavailable,
+                LinkError::Unavailable,
                 &app,
             )));
         }

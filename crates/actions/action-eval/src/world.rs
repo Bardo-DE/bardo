@@ -22,13 +22,13 @@ use std::sync::MutexGuard;
 /// A case's world could not be built: the fixture names something that is not valid.
 #[derive(Debug, thiserror::Error)]
 #[error("setup: {what}")]
-pub struct SetupFault {
+pub struct SetupError {
     what: &'static str,
     #[source]
     cause: Option<Box<dyn std::error::Error + Send + Sync>>,
 }
 
-impl SetupFault {
+impl SetupError {
     fn new(what: &'static str) -> Self {
         Self { what, cause: None }
     }
@@ -58,12 +58,12 @@ pub(crate) fn state_of<S: Seams>(router: &Router<S>) -> MutexGuard<'_, RouterSta
         .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
-fn name(text: &str) -> Result<AppName, SetupFault> {
-    AppName::parse(text).map_err(|e| SetupFault::because("a fixture app name", e))
+fn name(text: &str) -> Result<AppName, SetupError> {
+    AppName::parse(text).map_err(|e| SetupError::because("a fixture app name", e))
 }
 
 /// The connection of the companion daemon.
-pub(crate) fn companion() -> Result<CallerId, SetupFault> {
+pub(crate) fn companion() -> Result<CallerId, SetupError> {
     Ok(CallerId {
         app: AppId {
             name: name("org.bardo.Companion")?,
@@ -74,7 +74,7 @@ pub(crate) fn companion() -> Result<CallerId, SetupFault> {
 }
 
 /// The connection of a process running `bardo-do`.
-pub(crate) fn cli() -> Result<CallerId, SetupFault> {
+pub(crate) fn cli() -> Result<CallerId, SetupError> {
     Ok(CallerId {
         app: AppId {
             name: name("org.bardo.Do")?,
@@ -85,7 +85,7 @@ pub(crate) fn cli() -> Result<CallerId, SetupFault> {
 }
 
 /// The connection of the shell's launcher, which records the person's own words.
-pub(crate) fn launcher() -> Result<CallerId, SetupFault> {
+pub(crate) fn launcher() -> Result<CallerId, SetupError> {
     Ok(CallerId {
         app: AppId {
             name: name("org.bardo.Shell")?,
@@ -134,13 +134,13 @@ fn put_world<S: Seams<Link = FakeLink>>(world: &WorldFixture, router: &Router<S>
 ///
 /// # Errors
 ///
-/// Fails with [`SetupFault`] when a fixture app name or grant id is not valid.
+/// Fails with [`SetupError`] when a fixture app name or grant id is not valid.
 pub fn install_fixture<S: Seams<Link = FakeLink, Grants = MemoryGrants>>(
     router: &Router<S>,
     world: &WorldFixture,
     in_space: &SpaceId,
     mode: Mode,
-) -> Result<(), SetupFault> {
+) -> Result<(), SetupError> {
     put_world(world, router);
     if world.consent == ConsentFixture::Standing {
         grant_consent(router, in_space)?;
@@ -163,7 +163,7 @@ fn start_in<S: Seams>(router: &Router<S>, mode: Mode) {
 fn grant_consent<S: Seams<Grants = MemoryGrants>>(
     router: &Router<S>,
     in_space: &SpaceId,
-) -> Result<(), SetupFault> {
+) -> Result<(), SetupError> {
     use action_router::GrantStore;
     let mut apps: BTreeMap<AppName, BTreeSet<DataClass>> = BTreeMap::new();
     for m in state_of(router).registry.all() {
@@ -179,7 +179,7 @@ fn grant_consent<S: Seams<Grants = MemoryGrants>>(
                 n += 1;
                 router.seams.grants().record(Grant {
                     id: GrantId::parse(&format!("g-eval-{n}"))
-                        .map_err(|e| SetupFault::because("a grant id", e))?,
+                        .map_err(|e| SetupError::because("a grant id", e))?,
                     key: ActionGrantKey {
                         caller: GrantCaller::Companion,
                         owner: app.clone(),
@@ -202,7 +202,7 @@ fn open<S: Rig>(
     router: &Router<S>,
     in_space: &SpaceId,
     agent: AgentRef,
-) -> Result<action_wire::SessionOpened, SetupFault> {
+) -> Result<action_wire::SessionOpened, SetupError> {
     let reply = block_on(router.handle(
         &companion()?,
         IntentsRequest::SessionOpen(SessionOpen {
@@ -218,14 +218,14 @@ fn open<S: Rig>(
     ));
     match reply {
         IntentsReply::SessionOpened(opened) => Ok(opened),
-        _ => Err(SetupFault::new("a session did not open")),
+        _ => Err(SetupError::new("a session did not open")),
     }
 }
 
 fn other_agents<'a, S: Rig>(
     case: &'a Case,
     router: &Router<S>,
-) -> Result<BTreeMap<AgentRef, (SessionId, &'a FixtureTask)>, SetupFault> {
+) -> Result<BTreeMap<AgentRef, (SessionId, &'a FixtureTask)>, SetupError> {
     case.world
         .tasks
         .iter()
@@ -254,7 +254,7 @@ pub(crate) fn install<S: Rig>(
     case: &Case,
     harness: &Harness<S>,
     mode: PolicyMode,
-) -> Result<Scene, SetupFault> {
+) -> Result<Scene, SetupError> {
     harness.reset();
     let router = &harness.router;
     install_world(case, router);
@@ -305,7 +305,7 @@ pub(crate) fn install<S: Rig>(
             },
         ));
         if !matches!(reply, IntentsReply::TurnRecorded(_)) {
-            return Err(SetupFault::new("a turn was not recorded"));
+            return Err(SetupError::new("a turn was not recorded"));
         }
     }
     // A case with no task policy has none whatever wrote one on the turns (a live writer did).

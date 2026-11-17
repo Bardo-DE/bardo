@@ -71,7 +71,7 @@ pub const COMPUTER_KEY_KEY: &str = "key";
 /// `ForgetGuest`. The name is `org.bardo.Inference1.Error.Computer.<Name>`, the name one of
 /// `BadName`, `NoModels`, `TooMany`, `AlreadyThere`, `UnknownModel`, `ModelNotUsable`,
 /// `ModelTaken`, `BadAddress`, `BadKey`, `NotSaved`, `NotThere`, `AddedByHand`, `Unavailable`,
-/// and, since `AddTailnetComputer` and the guests: `NotOnTailscale`, `NotAnswering`,
+/// and, since `AddTailnetComputer` and the guests: `NotOnTailscale`, `NotAnsweringError`,
 /// `NotAsking`, `TooManyAsking`. The reply's text is a plain sentence for the person.
 pub const COMPUTER_ERROR_PREFIX: &str = "org.bardo.Inference1.Error.Computer.";
 /// The keys of a row of `Inference1.Candidates` (`a(sa{sv})`: the computer's Tailscale node id, then

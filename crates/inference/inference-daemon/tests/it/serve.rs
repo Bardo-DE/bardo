@@ -15,8 +15,8 @@ use base_ids::{Count, Tokens};
 use inference_core::{
     AttachIndex, AudioFrame, AudioRate, Base64Bytes, ChatControl, ChatMessage, ChatReply,
     ChatRequest, ClientFrame, ComputerUseBegin, ComputerUseStepReply, ImagePart, ImageSource,
-    InferEvent, InferRefusal, InferReply, InferRequest, MessagePart, ModelError, Role, StopReason,
-    ToolParallelism, TranscribeBegin, TranscribeMode, TranscribeReply, TurnUsage,
+    InferEvent, InferRefusedError, InferReply, InferRequest, MessagePart, ModelError, Role,
+    StopReason, ToolParallelism, TranscribeBegin, TranscribeMode, TranscribeReply, TurnUsage,
 };
 use inference_daemon::serve_session;
 use inference_router::carried::Carried;
@@ -145,14 +145,14 @@ fn push(rig: &Rig, which: usize, step: TurnStep) {
 #[tokio::test]
 async fn a_refused_route_is_the_first_event_and_then_the_socket_closes() {
     let mut rig = start(
-        FixedRouter(Err(InferRefusal::NeedsGrant)),
+        FixedRouter(Err(InferRefusedError::NeedsGrant)),
         Engines::default(),
         mail(),
     );
     assert_eq!(
         rig.client.event().await,
         Some(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::NeedsGrant
+            InferRefusedError::NeedsGrant
         )))
     );
     assert_eq!(rig.client.event().await, None);
@@ -268,7 +268,7 @@ async fn one_request_queues_behind_a_running_turn_with_its_own_descriptors() {
     assert_eq!(
         rig.client.event().await,
         Some(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unsupported
+            InferRefusedError::Unsupported
         )))
     );
 
@@ -488,7 +488,7 @@ async fn a_computer_use_step_before_a_begin_is_refused_and_after_one_it_runs() {
     assert_eq!(
         rig.client.event().await,
         Some(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unsupported
+            InferRefusedError::Unsupported
         )))
     );
 

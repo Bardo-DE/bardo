@@ -9,8 +9,9 @@ use model_extract::{
     ToolsPresent, choose,
 };
 use model_provider::{
-    CharCount, Constraint, Extract, JsonText, OutputShape, Refused, SchemaLimits, SchemaText,
-    Shape, ShapeFault, ShapeWithTools, StopReason, ToolCall, ToolCallId, ToolName, ToolSupport,
+    CharCount, Constraint, Extract, JsonText, OutputShape, SchemaKeywordError, SchemaLimits,
+    SchemaText, Shape, ShapeError, ShapeWithTools, StopReason, ToolCall, ToolCallId, ToolName,
+    ToolSupport,
 };
 use support::{base, caps, end};
 
@@ -56,7 +57,7 @@ impl Extract for Same {
     fn shape() -> Shape {
         Shape::from_json_schema(&review_schema(), LIMITS).unwrap()
     }
-    fn read(json: &JsonText) -> Result<Self, ShapeFault> {
+    fn read(json: &JsonText) -> Result<Self, ShapeError> {
         Ok(Same(json.as_str().to_owned()))
     }
 }
@@ -131,5 +132,5 @@ fn a_schema_the_vocabulary_cannot_say_is_a_typed_refusal_and_builds_no_session()
     let open = SchemaText(JsonText::new(r#"{"type":"object"}"#).unwrap());
     let refusal = ShapedSession::from_schema(&open, LIMITS, ExtractMode::Prompted, RepairBudget(1))
         .unwrap_err();
-    assert_eq!(refusal.why, Refused::OpenObject);
+    assert_eq!(refusal.why, SchemaKeywordError::OpenObject);
 }

@@ -7,7 +7,7 @@
 //! The turn they run makes one call and then says words: `Started`, `Ended`, `Words`, then
 //! `TurnEnd(Done)`.
 
-use crate::backend::{BackendEvent, BackendFault, CallEvent, SessionBackend, TurnEnd};
+use crate::backend::{BackendError, BackendEvent, CallEvent, SessionBackend, TurnEnd};
 use action_core::{Reveal, UserTurn};
 use action_vocab::CallId;
 use std::pin::pin;
@@ -118,7 +118,7 @@ pub async fn runs_a_turn<H: Harness>(h: &mut H) {
     backend.turn(h.turn(1)).await.expect("turn");
     assert_eq!(
         backend.turn(h.turn(2)).await,
-        Err(BackendFault::Busy),
+        Err(BackendError::Busy),
         "one turn at a time"
     );
     drain(&mut backend).await;

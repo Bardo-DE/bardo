@@ -7,7 +7,7 @@ use base_ids::Count;
 use base_testkit::Scratch;
 use base_time::FixedClock;
 use base_time::UnixSeconds;
-use inference_core::{ChatReply, EmbedReply, InferRefusal, ModelError, StopReason};
+use inference_core::{ChatReply, EmbedReply, InferRefusedError, ModelError, StopReason};
 use std::collections::BTreeSet;
 
 fn app() -> AppId {
@@ -106,7 +106,7 @@ fn what_a_reply_spent_depends_on_what_it_is() {
     let cases = [
         (chat(usage(3, 4)), usage(3, 4)),
         (embed, usage(9, 0)),
-        (InferReply::Refused(InferRefusal::Denied), zero),
+        (InferReply::Refused(InferRefusedError::Denied), zero),
         (InferReply::Failed(ModelError::NotReady), zero),
         (InferReply::Cancelled, zero),
     ];

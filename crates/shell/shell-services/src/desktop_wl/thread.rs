@@ -15,13 +15,13 @@ use super::commands::park_commands;
 use super::offer::offer_of_registry;
 use super::publish::Publish;
 use super::run::run as follow;
-use crate::env::{WaylandRoute, WaylandUnreached};
+use crate::env::{WaylandRoute, WaylandUnreachedError};
 
 /// Why the thread is not following a compositor.
 #[derive(Debug, thiserror::Error)]
-enum Refusal {
+enum ThreadError {
     #[error("{0}")]
-    Unreached(#[from] WaylandUnreached),
+    Unreached(#[from] WaylandUnreachedError),
     #[error("the registry: {0}")]
     Registry(#[from] GlobalError),
     #[error("the compositor offers no window protocol")]
@@ -61,7 +61,7 @@ pub(super) fn run(
 }
 
 /// The connection, once the compositor's globals select an arm that can follow it.
-fn open(endpoint: &WaylandRoute) -> Result<Connection, Refusal> {
+fn open(endpoint: &WaylandRoute) -> Result<Connection, ThreadError> {
     let connection = endpoint.connect()?;
     let (globals, _queue) = registry_queue_init::<Probe>(&connection)?;
     match backend_of(&offer_of_registry(&globals)) {
@@ -70,6 +70,6 @@ fn open(endpoint: &WaylandRoute) -> Result<Connection, Refusal> {
         // toplevels' flags); its shell role lives on the shell host's connection
         // (`desktop_wl::bardo`).
         DesktopBackend::Bardo | DesktopBackend::Wlr => Ok(connection),
-        DesktopBackend::Bare => Err(Refusal::NoWindowProtocol),
+        DesktopBackend::Bare => Err(ThreadError::NoWindowProtocol),
     }
 }

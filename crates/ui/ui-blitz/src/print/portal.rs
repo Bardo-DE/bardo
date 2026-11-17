@@ -9,7 +9,7 @@
 //! filters on it), so another process cannot answer for the dialog.
 
 use super::{PrintError, PrintOutcome};
-use base_time::deadline::{Deadline, NotAnswering, within};
+use base_time::deadline::{Deadline, NotAnsweringError, within};
 use std::collections::HashMap;
 use std::future::poll_fn;
 use std::io::{Seek, SeekFrom, Write};
@@ -139,7 +139,7 @@ async fn submit(
     prepared: Prepared,
 ) -> Result<PrintOutcome, PrintError> {
     let portal_error = |error: zbus::Error| PrintError::Portal(error.to_string());
-    let silent = |error: NotAnswering| PrintError::Portal(error.to_string());
+    let silent = |error: NotAnsweringError| PrintError::Portal(error.to_string());
     let file = sealed_file(pdf)?;
     let handle = handle_token("print");
     let mut answers = answers(connection, &handle).await.map_err(portal_error)?;

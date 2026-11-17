@@ -24,7 +24,7 @@ pub mod roles;
 pub use cgroup::{CgroupPath, escape_unit, flatpak_scope_in, scope_app, unescape_unit};
 #[cfg(feature = "dev-rows")]
 pub use dev::RowOrigin;
-pub use error::{IdError, Refused, RowFault, TableError};
+pub use error::{IdError, NotHeldError, RowError, TableError};
 pub use facts::{
     DropIns, Engine, Exe, Facts, FileTrust, Fragment, LOADER_VARIABLES, Loader, Pin, PinNeed,
     SandboxFacts, Transient, UnitFacts, Writer,

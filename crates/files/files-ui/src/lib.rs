@@ -49,7 +49,7 @@ pub use edge::{
 };
 #[cfg(feature = "testing")]
 pub use edge::{FakeVolumes, VolumeCall};
-pub use error::{OpenFailure, ReadError, VolumeError};
+pub use error::{OpenError, ReadError, VolumeError};
 pub use launch::{AppearanceSource, Launch};
 pub use places::{Heading, PlaceKey, PlaceKind, Places, Sidebar};
 pub use preferences::Preferences;

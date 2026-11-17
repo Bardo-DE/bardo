@@ -7,7 +7,7 @@ use std::collections::{BTreeSet, HashSet};
 use base_ids::Count;
 use companion_model::{
     helper::Ceiling, helper::HelperKind, helper::HelperModel, helper::HelperName,
-    helper::HelperTextFault, helper::Role,
+    helper::HelperTextError, helper::Role,
 };
 use companion_wire::{HelperCardView, HelperForm};
 use provenance::{AppName, SpaceId};
@@ -32,7 +32,7 @@ pub enum Reach {
 
 /// Why a draft cannot be saved yet.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum SaveFault {
+pub enum SaveError {
     /// No name, or only spaces.
     #[error("Give it a name.")]
     NoName,
@@ -108,20 +108,20 @@ impl Draft {
     ///
     /// # Errors
     ///
-    /// Returns a [`SaveFault`] naming what is missing: the name, what the helper is for, or an app.
-    pub fn form(&self) -> Result<HelperForm, SaveFault> {
+    /// Returns a [`SaveError`] naming what is missing: the name, what the helper is for, or an app.
+    pub fn form(&self) -> Result<HelperForm, SaveError> {
         let name = HelperName::parse(&self.name).map_err(|fault| match fault {
-            HelperTextFault::Empty => SaveFault::NoName,
-            _ => SaveFault::BadName,
+            HelperTextError::Empty => SaveError::NoName,
+            _ => SaveError::BadName,
         })?;
         let role = Role::parse(&self.role).map_err(|fault| match fault {
-            HelperTextFault::Empty => SaveFault::NoRole,
-            _ => SaveFault::BadRole,
+            HelperTextError::Empty => SaveError::NoRole,
+            _ => SaveError::BadRole,
         })?;
         let (apps, ceiling) = match &self.reach {
             Reach::Chosen { apps, ceiling } if !apps.is_empty() => (apps, *ceiling),
-            Reach::Chosen { .. } => return Err(SaveFault::NoApps),
-            Reach::Unreadable => return Err(SaveFault::ReachUnreadable),
+            Reach::Chosen { .. } => return Err(SaveError::NoApps),
+            Reach::Unreadable => return Err(SaveError::ReachUnreadable),
         };
         Ok(HelperForm {
             name,

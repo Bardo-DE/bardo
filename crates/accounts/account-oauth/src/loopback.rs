@@ -27,7 +27,7 @@ pub struct AuthCode(pub SecretText);
 
 /// Why a redirect was not accepted.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum LoopbackFault {
+pub enum LoopbackError {
     /// The `state` is not this sign-in's.
     #[error("wrong state")]
     WrongState,
@@ -57,12 +57,12 @@ const MAX_HEADERS: usize = 64;
 /// Whether `buf` holds a whole request head (through the blank line): `Ok(false)` while more is
 /// to come, a fault when what has arrived cannot be an HTTP request head.
 #[cfg(feature = "io")]
-pub(crate) fn head_complete(buf: &[u8]) -> Result<bool, LoopbackFault> {
+pub(crate) fn head_complete(buf: &[u8]) -> Result<bool, LoopbackError> {
     let mut headers = [httparse::EMPTY_HEADER; MAX_HEADERS];
     match httparse::Request::new(&mut headers).parse(buf) {
         Ok(httparse::Status::Complete(_)) => Ok(true),
         Ok(httparse::Status::Partial) => Ok(false),
-        Err(_) => Err(LoopbackFault::Malformed),
+        Err(_) => Err(LoopbackError::Malformed),
     }
 }
 
@@ -71,20 +71,20 @@ pub(crate) fn head_complete(buf: &[u8]) -> Result<bool, LoopbackFault> {
 ///
 /// # Errors
 ///
-/// Returns a [`LoopbackFault`] when the request is oversized, malformed, has the wrong `state`,
+/// Returns a [`LoopbackError`] when the request is oversized, malformed, has the wrong `state`,
 /// carries no code, or reports that the issuer refused.
-pub fn parse_redirect(head: &[u8], expected: &OAuthState) -> Result<AuthCode, LoopbackFault> {
+pub fn parse_redirect(head: &[u8], expected: &OAuthState) -> Result<AuthCode, LoopbackError> {
     if head.len() > MAX_REDIRECT_BYTES {
-        return Err(LoopbackFault::Oversized);
+        return Err(LoopbackError::Oversized);
     }
     let mut headers = [httparse::EMPTY_HEADER; MAX_HEADERS];
     let mut request = httparse::Request::new(&mut headers);
     let target = match request.parse(head) {
         Ok(httparse::Status::Complete(_)) => match (request.method, request.path) {
             (Some("GET"), Some(target)) => target,
-            _ => return Err(LoopbackFault::Malformed),
+            _ => return Err(LoopbackError::Malformed),
         },
-        _ => return Err(LoopbackFault::Malformed),
+        _ => return Err(LoopbackError::Malformed),
     };
     let params = target
         .split_once('?')
@@ -98,12 +98,12 @@ pub fn parse_redirect(head: &[u8], expected: &OAuthState) -> Result<AuthCode, Lo
     // The state is checked before anything else is believed, an issuer's `error` included: a
     // refusal nobody asked for is as foreign as a code nobody asked for.
     if !param("state").is_some_and(|s| expected.accepts(s)) {
-        return Err(LoopbackFault::WrongState);
+        return Err(LoopbackError::WrongState);
     }
     match (param("error"), param("code")) {
-        (Some(error), _) => Err(LoopbackFault::Refused(error.to_owned())),
+        (Some(error), _) => Err(LoopbackError::Refused(error.to_owned())),
         (None, Some(code)) if !code.is_empty() => Ok(AuthCode(SecretText::new(code))),
-        _ => Err(LoopbackFault::NoCode),
+        _ => Err(LoopbackError::NoCode),
     }
 }
 
@@ -115,13 +115,13 @@ mod tests {
         OAuthState("st-1".into())
     }
 
-    fn parse(request: &str) -> Result<String, LoopbackFault> {
+    fn parse(request: &str) -> Result<String, LoopbackError> {
         parse_redirect(request.as_bytes(), &state()).map(|c| c.0.expose().to_owned())
     }
 
     #[test]
     fn a_redirect_parses_to_its_code_or_its_fault() {
-        let cases: &[(&str, &str, Result<&str, LoopbackFault>)] = &[
+        let cases: &[(&str, &str, Result<&str, LoopbackError>)] = &[
             (
                 "code",
                 "GET /?code=4%2F0Aa&state=st-1 HTTP/1.1\r\n\r\n",
@@ -135,68 +135,68 @@ mod tests {
             (
                 "wrong state",
                 "GET /?code=stolen&state=wrong HTTP/1.1\r\n\r\n",
-                Err(LoopbackFault::WrongState),
+                Err(LoopbackError::WrongState),
             ),
             (
                 "no state",
                 "GET /?code=stolen HTTP/1.1\r\n\r\n",
-                Err(LoopbackFault::WrongState),
+                Err(LoopbackError::WrongState),
             ),
             (
                 "foreign error",
                 "GET /?error=access_denied&state=x HTTP/1.1\r\n\r\n",
-                Err(LoopbackFault::WrongState),
+                Err(LoopbackError::WrongState),
             ),
             (
                 "issuer error",
                 "GET /?error=access_denied&state=st-1 HTTP/1.1\r\n\r\n",
-                Err(LoopbackFault::Refused("access_denied".into())),
+                Err(LoopbackError::Refused("access_denied".into())),
             ),
             (
                 "no code",
                 "GET /?state=st-1 HTTP/1.1\r\n\r\n",
-                Err(LoopbackFault::NoCode),
+                Err(LoopbackError::NoCode),
             ),
             (
                 "empty code",
                 "GET /?code=&state=st-1 HTTP/1.1\r\n\r\n",
-                Err(LoopbackFault::NoCode),
+                Err(LoopbackError::NoCode),
             ),
             (
                 "favicon",
                 "GET /favicon.ico HTTP/1.1\r\n\r\n",
-                Err(LoopbackFault::WrongState),
+                Err(LoopbackError::WrongState),
             ),
             (
                 "post",
                 "POST /?code=c&state=st-1 HTTP/1.1\r\n\r\n",
-                Err(LoopbackFault::Malformed),
+                Err(LoopbackError::Malformed),
             ),
-            ("junk", "\u{0}\u{1}", Err(LoopbackFault::Malformed)),
+            ("junk", "\u{0}\u{1}", Err(LoopbackError::Malformed)),
             (
                 "a header name with a space",
                 "GET /?code=c&state=st-1 HTTP/1.1\r\nBad Name: x\r\n\r\n",
-                Err(LoopbackFault::Malformed),
+                Err(LoopbackError::Malformed),
             ),
             (
                 "not HTTP/1",
                 "GET /?code=c&state=st-1 HTTP/2\r\n\r\n",
-                Err(LoopbackFault::Malformed),
+                Err(LoopbackError::Malformed),
             ),
             (
                 "an unfinished head",
                 "GET /?code=c&state=st-1 HTTP/1.1\r\n",
-                Err(LoopbackFault::Malformed),
+                Err(LoopbackError::Malformed),
             ),
             (
                 "a plus in the code is a space",
                 "GET /?code=a+b&state=st-1 HTTP/1.1\r\n\r\n",
                 Ok("a b"),
             ),
-            ("empty", "", Err(LoopbackFault::Malformed)),
+            ("empty", "", Err(LoopbackError::Malformed)),
         ];
         for (name, request, want) in cases {
-            let kind = |fault: LoopbackFault| std::mem::discriminant(&fault);
+            let kind = |fault: LoopbackError| std::mem::discriminant(&fault);
             assert_eq!(
                 parse(request).map_err(kind),
                 want.clone().map(str::to_owned).map_err(kind),
@@ -211,7 +211,7 @@ mod tests {
             "GET /?code={}&state=st-1 HTTP/1.1\r\n\r\n",
             "a".repeat(MAX_REDIRECT_BYTES)
         );
-        assert!(matches!(parse(&long), Err(LoopbackFault::Oversized)));
+        assert!(matches!(parse(&long), Err(LoopbackError::Oversized)));
         let edge = format!("GET /?state=st-1&code={} HTTP/1.1\r\n\r\n", "a".repeat(100));
         assert!(edge.len() < MAX_REDIRECT_BYTES && parse(&edge).is_ok());
     }

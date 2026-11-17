@@ -8,7 +8,7 @@ use action_core::*;
 use action_fake::{
     FixedClock, MailContact, MailThread, ScriptedReviewer, ScriptedWriter, fake_router_on,
 };
-use action_router::{RestoreFault, Router};
+use action_router::{RestoreError, Router};
 use action_vocab::{Handle, Value};
 use action_wire::{IntentsReply, IntentsRequest, SessionOpen, SessionOpened, WireRefusal};
 use agent_session::fake::{LogMood, MemoryLog};
@@ -497,7 +497,7 @@ async fn untrusted_handles_with_no_taint_before_them_restore_tainted_and_are_rep
     assert!(restored.taint, "it cannot launder itself clean");
     assert_eq!(
         router.restore_session(&id).await.expect_err("not twice"),
-        RestoreFault::Live
+        RestoreError::Live
     );
     say(&router, &id, "hello").await;
     let written = entries(&log, &id).await;
@@ -556,7 +556,7 @@ async fn taint_survives_a_crash(ops: &[Op], cut: u32) {
             "ops {ops:?} cut at {cut}: an untrusted value was revealed and the restore is clean"
         ),
         Ok(_) => {}
-        Err(RestoreFault::Unknown(_)) => assert!(
+        Err(RestoreError::Unknown(_)) => assert!(
             !revealed,
             "ops {ops:?} cut at {cut}: a reveal with no record at all"
         ),

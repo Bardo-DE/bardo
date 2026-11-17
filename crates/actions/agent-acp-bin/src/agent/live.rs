@@ -65,10 +65,10 @@ struct Placeholder {
 
 /// Why the host could not serve the pseudo-app.
 #[derive(Debug, thiserror::Error)]
-pub enum LiveFault {
+pub enum LiveError {
     /// No bubblewrap: no agent is started unconfined.
     #[error("no sandbox (bubblewrap) here ({0}): no agent is started unconfined")]
-    NoSandbox(sandbox::CannotSandbox),
+    NoSandbox(sandbox::CannotSandboxError),
     /// The pseudo-app's manifest does not parse.
     #[error("the agent manifest: {0}")]
     Manifest(#[from] action_manifest::ManifestFileError),
@@ -87,8 +87,8 @@ pub enum LiveFault {
 }
 
 impl Placeholder {
-    fn new() -> Result<Self, LiveFault> {
-        let invalid = |e: &dyn std::fmt::Display| LiveFault::Invalid(e.to_string());
+    fn new() -> Result<Self, LiveError> {
+        let invalid = |e: &dyn std::fmt::Display| LiveError::Invalid(e.to_string());
         Ok(Self {
             session: SessionId::parse("s-0").map_err(|e| invalid(&e))?,
             task: TaskId::parse("helper-task").map_err(|e| invalid(&e))?,
@@ -100,7 +100,7 @@ impl Placeholder {
 impl<A: Accounts + 'static> Live<A> {
     /// Serves the pseudo-app on the bus. The performer counts the commands it runs against
     /// `agent_network`, the network of the agent process.
-    pub async fn serve(wiring: Wiring<A>, agent_network: NetworkMode) -> Result<Self, LiveFault> {
+    pub async fn serve(wiring: Wiring<A>, agent_network: NetworkMode) -> Result<Self, LiveError> {
         let Wiring {
             bus,
             accounts,
@@ -120,7 +120,7 @@ impl<A: Accounts + 'static> Live<A> {
         let found = match &bwrap {
             Detected::Bwrap(found) => found,
             Detected::Missing(why) => {
-                return Err(LiveFault::NoSandbox(*why));
+                return Err(LiveError::NoSandbox(*why));
             }
         };
         let sandbox = found.clone();
@@ -128,7 +128,7 @@ impl<A: Accounts + 'static> Live<A> {
             .with_agent_network(agent_network)
             .with_command_deadline(agent_acp_core::command_deadline::CommandDeadline::DEFAULT);
         let manifest: ValidManifest = action_manifest::parse(MANIFEST)?;
-        let quiet = Quiet(permission_core::acp_agent_app().ok_or(LiveFault::NoAppName)?);
+        let quiet = Quiet(permission_core::acp_agent_app().ok_or(LiveError::NoAppName)?);
         if terminal_fallback {
             // Served before the name is claimed, so the first sheet finds it.
             bus.object_server()

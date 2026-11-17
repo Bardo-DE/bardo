@@ -7,7 +7,7 @@ use plugin_host::manifest::{Entry, PathRole, Provides, Refusal};
 use serde::Deserialize;
 
 use crate::capability::Capability;
-use crate::fault::Fault;
+use crate::fault::EntryError;
 use crate::file_icons::IconFolder;
 use crate::look::Look;
 
@@ -47,7 +47,7 @@ impl Provision {
 
     /// The first problem with the files this entry names that plugin host's own checks do not make
     /// (a size over its cap, a folder that is not one).
-    pub(crate) fn fault(&self) -> Option<Fault> {
+    pub(crate) fn fault(&self) -> Option<EntryError> {
         match self {
             Provision::FileIcons(icons) => icons.fault(),
             Provision::Look(look) => look.fault(),
@@ -57,14 +57,14 @@ impl Provision {
 
 impl Provides for Provision {
     type Capability = Capability;
-    type Fault = Fault;
+    type Fault = EntryError;
 
-    fn parse(entry: Entry) -> Result<Provision, Refusal<Fault>> {
-        let head = entry.clone().read::<Head, Fault>()?;
+    fn parse(entry: Entry) -> Result<Provision, Refusal<EntryError>> {
+        let head = entry.clone().read::<Head, EntryError>()?;
         match Capability::parse(&head.capability) {
             Some(Capability::FileIcons) => IconFolder::from_entry(&entry).map(Provision::FileIcons),
             Some(Capability::Look) => Look::from_entry(&entry).map(Provision::Look),
-            None => Err(Refusal::Fault(Fault::NotOwned {
+            None => Err(Refusal::Fault(EntryError::NotOwned {
                 word: head.capability,
             })),
         }

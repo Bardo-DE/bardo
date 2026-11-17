@@ -73,7 +73,7 @@ async fn a_file_that_cannot_be_read_is_left_as_it_is_and_no_use_is_recorded() {
     let refused = book
         .record(identity("ada.example"), app("org.bardo.Mail"))
         .await;
-    assert!(matches!(refused, Err(Unsaved::ReadOnly)));
+    assert!(matches!(refused, Err(UnsavedError::ReadOnly)));
     assert_eq!(
         std::fs::read_to_string(dir.join(FILE)).expect("file"),
         "{not json"

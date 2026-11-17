@@ -2,7 +2,7 @@
 
 use crate::gpu::GpuError;
 use crate::headless::{ConnectorEvent, FrameSource, HeadlessBackend, RgbaFrame, SpecError};
-use crate::session::SessionFault;
+use crate::session::SessionError;
 use crate::tty::{KmsError, TtyBackend};
 use crate::winit::WinitBackend;
 use compositor_core::OutputName;
@@ -208,7 +208,7 @@ pub enum BackendError {
     Kms(#[from] KmsError),
     /// The session refused.
     #[error("session: {0}")]
-    Session(#[from] SessionFault),
+    Session(#[from] SessionError),
     /// A GPU call failed.
     #[error("gpu: {0}")]
     Gpu(#[from] GpuError),

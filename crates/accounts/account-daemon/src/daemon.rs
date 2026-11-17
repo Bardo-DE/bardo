@@ -25,7 +25,7 @@ use account_families::set::{FamilyIo, ProviderNames, load_specs, local_runtimes,
 use account_identities::SheetsDesk;
 use account_provider::{Provider, ProviderSpec};
 use account_secrets::Namespace;
-use account_secrets::keysel::{Chosen, KeysRefusal, Selection, select};
+use account_secrets::keysel::{Chosen, KeysError, Selection, select};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_sheets::{AppNames, BusSheets};
@@ -184,7 +184,7 @@ pub enum StartError {
     Paths(#[from] PathError),
     /// The secret store asked for is refused.
     #[error("{0}")]
-    Keys(#[from] KeysRefusal),
+    Keys(#[from] KeysError),
     /// A caller table cannot be read.
     #[error("{0}")]
     Callers(#[from] CallerFileError),
@@ -192,7 +192,7 @@ pub enum StartError {
     /// was changed. The daemon stops with [`account_daemon::EXIT_REGISTRY_REFUSED`](crate::EXIT_REGISTRY_REFUSED),
     /// the status `bardo-accountd.service` does not restart on.
     #[error("{}", account_daemon_support::registry_words(.0.file(), .0.backup(), .0.cause(), "accounts service"))]
-    RegistryRefused(account_store::RegistryRefusal),
+    RegistryRefused(account_store::RegistryError),
     /// The bus cannot be reached.
     #[error("no session bus: {0}")]
     Bus(#[source] zbus::Error),

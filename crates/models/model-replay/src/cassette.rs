@@ -7,7 +7,7 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use speech_provider::SpeechCaps;
 
-use crate::{PrintHash, RequestPrint, StreamFault, check_sequence};
+use crate::{PrintHash, RequestPrint, StreamError, check_sequence};
 
 /// The format version of a cassette file.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -102,7 +102,7 @@ pub enum CassetteError {
     BadSequence {
         line: u32,
         #[source]
-        source: StreamFault,
+        source: StreamError,
     },
     #[error("the cassette is version {found:?}, this build reads {want:?}")]
     Version {

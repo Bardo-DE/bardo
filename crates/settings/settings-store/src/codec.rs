@@ -3,7 +3,7 @@
 
 use crate::doc::{Format, SettingsDoc};
 use crate::lenient::{Loaded, Read, read, read_within};
-use crate::preserve::{self, InTheWay};
+use crate::preserve::{self, InTheWayError};
 
 /// `text` read as a `D`; text that is not the document's format at all is the defaults with the
 /// whole file reported invalid.
@@ -32,13 +32,16 @@ pub fn understood<D: SettingsDoc>(text: &str) -> Result<(), String> {
 ///
 /// # Errors
 ///
-/// Returns [`InTheWay`] when the file is not a `D`.
-pub fn merged<D: SettingsDoc>(existing: Option<String>, body: &str) -> Result<String, InTheWay> {
+/// Returns [`InTheWayError`] when the file is not a `D`.
+pub fn merged<D: SettingsDoc>(
+    existing: Option<String>,
+    body: &str,
+) -> Result<String, InTheWayError> {
     let Some(text) = existing else {
         return Ok(body.to_owned());
     };
     match read::<D>(&text, D::FORMAT) {
-        Read::Garbled { .. } => Err(InTheWay(None)),
+        Read::Garbled { .. } => Err(InTheWayError(None)),
         Read::Loaded(loaded) => match D::FORMAT {
             Format::Toml => preserve::merge(&text, body, &loaded.unknown),
             _ => Ok(body.to_owned()),

@@ -9,7 +9,7 @@ use base_ids::Count;
     clippy::too_many_lines,
     reason = "a table of cases, one row each; splitting it would only scatter the rows"
 )]
-fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFault>)> {
+fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaError>)> {
     let a = entity("mail.thread", "a");
     let b = entity("mail.thread", "b");
     let yes = ChoiceId::parse("yes").expect("id");
@@ -27,7 +27,7 @@ fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFau
             "choice outside the set",
             Value::Choice(ChoiceId::parse("maybe").expect("id")),
             ValueSchema::Choice(vec![yes, no]),
-            Err(SchemaFault::NotInSet),
+            Err(SchemaError::NotInSet),
         ),
         (
             "integer in range",
@@ -39,7 +39,7 @@ fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFau
             "integer above range",
             Value::Integer(4),
             ValueSchema::Integer { min: 1, max: 3 },
-            Err(SchemaFault::OutOfRange),
+            Err(SchemaError::OutOfRange),
         ),
         (
             "entities among the offered",
@@ -51,7 +51,7 @@ fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFau
             "an entity nobody offered",
             Value::Entities(vec![entity("mail.thread", "evil")]),
             ValueSchema::EntitiesAmong(vec![a.clone(), b.clone()]),
-            Err(SchemaFault::NotInSet),
+            Err(SchemaError::NotInSet),
         ),
         (
             "text within the cap",
@@ -63,13 +63,13 @@ fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFau
             "text over the cap",
             Value::Text("too long".into()),
             ValueSchema::Text { max: CharCount(2) },
-            Err(SchemaFault::TooLong),
+            Err(SchemaError::TooLong),
         ),
         (
             "wrong type",
             Value::Integer(1),
             ValueSchema::Date,
-            Err(SchemaFault::WrongType),
+            Err(SchemaError::WrongType),
         ),
         (
             "record with every field",
@@ -81,13 +81,13 @@ fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFau
             "record missing a field",
             fields(vec![]),
             ValueSchema::Record(vec![(param("n"), ValueSchema::Integer { min: 0, max: 9 })]),
-            Err(SchemaFault::MissingField(param("n"))),
+            Err(SchemaError::MissingField(param("n"))),
         ),
         (
             "record with an extra field",
             fields(vec![("n", Value::Integer(1)), ("x", Value::Integer(1))]),
             ValueSchema::Record(vec![(param("n"), ValueSchema::Integer { min: 0, max: 9 })]),
-            Err(SchemaFault::UnknownField(param("x"))),
+            Err(SchemaError::UnknownField(param("x"))),
         ),
         (
             "list within its cap",
@@ -105,7 +105,7 @@ fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFau
                 of: Box::new(ValueSchema::Integer { min: 0, max: 9 }),
                 max: Count(1),
             },
-            Err(SchemaFault::TooMany),
+            Err(SchemaError::TooMany),
         ),
         (
             "list with a bad element",
@@ -114,7 +114,7 @@ fn schema_cases() -> Vec<(&'static str, Value, ValueSchema, Result<(), SchemaFau
                 of: Box::new(ValueSchema::Integer { min: 0, max: 9 }),
                 max: Count(3),
             },
-            Err(SchemaFault::OutOfRange),
+            Err(SchemaError::OutOfRange),
         ),
     ]
 }

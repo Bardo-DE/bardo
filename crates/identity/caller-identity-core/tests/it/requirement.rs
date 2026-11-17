@@ -1,7 +1,7 @@
 //! What a method asks of its caller.
 
 use caller_identity_core::{
-    AppKey, ExePath, Pin, PinNeed, Proof, Refused, Requirement, RoleName, Standing, WhyNot,
+    AppKey, ExePath, NotHeldError, Pin, PinNeed, Proof, Requirement, RoleName, Standing, WhyNot,
 };
 
 fn role(name: &str) -> RoleName {
@@ -58,17 +58,17 @@ fn refusals_do_not_say_which_check_failed() {
         exe: ExePath::new("/usr/bin/x").expect("a path"),
         scope_app: None,
     };
-    assert_eq!(unknown.holds(&need), Err(Refused::Unknown));
-    assert_eq!(program.holds(&need), Err(Refused::NotAllowed));
+    assert_eq!(unknown.holds(&need), Err(NotHeldError::Unknown));
+    assert_eq!(program.holds(&need), Err(NotHeldError::NotAllowed));
     assert_eq!(
         service("portal", Proof::Full, Pin::AtConnect).holds(&need),
-        Err(Refused::NotAllowed)
+        Err(NotHeldError::NotAllowed)
     );
-    assert_eq!(program.holds(&[]), Err(Refused::NotAllowed));
-    assert_eq!(Refused::NoSender.to_string(), "no sender");
-    assert_eq!(Refused::Unknown.to_string(), "unknown caller");
+    assert_eq!(program.holds(&[]), Err(NotHeldError::NotAllowed));
+    assert_eq!(NotHeldError::NoSender.to_string(), "no sender");
+    assert_eq!(NotHeldError::Unknown.to_string(), "unknown caller");
     assert_eq!(
-        Refused::NotAllowed.to_string(),
+        NotHeldError::NotAllowed.to_string(),
         "not the caller this method answers"
     );
 }

@@ -2,7 +2,9 @@
 //! well-known name of the service that role is.
 
 use caller_identity_dbus::access_denied;
-use caller_identity_dbus::caller_identity_core::{Proof, Refused, Requirement, RoleName, Standing};
+use caller_identity_dbus::caller_identity_core::{
+    NotHeldError, Proof, Requirement, RoleName, Standing,
+};
 use zbus::fdo;
 use zbus::message::Header;
 use zbus::names::OwnedUniqueName;
@@ -45,7 +47,7 @@ impl<T> Claim<T> {
 impl<T> Claim<T> {
     /// The unique name that owns this claim's well-known name, when its program holds the role:
     /// who an address by that name reaches. A name nobody owns, or a squatter, is refused.
-    pub(crate) async fn owner(&self, peers: &Peers) -> Result<OwnedUniqueName, Refused> {
+    pub(crate) async fn owner(&self, peers: &Peers) -> Result<OwnedUniqueName, NotHeldError> {
         peers.owner_of(self.name, &self.requirements()).await
     }
 }
@@ -74,21 +76,21 @@ pub(crate) async fn check<T: Copy>(
     peers: &Peers,
     header: &Header<'_>,
     claims: &[Claim<T>],
-) -> Result<(OwnedUniqueName, T), Refused> {
+) -> Result<(OwnedUniqueName, T), NotHeldError> {
     let sender = header.sender().map(zbus::names::UniqueName::as_str);
     let need: Vec<Requirement> = claims.iter().flat_map(Claim::requirements).collect();
     let standing = peers.require(sender, &need).await?;
-    let claim = claim_held(&standing, claims).ok_or(Refused::NotAllowed)?;
+    let claim = claim_held(&standing, claims).ok_or(NotHeldError::NotAllowed)?;
     let owner = peers.owner_of(claim.name, &claim.requirements()).await?;
     if Some(owner.as_str()) == sender {
         Ok((owner, claim.tag))
     } else {
-        Err(Refused::NotAllowed)
+        Err(NotHeldError::NotAllowed)
     }
 }
 
 /// Say in the journal that `sender` was refused, and for which roles.
-pub(crate) fn log_refusal<T>(sender: Option<&str>, claims: &[Claim<T>], refused: Refused) {
+pub(crate) fn log_refusal<T>(sender: Option<&str>, claims: &[Claim<T>], refused: NotHeldError) {
     let wanted: Vec<&str> = claims.iter().map(|claim| claim.role.as_str()).collect();
     eprintln!("bardo-shell: callers: {sender:?} refused for {wanted:?}: {refused}");
 }

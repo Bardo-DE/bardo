@@ -68,7 +68,7 @@ fn the_checkpoint_requests_and_replies_round_trip_and_name_their_members() {
         SessionId::parse("s-2").expect("session"),
     ));
     round(&IntentsReply::CheckpointPlan(Ok(RestorePlan::default())));
-    round(&IntentsReply::CheckpointPlan(Err(CheckpointFault::Gone)));
+    round(&IntentsReply::CheckpointPlan(Err(CheckpointError::Gone)));
 }
 
 #[test]

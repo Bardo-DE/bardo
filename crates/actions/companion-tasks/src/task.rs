@@ -98,7 +98,7 @@ pub struct TaskRuntime {
 #[derive(Debug, Clone, PartialEq)]
 pub enum Failure {
     /// The planner model gave nothing usable.
-    Model(agent_planner::PlanFault),
+    Model(agent_planner::PlanError),
     /// A call was refused in a way that ends the task (over budget).
     Refused(CallRefusal),
     /// The quarantined reader could not answer.

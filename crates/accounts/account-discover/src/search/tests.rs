@@ -53,7 +53,7 @@ v = { access = "read_write", send = "present", delta = "poll", transport = "imap
     ProviderSet::layered(vec![spec], vec![])
 }
 
-async fn run(http: &Table, dns: &Records, set: &ProviderSet) -> Result<Outcome, NotFound> {
+async fn run(http: &Table, dns: &Records, set: &ProviderSet) -> Result<Outcome, SearchError> {
     discover_mail(http, dns, set, ADDRESS).await
 }
 
@@ -152,7 +152,7 @@ async fn a_document_naming_no_usable_server_is_recorded_and_the_search_goes_on()
     assert!(
         err.tried
             .iter()
-            .any(|t| t.what == OWN && t.miss == Miss::Unusable(DiscoverFault::NoServers)),
+            .any(|t| t.what == OWN && t.miss == Miss::Unusable(DiscoverError::NoServers)),
         "{err}"
     );
     assert!(

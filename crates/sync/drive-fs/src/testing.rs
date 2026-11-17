@@ -15,7 +15,7 @@ use std::collections::{BTreeMap, HashMap};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 use sync_core::{
-    BaseVersion, Conflict, ContentHash, Found, ItemKind, Place, PutRefused, RemoteId, RemoteSide,
+    BaseVersion, Conflict, ContentHash, Found, ItemKind, Place, PutError, RemoteId, RemoteSide,
     RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
 };
 use tokio::sync::Semaphore;
@@ -388,9 +388,9 @@ impl MemorySink {
     }
 
     /// The answer of a change taken: lost when [`MemorySink::lose_next`] asked.
-    fn answer<T>(&self, taken: T) -> Result<T, PutRefused> {
+    fn answer<T>(&self, taken: T) -> Result<T, PutError> {
         if std::mem::take(&mut held(&self.state).lose) {
-            Err(PutRefused::Transient(RetryAfter(0)))
+            Err(PutError::Transient(RetryAfter(0)))
         } else {
             Ok(taken)
         }
@@ -398,10 +398,10 @@ impl MemorySink {
 
     /// The id a new item at `place` is made under: the one reserved for it, unless something
     /// has it (a conflict, as a drive answers), else a new one.
-    fn id_for(&self, place: &Place) -> Result<RemoteId, PutRefused> {
+    fn id_for(&self, place: &Place) -> Result<RemoteId, PutError> {
         match &place.id {
             Some(id) => match self.listing.entry(id).ok().flatten() {
-                Some(there) => Err(PutRefused::Conflict(Conflict {
+                Some(there) => Err(PutError::Conflict(Conflict {
                     item: id.clone(),
                     base: BaseVersion::Absent,
                     remote: RemoteSide::Exists(id.clone(), there.version),
@@ -477,34 +477,34 @@ impl MemorySink {
         RemoteVersion(format!("w{}", state.next))
     }
 
-    fn check(&self, name: Option<&str>) -> Result<(), PutRefused> {
+    fn check(&self, name: Option<&str>) -> Result<(), PutError> {
         let mut state = held(&self.state);
         state.tries += 1;
         match state.refuse {
-            Some(Refuse::Offline) => return Err(PutRefused::Transient(RetryAfter(0))),
-            Some(Refuse::Quota) => return Err(PutRefused::Quota),
-            Some(Refuse::Forbidden) => return Err(PutRefused::Forbidden),
-            Some(Refuse::SignedOut) => return Err(PutRefused::Unauthorized),
-            Some(Refuse::InUse) => return Err(PutRefused::InUse(RetryAfter(0))),
-            Some(Refuse::Declined) => return Err(PutRefused::Declined),
+            Some(Refuse::Offline) => return Err(PutError::Transient(RetryAfter(0))),
+            Some(Refuse::Quota) => return Err(PutError::Quota),
+            Some(Refuse::Forbidden) => return Err(PutError::Forbidden),
+            Some(Refuse::SignedOut) => return Err(PutError::Unauthorized),
+            Some(Refuse::InUse) => return Err(PutError::InUse(RetryAfter(0))),
+            Some(Refuse::Declined) => return Err(PutError::Declined),
             None => {}
         }
         match (name, state.names) {
-            (Some(name), Some(rule)) if !rule(name) => Err(PutRefused::NameRefused),
+            (Some(name), Some(rule)) if !rule(name) => Err(PutError::NameRefused),
             _ => Ok(()),
         }
     }
 
-    fn at_base(&self, id: &RemoteId, base: &BaseVersion) -> Result<Entry, PutRefused> {
+    fn at_base(&self, id: &RemoteId, base: &BaseVersion) -> Result<Entry, PutError> {
         let now = self.listing.entry(id).ok().flatten();
         match (now, base) {
             (Some(entry), BaseVersion::At(seen)) if entry.version == *seen => Ok(entry),
-            (Some(entry), _) => Err(PutRefused::Conflict(Conflict {
+            (Some(entry), _) => Err(PutError::Conflict(Conflict {
                 item: id.clone(),
                 base: base.clone(),
                 remote: RemoteSide::Changed(entry.version),
             })),
-            (None, _) => Err(PutRefused::Conflict(Conflict {
+            (None, _) => Err(PutError::Conflict(Conflict {
                 item: id.clone(),
                 base: base.clone(),
                 remote: RemoteSide::Deleted(RemoteVersion(String::new())),
@@ -512,7 +512,7 @@ impl MemorySink {
         }
     }
 
-    fn free(&self, place: &Place, except: Option<&RemoteId>) -> Result<(), PutRefused> {
+    fn free(&self, place: &Place, except: Option<&RemoteId>) -> Result<(), PutError> {
         if held(&self.state).twins {
             return Ok(());
         }
@@ -523,7 +523,7 @@ impl MemorySink {
             .into_iter()
             .find(|e| e.name == place.name && Some(&e.id) != except);
         match taken {
-            Some(entry) => Err(PutRefused::Conflict(Conflict {
+            Some(entry) => Err(PutError::Conflict(Conflict {
                 item: entry.id.clone(),
                 base: BaseVersion::Absent,
                 remote: RemoteSide::Exists(entry.id, entry.version),
@@ -641,7 +641,7 @@ impl Sink for MemorySink {
                     if let Some(key) = &session {
                         held(&self.state).sessions.insert(key.clone(), bytes);
                     }
-                    return Err(PutRefused::Transient(RetryAfter(0)));
+                    return Err(PutError::Transient(RetryAfter(0)));
                 }
                 let cut = held(&self.state).cut_after;
                 if cut.is_some_and(|after| chunks >= after) {
@@ -651,12 +651,12 @@ impl Sink for MemorySink {
                     if let Some(key) = &session {
                         state.sessions.insert(key.clone(), bytes);
                     }
-                    return Err(PutRefused::Transient(RetryAfter(0)));
+                    return Err(PutError::Transient(RetryAfter(0)));
                 }
                 let chunk = upload
                     .content
                     .read(at, self.chunk)
-                    .map_err(|error| PutRefused::failed(RetryAfter(0), error))?;
+                    .map_err(|error| PutError::failed(RetryAfter(0), error))?;
                 {
                     let mut state = held(&self.state);
                     state.largest = state.largest.max(chunk.len() as u64);

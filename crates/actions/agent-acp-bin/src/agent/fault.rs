@@ -3,7 +3,7 @@
 /// Why the agent host could not start or went on no longer. The words are the ones the program
 /// prints, after `bardo-agent: `.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum AgentFault {
+pub enum AgentError {
     /// The settings do not let an agent run.
     #[error("{0}")]
     Permit(String),
@@ -15,7 +15,7 @@ pub enum AgentFault {
     Agents(String),
     /// No sandbox: no agent is started unconfined.
     #[error("no sandbox (bubblewrap) here ({0}): no agent is started unconfined")]
-    NoSandbox(sandbox::CannotSandbox),
+    NoSandbox(sandbox::CannotSandboxError),
     /// The network forwarder is not beside this program.
     #[error("cannot find bardo-agent-net-forward beside this program")]
     NoForwarder,

@@ -176,7 +176,7 @@ pub fn decide_text(
         .stages
         .into_iter()
         .next()
-        .ok_or(plain(inference_core::InferRefusal::Unavailable))?;
+        .ok_or(plain(inference_core::InferRefusedError::Unavailable))?;
     Ok(Decided {
         chosen: stage.picked.chosen,
         readiness: stage.picked.readiness,

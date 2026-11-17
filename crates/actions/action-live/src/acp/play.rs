@@ -36,7 +36,7 @@ pub enum AgentEnd {
 
 /// Why the agent could not be hosted. The words are what a run says, plainly.
 #[derive(Debug, thiserror::Error)]
-pub enum PlayFault {
+pub enum PlayError {
     /// The scratch directories could not be made.
     #[error("scratch directories: {0}")]
     Scratch(#[from] std::io::Error),
@@ -101,12 +101,12 @@ async fn open(
     world: &World,
     binaries: &Binaries,
     spec: &AcpSpec,
-) -> Result<Hosted<LoginOnly>, PlayFault> {
+) -> Result<Hosted<LoginOnly>, PlayError> {
     let home = world.dir.path();
     let work = home.join("work");
     std::fs::create_dir_all(&work).and_then(|()| prepare_state(spec, home))?;
     let (Some(forwarder), Some(cwd)) = (abs(&binaries.action_mcp), abs(&work)) else {
-        return Err(PlayFault::NotUtf8);
+        return Err(PlayError::NotUtf8);
     };
     let entry = spec.entry_toml(home);
     let dir = spec
@@ -114,8 +114,8 @@ async fn open(
         .as_ref()
         .map(|pick| agent_registry::dirs::AgentsDir::at(&pick.dir));
     let file = AgentsFile::parse_in(&entry, dir.as_ref())
-        .map_err(|why| PlayFault::Entry(why.to_string()))?;
-    let program = ProgramName::parse(&spec.program).map_err(PlayFault::ProgramName)?;
+        .map_err(|why| PlayError::Entry(why.to_string()))?;
+    let program = ProgramName::parse(&spec.program).map_err(PlayError::ProgramName)?;
     // The agent host is its own process to the daemons (bardo-agent's scope), as it is on a
     // desktop; the harness process stays the shell.
     let bus = world
@@ -161,12 +161,12 @@ async fn open(
 ///
 /// # Errors
 ///
-/// Returns a [`PlayFault`] when the agent cannot be started or the session cannot be opened.
+/// Returns a [`PlayError`] when the agent cannot be started or the session cannot be opened.
 pub async fn offered_models(
     world: &World,
     binaries: &Binaries,
     spec: &AcpSpec,
-) -> Result<Option<Models>, PlayFault> {
+) -> Result<Option<Models>, PlayError> {
     let Hosted { mut host, session } = Box::pin(open(world, binaries, spec)).await?;
     let models = host.backend().models().cloned();
     let _ = host.close(&session, EndCause::Closed).await;

@@ -4,7 +4,7 @@
 use crate::error::FilesError;
 use crate::read::text_of;
 use crate::values::{ConfigHome, DataHome};
-use action_settings::{AddFault, AgentChoice, Agents, ChoiceFault, NewAgent};
+use action_settings::{AddError, AgentChoice, Agents, ChoiceError, NewAgent};
 use action_settings_fs::{read_agents_in, write_agent_add, write_agent_choice, write_agent_remove};
 use agent_install::store::{agents, versions};
 use agent_registry::dirs::AgentsDir;
@@ -39,7 +39,7 @@ pub fn save_agent_choice(
     choice: &AgentChoice,
 ) -> Result<(), FilesError> {
     write_agent_choice(&config.0.join(AGENTS_FILE), program, choice).map_err(|fault| match fault {
-        ChoiceFault::Io(source) => FilesError::Io {
+        ChoiceError::Io(source) => FilesError::Io {
             path: AGENTS_FILE.into(),
             source,
         },
@@ -72,9 +72,9 @@ pub fn installed_agents(data: &DataHome) -> Vec<FoundAgent> {
 ///
 /// # Errors
 ///
-/// Returns an [`AddFault`] when the entry is not valid, or is already listed, or the file cannot be
+/// Returns an [`AddError`] when the entry is not valid, or is already listed, or the file cannot be
 /// read or written.
-pub fn add_agent(config: &ConfigHome, agent: &NewAgent) -> Result<(), AddFault> {
+pub fn add_agent(config: &ConfigHome, agent: &NewAgent) -> Result<(), AddError> {
     write_agent_add(&config.0.join(AGENTS_FILE), agent)
 }
 
@@ -83,8 +83,8 @@ pub fn add_agent(config: &ConfigHome, agent: &NewAgent) -> Result<(), AddFault> 
 ///
 /// # Errors
 ///
-/// Returns a [`ChoiceFault`] when there is no entry for `program`, or the file cannot be read or
+/// Returns a [`ChoiceError`] when there is no entry for `program`, or the file cannot be read or
 /// written.
-pub fn remove_agent(config: &ConfigHome, program: &str) -> Result<(), ChoiceFault> {
+pub fn remove_agent(config: &ConfigHome, program: &str) -> Result<(), ChoiceError> {
     write_agent_remove(&config.0.join(AGENTS_FILE), program)
 }

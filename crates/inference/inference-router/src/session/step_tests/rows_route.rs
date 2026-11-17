@@ -4,7 +4,7 @@ use super::helpers::*;
 use account_core::DataClass;
 use base_ids::Permille;
 use inference_core::{
-    ClientFrame, Declined, DeclinedBecause, InferEvent, InferRefusal, InferReply, ModelError,
+    ClientFrame, Declined, DeclinedBecause, InferEvent, InferRefusedError, InferReply, ModelError,
     ModelRef, PickRefusal, Readiness, RequestKind, Why,
 };
 
@@ -75,22 +75,22 @@ pub(super) fn rows() -> Vec<Row> {
             "route refused closes",
             llm_spec(DataClass::Mail),
             Phase::Opened,
-            SessionIn::Routed(Err(InferRefusal::NeedsGrant.into())),
+            SessionIn::Routed(Err(InferRefusedError::NeedsGrant.into())),
             Phase::Closed,
-            vec![done(InferReply::Refused(InferRefusal::NeedsGrant))],
+            vec![done(InferReply::Refused(InferRefusedError::NeedsGrant))],
         ),
         (
             "a named model that cannot serve says which and why, then refuses",
             llm_spec(DataClass::Mail),
             Phase::Opened,
             SessionIn::Routed(Err(PickRefusal {
-                refusal: InferRefusal::Unavailable,
+                refusal: InferRefusedError::Unavailable,
                 declined: Some(declined()),
             })),
             Phase::Closed,
             vec![
                 SessionOut::Emit(InferEvent::Declined(declined())),
-                done(InferReply::Refused(InferRefusal::Unavailable)),
+                done(InferReply::Refused(InferRefusedError::Unavailable)),
             ],
         ),
         (

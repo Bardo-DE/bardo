@@ -11,12 +11,12 @@
 //! `--registry-file FILE` reads the snapshot from a file instead of the registry. `install` says
 //! `installing ID VERSION` on its first line before it reaches the network.
 
-use agent_install::fetch::{Fetch, FetchFault, Https};
+use agent_install::fetch::{Fetch, FetchError, Https};
 use agent_install::run::System;
 use agent_install::store::{agents, versions};
 use agent_install::{Standing, Want, install, offers, standing};
 use agent_registry::dirs::AgentsDir;
-use agent_registry::snapshot::{Snapshot, SnapshotFault};
+use agent_registry::snapshot::{RegistrySnapshotError, Snapshot};
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::process::ExitCode;
@@ -64,11 +64,11 @@ enum SnapshotError {
     #[error("{0}")]
     Unread(#[from] std::io::Error),
     #[error("{0}")]
-    Unfetched(#[from] FetchFault),
+    Unfetched(#[from] FetchError),
     #[error("{0}")]
     NotText(#[from] std::string::FromUtf8Error),
     #[error("{0}")]
-    Invalid(#[from] SnapshotFault),
+    Invalid(#[from] RegistrySnapshotError),
 }
 
 fn snapshot(file: Option<PathBuf>) -> Result<Snapshot, SnapshotError> {

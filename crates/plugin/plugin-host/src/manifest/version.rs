@@ -25,7 +25,7 @@ enum PreRelease {
 /// Text that is not a dotted version.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("not a version: {version:?}")]
-pub struct InvalidVersion {
+pub struct InvalidVersionError {
     /// The text as written.
     pub version: String,
 }
@@ -37,9 +37,9 @@ impl Version {
     ///
     /// # Errors
     ///
-    /// Returns [`InvalidVersion`] when the text is not a dotted version.
-    pub fn parse(text: &str) -> Result<Version, InvalidVersion> {
-        let invalid = || InvalidVersion {
+    /// Returns [`InvalidVersionError`] when the text is not a dotted version.
+    pub fn parse(text: &str) -> Result<Version, InvalidVersionError> {
+        let invalid = || InvalidVersionError {
             version: text.to_owned(),
         };
         let (numbers, pre) = match text.split_once('-') {

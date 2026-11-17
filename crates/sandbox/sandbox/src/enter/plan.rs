@@ -85,7 +85,7 @@ pub struct EnterPlan {
 
 /// Why the exec stage's words were refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum EnterFault {
+pub enum EnterError {
     /// A word the stage does not know.
     #[error("unknown word {0:?}")]
     UnknownWord(String),
@@ -159,16 +159,16 @@ impl EnterPlan {
     /// value, a bad path, two network words or none, no `--`, or no program is a fault.
     ///
     /// # Errors
-    /// Returns the `EnterFault` for an unknown word, a missing value, a bad path, two network words or
+    /// Returns the `EnterError` for an unknown word, a missing value, a bad path, two network words or
     /// none, a missing `--`, or no program.
     pub fn parse(
         args: impl IntoIterator<Item = String>,
-    ) -> Result<(Self, Vec<String>), EnterFault> {
+    ) -> Result<(Self, Vec<String>), EnterError> {
         let mut args = args.into_iter();
         let (mut read, mut write, mut device) = (Vec::new(), Vec::new(), Vec::new());
         let mut net: Option<NetRule> = None;
         loop {
-            let word = args.next().ok_or(EnterFault::NoSeparator)?;
+            let word = args.next().ok_or(EnterError::NoSeparator)?;
             let list = match word.as_str() {
                 READ => Some((READ, &mut read)),
                 WRITE => Some((WRITE, &mut write)),
@@ -176,7 +176,7 @@ impl EnterPlan {
                 _ => None,
             };
             if let Some((name, list)) = list {
-                let value = args.next().ok_or(EnterFault::MissingValue(name))?;
+                let value = args.next().ok_or(EnterError::MissingValue(name))?;
                 list.push(path(&value)?);
                 continue;
             }
@@ -185,37 +185,37 @@ impl EnterPlan {
                 NET_UNFILTERED => NetRule::Unfiltered,
                 NET_NONE => NetRule::NoTcp,
                 NET_CONNECT => {
-                    let value = args.next().ok_or(EnterFault::MissingValue(NET_CONNECT))?;
+                    let value = args.next().ok_or(EnterError::MissingValue(NET_CONNECT))?;
                     NetRule::ConnectTo(port(&value)?)
                 }
-                _ => return Err(EnterFault::UnknownWord(word.clone())),
+                _ => return Err(EnterError::UnknownWord(word.clone())),
             };
             if net.replace(rule).is_some() {
-                return Err(EnterFault::TwoNets);
+                return Err(EnterError::TwoNets);
             }
         }
         let program: Vec<String> = args.collect();
         if program.is_empty() {
-            return Err(EnterFault::NoProgram);
+            return Err(EnterError::NoProgram);
         }
-        let net = net.ok_or(EnterFault::NoNet)?;
+        let net = net.ok_or(EnterError::NoNet)?;
         Ok((Self::new(read, write, device, net), program))
     }
 }
 
-fn path(text: &str) -> Result<AbsPath, EnterFault> {
-    let path = AbsPath::parse(text).map_err(EnterFault::BadPath)?;
+fn path(text: &str) -> Result<AbsPath, EnterError> {
+    let path = AbsPath::parse(text).map_err(EnterError::BadPath)?;
     if path.is_root() {
-        Err(EnterFault::Root)
+        Err(EnterError::Root)
     } else {
         Ok(path)
     }
 }
 
-fn port(text: &str) -> Result<u16, EnterFault> {
+fn port(text: &str) -> Result<u16, EnterError> {
     let digits = !text.is_empty() && text.bytes().all(|b| b.is_ascii_digit());
     match text.parse::<u16>() {
         Ok(port) if digits && port != 0 => Ok(port),
-        _ => Err(EnterFault::BadPort(text.to_owned())),
+        _ => Err(EnterError::BadPort(text.to_owned())),
     }
 }

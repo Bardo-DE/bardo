@@ -13,7 +13,7 @@ mod manifest;
 mod manifest_file;
 mod validate;
 
-pub use args::{ArgsFault, TARGET_KEY, TargetFault, Why, args_from_json, target_from_json};
+pub use args::{ArgError, ArgsError, TARGET_KEY, TargetError, args_from_json, target_from_json};
 pub use manifest::{
     ActionDecl, AgentReach, ArgSink, Cardinality, DryRun, EntityDecl, Filled, KeyHint, Lasting,
     Latency, Manifest, ParamDecl, ParamNeed, PropDecl, RELATION_ARG, RelationDecl, ResultShape,

@@ -3,8 +3,8 @@
 
 use base_ids::Count;
 use model_provider::{
-    CharCount, ChoiceText, Field, FieldName, JsonText, Refused, SchemaDialect, SchemaLimits,
-    SchemaRefusal, SchemaText, Shape, Variant, VariantName,
+    CharCount, ChoiceText, Field, FieldName, JsonText, SchemaDialect, SchemaKeywordError,
+    SchemaLimits, SchemaRefusal, SchemaText, Shape, Variant, VariantName,
 };
 use proptest::prelude::*;
 use serde_json::{Value, json};
@@ -15,12 +15,12 @@ const LIMITS: SchemaLimits = SchemaLimits {
     depth: Count(6),
 };
 
-fn read(value: &Value) -> Result<Shape, SchemaRefusal> {
+fn read(value: &Value) -> Result<Shape, SchemaError> {
     let text = SchemaText(JsonText::new(value.to_string()).unwrap());
     Shape::from_json_schema(&text, LIMITS)
 }
 
-fn refused(value: &Value) -> (String, Refused) {
+fn refused(value: &Value) -> (String, SchemaKeywordError) {
     let error = read(value).unwrap_err();
     (error.at.0, error.why)
 }
@@ -182,22 +182,28 @@ fn a_tagged_enum_reads_whichever_property_holds_the_tag() {
         arm("point", json!({"type": "string", "enum": ["x"]})),
         arm("note", json!({"type": "string", "enum": ["y"]})),
     ]});
-    assert_eq!(refused(&both), (String::new(), Refused::BadTagged));
+    assert_eq!(
+        refused(&both),
+        (String::new(), SchemaKeywordError::BadTagged)
+    );
     // An arm with a different pair of names, a stray property or no arms at all is refused.
     let other = json!({"type": "object",
         "properties": {"t": {"enum": ["z"]}, "v": {"type": "integer"}},
         "required": ["t", "v"], "additionalProperties": false});
     let mixed = json!({"oneOf": [arm("a", json!({"type": "integer"})), other]});
-    assert_eq!(refused(&mixed).1, Refused::BadTagged);
-    assert_eq!(refused(&json!({"oneOf": []})).1, Refused::BadTagged);
+    assert_eq!(refused(&mixed).1, SchemaKeywordError::BadTagged);
+    assert_eq!(
+        refused(&json!({"oneOf": []})).1,
+        SchemaKeywordError::BadTagged
+    );
 }
 
 #[test]
 fn what_the_vocabulary_cannot_say_is_refused_with_a_path_and_a_reason() {
-    use Refused::*;
+    use SchemaKeywordError::*;
     let keyword = |k: &str| Unsupported(model_provider::KeywordText(k.into()));
     let object = |props: Value| json!({"type": "object", "properties": props, "required": [], "additionalProperties": false});
-    let cases: Vec<(Value, &str, Refused)> = vec![
+    let cases: Vec<(Value, &str, SchemaKeywordError)> = vec![
         (json!(true), "", NotASchema),
         (json!({}), "", NoType),
         (json!({"type": "number"}), "", UnsupportedType),
@@ -339,14 +345,14 @@ fn nesting_is_bounded_by_the_limit() {
     read(&schema).unwrap();
     schema = json!({"type": "array", "items": schema, "maxItems": 1});
     let (at, why) = refused(&schema);
-    assert_eq!(why, Refused::TooDeep);
+    assert_eq!(why, SchemaKeywordError::TooDeep);
     assert_eq!(at.matches("/items").count(), 6);
     // A schema far deeper than the stack could hold is refused, not walked.
     let mut deep = json!({"type": "string"});
     for _ in 0..40 {
         deep = json!({"anyOf": [deep, {"type": "null"}]});
     }
-    assert_eq!(refused(&deep).1, Refused::TooDeep);
+    assert_eq!(refused(&deep).1, SchemaKeywordError::TooDeep);
 }
 
 fn leaf() -> impl Strategy<Value = Shape> {

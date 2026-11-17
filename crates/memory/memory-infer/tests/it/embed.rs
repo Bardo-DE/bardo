@@ -9,7 +9,7 @@ use account_match::DimsNeed;
 use account_match::Need;
 use base_ids::Dims;
 use inference_core::{
-    ChatReply, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, ModelError,
+    ChatReply, ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest, ModelError,
     StopReason,
 };
 use memory_core::DataClass;
@@ -96,26 +96,26 @@ async fn embed_error(reply: InferReply, count: usize) -> EmbedError {
 #[tokio::test]
 async fn the_embedder_maps_every_refusal_and_failure() {
     let refusals = [
-        (InferRefusal::Unavailable, EmbedError::Unavailable),
+        (InferRefusedError::Unavailable, EmbedError::Unavailable),
         (
-            InferRefusal::RequiresCloud(DataClass::Mail),
-            EmbedError::Refused(InferRefusal::RequiresCloud(DataClass::Mail).to_string()),
+            InferRefusedError::RequiresCloud(DataClass::Mail),
+            EmbedError::Refused(InferRefusedError::RequiresCloud(DataClass::Mail).to_string()),
         ),
         (
-            InferRefusal::NeedsGrant,
-            EmbedError::Refused(InferRefusal::NeedsGrant.to_string()),
+            InferRefusedError::NeedsGrant,
+            EmbedError::Refused(InferRefusedError::NeedsGrant.to_string()),
         ),
         (
-            InferRefusal::Denied,
-            EmbedError::Refused(InferRefusal::Denied.to_string()),
+            InferRefusedError::Denied,
+            EmbedError::Refused(InferRefusedError::Denied.to_string()),
         ),
         (
-            InferRefusal::OverBudget,
-            EmbedError::Refused(InferRefusal::OverBudget.to_string()),
+            InferRefusedError::OverBudget,
+            EmbedError::Refused(InferRefusedError::OverBudget.to_string()),
         ),
         (
-            InferRefusal::Unsupported,
-            EmbedError::Refused(InferRefusal::Unsupported.to_string()),
+            InferRefusedError::Unsupported,
+            EmbedError::Refused(InferRefusedError::Unsupported.to_string()),
         ),
     ];
     for (refusal, expected) in refusals {

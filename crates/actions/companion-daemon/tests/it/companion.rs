@@ -83,12 +83,12 @@ fn nothing_is_added_to_a_finished_or_absent_front_task_or_for_progress() {
 }
 
 struct Scripted(
-    Result<Vec<RecentEntry>, ReplayFault>,
+    Result<Vec<RecentEntry>, ReplayError>,
     Mutex<Vec<RecentQuery>>,
 );
 
 impl Scripted {
-    fn new(entries: Result<Vec<RecentEntry>, ReplayFault>) -> Self {
+    fn new(entries: Result<Vec<RecentEntry>, ReplayError>) -> Self {
         Self(entries, Mutex::new(vec![]))
     }
 }
@@ -98,7 +98,7 @@ impl RecentSource for Scripted {
         clippy::unused_async_trait_impl,
         reason = "`RecentSource::recent` is an async trait method; the scripted source has nothing to await"
     )]
-    async fn recent(&self, query: RecentQuery) -> Result<Vec<RecentEntry>, ReplayFault> {
+    async fn recent(&self, query: RecentQuery) -> Result<Vec<RecentEntry>, ReplayError> {
         self.1.lock().expect("log").push(query);
         self.0.clone()
     }
@@ -194,7 +194,7 @@ fn replay_reads_oldest_first_skips_the_routers_log_and_refuses_a_body_it_cannot_
         "companion.episode",
     ] {
         let bad = vec![entry(1, kind, 1, Some("{\"nope\":1}".into()))];
-        assert_eq!(replay_of(&bad), Err(ReplayFault::Malformed), "{kind}");
+        assert_eq!(replay_of(&bad), Err(ReplayError::Malformed), "{kind}");
     }
     // The router's own session log shares the kind; its versioned entries are read elsewhere.
     let logged = r#"{"version":1,"seq":4,"kind":"closed","v":"closed"}"#;
@@ -317,7 +317,7 @@ fn a_run_whose_start_is_older_than_the_window_says_nothing_and_a_broken_record_i
     );
     for body in ["{\"nope\":1}", "{\"kind\":\"computer_use.asked\",\"v\":{}}"] {
         let bad = vec![entry(1, "computer_use.asked", 1, Some(body.into()))];
-        assert_eq!(replay_of(&bad), Err(ReplayFault::Malformed), "{body}");
+        assert_eq!(replay_of(&bad), Err(ReplayError::Malformed), "{body}");
     }
 }
 
@@ -325,12 +325,12 @@ fn a_run_whose_start_is_older_than_the_window_says_nothing_and_a_broken_record_i
 async fn an_unreadable_record_is_a_fault_not_a_guess() {
     let since = provenance::UnixSeconds(0);
     assert_eq!(
-        recover(&Scripted::new(Err(ReplayFault::Malformed)), since).await,
-        Err(ReplayFault::Malformed)
+        recover(&Scripted::new(Err(ReplayError::Malformed)), since).await,
+        Err(ReplayError::Malformed)
     );
     assert_eq!(
-        recover(&Scripted::new(Err(ReplayFault::Unavailable)), since).await,
-        Err(ReplayFault::Unavailable)
+        recover(&Scripted::new(Err(ReplayError::Unavailable)), since).await,
+        Err(ReplayError::Unavailable)
     );
 }
 

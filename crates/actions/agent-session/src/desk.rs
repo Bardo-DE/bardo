@@ -9,7 +9,7 @@ use provenance::SessionId;
 
 /// Why a sheet could not be answered.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum DeskFault {
+pub enum DeskError {
     /// The desk holds no open sheet by that id (answered, withdrawn, or never its own).
     #[error("no such sheet")]
     NoSuchSheet,
@@ -36,8 +36,8 @@ pub trait SheetDesk: Send + Sync {
     ///
     /// # Errors
     ///
-    /// Returns `DeskFault::NoSuchSheet` when the desk holds no open sheet by that id.
-    fn answer(&self, id: &ConfirmId, choice: SheetChoice) -> Result<(), DeskFault>;
+    /// Returns `DeskError::NoSuchSheet` when the desk holds no open sheet by that id.
+    fn answer(&self, id: &ConfirmId, choice: SheetChoice) -> Result<(), DeskError>;
 }
 
 /// A desk with nothing on it.
@@ -49,7 +49,7 @@ impl SheetDesk for NoDesk {
         None
     }
 
-    fn answer(&self, _id: &ConfirmId, _choice: SheetChoice) -> Result<(), DeskFault> {
-        Err(DeskFault::NoSuchSheet)
+    fn answer(&self, _id: &ConfirmId, _choice: SheetChoice) -> Result<(), DeskError> {
+        Err(DeskError::NoSuchSheet)
     }
 }

@@ -6,7 +6,7 @@
 use super::fault;
 use account_capability::Claim;
 use account_core::{Credential, EndpointUrl, LoginName, ServiceEndpoint};
-use account_discover::{DiscoverFault, parse_jmap_session};
+use account_discover::{DiscoverError, parse_jmap_session};
 use account_family_kit::Io;
 use account_family_kit::password::{basic, fault_of, sensitive};
 use account_generic_proto::jmap;
@@ -38,12 +38,12 @@ pub(super) async fn session(
     clippy::needless_pass_by_value,
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
-fn discover_fault(fault: DiscoverFault) -> SignInFault {
+fn discover_fault(fault: DiscoverError) -> SignInFault {
     match fault {
-        DiscoverFault::Unreachable | DiscoverFault::Transport(_) => SignInFault::Unreachable,
-        DiscoverFault::NoServers
-        | DiscoverFault::Unreadable
-        | DiscoverFault::Unparsed(_)
-        | DiscoverFault::BadEndpoint(_) => SignInFault::Unreadable,
+        DiscoverError::Unreachable | DiscoverError::Transport(_) => SignInFault::Unreachable,
+        DiscoverError::NoServers
+        | DiscoverError::Unreadable
+        | DiscoverError::Unparsed(_)
+        | DiscoverError::BadEndpoint(_) => SignInFault::Unreadable,
     }
 }

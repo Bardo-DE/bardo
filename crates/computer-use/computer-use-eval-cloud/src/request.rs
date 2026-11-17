@@ -21,7 +21,7 @@ pub enum SamplingFrom {
 
 /// Why a turn could not be written as a chat request.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum RequestFault {
+pub enum RequestError {
     /// A vendor's own tool, which the wire cannot carry.
     #[error("not representable on the inference wire: {0}")]
     Wire(String),
@@ -37,7 +37,7 @@ fn media(media: MediaType) -> &'static str {
     }
 }
 
-fn part(one: &sp::Part) -> Result<pi::MessagePart, RequestFault> {
+fn part(one: &sp::Part) -> Result<pi::MessagePart, RequestError> {
     Ok(match one {
         sp::Part::Text(text) => pi::MessagePart::Text(text.clone()),
         sp::Part::Image(image) => pi::MessagePart::Image(pi::ImagePart {
@@ -56,7 +56,7 @@ fn part(one: &sp::Part) -> Result<pi::MessagePart, RequestFault> {
                 .parts
                 .iter()
                 .map(part)
-                .collect::<Result<_, RequestFault>>()?,
+                .collect::<Result<_, RequestError>>()?,
         }),
     })
 }
@@ -70,7 +70,7 @@ fn role(role: sp::Role) -> pi::Role {
     }
 }
 
-fn tool(spec: &sp::ToolSpec) -> Result<pi::ToolDecl, RequestFault> {
+fn tool(spec: &sp::ToolSpec) -> Result<pi::ToolDecl, RequestError> {
     match spec {
         sp::ToolSpec::Function {
             name,
@@ -81,7 +81,7 @@ fn tool(spec: &sp::ToolSpec) -> Result<pi::ToolDecl, RequestFault> {
             description: description.clone(),
             params: parameters.clone(),
         }),
-        sp::ToolSpec::Native(_) => Err(RequestFault::Wire("a vendor's own tool".to_owned())),
+        sp::ToolSpec::Native(_) => Err(RequestError::Wire("a vendor's own tool".to_owned())),
     }
 }
 
@@ -89,15 +89,15 @@ fn tool(spec: &sp::ToolSpec) -> Result<pi::ToolDecl, RequestFault> {
 ///
 /// # Errors
 ///
-/// Returns a [`RequestFault`] when the turn cannot be written as a chat request.
+/// Returns a [`RequestError`] when the turn cannot be written as a chat request.
 pub fn chat(
     turn: &sp::TurnRequest,
     tier: Tier,
     from: SamplingFrom,
-) -> Result<pi::ChatRequest, RequestFault> {
+) -> Result<pi::ChatRequest, RequestError> {
     let shape = match &turn.output {
         sp::OutputShape::Free => pi::ReplyShape::Text,
-        _ => return Err(RequestFault::Shape),
+        _ => return Err(RequestError::Shape),
     };
     let messages: Vec<pi::ChatMessage> = turn
         .messages
@@ -109,15 +109,15 @@ pub fn chat(
                     .parts
                     .iter()
                     .map(part)
-                    .collect::<Result<_, RequestFault>>()?,
+                    .collect::<Result<_, RequestError>>()?,
             })
         })
-        .collect::<Result<_, RequestFault>>()?;
+        .collect::<Result<_, RequestError>>()?;
     let tools: Vec<pi::ToolDecl> = turn
         .tools
         .iter()
         .map(tool)
-        .collect::<Result<_, RequestFault>>()?;
+        .collect::<Result<_, RequestError>>()?;
     let control = pi::ChatControl::new()
         .with_tool_choice(turn.tool_choice.clone())
         .with_tool_calls(turn.tool_calls)
@@ -216,7 +216,7 @@ mod tests {
         let shaped = turn(sp::OutputShape::Regex("a".to_owned()));
         assert_eq!(
             chat(&shaped, Tier::Fast, SamplingFrom::Entry),
-            Err(RequestFault::Shape)
+            Err(RequestError::Shape)
         );
     }
 }

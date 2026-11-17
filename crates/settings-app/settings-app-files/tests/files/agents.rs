@@ -2,7 +2,7 @@
 //! row draws, and a choice written into its entry with every other line kept.
 
 use action_settings::NewAgent;
-use action_settings::{AddFault, ChoiceFault};
+use action_settings::{AddError, ChoiceError};
 use settings_app_files::{
     ConfigHome, DataHome, add_agent, installed_agents, load_agents, remove_agent, save_agent_choice,
 };
@@ -159,7 +159,7 @@ fn an_assistant_added_from_the_installed_ones_can_be_removed_again() {
     }
     let after = load_agents(&config, &data);
     assert_eq!(after.get("gemini").expect("listed").label, "My Gemini");
-    assert_eq!(add_agent(&config, &new), Err(AddFault::Listed));
+    assert_eq!(add_agent(&config, &new), Err(AddError::Listed));
 
     remove_agent(&config, "gemini").expect("removed");
     let back = std::fs::read_to_string(&path).expect("file");
@@ -168,7 +168,7 @@ fn an_assistant_added_from_the_installed_ones_can_be_removed_again() {
     assert_eq!(load_agents(&config, &data).rows.len(), 2, "the others stay");
     assert!(matches!(
         remove_agent(&config, "gemini"),
-        Err(ChoiceFault::NoSuchAgent)
+        Err(ChoiceError::NoSuchAgent)
     ));
     assert!(
         data.0

@@ -6,7 +6,7 @@
 //! or described, but a call that names it by hand is sent on: the router is the one that refuses
 //! it.
 
-use crate::exit::Failure;
+use crate::exit::ExitError;
 use account_core::AppName;
 use action_manifest::{ActionDecl, AgentReach, Manifest, ValidManifest};
 use action_vocab::action_prefix;
@@ -36,7 +36,7 @@ impl Apps {
     ///
     /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the
     /// failure says what is wrong.
-    pub fn app(&self, word: &str) -> Result<&Manifest, Failure> {
+    pub fn app(&self, word: &str) -> Result<&Manifest, ExitError> {
         let named: Vec<&Manifest> = self
             .0
             .iter()
@@ -45,10 +45,10 @@ impl Apps {
             .collect();
         match named.as_slice() {
             [one] => Ok(one),
-            [] => Err(Failure::usage(format!(
+            [] => Err(ExitError::usage(format!(
                 "no installed app is called {word:?} (see: bardo-do apps)"
             ))),
-            _ => Err(Failure::usage(format!(
+            _ => Err(ExitError::usage(format!(
                 "{word:?} names several apps: use the full name"
             ))),
         }
@@ -60,7 +60,7 @@ impl Apps {
     ///
     /// Returns [`Failure`] as a usage failure when the input is not what the action takes; the
     /// failure says what is wrong.
-    pub fn action<'a>(&self, app: &'a Manifest, word: &str) -> Result<&'a ActionDecl, Failure> {
+    pub fn action<'a>(&self, app: &'a Manifest, word: &str) -> Result<&'a ActionDecl, ExitError> {
         let full = if word.starts_with(&format!("{}.", slug(&app.app))) {
             word.to_owned()
         } else {
@@ -71,7 +71,7 @@ impl Apps {
             .iter()
             .find(|a| Some(&a.name) == name.as_ref())
             .ok_or_else(|| {
-                Failure::usage(format!(
+                ExitError::usage(format!(
                     "{} has no action {word:?} (see: bardo-do {} --list)",
                     slug(&app.app),
                     slug(&app.app)

@@ -3,7 +3,7 @@
 use std::time::SystemTime;
 
 use files_core::{
-    ByteSize, Entry, EntryKind, Finish, FolderPath, ItemRef, Location, OpEvent, OpFailure, OpKind,
+    ByteSize, Entry, EntryKind, Finish, FolderPath, ItemRef, Location, OpError, OpEvent, OpKind,
     OpPlan, Outcome, Summary, Transfer, TrashId, TrashedItem,
 };
 use files_model::{Browser, Change, DropHow, Effect, Input, Modifier, Question, Rename};
@@ -130,12 +130,12 @@ fn a_new_folder_that_failed_does_not_start_a_rename_later() {
     let (browser, effects) = browser.step(
         finished(
             OpKind::NewFolder,
-            Finish::Failed(OpFailure::NoPermission),
+            Finish::Failed(OpError::NoPermission),
             None,
         ),
         at(0),
     );
-    assert_eq!(effects, vec![Effect::Tell(OpFailure::NoPermission)]);
+    assert_eq!(effects, vec![Effect::Tell(OpError::NoPermission)]);
     let (browser, _) = browser.step(
         Input::Changed(home(), Change::Added(folder("untitled folder"))),
         at(0),

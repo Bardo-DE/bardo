@@ -1,7 +1,7 @@
 //! Stopping what `up` started, and saying what is still running. Only the pids in `<root>/procs`
 //! whose start time still matches are signalled; nothing is found by name.
 
-use super::procs::{self, ProcsFault, Record, State};
+use super::procs::{self, ProcsError, Record, State};
 use std::path::Path;
 use std::process::{Command, Stdio};
 use std::time::{Duration, Instant};
@@ -86,8 +86,8 @@ pub fn stop(record: &Record) -> Outcome {
 ///
 /// # Errors
 ///
-/// Returns a [`ProcsFault`] when the records cannot be read.
-pub fn down(root: &Path) -> Result<Vec<Stopped>, ProcsFault> {
+/// Returns a [`ProcsError`] when the records cannot be read.
+pub fn down(root: &Path) -> Result<Vec<Stopped>, ProcsError> {
     let records = procs::read(root)?;
     Ok(records
         .into_iter()
@@ -103,8 +103,8 @@ pub fn down(root: &Path) -> Result<Vec<Stopped>, ProcsFault> {
 ///
 /// # Errors
 ///
-/// Returns a [`ProcsFault`] when the records cannot be read.
-pub fn status(root: &Path) -> Result<Vec<(Record, State)>, ProcsFault> {
+/// Returns a [`ProcsError`] when the records cannot be read.
+pub fn status(root: &Path) -> Result<Vec<(Record, State)>, ProcsError> {
     Ok(procs::read(root)?
         .into_iter()
         .map(|record| {

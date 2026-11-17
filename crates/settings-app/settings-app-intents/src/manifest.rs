@@ -8,7 +8,7 @@ const TEXT: &str = include_str!("../../dist/intents/org.bardo.Settings.toml");
 
 /// The shipped manifest is not usable. A test holds this from happening.
 #[derive(Debug, PartialEq, Eq, thiserror::Error)]
-pub enum ManifestFault {
+pub enum ManifestLoadError {
     /// The file does not parse as a manifest.
     #[error("the manifest does not parse: {0}")]
     Parse(String),
@@ -21,10 +21,11 @@ pub enum ManifestFault {
 ///
 /// # Errors
 ///
-/// [`ManifestFault`] when the embedded manifest does not parse or does not validate.
-pub fn manifest() -> Result<ValidManifest, ManifestFault> {
-    let parsed: Manifest = toml::from_str(TEXT).map_err(|e| ManifestFault::Parse(e.to_string()))?;
-    validate(parsed).map_err(ManifestFault::Invalid)
+/// [`ManifestLoadError`] when the embedded manifest does not parse or does not validate.
+pub fn manifest() -> Result<ValidManifest, ManifestLoadError> {
+    let parsed: Manifest =
+        toml::from_str(TEXT).map_err(|e| ManifestLoadError::Parse(e.to_string()))?;
+    validate(parsed).map_err(ManifestLoadError::Invalid)
 }
 
 #[cfg(test)]

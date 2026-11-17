@@ -7,7 +7,7 @@ use files_core::{Entry, FileName, FolderPath};
 
 use crate::browser::Browser;
 use crate::effect::Effect;
-use crate::error::RenameProblem;
+use crate::error::RenameError;
 use crate::open::{Opens, opens};
 use crate::ops::{ExtensionChange, Question};
 use crate::rename::{Decision, Rename, decide};
@@ -91,7 +91,7 @@ impl Browser {
             .asking(Question::ChangeExtension(change))
     }
 
-    fn refuse(self, name: files_core::FileName, draft: String, problem: RenameProblem) -> Browser {
+    fn refuse(self, name: files_core::FileName, draft: String, problem: RenameError) -> Browser {
         Browser {
             rename: Rename::Editing {
                 name,

@@ -9,7 +9,7 @@ use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::Tokens;
 use caller_role_types::CallerRole;
-use inference_core::{AutoMode, AutoRow, InferRefusal, Policy, Slot, TierMap, TierRow};
+use inference_core::{AutoMode, AutoRow, InferRefusedError, Policy, Slot, TierMap, TierRow};
 use inference_router::seams::EngineHost;
 use inference_router::session::SessionSpec;
 use std::path::Path;
@@ -195,7 +195,7 @@ fn a_runtime_that_is_down_is_unavailable_and_never_replaced_by_a_remote_model() 
     let refused = engines
         .route(&spec(DataClass::Prompt), CallerRole::App)
         .expect_err("nothing serves");
-    assert_eq!(refused, InferRefusal::Unavailable);
+    assert_eq!(refused, InferRefusedError::Unavailable);
 }
 
 #[test]
@@ -227,7 +227,7 @@ fn local_only_on_leaves_the_runtime_the_only_answer() {
         engines
             .route(&spec(DataClass::Mail), CallerRole::App)
             .expect_err("local only and nothing local"),
-        InferRefusal::Unavailable
+        InferRefusedError::Unavailable
     );
 }
 

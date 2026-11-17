@@ -1,7 +1,7 @@
 //! Where an attached engine is and how a request to it is signed: the endpoint of one connect.
 
 use super::config::{Attached, Reach, Site};
-use super::key::{KeyFile, KeyFileProblem};
+use super::key::{KeyFile, KeyFileError};
 use base_secret::SecretText;
 use inference_core::ComputerName;
 use model_http::{AuthHeader, HostName, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath};
@@ -53,13 +53,13 @@ impl Target {
     /// a file that is refused is why there is no endpoint.
     ///
     /// # Errors
-    /// `KeyFileProblem` when `read_key` refuses the key file.
+    /// `KeyFileError` when `read_key` refuses the key file.
     pub fn endpoint(
         &self,
         base: &str,
         timeouts: Timeouts,
-        read_key: impl FnOnce(&KeyFile) -> Result<SecretText, KeyFileProblem>,
-    ) -> Result<HttpEndpoint, KeyFileProblem> {
+        read_key: impl FnOnce(&KeyFile) -> Result<SecretText, KeyFileError>,
+    ) -> Result<HttpEndpoint, KeyFileError> {
         let auth = match (&self.key, &self.reach) {
             // Plain http on this machine's loopback: the key goes only because it is opted in, and
             // the client still refuses any host that is not loopback.

@@ -3,7 +3,8 @@
 //! (the kernel's own test runs when a frame is queued).
 
 use super::kms::{
-    CommitVerdict, ConnectorId, ConnectorStatus, KmsCommit, KmsRefusal, KmsResources, OutputCommit,
+    CommitVerdict, ConnectorId, ConnectorStatus, KmsCommit, KmsRefusedError, KmsResources,
+    OutputCommit,
 };
 use std::collections::BTreeMap;
 
@@ -49,13 +50,13 @@ fn refusal(
     commit: &KmsCommit,
     index: usize,
     output: &OutputCommit,
-) -> Option<KmsRefusal> {
+) -> Option<KmsRefusedError> {
     let Some(connector) = resources
         .connectors
         .iter()
         .find(|c| c.id == output.connector && c.status == ConnectorStatus::Connected)
     else {
-        return Some(KmsRefusal::Unsupported);
+        return Some(KmsRefusedError::Unsupported);
     };
     let crtc = resources.crtcs.iter().find(|c| c.id == output.crtc);
     let crtc_free = {
@@ -76,13 +77,13 @@ fn refusal(
         Some(crtc) if connector.possible_crtcs.contains(&crtc.id) && crtc_free => {
             let vrr_ok = !output.vrr || (connector.vrr && crtc.vrr);
             if !connector.modes.contains(&output.mode) {
-                Some(KmsRefusal::Mode)
+                Some(KmsRefusedError::Mode)
             } else if !vrr_ok {
-                Some(KmsRefusal::Unsupported)
+                Some(KmsRefusedError::Unsupported)
             } else {
                 None
             }
         }
-        _ => Some(KmsRefusal::NoCrtc),
+        _ => Some(KmsRefusedError::NoCrtc),
     }
 }

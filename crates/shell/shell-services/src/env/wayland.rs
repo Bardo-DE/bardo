@@ -51,7 +51,7 @@ impl Hash for HandedSocket {
 
 /// Why no connection was made.
 #[derive(Debug, thiserror::Error)]
-pub enum WaylandUnreached {
+pub enum WaylandUnreachedError {
     #[error("no Wayland socket: {0}")]
     Socket(std::io::Error),
     #[error("no Wayland connection: {0}")]
@@ -62,15 +62,15 @@ impl WaylandRoute {
     /// A new connection by this route.
     ///
     /// # Errors
-    /// [`WaylandUnreached`] when the socket cannot be reached or the Wayland handshake fails.
-    pub fn connect(&self) -> Result<Connection, WaylandUnreached> {
+    /// [`WaylandUnreachedError`] when the socket cannot be reached or the Wayland handshake fails.
+    pub fn connect(&self) -> Result<Connection, WaylandUnreachedError> {
         Ok(match self {
             WaylandRoute::Environment => Connection::connect_to_env()?,
             WaylandRoute::Socket(path) => Connection::from_socket(
-                UnixStream::connect(path).map_err(WaylandUnreached::Socket)?,
+                UnixStream::connect(path).map_err(WaylandUnreachedError::Socket)?,
             )?,
             WaylandRoute::Handed(HandedSocket(fd)) => Connection::from_socket(UnixStream::from(
-                fd.try_clone().map_err(WaylandUnreached::Socket)?,
+                fd.try_clone().map_err(WaylandUnreachedError::Socket)?,
             ))?,
         })
     }

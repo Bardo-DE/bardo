@@ -1,6 +1,6 @@
 //! `.well-known` URLs for `CalDAV`, `CardDAV` and JMAP, and the JMAP session resource.
 
-use crate::found::{DiscoverFault, Found, Source};
+use crate::found::{DiscoverError, Found, Source};
 use crate::mail::mail_claim;
 use account_capability::{Access, Capability, CapabilityKind, Delta, MailTransport};
 use account_capability::{Claim, Offer, Provenance, Subject};
@@ -51,20 +51,20 @@ pub fn well_known_urls(domain: &DomainName, kind: CapabilityKind) -> Vec<Endpoin
 ///
 /// # Errors
 ///
-/// A `DiscoverFault`: `NoServers` for `404` or a `kind` with no `.well-known` name, and
+/// A `DiscoverError`: `NoServers` for `404` or a `kind` with no `.well-known` name, and
 /// `Unreadable` for a redirect that is not `https` or cannot be resolved, or any other status.
 pub fn well_known_found(
     kind: CapabilityKind,
     requested: &EndpointUrl,
     response: &Response<Vec<u8>>,
     login: &LoginName,
-) -> Result<Found, DiscoverFault> {
-    let (_, family) = well_known_of(kind).ok_or(DiscoverFault::NoServers)?;
+) -> Result<Found, DiscoverError> {
+    let (_, family) = well_known_of(kind).ok_or(DiscoverError::NoServers)?;
     let url = match response.status().as_u16() {
         301 | 302 | 303 | 307 | 308 => redirect_target(requested, response.header("location"))?,
         200..=299 | 401 => requested.clone(),
-        404 | 410 => return Err(DiscoverFault::NoServers),
-        _ => return Err(DiscoverFault::Unreadable),
+        404 | 410 => return Err(DiscoverError::NoServers),
+        _ => return Err(DiscoverError::Unreadable),
     };
     Ok(Found {
         endpoints: vec![ServiceEndpoint {
@@ -86,20 +86,20 @@ pub fn well_known_found(
 ///
 /// # Errors
 ///
-/// The `DiscoverFault` of the last URL tried when none of them names a service.
+/// The `DiscoverError` of the last URL tried when none of them names a service.
 pub async fn discover_well_known<H: Http>(
     http: &H,
     domain: &DomainName,
     kind: CapabilityKind,
     login: &LoginName,
-) -> Result<Found, DiscoverFault> {
-    let mut fault = DiscoverFault::NoServers;
+) -> Result<Found, DiscoverError> {
+    let mut fault = DiscoverError::NoServers;
     for url in well_known_urls(domain, kind) {
         let Ok(Ok(request)) = request_to(Method::GET, &url).map(|r| r.body(Vec::new())) else {
             continue;
         };
         match http.send(request).await {
-            Err(error) => fault = DiscoverFault::transport(error),
+            Err(error) => fault = DiscoverError::transport(error),
             Ok(response) => match well_known_found(kind, &url, &response, login) {
                 Ok(found) => return Ok(found),
                 Err(why) => fault = why,
@@ -113,8 +113,8 @@ pub async fn discover_well_known<H: Http>(
 fn redirect_target(
     requested: &EndpointUrl,
     location: Option<&str>,
-) -> Result<EndpointUrl, DiscoverFault> {
-    let location = location.ok_or(DiscoverFault::Unreadable)?.trim();
+) -> Result<EndpointUrl, DiscoverError> {
+    let location = location.ok_or(DiscoverError::Unreadable)?.trim();
     let origin = requested.origin();
     let port = match origin.port {
         443 => String::new(),
@@ -125,11 +125,11 @@ fn redirect_target(
     } else {
         location.to_owned()
     };
-    let url = EndpointUrl::parse(&text).map_err(DiscoverFault::unparsed)?;
+    let url = EndpointUrl::parse(&text).map_err(DiscoverError::unparsed)?;
     if url.origin().scheme == base_url::UrlScheme::Https {
         Ok(url)
     } else {
-        Err(DiscoverFault::Unreadable)
+        Err(DiscoverError::Unreadable)
     }
 }
 
@@ -174,14 +174,14 @@ struct Session {
 ///
 /// # Errors
 ///
-/// `DiscoverFault::Unreadable` when `json` is not a JMAP session or its `apiUrl` is not an endpoint
+/// `DiscoverError::Unreadable` when `json` is not a JMAP session or its `apiUrl` is not an endpoint
 /// URL.
-pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
-    let session: Session = serde_json::from_str(json).map_err(DiscoverFault::unparsed)?;
+pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverError> {
+    let session: Session = serde_json::from_str(json).map_err(DiscoverError::unparsed)?;
     if !session.capabilities.contains_key(CORE) {
-        return Err(DiscoverFault::Unreadable);
+        return Err(DiscoverError::Unreadable);
     }
-    let url = EndpointUrl::parse(&session.api_url).map_err(DiscoverFault::unparsed)?;
+    let url = EndpointUrl::parse(&session.api_url).map_err(DiscoverError::unparsed)?;
     let tls = if url.origin().scheme == base_url::UrlScheme::Https {
         Tls::Implicit
     } else {
@@ -193,7 +193,7 @@ pub fn parse_jmap_session(json: &str) -> Result<Found, DiscoverFault> {
         tls,
         login: LoginName(session.username),
     };
-    endpoint.check().map_err(DiscoverFault::bad_endpoint)?;
+    endpoint.check().map_err(DiscoverError::bad_endpoint)?;
     let has = |name: &str| session.capabilities.contains_key(name);
     let send = has(SUBMISSION);
     let claims = [

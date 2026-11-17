@@ -4,7 +4,7 @@
 //! call from the terminal ask again. The unit is also `PartOf=graphical-session.target`, so the
 //! daemon (and everything it holds in memory) stops with the graphical session.
 
-use crate::serve::ServeFault;
+use crate::serve::ServeError;
 use action_dbus::BusConnection;
 use action_router::{Router, Seams};
 use futures_util::StreamExt;
@@ -32,9 +32,9 @@ pub struct Logouts {
 ///
 /// # Errors
 ///
-/// Returns a [`ServeFault`] when the system bus refuses the logind subscription.
-pub async fn watch_logind(system: &BusConnection) -> Result<Logouts, ServeFault> {
-    let bus = |e: zbus::Error| ServeFault::Bus(e.to_string());
+/// Returns a [`ServeError`] when the system bus refuses the logind subscription.
+pub async fn watch_logind(system: &BusConnection) -> Result<Logouts, ServeError> {
+    let bus = |e: zbus::Error| ServeError::Bus(e.to_string());
     let manager = Login1ManagerProxy::new(system).await.map_err(bus)?;
     let removed = manager.receive_session_removed().await.map_err(bus)?;
     Ok(Logouts { removed })
@@ -61,12 +61,12 @@ impl Logouts {
 ///
 /// # Errors
 ///
-/// Returns a [`ServeFault`] when the system bus refuses the logind subscription.
+/// Returns a [`ServeError`] when the system bus refuses the logind subscription.
 pub async fn end_terminals_at_logout<S: Seams + 'static>(
     system: &BusConnection,
     router: Arc<Router<S>>,
     session: Option<String>,
-) -> Result<(), ServeFault> {
+) -> Result<(), ServeError> {
     watch_logind(system)
         .await?
         .end_terminals(router, session)

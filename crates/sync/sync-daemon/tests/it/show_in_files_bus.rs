@@ -30,7 +30,7 @@ use caller_role_types::CallerRole;
 use common::bus::PrivateBus;
 use common::hosted::{Hosted, Link, Service, host_with};
 use common::{Known, client};
-use drive_fs::{CacheLimit, FreeSpace, ItemState, Reason};
+use drive_fs::{CacheLimit, FreeSpace, ItemState, SkipError};
 use drive_fuse::{Mounter, mountd};
 use settings_dbus::{AnyOwner, LiveClient};
 use settings_types::schema::KeyPath;
@@ -670,7 +670,7 @@ async fn the_keep_row_is_told_of_when_the_drive_stops_fitting_and_again_when_it_
     assert!(drive.drive.short_of_room());
     assert_eq!(
         keep_note(&rig).await.as_deref(),
-        Some(words::reason(Reason::NoRoomForAll))
+        Some(words::reason(SkipError::NoRoomForAll))
     );
     assert_eq!(state_at(&drive, "Big.bin"), Some(ItemState::Cloud));
 

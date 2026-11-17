@@ -37,7 +37,7 @@ use sync_daemon::keep::sync_app;
 use sync_daemon::service::serve;
 use sync_driver::hub::{Access, Hub};
 use sync_engine::scheduler::{Network, Settings};
-use sync_pim_mirror::{AccountdUnavailable, Wiring};
+use sync_pim_mirror::{AccountdUnavailableError, Wiring};
 use sync_storage::storage::{
     ClientStorageGrants, StorageConfig, StorageGrants, StorageKind, StorageSupervisor,
 };
@@ -100,7 +100,7 @@ pub struct Gate {
 }
 
 impl StorageGrants for Gate {
-    async fn granted(&self, kind: StorageKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
+    async fn granted(&self, kind: StorageKind) -> Result<Vec<Candidate>, AccountdUnavailableError> {
         let shown = match kind {
             StorageKind::AppFolder | StorageKind::Drive => &self.files,
             StorageKind::Photos | StorageKind::GooglePhotos => &self.photos,

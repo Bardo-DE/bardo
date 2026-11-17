@@ -20,4 +20,4 @@
 
 mod file;
 
-pub use file::{FileStore, RegistryRefusal};
+pub use file::{FileStore, RegistryError};

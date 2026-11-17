@@ -11,7 +11,7 @@ use serde_json::json;
 
 const READ: &str = "org_bardo_Mail-mail_thread_read";
 
-async fn plan(say: Say) -> Result<ModelOutput, PlanFault> {
+async fn plan(say: Say) -> Result<ModelOutput, PlanError> {
     let (planner, _) = planner(vec![say]);
     planner.plan(&view(catalogue().cards())).await
 }
@@ -49,7 +49,7 @@ async fn a_call_written_as_words_is_a_fault_in_every_template() {
     ] {
         assert_eq!(
             plan(words(&text)).await,
-            Err(PlanFault::CallInText),
+            Err(PlanError::CallInText),
             "{name}"
         );
     }
@@ -77,13 +77,13 @@ async fn bardo_answer_is_the_reply_and_a_bad_one_is_a_fault_never_a_call() {
     ] {
         assert_eq!(
             plan(call(TOOL_ANSWER, args.clone())).await,
-            Err(PlanFault::Unreadable),
+            Err(PlanError::Unreadable),
             "{args}"
         );
     }
     assert_eq!(
         plan(call(TOOL_ANSWER, reply("<tool_call>{}</tool_call>"))).await,
-        Err(PlanFault::CallInText)
+        Err(PlanError::CallInText)
     );
 }
 
@@ -156,7 +156,7 @@ async fn words_are_bounded_and_carry_no_reordering_or_hidden_marks() {
     // Only marks: nothing left to say.
     assert_eq!(
         plan(words("\u{202e}\u{200b}")).await,
-        Err(PlanFault::Unreadable)
+        Err(PlanError::Unreadable)
     );
 }
 
@@ -175,13 +175,13 @@ async fn a_question_past_what_its_tool_allows_is_unreadable() {
     for args in bad {
         assert_eq!(
             plan(call(TOOL_ASK, args.clone())).await,
-            Err(PlanFault::Unreadable),
+            Err(PlanError::Unreadable),
             "{args}"
         );
     }
     assert_eq!(
         plan(call(TOOL_ASK, json!({ "text": "\u{202e}\u{200b}" }))).await,
-        Err(PlanFault::Unreadable),
+        Err(PlanError::Unreadable),
         "a question of marks only"
     );
     assert_eq!(
@@ -219,31 +219,31 @@ fn a_tool_name_with_a_homoglyph_is_not_a_name_at_all() {
 #[tokio::test]
 async fn made_up_and_wrong_typed_calls_are_unread_with_a_typed_fault_not_run() {
     use action_core::ReplyFault;
-    use action_manifest::{ArgsFault, TargetFault};
+    use action_manifest::{ArgsError, TargetError};
     let thread = json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": "t1" });
-    let target = |fault| ReplyFault::Args(ArgsFault::Target(fault));
+    let target = |fault| ReplyFault::Args(ArgsError::Target(fault));
     for (name, args, fault) in [
         (
             "org_bardo_Mail-mail_thread_nuke",
             json!({ "target": thread }),
             ReplyFault::NoSuchTool("org_bardo_Mail-mail_thread_nuke".into()),
         ),
-        (READ, json!({ "target": 5 }), target(TargetFault::Malformed)),
-        (READ, json!({}), target(TargetFault::Missing)),
+        (READ, json!({ "target": 5 }), target(TargetError::Malformed)),
+        (READ, json!({}), target(TargetError::Missing)),
         (
             READ,
             json!({ "target": thread, "admin": true }),
-            ReplyFault::Args(ArgsFault::Unknown("admin".into())),
+            ReplyFault::Args(ArgsError::Unknown("admin".into())),
         ),
         (
             READ,
             json!([1, 2]),
-            ReplyFault::Args(ArgsFault::NotAnObject),
+            ReplyFault::Args(ArgsError::NotAnObject),
         ),
         (
             READ,
             json!("target"),
-            ReplyFault::Args(ArgsFault::NotAnObject),
+            ReplyFault::Args(ArgsError::NotAnObject),
         ),
     ] {
         assert_eq!(

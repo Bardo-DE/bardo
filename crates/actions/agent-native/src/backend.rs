@@ -17,7 +17,7 @@ use action_core::{ContextKeep, Keep, TurnIn, UserTurn};
 use action_vocab::{Clock, WindowKey};
 use agent_planner::Planner;
 use agent_session::{
-    BackendEvent, BackendFault, BackendKind, ResumePlan, Resumed, SessionBackend, Standing,
+    BackendError, BackendEvent, BackendKind, ResumePlan, Resumed, SessionBackend, Standing,
     StartSession, TurnEnd,
 };
 use companion_tasks::Companion;
@@ -86,11 +86,11 @@ where
     }
 
     /// Takes up the task the companion already runs on this session.
-    async fn bind(&mut self) -> Result<(), BackendFault> {
+    async fn bind(&mut self) -> Result<(), BackendError> {
         let core = self.core.lock().await;
         let task = core
             .task_of(&self.session)
-            .ok_or(BackendFault::Unavailable)?;
+            .ok_or(BackendError::Unavailable)?;
         self.bound = Bound::Task(task);
         Ok(())
     }
@@ -118,21 +118,21 @@ where
     ///
     /// # Errors
     ///
-    /// Returns a [`BackendFault`] when the router refuses the turn or the turn cannot be run.
-    pub fn record_and_turn(&mut self, turn: UserTurn, said: TurnIn) -> Result<(), BackendFault> {
+    /// Returns a [`BackendError`] when the router refuses the turn or the turn cannot be run.
+    pub fn record_and_turn(&mut self, turn: UserTurn, said: TurnIn) -> Result<(), BackendError> {
         self.begin(turn, Recording::Pending(said))
     }
 
-    fn begin(&mut self, turn: UserTurn, recording: Recording) -> Result<(), BackendFault> {
+    fn begin(&mut self, turn: UserTurn, recording: Recording) -> Result<(), BackendError> {
         let Bound::Task(task) = self.bound.clone() else {
-            return Err(BackendFault::NotRunning);
+            return Err(BackendError::NotRunning);
         };
         if self.flight.is_some() {
-            return Err(BackendFault::Busy);
+            return Err(BackendError::Busy);
         }
         let window = WindowKey::parse(EDITOR_WINDOW).map_err(|error| {
             tracing::warn!(%error, "the editor window name is not a window key");
-            BackendFault::Unavailable
+            BackendError::Unavailable
         })?;
         let core = Arc::clone(&self.core);
         let session = self.session.clone();
@@ -203,11 +203,11 @@ where
         BackendKind::Native
     }
 
-    async fn start(&mut self, _open: StartSession) -> Result<(), BackendFault> {
+    async fn start(&mut self, _open: StartSession) -> Result<(), BackendError> {
         self.bind().await
     }
 
-    async fn resume(&mut self, plan: &ResumePlan) -> Result<Resumed, BackendFault> {
+    async fn resume(&mut self, plan: &ResumePlan) -> Result<Resumed, BackendError> {
         if !matches!(plan.standing, Standing::Open | Standing::Paused(_)) {
             self.bound = Bound::Over;
             return Ok(Resumed::Restored);
@@ -219,7 +219,7 @@ where
                     .await
                     .map_err(|error| {
                         tracing::warn!(%error, "the stored session could not be adopted");
-                        BackendFault::Unavailable
+                        BackendError::Unavailable
                     })?;
             }
         }
@@ -231,7 +231,7 @@ where
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn turn(&mut self, turn: UserTurn) -> Result<(), BackendFault> {
+    async fn turn(&mut self, turn: UserTurn) -> Result<(), BackendError> {
         self.begin(turn, Recording::Done)
     }
 

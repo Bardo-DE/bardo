@@ -4,7 +4,7 @@
 
 use account_tailscale::NodeId;
 use inference_client::{
-    ClientError, ComputerReason, DbusTransport, GuestChange, Inference, TransportError,
+    ClientError, ComputerError, DbusTransport, GuestChange, Inference, TransportError,
 };
 use shell_model::guest_asks::{
     Ask, Computer, GuestAsksCommand, GuestAsksEffect, GuestAsksEvent, GuestAsksState, Verdict,
@@ -186,7 +186,7 @@ async fn answer(proxy: &Guests, node: &Computer, verdict: Verdict) {
     let already = matches!(
         &error,
         ClientError::Transport(TransportError::Computer {
-            reason: ComputerReason::NotAsking,
+            reason: ComputerError::NotAsking,
             ..
         })
     );

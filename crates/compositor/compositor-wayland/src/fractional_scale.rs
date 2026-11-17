@@ -1,7 +1,7 @@
 //! `wp_fractional_scale_v1`: the exact scale a surface should draw at, sent before its first
 //! configure (layer-shell-host FINDINGS 167).
 
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::Event;
 use compositor_core::OutputBook;
 use smithay::reexports::wayland_protocols::wp::fractional_scale::v1::server::{
@@ -76,15 +76,15 @@ pub fn on_preferred(part: &mut FractionalScalePart, surface: &WlSurface) -> Vec<
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_scale(
     part: &mut FractionalScalePart,
     surface: &WlSurface,
     scale: Scale,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let _ = part;
     if !surface.is_alive() {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     with_states(surface, |states| {
         with_fractional_scale(states, |state| state.set_preferred_scale(scale.as_f64()));

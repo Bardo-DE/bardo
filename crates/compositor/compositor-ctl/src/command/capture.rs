@@ -2,7 +2,7 @@
 //! `desktop_client`'s wire client, written as a PNG. The compositor's frame is the one scanout
 //! shows, so this is the same picture the screen has.
 
-use desktop_client::capture::{CaptureFailure, CaptureRequest, FrameError};
+use desktop_client::capture::{CaptureError, CaptureRequest, FrameError};
 use desktop_client::client::{DesktopClient, WireError};
 use desktop_client::{Desktop, DesktopCommand, OutputName, Ticket};
 use std::path::Path;
@@ -22,7 +22,7 @@ pub enum ShotError {
     Wire(#[from] WireError),
     /// The compositor failed the frame.
     #[error("the compositor failed the capture: {0}")]
-    Failed(#[from] CaptureFailure),
+    Failed(#[from] CaptureError),
     /// The frame is in a layout this tool cannot read.
     #[error("reading the frame: {0}")]
     Frame(#[from] FrameError),

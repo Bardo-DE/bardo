@@ -128,7 +128,7 @@ fn model_errors_and_refusals_keep_their_slugs() {
         assert_eq!(round_trip(&error), json);
     }
     assert_eq!(
-        round_trip(&InferRefusal::Unsupported),
+        round_trip(&InferRefusedError::Unsupported),
         r#"{"kind":"unsupported"}"#
     );
 }

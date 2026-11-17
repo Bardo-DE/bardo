@@ -1,6 +1,6 @@
 //! The undo journal: each kind of work taken back, and the put-back round trip.
 
-use files_core::{Answer, OpFailure, OpPlan, Resolution};
+use files_core::{Answer, OpError, OpPlan, Resolution};
 use files_ops::{Finish, Journal};
 use files_trash::Trash;
 
@@ -69,7 +69,7 @@ fn a_new_folder_is_undone_only_while_it_is_empty() {
 
     run(&mut rig, &plan);
     rig.write("home/untitled folder/kept.txt", "k");
-    assert_eq!(undo(&mut rig), Finish::Failed(OpFailure::NotEmpty));
+    assert_eq!(undo(&mut rig), Finish::Failed(OpError::NotEmpty));
     assert_eq!(rig.read("home/untitled folder/kept.txt"), "k");
 }
 
@@ -114,10 +114,7 @@ fn put_back_round_trips_and_is_refused_when_the_place_is_taken() {
     };
 
     rig.write("home/a.txt", "in the way");
-    assert_eq!(
-        run(&mut rig, &put_back),
-        Finish::Failed(OpFailure::Occupied)
-    );
+    assert_eq!(run(&mut rig, &put_back), Finish::Failed(OpError::Occupied));
     assert_eq!(rig.read("home/a.txt"), "in the way");
     assert!(
         rig.journal.is_empty(),

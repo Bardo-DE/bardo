@@ -26,7 +26,7 @@ pub const REPEATS: [Repeat; 3] = [Repeat::Daily, Repeat::Weekdays, Repeat::Every
 
 /// Why a draft cannot be confirmed yet.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum RoutineFault {
+pub enum RoutineError {
     /// No words for what it is to do.
     #[error("Say what it is to do.")]
     NoGoal,
@@ -76,15 +76,15 @@ impl RoutineDraft {
     ///
     /// # Errors
     ///
-    /// Returns a [`RoutineFault`] naming what is missing or not valid in the routine.
-    pub fn form(&self) -> Result<RoutineForm, RoutineFault> {
+    /// Returns a [`RoutineError`] naming what is missing or not valid in the routine.
+    pub fn form(&self) -> Result<RoutineForm, RoutineError> {
         let goal = self.goal.trim();
         if goal.is_empty() {
-            return Err(RoutineFault::NoGoal);
+            return Err(RoutineError::NoGoal);
         }
         let words = self.words();
         Schedule::parse(&words)
-            .map_err(|fault| RoutineFault::When(sentence(&fault.to_string())))?;
+            .map_err(|fault| RoutineError::When(sentence(&fault.to_string())))?;
         Ok(RoutineForm {
             helper: self.helper.clone(),
             goal: goal.to_owned(),

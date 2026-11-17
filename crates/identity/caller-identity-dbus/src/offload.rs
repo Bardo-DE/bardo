@@ -3,7 +3,7 @@
 
 /// The blocking work could not be run (the runtime shut down, or the work panicked).
 #[derive(Debug, thiserror::Error)]
-pub enum Cancelled {
+pub enum OffloadError {
     /// The blocking task did not finish.
     #[cfg(feature = "tokio")]
     #[error("the blocking task did not finish")]
@@ -32,7 +32,7 @@ impl Offload {
             reason = "only the tokio variant awaits; callers await the same signature in every build"
         )
     )]
-    pub(crate) async fn run<T, F>(self, work: F) -> Result<T, Cancelled>
+    pub(crate) async fn run<T, F>(self, work: F) -> Result<T, OffloadError>
     where
         F: FnOnce() -> T + Send + 'static,
         T: Send + 'static,
@@ -42,7 +42,7 @@ impl Offload {
             #[cfg(feature = "tokio")]
             Offload::Tokio => tokio::task::spawn_blocking(work)
                 .await
-                .map_err(Cancelled::Task),
+                .map_err(OffloadError::Task),
         }
     }
 }

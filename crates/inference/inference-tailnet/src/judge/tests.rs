@@ -52,7 +52,7 @@ fn judged(
     from: &str,
     answer: Result<WhoIs, TailscaleError>,
     guests: &Guests,
-) -> Result<Welcome, Refusal> {
+) -> Result<Welcome, TailnetError> {
     judge(&me(), ip(from), answer, guests)
 }
 
@@ -73,14 +73,14 @@ struct Refused {
     from: &'static str,
     answer: Result<WhoIs, TailscaleError>,
     self_allowed: bool,
-    refusal: Refusal,
+    refusal: TailnetError,
 }
 
 fn refused(
     why: impl Into<String>,
     from: &'static str,
     answer: Result<WhoIs, TailscaleError>,
-    refusal: Refusal,
+    refusal: TailnetError,
 ) -> Refused {
     Refused {
         why: why.into(),
@@ -119,7 +119,7 @@ fn the_judge_refuses_this_computer_the_unknown_the_unaskable_and_the_not_the_per
         ] {
             rows.push(Refused {
                 self_allowed: true,
-                ..refused(why, own, answer, Refusal::ThisComputer)
+                ..refused(why, own, answer, TailnetError::ThisComputer)
             });
         }
     }
@@ -127,19 +127,19 @@ fn the_judge_refuses_this_computer_the_unknown_the_unaskable_and_the_not_the_per
         "this computer through another address",
         "100.64.0.9",
         Ok(who("nSELF", "desk.tail1234.ts.net", 1, "100.64.0.9")),
-        Refusal::ThisComputer,
+        TailnetError::ThisComputer,
     ));
     rows.push(refused(
         "an address tailscale does not know",
         "100.64.0.2",
         Err(TailscaleError::NoSuchPeer),
-        Refusal::Unknown,
+        TailnetError::Unknown,
     ));
     rows.push(refused(
         "an answer that does not list the address",
         "100.64.0.2",
         Ok(who("nPI", "pi.tail1234.ts.net", 1, "100.64.0.77")),
-        Refusal::Unknown,
+        TailnetError::Unknown,
     ));
     for failure in [
         TailscaleError::NotRunning(None),
@@ -153,14 +153,14 @@ fn the_judge_refuses_this_computer_the_unknown_the_unaskable_and_the_not_the_per
             format!("tailscale cannot be asked: {failure}"),
             "100.64.0.2",
             Err(failure),
-            Refusal::CouldNotCheck,
+            TailnetError::CouldNotCheck,
         ));
     }
     rows.push(refused(
         "a tagged server",
         "100.64.0.4",
         Ok(tagged),
-        Refusal::Tagged,
+        TailnetError::Tagged,
     ));
     rows.push(refused(
         "another person's computer",
@@ -171,13 +171,13 @@ fn the_judge_refuses_this_computer_the_unknown_the_unaskable_and_the_not_the_per
             2,
             "100.64.0.5",
         )),
-        Refusal::Shared,
+        TailnetError::Shared,
     ));
     rows.push(refused(
         "a computer shared in",
         "100.64.0.6",
         Ok(shared_in),
-        Refusal::Shared,
+        TailnetError::Shared,
     ));
     for row in rows {
         let guests = Guests::in_memory();
@@ -227,7 +227,7 @@ fn a_no_beats_everything_and_a_yes_is_by_id_not_by_name() {
         .unwrap();
     assert_eq!(
         judged("100.64.0.2", Ok(pi()), &guests).unwrap_err(),
-        Refusal::Denied
+        TailnetError::Denied
     );
     guests
         .set(&node("nPI"), "pi", GuestAnswer::Allow, NOW)
@@ -257,8 +257,8 @@ fn a_new_computer_is_asked_about_once_and_refused_until_the_person_answers() {
     let log = Arc::clone(&told);
     guests.on_event(move |event| log.lock().unwrap().push(event.clone()));
     let welcome = judged("100.64.0.2", Ok(pi()), &guests).expect("welcome");
-    assert_eq!(welcome.admit(&guests, NOW), Err(Refusal::Waiting));
-    assert_eq!(welcome.admit(&guests, NOW), Err(Refusal::Waiting));
+    assert_eq!(welcome.admit(&guests, NOW), Err(TailnetError::Waiting));
+    assert_eq!(welcome.admit(&guests, NOW), Err(TailnetError::Waiting));
     let asked = told
         .lock()
         .unwrap()
@@ -283,9 +283,9 @@ fn a_yes_taken_back_is_taken_back_for_the_next_request() {
     guests
         .set(&node("nPI"), "pi", GuestAnswer::Deny, NOW)
         .unwrap();
-    assert_eq!(welcome.admit(&guests, NOW), Err(Refusal::Denied));
+    assert_eq!(welcome.admit(&guests, NOW), Err(TailnetError::Denied));
     guests.forget(&node("nPI")).unwrap();
-    assert_eq!(welcome.admit(&guests, NOW), Err(Refusal::Waiting));
+    assert_eq!(welcome.admit(&guests, NOW), Err(TailnetError::Waiting));
 }
 
 #[test]
@@ -297,7 +297,7 @@ fn someone_elses_computer_is_never_asked_about() {
     let friend = who("nFRIEND", "friends-pc.tail1234.ts.net", 2, "100.64.0.5");
     let welcome = judged("100.64.0.5", Ok(friend), &guests).expect("welcome");
     guests.forget(&node("nFRIEND")).unwrap();
-    assert_eq!(welcome.admit(&guests, NOW), Err(Refusal::Shared));
+    assert_eq!(welcome.admit(&guests, NOW), Err(TailnetError::Shared));
     assert!(guests.asking().is_empty(), "no question is raised for it");
     assert_eq!(
         guests.ask(&node("nPI"), "pi", NOW).unwrap(),
@@ -312,5 +312,8 @@ fn too_many_waiting_is_a_refusal_with_words() {
         guests.ask(&node(&format!("n{n}")), "x", NOW).unwrap();
     }
     let welcome = judged("100.64.0.2", Ok(pi()), &guests).expect("welcome");
-    assert_eq!(welcome.admit(&guests, NOW), Err(Refusal::TooManyAsking));
+    assert_eq!(
+        welcome.admit(&guests, NOW),
+        Err(TailnetError::TooManyAsking)
+    );
 }

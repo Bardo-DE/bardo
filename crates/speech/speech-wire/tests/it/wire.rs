@@ -7,7 +7,7 @@ use action_vocab::UtteranceId;
 use action_wire::VoiceIntent;
 use base_ids::Permille;
 use base_time::UnixSeconds;
-use inference_core::{InferRefusal, ModelError, Readiness, ServedBy};
+use inference_core::{InferRefusedError, ModelError, Readiness, ServedBy};
 use serde::{Serialize, de::DeserializeOwned};
 use speech_wire::*;
 
@@ -62,7 +62,7 @@ fn utterance_end_round_trip() {
         UtteranceEnd::Cancelled(CancelCause::Escape),
         UtteranceEnd::Failed(VoiceFault::MicDenied),
         UtteranceEnd::Failed(VoiceFault::Engine(ModelError::NotReady)),
-        UtteranceEnd::Failed(VoiceFault::Refused(InferRefusal::RequiresCloud(
+        UtteranceEnd::Failed(VoiceFault::Refused(InferRefusedError::RequiresCloud(
             DataClass::Voice,
         ))),
     ];
@@ -118,28 +118,28 @@ fn begin_target_and_speak_round_trip() {
 #[test]
 fn voice_refusal_maps_errors_1to1() {
     let mut names = std::collections::BTreeSet::new();
-    for r in VoiceRefusal::ALL {
+    for r in VoiceError::ALL {
         let name = r.error_name();
         assert!(name.starts_with("org.bardo.Voice1.Error."), "{name}");
-        assert_eq!(VoiceRefusal::from_error_name(&name), Some(r));
+        assert_eq!(VoiceError::from_error_name(&name), Some(r));
         assert!(names.insert(name), "duplicate name for {r:?}");
         // The slug is the variant in snake_case.
         round(&r);
     }
     assert_eq!(names.len(), 6);
     assert_eq!(
-        VoiceRefusal::from_error_name("org.bardo.Voice1.Error.Nope"),
+        VoiceError::from_error_name("org.bardo.Voice1.Error.Nope"),
         None
     );
     // ALL is exhaustive: this match fails to compile when a variant is added.
-    for r in VoiceRefusal::ALL {
+    for r in VoiceError::ALL {
         match r {
-            VoiceRefusal::Disabled
-            | VoiceRefusal::NeedsConsent
-            | VoiceRefusal::Busy
-            | VoiceRefusal::NotAllowed
-            | VoiceRefusal::NoModel
-            | VoiceRefusal::MicUnavailable => {}
+            VoiceError::Disabled
+            | VoiceError::NeedsConsent
+            | VoiceError::Busy
+            | VoiceError::NotAllowed
+            | VoiceError::NoModel
+            | VoiceError::MicUnavailable => {}
         }
     }
 }

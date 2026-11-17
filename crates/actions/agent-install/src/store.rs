@@ -6,8 +6,8 @@
 
 use action_store::{read_optional, write_atomic};
 use agent_registry::dirs::AgentsDir;
-use agent_registry::offered::{Offered, OfferedFault};
-use agent_registry::record::{FILE, Record, RecordFault};
+use agent_registry::offered::{Offered, OfferedError};
+use agent_registry::record::{FILE, Record, RecordError};
 use agent_registry::slug::Slug;
 use std::path::Path;
 use std::sync::Arc;
@@ -26,10 +26,10 @@ pub fn write_record(record: &Record, dir: &Path) -> std::io::Result<()> {
 ///
 /// # Errors
 ///
-/// Returns [`RecordFault`] when the record could not be read.
-pub fn read_record(dir: &Path) -> Result<Record, RecordFault> {
+/// Returns [`RecordError`] when the record could not be read.
+pub fn read_record(dir: &Path) -> Result<Record, RecordError> {
     let text = std::fs::read_to_string(dir.join(FILE))
-        .map_err(|error| RecordFault::Missing(Arc::new(error)))?;
+        .map_err(|error| RecordError::Missing(Arc::new(error)))?;
     Record::parse(&text)
 }
 
@@ -76,10 +76,10 @@ pub fn versions(dir: &AgentsDir, id: &Slug) -> Vec<Slug> {
 ///
 /// # Errors
 ///
-/// Returns [`OfferedFault`] when the record could not be read or written.
-pub fn read_offered(dir: &AgentsDir, id: &str) -> Result<Option<Offered>, OfferedFault> {
-    let path = dir.offered(&Slug::parse(id).map_err(OfferedFault::Name)?);
-    let text = read_optional(&path).map_err(|error| OfferedFault::Io(Arc::new(error)))?;
+/// Returns [`OfferedError`] when the record could not be read or written.
+pub fn read_offered(dir: &AgentsDir, id: &str) -> Result<Option<Offered>, OfferedError> {
+    let path = dir.offered(&Slug::parse(id).map_err(OfferedError::Name)?);
+    let text = read_optional(&path).map_err(|error| OfferedError::Io(Arc::new(error)))?;
     text.map(|t| Offered::parse(&t)).transpose()
 }
 
@@ -88,12 +88,12 @@ pub fn read_offered(dir: &AgentsDir, id: &str) -> Result<Option<Offered>, Offere
 ///
 /// # Errors
 ///
-/// Returns [`OfferedFault`] when the record could not be read or written.
-pub fn write_offered(dir: &AgentsDir, id: &str, offered: Offered) -> Result<Offered, OfferedFault> {
-    let path = dir.offered(&Slug::parse(id).map_err(OfferedFault::Name)?);
+/// Returns [`OfferedError`] when the record could not be read or written.
+pub fn write_offered(dir: &AgentsDir, id: &str, offered: Offered) -> Result<Offered, OfferedError> {
+    let path = dir.offered(&Slug::parse(id).map_err(OfferedError::Name)?);
     let before = read_offered(dir, id).ok().flatten();
     let next = offered.after(before.as_ref());
     write_atomic(&path, next.render()?.as_bytes())
-        .map_err(|error| OfferedFault::Io(Arc::new(error)))?;
+        .map_err(|error| OfferedError::Io(Arc::new(error)))?;
     Ok(next)
 }

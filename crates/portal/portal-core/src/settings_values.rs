@@ -82,7 +82,7 @@ pub enum SettingValue {
 
 /// Why a read failed.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, thiserror::Error)]
-pub enum SettingsRefusal {
+pub enum SettingLookupError {
     /// No such namespace or key.
     #[error("no such setting")]
     NotFound,
@@ -146,17 +146,17 @@ fn selects(pattern: &str, namespace: &str) -> bool {
 /// Read one setting.
 ///
 /// # Errors
-/// [`SettingsRefusal`] when the namespace and key name no setting this portal serves.
+/// [`SettingLookupError`] when the namespace and key name no setting this portal serves.
 pub fn read(
     appearance: &Appearance,
     namespace: &str,
     key: &str,
-) -> Result<SettingValue, SettingsRefusal> {
+) -> Result<SettingValue, SettingLookupError> {
     ALL_KEYS
         .iter()
         .find(|k| k.namespace == namespace && k.key == key)
         .and_then(|k| value_of(appearance, *k))
-        .ok_or(SettingsRefusal::NotFound)
+        .ok_or(SettingLookupError::NotFound)
 }
 
 /// Every setting a list of namespace patterns selects; no patterns selects everything.

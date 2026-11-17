@@ -121,10 +121,10 @@ pub trait Job: Send + std::fmt::Debug {
 
 /// Why a job did not start.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum StartFault {
+pub enum StartError {
     /// The sandbox cannot confine this command; nothing was run.
     #[error("cannot sandbox: {0}")]
-    Cannot(crate::CannotSandbox),
+    Cannot(crate::CannotSandboxError),
     /// A descriptor above 2 is not close-on-exec and would leak into the sandbox.
     #[error("an inheritable file descriptor would leak into the sandbox")]
     InheritedFds,
@@ -151,8 +151,8 @@ pub trait Sandbox: Send + std::fmt::Debug {
     /// Starts the command, confined. Never runs it unconfined.
     ///
     /// # Errors
-    /// Returns a `StartFault` when the command cannot be confined or the sandbox program cannot start.
-    fn start(&self, spec: &RunSpec) -> Result<Self::Job, StartFault>;
+    /// Returns a `StartError` when the command cannot be confined or the sandbox program cannot start.
+    fn start(&self, spec: &RunSpec) -> Result<Self::Job, StartError>;
 }
 
 /// The signal name the reports use for a killed job.

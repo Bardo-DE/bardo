@@ -5,7 +5,7 @@ use agent_acp_core::command_deadline::CommandDeadline;
 use agent_acp_host::Terminals;
 use agent_client_protocol::schema::v1::Error;
 use base_path::AbsPath;
-use sandbox::CannotSandbox;
+use sandbox::CannotSandboxError;
 use sandbox::fake::{FakeSandbox, Script, Seen};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
@@ -189,7 +189,7 @@ fn the_command_runs_with_the_cwd_a_cleared_env_and_no_network() {
 
 #[test]
 fn a_withheld_sandbox_is_not_advertised_and_runs_nothing() {
-    let (sandbox, seen) = FakeSandbox::withheld(CannotSandbox::NamespacesDenied);
+    let (sandbox, seen) = FakeSandbox::withheld(CannotSandboxError::NamespacesDenied);
     let mut b = with(sandbox, seen);
     let base = agent_client_protocol::schema::v1::ClientCapabilities::new();
     let caps = serde_json::to_value(b.terminals.capabilities(base)).expect("caps");
@@ -206,8 +206,8 @@ fn a_withheld_sandbox_is_not_advertised_and_runs_nothing() {
 
 #[test]
 fn a_security_policy_refusal_keeps_its_own_reason() {
-    use permission_core::CannotSandbox as Reason;
-    let reason = agent_acp_host::bulk::cannot(CannotSandbox::RestrictedByAppArmor);
+    use permission_core::CannotSandboxError as Reason;
+    let reason = agent_acp_host::bulk::cannot(CannotSandboxError::RestrictedByAppArmor);
     assert_eq!(reason, Reason::RestrictedByAppArmor);
     assert_ne!(reason, Reason::NamespacesDenied);
     assert_eq!(

@@ -30,7 +30,7 @@ pub enum Selection {
 
 /// Why a daemon refuses to start over the keys it was told to use.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum KeysRefusal {
+pub enum KeysError {
     /// In a test build the variable is set but is not `file:<path>`.
     NotFilePath,
     /// The path after `file:` is not absolute.
@@ -42,7 +42,7 @@ pub enum KeysRefusal {
     File(crate::FileSecretsError),
 }
 
-impl std::fmt::Display for KeysRefusal {
+impl std::fmt::Display for KeysError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::NotFilePath => f.write_str("the key store setting is not file:<absolute path>"),
@@ -56,14 +56,14 @@ impl std::fmt::Display for KeysRefusal {
     }
 }
 
-impl std::error::Error for KeysRefusal {}
+impl std::error::Error for KeysError {}
 
 /// Chooses the key store for this build from the value of the daemon's variable.
 ///
 /// # Errors
 ///
-/// `KeysRefusal` when the variable is set to something this build refuses; see `select_for`.
-pub fn select(var_value: Option<&str>) -> Result<Selection, KeysRefusal> {
+/// `KeysError` when the variable is set to something this build refuses; see `select_for`.
+pub fn select(var_value: Option<&str>) -> Result<Selection, KeysError> {
     select_for(var_value, cfg!(feature = "test-keys"))
 }
 
@@ -72,9 +72,9 @@ pub fn select(var_value: Option<&str>) -> Result<Selection, KeysRefusal> {
 ///
 /// # Errors
 ///
-/// `KeysRefusal::NotFilePath` when `test_keys` is on and the value is not `file:<path>`, and
-/// `KeysRefusal::NotAbsolute` when the path is not absolute.
-pub fn select_for(var_value: Option<&str>, test_keys: bool) -> Result<Selection, KeysRefusal> {
+/// `KeysError::NotFilePath` when `test_keys` is on and the value is not `file:<path>`, and
+/// `KeysError::NotAbsolute` when the path is not absolute.
+pub fn select_for(var_value: Option<&str>, test_keys: bool) -> Result<Selection, KeysError> {
     match (var_value, test_keys) {
         (None, _) => Ok(Selection::SecretService),
         (Some(_), false) => Ok(Selection::SecretServiceIgnoring),
@@ -82,11 +82,11 @@ pub fn select_for(var_value: Option<&str>, test_keys: bool) -> Result<Selection,
             let path = value
                 .strip_prefix("file:")
                 .filter(|path| !path.is_empty())
-                .ok_or(KeysRefusal::NotFilePath)?;
+                .ok_or(KeysError::NotFilePath)?;
             let path = PathBuf::from(path);
             path.is_absolute()
                 .then_some(Selection::File(path))
-                .ok_or(KeysRefusal::NotAbsolute)
+                .ok_or(KeysError::NotAbsolute)
         }
     }
 }
@@ -116,7 +116,7 @@ impl Chosen {
     ///
     /// # Errors
     ///
-    /// `KeysRefusal` when `selection` names a store this build cannot open: a key file that cannot
+    /// `KeysError` when `selection` names a store this build cannot open: a key file that cannot
     /// be opened, or a file store in a build without the `test-keys` feature.
     #[cfg_attr(
         not(all(feature = "test-keys", unix)),
@@ -129,7 +129,7 @@ impl Chosen {
         selection: Selection,
         namespace: Namespace,
         said_prefix: &str,
-    ) -> Result<Self, KeysRefusal> {
+    ) -> Result<Self, KeysError> {
         match selection {
             Selection::SecretService => Ok(Self {
                 keys: AnyKeys::Oo7(Oo7Secrets::in_namespace(namespace)),
@@ -144,7 +144,7 @@ impl Chosen {
             #[cfg(all(feature = "test-keys", unix))]
             Selection::File(path) => {
                 let store =
-                    crate::FileSecrets::open_in(&path, namespace).map_err(KeysRefusal::File)?;
+                    crate::FileSecrets::open_in(&path, namespace).map_err(KeysError::File)?;
                 Ok(Self {
                     said: format!(
                         "{said_prefix}: TEST BUILD: credentials are in the file {}, not the Secret Service",
@@ -154,7 +154,7 @@ impl Chosen {
                 })
             }
             #[cfg(not(all(feature = "test-keys", unix)))]
-            Selection::File(_) => Err(KeysRefusal::NotBuilt),
+            Selection::File(_) => Err(KeysError::NotBuilt),
         }
     }
 }
@@ -254,13 +254,13 @@ mod tests {
                 "file:/x/keys",
                 Ok(Selection::File(PathBuf::from("/x/keys"))),
             ),
-            ("file:", Err(KeysRefusal::NotFilePath)),
-            ("/x/keys", Err(KeysRefusal::NotFilePath)),
-            ("", Err(KeysRefusal::NotFilePath)),
-            ("memory", Err(KeysRefusal::NotFilePath)),
-            ("File:/x/keys", Err(KeysRefusal::NotFilePath)),
-            ("file:keys", Err(KeysRefusal::NotAbsolute)),
-            ("file:./keys", Err(KeysRefusal::NotAbsolute)),
+            ("file:", Err(KeysError::NotFilePath)),
+            ("/x/keys", Err(KeysError::NotFilePath)),
+            ("", Err(KeysError::NotFilePath)),
+            ("memory", Err(KeysError::NotFilePath)),
+            ("File:/x/keys", Err(KeysError::NotFilePath)),
+            ("file:keys", Err(KeysError::NotAbsolute)),
+            ("file:./keys", Err(KeysError::NotAbsolute)),
         ];
         for (value, want) in cases {
             assert_eq!(select_for(Some(value), true), want, "{value}");
@@ -311,7 +311,7 @@ mod tests {
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o644)).expect("chmod");
         let refused =
             Chosen::open(Selection::File(path), namespace(), "syncd").expect_err("loose mode");
-        assert!(matches!(refused, KeysRefusal::File(_)), "{refused}");
+        assert!(matches!(refused, KeysError::File(_)), "{refused}");
         assert!(refused.to_string().contains("0600"), "{refused}");
     }
 }

@@ -10,7 +10,7 @@ use std::path::{Path, PathBuf};
 
 /// Why a key file was not used.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum KeyFileProblem {
+pub enum KeyFileError {
     /// There is no file there.
     #[error("the key file is missing")]
     Missing,

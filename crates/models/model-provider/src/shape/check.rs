@@ -6,21 +6,21 @@
 
 use serde_json::{Map, Value};
 
-use crate::{FieldName, JsonText, Shape, ShapeFault, ShapeKind};
+use crate::{FieldName, JsonText, Shape, ShapeError, ShapeKind};
 
 impl Shape {
-    pub(crate) fn check_json(&self, json: &JsonText) -> Result<(), ShapeFault> {
+    pub(crate) fn check_json(&self, json: &JsonText) -> Result<(), ShapeError> {
         #[expect(
             clippy::map_err_ignore,
             reason = "a shape fault never carries the reply: the model's text may be untrusted"
         )]
-        let parsed = serde_json::from_str(json.as_str()).map_err(|_| ShapeFault::NotJson);
+        let parsed = serde_json::from_str(json.as_str()).map_err(|_| ShapeError::NotJson);
         let value: Value = parsed?;
         self.check_value(&value, &root())
     }
 
-    fn check_value(&self, value: &Value, at: &FieldName) -> Result<(), ShapeFault> {
-        let mismatch = |want| ShapeFault::Mismatch {
+    fn check_value(&self, value: &Value, at: &FieldName) -> Result<(), ShapeError> {
+        let mismatch = |want| ShapeError::Mismatch {
             at: at.clone(),
             want,
         };
@@ -98,19 +98,19 @@ fn check_record(
     fields: &[crate::Field],
     map: &Map<String, Value>,
     at: &FieldName,
-) -> Result<(), ShapeFault> {
+) -> Result<(), ShapeError> {
     if map
         .keys()
         .any(|key| !fields.iter().any(|f| f.name.as_str() == key))
     {
-        return Err(ShapeFault::Unknown { field: at.clone() });
+        return Err(ShapeError::Unknown { field: at.clone() });
     }
     fields
         .iter()
         .try_for_each(|field| match map.get(field.name.as_str()) {
             Some(value) => field.shape.check_value(value, &field.name),
             None if matches!(field.shape, Shape::Optional(_)) => Ok(()),
-            None => Err(ShapeFault::Missing {
+            None => Err(ShapeError::Missing {
                 field: field.name.clone(),
             }),
         })
@@ -122,26 +122,26 @@ fn check_tagged(
     variants: &[crate::Variant],
     map: &Map<String, Value>,
     at: &FieldName,
-) -> Result<(), ShapeFault> {
+) -> Result<(), ShapeError> {
     if map
         .keys()
         .any(|k| k != tag.as_str() && k != content.as_str())
     {
-        return Err(ShapeFault::Unknown { field: at.clone() });
+        return Err(ShapeError::Unknown { field: at.clone() });
     }
     let chosen = map
         .get(tag.as_str())
-        .ok_or_else(|| ShapeFault::Missing { field: tag.clone() })?;
+        .ok_or_else(|| ShapeError::Missing { field: tag.clone() })?;
     let variant = chosen
         .as_str()
         .and_then(|name| variants.iter().find(|v| v.name.as_str() == name))
-        .ok_or_else(|| ShapeFault::Mismatch {
+        .ok_or_else(|| ShapeError::Mismatch {
             at: tag.clone(),
             want: ShapeKind::Tagged,
         })?;
     let body = map
         .get(content.as_str())
-        .ok_or_else(|| ShapeFault::Missing {
+        .ok_or_else(|| ShapeError::Missing {
             field: content.clone(),
         })?;
     variant.shape.check_value(body, content)

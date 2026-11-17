@@ -3,7 +3,7 @@
 use std::time::SystemTime;
 
 use files_core::{ByteSize, Entry, Info};
-use files_model::ListFailure;
+use files_model::FolderListError;
 
 use super::{kind_words, size_words};
 
@@ -95,13 +95,13 @@ pub fn name_rows(info: &Info) -> Vec<InfoRow> {
 
 /// What Get Info says when the facts of an item could not be read.
 #[must_use]
-pub fn info_failure_words(failure: ListFailure) -> &'static str {
+pub fn info_failure_words(failure: FolderListError) -> &'static str {
     match failure {
-        ListFailure::NotFound => {
+        FolderListError::NotFound => {
             "This item can\u{2019}t be found. It may have been moved or deleted."
         }
-        ListFailure::NoPermission => "You don\u{2019}t have permission to see this item.",
-        ListFailure::NotAFolder | ListFailure::Other => {
+        FolderListError::NoPermission => "You don\u{2019}t have permission to see this item.",
+        FolderListError::NotAFolder | FolderListError::Other => {
             "The details of this item can\u{2019}t be read."
         }
     }

@@ -41,7 +41,7 @@ const CLI_NAME: &str = "org.bardo.Do";
 
 /// Why a connection has no identity.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum PeerFault {
+pub enum PeerError {
     /// The connection is gone.
     #[error("the connection is gone: {0}")]
     Gone(String),
@@ -173,30 +173,30 @@ impl Peers {
     }
 
     /// What identifies the connection `unique`: the callers table, else a terminal's scope.
-    async fn found(&self, unique: &str) -> Result<Found, PeerFault> {
-        let bus = |e: zbus::Error| PeerFault::Bus(e.to_string());
+    async fn found(&self, unique: &str) -> Result<Found, PeerError> {
+        let bus = |e: zbus::Error| PeerError::Bus(e.to_string());
         let dbus = DBusProxy::new(&self.connection).await.map_err(bus)?;
-        let who = BusName::try_from(unique).map_err(|e| PeerFault::Bus(e.to_string()))?;
+        let who = BusName::try_from(unique).map_err(|e| PeerError::Bus(e.to_string()))?;
         let credentials = dbus
             .get_connection_credentials(who)
             .await
-            .map_err(|e| PeerFault::Gone(e.to_string()))?;
+            .map_err(|e| PeerError::Gone(e.to_string()))?;
         if own_uid().is_some_and(|ours| credentials.unix_user_id() != Some(ours)) {
-            return Err(PeerFault::WrongUser);
+            return Err(PeerError::WrongUser);
         }
         let named = self.who.caller_of(unique).await;
-        classify(&self.proc_root, credentials.process_id(), named).ok_or(PeerFault::Unknown)
+        classify(&self.proc_root, credentials.process_id(), named).ok_or(PeerError::Unknown)
     }
 
     /// The caller behind a connection's unique name.
     ///
     /// # Errors
     ///
-    /// Returns a [`PeerFault`] when the connection is gone, belongs to another user, or no known
+    /// Returns a [`PeerError`] when the connection is gone, belongs to another user, or no known
     /// process stands behind it.
-    pub async fn caller(&self, unique: &str) -> Result<CallerId, PeerFault> {
+    pub async fn caller(&self, unique: &str) -> Result<CallerId, PeerError> {
         let found = self.found(unique).await?;
-        derive(&self.config, &self.acp, &found).ok_or(PeerFault::Unknown)
+        derive(&self.config, &self.acp, &found).ok_or(PeerError::Unknown)
     }
 
     /// The caller that owns a well-known name right now: the name only addresses the connection,
@@ -204,17 +204,17 @@ impl Peers {
     ///
     /// # Errors
     ///
-    /// Returns a [`PeerFault`] when the name has no owner, the bus fails, or the owner cannot be
+    /// Returns a [`PeerError`] when the name has no owner, the bus fails, or the owner cannot be
     /// identified.
-    pub async fn owner_of(&self, name: &str) -> Result<CallerId, PeerFault> {
+    pub async fn owner_of(&self, name: &str) -> Result<CallerId, PeerError> {
         let dbus = DBusProxy::new(&self.connection)
             .await
-            .map_err(|e| PeerFault::Bus(e.to_string()))?;
-        let well_known = BusName::try_from(name).map_err(|e| PeerFault::Bus(e.to_string()))?;
+            .map_err(|e| PeerError::Bus(e.to_string()))?;
+        let well_known = BusName::try_from(name).map_err(|e| PeerError::Bus(e.to_string()))?;
         let owner = dbus
             .get_name_owner(well_known)
             .await
-            .map_err(|e| PeerFault::Gone(e.to_string()))?;
+            .map_err(|e| PeerError::Gone(e.to_string()))?;
         self.caller(owner.as_str()).await
     }
 }

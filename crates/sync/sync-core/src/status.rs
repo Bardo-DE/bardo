@@ -1,11 +1,11 @@
 //! What an HTTP status the replica did not expect means to the contract.
 //!
 //! It is written once for the replicas that speak HTTP: a read that failed ([`ReplicaError`]) or a
-//! write that was refused ([`PutRefused`]). The statuses every server answers alike are here; a
+//! write that was refused ([`PutError`]). The statuses every server answers alike are here; a
 //! vendor's own reasons (a throttle spelled as a `403`, a locked item) stay in that vendor's crate,
 //! on top of these.
 
-use crate::refusal::{PutRefused, ReplicaError, RetryAfter};
+use crate::refusal::{PutError, ReplicaError, RetryAfter};
 use base_time::UnixSeconds;
 use http_core::http::Response;
 use http_core::{HeaderText, HttpError};
@@ -42,23 +42,23 @@ pub fn unreached(error: HttpError) -> ReplicaError {
 
 /// The same for a write: access not given yet is a write the account may not make.
 #[must_use]
-pub fn write_unreached(error: HttpError) -> PutRefused {
+pub fn write_unreached(error: HttpError) -> PutError {
     match error {
-        HttpError::NotGranted => PutRefused::Forbidden,
-        error => PutRefused::failed(RETRY, error),
+        HttpError::NotGranted => PutError::Forbidden,
+        error => PutError::failed(RETRY, error),
     }
 }
 
 /// A read that failed while a write was being settled: nothing the account did wrong, except a
 /// token the server refused.
 #[must_use]
-pub fn refused(error: ReplicaError) -> PutRefused {
+pub fn refused(error: ReplicaError) -> PutError {
     match error {
-        ReplicaError::Unauthorized => PutRefused::Unauthorized,
-        ReplicaError::NeedsConsent => PutRefused::Forbidden,
-        ReplicaError::Transient(after) => PutRefused::Transient(after),
-        ReplicaError::Failed(after, source) => PutRefused::Failed(after, source),
-        ReplicaError::Gone | ReplicaError::AnchorExpired => PutRefused::Transient(RetryAfter(1)),
+        ReplicaError::Unauthorized => PutError::Unauthorized,
+        ReplicaError::NeedsConsent => PutError::Forbidden,
+        ReplicaError::Transient(after) => PutError::Transient(after),
+        ReplicaError::Failed(after, source) => PutError::Failed(after, source),
+        ReplicaError::Gone | ReplicaError::AnchorExpired => PutError::Transient(RetryAfter(1)),
     }
 }
 
@@ -97,22 +97,16 @@ mod tests {
     #[test]
     fn access_not_given_is_its_own_state_and_never_a_retry() {
         assert_eq!(unreached(HttpError::NotGranted), ReplicaError::NeedsConsent);
-        assert_eq!(
-            write_unreached(HttpError::NotGranted),
-            PutRefused::Forbidden
-        );
-        assert_eq!(refused(ReplicaError::NeedsConsent), PutRefused::Forbidden);
-        assert_eq!(
-            refused(ReplicaError::Unauthorized),
-            PutRefused::Unauthorized
-        );
+        assert_eq!(write_unreached(HttpError::NotGranted), PutError::Forbidden);
+        assert_eq!(refused(ReplicaError::NeedsConsent), PutError::Forbidden);
+        assert_eq!(refused(ReplicaError::Unauthorized), PutError::Unauthorized);
         assert_eq!(
             unreached(HttpError::TimedOut),
             ReplicaError::failed(RETRY, HttpError::TimedOut)
         );
         assert_eq!(
             write_unreached(HttpError::TimedOut),
-            PutRefused::failed(RETRY, HttpError::TimedOut)
+            PutError::failed(RETRY, HttpError::TimedOut)
         );
     }
 

@@ -41,7 +41,7 @@ pub enum Withheld {
     /// A grant already stands for this call, so the ask that remains is a reviewer's.
     AlreadyHeld,
     /// A terminal command that cannot run in the sandbox: it asks, and nothing is remembered.
-    CannotSandbox(crate::execute::CannotSandbox),
+    CannotSandbox(crate::execute::CannotSandboxError),
     /// A terminal command that can send data out (a network tool, or a sandbox with a network):
     /// it asks every time, whether or not anything was read, and no grant stands in.
     CanSendOut,

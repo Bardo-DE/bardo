@@ -59,19 +59,19 @@ mod terminals;
 mod workdir;
 
 pub use backend::{AcpBackend, Parts, Seams};
-pub use edge::{EdgeBind, EdgeFault, EdgeMenu, SERVER_NAME, ToolsEdge, ToolsOffer};
-pub use files::{FileFault, Files, MAX_READ, MAX_WRITE, OsFiles};
+pub use edge::{EdgeBind, EdgeError, EdgeMenu, SERVER_NAME, ToolsEdge, ToolsOffer};
+pub use files::{FileError, Files, MAX_READ, MAX_WRITE, OsFiles};
 pub use helper_agent::{
     AgentEnd, Away, HelperAgent, Hosts, SignInStep, SignOutStep, Start, Trouble,
 };
 pub use helper_agents::{HelperAgents, Logout};
 pub use host::AgentHost;
 pub use intents_court::IntentsCourt;
-pub use models::{ModelId, ModelIdRefused, Models};
+pub use models::{ModelId, ModelIdError, Models};
 pub use performer::{Performer, UndoNote};
 pub use spawn::{
-    AgentChild, FaultSource, LaunchPlan, SandboxStep, SessionMeta, SignIn, SignInRefused, Spawn,
+    AgentChild, FaultSource, LaunchPlan, SandboxStepError, SessionMeta, SignIn, SignInError, Spawn,
     SpawnFault, Spawned,
 };
 pub use terminals::Terminals;
-pub use workdir::{Workdir, WorkdirFault};
+pub use workdir::{Workdir, WorkdirError};

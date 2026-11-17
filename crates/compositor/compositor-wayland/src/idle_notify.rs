@@ -19,7 +19,7 @@ pub use machine::{IdleBook, Moved, Signal};
 
 use crate::client::ClientState;
 use crate::limits::{self, Limit};
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use account_core::PeerIdentity;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::time::{IdleNotifierId, Mono};
@@ -188,24 +188,24 @@ pub fn on_destroyed(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Vec<Effect
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_idle(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Result<(), WaylandFault> {
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_idle(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Result<(), WaylandError> {
     part.objects
         .get(&id)
         .map(ExtIdleNotificationV1::idled)
-        .ok_or(WaylandFault::SurfaceGone)
+        .ok_or(WaylandError::SurfaceGone)
 }
 
 /// Sends `resumed` to notifier `id`.
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_resumed(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Result<(), WaylandFault> {
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_resumed(part: &mut IdleNotifyPart, id: IdleNotifierId) -> Result<(), WaylandError> {
     part.objects
         .get(&id)
         .map(ExtIdleNotificationV1::resumed)
-        .ok_or(WaylandFault::SurfaceGone)
+        .ok_or(WaylandError::SurfaceGone)
 }
 
 /// Tells clients what `moved` says, in order, and returns its timer effects. A signal for an

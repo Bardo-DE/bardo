@@ -7,7 +7,7 @@ use updater_core::{Attempt, Outcome};
 use updater_daemon::cli::{Command, parse};
 use updater_daemon::config::{Config, ConfigError};
 use updater_daemon::dirs::Dirs;
-use updater_daemon::elevate::ApplyFailure;
+use updater_daemon::elevate::ApplyError;
 use updater_daemon::login;
 use updater_daemon::problem::Problem;
 use updater_daemon::service::{InstallError, MAX_VERSION_BYTES, Wanted, is_from_owner};
@@ -287,7 +287,7 @@ fn the_state_file_round_trips_and_is_replaced_whole() {
 
 #[test]
 fn what_a_person_reads_names_no_tool_or_protocol() {
-    let failure = |code| ApplyFailure {
+    let failure = |code| ApplyError {
         code,
         detail: String::new(),
     };

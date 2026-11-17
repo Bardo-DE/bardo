@@ -4,7 +4,7 @@ use smithay::backend::session::AsErrno;
 
 /// Why a session refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum SessionFault {
+pub enum SessionError {
     /// The open was refused (in a test: the jail is breached; the test fails with exit 5).
     #[error("denied open {0}")]
     DeniedOpen(String),
@@ -16,11 +16,11 @@ pub enum SessionFault {
     Unavailable(String),
 }
 
-impl AsErrno for SessionFault {
+impl AsErrno for SessionError {
     fn as_errno(&self) -> Option<i32> {
         match self {
-            SessionFault::DeniedOpen(_) => Some(rustix::io::Errno::ACCESS.raw_os_error()),
-            SessionFault::Inactive | SessionFault::Unavailable(_) => None,
+            SessionError::DeniedOpen(_) => Some(rustix::io::Errno::ACCESS.raw_os_error()),
+            SessionError::Inactive | SessionError::Unavailable(_) => None,
         }
     }
 }

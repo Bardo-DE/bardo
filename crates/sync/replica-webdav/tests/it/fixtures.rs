@@ -289,6 +289,6 @@ async fn fetch_and_write_statuses_map_to_the_contract() {
             sync_core::BaseVersion::At(RemoteVersion("\"e\"".into()))
         )
         .await,
-        Err(sync_core::PutRefused::Transient(RetryAfter(17)))
+        Err(sync_core::PutError::Transient(RetryAfter(17)))
     );
 }

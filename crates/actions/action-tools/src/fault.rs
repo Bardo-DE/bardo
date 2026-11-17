@@ -2,14 +2,14 @@
 //! policy, so a refusal says which kind it was and never which rule, reviewer or app text.
 
 use action_core::{AppRefusal, CallRefusal};
-use action_manifest::ArgsFault;
+use action_manifest::ArgsError;
 use permission_core::DenyCode;
 use serde::{Deserialize, Serialize};
 
 /// The ways the router refused a call, without its reasons.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, thiserror::Error)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum ToolRefusal {
+pub enum ToolRefusedError {
     /// Policy or a reviewer said no; only the coarse code.
     #[error("denied ({0:?})")]
     Denied(DenyCode),
@@ -45,22 +45,22 @@ pub enum ToolRefusal {
     AppRefused,
 }
 
-impl From<&CallRefusal> for ToolRefusal {
+impl From<&CallRefusal> for ToolRefusedError {
     fn from(refusal: &CallRefusal) -> Self {
         match refusal {
-            CallRefusal::Denied(code) => ToolRefusal::Denied(*code),
-            CallRefusal::Unconfirmed(_) => ToolRefusal::NotConfirmed,
-            CallRefusal::Halted(_) => ToolRefusal::Halted,
-            CallRefusal::Paused(_) => ToolRefusal::Paused,
-            CallRefusal::OverBudget(_) => ToolRefusal::OverBudget,
-            CallRefusal::NoSuchAction(_) => ToolRefusal::NoSuchAction,
+            CallRefusal::Denied(code) => ToolRefusedError::Denied(*code),
+            CallRefusal::Unconfirmed(_) => ToolRefusedError::NotConfirmed,
+            CallRefusal::Halted(_) => ToolRefusedError::Halted,
+            CallRefusal::Paused(_) => ToolRefusedError::Paused,
+            CallRefusal::OverBudget(_) => ToolRefusedError::OverBudget,
+            CallRefusal::NoSuchAction(_) => ToolRefusedError::NoSuchAction,
             CallRefusal::BadArgs { .. } | CallRefusal::App(AppRefusal::NeedsParam { .. }) => {
-                ToolRefusal::BadArguments
+                ToolRefusedError::BadArguments
             }
-            CallRefusal::AppUnavailable(_) => ToolRefusal::AppUnavailable,
-            CallRefusal::Timeout => ToolRefusal::TimedOut,
-            CallRefusal::NotRecorded => ToolRefusal::NotRecorded,
-            CallRefusal::App(_) => ToolRefusal::AppRefused,
+            CallRefusal::AppUnavailable(_) => ToolRefusedError::AppUnavailable,
+            CallRefusal::Timeout => ToolRefusedError::TimedOut,
+            CallRefusal::NotRecorded => ToolRefusedError::NotRecorded,
+            CallRefusal::App(_) => ToolRefusedError::AppRefused,
         }
     }
 }
@@ -68,7 +68,7 @@ impl From<&CallRefusal> for ToolRefusal {
 /// Why a tool call gave no outcome.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, thiserror::Error)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum ToolFault {
+pub enum ToolError {
     /// The name would be longer than 64 characters.
     #[error("tool name longer than 64 characters")]
     TooLong,
@@ -80,10 +80,10 @@ pub enum ToolFault {
     UnknownTool,
     /// The arguments were refused before the router saw them.
     #[error("{0}")]
-    Args(#[from] ArgsFault),
+    Args(#[from] ArgsError),
     /// The router refused the call.
     #[error("refused: {0}")]
-    Refused(#[from] ToolRefusal),
+    Refused(#[from] ToolRefusedError),
     /// The router is not reachable, or refused the request itself.
     #[error("the router is not available")]
     Unavailable,

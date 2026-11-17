@@ -16,7 +16,7 @@ use std::sync::Arc;
 
 /// Why the daemon stopped serving.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ServeFault {
+pub enum ServeError {
     /// The bus name is taken or the connection failed.
     #[error("bus: {0}")]
     Bus(String),
@@ -26,8 +26,8 @@ pub enum ServeFault {
     clippy::needless_pass_by_value,
     reason = "used as a `map_err` function, which hands the error over by value"
 )]
-fn bus(error: zbus::Error) -> ServeFault {
-    ServeFault::Bus(error.to_string())
+fn bus(error: zbus::Error) -> ServeError {
+    ServeError::Bus(error.to_string())
 }
 
 /// The router as the bus hands it requests. After an app's `Index.Reset` or `Index.Push` is done,
@@ -71,12 +71,12 @@ fn search_port<S: Seams + 'static>(router: Arc<Router<S>>) -> IndexedSearch {
 ///
 /// # Errors
 ///
-/// Returns a [`ServeFault`] when the bus name is taken or the connection fails.
+/// Returns a [`ServeError`] when the bus name is taken or the connection fails.
 pub async fn serve_on<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
     config: Arc<IntentdConfig>,
-) -> Result<(), ServeFault> {
+) -> Result<(), ServeError> {
     serve_on_with(connection, router, config, &ProcRoot::Unset).await
 }
 
@@ -85,13 +85,13 @@ pub async fn serve_on<S: Seams + 'static>(
 ///
 /// # Errors
 ///
-/// Returns a [`ServeFault`] when the bus name is taken or the connection fails.
+/// Returns a [`ServeError`] when the bus name is taken or the connection fails.
 pub async fn serve_on_with<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
     config: Arc<IntentdConfig>,
     proc_root: &ProcRoot,
-) -> Result<(), ServeFault> {
+) -> Result<(), ServeError> {
     let who = Arc::new(Identity::on(
         connection.clone(),
         callers::shipped(),
@@ -115,7 +115,7 @@ pub async fn serve_on_with<S: Seams + 'static>(
 ///
 /// # Errors
 ///
-/// Returns a [`ServeFault`] when the bus name is taken or the connection fails.
+/// Returns a [`ServeError`] when the bus name is taken or the connection fails.
 pub async fn serve_on_gated<S: Seams + 'static>(
     connection: &BusConnection,
     router: Arc<Router<S>>,
@@ -124,7 +124,7 @@ pub async fn serve_on_gated<S: Seams + 'static>(
     proc_root: &ProcRoot,
     acp: AcpGate,
     index: Option<IndexStore>,
-) -> Result<(), ServeFault> {
+) -> Result<(), ServeError> {
     let gateway = Gateway::new(
         handler(Arc::clone(&router), index),
         search_port(router),
@@ -135,7 +135,7 @@ pub async fn serve_on_gated<S: Seams + 'static>(
     // Never queued behind another intentd: two routers would be two breakers and two journals.
     dbus_kit::name::claim(connection, INTENTS_BUS)
         .await
-        .map_err(|error| ServeFault::Bus(error.to_string()))
+        .map_err(|error| ServeError::Bus(error.to_string()))
 }
 
 /// Claims `org.bardo.Intents1` on the session bus and serves every interface of it over `router`.
@@ -145,11 +145,11 @@ pub async fn serve_on_gated<S: Seams + 'static>(
 ///
 /// # Errors
 ///
-/// Returns a [`ServeFault`] when the bus name is taken or the connection fails.
+/// Returns a [`ServeError`] when the bus name is taken or the connection fails.
 pub async fn serve<S: Seams + 'static>(
     router: Arc<Router<S>>,
     config: Arc<IntentdConfig>,
-) -> Result<(), ServeFault> {
+) -> Result<(), ServeError> {
     let connection = BusConnection::session().await.map_err(bus)?;
     serve_on(&connection, router, config).await?;
     closed(&connection).await;

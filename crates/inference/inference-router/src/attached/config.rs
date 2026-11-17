@@ -240,7 +240,7 @@ pub enum AttachedError {
         id: String,
         /// Which engine.
         #[source]
-        source: engine_supervisor::MissingProgram,
+        source: engine_supervisor::MissingProgramError,
     },
 }
 

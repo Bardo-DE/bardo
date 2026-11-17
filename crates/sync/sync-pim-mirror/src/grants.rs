@@ -37,13 +37,13 @@ pub trait PimGrants: Send + Sync {
     fn granted(
         &self,
         kind: PimKind,
-    ) -> impl Future<Output = Result<Vec<Candidate>, AccountdUnavailable>> + Send;
+    ) -> impl Future<Output = Result<Vec<Candidate>, AccountdUnavailableError>> + Send;
 }
 
 /// accountd could not be asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("accountd could not be asked")]
-pub struct AccountdUnavailable(#[source] pub GrantsError);
+pub struct AccountdUnavailableError(#[source] pub GrantsError);
 
 /// [`PimGrants`] over an accountd connection.
 #[derive(Debug)]
@@ -60,12 +60,12 @@ impl<T> ClientGrants<T> {
 }
 
 impl<T: GrantsLink> PimGrants for ClientGrants<T> {
-    async fn granted(&self, kind: PimKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
+    async fn granted(&self, kind: PimKind) -> Result<Vec<Candidate>, AccountdUnavailableError> {
         let found = self
             .accounts
             .find(&need_of(kind), kind.class(), Usage::Background)
             .await
-            .map_err(AccountdUnavailable)?;
+            .map_err(AccountdUnavailableError)?;
         let mut candidates = match found {
             Found::One(one) => vec![one],
             Found::Several(several) => several,

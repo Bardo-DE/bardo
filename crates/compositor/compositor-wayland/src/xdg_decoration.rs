@@ -1,7 +1,7 @@
 //! `zxdg_decoration_manager_v1`: who draws a toplevel's frame. The compositor prefers to draw it (the
 //! Mac titlebar, lights and shadow) and honours a client that insists on drawing its own.
 
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::Event;
 use compositor_core::WindowId;
 use compositor_core::policy::GlobalKind;
@@ -124,15 +124,15 @@ fn wire_mode(mode: DecorationMode) -> Mode {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_mode(
     part: &mut XdgDecorationPart,
     toplevel: &ToplevelSurface,
     mode: DecorationMode,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let _ = part;
     if !toplevel.alive() {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     toplevel.with_pending_state(|state| state.decoration_mode = Some(wire_mode(mode)));
     if toplevel.is_initial_configure_sent() {

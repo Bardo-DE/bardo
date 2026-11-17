@@ -16,7 +16,7 @@ use tokio::signal::unix::{SignalKind, signal};
 
 /// Why the daemon did not start or stopped badly.
 #[derive(Debug, thiserror::Error)]
-pub enum Fatal {
+pub enum FatalError {
     /// The configuration, the schema directory or the callers table could not be used.
     #[error("{0}")]
     Config(String),
@@ -61,37 +61,37 @@ fn command(args: &[String], env: &impl Fn(&str) -> Option<String>) -> Command {
     )
 }
 
-fn write_schema(dir: &Path) -> Result<(), Fatal> {
-    let io = |e: std::io::Error| Fatal::Config(format!("{}: {e}", dir.display()));
+fn write_schema(dir: &Path) -> Result<(), FatalError> {
+    let io = |e: std::io::Error| FatalError::Config(format!("{}: {e}", dir.display()));
     std::fs::create_dir_all(dir).map_err(io)?;
     std::fs::write(dir.join("computer-use.settings.toml"), crate::SCHEMA).map_err(io)
 }
 
-fn load_config(path: Option<&Path>) -> Result<ComputerUseDaemonConfig, Fatal> {
+fn load_config(path: Option<&Path>) -> Result<ComputerUseDaemonConfig, FatalError> {
     let Some(path) = path else {
         return Ok(ComputerUseDaemonConfig::default());
     };
     match std::fs::read_to_string(path) {
         Ok(text) => {
-            ComputerUseDaemonConfig::from_toml(&text).map_err(|e| Fatal::Config(e.to_string()))
+            ComputerUseDaemonConfig::from_toml(&text).map_err(|e| FatalError::Config(e.to_string()))
         }
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
             Ok(ComputerUseDaemonConfig::default())
         }
-        Err(e) => Err(Fatal::Config(format!("{}: {e}", path.display()))),
+        Err(e) => Err(FatalError::Config(format!("{}: {e}", path.display()))),
     }
 }
 
 /// The screen rules: the administrator's `screen-rules.toml` (in the folder of the administrator's
 /// files, `/etc/bardo`) when there is one, else the file the program ships.
-fn load_rules(env: &impl Fn(&str) -> Option<String>) -> Result<Rules, Fatal> {
+fn load_rules(env: &impl Fn(&str) -> Option<String>) -> Result<Rules, FatalError> {
     let path = crate::callers::system_dir(env).join(RULES_FILE);
     match std::fs::read_to_string(&path) {
         Ok(text) => {
-            parse_rules(&text).map_err(|e| Fatal::Config(format!("{}: {e}", path.display())))
+            parse_rules(&text).map_err(|e| FatalError::Config(format!("{}: {e}", path.display())))
         }
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(shipped_rules()),
-        Err(e) => Err(Fatal::Config(format!("{}: {e}", path.display()))),
+        Err(e) => Err(FatalError::Config(format!("{}: {e}", path.display()))),
     }
 }
 
@@ -110,7 +110,7 @@ fn load_rules(env: &impl Fn(&str) -> Option<String>) -> Result<Rules, Fatal> {
 pub async fn run(
     args: &[String],
     env: impl Fn(&str) -> Option<String> + Copy,
-) -> Result<(), Fatal> {
+) -> Result<(), FatalError> {
     let config_path = match command(args, &env) {
         Command::WriteSchema(dir) => return write_schema(&dir),
         Command::Serve(path) => path,
@@ -128,7 +128,7 @@ pub async fn run(
         .collect();
     let connection = zbus::Connection::session()
         .await
-        .map_err(|e| Fatal::Bus(e.to_string()))?;
+        .map_err(|e| FatalError::Bus(e.to_string()))?;
     let reached = Reached::find(&config, &connection).await?;
     eprintln!("bardo-computer-use: {}", reached.describe());
     let links = Links::over(&connection, config.tier);
@@ -150,11 +150,11 @@ pub async fn run(
     tokio::spawn(async move { follow_settings(&announcing, &following, &mut watched).await });
     // Who is calling is the process behind the connection, named by the callers table: the
     // system's `computer-use-callers.toml` with the person's laid over it.
-    let table = read_callers(&env).map_err(|e| Fatal::Config(e.to_string()))?;
+    let table = read_callers(&env).map_err(|e| FatalError::Config(e.to_string()))?;
     let who = caller_identity(connection.clone(), table, &env);
     // SIGTERM is caught before the names are taken: whoever sees the name may stop the daemon.
     let mut terminate =
-        signal(SignalKind::terminate()).map_err(|e| Fatal::Signal(e.to_string()))?;
+        signal(SignalKind::terminate()).map_err(|e| FatalError::Signal(e.to_string()))?;
     let _serving = serve_on_as(&connection, supervisor, who).await?;
 
     let mut messages = zbus::MessageStream::from(&connection);

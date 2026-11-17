@@ -70,7 +70,7 @@ fn every_effect() -> Effect {
 
 /// Why a floor file does not make sense.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum FloorFault {
+pub enum FloorError {
     /// An entry names an action but not its app.
     #[error("a locked entry names an action without its app")]
     ActionWithoutApp,
@@ -95,8 +95,8 @@ impl Floor {
     ///
     /// # Errors
     ///
-    /// Returns `FloorFault::ActionWithoutApp` when an entry names an action but not its app.
-    pub fn from_file(file: FloorFile) -> Result<Self, FloorFault> {
+    /// Returns `FloorError::ActionWithoutApp` when an entry names an action but not its app.
+    pub fn from_file(file: FloorFile) -> Result<Self, FloorError> {
         let locked = file
             .locked
             .into_iter()
@@ -105,7 +105,7 @@ impl Floor {
                     (None, None) => LimitScope::Everything,
                     (Some(app), None) => LimitScope::App(app),
                     (Some(app), Some(name)) => LimitScope::Action(ActionRef { app, name }),
-                    (None, Some(_)) => return Err(FloorFault::ActionWithoutApp),
+                    (None, Some(_)) => return Err(FloorError::ActionWithoutApp),
                 };
                 let key = LimitKey {
                     caller: LimitCaller::AnyAgent,

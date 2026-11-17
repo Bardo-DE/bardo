@@ -3,7 +3,7 @@ use super::add::{
 };
 use super::add_choice::{AddAction, Candidate, Listing, Presence, Step};
 use crate::outside::Assistant;
-use action_settings::{AddFault, AgentRow, ModelState, Offers, SignInState, Source};
+use action_settings::{AddError, AgentRow, ModelState, Offers, SignInState, Source};
 
 fn found(id: &str) -> FoundAgent {
     FoundAgent {
@@ -95,7 +95,7 @@ fn the_form_names_the_pick_after_itself_and_checks_the_name() {
     assert_eq!(unchanged, form, "an id not offered changes nothing");
 
     // `(typed, the name written, or the refusal it meets)`.
-    let bad_label = Err(AddRefusal::Fault(AddFault::BadLabel));
+    let bad_label = Err(AddRefusal::Fault(AddError::BadLabel));
     let cases = [
         ("  Gem  ", Ok("Gem")),
         ("", bad_label.clone()),
@@ -126,7 +126,7 @@ fn the_form_names_the_pick_after_itself_and_checks_the_name() {
 #[test]
 fn a_name_actions_service_cannot_keep_is_refused_before_anything_is_written() {
     let form = AddForm::offline(&[found("odd+name")], &[]);
-    assert_eq!(form.request(), Err(AddRefusal::Fault(AddFault::BadName)));
+    assert_eq!(form.request(), Err(AddRefusal::Fault(AddError::BadName)));
 }
 
 #[test]
@@ -238,8 +238,8 @@ fn a_download_that_fails_keeps_the_sheet_open_with_what_was_said() {
 #[test]
 fn a_refused_write_is_kept_until_the_name_is_typed_again() {
     let form = AddForm::offline(&[found("gemini")], &[]);
-    let refused = form.refused(AddFault::Listed);
-    assert_eq!(refused.refusal, Some(AddRefusal::Fault(AddFault::Listed)));
+    let refused = form.refused(AddError::Listed);
+    assert_eq!(refused.refusal, Some(AddRefusal::Fault(AddError::Listed)));
     assert_eq!(
         refused.typed("x".to_owned()).refusal,
         None,

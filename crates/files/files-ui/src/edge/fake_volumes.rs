@@ -2,7 +2,7 @@
 
 use std::sync::{Mutex, PoisonError};
 
-use files_core::{EjectFailure, FolderPath, MountFailure, Volume, VolumeId};
+use files_core::{EjectError, FolderPath, MountError, Volume, VolumeId};
 
 use super::volumes::{Changed, Volumes, WatchGuard};
 use crate::error::VolumeError;
@@ -22,8 +22,8 @@ pub enum VolumeCall {
 struct State {
     volumes: Vec<Volume>,
     calls: Vec<VolumeCall>,
-    eject_fails: Option<EjectFailure>,
-    mount_fails: Option<MountFailure>,
+    eject_fails: Option<EjectError>,
+    mount_fails: Option<MountError>,
     changed: Option<Changed>,
 }
 
@@ -45,14 +45,14 @@ impl FakeVolumes {
 
     /// The same computer where every eject fails with `failure`.
     #[must_use]
-    pub fn failing_eject(self, failure: EjectFailure) -> FakeVolumes {
+    pub fn failing_eject(self, failure: EjectError) -> FakeVolumes {
         self.lock().eject_fails = Some(failure);
         self
     }
 
     /// The same computer where every open fails with `failure`.
     #[must_use]
-    pub fn failing_mount(self, failure: MountFailure) -> FakeVolumes {
+    pub fn failing_mount(self, failure: MountError) -> FakeVolumes {
         self.lock().mount_fails = Some(failure);
         self
     }
@@ -87,7 +87,7 @@ impl Volumes for FakeVolumes {
         Ok(self.lock().volumes.clone())
     }
 
-    fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
+    fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountError> {
         let mut state = self.lock();
         state.calls.push(VolumeCall::Mounted(id.clone()));
         if let Some(failure) = state.mount_fails.clone() {
@@ -99,12 +99,12 @@ impl Volumes for FakeVolumes {
             .volumes
             .iter_mut()
             .find(|volume| volume.id == *id)
-            .ok_or(MountFailure::Gone(None))?;
+            .ok_or(MountError::Gone(None))?;
         volume.mount = Some(folder.clone());
         Ok(folder)
     }
 
-    fn eject(&self, id: &VolumeId) -> Result<(), EjectFailure> {
+    fn eject(&self, id: &VolumeId) -> Result<(), EjectError> {
         let mut state = self.lock();
         state.calls.push(VolumeCall::Ejected(id.clone()));
         if let Some(failure) = state.eject_fails.clone() {
@@ -114,7 +114,7 @@ impl Volumes for FakeVolumes {
     }
 
     /// Force gets past a busy disk, which is what a failing eject stands for here.
-    fn force_eject(&self, id: &VolumeId) -> Result<(), EjectFailure> {
+    fn force_eject(&self, id: &VolumeId) -> Result<(), EjectError> {
         let mut state = self.lock();
         state.calls.push(VolumeCall::ForceEjected(id.clone()));
         take_away(&mut state, id)
@@ -127,10 +127,10 @@ impl Volumes for FakeVolumes {
 }
 
 /// Takes the disk out of the list if it can be ejected, else says it is gone.
-fn take_away(state: &mut State, id: &VolumeId) -> Result<(), EjectFailure> {
+fn take_away(state: &mut State, id: &VolumeId) -> Result<(), EjectError> {
     match state.volumes.iter().find(|volume| volume.id == *id) {
         Some(volume) if volume.can_eject => {}
-        Some(_) | None => return Err(EjectFailure::Gone(None)),
+        Some(_) | None => return Err(EjectError::Gone(None)),
     }
     state.volumes.retain(|volume| volume.id != *id);
     Ok(())

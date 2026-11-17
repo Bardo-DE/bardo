@@ -2,7 +2,7 @@
 
 use agent_registry::launch::Launch;
 use agent_registry::offered::{Named, Offered, Start};
-use agent_registry::record::{Check, Record, RecordFault};
+use agent_registry::record::{Check, Record, RecordError};
 use std::collections::BTreeMap;
 use std::path::Path;
 
@@ -45,11 +45,11 @@ fn a_record_survives_its_text() {
 fn a_record_that_climbs_out_or_is_not_one_is_damaged() {
     for bad in [record("../agy"), record("/bin/sh")] {
         let text = bad.render().expect("render");
-        assert_eq!(Record::parse(&text), Err(RecordFault::Invalid));
+        assert_eq!(Record::parse(&text), Err(RecordError::Invalid));
     }
     assert!(matches!(
         Record::parse("nonsense ="),
-        Err(RecordFault::Damaged(_))
+        Err(RecordError::Damaged(_))
     ));
 }
 

@@ -1,6 +1,6 @@
 use super::agent::{Act, call};
 use super::rig::{Real, Setup, abs, once, read, run_turn, started_over, write};
-use agent_acp_host::{FileFault, Files, OsFiles};
+use agent_acp_host::{FileError, Files, OsFiles};
 use std::os::unix::fs::symlink;
 
 #[tokio::test]
@@ -92,8 +92,8 @@ fn a_descriptor_that_points_outside_after_the_open_is_caught() {
     std::fs::write(elsewhere.join("f.txt"), "x").expect("f");
     let file = abs(elsewhere.join("f.txt").to_str().expect("utf8"));
     let within = abs(inside.to_str().expect("utf8"));
-    assert_eq!(OsFiles.read(&file, &within), Err(FileFault::Moved));
-    assert_eq!(OsFiles.write(&file, &within, "y"), Err(FileFault::Moved));
+    assert_eq!(OsFiles.read(&file, &within), Err(FileError::Moved));
+    assert_eq!(OsFiles.write(&file, &within, "y"), Err(FileError::Moved));
     assert_eq!(
         std::fs::read_to_string(elsewhere.join("f.txt")).expect("kept"),
         "x"
@@ -141,7 +141,7 @@ fn a_pipe_or_a_directory_is_refused_at_once_and_a_big_file_is_too_big() {
         .expect("sparse");
 
     let mut files = OsFiles;
-    assert_eq!(files.read(&at("pipe"), &within), Err(FileFault::NotRegular));
-    assert_eq!(files.read(&at("dir"), &within), Err(FileFault::NotRegular));
-    assert_eq!(files.read(&at("big"), &within), Err(FileFault::TooBig));
+    assert_eq!(files.read(&at("pipe"), &within), Err(FileError::NotRegular));
+    assert_eq!(files.read(&at("dir"), &within), Err(FileError::NotRegular));
+    assert_eq!(files.read(&at("big"), &within), Err(FileError::TooBig));
 }

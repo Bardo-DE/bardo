@@ -7,16 +7,16 @@ pub struct Slug(String);
 /// Why a name was not accepted.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{0:?} is not a name the actions service can keep an agent under")]
-pub struct SlugRefused(String);
+pub struct SlugError(String);
 
 impl Slug {
     /// Checks `text`.
     ///
     /// # Errors
     ///
-    /// Returns [`SlugRefused`] when `text` is empty, longer than 64 bytes, starts with a dot or
+    /// Returns [`SlugError`] when `text` is empty, longer than 64 bytes, starts with a dot or
     /// holds a character a slug does not allow.
-    pub fn parse(text: &str) -> Result<Self, SlugRefused> {
+    pub fn parse(text: &str) -> Result<Self, SlugError> {
         let fine = !text.is_empty()
             && text.len() <= 64
             && !text.starts_with('.')
@@ -26,7 +26,7 @@ impl Slug {
         if fine {
             Ok(Self(text.to_owned()))
         } else {
-            Err(SlugRefused(text.to_owned()))
+            Err(SlugError(text.to_owned()))
         }
     }
 

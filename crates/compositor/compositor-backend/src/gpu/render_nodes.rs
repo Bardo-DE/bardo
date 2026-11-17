@@ -16,7 +16,7 @@
 //! let _ = SysRoot::host();
 //! ```
 
-use compositor_core::gpu::{DrmNodeId, GpuFacts, PlanRefusal};
+use compositor_core::gpu::{DrmNodeId, GpuFacts, PlanError};
 use std::os::fd::OwnedFd;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -112,7 +112,7 @@ pub enum GpuError {
     NoFormats(DrmNodeId),
     /// No plan could be made.
     #[error("plan: {0}")]
-    Plan(#[from] PlanRefusal),
+    Plan(#[from] PlanError),
 }
 
 /// The machine's GPUs.

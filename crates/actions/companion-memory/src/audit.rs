@@ -8,7 +8,7 @@
 //! and counts them. `AuditState::flush` says what changed (`Report`) and prints nothing: the host
 //! decides what to tell the person.
 
-use action_core::{AuditRecord, LinkFault, MemoryLink};
+use action_core::{AuditRecord, LinkError, MemoryLink};
 use action_vocab::CallId;
 use companion_memory_core::{QueuedSink, record_of, space_named_by};
 use memory_core::{MemoryReply, MemoryRequest, Refusal};
@@ -224,7 +224,7 @@ impl AuditState {
             // A batch memory refuses may hold one record it dislikes: try them one at a time so
             // the rest are kept.
             Ok(MemoryReply::Refused(_)) => self.write_each(memory, space, records).await,
-            Ok(_) | Err(LinkFault::Malformed) => {
+            Ok(_) | Err(LinkError::Malformed) => {
                 self.link = Link::Up;
                 self.tell_refused(space, "an unexpected reply");
                 Done::Settled {
@@ -232,7 +232,7 @@ impl AuditState {
                     lost: count,
                 }
             }
-            Err(LinkFault::Unavailable | LinkFault::Timeout) => {
+            Err(LinkError::Unavailable | LinkError::Timeout) => {
                 self.link = Link::Down;
                 Done::keep(records)
             }
@@ -259,7 +259,7 @@ impl AuditState {
                     waiting.push((i, record));
                     waiting.extend(records.by_ref().map(|(i, _, r)| (i, r)));
                 }
-                Err(LinkFault::Unavailable | LinkFault::Timeout) => {
+                Err(LinkError::Unavailable | LinkError::Timeout) => {
                     self.link = Link::Down;
                     waiting.push((i, record));
                     waiting.extend(records.by_ref().map(|(i, _, r)| (i, r)));

@@ -20,7 +20,7 @@ use crate::policies_watch::follow as follow_policies;
 use crate::reach::{LiveReach, follow as follow_reach};
 use crate::reviewers::reviewer;
 use crate::search_files::ship_search_files;
-use crate::serve::{ServeFault, closed, serve_on_gated};
+use crate::serve::{ServeError, closed, serve_on_gated};
 use crate::settings_watch::{apply, apply_next, watch_settings};
 use crate::sheet::SheetConfirmer;
 use crate::signals::{Cadence, pump};
@@ -132,13 +132,13 @@ impl SystemFiles {
 
 /// Why the daemon did not start or stopped.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum DaemonFault {
+pub enum DaemonError {
     /// `actiond.toml` is not a configuration.
     #[error("{0}")]
     Config(ConfigError),
     /// The bus.
     #[error("{0}")]
-    Serve(ServeFault),
+    Serve(ServeError),
     /// The policy set does not load: the shipped files, or an administrator's policy file, which
     /// is never skipped (a daemon that did would leave agents looser than the administrator meant).
     #[error("policy: {0}")]
@@ -216,8 +216,8 @@ pub fn data_dirs(env: &impl Fn(&str) -> Option<String>) -> Result<Vec<PathBuf>, 
 }
 
 /// The directory the daemon keeps its files in could not be found.
-fn state(why: PathError) -> DaemonFault {
-    DaemonFault::State(why.to_string())
+fn state(why: PathError) -> DaemonError {
+    DaemonError::State(why.to_string())
 }
 
 impl Setup {
@@ -227,12 +227,12 @@ impl Setup {
     ///
     /// # Errors
     ///
-    /// Returns a [`DaemonFault`] when a directory is not absolute, the configuration, the callers
+    /// Returns a [`DaemonError`] when a directory is not absolute, the configuration, the callers
     /// file or the floor cannot be used, or the policy set does not load.
     pub fn from_env(
         system: &SystemFiles,
         env: &impl Fn(&str) -> Option<String>,
-    ) -> Result<Self, DaemonFault> {
+    ) -> Result<Self, DaemonError> {
         let xdg = Xdg::new(env);
         let config_home = xdg.config_home().map_err(state)?;
         let found = std::iter::once(config_home.clone())
@@ -243,10 +243,10 @@ impl Setup {
             Some(text) => IntentdConfig::parse(&text),
             None => IntentdConfig::shipped(),
         }
-        .map_err(DaemonFault::Config)?;
+        .map_err(DaemonError::Config)?;
         let callers = callers::read_at(&system.callers, env)
-            .map_err(|e| DaemonFault::Callers(e.to_string()))?;
-        let floor = read_floor(&system.floor).map_err(|e| DaemonFault::Floor(e.to_string()))?;
+            .map_err(|e| DaemonError::Callers(e.to_string()))?;
+        let floor = read_floor(&system.floor).map_err(|e| DaemonError::Floor(e.to_string()))?;
         let data = data_dirs(env).map_err(state)?;
         let permissions = PolicyDirs {
             data_home: data[0].clone(),
@@ -301,7 +301,7 @@ impl Duties {
 
     /// Waits for the first duty to end, however it ends, and says which and why. With no duty
     /// left it never finishes.
-    async fn first_ended(&mut self) -> DaemonFault {
+    async fn first_ended(&mut self) -> DaemonError {
         match self.set.join_next_with_id().await {
             None => std::future::pending().await,
             Some(Ok((id, ()))) => self.fault(id, "it returned".into()),
@@ -316,9 +316,9 @@ impl Duties {
         }
     }
 
-    fn fault(&mut self, id: tokio::task::Id, why: String) -> DaemonFault {
+    fn fault(&mut self, id: tokio::task::Id, why: String) -> DaemonError {
         let duty = self.names.remove(&id).unwrap_or("unknown");
-        DaemonFault::Duty { duty, why }
+        DaemonError::Duty { duty, why }
     }
 }
 
@@ -329,7 +329,7 @@ impl Running {
     }
 
     /// Waits until a background duty ends, which it should never do: says which and why.
-    pub async fn duty_ended(&mut self) -> DaemonFault {
+    pub async fn duty_ended(&mut self) -> DaemonError {
         self.tasks.first_ended().await
     }
 
@@ -347,7 +347,7 @@ impl Running {
 ///
 /// # Errors
 ///
-/// Returns a [`DaemonFault`] when the bus name cannot be served or a background duty cannot start.
+/// Returns a [`DaemonError`] when the bus name cannot be served or a background duty cannot start.
 #[expect(
     clippy::too_many_lines,
     reason = "one start-up sequence: each step needs what the one before made, so there is no part to lift out"
@@ -356,7 +356,7 @@ pub async fn start(
     session: &BusConnection,
     system: Option<&BusConnection>,
     setup: Setup,
-) -> Result<Running, DaemonFault> {
+) -> Result<Running, DaemonError> {
     let Setup {
         config,
         manifests,
@@ -399,15 +399,15 @@ pub async fn start(
         port.clone(),
         restore_port.clone(),
     )
-    .map_err(|e| DaemonFault::Policy(e.to_string()))?;
+    .map_err(|e| DaemonError::Policy(e.to_string()))?;
     let kept = AbsPath::parse(&checkpoints.to_string_lossy())
-        .map_err(|e| DaemonFault::State(format!("{}: {e}", checkpoints.display())))?;
+        .map_err(|e| DaemonError::State(format!("{}: {e}", checkpoints.display())))?;
     let seams = SystemSeams {
         link,
         confirmer,
         // The router enforces the person's review times, live; the cascade's own are the ceiling.
         reviewer: reviewer(session, config.reviewers.as_ref(), REVIEW_CEILING, &trace)
-            .ok_or_else(|| DaemonFault::Policy("no reviewer set".into()))?,
+            .ok_or_else(|| DaemonError::Policy("no reviewer set".into()))?,
         grants: FileGrants::at(grants)
             .with_defaults(&data_dirs)
             .with_rules(permissions.clone()),
@@ -425,7 +425,7 @@ pub async fn start(
     };
     // The policy files, layered: a bad person or assistant file is skipped and a bad preset falls
     // back to the built-in one (both logged); a bad administrator file stops the daemon.
-    let loaded = load_policies(&permissions).map_err(|e| DaemonFault::Policy(e.to_string()))?;
+    let loaded = load_policies(&permissions).map_err(|e| DaemonError::Policy(e.to_string()))?;
     for rejected in &loaded.skipped {
         eprintln!("intentd: skipped policy {rejected}");
     }
@@ -448,7 +448,7 @@ pub async fn start(
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
         for manifest in builtin_manifests()
-            .map_err(|e| DaemonFault::Policy(e.to_string()))?
+            .map_err(|e| DaemonError::Policy(e.to_string()))?
             .into_iter()
             .chain(manifests.manifests)
         {
@@ -495,7 +495,7 @@ pub async fn start(
         Some(index),
     )
     .await
-    .map_err(DaemonFault::Serve)?;
+    .map_err(DaemonError::Serve)?;
     let mut tasks = Duties::default();
     let followed = Arc::clone(&router);
     let blind = matches!(watched.state(), WatchState::Blind { .. });
@@ -619,9 +619,9 @@ fn placed_by<S: Seams>(router: &Router<S>, record: &AuditRecord) -> Option<Space
 ///
 /// # Errors
 ///
-/// Returns a [`DaemonFault`] when setup fails (configuration, callers, floor or policies) or the
+/// Returns a [`DaemonError`] when setup fails (configuration, callers, floor or policies) or the
 /// bus fails while serving.
-pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonFault> {
+pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonError> {
     let seams = HarnessSeams {
         system_callers: callers::system_override(env),
         ..HarnessSeams::default()
@@ -633,12 +633,12 @@ pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonFaul
 ///
 /// # Errors
 ///
-/// Returns a [`DaemonFault`] when setup fails (configuration, callers, floor or policies) or the
+/// Returns a [`DaemonError`] when setup fails (configuration, callers, floor or policies) or the
 /// bus fails while serving.
 pub async fn run_with(
     seams: HarnessSeams,
     env: &impl Fn(&str) -> Option<String>,
-) -> Result<(), DaemonFault> {
+) -> Result<(), DaemonError> {
     let installed = SystemFiles::installed();
     let files = SystemFiles {
         callers: seams.system_callers.unwrap_or(installed.callers),
@@ -650,7 +650,7 @@ pub async fn run_with(
     setup.trace = seams.trace;
     let session = dbus_kit::connect::session_from_env(env)
         .await
-        .map_err(|e| DaemonFault::Serve(ServeFault::Bus(e.to_string())))?;
+        .map_err(|e| DaemonError::Serve(ServeError::Bus(e.to_string())))?;
     let system = BusConnection::system().await.ok();
     if system.is_none() {
         eprintln!("intentd: no system bus: the terminal's grants end only when intentd does");
@@ -681,7 +681,7 @@ mod tests {
         duties.spawn("broken", async { panic!("boom") });
         let fault = duties.first_ended().await;
         assert!(
-            matches!(&fault, DaemonFault::Duty { duty: "broken", why } if why.contains("boom")),
+            matches!(&fault, DaemonError::Duty { duty: "broken", why } if why.contains("boom")),
             "{fault:?}"
         );
     }
@@ -694,7 +694,7 @@ mod tests {
         duties.spawn("done", async {});
         let fault = duties.first_ended().await;
         assert!(
-            matches!(&fault, DaemonFault::Duty { duty: "done", .. }),
+            matches!(&fault, DaemonError::Duty { duty: "done", .. }),
             "{fault:?}"
         );
     }

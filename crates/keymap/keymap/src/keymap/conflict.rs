@@ -6,7 +6,7 @@ use crate::standard_action::StandardAction;
 
 /// A refused registration. Nothing is registered when any row is refused.
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
-pub enum Conflict {
+pub enum ConflictError {
     /// The platform or desktop keeps the chord for itself.
     #[error("{shown} can't be used for {wanted_by}: {reason}")]
     Reserved {

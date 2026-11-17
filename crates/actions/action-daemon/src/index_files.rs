@@ -16,7 +16,7 @@ const VERSION: u32 = 1;
 
 /// Why an index file could not be written or read.
 #[derive(Debug, thiserror::Error)]
-pub enum IndexFileFault {
+pub enum IndexFileError {
     /// The disk refused.
     #[error("{0}")]
     Io(#[from] std::io::Error),
@@ -58,24 +58,24 @@ impl IndexStore {
     ///
     /// # Errors
     ///
-    /// Returns an [`IndexFileFault`] when the entries cannot be encoded or the disk refuses the
+    /// Returns an [`IndexFileError`] when the entries cannot be encoded or the disk refuses the
     /// file.
-    pub fn write(&self, app: &AppName, entries: Vec<IndexEntry>) -> Result<(), IndexFileFault> {
+    pub fn write(&self, app: &AppName, entries: Vec<IndexEntry>) -> Result<(), IndexFileError> {
         let bytes = serde_json::to_vec(&IndexFile {
             version: VERSION,
             entries,
         })
-        .map_err(|e| IndexFileFault::Malformed(e.to_string()))?;
+        .map_err(|e| IndexFileError::Malformed(e.to_string()))?;
         Ok(AtomicWrite::PRIVATE.write(&self.file_of(app), &bytes)?)
     }
 
     /// Reads the file at `path`.
-    fn read(path: &Path) -> Result<Vec<IndexEntry>, IndexFileFault> {
+    fn read(path: &Path) -> Result<Vec<IndexEntry>, IndexFileError> {
         let file: IndexFile = serde_json::from_slice(&std::fs::read(path)?)
-            .map_err(|e| IndexFileFault::Malformed(e.to_string()))?;
+            .map_err(|e| IndexFileError::Malformed(e.to_string()))?;
         match file.version {
             VERSION => Ok(file.entries),
-            other => Err(IndexFileFault::Malformed(format!("version {other}"))),
+            other => Err(IndexFileError::Malformed(format!("version {other}"))),
         }
     }
 

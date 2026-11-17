@@ -17,10 +17,10 @@ mod library;
 mod skill;
 
 pub use discover::{Found, Rejected, Roots, discover, load_dir};
-pub use fault::{SkillFault, Unresolved};
+pub use fault::{SkillError, UnresolvedError};
 pub use folder::{FolderError, SkillFolder};
 pub use library::{
-    BODY_BUDGET_BYTES, Hidden, LOAD_MAX, Library, LoadRefusal, Loaded, PRESELECT_MAX, Reach,
+    BODY_BUDGET_BYTES, Hidden, LOAD_MAX, Library, LoadError, Loaded, PRESELECT_MAX, Reach,
     Situation, preselect, reach, uses_first,
 };
 pub use skill::{

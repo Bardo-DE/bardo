@@ -6,8 +6,8 @@ use super::token::{mint, nonce};
 use action_core::CallRefusal;
 use action_procroot::own_uid;
 use action_tools::{
-    EDGE_LINE_MAX, EdgeOp, EdgeReply, EdgeRequest, EdgeToken, EdgeTool, ToolFault, ToolRefusal,
-    listing, outcome_json, prepare,
+    EDGE_LINE_MAX, EdgeOp, EdgeReply, EdgeRequest, EdgeToken, EdgeTool, ToolError,
+    ToolRefusedError, listing, outcome_json, prepare,
 };
 use agent_acp_core::call::AgentCall;
 use agent_acp_core::court::{Court, Ruled};
@@ -31,7 +31,7 @@ const FIRST_CALL: u64 = 1 << 40;
 
 /// Why an edge could not be made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum EdgeFault {
+pub enum EdgeError {
     /// The socket directory, the socket or the token could not be made.
     #[error("the tool edge could not be made")]
     Io,
@@ -88,10 +88,10 @@ fn private_dir(run_dir: &std::path::Path) -> std::io::Result<PathBuf> {
     Ok(dir)
 }
 
-fn abs(path: &std::path::Path) -> Result<AbsPath, EdgeFault> {
+fn abs(path: &std::path::Path) -> Result<AbsPath, EdgeError> {
     path.to_str()
         .and_then(|t| AbsPath::parse(t).ok())
-        .ok_or(EdgeFault::Path)
+        .ok_or(EdgeError::Path)
 }
 
 fn client_of(program: &ProgramName) -> ClientName {
@@ -105,29 +105,29 @@ impl ToolsEdge {
     /// through `court`. Must run inside the tokio runtime.
     ///
     /// # Errors
-    /// Returns [`EdgeFault::Io`] when the private directory, token or socket cannot be made.
+    /// Returns [`EdgeError::Io`] when the private directory, token or socket cannot be made.
     pub fn start<C: Court>(
         offer: &ToolsOffer,
         session: &SessionId,
         program: &ProgramName,
         court: C,
-    ) -> Result<Self, EdgeFault> {
+    ) -> Result<Self, EdgeError> {
         Self::start_with(offer, session, program, court, EdgeMenu::Everything)
     }
 
     /// [`Self::start`], offering only what `menu` allows.
     ///
     /// # Errors
-    /// Returns [`EdgeFault::Io`] when the private directory, token or socket cannot be made.
+    /// Returns [`EdgeError::Io`] when the private directory, token or socket cannot be made.
     pub fn start_with<C: Court>(
         offer: &ToolsOffer,
         session: &SessionId,
         program: &ProgramName,
         court: C,
         menu: EdgeMenu,
-    ) -> Result<Self, EdgeFault> {
-        let io = |_| EdgeFault::Io;
-        let owner = own_uid().ok_or(EdgeFault::Io)?;
+    ) -> Result<Self, EdgeError> {
+        let io = |_| EdgeError::Io;
+        let owner = own_uid().ok_or(EdgeError::Io)?;
         let token = mint().map_err(io)?;
         let dir = private_dir(&offer.run_dir).map_err(io)?;
         let socket = dir.join("tools.sock");
@@ -136,7 +136,7 @@ impl ToolsEdge {
             .and_then(UnixListener::from_std);
         let Ok(listener) = made else {
             let _ = std::fs::remove_dir_all(&dir);
-            return Err(EdgeFault::Io);
+            return Err(EdgeError::Io);
         };
         let bind = EdgeBind {
             socket: abs(&socket)?,
@@ -247,7 +247,7 @@ impl<C: Court> Serving<C> {
             return EdgeReply::Refused;
         }
         let Some(registry) = self.court.registry().await else {
-            return EdgeReply::Failed(ToolFault::Unavailable);
+            return EdgeReply::Failed(ToolError::Unavailable);
         };
         match request.op {
             EdgeOp::List => EdgeReply::Tools(
@@ -270,7 +270,7 @@ impl<C: Court> Serving<C> {
         registry: &[action_manifest::ValidManifest],
         tool: &str,
         arguments: Json,
-    ) -> Result<Json, ToolFault> {
+    ) -> Result<Json, ToolError> {
         let request = prepare(registry, tool, &arguments, &self.client, |action| {
             self.menu.offers(action)
         })?;
@@ -285,9 +285,9 @@ impl<C: Court> Serving<C> {
                         .lock()
                         .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(*trip);
                 }
-                Err(ToolRefusal::from(&refusal).into())
+                Err(ToolRefusedError::from(&refusal).into())
             }
-            Ruled::Lost => Err(ToolFault::Unavailable),
+            Ruled::Lost => Err(ToolError::Unavailable),
         }
     }
 }

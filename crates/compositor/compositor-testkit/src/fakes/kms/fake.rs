@@ -7,7 +7,7 @@ use super::topology::SyntheticTopology;
 use compositor_backend::headless::ConnectorEvent;
 use compositor_backend::tty::{
     CaptureGpu, CommitVerdict, ConnectorFacts, ConnectorId, ConnectorStatus, DevicePath, Kms,
-    KmsCommit, KmsError, KmsOpener, KmsRefusal, KmsResources, Lit, RenderMode, Routes,
+    KmsCommit, KmsError, KmsOpener, KmsRefusedError, KmsResources, Lit, RenderMode, Routes,
     ScanoutSurface, judge, output_facts,
 };
 use compositor_core::output::{GammaRamp, Mode, OutputConfig};
@@ -240,7 +240,7 @@ impl Kms for FakeKms {
         match judge(&world.resources, &world.lit, &commit) {
             CommitVerdict::Accepted => {}
             CommitVerdict::NeedsModeset => {
-                return Err(KmsError::Refused(KmsRefusal::ModesetForbidden));
+                return Err(KmsError::Refused(KmsRefusedError::ModesetForbidden));
             }
             CommitVerdict::Refused(refusal) => return Err(KmsError::Refused(refusal)),
         }

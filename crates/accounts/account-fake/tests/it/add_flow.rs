@@ -27,7 +27,7 @@ use account_service::AccountService;
 use account_service_accounts::SignInAs;
 use account_service_core::audit::AuditEvent;
 use account_service_core::registry::Registry;
-use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetLink, SheetOpen, Sheets};
 use account_sheet::{
     Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SheetInput, SheetView, SignInFault,
     SignInInput, UserCode,
@@ -294,13 +294,13 @@ impl SheetLink for Link {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
+    async fn update(&mut self, view: SheetView) -> Result<(), SheetError> {
         self.see(&view);
         Ok(())
     }
 
-    async fn input(&mut self) -> Result<SheetInput, SheetFault> {
-        self.rx.recv().await.ok_or(SheetFault::Closed)
+    async fn input(&mut self) -> Result<SheetInput, SheetError> {
+        self.rx.recv().await.ok_or(SheetError::Closed)
     }
 }
 
@@ -319,13 +319,13 @@ impl Sheets for Reactive {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn conversation(&self, open: SheetOpen) -> Result<Link, SheetFault> {
+    async fn conversation(&self, open: SheetOpen) -> Result<Link, SheetError> {
         let react = self
             .people
             .lock()
             .expect("people")
             .pop_front()
-            .ok_or(SheetFault::Unavailable)?;
+            .ok_or(SheetError::Unavailable)?;
         let (tx, rx) = unbounded_channel();
         let link = Link {
             react,

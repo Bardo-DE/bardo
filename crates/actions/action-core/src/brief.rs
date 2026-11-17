@@ -25,7 +25,7 @@ pub fn from_checked_brief(outcome: &Outcome) -> bool {
 
 /// Why some words are not a brief.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum BriefFault {
+pub enum BriefError {
     /// Nothing but whitespace.
     #[error("the brief is empty")]
     Empty,
@@ -45,14 +45,14 @@ impl BriefText {
     ///
     /// # Errors
     ///
-    /// Returns [`BriefFault::Empty`] when `text` is blank and [`BriefFault::TooLong`] when it is
+    /// Returns [`BriefError::Empty`] when `text` is blank and [`BriefError::TooLong`] when it is
     /// longer than the brief limit.
-    pub fn parse(text: &str) -> Result<Self, BriefFault> {
+    pub fn parse(text: &str) -> Result<Self, BriefError> {
         if text.trim().is_empty() {
-            return Err(BriefFault::Empty);
+            return Err(BriefError::Empty);
         }
         if text.len() > BRIEF_MAX {
-            return Err(BriefFault::TooLong);
+            return Err(BriefError::TooLong);
         }
         Ok(Self(text.to_owned()))
     }
@@ -72,8 +72,8 @@ impl fmt::Debug for BriefText {
 }
 
 impl TryFrom<String> for BriefText {
-    type Error = BriefFault;
-    fn try_from(text: String) -> Result<Self, BriefFault> {
+    type Error = BriefError;
+    fn try_from(text: String) -> Result<Self, BriefError> {
         Self::parse(&text)
     }
 }
@@ -411,10 +411,10 @@ mod tests {
         assert!(flag_brief("\n\n  \n").is_empty());
         let big = "send http://a.b/c ".repeat(BRIEF_MAX / 18);
         assert!(!flag_brief(&big).is_empty());
-        assert_eq!(BriefText::parse(""), Err(BriefFault::Empty));
+        assert_eq!(BriefText::parse(""), Err(BriefError::Empty));
         assert_eq!(
             BriefText::parse(&"x".repeat(BRIEF_MAX + 1)),
-            Err(BriefFault::TooLong)
+            Err(BriefError::TooLong)
         );
         BriefText::parse(&big).unwrap();
     }

@@ -19,9 +19,9 @@ use crate::fds::inherited_fds;
 use crate::harden::Hardening;
 use crate::launch::{Enforcement, Env, Feed, Launcher, UserSession};
 use crate::profile::Profile;
-use crate::sandbox::{RunSpec, Sandbox, StartFault};
+use crate::sandbox::{RunSpec, Sandbox, StartError};
 use crate::seccomp::default_filter;
-use crate::{CannotSandbox, SandboxState};
+use crate::{CannotSandboxError, SandboxState};
 use base_path::AbsPath;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -55,13 +55,13 @@ pub struct BwrapSandbox {
 }
 
 /// Fails closed where a descriptor would leak into the sandbox, unless the person allowed it.
-fn no_leaks(allowed: bool) -> Result<(), StartFault> {
+fn no_leaks(allowed: bool) -> Result<(), StartError> {
     if allowed {
         Ok(())
     } else {
         match inherited_fds() {
             Ok(found) if found.is_empty() => Ok(()),
-            _ => Err(StartFault::InheritedFds),
+            _ => Err(StartError::InheritedFds),
         }
     }
 }
@@ -120,26 +120,26 @@ impl BwrapSandbox {
     /// environment of `run`. The caller sets the stdio and spawns it.
     ///
     /// When the seccomp filter is on, `filter` must name a file written with `write_filter`;
-    /// without one this is `StartFault::FilterFile`, never an unfiltered agent. Every
+    /// without one this is `StartError::FilterFile`, never an unfiltered agent. Every
     /// descriptor the caller opens before spawning must be close-on-exec (see `inherited_fds`).
     ///
     /// # Errors
-    /// Returns `StartFault::Cannot` when the sandbox cannot confine `run.cwd`,
-    /// `StartFault::InheritedFds` when a descriptor would leak, and `StartFault::FilterFile` when
+    /// Returns `StartError::Cannot` when the sandbox cannot confine `run.cwd`,
+    /// `StartError::InheritedFds` when a descriptor would leak, and `StartError::FilterFile` when
     /// the seccomp filter is on and no `filter` file was given.
     pub fn agent_command(
         &self,
         run: &AgentRun,
         filter: Option<&AbsPath>,
-    ) -> Result<Command, StartFault> {
+    ) -> Result<Command, StartError> {
         if let SandboxState::Cannot(why) = self.check(&run.cwd) {
-            return Err(StartFault::Cannot(why));
+            return Err(StartError::Cannot(why));
         }
         no_leaks(self.hardening.inherited_fds)?;
         let feed = match (&self.filter, filter) {
             (None, _) => Feed::NoFilter,
             (Some(_), Some(file)) => Feed::FromFile(file.clone()),
-            (Some(_), None) => return Err(StartFault::FilterFile),
+            (Some(_), None) => return Err(StartError::FilterFile),
         };
         let args = agent_bwrap_args(run, &self.profile());
         Ok(self
@@ -151,7 +151,7 @@ impl BwrapSandbox {
     ///
     /// # Errors
     /// The same as [`Self::detect_with`].
-    pub fn detect(path: &str) -> Result<Self, CannotSandbox> {
+    pub fn detect(path: &str) -> Result<Self, CannotSandboxError> {
         Self::detect_with(path, &Hardening::default(), &UserSession::from_env())
     }
 
@@ -160,34 +160,34 @@ impl BwrapSandbox {
     /// was asked for cannot be applied this is an error, never a weaker sandbox.
     ///
     /// # Errors
-    /// Returns `CannotSandbox` naming why: no `bwrap` on `path`, the kernel or `AppArmor` refusing
+    /// Returns `CannotSandboxError` naming why: no `bwrap` on `path`, the kernel or `AppArmor` refusing
     /// the namespaces, the seccomp filter or the resource limits not applicable here, or an
     /// unsupported platform.
     pub fn detect_with(
         path: &str,
         hardening: &Hardening,
         session: &UserSession,
-    ) -> Result<Self, CannotSandbox> {
+    ) -> Result<Self, CannotSandboxError> {
         if cfg!(not(unix)) {
-            return Err(CannotSandbox::Unsupported);
+            return Err(CannotSandboxError::Unsupported);
         }
         let program = path
             .split(':')
             .filter(|d| !d.is_empty())
             .map(|d| Path::new(d).join("bwrap"))
             .find(|p| p.is_file())
-            .ok_or(CannotSandbox::NotInstalled)?;
+            .ok_or(CannotSandboxError::NotInstalled)?;
         if !bwrap_runs(&program, &[], None) {
             return Err(refusal_at(Path::new(RESTRICT_USERNS)));
         }
         let filter = if hardening.seccomp {
             #[expect(
                 clippy::map_err_ignore,
-                reason = "`CannotSandbox` is a plain word that is complete by itself: either way no filter can be made here"
+                reason = "`CannotSandboxError` is a plain word that is complete by itself: either way no filter can be made here"
             )]
-            let bytes = default_filter().map_err(|_| CannotSandbox::SeccompUnavailable)?;
+            let bytes = default_filter().map_err(|_| CannotSandboxError::SeccompUnavailable)?;
             if !bwrap_runs(&program, &["--seccomp", "0"], Some(&bytes)) {
-                return Err(CannotSandbox::SeccompUnavailable);
+                return Err(CannotSandboxError::SeccompUnavailable);
             }
             Some(bytes)
         } else {
@@ -197,7 +197,7 @@ impl BwrapSandbox {
         if launcher.limits().is_some()
             && !bwrap_runs(&program, &["--size", "1048576", "--tmpfs", "/tmp"], None)
         {
-            return Err(CannotSandbox::LimitsUnavailable);
+            return Err(CannotSandboxError::LimitsUnavailable);
         }
         Ok(Self {
             program,
@@ -209,12 +209,12 @@ impl BwrapSandbox {
 }
 
 /// A pipe already holding `bytes` (a filter is far below the pipe's capacity), read end only.
-fn filter_pipe(bytes: &[u8]) -> Result<Stdio, StartFault> {
+fn filter_pipe(bytes: &[u8]) -> Result<Stdio, StartError> {
     use std::io::Write;
-    let (reader, mut writer) = std::io::pipe().map_err(|e| StartFault::Spawn(e.to_string()))?;
+    let (reader, mut writer) = std::io::pipe().map_err(|e| StartError::Spawn(e.to_string()))?;
     writer
         .write_all(bytes)
-        .map_err(|e| StartFault::Spawn(e.to_string()))?;
+        .map_err(|e| StartError::Spawn(e.to_string()))?;
     Ok(Stdio::from(reader))
 }
 
@@ -262,13 +262,13 @@ impl Sandbox for BwrapSandbox {
         if usable(cwd) {
             SandboxState::Ready
         } else {
-            SandboxState::Cannot(CannotSandbox::BadWorkingDir)
+            SandboxState::Cannot(CannotSandboxError::BadWorkingDir)
         }
     }
 
-    fn start(&self, spec: &RunSpec) -> Result<BwrapJob, StartFault> {
+    fn start(&self, spec: &RunSpec) -> Result<BwrapJob, StartError> {
         if let SandboxState::Cannot(why) = self.check(&spec.cwd) {
-            return Err(StartFault::Cannot(why));
+            return Err(StartError::Cannot(why));
         }
         no_leaks(self.hardening.inherited_fds)?;
         let args = bwrap_args(spec, &self.profile());
@@ -290,7 +290,7 @@ pub enum Detected {
     /// A working bubblewrap.
     Bwrap(BwrapSandbox),
     /// No usable sandbox, for this reason.
-    Missing(CannotSandbox),
+    Missing(CannotSandboxError),
 }
 
 impl Detected {
@@ -342,10 +342,10 @@ impl Sandbox for Detected {
         }
     }
 
-    fn start(&self, spec: &RunSpec) -> Result<BwrapJob, StartFault> {
+    fn start(&self, spec: &RunSpec) -> Result<BwrapJob, StartError> {
         match self {
             Detected::Bwrap(b) => b.start(spec),
-            Detected::Missing(why) => Err(StartFault::Cannot(*why)),
+            Detected::Missing(why) => Err(StartError::Cannot(*why)),
         }
     }
 }

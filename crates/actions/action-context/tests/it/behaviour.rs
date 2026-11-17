@@ -2,7 +2,7 @@
 
 use account_core::{AppName, DataClass};
 use action_context::handle_views::context_view;
-use action_context::handles::{HandleLimit, HandleTable, MAX_HANDLES, MAX_VIEW_TEXTS};
+use action_context::handles::{HandleLimitError, HandleTable, MAX_HANDLES, MAX_VIEW_TEXTS};
 use action_context::registry::Registry;
 use action_core::*;
 use action_manifest::parse;
@@ -288,7 +288,7 @@ fn a_thing_is_held_once_per_label_and_a_full_table_refuses_a_new_one_not_an_old_
     assert!(table.is_full());
     assert_eq!(
         table.try_mint_entity(entity("mail.thread", "onemore"), trusted()),
-        Err(HandleLimit::Handles)
+        Err(HandleLimitError::Handles)
     );
     assert_eq!(
         table.try_mint_entity(entity("mail.thread", "t0"), trusted()),

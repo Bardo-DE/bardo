@@ -15,5 +15,5 @@ pub use agent_reader::{answer_of, class_of, reader_request, reply_shape, task_in
 pub use callers::{FILE as CALLERS_FILE, SYSTEM_CALLERS_VAR, shipped as shipped_callers};
 pub use daemon::{HarnessSeams, run, run_with, start};
 pub use host::ReaderHost;
-pub use serve::{ServeFault, serve, serve_on};
+pub use serve::{ServeError, serve, serve_on};
 pub use service::ReaderService;

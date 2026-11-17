@@ -31,16 +31,16 @@ impl Deadlines {
 /// A stage ran out of time.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("inferd did not answer in time")]
-pub(crate) struct TimedOut(#[source] std::sync::Arc<tokio::time::error::Elapsed>);
+pub(crate) struct StageTimeoutError(#[source] std::sync::Arc<tokio::time::error::Elapsed>);
 
 /// Runs `work`, giving it up after `limit`.
 pub(crate) async fn within<T>(
     limit: Duration,
     work: impl Future<Output = T>,
-) -> Result<T, TimedOut> {
+) -> Result<T, StageTimeoutError> {
     tokio::time::timeout(limit, work)
         .await
-        .map_err(|e| TimedOut(e.into()))
+        .map_err(|e| StageTimeoutError(e.into()))
 }
 
 /// Why a turn did not finish.
@@ -51,7 +51,7 @@ pub(crate) enum TurnError {
     Session(#[from] SessionError),
     /// The turn outlived its deadline.
     #[error(transparent)]
-    TimedOut(#[from] TimedOut),
+    TimedOut(#[from] StageTimeoutError),
 }
 
 /// Runs one turn: sends `request`, then reads events until the one that ends the turn, all

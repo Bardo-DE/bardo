@@ -6,7 +6,7 @@ pub const ROLE_LIMIT: usize = 4_000;
 
 /// Why a text is not a role.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum RoleFault {
+pub enum RoleError {
     /// Nothing but whitespace.
     #[error("the role is empty")]
     Empty,
@@ -25,15 +25,15 @@ impl RoleText {
     ///
     /// # Errors
     ///
-    /// Returns [`RoleFault::Empty`] when `text` is only whitespace and [`RoleFault::TooLong`] when
+    /// Returns [`RoleError::Empty`] when `text` is only whitespace and [`RoleError::TooLong`] when
     /// it is longer than the limit.
-    pub fn parse(text: &str) -> Result<Self, RoleFault> {
+    pub fn parse(text: &str) -> Result<Self, RoleError> {
         let text = text.trim();
         if text.is_empty() {
-            return Err(RoleFault::Empty);
+            return Err(RoleError::Empty);
         }
         if text.len() > ROLE_LIMIT {
-            return Err(RoleFault::TooLong);
+            return Err(RoleError::TooLong);
         }
         Ok(Self(text.to_owned()))
     }
@@ -55,10 +55,10 @@ mod tests {
             RoleText::parse("  review mail \n").expect("role").as_str(),
             "review mail"
         );
-        assert_eq!(RoleText::parse(" \n"), Err(RoleFault::Empty));
+        assert_eq!(RoleText::parse(" \n"), Err(RoleError::Empty));
         assert_eq!(
             RoleText::parse(&"x".repeat(ROLE_LIMIT + 1)),
-            Err(RoleFault::TooLong)
+            Err(RoleError::TooLong)
         );
     }
 }

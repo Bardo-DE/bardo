@@ -41,7 +41,7 @@ mod undo;
 
 pub use audit::{AuditRecord, ConfirmAnswerKind, DecidedBy};
 pub use brief::{
-    BRIEF_MAX, BriefEdit, BriefFault, BriefFlag, BriefSheet, BriefText, BriefWhy,
+    BRIEF_MAX, BriefEdit, BriefError, BriefFlag, BriefSheet, BriefText, BriefWhy,
     FROM_CHECKED_BRIEF, flag_brief, from_checked_brief,
 };
 pub use budget::{Budget, BudgetKind, Cost, Halt, HaltCause, KillSwitch, Ledger, charge, halted};
@@ -50,11 +50,11 @@ pub use call::{
     FailText, Follow, Invocation, Outcome, Undoable,
 };
 pub use checkpoint::{
-    CheckpointEvent, CheckpointFault, CheckpointId, CheckpointList, CheckpointNote, CheckpointRow,
+    CheckpointError, CheckpointEvent, CheckpointId, CheckpointList, CheckpointNote, CheckpointRow,
     PlanDigest, RestorePlan, Retention, Rewind, SavedState, SkipReason, TurnEnd, TurnState,
     WorkPath, WorkPathError,
 };
-pub use compact::{Covers, SUMMARY_MAX_CHARS, Summary, SummaryFault, SummaryText};
+pub use compact::{Covers, SUMMARY_MAX_CHARS, Summary, SummaryError, SummaryText};
 pub use config::{
     AgentConfig, AssemblerBudget, BreakerLimits, IdleRules, ReviewTimeouts, SETTING_ROWS,
     STANDARD_BUDGET, SettingRow, SettingValue, TASK_POLICY_MAX, UNDO_KEEP,
@@ -73,7 +73,7 @@ pub use derived::{Corrected, Derived, PolicyWriter};
 pub use external::{ExternalAgent, SheetSurface};
 pub use handover::{HandOver, HandRefusal, HandReply, Handed};
 pub use index::{Hit, IndexBatch, IndexEntry, IndexState, SearchAsk, SearchScope, SuggestAsk};
-pub use memory_link::{EventSink, LinkFault, MemoryLink};
+pub use memory_link::{EventSink, LinkError, MemoryLink};
 pub use message::{
     Delivery, DraftPart, InboundLine, InboundPart, InboxAsk, MessageDraft, SendRefusal,
 };
@@ -85,7 +85,7 @@ pub use preview::{
     FactLine, FileFacts, FileMove, Markdownish, MessageSnip, PageIndex, Preview, TimeRange, size_of,
 };
 pub use reader::{
-    ReadFault, Reader, ReaderAsk, ReaderError, ReaderTask, SchemaFault, ValueSchema, conforms,
+    ReadFault, Reader, ReaderAsk, ReaderError, ReaderTask, SchemaError, ValueSchema, conforms,
     entity_choice_text,
 };
 pub use roster::{

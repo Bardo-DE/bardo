@@ -14,7 +14,7 @@ const MOST_HOURS: u8 = 12;
 
 /// Why some words are not a schedule.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ScheduleFault {
+pub enum ScheduleError {
     /// Not a time of day (the number that would not read, when that was the trouble).
     #[error("say a time of day like 08:00")]
     Time(#[source] Option<ParseIntError>),
@@ -49,12 +49,12 @@ impl TimeOfDay {
     ///
     /// # Errors
     ///
-    /// Returns [`ScheduleFault`] when the input is not a valid schedule.
-    pub fn new(hour: u8, minute: u8) -> Result<Self, ScheduleFault> {
+    /// Returns [`ScheduleError`] when the input is not a valid schedule.
+    pub fn new(hour: u8, minute: u8) -> Result<Self, ScheduleError> {
         if hour < 24 && minute < 60 {
             Ok(Self { hour, minute })
         } else {
-            Err(ScheduleFault::Time(None))
+            Err(ScheduleError::Time(None))
         }
     }
 
@@ -62,17 +62,17 @@ impl TimeOfDay {
     ///
     /// # Errors
     ///
-    /// Returns [`ScheduleFault`] when the input is not a valid schedule.
-    pub fn parse(text: &str) -> Result<Self, ScheduleFault> {
+    /// Returns [`ScheduleError`] when the input is not a valid schedule.
+    pub fn parse(text: &str) -> Result<Self, ScheduleError> {
         let (hour, minute) = text
             .trim()
             .split_once(':')
-            .ok_or(ScheduleFault::Time(None))?;
+            .ok_or(ScheduleError::Time(None))?;
         if minute.len() != 2 {
-            return Err(ScheduleFault::Time(None));
+            return Err(ScheduleError::Time(None));
         }
-        let hour = hour.parse().map_err(|e| ScheduleFault::Time(Some(e)))?;
-        let minute = minute.parse().map_err(|e| ScheduleFault::Time(Some(e)))?;
+        let hour = hour.parse().map_err(|e| ScheduleError::Time(Some(e)))?;
+        let minute = minute.parse().map_err(|e| ScheduleError::Time(Some(e)))?;
         Self::new(hour, minute)
     }
 
@@ -94,8 +94,8 @@ impl fmt::Display for TimeOfDay {
 }
 
 impl TryFrom<String> for TimeOfDay {
-    type Error = ScheduleFault;
-    fn try_from(text: String) -> Result<Self, ScheduleFault> {
+    type Error = ScheduleError;
+    fn try_from(text: String) -> Result<Self, ScheduleError> {
         Self::parse(&text)
     }
 }
@@ -116,19 +116,19 @@ impl Hours {
     ///
     /// # Errors
     ///
-    /// Returns [`ScheduleFault`] when the input is not a valid schedule.
-    pub fn new(n: u8) -> Result<Self, ScheduleFault> {
+    /// Returns [`ScheduleError`] when the input is not a valid schedule.
+    pub fn new(n: u8) -> Result<Self, ScheduleError> {
         if (1..=MOST_HOURS).contains(&n) {
             Ok(Self(n))
         } else {
-            Err(ScheduleFault::Hours(None))
+            Err(ScheduleError::Hours(None))
         }
     }
 }
 
 impl TryFrom<u8> for Hours {
-    type Error = ScheduleFault;
-    fn try_from(n: u8) -> Result<Self, ScheduleFault> {
+    type Error = ScheduleError;
+    fn try_from(n: u8) -> Result<Self, ScheduleError> {
         Self::new(n)
     }
 }
@@ -161,8 +161,8 @@ impl Schedule {
     ///
     /// # Errors
     ///
-    /// Returns [`ScheduleFault`] when the input is not a valid schedule.
-    pub fn parse(text: &str) -> Result<Self, ScheduleFault> {
+    /// Returns [`ScheduleError`] when the input is not a valid schedule.
+    pub fn parse(text: &str) -> Result<Self, ScheduleError> {
         let lower = text.trim().to_lowercase();
         let words: Vec<&str> = lower.split_whitespace().collect();
         match words.as_slice() {
@@ -170,10 +170,10 @@ impl Schedule {
             ["weekdays", time] => Ok(Schedule::Weekdays(TimeOfDay::parse(time)?)),
             ["every", "hour"] => Ok(Schedule::Every(Hours::new(1)?)),
             ["every", n, "hours"] => {
-                let n = n.parse().map_err(|e| ScheduleFault::Hours(Some(e)))?;
+                let n = n.parse().map_err(|e| ScheduleError::Hours(Some(e)))?;
                 Ok(Schedule::Every(Hours::new(n)?))
             }
-            _ => Err(ScheduleFault::Words),
+            _ => Err(ScheduleError::Words),
         }
     }
 

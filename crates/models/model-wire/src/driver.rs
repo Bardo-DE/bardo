@@ -3,7 +3,7 @@
 use base_ids::{Count, Dims};
 use model_http::Transport;
 use model_provider::{
-    Charges, EmbedEnd, EmbedFault, EmbedTurn, Embedder, Knob, ModelInfo, Provider, ProviderError,
+    Charges, EmbedEnd, EmbedError, EmbedTurn, Embedder, Knob, ModelInfo, Provider, ProviderError,
     TurnEnd, TurnRequest, TurnSink, TurnUsage,
 };
 
@@ -110,10 +110,10 @@ fn check_reply(end: &EmbedEnd, turn: &EmbedTurn) -> Result<(), ProviderError> {
         ),
     };
     end.check(want, dims).map_err(|fault| match fault {
-        EmbedFault::CountMismatch { want, got } => {
+        EmbedError::CountMismatch { want, got } => {
             ProviderError::Unreadable(format!("asked for {} vectors, got {}", want.0, got.0))
         }
-        EmbedFault::WidthMismatch { want, got } => ProviderError::Unreadable(format!(
+        EmbedError::WidthMismatch { want, got } => ProviderError::Unreadable(format!(
             "expected vectors of width {}, got {}",
             want.0, got.0
         )),

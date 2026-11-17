@@ -20,7 +20,7 @@ pub mod serve {
 
 /// `bardo-agent-acp` as the harness's own process.
 pub mod acp {
-    use crate::{Callers, LiveFault};
+    use crate::{Callers, LiveError};
     use account_callers::ProcRoot;
     use std::path::PathBuf;
 
@@ -52,12 +52,12 @@ pub mod acp {
     ///
     /// # Errors
     ///
-    /// [`LiveFault`] when the service cannot be set up or served.
+    /// [`LiveError`] when the service cannot be set up or served.
     pub async fn serve_with(
         trace: action_dbus::InferWatch,
         seams: HarnessSeams,
         env: &impl Fn(&str) -> Option<String>,
-    ) -> Result<(), LiveFault> {
+    ) -> Result<(), LiveError> {
         let HarnessSeams {
             proc_root,
             system_callers,

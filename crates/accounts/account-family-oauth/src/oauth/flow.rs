@@ -14,7 +14,7 @@ use super::env::OAuthEnv;
 use super::issuer::BrowserIssuer;
 use account_family_kit::{Flow, Move};
 use account_oauth::{
-    AuthCode, AuthorizeAsk, ClientRegistry, ClientTraits, ExchangeFault, LoopbackFault,
+    AuthCode, AuthorizeAsk, ClientRegistry, ClientTraits, ExchangeCauseError, LoopbackError,
     LoopbackServer, OAuthState, Pkce, TokenResponse, authorize_url_for, endpoints_of,
     exchange_code_scoped,
 };
@@ -73,7 +73,7 @@ pub struct Browser {
     grant: Grant,
     pkce: Pkce,
     redirect: String,
-    wait: Task<Result<AuthCode, LoopbackFault>>,
+    wait: Task<Result<AuthCode, LoopbackError>>,
 }
 
 /// The browser sign-in of the issuer `R`, over the HTTP seam `H`.
@@ -271,21 +271,21 @@ impl<R: BrowserIssuer, H: Http + 'static> Flow for BrowserFlow<R, H> {
 }
 
 /// What a token endpoint's refusal means to the person.
-pub(crate) fn exchange_fault(fault: ExchangeFault) -> SignInFault {
+pub(crate) fn exchange_fault(fault: ExchangeCauseError) -> SignInFault {
     match fault {
-        ExchangeFault::Refused => SignInFault::Refused,
-        ExchangeFault::Unreachable => SignInFault::Unreachable,
-        ExchangeFault::Unreadable => SignInFault::Unreadable,
+        ExchangeCauseError::Refused => SignInFault::Refused,
+        ExchangeCauseError::Unreachable => SignInFault::Unreachable,
+        ExchangeCauseError::Unreadable => SignInFault::Unreadable,
     }
 }
 
 /// What the issuer's redirect (or the lack of one) says of the sign-in, in the words of the
 /// issuer's rules ([`BrowserIssuer::refusal`]).
-pub(crate) fn loopback_fault<R: BrowserIssuer>(rules: &R, fault: LoopbackFault) -> SignInFault {
+pub(crate) fn loopback_fault<R: BrowserIssuer>(rules: &R, fault: LoopbackError) -> SignInFault {
     match fault {
-        LoopbackFault::TimedOut => SignInFault::TimedOut,
-        LoopbackFault::Refused(error) => rules.refusal(&error),
-        LoopbackFault::WrongState => SignInFault::Refused,
+        LoopbackError::TimedOut => SignInFault::TimedOut,
+        LoopbackError::Refused(error) => rules.refusal(&error),
+        LoopbackError::WrongState => SignInFault::Refused,
         // oversized, no code, malformed, and a fault a later account-oauth adds
         _ => SignInFault::Unreadable,
     }
@@ -299,12 +299,12 @@ mod tests {
 
     #[test]
     fn a_redirect_fault_maps_to_what_the_person_sees() {
-        const CASES: &[(LoopbackFault, SignInFault)] = &[
-            (LoopbackFault::TimedOut, SignInFault::TimedOut),
-            (LoopbackFault::WrongState, SignInFault::Refused),
-            (LoopbackFault::NoCode, SignInFault::Unreadable),
-            (LoopbackFault::Malformed, SignInFault::Unreadable),
-            (LoopbackFault::Oversized, SignInFault::Unreadable),
+        const CASES: &[(LoopbackError, SignInFault)] = &[
+            (LoopbackError::TimedOut, SignInFault::TimedOut),
+            (LoopbackError::WrongState, SignInFault::Refused),
+            (LoopbackError::NoCode, SignInFault::Unreadable),
+            (LoopbackError::Malformed, SignInFault::Unreadable),
+            (LoopbackError::Oversized, SignInFault::Unreadable),
         ];
         let rules = Standard::of(Issuer::Yahoo);
         for (fault, want) in CASES {
@@ -316,11 +316,11 @@ mod tests {
     fn a_person_who_said_no_cancelled_and_the_rest_were_refused() {
         let rules = Standard::of(Issuer::Yahoo);
         assert_eq!(
-            loopback_fault(&rules, LoopbackFault::Refused("access_denied".into())),
+            loopback_fault(&rules, LoopbackError::Refused("access_denied".into())),
             SignInFault::Cancelled
         );
         assert_eq!(
-            loopback_fault(&rules, LoopbackFault::Refused("server_error".into())),
+            loopback_fault(&rules, LoopbackError::Refused("server_error".into())),
             SignInFault::Refused
         );
     }

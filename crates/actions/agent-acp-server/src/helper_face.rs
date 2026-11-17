@@ -8,7 +8,7 @@
 use crate::calls;
 use crate::helper_replay;
 use crate::helpers::{HelperRow, Helpers};
-use crate::link::{Gone, Link, chain};
+use crate::link::{EditorGoneError, Link, chain};
 use crate::mode::Mode;
 use crate::out;
 use crate::server::{Known, Server, Turns};
@@ -149,7 +149,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
 
     /// The board's sentence, as a plain agent line in each session this connection has for that
     /// helper.
-    pub(crate) fn tell(&mut self, link: &Link, told: &ToldWire) -> Result<(), Gone> {
+    pub(crate) fn tell(&mut self, link: &Link, told: &ToldWire) -> Result<(), EditorGoneError> {
         let sessions: Vec<SessionId> = self
             .roster
             .iter()

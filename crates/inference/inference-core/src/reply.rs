@@ -2,7 +2,7 @@
 
 use crate::computer_use::ComputerUseStepReply;
 use crate::control::StopReason;
-use crate::error::{InferRefusal, ModelError};
+use crate::error::{InferRefusedError, ModelError};
 use crate::scores::OptionScores;
 use account_capability::Locality;
 use account_capability::ModelId;
@@ -26,7 +26,7 @@ pub enum InferReply {
     /// For `Speak`.
     Spoke(SpeakReply),
     /// Refused, and why; never a silent downgrade.
-    Refused(InferRefusal),
+    Refused(InferRefusedError),
     /// The model call failed.
     Failed(ModelError),
     /// The client cancelled.

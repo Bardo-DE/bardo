@@ -34,7 +34,7 @@ use wayland_client::globals::registry_queue_init;
 use wayland_client::protocol::wl_surface::WlSurface;
 use wayland_client::{Connection, EventQueue};
 
-use crate::capture::{CaptureFailure, Frame};
+use crate::capture::{CaptureError, Frame};
 use crate::command::{DesktopCommand, Ticket};
 use crate::config::DesktopConfig;
 use crate::desktop::Desktop;
@@ -186,7 +186,7 @@ impl DesktopClient {
     }
 
     /// Takes a finished capture: its frame, or why it failed. `None` while it is still going.
-    pub fn take_capture(&mut self, id: CaptureId) -> Option<Result<Frame, CaptureFailure>> {
+    pub fn take_capture(&mut self, id: CaptureId) -> Option<Result<Frame, CaptureError>> {
         let captures = std::mem::take(&mut self.wire.state.captures);
         let (captures, ready) = captures.take_ready(id);
         self.wire.state.captures = captures;

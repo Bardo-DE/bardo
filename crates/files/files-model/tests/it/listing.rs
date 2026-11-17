@@ -1,6 +1,6 @@
 //! Answers arriving: stale ones, failures and live changes.
 
-use files_model::{Change, Effect, Input, ListFailure, Listing, Modifier};
+use files_model::{Change, Effect, FolderListError, Input, Listing, Modifier};
 
 use crate::common::*;
 
@@ -18,14 +18,17 @@ fn an_answer_for_a_place_already_left_is_ignored() {
 #[test]
 fn a_failed_listing_is_kept_with_its_reason_and_clears_the_rows() {
     let browser = loaded(vec![file("a")]);
-    let (browser, _) = browser.step(Input::Listed(home(), Err(ListFailure::NoPermission)), at(0));
+    let (browser, _) = browser.step(
+        Input::Listed(home(), Err(FolderListError::NoPermission)),
+        at(0),
+    );
     assert_eq!(
         browser.listing(),
-        &Listing::Failed(ListFailure::NoPermission)
+        &Listing::Failed(FolderListError::NoPermission)
     );
     assert!(browser.rows().is_empty());
     assert_eq!(
-        ListFailure::NoPermission.to_string(),
+        FolderListError::NoPermission.to_string(),
         "You don't have permission to open that folder."
     );
 }

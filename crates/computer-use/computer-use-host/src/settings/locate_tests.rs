@@ -3,7 +3,7 @@
 use super::tests::base;
 use super::*;
 use settings_store::Loaded;
-use settings_store_fs::{Locator, ReadFailure, ReadText};
+use settings_store_fs::{Locator, ReadError, ReadText};
 use std::path::{Path, PathBuf};
 
 /// The files a test shows the locator: a path with its text, or `None` for a file that is there
@@ -11,13 +11,13 @@ use std::path::{Path, PathBuf};
 struct Files(Vec<(PathBuf, Option<String>)>);
 
 impl ReadText for Files {
-    fn read_text(&self, path: &Path) -> Result<String, ReadFailure> {
+    fn read_text(&self, path: &Path) -> Result<String, ReadError> {
         self.0
             .iter()
             .find(|(at, _)| at == path)
-            .map_or(Err(ReadFailure::Missing), |(_, shown)| match shown {
+            .map_or(Err(ReadError::Missing), |(_, shown)| match shown {
                 Some(text) => Ok(text.clone()),
-                None => Err(ReadFailure::Unreadable {
+                None => Err(ReadError::Unreadable {
                     reason: "is a directory".to_owned(),
                 }),
             })

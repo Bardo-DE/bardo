@@ -16,6 +16,6 @@ pub mod screencopy;
 pub mod toplevel_source;
 
 pub use copy_session::{BufferAsk, CursorEvent, DmabufFormat, OutputCapture};
-pub use desktop_client::capture::{CaptureFailure, CursorMode};
+pub use desktop_client::capture::{CaptureError, CursorMode};
 pub use desktop_client::{Frame, Size};
 pub use screencopy::{Copied, CopyArea, CopyFailure, CopyKind, DmabufOffer, Offer, ScreenCopy};

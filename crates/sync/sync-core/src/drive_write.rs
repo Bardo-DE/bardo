@@ -2,7 +2,7 @@
 //! this computer sends when a person changes it. Items are named by id and placed by a parent id
 //! and a name (never a path: a drive's names are shown through naming rules this crate does not
 //! know). Every change of an existing item carries the version it was made against, and a stale
-//! one is a [`PutRefused::Conflict`], never an overwrite. Uploads read their file a chunk at a
+//! one is a [`PutError::Conflict`], never an overwrite. Uploads read their file a chunk at a
 //! time; a large one runs in an upload session that can be resumed after a restart. A delete
 //! sends the item to the drive's recycle bin, never a permanent delete.
 //!
@@ -12,7 +12,7 @@
 //! it, so a retry finds it there rather than making a second.
 
 use crate::item::{BaseVersion, ContentHash, RemoteId, RemoteVersion};
-use crate::refusal::PutRefused;
+use crate::refusal::PutError;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -120,7 +120,7 @@ pub trait Progress: Send + Sync {
     fn sent(&self, bytes: u64);
 
     /// Whether the upload is to stop between chunks (the drive was paused): it ends as
-    /// [`PutRefused::Transient`], its session kept, to resume later.
+    /// [`PutError::Transient`], its session kept, to resume later.
     fn held(&self) -> bool {
         false
     }
@@ -199,10 +199,8 @@ pub trait DriveWrite: Send + Sync {
 
     /// `item` as the drive has it now; `None` when it has no such item (or has it only in its
     /// recycle bin).
-    fn look(
-        &self,
-        item: &RemoteId,
-    ) -> impl Future<Output = Result<Option<Found>, PutRefused>> + Send;
+    fn look(&self, item: &RemoteId)
+    -> impl Future<Output = Result<Option<Found>, PutError>> + Send;
 
     /// Ids for `count` items not made yet, for a drive that lets its client choose them: an item
     /// made with one ([`Place::id`]) is made once however often it is sent. A drive that does
@@ -210,23 +208,17 @@ pub trait DriveWrite: Send + Sync {
     fn reserve_ids(
         &self,
         count: usize,
-    ) -> impl Future<Output = Result<Vec<RemoteId>, PutRefused>> + Send {
+    ) -> impl Future<Output = Result<Vec<RemoteId>, PutError>> + Send {
         let _ = count;
         async { Ok(Vec::new()) }
     }
 
     /// Makes a folder at `place`. A name taken there is a `Conflict` (`Exists`).
-    fn make_folder(
-        &self,
-        place: &Place,
-    ) -> impl Future<Output = Result<Written, PutRefused>> + Send;
+    fn make_folder(&self, place: &Place) -> impl Future<Output = Result<Written, PutError>> + Send;
 
     /// Sends a file's bytes: a small one in one request, a larger one in an upload session, in
     /// chunks.
-    fn upload(
-        &self,
-        upload: Upload<'_>,
-    ) -> impl Future<Output = Result<Written, PutRefused>> + Send;
+    fn upload(&self, upload: Upload<'_>) -> impl Future<Output = Result<Written, PutError>> + Send;
 
     /// Renames and/or moves `item` to `to`, if the drive still has `base`.
     fn relocate(
@@ -234,7 +226,7 @@ pub trait DriveWrite: Send + Sync {
         item: &RemoteId,
         base: &BaseVersion,
         to: &Place,
-    ) -> impl Future<Output = Result<Written, PutRefused>> + Send;
+    ) -> impl Future<Output = Result<Written, PutError>> + Send;
 
     /// Sends `item` to the drive's recycle bin, if the drive still has `base`; a folder takes
     /// what it holds.
@@ -242,7 +234,7 @@ pub trait DriveWrite: Send + Sync {
         &self,
         item: &RemoteId,
         base: &BaseVersion,
-    ) -> impl Future<Output = Result<(), PutRefused>> + Send;
+    ) -> impl Future<Output = Result<(), PutError>> + Send;
 
     /// Gives up an upload session that will not be resumed (the bytes it was sending changed),
     /// so the drive drops what it holds of it. A drive that drops sessions only in time does

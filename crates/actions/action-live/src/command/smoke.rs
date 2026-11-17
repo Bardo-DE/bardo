@@ -1,6 +1,6 @@
 //! `agent-live smoke`.
 
-use super::{CommandFault, say_agent, say_reach};
+use super::{CommandError, say_agent, say_reach};
 use crate::Engine;
 use crate::acp::{AcpSpec, Redactor, Task, agent_cassette, list_models_acp, run_flow_acp};
 use crate::cli::{Agent, SmokeArgs};
@@ -41,7 +41,7 @@ impl Play {
 /// planner cases when the engine is a cassette. A planner case's expectation is written for its
 /// own misbehaving replies; a live model says something else, so on a live engine the cases run
 /// only when named.
-fn plays(args: &SmokeArgs) -> Result<Vec<Play>, CommandFault> {
+fn plays(args: &SmokeArgs) -> Result<Vec<Play>, CommandError> {
     let hostile = load_planner_cases(&args.eval_dir.join("hostile-model/planner"))?;
     let all = Flow::ALL
         .into_iter()
@@ -58,7 +58,7 @@ fn plays(args: &SmokeArgs) -> Result<Vec<Play>, CommandFault> {
         .map(|name| {
             all.clone()
                 .find(|p| &p.name() == name)
-                .ok_or_else(|| CommandFault::NoFlow(name.clone()))
+                .ok_or_else(|| CommandError::NoFlow(name.clone()))
         })
         .collect()
 }
@@ -70,7 +70,7 @@ async fn smoke_agent(
     args: SmokeArgs,
     spec: AcpSpec,
     binaries: &Binaries,
-) -> Result<ExitCode, CommandFault> {
+) -> Result<ExitCode, CommandError> {
     let smoke_catalog = args
         .catalog
         .clone()
@@ -99,7 +99,7 @@ async fn smoke_agent(
     } else {
         args.flows
             .iter()
-            .map(|name| Flow::parse(name).ok_or_else(|| CommandFault::NoAgentFlow(name.clone())))
+            .map(|name| Flow::parse(name).ok_or_else(|| CommandError::NoAgentFlow(name.clone())))
             .collect::<Result<_, _>>()?
     };
     println!(
@@ -151,7 +151,7 @@ async fn smoke_agent(
     })
 }
 
-pub(super) async fn smoke(args: SmokeArgs, binaries: &Binaries) -> Result<ExitCode, CommandFault> {
+pub(super) async fn smoke(args: SmokeArgs, binaries: &Binaries) -> Result<ExitCode, CommandError> {
     say_reach(args.engine);
     say_agent(&args.agent);
     if let Agent::Acp(spec) = args.agent.clone() {

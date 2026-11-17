@@ -9,7 +9,7 @@ mod frame;
 mod request;
 mod session;
 
-pub use event::{CaptureEvent, CaptureFailure};
+pub use event::{CaptureError, CaptureEvent};
 pub use frame::{Frame, FrameError, ShmFormat};
 pub use request::{CaptureRequest, CursorMode, SpaceShot};
 pub(crate) use session::reduce_captures;

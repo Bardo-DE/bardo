@@ -18,7 +18,7 @@ pub mod plan;
 mod apply;
 
 pub(crate) use build::plan_for;
-pub use plan::{EnterFault, EnterPlan, LandlockLevel, NetRule};
+pub use plan::{EnterError, EnterPlan, LandlockLevel, NetRule};
 
 /// Where the exec stage appears inside the sandbox.
 pub const INSIDE_ENTER: &str = "/run/bardo/sandbox/enter";

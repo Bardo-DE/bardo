@@ -3,7 +3,7 @@
 //! intentd's `audit.rs` through its re-exports.
 
 use action_core::{AuditRecord, HaltCause};
-use action_core::{EventSink, LinkFault, MemoryLink};
+use action_core::{EventSink, LinkError, MemoryLink};
 use base_ids::Count;
 use companion_memory::{AuditState, Link, MemoryServiceLink};
 use companion_memory_core::QueuedSink;
@@ -73,7 +73,7 @@ async fn no_memory_keeps_the_records_queued_and_the_next_flush_writes_them() {
     let away = MemoryServiceLink::over(Absent);
     assert_eq!(
         away.ask(MemoryRequest::Spaces).await.err(),
-        Some(LinkFault::Unavailable)
+        Some(LinkError::Unavailable)
     );
     let report = state.flush(&away, &sink, |_| Some(work())).await;
     assert_eq!(report.flushed.waiting, 2);

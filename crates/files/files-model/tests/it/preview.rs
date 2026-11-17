@@ -2,7 +2,7 @@
 //! for an item it is no longer about.
 
 use files_core::{ByteSize, EntryKind, FolderPath, Info, ItemRef, Location};
-use files_model::{Browser, Effect, Input, ListFailure, Modifier, Preview, Tabbed, Tabs};
+use files_model::{Browser, Effect, FolderListError, Input, Modifier, Preview, Tabbed, Tabs};
 
 use crate::common::*;
 
@@ -117,7 +117,7 @@ fn facts_for_another_item_or_a_failed_read_are_ignored() {
     assert_eq!(stale.details(), None);
 
     let (failed, _) = browser.clone().step(
-        Input::DetailsRead(item("b"), Err(ListFailure::NotFound)),
+        Input::DetailsRead(item("b"), Err(FolderListError::NotFound)),
         at(0),
     );
     assert_eq!(failed.details(), None);

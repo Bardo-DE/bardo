@@ -15,7 +15,7 @@ use super::models::RemoteModel;
 use super::wire::{BodyShape, Temperature, flavor_of};
 use account_core::AppId;
 use inference_core::{
-    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferRefusal, Knob, Model,
+    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferRefusedError, Knob, Model,
     ModelCard, ModelError, ServedBy, SpendVerdict, TaskRequest, TurnError, TurnUsage,
 };
 use inference_settings::SpendLine;
@@ -129,7 +129,7 @@ impl<'a> CloudModel<'a> {
         attachments: Vec<OwnedFd>,
     ) -> Result<Self, TurnError> {
         if cloud.spend(pin.line, &pin.app, &pin.model) == SpendVerdict::Stop {
-            return Err(InferRefusal::OverBudget.into());
+            return Err(InferRefusedError::OverBudget.into());
         }
         let frames = inference_fs::read_frames(attachments).map_err(|error| {
             tracing::warn!(%error, "could not read the attached frames");
@@ -154,7 +154,7 @@ impl<'a> CloudModel<'a> {
     ) -> Result<ChatReply, TurnError> {
         let (cloud, pin) = (self.cloud, self.pin);
         let Some(grant) = pin.model.grant() else {
-            return Err(InferRefusal::NeedsGrant.into());
+            return Err(InferRefusedError::NeedsGrant.into());
         };
         let key = cloud.key(grant).await.map_err(fault)?;
         let reach = &pin.model.reach;
@@ -208,7 +208,7 @@ impl Model for CloudModel<'_> {
                 ?error,
                 "the chat request cannot be expressed to the hosted model"
             );
-            InferRefusal::Unsupported
+            InferRefusedError::Unsupported
         })?;
         self.run(turn, temperature, sink).await
     }
@@ -221,7 +221,7 @@ impl Model for CloudModel<'_> {
         let target = remote_target(&self.pin.model);
         let turn = bridge::task_turn_for(&target, request, self.tier).map_err(|error| {
             tracing::warn!(?error, "the task cannot be expressed to the hosted model");
-            InferRefusal::Unsupported
+            InferRefusedError::Unsupported
         })?;
         self.run(turn, Temperature::ProviderDefault, sink).await
     }
@@ -232,7 +232,7 @@ impl Model for CloudModel<'_> {
         reason = "the trait method is async; this implementation has nothing to await"
     )]
     async fn embed(&self, _: &EmbedRequest) -> Result<EmbedReply, TurnError> {
-        Err(InferRefusal::Unsupported.into())
+        Err(InferRefusedError::Unsupported.into())
     }
 }
 

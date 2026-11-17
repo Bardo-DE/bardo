@@ -25,9 +25,9 @@ mod serve;
 
 pub use accounts::{AccountsRead, AccountsSource};
 pub use application::{
-    APPLICATION_INTERFACE, APPLICATION_PATH, HandOverFault, hand_over, hand_over_session,
+    APPLICATION_INTERFACE, APPLICATION_PATH, HandOverError, hand_over, hand_over_session,
 };
-pub use manifest::{ManifestFault, manifest};
+pub use manifest::{ManifestLoadError, manifest};
 pub use provider::SettingsProvider;
 pub use search_file::search_entries;
-pub use serve::{ServeFault, serve, serve_session, serve_with};
+pub use serve::{IntentServeError, serve, serve_session, serve_with};

@@ -6,7 +6,7 @@
 //! checksum covers all of it). A file that is complete but wrong is deleted. A stop or a lost
 //! connection that outlasts the retries leaves the part for the next try.
 
-use crate::pinned_url::{NotPinned, PinnedUrl};
+use crate::pinned_url::{NotPinnedError, PinnedUrl};
 use crate::progress::{CancelToken, Meter};
 use base_secret::SecretText;
 use engine_manifest::{Artifact, hex};
@@ -159,7 +159,8 @@ impl Fetcher {
         meter: &Meter,
         cancel: &CancelToken,
     ) -> Result<(), FetchError> {
-        let mut url = PinnedUrl::parse(artifact.url).map_err(|NotPinned| FetchError::BadAddress)?;
+        let mut url =
+            PinnedUrl::parse(artifact.url).map_err(|NotPinnedError| FetchError::BadAddress)?;
         for _hop in 0..=MAX_REDIRECTS {
             let mut sink = Sink::resume(part, artifact.size, base, meter, cancel)?;
             let client = model_http_reqwest::client_with_roots(
@@ -186,7 +187,7 @@ impl Fetcher {
                     let location = sink.location.take().ok_or(FetchError::BadAddress)?;
                     url = url
                         .join(&location)
-                        .map_err(|NotPinned| FetchError::BadAddress)?;
+                        .map_err(|NotPinnedError| FetchError::BadAddress)?;
                 }
                 (Err(HttpError::Rejected), 416) => {
                     // The part is longer than the file or not a part of it: start again.

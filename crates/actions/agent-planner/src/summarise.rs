@@ -6,13 +6,13 @@
 //! steps as the assembler masks them, and the handles it held. It has no tools. Its answer is kept
 //! only if it is words, short, and cites no handle the planner never held (`SummaryText::parse`).
 
-use crate::planner::{PlanFault, PlannerModel};
+use crate::planner::{PlanError, PlannerModel};
 use crate::seam::Planner;
 use crate::step_text::step_line;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_core::consent::Usage;
-use action_core::{SummaryFault, SummaryText};
+use action_core::{SummaryError, SummaryText};
 use agent_loop::{SummaryInput, leaked_call};
 use inference_client::Transport;
 use inference_core::{
@@ -37,16 +37,16 @@ pub struct Summarised {
 
 /// Why no summary was made. The task carries on with what it has.
 #[derive(Debug, Clone, PartialEq, thiserror::Error)]
-pub enum SummariseFault {
+pub enum SummariseError {
     /// The model gave nothing usable.
     #[error("the summariser model gave nothing usable")]
-    Model(PlanFault),
+    Model(PlanError),
     /// It wrote a tool call as words.
     #[error("the summary was a call written as words")]
     CallInText,
     /// Its words were refused as a summary.
     #[error("the summary was refused: {0}")]
-    Refused(SummaryFault),
+    Refused(SummaryError),
 }
 
 /// The model's words as a summary: without the marks that reorder or hide words, not a call written
@@ -54,20 +54,20 @@ pub enum SummariseFault {
 ///
 /// # Errors
 ///
-/// Returns a [`SummariseFault`] when the words contain a call written as words or do not pass
+/// Returns a [`SummariseError`] when the words contain a call written as words or do not pass
 /// `SummaryText::parse` against `held`.
 pub fn summary_text(
     words: &str,
     held: &[action_vocab::Handle],
-) -> Result<SummaryText, SummariseFault> {
+) -> Result<SummaryText, SummariseError> {
     let plain: String = words
         .chars()
         .filter(|c| !action_vocab::reorders(*c) && !action_vocab::hides(*c))
         .collect();
     if leaked_call(&plain).is_some() {
-        return Err(SummariseFault::CallInText);
+        return Err(SummariseError::CallInText);
     }
-    SummaryText::parse(&plain, held).map_err(SummariseFault::Refused)
+    SummaryText::parse(&plain, held).map_err(SummariseError::Refused)
 }
 
 fn section(into: &mut String, heading: &str, lines: impl IntoIterator<Item = String>) {
@@ -129,7 +129,7 @@ impl<P: Transport> PlannerModel<P> {
     pub(crate) async fn summary_of(
         &self,
         input: &SummaryInput,
-    ) -> Result<Summarised, SummariseFault> {
+    ) -> Result<Summarised, SummariseError> {
         let request = ChatRequest::new(
             vec![
                 message(Role::System, SUMMARY_RULES.to_owned()),
@@ -147,12 +147,12 @@ impl<P: Transport> PlannerModel<P> {
         );
         let reply = Planner::chat(self, request)
             .await
-            .map_err(SummariseFault::Model)?;
+            .map_err(SummariseError::Model)?;
         if matches!(
             reply.stop,
             StopReason::MaxTokens | StopReason::ContentFilter
         ) {
-            return Err(SummariseFault::Model(PlanFault::Unreadable));
+            return Err(SummariseError::Model(PlanError::Unreadable));
         }
         Ok(Summarised {
             text: summary_text(&reply.text, &input.held)?,

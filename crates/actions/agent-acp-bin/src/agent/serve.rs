@@ -19,8 +19,8 @@
 mod object;
 mod watchdog;
 
-use super::calls::{Calls, NoSuchTurn};
-use super::fault::AgentFault;
+use super::calls::{Calls, NoSuchTurnError};
+use super::fault::AgentError;
 use super::folders::folder;
 use super::hand_words::{end_of, refusal_of_fault, refusal_of_open};
 use super::helper_host::HelperHost;
@@ -100,7 +100,7 @@ impl Service {
 
     /// The reply of the turn `id` once it has ended, waiting up to a minute for it: `None` while
     /// the agent is still working. A turn's reply is given once.
-    pub async fn wait(&self, id: &str) -> Result<Option<HandReply>, NoSuchTurn> {
+    pub async fn wait(&self, id: &str) -> Result<Option<HandReply>, NoSuchTurnError> {
         // The turn's task ended without a reply: the agent stopped answering.
         let lost = HandReply::Refused(HandRefusal::Failed {
             message: "The coding agent stopped answering.".to_owned(),
@@ -117,7 +117,7 @@ impl Service {
     }
 
     /// The reply of the call `id` once it has ended: `None` while it is still working.
-    pub async fn apps_wait(&self, id: &str) -> Result<Option<AppsReply>, NoSuchTurn> {
+    pub async fn apps_wait(&self, id: &str) -> Result<Option<AppsReply>, NoSuchTurnError> {
         self.apps.wait(id, AppsReply::Forget).await
     }
 
@@ -136,7 +136,7 @@ impl Service {
     /// The pseudo-app and the parts agents are made of, made once for every use: the setting and
     /// `agents.toml` must allow it. The commands an agent runs count against the widest network,
     /// because one host serves the agents of every program.
-    async fn live(&self) -> Result<Arc<Live<DbusAccounts>>, AgentFault> {
+    async fn live(&self) -> Result<Arc<Live<DbusAccounts>>, AgentError> {
         let made = self
             .live
             .get_or_try_init(|| async {
@@ -151,14 +151,14 @@ impl Service {
                 .await?;
                 let live = Live::serve(wiring, NetworkMode::Host)
                     .await
-                    .map_err(|why| AgentFault::Bus(why.to_string()))?;
-                Ok::<_, AgentFault>(Arc::new(live))
+                    .map_err(|why| AgentError::Bus(why.to_string()))?;
+                Ok::<_, AgentError>(Arc::new(live))
             })
             .await?;
         Ok(Arc::clone(made))
     }
 
-    async fn helper_host(&self) -> Result<Arc<HelperHost>, AgentFault> {
+    async fn helper_host(&self) -> Result<Arc<HelperHost>, AgentError> {
         let live = self.live().await?;
         let host = self.helpers.get_or_init(|| Arc::new(HelperHost::new(live)));
         Ok(Arc::clone(host))
@@ -312,7 +312,7 @@ impl Default for HarnessSeams {
 /// the environment `main` hands in.
 pub async fn run(
     env: impl Fn(&str) -> Option<String> + Send + Sync + 'static,
-) -> Result<(), AgentFault> {
+) -> Result<(), AgentError> {
     run_with(HarnessSeams::default(), env).await
 }
 
@@ -320,12 +320,12 @@ pub async fn run(
 ///
 /// # Errors
 ///
-/// [`AgentFault`] when the bus cannot be reached or the service cannot be set up or served.
+/// [`AgentError`] when the bus cannot be reached or the service cannot be set up or served.
 pub async fn run_with(
     seams: HarnessSeams,
     env: impl Fn(&str) -> Option<String> + Send + Sync + 'static,
-) -> Result<(), AgentFault> {
-    let bus_fault = |e: zbus::Error| AgentFault::Bus(e.to_string());
+) -> Result<(), AgentError> {
+    let bus_fault = |e: zbus::Error| AgentError::Bus(e.to_string());
     let places = Places::read(env);
     let var = |name: &str| places.var(name);
     let bus = dbus_kit::connect::session_from_env(&var)
@@ -340,7 +340,7 @@ pub async fn run_with(
         Some(system) => crate::callers::read_at(system, &var),
         None => crate::callers::read(&var),
     }
-    .map_err(|e| AgentFault::Callers(e.to_string()))?;
+    .map_err(|e| AgentError::Callers(e.to_string()))?;
     let callers = Arc::new(Identity::on(
         bus.clone(),
         table,

@@ -14,7 +14,7 @@ use http_core::{Http, request};
 use sync_core::DELETED;
 use sync_core::status::{refused, write_unreached};
 use sync_core::{
-    BaseVersion, Conflict, PutItem, PutRefused, PutTarget, RemoteId, RemoteSide, RemoteVersion,
+    BaseVersion, Conflict, PutError, PutItem, PutTarget, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter,
 };
 
@@ -27,12 +27,12 @@ pub(crate) enum Target {
     Existing(RemoteId),
 }
 
-type Written = Result<(RemoteId, RemoteVersion), PutRefused>;
+type Written = Result<(RemoteId, RemoteVersion), PutError>;
 
 impl<H: Http> GraphReplica<H> {
     pub(crate) async fn write(&self, item: PutItem, base: BaseVersion) -> Written {
         let target = match &item.target {
-            PutTarget::New(path) => Target::New(names_of(&path.0).ok_or(PutRefused::Forbidden)?),
+            PutTarget::New(path) => Target::New(names_of(&path.0).ok_or(PutError::Forbidden)?),
             PutTarget::Existing(id) => Target::Existing(id.clone()),
         };
         let guard = match (&target, &base) {
@@ -56,7 +56,7 @@ impl<H: Http> GraphReplica<H> {
         &self,
         item: &RemoteId,
         base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    ) -> Result<RemoteVersion, PutError> {
         let target = Target::Existing(item.clone());
         let BaseVersion::At(seen) = &base else {
             return Err(self.conflict(&target, &base, false).await);
@@ -64,7 +64,7 @@ impl<H: Http> GraphReplica<H> {
         let url = self
             .addr
             .item(&item.0, None, "")
-            .ok_or(PutRefused::Forbidden)?;
+            .ok_or(PutError::Forbidden)?;
         let delete = request(Method::DELETE, &url)
             .header("If-Match", seen.0.as_str())
             .body(Vec::new())
@@ -83,7 +83,7 @@ impl<H: Http> GraphReplica<H> {
     pub(crate) async fn write_send(
         &self,
         mut request: Request<Vec<u8>>,
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         request
             .headers_mut()
             .append(ACCEPT, HeaderValue::from_static("application/json"));
@@ -96,7 +96,7 @@ impl<H: Http> GraphReplica<H> {
         target: &Target,
         guard: Option<&str>,
         bytes: Vec<u8>,
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         let url = match target {
             Target::New(names) => self.addr.path(
                 Some(names),
@@ -105,7 +105,7 @@ impl<H: Http> GraphReplica<H> {
             ),
             Target::Existing(id) => self.addr.item(&id.0, Some("content"), ""),
         };
-        let put = request(Method::PUT, &url.ok_or(PutRefused::Forbidden)?)
+        let put = request(Method::PUT, &url.ok_or(PutError::Forbidden)?)
             .header(CONTENT_TYPE, "application/octet-stream");
         let put = match guard {
             Some(tag) => put.header("If-Match", tag),
@@ -125,7 +125,7 @@ impl<H: Http> GraphReplica<H> {
         match response.status().as_u16() {
             200 | 201 => {
                 let item: DriveItem = serde_json::from_slice(response.body())
-                    .map_err(|error| PutRefused::failed(RetryAfter(30), error))?;
+                    .map_err(|error| PutError::failed(RetryAfter(30), error))?;
                 if let Some(parent) = item.parent_id() {
                     self.state()
                         .folders
@@ -144,7 +144,7 @@ impl<H: Http> GraphReplica<H> {
 
     /// The conflict a refused write is: what the server has there now. `blocked` says the server
     /// answered `409`, so an item that is not there means the path itself is in the way.
-    async fn conflict(&self, target: &Target, base: &BaseVersion, blocked: bool) -> PutRefused {
+    async fn conflict(&self, target: &Target, base: &BaseVersion, blocked: bool) -> PutError {
         let now = match target {
             Target::Existing(id) => self.item_now(&id.0).await,
             Target::New(names) => self.read_item(self.addr.path(Some(names), None, "")).await,
@@ -163,14 +163,14 @@ impl<H: Http> GraphReplica<H> {
             }
             // Nothing there, though the server said something was: a name on the path is a file
             // (`409`), or the item was there a moment ago and the write can be tried again.
-            (Ok(None), ..) if blocked => return PutRefused::Forbidden,
-            (Ok(None), ..) => return PutRefused::Transient(RetryAfter(1)),
+            (Ok(None), ..) if blocked => return PutError::Forbidden,
+            (Ok(None), ..) => return PutError::Transient(RetryAfter(1)),
         };
         let item = match (target, &remote) {
             (Target::Existing(id), _) | (Target::New(_), RemoteSide::Exists(id, _)) => id.clone(),
             (Target::New(_), _) => RemoteId(String::new()),
         };
-        PutRefused::Conflict(Conflict {
+        PutError::Conflict(Conflict {
             item,
             base: base.clone(),
             remote,

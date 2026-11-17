@@ -331,13 +331,13 @@ async fn a_finished_task_takes_no_follow_up_and_an_unknown_session_is_refused() 
         app: None,
     };
     let late = Box::pin(w.companion.ask(ask(opened.session.clone()))).await;
-    assert_eq!(late, Err(companion_daemon::ServeFault::Finished));
+    assert_eq!(late, Err(companion_daemon::ServeError::Finished));
     let strange = Box::pin(
         w.companion
             .ask(ask(provenance::SessionId::parse("s-404").expect("session"))),
     )
     .await;
-    assert_eq!(strange, Err(companion_daemon::ServeFault::UnknownSession));
+    assert_eq!(strange, Err(companion_daemon::ServeError::UnknownSession));
 }
 
 fn draft_from(handle: u64) -> crate::support::infer::Say {

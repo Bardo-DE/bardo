@@ -10,7 +10,7 @@ use action_core::{Reader, ReaderAsk, ReaderError, ReaderTask, ValueSchema};
 use action_vocab::{CharCount, ChoiceId, Handle, Value};
 use agent_reader::{TransportReader, read};
 use infer::{Say, ScriptedInfer, words};
-use inference_core::{InferRefusal, ReplyShape};
+use inference_core::{InferRefusedError, ReplyShape};
 use provenance::{Confidentiality, Integrity, Label, Labelled, Quarantined, SessionId, Source};
 use std::collections::BTreeSet;
 
@@ -83,7 +83,7 @@ async fn no_model_is_unavailable_and_a_refusal_is_not_a_value() {
         read(&ScriptedInfer::default(), &classify(), &[mail("x")]).await,
         Err(ReaderError::ModelUnavailable)
     );
-    let refused = ScriptedInfer::new(vec![Say::Refuse(InferRefusal::Unavailable)]);
+    let refused = ScriptedInfer::new(vec![Say::Refuse(InferRefusedError::Unavailable)]);
     assert_eq!(
         read(&refused, &classify(), &[mail("x")]).await,
         Err(ReaderError::ModelUnavailable)

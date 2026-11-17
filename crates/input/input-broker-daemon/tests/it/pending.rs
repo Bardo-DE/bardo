@@ -1,5 +1,5 @@
 use caller_identity_core::Uid;
-use input_broker_daemon::pending::{Caps, Crowded, Pending};
+use input_broker_daemon::pending::{Caps, CrowdedError, Pending};
 
 const CAPS: Caps = Caps {
     per_user: 2,
@@ -11,11 +11,11 @@ fn a_user_has_its_share_and_all_users_a_total_and_a_dropped_ticket_frees_both() 
     let pending = Pending::new(CAPS);
     let a1 = pending.enter(Uid::new(1)).expect("first");
     let a2 = pending.enter(Uid::new(1)).expect("second");
-    assert_eq!(pending.enter(Uid::new(1)).err(), Some(Crowded::User));
+    assert_eq!(pending.enter(Uid::new(1)).err(), Some(CrowdedError::User));
     let b = pending
         .enter(Uid::new(2))
         .expect("another user is not affected");
-    assert_eq!(pending.enter(Uid::new(3)).err(), Some(Crowded::All));
+    assert_eq!(pending.enter(Uid::new(3)).err(), Some(CrowdedError::All));
     assert_eq!(pending.count(), 3);
     drop(a1);
     assert_eq!(pending.count(), 2);

@@ -45,13 +45,13 @@ impl Document {
 
 /// A change to the uses was refused: the file could not be written, or was refused at start.
 #[derive(Debug, thiserror::Error)]
-pub enum Unsaved {
+pub enum UnsavedError {
     /// The file on disk could not be read at start, so it is left as it is.
     #[error("the identity uses file is read-only")]
     ReadOnly,
     /// The write failed.
     #[error("the identity uses file cannot be written")]
-    Write(#[source] base_fs::book::SaveFailed),
+    Write(#[source] base_fs::book::SaveError),
 }
 
 /// The apps that use each identity, as accountd holds them.
@@ -109,11 +109,11 @@ impl UseBook {
     }
 
     /// Saves `doc` and, once it is on disk, holds it. In memory it is held at once.
-    async fn commit(&mut self, doc: Document) -> Result<(), Unsaved> {
+    async fn commit(&mut self, doc: Document) -> Result<(), UnsavedError> {
         base_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
             .await
             .map(drop)
-            .map_err(Unsaved::Write)
+            .map_err(UnsavedError::Write)
     }
 }
 
@@ -133,9 +133,9 @@ impl UseBook {
     ///
     /// # Errors
     /// [`Unsaved`] when the book is read-only or the change could not be written.
-    pub async fn record(&mut self, identity: IdentityId, app: AppName) -> Result<(), Unsaved> {
+    pub async fn record(&mut self, identity: IdentityId, app: AppName) -> Result<(), UnsavedError> {
         if !self.writable {
-            return Err(Unsaved::ReadOnly);
+            return Err(UnsavedError::ReadOnly);
         }
         if self
             .doc
@@ -154,9 +154,9 @@ impl UseBook {
     ///
     /// # Errors
     /// [`Unsaved`] when the book is read-only or the change could not be written.
-    pub async fn forget(&mut self, identity: &IdentityId) -> Result<(), Unsaved> {
+    pub async fn forget(&mut self, identity: &IdentityId) -> Result<(), UnsavedError> {
         if !self.writable {
-            return Err(Unsaved::ReadOnly);
+            return Err(UnsavedError::ReadOnly);
         }
         if !self.doc.uses.contains_key(identity) {
             return Ok(());

@@ -1,7 +1,7 @@
 //! The name field of a rename in place.
 
 use dioxus::prelude::*;
-use files_model::{Input, RenameProblem};
+use files_model::{Input, RenameError};
 use ui_components::components::fields::text_field_model::Invalid;
 use ui_components::motion::detail::stamp::EventStamp;
 use ui_components::prelude::{FieldFocus, TextField, TextLine, Validity};
@@ -12,7 +12,7 @@ use crate::state::Browse;
 /// Return commits, Escape puts the name back, and leaving the field commits. A name the model
 /// refuses stays here with its reason under it.
 #[component]
-pub(super) fn RenameCell(browse: Browse, draft: String, problem: Option<RenameProblem>) -> Element {
+pub(super) fn RenameCell(browse: Browse, draft: String, problem: Option<RenameError>) -> Element {
     let validity = match problem {
         Some(problem) => Validity::Invalid(Invalid {
             message: TextLine::from(problem.to_string()),

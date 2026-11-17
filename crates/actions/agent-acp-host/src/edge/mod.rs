@@ -26,4 +26,4 @@ mod token;
 
 pub use menu::EdgeMenu;
 pub use offer::{EdgeBind, SERVER_NAME, ToolsOffer};
-pub use serve::{EdgeFault, ToolsEdge};
+pub use serve::{EdgeError, ToolsEdge};

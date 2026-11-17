@@ -21,10 +21,10 @@ use hosting::rig::{Plan, World};
 use hosting::{bus, entries};
 use inference_client::InferSession;
 use inference_core::{
-    ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
+    ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest,
     MessagePart, ModelRef, Role as ChatRole,
 };
-use inference_daemon::{Attached, KeyFileProblem, NotReady, Reach, Site};
+use inference_daemon::{Attached, KeyFileError, NotReady, Reach, Site};
 use inference_router::seams::EngineHost;
 use inference_router::startup::Cause;
 use inference_settings::Settings;
@@ -208,7 +208,7 @@ async fn turn(world: &World, class: DataClass, text: &str) -> Vec<InferEvent> {
     }
 }
 
-fn refused(refusal: InferRefusal) -> Vec<InferEvent> {
+fn refused(refusal: InferRefusedError) -> Vec<InferEvent> {
     vec![InferEvent::Finished(InferReply::Refused(refusal))]
 }
 
@@ -316,7 +316,7 @@ async fn each_way_an_engine_cannot_answer_is_a_typed_cause_and_the_session_is_un
         Cause::Attached(NotReady::SocketMissing { path: dir.socket() })
     );
     let events = turn(&world, DataClass::Public, "anyone?").await;
-    assert_eq!(events, refused(InferRefusal::Unavailable));
+    assert_eq!(events, refused(InferRefusedError::Unavailable));
 
     // A socket nobody listens on any more.
     drop(std::os::unix::net::UnixListener::bind(dir.socket()).expect("bind"));
@@ -361,7 +361,7 @@ async fn the_bearer_is_sent_from_the_key_file_and_without_it_the_engine_says_401
     );
     assert_eq!(
         turn(&without, DataClass::Mail, "hi").await,
-        refused(InferRefusal::Unavailable)
+        refused(InferRefusedError::Unavailable)
     );
     assert!(lab.chats().is_empty());
 
@@ -399,13 +399,11 @@ async fn a_key_file_others_can_read_is_refused_and_no_request_carries_the_token(
     let world = world(vec![on_socket(&dir, Site::ThisDevice, Some(key_file))]).await;
     assert_eq!(
         cause_of(&world).await,
-        Cause::Attached(NotReady::KeyFile(KeyFileProblem::NotPrivate {
-            mode: 0o644
-        }))
+        Cause::Attached(NotReady::KeyFile(KeyFileError::NotPrivate { mode: 0o644 }))
     );
     assert_eq!(
         turn(&world, DataClass::Mail, "hi").await,
-        refused(InferRefusal::Unavailable)
+        refused(InferRefusedError::Unavailable)
     );
     assert_eq!(
         lab.seen(),
@@ -428,7 +426,7 @@ async fn this_device_takes_on_device_only_data_and_my_network_does_not_unless_th
     let before = turn(&world, DataClass::Mail, "private").await;
     assert_eq!(
         before,
-        refused(InferRefusal::RequiresCloud(DataClass::Mail))
+        refused(InferRefusedError::RequiresCloud(DataClass::Mail))
     );
     assert!(lab.chats().is_empty(), "nothing was sent");
 

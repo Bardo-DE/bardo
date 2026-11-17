@@ -167,7 +167,7 @@ proptest! {
                 prop_assert!(pool.contains(&chosen));
             }
             Err(refusal) if pool.is_empty() => {
-                prop_assert_eq!(refusal.refusal, InferRefusal::NoModelChosen);
+                prop_assert_eq!(refusal.refusal, InferRefusedError::NoModelChosen);
             }
             Err(_) => {}
         }

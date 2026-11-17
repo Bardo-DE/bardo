@@ -49,7 +49,7 @@ pub enum ShellCall {
 /// The arm's thread has ended (the compositor went away or the client could not bind).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("the desktop arm is not running")]
-pub struct ShellGone;
+pub struct ShellGoneError;
 
 /// Why the thread did not start.
 #[derive(Debug, thiserror::Error)]
@@ -78,21 +78,21 @@ impl ShellArm {
     /// Carry out `command` on the arm's thread.
     ///
     /// # Errors
-    /// [`ShellGone`] when the arm's thread has stopped.
-    pub fn command(&self, command: DesktopCommand) -> Result<(), ShellGone> {
+    /// [`ShellGoneError`] when the arm's thread has stopped.
+    pub fn command(&self, command: DesktopCommand) -> Result<(), ShellGoneError> {
         self.call(ShellCall::Command(command))
     }
 
     /// Register a surface of the host with the arm.
     ///
     /// # Errors
-    /// [`ShellGone`] when the arm's thread has stopped.
+    /// [`ShellGoneError`] when the arm's thread has stopped.
     pub fn register(
         &self,
         role: ShellRole,
         output: impl Into<String>,
         surface: WlSurface,
-    ) -> Result<(), ShellGone> {
+    ) -> Result<(), ShellGoneError> {
         self.call(ShellCall::Register {
             role,
             output: output.into(),
@@ -102,10 +102,10 @@ impl ShellArm {
 
     #[expect(
         clippy::map_err_ignore,
-        reason = "the send error only hands the call back; `ShellGone` says the thread has stopped"
+        reason = "the send error only hands the call back; `ShellGoneError` says the thread has stopped"
     )]
-    fn call(&self, call: ShellCall) -> Result<(), ShellGone> {
-        self.calls.send(call).map_err(|_| ShellGone)
+    fn call(&self, call: ShellCall) -> Result<(), ShellGoneError> {
+        self.calls.send(call).map_err(|_| ShellGoneError)
     }
 }
 

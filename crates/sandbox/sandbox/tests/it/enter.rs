@@ -3,7 +3,7 @@
 
 use base_path::{AbsPath, AbsPathError};
 use sandbox::{
-    Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnterFault, EnterPlan, EnvVar,
+    Access, AgentNet, AgentRun, Argv, Bind, EndpointBind, EnterError, EnterPlan, EnvVar,
     INSIDE_ENTER, INSIDE_FORWARDER, LandlockLevel, NetRule, Overlay, Profile, agent_bwrap_args,
 };
 
@@ -44,67 +44,67 @@ fn the_words_round_trip_through_the_parser() {
 
 #[test]
 fn the_parser_refuses_what_it_does_not_know() {
-    let bad = |w: &[&str], fault: EnterFault| (words(w), fault);
+    let bad = |w: &[&str], fault: EnterError| (words(w), fault);
     let rows = [
         bad(
             &["--bogus", "--net-none", "--", "a"],
-            EnterFault::UnknownWord("--bogus".into()),
+            EnterError::UnknownWord("--bogus".into()),
         ),
-        bad(&["--net-none", "a"], EnterFault::UnknownWord("a".into())),
-        bad(&["--read"], EnterFault::MissingValue("--read")),
-        bad(&["--write"], EnterFault::MissingValue("--write")),
-        bad(&["--device"], EnterFault::MissingValue("--device")),
+        bad(&["--net-none", "a"], EnterError::UnknownWord("a".into())),
+        bad(&["--read"], EnterError::MissingValue("--read")),
+        bad(&["--write"], EnterError::MissingValue("--write")),
+        bad(&["--device"], EnterError::MissingValue("--device")),
         bad(
             &["--net-connect"],
-            EnterFault::MissingValue("--net-connect"),
+            EnterError::MissingValue("--net-connect"),
         ),
         bad(
             &["--read", "relative", "--net-none", "--", "a"],
-            EnterFault::BadPath(AbsPathError::NotAbsolute),
+            EnterError::BadPath(AbsPathError::NotAbsolute),
         ),
         bad(
             &["--write", "/a/../b", "--net-none", "--", "a"],
-            EnterFault::BadPath(AbsPathError::ParentStep),
+            EnterError::BadPath(AbsPathError::ParentStep),
         ),
-        bad(&["--read", "/", "--net-none", "--", "a"], EnterFault::Root),
-        bad(&["--write", "/", "--net-none", "--", "a"], EnterFault::Root),
+        bad(&["--read", "/", "--net-none", "--", "a"], EnterError::Root),
+        bad(&["--write", "/", "--net-none", "--", "a"], EnterError::Root),
         bad(
             &["--device", "/.", "--net-none", "--", "a"],
-            EnterFault::Root,
+            EnterError::Root,
         ),
         bad(
             &["--net-connect", "0", "--", "a"],
-            EnterFault::BadPort("0".into()),
+            EnterError::BadPort("0".into()),
         ),
         bad(
             &["--net-connect", "70000", "--", "a"],
-            EnterFault::BadPort("70000".into()),
+            EnterError::BadPort("70000".into()),
         ),
         bad(
             &["--net-connect", "+80", "--", "a"],
-            EnterFault::BadPort("+80".into()),
+            EnterError::BadPort("+80".into()),
         ),
         bad(
             &["--net-connect", "http", "--", "a"],
-            EnterFault::BadPort("http".into()),
+            EnterError::BadPort("http".into()),
         ),
-        bad(&[], EnterFault::NoSeparator),
-        bad(&["--net-none"], EnterFault::NoSeparator),
-        bad(&["--read", "/usr", "--net-none"], EnterFault::NoSeparator),
+        bad(&[], EnterError::NoSeparator),
+        bad(&["--net-none"], EnterError::NoSeparator),
+        bad(&["--read", "/usr", "--net-none"], EnterError::NoSeparator),
         bad(
             &["--net-none", "--net-unfiltered", "--", "a"],
-            EnterFault::TwoNets,
+            EnterError::TwoNets,
         ),
         bad(
             &["--net-none", "--net-none", "--", "a"],
-            EnterFault::TwoNets,
+            EnterError::TwoNets,
         ),
         bad(
             &["--net-none", "--net-connect", "80", "--", "a"],
-            EnterFault::TwoNets,
+            EnterError::TwoNets,
         ),
-        bad(&["--read", "/usr", "--", "a"], EnterFault::NoNet),
-        bad(&["--net-none", "--"], EnterFault::NoProgram),
+        bad(&["--read", "/usr", "--", "a"], EnterError::NoNet),
+        bad(&["--net-none", "--"], EnterError::NoProgram),
     ];
     for (line, fault) in rows {
         assert_eq!(EnterPlan::parse(line.clone()), Err(fault), "{line:?}");

@@ -6,7 +6,7 @@
 //! host knows which session a socket serves because it made the socket for that session. Unknown
 //! fields are refused. A reply to a bad token is one word and says nothing of why.
 
-use crate::fault::ToolFault;
+use crate::fault::ToolError;
 use crate::tools::ToolSpec;
 use base_secret::SecretText;
 use serde::{Deserialize, Serialize};
@@ -89,7 +89,7 @@ pub enum EdgeReply {
     /// The call's outcome, as `outcome_json` gives it.
     Done(Json),
     /// The call gave no outcome.
-    Failed(ToolFault),
+    Failed(ToolError),
     /// The line was not a request, or the token is not this session's. Nothing was done.
     Refused,
 }

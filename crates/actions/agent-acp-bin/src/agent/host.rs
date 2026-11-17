@@ -4,7 +4,7 @@
 //! accountd behind it; the live-eval harness hosts with `LoginOnly` on its private bus. Nothing
 //! here reads the environment or a file: everything is handed in.
 
-use crate::agent::live::{Live, LiveFault};
+use crate::agent::live::{Live, LiveError};
 use crate::agent::places::Places;
 use crate::agent::remember::remember;
 use action_client::DbusTransport;
@@ -15,7 +15,7 @@ use action_vocab::Workspace;
 use agent_acp_host::{AgentHost, EdgeMenu, IntentsCourt, OsFiles, Seams, ToolsOffer};
 use agent_launch::{Accounts, AgentSpawn, AgentsFile, BwrapProcs, ChildProc, Registry};
 use agent_registry::dirs::AgentsDir;
-use agent_session::{BackendKind, HostFault, Opening, SessionHost};
+use agent_session::{AgentHostError, BackendKind, Opening, SessionHost};
 use base_path::AbsPath;
 use permission_core::ProgramName;
 use provenance::{AgentRef, SessionId, SpaceId, TaskId};
@@ -100,13 +100,13 @@ pub struct Hosted<A: Accounts + 'static> {
 pub enum HostError {
     /// The sandbox, the manifest or the bus: the words say what.
     #[error(transparent)]
-    Setup(#[from] LiveFault),
+    Setup(#[from] LiveError),
     /// A name made here does not parse.
     #[error("{0}")]
     Invalid(String),
     /// The session did not open; the fault says why (a sign-in is needed, say).
     #[error("{0}")]
-    Open(HostFault),
+    Open(AgentHostError),
 }
 
 /// Serves the pseudo-app on the bus and starts the program named `program`.

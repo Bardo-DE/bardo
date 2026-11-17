@@ -3,22 +3,22 @@
 //! The network is reached here and nowhere else, through the `Fetch` seam. Nothing updates by
 //! itself: a newer version is installed only when the person names it.
 
-use crate::fetch::{Fetch, FetchFault};
-use crate::run::{Run, RunFault};
+use crate::fetch::{Fetch, FetchError};
+use crate::run::{Run, RunError};
 use crate::store::{read_record, versions, write_record};
-use crate::unpack::{Limits, UnpackFault, unpack};
+use crate::unpack::{Limits, UnpackError, unpack};
 use crate::uv::uvx;
 use agent_registry::dirs::AgentsDir;
-use agent_registry::hash::{DigestRefused, Sha256Hex};
+use agent_registry::hash::{DigestError, Sha256Hex};
 use agent_registry::platform::Platform;
 use agent_registry::record::{Check, FILES, Record};
-use agent_registry::slug::{Slug, SlugRefused};
+use agent_registry::slug::{Slug, SlugError};
 use agent_registry::snapshot::{Binary, Listing, Package, Snapshot};
 use std::path::Path;
 
 /// Why an install did not happen. Nothing is left half-installed.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum InstallFault {
+pub enum InstallError {
     /// The list has no such agent.
     #[error("the agent list has no {0}")]
     Unknown(String),
@@ -48,7 +48,7 @@ pub enum InstallFault {
         package: String,
         /// Why it is not a package name.
         #[source]
-        source: crate::uv::SpecRefused,
+        source: crate::uv::SpecError,
     },
     /// A digest the list or the pin holds is not a SHA-256.
     #[error("{text:?} is not a SHA-256 digest")]
@@ -57,23 +57,23 @@ pub enum InstallFault {
         text: String,
         /// Why it is not one.
         #[source]
-        source: DigestRefused,
+        source: DigestError,
     },
     /// The package's own manifest could not be read.
     #[error("the package's manifest could not be read")]
     Manifest(#[source] std::sync::Arc<dyn std::error::Error + Send + Sync>),
     /// A name unfit for a directory.
     #[error(transparent)]
-    Name(#[from] SlugRefused),
+    Name(#[from] SlugError),
     /// The download failed.
     #[error(transparent)]
-    Fetch(#[from] FetchFault),
+    Fetch(#[from] FetchError),
     /// The archive did not unpack.
     #[error(transparent)]
-    Unpack(#[from] UnpackFault),
+    Unpack(#[from] UnpackError),
     /// The package manager failed.
     #[error(transparent)]
-    Run(#[from] RunFault),
+    Run(#[from] RunError),
     /// The disk refused.
     #[error("the agents directory could not be written: {0}")]
     Disk(String),
@@ -83,8 +83,8 @@ pub enum InstallFault {
 }
 
 /// The disk's refusal, with its cause.
-fn disk(why: impl std::fmt::Display) -> InstallFault {
-    InstallFault::Disk(why.to_string())
+fn disk(why: impl std::fmt::Display) -> InstallError {
+    InstallError::Disk(why.to_string())
 }
 
 /// What the person asked to install.
@@ -168,18 +168,18 @@ pub fn offers(dir: &AgentsDir, snapshot: &Snapshot) -> Vec<Offer> {
 ///
 /// # Errors
 ///
-/// Returns [`InstallFault`] when the install did not happen; nothing is left half-installed.
+/// Returns [`InstallError`] when the install did not happen; nothing is left half-installed.
 pub fn install(
     dir: &AgentsDir,
     snapshot: &Snapshot,
     want: Want<'_>,
     (fetch, run): (&dyn Fetch, &dyn Run),
-) -> Result<Record, InstallFault> {
+) -> Result<Record, InstallError> {
     let listing = snapshot
         .find(want.id)
-        .ok_or_else(|| InstallFault::Unknown(want.id.to_owned()))?;
+        .ok_or_else(|| InstallError::Unknown(want.id.to_owned()))?;
     if listing.version != want.version {
-        return Err(InstallFault::Version {
+        return Err(InstallError::Version {
             wanted: want.version.to_owned(),
             offered: listing.version.clone(),
         });
@@ -208,9 +208,9 @@ fn fill(
     listing: &Listing,
     (target, pin): (&Path, &Path),
     (fetch, run): (&dyn Fetch, &dyn Run),
-) -> Result<Record, InstallFault> {
+) -> Result<Record, InstallError> {
     let files = target.join(FILES);
-    let unsupported = || InstallFault::Unsupported(listing.name.clone());
+    let unsupported = || InstallError::Unsupported(listing.name.clone());
     let dist = &listing.distribution;
     let record = |command: String, args, env, digest: Option<String>, check| Record {
         id: listing.id.clone(),
@@ -231,7 +231,7 @@ fn fill(
         found
             .is_file()
             .then_some(())
-            .ok_or(InstallFault::NoProgram)?;
+            .ok_or(InstallError::NoProgram)?;
         return Ok(record(
             bin.cmd.clone(),
             bin.args.clone(),
@@ -266,19 +266,19 @@ fn binary(
     bin: &Binary,
     (files, pin, stage): (&Path, &Path, &Path),
     fetch: &dyn Fetch,
-) -> Result<(String, Check), InstallFault> {
+) -> Result<(String, Check), InstallError> {
     // Streamed to a staging file beside the files, never held in memory.
     fetch.download(&bin.archive, stage)?;
     let got = std::fs::File::open(stage)
         .and_then(Sha256Hex::of_reader)
         .map_err(disk)?;
-    let refused = |expected: &str| InstallFault::Digest {
+    let refused = |expected: &str| InstallError::Digest {
         expected: expected.to_owned(),
         got: got.as_str().to_owned(),
     };
     let check = match &bin.sha256 {
         Some(text) => {
-            let expected = Sha256Hex::parse(text).map_err(|source| InstallFault::NotDigest {
+            let expected = Sha256Hex::parse(text).map_err(|source| InstallError::NotDigest {
                 text: text.clone(),
                 source,
             })?;
@@ -291,7 +291,7 @@ fn binary(
         // with the pin. An unreadable pin is a refusal, never a fresh start.
         None => match std::fs::read_to_string(pin) {
             Ok(text) => {
-                let pinned = Sha256Hex::parse(&text).map_err(|source| InstallFault::NotDigest {
+                let pinned = Sha256Hex::parse(&text).map_err(|source| InstallError::NotDigest {
                     text: text.trim().to_owned(),
                     source,
                 })?;
@@ -323,7 +323,7 @@ fn package_name(package: &str) -> &str {
 }
 
 /// Installs a node package under `files` and returns the path of its program, relative.
-fn npm(package: &Package, files: &Path, run: &dyn Run) -> Result<String, InstallFault> {
+fn npm(package: &Package, files: &Path, run: &dyn Run) -> Result<String, InstallError> {
     let args: Vec<String> = [
         "install",
         "--prefix",
@@ -340,9 +340,9 @@ fn npm(package: &Package, files: &Path, run: &dyn Run) -> Result<String, Install
     let name = package_name(&package.package);
     let manifest =
         std::fs::read_to_string(files.join("node_modules").join(name).join("package.json"))
-            .map_err(|e| InstallFault::Manifest(std::sync::Arc::new(e)))?;
+            .map_err(|e| InstallError::Manifest(std::sync::Arc::new(e)))?;
     let json: serde_json::Value = serde_json::from_str(&manifest)
-        .map_err(|e| InstallFault::Manifest(std::sync::Arc::new(e)))?;
+        .map_err(|e| InstallError::Manifest(std::sync::Arc::new(e)))?;
     let bin = match json.get("bin") {
         Some(serde_json::Value::String(_)) => name.rsplit('/').next().map(str::to_owned),
         Some(serde_json::Value::Object(map)) => map.keys().next().cloned(),
@@ -350,6 +350,6 @@ fn npm(package: &Package, files: &Path, run: &dyn Run) -> Result<String, Install
     };
     let bin = bin
         .filter(|b| Slug::parse(b).is_ok())
-        .ok_or(InstallFault::NoProgram)?;
+        .ok_or(InstallError::NoProgram)?;
     Ok(format!("node_modules/.bin/{bin}"))
 }

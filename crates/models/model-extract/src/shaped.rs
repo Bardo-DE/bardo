@@ -1,7 +1,7 @@
 //! One extraction of a shape known only at run time: a schema a caller holds as text.
 
 use model_provider::{
-    JsonText, SchemaLimits, SchemaRefusal, SchemaText, Shape, ToolCall, TurnEnd, TurnRequest,
+    JsonText, SchemaError, SchemaLimits, SchemaText, Shape, ToolCall, TurnEnd, TurnRequest,
 };
 
 use crate::session::Machine;
@@ -33,13 +33,13 @@ impl ShapedSession {
     /// A session for the shape of `schema`, or why the schema is not one.
     ///
     /// # Errors
-    /// [`SchemaRefusal`] when the shape vocabulary cannot say the schema.
+    /// [`SchemaError`] when the shape vocabulary cannot say the schema.
     pub fn from_schema(
         schema: &SchemaText,
         limits: SchemaLimits,
         mode: ExtractMode,
         budget: RepairBudget,
-    ) -> Result<Self, SchemaRefusal> {
+    ) -> Result<Self, SchemaError> {
         Shape::from_json_schema(schema, limits).map(|shape| Self::new(shape, mode, budget))
     }
 

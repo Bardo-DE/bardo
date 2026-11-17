@@ -21,7 +21,7 @@ mod sysfs;
 pub use client::{Client, FOCUS_SETTLE, summary};
 pub use daemon::{Daemon, DaemonSpec};
 pub use event::{EV_ABS, EV_KEY, EV_LED, EV_REL, EV_SYN, Event, LED_CAPSL, SYN_REPORT};
-pub use failure::Failure;
+pub use failure::DevtestError;
 pub use fake::{FakeKeyboard, FakeSpec, Pointer};
 pub use grab::ExternalGrab;
 pub use keys::{KEYS, code_of, name_of};

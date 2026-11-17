@@ -17,9 +17,7 @@ pub struct DmabufFormat {
 use super::output_source::NamedOutput;
 use crate::misc::idle::{pump_queue, side_queue};
 use crate::{ClientError, GlobalList};
-use desktop_client::capture::{
-    CaptureEvent, CaptureFailure, CaptureSession, CursorMode, ShmFormat,
-};
+use desktop_client::capture::{CaptureError, CaptureEvent, CaptureSession, CursorMode, ShmFormat};
 use desktop_client::{CaptureId, DesktopEvent, DesktopState, Frame, Rect, Size, reduce};
 use desktop_protocols::vocab::{Transform, WireCode};
 use rustix::fs::{MemfdFlags, ftruncate, memfd_create};
@@ -406,7 +404,7 @@ impl OutputCapture {
     }
 
     /// The finished frame, or why it failed; `None` while it is still going. Takes it.
-    pub fn take(&mut self) -> Option<Result<Frame, CaptureFailure>> {
+    pub fn take(&mut self) -> Option<Result<Frame, CaptureError>> {
         let captures = std::mem::take(&mut self.state.desktop.captures);
         let (captures, ready) = captures.take_ready(ID);
         self.state.desktop.captures = captures;
@@ -519,7 +517,7 @@ impl Dispatch<ExtImageCopyCaptureSessionV1, ()> for Capturing {
             }
             Event::Stopped => {
                 state.stopped = true;
-                state.fold(CaptureEvent::Failed(CaptureFailure::Stopped));
+                state.fold(CaptureEvent::Failed(CaptureError::Stopped));
             }
             _ => {}
         }
@@ -577,14 +575,14 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, ()> for Capturing {
                 });
                 state.fold(match read {
                     Some((stride, pixels)) => CaptureEvent::Ready { stride, pixels },
-                    None => CaptureEvent::Failed(CaptureFailure::Unknown),
+                    None => CaptureEvent::Failed(CaptureError::Unknown),
                 });
             }
             Event::Failed { reason } => {
                 let reason = match raw(reason) {
-                    1 => CaptureFailure::BufferConstraints,
-                    2 => CaptureFailure::Stopped,
-                    _ => CaptureFailure::Unknown,
+                    1 => CaptureError::BufferConstraints,
+                    2 => CaptureError::Stopped,
+                    _ => CaptureError::Unknown,
                 };
                 state.buffer = None;
                 state.fold(CaptureEvent::Failed(reason));

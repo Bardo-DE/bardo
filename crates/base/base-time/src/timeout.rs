@@ -8,7 +8,7 @@ use std::time::Duration;
 /// The call did not finish within its bound.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("no answer within {after:?}")]
-pub struct TimedOut {
+pub struct TimeoutError {
     /// The bound that passed.
     pub after: Duration,
 }
@@ -19,7 +19,7 @@ pub struct TimedOut {
 /// # Errors
 ///
 /// [`TimedOut`] when `work` does not finish within `limit`.
-pub async fn within<T>(limit: Duration, work: impl Future<Output = T>) -> Result<T, TimedOut> {
+pub async fn within<T>(limit: Duration, work: impl Future<Output = T>) -> Result<T, TimeoutError> {
     let mut work = pin!(work);
     let mut timer = futures_timer::Delay::new(limit);
     poll_fn(move |cx| {
@@ -27,7 +27,7 @@ pub async fn within<T>(limit: Duration, work: impl Future<Output = T>) -> Result
             return Poll::Ready(Ok(done));
         }
         match Pin::new(&mut timer).poll(cx) {
-            Poll::Ready(()) => Poll::Ready(Err(TimedOut { after: limit })),
+            Poll::Ready(()) => Poll::Ready(Err(TimeoutError { after: limit })),
             Poll::Pending => Poll::Pending,
         }
     })
@@ -49,6 +49,6 @@ mod tests {
     #[tokio::test]
     async fn a_call_that_never_answers_times_out() {
         let got = within(SHORT, pending::<()>()).await;
-        assert_eq!(got, Err(TimedOut { after: SHORT }));
+        assert_eq!(got, Err(TimeoutError { after: SHORT }));
     }
 }

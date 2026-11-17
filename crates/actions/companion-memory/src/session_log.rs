@@ -11,7 +11,7 @@ use crate::cursor_cache::CursorCache;
 use account_core::AppName;
 use action_vocab::Clock;
 use agent_session::{
-    Appended, LogFault, LogPage, PageSize, SESSION_KIND, Seq, SessionEntry, SessionLog, decode,
+    Appended, LogError, LogPage, PageSize, SESSION_KIND, Seq, SessionEntry, SessionLog, decode,
     encode, session_thing,
 };
 use base_ids::Count;
@@ -64,8 +64,8 @@ impl<T: Transport, K: Clock> MemorySessionLog<T, K> {
         }
     }
 
-    fn thing(session: &SessionId) -> Result<EntityId, LogFault> {
-        session_thing(session).ok_or(LogFault::Unnamed)
+    fn thing(session: &SessionId) -> Result<EntityId, LogError> {
+        session_thing(session).ok_or(LogError::Unnamed)
     }
 
     /// What the router says about its own record: trusted, private to the Space.
@@ -81,11 +81,11 @@ impl<T: Transport, K: Clock> MemorySessionLog<T, K> {
         }
     }
 
-    fn record(&self, session: &SessionId, kind: &str, json: &str) -> Result<Record, LogFault> {
+    fn record(&self, session: &SessionId, kind: &str, json: &str) -> Result<Record, LogError> {
         let body = EventBody::Area(AreaPayload {
             area: AreaTag::Companion,
-            kind: KindTag::parse(kind).map_err(LogFault::encode)?,
-            json: JsonText::parse(json).map_err(LogFault::encode)?,
+            kind: KindTag::parse(kind).map_err(LogError::encode)?,
+            json: JsonText::parse(json).map_err(LogError::encode)?,
             things: vec![(
                 ThingView {
                     thing: Self::thing(session)?,
@@ -112,7 +112,7 @@ impl<T: Transport, K: Clock> MemorySessionLog<T, K> {
         session: &SessionId,
         after: Option<Cursor>,
         limit: u32,
-    ) -> Result<EntriesQuery, LogFault> {
+    ) -> Result<EntriesQuery, LogError> {
         Ok(EntriesQuery {
             kinds: vec![
                 KindPattern::parse(ENTRY_KINDS)
@@ -126,7 +126,7 @@ impl<T: Transport, K: Clock> MemorySessionLog<T, K> {
     }
 
     /// Reads to the end of `session`'s log: the next position and the last body.
-    async fn tail(&self, session: &SessionId) -> Result<Tail, LogFault> {
+    async fn tail(&self, session: &SessionId) -> Result<Tail, LogError> {
         let mut after = None;
         let mut count = 0u64;
         let mut last = None;
@@ -185,14 +185,14 @@ fn stored_seq(json: &str) -> Option<Seq> {
 /// What a failed call to the memory service means to the log: a store that will not remember is `Refused`;
 /// one that cannot answer (a lock, no daemon, a failing disk) is `Unavailable`. Either refuses
 /// the reveal an entry guards.
-fn fault_of(error: &ClientError) -> LogFault {
+fn fault_of(error: &ClientError) -> LogError {
     match error {
         ClientError::Refused(Refusal::SpaceLocked | Refusal::Unavailable | Refusal::Busy) => {
-            LogFault::Unavailable
+            LogError::Unavailable
         }
-        ClientError::Refused(_) => LogFault::Refused,
+        ClientError::Refused(_) => LogError::Refused,
         // An unknown failure counts as unavailable, so the reveal it guards is refused.
-        ClientError::Transport(_) | ClientError::Unexpected => LogFault::Unavailable,
+        ClientError::Transport(_) | ClientError::Unexpected => LogError::Unavailable,
     }
 }
 
@@ -202,8 +202,8 @@ impl<T: Transport, K: Clock> SessionLog for MemorySessionLog<T, K> {
         session: &SessionId,
         seq: Seq,
         entry: &SessionEntry,
-    ) -> Result<Appended, LogFault> {
-        let encoded = encode(seq, entry).map_err(LogFault::encode)?;
+    ) -> Result<Appended, LogError> {
+        let encoded = encode(seq, entry).map_err(LogError::encode)?;
         let (next, last) = if let Some(next) = self.cached(session) {
             (next, None)
         } else {
@@ -218,7 +218,7 @@ impl<T: Transport, K: Clock> SessionLog for MemorySessionLog<T, K> {
             return if landed {
                 Ok(Appended { seq })
             } else {
-                Err(LogFault::OutOfOrder { expected: next })
+                Err(LogError::OutOfOrder { expected: next })
             };
         }
         let record = self.record(session, &encoded.kind, &encoded.json)?;
@@ -240,7 +240,7 @@ impl<T: Transport, K: Clock> SessionLog for MemorySessionLog<T, K> {
         session: &SessionId,
         from: Option<Seq>,
         size: PageSize,
-    ) -> Result<LogPage, LogFault> {
+    ) -> Result<LogPage, LogError> {
         let want = size.0.0.max(1);
         let start = from.map_or(0, |s| s.0);
         let known = self.cursors.at(session, Seq(start));
@@ -282,7 +282,7 @@ impl<T: Transport, K: Clock> SessionLog for MemorySessionLog<T, K> {
         Ok(LogPage { rows, next })
     }
 
-    async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
+    async fn sessions(&self) -> Result<Vec<SessionId>, LogError> {
         let mut found = Vec::new();
         let mut seen = BTreeSet::new();
         let mut after = None;

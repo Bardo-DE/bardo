@@ -17,7 +17,7 @@ use layer_shell_hooks::{
     FrameTicks, GrabRecord, HandleParts, Live, NativeCell, Request, RequestQueue, RoleKind,
     SurfaceHandle, SurfaceIds, use_frame_tick, use_surface, use_surface_scale, use_toplevel_state,
 };
-use layer_shell_hooks::{GrabRefused, PointerFacts, Press};
+use layer_shell_hooks::{GrabError, PointerFacts, Press};
 use layer_shell_types::{CommonOp, FrameTick, Maximize, ResizeEdge, WindowOp};
 use layer_shell_types::{Scale120, SurfaceId, SurfaceOp, ToplevelState};
 
@@ -470,9 +470,9 @@ fn a_move_is_queued_only_with_a_held_press_on_the_surface() {
         )
     };
     let window = handle_of(RoleKind::Toplevel);
-    assert_eq!(window.begin_move(), Err(GrabRefused::PointerElsewhere));
+    assert_eq!(window.begin_move(), Err(GrabError::PointerElsewhere));
     grab.update(|facts| facts.focus = Some(id));
-    assert_eq!(window.begin_move(), Err(GrabRefused::NoPress));
+    assert_eq!(window.begin_move(), Err(GrabError::NoPress));
     assert!(requests.drain().is_empty(), "a refusal sends nothing");
 
     grab.update(|facts| {
@@ -505,6 +505,6 @@ fn a_move_is_queued_only_with_a_held_press_on_the_surface() {
     );
     assert_eq!(
         handle_of(RoleKind::Layer).begin_move(),
-        Err(GrabRefused::NotAToplevel)
+        Err(GrabError::NotAToplevel)
     );
 }

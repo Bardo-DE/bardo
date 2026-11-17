@@ -24,7 +24,7 @@ use crate::names::launcher_session;
 use crate::procs::{Proc, Procs};
 use crate::protect;
 use account_core::SessionToken;
-use agent_acp_host::{EdgeBind, LaunchPlan, SandboxStep, Spawn, SpawnFault, Spawned};
+use agent_acp_host::{EdgeBind, LaunchPlan, SandboxStepError, Spawn, SpawnError, Spawned};
 use base_path::AbsPath;
 use sandbox::egress::{Resolver, SystemResolver};
 use sandbox::forward::{Bridge, Loopback};
@@ -152,14 +152,14 @@ impl<A: Accounts + 'static, P: Procs> Spawn for AgentSpawn<A, P> {
     async fn spawn(
         &mut self,
         plan: &LaunchPlan,
-    ) -> Result<Spawned<P::Transport, Child<A, P::Proc>>, SpawnFault> {
+    ) -> Result<Spawned<P::Transport, Child<A, P::Proc>>, SpawnError> {
         let file = Arc::clone(&self.file);
-        let entry = file.get(&plan.program).ok_or(SpawnFault::NotAllowed)?;
-        let session = launcher_session(&plan.session).ok_or(SpawnFault::Session)?;
+        let entry = file.get(&plan.program).ok_or(SpawnError::NotAllowed)?;
+        let session = launcher_session(&plan.session).ok_or(SpawnError::Session)?;
         self.accounts
             .begin_session(&session)
             .await
-            .map_err(SpawnFault::accounts)?;
+            .map_err(SpawnError::accounts)?;
         let mut release = Release {
             accounts: Arc::clone(&self.accounts),
             registry: self.registry.clone(),
@@ -205,11 +205,11 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         entry: &Entry,
         session: &SessionToken,
         release: &mut Release<A, P::Proc>,
-    ) -> Result<Lent, SpawnFault> {
+    ) -> Result<Lent, SpawnError> {
         match entry.route {
             Route::Login => Ok(Lent::Nothing),
             Route::Endpoint => {
-                let target = entry.endpoint.as_ref().ok_or(SpawnFault::NotAllowed)?;
+                let target = entry.endpoint.as_ref().ok_or(SpawnError::NotAllowed)?;
                 let wish = RouteWish {
                     kind: target.kind,
                     id: target.id.clone(),
@@ -218,20 +218,20 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
                 let opened = accounts
                     .open_endpoint(&entry.program, &wish, entry.class, entry.protocol)
                     .await
-                    .map_err(SpawnFault::accounts)?;
+                    .map_err(SpawnError::accounts)?;
                 release.endpoint = Some(opened.session.clone());
                 Ok(Lent::Endpoint(opened))
             }
             Route::Handoff => {
-                let key_env = entry.key_env.as_ref().ok_or(SpawnFault::NotAllowed)?;
+                let key_env = entry.key_env.as_ref().ok_or(SpawnError::NotAllowed)?;
                 let permit = accounts
                     .request_key(&entry.program, entry.class, session)
                     .await
-                    .map_err(SpawnFault::accounts)?;
+                    .map_err(SpawnError::accounts)?;
                 let issued = accounts
                     .issue(&permit, &entry.program, key_env)
                     .await
-                    .map_err(SpawnFault::accounts)?;
+                    .map_err(SpawnError::accounts)?;
                 release.credential = Some(issued.id);
                 Ok(Lent::Key(issued.key))
             }
@@ -247,13 +247,12 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         lent: &Lent,
         session: &SessionToken,
         release: &mut Release<A, P::Proc>,
-    ) -> Result<AgentNet, SpawnFault> {
+    ) -> Result<AgentNet, SpawnError> {
         match entry.network {
             NetworkMode::EndpointOnly => self.endpoint_net(lent, session, release),
             NetworkMode::Allowlist => self.allowlist_net(entry, session, release),
-            NetworkMode::None | NetworkMode::Host => {
-                AgentNet::of(entry.network, None).map_err(SpawnFault::at(SandboxStep::NetworkPlan))
-            }
+            NetworkMode::None | NetworkMode::Host => AgentNet::of(entry.network, None)
+                .map_err(SpawnError::at(SandboxStepError::NetworkPlan)),
         }
     }
 
@@ -264,15 +263,15 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         session: &SessionToken,
         release: &mut Release<A, P::Proc>,
         port: u16,
-    ) -> Result<(PathBuf, EndpointBind), SpawnFault> {
+    ) -> Result<(PathBuf, EndpointBind), SpawnError> {
         let dir = session_dir(&self.run_dir, session, release)
-            .map_err(SpawnFault::at(SandboxStep::SessionDir))?;
+            .map_err(SpawnError::at(SandboxStepError::SessionDir))?;
         let socket = dir.join("ep.sock");
         let inside = socket
             .to_str()
-            .ok_or(SpawnFault::Sandbox(SandboxStep::SocketPath))
+            .ok_or(SpawnError::Sandbox(SandboxStepError::SocketPath))
             .and_then(|t| {
-                base_path::AbsPath::parse(t).map_err(SpawnFault::at(SandboxStep::SocketPath))
+                base_path::AbsPath::parse(t).map_err(SpawnError::at(SandboxStepError::SocketPath))
             })?;
         Ok((
             socket,
@@ -285,16 +284,16 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         lent: &Lent,
         session: &SessionToken,
         release: &mut Release<A, P::Proc>,
-    ) -> Result<AgentNet, SpawnFault> {
+    ) -> Result<AgentNet, SpawnError> {
         let Lent::Endpoint(endpoint) = lent else {
-            return Err(SpawnFault::Sandbox(SandboxStep::NoEndpoint));
+            return Err(SpawnError::Sandbox(SandboxStepError::NoEndpoint));
         };
-        let target = Loopback::new(&endpoint.host, endpoint.port).map_err(SpawnFault::accounts)?;
+        let target = Loopback::new(&endpoint.host, endpoint.port).map_err(SpawnError::accounts)?;
         let (socket, bind) = self.bind(session, release, target.port())?;
         release.bridge =
-            Some(Bridge::start(&socket, target).map_err(SpawnFault::at(SandboxStep::Bridge))?);
+            Some(Bridge::start(&socket, target).map_err(SpawnError::at(SandboxStepError::Bridge))?);
         AgentNet::of(NetworkMode::EndpointOnly, Some(bind))
-            .map_err(SpawnFault::at(SandboxStep::NetworkPlan))
+            .map_err(SpawnError::at(SandboxStepError::NetworkPlan))
     }
 
     /// The filter listens on the socket for exactly the life of the session (`Release` holds
@@ -304,28 +303,28 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         entry: &Entry,
         session: &SessionToken,
         release: &mut Release<A, P::Proc>,
-    ) -> Result<AgentNet, SpawnFault> {
+    ) -> Result<AgentNet, SpawnError> {
         let reach = entry
             .reach
             .as_ref()
-            .ok_or(SpawnFault::Sandbox(SandboxStep::NoReach))?;
+            .ok_or(SpawnError::Sandbox(SandboxStepError::NoReach))?;
         let (socket, bind) = self.bind(session, release, PROXY_PORT)?;
         release.proxy = Some(
             egress::start(&socket, reach, Arc::clone(&self.resolver))
-                .map_err(SpawnFault::at(SandboxStep::Filter))?,
+                .map_err(SpawnError::at(SandboxStepError::Filter))?,
         );
         AgentNet::of(NetworkMode::Allowlist, Some(bind))
-            .map_err(SpawnFault::at(SandboxStep::NetworkPlan))
+            .map_err(SpawnError::at(SandboxStepError::NetworkPlan))
     }
 
     /// `run` with every `.git` directory of the workspace, and the named extra paths that lie
     /// in it, bound read-only over the writable workspace. A `.git` that cannot be protected
     /// stops the start; an extra outside the workspace is not the agent's and is left out.
-    fn guarded(&self, run: AgentRun, cwd: &base_path::AbsPath) -> Result<AgentRun, SpawnFault> {
+    fn guarded(&self, run: AgentRun, cwd: &base_path::AbsPath) -> Result<AgentRun, SpawnError> {
         let run = protect::git_dirs(cwd)
             .into_iter()
             .try_fold(run, AgentRun::with_protect)
-            .map_err(SpawnFault::at(SandboxStep::Protect))?;
+            .map_err(SpawnError::at(SandboxStepError::Protect))?;
         Ok(self.protected.iter().cloned().fold(run, |run, path| {
             run.clone().with_protect(path).unwrap_or(run)
         }))
@@ -337,7 +336,7 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         plan: &LaunchPlan,
         session: &SessionToken,
         release: &mut Release<A, P::Proc>,
-    ) -> Result<(P::Transport, Arc<Mutex<P::Proc>>), SpawnFault> {
+    ) -> Result<(P::Transport, Arc<Mutex<P::Proc>>), SpawnError> {
         let lent = Self::lend(&self.accounts, entry, session, release).await?;
         let net = self.network(entry, &lent, session, release)?;
         let built = child_env(entry, &lent);
@@ -345,7 +344,7 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
         let cwd = plan.cwd.clone();
         let run = binds(entry, plan.edge.as_ref()).into_iter().fold(
             AgentRun::new(
-                Argv::new(command, &entry.args).ok_or(SpawnFault::Process)?,
+                Argv::new(command, &entry.args).ok_or(SpawnError::Process)?,
                 cwd.clone(),
                 built.vars,
                 net,
@@ -361,7 +360,7 @@ impl<A: Accounts + 'static, P: Procs> AgentSpawn<A, P> {
             .procs
             .start(&run)
             .await
-            .map_err(SpawnFault::at(SandboxStep::Start))?;
+            .map_err(SpawnError::at(SandboxStepError::Start))?;
         let proc = Arc::new(Mutex::new(proc));
         if let Some(id) = &release.credential {
             self.registry.add(id.clone(), Arc::clone(&proc));

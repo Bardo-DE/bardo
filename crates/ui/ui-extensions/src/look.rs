@@ -21,7 +21,7 @@ use plugin_host::registry::Registry;
 use serde::Deserialize;
 use settings_types::schema::Provided;
 
-use crate::fault::Fault;
+use crate::fault::EntryError;
 use crate::provision::Provision;
 
 /// The most a look's stylesheet may be: 256 KiB. A larger one makes its Extension unusable.
@@ -45,16 +45,16 @@ pub struct Look {
 impl Look {
     /// Reads the entry. The stylesheet path is made absolute inside the Extension's folder
     /// (`Entry::resolve`): an absolute path or a `..` is refused.
-    pub(crate) fn from_entry(entry: &Entry) -> Result<Look, Refusal<Fault>> {
-        let wire: Wire = entry.clone().read::<Wire, Fault>()?;
+    pub(crate) fn from_entry(entry: &Entry) -> Result<Look, Refusal<EntryError>> {
+        let wire: Wire = entry.clone().read::<Wire, EntryError>()?;
         if wire.stylesheet.extension().is_none_or(|ext| ext != "css") {
-            return Err(Refusal::Fault(Fault::NotCss {
+            return Err(Refusal::Fault(EntryError::NotCss {
                 path: wire.stylesheet,
             }));
         }
-        let stylesheet = entry.resolve::<Fault>(wire.stylesheet)?;
+        let stylesheet = entry.resolve::<EntryError>(wire.stylesheet)?;
         // The empty path resolves to the folder itself.
-        let folder = entry.resolve::<Fault>(PathBuf::from("."))?;
+        let folder = entry.resolve::<EntryError>(PathBuf::from("."))?;
         Ok(Look {
             stylesheet,
             folder,
@@ -81,9 +81,9 @@ impl Look {
     }
 
     /// The first problem with the files this entry names, if any: a sheet over the cap.
-    pub(crate) fn fault(&self) -> Option<Fault> {
+    pub(crate) fn fault(&self) -> Option<EntryError> {
         let size = fs::metadata(&self.stylesheet).ok()?.len();
-        (size > STYLESHEET_CAP_BYTES).then(|| Fault::TooBig {
+        (size > STYLESHEET_CAP_BYTES).then(|| EntryError::TooBig {
             path: self.stylesheet.clone(),
             cap: STYLESHEET_CAP_BYTES,
         })

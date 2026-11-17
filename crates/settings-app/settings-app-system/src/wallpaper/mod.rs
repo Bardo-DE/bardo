@@ -5,4 +5,4 @@ mod disk;
 mod thumbs;
 
 pub use disk::OnDisk;
-pub use thumbs::{ThumbFault, Thumbnails};
+pub use thumbs::{ThumbError, Thumbnails};

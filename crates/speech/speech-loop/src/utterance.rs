@@ -38,11 +38,11 @@ impl UtteranceState {
 
 /// Why a `Begin` is refused whatever the state, or `None` when voice is on.
 #[must_use]
-pub fn refusal_for(enabled: VoiceUse) -> Option<VoiceRefusal> {
+pub fn refusal_for(enabled: VoiceUse) -> Option<VoiceError> {
     match enabled {
         VoiceUse::On => None,
-        VoiceUse::NeedsConsent => Some(VoiceRefusal::NeedsConsent),
-        VoiceUse::Off => Some(VoiceRefusal::Disabled),
+        VoiceUse::NeedsConsent => Some(VoiceError::NeedsConsent),
+        VoiceUse::Off => Some(VoiceError::Disabled),
     }
 }
 
@@ -153,7 +153,7 @@ pub enum UtteranceEffect {
     /// Wipe the buffers.
     Zeroize,
     /// Refuse the call.
-    Refuse(VoiceRefusal),
+    Refuse(VoiceError),
     /// Remember who may attach.
     StoreRoute(VoiceTarget),
     /// Replay the committed segments and the last partial to the attached app.
@@ -228,14 +228,14 @@ pub fn utterance_step(
                 enabled: VoiceUse::NeedsConsent,
                 ..
             },
-        ) => (s, vec![E::Refuse(VoiceRefusal::NeedsConsent)]),
+        ) => (s, vec![E::Refuse(VoiceError::NeedsConsent)]),
         (
             s,
             V::Begin {
                 enabled: VoiceUse::Off,
                 ..
             },
-        ) => (s, vec![E::Refuse(VoiceRefusal::Disabled)]),
+        ) => (s, vec![E::Refuse(VoiceError::Disabled)]),
         (S::Opening, V::MicOpened) => (
             S::Listening,
             vec![E::Emit(VoiceEvent::Opened), E::Earcon(Earcon::Begin)],

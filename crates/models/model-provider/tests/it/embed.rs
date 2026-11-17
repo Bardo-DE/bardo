@@ -2,7 +2,7 @@
 
 use base_ids::{Count, Dims};
 use model_provider::{
-    BatchMax, EmbedEnd, EmbedFault, EmbedVector, ModelName, TurnUsage, plan_batches,
+    BatchMax, EmbedEnd, EmbedError, EmbedVector, ModelName, TurnUsage, plan_batches,
 };
 use proptest::prelude::*;
 
@@ -36,14 +36,14 @@ fn a_reply_is_checked_for_count_then_width() {
     assert_eq!(end(&[]).check(Count(0), Dims(3)), Ok(()));
     assert_eq!(
         end(&[3]).check(Count(2), Dims(3)),
-        Err(EmbedFault::CountMismatch {
+        Err(EmbedError::CountMismatch {
             want: Count(2),
             got: Count(1)
         })
     );
     assert_eq!(
         end(&[3, 2, 4]).check(Count(3), Dims(3)),
-        Err(EmbedFault::WidthMismatch {
+        Err(EmbedError::WidthMismatch {
             want: Dims(3),
             got: Dims(2)
         })
@@ -51,7 +51,7 @@ fn a_reply_is_checked_for_count_then_width() {
     // The count is checked before any width.
     assert_eq!(
         end(&[9]).check(Count(2), Dims(3)),
-        Err(EmbedFault::CountMismatch {
+        Err(EmbedError::CountMismatch {
             want: Count(2),
             got: Count(1)
         })

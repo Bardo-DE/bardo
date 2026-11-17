@@ -2,7 +2,7 @@
 
 use crate::support::*;
 use action_checkpoint::{
-    ApplyAsk, CheckpointStore, DropAsk, NoStore, PlanAsk, StoreFault, TakeAsk, WorkRoot,
+    ApplyAsk, CheckpointStore, CheckpointStoreError, DropAsk, NoStore, PlanAsk, TakeAsk, WorkRoot,
 };
 use action_core::{CheckpointId, PlanDigest};
 use base_ids::Count;
@@ -79,7 +79,7 @@ fn a_build_without_history_refuses_every_ask() {
             session: session.clone(),
             ids: vec![id],
         };
-        let none = || Err(StoreFault::NoHistory);
+        let none = || Err(CheckpointStoreError::NoHistory);
         assert_eq!(NoStore.take(take).await.map(|_| ()), none());
         assert_eq!(NoStore.held(&root, &session).await.map(|_| ()), none());
         assert_eq!(NoStore.plan(plan).await.map(|_| ()), none());

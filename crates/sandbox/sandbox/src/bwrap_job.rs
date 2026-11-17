@@ -7,7 +7,7 @@
 //! nothing and `kill` does not rely on the death signal at all.
 
 use crate::output::Tail;
-use crate::sandbox::{Captured, ExitReport, Job, KILLED, StartFault};
+use crate::sandbox::{Captured, ExitReport, Job, KILLED, StartError};
 use std::io::Read;
 use std::process::{Child, Command, ExitStatus, Stdio};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
@@ -64,16 +64,16 @@ impl BwrapJob {
         mut command: Command,
         keep: usize,
         stdin: Stdio,
-    ) -> Result<Self, StartFault> {
-        let (mut reader, writer) = std::io::pipe().map_err(|e| StartFault::Spawn(e.to_string()))?;
+    ) -> Result<Self, StartError> {
+        let (mut reader, writer) = std::io::pipe().map_err(|e| StartError::Spawn(e.to_string()))?;
         let errors = writer
             .try_clone()
-            .map_err(|e| StartFault::Spawn(e.to_string()))?;
+            .map_err(|e| StartError::Spawn(e.to_string()))?;
         command.stdin(stdin).stdout(writer).stderr(errors);
         own_group(&mut command);
         let child = command
             .spawn()
-            .map_err(|e| StartFault::Spawn(e.to_string()))?;
+            .map_err(|e| StartError::Spawn(e.to_string()))?;
         // The command still holds the write ends; closing them lets the reader see the end.
         drop(command);
         let tail = Arc::new(Mutex::new(Tail::new(keep)));

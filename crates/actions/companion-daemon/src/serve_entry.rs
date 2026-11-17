@@ -9,7 +9,7 @@ use action_dbus::BusConnection;
 use action_dbus::callers::Identity;
 use action_vocab::Clock;
 use agent_planner::Planner;
-use companion_tasks::ServeFault;
+use companion_tasks::ServeError;
 use futures_util::lock::Mutex;
 use std::sync::Arc;
 
@@ -21,12 +21,12 @@ use std::sync::Arc;
 /// connection keeps serving until it closes.
 ///
 /// # Errors
-/// `ServeFault` when the name cannot be claimed or an object cannot be served on `connection`.
+/// `ServeError` when the name cannot be claimed or an object cannot be served on `connection`.
 pub async fn serve_on<P, I, K>(
     connection: &BusConnection,
     companion: Arc<Mutex<Companiond<P, I, K>>>,
     who: Arc<Identity>,
-) -> Result<(), ServeFault>
+) -> Result<(), ServeError>
 where
     P: Planner + 'static,
     I: IntentsTransport + 'static,
@@ -39,13 +39,13 @@ where
 /// presents its processes as a terminal. The daemon's own `serve_on` always reads `/proc`.
 ///
 /// # Errors
-/// `ServeFault` when the name cannot be claimed or an object cannot be served on `connection`.
+/// `ServeError` when the name cannot be claimed or an object cannot be served on `connection`.
 pub async fn serve_on_rooted<P, I, K>(
     connection: &BusConnection,
     companion: Arc<Mutex<Companiond<P, I, K>>>,
     who: Arc<Identity>,
     proc_root: ProcRoot,
-) -> Result<(), ServeFault>
+) -> Result<(), ServeError>
 where
     P: Planner + 'static,
     I: IntentsTransport + 'static,
@@ -59,12 +59,12 @@ where
 /// person's over it).
 ///
 /// # Errors
-/// `ServeFault` when the session bus is unreachable, the callers file is unreadable or serving
+/// `ServeError` when the session bus is unreachable, the callers file is unreadable or serving
 /// fails.
 pub async fn serve<P, I, K>(
     companion: Arc<Mutex<Companiond<P, I, K>>>,
     env: &impl Fn(&str) -> Option<String>,
-) -> Result<(), ServeFault>
+) -> Result<(), ServeError>
 where
     P: Planner + 'static,
     I: IntentsTransport + 'static,
@@ -73,8 +73,8 @@ where
     use futures_util::StreamExt;
     let connection = BusConnection::session()
         .await
-        .map_err(|e| ServeFault::Bus(e.to_string()))?;
-    let table = crate::callers::read(env).map_err(|e| ServeFault::Config(e.to_string()))?;
+        .map_err(|e| ServeError::Bus(e.to_string()))?;
+    let table = crate::callers::read(env).map_err(|e| ServeError::Config(e.to_string()))?;
     let who = Arc::new(Identity::on_system(connection.clone(), table));
     serve_on(&connection, companion, who).await?;
     let mut messages = zbus::MessageStream::from(&connection);

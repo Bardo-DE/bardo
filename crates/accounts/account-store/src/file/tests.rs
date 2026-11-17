@@ -162,18 +162,18 @@ async fn a_corrupt_file_is_refused_and_never_overwritten() {
     std::fs::write(store.path(), garbage).expect("write");
     assert!(matches!(
         store.load().await,
-        Err(StoreError::Fault(StoreFault::Unreadable(_)))
+        Err(StoreError::Fault(AccountStoreError::Unreadable(_)))
     ));
     assert!(matches!(
         store.save(&registry()).await,
-        Err(StoreError::Fault(StoreFault::Unreadable(_)))
+        Err(StoreError::Fault(AccountStoreError::Unreadable(_)))
     ));
     assert_eq!(std::fs::read(store.path()).expect("read"), garbage);
     // Bytes that are not text are refused the same way.
     std::fs::write(store.path(), [0xff, 0xfe, 0x00]).expect("write");
     assert!(matches!(
         store.load().await,
-        Err(StoreError::Fault(StoreFault::Unreadable(_)))
+        Err(StoreError::Fault(AccountStoreError::Unreadable(_)))
     ));
 }
 
@@ -204,18 +204,22 @@ async fn the_vocabulary_of_the_file_decides_whether_it_loads() {
     std::fs::write(store.path(), with(older.0)).expect("write");
     assert_eq!(
         store.load().await,
-        Err(StoreError::Fault(StoreFault::NoMigration(older)))
+        Err(StoreError::Fault(AccountStoreError::NoMigration(older)))
     );
     let newer = VocabVersion(VocabVersion::CURRENT.0 + 1);
     std::fs::write(store.path(), with(newer.0)).expect("write");
     assert_eq!(
         store.load().await,
-        Err(StoreError::Fault(StoreFault::FromNewerVocabulary(newer)))
+        Err(StoreError::Fault(AccountStoreError::FromNewerVocabulary(
+            newer
+        )))
     );
     // Neither refusal was overwritten by a save.
     assert_eq!(
         store.save(&registry()).await,
-        Err(StoreError::Fault(StoreFault::FromNewerVocabulary(newer)))
+        Err(StoreError::Fault(AccountStoreError::FromNewerVocabulary(
+            newer
+        )))
     );
     std::fs::write(store.path(), &text).expect("write");
     assert_eq!(store.load().await, Ok(registry()));

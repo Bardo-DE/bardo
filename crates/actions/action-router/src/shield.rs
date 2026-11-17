@@ -4,20 +4,20 @@
 //! (a leaf that is not a closed-set value never passes), never left to pass because nothing
 //! matched it.
 
-use action_context::handles::{HandleLimit, HandleValue};
+use action_context::handles::{HandleLimitError, HandleValue};
 use action_context::state::SessionRecord;
 use action_vocab::Value;
 use provenance::{Label, Labelled, Source};
 
 /// `value` with every leaf that can carry somebody's words held as a handle in `record`, under
 /// `label`. Closed-set leaves (numbers, dates, choices) and handles pass as they are. A session
-/// at its limit refuses (`HandleLimit`) instead of dropping an older handle.
+/// at its limit refuses (`HandleLimitError`) instead of dropping an older handle.
 pub(crate) fn shield(
     record: &mut SessionRecord,
     label: &Label,
     source: &Source,
     value: Value,
-) -> Result<Value, HandleLimit> {
+) -> Result<Value, HandleLimitError> {
     Ok(match value {
         Value::Text(t) | Value::Url(t) => Value::Handle(record.handles.try_mint_text(
             Labelled {
@@ -60,7 +60,7 @@ pub(crate) fn shield(
             fields
                 .into_iter()
                 .map(|(k, v)| Ok((k, shield(record, label, source, v)?)))
-                .collect::<Result<_, HandleLimit>>()?,
+                .collect::<Result<_, HandleLimitError>>()?,
         ),
         closed @ (Value::Integer(_)
         | Value::Decimal(_)

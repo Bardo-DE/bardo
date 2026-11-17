@@ -1,7 +1,7 @@
 //! The coding assistants' Add sheet and the question before one is removed: every sentence for
 //! what the sheet says and for each refusal.
 
-use settings_app_model::external::{AddFault, ChoiceFault};
+use settings_app_model::external::{AddError, ChoiceError};
 use settings_app_model::{AddRefusal, Presence, RemoveQuestion};
 
 /// Said on the Add sheet before Add: what the assistant reaches.
@@ -50,28 +50,28 @@ pub(crate) fn add_refusal(refusal: &AddRefusal) -> String {
     }
 }
 
-fn add_fault(fault: &AddFault) -> &'static str {
+fn add_fault(fault: &AddError) -> &'static str {
     match fault {
-        AddFault::Unreadable | AddFault::Syntax(_) => {
+        AddError::Unreadable | AddError::Syntax(_) => {
             "The list of coding assistants can\u{2019}t be read, so nothing was changed."
         }
-        AddFault::Listed => "That coding assistant is already offered.",
-        AddFault::BadName => {
+        AddError::Listed => "That coding assistant is already offered.",
+        AddError::BadName => {
             "That coding assistant\u{2019}s name has characters that can\u{2019}t be kept."
         }
-        AddFault::BadLabel => "Give it a name of up to 64 letters.",
-        AddFault::Io(_) => "The list of coding assistants can\u{2019}t be written.",
+        AddError::BadLabel => "Give it a name of up to 64 letters.",
+        AddError::Io(_) => "The list of coding assistants can\u{2019}t be written.",
     }
 }
 
 /// The sentence for why an assistant was not removed.
-pub(crate) fn remove_refusal(fault: &ChoiceFault) -> &'static str {
+pub(crate) fn remove_refusal(fault: &ChoiceError) -> &'static str {
     match fault {
-        ChoiceFault::NoSuchAgent => "That coding assistant isn\u{2019}t on the list any more.",
-        ChoiceFault::Unreadable | ChoiceFault::Syntax(_) => {
+        ChoiceError::NoSuchAgent => "That coding assistant isn\u{2019}t on the list any more.",
+        ChoiceError::Unreadable | ChoiceError::Syntax(_) => {
             "The list of coding assistants can\u{2019}t be read, so nothing was changed."
         }
-        ChoiceFault::BadModel | ChoiceFault::BadWay | ChoiceFault::Io(_) => {
+        ChoiceError::BadModel | ChoiceError::BadWay | ChoiceError::Io(_) => {
             "The list of coding assistants can\u{2019}t be written."
         }
     }
@@ -107,18 +107,18 @@ mod tests {
     #[test]
     fn every_refusal_has_a_sentence_without_developer_words() {
         let adds = [
-            AddFault::Unreadable,
-            AddFault::Listed,
-            AddFault::BadName,
-            AddFault::BadLabel,
-            AddFault::Io(std::io::Error::other("disk full").into()),
+            AddError::Unreadable,
+            AddError::Listed,
+            AddError::BadName,
+            AddError::BadLabel,
+            AddError::Io(std::io::Error::other("disk full").into()),
         ];
         let removes = [
-            ChoiceFault::NoSuchAgent,
-            ChoiceFault::Unreadable,
-            ChoiceFault::BadModel,
-            ChoiceFault::BadWay,
-            ChoiceFault::Io(std::io::Error::other("disk full")),
+            ChoiceError::NoSuchAgent,
+            ChoiceError::Unreadable,
+            ChoiceError::BadModel,
+            ChoiceError::BadWay,
+            ChoiceError::Io(std::io::Error::other("disk full")),
         ];
         let sentences = adds
             .into_iter()

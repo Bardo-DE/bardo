@@ -38,7 +38,7 @@ use shell_model::desktop::{
 use shell_services::desktop_wl::bardo::{
     ArmError, BardoArm, Handout, HandoutError, shell_connection,
 };
-use shell_services::desktop_wl::{Refusal, project_subjects};
+use shell_services::desktop_wl::{CommandError, project_subjects};
 use shell_services::env::{Bus, BusRoute};
 use shell_testkit::PrivateBus;
 
@@ -471,7 +471,9 @@ fn a_command_for_something_gone_is_refused_before_anything_is_sent() {
             matches!(
                 refused,
                 Err(ArmError::Refused(
-                    Refusal::UnknownWindow(_) | Refusal::UnknownApp(_) | Refusal::UnknownSpace(_)
+                    CommandError::UnknownWindow(_)
+                        | CommandError::UnknownApp(_)
+                        | CommandError::UnknownSpace(_)
                 ))
             ),
             "{name}: {refused:?}"
@@ -490,7 +492,7 @@ fn a_minimise_target_names_the_docks_surface() {
     assert!(
         matches!(
             arm.execute(&target),
-            Err(ArmError::Refused(Refusal::NoSurface(ShellRole::Dock)))
+            Err(ArmError::Refused(CommandError::NoSurface(ShellRole::Dock)))
         ),
         "no dock surface is registered yet"
     );
@@ -1007,7 +1009,7 @@ fn a_picture_the_compositor_cannot_make_is_a_failed_note_not_a_wait() {
         output: "DP-2".to_owned(),
     })
     .unwrap_or_else(|e| panic!("{e}"));
-    arm.pictures(|_, _| Some(Err(desktop_client::capture::CaptureFailure::Stopped)));
+    arm.pictures(|_, _| Some(Err(desktop_client::capture::CaptureError::Stopped)));
     assert_eq!(
         arm.sink().as_slice(),
         [ShellNote::OutputPicture {

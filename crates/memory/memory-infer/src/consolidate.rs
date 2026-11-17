@@ -8,7 +8,7 @@ use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::Tokens;
 use inference_client::Transport;
-use inference_core::{InferRefusal, InferReply, InferRequest, ModelError, Task, TaskRequest};
+use inference_core::{InferRefusedError, InferReply, InferRequest, ModelError, Task, TaskRequest};
 use memory_store::class_of;
 use memory_tidy::{
     ConsolidateError, ConsolidationInput, Consolidator, Draft, parse_draft, render_prompt,
@@ -57,15 +57,15 @@ fn need() -> Need {
     clippy::match_same_arms,
     reason = "the wildcard stands for reasons the accounts service adds later (the enum is non-exhaustive); the named arms are the known ones"
 )]
-fn refusal(why: InferRefusal) -> ConsolidateError {
+fn refusal(why: InferRefusedError) -> ConsolidateError {
     match why {
-        InferRefusal::Unavailable
-        | InferRefusal::RequiresCloud(_)
-        | InferRefusal::NeedsGrant
-        | InferRefusal::Denied
-        | InferRefusal::Unsupported => ConsolidateError::Unavailable,
-        InferRefusal::OverBudget => ConsolidateError::Busy,
-        // The accounts service may add reasons (`InferRefusal` is non-exhaustive); one not named means no run.
+        InferRefusedError::Unavailable
+        | InferRefusedError::RequiresCloud(_)
+        | InferRefusedError::NeedsGrant
+        | InferRefusedError::Denied
+        | InferRefusedError::Unsupported => ConsolidateError::Unavailable,
+        InferRefusedError::OverBudget => ConsolidateError::Busy,
+        // The accounts service may add reasons (`InferRefusedError` is non-exhaustive); one not named means no run.
         _ => ConsolidateError::Unavailable,
     }
 }

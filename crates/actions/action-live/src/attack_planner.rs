@@ -22,7 +22,7 @@ use action_accept::world::{Binaries, Options};
 use action_client::{InProcess, Intents};
 use action_core::{AgentConfig, ContextKeep, Keep, TurnIn, TurnVia, UserTurn};
 use action_dbus::Watched;
-use action_eval::{Facts, SetupFault, install_fixture};
+use action_eval::{Facts, SetupError, install_fixture};
 use action_eval_core::{
     AnswerGiven, AttackCase, Case, CaseTrace, LiveRun, LiveScore, Place, PlaceError, RunNote,
     faulted_trace, live_trace, score_live,
@@ -99,7 +99,7 @@ struct Rig {
 
 /// Why one case could not be played. The words go into the case's faulted trace.
 #[derive(Debug, thiserror::Error)]
-pub enum AttackFault {
+pub enum AttackError {
     /// No model card for a tier.
     #[error("no model card for {0}")]
     NoCard(&'static str),
@@ -120,7 +120,7 @@ pub enum AttackFault {
     Router(#[from] FakeError),
     /// The case's world could not be installed.
     #[error("{0}")]
-    Fixture(#[from] SetupFault),
+    Fixture(#[from] SetupError),
     /// The person's place could not be made from the world.
     #[error("where the person is: {0}")]
     Place(#[from] PlaceError),
@@ -140,16 +140,16 @@ impl Rig {
         )
     }
 
-    fn model(&self, name: &'static str) -> Result<TransportModel<Link>, AttackFault> {
+    fn model(&self, name: &'static str) -> Result<TransportModel<Link>, AttackError> {
         card(name)
             .map(|card| TransportModel::new(self.link(), card))
-            .ok_or(AttackFault::NoCard(name))
+            .ok_or(AttackError::NoCard(name))
     }
 }
 
-fn caller(name: &str, role: CallerRole) -> Result<CallerId, AttackFault> {
+fn caller(name: &str, role: CallerRole) -> Result<CallerId, AttackError> {
     let app =
-        AppName::parse(name).map_err(|error| AttackFault::NotAnApp(name.to_owned(), error))?;
+        AppName::parse(name).map_err(|error| AttackError::NotAnApp(name.to_owned(), error))?;
     Ok(CallerId {
         app: AppId {
             name: app,
@@ -173,21 +173,21 @@ fn keep_nothing() -> ContextKeep {
 ///
 /// # Errors
 ///
-/// Returns an [`AttackFault`] when the turn cannot be written as a companion ask.
-pub fn ask_of(session: SessionId, turn: UserTurn, place: &Place) -> Result<AskWire, AttackFault> {
+/// Returns an [`AttackError`] when the turn cannot be written as a companion ask.
+pub fn ask_of(session: SessionId, turn: UserTurn, place: &Place) -> Result<AskWire, AttackError> {
     Ok(AskWire {
         session,
         turn,
         keep: keep_nothing(),
-        parent_window: WindowKey::parse("w1").map_err(AttackFault::WindowName)?,
+        parent_window: WindowKey::parse("w1").map_err(AttackError::WindowName)?,
         app: Some(place.app.clone()),
     })
 }
 
 /// Plays one case: a fresh router over the case's world, the companion with its real planner, the
 /// person's words, and the router's audit records and the model tap kept when the answer rests.
-async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, AttackFault> {
-    let words = case.turns.first().cloned().ok_or(AttackFault::NoTurn)?;
+async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, AttackError> {
+    let words = case.turns.first().cloned().ok_or(AttackError::NoTurn)?;
     let reviewer = Judges(InferReviewer {
         quick: rig.model("bardo-quick")?,
         deliberate: rig.model("bardo-deliberate")?,
@@ -239,7 +239,7 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
             acts_for: None,
         })
         .await
-        .map_err(|e| AttackFault::Open(format!("{e:?}")))?;
+        .map_err(|e| AttackError::Open(format!("{e:?}")))?;
     let turn = launcher
         .session_turn(
             opened.session.clone(),
@@ -252,7 +252,7 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
             },
         )
         .await
-        .map_err(|e| AttackFault::Turn(format!("{e:?}")))?;
+        .map_err(|e| AttackError::Turn(format!("{e:?}")))?;
     let turn = UserTurn {
         id: turn,
         text: words,
@@ -290,8 +290,8 @@ async fn play(rig: &Rig, attack: &AttackCase, case: &Case) -> Result<LiveRun, At
 }
 
 /// The shell's own name, the app the companion answers to.
-fn shell_name() -> Result<AppName, AttackFault> {
-    AppName::parse("org.bardo.Shell").map_err(AttackFault::ShellName)
+fn shell_name() -> Result<AppName, AttackError> {
+    AppName::parse("org.bardo.Shell").map_err(AttackError::ShellName)
 }
 
 /// Whether the task ended showing the person an answer: done, with words or a shown handle in

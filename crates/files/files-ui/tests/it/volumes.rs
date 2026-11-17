@@ -76,7 +76,7 @@ fn opening_a_disk_mounts_it_and_says_where() {
 
 #[test]
 fn ejecting_a_busy_disk_comes_back_as_a_failure_and_the_list_stays() {
-    let busy = EjectFailure::InUse(vec![ProgramName::new("vlc")]);
+    let busy = EjectError::InUse(vec![ProgramName::new("vlc")]);
     let fake = Arc::new(FakeVolumes::with(vec![stick()]).failing_eject(busy.clone()));
     let mut rig = rig_over(fake);
     let _ = next(&mut rig.inbox);
@@ -111,7 +111,7 @@ fn what_went_wrong_is_told_in_finders_words() {
         TabId::FIRST,
         vec![Effect::TellVolume {
             name: VolumeName::new("STICK"),
-            trouble: VolumeTrouble::NotEjected(EjectFailure::InUse(Vec::new())),
+            trouble: VolumeTrouble::NotEjected(EjectError::InUse(Vec::new())),
         }],
     );
     assert_eq!(
@@ -176,7 +176,7 @@ const FIRST_BUTTON: &str = ".ds-alert-slot:nth-child(1) > .ds-button";
 
 #[test]
 fn a_busy_disk_asks_in_an_alert_and_force_eject_ejects_it_anyway() {
-    let busy = EjectFailure::InUse(vec![ProgramName::new("vlc"), ProgramName::new("bash")]);
+    let busy = EjectError::InUse(vec![ProgramName::new("vlc"), ProgramName::new("bash")]);
     let fake = Arc::new(FakeVolumes::with(vec![stick(), card()]).failing_eject(busy));
     let (mut harness, _dir, _config) = window_over(Arc::clone(&fake), "STICK");
     let press = |harness: &mut ui_harness::Harness, selector: &str| {

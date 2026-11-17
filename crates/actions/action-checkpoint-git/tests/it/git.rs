@@ -3,7 +3,9 @@
 
 use crate::scratch::{Scratch, root};
 use action_checkpoint::contract::{Workbench, run};
-use action_checkpoint::{ApplyAsk, CheckpointStore, PlanAsk, StoreFault, TakeAsk, WorkRoot};
+use action_checkpoint::{
+    ApplyAsk, CheckpointStore, CheckpointStoreError, PlanAsk, TakeAsk, WorkRoot,
+};
 use action_checkpoint_git::ref_name;
 use action_core::{CheckpointId, WorkPath};
 use base_ids::Count;
@@ -263,7 +265,10 @@ async fn a_restore_does_not_write_through_a_link_that_took_the_place_of_a_folder
         id: CheckpointId(1),
         expect: plan.digest,
     };
-    assert_eq!(store.apply(restore).await, Err(StoreFault::Failed));
+    assert_eq!(
+        store.apply(restore).await,
+        Err(CheckpointStoreError::Failed)
+    );
     assert_eq!(
         std::fs::read_to_string(outside.join("f.txt")).expect("read"),
         "theirs"
@@ -306,7 +311,7 @@ async fn a_restore_that_fails_while_writing_deletes_nothing_and_says_it_stopped_
     };
     let done = store.apply(restore).await;
     std::fs::set_permissions(&shut, std::fs::Permissions::from_mode(0o755)).expect("mode");
-    assert_eq!(done, Err(StoreFault::Partial));
+    assert_eq!(done, Err(CheckpointStoreError::Partial));
     // The deletes come last, so the failed write cost nothing.
     assert_eq!(std::fs::read_to_string(kept).expect("read"), "only now");
 }

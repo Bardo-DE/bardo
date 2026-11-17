@@ -73,17 +73,17 @@ pub struct Package {
 /// Why a snapshot was not read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("the agent list is not valid: {0}")]
-pub struct SnapshotFault(String);
+pub struct RegistrySnapshotError(String);
 
 impl Snapshot {
     /// Reads the snapshot's JSON.
     ///
     /// # Errors
     ///
-    /// Returns a [`SnapshotFault`] carrying the parser's message when `text` is not a valid
+    /// Returns a [`RegistrySnapshotError`] carrying the parser's message when `text` is not a valid
     /// snapshot.
-    pub fn parse(text: &str) -> Result<Self, SnapshotFault> {
-        serde_json::from_str(text).map_err(|e| SnapshotFault(e.to_string()))
+    pub fn parse(text: &str) -> Result<Self, RegistrySnapshotError> {
+        serde_json::from_str(text).map_err(|e| RegistrySnapshotError(e.to_string()))
     }
 
     /// The agent with `id`.

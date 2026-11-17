@@ -19,7 +19,7 @@ use http::{HeaderValue, Method, Request};
 
 /// Why a read could not be built or its answer not used.
 #[derive(Debug, thiserror::Error)]
-pub enum Failure {
+pub enum ProbeError {
     /// The server answered with this status, which the reading does not take as an answer.
     #[error("the server answered with status {0}")]
     Status(u16),
@@ -46,9 +46,10 @@ pub enum Failure {
 ///
 /// [`Failure::Unreadable`] when `url` or `token` is not usable in a request, or the request cannot
 /// be built.
-pub fn bearer_get(url: &str, token: &str) -> Result<Request<Vec<u8>>, Failure> {
-    let url = WebUrl::parse(url).map_err(Failure::Address)?;
-    let mut bearer = HeaderValue::from_str(&format!("Bearer {token}")).map_err(Failure::Token)?;
+pub fn bearer_get(url: &str, token: &str) -> Result<Request<Vec<u8>>, ProbeError> {
+    let url = WebUrl::parse(url).map_err(ProbeError::Address)?;
+    let mut bearer =
+        HeaderValue::from_str(&format!("Bearer {token}")).map_err(ProbeError::Token)?;
     bearer.set_sensitive(true);
     Request::builder()
         .method(Method::GET)
@@ -56,7 +57,7 @@ pub fn bearer_get(url: &str, token: &str) -> Result<Request<Vec<u8>>, Failure> {
         .header(ACCEPT, "application/json")
         .header(AUTHORIZATION, bearer)
         .body(Vec::new())
-        .map_err(Failure::Request)
+        .map_err(ProbeError::Request)
 }
 
 #[cfg(test)]
@@ -77,11 +78,11 @@ mod tests {
     fn a_url_that_is_not_a_web_url_builds_nothing() {
         assert!(matches!(
             bearer_get("imaps://x.example.test", "t"),
-            Err(Failure::Address(_))
+            Err(ProbeError::Address(_))
         ));
         assert!(matches!(
             bearer_get("http://api.example.test/", "t"),
-            Err(Failure::Address(_))
+            Err(ProbeError::Address(_))
         ));
     }
 }

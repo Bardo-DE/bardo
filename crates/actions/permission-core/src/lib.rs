@@ -40,18 +40,18 @@ pub use exec_facts::{
     NETWORK_PARAM, derives_choice, network_choice,
 };
 pub use exec_reach::{NetPrograms, net_reach};
-pub use execute::{CannotSandbox, EXECUTE_AS, SandboxState};
-pub use floor::{Floor, FloorEntry, FloorFault, FloorFile, LockedRow};
+pub use execute::{CannotSandboxError, EXECUTE_AS, SandboxState};
+pub use floor::{Floor, FloorEntry, FloorError, FloorFile, LockedRow};
 pub use grant::{
     ActionGrant, ActionGrantKey, GrantCaller, GrantTarget, ProgramName, ProgramNameError,
 };
 pub use grant_space::{
-    Ended, GrantEnd, GrantListFault, KnownSpaces, Reconciled, decode_grants, reconcile,
+    Ended, GrantEnd, GrantListError, KnownSpaces, Reconciled, decode_grants, reconcile,
     without_space,
 };
 pub use limit::{
     Level, Limit, LimitCall, LimitCaller, LimitKey, LimitLevel, LimitMaker, LimitNote, LimitScope,
-    Limited, NotATightening, Said, SaidFault, Tighten, decode_limits, encode_limits, limited,
+    Limited, NotATighteningError, Said, SaidError, Tighten, decode_limits, encode_limits, limited,
     limits_with, limits_without,
 };
 pub use mode::{AskOrRun, Mode, ModeRows, OtherRow, RowSets, ScreenRow};
@@ -64,10 +64,10 @@ pub use review::{
     ReviewMark, Ruling, Stage, Strictness, VerdictKind,
 };
 pub use rules::{RuleFile, generated_rules, rule_ids, rule_text, with_rule, without_rule};
-pub use space_access::{SpaceAccess, SpaceRefusal, space_access};
+pub use space_access::{SpaceAccess, SpaceError, space_access};
 pub use standing::{
-    AddressFault, CommandFault, CommandPrefix, Domain, DomainFault, Recipient, ScopeKind,
-    StandingFileFault, StandingGrant, StandingGrantId, StandingIdFault, StandingScope,
+    AddressFault, CommandError, CommandPrefix, Domain, DomainError, Recipient, ScopeKind,
+    StandingFileFault, StandingGrant, StandingGrantId, StandingIdError, StandingScope,
     decode_standing, encode_standing, held_with, held_without,
 };
 pub use standing_match::{ArgFacts, CallFacts, find_standing_for};

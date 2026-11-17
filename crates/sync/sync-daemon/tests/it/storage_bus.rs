@@ -39,7 +39,7 @@ use sync_daemon::service::serve;
 use sync_driver::hub::{Access, DatasetName, Hub};
 use sync_engine::scheduler::{Network, Settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
-use sync_pim_mirror::{AccountdUnavailable, Wiring};
+use sync_pim_mirror::{AccountdUnavailableError, Wiring};
 use sync_storage::storage::{
     ClientStorageGrants, FILES_APP, PHOTOS_APP, StorageConfig, StorageGrants, StorageKind,
     StorageSupervisor,
@@ -82,7 +82,7 @@ struct Gate {
 }
 
 impl StorageGrants for Gate {
-    async fn granted(&self, kind: StorageKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
+    async fn granted(&self, kind: StorageKind) -> Result<Vec<Candidate>, AccountdUnavailableError> {
         if self.shown.load(Ordering::SeqCst) {
             self.real.granted(kind).await
         } else {

@@ -4,7 +4,7 @@
 //! router decides what "always" covers and whether it was offered.
 
 use crate::helpers::Helpers;
-use crate::link::{Gone, Link};
+use crate::link::{EditorGoneError, Link};
 use crate::out;
 use crate::permission;
 use crate::prompt::Reply;
@@ -25,7 +25,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         session: &SessionId,
         sheet: &ConfirmRequest,
         turn: &mut Turn,
-    ) -> Result<Vec<Order>, Gone> {
+    ) -> Result<Vec<Order>, EditorGoneError> {
         let request = permission::sheet_request(&out::wire_id(session), sheet);
         match self.ask_editor(link, session, request, turn).await? {
             Reply::Heard(orders) => Ok(orders),

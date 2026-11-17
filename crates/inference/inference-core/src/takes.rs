@@ -125,7 +125,7 @@ pub fn cannot_see_screen(model: &str) -> String {
     )
 }
 
-/// Said when no model can serve work done from screenshots ([`crate::InferRefusal::NoModelSeesScreen`]).
+/// Said when no model can serve work done from screenshots ([`crate::InferRefusedError::NoModelSeesScreen`]).
 pub const NO_MODEL_SEES_SCREEN: &str =
     "No model here can see the screen. Choose one that reads images.";
 

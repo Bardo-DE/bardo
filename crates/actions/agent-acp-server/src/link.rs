@@ -23,7 +23,7 @@ use std::pin::pin;
 /// The editor has gone: nothing more can be said to it.
 #[derive(Debug, thiserror::Error)]
 #[error("the editor closed the connection")]
-pub(crate) struct Gone(#[source] pub(crate) Error);
+pub(crate) struct EditorGoneError(#[source] pub(crate) Error);
 
 /// The wire answer for a session that is not there: the same whatever went wrong (an id that is not
 /// one, a log that holds no session of that name), so the editor learns nothing from it. The
@@ -67,13 +67,15 @@ pub(crate) enum Inbound {
 pub(crate) fn answer<T: JsonRpcResponse>(
     responder: Responder<T>,
     result: Result<T, Error>,
-) -> Result<(), Gone> {
-    responder.respond_with_result(result).map_err(Gone)
+) -> Result<(), EditorGoneError> {
+    responder
+        .respond_with_result(result)
+        .map_err(EditorGoneError)
 }
 
 impl Inbound {
     /// Turns the request away with `error`. A cancel has no one to answer.
-    pub(crate) fn refuse(self, error: Error) -> Result<(), Gone> {
+    pub(crate) fn refuse(self, error: Error) -> Result<(), EditorGoneError> {
         match self {
             Inbound::Initialize(responder) => answer(responder, Err(error)),
             Inbound::New(_, responder) => answer(responder, Err(error)),
@@ -123,9 +125,13 @@ impl Link {
     }
 
     /// Sends `session/update` for `session`.
-    pub(crate) fn update(&self, session: &SessionId, update: SessionUpdate) -> Result<(), Gone> {
+    pub(crate) fn update(
+        &self,
+        session: &SessionId,
+        update: SessionUpdate,
+    ) -> Result<(), EditorGoneError> {
         let note = SessionNotification::new(out::wire_id(session), update);
-        self.cx.send_notification(note).map_err(Gone)
+        self.cx.send_notification(note).map_err(EditorGoneError)
     }
 
     /// Sends the permission `request`. Its answer comes on the returned channel; dropping the

@@ -3,7 +3,7 @@
 //! and `oauth.rs::assess`): the refresh token is carried through when the issuer does not rotate
 //! it, and only the issuer's own refusal is a reason to sign in again.
 
-use crate::exchange::{ExchangeFault, refresh};
+use crate::exchange::{ExchangeCauseError, refresh};
 use account_core::{Credential, GrantedScopes};
 use account_provider::{ClientEntry, IssuerEndpoints};
 use base_time::UnixSeconds;
@@ -53,8 +53,10 @@ pub async fn renew<H: Http>(
             // Renewal is handed the refresh token alone, so what it holds stays unknown here.
             granted: GrantedScopes::unknown(),
         }),
-        Err(ExchangeFault::Refused) => RenewOutcome::NeedsReauth,
-        Err(ExchangeFault::Unreachable | ExchangeFault::Unreadable) => RenewOutcome::Offline,
+        Err(ExchangeCauseError::Refused) => RenewOutcome::NeedsReauth,
+        Err(ExchangeCauseError::Unreachable | ExchangeCauseError::Unreadable) => {
+            RenewOutcome::Offline
+        }
     }
 }
 

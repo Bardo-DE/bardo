@@ -26,8 +26,8 @@ use shell_model::ids::{OutputName, WorkspaceKey};
 use shell_model::keyboard::focused;
 use shell_model::windows::{Sizing, Toplevels, WlCommand};
 use shell_services::desktop_wl::{
-    Refusal, backend_of, desktop_of, desktop_view, heads_of, offer_of_protocols, project_toplevels,
-    project_workspaces, space_id, wire_of,
+    CommandError, backend_of, desktop_of, desktop_view, heads_of, offer_of_protocols,
+    project_toplevels, project_workspaces, space_id, wire_of,
 };
 
 fn full_offer() -> ProtocolSet {
@@ -160,7 +160,7 @@ fn order(toplevels: &Toplevels) -> Vec<u64> {
 use ToplevelFlag::{Activated, Fullscreen, Maximized, Minimized};
 
 /// A shell command, what it should become on the wire, and its name.
-type WireCase = (&'static str, WlCommand, Result<Vec<Wire>, Refusal>);
+type WireCase = (&'static str, WlCommand, Result<Vec<Wire>, CommandError>);
 
 #[test]
 fn windows_follow_recency_as_they_activate_and_close() {
@@ -417,7 +417,7 @@ fn the_shells_commands_become_the_wire_requests_the_protocols_carry() {
     let state = session.state();
     let wire = |command: WlCommand| {
         desktop_of(&command, state)
-            .ok_or(Refusal::Unsupported)
+            .ok_or(CommandError::Unsupported)
             .and_then(|command| wire_of(&command, state))
     };
     let cases: Vec<WireCase> = vec![
@@ -457,12 +457,12 @@ fn the_shells_commands_become_the_wire_requests_the_protocols_carry() {
         (
             "a window that is gone",
             WlCommand::Close(WindowKey(99)),
-            Err(Refusal::Unsupported),
+            Err(CommandError::Unsupported),
         ),
         (
             "pinning is not carried",
             WlCommand::PinWorkspace(WorkspaceKey(10)),
-            Err(Refusal::Unsupported),
+            Err(CommandError::Unsupported),
         ),
     ];
     for (name, command, want) in cases {
@@ -520,7 +520,11 @@ fn what_shell_says_a_backend_supports_is_what_the_wire_client_accepts() {
         if supports(DesktopBackend::Wlr, command) {
             assert_eq!(sent, Ok(Ok(())), "{command:?} is offered and sent");
         } else {
-            assert_eq!(sent, Err(Refusal::Unsupported), "{command:?} is refused");
+            assert_eq!(
+                sent,
+                Err(CommandError::Unsupported),
+                "{command:?} is refused"
+            );
         }
     }
 }

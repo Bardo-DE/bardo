@@ -17,4 +17,4 @@ pub use buffer::{Buffer, Revision};
 pub use log::EditStamp;
 pub(crate) use log::Log;
 pub use session::{Motion, Preedit, Selection, Session};
-pub use text::{EDIT_BYTES, EditRefusal, EditText};
+pub use text::{EDIT_BYTES, EditError, EditText};

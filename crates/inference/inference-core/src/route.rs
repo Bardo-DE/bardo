@@ -2,7 +2,7 @@
 //! afford, then rank this computer first, the user's tier choice next, cost last. Every way to
 //! come up empty is a typed refusal, never a silent downgrade to the cloud.
 
-use crate::error::InferRefusal;
+use crate::error::InferRefusedError;
 use crate::policy::Policy;
 use crate::spend::SpendVerdict;
 use account_capability::ModelId;
@@ -89,18 +89,18 @@ pub struct Chosen {
 ///
 /// # Errors
 ///
-/// [`InferRefusal`] when no candidate is reachable or the policy admits none of them.
+/// [`InferRefusedError`] when no candidate is reachable or the policy admits none of them.
 pub fn admit<'a>(
     ask: RouteAsk,
     candidates: impl IntoIterator<Item = &'a RouteCandidate>,
     policy: &Policy,
-) -> Result<Vec<&'a RouteCandidate>, InferRefusal> {
+) -> Result<Vec<&'a RouteCandidate>, InferRefusedError> {
     let reachable: Vec<&RouteCandidate> = candidates
         .into_iter()
         .filter(|c| !policy.local_only || !is_cloud(&c.locality))
         .collect();
     if reachable.is_empty() {
-        return Err(InferRefusal::Unavailable);
+        return Err(InferRefusedError::Unavailable);
     }
     let floor = policy.floor(ask.class);
     let admitted: Vec<&RouteCandidate> = reachable
@@ -108,7 +108,7 @@ pub fn admit<'a>(
         .filter(|c| floor.admits(&c.locality))
         .collect();
     if admitted.is_empty() {
-        return Err(InferRefusal::RequiresCloud(ask.class));
+        return Err(InferRefusedError::RequiresCloud(ask.class));
     }
     let permitted: Vec<&RouteCandidate> = admitted
         .iter()
@@ -118,9 +118,9 @@ pub fn admit<'a>(
     if permitted.is_empty() {
         let askable = admitted.iter().any(|c| c.permission == Permit::Askable);
         return Err(if askable {
-            InferRefusal::NeedsGrant
+            InferRefusedError::NeedsGrant
         } else {
-            InferRefusal::Denied
+            InferRefusedError::Denied
         });
     }
     let affordable: Vec<&RouteCandidate> = permitted
@@ -128,7 +128,7 @@ pub fn admit<'a>(
         .filter(|c| c.spend != SpendVerdict::Stop)
         .collect();
     if affordable.is_empty() {
-        Err(InferRefusal::OverBudget)
+        Err(InferRefusedError::OverBudget)
     } else {
         Ok(affordable)
     }
@@ -138,17 +138,17 @@ pub fn admit<'a>(
 ///
 /// # Errors
 ///
-/// [`InferRefusal`] when no candidate is admitted.
+/// [`InferRefusedError`] when no candidate is admitted.
 pub fn route(
     ask: RouteAsk,
     candidates: &[RouteCandidate],
     policy: &Policy,
-) -> Result<Chosen, InferRefusal> {
+) -> Result<Chosen, InferRefusedError> {
     admit(ask, candidates, policy)?
         .into_iter()
         .min_by_key(|c| (closeness(&c.locality), c.tier, billing_rank(&c.billing)))
         .map(chosen_of)
-        .ok_or(InferRefusal::Unavailable)
+        .ok_or(InferRefusedError::Unavailable)
 }
 
 /// What a candidate becomes when it is the answer.

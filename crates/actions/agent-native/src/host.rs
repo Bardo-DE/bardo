@@ -11,7 +11,7 @@ use action_vocab::{Clock, Origin};
 use action_wire::SessionOpen;
 use agent_planner::Planner;
 use agent_session::{
-    BackendEvent, BackendFault, EndCause, HostFault, NoDesk, Opening, ResumePlan, Seq,
+    AgentHostError, BackendError, BackendEvent, EndCause, NoDesk, Opening, ResumePlan, Seq,
     SessionBackend, SessionExport, SessionHost, SessionLog, SheetChoice, SheetDesk, Standing,
     StartSession, child_names, export, fork, forks_of, read_all, resume_plan,
 };
@@ -106,19 +106,19 @@ where
     fn backend(
         &mut self,
         session: &SessionId,
-    ) -> Result<&mut NativeBackend<P, I, K, S>, HostFault> {
+    ) -> Result<&mut NativeBackend<P, I, K, S>, AgentHostError> {
         self.backends
             .get_mut(session)
-            .ok_or(HostFault::NoSuchSession)
+            .ok_or(AgentHostError::NoSuchSession)
     }
 
     /// The next thing a session shows: a sheet its desk was handed, or the backend's next event.
     /// Cancel-safe: the two futures lose nothing when dropped.
-    async fn pull(&mut self, session: &SessionId) -> Result<Pulled, HostFault> {
+    async fn pull(&mut self, session: &SessionId) -> Result<Pulled, AgentHostError> {
         let backend = self
             .backends
             .get_mut(session)
-            .ok_or(HostFault::NoSuchSession)?;
+            .ok_or(AgentHostError::NoSuchSession)?;
         let sheet = Box::pin(self.desk.next_sheet(session));
         let event = Box::pin(backend.next_event());
         Ok(match select(sheet, event).await {
@@ -156,7 +156,7 @@ where
     L: SessionLog,
     D: SheetDesk,
 {
-    async fn open(&mut self, opening: Opening) -> Result<SessionId, HostFault> {
+    async fn open(&mut self, opening: Opening) -> Result<SessionId, AgentHostError> {
         let opened = {
             let mut core = self.core.lock().await;
             core.open(SessionOpen {
@@ -172,7 +172,7 @@ where
             .await
             .map_err(|error| {
                 tracing::warn!(%error, "the companion did not open the session");
-                BackendFault::Unavailable
+                BackendError::Unavailable
             })?
         };
         let mut backend = self.fresh(&opened.session);
@@ -186,7 +186,7 @@ where
         Ok(opened.session)
     }
 
-    async fn resume(&mut self, session: &SessionId) -> Result<ResumePlan, HostFault> {
+    async fn resume(&mut self, session: &SessionId) -> Result<ResumePlan, AgentHostError> {
         let rows = read_all(&self.log, session).await?;
         let plan = resume_plan(&rows)?;
         let mut backend = self
@@ -206,9 +206,9 @@ where
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn turn(&mut self, session: &SessionId, turn: UserTurn) -> Result<(), HostFault> {
+    async fn turn(&mut self, session: &SessionId, turn: UserTurn) -> Result<(), AgentHostError> {
         if self.over.contains(session) {
-            return Err(HostFault::NotOpen);
+            return Err(AgentHostError::NotOpen);
         }
         self.backend(session)?;
         // The router records what the person said, and numbers it, inside the turn's flight.
@@ -228,7 +228,10 @@ where
     /// itself, once; one that has not arrived is awaited together with the backend's next event,
     /// and if that comes first the sheet went elsewhere (the desktop) and stays text. All state
     /// between pulls is in fields (`awaited`, `later`), so a dropped pull loses nothing.
-    async fn next_event(&mut self, session: &SessionId) -> Result<Option<BackendEvent>, HostFault> {
+    async fn next_event(
+        &mut self,
+        session: &SessionId,
+    ) -> Result<Option<BackendEvent>, AgentHostError> {
         loop {
             let pulled = match self.later.remove(session) {
                 Some(event) => Pulled::Event(event),
@@ -274,32 +277,33 @@ where
         session: &SessionId,
         id: &ConfirmId,
         choice: SheetChoice,
-    ) -> Result<(), HostFault> {
+    ) -> Result<(), AgentHostError> {
         self.backend(session)?;
         Ok(self.desk.answer(id, choice)?)
     }
 
-    async fn cancel(&mut self, session: &SessionId) -> Result<(), HostFault> {
+    async fn cancel(&mut self, session: &SessionId) -> Result<(), AgentHostError> {
         self.backend(session)?.cancel().await;
         Ok(())
     }
 
-    async fn close(&mut self, session: &SessionId, _cause: EndCause) -> Result<(), HostFault> {
+    async fn close(&mut self, session: &SessionId, _cause: EndCause) -> Result<(), AgentHostError> {
         self.backend(session)?.close().await;
         self.over.insert(session.clone());
         let mut core = self.core.lock().await;
         core.close(session.clone()).await.map_err(|error| {
             tracing::warn!(%error, "the companion did not close the session");
-            BackendFault::Unavailable
+            BackendError::Unavailable
         })?;
         Ok(())
     }
 
-    async fn fork(&mut self, session: &SessionId, at: Seq) -> Result<SessionId, HostFault> {
+    async fn fork(&mut self, session: &SessionId, at: Seq) -> Result<SessionId, AgentHostError> {
         let rows = read_all(&self.log, session).await?;
         let parent = resume_plan(&rows)?.opening.task;
         let taken = forks_of(session, &self.log.sessions().await?);
-        let (child, task) = child_names(session, &parent, taken).ok_or(HostFault::NoSuchSession)?;
+        let (child, task) =
+            child_names(session, &parent, taken).ok_or(AgentHostError::NoSuchSession)?;
         let entries = fork(session, &rows, at, task)?;
         for (n, entry) in entries.iter().enumerate() {
             self.log.append(&child, Seq(n as u64), entry).await?;
@@ -310,7 +314,7 @@ where
     fn export(
         &self,
         session: &SessionId,
-    ) -> impl Future<Output = Result<SessionExport, HostFault>> + Send {
+    ) -> impl Future<Output = Result<SessionExport, AgentHostError>> + Send {
         // Borrows the log alone: a host with a turn in flight is not `Sync`.
         let log = &self.log;
         async move {

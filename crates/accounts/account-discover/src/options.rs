@@ -122,7 +122,7 @@ fn an_oauth_only_document_is_a_miss_by_default_and_a_finding_when_offered() {
     let xml = with_issuer(&oauth_both("example.test"), "accounts.example.test");
     assert_eq!(
         parse_autoconfig(&xml, ADDRESS),
-        Err(DiscoverFault::NoServers),
+        Err(DiscoverError::NoServers),
         "unchanged"
     );
     let found = parse_autoconfig_with(&xml, ADDRESS, &offer_oauth()).expect("found");
@@ -151,7 +151,7 @@ fn pop3_is_listed_never_plain_implicit_first_and_only_on_request() {
     let xml = pop3_and_smtp();
     assert_eq!(
         parse_autoconfig(&xml, ADDRESS),
-        Err(DiscoverFault::NoServers),
+        Err(DiscoverError::NoServers),
         "a POP3-only document is a miss by default"
     );
     let found = parse_autoconfig_with(&xml, ADDRESS, &report()).expect("found");
@@ -198,7 +198,7 @@ fn pop3_without_an_smtp_server_is_still_a_miss() {
     let xml = doc(&server("pop3", "pop.example.test", 995, "SSL", "", &[]));
     assert_eq!(
         parse_autoconfig_with(&xml, ADDRESS, &report()),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
 }
 
@@ -215,7 +215,7 @@ fn starttls_only_is_a_miss_under_try_next_and_a_finding_otherwise() {
     };
     assert_eq!(
         parse_autoconfig_with(&xml, ADDRESS, &try_next),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
     let accepted = parse_autoconfig_with(&xml, ADDRESS, &SearchOptions::default()).expect("found");
     assert_eq!(accepted.endpoints[0].tls, Tls::StartTls);
@@ -228,7 +228,7 @@ fn starttls_only_is_a_miss_under_try_next_and_a_finding_otherwise() {
     .concat());
     assert_eq!(
         parse_autoconfig_with(&half, ADDRESS, &try_next),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
 }
 

@@ -461,7 +461,7 @@ pub fn status_of(text: &str) -> speech_wire::VoiceStatus {
 }
 
 /// The refusal a failed call carries.
-pub fn refusal(error: zbus::Error) -> speech_wire::VoiceRefusal {
+pub fn refusal(error: zbus::Error) -> speech_wire::VoiceError {
     match error {
         zbus::Error::MethodError(name, _, _) => speech_daemon::refusal_of_name(name.as_str())
             .unwrap_or_else(|| panic!("not a refusal: {name}")),

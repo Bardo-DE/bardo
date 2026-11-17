@@ -1,8 +1,8 @@
 //! `agents.toml`: what is accepted, and what is refused outright.
 
-use agent_launch::{AgentsFile, ConfigFault, Route};
+use agent_launch::{AgentsFile, ConfigError, Route};
 use sandbox::NetworkMode;
-use sandbox::egress::{Host, HostFault, Refusal};
+use sandbox::egress::{EgressHostError, EgressRefusedError, Host};
 
 use super::support::{HANDOFF, LOGIN};
 
@@ -31,7 +31,7 @@ impl Program for str {
     }
 }
 
-fn refused(text: &str) -> ConfigFault {
+fn refused(text: &str) -> ConfigError {
     AgentsFile::parse(text).expect_err(text)
 }
 
@@ -40,12 +40,12 @@ fn entry(extra: &str) -> String {
 }
 
 /// What kind of refusal a fault is, as the table below names it.
-fn kind_of(fault: &ConfigFault) -> &'static str {
+fn kind_of(fault: &ConfigError) -> &'static str {
     match fault {
-        ConfigFault::Entry { .. } => "entry",
-        ConfigFault::Syntax(why) if why.contains("delivery") => "delivery",
-        ConfigFault::Syntax(_) => "syntax",
-        ConfigFault::Twice(_) => "twice",
+        ConfigError::Entry { .. } => "entry",
+        ConfigError::Syntax(why) if why.contains("delivery") => "delivery",
+        ConfigError::Syntax(_) => "syntax",
+        ConfigError::Twice(_) => "twice",
         _ => "other",
     }
 }
@@ -168,7 +168,7 @@ fn a_file_that_does_not_make_sense_is_refused_whole() {
         .chain(methods.iter().map(|v| plain(&format!("sign_in = {v}"))));
     for text in odd {
         match AgentsFile::parse(&text) {
-            Err(ConfigFault::Entry { program, .. }) => assert_eq!(program, "plain", "{text}"),
+            Err(ConfigError::Entry { program, .. }) => assert_eq!(program, "plain", "{text}"),
             other => panic!("{text}: {other:?}"),
         }
     }
@@ -352,7 +352,7 @@ fn a_registry_agent_that_is_not_installed_or_not_pinned_is_refused() {
     let tmp = tempfile::tempdir().expect("tmp");
     let dir = agent_registry::dirs::AgentsDir::at(tmp.path());
     let fault = AgentsFile::parse_in(REGISTRY_ENTRY, Some(&dir)).expect_err("not installed");
-    assert!(matches!(fault, ConfigFault::Registry { .. }));
+    assert!(matches!(fault, ConfigError::Registry { .. }));
     let unpinned = REGISTRY_ENTRY.replace("version = \"1.3.0\"\n", "");
     AgentsFile::parse_in(&unpinned, Some(&dir)).unwrap_err();
     // Without the agents directory a registry entry cannot be placed at all.
@@ -384,7 +384,7 @@ fn checkpoints_say_who_keeps_the_history_and_the_claude_code_profile_defaults_to
         assert_eq!(entry.rewind, want, "{name}");
     }
     let odd = "[[agent]]\nprogram = \"plain\"\ncommand = \"/usr/bin/true\"\nroute = \"login\"\ncheckpoints = \"git\"\n";
-    assert!(matches!(refused(odd), ConfigFault::Syntax(_)));
+    assert!(matches!(refused(odd), ConfigError::Syntax(_)));
 }
 
 #[test]
@@ -475,8 +475,8 @@ fn a_command_line_a_terminal_saw_is_the_app_and_conversation_it_picks_up() {
 
 const ALLOWLIST_LOGIN: &str = "route = \"login\"\nnetwork = \"allowlist\"\n";
 
-fn site(list: &'static str, text: &str, why: HostFault) -> ConfigFault {
-    ConfigFault::Site {
+fn site(list: &'static str, text: &str, why: EgressHostError) -> ConfigError {
+    ConfigError::Site {
         program: "x".to_owned(),
         list,
         entry: text.to_owned(),
@@ -505,15 +505,15 @@ fn an_allowlist_entry_reads_its_lists_and_ports() {
     assert_eq!(policy.check(&host("a.example.org"), 443), Ok(()));
     assert_eq!(
         policy.check(&host("api.example.com"), 22),
-        Err(Refusal::Port)
+        Err(EgressRefusedError::Port)
     );
     assert_eq!(
         policy.check(&host("bad.example.org"), 443),
-        Err(Refusal::Denied)
+        Err(EgressRefusedError::Denied)
     );
     assert_eq!(
         policy.check(&host("other.example.net"), 443),
-        Err(Refusal::NotListed)
+        Err(EgressRefusedError::NotListed)
     );
     // Only an allowlist entry has a reach; the other modes have none.
     let plain = AgentsFile::parse(LOGIN).expect("login");
@@ -531,19 +531,19 @@ fn a_bad_site_names_the_program_and_the_entry() {
     let with = |lists: &str| entry(&format!("{ALLOWLIST_LOGIN}{lists}"));
     assert_eq!(
         refused(&with("allow = [\"bad host\"]")),
-        site("allow", "bad host", HostFault::Whitespace)
+        site("allow", "bad host", EgressHostError::Whitespace)
     );
     assert_eq!(
         refused(&with("allow = [\"a.example.com\"]\ndeny = [\"*\"]")),
-        site("deny", "*", HostFault::BareStar)
+        site("deny", "*", EgressHostError::BareStar)
     );
     assert_eq!(
         refused(&with("allow = [\"a*.example.com\"]")),
-        site("allow", "a*.example.com", HostFault::StarNotLeading)
+        site("allow", "a*.example.com", EgressHostError::StarNotLeading)
     );
     assert_eq!(
         refused(&with("allow = [\"127.1\"]")),
-        site("allow", "127.1", HostFault::Numeric)
+        site("allow", "127.1", EgressHostError::Numeric)
     );
 }
 
@@ -552,25 +552,25 @@ fn an_allowlist_without_an_allow_entry_or_with_a_bad_port_or_in_the_wrong_place_
     // Nothing allowed reaches nothing: a mistake, not a closed network.
     assert!(matches!(
         refused(&entry(ALLOWLIST_LOGIN)),
-        ConfigFault::Entry { .. }
+        ConfigError::Entry { .. }
     ));
     assert!(matches!(
         refused(&entry(&format!(
             "{ALLOWLIST_LOGIN}allow = []\ndeny = [\"a.example.com\"]"
         ))),
-        ConfigFault::Entry { .. }
+        ConfigError::Entry { .. }
     ));
     assert!(matches!(
         refused(&entry(&format!(
             "{ALLOWLIST_LOGIN}allow = [\"a.example.com\"]\nports = [0]"
         ))),
-        ConfigFault::Entry { .. }
+        ConfigError::Entry { .. }
     ));
     assert!(matches!(
         refused(&entry(&format!(
             "{ALLOWLIST_LOGIN}allow = [\"a.example.com\"]\nports = [70000]"
         ))),
-        ConfigFault::Syntax(_)
+        ConfigError::Syntax(_)
     ));
     // The lists belong to the allowlist network and no other.
     for network in ["none", "host"] {
@@ -579,7 +579,7 @@ fn an_allowlist_without_an_allow_entry_or_with_a_bad_port_or_in_the_wrong_place_
                 refused(&entry(&format!(
                     "route = \"login\"\nnetwork = \"{network}\"\nallow = [\"a.example.com\"]"
                 ))),
-                ConfigFault::Entry { .. }
+                ConfigError::Entry { .. }
             ),
             "{network}"
         );
@@ -589,14 +589,14 @@ fn an_allowlist_without_an_allow_entry_or_with_a_bad_port_or_in_the_wrong_place_
         refused(&entry(
             "route = \"endpoint\"\nnetwork = \"allowlist\"\nallow = [\"a.example.com\"]\nkey_env = \"K\"\nbase_url_env = \"B\"\n[agent.endpoint]\nkind = \"account\"\nid = \"a\""
         )),
-        ConfigFault::Entry { .. }
+        ConfigError::Entry { .. }
     ));
     // An unknown key is still refused.
     assert!(matches!(
         refused(&entry(&format!(
             "{ALLOWLIST_LOGIN}allow = [\"a.example.com\"]\nallowed = [\"b.example.com\"]"
         ))),
-        ConfigFault::Syntax(_)
+        ConfigError::Syntax(_)
     ));
 }
 

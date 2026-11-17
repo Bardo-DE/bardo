@@ -13,7 +13,7 @@ use super::env::OAuthEnv;
 use super::issuer::BrowserIssuer;
 use account_capability::{CapabilityKind, StorageScope};
 use account_core::{AccountId, Audience, Credential, IssuedToken, TokenKind};
-use account_oauth::{ExchangeFault, endpoints_of, is_due, refresh_scoped_detailed};
+use account_oauth::{ExchangeCauseError, endpoints_of, is_due, refresh_scoped_detailed};
 use account_provider::{Presented, ProviderError, ProviderSession, ProviderSpec};
 use base_time::UnixSeconds;
 use http_core::Http;
@@ -162,15 +162,15 @@ impl<R: BrowserIssuer, H: Http + 'static> OAuthSession<R, H> {
         .map_err(|failure| match failure.fault {
             // `invalid_scope`, `AADSTS65001`: the grant is good, the scope was never given.
             _ if failure.wants_consent() => ProviderError::NeedsConsent,
-            ExchangeFault::Refused => {
+            ExchangeCauseError::Refused => {
                 let testing = clients
                     .traits(self.rules.issuer(), self.env.channel)
                     .testing;
                 self.rules.refused(&mut self.state().extra, testing, now);
                 ProviderError::Unauthorized
             }
-            ExchangeFault::Unreachable => ProviderError::Unreachable,
-            ExchangeFault::Unreadable => ProviderError::Unreadable,
+            ExchangeCauseError::Unreachable => ProviderError::Unreachable,
+            ExchangeCauseError::Unreadable => ProviderError::Unreadable,
         })?;
         let issued = IssuedToken::new(
             TokenKind::Bearer,

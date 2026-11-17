@@ -145,22 +145,22 @@ async fn every_way_a_turn_can_end_is_sorted_for_the_run_machine() {
         ),
         (
             "no model",
-            refused(InferRefusal::Unavailable),
+            refused(InferRefusedError::Unavailable),
             ComputerUseModelError::Transient,
         ),
         (
             "no model sees the screen",
-            refused(InferRefusal::NoModelSeesScreen),
+            refused(InferRefusedError::NoModelSeesScreen),
             ComputerUseModelError::CannotSeeScreen,
         ),
         (
             "no grant",
-            refused(InferRefusal::NeedsGrant),
+            refused(InferRefusedError::NeedsGrant),
             ComputerUseModelError::Fatal,
         ),
         (
             "over budget",
-            refused(InferRefusal::OverBudget),
+            refused(InferRefusedError::OverBudget),
             ComputerUseModelError::Fatal,
         ),
         (
@@ -284,7 +284,7 @@ async fn faults_before_and_around_the_session() {
     );
     // A refused begin says why it ended.
     let (transport, _) = Scripted::new(vec![vec![InferEvent::Finished(InferReply::Refused(
-        InferRefusal::RequiresCloud(DataClass::Screen),
+        InferRefusedError::RequiresCloud(DataClass::Screen),
     ))]]);
     assert_eq!(
         InferdComputerUseModel::over(transport).begin(begin()).await,

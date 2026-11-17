@@ -1,6 +1,6 @@
 //! Why an attached engine cannot answer now: the one thing that is wrong, typed.
 
-use super::key::KeyFileProblem;
+use super::key::KeyFileError;
 use std::path::PathBuf;
 
 /// Why an attached engine cannot answer now.
@@ -24,7 +24,7 @@ pub enum NotReady {
         served: Vec<String>,
     },
     /// The key file was refused, so no request was sent.
-    KeyFile(KeyFileProblem),
+    KeyFile(KeyFileError),
     /// It answered, but not with a model list, or not in time.
     Unanswered,
 }

@@ -9,5 +9,5 @@ mod serve;
 mod shots;
 mod windows;
 
-pub use provider::{ManifestFault, manifest};
+pub use provider::{ManifestLoadError, manifest};
 pub(crate) use run::{Reach, run};

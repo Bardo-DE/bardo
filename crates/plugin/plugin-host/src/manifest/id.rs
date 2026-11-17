@@ -8,7 +8,7 @@ pub struct PluginId(String);
 /// Text that is not a plugin id.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("not a plugin id: {id:?}")]
-pub struct InvalidId {
+pub struct InvalidIdError {
     /// The text as written.
     pub id: String,
 }
@@ -18,8 +18,8 @@ impl PluginId {
     ///
     /// # Errors
     ///
-    /// Returns [`InvalidId`] when the text is not a plugin id.
-    pub fn parse(text: &str) -> Result<PluginId, InvalidId> {
+    /// Returns [`InvalidIdError`] when the text is not a plugin id.
+    pub fn parse(text: &str) -> Result<PluginId, InvalidIdError> {
         let fits = !text.is_empty()
             && text.len() <= 64
             && text
@@ -28,7 +28,7 @@ impl PluginId {
         if fits {
             Ok(PluginId(text.to_owned()))
         } else {
-            Err(InvalidId {
+            Err(InvalidIdError {
                 id: text.to_owned(),
             })
         }
@@ -40,8 +40,8 @@ impl PluginId {
     ///
     /// # Errors
     ///
-    /// Returns [`InvalidId`] when the text is not a plugin id.
-    pub fn parse_dotted(text: &str) -> Result<PluginId, InvalidId> {
+    /// Returns [`InvalidIdError`] when the text is not a plugin id.
+    pub fn parse_dotted(text: &str) -> Result<PluginId, InvalidIdError> {
         let word = |word: &str| {
             !word.is_empty()
                 && word
@@ -51,7 +51,7 @@ impl PluginId {
         if text.len() <= 128 && text.split('.').all(word) {
             Ok(PluginId(text.to_owned()))
         } else {
-            Err(InvalidId {
+            Err(InvalidIdError {
                 id: text.to_owned(),
             })
         }

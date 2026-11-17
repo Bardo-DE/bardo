@@ -5,7 +5,7 @@
 use std::collections::BTreeMap;
 
 use account_core::SpaceId;
-use desktop_client::capture::CaptureFailure;
+use desktop_client::capture::CaptureError;
 use desktop_client::{
     CaptureId, Desktop, DesktopCommand as Wire, DesktopEvent, Frame, SurfaceKey, Ticket,
 };
@@ -17,7 +17,7 @@ use super::notes::note_of;
 use super::pictures::{picture_of, shot_of};
 use super::surfaces::ShellSurfaces;
 use super::view::bardo_view;
-use crate::desktop_wl::Refusal;
+use crate::desktop_wl::CommandError;
 
 /// Where the shell protocol's notes go: whatever draws or acts on them.
 pub trait NoteSink {
@@ -37,7 +37,7 @@ impl NoteSink for Vec<ShellNote> {
 pub enum ArmError<E: std::error::Error + 'static> {
     /// The command names something the desktop does not have, or the arm cannot say.
     #[error("{0}")]
-    Refused(#[from] Refusal),
+    Refused(#[from] CommandError),
     /// The client refused to send it.
     #[error("{0}")]
     Send(#[source] E),
@@ -144,7 +144,7 @@ impl<D: Desktop, S: NoteSink> BardoArm<D, S> {
     /// still going.
     pub fn pictures(
         &mut self,
-        mut take: impl FnMut(&mut D, CaptureId) -> Option<Result<Frame, CaptureFailure>>,
+        mut take: impl FnMut(&mut D, CaptureId) -> Option<Result<Frame, CaptureError>>,
     ) {
         let ids: Vec<CaptureId> = self.pending.keys().copied().collect();
         for id in ids {

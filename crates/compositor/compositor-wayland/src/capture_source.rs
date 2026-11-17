@@ -18,8 +18,8 @@
 //! part adds smithay's state and the objects whose drop is a protocol event (a session's
 //! `stopped`, a held frame's `failed`).
 
-use crate::image_capture::CaptureFailure;
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::image_capture::CaptureError;
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::geometry::{LogicalSize, PhysicalSize, buffer_size};
 use compositor_core::policy::GlobalKind;
 use compositor_core::time::Mono;
@@ -251,16 +251,16 @@ pub fn on_source_destroyed(book: &mut ToplevelCaptureBook, source: ToplevelSourc
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn on_session(
     book: &mut ToplevelCaptureBook,
     source: ToplevelSourceId,
-) -> Result<ToplevelSessionId, WaylandFault> {
+) -> Result<ToplevelSessionId, WaylandError> {
     let window = book
         .sources
         .get(&source)
         .copied()
-        .ok_or(WaylandFault::UnknownCapture(source.0))?;
+        .ok_or(WaylandError::UnknownCapture(source.0))?;
     let id = ToplevelSessionId(book.mint());
     book.sessions.insert(id, window);
     Ok(id)
@@ -271,18 +271,18 @@ pub fn on_session(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn on_frame_request(
     book: &mut ToplevelCaptureBook,
     session: ToplevelSessionId,
     buffer: PhysicalSize,
     content: ContentStamp,
-) -> Result<FrameVerdict, WaylandFault> {
+) -> Result<FrameVerdict, WaylandError> {
     let window = book
         .sessions
         .get(&session)
         .copied()
-        .ok_or(WaylandFault::UnknownCapture(session.0))?;
+        .ok_or(WaylandError::UnknownCapture(session.0))?;
     let seen = book.delivered.get(&session).map(|(stamp, _)| *stamp);
     if seen == Some(content) {
         book.waiting.insert(session, buffer);
@@ -342,15 +342,15 @@ pub fn apply_content(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_ready(
     book: &mut ToplevelCaptureBook,
     session: ToplevelSessionId,
     content: ContentStamp,
     at: Mono,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     if !book.sessions.contains_key(&session) {
-        return Err(WaylandFault::UnknownCapture(session.0));
+        return Err(WaylandError::UnknownCapture(session.0));
     }
     book.waiting.remove(&session);
     book.delivered.insert(session, (content, at));
@@ -361,17 +361,17 @@ pub fn apply_ready(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_failed(
     book: &mut ToplevelCaptureBook,
     session: ToplevelSessionId,
-    why: CaptureFailure,
-) -> Result<(), WaylandFault> {
+    why: CaptureError,
+) -> Result<(), WaylandError> {
     if !book.sessions.contains_key(&session) {
-        return Err(WaylandFault::UnknownCapture(session.0));
+        return Err(WaylandError::UnknownCapture(session.0));
     }
     book.waiting.remove(&session);
-    if why == CaptureFailure::OutputGone {
+    if why == CaptureError::OutputGone {
         book.drop_session(session);
     }
     Ok(())

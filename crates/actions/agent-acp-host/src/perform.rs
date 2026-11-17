@@ -3,7 +3,7 @@
 //! agent reported, take a write back. Each checks that the call it was handed names exactly what
 //! the held request was formed for.
 
-use super::files::FileFault;
+use super::files::FileError;
 use super::files::Files;
 use super::performer::{Held, Performer, Scope, UNDO_KEEP, UndoNote};
 use account_core::DataClass;
@@ -52,7 +52,7 @@ fn lines_of(content: &str, from: Option<u32>, limit: Option<u32>) -> String {
         .collect()
 }
 
-fn file_failed(fault: FileFault) -> AppRefusal {
+fn file_failed(fault: FileError) -> AppRefusal {
     failed(&format!("the file call failed: {fault}"))
 }
 

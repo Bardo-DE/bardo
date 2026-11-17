@@ -1,22 +1,22 @@
 //! The fixed words of a repair prompt and of the prompted mode. A fault names a field and a kind,
 //! never the model's output, which may hold untrusted text.
 
-use model_provider::{ShapeFault, ShapeKind};
+use model_provider::{ShapeError, ShapeKind};
 
 /// The user turn that asks for a corrected reply.
-pub(crate) fn repair_text(fault: &ShapeFault) -> String {
+pub(crate) fn repair_text(fault: &ShapeError) -> String {
     let what = match fault {
-        ShapeFault::NotJson => "the reply was not a single valid JSON value".to_owned(),
-        ShapeFault::NotRepresentable => "the reply has no form in the requested format".to_owned(),
-        ShapeFault::Mismatch { at, want } => {
+        ShapeError::NotJson => "the reply was not a single valid JSON value".to_owned(),
+        ShapeError::NotRepresentable => "the reply has no form in the requested format".to_owned(),
+        ShapeError::Mismatch { at, want } => {
             format!(
                 "the value at `{}` must be {}",
                 at.as_str(),
                 kind_words(*want)
             )
         }
-        ShapeFault::Missing { field } => format!("the field `{}` is missing", field.as_str()),
-        ShapeFault::Unknown { field } => {
+        ShapeError::Missing { field } => format!("the field `{}` is missing", field.as_str()),
+        ShapeError::Unknown { field } => {
             format!("`{}` holds a field that is not allowed", field.as_str())
         }
     };

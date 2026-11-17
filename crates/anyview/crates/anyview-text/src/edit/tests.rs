@@ -1,4 +1,4 @@
-use super::{EditRefusal, EditText, Motion, Selection, Session};
+use super::{EditError, EditText, Motion, Selection, Session};
 use crate::find::Needle;
 use anyview_core::LineIndex;
 
@@ -484,7 +484,7 @@ fn a_file_is_taken_for_editing_only_when_saving_it_back_changes_nothing_else() {
     type Case = (
         &'static str,
         &'static [u8],
-        Result<&'static [u8], EditRefusal>,
+        Result<&'static [u8], EditError>,
     );
     const CASES: &[Case] = &[
         ("ascii", b"hello\n", Ok(b"hello\n")),
@@ -499,9 +499,9 @@ fn a_file_is_taken_for_editing_only_when_saving_it_back_changes_nothing_else() {
         (
             "UTF-16 is refused",
             b"\xFF\xFEh\0i\0",
-            Err(EditRefusal::NotUtf8),
+            Err(EditError::NotUtf8),
         ),
-        ("Latin-1 is refused", b"caf\xE9", Err(EditRefusal::NotUtf8)),
+        ("Latin-1 is refused", b"caf\xE9", Err(EditError::NotUtf8)),
     ];
     for (name, bytes, want) in CASES {
         let got = EditText::from_bytes(bytes.to_vec()).map(|text| Session::open(text).file_bytes());
@@ -511,7 +511,7 @@ fn a_file_is_taken_for_editing_only_when_saving_it_back_changes_nothing_else() {
     assert!(
         matches!(
             EditText::from_bytes(b"\xEF\xBB\xBFa\xFFb".to_vec()),
-            Err(EditRefusal::InvalidUtf8(_))
+            Err(EditError::InvalidUtf8(_))
         ),
         "bad bytes after a mark are refused, with where they are"
     );
@@ -533,12 +533,12 @@ fn a_file_is_read_whole_or_refused_with_the_reason() {
     let text = EditText::read(&path).unwrap();
     assert_eq!(Session::open(text).buffer().text(), "hé\n");
     std::fs::write(&path, b"caf\xE9").unwrap();
-    assert_eq!(EditText::read(&path), Err(EditRefusal::NotUtf8));
+    assert_eq!(EditText::read(&path), Err(EditError::NotUtf8));
     assert_eq!(
         EditText::read(&dir.path().join("gone.txt")),
-        Err(EditRefusal::Unreadable(std::io::ErrorKind::NotFound))
+        Err(EditError::Unreadable(std::io::ErrorKind::NotFound))
     );
     let big = vec![b'a'; usize::try_from(super::EDIT_BYTES).unwrap() + 1];
     std::fs::write(&path, big).unwrap();
-    assert_eq!(EditText::read(&path), Err(EditRefusal::TooLarge));
+    assert_eq!(EditText::read(&path), Err(EditError::TooLarge));
 }

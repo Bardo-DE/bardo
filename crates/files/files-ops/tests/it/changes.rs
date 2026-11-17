@@ -3,7 +3,7 @@
 use std::fs;
 use std::os::unix::fs::symlink;
 
-use files_core::{OpFailure, OpPlan};
+use files_core::{OpError, OpPlan};
 use files_ops::Finish;
 
 use super::support::{Script, is_link, name, rig};
@@ -126,7 +126,7 @@ fn a_folder_cannot_be_put_inside_itself() {
         inside,
     ));
     let ran = rig.exec.run(&plan, &mut Script::default());
-    assert_eq!(ran.finish, Finish::Failed(OpFailure::IntoItself));
+    assert_eq!(ran.finish, Finish::Failed(OpError::IntoItself));
     assert!(rig.exists("home/tree/leaf"));
 }
 
@@ -144,7 +144,7 @@ fn a_new_folder_is_made_and_a_taken_name_is_refused() {
     assert!(rig.path("home/untitled folder").is_dir());
     assert_eq!(
         rig.exec.run(&plan, &mut Script::default()).finish,
-        Finish::Failed(OpFailure::Taken)
+        Finish::Failed(OpError::Taken)
     );
 }
 
@@ -158,7 +158,7 @@ fn a_rename_never_replaces() {
         to: name(to),
     };
     let taken = rig.exec.run(&rename("b.txt"), &mut Script::default());
-    assert_eq!(taken.finish, Finish::Failed(OpFailure::Taken));
+    assert_eq!(taken.finish, Finish::Failed(OpError::Taken));
     assert_eq!(rig.read("home/b.txt"), "b");
 
     let free = rig.exec.run(&rename("c.txt"), &mut Script::default());
@@ -175,7 +175,7 @@ fn a_missing_source_fails_as_not_found_and_stops_there() {
     sources.push(rig.item("home/a.txt"));
     let plan = OpPlan::Copy(files_core::Transfer::new(sources, rig.folder("dest")));
     let ran = rig.exec.run(&plan, &mut Script::default());
-    assert_eq!(ran.finish, Finish::Failed(OpFailure::NotFound));
+    assert_eq!(ran.finish, Finish::Failed(OpError::NotFound));
     assert!(rig.exists("dest/a.txt"), "the first item was done");
     assert!(ran.is_undoable(), "and can be taken back");
 }

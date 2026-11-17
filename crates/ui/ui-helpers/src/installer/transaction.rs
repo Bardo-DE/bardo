@@ -7,7 +7,7 @@
 //! `Package` or a `Finished`. A `PackageKit` that vanishes mid-transaction ends the wait at once,
 //! and one that goes quiet is asked to cancel.
 
-use base_time::deadline::{Deadline, NotAnswering, within};
+use base_time::deadline::{Deadline, NotAnsweringError, within};
 use std::future::poll_fn;
 use std::pin::Pin;
 use std::task::Poll;
@@ -35,11 +35,11 @@ pub(super) struct Report {
 
 /// Why a transaction did not finish.
 #[derive(Debug, thiserror::Error)]
-pub(super) enum Fault {
+pub(super) enum TransactionError {
     #[error(transparent)]
     Bus(#[from] zbus::Error),
     #[error(transparent)]
-    Silent(#[from] NotAnswering),
+    Silent(#[from] NotAnsweringError),
     #[error("The installer stopped before it finished.")]
     Gone,
 }
@@ -62,7 +62,7 @@ pub(super) enum Step {
 async fn call<T>(
     deadline: Deadline,
     work: impl Future<Output = zbus::Result<T>>,
-) -> Result<T, Fault> {
+) -> Result<T, TransactionError> {
     Ok(within(deadline, PEER, work).await??)
 }
 
@@ -71,7 +71,7 @@ pub(super) async fn transact<B>(
     method: &str,
     body: &B,
     budget: Budget,
-) -> Result<Report, Fault>
+) -> Result<Report, TransactionError>
 where
     B: serde::Serialize + zbus::zvariant::DynamicType,
 {
@@ -91,7 +91,7 @@ where
         .header()
         .sender()
         .map(UniqueName::to_owned)
-        .ok_or(Fault::Gone)?;
+        .ok_or(TransactionError::Gone)?;
     let rule = MatchRule::builder()
         .msg_type(Type::Signal)
         .sender(owner.clone())?
@@ -186,11 +186,11 @@ async fn read_until_finished(
     signals: &mut MessageStream,
     gone: &mut MessageStream,
     owner: &UniqueName<'_>,
-) -> Result<Report, Fault> {
+) -> Result<Report, TransactionError> {
     let mut report = Report::default();
     loop {
         let message = match next_event(signals, gone).await {
-            Event::Gone => return Err(Fault::Gone),
+            Event::Gone => return Err(TransactionError::Gone),
             Event::Signal(None) => {
                 return Err(zbus::Error::Failure("the bus closed".to_owned()).into());
             }

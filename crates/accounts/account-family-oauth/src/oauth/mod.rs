@@ -28,7 +28,7 @@ pub(crate) use identity::{failure, get, userinfo_address};
 use account_capability::Claim;
 use account_core::{Account, AccountId, Credential, SecretText};
 use account_family_kit::Conversation;
-use account_oauth::{ExchangeFault, endpoints_of, revoke};
+use account_oauth::{ExchangeCauseError, endpoints_of, revoke};
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignInStart,
 };
@@ -189,8 +189,8 @@ impl<R: BrowserIssuer, H: Http + 'static> Provider for OAuthProvider<R, H> {
             return Ok(RevokeOutcome::Unsupported);
         };
         match revoke(&*self.env.http, &endpoints_of(client), refresh).await {
-            Ok(()) | Err(ExchangeFault::Refused) => Ok(RevokeOutcome::Revoked),
-            Err(ExchangeFault::Unreachable) => Err(ProviderError::Unreachable),
+            Ok(()) | Err(ExchangeCauseError::Refused) => Ok(RevokeOutcome::Revoked),
+            Err(ExchangeCauseError::Unreachable) => Err(ProviderError::Unreachable),
             // unreadable, and a fault a later account-oauth adds
             Err(_) => Ok(RevokeOutcome::Unsupported),
         }

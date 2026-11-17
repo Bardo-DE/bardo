@@ -6,8 +6,8 @@ use crate::deadline::within;
 use crate::router::Router;
 use crate::seams::Seams;
 use action_checkpoint::{
-    CheckpointStore, Decision, DropAsk, Saved, StoreFault, TakeAsk, WorkRoot, decide, next_id,
-    retention,
+    CheckpointStore, CheckpointStoreError, Decision, DropAsk, Saved, TakeAsk, WorkRoot, decide,
+    next_id, retention,
 };
 use action_context::state::SessionKind;
 use action_core::{
@@ -46,10 +46,10 @@ pub(crate) fn notes_of(rows: &[Logged]) -> Vec<CheckpointNote> {
 }
 
 /// Why a store could not save, as the list tells it.
-fn skip_of(fault: &StoreFault) -> SkipReason {
+fn skip_of(fault: &CheckpointStoreError) -> SkipReason {
     match fault {
-        StoreFault::NoHistory => SkipReason::NoHistory,
-        StoreFault::TooLarge => SkipReason::TooLarge,
+        CheckpointStoreError::NoHistory => SkipReason::NoHistory,
+        CheckpointStoreError::TooLarge => SkipReason::TooLarge,
         _ => SkipReason::Failed,
     }
 }
@@ -169,7 +169,7 @@ impl<S: Seams> Router<S> {
         session: &SessionId,
         root: &WorkRoot,
         cfg: &AgentConfig,
-    ) -> Result<Saved, StoreFault> {
+    ) -> Result<Saved, CheckpointStoreError> {
         let store = self.seams.checkpoints();
         let held = store.held(root, session).await?;
         store

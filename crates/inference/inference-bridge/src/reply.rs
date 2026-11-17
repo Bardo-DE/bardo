@@ -4,7 +4,7 @@
 use inference_core as pi;
 use model_provider as sp;
 
-use crate::scores::{NoScores, option_scores};
+use crate::scores::{NoScoresError, option_scores};
 
 /// What a turn has produced so far, folded into the reply it ends with.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
@@ -67,7 +67,7 @@ impl Gathered {
         self,
         end: &sp::TurnEnd,
         served: pi::ServedBy,
-    ) -> (pi::ChatReply, Option<NoScores>) {
+    ) -> (pi::ChatReply, Option<NoScoresError>) {
         let (scores, why) = match &self.options {
             None => (None, None),
             Some(options) => match option_scores(options, end.first_token.as_ref()) {

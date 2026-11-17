@@ -15,7 +15,7 @@ use http_core::{Http, request};
 use sync_core::DELETED;
 use sync_core::status::{refused, write_unreached};
 use sync_core::{
-    BaseVersion, Conflict, PutItem, PutRefused, PutTarget, RemoteId, RemoteSide, RemoteVersion,
+    BaseVersion, Conflict, PutError, PutItem, PutTarget, RemoteId, RemoteSide, RemoteVersion,
     RetryAfter,
 };
 
@@ -28,7 +28,7 @@ pub(crate) enum Target {
     Existing(RemoteId),
 }
 
-type Written = Result<(RemoteId, RemoteVersion), PutRefused>;
+type Written = Result<(RemoteId, RemoteVersion), PutError>;
 
 /// A boundary that does not occur in `content`.
 fn boundary_for(content: &[u8]) -> String {
@@ -61,8 +61,8 @@ impl<H: Http> GdriveReplica<H> {
         let small = bytes.len() <= self.uploads.simple_max;
         let (target, response) = match item.target {
             PutTarget::New(path) => {
-                let names = names_of(&path.0).ok_or(PutRefused::Forbidden)?;
-                let (name, folders) = names.split_last().ok_or(PutRefused::Forbidden)?;
+                let names = names_of(&path.0).ok_or(PutError::Forbidden)?;
+                let (name, folders) = names.split_last().ok_or(PutError::Forbidden)?;
                 let root = self.root_id(true).await.map_err(refused)?;
                 let parent = self
                     .folder_below(&root, folders, true)
@@ -75,7 +75,7 @@ impl<H: Http> GdriveReplica<H> {
                 let there = self.named_in(&parent, name).await.map_err(refused)?;
                 if there.iter().any(File::is_folder) && !there.iter().any(|f| !f.is_folder()) {
                     // A folder is where the file would go.
-                    return Err(PutRefused::Forbidden);
+                    return Err(PutError::Forbidden);
                 }
                 if let Some(found) = there.iter().find(|f| !f.is_folder()) {
                     return Err(Self::conflict(&target, &base, Some(found)));
@@ -117,7 +117,7 @@ impl<H: Http> GdriveReplica<H> {
         &self,
         item: &RemoteId,
         base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    ) -> Result<RemoteVersion, PutError> {
         let target = Target::Existing(item.clone());
         let now = self.file_now(&item.0).await.map_err(refused)?;
         let BaseVersion::At(seen) = &base else {
@@ -127,7 +127,7 @@ impl<H: Http> GdriveReplica<H> {
             Some(file) if !file.in_trash() && file.version.as_deref() == Some(seen.0.as_str()) => {}
             _ => return Err(Self::conflict(&target, &base, now.as_ref())),
         }
-        let url = self.addr.file(&item.0, &[]).ok_or(PutRefused::Forbidden)?;
+        let url = self.addr.file(&item.0, &[]).ok_or(PutError::Forbidden)?;
         let delete = request(Method::DELETE, &url)
             .body(Vec::new())
             .map_err(|e| write_unreached(e.into()))?;
@@ -145,7 +145,7 @@ impl<H: Http> GdriveReplica<H> {
     pub(crate) async fn write_send(
         &self,
         mut request: Request<Vec<u8>>,
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         request
             .headers_mut()
             .append(ACCEPT, HeaderValue::from_static("application/json"));
@@ -157,14 +157,14 @@ impl<H: Http> GdriveReplica<H> {
         &self,
         meta: &str,
         bytes: Vec<u8>,
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         let url = self
             .addr
             .upload(
                 "files",
                 &[("uploadType", "multipart"), ("fields", FILE_FIELDS)],
             )
-            .ok_or(PutRefused::Forbidden)?;
+            .ok_or(PutError::Forbidden)?;
         let (boundary, body) = multipart(meta, &bytes);
         let create = request(Method::POST, &url)
             .header(
@@ -182,12 +182,12 @@ impl<H: Http> GdriveReplica<H> {
         &self,
         id: &str,
         bytes: Vec<u8>,
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         let path = format!("files/{}", base_url::percent::encode_unreserved(id));
         let url = self
             .addr
             .upload(&path, &[("uploadType", "media"), ("fields", FILE_FIELDS)])
-            .ok_or(PutRefused::Forbidden)?;
+            .ok_or(PutError::Forbidden)?;
         let update = request(Method::POST, &url)
             .header("X-HTTP-Method-Override", "PATCH")
             .header(CONTENT_TYPE, "application/octet-stream")
@@ -206,7 +206,7 @@ impl<H: Http> GdriveReplica<H> {
         match response.status().as_u16() {
             200 | 201 => {
                 let file: File = serde_json::from_slice(response.body())
-                    .map_err(|error| PutRefused::failed(RetryAfter(30), error))?;
+                    .map_err(|error| PutError::failed(RetryAfter(30), error))?;
                 if let Some(parent) = file.parent_id() {
                     self.state()
                         .folders
@@ -225,7 +225,7 @@ impl<H: Http> GdriveReplica<H> {
                 Target::New { .. } => {
                     // The folder it was going into is gone: ask again from the top.
                     *self.state() = crate::replica::State::default();
-                    Err(PutRefused::Transient(RetryAfter(1)))
+                    Err(PutError::Transient(RetryAfter(1)))
                 }
             },
             _ => Err(write_error(&response, self.clock.now())),
@@ -233,7 +233,7 @@ impl<H: Http> GdriveReplica<H> {
     }
 
     /// The conflict a refused write is: what the server has there now.
-    pub(crate) fn conflict(target: &Target, base: &BaseVersion, now: Option<&File>) -> PutRefused {
+    pub(crate) fn conflict(target: &Target, base: &BaseVersion, now: Option<&File>) -> PutError {
         let live = now.filter(|f| !f.in_trash());
         let version = |f: &File| RemoteVersion(f.version.clone().unwrap_or_default());
         let (item, remote) = match (live, base) {
@@ -249,11 +249,11 @@ impl<H: Http> GdriveReplica<H> {
                     id.clone(),
                     RemoteSide::Deleted(RemoteVersion(DELETED.to_owned())),
                 ),
-                Target::New { .. } => return PutRefused::Transient(RetryAfter(1)),
+                Target::New { .. } => return PutError::Transient(RetryAfter(1)),
             },
-            (None, BaseVersion::Absent) => return PutRefused::Transient(RetryAfter(1)),
+            (None, BaseVersion::Absent) => return PutError::Transient(RetryAfter(1)),
         };
-        PutRefused::Conflict(Conflict {
+        PutError::Conflict(Conflict {
             item,
             base: base.clone(),
             remote,

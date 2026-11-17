@@ -153,7 +153,7 @@ async fn an_answer_out_of_schema_crosses_the_bus_as_the_error_it_is() {
     let value = ReaderClient::new(rig.intentd.clone())
         .extract_in(&rig.session, &ask(rig.handle))
         .await;
-    assert_eq!(value, Err(ReaderError::OutOfSchema(SchemaFault::NotInSet)));
+    assert_eq!(value, Err(ReaderError::OutOfSchema(SchemaError::NotInSet)));
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

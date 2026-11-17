@@ -1,6 +1,6 @@
 //! A flow played by an external agent, in the same world and judged the same way.
 
-use super::play::{AgentEnd, PlayFault, Played, offered_models, play};
+use super::play::{AgentEnd, PlayError, Played, offered_models, play};
 use super::secret::{Credentials, Redactor};
 use super::spec::AcpSpec;
 use crate::flows::{
@@ -255,13 +255,13 @@ pub async fn run_flow_acp(
 ///
 /// # Errors
 ///
-/// Returns a [`PlayFault`] when the agent cannot be started or the session cannot be opened.
+/// Returns a [`PlayError`] when the agent cannot be started or the session cannot be opened.
 pub async fn list_models_acp(
     binaries: &Binaries,
     spec: &AcpSpec,
     model: &ModelSource,
     (keep_in, catalog): (Option<PathBuf>, Option<PathBuf>),
-) -> Result<String, PlayFault> {
+) -> Result<String, PlayError> {
     let options = Options {
         keep_in,
         tap: true,

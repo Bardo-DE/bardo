@@ -1,7 +1,7 @@
 //! Quick Look and Get Info: what opens, what follows the cursor, what puts them away.
 
 use files_core::{ByteSize, EntryKind, FileName, FolderPath, Info, ItemRef, Location};
-use files_model::{Browser, Change, Direction, Effect, InfoView, Input, ListFailure, Modifier};
+use files_model::{Browser, Change, Direction, Effect, FolderListError, InfoView, Input, Modifier};
 
 use crate::common::*;
 
@@ -136,12 +136,12 @@ fn get_info_that_cannot_be_read_says_so() {
         vec![
             click("a"),
             Input::GetInfo,
-            Input::InfoRead(item("a"), Err(ListFailure::NotFound)),
+            Input::InfoRead(item("a"), Err(FolderListError::NotFound)),
         ],
     );
     assert_eq!(
         browser.info(),
-        &InfoView::Failed(item("a"), ListFailure::NotFound)
+        &InfoView::Failed(item("a"), FolderListError::NotFound)
     );
 }
 

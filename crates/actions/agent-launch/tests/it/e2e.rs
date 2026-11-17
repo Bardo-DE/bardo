@@ -11,7 +11,7 @@ use super::support::{ENDPOINT, abs};
 use action_vocab::Workspace;
 use agent::{Act, agent as scripted, say};
 use agent_acp_core::call::AgentCall;
-use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
+use agent_acp_core::court::{Court, CourtError, OpenAgent, Ruled};
 use agent_acp_host::fake::FakeFiles;
 use agent_acp_host::{AcpBackend, Parts, Performer, Seams};
 use agent_launch::fake::{Call, FakeAccounts, FakeProcs, Mood, Secrets};
@@ -32,8 +32,8 @@ impl Court for Nobody {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtFault> {
-        Err(CourtFault::Unavailable)
+    async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtError> {
+        Err(CourtError::Unavailable)
     }
 
     #[expect(
@@ -44,8 +44,8 @@ impl Court for Nobody {
         &mut self,
         _session: &SessionId,
         _text: &str,
-    ) -> Result<action_vocab::TurnId, CourtFault> {
-        Err(CourtFault::Unavailable)
+    ) -> Result<action_vocab::TurnId, CourtError> {
+        Err(CourtError::Unavailable)
     }
 
     #[expect(

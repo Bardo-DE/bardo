@@ -10,7 +10,7 @@ use account_capability::KindToggle;
 use account_core::AccountId;
 use account_core::SecretText;
 use account_core::consent::{ConsentAnswer, ConsentAsk, GrantScope};
-use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetLink, SheetOpen, Sheets};
 use account_sheet::{
     Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, ServiceState, SheetInput, SheetView,
     refit,
@@ -170,7 +170,7 @@ impl<T: Terminal> Sheets for TerminalSheets<T> {
         }
     }
 
-    async fn conversation(&self, open: SheetOpen) -> Result<TerminalLink<T>, SheetFault> {
+    async fn conversation(&self, open: SheetOpen) -> Result<TerminalLink<T>, SheetError> {
         let mut link = TerminalLink {
             inner: Arc::clone(&self.inner),
             view: None,
@@ -228,16 +228,16 @@ fn prompt_of(field: &FieldSpec) -> String {
 }
 
 impl<T: Terminal> TerminalLink<T> {
-    async fn ask(&self, label: String, hidden: bool) -> Result<String, SheetFault> {
+    async fn ask(&self, label: String, hidden: bool) -> Result<String, SheetError> {
         let inner = Arc::clone(&self.inner);
         tokio::task::spawn_blocking(move || inner.terminal.ask(&label, hidden))
             .await
             .ok()
             .flatten()
-            .ok_or(SheetFault::Closed)
+            .ok_or(SheetError::Closed)
     }
 
-    async fn fields(&self, view: account_sheet::SignInView) -> Result<SheetInput, SheetFault> {
+    async fn fields(&self, view: account_sheet::SignInView) -> Result<SheetInput, SheetError> {
         let mut answers: Vec<FieldAnswer> = Vec::new();
         let mut fields = view.fields;
         let mut at = 0;
@@ -266,7 +266,7 @@ impl<T: Terminal> TerminalLink<T> {
         Ok(SheetInput::Submit(answers))
     }
 
-    async fn review(&self, view: account_sheet::ReviewView) -> Result<SheetInput, SheetFault> {
+    async fn review(&self, view: account_sheet::ReviewView) -> Result<SheetInput, SheetError> {
         let typed = self
             .ask("Add this account? [Y/n]".to_owned(), false)
             .await?;
@@ -294,7 +294,7 @@ impl<T: Terminal> SheetLink for TerminalLink<T> {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async and this implementation has nothing to wait for"
     )]
-    async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
+    async fn update(&mut self, view: SheetView) -> Result<(), SheetError> {
         let terminal = &self.inner.terminal;
         match &view {
             SheetView::BrowserWait { url, .. } => {
@@ -332,7 +332,7 @@ impl<T: Terminal> SheetLink for TerminalLink<T> {
         Ok(())
     }
 
-    async fn input(&mut self) -> Result<SheetInput, SheetFault> {
+    async fn input(&mut self) -> Result<SheetInput, SheetError> {
         // A view that waits on the browser or the provider has no input: it stays until the
         // sign-in moves on or the conversation is dropped.
         let waiting = matches!(
@@ -350,7 +350,7 @@ impl<T: Terminal> SheetLink for TerminalLink<T> {
             Some(SheetView::SignIn(form)) => self.fields(form).await,
             Some(SheetView::Review(review)) => self.review(review).await,
             Some(SheetView::Failed { .. }) => Ok(SheetInput::Dismiss),
-            _ => Err(SheetFault::Closed),
+            _ => Err(SheetError::Closed),
         }
     }
 }

@@ -4,7 +4,7 @@
 //! to the router, which gates it, and a refusal comes back as a code.
 
 use crate::deadline::{bounded, timed};
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::handoff::chosen_agent;
 use crate::helpers::is_helper_action;
 use crate::one_run::loop_end;
@@ -16,14 +16,14 @@ use crate::tap::{Go, NoTap, Tap};
 use crate::task::Failure;
 use action_client::{ClientError, PerformEvent, Transport as IntentsTransport};
 use action_core::{BudgetKind, CallProgress, CallRefusal, Held, ReaderAsk, StepEnd};
-use action_store::Stop;
+use action_store::WaitStopError;
 use action_vocab::{CallId, CallRequest, Clock};
 use action_wire::WireRefusal;
 use agent_loop::{
     IdleInput, LoopEffect, LoopInput, LoopPhase, LoopState, ModelOutput, agent_step, assemble,
     idle_step,
 };
-use agent_planner::{PlanFault, Planner};
+use agent_planner::{PlanError, Planner};
 use agent_session::CallOpen;
 use companion_wire::{AnswerPhase, RefusalWire, declined_text};
 use permission_core::COMPANION_APP;
@@ -49,22 +49,22 @@ pub fn refusal_of(error: ClientError) -> CallRefusal {
 
 /// The refusal the answer carries when the planner gave nothing usable and the person can act on
 /// it: no model chosen asks them to choose one, and the faults with words say them.
-fn model_refusal(fault: &PlanFault) -> Option<RefusalWire> {
+fn model_refusal(fault: &PlanError) -> Option<RefusalWire> {
     match fault {
-        PlanFault::NoModelChosen => Some(RefusalWire::NoModel),
+        PlanError::NoModelChosen => Some(RefusalWire::NoModel),
         other => refusal_text(other).map(RefusalWire::Failed),
     }
 }
 
 /// What the person is told when the planner gave nothing usable and there is more to say than
 /// "it failed".
-fn refusal_text(fault: &PlanFault) -> Option<String> {
+fn refusal_text(fault: &PlanError) -> Option<String> {
     match fault {
-        PlanFault::Declined(declined) => Some(declined_text(declined)),
-        PlanFault::NoModelUsesApps => {
+        PlanError::Declined(declined) => Some(declined_text(declined)),
+        PlanError::NoModelUsesApps => {
             Some("None of the models in Automatic can use apps. Add one in Settings.".to_owned())
         }
-        PlanFault::CallInText => Some(
+        PlanError::CallInText => Some(
             "The model wrote a step as text instead of making it, so nothing was done.".to_owned(),
         ),
         // Nothing more to say for these, nor for a fault added later.
@@ -99,7 +99,7 @@ fn idle_loop() -> LoopState {
 
 impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S> {
     /// Runs `first`, and what follows from it, to the end of what the task can do alone.
-    pub(crate) async fn run(&mut self, task: &TaskId, first: LoopInput) -> Result<(), ServeFault> {
+    pub(crate) async fn run(&mut self, task: &TaskId, first: LoopInput) -> Result<(), ServeError> {
         self.run_tapped(task, first, &mut NoTap).await
     }
 
@@ -109,7 +109,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         task: &TaskId,
         first: LoopInput,
         tap: &mut T,
-    ) -> Result<(), ServeFault> {
+    ) -> Result<(), ServeError> {
         if !self.running.insert(task.clone()) {
             return Ok(());
         }
@@ -126,7 +126,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         task: &TaskId,
         first: LoopInput,
         tap: &mut T,
-    ) -> Result<(), ServeFault> {
+    ) -> Result<(), ServeError> {
         let mut queue = VecDeque::from([first]);
         // At rest, a run's report that landed mid-turn is the next input.
         while let Some(input) = queue.pop_front().or_else(|| self.woken_input(task)) {
@@ -187,7 +187,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         &mut self,
         task: &TaskId,
         first: LoopInput,
-    ) -> Result<(), ServeFault> {
+    ) -> Result<(), ServeError> {
         self.run_interactive_tapped(task, first, &mut NoTap).await
     }
 
@@ -197,7 +197,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         task: &TaskId,
         first: LoopInput,
         tap: &mut T,
-    ) -> Result<(), ServeFault> {
+    ) -> Result<(), ServeError> {
         self.shared.interrupt();
         self.idle_apply(IdleInput::InteractiveStarted);
         // Memory comes to the planner on the person's own turn, before its first call.
@@ -218,7 +218,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         effect: LoopEffect,
         position: &mut u64,
         tap: &mut T,
-    ) -> Result<Vec<LoopInput>, ServeFault> {
+    ) -> Result<Vec<LoopInput>, ServeError> {
         match effect {
             LoopEffect::AskPlanner => self.plan_turn(task, tap).await,
             LoopEffect::Call(call) => {
@@ -282,7 +282,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         &mut self,
         task: &TaskId,
         tap: &mut T,
-    ) -> Result<Vec<LoopInput>, ServeFault> {
+    ) -> Result<Vec<LoopInput>, ServeError> {
         let spent = self.tasks.get(task).map_or(0, |s| s.steps);
         if spent >= self.config.budget.calls.0 {
             if let Some(rt) = self.runtimes.get_mut(task) {
@@ -306,11 +306,11 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         .await;
         let reply = match asked {
             // The person stopped the task while the model was thinking: the turn is dropped.
-            Err(Stop::Cancelled) => return Ok(vec![LoopInput::Cancelled]),
+            Err(WaitStopError::Cancelled) => return Ok(vec![LoopInput::Cancelled]),
             // A model that never answers is a model that is not there.
-            Err(Stop::TimedOut) => {
+            Err(WaitStopError::TimedOut) => {
                 tracing::warn!(%task, "the planner's model did not answer in time");
-                Err(PlanFault::Unavailable)
+                Err(PlanError::Unavailable)
             }
             Ok(reply) => reply,
         };
@@ -361,12 +361,12 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         call: CallRequest,
         id: CallId,
         tap: &mut T,
-    ) -> Result<Vec<LoopInput>, ServeFault> {
+    ) -> Result<Vec<LoopInput>, ServeError> {
         if call.action.app.as_str() == COMPANION_APP && call.action.name.as_str() == TASK_START {
             return self.start_task(task, call, id).await;
         }
         let Some(rt) = self.runtimes.get(task) else {
-            return Err(ServeFault::UnknownSession);
+            return Err(ServeError::UnknownSession);
         };
         let (session, window) = (rt.session.clone(), rt.window.clone());
         let effect = self
@@ -528,13 +528,13 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         task: &TaskId,
         call: CallRequest,
         id: CallId,
-    ) -> Result<Vec<LoopInput>, ServeFault> {
+    ) -> Result<Vec<LoopInput>, ServeError> {
         let Some((session, window)) = self
             .runtimes
             .get(task)
             .map(|rt| (rt.session.clone(), rt.window.clone()))
         else {
-            return Err(ServeFault::UnknownSession);
+            return Err(ServeError::UnknownSession);
         };
         // A worker is run from inside the future of the task that started it, so tasks that start
         // tasks nest without end unless the depth is bounded here, whatever the router allows.
@@ -557,7 +557,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
             Ok(started) => match self.adopt_worker(task, &started).await {
                 Ok(_) => Ok(Self::outcome_text(started)),
                 Err(error) => Err(match error {
-                    ServeFault::Router(error) => refusal_of(error),
+                    ServeError::Router(error) => refusal_of(error),
                     _ => CallRefusal::Timeout,
                 }),
             },
@@ -578,9 +578,9 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// One read of the quarantined reader (`answer_read`), for the task.
-    async fn read(&mut self, task: &TaskId, ask: ReaderAsk) -> Result<Vec<LoopInput>, ServeFault> {
+    async fn read(&mut self, task: &TaskId, ask: ReaderAsk) -> Result<Vec<LoopInput>, ServeError> {
         let Some(rt) = self.runtimes.get_mut(task) else {
-            return Err(ServeFault::UnknownSession);
+            return Err(ServeError::UnknownSession);
         };
         let read = bounded(
             &*self.shared,
@@ -592,8 +592,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         .await;
         Ok(match read {
             Ok(inputs) => inputs,
-            Err(Stop::Cancelled) => vec![LoopInput::Cancelled],
-            Err(Stop::TimedOut) => {
+            Err(WaitStopError::Cancelled) => vec![LoopInput::Cancelled],
+            Err(WaitStopError::TimedOut) => {
                 if let Some(rt) = self.runtimes.get_mut(task) {
                     rt.failure = Some(Failure::Reader);
                 }

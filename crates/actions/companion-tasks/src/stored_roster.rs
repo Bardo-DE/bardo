@@ -11,7 +11,7 @@ use agent_session::{Logged, Opening, Read, SessionEntry, SessionLog, read_all};
 use companion_wire::SessionRecord;
 use provenance::{AgentRef, TaskId, UnixSeconds};
 
-use crate::recover::ReplayFault;
+use crate::recover::ReplayError;
 
 /// Whether `row` is the opening of a session an editor started.
 fn is_editors(row: &Logged) -> bool {
@@ -80,11 +80,11 @@ pub fn events_of(rows: &[Logged]) -> Vec<ReplayEvent> {
 ///
 /// # Errors
 ///
-/// Returns [`ReplayFault::Log`] when the log cannot list its sessions.
+/// Returns [`ReplayError::Log`] when the log cannot list its sessions.
 pub async fn stored_events<L: SessionLog>(
     log: &L,
-) -> Result<Option<Vec<ReplayEvent>>, ReplayFault> {
-    let sessions = log.sessions().await.map_err(ReplayFault::Log)?;
+) -> Result<Option<Vec<ReplayEvent>>, ReplayError> {
+    let sessions = log.sessions().await.map_err(ReplayError::Log)?;
     if sessions.is_empty() {
         return Ok(None);
     }

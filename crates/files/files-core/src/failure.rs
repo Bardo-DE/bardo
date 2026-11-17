@@ -7,7 +7,7 @@ use std::io;
 /// It is a code that carries no cause: the failures it stands for (an I/O error's kind, a Trash
 /// error) are classed where they are met.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum OpFailure {
+pub enum OpError {
     /// An item is gone.
     #[error("An item can't be found any more.")]
     NotFound,
@@ -40,16 +40,16 @@ pub enum OpFailure {
     Other,
 }
 
-impl OpFailure {
+impl OpError {
     /// The failure an I/O error stands for.
     #[must_use]
-    pub fn from_io(err: &io::Error) -> OpFailure {
+    pub fn from_io(err: &io::Error) -> OpError {
         match err.kind() {
-            io::ErrorKind::NotFound => OpFailure::NotFound,
-            io::ErrorKind::PermissionDenied => OpFailure::NoPermission,
-            io::ErrorKind::AlreadyExists => OpFailure::Taken,
-            io::ErrorKind::StorageFull => OpFailure::NoSpace,
-            io::ErrorKind::Other | _ => OpFailure::Other,
+            io::ErrorKind::NotFound => OpError::NotFound,
+            io::ErrorKind::PermissionDenied => OpError::NoPermission,
+            io::ErrorKind::AlreadyExists => OpError::Taken,
+            io::ErrorKind::StorageFull => OpError::NoSpace,
+            io::ErrorKind::Other | _ => OpError::Other,
         }
     }
 }

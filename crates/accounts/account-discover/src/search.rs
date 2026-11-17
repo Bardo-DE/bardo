@@ -16,8 +16,8 @@
 //! Nothing is sent to a discovered server: the result goes to the review step.
 
 use crate::autoconfig::{autoconfig_urls, domain_of, ispdb_url, parse_autoconfig_with};
-use crate::dns::{Dns, DnsFault};
-use crate::found::{Cause, DiscoverFault, Found, SearchOptions, Source};
+use crate::dns::{Dns, DnsError};
+use crate::found::{Cause, DiscoverError, Found, SearchOptions, Source};
 use crate::mx::{ProviderLead, ispdb_candidates, lookup_mx, provider_leads};
 use crate::srv::{found_from_srv_with, lookup_srv};
 use account_core::Tls;
@@ -54,7 +54,7 @@ pub enum Miss {
     /// An answer that is not a configuration: another status, or a document that did not parse.
     Malformed,
     /// A configuration that cannot be used, and why.
-    Unusable(DiscoverFault),
+    Unusable(DiscoverError),
     /// No answer, and why.
     Down(Cause),
     /// An answer that is not a configuration, and why.
@@ -102,12 +102,12 @@ pub struct Tried {
 
 /// The search found nothing usable. Every step is listed, so the user sees what was asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub struct NotFound {
+pub struct SearchError {
     /// Every step, in order.
     pub tried: Vec<Tried>,
 }
 
-impl NotFound {
+impl SearchError {
     /// Nothing answered at all: most likely this computer is offline.
     #[must_use]
     pub fn offline(&self) -> bool {
@@ -115,7 +115,7 @@ impl NotFound {
     }
 }
 
-impl fmt::Display for NotFound {
+impl fmt::Display for SearchError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if self.offline() {
             f.write_str("could not reach anything to ask; is this computer offline?")?;
@@ -127,7 +127,7 @@ impl fmt::Display for NotFound {
                 Miss::Absent => "nothing there",
                 Miss::Unreachable | Miss::Down(_) => "no answer",
                 Miss::Malformed | Miss::Garbled(_) => "not a configuration",
-                Miss::Unusable(DiscoverFault::NoServers) => "names no usable server",
+                Miss::Unusable(DiscoverError::NoServers) => "names no usable server",
                 Miss::Unusable(_) => "unusable",
             };
             write!(f, "\n  {}: {why}", tried.what)
@@ -146,7 +146,7 @@ pub async fn discover_mail<H: Http, D: Dns>(
     dns: &D,
     providers: &ProviderSet,
     address: &str,
-) -> Result<Outcome, NotFound> {
+) -> Result<Outcome, SearchError> {
     discover_mail_with(http, dns, providers, address, &SearchOptions::default()).await
 }
 
@@ -165,11 +165,11 @@ pub async fn discover_mail_with<H: Http, D: Dns>(
     providers: &ProviderSet,
     address: &str,
     options: &SearchOptions,
-) -> Result<Outcome, NotFound> {
+) -> Result<Outcome, SearchError> {
     let mut tried = Vec::new();
     match search(http, dns, providers, address, options, &mut tried).await {
         Some(outcome) => Ok(outcome),
-        None => Err(NotFound { tried }),
+        None => Err(SearchError { tried }),
     }
 }
 
@@ -211,7 +211,7 @@ async fn search<H: Http, D: Dns>(
             Err(why) => tried.push(Tried {
                 what: format!("SRV records for {domain}"),
                 miss: match why {
-                    DiscoverFault::NoServers => Miss::Absent,
+                    DiscoverError::NoServers => Miss::Absent,
                     other => Miss::Unusable(other),
                 },
             }),
@@ -259,19 +259,19 @@ async fn search<H: Http, D: Dns>(
 }
 
 /// Under `starttls_only`, a finding with a `STARTTLS` endpoint is not one.
-fn tls_ok(found: Found, options: SearchOptions) -> Result<Found, DiscoverFault> {
+fn tls_ok(found: Found, options: SearchOptions) -> Result<Found, DiscoverError> {
     let starttls = found.endpoints.iter().any(|e| e.tls == Tls::StartTls);
     match (options.starttls_only, starttls) {
-        (true, true) => Err(DiscoverFault::NoServers),
+        (true, true) => Err(DiscoverError::NoServers),
         _ => Ok(found),
     }
 }
 
-fn dns_miss(fault: DnsFault) -> Miss {
+fn dns_miss(fault: DnsError) -> Miss {
     match fault {
-        DnsFault::NoRecords => Miss::Absent,
-        DnsFault::Unreachable => Miss::Unreachable,
-        DnsFault::Resolver(cause) => Miss::Down(cause),
+        DnsError::NoRecords => Miss::Absent,
+        DnsError::Unreachable => Miss::Unreachable,
+        DnsError::Resolver(cause) => Miss::Down(cause),
     }
 }
 
@@ -288,8 +288,8 @@ async fn document<H: Http>(
     let miss = match fetch(http, url).await {
         Ok(body) => match parse_autoconfig_with(&body, address, options) {
             Ok(found) => return Some(Found { source, ..found }),
-            Err(DiscoverFault::Unreadable) => Miss::Malformed,
-            Err(DiscoverFault::Unparsed(cause)) => Miss::Garbled(cause),
+            Err(DiscoverError::Unreadable) => Miss::Malformed,
+            Err(DiscoverError::Unparsed(cause)) => Miss::Garbled(cause),
             Err(why) => Miss::Unusable(why),
         },
         Err(miss) => miss,

@@ -139,7 +139,7 @@ pub trait WireSink: Send + Sync {
 /// A request the replay could not serve, kept for the test to read (a transport can only answer
 /// `HttpError::ReplayMiss`).
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum WireMiss {
+pub enum WireMissError {
     #[error("the wire cassette has no exchange left")]
     Exhausted,
     #[error("exchange {index:?} was recorded for a different request")]

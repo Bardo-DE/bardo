@@ -36,6 +36,6 @@ pub use fetch::{FetchError, Fetcher};
 pub use installer::{InstallError, Installer};
 pub use jobs::{EngineInstalls, InstallChoice, Parts, Standing, StartError};
 pub use package::install_package;
-pub use pinned_url::{NotPinned, PinnedUrl};
+pub use pinned_url::{NotPinnedError, PinnedUrl};
 pub use progress::{CancelToken, Meter};
-pub use space::{NoSpace, free_bytes, require_space};
+pub use space::{NoSpaceError, free_bytes, require_space};

@@ -7,7 +7,7 @@ use std::path::Path;
 
 /// A path that would reach outside the folder, or a folder that could not be looked at.
 #[derive(Debug, thiserror::Error)]
-pub(crate) enum Unsafe {
+pub(crate) enum UnsafePathError {
     /// A folder on the way to the file is a link.
     #[error("a folder on the way is a link")]
     Link,
@@ -18,18 +18,18 @@ pub(crate) enum Unsafe {
 
 /// Fails if any folder between `root` and a file of `paths` is a link: git would refuse to write
 /// through one, and a delete must not follow one out of the folder either.
-pub(crate) fn stay_inside(root: &Path, paths: &[&WorkPath]) -> Result<(), Unsafe> {
+pub(crate) fn stay_inside(root: &Path, paths: &[&WorkPath]) -> Result<(), UnsafePathError> {
     for path in paths {
         let steps: Vec<&str> = path.as_str().split('/').collect();
         let mut here = root.to_path_buf();
         for step in steps.iter().take(steps.len().saturating_sub(1)) {
             here.push(step);
             match std::fs::symlink_metadata(&here) {
-                Ok(meta) if meta.file_type().is_symlink() => return Err(Unsafe::Link),
+                Ok(meta) if meta.file_type().is_symlink() => return Err(UnsafePathError::Link),
                 Ok(_) => {}
                 // Nothing here yet, so nothing below it either.
                 Err(why) if why.kind() == ErrorKind::NotFound => break,
-                Err(why) => return Err(Unsafe::Unreadable(why)),
+                Err(why) => return Err(UnsafePathError::Unreadable(why)),
             }
         }
     }

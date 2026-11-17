@@ -39,7 +39,7 @@ pub use convention::{Convention, ConventionTable};
 pub use detect::{HostOs, OVERRIDE_VAR, detect, detect_process};
 pub use key::Key;
 pub use key_input::KeyInput;
-pub use keymap::{Conflict, Keymap, Registration};
+pub use keymap::{ConflictError, Keymap, Registration};
 pub use modifier::CHORD_MODIFIERS;
 pub use overrides::{OverrideEntry, OverrideProblem, Overrides};
 pub use platform::{Context, Desktop, Platform, PlatformError};

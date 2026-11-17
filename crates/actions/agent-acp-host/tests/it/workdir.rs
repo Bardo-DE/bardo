@@ -2,7 +2,7 @@
 //! home folder, a folder that holds home, a place of secrets and an outside folder are refused.
 //! Scratch directories only.
 
-use agent_acp_host::{Workdir, WorkdirFault};
+use agent_acp_host::{Workdir, WorkdirError};
 use base_path::AbsPath;
 use std::os::unix::fs::symlink;
 use std::path::Path;
@@ -31,20 +31,20 @@ fn only_a_plain_folder_inside_the_session_is_confined() {
 
     let refused =
         |asked: &Path| Workdir::resolve(&scope, &abs(asked), home_arg).expect_err("refused");
-    assert_eq!(refused(&proj.join("to-home")), WorkdirFault::Link);
-    assert_eq!(refused(&proj.join("to-out")), WorkdirFault::Link);
-    assert_eq!(refused(&proj.join("to-home/proj")), WorkdirFault::Link);
-    assert_eq!(refused(&proj.join(".ssh")), WorkdirFault::Secret);
-    assert_eq!(refused(&proj.join("file")), WorkdirFault::NotFolder);
-    assert_eq!(refused(&proj.join("missing")), WorkdirFault::NotFolder);
-    assert_eq!(refused(&root.join("elsewhere")), WorkdirFault::Outside);
+    assert_eq!(refused(&proj.join("to-home")), WorkdirError::Link);
+    assert_eq!(refused(&proj.join("to-out")), WorkdirError::Link);
+    assert_eq!(refused(&proj.join("to-home/proj")), WorkdirError::Link);
+    assert_eq!(refused(&proj.join(".ssh")), WorkdirError::Secret);
+    assert_eq!(refused(&proj.join("file")), WorkdirError::NotFolder);
+    assert_eq!(refused(&proj.join("missing")), WorkdirError::NotFolder);
+    assert_eq!(refused(&root.join("elsewhere")), WorkdirError::Outside);
     // The session folder is home itself, or home is below it.
     assert_eq!(
         Workdir::resolve(&abs(&home), &abs(&home), home_arg).expect_err("home"),
-        WorkdirFault::Home
+        WorkdirError::Home
     );
     assert_eq!(
         Workdir::resolve(&abs(&root), &abs(&root), home_arg).expect_err("above home"),
-        WorkdirFault::Home
+        WorkdirError::Home
     );
 }

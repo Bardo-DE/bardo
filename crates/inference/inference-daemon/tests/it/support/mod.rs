@@ -9,7 +9,7 @@ use account_match::Need;
 use account_wire::{decode_frame, encode_frame};
 use base_ids::Tokens;
 use inference_core::{
-    AudioFrame, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, ModelRef,
+    AudioFrame, ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest, ModelRef,
     Readiness, ServedBy,
 };
 use inference_router::carried::Carried;
@@ -59,7 +59,7 @@ pub fn llm() -> Need {
 
 /// A router with one fixed answer.
 #[derive(Debug)]
-pub struct FixedRouter(pub Result<RouteDecision, InferRefusal>);
+pub struct FixedRouter(pub Result<RouteDecision, InferRefusedError>);
 
 impl FixedRouter {
     pub fn ready() -> Self {
@@ -82,7 +82,7 @@ impl Router for FixedRouter {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn route(&self, _spec: &SessionSpec) -> Result<RouteDecision, InferRefusal> {
+    async fn route(&self, _spec: &SessionSpec) -> Result<RouteDecision, InferRefusedError> {
         self.0.clone()
     }
 }

@@ -18,7 +18,7 @@ use crate::guests::Guests;
 use crate::identity::Identity;
 use crate::judge::{Welcome, judge};
 use crate::observe::Seen;
-use crate::refusal::Refusal;
+use crate::refusal::TailnetError;
 use crate::{PORT, is_network_address};
 use account_tailscale::NodeId;
 use account_tailscale::{LocalApi, TailscaleError};
@@ -69,13 +69,13 @@ pub struct Config {
     pub longest_pause: Duration,
     /// The words a person reads for a refusal, which the answer carries beside its code (this
     /// crate writes none).
-    pub words: fn(&Refusal) -> &'static str,
+    pub words: fn(&TailnetError) -> &'static str,
 }
 
 impl Config {
     /// What a product uses: [`PORT`], the network's own addresses only, a try after a second
     /// and then after longer, up to half a minute, and `words` for a refusal.
-    pub const fn product(words: fn(&Refusal) -> &'static str) -> Self {
+    pub const fn product(words: fn(&TailnetError) -> &'static str) -> Self {
         Self {
             port: PORT,
             allowed: is_network_address,
@@ -207,7 +207,7 @@ struct Shared<V> {
     guests: Arc<Guests>,
     visits: Arc<V>,
     limiter: Limiter,
-    words: fn(&Refusal) -> &'static str,
+    words: fn(&TailnetError) -> &'static str,
 }
 
 /// Starts listening whenever `on` says so and `seen` says Tailscale is running and signed in.
@@ -356,7 +356,7 @@ async fn accept<V: Visits>(listener: TcpListener, shared: Arc<Shared<V>>) {
 }
 
 /// What a refusal is answered with: a JSON error in the shape model clients read.
-fn refusal_response(refusal: Refusal, words: fn(&Refusal) -> &'static str) -> String {
+fn refusal_response(refusal: TailnetError, words: fn(&TailnetError) -> &'static str) -> String {
     let status = refusal.status();
     let reason = match status {
         403 => "Forbidden",
@@ -376,7 +376,11 @@ fn refusal_response(refusal: Refusal, words: fn(&Refusal) -> &'static str) -> St
 /// Answers a refused connection with the sentence, after taking what the other side has sent
 /// first (so that the answer is not lost to a reset), and closes it. A computer that sends
 /// nothing is not waited for for ever.
-async fn refuse(mut stream: TcpStream, refusal: Refusal, words: fn(&Refusal) -> &'static str) {
+async fn refuse(
+    mut stream: TcpStream,
+    refusal: TailnetError,
+    words: fn(&TailnetError) -> &'static str,
+) {
     let mut first = [0_u8; 4096];
     let _ = tokio::time::timeout(Duration::from_secs(10), stream.read(&mut first)).await;
     let _ = stream
@@ -388,7 +392,7 @@ async fn refuse(mut stream: TcpStream, refusal: Refusal, words: fn(&Refusal) -> 
 async fn connection<V: Visits>(stream: TcpStream, from: SocketAddr, shared: Arc<Shared<V>>) {
     let from = SocketAddr::new(from.ip().to_canonical(), from.port());
     let Some(me) = shared.seen.borrow().clone() else {
-        return refuse(stream, Refusal::Off, shared.words).await;
+        return refuse(stream, TailnetError::Off, shared.words).await;
     };
     match admit(&shared, &me, from).await {
         Ok(welcome) => match shared.limiter.take(&welcome.peer().node) {
@@ -405,7 +409,7 @@ async fn connection<V: Visits>(stream: TcpStream, from: SocketAddr, shared: Arc<
                     })
                     .await;
             }
-            None => refuse(stream, Refusal::Busy, shared.words).await,
+            None => refuse(stream, TailnetError::Busy, shared.words).await,
         },
         Err(refusal) => refuse(stream, refusal, shared.words).await,
     }
@@ -413,7 +417,11 @@ async fn connection<V: Visits>(stream: TcpStream, from: SocketAddr, shared: Arc<
 
 /// Asks Tailscale who has `from` (not when it is this computer's own address: that is refused
 /// without asking) and judges the answer.
-async fn admit<V>(shared: &Shared<V>, me: &Identity, from: SocketAddr) -> Result<Welcome, Refusal> {
+async fn admit<V>(
+    shared: &Shared<V>,
+    me: &Identity,
+    from: SocketAddr,
+) -> Result<Welcome, TailnetError> {
     let answer = if me.owns(from.ip()) {
         Err(TailscaleError::NoSuchPeer)
     } else {

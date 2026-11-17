@@ -79,15 +79,15 @@ async fn changing_or_removing_a_space_that_is_not_there_is_refused() {
     let ghost = DesktopSpace::parse("ghost").expect("id");
     assert!(matches!(
         book.rename(&ghost, name("x")).await,
-        Err(SpaceFault::NotThere)
+        Err(SpaceError::NotThere)
     ));
     assert!(matches!(
         book.set_look(&ghost, SpaceLook::default()).await,
-        Err(SpaceFault::NotThere)
+        Err(SpaceError::NotThere)
     ));
     assert!(matches!(
         book.remove(&ghost).await,
-        Err(SpaceFault::NotThere)
+        Err(SpaceError::NotThere)
     ));
 }
 
@@ -105,7 +105,7 @@ async fn creates_are_limited_per_app_within_the_window() {
     assert!(matches!(
         book.create(&flood, name("x"), SpaceLook::default(), (late, NOW))
             .await,
-        Err(SpaceFault::TooMany)
+        Err(SpaceError::TooMany)
     ));
     // Another app is not held back by it.
     book.create(&calm, name("y"), SpaceLook::default(), (late, NOW))
@@ -147,7 +147,7 @@ async fn a_counter_at_the_top_of_its_range_is_refused_and_not_wrapped() {
     assert!(matches!(
         book.create(&photos, name("More"), SpaceLook::default(), at)
             .await,
-        Err(SpaceFault::Unsaved)
+        Err(SpaceError::Unsaved)
     ));
     assert_eq!(book.list().len(), 1, "the refused create changed nothing");
 
@@ -158,7 +158,7 @@ async fn a_counter_at_the_top_of_its_range_is_refused_and_not_wrapped() {
     assert!(matches!(
         book.create(&photos, name("x"), SpaceLook::default(), at)
             .await,
-        Err(SpaceFault::Unsaved)
+        Err(SpaceError::Unsaved)
     ));
     assert_eq!(std::fs::read_to_string(&file).expect("read"), full);
 }
@@ -180,7 +180,7 @@ async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
             (Instant::now(), NOW)
         )
         .await,
-        Err(SpaceFault::Unsaved)
+        Err(SpaceError::Unsaved)
     ));
     assert_eq!(
         std::fs::read_to_string(dir.join("spaces.json")).expect("read"),

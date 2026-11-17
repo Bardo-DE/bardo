@@ -2,7 +2,9 @@
 
 use action_client::{Intents, Transport};
 use action_manifest::ValidManifest;
-use action_tools::{ToolFault, ToolHints, ToolRefusal, ToolSpec, listing, outcome_json, prepare};
+use action_tools::{
+    ToolError, ToolHints, ToolRefusedError, ToolSpec, listing, outcome_json, prepare,
+};
 use provenance::ClientName;
 use rmcp::model::{
     CacheScope, CallToolRequestParams, CallToolResponse, CallToolResult, ContentBlock, ErrorData,
@@ -77,18 +79,18 @@ impl<T: Transport> McpEdge<T> {
         }
     }
 
-    async fn registry(&self) -> Result<Vec<ValidManifest>, ToolFault> {
+    async fn registry(&self) -> Result<Vec<ValidManifest>, ToolError> {
         self.intents.manifests().await.map_err(|error| {
             tracing::warn!(error = %error, "the router's registry could not be read");
-            ToolFault::Unavailable
+            ToolError::Unavailable
         })
     }
 
     /// The tools offered right now, each with its description: nothing while the edge is off.
     ///
     /// # Errors
-    /// Returns [`ToolFault::Unavailable`] when the router's registry cannot be read.
-    pub async fn listing(&self) -> Result<Vec<(ToolSpec, String)>, ToolFault> {
+    /// Returns [`ToolError::Unavailable`] when the router's registry cannot be read.
+    pub async fn listing(&self) -> Result<Vec<(ToolSpec, String)>, ToolError> {
         if !self.expose() {
             return Ok(Vec::new());
         }
@@ -103,18 +105,18 @@ impl<T: Transport> McpEdge<T> {
     /// declaration is refused before the router is asked anything.
     ///
     /// # Errors
-    /// Returns a [`ToolFault`] when the edge is off, the tool or its arguments are refused, the
+    /// Returns a [`ToolError`] when the edge is off, the tool or its arguments are refused, the
     /// router refuses the call, or the router is unavailable.
-    pub async fn call(&self, tool: &str, arguments: Json) -> Result<Json, ToolFault> {
+    pub async fn call(&self, tool: &str, arguments: Json) -> Result<Json, ToolError> {
         if !self.expose() {
-            return Err(ToolFault::Off);
+            return Err(ToolError::Off);
         }
         let registry = self.registry().await?;
         let call = prepare(&registry, tool, &arguments, &self.client, |_| true)?;
         match self.intents.perform(call, None, None).await {
             Ok(Ok(outcome)) => Ok(outcome_json(&outcome)),
-            Ok(Err(refusal)) => Err(ToolRefusal::from(&refusal).into()),
-            Err(_) => Err(ToolFault::Unavailable),
+            Ok(Err(refusal)) => Err(ToolRefusedError::from(&refusal).into()),
+            Err(_) => Err(ToolError::Unavailable),
         }
     }
 }
@@ -147,7 +149,7 @@ pub(crate) fn rmcp_tool(tool: &ToolSpec, description: String) -> Option<Tool> {
     Some(listed)
 }
 
-pub(crate) fn failed(fault: &ToolFault) -> CallToolResult {
+pub(crate) fn failed(fault: &ToolError) -> CallToolResult {
     CallToolResult::error(vec![ContentBlock::text(fault.to_string())])
 }
 

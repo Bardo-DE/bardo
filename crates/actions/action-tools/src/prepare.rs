@@ -2,10 +2,10 @@
 //! the same way, so the MCP edge and the per-session edge of an external ACP agent keep only their
 //! transport.
 
-use crate::fault::ToolFault;
+use crate::fault::ToolError;
 use crate::label::tool_label;
 use crate::tools::{ToolSpec, find, offered, tool_of};
-use action_manifest::{ActionDecl, ArgsFault, ValidManifest, args_from_json};
+use action_manifest::{ActionDecl, ArgsError, ValidManifest, args_from_json};
 use action_vocab::{ActionRef, CallRequest, Origin};
 use provenance::ClientName;
 use serde_json::Value as Json;
@@ -40,7 +40,7 @@ pub fn listing(
 ///
 /// # Errors
 ///
-/// Returns a [`ToolFault`] when the tool is unknown or off the menu, or an argument does not fit
+/// Returns a [`ToolError`] when the tool is unknown or off the menu, or an argument does not fit
 /// its declaration.
 pub fn prepare(
     registry: &[ValidManifest],
@@ -48,14 +48,14 @@ pub fn prepare(
     arguments: &Json,
     client: &ClientName,
     on_menu: impl Fn(&ActionRef) -> bool,
-) -> Result<CallRequest, ToolFault> {
+) -> Result<CallRequest, ToolError> {
     let (manifest, decl) = find(registry, tool)
         .filter(|(m, a)| on_menu(&ref_of(m, a)))
-        .ok_or(ToolFault::UnknownTool)?;
+        .ok_or(ToolError::UnknownTool)?;
     let given = match arguments {
         Json::Null => None,
         Json::Object(map) => Some(map),
-        _ => return Err(ArgsFault::NotAnObject.into()),
+        _ => return Err(ArgsError::NotAnObject.into()),
     };
     let (target, args) = args_from_json(decl, given, &tool_label(client))?;
     Ok(CallRequest {

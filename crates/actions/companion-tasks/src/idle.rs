@@ -6,7 +6,7 @@
 //! to be tried again later, the moment an interactive request starts.
 
 use crate::best_effort::best_effort;
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::runtime::Companion;
 use crate::seams::Surface;
 use account_capability::Tier;
@@ -84,8 +84,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
-    pub async fn tick(&mut self) -> Result<(), ServeFault> {
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
+    pub async fn tick(&mut self) -> Result<(), ServeError> {
         let now = self.clock.now();
         self.tick_at(now).await
     }
@@ -95,8 +95,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
-    pub async fn tick_at(&mut self, now: UnixSeconds) -> Result<(), ServeFault> {
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
+    pub async fn tick_at(&mut self, now: UnixSeconds) -> Result<(), ServeError> {
         let (side, effects) = side_step(
             std::mem::take(&mut self.side),
             SideInput::Tick(now),

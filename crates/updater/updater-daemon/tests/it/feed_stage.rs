@@ -9,7 +9,7 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use updater_core::LoginSession;
 use updater_daemon::config::Config;
-use updater_daemon::elevate::{ApplyFailure, Elevate, Recovery};
+use updater_daemon::elevate::{ApplyError, Elevate, Recovery};
 use updater_daemon::fetch::{
     Download, FeedError, Fetch, FetchError, Patience, Source, StageError, latest, of_version,
     stage, stage_with,
@@ -202,19 +202,19 @@ fn a_download_that_ends_short_is_given_up_on_and_never_published() {
 struct NoHelper;
 
 impl Elevate for NoHelper {
-    fn install(&self, _: &Path) -> Result<Report, ApplyFailure> {
+    fn install(&self, _: &Path) -> Result<Report, ApplyError> {
         Ok(Report::default())
     }
 
-    fn rollback(&self) -> Result<Report, ApplyFailure> {
+    fn rollback(&self) -> Result<Report, ApplyError> {
         Ok(Report::default())
     }
 
-    fn recover(&self) -> Result<Recovery, ApplyFailure> {
+    fn recover(&self) -> Result<Recovery, ApplyError> {
         Ok(Recovery::Fine)
     }
 
-    fn confirmed(&self) -> Result<(), ApplyFailure> {
+    fn confirmed(&self) -> Result<(), ApplyError> {
         Ok(())
     }
 }
@@ -301,24 +301,24 @@ struct SwitchesThenFails {
 }
 
 impl Elevate for SwitchesThenFails {
-    fn install(&self, staged: &Path) -> Result<Report, ApplyFailure> {
+    fn install(&self, staged: &Path) -> Result<Report, ApplyError> {
         updater_root::apply::install(&self.layout, staged, &Accept)
             .expect("the install itself works");
-        Err(ApplyFailure {
+        Err(ApplyError {
             code: Some(1),
             detail: "a system file could not be placed".into(),
         })
     }
 
-    fn rollback(&self) -> Result<Report, ApplyFailure> {
+    fn rollback(&self) -> Result<Report, ApplyError> {
         Ok(Report::default())
     }
 
-    fn recover(&self) -> Result<Recovery, ApplyFailure> {
+    fn recover(&self) -> Result<Recovery, ApplyError> {
         Ok(Recovery::Fine)
     }
 
-    fn confirmed(&self) -> Result<(), ApplyFailure> {
+    fn confirmed(&self) -> Result<(), ApplyError> {
         Ok(())
     }
 }

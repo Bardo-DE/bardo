@@ -14,7 +14,7 @@ use crate::cloud::accountd::{AccountVerdict, Accountd, AccountdFault, Boxed};
 use crate::cloud::own::OwnServer;
 use crate::probe::Runtime;
 use crate::probed::Standing;
-use crate::report::{ReportFault, Reports};
+use crate::report::{ReportError, Reports};
 use account_capability::Claim;
 use account_client::{AiAccountsError, LinkError};
 use account_client_dbus::AiAccounts;
@@ -114,10 +114,10 @@ impl Reports for AccountdBroker {
         runtime: Runtime,
         claims: &'a [Claim],
         standing: Standing,
-    ) -> Boxed<'a, Result<AccountId, ReportFault>> {
+    ) -> Boxed<'a, Result<AccountId, ReportError>> {
         Box::pin(async move {
             let provider = ProviderId::parse(runtime.provider())
-                .map_err(|error| ReportFault::Rejected(Arc::new(error)))?;
+                .map_err(|error| ReportError::Rejected(Arc::new(error)))?;
             let state = match standing {
                 Standing::Online => AccountState::Ok,
                 Standing::Offline => AccountState::Offline,
@@ -128,9 +128,9 @@ impl Reports for AccountdBroker {
                 .map_err(|error| match error {
                     AiAccountsError::Link(LinkError::Unreachable)
                     | AiAccountsError::Refused(Refusal::Unavailable) => {
-                        ReportFault::Unavailable(Arc::new(error))
+                        ReportError::Unavailable(Arc::new(error))
                     }
-                    _ => ReportFault::Rejected(Arc::new(error)),
+                    _ => ReportError::Rejected(Arc::new(error)),
                 })
         })
     }

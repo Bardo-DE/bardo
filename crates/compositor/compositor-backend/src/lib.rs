@@ -38,7 +38,7 @@ pub use headless::{
     VblankSource, VirtualOutputSpec,
 };
 pub use input::{DeviceName, DeviceSpec, VirtualDevice, VirtualInput};
-pub use session::SessionFault;
+pub use session::SessionError;
 pub use tty::TtyBackend;
 pub use winit::{WindowTurn, WinitBackend};
 pub use winit_held::HeldInput;

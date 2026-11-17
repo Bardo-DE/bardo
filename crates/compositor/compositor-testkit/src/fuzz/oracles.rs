@@ -6,7 +6,7 @@
 //! 4. `Model::check_invariants` holds;
 //! 5. privileged globals never appear on a connection that may not see them (I7).
 
-use super::failure::{FuzzFailure, PanicSite, panic_message};
+use super::failure::{FuzzError, PanicSite, panic_message};
 use super::host::FuzzHost;
 use crate::fixture::ClientId;
 use compositor_core::policy::{ConnectionRole, GlobalKind, advertised};
@@ -35,17 +35,17 @@ pub(super) fn snapshot<H: FuzzHost>(host: &mut H, id: ClientId) -> Snapshot {
 }
 
 /// Oracle 1: pumps, and says so if the compositor panicked doing it.
-pub(super) fn alive_pump<H: FuzzHost>(host: &mut H) -> Result<(), FuzzFailure> {
+pub(super) fn alive_pump<H: FuzzHost>(host: &mut H) -> Result<(), FuzzError> {
     catch_unwind(AssertUnwindSafe(|| host.pump()))
         .map(|_progressed| ())
-        .map_err(|payload| FuzzFailure::Panicked(PanicSite::Pump, panic_message(&*payload)))
+        .map_err(|payload| FuzzError::Panicked(PanicSite::Pump, panic_message(&*payload)))
 }
 
 /// Oracle 2 for one client: no protocol error, or a documented one.
-pub(super) fn documented_error<H: FuzzHost>(host: &mut H, id: ClientId) -> Result<(), FuzzFailure> {
+pub(super) fn documented_error<H: FuzzHost>(host: &mut H, id: ClientId) -> Result<(), FuzzError> {
     let client = host.client(id);
     match (client.protocol_error(), client.error_is_documented()) {
-        (Some(error), Some(false)) => Err(FuzzFailure::UndocumentedError { client: id, error }),
+        (Some(error), Some(false)) => Err(FuzzError::UndocumentedError { client: id, error }),
         _ => Ok(()),
     }
 }
@@ -55,18 +55,18 @@ pub(super) fn bystander_ok<H: FuzzHost>(
     host: &mut H,
     id: ClientId,
     before: &Snapshot,
-) -> Result<(), FuzzFailure> {
+) -> Result<(), FuzzError> {
     let done = host.client(id).sync()?;
     alive_pump(host)?;
     if let Some(error) = host.client(id).protocol_error() {
-        return Err(FuzzFailure::BystanderError(error));
+        return Err(FuzzError::BystanderError(error));
     }
     if !done.is_done() {
-        return Err(FuzzFailure::BystanderStalled);
+        return Err(FuzzError::BystanderStalled);
     }
     let after = snapshot(host, id);
     if &after != before {
-        return Err(FuzzFailure::BystanderChanged {
+        return Err(FuzzError::BystanderChanged {
             before: Box::new(before.clone()),
             after: Box::new(after),
         });
@@ -75,8 +75,8 @@ pub(super) fn bystander_ok<H: FuzzHost>(
 }
 
 /// Oracle 4.
-pub(super) fn invariants<H: FuzzHost>(host: &H) -> Result<(), FuzzFailure> {
-    host.invariants().map_err(FuzzFailure::InvariantBroke)
+pub(super) fn invariants<H: FuzzHost>(host: &H) -> Result<(), FuzzError> {
+    host.invariants().map_err(FuzzError::InvariantBroke)
 }
 
 /// The privileged globals no `Public` or `Sandboxed` connection may be offered.
@@ -92,7 +92,7 @@ pub(super) fn privilege<H: FuzzHost>(
     host: &mut H,
     id: ClientId,
     role: &ConnectionRole,
-) -> Result<(), FuzzFailure> {
+) -> Result<(), FuzzError> {
     let seen: Vec<String> = host
         .client(id)
         .globals()
@@ -104,7 +104,7 @@ pub(super) fn privilege<H: FuzzHost>(
     let privileged_role = matches!(role, ConnectionRole::Shell | ConnectionRole::Agent);
     for interface in &seen {
         if !privileged_role && PRIVILEGED.contains(&interface.as_str()) {
-            return Err(FuzzFailure::PrivilegedOffered {
+            return Err(FuzzError::PrivilegedOffered {
                 role: role.clone(),
                 interface: interface.clone(),
             });
@@ -112,7 +112,7 @@ pub(super) fn privilege<H: FuzzHost>(
         if let Some(kind) = kind_of(interface)
             && !advertised(kind, role)
         {
-            return Err(FuzzFailure::GlobalNotForRole {
+            return Err(FuzzError::GlobalNotForRole {
                 role: role.clone(),
                 interface: interface.clone(),
             });

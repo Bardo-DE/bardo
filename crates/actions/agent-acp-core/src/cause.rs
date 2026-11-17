@@ -1,11 +1,11 @@
 //! Where an agent's start went wrong.
 //!
-//! `BackendFault::Unavailable` is one fault for many causes (a folder the sandbox may not write, a
+//! `BackendError::Unavailable` is one fault for many causes (a folder the sandbox may not write, a
 //! process that did not start, an agent that answered nonsense); the person is told one sentence,
 //! so the cause is written to the log at the step where it is dropped, and [`Step`] names that
 //! step.
 
-use agent_session::BackendFault;
+use agent_session::BackendError;
 use std::fmt;
 
 /// The step of starting an agent that failed.
@@ -57,9 +57,9 @@ impl Step {
     }
 
     /// `Unavailable`, with the step and its cause written to the log.
-    pub fn unavailable(self, cause: &dyn fmt::Display) -> BackendFault {
+    pub fn unavailable(self, cause: &dyn fmt::Display) -> BackendError {
         tracing::warn!("{}", self.told(cause));
-        BackendFault::Unavailable
+        BackendError::Unavailable
     }
 }
 
@@ -75,7 +75,7 @@ mod tests {
         assert!(told.contains("network forwarder"), "{told}");
         let other = Step::Spawn.told(&"the sandbox did not start");
         assert_ne!(told, other);
-        assert_eq!(Step::Spawn.unavailable(&cause), BackendFault::Unavailable);
+        assert_eq!(Step::Spawn.unavailable(&cause), BackendError::Unavailable);
     }
 
     #[test]

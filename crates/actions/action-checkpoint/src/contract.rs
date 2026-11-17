@@ -5,7 +5,7 @@
 //! and the means to change it from outside, as a person or an agent would.
 
 use crate::ids::WorkRoot;
-use crate::store::{ApplyAsk, CheckpointStore, DropAsk, PlanAsk, StoreFault, TakeAsk};
+use crate::store::{ApplyAsk, CheckpointStore, CheckpointStoreError, DropAsk, PlanAsk, TakeAsk};
 use action_core::{CheckpointId, PlanDigest, WorkPath};
 use base_ids::Count;
 use base_time::UnixSeconds;
@@ -110,7 +110,7 @@ pub async fn run<S: CheckpointStore, W: Workbench>(store: &S, bench: &W) {
     let wrong = store
         .apply(apply(&root, &session, 1, PlanDigest("0".repeat(64))))
         .await;
-    assert_eq!(wrong, Err(StoreFault::PlanStale));
+    assert_eq!(wrong, Err(CheckpointStoreError::PlanStale));
     assert_eq!(bench.read(&a).as_deref(), Some("ONE"));
     assert_eq!(bench.read(&c).as_deref(), Some("three"));
 
@@ -127,22 +127,22 @@ pub async fn run<S: CheckpointStore, W: Workbench>(store: &S, bench: &W) {
     assert_eq!(store.plan(plan(&root, &session, 1)).await, Ok(same));
     // The same confirmation is stale once the folder has moved on.
     let late = store.apply(apply(&root, &session, 1, change.digest)).await;
-    assert_eq!(late, Err(StoreFault::PlanStale));
+    assert_eq!(late, Err(CheckpointStoreError::PlanStale));
 
     // A point that is not held is not a plan.
     assert_eq!(
         store.plan(plan(&root, &session, 9)).await,
-        Err(StoreFault::NoSuchPoint)
+        Err(CheckpointStoreError::NoSuchPoint)
     );
     assert_eq!(
         store.plan(plan(&root, &other, 1)).await,
-        Err(StoreFault::NoSuchPoint)
+        Err(CheckpointStoreError::NoSuchPoint)
     );
 
     // Too many files is refused and saves nothing.
     assert_eq!(
         store.take(take(&root, &session, 2, 1)).await,
-        Err(StoreFault::TooLarge)
+        Err(CheckpointStoreError::TooLarge)
     );
     assert_eq!(store.held(&root, &session).await, Ok(vec![saved]));
 
@@ -160,14 +160,14 @@ pub async fn run<S: CheckpointStore, W: Workbench>(store: &S, bench: &W) {
     assert_eq!(store.held(&root, &session).await, Ok(vec![second]));
     assert_eq!(
         store.plan(plan(&root, &session, 1)).await,
-        Err(StoreFault::NoSuchPoint)
+        Err(CheckpointStoreError::NoSuchPoint)
     );
 
     // A folder that cannot keep points says so.
     if let Some(bare) = bench.without_history() {
         assert_eq!(
             store.take(take(&bare, &session, 1, 100)).await,
-            Err(StoreFault::NoHistory)
+            Err(CheckpointStoreError::NoHistory)
         );
     }
 }

@@ -942,7 +942,7 @@ mod routed {
     use super::*;
     use account_core::consent::{Decision, Grant, Usage};
     use account_core::{AppId, DataClass, Isolation};
-    use action_core::LinkFault;
+    use action_core::LinkError;
     use action_core::{
         AppRefusal, CallRefusal, ConfirmAnswer, GrantScope as ConsentScope, Invocation,
     };
@@ -1057,8 +1057,8 @@ mod routed {
             clippy::unused_async_trait_impl,
             reason = "the `AppLink` trait is async; this fake refuses or answers at once"
         )]
-        async fn context(&self, _: &AppName) -> Result<action_core::ContextSnapshot, LinkFault> {
-            Err(LinkFault::Unavailable)
+        async fn context(&self, _: &AppName) -> Result<action_core::ContextSnapshot, LinkError> {
+            Err(LinkError::Unavailable)
         }
 
         #[expect(
@@ -1077,8 +1077,8 @@ mod routed {
             &self,
             _: &AppName,
             _: &provenance::EntityId,
-        ) -> Result<Preview, LinkFault> {
-            Err(LinkFault::Unavailable)
+        ) -> Result<Preview, LinkError> {
+            Err(LinkError::Unavailable)
         }
 
         #[expect(
@@ -1089,8 +1089,8 @@ mod routed {
             &self,
             _: &AppName,
             _: action_core::SuggestAsk,
-        ) -> Result<Vec<action_vocab::EntityRef>, LinkFault> {
-            Err(LinkFault::Unavailable)
+        ) -> Result<Vec<action_vocab::EntityRef>, LinkError> {
+            Err(LinkError::Unavailable)
         }
     }
 

@@ -369,14 +369,14 @@ async fn a_refusal_keeps_the_copy_with_its_reason_and_is_tried_again() {
     })
     .await;
     let status = rig.drive.status(&id).expect("status");
-    assert_eq!(status.reason, Some(Reason::NoRoom));
+    assert_eq!(status.reason, Some(SkipError::NoRoom));
     assert_eq!(rig.drive.read(&id, 0, 8).await.expect("kept"), b"abc");
     rig.sink.refuse(Some(Refuse::Forbidden));
     rig.drive.retry();
     eventually("refused again", || {
         rig.drive
             .status(&id)
-            .is_some_and(|s| s.reason == Some(Reason::MayNotWrite))
+            .is_some_and(|s| s.reason == Some(SkipError::MayNotWrite))
     })
     .await;
     rig.sink.refuse(None);
@@ -420,7 +420,7 @@ async fn eviction_never_takes_what_was_changed_here() {
     );
     assert_eq!(
         rig.drive.remove_download(&remote("r")),
-        Err(Reason::Waiting)
+        Err(SkipError::Waiting)
     );
     assert_eq!(rig.state(&remote("r")), ItemState::Waiting);
     rig.drive.set_paused(false);
@@ -508,7 +508,7 @@ async fn a_newer_version_on_the_drive_keeps_both_and_each_names_the_other() {
         rig.drive.read(&remote("r"), 0, 64).await.expect("read"),
         b"theirs"
     );
-    assert_eq!(rig.drive.remove_download(&copy), Err(Reason::Conflict));
+    assert_eq!(rig.drive.remove_download(&copy), Err(SkipError::Conflict));
     rig.drive.set_paused(false);
     rig.sent(1).await;
     assert_eq!(
@@ -1093,7 +1093,7 @@ async fn a_file_in_use_on_the_drive_waits_with_a_reason_that_says_so() {
     let id = rig.write_new(&NodeId::Top, "a.txt", b"a").await;
     eventually("it waits with a reason", || {
         rig.drive.status(&id).is_some_and(|status| {
-            status.state == ItemState::Waiting && status.reason == Some(Reason::InUse)
+            status.state == ItemState::Waiting && status.reason == Some(SkipError::InUse)
         })
     })
     .await;
@@ -1109,11 +1109,14 @@ async fn a_name_the_drive_refuses_and_a_change_it_declines_say_what_they_are() {
     rig.sink.names(|name| !name.contains('#'));
     rig.drive.set_paused(false);
     let reason_of = |id: &NodeId| rig.drive.status(id).and_then(|status| status.reason);
-    eventually("refused", || reason_of(&bad) == Some(Reason::NameRefused)).await;
+    eventually("refused", || {
+        reason_of(&bad) == Some(SkipError::NameRefused)
+    })
+    .await;
     rig.sink.refuse(Some(Refuse::Declined));
     let declined = rig.write_new(&NodeId::Top, "c.txt", b"c").await;
     eventually("declined", || {
-        reason_of(&declined) == Some(Reason::Declined)
+        reason_of(&declined) == Some(SkipError::Declined)
     })
     .await;
 }
@@ -1402,7 +1405,7 @@ async fn a_file_this_computer_has_no_room_to_copy_for_its_upload_says_so() {
     held(&rig.drive.inner.faults).insert("snapshot", std::io::ErrorKind::StorageFull);
     let id = rig.write_new(&NodeId::Top, "a.txt", b"a").await;
     eventually("said", || {
-        rig.drive.status(&id).and_then(|status| status.reason) == Some(Reason::NoRoomHere)
+        rig.drive.status(&id).and_then(|status| status.reason) == Some(SkipError::NoRoomHere)
     })
     .await;
     held(&rig.drive.inner.faults).clear();

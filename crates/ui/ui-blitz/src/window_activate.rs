@@ -40,7 +40,7 @@ pub(crate) fn raise(window: &dyn Window, token: Option<String>) {
 }
 
 #[cfg(all(target_os = "linux", feature = "desktop"))]
-fn activate(window: &dyn Window, token: &str) -> Result<(), ActivateFailed> {
+fn activate(window: &dyn Window, token: &str) -> Result<(), ActivateError> {
     use crate::{wayland_surface::adopt, xdg_activation};
     use raw_window_handle::HasWindowHandle;
     let adopted = adopt(window.display_handle()?, window.window_handle()?)?;
@@ -49,13 +49,13 @@ fn activate(window: &dyn Window, token: &str) -> Result<(), ActivateFailed> {
 
 /// Elsewhere, or without `desktop`, there is no Wayland to ask.
 #[cfg(not(all(target_os = "linux", feature = "desktop")))]
-fn activate(_window: &dyn Window, _token: &str) -> Result<(), ActivateFailed> {
-    Err(ActivateFailed::NotLinux)
+fn activate(_window: &dyn Window, _token: &str) -> Result<(), ActivateError> {
+    Err(ActivateError::NotLinux)
 }
 
 /// Why a token could not be handed over.
 #[derive(Debug, thiserror::Error)]
-enum ActivateFailed {
+enum ActivateError {
     #[error("the window has no handle: {0}")]
     Handle(#[from] raw_window_handle::HandleError),
     #[cfg(all(target_os = "linux", feature = "desktop"))]

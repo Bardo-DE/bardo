@@ -283,12 +283,12 @@ pub enum CommitVerdict {
     /// It would succeed only as a full modeset.
     NeedsModeset,
     /// It would fail.
-    Refused(KmsRefusal),
+    Refused(KmsRefusedError),
 }
 
 /// Why the kernel refuses a commit.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum KmsRefusal {
+pub enum KmsRefusedError {
     /// Not enough bandwidth for the modes together.
     #[error("not enough bandwidth")]
     Bandwidth,
@@ -320,7 +320,7 @@ pub enum KmsError {
     UnknownConnector(ConnectorId),
     /// The commit was refused.
     #[error("commit refused: {0}")]
-    Refused(#[from] KmsRefusal),
+    Refused(#[from] KmsRefusedError),
     /// The device went away (an unplugged eGPU, a revoked session).
     #[error("device {} is gone", .0.display())]
     DeviceGone(PathBuf),

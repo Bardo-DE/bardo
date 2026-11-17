@@ -9,7 +9,7 @@ use model_extract::{
 };
 use model_provider::{
     CharCount, ChoiceText, Extract, Field, FieldName, JsonText, OutputShape, Part, Role,
-    SchemaDialect, Shape, ShapeFault, StopReason, ToolCall, ToolCallId, ToolChoice, ToolName,
+    SchemaDialect, Shape, ShapeError, StopReason, ToolCall, ToolCallId, ToolChoice, ToolName,
     ToolSpec, check_sequence,
 };
 use support::{base, end};
@@ -25,10 +25,10 @@ impl Extract for Verdict {
         clippy::map_err_ignore,
         reason = "a shape fault never carries the reply: the model's text may be untrusted"
     )]
-    fn read(json: &JsonText) -> Result<Self, ShapeFault> {
+    fn read(json: &JsonText) -> Result<Self, ShapeError> {
         serde_json::from_str(json.as_str())
             .map(Verdict)
-            .map_err(|_| ShapeFault::NotJson)
+            .map_err(|_| ShapeError::NotJson)
     }
 }
 
@@ -50,7 +50,7 @@ impl Extract for Review {
             },
         ])
     }
-    fn read(json: &JsonText) -> Result<Self, ShapeFault> {
+    fn read(json: &JsonText) -> Result<Self, ShapeError> {
         let value: serde_json::Value =
             serde_json::from_str(json.as_str()).expect("the shape was checked as JSON before");
         Ok(Review {
@@ -200,7 +200,7 @@ fn a_bare_choice_or_integer_reply_is_read_as_its_value() {
         fn shape() -> Shape {
             Shape::Integer { min: 0, max: 9 }
         }
-        fn read(json: &JsonText) -> Result<Self, ShapeFault> {
+        fn read(json: &JsonText) -> Result<Self, ShapeError> {
             Ok(Int(json.as_str().parse().unwrap_or(-1)))
         }
     }
@@ -357,7 +357,7 @@ fn a_session_reads_a_list_shape_through_the_checker_before_the_reader() {
                 max: Count(2),
             }
         }
-        fn read(json: &JsonText) -> Result<Self, ShapeFault> {
+        fn read(json: &JsonText) -> Result<Self, ShapeError> {
             // A reader that would accept anything: the shape check is what refuses.
             Ok(Ids(json.as_str().len()))
         }

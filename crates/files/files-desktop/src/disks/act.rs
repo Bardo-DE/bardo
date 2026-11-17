@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use files_core::{Cause, EjectFailure, FolderPath, MountFailure, ProgramName, VolumeId};
+use files_core::{EjectError, FolderPath, MountError, ProgramName, VolumeCauseError, VolumeId};
 
 use zbus::zvariant::Value;
 
@@ -38,19 +38,18 @@ impl Disks {
     ///
     /// # Errors
     ///
-    /// `MountFailure::Gone` when the disk is no longer there, and `Other` when the service refuses
+    /// `MountError::Gone` when the disk is no longer there, and `Other` when the service refuses
     /// or gives no usable folder.
-    pub async fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
+    pub async fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountError> {
         let filesystem = self
             .filesystem(id)
             .await
-            .map_err(|error| MountFailure::Gone(Some(Cause::new(error))))?;
+            .map_err(|error| MountError::Gone(Some(VolumeCauseError::new(error))))?;
         match filesystem.mount(HashMap::new()).await {
-            Ok(path) => {
-                FolderPath::new(path).map_err(|error| MountFailure::Other(Some(Cause::new(error))))
-            }
+            Ok(path) => FolderPath::new(path)
+                .map_err(|error| MountError::Other(Some(VolumeCauseError::new(error)))),
             Err(error) => match Said::from_error(&error) {
-                Said::AlreadyMounted => self.mounted_at(id).await.ok_or(MountFailure::Other(None)),
+                Said::AlreadyMounted => self.mounted_at(id).await.ok_or(MountError::Other(None)),
                 said @ (Said::Busy | Said::NotAllowed | Said::NotMounted | Said::Other) => {
                     Err(said.mount_failure(error))
                 }
@@ -63,9 +62,9 @@ impl Disks {
     ///
     /// # Errors
     ///
-    /// `EjectFailure` when the disk cannot be unmounted or its drive cannot be switched off,
+    /// `EjectError` when the disk cannot be unmounted or its drive cannot be switched off,
     /// including when programs have it open.
-    pub async fn eject(&self, id: &VolumeId) -> Result<(), EjectFailure> {
+    pub async fn eject(&self, id: &VolumeId) -> Result<(), EjectError> {
         self.eject_with(id, false).await
     }
 
@@ -75,18 +74,18 @@ impl Disks {
     ///
     /// # Errors
     ///
-    /// `EjectFailure` when the disk cannot be unmounted even by force, or its drive cannot be
+    /// `EjectError` when the disk cannot be unmounted even by force, or its drive cannot be
     /// switched off.
-    pub async fn force_eject(&self, id: &VolumeId) -> Result<(), EjectFailure> {
+    pub async fn force_eject(&self, id: &VolumeId) -> Result<(), EjectError> {
         self.eject_with(id, true).await
     }
 
     /// `force`: unmount even though something has the disk open.
-    async fn eject_with(&self, id: &VolumeId, force: bool) -> Result<(), EjectFailure> {
+    async fn eject_with(&self, id: &VolumeId, force: bool) -> Result<(), EjectError> {
         let filesystem = self
             .filesystem(id)
             .await
-            .map_err(|error| EjectFailure::Gone(Some(Cause::new(error))))?;
+            .map_err(|error| EjectError::Gone(Some(VolumeCauseError::new(error))))?;
         let mounts = self.mounts_of(id).await;
         match filesystem.unmount(unmount_options(force)).await {
             Ok(()) => {}
@@ -131,16 +130,16 @@ impl Disks {
     }
 
     /// After the unmount: power the drive off when it can be, else eject its media when it can be.
-    async fn take_away(&self, id: &VolumeId) -> Result<(), EjectFailure> {
+    async fn take_away(&self, id: &VolumeId) -> Result<(), EjectError> {
         let Some(drive) = self.drive_of(id).await else {
             return Ok(());
         };
         let proxy = DriveProxy::builder(&self.connection)
             .path(drive.path)
-            .map_err(|error| EjectFailure::Other(Some(Cause::new(error))))?
+            .map_err(|error| EjectError::Other(Some(VolumeCauseError::new(error))))?
             .build()
             .await
-            .map_err(|error| EjectFailure::Other(Some(Cause::new(error))))?;
+            .map_err(|error| EjectError::Other(Some(VolumeCauseError::new(error))))?;
         let done = match (drive.can_power_off, drive.ejectable) {
             (true, _) => proxy.power_off(HashMap::new()).await,
             (false, true) => proxy.eject(HashMap::new()).await,

@@ -7,19 +7,19 @@
 mod corpus;
 mod smoke;
 
-use crate::acp::PlayFault;
+use crate::acp::PlayError;
 use crate::cli::{Agent, Command};
 use crate::regress::RegressError;
-use crate::report_file::ReportFault;
+use crate::report_file::ReportError;
 use crate::{Engine, EngineError, Reach};
-use action_accept::keys_home::HomeFault;
+use action_accept::keys_home::HomeError;
 use action_accept::world::Binaries;
 use action_eval_core::{AttackError, SummaryError};
 use std::process::ExitCode;
 
 /// Why a command did not run. The words are what the program prints after `agent-live: `.
 #[derive(Debug, thiserror::Error)]
-pub enum CommandFault {
+pub enum CommandError {
     /// The corpus cases could not be read.
     #[error(transparent)]
     Cases(#[from] action_eval::CorpusError),
@@ -43,13 +43,13 @@ pub enum CommandFault {
     Engine(#[from] EngineError),
     /// The key home is not usable.
     #[error(transparent)]
-    Home(#[from] HomeFault),
+    Home(#[from] HomeError),
     /// The report could not be written.
     #[error(transparent)]
-    Report(#[from] ReportFault),
+    Report(#[from] ReportError),
     /// The agent could not be hosted.
     #[error(transparent)]
-    Play(#[from] PlayFault),
+    Play(#[from] PlayError),
     /// A trace directory could not be made or written.
     #[error(transparent)]
     Io(#[from] std::io::Error),
@@ -83,8 +83,8 @@ pub enum CommandFault {
 ///
 /// # Errors
 ///
-/// Returns a [`CommandFault`] when the command cannot be run to its end.
-pub async fn run(command: Command, binaries: &Binaries) -> Result<ExitCode, CommandFault> {
+/// Returns a [`CommandError`] when the command cannot be run to its end.
+pub async fn run(command: Command, binaries: &Binaries) -> Result<ExitCode, CommandError> {
     match command {
         Command::Corpus(args) => Box::pin(corpus::corpus(args, binaries)).await,
         Command::Smoke(args) => Box::pin(smoke::smoke(args, binaries)).await,

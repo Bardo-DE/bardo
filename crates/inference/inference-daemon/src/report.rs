@@ -18,7 +18,7 @@ use std::sync::Arc;
 
 /// Why a report was not taken.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum ReportFault {
+pub enum ReportError {
     /// There is no store to report to: ask again at the next look.
     #[error("there is no store to report to")]
     Unreachable,
@@ -38,7 +38,7 @@ pub trait Reports: Debug + Send + Sync + 'static {
         runtime: Runtime,
         claims: &'a [Claim],
         standing: Standing,
-    ) -> Boxed<'a, Result<AccountId, ReportFault>>;
+    ) -> Boxed<'a, Result<AccountId, ReportError>>;
 }
 
 /// No accountd: every report is `Unreachable`, so the daemon serves its probed runtimes on its
@@ -52,8 +52,8 @@ impl Reports for NoReports {
         _: Runtime,
         _: &'a [Claim],
         _: Standing,
-    ) -> Boxed<'a, Result<AccountId, ReportFault>> {
-        Box::pin(async { Err(ReportFault::Unreachable) })
+    ) -> Boxed<'a, Result<AccountId, ReportError>> {
+        Box::pin(async { Err(ReportError::Unreachable) })
     }
 }
 

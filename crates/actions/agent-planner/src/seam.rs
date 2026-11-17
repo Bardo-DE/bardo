@@ -5,9 +5,9 @@
 
 use crate::catalogue::Catalogue;
 use crate::choices::ParamChoices;
-use crate::planner::{PlanFault, PlannerReply};
+use crate::planner::{PlanError, PlannerReply};
 use crate::role::RoleText;
-use crate::summarise::{SummariseFault, Summarised};
+use crate::summarise::{SummariseError, Summarised};
 use crate::voice::Voice;
 use action_core::PlannerView;
 use agent_loop::SummaryInput;
@@ -38,17 +38,17 @@ pub trait Planner: Send + Sync {
     fn converse(
         &self,
         view: &PlannerView,
-    ) -> impl Future<Output = Result<PlannerReply, PlanFault>> + Send;
+    ) -> impl Future<Output = Result<PlannerReply, PlanError>> + Send;
 
     /// Runs a chat turn to its end and returns the reply (the idle pass's narratives).
     fn chat(
         &self,
         request: ChatRequest,
-    ) -> impl Future<Output = Result<ChatReply, PlanFault>> + Send;
+    ) -> impl Future<Output = Result<ChatReply, PlanError>> + Send;
 
     /// The account of a task's oldest steps, from what the planner was shown alone.
     fn summarise(
         &self,
         input: &SummaryInput,
-    ) -> impl Future<Output = Result<Summarised, SummariseFault>> + Send;
+    ) -> impl Future<Output = Result<Summarised, SummariseError>> + Send;
 }

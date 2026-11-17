@@ -3,7 +3,7 @@
 use compositor_backend::headless::ConnectorEvent;
 use compositor_backend::tty::{
     CommitVerdict, ConnectorId, ConnectorStatus, CrtcId, DevicePath, EdidError, Kms, KmsCommit,
-    KmsError, KmsRefusal, KnownConnectors, OutputCommit, TtyDevices, output_facts, parse_edid,
+    KmsError, KmsRefusedError, KnownConnectors, OutputCommit, TtyDevices, output_facts, parse_edid,
     plan_outputs, reconcile,
 };
 use compositor_core::OutputName;
@@ -57,7 +57,7 @@ fn a_frame_commit_after_the_modeset_needs_none_and_a_mode_change_does() {
     assert_eq!(kms.test(&change), CommitVerdict::NeedsModeset);
     assert!(matches!(
         kms.commit(change),
-        Err(KmsError::Refused(KmsRefusal::ModesetForbidden))
+        Err(KmsError::Refused(KmsRefusedError::ModesetForbidden))
     ));
 }
 
@@ -69,11 +69,11 @@ fn the_kernel_refuses_what_does_not_fit() {
     let mut crowded = plan.clone();
     crowded[1].crtc = crowded[0].crtc;
     let verdict = kms.test(&KmsCommit::new(crowded, true));
-    assert_eq!(verdict, CommitVerdict::Refused(KmsRefusal::NoCrtc));
+    assert_eq!(verdict, CommitVerdict::Refused(KmsRefusedError::NoCrtc));
     let mut odd = plan[..1].to_vec();
     odd[0].mode = kms.resources().connectors[1].modes[0];
     let verdict = kms.test(&KmsCommit::new(odd, true));
-    assert_eq!(verdict, CommitVerdict::Refused(KmsRefusal::Mode));
+    assert_eq!(verdict, CommitVerdict::Refused(KmsRefusedError::Mode));
 }
 
 #[test]
@@ -226,7 +226,7 @@ fn variable_refresh_follows_the_policy_only_on_capable_monitors() {
     forced[1].vrr = true;
     assert_eq!(
         kms.test(&KmsCommit::new(forced, true)),
-        CommitVerdict::Refused(KmsRefusal::Unsupported)
+        CommitVerdict::Refused(KmsRefusedError::Unsupported)
     );
 }
 
@@ -261,7 +261,7 @@ fn an_unplugged_connector_goes_dark_and_cannot_be_driven() {
     );
     assert_eq!(
         kms.test(&commit),
-        CommitVerdict::Refused(KmsRefusal::Unsupported)
+        CommitVerdict::Refused(KmsRefusedError::Unsupported)
     );
     assert_eq!(plan_outputs(&kms.resources(), &no_wishes(), false).len(), 2);
 }

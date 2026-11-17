@@ -39,7 +39,7 @@ pub use session_actions::{
     DryRunActions, DryRunOffers, LogindActions, SessionActions, dry_run_line,
 };
 pub use wall_clock::{FixedClock, SystemClock, WallClock};
-pub use wayland::{HandedSocket, WaylandRoute, WaylandUnreached};
+pub use wayland::{HandedSocket, WaylandRoute, WaylandUnreachedError};
 
 /// The seams every service is started with.
 #[derive(Debug, Clone)]

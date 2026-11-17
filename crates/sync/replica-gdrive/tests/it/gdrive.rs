@@ -9,7 +9,7 @@ use account_fake_servers::google::md5_hex;
 use common::{Server, TOKEN};
 use replica_gdrive::{CHUNK_UNIT, Uploads};
 use sync_core::{
-    Anchor, BaseVersion, Blob, ByteRange, Change, Cursor, ItemPath, More, PutItem, PutRefused,
+    Anchor, BaseVersion, Blob, ByteRange, Change, Cursor, ItemPath, More, PutError, PutItem,
     PutTarget, Replica as _, ReplicaError, RetryAfter,
 };
 
@@ -266,10 +266,7 @@ async fn a_small_file_is_one_multipart_request_and_a_large_one_a_resumable_sessi
             BaseVersion::At(sync_core::RemoteVersion("0".into())),
         )
         .await;
-    assert!(
-        matches!(refused, Err(PutRefused::Conflict(_))),
-        "{refused:?}"
-    );
+    assert!(matches!(refused, Err(PutError::Conflict(_))), "{refused:?}");
     assert!(
         server.google.hits()[mark..]
             .iter()
@@ -302,10 +299,7 @@ async fn a_remote_edit_between_listing_and_write_is_a_conflict_and_nothing_is_ov
             BaseVersion::At(item.version.clone()),
         )
         .await;
-    assert!(
-        matches!(refused, Err(PutRefused::Conflict(_))),
-        "{refused:?}"
-    );
+    assert!(matches!(refused, Err(PutError::Conflict(_))), "{refused:?}");
     assert_eq!(
         server.google.drive_file("doc.txt"),
         Some(b"theirs".to_vec())
@@ -314,10 +308,7 @@ async fn a_remote_edit_between_listing_and_write_is_a_conflict_and_nothing_is_ov
     let removed = replica
         .remove(&item.id, BaseVersion::At(item.version))
         .await;
-    assert!(
-        matches!(removed, Err(PutRefused::Conflict(_))),
-        "{removed:?}"
-    );
+    assert!(matches!(removed, Err(PutError::Conflict(_))), "{removed:?}");
     assert_eq!(
         server.google.drive_file("doc.txt"),
         Some(b"theirs".to_vec())
@@ -380,12 +371,12 @@ async fn a_throttled_request_is_a_retry_with_the_servers_wait_and_a_bad_path_is_
         replica
             .put(new_item("a.txt", b"x"), BaseVersion::Absent)
             .await,
-        Err(PutRefused::Transient(RetryAfter(9)))
+        Err(PutError::Transient(RetryAfter(9)))
     );
     for path in ["", "/a", "a//b", "../a"] {
         assert_eq!(
             replica.put(new_item(path, b"x"), BaseVersion::Absent).await,
-            Err(PutRefused::Forbidden),
+            Err(PutError::Forbidden),
             "{path:?}"
         );
     }

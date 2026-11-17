@@ -14,7 +14,7 @@ use zbus::message::Header;
 
 /// Why the daemon stopped serving.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ServeFault {
+pub enum ServeError {
     /// The bus name is taken or the connection failed.
     #[error("bus: {0}")]
     Bus(String),
@@ -27,8 +27,8 @@ pub enum ServeFault {
     clippy::needless_pass_by_value,
     reason = "used as `map_err(bus)`, which hands the error over by value"
 )]
-fn bus(error: zbus::Error) -> ServeFault {
-    ServeFault::Bus(error.to_string())
+fn bus(error: zbus::Error) -> ServeError {
+    ServeError::Bus(error.to_string())
 }
 
 /// `org.bardo.Reader1` over a service.
@@ -89,12 +89,12 @@ impl<P: InferTransport + 'static, I: IntentsTransport + 'static> ReaderObject<P,
 ///
 /// # Errors
 ///
-/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
+/// Returns [`ServeError`] when the daemon could not start serving or stopped serving.
 pub async fn serve_on<P, I>(
     connection: &BusConnection,
     service: Arc<ReaderService<P, I>>,
     callers: Arc<Identity>,
-) -> Result<(), ServeFault>
+) -> Result<(), ServeError>
 where
     P: InferTransport + 'static,
     I: IntentsTransport + 'static,
@@ -108,7 +108,7 @@ where
     dbus_kit::ready::serving(connection).await.map_err(bus)?;
     dbus_kit::name::claim(connection, READER_BUS)
         .await
-        .map_err(|error| ServeFault::Bus(error.to_string()))
+        .map_err(|error| ServeError::Bus(error.to_string()))
 }
 
 /// Claims `org.bardo.Reader1` on the session bus and serves `Extract(session, ask)` until the
@@ -119,18 +119,18 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
+/// Returns [`ServeError`] when the daemon could not start serving or stopped serving.
 pub async fn serve<P, I>(
     service: Arc<ReaderService<P, I>>,
     env: &impl Fn(&str) -> Option<String>,
-) -> Result<(), ServeFault>
+) -> Result<(), ServeError>
 where
     P: InferTransport + 'static,
     I: IntentsTransport + 'static,
 {
     use futures_util::StreamExt;
     let connection = BusConnection::session().await.map_err(bus)?;
-    let table = crate::callers::read(env).map_err(|e| ServeFault::Callers(e.to_string()))?;
+    let table = crate::callers::read(env).map_err(|e| ServeError::Callers(e.to_string()))?;
     let who = Arc::new(Identity::on_system(connection.clone(), table));
     serve_on(&connection, service, who).await?;
     let mut messages = zbus::MessageStream::from(&connection);

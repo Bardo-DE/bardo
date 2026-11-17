@@ -10,7 +10,7 @@ use common::{Replica, Server};
 use replica_graph::{CHUNK_UNIT, Root, Uploads};
 use std::sync::Mutex;
 use sync_core::{
-    BaseVersion, Content, DriveWrite, Place, Progress, PutRefused, RemoteSide, Session, Unheard,
+    BaseVersion, Content, DriveWrite, Place, Progress, PutError, RemoteSide, Session, Unheard,
     Upload, UploadTo, Written,
 };
 
@@ -37,7 +37,7 @@ async fn send(
     to: UploadTo,
     base: BaseVersion,
     content: &Content,
-) -> Result<Written, PutRefused> {
+) -> Result<Written, PutError> {
     replica
         .upload(Upload {
             to,
@@ -144,7 +144,7 @@ async fn folders_files_renames_and_the_recycle_bin_keep_ids_and_check_their_base
         &content(&dir, "c", b"three"),
     )
     .await;
-    let Err(PutRefused::Conflict(conflict)) = &stale else {
+    let Err(PutError::Conflict(conflict)) = &stale else {
         panic!("{stale:?}")
     };
     assert_eq!(conflict.remote, RemoteSide::Changed(again.version.clone()));
@@ -159,16 +159,16 @@ async fn folders_files_renames_and_the_recycle_bin_keep_ids_and_check_their_base
     let stale = replica
         .relocate(&file.id, &at(&again), &place(None, "c.txt"))
         .await;
-    assert!(matches!(stale, Err(PutRefused::Conflict(_))), "{stale:?}");
+    assert!(matches!(stale, Err(PutError::Conflict(_))), "{stale:?}");
     let taken = replica.make_folder(&place(None, "Work")).await;
-    let Err(PutRefused::Conflict(conflict)) = &taken else {
+    let Err(PutError::Conflict(conflict)) = &taken else {
         panic!("{taken:?}")
     };
     assert!(matches!(&conflict.remote, RemoteSide::Exists(id, _) if *id == work.id));
     assert!(!replica.accepts_name("a:b") && replica.accepts_name("a b"));
 
     let stale = replica.trash(&file.id, &at(&again)).await;
-    assert!(matches!(stale, Err(PutRefused::Conflict(_))), "{stale:?}");
+    assert!(matches!(stale, Err(PutError::Conflict(_))), "{stale:?}");
     replica
         .trash(&file.id, &at(&moved))
         .await
@@ -200,7 +200,7 @@ async fn a_large_file_goes_in_chunks_and_a_cut_session_is_resumed_by_a_new_repli
     };
     let cut = drive(&server, uploads).upload(upload(None)).await;
     assert!(
-        matches!(cut, Err(PutRefused::Transient(_) | PutRefused::Failed(..))),
+        matches!(cut, Err(PutError::Transient(_) | PutError::Failed(..))),
         "{cut:?}"
     );
     let session = kept.session().expect("the session is kept for a resume");
@@ -256,7 +256,7 @@ async fn a_session_replacing_a_file_changed_meanwhile_is_given_up_before_its_las
             progress: &changing,
         })
         .await;
-    let Err(PutRefused::Conflict(conflict)) = &stale else {
+    let Err(PutError::Conflict(conflict)) = &stale else {
         panic!("{stale:?}")
     };
     assert!(
@@ -309,13 +309,13 @@ async fn a_resumed_session_asks_first_whether_the_file_it_replaces_changed() {
     server.graph.cut_upload_after(1);
     let cut = drive(&server, uploads).upload(upload(None)).await;
     assert!(
-        matches!(cut, Err(PutRefused::Transient(_) | PutRefused::Failed(..))),
+        matches!(cut, Err(PutError::Transient(_) | PutError::Failed(..))),
         "{cut:?}"
     );
     let session = kept.session().expect("kept");
     server.graph.put_root_file("big.bin", b"theirs");
     let stale = drive(&server, uploads).upload(upload(Some(session))).await;
-    assert!(matches!(stale, Err(PutRefused::Conflict(_))), "{stale:?}");
+    assert!(matches!(stale, Err(PutError::Conflict(_))), "{stale:?}");
     assert_eq!(server.graph.root_file("big.bin"), Some(b"theirs".to_vec()));
     assert_eq!(kept.session(), None, "the session is given up");
 }

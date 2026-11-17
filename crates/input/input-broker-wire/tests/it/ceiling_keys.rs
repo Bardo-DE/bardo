@@ -3,7 +3,7 @@
 use crate::{key, sync};
 use input_broker_wire::codes::*;
 use input_broker_wire::limits::{MAX_KEY_CODES, MAX_KEYS_DOWN};
-use input_broker_wire::{BadCaps, Create, Denial, Event, Filter, Route, plan};
+use input_broker_wire::{BadCapsError, Create, Denial, Event, Filter, Route, plan};
 
 const A: u16 = 30;
 const ENTER: u16 = 28;
@@ -164,16 +164,24 @@ fn at_most_eight_keys_are_down_at_once() {
 
 #[test]
 fn requests_outside_the_name_table_are_refused() {
-    let table: &[(&str, Vec<u16>, BadCaps)] = &[
-        ("no keys", vec![], BadCaps::NoKeys),
-        ("a right-hand control", vec![97], BadCaps::UnknownKey(97)),
-        ("key zero", vec![0], BadCaps::UnknownKey(0)),
-        ("a button", vec![0x110], BadCaps::UnknownKey(0x110)),
-        ("one good one bad", vec![A, 9999], BadCaps::UnknownKey(9999)),
+    let table: &[(&str, Vec<u16>, BadCapsError)] = &[
+        ("no keys", vec![], BadCapsError::NoKeys),
+        (
+            "a right-hand control",
+            vec![97],
+            BadCapsError::UnknownKey(97),
+        ),
+        ("key zero", vec![0], BadCapsError::UnknownKey(0)),
+        ("a button", vec![0x110], BadCapsError::UnknownKey(0x110)),
+        (
+            "one good one bad",
+            vec![A, 9999],
+            BadCapsError::UnknownKey(9999),
+        ),
         (
             "over the cap",
             vec![A; MAX_KEY_CODES + 1],
-            BadCaps::TooManyKeys,
+            BadCapsError::TooManyKeys,
         ),
     ];
     for (name, codes, want) in table {

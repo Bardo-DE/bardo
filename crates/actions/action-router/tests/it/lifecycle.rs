@@ -135,8 +135,8 @@ impl AppLink for ChainLink {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn context(&self, _: &account_core::AppName) -> Result<ContextSnapshot, LinkFault> {
-        Err(LinkFault::Unavailable)
+    async fn context(&self, _: &account_core::AppName) -> Result<ContextSnapshot, LinkError> {
+        Err(LinkError::Unavailable)
     }
     #[expect(
         clippy::unused_async_trait_impl,
@@ -146,8 +146,8 @@ impl AppLink for ChainLink {
         &self,
         _: &account_core::AppName,
         _: &provenance::EntityId,
-    ) -> Result<Preview, LinkFault> {
-        Err(LinkFault::Unavailable)
+    ) -> Result<Preview, LinkError> {
+        Err(LinkError::Unavailable)
     }
     #[expect(
         clippy::unused_async_trait_impl,
@@ -157,8 +157,8 @@ impl AppLink for ChainLink {
         &self,
         _: &account_core::AppName,
         _: SuggestAsk,
-    ) -> Result<Vec<EntityRef>, LinkFault> {
-        Err(LinkFault::Unavailable)
+    ) -> Result<Vec<EntityRef>, LinkError> {
+        Err(LinkError::Unavailable)
     }
 }
 

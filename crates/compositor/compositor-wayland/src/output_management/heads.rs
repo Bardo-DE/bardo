@@ -1,7 +1,7 @@
 //! The heads (outputs) and modes a manager announces, and what is sent to keep them current.
 
 use super::wire::{side, transform_to};
-use crate::states::WaylandFault;
+use crate::states::WaylandError;
 use compositor_core::OutputKey;
 use compositor_core::OutputState;
 use compositor_core::output::{EdidSerial, Mode, OutputConfig, OutputFacts};
@@ -90,7 +90,7 @@ pub(super) fn create_head<D>(
     client: &Client,
     manager: &ZwlrOutputManagerV1,
     plugged: &OutputState,
-) -> Result<HeadObjects, WaylandFault>
+) -> Result<HeadObjects, WaylandError>
 where
     D: Dispatch<ZwlrOutputHeadV1, HeadData> + Dispatch<ZwlrOutputModeV1, ModeData> + 'static,
 {
@@ -104,7 +104,7 @@ where
                 output: facts.key.clone(),
             },
         )
-        .map_err(WaylandFault::ObjectGone)?;
+        .map_err(WaylandError::ObjectGone)?;
     manager.head(&head);
     head.name(facts.name.as_str().to_owned());
     head.description(describe(facts));
@@ -127,7 +127,7 @@ where
                     mode: *mode,
                 },
             )
-            .map_err(WaylandFault::ObjectGone)?;
+            .map_err(WaylandError::ObjectGone)?;
         head.mode(&object);
         object.size(side(mode.size.w), side(mode.size.h));
         object.refresh(side(mode.refresh.0));

@@ -7,7 +7,7 @@ use crate::launcher_rig::*;
 use account_daemon::launcher::LoginTiming;
 use account_dbus::accounts::ServiceRoot;
 use account_dbus::accounts::launcher_fault_error_name_in;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use caller_role_types::CallerRole;
 
 const DENIED: &str = "org.freedesktop.DBus.Error.AccessDenied";
@@ -21,7 +21,7 @@ pub fn error_name(error: zbus::Error) -> String {
     }
 }
 
-fn fault_name(fault: LauncherFault) -> String {
+fn fault_name(fault: LauncherWireError) -> String {
     launcher_fault_error_name_in(fault, ServiceRoot::Accounts)
 }
 
@@ -49,7 +49,7 @@ async fn a_program_has_one_launcher_first_wins_and_a_departed_connection_frees_i
         .expect_err("held");
     assert_eq!(
         error_name(refused),
-        fault_name(LauncherFault::AlreadyRegistered)
+        fault_name(LauncherWireError::AlreadyRegistered)
     );
     // All or none: the free program was not taken either.
     let none_taken = second
@@ -59,7 +59,7 @@ async fn a_program_has_one_launcher_first_wins_and_a_departed_connection_frees_i
         .expect_err("all or none");
     assert_eq!(
         error_name(none_taken),
-        fault_name(LauncherFault::AlreadyRegistered)
+        fault_name(LauncherWireError::AlreadyRegistered)
     );
     second
         .proxy
@@ -77,7 +77,7 @@ async fn a_program_has_one_launcher_first_wins_and_a_departed_connection_frees_i
                 Err(error) => {
                     assert_eq!(
                         error_name(error),
-                        fault_name(LauncherFault::AlreadyRegistered)
+                        fault_name(LauncherWireError::AlreadyRegistered)
                     );
                     None
                 }
@@ -149,6 +149,6 @@ async fn only_the_launcher_calls_and_bad_words_are_invalid() {
                 .await
                 .expect_err("no such request")
         ),
-        fault_name(LauncherFault::UnknownRequest)
+        fault_name(LauncherWireError::UnknownRequest)
     );
 }

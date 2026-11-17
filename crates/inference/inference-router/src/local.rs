@@ -11,7 +11,7 @@
 //! cache is `Downloadable`, and there is no downloader yet), and the engine programs come from
 //! configuration, never from the environment.
 
-use crate::attached::{Attached, AttachedEntry, AttachedError, KeyFile, KeyFileProblem, Target};
+use crate::attached::{Attached, AttachedEntry, AttachedError, KeyFile, KeyFileError, Target};
 use crate::catalog::claims_of;
 use account_capability::ModelId;
 use account_capability::{Billing, Locality};
@@ -257,7 +257,7 @@ impl LocalModel {
         &self,
         base: &str,
         timeouts: Timeouts,
-        read_key: impl FnOnce(&KeyFile) -> Result<SecretText, KeyFileProblem>,
+        read_key: impl FnOnce(&KeyFile) -> Result<SecretText, KeyFileError>,
     ) -> HttpEndpoint {
         if let Some(target) = &self.attached {
             return target

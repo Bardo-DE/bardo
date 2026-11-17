@@ -29,7 +29,7 @@ pub mod when;
 pub use args::{CallArgs, Command, JsonFlag, Parsed, UndoWhich, parse};
 pub use ask::ask as ask_companion;
 pub use exec::Style;
-pub use exit::{Exit, Failure};
+pub use exit::{Exit, ExitError};
 pub use params::Stdin;
 pub use resolve::Apps;
 pub use session_bus::SessionBus;
@@ -80,7 +80,7 @@ impl Report {
         }
     }
 
-    fn failed(failure: &Failure, style: Style) -> Self {
+    fn failed(failure: &ExitError, style: Style) -> Self {
         match style {
             Style::Json => Self {
                 stdout: format!("{}\n", failure.json()),
@@ -126,7 +126,7 @@ impl Transport for NoBus {
     }
 }
 
-async fn apps_of<T: Transport>(intents: &Intents<T>) -> Result<Apps, Failure> {
+async fn apps_of<T: Transport>(intents: &Intents<T>) -> Result<Apps, ExitError> {
     intents
         .manifests()
         .await
@@ -139,7 +139,7 @@ async fn command<T: Transport>(
     parsed: &Parsed,
     stdin: Stdin,
     roots: &agent_skills::Roots,
-) -> Result<Printed, Failure> {
+) -> Result<Printed, ExitError> {
     let plain = |text: String| Printed {
         human: text.clone(),
         json: serde_json::Value::String(text),
@@ -148,7 +148,7 @@ async fn command<T: Transport>(
         Command::Help => Ok(plain(help::text())),
         Command::Version => Ok(plain(format!("bardo-do {}", env!("CARGO_PKG_VERSION")))),
         Command::Undo(which) => exec::undo(intents, *which).await,
-        Command::Ask { .. } => Err(Failure::new(
+        Command::Ask { .. } => Err(ExitError::new(
             Exit::Unavailable,
             "ask talks to the assistant, not to bardo-actiond: it needs the assistant's bus",
         )),

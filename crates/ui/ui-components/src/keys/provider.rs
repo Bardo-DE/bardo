@@ -3,7 +3,7 @@
 use super::handle::Keys;
 use super::source::KeySource;
 use dioxus::prelude::*;
-use keymap::{AppAction, AppId, Conflict, DefaultChord, Platform, Registration};
+use keymap::{AppAction, AppId, ConflictError, DefaultChord, Platform, Registration};
 
 /// The root's keymap: the enclosing root's when there is one, else a new one from the [`KeySource`]
 /// the launcher provided (our desktop's conventions without one).
@@ -54,7 +54,7 @@ pub fn use_platform() -> Platform {
 pub fn use_register_actions(
     app: &AppId,
     actions: &[(AppAction, DefaultChord)],
-) -> Result<(), Conflict> {
+) -> Result<(), ConflictError> {
     let keys = use_keys();
     use_hook(|| keys.register_actions(app, actions))
 }
@@ -64,7 +64,7 @@ pub fn use_register_actions(
 ///
 /// # Errors
 /// [`Conflict`] when a row of `registration` is refused, as [`Keys::register`] reports it.
-pub fn use_register(app: &AppId, registration: &Registration) -> Result<(), Conflict> {
+pub fn use_register(app: &AppId, registration: &Registration) -> Result<(), ConflictError> {
     let keys = use_keys();
     use_hook(|| keys.register(app, registration))
 }

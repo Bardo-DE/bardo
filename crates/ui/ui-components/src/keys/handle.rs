@@ -4,8 +4,8 @@ use super::source::KeySource;
 use super::state::KeyState;
 use dioxus::prelude::*;
 use keymap::{
-    Action, AppAction, AppId, Chord, Conflict, Context, DefaultChord, Keymap, Overrides, Platform,
-    Registration,
+    Action, AppAction, AppId, Chord, ConflictError, Context, DefaultChord, Keymap, Overrides,
+    Platform, Registration,
 };
 use std::fmt;
 use std::sync::Arc;
@@ -62,7 +62,7 @@ impl Keys {
         &self,
         app: &AppId,
         actions: &[(AppAction, DefaultChord)],
-    ) -> Result<(), Conflict> {
+    ) -> Result<(), ConflictError> {
         let registration = actions
             .iter()
             .fold(Registration::new(app), |registration, (action, chord)| {
@@ -81,7 +81,7 @@ impl Keys {
     ///
     /// # Errors
     /// [`Conflict`] when a row of `registration` is refused; nothing is registered then.
-    pub fn register(&self, app: &AppId, registration: &Registration) -> Result<(), Conflict> {
+    pub fn register(&self, app: &AppId, registration: &Registration) -> Result<(), ConflictError> {
         let registered = self.state.write_unchecked().register(app, registration);
         if registered.is_ok() {
             self.touch();

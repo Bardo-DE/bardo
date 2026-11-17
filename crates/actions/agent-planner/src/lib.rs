@@ -50,9 +50,9 @@ pub use planner::{
 };
 pub use prefix::{CacheBreak, StablePrefix};
 pub use render::{RULES, messages, messages_with, system_text, system_text_with, user_text};
-pub use role::{ROLE_LIMIT, RoleFault, RoleText};
+pub use role::{ROLE_LIMIT, RoleError, RoleText};
 #[cfg(feature = "testing")]
 pub use scripted::ScriptedPlanner;
 pub use seam::Planner;
-pub use summarise::{SUMMARY_RULES, SummariseFault, Summarised, summary_text};
+pub use summarise::{SUMMARY_RULES, SummariseError, Summarised, summary_text};
 pub use voice::Voice;

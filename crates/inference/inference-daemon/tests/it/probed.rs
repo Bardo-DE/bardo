@@ -24,7 +24,7 @@ use hosting::entries;
 use hosting::rig::{Hosted, Plan, Trust, World};
 use inference_client::InferSession;
 use inference_core::{
-    ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest,
+    ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest,
     MessagePart, Policy, Role as ChatRole,
 };
 use inference_daemon::ProbeConfig;
@@ -241,7 +241,7 @@ async fn acceptance_6_with_local_only_on_a_mail_summary_runs_on_the_probed_ollam
     assert_eq!(
         events,
         vec![InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unavailable
+            InferRefusedError::Unavailable
         ))]
     );
     assert_eq!(

@@ -8,13 +8,13 @@
 //! still be on the surface, since the implicit grab keeps delivering to it.
 
 use layer_shell_hooks::PointerFacts;
-use layer_shell_types::{DragRefused, SurfaceId};
+use layer_shell_types::{DragError, SurfaceId};
 
 /// The serial to start a drag from surface `id` with, or why none fits.
-pub(crate) fn drag_serial(facts: PointerFacts, id: SurfaceId) -> Result<u32, DragRefused> {
+pub(crate) fn drag_serial(facts: PointerFacts, id: SurfaceId) -> Result<u32, DragError> {
     match facts.press {
-        None => Err(DragRefused::NoPress),
-        Some(press) if press.surface != id => Err(DragRefused::PressedElsewhere),
+        None => Err(DragError::NoPress),
+        Some(press) if press.surface != id => Err(DragError::PressedElsewhere),
         Some(press) => Ok(press.serial),
     }
 }
@@ -52,7 +52,7 @@ mod tests {
                     focus: Some(me),
                     press: None,
                 },
-                Err(DragRefused::NoPress),
+                Err(DragError::NoPress),
             ),
             (
                 "pressed on another surface",
@@ -60,12 +60,12 @@ mod tests {
                     focus: Some(me),
                     press: press(other, 9),
                 },
-                Err(DragRefused::PressedElsewhere),
+                Err(DragError::PressedElsewhere),
             ),
             (
                 "nothing known",
                 PointerFacts::default(),
-                Err(DragRefused::NoPress),
+                Err(DragError::NoPress),
             ),
         ];
         for (name, facts, want) in cases {

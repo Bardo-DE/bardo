@@ -25,7 +25,7 @@ pub mod screencast;
 pub mod settings_values;
 pub mod standing;
 
-pub use choice::{Choice, ChoiceRefusal, ChoiceRequest, Multiple, Offer, SourceKinds};
+pub use choice::{Choice, ChoiceError, ChoiceRequest, Multiple, Offer, SourceKinds};
 pub use devices::{DEVICE_TYPES, DeviceKinds};
 pub use inhibit::{BookChange, InhibitBook, InhibitFlags, RequestHandle};
 pub use layout::{Extent, OutputFacts, Point, Tile, Turn, arrange};
@@ -38,7 +38,7 @@ pub use screencast::{
     CastIn, CastOut, CastReply, CastSession, CastSource, CursorMode, PwNode, step,
 };
 pub use settings_values::{
-    Appearance, Contrast, Rgb, Scheme, SettingKey, SettingValue, SettingsRefusal, changes, read,
+    Appearance, Contrast, Rgb, Scheme, SettingKey, SettingLookupError, SettingValue, changes, read,
     read_all,
 };
 pub use standing::{Screens, StandingGrant};

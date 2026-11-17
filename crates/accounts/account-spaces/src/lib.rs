@@ -57,7 +57,7 @@ impl Document {
 
 /// Why a change to the Spaces was refused.
 #[derive(Debug, thiserror::Error)]
-pub enum SpaceFault {
+pub enum SpaceError {
     /// No Space has that id.
     #[error("no such Space")]
     NotThere,
@@ -69,7 +69,7 @@ pub enum SpaceFault {
     Unsaved,
     /// The write failed.
     #[error("the Spaces file could not be saved")]
-    Write(#[source] base_fs::book::SaveFailed),
+    Write(#[source] base_fs::book::SaveError),
 }
 
 /// The Spaces as the daemon holds them.
@@ -177,20 +177,20 @@ impl SpaceBook {
     /// Makes a Space for `app`, and answers its new id.
     ///
     /// # Errors
-    /// [`SpaceFault::TooMany`] when `app` made too many Spaces within the window;
-    /// [`SpaceFault::Unsaved`] when the file cannot be written or the id counter is full.
+    /// [`SpaceError::TooMany`] when `app` made too many Spaces within the window;
+    /// [`SpaceError::Unsaved`] when the file cannot be written or the id counter is full.
     pub async fn create(
         &mut self,
         app: &AppName,
         name: SpaceName,
         look: SpaceLook,
         now: (Instant, UnixSeconds),
-    ) -> Result<DesktopSpace, SpaceFault> {
+    ) -> Result<DesktopSpace, SpaceError> {
         if !self.writable {
-            return Err(SpaceFault::Unsaved);
+            return Err(SpaceError::Unsaved);
         }
         if !self.admit(app, now.0) {
-            return Err(SpaceFault::TooMany);
+            return Err(SpaceError::TooMany);
         }
         let mut doc = self.doc.clone();
         // `next` comes from a file: one at the top of the range is a full counter (refused), not
@@ -198,8 +198,8 @@ impl SpaceBook {
         let (n, id) = (doc.next..=u64::MAX)
             .filter_map(|n| Some((n, DesktopSpace::parse(&format!("space-{n}")).ok()?)))
             .find(|(_, id)| !doc.spaces.iter().any(|s| s.id == *id))
-            .ok_or(SpaceFault::Unsaved)?;
-        doc.next = n.checked_add(1).ok_or(SpaceFault::Unsaved)?;
+            .ok_or(SpaceError::Unsaved)?;
+        doc.next = n.checked_add(1).ok_or(SpaceError::Unsaved)?;
         doc.spaces.push(DesktopSpaceRecord {
             id: id.clone(),
             name,
@@ -215,8 +215,8 @@ impl SpaceBook {
     /// the per-app limit. It answers whether the Space is new.
     ///
     /// # Errors
-    /// [`SpaceFault::TooMany`] when a new Space is over `app`'s limit;
-    /// [`SpaceFault::Unsaved`] when the file cannot be written.
+    /// [`SpaceError::TooMany`] when a new Space is over `app`'s limit;
+    /// [`SpaceError::Unsaved`] when the file cannot be written.
     pub async fn register(
         &mut self,
         app: &AppName,
@@ -224,15 +224,15 @@ impl SpaceBook {
         name: SpaceName,
         look: SpaceLook,
         now: (Instant, UnixSeconds),
-    ) -> Result<bool, SpaceFault> {
+    ) -> Result<bool, SpaceError> {
         if !self.writable {
-            return Err(SpaceFault::Unsaved);
+            return Err(SpaceError::Unsaved);
         }
         if self.doc.spaces.iter().any(|s| s.id == id) {
             return Ok(false);
         }
         if !self.admit(app, now.0) {
-            return Err(SpaceFault::TooMany);
+            return Err(SpaceError::TooMany);
         }
         let mut doc = self.doc.clone();
         doc.spaces.push(DesktopSpaceRecord {
@@ -247,32 +247,32 @@ impl SpaceBook {
     /// Renames a Space.
     ///
     /// # Errors
-    /// [`SpaceFault::NotThere`] when no Space has `id`; [`SpaceFault::Unsaved`] when the file
+    /// [`SpaceError::NotThere`] when no Space has `id`; [`SpaceError::Unsaved`] when the file
     /// cannot be written.
-    pub async fn rename(&mut self, id: &DesktopSpace, name: SpaceName) -> Result<(), SpaceFault> {
+    pub async fn rename(&mut self, id: &DesktopSpace, name: SpaceName) -> Result<(), SpaceError> {
         self.change(id, |record| record.name = name).await
     }
 
     /// Gives a Space a new look.
     ///
     /// # Errors
-    /// [`SpaceFault::NotThere`] when no Space has `id`; [`SpaceFault::Unsaved`] when the file
+    /// [`SpaceError::NotThere`] when no Space has `id`; [`SpaceError::Unsaved`] when the file
     /// cannot be written.
-    pub async fn set_look(&mut self, id: &DesktopSpace, look: SpaceLook) -> Result<(), SpaceFault> {
+    pub async fn set_look(&mut self, id: &DesktopSpace, look: SpaceLook) -> Result<(), SpaceError> {
         self.change(id, |record| record.look = look).await
     }
 
     /// Removes a Space.
     ///
     /// # Errors
-    /// [`SpaceFault::NotThere`] when no Space has `id`; [`SpaceFault::Unsaved`] when the file
+    /// [`SpaceError::NotThere`] when no Space has `id`; [`SpaceError::Unsaved`] when the file
     /// cannot be written.
-    pub async fn remove(&mut self, id: &DesktopSpace) -> Result<(), SpaceFault> {
+    pub async fn remove(&mut self, id: &DesktopSpace) -> Result<(), SpaceError> {
         let mut doc = self.doc.clone();
         let before = doc.spaces.len();
         doc.spaces.retain(|s| s.id != *id);
         if doc.spaces.len() == before {
-            return Err(SpaceFault::NotThere);
+            return Err(SpaceError::NotThere);
         }
         self.commit(doc).await
     }
@@ -283,21 +283,21 @@ impl SpaceBook {
         &mut self,
         id: &DesktopSpace,
         edit: impl FnOnce(&mut DesktopSpaceRecord),
-    ) -> Result<(), SpaceFault> {
+    ) -> Result<(), SpaceError> {
         let mut doc = self.doc.clone();
-        edit(doc.find_mut(id).ok_or(SpaceFault::NotThere)?);
+        edit(doc.find_mut(id).ok_or(SpaceError::NotThere)?);
         self.commit(doc).await
     }
 
     /// Saves `doc` and, once it is on disk, holds it. In memory it is held at once.
-    async fn commit(&mut self, doc: Document) -> Result<(), SpaceFault> {
+    async fn commit(&mut self, doc: Document) -> Result<(), SpaceError> {
         if !self.writable {
-            return Err(SpaceFault::Unsaved);
+            return Err(SpaceError::Unsaved);
         }
         base_fs::book::commit(self.file.as_ref(), &mut self.doc, doc)
             .await
             .map(drop)
-            .map_err(SpaceFault::Write)
+            .map_err(SpaceError::Write)
     }
 }
 

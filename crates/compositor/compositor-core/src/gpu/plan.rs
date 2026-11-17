@@ -25,7 +25,7 @@ impl RenderPlan {
 
 /// Why no plan could be made.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum PlanRefusal {
+pub enum PlanError {
     /// Detection found no GPU.
     #[error("no GPU")]
     NoGpu,
@@ -39,16 +39,16 @@ pub enum PlanRefusal {
 ///
 /// # Errors
 ///
-/// [`PlanRefusal::NoGpu`] when `Auto` finds no GPU, [`PlanRefusal::UnknownGpu`] when the setting
+/// [`PlanError::NoGpu`] when `Auto` finds no GPU, [`PlanError::UnknownGpu`] when the setting
 /// names a GPU that is not in `facts`.
-pub fn plan_for(facts: &[GpuFacts], choice: &GpuChoice) -> Result<RenderPlan, PlanRefusal> {
+pub fn plan_for(facts: &[GpuFacts], choice: &GpuChoice) -> Result<RenderPlan, PlanError> {
     let render = match choice {
-        GpuChoice::Auto => automatic(facts).ok_or(PlanRefusal::NoGpu)?,
+        GpuChoice::Auto => automatic(facts).ok_or(PlanError::NoGpu)?,
         GpuChoice::ByPath(id) => facts
             .iter()
             .find(|gpu| &gpu.by_path == id)
             .map(|gpu| gpu.node)
-            .ok_or_else(|| PlanRefusal::UnknownGpu(id.clone()))?,
+            .ok_or_else(|| PlanError::UnknownGpu(id.clone()))?,
     };
     let scanout = facts
         .iter()

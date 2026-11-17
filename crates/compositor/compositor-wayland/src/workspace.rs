@@ -18,7 +18,7 @@ mod gate;
 pub use gate::{WaitingManager, on_resolved};
 
 use crate::consent::{self, Admission, ConsentHandler, Held};
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use account_core::SpaceId;
 use compositor_core::policy::GlobalKind;
 use compositor_core::space::{SpaceBook, WorkspaceRequest};
@@ -604,12 +604,12 @@ fn enter_outputs(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_spaces(
     part: &mut WorkspacePart,
     spaces: &SpaceBook,
     outputs: &BTreeMap<OutputKey, Output>,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     part.layout = Layout::of(spaces);
     part.outputs = outputs.clone();
     part.groups = part.layout.groups.keys().cloned().collect();

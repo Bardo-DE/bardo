@@ -14,7 +14,7 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 use sync_core::Clock;
 use sync_core::status::unreached;
 use sync_core::{
-    BaseVersion, Blob, ByteRange, ChangePage, Cursor, ExportError, Folders, PutItem, PutRefused,
+    BaseVersion, Blob, ByteRange, ChangePage, Cursor, ExportError, Folders, PutError, PutItem,
     Quota, RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
 
@@ -284,15 +284,11 @@ impl<H: Http> Replica for GdriveReplica<H> {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         self.write(item, base).await
     }
 
-    async fn remove(
-        &self,
-        item: &RemoteId,
-        base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    async fn remove(&self, item: &RemoteId, base: BaseVersion) -> Result<RemoteVersion, PutError> {
         self.delete(item, base).await
     }
 

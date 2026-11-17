@@ -8,7 +8,7 @@ use action_core::*;
 use action_daemon::InferdWriter;
 use action_vocab::{ActionRef, Caller, TurnId, Value};
 use inference_core::{
-    ClientFrame, InferRefusal, InferReply, InferRequest, MessagePart, ReplyShape, RequestKind,
+    ClientFrame, InferRefusedError, InferReply, InferRequest, MessagePart, ReplyShape, RequestKind,
     StopReason,
 };
 use permission_core::{ActionMatch, ReviewError, TaskPolicy, TaskPolicyState, TrustedPattern};
@@ -244,7 +244,7 @@ async fn when_the_writer_fails_there_is_no_policy() {
         ),
         (
             "refused",
-            finish(InferReply::Refused(InferRefusal::NeedsGrant)),
+            finish(InferReply::Refused(InferRefusedError::NeedsGrant)),
             ReviewError::Unavailable,
         ),
         (

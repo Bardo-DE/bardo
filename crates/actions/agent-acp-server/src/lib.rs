@@ -50,5 +50,5 @@ pub use mode::{Mode, Say};
 pub use permission::{options, sheet_options, sheet_request};
 pub use scope_words::always_words;
 pub use server::Server;
-pub use stdio::{LINE_MAX, LineFault, capped_lines, read_capped};
+pub use stdio::{LINE_MAX, LineError, capped_lines, read_capped};
 pub use turn::{Finish, Order, Turn, Wants};

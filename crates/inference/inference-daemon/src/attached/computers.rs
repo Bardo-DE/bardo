@@ -109,7 +109,7 @@ pub struct AddedFile {
 
 /// Why the file of added computers was not used as it is.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum AddedProblem {
+pub enum AddedError {
     /// It could not be read.
     #[error("{}: cannot be read ({kind:?})", path.display())]
     Unreadable {
@@ -136,13 +136,13 @@ impl AddedFile {
     ///
     /// # Errors
     ///
-    /// Returns an [`AddedProblem`] when the file cannot be read or moved aside.
-    pub fn read(path: &Path) -> Result<Self, AddedProblem> {
+    /// Returns an [`AddedError`] when the file cannot be read or moved aside.
+    pub fn read(path: &Path) -> Result<Self, AddedError> {
         let text = match std::fs::read_to_string(path) {
             Ok(text) => text,
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(Self::default()),
             Err(e) => {
-                return Err(AddedProblem::Unreadable {
+                return Err(AddedError::Unreadable {
                     path: path.to_owned(),
                     kind: e.kind(),
                 });
@@ -155,7 +155,7 @@ impl AddedFile {
             aside.push(".unusable");
             let aside = PathBuf::from(aside);
             let _ = std::fs::rename(path, &aside);
-            Err(AddedProblem::Unusable {
+            Err(AddedError::Unusable {
                 path: path.to_owned(),
                 aside,
             })
@@ -320,38 +320,38 @@ pub struct NewTailnetComputer {
 /// same one.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error(transparent)]
-pub struct SaveFailed(Arc<dyn std::error::Error + Send + Sync>);
+pub struct SaveError(Arc<dyn std::error::Error + Send + Sync>);
 
 /// The failure behind a refusal. Two causes are equal when they are the same one.
 #[derive(Debug, Clone, thiserror::Error)]
 #[error(transparent)]
-pub struct Because(Arc<dyn std::error::Error + Send + Sync>);
+pub struct FailureCauseError(Arc<dyn std::error::Error + Send + Sync>);
 
-impl Because {
+impl FailureCauseError {
     fn of(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
         Self(Arc::new(cause))
     }
 }
 
-impl PartialEq for Because {
+impl PartialEq for FailureCauseError {
     fn eq(&self, other: &Self) -> bool {
         Arc::ptr_eq(&self.0, &other.0)
     }
 }
 
-impl Eq for Because {}
+impl Eq for FailureCauseError {}
 
-impl PartialEq for SaveFailed {
+impl PartialEq for SaveError {
     fn eq(&self, other: &Self) -> bool {
         Arc::ptr_eq(&self.0, &other.0)
     }
 }
 
-impl Eq for SaveFailed {}
+impl Eq for SaveError {}
 
 impl ComputerError {
     fn not_saved(cause: impl std::error::Error + Send + Sync + 'static) -> Self {
-        Self::NotSaved(SaveFailed(Arc::new(cause)))
+        Self::NotSaved(SaveError(Arc::new(cause)))
     }
 }
 
@@ -380,7 +380,7 @@ pub enum ComputerError {
         id: String,
         /// Why it is not an id.
         #[source]
-        source: Because,
+        source: FailureCauseError,
     },
     /// The model is one that cannot be used from another computer.
     #[error("The model \u{201c}{0}\u{201d} cannot be used from another computer.")]
@@ -398,10 +398,10 @@ pub enum ComputerError {
     BadKey(String),
     /// The new list could not be saved.
     #[error("The computer could not be saved.")]
-    NotSaved(#[source] SaveFailed),
+    NotSaved(#[source] SaveError),
     /// There is no computer of that name, because it is not a name.
     #[error("There is no computer with that name.")]
-    BadComputerName(#[source] Because),
+    BadComputerName(#[source] FailureCauseError),
     /// There is no computer of that name.
     #[error("There is no computer with that name.")]
     NotThere,
@@ -436,7 +436,7 @@ impl From<inference_tailnet::GuestError> for ComputerError {
             GuestError::NotAsking => ComputerError::NotAsking,
             GuestError::TooManyAsking => ComputerError::TooManyAsking,
             GuestError::TooMany => ComputerError::TooMany,
-            GuestError::NotSaved(cause) => ComputerError::NotSaved(SaveFailed(Arc::from(cause))),
+            GuestError::NotSaved(cause) => ComputerError::NotSaved(SaveError(Arc::from(cause))),
         }
     }
 }
@@ -460,7 +460,7 @@ impl ComputerError {
             ComputerError::AddedByHand => "AddedByHand",
             ComputerError::Unavailable => "Unavailable",
             ComputerError::NotOnTailscale => "NotOnTailscale",
-            ComputerError::NotAnswering => "NotAnswering",
+            ComputerError::NotAnswering => "NotAnsweringError",
             ComputerError::NotAsking => "NotAsking",
             ComputerError::TooManyAsking => "TooManyAsking",
         }
@@ -703,7 +703,7 @@ impl Computers {
         for model in &new.models {
             let id = ModelId::parse(&model.id).map_err(|error| ComputerError::BadModelId {
                 id: model.id.clone(),
-                source: Because::of(error),
+                source: FailureCauseError::of(error),
             })?;
             if !taken.insert(id.to_string()) {
                 return Err(ComputerError::ModelTaken(model.id.clone()));
@@ -806,7 +806,7 @@ impl Computers {
         for model in &new.models {
             let id = ModelId::parse(model).map_err(|error| ComputerError::BadModelId {
                 id: model.clone(),
-                source: Because::of(error),
+                source: FailureCauseError::of(error),
             })?;
             if !taken.insert(id.to_string()) {
                 return Err(ComputerError::ModelTaken(model.clone()));
@@ -898,7 +898,7 @@ impl Computers {
     pub fn remove(&self, name: &str) -> Result<Option<NodeId>, ComputerError> {
         let text = name.strip_prefix("computer:").unwrap_or(name);
         let name = ComputerName::parse(text)
-            .map_err(|error| ComputerError::BadComputerName(Because::of(error)))?;
+            .map_err(|error| ComputerError::BadComputerName(FailureCauseError::of(error)))?;
         let mut state = self.state();
         let Some(gone) = state.file.computers.get(name.as_str()).cloned() else {
             return Err(if state.by_hand.contains(&name) {

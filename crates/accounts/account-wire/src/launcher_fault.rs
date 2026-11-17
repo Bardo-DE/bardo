@@ -4,7 +4,7 @@
 
 /// Why accountd refused a launcher's call.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum LauncherFault {
+pub enum LauncherWireError {
     /// A live connection already launches this program (first wins).
     AlreadyRegistered,
     /// No such request for this connection: never made, answered already, expired, or another
@@ -29,48 +29,48 @@ pub enum LauncherFault {
     UnknownSession,
 }
 
-impl std::fmt::Display for LauncherFault {
+impl std::fmt::Display for LauncherWireError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            LauncherFault::AlreadyRegistered => "another launcher already holds a program",
-            LauncherFault::UnknownRequest => "no such request for this connection",
-            LauncherFault::NotRegistered => "this connection has not registered that program",
-            LauncherFault::OnceGrant => "a once permit cannot back a process credential",
-            LauncherFault::NotAKeyAccount => "the account holds no API key to hand over",
-            LauncherFault::UnknownCredential => "no such credential for this connection",
-            LauncherFault::SessionTaken => "another launcher holds that session",
-            LauncherFault::UnknownSession => "no such open session for this connection",
+            LauncherWireError::AlreadyRegistered => "another launcher already holds a program",
+            LauncherWireError::UnknownRequest => "no such request for this connection",
+            LauncherWireError::NotRegistered => "this connection has not registered that program",
+            LauncherWireError::OnceGrant => "a once permit cannot back a process credential",
+            LauncherWireError::NotAKeyAccount => "the account holds no API key to hand over",
+            LauncherWireError::UnknownCredential => "no such credential for this connection",
+            LauncherWireError::SessionTaken => "another launcher holds that session",
+            LauncherWireError::UnknownSession => "no such open session for this connection",
         })
     }
 }
 
-impl std::error::Error for LauncherFault {}
+impl std::error::Error for LauncherWireError {}
 
-impl LauncherFault {
+impl LauncherWireError {
     /// Every fault, so the table is total by construction.
-    pub const ALL: [LauncherFault; 8] = [
-        LauncherFault::AlreadyRegistered,
-        LauncherFault::UnknownRequest,
-        LauncherFault::NotRegistered,
-        LauncherFault::OnceGrant,
-        LauncherFault::NotAKeyAccount,
-        LauncherFault::UnknownCredential,
-        LauncherFault::SessionTaken,
-        LauncherFault::UnknownSession,
+    pub const ALL: [LauncherWireError; 8] = [
+        LauncherWireError::AlreadyRegistered,
+        LauncherWireError::UnknownRequest,
+        LauncherWireError::NotRegistered,
+        LauncherWireError::OnceGrant,
+        LauncherWireError::NotAKeyAccount,
+        LauncherWireError::UnknownCredential,
+        LauncherWireError::SessionTaken,
+        LauncherWireError::UnknownSession,
     ];
 
     /// The bare name of the fault, the last part of its bus error name.
     #[must_use]
     pub fn name(self) -> &'static str {
         match self {
-            LauncherFault::AlreadyRegistered => "AlreadyRegistered",
-            LauncherFault::UnknownRequest => "UnknownRequest",
-            LauncherFault::NotRegistered => "NotRegistered",
-            LauncherFault::OnceGrant => "OnceGrant",
-            LauncherFault::NotAKeyAccount => "NotAKeyAccount",
-            LauncherFault::UnknownCredential => "UnknownCredential",
-            LauncherFault::SessionTaken => "SessionTaken",
-            LauncherFault::UnknownSession => "UnknownSession",
+            LauncherWireError::AlreadyRegistered => "AlreadyRegistered",
+            LauncherWireError::UnknownRequest => "UnknownRequest",
+            LauncherWireError::NotRegistered => "NotRegistered",
+            LauncherWireError::OnceGrant => "OnceGrant",
+            LauncherWireError::NotAKeyAccount => "NotAKeyAccount",
+            LauncherWireError::UnknownCredential => "UnknownCredential",
+            LauncherWireError::SessionTaken => "SessionTaken",
+            LauncherWireError::UnknownSession => "UnknownSession",
         }
     }
 

@@ -19,7 +19,7 @@
 //! `Block::Verbatim`. Contract: `render_topic(&parse_topic(s)?, tz) == s` for any `s` that
 //! `render_topic` produced.
 
-use crate::trailer::{Cause, TrailerFault, parse_trailer, render_trailer, timestamp};
+use crate::trailer::{TrailerCauseError, TrailerError, parse_trailer, render_trailer, timestamp};
 use jiff::tz::Offset;
 use memory_core::{Fact, FactText, TopicPath};
 use std::fmt::Write as _;
@@ -78,14 +78,14 @@ pub enum ParseError {
     UnknownKey(String),
     /// The topic is not a topic path.
     #[error("bad topic {0:?}")]
-    BadTopic(String, #[source] Cause),
+    BadTopic(String, #[source] TrailerCauseError),
     /// A bullet's trailer was refused (1-based line of the trailer).
     #[error("line {line}: {fault}")]
     BadTrailer {
         /// Where.
         line: usize,
         /// Why.
-        fault: TrailerFault,
+        fault: TrailerError,
     },
     /// A stamped bullet's text is not fact text (1-based line).
     #[error("line {line}: bullet is not fact text")]
@@ -94,7 +94,7 @@ pub enum ParseError {
         line: usize,
         /// Why the text is refused.
         #[source]
-        source: Cause,
+        source: TrailerCauseError,
     },
 }
 
@@ -143,7 +143,7 @@ pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
     }
     let topic_text = topic.ok_or(ParseError::MissingKey("topic"))?;
     let topic = TopicPath::parse(topic_text)
-        .map_err(|e| ParseError::BadTopic(topic_text.to_owned(), Cause::of(e)))?;
+        .map_err(|e| ParseError::BadTopic(topic_text.to_owned(), TrailerCauseError::of(e)))?;
     let title = title.ok_or(ParseError::MissingKey("title"))?.to_owned();
     let mut blocks = Vec::new();
     let mut i = close + 1;
@@ -161,7 +161,7 @@ pub fn parse_topic(text: &str) -> Result<TopicFile, ParseError> {
             Some(trailer) => {
                 let fact_text = FactText::parse(bullet).map_err(|e| ParseError::BadFactText {
                     line: i,
-                    source: Cause::of(e),
+                    source: TrailerCauseError::of(e),
                 })?;
                 let fact = parse_trailer(trailer, fact_text)
                     .map_err(|fault| ParseError::BadTrailer { line: i + 1, fault })?;

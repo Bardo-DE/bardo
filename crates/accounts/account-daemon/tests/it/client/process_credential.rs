@@ -11,7 +11,7 @@ use account_client_dbus::{Bus, ChildKey, ChildKeyError, Delivery, Launcher, Laun
 use account_core::GrantId;
 use account_core::audit::CredentialEnd;
 use account_dbus::BusStream;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use account_wire::Refusal;
 use common::bus::PrivateBus;
 use common::eventually;
@@ -117,7 +117,7 @@ async fn a_memfd_credential_sets_a_child_up_by_value_or_by_an_inherited_descript
         .expect("revoked");
     assert_eq!(
         rig.launcher.revoke_credential(credential.id()).await,
-        Err(LauncherError::Fault(LauncherFault::UnknownCredential))
+        Err(LauncherError::Fault(LauncherWireError::UnknownCredential))
     );
 }
 
@@ -167,7 +167,7 @@ async fn a_refusal_is_a_typed_error_and_a_key_is_never_part_of_it() {
         rig.launcher
             .issue_credential(&permit("g-once"), &program())
             .await,
-        Err(LauncherError::Fault(LauncherFault::OnceGrant))
+        Err(LauncherError::Fault(LauncherWireError::OnceGrant))
     ));
     assert!(matches!(
         rig.launcher

@@ -82,7 +82,7 @@ pub struct EmbedEnd {
 /// A reply that is not the shape that was asked for. Checked before a vector reaches a store.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum EmbedFault {
+pub enum EmbedError {
     #[error("asked for {want:?} vectors, got {got:?}")]
     CountMismatch { want: Count, got: Count },
     #[error("expected vectors of width {want:?}, got {got:?}")]
@@ -94,19 +94,19 @@ impl EmbedEnd {
     ///
     /// # Errors
     ///
-    /// Returns [`EmbedFault::CountMismatch`] when there are not `want` vectors and
-    /// [`EmbedFault::WidthMismatch`] when one is not `dims` wide.
-    pub fn check(&self, want: Count, dims: Dims) -> Result<(), EmbedFault> {
+    /// Returns [`EmbedError::CountMismatch`] when there are not `want` vectors and
+    /// [`EmbedError::WidthMismatch`] when one is not `dims` wide.
+    pub fn check(&self, want: Count, dims: Dims) -> Result<(), EmbedError> {
         let got = Count(u32::try_from(self.vectors.len()).unwrap_or(u32::MAX));
         if got != want {
-            return Err(EmbedFault::CountMismatch { want, got });
+            return Err(EmbedError::CountMismatch { want, got });
         }
         self.vectors
             .iter()
             .map(|vector| Dims(u32::try_from(vector.0.len()).unwrap_or(u32::MAX)))
             .find(|width| *width != dims)
             .map_or(Ok(()), |got| {
-                Err(EmbedFault::WidthMismatch { want: dims, got })
+                Err(EmbedError::WidthMismatch { want: dims, got })
             })
     }
 }

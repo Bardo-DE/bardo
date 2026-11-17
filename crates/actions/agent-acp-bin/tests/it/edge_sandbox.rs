@@ -6,7 +6,7 @@
 use action_manifest::ValidManifest;
 use action_vocab::TurnId;
 use agent_acp_core::call::AgentCall;
-use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
+use agent_acp_core::court::{Court, CourtError, OpenAgent, Ruled};
 use agent_acp_host::{ToolsEdge, ToolsOffer};
 use base_path::AbsPath;
 use provenance::SessionId;
@@ -22,15 +22,15 @@ impl Court for Stand {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtFault> {
-        Err(CourtFault::Unavailable)
+    async fn open(&mut self, _open: OpenAgent) -> Result<SessionId, CourtError> {
+        Err(CourtError::Unavailable)
     }
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn turn(&mut self, _session: &SessionId, _text: &str) -> Result<TurnId, CourtFault> {
-        Err(CourtFault::Unavailable)
+    async fn turn(&mut self, _session: &SessionId, _text: &str) -> Result<TurnId, CourtError> {
+        Err(CourtError::Unavailable)
     }
     #[expect(
         clippy::unused_async_trait_impl,

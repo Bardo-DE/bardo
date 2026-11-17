@@ -4,7 +4,7 @@ use crate::anchor::Cursor;
 use crate::change::ChangePage;
 use crate::item::{BaseVersion, RemoteId, RemoteVersion};
 use crate::quota::Quota;
-use crate::refusal::{ExportError, PutRefused, ReplicaError};
+use crate::refusal::{ExportError, PutError, ReplicaError};
 use crate::transfer::{Blob, ByteRange, PutItem};
 use account_capability::StorageCap;
 
@@ -28,14 +28,14 @@ pub trait Replica: Send + Sync {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> impl Future<Output = Result<(RemoteId, RemoteVersion), PutRefused>> + Send;
+    ) -> impl Future<Output = Result<(RemoteId, RemoteVersion), PutError>> + Send;
 
     /// Deletes an item if the replica still has `base`, leaving a tombstone in the feed.
     fn remove(
         &self,
         item: &RemoteId,
         base: BaseVersion,
-    ) -> impl Future<Output = Result<RemoteVersion, PutRefused>> + Send;
+    ) -> impl Future<Output = Result<RemoteVersion, PutError>> + Send;
 
     /// What the account has used and may use (`StorageCap.quota` says whether the backend
     /// reports it; a backend that does not answers `total: None`).

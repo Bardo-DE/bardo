@@ -13,7 +13,7 @@ const NESTED_REPOSITORY: &str = "160000";
 
 /// Output that is not what the command prints.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub(crate) enum Unexpected {
+pub(crate) enum UnexpectedModeError {
     /// A line or a value is not in the form the command prints.
     #[error("git printed something unexpected")]
     Shape,
@@ -29,8 +29,8 @@ fn lines(stdout: &[u8]) -> impl Iterator<Item = &[u8]> {
     stdout.split(|b| *b == 0).filter(|line| !line.is_empty())
 }
 
-fn text(bytes: &[u8]) -> Result<&str, Unexpected> {
-    std::str::from_utf8(bytes).map_err(Unexpected::Text)
+fn text(bytes: &[u8]) -> Result<&str, UnexpectedModeError> {
+    std::str::from_utf8(bytes).map_err(UnexpectedModeError::Text)
 }
 
 /// The number of paths in a NUL-separated listing.
@@ -40,16 +40,16 @@ pub(crate) fn count_paths(stdout: &[u8]) -> usize {
 
 /// `git ls-files -s -z`: `<mode> <oid> <stage>\t<path>`. A file's content id is its mode and
 /// object id, so a change of the executable bit counts as a change.
-pub(crate) fn staged_listing(stdout: &[u8]) -> Result<TreeListing, Unexpected> {
+pub(crate) fn staged_listing(stdout: &[u8]) -> Result<TreeListing, UnexpectedModeError> {
     let mut files = BTreeMap::new();
     for line in lines(stdout) {
         let line = text(line)?;
-        let (head, path) = line.split_once('\t').ok_or(Unexpected::Shape)?;
+        let (head, path) = line.split_once('\t').ok_or(UnexpectedModeError::Shape)?;
         let mut fields = head.split(' ');
         let (Some(mode), Some(oid), Some(_stage), None) =
             (fields.next(), fields.next(), fields.next(), fields.next())
         else {
-            return Err(Unexpected::Shape);
+            return Err(UnexpectedModeError::Shape);
         };
         add(&mut files, mode, oid, path)?;
     }
@@ -57,16 +57,16 @@ pub(crate) fn staged_listing(stdout: &[u8]) -> Result<TreeListing, Unexpected> {
 }
 
 /// `git ls-tree -r -z`: `<mode> <type> <oid>\t<path>`.
-pub(crate) fn tree_listing(stdout: &[u8]) -> Result<TreeListing, Unexpected> {
+pub(crate) fn tree_listing(stdout: &[u8]) -> Result<TreeListing, UnexpectedModeError> {
     let mut files = BTreeMap::new();
     for line in lines(stdout) {
         let line = text(line)?;
-        let (head, path) = line.split_once('\t').ok_or(Unexpected::Shape)?;
+        let (head, path) = line.split_once('\t').ok_or(UnexpectedModeError::Shape)?;
         let mut fields = head.split(' ');
         let (Some(mode), Some(_kind), Some(oid), None) =
             (fields.next(), fields.next(), fields.next(), fields.next())
         else {
-            return Err(Unexpected::Shape);
+            return Err(UnexpectedModeError::Shape);
         };
         add(&mut files, mode, oid, path)?;
     }
@@ -78,11 +78,11 @@ fn add(
     mode: &str,
     oid: &str,
     path: &str,
-) -> Result<(), Unexpected> {
+) -> Result<(), UnexpectedModeError> {
     if mode == NESTED_REPOSITORY {
         return Ok(());
     }
-    let path = WorkPath::parse(path).map_err(Unexpected::Path)?;
+    let path = WorkPath::parse(path).map_err(UnexpectedModeError::Path)?;
     files.insert(path, EntryId::new(format!("{mode}:{oid}")));
     Ok(())
 }
@@ -107,10 +107,10 @@ pub(crate) fn held_points(session: &SessionId, stdout: &[u8]) -> Vec<Saved> {
 }
 
 /// The first line of a command's output as an object id.
-pub(crate) fn object_id(stdout: &[u8]) -> Result<String, Unexpected> {
+pub(crate) fn object_id(stdout: &[u8]) -> Result<String, UnexpectedModeError> {
     let first = text(stdout)?.lines().next().map_or("", str::trim);
     if first.is_empty() || !first.bytes().all(|b| b.is_ascii_hexdigit()) {
-        return Err(Unexpected::Shape);
+        return Err(UnexpectedModeError::Shape);
     }
     Ok(first.to_owned())
 }

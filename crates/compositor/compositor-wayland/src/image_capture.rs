@@ -27,7 +27,7 @@ pub use damage::{DamageLog, DamageLogs, Since};
 pub use dma::dma_offer;
 pub use gate::{GatedFrame, GatedFrames, owner_of};
 
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::OutputKey;
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::policy::GlobalKind;
@@ -180,11 +180,11 @@ pub fn on_source_destroyed(book: &mut CaptureBook, source: CaptureSourceId) {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn on_session(
     book: &mut CaptureBook,
     source: CaptureSourceId,
-) -> Result<CaptureSessionId, WaylandFault> {
+) -> Result<CaptureSessionId, WaylandError> {
     book.add_session(source)
 }
 
@@ -192,12 +192,12 @@ pub fn on_session(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn on_frame_request(
     book: &mut CaptureBook,
     session: CaptureSessionId,
     buffer: PhysicalSize,
-) -> Result<CaptureRequest, WaylandFault> {
+) -> Result<CaptureRequest, WaylandError> {
     book.request_frame(session, buffer)
 }
 
@@ -205,12 +205,12 @@ pub fn on_frame_request(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_ready(
     book: &mut CaptureBook,
     session: CaptureSessionId,
     at: Mono,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     book.frame_ready(session, at)
 }
 
@@ -218,12 +218,12 @@ pub fn apply_ready(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_failed(
     book: &mut CaptureBook,
     session: CaptureSessionId,
     why: CaptureFailure,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     book.frame_failed(session, why)
 }
 

@@ -75,7 +75,7 @@ impl Hearing {
             listed
         } else {
             let Some(pinned) = turns.pinned_to_now() else {
-                return InferReply::Refused(inference_core::InferRefusal::Unavailable);
+                return InferReply::Refused(inference_core::InferRefusedError::Unavailable);
             };
             let served = &pinned.served;
             let place = self
@@ -120,10 +120,10 @@ impl Hearing {
                 })
         };
         let Some(answering) = model_of(StageRole::Answer) else {
-            return InferReply::Refused(inference_core::InferRefusal::Unavailable);
+            return InferReply::Refused(inference_core::InferRefusedError::Unavailable);
         };
         let Some(pinned) = self.engines.pinned_for(&answering, &offered) else {
-            return InferReply::Refused(inference_core::InferRefusal::Unavailable);
+            return InferReply::Refused(inference_core::InferRefusedError::Unavailable);
         };
         let names = planned
             .stages
@@ -196,7 +196,7 @@ impl TurnRunner for Answering {
         let (steps, inbox) = mpsc::unbounded_channel();
         let task = tokio::spawn(async move {
             let _ = steps.send(TurnStep::Done(InferReply::Refused(
-                inference_core::InferRefusal::Unsupported,
+                inference_core::InferRefusedError::Unsupported,
             )));
         });
         Turn::running(inbox, task)

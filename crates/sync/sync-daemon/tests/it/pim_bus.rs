@@ -132,12 +132,12 @@ impl PimGrants for Switch {
     async fn granted(
         &self,
         kind: PimKind,
-    ) -> Result<Vec<account_core::Candidate>, AccountdUnavailable> {
+    ) -> Result<Vec<account_core::Candidate>, AccountdUnavailableError> {
         self.asked.fetch_add(1, Ordering::SeqCst);
         if self.up.load(Ordering::Relaxed) {
             self.inner.granted(kind).await
         } else {
-            Err(AccountdUnavailable(GrantsError::Link(
+            Err(AccountdUnavailableError(GrantsError::Link(
                 LinkError::Unreachable,
             )))
         }

@@ -10,7 +10,7 @@ use layer_shell_hooks::SurfaceHandle;
 use shell_launcher::{AppId, DesktopAction, SettingsTarget};
 use shell_model::launch::{LaunchCommand, LaunchRequest, SETTINGS_BUS_NAME, SettingsOpen};
 use shell_model::service::Control;
-use shell_model::service::Gone;
+use shell_model::service::ServiceGoneError;
 
 /// How long a launch waits for the compositor's token. It answers within a frame or two when it
 /// answers at all; a person notices a click that takes longer than this to do anything.
@@ -61,7 +61,7 @@ pub async fn launch_with_token(
     app: AppId,
     action: DesktopAction,
     uris: Vec<String>,
-) -> Result<(), Gone> {
+) -> Result<(), ServiceGoneError> {
     let token = token_from(surface, Some(app.0.clone())).await;
     launch.send(LaunchCommand::Launch(
         LaunchRequest::app(app)
@@ -81,7 +81,7 @@ pub async fn open_settings_with_token(
     surface: Option<&SurfaceHandle>,
     launch: &Control<LaunchCommand>,
     link: SettingsTarget,
-) -> Result<(), Gone> {
+) -> Result<(), ServiceGoneError> {
     let token = token_from(surface, Some(SETTINGS_BUS_NAME.to_owned())).await;
     launch.send(LaunchCommand::OpenSettings(
         SettingsOpen::at(link).with_token(token),

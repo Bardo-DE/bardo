@@ -6,7 +6,7 @@ use agent_acp_host::{AcpBackend, Models, Seams};
 use agent_install::store::write_offered;
 use agent_registry::dirs::AgentsDir;
 use agent_registry::offered::{Named, Offered, Start};
-use agent_session::{BackendFault, Choice, Choices, HostFault};
+use agent_session::{AgentHostError, BackendError, Choice, Choices};
 
 fn named(choices: &[Choice]) -> Vec<Named> {
     choices
@@ -21,7 +21,7 @@ fn named(choices: &[Choice]) -> Vec<Named> {
 /// The record an opening leaves, before its counter is set; none when the opening failed for a
 /// reason that says nothing about sign-in or models.
 pub fn of_opening(
-    fault: Option<&BackendFault>,
+    fault: Option<&BackendError>,
     models: Option<&Models>,
     listed: &Choices,
 ) -> Option<Offered> {
@@ -39,13 +39,13 @@ pub fn of_opening(
             models.map_or_else(Vec::new, |m| named(&m.available)),
             listed,
         )),
-        Some(BackendFault::SignInNeeded) => {
+        Some(BackendError::SignInNeeded) => {
             Some(record(Start::NeedsSignIn, None, Vec::new(), listed))
         }
-        Some(BackendFault::SignInChoose(ways)) => {
+        Some(BackendError::SignInChoose(ways)) => {
             Some(record(Start::NeedsSignIn, None, Vec::new(), ways))
         }
-        Some(BackendFault::ModelNotOffered(offer)) => {
+        Some(BackendError::ModelNotOffered(offer)) => {
             Some(record(Start::SignedIn, None, named(&offer.0), listed))
         }
         Some(_) => None,
@@ -57,12 +57,12 @@ pub fn remember<X: Seams>(
     dir: &AgentsDir,
     id: &str,
     backend: &AcpBackend<X>,
-    opened: Result<(), &HostFault>,
+    opened: Result<(), &AgentHostError>,
 ) {
     let none = Choices(Vec::new());
     let fault = match opened {
         Ok(()) => None,
-        Err(HostFault::Backend(fault)) => Some(fault),
+        Err(AgentHostError::Backend(fault)) => Some(fault),
         Err(_) => return,
     };
     let listed = backend.sign_in_ways().unwrap_or(&none);
@@ -77,7 +77,7 @@ mod tests {
 
     use super::of_opening;
     use agent_registry::offered::Start;
-    use agent_session::{BackendFault, Choice, Choices};
+    use agent_session::{BackendError, Choice, Choices};
 
     fn choices(ids: &[&str]) -> Choices {
         Choices(
@@ -100,12 +100,12 @@ mod tests {
 
     #[test]
     fn a_sign_in_the_agent_asked_for_lists_its_ways() {
-        let fault = BackendFault::SignInChoose(choices(&["google", "key"]));
+        let fault = BackendError::SignInChoose(choices(&["google", "key"]));
         let record = of_opening(Some(&fault), None, &choices(&[])).expect("record");
         assert_eq!(record.start, Start::NeedsSignIn);
         assert_eq!(record.ways.len(), 2);
         let plain = of_opening(
-            Some(&BackendFault::SignInNeeded),
+            Some(&BackendError::SignInNeeded),
             None,
             &choices(&["login"]),
         );
@@ -114,7 +114,7 @@ mod tests {
 
     #[test]
     fn a_refused_model_still_records_the_models_it_offered() {
-        let fault = BackendFault::ModelNotOffered(choices(&["a", "b"]));
+        let fault = BackendError::ModelNotOffered(choices(&["a", "b"]));
         let record = of_opening(Some(&fault), None, &choices(&[])).expect("record");
         assert_eq!(record.start, Start::SignedIn);
         assert_eq!(record.models.len(), 2);
@@ -122,6 +122,6 @@ mod tests {
 
     #[test]
     fn a_start_that_failed_for_another_reason_records_nothing() {
-        assert!(of_opening(Some(&BackendFault::Unavailable), None, &choices(&[])).is_none());
+        assert!(of_opening(Some(&BackendError::Unavailable), None, &choices(&[])).is_none());
     }
 }

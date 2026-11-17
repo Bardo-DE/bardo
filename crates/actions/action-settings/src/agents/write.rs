@@ -26,7 +26,7 @@ pub struct AgentChoice {
 
 /// Why the choice was not written.
 #[derive(Debug, thiserror::Error)]
-pub enum ChoiceFault {
+pub enum ChoiceError {
     /// `agents.toml` is not valid TOML.
     #[error("the agents file isn't valid TOML")]
     Syntax(#[source] toml_edit::TomlError),
@@ -77,20 +77,20 @@ fn apply(entry: &mut toml_edit::Table, key: &str, pick: &Pick) {
 ///
 /// # Errors
 ///
-/// [`ChoiceFault`] when `text` is not readable TOML, no such agent is listed, or the model or the
+/// [`ChoiceError`] when `text` is not readable TOML, no such agent is listed, or the model or the
 /// way of signing in is not one actions service can keep.
 pub fn edit_agent_choice(
     text: &str,
     program: &str,
     choice: &AgentChoice,
-) -> Result<String, ChoiceFault> {
+) -> Result<String, ChoiceError> {
     if matches!(&choice.model, Pick::Set(id) if !model_fine(id)) {
-        return Err(ChoiceFault::BadModel);
+        return Err(ChoiceError::BadModel);
     }
     if matches!(&choice.way, Pick::Set(id) if !way_fine(id)) {
-        return Err(ChoiceFault::BadWay);
+        return Err(ChoiceError::BadWay);
     }
-    let mut doc: DocumentMut = text.parse().map_err(ChoiceFault::Syntax)?;
+    let mut doc: DocumentMut = text.parse().map_err(ChoiceError::Syntax)?;
     let entry = entry_of(&mut doc, program)?;
     apply(entry, "model", &choice.model);
     apply(entry, "sign_in", &choice.way);
@@ -100,14 +100,14 @@ pub fn edit_agent_choice(
 fn entry_of<'a>(
     doc: &'a mut DocumentMut,
     program: &str,
-) -> Result<&'a mut toml_edit::Table, ChoiceFault> {
+) -> Result<&'a mut toml_edit::Table, ChoiceError> {
     doc.get_mut("agent")
         .and_then(Item::as_array_of_tables_mut)
         .and_then(|list| {
             list.iter_mut()
                 .find(|t| t.get("program").and_then(Item::as_str) == Some(program))
         })
-        .ok_or(ChoiceFault::NoSuchAgent)
+        .ok_or(ChoiceError::NoSuchAgent)
 }
 
 /// `text` with `checkpoints` (who keeps the history of the files the agent changes) set in the
@@ -118,9 +118,9 @@ fn entry_of<'a>(
 ///
 /// # Errors
 ///
-/// [`ChoiceFault`] when `text` is not readable TOML or no such agent is listed.
-pub fn edit_agent_rewind(text: &str, program: &str, rewind: Rewind) -> Result<String, ChoiceFault> {
-    let mut doc: DocumentMut = text.parse().map_err(ChoiceFault::Syntax)?;
+/// [`ChoiceError`] when `text` is not readable TOML or no such agent is listed.
+pub fn edit_agent_rewind(text: &str, program: &str, rewind: Rewind) -> Result<String, ChoiceError> {
+    let mut doc: DocumentMut = text.parse().map_err(ChoiceError::Syntax)?;
     let entry = entry_of(&mut doc, program)?;
     let word = match rewind {
         Rewind::Actions => "actions",

@@ -12,7 +12,7 @@
 //!
 //! Only blocking file calls live here; the seam is async, so each runs on tokio's blocking pool.
 
-use account_core::store::{Persisted, StoreFault};
+use account_core::store::{AccountStoreError, Persisted};
 use account_core::store::{RegistryStore, StoreError};
 use base_fs::atomic::AtomicFile;
 use std::path::{Path, PathBuf};
@@ -32,13 +32,13 @@ pub struct FileStore {
 /// host's.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("registry file {} refused: {cause}", file.display())]
-pub struct RegistryRefusal {
+pub struct RegistryError {
     file: PathBuf,
     backup: Option<PathBuf>,
     cause: String,
 }
 
-impl RegistryRefusal {
+impl RegistryError {
     /// The registry file.
     #[must_use]
     pub fn file(&self) -> &std::path::Path {
@@ -90,7 +90,7 @@ impl FileStore {
     /// The refusal of the registry file at start, for the host to word: both files and why.
     /// The host stops (it never starts empty over a file it could not read) and nothing is
     /// restored on its own.
-    pub fn refusal(&self, why: &impl std::fmt::Display) -> RegistryRefusal {
+    pub fn refusal(&self, why: &impl std::fmt::Display) -> RegistryError {
         let backup = self.backup_path();
         RegistryRefusal {
             file: self.path(),
@@ -115,7 +115,7 @@ impl FileStore {
         match self.file.read() {
             Ok(Some(bytes)) => {
                 let text = String::from_utf8(bytes)
-                    .map_err(|e| StoreFault::Unreadable(e.utf8_error().to_string()))?;
+                    .map_err(|e| AccountStoreError::Unreadable(e.utf8_error().to_string()))?;
                 Ok(Persisted::from_json(&text)?)
             }
             Ok(None) => Ok(Persisted::empty()),

@@ -3,7 +3,7 @@
 use crate::common::FakeMounts;
 use base_testkit::Scratch;
 use drive_mount_daemon::client;
-use drive_mount_daemon::server::{At, Helper, Refusal};
+use drive_mount_daemon::server::{At, Helper, ServeRefusedError};
 use drive_mount_daemon::wire::{self, Access, Code, FolderName, Reply, Request};
 use std::io::{Read, Write};
 use std::os::unix::fs::PermissionsExt;
@@ -33,7 +33,11 @@ fn cloud(dir: &Scratch) -> (PathBuf, PathBuf) {
 fn exchange(
     helper: &Helper<FakeMounts>,
     bytes: &[u8],
-) -> (Result<(), Refusal>, Reply, Option<std::os::fd::OwnedFd>) {
+) -> (
+    Result<(), ServeRefusedError>,
+    Reply,
+    Option<std::os::fd::OwnedFd>,
+) {
     let (ours, theirs) = UnixStream::pair().expect("pair");
     std::thread::scope(|scope| {
         // The helper's end closes once answered, as the server's does, ending the reply.
@@ -127,7 +131,7 @@ fn a_refused_name_is_answered_with_a_code_and_nothing_is_touched() {
         let bytes = [b"1\0mount\0", bad.as_bytes(), b"\0ro\0"].concat();
         let (outcome, reply, fd) = exchange(&helper, &bytes);
         assert!(
-            matches!(outcome, Err(Refusal::Message(_))),
+            matches!(outcome, Err(ServeRefusedError::Message(_))),
             "{bad:?}: {outcome:?}"
         );
         assert_eq!(reply, Reply::Refused(Code::NotHere));
@@ -148,7 +152,10 @@ fn a_folder_that_leads_out_of_cloud_is_refused() {
     let helper = Helper::new(cloud, FakeMounts::default());
     for folder in ["OneDrive", "Google Drive"] {
         let refused = helper.handle(&mount(folder)).expect_err(folder);
-        assert!(matches!(refused, Refusal::NotInCloud(_)), "{refused:?}");
+        assert!(
+            matches!(refused, ServeRefusedError::NotInCloud(_)),
+            "{refused:?}"
+        );
         assert_eq!(refused.code(), Code::NotHere);
     }
     assert!(helper.mounts().writers.lock().expect("writers").is_empty());
@@ -162,7 +169,10 @@ fn a_folder_with_files_of_its_own_is_refused() {
     std::fs::write(real.join("OneDrive/notes.txt"), b"mine").expect("file");
     let helper = Helper::new(cloud, FakeMounts::default());
     let refused = helper.handle(&mount("OneDrive")).expect_err("not empty");
-    assert!(matches!(refused, Refusal::NotEmpty(_)), "{refused:?}");
+    assert!(
+        matches!(refused, ServeRefusedError::NotEmpty(_)),
+        "{refused:?}"
+    );
     assert_eq!(refused.code(), Code::FolderInUse);
     assert!(helper.mounts().writers.lock().expect("writers").is_empty());
     // An empty folder is used as it is.
@@ -177,7 +187,10 @@ fn one_live_mount_per_name_and_a_stale_one_is_cleared_first() {
     let helper = Helper::new(cloud.clone(), FakeMounts::default());
     helper.handle(&mount("OneDrive")).expect("first");
     let again = helper.handle(&mount("OneDrive")).expect_err("second");
-    assert!(matches!(again, Refusal::AlreadyShown(_)), "{again:?}");
+    assert!(
+        matches!(again, ServeRefusedError::AlreadyShown(_)),
+        "{again:?}"
+    );
     assert_eq!(again.code(), Code::AlreadyShown);
     // Another name is its own.
     helper.handle(&mount("Google Drive")).expect("another name");
@@ -202,7 +215,10 @@ fn one_live_mount_per_name_and_a_stale_one_is_cleared_first() {
     let refused = other
         .handle(&mount("OneDrive"))
         .expect_err("another file system");
-    assert!(matches!(refused, Refusal::OtherMount(..)), "{refused:?}");
+    assert!(
+        matches!(refused, ServeRefusedError::OtherMount(..)),
+        "{refused:?}"
+    );
     assert!(
         other
             .mounts()
@@ -222,7 +238,7 @@ fn a_caller_of_another_uid_is_refused() {
     let helper = Helper::for_owner(cloud, FakeMounts::default(), someone_else);
     let (outcome, reply, fd) = exchange(&helper, &mount("OneDrive").encode());
     assert!(
-        matches!(outcome, Err(Refusal::Peer(uid)) if uid == me.as_raw()),
+        matches!(outcome, Err(ServeRefusedError::Peer(uid)) if uid == me.as_raw()),
         "{outcome:?}"
     );
     assert_eq!(reply, Reply::Refused(Code::NotHere));
@@ -242,7 +258,10 @@ fn a_failed_mount_says_the_drive_cannot_be_shown() {
         },
     );
     let (outcome, reply, fd) = exchange(&helper, &mount("OneDrive").encode());
-    assert!(matches!(outcome, Err(Refusal::Mount(..))), "{outcome:?}");
+    assert!(
+        matches!(outcome, Err(ServeRefusedError::Mount(..))),
+        "{outcome:?}"
+    );
     assert_eq!(reply, Reply::Refused(Code::NotHere));
     assert!(fd.is_none());
 }
@@ -279,7 +298,10 @@ fn an_unmount_takes_away_only_a_drives_folder() {
         FakeMounts::with(real.join("OneDrive"), At::Other("fuse.sshfs".into())),
     );
     let refused = other.handle(&unmount("OneDrive")).expect_err("not ours");
-    assert!(matches!(refused, Refusal::OtherMount(..)), "{refused:?}");
+    assert!(
+        matches!(refused, ServeRefusedError::OtherMount(..)),
+        "{refused:?}"
+    );
     assert!(
         other
             .mounts()

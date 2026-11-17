@@ -67,18 +67,18 @@ fn a_fork_of_a_tainted_by_fault_parent_writes_the_taint_down() {
 fn a_fork_refuses_what_it_cannot_copy_whole() {
     assert_eq!(
         fork(&session("s-1"), &parent_rows(), Seq(99), task("t-2")),
-        Err(ForkFault::PastEnd)
+        Err(ForkError::PastEnd)
     );
     let mut gappy = parent_rows();
     gappy[3].seq = Seq(30);
     gappy.truncate(5);
     assert_eq!(
         fork(&session("s-1"), &gappy, Seq(4), task("t-2")),
-        Err(ForkFault::NotWhole)
+        Err(ForkError::NotWhole)
     );
     assert_eq!(
         fork(&session("s-1"), &[], Seq(0), task("t-2")),
-        Err(ForkFault::PastEnd)
+        Err(ForkError::PastEnd)
     );
 }
 
@@ -107,16 +107,16 @@ fn an_export_names_labels_not_values_and_refuses_a_hole() {
     bad[2].read = Read::Unreadable(Unreadable::Malformed);
     assert_eq!(
         export(&session("s-1"), &bad),
-        Err(ExportFault::Unreadable(Seq(2)))
+        Err(ExportError::Unreadable(Seq(2)))
     );
 }
 
 #[test]
 fn an_import_checks_its_version() {
-    assert!(matches!(from_json("{"), Err(ExportFault::Malformed(_))));
+    assert!(matches!(from_json("{"), Err(ExportError::Malformed(_))));
     assert_eq!(
         from_json(r#"{"export_version":9,"anything":1}"#),
-        Err(ExportFault::UnknownVersion(9))
+        Err(ExportError::UnknownVersion(9))
     );
 }
 

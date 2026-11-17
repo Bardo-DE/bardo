@@ -23,7 +23,7 @@ pub enum Listen {
 
 /// Why the edge stopped.
 #[derive(Debug, thiserror::Error)]
-pub enum DaemonFault {
+pub enum DaemonError {
     /// The configuration file does not read.
     #[error("{0}")]
     Config(#[from] ConfigError),
@@ -44,16 +44,16 @@ pub enum DaemonFault {
     Joined(#[from] tokio::task::JoinError),
     /// A bridge was started without its session's token.
     #[error("{0}")]
-    NoToken(#[from] crate::bound::NoToken),
+    NoToken(#[from] crate::bound::NoTokenError),
 }
 
-impl From<zbus::Error> for DaemonFault {
+impl From<zbus::Error> for DaemonError {
     fn from(error: zbus::Error) -> Self {
         Self::Bus(Box::new(error))
     }
 }
 
-impl From<rmcp::service::ServerInitializeError> for DaemonFault {
+impl From<rmcp::service::ServerInitializeError> for DaemonError {
     fn from(error: rmcp::service::ServerInitializeError) -> Self {
         Self::Session(Box::new(error))
     }
@@ -66,12 +66,12 @@ impl From<rmcp::service::ServerInitializeError> for DaemonFault {
 /// share one edge through the socket).
 ///
 /// # Errors
-/// Returns [`DaemonFault::NameTaken`] when another edge holds the name, or a bus fault when the
+/// Returns [`DaemonError::NameTaken`] when another edge holds the name, or a bus fault when the
 /// name request fails.
-pub async fn claim(connection: &BusConnection) -> Result<(), DaemonFault> {
+pub async fn claim(connection: &BusConnection) -> Result<(), DaemonError> {
     match dbus_kit::name::claim(connection, MCP_BUS).await {
         Ok(()) => Ok(()),
-        Err(dbus_kit::name::ClaimError::Taken(_)) => Err(DaemonFault::NameTaken),
+        Err(dbus_kit::name::ClaimError::Taken(_)) => Err(DaemonError::NameTaken),
         Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err((*source).into()),
     }
 }
@@ -92,7 +92,7 @@ fn edge(
     .with_expose_read(move || expose())
 }
 
-async fn over_stdio<S: rmcp::ServerHandler>(edge: S) -> Result<(), DaemonFault> {
+async fn over_stdio<S: rmcp::ServerHandler>(edge: S) -> Result<(), DaemonError> {
     let running = edge
         .serve((tokio::io::stdin(), tokio::io::stdout()))
         .await?;
@@ -105,7 +105,7 @@ async fn over_socket(
     config: McpConfig,
     expose: ExposeRead,
     path: &Path,
-) -> Result<(), DaemonFault> {
+) -> Result<(), DaemonError> {
     // A stale file from a crashed edge is ours to replace; a live one would refuse the bind below
     // only after this removes it, so the bus name (taken first) is what keeps two edges apart.
     let _ = std::fs::remove_file(path);
@@ -126,13 +126,13 @@ async fn over_socket(
 /// switched as `config.expose` says for as long as it runs.
 ///
 /// # Errors
-/// Returns a [`DaemonFault`] when the bus name is taken, the socket cannot be bound or accepted
+/// Returns a [`DaemonError`] when the bus name is taken, the socket cannot be bound or accepted
 /// on, or the MCP session fails.
 pub async fn start(
     connection: &BusConnection,
     config: McpConfig,
     listen: Listen,
-) -> Result<(), DaemonFault> {
+) -> Result<(), DaemonError> {
     let expose = config.expose;
     Box::pin(start_following(
         connection,
@@ -147,14 +147,14 @@ pub async fn start(
 /// settings file, read again each time.
 ///
 /// # Errors
-/// Returns a [`DaemonFault`] when the bus name is taken, the socket cannot be bound or accepted
+/// Returns a [`DaemonError`] when the bus name is taken, the socket cannot be bound or accepted
 /// on, or the MCP session fails.
 pub async fn start_following(
     connection: &BusConnection,
     config: McpConfig,
     listen: Listen,
     expose: ExposeRead,
-) -> Result<(), DaemonFault> {
+) -> Result<(), DaemonError> {
     claim(connection).await?;
     match listen {
         Listen::Stdio => Box::pin(over_stdio(edge(connection, &config, &expose))).await,
@@ -178,7 +178,7 @@ pub struct Args {
 
 /// Why the command line was not understood.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum CommandLineFault {
+pub enum CommandLineError {
     /// A flag that takes a value came last.
     #[error("{0} needs a value")]
     NeedsValue(String),
@@ -194,15 +194,15 @@ impl Args {
     /// Reads the arguments after the program name; an unknown one is an error.
     ///
     /// # Errors
-    /// Returns a [`CommandLineFault`] for a flag without its value, an unknown flag, or a
+    /// Returns a [`CommandLineError`] for a flag without its value, an unknown flag, or a
     /// `--client` that is not a client name.
-    pub fn parse(args: impl IntoIterator<Item = String>) -> Result<Self, CommandLineFault> {
+    pub fn parse(args: impl IntoIterator<Item = String>) -> Result<Self, CommandLineError> {
         let mut args = args.into_iter();
         let mut parsed = Self::default();
         while let Some(flag) = args.next() {
             let mut value = || {
                 args.next()
-                    .ok_or_else(|| CommandLineFault::NeedsValue(flag.clone()))
+                    .ok_or_else(|| CommandLineError::NeedsValue(flag.clone()))
             };
             match flag.as_str() {
                 "--socket" => parsed.socket = Some(PathBuf::from(value()?)),
@@ -211,10 +211,10 @@ impl Args {
                 "--client" => {
                     parsed.client = Some(
                         provenance::ClientName::parse(&value()?)
-                            .map_err(CommandLineFault::NotAClient)?,
+                            .map_err(CommandLineError::NotAClient)?,
                     );
                 }
-                other => return Err(CommandLineFault::Unknown(other.to_owned())),
+                other => return Err(CommandLineError::Unknown(other.to_owned())),
             }
         }
         Ok(parsed)
@@ -225,9 +225,9 @@ impl Args {
 /// its `main` passes in), the arguments from the command line.
 ///
 /// # Errors
-/// Returns a [`DaemonFault`] when the configuration or bus cannot be read, the host token is
+/// Returns a [`DaemonError`] when the configuration or bus cannot be read, the host token is
 /// missing, or serving fails.
-pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonFault> {
+pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<(), DaemonError> {
     if let Some(dir) = args.write_schema {
         return write_schema(&dir);
     }
@@ -263,8 +263,8 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
 /// 9.2).
 ///
 /// # Errors
-/// Returns a [`DaemonFault`] when the directory or the file cannot be written.
-pub fn write_schema(dir: &Path) -> Result<(), DaemonFault> {
+/// Returns a [`DaemonError`] when the directory or the file cannot be written.
+pub fn write_schema(dir: &Path) -> Result<(), DaemonError> {
     std::fs::create_dir_all(dir)?;
     std::fs::write(dir.join("actions.settings.toml"), crate::settings::SCHEMA)?;
     Ok(())

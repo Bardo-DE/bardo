@@ -39,7 +39,7 @@ pub enum Provision {
 
 /// Why this host refuses an entry.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum Fault {
+pub enum TableError {
     /// A lens or a facts entry that applies to nothing.
     #[error("the capability {0:?} applies to nothing")]
     AppliesToNothing(Cap),
@@ -60,11 +60,11 @@ struct Raw {
 
 impl Provides for Provision {
     type Capability = Cap;
-    type Fault = Fault;
+    type Fault = TableError;
 
-    fn parse(entry: Entry) -> Result<Provision, Refusal<Fault>> {
+    fn parse(entry: Entry) -> Result<Provision, Refusal<TableError>> {
         let raw: Raw = entry.read()?;
-        let nothing = Refusal::Fault(Fault::AppliesToNothing(raw.capability));
+        let nothing = Refusal::Fault(TableError::AppliesToNothing(raw.capability));
         match raw.capability {
             Cap::BlockLens if raw.kinds.is_empty() => Err(nothing),
             Cap::BlockLens => Ok(Provision::BlockLens(raw.kinds)),

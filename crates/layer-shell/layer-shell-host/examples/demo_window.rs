@@ -17,7 +17,7 @@ use std::cell::RefCell;
 use std::io::{BufRead, Write};
 
 use dioxus::prelude::*;
-use layer_shell_hooks::{GrabRefused, HostRoot, SurfaceHandle, use_surface, use_toplevel_state};
+use layer_shell_hooks::{GrabError, HostRoot, SurfaceHandle, use_surface, use_toplevel_state};
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
     Decorations, Fullscreen, Maximize, ResizeEdge, Size, SurfaceId, ToplevelConfig,
@@ -43,7 +43,7 @@ fn print(value: &serde_json::Value) {
     let _ = out.flush();
 }
 
-fn grab_line(what: &str, result: Result<(), GrabRefused>) -> serde_json::Value {
+fn grab_line(what: &str, result: Result<(), GrabError>) -> serde_json::Value {
     let err = result.err().map(|e| format!("{e:?}"));
     json!({"event": what, "ok": err.is_none(), "err": err})
 }

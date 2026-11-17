@@ -1,4 +1,4 @@
-use portal_core::choice::{ChoiceRefusal, ChoiceRequest, Multiple, Offer, SourceKinds};
+use portal_core::choice::{ChoiceError, ChoiceRequest, Multiple, Offer, SourceKinds};
 use portal_core::{CastSource, CursorMode, PersistMode};
 
 fn out(name: &str) -> CastSource {
@@ -60,7 +60,7 @@ fn the_acceptance_table() {
             Multiple::One,
             vec![out("A"), out("B")],
             CursorMode::Hidden,
-            Err(ChoiceRefusal::TooMany),
+            Err(ChoiceError::TooMany),
         ),
         (
             "nothing",
@@ -68,7 +68,7 @@ fn the_acceptance_table() {
             Multiple::One,
             vec![],
             CursorMode::Hidden,
-            Err(ChoiceRefusal::Empty),
+            Err(ChoiceError::Empty),
         ),
         (
             "a window when only displays",
@@ -76,7 +76,7 @@ fn the_acceptance_table() {
             Multiple::One,
             vec![win("w")],
             CursorMode::Hidden,
-            Err(ChoiceRefusal::WrongKind),
+            Err(ChoiceError::WrongKind),
         ),
         (
             "a display when only windows",
@@ -84,7 +84,7 @@ fn the_acceptance_table() {
             Multiple::One,
             vec![out("A")],
             CursorMode::Hidden,
-            Err(ChoiceRefusal::WrongKind),
+            Err(ChoiceError::WrongKind),
         ),
         (
             "the same twice",
@@ -92,7 +92,7 @@ fn the_acceptance_table() {
             Multiple::Many,
             vec![out("A"), out("A")],
             CursorMode::Hidden,
-            Err(ChoiceRefusal::Duplicate),
+            Err(ChoiceError::Duplicate),
         ),
         (
             "a cursor the app did not allow",
@@ -100,7 +100,7 @@ fn the_acceptance_table() {
             Multiple::One,
             vec![out("A")],
             CursorMode::Metadata,
-            Err(ChoiceRefusal::CursorNotAllowed),
+            Err(ChoiceError::CursorNotAllowed),
         ),
     ];
     for (name, kinds, multiple, sources, cursor, want) in table {

@@ -26,7 +26,7 @@ fn a_file_others_can_read_is_refused_and_so_is_one_that_is_not_a_file() {
         let key = file_with(&scratch, b"sk-lab-1234", mode);
         assert_eq!(
             read_key(&key),
-            Err(KeyFileProblem::NotPrivate { mode }),
+            Err(KeyFileError::NotPrivate { mode }),
             "{mode:04o}"
         );
     }
@@ -39,11 +39,11 @@ fn a_file_others_can_read_is_refused_and_so_is_one_that_is_not_a_file() {
     let dir = KeyFile::at(scratch.path().to_path_buf());
     assert!(matches!(
         read_key(&dir),
-        Err(KeyFileProblem::NotAFile | KeyFileProblem::NotPrivate { .. })
+        Err(KeyFileError::NotAFile | KeyFileError::NotPrivate { .. })
     ));
     assert_eq!(
         read_key(&KeyFile::at(scratch.path().join("nothing"))),
-        Err(KeyFileProblem::Missing)
+        Err(KeyFileError::Missing)
     );
 }
 
@@ -53,12 +53,12 @@ fn an_empty_or_odd_token_is_not_used() {
     for text in [&b""[..], b"  \n", b"two words", b"tab\there", &[b'a'; 5000]] {
         assert_eq!(
             read_key(&file_with(&scratch, text, 0o600)),
-            Err(KeyFileProblem::Unusable),
+            Err(KeyFileError::Unusable),
             "{text:?}"
         );
     }
     assert!(matches!(
         read_key(&file_with(&scratch, b"\xff\xfe", 0o600)),
-        Err(KeyFileProblem::NotText(_))
+        Err(KeyFileError::NotText(_))
     ));
 }

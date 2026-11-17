@@ -38,24 +38,22 @@ mod resume;
 mod thing;
 
 pub use backend::{
-    BackendEvent, BackendFault, CallEvent, Choice, Choices, HostFault, Resumed, SessionBackend,
-    SessionHost, SheetChoice, StartSession, TurnEnd, UsageNote,
+    AgentHostError, BackendError, BackendEvent, CallEvent, Choice, Choices, Resumed,
+    SessionBackend, SessionHost, SheetChoice, StartSession, TurnEnd, UsageNote,
 };
 pub use checkpoints::{checkpoint_rows, note_rows};
 pub use codec::{
-    CURRENT, EncodeFault, Encoded, EntryVersion, Logged, Read, Unreadable, decode, encode, kind_tag,
+    CURRENT, EncodeError, Encoded, EntryVersion, Logged, Read, Unreadable, decode, encode, kind_tag,
 };
-pub use desk::{DeskFault, NoDesk, SheetDesk};
+pub use desk::{DeskError, NoDesk, SheetDesk};
 pub use entry::{
     BackendKind, BreakerNote, CallOpen, Compacted, CompactedBy, EndCause, ForkPoint, HandleLabel,
     Opening, Seq, SessionEntry, SkillUse, TaintCause, TaintNote, UnknownEntry,
 };
-pub use export::{EXPORT_VERSION, ExportFault, SessionExport, export, from_json, to_json};
-pub use fork::{ForkFault, child_names, fork, forks_of};
-pub use log::{Appended, LogFault, LogPage, PageSize, SessionLog, read_all};
-pub use plan::{
-    Blocker, Interrupted, PlanRefusal, ResumeFault, ResumePlan, ResumedBudget, Standing,
-};
+pub use export::{EXPORT_VERSION, ExportError, SessionExport, export, from_json, to_json};
+pub use fork::{ForkError, child_names, fork, forks_of};
+pub use log::{Appended, LogError, LogPage, PageSize, SessionLog, read_all};
+pub use plan::{Blocker, Interrupted, PlanError, ResumeFault, ResumePlan, ResumedBudget, Standing};
 pub use restore_rule::{Claimant, may_restore, may_restore_opening, may_restore_plan};
 pub use resume::resume_plan;
 pub use thing::{SESSION_KIND, session_thing};

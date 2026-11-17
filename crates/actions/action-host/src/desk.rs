@@ -6,7 +6,7 @@
 
 use crate::ConfirmSheet;
 use action_core::{ConfirmId, ConfirmRequest};
-use agent_session::{DeskFault, SheetChoice, SheetDesk};
+use agent_session::{DeskError, SheetChoice, SheetDesk};
 use futures_channel::oneshot;
 use provenance::SessionId;
 use std::collections::BTreeMap;
@@ -130,10 +130,10 @@ impl SheetDesk for EditorDesk {
         }
     }
 
-    fn answer(&self, id: &ConfirmId, choice: SheetChoice) -> Result<(), DeskFault> {
+    fn answer(&self, id: &ConfirmId, choice: SheetChoice) -> Result<(), DeskError> {
         let waiting = self
             .with(|held| held.open.remove(id))
-            .ok_or(DeskFault::NoSuchSheet)?;
+            .ok_or(DeskError::NoSuchSheet)?;
         // The router stopped waiting (the call was cancelled): nothing is left to tell.
         let _ = waiting.answer.send(choice);
         Ok(())
@@ -181,7 +181,7 @@ mod tests {
         assert_eq!(asking.now_or_never(), Some(Some(SheetChoice::Always)));
         assert_eq!(
             desk.answer(&ask.id, SheetChoice::Once),
-            Err(DeskFault::NoSuchSheet)
+            Err(DeskError::NoSuchSheet)
         );
         assert_eq!(desk.waiting(), 0);
     }
@@ -216,7 +216,7 @@ mod tests {
         assert_eq!(desk.request(&ask.id), None);
         assert_eq!(
             desk.answer(&ask.id, SheetChoice::Once),
-            Err(DeskFault::NoSuchSheet)
+            Err(DeskError::NoSuchSheet)
         );
     }
 }

@@ -1,7 +1,7 @@
 //! What flows on the utterance fd.
 
 use crate::text::{HeardSegment, HeardTail, HeardText};
-use inference_core::{InferRefusal, ModelError, Readiness, ServedBy};
+use inference_core::{InferRefusedError, ModelError, Readiness, ServedBy};
 use serde::{Deserialize, Serialize};
 
 /// An input level in thousandths, 0 to 1000: the meter's own type, `speech_vad::Level`.
@@ -38,7 +38,7 @@ pub enum VoiceFault {
     /// The engine failed.
     Engine(ModelError),
     /// inferd refused.
-    Refused(InferRefusal),
+    Refused(InferRefusedError),
 }
 
 /// How an utterance ended. The text goes on the fds only; the unicast `Ended` signal carries

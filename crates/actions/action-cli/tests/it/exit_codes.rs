@@ -282,6 +282,6 @@ fn the_codes_are_the_table_in_cli_md() {
         [0, 2, 3, 4, 5, 6, 7, 8],
         "stable: scripts depend on them"
     );
-    let help = action_cli::Failure::usage("x").json();
+    let help = action_cli::ExitError::usage("x").json();
     assert_eq!(help["error"]["exit"], 2);
 }

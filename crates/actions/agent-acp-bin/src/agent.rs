@@ -39,7 +39,7 @@ use agent_acp_host::Workdir;
 use agent_session::{BackendEvent, SessionHost};
 use args::{Args, Mode};
 use base_path::AbsPath;
-use fault::AgentFault;
+use fault::AgentError;
 use host::{Hosted, host};
 use places::Places;
 use provenance::UnixSeconds;
@@ -62,12 +62,12 @@ fn sibling(name: &str) -> Option<AbsPath> {
 pub async fn run(
     args: Args,
     env: impl Fn(&str) -> Option<String> + Send + Sync + 'static,
-) -> Result<(), AgentFault> {
+) -> Result<(), AgentError> {
     let tools = args.mode == Mode::Session;
     let places = Places::read(env);
     let bus = dbus_kit::connect::session_from_env(&|name: &str| places.var(name))
         .await
-        .map_err(|e| AgentFault::Bus(e.to_string()))?;
+        .map_err(|e| AgentError::Bus(e.to_string()))?;
     let wiring = wire::build(
         allowed(&places)?,
         tools,
@@ -78,22 +78,22 @@ pub async fn run(
     )
     .await?;
 
-    let cwd = std::fs::canonicalize(&args.cwd).map_err(|e| AgentFault::Directory(e.to_string()))?;
-    let cwd = cwd.to_str().ok_or(AgentFault::DirectoryNotUtf8)?.to_owned();
+    let cwd = std::fs::canonicalize(&args.cwd).map_err(|e| AgentError::Directory(e.to_string()))?;
+    let cwd = cwd.to_str().ok_or(AgentError::DirectoryNotUtf8)?.to_owned();
     // The agent gets this folder read-write: never the home folder itself (its dot-directories
     // hold the person's configuration), nor a place of secrets.
-    let folder = AbsPath::parse(&cwd).map_err(|e| AgentFault::Directory(e.to_string()))?;
+    let folder = AbsPath::parse(&cwd).map_err(|e| AgentError::Directory(e.to_string()))?;
     Workdir::resolve(&folder, &folder, places.home())
-        .map_err(|e| AgentFault::Directory(format!("{cwd}: {e}; give --cwd a project folder")))?;
+        .map_err(|e| AgentError::Directory(format!("{cwd}: {e}; give --cwd a project folder")))?;
     let Hosted {
         mut host, session, ..
     } = Box::pin(host(wiring, args.program, &cwd, args.space))
         .await
-        .map_err(|why| AgentFault::Open(why.to_string()))?;
+        .map_err(|why| AgentError::Open(why.to_string()))?;
     if args.mode == Mode::Refresh {
         host.close(&session, agent_session::EndCause::Closed)
             .await
-            .map_err(|e| AgentFault::Session(e.to_string()))?;
+            .map_err(|e| AgentError::Session(e.to_string()))?;
         return Ok(());
     }
     eprintln!("agent started in {cwd}. Type a request; an empty line or ctrl-d quits.");
@@ -117,10 +117,10 @@ pub async fn run(
         };
         host.turn(&session, turn)
             .await
-            .map_err(|e| AgentFault::Session(e.to_string()))?;
+            .map_err(|e| AgentError::Session(e.to_string()))?;
         while let Some(event) = Box::pin(host.next_event(&session))
             .await
-            .map_err(|e| AgentFault::Session(e.to_string()))?
+            .map_err(|e| AgentError::Session(e.to_string()))?
         {
             if let BackendEvent::Confirm(request) = &event {
                 let (words, always) = tty::render(request);
@@ -128,7 +128,7 @@ pub async fn run(
                 let typed = lines.lock().await.next_line().await.ok().flatten();
                 host.answer_sheet(&session, &request.id, tty::choice(typed.as_deref(), always))
                     .await
-                    .map_err(|e| AgentFault::Session(e.to_string()))?;
+                    .map_err(|e| AgentError::Session(e.to_string()))?;
             }
             tty::print(&event);
             if matches!(event, BackendEvent::TurnEnd(_)) {
@@ -138,6 +138,6 @@ pub async fn run(
     }
     host.close(&session, agent_session::EndCause::Closed)
         .await
-        .map_err(|e| AgentFault::Session(e.to_string()))?;
+        .map_err(|e| AgentError::Session(e.to_string()))?;
     Ok(())
 }

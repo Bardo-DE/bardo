@@ -9,7 +9,7 @@
 
 use crate::ask_render;
 use crate::exec::Style;
-use crate::exit::{Exit, Failure, of_client};
+use crate::exit::{Exit, ExitError, of_client};
 use crate::{JsonFlag, Report, Stdout};
 use action_client::{ClientError, Intents, Transport, TransportError};
 use action_core::{ContextKeep, Keep, TurnIn, TurnVia, UserTurn};
@@ -33,13 +33,13 @@ fn keep_nothing() -> ContextKeep {
     }
 }
 
-fn unavailable(error: &TransportError) -> Failure {
+fn unavailable(error: &TransportError) -> ExitError {
     match error {
-        TransportError::Closed => Failure::new(
+        TransportError::Closed => ExitError::new(
             Exit::Unavailable,
             "the assistant is not running (bardo-companiond is not installed, or did not start)",
         ),
-        other => Failure::new(Exit::Unavailable, format!("the assistant: {other}")),
+        other => ExitError::new(Exit::Unavailable, format!("the assistant: {other}")),
     }
 }
 
@@ -110,7 +110,7 @@ fn report(answer: &AnswerWire, style: Style) -> Report {
 }
 
 /// Follows the answer until it is no longer working.
-async fn settled(answer: &mut impl Follow) -> Result<AnswerWire, Failure> {
+async fn settled(answer: &mut impl Follow) -> Result<AnswerWire, ExitError> {
     let mut last = None;
     while let Some(view) = answer.next().await.map_err(|e| unavailable(&e))? {
         let working = matches!(view.phase, AnswerPhase::Thinking | AnswerPhase::Streaming);
@@ -119,14 +119,14 @@ async fn settled(answer: &mut impl Follow) -> Result<AnswerWire, Failure> {
             break;
         }
     }
-    last.ok_or_else(|| Failure::new(Exit::Unavailable, "the assistant dropped the answer"))
+    last.ok_or_else(|| ExitError::new(Exit::Unavailable, "the assistant dropped the answer"))
 }
 
 async fn turn<T: Transport>(
     intents: &Intents<T>,
     session: &SessionId,
     text: &str,
-) -> Result<action_vocab::TurnId, Failure> {
+) -> Result<action_vocab::TurnId, ExitError> {
     intents
         .session_turn(
             session.clone(),
@@ -148,7 +148,7 @@ async fn run<T: Transport, C: CompanionTransport>(
     text: &str,
     space: SpaceId,
     now: UnixSeconds,
-) -> Result<(AnswerWire, SessionId), Failure> {
+) -> Result<(AnswerWire, SessionId), ExitError> {
     let open = SessionOpen {
         space,
         agent: AgentRef::Companion,

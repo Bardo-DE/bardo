@@ -19,7 +19,7 @@ pub use caller_identity_core;
 pub use caller_identity_linux;
 pub use error::{UnitError, WhoError, access_denied};
 pub use manager::{DROP_INS_MAX, ManagerLink, SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH, UnitSource};
-pub use offload::{Cancelled, Offload};
+pub use offload::{Offload, OffloadError};
 pub use owner::OwnerWatch;
 pub use who::{BusPeers, ManagerCheck};
 

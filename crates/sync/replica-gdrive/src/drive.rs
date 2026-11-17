@@ -32,12 +32,12 @@ use http_core::http::{Method, Response};
 use http_core::{HeaderText, Http, request};
 use sync_core::status::{refused, write_unreached};
 use sync_core::{
-    BaseVersion, Conflict, DriveWrite, Found, Place, PutRefused, RemoteId, RemoteSide,
-    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
+    BaseVersion, Conflict, DriveWrite, Found, Place, PutError, RemoteId, RemoteSide, RemoteVersion,
+    RetryAfter, Session, Upload, UploadTo, Written,
 };
 
-fn again(source: impl std::error::Error + Send + Sync + 'static) -> PutRefused {
-    PutRefused::failed(RetryAfter(30), source)
+fn again(source: impl std::error::Error + Send + Sync + 'static) -> PutError {
+    PutError::failed(RetryAfter(30), source)
 }
 
 /// Whether Drive takes `name`: any but an empty one.
@@ -48,7 +48,7 @@ pub fn accepts_name(name: &str) -> bool {
 
 impl<H: Http> GdriveReplica<H> {
     /// The id of `place`'s folder: its own, or My Drive's (the dataset folder's) for the top.
-    async fn parent_id(&self, place: &Place) -> Result<String, PutRefused> {
+    async fn parent_id(&self, place: &Place) -> Result<String, PutError> {
         match &place.parent {
             Some(id) => Ok(id.0.clone()),
             None => self.root_id(false).await.map_err(refused),
@@ -56,7 +56,7 @@ impl<H: Http> GdriveReplica<H> {
     }
 
     /// The file `id` now, if it is still at `base`; else the conflict that is.
-    async fn at_base(&self, id: &RemoteId, base: &BaseVersion) -> Result<File, PutRefused> {
+    async fn at_base(&self, id: &RemoteId, base: &BaseVersion) -> Result<File, PutError> {
         let target = Target::Existing(id.clone());
         let now = self.file_now(&id.0).await.map_err(refused)?;
         match (&now, base) {
@@ -74,7 +74,7 @@ impl<H: Http> GdriveReplica<H> {
         response: Response<Vec<u8>>,
         target: &Target,
         base: &BaseVersion,
-    ) -> Result<Written, PutRefused> {
+    ) -> Result<Written, PutError> {
         self.settle(response, target, base)
             .await
             .map(|(id, version)| Written { id, version })
@@ -91,13 +91,13 @@ impl<H: Http> GdriveReplica<H> {
 
     /// A create of `place` was refused `409`: its reserved id is used, by the item an earlier
     /// try made. That item, as a conflict for the caller to take.
-    async fn made_before(&self, place: &Place) -> PutRefused {
+    async fn made_before(&self, place: &Place) -> PutError {
         let Some(id) = &place.id else {
-            return PutRefused::Declined;
+            return PutError::Declined;
         };
         match self.file_now(&id.0).await {
             Err(error) => refused(error),
-            Ok(Some(file)) if !file.in_trash() => PutRefused::Conflict(Conflict {
+            Ok(Some(file)) if !file.in_trash() => PutError::Conflict(Conflict {
                 item: id.clone(),
                 base: BaseVersion::Absent,
                 remote: RemoteSide::Exists(
@@ -106,11 +106,11 @@ impl<H: Http> GdriveReplica<H> {
                 ),
             }),
             // Used, and in the trash or gone: a new id is wanted.
-            Ok(_) => PutRefused::Declined,
+            Ok(_) => PutError::Declined,
         }
     }
 
-    async fn drive_make_folder(&self, place: &Place) -> Result<Written, PutRefused> {
+    async fn drive_make_folder(&self, place: &Place) -> Result<Written, PutError> {
         let parent = self.parent_id(place).await?;
         let mut meta = Self::new_meta(place, &parent);
         meta["mimeType"] = serde_json::Value::String(crate::json::FOLDER.to_owned());
@@ -118,7 +118,7 @@ impl<H: Http> GdriveReplica<H> {
         let url = self
             .addr
             .api("files", &[("fields", FILE_FIELDS)])
-            .ok_or(PutRefused::Forbidden)?;
+            .ok_or(PutError::Forbidden)?;
         let make = request(Method::POST, &url)
             .header(CONTENT_TYPE, "application/json")
             .body(body.into_bytes())
@@ -134,7 +134,7 @@ impl<H: Http> GdriveReplica<H> {
         self.settled(response, &target, &BaseVersion::Absent).await
     }
 
-    async fn drive_upload(&self, upload: Upload<'_>) -> Result<Written, PutRefused> {
+    async fn drive_upload(&self, upload: Upload<'_>) -> Result<Written, PutError> {
         let size = upload.content.size();
         let small = size <= self.uploads.simple_max as u64;
         let (target, meta) = match &upload.to {
@@ -174,7 +174,7 @@ impl<H: Http> GdriveReplica<H> {
 
     /// Whether the file an upload replaces is still the version it was made against; else the
     /// conflict that is.
-    async fn still_at_base(&self, upload: &Upload<'_>) -> Result<(), PutRefused> {
+    async fn still_at_base(&self, upload: &Upload<'_>) -> Result<(), PutError> {
         match &upload.to {
             UploadTo::Replace(id) => self.at_base(id, &upload.base).await.map(drop),
             UploadTo::New(_) => Ok(()),
@@ -183,7 +183,7 @@ impl<H: Http> GdriveReplica<H> {
 
     /// Where a session from before stands: the first byte it still wants, the finished file's
     /// answer, or `None` when Drive no longer has it.
-    async fn session_at(&self, session: &Session, size: u64) -> Result<Resumed, PutRefused> {
+    async fn session_at(&self, session: &Session, size: u64) -> Result<Resumed, PutError> {
         let ours = |url: &WebUrl| Some(url.origin()) == self.addr.origin();
         let Some(url) = link(session.address()).filter(ours) else {
             return Ok(Resumed::Gone);
@@ -214,7 +214,7 @@ impl<H: Http> GdriveReplica<H> {
         &self,
         upload: &Upload<'_>,
         meta: &str,
-    ) -> Result<Result<WebUrl, Response<Vec<u8>>>, PutRefused> {
+    ) -> Result<Result<WebUrl, Response<Vec<u8>>>, PutError> {
         let pairs = [("uploadType", "resumable"), ("fields", FILE_FIELDS)];
         let start = match &upload.to {
             UploadTo::New(_) => self.addr.upload("files", &pairs),
@@ -222,7 +222,7 @@ impl<H: Http> GdriveReplica<H> {
                 .addr
                 .upload(&format!("files/{}", encode_unreserved(&id.0)), &pairs),
         };
-        let mut open = request(Method::POST, &start.ok_or(PutRefused::Forbidden)?)
+        let mut open = request(Method::POST, &start.ok_or(PutError::Forbidden)?)
             .header(CONTENT_TYPE, "application/json; charset=UTF-8")
             .header("X-Upload-Content-Type", "application/octet-stream")
             .header("X-Upload-Content-Length", upload.content.size().to_string());
@@ -240,7 +240,7 @@ impl<H: Http> GdriveReplica<H> {
             .header("location")
             .and_then(link)
             .filter(|url| Some(url.origin()) == self.addr.origin())
-            .ok_or(PutRefused::Transient(RetryAfter(30)))?;
+            .ok_or(PutError::Transient(RetryAfter(30)))?;
         upload
             .progress
             .session(Some(&Session::new(url.as_str().to_owned())));
@@ -252,7 +252,7 @@ impl<H: Http> GdriveReplica<H> {
         &self,
         upload: &Upload<'_>,
         meta: &str,
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         let total = upload.content.size();
         let resumed = match &upload.resume {
             Some(session) => self.session_at(session, total).await?,
@@ -286,7 +286,7 @@ impl<H: Http> GdriveReplica<H> {
         while sent < total {
             if upload.progress.held() {
                 // Paused: the session stays, to be resumed.
-                return Err(PutRefused::Transient(RetryAfter(0)));
+                return Err(PutError::Transient(RetryAfter(0)));
             }
             let chunk = upload
                 .content
@@ -325,7 +325,7 @@ impl<H: Http> GdriveReplica<H> {
                 }
             }
         }
-        Err(PutRefused::Transient(RetryAfter(30)))
+        Err(PutError::Transient(RetryAfter(30)))
     }
 
     /// A `files.update` of `id`'s metadata, with these parent changes.
@@ -334,10 +334,10 @@ impl<H: Http> GdriveReplica<H> {
         id: &RemoteId,
         meta: serde_json::Value,
         parents: &[(&str, &str)],
-    ) -> Result<Response<Vec<u8>>, PutRefused> {
+    ) -> Result<Response<Vec<u8>>, PutError> {
         let mut pairs = vec![("fields", FILE_FIELDS)];
         pairs.extend_from_slice(parents);
-        let url = self.addr.file(&id.0, &pairs).ok_or(PutRefused::Forbidden)?;
+        let url = self.addr.file(&id.0, &pairs).ok_or(PutError::Forbidden)?;
         let update = request(Method::POST, &url)
             .header("X-HTTP-Method-Override", "PATCH")
             .header(CONTENT_TYPE, "application/json")
@@ -351,7 +351,7 @@ impl<H: Http> GdriveReplica<H> {
         item: &RemoteId,
         base: &BaseVersion,
         to: &Place,
-    ) -> Result<Written, PutRefused> {
+    ) -> Result<Written, PutError> {
         let now = self.at_base(item, base).await?;
         let parent = self.parent_id(to).await?;
         let old = now.parent_id().map(str::to_owned);
@@ -370,7 +370,7 @@ impl<H: Http> GdriveReplica<H> {
             .await
     }
 
-    async fn drive_trash(&self, item: &RemoteId, base: &BaseVersion) -> Result<(), PutRefused> {
+    async fn drive_trash(&self, item: &RemoteId, base: &BaseVersion) -> Result<(), PutError> {
         self.at_base(item, base).await?;
         let response = self
             .update_meta(item, serde_json::json!({"trashed": true}), &[])
@@ -387,7 +387,7 @@ impl<H: Http> GdriveReplica<H> {
         }
     }
 
-    async fn drive_look(&self, item: &RemoteId) -> Result<Option<Found>, PutRefused> {
+    async fn drive_look(&self, item: &RemoteId) -> Result<Option<Found>, PutError> {
         let now = self.file_now(&item.0).await.map_err(refused)?;
         Ok(now.filter(|file| !file.in_trash()).map(|file| Found {
             version: RemoteVersion(file.version.clone().unwrap_or_default()),
@@ -397,7 +397,7 @@ impl<H: Http> GdriveReplica<H> {
         }))
     }
 
-    async fn drive_reserve_ids(&self, count: usize) -> Result<Vec<RemoteId>, PutRefused> {
+    async fn drive_reserve_ids(&self, count: usize) -> Result<Vec<RemoteId>, PutError> {
         let count = count.clamp(1, 1000).to_string();
         let url = self
             .addr
@@ -405,7 +405,7 @@ impl<H: Http> GdriveReplica<H> {
                 "files/generateIds",
                 &[("count", &count), ("space", "drive")],
             )
-            .ok_or(PutRefused::Forbidden)?;
+            .ok_or(PutError::Forbidden)?;
         let get = request(Method::GET, &url)
             .body(Vec::new())
             .map_err(|e| write_unreached(e.into()))?;
@@ -435,19 +435,19 @@ impl<H: Http> DriveWrite for GdriveReplica<H> {
         accepts_name(name)
     }
 
-    async fn look(&self, item: &RemoteId) -> Result<Option<Found>, PutRefused> {
+    async fn look(&self, item: &RemoteId) -> Result<Option<Found>, PutError> {
         self.drive_look(item).await
     }
 
-    async fn reserve_ids(&self, count: usize) -> Result<Vec<RemoteId>, PutRefused> {
+    async fn reserve_ids(&self, count: usize) -> Result<Vec<RemoteId>, PutError> {
         self.drive_reserve_ids(count).await
     }
 
-    async fn make_folder(&self, place: &Place) -> Result<Written, PutRefused> {
+    async fn make_folder(&self, place: &Place) -> Result<Written, PutError> {
         self.drive_make_folder(place).await
     }
 
-    async fn upload(&self, upload: Upload<'_>) -> Result<Written, PutRefused> {
+    async fn upload(&self, upload: Upload<'_>) -> Result<Written, PutError> {
         self.drive_upload(upload).await
     }
 
@@ -456,11 +456,11 @@ impl<H: Http> DriveWrite for GdriveReplica<H> {
         item: &RemoteId,
         base: &BaseVersion,
         to: &Place,
-    ) -> Result<Written, PutRefused> {
+    ) -> Result<Written, PutError> {
         self.drive_relocate(item, base, to).await
     }
 
-    async fn trash(&self, item: &RemoteId, base: &BaseVersion) -> Result<(), PutRefused> {
+    async fn trash(&self, item: &RemoteId, base: &BaseVersion) -> Result<(), PutError> {
         self.drive_trash(item, base).await
     }
 }

@@ -15,7 +15,7 @@ use account_dbus::accounts::ServiceRoot;
 use account_dbus::accounts::launcher_fault_error_name_in;
 use account_dbus::accounts::refusal_error_name_in;
 use account_service_core::audit::{AuditEvent, CredentialEnd};
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use account_wire::Refusal;
 use caller_role_types::CallerRole;
 use rustix::fs::{SealFlags, fcntl_get_seals};
@@ -34,7 +34,7 @@ fn permits() -> Vec<account_core::consent::Grant> {
     ]
 }
 
-fn fault(fault: LauncherFault) -> String {
+fn fault(fault: LauncherWireError) -> String {
     launcher_fault_error_name_in(fault, ServiceRoot::Accounts)
 }
 
@@ -112,7 +112,7 @@ async fn a_credential_is_a_sealed_key_on_a_descriptor_and_the_key_is_in_no_line(
                 .await
                 .expect_err("once")
         ),
-        fault(LauncherFault::UnknownCredential)
+        fault(LauncherWireError::UnknownCredential)
     );
 
     assert_eq!(audit_lines(&rig), ["issued", "ended process_exited"]);
@@ -136,7 +136,7 @@ async fn a_credential_is_refused_unless_every_check_holds() {
     };
     assert_eq!(
         ask("g-once", PROGRAM).await,
-        fault(LauncherFault::OnceGrant)
+        fault(LauncherWireError::OnceGrant)
     );
     assert_eq!(
         ask("g-denied", PROGRAM).await,
@@ -149,11 +149,11 @@ async fn a_credential_is_refused_unless_every_check_holds() {
     );
     assert_eq!(
         ask("g-oauth", PROGRAM).await,
-        fault(LauncherFault::NotAKeyAccount)
+        fault(LauncherWireError::NotAKeyAccount)
     );
     assert_eq!(
         ask("g-always", "codex").await,
-        fault(LauncherFault::NotRegistered)
+        fault(LauncherWireError::NotRegistered)
     );
     // Nobody else may ask: an app, or a connection the table does not know.
     let app = rig.client_as("org.example.App", CallerRole::App).await;

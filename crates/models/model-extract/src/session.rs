@@ -101,7 +101,7 @@ impl<T: Extract> ExtractSession<T> {
 pub(crate) struct Machine {
     pub(crate) mode: ExtractMode,
     pub(crate) left: RepairsLeft,
-    last_fault: Option<ShapeFault>,
+    last_fault: Option<ShapeError>,
 }
 
 impl Machine {
@@ -153,7 +153,7 @@ impl Machine {
         text: &str,
         calls: &[ToolCall],
         shape: &Shape,
-        read: impl Fn(&JsonText) -> Result<T, ShapeFault>,
+        read: impl Fn(&JsonText) -> Result<T, ShapeError>,
     ) -> Extracted<T> {
         match end.stop {
             // A stop the server named but this build does not know: the reply may be cut, so it
@@ -188,13 +188,13 @@ impl Machine {
         text: &str,
         calls: &[ToolCall],
         shape: &Shape,
-    ) -> Result<JsonText, ShapeFault> {
+    ) -> Result<JsonText, ShapeError> {
         match &self.mode {
             ExtractMode::ToolCall { tool } => calls
                 .iter()
                 .find(|c| &c.name == tool)
                 .map(|c| c.input.clone())
-                .ok_or(ShapeFault::NotJson),
+                .ok_or(ShapeError::NotJson),
             ExtractMode::Native(OutputShape::Choice(_) | OutputShape::Regex(_)) => {
                 bare_value(shape, text)
             }
@@ -227,7 +227,7 @@ fn is_named(spec: &ToolSpec, tool: &ToolName) -> bool {
 
 /// A reply constrained to a bare value (`allow`, `7`) as the JSON of its shape: a choice is a
 /// string, an integer is itself.
-fn bare_value(shape: &Shape, text: &str) -> Result<JsonText, ShapeFault> {
+fn bare_value(shape: &Shape, text: &str) -> Result<JsonText, ShapeError> {
     let text = text.trim();
     let json = match shape {
         Shape::Choice(_) => serde_json::Value::String(text.to_owned()).to_string(),
@@ -241,8 +241,8 @@ fn bare_value(shape: &Shape, text: &str) -> Result<JsonText, ShapeFault> {
     clippy::map_err_ignore,
     reason = "a shape fault never carries the reply: the model's text may be untrusted"
 )]
-fn not_json(parsed: Result<JsonText, JsonError>) -> Result<JsonText, ShapeFault> {
-    parsed.map_err(|_| ShapeFault::NotJson)
+fn not_json(parsed: Result<JsonText, JsonError>) -> Result<JsonText, ShapeError> {
+    parsed.map_err(|_| ShapeError::NotJson)
 }
 
 /// `text` without one surrounding Markdown code fence, which models add to a JSON reply.

@@ -178,7 +178,7 @@ fn settings(opening: Opening) -> ExitCode {
     let _service = match provider {
         Ok(provider) => match enter_runtime_block(serve_session(provider)) {
             Ok(connection) => Some(connection),
-            Err(ServeFault::Running) => return hand_over_to_running(wanted),
+            Err(IntentServeError::Running) => return hand_over_to_running(wanted),
             Err(fault) => {
                 eprintln!("bardo-settings: no intents service: {fault}");
                 None

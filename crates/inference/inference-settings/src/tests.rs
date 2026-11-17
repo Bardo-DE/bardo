@@ -10,7 +10,7 @@ use account_match::LlmNeed;
 use account_match::Need;
 use base_ids::{Tokens, TurnCount};
 use inference_core::{
-    AutoEvict, EngineLoad, InferRefusal, LicenceClass, ModelCard, ModelRef, Pick, PickRefusal,
+    AutoEvict, EngineLoad, InferRefusedError, LicenceClass, ModelCard, ModelRef, Pick, PickRefusal,
     Readiness, Slot, SwapCost, Why,
 };
 use inference_router::router::{Decided, Listed, choose};
@@ -78,7 +78,7 @@ fn decide(
     choose(&need(), class, tier, models, &s.policy, &s.tiers, s.auto)
 }
 
-fn refusal(result: Result<Decided, PickRefusal>) -> InferRefusal {
+fn refusal(result: Result<Decided, PickRefusal>) -> InferRefusedError {
     result.expect_err("refused").refusal
 }
 
@@ -103,7 +103,7 @@ fn local_only_removes_every_cloud_model_and_off_lets_the_next_rule_speak() {
         Tier::Balanced,
         &models,
     );
-    assert_eq!(refusal(on), InferRefusal::Unavailable);
+    assert_eq!(refusal(on), InferRefusedError::Unavailable);
     // Off: a cloud model is reachable; for Public data the rule that stops it is consent.
     let off = decide(
         "[ai]\nlocal_only = false\n",
@@ -111,10 +111,10 @@ fn local_only_removes_every_cloud_model_and_off_lets_the_next_rule_speak() {
         Tier::Balanced,
         &models,
     );
-    assert_eq!(refusal(off), InferRefusal::NeedsGrant);
+    assert_eq!(refusal(off), InferRefusedError::NeedsGrant);
     // No row is the proposed `on`.
     let none = decide("", DataClass::Public, Tier::Balanced, &models);
-    assert_eq!(refusal(none), InferRefusal::Unavailable);
+    assert_eq!(refusal(none), InferRefusedError::Unavailable);
 }
 
 #[test]
@@ -130,13 +130,13 @@ fn a_floor_refuses_the_cloud_until_the_row_widens_it() {
     };
     assert_eq!(
         refusal(with("on_device")),
-        InferRefusal::RequiresCloud(DataClass::Notes)
+        InferRefusedError::RequiresCloud(DataClass::Notes)
     );
     assert_eq!(
         refusal(with("local_network")),
-        InferRefusal::RequiresCloud(DataClass::Notes)
+        InferRefusedError::RequiresCloud(DataClass::Notes)
     );
-    assert_eq!(refusal(with("anywhere")), InferRefusal::NeedsGrant);
+    assert_eq!(refusal(with("anywhere")), InferRefusedError::NeedsGrant);
 }
 
 #[test]
@@ -242,7 +242,7 @@ fn never_evict_refuses_the_swap_idle_only_makes() {
         with("idle_only").expect("swaps").why,
         Why::Evicted { .. }
     ));
-    assert_eq!(refusal(with("never")), InferRefusal::Unavailable);
+    assert_eq!(refusal(with("never")), InferRefusedError::Unavailable);
     assert_eq!(settings("").auto.allow_evict, AutoEvict::IdleOnly);
 }
 

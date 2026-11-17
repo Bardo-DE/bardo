@@ -2,7 +2,7 @@
 //! it.
 
 use super::{Drive, Inner, Node, NodeId, NodeKind, held};
-use crate::Reason;
+use crate::SkipError;
 use crate::listing::Entry;
 
 /// Where an item stands.
@@ -34,7 +34,7 @@ pub struct Status {
     /// How far a download or upload is, 0 to 1, while it moves.
     pub fraction: Option<f64>,
     /// What went wrong, when the state is an error, or why it waits.
-    pub reason: Option<Reason>,
+    pub reason: Option<SkipError>,
     /// Whether it is kept downloaded, itself or with a folder above it.
     pub kept: bool,
     /// What it is.
@@ -48,7 +48,7 @@ struct Part {
     state: ItemState,
     moved: u64,
     size: u64,
-    reason: Option<Reason>,
+    reason: Option<SkipError>,
 }
 
 impl Part {

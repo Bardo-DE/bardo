@@ -9,7 +9,7 @@ use super::{Feed, FeedChange, FeedCursor};
 use std::collections::HashMap;
 use std::sync::{Mutex, PoisonError};
 use sync_core::{
-    Anchor, BaseVersion, Blob, ByteRange, Change, ChangePage, Cursor, PutItem, PutRefused, Quota,
+    Anchor, BaseVersion, Blob, ByteRange, Change, ChangePage, Cursor, PutError, PutItem, Quota,
     RemoteId, RemoteVersion, Replica, ReplicaError,
 };
 
@@ -118,8 +118,8 @@ impl<F: Feed> Replica for FeedReplica<F> {
         &self,
         _item: PutItem,
         _base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
-        Err(PutRefused::Forbidden)
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
+        Err(PutError::Forbidden)
     }
 
     #[expect(
@@ -130,8 +130,8 @@ impl<F: Feed> Replica for FeedReplica<F> {
         &self,
         _item: &RemoteId,
         _base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
-        Err(PutRefused::Forbidden)
+    ) -> Result<RemoteVersion, PutError> {
+        Err(PutError::Forbidden)
     }
 
     async fn quota(&self) -> Result<Quota, ReplicaError> {

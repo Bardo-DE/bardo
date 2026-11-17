@@ -26,7 +26,7 @@ use account_match::Need;
 use caller_role_types::CallerRole;
 use engine_supervisor::{EngineId, EngineState, MonoMs};
 use inference_core::{
-    Asker, ChargeTotal, InferRefusal, LicenceClass, ModelCard, ModelRef, Period, Permit,
+    Asker, ChargeTotal, InferRefusedError, LicenceClass, ModelCard, ModelRef, Period, Permit,
     PickRefusal, PlaceRefusal, Policy, Readiness, ServedBy, Slot, SpendScope, SpendVerdict,
     SwapCost, TierMap, Why,
 };
@@ -500,13 +500,13 @@ impl Engines {
     ///
     /// # Errors
     ///
-    /// Returns an [`InferRefusal`] when no runner can serve the session or the model is not on this
+    /// Returns an [`InferRefusedError`] when no runner can serve the session or the model is not on this
     /// computer.
     pub fn route(
         &self,
         spec: &SessionSpec,
         role: CallerRole,
-    ) -> Result<(RouteDecision, Pinned), InferRefusal> {
+    ) -> Result<(RouteDecision, Pinned), InferRefusedError> {
         self.route_detailed(spec, role)
             .map(|(routing, pinned)| (routing.decision(), pinned))
             .map_err(|r| r.refusal)
@@ -611,7 +611,7 @@ impl Engines {
         who: &Who,
     ) -> Result<(Routing, Pinned), Unplaced> {
         if matches!(spec.need, Need::ComputerUse(_)) && role != CallerRole::ComputerUse {
-            return Err(Unplaced::Other(InferRefusal::Denied.into()));
+            return Err(Unplaced::Other(InferRefusedError::Denied.into()));
         }
         let settings = self.settings();
         let tiers = named_tiers(&settings.tiers.for_chooser(&who.chooser), &spec.need, named);
@@ -665,7 +665,7 @@ impl Engines {
         };
         let (locality, model, cloud) = self
             .backing(&chosen_ref, offered, &settings)
-            .ok_or_else(|| Unplaced::Other(InferRefusal::Unavailable.into()))?;
+            .ok_or_else(|| Unplaced::Other(InferRefusedError::Unavailable.into()))?;
         let name = self.label_of(&chosen_ref, offered);
         let served = ServedBy {
             account: chosen.account,
@@ -786,13 +786,13 @@ impl Engines {
     ///
     /// # Errors
     ///
-    /// Returns an [`InferRefusal`] when no engine can serve the request.
+    /// Returns an [`InferRefusedError`] when no engine can serve the request.
     pub fn prepare(
         &self,
         need: &Need,
         class: DataClass,
         tier: Tier,
-    ) -> Result<Readiness, InferRefusal> {
+    ) -> Result<Readiness, InferRefusedError> {
         self.prepare_as(need, class, tier, CallerRole::App)
     }
 
@@ -800,14 +800,14 @@ impl Engines {
     ///
     /// # Errors
     ///
-    /// Returns an [`InferRefusal`] when no engine can serve the request.
+    /// Returns an [`InferRefusedError`] when no engine can serve the request.
     pub fn prepare_as(
         &self,
         need: &Need,
         class: DataClass,
         tier: Tier,
         role: CallerRole,
-    ) -> Result<Readiness, InferRefusal> {
+    ) -> Result<Readiness, InferRefusedError> {
         self.prepare_with(
             need,
             class,
@@ -826,7 +826,7 @@ impl Engines {
     ///
     /// # Errors
     ///
-    /// Returns an [`InferRefusal`] when no engine can serve the request.
+    /// Returns an [`InferRefusedError`] when no engine can serve the request.
     pub async fn prepare_for(
         &self,
         need: &Need,
@@ -834,7 +834,7 @@ impl Engines {
         tier: Tier,
         usage: Usage,
         caller: &Caller,
-    ) -> Result<Readiness, InferRefusal> {
+    ) -> Result<Readiness, InferRefusedError> {
         self.prepare_in(need, class, tier, usage, caller, None, None)
             .await
             .map_err(|refusal| refusal.into_pick().refusal)
@@ -845,7 +845,7 @@ impl Engines {
     ///
     /// # Errors
     ///
-    /// Returns an [`InferRefusal`] when no engine can serve the request.
+    /// Returns an [`InferRefusedError`] when no engine can serve the request.
     #[expect(
         clippy::too_many_arguments,
         reason = "each argument is one part of the routing question, given by the caller"
@@ -1005,9 +1005,9 @@ impl Engines {
             Ok(_) => Ok(Availability::Granted),
             Err(Unplaced::NoPlace(refusal)) => Err(refusal),
             Err(Unplaced::Other(pick)) => Ok(match pick.refusal {
-                InferRefusal::NeedsGrant => Availability::AvailableNeedsConsent,
-                InferRefusal::Unsupported => Availability::Unsupported,
-                InferRefusal::RequiresCloud(_) | InferRefusal::Unavailable => {
+                InferRefusedError::NeedsGrant => Availability::AvailableNeedsConsent,
+                InferRefusedError::Unsupported => Availability::Unsupported,
+                InferRefusedError::RequiresCloud(_) | InferRefusedError::Unavailable => {
                     Availability::NeedsAccount
                 }
                 // `Denied`, `OverBudget` and a variant a newer the accounts service adds: not available to the app
@@ -1222,7 +1222,7 @@ impl SessionRouter {
 }
 
 impl inference_router::seams::Router for SessionRouter {
-    async fn route(&self, spec: &SessionSpec) -> Result<RouteDecision, InferRefusal> {
+    async fn route(&self, spec: &SessionSpec) -> Result<RouteDecision, InferRefusedError> {
         self.route_why(spec)
             .await
             .map(|routing| routing.decision())

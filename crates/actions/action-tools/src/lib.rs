@@ -5,7 +5,7 @@
 //! - `listing`, `prepare`: an edge's tool list and one tool call made into a request, the one copy
 //!   every edge uses.
 //! - `tool_label`: what every argument from such an agent is worth (`Untrusted`).
-//! - `outcome_json`, `ToolRefusal`, `ToolFault`: what comes back, coarse on purpose.
+//! - `outcome_json`, `ToolRefusedError`, `ToolError`: what comes back, coarse on purpose.
 //!
 //! `bardo-actions-mcp` serves these over MCP for the clients that connect to it; `bardo-agent-acp` serves the
 //! same over the per-session edge of an external ACP agent. Each keeps only its transport.
@@ -17,7 +17,7 @@ mod result;
 mod session_edge;
 mod tools;
 
-pub use fault::{ToolFault, ToolRefusal};
+pub use fault::{ToolError, ToolRefusedError};
 pub use label::tool_label;
 pub use prepare::{listing, prepare};
 pub use result::outcome_json;

@@ -89,7 +89,7 @@ fn a_redirect_to_plain_http_or_nowhere_is_unreadable() {
     ] {
         assert_eq!(
             well_known_found(CapabilityKind::Contacts, &asked, &response, &login()),
-            Err(DiscoverFault::Unreadable)
+            Err(DiscoverError::Unreadable)
         );
     }
 }
@@ -115,7 +115,7 @@ fn an_answer_in_place_is_the_service_and_a_missing_one_is_none() {
             &respond(404, ""),
             &login()
         ),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
     assert_eq!(
         well_known_found(
@@ -124,11 +124,11 @@ fn an_answer_in_place_is_the_service_and_a_missing_one_is_none() {
             &respond(500, ""),
             &login()
         ),
-        Err(DiscoverFault::Unreadable)
+        Err(DiscoverError::Unreadable)
     );
     assert_eq!(
         well_known_found(CapabilityKind::Storage, &asked, &respond(200, ""), &login()),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
 }
 
@@ -155,7 +155,7 @@ async fn the_fetch_asks_the_url_and_reads_its_redirect() {
             &login()
         )
         .await,
-        Err(DiscoverFault::Unreachable)
+        Err(DiscoverError::Unreachable)
     );
 }
 
@@ -208,7 +208,7 @@ fn a_loopback_jmap_over_http_is_plain_and_any_other_is_refused() {
     assert!(local.claims.is_empty());
     assert_eq!(
         parse_jmap_session(&session("http://jmap.example.test/api")),
-        Err(DiscoverFault::NoServers)
+        Err(DiscoverError::NoServers)
     );
 }
 
@@ -225,7 +225,7 @@ fn a_session_that_is_not_one_is_unreadable() {
     ] {
         assert_eq!(
             parse_jmap_session(text),
-            Err(DiscoverFault::Unreadable),
+            Err(DiscoverError::Unreadable),
             "{text:?}"
         );
     }

@@ -1,13 +1,13 @@
 //! What a summary may say: not empty, not long, and handles only the planner held.
 
-use action_core::{SUMMARY_MAX_CHARS, SummaryFault, SummaryText};
+use action_core::{SUMMARY_MAX_CHARS, SummaryError, SummaryText};
 use action_vocab::Handle;
 
 #[test]
 fn a_summary_cites_only_handles_the_planner_held() {
     let held = [Handle(1), Handle(12)];
     let long = "x".repeat(SUMMARY_MAX_CHARS + 1);
-    let table: [(&str, Result<&str, SummaryFault>); 8] = [
+    let table: [(&str, Result<&str, SummaryError>); 8] = [
         (
             "searched, found #1 and #12",
             Ok("searched, found #1 and #12"),
@@ -15,12 +15,12 @@ fn a_summary_cites_only_handles_the_planner_held() {
         ("  padded  ", Ok("padded")),
         ("no handles at all", Ok("no handles at all")),
         ("a # alone is not a handle", Ok("a # alone is not a handle")),
-        ("   ", Err(SummaryFault::Empty)),
-        (long.as_str(), Err(SummaryFault::TooLong)),
-        ("found #2", Err(SummaryFault::UnknownHandle(2))),
+        ("   ", Err(SummaryError::Empty)),
+        (long.as_str(), Err(SummaryError::TooLong)),
+        ("found #2", Err(SummaryError::UnknownHandle(2))),
         (
             "found #99999999999999999999999",
-            Err(SummaryFault::UnknownHandle(u64::MAX)),
+            Err(SummaryError::UnknownHandle(u64::MAX)),
         ),
     ];
     for (words, want) in table {

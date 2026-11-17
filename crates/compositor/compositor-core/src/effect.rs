@@ -286,7 +286,7 @@ pub enum CoreNote {
     /// An event named a window the model does not know.
     UnknownWindow(WindowId),
     /// A client's request to change an output was refused (P1-M1).
-    RefusedOutput(crate::output::OutputRefusal),
+    RefusedOutput(crate::output::OutputError),
     /// A request to reopen an app with no windows, which waits for the launch intent (P4).
     ReopenDeferred,
 }

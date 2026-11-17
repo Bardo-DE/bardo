@@ -130,7 +130,7 @@ async fn only_computer_use_daemon_may_open_a_computer_use_session() {
     assert_eq!(
         events,
         vec![InferEvent::Finished(InferReply::Refused(
-            inference_core::InferRefusal::Denied
+            inference_core::InferRefusedError::Denied
         ))]
     );
     assert!(world.host.spawned.lock().expect("lock").is_empty());
@@ -156,7 +156,7 @@ async fn a_step_before_a_begin_and_a_wrong_class_are_refused() {
         matches!(
             events.last(),
             Some(InferEvent::Finished(InferReply::Refused(
-                inference_core::InferRefusal::Unsupported
+                inference_core::InferRefusedError::Unsupported
             )))
         ),
         "{events:?}"
@@ -172,7 +172,7 @@ async fn a_step_before_a_begin_and_a_wrong_class_are_refused() {
     assert_eq!(
         events,
         vec![InferEvent::Finished(InferReply::Refused(
-            inference_core::InferRefusal::Unsupported
+            inference_core::InferRefusedError::Unsupported
         ))]
     );
 }

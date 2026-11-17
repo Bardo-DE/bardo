@@ -7,15 +7,15 @@ use model_http::{BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transp
 
 use crate::wire_form::{chunks, is_success, request_of, same_request};
 use crate::{
-    ChunkPlan, InteractionId, ReplayMode, WireCassette, WireEnd, WireExchange, WireMiss, WireReply,
-    WireRequest,
+    ChunkPlan, InteractionId, ReplayMode, WireCassette, WireEnd, WireExchange, WireMissError,
+    WireReply, WireRequest,
 };
 
 #[derive(Debug, Default)]
 struct Cursor {
     next: usize,
     used: Vec<usize>,
-    misses: Vec<WireMiss>,
+    misses: Vec<WireMissError>,
 }
 
 /// Plays a wire cassette as a transport: the recorded head, then the recorded body sliced by the
@@ -44,14 +44,14 @@ impl ReplayTransport {
     }
 
     /// The requests that found no exchange, with what a mismatch compared.
-    pub fn misses(&self) -> Vec<WireMiss> {
+    pub fn misses(&self) -> Vec<WireMissError> {
         self.cursor
             .lock()
             .map(|c| c.misses.clone())
             .unwrap_or_default()
     }
 
-    fn pick(&self, got: &WireRequest) -> Result<WireReply, WireMiss> {
+    fn pick(&self, got: &WireRequest) -> Result<WireReply, WireMissError> {
         let mut cursor = self
             .cursor
             .lock()
@@ -69,8 +69,8 @@ fn pick<'a>(
     mode: ReplayMode,
     cursor: &mut Cursor,
     got: &WireRequest,
-) -> Result<&'a WireExchange, WireMiss> {
-    let mismatch = |at: usize, ex: &WireExchange| WireMiss::Mismatch {
+) -> Result<&'a WireExchange, WireMissError> {
+    let mismatch = |at: usize, ex: &WireExchange| WireMissError::Mismatch {
         index: InteractionId(u32::try_from(at).unwrap_or(u32::MAX)),
         want: Box::new(ex.request.clone()),
         got: Box::new(got.clone()),
@@ -78,7 +78,7 @@ fn pick<'a>(
     match mode {
         ReplayMode::InOrder | ReplayMode::Strict => {
             let at = cursor.next;
-            let ex = exchanges.get(at).ok_or(WireMiss::Exhausted)?;
+            let ex = exchanges.get(at).ok_or(WireMissError::Exhausted)?;
             cursor.next += 1;
             match mode {
                 ReplayMode::Strict if !same_request(&ex.request, got) => Err(mismatch(at, ex)),
@@ -90,7 +90,7 @@ fn pick<'a>(
                 .iter()
                 .enumerate()
                 .filter(|(at, _)| !cursor.used.contains(at));
-            let first = unused.next().ok_or(WireMiss::Exhausted)?;
+            let first = unused.next().ok_or(WireMissError::Exhausted)?;
             let (at, ex) = std::iter::once(first)
                 .chain(unused)
                 .find(|(_, ex)| same_request(&ex.request, got))

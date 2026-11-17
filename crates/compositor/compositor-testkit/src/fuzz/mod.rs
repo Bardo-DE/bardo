@@ -16,7 +16,7 @@ mod run;
 mod scripted;
 pub mod strategy;
 
-pub use failure::{FuzzFailure, PanicSite};
+pub use failure::{FuzzError, PanicSite};
 pub use host::FuzzHost;
 pub use ops::{FuzzOp, FuzzRequest, MAX_REPEAT, ObjectRef};
 pub use oracles::Snapshot;

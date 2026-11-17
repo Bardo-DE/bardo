@@ -118,7 +118,7 @@ fn a_live_engine_needs_the_owners_config_and_never_a_callers_table() {
 
 mod keys_home {
     use super::words;
-    use action_accept::keys_home::{HomeFault, KeysHome, check_dir};
+    use action_accept::keys_home::{HomeError, KeysHome, check_dir};
     use action_live::cli::{Command, UsageError, parse};
     use std::os::unix::fs::PermissionsExt;
     use std::path::Path;
@@ -157,7 +157,7 @@ mod keys_home {
         let loose = tmp.path().join("loose");
         std::fs::create_dir(&loose).expect("dir");
         mode(&loose, 0o750);
-        assert!(matches!(check_dir(&loose), Err(HomeFault::LooseMode(..))));
+        assert!(matches!(check_dir(&loose), Err(HomeError::LooseMode(..))));
         mode(&loose, 0o700);
         check_dir(&loose).unwrap();
         let repo = tmp.path().join("repo");
@@ -165,10 +165,10 @@ mod keys_home {
         let inside = repo.join("keys");
         std::fs::create_dir(&inside).expect("dir");
         mode(&inside, 0o700);
-        assert!(matches!(check_dir(&inside), Err(HomeFault::InsideGit(..))));
+        assert!(matches!(check_dir(&inside), Err(HomeError::InsideGit(..))));
         assert!(matches!(
             check_dir(Path::new("relative")),
-            Err(HomeFault::NotAbsolute(_))
+            Err(HomeError::NotAbsolute(_))
         ));
     }
 
@@ -184,7 +184,7 @@ mod keys_home {
         mode(&home.join("accountd.keys"), 0o644);
         assert!(matches!(
             KeysHome::open(&home),
-            Err(HomeFault::LooseMode(..))
+            Err(HomeError::LooseMode(..))
         ));
         mode(&home.join("accountd.keys"), 0o600);
         let registry = home.join("state/bardo/accounts");

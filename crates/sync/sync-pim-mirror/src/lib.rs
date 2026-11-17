@@ -25,7 +25,7 @@ mod supervisor;
 #[cfg(test)]
 mod testing;
 
-pub use grants::{AccountdUnavailable, ClientGrants, PimGrants, need_of};
+pub use grants::{AccountdUnavailableError, ClientGrants, PimGrants, need_of};
 pub use mirror::PimMirror;
 pub use mirrors::{AccountMirrors, Wiring};
 pub use plan::{Planned, plan};

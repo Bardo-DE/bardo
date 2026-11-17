@@ -16,6 +16,7 @@ base-time = { path = "../../base/base-time" }
 sync-core = {path = "../sync-core"}
 sync-engine = {path = "../sync-engine"}
 sync-xdg = {path = "../sync-xdg"}
+thiserror = { workspace = true }
 tokio = {workspace = true, features = ["macros", "rt-multi-thread", "sync", "time"]}
 
 [dev-dependencies]

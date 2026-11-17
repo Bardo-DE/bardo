@@ -28,6 +28,6 @@ pub use feedback::{
     FeedbackPlan, FormatEntry, FormatTable, Fourcc, Modifier, Tranche, TrancheUse, feedback_for,
 };
 pub use node::{BootVga, ByPathId, DrmNodeId, GpuFacts, VendorFact};
-pub use plan::{PlanRefusal, RenderPlan, plan_for};
+pub use plan::{PlanError, RenderPlan, plan_for};
 pub use policy::GpuChoice;
 pub use route::OutputRoute;

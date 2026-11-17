@@ -20,7 +20,7 @@ pub struct SheetOpen {
 
 /// Why a conversation could not go on.
 #[derive(Debug, thiserror::Error)]
-pub enum SheetFault {
+pub enum SheetError {
     /// No sheet host is reachable (the shell is not running, no app draws).
     #[error("no sheet host reachable")]
     Unavailable,
@@ -35,7 +35,7 @@ pub enum SheetFault {
     Refused(#[source] Box<dyn std::error::Error + Send + Sync>),
 }
 
-impl SheetFault {
+impl SheetError {
     /// The host could not be reached, because of `cause`.
     pub fn unreachable(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
         Self::Unreachable(cause.into())
@@ -64,14 +64,14 @@ pub trait Sheets: Send + Sync {
     fn conversation(
         &self,
         open: SheetOpen,
-    ) -> impl Future<Output = Result<Self::Link, SheetFault>> + Send;
+    ) -> impl Future<Output = Result<Self::Link, SheetError>> + Send;
 }
 
 /// One open conversation with a sheet.
 pub trait SheetLink: Send {
     /// Replaces what the sheet shows.
-    fn update(&mut self, view: SheetView) -> impl Future<Output = Result<(), SheetFault>> + Send;
+    fn update(&mut self, view: SheetView) -> impl Future<Output = Result<(), SheetError>> + Send;
 
     /// The person's next input. Only the sheet's owner's input counts; the host checks that.
-    fn input(&mut self) -> impl Future<Output = Result<SheetInput, SheetFault>> + Send;
+    fn input(&mut self) -> impl Future<Output = Result<SheetInput, SheetError>> + Send;
 }

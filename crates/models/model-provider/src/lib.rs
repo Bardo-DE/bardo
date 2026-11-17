@@ -45,7 +45,7 @@ pub use control::{
 };
 pub use detail::{ProviderDetail, redact_excerpt};
 pub use embed::{
-    EmbedCaps, EmbedEnd, EmbedFault, EmbedPrompts, EmbedRole, EmbedTurn, EmbedVector, Embedder,
+    EmbedCaps, EmbedEnd, EmbedError, EmbedPrompts, EmbedRole, EmbedTurn, EmbedVector, Embedder,
     PrefixText, plan_batches,
 };
 pub use event::{SafetySignal, StopReason, TurnEnd, TurnEvent, TurnSink, TurnUsage, UsageReport};
@@ -64,11 +64,11 @@ pub use request::{
 pub use retry::{RetryClass, RetryPolicy, Retrying, Sleeper, next_wait};
 #[cfg(feature = "testing")]
 pub use scripted::{Script, ScriptedProvider};
-pub use sequence::{SequenceFault, check as check_sequence};
+pub use sequence::{SequenceError, check as check_sequence};
 pub use shape::{
-    ChoiceText, Extract, Field, FieldName, IdentError, KeywordText, Refused, SchemaDialect,
-    SchemaLimits, SchemaPath, SchemaRefusal, Shape, ShapeFault, ShapeKind, Variant, VariantName,
-    sanitize_schema,
+    ChoiceText, Extract, Field, FieldName, IdentError, KeywordText, SchemaDialect, SchemaError,
+    SchemaKeywordError, SchemaLimits, SchemaPath, Shape, ShapeError, ShapeKind, Variant,
+    VariantName, sanitize_schema,
 };
 pub use units::{
     Attempt, BatchMax, CallIndex, CharCount, ImageCount, Knob, Milli, Permille, RepairBudget,

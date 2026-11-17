@@ -24,7 +24,7 @@ use account_callers::{Caller, Callers};
 use account_dbus::Details;
 use caller_role_types::CallerRole;
 use dbus_kit::Call;
-use drive_fs::{Node, NodeId, NodeKind, Reason, Status};
+use drive_fs::{Node, NodeId, NodeKind, SkipError, Status};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
@@ -215,7 +215,7 @@ impl<C: Callers> Core<C> {
     fn each(
         &self,
         paths: &[String],
-        mut act: impl FnMut(&LiveDrive, &NodeId) -> Result<(), Reason>,
+        mut act: impl FnMut(&LiveDrive, &NodeId) -> Result<(), SkipError>,
     ) -> Refused {
         let mut refused = Refused::new();
         for text in paths {
@@ -226,7 +226,10 @@ impl<C: Callers> Core<C> {
                     }
                 }
                 None => {
-                    refused.insert(text.clone(), words::reason(Reason::NotOnADrive).to_owned());
+                    refused.insert(
+                        text.clone(),
+                        words::reason(SkipError::NotOnADrive).to_owned(),
+                    );
                 }
             }
         }
@@ -379,7 +382,7 @@ impl<C: Callers> StorageServer for StorageObject<C> {
         let mut refused = Refused::new();
         for text in paths {
             let Some((drive, node)) = self.0.find(&text) else {
-                refused.insert(text, words::reason(Reason::NotOnADrive).to_owned());
+                refused.insert(text, words::reason(SkipError::NotOnADrive).to_owned());
                 continue;
             };
             match drive.drive.save_copy(&node.id).await {
@@ -388,7 +391,7 @@ impl<C: Callers> StorageServer for StorageObject<C> {
                         saved.insert(text, path.to_string_lossy().into_owned());
                     }
                     None => {
-                        refused.insert(text, words::reason(Reason::CopyFailed).to_owned());
+                        refused.insert(text, words::reason(SkipError::CopyFailed).to_owned());
                     }
                 },
                 Err(why) => {
@@ -415,7 +418,7 @@ impl<C: Callers> StorageServer for StorageObject<C> {
         for id in drives {
             // Kept across restarts.
             if !self.0.drives.set_paused(&id, paused) {
-                refused.insert(id, words::reason(Reason::NoDrive).to_owned());
+                refused.insert(id, words::reason(SkipError::NoDrive).to_owned());
             }
         }
         self.0.drives.tell_drives();

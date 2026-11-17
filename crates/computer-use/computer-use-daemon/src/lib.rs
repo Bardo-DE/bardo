@@ -44,7 +44,7 @@ pub use computer_use_host::{
     RecordError, RunView, SCHEMA, SETTINGS_FILE, Supervisor, SupervisorEvent, SystemClock, guard,
     is_browser, locator, mint_run_id, read, record_of,
 };
-pub use daemon::{Fatal, run};
+pub use daemon::{FatalError, run};
 pub use keymap::desktop_keymap;
 pub use provider::{ComputerUseProvider, ProviderError, StartRefusal, StartRequest, manifest_for};
 pub use reach::{follow_settings, reach_json};

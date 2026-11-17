@@ -150,7 +150,7 @@ pub enum Chosen {
 /// Why no source reads a grant.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("no source reads {kind:?} over {transport:?} yet")]
-pub struct NoSource {
+pub struct NoSourceError {
     /// The kind.
     pub kind: PimKind,
     /// The capability's transport.
@@ -171,9 +171,9 @@ fn transport_of(kind: PimKind, candidate: &Candidate) -> Option<PimTransport> {
 ///
 /// # Errors
 ///
-/// Returns [`NoSource`] when no source speaks the capability's transport for this kind of
+/// Returns [`NoSourceError`] when no source speaks the capability's transport for this kind of
 /// collection.
-pub fn choose(kind: PimKind, candidate: &Candidate) -> Result<Chosen, NoSource> {
+pub fn choose(kind: PimKind, candidate: &Candidate) -> Result<Chosen, NoSourceError> {
     // A candidate whose capability is not the kind's (or an older bus peer) is the kind's
     // protocol family, which is what the mirror did before sources existed.
     let transport = transport_of(kind, candidate).unwrap_or(match kind {
@@ -183,13 +183,13 @@ pub fn choose(kind: PimKind, candidate: &Candidate) -> Result<Chosen, NoSource> 
     match (kind, transport) {
         // A task list over CalDAV is a calendar of `VTODO`s: the CalDAV account's calendars
         // already mirror it as one, so a second mirror of the same collection is not made.
-        (PimKind::Tasks, PimTransport::CalDav) => Err(NoSource { kind, transport }),
+        (PimKind::Tasks, PimTransport::CalDav) => Err(NoSourceError { kind, transport }),
         (_, PimTransport::CalDav | PimTransport::CardDav) => Ok(Chosen::Dav),
         (PimKind::Calendar, PimTransport::Graph) => Ok(Chosen::GraphCalendar),
         (PimKind::Calendar, PimTransport::GoogleApi) => Ok(Chosen::GoogleCalendar),
         (PimKind::Contacts, PimTransport::GoogleApi) => Ok(Chosen::GooglePeople),
         (PimKind::Tasks, PimTransport::GoogleApi) => Ok(Chosen::GoogleTasks),
-        (kind, transport) => Err(NoSource { kind, transport }),
+        (kind, transport) => Err(NoSourceError { kind, transport }),
     }
 }
 

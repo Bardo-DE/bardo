@@ -19,7 +19,7 @@ use account_client_dbus::{
 };
 use account_core::{DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
 use account_dbus::BusConnection;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use inference_dbus::inference::{
     AgentsProxy, MODELS_ANY, MODELS_LISTED, ROUTE_ACCOUNT, ROUTE_MODEL,
 };
@@ -44,28 +44,28 @@ impl std::fmt::Debug for DbusAccounts {
     clippy::needless_pass_by_value,
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
-fn fault(error: LauncherError) -> AccountFault {
-    let cause = AccountFault::source_of(error.clone());
+fn fault(error: LauncherError) -> AccountError {
+    let cause = AccountError::source_of(error.clone());
     match error {
-        LauncherError::Link(LinkError::Unreachable) => AccountFault::Unreachable(cause),
+        LauncherError::Link(LinkError::Unreachable) => AccountError::Unreachable(cause),
         LauncherError::Refused(_)
         | LauncherError::Link(LinkError::Denied)
-        | LauncherError::Fault(LauncherFault::OnceGrant) => AccountFault::Refused(cause),
-        _ => AccountFault::Other(cause),
+        | LauncherError::Fault(LauncherWireError::OnceGrant) => AccountError::Refused(cause),
+        _ => AccountError::Other(cause),
     }
 }
 
-fn bus_fault(error: zbus::Error) -> AccountFault {
+fn bus_fault(error: zbus::Error) -> AccountError {
     match &error {
-        zbus::Error::MethodError(..) => AccountFault::Refused(AccountFault::source_of(error)),
-        zbus::Error::InputOutput(_) => AccountFault::Unreachable(AccountFault::source_of(error)),
-        _ => AccountFault::Other(AccountFault::source_of(error)),
+        zbus::Error::MethodError(..) => AccountError::Refused(AccountError::source_of(error)),
+        zbus::Error::InputOutput(_) => AccountError::Unreachable(AccountError::source_of(error)),
+        _ => AccountError::Other(AccountError::source_of(error)),
     }
 }
 
 /// A name for the bus, which the value's own text gives; anything else is no name.
 #[derive(Debug, thiserror::Error)]
-enum BadReply {
+enum BadReplyError {
     #[error("the value does not serialise")]
     Serialise(#[source] serde_json::Error),
     #[error("the value is not a plain name")]
@@ -74,14 +74,14 @@ enum BadReply {
     NotValue,
 }
 
-fn slug<T: serde::Serialize>(value: &T) -> Result<String, AccountFault> {
+fn slug<T: serde::Serialize>(value: &T) -> Result<String, AccountError> {
     match serde_json::to_value(value) {
         Ok(serde_json::Value::String(s)) => Ok(s),
-        Ok(_) => Err(AccountFault::Other(AccountFault::source_of(
-            BadReply::NotText,
+        Ok(_) => Err(AccountError::Other(AccountError::source_of(
+            BadReplyError::NotText,
         ))),
-        Err(error) => Err(AccountFault::Other(AccountFault::source_of(
-            BadReply::Serialise(error),
+        Err(error) => Err(AccountError::Other(AccountError::source_of(
+            BadReplyError::Serialise(error),
         ))),
     }
 }
@@ -93,9 +93,9 @@ impl DbusAccounts {
     ///
     /// # Errors
     ///
-    /// Returns an [`AccountFault`] when the bus cannot subscribe to the launcher's request and
+    /// Returns an [`AccountError`] when the bus cannot subscribe to the launcher's request and
     /// revocation streams, or does not reach the agents interface.
-    pub async fn connect(connection: &BusConnection) -> Result<Self, AccountFault> {
+    pub async fn connect(connection: &BusConnection) -> Result<Self, AccountError> {
         let launcher = Bus::over(connection.clone()).launcher();
         let requests = launcher.requests().await.map_err(fault)?;
         let revocations = launcher.revocations().await.map_err(fault)?;
@@ -110,15 +110,15 @@ impl DbusAccounts {
 }
 
 impl Accounts for DbusAccounts {
-    async fn register(&self, programs: &[AgentProgram]) -> Result<(), AccountFault> {
+    async fn register(&self, programs: &[AgentProgram]) -> Result<(), AccountError> {
         self.launcher.register(programs).await.map_err(fault)
     }
 
-    async fn begin_session(&self, session: &SessionToken) -> Result<(), AccountFault> {
+    async fn begin_session(&self, session: &SessionToken) -> Result<(), AccountError> {
         self.launcher.begin_session(session).await.map_err(fault)
     }
 
-    async fn end_session(&self, session: &SessionToken) -> Result<(), AccountFault> {
+    async fn end_session(&self, session: &SessionToken) -> Result<(), AccountError> {
         self.launcher.end_session(session).await.map_err(fault)
     }
 
@@ -128,7 +128,7 @@ impl Accounts for DbusAccounts {
         route: &RouteWish,
         class: DataClass,
         protocol: AgentProtocol,
-    ) -> Result<OpenedEndpoint, AccountFault> {
+    ) -> Result<OpenedEndpoint, AccountError> {
         let kind = match route.kind {
             EndpointKind::Model => ROUTE_MODEL,
             EndpointKind::Account => ROUTE_ACCOUNT,
@@ -166,7 +166,7 @@ impl Accounts for DbusAccounts {
         })
     }
 
-    async fn close_endpoint(&self, session: &str) -> Result<(), AccountFault> {
+    async fn close_endpoint(&self, session: &str) -> Result<(), AccountError> {
         self.agents.close_endpoint(session).await.map_err(bus_fault)
     }
 
@@ -175,7 +175,7 @@ impl Accounts for DbusAccounts {
         program: &AgentProgram,
         class: DataClass,
         session: &SessionToken,
-    ) -> Result<GrantId, AccountFault> {
+    ) -> Result<GrantId, AccountError> {
         self.launcher
             .request_agent_key(program, class, Some(session))
             .await
@@ -188,7 +188,7 @@ impl Accounts for DbusAccounts {
         permit: &GrantId,
         program: &AgentProgram,
         key_env: &EnvName,
-    ) -> Result<Issued, AccountFault> {
+    ) -> Result<Issued, AccountError> {
         let credential = self
             .launcher
             .issue_credential(permit, program)
@@ -196,10 +196,10 @@ impl Accounts for DbusAccounts {
             .map_err(fault)?;
         let ChildKey::Value { value: key, .. } = credential
             .child_key(key_env, KeyDelivery::Value)
-            .map_err(|error| AccountFault::Other(AccountFault::source_of(error)))?
+            .map_err(|error| AccountError::Other(AccountError::source_of(error)))?
         else {
-            return Err(AccountFault::Other(AccountFault::source_of(
-                BadReply::NotValue,
+            return Err(AccountError::Other(AccountError::source_of(
+                BadReplyError::NotValue,
             )));
         };
         Ok(Issued {
@@ -208,7 +208,7 @@ impl Accounts for DbusAccounts {
         })
     }
 
-    async fn revoke(&self, id: &ProcessCredentialId) -> Result<(), AccountFault> {
+    async fn revoke(&self, id: &ProcessCredentialId) -> Result<(), AccountError> {
         self.launcher.revoke_credential(id).await.map_err(fault)
     }
 
@@ -240,7 +240,7 @@ impl Accounts for DbusAccounts {
         }
     }
 
-    async fn report(&self, ask: &LoginAsk, outcome: LoginOutcome) -> Result<(), AccountFault> {
+    async fn report(&self, ask: &LoginAsk, outcome: LoginOutcome) -> Result<(), AccountError> {
         let result = match ask.kind {
             AskKind::Login => self.launcher.report_login(&ask.request, outcome).await,
             AskKind::Logout => self.launcher.report_logout(&ask.request, outcome).await,

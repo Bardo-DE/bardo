@@ -219,9 +219,9 @@ fn done(id: &str) -> TurnEvent {
 
 #[test]
 fn check_sequence_table() {
-    use StreamFault::*;
+    use StreamError::*;
     let text = || TurnEvent::TextDelta("t".into());
-    let table: Vec<(&str, Vec<TurnEvent>, Result<(), StreamFault>)> = vec![
+    let table: Vec<(&str, Vec<TurnEvent>, Result<(), StreamError>)> = vec![
         ("empty", vec![], Ok(())),
         ("text only", vec![text()], Ok(())),
         (

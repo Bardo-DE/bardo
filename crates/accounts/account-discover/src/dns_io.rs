@@ -3,7 +3,7 @@
 //! Ported from `SystemDns` in mailo's `crates/mail-runtime/src/discover.rs` (MIT OR
 //! Apache-2.0, same author).
 
-use crate::dns::{Dns, DnsFault, MxRecord, SrvRecord};
+use crate::dns::{Dns, DnsError, MxRecord, SrvRecord};
 use account_provider::DomainName;
 use hickory_resolver::TokioResolver;
 use hickory_resolver::net::NetError;
@@ -28,26 +28,26 @@ impl HickoryDns {
     ///
     /// # Errors
     ///
-    /// `DnsFault::Unreachable` when the system's resolver configuration cannot be read or a
+    /// `DnsError::Unreachable` when the system's resolver configuration cannot be read or a
     /// resolver cannot be built from it.
-    pub fn system() -> Result<Self, DnsFault> {
-        let mut builder = TokioResolver::builder_tokio().map_err(DnsFault::resolver)?;
+    pub fn system() -> Result<Self, DnsError> {
+        let mut builder = TokioResolver::builder_tokio().map_err(DnsError::resolver)?;
         builder.options_mut().timeout = PER_QUERY;
         builder.options_mut().attempts = 1;
-        builder.build().map(Self).map_err(DnsFault::resolver)
+        builder.build().map(Self).map_err(DnsError::resolver)
     }
 }
 
-fn fault(e: NetError) -> DnsFault {
+fn fault(e: NetError) -> DnsError {
     if e.is_no_records_found() {
-        DnsFault::NoRecords
+        DnsError::NoRecords
     } else {
-        DnsFault::resolver(e)
+        DnsError::resolver(e)
     }
 }
 
 impl Dns for HickoryDns {
-    async fn srv(&self, name: &str) -> Result<Vec<SrvRecord>, DnsFault> {
+    async fn srv(&self, name: &str) -> Result<Vec<SrvRecord>, DnsError> {
         let lookup = self.0.srv_lookup(name).await.map_err(fault)?;
         Ok(lookup
             .answers()
@@ -65,7 +65,7 @@ impl Dns for HickoryDns {
             .collect())
     }
 
-    async fn mx(&self, domain: &DomainName) -> Result<Vec<MxRecord>, DnsFault> {
+    async fn mx(&self, domain: &DomainName) -> Result<Vec<MxRecord>, DnsError> {
         let lookup = self.0.mx_lookup(domain.as_str()).await.map_err(fault)?;
         Ok(lookup
             .answers()

@@ -14,7 +14,7 @@ mod spec;
 pub use spec::{anchors_of, exclusive_of, keyboard_of, level_of, margins_of, spec_of};
 
 use crate::client::key_of_surface;
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::geometry::LogicalSize;
 use compositor_core::layer::{LayerLevel, LayerSpec};
 use compositor_core::policy::GlobalKind;
@@ -207,15 +207,15 @@ pub fn on_layer_popup(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_layer_configure(
     part: &mut LayerShellPart,
     layer: LayerKey,
     size: LogicalSize,
-) -> Result<(), WaylandFault> {
-    let surface = part.layers.get(&layer).ok_or(WaylandFault::SurfaceGone)?;
+) -> Result<(), WaylandError> {
+    let surface = part.layers.get(&layer).ok_or(WaylandError::SurfaceGone)?;
     if !surface.alive() {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     let wire: Size<i32, Logical> = crate::convert::size_to(size);
     surface.with_pending_state(|state| state.size = Some(wire));

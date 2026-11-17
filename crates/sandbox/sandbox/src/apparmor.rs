@@ -5,7 +5,7 @@
 //! `bwrap` has no such profile, so it fails exactly as it does when namespaces are off, and the
 //! remedy is different. This module only reads the switch; it never changes it.
 
-use crate::CannotSandbox;
+use crate::CannotSandboxError;
 use std::path::Path;
 
 /// Where the kernel exposes the switch.
@@ -13,15 +13,15 @@ pub const RESTRICT_USERNS: &str = "/proc/sys/kernel/apparmor_restrict_unprivileg
 
 /// The reason a throwaway `bwrap` run failed, given the switch's text (`None`: no such file,
 /// so this kernel has no `AppArmor` restriction). Pure.
-pub fn namespaces_refused(switch: Option<&str>) -> CannotSandbox {
+pub fn namespaces_refused(switch: Option<&str>) -> CannotSandboxError {
     match switch.map(str::trim) {
-        Some("1") => CannotSandbox::RestrictedByAppArmor,
-        _ => CannotSandbox::NamespacesDenied,
+        Some("1") => CannotSandboxError::RestrictedByAppArmor,
+        _ => CannotSandboxError::NamespacesDenied,
     }
 }
 
 /// `namespaces_refused` for the switch file at `path`; an unreadable file counts as missing.
 #[must_use]
-pub fn refusal_at(path: &Path) -> CannotSandbox {
+pub fn refusal_at(path: &Path) -> CannotSandboxError {
     namespaces_refused(std::fs::read_to_string(path).ok().as_deref())
 }

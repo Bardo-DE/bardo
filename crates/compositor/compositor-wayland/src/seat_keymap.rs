@@ -7,7 +7,7 @@
 //! new keymap and the focused client the modifiers. Latched and locked modifiers are not
 //! carried over (the new state starts without them), and no key is released or repeated.
 
-use crate::states::WaylandFault;
+use crate::states::WaylandError;
 use compositor_core::settings::XkbNames;
 use smithay::input::SeatHandler;
 use smithay::input::keyboard::{KeyboardHandle, XkbConfig};
@@ -117,18 +117,18 @@ impl KeymapBook {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn switch_layout<D>(
     keyboard: &KeyboardHandle<D>,
     data: &mut D,
     names: &XkbNames,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: SeatHandler + 'static,
 {
     keyboard
         .set_xkb_config(data, xkb_config(names))
-        .map_err(|error| WaylandFault::Keymap(error.to_string()))
+        .map_err(|error| WaylandError::Keymap(error.to_string()))
 }
 
 #[cfg(test)]

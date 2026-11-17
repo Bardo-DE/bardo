@@ -1,7 +1,7 @@
 //! The lending switch's world: a shipped file in a scratch folder, and a service manager that
 //! writes down what it was asked and never touches the real one.
 
-use inference_client::{UnitFailure, UnitManager};
+use inference_client::{UnitError, UnitManager};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 
@@ -36,7 +36,7 @@ impl UnitManager for Units {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn reload(&self) -> Result<(), UnitFailure> {
+    async fn reload(&self) -> Result<(), UnitError> {
         self.note("reload".to_owned());
         Ok(())
     }
@@ -45,10 +45,10 @@ impl UnitManager for Units {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn restart(&self, unit: &'static str) -> Result<(), UnitFailure> {
+    async fn restart(&self, unit: &'static str) -> Result<(), UnitError> {
         self.note(format!("restart {unit}"));
         if self.refuse_restart.load(Ordering::SeqCst) {
-            Err(UnitFailure("refused by the test".to_owned()))
+            Err(UnitError("refused by the test".to_owned()))
         } else {
             Ok(())
         }

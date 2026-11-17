@@ -1,7 +1,7 @@
 //! What the router keeps: one record per open session, the tasks, the journal, the halts and
 //! the shadow index, behind the one lock `Router` holds.
 
-use crate::handles::{HandleLimit, HandleTable, MAX_KNOWN};
+use crate::handles::{HandleLimitError, HandleTable, MAX_KNOWN};
 use crate::index::IndexEvent;
 use crate::journal::UndoJournal;
 use crate::registry::Registry;
@@ -204,11 +204,14 @@ impl SessionRecord {
     ///
     /// # Errors
     ///
-    /// Returns [`HandleLimit`] when noting the things would pass [`MAX_KNOWN`].
-    pub fn know(&mut self, things: impl IntoIterator<Item = EntityId>) -> Result<(), HandleLimit> {
+    /// Returns [`HandleLimitError`] when noting the things would pass [`MAX_KNOWN`].
+    pub fn know(
+        &mut self,
+        things: impl IntoIterator<Item = EntityId>,
+    ) -> Result<(), HandleLimitError> {
         for thing in things {
             if self.known.len() >= MAX_KNOWN && !self.known.contains(&thing) {
-                return Err(HandleLimit::Known);
+                return Err(HandleLimitError::Known);
             }
             self.known.insert(thing);
         }

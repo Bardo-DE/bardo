@@ -10,7 +10,7 @@ use crate::{Message, Part, Role, ToolCallId};
 
 /// What is wrong with a conversation's order.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-pub enum SequenceFault {
+pub enum SequenceError {
     #[error("two assistant messages follow each other")]
     ConsecutiveAssistant,
     #[error("a tool call has no result before the next turn")]
@@ -27,9 +27,9 @@ pub enum SequenceFault {
 ///
 /// # Errors
 ///
-/// Returns [`SequenceFault`] when an assistant message follows another, a tool result answers no
+/// Returns [`SequenceError`] when an assistant message follows another, a tool result answers no
 /// earlier call, or a tool call is left unanswered.
-pub fn check(messages: &[Message]) -> Result<(), SequenceFault> {
+pub fn check(messages: &[Message]) -> Result<(), SequenceError> {
     let mut pending: BTreeSet<&ToolCallId> = BTreeSet::new();
     let mut previous: Option<Role> = None;
     for message in messages {
@@ -37,14 +37,14 @@ pub fn check(messages: &[Message]) -> Result<(), SequenceFault> {
             if let Part::ToolResult(result) = part
                 && !pending.remove(&result.id)
             {
-                return Err(SequenceFault::OrphanResult);
+                return Err(SequenceError::OrphanResult);
             }
         }
         if message.role == Role::Assistant && previous == Some(Role::Assistant) {
-            return Err(SequenceFault::ConsecutiveAssistant);
+            return Err(SequenceError::ConsecutiveAssistant);
         }
         if message.role != Role::Tool && !pending.is_empty() {
-            return Err(SequenceFault::UnansweredCall);
+            return Err(SequenceError::UnansweredCall);
         }
         pending.extend(message.parts.iter().filter_map(|part| match part {
             Part::ToolCall(call) => Some(&call.id),
@@ -55,6 +55,6 @@ pub fn check(messages: &[Message]) -> Result<(), SequenceFault> {
     if pending.is_empty() {
         Ok(())
     } else {
-        Err(SequenceFault::UnansweredCall)
+        Err(SequenceError::UnansweredCall)
     }
 }

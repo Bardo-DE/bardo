@@ -157,7 +157,7 @@ pub(super) fn put(table: &mut toml::Table, path: &str, value: toml::Value) {
 /// Why the settings were not reloaded: the old ones stay in force.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{0}")]
-pub struct ReloadFailed(pub String);
+pub struct ReloadError(pub String);
 
 /// What a reload put in force.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -222,9 +222,9 @@ impl Reload {
     ///
     /// # Errors
     ///
-    /// Returns [`ReloadFailed`] when the file cannot be read; nothing changes then.
-    pub fn now(&self) -> Result<Reloaded, ReloadFailed> {
-        let config = self.file.read().map_err(|e| ReloadFailed(e.to_string()))?;
+    /// Returns [`ReloadError`] when the file cannot be read; nothing changes then.
+    pub fn now(&self) -> Result<Reloaded, ReloadError> {
+        let config = self.file.read().map_err(|e| ReloadError(e.to_string()))?;
         let resolved = resolve(&config.ai);
         self.engines.apply(resolved.settings);
         if let Some(programs) = &self.programs {

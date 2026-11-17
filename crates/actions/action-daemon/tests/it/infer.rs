@@ -161,20 +161,20 @@ async fn every_way_inferd_can_fail_is_a_model_error_and_never_a_reply() {
         ),
         (
             "this class may not leave the computer",
-            finish(InferReply::Refused(InferRefusal::RequiresCloud(
+            finish(InferReply::Refused(InferRefusedError::RequiresCloud(
                 DataClass::Prompt,
             ))),
-            TurnError::Refused(InferRefusal::RequiresCloud(DataClass::Prompt)),
+            TurnError::Refused(InferRefusedError::RequiresCloud(DataClass::Prompt)),
         ),
         (
             "no grant",
-            finish(InferReply::Refused(InferRefusal::NeedsGrant)),
-            TurnError::Refused(InferRefusal::NeedsGrant),
+            finish(InferReply::Refused(InferRefusedError::NeedsGrant)),
+            TurnError::Refused(InferRefusedError::NeedsGrant),
         ),
         (
             "no model",
-            finish(InferReply::Refused(InferRefusal::Unavailable)),
-            TurnError::Refused(InferRefusal::Unavailable),
+            finish(InferReply::Refused(InferRefusedError::Unavailable)),
+            TurnError::Refused(InferRefusedError::Unavailable),
         ),
         (
             "the call failed",
@@ -208,7 +208,7 @@ async fn every_way_inferd_can_fail_is_a_model_error_and_never_a_reply() {
         (
             "a script for another kind of request",
             ScriptedInferd::new([inference_core::testing::FakeInferSession::scripted([])]),
-            TurnError::Refused(InferRefusal::Unsupported),
+            TurnError::Refused(InferRefusedError::Unsupported),
         ),
     ];
     for (name, inferd, want) in rows {
@@ -322,9 +322,9 @@ async fn the_reviewer_over_inferd_passes_a_quick_pass_and_asks_when_inferd_says_
     assert_eq!(opened[0].tier, Tier::Fast);
 
     for refused in [
-        InferRefusal::Unavailable,
-        InferRefusal::NeedsGrant,
-        InferRefusal::Denied,
+        InferRefusedError::Unavailable,
+        InferRefusedError::NeedsGrant,
+        InferRefusedError::Denied,
     ] {
         let inferd =
             ScriptedInferd::new([finishing(RequestKind::Chat, InferReply::Refused(refused))]);

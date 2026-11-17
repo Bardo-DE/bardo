@@ -134,9 +134,9 @@ fn a_command_prefix_and_cwd_both_have_to_match() {
 
 #[test]
 fn a_prefix_cannot_hold_shell_syntax() {
-    assert_eq!(CommandPrefix::parse("ls; rm"), Err(CommandFault::Shell));
-    assert_eq!(CommandPrefix::parse("echo $HOME"), Err(CommandFault::Shell));
-    assert_eq!(CommandPrefix::parse("   "), Err(CommandFault::Empty));
+    assert_eq!(CommandPrefix::parse("ls; rm"), Err(CommandError::Shell));
+    assert_eq!(CommandPrefix::parse("echo $HOME"), Err(CommandError::Shell));
+    assert_eq!(CommandPrefix::parse("   "), Err(CommandError::Empty));
 }
 
 pub(crate) fn outbound(to: Recipient) -> StandingScope {

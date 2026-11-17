@@ -5,7 +5,7 @@
 //! gated by the receiving task like any call it thought of itself, and its label is already in
 //! that task's taint (the router joined it at delivery).
 
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::runtime::Companion;
 use crate::seams::Surface;
 use account_core::AppName;
@@ -78,14 +78,14 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
-    pub async fn arrived(&mut self) -> Result<(), ServeFault> {
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
+    pub async fn arrived(&mut self) -> Result<(), ServeError> {
         self.pull().await?;
         self.drain().await
     }
 
     /// Runs the loops that messages started, one after another.
-    pub(crate) async fn drain(&mut self) -> Result<(), ServeFault> {
+    pub(crate) async fn drain(&mut self) -> Result<(), ServeError> {
         while let Some((task, input)) = self.triggers.pop_front() {
             // A worker's loop is run from inside the loop of the task that spawned it: the one
             // place the machine calls itself, so its future is boxed here.
@@ -96,7 +96,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
 
     /// Reads what waits for the companion and each of its workers, and puts each message in the
     /// task it is for. Nothing runs here.
-    pub(crate) async fn pull(&mut self) -> Result<(), ServeFault> {
+    pub(crate) async fn pull(&mut self) -> Result<(), ServeError> {
         let workers = self
             .runtimes
             .values()
@@ -113,7 +113,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
                     after: None,
                 })
                 .await
-                .map_err(ServeFault::Router)?;
+                .map_err(ServeError::Router)?;
             for line in lines {
                 self.deliver(&agent, line);
             }
@@ -290,13 +290,13 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         &mut self,
         parent: &TaskId,
         started: &Outcome,
-    ) -> Result<TaskId, ServeFault> {
-        let Started { task, session, .. } = started_of(started).ok_or(ServeFault::Malformed)?;
+    ) -> Result<TaskId, ServeError> {
+        let Started { task, session, .. } = started_of(started).ok_or(ServeError::Malformed)?;
         let space = self
             .runtimes
             .get(parent)
             .map(|rt| rt.space.clone())
-            .ok_or(ServeFault::UnknownSession)?;
+            .ok_or(ServeError::UnknownSession)?;
         let open = SessionOpen {
             space,
             agent: AgentRef::Worker { task: task.clone() },
@@ -340,19 +340,19 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
     pub async fn message(
         &mut self,
         from: &TaskId,
         to: Address,
         kind: MessageKind,
         parts: Vec<DraftPart>,
-    ) -> Result<Delivery, ServeFault> {
+    ) -> Result<Delivery, ServeError> {
         let session = self
             .runtimes
             .get(from)
             .map(|rt| rt.session.clone())
-            .ok_or(ServeFault::UnknownSession)?;
+            .ok_or(ServeError::UnknownSession)?;
         self.intents
             .send(
                 session,
@@ -365,7 +365,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
                 },
             )
             .await
-            .map_err(ServeFault::Router)
+            .map_err(ServeError::Router)
     }
 }
 

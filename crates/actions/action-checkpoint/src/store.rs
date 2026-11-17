@@ -8,7 +8,7 @@ use provenance::SessionId;
 
 /// Why a store could not do what it was asked.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum StoreFault {
+pub enum CheckpointStoreError {
     /// The folder has no history to keep points in.
     #[error("no history to keep points in")]
     NoHistory,
@@ -84,26 +84,38 @@ pub struct DropAsk {
 /// stash) or, except `apply`, the files of the folder.
 pub trait CheckpointStore: Send + Sync {
     /// Saves the folder as a new point.
-    fn take(&self, ask: TakeAsk) -> impl Future<Output = Result<Saved, StoreFault>> + Send;
+    fn take(
+        &self,
+        ask: TakeAsk,
+    ) -> impl Future<Output = Result<Saved, CheckpointStoreError>> + Send;
 
     /// The points held for `session`, oldest first.
     fn held(
         &self,
         root: &WorkRoot,
         session: &SessionId,
-    ) -> impl Future<Output = Result<Vec<Saved>, StoreFault>> + Send;
+    ) -> impl Future<Output = Result<Vec<Saved>, CheckpointStoreError>> + Send;
 
     /// What restoring a point would change, from the folder as it is now. Writes nothing.
-    fn plan(&self, ask: PlanAsk) -> impl Future<Output = Result<RestorePlan, StoreFault>> + Send;
+    fn plan(
+        &self,
+        ask: PlanAsk,
+    ) -> impl Future<Output = Result<RestorePlan, CheckpointStoreError>> + Send;
 
     /// Re-derives the plan, refuses `PlanStale` if its digest is not `expect`, then writes
     /// `changed` and `added` from the point and, only after all are written, deletes `removed`.
     /// A failure after the first file was touched is `Partial`; any other refusal changed
     /// nothing. Returns what it did.
-    fn apply(&self, ask: ApplyAsk) -> impl Future<Output = Result<RestorePlan, StoreFault>> + Send;
+    fn apply(
+        &self,
+        ask: ApplyAsk,
+    ) -> impl Future<Output = Result<RestorePlan, CheckpointStoreError>> + Send;
 
     /// Forgets points; how many were forgotten.
-    fn drop_points(&self, ask: DropAsk) -> impl Future<Output = Result<Count, StoreFault>> + Send;
+    fn drop_points(
+        &self,
+        ask: DropAsk,
+    ) -> impl Future<Output = Result<Count, CheckpointStoreError>> + Send;
 }
 
 /// A store for a build that cannot keep history: every ask is `NoHistory`.
@@ -115,39 +127,43 @@ impl CheckpointStore for NoStore {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn take(&self, _ask: TakeAsk) -> Result<Saved, StoreFault> {
-        Err(StoreFault::NoHistory)
+    async fn take(&self, _ask: TakeAsk) -> Result<Saved, CheckpointStoreError> {
+        Err(CheckpointStoreError::NoHistory)
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn held(&self, _root: &WorkRoot, _session: &SessionId) -> Result<Vec<Saved>, StoreFault> {
-        Err(StoreFault::NoHistory)
+    async fn held(
+        &self,
+        _root: &WorkRoot,
+        _session: &SessionId,
+    ) -> Result<Vec<Saved>, CheckpointStoreError> {
+        Err(CheckpointStoreError::NoHistory)
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn plan(&self, _ask: PlanAsk) -> Result<RestorePlan, StoreFault> {
-        Err(StoreFault::NoHistory)
+    async fn plan(&self, _ask: PlanAsk) -> Result<RestorePlan, CheckpointStoreError> {
+        Err(CheckpointStoreError::NoHistory)
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn apply(&self, _ask: ApplyAsk) -> Result<RestorePlan, StoreFault> {
-        Err(StoreFault::NoHistory)
+    async fn apply(&self, _ask: ApplyAsk) -> Result<RestorePlan, CheckpointStoreError> {
+        Err(CheckpointStoreError::NoHistory)
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn drop_points(&self, _ask: DropAsk) -> Result<Count, StoreFault> {
-        Err(StoreFault::NoHistory)
+    async fn drop_points(&self, _ask: DropAsk) -> Result<Count, CheckpointStoreError> {
+        Err(CheckpointStoreError::NoHistory)
     }
 }

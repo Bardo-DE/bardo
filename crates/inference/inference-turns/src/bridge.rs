@@ -9,8 +9,8 @@
 mod request;
 
 pub use inference_bridge::{
-    BridgeError, DefaultSampling, Frames, Gathered, JsonReply, MAX_ATTACHMENT, NoScores, Target,
-    chat_turn_for, embed_turns_for, event, extras, image_input, model_error, model_id_of,
+    BridgeError, DefaultSampling, Frames, Gathered, JsonReply, MAX_ATTACHMENT, NoScoresError,
+    Target, chat_turn_for, embed_turns_for, event, extras, image_input, model_error, model_id_of,
     task_turn_for, turn_scores,
 };
 pub use request::{chat_turn, embed_turns, local_target, task_turn};

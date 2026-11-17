@@ -1,7 +1,7 @@
 //! What a window capture session's queue dispatches into: the announced constraints, the buffer
 //! in flight and the frame's outcome.
 
-use super::super::CaptureFailure;
+use super::super::CaptureError;
 use super::{FORMATS, WindowFrame};
 use std::fs::File;
 use std::os::unix::fs::FileExt;
@@ -45,7 +45,7 @@ pub(super) struct Wire {
     /// The buffer of the frame in flight.
     pub(super) buffer: Option<Pending>,
     /// How the last frame ended, until it is taken.
-    pub(super) finished: Option<Result<WindowFrame, CaptureFailure>>,
+    pub(super) finished: Option<Result<WindowFrame, CaptureError>>,
 }
 
 impl Wire {
@@ -127,15 +127,15 @@ impl Dispatch<ExtImageCopyCaptureFrameV1, ()> for Wire {
                         .buffer
                         .take()
                         .and_then(|pending| read(&pending))
-                        .ok_or(CaptureFailure::Unknown),
+                        .ok_or(CaptureError::Unknown),
                 );
             }
             Event::Failed { reason } => {
                 state.buffer = None;
                 state.finished = Some(Err(match raw(reason) {
-                    1 => CaptureFailure::BufferConstraints,
-                    2 => CaptureFailure::Stopped,
-                    _ => CaptureFailure::Unknown,
+                    1 => CaptureError::BufferConstraints,
+                    2 => CaptureError::Stopped,
+                    _ => CaptureError::Unknown,
                 }));
             }
             _ => {}

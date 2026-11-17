@@ -1,7 +1,7 @@
 //! Renaming in place.
 
 use files_core::{FolderPath, NameError};
-use files_model::{Browser, Change, Effect, Input, Modifier, Rename, RenameProblem};
+use files_model::{Browser, Change, Effect, Input, Modifier, Rename, RenameError};
 
 use crate::common::*;
 
@@ -73,7 +73,7 @@ fn committing_a_draft_does_what_the_draft_deserves() {
             Rename::Editing {
                 name: name("a.txt"),
                 draft: "b.txt".into(),
-                problem: Some(RenameProblem::Taken),
+                problem: Some(RenameError::Taken),
             },
         ),
         (
@@ -82,7 +82,7 @@ fn committing_a_draft_does_what_the_draft_deserves() {
             Rename::Editing {
                 name: name("a.txt"),
                 draft: String::new(),
-                problem: Some(RenameProblem::Invalid(NameError::Empty)),
+                problem: Some(RenameError::Invalid(NameError::Empty)),
             },
         ),
         (
@@ -91,7 +91,7 @@ fn committing_a_draft_does_what_the_draft_deserves() {
             Rename::Editing {
                 name: name("a.txt"),
                 draft: "x/y".into(),
-                problem: Some(RenameProblem::Invalid(NameError::Slash)),
+                problem: Some(RenameError::Invalid(NameError::Slash)),
             },
         ),
     ];
@@ -104,9 +104,9 @@ fn committing_a_draft_does_what_the_draft_deserves() {
 
 #[test]
 fn a_problem_is_worded_for_a_person() {
-    assert_eq!(RenameProblem::Taken.to_string(), "That name is taken.");
+    assert_eq!(RenameError::Taken.to_string(), "That name is taken.");
     assert_eq!(
-        RenameProblem::Invalid(NameError::Empty).to_string(),
+        RenameError::Invalid(NameError::Empty).to_string(),
         "A name can't be empty."
     );
 }
@@ -171,7 +171,7 @@ fn a_name_taken_by_a_hidden_entry_is_still_taken() {
     assert!(matches!(
         browser.rename(),
         Rename::Editing {
-            problem: Some(RenameProblem::Taken),
+            problem: Some(RenameError::Taken),
             ..
         }
     ));

@@ -25,7 +25,8 @@ use super::hotplug::{KnownConnectors, reconcile};
 use super::judge::{Lit, judge};
 use super::kms::{
     CommitVerdict, ConnectorFacts, ConnectorId, ConnectorStatus, CrtcFacts, CrtcId, Kms, KmsCommit,
-    KmsError, KmsOpener, KmsRefusal, KmsResources, OutputCommit, PlaneFacts, PlaneId, PlaneKind,
+    KmsError, KmsOpener, KmsRefusedError, KmsResources, OutputCommit, PlaneFacts, PlaneId,
+    PlaneKind,
 };
 use super::render_hub_real::RenderHub;
 use super::render_mode::{RenderMode, Routes};
@@ -290,10 +291,12 @@ impl RealKms {
         let connector = self
             .connector_handle(output.connector)
             .ok_or(KmsError::UnknownConnector(output.connector))?;
-        let crtc = self.crtc_handle(output.crtc).ok_or(KmsRefusal::NoCrtc)?;
+        let crtc = self
+            .crtc_handle(output.crtc)
+            .ok_or(KmsRefusedError::NoCrtc)?;
         let raw = self
             .raw_mode(connector, &output.mode)
-            .ok_or(KmsRefusal::Mode)?;
+            .ok_or(KmsRefusedError::Mode)?;
         if self.is_out(output.connector) {
             // The compositor that owns the surface keeps its mode; a new mode arrives as a new
             // surface, after the backend dropped the old scanout.
@@ -344,7 +347,7 @@ impl Kms for RealKms {
         match self.test(&commit) {
             CommitVerdict::Accepted => {}
             CommitVerdict::NeedsModeset => {
-                return Err(KmsError::Refused(KmsRefusal::ModesetForbidden));
+                return Err(KmsError::Refused(KmsRefusedError::ModesetForbidden));
             }
             CommitVerdict::Refused(refusal) => return Err(KmsError::Refused(refusal)),
         }
@@ -380,7 +383,7 @@ impl Kms for RealKms {
             .get(&connector)
             .map(|lit| lit.crtc)
             .ok_or(KmsError::UnknownConnector(connector))?;
-        let crtc = self.crtc_handle(id).ok_or(KmsRefusal::NoCrtc)?;
+        let crtc = self.crtc_handle(id).ok_or(KmsRefusedError::NoCrtc)?;
         let size = self.device.get_crtc(crtc)?.gamma_length() as usize;
         let [red, green, blue] = channels(ramp, size);
         self.device.set_gamma(crtc, &red, &green, &blue)?;

@@ -14,7 +14,7 @@ use http_core::{Http, HttpError};
 use http_reqwest::ReqwestHttp;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use sync_core::{
-    Blob, ByteRange, ChangePage, Cursor, Folders, ItemKind, ItemPath, PutItem, PutRefused, Quota,
+    Blob, ByteRange, ChangePage, Cursor, Folders, ItemKind, ItemPath, PutError, PutItem, Quota,
     RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
 use sync_fake_graph::FakeGraph;
@@ -108,7 +108,7 @@ impl<R: Replica> Replica for Cut<R> {
         &self,
         item: PutItem,
         base: sync_core::BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         self.inner.put(item, base).await
     }
 
@@ -116,7 +116,7 @@ impl<R: Replica> Replica for Cut<R> {
         &self,
         item: &RemoteId,
         base: sync_core::BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    ) -> Result<RemoteVersion, PutError> {
         self.inner.remove(item, base).await
     }
 

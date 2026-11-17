@@ -8,7 +8,7 @@ use files_fs::{
     FakeLister, FakePrefs, FakeWatcher, FolderEvent, ListError, Lister, NoClouds, NoPrefs,
     PrefsStore, Watcher,
 };
-use files_model::{Change, Effect, Input, ListFailure, OpenTarget, TabId};
+use files_model::{Change, Effect, FolderListError, Input, OpenTarget, TabId};
 use files_trash::{FakeTrash, Trash};
 use files_ui::edge::{Edge, Heard, Seams, change_of};
 use files_ui::{NoApps, NoThumbnails, NoVolumes, Opener, Volumes};
@@ -106,21 +106,21 @@ fn listing_a_folder_answers_with_its_entries() {
 #[test]
 fn a_listing_that_fails_says_why_in_the_models_terms() {
     let cases = [
-        ("gone", Err(ListError::NotFound), ListFailure::NotFound),
+        ("gone", Err(ListError::NotFound), FolderListError::NotFound),
         (
             "not allowed",
             Err(ListError::NoPermission),
-            ListFailure::NoPermission,
+            FolderListError::NoPermission,
         ),
         (
             "a file",
             Err(ListError::NotAFolder),
-            ListFailure::NotAFolder,
+            FolderListError::NotAFolder,
         ),
         (
             "anything else",
             Err(ListError::Other(std::io::ErrorKind::TimedOut)),
-            ListFailure::Other,
+            FolderListError::Other,
         ),
     ];
     for (why, result, want) in cases {

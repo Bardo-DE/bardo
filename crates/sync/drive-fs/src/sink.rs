@@ -3,11 +3,11 @@
 use crate::source::ReplicaSource;
 use std::pin::Pin;
 use sync_core::{
-    BaseVersion, DriveWrite, Found, Place, PutRefused, RemoteId, Session, Upload, Written,
+    BaseVersion, DriveWrite, Found, Place, PutError, RemoteId, Session, Upload, Written,
 };
 
 /// A write under way.
-pub type Sending<'a, T> = Pin<Box<dyn Future<Output = Result<T, PutRefused>> + Send + 'a>>;
+pub type Sending<'a, T> = Pin<Box<dyn Future<Output = Result<T, PutError>> + Send + 'a>>;
 
 /// The writes of a drive, as the core sends its changes: sync-core's [`DriveWrite`], boxed
 /// so a drive holds any of them.

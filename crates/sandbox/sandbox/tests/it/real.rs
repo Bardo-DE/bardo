@@ -235,7 +235,7 @@ fn a_cwd_that_is_not_a_directory_or_is_too_shallow_cannot_be_sandboxed() {
         assert!(
             matches!(
                 shell.create(&ask),
-                Err(sandbox::ShellFault::Start(sandbox::StartFault::Cannot(_)))
+                Err(sandbox::ShellError::Start(sandbox::StartError::Cannot(_)))
             ),
             "{bad}"
         );

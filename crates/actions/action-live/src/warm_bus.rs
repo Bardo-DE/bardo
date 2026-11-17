@@ -1,7 +1,7 @@
 //! The shipped [`Prepare`]: inference-client's `Transport::prepare` over a private bus, as the
 //! intentd unit (the policy writer's identity, which inferd serves every tier of a run to).
 
-use crate::warm::{POLL, Prepare, WarmFault, plan, warm_all};
+use crate::warm::{POLL, Prepare, WarmError, plan, warm_all};
 use account_capability::LlmFeature;
 use account_capability::Tier;
 use account_core::DataClass;
@@ -74,12 +74,12 @@ impl Prepare for BusPrepare {
 ///
 /// # Errors
 ///
-/// Returns a [`WarmFault`] when a model does not come up.
+/// Returns a [`WarmError`] when a model does not come up.
 pub async fn warm_up(
     source: &ModelSource,
     connection: zbus::Connection,
     patience: Duration,
-) -> Result<(), WarmFault> {
+) -> Result<(), WarmError> {
     let steps = plan(source)?;
     let inferd = BusPrepare::over(connection);
     warm_all(&steps, &inferd, patience, |w| eprintln!("{}", w.line()))
@@ -108,12 +108,12 @@ pub async fn as_intentd<T>(world: &World, work: impl std::future::Future<Output 
 ///
 /// # Errors
 ///
-/// Returns a [`WarmFault`] when a model does not come up.
+/// Returns a [`WarmError`] when a model does not come up.
 pub async fn warm_world(
     world: &World,
     source: &ModelSource,
     patience: Duration,
-) -> Result<(), WarmFault> {
+) -> Result<(), WarmError> {
     if matches!(source, ModelSource::Scripted(_)) {
         return Ok(());
     }

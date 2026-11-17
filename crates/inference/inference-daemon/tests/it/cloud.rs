@@ -20,7 +20,7 @@ use hosting::entries;
 use hosting::rig::{Hosted, Plan, Trust, World};
 use inference_client::InferSession;
 use inference_core::{
-    ChargeTotal, ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusal, InferReply,
+    ChargeTotal, ChatMessage, ChatRequest, ClientFrame, InferEvent, InferRefusedError, InferReply,
     InferRequest, MessagePart, ModelError, OpenOptions, Policy, Role as ChatRole, StopReason,
 };
 use inference_dbus::inference::InferenceProxy;
@@ -441,7 +441,7 @@ async fn an_app_without_a_grant_is_never_served_a_cloud_model_even_with_the_floo
     assert_eq!(
         events,
         vec![InferEvent::Finished(InferReply::Refused(
-            InferRefusal::NeedsGrant
+            InferRefusedError::NeedsGrant
         ))]
     );
     assert!(
@@ -471,14 +471,14 @@ async fn an_account_the_person_denied_the_app_is_a_refusal_and_no_account_is_una
     assert_eq!(
         turn(&world, "x").await,
         vec![InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Denied
+            InferRefusedError::Denied
         ))]
     );
     let none = World::start(plan(Vec::new(), COMPANION)).await;
     assert_eq!(
         turn(&none, "x").await,
         vec![InferEvent::Finished(InferReply::Refused(
-            InferRefusal::Unavailable
+            InferRefusedError::Unavailable
         ))]
     );
 }
@@ -676,7 +676,7 @@ async fn a_background_session_asks_verdicts_as_background_and_an_interactive_one
     assert_eq!(
         interactive,
         vec![InferEvent::Finished(InferReply::Refused(
-            InferRefusal::NeedsGrant
+            InferRefusedError::NeedsGrant
         ))]
     );
     let calls = world.accountd.as_ref().expect("accountd").calls();
@@ -689,7 +689,7 @@ async fn a_background_session_is_not_served_on_a_grant_held_for_interactive_use_
     assert_eq!(
         turn_as(&world, Usage::Background).await,
         vec![InferEvent::Finished(InferReply::Refused(
-            InferRefusal::NeedsGrant
+            InferRefusedError::NeedsGrant
         ))]
     );
     assert!(

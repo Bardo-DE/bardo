@@ -3,8 +3,7 @@
 //! test hands in scratch folders and a manager that only writes down what it was asked.
 
 use inference_client::{
-    LendingConfig, LendingError, LendingState, SessionUnits, TailnetLending, UnitFailure,
-    UnitManager,
+    LendingConfig, LendingError, LendingState, SessionUnits, TailnetLending, UnitError, UnitManager,
 };
 use settings_app_files::ConfigHome;
 use settings_app_link::lending::{Lend, Lender};
@@ -60,16 +59,16 @@ impl UnitManager for NoUnits {
         clippy::unused_async_trait_impl,
         reason = "UnitManager is async; this manager is never asked and answers at once"
     )]
-    async fn reload(&self) -> Result<(), UnitFailure> {
-        Err(UnitFailure(NO_SERVICES.to_owned()))
+    async fn reload(&self) -> Result<(), UnitError> {
+        Err(UnitError(NO_SERVICES.to_owned()))
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "UnitManager is async; this manager is never asked and answers at once"
     )]
-    async fn restart(&self, _unit: &'static str) -> Result<(), UnitFailure> {
-        Err(UnitFailure(NO_SERVICES.to_owned()))
+    async fn restart(&self, _unit: &'static str) -> Result<(), UnitError> {
+        Err(UnitError(NO_SERVICES.to_owned()))
     }
 }
 

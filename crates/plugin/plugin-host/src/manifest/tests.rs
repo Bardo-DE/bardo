@@ -1,5 +1,5 @@
 use super::*;
-use crate::fixture::{Cap, Tool, ToolFault, manifest_text, probe};
+use crate::fixture::{Cap, Tool, ToolError, manifest_text, probe};
 use std::path::Path;
 
 type Parsed = Manifest<Tool>;
@@ -86,7 +86,7 @@ fn a_manifest_whose_entries_need_no_program_needs_none() {
 /// What a bad manifest must come back as: the exact error, or any syntax error (its reason is
 /// the TOML parser's text, which is not ours to pin).
 enum Want {
-    Exact(ManifestError<Cap, ToolFault>),
+    Exact(ManifestError<Cap, ToolError>),
     Syntax,
 }
 
@@ -127,14 +127,14 @@ fn a_bad_manifest_is_a_typed_error() {
         (
             "the host refuses an entry with no kinds",
             manifest_text("p", 1, "[[provides]]\ncapability = \"probe\"\n"),
-            Exact(ManifestError::Provision(ToolFault::HandlesNothing(
+            Exact(ManifestError::Provision(ToolError::HandlesNothing(
                 Cap::Probe,
             ))),
         ),
         (
             "a host's own refusal keeps its value",
             manifest_text("p", 1, "[[provides]]\ncapability = \"export\"\n"),
-            Exact(ManifestError::Provision(ToolFault::HandlesNothing(
+            Exact(ManifestError::Provision(ToolError::HandlesNothing(
                 Cap::Export,
             ))),
         ),

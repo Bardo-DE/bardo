@@ -31,7 +31,7 @@ pub struct MxRecord {
 /// Two faults are equal when they are the same kind of failure: [`Self::Resolver`] is the kind
 /// [`Self::Unreachable`] is.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum DnsFault {
+pub enum DnsError {
     /// The name has none.
     #[error("the name has no records")]
     NoRecords,
@@ -43,7 +43,7 @@ pub enum DnsFault {
     Resolver(#[source] Cause),
 }
 
-impl DnsFault {
+impl DnsError {
     /// The resolver failed because of `cause`.
     pub fn resolver(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
         Self::Resolver(Arc::from(cause.into()))
@@ -56,7 +56,7 @@ impl DnsFault {
     }
 }
 
-impl PartialEq for DnsFault {
+impl PartialEq for DnsError {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::NoRecords, Self::NoRecords) => true,
@@ -65,16 +65,16 @@ impl PartialEq for DnsFault {
     }
 }
 
-impl Eq for DnsFault {}
+impl Eq for DnsError {}
 
 /// Resolves the record types discovery reads.
 pub trait Dns: Send + Sync {
     /// SRV records for `name` (`_imaps._tcp.example.org`).
-    fn srv(&self, name: &str) -> impl Future<Output = Result<Vec<SrvRecord>, DnsFault>> + Send;
+    fn srv(&self, name: &str) -> impl Future<Output = Result<Vec<SrvRecord>, DnsError>> + Send;
 
     /// MX records for `domain`.
     fn mx(
         &self,
         domain: &DomainName,
-    ) -> impl Future<Output = Result<Vec<MxRecord>, DnsFault>> + Send;
+    ) -> impl Future<Output = Result<Vec<MxRecord>, DnsError>> + Send;
 }

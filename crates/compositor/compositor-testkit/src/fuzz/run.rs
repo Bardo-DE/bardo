@@ -1,6 +1,6 @@
 //! Running a sequence of ops and checking the five oracles after each.
 
-use super::failure::{FuzzFailure, PanicSite, panic_message};
+use super::failure::{FuzzError, PanicSite, panic_message};
 use super::host::FuzzHost;
 use super::ops::{FuzzOp, FuzzRequest, MAX_REPEAT, ObjectRef};
 use super::oracles::{self, Snapshot};
@@ -16,8 +16,8 @@ use std::time::Duration;
 ///
 /// # Errors
 ///
-/// [`FuzzFailure`] when the run cannot start, an operation fails, or an invariant breaks after one.
-pub fn run_ops(fixture: &mut Fixture, ops: &[FuzzOp]) -> Result<(), FuzzFailure> {
+/// [`FuzzError`] when the run cannot start, an operation fails, or an invariant breaks after one.
+pub fn run_ops(fixture: &mut Fixture, ops: &[FuzzOp]) -> Result<(), FuzzError> {
     run_on(fixture, ops)
 }
 
@@ -25,13 +25,13 @@ pub fn run_ops(fixture: &mut Fixture, ops: &[FuzzOp]) -> Result<(), FuzzFailure>
 ///
 /// # Errors
 ///
-/// [`FuzzFailure`] when the run cannot start, an operation fails, or an invariant breaks after one.
-pub fn run_on<H: FuzzHost>(host: &mut H, ops: &[FuzzOp]) -> Result<(), FuzzFailure> {
+/// [`FuzzError`] when the run cannot start, an operation fails, or an invariant breaks after one.
+pub fn run_on<H: FuzzHost>(host: &mut H, ops: &[FuzzOp]) -> Result<(), FuzzError> {
     let mut run = Run::start(host)?;
     for (step, op) in ops.iter().enumerate() {
         run.apply(op)
             .and_then(|()| run.check())
-            .map_err(|failure| FuzzFailure::AtOp {
+            .map_err(|failure| FuzzError::AtOp {
                 step,
                 op: Box::new(op.clone()),
                 failure: Box::new(failure),
@@ -54,7 +54,7 @@ struct Run<'h, H> {
 }
 
 impl<'h, H: FuzzHost> Run<'h, H> {
-    fn start(host: &'h mut H) -> Result<Run<'h, H>, FuzzFailure> {
+    fn start(host: &'h mut H) -> Result<Run<'h, H>, FuzzError> {
         let bystander = host.connect(ConnectionRole::Public);
         oracles::alive_pump(host)?;
         let resting = oracles::snapshot(host, bystander);
@@ -66,12 +66,12 @@ impl<'h, H: FuzzHost> Run<'h, H> {
         })
     }
 
-    fn apply(&mut self, op: &FuzzOp) -> Result<(), FuzzFailure> {
+    fn apply(&mut self, op: &FuzzOp) -> Result<(), FuzzError> {
         match op {
             FuzzOp::Advance(ms) => {
                 let by = Duration::from_millis(u64::from(*ms));
                 catch_unwind(AssertUnwindSafe(|| self.host.advance(by))).map_err(|payload| {
-                    FuzzFailure::Panicked(PanicSite::Advance, panic_message(&*payload))
+                    FuzzError::Panicked(PanicSite::Advance, panic_message(&*payload))
                 })
             }
             FuzzOp::Request {
@@ -85,7 +85,7 @@ impl<'h, H: FuzzHost> Run<'h, H> {
                     self.send(id, *object, request);
                 }))
                 .map_err(|payload| {
-                    FuzzFailure::Panicked(PanicSite::Request, panic_message(&*payload))
+                    FuzzError::Panicked(PanicSite::Request, panic_message(&*payload))
                 })?;
                 oracles::alive_pump(self.host)
             }
@@ -132,7 +132,7 @@ impl<'h, H: FuzzHost> Run<'h, H> {
     }
 
     /// The five oracles.
-    fn check(&mut self) -> Result<(), FuzzFailure> {
+    fn check(&mut self) -> Result<(), FuzzError> {
         oracles::invariants(self.host)?;
         oracles::bystander_ok(self.host, self.bystander, &self.resting)?;
         let known: Vec<(ClientId, ConnectionRole)> =

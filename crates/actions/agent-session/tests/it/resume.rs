@@ -42,9 +42,9 @@ fn the_latest_hand_note_says_where_the_conversation_is() {
 
 #[test]
 fn refusals_name_what_is_missing() {
-    assert_eq!(resume_plan(&[]), Err(PlanRefusal::Empty));
+    assert_eq!(resume_plan(&[]), Err(PlanError::Empty));
     let no_opening = rows(&[SessionEntry::Turn(turn(1, "hi"))]);
-    assert_eq!(resume_plan(&no_opening), Err(PlanRefusal::NoOpening));
+    assert_eq!(resume_plan(&no_opening), Err(PlanError::NoOpening));
 }
 
 #[test]

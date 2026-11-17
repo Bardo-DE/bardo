@@ -13,13 +13,13 @@ use account_capability::{AgentProgram, AgentProtocol};
 use account_capability::{LoginOutcome, LoginRequestId};
 use account_core::{AccountId, DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
 
-/// What was underneath an [`AccountFault`], when something was.
+/// What was underneath an [`AccountError`], when something was.
 pub type FaultSource = std::sync::Arc<dyn std::error::Error + Send + Sync>;
 
 /// Why a call to the accounts service failed. Coarse on purpose: the kind says what the launcher does next, and
 /// the source (when there is one) is what the link reported, for logs.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum AccountFault {
+pub enum AccountError {
     /// The service is not there.
     #[error("the account service is not reachable")]
     Unreachable(#[source] Option<FaultSource>),
@@ -31,7 +31,7 @@ pub enum AccountFault {
     Other(#[source] Option<FaultSource>),
 }
 
-impl AccountFault {
+impl AccountError {
     /// `source` as a fault's cause.
     pub fn source_of<E>(source: E) -> Option<FaultSource>
     where
@@ -113,19 +113,19 @@ pub trait Accounts: Send + Sync {
     fn register(
         &self,
         programs: &[AgentProgram],
-    ) -> impl Future<Output = Result<(), AccountFault>> + Send;
+    ) -> impl Future<Output = Result<(), AccountError>> + Send;
 
     /// Opens a launcher session (the span a "this session only" grant lasts).
     fn begin_session(
         &self,
         session: &SessionToken,
-    ) -> impl Future<Output = Result<(), AccountFault>> + Send;
+    ) -> impl Future<Output = Result<(), AccountError>> + Send;
 
     /// Ends it: accountd removes its grants and ends the credentials under them.
     fn end_session(
         &self,
         session: &SessionToken,
-    ) -> impl Future<Output = Result<(), AccountFault>> + Send;
+    ) -> impl Future<Output = Result<(), AccountError>> + Send;
 
     /// inferd opens a loopback endpoint for `program` over `route` (P4).
     fn open_endpoint(
@@ -134,13 +134,13 @@ pub trait Accounts: Send + Sync {
         route: &RouteWish,
         class: DataClass,
         protocol: AgentProtocol,
-    ) -> impl Future<Output = Result<OpenedEndpoint, AccountFault>> + Send;
+    ) -> impl Future<Output = Result<OpenedEndpoint, AccountError>> + Send;
 
     /// Closes it.
     fn close_endpoint(
         &self,
         session: &str,
-    ) -> impl Future<Output = Result<(), AccountFault>> + Send;
+    ) -> impl Future<Output = Result<(), AccountError>> + Send;
 
     /// Asks the person which account `program` may use for this session (P2).
     fn request_key(
@@ -148,7 +148,7 @@ pub trait Accounts: Send + Sync {
         program: &AgentProgram,
         class: DataClass,
         session: &SessionToken,
-    ) -> impl Future<Output = Result<GrantId, AccountFault>> + Send;
+    ) -> impl Future<Output = Result<GrantId, AccountError>> + Send;
 
     /// A key for one process under `permit`.
     fn issue(
@@ -156,13 +156,13 @@ pub trait Accounts: Send + Sync {
         permit: &GrantId,
         program: &AgentProgram,
         key_env: &account_capability::EnvName,
-    ) -> impl Future<Output = Result<Issued, AccountFault>> + Send;
+    ) -> impl Future<Output = Result<Issued, AccountError>> + Send;
 
     /// Ends a credential because its process ended.
     fn revoke(
         &self,
         id: &ProcessCredentialId,
-    ) -> impl Future<Output = Result<(), AccountFault>> + Send;
+    ) -> impl Future<Output = Result<(), AccountError>> + Send;
 
     /// The next thing the accounts service says to this launcher; `None` when the link is gone.
     fn hear(&self) -> impl Future<Output = Option<Heard>> + Send;
@@ -172,5 +172,5 @@ pub trait Accounts: Send + Sync {
         &self,
         ask: &LoginAsk,
         outcome: LoginOutcome,
-    ) -> impl Future<Output = Result<(), AccountFault>> + Send;
+    ) -> impl Future<Output = Result<(), AccountError>> + Send;
 }

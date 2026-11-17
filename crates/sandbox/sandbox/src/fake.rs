@@ -4,8 +4,8 @@
 
 use crate::bwrap_job::locked;
 use crate::output::Tail;
-use crate::sandbox::{Captured, ExitReport, Job, KILLED, RunSpec, Sandbox, StartFault};
-use crate::{CannotSandbox, SandboxState};
+use crate::sandbox::{Captured, ExitReport, Job, KILLED, RunSpec, Sandbox, StartError};
+use crate::{CannotSandboxError, SandboxState};
 use base_path::AbsPath;
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
@@ -88,7 +88,7 @@ impl FakeSandbox {
 
     /// A sandbox that cannot confine anything, for this reason.
     #[must_use]
-    pub fn withheld(why: CannotSandbox) -> (Self, Seen) {
+    pub fn withheld(why: CannotSandboxError) -> (Self, Seen) {
         Self::with(SandboxState::Cannot(why), Vec::new())
     }
 
@@ -165,9 +165,9 @@ impl Sandbox for FakeSandbox {
         self.available
     }
 
-    fn start(&self, spec: &RunSpec) -> Result<FakeJob, StartFault> {
+    fn start(&self, spec: &RunSpec) -> Result<FakeJob, StartError> {
         if let SandboxState::Cannot(why) = self.available {
-            return Err(StartFault::Cannot(why));
+            return Err(StartError::Cannot(why));
         }
         let script = locked(&self.scripts)
             .pop_front()

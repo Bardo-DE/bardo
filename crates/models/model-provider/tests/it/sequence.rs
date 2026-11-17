@@ -1,7 +1,7 @@
 //! `check_sequence`.
 
 use model_provider::{
-    JsonText, Message, Part, Role, SequenceFault, ToolCall, ToolCallId, ToolName, ToolResult,
+    JsonText, Message, Part, Role, SequenceError, ToolCall, ToolCallId, ToolName, ToolResult,
     ToolStatus, check_sequence,
 };
 use proptest::prelude::*;
@@ -49,7 +49,7 @@ fn results(ids: &[&str]) -> Message {
     reason = "a table of message orders and what each must be"
 )]
 fn orders() {
-    let cases: Vec<(&str, Vec<Message>, Result<(), SequenceFault>)> = vec![
+    let cases: Vec<(&str, Vec<Message>, Result<(), SequenceError>)> = vec![
         ("empty", vec![], Ok(())),
         (
             "plain chat",
@@ -93,22 +93,22 @@ fn orders() {
                 text(Role::Assistant),
                 text(Role::Assistant),
             ],
-            Err(SequenceFault::ConsecutiveAssistant),
+            Err(SequenceError::ConsecutiveAssistant),
         ),
         (
             "assistant call then assistant",
             vec![calls(Role::Assistant, &["a"]), text(Role::Assistant)],
-            Err(SequenceFault::ConsecutiveAssistant),
+            Err(SequenceError::ConsecutiveAssistant),
         ),
         (
             "call then user",
             vec![calls(Role::Assistant, &["a"]), text(Role::User)],
-            Err(SequenceFault::UnansweredCall),
+            Err(SequenceError::UnansweredCall),
         ),
         (
             "call at the end",
             vec![text(Role::User), calls(Role::Assistant, &["a"])],
-            Err(SequenceFault::UnansweredCall),
+            Err(SequenceError::UnansweredCall),
         ),
         (
             "one of two answered",
@@ -117,17 +117,17 @@ fn orders() {
                 results(&["a"]),
                 text(Role::User),
             ],
-            Err(SequenceFault::UnansweredCall),
+            Err(SequenceError::UnansweredCall),
         ),
         (
             "result with no call",
             vec![text(Role::User), results(&["a"])],
-            Err(SequenceFault::OrphanResult),
+            Err(SequenceError::OrphanResult),
         ),
         (
             "result for another id",
             vec![calls(Role::Assistant, &["a"]), results(&["b"])],
-            Err(SequenceFault::OrphanResult),
+            Err(SequenceError::OrphanResult),
         ),
         (
             "a second result for one call",
@@ -136,12 +136,12 @@ fn orders() {
                 results(&["a"]),
                 results(&["a"]),
             ],
-            Err(SequenceFault::OrphanResult),
+            Err(SequenceError::OrphanResult),
         ),
         (
             "result before its call",
             vec![results(&["a"]), calls(Role::Assistant, &["a"])],
-            Err(SequenceFault::OrphanResult),
+            Err(SequenceError::OrphanResult),
         ),
         (
             "a result in a user message",

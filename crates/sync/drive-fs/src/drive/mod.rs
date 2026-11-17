@@ -42,7 +42,7 @@ pub use fetch::ReadError;
 pub use state::{ItemState, Status};
 pub use write::{WriteError, WriteHandle};
 
-use crate::Reason;
+use crate::SkipError;
 use crate::index::{Dirty, Edit, Index, IndexFile};
 use crate::limit::CacheLimit;
 use crate::listing::{Listing, ListingError};
@@ -250,7 +250,7 @@ pub enum FreeSpace {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct Failure {
     /// Why, for whoever shows it.
-    pub reason: Reason,
+    pub reason: SkipError,
     /// It may pass by itself (no network, a stall): cleared when the drive is reached again.
     pub transient: bool,
 }
@@ -314,7 +314,7 @@ pub(crate) struct Inner {
     signed_out: AtomicBool,
     /// Changes the drive could not take now, with the reason (in use there), until their
     /// next try.
-    waiting: Mutex<HashMap<NodeId, Reason>>,
+    waiting: Mutex<HashMap<NodeId, SkipError>>,
     /// Changes the drive answered with a newer version: held until a listing pass shows it.
     stale: Mutex<HashSet<NodeId>>,
     /// When the sender tries again after the drive could not take a change, and how long it
@@ -495,7 +495,7 @@ fn now_secs() -> i64 {
 
 /// An action's `Reason` for a listing that could not be read: `Reason` is a code and carries no
 /// cause, so the cause is written to the log here.
-fn unlisted(reason: Reason) -> impl FnOnce(DriveError) -> Reason {
+fn unlisted(reason: SkipError) -> impl FnOnce(DriveError) -> SkipError {
     move |why| {
         eprintln!("drive-core: the listing could not be read: {why}");
         reason

@@ -53,7 +53,7 @@ pub use judge::{Footing, Peer, Welcome, judge};
 pub use lending::{
     Approval, CandidateModel, ComputerCandidate, GuestAnswer, GuestAsk, GuestRow, RowState,
 };
-pub use refusal::Refusal;
+pub use refusal::TailnetError;
 
 #[cfg(feature = "io")]
 pub use dial::{DialError, Dialer};

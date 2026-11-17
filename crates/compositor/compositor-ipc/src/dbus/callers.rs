@@ -5,7 +5,7 @@
 
 use super::connect_ask::{NOT_THE_CALLER, Proven};
 use caller_identity_dbus::caller_identity_core::{
-    Proof, Refused, Requirement, RoleName, Standing, roles,
+    NotHeldError, Proof, Requirement, RoleName, Standing, roles,
 };
 use caller_identity_dbus::caller_identity_linux::ProcFs;
 use caller_identity_dbus::caller_identity_linux::RealProc;
@@ -104,7 +104,7 @@ pub async fn require(
 /// feature `dev-rows`, as a developer row (`Proof::Dev`) of one of them. The developer step is
 /// exactly that proof, so a service known by its image or its control group alone is refused
 /// there as it is everywhere.
-fn admitted(standing: &Standing, roles: &[RoleName]) -> Result<(), Refused> {
+fn admitted(standing: &Standing, roles: &[RoleName]) -> Result<(), NotHeldError> {
     let need: Vec<Requirement> = roles
         .iter()
         .map(|role| Requirement::new(role.clone(), Proof::Full))
@@ -135,7 +135,7 @@ fn dev_row_of(_standing: &Standing, _roles: &[RoleName]) -> bool {
 }
 
 /// What the log says was found: the standing and why it did not do.
-fn found(standing: &Standing, refused: Refused) -> String {
+fn found(standing: &Standing, refused: NotHeldError) -> String {
     format!("{standing:?} ({refused})")
 }
 

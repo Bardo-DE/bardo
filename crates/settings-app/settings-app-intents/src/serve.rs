@@ -51,7 +51,7 @@ pub async fn serve_with<K: Callers>(
 
 /// Why the session bus could not be served.
 #[derive(Debug, thiserror::Error)]
-pub enum ServeFault {
+pub enum IntentServeError {
     /// There is no session bus to connect to.
     #[error("cannot connect to the session bus: {0}")]
     Connect(String),
@@ -70,17 +70,17 @@ pub enum ServeFault {
 /// The connection is returned: dropping it takes the service off the bus, so the caller keeps it
 /// for as long as the app runs.
 ///
-/// A bus that does not answer inside the read deadline is [`ServeFault::Connect`]: Settings then
+/// A bus that does not answer inside the read deadline is [`IntentServeError::Connect`]: Settings then
 /// opens without the service instead of never opening (audit SETTINGS-07).
 ///
 /// # Errors
 ///
-/// [`ServeFault`] when the session bus does not answer in time, the name is taken, or serving
+/// [`IntentServeError`] when the session bus does not answer in time, the name is taken, or serving
 /// fails.
-pub async fn serve_session(provider: SettingsProvider) -> Result<BusConnection, ServeFault> {
+pub async fn serve_session(provider: SettingsProvider) -> Result<BusConnection, IntentServeError> {
     within(BUS_DEADLINE, BUS_PEER, serve_unbounded(provider))
         .await
-        .map_err(|silent| ServeFault::Connect(silent.to_string()))?
+        .map_err(|silent| IntentServeError::Connect(silent.to_string()))?
 }
 
 /// How long the session bus gets to take the service: the read deadline, since a healthy bus
@@ -90,18 +90,18 @@ const BUS_DEADLINE: Deadline = Deadline::READ;
 /// Who is not answering, as a sentence names them.
 pub(crate) const BUS_PEER: &str = "The desktop";
 
-async fn serve_unbounded(provider: SettingsProvider) -> Result<BusConnection, ServeFault> {
+async fn serve_unbounded(provider: SettingsProvider) -> Result<BusConnection, IntentServeError> {
     let connection = zbus::connection::Builder::session()
-        .map_err(|e| ServeFault::Connect(e.to_string()))?
+        .map_err(|e| IntentServeError::Connect(e.to_string()))?
         .build()
         .await
-        .map_err(|e| ServeFault::Connect(e.to_string()))?;
+        .map_err(|e| IntentServeError::Connect(e.to_string()))?;
     if name_taken(&connection).await {
-        return Err(ServeFault::Running);
+        return Err(IntentServeError::Running);
     }
     serve(&connection, provider)
         .await
-        .map_err(|e| ServeFault::Serve(e.to_string()))?;
+        .map_err(|e| IntentServeError::Serve(e.to_string()))?;
     Ok(connection)
 }
 

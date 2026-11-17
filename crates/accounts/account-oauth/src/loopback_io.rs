@@ -3,7 +3,7 @@
 //! which would accept an authorization code from anywhere on the network.
 
 use crate::loopback::{
-    AuthCode, LoopbackFault, MAX_REDIRECT_BYTES, MAX_STRAY_REQUESTS, REDIRECT_WAIT_SECONDS,
+    AuthCode, LoopbackError, MAX_REDIRECT_BYTES, MAX_STRAY_REQUESTS, REDIRECT_WAIT_SECONDS,
     STRAY_READ_SECONDS, head_complete, parse_redirect,
 };
 use crate::pkce::OAuthState;
@@ -79,9 +79,9 @@ impl LoopbackServer {
     ///
     /// # Errors
     ///
-    /// Returns a [`LoopbackFault`] when the request is not the redirect (wrong `state`, no code,
+    /// Returns a [`LoopbackError`] when the request is not the redirect (wrong `state`, no code,
     /// oversized or malformed), the issuer refused, or the wait limit passes first.
-    pub async fn wait(self, expected: &OAuthState) -> Result<AuthCode, LoopbackFault> {
+    pub async fn wait(self, expected: &OAuthState) -> Result<AuthCode, LoopbackError> {
         self.wait_for(expected, Duration::from_secs(REDIRECT_WAIT_SECONDS))
             .await
     }
@@ -90,10 +90,10 @@ impl LoopbackServer {
         self,
         expected: &OAuthState,
         limit: Duration,
-    ) -> Result<AuthCode, LoopbackFault> {
+    ) -> Result<AuthCode, LoopbackError> {
         tokio::time::timeout(limit, self.accept_one(expected))
             .await
-            .unwrap_or(Err(LoopbackFault::TimedOut))
+            .unwrap_or(Err(LoopbackError::TimedOut))
     }
 
     /// Like [`wait`](Self::wait), but a request that is not the answer (a wrong or missing
@@ -107,40 +107,40 @@ impl LoopbackServer {
     ///
     /// # Errors
     ///
-    /// Returns a [`LoopbackFault`] when the issuer refused, or `TimedOut` when no answering request
+    /// Returns a [`LoopbackError`] when the issuer refused, or `TimedOut` when no answering request
     /// arrives before `deadline`.
     pub async fn wait_until(
         self,
         expected: &OAuthState,
         deadline: Duration,
-    ) -> Result<AuthCode, LoopbackFault> {
+    ) -> Result<AuthCode, LoopbackError> {
         tokio::time::timeout(deadline, self.accept_until_answered(expected))
             .await
-            .unwrap_or(Err(LoopbackFault::TimedOut))
+            .unwrap_or(Err(LoopbackError::TimedOut))
     }
 
-    async fn accept_one(self, expected: &OAuthState) -> Result<AuthCode, LoopbackFault> {
+    async fn accept_one(self, expected: &OAuthState) -> Result<AuthCode, LoopbackError> {
         let (mut socket, _) = self
             .listener
             .accept()
             .await
-            .map_err(|error| LoopbackFault::Accept(Arc::new(error)))?;
+            .map_err(|error| LoopbackError::Accept(Arc::new(error)))?;
         drop(self.listener);
         serve(&mut socket, expected).await
     }
 
-    async fn accept_until_answered(self, expected: &OAuthState) -> Result<AuthCode, LoopbackFault> {
+    async fn accept_until_answered(self, expected: &OAuthState) -> Result<AuthCode, LoopbackError> {
         let mut strays = 0;
         loop {
             let (mut socket, _) = self
                 .listener
                 .accept()
                 .await
-                .map_err(|error| LoopbackFault::Accept(Arc::new(error)))?;
+                .map_err(|error| LoopbackError::Accept(Arc::new(error)))?;
             let limit = Duration::from_secs(STRAY_READ_SECONDS);
             let outcome = tokio::time::timeout(limit, serve(&mut socket, expected))
                 .await
-                .unwrap_or(Err(LoopbackFault::Malformed));
+                .unwrap_or(Err(LoopbackError::Malformed));
             match outcome {
                 Err(fault) if is_stray(&fault) => {
                     strays += 1;
@@ -155,7 +155,7 @@ impl LoopbackServer {
 }
 
 /// Reads one request, answers the person, and says what it amounted to.
-async fn serve(socket: &mut TcpStream, expected: &OAuthState) -> Result<AuthCode, LoopbackFault> {
+async fn serve(socket: &mut TcpStream, expected: &OAuthState) -> Result<AuthCode, LoopbackError> {
     let outcome = match read_head(socket).await {
         Ok(head) => parse_redirect(&head, expected),
         Err(fault) => Err(fault),
@@ -165,24 +165,24 @@ async fn serve(socket: &mut TcpStream, expected: &OAuthState) -> Result<AuthCode
 }
 
 /// Whether a fault is a request that is not the sign-in's answer, so `wait_until` goes on.
-fn is_stray(fault: &LoopbackFault) -> bool {
+fn is_stray(fault: &LoopbackError) -> bool {
     matches!(
         fault,
-        LoopbackFault::WrongState | LoopbackFault::Malformed | LoopbackFault::Oversized
+        LoopbackError::WrongState | LoopbackError::Malformed | LoopbackError::Oversized
     )
 }
 
 /// Reads through the blank line (`httparse` says where the head ends), and no further than the
 /// cap.
-async fn read_head(socket: &mut TcpStream) -> Result<Vec<u8>, LoopbackFault> {
+async fn read_head(socket: &mut TcpStream) -> Result<Vec<u8>, LoopbackError> {
     let mut buf = Vec::new();
     let mut chunk = [0u8; 1024];
     while !head_complete(&buf)? {
         if buf.len() > MAX_REDIRECT_BYTES {
-            return Err(LoopbackFault::Oversized);
+            return Err(LoopbackError::Oversized);
         }
         match socket.read(&mut chunk).await {
-            Ok(0) | Err(_) => return Err(LoopbackFault::Malformed),
+            Ok(0) | Err(_) => return Err(LoopbackError::Malformed),
             Ok(n) => buf.extend_from_slice(&chunk[..n]),
         }
     }
@@ -191,10 +191,10 @@ async fn read_head(socket: &mut TcpStream) -> Result<Vec<u8>, LoopbackFault> {
 
 /// What the person reads. Fixed text: nothing from the request is reflected, so a crafted URL
 /// cannot put content in their browser.
-fn page(outcome: &Result<AuthCode, LoopbackFault>) -> &'static str {
+fn page(outcome: &Result<AuthCode, LoopbackError>) -> &'static str {
     match outcome {
         Ok(_) => "Signed in. You can close this tab.",
-        Err(LoopbackFault::Refused(_)) => "Authorization was declined.",
+        Err(LoopbackError::Refused(_)) => "Authorization was declined.",
         Err(_) => "Not what this port is for.",
     }
 }
@@ -264,7 +264,7 @@ mod tests {
         ));
         assert!(matches!(
             server.wait(&state()).await,
-            Err(LoopbackFault::WrongState)
+            Err(LoopbackError::WrongState)
         ));
         let page = client.await.expect("client");
         assert!(!page.contains("stolen"));
@@ -279,7 +279,7 @@ mod tests {
         let client = tokio::spawn(send_raw(port, huge.into_bytes()));
         assert!(matches!(
             server.wait(&state()).await,
-            Err(LoopbackFault::Oversized)
+            Err(LoopbackError::Oversized)
         ));
         let _ = client.await;
     }
@@ -288,7 +288,7 @@ mod tests {
     async fn a_silent_browser_times_out() {
         let server = LoopbackServer::bind().await.expect("bind");
         let outcome = server.wait_for(&state(), Duration::from_millis(50)).await;
-        assert!(matches!(outcome, Err(LoopbackFault::TimedOut)));
+        assert!(matches!(outcome, Err(LoopbackError::TimedOut)));
     }
 
     async fn probe(port: u16, request: &str) -> String {
@@ -328,7 +328,7 @@ mod tests {
         }
         assert!(matches!(
             wait.await.expect("join"),
-            Err(LoopbackFault::WrongState)
+            Err(LoopbackError::WrongState)
         ));
         TcpStream::connect(("127.0.0.1", port)).await.unwrap_err();
     }
@@ -337,7 +337,7 @@ mod tests {
     async fn wait_until_ends_at_its_deadline_and_a_dropped_wait_frees_the_port() {
         let server = LoopbackServer::bind().await.expect("bind");
         let outcome = server.wait_until(&state(), Duration::from_millis(50)).await;
-        assert!(matches!(outcome, Err(LoopbackFault::TimedOut)));
+        assert!(matches!(outcome, Err(LoopbackError::TimedOut)));
 
         let server = LoopbackServer::bind().await.expect("bind");
         let port = server.port();
@@ -362,7 +362,7 @@ mod tests {
         )
         .await;
         assert!(
-            matches!(wait.await.expect("join"), Err(LoopbackFault::Refused(why)) if why == "access_denied")
+            matches!(wait.await.expect("join"), Err(LoopbackError::Refused(why)) if why == "access_denied")
         );
     }
 

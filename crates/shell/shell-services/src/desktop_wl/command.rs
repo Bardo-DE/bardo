@@ -14,7 +14,7 @@ use super::view::identifier;
 
 /// Why a command did not become wire requests.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum Refusal {
+pub enum CommandError {
     /// The standard protocols cannot do it.
     #[error("the standard protocols cannot carry this command")]
     Unsupported,
@@ -58,9 +58,9 @@ pub fn desktop_of(command: &WlCommand, state: &DesktopState) -> Option<DesktopCo
 /// # Errors
 /// A [`Refusal`] when the Wlr arm cannot carry `command`, or when it names a window or Space the
 /// state does not have.
-pub fn wire_of(command: &DesktopCommand, state: &DesktopState) -> Result<Vec<Wire>, Refusal> {
+pub fn wire_of(command: &DesktopCommand, state: &DesktopState) -> Result<Vec<Wire>, CommandError> {
     if !supports(DesktopBackend::Wlr, command) {
-        return Err(Refusal::Unsupported);
+        return Err(CommandError::Unsupported);
     }
     match command {
         DesktopCommand::Activate(id) => {
@@ -107,35 +107,35 @@ pub fn wire_of(command: &DesktopCommand, state: &DesktopState) -> Result<Vec<Wir
         | DesktopCommand::AnswerPermission { .. }
         | DesktopCommand::AnswerTrial { .. }
         | DesktopCommand::SetFullScreenBar(_)
-        | DesktopCommand::SetMotion(_) => Err(Refusal::Unsupported),
+        | DesktopCommand::SetMotion(_) => Err(CommandError::Unsupported),
     }
 }
 
 pub(super) fn find_window(
     state: &DesktopState,
     id: &str,
-) -> Result<desktop_client::ToplevelKey, Refusal> {
+) -> Result<desktop_client::ToplevelKey, CommandError> {
     state
         .toplevels
         .announced()
         .find(|t| identifier(t) == id)
         .map(|t| t.key)
-        .ok_or_else(|| Refusal::UnknownWindow(id.to_owned()))
+        .ok_or_else(|| CommandError::UnknownWindow(id.to_owned()))
 }
 
 /// Activate the workspace `space` names, when the compositor lets a client activate it.
-fn switch(state: &DesktopState, space: &SpaceId) -> Result<Vec<Wire>, Refusal> {
+fn switch(state: &DesktopState, space: &SpaceId) -> Result<Vec<Wire>, CommandError> {
     let workspace = state
         .workspaces
         .workspaces()
         .find(|w| &space_id(w) == space)
-        .ok_or_else(|| Refusal::UnknownSpace(space.clone()))?;
+        .ok_or_else(|| CommandError::UnknownSpace(space.clone()))?;
     if workspace.abilities.contains(&WorkspaceAbility::Activate) {
         Ok(vec![
             Wire::ActivateWorkspace(workspace.key),
             Wire::CommitWorkspaces,
         ])
     } else {
-        Err(Refusal::Unsupported)
+        Err(CommandError::Unsupported)
     }
 }

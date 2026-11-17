@@ -32,7 +32,7 @@ use account_tailscale::NodeId;
 use base_time::Clock;
 use inference_agent_proto::fail::{Cause, Failure, Shape};
 use inference_agent_proto::openai;
-use inference_tailnet::{Approval, Guests, Hello, LentModel, Refusal, State, Visit, Visits};
+use inference_tailnet::{Approval, Guests, Hello, LentModel, State, TailnetError, Visit, Visits};
 use inference_turns::audit::AuditOut;
 use serde_json::json;
 use std::pin::Pin;
@@ -95,7 +95,7 @@ fn guest_app(node: &NodeId) -> AppId {
     }
 }
 
-async fn refuse<S: AsyncWrite + Unpin>(stream: &mut S, refusal: &Refusal) {
+async fn refuse<S: AsyncWrite + Unpin>(stream: &mut S, refusal: &TailnetError) {
     let body = json!({
         "error": {"message": super::words::refusal(refusal), "type": "refused", "code": refusal.slug()}
     })
@@ -133,7 +133,7 @@ impl Lender {
         let welcome = visit.welcome().clone();
         // The permit stays until the computer is done.
         let (mut stream, _permit) = visit.into_stream();
-        let refused: Mutex<Option<Refusal>> = Mutex::new(None);
+        let refused: Mutex<Option<TailnetError>> = Mutex::new(None);
         let now = self.clock.now();
         let read = http::read_request(&mut stream, |head| match wanted(head) {
             Wanted::Models => match welcome.admit(&self.guests, now) {
@@ -153,7 +153,7 @@ impl Lender {
                     .lock()
                     .unwrap_or_else(PoisonError::into_inner)
                     .take()
-                    .unwrap_or(Refusal::Off);
+                    .unwrap_or(TailnetError::Off);
                 refuse(&mut stream, &why).await;
                 return;
             }

@@ -22,7 +22,7 @@ use agent_client_protocol::schema::v1::{
 };
 use base_path::AbsPath;
 use permission_core::SandboxState;
-use sandbox::{Argv, ExitReport, Launch, Network, Sandbox, Shell, ShellFault, StartFault, TermId};
+use sandbox::{Argv, ExitReport, Launch, Network, Sandbox, Shell, ShellError, StartError, TermId};
 use std::collections::BTreeMap;
 use std::time::{Duration, Instant};
 
@@ -47,20 +47,20 @@ fn exit_status(report: ExitReport) -> TerminalExitStatus {
     }
 }
 
-fn shell_error(fault: &ShellFault) -> Error {
+fn shell_error(fault: &ShellError) -> Error {
     match fault {
-        ShellFault::NoSuchTerminal => fault::invalid("no such terminal"),
-        ShellFault::TooMany => fault::not_now("too many terminals are open"),
-        ShellFault::Start(StartFault::Cannot(why)) => {
+        ShellError::NoSuchTerminal => fault::invalid("no such terminal"),
+        ShellError::TooMany => fault::not_now("too many terminals are open"),
+        ShellError::Start(StartError::Cannot(why)) => {
             fault::not_now(&format!("cannot sandbox: {why}"))
         }
-        ShellFault::Start(StartFault::InheritedFds) => {
+        ShellError::Start(StartError::InheritedFds) => {
             fault::not_now("the sandbox refused to start: a file descriptor would leak into it")
         }
-        ShellFault::Start(StartFault::FilterFile) => {
+        ShellError::Start(StartError::FilterFile) => {
             fault::internal("the sandbox's syscall filter was not given")
         }
-        ShellFault::Start(_) => fault::internal("the sandbox did not start"),
+        ShellError::Start(_) => fault::internal("the sandbox did not start"),
     }
 }
 
@@ -105,7 +105,7 @@ impl<S: Sandbox> Terminals<S> {
     }
 
     /// The exit of `id`, waiting for it, but never past its deadline: then it is killed.
-    fn wait_until_due(&mut self, id: TermId) -> Result<ExitReport, ShellFault> {
+    fn wait_until_due(&mut self, id: TermId) -> Result<ExitReport, ShellError> {
         loop {
             self.reap();
             if let Some(report) = self.shell.output(id)?.exit {
@@ -202,7 +202,7 @@ impl<S: Sandbox> Terminals<S> {
         // reason.
         let shell_cwd = cwd.clone();
         if let sandbox::SandboxState::Cannot(why) = self.shell.check(&shell_cwd) {
-            return Err(shell_error(&ShellFault::Start(StartFault::Cannot(why))));
+            return Err(shell_error(&ShellError::Start(StartError::Cannot(why))));
         }
         let launch = Launch::new(argv, shell_cwd).with_env(
             asked

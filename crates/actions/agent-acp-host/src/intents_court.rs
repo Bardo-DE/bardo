@@ -11,7 +11,7 @@ use action_core::{CallRefusal, ContextKeep, Keep, TurnEnd, TurnIn, TurnVia};
 use action_vocab::{Origin, TurnId};
 use action_wire::SessionOpen;
 use agent_acp_core::call::AgentCall;
-use agent_acp_core::court::{Court, CourtFault, OpenAgent, Ruled};
+use agent_acp_core::court::{Court, CourtError, OpenAgent, Ruled};
 use companion_model::{RunsIn, WatchedAgent};
 use permission_core::DenyCode;
 use provenance::{AgentRef, SessionId};
@@ -31,9 +31,9 @@ struct Flight {
     clippy::needless_pass_by_value,
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
-fn refused(error: ClientError) -> CourtFault {
+fn refused(error: ClientError) -> CourtError {
     tracing::debug!(%error, "the router refused the call");
-    CourtFault::Refused
+    CourtError::Refused
 }
 
 fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
@@ -111,7 +111,7 @@ fn kept_nothing() -> ContextKeep {
 }
 
 impl<T: Transport + 'static> Court for IntentsCourt<T> {
-    async fn open(&mut self, open: OpenAgent) -> Result<SessionId, CourtFault> {
+    async fn open(&mut self, open: OpenAgent) -> Result<SessionId, CourtError> {
         let opened = self
             .intents
             .session_open(SessionOpen {
@@ -129,7 +129,7 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
         Ok(opened.session)
     }
 
-    async fn turn(&mut self, session: &SessionId, text: &str) -> Result<TurnId, CourtFault> {
+    async fn turn(&mut self, session: &SessionId, text: &str) -> Result<TurnId, CourtError> {
         let said = TurnIn {
             text: text.to_owned(),
             origin: Origin::InWindowField,
@@ -174,7 +174,7 @@ impl<T: Transport + 'static> Court for IntentsCourt<T> {
         session: &SessionId,
         to: RunsIn,
         agent: Option<WatchedAgent>,
-    ) -> Result<Option<WatchedAgent>, CourtFault> {
+    ) -> Result<Option<WatchedAgent>, CourtError> {
         self.intents
             .checkpoint_handover(session.clone(), to, agent)
             .await

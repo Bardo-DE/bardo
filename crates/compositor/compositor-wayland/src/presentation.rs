@@ -1,7 +1,7 @@
 //! `wp_presentation`: when a frame reached the screen. Timestamps are `CLOCK_MONOTONIC` (the
 //! session's `Mono` plus its epoch; virtual in tests, where the epoch is 0), never the wall clock.
 
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::time::{Millihertz, Mono, VblankSeq};
 use compositor_core::{Event, OutputKey};
 use smithay::output::{Output, PhysicalProperties, Subpixel};
@@ -173,12 +173,12 @@ fn detached() -> Output {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_presented(
     part: &mut PresentationPart,
     output: &OutputKey,
     presented: Presented,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     if primary(&part.outputs).is_some_and(|primary| primary != output) {
         return Ok(());
     }

@@ -19,7 +19,7 @@
 use crate::engines::Engines;
 use crate::probe::{Found, ProbeConfig, Runtime, probe};
 use crate::probed::Standing;
-use crate::report::{ReportFault, Reports};
+use crate::report::{ReportError, Reports};
 use http_core::http::{Request, Response};
 use http_core::{Http, HttpError};
 use std::collections::BTreeMap;
@@ -254,7 +254,7 @@ impl<H: Http + 'static> Watch<H> {
         // report that did not get through is asked again.
         let done = !matches!(
             reported,
-            Err(ReportFault::Unreachable | ReportFault::Unavailable(_))
+            Err(ReportError::Unreachable | ReportError::Unavailable(_))
         );
         if let (true, Some(one)) = (done, self.installed.get_mut(&runtime)) {
             one.told = Told::Yes;

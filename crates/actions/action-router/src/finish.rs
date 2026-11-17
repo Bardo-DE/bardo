@@ -4,7 +4,7 @@
 use crate::router::Router;
 use crate::seams::Seams;
 use crate::shield::shield;
-use action_context::handles::HandleLimit;
+use action_context::handles::HandleLimitError;
 use action_context::labels::{Voice, absorb};
 use action_context::session::{SessionEffect, SessionEvent};
 use action_context::state::SessionRecord;
@@ -31,71 +31,74 @@ fn present(
     record: &mut SessionRecord,
     voice: &Voice,
     mut outcome: Outcome,
-) -> Result<Outcome, HandleLimit> {
+) -> Result<Outcome, HandleLimitError> {
     if *voice != Voice::Model {
         return Ok(outcome);
     }
     outcome.show = Preview::None;
-    let held = outcome.value.take().map(|held| -> Result<_, HandleLimit> {
-        let source = held
-            .label
-            .sources
-            .iter()
-            .next()
-            .cloned()
-            .unwrap_or(Source::Model(provenance::ModelRole::Planner));
-        Ok(match (&held.value, held.label.integrity) {
-            (Value::Text(t) | Value::Url(t), Integrity::Untrusted) => {
-                let handle = record.handles.try_mint_text(
+    let held = outcome
+        .value
+        .take()
+        .map(|held| -> Result<_, HandleLimitError> {
+            let source = held
+                .label
+                .sources
+                .iter()
+                .next()
+                .cloned()
+                .unwrap_or(Source::Model(provenance::ModelRole::Planner));
+            Ok(match (&held.value, held.label.integrity) {
+                (Value::Text(t) | Value::Url(t), Integrity::Untrusted) => {
+                    let handle = record.handles.try_mint_text(
+                        Labelled {
+                            value: t.clone(),
+                            label: held.label.clone(),
+                        },
+                        source,
+                    )?;
                     Labelled {
-                        value: t.clone(),
-                        label: held.label.clone(),
-                    },
-                    source,
-                )?;
-                Labelled {
-                    value: Value::Handle(handle),
-                    label: held.label,
+                        value: Value::Handle(handle),
+                        label: held.label,
+                    }
                 }
-            }
-            (Value::Entity(e), _) => {
-                record.know([e.clone()])?;
-                let handle = record
-                    .handles
-                    .try_mint_entity(e.clone(), held.label.clone())?;
-                Labelled {
-                    value: Value::Handle(handle),
-                    label: held.label,
+                (Value::Entity(e), _) => {
+                    record.know([e.clone()])?;
+                    let handle = record
+                        .handles
+                        .try_mint_entity(e.clone(), held.label.clone())?;
+                    Labelled {
+                        value: Value::Handle(handle),
+                        label: held.label,
+                    }
                 }
-            }
-            (Value::Entities(es), _) if !es.is_empty() => {
-                record.know(es.iter().cloned())?;
-                let handles = es
-                    .iter()
-                    .map(|e| {
-                        record
-                            .handles
-                            .try_mint_entity(e.clone(), held.label.clone())
-                            .map(Value::Handle)
-                    })
-                    .collect::<Result<_, _>>()?;
-                Labelled {
-                    value: Value::List(handles),
-                    label: held.label,
+                (Value::Entities(es), _) if !es.is_empty() => {
+                    record.know(es.iter().cloned())?;
+                    let handles = es
+                        .iter()
+                        .map(|e| {
+                            record
+                                .handles
+                                .try_mint_entity(e.clone(), held.label.clone())
+                                .map(Value::Handle)
+                        })
+                        .collect::<Result<_, _>>()?;
+                    Labelled {
+                        value: Value::List(handles),
+                        label: held.label,
+                    }
                 }
-            }
-            // Words hide inside a file's name, a list and a record as well: they are held the
-            // same way, leaf by leaf.
-            (Value::File(_) | Value::List(_) | Value::Record(_), Integrity::Untrusted) => {
-                let value = shield(record, &held.label, &source, held.value.clone())?;
-                Labelled {
-                    value,
-                    label: held.label,
+                // Words hide inside a file's name, a list and a record as well: they are held the
+                // same way, leaf by leaf.
+                (Value::File(_) | Value::List(_) | Value::Record(_), Integrity::Untrusted) => {
+                    let value = shield(record, &held.label, &source, held.value.clone())?;
+                    Labelled {
+                        value,
+                        label: held.label,
+                    }
                 }
-            }
-            _ => held,
-        })
-    });
+                _ => held,
+            })
+        });
     outcome.value = held.transpose()?;
     Ok(outcome)
 }

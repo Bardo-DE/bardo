@@ -100,7 +100,7 @@ fn every_checkpoint_type_round_trips_in_its_pinned_shape() {
         removed: vec![path("c/d")],
         digest: PlanDigest("00".into()),
     });
-    round(&CheckpointFault::PlanStale);
+    round(&CheckpointError::PlanStale);
 }
 
 #[test]

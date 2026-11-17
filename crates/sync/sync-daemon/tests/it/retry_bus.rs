@@ -14,7 +14,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use sync_driver::hub::{Access, Hub};
 use sync_engine::scheduler::{Network, Settings};
 use sync_pim_feed::PimKind;
-use sync_pim_mirror::{AccountdUnavailable, PimConfig, PimGrants, PimSupervisor, Wiring};
+use sync_pim_mirror::{AccountdUnavailableError, PimConfig, PimGrants, PimSupervisor, Wiring};
 use sync_xdg::Paths;
 use tokio::sync::watch;
 
@@ -28,9 +28,9 @@ impl PimGrants for Flaky {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn granted(&self, _kind: PimKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
+    async fn granted(&self, _kind: PimKind) -> Result<Vec<Candidate>, AccountdUnavailableError> {
         if self.down.load(Ordering::SeqCst) {
-            Err(AccountdUnavailable(GrantsError::Link(
+            Err(AccountdUnavailableError(GrantsError::Link(
                 LinkError::Unreachable,
             )))
         } else {

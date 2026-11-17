@@ -4,7 +4,7 @@
 
 use account_capability::Tier;
 use action_accept::world::ModelSource;
-use action_live::warm::{POLL, Prepare, WarmFault, WarmStep, plan, warm_all};
+use action_live::warm::{POLL, Prepare, WarmError, WarmStep, plan, warm_all};
 use inference_core::Readiness;
 use std::cell::{Cell, RefCell};
 use std::collections::VecDeque;
@@ -86,7 +86,7 @@ best = "local/granite"
         .collect();
     assert_eq!(tiers, [Tier::Best, Tier::Balanced, Tier::Fast]);
     assert_eq!(plan(&live("[engines]\n")), Ok(vec![]));
-    assert!(matches!(plan(&live("= nope")), Err(WarmFault::Config(_))));
+    assert!(matches!(plan(&live("= nope")), Err(WarmError::Config(_))));
 }
 
 #[tokio::test]
@@ -123,7 +123,7 @@ async fn a_model_that_never_comes_up_stops_the_run_with_a_typed_fault() {
         .expect_err("never ready");
     assert_eq!(
         fault,
-        WarmFault::NeverCameUp {
+        WarmError::NeverCameUp {
             step: step(Tier::Best, "b"),
             last: "loading",
             waited: POLL * 2,
@@ -144,7 +144,7 @@ async fn an_unavailable_or_refusing_inferd_fails_at_once() {
         let fault = warm_all(&steps, &inferd, Duration::from_secs(60), |_| {})
             .await
             .expect_err("unavailable");
-        assert_eq!(fault, WarmFault::Unavailable(step(Tier::Fast, "f")));
+        assert_eq!(fault, WarmError::Unavailable(step(Tier::Fast, "f")));
         assert_eq!(inferd.asked.borrow().len(), 1);
     }
 }

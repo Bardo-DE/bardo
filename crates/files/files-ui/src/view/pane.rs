@@ -2,7 +2,7 @@
 
 use dioxus::prelude::*;
 use files_core::{CloudDrive, DriveState, Location, ViewMode};
-use files_model::{Input, ListFailure, Listing};
+use files_model::{FolderListError, Input, Listing};
 use ui_components::components::chrome::column::model::ColumnExtent;
 use ui_components::components::chrome::column::view::Column;
 use ui_components::components::overlays::empty_state::EmptyForm;
@@ -27,7 +27,7 @@ enum Body {
     /// The folder has nothing to show.
     Empty,
     /// The folder could not be read.
-    Failed(ListFailure),
+    Failed(FolderListError),
     /// The folder is in a cloud drive that cannot show its files: it says why.
     Trouble,
 }

@@ -1,6 +1,6 @@
 //! The tools a registry offers to an outside agent.
 
-use crate::fault::ToolFault;
+use crate::fault::ToolError;
 use action_core::{ToolSchema, tool_schema};
 use action_manifest::{ActionDecl, TARGET_KEY, TargetKind, ValidManifest, is_offered};
 use action_vocab::action_prefix;
@@ -70,15 +70,15 @@ pub struct ToolSpec {
 ///
 /// # Errors
 ///
-/// Returns [`ToolFault::TooLong`] when the name would be longer than 64 characters.
-pub fn tool_name(app: &account_core::AppName, action: &ActionDecl) -> Result<ToolName, ToolFault> {
+/// Returns [`ToolError::TooLong`] when the name would be longer than 64 characters.
+pub fn tool_name(app: &account_core::AppName, action: &ActionDecl) -> Result<ToolName, ToolError> {
     let name = format!(
         "{}__{}",
         action_prefix(app),
         action.name.as_str().replace('.', "_")
     );
     if name.len() > 64 {
-        Err(ToolFault::TooLong)
+        Err(ToolError::TooLong)
     } else {
         Ok(ToolName(name))
     }

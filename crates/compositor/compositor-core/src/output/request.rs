@@ -48,7 +48,7 @@ impl OutputChangeSet {
 
 /// Why a request was refused.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum OutputRefusal {
+pub enum OutputError {
     /// The output is not plugged.
     #[error("no such output")]
     UnknownOutput(OutputKey),
@@ -94,28 +94,28 @@ const MAX_POSITION: i32 = 100_000;
 ///
 /// # Errors
 ///
-/// The [`OutputRefusal`] for a mode the display does not offer, a scale or a position out of
+/// The [`OutputError`] for a mode the display does not offer, a scale or a position out of
 /// range.
 pub fn resolve_change(
     facts: &OutputFacts,
     current: &OutputConfig,
     change: &OutputChangeSet,
-) -> Result<OutputConfig, OutputRefusal> {
+) -> Result<OutputConfig, OutputError> {
     let mode = match change.mode {
         Some(wanted) if facts.modes.contains(&wanted) => wanted,
-        Some(wanted) => return Err(OutputRefusal::ModeNotOffered(wanted)),
+        Some(wanted) => return Err(OutputError::ModeNotOffered(wanted)),
         None => current.mode,
     };
     let scale = match change.scale {
         Some(wanted) if (MIN_SCALE..=MAX_SCALE).contains(&wanted.numerator()) => wanted,
-        Some(wanted) => return Err(OutputRefusal::ScaleOutOfRange(wanted)),
+        Some(wanted) => return Err(OutputError::ScaleOutOfRange(wanted)),
         None => current.scale,
     };
     let position = change.position.unwrap_or(current.position);
     if position.x.unsigned_abs() > MAX_POSITION.unsigned_abs()
         || position.y.unsigned_abs() > MAX_POSITION.unsigned_abs()
     {
-        return Err(OutputRefusal::PositionOutOfRange(position));
+        return Err(OutputError::PositionOutOfRange(position));
     }
     Ok(OutputConfig {
         mode,
@@ -141,11 +141,11 @@ pub fn resolve_change(
 ///
 /// # Errors
 ///
-/// [`OutputRefusal::NoneLeftLit`] when the changes turn the last lit display dark.
+/// [`OutputError::NoneLeftLit`] when the changes turn the last lit display dark.
 pub fn keeps_one_lit(
     outputs: &OutputBook,
     changes: &[(OutputKey, OutputChangeSet)],
-) -> Result<(), OutputRefusal> {
+) -> Result<(), OutputError> {
     let power_after = |key: &OutputKey, now: bool| {
         changes
             .iter()
@@ -163,7 +163,7 @@ pub fn keeps_one_lit(
         .iter()
         .any(|(key, state)| state.config.power && !power_after(key, state.config.power));
     match (lit_after, darkened) {
-        (false, true) => Err(OutputRefusal::NoneLeftLit),
+        (false, true) => Err(OutputError::NoneLeftLit),
         (true, _) | (false, false) => Ok(()),
     }
 }

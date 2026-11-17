@@ -2,7 +2,7 @@
 //! agent to run, the sandbox, the bus and the launcher on it. `bardo-agent` on a terminal and
 //! its service (`serve`) both start from here, so the two hold an agent to the same rules.
 
-use super::fault::AgentFault;
+use super::fault::AgentError;
 use super::host::Wiring;
 use super::places::Places;
 use super::sibling;
@@ -25,21 +25,21 @@ pub struct Allowed {
 }
 
 /// Reads the setting and `agents.toml`. Off, or no file, or a file that is wrong, is a fault.
-pub fn allowed(places: &Places) -> Result<Allowed, AgentFault> {
+pub fn allowed(places: &Places) -> Result<Allowed, AgentError> {
     let loaded = places
         .locator()
         .read(AgentSettings::default(), action_settings::read);
     if !loaded.value.agents {
-        return Err(AgentFault::Permit(
+        return Err(AgentError::Permit(
             "agent.acp.agents is off: no agent program starts".to_owned(),
         ));
     }
     let text = std::fs::read_to_string(places.config_dir().join("actions/agents.toml"))
-        .map_err(|e| AgentFault::NoAgentsFile(std::sync::Arc::new(e)))?;
+        .map_err(|e| AgentError::NoAgentsFile(std::sync::Arc::new(e)))?;
     let agents = places.agents_dir();
     let file = Arc::new(
         AgentsFile::parse_in(&text, Some(&agents))
-            .map_err(|e| AgentFault::Agents(e.to_string()))?,
+            .map_err(|e| AgentError::Agents(e.to_string()))?,
     );
     Ok(Allowed { file })
 }
@@ -56,13 +56,13 @@ pub async fn build(
     bus: BusConnection,
     limits: SandboxLimits,
     places: Places,
-) -> Result<Wiring<DbusAccounts>, AgentFault> {
+) -> Result<Wiring<DbusAccounts>, AgentError> {
     let Allowed { file } = allowed;
     let bwrap = match limits.probe(places.path()) {
         Detected::Bwrap(bwrap) => bwrap,
-        Detected::Missing(why) => return Err(AgentFault::NoSandbox(why)),
+        Detected::Missing(why) => return Err(AgentError::NoSandbox(why)),
     };
-    let forwarder = sibling("bardo-agent-net-forward").ok_or(AgentFault::NoForwarder)?;
+    let forwarder = sibling("bardo-agent-net-forward").ok_or(AgentError::NoForwarder)?;
     // Without the exec stage the agent is held by the sandbox alone: say so, never hide it.
     let enter =
         sibling("bardo-agent-net-enter").filter(|p| std::path::Path::new(p.as_str()).exists());
@@ -73,7 +73,7 @@ pub async fn build(
     }
     let run_dir = places
         .runtime_dir()
-        .ok_or(AgentFault::NoRuntimeDir)?
+        .ok_or(AgentError::NoRuntimeDir)?
         .to_path_buf();
     // The desktop's actions go to the agent as an MCP server it starts itself: the `bardo-actions-mcp`
     // program beside this one, as the bridge to this host. Whether a program is offered it (an
@@ -93,12 +93,12 @@ pub async fn build(
     }
 
     let table = crate::callers::read(&|name: &str| places.var(name))
-        .map_err(|e| AgentFault::Callers(e.to_string()))?;
+        .map_err(|e| AgentError::Callers(e.to_string()))?;
     let callers = Arc::new(Identity::on_system(bus.clone(), table));
     let accounts = Arc::new(
         DbusAccounts::connect(&bus)
             .await
-            .map_err(|e| AgentFault::Bus(e.to_string()))?,
+            .map_err(|e| AgentError::Bus(e.to_string()))?,
     );
     let registry: Registry<ChildProc> = Registry::default();
     let supervisor = Supervisor::new(
@@ -110,7 +110,7 @@ pub async fn build(
     supervisor
         .register()
         .await
-        .map_err(|e| AgentFault::Bus(e.to_string()))?;
+        .map_err(|e| AgentError::Bus(e.to_string()))?;
     tokio::spawn(async move { supervisor.run().await });
 
     if places.data_dir().join("acp-agent-grants.json").exists() {

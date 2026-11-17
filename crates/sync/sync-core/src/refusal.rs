@@ -41,9 +41,9 @@ pub struct RetryAfter(pub u32);
 /// Why a write was refused.
 ///
 /// Two refusals are equal when they are the same kind of refusal with the same values; two
-/// [`PutRefused::Failed`] are equal when they ask for the same wait, whatever caused them.
+/// [`PutError::Failed`] are equal when they ask for the same wait, whatever caused them.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum PutRefused {
+pub enum PutError {
     /// The base is stale.
     #[error("conflict on {:?}", .0.item)]
     Conflict(Conflict),
@@ -74,7 +74,7 @@ pub enum PutRefused {
     Failed(RetryAfter, #[source] Cause),
 }
 
-impl PutRefused {
+impl PutError {
     /// A write that failed because of `source`: try again after `after`.
     pub fn failed(
         after: RetryAfter,
@@ -84,7 +84,7 @@ impl PutRefused {
     }
 }
 
-impl PartialEq for PutRefused {
+impl PartialEq for PutError {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::Conflict(a), Self::Conflict(b)) => a == b,
@@ -101,7 +101,7 @@ impl PartialEq for PutRefused {
     }
 }
 
-impl Eq for PutRefused {}
+impl Eq for PutError {}
 
 /// Why an online document could not be exported as a file.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

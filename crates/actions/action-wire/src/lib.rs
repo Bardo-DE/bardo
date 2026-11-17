@@ -25,7 +25,7 @@ pub use caller::{CallerId, is_terminal_scope};
 pub use member::Member;
 pub use reply::IntentsReply;
 pub use request::IntentsRequest;
-pub use started::{NotATerminalScope, StartedFrom, TerminalScope};
+pub use started::{NotATerminalScopeError, StartedFrom, TerminalScope};
 pub use summon::{SummonAnswer, SummonOrigin, SummonSerial, VoiceIntent};
 pub use task::{
     LedgerStep, SessionOpen, SessionOpened, TaskKind, TaskLedger, TaskStart, close, skeleton_of,

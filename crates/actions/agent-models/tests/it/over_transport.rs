@@ -65,11 +65,13 @@ async fn a_model_over_a_transport_chats_and_says_who_answers() {
 
 #[tokio::test]
 async fn a_refusal_and_a_silence_are_errors_the_cascade_turns_into_asking() {
-    let refused = model(vec![Say::Refuse(inference_core::InferRefusal::Unavailable)]);
+    let refused = model(vec![Say::Refuse(
+        inference_core::InferRefusedError::Unavailable,
+    )]);
     assert_eq!(
         refused.chat(&chat(), &mut Quiet).await.err(),
         Some(TurnError::Refused(
-            inference_core::InferRefusal::Unavailable
+            inference_core::InferRefusedError::Unavailable
         ))
     );
     let silent = model(vec![]);

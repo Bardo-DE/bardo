@@ -11,7 +11,7 @@ fn the_fake_backend_answers_each_turn_from_its_script_and_ends_it() {
     ]);
     assert_eq!(
         block_on(backend.turn(turn(1, "x"))),
-        Err(BackendFault::NotRunning)
+        Err(BackendError::NotRunning)
     );
     block_on(backend.start(StartSession {
         session: session("s-1"),
@@ -23,7 +23,7 @@ fn the_fake_backend_answers_each_turn_from_its_script_and_ends_it() {
     block_on(backend.turn(turn(1, "hello"))).expect("turn");
     assert_eq!(
         block_on(backend.turn(turn(2, "again"))),
-        Err(BackendFault::Busy)
+        Err(BackendError::Busy)
     );
     let mut events = Vec::new();
     while let Some(e) = block_on(backend.next_event()) {
@@ -62,7 +62,7 @@ fn cancel_ends_the_turn_cancelled_and_close_stops_it() {
     block_on(backend.close());
     assert_eq!(
         block_on(backend.turn(turn(2, "x"))),
-        Err(BackendFault::NotRunning)
+        Err(BackendError::NotRunning)
     );
 }
 

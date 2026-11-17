@@ -15,7 +15,7 @@ pub const STATUS_CAP: u64 = 16 * 1024;
 
 /// Why the process does not show what a real unit's process shows.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum ProcessFault {
+pub enum ProcessError {
     /// Another process traces it.
     #[error("another process is tracing it")]
     Traced,
@@ -39,17 +39,17 @@ pub fn tracer_of(status: &str) -> Option<u32> {
 }
 
 /// Checks the process `pid` through `fs`: nobody is tracing it.
-pub fn check<P: ProcFs>(fs: &P, pid: Pid) -> Result<(), ProcessFault> {
+pub fn check<P: ProcFs>(fs: &P, pid: Pid) -> Result<(), ProcessError> {
     let status = fs
         .read_capped(
             &fs.proc_root().join(pid.to_string()).join("status"),
             STATUS_CAP,
         )
-        .map_err(|e| ProcessFault::Read(std::sync::Arc::new(e)))?;
-    let status = String::from_utf8(status).map_err(ProcessFault::NotText)?;
+        .map_err(|e| ProcessError::Read(std::sync::Arc::new(e)))?;
+    let status = String::from_utf8(status).map_err(ProcessError::NotText)?;
     match tracer_of(&status) {
         Some(0) => Ok(()),
-        Some(_) => Err(ProcessFault::Traced),
-        None => Err(ProcessFault::Unreadable("its status")),
+        Some(_) => Err(ProcessError::Traced),
+        None => Err(ProcessError::Unreadable("its status")),
     }
 }

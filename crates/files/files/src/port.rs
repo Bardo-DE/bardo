@@ -5,12 +5,12 @@
 use std::path::{Path, PathBuf};
 
 use files_core::{Bring, FileName, FolderPath, ItemRef, Location};
-use files_desktop::{Ask, Refusal, Reply, Undoing, Window};
+use files_desktop::{Ask, Reply, Undoing, Window, WindowError};
 use files_model::Input;
 use files_ui::{Query, ReadError, Reading, Request, RequestSender};
 
 /// What the window is to do with a path an agent named.
-pub fn open_input(path: &Path) -> Result<Input, Refusal> {
+pub fn open_input(path: &Path) -> Result<Input, WindowError> {
     let folder = FolderPath::new(path).map_err(not_there)?;
     let meta = std::fs::metadata(path).map_err(not_there)?;
     if meta.is_dir() {
@@ -31,13 +31,13 @@ pub fn open_input(path: &Path) -> Result<Input, Refusal> {
 }
 
 /// What the agent is told about a path that cannot be used; what went wrong goes to the log.
-fn not_there(error: impl std::fmt::Display) -> Refusal {
+fn not_there(error: impl std::fmt::Display) -> WindowError {
     tracing::debug!(%error, "a path an agent named cannot be used");
-    Refusal::Failed("That file or folder isn\u{2019}t there.".to_owned())
+    WindowError::Failed("That file or folder isn\u{2019}t there.".to_owned())
 }
 
-fn closed(_: ReadError) -> Refusal {
-    Refusal::Closed
+fn closed(_: ReadError) -> WindowError {
+    WindowError::Closed
 }
 
 fn paths_of(items: &[ItemRef]) -> Vec<PathBuf> {
@@ -56,7 +56,7 @@ impl Port {
         Port { sender }
     }
 
-    async fn read(&self, query: Query) -> Result<Reading, Refusal> {
+    async fn read(&self, query: Query) -> Result<Reading, WindowError> {
         self.sender
             .ask(query)
             .map_err(closed)?
@@ -71,7 +71,7 @@ impl Port {
     }
 
     /// Takes back the newest change, if it is the one `undoing` describes.
-    async fn undo(&self, undoing: Undoing) -> Result<Reply, Refusal> {
+    async fn undo(&self, undoing: Undoing) -> Result<Reply, WindowError> {
         let next = match self.read(Query::NextUndo).await? {
             Reading::Undo(next) => next,
             Reading::Selection(_) | Reading::Place(_) => None,
@@ -80,11 +80,11 @@ impl Port {
             Some(next) if next.kind == undoing.kind && next.count == undoing.count => {
                 Ok(self.quietly(Input::Undo))
             }
-            Some(_) | None => Err(Refusal::Gone),
+            Some(_) | None => Err(WindowError::Gone),
         }
     }
 
-    async fn carry_out(&self, ask: Ask) -> Result<Reply, Refusal> {
+    async fn carry_out(&self, ask: Ask) -> Result<Reply, WindowError> {
         match ask {
             Ask::Open(path) => {
                 let input = open_input(&path)?;
@@ -111,11 +111,11 @@ impl Port {
             }
             Ask::Selection => match self.read(Query::Selection).await? {
                 Reading::Selection(items) => Ok(Reply::Items(paths_of(&items))),
-                Reading::Place(_) | Reading::Undo(_) => Err(Refusal::Closed),
+                Reading::Place(_) | Reading::Undo(_) => Err(WindowError::Closed),
             },
             Ask::CurrentFolder => match self.read(Query::CurrentFolder).await? {
                 Reading::Place(place) => Ok(Reply::Place(place)),
-                Reading::Selection(_) | Reading::Undo(_) => Err(Refusal::Closed),
+                Reading::Selection(_) | Reading::Undo(_) => Err(WindowError::Closed),
             },
             Ask::Undo(undoing) => self.undo(undoing).await,
         }
@@ -123,7 +123,7 @@ impl Port {
 }
 
 impl Window for Port {
-    fn ask(&self, ask: Ask) -> impl Future<Output = Result<Reply, Refusal>> + Send {
+    fn ask(&self, ask: Ask) -> impl Future<Output = Result<Reply, WindowError>> + Send {
         let port = self.clone();
         async move { port.carry_out(ask).await }
     }

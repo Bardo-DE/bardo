@@ -4,7 +4,7 @@
 use super::sleep::SleepLink;
 use super::udev::DevicePath;
 use super::vt::VtNumber;
-use crate::session::SessionFault;
+use crate::session::SessionError;
 use std::os::fd::OwnedFd;
 
 /// A change in who holds the seat.
@@ -28,15 +28,15 @@ pub trait TtySession: std::fmt::Debug {
     ///
     /// # Errors
     ///
-    /// Returns [`SessionFault`] when the session is revoked or refuses to open the device.
-    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionFault>;
+    /// Returns [`SessionError`] when the session is revoked or refuses to open the device.
+    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionError>;
 
     /// Asks to switch to `vt`.
     ///
     /// # Errors
     ///
-    /// Returns [`SessionFault`] when the session refuses the switch.
-    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault>;
+    /// Returns [`SessionError`] when the session refuses the switch.
+    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionError>;
 
     /// The seat changes since the last call: another session taking it and giving it back.
     fn notes(&mut self) -> Vec<SessionNote>;

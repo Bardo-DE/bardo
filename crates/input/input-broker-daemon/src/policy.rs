@@ -26,7 +26,7 @@ pub const KEYMAP_CGROUP: &str = "/system.slice/bardo-key-remap.service";
 
 /// Why a caller may not have a device.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum Refusal {
+pub enum ControlGroupError {
     /// The caller is not a listed desktop program, or was not proven to be one.
     #[error("not a listed desktop program")]
     Unlisted,
@@ -57,7 +57,7 @@ pub trait Admission {
     /// # Errors
     ///
     /// Returns a [`Refusal`] when the caller may not have a device of `kind` now.
-    fn admit(&self, kind: Kind) -> Result<(), Refusal>;
+    fn admit(&self, kind: Kind) -> Result<(), ControlGroupError>;
 }
 
 /// The admission of a real caller, judged against the seat as it is at each request.
@@ -70,7 +70,7 @@ pub struct CallerAdmission<'a, S> {
 }
 
 impl<S: SeatSource> Admission for CallerAdmission<'_, S> {
-    fn admit(&self, kind: Kind) -> Result<(), Refusal> {
+    fn admit(&self, kind: Kind) -> Result<(), ControlGroupError> {
         authorise(kind, self.caller, self.seat.active_uid())
     }
 }
@@ -80,11 +80,11 @@ impl<S: SeatSource> Admission for CallerAdmission<'_, S> {
 pub struct AllowKinds(pub Vec<Kind>);
 
 impl Admission for AllowKinds {
-    fn admit(&self, kind: Kind) -> Result<(), Refusal> {
+    fn admit(&self, kind: Kind) -> Result<(), ControlGroupError> {
         if self.0.contains(&kind) {
             Ok(())
         } else {
-            Err(Refusal::Unlisted)
+            Err(ControlGroupError::Unlisted)
         }
     }
 }
@@ -95,28 +95,28 @@ impl Admission for AllowKinds {
 ///
 /// Returns a [`Refusal`] when `caller` is not the daemon that makes `kind` or the active user is
 /// not the one `seat` names.
-pub fn authorise(kind: Kind, caller: &Caller, seat: ActiveUid) -> Result<(), Refusal> {
+pub fn authorise(kind: Kind, caller: &Caller, seat: ActiveUid) -> Result<(), ControlGroupError> {
     let (role, cgroup) = match kind.maker() {
         Maker::PadDaemon => (PAD_DAEMON, PAD_CGROUP),
         Maker::KeymapDaemon => (KEYMAP_DAEMON, KEYMAP_CGROUP),
     };
     match &caller.credential {
         Some(Credential { role: have, .. }) if *have != role => {
-            return Err(Refusal::WrongRole {
+            return Err(ControlGroupError::WrongRole {
                 have: have.to_string(),
             });
         }
         Some(Credential { proof, .. }) if *proof != Proof::Full => {
-            return Err(Refusal::TooWeak);
+            return Err(ControlGroupError::TooWeak);
         }
         Some(_) => {}
-        None => return Err(Refusal::Unlisted),
+        None => return Err(ControlGroupError::Unlisted),
     }
     if seat.0 == Some(caller.uid) {
-        return Err(Refusal::WrongUser);
+        return Err(ControlGroupError::WrongUser);
     }
     if caller.cgroup.as_str() != cgroup {
-        return Err(Refusal::WrongPlace);
+        return Err(ControlGroupError::WrongPlace);
     }
     Ok(())
 }

@@ -36,7 +36,7 @@ fn open_policy() -> Policy {
     clippy::unnecessary_wraps,
     reason = "the expected answer of a case is a `Result`, and other cases are refusals"
 )]
-fn picked(name: &str) -> Result<AccountId, InferRefusal> {
+fn picked(name: &str) -> Result<AccountId, InferRefusedError> {
     Ok(AccountId::parse(name).expect("id"))
 }
 
@@ -45,7 +45,7 @@ struct Case {
     class: DataClass,
     policy: Policy,
     candidates: Vec<RouteCandidate>,
-    expected: Result<AccountId, InferRefusal>,
+    expected: Result<AccountId, InferRefusedError>,
 }
 
 #[expect(
@@ -96,7 +96,7 @@ fn cases() -> Vec<Case> {
             class: DataClass::Public,
             policy: Policy::proposed(),
             candidates: vec![cloud("a")],
-            expected: Err(InferRefusal::Unavailable),
+            expected: Err(InferRefusedError::Unavailable),
         },
         Case {
             name: "local-only mail runs on ollama",
@@ -113,7 +113,7 @@ fn cases() -> Vec<Case> {
                 ..Policy::proposed()
             },
             candidates: vec![cloud("a")],
-            expected: Err(InferRefusal::RequiresCloud(DataClass::Mail)),
+            expected: Err(InferRefusedError::RequiresCloud(DataClass::Mail)),
         },
         Case {
             name: "a local-network floor admits a peer",
@@ -127,7 +127,7 @@ fn cases() -> Vec<Case> {
             class: DataClass::Notes,
             policy: peer_floor,
             candidates: vec![cloud("a")],
-            expected: Err(InferRefusal::RequiresCloud(DataClass::Notes)),
+            expected: Err(InferRefusedError::RequiresCloud(DataClass::Notes)),
         },
         Case {
             name: "public goes to the cloud when local-only is off",
@@ -162,28 +162,28 @@ fn cases() -> Vec<Case> {
             class: DataClass::Public,
             policy: open_policy(),
             candidates: vec![stopped],
-            expected: Err(InferRefusal::OverBudget),
+            expected: Err(InferRefusedError::OverBudget),
         },
         Case {
             name: "an ungranted model needs a grant",
             class: DataClass::Public,
             policy: open_policy(),
             candidates: vec![asking],
-            expected: Err(InferRefusal::NeedsGrant),
+            expected: Err(InferRefusedError::NeedsGrant),
         },
         Case {
             name: "a refused model is denied",
             class: DataClass::Public,
             policy: open_policy(),
             candidates: vec![refused],
-            expected: Err(InferRefusal::Denied),
+            expected: Err(InferRefusedError::Denied),
         },
         Case {
             name: "nothing at all is unavailable",
             class: DataClass::Public,
             policy: open_policy(),
             candidates: vec![],
-            expected: Err(InferRefusal::Unavailable),
+            expected: Err(InferRefusedError::Unavailable),
         },
     ]
 }
@@ -223,13 +223,13 @@ fn legacy_route(
     ask: RouteAsk,
     candidates: &[RouteCandidate],
     policy: &Policy,
-) -> Result<Chosen, InferRefusal> {
+) -> Result<Chosen, InferRefusedError> {
     let reachable: Vec<&RouteCandidate> = candidates
         .iter()
         .filter(|c| !policy.local_only || !is_cloud(&c.locality))
         .collect();
     if reachable.is_empty() {
-        return Err(InferRefusal::Unavailable);
+        return Err(InferRefusedError::Unavailable);
     }
     let floor = policy.floor(ask.class);
     let admitted: Vec<&RouteCandidate> = reachable
@@ -237,7 +237,7 @@ fn legacy_route(
         .filter(|c| floor.admits(&c.locality))
         .collect();
     if admitted.is_empty() {
-        return Err(InferRefusal::RequiresCloud(ask.class));
+        return Err(InferRefusedError::RequiresCloud(ask.class));
     }
     let permitted: Vec<&RouteCandidate> = admitted
         .iter()
@@ -247,9 +247,9 @@ fn legacy_route(
     if permitted.is_empty() {
         let askable = admitted.iter().any(|c| c.permission == Permit::Askable);
         return Err(if askable {
-            InferRefusal::NeedsGrant
+            InferRefusedError::NeedsGrant
         } else {
-            InferRefusal::Denied
+            InferRefusedError::Denied
         });
     }
     permitted
@@ -261,7 +261,7 @@ fn legacy_route(
             model: c.model.clone(),
             spend: c.spend,
         })
-        .ok_or(InferRefusal::OverBudget)
+        .ok_or(InferRefusedError::OverBudget)
 }
 
 /// Every combination of locality, tier choice, consent and spend verdict, each with its own

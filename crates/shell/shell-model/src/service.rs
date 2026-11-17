@@ -23,7 +23,7 @@ pub trait Service: Sized + 'static {
 /// The service has stopped: its commands go nowhere.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
 #[error("the service has stopped")]
-pub struct Gone;
+pub struct ServiceGoneError;
 
 /// Sends commands of type `C` to one running service. Cheap to clone; every surface holds one
 /// through its `Services`.
@@ -56,8 +56,8 @@ impl<C> Control<C> {
         clippy::map_err_ignore,
         reason = "the send error only hands the command back; `Gone` says all there is to say"
     )]
-    pub fn send(&self, command: C) -> Result<(), Gone> {
-        self.tx.send(command).map_err(|_| Gone)
+    pub fn send(&self, command: C) -> Result<(), ServiceGoneError> {
+        self.tx.send(command).map_err(|_| ServiceGoneError)
     }
 
     /// Resolves once the service's receiver has been dropped: the service has stopped.
@@ -122,7 +122,7 @@ impl<S: Service> Handle<S> {
 
 #[cfg(test)]
 mod tests {
-    use super::{Control, Gone};
+    use super::{Control, ServiceGoneError};
 
     #[test]
     fn a_command_reaches_the_service_until_it_stops() {
@@ -133,6 +133,6 @@ mod tests {
         assert_eq!(rx.try_recv().ok(), Some(1));
         assert_eq!(rx.try_recv().ok(), Some(2));
         drop(rx);
-        assert_eq!(control.send(3), Err(Gone));
+        assert_eq!(control.send(3), Err(ServiceGoneError));
     }
 }

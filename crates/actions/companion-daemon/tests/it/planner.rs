@@ -6,7 +6,7 @@ use crate::support::infer::{Say, call, words};
 use crate::support::planner_view::{catalogue, planner, view};
 use account_core::AppName;
 use action_core::*;
-use action_manifest::{ArgSink, ArgsFault, ParamDecl, ParamNeed, Why};
+use action_manifest::{ArgError, ArgSink, ArgsError, ParamDecl, ParamNeed};
 use action_vocab::{
     CharCount, ChoiceDecl, ChoiceId, CivilDate, Handle, LabelText, Origin, ParamName, ParamType,
     Seconds, TargetValue, Value,
@@ -18,10 +18,10 @@ use provenance::{ActionName, EntityId, EntityKey, EntityKind, Integrity, Source}
 use serde_json::json;
 
 /// A value outside what the parameter declares.
-fn wrong(name: &str) -> ArgsFault {
-    ArgsFault::Wrong {
+fn wrong(name: &str) -> ArgsError {
+    ArgsError::Wrong {
         param: ParamName::parse(name).expect("param"),
-        why: action_manifest::Why::Range,
+        why: action_manifest::ArgError::Range,
     }
 }
 
@@ -98,7 +98,7 @@ fn tool_with(ty: ParamType, need: ParamNeed) -> CatalogueTool {
     tool
 }
 
-fn read(ty: ParamType, json: &serde_json::Value) -> Result<Value, ArgsFault> {
+fn read(ty: ParamType, json: &serde_json::Value) -> Result<Value, ArgsError> {
     let tool = tool_with(ty, ParamNeed::Required);
     read_call(&tool, &json!({ "p": json })).map(|c| c.args[&param("p")].value.clone())
 }
@@ -224,7 +224,7 @@ fn a_call_is_read_whole_or_not_at_all() {
     let optional = tool_with(ParamType::Date, ParamNeed::Optional);
     assert_eq!(
         read_call(&required, &json!({})),
-        Err(ArgsFault::Missing(param("p")))
+        Err(ArgsError::Missing(param("p")))
     );
     assert!(
         read_call(&optional, &json!({}))
@@ -234,11 +234,11 @@ fn a_call_is_read_whole_or_not_at_all() {
     );
     assert_eq!(
         read_call(&required, &json!({ "q": 1 })),
-        Err(ArgsFault::Unknown("q".into()))
+        Err(ArgsError::Unknown("q".into()))
     );
     assert_eq!(
         read_call(&required, &json!(["x"])),
-        Err(ArgsFault::NotAnObject)
+        Err(ArgsError::NotAnObject)
     );
     // Whatever the model passes is its own, untrusted: the router derives the real labels.
     let call = read_call(
@@ -418,12 +418,12 @@ async fn a_reply_is_read_into_calls_a_read_a_question_an_end_or_words() {
     for why in ["nothing", "a cut-off reply"] {
         assert_eq!(
             planner.plan(&view).await,
-            Err(PlanFault::Unreadable),
+            Err(PlanError::Unreadable),
             "{why}"
         );
     }
     // The script is spent: no model to ask.
-    assert_eq!(planner.plan(&view).await, Err(PlanFault::Unavailable));
+    assert_eq!(planner.plan(&view).await, Err(PlanError::Unavailable));
 }
 
 fn thread_handle() -> HandleCard {
@@ -527,18 +527,24 @@ async fn a_bardo_related_that_cannot_be_a_call_is_told_what_was_wrong() {
     let mut v = view(catalogue().cards());
     v.handles = vec![thread_handle()];
     let fault = |why| Ok(ModelOutput::Unread(ReplyFault::Args(why)));
-    let wrong = |name: &str, why| ArgsFault::Wrong {
+    let wrong = |name: &str, why| ArgsError::Wrong {
         param: param(name),
         why,
     };
-    assert_eq!(planner.plan(&v).await, fault(wrong("of", Why::Type)));
-    assert_eq!(planner.plan(&v).await, fault(wrong("relation", Why::Range)));
+    assert_eq!(planner.plan(&v).await, fault(wrong("of", ArgError::Type)));
     assert_eq!(
         planner.plan(&v).await,
-        fault(ArgsFault::Missing(param("relation")))
+        fault(wrong("relation", ArgError::Range))
     );
-    assert_eq!(planner.plan(&v).await, fault(wrong("of", Why::Type)));
-    assert_eq!(planner.plan(&v).await, fault(wrong("relation", Why::Range)));
+    assert_eq!(
+        planner.plan(&v).await,
+        fault(ArgsError::Missing(param("relation")))
+    );
+    assert_eq!(planner.plan(&v).await, fault(wrong("of", ArgError::Type)));
+    assert_eq!(
+        planner.plan(&v).await,
+        fault(wrong("relation", ArgError::Range))
+    );
 }
 
 #[tokio::test]
@@ -604,7 +610,7 @@ async fn bardo_finish_shows_text_handles_of_the_view_and_refuses_the_rest() {
         },
     ];
     let unread = |why| {
-        ModelOutput::Unread(ReplyFault::Args(ArgsFault::Wrong {
+        ModelOutput::Unread(ReplyFault::Args(ArgsError::Wrong {
             param: ParamName::parse("show").expect("param"),
             why,
         }))
@@ -621,15 +627,15 @@ async fn bardo_finish_shows_text_handles_of_the_view_and_refuses_the_rest() {
         (ModelOutput::Finish, vec![Handle(2), Handle(1)])
     );
     for (why, fault) in [
-        ("unknown", action_manifest::Why::Range),
-        ("not text", action_manifest::Why::Range),
-        ("not a list", action_manifest::Why::Type),
+        ("unknown", action_manifest::ArgError::Range),
+        ("not text", action_manifest::ArgError::Range),
+        ("not a list", action_manifest::ArgError::Type),
     ] {
         let reply = planner.converse(&view).await.expect(why);
         assert_eq!((reply.then, reply.show), (unread(fault), vec![]), "{why}");
     }
     let many = planner.converse(&view).await.expect("too many");
-    assert_eq!(many.then, unread(action_manifest::Why::Range));
+    assert_eq!(many.then, unread(action_manifest::ArgError::Range));
     let none = planner.converse(&view).await.expect("none");
     assert_eq!((none.then, none.show), (ModelOutput::Finish, vec![]));
 }

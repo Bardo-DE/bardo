@@ -7,7 +7,7 @@ use super::focus_origin;
 use super::hold::{Hold, confined_focus, hold_of, settled};
 use super::{GestureDelivery, PointerDelivery, SurfaceAt};
 use crate::convert::serial_to;
-use crate::states::WaylandFault;
+use crate::states::WaylandError;
 use compositor_core::InputSerial;
 use compositor_core::input::{AxisFrame, GestureStep, PinchDelta};
 use compositor_core::time::Mono;
@@ -87,17 +87,17 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_pointer<D>(
     seat: &Seat<D>,
     state: &mut D,
     delivery: PointerDelivery,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: SeatHandler + PointerConstraintsHandler + 'static,
     D::PointerFocus: From<WlSurface> + Into<Option<WlSurface>> + Clone + PartialEq,
 {
-    let pointer = seat.get_pointer().ok_or(WaylandFault::SurfaceGone)?;
+    let pointer = seat.get_pointer().ok_or(WaylandError::SurfaceGone)?;
     match delivery {
         PointerDelivery::Motion {
             focus,
@@ -189,18 +189,18 @@ fn relative_of<F: From<WlSurface>>(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_refocus<D>(
     seat: &Seat<D>,
     state: &mut D,
     focus: Option<SurfaceAt>,
     time: Mono,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: SeatHandler + PointerConstraintsHandler + 'static,
     D::PointerFocus: From<WlSurface> + Into<Option<WlSurface>> + Clone + PartialEq,
 {
-    let pointer = seat.get_pointer().ok_or(WaylandFault::SurfaceGone)?;
+    let pointer = seat.get_pointer().ok_or(WaylandError::SurfaceGone)?;
     let current: Option<WlSurface> = pointer.current_focus().and_then(Into::into);
     let wanted = focus.as_ref().map(|at| &at.surface);
     if current.as_ref() == wanted {
@@ -231,17 +231,17 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_axis<D>(
     seat: &Seat<D>,
     state: &mut D,
     frame: AxisFrame,
     time: Mono,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: SeatHandler + 'static,
 {
-    let pointer = seat.get_pointer().ok_or(WaylandFault::SurfaceGone)?;
+    let pointer = seat.get_pointer().ok_or(WaylandError::SurfaceGone)?;
     pointer.axis(state, super::edge::axis_frame_of(frame, time));
     pointer.frame(state);
     Ok(())
@@ -255,18 +255,18 @@ fn fingers_of(fingers: u8) -> u32 {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_gesture<D>(
     seat: &Seat<D>,
     state: &mut D,
     gesture: GestureDelivery,
     serial: InputSerial,
     time: Mono,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: SeatHandler + 'static,
 {
-    let pointer = seat.get_pointer().ok_or(WaylandFault::SurfaceGone)?;
+    let pointer = seat.get_pointer().ok_or(WaylandError::SurfaceGone)?;
     let (serial, time) = (serial_to(serial), time_of(time));
     match gesture {
         GestureDelivery::Swipe(GestureStep::Begin { fingers }) => pointer.gesture_swipe_begin(

@@ -2,7 +2,7 @@
 
 use super::{Evidence, Flow, FlowReport, UndoCheck, judge, setup, transcript};
 use crate::hostile::at_rest;
-use crate::warm::WarmFault;
+use crate::warm::WarmError;
 use crate::warm_bus::warm_world;
 use action_accept::confirm::ByEffect;
 use action_accept::drive::Launcher;
@@ -85,7 +85,7 @@ pub(crate) async fn observe(
     keys_home: Option<&KeysHome>,
     patience: Duration,
     stop: impl Fn(&AnswerWire) -> bool,
-) -> Result<Played, WarmFault> {
+) -> Result<Played, WarmError> {
     let options = Options {
         keep_in,
         tap: true,

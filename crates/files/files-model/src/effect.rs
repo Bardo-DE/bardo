@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use crate::app::AppPick;
 use files_core::{
-    FileName, FolderPath, FolderPrefs, ItemRef, Location, OnlineUrl, OpFailure, OpPlan, Resolution,
+    FileName, FolderPath, FolderPrefs, ItemRef, Location, OnlineUrl, OpError, OpPlan, Resolution,
     Summary, VolumeId, VolumeName, VolumeTrouble,
 };
 
@@ -85,7 +85,7 @@ pub enum Effect {
     /// Stop the change under way.
     Cancel,
     /// Tell the person a change failed.
-    Tell(OpFailure),
+    Tell(OpError),
     /// Tell the person a change was made that they can undo (a move to the Trash).
     Announce(Summary),
     /// Open (mount) this disk and answer with `Input::Mounted`.

@@ -2,7 +2,7 @@
 
 use crate::client::ClearedClients;
 use crate::presentation::Presented;
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use crate::watch_mark;
 use compositor_core::{Event, OutputKey};
 use smithay::reexports::wayland_protocols::wp::fifo::v1::server::wp_fifo_manager_v1::WpFifoManagerV1;
@@ -84,12 +84,12 @@ pub fn on_barrier(part: &mut FifoPart, surface: &WlSurface) -> Vec<Event> {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_presented(
     part: &mut FifoPart,
     output: &OutputKey,
     presented: Presented,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let _ = (output, presented);
     for waiting in std::mem::take(&mut part.waiting) {
         waiting.barrier.signal();

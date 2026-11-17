@@ -158,7 +158,7 @@ async fn a_stale_base_is_a_conflict_value_and_nothing_is_overwritten<H: Harness>
         base: BaseVersion::At(first),
         remote: RemoteSide::Changed(second),
     };
-    assert_eq!(refused, Err(PutRefused::Conflict(expected)));
+    assert_eq!(refused, Err(PutError::Conflict(expected)));
     assert_eq!(
         replica.fetch(&id, ByteRange::Whole).await,
         Ok(Blob(b"two".to_vec()))
@@ -180,7 +180,7 @@ async fn creating_over_an_existing_path_is_a_conflict<H: Harness>() {
         base: BaseVersion::Absent,
         remote: RemoteSide::Exists(id, version),
     };
-    assert_eq!(refused, Err(PutRefused::Conflict(expected)));
+    assert_eq!(refused, Err(PutError::Conflict(expected)));
 }
 
 async fn a_removal_leaves_a_tombstone_and_refuses_later_writes_on_the_old_base<H: Harness>() {
@@ -210,7 +210,7 @@ async fn a_removal_leaves_a_tombstone_and_refuses_later_writes_on_the_old_base<H
         base: BaseVersion::At(version),
         remote: RemoteSide::Deleted(gone),
     };
-    assert_eq!(refused, Err(PutRefused::Conflict(expected)));
+    assert_eq!(refused, Err(PutError::Conflict(expected)));
     assert_eq!(
         replica.fetch(&id, ByteRange::Whole).await,
         Err(ReplicaError::Gone)
@@ -336,7 +336,7 @@ async fn a_write_past_the_limit_is_refused_and_a_rewrite_counts_only_the_differe
         replica
             .put(new_item("b.jpg", b"12345"), BaseVersion::Absent)
             .await,
-        Err(PutRefused::Quota)
+        Err(PutError::Quota)
     );
     // Replacing the 6 bytes with 9 fits: 9 <= 10, though 6 + 9 would not.
     replica

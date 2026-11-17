@@ -5,7 +5,7 @@ use super::*;
 use crate::testing::{ADDRESS, doc, name, server};
 use account_core::Family;
 
-fn found(xml: &str) -> Result<Found, DiscoverFault> {
+fn found(xml: &str) -> Result<Found, DiscoverError> {
     parse_autoconfig(xml, ADDRESS)
 }
 
@@ -126,7 +126,7 @@ fn pop3_is_never_chosen() {
         server("smtp", "smtp.example.test", 465, "SSL", "", &[]),
     ]
     .concat()));
-    assert_eq!(none, Err(DiscoverFault::NoServers));
+    assert_eq!(none, Err(DiscoverError::NoServers));
 }
 
 #[test]
@@ -156,17 +156,17 @@ fn plain_servers_are_skipped_even_when_they_are_the_only_ones() {
         server("smtp", "smtp.example.test", 465, "SSL", "", &[]),
     ]
     .concat());
-    assert_eq!(found(&plain), Err(DiscoverFault::NoServers));
+    assert_eq!(found(&plain), Err(DiscoverError::NoServers));
     let missing_socket = doc(
         "<incomingServer type=\"imap\"><hostname>h.example.test</hostname><port>143</port></incomingServer>",
     );
-    assert_eq!(found(&missing_socket), Err(DiscoverFault::NoServers));
+    assert_eq!(found(&missing_socket), Err(DiscoverError::NoServers));
 }
 
 #[test]
 fn a_side_with_no_server_at_all_is_no_servers() {
     let only_imap = doc(&server("imap", "i.example.test", 993, "SSL", "", &[]));
-    assert_eq!(found(&only_imap), Err(DiscoverFault::NoServers));
+    assert_eq!(found(&only_imap), Err(DiscoverError::NoServers));
 }
 
 #[test]
@@ -183,7 +183,7 @@ fn a_challenge_response_only_server_is_not_one_this_can_sign_in_to() {
         server("smtp", "s.example.test", 465, "SSL", "", &[]),
     ]
     .concat());
-    assert_eq!(found(&xml), Err(DiscoverFault::NoServers));
+    assert_eq!(found(&xml), Err(DiscoverError::NoServers));
 }
 
 #[test]
@@ -193,7 +193,7 @@ fn an_oauth_only_server_is_left_to_the_providers_that_know_it() {
         server("smtp", "s.example.test", 465, "SSL", "", &["OAuth2"]),
     ]
     .concat());
-    assert_eq!(found(&xml), Err(DiscoverFault::NoServers));
+    assert_eq!(found(&xml), Err(DiscoverError::NoServers));
 }
 
 #[test]
@@ -240,7 +240,7 @@ fn a_hostname_that_cannot_be_an_endpoint_is_skipped_for_the_next() {
 #[test]
 fn unreadable_documents_are_unreadable() {
     for text in ["", "<html/>", "<clientConfig/>", "not xml"] {
-        assert_eq!(found(text), Err(DiscoverFault::Unreadable), "{text:?}");
+        assert_eq!(found(text), Err(DiscoverError::Unreadable), "{text:?}");
     }
 }
 

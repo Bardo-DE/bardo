@@ -17,7 +17,7 @@
 //! administrator's password.
 
 use crate::problem::Problem;
-use caller_identity_dbus::caller_identity_core::{Proof, Refused, Requirement, Table, roles};
+use caller_identity_dbus::caller_identity_core::{NotHeldError, Proof, Requirement, Table, roles};
 use caller_identity_dbus::caller_identity_linux::RealProc;
 use caller_identity_dbus::{BusPeers, ManagerCheck, Offload};
 
@@ -122,7 +122,7 @@ impl Gate {
 }
 
 /// Records a refusal (who asked and why not, never shown to the caller) and gives the sentence.
-fn refused(sender: Option<&str>, why: Refused, otherwise: Problem) -> Problem {
+fn refused(sender: Option<&str>, why: NotHeldError, otherwise: Problem) -> Problem {
     tracing::warn!(
         sender = sender.unwrap_or("none"),
         "a request was refused: {why}"

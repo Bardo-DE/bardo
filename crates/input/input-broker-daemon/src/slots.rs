@@ -53,7 +53,7 @@ impl Bucket {
 /// No slot is free in the pool.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("no free connection slot")]
-pub struct NoSlot;
+pub struct NoSlotError;
 
 #[derive(Debug, Default)]
 struct Counts {
@@ -76,13 +76,13 @@ impl Slots {
     ///
     /// # Errors
     ///
-    /// Returns [`NoSlot`] when `bucket` has no slot left.
-    pub fn take(&self, bucket: Bucket) -> Result<Slot, NoSlot> {
+    /// Returns [`NoSlotError`] when `bucket` has no slot left.
+    pub fn take(&self, bucket: Bucket) -> Result<Slot, NoSlotError> {
         let mut counts = self.counts();
         match bucket {
             Bucket::Reserved(client) => {
                 if counts.reserved.count(client) >= MAX_RESERVED_PER_CLIENT {
-                    return Err(NoSlot);
+                    return Err(NoSlotError);
                 }
                 counts.reserved.add(client);
             }
@@ -90,7 +90,7 @@ impl Slots {
                 if counts.strangers.count(uid) >= MAX_CONNECTIONS_PER_USER
                     || counts.strangers.total() >= MAX_CONNECTIONS
                 {
-                    return Err(NoSlot);
+                    return Err(NoSlotError);
                 }
                 counts.strangers.add(uid);
             }

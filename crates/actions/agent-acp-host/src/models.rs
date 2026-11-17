@@ -18,19 +18,19 @@ pub struct ModelId(String);
 /// Why a model id was not accepted.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("a model id is 1 to 128 characters without spaces or control characters")]
-pub struct ModelIdRefused;
+pub struct ModelIdError;
 
 impl ModelId {
     /// A model id: printable, no whitespace.
     ///
     /// # Errors
-    /// Returns [`ModelIdRefused`] when `text` is empty, over 128 characters, or has whitespace or
+    /// Returns [`ModelIdError`] when `text` is empty, over 128 characters, or has whitespace or
     /// control characters.
-    pub fn parse(text: &str) -> Result<Self, ModelIdRefused> {
+    pub fn parse(text: &str) -> Result<Self, ModelIdError> {
         let fine = !text.is_empty()
             && text.chars().count() <= 128
             && !text.chars().any(|c| c.is_whitespace() || c.is_control());
-        fine.then(|| Self(text.to_owned())).ok_or(ModelIdRefused)
+        fine.then(|| Self(text.to_owned())).ok_or(ModelIdError)
     }
 
     /// The id as the agent knows it.

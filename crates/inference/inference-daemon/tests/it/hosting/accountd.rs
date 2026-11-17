@@ -17,7 +17,7 @@ use inference_daemon::Runtime;
 use inference_daemon::Standing as Probed;
 use inference_daemon::{AccountVerdict, Accountd, AccountdFault, Boxed};
 use inference_daemon::{OWN_PROVIDER, OwnServer};
-use inference_daemon::{ReportFault, Reports};
+use inference_daemon::{ReportError, Reports};
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
 
@@ -316,7 +316,7 @@ impl Reports for FakeAccountd {
         runtime: Runtime,
         claims: &'a [Claim],
         standing: Probed,
-    ) -> Boxed<'a, Result<AccountId, ReportFault>> {
+    ) -> Boxed<'a, Result<AccountId, ReportError>> {
         Box::pin(async move {
             let state = match standing {
                 Probed::Online => "ok",
@@ -328,7 +328,7 @@ impl Reports for FakeAccountd {
                 claims.len(),
             ));
             AccountId::parse(runtime.provider())
-                .map_err(|error| ReportFault::Rejected(Arc::new(error)))
+                .map_err(|error| ReportError::Rejected(Arc::new(error)))
         })
     }
 }

@@ -1,8 +1,8 @@
 //! `org.bardo.Voice1.Error.<Variant>`: the bus form of a refused call. The six refusals are
-//! `VoiceRefusal`'s, one to one; `Malformed` is a body that does not parse and `Gone` is a daemon
+//! `VoiceError`'s, one to one; `Malformed` is a body that does not parse and `Gone` is a daemon
 //! that is shutting down.
 
-use speech_wire::{ERROR_PREFIX, VoiceRefusal};
+use speech_wire::{ERROR_PREFIX, VoiceError};
 use zbus::fdo;
 
 /// The errors the members return.
@@ -30,18 +30,18 @@ pub enum VoiceError {
     Gone(String),
 }
 
-impl From<VoiceRefusal> for VoiceError {
+impl From<VoiceError> for VoiceError {
     /// Every refusal a call gets passes through here, so this is where it is logged.
-    fn from(refusal: VoiceRefusal) -> Self {
+    fn from(refusal: VoiceError) -> Self {
         tracing::info!(?refusal, "voice call refused");
         let why = refusal.to_string();
         match refusal {
-            VoiceRefusal::Disabled => VoiceError::Disabled(why),
-            VoiceRefusal::NeedsConsent => VoiceError::NeedsConsent(why),
-            VoiceRefusal::Busy => VoiceError::Busy(why),
-            VoiceRefusal::NotAllowed => VoiceError::NotAllowed(why),
-            VoiceRefusal::NoModel => VoiceError::NoModel(why),
-            VoiceRefusal::MicUnavailable => VoiceError::MicUnavailable(why),
+            VoiceError::Disabled => VoiceError::Disabled(why),
+            VoiceError::NeedsConsent => VoiceError::NeedsConsent(why),
+            VoiceError::Busy => VoiceError::Busy(why),
+            VoiceError::NotAllowed => VoiceError::NotAllowed(why),
+            VoiceError::NoModel => VoiceError::NoModel(why),
+            VoiceError::MicUnavailable => VoiceError::MicUnavailable(why),
         }
     }
 }
@@ -55,14 +55,14 @@ impl From<fdo::Error> for VoiceError {
 impl VoiceError {
     /// The refusal this error carries, or `None` for anything else.
     #[must_use]
-    pub fn refusal(&self) -> Option<VoiceRefusal> {
+    pub fn refusal(&self) -> Option<VoiceError> {
         match self {
-            VoiceError::Disabled(_) => Some(VoiceRefusal::Disabled),
-            VoiceError::NeedsConsent(_) => Some(VoiceRefusal::NeedsConsent),
-            VoiceError::Busy(_) => Some(VoiceRefusal::Busy),
-            VoiceError::NotAllowed(_) => Some(VoiceRefusal::NotAllowed),
-            VoiceError::NoModel(_) => Some(VoiceRefusal::NoModel),
-            VoiceError::MicUnavailable(_) => Some(VoiceRefusal::MicUnavailable),
+            VoiceError::Disabled(_) => Some(VoiceError::Disabled),
+            VoiceError::NeedsConsent(_) => Some(VoiceError::NeedsConsent),
+            VoiceError::Busy(_) => Some(VoiceError::Busy),
+            VoiceError::NotAllowed(_) => Some(VoiceError::NotAllowed),
+            VoiceError::NoModel(_) => Some(VoiceError::NoModel),
+            VoiceError::MicUnavailable(_) => Some(VoiceError::MicUnavailable),
             VoiceError::ZBus(_) | VoiceError::Malformed(_) | VoiceError::Gone(_) => None,
         }
     }
@@ -70,9 +70,9 @@ impl VoiceError {
 
 /// The refusal a bus error name stands for (a client's side of the table).
 #[must_use]
-pub fn refusal_of_name(name: &str) -> Option<VoiceRefusal> {
+pub fn refusal_of_name(name: &str) -> Option<VoiceError> {
     name.strip_prefix(ERROR_PREFIX)
-        .and_then(|_| VoiceRefusal::from_error_name(name))
+        .and_then(|_| VoiceError::from_error_name(name))
 }
 
 #[cfg(test)]
@@ -82,7 +82,7 @@ mod tests {
 
     #[test]
     fn each_refusal_is_one_error_with_the_names_of_the_wire() {
-        for refusal in VoiceRefusal::ALL {
+        for refusal in VoiceError::ALL {
             let error = VoiceError::from(refusal);
             assert_eq!(error.refusal(), Some(refusal));
             let name = error.name();

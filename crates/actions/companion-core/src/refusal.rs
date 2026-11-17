@@ -3,9 +3,9 @@
 //! decision here never carries words.
 
 use companion_model::helper::{
-    GoalFault, HandFault, HelperName, HelperTextFault, JobFault, JobRefusal, ReachFault,
+    GoalFault, HandFault, HelperName, HelperTextError, JobFault, JobRefusal, ReachError,
 };
-use companion_model::routine::ScheduleFault;
+use companion_model::routine::ScheduleError;
 
 /// What a request to the helper's app was for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -26,13 +26,13 @@ pub enum Refusal {
     /// A conversation could not move to or from a terminal.
     Hand(HandFault),
     /// What the person named is not a reach.
-    Reach(ReachFault),
+    Reach(ReachError),
     /// The words are not a schedule.
-    Schedule(ScheduleFault),
+    Schedule(ScheduleError),
     /// Another helper already has this name.
     NameTaken(HelperName),
     /// The goal is empty or too long to be one.
-    NoGoal(GoalFault),
+    NoGoal(GoalError),
     /// The helper named has no finished job to hand on.
     NothingToHandOn(String),
     /// The board made no job, and said nothing about it.
@@ -42,7 +42,7 @@ pub enum Refusal {
     /// Too many proposed routines wait for an answer.
     TooManyWaiting,
     /// The proposed name, or what it is for, is empty or too long.
-    BadNameOrRole(HelperTextFault),
+    BadNameOrRole(HelperTextError),
     /// An app the person named is not an app name.
     BadAppName {
         /// The app as named.

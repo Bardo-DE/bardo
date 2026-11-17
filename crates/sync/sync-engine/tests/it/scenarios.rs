@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex, PoisonError};
 use sync_core::{
     Acknowledgement, BaseVersion, Blob, Change, ConflictRule, ItemKind, ItemPath, ItemState,
-    LocalId, PutRefused, RemoteId, RemoteItem, RemoteSide, RemoteVersion, ReplicaError, Resolution,
+    LocalId, PutError, RemoteId, RemoteItem, RemoteSide, RemoteVersion, ReplicaError, Resolution,
     RetryAfter, Scanned,
 };
 use sync_engine::dataset::{Dataset, DatasetError, DatasetId, MemoryDataset};
@@ -506,7 +506,7 @@ async fn a_transient_or_unauthorized_replica_stops_the_cycle_and_changes_nothing
     world.dataset.put("b.txt", b"two");
     world
         .replica
-        .fail_next_put(PutRefused::Transient(RetryAfter(30)));
+        .fail_next_put(PutError::Transient(RetryAfter(30)));
     let retry = engine.sync_once().await.expect("cycle");
     assert_eq!(retry.outcome, Outcome::Retry(RetryAfter(30)));
     assert_eq!(
@@ -555,7 +555,7 @@ async fn a_forbidden_write_stays_pending_and_is_counted() {
     let world = World::new("forbidden", sha(), 10);
     let engine = world.engine();
     world.dataset.put("a.txt", b"one");
-    world.replica.fail_next_put(PutRefused::Forbidden);
+    world.replica.fail_next_put(PutError::Forbidden);
     let report = engine.sync_once().await.expect("cycle");
     assert_eq!((report.refused, report.uploaded), (1, 0));
     assert_eq!(

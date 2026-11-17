@@ -9,7 +9,7 @@ use account_dbus::Details;
 use account_match::Need;
 use account_wire::{decode_frame, encode_frame};
 use inference_core::testing::{FakeInferSession, Script};
-use inference_core::{ClientFrame, InferEvent, InferRefusal, InferReply, InferSession};
+use inference_core::{ClientFrame, InferEvent, InferRefusedError, InferReply, InferSession};
 use inference_dbus::inference::{NeedArg, need_from_dbus};
 use rustix::net::{RecvAncillaryBuffer, RecvAncillaryMessage, RecvFlags, recvmsg};
 use std::io::IoSliceMut;
@@ -48,7 +48,7 @@ pub enum Behaviour {
     /// Play these scripts, one per request kind.
     Scripted(Vec<Script>),
     /// Refuse at once: `Finished(Refused(..))` before any request.
-    Refuse(InferRefusal),
+    Refuse(InferRefusedError),
     /// Close the socket after reading the first frame.
     HangUp,
     /// Write these bytes at once, whatever they are.

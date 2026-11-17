@@ -15,8 +15,8 @@ use account_capability::Tier;
 use account_core::DataClass;
 use account_match::Need;
 use inference_core::{
-    AutoPolicy, InferRefusal, NoPlaceReason, PickRefusal, PlaceId, PlaceRefusal, Policy, RouteAsk,
-    RouteCandidate, TierChoice, TierMap, admit,
+    AutoPolicy, InferRefusedError, NoPlaceReason, PickRefusal, PlaceId, PlaceRefusal, Policy,
+    RouteAsk, RouteCandidate, TierChoice, TierMap, admit,
 };
 use std::collections::BTreeMap;
 
@@ -95,7 +95,7 @@ impl Unplaced {
     pub fn into_pick(self) -> PickRefusal {
         match self {
             Unplaced::Other(refusal) => refusal,
-            Unplaced::NoPlace(_) => InferRefusal::Unavailable.into(),
+            Unplaced::NoPlace(_) => InferRefusedError::Unavailable.into(),
         }
     }
 }
@@ -167,7 +167,7 @@ fn attempt(
     if let Err(refusal) = admit(RouteAsk::new(class), routes.iter(), rules.policy) {
         return match refusal {
             // The floor or the local-only switch removed every model of the place.
-            InferRefusal::Unavailable | InferRefusal::RequiresCloud(_) => {
+            InferRefusedError::Unavailable | InferRefusedError::RequiresCloud(_) => {
                 Outcome::Nothing(NoPlaceReason::FloorRefused)
             }
             other => Outcome::Other(other.into()),

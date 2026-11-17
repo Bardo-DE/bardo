@@ -12,7 +12,7 @@ use shell_launcher::WindowKey;
 use shell_model::voice::{AskScope, ConsentAnswer, Notice, Phase, VoiceCommand, VoiceParams};
 use shell_settings::{APP, ShellFile};
 use shell_testkit::TempDir;
-use speech_wire::{VoiceRefusal, VoiceTrigger};
+use speech_wire::{VoiceError, VoiceTrigger};
 use tokio::sync::watch;
 
 fn start() -> VoiceCommand {
@@ -97,7 +97,7 @@ async fn not_now_writes_declined_and_the_next_hold_never_calls_begin() {
     // that is the second call the stand-in sees, so the declined hold made none.
     desk.send(VoiceCommand::Params(VoiceParams::default()));
     desk.send(start());
-    desk.state(|v| matches!(v.notice, Notice::Refused(VoiceRefusal::Disabled)).then_some(()))
+    desk.state(|v| matches!(v.notice, Notice::Refused(VoiceError::Disabled)).then_some(()))
         .await;
     assert_eq!(
         begins(&desk),

@@ -39,8 +39,8 @@ pub use auth_kind::{AuthFacts, AuthKind, SignInWay};
 pub use candidate::Candidate;
 pub use data_class::DataClass;
 pub use endpoint::{
-    Direction, EndpointFault, EndpointUrl, LoginName, PathReach, Reach, ReachMethods, RelayAuth,
-    RelayPlan, ServerAddress, ServerAddressFault, ServiceEndpoint, Tls, server_address,
+    Direction, EndpointError, EndpointUrl, LoginName, PathReach, Reach, ReachMethods, RelayAuth,
+    RelayPlan, ServerAddress, ServerAddressError, ServiceEndpoint, Tls, server_address,
     server_address_shape,
 };
 pub use error::CoreError;

@@ -54,7 +54,7 @@ pub use header::{
     GENESIS_CONTEXT, HEADER_MAGIC, Header, NewHeader, body_digest, genesis_link, header_bytes, link,
 };
 pub use log::{LogError, LogRead, LogWrite, PageQuery, RoleFilter};
-pub use search::{IndexFailure, SearchIndex, SearchQuery};
+pub use search::{SearchIndex, SearchIndexError, SearchQuery};
 pub use state::{IndexEvent, step};
 pub use vault::{FACTS_DIR, PENDING_DIR, PROCEDURES_DIR, Vault, VaultError, VaultPath};
 pub use vector::{

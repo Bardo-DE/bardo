@@ -14,13 +14,13 @@ use futures_util::FutureExt;
 use futures_util::StreamExt;
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
-    ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, LangPick, ModelError,
+    ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest, LangPick, ModelError,
     Readiness, RequestKind, TranscribeMode,
 };
 use speech_audio::NodeKind;
 use speech_daemon::VoiceProxy;
 use speech_wire::{
-    CancelCause, HeardText, MicState, UtteranceEnd, VoiceEvent, VoiceFault, VoiceRefusal, VoiceUse,
+    CancelCause, HeardText, MicState, UtteranceEnd, VoiceError, VoiceEvent, VoiceFault, VoiceUse,
 };
 use std::collections::BTreeSet;
 
@@ -55,7 +55,7 @@ async fn only_the_shell_begins_and_nothing_opens_for_anyone_else() {
             .begin(&begin(VoiceIntent::Ask))
             .await
             .expect_err("refused");
-        assert_eq!(refusal(refused), VoiceRefusal::NotAllowed);
+        assert_eq!(refusal(refused), VoiceError::NotAllowed);
     }
     assert_eq!(world.hand.opened(), 0, "no capture was ever opened");
     assert!(world.seen.opens().is_empty(), "no inferd session either");
@@ -66,8 +66,8 @@ async fn only_the_shell_begins_and_nothing_opens_for_anyone_else() {
 #[tokio::test]
 async fn consent_and_the_setting_gate_the_mic_before_it_opens() {
     for (usage, want) in [
-        (VoiceUse::NeedsConsent, VoiceRefusal::NeedsConsent),
-        (VoiceUse::Off, VoiceRefusal::Disabled),
+        (VoiceUse::NeedsConsent, VoiceError::NeedsConsent),
+        (VoiceUse::Off, VoiceError::Disabled),
     ] {
         let mut options = Options::new(ScriptedInfer::new(vec![]));
         options.usage = usage;
@@ -98,7 +98,7 @@ async fn a_monitor_is_never_captured_and_no_source_means_no_mic() {
         .begin(&begin(VoiceIntent::Ask))
         .await
         .expect_err("refused");
-    assert_eq!(refusal(refused), VoiceRefusal::MicUnavailable);
+    assert_eq!(refusal(refused), VoiceError::MicUnavailable);
     assert_eq!(world.hand.opened(), 0);
 }
 
@@ -334,8 +334,8 @@ async fn a_late_call_on_an_old_utterance_is_refused() {
 async fn the_engine_refusing_or_failing_ends_the_utterance_and_closes_the_mic() {
     let table = [
         (
-            InferReply::Refused(InferRefusal::Denied),
-            VoiceFault::Refused(InferRefusal::Denied),
+            InferReply::Refused(InferRefusedError::Denied),
+            VoiceFault::Refused(InferRefusedError::Denied),
         ),
         (
             InferReply::Failed(ModelError::Unreadable),
@@ -461,7 +461,7 @@ async fn prepare_is_the_shells_and_answers_a_readiness_slug() {
         .prepare()
         .await
         .expect_err("refused");
-    assert_eq!(refusal(refused), VoiceRefusal::NotAllowed);
+    assert_eq!(refusal(refused), VoiceError::NotAllowed);
     assert_eq!(world.hand.opened(), 0, "prepare never opens the mic");
 }
 
@@ -553,7 +553,7 @@ async fn a_request_inferd_cannot_serve_ends_the_utterance_refused() {
     let (_, mut events) = start_utterance(&world, VoiceIntent::Ask).await;
     assert_eq!(
         ended_of(&events.until_ended().await),
-        UtteranceEnd::Failed(VoiceFault::Refused(InferRefusal::Unsupported))
+        UtteranceEnd::Failed(VoiceFault::Refused(InferRefusedError::Unsupported))
     );
     assert_eq!(world.hand.open_now(), 0);
 }

@@ -2,7 +2,7 @@
 //! a mail, a web page, a file the person opened or an agent to this module, and nothing here
 //! reads the environment (the daemon's `main` does, and passes the results).
 
-use crate::fault::SkillFault;
+use crate::fault::SkillError;
 use crate::folder::SkillFolder;
 use crate::skill::{Origin, Skill, parse};
 use std::path::{Path, PathBuf};
@@ -70,7 +70,7 @@ pub struct Rejected {
     /// The directory.
     pub dir: PathBuf,
     /// Why.
-    pub fault: SkillFault,
+    pub fault: SkillError,
 }
 
 /// What a discovery found: the skills that pass the format, and what did not.
@@ -82,10 +82,10 @@ pub struct Found {
     pub rejected: Vec<Rejected>,
 }
 
-fn read(folder: &impl SkillFolder, dir: &Path, file: &'static str) -> Result<String, SkillFault> {
+fn read(folder: &impl SkillFolder, dir: &Path, file: &'static str) -> Result<String, SkillError> {
     folder
         .read(&dir.join(file))
-        .map_err(|e| SkillFault::Unreadable {
+        .map_err(|e| SkillError::Unreadable {
             file,
             why: e.to_string(),
         })
@@ -95,13 +95,13 @@ fn read(folder: &impl SkillFolder, dir: &Path, file: &'static str) -> Result<Str
 /// its id).
 ///
 /// # Errors
-/// [`SkillFault`] when `skill.toml` or `SKILL.md` cannot be read, or the two do not make a valid
+/// [`SkillError`] when `skill.toml` or `SKILL.md` cannot be read, or the two do not make a valid
 /// skill.
 pub fn load_dir(
     folder: &impl SkillFolder,
     dir: &Path,
     origin: Origin,
-) -> Result<Skill, SkillFault> {
+) -> Result<Skill, SkillError> {
     let name = dir.file_name().and_then(|n| n.to_str()).unwrap_or_default();
     parse(
         name,

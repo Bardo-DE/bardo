@@ -24,7 +24,7 @@ pub struct WarmStep {
 
 /// Why a model did not come up.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum WarmFault {
+pub enum WarmError {
     /// The config is not TOML.
     #[error("the inferd config could not be read to plan the warm-up: {0}")]
     Config(String),
@@ -83,12 +83,12 @@ pub trait Prepare {
 ///
 /// # Errors
 ///
-/// Returns a [`WarmFault`] when a tier names a model that cannot be warmed.
-pub fn plan(source: &ModelSource) -> Result<Vec<WarmStep>, WarmFault> {
+/// Returns a [`WarmError`] when a tier names a model that cannot be warmed.
+pub fn plan(source: &ModelSource) -> Result<Vec<WarmStep>, WarmError> {
     let ModelSource::Live(body) = source else {
         return Ok(Vec::new());
     };
-    let table: toml::Table = toml::from_str(body).map_err(|e| WarmFault::Config(e.to_string()))?;
+    let table: toml::Table = toml::from_str(body).map_err(|e| WarmError::Config(e.to_string()))?;
     let text = table
         .get("ai")
         .and_then(|v| v.get("model"))
@@ -123,7 +123,7 @@ async fn warm_one(
     step: &WarmStep,
     inferd: &impl Prepare,
     patience: Duration,
-) -> Result<Warmed, WarmFault> {
+) -> Result<Warmed, WarmError> {
     let started = inferd.now();
     let mut last = Readiness::Loadable;
     for ask in 0..asks(patience) {
@@ -138,12 +138,12 @@ async fn warm_one(
                 });
             }
             None | Some(Readiness::Unavailable) => {
-                return Err(WarmFault::Unavailable(step.clone()));
+                return Err(WarmError::Unavailable(step.clone()));
             }
             Some(now) => last = now,
         }
     }
-    Err(WarmFault::NeverCameUp {
+    Err(WarmError::NeverCameUp {
         step: step.clone(),
         last: last.slug(),
         waited: inferd.now().saturating_sub(started),
@@ -155,13 +155,13 @@ async fn warm_one(
 ///
 /// # Errors
 ///
-/// Returns the [`WarmFault`] of the first model that does not come up.
+/// Returns the [`WarmError`] of the first model that does not come up.
 pub async fn warm_all(
     steps: &[WarmStep],
     inferd: &impl Prepare,
     patience: Duration,
     mut said: impl FnMut(&Warmed),
-) -> Result<Vec<Warmed>, WarmFault> {
+) -> Result<Vec<Warmed>, WarmError> {
     let mut done = Vec::new();
     for step in steps {
         let warmed = warm_one(step, inferd, patience).await?;

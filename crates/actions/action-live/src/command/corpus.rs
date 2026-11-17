@@ -1,6 +1,6 @@
 //! `agent-live corpus`.
 
-use super::{CommandFault, say_agent, say_reach};
+use super::{CommandError, say_agent, say_reach};
 use crate::acp::AcpSpec;
 use crate::attack_planner::run_attacks_planner;
 use crate::cli::{Agent, CorpusArgs, PlannerMode};
@@ -48,7 +48,7 @@ const ATTACKS: &str = "attacks";
 
 /// The attacks a run is asked for: those of `--corpus attacks`, or the ones `--case` names (by the
 /// attack's id or the id of either case it compiles to). Each is played as its pair of cases.
-fn chosen_attacks(args: &CorpusArgs) -> Result<Vec<AttackCase>, CommandFault> {
+fn chosen_attacks(args: &CorpusArgs) -> Result<Vec<AttackCase>, CommandError> {
     let named = args.corpora.iter().any(|c| c == ATTACKS);
     if !named && args.cases.is_empty() {
         return Ok(Vec::new());
@@ -89,11 +89,11 @@ fn over_target(report: &RunReport, max: u32) -> Vec<String> {
 /// A case scripts the planner's calls and judges the router's ruling on each; an external agent
 /// chooses its own, so the case's expectation has nothing to compare. The flows (`smoke`) are what
 /// an agent is measured on.
-fn corpus_agent(args: &CorpusArgs, spec: &AcpSpec) -> Result<ExitCode, CommandFault> {
+fn corpus_agent(args: &CorpusArgs, spec: &AcpSpec) -> Result<ExitCode, CommandError> {
     let all = load_all(&args.eval_dir)?;
     let cases = chosen(args, all);
     if cases.is_empty() {
-        return Err(CommandFault::NoCase);
+        return Err(CommandError::NoCase);
     }
     let why = "the case scripts the planner's calls and judges the router's ruling on each; an external agent chooses its own";
     let note = RunNote {
@@ -131,9 +131,9 @@ fn write_attack_summary(
     args: &CorpusArgs,
     outcomes: &[CorpusOutcome],
     dir: &std::path::Path,
-) -> Result<(), CommandFault> {
+) -> Result<(), CommandError> {
     let Some(metrics) = outcomes.iter().find_map(|o| o.report.attack.clone()) else {
-        return Err(CommandFault::NoAttackSummary);
+        return Err(CommandError::NoAttackSummary);
     };
     let summary = stamp_summary(args.engine.slug(), metrics, &args.eval_dir, &today())?;
     let path = write_summary(&summary, dir)?;
@@ -149,13 +149,13 @@ async fn corpus_live_planner(
     args: &CorpusArgs,
     binaries: &Binaries,
     options: &CorpusOptions,
-) -> Result<ExitCode, CommandFault> {
+) -> Result<ExitCode, CommandError> {
     if args.regress.is_some() || args.corpora.iter().any(|c| c != ATTACKS) {
-        return Err(CommandFault::LivePlannerOnlyAttacks);
+        return Err(CommandError::LivePlannerOnlyAttacks);
     }
     let attacks = chosen_attacks(args)?;
     if attacks.is_empty() {
-        return Err(CommandFault::NoAttacks);
+        return Err(CommandError::NoAttacks);
     }
     eprintln!(
         "agent-live: --planner live: {} attacks, two runs each, played by the companion's own planner model (a run takes a while)",
@@ -201,7 +201,7 @@ async fn corpus_live_planner(
 pub(super) async fn corpus(
     args: CorpusArgs,
     binaries: &Binaries,
-) -> Result<ExitCode, CommandFault> {
+) -> Result<ExitCode, CommandError> {
     say_reach(args.engine);
     say_agent(&args.agent);
     if let Agent::Acp(spec) = &args.agent {
@@ -245,7 +245,7 @@ pub(super) async fn corpus(
             [clean, attacked]
         }));
         if cases.is_empty() {
-            return Err(CommandFault::NoCase);
+            return Err(CommandError::NoCase);
         }
         let mut ran = run_corpus_live(binaries, &cases, &options).await?;
         if !attacks.is_empty() {
@@ -256,7 +256,7 @@ pub(super) async fn corpus(
         outcomes.push(ran);
     }
     if outcomes.is_empty() {
-        return Err(CommandFault::NothingToRun);
+        return Err(CommandError::NothingToRun);
     }
     // One section per run: a regression pair is a run of its own.
     let text: String = outcomes

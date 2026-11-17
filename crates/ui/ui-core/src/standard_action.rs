@@ -10,7 +10,7 @@
 use crate::vocab::{Shortcut, ShortcutKey};
 use keymap::{AppAction, AppId, Convention, ConventionTable, Desktop, Keymap, Platform};
 
-pub use keymap::{Conflict, SpaceNumber, StandardAction};
+pub use keymap::{ConflictError, SpaceNumber, StandardAction};
 
 /// The platform a [`Shortcut`] is written for: this desktop, whose Command key is the Mac's.
 pub(crate) const DESIGN_PLATFORM: Platform = Platform::Linux {
@@ -38,7 +38,7 @@ impl Shortcut {
     ///
     /// Returns the chord keymap's [`Conflict`] when this desktop keeps the combination for itself or a
     /// standard action has it.
-    pub fn custom(keys: impl IntoIterator<Item = ShortcutKey>) -> Result<Shortcut, Conflict> {
+    pub fn custom(keys: impl IntoIterator<Item = ShortcutKey>) -> Result<Shortcut, ConflictError> {
         let shortcut = Shortcut(normalized(keys));
         let (Some(chord), Some((app, action))) = (shortcut.default_chord(), probe()) else {
             return Ok(shortcut);

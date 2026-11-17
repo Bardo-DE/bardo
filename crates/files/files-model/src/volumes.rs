@@ -1,7 +1,7 @@
 //! Disks in the sidebar: the list as told, opening one, ejecting one, and the answers.
 
 use files_core::{
-    EjectFailure, FolderPath, Location, MountFailure, Volume, VolumeId, VolumeName, VolumeTrouble,
+    EjectFailure, FolderPath, Location, MountError, Volume, VolumeId, VolumeName, VolumeTrouble,
 };
 
 use crate::browser::Browser;
@@ -60,11 +60,7 @@ impl Browser {
     }
 
     /// A disk was opened, or could not be.
-    pub(crate) fn mounted(
-        self,
-        id: &VolumeId,
-        result: Result<FolderPath, MountFailure>,
-    ) -> Stepped {
+    pub(crate) fn mounted(self, id: &VolumeId, result: Result<FolderPath, MountError>) -> Stepped {
         match result {
             Ok(folder) => self.go(Location::Folder(folder)),
             Err(failure) => self.tell_volume(id, VolumeTrouble::NotOpened(failure)),
@@ -84,10 +80,10 @@ impl Browser {
     /// `Input::Volumes`.
     ///
     /// A disk in use is not just told: the person is asked whether to eject it anyway.
-    pub(crate) fn ejected(self, id: VolumeId, result: Result<(), EjectFailure>) -> Stepped {
+    pub(crate) fn ejected(self, id: VolumeId, result: Result<(), EjectError>) -> Stepped {
         match result {
             Ok(()) => (self, Vec::new()),
-            Err(EjectFailure::InUse(programs)) => {
+            Err(EjectError::InUse(programs)) => {
                 let name = self.volume(&id).map(|volume| volume.name.clone());
                 match name {
                     Some(name) => {
@@ -101,7 +97,7 @@ impl Browser {
     }
 
     /// A disk was ejected by force, or could not be: a failure is told, whatever it is.
-    pub(crate) fn force_ejected(self, id: &VolumeId, result: Result<(), EjectFailure>) -> Stepped {
+    pub(crate) fn force_ejected(self, id: &VolumeId, result: Result<(), EjectError>) -> Stepped {
         match result {
             Ok(()) => (self, Vec::new()),
             Err(failure) => self.tell_volume(id, VolumeTrouble::NotEjected(failure)),

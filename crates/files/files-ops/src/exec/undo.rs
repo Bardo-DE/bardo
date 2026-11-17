@@ -3,7 +3,7 @@
 use std::fs;
 use std::ops::ControlFlow;
 
-use files_core::{ItemRef, OpFailure};
+use files_core::{ItemRef, OpError};
 
 use super::{Run, Step};
 use crate::error;
@@ -22,15 +22,15 @@ impl Run<'_> {
         Ok(ControlFlow::Continue(()))
     }
 
-    fn undo_step(&mut self, step: Inverse) -> Result<(), OpFailure> {
+    fn undo_step(&mut self, step: Inverse) -> Result<(), OpError> {
         match step {
             Inverse::Trash(items) => self.trash_away(&items),
             Inverse::MoveBack { now, back } => {
                 if fs::symlink_metadata(back.path()).is_ok() {
-                    return Err(OpFailure::Taken);
+                    return Err(OpError::Taken);
                 }
                 if self.move_path(&now.path(), &back.path())? == ControlFlow::Break(()) {
-                    return Err(OpFailure::Other);
+                    return Err(OpError::Other);
                 }
                 self.touch_folder(&now.folder);
                 self.touch_folder(&back.folder);
@@ -44,13 +44,13 @@ impl Run<'_> {
                 if empty {
                     self.trash_away(&[folder])
                 } else {
-                    Err(OpFailure::NotEmpty)
+                    Err(OpError::NotEmpty)
                 }
             }
             Inverse::RenameBack { now, was } => {
                 let back = now.renamed(was);
                 if fs::symlink_metadata(back.path()).is_ok() {
-                    return Err(OpFailure::Taken);
+                    return Err(OpError::Taken);
                 }
                 fs::rename(now.path(), back.path()).map_err(error::io)?;
                 self.touch_folder(&now.folder);
@@ -68,7 +68,7 @@ impl Run<'_> {
     }
 
     /// Moves `items` to the Trash as part of taking something back.
-    fn trash_away(&mut self, items: &[ItemRef]) -> Result<(), OpFailure> {
+    fn trash_away(&mut self, items: &[ItemRef]) -> Result<(), OpError> {
         self.trash.trash(items).map_err(error::trash)?;
         for item in items {
             self.touch_folder(&item.folder);

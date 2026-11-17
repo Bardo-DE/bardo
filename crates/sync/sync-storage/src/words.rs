@@ -3,7 +3,7 @@
 //! syncd serves `org.bardo.Storage1` and the sync settings rows, so the sentences live here and
 //! nowhere in those libraries.
 
-use drive_fs::Reason;
+use drive_fs::SkipError;
 use drive_fuse::MountError;
 use drive_fuse::mountd::wire::Code;
 
@@ -12,27 +12,27 @@ pub const NO_FILES_HERE: &str = "Files can't show this drive on this computer.";
 
 /// Why an action or a change did not go through, as a plain sentence.
 #[must_use]
-pub fn reason(reason: Reason) -> &'static str {
+pub fn reason(reason: SkipError) -> &'static str {
     match reason {
-        Reason::NotOnADrive => "This item isn't in a cloud drive.",
-        Reason::OnlineOnly => "This document opens online.",
-        Reason::Offline => "This file will download when you're connected.",
-        Reason::Waiting => "Waiting to upload.",
-        Reason::NoRoom => "There's no room left on this drive.",
-        Reason::MayNotWrite => "You can't change this file.",
-        Reason::InUse => "This file is in use on the drive.",
-        Reason::NameRefused => "The drive doesn't take this name.",
-        Reason::Declined => "The drive couldn't take this change.",
-        Reason::NoRoomHere => "There isn't room on this computer to send this file.",
-        Reason::Conflict => "This file has two versions. Choose one first.",
-        Reason::KeptWithFolder => "This item is kept downloaded with its folder.",
-        Reason::KeptWithDrive => "Everything on this drive is kept downloaded.",
-        Reason::NoRoomForAll => "Not enough space to keep everything downloaded.",
-        Reason::NoDrive => "This drive isn't in Files.",
-        Reason::NotADocument => "Only an online document can be saved as a copy.",
-        Reason::NoFileFormat => "This document can't be saved as a file.",
-        Reason::TooLarge => "This document is too large to save as a copy.",
-        Reason::CopyFailed => "The copy couldn't be made. Try again later.",
+        SkipError::NotOnADrive => "This item isn't in a cloud drive.",
+        SkipError::OnlineOnly => "This document opens online.",
+        SkipError::Offline => "This file will download when you're connected.",
+        SkipError::Waiting => "Waiting to upload.",
+        SkipError::NoRoom => "There's no room left on this drive.",
+        SkipError::MayNotWrite => "You can't change this file.",
+        SkipError::InUse => "This file is in use on the drive.",
+        SkipError::NameRefused => "The drive doesn't take this name.",
+        SkipError::Declined => "The drive couldn't take this change.",
+        SkipError::NoRoomHere => "There isn't room on this computer to send this file.",
+        SkipError::Conflict => "This file has two versions. Choose one first.",
+        SkipError::KeptWithFolder => "This item is kept downloaded with its folder.",
+        SkipError::KeptWithDrive => "Everything on this drive is kept downloaded.",
+        SkipError::NoRoomForAll => "Not enough space to keep everything downloaded.",
+        SkipError::NoDrive => "This drive isn't in Files.",
+        SkipError::NotADocument => "Only an online document can be saved as a copy.",
+        SkipError::NoFileFormat => "This document can't be saved as a file.",
+        SkipError::TooLarge => "This document is too large to save as a copy.",
+        SkipError::CopyFailed => "The copy couldn't be made. Try again later.",
     }
 }
 
@@ -77,7 +77,7 @@ mod tests {
     #[test]
     fn every_reason_has_its_own_sentence() {
         let mut seen = std::collections::BTreeSet::new();
-        for it in Reason::ALL {
+        for it in SkipError::ALL {
             let text = reason(it);
             assert!(text.ends_with('.'), "{text}");
             assert!(seen.insert(text), "{text} is said twice");

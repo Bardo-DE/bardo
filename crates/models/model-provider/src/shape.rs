@@ -13,7 +13,7 @@ mod gbnf;
 mod pattern;
 mod schema;
 
-pub use from_schema::{KeywordText, Refused, SchemaLimits, SchemaPath, SchemaRefusal};
+pub use from_schema::{KeywordText, SchemaError, SchemaKeywordError, SchemaLimits, SchemaPath};
 pub use schema::sanitize_schema;
 
 use serde::{Deserialize, Serialize};
@@ -158,7 +158,7 @@ pub enum SchemaDialect {
 /// Why a shape cannot be converted, or a value does not fit it. Names a field and a kind, never a
 /// value: a model's text may be untrusted and must not travel into a repair prompt.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ShapeFault {
+pub enum ShapeError {
     #[error("this shape has no form in the requested language")]
     NotRepresentable,
     #[error("the reply is not JSON")]
@@ -195,9 +195,9 @@ impl Shape {
     ///
     /// # Errors
     ///
-    /// Returns [`ShapeFault`] when the shape has no grammar: an empty `Choice`, an empty `Integer`
+    /// Returns [`ShapeError`] when the shape has no grammar: an empty `Choice`, an empty `Integer`
     /// range or a `Tagged` with no variants.
-    pub fn to_gbnf(&self) -> Result<String, ShapeFault> {
+    pub fn to_gbnf(&self) -> Result<String, ShapeError> {
         self.gbnf_text()
     }
 
@@ -226,8 +226,8 @@ impl Shape {
     ///
     /// # Errors
     ///
-    /// Returns [`ShapeFault`] when `json` is not text of this shape.
-    pub fn check(&self, json: &JsonText) -> Result<(), ShapeFault> {
+    /// Returns [`ShapeError`] when `json` is not text of this shape.
+    pub fn check(&self, json: &JsonText) -> Result<(), ShapeError> {
         self.check_json(json)
     }
 }
@@ -240,6 +240,6 @@ pub trait Extract: Sized {
     ///
     /// # Errors
     ///
-    /// Returns [`ShapeFault`] when `json` is not text of this shape.
-    fn read(json: &JsonText) -> Result<Self, ShapeFault>;
+    /// Returns [`ShapeError`] when `json` is not text of this shape.
+    fn read(json: &JsonText) -> Result<Self, ShapeError>;
 }

@@ -75,15 +75,15 @@ pub struct UiFile {
 /// Why a ui commands file could not be read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{0}")]
-pub struct UiFault(#[from] toml::de::Error);
+pub struct UiError(#[from] toml::de::Error);
 
 impl UiFile {
     /// Reads the file.
     ///
     /// # Errors
     ///
-    /// Fails with [`UiFault`] when `text` is not a valid ui commands file.
-    pub fn parse(text: &str) -> Result<Self, UiFault> {
+    /// Fails with [`UiError`] when `text` is not a valid ui commands file.
+    pub fn parse(text: &str) -> Result<Self, UiError> {
         Ok(toml::from_str(text)?)
     }
 }

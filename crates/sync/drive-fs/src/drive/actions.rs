@@ -2,7 +2,7 @@
 //! the whole drive (Keep Everything Downloaded), what a new listing changes, and eviction.
 
 use super::{Drive, FreeSpace, Inner, NodeId, held, unlisted};
-use crate::Reason;
+use crate::SkipError;
 use crate::listing::Entry;
 use std::collections::BTreeSet;
 use std::sync::Arc;
@@ -11,11 +11,11 @@ use sync_core::{ItemKind, RemoteId};
 
 impl Inner {
     /// The files at or under `id` (a file: itself), from the listing.
-    pub(super) fn files_under(&self, id: &RemoteId) -> Result<Vec<Entry>, Reason> {
+    pub(super) fn files_under(&self, id: &RemoteId) -> Result<Vec<Entry>, SkipError> {
         let entry = self
             .entry(id)
-            .map_err(unlisted(Reason::NotOnADrive))?
-            .ok_or(Reason::NotOnADrive)?;
+            .map_err(unlisted(SkipError::NotOnADrive))?
+            .ok_or(SkipError::NotOnADrive)?;
         Ok(match entry.kind {
             ItemKind::Folder => self
                 .listing
@@ -178,14 +178,14 @@ impl Drive {
     /// # Errors
     /// The reason when it is refused: an online document, an item that is not there, or the
     /// drive cannot be reached now.
-    pub fn download(&self, id: &NodeId) -> Result<(), Reason> {
+    pub fn download(&self, id: &NodeId) -> Result<(), SkipError> {
         let id = &self.inner.canonical(id);
         let remote = match id {
-            NodeId::Top => return Err(Reason::NotOnADrive),
+            NodeId::Top => return Err(SkipError::NotOnADrive),
             NodeId::Local(_) => {
                 return match self.inner.edit(id) {
                     Some(_) => Ok(()),
-                    None => Err(Reason::NotOnADrive),
+                    None => Err(SkipError::NotOnADrive),
                 };
             }
             NodeId::Remote(remote) => remote,
@@ -193,10 +193,10 @@ impl Drive {
         let entry = self
             .inner
             .entry(remote)
-            .map_err(unlisted(Reason::NotOnADrive))?
-            .ok_or(Reason::NotOnADrive)?;
+            .map_err(unlisted(SkipError::NotOnADrive))?
+            .ok_or(SkipError::NotOnADrive)?;
         if matches!(entry.kind, ItemKind::Online { .. }) {
-            return Err(Reason::OnlineOnly);
+            return Err(SkipError::OnlineOnly);
         }
         let files = self.inner.files_under(remote)?;
         let missing: Vec<Entry> = files
@@ -207,10 +207,10 @@ impl Drive {
             return Ok(());
         }
         if self.inner.offline.load(Ordering::SeqCst) {
-            return Err(Reason::Offline);
+            return Err(SkipError::Offline);
         }
         if self.inner.download_all(&missing) {
-            Err(Reason::Offline)
+            Err(SkipError::Offline)
         } else {
             Ok(())
         }
@@ -222,18 +222,18 @@ impl Drive {
     /// # Errors
     /// The reason when it is refused: an online document, an item that is not there, or turning
     /// off an item kept with its folder.
-    pub fn keep(&self, id: &NodeId, keep: bool) -> Result<(), Reason> {
+    pub fn keep(&self, id: &NodeId, keep: bool) -> Result<(), SkipError> {
         let inner = &self.inner;
         let id = &inner.canonical(id);
         let remote = match id {
-            NodeId::Top => return Err(Reason::NotOnADrive),
+            NodeId::Top => return Err(SkipError::NotOnADrive),
             NodeId::Local(_) => {
-                inner.edit(id).ok_or(Reason::NotOnADrive)?;
+                inner.edit(id).ok_or(SkipError::NotOnADrive)?;
                 if !keep && inner.keeps_all() {
-                    return Err(Reason::KeptWithDrive);
+                    return Err(SkipError::KeptWithDrive);
                 }
                 if !keep && inner.kept_by_folder(id) {
-                    return Err(Reason::KeptWithFolder);
+                    return Err(SkipError::KeptWithFolder);
                 }
                 return Ok(());
             }
@@ -241,16 +241,16 @@ impl Drive {
         };
         let entry = inner
             .entry(remote)
-            .map_err(unlisted(Reason::NotOnADrive))?
-            .ok_or(Reason::NotOnADrive)?;
+            .map_err(unlisted(SkipError::NotOnADrive))?
+            .ok_or(SkipError::NotOnADrive)?;
         if matches!(entry.kind, ItemKind::Online { .. }) {
-            return Err(Reason::OnlineOnly);
+            return Err(SkipError::OnlineOnly);
         }
         if !keep && inner.keeps_all() {
-            return Err(Reason::KeptWithDrive);
+            return Err(SkipError::KeptWithDrive);
         }
         if !keep && inner.kept_by_folder(id) {
-            return Err(Reason::KeptWithFolder);
+            return Err(SkipError::KeptWithFolder);
         }
         let under: Vec<Entry> = match entry.kind {
             ItemKind::Folder => inner.listing.descendants(remote).unwrap_or_default(),
@@ -275,7 +275,7 @@ impl Drive {
             let files = inner.files_under(remote)?;
             let missing: Vec<Entry> = files.into_iter().filter(|f| !inner.here(f)).collect();
             if inner.download_all(&missing) {
-                return Err(Reason::Offline);
+                return Err(SkipError::Offline);
             }
         } else {
             inner.evict();
@@ -290,35 +290,35 @@ impl Drive {
     /// The reason when it is refused: an online document, an item that is not there or is kept
     /// with its folder, or one with changes not sent yet (the first of a folder's refusals
     /// stands for it; the rest of it is still freed).
-    pub fn remove_download(&self, id: &NodeId) -> Result<(), Reason> {
+    pub fn remove_download(&self, id: &NodeId) -> Result<(), SkipError> {
         let inner = &self.inner;
         let id = &inner.canonical(id);
         if inner.keeps_all() && *id != NodeId::Top {
-            return Err(Reason::KeptWithDrive);
+            return Err(SkipError::KeptWithDrive);
         }
         if self.inner.kept_by_folder(id) {
-            return Err(Reason::KeptWithFolder);
+            return Err(SkipError::KeptWithFolder);
         }
         let remote = match id {
-            NodeId::Top => return Err(Reason::NotOnADrive),
+            NodeId::Top => return Err(SkipError::NotOnADrive),
             NodeId::Local(_) => {
-                inner.edit(id).ok_or(Reason::NotOnADrive)?;
+                inner.edit(id).ok_or(SkipError::NotOnADrive)?;
                 return match inner.other(id) {
-                    Some(_) => Err(Reason::Conflict),
-                    None => Err(Reason::Waiting),
+                    Some(_) => Err(SkipError::Conflict),
+                    None => Err(SkipError::Waiting),
                 };
             }
             NodeId::Remote(remote) => remote,
         };
         let entry = inner
             .entry(remote)
-            .map_err(unlisted(Reason::NotOnADrive))?
-            .ok_or(Reason::NotOnADrive)?;
+            .map_err(unlisted(SkipError::NotOnADrive))?
+            .ok_or(SkipError::NotOnADrive)?;
         if matches!(entry.kind, ItemKind::Online { .. }) {
-            return Err(Reason::OnlineOnly);
+            return Err(SkipError::OnlineOnly);
         }
         if inner.other(id).is_some() {
-            return Err(Reason::Conflict);
+            return Err(SkipError::Conflict);
         }
         let under: Vec<Entry> = match entry.kind {
             ItemKind::Folder => inner.listing.descendants(remote).unwrap_or_default(),
@@ -356,7 +356,7 @@ impl Drive {
             .values()
             .any(|edit| !edit.removed && folders.contains(&edit.parent));
         if waiting {
-            Err(Reason::Waiting)
+            Err(SkipError::Waiting)
         } else {
             Ok(())
         }

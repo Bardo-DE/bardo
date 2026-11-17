@@ -140,7 +140,7 @@ fn automatic_table() {
         cands: Vec<PickCandidate>,
         policy: Policy,
         evict: AutoEvict,
-        expected: Result<(&'static str, Why), InferRefusal>,
+        expected: Result<(&'static str, Why), InferRefusedError>,
     }
     let case = |name, cands, expected| Case {
         name,
@@ -208,7 +208,7 @@ fn automatic_table() {
             ..case(
                 "never-evict leaves a swap alone",
                 vec![evicting("a", 0, "x", EngineLoad::Idle)],
-                Err(InferRefusal::Unavailable),
+                Err(InferRefusedError::Unavailable),
             )
         },
         Case {
@@ -222,12 +222,12 @@ fn automatic_table() {
         case(
             "an engine in a turn is never unloaded",
             vec![evicting("a", 0, "x", EngineLoad::MidTurn)],
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         case(
             "no room is not a candidate",
             vec![cand("a", 0, Readiness::Loadable, SwapCost::NoRoom)],
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         case(
             "unloading several engines is never done for the person",
@@ -237,7 +237,7 @@ fn automatic_table() {
                 Readiness::Loadable,
                 SwapCost::Purge { engines: 2 },
             )],
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         case(
             "a model that is not installed is not a candidate",
@@ -249,7 +249,7 @@ fn automatic_table() {
                     cold_start_estimate_s: 1,
                 },
             )],
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         case(
             "a non-commercial model is never chosen",
@@ -258,7 +258,7 @@ fn automatic_table() {
                 c.licence = LicenceClass::NonCommercial;
                 c
             }],
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         Case {
             policy: Policy::proposed(),
@@ -273,7 +273,7 @@ fn automatic_table() {
             ..case(
                 "local-only with only cloud is unavailable",
                 vec![cloud("c", 0)],
-                Err(InferRefusal::Unavailable),
+                Err(InferRefusedError::Unavailable),
             )
         },
         Case {
@@ -287,7 +287,7 @@ fn automatic_table() {
             ..case(
                 "a floor that forbids cloud is not widened",
                 vec![cloud("c", 0)],
-                Err(InferRefusal::RequiresCloud(DataClass::Public)),
+                Err(InferRefusedError::RequiresCloud(DataClass::Public)),
             )
         },
         case(
@@ -362,7 +362,7 @@ fn a_named_model_that_cannot_serve_refuses_and_says_why_without_a_fallback() {
             vec![warm_b.clone()],
             open(),
             DeclinedBecause::NotListed,
-            InferRefusal::Unavailable,
+            InferRefusedError::Unavailable,
         ),
         (
             "not installed",
@@ -379,7 +379,7 @@ fn a_named_model_that_cannot_serve_refuses_and_says_why_without_a_fallback() {
             ],
             open(),
             DeclinedBecause::NotInstalled,
-            InferRefusal::Unavailable,
+            InferRefusedError::Unavailable,
         ),
         (
             "failed",
@@ -389,7 +389,7 @@ fn a_named_model_that_cannot_serve_refuses_and_says_why_without_a_fallback() {
             ],
             open(),
             DeclinedBecause::Unavailable,
-            InferRefusal::Unavailable,
+            InferRefusedError::Unavailable,
         ),
         (
             "no room",
@@ -399,16 +399,16 @@ fn a_named_model_that_cannot_serve_refuses_and_says_why_without_a_fallback() {
             ],
             open(),
             DeclinedBecause::NoRoom,
-            InferRefusal::Unavailable,
+            InferRefusedError::Unavailable,
         ),
         (
             "local-only refuses a named cloud model",
             vec![warm_b, cloud("a", 1)],
             policy_local,
             DeclinedBecause::Blocked {
-                refusal: InferRefusal::Unavailable,
+                refusal: InferRefusedError::Unavailable,
             },
-            InferRefusal::Unavailable,
+            InferRefusedError::Unavailable,
         ),
     ];
     for (name, cands, policy, because, refusal) in table {
@@ -435,7 +435,10 @@ fn a_named_model_the_floor_forbids_is_blocked_by_the_floor() {
         }],
     };
     let err = named_pick("c", &[cloud("c", 0), warm("a", 1)], &policy).expect_err("floor");
-    assert_eq!(err.refusal, InferRefusal::RequiresCloud(DataClass::Public));
+    assert_eq!(
+        err.refusal,
+        InferRefusedError::RequiresCloud(DataClass::Public)
+    );
 }
 
 #[test]
@@ -454,7 +457,7 @@ fn a_chosen_coding_agent_is_no_model_and_the_refusal_names_it() {
     };
     let refused = pick(ASK, &Pick::Named(agent.clone()), &[warm("b", 0)], rules)
         .expect_err("an agent is not a model");
-    assert_eq!(refused.refusal, InferRefusal::Unavailable);
+    assert_eq!(refused.refusal, InferRefusedError::Unavailable);
     assert_eq!(
         refused.declined,
         Some(Declined {

@@ -7,7 +7,7 @@
 //! so a large bound makes a huge grammar) and the checker enforces them.
 
 use crate::shape::pattern::{Syntax, gbnf_literal, int_range};
-use crate::{Shape, ShapeFault};
+use crate::{Shape, ShapeError};
 use std::fmt::Write as _;
 
 const UNROLL_MAX: u32 = 256;
@@ -34,7 +34,7 @@ char ::= [^"\\\x00-\x1F] | "\\" (["\\/bfnrt] | "u" [0-9a-fA-F]{4})
 "#;
 
 impl Shape {
-    pub(crate) fn gbnf_text(&self) -> Result<String, ShapeFault> {
+    pub(crate) fn gbnf_text(&self) -> Result<String, ShapeError> {
         let mut rules = Rules::default();
         let root = rules.expr(self)?;
         let mut body = String::new();
@@ -52,9 +52,9 @@ struct Rules {
 
 impl Rules {
     /// The expression for `shape`, adding named rules for the parts that repeat or nest.
-    fn expr(&mut self, shape: &Shape) -> Result<String, ShapeFault> {
+    fn expr(&mut self, shape: &Shape) -> Result<String, ShapeError> {
         match shape {
-            Shape::Choice(choices) if choices.is_empty() => Err(ShapeFault::NotRepresentable),
+            Shape::Choice(choices) if choices.is_empty() => Err(ShapeError::NotRepresentable),
             Shape::Choice(choices) => Ok(choices
                 .iter()
                 .map(|c| gbnf_literal(&json_string(&c.0)))
@@ -62,7 +62,7 @@ impl Rules {
                 .join(" | ")),
             Shape::Integer { min, max } => int_range(*min, *max)
                 .map(|p| p.render(Syntax::Gbnf))
-                .ok_or(ShapeFault::NotRepresentable),
+                .ok_or(ShapeError::NotRepresentable),
             Shape::Text { max } => {
                 let count = if max.0 <= UNROLL_MAX {
                     format!("{{0,{}}}", max.0)
@@ -93,7 +93,7 @@ impl Rules {
                         let key = gbnf_literal(&json_string(f.name.as_str()));
                         Ok(format!("{key} ws \":\" ws {value}"))
                     })
-                    .collect::<Result<Vec<_>, ShapeFault>>()?;
+                    .collect::<Result<Vec<_>, ShapeError>>()?;
                 Ok(if members.is_empty() {
                     "\"{\" ws \"}\"".to_owned()
                 } else {
@@ -103,7 +103,7 @@ impl Rules {
             Shape::Date => Ok(self.calendar("date", DATE)),
             Shape::DateTime => Ok(self.calendar("date-time", DATE_TIME)),
             Shape::Tagged { variants, .. } if variants.is_empty() => {
-                Err(ShapeFault::NotRepresentable)
+                Err(ShapeError::NotRepresentable)
             }
             Shape::Tagged {
                 tag,
@@ -122,14 +122,14 @@ impl Rules {
                             key(content.as_str()),
                         ))
                     })
-                    .collect::<Result<Vec<_>, ShapeFault>>()?;
+                    .collect::<Result<Vec<_>, ShapeError>>()?;
                 Ok(arms.join(" | "))
             }
             Shape::OrHandle(inner) => {
                 let inner = self.named("alt", inner)?;
                 let index = int_range(0, i64::MAX)
                     .map(|p| p.render(Syntax::Gbnf))
-                    .ok_or(ShapeFault::NotRepresentable)?;
+                    .ok_or(ShapeError::NotRepresentable)?;
                 let index = self.fixed("handle-index", &index);
                 let body = format!("\"{{\" ws \"\\\"handle\\\"\" ws \":\" ws {index} ws \"}}\"");
                 let handle = self.fixed("handle", &body);
@@ -155,7 +155,7 @@ impl Rules {
     }
 
     /// A rule for `shape`, returned as a reference.
-    fn named(&mut self, stem: &str, shape: &Shape) -> Result<String, ShapeFault> {
+    fn named(&mut self, stem: &str, shape: &Shape) -> Result<String, ShapeError> {
         let expr = self.expr(shape)?;
         let name = format!("{stem}-{}", self.defs.len());
         self.defs.push((name.clone(), expr));

@@ -23,7 +23,7 @@ use super::error::WireError;
 use super::shm::ShmFile;
 use super::wire::{Wire, raw};
 use crate::capture::{
-    CaptureEvent, CaptureFailure, CapturePhase, CaptureRequest, CursorMode, ShmFormat,
+    CaptureError, CaptureEvent, CapturePhase, CaptureRequest, CursorMode, ShmFormat,
 };
 use crate::command::CommandRoute;
 use crate::error::CommandError;
@@ -61,7 +61,7 @@ fn capture_event(wire: &mut Wire, id: CaptureId, event: CaptureEvent) {
 }
 
 /// Reports a failure and releases the capture's objects.
-fn fail(wire: &mut Wire, id: CaptureId, reason: CaptureFailure) {
+fn fail(wire: &mut Wire, id: CaptureId, reason: CaptureError) {
     capture_event(wire, id, CaptureEvent::Failed(reason));
     release(wire, id);
 }
@@ -158,7 +158,7 @@ pub(super) fn on_session(
                 _ => {}
             }
         }
-        Event::Stopped => fail(wire, id, CaptureFailure::Stopped),
+        Event::Stopped => fail(wire, id, CaptureError::Stopped),
         _ => {}
     }
 }
@@ -175,7 +175,7 @@ fn begin_frame(wire: &mut Wire, id: CaptureId) {
     }
     let made = make_frame(wire, id);
     if made.is_none() {
-        fail(wire, id, CaptureFailure::Unknown);
+        fail(wire, id, CaptureError::Unknown);
     }
 }
 
@@ -254,9 +254,9 @@ pub(super) fn on_frame(
         Event::Ready => ready(wire, id),
         Event::Failed { reason } => {
             let reason = match raw(reason) {
-                1 => CaptureFailure::BufferConstraints,
-                2 => CaptureFailure::Stopped,
-                _ => CaptureFailure::Unknown,
+                1 => CaptureError::BufferConstraints,
+                2 => CaptureError::Stopped,
+                _ => CaptureError::Unknown,
             };
             fail(wire, id, reason);
         }
@@ -277,7 +277,7 @@ fn ready(wire: &mut Wire, id: CaptureId) {
             capture_event(wire, id, CaptureEvent::Ready { stride, pixels });
             release(wire, id);
         }
-        _ => fail(wire, id, CaptureFailure::Unknown),
+        _ => fail(wire, id, CaptureError::Unknown),
     }
 }
 

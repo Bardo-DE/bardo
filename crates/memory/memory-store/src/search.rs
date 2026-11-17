@@ -22,7 +22,7 @@ pub struct SearchQuery {
 
 /// Why an index operation failed, whatever the index stores in.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum IndexFailure {
+pub enum SearchIndexError {
     /// Embedding failed.
     #[error("embedding: {0}")]
     Embed(#[from] EmbedError),
@@ -51,44 +51,48 @@ pub trait SearchIndex: Send {
     ///
     /// # Errors
     ///
-    /// Returns [`IndexFailure`] when the index cannot be read.
-    fn allow_kinds(&self, kinds: &[&str], trust: Option<Integrity>) -> Result<Allow, IndexFailure>;
+    /// Returns [`SearchIndexError`] when the index cannot be read.
+    fn allow_kinds(
+        &self,
+        kinds: &[&str],
+        trust: Option<Integrity>,
+    ) -> Result<Allow, SearchIndexError>;
     /// The lexical half's ranked list for `q`.
     ///
     /// # Errors
     ///
-    /// Returns [`IndexFailure`] when the index cannot be read.
-    fn lexical(&self, q: &SearchQuery) -> Result<Vec<Ranked>, IndexFailure>;
+    /// Returns [`SearchIndexError`] when the index cannot be read.
+    fn lexical(&self, q: &SearchQuery) -> Result<Vec<Ranked>, SearchIndexError>;
     /// The `k` documents nearest to `v` among the allowed ones, best first.
     ///
     /// # Errors
     ///
-    /// Returns [`IndexFailure`] when the index cannot be read.
-    fn nearest(&self, v: &Vector, k: TopK, allow: &Allow) -> Result<Vec<Ranked>, IndexFailure>;
+    /// Returns [`SearchIndexError`] when the index cannot be read.
+    fn nearest(&self, v: &Vector, k: TopK, allow: &Allow) -> Result<Vec<Ranked>, SearchIndexError>;
     /// Clears and rebuilds from `docs`, embedding in the background. A lost embedder that can
     /// come back leaves the index lexical-only and returns `Ok`.
     fn rebuild<E: Embedder>(
         &mut self,
         docs: Vec<Doc>,
         e: &E,
-    ) -> impl Future<Output = Result<(), IndexFailure>> + Send;
+    ) -> impl Future<Output = Result<(), SearchIndexError>> + Send;
     /// Brings the index in line with `docs` (the truth) without re-embedding what is already
     /// right.
     fn sync<E: Embedder>(
         &mut self,
         docs: Vec<Doc>,
         e: &E,
-    ) -> impl Future<Output = Result<(), IndexFailure>> + Send;
+    ) -> impl Future<Output = Result<(), SearchIndexError>> + Send;
     /// Adds or replaces documents.
     fn upsert<E: Embedder>(
         &mut self,
         docs: &[Doc],
         e: &E,
-    ) -> impl Future<Output = Result<(), IndexFailure>> + Send;
+    ) -> impl Future<Output = Result<(), SearchIndexError>> + Send;
     /// Removes documents from both halves; how many were there.
     ///
     /// # Errors
     ///
-    /// Returns [`IndexFailure`] when the documents cannot be removed.
-    fn remove(&mut self, ids: &[DocId]) -> Result<u32, IndexFailure>;
+    /// Returns [`SearchIndexError`] when the documents cannot be removed.
+    fn remove(&mut self, ids: &[DocId]) -> Result<u32, SearchIndexError>;
 }

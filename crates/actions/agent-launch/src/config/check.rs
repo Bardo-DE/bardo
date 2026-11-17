@@ -1,7 +1,7 @@
 //! Reading one `[[agent]]` table into an [`Entry`]: every field checked, and the route that
 //! decides what the entry must say.
 
-use super::{ConfigFault, Entry, Raw, Route, SESSION_MARK};
+use super::{ConfigError, Entry, Raw, Route, SESSION_MARK};
 use crate::reach::Reach;
 use action_core::Rewind;
 use agent_acp_host::{ModelId, SignIn};
@@ -16,7 +16,7 @@ use account_core::DataClass;
 /// The longest label, in characters.
 const LABEL_MAX: usize = 64;
 
-fn label(program: &str, text: Option<String>) -> Result<Option<String>, ConfigFault> {
+fn label(program: &str, text: Option<String>) -> Result<Option<String>, ConfigError> {
     let Some(text) = text else { return Ok(None) };
     let trimmed = text.trim();
     if trimmed.is_empty() {
@@ -34,15 +34,15 @@ fn label(program: &str, text: Option<String>) -> Result<Option<String>, ConfigFa
     Ok(Some(trimmed.to_owned()))
 }
 
-fn bad(program: &str, why: &str) -> ConfigFault {
-    ConfigFault::Entry {
+fn bad(program: &str, why: &str) -> ConfigError {
+    ConfigError::Entry {
         program: program.to_owned(),
         why: why.to_owned(),
     }
 }
 
 /// [`bad`] for a value that failed to parse: `why`, then what the parser said.
-fn bad_value(program: &str, why: &str, cause: &impl std::fmt::Display) -> ConfigFault {
+fn bad_value(program: &str, why: &str, cause: &impl std::fmt::Display) -> ConfigError {
     bad(program, &format!("{why}: {cause}"))
 }
 
@@ -52,7 +52,7 @@ fn resume_of(
     at: &str,
     written: Option<Vec<String>>,
     claude_code: bool,
-) -> Result<Option<Vec<String>>, ConfigFault> {
+) -> Result<Option<Vec<String>>, ConfigError> {
     let Some(args) = written else {
         return Ok(claude_code.then(|| vec!["--resume".to_owned(), SESSION_MARK.to_owned()]));
     };
@@ -71,7 +71,7 @@ fn resume_of(
     }
 }
 
-fn abs(program: &str, text: &str) -> Result<AbsPath, ConfigFault> {
+fn abs(program: &str, text: &str) -> Result<AbsPath, ConfigError> {
     let path =
         AbsPath::parse(text).map_err(|e| bad_value(program, "a path must be absolute", &e))?;
     if path.is_root() {
@@ -81,7 +81,7 @@ fn abs(program: &str, text: &str) -> Result<AbsPath, ConfigFault> {
     }
 }
 
-fn env(program: &str, name: Option<&String>) -> Result<Option<EnvName>, ConfigFault> {
+fn env(program: &str, name: Option<&String>) -> Result<Option<EnvName>, ConfigError> {
     name.map(|n| {
         EnvName::parse(n).map_err(|e| bad_value(program, "not an environment variable name", &e))
     })
@@ -109,8 +109,8 @@ struct Source {
     set: Vec<(String, String)>,
 }
 
-fn source(at: &str, raw: &Raw, dir: Option<&AgentsDir>) -> Result<Source, ConfigFault> {
-    let paths = |list: &[String]| -> Result<Vec<AbsPath>, ConfigFault> {
+fn source(at: &str, raw: &Raw, dir: Option<&AgentsDir>) -> Result<Source, ConfigError> {
+    let paths = |list: &[String]| -> Result<Vec<AbsPath>, ConfigError> {
         list.iter().map(|p| abs(at, p)).collect()
     };
     let args = raw.args.clone();
@@ -131,7 +131,7 @@ fn source(at: &str, raw: &Raw, dir: Option<&AgentsDir>) -> Result<Source, Config
         (None, Some(id), Some(version)) => {
             let dir = dir.ok_or_else(|| bad(at, "a registry agent needs the agents directory"))?;
             let launch =
-                crate::registry::launch(dir, id, version).map_err(|why| ConfigFault::Registry {
+                crate::registry::launch(dir, id, version).map_err(|why| ConfigError::Registry {
                     program: at.to_owned(),
                     why,
                 })?;
@@ -169,7 +169,7 @@ fn plain_variables(
     set: &[(String, String)],
     key_env: Option<&EnvName>,
     base_url_env: Option<&EnvName>,
-) -> Result<Vec<(EnvName, String)>, ConfigFault> {
+) -> Result<Vec<(EnvName, String)>, ConfigError> {
     set.iter()
         .map(|(k, v)| {
             let name = EnvName::parse(k)
@@ -191,7 +191,7 @@ fn plain_variables(
 }
 
 /// What the route requires of the network mode, and what network makes sense for it.
-fn check_network(at: &str, route: Route, network: NetworkMode) -> Result<(), ConfigFault> {
+fn check_network(at: &str, route: Route, network: NetworkMode) -> Result<(), ConfigError> {
     match (route, network) {
         (Route::Endpoint, NetworkMode::None | NetworkMode::Allowlist) => {
             return Err(bad(
@@ -220,7 +220,7 @@ fn check_network(at: &str, route: Route, network: NetworkMode) -> Result<(), Con
 }
 
 /// What the route requires an entry to name.
-fn check_route_needs(at: &str, route: Route, raw: &Raw) -> Result<(), ConfigFault> {
+fn check_route_needs(at: &str, route: Route, raw: &Raw) -> Result<(), ConfigError> {
     if route == Route::Endpoint && (raw.base_url_env.is_none() || raw.key_env.is_none()) {
         return Err(bad(at, "the endpoint route needs base_url_env and key_env"));
     }
@@ -236,7 +236,7 @@ fn check_route_needs(at: &str, route: Route, raw: &Raw) -> Result<(), ConfigFaul
     Ok(())
 }
 
-pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFault> {
+pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigError> {
     let at = raw.program.clone();
     let name =
         ProgramName::parse(&raw.program).map_err(|e| bad_value(&at, "not a program name", &e))?;

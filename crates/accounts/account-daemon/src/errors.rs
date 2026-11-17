@@ -7,7 +7,7 @@
 //! `org.freedesktop.zbus.Error`, which a client cannot tell from any other failure.
 
 use account_dbus::accounts::{ServiceRoot, launcher_fault_error_name_in, refusal_error_name};
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use account_wire::Refusal;
 use zbus::DBusError;
 use zbus::fdo;
@@ -57,7 +57,7 @@ impl RefusedError {
         clippy::needless_pass_by_value,
         reason = "passed by name to `map_err`, which hands over the error by value"
     )]
-    pub(crate) fn launcher(fault: LauncherFault, why: impl ToString) -> Self {
+    pub(crate) fn launcher(fault: LauncherWireError, why: impl ToString) -> Self {
         Self {
             name: ErrorName::try_from(launcher_fault_error_name_in(fault, ServiceRoot::Accounts))
                 .unwrap_or_else(|_| {

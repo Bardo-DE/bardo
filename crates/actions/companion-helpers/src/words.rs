@@ -3,13 +3,13 @@
 //! routines' desk, so the wire's plain-sentence refusals read as they always have.
 
 use companion_core::{AppStep, Refusal};
-use companion_model::helper::ReachFault;
+use companion_model::helper::ReachError;
 use companion_wire::HelperReply;
 
-fn reach_sentence(fault: &ReachFault) -> String {
+fn reach_sentence(fault: &ReachError) -> String {
     match fault {
-        ReachFault::NoSuchApp(app) => format!("There is no app called {app}."),
-        ReachFault::NoApps => "Choose at least one app for it to use.".to_owned(),
+        ReachError::NoSuchApp(app) => format!("There is no app called {app}."),
+        ReachError::NoApps => "Choose at least one app for it to use.".to_owned(),
     }
 }
 

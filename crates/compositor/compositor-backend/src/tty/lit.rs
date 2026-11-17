@@ -6,7 +6,7 @@ use super::TtyBackend;
 use super::connector::vrr_enabled;
 use super::fallback::mode_ladder;
 use super::kms::{
-    ConnectorFacts, ConnectorId, CrtcId, KmsCommit, KmsError, KmsRefusal, OutputCommit,
+    ConnectorFacts, ConnectorId, CrtcId, KmsCommit, KmsError, KmsRefusedError, OutputCommit,
 };
 use super::scanouts::Scanout;
 use super::udev::DevicePath;
@@ -170,7 +170,7 @@ impl TtyBackend {
                 }
             }
         }
-        Err(refusal.unwrap_or_else(|| KmsError::Refused(KmsRefusal::Mode).into()))
+        Err(refusal.unwrap_or_else(|| KmsError::Refused(KmsRefusedError::Mode).into()))
     }
 
     /// Commits `config` and attaches a surface where the output has none for this mode.
@@ -189,7 +189,7 @@ impl TtyBackend {
             .get(path)
             .map(|device| device.kms.resources())
             .and_then(|resources| resources.crtcs.into_iter().find(|facts| facts.id == crtc))
-            .ok_or(KmsError::Refused(KmsRefusal::NoCrtc))?;
+            .ok_or(KmsError::Refused(KmsRefusedError::NoCrtc))?;
         let vrr = vrr_enabled(self.vrr, connector, &facts);
         let commit = KmsCommit::new(
             vec![OutputCommit::new(connector.id, crtc, config.mode, vrr)],
@@ -260,7 +260,7 @@ impl TtyBackend {
             .iter()
             .copied()
             .find(|crtc| !held(crtc))
-            .ok_or(KmsError::Refused(KmsRefusal::NoCrtc))
+            .ok_or(KmsError::Refused(KmsRefusedError::NoCrtc))
     }
 
     /// How many gamma steps the CRTC of `name` has per channel: the one it is lit on, else the

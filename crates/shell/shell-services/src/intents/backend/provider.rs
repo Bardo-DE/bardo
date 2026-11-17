@@ -34,16 +34,16 @@ const CALL_WAIT: Duration = Duration::from_secs(4);
 /// The shell's manifest, parsed and validated; an error is a bug in the shipped file.
 ///
 /// # Errors
-/// [`ManifestFault::Parse`] when the shipped file is not TOML of the manifest's shape,
-/// [`ManifestFault::Invalid`] when it breaks a rule of the vocabulary.
-pub fn manifest() -> Result<ValidManifest, ManifestFault> {
+/// [`ManifestLoadError::Parse`] when the shipped file is not TOML of the manifest's shape,
+/// [`ManifestLoadError::Invalid`] when it breaks a rule of the vocabulary.
+pub fn manifest() -> Result<ValidManifest, ManifestLoadError> {
     let parsed: Manifest = toml::from_str(MANIFEST)?;
     Ok(validate(parsed)?)
 }
 
 /// Why the shipped manifest cannot be read: a bug in the shipped file.
 #[derive(Debug, thiserror::Error)]
-pub enum ManifestFault {
+pub enum ManifestLoadError {
     /// The file is not TOML of the manifest's shape.
     #[error("{0}")]
     Parse(#[from] toml::de::Error),

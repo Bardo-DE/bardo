@@ -83,17 +83,17 @@ fn a_session_log_page_reads_back_what_was_appended() {
     // Out of order is refused; a refusing or absent store fails the append.
     assert_eq!(
         block_on(log.append(&s, Seq(3), &canonical()[0])),
-        Err(LogFault::OutOfOrder { expected: Seq(14) })
+        Err(LogError::OutOfOrder { expected: Seq(14) })
     );
     log.set_mood(LogMood::Refusing);
     assert_eq!(
         block_on(log.append(&s, Seq(14), &taint())),
-        Err(LogFault::Refused)
+        Err(LogError::Refused)
     );
     log.set_mood(LogMood::Down);
     assert_eq!(
         block_on(log.append(&s, Seq(14), &taint())),
-        Err(LogFault::Unavailable)
+        Err(LogError::Unavailable)
     );
 }
 

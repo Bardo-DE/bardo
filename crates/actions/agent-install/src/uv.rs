@@ -4,9 +4,9 @@
 //! The package manager checks its own packages; the actions service only names them and asks for nothing but the
 //! index.
 
-use crate::install::InstallFault;
+use crate::install::InstallError;
 use crate::run::Run;
-use agent_registry::slug::{Slug, SlugRefused};
+use agent_registry::slug::{Slug, SlugError};
 use agent_registry::snapshot::Package;
 use std::path::Path;
 
@@ -22,11 +22,11 @@ pub struct PythonPackage {
 /// Why a package string is not a name with an optional version.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{text:?} is not a package name with an optional version")]
-pub struct SpecRefused {
+pub struct SpecError {
     text: String,
     /// Why the name is not one the registry keeps, when that is what was wrong.
     #[source]
-    name: Option<SlugRefused>,
+    name: Option<SlugError>,
 }
 
 impl PythonPackage {
@@ -35,9 +35,9 @@ impl PythonPackage {
     ///
     /// # Errors
     ///
-    /// Returns [`SpecRefused`] when the text is not a package name with an optional version.
-    pub fn parse(text: &str) -> Result<Self, SpecRefused> {
-        let refused = |name| SpecRefused {
+    /// Returns [`SpecError`] when the text is not a package name with an optional version.
+    pub fn parse(text: &str) -> Result<Self, SpecError> {
+        let refused = |name| SpecError {
             text: text.to_owned(),
             name,
         };
@@ -71,10 +71,10 @@ fn words(parts: &[&str]) -> Vec<String> {
 ///
 /// # Errors
 ///
-/// Returns [`InstallFault`] when the install did not happen; nothing is left half-installed.
-pub fn uvx(package: &Package, files: &Path, run: &dyn Run) -> Result<String, InstallFault> {
+/// Returns [`InstallError`] when the install did not happen; nothing is left half-installed.
+pub fn uvx(package: &Package, files: &Path, run: &dyn Run) -> Result<String, InstallError> {
     let python =
-        PythonPackage::parse(&package.package).map_err(|source| InstallFault::BadPackage {
+        PythonPackage::parse(&package.package).map_err(|source| InstallError::BadPackage {
             package: package.package.clone(),
             source,
         })?;
@@ -107,6 +107,6 @@ pub fn uvx(package: &Package, files: &Path, run: &dyn Run) -> Result<String, Ins
         .join(&python.name)
         .is_file()
         .then_some(())
-        .ok_or(InstallFault::NoProgram)?;
+        .ok_or(InstallError::NoProgram)?;
     Ok(format!("venv/bin/{}", python.name))
 }

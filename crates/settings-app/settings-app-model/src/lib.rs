@@ -140,7 +140,7 @@ pub use memory_consent::{
     holds_memory_settings, is_memory_setting, kept_value, tells_confinement, to_confirm,
 };
 pub use navigation::{landing, opening_page, visible_pages};
-pub use notice::{Inbox, Notice, Outbox, Receiver, WindowGone, inbox};
+pub use notice::{Inbox, Notice, Outbox, Receiver, WindowGoneError, inbox};
 pub use origin::{OriginRule, SchemaOrigin};
 pub use outside::{
     AGENTS_OWN, Assistant, Entry, assistants_of, model_choice, model_menu, model_word, way_choice,

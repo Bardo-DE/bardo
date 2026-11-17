@@ -4,7 +4,7 @@
 use std::fs;
 
 use plugin_host::manifest::ManifestError;
-use ui_extensions::{Capability, Fault, STYLESHEET_CAP_BYTES, Search, Trouble};
+use ui_extensions::{Capability, EntryError, STYLESHEET_CAP_BYTES, Search, Trouble};
 
 use crate::support::{
     ICONS, LOOK, Scratch, install, install_entries, install_look, manifest, write,
@@ -88,7 +88,7 @@ fn a_stylesheet_over_its_cap_sets_the_extension_aside() {
     assert_eq!(aside[0].id.as_str(), "org.example.Big");
     assert!(matches!(
         aside[0].reason,
-        ManifestError::Provision(Fault::TooBig { .. })
+        ManifestError::Provision(EntryError::TooBig { .. })
     ));
     assert_eq!(resolved.problems()[0].words(), LOOK_WORDS);
 }

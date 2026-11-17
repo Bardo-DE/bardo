@@ -121,31 +121,31 @@ fn a_file_that_cannot_be_read_is_refused_not_emptied() {
         .to_json()
         .expect("json")
         .replace("implicit", "start_tls");
-    let cases: Vec<(&str, String, StoreFault)> = vec![
+    let cases: Vec<(&str, String, AccountStoreError)> = vec![
         (
             "not json",
             "{".into(),
-            StoreFault::Unreadable("EOF while parsing an object at line 1 column 1".into()),
+            AccountStoreError::Unreadable("EOF while parsing an object at line 1 column 1".into()),
         ),
         (
             "no vocab",
             "{}".into(),
-            StoreFault::Unreadable("no vocab".into()),
+            AccountStoreError::Unreadable("no vocab".into()),
         ),
         (
             "from a newer build",
             newer,
-            StoreFault::FromNewerVocabulary(VocabVersion(VocabVersion::CURRENT.0 + 1)),
+            AccountStoreError::FromNewerVocabulary(VocabVersion(VocabVersion::CURRENT.0 + 1)),
         ),
         (
             "from before anything was stored",
             older,
-            StoreFault::NoMigration(VocabVersion(FIRST_PERSISTED.0 - 1)),
+            AccountStoreError::NoMigration(VocabVersion(FIRST_PERSISTED.0 - 1)),
         ),
         (
             "an endpoint that does not go with its scheme",
             incoherent,
-            StoreFault::BadEndpoint(AccountId::parse("cloud").expect("id")),
+            AccountStoreError::BadEndpoint(AccountId::parse("cloud").expect("id")),
         ),
     ];
     for (name, text, fault) in cases {
@@ -443,7 +443,7 @@ fn a_session_grant_survives_the_document_and_keeps_its_form() {
     let bad = json.replace("sess-1", "Sess 1");
     assert!(matches!(
         Persisted::from_json(&bad),
-        Err(StoreFault::Unreadable(_))
+        Err(AccountStoreError::Unreadable(_))
     ));
 }
 

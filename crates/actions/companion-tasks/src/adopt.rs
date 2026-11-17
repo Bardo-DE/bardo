@@ -4,7 +4,7 @@
 //! matches the plan, so the next turn is planned from the person's words and the steps the log
 //! kept, with every handle a label and every call the crash cut off ended interrupted.
 
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::linger::dismissed;
 use crate::runtime::{Companion, idle_state};
 use crate::seams::Surface;
@@ -64,17 +64,17 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
     pub async fn adopt_stored(
         &mut self,
         session: &SessionId,
         plan: &ResumePlan,
-    ) -> Result<TaskId, ServeFault> {
+    ) -> Result<TaskId, ServeError> {
         self.refresh_catalogue().await;
         self.intents
             .session_handles(session.clone())
             .await
-            .map_err(ServeFault::Router)?;
+            .map_err(ServeError::Router)?;
         let opening = &plan.opening;
         let mut rt = TaskRuntime::new(
             session.clone(),
@@ -99,12 +99,12 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
     pub async fn run_begun_tapped<T: crate::tap::Tap>(
         &mut self,
         begun: crate::runtime::Begun,
         tap: &mut T,
-    ) -> Result<(), ServeFault> {
+    ) -> Result<(), ServeError> {
         self.record(&begun.session, &begun.asked).await;
         self.run_interactive_tapped(&begun.task, begun.first, tap)
             .await

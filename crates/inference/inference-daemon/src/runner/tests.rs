@@ -121,7 +121,7 @@ async fn kinds_the_runner_cannot_serve_are_refused_unsupported_and_so_is_a_step_
     for request in cases {
         assert_eq!(
             finish(&turns, request).await,
-            InferReply::Refused(InferRefusal::Unsupported)
+            InferReply::Refused(InferRefusedError::Unsupported)
         );
     }
     // An image type with no encoder never reaches the engine.
@@ -131,7 +131,7 @@ async fn kinds_the_runner_cannot_serve_are_refused_unsupported_and_so_is_a_step_
     })]);
     assert_eq!(
         finish(&turns, gif).await,
-        InferReply::Refused(InferRefusal::Unsupported)
+        InferReply::Refused(InferRefusedError::Unsupported)
     );
 }
 
@@ -148,7 +148,7 @@ async fn a_model_with_no_embedding_details_refuses_to_embed() {
     ));
     assert_eq!(
         finish(&turns, request).await,
-        InferReply::Refused(InferRefusal::Unsupported)
+        InferReply::Refused(InferRefusedError::Unsupported)
     );
 }
 

@@ -1,28 +1,28 @@
 //! The typed errors of the launcher interface (`org.bardo.Accounts1.Launcher`, served by accountd),
 //! beside the refusals of `refusal`: `org.bardo.Accounts1.Error.<Name>`. The fault values are
-//! `account_wire::LauncherFault`; this reads and writes their bus error names. A reader takes the
+//! `account_wire::LauncherWireError`; this reads and writes their bus error names. A reader takes the
 //! same names under any service's prefix.
 
 use crate::accounts::ServiceRoot;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 
 /// The error name accountd replies with: the same as [`launcher_fault_error_name_in`] with
 /// [`ServiceRoot::Accounts`].
 #[must_use]
-pub fn launcher_fault_error_name(fault: LauncherFault) -> String {
+pub fn launcher_fault_error_name(fault: LauncherWireError) -> String {
     launcher_fault_error_name_in(fault, ServiceRoot::Accounts)
 }
 
 /// The error name the daemon `service` replies with.
 #[must_use]
-pub fn launcher_fault_error_name_in(fault: LauncherFault, service: ServiceRoot) -> String {
+pub fn launcher_fault_error_name_in(fault: LauncherWireError, service: ServiceRoot) -> String {
     format!("{}.{}", service.error_prefix(), fault.name())
 }
 
 /// The fault an error name stands for, if it is one of ours, under any service's prefix.
 #[must_use]
-pub fn launcher_fault_from_error_name(name: &str) -> Option<LauncherFault> {
-    LauncherFault::ALL.into_iter().find(|fault| {
+pub fn launcher_fault_from_error_name(name: &str) -> Option<LauncherWireError> {
+    LauncherWireError::ALL.into_iter().find(|fault| {
         ServiceRoot::ALL
             .into_iter()
             .any(|service| launcher_fault_error_name_in(*fault, service) == name)
@@ -31,7 +31,7 @@ pub fn launcher_fault_from_error_name(name: &str) -> Option<LauncherFault> {
 
 /// The launcher fault a daemon's error reply stands for, if it is one.
 #[must_use]
-pub fn launcher_fault_of(error: &zbus::Error) -> Option<LauncherFault> {
+pub fn launcher_fault_of(error: &zbus::Error) -> Option<LauncherWireError> {
     match error {
         zbus::Error::MethodError(name, _, _) => launcher_fault_from_error_name(name.as_str()),
         _ => None,
@@ -45,7 +45,7 @@ mod tests {
     #[test]
     fn every_fault_has_a_distinct_valid_name_that_reads_back() {
         let mut seen = std::collections::BTreeSet::new();
-        for fault in LauncherFault::ALL {
+        for fault in LauncherWireError::ALL {
             let name = launcher_fault_error_name(fault);
             assert!(
                 zbus::names::ErrorName::try_from(name.as_str()).is_ok(),

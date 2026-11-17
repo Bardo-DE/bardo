@@ -3,7 +3,7 @@
 
 use action_core::{ContextKeep, Keep, TurnVia};
 use provenance::SpaceId;
-use speech_wire::{CancelCause, UtteranceEnd, VoiceEvent as Frame, VoiceRefusal};
+use speech_wire::{CancelCause, UtteranceEnd, VoiceError, VoiceEvent as Frame};
 
 use super::command::{VoiceCommand, VoiceEffect, VoiceEvent};
 use super::model::{AskScope, Heard, HoldToTalk, Notice, Phase, Then, Voice, VoiceConsent, Words};
@@ -159,9 +159,9 @@ fn began(state: Voice) -> (Voice, Vec<VoiceEffect>) {
     (Voice { phase, ..state }, effects)
 }
 
-fn refused(state: Voice, refusal: VoiceRefusal) -> (Voice, Vec<VoiceEffect>) {
+fn refused(state: Voice, refusal: VoiceError) -> (Voice, Vec<VoiceEffect>) {
     match refusal {
-        VoiceRefusal::NeedsConsent => (
+        VoiceError::NeedsConsent => (
             Voice {
                 phase: Phase::Idle,
                 sheet: true,

@@ -1,7 +1,7 @@
 //! Changes under way with several tabs: every report of a job goes to the tab that asked for it.
 
 use files_core::{
-    Answer, Bring, ByteSize, Conflict, FileName, Finish, FolderPath, OpEvent, OpFailure, OpKind,
+    Answer, Bring, ByteSize, Conflict, FileName, Finish, FolderPath, OpError, OpEvent, OpKind,
     Outcome, Progress, Resolution, Summary,
 };
 use files_model::{Effect, Input, Question, TabId, Tabbed, Tabs, Work};
@@ -148,8 +148,8 @@ fn what_a_closed_tabs_job_reports_is_dropped_but_its_question_is_answered_stop()
         ),
         (
             "a failure is told in the front tab",
-            finished(OpKind::Copy, Finish::Failed(OpFailure::NoSpace), None),
-            vec![Tabbed::new(b, Effect::Tell(OpFailure::NoSpace))],
+            finished(OpKind::Copy, Finish::Failed(OpError::NoSpace), None),
+            vec![Tabbed::new(b, Effect::Tell(OpError::NoSpace))],
         ),
     ];
     for (why, event, want) in table {

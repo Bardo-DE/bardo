@@ -8,8 +8,8 @@
 //! the verdict, and nothing else: no headers, no path, no body.
 
 use super::host::Host;
-use super::policy::{EgressPolicy, Refusal};
-use super::request::{BadRequest, HEAD_DEADLINE, Request, Target, parse_head, read_head};
+use super::policy::{EgressPolicy, EgressRefusedError};
+use super::request::{BadRequestError, HEAD_DEADLINE, Request, Target, parse_head, read_head};
 use super::resolve::Resolver;
 use crate::forward::{Duplex, Listening, splice};
 use std::io::{self, Write};
@@ -29,7 +29,7 @@ pub enum Outcome {
     /// A plain http request was forwarded.
     Relayed,
     /// The policy said no.
-    Refused(Refusal),
+    Refused(EgressRefusedError),
     /// The name did not resolve, or nothing answered.
     Unreachable,
     /// The request was not understood (no target is known).
@@ -60,7 +60,7 @@ impl Journal for Silent {
 }
 
 enum Failure {
-    Refused(Refusal),
+    Refused(EgressRefusedError),
     Unreachable,
 }
 
@@ -148,7 +148,7 @@ impl Gate {
     pub fn serve<S: Duplex>(&self, mut client: S) {
         let head = match read_head(&mut client, HEAD_DEADLINE) {
             Ok(head) => head,
-            Err(BadRequest::Closed) => return,
+            Err(BadRequestError::Closed) => return,
             Err(_) => return self.bad(&mut client),
         };
         let Ok(request) = parse_head(&head.bytes[..head.end]) else {

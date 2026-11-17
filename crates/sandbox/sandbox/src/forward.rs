@@ -124,19 +124,19 @@ pub struct Loopback(SocketAddrV4);
 /// A host that is not the IPv4 loopback address.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("the bridge reaches 127.0.0.1 and nothing else")]
-pub struct NotLoopback;
+pub struct NotLoopbackError;
 
 impl Loopback {
     /// `host` and `port`, if the host is exactly `127.0.0.1`.
     ///
     /// # Errors
-    /// Returns `NotLoopback` unless `host` is exactly `127.0.0.1` and `port` is not 0.
-    pub fn new(host: &str, port: u16) -> Result<Self, NotLoopback> {
+    /// Returns `NotLoopbackError` unless `host` is exactly `127.0.0.1` and `port` is not 0.
+    pub fn new(host: &str, port: u16) -> Result<Self, NotLoopbackError> {
         match host.parse::<Ipv4Addr>() {
             Ok(ip) if ip == Ipv4Addr::LOCALHOST && port != 0 => {
                 Ok(Self(SocketAddrV4::new(ip, port)))
             }
-            _ => Err(NotLoopback),
+            _ => Err(NotLoopbackError),
         }
     }
 

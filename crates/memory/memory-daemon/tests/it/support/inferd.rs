@@ -10,7 +10,7 @@ use account_wire::names::{INFERENCE_BUS, INFERENCE_PATH};
 use account_wire::{decode_frame, encode_frame};
 use base_ids::Tokens;
 use inference_core::{
-    ChatReply, ClientFrame, EmbedReply, EmbedVector, InferEvent, InferRefusal, InferReply,
+    ChatReply, ClientFrame, EmbedReply, EmbedVector, InferEvent, InferRefusedError, InferReply,
     InferRequest, ServedBy, StopReason, TurnUsage,
 };
 use inference_dbus::inference::NeedArg;
@@ -139,7 +139,7 @@ fn answer(class: &str, request: InferRequest, seen: &Mutex<Seen>, draft: &str) -
                 served(),
             ))
         }
-        _ => InferReply::Refused(InferRefusal::Unsupported),
+        _ => InferReply::Refused(InferRefusedError::Unsupported),
     };
     vec![InferEvent::Routed(served()), InferEvent::Finished(reply)]
 }

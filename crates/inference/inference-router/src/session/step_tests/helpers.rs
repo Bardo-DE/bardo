@@ -15,8 +15,9 @@ use account_match::{ComputerUseNeed, LlmNeed, SpeechNeed};
 use base_ids::Tokens;
 use inference_core::{
     AudioFrame, AudioRate, Base64Bytes, ClientFrame, ComputerUseBegin, ComputerUseStepReply,
-    InferEvent, InferRefusal, InferReply, InferRequest, LangPick, ModelError, ModelRef, Readiness,
-    RequestKind, ServedBy, SpeakRequest, Task, TaskRequest, TranscribeBegin, TranscribeMode, Why,
+    InferEvent, InferRefusedError, InferReply, InferRequest, LangPick, ModelError, ModelRef,
+    Readiness, RequestKind, ServedBy, SpeakRequest, Task, TaskRequest, TranscribeBegin,
+    TranscribeMode, Why,
 };
 
 pub(super) fn model() -> ModelRef {
@@ -244,7 +245,7 @@ pub(super) fn done(reply: InferReply) -> SessionOut {
 }
 
 pub(super) fn unsupported() -> SessionOut {
-    done(InferReply::Refused(InferRefusal::Unsupported))
+    done(InferReply::Refused(InferRefusedError::Unsupported))
 }
 
 pub(super) fn frame(f: ClientFrame) -> SessionIn {

@@ -14,7 +14,7 @@ use std::hash::{DefaultHasher, Hash, Hasher};
 /// The most handles one session holds.
 ///
 /// An app is the source of what fills a table (a search can return thousands of things); a session
-/// that reaches this refuses the next result with [`HandleLimit::Handles`] rather than dropping an
+/// that reaches this refuses the next result with [`HandleLimitError::Handles`] rather than dropping an
 /// older handle a planner may still name. A task that needs more starts a new session.
 pub const MAX_HANDLES: usize = 4096;
 
@@ -26,13 +26,13 @@ pub const MAX_HANDLES: usize = 4096;
 pub const MAX_VIEW_TEXTS: usize = 512;
 
 /// The most things one session may have been shown (`SessionRecord::known`), for the same
-/// reason and with the same refusal ([`HandleLimit::Known`]).
+/// reason and with the same refusal ([`HandleLimitError::Known`]).
 pub const MAX_KNOWN: usize = 4096;
 
 /// Why a session cannot take in one more result. Both read, to a planner, as a call that
 /// returned too many things (`BudgetKind::FanOut`), and the daemon logs which.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum HandleLimit {
+pub enum HandleLimitError {
     /// The session holds as many handles as it may.
     #[error("the session holds as many handles as it may")]
     Handles,
@@ -130,14 +130,14 @@ impl HandleTable {
     ///
     /// # Errors
     ///
-    /// Returns [`HandleLimit`] when the table is full.
+    /// Returns [`HandleLimitError`] when the table is full.
     pub fn try_mint(
         &mut self,
         value: Labelled<HandleValue>,
         from: Source,
-    ) -> Result<Handle, HandleLimit> {
+    ) -> Result<Handle, HandleLimitError> {
         if self.is_full() {
-            return Err(HandleLimit::Handles);
+            return Err(HandleLimitError::Handles);
         }
         Ok(self.mint(value, from))
     }
@@ -238,15 +238,15 @@ impl HandleTable {
     ///
     /// # Errors
     ///
-    /// Returns [`HandleLimit`] when the thing is new and the table is full.
+    /// Returns [`HandleLimitError`] when the thing is new and the table is full.
     pub fn try_mint_entity(
         &mut self,
         thing: EntityId,
         label: Label,
-    ) -> Result<Handle, HandleLimit> {
+    ) -> Result<Handle, HandleLimitError> {
         match self.handle_of(&thing, &label) {
             Some(known) => Ok(known),
-            None if self.is_full() => Err(HandleLimit::Handles),
+            None if self.is_full() => Err(HandleLimitError::Handles),
             None => Ok(self.mint_entity(thing, label)),
         }
     }
@@ -291,15 +291,15 @@ impl HandleTable {
     ///
     /// # Errors
     ///
-    /// Returns [`HandleLimit`] when the text is new and the table is full.
+    /// Returns [`HandleLimitError`] when the text is new and the table is full.
     pub fn try_mint_text(
         &mut self,
         text: Labelled<String>,
         from: Source,
-    ) -> Result<Handle, HandleLimit> {
+    ) -> Result<Handle, HandleLimitError> {
         match self.text_handle(&text, &from) {
             Some(known) => Ok(known),
-            None if self.is_full() => Err(HandleLimit::Handles),
+            None if self.is_full() => Err(HandleLimitError::Handles),
             None => Ok(self.mint_text(text, from)),
         }
     }

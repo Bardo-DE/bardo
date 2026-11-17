@@ -19,7 +19,7 @@ use super::code_of;
 use crate::client::ClientState;
 use crate::foreign_toplevel_list::window_of_identifier;
 use crate::handler::EventSink;
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use account_core::SpaceId;
 use compositor_core::app::AppKey;
 use compositor_core::desktop::{
@@ -509,13 +509,13 @@ where
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn on_bind(
     part: &mut BardoDesktopPart,
     view: &DesktopView<'_>,
     manager: BardoDesktopManagerV1,
     may_manage: bool,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let BardoDesktopPart { bound, makers, .. } = part;
     let mut fresh = Bound::new(manager, may_manage);
     for space in view.model.spaces().iter() {
@@ -542,14 +542,14 @@ pub fn on_bind(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn on_get_window_for(
     part: &mut BardoDesktopPart,
     view: &DesktopView<'_>,
     manager: &BardoDesktopManagerV1,
     window: WindowId,
     object: BardoDesktopWindowV1,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let BardoDesktopPart { bound, makers, .. } = part;
     let Some(held) = bound.iter_mut().find(|held| held.manager == *manager) else {
         return Ok(());
@@ -614,12 +614,12 @@ pub fn on_manager_gone(part: &mut BardoDesktopPart, manager: &BardoDesktopManage
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_note(
     part: &mut BardoDesktopPart,
     view: &DesktopView<'_>,
     note: &DesktopNote,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let BardoDesktopPart { bound, makers, .. } = part;
     for held in bound.iter_mut() {
         held.prune();

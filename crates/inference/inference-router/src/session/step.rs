@@ -7,7 +7,7 @@ use super::{
 use crate::audio::{audio_ms, check_audio};
 use account_match::Need;
 use inference_core::{
-    AudioRate, ClientFrame, Declined, InferEvent, InferRefusal, InferReply, InferRequest,
+    AudioRate, ClientFrame, Declined, InferEvent, InferRefusedError, InferReply, InferRequest,
     ModelError, Readiness, RequestKind, ServedBy, StageNote, TranscribeBegin, Why,
 };
 
@@ -117,7 +117,7 @@ pub fn step(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<S
                     answer,
                     queued,
                 },
-                vec![refused(InferRefusal::Unsupported)],
+                vec![refused(InferRefusedError::Unsupported)],
             ),
         },
         (
@@ -129,13 +129,13 @@ pub fn step(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<S
         }
         (idle @ Phase::Idle { .. }, SessionIn::Frame(ClientFrame::Cancel)) => (idle, vec![]),
         (idle @ Phase::Idle { .. }, SessionIn::Frame(_)) => {
-            (idle, vec![refused(InferRefusal::Unsupported)])
+            (idle, vec![refused(InferRefusedError::Unsupported)])
         }
         (Phase::Idle { served, .. }, SessionIn::EngineFailed) => {
             (Phase::Closed, vec![SessionOut::Release(model_of(&served))])
         }
         (opened @ Phase::Opened, SessionIn::Frame(ClientFrame::Request(_))) => {
-            (opened, vec![refused(InferRefusal::Unsupported)])
+            (opened, vec![refused(InferRefusedError::Unsupported)])
         }
         (phase @ Phase::InTurn { .. }, input) => in_turn(spec, phase, input),
         (phase, _) => (phase, vec![]),
@@ -146,7 +146,7 @@ fn finished(reply: InferReply) -> SessionOut {
     SessionOut::Emit(InferEvent::Finished(reply))
 }
 
-fn refused(refusal: InferRefusal) -> SessionOut {
+fn refused(refusal: InferRefusedError) -> SessionOut {
     finished(InferReply::Refused(refusal))
 }
 
@@ -240,7 +240,7 @@ fn request_in_idle(
         return (idle, vec![]);
     };
     if !admits(spec, *computer_use, &request) {
-        return (idle, vec![refused(InferRefusal::Unsupported)]);
+        return (idle, vec![refused(InferRefusedError::Unsupported)]);
     }
     let kind = request.kind();
     let audio = match kind {
@@ -298,7 +298,7 @@ fn start_hearing(before: Phase, begin: &TranscribeBegin) -> (Phase, Vec<SessionO
             ComputerUseProgress::NotBegun,
             EngineNow::Loading,
         ),
-        other => return (other, vec![refused(InferRefusal::Unsupported)]),
+        other => return (other, vec![refused(InferRefusedError::Unsupported)]),
     };
     let hearing = Phase::Hearing {
         served,
@@ -316,7 +316,10 @@ fn start_hearing(before: Phase, begin: &TranscribeBegin) -> (Phase, Vec<SessionO
     if begin.rate == V1_RATE {
         (hearing, vec![])
     } else {
-        (settle(hearing), vec![refused(InferRefusal::Unsupported)])
+        (
+            settle(hearing),
+            vec![refused(InferRefusedError::Unsupported)],
+        )
     }
 }
 
@@ -441,7 +444,7 @@ fn hearing(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
         ),
         SessionIn::Frame(_) => (
             same(heard, audio, engine, chat),
-            vec![refused(InferRefusal::Unsupported)],
+            vec![refused(InferRefusedError::Unsupported)],
         ),
         SessionIn::Routed(_)
         | SessionIn::EngineProgress(_)
@@ -546,7 +549,7 @@ fn in_turn(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
                 (None, true) => (same(audio, Some(request)), vec![]),
                 _ => (
                     same(audio, queued),
-                    vec![refused(InferRefusal::Unsupported)],
+                    vec![refused(InferRefusedError::Unsupported)],
                 ),
             }
         }
@@ -555,7 +558,7 @@ fn in_turn(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
         {
             (
                 same(audio, queued),
-                vec![refused(InferRefusal::Unsupported)],
+                vec![refused(InferRefusedError::Unsupported)],
             )
         }
         SessionIn::Frame(ClientFrame::Audio(frame)) => match check_audio(audio, V1_RATE, &frame) {

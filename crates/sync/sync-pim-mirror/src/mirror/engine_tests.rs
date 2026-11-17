@@ -9,8 +9,8 @@ use base_time::UnixSeconds;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use sync_core::RemoteId;
 use sync_core::{
-    BaseVersion, ByteRange, ChangePage, Cursor, MemoryReplica, PutItem, PutRefused, PutTarget,
-    Quota, RemoteVersion, Replica, ReplicaError,
+    BaseVersion, ByteRange, ChangePage, Cursor, MemoryReplica, PutError, PutItem, PutTarget, Quota,
+    RemoteVersion, Replica, ReplicaError,
 };
 use sync_engine::clock::ManualClock;
 use sync_engine::engine::Engine;
@@ -41,16 +41,12 @@ impl Replica for Server {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         self.0.writes.fetch_add(1, Ordering::Relaxed);
         self.0.inner.put(item, base).await
     }
 
-    async fn remove(
-        &self,
-        item: &RemoteId,
-        base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    async fn remove(&self, item: &RemoteId, base: BaseVersion) -> Result<RemoteVersion, PutError> {
         self.0.writes.fetch_add(1, Ordering::Relaxed);
         self.0.inner.remove(item, base).await
     }

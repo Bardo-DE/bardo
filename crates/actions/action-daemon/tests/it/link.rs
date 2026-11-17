@@ -152,10 +152,10 @@ async fn an_app_that_is_away_is_unavailable_and_never_a_panic() {
         link.undo(&gone, &token, &Actor::Cli).await,
         Err(UndoFault::AppUnavailable)
     );
-    assert_eq!(link.context(&gone).await, Err(LinkFault::Unavailable));
+    assert_eq!(link.context(&gone).await, Err(LinkError::Unavailable));
     assert_eq!(
         link.preview(&gone, &thread("x")).await,
-        Err(LinkFault::Unavailable)
+        Err(LinkError::Unavailable)
     );
 }
 

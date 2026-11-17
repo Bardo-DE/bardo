@@ -1,8 +1,8 @@
 //! For tests: an in-memory pipe, a scripted `Spawn` and a file system in a map. No process, no
 //! clock, no network.
 
-use super::files::{FileFault, Files};
-use super::spawn::{AgentChild, LaunchPlan, SessionMeta, SignIn, Spawn, SpawnFault, Spawned};
+use super::files::{FileError, Files};
+use super::spawn::{AgentChild, LaunchPlan, SessionMeta, SignIn, Spawn, SpawnError, Spawned};
 use agent_client_protocol::{Agent, Client, ConnectTo, Error, Lines};
 use base_path::AbsPath;
 use futures_channel::mpsc::{UnboundedReceiver, UnboundedSender, unbounded};
@@ -37,7 +37,7 @@ pub fn pipe() -> (ChannelWire, ChannelWire) {
 /// The other end of the pipe is gone.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("the other end of the pipe is gone")]
-pub struct PipeClosed;
+pub struct PipeClosedError;
 
 impl ChannelWire {
     /// The next line; `None` when the other end is gone. Cancel-safe.
@@ -48,13 +48,13 @@ impl ChannelWire {
     /// Writes one line.
     ///
     /// # Errors
-    /// Returns [`PipeClosed`] when the other end is gone.
+    /// Returns [`PipeClosedError`] when the other end is gone.
     #[expect(
         clippy::map_err_ignore,
-        reason = "`PipeClosed` says all there is: the send failed because the other end dropped"
+        reason = "`PipeClosedError` says all there is: the send failed because the other end dropped"
     )]
-    pub fn write_line(&mut self, line: String) -> Result<(), PipeClosed> {
-        self.tx.unbounded_send(line).map_err(|_| PipeClosed)
+    pub fn write_line(&mut self, line: String) -> Result<(), PipeClosedError> {
+        self.tx.unbounded_send(line).map_err(|_| PipeClosedError)
     }
 }
 
@@ -194,9 +194,9 @@ impl Spawn for FakeSpawn {
     async fn spawn(
         &mut self,
         plan: &LaunchPlan,
-    ) -> Result<Spawned<ChannelWire, FakeChild>, SpawnFault> {
+    ) -> Result<Spawned<ChannelWire, FakeChild>, SpawnError> {
         locked(&self.seen.0).plans.push(plan.clone());
-        let wire = self.wires.pop_front().ok_or(SpawnFault::Process)?;
+        let wire = self.wires.pop_front().ok_or(SpawnError::Process)?;
         let child = FakeChild {
             seen: self.seen.clone(),
             killed: false,
@@ -261,7 +261,7 @@ impl FakeFiles {
 }
 
 impl Files for FakeFiles {
-    fn real(&self, path: &AbsPath) -> Result<AbsPath, FileFault> {
+    fn real(&self, path: &AbsPath) -> Result<AbsPath, FileError> {
         let disk = locked(&self.0);
         for (at, to) in &disk.links {
             if at.covers(path) {
@@ -269,17 +269,17 @@ impl Files for FakeFiles {
                 let joined = format!("{}{rest}", to.as_str());
                 return AbsPath::parse(&joined).map_err(|error| {
                     tracing::debug!(%error, "the linked path is not absolute");
-                    FileFault::Refused
+                    FileError::Refused
                 });
             }
         }
         Ok(path.clone())
     }
 
-    fn read(&mut self, real: &AbsPath, _within: &AbsPath) -> Result<String, FileFault> {
+    fn read(&mut self, real: &AbsPath, _within: &AbsPath) -> Result<String, FileError> {
         let mut disk = locked(&self.0);
         disk.reads += 1;
-        disk.files.get(real).cloned().ok_or(FileFault::NotFound)
+        disk.files.get(real).cloned().ok_or(FileError::NotFound)
     }
 
     fn write(
@@ -287,17 +287,17 @@ impl Files for FakeFiles {
         real: &AbsPath,
         _within: &AbsPath,
         content: &str,
-    ) -> Result<Option<String>, FileFault> {
+    ) -> Result<Option<String>, FileError> {
         let mut disk = locked(&self.0);
         disk.writes.push((real.clone(), content.to_owned()));
         Ok(disk.files.insert(real.clone(), content.to_owned()))
     }
 
-    fn remove(&mut self, real: &AbsPath, _within: &AbsPath) -> Result<(), FileFault> {
+    fn remove(&mut self, real: &AbsPath, _within: &AbsPath) -> Result<(), FileError> {
         locked(&self.0)
             .files
             .remove(real)
             .map(|_| ())
-            .ok_or(FileFault::NotFound)
+            .ok_or(FileError::NotFound)
     }
 }

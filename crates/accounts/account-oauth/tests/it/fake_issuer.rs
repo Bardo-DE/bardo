@@ -7,7 +7,7 @@ use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Scheme, send};
 use account_fake_servers::{Consent, FakeIssuer, IssuerEvent, Running, TokenResult, follow};
 use account_oauth::{
-    ExchangeFault, LoopbackFault, LoopbackServer, Pkce, RenewOutcome, authorize_url, exchange_code,
+    ExchangeFault, LoopbackError, LoopbackServer, Pkce, RenewOutcome, authorize_url, exchange_code,
     renew, revoke,
 };
 use account_provider::{ClientChannel, ClientEntry, ClientId, Issuer, IssuerEndpoints};
@@ -75,7 +75,7 @@ async fn browse(
     pkce: &Pkce,
 ) -> (
     String,
-    Result<account_oauth::AuthCode, LoopbackFault>,
+    Result<account_oauth::AuthCode, LoopbackError>,
     tokio::task::JoinHandle<std::io::Result<account_fake_servers::Visit>>,
 ) {
     let server = LoopbackServer::bind().await.expect("bind");
@@ -152,7 +152,7 @@ async fn a_full_pkce_sign_in_exchanges_the_code_the_browser_carried() {
         &redirect,
     )
     .await;
-    assert_eq!(again, Err(ExchangeFault::Refused));
+    assert_eq!(again, Err(ExchangeCauseError::Refused));
 }
 
 #[tokio::test]
@@ -171,7 +171,7 @@ async fn a_wrong_verifier_is_refused_by_the_issuer() {
         &redirect,
     )
     .await;
-    assert_eq!(result, Err(ExchangeFault::Refused));
+    assert_eq!(result, Err(ExchangeCauseError::Refused));
 }
 
 #[tokio::test]
@@ -185,7 +185,7 @@ async fn a_wrong_state_redirect_is_refused_and_nothing_is_exchanged() {
     ));
     assert!(matches!(
         server.wait(&pkce().state).await,
-        Err(LoopbackFault::WrongState)
+        Err(LoopbackError::WrongState)
     ));
     attacker.await.expect("task");
     assert_eq!(tokens_issued(&issuer), 0);
@@ -202,7 +202,7 @@ async fn an_oversized_request_line_is_refused() {
     let sender = tokio::spawn(raw(port, long.into_bytes()));
     assert!(matches!(
         server.wait(&pkce().state).await,
-        Err(LoopbackFault::Oversized)
+        Err(LoopbackError::Oversized)
     ));
     sender.await.expect("task");
 }
@@ -235,7 +235,7 @@ async fn a_person_who_says_no_ends_the_sign_in_with_the_issuers_error() {
     issuer.set_consent(Consent::Deny);
     let pkce = pkce();
     let (_redirect, outcome, browser) = browse(&endpoints, &pkce).await;
-    assert!(matches!(outcome, Err(LoopbackFault::Refused(why)) if why == "access_denied"));
+    assert!(matches!(outcome, Err(LoopbackError::Refused(why)) if why == "access_denied"));
     assert!(
         browser
             .await

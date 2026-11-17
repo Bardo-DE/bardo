@@ -10,7 +10,7 @@ use inference_core::OpenOptions;
 use inference_core::testing::{FakeInferSession, Script, ScriptStep};
 use inference_core::{ChatControl, ToolParallelism};
 use inference_core::{
-    ChatReply, ClientFrame, InferEvent, InferRefusal, InferReply, InferRequest, RequestKind,
+    ChatReply, ClientFrame, InferEvent, InferRefusedError, InferReply, InferRequest, RequestKind,
     ServedBy, StopReason, TurnUsage,
 };
 use std::sync::Mutex;
@@ -107,7 +107,7 @@ async fn a_refusal_is_an_error_the_app_shows() {
     let script = Script {
         kind: RequestKind::Chat,
         steps: vec![ScriptStep::Emit(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::NeedsGrant,
+            InferRefusedError::NeedsGrant,
         )))],
     };
     let got = accounts(script)
@@ -115,7 +115,7 @@ async fn a_refusal_is_an_error_the_app_shows() {
         .await;
     assert_eq!(
         got,
-        Err(ClientError::InferRefused(InferRefusal::NeedsGrant))
+        Err(ClientError::InferRefused(InferRefusedError::NeedsGrant))
     );
 }
 

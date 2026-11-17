@@ -6,7 +6,7 @@
 //! as it runs, so dropping it cancels, and the sink can end the turn early by returning
 //! `ControlFlow::Break(())`.
 
-use crate::error::{InferRefusal, ModelError};
+use crate::error::{InferRefusedError, ModelError};
 use crate::event::InferEvent;
 use crate::reply::{ChatReply, EmbedReply, InferReply};
 use crate::request::{ChatRequest, EmbedRequest, InferRequest, TaskRequest};
@@ -41,13 +41,13 @@ pub trait ChatSink: Send {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum TurnError {
     /// The request was not run (a cap, a missing grant, a kind of request the model does not take).
-    Refused(InferRefusal),
+    Refused(InferRefusedError),
     /// The model was asked and failed.
     Failed(ModelError),
 }
 
-impl From<InferRefusal> for TurnError {
-    fn from(refusal: InferRefusal) -> Self {
+impl From<InferRefusedError> for TurnError {
+    fn from(refusal: InferRefusedError) -> Self {
         TurnError::Refused(refusal)
     }
 }
@@ -116,6 +116,6 @@ pub async fn answer(
             Ok(reply) => InferReply::Embed(reply),
             Err(error) => error.into(),
         },
-        _ => InferReply::Refused(InferRefusal::Unsupported),
+        _ => InferReply::Refused(InferRefusedError::Unsupported),
     }
 }

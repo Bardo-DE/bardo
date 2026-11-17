@@ -2,7 +2,7 @@
 //! userinfo), and what a non-success status means for the account.
 
 use account_core::EndpointUrl;
-use account_oauth_probe_proto::{Failure, bearer_get};
+use account_oauth_probe_proto::{ProbeError, bearer_get};
 use account_provider::ProviderError;
 use http_core::Http;
 use http_core::http::Response;
@@ -40,14 +40,14 @@ pub(crate) fn fault(status: u16) -> ProviderError {
 }
 
 /// What a failed read means for the account.
-pub(crate) fn failure(failure: Failure) -> ProviderError {
+pub(crate) fn failure(failure: ProbeError) -> ProviderError {
     match failure {
-        Failure::Status(status) => fault(status),
-        Failure::Unreadable => ProviderError::Unreadable,
-        cause @ (Failure::Address(_)
-        | Failure::Token(_)
-        | Failure::Request(_)
-        | Failure::Json(_)) => ProviderError::garbled(cause),
+        ProbeError::Status(status) => fault(status),
+        ProbeError::Unreadable => ProviderError::Unreadable,
+        cause @ (ProbeError::Address(_)
+        | ProbeError::Token(_)
+        | ProbeError::Request(_)
+        | ProbeError::Json(_)) => ProviderError::garbled(cause),
     }
 }
 

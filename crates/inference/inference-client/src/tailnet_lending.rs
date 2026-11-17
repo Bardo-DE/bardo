@@ -49,15 +49,15 @@ pub const SHIPPED_NAME: &str = "tailnet.conf";
 /// Why the manager did not do what it was asked: a sentence for a log, not for the person.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{0}")]
-pub struct UnitFailure(pub String);
+pub struct UnitError(pub String);
 
 /// The person's systemd manager, as far as this needs it. The real one is [`SessionUnits`] over
 /// the session bus; a test gives one that records its calls.
 pub trait UnitManager: Send + Sync {
     /// Reads the unit files again (`daemon-reload`).
-    fn reload(&self) -> impl Future<Output = Result<(), UnitFailure>> + Send;
+    fn reload(&self) -> impl Future<Output = Result<(), UnitError>> + Send;
     /// Restarts `unit` (a systemd unit's name, such as [`INFERD_UNIT`]) and returns when the job has finished.
-    fn restart(&self, unit: &'static str) -> impl Future<Output = Result<(), UnitFailure>> + Send;
+    fn restart(&self, unit: &'static str) -> impl Future<Output = Result<(), UnitError>> + Send;
 }
 
 /// Where the shipped file is and where the person's systemd user files are.
@@ -146,10 +146,10 @@ pub enum LendingError {
     CouldNotWrite(#[source] io::Error),
     /// The file is saved, but the computer would not read its files again.
     #[error("the drop-in was written but the manager did not read the unit files again")]
-    ReloadFailed(#[source] UnitFailure),
+    ReloadFailed(#[source] UnitError),
     /// The file is saved and read, but the models service did not restart.
     #[error("the drop-in was written but the unit did not restart")]
-    RestartFailed(#[source] UnitFailure),
+    RestartFailed(#[source] UnitError),
 }
 
 /// Installs and takes away the tailnet drop-in of inferd's unit.
@@ -251,7 +251,7 @@ pub use session::SessionUnits;
 
 #[cfg(feature = "dbus")]
 mod session {
-    use super::{UnitFailure, UnitManager};
+    use super::{UnitError, UnitManager};
     use account_callers::{SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH};
     use account_dbus::{BusConnection, BusStream};
     use std::pin::Pin;
@@ -296,15 +296,15 @@ mod session {
         ///
         /// # Errors
         ///
-        /// Returns a [`UnitFailure`] when the session bus cannot be reached.
-        pub async fn session() -> Result<Self, UnitFailure> {
+        /// Returns a [`UnitError`] when the session bus cannot be reached.
+        pub async fn session() -> Result<Self, UnitError> {
             BusConnection::session()
                 .await
                 .map(Self::new)
                 .map_err(failure)
         }
 
-        async fn proxy(&self) -> Result<ManagerProxy<'static>, UnitFailure> {
+        async fn proxy(&self) -> Result<ManagerProxy<'static>, UnitError> {
             ManagerProxy::builder(&self.connection)
                 .destination(SYSTEMD)
                 .and_then(|b| b.path(SYSTEMD_PATH))
@@ -320,16 +320,16 @@ mod session {
         clippy::needless_pass_by_value,
         reason = "used as a `map_err` function, which hands the error over by value"
     )]
-    fn failure(error: zbus::Error) -> UnitFailure {
+    fn failure(error: zbus::Error) -> UnitError {
         UnitFailure(error.to_string())
     }
 
     impl UnitManager for SessionUnits {
-        async fn reload(&self) -> Result<(), UnitFailure> {
+        async fn reload(&self) -> Result<(), UnitError> {
             self.proxy().await?.reload().await.map_err(failure)
         }
 
-        async fn restart(&self, unit: &'static str) -> Result<(), UnitFailure> {
+        async fn restart(&self, unit: &'static str) -> Result<(), UnitError> {
             let proxy = self.proxy().await?;
             // Subscribe first, so a job that finishes at once is not missed.
             let mut removed = proxy.receive_job_removed().await.map_err(failure)?;
@@ -339,12 +339,12 @@ mod session {
                     let signal =
                         std::future::poll_fn(|cx| BusStream::poll_next(Pin::new(&mut removed), cx))
                             .await
-                            .ok_or_else(|| UnitFailure("the bus closed".to_owned()))?;
+                            .ok_or_else(|| UnitError("the bus closed".to_owned()))?;
                     let args = signal.args().map_err(failure)?;
                     if args.job == job {
                         return match args.result {
                             "done" => Ok(()),
-                            other => Err(UnitFailure(format!(
+                            other => Err(UnitError(format!(
                                 "the restart of {unit} ended as '{other}'"
                             ))),
                         };
@@ -357,7 +357,7 @@ mod session {
             )]
             let finished = tokio::time::timeout(JOB_WAIT, wait)
                 .await
-                .map_err(|_| UnitFailure("the restart did not finish in time".to_owned()));
+                .map_err(|_| UnitError("the restart did not finish in time".to_owned()));
             finished?
         }
     }

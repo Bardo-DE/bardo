@@ -27,7 +27,7 @@
 //!   over the listing until a listing pass shows it.
 
 use super::{Drive, Inner, NodeId, held};
-use crate::Reason;
+use crate::SkipError;
 use crate::index::{Awaiting, Base, Edit, Index, Row};
 use crate::naming;
 use crate::ranges::Ranges;
@@ -37,8 +37,8 @@ use std::sync::atomic::Ordering;
 use std::sync::{Arc, Weak};
 use std::time::{Duration, Instant};
 use sync_core::{
-    BaseVersion, Conflict, Content, Place, Progress, PutRefused, RemoteId, RemoteSide,
-    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
+    BaseVersion, Conflict, Content, Place, Progress, PutError, RemoteId, RemoteSide, RemoteVersion,
+    RetryAfter, Session, Upload, UploadTo, Written,
 };
 use tokio::sync::Notify;
 #[cfg(test)]
@@ -629,7 +629,7 @@ impl Inner {
     }
 
     /// The drive refused `op` for good (for now): the change keeps its bytes here and says why.
-    fn refused(&self, op: &Op, reason: Reason) {
+    fn refused(&self, op: &Op, reason: SkipError) {
         if let Some(edit) = held(&self.index).edits.get_mut(op.id()) {
             edit.refused = Some(reason);
         }
@@ -725,7 +725,7 @@ async fn snapshot(inner: &Arc<Inner>, mut op: Op) -> Option<Op> {
         Ok(Err(why)) => {
             eprintln!("drive-core: a file to send could not be copied: {why}");
             if why.kind() == std::io::ErrorKind::StorageFull {
-                held(&inner.waiting).insert(op.id().clone(), Reason::NoRoomHere);
+                held(&inner.waiting).insert(op.id().clone(), SkipError::NoRoomHere);
                 inner.emit(vec![op.id().clone()]);
             }
             inner.back_off(Duration::ZERO);
@@ -756,7 +756,7 @@ async fn reserved(inner: &Arc<Inner>, sink: &dyn Sink, mut op: Op) -> Option<Op>
     }
     let given = match sink.reserve_ids(1).await {
         Ok(ids) => ids.into_iter().next(),
-        Err(PutRefused::Transient(after) | PutRefused::Failed(after, _)) => {
+        Err(PutError::Transient(after) | PutError::Failed(after, _)) => {
             inner.back_off(Duration::from_secs(u64::from(after.0)));
             return None;
         }
@@ -967,7 +967,7 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
                 item, base, place, ..
             } => sink.relocate(item, base, place).await.map(Some),
             Op::Trash { item, base, .. } => sink.trash(item, base).await.map(|()| None),
-            Op::Upload { snapshot: None, .. } => Err(PutRefused::Transient(RetryAfter(0))),
+            Op::Upload { snapshot: None, .. } => Err(PutError::Transient(RetryAfter(0))),
         };
         let Some(inner) = weak.upgrade() else { return };
         *held(&inner.sending) = None;
@@ -975,14 +975,14 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
         // A conflict may be this step's own earlier try, whose answer was lost.
         let mut made = false;
         let result = match result {
-            Err(PutRefused::Conflict(conflict)) => {
+            Err(PutError::Conflict(conflict)) => {
                 match adopted(&inner, &*sink, &op, &conflict).await {
                     Some(Adopted::Sent(written)) => Ok(Some(written)),
                     Some(Adopted::Made(written)) => {
                         made = true;
                         Ok(Some(written))
                     }
-                    None => Err(PutRefused::Conflict(conflict)),
+                    None => Err(PutError::Conflict(conflict)),
                 }
             }
             other => other,
@@ -1005,30 +1005,30 @@ pub(super) async fn sender(weak: Weak<Inner>, wake: Arc<Notify>) {
                     eprintln!("drive-core: the cache's index could not be written: {why}");
                 }
             }
-            Err(PutRefused::Transient(after) | PutRefused::Failed(after, _)) => {
+            Err(PutError::Transient(after) | PutError::Failed(after, _)) => {
                 inner.back_off(Duration::from_secs(u64::from(after.0)));
                 inner.emit(vec![op.id().clone()]);
             }
-            Err(PutRefused::InUse(after)) => {
-                held(&inner.waiting).insert(op.id().clone(), Reason::InUse);
+            Err(PutError::InUse(after)) => {
+                held(&inner.waiting).insert(op.id().clone(), SkipError::InUse);
                 inner.back_off(Duration::from_secs(u64::from(after.0)));
                 inner.emit(vec![op.id().clone()]);
             }
-            Err(PutRefused::Unauthorized) => {
+            Err(PutError::Unauthorized) => {
                 // Held until it is signed in again; a listing pass says so to the person.
                 inner.signed_out.store(true, Ordering::SeqCst);
                 inner.wanted.notify_one();
                 inner.emit(vec![op.id().clone()]);
             }
-            Err(PutRefused::Quota) => inner.refused(&op, Reason::NoRoom),
-            Err(PutRefused::Forbidden) => inner.refused(&op, Reason::MayNotWrite),
-            Err(PutRefused::NameRefused) => inner.refused(&op, Reason::NameRefused),
-            Err(PutRefused::Declined) => {
+            Err(PutError::Quota) => inner.refused(&op, SkipError::NoRoom),
+            Err(PutError::Forbidden) => inner.refused(&op, SkipError::MayNotWrite),
+            Err(PutError::NameRefused) => inner.refused(&op, SkipError::NameRefused),
+            Err(PutError::Declined) => {
                 // An id reserved and used up is given up with it: the next try reserves another.
                 inner.change(op.id(), |edit, _| edit.reserved = None);
-                inner.refused(&op, Reason::Declined);
+                inner.refused(&op, SkipError::Declined);
             }
-            Err(PutRefused::Conflict(conflict)) => inner.conflicted(&op, &conflict),
+            Err(PutError::Conflict(conflict)) => inner.conflicted(&op, &conflict),
         }
     }
 }

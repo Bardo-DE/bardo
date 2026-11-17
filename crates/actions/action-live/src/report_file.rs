@@ -6,12 +6,12 @@ use std::path::{Path, PathBuf};
 /// Why a report could not be written: the path it was about, and the reason.
 #[derive(Debug, thiserror::Error)]
 #[error("{}: {source}", path.display())]
-pub struct ReportFault {
+pub struct ReportError {
     path: PathBuf,
     source: std::io::Error,
 }
 
-impl ReportFault {
+impl ReportError {
     fn at(path: &Path) -> impl FnOnce(std::io::Error) -> Self + '_ {
         move |source| Self {
             path: path.to_owned(),
@@ -24,10 +24,10 @@ impl ReportFault {
 ///
 /// # Errors
 ///
-/// Returns a [`ReportFault`] when the directory or the file cannot be written.
-pub fn write_report(path: &Path, text: &str) -> Result<(), ReportFault> {
+/// Returns a [`ReportError`] when the directory or the file cannot be written.
+pub fn write_report(path: &Path, text: &str) -> Result<(), ReportError> {
     if let Some(dir) = path.parent().filter(|dir| !dir.as_os_str().is_empty()) {
-        std::fs::create_dir_all(dir).map_err(ReportFault::at(dir))?;
+        std::fs::create_dir_all(dir).map_err(ReportError::at(dir))?;
     }
-    std::fs::write(path, text).map_err(ReportFault::at(path))
+    std::fs::write(path, text).map_err(ReportError::at(path))
 }

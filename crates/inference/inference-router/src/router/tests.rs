@@ -77,7 +77,7 @@ fn pick(
     class: DataClass,
     models: &[Listed],
     policy: &Policy,
-) -> Result<(String, Readiness), InferRefusal> {
+) -> Result<(String, Readiness), InferRefusedError> {
     choose(
         need,
         class,
@@ -108,7 +108,7 @@ fn the_route_table() {
         DataClass,
         Vec<Listed>,
         Policy,
-        Result<(&str, Readiness), InferRefusal>,
+        Result<(&str, Readiness), InferRefusedError>,
     )> = vec![
         (
             "a local model that fits",
@@ -132,7 +132,7 @@ fn the_route_table() {
             DataClass::Notes,
             vec![],
             Policy::proposed(),
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         (
             "weights not downloaded cannot answer",
@@ -140,7 +140,7 @@ fn the_route_table() {
             DataClass::Notes,
             vec![listed(local("a"), Readiness::Downloadable)],
             Policy::proposed(),
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         (
             "a failed engine cannot answer",
@@ -148,7 +148,7 @@ fn the_route_table() {
             DataClass::Notes,
             vec![listed(local("a"), Readiness::Unavailable)],
             Policy::proposed(),
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         (
             "local-only removes the cloud",
@@ -156,7 +156,7 @@ fn the_route_table() {
             DataClass::Notes,
             vec![listed(cloud("c"), ready)],
             Policy::proposed(),
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         (
             "the prompt class is refused a cloud-only route by its floor",
@@ -164,7 +164,7 @@ fn the_route_table() {
             DataClass::Prompt,
             vec![listed(cloud("c"), ready)],
             off(),
-            Err(InferRefusal::RequiresCloud(DataClass::Prompt)),
+            Err(InferRefusedError::RequiresCloud(DataClass::Prompt)),
         ),
         (
             "so is every personal class",
@@ -172,7 +172,7 @@ fn the_route_table() {
             DataClass::Mail,
             vec![listed(cloud("c"), ready)],
             off(),
-            Err(InferRefusal::RequiresCloud(DataClass::Mail)),
+            Err(InferRefusedError::RequiresCloud(DataClass::Mail)),
         ),
         (
             "public data may go to a cloud that nobody has granted yet",
@@ -180,7 +180,7 @@ fn the_route_table() {
             DataClass::Public,
             vec![listed(cloud("c"), ready)],
             off(),
-            Err(InferRefusal::NeedsGrant),
+            Err(InferRefusedError::NeedsGrant),
         ),
         (
             "this computer is preferred to the cloud",
@@ -204,7 +204,7 @@ fn the_route_table() {
             DataClass::Notes,
             vec![listed(local("a"), ready)],
             Policy::proposed(),
-            Err(InferRefusal::Unavailable),
+            Err(InferRefusedError::Unavailable),
         ),
         (
             "computer use takes screen data only",
@@ -215,7 +215,7 @@ fn the_route_table() {
                 ready,
             )],
             Policy::proposed(),
-            Err(InferRefusal::Unsupported),
+            Err(InferRefusedError::Unsupported),
         ),
         (
             "computer use on a screen",
@@ -234,7 +234,7 @@ fn the_route_table() {
             DataClass::Notes,
             vec![listed(local("a"), ready)],
             Policy::proposed(),
-            Err(InferRefusal::Unsupported),
+            Err(InferRefusedError::Unsupported),
         ),
     ];
     for (name, need, class, models, policy, expected) in cases {
@@ -411,7 +411,7 @@ fn automatic_names_the_idle_model_it_unloads_and_only_when_allowed() {
         decide(&[swapping], &auto_map(), never)
             .expect_err("no swap")
             .refusal,
-        InferRefusal::Unavailable
+        InferRefusedError::Unavailable
     );
 }
 
@@ -423,7 +423,7 @@ fn automatic_takes_the_cloud_only_when_the_floor_and_local_only_allow() {
         decide(&models, &auto_map(), AutoPolicy::default())
             .expect_err("floor")
             .refusal,
-        InferRefusal::Unavailable
+        InferRefusedError::Unavailable
     );
     let open = choose(
         &need(),
@@ -436,7 +436,7 @@ fn automatic_takes_the_cloud_only_when_the_floor_and_local_only_allow() {
     )
     .expect_err("a cloud model needs a grant, which only accountd can give and cannot yet");
     // `admit` lets Public data reach the cloud; consent is the rule that stops it today.
-    assert_eq!(open.refusal, InferRefusal::NeedsGrant);
+    assert_eq!(open.refusal, InferRefusedError::NeedsGrant);
 }
 
 #[test]
@@ -455,7 +455,7 @@ fn a_named_model_that_cannot_serve_refuses_naming_it_and_no_other_answers() {
         pools: vec![],
     };
     let err = decide(&models, &tiers, AutoPolicy::default()).expect_err("refuses");
-    assert_eq!(err.refusal, InferRefusal::Unavailable);
+    assert_eq!(err.refusal, InferRefusedError::Unavailable);
     assert_eq!(
         err.declined,
         Some(Declined {
@@ -539,6 +539,6 @@ fn computer_use_never_picks_a_model_that_cannot_read_images_even_if_its_card_cla
     let only_claim = [listed(claims_without_sight, Readiness::Ready)];
     assert_eq!(
         ask(&only_claim).expect_err("none sees").refusal,
-        InferRefusal::NoModelSeesScreen
+        InferRefusedError::NoModelSeesScreen
     );
 }

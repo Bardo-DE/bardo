@@ -136,7 +136,7 @@ pub enum ValueSchema {
 /// made from another error, that error is logged.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, thiserror::Error)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum SchemaFault {
+pub enum SchemaError {
     /// The wrong kind of value.
     #[error("wrong type")]
     WrongType,
@@ -167,50 +167,50 @@ pub enum SchemaFault {
 ///
 /// # Errors
 ///
-/// Returns the [`SchemaFault`] that says how `value` fails `schema`: the wrong type, a choice or
+/// Returns the [`SchemaError`] that says how `value` fails `schema`: the wrong type, a choice or
 /// number out of its set or range, text or a list that is too long, or a record with a missing or
 /// unknown field.
-pub fn conforms(value: &Value, schema: &ValueSchema) -> Result<(), SchemaFault> {
+pub fn conforms(value: &Value, schema: &ValueSchema) -> Result<(), SchemaError> {
     match (value, schema) {
         (Value::Choice(id), ValueSchema::Choice(options)) => options
             .contains(id)
             .then_some(())
-            .ok_or(SchemaFault::NotInSet),
+            .ok_or(SchemaError::NotInSet),
         (Value::Integer(n), ValueSchema::Integer { min, max }) => (*min..=*max)
             .contains(n)
             .then_some(())
-            .ok_or(SchemaFault::OutOfRange),
+            .ok_or(SchemaError::OutOfRange),
         (Value::Date(_), ValueSchema::Date) | (Value::DateTime(_), ValueSchema::DateTime) => Ok(()),
         (Value::Entities(found), ValueSchema::EntitiesAmong(allowed)) => found
             .iter()
             .all(|e| allowed.contains(e))
             .then_some(())
-            .ok_or(SchemaFault::NotInSet),
+            .ok_or(SchemaError::NotInSet),
         (Value::Entity(found), ValueSchema::EntitiesAmong(allowed)) => allowed
             .contains(found)
             .then_some(())
-            .ok_or(SchemaFault::NotInSet),
+            .ok_or(SchemaError::NotInSet),
         (Value::Text(t), ValueSchema::Text { max }) => (t.chars().count() <= max.0 as usize)
             .then_some(())
-            .ok_or(SchemaFault::TooLong),
+            .ok_or(SchemaError::TooLong),
         (Value::Record(fields), ValueSchema::Record(wanted)) => {
             if let Some(extra) = fields.keys().find(|k| !wanted.iter().any(|(n, _)| &n == k)) {
-                return Err(SchemaFault::UnknownField(extra.clone()));
+                return Err(SchemaError::UnknownField(extra.clone()));
             }
             wanted.iter().try_for_each(|(name, schema)| {
                 let value = fields
                     .get(name)
-                    .ok_or_else(|| SchemaFault::MissingField(name.clone()))?;
+                    .ok_or_else(|| SchemaError::MissingField(name.clone()))?;
                 conforms(value, schema)
             })
         }
         (Value::List(items), ValueSchema::List { of, max }) => {
             if items.len() > max.0 as usize {
-                return Err(SchemaFault::TooMany);
+                return Err(SchemaError::TooMany);
             }
             items.iter().try_for_each(|item| conforms(item, of))
         }
-        _ => Err(SchemaFault::WrongType),
+        _ => Err(SchemaError::WrongType),
     }
 }
 
@@ -227,9 +227,9 @@ impl ValueSchema {
     ///
     /// # Errors
     ///
-    /// Returns [`SchemaFault::NotRepresentable`] when a record field has a name that cannot be a
+    /// Returns [`SchemaError::NotRepresentable`] when a record field has a name that cannot be a
     /// field name, and any fault of a nested schema.
-    pub fn shape(&self) -> Result<Shape, SchemaFault> {
+    pub fn shape(&self) -> Result<Shape, SchemaError> {
         let count = |n: usize| base_ids::Count(u32::try_from(n).unwrap_or(u32::MAX));
         match self {
             ValueSchema::Choice(ids) => Ok(Shape::Choice(
@@ -259,14 +259,14 @@ impl ValueSchema {
                 .map(|(name, schema)| {
                     let name = FieldName::new(name.as_str()).map_err(|error| {
                         tracing::warn!(error = %error, "a field name is not one the structured-output vocabulary takes");
-                        SchemaFault::NotRepresentable
+                        SchemaError::NotRepresentable
                     })?;
                     Ok(Field {
                         name,
                         shape: schema.shape()?,
                     })
                 })
-                .collect::<Result<Vec<_>, SchemaFault>>()
+                .collect::<Result<Vec<_>, SchemaError>>()
                 .map(Shape::Record),
             ValueSchema::List { of, max } => Ok(Shape::List {
                 of: Box::new(of.shape()?),
@@ -282,8 +282,8 @@ impl ValueSchema {
     ///
     /// # Errors
     ///
-    /// Returns the [`SchemaFault`] that [`ValueSchema::shape`] reports.
-    pub fn json_schema(&self) -> Result<String, SchemaFault> {
+    /// Returns the [`SchemaError`] that [`ValueSchema::shape`] reports.
+    pub fn json_schema(&self) -> Result<String, SchemaError> {
         Ok(self
             .shape()?
             .to_json_schema(model_provider::SchemaDialect::Plain)
@@ -301,7 +301,7 @@ impl ValueSchema {
 pub enum ReaderError {
     /// The answer did not fit the schema.
     #[error("answer outside the schema")]
-    OutOfSchema(SchemaFault),
+    OutOfSchema(SchemaError),
     /// The reply did not parse.
     #[error("unparseable reply")]
     Unparseable,
@@ -341,7 +341,7 @@ pub enum ReadFault {
         shape: HandleShape,
     },
     /// The reader's answer did not fit `want`.
-    OutOfSchema(SchemaFault),
+    OutOfSchema(SchemaError),
     /// The reader's reply could not be read at all.
     Unparseable,
     /// The reader refused.

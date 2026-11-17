@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 
 /// Why a file gave no text.
 #[derive(Debug, thiserror::Error)]
-pub enum ReadFailure {
+pub enum ReadError {
     /// There is no file. The ordinary case for a configuration directory.
     #[error("no such file")]
     Missing,
@@ -27,9 +27,9 @@ pub trait ReadText {
     ///
     /// # Errors
     ///
-    /// [`ReadFailure::Missing`] when there is no such file, [`ReadFailure::Unreadable`] when there
+    /// [`ReadError::Missing`] when there is no such file, [`ReadError::Unreadable`] when there
     /// is one and it cannot be read.
-    fn read_text(&self, path: &Path) -> Result<String, ReadFailure>;
+    fn read_text(&self, path: &Path) -> Result<String, ReadError>;
 }
 
 /// The disk, through the one capped reader of settings files.
@@ -37,11 +37,11 @@ pub trait ReadText {
 pub struct DiskText;
 
 impl ReadText for DiskText {
-    fn read_text(&self, path: &Path) -> Result<String, ReadFailure> {
+    fn read_text(&self, path: &Path) -> Result<String, ReadError> {
         match file_text(path, SETTINGS_CAP) {
             FileText::Text(text) => Ok(text),
-            FileText::Missing => Err(ReadFailure::Missing),
-            FileText::Unusable(reason) => Err(ReadFailure::Unreadable { reason }),
+            FileText::Missing => Err(ReadError::Missing),
+            FileText::Unusable(reason) => Err(ReadError::Unreadable { reason }),
         }
     }
 }
@@ -111,8 +111,8 @@ impl Locator {
                     break;
                 }
                 // No file in this directory is the ordinary case.
-                Err(ReadFailure::Missing) => {}
-                Err(ReadFailure::Unreadable { reason }) => unreadable.push(InvalidKey {
+                Err(ReadError::Missing) => {}
+                Err(ReadError::Unreadable { reason }) => unreadable.push(InvalidKey {
                     path: path.display().to_string(),
                     reason: format!("could not be read: {reason}"),
                 }),

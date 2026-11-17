@@ -3,7 +3,7 @@ use crate::lab::Lab;
 use account_fake_servers::net::Bind;
 use base_testkit::Scratch;
 use inference_router::attached::config::{Reach, Site};
-use inference_router::attached::key::{KeyFile, KeyFileProblem};
+use inference_router::attached::key::{KeyFile, KeyFileError};
 use model_http::Port;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
@@ -151,9 +151,7 @@ async fn a_key_file_that_is_refused_is_never_sent_and_the_engine_is_not_asked() 
     let open = key_file(&scratch, "sk-lab-1234\n", 0o644);
     assert_eq!(
         probe(&socket_target(lab.socket(), Some(open)), SERVED).await,
-        Err(NotReady::KeyFile(KeyFileProblem::NotPrivate {
-            mode: 0o644
-        }))
+        Err(NotReady::KeyFile(KeyFileError::NotPrivate { mode: 0o644 }))
     );
     assert_eq!(lab.seen(), vec![], "no request, so no token, left");
 }
@@ -230,7 +228,7 @@ fn what_is_wrong_is_said_in_a_sentence_and_the_setup_causes_are_the_persons_to_m
         NotReady::ModelAbsent {
             served: vec!["a".into(), "b".into()],
         },
-        NotReady::KeyFile(KeyFileProblem::NotYours),
+        NotReady::KeyFile(KeyFileError::NotYours),
         NotReady::Unanswered,
     ];
     let said: Vec<String> = causes.iter().map(ToString::to_string).collect();

@@ -6,7 +6,7 @@ use model_provider::{CallIndex, ToolCallId, TurnEvent};
 
 /// What is wrong with a recorded event stream (port of rig's `Transcript::push` checks).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-pub enum StreamFault {
+pub enum StreamError {
     #[error("a tool-call delta or end names a call that never started")]
     UnknownCall,
     #[error("a tool call started or finished twice")]
@@ -31,20 +31,20 @@ enum Call<'a> {
 ///
 /// # Errors
 ///
-/// The [`StreamFault`] that says how the first impossible event breaks the stream.
-pub fn check_sequence(events: &[TurnEvent]) -> Result<(), StreamFault> {
+/// The [`StreamError`] that says how the first impossible event breaks the stream.
+pub fn check_sequence(events: &[TurnEvent]) -> Result<(), StreamError> {
     let mut calls: BTreeMap<CallIndex, Call<'_>> = BTreeMap::new();
     for event in events {
         match event {
             TurnEvent::ToolCallStarted { index, id, .. } => {
                 if let Some(Call::Open(_)) = calls.get(index) {
-                    return Err(StreamFault::EndedTwice);
+                    return Err(StreamError::EndedTwice);
                 }
                 calls.insert(*index, Call::Open(id));
             }
             TurnEvent::ToolCallDelta { index, .. } => match calls.get(index) {
-                None => return Err(StreamFault::UnknownCall),
-                Some(Call::Closed(_)) => return Err(StreamFault::AfterDone),
+                None => return Err(StreamError::UnknownCall),
+                Some(Call::Closed(_)) => return Err(StreamError::AfterDone),
                 Some(Call::Open(_)) => {}
             },
             TurnEvent::ToolCallDone(call) => {
@@ -59,16 +59,16 @@ pub fn check_sequence(events: &[TurnEvent]) -> Result<(), StreamFault> {
                         .values()
                         .any(|c| matches!(c, Call::Closed(id) if *id == &call.id)) =>
                     {
-                        return Err(StreamFault::EndedTwice);
+                        return Err(StreamError::EndedTwice);
                     }
-                    None => return Err(StreamFault::UnknownCall),
+                    None => return Err(StreamError::UnknownCall),
                 }
             }
             _ => {}
         }
     }
     if calls.values().any(|c| matches!(c, Call::Open(_))) {
-        Err(StreamFault::Unclosed)
+        Err(StreamError::Unclosed)
     } else {
         Ok(())
     }

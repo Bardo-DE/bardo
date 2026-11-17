@@ -3,7 +3,7 @@
 
 use super::confine::inside;
 use super::error::ManifestError;
-use super::id::{InvalidId, PluginId};
+use super::id::{InvalidIdError, PluginId};
 use super::model::{Manifest, Program};
 use super::provides::{Entry, Provides, Refusal, absolute};
 use super::version::Version;
@@ -79,7 +79,7 @@ fn read<P: Provides>(text: &str, place: Place<'_>) -> Result<Manifest<P>, Failur
         Place::Flat => PluginId::parse(&raw.id),
         Place::Folder(_) => PluginId::parse_dotted(&raw.id),
     }
-    .map_err(|InvalidId { id }| ManifestError::IdInvalid { id })?;
+    .map_err(|InvalidIdError { id }| ManifestError::IdInvalid { id })?;
     if raw.name.trim().is_empty() {
         return Err(ManifestError::NameEmpty);
     }

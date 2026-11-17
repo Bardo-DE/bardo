@@ -21,4 +21,4 @@ pub use edit::{Edit, EditError, apply_edits};
 pub use lenient::{
     ClampedKey, InvalidKey, LimitBounds, Limits, Loaded, Read, UnknownKey, read, read_within,
 };
-pub use preserve::InTheWay;
+pub use preserve::InTheWayError;

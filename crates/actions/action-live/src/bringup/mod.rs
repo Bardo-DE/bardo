@@ -16,12 +16,12 @@ pub mod refuse;
 pub mod seed;
 pub mod up;
 
-use action_accept::keys_home::HomeFault;
+use action_accept::keys_home::HomeError;
 use action_accept::world::{Binaries, env_of};
 use cli::{Command, UsageError};
-use procs::ProcsFault;
-use refuse::{Own, Refusal};
-use seed::ExtraFault;
+use procs::ProcsError;
+use refuse::{BringUpError, Own};
+use seed::ExtraError;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
@@ -30,16 +30,16 @@ use std::process::ExitCode;
 pub enum BringupError {
     /// A safety refusal.
     #[error("{0}")]
-    Refused(#[from] Refusal),
+    Refused(#[from] BringUpError),
     /// The key home is not usable.
     #[error("{0}")]
-    Keys(#[from] HomeFault),
+    Keys(#[from] HomeError),
     /// The extra `inferd.toml` rows are not usable.
     #[error("--inferd-config: {0}")]
-    Inferd(#[from] ExtraFault),
+    Inferd(#[from] ExtraError),
     /// The procs file is damaged.
     #[error("{0}")]
-    Procs(#[from] ProcsFault),
+    Procs(#[from] ProcsError),
     /// A file or directory could not be made, read or written.
     #[error("{0}")]
     Io(#[from] std::io::Error),

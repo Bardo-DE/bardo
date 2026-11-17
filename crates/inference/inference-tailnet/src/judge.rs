@@ -19,7 +19,7 @@
 
 use crate::guests::{Guests, State};
 use crate::identity::Identity;
-use crate::refusal::Refusal;
+use crate::refusal::TailnetError;
 use account_tailscale::{MachineOwner, NodeId};
 use account_tailscale::{TailscaleError, WhoIs};
 use std::net::IpAddr;
@@ -72,23 +72,23 @@ impl Welcome {
     /// # Errors
     ///
     /// Returns [`Refusal`] when the host will not take the entry.
-    pub fn admit(&self, guests: &Guests, now: base_time::UnixSeconds) -> Result<(), Refusal> {
+    pub fn admit(&self, guests: &Guests, now: base_time::UnixSeconds) -> Result<(), TailnetError> {
         match guests.state_of(&self.peer.node) {
             Some(State::Approved) => Ok(()),
-            Some(State::Denied) => Err(Refusal::Denied),
+            Some(State::Denied) => Err(TailnetError::Denied),
             None if self.peer.owner == MachineOwner::Mine => {
                 guests
                     .ask(&self.peer.node, &self.peer.name, now)
                     .map_err(|e| match e {
-                        crate::guests::GuestError::TooManyAsking => Refusal::TooManyAsking,
-                        _ => Refusal::NotKept,
+                        crate::guests::GuestError::TooManyAsking => TailnetError::TooManyAsking,
+                        _ => TailnetError::NotKept,
                     })?;
-                Err(Refusal::Waiting)
+                Err(TailnetError::Waiting)
             }
             // Someone else's computer is let in by the person's word alone, never asked about.
             None => Err(match self.peer.owner {
-                MachineOwner::Tagged => Refusal::Tagged,
-                _ => Refusal::Shared,
+                MachineOwner::Tagged => TailnetError::Tagged,
+                _ => TailnetError::Shared,
             }),
         }
     }
@@ -105,21 +105,21 @@ pub fn judge(
     from: IpAddr,
     answer: Result<WhoIs, TailscaleError>,
     guests: &Guests,
-) -> Result<Welcome, Refusal> {
+) -> Result<Welcome, TailnetError> {
     if me.owns(from) {
-        return Err(Refusal::ThisComputer);
+        return Err(TailnetError::ThisComputer);
     }
     let who = match answer {
         Ok(who) => who,
-        Err(TailscaleError::NoSuchPeer) => return Err(Refusal::Unknown),
-        Err(_) => return Err(Refusal::CouldNotCheck),
+        Err(TailscaleError::NoSuchPeer) => return Err(TailnetError::Unknown),
+        Err(_) => return Err(TailnetError::CouldNotCheck),
     };
     if who.node.id == *me.node() {
-        return Err(Refusal::ThisComputer);
+        return Err(TailnetError::ThisComputer);
     }
     // An address Tailscale does not list among the computer's own is not trusted to be it.
     if !who.node.addresses.contains(&from) {
-        return Err(Refusal::Unknown);
+        return Err(TailnetError::Unknown);
     }
     let owner = who.owner(me.user());
     let name = match who.node.dns.split('.').next() {
@@ -132,7 +132,7 @@ pub fn judge(
         owner,
     };
     match guests.state_of(&peer.node) {
-        Some(State::Denied) => Err(Refusal::Denied),
+        Some(State::Denied) => Err(TailnetError::Denied),
         Some(State::Approved) => Ok(Welcome {
             peer,
             footing: Footing::Approved,
@@ -142,8 +142,8 @@ pub fn judge(
                 peer,
                 footing: Footing::New,
             }),
-            MachineOwner::Tagged => Err(Refusal::Tagged),
-            MachineOwner::Shared => Err(Refusal::Shared),
+            MachineOwner::Tagged => Err(TailnetError::Tagged),
+            MachineOwner::Shared => Err(TailnetError::Shared),
         },
     }
 }

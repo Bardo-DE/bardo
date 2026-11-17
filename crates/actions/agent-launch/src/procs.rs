@@ -6,7 +6,7 @@
 
 use agent_acp_server::capped_lines;
 use agent_client_protocol::{Agent, Client, ConnectTo, Error};
-use sandbox::{AgentRun, BwrapSandbox, LandlockLevel, StartFault};
+use sandbox::{AgentRun, BwrapSandbox, LandlockLevel, StartError};
 use std::path::PathBuf;
 use std::process::Stdio;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -16,7 +16,7 @@ use tokio::process::{Child, ChildStderr, ChildStdin, ChildStdout, Command};
 
 /// Why a process did not start.
 #[derive(Debug, thiserror::Error)]
-pub enum ProcFault {
+pub enum ProcError {
     /// The sandbox program is missing or the kernel refuses it: nothing runs unconfined.
     #[error("no sandbox: the agent is not started unconfined")]
     NoSandbox,
@@ -25,7 +25,7 @@ pub enum ProcFault {
     Spawn,
     /// The sandbox program did not start.
     #[error("the sandbox program did not start")]
-    Sandbox(#[source] StartFault),
+    Sandbox(#[source] StartError),
     /// The process could not be spawned.
     #[error("the agent process could not be spawned")]
     Exec(#[source] std::io::Error),
@@ -60,7 +60,7 @@ pub trait Procs: Send {
     fn start(
         &mut self,
         run: &AgentRun,
-    ) -> impl Future<Output = Result<(Self::Transport, Self::Proc), ProcFault>> + Send;
+    ) -> impl Future<Output = Result<(Self::Transport, Self::Proc), ProcError>> + Send;
 }
 
 /// Bubblewrap with its hardening: resource limits and the syscall filter, as the detected sandbox
@@ -168,11 +168,11 @@ impl ConnectTo<Client> for StdioWire {
     }
 }
 
-fn refused(fault: &StartFault) -> ProcFault {
+fn refused(fault: &StartError) -> ProcError {
     match fault {
-        StartFault::Cannot(_) => ProcFault::NoSandbox,
-        StartFault::InheritedFds | StartFault::FilterFile => ProcFault::Refused,
-        StartFault::Spawn(_) => ProcFault::Sandbox(fault.clone()),
+        StartError::Cannot(_) => ProcError::NoSandbox,
+        StartError::InheritedFds | StartError::FilterFile => ProcError::Refused,
+        StartError::Spawn(_) => ProcError::Sandbox(fault.clone()),
     }
 }
 
@@ -184,13 +184,13 @@ impl Procs for BwrapProcs {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn start(&mut self, run: &AgentRun) -> Result<(StdioWire, ChildProc), ProcFault> {
-        let file = self.filter_path().ok_or(ProcFault::Spawn)?;
+    async fn start(&mut self, run: &AgentRun) -> Result<(StdioWire, ChildProc), ProcError> {
+        let file = self.filter_path().ok_or(ProcError::Spawn)?;
         // Held from here, so the file goes whichever way this returns.
         let mut filter = ChildFilter(Some(PathBuf::from(file.as_str())));
         self.sandbox
             .write_filter(&file)
-            .map_err(ProcFault::Filter)?;
+            .map_err(ProcError::Filter)?;
         // Limits, the syscall filter, exactly the environment of `run` (and none of ours, none of
         // it on a command line) all come with the command. It fails closed.
         let mut command = Command::from(
@@ -208,9 +208,9 @@ impl Procs for BwrapProcs {
                 None => Stdio::null(),
             })
             .kill_on_drop(true);
-        let mut child = command.spawn().map_err(ProcFault::Exec)?;
-        let stdin = child.stdin.take().ok_or(ProcFault::Spawn)?;
-        let stdout = child.stdout.take().ok_or(ProcFault::Spawn)?;
+        let mut child = command.spawn().map_err(ProcError::Exec)?;
+        let stdin = child.stdin.take().ok_or(ProcError::Spawn)?;
+        let stdout = child.stdout.take().ok_or(ProcError::Spawn)?;
         let level = Arc::new(OnceLock::new());
         if let Some(stderr) = child.stderr.take() {
             tokio::spawn(watch(stderr, Arc::clone(&level)));
@@ -248,14 +248,14 @@ impl BwrapProcs {
     ///
     /// # Errors
     ///
-    /// Returns a [`ProcFault`] when the syscall filter cannot be written or the sandbox refuses the
-    /// run: [`ProcFault::NoSandbox`] when it cannot confine the command, [`ProcFault::Refused`] for
-    /// a leaked descriptor or a missing filter file, and [`ProcFault::Spawn`] otherwise.
-    pub fn command_line(&self, run: &AgentRun) -> Result<CommandLine, ProcFault> {
-        let file = self.filter_path().ok_or(ProcFault::Spawn)?;
+    /// Returns a [`ProcError`] when the syscall filter cannot be written or the sandbox refuses the
+    /// run: [`ProcError::NoSandbox`] when it cannot confine the command, [`ProcError::Refused`] for
+    /// a leaked descriptor or a missing filter file, and [`ProcError::Spawn`] otherwise.
+    pub fn command_line(&self, run: &AgentRun) -> Result<CommandLine, ProcError> {
+        let file = self.filter_path().ok_or(ProcError::Spawn)?;
         self.sandbox
             .write_filter(&file)
-            .map_err(ProcFault::Filter)?;
+            .map_err(ProcError::Filter)?;
         let command = self
             .sandbox
             .agent_command(run, Some(&file))

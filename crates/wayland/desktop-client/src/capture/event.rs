@@ -9,7 +9,7 @@ use desktop_protocols::vocab::Transform;
 /// Why a capture failed (`ext_image_copy_capture_frame_v1.failure_reason` and the session's
 /// `stopped`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum CaptureFailure {
+pub enum CaptureError {
     /// The compositor gave no reason.
     #[error("the compositor failed the capture")]
     Unknown,
@@ -48,5 +48,5 @@ pub enum CaptureEvent {
         pixels: Vec<u8>,
     },
     /// The capture failed.
-    Failed(CaptureFailure),
+    Failed(CaptureError),
 }

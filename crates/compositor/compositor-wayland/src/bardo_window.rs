@@ -24,7 +24,7 @@ pub use hints::{
 };
 
 use crate::client::ClientState;
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::geometry::LogicalRect;
 use compositor_core::policy::GlobalKind;
 use compositor_core::window::{A11yRoot, FrameHint};
@@ -506,18 +506,18 @@ pub fn on_request_placement(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_emphasis(
     part: &mut BardoWindowPart,
     window: WindowId,
     emphasis: Emphasis,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     match part.windows.get(&window) {
         Some(object) if object.is_alive() => {
             send_emphasis(object, emphasis);
             Ok(())
         }
-        Some(_) => Err(WaylandFault::SurfaceGone),
+        Some(_) => Err(WaylandError::SurfaceGone),
         // A window that never extended itself has nobody to tell.
         None => Ok(()),
     }
@@ -539,12 +539,12 @@ pub fn apply_emphasis(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_placement(
     part: &mut BardoWindowPart,
     window: WindowId,
     mark: PlacementMark,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     match part.windows.get(&window) {
         Some(object) if object.is_alive() => {
             if part.marks.insert(window, mark) != Some(mark) {
@@ -552,7 +552,7 @@ pub fn apply_placement(
             }
             Ok(())
         }
-        Some(_) => Err(WaylandFault::SurfaceGone),
+        Some(_) => Err(WaylandError::SurfaceGone),
         None => Ok(()),
     }
 }
@@ -562,8 +562,8 @@ pub fn apply_placement(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_quit(part: &mut BardoWindowPart, client: ClientKey) -> Result<(), WaylandFault> {
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_quit(part: &mut BardoWindowPart, client: ClientKey) -> Result<(), WaylandError> {
     let live: Vec<&BardoWindowManagerV1> = part
         .quit_managers
         .iter()
@@ -571,7 +571,7 @@ pub fn apply_quit(part: &mut BardoWindowPart, client: ClientKey) -> Result<(), W
         .map(|(_, manager)| manager)
         .collect();
     if live.is_empty() {
-        return Err(WaylandFault::SurfaceGone);
+        return Err(WaylandError::SurfaceGone);
     }
     for manager in live {
         manager.quit();

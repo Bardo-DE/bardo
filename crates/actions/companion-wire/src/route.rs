@@ -5,7 +5,7 @@
 //! the notes into the one line a card shows, so every surface prints the same words.
 
 use inference_core::{
-    Declined, DeclinedBecause, Door, InferRefusal, ModelRef, ProviderId, ServedBy,
+    Declined, DeclinedBecause, Door, InferRefusedError, ModelRef, ProviderId, ServedBy,
 };
 use inference_core::{ModelLabel, StageRole, Why};
 use serde::{Deserialize, Serialize};
@@ -229,16 +229,16 @@ pub fn declined_text(declined: &Declined) -> String {
     format!("{name} cannot answer: {reason}.")
 }
 
-fn blocked_text(refusal: InferRefusal) -> &'static str {
+fn blocked_text(refusal: InferRefusedError) -> &'static str {
     match refusal {
-        InferRefusal::RequiresCloud(_) => "this data may not leave this computer",
-        InferRefusal::Unavailable => "no model is available",
-        InferRefusal::NeedsGrant => "it needs your consent first",
-        InferRefusal::Denied => "you refused it for this app",
-        InferRefusal::OverBudget => "its spend cap is reached",
-        InferRefusal::Unsupported => "it does not fit this request",
-        InferRefusal::NoModelChosen => "no model is chosen yet",
-        InferRefusal::NoModelUsesApps => "none of the models in Automatic can use apps",
-        InferRefusal::NoModelSeesScreen => "no model here can see the screen",
+        InferRefusedError::RequiresCloud(_) => "this data may not leave this computer",
+        InferRefusedError::Unavailable => "no model is available",
+        InferRefusedError::NeedsGrant => "it needs your consent first",
+        InferRefusedError::Denied => "you refused it for this app",
+        InferRefusedError::OverBudget => "its spend cap is reached",
+        InferRefusedError::Unsupported => "it does not fit this request",
+        InferRefusedError::NoModelChosen => "no model is chosen yet",
+        InferRefusedError::NoModelUsesApps => "none of the models in Automatic can use apps",
+        InferRefusedError::NoModelSeesScreen => "no model here can see the screen",
     }
 }

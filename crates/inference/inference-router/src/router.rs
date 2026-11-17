@@ -21,9 +21,9 @@ use account_core::DataClass;
 use account_match::Need;
 use account_match::{Match, matches};
 use inference_core::{
-    AutoPolicy, Chosen, Declined, DeclinedBecause, InferRefusal, LicenceClass, ModelCard, ModelRef,
-    Permit, Pick, PickCandidate, PickPolicy, PickRefusal, Policy, ProviderId, Readiness, RouteAsk,
-    RouteCandidate, Sharing, Sight, Slot, SpendVerdict, SwapCost, Takes, TierMap, Why,
+    AutoPolicy, Chosen, Declined, DeclinedBecause, InferRefusedError, LicenceClass, ModelCard,
+    ModelRef, Permit, Pick, PickCandidate, PickPolicy, PickRefusal, Policy, ProviderId, Readiness,
+    RouteAsk, RouteCandidate, Sharing, Sight, Slot, SpendVerdict, SwapCost, Takes, TierMap, Why,
     default_choice, pick, tier_choice,
 };
 
@@ -137,11 +137,11 @@ pub fn slots_of(card: &ModelCard) -> Vec<Slot> {
 /// Only `Screen` data may enter a computer-use session: the frames are the screen.
 ///
 /// # Errors
-/// `InferRefusal::Unsupported` for any class but `Screen`.
-pub fn check_class(class: DataClass) -> Result<(), InferRefusal> {
+/// `InferRefusedError::Unsupported` for any class but `Screen`.
+pub fn check_class(class: DataClass) -> Result<(), InferRefusedError> {
     match class {
         DataClass::Screen => Ok(()),
-        _ => Err(InferRefusal::Unsupported),
+        _ => Err(InferRefusedError::Unsupported),
     }
 }
 
@@ -186,7 +186,7 @@ pub fn choose(
         check_class(class).map_err(plain)?;
         refuse_blind_pick(tiers, tier, listed)?;
     }
-    let kind = slot_of_need(need).ok_or(plain(InferRefusal::Unsupported))?;
+    let kind = slot_of_need(need).ok_or(plain(InferRefusedError::Unsupported))?;
     if let Need::Llm(_) = need {
         // The language slot is planned as a pipeline: today a text-only request, so one stage.
         return crate::pipeline::decide_text(need, class, tier, listed, policy, tiers, auto);
@@ -201,7 +201,7 @@ pub fn choose(
         .filter(|one| fits(need, &one.card) && sees(one))
         .collect();
     if fitting.is_empty() && matches!(need, Need::ComputerUse(_)) {
-        return Err(plain(InferRefusal::NoModelSeesScreen));
+        return Err(plain(InferRefusedError::NoModelSeesScreen));
     }
     let candidates: Vec<PickCandidate> = fitting
         .iter()
@@ -259,7 +259,7 @@ fn refuse_blind_pick(tiers: &TierMap, tier: Tier, listed: &[Listed]) -> Result<(
     });
     if blind {
         Err(PickRefusal {
-            refusal: InferRefusal::Unavailable,
+            refusal: InferRefusedError::Unavailable,
             declined: Some(Declined {
                 model,
                 because: DeclinedBecause::CannotSeeScreen,
@@ -298,13 +298,13 @@ pub fn chosen_for(
 ) -> Result<(), PickRefusal> {
     match (need, unchosen) {
         (Need::Llm(_), Unchosen::Refuse) if tiers.pick_serving(Slot::Text, tier).is_none() => {
-            Err(plain(InferRefusal::NoModelChosen))
+            Err(plain(InferRefusedError::NoModelChosen))
         }
         _ => Ok(()),
     }
 }
 
-pub(crate) fn plain(refusal: InferRefusal) -> PickRefusal {
+pub(crate) fn plain(refusal: InferRefusedError) -> PickRefusal {
     PickRefusal {
         refusal,
         declined: None,

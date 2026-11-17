@@ -28,7 +28,7 @@ mod wheel;
 mod window_placement;
 
 pub use blur::BlurSpec;
-pub use drag::{BadMime, DragAction, DragActions, DragOutcome, DragPayload, DragRefused, Mime};
+pub use drag::{BadMimeError, DragAction, DragActions, DragError, DragOutcome, DragPayload, Mime};
 pub use focus::KeyboardFocus;
 pub use geometry::{Margin, Point, enclosing_rect, inflate, px_of};
 pub use id::{OutputId, SurfaceId, SurfaceName};

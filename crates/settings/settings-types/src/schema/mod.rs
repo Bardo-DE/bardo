@@ -39,7 +39,7 @@ pub use deep_link::{deep_link, deep_link_path};
 pub use doc_table::{DocTableError, key_table, regenerate};
 pub use footnote::{Footnote, FootnoteText};
 pub use key::{
-    AgentSetting, ChoiceGroup, ChoiceUnavailable, ChoiceWord, Exposure, GroupedChoices, Help,
+    AgentSetting, ChoiceGroup, ChoiceUnavailableError, ChoiceWord, Exposure, GroupedChoices, Help,
     KeyKind, KeySpec, Label, Note, Section, SliderEnds, UnavailableReason, WordLabels,
     kind_from_variants,
 };

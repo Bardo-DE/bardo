@@ -10,7 +10,7 @@ use std::any::Any;
 use std::fmt;
 use std::sync::Arc;
 
-use files_core::{EjectFailure, FolderPath, MountFailure, Volume, VolumeId};
+use files_core::{EjectError, FolderPath, MountError, Volume, VolumeId};
 use files_model::{Input, TabId};
 use tokio::sync::mpsc::{UnboundedSender, unbounded_channel};
 
@@ -56,23 +56,23 @@ pub trait Volumes: Send + Sync {
     ///
     /// # Errors
     ///
-    /// Returns `MountFailure` when the disk could not be opened.
-    fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure>;
+    /// Returns `MountError` when the disk could not be opened.
+    fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountError>;
 
     /// Ejects the disk: unmounts it and, when it can be, powers it off.
     ///
     /// # Errors
     ///
-    /// Returns `EjectFailure` when the disk could not be ejected.
-    fn eject(&self, id: &VolumeId) -> Result<(), EjectFailure>;
+    /// Returns `EjectError` when the disk could not be ejected.
+    fn eject(&self, id: &VolumeId) -> Result<(), EjectError>;
 
     /// Ejects the disk although programs may be using it: unmounts it by force, then powers it off
     /// as `eject` does. The person has been asked.
     ///
     /// # Errors
     ///
-    /// Returns `EjectFailure` when the disk could not be ejected even by force.
-    fn force_eject(&self, id: &VolumeId) -> Result<(), EjectFailure>;
+    /// Returns `EjectError` when the disk could not be ejected even by force.
+    fn force_eject(&self, id: &VolumeId) -> Result<(), EjectError>;
 
     /// Calls `changed` whenever a disk came, went, was opened or closed, until the guard drops.
     ///
@@ -91,16 +91,16 @@ impl Volumes for NoVolumes {
         Err(VolumeError)
     }
 
-    fn mount(&self, _id: &VolumeId) -> Result<FolderPath, MountFailure> {
-        Err(MountFailure::Gone(None))
+    fn mount(&self, _id: &VolumeId) -> Result<FolderPath, MountError> {
+        Err(MountError::Gone(None))
     }
 
-    fn eject(&self, _id: &VolumeId) -> Result<(), EjectFailure> {
-        Err(EjectFailure::Gone(None))
+    fn eject(&self, _id: &VolumeId) -> Result<(), EjectError> {
+        Err(EjectError::Gone(None))
     }
 
-    fn force_eject(&self, _id: &VolumeId) -> Result<(), EjectFailure> {
-        Err(EjectFailure::Gone(None))
+    fn force_eject(&self, _id: &VolumeId) -> Result<(), EjectError> {
+        Err(EjectError::Gone(None))
     }
 
     fn watch(&self, _changed: Changed) -> Result<WatchGuard, VolumeError> {

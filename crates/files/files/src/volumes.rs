@@ -1,7 +1,7 @@
 //! The disks, as the window sees them: the desktop crate's `UDisks2` service on the runtime the
 //! rest of the bus work runs on. The window's disk thread calls these and may block.
 
-use files_core::{EjectFailure, FolderPath, MountFailure, Volume, VolumeId};
+use files_core::{EjectError, FolderPath, MountError, Volume, VolumeId};
 use files_desktop::Disks;
 use files_ui::{Changed, VolumeError, Volumes, WatchGuard};
 use tokio::runtime::Handle;
@@ -38,15 +38,15 @@ impl Volumes for DesktopVolumes {
         })
     }
 
-    fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountFailure> {
+    fn mount(&self, id: &VolumeId) -> Result<FolderPath, MountError> {
         self.runtime.block_on(self.disks.mount(id))
     }
 
-    fn eject(&self, id: &VolumeId) -> Result<(), EjectFailure> {
+    fn eject(&self, id: &VolumeId) -> Result<(), EjectError> {
         self.runtime.block_on(self.disks.eject(id))
     }
 
-    fn force_eject(&self, id: &VolumeId) -> Result<(), EjectFailure> {
+    fn force_eject(&self, id: &VolumeId) -> Result<(), EjectError> {
         self.runtime.block_on(self.disks.force_eject(id))
     }
 

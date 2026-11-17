@@ -2,7 +2,7 @@
 
 use crate::support::{World, peers_knowing};
 use settings_app_callers::roles;
-use settings_app_intents::{APPLICATION_INTERFACE, APPLICATION_PATH, HandOverFault, hand_over};
+use settings_app_intents::{APPLICATION_INTERFACE, APPLICATION_PATH, HandOverError, hand_over};
 use settings_app_model::{
     ASSISTANT_MODEL_SLUG, ASSISTANT_SETUP_SLUG, AccountSegment, AccountTarget, Notice, PageSlug,
 };
@@ -326,7 +326,7 @@ async fn a_second_settings_app_sends_nothing_to_an_owner_that_is_not_settings() 
     let knows = peers_knowing(&second, &world.owner(), &roles::SHELL);
     let handed = hand_over(&second, &knows, Some("tok-3".to_owned()), None).await;
     assert!(
-        matches!(handed, Err(HandOverFault::NotSettings(_))),
+        matches!(handed, Err(HandOverError::NotSettings(_))),
         "{handed:?}"
     );
     assert_eq!(world.window.told(), [], "no token and no page was sent");

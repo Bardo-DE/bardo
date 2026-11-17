@@ -64,7 +64,7 @@ enum Phase {
 
 /// What an `add_buffer` can be refused for.
 #[derive(Debug, thiserror::Error)]
-enum Refusal {
+enum IconError {
     /// Not backed by `wl_shm`.
     #[error("The wl_buffer must be backed by wl_shm")]
     NotShm(#[source] BufferAccessError),
@@ -74,12 +74,12 @@ enum Refusal {
 }
 
 /// The edge of `buffer`, or why it is no icon buffer.
-fn edge_of(buffer: &WlBuffer) -> Result<u32, Refusal> {
+fn edge_of(buffer: &WlBuffer) -> Result<u32, IconError> {
     let size = with_buffer_contents(buffer, |_, _, data| (data.width, data.height))
-        .map_err(Refusal::NotShm)?;
+        .map_err(IconError::NotShm)?;
     match size {
         (w, h) if w == h && w >= 0 => Ok(w.unsigned_abs()),
-        _ => Err(Refusal::NotSquare),
+        _ => Err(IconError::NotSquare),
     }
 }
 

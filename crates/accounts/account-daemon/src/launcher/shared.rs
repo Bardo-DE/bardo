@@ -39,7 +39,7 @@ use account_core::{AppId, AuthKind};
 use account_core::{ProcessCredentialId, SessionToken};
 use account_service_core::audit::{AuditEvent, CredentialEnd};
 use account_service_core::registry::Registry;
-use account_wire::LauncherFault;
+use account_wire::LauncherWireError;
 use account_wire::Refusal;
 use base_ids::word::word as word_of;
 use caller_role_types::CallerRole;
@@ -99,7 +99,7 @@ impl<H: Host, C: Callers> Core<H, C> {
         let program = AgentProgram::parse(program).map_err(RefusedError::invalid)?;
         if !self.launchers.holds(&owner, &program) {
             return Err(RefusedError::launcher(
-                LauncherFault::NotRegistered,
+                LauncherWireError::NotRegistered,
                 "this connection has not registered that program",
             ));
         }
@@ -119,14 +119,14 @@ impl<H: Host, C: Callers> Core<H, C> {
             GrantScope::Always => {}
             GrantScope::Once => {
                 return Err(RefusedError::launcher(
-                    LauncherFault::OnceGrant,
+                    LauncherWireError::OnceGrant,
                     "a once permit is spent by its first use; a process holds its key for its life",
                 ));
             }
             GrantScope::Session(session) => {
                 if !self.launchers.session_open(&owner, session) {
                     return Err(RefusedError::launcher(
-                        LauncherFault::UnknownSession,
+                        LauncherWireError::UnknownSession,
                         "the permit is for a session this connection does not hold open",
                     ));
                 }
@@ -139,7 +139,7 @@ impl<H: Host, C: Callers> Core<H, C> {
             .ok_or_else(|| RefusedError::of(Refusal::UnknownGrant))?;
         if !holds_a_key(account.auth) {
             return Err(RefusedError::launcher(
-                LauncherFault::NotAKeyAccount,
+                LauncherWireError::NotAKeyAccount,
                 "the account holds no API key to hand over",
             ));
         }
@@ -198,7 +198,7 @@ impl<H: Host, C: Callers> Core<H, C> {
             })
             .ok_or_else(|| {
                 RefusedError::launcher(
-                    LauncherFault::UnknownCredential,
+                    LauncherWireError::UnknownCredential,
                     "no such credential for this connection",
                 )
             })?;

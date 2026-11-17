@@ -6,7 +6,7 @@
 //!
 //! Requests carry no query string: each path answers with its default page.
 
-use crate::Failure;
+use crate::ProbeError;
 use account_capability::{AbsentReason, Capability, Claim, Offer, Provenance, StorageCap, Subject};
 use http::Response;
 use serde::Deserialize;
@@ -53,16 +53,16 @@ struct Quota {
 ///
 /// [`Failure::Status`] for a status that is not a success; [`Failure::Unreadable`] when the body is
 /// not the expected JSON or names no address.
-pub fn address(answer: &Response<Vec<u8>>) -> Result<String, Failure> {
+pub fn address(answer: &Response<Vec<u8>>) -> Result<String, ProbeError> {
     let me: Me = match answer.status().as_u16() {
-        200..=299 => serde_json::from_slice(answer.body()).map_err(Failure::Json)?,
-        status => return Err(Failure::Status(status)),
+        200..=299 => serde_json::from_slice(answer.body()).map_err(ProbeError::Json)?,
+        status => return Err(ProbeError::Status(status)),
     };
     [me.mail, me.user_principal_name]
         .into_iter()
         .flatten()
         .find(|a| !a.is_empty())
-        .ok_or(Failure::Unreadable)
+        .ok_or(ProbeError::Unreadable)
 }
 
 fn claim(offer: Offer, provenance: Provenance) -> Claim {
@@ -91,7 +91,7 @@ pub fn verdict(
     declared: &Capability,
     personal: bool,
     answer: &Response<Vec<u8>>,
-) -> Result<Claim, Failure> {
+) -> Result<Claim, ProbeError> {
     let kind = declared.kind();
     let absent = |reason| Offer::Absent { kind, reason };
     Ok(match answer.status().as_u16() {
@@ -109,7 +109,7 @@ pub fn verdict(
             Provenance::Probed,
         ),
         404 => claim(absent(AbsentReason::NotOnServer), Provenance::Probed),
-        status => return Err(Failure::Status(status)),
+        status => return Err(ProbeError::Status(status)),
     })
 }
 
@@ -187,7 +187,7 @@ mod tests {
         assert_eq!(got(r"{}"), None);
         assert!(matches!(
             address(&answer(401, "")),
-            Err(Failure::Status(401))
+            Err(ProbeError::Status(401))
         ));
     }
 
@@ -244,7 +244,7 @@ mod tests {
         ));
         assert!(matches!(
             verdict(&drive(), true, &answer(500, "")),
-            Err(Failure::Status(500))
+            Err(ProbeError::Status(500))
         ));
     }
 

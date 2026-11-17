@@ -87,7 +87,7 @@ impl Window {
 /// Why no unit can be built.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("settings list no program for the {kind:?} engine")]
-pub struct MissingProgram {
+pub struct MissingProgramError {
     pub kind: EngineKind,
 }
 
@@ -95,13 +95,13 @@ pub struct MissingProgram {
 /// entry serves. See [`command_with_window`].
 ///
 /// # Errors
-/// Returns [`MissingProgram`] when the settings list no program for the entry's engine.
+/// Returns [`MissingProgramError`] when the settings list no program for the entry's engine.
 pub fn command(
     entry: &ModelEntry,
     profile: &EngineProfile,
     paths: &EnginePaths,
     socket: &SocketPath,
-) -> Result<UnitSpec, MissingProgram> {
+) -> Result<UnitSpec, MissingProgramError> {
     command_with_window(entry, profile, paths, socket, Window::Serve)
 }
 
@@ -119,7 +119,7 @@ pub fn command(
 /// sandbox's only read-only bind, and the socket's directory its only writable one. An entry whose `vram.gpu_need()` is `Absent` gets `GpuAccess::Absent` in its
 /// sandbox. The program is the one `paths` lists for the profile's engine (a uv environment's
 /// interpreter for vLLM and Kokoro, the interpreter in Strata's own folder, whose args name its
-/// server script and flags); an engine with none listed is [`MissingProgram`].
+/// server script and flags); an engine with none listed is [`MissingProgramError`].
 /// Every engine starts offline (`HF_HUB_OFFLINE=1`) and serves the model under the catalog id, so
 /// a request's model name does not depend on the repository it came from.
 ///
@@ -127,14 +127,14 @@ pub fn command(
 /// [`HOST_MEMORY_BASE`], which a CPU-only entry (all-zero figures) still gets.
 ///
 /// # Errors
-/// Returns [`MissingProgram`] when the settings list no program for the engine of `profile`.
+/// Returns [`MissingProgramError`] when the settings list no program for the engine of `profile`.
 pub fn command_with_window(
     entry: &ModelEntry,
     profile: &EngineProfile,
     paths: &EnginePaths,
     socket: &SocketPath,
     window: Window,
-) -> Result<UnitSpec, MissingProgram> {
+) -> Result<UnitSpec, MissingProgramError> {
     let repo_dir = repo_dir(&paths.hf_cache, &entry.source);
     let snapshot = snapshot_dir(&repo_dir, &entry.source);
     let socket_text = socket.0.to_string_lossy();
@@ -156,7 +156,7 @@ pub fn command_with_window(
     };
     let program = paths
         .program(profile.kind)
-        .ok_or(MissingProgram { kind: profile.kind })?;
+        .ok_or(MissingProgramError { kind: profile.kind })?;
     Ok(UnitSpec {
         program: program.clone(),
         args: own

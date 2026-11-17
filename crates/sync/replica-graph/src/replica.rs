@@ -13,8 +13,8 @@ use std::sync::{Mutex, MutexGuard, PoisonError};
 use sync_core::Clock;
 use sync_core::status::{read_error, unreached};
 use sync_core::{
-    BaseVersion, Blob, ByteRange, ChangePage, Cursor, Folders, PutItem, PutRefused, Quota,
-    RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
+    BaseVersion, Blob, ByteRange, ChangePage, Cursor, Folders, PutError, PutItem, Quota, RemoteId,
+    RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
 
 /// How many delta items a page asks for unless told otherwise.
@@ -265,15 +265,11 @@ impl<H: Http> Replica for GraphReplica<H> {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         self.write(item, base).await
     }
 
-    async fn remove(
-        &self,
-        item: &RemoteId,
-        base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    async fn remove(&self, item: &RemoteId, base: BaseVersion) -> Result<RemoteVersion, PutError> {
         self.delete(item, base).await
     }
 

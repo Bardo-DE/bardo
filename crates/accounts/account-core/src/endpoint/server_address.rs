@@ -18,7 +18,7 @@ use crate::error::CoreError;
 
 /// Why an address is not accepted. Two faults are equal when they are the same kind.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum ServerAddressFault {
+pub enum ServerAddressError {
     /// Not a web address (`http` or `https`, a host, an optional port and path).
     #[error("not a web address")]
     NotAnAddress(#[source] Option<CoreError>),
@@ -27,13 +27,13 @@ pub enum ServerAddressFault {
     PlainOffTrusted,
 }
 
-impl PartialEq for ServerAddressFault {
+impl PartialEq for ServerAddressError {
     fn eq(&self, other: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(other)
     }
 }
 
-impl Eq for ServerAddressFault {}
+impl Eq for ServerAddressError {}
 
 /// An accepted address: where the server is and how the connection is secured.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -69,15 +69,15 @@ impl ServerAddress {
 /// the person's own computers on their tailnet, as far as the caller knows them.
 ///
 /// # Errors
-/// [`ServerAddressFault::NotAnAddress`] for text that is not an `http` or `https` address;
-/// [`ServerAddressFault::PlainOffTrusted`] for `http` to a host that is not this computer nor one
+/// [`ServerAddressError::NotAnAddress`] for text that is not an `http` or `https` address;
+/// [`ServerAddressError::PlainOffTrusted`] for `http` to a host that is not this computer nor one
 /// of the person's own computers.
 pub fn server_address(
     text: &str,
     is_own: impl Fn(&str) -> bool,
-) -> Result<ServerAddress, ServerAddressFault> {
+) -> Result<ServerAddress, ServerAddressError> {
     let url =
-        EndpointUrl::parse(text.trim()).map_err(|e| ServerAddressFault::NotAnAddress(Some(e)))?;
+        EndpointUrl::parse(text.trim()).map_err(|e| ServerAddressError::NotAnAddress(Some(e)))?;
     let origin = url.origin();
     match origin.scheme {
         UrlScheme::Https => Ok(ServerAddress {
@@ -92,8 +92,8 @@ pub fn server_address(
                 tls: Tls::Plain,
             })
         }
-        UrlScheme::Http => Err(ServerAddressFault::PlainOffTrusted),
-        _ => Err(ServerAddressFault::NotAnAddress(None)),
+        UrlScheme::Http => Err(ServerAddressError::PlainOffTrusted),
+        _ => Err(ServerAddressError::NotAnAddress(None)),
     }
 }
 
@@ -104,13 +104,13 @@ pub fn server_address(
 /// checks with this and leaves the rest to [`server_address`].
 ///
 /// # Errors
-/// [`ServerAddressFault::NotAnAddress`] for text that is not an `http` or `https` address.
-pub fn server_address_shape(text: &str) -> Result<EndpointUrl, ServerAddressFault> {
+/// [`ServerAddressError::NotAnAddress`] for text that is not an `http` or `https` address.
+pub fn server_address_shape(text: &str) -> Result<EndpointUrl, ServerAddressError> {
     let url =
-        EndpointUrl::parse(text.trim()).map_err(|e| ServerAddressFault::NotAnAddress(Some(e)))?;
+        EndpointUrl::parse(text.trim()).map_err(|e| ServerAddressError::NotAnAddress(Some(e)))?;
     match url.origin().scheme {
         UrlScheme::Https | UrlScheme::Http => Ok(url),
-        _ => Err(ServerAddressFault::NotAnAddress(None)),
+        _ => Err(ServerAddressError::NotAnAddress(None)),
     }
 }
 
@@ -129,7 +129,7 @@ mod tests {
     fn an_address_is_accepted_by_its_scheme_and_its_host() {
         const ACCEPTED: Tls = Tls::Implicit;
         const PLAIN: Tls = Tls::Plain;
-        let cases: &[(&str, &str, Result<Tls, ServerAddressFault>)] = &[
+        let cases: &[(&str, &str, Result<Tls, ServerAddressError>)] = &[
             (
                 "https, any host",
                 "https://llm.example.test/v1",
@@ -171,44 +171,44 @@ mod tests {
             (
                 "http, a shared machine",
                 "http://friend:8080/v1",
-                Err(ServerAddressFault::PlainOffTrusted),
+                Err(ServerAddressError::PlainOffTrusted),
             ),
             (
                 "http, a tagged machine",
                 "http://gpu-box.tail1.ts.net/v1",
-                Err(ServerAddressFault::PlainOffTrusted),
+                Err(ServerAddressError::PlainOffTrusted),
             ),
             (
                 "http, an address on the tailnet nobody owns",
                 "http://100.64.0.99:8080/v1",
-                Err(ServerAddressFault::PlainOffTrusted),
+                Err(ServerAddressError::PlainOffTrusted),
             ),
             (
                 "http, any other host",
                 "http://llm.example.test/v1",
-                Err(ServerAddressFault::PlainOffTrusted),
+                Err(ServerAddressError::PlainOffTrusted),
             ),
             (
                 "not a web address",
                 "ftp://llm.example.test",
-                Err(ServerAddressFault::NotAnAddress(None)),
+                Err(ServerAddressError::NotAnAddress(None)),
             ),
             (
                 "no scheme",
                 "llm.example.test/v1",
-                Err(ServerAddressFault::NotAnAddress(None)),
+                Err(ServerAddressError::NotAnAddress(None)),
             ),
             (
                 "a mail scheme",
                 "imaps://mail.example.test",
-                Err(ServerAddressFault::NotAnAddress(None)),
+                Err(ServerAddressError::NotAnAddress(None)),
             ),
             (
                 "a query",
                 "https://llm.example.test/v1?key=1",
-                Err(ServerAddressFault::NotAnAddress(None)),
+                Err(ServerAddressError::NotAnAddress(None)),
             ),
-            ("empty", "", Err(ServerAddressFault::NotAnAddress(None))),
+            ("empty", "", Err(ServerAddressError::NotAnAddress(None))),
         ];
         for (what, text, want) in cases {
             let got = server_address(text, is_own).map(|address| address.tls());
@@ -217,7 +217,7 @@ mod tests {
         // With no list of computers only this computer may be plain.
         assert_eq!(
             server_address("http://studio:8080/v1", |_| false),
-            Err(ServerAddressFault::PlainOffTrusted)
+            Err(ServerAddressError::PlainOffTrusted)
         );
     }
 

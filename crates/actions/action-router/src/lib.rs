@@ -85,7 +85,7 @@ pub use checkpoint_sheet::restore_sheet;
 // The store of a build that cannot keep history, for the seams of a portable host.
 pub use action_checkpoint::NoStore;
 pub use messages::{assemble, check_stamped, inbound_line, intake_label, report_status};
-pub use restore::{RestoreFault, Restored};
+pub use restore::{RestoreError, Restored};
 pub use router::Router;
 pub use seams::{AppFault, AppLink, GrantStore, NoLog, Seams};
 pub use skills::SKILL_LOAD;

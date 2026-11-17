@@ -14,7 +14,7 @@ use crate::drag::offer::offers;
 use crate::drag::serial::drag_serial;
 use crate::handlers::drag_source::ActiveDrag;
 use layer_shell_hooks::DragSpec;
-use layer_shell_types::{DragOutcome, DragRefused, SurfaceId};
+use layer_shell_types::{DragError, DragOutcome, SurfaceId};
 
 /// `wl_data_source.dnd_drop_performed`, `dnd_finished` and `action` exist from v3.
 const DND_EVENTS_SINCE: u32 = 3;
@@ -65,25 +65,22 @@ pub(super) fn start<M: 'static>(
 }
 
 /// Why a drag from `from` cannot start now, if it cannot.
-fn check<M: 'static>(ctx: &HostCtx<M>, from: SurfaceId) -> Result<(), DragRefused> {
+fn check<M: 'static>(ctx: &HostCtx<M>, from: SurfaceId) -> Result<(), DragError> {
     let state = &ctx.state;
     if state.drag.active.is_some() {
-        return Err(DragRefused::InProgress);
+        return Err(DragError::InProgress);
     }
     if !state.surfaces.contains_key(&from) {
-        return Err(DragRefused::NoSurface);
+        return Err(DragError::NoSurface);
     }
-    let manager = state
-        .data_device
-        .as_ref()
-        .ok_or(DragRefused::NoDataDevice)?;
+    let manager = state.data_device.as_ref().ok_or(DragError::NoDataDevice)?;
     if manager.data_device_manager().version() < DND_EVENTS_SINCE {
-        return Err(DragRefused::OldProtocol);
+        return Err(DragError::OldProtocol);
     }
     state
         .input
         .data_device
         .as_ref()
-        .ok_or(DragRefused::NoDataDevice)?;
+        .ok_or(DragError::NoDataDevice)?;
     drag_serial(state.input.grab.get(), from).map(drop)
 }

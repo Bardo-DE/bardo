@@ -38,7 +38,7 @@ const RESTART_LIMIT: u32 = 5000;
 
 /// Why the stored records could not be read.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ReplayFault {
+pub enum ReplayError {
     /// The router or memoryd is not there.
     #[error("the record is not available")]
     Unavailable,
@@ -47,7 +47,7 @@ pub enum ReplayFault {
     Router(#[source] action_client::ClientError),
     /// The session log could not list its sessions.
     #[error("the session log could not list its sessions")]
-    Log(#[source] agent_session::LogFault),
+    Log(#[source] agent_session::LogError),
     /// A record is not in the form its owner writes.
     #[error("a stored record is malformed")]
     Malformed,
@@ -59,7 +59,7 @@ pub trait RecentSource: Send + Sync {
     fn recent(
         &self,
         query: RecentQuery,
-    ) -> impl Future<Output = Result<Vec<RecentEntry>, ReplayFault>> + Send;
+    ) -> impl Future<Output = Result<Vec<RecentEntry>, ReplayError>> + Send;
 }
 
 /// `Recent` through the router: `Session.Recall` in a session of the Space to read.
@@ -81,14 +81,14 @@ impl<'a, I: action_client::Transport> RouterRecent<'a, I> {
 }
 
 impl<I: action_client::Transport> RecentSource for RouterRecent<'_, I> {
-    async fn recent(&self, query: RecentQuery) -> Result<Vec<RecentEntry>, ReplayFault> {
+    async fn recent(&self, query: RecentQuery) -> Result<Vec<RecentEntry>, ReplayError> {
         let view = self
             .intents
             .session_recall(self.session.clone(), action_wire::RecallAsk::Recent(query))
             .await
-            .map_err(ReplayFault::Router)?;
+            .map_err(ReplayError::Router)?;
         let action_wire::RecallView::Recent(lines) = view else {
-            return Err(ReplayFault::Unavailable);
+            return Err(ReplayError::Unavailable);
         };
         Ok(lines
             .into_iter()
@@ -158,7 +158,7 @@ fn is_session_log_entry(text: &str) -> bool {
     serde_json::from_str::<serde_json::Value>(text).is_ok_and(|body| body.get("version").is_some())
 }
 
-fn what_of(entry: &RecentEntry) -> Result<Option<ReplayWhat>, ReplayFault> {
+fn what_of(entry: &RecentEntry) -> Result<Option<ReplayWhat>, ReplayError> {
     let kind = entry.summary.kind.as_str();
     let wanted = kind == MESSAGE_KIND
         || kind == EPISODE_KIND
@@ -179,7 +179,7 @@ fn what_of(entry: &RecentEntry) -> Result<Option<ReplayWhat>, ReplayFault> {
     }
     let malformed = |cause: serde_json::Error| {
         tracing::warn!(kind, %cause, "a stored record does not parse");
-        ReplayFault::Malformed
+        ReplayError::Malformed
     };
     let what = match kind {
         MESSAGE_KIND => ReplayWhat::Message(Box::new(
@@ -219,7 +219,7 @@ fn run_state(kind: &str, record: &serde_json::Value) -> Option<RosterState> {
 fn run_of(
     entry: &RecentEntry,
     spaces: &mut BTreeMap<RunId, SpaceId>,
-) -> Result<Option<ReplayWhat>, ReplayFault> {
+) -> Result<Option<ReplayWhat>, ReplayError> {
     let kind = entry.summary.kind.as_str();
     if !RUN_KINDS.contains(&kind) {
         return Ok(None);
@@ -229,24 +229,24 @@ fn run_of(
     };
     let malformed = |cause: serde_json::Error| {
         tracing::warn!(kind, %cause, "a stored record does not parse");
-        ReplayFault::Malformed
+        ReplayError::Malformed
     };
     let record: serde_json::Value =
         serde_json::from_str(&owner_form(body.as_str())).map_err(malformed)?;
     let run = record["v"]["run"]
         .as_str()
         .and_then(|r| RunId::parse(r).ok())
-        .ok_or(ReplayFault::Malformed)?;
+        .ok_or(ReplayError::Malformed)?;
     if kind == "computer_use.run.started" {
         let space = record["v"]["space"]
             .as_str()
             .and_then(|s| SpaceId::parse(s).ok())
-            .ok_or(ReplayFault::Malformed)?;
+            .ok_or(ReplayError::Malformed)?;
         spaces.insert(run.clone(), space);
     }
     let Some(state) = run_state(kind, &record) else {
         tracing::warn!(kind, "a stored run record names no state");
-        return Err(ReplayFault::Malformed);
+        return Err(ReplayError::Malformed);
     };
     Ok(spaces.get(&run).map(|space| ReplayWhat::Run {
         run,
@@ -260,8 +260,8 @@ fn run_of(
 ///
 /// # Errors
 ///
-/// Returns [`ReplayFault::Malformed`] when an entry is not in the form its owner writes.
-pub fn replay_of(entries: &[RecentEntry]) -> Result<Vec<ReplayEvent>, ReplayFault> {
+/// Returns [`ReplayError::Malformed`] when an entry is not in the form its owner writes.
+pub fn replay_of(entries: &[RecentEntry]) -> Result<Vec<ReplayEvent>, ReplayError> {
     let mut events = Vec::new();
     let mut spaces = BTreeMap::new();
     for entry in entries.iter().rev() {
@@ -284,11 +284,11 @@ pub fn replay_of(entries: &[RecentEntry]) -> Result<Vec<ReplayEvent>, ReplayFaul
 ///
 /// # Errors
 ///
-/// Returns a [`ReplayFault`] when the router or memoryd is not there, or a record is malformed.
+/// Returns a [`ReplayError`] when the router or memoryd is not there, or a record is malformed.
 pub async fn recent_events<S: RecentSource>(
     source: &S,
     since: UnixSeconds,
-) -> Result<Vec<ReplayEvent>, ReplayFault> {
+) -> Result<Vec<ReplayEvent>, ReplayError> {
     replay_of(&source.recent(restart_query(since)).await?)
 }
 
@@ -298,11 +298,11 @@ pub async fn recent_events<S: RecentSource>(
 ///
 /// # Errors
 ///
-/// Returns a [`ReplayFault`] when the router or memoryd is not there, or a record is malformed.
+/// Returns a [`ReplayError`] when the router or memoryd is not there, or a record is malformed.
 pub async fn recover<S: RecentSource>(
     source: &S,
     since: UnixSeconds,
-) -> Result<Rebuilt, ReplayFault> {
+) -> Result<Rebuilt, ReplayError> {
     Ok(rebuild(&recent_events(source, since).await?))
 }
 

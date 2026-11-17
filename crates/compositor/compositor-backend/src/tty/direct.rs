@@ -28,7 +28,7 @@ use super::sleep::{SleepInbox, SleepLink, sleep_channel};
 use super::udev::{DeviceEvent, DevicePath, DeviceSource};
 use super::vt::VtNumber;
 use crate::gpu::{GpuError, GpuHandle, RenderNodes};
-use crate::session::SessionFault;
+use crate::session::SessionError;
 use compositor_core::gpu::{DrmNodeId, GpuFacts};
 use std::ffi::OsStr;
 use std::os::fd::OwnedFd;
@@ -90,14 +90,14 @@ impl DirectSession {
 }
 
 impl TtySession for DirectSession {
-    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionFault> {
-        Err(SessionFault::DeniedOpen(
+    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionError> {
+        Err(SessionError::DeniedOpen(
             path.as_path().display().to_string(),
         ))
     }
 
-    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault> {
-        Err(SessionFault::Unavailable(format!(
+    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionError> {
+        Err(SessionError::Unavailable(format!(
             "no VT {} to switch to: --drm-node mode has no VTs",
             vt.0
         )))

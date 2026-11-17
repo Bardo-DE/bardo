@@ -28,6 +28,6 @@ pub use command::bardo_wire_of;
 pub use handout::{Handout, HandoutError, ZbusHandout, shell_connection};
 pub use notes::note_of;
 pub use pictures::picture_of;
-pub use shell::{ShellArm, ShellCall, ShellGone, SpawnError, spawn_shell_arm};
+pub use shell::{ShellArm, ShellCall, ShellGoneError, SpawnError, spawn_shell_arm};
 pub use surfaces::ShellSurfaces;
 pub use view::bardo_view;

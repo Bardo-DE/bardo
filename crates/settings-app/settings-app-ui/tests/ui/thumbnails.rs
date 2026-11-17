@@ -2,7 +2,7 @@
 //! scaled to the size kept, found again the next time, refused for what is not a picture.
 
 use settings_app_files::CacheHome;
-use settings_app_system::wallpaper::{ThumbFault, Thumbnails};
+use settings_app_system::wallpaper::{ThumbError, Thumbnails};
 use settings_app_testkit::Scratch;
 use std::path::Path;
 
@@ -63,7 +63,7 @@ fn what_is_not_a_picture_or_not_a_full_path_has_no_small_picture() {
     assert!(
         matches!(
             thumbs.of(Path::new("relative.png")),
-            Err(ThumbFault::NotAbsolute)
+            Err(ThumbError::NotAbsolute)
         ),
         "a path with no folder"
     );

@@ -6,7 +6,7 @@
 #![cfg(feature = "lending")]
 
 use inference_client::{
-    LendingConfig, LendingError, LendingState, TailnetLending, UnitFailure, UnitManager,
+    LendingConfig, LendingError, LendingState, TailnetLending, UnitError, UnitManager,
 };
 use std::ffi::OsString;
 use std::fs;
@@ -50,10 +50,10 @@ impl UnitManager for FakeUnits {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn reload(&self) -> Result<(), UnitFailure> {
+    async fn reload(&self) -> Result<(), UnitError> {
         self.calls.lock().expect("calls").push("reload".to_owned());
         match self.fail {
-            Fail::Reload => Err(UnitFailure("scripted".to_owned())),
+            Fail::Reload => Err(UnitError("scripted".to_owned())),
             _ => Ok(()),
         }
     }
@@ -62,13 +62,13 @@ impl UnitManager for FakeUnits {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn restart(&self, unit: &'static str) -> Result<(), UnitFailure> {
+    async fn restart(&self, unit: &'static str) -> Result<(), UnitError> {
         self.calls
             .lock()
             .expect("calls")
             .push(format!("restart {unit}"));
         match self.fail {
-            Fail::Restart => Err(UnitFailure("scripted".to_owned())),
+            Fail::Restart => Err(UnitError("scripted".to_owned())),
             _ => Ok(()),
         }
     }

@@ -317,7 +317,10 @@ fn a_rule_other_than_the_place_keeps_its_own_refusal() {
         DataClass::Public,
         &open(),
     );
-    assert_eq!(got, Err(Unplaced::Other(InferRefusal::NeedsGrant.into())));
+    assert_eq!(
+        got,
+        Err(Unplaced::Other(InferRefusedError::NeedsGrant.into()))
+    );
 }
 
 #[test]
@@ -361,7 +364,7 @@ fn an_unset_text_slot_is_no_model_chosen_unless_the_place_is_pinned() {
     };
     match refuse(&open_set, &unset) {
         Err(Unplaced::Other(refusal)) => {
-            assert_eq!(refusal.refusal, InferRefusal::NoModelChosen);
+            assert_eq!(refusal.refusal, InferRefusedError::NoModelChosen);
         }
         other => panic!("NoModelChosen, got {other:?}"),
     }
@@ -379,7 +382,7 @@ fn an_unset_text_slot_is_no_model_chosen_unless_the_place_is_pinned() {
         (&unset, Unchosen::Refuse),
     );
     assert!(
-        !matches!(&embed, Err(Unplaced::Other(r)) if r.refusal == InferRefusal::NoModelChosen),
+        !matches!(&embed, Err(Unplaced::Other(r)) if r.refusal == InferRefusedError::NoModelChosen),
         "{embed:?}"
     );
 }

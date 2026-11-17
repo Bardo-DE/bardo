@@ -4,7 +4,7 @@
 //! told them), and the front task gets a fresh session in the Space it was in.
 
 use crate::best_effort::best_effort;
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::recover::{RouterRecent, rebuild_from, recent_events};
 use crate::router_log::RouterLog;
 use crate::runtime::Companion;
@@ -86,8 +86,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
-    pub async fn restore(&mut self, spaces: &[SpaceId]) -> Result<Restarted, ServeFault> {
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
+    pub async fn restore(&mut self, spaces: &[SpaceId]) -> Result<Restarted, ServeError> {
         let since = UnixSeconds(self.clock.now().0.saturating_sub(RETENTION));
         let (mut restored, mut failed) = (0, 0);
         let stored = match stored_events(&RouterLog::reading(&self.intents)).await {
@@ -157,8 +157,8 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     ///
     /// # Errors
     ///
-    /// Returns a [`ServeFault`] when the router does not answer or refuses the request.
-    pub async fn resume(&mut self, rebuilt: Rebuilt) -> Result<Option<SessionOpened>, ServeFault> {
+    /// Returns a [`ServeError`] when the router does not answer or refuses the request.
+    pub async fn resume(&mut self, rebuilt: Rebuilt) -> Result<Option<SessionOpened>, ServeError> {
         for line in rebuilt.roster().entries {
             self.known.insert(line.agent.clone(), line);
         }

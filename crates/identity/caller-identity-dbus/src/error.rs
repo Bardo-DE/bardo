@@ -1,6 +1,6 @@
 //! The errors of the bus crate, and the one refusal a method returns.
 
-use caller_identity_core::Refused;
+use caller_identity_core::NotHeldError;
 use caller_identity_linux::PinError;
 use zbus::fdo;
 
@@ -34,7 +34,7 @@ pub enum WhoError {
     Changed,
     /// The work could not be run off the executor.
     #[error("the probe could not be run")]
-    Offload(#[source] crate::Cancelled),
+    Offload(#[source] crate::OffloadError),
 }
 
 /// The unit manager's answer about a unit could not be had.
@@ -73,6 +73,6 @@ impl UnitError {
 /// The refusal a method returns for `refused`: `AccessDenied` with the fixed text of the refusal
 /// and nothing about which check failed. (A `From` impl cannot live here: both types are foreign.)
 #[must_use]
-pub fn access_denied(refused: Refused) -> fdo::Error {
+pub fn access_denied(refused: NotHeldError) -> fdo::Error {
     fdo::Error::AccessDenied(refused.to_string())
 }

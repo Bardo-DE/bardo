@@ -7,7 +7,9 @@ use super::common::{
 use account_fake_servers::Daemon;
 use account_tailscale::NodeId;
 use base_testkit::GENEROUS;
-use inference_tailnet::{Config, Footing, Guests, Lending, Limits, Refusal, Visit, Visits, lend};
+use inference_tailnet::{
+    Config, Footing, Guests, Lending, Limits, TailnetError, Visit, Visits, lend,
+};
 use std::net::{IpAddr, SocketAddr};
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
@@ -304,7 +306,7 @@ async fn a_computer_has_a_few_connections_at_once_and_no_more() {
     let third = connect_from(a.pi, at(a.me, port)).await.unwrap();
     let answer = ask(third, "GET /hello HTTP/1.1\r\n\r\n").await;
     assert!(answer.starts_with("HTTP/1.1 429"), "{answer}");
-    assert!(answer.contains(Refusal::Busy.slug()), "{answer}");
+    assert!(answer.contains(TailnetError::Busy.slug()), "{answer}");
     // Closing one makes room.
     drop(first);
     base_testkit::eventually_some_async("a connection closed to make room for another", || async {

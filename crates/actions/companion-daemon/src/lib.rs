@@ -33,7 +33,7 @@ mod serve_entry;
 mod speaker;
 
 pub use agent_planner::{
-    Catalogue, CatalogueTool, PlanFault, PlannerModel, PlannerReply, RULES, ReadCall, TARGET,
+    Catalogue, CatalogueTool, PlanError, PlannerModel, PlannerReply, RULES, ReadCall, TARGET,
     TOOL_ANSWER, TOOL_ASK, TOOL_FINISH, TOOL_READ, TOOL_RELATED, messages, planner_label,
     read_call, system_text, user_text,
 };
@@ -41,7 +41,7 @@ pub use apps_link::AppsLink;
 pub use bell::Bell;
 pub use callers::{FILE as CALLERS_FILE, SYSTEM_CALLERS_VAR, shipped as shipped_callers};
 pub use companion_tasks::{
-    Begun, Change, RecentSource, ReplayFault, RouterLog, RouterRecent, ServeFault, TaskRuntime,
+    Begun, Change, RecentSource, ReplayError, RouterLog, RouterRecent, ServeError, TaskRuntime,
     completion_effects, events_of, rebuild_from, recent_events, recover, replay_of, restart_query,
     stored_events,
 };

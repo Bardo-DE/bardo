@@ -1,12 +1,12 @@
 //! DNS, shared: the lookups the generic family's mail search makes, handed in as a type-erased
 //! value so the provider has no type parameter and reaches no resolver itself.
 
-use account_discover::{Dns, DnsFault, MxRecord, SrvRecord};
+use account_discover::{Dns, DnsError, MxRecord, SrvRecord};
 use account_provider::DomainName;
 use std::pin::Pin;
 use std::sync::Arc;
 
-type Answer<'a, T> = Pin<Box<dyn Future<Output = Result<T, DnsFault>> + Send + 'a>>;
+type Answer<'a, T> = Pin<Box<dyn Future<Output = Result<T, DnsError>> + Send + 'a>>;
 
 trait DynDns: Send + Sync {
     fn srv_boxed<'a>(&'a self, name: &'a str) -> Answer<'a, Vec<SrvRecord>>;
@@ -41,7 +41,7 @@ impl std::fmt::Debug for SharedDns {
 }
 
 impl Dns for SharedDns {
-    fn srv(&self, name: &str) -> impl Future<Output = Result<Vec<SrvRecord>, DnsFault>> + Send {
+    fn srv(&self, name: &str) -> impl Future<Output = Result<Vec<SrvRecord>, DnsError>> + Send {
         let name = name.to_owned();
         async move { self.0.srv_boxed(&name).await }
     }
@@ -49,7 +49,7 @@ impl Dns for SharedDns {
     fn mx(
         &self,
         domain: &DomainName,
-    ) -> impl Future<Output = Result<Vec<MxRecord>, DnsFault>> + Send {
+    ) -> impl Future<Output = Result<Vec<MxRecord>, DnsError>> + Send {
         let domain = domain.clone();
         async move { self.0.mx_boxed(&domain).await }
     }

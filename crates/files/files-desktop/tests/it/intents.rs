@@ -11,7 +11,7 @@ use action_manifest::{Manifest, validate};
 use action_vocab::{Args, CallId, FileRef, Origin, ParamName, TargetValue, Value};
 use files_core::{FileName, FolderPath, ItemRef, Location, OpKind};
 use files_desktop::intents::{self, MANIFEST};
-use files_desktop::{Ask, Refusal, Reply, Undoing, Window};
+use files_desktop::{Ask, Reply, Undoing, Window, WindowError};
 use provenance::{ActionName, Actor, Label, Labelled, SpaceId};
 use zbus::zvariant::Value as BusValue;
 
@@ -38,7 +38,7 @@ impl FakeWindow {
 }
 
 impl Window for FakeWindow {
-    fn ask(&self, ask: Ask) -> impl Future<Output = Result<Reply, Refusal>> + Send {
+    fn ask(&self, ask: Ask) -> impl Future<Output = Result<Reply, WindowError>> + Send {
         let reply = match &ask {
             Ask::Selection => Reply::Items(self.selected.clone()),
             Ask::CurrentFolder => match &self.place {

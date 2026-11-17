@@ -12,7 +12,7 @@ use http_reqwest::blocking::{BlockingHttp, Patience};
 /// Why bytes did not arrive. Carries the location and the cause.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("could not download {0}")]
-pub struct FetchFault(pub String);
+pub struct FetchError(pub String);
 
 /// The largest archive the actions service takes, in bytes.
 pub const MAX_BYTES: u64 = 1 << 30;
@@ -31,15 +31,15 @@ pub trait Fetch {
     /// The bytes at `url`, a small document held in memory (at most [`MAX_SMALL_BYTES`]).
     ///
     /// # Errors
-    /// [`FetchFault`] when the bytes did not arrive or are too many.
-    fn get(&self, url: &str) -> Result<Vec<u8>, FetchFault>;
+    /// [`FetchError`] when the bytes did not arrive or are too many.
+    fn get(&self, url: &str) -> Result<Vec<u8>, FetchError>;
 
     /// Writes the bytes at `url` to the file `to`, which is made or replaced; at most
     /// [`MAX_BYTES`]. Nothing is left at `to` on failure.
     ///
     /// # Errors
-    /// [`FetchFault`] when the bytes did not arrive or are too many.
-    fn download(&self, url: &str, to: &Path) -> Result<(), FetchFault>;
+    /// [`FetchError`] when the bytes did not arrive or are too many.
+    fn download(&self, url: &str, to: &Path) -> Result<(), FetchError>;
 }
 
 /// Copies `from` into `to`, at most `max` bytes: more is an error.
@@ -55,11 +55,11 @@ fn copy_capped(from: &mut impl Read, to: &mut impl Write, max: u64) -> Result<()
 fn into_file(
     url: &str,
     to: &Path,
-    fill: impl FnOnce(&mut std::fs::File) -> Result<(), FetchFault>,
-) -> Result<(), FetchFault> {
-    let mut out = std::fs::File::create(to).map_err(|e| FetchFault(format!("{url}: {e}")))?;
+    fill: impl FnOnce(&mut std::fs::File) -> Result<(), FetchError>,
+) -> Result<(), FetchError> {
+    let mut out = std::fs::File::create(to).map_err(|e| FetchError(format!("{url}: {e}")))?;
     let done =
-        fill(&mut out).and_then(|()| out.flush().map_err(|e| FetchFault(format!("{url}: {e}"))));
+        fill(&mut out).and_then(|()| out.flush().map_err(|e| FetchError(format!("{url}: {e}"))));
     if done.is_err() {
         drop(out);
         let _ = std::fs::remove_file(to);
@@ -74,8 +74,8 @@ pub struct Https;
 
 impl Https {
     /// Streams `url` into `sink`, stopping the transfer past `max` bytes.
-    fn stream(url: &str, sink: &mut impl Write, max: u64) -> Result<(), FetchFault> {
-        let fault = |why: String| FetchFault(format!("{url}: {why}"));
+    fn stream(url: &str, sink: &mut impl Write, max: u64) -> Result<(), FetchError> {
+        let fault = |why: String| FetchError(format!("{url}: {why}"));
         if !url.starts_with("https://") {
             return Err(fault("only https is used".to_owned()));
         }
@@ -100,13 +100,13 @@ impl Https {
 }
 
 impl Fetch for Https {
-    fn get(&self, url: &str) -> Result<Vec<u8>, FetchFault> {
+    fn get(&self, url: &str) -> Result<Vec<u8>, FetchError> {
         let mut bytes = Vec::new();
         Self::stream(url, &mut bytes, MAX_SMALL_BYTES)?;
         Ok(bytes)
     }
 
-    fn download(&self, url: &str, to: &Path) -> Result<(), FetchFault> {
+    fn download(&self, url: &str, to: &Path) -> Result<(), FetchError> {
         into_file(url, to, |file| Self::stream(url, file, MAX_BYTES))
     }
 }
@@ -123,8 +123,8 @@ impl Files {
     }
 
     /// Opens the file `url` names.
-    fn open(&self, url: &str) -> Result<std::fs::File, FetchFault> {
-        let fault = |why: String| FetchFault(format!("{url}: {why}"));
+    fn open(&self, url: &str) -> Result<std::fs::File, FetchError> {
+        let fault = |why: String| FetchError(format!("{url}: {why}"));
         let name = url
             .strip_prefix("file://")
             .ok_or_else(|| fault("not a file:// location".to_owned()))?;
@@ -137,18 +137,18 @@ impl Files {
 }
 
 impl Fetch for Files {
-    fn get(&self, url: &str) -> Result<Vec<u8>, FetchFault> {
+    fn get(&self, url: &str) -> Result<Vec<u8>, FetchError> {
         let mut file = self.open(url)?;
         let mut bytes = Vec::new();
         copy_capped(&mut file, &mut bytes, MAX_SMALL_BYTES)
-            .map_err(|e| FetchFault(format!("{url}: {e}")))?;
+            .map_err(|e| FetchError(format!("{url}: {e}")))?;
         Ok(bytes)
     }
 
-    fn download(&self, url: &str, to: &Path) -> Result<(), FetchFault> {
+    fn download(&self, url: &str, to: &Path) -> Result<(), FetchError> {
         let mut from = self.open(url)?;
         into_file(url, to, |file| {
-            copy_capped(&mut from, file, MAX_BYTES).map_err(|e| FetchFault(format!("{url}: {e}")))
+            copy_capped(&mut from, file, MAX_BYTES).map_err(|e| FetchError(format!("{url}: {e}")))
         })
     }
 }

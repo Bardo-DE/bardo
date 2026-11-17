@@ -104,7 +104,7 @@ pub struct SearchOptions {
 /// is the kind of the one beside it that does not ([`Self::Transport`] is [`Self::Unreachable`],
 /// [`Self::Unparsed`] is [`Self::Unreadable`], [`Self::BadEndpoint`] is [`Self::NoServers`]).
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum DiscoverFault {
+pub enum DiscoverError {
     /// The domain answered and named no usable server.
     #[error("no servers named")]
     NoServers,
@@ -125,7 +125,7 @@ pub enum DiscoverFault {
     BadEndpoint(#[source] Cause),
 }
 
-impl DiscoverFault {
+impl DiscoverError {
     /// Nothing could be reached because of `cause`.
     pub fn transport(cause: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> Self {
         Self::Transport(Arc::from(cause.into()))
@@ -150,10 +150,10 @@ impl DiscoverFault {
     }
 }
 
-impl PartialEq for DiscoverFault {
+impl PartialEq for DiscoverError {
     fn eq(&self, other: &Self) -> bool {
         self.kind() == other.kind()
     }
 }
 
-impl Eq for DiscoverFault {}
+impl Eq for DiscoverError {}

@@ -38,7 +38,7 @@ pub struct Plan {
 
 /// Why a request is outside the ceiling.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum BadCaps {
+pub enum BadCapsError {
     /// A keyboard with more keys than a request may list.
     #[error("the key list is longer than a request may make it")]
     TooManyKeys,
@@ -59,8 +59,8 @@ pub enum BadCaps {
 /// Cuts `create` to the ceiling of its kind.
 ///
 /// # Errors
-/// `BadCaps` when the capabilities asked for are outside the ceiling of the kind.
-pub fn plan(create: &Create) -> Result<Plan, BadCaps> {
+/// `BadCapsError` when the capabilities asked for are outside the ceiling of the kind.
+pub fn plan(create: &Create) -> Result<Plan, BadCapsError> {
     let maker = create.kind().maker();
     match create {
         Create::Touchpad => Ok(touchpad::plan(maker)),

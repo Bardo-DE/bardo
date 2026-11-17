@@ -22,7 +22,7 @@ impl fmt::Display for JobId {
 
 /// Why a goal is not one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum GoalFault {
+pub enum GoalError {
     /// Nothing but whitespace.
     #[error("the goal is empty")]
     Empty,
@@ -45,14 +45,14 @@ impl GoalText {
     ///
     /// # Errors
     ///
-    /// Returns [`GoalFault`] when the text is not a goal.
-    pub fn parse(text: &str) -> Result<Self, GoalFault> {
+    /// Returns [`GoalError`] when the text is not a goal.
+    pub fn parse(text: &str) -> Result<Self, GoalError> {
         let text = text.trim();
         if text.is_empty() {
-            return Err(GoalFault::Empty);
+            return Err(GoalError::Empty);
         }
         if text.chars().count() > GOAL_MAX.0 || text.len() > GOAL_MAX.1 {
-            return Err(GoalFault::TooLong);
+            return Err(GoalError::TooLong);
         }
         Ok(Self(text.to_owned()))
     }
@@ -72,8 +72,8 @@ impl fmt::Debug for GoalText {
 }
 
 impl TryFrom<String> for GoalText {
-    type Error = GoalFault;
-    fn try_from(text: String) -> Result<Self, GoalFault> {
+    type Error = GoalError;
+    fn try_from(text: String) -> Result<Self, GoalError> {
         Self::parse(&text)
     }
 }

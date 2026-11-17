@@ -1,16 +1,16 @@
 //! The registry reader and installer, over a fixture snapshot and archives built here. Nothing
 //! reaches the network or the real home.
 
-use agent_install::fetch::{Fetch, FetchFault};
-use agent_install::run::{Run, RunFault};
+use agent_install::fetch::{Fetch, FetchError};
+use agent_install::run::{Run, RunError};
 use agent_install::store::{agents, read_record, versions};
-use agent_install::unpack::{Limits, UnpackFault, unpack};
+use agent_install::unpack::{Limits, UnpackError, unpack};
 use agent_install::uv::PythonPackage;
-use agent_install::{InstallFault, Offer, Standing, Want, install, offers, standing};
+use agent_install::{InstallError, Offer, Standing, Want, install, offers, standing};
 use agent_registry::dirs::AgentsDir;
 use agent_registry::hash::Sha256Hex;
 use agent_registry::platform::Platform;
-use agent_registry::record::{Check, Record, RecordFault};
+use agent_registry::record::{Check, Record, RecordError};
 use agent_registry::slug::Slug;
 use agent_registry::snapshot::Snapshot;
 use std::cell::RefCell;
@@ -22,16 +22,16 @@ use std::path::Path;
 struct Served(BTreeMap<String, Vec<u8>>);
 
 impl Fetch for Served {
-    fn get(&self, url: &str) -> Result<Vec<u8>, FetchFault> {
+    fn get(&self, url: &str) -> Result<Vec<u8>, FetchError> {
         self.0
             .get(url)
             .cloned()
-            .ok_or_else(|| FetchFault(url.to_owned()))
+            .ok_or_else(|| FetchError(url.to_owned()))
     }
 
-    fn download(&self, url: &str, to: &Path) -> Result<(), FetchFault> {
+    fn download(&self, url: &str, to: &Path) -> Result<(), FetchError> {
         let bytes = self.get(url)?;
-        std::fs::write(to, bytes).map_err(|e| FetchFault(format!("{url}: {e}")))
+        std::fs::write(to, bytes).map_err(|e| FetchError(format!("{url}: {e}")))
     }
 }
 
@@ -39,7 +39,7 @@ impl Fetch for Served {
 struct FakeNpm;
 
 impl Run for FakeNpm {
-    fn run(&self, _: &str, _: &[String], dir: &Path) -> Result<(), RunFault> {
+    fn run(&self, _: &str, _: &[String], dir: &Path) -> Result<(), RunError> {
         let pkg = dir.join("node_modules/@scope/tool");
         std::fs::create_dir_all(&pkg).expect("fake npm makes the package folder");
         std::fs::write(pkg.join("package.json"), r#"{"bin": {"tool-acp": "x.js"}}"#)
@@ -57,9 +57,9 @@ struct FakeUv {
 }
 
 impl Run for FakeUv {
-    fn run(&self, program: &str, args: &[String], dir: &Path) -> Result<(), RunFault> {
+    fn run(&self, program: &str, args: &[String], dir: &Path) -> Result<(), RunError> {
         self.calls.borrow_mut().push(args.to_vec());
-        let fail = || RunFault::Failed(program.to_owned());
+        let fail = || RunError::Failed(program.to_owned());
         if program != "uv" {
             return Err(fail());
         }
@@ -127,7 +127,7 @@ fn served(version: &str, body: &[u8]) -> Served {
 }
 
 /// The record of `id` at `version`, as the launcher would read it.
-fn installed(dir: &AgentsDir, id: &str, version: &str) -> Result<Record, RecordFault> {
+fn installed(dir: &AgentsDir, id: &str, version: &str) -> Result<Record, RecordError> {
     let (id, version) = (
         Slug::parse(id).expect("id"),
         Slug::parse(version).expect("version"),
@@ -179,7 +179,7 @@ fn a_wrong_digest_installs_nothing() {
     let snap = snapshot(Some(&wrong), "1.0.0");
     let fault =
         install(&dir, &snap, want("agy-acp", "1.0.0"), (&net, &FakeNpm)).expect_err("refused");
-    assert!(matches!(fault, InstallFault::Digest { .. }));
+    assert!(matches!(fault, InstallError::Digest { .. }));
     installed(&dir, "agy-acp", "1.0.0").unwrap_err();
 }
 
@@ -217,7 +217,7 @@ fn a_reinstall_with_no_declared_digest_is_compared_with_the_first_one() {
     assert_eq!(go(b"x").expect("first").check, Check::FirstUse);
     assert_eq!(go(b"x").expect("same").check, Check::Pinned);
     let fault = go(b"swapped").expect_err("changed");
-    assert!(matches!(fault, InstallFault::Digest { .. }));
+    assert!(matches!(fault, InstallError::Digest { .. }));
     installed(&dir, "agy-acp", "1.0.0").unwrap_err();
 }
 
@@ -249,7 +249,7 @@ fn only_the_listed_version_installs_and_a_newer_one_is_never_taken_alone() {
     install(&dir, &old, want("agy-acp", "1.0.0"), (&none, &FakeNpm)).unwrap();
     let stale =
         install(&dir, &newer, want("agy-acp", "0.9.0"), (&net, &FakeNpm)).expect_err("stale");
-    assert!(matches!(stale, InstallFault::Version { .. }));
+    assert!(matches!(stale, InstallError::Version { .. }));
     assert_eq!(standing(&dir, &newer, "nope"), Standing::Unknown);
 
     // The list in its own order, with what is installed of each; a missing line is empty.
@@ -322,7 +322,7 @@ fn a_python_program_missing_after_uv_installs_nothing() {
     let net = Served(BTreeMap::new());
     let fault =
         install(&dir, &snap, want("py", "1"), (&net, &FakeUv::default())).expect_err("no program");
-    assert!(matches!(fault, InstallFault::NoProgram));
+    assert!(matches!(fault, InstallError::NoProgram));
     installed(&dir, "py", "1").unwrap_err();
     assert!(versions(&dir, &Slug::parse("py").expect("slug")).is_empty());
 }
@@ -390,11 +390,11 @@ fn a_tarball_unpacks_and_an_escaping_entry_is_refused() {
     let other = tmp.path().join("other");
     let bad = archive_file(tmp.path(), "a.zip", &zip_of("../escape", b"x"));
     let fault = unpack("a.zip", &bad, &other, &Limits::default()).expect_err("escape");
-    assert!(matches!(fault, UnpackFault::Path(_)), "{fault}");
+    assert!(matches!(fault, UnpackError::Path(_)), "{fault}");
     assert!(!tmp.path().join("escape").exists());
     assert!(left_nothing(tmp.path(), &other));
     let kind = unpack("a.tar.bz2", &good, &other, &Limits::default()).expect_err("kind");
-    assert_eq!(kind, UnpackFault::Kind);
+    assert_eq!(kind, UnpackError::Kind);
 }
 
 #[test]
@@ -413,7 +413,7 @@ fn an_absolute_path_is_refused_and_nothing_is_left() {
         .expect("gz");
     let file = archive_file(tmp.path(), "a.tgz", &gz.finish().expect("end"));
     let fault = unpack("a.tgz", &file, &into, &Limits::default()).expect_err("absolute");
-    assert!(matches!(fault, UnpackFault::Path(_)), "{fault}");
+    assert!(matches!(fault, UnpackError::Path(_)), "{fault}");
     assert!(left_nothing(tmp.path(), &into));
 }
 
@@ -429,7 +429,7 @@ fn an_archive_over_the_total_cap_is_refused_and_nothing_is_left() {
         &zip_many(&[("a", &a), ("b", &b), ("c", &c)]),
     );
     let fault = unpack("a.zip", &file, &into, &small()).expect_err("over total");
-    assert!(matches!(fault, UnpackFault::TooLarge(_)), "{fault}");
+    assert!(matches!(fault, UnpackError::TooLarge(_)), "{fault}");
     assert!(left_nothing(tmp.path(), &into));
 }
 
@@ -440,7 +440,7 @@ fn a_file_over_the_entry_cap_is_refused_whatever_the_header_says() {
     // A tar header states the size it writes, so the count of real bytes is what stops this one.
     let file = archive_file(tmp.path(), "a.tar.gz", &tar_gz_of("big", &vec![0_u8; 700]));
     let fault = unpack("a.tar.gz", &file, &into, &small()).expect_err("over entry");
-    assert!(matches!(fault, UnpackFault::TooLarge(_)), "{fault}");
+    assert!(matches!(fault, UnpackError::TooLarge(_)), "{fault}");
     assert!(left_nothing(tmp.path(), &into));
 }
 
@@ -464,7 +464,7 @@ fn an_entry_that_lies_about_its_size_is_refused_and_nothing_is_left() {
     let fault = unpack("a.zip", &file, &into, &small()).expect_err("liar");
     // The stated size fits the cap; the real bytes do not (or the reader notices the mismatch).
     assert!(
-        matches!(fault, UnpackFault::TooLarge(_) | UnpackFault::Damaged(_)),
+        matches!(fault, UnpackError::TooLarge(_) | UnpackError::Damaged(_)),
         "{fault}"
     );
     assert!(left_nothing(tmp.path(), &into));
@@ -480,7 +480,7 @@ fn too_many_entries_are_refused_and_nothing_is_left() {
         &zip_many(&[("a", b"1"), ("b", b"2"), ("c", b"3"), ("d", b"4")]),
     );
     let fault = unpack("a.zip", &file, &into, &small()).expect_err("too many");
-    assert!(matches!(fault, UnpackFault::TooLarge(_)), "{fault}");
+    assert!(matches!(fault, UnpackError::TooLarge(_)), "{fault}");
     assert!(left_nothing(tmp.path(), &into));
 }
 

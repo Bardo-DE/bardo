@@ -15,7 +15,7 @@ use account_core::{Candidate, DataClass, Family, ServiceEndpoint};
 use account_match::Need;
 use account_match::{PhotosNeed, StorageNeed};
 use std::sync::Arc;
-use sync_pim_mirror::AccountdUnavailable;
+use sync_pim_mirror::AccountdUnavailableError;
 
 /// What a Storage grant of syncd's is for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -165,7 +165,7 @@ pub trait StorageGrants: Send + Sync {
     fn granted(
         &self,
         kind: StorageKind,
-    ) -> impl Future<Output = Result<Vec<Candidate>, AccountdUnavailable>> + Send;
+    ) -> impl Future<Output = Result<Vec<Candidate>, AccountdUnavailableError>> + Send;
 }
 
 /// [`StorageGrants`] over an accountd connection.
@@ -183,7 +183,7 @@ impl<T> ClientStorageGrants<T> {
 }
 
 impl<T: GrantsLink> StorageGrants for ClientStorageGrants<T> {
-    async fn granted(&self, kind: StorageKind) -> Result<Vec<Candidate>, AccountdUnavailable> {
+    async fn granted(&self, kind: StorageKind) -> Result<Vec<Candidate>, AccountdUnavailableError> {
         // Google Photos: an account that uploads, or one that only picks (each scope stands
         // alone); the same grant answers both, and `seen` keeps one candidate per account.
         let needs = match kind {
@@ -197,7 +197,7 @@ impl<T: GrantsLink> StorageGrants for ClientStorageGrants<T> {
                 .accounts
                 .find(&need, kind.class(), Usage::Background)
                 .await
-                .map_err(AccountdUnavailable)?;
+                .map_err(AccountdUnavailableError)?;
             match found {
                 Found::One(one) => candidates.push(one),
                 Found::Several(several) => candidates.extend(several),

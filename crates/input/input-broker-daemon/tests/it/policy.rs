@@ -4,7 +4,7 @@ use crate::support::{
 };
 use caller_identity_core::{Proof, Uid};
 use input_broker_daemon::identity::{ActiveUid, Caller};
-use input_broker_daemon::policy::{Refusal, authorise};
+use input_broker_daemon::policy::{ControlGroupError, authorise};
 use input_broker_wire::Kind;
 
 const MOUSE_GESTURES_KINDS: [Kind; 3] = [
@@ -58,12 +58,12 @@ fn both_are_served_before_anyone_logs_in() {
 
 #[test]
 fn refusals_table() {
-    use Refusal::*;
+    use ControlGroupError::*;
     let user_mouse_gestures =
         "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service";
     let user_key_remap =
         "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-key-remap.service";
-    let table: Vec<(&str, Kind, Caller, ActiveUid, Refusal)> = vec![
+    let table: Vec<(&str, Kind, Caller, ActiveUid, ControlGroupError)> = vec![
         (
             "not in the table",
             Kind::MouseGesturesWheel,
@@ -214,16 +214,16 @@ fn refusals_table() {
 /// as the right user; only the unit's proof is enough.
 #[test]
 fn only_a_proven_unit_gets_devices_whatever_the_place_is() {
-    let table: &[(&str, Proof, Result<(), Refusal>)] = &[
+    let table: &[(&str, Proof, Result<(), ControlGroupError>)] = &[
         (
             "its control group only",
             Proof::Cgroup,
-            Err(Refusal::TooWeak),
+            Err(ControlGroupError::TooWeak),
         ),
         (
             "its control group and its image",
             Proof::Exe,
-            Err(Refusal::TooWeak),
+            Err(ControlGroupError::TooWeak),
         ),
         ("its unit", Proof::Full, Ok(())),
     ];

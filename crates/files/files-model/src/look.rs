@@ -4,7 +4,7 @@ use files_core::{Entry, FileName, FolderPath, Info, ItemRef};
 
 use crate::browser::Browser;
 use crate::effect::Effect;
-use crate::error::ListFailure;
+use crate::error::FolderListError;
 
 type Stepped = (Browser, Vec<Effect>);
 
@@ -19,7 +19,7 @@ pub enum InfoView {
     /// Up, showing the facts.
     Shown(Info),
     /// Up, and the facts of this item could not be read.
-    Failed(ItemRef, ListFailure),
+    Failed(ItemRef, FolderListError),
 }
 
 impl InfoView {
@@ -135,7 +135,7 @@ impl Browser {
     }
 
     /// The answer to `Effect::ReadInfo`. One for an item the panel is no longer about is ignored.
-    pub(crate) fn info_read(self, item: ItemRef, result: Result<Info, ListFailure>) -> Stepped {
+    pub(crate) fn info_read(self, item: ItemRef, result: Result<Info, FolderListError>) -> Stepped {
         if self.info.item().as_ref() != Some(&item) {
             return (self, Vec::new());
         }

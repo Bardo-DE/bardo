@@ -20,9 +20,9 @@
 //! `close` kills the process. A host may still `cancel`, then `close`, sooner. A write the agent
 //! never reads ends the connection at the line sink's span (`capped_lines`).
 
-use super::edge::{EdgeFault, EdgeMenu, ToolsEdge, ToolsOffer};
+use super::edge::{EdgeError, EdgeMenu, ToolsEdge, ToolsOffer};
 use super::files::Files;
-use super::link::{Gone, Link, Reply, Work};
+use super::link::{Link, LinkGoneError, Reply, Work};
 use super::models::{ModelId, Models};
 use super::performer::Performer;
 use super::spawn::{AgentChild, SessionMeta, SignIn, Spawn};
@@ -39,7 +39,7 @@ use agent_client_protocol::schema::v1::{
     WaitForTerminalExitRequest,
 };
 use agent_session::{
-    BackendEvent, BackendFault, BackendKind, Choices, ResumePlan, Resumed, SessionBackend,
+    BackendError, BackendEvent, BackendKind, Choices, ResumePlan, Resumed, SessionBackend,
     StartSession, TurnEnd,
 };
 use base_path::AbsPath;
@@ -174,7 +174,7 @@ pub struct AcpBackend<X: Seams> {
     pub(super) pausing: Option<permission_core::BreakerTrip>,
     pub(super) dead: bool,
     /// Why the tool edge could not be made at the last start, when it was offered and failed.
-    pub(super) edge_fault: Option<EdgeFault>,
+    pub(super) edge_fault: Option<EdgeError>,
     pub(super) next_call: u64,
     pub(super) next_ask: u64,
     /// Tool calls the agent reported that bring content in, to be told to the router.
@@ -267,7 +267,7 @@ impl<X: Seams> AcpBackend<X> {
 
     /// Why the agent runs without the desktop's tools, when the host offered them and the edge
     /// could not be made: the person should be told, not left to wonder.
-    pub fn edge_fault(&self) -> Option<EdgeFault> {
+    pub fn edge_fault(&self) -> Option<EdgeError> {
         self.edge_fault
     }
 
@@ -354,17 +354,17 @@ impl<X: Seams> SessionBackend for AcpBackend<X> {
         BackendKind::Acp(self.program.clone())
     }
 
-    async fn start(&mut self, open: StartSession) -> Result<(), BackendFault> {
+    async fn start(&mut self, open: StartSession) -> Result<(), BackendError> {
         let cwd = open
             .opening
             .cwd
             .as_ref()
             .and_then(|w| AbsPath::parse(w.as_str()).ok())
-            .ok_or(BackendFault::Unavailable)?;
+            .ok_or(BackendError::Unavailable)?;
         self.open(open.session, cwd, false).await
     }
 
-    async fn resume(&mut self, plan: &ResumePlan) -> Result<Resumed, BackendFault> {
+    async fn resume(&mut self, plan: &ResumePlan) -> Result<Resumed, BackendError> {
         // The agent's own session id is not kept in the log, so a resume is always a new agent
         // session; the person is told (`Reseeded`).
         let cwd = plan
@@ -372,8 +372,8 @@ impl<X: Seams> SessionBackend for AcpBackend<X> {
             .cwd
             .as_ref()
             .and_then(|w| AbsPath::parse(w.as_str()).ok())
-            .ok_or(BackendFault::Unavailable)?;
-        let session = self.session.clone().ok_or(BackendFault::NotRunning)?;
+            .ok_or(BackendError::Unavailable)?;
+        let session = self.session.clone().ok_or(BackendError::NotRunning)?;
         self.open(session, cwd, plan.taint).await?;
         Ok(Resumed::Reseeded)
     }
@@ -382,20 +382,20 @@ impl<X: Seams> SessionBackend for AcpBackend<X> {
         clippy::unused_async_trait_impl,
         reason = "`SessionBackend::turn` is async; this backend only queues the prompt"
     )]
-    async fn turn(&mut self, turn: UserTurn) -> Result<(), BackendFault> {
+    async fn turn(&mut self, turn: UserTurn) -> Result<(), BackendError> {
         match self.phase {
-            Phase::Stopped => return Err(BackendFault::NotRunning),
-            Phase::Answering => return Err(BackendFault::Busy),
-            Phase::Idle if self.dead => return Err(BackendFault::Unavailable),
+            Phase::Stopped => return Err(BackendError::NotRunning),
+            Phase::Answering => return Err(BackendError::Busy),
+            Phase::Idle if self.dead => return Err(BackendError::Unavailable),
             Phase::Idle => {}
         }
-        let live = self.live.as_ref().ok_or(BackendFault::NotRunning)?;
-        let agent = live.agent.clone().ok_or(BackendFault::NotRunning)?;
+        let live = self.live.as_ref().ok_or(BackendError::NotRunning)?;
+        let agent = live.agent.clone().ok_or(BackendError::NotRunning)?;
         self.strikes.new_turn();
         let words = vec![ContentBlock::from(turn.text)];
         if live.link.prompt(PromptRequest::new(agent, words)).is_err() {
             self.dead = true;
-            return Err(Step::Write.unavailable(&Gone));
+            return Err(Step::Write.unavailable(&LinkGoneError));
         }
         self.phase = Phase::Answering;
         Ok(())

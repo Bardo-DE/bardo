@@ -142,7 +142,7 @@ impl Drop for Reservation<'_> {
 
 /// Why what a sign-in produced was not stored; nothing changed.
 #[derive(Debug, thiserror::Error)]
-pub(crate) enum StoreFault {
+pub(crate) enum AddStoreError {
     /// The sign-in is for no provider this service lists.
     #[error("the sign-in is for no provider the service lists")]
     NoProvider,
@@ -202,9 +202,9 @@ impl<E: Ports> Accounts<'_, E> {
         signed: &Signed,
         choices: &[KindToggle],
         allow: Option<&AllowFor>,
-    ) -> Result<AccountId, StoreFault> {
+    ) -> Result<AccountId, AddStoreError> {
         if signed.endpoints.iter().any(|e| e.check().is_err()) {
-            return Err(StoreFault::Endpoint);
+            return Err(AddStoreError::Endpoint);
         }
         let off: Vec<KindToggle> = choices
             .iter()
@@ -234,7 +234,7 @@ impl<E: Ports> Accounts<'_, E> {
             if let Err(why) = self.ctx.secrets().put(&key, credential).await {
                 // Nothing more can be done for a secret that cannot be deleted.
                 let _ = self.ctx.secrets().delete_account(&reservation.id).await;
-                return Err(StoreFault::Secret(why));
+                return Err(AddStoreError::Secret(why));
             }
         }
         // The row, its toggles and its first grant are one transaction, and the only place a
@@ -289,7 +289,7 @@ impl<E: Ports> Accounts<'_, E> {
             Err(refusal) => {
                 // Nothing more can be done for a secret that cannot be deleted.
                 let _ = self.ctx.secrets().delete_account(&reservation.id).await;
-                Err(StoreFault::Registry(refusal))
+                Err(AddStoreError::Registry(refusal))
             }
         }
     }
@@ -334,7 +334,7 @@ impl<E: Ports> Accounts<'_, E> {
         caller: &AppId,
         account: &AccountId,
         signed: &Signed,
-    ) -> Result<(), StoreFault> {
+    ) -> Result<(), AddStoreError> {
         let flight = self.ctx.flights().of(account);
         let _turn = flight.gate.lock().await;
         self.renew(caller, account, signed, &[]).await
@@ -354,7 +354,7 @@ impl<E: Ports> Accounts<'_, E> {
         account: &AccountId,
         signed: &Signed,
         given: &[Capability],
-    ) -> Result<(), StoreFault> {
+    ) -> Result<(), AddStoreError> {
         let flight = self.ctx.flights().of(account);
         let _turn = flight.gate.lock().await;
         let held = self
@@ -364,9 +364,9 @@ impl<E: Ports> Accounts<'_, E> {
             .iter()
             .find(|a| a.id == *account)
             .map(|a| a.endpoints.clone())
-            .ok_or(StoreFault::UnknownAccount)?;
+            .ok_or(AddStoreError::UnknownAccount)?;
         if !same_person(&held, &signed.endpoints) {
-            return Err(StoreFault::OtherPerson);
+            return Err(AddStoreError::OtherPerson);
         }
         self.renew(caller, account, signed, given).await
     }
@@ -379,7 +379,7 @@ impl<E: Ports> Accounts<'_, E> {
         account: &AccountId,
         signed: &Signed,
         given: &[Capability],
-    ) -> Result<(), StoreFault> {
+    ) -> Result<(), AddStoreError> {
         let held = self
             .ctx
             .lock()
@@ -387,12 +387,12 @@ impl<E: Ports> Accounts<'_, E> {
             .iter()
             .find(|a| a.id == *account)
             .map(|a| a.endpoints.clone())
-            .ok_or(StoreFault::UnknownAccount)?;
+            .ok_or(AddStoreError::UnknownAccount)?;
         if !held.is_empty()
             && !signed.endpoints.is_empty()
             && logins(&held) != logins(&signed.endpoints)
         {
-            return Err(StoreFault::OtherPerson);
+            return Err(AddStoreError::OtherPerson);
         }
         for (purpose, credential) in &signed.credentials {
             let key = SecretKey {
@@ -403,7 +403,7 @@ impl<E: Ports> Accounts<'_, E> {
                 .secrets()
                 .put(&key, credential)
                 .await
-                .map_err(StoreFault::Secret)?;
+                .map_err(AddStoreError::Secret)?;
         }
         self.ctx
             .transact(|registry| {
@@ -440,7 +440,7 @@ impl<E: Ports> Accounts<'_, E> {
             })
             .await
             .map(|_| ())
-            .map_err(StoreFault::Registry)
+            .map_err(AddStoreError::Registry)
     }
 }
 

@@ -8,7 +8,7 @@
 //! This is the pure half. Nothing here reads a clock, a bus or a timer: companiond owns the book,
 //! passes the time and the local zone in, and carries out the effects.
 //!
-//! - [`Schedule`], [`TimeOfDay`], [`Hours`], [`Zone`], [`ScheduleFault`]: the time rules.
+//! - [`Schedule`], [`TimeOfDay`], [`Hours`], [`Zone`], [`ScheduleError`]: the time rules.
 //! - [`Trigger`], [`EventMatch`], [`JobRef`]: what starts a routine.
 //! - [`Routine`], [`RoutineId`], [`RoutineState`], [`Missed`], [`RunBudget`],
 //!   [`RunRecord`], [`RunOutcome`]: the routine and its runs.
@@ -25,6 +25,6 @@ pub use book::{LATE, RoutineBook, RoutineEffect, RoutineEvent, TimerEntry, step}
 pub use kept::{
     MOST_RUNS, Missed, Routine, RoutineId, RoutineState, RunBudget, RunOutcome, RunRecord,
 };
-pub use schedule::{Hours, Schedule, ScheduleFault, TimeOfDay, Zone};
+pub use schedule::{Hours, Schedule, ScheduleError, TimeOfDay, Zone};
 pub use shapes::{JobEnd, NewRoutine, RoutineNotice, RoutineRecord, RunRequest};
 pub use trigger::{EventMatch, Trigger};

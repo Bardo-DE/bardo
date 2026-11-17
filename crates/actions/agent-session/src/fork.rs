@@ -6,19 +6,19 @@
 
 use crate::codec::{Logged, Read};
 use crate::entry::{ForkPoint, Seq, SessionEntry, TaintCause, TaintNote};
-use crate::plan::{PlanRefusal, Standing};
+use crate::plan::{PlanError, Standing};
 use crate::resume::resume_plan;
 use provenance::{SessionId, TaskId};
 
 /// Why a log cannot be forked.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum ForkFault {
+pub enum ForkError {
     /// The parent has no entry at that position.
     #[error("the parent has no entry at that position")]
     PastEnd,
     /// The kept entries are not a session.
     #[error("the kept entries have no plan: {0}")]
-    Plan(#[from] PlanRefusal),
+    Plan(#[from] PlanError),
     /// The kept entries have a gap or one that cannot be read: a fork would copy a guess.
     #[error("the parent's log is not whole up to that position")]
     NotWhole,
@@ -56,22 +56,22 @@ pub fn forks_of(parent: &SessionId, all: &[SessionId]) -> usize {
 ///
 /// # Errors
 ///
-/// Returns `ForkFault::PastEnd` when the parent has no entry at `at`, `ForkFault::NotWhole` when
-/// the kept entries have a gap or one that cannot be read, and `ForkFault::Plan` when they are not
+/// Returns `ForkError::PastEnd` when the parent has no entry at `at`, `ForkError::NotWhole` when
+/// the kept entries have a gap or one that cannot be read, and `ForkError::Plan` when they are not
 /// a session.
 pub fn fork(
     parent: &SessionId,
     rows: &[Logged],
     at: Seq,
     task: TaskId,
-) -> Result<Vec<SessionEntry>, ForkFault> {
+) -> Result<Vec<SessionEntry>, ForkError> {
     let kept: Vec<Logged> = rows.iter().filter(|r| r.seq <= at).cloned().collect();
     if kept.last().map(|r| r.seq) != Some(at) {
-        return Err(ForkFault::PastEnd);
+        return Err(ForkError::PastEnd);
     }
     let plan = resume_plan(&kept)?;
     if matches!(plan.standing, Standing::Blocked(_)) {
-        return Err(ForkFault::NotWhole);
+        return Err(ForkError::NotWhole);
     }
     let mut opening = plan.opening;
     opening.task = task;

@@ -1,42 +1,42 @@
 //! The words a person reads about the Tailscale network.
 //!
 //! The words a person reads about the Tailscale network, written from the typed reasons the
-//! libraries return (`inference_tailnet::Refusal`, `DialError`, `account_tailscale::TailscaleError`).
+//! libraries return (`inference_tailnet::TailnetError`, `DialError`, `account_tailscale::TailscaleError`).
 //! inferd owns the settings page and the answers to the asking computer, so the sentences live
 //! here and nowhere in those libraries. A refusal travels back to the asking computer, so each
 //! sentence is written from its side: "that computer" is the one that lends, "this computer"
 //! the one that asked.
 
 use account_tailscale::TailscaleError;
-use inference_tailnet::{DialError, Refusal};
+use inference_tailnet::{DialError, TailnetError};
 
 /// Why a request was refused, as a plain sentence ending in a full stop.
 #[must_use]
-pub fn refusal(refusal: &Refusal) -> &'static str {
+pub fn refusal(refusal: &TailnetError) -> &'static str {
     match refusal {
-        Refusal::ThisComputer => "That computer won't answer a request that came from itself.",
-        Refusal::Unknown => "That computer could not tell which of your computers is asking.",
-        Refusal::CouldNotCheck => "That computer could not check who is asking.",
-        Refusal::Tagged => {
+        TailnetError::ThisComputer => "That computer won't answer a request that came from itself.",
+        TailnetError::Unknown => "That computer could not tell which of your computers is asking.",
+        TailnetError::CouldNotCheck => "That computer could not check who is asking.",
+        TailnetError::Tagged => {
             "That computer won't lend its models to this one, which is set up as a server."
         }
-        Refusal::Shared => {
+        TailnetError::Shared => {
             "That computer won't lend its models to this one, which belongs to someone else, unless it is allowed in Settings there."
         }
-        Refusal::Denied => {
+        TailnetError::Denied => {
             "That computer was told not to let this one use its models. This can be changed in Settings there."
         }
-        Refusal::Waiting => {
+        TailnetError::Waiting => {
             "That computer is asking its owner whether to let this one use its models. Say yes there, then try again."
         }
-        Refusal::TooManyAsking => {
+        TailnetError::TooManyAsking => {
             "That computer is already asking about several computers. Answer those first."
         }
-        Refusal::NotKept => "That computer could not keep the answer. Try again.",
-        Refusal::Busy => {
+        TailnetError::NotKept => "That computer could not keep the answer. Try again.",
+        TailnetError::Busy => {
             "That computer is busy with this one's other requests. Try again in a moment."
         }
-        Refusal::Off => "That computer isn't lending its models.",
+        TailnetError::Off => "That computer isn't lending its models.",
     }
 }
 
@@ -93,7 +93,7 @@ mod tests {
 
     #[test]
     fn every_refusal_reads_as_plain_words() {
-        for it in Refusal::ALL {
+        for it in TailnetError::ALL {
             plain(refusal(&it));
         }
     }

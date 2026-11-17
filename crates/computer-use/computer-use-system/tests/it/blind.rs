@@ -6,8 +6,8 @@ use account_core::AccountId;
 use computer_use_run::{ComputerUseModel, ComputerUseModelError, ModelSight};
 use computer_use_system::InferdComputerUseModel;
 use inference_core::{
-    Declined, DeclinedBecause, InferEvent, InferRefusal, InferReply, ModelRef, PlaceId, PlaceModel,
-    PlaceRow, PlaceState, Takes,
+    Declined, DeclinedBecause, InferEvent, InferRefusedError, InferReply, ModelRef, PlaceId,
+    PlaceModel, PlaceRow, PlaceState, Takes,
 };
 
 fn declined_blind() -> InferEvent {
@@ -24,7 +24,7 @@ fn declined_blind() -> InferEvent {
 async fn a_chosen_model_that_cannot_read_images_is_told_by_name_and_not_retried() {
     let (transport, _) = Scripted::new(vec![vec![
         declined_blind(),
-        InferEvent::Finished(InferReply::Refused(InferRefusal::Unavailable)),
+        InferEvent::Finished(InferReply::Refused(InferRefusedError::Unavailable)),
     ]]);
     let mut model = InferdComputerUseModel::over(transport);
     assert_eq!(
@@ -40,7 +40,7 @@ async fn a_chosen_model_that_cannot_read_images_is_told_by_name_and_not_retried(
 #[tokio::test]
 async fn no_model_that_reads_images_says_porters_sentence() {
     let (transport, _) = Scripted::new(vec![vec![InferEvent::Finished(InferReply::Refused(
-        InferRefusal::NoModelSeesScreen,
+        InferRefusedError::NoModelSeesScreen,
     ))]]);
     let mut model = InferdComputerUseModel::over(transport);
     assert_eq!(

@@ -8,7 +8,7 @@ use serde::Deserialize;
 
 /// Why a shipped file is not taken.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ShippedFault {
+pub enum ShippedError {
     /// The text is not TOML of the shipped shape, or a kind or key is not a valid id.
     #[error("not a search file: {0}")]
     Malformed(String),
@@ -43,11 +43,11 @@ impl ShippedEntries {
     ///
     /// # Errors
     ///
-    /// Returns a [`ShippedFault`] when `text` is not a shipped file, or a kind or key in it is not
+    /// Returns a [`ShippedError`] when `text` is not a shipped file, or a kind or key in it is not
     /// a valid id.
-    pub fn parse(text: &str) -> Result<Self, ShippedFault> {
+    pub fn parse(text: &str) -> Result<Self, ShippedError> {
         let file: File =
-            toml::from_str(text).map_err(|e| ShippedFault::Malformed(e.to_string()))?;
+            toml::from_str(text).map_err(|e| ShippedError::Malformed(e.to_string()))?;
         Ok(Self(
             file.entries
                 .into_iter()

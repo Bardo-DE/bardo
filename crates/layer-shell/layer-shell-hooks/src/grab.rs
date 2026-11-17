@@ -38,7 +38,7 @@ pub struct PointerFacts {
 
 /// Why a move or resize was not started.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum GrabRefused {
+pub enum GrabError {
     /// The pointer is not on this surface.
     #[error("the pointer is not on this surface")]
     PointerElsewhere,
@@ -61,14 +61,14 @@ pub enum GrabRefused {
 ///
 /// # Errors
 ///
-/// [`GrabRefused`] when the compositor would ignore a grab started now.
-pub fn grab_serial(facts: PointerFacts, id: SurfaceId) -> Result<u32, GrabRefused> {
+/// [`GrabError`] when the compositor would ignore a grab started now.
+pub fn grab_serial(facts: PointerFacts, id: SurfaceId) -> Result<u32, GrabError> {
     if facts.focus != Some(id) {
-        return Err(GrabRefused::PointerElsewhere);
+        return Err(GrabError::PointerElsewhere);
     }
     match facts.press {
-        None => Err(GrabRefused::NoPress),
-        Some(press) if press.surface != id => Err(GrabRefused::PressedElsewhere),
+        None => Err(GrabError::NoPress),
+        Some(press) if press.surface != id => Err(GrabError::PressedElsewhere),
         Some(press) => Ok(press.serial),
     }
 }
@@ -95,8 +95,8 @@ impl GrabRecord {
     ///
     /// # Errors
     ///
-    /// [`GrabRefused`] when the compositor would ignore a grab started now.
-    pub fn serial_for(&self, id: SurfaceId) -> Result<u32, GrabRefused> {
+    /// [`GrabError`] when the compositor would ignore a grab started now.
+    pub fn serial_for(&self, id: SurfaceId) -> Result<u32, GrabError> {
         grab_serial(self.get(), id)
     }
 }
@@ -130,7 +130,7 @@ mod tests {
                     focus: Some(me),
                     press: None,
                 },
-                Err(GrabRefused::NoPress),
+                Err(GrabError::NoPress),
             ),
             (
                 "pressed on another surface, then moved here",
@@ -138,7 +138,7 @@ mod tests {
                     focus: Some(me),
                     press: press(other),
                 },
-                Err(GrabRefused::PressedElsewhere),
+                Err(GrabError::PressedElsewhere),
             ),
             (
                 "pressed here, pointer has left",
@@ -146,12 +146,12 @@ mod tests {
                     focus: Some(other),
                     press: press(me),
                 },
-                Err(GrabRefused::PointerElsewhere),
+                Err(GrabError::PointerElsewhere),
             ),
             (
                 "pointer on no surface",
                 PointerFacts::default(),
-                Err(GrabRefused::PointerElsewhere),
+                Err(GrabError::PointerElsewhere),
             ),
         ];
         for (name, facts, want) in cases {

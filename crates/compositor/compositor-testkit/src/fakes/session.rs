@@ -2,7 +2,7 @@
 //! fixture is `DeniedOpen`, which fails the test with exit 5 (a jail breach, §6.1).
 
 use super::logind::manager::SleepPhase;
-use compositor_backend::SessionFault;
+use compositor_backend::SessionError;
 use compositor_backend::tty::{
     DevicePath, SessionNote, SleepInbox, SleepLink, TtySession, VtNumber, sleep_channel,
 };
@@ -160,11 +160,11 @@ impl SharedSession {
 }
 
 impl TtySession for SharedSession {
-    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionFault> {
+    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionError> {
         self.0.borrow_mut().open_device(path)
     }
 
-    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault> {
+    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionError> {
         self.0.borrow_mut().switch_vt(vt)
     }
 
@@ -182,8 +182,8 @@ impl TtySession for SharedSession {
 }
 
 /// A memfd holding `bytes`, read position at the start.
-fn memfd_of(path: &Path, bytes: &[u8]) -> Result<OwnedFd, SessionFault> {
-    let denied = |errno| SessionFault::DeniedOpen(format!("{}: {errno}", path.display()));
+fn memfd_of(path: &Path, bytes: &[u8]) -> Result<OwnedFd, SessionError> {
+    let denied = |errno| SessionError::DeniedOpen(format!("{}: {errno}", path.display()));
     let fd = rustix::fs::memfd_create("compositor-session-fixture", MemfdFlags::CLOEXEC)
         .map_err(denied)?;
     let mut rest = bytes;
@@ -196,23 +196,23 @@ fn memfd_of(path: &Path, bytes: &[u8]) -> Result<OwnedFd, SessionFault> {
 }
 
 impl Session for FakeSession {
-    type Error = SessionFault;
+    type Error = SessionError;
 
-    fn open(&mut self, path: &Path, flags: OFlags) -> Result<OwnedFd, SessionFault> {
+    fn open(&mut self, path: &Path, flags: OFlags) -> Result<OwnedFd, SessionError> {
         let _ = flags;
         match (self.activity, self.fixtures.get(path)) {
-            (Activity::Inactive, _) => Err(SessionFault::Inactive),
+            (Activity::Inactive, _) => Err(SessionError::Inactive),
             (Activity::Active, Some(fixture)) => memfd_of(path, &fixture.bytes),
-            (Activity::Active, None) => Err(SessionFault::DeniedOpen(path.display().to_string())),
+            (Activity::Active, None) => Err(SessionError::DeniedOpen(path.display().to_string())),
         }
     }
 
-    fn close(&mut self, fd: OwnedFd) -> Result<(), SessionFault> {
+    fn close(&mut self, fd: OwnedFd) -> Result<(), SessionError> {
         drop(fd);
         Ok(())
     }
 
-    fn change_vt(&mut self, vt: i32) -> Result<(), SessionFault> {
+    fn change_vt(&mut self, vt: i32) -> Result<(), SessionError> {
         self.switched_to = Some(vt);
         self.set(Activity::Inactive);
         Ok(())
@@ -228,13 +228,13 @@ impl Session for FakeSession {
 }
 
 impl TtySession for FakeSession {
-    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionFault> {
+    fn open_device(&mut self, path: &DevicePath) -> Result<OwnedFd, SessionError> {
         Session::open(self, path.as_path(), OFlags::RDWR)
     }
 
-    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionFault> {
+    fn switch_vt(&mut self, vt: VtNumber) -> Result<(), SessionError> {
         let vt = i32::try_from(vt.0)
-            .map_err(|error| SessionFault::Unavailable(format!("no VT {}: {error}", vt.0)))?;
+            .map_err(|error| SessionError::Unavailable(format!("no VT {}: {error}", vt.0)))?;
         Session::change_vt(self, vt)
     }
 
@@ -303,7 +303,7 @@ mod tests {
         for path in ["/dev/dri/card1", "/dev/input/event0", "/etc/passwd"] {
             assert_eq!(
                 session.open(Path::new(path), OFlags::RDONLY).unwrap_err(),
-                SessionFault::DeniedOpen(path.to_owned())
+                SessionError::DeniedOpen(path.to_owned())
             );
         }
     }
@@ -319,7 +319,7 @@ mod tests {
             session
                 .open(Path::new("/dev/dri/card0"), OFlags::RDWR)
                 .unwrap_err(),
-            SessionFault::Inactive
+            SessionError::Inactive
         );
         session.resume();
         assert!(session.is_active());

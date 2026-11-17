@@ -1,7 +1,7 @@
 //! "The owner of this name must hold this role", and the watch for the name changing hands.
 
 use crate::bus::{PrivateBus, name_of};
-use caller_identity_core::{Pin, Proof, Refused, Requirement, RoleName, Table};
+use caller_identity_core::{NotHeldError, Pin, Proof, Requirement, RoleName, Table};
 use caller_identity_dbus::{BusPeers, ManagerCheck};
 use caller_identity_linux::FixtureProc;
 use caller_identity_linux::fake::introduced_service;
@@ -29,11 +29,11 @@ fn a_name_nobody_owns_passes_nothing() {
         let need = [Requirement::new(shell(), Proof::Exe)];
         assert_eq!(
             peers.owner_of(NAME, &need).await.err(),
-            Some(Refused::Unknown)
+            Some(NotHeldError::Unknown)
         );
         assert_eq!(
             peers.owner_of("not a name", &need).await.err(),
-            Some(Refused::Unknown)
+            Some(NotHeldError::Unknown)
         );
     });
 }
@@ -53,7 +53,7 @@ fn the_owner_must_hold_the_role_and_is_returned_by_its_unique_name() {
         // The owner is not the shell: an empty table and an empty tree make it nobody.
         assert_eq!(
             peers.owner_of(NAME, &need).await.err(),
-            Some(Refused::Unknown)
+            Some(NotHeldError::Unknown)
         );
         let standing = introduced_service("org.bardo.Shell", "shell", Proof::Full, Pin::AtConnect)
             .expect("valid");

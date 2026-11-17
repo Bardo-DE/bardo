@@ -5,7 +5,7 @@
 
 use super::backend::{AcpBackend, Live, Phase, Seams};
 use super::edge::ToolsEdge;
-use super::link::{Gone, Link};
+use super::link::{Link, LinkGoneError};
 use super::models::Models;
 use super::spawn::{AgentChild, LaunchPlan, Spawn, Spawned};
 use agent_acp_core::cause::Step;
@@ -19,7 +19,7 @@ use agent_client_protocol::schema::v1::{
     ResumeSessionRequest,
 };
 use agent_client_protocol::{SentRequest, UntypedMessage};
-use agent_session::{BackendFault, Choice, Choices};
+use agent_session::{BackendError, Choice, Choices};
 use base_path::AbsPath;
 use companion_model::helper::{SignInHow, SignInWay, TerminalLogin};
 use std::path::PathBuf;
@@ -41,7 +41,7 @@ impl<X: Seams> AcpBackend<X> {
         session: provenance::SessionId,
         cwd: AbsPath,
         taint: bool,
-    ) -> Result<(), BackendFault> {
+    ) -> Result<(), BackendError> {
         // The agent's writable folder is confined like a terminal's: no link on the way, not the
         // home folder, no place of secrets. The sandbox is given the real directory.
         let workdir = self
@@ -137,24 +137,24 @@ impl<X: Seams> AcpBackend<X> {
     async fn answered<T: Send>(
         &mut self,
         sent: SentRequest<T>,
-    ) -> Result<Result<T, Error>, BackendFault> {
-        let live = self.live.as_mut().ok_or(BackendFault::NotRunning)?;
+    ) -> Result<Result<T, Error>, BackendError> {
+        let live = self.live.as_mut().ok_or(BackendError::NotRunning)?;
         if let Ok(answer) = live.link.answer(sent).await {
             Ok(answer)
         } else {
             self.dead = true;
-            Err(Step::Reply.unavailable(&Gone))
+            Err(Step::Reply.unavailable(&LinkGoneError))
         }
     }
 
-    fn link(&self) -> Result<&Link, BackendFault> {
+    fn link(&self) -> Result<&Link, BackendError> {
         self.live
             .as_ref()
             .map(|live| &live.link)
-            .ok_or(BackendFault::NotRunning)
+            .ok_or(BackendError::NotRunning)
     }
 
-    async fn handshake(&mut self, cwd: &AbsPath) -> Result<(), BackendFault> {
+    async fn handshake(&mut self, cwd: &AbsPath) -> Result<(), BackendError> {
         let caps = capabilities(self.performer.capabilities(ClientCapabilities::new()));
         let initialize = InitializeRequest::new(ProtocolVersion::V1)
             .client_capabilities(caps)
@@ -165,7 +165,7 @@ impl<X: Seams> AcpBackend<X> {
             .answered(sent)
             .await?
             .map_err(|e| Step::Initialize.unavailable(&e))?;
-        let live = self.live.as_mut().ok_or(BackendFault::NotRunning)?;
+        let live = self.live.as_mut().ok_or(BackendError::NotRunning)?;
         live.auth_ways = auth_ways(&init);
         live.can_log_out = init.agent_capabilities.auth.logout.is_some();
         live.can_resume = init
@@ -176,13 +176,13 @@ impl<X: Seams> AcpBackend<X> {
         live.can_load = init.agent_capabilities.load_session;
         self.sign_in(&init).await?;
         let methods = signable(&init);
-        let live = self.live.as_mut().ok_or(BackendFault::NotRunning)?;
+        let live = self.live.as_mut().ok_or(BackendError::NotRunning)?;
         live.ways = methods.clone();
         if self.resume_session(cwd).await? {
             self.phase = Phase::Idle;
             return Ok(());
         }
-        let live = self.live.as_ref().ok_or(BackendFault::NotRunning)?;
+        let live = self.live.as_ref().ok_or(BackendError::NotRunning)?;
         let servers = live
             .edge
             .iter()
@@ -202,7 +202,7 @@ impl<X: Seams> AcpBackend<X> {
         };
         let made: NewSessionResponse =
             serde_json::from_value(reply.clone()).map_err(|e| Step::NewSession.unavailable(&e))?;
-        let live = self.live.as_mut().ok_or(BackendFault::NotRunning)?;
+        let live = self.live.as_mut().ok_or(BackendError::NotRunning)?;
         live.models = Models::of_reply(&reply, &made);
         live.agent = Some(made.session_id);
         self.choose_model().await?;
@@ -212,11 +212,11 @@ impl<X: Seams> AcpBackend<X> {
 
     /// Picks up the agent's own session again, when one was asked for and the agent can. False
     /// when there was nothing to resume or the agent would not: a new session is then made.
-    async fn resume_session(&mut self, cwd: &AbsPath) -> Result<bool, BackendFault> {
+    async fn resume_session(&mut self, cwd: &AbsPath) -> Result<bool, BackendError> {
         let Some(old) = self.resume_id.clone() else {
             return Ok(false);
         };
-        let live = self.live.as_ref().ok_or(BackendFault::NotRunning)?;
+        let live = self.live.as_ref().ok_or(BackendError::NotRunning)?;
         // `session/resume` when the agent has it, else `session/load`, which also replays the
         // conversation to us: that replay is the agent's own history, not words of a new turn.
         let (can_resume, can_load) = (live.can_resume, live.can_load);
@@ -241,7 +241,7 @@ impl<X: Seams> AcpBackend<X> {
         match picked {
             Ok(()) => {
                 self.ready.clear();
-                let live = self.live.as_mut().ok_or(BackendFault::NotRunning)?;
+                let live = self.live.as_mut().ok_or(BackendError::NotRunning)?;
                 live.agent = Some(old);
                 live.picked_up = true;
                 Ok(true)
@@ -255,9 +255,9 @@ impl<X: Seams> AcpBackend<X> {
     /// state the agent would not end, or one it cannot end this way.
     ///
     /// # Errors
-    /// Returns a [`BackendFault`] when no agent is running or the connection to it is gone.
-    pub async fn log_out(&mut self) -> Result<bool, BackendFault> {
-        let live = self.live.as_ref().ok_or(BackendFault::NotRunning)?;
+    /// Returns a [`BackendError`] when no agent is running or the connection to it is gone.
+    pub async fn log_out(&mut self) -> Result<bool, BackendError> {
+        let live = self.live.as_ref().ok_or(BackendError::NotRunning)?;
         if !live.can_log_out || self.phase != Phase::Idle {
             return Ok(false);
         }
@@ -267,41 +267,41 @@ impl<X: Seams> AcpBackend<X> {
 
     /// Switches to the model `agents.toml` names, when it names one: only one the agent offered,
     /// and the reply is awaited before the first turn. No model named leaves the agent's own.
-    async fn choose_model(&mut self) -> Result<(), BackendFault> {
-        let live = self.live.as_ref().ok_or(BackendFault::NotRunning)?;
+    async fn choose_model(&mut self) -> Result<(), BackendError> {
+        let live = self.live.as_ref().ok_or(BackendError::NotRunning)?;
         let Some(wanted) = live.model.clone() else {
             return Ok(());
         };
-        let agent = live.agent.clone().ok_or(BackendFault::NotRunning)?;
-        let offer = live.models.clone().ok_or(BackendFault::ModelNotChoosable)?;
+        let agent = live.agent.clone().ok_or(BackendError::NotRunning)?;
+        let offer = live.models.clone().ok_or(BackendError::ModelNotChoosable)?;
         if !offer.offers(&wanted) {
-            return Err(BackendFault::ModelNotOffered(offer.choices()));
+            return Err(BackendError::ModelNotOffered(offer.choices()));
         }
         if offer.current.as_deref() == Some(wanted.as_str()) {
             return Ok(());
         }
         let message = offer.switch(&agent, &wanted).map_err(|error| {
             tracing::debug!(%error, "the model switch could not be encoded");
-            BackendFault::ModelRefused
+            BackendError::ModelRefused
         })?;
         let sent = live.link.ask(message);
         match self.answered(sent).await? {
             Ok(_) => {
-                let live = self.live.as_mut().ok_or(BackendFault::NotRunning)?;
+                let live = self.live.as_mut().ok_or(BackendError::NotRunning)?;
                 if let Some(models) = live.models.as_mut() {
                     models.current = Some(wanted.as_str().to_owned());
                 }
                 Ok(())
             }
-            Err(_) => Err(BackendFault::ModelRefused),
+            Err(_) => Err(BackendError::ModelRefused),
         }
     }
 
     /// Signs in the way `agents.toml` names, when it names one: only a way the agent advertised
     /// as its own to run, and the reply is awaited before `session/new` goes out. The agent reads
     /// its own login; nothing of it passes through us.
-    async fn sign_in(&mut self, init: &InitializeResponse) -> Result<(), BackendFault> {
-        let live = self.live.as_ref().ok_or(BackendFault::NotRunning)?;
+    async fn sign_in(&mut self, init: &InitializeResponse) -> Result<(), BackendError> {
+        let live = self.live.as_ref().ok_or(BackendError::NotRunning)?;
         let Some(method) = live.sign_in.clone() else {
             return Ok(());
         };
@@ -310,7 +310,7 @@ impl<X: Seams> AcpBackend<X> {
             .iter()
             .any(|m| matches!(m, AuthMethod::Agent(_)) && m.id().0.as_ref() == method.as_str());
         if !offered {
-            return Err(BackendFault::SignInUnsupported);
+            return Err(BackendError::SignInUnsupported);
         }
         let sent = live
             .link
@@ -318,21 +318,21 @@ impl<X: Seams> AcpBackend<X> {
         // Whatever the agent answers with an error, it did not sign in.
         match self.answered(sent).await? {
             Ok(_) => Ok(()),
-            Err(_) => Err(BackendFault::SignInNeeded),
+            Err(_) => Err(BackendError::SignInNeeded),
         }
     }
 }
 
 /// The fault for an error the agent answered `session/new` with: "authentication required"
 /// (-32000) is its own fault, everything else is the agent being unavailable.
-fn refusal_fault(error: &Error, methods: Choices) -> BackendFault {
+fn refusal_fault(error: &Error, methods: Choices) -> BackendError {
     if error.code != ErrorCode::AuthRequired {
         return Step::NewSession.unavailable(error);
     }
     if methods.0.is_empty() {
-        BackendFault::SignInNeeded
+        BackendError::SignInNeeded
     } else {
-        BackendFault::SignInChoose(methods)
+        BackendError::SignInChoose(methods)
     }
 }
 

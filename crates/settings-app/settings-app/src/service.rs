@@ -5,7 +5,7 @@
 //! is opened on demand, and the process leaves once no window has been open for [`IDLE`].
 
 use crate::{HEIGHT, WIDTH, ended, enter_runtime_block, environment};
-use settings_app_intents::{ServeFault, SettingsProvider, serve_session};
+use settings_app_intents::{IntentServeError, SettingsProvider, serve_session};
 use settings_app_model::{Inbox, Notice, Outbox, Receiver, inbox};
 use settings_app_ui::{App, Env, Opening};
 use std::process::ExitCode;
@@ -33,7 +33,7 @@ fn window_spec() -> WindowSpec {
 }
 
 /// Hands each notice to the open window, or opens one for it. A window that has closed has dropped
-/// its receiver, which is how this finds out (`WindowGone`): the next notice that shows something
+/// its receiver, which is how this finds out (`WindowGoneError`): the next notice that shows something
 /// gets a fresh queue in `windows`, which the new window takes, and a window opened for it.
 async fn dispatch(mut notices: Receiver, windows: Inbox, app: AppHandle) {
     let mut open: Option<Outbox> = None;
@@ -87,7 +87,7 @@ pub fn run() -> ExitCode {
     let _connection = match enter_runtime_block(serve_session(provider)) {
         Ok(connection) => connection,
         // Settings is already up and answering: this start has nothing to add.
-        Err(ServeFault::Running) => return ExitCode::SUCCESS,
+        Err(IntentServeError::Running) => return ExitCode::SUCCESS,
         Err(fault) => {
             eprintln!("bardo-settings: no intents service: {fault}");
             return ExitCode::FAILURE;

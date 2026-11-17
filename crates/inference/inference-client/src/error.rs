@@ -1,6 +1,6 @@
 //! inference-client's errors.
 
-use inference_core::{InferRefusal, NoPlaceReason, PlaceKind, SessionError};
+use inference_core::{InferRefusedError, NoPlaceReason, PlaceKind, SessionError};
 
 /// Why a transport could not carry a request. More reasons may be added: match with a wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -29,7 +29,7 @@ pub enum TransportError {
     #[error("inferd refused a call about computers or guests: {reason}")]
     Computer {
         /// Why, as a word an app can act on.
-        reason: ComputerReason,
+        reason: ComputerError,
         /// The text inferd sent with the refusal.
         words: String,
     },
@@ -51,7 +51,7 @@ pub enum TransportError {
 /// Why inferd refused a call about computers or guests. More reasons may be added: match with a
 /// wildcard.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ComputerReason {
+pub enum ComputerError {
     /// The name is empty, too long or has control characters.
     #[error("bad name")]
     BadName,
@@ -108,7 +108,7 @@ pub enum ComputerReason {
     Other(String),
 }
 
-impl ComputerReason {
+impl ComputerError {
     /// The reason a daemon's error name stands for (the part after the `Computer.` prefix).
     #[must_use]
     pub fn from_name(name: &str) -> Self {
@@ -127,7 +127,7 @@ impl ComputerReason {
             "AddedByHand" => Self::AddedByHand,
             "Unavailable" => Self::Unavailable,
             "NotOnTailscale" => Self::NotOnTailscale,
-            "NotAnswering" => Self::NotAnswering,
+            "NotAnsweringError" => Self::NotAnswering,
             "NotAsking" => Self::NotAsking,
             "TooManyAsking" => Self::TooManyAsking,
             other => Self::Other(other.to_owned()),
@@ -147,7 +147,7 @@ pub enum ClientError {
     Transport(#[from] TransportError),
     /// inferd refused.
     #[error(transparent)]
-    InferRefused(#[from] InferRefusal),
+    InferRefused(#[from] InferRefusedError),
 }
 
 impl ClientError {

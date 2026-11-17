@@ -41,7 +41,7 @@ pub struct Encoded {
 
 /// Why an entry could not be written.
 #[derive(Debug, thiserror::Error)]
-pub enum EncodeFault {
+pub enum EncodeError {
     /// An entry of a kind this version does not know has no stored form.
     #[error("an entry of an unknown kind has no stored form")]
     UnknownKind,
@@ -54,10 +54,10 @@ pub enum EncodeFault {
 ///
 /// # Errors
 ///
-/// Returns `EncodeFault` when the entry cannot be written as JSON.
-pub fn encode(seq: Seq, entry: &SessionEntry) -> Result<Encoded, EncodeFault> {
+/// Returns `EncodeError` when the entry cannot be written as JSON.
+pub fn encode(seq: Seq, entry: &SessionEntry) -> Result<Encoded, EncodeError> {
     if matches!(entry, SessionEntry::Unknown(_)) {
-        return Err(EncodeFault::UnknownKind);
+        return Err(EncodeError::UnknownKind);
     }
     let envelope = Envelope {
         version: CURRENT,
@@ -66,7 +66,7 @@ pub fn encode(seq: Seq, entry: &SessionEntry) -> Result<Encoded, EncodeFault> {
     };
     Ok(Encoded {
         kind: kind_tag(entry.slug()),
-        json: serde_json::to_string(&envelope).map_err(EncodeFault::Json)?,
+        json: serde_json::to_string(&envelope).map_err(EncodeError::Json)?,
     })
 }
 

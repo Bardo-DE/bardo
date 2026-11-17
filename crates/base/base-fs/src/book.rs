@@ -10,7 +10,7 @@ use serde::Serialize;
 
 /// The document could not be written; the held one is as it was.
 #[derive(Debug, thiserror::Error)]
-pub enum SaveFailed {
+pub enum SaveError {
     /// The new document could not be turned into text.
     #[error("the document could not be serialized")]
     Serialize(#[source] serde_json::Error),
@@ -40,22 +40,22 @@ pub struct Committed<D> {
 ///
 /// # Errors
 ///
-/// Returns [`SaveFailed`] when `after` cannot be serialized or written; `held` is left as it was.
+/// Returns [`SaveError`] when `after` cannot be serialized or written; `held` is left as it was.
 pub async fn commit<D>(
     file: Option<&AtomicFile>,
     held: &mut D,
     after: D,
-) -> Result<Committed<D>, SaveFailed>
+) -> Result<Committed<D>, SaveError>
 where
     D: Serialize + Clone,
 {
     if let Some(file) = file {
-        let text = serde_json::to_string_pretty(&after).map_err(SaveFailed::Serialize)?;
+        let text = serde_json::to_string_pretty(&after).map_err(SaveError::Serialize)?;
         let file = file.clone();
         tokio::task::spawn_blocking(move || file.write(&text))
             .await
-            .map_err(SaveFailed::Task)?
-            .map_err(SaveFailed::Write)?;
+            .map_err(SaveError::Task)?
+            .map_err(SaveError::Write)?;
     }
     let before = std::mem::replace(held, after.clone());
     Ok(Committed { before, after })
@@ -93,7 +93,7 @@ mod tests {
         let mut held = vec![1];
         assert!(matches!(
             commit(Some(&file), &mut held, vec![2]).await,
-            Err(SaveFailed::Write(_))
+            Err(SaveError::Write(_))
         ));
         assert_eq!(held, [1]);
     }

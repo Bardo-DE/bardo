@@ -5,7 +5,7 @@ use std::ops::ControlFlow;
 use std::os::unix::fs::MetadataExt;
 
 use files_core::{
-    Answer, Bring, ByteSize, Conflict, FileName, FolderPath, ItemRef, OpFailure, Progress,
+    Answer, Bring, ByteSize, Conflict, FileName, FolderPath, ItemRef, OpError, Progress,
     Resolution, Split, Transfer, keep_both,
 };
 
@@ -35,7 +35,7 @@ impl Run<'_> {
         let destination = &transfer.destination;
         let folder = fs::metadata(destination.as_path()).map_err(error::io)?;
         if !folder.is_dir() {
-            return Err(OpFailure::NotFound);
+            return Err(OpError::NotFound);
         }
         let bytes: u64 = transfer
             .sources
@@ -82,7 +82,7 @@ impl Run<'_> {
             }
         };
         if meta.is_dir() && destination.as_path().starts_with(&from) {
-            return Err(OpFailure::IntoItself);
+            return Err(OpError::IntoItself);
         }
         let here = source.folder == *destination;
         if here && mode == Bring::Move {
@@ -144,7 +144,7 @@ impl Run<'_> {
         split: Split,
         here: bool,
         rest: usize,
-    ) -> Result<Place, OpFailure> {
+    ) -> Result<Place, OpError> {
         let name = &source.name;
         let taken = |candidate: &FileName| {
             fs::symlink_metadata(destination.join(candidate).as_path()).is_ok()
@@ -156,7 +156,7 @@ impl Run<'_> {
         let another = || {
             keep_both(name, split, taken)
                 .map(Place::At)
-                .map_err(|_| OpFailure::NameTooLong)
+                .map_err(|_| OpError::NameTooLong)
         };
         if !taken(name) {
             return Ok(Place::At(name.clone()));

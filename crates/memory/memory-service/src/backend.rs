@@ -5,7 +5,9 @@ use crate::registry::{Listing, RegistryError};
 use base_time::Clock;
 use memory_core::{ReplicaId, SpaceId, SpaceMeta};
 use memory_seal::{KeyError, KeyStore, SpaceKey};
-use memory_store::{Embedder, IndexFailure, LogError, LogWrite, SearchIndex, Vault, VaultError};
+use memory_store::{
+    Embedder, LogError, LogWrite, SearchIndex, SearchIndexError, Vault, VaultError,
+};
 use memory_tidy::Consolidator;
 
 /// Why a backend could not open a Space's stores.
@@ -22,7 +24,7 @@ pub enum BackendError {
     Files(#[from] VaultError),
     /// The index could not be opened.
     #[error("index: {0}")]
-    Index(#[from] IndexFailure),
+    Index(#[from] SearchIndexError),
     /// A Space's directories could not be removed.
     #[error("removing a Space: {0}")]
     Remove(String),

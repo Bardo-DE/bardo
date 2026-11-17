@@ -2,7 +2,7 @@
 
 use input_broker_wire::ceiling::{KEYBOARD_NAME, POINTER_SUFFIX};
 use input_broker_wire::codes::*;
-use input_broker_wire::{AbsAxis, BadCaps, Create, PointerCaps, Route, plan};
+use input_broker_wire::{AbsAxis, BadCapsError, Create, PointerCaps, Route, plan};
 
 #[test]
 fn the_keyboard_is_the_full_keyboard_of_key_remap() {
@@ -117,15 +117,19 @@ fn pointers_outside_the_ceiling_are_refused() {
         abs: vec![],
         ..trackpad()
     };
-    let cases: Vec<(&str, PointerCaps, BadCaps)> = vec![
-        ("nothing a pointer does", nothing, BadCaps::EmptyPointer),
+    let cases: Vec<(&str, PointerCaps, BadCapsError)> = vec![
+        (
+            "nothing a pointer does",
+            nothing,
+            BadCapsError::EmptyPointer,
+        ),
         (
             "axis code past ABS_MAX",
             PointerCaps {
                 abs: vec![axis(0x40, 0, 1)],
                 ..trackpad()
             },
-            BadCaps::BadAxis(0x40),
+            BadCapsError::BadAxis(0x40),
         ),
         (
             "minimum above maximum",
@@ -133,7 +137,7 @@ fn pointers_outside_the_ceiling_are_refused() {
                 abs: vec![axis(0, 5, 1)],
                 ..trackpad()
             },
-            BadCaps::BadAxis(0),
+            BadCapsError::BadAxis(0),
         ),
         (
             "huge range",
@@ -141,7 +145,7 @@ fn pointers_outside_the_ceiling_are_refused() {
                 abs: vec![axis(1, 0, i32::MAX)],
                 ..trackpad()
             },
-            BadCaps::BadAxis(1),
+            BadCapsError::BadAxis(1),
         ),
         (
             "negative resolution",
@@ -152,7 +156,7 @@ fn pointers_outside_the_ceiling_are_refused() {
                 }],
                 ..trackpad()
             },
-            BadCaps::BadAxis(0),
+            BadCapsError::BadAxis(0),
         ),
     ];
     for (name, caps, want) in cases {

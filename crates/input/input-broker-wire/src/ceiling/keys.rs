@@ -5,7 +5,7 @@
 //! is the caller's identity.
 
 use super::filter::{Denial, Filter};
-use super::{BadCaps, Plan, Route};
+use super::{BadCapsError, Plan, Route};
 use crate::codes::{EV_KEY, EV_SYN, KEY_LEFTALT, KEY_LEFTCTRL, KEY_LEFTMETA, SYN_REPORT};
 use crate::event::Event;
 use crate::keytable::{KeyClass, class_of};
@@ -16,15 +16,15 @@ use crate::spec::DeviceSpec;
 /// The modifiers that turn a key press into a shortcut. Shift alone does not.
 const CHORD_MODIFIERS: [u16; 3] = [KEY_LEFTCTRL, KEY_LEFTALT, KEY_LEFTMETA];
 
-pub(super) fn plan(maker: Maker, requested: &[u16]) -> Result<Plan, BadCaps> {
+pub(super) fn plan(maker: Maker, requested: &[u16]) -> Result<Plan, BadCapsError> {
     if requested.is_empty() {
-        return Err(BadCaps::NoKeys);
+        return Err(BadCapsError::NoKeys);
     }
     if requested.len() > MAX_KEY_CODES {
-        return Err(BadCaps::TooManyKeys);
+        return Err(BadCapsError::TooManyKeys);
     }
     if let Some(&bad) = requested.iter().find(|&&c| class_of(c).is_none()) {
-        return Err(BadCaps::UnknownKey(bad));
+        return Err(BadCapsError::UnknownKey(bad));
     }
     let mut keys = requested.to_vec();
     keys.sort_unstable();

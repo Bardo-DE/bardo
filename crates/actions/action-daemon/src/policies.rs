@@ -14,7 +14,7 @@
 //! core, the preset, and the person's, assistant's and administrator's layers.
 
 use permission_policy::{
-    Layer, LayerError, Pdp, PolicySource, Presets, ReadFault, Rejected, SCHEMA,
+    Layer, LayerError, Pdp, PolicySource, Presets, ReadError, Rejected, SCHEMA,
 };
 use std::fmt;
 use std::path::{Path, PathBuf};
@@ -134,7 +134,7 @@ fn read_layer(layer: Layer, dir: &Path) -> Vec<PolicySource> {
         .into_iter()
         .map(|path| match std::fs::read_to_string(&path) {
             Ok(text) => PolicySource::file(layer, path, text),
-            Err(why) => PolicySource::unreadable(layer, path, ReadFault::from(&why)),
+            Err(why) => PolicySource::unreadable(layer, path, ReadError::from(&why)),
         })
         .collect()
 }

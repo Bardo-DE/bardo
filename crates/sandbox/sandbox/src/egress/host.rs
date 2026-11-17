@@ -11,7 +11,7 @@ const LABEL_MAX: usize = 63;
 
 /// Why text is not a usable host or host pattern.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum HostFault {
+pub enum EgressHostError {
     /// Nothing there.
     #[error("the host is empty")]
     Empty,
@@ -51,46 +51,46 @@ pub enum Host {
 }
 
 /// Lower-cases `text`, drops one trailing dot and checks the labels.
-fn name(text: &str) -> Result<String, HostFault> {
+fn name(text: &str) -> Result<String, EgressHostError> {
     let lower = text.to_ascii_lowercase();
     let trimmed = lower.strip_suffix('.').unwrap_or(&lower);
     if trimmed.is_empty() {
-        return Err(HostFault::Empty);
+        return Err(EgressHostError::Empty);
     }
     if trimmed.len() > NAME_MAX {
-        return Err(HostFault::TooLong);
+        return Err(EgressHostError::TooLong);
     }
     for label in trimmed.split('.') {
         if label.is_empty() {
-            return Err(HostFault::EmptyLabel);
+            return Err(EgressHostError::EmptyLabel);
         }
         if label.len() > LABEL_MAX {
-            return Err(HostFault::TooLong);
+            return Err(EgressHostError::TooLong);
         }
         let fine = label
             .bytes()
             .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-' || b == b'_');
         if !fine {
-            return Err(HostFault::BadChar);
+            return Err(EgressHostError::BadChar);
         }
     }
     let last = trimmed.rsplit('.').next().unwrap_or_default();
     if last.bytes().all(|b| b.is_ascii_digit()) {
-        return Err(HostFault::Numeric);
+        return Err(EgressHostError::Numeric);
     }
     Ok(trimmed.to_owned())
 }
 
 /// The checks every host text passes first.
-fn clean(text: &str) -> Result<(), HostFault> {
+fn clean(text: &str) -> Result<(), EgressHostError> {
     if text.is_empty() {
-        return Err(HostFault::Empty);
+        return Err(EgressHostError::Empty);
     }
     if text.chars().any(|c| c.is_whitespace() || c.is_control()) {
-        return Err(HostFault::Whitespace);
+        return Err(EgressHostError::Whitespace);
     }
     if !text.is_ascii() {
-        return Err(HostFault::NonAscii);
+        return Err(EgressHostError::NonAscii);
     }
     Ok(())
 }
@@ -108,9 +108,9 @@ impl Host {
     /// The host in `text`: an address literal or a name. Lower-cased, one trailing dot dropped.
     ///
     /// # Errors
-    /// Returns the `HostFault` naming why `text` is not a usable host or pattern (empty, bad
+    /// Returns the `EgressHostError` naming why `text` is not a usable host or pattern (empty, bad
     /// characters, a misplaced `*`, and the like).
-    pub fn parse(text: &str) -> Result<Self, HostFault> {
+    pub fn parse(text: &str) -> Result<Self, EgressHostError> {
         clean(text)?;
         match literal(text) {
             Some(addr) => Ok(Host::Addr(addr)),
@@ -144,20 +144,20 @@ impl HostPattern {
     /// The entry in `text`. Case does not matter and one trailing dot is ignored.
     ///
     /// # Errors
-    /// Returns the `HostFault` naming why `text` is not a usable host or pattern (empty, bad
+    /// Returns the `EgressHostError` naming why `text` is not a usable host or pattern (empty, bad
     /// characters, a misplaced `*`, and the like).
-    pub fn parse(text: &str) -> Result<Self, HostFault> {
+    pub fn parse(text: &str) -> Result<Self, EgressHostError> {
         clean(text)?;
         if let Some(addr) = literal(text) {
             return Ok(HostPattern::Addr(addr));
         }
         if text == "*" || text == "*." {
-            return Err(HostFault::BareStar);
+            return Err(EgressHostError::BareStar);
         }
         match text.strip_prefix("*.") {
-            Some(rest) if rest.contains('*') => Err(HostFault::StarNotLeading),
+            Some(rest) if rest.contains('*') => Err(EgressHostError::StarNotLeading),
             Some(rest) => name(rest).map(HostPattern::Subdomains),
-            None if text.contains('*') => Err(HostFault::StarNotLeading),
+            None if text.contains('*') => Err(EgressHostError::StarNotLeading),
             None => name(text).map(HostPattern::Exact),
         }
     }

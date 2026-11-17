@@ -4,7 +4,7 @@ use action_vocab::ActionRef;
 
 /// A skill that does not parse or break a rule of the format.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum SkillFault {
+pub enum SkillError {
     /// A file could not be read.
     #[error("cannot read {file}: {why}")]
     Unreadable {
@@ -60,7 +60,7 @@ pub enum SkillFault {
 
 /// What a skill's `uses` found among the registered manifests.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum Unresolved {
+pub enum UnresolvedError {
     /// The app, or the action, is not registered: the skill is hidden.
     #[error("{}:{} is not a registered action", .0.app, .0.name)]
     Missing(ActionRef),

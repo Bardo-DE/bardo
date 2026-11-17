@@ -12,7 +12,7 @@ use super::render_mode::RenderMode;
 use super::udev::DevicePath;
 use super::writeback_real::RealWriteback;
 use crate::backend::BackendError;
-use crate::session::SessionFault;
+use crate::session::SessionError;
 use compositor_core::gpu::GpuChoice;
 use smithay::backend::drm::DrmDeviceFd;
 use smithay::reexports::calloop::LoopHandle;
@@ -67,7 +67,7 @@ pub fn direct_seams<D: 'static>(
     mode: RenderMode,
     handle: &LoopHandle<'static, D>,
 ) -> Result<TtySeams, BackendError> {
-    let unavailable = |why: String| SessionFault::Unavailable(why);
+    let unavailable = |why: String| SessionError::Unavailable(why);
     let file = OpenOptions::new()
         .read(true)
         .write(true)

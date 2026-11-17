@@ -6,7 +6,7 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 /// Why an action did not take an item, or why a change or a download is not done. More reasons
 /// may be added: match with a wildcard. `Display` says what happened, in terms of the program.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, thiserror::Error)]
-pub enum Reason {
+pub enum SkipError {
     /// A path on no drive.
     #[error("the item is on no drive")]
     NotOnADrive,
@@ -66,53 +66,53 @@ pub enum Reason {
     CopyFailed,
 }
 
-impl Reason {
+impl SkipError {
     /// Every reason, for tables.
-    pub const ALL: [Reason; 19] = [
-        Reason::NotOnADrive,
-        Reason::OnlineOnly,
-        Reason::Offline,
-        Reason::Waiting,
-        Reason::NoRoom,
-        Reason::MayNotWrite,
-        Reason::InUse,
-        Reason::NameRefused,
-        Reason::Declined,
-        Reason::NoRoomHere,
-        Reason::Conflict,
-        Reason::KeptWithFolder,
-        Reason::KeptWithDrive,
-        Reason::NoRoomForAll,
-        Reason::NoDrive,
-        Reason::NotADocument,
-        Reason::NoFileFormat,
-        Reason::TooLarge,
-        Reason::CopyFailed,
+    pub const ALL: [SkipError; 19] = [
+        SkipError::NotOnADrive,
+        SkipError::OnlineOnly,
+        SkipError::Offline,
+        SkipError::Waiting,
+        SkipError::NoRoom,
+        SkipError::MayNotWrite,
+        SkipError::InUse,
+        SkipError::NameRefused,
+        SkipError::Declined,
+        SkipError::NoRoomHere,
+        SkipError::Conflict,
+        SkipError::KeptWithFolder,
+        SkipError::KeptWithDrive,
+        SkipError::NoRoomForAll,
+        SkipError::NoDrive,
+        SkipError::NotADocument,
+        SkipError::NoFileFormat,
+        SkipError::TooLarge,
+        SkipError::CopyFailed,
     ];
 
     /// The reason as a stable word: how the index keeps it.
     #[must_use]
     pub fn slug(self) -> &'static str {
         match self {
-            Reason::NotOnADrive => "not_on_a_drive",
-            Reason::OnlineOnly => "online_only",
-            Reason::Offline => "offline",
-            Reason::Waiting => "waiting",
-            Reason::NoRoom => "no_room",
-            Reason::MayNotWrite => "may_not_write",
-            Reason::InUse => "in_use",
-            Reason::NameRefused => "name_refused",
-            Reason::Declined => "declined",
-            Reason::NoRoomHere => "no_room_here",
-            Reason::Conflict => "conflict",
-            Reason::KeptWithFolder => "kept_with_folder",
-            Reason::KeptWithDrive => "kept_with_drive",
-            Reason::NoRoomForAll => "no_room_for_all",
-            Reason::NoDrive => "no_drive",
-            Reason::NotADocument => "not_a_document",
-            Reason::NoFileFormat => "no_file_format",
-            Reason::TooLarge => "too_large",
-            Reason::CopyFailed => "copy_failed",
+            SkipError::NotOnADrive => "not_on_a_drive",
+            SkipError::OnlineOnly => "online_only",
+            SkipError::Offline => "offline",
+            SkipError::Waiting => "waiting",
+            SkipError::NoRoom => "no_room",
+            SkipError::MayNotWrite => "may_not_write",
+            SkipError::InUse => "in_use",
+            SkipError::NameRefused => "name_refused",
+            SkipError::Declined => "declined",
+            SkipError::NoRoomHere => "no_room_here",
+            SkipError::Conflict => "conflict",
+            SkipError::KeptWithFolder => "kept_with_folder",
+            SkipError::KeptWithDrive => "kept_with_drive",
+            SkipError::NoRoomForAll => "no_room_for_all",
+            SkipError::NoDrive => "no_drive",
+            SkipError::NotADocument => "not_a_document",
+            SkipError::NoFileFormat => "no_file_format",
+            SkipError::TooLarge => "too_large",
+            SkipError::CopyFailed => "copy_failed",
         }
     }
 
@@ -123,7 +123,7 @@ impl Reason {
     }
 }
 
-impl Serialize for Reason {
+impl Serialize for SkipError {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         serializer.serialize_str(self.slug())
     }
@@ -134,9 +134,9 @@ impl Serialize for Reason {
 /// tried again, which is what none means.
 pub(crate) fn read_kept<'de, D: Deserializer<'de>>(
     deserializer: D,
-) -> Result<Option<Reason>, D::Error> {
+) -> Result<Option<SkipError>, D::Error> {
     let text = Option::<String>::deserialize(deserializer)?;
-    Ok(text.as_deref().and_then(Reason::from_slug))
+    Ok(text.as_deref().and_then(SkipError::from_slug))
 }
 
 #[cfg(test)]
@@ -145,18 +145,18 @@ mod tests {
 
     #[test]
     fn a_reason_is_read_back_from_its_word() {
-        for reason in Reason::ALL {
-            assert_eq!(Reason::from_slug(reason.slug()), Some(reason));
+        for reason in SkipError::ALL {
+            assert_eq!(SkipError::from_slug(reason.slug()), Some(reason));
         }
         assert_eq!(
-            Reason::from_slug("There's no room left on this drive."),
+            SkipError::from_slug("There's no room left on this drive."),
             None
         );
     }
 
     #[test]
     fn no_reason_says_a_sentence_for_a_person() {
-        for reason in Reason::ALL {
+        for reason in SkipError::ALL {
             let text = reason.to_string();
             assert!(!text.ends_with('.'), "{text}");
             assert!(text.starts_with(|c: char| c.is_ascii_lowercase()), "{text}");

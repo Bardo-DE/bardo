@@ -4,7 +4,7 @@
 //! one is a fault in that job and no other; the host spawns the run and watches it.
 
 use crate::best_effort::best_effort;
-use crate::fault::ServeFault;
+use crate::fault::ServeError;
 use crate::helpers::view::role_text;
 use crate::runtime::Companion;
 use crate::seams::Surface;
@@ -170,7 +170,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         self.job_report(&opened.task, ran)
     }
 
-    pub(super) fn job_report(&self, task: &TaskId, ran: Result<(), ServeFault>) -> JobReport {
+    pub(super) fn job_report(&self, task: &TaskId, ran: Result<(), ServeError>) -> JobReport {
         let (Some(state), Some(rt)) = (self.tasks.get(task), self.runtimes.get(task)) else {
             return JobReport::failed(JobFault::Crashed);
         };

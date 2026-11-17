@@ -1,6 +1,6 @@
 //! The disk folder lists sorted directories and reads files, and says why it could not.
 
-use agent_skills::{Origin, Roots, SkillFault, SkillFolder, discover, load_dir};
+use agent_skills::{Origin, Roots, SkillError, SkillFolder, discover, load_dir};
 use agent_skills_disk::DiskFolder;
 
 fn write(root: &std::path::Path, id: &str, toml: &str, md: &str) {
@@ -39,7 +39,7 @@ fn a_skill_on_disk_loads_and_a_missing_file_is_unreadable() {
     let fault = load_dir(&DiskFolder, &tmp.path().join("empty"), Origin::Shipped);
     assert!(matches!(
         fault,
-        Err(SkillFault::Unreadable {
+        Err(SkillError::Unreadable {
             file: "skill.toml",
             ..
         })

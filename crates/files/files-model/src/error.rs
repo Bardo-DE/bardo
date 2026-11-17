@@ -5,7 +5,7 @@ use files_core::NameError;
 
 /// Why a folder could not be read, in terms a person understands.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum ListFailure {
+pub enum FolderListError {
     /// It isn't there any more.
     #[error("That folder can't be found.")]
     NotFound,
@@ -22,7 +22,7 @@ pub enum ListFailure {
 
 /// Why a typed path can't be gone to, in the words under the field.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum GoToProblem {
+pub enum GoToError {
     /// It isn't a folder that exists (or isn't a full path at all).
     #[error("The folder can't be found.")]
     NotFound,
@@ -33,7 +33,7 @@ pub enum GoToProblem {
 
 /// Why a rename can't go through yet, in words a person reads.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum RenameProblem {
+pub enum RenameError {
     /// The text isn't a name.
     #[error("{0}")]
     Invalid(NameError),

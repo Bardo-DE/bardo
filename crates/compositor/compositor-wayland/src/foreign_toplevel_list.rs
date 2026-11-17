@@ -1,7 +1,7 @@
 //! `ext_foreign_toplevel_list_v1`: every window, for docks, switchers and taskbars outside
 //! the shell. Hidden from sandboxed clients (I7). Identifiers are chosen by compositor.
 
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::WindowId;
 use compositor_core::lock::LockState;
 use compositor_core::policy::GlobalKind;
@@ -96,12 +96,12 @@ pub fn told(disclosed: bool, text: &str) -> &str {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_toplevel(
     part: &mut ForeignToplevelListPart,
     window: &Window,
     disclosed: bool,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let title = told(disclosed, window.title.0.as_str());
     let app_id = told(disclosed, window.claimed_id.as_str());
     if let Some(handle) = part.handles.get(&window.id) {
@@ -127,15 +127,15 @@ pub fn apply_toplevel(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_closed(
     part: &mut ForeignToplevelListPart,
     window: WindowId,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let handle = part
         .handles
         .remove(&window)
-        .ok_or(WaylandFault::UnknownWindow(window))?;
+        .ok_or(WaylandError::UnknownWindow(window))?;
     part.state.remove_toplevel(&handle);
     Ok(())
 }

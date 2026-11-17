@@ -17,7 +17,7 @@ use crate::app_names::AppNames;
 use account_callers::Callers;
 use account_core::consent::{ConsentAnswer, ConsentAsk};
 use account_dbus::accounts::AccountsSheetProxy;
-use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetLink, SheetOpen, Sheets};
 use account_sheet::{ReviewView, SheetInput, SheetView};
 use account_wire::ParentWindow;
 use account_wire::names::SHEET_BUS;
@@ -60,30 +60,30 @@ impl<C: Callers> BusSheets<C> {
     }
 
     /// The unique name of the verified host.
-    async fn host(&self) -> Result<UniqueName<'static>, SheetFault> {
+    async fn host(&self) -> Result<UniqueName<'static>, SheetError> {
         let bus = DBusProxy::new(&self.connection)
             .await
-            .map_err(SheetFault::unreachable)?;
-        let name = BusName::try_from(SHEET_BUS).map_err(SheetFault::unreachable)?;
+            .map_err(SheetError::unreachable)?;
+        let name = BusName::try_from(SHEET_BUS).map_err(SheetError::unreachable)?;
         let owner = bus
             .get_name_owner(name)
             .await
-            .map_err(SheetFault::unreachable)?
+            .map_err(SheetError::unreachable)?
             .into_inner();
         match self.callers.caller_of(owner.as_str()).await {
             Some(caller) if caller.role == CallerRole::SheetHost => Ok(owner),
-            _ => Err(SheetFault::Unavailable),
+            _ => Err(SheetError::Unavailable),
         }
     }
 
-    async fn open_link(&self, open: SheetOpen) -> Result<BusLink, SheetFault> {
+    async fn open_link(&self, open: SheetOpen) -> Result<BusLink, SheetError> {
         let owner = self.host().await?;
         let proxy = AccountsSheetProxy::builder(&self.connection)
             .destination(BusName::from(owner.clone()))
-            .map_err(SheetFault::unreachable)?
+            .map_err(SheetError::unreachable)?
             .build()
             .await
-            .map_err(SheetFault::unreachable)?;
+            .map_err(SheetError::unreachable)?;
         // Subscribed before `Open`, so an input sent at once is not missed.
         let rule = zbus::MatchRule::builder()
             .msg_type(zbus::message::Type::Signal)
@@ -91,16 +91,16 @@ impl<C: Callers> BusSheets<C> {
             .and_then(|b| b.interface("org.bardo.AccountsSheet1"))
             .and_then(|b| b.member("Input"))
             .map(zbus::match_rule::Builder::build)
-            .map_err(SheetFault::unreachable)?;
+            .map_err(SheetError::unreachable)?;
         let inputs = zbus::MessageStream::for_match_rule(rule, &self.connection, None)
             .await
-            .map_err(SheetFault::unreachable)?;
+            .map_err(SheetError::unreachable)?;
         let leaving = DBusProxy::new(&self.connection)
             .await
-            .map_err(SheetFault::unreachable)?
+            .map_err(SheetError::unreachable)?
             .receive_name_owner_changed_with_args(&[(0, owner.as_str())])
             .await
-            .map_err(SheetFault::unreachable)?;
+            .map_err(SheetError::unreachable)?;
         let handle = format!("accounts-{}", self.next.fetch_add(1, Ordering::Relaxed));
         let window = match &open.window {
             ParentWindow::Unparented => "",
@@ -115,7 +115,7 @@ impl<C: Callers> BusSheets<C> {
             .proxy
             .open(&shown.handle, window, &view)
             .await
-            .map_err(SheetFault::refused)?;
+            .map_err(SheetError::refused)?;
         Ok(BusLink {
             shown,
             owner,
@@ -126,8 +126,8 @@ impl<C: Callers> BusSheets<C> {
     }
 }
 
-fn json(view: &SheetView) -> Result<String, SheetFault> {
-    serde_json::to_string(view).map_err(SheetFault::unreachable)
+fn json(view: &SheetView) -> Result<String, SheetError> {
+    serde_json::to_string(view).map_err(SheetError::unreachable)
 }
 
 /// `view` with the names of the apps it shows beside their ids: the consent ask's app, and the
@@ -196,22 +196,22 @@ async fn departed(owners: &mut NameOwnerChangedStream) {
 }
 
 impl SheetLink for BusLink {
-    async fn update(&mut self, view: SheetView) -> Result<(), SheetFault> {
+    async fn update(&mut self, view: SheetView) -> Result<(), SheetError> {
         self.shown
             .proxy
             .update(&self.shown.handle, &json(&labelled(view, &self.names))?)
             .await
-            .map_err(SheetFault::refused)
+            .map_err(SheetError::refused)
     }
 
-    async fn input(&mut self) -> Result<SheetInput, SheetFault> {
+    async fn input(&mut self) -> Result<SheetInput, SheetError> {
         loop {
             tokio::select! {
                 signal = next(&mut self.inputs) => {
                     let message = match signal {
                         Some(Ok(message)) => message,
-                        Some(Err(error)) => return Err(SheetFault::refused(error)),
-                        None => return Err(SheetFault::Closed),
+                        Some(Err(error)) => return Err(SheetError::refused(error)),
+                        None => return Err(SheetError::Closed),
                     };
                     let from_owner = message.header().sender() == Some(&self.owner);
                     let Ok((handle, input)) = message.body().deserialize::<(String, String)>() else {
@@ -224,7 +224,7 @@ impl SheetLink for BusLink {
                         return Ok(input);
                     }
                 }
-                () = departed(&mut self.leaving) => return Err(SheetFault::Closed),
+                () = departed(&mut self.leaving) => return Err(SheetError::Closed),
             }
         }
     }
@@ -250,7 +250,7 @@ impl<C: Callers> Sheets for BusSheets<C> {
         }
     }
 
-    async fn conversation(&self, open: SheetOpen) -> Result<BusLink, SheetFault> {
+    async fn conversation(&self, open: SheetOpen) -> Result<BusLink, SheetError> {
         self.open_link(open).await
     }
 }

@@ -5,14 +5,14 @@ use super::agent::{Auth, Offer, View};
 use super::rig::{CWD, Fakes, Setup, opening, wired_over};
 use agent_acp_host::fake::FakeFiles;
 use agent_acp_host::{AgentHost, ModelId};
-use agent_session::{BackendFault, HostFault, SessionHost};
+use agent_session::{AgentHostError, BackendError, SessionHost};
 use serde_json::json;
 
 fn model(id: &str) -> ModelId {
     ModelId::parse(id).expect("a model id")
 }
 
-async fn open_with(offer: Offer, wanted: Option<ModelId>) -> (Result<(), HostFault>, View) {
+async fn open_with(offer: Offer, wanted: Option<ModelId>) -> (Result<(), AgentHostError>, View) {
     let wired = wired_over::<Fakes>(
         FakeFiles::new(),
         Setup {
@@ -56,7 +56,7 @@ async fn the_older_model_list_is_switched_with_set_model() {
 async fn a_model_that_is_not_offered_is_refused_with_the_ones_that_are() {
     for offer in [Offer::Option, Offer::Older] {
         let (opened, agent) = Box::pin(open_with(offer, Some(model("gpt-9")))).await;
-        let Err(HostFault::Backend(BackendFault::ModelNotOffered(offered))) = opened else {
+        let Err(AgentHostError::Backend(BackendError::ModelNotOffered(offered))) = opened else {
             panic!("expected the list of models, got {opened:?}");
         };
         let ids: Vec<_> = offered.0.iter().map(|c| c.id.as_str()).collect();
@@ -79,7 +79,7 @@ async fn an_agent_that_offers_no_choice_refuses_a_configured_model() {
     let (opened, _agent) = Box::pin(open_with(Offer::None, Some(model("flash")))).await;
     assert_eq!(
         opened,
-        Err(HostFault::Backend(BackendFault::ModelNotChoosable))
+        Err(AgentHostError::Backend(BackendError::ModelNotChoosable))
     );
 }
 
@@ -87,7 +87,10 @@ async fn an_agent_that_offers_no_choice_refuses_a_configured_model() {
 async fn an_agent_that_refuses_the_switch_is_a_typed_refusal() {
     let (opened, _agent) =
         Box::pin(open_with(Offer::Stubborn, Some(model("gemini-pro-agent")))).await;
-    assert_eq!(opened, Err(HostFault::Backend(BackendFault::ModelRefused)));
+    assert_eq!(
+        opened,
+        Err(AgentHostError::Backend(BackendError::ModelRefused))
+    );
 }
 
 #[tokio::test]

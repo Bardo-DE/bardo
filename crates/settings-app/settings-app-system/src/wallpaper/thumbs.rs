@@ -33,7 +33,7 @@ const BUDGET: PeekBudget = PeekBudget::DEFAULT.with_pixels(PixelArea(512 * 512))
 
 /// Why a wallpaper has no small picture.
 #[derive(Debug, thiserror::Error)]
-pub enum ThumbFault {
+pub enum ThumbError {
     /// The path is not an absolute one, so the cache has no name for it.
     #[error("the picture's path is not absolute")]
     NotAbsolute,
@@ -89,14 +89,14 @@ impl Thumbnails {
     ///
     /// # Errors
     ///
-    /// `ThumbFault::NotAbsolute` for a relative path; otherwise the fault of reading, decoding or
+    /// `ThumbError::NotAbsolute` for a relative path; otherwise the fault of reading, decoding or
     /// storing the picture.
-    pub fn of(&self, source: &Path) -> Result<PathBuf, ThumbFault> {
+    pub fn of(&self, source: &Path) -> Result<PathBuf, ThumbError> {
         #[expect(
             clippy::map_err_ignore,
             reason = "FilePath::new fails only for a relative path, which NotAbsolute already says"
         )]
-        let file = FilePath::new(source).map_err(|_| ThumbFault::NotAbsolute)?;
+        let file = FilePath::new(source).map_err(|_| ThumbError::NotAbsolute)?;
         let input = file.on_disk();
         let stamp = input.stamp();
         let kept = self.cache.lookup(&file, &stamp, SIZE);
@@ -120,18 +120,18 @@ impl Thumbnails {
 }
 
 /// The original of `input`, decoded and scaled to the size kept.
-fn small_picture(input: &Input) -> Result<ThumbPixels, ThumbFault> {
+fn small_picture(input: &Input) -> Result<ThumbPixels, ThumbError> {
     if input.bytes().len().0 > MOST_BYTES.0 {
-        return Err(ThumbFault::TooLarge);
+        return Err(ThumbError::TooLarge);
     }
     let head = input
         .bytes()
         .read_range(0..FileHead::MAX.0)
-        .map_err(ThumbFault::Unreadable)?;
+        .map_err(ThumbError::Unreadable)?;
     let SniffStep::Done(sniffed) = sniff(&FileHead::new(&head), input.name()) else {
-        return Err(ThumbFault::NotAPicture);
+        return Err(ThumbError::NotAPicture);
     };
     let peeked = RasterPeek::peek(input, &sniffed, &BUDGET)?;
     let small = resized(&peeked.picture, Resize::LongEdge(SIZE.edge()));
-    ThumbPixels::new(small.size(), small.into_bytes()).ok_or(ThumbFault::Empty)
+    ThumbPixels::new(small.size(), small.into_bytes()).ok_or(ThumbError::Empty)
 }

@@ -37,7 +37,7 @@ pub(super) enum Input {
 
 /// What is wrong with one line.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub(super) enum Problem {
+pub(super) enum LineError {
     #[error("{0:?} is not a time in milliseconds")]
     Time(String, #[source] std::num::ParseIntError),
     #[error("unknown input {0:?}")]
@@ -63,7 +63,7 @@ pub(super) enum Problem {
 #[error("line {line}: {problem}")]
 pub(super) struct ScriptError {
     pub line: usize,
-    pub problem: Problem,
+    pub problem: LineError,
 }
 
 /// Every input of `text`, in order; the first bad line is the error.
@@ -82,7 +82,7 @@ pub(super) fn parse(text: &str) -> Result<Vec<Step>, ScriptError> {
 }
 
 /// One line: `None` for a blank or comment line.
-fn parse_line(line: &str) -> Result<Option<Step>, Problem> {
+fn parse_line(line: &str) -> Result<Option<Step>, LineError> {
     let content = line.split_once('#').map_or(line, |(before, _)| before);
     let words: Vec<&str> = content.split_whitespace().collect();
     let Some((&ms, rest)) = words.split_first() else {
@@ -91,7 +91,7 @@ fn parse_line(line: &str) -> Result<Option<Step>, Problem> {
     let at = ms
         .parse::<u64>()
         .map(Mono::from_millis)
-        .map_err(|error| Problem::Time(ms.to_owned(), error))?;
+        .map_err(|error| LineError::Time(ms.to_owned(), error))?;
     input_of(at, rest).map(|input| {
         Some(Step {
             text: words.join(" "),
@@ -100,7 +100,7 @@ fn parse_line(line: &str) -> Result<Option<Step>, Problem> {
     })
 }
 
-fn input_of(at: Mono, words: &[&str]) -> Result<Input, Problem> {
+fn input_of(at: Mono, words: &[&str]) -> Result<Input, LineError> {
     match words {
         ["led", rest @ ..] => match rest {
             [led, lamp] => Ok(Input::Led(LedEvent {
@@ -113,14 +113,14 @@ fn input_of(at: Mono, words: &[&str]) -> Result<Input, Problem> {
     }
 }
 
-fn shape(verb: &str, shape: &'static str) -> Problem {
-    Problem::Shape {
+fn shape(verb: &str, shape: &'static str) -> LineError {
+    LineError::Shape {
         verb: verb.to_owned(),
         shape,
     }
 }
 
-fn remap_of(at: Mono, words: &[&str]) -> Result<RemapInput, Problem> {
+fn remap_of(at: Mono, words: &[&str]) -> Result<RemapInput, LineError> {
     match words {
         [verb @ ("press" | "release" | "repeat"), rest @ ..] => {
             let edge = match *verb {
@@ -134,7 +134,7 @@ fn remap_of(at: Mono, words: &[&str]) -> Result<RemapInput, Problem> {
             Ok(RemapInput::Key {
                 device: device_of(device)?,
                 layout: layout_of(layout)?,
-                key: Physical(Key::named(key).ok_or_else(|| Problem::Key((*key).to_owned()))?),
+                key: Physical(Key::named(key).ok_or_else(|| LineError::Key((*key).to_owned()))?),
                 edge,
                 at,
             })
@@ -150,39 +150,39 @@ fn remap_of(at: Mono, words: &[&str]) -> Result<RemapInput, Problem> {
         ["release-all"] => Ok(RemapInput::ReleaseAll),
         ["resume"] => Ok(RemapInput::Resume),
         [verb @ ("release-all" | "resume"), ..] => Err(shape(verb, "no arguments")),
-        [verb, ..] => Err(Problem::Verb((*verb).to_owned())),
-        [] => Err(Problem::Verb(String::new())),
+        [verb, ..] => Err(LineError::Verb((*verb).to_owned())),
+        [] => Err(LineError::Verb(String::new())),
     }
 }
 
-fn device_of(word: &str) -> Result<DeviceId, Problem> {
+fn device_of(word: &str) -> Result<DeviceId, LineError> {
     word.parse()
         .map(DeviceId)
-        .map_err(|error| Problem::Device(word.to_owned(), error))
+        .map_err(|error| LineError::Device(word.to_owned(), error))
 }
 
-fn led_of(word: &str) -> Result<Led, Problem> {
+fn led_of(word: &str) -> Result<Led, LineError> {
     match word {
         "caps" => Ok(Led::Caps),
         "num" => Ok(Led::Num),
         "scroll" => Ok(Led::Scroll),
-        other => Err(Problem::Led(other.to_owned())),
+        other => Err(LineError::Led(other.to_owned())),
     }
 }
 
-fn lamp_of(word: &str) -> Result<bool, Problem> {
+fn lamp_of(word: &str) -> Result<bool, LineError> {
     match word {
         "on" => Ok(true),
         "off" => Ok(false),
-        other => Err(Problem::Lamp(other.to_owned())),
+        other => Err(LineError::Lamp(other.to_owned())),
     }
 }
 
-fn layout_of(word: &str) -> Result<Layout, Problem> {
+fn layout_of(word: &str) -> Result<Layout, LineError> {
     match word {
         "apple" => Ok(Layout::Apple),
         "pc" => Ok(Layout::Pc),
-        other => Err(Problem::Layout(other.to_owned())),
+        other => Err(LineError::Layout(other.to_owned())),
     }
 }
 
@@ -203,7 +203,7 @@ mod tests {
     #[test]
     #[expect(clippy::too_many_lines, reason = "a table of cases, one row each")]
     fn line_table() {
-        type Case = (&'static str, &'static str, Result<Option<Input>, Problem>);
+        type Case = (&'static str, &'static str, Result<Option<Input>, LineError>);
 
         let focus = |s: &str| Input::Remap(RemapInput::Focus(ProfileName::parse(s).unwrap()));
         let led = |led, lamp| Input::Led(LedEvent { led, lamp });
@@ -256,17 +256,17 @@ mod tests {
             (
                 "an unknown LED",
                 "0 led kana on",
-                Err(Problem::Led("kana".into())),
+                Err(LineError::Led("kana".into())),
             ),
             (
                 "a lamp that is neither on nor off",
                 "0 led caps 1",
-                Err(Problem::Lamp("1".into())),
+                Err(LineError::Lamp("1".into())),
             ),
             (
                 "led needs a LED and a lamp",
                 "0 led caps",
-                Err(Problem::Shape {
+                Err(LineError::Shape {
                     verb: "led".into(),
                     shape: "<caps|num|scroll> <on|off>",
                 }),
@@ -274,7 +274,7 @@ mod tests {
             (
                 "time is not a number",
                 "soon press 1 apple c",
-                Err(Problem::Time(
+                Err(LineError::Time(
                     "soon".into(),
                     "soon".parse::<u64>().unwrap_err(),
                 )),
@@ -282,18 +282,21 @@ mod tests {
             (
                 "negative time",
                 "-5 resume",
-                Err(Problem::Time("-5".into(), "-5".parse::<u64>().unwrap_err())),
+                Err(LineError::Time(
+                    "-5".into(),
+                    "-5".parse::<u64>().unwrap_err(),
+                )),
             ),
-            ("time only", "10", Err(Problem::Verb(String::new()))),
+            ("time only", "10", Err(LineError::Verb(String::new()))),
             (
                 "unknown verb",
                 "0 tap 1 apple c",
-                Err(Problem::Verb("tap".into())),
+                Err(LineError::Verb("tap".into())),
             ),
             (
                 "press without a key",
                 "0 press 1 apple",
-                Err(Problem::Shape {
+                Err(LineError::Shape {
                     verb: "press".into(),
                     shape: "<dev> <apple|pc> <keyname>",
                 }),
@@ -301,7 +304,7 @@ mod tests {
             (
                 "press with too much",
                 "0 press 1 apple c d",
-                Err(Problem::Shape {
+                Err(LineError::Shape {
                     verb: "press".into(),
                     shape: "<dev> <apple|pc> <keyname>",
                 }),
@@ -309,7 +312,7 @@ mod tests {
             (
                 "bad device",
                 "0 press one apple c",
-                Err(Problem::Device(
+                Err(LineError::Device(
                     "one".into(),
                     "one".parse::<u8>().unwrap_err(),
                 )),
@@ -317,17 +320,17 @@ mod tests {
             (
                 "bad layout",
                 "0 press 1 dvorak c",
-                Err(Problem::Layout("dvorak".into())),
+                Err(LineError::Layout("dvorak".into())),
             ),
             (
                 "bad key",
                 "0 press 1 apple KEY_C",
-                Err(Problem::Key("KEY_C".into())),
+                Err(LineError::Key("KEY_C".into())),
             ),
             (
                 "focus needs a name",
                 "0 focus",
-                Err(Problem::Shape {
+                Err(LineError::Shape {
                     verb: "focus".into(),
                     shape: "<profile>",
                 }),
@@ -335,12 +338,12 @@ mod tests {
             (
                 "bad profile name",
                 "0 focus Terminal",
-                Err(Problem::Profile(NameError::BadChar('T'))),
+                Err(LineError::Profile(NameError::BadChar('T'))),
             ),
             (
                 "gone needs a device",
                 "0 gone",
-                Err(Problem::Shape {
+                Err(LineError::Shape {
                     verb: "gone".into(),
                     shape: "<dev>",
                 }),
@@ -348,7 +351,7 @@ mod tests {
             (
                 "resume takes nothing",
                 "0 resume now",
-                Err(Problem::Shape {
+                Err(LineError::Shape {
                     verb: "resume".into(),
                     shape: "no arguments",
                 }),
@@ -375,7 +378,7 @@ mod tests {
             err,
             ScriptError {
                 line: 3,
-                problem: Problem::Key("nope".into())
+                problem: LineError::Key("nope".into())
             }
         );
         assert_eq!(err.to_string(), "line 3: \"nope\" is not a key name");

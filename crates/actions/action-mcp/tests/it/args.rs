@@ -2,8 +2,8 @@
 
 use account_core::AppName;
 use action_manifest::{
-    ActionDecl, AgentReach, ArgSink, ArgsFault, DryRun, KeyHint, Lasting, Latency, ParamDecl,
-    ParamNeed, ResultShape, TargetFault, TargetKind, Why, args_from_json,
+    ActionDecl, AgentReach, ArgError, ArgSink, ArgsError, DryRun, KeyHint, Lasting, Latency,
+    ParamDecl, ParamNeed, ResultShape, TargetError, TargetKind, args_from_json,
 };
 use action_tools::*;
 use action_vocab::{
@@ -63,7 +63,7 @@ fn entity_json(key: &str) -> Json {
     json!({ "app": "org.bardo.Mail", "kind": "mail.thread", "key": key })
 }
 
-fn one(ty: ParamType, given: &Json) -> Result<Value, ArgsFault> {
+fn one(ty: ParamType, given: &Json) -> Result<Value, ArgsError> {
     let decl = action(
         TargetKind::Nothing,
         vec![param("p", ty, ParamNeed::Required)],
@@ -81,8 +81,8 @@ fn text(max: u32, multiline: bool) -> ParamType {
     }
 }
 
-fn wrong(why: Why) -> ArgsFault {
-    ArgsFault::Wrong {
+fn wrong(why: ArgError) -> ArgsError {
+    ArgsError::Wrong {
         param: ParamName::parse("p").expect("p"),
         why,
     }
@@ -181,46 +181,62 @@ fn a_handle_stands_in_where_the_schema_allows_one() {
         ParamType::Entities(kind("mail.thread")),
         ParamType::Date,
     ] {
-        assert_eq!(one(ty.clone(), &held), Err(wrong(Why::Type)), "{ty:?}");
+        assert_eq!(one(ty.clone(), &held), Err(wrong(ArgError::Type)), "{ty:?}");
     }
     let extra = json!({ "handle": 4, "also": 1 });
-    assert_eq!(one(text(9, false), &extra), Err(wrong(Why::Type)));
+    assert_eq!(one(text(9, false), &extra), Err(wrong(ArgError::Type)));
 }
 
 #[test]
 fn a_value_that_does_not_fit_is_refused_with_its_parameter() {
-    let rows: Vec<(ParamType, Json, Why)> = vec![
-        (text(3, false), json!("long"), Why::Range),
-        (text(9, false), json!("a\nb"), Why::Range),
-        (text(9, false), json!(4), Why::Type),
-        (ParamType::Integer { min: 1, max: 9 }, json!(10), Why::Range),
-        (ParamType::Integer { min: 1, max: 9 }, json!("3"), Why::Type),
-        (ParamType::Integer { min: 1, max: 9 }, json!(2.5), Why::Type),
+    let rows: Vec<(ParamType, Json, ArgError)> = vec![
+        (text(3, false), json!("long"), ArgError::Range),
+        (text(9, false), json!("a\nb"), ArgError::Range),
+        (text(9, false), json!(4), ArgError::Type),
+        (
+            ParamType::Integer { min: 1, max: 9 },
+            json!(10),
+            ArgError::Range,
+        ),
+        (
+            ParamType::Integer { min: 1, max: 9 },
+            json!("3"),
+            ArgError::Type,
+        ),
+        (
+            ParamType::Integer { min: 1, max: 9 },
+            json!(2.5),
+            ArgError::Type,
+        ),
         (
             ParamType::Decimal { scale: Scale(3) },
             json!({ "units": 1, "scale": 2 }),
-            Why::Range,
+            ArgError::Range,
         ),
         (
             ParamType::Date,
             json!({ "year": 2026, "month": 13, "day": 3 }),
-            Why::Range,
+            ArgError::Range,
         ),
-        (ParamType::Date, json!("2026-10-03"), Why::Type),
-        (ParamType::Duration, json!(-1), Why::Range),
-        (ParamType::Choice(vec![]), json!("anything"), Why::Range),
+        (ParamType::Date, json!("2026-10-03"), ArgError::Type),
+        (ParamType::Duration, json!(-1), ArgError::Range),
+        (
+            ParamType::Choice(vec![]),
+            json!("anything"),
+            ArgError::Range,
+        ),
         (
             ParamType::Entity(kind("mail.thread")),
             json!({ "app": "org.bardo.Mail", "kind": "mail.contact", "key": "c1" }),
-            Why::Range,
+            ArgError::Range,
         ),
         (
             ParamType::Entity(kind("mail.thread")),
             json!("t1"),
-            Why::Type,
+            ArgError::Type,
         ),
-        (ParamType::Url, json!("not a link"), Why::Range),
-        (ParamType::File, json!(""), Why::Range),
+        (ParamType::Url, json!("not a link"), ArgError::Range),
+        (ParamType::File, json!(""), ArgError::Range),
     ];
     for (ty, given, why) in rows {
         assert_eq!(one(ty.clone(), &given), Err(wrong(why)), "{ty:?} {given}");
@@ -269,15 +285,15 @@ fn missing_unknown_and_optional_arguments() {
     assert_eq!(read(json!({ "need": "x", "maybe": "y" })), Ok(2));
     assert_eq!(
         read(json!({})),
-        Err(ArgsFault::Missing(ParamName::parse("need").expect("p")))
+        Err(ArgsError::Missing(ParamName::parse("need").expect("p")))
     );
     assert_eq!(
         read(json!({ "need": "x", "extra": 1 })),
-        Err(ArgsFault::Unknown("extra".into()))
+        Err(ArgsError::Unknown("extra".into()))
     );
     assert_eq!(
         args_from_json(&decl, None, &label()).map(|_| ()),
-        Err(ArgsFault::Missing(ParamName::parse("need").expect("p")))
+        Err(ArgsError::Missing(ParamName::parse("need").expect("p")))
     );
 }
 
@@ -292,7 +308,7 @@ fn the_target_follows_the_actions_on() {
     assert_eq!(t(TargetKind::Nothing, None), Ok(TargetValue::Nothing));
     assert_eq!(
         t(TargetKind::Nothing, Some(json!("x"))),
-        Err(ArgsFault::Target(TargetFault::Unexpected))
+        Err(ArgsError::Target(TargetError::Unexpected))
     );
     assert_eq!(
         t(
@@ -303,7 +319,7 @@ fn the_target_follows_the_actions_on() {
     );
     assert_eq!(
         t(TargetKind::One(thread_kind.clone()), None),
-        Err(ArgsFault::Target(TargetFault::Missing))
+        Err(ArgsError::Target(TargetError::Missing))
     );
     assert_eq!(
         t(
@@ -314,11 +330,11 @@ fn the_target_follows_the_actions_on() {
     );
     assert_eq!(
         t(TargetKind::Many(thread_kind.clone()), Some(json!([]))),
-        Err(ArgsFault::Target(TargetFault::Malformed))
+        Err(ArgsError::Target(TargetError::Malformed))
     );
     assert_eq!(
         t(TargetKind::One(thread_kind), Some(json!({ "key": "t1" }))),
-        Err(ArgsFault::Target(TargetFault::Malformed))
+        Err(ArgsError::Target(TargetError::Malformed))
     );
     assert_eq!(
         t(TargetKind::Files, Some(json!(["/a/b"]))),
@@ -326,6 +342,6 @@ fn the_target_follows_the_actions_on() {
     );
     assert_eq!(
         t(TargetKind::Text, Some(json!("field"))),
-        Err(ArgsFault::Target(TargetFault::NotNameable))
+        Err(ArgsError::Target(TargetError::NotNameable))
     );
 }

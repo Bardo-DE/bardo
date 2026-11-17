@@ -1,11 +1,11 @@
 //! For tests only: a scripted `SessionBackend` and an in-memory `SessionLog`.
 
 use crate::backend::{
-    BackendEvent, BackendFault, CallEvent, Resumed, SessionBackend, StartSession, TurnEnd,
+    BackendError, BackendEvent, CallEvent, Resumed, SessionBackend, StartSession, TurnEnd,
 };
 use crate::codec::{Logged, decode, encode};
 use crate::entry::{BackendKind, Seq, SessionEntry};
-use crate::log::{Appended, LogFault, LogPage, PageSize, SessionLog};
+use crate::log::{Appended, LogError, LogPage, PageSize, SessionLog};
 use crate::plan::ResumePlan;
 use action_core::UserTurn;
 use provenance::SessionId;
@@ -57,20 +57,20 @@ impl SessionBackend for FakeBackend {
         BackendKind::Fake
     }
 
-    async fn start(&mut self, _open: StartSession) -> Result<(), BackendFault> {
+    async fn start(&mut self, _open: StartSession) -> Result<(), BackendError> {
         self.running = Running::Idle;
         Ok(())
     }
 
-    async fn resume(&mut self, _plan: &ResumePlan) -> Result<Resumed, BackendFault> {
+    async fn resume(&mut self, _plan: &ResumePlan) -> Result<Resumed, BackendError> {
         self.running = Running::Idle;
         Ok(Resumed::Restored)
     }
 
-    async fn turn(&mut self, turn: UserTurn) -> Result<(), BackendFault> {
+    async fn turn(&mut self, turn: UserTurn) -> Result<(), BackendError> {
         match self.running {
-            Running::Stopped => Err(BackendFault::NotRunning),
-            Running::Answering => Err(BackendFault::Busy),
+            Running::Stopped => Err(BackendError::NotRunning),
+            Running::Answering => Err(BackendError::Busy),
             Running::Idle => {
                 self.turns.push(turn);
                 let mut events = self.script.pop_front().unwrap_or_default();
@@ -202,27 +202,27 @@ impl SessionLog for MemoryLog {
         session: &SessionId,
         seq: Seq,
         entry: &SessionEntry,
-    ) -> Result<Appended, LogFault> {
+    ) -> Result<Appended, LogError> {
         match self.mood.lock().map(|m| *m) {
             Ok(LogMood::Storing) => {}
             Ok(LogMood::RefusingTaint) if !matches!(entry, SessionEntry::Taint(_)) => {}
-            Ok(LogMood::Refusing | LogMood::RefusingTaint) => return Err(LogFault::Refused),
-            Ok(LogMood::Down) | Err(_) => return Err(LogFault::Unavailable),
+            Ok(LogMood::Refusing | LogMood::RefusingTaint) => return Err(LogError::Refused),
+            Ok(LogMood::Down) | Err(_) => return Err(LogError::Unavailable),
         }
         if let Ok(mut allowance) = self.allowance.lock()
             && let Some(left) = allowance.as_mut()
         {
             if *left == 0 {
-                return Err(LogFault::Unavailable);
+                return Err(LogError::Unavailable);
             }
             *left -= 1;
         }
-        let encoded = encode(seq, entry).map_err(LogFault::encode)?;
+        let encoded = encode(seq, entry).map_err(LogError::encode)?;
         let mut all = self.bodies.lock().unwrap_or_else(PoisonError::into_inner);
         let rows = all.entry(session.clone()).or_default();
         let expected = Seq(rows.len() as u64);
         if seq != expected {
-            return Err(LogFault::OutOfOrder { expected });
+            return Err(LogError::OutOfOrder { expected });
         }
         rows.push((encoded.kind, encoded.json));
         Ok(Appended { seq })
@@ -233,7 +233,7 @@ impl SessionLog for MemoryLog {
         session: &SessionId,
         from: Option<Seq>,
         size: PageSize,
-    ) -> Result<LogPage, LogFault> {
+    ) -> Result<LogPage, LogError> {
         let all = self.bodies.lock().unwrap_or_else(PoisonError::into_inner);
         let rows = all.get(session).map(Vec::as_slice).unwrap_or_default();
         let start = from
@@ -253,7 +253,7 @@ impl SessionLog for MemoryLog {
         Ok(LogPage { rows: logged, next })
     }
 
-    async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
+    async fn sessions(&self) -> Result<Vec<SessionId>, LogError> {
         let all = self.bodies.lock().unwrap_or_else(PoisonError::into_inner);
         Ok(all
             .iter()

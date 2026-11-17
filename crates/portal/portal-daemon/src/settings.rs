@@ -11,7 +11,7 @@ use std::time::Duration;
 
 use base_fs::{ReadCap, read_text_capped};
 use portal_core::{
-    Appearance, Contrast, Rgb, Scheme, SettingKey, SettingValue, SettingsRefusal, changes,
+    Appearance, Contrast, Rgb, Scheme, SettingKey, SettingLookupError, SettingValue, changes,
 };
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{OwnedValue, StructureBuilder, Value};
@@ -199,7 +199,7 @@ pub fn read_setting(
     key: &str,
 ) -> Result<OwnedValue, SettingsError> {
     let value = portal_core::read(appearance, namespace, key).map_err(|e| match e {
-        SettingsRefusal::NotFound => SettingsError::NotFound(format!("{namespace} {key}")),
+        SettingLookupError::NotFound => SettingsError::NotFound(format!("{namespace} {key}")),
     })?;
     owned(value).ok_or_else(|| SettingsError::Failed("the value has no wire form".into()))
 }

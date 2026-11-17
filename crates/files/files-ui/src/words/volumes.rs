@@ -1,6 +1,6 @@
 //! What is said when a disk would not eject or open, in Finder's words. Pure.
 
-use files_core::{EjectFailure, MountFailure, ProgramName, VolumeName, VolumeTrouble};
+use files_core::{EjectError, MountError, ProgramName, VolumeName, VolumeTrouble};
 
 /// The sentence for a disk that did not eject or open.
 ///
@@ -10,7 +10,7 @@ pub fn volume_trouble_words(name: &VolumeName, trouble: &VolumeTrouble) -> Strin
     let disk = format!("The disk \u{201c}{name}\u{201d}");
     match trouble {
         VolumeTrouble::NotEjected(failure) => match failure {
-            EjectFailure::InUse(programs) => {
+            EjectError::InUse(programs) => {
                 let busy = format!(
                     "{disk} wasn\u{2019}t ejected because one or more programs may be using it"
                 );
@@ -24,18 +24,18 @@ pub fn volume_trouble_words(name: &VolumeName, trouble: &VolumeTrouble) -> Strin
                     format!("{busy}: {}.", names.join(", "))
                 }
             }
-            EjectFailure::NotAllowed => {
+            EjectError::NotAllowed => {
                 format!("{disk} wasn\u{2019}t ejected because you don\u{2019}t have permission.")
             }
-            EjectFailure::Gone(_) => format!("{disk} is not there any more."),
-            EjectFailure::Other(_) => format!("{disk} wasn\u{2019}t ejected."),
+            EjectError::Gone(_) => format!("{disk} is not there any more."),
+            EjectError::Other(_) => format!("{disk} wasn\u{2019}t ejected."),
         },
         VolumeTrouble::NotOpened(failure) => match failure {
-            MountFailure::NotAllowed => {
+            MountError::NotAllowed => {
                 format!("{disk} wasn\u{2019}t opened because you don\u{2019}t have permission.")
             }
-            MountFailure::Gone(_) => format!("{disk} is not there any more."),
-            MountFailure::Other(_) => format!("{disk} couldn\u{2019}t be opened."),
+            MountError::Gone(_) => format!("{disk} is not there any more."),
+            MountError::Other(_) => format!("{disk} couldn\u{2019}t be opened."),
         },
     }
 }
@@ -68,7 +68,7 @@ mod tests {
     fn a_disk_that_would_not_eject_or_open_says_so_as_finder_does() {
         let name = VolumeName::new("STICK");
         let busy_by = |names: &[&str]| {
-            VolumeTrouble::NotEjected(EjectFailure::InUse(
+            VolumeTrouble::NotEjected(EjectError::InUse(
                 names.iter().map(|n| ProgramName::new(*n)).collect(),
             ))
         };
@@ -85,17 +85,17 @@ mod tests {
             ),
             (
                 "not allowed to eject",
-                VolumeTrouble::NotEjected(EjectFailure::NotAllowed),
+                VolumeTrouble::NotEjected(EjectError::NotAllowed),
                 "The disk \u{201c}STICK\u{201d} wasn\u{2019}t ejected because you don\u{2019}t have permission.",
             ),
             (
                 "ejected badly",
-                VolumeTrouble::NotEjected(EjectFailure::Other(None)),
+                VolumeTrouble::NotEjected(EjectError::Other(None)),
                 "The disk \u{201c}STICK\u{201d} wasn\u{2019}t ejected.",
             ),
             (
                 "not opened",
-                VolumeTrouble::NotOpened(MountFailure::Other(None)),
+                VolumeTrouble::NotOpened(MountError::Other(None)),
                 "The disk \u{201c}STICK\u{201d} couldn\u{2019}t be opened.",
             ),
         ];

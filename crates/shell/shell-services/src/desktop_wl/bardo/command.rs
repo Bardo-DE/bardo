@@ -10,14 +10,14 @@ use desktop_protocols::vocab::ShellRole;
 use shell_model::desktop::DesktopCommand;
 
 use super::surfaces::ShellSurfaces;
-use crate::desktop_wl::Refusal;
+use crate::desktop_wl::CommandError;
 use crate::desktop_wl::command::find_window;
 
 /// The wire requests that carry `command`, in order. Activating a minimised window restores it
 /// first; a minimise target names the dock's surface on the window's output.
 ///
 /// # Errors
-/// A [`Refusal`] when `command` names a window, app or Space the state does not have, or a
+/// A [`CommandError`] when `command` names a window, app or Space the state does not have, or a
 /// minimise target on an output with no dock surface.
 #[expect(
     clippy::too_many_lines,
@@ -27,11 +27,11 @@ pub fn bardo_wire_of(
     command: &DesktopCommand,
     state: &DesktopState,
     surfaces: &ShellSurfaces,
-) -> Result<Vec<Wire>, Refusal> {
+) -> Result<Vec<Wire>, CommandError> {
     let window = |id: &str| find_window(state, id);
     let app = |key: &str| app_key(state, key);
     let space = |id: &SpaceId| space_key(state, id);
-    let one = |request: Wire| -> Result<Vec<Wire>, Refusal> { Ok(vec![request]) };
+    let one = |request: Wire| -> Result<Vec<Wire>, CommandError> { Ok(vec![request]) };
     match command {
         DesktopCommand::Activate(id) => {
             let key = window(id)?;
@@ -58,7 +58,7 @@ pub fn bardo_wire_of(
             let key = window(toplevel)?;
             let surface = surfaces
                 .dock_for(output_of(state, key))
-                .ok_or(Refusal::NoSurface(ShellRole::Dock))?;
+                .ok_or(CommandError::NoSurface(ShellRole::Dock))?;
             let (x, y, w, h) = *rect;
             one(Wire::SetMinimiseTarget {
                 toplevel: key,
@@ -152,18 +152,18 @@ fn output_of(state: &DesktopState, key: ToplevelKey) -> Option<&str> {
         .map(OutputName::as_str)
 }
 
-fn app_key(state: &DesktopState, key: &str) -> Result<AppKey, Refusal> {
+fn app_key(state: &DesktopState, key: &str) -> Result<AppKey, CommandError> {
     state
         .bardo
         .app_by_id(&AppId::new(key))
         .map(|app| app.key)
-        .ok_or_else(|| Refusal::UnknownApp(key.to_owned()))
+        .ok_or_else(|| CommandError::UnknownApp(key.to_owned()))
 }
 
-fn space_key(state: &DesktopState, id: &SpaceId) -> Result<SpaceKey, Refusal> {
+fn space_key(state: &DesktopState, id: &SpaceId) -> Result<SpaceKey, CommandError> {
     state
         .bardo
         .space_by_id(&WireSpaceId::new(id.as_str()))
         .map(|space| space.key)
-        .ok_or_else(|| Refusal::UnknownSpace(id.clone()))
+        .ok_or_else(|| CommandError::UnknownSpace(id.clone()))
 }

@@ -9,7 +9,7 @@ use files_model::AppPick;
 use files_trash::FakeTrash;
 use files_ui::edge::Seams;
 use files_ui::{
-    AppChoiceView, AppearanceSource, Apps, Launch, NoThumbnails, NoVolumes, OpenAs, OpenFailure,
+    AppChoiceView, AppearanceSource, Apps, Launch, NoThumbnails, NoVolumes, OpenAs, OpenError,
     Opener, Zone,
 };
 use tempfile::TempDir;
@@ -41,7 +41,7 @@ impl RecordingOpener {
 }
 
 impl Opener for RecordingOpener {
-    fn open(&self, targets: Vec<PathBuf>, with: OpenAs) -> Result<(), OpenFailure> {
+    fn open(&self, targets: Vec<PathBuf>, with: OpenAs) -> Result<(), OpenError> {
         self.opened
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
@@ -90,10 +90,10 @@ impl Apps for FakeApps {
 pub struct NoAppOpener;
 
 impl Opener for NoAppOpener {
-    fn open(&self, targets: Vec<PathBuf>, _with: OpenAs) -> Result<(), OpenFailure> {
+    fn open(&self, targets: Vec<PathBuf>, _with: OpenAs) -> Result<(), OpenError> {
         let first = targets.first().and_then(|path| path.file_name());
         let shown = first.map(|name| name.to_string_lossy().into_owned());
-        Err(OpenFailure(format!(
+        Err(OpenError(format!(
             "There is no app set to open \u{201c}{}\u{201d}.",
             shown.unwrap_or_default()
         )))

@@ -38,7 +38,7 @@ impl Ceiling {
 
 /// Why what the person named is not a reach.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ReachFault {
+pub enum ReachError {
     /// No app was named.
     #[error("name at least one app for it to use")]
     NoApps,
@@ -55,15 +55,15 @@ const MOST_AT_ONCE: Count = Count(20);
 ///
 /// # Errors
 ///
-/// Returns [`ReachFault`] when what the person named is not a reach.
+/// Returns [`ReachError`] when what the person named is not a reach.
 pub fn reach_policy(
     apps: &[AppName],
     ceiling: Ceiling,
     space: &SpaceId,
     installed: &[&Manifest],
-) -> Result<TaskPolicy, ReachFault> {
+) -> Result<TaskPolicy, ReachError> {
     if apps.is_empty() {
-        return Err(ReachFault::NoApps);
+        return Err(ReachError::NoApps);
     }
     let effect = ceiling.effect();
     let mut actions = BTreeSet::new();
@@ -72,7 +72,7 @@ pub fn reach_policy(
         let manifest = installed
             .iter()
             .find(|m| &m.app == app)
-            .ok_or_else(|| ReachFault::NoSuchApp(app.to_string()))?;
+            .ok_or_else(|| ReachError::NoSuchApp(app.to_string()))?;
         actions.insert(ActionMatch::AppUpTo(app.clone(), effect));
         kinds.extend(manifest.entities.iter().map(|e| e.kind.clone()));
     }
@@ -80,7 +80,7 @@ pub fn reach_policy(
         TaskId::parse("t-0"),
         LabelText::parse("what the helper may use"),
     ) else {
-        return Err(ReachFault::NoApps);
+        return Err(ReachError::NoApps);
     };
     Ok(TaskPolicy {
         task,

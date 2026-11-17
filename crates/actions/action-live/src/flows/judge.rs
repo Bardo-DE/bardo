@@ -3,7 +3,7 @@
 use super::{Flow, INJECTED_ADDRESS, INJECTED_THREAD};
 use crate::pattern;
 use crate::stage::{Asker, asker};
-use crate::warm::WarmFault;
+use crate::warm::WarmError;
 use action_accept::provider::{INJECTION, Message};
 use action_core::{ConfirmDetail, ConfirmRequest, ModelExchange, Reveal, Shown};
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, NeedsYou};
@@ -35,7 +35,7 @@ pub(crate) fn safety(what: impl Into<String>) -> Failure {
     }
 }
 
-pub(crate) fn setup(fault: &WarmFault) -> Failure {
+pub(crate) fn setup(fault: &WarmError) -> Failure {
     Failure {
         kind: Kind::Setup,
         what: fault.to_string(),

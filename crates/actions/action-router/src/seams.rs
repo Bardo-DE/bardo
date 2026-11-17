@@ -10,11 +10,11 @@ use action_core::{
     AppRefusal, Confirmer, ContextSnapshot, Invocation, Outcome, PolicyWriter, Preview, Reader,
     SuggestAsk, UndoFault,
 };
-use action_core::{EventSink, LinkFault, MemoryLink};
+use action_core::{EventSink, LinkError, MemoryLink};
 use action_manifest::Latency;
 use action_review::Reviewer;
 use action_vocab::{EntityRef, UndoToken};
-use agent_session::{Appended, LogFault, LogPage, PageSize, Seq, SessionEntry, SessionLog};
+use agent_session::{Appended, LogError, LogPage, PageSize, Seq, SessionEntry, SessionLog};
 use permission_core::Limit;
 use permission_core::{ActionGrant, StandingGrant, StandingGrantId};
 use permission_policy::Presets;
@@ -104,19 +104,19 @@ pub trait AppLink: Send + Sync {
     fn context(
         &self,
         app: &AppName,
-    ) -> impl Future<Output = Result<ContextSnapshot, LinkFault>> + Send;
+    ) -> impl Future<Output = Result<ContextSnapshot, LinkError>> + Send;
     /// `Preview`.
     fn preview(
         &self,
         app: &AppName,
         id: &EntityId,
-    ) -> impl Future<Output = Result<Preview, LinkFault>> + Send;
+    ) -> impl Future<Output = Result<Preview, LinkError>> + Send;
     /// `Suggest`.
     fn suggest(
         &self,
         app: &AppName,
         ask: SuggestAsk,
-    ) -> impl Future<Output = Result<Vec<EntityRef>, LinkFault>> + Send;
+    ) -> impl Future<Output = Result<Vec<EntityRef>, LinkError>> + Send;
 }
 
 /// The person's standing consent.
@@ -174,7 +174,7 @@ impl SessionLog for NoLog {
         _session: &SessionId,
         seq: Seq,
         _entry: &SessionEntry,
-    ) -> Result<Appended, LogFault> {
+    ) -> Result<Appended, LogError> {
         Ok(Appended { seq })
     }
 
@@ -187,7 +187,7 @@ impl SessionLog for NoLog {
         _session: &SessionId,
         _from: Option<Seq>,
         _size: PageSize,
-    ) -> Result<LogPage, LogFault> {
+    ) -> Result<LogPage, LogError> {
         Ok(LogPage {
             rows: Vec::new(),
             next: None,
@@ -198,7 +198,7 @@ impl SessionLog for NoLog {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
+    async fn sessions(&self) -> Result<Vec<SessionId>, LogError> {
         Ok(Vec::new())
     }
 }

@@ -33,7 +33,7 @@ use account_tailscale::NodeId;
 use base_time::Clock;
 use caller_role_types::CallerRole;
 use dbus_kit::Call;
-use inference_core::{InferRefusal, PlaceId, PlaceRow, PlaceState};
+use inference_core::{InferRefusedError, PlaceId, PlaceRow, PlaceState};
 use inference_dbus::inference::{
     AgentsServed, InferenceServed, InferenceServer, NeedArg, need_from_dbus,
 };
@@ -1125,7 +1125,7 @@ fn place_row(row: PlaceRow) -> (String, Details) {
 
 /// The slug of a refusal (`requires_cloud`, `unavailable`, ...).
 #[must_use]
-pub fn refusal_slug(refusal: InferRefusal) -> String {
+pub fn refusal_slug(refusal: InferRefusedError) -> String {
     slug(&refusal, "kind")
 }
 

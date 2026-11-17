@@ -6,7 +6,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::sync::Mutex;
 use updater_daemon::cli::{Exit, confirm, recover, vouch};
-use updater_daemon::elevate::{ApplyFailure, Elevate, Recovery};
+use updater_daemon::elevate::{ApplyError, Elevate, Recovery};
 use updater_daemon::report::Report;
 use updater_daemon::state::StateStore;
 use updater_root::apply::{NoRelabel, Started, note_confirmed, note_start};
@@ -88,12 +88,12 @@ fn the_record_is_for_root_alone() {
 /// Records what the session asks of the helper, and answers as set.
 struct Helper {
     calls: Mutex<Vec<&'static str>>,
-    recover: Result<Recovery, ApplyFailure>,
-    confirmed: Result<(), ApplyFailure>,
+    recover: Result<Recovery, ApplyError>,
+    confirmed: Result<(), ApplyError>,
 }
 
 impl Helper {
-    fn answering(recover: Result<Recovery, ApplyFailure>) -> Self {
+    fn answering(recover: Result<Recovery, ApplyError>) -> Self {
         Self {
             calls: Mutex::new(Vec::new()),
             recover,
@@ -103,26 +103,26 @@ impl Helper {
 }
 
 impl Elevate for Helper {
-    fn install(&self, _: &Path) -> Result<Report, ApplyFailure> {
+    fn install(&self, _: &Path) -> Result<Report, ApplyError> {
         Ok(Report::default())
     }
 
-    fn rollback(&self) -> Result<Report, ApplyFailure> {
+    fn rollback(&self) -> Result<Report, ApplyError> {
         Ok(Report::default())
     }
 
-    fn recover(&self) -> Result<Recovery, ApplyFailure> {
+    fn recover(&self) -> Result<Recovery, ApplyError> {
         self.calls.lock().expect("lock").push("recover");
         self.recover.clone()
     }
 
-    fn confirmed(&self) -> Result<(), ApplyFailure> {
+    fn confirmed(&self) -> Result<(), ApplyError> {
         self.calls.lock().expect("lock").push("confirmed");
         self.confirmed.clone()
     }
 }
 
-fn failure() -> ApplyFailure {
+fn failure() -> ApplyError {
     ApplyFailure {
         code: Some(1),
         detail: "no".into(),

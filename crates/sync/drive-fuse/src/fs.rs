@@ -854,7 +854,7 @@ impl Filesystem for Mounted {
 mod tests {
     use super::*;
     use drive_fs::testing::{MemoryListing, MemorySink, MemorySource, Took};
-    use drive_fs::{DriveConfig, Reason};
+    use drive_fs::{DriveConfig, SkipError};
     use std::sync::Arc;
 
     async fn fs(dir: &base_testkit::Scratch) -> (Arc<MemoryListing>, Arc<MemorySource>, DriveFs) {
@@ -943,7 +943,7 @@ mod tests {
         let status = fs
             .drive
             .status(&NodeId::Remote(drive_fs::RemoteId("a".into())));
-        assert_eq!(status.and_then(|s| s.reason), Some(Reason::Offline));
+        assert_eq!(status.and_then(|s| s.reason), Some(SkipError::Offline));
         assert_eq!(fs.read(999, 0, 1).await, Err(Errno::EBADF));
     }
 

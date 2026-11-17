@@ -3,7 +3,7 @@
 //! memory answering while a missing service is the link down. Memory is a scripted fake.
 
 use action_core::{AuditRecord, HaltCause};
-use action_core::{EventSink, LinkFault, MemoryLink};
+use action_core::{EventSink, LinkError, MemoryLink};
 use companion_memory::{AuditState, Link};
 use companion_memory_core::QueuedSink;
 use memory_core::{MemoryReply, MemoryRequest, Refusal};
@@ -12,10 +12,10 @@ use std::collections::VecDeque;
 use std::sync::Mutex;
 
 /// Answers each request with the next scripted reply, whatever the request.
-struct Script(Mutex<VecDeque<Result<MemoryReply, LinkFault>>>);
+struct Script(Mutex<VecDeque<Result<MemoryReply, LinkError>>>);
 
 impl Script {
-    fn of(replies: impl IntoIterator<Item = Result<MemoryReply, LinkFault>>) -> Self {
+    fn of(replies: impl IntoIterator<Item = Result<MemoryReply, LinkError>>) -> Self {
         Self(Mutex::new(replies.into_iter().collect()))
     }
 }
@@ -25,12 +25,12 @@ impl MemoryLink for Script {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn ask(&self, _request: MemoryRequest) -> Result<MemoryReply, LinkFault> {
+    async fn ask(&self, _request: MemoryRequest) -> Result<MemoryReply, LinkError> {
         self.0
             .lock()
             .expect("script")
             .pop_front()
-            .unwrap_or(Err(LinkFault::Unavailable))
+            .unwrap_or(Err(LinkError::Unavailable))
     }
 }
 
@@ -52,12 +52,12 @@ fn three() -> QueuedSink {
     clippy::unnecessary_wraps,
     reason = "the script holds `Result`s, as the link answers"
 )]
-fn invalid() -> Result<MemoryReply, LinkFault> {
+fn invalid() -> Result<MemoryReply, LinkError> {
     Ok(MemoryReply::Refused(Refusal::Invalid("no".into())))
 }
 
 async fn flush_after_batch_refusal(
-    then: [Result<MemoryReply, LinkFault>; 3],
+    then: [Result<MemoryReply, LinkError>; 3],
 ) -> (companion_memory::Report, QueuedSink) {
     let memory = Script::of([invalid()].into_iter().chain(then));
     let sink = three();
@@ -81,7 +81,7 @@ async fn a_lock_after_a_written_and_a_lost_record_keeps_both_counts_and_the_link
 #[tokio::test]
 async fn a_missing_service_after_a_written_and_a_lost_record_keeps_both_counts_and_the_link_down() {
     let (report, sink) =
-        flush_after_batch_refusal([Ok(MemoryReply::Ok), invalid(), Err(LinkFault::Unavailable)])
+        flush_after_batch_refusal([Ok(MemoryReply::Ok), invalid(), Err(LinkError::Unavailable)])
             .await;
     let f = report.flushed;
     assert_eq!((f.written, f.lost, f.waiting), (1, 1, 1));

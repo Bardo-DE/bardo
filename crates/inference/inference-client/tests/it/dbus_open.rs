@@ -21,7 +21,7 @@ use inference_client::{
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
     AttachIndex, ChatControl, ChatMessage, ChatReply, ChatRequest, ClientFrame, ImagePart,
-    ImageSource, InferEvent, InferRefusal, InferReply, InferRequest, Knob, MessagePart,
+    ImageSource, InferEvent, InferRefusedError, InferReply, InferRequest, Knob, MessagePart,
     OpenOptions, OptionScore, OptionScores, ReplyShape, RequestKind, Role, ScoreOptions, ServedBy,
     StopReason, ToolParallelism, Traceparent, TurnUsage,
 };
@@ -235,12 +235,12 @@ async fn the_usage_rides_in_the_options_as_its_slug_and_is_absent_otherwise() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_refusal_is_the_first_event() {
-    let rig = rig(Behaviour::Refuse(InferRefusal::NeedsGrant)).await;
+    let rig = rig(Behaviour::Refuse(InferRefusedError::NeedsGrant)).await;
     let mut session = session(&rig, &llm(), DataClass::Mail).await;
     assert_eq!(
         session.next().await,
         Ok(InferEvent::Finished(InferReply::Refused(
-            InferRefusal::NeedsGrant
+            InferRefusedError::NeedsGrant
         )))
     );
     let got = rig
@@ -249,7 +249,7 @@ async fn a_refusal_is_the_first_event() {
         .await;
     assert_eq!(
         got,
-        Err(ClientError::InferRefused(InferRefusal::NeedsGrant))
+        Err(ClientError::InferRefused(InferRefusedError::NeedsGrant))
     );
 }
 

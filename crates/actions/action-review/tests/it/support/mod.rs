@@ -12,8 +12,8 @@ use action_review::*;
 use action_vocab::{Caller, LabelText, Millis, TurnId};
 use base_ids::Tokens;
 use inference_core::{
-    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
-    ModelCard, ModelError, ServedBy, StopReason, TaskRequest, TurnError, TurnUsage,
+    ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusedError,
+    Model, ModelCard, ModelError, ServedBy, StopReason, TaskRequest, TurnError, TurnUsage,
 };
 use permission_core::{ArgLabels, SessionSaw, Strictness};
 use provenance::{ActionName, Effect, Integrity, SpaceId};
@@ -143,7 +143,7 @@ impl Model for Scripted {
         _request: &TaskRequest,
         _sink: &mut impl ChatSink,
     ) -> Result<ChatReply, TurnError> {
-        Err(InferRefusal::Unsupported.into())
+        Err(InferRefusedError::Unsupported.into())
     }
 
     async fn embed(&self, _request: &EmbedRequest) -> Result<EmbedReply, TurnError> {

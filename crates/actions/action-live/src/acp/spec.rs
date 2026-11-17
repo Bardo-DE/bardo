@@ -13,7 +13,7 @@ pub const CLAUDE_CREDENTIALS_AT: &str = ".claude/.credentials.json";
 
 /// Why a spec is not usable.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum SpecFault {
+pub enum SpecError {
     /// The program's name is not one.
     #[error("--acp-program {0:?} is not a program name (lower-case letters, digits and -)")]
     Program(String),
@@ -143,18 +143,18 @@ impl AcpSpec {
     ///
     /// # Errors
     ///
-    /// Returns the [`SpecFault`] for the first flag combination that is wrong.
-    pub fn check(&self) -> Result<(), SpecFault> {
+    /// Returns the [`SpecError`] for the first flag combination that is wrong.
+    pub fn check(&self) -> Result<(), SpecError> {
         let name_ok = !self.program.is_empty()
             && self
                 .program
                 .bytes()
                 .all(|b| b.is_ascii_lowercase() || b.is_ascii_digit() || b == b'-');
         if !name_ok {
-            return Err(SpecFault::Program(self.program.clone()));
+            return Err(SpecError::Program(self.program.clone()));
         }
         match &self.registry {
-            None if !self.command.is_absolute() => return Err(SpecFault::Command),
+            None if !self.command.is_absolute() => return Err(SpecError::Command),
             None => {}
             Some(pick) => self.check_registry(pick)?,
         }
@@ -163,38 +163,38 @@ impl AcpSpec {
             .as_ref()
             .filter(|m| agent_acp_host::ModelId::parse(m).is_err())
         {
-            return Err(SpecFault::Model(model.clone()));
+            return Err(SpecError::Model(model.clone()));
         }
         if let Some(bad) = self.reads.iter().find(|p| !p.is_absolute()) {
-            return Err(SpecFault::Reads(bad.display().to_string()));
+            return Err(SpecError::Reads(bad.display().to_string()));
         }
         if let Some(profile) = self
             .profile
             .as_ref()
             .filter(|p| !matches!(p.as_str(), "claude-code"))
         {
-            return Err(SpecFault::Profile(profile.clone()));
+            return Err(SpecError::Profile(profile.clone()));
         }
         if let Some(method) = self
             .sign_in
             .as_ref()
             .filter(|m| agent_acp_host::SignIn::parse(m).is_err())
         {
-            return Err(SpecFault::SignIn(method.clone()));
+            return Err(SpecError::SignIn(method.clone()));
         }
         let credentials = self.credentials.iter().map(|c| c.at.as_str());
         for inside in self.state.iter().map(String::as_str).chain(credentials) {
             if !stays_inside(inside) {
-                return Err(SpecFault::Inside(inside.to_owned()));
+                return Err(SpecError::Inside(inside.to_owned()));
             }
         }
         Ok(())
     }
 
-    fn check_registry(&self, pick: &RegistryPick) -> Result<(), SpecFault> {
-        let clash = |what: &str| SpecFault::Registry(format!("a registry agent takes no {what}"));
+    fn check_registry(&self, pick: &RegistryPick) -> Result<(), SpecError> {
+        let clash = |what: &str| SpecError::Registry(format!("a registry agent takes no {what}"));
         if !pick.dir.is_absolute() {
-            return Err(SpecFault::Registry(
+            return Err(SpecError::Registry(
                 "--acp-agents-dir must be an absolute path".to_owned(),
             ));
         }
@@ -289,11 +289,11 @@ pub fn network_word(mode: NetworkMode) -> &'static str {
 ///
 /// # Errors
 ///
-/// Returns a [`SpecFault`] when `word` names no network.
-pub fn network_of(word: &str) -> Result<NetworkMode, SpecFault> {
+/// Returns a [`SpecError`] when `word` names no network.
+pub fn network_of(word: &str) -> Result<NetworkMode, SpecError> {
     match word {
         "none" => Ok(NetworkMode::None),
         "host" => Ok(NetworkMode::Host),
-        other => Err(SpecFault::Network(other.to_owned())),
+        other => Err(SpecError::Network(other.to_owned())),
     }
 }

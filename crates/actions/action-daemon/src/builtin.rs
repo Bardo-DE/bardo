@@ -9,7 +9,7 @@ use crate::builtin_checkpoints::{CheckpointsPort, CheckpointsProvider};
 use crate::builtin_companion::{CompanionPort, CompanionProvider};
 use crate::link::DbusLink;
 use account_core::AppName;
-use action_core::LinkFault;
+use action_core::LinkError;
 use action_core::{
     AppRefusal, ContextSnapshot, Invocation, Outcome, Preview, SuggestAsk, UndoFault,
 };
@@ -192,16 +192,16 @@ impl<T: MemoryTransport> AppLink for HostedLink<T> {
         self.builtins.serves(app) || self.apps.running(app).await
     }
 
-    async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkFault> {
+    async fn context(&self, app: &AppName) -> Result<ContextSnapshot, LinkError> {
         if self.builtins.serves(app) {
             // None has a window: there is nothing on screen to report.
-            Err(LinkFault::Unavailable)
+            Err(LinkError::Unavailable)
         } else {
             self.apps.context(app).await
         }
     }
 
-    async fn preview(&self, app: &AppName, id: &EntityId) -> Result<Preview, LinkFault> {
+    async fn preview(&self, app: &AppName, id: &EntityId) -> Result<Preview, LinkError> {
         if self.builtins.serves(app) {
             Ok(self.builtins.hosted_preview(app, id).await)
         } else {
@@ -209,7 +209,7 @@ impl<T: MemoryTransport> AppLink for HostedLink<T> {
         }
     }
 
-    async fn suggest(&self, app: &AppName, ask: SuggestAsk) -> Result<Vec<EntityRef>, LinkFault> {
+    async fn suggest(&self, app: &AppName, ask: SuggestAsk) -> Result<Vec<EntityRef>, LinkError> {
         if self.builtins.serves(app) {
             Ok(self.builtins.hosted_suggest(app, ask).await)
         } else {

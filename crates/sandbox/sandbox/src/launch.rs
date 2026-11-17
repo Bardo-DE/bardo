@@ -13,7 +13,7 @@
 
 use crate::harden::{LimitPolicy, Limits};
 use crate::sandbox::EnvVar;
-use crate::state::CannotSandbox;
+use crate::state::CannotSandboxError;
 use base_path::AbsPath;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
@@ -203,15 +203,15 @@ impl Launcher {
         path: &str,
         policy: &LimitPolicy,
         session: &UserSession,
-    ) -> Result<Self, CannotSandbox> {
+    ) -> Result<Self, CannotSandboxError> {
         match policy {
             LimitPolicy::Unlimited(_) => Ok(Self { how: How::Nothing }),
             LimitPolicy::Rlimit(limits) => {
                 if !limits.usable() {
-                    return Err(CannotSandbox::BadLimits);
+                    return Err(CannotSandboxError::BadLimits);
                 }
                 if !Path::new(SH).is_file() {
-                    return Err(CannotSandbox::LimitsUnavailable);
+                    return Err(CannotSandboxError::LimitsUnavailable);
                 }
                 Ok(Self {
                     how: How::Rlimit(limits.clone()),
@@ -219,11 +219,12 @@ impl Launcher {
             }
             LimitPolicy::Cgroup(limits) => {
                 if !limits.usable() {
-                    return Err(CannotSandbox::BadLimits);
+                    return Err(CannotSandboxError::BadLimits);
                 }
-                let program = find(path, "systemd-run").ok_or(CannotSandbox::LimitsUnavailable)?;
+                let program =
+                    find(path, "systemd-run").ok_or(CannotSandboxError::LimitsUnavailable)?;
                 if !Path::new(SH).is_file() || !scope_applies(&program, session, limits) {
-                    return Err(CannotSandbox::LimitsUnavailable);
+                    return Err(CannotSandboxError::LimitsUnavailable);
                 }
                 Ok(Self {
                     how: How::Scope {
@@ -446,7 +447,7 @@ mod tests {
                 LimitPolicy::Rlimit(limits.clone()),
             ] {
                 let got = Launcher::resolve("/usr/bin", &policy, &UserSession::default());
-                assert_eq!(got.err(), Some(CannotSandbox::BadLimits), "{policy:?}");
+                assert_eq!(got.err(), Some(CannotSandboxError::BadLimits), "{policy:?}");
             }
         }
     }
@@ -458,6 +459,6 @@ mod tests {
             &LimitPolicy::default(),
             &UserSession::default(),
         );
-        assert_eq!(got.err(), Some(CannotSandbox::LimitsUnavailable));
+        assert_eq!(got.err(), Some(CannotSandboxError::LimitsUnavailable));
     }
 }

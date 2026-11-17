@@ -4,7 +4,7 @@ use files_core::{Entry, FolderPrefs, Sort, ViewMode};
 
 use crate::browser::Browser;
 use crate::effect::Effect;
-use crate::error::ListFailure;
+use crate::error::FolderListError;
 use crate::input::{Change, Input, Now};
 use crate::listing::Listing;
 use crate::selection::Selection;
@@ -146,7 +146,7 @@ impl Browser {
         }
     }
 
-    fn listed(self, result: Result<Vec<Entry>, ListFailure>) -> Stepped {
+    fn listed(self, result: Result<Vec<Entry>, FolderListError>) -> Stepped {
         let listing = match result {
             Ok(entries) => Listing::Loaded(entries),
             Err(failure) => Listing::Failed(failure),

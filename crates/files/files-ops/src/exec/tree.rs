@@ -6,7 +6,7 @@ use std::ops::ControlFlow;
 use std::os::unix::fs::symlink;
 use std::path::Path;
 
-use files_core::OpFailure;
+use files_core::OpError;
 
 use super::{Run, Step};
 use crate::error;
@@ -103,7 +103,7 @@ impl Run<'_> {
 
 /// Removes the file, link or folder at `path` with everything in it; a link is removed, not
 /// followed.
-pub(super) fn remove_tree(path: &Path) -> Result<(), OpFailure> {
+pub(super) fn remove_tree(path: &Path) -> Result<(), OpError> {
     let meta = fs::symlink_metadata(path).map_err(error::io)?;
     let removed = if meta.is_dir() {
         fs::remove_dir_all(path)

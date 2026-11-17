@@ -1,8 +1,8 @@
 //! One tool list and one tool call made into a request, for every edge: the menu narrows both,
 //! an argument that does not fit is refused, and a call carries the client's label.
 
-use action_manifest::{ArgsFault, Manifest, ValidManifest, validate};
-use action_tools::{ToolFault, listing, prepare, tools};
+use action_manifest::{ArgsError, Manifest, ValidManifest, validate};
+use action_tools::{ToolError, listing, prepare, tools};
 use action_vocab::Origin;
 use provenance::{ClientName, Integrity};
 use serde_json::{Value as Json, json};
@@ -54,11 +54,11 @@ fn a_tool_off_the_menu_is_unknown() {
             &client(),
             |_| false
         ),
-        Err(ToolFault::UnknownTool)
+        Err(ToolError::UnknownTool)
     );
     assert_eq!(
         prepare(&registry, "nothing__here", &Json::Null, &client(), |_| true),
-        Err(ToolFault::UnknownTool)
+        Err(ToolError::UnknownTool)
     );
 }
 
@@ -73,7 +73,7 @@ fn arguments_that_are_not_an_object_are_refused() {
             &client(),
             |_| true
         ),
-        Err(ArgsFault::NotAnObject.into())
+        Err(ArgsError::NotAnObject.into())
     );
 }
 

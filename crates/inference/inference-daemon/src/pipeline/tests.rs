@@ -443,6 +443,6 @@ async fn a_plan_with_a_stage_the_runner_does_not_run_is_refused_before_anything_
         names: std::collections::BTreeMap::default(),
     };
     let reply = run_pipeline(&planned, true, input, &fake, &turns, &mut events).await;
-    assert_eq!(reply, InferReply::Refused(InferRefusal::Unsupported));
+    assert_eq!(reply, InferReply::Refused(InferRefusedError::Unsupported));
     assert!(events.0.is_empty());
 }

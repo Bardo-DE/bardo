@@ -163,21 +163,21 @@ impl fmt::Display for ProposalId {
 
 /// Text that is not a proposal id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct ProposalIdFault;
+pub struct ProposalIdError;
 
-impl fmt::Display for ProposalIdFault {
+impl fmt::Display for ProposalIdError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("a proposal is written p-1, p-2 and so on")
     }
 }
 
-impl std::error::Error for ProposalIdFault {}
+impl std::error::Error for ProposalIdError {}
 
 impl TryFrom<String> for ProposalId {
-    type Error = ProposalIdFault;
+    type Error = ProposalIdError;
 
-    fn try_from(text: String) -> Result<Self, ProposalIdFault> {
-        Self::parse(&text).ok_or(ProposalIdFault)
+    fn try_from(text: String) -> Result<Self, ProposalIdError> {
+        Self::parse(&text).ok_or(ProposalIdError)
     }
 }
 

@@ -17,7 +17,7 @@ use action_context::wal::{Lane, Writer};
 use action_core::CallRefusal;
 use action_vocab::CallId;
 use action_wire::{IntentsReply, WireRefusal};
-use agent_session::{LogFault, SessionEntry, TaintCause, TaintNote};
+use agent_session::{LogError, SessionEntry, TaintCause, TaintNote};
 use provenance::SessionId;
 use std::sync::Arc;
 
@@ -45,7 +45,7 @@ impl<S: Seams> Router<S> {
 
     /// Appends everything queued for `id` and everything minted since, through `writer`, which
     /// the caller holds. On a failure the failed entry and those after it go back to the front.
-    async fn drain(&self, id: &SessionId, writer: &mut Writer) -> Result<(), LogFault> {
+    async fn drain(&self, id: &SessionId, writer: &mut Writer) -> Result<(), LogError> {
         loop {
             let batch = {
                 let mut st = self.locked();

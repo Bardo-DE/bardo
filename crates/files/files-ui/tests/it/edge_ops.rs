@@ -1,7 +1,7 @@
 //! The edge's queue of changes: rename, trash, undo and a taken name, reported and rescanned.
 
 use files_core::{
-    Answer, Finish, FolderPath, ItemRef, Location, OpEvent, OpFailure, OpKind, OpPlan, Resolution,
+    Answer, Finish, FolderPath, ItemRef, Location, OpError, OpEvent, OpKind, OpPlan, Resolution,
     Transfer,
 };
 use files_model::{Change, Effect, Input, TabId};
@@ -72,7 +72,7 @@ fn renaming_onto_another_file_is_refused_and_the_failure_is_reported() {
     );
     assert_eq!(
         finish_of(until(&mut rig.inbox, finished)),
-        Finish::Failed(OpFailure::Taken)
+        Finish::Failed(OpError::Taken)
     );
     assert_eq!(
         std::fs::read_to_string(dir.path().join("report.pdf")).unwrap(),
@@ -95,7 +95,7 @@ fn renaming_a_file_that_is_gone_is_reported() {
     );
     assert_eq!(
         finish_of(until(&mut rig.inbox, finished)),
-        Finish::Failed(OpFailure::NotFound)
+        Finish::Failed(OpError::NotFound)
     );
 }
 
@@ -103,7 +103,7 @@ fn renaming_a_file_that_is_gone_is_reported() {
 fn a_failure_the_model_tells_is_said_in_plain_words() {
     let mut rig = rig();
     rig.edge
-        .run_in(TabId::FIRST, vec![Effect::Tell(OpFailure::Taken)]);
+        .run_in(TabId::FIRST, vec![Effect::Tell(OpError::Taken)]);
     assert_eq!(
         next(&mut rig.inbox),
         Heard::Told("That name is taken.".to_owned())

@@ -90,4 +90,4 @@ pub mod xdg_toplevel_icon;
 pub mod xdg_toplevel_tag;
 
 pub use client::{ClientMint, ClientState};
-pub use states::{GlobalFilter, WaylandFault, WaylandStates};
+pub use states::{GlobalFilter, WaylandError, WaylandStates};

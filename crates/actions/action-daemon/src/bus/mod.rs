@@ -12,7 +12,7 @@ mod request;
 mod run;
 mod session;
 
-use crate::peer::{PeerFault, Peers};
+use crate::peer::{PeerError, Peers};
 use action_core::{Hit, SearchAsk};
 use action_dbus::{INTENTS_PATH, IntentsError};
 use action_router::Watch;
@@ -108,7 +108,7 @@ impl Gateway {
             .caller(sender.as_str())
             .await
             .map_err(|why| match why {
-                PeerFault::Bus(text) => IntentsError::ZBus(zbus::Error::Failure(text)),
+                PeerError::Bus(text) => IntentsError::ZBus(zbus::Error::Failure(text)),
                 other => IntentsError::NotAllowed(other.to_string()),
             })
     }

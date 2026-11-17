@@ -14,7 +14,7 @@
 
 use crate::covered::Covered;
 use crate::helpers::{Helpers, NoHelpers};
-use crate::link::{Gone, Inbound, Link, answer, chain, unknown_session};
+use crate::link::{EditorGoneError, Inbound, Link, answer, chain, unknown_session};
 use crate::mode::Mode;
 use account_core::AppName;
 use action_vocab::Clock;
@@ -172,7 +172,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
             .await
     }
 
-    async fn serve(&mut self, link: &mut Link) -> Result<(), Gone> {
+    async fn serve(&mut self, link: &mut Link) -> Result<(), EditorGoneError> {
         loop {
             let watching = self.watching();
             let heard = {
@@ -191,7 +191,7 @@ impl<H: SessionHost, L: SessionLog, T: Clock, S: Helpers> Server<H, L, T, S> {
         }
     }
 
-    async fn inbound(&mut self, link: &mut Link, inbound: Inbound) -> Result<(), Gone> {
+    async fn inbound(&mut self, link: &mut Link, inbound: Inbound) -> Result<(), EditorGoneError> {
         match (self.readiness, inbound) {
             // Nothing to cancel between prompts.
             (_, Inbound::Cancel(_)) => Ok(()),

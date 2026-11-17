@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use base_ids::Tokens;
 use engine_spec::{EnginePaths, ProgramPath};
 use engine_supervisor::{
-    EnvPair, GpuAccess, MissingProgram, Network, Sandbox, SocketPath, UnitSpec, Window,
+    EnvPair, GpuAccess, MissingProgramError, Network, Sandbox, SocketPath, UnitSpec, Window,
 };
 use model_catalog::{
     ContextArg, EngineArg, EngineKind, EngineProfile, FileName, MiB, ModelEntry, WeightFiles,
@@ -56,7 +56,7 @@ fn an_engine_with_no_listed_program_cannot_start() {
     let none = EnginePaths::new(PathBuf::from("/data/hf/hub"));
     assert_eq!(
         engine_supervisor::command(&holo, &holo.engines[0], &none, &socket("x")),
-        Err(MissingProgram {
+        Err(MissingProgramError {
             kind: EngineKind::Vllm
         })
     );

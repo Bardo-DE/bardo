@@ -36,7 +36,7 @@ impl Default for Caps {
 
 /// Which cap was reached.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum Crowded {
+pub enum CrowdedError {
     /// The user has as many identifications waiting as it may.
     #[error("too many connections from this user are being identified")]
     User,
@@ -71,13 +71,13 @@ impl Pending {
     ///
     /// Returns [`Crowded::User`] when `uid` already holds its share of identifications, and another
     /// [`Crowded`] when the daemon-wide cap is reached.
-    pub fn enter(&self, uid: Uid) -> Result<Ticket, Crowded> {
+    pub fn enter(&self, uid: Uid) -> Result<Ticket, CrowdedError> {
         let mut counts = self.counts();
         if counts.0.count(uid) >= self.caps.per_user {
-            return Err(Crowded::User);
+            return Err(CrowdedError::User);
         }
         if counts.0.total() >= self.caps.total {
-            return Err(Crowded::All);
+            return Err(CrowdedError::All);
         }
         counts.0.add(uid);
         drop(counts);

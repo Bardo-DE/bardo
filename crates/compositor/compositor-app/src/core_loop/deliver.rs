@@ -890,7 +890,7 @@ fn touch(state: &mut State, seat: &Seat<State>, event: &InputEvent, step: TouchS
     }
 }
 
-fn log(result: Result<(), compositor_wayland::WaylandFault>) {
+fn log(result: Result<(), compositor_wayland::WaylandError>) {
     if let Err(fault) = result {
         tracing::warn!(%fault, "an input delivery failed");
     }

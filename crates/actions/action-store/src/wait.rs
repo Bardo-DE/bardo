@@ -49,7 +49,7 @@ impl Default for Waits {
 
 /// Why a wait ended without the peer answering.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum Stop {
+pub enum WaitStopError {
     /// The span ran out.
     #[error("no answer in time")]
     TimedOut,
@@ -101,12 +101,15 @@ impl Cancel {
 }
 
 /// The first of a sleep and a cancel; a cancel that is already there wins a tie.
-pub async fn stop_after(sleep: impl Future<Output = ()>, cancel: impl Future<Output = ()>) -> Stop {
+pub async fn stop_after(
+    sleep: impl Future<Output = ()>,
+    cancel: impl Future<Output = ()>,
+) -> WaitStopError {
     let sleep = pin!(sleep);
     let cancel = pin!(cancel);
     match select(cancel, sleep).await {
-        Either::Left(_) => Stop::Cancelled,
-        Either::Right(_) => Stop::TimedOut,
+        Either::Left(_) => WaitStopError::Cancelled,
+        Either::Right(_) => WaitStopError::TimedOut,
     }
 }
 
@@ -117,8 +120,8 @@ pub async fn stop_after(sleep: impl Future<Output = ()>, cancel: impl Future<Out
 /// Returns the [`Stop`] that `stop` resolved with when it resolves before `work` does.
 pub async fn until<T>(
     work: impl Future<Output = T>,
-    stop: impl Future<Output = Stop>,
-) -> Result<T, Stop> {
+    stop: impl Future<Output = WaitStopError>,
+) -> Result<T, WaitStopError> {
     let work = pin!(work);
     let stop = pin!(stop);
     match select(work, stop).await {
@@ -135,10 +138,10 @@ pub async fn until<T>(
 pub async fn within<T>(
     sleep: impl Future<Output = ()>,
     work: impl Future<Output = T>,
-) -> Result<T, Stop> {
+) -> Result<T, WaitStopError> {
     until(work, async {
         sleep.await;
-        Stop::TimedOut
+        WaitStopError::TimedOut
     })
     .await
 }
@@ -161,7 +164,10 @@ mod tests {
         assert_eq!(poll_once(&mut quick), Poll::Ready(Ok(7)));
 
         let mut slow = Box::pin(within(async {}, std::future::pending::<u8>()));
-        assert_eq!(poll_once(&mut slow), Poll::Ready(Err(Stop::TimedOut)));
+        assert_eq!(
+            poll_once(&mut slow),
+            Poll::Ready(Err(WaitStopError::TimedOut))
+        );
 
         let cancel = Cancel::default();
         let mut waiting = Box::pin(until(
@@ -170,6 +176,9 @@ mod tests {
         ));
         assert_eq!(poll_once(&mut waiting), Poll::Pending);
         cancel.cancel();
-        assert_eq!(poll_once(&mut waiting), Poll::Ready(Err(Stop::Cancelled)));
+        assert_eq!(
+            poll_once(&mut waiting),
+            Poll::Ready(Err(WaitStopError::Cancelled))
+        );
     }
 }

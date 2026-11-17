@@ -25,7 +25,7 @@ use crate::consent::{self, Admission, ConsentHandler};
 use crate::foreign_toplevel_list::told;
 use crate::handler::OutputLookup;
 use crate::limits::{self, Limit};
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::policy::GlobalKind;
 use compositor_core::window::{Window, WindowState, WlrToplevelRequest};
@@ -475,13 +475,13 @@ fn list_all_on(part: &mut WlrToplevelPart, manager: &ZwlrForeignToplevelManagerV
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_toplevel(
     part: &mut WlrToplevelPart,
     window: &Window,
     outputs: &[Output],
     disclosed: bool,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let facts = Facts {
         title: told(disclosed, &window.title.0).to_owned(),
         app_id: told(disclosed, window.claimed_id.as_str()).to_owned(),
@@ -513,11 +513,11 @@ pub fn apply_toplevel(
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
-pub fn apply_closed(part: &mut WlrToplevelPart, window: WindowId) -> Result<(), WaylandFault> {
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
+pub fn apply_closed(part: &mut WlrToplevelPart, window: WindowId) -> Result<(), WaylandError> {
     part.facts
         .remove(&window)
-        .ok_or(WaylandFault::UnknownWindow(window))?;
+        .ok_or(WaylandError::UnknownWindow(window))?;
     for held in part.handles.remove(&window).unwrap_or_default() {
         held.handle.closed();
     }

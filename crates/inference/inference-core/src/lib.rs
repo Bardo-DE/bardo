@@ -69,7 +69,7 @@ pub use control::{
     ChatControl, Effort, Knob, Milli, Reasoning, Sampling, Seed, StopReason, ThoughtSeal,
     ToolChoice, ToolParallelism,
 };
-pub use error::{InferRefusal, ModelError};
+pub use error::{InferRefusedError, ModelError};
 pub use event::{ClientFrame, InferEvent, ModelLabel, QueueFact, StageNote};
 pub use hardware::{HardwareFacts, HardwareNote, MemoryFacts, QUEUE_LONG_FROM, hardware_notes};
 pub use ids::{

@@ -25,7 +25,7 @@ mod view;
 mod workspaces;
 
 pub use choose::backend_of;
-pub use command::{Refusal, desktop_of, wire_of};
+pub use command::{CommandError, desktop_of, wire_of};
 pub use ids::space_id;
 pub use offer::{offer_of_protocols, offer_of_registry};
 pub use outputs::heads_of;

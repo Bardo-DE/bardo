@@ -316,9 +316,9 @@ fn account_keys(account: &Account, provider_label: Option<&str>, files: FilesRow
             KeyKind::Toggle,
             toml::Value::Boolean(false),
         );
-        row.note = files
-            .short_of_room
-            .then(|| Note(sync_storage::words::reason(drive_fs::Reason::NoRoomForAll).to_owned()));
+        row.note = files.short_of_room.then(|| {
+            Note(sync_storage::words::reason(drive_fs::SkipError::NoRoomForAll).to_owned())
+        });
         keys.push(row);
     }
     keys.push(spec(

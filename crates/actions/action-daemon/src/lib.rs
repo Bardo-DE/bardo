@@ -62,12 +62,12 @@ pub use daemon::{
 pub use defaults::{DEFAULT_GRANTS_FILE, default_grants_file, revoking};
 pub use floor::{FLOOR_FILE, FloorError, read_floor};
 pub use grants::FileGrants;
-pub use index_files::{IndexFileFault, IndexStore};
+pub use index_files::{IndexFileError, IndexStore};
 pub use infer::{InferdModel, InferdWriter, ReaderClient, inferd_transport};
 pub use link::DbusLink;
 pub use logout::{Logouts, end_terminals_at_logout, watch_logind};
 pub use manifests::{Loaded, intents_dir, load_manifests};
-pub use peer::{PeerFault, Peers};
+pub use peer::{PeerError, Peers};
 pub use policies::{
     ADMIN_DIR, LoadedPolicies, PolicyDirs, PresetOrigin, load_policies, read_sources,
 };
@@ -75,10 +75,10 @@ pub use policies_watch::{follow as follow_policies, reload as reload_policies};
 pub use reach::{LiveReach, follow as follow_reach, parse_reach};
 pub use reviewers::{placeholder_set, reviewer};
 pub use search_files::{search_dir, ship_search_files};
-pub use serve::{ServeFault, serve, serve_on, serve_on_gated, serve_on_with};
+pub use serve::{ServeError, serve, serve_on, serve_on_gated, serve_on_with};
 pub use settings_watch::{apply, apply_next, watch_settings};
 pub use sheet::SheetConfirmer;
-pub use shipped::{ShippedEntries, ShippedFault};
+pub use shipped::{ShippedEntries, ShippedError};
 pub use signals::{Cadence, Changed, Marks, changes, emit, marks_of, pump, rescan, rescan_with};
 pub use space_watch::SpaceKeeper;
 pub use system::{DaemonLog, SystemSeams};

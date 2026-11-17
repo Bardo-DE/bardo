@@ -5,7 +5,7 @@
 //! command of its own is the person's to write by hand. The file is edited in place, so comments
 //! and the other entries stay.
 
-use super::write::ChoiceFault;
+use super::write::ChoiceError;
 use toml_edit::{ArrayOfTables, DocumentMut, Item, Table, value};
 
 /// An agent to add from the registry.
@@ -23,7 +23,7 @@ pub struct NewAgent {
 
 /// Why an agent was not added. Two faults are equal when they are the same kind of failure.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum AddFault {
+pub enum AddError {
     /// `agents.toml` is not valid TOML, or `agent` in it is not a list of entries.
     #[error("the agents file can't be read")]
     Unreadable,
@@ -44,13 +44,13 @@ pub enum AddFault {
     Io(#[source] std::sync::Arc<std::io::Error>),
 }
 
-impl PartialEq for AddFault {
+impl PartialEq for AddError {
     fn eq(&self, other: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(other)
     }
 }
 
-impl Eq for AddFault {}
+impl Eq for AddError {}
 
 fn word_fine(id: &str) -> bool {
     !id.is_empty()
@@ -84,24 +84,24 @@ fn entry_of(agent: &NewAgent) -> Table {
 ///
 /// # Errors
 ///
-/// [`AddFault`] when `text` is not readable TOML, an agent of that name is listed already, or the
+/// [`AddError`] when `text` is not readable TOML, an agent of that name is listed already, or the
 /// name, registry, version or label is not one actions service can keep.
-pub fn edit_agent_add(text: &str, agent: &NewAgent) -> Result<String, AddFault> {
+pub fn edit_agent_add(text: &str, agent: &NewAgent) -> Result<String, AddError> {
     let names = [&agent.program, &agent.registry, &agent.version];
     if !names.iter().all(|w| word_fine(w)) {
-        return Err(AddFault::BadName);
+        return Err(AddError::BadName);
     }
     if !label_fine(&agent.label) {
-        return Err(AddFault::BadLabel);
+        return Err(AddError::BadLabel);
     }
-    let mut doc: DocumentMut = text.parse().map_err(AddFault::Syntax)?;
+    let mut doc: DocumentMut = text.parse().map_err(AddError::Syntax)?;
     let list = doc
         .entry("agent")
         .or_insert(Item::ArrayOfTables(ArrayOfTables::new()))
         .as_array_of_tables_mut()
-        .ok_or(AddFault::Unreadable)?;
+        .ok_or(AddError::Unreadable)?;
     if listed(list, &agent.program) {
-        return Err(AddFault::Listed);
+        return Err(AddError::Listed);
     }
     list.push(entry_of(agent));
     Ok(doc.to_string())
@@ -111,17 +111,17 @@ pub fn edit_agent_add(text: &str, agent: &NewAgent) -> Result<String, AddFault> 
 ///
 /// # Errors
 ///
-/// [`ChoiceFault`] when `text` is not readable TOML or no such agent is listed.
-pub fn edit_agent_remove(text: &str, program: &str) -> Result<String, ChoiceFault> {
-    let mut doc: DocumentMut = text.parse().map_err(ChoiceFault::Syntax)?;
+/// [`ChoiceError`] when `text` is not readable TOML or no such agent is listed.
+pub fn edit_agent_remove(text: &str, program: &str) -> Result<String, ChoiceError> {
+    let mut doc: DocumentMut = text.parse().map_err(ChoiceError::Syntax)?;
     let list = doc
         .get_mut("agent")
         .and_then(Item::as_array_of_tables_mut)
-        .ok_or(ChoiceFault::NoSuchAgent)?;
+        .ok_or(ChoiceError::NoSuchAgent)?;
     let before = list.len();
     list.retain(|t| t.get("program").and_then(Item::as_str) != Some(program));
     if list.len() == before {
-        return Err(ChoiceFault::NoSuchAgent);
+        return Err(ChoiceError::NoSuchAgent);
     }
     Ok(doc.to_string())
 }

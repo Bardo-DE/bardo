@@ -20,7 +20,7 @@ use crate::entry::{
     BreakerNote, CallOpen, Compacted, EndCause, HandleLabel, Opening, Seq, SessionEntry,
 };
 use crate::plan::{
-    Blocker, Interrupted, PlanRefusal, ResumeFault, ResumePlan, ResumedBudget, Standing,
+    Blocker, Interrupted, PlanError, ResumeFault, ResumePlan, ResumedBudget, Standing,
 };
 use action_core::{Ledger, SkillId, StepLine, Summary, UserTurn};
 use action_vocab::{CallId, Handle};
@@ -203,15 +203,15 @@ impl Fold {
 ///
 /// # Errors
 ///
-/// Returns `PlanRefusal::Empty` when there are no entries and `PlanRefusal::NoOpening` when the
+/// Returns `PlanError::Empty` when there are no entries and `PlanError::NoOpening` when the
 /// first entry is not `Opened`.
-pub fn resume_plan(rows: &[Logged]) -> Result<ResumePlan, PlanRefusal> {
-    let first = rows.first().ok_or(PlanRefusal::Empty)?;
+pub fn resume_plan(rows: &[Logged]) -> Result<ResumePlan, PlanError> {
+    let first = rows.first().ok_or(PlanError::Empty)?;
     let Read::Entry(entry) = &first.read else {
-        return Err(PlanRefusal::NoOpening);
+        return Err(PlanError::NoOpening);
     };
     let SessionEntry::Opened(opening) = entry.as_ref() else {
-        return Err(PlanRefusal::NoOpening);
+        return Err(PlanError::NoOpening);
     };
     let mut fold = Fold::new(opening.clone());
     let mut expected = first.seq.next();

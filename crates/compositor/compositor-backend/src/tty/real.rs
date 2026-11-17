@@ -14,7 +14,7 @@ use crate::backend::BackendError;
 use crate::gpu::{RealFormats, RenderNodes, SysRenderNodes, SysRoot};
 #[cfg(feature = "libinput")]
 use crate::input::RealInputFeed;
-use crate::session::SessionFault;
+use crate::session::SessionError;
 use compositor_core::gpu::{GpuChoice, plan_for};
 use smithay::backend::session::libseat::LibSeatSession;
 use smithay::reexports::calloop::LoopHandle;
@@ -44,7 +44,7 @@ pub fn real_seams<D: 'static>(
     let seat = session.seat_name();
     let input_session = session.seat_handle();
     let udev = RealUdev::watch(&seat, handle)
-        .map_err(|error| SessionFault::Unavailable(format!("udev: {error}")))?;
+        .map_err(|error| SessionError::Unavailable(format!("udev: {error}")))?;
     let fds = session.fds();
     let kinds = SysDeviceKinds::new(root.clone());
     let opener = RealKmsOpener::new(Box::new(fds), handle.clone())
@@ -103,7 +103,7 @@ fn with_input<D: 'static>(
     handle: &LoopHandle<'static, D>,
 ) -> Result<TtySeams, BackendError> {
     let feed = RealInputFeed::open(seat, session, handle)
-        .map_err(|error| SessionFault::Unavailable(format!("libinput: {error}")))?;
+        .map_err(|error| SessionError::Unavailable(format!("libinput: {error}")))?;
     Ok(seams.with_input(Box::new(feed)))
 }
 

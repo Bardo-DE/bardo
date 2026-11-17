@@ -19,7 +19,7 @@ mod writer;
 
 pub use damaged::{DamagedFile, Saved, damage, keep_damaged};
 pub use error::SettingsError;
-pub use locator::{DiskText, Locator, ReadFailure, ReadText};
+pub use locator::{DiskText, Locator, ReadError, ReadText};
 pub use root::ConfigRoot;
 pub use schema_files::{
     data_dirs, data_dirs_from, data_dirs_list_from, data_home_from, data_search_from, discover,

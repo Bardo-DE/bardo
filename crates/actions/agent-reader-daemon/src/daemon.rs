@@ -4,7 +4,7 @@
 
 use crate::callers;
 use crate::host::ReaderHost;
-use crate::serve::{ServeFault, serve_on};
+use crate::serve::{ServeError, serve_on};
 use crate::service::ReaderService;
 use account_callers::ProcRoot;
 use action_client::{DbusTransport, Intents};
@@ -22,12 +22,12 @@ use std::sync::Arc;
 ///
 /// # Errors
 ///
-/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
+/// Returns [`ServeError`] when the daemon could not start serving or stopped serving.
 pub async fn start(
     connection: &BusConnection,
     tap: InferWatch,
     who: Arc<Identity>,
-) -> Result<(), ServeFault> {
+) -> Result<(), ServeError> {
     let intents = Intents::over(DbusTransport::new(connection.clone()));
     let service = ReaderService::on_bus(ReaderHost::start(), connection, intents, tap);
     serve_on(connection, Arc::new(service), who).await
@@ -60,8 +60,8 @@ impl Default for HarnessSeams {
 ///
 /// # Errors
 ///
-/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
-pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), ServeFault> {
+/// Returns [`ServeError`] when the daemon could not start serving or stopped serving.
+pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), ServeError> {
     run_with(InferWatch::off(), HarnessSeams::default(), env).await
 }
 
@@ -69,20 +69,20 @@ pub async fn run(env: &impl Fn(&str) -> Option<String>) -> Result<(), ServeFault
 ///
 /// # Errors
 ///
-/// Returns [`ServeFault`] when the daemon could not start serving or stopped serving.
+/// Returns [`ServeError`] when the daemon could not start serving or stopped serving.
 pub async fn run_with(
     tap: InferWatch,
     seams: HarnessSeams,
     env: &impl Fn(&str) -> Option<String>,
-) -> Result<(), ServeFault> {
+) -> Result<(), ServeError> {
     let connection = dbus_kit::connect::session_from_env(env)
         .await
-        .map_err(|e| ServeFault::Bus(e.to_string()))?;
+        .map_err(|e| ServeError::Bus(e.to_string()))?;
     let table = match &seams.system_callers {
         Some(system) => callers::read_at(system, env),
         None => callers::read(env),
     }
-    .map_err(|e| ServeFault::Callers(e.to_string()))?;
+    .map_err(|e| ServeError::Callers(e.to_string()))?;
     let who = Arc::new(Identity::on(
         connection.clone(),
         table,

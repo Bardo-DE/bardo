@@ -4,7 +4,7 @@
 //! moved to another Space and never widened to every Space.
 
 use crate::grant::{ActionGrant, ActionGrantKey};
-use crate::space_access::{SpaceAccess, SpaceRefusal};
+use crate::space_access::{SpaceAccess, SpaceError};
 use account_core::{DesktopSpace, SpaceKind};
 use provenance::{SpaceId, SpaceScope};
 use serde::{Deserialize, Serialize};
@@ -80,7 +80,7 @@ impl Reconciled {
 
 /// Why a grant ends, when it does.
 fn fate(key: &ActionGrantKey, known: Option<&KnownSpaces>) -> Option<GrantEnd> {
-    if let SpaceAccess::Refused(SpaceRefusal { space, .. }) = key.space_access() {
+    if let SpaceAccess::Refused(SpaceError { space, .. }) = key.space_access() {
         return Some(GrantEnd::NotTheirSpace(space));
     }
     known
@@ -122,7 +122,7 @@ pub fn without_space(grants: Vec<ActionGrant>, gone: &SpaceId) -> Reconciled {
 /// Why a grant file is not a list of grants.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{0}")]
-pub struct GrantListFault(pub String);
+pub struct GrantListError(pub String);
 
 /// The grants a file's text holds.
 ///
@@ -132,18 +132,18 @@ pub struct GrantListFault(pub String);
 ///
 /// # Errors
 ///
-/// Returns `GrantListFault` when the text is not a list of grants, or an entry is wrong in any way
+/// Returns `GrantListError` when the text is not a list of grants, or an entry is wrong in any way
 /// other than an unreadable Space.
-pub fn decode_grants(text: &str) -> Result<Reconciled, GrantListFault> {
+pub fn decode_grants(text: &str) -> Result<Reconciled, GrantListError> {
     let entries: Vec<serde_json::Value> =
-        serde_json::from_str(text).map_err(|why| GrantListFault(why.to_string()))?;
+        serde_json::from_str(text).map_err(|why| GrantListError(why.to_string()))?;
     entries
         .into_iter()
         .try_fold(Reconciled::default(), |mut out, entry| {
             match serde_json::from_value::<ActionGrant>(entry.clone()) {
                 Ok(grant) => out.kept.push(grant),
                 Err(_) if only_the_space_is_wrong(entry) => out.end(GrantEnd::SpaceUnreadable),
-                Err(why) => return Err(GrantListFault(why.to_string())),
+                Err(why) => return Err(GrantListError(why.to_string())),
             }
             Ok(out)
         })

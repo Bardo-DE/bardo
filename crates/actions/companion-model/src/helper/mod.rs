@@ -50,7 +50,7 @@ pub use apps_wire::{AppsAsk, AppsReply};
 pub use board::{Board, BoardEffect, BoardEvent, CallVerdict, Launch, NewJob, step};
 pub use card::{
     CardDraft, HelperBudget, HelperCard, HelperKind, HelperModel, HelperName, HelperPhase,
-    HelperState, HelperTextFault, Need, PauseWhy, Role, TaskRef,
+    HelperState, HelperTextError, Need, PauseWhy, Role, TaskRef,
 };
 pub use hand::{BackOutcome, BroughtOutcome, HandFault, TerminalHand, ToTerminalOutcome};
 pub use job::{
@@ -58,7 +58,7 @@ pub use job::{
 };
 pub use notice::{Notice, owned_sentence};
 pub use post::{Post, PostId, PostPart, PostTo};
-pub use reach::{Ceiling, ReachFault, reach_lines, reach_policy};
+pub use reach::{Ceiling, ReachError, reach_lines, reach_policy};
 pub use records::{CardRecord, HelperRecord, HelperRecordKind};
 pub use rules::{JobRefusal, admit_goal};
 pub use seat::{HelperSeat, SeatPlace};

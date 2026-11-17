@@ -7,7 +7,7 @@
 //! listens to the sheet at the same time, so closing the sheet ends the wait at once.
 
 use crate::Accounts;
-use crate::add_store::{AllowFor, StoreFault};
+use crate::add_store::{AddStoreError, AllowFor};
 use crate::edit::EditError;
 use crate::launcher::{Roster, program_of_spec};
 use crate::race::{Raced, race};
@@ -22,7 +22,7 @@ use account_provider::{
 };
 use account_service_core::Ports;
 use account_service_core::refusal::refusal_of;
-use account_sheet::host::{SheetFault, SheetLink, SheetOpen, Sheets};
+use account_sheet::host::{SheetError, SheetLink, SheetOpen, Sheets};
 use account_sheet::{
     EditedServers, FieldAnswer, Manual, Progress, ProviderRow, Purpose, RowKind, Sheet,
     SheetEffect, SheetEnd, SheetEvent, SignInFault, SignInInput, servers_fixed, step,
@@ -123,7 +123,7 @@ pub(crate) trait Job: Sync {
         signed: &Signed,
         answers: Option<&[FieldAnswer]>,
         choices: &[KindToggle],
-    ) -> impl Future<Output = Result<Self::Done, StoreFault>> + Send;
+    ) -> impl Future<Output = Result<Self::Done, AddStoreError>> + Send;
 }
 
 /// A new account.
@@ -193,11 +193,11 @@ impl Job for Add {
         signed: &Signed,
         _answers: Option<&[FieldAnswer]>,
         choices: &[KindToggle],
-    ) -> Result<AddDone, StoreFault> {
+    ) -> Result<AddDone, AddStoreError> {
         let spec = provider
             .and_then(|id| at.ctx.provider_of(id))
             .map(|provider| provider.spec().clone())
-            .ok_or(StoreFault::NoProvider)?;
+            .ok_or(AddStoreError::NoProvider)?;
         at.store_new(caller, &spec, signed, choices, self.allow.as_ref())
             .await
             .map(AddDone::Added)
@@ -242,7 +242,7 @@ impl Job for Reauthenticate {
         signed: &Signed,
         _answers: Option<&[FieldAnswer]>,
         _choices: &[KindToggle],
-    ) -> Result<(), StoreFault> {
+    ) -> Result<(), AddStoreError> {
         at.store_renewed(caller, &self.account, signed).await
     }
 }
@@ -293,7 +293,7 @@ impl Job for Extend {
         signed: &Signed,
         _answers: Option<&[FieldAnswer]>,
         _choices: &[KindToggle],
-    ) -> Result<(), StoreFault> {
+    ) -> Result<(), AddStoreError> {
         let given: Vec<account_capability::Capability> = at
             .ctx
             .catalog()
@@ -368,9 +368,10 @@ impl Job for EditServers {
         signed: &Signed,
         answers: Option<&[FieldAnswer]>,
         _choices: &[KindToggle],
-    ) -> Result<EditedServers, StoreFault> {
-        let answers = answers.ok_or(StoreFault::NoAnswers)?;
-        EditedServers::from_answers(answers, signed.endpoints.clone()).map_err(StoreFault::Answers)
+    ) -> Result<EditedServers, AddStoreError> {
+        let answers = answers.ok_or(AddStoreError::NoAnswers)?;
+        EditedServers::from_answers(answers, signed.endpoints.clone())
+            .map_err(AddStoreError::Answers)
     }
 }
 
@@ -836,15 +837,15 @@ fn finish<J: Job>(
     clippy::needless_pass_by_value,
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
-fn left(fault: SheetFault) -> Refusal {
+fn left(fault: SheetError) -> Refusal {
     match fault {
-        SheetFault::Closed | SheetFault::Refused(_) => Refusal::Dismissed,
-        SheetFault::Unavailable | SheetFault::Unreachable(_) => Refusal::Unavailable,
+        SheetError::Closed | SheetError::Refused(_) => Refusal::Dismissed,
+        SheetError::Unavailable | SheetError::Unreachable(_) => Refusal::Unavailable,
     }
 }
 
 /// What the person did, as an event; a sheet that closed or went away is the person leaving.
-fn person(input: Result<account_sheet::SheetInput, SheetFault>) -> SheetEvent {
+fn person(input: Result<account_sheet::SheetInput, SheetError>) -> SheetEvent {
     match input {
         Ok(input) => SheetEvent::Input(input),
         // Closed or unavailable, and a fault a later the accounts service adds: the person is gone.

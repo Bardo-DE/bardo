@@ -3,7 +3,7 @@
 //! image alone. Reading the file is the I/O crate's job; this is the text format and the rows.
 
 #[cfg(feature = "toml")]
-use crate::error::{IdError, RowFault, TableError};
+use crate::error::{IdError, RowError, TableError};
 use crate::ids::{AppKey, ExePath, ExePattern, RoleName, UnitName};
 #[cfg(feature = "toml")]
 use serde::Deserialize;
@@ -80,9 +80,9 @@ struct RawRow {
 
 #[cfg(feature = "toml")]
 impl RawRow {
-    fn typed(&self) -> Result<Row, RowFault> {
+    fn typed(&self) -> Result<Row, RowError> {
         if self.exe.is_empty() {
-            return Err(RowFault::NoExe);
+            return Err(RowError::NoExe);
         }
         let exe = self
             .exe
@@ -94,7 +94,7 @@ impl RawRow {
             .as_ref()
             .is_some_and(|n| n.is_empty() || n.len() > NAME_MAX)
         {
-            return Err(RowFault::BadName { max: NAME_MAX });
+            return Err(RowError::BadName { max: NAME_MAX });
         }
         Ok(Row {
             app: AppKey::new(&self.app)?,

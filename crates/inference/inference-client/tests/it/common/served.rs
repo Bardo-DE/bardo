@@ -4,7 +4,7 @@
 
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
-    AudioFrame, InferEvent, InferRefusal, InferReply, InferRequest, ModelRef, ServedBy,
+    AudioFrame, InferEvent, InferRefusedError, InferReply, InferRequest, ModelRef, ServedBy,
 };
 use inference_router::carried::Carried;
 use inference_router::seams::{
@@ -18,14 +18,14 @@ use tokio::sync::Notify;
 
 /// The route is fixed.
 #[derive(Debug, Clone)]
-pub struct Route(pub Result<RouteDecision, InferRefusal>);
+pub struct Route(pub Result<RouteDecision, InferRefusedError>);
 
 impl Router for Route {
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn route(&self, _spec: &SessionSpec) -> Result<RouteDecision, InferRefusal> {
+    async fn route(&self, _spec: &SessionSpec) -> Result<RouteDecision, InferRefusedError> {
         self.0.clone()
     }
 }
@@ -82,7 +82,7 @@ impl TurnRunner for Scripted {
         let steps = at.and_then(|i| scripts.remove(i)).map_or_else(
             || {
                 vec![ScriptStep::Emit(InferEvent::Finished(InferReply::Refused(
-                    InferRefusal::Unsupported,
+                    InferRefusedError::Unsupported,
                 )))]
             },
             |s| s.steps,

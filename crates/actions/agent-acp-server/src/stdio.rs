@@ -19,7 +19,7 @@ const WRITE_SPAN: Duration = Duration::from_secs(60);
 
 /// Why a line could not be read.
 #[derive(Debug, thiserror::Error)]
-pub enum LineFault {
+pub enum LineError {
     /// The peer sent more than the cap before a newline.
     #[error("a line over {cap} bytes")]
     TooLong {
@@ -42,12 +42,12 @@ pub enum LineFault {
 ///
 /// # Errors
 ///
-/// [`LineFault`] when the reader fails, a line is not text, or a line is over `cap` bytes.
+/// [`LineError`] when the reader fails, a line is not text, or a line is over `cap` bytes.
 pub async fn read_capped<R: AsyncBufRead + Unpin>(
     reader: &mut R,
     buf: &mut Vec<u8>,
     cap: usize,
-) -> Result<Option<String>, LineFault> {
+) -> Result<Option<String>, LineError> {
     loop {
         let chunk = reader.fill_buf().await?;
         if chunk.is_empty() {
@@ -61,7 +61,7 @@ pub async fn read_capped<R: AsyncBufRead + Unpin>(
         let take = newline.unwrap_or(chunk.len());
         if buf.len().saturating_add(take) > cap {
             buf.clear();
-            return Err(LineFault::TooLong { cap });
+            return Err(LineError::TooLong { cap });
         }
         buf.extend_from_slice(&chunk[..take]);
         std::pin::Pin::new(&mut *reader).consume(take + usize::from(newline.is_some()));
@@ -71,11 +71,11 @@ pub async fn read_capped<R: AsyncBufRead + Unpin>(
     }
 }
 
-fn text_of(mut bytes: Vec<u8>) -> Result<String, LineFault> {
+fn text_of(mut bytes: Vec<u8>) -> Result<String, LineError> {
     if bytes.last() == Some(&b'\r') {
         bytes.pop();
     }
-    String::from_utf8(bytes).map_err(LineFault::NotText)
+    String::from_utf8(bytes).map_err(LineError::NotText)
 }
 
 /// The lines of `reader` as the SDK reads them: blank lines skipped, and the stream ends, with a

@@ -365,7 +365,7 @@ fn voice_never_reaches_a_cloud_transcriber_under_its_floor() {
             assert_eq!(role, StageRole::Hear);
             assert_eq!(
                 refusal.refusal,
-                InferRefusal::RequiresCloud(DataClass::Voice)
+                InferRefusedError::RequiresCloud(DataClass::Voice)
             );
         }
         other => panic!("{other:?}"),
@@ -391,7 +391,7 @@ fn a_transcript_keeps_the_voice_floor_for_the_text_stage() {
             assert_eq!(role, StageRole::Answer);
             assert_eq!(
                 refusal.refusal,
-                InferRefusal::RequiresCloud(DataClass::Voice)
+                InferRefusedError::RequiresCloud(DataClass::Voice)
             );
         }
         other => panic!("{other:?}"),

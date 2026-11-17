@@ -14,7 +14,7 @@ pub const DEFAULT_PORTS: [u16; 2] = [443, 80];
 
 /// Why a policy cannot be made.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum PolicyFault {
+pub enum PolicyError {
     /// No allow entries: that would mean nothing is allowed, and is surely a mistake.
     #[error("an egress policy needs at least one allow entry")]
     NoAllow,
@@ -31,10 +31,10 @@ impl Ports {
     /// These ports; none, or port 0, is a fault.
     ///
     /// # Errors
-    /// Returns `PolicyFault::BadPorts` when `ports` is empty or holds port 0.
-    pub fn new(ports: Vec<u16>) -> Result<Self, PolicyFault> {
+    /// Returns `PolicyError::BadPorts` when `ports` is empty or holds port 0.
+    pub fn new(ports: Vec<u16>) -> Result<Self, PolicyError> {
         if ports.is_empty() || ports.contains(&0) {
-            return Err(PolicyFault::BadPorts);
+            return Err(PolicyError::BadPorts);
         }
         Ok(Self(ports))
     }
@@ -54,7 +54,7 @@ impl Default for Ports {
 
 /// Why a request was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum Refusal {
+pub enum EgressRefusedError {
     /// A deny entry names the host.
     #[error("the host is denied")]
     Denied,
@@ -81,14 +81,14 @@ impl EgressPolicy {
     /// A policy; an empty `allow` is a fault.
     ///
     /// # Errors
-    /// Returns `PolicyFault::NoAllow` when `allow` is empty.
+    /// Returns `PolicyError::NoAllow` when `allow` is empty.
     pub fn new(
         allow: Vec<HostPattern>,
         deny: Vec<HostPattern>,
         ports: Ports,
-    ) -> Result<Self, PolicyFault> {
+    ) -> Result<Self, PolicyError> {
         if allow.is_empty() {
-            return Err(PolicyFault::NoAllow);
+            return Err(PolicyError::NoAllow);
         }
         Ok(Self { allow, deny, ports })
     }
@@ -98,17 +98,17 @@ impl EgressPolicy {
     /// # Errors
     /// Returns the `Refusal` naming the first rule that stops it: a port not allowed, a deny entry, or
     /// no allow entry.
-    pub fn check(&self, host: &Host, port: u16) -> Result<(), Refusal> {
+    pub fn check(&self, host: &Host, port: u16) -> Result<(), EgressRefusedError> {
         if !self.ports.allows(port) {
-            return Err(Refusal::Port);
+            return Err(EgressRefusedError::Port);
         }
         if self.deny.iter().any(|p| p.matches(host)) {
-            return Err(Refusal::Denied);
+            return Err(EgressRefusedError::Denied);
         }
         if self.allow.iter().any(|p| p.matches(host)) {
             Ok(())
         } else {
-            Err(Refusal::NotListed)
+            Err(EgressRefusedError::NotListed)
         }
     }
 
@@ -118,12 +118,12 @@ impl EgressPolicy {
     /// # Errors
     /// Returns `Refusal::Denied` when a deny entry names `addr`, and `Refusal::SpecialAddress` when it is
     /// in a special range and no allow entry names it exactly.
-    pub fn check_addr(&self, addr: IpAddr) -> Result<(), Refusal> {
+    pub fn check_addr(&self, addr: IpAddr) -> Result<(), EgressRefusedError> {
         if self.deny.iter().any(|p| p.is_addr(addr)) {
-            return Err(Refusal::Denied);
+            return Err(EgressRefusedError::Denied);
         }
         if special(addr) && !self.allow.iter().any(|p| p.is_addr(addr)) {
-            return Err(Refusal::SpecialAddress);
+            return Err(EgressRefusedError::SpecialAddress);
         }
         Ok(())
     }

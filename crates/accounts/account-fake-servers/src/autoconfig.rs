@@ -7,7 +7,7 @@
 use crate::http::{Hit, Request, Response, serve};
 use crate::net::{Bind, Listener};
 use crate::seen::{Running, Seen, lock};
-use account_discover::{Dns, DnsFault, MxRecord, SrvRecord};
+use account_discover::{Dns, DnsError, MxRecord, SrvRecord};
 use account_fake::{FakeAddress, FakeServer};
 use account_provider::{DomainName, ProviderSpec};
 use std::collections::HashMap;
@@ -210,7 +210,7 @@ impl FakeDns {
         self
     }
 
-    /// Makes every lookup fail with `DnsFault::Unreachable`.
+    /// Makes every lookup fail with `DnsError::Unreachable`.
     #[must_use]
     pub fn unreachable(self) -> Self {
         *lock(&self.dead) = true;
@@ -227,19 +227,19 @@ impl FakeDns {
         &self,
         table: &Mutex<HashMap<String, Vec<T>>>,
         key: &str,
-    ) -> Result<Vec<T>, DnsFault> {
+    ) -> Result<Vec<T>, DnsError> {
         if *lock(&self.dead) {
-            return Err(DnsFault::Unreachable);
+            return Err(DnsError::Unreachable);
         }
         match lock(table).get(&key.to_ascii_lowercase()) {
             Some(records) if !records.is_empty() => Ok(records.clone()),
-            _ => Err(DnsFault::NoRecords),
+            _ => Err(DnsError::NoRecords),
         }
     }
 }
 
 impl Dns for FakeDns {
-    fn srv(&self, name: &str) -> impl Future<Output = Result<Vec<SrvRecord>, DnsFault>> + Send {
+    fn srv(&self, name: &str) -> impl Future<Output = Result<Vec<SrvRecord>, DnsError>> + Send {
         self.asked.push(format!("SRV {name}"));
         let answer = self.answer(&self.srv, name);
         async move { answer }
@@ -248,7 +248,7 @@ impl Dns for FakeDns {
     fn mx(
         &self,
         domain: &DomainName,
-    ) -> impl Future<Output = Result<Vec<MxRecord>, DnsFault>> + Send {
+    ) -> impl Future<Output = Result<Vec<MxRecord>, DnsError>> + Send {
         self.asked.push(format!("MX {}", domain.as_str()));
         let answer = self.answer(&self.mx, domain.as_str());
         async move { answer }

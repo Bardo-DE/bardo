@@ -86,7 +86,7 @@ pub struct SeenCommand(Vec<String>);
 
 /// Why words are not a seen command line.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum SeenCommandFault {
+pub enum SeenCommandError {
     /// There are no words.
     #[error("the command line is empty")]
     Empty,
@@ -106,19 +106,19 @@ impl SeenCommand {
     ///
     /// # Errors
     ///
-    /// Returns [`SeenCommandFault`] when the words are not a seen command line.
-    pub fn parse(words: Vec<String>) -> Result<Self, SeenCommandFault> {
+    /// Returns [`SeenCommandError`] when the words are not a seen command line.
+    pub fn parse(words: Vec<String>) -> Result<Self, SeenCommandError> {
         if words.is_empty() {
-            return Err(SeenCommandFault::Empty);
+            return Err(SeenCommandError::Empty);
         }
         if words.len() > SEEN_TOKENS_MAX {
-            return Err(SeenCommandFault::TooManyWords);
+            return Err(SeenCommandError::TooManyWords);
         }
         if words.iter().map(String::len).sum::<usize>() > SEEN_BYTES_MAX {
-            return Err(SeenCommandFault::TooLong);
+            return Err(SeenCommandError::TooLong);
         }
         if words.iter().any(|w| w.contains('\0')) {
-            return Err(SeenCommandFault::Nul);
+            return Err(SeenCommandError::Nul);
         }
         Ok(Self(words))
     }
@@ -137,7 +137,7 @@ impl fmt::Debug for SeenCommand {
 }
 
 impl TryFrom<Vec<String>> for SeenCommand {
-    type Error = SeenCommandFault;
+    type Error = SeenCommandError;
 
     fn try_from(words: Vec<String>) -> Result<Self, Self::Error> {
         Self::parse(words)

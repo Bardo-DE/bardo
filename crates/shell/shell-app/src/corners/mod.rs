@@ -22,7 +22,7 @@ use shell_model::actions::Ask;
 use shell_model::companion::CompanionCommand;
 use shell_model::desktop::{HeldMods, open_app_expose};
 use shell_model::launch::{LaunchCommand, LaunchRequest, OpenRequest};
-use shell_model::service::Gone;
+use shell_model::service::ServiceGoneError;
 use shell_settings::ShellFile;
 use shell_ui_kit::links::{Asked, Links, Origin};
 use shell_ui_kit::services::Services;
@@ -138,7 +138,7 @@ fn act(effect: CornerEffect, output: OutputId, doing: &Doing) {
 /// Carry out what a corner opens or asks of an app: a launch and an open go to the launch
 /// service and an app's action to intentd through the companion service, as the launcher's own
 /// rows do. A corner has no surface of its own, so no activation token goes with them.
-fn activate(activation: Activation, services: &Services) -> Result<(), Gone> {
+fn activate(activation: Activation, services: &Services) -> Result<(), ServiceGoneError> {
     match activation {
         Activation::Launch { app, action } => services.launch.control.send(LaunchCommand::Launch(
             LaunchRequest::app(app).action(action),

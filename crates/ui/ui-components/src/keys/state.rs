@@ -1,4 +1,4 @@
-use keymap::{AppId, Conflict, Keymap, Overrides, Registration, Watch};
+use keymap::{AppId, ConflictError, Keymap, Overrides, Registration, Watch};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 
@@ -47,7 +47,7 @@ impl KeyState {
         &mut self,
         app: &AppId,
         registration: &Registration,
-    ) -> Result<(), Conflict> {
+    ) -> Result<(), ConflictError> {
         let wanted = Registered {
             app: app.clone(),
             registration: registration.clone(),
@@ -64,7 +64,7 @@ impl KeyState {
     }
 
     /// Makes every registration again over the base, with `wanted` in place of the one at `at`.
-    fn replace(&mut self, at: usize, wanted: Registered) -> Result<(), Conflict> {
+    fn replace(&mut self, at: usize, wanted: Registered) -> Result<(), ConflictError> {
         let mut next = self.registered.clone();
         next[at] = wanted;
         let (keymap, refused) = replayed(&self.base, &next);
@@ -138,7 +138,7 @@ fn loaded(source: &KeySource) -> (Keymap, Vec<String>) {
 }
 
 /// An app's registration that was refused, and why.
-type Refused = (AppId, Conflict);
+type Refused = (AppId, ConflictError);
 
 /// `base` with each registration made over it, and the ones its keymap refused.
 fn replayed(base: &Keymap, registered: &[Registered]) -> (Keymap, Vec<Refused>) {

@@ -63,7 +63,7 @@ const SENSITIVE: &[&str] = &[
 
 /// Why a path was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum Refusal {
+pub enum ConfineError {
     /// Not an absolute path, or it steps up.
     #[error("the requested path is not usable")]
     BadPath(#[source] base_path::AbsPathError),
@@ -130,10 +130,10 @@ fn care(path: &AbsPath) -> Care {
 /// # Errors
 ///
 /// [`Refusal`] when `requested` is not an absolute path or is outside `scope`.
-pub fn named(scope: &AbsPath, requested: &str) -> Result<AbsPath, Refusal> {
-    let path = AbsPath::parse(requested).map_err(Refusal::BadPath)?;
+pub fn named(scope: &AbsPath, requested: &str) -> Result<AbsPath, ConfineError> {
+    let path = AbsPath::parse(requested).map_err(ConfineError::BadPath)?;
     if !scope.covers(&path) {
-        return Err(Refusal::Outside);
+        return Err(ConfineError::Outside);
     }
     Ok(path)
 }
@@ -145,12 +145,16 @@ pub fn named(scope: &AbsPath, requested: &str) -> Result<AbsPath, Refusal> {
 ///
 /// [`Refusal`] when `real_scope` does not cover `real`, or `real` is not the path the name leads
 /// to.
-pub fn confine(real_scope: &AbsPath, path: AbsPath, real: AbsPath) -> Result<Confined, Refusal> {
+pub fn confine(
+    real_scope: &AbsPath,
+    path: AbsPath,
+    real: AbsPath,
+) -> Result<Confined, ConfineError> {
     if !real_scope.covers(&real) {
-        return Err(Refusal::Link);
+        return Err(ConfineError::Link);
     }
     if is_secret(&path) || is_secret(&real) {
-        return Err(Refusal::Secret);
+        return Err(ConfineError::Secret);
     }
     let care = if care(&path) == Care::Sensitive || care(&real) == Care::Sensitive {
         Care::Sensitive
@@ -175,21 +179,24 @@ mod tests {
         named(&scope, "/work/app/src/a.rs").unwrap();
         assert_eq!(
             named(&scope, "src/a.rs"),
-            Err(Refusal::BadPath(AbsPathError::NotAbsolute))
+            Err(ConfineError::BadPath(AbsPathError::NotAbsolute))
         );
         assert_eq!(
             named(&scope, "/work/app/../etc/passwd"),
-            Err(Refusal::BadPath(AbsPathError::ParentStep))
+            Err(ConfineError::BadPath(AbsPathError::ParentStep))
         );
         assert_eq!(
             named(&scope, "/work/app/src/../../x"),
-            Err(Refusal::BadPath(AbsPathError::ParentStep))
+            Err(ConfineError::BadPath(AbsPathError::ParentStep))
         );
-        assert_eq!(named(&scope, "/work/application/a"), Err(Refusal::Outside));
-        assert_eq!(named(&scope, "/etc/passwd"), Err(Refusal::Outside));
+        assert_eq!(
+            named(&scope, "/work/application/a"),
+            Err(ConfineError::Outside)
+        );
+        assert_eq!(named(&scope, "/etc/passwd"), Err(ConfineError::Outside));
         assert_eq!(
             named(&scope, "/work/app/a\nb"),
-            Err(Refusal::BadPath(AbsPathError::Control))
+            Err(ConfineError::BadPath(AbsPathError::Control))
         );
     }
 
@@ -199,7 +206,7 @@ mod tests {
         let path = abs("/work/app/link/x");
         assert_eq!(
             confine(&scope, path.clone(), abs("/etc/x")),
-            Err(Refusal::Link)
+            Err(ConfineError::Link)
         );
         confine(&scope, path.clone(), abs("/work/app/real/x")).unwrap();
     }
@@ -221,7 +228,11 @@ mod tests {
             "/home/u/proj/.local/state/bardo/accounts/audit.jsonl",
             "/home/u/proj/.config/bardo/accounts/clients.toml",
         ] {
-            assert_eq!(confine(&scope, abs(p), abs(p)), Err(Refusal::Secret), "{p}");
+            assert_eq!(
+                confine(&scope, abs(p), abs(p)),
+                Err(ConfineError::Secret),
+                "{p}"
+            );
         }
         for fine in [
             "/home/u/proj/.config/app/x",

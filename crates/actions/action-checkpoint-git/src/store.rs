@@ -5,8 +5,8 @@ use crate::git::{GitStore, failed, log_cause, strings};
 use crate::names::{INDEX, RESTORE, ref_name, session_prefix};
 use crate::parse::{count_paths, held_points, named, object_id};
 use action_checkpoint::{
-    ApplyAsk, CheckpointStore, DropAsk, PlanAsk, Saved, StoreFault, TakeAsk, TreeId, WorkRoot,
-    plan_restore,
+    ApplyAsk, CheckpointStore, CheckpointStoreError, DropAsk, PlanAsk, Saved, TakeAsk, TreeId,
+    WorkRoot, plan_restore,
 };
 use action_core::{RestorePlan, WorkPath};
 use base_ids::Count;
@@ -40,15 +40,15 @@ fn authorship(at: i64) -> Vec<(String, String)> {
     clippy::needless_pass_by_value,
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
-fn part_way(fault: StoreFault) -> StoreFault {
+fn part_way(fault: CheckpointStoreError) -> CheckpointStoreError {
     tracing::warn!(%fault, "the restore stopped part-way");
-    StoreFault::Partial
+    CheckpointStoreError::Partial
 }
 
 /// A blocking file job that failed to run or ran into a link or an error.
 async fn blocking<T: Send + 'static>(
-    job: impl FnOnce() -> Result<T, StoreFault> + Send + 'static,
-) -> Result<T, StoreFault> {
+    job: impl FnOnce() -> Result<T, CheckpointStoreError> + Send + 'static,
+) -> Result<T, CheckpointStoreError> {
     tokio::task::spawn_blocking(job)
         .await
         .map_err(|error| failed("a file job did not finish", &error))?
@@ -56,7 +56,11 @@ async fn blocking<T: Send + 'static>(
 
 impl GitStore {
     /// The points of `session` in the repository holding `root`, oldest first.
-    async fn points(&self, root: &WorkRoot, session: &SessionId) -> Result<Vec<Saved>, StoreFault> {
+    async fn points(
+        &self,
+        root: &WorkRoot,
+        session: &SessionId,
+    ) -> Result<Vec<Saved>, CheckpointStoreError> {
         self.require_repository(root).await?;
         let args = vec![
             "for-each-ref".to_owned(),
@@ -74,7 +78,7 @@ impl GitStore {
         session: &SessionId,
         tree: &str,
         paths: &[&WorkPath],
-    ) -> Result<(), StoreFault> {
+    ) -> Result<(), CheckpointStoreError> {
         if paths.is_empty() {
             return Ok(());
         }
@@ -103,7 +107,7 @@ impl GitStore {
 }
 
 impl CheckpointStore for GitStore {
-    async fn take(&self, ask: TakeAsk) -> Result<Saved, StoreFault> {
+    async fn take(&self, ask: TakeAsk) -> Result<Saved, CheckpointStoreError> {
         let TakeAsk {
             root,
             session,
@@ -122,7 +126,7 @@ impl CheckpointStore for GitStore {
             )
             .await?;
         if count_paths(&listed) > usize::try_from(max.0).unwrap_or(usize::MAX) {
-            return Err(StoreFault::TooLarge);
+            return Err(CheckpointStoreError::TooLarge);
         }
         self.ok(&root, &["add", "-A", "--", "."], &env).await?;
         let tree = object_id(&self.ok(&root, &["write-tree"], &env).await?)
@@ -152,11 +156,15 @@ impl CheckpointStore for GitStore {
         })
     }
 
-    async fn held(&self, root: &WorkRoot, session: &SessionId) -> Result<Vec<Saved>, StoreFault> {
+    async fn held(
+        &self,
+        root: &WorkRoot,
+        session: &SessionId,
+    ) -> Result<Vec<Saved>, CheckpointStoreError> {
         self.points(root, session).await
     }
 
-    async fn plan(&self, ask: PlanAsk) -> Result<RestorePlan, StoreFault> {
+    async fn plan(&self, ask: PlanAsk) -> Result<RestorePlan, CheckpointStoreError> {
         self.require_repository(&ask.root).await?;
         let tree = self.point_tree(&ask.root, &ask.session, ask.id).await?;
         let then = self.listing_then(&ask.root, &tree).await?;
@@ -164,14 +172,14 @@ impl CheckpointStore for GitStore {
         Ok(plan_restore(&now, &then))
     }
 
-    async fn apply(&self, ask: ApplyAsk) -> Result<RestorePlan, StoreFault> {
+    async fn apply(&self, ask: ApplyAsk) -> Result<RestorePlan, CheckpointStoreError> {
         self.require_repository(&ask.root).await?;
         let tree = self.point_tree(&ask.root, &ask.session, ask.id).await?;
         let then = self.listing_then(&ask.root, &tree).await?;
         let now = self.listing_now(&ask.root, &ask.session).await?;
         let plan = plan_restore(&now, &then);
         if plan.digest != ask.expect {
-            return Err(StoreFault::PlanStale);
+            return Err(CheckpointStoreError::PlanStale);
         }
         let folder = PathBuf::from(ask.root.path().as_str());
         let everything: Vec<WorkPath> = plan
@@ -198,14 +206,14 @@ impl CheckpointStore for GitStore {
         blocking(move || {
             delete(&delete_root, &gone).map_err(|error| {
                 log_cause("the files of the restore could not be deleted", &error);
-                StoreFault::Partial
+                CheckpointStoreError::Partial
             })
         })
         .await?;
         Ok(plan)
     }
 
-    async fn drop_points(&self, ask: DropAsk) -> Result<Count, StoreFault> {
+    async fn drop_points(&self, ask: DropAsk) -> Result<Count, CheckpointStoreError> {
         let held = self.points(&ask.root, &ask.session).await?;
         let mut dropped = 0u32;
         for id in named(&held, &ask.ids) {

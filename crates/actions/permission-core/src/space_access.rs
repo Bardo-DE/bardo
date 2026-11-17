@@ -9,7 +9,7 @@ use provenance::{SpaceId, SpaceScope};
 /// Why an app may not use a Space: it is another app's own.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("That Space belongs to another app, so only that app can use it.")]
-pub struct SpaceRefusal {
+pub struct SpaceError {
     /// The Space.
     pub space: SpaceId,
     /// The app it belongs to.
@@ -22,7 +22,7 @@ pub enum SpaceAccess {
     /// It may.
     Open,
     /// It may not.
-    Refused(SpaceRefusal),
+    Refused(SpaceError),
 }
 
 /// What `app` may do with `scope`: the accounts service's `open_to`, with the reason when it is no.
@@ -30,7 +30,7 @@ pub enum SpaceAccess {
 pub fn space_access(scope: &SpaceScope, app: &AppName) -> SpaceAccess {
     match scope {
         SpaceScope::Only(space) if !scope.open_to(app) => match space.owner() {
-            Some(owner) => SpaceAccess::Refused(SpaceRefusal {
+            Some(owner) => SpaceAccess::Refused(SpaceError {
                 space: space.clone(),
                 owner,
             }),

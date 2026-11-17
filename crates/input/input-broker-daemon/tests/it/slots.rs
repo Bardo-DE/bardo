@@ -1,7 +1,7 @@
 use crate::support::{KEY_REMAP_UID, MOUSE_GESTURES_UID, USER, key_remap, mouse_gestures};
 use caller_identity_core::Uid;
 use input_broker_daemon::identity::{ActiveUid, Caller};
-use input_broker_daemon::slots::{Bucket, NoSlot, Slots};
+use input_broker_daemon::slots::{Bucket, NoSlotError, Slots};
 use input_broker_wire::Maker;
 use input_broker_wire::limits::{
     MAX_CONNECTIONS, MAX_CONNECTIONS_PER_USER, MAX_RESERVED_PER_CLIENT,
@@ -80,7 +80,7 @@ fn one_user_cannot_take_another_users_slots_or_the_reserve() {
         .collect();
     assert_eq!(
         slots.take(Bucket::Stranger(Uid::new(1))).err(),
-        Some(NoSlot)
+        Some(NoSlotError)
     );
     let theirs = slots
         .take(Bucket::Stranger(Uid::new(2)))
@@ -112,13 +112,16 @@ fn many_users_share_the_stranger_total_but_never_the_reserve() {
         .collect();
     assert_eq!(
         slots.take(Bucket::Stranger(Uid::new(9999))).err(),
-        Some(NoSlot)
+        Some(NoSlotError)
     );
     for client in [Maker::PadDaemon, Maker::KeymapDaemon] {
         let reserve: Vec<_> = (0..MAX_RESERVED_PER_CLIENT)
             .map(|_| slots.take(Bucket::Reserved(client)).expect("reserve"))
             .collect();
-        assert_eq!(slots.take(Bucket::Reserved(client)).err(), Some(NoSlot));
+        assert_eq!(
+            slots.take(Bucket::Reserved(client)).err(),
+            Some(NoSlotError)
+        );
         drop(reserve);
     }
     drop(held);

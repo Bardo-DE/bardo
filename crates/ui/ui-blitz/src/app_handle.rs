@@ -4,7 +4,7 @@
 //! the way in from outside. Make one before `launch`, give a clone to the app's own threads and
 //! the other to [`AppConfig::with_handle`](crate::AppConfig::with_handle); `launch` binds it to
 //! its event loop. A request made before the loop runs waits for it; one made after it ended is
-//! refused with [`AppEnded`].
+//! refused with [`AppEndedError`].
 //!
 //! Every window's root can also read its app's handle with [`use_app_handle`].
 
@@ -17,7 +17,7 @@ use std::collections::VecDeque;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use ui_desktop::Outputs;
-use ui_host_hooks::{AppControl, AppEnded};
+use ui_host_hooks::{AppControl, AppEndedError};
 
 /// What a thread asked of the loop. The root is built on the loop's thread (a `Root` holds an
 /// `Rc`), from a closure that carries only `Send` data.
@@ -89,8 +89,12 @@ impl AppHandle {
     ///
     /// # Errors
     ///
-    /// Returns `AppEnded` when the app's event loop has ended.
-    pub fn open_window(&self, spec: WindowSpec, root: fn() -> Element) -> Result<(), AppEnded> {
+    /// Returns `AppEndedError` when the app's event loop has ended.
+    pub fn open_window(
+        &self,
+        spec: WindowSpec,
+        root: fn() -> Element,
+    ) -> Result<(), AppEndedError> {
         self.push(Remote::Open {
             spec,
             make: Box::new(move || Root::Plain(root)),
@@ -102,13 +106,13 @@ impl AppHandle {
     ///
     /// # Errors
     ///
-    /// Returns `AppEnded` when the app's event loop has ended.
+    /// Returns `AppEndedError` when the app's event loop has ended.
     pub fn open_window_with<P: Clone + Send + 'static>(
         &self,
         spec: WindowSpec,
         root: fn(P) -> Element,
         props: P,
-    ) -> Result<(), AppEnded> {
+    ) -> Result<(), AppEndedError> {
         self.push(Remote::Open {
             spec,
             make: Box::new(move || Root::Shared(Rc::new(move || root(props.clone())))),
@@ -120,8 +124,8 @@ impl AppHandle {
     ///
     /// # Errors
     ///
-    /// Returns `AppEnded` when the app's event loop has ended.
-    pub fn redraw(&self) -> Result<(), AppEnded> {
+    /// Returns `AppEndedError` when the app's event loop has ended.
+    pub fn redraw(&self) -> Result<(), AppEndedError> {
         self.push(Remote::Redraw)
     }
 
@@ -133,8 +137,8 @@ impl AppHandle {
     ///
     /// # Errors
     ///
-    /// Returns `AppEnded` when the app's event loop has ended.
-    pub fn set_desktop_outputs(&self, outputs: Outputs) -> Result<(), AppEnded> {
+    /// Returns `AppEndedError` when the app's event loop has ended.
+    pub fn set_desktop_outputs(&self, outputs: Outputs) -> Result<(), AppEndedError> {
         self.lock().desktop = outputs;
         self.push(Remote::Screen)
     }
@@ -144,8 +148,8 @@ impl AppHandle {
     ///
     /// # Errors
     ///
-    /// Returns `AppEnded` when the app's event loop has ended.
-    pub fn quit(&self) -> Result<(), AppEnded> {
+    /// Returns `AppEndedError` when the app's event loop has ended.
+    pub fn quit(&self) -> Result<(), AppEndedError> {
         self.push(Remote::Quit)
     }
 
@@ -156,8 +160,8 @@ impl AppHandle {
     ///
     /// # Errors
     ///
-    /// Returns `AppEnded` once the app has ended.
-    pub fn hold(&self) -> Result<AppHold, AppEnded> {
+    /// Returns `AppEndedError` once the app has ended.
+    pub fn hold(&self) -> Result<AppHold, AppEndedError> {
         self.push(Remote::Hold)?;
         Ok(AppHold(self.clone()))
     }
@@ -192,11 +196,11 @@ impl AppHandle {
         self.0.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
-    fn push(&self, request: Remote) -> Result<(), AppEnded> {
+    fn push(&self, request: Remote) -> Result<(), AppEndedError> {
         let wake = {
             let mut state = self.lock();
             let wake = match &state.binding {
-                Binding::Ended => return Err(AppEnded),
+                Binding::Ended => return Err(AppEndedError),
                 Binding::Unbound => None,
                 Binding::Bound(wake) => Some(Arc::clone(wake)),
             };
@@ -337,9 +341,9 @@ mod tests {
         assert!(!handle.has_ended());
         handle.end();
         assert!(handle.has_ended());
-        assert_eq!(handle.open_window(spec(), empty), Err(AppEnded));
-        assert_eq!(handle.quit(), Err(AppEnded));
-        assert_eq!(handle.redraw(), Err(AppEnded));
+        assert_eq!(handle.open_window(spec(), empty), Err(AppEndedError));
+        assert_eq!(handle.quit(), Err(AppEndedError));
+        assert_eq!(handle.redraw(), Err(AppEndedError));
         assert_eq!(woken.load(Ordering::SeqCst), 0);
         assert!(handle.take().is_empty());
     }

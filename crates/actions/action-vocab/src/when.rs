@@ -11,7 +11,7 @@ use provenance::UnixSeconds;
 
 /// The text is not an RFC 3339 date or instant.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum NotRfc3339 {
+pub enum NotRfc3339Error {
     /// The text is not shaped like a date or instant.
     #[error("not an RFC 3339 date or instant")]
     Shape,
@@ -28,15 +28,15 @@ pub enum NotRfc3339 {
 
 /// The date part, `YYYY-MM-DD` exactly: jiff's own reader would also take a sign or a short
 /// month.
-fn day(head: &str) -> Result<Date, NotRfc3339> {
+fn day(head: &str) -> Result<Date, NotRfc3339Error> {
     let shaped = head.bytes().enumerate().all(|(at, b)| match at {
         4 | 7 => b == b'-',
         _ => b.is_ascii_digit(),
     });
     if !shaped {
-        return Err(NotRfc3339::Shape);
+        return Err(NotRfc3339Error::Shape);
     }
-    head.parse().map_err(NotRfc3339::Day)
+    head.parse().map_err(NotRfc3339Error::Day)
 }
 
 /// The text read as a date alone or as a full instant (the separator may be `T`, `t` or a space,
@@ -47,13 +47,13 @@ enum Read {
     Instant(Date, UnixSeconds),
 }
 
-fn read(text: &str) -> Result<Read, NotRfc3339> {
-    let head = text.get(..10).ok_or(NotRfc3339::Shape)?;
+fn read(text: &str) -> Result<Read, NotRfc3339Error> {
+    let head = text.get(..10).ok_or(NotRfc3339Error::Shape)?;
     let date = day(head)?;
     if text.len() == 10 {
         return Ok(Read::Day(date));
     }
-    let UnixSeconds(seconds) = UnixSeconds::from_rfc3339(text).ok_or(NotRfc3339::Instant)?;
+    let UnixSeconds(seconds) = UnixSeconds::from_rfc3339(text).ok_or(NotRfc3339Error::Instant)?;
     // The reader has checked the shape, so the seconds are the two bytes at 17; jiff clamps `:60`
     // to `:59`.
     let leap = i64::from(text.as_bytes().get(17..19) == Some(b"60"));
@@ -64,13 +64,13 @@ fn read(text: &str) -> Result<Read, NotRfc3339> {
 ///
 /// # Errors
 ///
-/// Returns `NotRfc3339` when `text` is not an RFC 3339 date.
-pub fn date(text: &str) -> Result<CivilDate, NotRfc3339> {
+/// Returns `NotRfc3339Error` when `text` is not an RFC 3339 date.
+pub fn date(text: &str) -> Result<CivilDate, NotRfc3339Error> {
     let (Read::Day(date) | Read::Instant(date, _)) = read(text)?;
     Ok(CivilDate {
         year: date.year(),
-        month: u8::try_from(date.month()).map_err(NotRfc3339::Range)?,
-        day: u8::try_from(date.day()).map_err(NotRfc3339::Range)?,
+        month: u8::try_from(date.month()).map_err(NotRfc3339Error::Range)?,
+        day: u8::try_from(date.day()).map_err(NotRfc3339Error::Range)?,
     })
 }
 
@@ -79,13 +79,13 @@ pub fn date(text: &str) -> Result<CivilDate, NotRfc3339> {
 ///
 /// # Errors
 ///
-/// Returns `NotRfc3339` when `text` is neither an RFC 3339 instant nor a bare date.
-pub fn instant(text: &str) -> Result<UnixSeconds, NotRfc3339> {
+/// Returns `NotRfc3339Error` when `text` is neither an RFC 3339 instant nor a bare date.
+pub fn instant(text: &str) -> Result<UnixSeconds, NotRfc3339Error> {
     Ok(match read(text)? {
         Read::Day(date) => UnixSeconds(
             date.at(0, 0, 0, 0)
                 .to_zoned(jiff::tz::TimeZone::UTC)
-                .map_err(NotRfc3339::Day)?
+                .map_err(NotRfc3339Error::Day)?
                 .timestamp()
                 .as_second(),
         ),

@@ -4,7 +4,7 @@ use action_client::ClientError;
 
 /// Why the daemon could not serve, or an entry point could not answer.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum ServeFault {
+pub enum ServeError {
     /// The bus name is taken or the connection failed.
     #[error("bus: {0}")]
     Bus(String),

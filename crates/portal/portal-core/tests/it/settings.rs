@@ -1,6 +1,6 @@
 use portal_core::settings_values::APPEARANCE;
 use portal_core::{
-    Appearance, Contrast, Rgb, Scheme, SettingValue, SettingsRefusal, changes, read, read_all,
+    Appearance, Contrast, Rgb, Scheme, SettingLookupError, SettingValue, changes, read, read_all,
 };
 
 fn dark() -> Appearance {
@@ -59,11 +59,11 @@ fn no_accent_is_out_of_range() {
 fn unknown_keys_and_namespaces_are_not_found() {
     assert_eq!(
         read(&dark(), APPEARANCE, "nope"),
-        Err(SettingsRefusal::NotFound)
+        Err(SettingLookupError::NotFound)
     );
     assert_eq!(
         read(&dark(), "org.example", "color-scheme"),
-        Err(SettingsRefusal::NotFound)
+        Err(SettingLookupError::NotFound)
     );
 }
 

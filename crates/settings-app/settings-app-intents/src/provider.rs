@@ -5,7 +5,7 @@ use crate::answer::{key_ref, not_found, outcome, own, own_label, page_ref, refus
 use crate::ask::{Ask, ask};
 use crate::journal::{Change, Journal};
 use crate::limits::{ACCOUNTS_CHARS, KEY_VALUE_CHARS, many_lines, one_line};
-use crate::manifest::{ManifestFault, manifest};
+use crate::manifest::{ManifestLoadError, manifest};
 use account_core::{AppName, DataClass};
 use action_core::{
     AppRefusal, FactLine, Hit, Invocation, Outcome, Preview, SuggestAsk, UndoFault, Undoable,
@@ -51,13 +51,13 @@ impl SettingsProvider {
     ///
     /// # Errors
     ///
-    /// [`ManifestFault`] when the embedded manifest does not parse or does not validate.
+    /// [`ManifestLoadError`] when the embedded manifest does not parse or does not validate.
     pub fn new(
         catalogue: Arc<Catalogue>,
         home: ConfigHome,
         window: Outbox,
         accounts: Arc<dyn AccountsSource>,
-    ) -> Result<SettingsProvider, ManifestFault> {
+    ) -> Result<SettingsProvider, ManifestLoadError> {
         let manifest = manifest()?;
         Ok(SettingsProvider {
             app: manifest.manifest().app.clone(),

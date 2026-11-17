@@ -2,7 +2,7 @@
 
 use files_core::Entry;
 
-use crate::error::ListFailure;
+use crate::error::FolderListError;
 use crate::input::Change;
 
 /// The folder's contents as last loaded.
@@ -13,7 +13,7 @@ pub enum Listing {
     /// Every entry, in no particular order.
     Loaded(Vec<Entry>),
     /// It could not be read.
-    Failed(ListFailure),
+    Failed(FolderListError),
 }
 
 impl Listing {

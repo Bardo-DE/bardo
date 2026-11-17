@@ -2,7 +2,7 @@
 //! computer, "Waiting to upload" until it is sent.
 
 use super::{Drive, NodeId, held, now_secs, unlisted};
-use crate::Reason;
+use crate::SkipError;
 use crate::index::{Dirty, Edit};
 use crate::naming;
 use crate::source::CopyError;
@@ -22,43 +22,43 @@ impl Drive {
     /// [`Reason::NotADocument`] for an item that is no online document, [`Reason::NoFileFormat`]
     /// for one with no file format (a Form, a Site, a Map), [`Reason::TooLarge`] past what the
     /// drive exports, [`Reason::CopyFailed`] when the drive could not be reached.
-    pub async fn save_copy(&self, id: &NodeId) -> Result<NodeId, Reason> {
+    pub async fn save_copy(&self, id: &NodeId) -> Result<NodeId, SkipError> {
         let NodeId::Remote(remote) = id else {
-            return Err(Reason::NotADocument);
+            return Err(SkipError::NotADocument);
         };
         let inner = &self.inner;
         let entry = inner
             .entry(remote)
-            .map_err(unlisted(Reason::NotADocument))?
-            .ok_or(Reason::NotADocument)?;
+            .map_err(unlisted(SkipError::NotADocument))?
+            .ok_or(SkipError::NotADocument)?;
         let ItemKind::Online { export, .. } = &entry.kind else {
-            return Err(Reason::NotADocument);
+            return Err(SkipError::NotADocument);
         };
         let (mime, extension) = export
             .as_deref()
             .and_then(|mime| Some((mime, naming::copy_extension(mime)?)))
-            .ok_or(Reason::NoFileFormat)?;
+            .ok_or(SkipError::NoFileFormat)?;
         let bytes = inner
             .source
             .export(remote, mime)
             .await
             .map_err(|why| match why {
-                CopyError::NoFormat => Reason::NoFileFormat,
-                CopyError::TooLarge => Reason::TooLarge,
-                CopyError::Failed => Reason::CopyFailed,
+                CopyError::NoFormat => SkipError::NoFileFormat,
+                CopyError::TooLarge => SkipError::TooLarge,
+                CopyError::Failed => SkipError::CopyFailed,
             })?;
         let folder = inner
             .parent_of(id)
             .map_err(|why| {
                 eprintln!("drive-core: the folder of a document to copy is unknown: {why}");
-                Reason::CopyFailed
+                SkipError::CopyFailed
             })?
-            .ok_or(Reason::NotADocument)?;
+            .ok_or(SkipError::NotADocument)?;
         let taken: Vec<String> = inner
             .children(&folder)
             .map_err(|why| {
                 eprintln!("drive-core: the folder of a copy could not be listed: {why}");
-                Reason::CopyFailed
+                SkipError::CopyFailed
             })?
             .into_iter()
             .map(|node| node.name)
@@ -70,7 +70,7 @@ impl Drive {
             .write(&inner.local_file(n), &bytes)
             .map_err(|why| {
                 eprintln!("drive-core: a copy of a document could not be written: {why}");
-                Reason::CopyFailed
+                SkipError::CopyFailed
             })?;
         let made = now_secs();
         let dirty = Dirty {
@@ -94,7 +94,7 @@ impl Drive {
             held(&inner.index).edits.remove(&NodeId::Local(n));
             let _ = std::fs::remove_file(inner.local_file(n));
             inner.touched();
-            return Err(Reason::CopyFailed);
+            return Err(SkipError::CopyFailed);
         }
         let copy = NodeId::Local(n);
         inner.ino(&copy);

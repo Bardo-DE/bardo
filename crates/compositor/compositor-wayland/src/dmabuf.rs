@@ -8,7 +8,7 @@
 //! allocated from, so a buffer's tranche is the one that offers its format and modifier; the plan's
 //! `feedback_for` offers each pair once, so the answer is unambiguous.
 
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use compositor_core::gpu::{FeedbackPlan, TrancheUse};
 use compositor_core::policy::GlobalKind;
 use smithay::backend::allocator::dmabuf::Dmabuf;
@@ -299,12 +299,12 @@ fn planes_fit(planes: &[Plane], sizes: &[Option<u64>], height: u32) -> bool {
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_offer<D>(
     part: &mut DmabufPart,
     display: &DisplayHandle,
     offer: &DmabufOffer,
-) -> Result<(), WaylandFault>
+) -> Result<(), WaylandError>
 where
     D: GlobalDispatch<ZwpLinuxDmabufV1, DmabufGlobalData> + BufferHandler + DmabufHandler + 'static,
 {

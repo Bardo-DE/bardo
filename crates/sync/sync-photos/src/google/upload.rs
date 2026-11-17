@@ -23,7 +23,7 @@ use http_core::Http;
 use std::path::PathBuf;
 use sync_core::DELETED;
 use sync_core::{
-    Anchor, BaseVersion, Blob, ByteRange, ChangePage, Cursor, More, PutItem, PutRefused, PutTarget,
+    Anchor, BaseVersion, Blob, ByteRange, ChangePage, Cursor, More, PutError, PutItem, PutTarget,
     Quota, RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
 use sync_engine::dataset::fingerprint;
@@ -53,27 +53,27 @@ pub struct UploadReplica<H> {
     clippy::needless_pass_by_value,
     reason = "used as a `map_err` function, which hands the error over by value"
 )]
-fn refusal(error: ApiError) -> PutRefused {
+fn refusal(error: ApiError) -> PutError {
     match error {
         ApiError::Unreached(_)
         | ApiError::Address(_)
         | ApiError::Request(_)
         | ApiError::Unreadable
         | ApiError::Json(_)
-        | ApiError::Token(_) => PutRefused::Transient(RetryAfter(30)),
+        | ApiError::Token(_) => PutError::Transient(RetryAfter(30)),
         ApiError::Refused {
             status,
             retry_after,
         } => match status {
-            429 | 500..=599 => PutRefused::Transient(retry_after.map_or(RETRY, RetryAfter)),
-            _ => PutRefused::Forbidden,
+            429 | 500..=599 => PutError::Transient(retry_after.map_or(RETRY, RetryAfter)),
+            _ => PutError::Forbidden,
         },
-        ApiError::ItemFailed { .. } => PutRefused::Forbidden,
+        ApiError::ItemFailed { .. } => PutError::Forbidden,
     }
 }
 
-fn unkept(_: LedgerError) -> PutRefused {
-    PutRefused::Transient(RetryAfter(30))
+fn unkept(_: LedgerError) -> PutError {
+    PutError::Transient(RetryAfter(30))
 }
 
 /// The name a path's file is sent under.
@@ -97,7 +97,7 @@ impl<H: Http> UploadReplica<H> {
     }
 
     /// The album, made on first need.
-    async fn album(&self, kept: &mut Kept) -> Result<AlbumId, PutRefused> {
+    async fn album(&self, kept: &mut Kept) -> Result<AlbumId, PutError> {
         if let Some(album) = &kept.ledger.album {
             return Ok(album.clone());
         }
@@ -108,12 +108,7 @@ impl<H: Http> UploadReplica<H> {
     }
 
     /// Sends `bytes` under `name` into the album.
-    async fn send(
-        &self,
-        kept: &mut Kept,
-        name: &str,
-        bytes: Vec<u8>,
-    ) -> Result<MediaId, PutRefused> {
+    async fn send(&self, kept: &mut Kept, name: &str, bytes: Vec<u8>) -> Result<MediaId, PutError> {
         let album = self.album(kept).await?;
         let token = self.api.upload(name, bytes).await.map_err(refusal)?;
         match self.api.add_item(Some(&album), name, &token).await {
@@ -124,7 +119,7 @@ impl<H: Http> UploadReplica<H> {
                 // The album is gone (the person deleted it): make a new one next time.
                 kept.ledger.album = None;
                 kept.save().map_err(unkept)?;
-                Err(PutRefused::Transient(RetryAfter(1)))
+                Err(PutError::Transient(RetryAfter(1)))
             }
             Err(error) => Err(refusal(error)),
         }
@@ -157,7 +152,7 @@ impl<H: Http> Replica for UploadReplica<H> {
         &self,
         item: PutItem,
         _base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         let sha = fingerprint(&item.content.0).0;
         let mut kept = self.kept.lock().await;
         let (name, path) = match &item.target {
@@ -199,7 +194,7 @@ impl<H: Http> Replica for UploadReplica<H> {
         &self,
         _item: &RemoteId,
         _base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    ) -> Result<RemoteVersion, PutError> {
         Ok(RemoteVersion(DELETED.to_owned()))
     }
 

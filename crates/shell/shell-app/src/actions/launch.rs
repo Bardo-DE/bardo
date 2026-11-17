@@ -4,7 +4,7 @@
 
 use layer_shell_host::HostCtx;
 use shell_ipc::response::Response;
-use shell_model::service::Gone;
+use shell_model::service::ServiceGoneError;
 use shell_ui_kit::links::Origin;
 use shell_ui_kit::surface::token_within;
 
@@ -18,7 +18,7 @@ pub fn with_token(
     reach: &Reach,
     origin: Origin,
     app: &str,
-    send: impl FnOnce(Option<String>) -> Result<(), Gone> + Send + 'static,
+    send: impl FnOnce(Option<String>) -> Result<(), ServiceGoneError> + Send + 'static,
 ) -> Response {
     let answer = origin
         .surface

@@ -10,7 +10,7 @@
 //! nothing here knows a path.
 
 use super::brought_hosts::BroughtHosts;
-use super::fault::AgentFault;
+use super::fault::AgentError;
 use super::helper_hosts::{HelperHosts, folder_of};
 use super::live::Live;
 use super::logout::EntryLogout;
@@ -280,18 +280,18 @@ impl HelperHost {
 
     /// The reply to `ask` when the host could not start: the setting is off, the list is missing
     /// or there is no sandbox (each told apart). A call that only ends something has nothing to end.
-    pub fn unavailable(ask: &AppsAsk, fault: &AgentFault) -> AppsReply {
+    pub fn unavailable(ask: &AppsAsk, fault: &AgentError) -> AppsReply {
         // The person is told one sentence; the cause is kept here, where it would be dropped.
         eprintln!("bardo-agent: the helpers' agents cannot be hosted: {fault}");
         Self::failed(ask, Self::told(fault))
     }
 
     /// What the person is told of a host that could not start.
-    fn told(fault: &AgentFault) -> JobFault {
+    fn told(fault: &AgentError) -> JobFault {
         match fault {
-            AgentFault::Permit(_) => JobFault::TurnedOff,
-            AgentFault::NoAgentsFile(_) | AgentFault::Agents(_) => JobFault::NotSetUp,
-            AgentFault::NoSandbox(_) => JobFault::NoSandbox,
+            AgentError::Permit(_) => JobFault::TurnedOff,
+            AgentError::NoAgentsFile(_) | AgentError::Agents(_) => JobFault::NotSetUp,
+            AgentError::NoSandbox(_) => JobFault::NoSandbox,
             _ => JobFault::Crashed,
         }
     }
@@ -324,7 +324,7 @@ mod tests {
 
     #[test]
     fn no_sandbox_is_told_as_its_own_sentence() {
-        let none = AgentFault::NoSandbox(sandbox::CannotSandbox::NotInstalled);
+        let none = AgentError::NoSandbox(sandbox::CannotSandboxError::NotInstalled);
         let why = HelperHost::told(&none);
         assert_eq!(why, JobFault::NoSandbox);
         assert!(!why.plain().contains("crash") && !why.plain().contains("bubblewrap"));

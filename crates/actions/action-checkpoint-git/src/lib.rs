@@ -36,5 +36,5 @@ mod store;
 
 pub use git::GitStore;
 pub use names::ref_name;
-pub use problem::{GitCause, GitProblem};
-pub use run::{GitCommand, GitFault, GitOut, Limits};
+pub use problem::{GitCauseError, GitError};
+pub use run::{GitCommand, GitOut, GitRunError, Limits};

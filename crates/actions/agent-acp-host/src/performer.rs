@@ -9,8 +9,8 @@
 //! staged request only if the call it was handed matches it exactly, and spends it. A stage
 //! cannot be used twice, by another session, or for another path.
 
-use super::files::{FileFault, Files};
-use super::workdir::{Workdir, WorkdirFault};
+use super::files::{FileError, Files};
+use super::workdir::{Workdir, WorkdirError};
 use crate::bulk;
 use crate::terminals::Terminals;
 use action_vocab::UndoToken;
@@ -156,17 +156,17 @@ impl<F: Files, S: Sandbox> Performer<F, S> {
     /// Where `path` really leads (links followed).
     ///
     /// # Errors
-    /// Returns a [`FileFault`] when the path cannot be resolved.
-    pub fn real(&self, path: &AbsPath) -> Result<AbsPath, FileFault> {
+    /// Returns a [`FileError`] when the path cannot be resolved.
+    pub fn real(&self, path: &AbsPath) -> Result<AbsPath, FileError> {
         self.lock().files.real(path)
     }
 
     /// `asked` as a directory a sandbox may write, inside the session folder `scope`.
     ///
     /// # Errors
-    /// Returns a [`WorkdirFault`] when `asked` is outside `scope`, is not a plain folder, or is
+    /// Returns a [`WorkdirError`] when `asked` is outside `scope`, is not a plain folder, or is
     /// the home folder or holds secrets.
-    pub fn workdir(&self, scope: &AbsPath, asked: &AbsPath) -> Result<Workdir, WorkdirFault> {
+    pub fn workdir(&self, scope: &AbsPath, asked: &AbsPath) -> Result<Workdir, WorkdirError> {
         self.lock().files.workdir(scope, asked)
     }
 

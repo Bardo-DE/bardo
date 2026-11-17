@@ -22,7 +22,7 @@ mod with_feature {
     use super::*;
     use crate::common::{in_shell_unit, table};
     use caller_identity_core::{
-        AppKey, Engine, Exe, Pin, Refused, Requirement, RoleName, RowOrigin, SandboxFacts,
+        AppKey, Engine, Exe, NotHeldError, Pin, Requirement, RoleName, RowOrigin, SandboxFacts,
         TableError, UnitName,
     };
 
@@ -197,7 +197,7 @@ mod with_feature {
             let need = [Requirement::new(role("accounts"), at_least)];
             assert_eq!(
                 standing.holds(&need),
-                Err(Refused::NotAllowed),
+                Err(NotHeldError::NotAllowed),
                 "{at_least:?}"
             );
         }

@@ -18,12 +18,12 @@ mod testing;
 
 pub use allow::allowing;
 pub use caller_identity_dbus::caller_identity_core::{
-    Proof, Refused, Requirement, RoleName, roles,
+    NotHeldError, Proof, Requirement, RoleName, roles,
 };
 pub use caller_identity_dbus::{BusPeers, access_denied};
 pub use check::RoleCheck;
 #[cfg(feature = "dev-callers")]
-pub use dev::{DevRowsFault, load_dev_rows, use_dev_rows};
+pub use dev::{DevRowsError, load_dev_rows, use_dev_rows};
 pub use peers::desktop_peers;
 pub use services::{SERVICE_PROOF, required_role};
 #[cfg(feature = "testing")]

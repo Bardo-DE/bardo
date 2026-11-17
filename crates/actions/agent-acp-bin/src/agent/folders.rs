@@ -26,7 +26,7 @@ pub fn plain_name(name: &str) -> Option<&str> {
 
 /// Why an agent's folder could not be had. The words are the ones the person reads.
 #[derive(Debug, thiserror::Error)]
-pub enum FolderFault {
+pub enum FolderError {
     /// The program's name cannot be a folder's.
     #[error("That coding agent can't be used by the assistant.")]
     NotUsable,
@@ -44,24 +44,24 @@ pub enum FolderFault {
     NotAbsolute(#[source] base_path::AbsPathError),
     /// The folder is not one the agent may work in.
     #[error("The agent's folder can't be used.")]
-    Unfit(#[source] agent_acp_host::WorkdirFault),
+    Unfit(#[source] agent_acp_host::WorkdirError),
 }
 
 /// The folder the agent works in, made if it is not there.
-pub fn folder(program: &ProgramName, places: &Places) -> Result<String, FolderFault> {
-    let name = workspace_name(program).ok_or(FolderFault::NotUsable)?;
+pub fn folder(program: &ProgramName, places: &Places) -> Result<String, FolderError> {
+    let name = workspace_name(program).ok_or(FolderError::NotUsable)?;
     folder_under("assistant", name, places)
 }
 
 /// The folder `name` under `group` in the actions service's data directory, made if it is not there, and
 /// never the home folder or a place of secrets.
-pub fn folder_under(group: &str, name: &str, places: &Places) -> Result<String, FolderFault> {
+pub fn folder_under(group: &str, name: &str, places: &Places) -> Result<String, FolderError> {
     let dir: PathBuf = places.data_dir().join(group).join(name);
-    std::fs::create_dir_all(&dir).map_err(FolderFault::Make)?;
-    let real = std::fs::canonicalize(&dir).map_err(FolderFault::Resolve)?;
-    let text = real.to_str().ok_or(FolderFault::NotText)?.to_owned();
-    let path = AbsPath::parse(&text).map_err(FolderFault::NotAbsolute)?;
-    Workdir::resolve(&path, &path, places.home()).map_err(FolderFault::Unfit)?;
+    std::fs::create_dir_all(&dir).map_err(FolderError::Make)?;
+    let real = std::fs::canonicalize(&dir).map_err(FolderError::Resolve)?;
+    let text = real.to_str().ok_or(FolderError::NotText)?.to_owned();
+    let path = AbsPath::parse(&text).map_err(FolderError::NotAbsolute)?;
+    Workdir::resolve(&path, &path, places.home()).map_err(FolderError::Unfit)?;
     Ok(text)
 }
 

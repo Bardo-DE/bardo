@@ -33,5 +33,5 @@ pub use runner::{Harness, PolicyMode, Rig, maximal_policy, run_case, run_case_tr
 pub use skills::check_skills;
 pub use summary_io::{read_summary, short_commit, stamp_summary, write_summary};
 pub use sweep::{run_attacks, run_corpus};
-pub use ui::{UiCommand, UiFault, UiFile, UiOnly, UiSource, check_ui};
-pub use world::{SetupFault, install_fixture};
+pub use ui::{UiCommand, UiError, UiFile, UiOnly, UiSource, check_ui};
+pub use world::{SetupError, install_fixture};

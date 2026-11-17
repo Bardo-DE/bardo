@@ -8,7 +8,7 @@
 //! rule that an untrusted handle never reaches the log before a taint entry.
 
 use action_vocab::CallId;
-use agent_session::{LogFault, Seq, SessionEntry, SessionLog, TaintCause, TaintNote};
+use agent_session::{LogError, Seq, SessionEntry, SessionLog, TaintCause, TaintNote};
 use provenance::{Integrity, SessionId};
 use std::sync::Arc;
 
@@ -149,13 +149,13 @@ impl Writer {
     ///
     /// # Errors
     ///
-    /// Returns the [`LogFault`] of the log when an append is not acknowledged.
+    /// Returns the [`LogError`] of the log when an append is not acknowledged.
     pub async fn put<L: SessionLog>(
         &mut self,
         log: &L,
         session: &SessionId,
         entry: SessionEntry,
-    ) -> Result<(), LogFault> {
+    ) -> Result<(), LogError> {
         let untrusted =
             matches!(&entry, SessionEntry::Handle(h) if h.label.integrity == Integrity::Untrusted);
         if untrusted && !self.taint {
@@ -173,15 +173,15 @@ impl Writer {
     ///
     /// # Errors
     ///
-    /// Returns the [`LogFault`] of the log when the append is not acknowledged.
+    /// Returns the [`LogError`] of the log when the append is not acknowledged.
     pub async fn append<L: SessionLog>(
         &mut self,
         log: &L,
         session: &SessionId,
         entry: &SessionEntry,
-    ) -> Result<(), LogFault> {
+    ) -> Result<(), LogError> {
         if let Some(expected) = self.diverged {
-            return Err(LogFault::OutOfOrder { expected });
+            return Err(LogError::OutOfOrder { expected });
         }
         match log.append(session, self.next, entry).await {
             Ok(_) => {
@@ -191,9 +191,9 @@ impl Writer {
                 }
                 Ok(())
             }
-            Err(LogFault::OutOfOrder { expected }) => {
+            Err(LogError::OutOfOrder { expected }) => {
                 self.diverged = Some(expected);
-                Err(LogFault::OutOfOrder { expected })
+                Err(LogError::OutOfOrder { expected })
             }
             Err(other) => Err(other),
         }

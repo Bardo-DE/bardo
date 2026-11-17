@@ -61,14 +61,14 @@ fn a_usage_in_the_options_is_its_slug_absent_is_interactive_and_unknown_is_refus
 fn refusals_and_closed_sets_are_written_as_their_slugs() {
     let refusals = [
         (
-            InferRefusal::RequiresCloud(DataClass::Prompt),
+            InferRefusedError::RequiresCloud(DataClass::Prompt),
             "requires_cloud",
         ),
-        (InferRefusal::Unavailable, "unavailable"),
-        (InferRefusal::NeedsGrant, "needs_grant"),
-        (InferRefusal::Denied, "denied"),
-        (InferRefusal::OverBudget, "over_budget"),
-        (InferRefusal::Unsupported, "unsupported"),
+        (InferRefusedError::Unavailable, "unavailable"),
+        (InferRefusedError::NeedsGrant, "needs_grant"),
+        (InferRefusedError::Denied, "denied"),
+        (InferRefusedError::OverBudget, "over_budget"),
+        (InferRefusedError::Unsupported, "unsupported"),
     ];
     for (refusal, slug_text) in refusals {
         assert_eq!(refusal_slug(refusal), slug_text);

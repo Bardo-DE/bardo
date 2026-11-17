@@ -12,8 +12,8 @@ use model_provider::ModelName;
 use model_replay::{
     BuildLabel, ByteStep, CassetteHeader, CassetteVersion, ChunkPlan, ContextStamp, EngineLabel,
     EngineStamp, HeadPrint, InteractionId, RecordedAt, RecordingTransport, ReplayMode,
-    ReplayTransport, SinkError, WireBody, WireCassette, WireEnd, WireExchange, WireFrame, WireMiss,
-    WireReply, WireRequest, WireSink,
+    ReplayTransport, SinkError, WireBody, WireCassette, WireEnd, WireExchange, WireFrame,
+    WireMissError, WireReply, WireRequest, WireSink,
 };
 
 fn block_on<T>(future: impl Future<Output = T>) -> T {
@@ -280,7 +280,7 @@ fn modes_pick_exchanges() {
         Err(HttpError::ReplayMiss),
         "each is used once"
     );
-    assert_eq!(by.misses(), vec![WireMiss::Exhausted]);
+    assert_eq!(by.misses(), vec![WireMissError::Exhausted]);
 
     let order = replay(both(), ReplayMode::InOrder, ChunkPlan::Whole);
     let sse_b = ex("/models", None, Framing::Sse);
@@ -288,7 +288,7 @@ fn modes_pick_exchanges() {
 
     let strict = replay(both(), ReplayMode::Strict, ChunkPlan::Whole);
     assert_eq!(run(&strict, &b).0, Err(HttpError::ReplayMiss));
-    let [WireMiss::Mismatch { index, want, got }] = &*strict.misses() else {
+    let [WireMissError::Mismatch { index, want, got }] = &*strict.misses() else {
         panic!("one mismatch");
     };
     assert_eq!(*index, InteractionId(0));

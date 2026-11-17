@@ -60,7 +60,7 @@ pub fn endorse<T>(value: Labelled<T>, witness: &Witness) -> Labelled<T> {
 /// Why [`declassify`] refused: the label asked for is more open than the receipt covers.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("the receipt covers {covers:?} and no more openly")]
-pub struct BeyondReceipt {
+pub struct BeyondReceiptError {
     /// What the receipt covers.
     pub covers: Confidentiality,
 }
@@ -70,12 +70,12 @@ pub struct BeyondReceipt {
 ///
 /// # Errors
 ///
-/// Returns [`BeyondReceipt`] when `to` is less restrictive than what the receipt covers.
+/// Returns [`BeyondReceiptError`] when `to` is less restrictive than what the receipt covers.
 pub fn declassify<T>(
     value: Labelled<T>,
     to: Confidentiality,
     witness: &Witness,
-) -> Result<Labelled<T>, BeyondReceipt> {
+) -> Result<Labelled<T>, BeyondReceiptError> {
     let Witness::UserConfirmed(receipt) = witness;
     // `a.join(b) == b` says `b` is at least as restrictive as `a`; joining `Public` normalises.
     let within = receipt.covers.join(&to) == to.join(&Confidentiality::Public);
@@ -84,7 +84,7 @@ pub fn declassify<T>(
         label.confidentiality = to;
         Ok(Labelled { label, ..value })
     } else {
-        Err(BeyondReceipt {
+        Err(BeyondReceiptError {
             covers: receipt.covers.clone(),
         })
     }

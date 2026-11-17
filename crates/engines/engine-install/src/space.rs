@@ -5,7 +5,7 @@ use std::path::Path;
 /// Not enough free space.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("needs {need} bytes and {free} are free")]
-pub struct NoSpace {
+pub struct NoSpaceError {
     /// Bytes the install needs.
     pub need: u64,
     /// Bytes free.
@@ -25,10 +25,10 @@ pub fn free_bytes(path: &Path) -> Option<u64> {
 /// the writes will say.
 ///
 /// # Errors
-/// [`NoSpace`] when fewer bytes are free.
-pub fn require_space(path: &Path, need: u64) -> Result<(), NoSpace> {
+/// [`NoSpaceError`] when fewer bytes are free.
+pub fn require_space(path: &Path, need: u64) -> Result<(), NoSpaceError> {
     match free_bytes(path) {
-        Some(free) if free < need => Err(NoSpace { need, free }),
+        Some(free) if free < need => Err(NoSpaceError { need, free }),
         _ => Ok(()),
     }
 }
@@ -44,6 +44,6 @@ mod tests {
         assert!(free_bytes(&deep).is_some());
         assert_eq!(require_space(&deep, 1), Ok(()));
         let huge = require_space(&deep, u64::MAX);
-        assert!(matches!(huge, Err(NoSpace { need: u64::MAX, .. })));
+        assert!(matches!(huge, Err(NoSpaceError { need: u64::MAX, .. })));
     }
 }

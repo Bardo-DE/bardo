@@ -3,7 +3,7 @@
 //! restore touches.
 
 use crate::ids::{EntryId, Saved, TreeId, WorkRoot};
-use crate::store::{ApplyAsk, CheckpointStore, DropAsk, PlanAsk, StoreFault, TakeAsk};
+use crate::store::{ApplyAsk, CheckpointStore, CheckpointStoreError, DropAsk, PlanAsk, TakeAsk};
 use crate::tree::{TreeListing, plan_restore};
 use action_core::{CheckpointId, RestorePlan, WorkPath};
 use base_ids::Count;
@@ -86,9 +86,9 @@ impl MemoryStore {
         Some(file.content.clone())
     }
 
-    fn history(state: &State, root: &WorkRoot) -> Result<(), StoreFault> {
+    fn history(state: &State, root: &WorkRoot) -> Result<(), CheckpointStoreError> {
         if state.without_history.contains(root) {
-            Err(StoreFault::NoHistory)
+            Err(CheckpointStoreError::NoHistory)
         } else {
             Ok(())
         }
@@ -120,13 +120,13 @@ impl MemoryStore {
         root: &WorkRoot,
         session: &SessionId,
         id: CheckpointId,
-    ) -> Result<(RestorePlan, BTreeMap<WorkPath, String>), StoreFault> {
+    ) -> Result<(RestorePlan, BTreeMap<WorkPath, String>), CheckpointStoreError> {
         Self::history(state, root)?;
         let point = state
             .points
             .get(&(root.clone(), session.clone()))
             .and_then(|held| held.get(&id))
-            .ok_or(StoreFault::NoSuchPoint)?;
+            .ok_or(CheckpointStoreError::NoSuchPoint)?;
         let now = Self::listing(&Self::followed(state, root));
         let plan = plan_restore(&now, &Self::listing(&point.files));
         Ok((plan, point.files.clone()))
@@ -138,19 +138,19 @@ impl CheckpointStore for MemoryStore {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn take(&self, ask: TakeAsk) -> Result<Saved, StoreFault> {
+    async fn take(&self, ask: TakeAsk) -> Result<Saved, CheckpointStoreError> {
         let mut state = self.lock();
         Self::history(&state, &ask.root)?;
         let files = Self::followed(&state, &ask.root);
         if files.len() > usize::try_from(ask.max.0).unwrap_or(usize::MAX) {
-            return Err(StoreFault::TooLarge);
+            return Err(CheckpointStoreError::TooLarge);
         }
         let held = state
             .points
             .entry((ask.root.clone(), ask.session.clone()))
             .or_default();
         if held.contains_key(&ask.id) {
-            return Err(StoreFault::Failed);
+            return Err(CheckpointStoreError::Failed);
         }
         let saved = Saved {
             id: ask.id,
@@ -171,7 +171,11 @@ impl CheckpointStore for MemoryStore {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn held(&self, root: &WorkRoot, session: &SessionId) -> Result<Vec<Saved>, StoreFault> {
+    async fn held(
+        &self,
+        root: &WorkRoot,
+        session: &SessionId,
+    ) -> Result<Vec<Saved>, CheckpointStoreError> {
         let state = self.lock();
         Self::history(&state, root)?;
         Ok(state
@@ -186,7 +190,7 @@ impl CheckpointStore for MemoryStore {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn plan(&self, ask: PlanAsk) -> Result<RestorePlan, StoreFault> {
+    async fn plan(&self, ask: PlanAsk) -> Result<RestorePlan, CheckpointStoreError> {
         let state = self.lock();
         Self::plan_for(&state, &ask.root, &ask.session, ask.id).map(|(plan, _)| plan)
     }
@@ -195,11 +199,11 @@ impl CheckpointStore for MemoryStore {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn apply(&self, ask: ApplyAsk) -> Result<RestorePlan, StoreFault> {
+    async fn apply(&self, ask: ApplyAsk) -> Result<RestorePlan, CheckpointStoreError> {
         let mut state = self.lock();
         let (plan, then) = Self::plan_for(&state, &ask.root, &ask.session, ask.id)?;
         if plan.digest != ask.expect {
-            return Err(StoreFault::PlanStale);
+            return Err(CheckpointStoreError::PlanStale);
         }
         let folder = state.folders.entry(ask.root.clone()).or_default();
         for path in plan.changed.iter().chain(&plan.added) {
@@ -223,7 +227,7 @@ impl CheckpointStore for MemoryStore {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn drop_points(&self, ask: DropAsk) -> Result<Count, StoreFault> {
+    async fn drop_points(&self, ask: DropAsk) -> Result<Count, CheckpointStoreError> {
         let mut state = self.lock();
         Self::history(&state, &ask.root)?;
         let dropped = state

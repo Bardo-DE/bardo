@@ -40,10 +40,10 @@ impl fmt::Display for PanicSite {
     }
 }
 
-/// Why a fuzz run failed: the oracle that fired, and for [`FuzzFailure::AtOp`] the op after
+/// Why a fuzz run failed: the oracle that fired, and for [`FuzzError::AtOp`] the op after
 /// which it did.
 #[derive(Debug, thiserror::Error)]
-pub enum FuzzFailure {
+pub enum FuzzError {
     /// Oracle 1: the compositor panicked.
     #[error("oracle 1: the compositor panicked {0}: {1}")]
     Panicked(PanicSite, String),
@@ -99,6 +99,6 @@ pub enum FuzzFailure {
         /// The op.
         op: Box<FuzzOp>,
         /// The oracle that fired.
-        failure: Box<FuzzFailure>,
+        failure: Box<FuzzError>,
     },
 }

@@ -4,7 +4,7 @@
 //! does not fit its declared type is a fault before the router is asked.
 
 use crate::catalogue::CatalogueTool;
-use action_manifest::{ArgsFault, args_from_json};
+use action_manifest::{ArgsError, args_from_json};
 use action_vocab::{Args, TargetValue};
 use provenance::{Integrity, Label, ModelRole, Source};
 use serde_json::Value as Json;
@@ -34,10 +34,10 @@ pub fn planner_label() -> Label {
 ///
 /// # Errors
 ///
-/// Returns an [`ArgsFault`] when `json` is not an object or an argument does not fit the tool's
+/// Returns an [`ArgsError`] when `json` is not an object or an argument does not fit the tool's
 /// declaration.
-pub fn read_call(tool: &CatalogueTool, json: &Json) -> Result<ReadCall, ArgsFault> {
-    let object = json.as_object().ok_or(ArgsFault::NotAnObject)?;
+pub fn read_call(tool: &CatalogueTool, json: &Json) -> Result<ReadCall, ArgsError> {
+    let object = json.as_object().ok_or(ArgsError::NotAnObject)?;
     let (target, args) = args_from_json(&tool.decl, Some(object), &planner_label())?;
     Ok(ReadCall { target, args })
 }

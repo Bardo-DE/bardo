@@ -86,7 +86,7 @@ pub use hotplug::{KnownConnectors, reconcile};
 pub use judge::{Lit, judge};
 pub use kms::{
     CommitVerdict, ConnectorFacts, ConnectorId, ConnectorStatus, CrtcFacts, CrtcId,
-    DEFAULT_GAMMA_SIZE, Kms, KmsCommit, KmsError, KmsOpener, KmsRefusal, KmsResources,
+    DEFAULT_GAMMA_SIZE, Kms, KmsCommit, KmsError, KmsOpener, KmsRefusedError, KmsResources,
     OutputCommit, PlaneFacts, PlaneId, PlaneKind,
 };
 pub use lit::{Lighting, LitOutput};

@@ -93,9 +93,9 @@ impl<A: Accounts + 'static, P: Proc, L: LoginRunner + 'static> Supervisor<A, P, 
     ///
     /// # Errors
     ///
-    /// Returns an [`AccountFault`] when the accounts service is unreachable, refuses, or fails; this includes a
+    /// Returns an [`AccountError`] when the accounts service is unreachable, refuses, or fails; this includes a
     /// program another launcher already holds.
-    pub async fn register(&self) -> Result<(), crate::accounts::AccountFault> {
+    pub async fn register(&self) -> Result<(), crate::accounts::AccountError> {
         self.accounts.register(&self.file.programs()).await
     }
 

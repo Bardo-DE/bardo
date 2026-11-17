@@ -1,8 +1,8 @@
 //! What to run for an installed agent. The launcher turns it into an `agents.toml` entry. This is
 //! the value; reading the record and making the home is the caller's.
 
-use crate::record::{FILES, Record, RecordFault};
-use crate::slug::SlugRefused;
+use crate::record::{FILES, Record, RecordError};
+use crate::slug::SlugError;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -24,10 +24,10 @@ pub struct Launch {
 /// Why an agent cannot be started from the agents directory. Two faults are equal when they are
 /// the same kind of failure.
 #[derive(Debug, Clone, thiserror::Error)]
-pub enum LaunchFault {
+pub enum LaunchError {
     /// The id or the version is not a name the actions service keeps agents under.
     #[error(transparent)]
-    Name(#[from] SlugRefused),
+    Name(#[from] SlugError),
     /// Not installed, or the record is damaged.
     #[error("{id} {version} is not installed ({why})")]
     Record {
@@ -36,20 +36,20 @@ pub enum LaunchFault {
         /// The pinned version.
         version: String,
         /// What is wrong.
-        why: RecordFault,
+        why: RecordError,
     },
     /// The home could not be made.
     #[error("the agent's home could not be made")]
     Home(#[source] Arc<std::io::Error>),
 }
 
-impl PartialEq for LaunchFault {
+impl PartialEq for LaunchError {
     fn eq(&self, other: &Self) -> bool {
         std::mem::discriminant(self) == std::mem::discriminant(other)
     }
 }
 
-impl Eq for LaunchFault {}
+impl Eq for LaunchError {}
 
 impl Launch {
     /// How to start the agent whose record is `record`, installed at `dir` (the version's

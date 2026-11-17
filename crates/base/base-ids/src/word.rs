@@ -32,7 +32,7 @@ use std::fmt;
 pub fn word<T: Serialize + ?Sized>(value: &T) -> &'static str {
     match value.serialize(WordOnly) {
         Ok(word) => word,
-        Err(NotAWord) => panic!("a wire word is a unit variant of an enum"),
+        Err(NotAWordError) => panic!("a wire word is a unit variant of an enum"),
     }
 }
 
@@ -45,17 +45,17 @@ pub fn from_word<T: DeserializeOwned>(text: &str) -> Option<T> {
 
 /// The refusal of a value that is not a unit variant.
 #[derive(Debug)]
-struct NotAWord;
+struct NotAWordError;
 
-impl fmt::Display for NotAWord {
+impl fmt::Display for NotAWordError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("not a unit variant")
     }
 }
 
-impl std::error::Error for NotAWord {}
+impl std::error::Error for NotAWordError {}
 
-impl ser::Error for NotAWord {
+impl ser::Error for NotAWordError {
     fn custom<T: fmt::Display>(_: T) -> Self {
         NotAWord
     }
@@ -67,29 +67,29 @@ struct WordOnly;
 /// Refuses each of the listed serializer methods.
 macro_rules! refuse {
     ($($method:ident($($argument:ty),*);)*) => {
-        $(fn $method(self, $(_: $argument),*) -> Result<&'static str, NotAWord> {
-            Err(NotAWord)
+        $(fn $method(self, $(_: $argument),*) -> Result<&'static str, NotAWordError> {
+            Err(NotAWordError)
         })*
     };
 }
 
 impl Serializer for WordOnly {
     type Ok = &'static str;
-    type Error = NotAWord;
-    type SerializeSeq = Impossible<&'static str, NotAWord>;
-    type SerializeTuple = Impossible<&'static str, NotAWord>;
-    type SerializeTupleStruct = Impossible<&'static str, NotAWord>;
-    type SerializeTupleVariant = Impossible<&'static str, NotAWord>;
-    type SerializeMap = Impossible<&'static str, NotAWord>;
-    type SerializeStruct = Impossible<&'static str, NotAWord>;
-    type SerializeStructVariant = Impossible<&'static str, NotAWord>;
+    type Error = NotAWordError;
+    type SerializeSeq = Impossible<&'static str, NotAWordError>;
+    type SerializeTuple = Impossible<&'static str, NotAWordError>;
+    type SerializeTupleStruct = Impossible<&'static str, NotAWordError>;
+    type SerializeTupleVariant = Impossible<&'static str, NotAWordError>;
+    type SerializeMap = Impossible<&'static str, NotAWordError>;
+    type SerializeStruct = Impossible<&'static str, NotAWordError>;
+    type SerializeStructVariant = Impossible<&'static str, NotAWordError>;
 
     fn serialize_unit_variant(
         self,
         _: &'static str,
         _: u32,
         variant: &'static str,
-    ) -> Result<&'static str, NotAWord> {
+    ) -> Result<&'static str, NotAWordError> {
         Ok(variant)
     }
 
@@ -113,16 +113,16 @@ impl Serializer for WordOnly {
         serialize_unit_struct(&'static str);
     }
 
-    fn serialize_some<T: Serialize + ?Sized>(self, _: &T) -> Result<&'static str, NotAWord> {
-        Err(NotAWord)
+    fn serialize_some<T: Serialize + ?Sized>(self, _: &T) -> Result<&'static str, NotAWordError> {
+        Err(NotAWordError)
     }
 
     fn serialize_newtype_struct<T: Serialize + ?Sized>(
         self,
         _: &'static str,
         _: &T,
-    ) -> Result<&'static str, NotAWord> {
-        Err(NotAWord)
+    ) -> Result<&'static str, NotAWordError> {
+        Err(NotAWordError)
     }
 
     fn serialize_newtype_variant<T: Serialize + ?Sized>(
@@ -131,24 +131,24 @@ impl Serializer for WordOnly {
         _: u32,
         _: &'static str,
         _: &T,
-    ) -> Result<&'static str, NotAWord> {
-        Err(NotAWord)
+    ) -> Result<&'static str, NotAWordError> {
+        Err(NotAWordError)
     }
 
-    fn serialize_seq(self, _: Option<usize>) -> Result<Self::SerializeSeq, NotAWord> {
-        Err(NotAWord)
+    fn serialize_seq(self, _: Option<usize>) -> Result<Self::SerializeSeq, NotAWordError> {
+        Err(NotAWordError)
     }
 
-    fn serialize_tuple(self, _: usize) -> Result<Self::SerializeTuple, NotAWord> {
-        Err(NotAWord)
+    fn serialize_tuple(self, _: usize) -> Result<Self::SerializeTuple, NotAWordError> {
+        Err(NotAWordError)
     }
 
     fn serialize_tuple_struct(
         self,
         _: &'static str,
         _: usize,
-    ) -> Result<Self::SerializeTupleStruct, NotAWord> {
-        Err(NotAWord)
+    ) -> Result<Self::SerializeTupleStruct, NotAWordError> {
+        Err(NotAWordError)
     }
 
     fn serialize_tuple_variant(
@@ -157,20 +157,20 @@ impl Serializer for WordOnly {
         _: u32,
         _: &'static str,
         _: usize,
-    ) -> Result<Self::SerializeTupleVariant, NotAWord> {
-        Err(NotAWord)
+    ) -> Result<Self::SerializeTupleVariant, NotAWordError> {
+        Err(NotAWordError)
     }
 
-    fn serialize_map(self, _: Option<usize>) -> Result<Self::SerializeMap, NotAWord> {
-        Err(NotAWord)
+    fn serialize_map(self, _: Option<usize>) -> Result<Self::SerializeMap, NotAWordError> {
+        Err(NotAWordError)
     }
 
     fn serialize_struct(
         self,
         _: &'static str,
         _: usize,
-    ) -> Result<Self::SerializeStruct, NotAWord> {
-        Err(NotAWord)
+    ) -> Result<Self::SerializeStruct, NotAWordError> {
+        Err(NotAWordError)
     }
 
     fn serialize_struct_variant(
@@ -179,8 +179,8 @@ impl Serializer for WordOnly {
         _: u32,
         _: &'static str,
         _: usize,
-    ) -> Result<Self::SerializeStructVariant, NotAWord> {
-        Err(NotAWord)
+    ) -> Result<Self::SerializeStructVariant, NotAWordError> {
+        Err(NotAWordError)
     }
 }
 

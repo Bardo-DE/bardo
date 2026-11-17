@@ -50,7 +50,7 @@ pub struct FolderName(String);
 
 /// Why a folder name was refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum BadName {
+pub enum BadNameError {
     /// It is empty.
     Empty,
     /// It is longer than 255 bytes.
@@ -59,32 +59,32 @@ pub enum BadName {
     NotOneName,
 }
 
-impl std::fmt::Display for BadName {
+impl std::fmt::Display for BadNameError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            BadName::Empty => "the folder name is empty",
-            BadName::TooLong => "the folder name is longer than 255 bytes",
-            BadName::NotOneName => "the folder name holds '/' or NUL, or starts with a dot",
+            BadNameError::Empty => "the folder name is empty",
+            BadNameError::TooLong => "the folder name is longer than 255 bytes",
+            BadNameError::NotOneName => "the folder name holds '/' or NUL, or starts with a dot",
         })
     }
 }
 
-impl std::error::Error for BadName {}
+impl std::error::Error for BadNameError {}
 
 impl FolderName {
     /// Checks a folder name.
     ///
     /// # Errors
     /// What is wrong with it.
-    pub fn parse(name: &str) -> Result<Self, BadName> {
+    pub fn parse(name: &str) -> Result<Self, BadNameError> {
         if name.is_empty() {
-            return Err(BadName::Empty);
+            return Err(BadNameError::Empty);
         }
         if name.len() > 255 {
-            return Err(BadName::TooLong);
+            return Err(BadNameError::TooLong);
         }
         if name.contains(['/', '\0']) || name.starts_with('.') {
-            return Err(BadName::NotOneName);
+            return Err(BadNameError::NotOneName);
         }
         Ok(Self(name.to_owned()))
     }
@@ -159,7 +159,7 @@ pub enum Request {
 
 /// Why a message could not be read.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum BadMessage {
+pub enum BadMessageError {
     /// It is longer than [`MAX_MESSAGE`].
     TooLong,
     /// It is not UTF-8 fields each ended by NUL.
@@ -171,31 +171,31 @@ pub enum BadMessage {
     /// Not a request or reply of this format.
     Unknown(String),
     /// The folder name is refused.
-    Name(BadName),
+    Name(BadNameError),
 }
 
-impl std::fmt::Display for BadMessage {
+impl std::fmt::Display for BadMessageError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            BadMessage::TooLong => write!(f, "the message is longer than {MAX_MESSAGE} bytes"),
-            BadMessage::NotFields => f.write_str("the message is not NUL-ended UTF-8 fields"),
-            BadMessage::NotText(_) => f.write_str("the message is not UTF-8 text"),
-            BadMessage::Version(v) => write!(f, "version {v:?} is not known"),
-            BadMessage::Unknown(what) => write!(f, "{what:?} is not a message of this format"),
-            BadMessage::Name(why) => why.fmt(f),
+            BadMessageError::TooLong => write!(f, "the message is longer than {MAX_MESSAGE} bytes"),
+            BadMessageError::NotFields => f.write_str("the message is not NUL-ended UTF-8 fields"),
+            BadMessageError::NotText(_) => f.write_str("the message is not UTF-8 text"),
+            BadMessageError::Version(v) => write!(f, "version {v:?} is not known"),
+            BadMessageError::Unknown(what) => write!(f, "{what:?} is not a message of this format"),
+            BadMessageError::Name(why) => why.fmt(f),
         }
     }
 }
 
-impl std::error::Error for BadMessage {
+impl std::error::Error for BadMessageError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            BadMessage::NotText(why) => Some(why),
-            BadMessage::TooLong
-            | BadMessage::Name(_)
-            | BadMessage::NotFields
-            | BadMessage::Version(_)
-            | BadMessage::Unknown(_) => None,
+            BadMessageError::NotText(why) => Some(why),
+            BadMessageError::TooLong
+            | BadMessageError::Name(_)
+            | BadMessageError::NotFields
+            | BadMessageError::Version(_)
+            | BadMessageError::Unknown(_) => None,
         }
     }
 }
@@ -209,12 +209,12 @@ fn encode(fields: &[&str]) -> Vec<u8> {
     out
 }
 
-fn fields(bytes: &[u8]) -> Result<Vec<&str>, BadMessage> {
+fn fields(bytes: &[u8]) -> Result<Vec<&str>, BadMessageError> {
     if bytes.len() > MAX_MESSAGE {
-        return Err(BadMessage::TooLong);
+        return Err(BadMessageError::TooLong);
     }
-    let text = std::str::from_utf8(bytes).map_err(BadMessage::NotText)?;
-    let body = text.strip_suffix('\0').ok_or(BadMessage::NotFields)?;
+    let text = std::str::from_utf8(bytes).map_err(BadMessageError::NotText)?;
+    let body = text.strip_suffix('\0').ok_or(BadMessageError::NotFields)?;
     Ok(body.split('\0').collect())
 }
 
@@ -234,20 +234,22 @@ impl Request {
     ///
     /// # Errors
     /// The bytes are not a request of this format, or its folder name is refused.
-    pub fn decode(bytes: &[u8]) -> Result<Self, BadMessage> {
+    pub fn decode(bytes: &[u8]) -> Result<Self, BadMessageError> {
         let fields = fields(bytes)?;
         match fields.as_slice() {
-            [version, ..] if *version != VERSION => Err(BadMessage::Version(version.to_string())),
+            [version, ..] if *version != VERSION => {
+                Err(BadMessageError::Version(version.to_string()))
+            }
             [_, "mount", name, access] => Ok(Request::Mount {
-                name: FolderName::parse(name).map_err(BadMessage::Name)?,
+                name: FolderName::parse(name).map_err(BadMessageError::Name)?,
                 access: Access::from_field(access)
-                    .ok_or_else(|| BadMessage::Unknown(format!("access {access}")))?,
+                    .ok_or_else(|| BadMessageError::Unknown(format!("access {access}")))?,
             }),
             [_, "unmount", name] => Ok(Request::Unmount {
-                name: FolderName::parse(name).map_err(BadMessage::Name)?,
+                name: FolderName::parse(name).map_err(BadMessageError::Name)?,
             }),
-            [_, verb, ..] => Err(BadMessage::Unknown(verb.to_string())),
-            _ => Err(BadMessage::NotFields),
+            [_, verb, ..] => Err(BadMessageError::Unknown(verb.to_string())),
+            _ => Err(BadMessageError::NotFields),
         }
     }
 }
@@ -326,14 +328,14 @@ impl Reply {
     ///
     /// # Errors
     /// The bytes are not a reply of this format.
-    pub fn decode(bytes: &[u8]) -> Result<Self, BadMessage> {
+    pub fn decode(bytes: &[u8]) -> Result<Self, BadMessageError> {
         match fields(bytes)?.as_slice() {
             ["ok"] => Ok(Reply::Done),
             ["no", slug] => Code::from_slug(slug)
                 .map(Reply::Refused)
-                .ok_or_else(|| BadMessage::Unknown((*slug).to_owned())),
-            [what, ..] => Err(BadMessage::Unknown(what.to_string())),
-            [] => Err(BadMessage::NotFields),
+                .ok_or_else(|| BadMessageError::Unknown((*slug).to_owned())),
+            [what, ..] => Err(BadMessageError::Unknown(what.to_string())),
+            [] => Err(BadMessageError::NotFields),
         }
     }
 }
@@ -390,7 +392,7 @@ pub fn receive(socket: impl AsFd) -> io::Result<(Vec<u8>, Option<OwnedFd>)> {
         if bytes.len() > MAX_MESSAGE {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
-                BadMessage::TooLong,
+                BadMessageError::TooLong,
             ));
         }
     }
@@ -412,11 +414,18 @@ mod tests {
         ] {
             assert_eq!(FolderName::parse(good).expect(good).as_str(), good);
         }
-        assert_eq!(FolderName::parse(""), Err(BadName::Empty));
-        assert_eq!(FolderName::parse(&"x".repeat(256)), Err(BadName::TooLong));
+        assert_eq!(FolderName::parse(""), Err(BadNameError::Empty));
+        assert_eq!(
+            FolderName::parse(&"x".repeat(256)),
+            Err(BadNameError::TooLong)
+        );
         FolderName::parse(&"x".repeat(255)).unwrap();
         for bad in ["a/b", "/abs", "..", ".", ".hidden", "nul\0", "../Documents"] {
-            assert_eq!(FolderName::parse(bad), Err(BadName::NotOneName), "{bad:?}");
+            assert_eq!(
+                FolderName::parse(bad),
+                Err(BadNameError::NotOneName),
+                "{bad:?}"
+            );
         }
     }
 
@@ -455,27 +464,33 @@ mod tests {
     fn a_request_out_of_the_format_is_refused() {
         let invalid = b"1\0mount\0\xff\0ro\0".to_vec();
         let not_text = std::str::from_utf8(&invalid).expect_err("not text");
-        let cases: [(&[u8], BadMessage); 7] = [
-            (b"2\0mount\0OneDrive\0ro\0", BadMessage::Version("2".into())),
+        let cases: [(&[u8], BadMessageError); 7] = [
+            (
+                b"2\0mount\0OneDrive\0ro\0",
+                BadMessageError::Version("2".into()),
+            ),
             (
                 b"1\0mount\0OneDrive\0rwx\0",
-                BadMessage::Unknown("access rwx".into()),
+                BadMessageError::Unknown("access rwx".into()),
             ),
             (
                 b"1\0format\0OneDrive\0",
-                BadMessage::Unknown("format".into()),
+                BadMessageError::Unknown("format".into()),
             ),
-            (b"1\0mount\0..\0ro\0", BadMessage::Name(BadName::NotOneName)),
-            (b"1\0unmount\0", BadMessage::Unknown("unmount".into())),
-            (b"1\0mount\0OneDrive\0ro", BadMessage::NotFields),
-            (b"1\0mount\0\xff\0ro\0", BadMessage::NotText(not_text)),
+            (
+                b"1\0mount\0..\0ro\0",
+                BadMessageError::Name(BadNameError::NotOneName),
+            ),
+            (b"1\0unmount\0", BadMessageError::Unknown("unmount".into())),
+            (b"1\0mount\0OneDrive\0ro", BadMessageError::NotFields),
+            (b"1\0mount\0\xff\0ro\0", BadMessageError::NotText(not_text)),
         ];
         for (bytes, why) in cases {
             assert_eq!(Request::decode(bytes), Err(why), "{bytes:?}");
         }
         assert_eq!(
             Request::decode(&vec![b'a'; MAX_MESSAGE + 1]),
-            Err(BadMessage::TooLong)
+            Err(BadMessageError::TooLong)
         );
     }
 

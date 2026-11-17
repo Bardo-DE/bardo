@@ -73,7 +73,7 @@ fn target_text_of(parameter: &[OwnedValue]) -> Option<SettingsTarget> {
     }
 }
 
-fn gone(window: settings_app_model::WindowGone) -> fdo::Error {
+fn gone(window: settings_app_model::WindowGoneError) -> fdo::Error {
     fdo::Error::Failed(window.to_string())
 }
 
@@ -161,7 +161,7 @@ pub(crate) async fn export_application(
 
 /// Why a second `bardo-settings` could not hand over.
 #[derive(Debug, thiserror::Error)]
-pub enum HandOverFault {
+pub enum HandOverError {
     /// The program that owns the name is not Settings, so nothing was sent to it: not the page,
     /// and not the activation token.
     #[error(
@@ -183,26 +183,26 @@ pub enum HandOverFault {
 ///
 /// # Errors
 ///
-/// [`HandOverFault`] when the owner of the name is not Settings, the bus call fails, or the owner
+/// [`HandOverError`] when the owner of the name is not Settings, the bus call fails, or the owner
 /// does not answer inside the read deadline.
 pub async fn hand_over(
     connection: &zbus::Connection,
     peers: &BusPeers,
     token: Option<String>,
     page: Option<PageSlug>,
-) -> Result<(), HandOverFault> {
+) -> Result<(), HandOverError> {
     let asked = async {
         let owner = peers
             .owner_of(APP_NAME, &settings_owner())
             .await
-            .map_err(HandOverFault::NotSettings)?;
+            .map_err(HandOverError::NotSettings)?;
         ask_to_show(connection, owner.as_str(), token, page)
             .await
-            .map_err(HandOverFault::Bus)
+            .map_err(HandOverError::Bus)
     };
     within(Deadline::READ, BUS_PEER, asked)
         .await
-        .map_err(|silent| HandOverFault::Bus(zbus::Error::Failure(silent.to_string())))?
+        .map_err(|silent| HandOverError::Bus(zbus::Error::Failure(silent.to_string())))?
 }
 
 /// [`hand_over`] on the session bus, connecting first and judging with the desktop's caller
@@ -213,11 +213,11 @@ pub async fn hand_over(
 ///
 /// # Errors
 ///
-/// [`HandOverFault`] when connecting fails or [`hand_over`] fails, all inside the read deadline.
+/// [`HandOverError`] when connecting fails or [`hand_over`] fails, all inside the read deadline.
 pub async fn hand_over_session(
     token: Option<String>,
     page: Option<PageSlug>,
-) -> Result<(), HandOverFault> {
+) -> Result<(), HandOverError> {
     let handed = async {
         let connection = zbus::connection::Builder::session()?.build().await?;
         let peers = desktop_peers(&connection);
@@ -225,7 +225,7 @@ pub async fn hand_over_session(
     };
     Box::pin(within(Deadline::READ, BUS_PEER, handed))
         .await
-        .map_err(|silent| HandOverFault::Bus(zbus::Error::Failure(silent.to_string())))?
+        .map_err(|silent| HandOverError::Bus(zbus::Error::Failure(silent.to_string())))?
 }
 
 async fn ask_to_show(

@@ -13,7 +13,7 @@ use plugin_host::{Reparsed, reparse};
 use settings_types::target::ExtensionId;
 
 use crate::capability::Capability;
-use crate::fault::Fault;
+use crate::fault::EntryError;
 use crate::provision::Provision;
 use crate::search::{Found, PROTOCOL, names};
 
@@ -148,7 +148,7 @@ impl Resolved {
     }
 }
 
-fn trouble_of(reason: &ManifestError<Capability, Fault>) -> Trouble {
+fn trouble_of(reason: &ManifestError<Capability, EntryError>) -> Trouble {
     if matches!(reason, ManifestError::ProtocolUnsupported { .. }) {
         Trouble::NeedsNewer
     } else {

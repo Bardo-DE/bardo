@@ -6,8 +6,8 @@ use crate::common;
 
 use common::{Flavor, Server};
 use sync_core::{
-    BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, PutItem, PutRefused,
-    PutTarget, RemoteSide, Replica, ReplicaError,
+    BaseVersion, Blob, ByteRange, Change, Conflict, Cursor, ItemPath, PutError, PutItem, PutTarget,
+    RemoteSide, Replica, ReplicaError,
 };
 
 fn new_item(path: &str, bytes: &[u8]) -> PutItem {
@@ -47,7 +47,7 @@ async fn a_write_carries_its_base_as_a_precondition_and_a_remote_edit_is_a_confl
             BaseVersion::At(first.clone()),
         )
         .await;
-    let Err(PutRefused::Conflict(Conflict { item, base, remote })) = refused else {
+    let Err(PutError::Conflict(Conflict { item, base, remote })) = refused else {
         panic!("{refused:?}")
     };
     let RemoteSide::Changed(now) = remote else {

@@ -72,7 +72,7 @@ pub struct UnavailableReason(pub String);
 /// caller can show it.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 #[error("{} is not available for {}: {}", .choice.0, .key.0, .reason.0)]
-pub struct ChoiceUnavailable {
+pub struct ChoiceUnavailableError {
     pub key: KeyPath,
     pub choice: ChoiceWord,
     pub reason: UnavailableReason,
@@ -304,10 +304,10 @@ impl KeySpec {
     ///
     /// # Errors
     ///
-    /// Returns [`ChoiceUnavailable`], with the reason, when `value` names an unavailable choice.
-    pub fn check_available(&self, value: &toml::Value) -> Result<(), ChoiceUnavailable> {
+    /// Returns [`ChoiceUnavailableError`], with the reason, when `value` names an unavailable choice.
+    pub fn check_available(&self, value: &toml::Value) -> Result<(), ChoiceUnavailableError> {
         match (self.unavailable_reason(value), value.as_str()) {
-            (Some(reason), Some(word)) => Err(ChoiceUnavailable {
+            (Some(reason), Some(word)) => Err(ChoiceUnavailableError {
                 key: self.path.clone(),
                 choice: ChoiceWord(word.to_owned()),
                 reason: reason.clone(),

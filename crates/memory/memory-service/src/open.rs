@@ -15,7 +15,7 @@ use memory_core::{
 use memory_files_format::{Block, MemfilesError};
 use memory_seal::{KeyError, SubKey};
 use memory_search::docs::{event_ref, fact_doc, indexed_docs, newest_episodes};
-use memory_store::{Doc, DocId, IndexFailure, SearchIndex};
+use memory_store::{Doc, DocId, SearchIndex, SearchIndexError};
 use memory_store::{Entry, LogError, LogRead, LogWrite, NewHeader, Vault, VaultPath};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -349,7 +349,7 @@ impl<B: Backend> Open<B> {
             .rebuild(docs, cx.backend.embedder())
             .await
             .map_err(|e| match e {
-                IndexFailure::Embed(_) => Refusal::Busy,
+                SearchIndexError::Embed(_) => Refusal::Busy,
                 other => failed(other),
             })
     }
@@ -361,7 +361,7 @@ impl<B: Backend> Open<B> {
     pub(crate) async fn sync_index(&mut self, cx: &Cx<'_, B>) -> Result<(), Refusal> {
         let docs = self.truth_docs()?;
         match self.rt.index.sync(docs, cx.backend.embedder()).await {
-            Ok(()) | Err(IndexFailure::Embed(_)) => Ok(()),
+            Ok(()) | Err(SearchIndexError::Embed(_)) => Ok(()),
             Err(other) => Err(failed(other)),
         }
     }

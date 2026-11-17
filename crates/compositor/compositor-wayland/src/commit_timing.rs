@@ -3,7 +3,7 @@
 
 use crate::client::ClearedClients;
 use crate::presentation::Presented;
-use crate::states::{GlobalFilter, WaylandFault};
+use crate::states::{GlobalFilter, WaylandError};
 use crate::watch_mark;
 use compositor_core::{Event, OutputKey};
 use smithay::reexports::wayland_protocols::wp::commit_timing::v1::server::wp_commit_timing_manager_v1::WpCommitTimingManagerV1;
@@ -90,12 +90,12 @@ pub fn on_barrier(part: &mut CommitTimingPart, surface: &WlSurface) -> Vec<Event
 ///
 /// # Errors
 ///
-/// Returns [`WaylandFault`] when the effect names something the protocol layer no longer has.
+/// Returns [`WaylandError`] when the effect names something the protocol layer no longer has.
 pub fn apply_presented(
     part: &mut CommitTimingPart,
     output: &OutputKey,
     presented: Presented,
-) -> Result<(), WaylandFault> {
+) -> Result<(), WaylandError> {
     let _ = output;
     let deadline = Timestamp::from(Time::<Monotonic>::from(presented.at.0));
     let mut still = Vec::new();

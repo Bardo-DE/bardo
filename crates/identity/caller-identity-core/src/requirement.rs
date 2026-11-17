@@ -1,6 +1,6 @@
 //! What a method asks of its caller, and the check ("require") that a standing meets it.
 
-use crate::error::Refused;
+use crate::error::NotHeldError;
 use crate::facts::PinNeed;
 use crate::ids::RoleName;
 use crate::standing::{Proof, Standing};
@@ -62,13 +62,13 @@ impl Standing {
     ///
     /// Returns `Refused::Unknown` for an unverified process, and `Refused::NotAllowed` for any
     /// other that meets none of `need`.
-    pub fn holds(&self, need: &[Requirement]) -> Result<&Standing, Refused> {
+    pub fn holds(&self, need: &[Requirement]) -> Result<&Standing, NotHeldError> {
         if need.iter().any(|r| r.met_by(self)) {
             return Ok(self);
         }
         match self {
-            Standing::Unverified { .. } => Err(Refused::Unknown),
-            _ => Err(Refused::NotAllowed),
+            Standing::Unverified { .. } => Err(NotHeldError::Unknown),
+            _ => Err(NotHeldError::NotAllowed),
         }
     }
 }

@@ -7,7 +7,7 @@
 use action_live::bringup::cli::{Command, UsageError, parse};
 use action_live::bringup::down::{self, Outcome};
 use action_live::bringup::procs::{self, Record, State};
-use action_live::bringup::refuse::{Own, Refusal, check_bus, check_root};
+use action_live::bringup::refuse::{BringUpError, Own, check_bus, check_root};
 use action_live::bringup::{add_command, seed};
 use std::path::{Path, PathBuf};
 
@@ -88,17 +88,23 @@ fn a_root_in_a_checkout_or_the_home_is_refused() {
     let inside = tmp.path().join("deep/scratch");
     assert_eq!(
         check_root(&inside, &own()),
-        Err(Refusal::RootInGit(inside.clone(), tmp.path().to_owned()))
+        Err(BringUpError::RootInGit(
+            inside.clone(),
+            tmp.path().to_owned()
+        ))
     );
 
-    let refused: [(&str, Refusal); 4] = [
+    let refused: [(&str, BringUpError); 4] = [
         (
             "/home/someone",
-            Refusal::RootTooBroad("/home/someone".into()),
+            BringUpError::RootTooBroad("/home/someone".into()),
         ),
-        ("/", Refusal::RootTooBroad("/".into())),
-        ("scratch", Refusal::RootNotAbsolute("scratch".into())),
-        ("/tmp/a/../b", Refusal::RootDotDot("/tmp/a/../b".into())),
+        ("/", BringUpError::RootTooBroad("/".into())),
+        ("scratch", BringUpError::RootNotAbsolute("scratch".into())),
+        (
+            "/tmp/a/../b",
+            BringUpError::RootDotDot("/tmp/a/../b".into()),
+        ),
     ];
     for (root, fault) in refused {
         assert_eq!(check_root(Path::new(root), &own()), Err(fault), "{root}");
@@ -123,9 +129,9 @@ fn the_real_buses_are_refused() {
     for (bus, why) in refused {
         let got = check_bus(bus, &own());
         let right = match why {
-            "own" => matches!(got, Err(Refusal::BusIsOwn(_))),
-            "real" => matches!(got, Err(Refusal::BusLooksReal(_))),
-            _ => matches!(got, Err(Refusal::BusNotUnix(_))),
+            "own" => matches!(got, Err(BringUpError::BusIsOwn(_))),
+            "real" => matches!(got, Err(BringUpError::BusLooksReal(_))),
+            _ => matches!(got, Err(BringUpError::BusNotUnix(_))),
         };
         assert!(right, "{bus}: {got:?}");
     }
@@ -253,13 +259,13 @@ fn inferd_is_never_given_a_local_engine() {
     for (rows, table) in refused {
         assert_eq!(
             seed::inferd_toml(root, rows),
-            Err(seed::ExtraFault::Owned(table)),
+            Err(seed::ExtraError::Owned(table)),
             "{rows}"
         );
     }
     assert!(matches!(
         seed::inferd_toml(root, "= nonsense"),
-        Err(seed::ExtraFault::Toml(_))
+        Err(seed::ExtraError::Toml(_))
     ));
 }
 

@@ -1,7 +1,7 @@
 //! The "key-remap keyboard" as a reader sees it: what the key remap daemon actually wrote to the kernel.
 
 use crate::event::{EV_LED, Event, SYN_REPORT, encode, token};
-use crate::failure::{Failure, errno};
+use crate::failure::{DevtestError, errno};
 use crate::keys::name_of;
 use crate::sysfs::{OUTPUT_NAME, find_node, name_registered, wait_for};
 use key_remap_evdev::{End, drain};
@@ -40,9 +40,9 @@ impl Output {
     ///
     /// Returns a [`Failure`] when the output keyboard does not register in time, or its node cannot
     /// be opened.
-    pub fn find(trace: Option<&Path>) -> Result<Self, Failure> {
+    pub fn find(trace: Option<&Path>) -> Result<Self, DevtestError> {
         let node = wait_for(FIND_WAIT, || find_node(OUTPUT_NAME)).ok_or_else(|| {
-            Failure::new(format!(
+            DevtestError::new(format!(
                 "no {OUTPUT_NAME:?} under /sys/class/input after {FIND_WAIT:?}: did the daemon \
                  create its virtual keyboard?"
             ))
@@ -114,7 +114,7 @@ impl Output {
     ///
     /// Returns a [`Failure`] showing both streams when what arrived is not a prefix of `want`, not
     /// all of `want` arrives before `WAIT` passes, or anything follows it within `SETTLE`.
-    pub fn expect(&mut self, want: &str) -> Result<(), Failure> {
+    pub fn expect(&mut self, want: &str) -> Result<(), DevtestError> {
         self.expect_within(want, WAIT)
     }
 
@@ -124,7 +124,7 @@ impl Output {
     ///
     /// Returns a [`Failure`] under the same conditions as [`Self::expect`], with `wait` as the
     /// limit.
-    pub fn expect_within(&mut self, want: &str, within: Duration) -> Result<(), Failure> {
+    pub fn expect_within(&mut self, want: &str, within: Duration) -> Result<(), DevtestError> {
         let want: Vec<String> = want.split_whitespace().map(str::to_owned).collect();
         let shown = |tokens: &[String]| format!("[{}]", tokens.join(" "));
         self.log(&format!("expect {}", shown(&want)));
@@ -133,7 +133,7 @@ impl Output {
         while got != want {
             got.extend(self.read());
             if !want.starts_with(&got) {
-                return Err(Failure::new(format!(
+                return Err(DevtestError::new(format!(
                     "output differs: want {} got {}",
                     shown(&want),
                     shown(&got)
@@ -141,7 +141,7 @@ impl Output {
             }
             if got != want {
                 if Instant::now() >= deadline {
-                    return Err(Failure::new(format!(
+                    return Err(DevtestError::new(format!(
                         "output incomplete after {within:?}: want {} got {}",
                         shown(&want),
                         shown(&got)
@@ -154,7 +154,7 @@ impl Output {
         while Instant::now() < settled {
             let extra = self.read();
             if !extra.is_empty() {
-                return Err(Failure::new(format!(
+                return Err(DevtestError::new(format!(
                     "output continued past {}: extra {}",
                     shown(&want),
                     shown(&extra)
@@ -170,13 +170,13 @@ impl Output {
     /// # Errors
     ///
     /// Returns a [`Failure`] when anything arrives within `quiet`.
-    pub fn expect_silence(&mut self, quiet: Duration) -> Result<(), Failure> {
+    pub fn expect_silence(&mut self, quiet: Duration) -> Result<(), DevtestError> {
         self.log("expect silence");
         let end = Instant::now() + quiet;
         while Instant::now() < end {
             let got = self.read();
             if !got.is_empty() {
-                return Err(Failure::new(format!(
+                return Err(DevtestError::new(format!(
                     "expected silence for {quiet:?}, got [{}]",
                     got.join(" ")
                 )));
@@ -209,13 +209,13 @@ impl Output {
     /// # Errors
     ///
     /// Returns a [`Failure`] when the device is still registered after `wait`.
-    pub fn expect_gone(&mut self, wait: Duration) -> Result<(), Failure> {
+    pub fn expect_gone(&mut self, wait: Duration) -> Result<(), DevtestError> {
         let gone = wait_for(wait, || {
             self.read();
             (!name_registered(OUTPUT_NAME)).then_some(())
         });
         gone.ok_or_else(|| {
-            Failure::new(format!(
+            DevtestError::new(format!(
                 "{OUTPUT_NAME:?} was still registered {wait:?} after the daemon died"
             ))
         })
@@ -226,7 +226,7 @@ impl Output {
     /// # Errors
     ///
     /// Returns a [`Failure`] when the event cannot be written to the node.
-    pub fn write_led(&self, led: u16, value: i32) -> Result<(), Failure> {
+    pub fn write_led(&self, led: u16, value: i32) -> Result<(), DevtestError> {
         let fd = rustix::fs::open(
             &self.node,
             OFlags::WRONLY | OFlags::NONBLOCK | OFlags::CLOEXEC,

@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 use std::time::Duration;
 
-use super::event::{CaptureEvent, CaptureFailure};
+use super::event::{CaptureError, CaptureEvent};
 use super::frame::{Frame, ShmFormat};
 use crate::geometry::{Rect, Size};
 use crate::keys::CaptureId;
@@ -19,7 +19,7 @@ pub enum CapturePhase {
     /// The frame is here, not yet taken.
     Ready(Frame),
     /// It failed.
-    Failed(CaptureFailure),
+    Failed(CaptureError),
 }
 
 /// One capture.
@@ -71,7 +71,7 @@ impl Captures {
     /// Takes a finished capture out: its frame, or why it failed. `None` while it is still
     /// going or unknown.
     #[must_use]
-    pub fn take_ready(mut self, id: CaptureId) -> (Self, Option<Result<Frame, CaptureFailure>>) {
+    pub fn take_ready(mut self, id: CaptureId) -> (Self, Option<Result<Frame, CaptureError>>) {
         let Some(session) = self.0.remove(&id) else {
             return (self, None);
         };
@@ -121,7 +121,7 @@ pub(crate) fn reduce_captures(
             session.phase = ready_phase(session, stride, pixels);
         }
         (Stage::Negotiating, CaptureEvent::Ready { .. }) => {
-            session.phase = CapturePhase::Failed(CaptureFailure::BufferConstraints);
+            session.phase = CapturePhase::Failed(CaptureError::BufferConstraints);
         }
         _ => {}
     }
@@ -140,8 +140,8 @@ enum Stage {
 fn constraints_phase(session: &CaptureSession) -> CapturePhase {
     match (session.size, ShmFormat::pick(&session.formats)) {
         (Some(size), Some(_)) if size.w > 0 && size.h > 0 => CapturePhase::Capturing,
-        (_, None) => CapturePhase::Failed(CaptureFailure::NoShmFormat),
-        _ => CapturePhase::Failed(CaptureFailure::BufferConstraints),
+        (_, None) => CapturePhase::Failed(CaptureError::NoShmFormat),
+        _ => CapturePhase::Failed(CaptureError::BufferConstraints),
     }
 }
 
@@ -155,6 +155,6 @@ fn ready_phase(session: &CaptureSession, stride: u32, pixels: Vec<u8>) -> Captur
             frame.presented = session.presented;
             CapturePhase::Ready(frame)
         }
-        _ => CapturePhase::Failed(CaptureFailure::BufferConstraints),
+        _ => CapturePhase::Failed(CaptureError::BufferConstraints),
     }
 }

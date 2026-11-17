@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 
 /// Why a directory is not a [`Workdir`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum WorkdirFault {
+pub enum WorkdirError {
     /// Outside the session's folder.
     #[error("outside the session's folder")]
     Outside,
@@ -43,15 +43,15 @@ pub struct Workdir(AbsPath);
     clippy::needless_pass_by_value,
     reason = "passed by name to `map_err`, which hands the error over by value"
 )]
-fn not_folder(error: std::io::Error) -> WorkdirFault {
+fn not_folder(error: std::io::Error) -> WorkdirError {
     tracing::debug!(%error, "the folder cannot be looked at");
-    WorkdirFault::NotFolder
+    WorkdirError::NotFolder
 }
 
-fn abs(path: &Path) -> Result<AbsPath, WorkdirFault> {
+fn abs(path: &Path) -> Result<AbsPath, WorkdirError> {
     AbsPath::try_from(path).map_err(|error| {
         tracing::debug!(%error, "the folder is not an absolute path");
-        WorkdirFault::NotFolder
+        WorkdirError::NotFolder
     })
 }
 
@@ -66,22 +66,22 @@ impl Workdir {
     /// `home` if known.
     ///
     /// # Errors
-    /// Returns a [`WorkdirFault`] when `real` is outside `real_scope`, is the home folder or holds
+    /// Returns a [`WorkdirError`] when `real` is outside `real_scope`, is the home folder or holds
     /// it, or is a place that holds secrets.
     pub fn from_resolved(
         real_scope: &AbsPath,
         real: AbsPath,
         home: Option<&AbsPath>,
-    ) -> Result<Self, WorkdirFault> {
+    ) -> Result<Self, WorkdirError> {
         if !real_scope.covers(&real) {
-            return Err(WorkdirFault::Outside);
+            return Err(WorkdirError::Outside);
         }
         // Home itself, or a folder above it, would make home (and its dot-directories) writable.
         if home.is_some_and(|h| real.covers(h)) {
-            return Err(WorkdirFault::Home);
+            return Err(WorkdirError::Home);
         }
         if is_secret(&real) {
-            return Err(WorkdirFault::Secret);
+            return Err(WorkdirError::Secret);
         }
         Ok(Self(real))
     }
@@ -91,15 +91,15 @@ impl Workdir {
     /// The opened directory is compared with the one that was looked at.
     ///
     /// # Errors
-    /// Returns a [`WorkdirFault`] when `asked` is outside `scope`, is missing or not a folder,
+    /// Returns a [`WorkdirError`] when `asked` is outside `scope`, is missing or not a folder,
     /// has a link on the way, changed while it was opened, or is home or a place with secrets.
     pub fn resolve(
         scope: &AbsPath,
         asked: &AbsPath,
         home: Option<&Path>,
-    ) -> Result<Self, WorkdirFault> {
+    ) -> Result<Self, WorkdirError> {
         if !scope.covers(asked) {
-            return Err(WorkdirFault::Outside);
+            return Err(WorkdirError::Outside);
         }
         let real_scope = std::fs::canonicalize(scope.as_str()).map_err(not_folder)?;
         let below = asked
@@ -111,18 +111,18 @@ impl Workdir {
             at.push(part);
             let meta = std::fs::symlink_metadata(&at).map_err(not_folder)?;
             if meta.file_type().is_symlink() {
-                return Err(WorkdirFault::Link);
+                return Err(WorkdirError::Link);
             }
         }
         let looked = std::fs::symlink_metadata(&at).map_err(not_folder)?;
         if !looked.is_dir() {
-            return Err(WorkdirFault::NotFolder);
+            return Err(WorkdirError::NotFolder);
         }
         let opened = std::fs::File::open(&at)
             .and_then(|f| f.metadata())
             .map_err(not_folder)?;
         if !same_directory(&looked, &opened) {
-            return Err(WorkdirFault::Moved);
+            return Err(WorkdirError::Moved);
         }
         let home = home
             .map(|h| std::fs::canonicalize(h).unwrap_or_else(|_| h.to_path_buf()))

@@ -37,8 +37,8 @@ use http_core::{Http, request};
 use sync_core::DELETED;
 use sync_core::status::{refused, write_unreached};
 use sync_core::{
-    BaseVersion, Conflict, DriveWrite, Found, Place, PutRefused, RemoteId, RemoteSide,
-    RemoteVersion, RetryAfter, Session, Upload, UploadTo, Written,
+    BaseVersion, Conflict, DriveWrite, Found, Place, PutError, RemoteId, RemoteSide, RemoteVersion,
+    RetryAfter, Session, Upload, UploadTo, Written,
 };
 
 /// The characters `OneDrive` refuses in a name.
@@ -75,8 +75,8 @@ pub fn accepts_name(name: &str) -> bool {
         && !device("lpt")
 }
 
-pub(crate) fn again(source: impl std::error::Error + Send + Sync + 'static) -> PutRefused {
-    PutRefused::failed(RetryAfter(30), source)
+pub(crate) fn again(source: impl std::error::Error + Send + Sync + 'static) -> PutError {
+    PutError::failed(RetryAfter(30), source)
 }
 
 /// Whether `response` says the name is taken (`409 nameAlreadyExists`).
@@ -88,9 +88,9 @@ fn name_taken(response: &Response<Vec<u8>>) -> bool {
 /// A whole-drive write answered with `response`, which was not a success, a stale base or a
 /// name taken: a name the drive refuses (`400 invalidRequest` on a write that names the item,
 /// `named`) says so; the rest as [`write_error`].
-fn drive_refusal(response: &Response<Vec<u8>>, named: bool, now: UnixSeconds) -> PutRefused {
+fn drive_refusal(response: &Response<Vec<u8>>, named: bool, now: UnixSeconds) -> PutError {
     match (response.status().as_u16(), error_code(response).as_deref()) {
-        (400, Some("invalidRequest" | "nameInvalid")) if named => PutRefused::NameRefused,
+        (400, Some("invalidRequest" | "nameInvalid")) if named => PutError::NameRefused,
         _ => write_error(response, now),
     }
 }
@@ -106,7 +106,7 @@ fn guard_of(base: &BaseVersion) -> Option<&str> {
 
 impl<H: Http> GraphReplica<H> {
     /// The id of `place`'s folder: its own, or the dataset folder's for the top.
-    async fn parent_id(&self, place: &Place) -> Result<String, PutRefused> {
+    async fn parent_id(&self, place: &Place) -> Result<String, PutError> {
         match &place.parent {
             Some(id) => Ok(id.0.clone()),
             None => self.root_id(false).await.map_err(refused),
@@ -114,7 +114,7 @@ impl<H: Http> GraphReplica<H> {
     }
 
     /// What a write that made or changed an item answered with: the item.
-    fn written(response: &Response<Vec<u8>>) -> Result<(Written, DriveItem), PutRefused> {
+    fn written(response: &Response<Vec<u8>>) -> Result<(Written, DriveItem), PutError> {
         let item: DriveItem = serde_json::from_slice(response.body()).map_err(again)?;
         let written = Written {
             id: RemoteId(item.id.clone()),
@@ -135,13 +135,13 @@ impl<H: Http> GraphReplica<H> {
     }
 
     /// The conflict a refused change of `item` is: what the server has now.
-    async fn changed_conflict(&self, item: &RemoteId, base: &BaseVersion) -> PutRefused {
+    async fn changed_conflict(&self, item: &RemoteId, base: &BaseVersion) -> PutError {
         let remote = match self.item_now(&item.0).await {
             Err(error) => return refused(error),
             Ok(Some(now)) => RemoteSide::Changed(RemoteVersion(now.etag.unwrap_or_default())),
             Ok(None) => RemoteSide::Deleted(RemoteVersion(DELETED.to_owned())),
         };
-        PutRefused::Conflict(Conflict {
+        PutError::Conflict(Conflict {
             item: item.clone(),
             base: base.clone(),
             remote,
@@ -149,7 +149,7 @@ impl<H: Http> GraphReplica<H> {
     }
 
     /// The conflict a new item whose name is taken is: the item there.
-    async fn taken_conflict(&self, place: &Place) -> PutRefused {
+    async fn taken_conflict(&self, place: &Place) -> PutError {
         let parent = match self.parent_id(place).await {
             Ok(parent) => parent,
             Err(why) => return why,
@@ -157,7 +157,7 @@ impl<H: Http> GraphReplica<H> {
         let url = self.addr.child(Some(&parent), &place.name, None, "");
         match self.read_item(url).await {
             Err(error) => refused(error),
-            Ok(Some(item)) => PutRefused::Conflict(Conflict {
+            Ok(Some(item)) => PutError::Conflict(Conflict {
                 item: RemoteId(item.id.clone()),
                 base: BaseVersion::Absent,
                 remote: RemoteSide::Exists(
@@ -166,7 +166,7 @@ impl<H: Http> GraphReplica<H> {
                 ),
             }),
             // Taken a moment ago and gone now: try again.
-            Ok(None) => PutRefused::Transient(RetryAfter(1)),
+            Ok(None) => PutError::Transient(RetryAfter(1)),
         }
     }
 
@@ -176,7 +176,7 @@ impl<H: Http> GraphReplica<H> {
         response: Response<Vec<u8>>,
         to: &UploadTo,
         base: &BaseVersion,
-    ) -> Result<Written, PutRefused> {
+    ) -> Result<Written, PutError> {
         match (response.status().as_u16(), to) {
             (200 | 201, _) => {
                 let (written, item) = Self::written(&response)?;
@@ -197,7 +197,7 @@ impl<H: Http> GraphReplica<H> {
 
     /// Whether the file an upload replaces is still the version it was made against; else the
     /// conflict that is.
-    async fn still_at_base(&self, upload: &Upload<'_>) -> Result<(), PutRefused> {
+    async fn still_at_base(&self, upload: &Upload<'_>) -> Result<(), PutError> {
         let (UploadTo::Replace(id), BaseVersion::At(seen)) = (&upload.to, &upload.base) else {
             return Ok(());
         };
@@ -216,7 +216,7 @@ impl<H: Http> GraphReplica<H> {
         upload.progress.session(None);
     }
 
-    async fn drive_upload(&self, upload: Upload<'_>) -> Result<Written, PutRefused> {
+    async fn drive_upload(&self, upload: Upload<'_>) -> Result<Written, PutError> {
         if let (UploadTo::Replace(id), BaseVersion::Absent) = (&upload.to, &upload.base) {
             return Err(self.changed_conflict(id, &upload.base).await);
         }
@@ -235,7 +235,7 @@ impl<H: Http> GraphReplica<H> {
                 }
                 UploadTo::Replace(id) => self.addr.item(&id.0, Some("content"), ""),
             };
-            let put = request(Method::PUT, &url.ok_or(PutRefused::Forbidden)?)
+            let put = request(Method::PUT, &url.ok_or(PutError::Forbidden)?)
                 .header(CONTENT_TYPE, "application/octet-stream");
             let put = match guard_of(&upload.base) {
                 Some(tag) => put.header("If-Match", tag),
@@ -253,7 +253,7 @@ impl<H: Http> GraphReplica<H> {
 
     /// Where a session from before stands: the first byte it still wants, or `None` when the
     /// server no longer has it.
-    async fn resumed(&self, session: &Session) -> Result<Option<(WebUrl, u64)>, PutRefused> {
+    async fn resumed(&self, session: &Session) -> Result<Option<(WebUrl, u64)>, PutError> {
         let Ok(url) = WebUrl::parse(session.address()) else {
             return Ok(None);
         };
@@ -276,7 +276,7 @@ impl<H: Http> GraphReplica<H> {
     async fn open_session(
         &self,
         upload: &Upload<'_>,
-    ) -> Result<Result<WebUrl, Response<Vec<u8>>>, PutRefused> {
+    ) -> Result<Result<WebUrl, Response<Vec<u8>>>, PutError> {
         let (url, behaviour) = match &upload.to {
             UploadTo::New(place) => {
                 let parent = self.parent_id(place).await?;
@@ -292,7 +292,7 @@ impl<H: Http> GraphReplica<H> {
             ),
         };
         let body = format!(r#"{{"item":{{"@microsoft.graph.conflictBehavior":"{behaviour}"}}}}"#);
-        let create = request(Method::POST, &url.ok_or(PutRefused::Forbidden)?)
+        let create = request(Method::POST, &url.ok_or(PutError::Forbidden)?)
             .header(CONTENT_TYPE, "application/json");
         let create = match guard_of(&upload.base) {
             Some(tag) => create.header("If-Match", tag),
@@ -314,7 +314,7 @@ impl<H: Http> GraphReplica<H> {
     }
 
     /// Sends `upload` in a session, resuming the one it names when the server still has it.
-    async fn in_session(&self, upload: &Upload<'_>) -> Result<Response<Vec<u8>>, PutRefused> {
+    async fn in_session(&self, upload: &Upload<'_>) -> Result<Response<Vec<u8>>, PutError> {
         let resumed = match &upload.resume {
             Some(session) => self.resumed(session).await?,
             None => None,
@@ -341,7 +341,7 @@ impl<H: Http> GraphReplica<H> {
         while sent < total {
             if upload.progress.held() {
                 // Paused: the session stays, to be resumed.
-                return Err(PutRefused::Transient(RetryAfter(0)));
+                return Err(PutError::Transient(RetryAfter(0)));
             }
             let chunk = upload
                 .content
@@ -384,15 +384,15 @@ impl<H: Http> GraphReplica<H> {
                 }
             }
         }
-        Err(PutRefused::Transient(RetryAfter(30)))
+        Err(PutError::Transient(RetryAfter(30)))
     }
 
-    async fn drive_make_folder(&self, place: &Place) -> Result<Written, PutRefused> {
+    async fn drive_make_folder(&self, place: &Place) -> Result<Written, PutError> {
         let parent = self.parent_id(place).await?;
         let url = self
             .addr
             .item(&parent, Some("children"), "")
-            .ok_or(PutRefused::Forbidden)?;
+            .ok_or(PutError::Forbidden)?;
         let body = format!(
             r#"{{"name":{},"folder":{{}},"@microsoft.graph.conflictBehavior":"fail"}}"#,
             json_string(&place.name)
@@ -418,7 +418,7 @@ impl<H: Http> GraphReplica<H> {
         item: &RemoteId,
         base: &BaseVersion,
         to: &Place,
-    ) -> Result<Written, PutRefused> {
+    ) -> Result<Written, PutError> {
         let Some(tag) = guard_of(base) else {
             return Err(self.changed_conflict(item, base).await);
         };
@@ -426,7 +426,7 @@ impl<H: Http> GraphReplica<H> {
         let url = self
             .addr
             .item(&item.0, None, "")
-            .ok_or(PutRefused::Forbidden)?;
+            .ok_or(PutError::Forbidden)?;
         let body = format!(
             r#"{{"name":{},"parentReference":{{"id":{}}}}}"#,
             json_string(&to.name),
@@ -450,14 +450,14 @@ impl<H: Http> GraphReplica<H> {
         }
     }
 
-    async fn drive_trash(&self, item: &RemoteId, base: &BaseVersion) -> Result<(), PutRefused> {
+    async fn drive_trash(&self, item: &RemoteId, base: &BaseVersion) -> Result<(), PutError> {
         let Some(tag) = guard_of(base) else {
             return Err(self.changed_conflict(item, base).await);
         };
         let url = self
             .addr
             .item(&item.0, None, "")
-            .ok_or(PutRefused::Forbidden)?;
+            .ok_or(PutError::Forbidden)?;
         // OneDrive keeps a deleted item in the recycle bin.
         let delete = request(Method::DELETE, &url)
             .header("If-Match", tag)
@@ -474,7 +474,7 @@ impl<H: Http> GraphReplica<H> {
         }
     }
 
-    async fn drive_look(&self, item: &RemoteId) -> Result<Option<Found>, PutRefused> {
+    async fn drive_look(&self, item: &RemoteId) -> Result<Option<Found>, PutError> {
         let now = self.item_now(&item.0).await.map_err(refused)?;
         Ok(now.filter(|now| now.deleted.is_none()).map(|now| Found {
             version: RemoteVersion(now.etag.clone().unwrap_or_default()),
@@ -494,15 +494,15 @@ impl<H: Http> DriveWrite for GraphReplica<H> {
         Some(PATH_MAX)
     }
 
-    async fn look(&self, item: &RemoteId) -> Result<Option<Found>, PutRefused> {
+    async fn look(&self, item: &RemoteId) -> Result<Option<Found>, PutError> {
         self.drive_look(item).await
     }
 
-    async fn make_folder(&self, place: &Place) -> Result<Written, PutRefused> {
+    async fn make_folder(&self, place: &Place) -> Result<Written, PutError> {
         self.drive_make_folder(place).await
     }
 
-    async fn upload(&self, upload: Upload<'_>) -> Result<Written, PutRefused> {
+    async fn upload(&self, upload: Upload<'_>) -> Result<Written, PutError> {
         self.drive_upload(upload).await
     }
 
@@ -511,11 +511,11 @@ impl<H: Http> DriveWrite for GraphReplica<H> {
         item: &RemoteId,
         base: &BaseVersion,
         to: &Place,
-    ) -> Result<Written, PutRefused> {
+    ) -> Result<Written, PutError> {
         self.drive_relocate(item, base, to).await
     }
 
-    async fn trash(&self, item: &RemoteId, base: &BaseVersion) -> Result<(), PutRefused> {
+    async fn trash(&self, item: &RemoteId, base: &BaseVersion) -> Result<(), PutError> {
         self.drive_trash(item, base).await
     }
 
@@ -576,17 +576,17 @@ mod tests {
     #[test]
     fn a_refused_name_a_lock_and_a_conflict_that_is_no_name_say_what_they_are() {
         let named = |status, code| drive_refusal(&answer(status, code), true, UnixSeconds(0));
-        assert_eq!(named(400, "invalidRequest"), PutRefused::NameRefused);
+        assert_eq!(named(400, "invalidRequest"), PutError::NameRefused);
         assert_eq!(
             drive_refusal(&answer(400, "invalidRequest"), false, UnixSeconds(0)),
-            PutRefused::Forbidden
+            PutError::Forbidden
         );
-        assert_eq!(named(409, "resourceModified"), PutRefused::Declined);
+        assert_eq!(named(409, "resourceModified"), PutError::Declined);
         assert_eq!(
             named(423, "resourceLocked"),
-            PutRefused::InUse(RetryAfter(30))
+            PutError::InUse(RetryAfter(30))
         );
-        assert_eq!(named(401, "unauthenticated"), PutRefused::Unauthorized);
+        assert_eq!(named(401, "unauthenticated"), PutError::Unauthorized);
         assert!(name_taken(&answer(409, "nameAlreadyExists")));
         assert!(!name_taken(&answer(409, "resourceModified")));
     }

@@ -3,7 +3,7 @@
 //! pattern refuses the whole file and names the program and the entry; an allow list with
 //! nothing in it refuses too, because it would reach nothing and is surely a mistake.
 
-use crate::config::ConfigFault;
+use crate::config::ConfigError;
 use sandbox::egress::{DEFAULT_PORTS, EgressPolicy, Host, HostPattern, Ports};
 
 /// The checked lists of one program.
@@ -14,8 +14,8 @@ pub struct Reach {
 }
 
 /// One entry of a list, parsed, or the fault that names it.
-fn pattern(program: &str, list: &'static str, entry: &str) -> Result<HostPattern, ConfigFault> {
-    HostPattern::parse(entry).map_err(|why| ConfigFault::Site {
+fn pattern(program: &str, list: &'static str, entry: &str) -> Result<HostPattern, ConfigError> {
+    HostPattern::parse(entry).map_err(|why| ConfigError::Site {
         program: program.to_owned(),
         list,
         entry: entry.to_owned(),
@@ -27,7 +27,7 @@ fn patterns(
     program: &str,
     list: &'static str,
     entries: &[String],
-) -> Result<Vec<HostPattern>, ConfigFault> {
+) -> Result<Vec<HostPattern>, ConfigError> {
     entries.iter().map(|e| pattern(program, list, e)).collect()
 }
 
@@ -40,15 +40,15 @@ fn shown(pattern: &HostPattern) -> String {
     }
 }
 
-fn fault(program: &str, why: &str) -> ConfigFault {
-    ConfigFault::Entry {
+fn fault(program: &str, why: &str) -> ConfigError {
+    ConfigError::Entry {
         program: program.to_owned(),
         why: why.to_owned(),
     }
 }
 
 /// [`fault`] for a value that was refused: `why`, then what refused it.
-fn fault_value(program: &str, why: &str, cause: &impl std::fmt::Display) -> ConfigFault {
+fn fault_value(program: &str, why: &str, cause: &impl std::fmt::Display) -> ConfigError {
     fault(program, &format!("{why}: {cause}"))
 }
 
@@ -57,14 +57,14 @@ impl Reach {
     ///
     /// # Errors
     ///
-    /// Returns a [`ConfigFault`] when an `allow` or `deny` entry is not a usable site, an extra
+    /// Returns a [`ConfigError`] when an `allow` or `deny` entry is not a usable site, an extra
     /// port is not 1 to 65535, or the allow list is empty.
     pub fn new(
         program: &str,
         allow: &[String],
         deny: &[String],
         extra_ports: &[u16],
-    ) -> Result<Self, ConfigFault> {
+    ) -> Result<Self, ConfigError> {
         let allowed = patterns(program, "allow", allow)?;
         let denied = patterns(program, "deny", deny)?;
         let sites = allowed.iter().map(shown).collect();

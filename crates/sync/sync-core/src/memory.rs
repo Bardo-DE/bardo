@@ -5,7 +5,7 @@ use crate::anchor::{Anchor, Cursor};
 use crate::change::{Change, ChangePage, More, Tombstone};
 use crate::item::{BaseVersion, ItemKind, RemoteId, RemoteItem, RemoteVersion};
 use crate::quota::Quota;
-use crate::refusal::{Conflict, PutRefused, RemoteSide, ReplicaError};
+use crate::refusal::{Conflict, PutError, RemoteSide, ReplicaError};
 use crate::replica::Replica;
 use crate::transfer::{Blob, ByteRange, PutItem, PutTarget};
 use account_capability::StorageCap;
@@ -48,7 +48,7 @@ impl MemoryReplica {
     }
 
     /// The same replica with room for `limit` bytes: a write that would pass it is refused
-    /// `PutRefused::Quota`, and `quota` reports it as the total.
+    /// `PutError::Quota`, and `quota` reports it as the total.
     #[must_use]
     pub fn with_limit(self, limit: Bytes) -> Self {
         Self {
@@ -96,7 +96,7 @@ impl State {
     }
 
     /// `Ok` when `base` is the replica's version of `id`, else the conflict.
-    fn check(&self, id: &RemoteId, base: &BaseVersion) -> Result<(), PutRefused> {
+    fn check(&self, id: &RemoteId, base: &BaseVersion) -> Result<(), PutError> {
         let conflict = |remote| Conflict {
             item: id.clone(),
             base: base.clone(),
@@ -104,13 +104,13 @@ impl State {
         };
         match (self.live.get(id), self.deleted.get(id), base) {
             (Some((item, _)), _, BaseVersion::At(seen)) if item.version == *seen => Ok(()),
-            (Some((item, _)), _, _) => Err(PutRefused::Conflict(conflict(RemoteSide::Changed(
+            (Some((item, _)), _, _) => Err(PutError::Conflict(conflict(RemoteSide::Changed(
                 item.version.clone(),
             )))),
-            (None, Some(gone), _) => Err(PutRefused::Conflict(conflict(RemoteSide::Deleted(
+            (None, Some(gone), _) => Err(PutError::Conflict(conflict(RemoteSide::Deleted(
                 gone.clone(),
             )))),
-            (None, None, _) => Err(PutRefused::Forbidden),
+            (None, None, _) => Err(PutError::Forbidden),
         }
     }
 
@@ -189,19 +189,19 @@ impl Replica for MemoryReplica {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         let mut state = self.state();
         let (id, path) = match item.target {
             PutTarget::Existing(id) => {
                 state.check(&id, &base)?;
                 let path = state.live.get(&id).map(|(live, _)| live.path.clone());
-                (id, path.ok_or(PutRefused::Forbidden)?)
+                (id, path.ok_or(PutError::Forbidden)?)
             }
             PutTarget::New(path) => {
                 let taken = state.live.values().find(|(live, _)| live.path == path);
                 if let Some((live, _)) = taken {
                     let remote = RemoteSide::Exists(live.id.clone(), live.version.clone());
-                    return Err(PutRefused::Conflict(Conflict {
+                    return Err(PutError::Conflict(Conflict {
                         item: live.id.clone(),
                         base,
                         remote,
@@ -214,7 +214,7 @@ impl Replica for MemoryReplica {
         let replaced = state.live.get(&id).map_or(0, |(old, _)| old.size.0);
         let after = state.used().saturating_sub(replaced).saturating_add(size.0);
         if self.limit.is_some_and(|Bytes(limit)| after > limit) {
-            return Err(PutRefused::Quota);
+            return Err(PutError::Quota);
         }
         let (seq, version) = state.bump();
         let stored = RemoteItem {
@@ -236,11 +236,7 @@ impl Replica for MemoryReplica {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to wait for"
     )]
-    async fn remove(
-        &self,
-        item: &RemoteId,
-        base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    async fn remove(&self, item: &RemoteId, base: BaseVersion) -> Result<RemoteVersion, PutError> {
         let mut state = self.state();
         state.check(item, &base)?;
         let (seq, version) = state.bump();

@@ -22,7 +22,7 @@ use sync_engine::scheduler::{Network, Settings};
 use sync_journal_sqlite::{Journal, SqliteError};
 use sync_pim_feed::source::{
     Chosen, DavSource, FeedReplica, GoogleCalendarSource, GooglePeopleSource, GoogleTasksSource,
-    GraphCalendarSource, NoSource, PimSource, choose, endpoint_of,
+    GraphCalendarSource, NoSourceError, PimSource, choose, endpoint_of,
 };
 use sync_pim_feed::{DiscoverError, PimKind};
 use sync_vdir::Meta;
@@ -63,7 +63,7 @@ pub enum RefreshError {
     NoEndpoint(PimKind),
     /// No source reads the grant's transport for this kind.
     #[error(transparent)]
-    NoSource(#[from] NoSource),
+    NoSource(#[from] NoSourceError),
     /// The server's collections could not be read.
     #[error(transparent)]
     Discover(#[from] DiscoverError),

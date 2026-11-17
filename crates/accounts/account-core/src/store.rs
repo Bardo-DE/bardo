@@ -44,7 +44,7 @@ pub struct AccountToggle {
 /// Why a stored document was refused. accountd refuses to start over a file it cannot read
 /// rather than start empty and overwrite it.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
-pub enum StoreFault {
+pub enum AccountStoreError {
     /// Not valid JSON, or not the stored schema.
     #[error("registry file unreadable: {0}")]
     Unreadable(String),
@@ -68,7 +68,7 @@ pub enum StoreError {
     /// The stored document was refused (corrupt, from a newer build); the daemon must not start
     /// empty over it.
     #[error(transparent)]
-    Fault(#[from] StoreFault),
+    Fault(#[from] AccountStoreError),
     /// The store is out of reach for a reason it has no error for (a stand-in store that refuses).
     #[error("registry store unavailable")]
     Unavailable,
@@ -129,7 +129,7 @@ impl RegistryStore for NoStore {
 }
 
 /// A step from one vocabulary version to the next, over the document's JSON.
-type Migration = fn(Value) -> Result<Value, StoreFault>;
+type Migration = fn(Value) -> Result<Value, AccountStoreError>;
 
 /// Every step, keyed by the version it starts from. A bump of `VocabVersion::CURRENT` that changes
 /// the stored document's shape adds its row here, with a fixture of the old document in the
@@ -154,48 +154,48 @@ impl Persisted {
     ///
     /// # Errors
     ///
-    /// `StoreFault::Unreadable` when the registry cannot be encoded as JSON.
-    pub fn to_json(&self) -> Result<String, StoreFault> {
-        serde_json::to_string_pretty(self).map_err(|e| StoreFault::Unreadable(e.to_string()))
+    /// `AccountStoreError::Unreadable` when the registry cannot be encoded as JSON.
+    pub fn to_json(&self) -> Result<String, AccountStoreError> {
+        serde_json::to_string_pretty(self).map_err(|e| AccountStoreError::Unreadable(e.to_string()))
     }
 
     /// The registry a stored document holds, migrated to this build's vocabulary.
     ///
     /// # Errors
     ///
-    /// `StoreFault::Unreadable` when `text` is not JSON, has no vocabulary version, or is not a
+    /// `AccountStoreError::Unreadable` when `text` is not JSON, has no vocabulary version, or is not a
     /// registry, and the fault the migration to this build's vocabulary reports when the document
     /// cannot be migrated.
-    pub fn from_json(text: &str) -> Result<Self, StoreFault> {
+    pub fn from_json(text: &str) -> Result<Self, AccountStoreError> {
         let document: Value =
-            serde_json::from_str(text).map_err(|e| StoreFault::Unreadable(e.to_string()))?;
+            serde_json::from_str(text).map_err(|e| AccountStoreError::Unreadable(e.to_string()))?;
         let stored: VocabVersion = document
             .get("vocab")
             .cloned()
             .and_then(|v| serde_json::from_value(v).ok())
-            .ok_or_else(|| StoreFault::Unreadable("no vocab".into()))?;
+            .ok_or_else(|| AccountStoreError::Unreadable("no vocab".into()))?;
         let document = migrate(document, stored)?;
-        let persisted: Persisted =
-            serde_json::from_value(document).map_err(|e| StoreFault::Unreadable(e.to_string()))?;
+        let persisted: Persisted = serde_json::from_value(document)
+            .map_err(|e| AccountStoreError::Unreadable(e.to_string()))?;
         match persisted
             .accounts
             .iter()
             .find(|a| a.endpoints.iter().any(|e| e.check().is_err()))
         {
-            Some(account) => Err(StoreFault::BadEndpoint(account.id.clone())),
+            Some(account) => Err(AccountStoreError::BadEndpoint(account.id.clone())),
             None => Ok(persisted),
         }
     }
 }
 
 /// `document`, written at `from`, brought to the current vocabulary one step at a time.
-fn migrate(document: Value, from: VocabVersion) -> Result<Value, StoreFault> {
+fn migrate(document: Value, from: VocabVersion) -> Result<Value, AccountStoreError> {
     let current = VocabVersion::CURRENT;
     if from > current {
-        return Err(StoreFault::FromNewerVocabulary(from));
+        return Err(AccountStoreError::FromNewerVocabulary(from));
     }
     if from < FIRST_PERSISTED {
-        return Err(StoreFault::NoMigration(from));
+        return Err(AccountStoreError::NoMigration(from));
     }
     let mut at = from;
     let mut document = document;

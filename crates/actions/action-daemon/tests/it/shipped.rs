@@ -1,7 +1,7 @@
 //! The search file an app ships: optional fields default, entries are in no Space and never
 //! updated, and anything else in the file is refused.
 
-use action_daemon::{ShippedEntries, ShippedFault};
+use action_daemon::{ShippedEntries, ShippedError};
 use provenance::{SpaceScope, UnixSeconds};
 
 #[test]
@@ -37,7 +37,7 @@ fn a_file_that_is_not_a_search_file_is_malformed() {
         "[[entries]]\nkind = \"a.b\"\nkey = \"k\"\ntitle = \"T\"\nextra = 1\n",
     ] {
         assert!(
-            matches!(ShippedEntries::parse(text), Err(ShippedFault::Malformed(_))),
+            matches!(ShippedEntries::parse(text), Err(ShippedError::Malformed(_))),
             "{text}"
         );
     }

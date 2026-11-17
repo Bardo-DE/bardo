@@ -14,7 +14,7 @@
 //! a refusal that names it.
 
 use crate::choice::ModelRef;
-use crate::error::InferRefusal;
+use crate::error::InferRefusedError;
 use crate::pick::{
     AutoPolicy, Declined, Pick, PickCandidate, PickPolicy, PickRefusal, Picked, Why,
 };
@@ -379,11 +379,11 @@ pub fn plan_pipeline(
 
 /// A refusal that carries no model, for a caller that only needs the typed reason.
 impl Refusal {
-    /// The `InferRefusal` a session ends with for this.
+    /// The `InferRefusedError` a session ends with for this.
     #[must_use]
-    pub fn infer_refusal(&self) -> InferRefusal {
+    pub fn infer_refusal(&self) -> InferRefusedError {
         match self {
-            Refusal::ImagesNeedDescribing | Refusal::NotYet(_) => InferRefusal::Unsupported,
+            Refusal::ImagesNeedDescribing | Refusal::NotYet(_) => InferRefusedError::Unsupported,
             Refusal::Stage { refusal, .. } => refusal.refusal,
         }
     }

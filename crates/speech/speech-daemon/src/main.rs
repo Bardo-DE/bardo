@@ -17,7 +17,7 @@ struct Args {
 
 /// Why the configuration was not read.
 #[derive(Debug, thiserror::Error)]
-enum LoadFault {
+enum LoadError {
     #[error("{path}: {source}")]
     Unread {
         path: String,
@@ -27,8 +27,8 @@ enum LoadFault {
     Invalid(#[from] ConfigError),
 }
 
-fn load(path: &std::path::Path) -> Result<VoicedConfig, LoadFault> {
-    let text = std::fs::read_to_string(path).map_err(|source| LoadFault::Unread {
+fn load(path: &std::path::Path) -> Result<VoicedConfig, LoadError> {
+    let text = std::fs::read_to_string(path).map_err(|source| LoadError::Unread {
         path: path.display().to_string(),
         source,
     })?;

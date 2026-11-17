@@ -96,7 +96,7 @@ pub enum ResumeFault {
 
 /// Why there is no plan at all.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum PlanRefusal {
+pub enum PlanError {
     /// No entries.
     #[error("the session has no entries")]
     Empty,

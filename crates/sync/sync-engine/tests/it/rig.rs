@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 use sync_core::{
     BaseVersion, Blob, ByteRange, Change, ChangePage, ConflictRule, Cursor, ItemPath,
-    MemoryReplica, PutItem, PutRefused, PutTarget, Quota, RemoteId, RemoteVersion, Replica,
+    MemoryReplica, PutError, PutItem, PutTarget, Quota, RemoteId, RemoteVersion, Replica,
     ReplicaError,
 };
 use sync_engine::clock::ManualClock;
@@ -35,7 +35,7 @@ pub fn caps(hashes: HashKind, quota: bool, delta: Delta) -> StorageCap {
 pub struct Faulty {
     pub inner: MemoryReplica,
     pub changes_fault: Mutex<Option<ReplicaError>>,
-    pub put_fault: Mutex<Option<PutRefused>>,
+    pub put_fault: Mutex<Option<PutError>>,
     /// Changes added to every page the replica answers (a whole drive's folders and online
     /// items, which the memory replica does not make).
     pub planted: Mutex<Vec<Change>>,
@@ -55,7 +55,7 @@ impl Faulty {
             .unwrap_or_else(PoisonError::into_inner) = Some(error);
     }
 
-    pub fn fail_next_put(&self, refused: PutRefused) {
+    pub fn fail_next_put(&self, refused: PutError) {
         *self
             .put_fault
             .lock()
@@ -91,7 +91,7 @@ impl Replica for Shared {
         &self,
         item: PutItem,
         base: BaseVersion,
-    ) -> Result<(RemoteId, RemoteVersion), PutRefused> {
+    ) -> Result<(RemoteId, RemoteVersion), PutError> {
         self.0.puts.fetch_add(1, Ordering::Relaxed);
         if let Some(fault) = take(&self.0.put_fault) {
             return Err(fault);
@@ -99,11 +99,7 @@ impl Replica for Shared {
         self.0.inner.put(item, base).await
     }
 
-    async fn remove(
-        &self,
-        item: &RemoteId,
-        base: BaseVersion,
-    ) -> Result<RemoteVersion, PutRefused> {
+    async fn remove(&self, item: &RemoteId, base: BaseVersion) -> Result<RemoteVersion, PutError> {
         self.0.inner.remove(item, base).await
     }
 
@@ -295,7 +291,7 @@ pub async fn settle(engine: &TestEngine, limit: usize) -> Report {
 /// The error a cut write fails with.
 #[derive(Debug, thiserror::Error)]
 #[error("cut before write")]
-pub struct Cut;
+pub struct CutError;
 
 /// A SQLite journal that can be told to die before a write.
 #[derive(Debug)]
@@ -316,7 +312,7 @@ impl JournalStore for CutHandle {
     fn apply(&self, ops: &[Op]) -> Result<(), JournalError> {
         let cut = *self.0.cut.lock().unwrap_or_else(PoisonError::into_inner);
         if cut.is_some_and(|at| self.0.inner.writes() >= at) {
-            return Err(JournalError::Store(Box::new(Cut)));
+            return Err(JournalError::Store(Box::new(CutError)));
         }
         JournalStore::apply(&self.0.inner, ops)
     }

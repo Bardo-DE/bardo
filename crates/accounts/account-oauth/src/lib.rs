@@ -20,13 +20,13 @@ mod scripted;
 
 pub use authorize::{AuthorizeAsk, GooglePrompt, authorize_url, authorize_url_for, redeem_scope};
 pub use exchange::{
-    DEFAULT_EXPIRES_IN_SECONDS, ExchangeFailure, ExchangeFault, TokenResponse, exchange_code,
+    DEFAULT_EXPIRES_IN_SECONDS, ExchangeCauseError, ExchangeError, TokenResponse, exchange_code,
     exchange_code_scoped, exchange_code_scoped_detailed, refresh, refresh_scoped,
     refresh_scoped_detailed, revoke,
 };
 pub use issuer::{IssuerSays, SAYS_MAX_CHARS};
 pub use loopback::{
-    AuthCode, LoopbackFault, MAX_REDIRECT_BYTES, MAX_STRAY_REQUESTS, REDIRECT_WAIT_SECONDS,
+    AuthCode, LoopbackError, MAX_REDIRECT_BYTES, MAX_STRAY_REQUESTS, REDIRECT_WAIT_SECONDS,
     STRAY_READ_SECONDS, parse_redirect,
 };
 #[cfg(feature = "io")]

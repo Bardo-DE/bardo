@@ -8,7 +8,7 @@ use crate::support::world::*;
 use action_core::{HandOver, HandRefusal, HandReply, Handed, Reveal};
 use companion_tasks::Handoff;
 use companion_wire::{AnswerBody, AnswerPhase, AnswerWire, RefusalWire, footer_line};
-use inference_core::{Declined, DeclinedBecause, InferEvent, InferRefusal, ModelRef};
+use inference_core::{Declined, DeclinedBecause, InferEvent, InferRefusedError, ModelRef};
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
 
@@ -48,7 +48,7 @@ fn chose_the_agent() -> Say {
     };
     Say::Routed(
         vec![InferEvent::Declined(declined)],
-        Box::new(Say::Refuse(InferRefusal::Unavailable)),
+        Box::new(Say::Refuse(InferRefusedError::Unavailable)),
     )
 }
 

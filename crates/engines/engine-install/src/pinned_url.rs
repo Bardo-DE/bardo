@@ -5,7 +5,7 @@ use url::Url;
 /// The text is not an `https` address with a host.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 #[error("not an https address with a host")]
-pub struct NotPinned;
+pub struct NotPinnedError;
 
 /// An `https` address with a host: the only kind the manifest pins and a redirect may lead to.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -15,23 +15,23 @@ impl PinnedUrl {
     /// The address `text` names.
     ///
     /// # Errors
-    /// [`NotPinned`] for text that is not a URL, is not `https`, or has no host.
-    pub fn parse(text: &str) -> Result<Self, NotPinned> {
+    /// [`NotPinnedError`] for text that is not a URL, is not `https`, or has no host.
+    pub fn parse(text: &str) -> Result<Self, NotPinnedError> {
         let Ok(url) = Url::parse(text) else {
-            return Err(NotPinned);
+            return Err(NotPinnedError);
         };
         (url.scheme() == "https" && url.host_str().is_some())
             .then_some(Self(url))
-            .ok_or(NotPinned)
+            .ok_or(NotPinnedError)
     }
 
     /// The address a `Location` header names from here: absolute, or relative to this one.
     ///
     /// # Errors
-    /// [`NotPinned`] when it does not lead to an `https` address.
-    pub fn join(&self, location: &str) -> Result<Self, NotPinned> {
+    /// [`NotPinnedError`] when it does not lead to an `https` address.
+    pub fn join(&self, location: &str) -> Result<Self, NotPinnedError> {
         let Ok(joined) = self.0.join(location) else {
-            return Err(NotPinned);
+            return Err(NotPinnedError);
         };
         Self::parse(joined.as_str())
     }
@@ -72,7 +72,7 @@ mod tests {
             "",
             "file:///x",
         ] {
-            assert_eq!(PinnedUrl::parse(text), Err(NotPinned), "{text:?}");
+            assert_eq!(PinnedUrl::parse(text), Err(NotPinnedError), "{text:?}");
         }
         let url = PinnedUrl::parse("https://a.example:8443/p/q%2Br.tar.gz?x=1").expect("pinned");
         assert_eq!(
@@ -100,6 +100,6 @@ mod tests {
             (path.host(), path.path_and_query().as_str()),
             ("a.example", "/real?t=1")
         );
-        assert_eq!(from.join("http://b.example/real"), Err(NotPinned));
+        assert_eq!(from.join("http://b.example/real"), Err(NotPinnedError));
     }
 }

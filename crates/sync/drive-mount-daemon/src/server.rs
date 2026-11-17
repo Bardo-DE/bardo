@@ -9,7 +9,7 @@
 //! with its [`Code`] and is said in full on stderr.
 
 use crate::mountinfo;
-use crate::wire::{self, Access, BadMessage, Code, FSTYPE, FolderName, Reply, Request};
+use crate::wire::{self, Access, BadMessageError, Code, FSTYPE, FolderName, Reply, Request};
 use rustix::io::{Errno, FdFlags};
 use rustix::process::Uid;
 use std::fs::DirBuilder;
@@ -168,13 +168,13 @@ impl Mounts for Fusermount {
 
 /// Why a request was refused.
 #[derive(Debug)]
-pub enum Refusal {
+pub enum ServeRefusedError {
     /// The caller is another user.
     Peer(u32),
     /// The request could not be read.
     Read(io::Error),
     /// The request is not of the format.
-    Message(BadMessage),
+    Message(BadMessageError),
     /// The folder is a link or not a folder, so not a folder in Cloud.
     NotInCloud(PathBuf),
     /// The folder holds files of its own.
@@ -191,48 +191,54 @@ pub enum Refusal {
     Unmount(PathBuf, io::Error),
 }
 
-impl Refusal {
+impl ServeRefusedError {
     /// What the caller is answered.
     #[must_use]
     pub fn code(&self) -> Code {
         match self {
-            Refusal::NotEmpty(_) | Refusal::OtherMount(..) => Code::FolderInUse,
-            Refusal::AlreadyShown(_) => Code::AlreadyShown,
-            Refusal::Unmount(..) => Code::NotTakenAway,
-            Refusal::Peer(_)
-            | Refusal::Read(_)
-            | Refusal::Message(_)
-            | Refusal::NotInCloud(_)
-            | Refusal::Folder(..)
-            | Refusal::Mount(..) => Code::NotHere,
+            ServeRefusedError::NotEmpty(_) | ServeRefusedError::OtherMount(..) => Code::FolderInUse,
+            ServeRefusedError::AlreadyShown(_) => Code::AlreadyShown,
+            ServeRefusedError::Unmount(..) => Code::NotTakenAway,
+            ServeRefusedError::Peer(_)
+            | ServeRefusedError::Read(_)
+            | ServeRefusedError::Message(_)
+            | ServeRefusedError::NotInCloud(_)
+            | ServeRefusedError::Folder(..)
+            | ServeRefusedError::Mount(..) => Code::NotHere,
         }
     }
 }
 
-impl std::fmt::Display for Refusal {
+impl std::fmt::Display for ServeRefusedError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Refusal::Peer(uid) => write!(f, "a caller of uid {uid}, not this user, was refused"),
-            Refusal::Read(why) => write!(f, "the request could not be read: {why}"),
-            Refusal::Message(why) => write!(f, "the request was refused: {why}"),
-            Refusal::NotInCloud(path) => {
+            ServeRefusedError::Peer(uid) => {
+                write!(f, "a caller of uid {uid}, not this user, was refused")
+            }
+            ServeRefusedError::Read(why) => write!(f, "the request could not be read: {why}"),
+            ServeRefusedError::Message(why) => write!(f, "the request was refused: {why}"),
+            ServeRefusedError::NotInCloud(path) => {
                 write!(f, "{} is a link or not a folder", path.display())
             }
-            Refusal::NotEmpty(path) => write!(f, "{} is not empty", path.display()),
-            Refusal::OtherMount(path, fstype) => {
+            ServeRefusedError::NotEmpty(path) => write!(f, "{} is not empty", path.display()),
+            ServeRefusedError::OtherMount(path, fstype) => {
                 write!(f, "{} is a mount of {fstype}", path.display())
             }
-            Refusal::AlreadyShown(path) => write!(f, "{} is still served", path.display()),
-            Refusal::Folder(path, why) => write!(f, "{}: {why}", path.display()),
-            Refusal::Mount(path, why) => write!(f, "{} was not mounted: {why}", path.display()),
-            Refusal::Unmount(path, why) => {
+            ServeRefusedError::AlreadyShown(path) => {
+                write!(f, "{} is still served", path.display())
+            }
+            ServeRefusedError::Folder(path, why) => write!(f, "{}: {why}", path.display()),
+            ServeRefusedError::Mount(path, why) => {
+                write!(f, "{} was not mounted: {why}", path.display())
+            }
+            ServeRefusedError::Unmount(path, why) => {
                 write!(f, "{} was not unmounted: {why}", path.display())
             }
         }
     }
 }
 
-impl std::error::Error for Refusal {}
+impl std::error::Error for ServeRefusedError {}
 
 /// Whether a caller of uid `peer` may ask a helper running as `owner`: only the same user.
 #[must_use]
@@ -268,16 +274,16 @@ impl<M: Mounts> Helper<M> {
         &self.mounts
     }
 
-    fn folder(&self, name: &FolderName) -> Result<PathBuf, Refusal> {
+    fn folder(&self, name: &FolderName) -> Result<PathBuf, ServeRefusedError> {
         DirBuilder::new()
             .recursive(true)
             .mode(0o700)
             .create(&self.cloud)
-            .map_err(|why| Refusal::Folder(self.cloud.clone(), why))?;
+            .map_err(|why| ServeRefusedError::Folder(self.cloud.clone(), why))?;
         let cloud = self
             .cloud
             .canonicalize()
-            .map_err(|why| Refusal::Folder(self.cloud.clone(), why))?;
+            .map_err(|why| ServeRefusedError::Folder(self.cloud.clone(), why))?;
         Ok(cloud.join(name.as_str()))
     }
 
@@ -285,47 +291,47 @@ impl<M: Mounts> Helper<M> {
     ///
     /// # Errors
     /// Why it was refused.
-    pub fn handle(&self, request: &Request) -> Result<Option<OwnedFd>, Refusal> {
+    pub fn handle(&self, request: &Request) -> Result<Option<OwnedFd>, ServeRefusedError> {
         match request {
             Request::Mount { name, access } => self.mount(name, *access).map(Some),
             Request::Unmount { name } => self.unmount(name).map(|()| None),
         }
     }
 
-    fn mount(&self, name: &FolderName, access: Access) -> Result<OwnedFd, Refusal> {
+    fn mount(&self, name: &FolderName, access: Access) -> Result<OwnedFd, ServeRefusedError> {
         let path = self.folder(name)?;
         match self.mounts.at(&path) {
             At::Nothing => {}
-            At::Ours { live: true } => return Err(Refusal::AlreadyShown(path)),
+            At::Ours { live: true } => return Err(ServeRefusedError::AlreadyShown(path)),
             At::Ours { live: false } => {
                 // Left by a crash: nothing answers it. Clear it, then go on.
                 self.mounts
                     .unmount(&path)
-                    .map_err(|why| Refusal::Unmount(path.clone(), why))?;
+                    .map_err(|why| ServeRefusedError::Unmount(path.clone(), why))?;
             }
-            At::Other(fstype) => return Err(Refusal::OtherMount(path, fstype)),
+            At::Other(fstype) => return Err(ServeRefusedError::OtherMount(path, fstype)),
         }
         match std::fs::symlink_metadata(&path) {
             Err(why) if why.kind() == io::ErrorKind::NotFound => DirBuilder::new()
                 .mode(0o700)
                 .create(&path)
-                .map_err(|why| Refusal::Folder(path.clone(), why))?,
-            Err(why) => return Err(Refusal::Folder(path, why)),
-            Ok(meta) if !meta.is_dir() => return Err(Refusal::NotInCloud(path)),
+                .map_err(|why| ServeRefusedError::Folder(path.clone(), why))?,
+            Err(why) => return Err(ServeRefusedError::Folder(path, why)),
+            Ok(meta) if !meta.is_dir() => return Err(ServeRefusedError::NotInCloud(path)),
             Ok(_) => {
-                let mut entries =
-                    std::fs::read_dir(&path).map_err(|why| Refusal::Folder(path.clone(), why))?;
+                let mut entries = std::fs::read_dir(&path)
+                    .map_err(|why| ServeRefusedError::Folder(path.clone(), why))?;
                 if entries.next().is_some() {
-                    return Err(Refusal::NotEmpty(path));
+                    return Err(ServeRefusedError::NotEmpty(path));
                 }
             }
         }
         self.mounts
             .mount(&path, access)
-            .map_err(|why| Refusal::Mount(path, why))
+            .map_err(|why| ServeRefusedError::Mount(path, why))
     }
 
-    fn unmount(&self, name: &FolderName) -> Result<(), Refusal> {
+    fn unmount(&self, name: &FolderName) -> Result<(), ServeRefusedError> {
         let Ok(cloud) = self.cloud.canonicalize() else {
             // No Cloud folder: nothing is shown in it.
             return Ok(());
@@ -336,25 +342,25 @@ impl<M: Mounts> Helper<M> {
             At::Ours { .. } => self
                 .mounts
                 .unmount(&path)
-                .map_err(|why| Refusal::Unmount(path, why)),
-            At::Other(fstype) => Err(Refusal::OtherMount(path, fstype)),
+                .map_err(|why| ServeRefusedError::Unmount(path, why)),
+            At::Other(fstype) => Err(ServeRefusedError::OtherMount(path, fstype)),
         }
     }
 
-    fn take(&self, stream: &UnixStream) -> Result<Option<OwnedFd>, Refusal> {
+    fn take(&self, stream: &UnixStream) -> Result<Option<OwnedFd>, ServeRefusedError> {
         let peer = rustix::net::sockopt::socket_peercred(stream)
-            .map_err(|why| Refusal::Read(why.into()))?;
+            .map_err(|why| ServeRefusedError::Read(why.into()))?;
         stream
             .set_read_timeout(Some(REQUEST_WITHIN))
-            .map_err(Refusal::Read)?;
+            .map_err(ServeRefusedError::Read)?;
         // Read whoever asks to the end (at most a message), so the refusal reaches them rather
         // than a reset. An fd the caller sent is closed here, unused.
         let read = wire::receive(stream);
         if !peer_allowed(peer.uid, self.owner) {
-            return Err(Refusal::Peer(peer.uid.as_raw()));
+            return Err(ServeRefusedError::Peer(peer.uid.as_raw()));
         }
-        let (bytes, _) = read.map_err(Refusal::Read)?;
-        let request = Request::decode(&bytes).map_err(Refusal::Message)?;
+        let (bytes, _) = read.map_err(ServeRefusedError::Read)?;
+        let request = Request::decode(&bytes).map_err(ServeRefusedError::Message)?;
         self.handle(&request)
     }
 
@@ -363,7 +369,7 @@ impl<M: Mounts> Helper<M> {
     /// # Errors
     /// Why it was refused (the caller has been told), or the answer could not be sent (a mount
     /// made for it is left unserved, and cleared by the next request for that name).
-    pub fn answer(&self, stream: &UnixStream) -> Result<(), Refusal> {
+    pub fn answer(&self, stream: &UnixStream) -> Result<(), ServeRefusedError> {
         let outcome = self.take(stream);
         let reply = match &outcome {
             Ok(_) => Reply::Done,
@@ -376,7 +382,7 @@ impl<M: Mounts> Helper<M> {
         let _ = stream.set_write_timeout(Some(REQUEST_WITHIN));
         let sent = wire::send(stream, &reply.encode(), fd);
         outcome?;
-        sent.map_err(Refusal::Read)
+        sent.map_err(ServeRefusedError::Read)
     }
 
     /// Answers each connection on `listener` in turn, for as long as the process lives; each

@@ -2,7 +2,7 @@
 //! Every context value is the slug of its Rust type, so the policies read the words the wire
 //! does; nothing here decides, it only translates.
 
-use crate::fault::{EvalFault, FaultCause, Ruled};
+use crate::fault::{EvalError, QueryError, Ruled};
 use crate::request::{BudgetFact, Op, PolicyContext, PolicyRequest};
 use action_manifest::ArgSink;
 use cedar_policy::{
@@ -99,9 +99,9 @@ fn string(value: String) -> RestrictedExpression {
 fn entities(
     request: &PolicyRequest,
     schema: &Schema,
-) -> Result<(EntityUid, EntityUid, Entities), FaultCause> {
+) -> Result<(EntityUid, EntityUid, Entities), QueryError> {
     let facts = &request.resource;
-    let named = || FaultCause::Name;
+    let named = || QueryError::Name;
     let caller = uid("Bardo::Caller", request.principal.caller.as_str()).ok_or_else(named)?;
     let app = uid("Bardo::App", facts.app.as_str()).ok_or_else(named)?;
     let act = uid("Bardo::Act", facts.action.as_str()).ok_or_else(named)?;
@@ -133,8 +133,8 @@ fn entities(
     Ok((caller, act, all))
 }
 
-fn entities_fault(error: impl Error + Send + Sync + 'static) -> FaultCause {
-    FaultCause::Entities(Arc::new(error))
+fn entities_fault(error: impl Error + Send + Sync + 'static) -> QueryError {
+    QueryError::Entities(Arc::new(error))
 }
 
 /// What one query said.
@@ -154,22 +154,22 @@ fn query(
     schema: &Schema,
     request: &PolicyRequest,
     action: &'static str,
-) -> Result<Answer, EvalFault> {
-    let fault = |cause: FaultCause| EvalFault {
+) -> Result<Answer, EvalError> {
+    let fault = |cause: QueryError| EvalError {
         query: action,
         cause,
     };
     let (caller, act, entities) = entities(request, schema).map_err(fault)?;
-    let action_uid = uid("Bardo::Action", action).ok_or_else(|| fault(FaultCause::Action))?;
+    let action_uid = uid("Bardo::Action", action).ok_or_else(|| fault(QueryError::Action))?;
     let context =
         Context::from_json_value(context_json(&request.context), Some((schema, &action_uid)))
-            .map_err(|error| fault(FaultCause::Context(Arc::new(error))))?;
+            .map_err(|error| fault(QueryError::Context(Arc::new(error))))?;
     let cedar = Request::new(caller, action_uid, act, context, Some(schema))
-        .map_err(|error| fault(FaultCause::Request(Arc::new(error))))?;
+        .map_err(|error| fault(QueryError::Request(Arc::new(error))))?;
     let response = Authorizer::new().is_authorized(&cedar, policies, &entities);
     let errors = response.diagnostics().errors().count();
     if errors > 0 {
-        return Err(fault(FaultCause::Policies(errors)));
+        return Err(fault(QueryError::Policies(errors)));
     }
     let decided: Vec<_> = response
         .diagnostics()
@@ -252,7 +252,7 @@ struct Queries<'a> {
     policies: &'a PolicySet,
     schema: &'a Schema,
     request: &'a PolicyRequest,
-    faults: Vec<EvalFault>,
+    faults: Vec<EvalError>,
 }
 
 impl Queries<'_> {

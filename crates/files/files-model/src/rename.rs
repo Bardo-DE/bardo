@@ -2,7 +2,7 @@
 
 use files_core::{Entry, FileName};
 
-use crate::error::RenameProblem;
+use crate::error::RenameError;
 
 /// Whether a name is being edited.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -17,7 +17,7 @@ pub enum Rename {
         /// The text in the field.
         draft: String,
         /// Why the draft can't be used, after a try.
-        problem: Option<RenameProblem>,
+        problem: Option<RenameError>,
     },
 }
 
@@ -59,7 +59,7 @@ pub(crate) enum Decision {
     /// Rename to this.
     Change(FileName),
     /// Not yet.
-    Refuse(RenameProblem),
+    Refuse(RenameError),
 }
 
 /// What committing `draft` as the new name of `name` does, given the folder's `entries`.
@@ -68,9 +68,9 @@ pub(crate) fn decide(name: &FileName, draft: &str, entries: &[Entry]) -> Decisio
         return Decision::Keep;
     }
     match FileName::new(draft) {
-        Err(problem) => Decision::Refuse(RenameProblem::Invalid(problem)),
+        Err(problem) => Decision::Refuse(RenameError::Invalid(problem)),
         Ok(to) if to == *name => Decision::Keep,
-        Ok(to) if entries.iter().any(|e| e.name == to) => Decision::Refuse(RenameProblem::Taken),
+        Ok(to) if entries.iter().any(|e| e.name == to) => Decision::Refuse(RenameError::Taken),
         Ok(to) => Decision::Change(to),
     }
 }

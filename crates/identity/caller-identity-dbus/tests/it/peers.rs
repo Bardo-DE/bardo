@@ -4,8 +4,8 @@
 use crate::bus::{PrivateBus, name_of};
 use crate::manager::{FakeUnit, serve};
 use caller_identity_core::{
-    FileTrust, LOADER_VARIABLES, Pid, Pin, Proof, Refused, Requirement, RoleName, Standing, Table,
-    Uid, WhyNot, Writer,
+    FileTrust, LOADER_VARIABLES, NotHeldError, Pid, Pin, Proof, Requirement, RoleName, Standing,
+    Table, Uid, WhyNot, Writer,
 };
 use caller_identity_dbus::{BusPeers, ManagerCheck};
 use caller_identity_linux::fake::introduced_service;
@@ -231,14 +231,17 @@ fn require_refuses_without_a_sender_an_unknown_sender_and_a_wrong_role() {
         let (service, asker) = (bus.connect().await, bus.connect().await);
         let peers = peers(asker, tree());
         let need = [Requirement::new(shell(), Proof::Exe)];
-        assert_eq!(peers.require(None, &need).await, Err(Refused::NoSender));
+        assert_eq!(
+            peers.require(None, &need).await,
+            Err(NotHeldError::NoSender)
+        );
         assert_eq!(
             peers.require(Some("not a name"), &need).await,
-            Err(Refused::Unknown)
+            Err(NotHeldError::Unknown)
         );
         assert_eq!(
             peers.require(Some(":1.99999"), &need).await,
-            Err(Refused::Unknown)
+            Err(NotHeldError::Unknown)
         );
         let other = [Requirement::new(
             RoleName::new("portal").expect("a role"),
@@ -246,7 +249,7 @@ fn require_refuses_without_a_sender_an_unknown_sender_and_a_wrong_role() {
         )];
         assert_eq!(
             peers.require(Some(&name_of(&service)), &other).await,
-            Err(Refused::NotAllowed)
+            Err(NotHeldError::NotAllowed)
         );
         let standing = peers
             .require(Some(&name_of(&service)), &need)
@@ -277,7 +280,7 @@ fn an_introduced_standing_stands_for_its_sender_and_for_nobody_else() {
         // The other connection is looked at for real, in an empty tree: nobody.
         assert_eq!(
             peers.require(Some(&name_of(&other)), &need).await,
-            Err(Refused::Unknown)
+            Err(NotHeldError::Unknown)
         );
     });
 }

@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 /// Why a name or a role is not one.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-pub enum HelperTextFault {
+pub enum HelperTextError {
     /// Nothing but whitespace.
     #[error("it is empty")]
     Empty,
@@ -27,19 +27,19 @@ const NAME_MAX: (usize, usize) = (40, 120);
 /// goal at every turn in a text that is 4,000 bytes at most, so each is bounded in bytes too.
 const ROLE_MAX: (usize, usize) = (600, 1_400);
 
-fn checked(text: &str, max: (usize, usize), newlines: bool) -> Result<String, HelperTextFault> {
+fn checked(text: &str, max: (usize, usize), newlines: bool) -> Result<String, HelperTextError> {
     let text = text.trim();
     if text.is_empty() {
-        return Err(HelperTextFault::Empty);
+        return Err(HelperTextError::Empty);
     }
     if text.chars().count() > max.0 || text.len() > max.1 {
-        return Err(HelperTextFault::TooLong);
+        return Err(HelperTextError::TooLong);
     }
     if text
         .chars()
         .any(|c| c.is_control() && !(newlines && c == '\n'))
     {
-        return Err(HelperTextFault::NotText);
+        return Err(HelperTextError::NotText);
     }
     Ok(text.to_owned())
 }
@@ -54,8 +54,8 @@ impl HelperName {
     ///
     /// # Errors
     ///
-    /// Returns [`HelperTextFault`] when the text is not a valid name or role.
-    pub fn parse(text: &str) -> Result<Self, HelperTextFault> {
+    /// Returns [`HelperTextError`] when the text is not a valid name or role.
+    pub fn parse(text: &str) -> Result<Self, HelperTextError> {
         checked(text, NAME_MAX, false).map(Self)
     }
 
@@ -67,8 +67,8 @@ impl HelperName {
 }
 
 impl TryFrom<String> for HelperName {
-    type Error = HelperTextFault;
-    fn try_from(text: String) -> Result<Self, HelperTextFault> {
+    type Error = HelperTextError;
+    fn try_from(text: String) -> Result<Self, HelperTextError> {
         Self::parse(&text)
     }
 }
@@ -89,8 +89,8 @@ impl Role {
     ///
     /// # Errors
     ///
-    /// Returns [`HelperTextFault`] when the text is not a valid name or role.
-    pub fn parse(text: &str) -> Result<Self, HelperTextFault> {
+    /// Returns [`HelperTextError`] when the text is not a valid name or role.
+    pub fn parse(text: &str) -> Result<Self, HelperTextError> {
         checked(text, ROLE_MAX, true).map(Self)
     }
 
@@ -102,8 +102,8 @@ impl Role {
 }
 
 impl TryFrom<String> for Role {
-    type Error = HelperTextFault;
-    fn try_from(text: String) -> Result<Self, HelperTextFault> {
+    type Error = HelperTextError;
+    fn try_from(text: String) -> Result<Self, HelperTextError> {
         Self::parse(&text)
     }
 }

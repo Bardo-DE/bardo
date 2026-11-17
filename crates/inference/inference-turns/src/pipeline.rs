@@ -121,7 +121,7 @@ pub async fn run_pipeline<H: Transcriber, T: TurnRunner>(
     sink: &mut impl ChatSink,
 ) -> InferReply {
     if unsupported(pipeline).is_some() {
-        return InferReply::Refused(inference_core::InferRefusal::Unsupported);
+        return InferReply::Refused(inference_core::InferRefusedError::Unsupported);
     }
     let PipelineInput {
         mut audio,
@@ -135,7 +135,7 @@ pub async fn run_pipeline<H: Transcriber, T: TurnRunner>(
         match stage.role {
             StageRole::Hear => {
                 let Some((begin, frames)) = audio.as_mut() else {
-                    return InferReply::Refused(inference_core::InferRefusal::Unsupported);
+                    return InferReply::Refused(inference_core::InferRefusedError::Unsupported);
                 };
                 match hear.transcribe(stage, begin, frames, sink).await {
                     Ok(heard) => chat = with_transcript(chat, heard.text),
@@ -144,11 +144,11 @@ pub async fn run_pipeline<H: Transcriber, T: TurnRunner>(
             }
             StageRole::Answer => return answer_turn(answer, chat, sink).await,
             StageRole::Describe | StageRole::Speak => {
-                return InferReply::Refused(inference_core::InferRefusal::Unsupported);
+                return InferReply::Refused(inference_core::InferRefusedError::Unsupported);
             }
         }
     }
-    InferReply::Refused(inference_core::InferRefusal::Unavailable)
+    InferReply::Refused(inference_core::InferRefusedError::Unavailable)
 }
 
 async fn answer_turn<T: TurnRunner>(

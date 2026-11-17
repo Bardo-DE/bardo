@@ -7,7 +7,7 @@ use caller_identity_linux::{FixtureImage, FixtureProc, FixtureProcess, Prober, T
 use input_broker_daemon::identity::caller_identity_authority::CallerIdentityAuthority;
 use input_broker_daemon::identity::fake::FixedAuthority;
 use input_broker_daemon::identity::{ActiveUid, Authority, Credential, IdentifyError};
-use input_broker_daemon::policy::{Refusal, authorise};
+use input_broker_daemon::policy::{ControlGroupError, authorise};
 use input_broker_wire::Kind;
 use rustix::net::sockopt::socket_peercred;
 use rustix::net::{AddressFamily, SocketFlags, SocketType, socketpair};
@@ -261,12 +261,12 @@ fn mouse_gestures_is_served_only_as_its_proven_system_unit() {
             0,
         )
     };
-    let table: Vec<(&str, FixtureProc, Result<(), Refusal>)> = vec![
+    let table: Vec<(&str, FixtureProc, Result<(), ControlGroupError>)> = vec![
         ("the real unit", with_unit(), Ok(())),
         (
             "genuine image, forged group, no unit file",
             proc_files(tree(), 0),
-            Err(Refusal::TooWeak),
+            Err(ControlGroupError::TooWeak),
         ),
     ];
     for (name, tree, want) in table {
@@ -307,7 +307,7 @@ fn a_hidden_image_is_only_the_cgroup_strength_and_the_policy_refuses_it() {
     };
     assert_eq!(
         authorise(Kind::MouseGesturesWheel, &caller, ActiveUid(Some(USER))),
-        Err(Refusal::TooWeak)
+        Err(ControlGroupError::TooWeak)
     );
 }
 

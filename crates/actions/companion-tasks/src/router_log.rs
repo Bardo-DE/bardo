@@ -5,7 +5,7 @@
 
 use action_client::{ClientError, Intents, Transport as IntentsTransport};
 use action_wire::{StoredAsk, StoredView, WireRefusal};
-use agent_session::{Appended, LogFault, LogPage, Logged, PageSize, Seq, SessionEntry, SessionLog};
+use agent_session::{Appended, LogError, LogPage, Logged, PageSize, Seq, SessionEntry, SessionLog};
 use provenance::SessionId;
 use std::borrow::Borrow;
 use std::marker::PhantomData;
@@ -37,11 +37,11 @@ impl<'a, I: IntentsTransport> RouterLog<I, &'a Intents<I>> {
     }
 }
 
-fn fault_of(error: &ClientError) -> LogFault {
+fn fault_of(error: &ClientError) -> LogError {
     match error {
-        ClientError::Refused(WireRefusal::NotAllowed) => LogFault::Refused,
+        ClientError::Refused(WireRefusal::NotAllowed) => LogError::Refused,
         // Any other failure, known or not yet known, leaves the log unavailable.
-        _ => LogFault::Unavailable,
+        _ => LogError::Unavailable,
     }
 }
 
@@ -55,8 +55,8 @@ impl<I: IntentsTransport, H: Borrow<Intents<I>> + Send + Sync> SessionLog for Ro
         _session: &SessionId,
         _seq: Seq,
         _entry: &SessionEntry,
-    ) -> Result<Appended, LogFault> {
-        Err(LogFault::Refused)
+    ) -> Result<Appended, LogError> {
+        Err(LogError::Refused)
     }
 
     async fn page(
@@ -64,7 +64,7 @@ impl<I: IntentsTransport, H: Borrow<Intents<I>> + Send + Sync> SessionLog for Ro
         session: &SessionId,
         from: Option<Seq>,
         size: PageSize,
-    ) -> Result<LogPage, LogFault> {
+    ) -> Result<LogPage, LogError> {
         let ask = StoredAsk::Rows {
             session: session.clone(),
             from: from.map(|s| s.0),
@@ -74,11 +74,11 @@ impl<I: IntentsTransport, H: Borrow<Intents<I>> + Send + Sync> SessionLog for Ro
             Ok(StoredView::Rows { rows, next }) => Ok(LogPage {
                 rows: rows
                     .iter()
-                    .map(|r| serde_json::from_str::<Logged>(&r.json).map_err(LogFault::encode))
+                    .map(|r| serde_json::from_str::<Logged>(&r.json).map_err(LogError::encode))
                     .collect::<Result<_, _>>()?,
                 next: next.map(Seq),
             }),
-            Ok(StoredView::Sessions(_) | StoredView::Forked(_)) => Err(LogFault::Unavailable),
+            Ok(StoredView::Sessions(_) | StoredView::Forked(_)) => Err(LogError::Unavailable),
             // A session the router will not show this caller is a session with no rows.
             Err(ClientError::Refused(WireRefusal::NoSuchSession)) => Ok(LogPage {
                 rows: Vec::new(),
@@ -88,10 +88,10 @@ impl<I: IntentsTransport, H: Borrow<Intents<I>> + Send + Sync> SessionLog for Ro
         }
     }
 
-    async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
+    async fn sessions(&self) -> Result<Vec<SessionId>, LogError> {
         match self.intents.borrow().session_stored(StoredAsk::List).await {
             Ok(StoredView::Sessions(all)) => Ok(all),
-            Ok(StoredView::Rows { .. } | StoredView::Forked(_)) => Err(LogFault::Unavailable),
+            Ok(StoredView::Rows { .. } | StoredView::Forked(_)) => Err(LogError::Unavailable),
             Err(error) => Err(fault_of(&error)),
         }
     }

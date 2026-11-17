@@ -9,7 +9,7 @@ use std::ops::ControlFlow;
 use std::sync::Arc;
 
 use files_core::{
-    FileName, Finish, FolderPath, ItemRef, Location, OpFailure, OpPlan, Progress, Resolution,
+    FileName, Finish, FolderPath, ItemRef, Location, OpError, OpPlan, Progress, Resolution,
     Summary, TrashedItem,
 };
 use files_trash::Trash;
@@ -21,7 +21,7 @@ use crate::journal::Inverse;
 use crate::ran::Ran;
 
 /// The result of one step.
-pub(crate) type Step = Result<ControlFlow<()>, OpFailure>;
+pub(crate) type Step = Result<ControlFlow<()>, OpError>;
 
 /// Runs plans on the disk, with a [`Trash`] for the trash and for what a replace puts aside.
 ///
@@ -149,7 +149,7 @@ impl<'a> Run<'a> {
         let target = item.renamed(to.clone());
         // `rename(2)` replaces what is at the target; a rename never should.
         if fs::symlink_metadata(target.path()).is_ok() {
-            return Err(OpFailure::Taken);
+            return Err(OpError::Taken);
         }
         fs::rename(item.path(), target.path()).map_err(error::io)?;
         self.steps.push(Inverse::RenameBack {
