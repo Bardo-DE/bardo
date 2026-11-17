@@ -1,6 +1,6 @@
 [package]
 name = "memory-core"
-description = "almanac's vocabulary: things, events, facts, retention rules, the memory wire (MemoryRequest, MemoryReply), the timeline and export shapes, and the pure admission rule."
+description = "memory's vocabulary: things, events, facts, retention rules, the memory wire (MemoryRequest, MemoryReply), the timeline and export shapes, and the pure admission rule."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -11,7 +11,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   changes are released upstream), anyrender (five; the same), dioxus (five; the dirty-task fix, ends when a
   dioxus release has it) and blitz (with taffy reached through it; ends when its changes are released upstream).
   The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, the plugin host, docket, porter
-  (with almanac, the model layer and the caller-identity library), the service locator and mpv-wgpu (each ends when it is published). `deny.toml` allows
+  (with the memory service, the model layer and the caller-identity library), the service locator and mpv-wgpu (each ends when it is published). `deny.toml` allows
   each git source by name. A source build is reproducible while those repositories keep the revs (`Cargo.lock` is
   committed, CI builds with `--locked`). The tag workflow (`.github/workflows/release.yml`) builds the Linux
   tarball from that lock and drafts a GitHub release; it never publishes to crates.io, which refuses a git
@@ -1192,8 +1192,8 @@ on. It is a reference, not a log: how each was found lives in git history.
 ## The agent layer (docket)
 
 - **docket is a git dependency** at 30aa26b8, with porter (`prov`, `porter-core`) at 260a14d, the rev docket
-  itself pins, spelled the same way so Cargo keeps one copy; docket's own almanac and the model pins come through it.
-  docket, almanac and the model layer are public, so a plain checkout of anyview builds. Owner: docket.
+  itself pins, spelled the same way so Cargo keeps one copy; docket's own the memory service and the model pins come through it.
+  docket, the memory service and the model layer are public, so a plain checkout of anyview builds. Owner: docket.
 - **The action is `anyview.file.open`, not `file.open`.** docket's `validate` requires the action name to start with the
   app's last element lowercased (`ActionOutsideApp`).
 - **docket has no parser in `docket-core`.** The manifest TOML is read in `docket-router::registry::parse`, which
@@ -1206,7 +1206,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   ds context model.
 
 - **The viewer's package budget is 682 (was 670).** docket's app side brings twelve packages, all behind
-  `desktop`: docket-client, docket-core, docket-dbus, porter-core, porter-dbus, prov, almanac-core, cua-action,
+  `desktop`: docket-client, docket-core, docket-dbus, porter-core, porter-dbus, prov, memory-core, cua-action,
   model-provider, genai-names, vision-prep and base64 0.22.1. Most are vocabulary crates docket-core names in its
   signatures, not code the viewer runs. `anyview-peek` stays at 590. Ends when docket-core splits the app-facing
   types from the planner and reader vocabulary.

@@ -1,5 +1,5 @@
 //! What the `desktop` scope admits: only facts the person stated themselves (preferences,
-//! names, style). The rule is almanac's, so it lives here and not in the shared vocabulary.
+//! names, style). The rule is the memory service's, so it lives here and not in the shared vocabulary.
 
 use account_core::SpaceId;
 use provenance::{Confidentiality, Integrity, Label, Source};

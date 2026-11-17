@@ -1,6 +1,6 @@
 # Architecture
 
-almanac is the desktop's memory: a typed, append-only, hash-chained **event log** per Space
+The memory service is the desktop's memory: a typed, append-only, hash-chained **event log** per Space
 (which is also the audit log), the companion's **memory files** as plain markdown (add-only,
 dated, linked to their sources), a rebuildable **recall index** (FTS5 plus exact-scan vectors,
 fused), and **memoryd**, the daemon that owns them and serves `org.bardo.Memory1`. The design is
@@ -23,7 +23,7 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 | `eventlog` | `SqliteLog` (SQLCipher), `MemoryLog` (feature `testing`), the schema; re-exports the log seam from `memory-store` | rusqlite |
 | `memory-files-format` | pure: the topic file format (`parse_topic`, `render_topic`, the trailer), `Store` over a `Vault` (from `memory-store`), `Primer`, `MemfilesError`. No file IO | none |
 | `memfiles` | the vaults on disk: `PlainDir`, `SealedDir`, and `MemoryVault` (feature `testing`). The `Vault` seam and `VaultPath` are in `memory-store` | the filesystem |
-| `recall` | generic: `VectorIndex`, `Fts5`, `ExactScan`, `Index` (implements `SearchIndex`), `FakeEmbedder` (feature `testing`); re-exports the `Embedder` and document types from `memory-store`; the vector, card and fusion code (`Vector`, `EmbedderCard`, `fuse_rrf`, `chunk`, `nearest_exact`) lives only there. Knows nothing of almanac's domain | rusqlite |
+| `recall` | generic: `VectorIndex`, `Fts5`, `ExactScan`, `Index` (implements `SearchIndex`), `FakeEmbedder` (feature `testing`); re-exports the `Embedder` and document types from `memory-store`; the vector, card and fusion code (`Vector`, `EmbedderCard`, `fuse_rrf`, `chunk`, `nearest_exact`) lives only there. Knows nothing of the memory service's domain | rusqlite |
 | `memory-settings` | pure: what the person can set for memory: `MemorySettings`, `ConsolidateWhen`, `ConsolidateApply`, `SCHEMA` (`schema/memory.settings.toml`, the file the Settings app draws them from; `memoryd --write-schema` writes it), `SETTINGS_FILE`, the lenient reader `read` (`Loaded`, `Fallback`, `Why`), the key table, and the consent gate (`Confirmations`, `gate`, `waiting`, `loosenings`: a value looser than shipped applies only once the person confirmed it). No file is read | none |
 | `memory-tidy` | pure: what memory learns and keeps tidy: the fact lifecycle machine (`fact`), the consolidation run machine, the `Consolidator` seam and `check_draft` (`consolidation`), the consolidation prompt and the parse of the model's draft (`render_prompt`, `parse_draft`), `tidy_is_acceptable`, `changes` (what a reply changed, as the pure `Change` events the daemon turns into bus signals), the removal notes (`Removals` over the `RemovalLedger` seam and the `removals.toml` text) | none |
 | `memory-search` | pure: how memory is searched: `docs` (the recall documents facts and events contribute to the index: `event_docs`, `fact_doc`, `indexed_docs`, `DocRef`, `newest_episodes`), `SpaceReader` (the narrow view of a Space that a search reads: its index, its log entries, its stored facts), `embed_query`, `search` and `inject` (fused lexical and semantic ranking, reciprocal-rank merge of facts and events, the token budget) | none |
@@ -36,12 +36,12 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 | `memory-client` | the app-facing `Memory` over a `Transport`: `Absent` (no-op on other desktops), `DbusTransport` (feature `dbus`), `InProcess` (feature `in_process`, off by default: only it links `memory-service`, which links no storage) | through its transport |
 | `memory-local` | the portable on-disk `Backend` for an app that hosts its own memory: `LocalBackend` (SQLCipher log and index, sealed or plain files, `ProvidedKeys`, `SystemClock` (the one real `Clock`) or an app-passed clock, embedder and consolidator, `NoEmbedder`/`NoConsolidator` by default), `Root` (the one directory the app gives), `open`, `create_space`, `save_spaces` (`spaces.toml`); no XDG, bus, inotify or Landlock | none (seams are passed in) |
 | `memory-fake` | test-only: `fake_service`, `FakeBackend`, `SteppedClock`, `SharedVault`, `ScriptedConsolidator`, `Scratch`, the five fixtures | none |
-| `memoryd` | the daemon and its library: `SystemBackend` (over any key store, embedder and consolidator), built over `memory-infer`'s `InferdEmbedder` and `InferdConsolidator`, the XDG roots, `Peers` (who is calling), `Daemon` (the bus handler), the Landlock `sandbox` policy, `keysel` (which key store: the Secret Service, or with the test-only `test-keys` feature a sealed file named by `BARDO_MEMORYD_KEYS=file:<path>`; the same feature lets `BARDO_MEMORYD_SANDBOX=off` skip Landlock, see FINDINGS; `PROC_GATE` and account-daemon-support's `ProcRoot`: the test-only `test-proc-root` feature's `BARDO_MEMORYD_PROC_ROOT=<dir>`, a fixture `/proc` for callers); `callers` (the callers file and porter's caller mapped onto almanac's); the binary applies the sandbox, then serves the session bus; `SettingsWatch` (the directory watch on `memory/settings.toml`; `apply_next` puts each change in force on the service), `Consent` (the person's confirmations of loosened settings, `Memory1.ConfirmSettings`, kept in `confirmed-settings.toml` in memoryd's own data directory, which the agent sandbox cannot write; the Settings app's alone; `Consent::waiting` answers `Memory1.PendingSettings`, the Settings app's and the shell's), the nightly consolidation timer, `Policy.read_dirs`, `--write-schema` | everything |
+| `memoryd` | the daemon and its library: `SystemBackend` (over any key store, embedder and consolidator), built over `memory-infer`'s `InferdEmbedder` and `InferdConsolidator`, the XDG roots, `Peers` (who is calling), `Daemon` (the bus handler), the Landlock `sandbox` policy, `keysel` (which key store: the Secret Service, or with the test-only `test-keys` feature a sealed file named by `BARDO_MEMORYD_KEYS=file:<path>`; the same feature lets `BARDO_MEMORYD_SANDBOX=off` skip Landlock, see FINDINGS; `PROC_GATE` and account-daemon-support's `ProcRoot`: the test-only `test-proc-root` feature's `BARDO_MEMORYD_PROC_ROOT=<dir>`, a fixture `/proc` for callers); `callers` (the callers file and porter's caller mapped onto the memory service's); the binary applies the sandbox, then serves the session bus; `SettingsWatch` (the directory watch on `memory/settings.toml`; `apply_next` puts each change in force on the service), `Consent` (the person's confirmations of loosened settings, `Memory1.ConfirmSettings`, kept in `confirmed-settings.toml` in memoryd's own data directory, which the agent sandbox cannot write; the Settings app's alone; `Consent::waiting` answers `Memory1.PendingSettings`, the Settings app's and the shell's), the nightly consolidation timer, `Policy.read_dirs`, `--write-schema` | everything |
 
 ## 1a. Portable core and desktop extras
 
 Bardo's rule (design/36-PORTABLE-CORE.md): everything except the desktop itself is
-cross-platform, and the desktop's features are additive. For almanac:
+cross-platform, and the desktop's features are additive. For the memory service:
 
 | Portable core (builds with `--no-default-features`) | Desktop extra |
 | --- | --- |
@@ -60,7 +60,7 @@ dependency), `memory-client` `dbus` (the D-Bus transport), `memory-seal` `oo7` (
 keys), plus `in_process` (hosting the service in the app; off by default, though the service links no SQLCipher
 or OpenSSL: the app's `Backend` does). An **app-level desktop switch** says "this app is on Bardo desktop" and is
 `desktop`; it is declared only by a crate that holds a D-Bus client, by implication, never as a
-rename: `memory-client` `desktop = ["dbus"]`, default on. No other almanac crate needs the
+rename: `memory-client` `desktop = ["dbus"]`, default on. No other the memory crate needs the
 alias: `memory-dbus`, `memory-dbus`, `memoryd` are the desktop itself, `memory-watch` and `memory-seal` hold no
 D-Bus client (their platform features are what a non-Linux OS lacks). An app on macOS or Windows
 depends on `memory-client` with `default-features = false, features = ["in_process"]`. Default
@@ -86,7 +86,7 @@ A crate depends on its own tier or a lower one (P < C < A), never up; `dev-depen
 
 The script also reports source files over 500 lines (`--long-files`, report only) and seeds one violation per tier to prove the bans fire (`--self-test`). The `KNOWN` list names each violation that exists today and the plan lane (`~/rs-wt/agent-layers/PLAN.md`) that removes it; a row whose violation is gone fails, so the list only shrinks. It is empty today.
 
-almanac never depends on the model layer, docket or cua: their payloads (policy, consent, computer-use
+The memory service never depends on the model layer, docket or cua: their payloads (policy, consent, computer-use
 steps, sessions) are `EventBody::Area` in their owners' serde form, and `check-boundary.sh`
 fails if any of their crates enters the tree. Other crates reach porter's names through
 `memory-core`'s re-exports, so the dependency tiers stay this exact.
@@ -142,7 +142,7 @@ may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus` reach `
 | where files live in a Space | `memory-store` (`VaultPath`) and `memory-core::dirs` (`Dirs`) |
 | search, fusion, chunking, the index state, adopting an index file at start (`Index::sync`) | `recall` |
 | the Space, fact, plan and run machines | `memory-service::{space, forget}` and `memory-tidy::{fact, consolidation}` |
-| where a removed desktop-wide Space's memories and event history go (each person's choice, `Removal { memories, history }`), and who may reach an App Space | `memory-service::{rehome, relocate, relocate_events}` and `auth::allowed`; the registry's removals and the note (with the choice) that finishes a crashed move are `almanac_tidy::Removals` over `memoryd::{Daemon, FileLedger}` |
+| where a removed desktop-wide Space's memories and event history go (each person's choice, `Removal { memories, history }`), and who may reach an App Space | `memory-service::{rehome, relocate, relocate_events}` and `auth::allowed`; the registry's removals and the note (with the choice) that finishes a crashed move are `memory_tidy::Removals` over `memoryd::{Daemon, FileLedger}` |
 | topic files edited outside the service (the baseline) | `memory-service::{baseline, edits}` |
 | what the bus hears that no reply says (`ServiceEvent`) | `memory-service::events`, drained by `Daemon::flush_events` |
 | what memoryd may touch (Landlock) | `memoryd::sandbox` |
@@ -198,7 +198,7 @@ pub trait Embedder: Send + Sync {
 // recall: ExactScan now; a sqlite-vec backend later (only if the no-unsafe rule is relaxed).
 pub trait VectorIndex: Send { fn card(&self) -> &EmbedderCard; fn upsert(..); fn remove(..); fn nearest(..); fn clear(..); }
 
-// memory-tidy: the trait; memory-fake: ScriptedConsolidator; memory-infer: InferdConsolidator; `almanac_local::SystemClock` or the stepped test clock.
+// memory-tidy: the trait; memory-fake: ScriptedConsolidator; memory-infer: InferdConsolidator; `memory_local::SystemClock` or the stepped test clock.
 pub trait Consolidator: Send + Sync {
     fn draft(&self, input: ConsolidationInput) -> impl Future<Output = Result<Draft, ConsolidateError>> + Send;
 }
@@ -288,7 +288,7 @@ produced. Golden: `crates/memfiles-format/tests/golden/people-sam-lee.md`.
 **Export**: a tar stream under `quire-memory-export-1/`: `manifest.json`, `<space>/events.jsonl`
 (one `EventLine` per entry: header fields, link, body or `"erased"`), `<space>/facts|procedures|
 pending/**.md` plain, `rules.toml`. Never the index, never the keys. Golden:
-`crates/almanac-service/tests/golden/events.jsonl` and the layout test.
+`crates/memory-service/tests/golden/events.jsonl` and the layout test.
 
 **D-Bus** `org.bardo.Memory1` at `/org/bardo/Memory1`: interfaces `.Record`, `.Recall`,
 `.Control` (28 methods, 5 signals, properties `Version u = 1` and `Confinement s`, one of `confined`,
@@ -305,7 +305,7 @@ introspection test; the failure prints the new text.
 index function breaks until it has one); its row in `allowed` (who may record it); its default
 retention in `RuleSet::standard`; a fixture in `memory-fake` if specs name it. Another area's
 payload is never a variant: it is an `AreaPayload` with its owner's `KindTag`. The two
-exceptions are types almanac may name because they live in `prov` or in almanac itself:
+exceptions are types the memory service may name because they live in `prov` or in the memory service itself:
 `Message` (prov's one message model) and `Episode`. Their text is a pure function of the body
 (`EventBody::index_texts`), so the index stays rebuildable from the log.
 
@@ -355,7 +355,7 @@ and every fact; `Recent`, `Entries`, `Timeline` and export return it. The member
 the D-Bus member in `memory-dbus` (proxy) and `memory-dbus` (skeleton and served object), then regenerate and review
 `dbus/org.bardo.Memory1.xml`; a method on `Memory`; the arms of `encode_request`, `decode_request`,
 `decode_reply`, `encode_reply` and `invoke`; the sample in `memory-core/tests/it/support/samples.rs`
-(the wire and codec tests read it); its queue claim in `almanac_service::claim_of`.
+(the wire and codec tests read it); its queue claim in `memory_service::claim_of`.
 
 **Add a vector backend**: a `VectorIndex` implementation in its own crate (never in `recall`
 if it needs `unsafe` or an extension: the rule is no `unsafe` anywhere); the contract tests of
@@ -401,7 +401,7 @@ the fakes.
 - **No `unsafe`** anywhere (`unsafe_code = "deny"`). That is why vectors are exact scan and not
   `sqlite-vec` (QUESTIONS P5).
 - **Dependencies** come from Bardo's pinned block (`docs/workspace-deps.toml` there), copied
-  verbatim, only the lines almanac names; a new one joins that file first. porter's crates are
+  verbatim, only the lines the memory service names; a new one joins that file first. porter's crates are
   git dependencies at a pinned rev, so a plain clone builds with no sibling checkout.
 - **The wire is serde.** Every stored or wire type has a round-trip test; enums with data are
   adjacently tagged (`kind`/`v`).
@@ -410,7 +410,7 @@ the fakes.
   the served objects (what memoryd runs) introspect the same.
 - **Keys and bodies never cross a transport in the clear.** No wire type holds a `SpaceKey`;
   the digest subkey leaves only in an export the person asked to include it in.
-- **Floats** appear only in `almanac_store::Vector` (embeddings are floats end to end).
+- **Floats** appear only in `memory_store::Vector` (embeddings are floats end to end).
 - **Physical erasure is a key operation.** Forgetting one item erases bodies and uses SQLite
   `secure_delete`; only destroying a Space's key guarantees the bytes are gone on
   copy-on-write storage, and the UI says so.

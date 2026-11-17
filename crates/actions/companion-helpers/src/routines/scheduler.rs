@@ -1,6 +1,6 @@
 //! The scheduler: the routine book's owner. A small timer inside the companion's daemon (not a
 //! daemon of its own) ticks every few seconds; each tick asks which runs ended, which times are due, and what
-//! the almanac saw. A time that came while the computer slept or the assistant was down shows as a
+//! the memory service saw. A time that came while the computer slept or the assistant was down shows as a
 //! late tick, and the book skips it (or runs it once, when the person said so). Systemd user
 //! timers, written from the same schedules, only start companiond at the time.
 
@@ -22,7 +22,7 @@ struct State {
     book: RoutineBook,
     /// What the host was last told: the timers installed, the need to stay awake.
     settle: Settle,
-    /// When the almanac was last asked, and the events already acted on.
+    /// When the memory service was last asked, and the events already acted on.
     watch: EventWatch,
 }
 
@@ -166,7 +166,7 @@ impl<H: Host, K: Clock> Routines<H, K> {
         }
     }
 
-    /// One tick: the runs that ended, the times that are due, and the events the almanac saw.
+    /// One tick: the runs that ended, the times that are due, and the events the memory service saw.
     pub async fn tick(&self) {
         let now = self.clock.now();
         let ended = self.with(|state| ended_events(&state.book, now, |job| self.host.job_end(job)));

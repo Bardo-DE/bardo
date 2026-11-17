@@ -1,6 +1,6 @@
 [package]
 name = "memory-eventlog"
-description = "almanac's typed, append-only, hash-chained per-Space event log (also the audit log)."
+description = "memory's typed, append-only, hash-chained per-Space event log (also the audit log)."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

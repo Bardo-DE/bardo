@@ -342,7 +342,7 @@ async fn a_torn_write_is_ignored_when_proposals_load() {
     let torn = &text.as_bytes()[..text.len() / 2];
     let vault = service.backend().vault_of(&work());
     for name in [
-        "consolidation/.almanac-tmp-c-torn",
+        "consolidation/.memory-tmp-c-torn",
         "consolidation/c-torn.toml",
         "consolidation/c-junk.toml",
     ] {

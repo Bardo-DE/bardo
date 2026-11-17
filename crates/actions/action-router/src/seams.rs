@@ -160,7 +160,7 @@ pub trait GrantStore: Send + Sync {
 /// Every entry is accepted and nothing is kept, so a session cannot be restored.
 ///
 /// What an app that hosts its own agent
-/// without memory runs with; the daemon passes `companion-memory`'s log over almanac.
+/// without memory runs with; the daemon passes `companion-memory`'s log over the memory service.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct NoLog;
 

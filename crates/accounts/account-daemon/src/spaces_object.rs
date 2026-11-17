@@ -11,7 +11,7 @@
 //!   one, as the manager's signals do; a client calls `List` once to be told.
 //! - `Remove` ends nothing else: no grant is scoped to a Space here any more. An app whose Space
 //!   linked to it learns by `Changed(id, "removed")` and falls back to its own Space: that is the
-//!   app's choice, and porter moves or deletes no memory (almanac's and docket's).
+//!   app's choice, and porter moves or deletes no memory (the memory service's and docket's).
 
 use crate::callers::Callers;
 use crate::errors::RefusedError;

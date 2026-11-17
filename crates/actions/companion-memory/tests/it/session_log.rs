@@ -1,4 +1,4 @@
-//! A session's log over almanac's in-process service (memory-fake): the `SessionLog` contract,
+//! A session's log over the memory service's in-process service (memory-fake): the `SessionLog` contract,
 //! its faults, an acknowledgement lost on the way, and a whole session restored from what a
 //! router wrote there before it was dropped.
 
@@ -11,7 +11,7 @@ use agent_session::{
     BackendKind, LogFault, Opening, PageSize, Read, Seq, SessionEntry, SessionLog,
 };
 use base_ids::Count;
-use companion_memory::AlmanacSessionLog;
+use companion_memory::MemorySessionLog;
 use memory_client::{Absent, InProcess, Transport, TransportError};
 use memory_core::{MemoryReply, MemoryRequest};
 use memory_fake::{FakeBackend, ScriptedConsolidator, fake_service};
@@ -38,8 +38,8 @@ fn clock() -> FixedClock {
     FixedClock::at(UnixSeconds(0))
 }
 
-fn log_over(service: &Arc<Service>) -> AlmanacSessionLog<InProcess<FakeBackend>, FixedClock> {
-    AlmanacSessionLog::over(
+fn log_over(service: &Arc<Service>) -> MemorySessionLog<InProcess<FakeBackend>, FixedClock> {
+    MemorySessionLog::over(
         InProcess::new(Arc::clone(service), Caller::router()),
         work(),
         clock(),
@@ -148,7 +148,7 @@ async fn a_position_the_store_does_not_hold_is_refused_out_of_order() {
 
 #[tokio::test]
 async fn no_memory_is_unavailable_never_a_silent_ack() {
-    let log = AlmanacSessionLog::over(Absent, work(), clock());
+    let log = MemorySessionLog::over(Absent, work(), clock());
     let id = session("s-1");
     assert_eq!(
         log.append(&id, Seq(0), &opening()).await,
@@ -192,7 +192,7 @@ impl Transport for LosesOneAck {
 #[tokio::test]
 async fn an_acknowledgement_lost_on_the_way_is_not_written_twice() {
     let service = service();
-    let log = AlmanacSessionLog::over(
+    let log = MemorySessionLog::over(
         LosesOneAck {
             inner: InProcess::new(Arc::clone(&service), Caller::router()),
             lose_at: 1,
@@ -232,9 +232,9 @@ async fn sessions_are_listed_by_their_openings() {
     assert_eq!(listed, vec![session("s-1"), session("s-3")]);
 }
 
-type AlmanacLog = Arc<AlmanacSessionLog<InProcess<FakeBackend>, FixedClock>>;
+type MemoryLog = Arc<MemorySessionLog<InProcess<FakeBackend>, FixedClock>>;
 type Router = action_router::Router<
-    action_fake::FakeSeams<ScriptedReviewer, ScriptedWriter, FixedClock, AlmanacLog>,
+    action_fake::FakeSeams<ScriptedReviewer, ScriptedWriter, FixedClock, MemoryLog>,
 >;
 
 /// The router over the fakes, its session log in `service`'s Space `work`.
@@ -353,7 +353,7 @@ async fn reads<S: action_router::Seams>(
 }
 
 #[tokio::test]
-async fn a_session_is_restored_from_almanac_after_the_router_is_dropped() {
+async fn a_session_is_restored_from_memory_service_after_the_router_is_dropped() {
     let service = service();
     let router = router_on(&service);
     standing_consent(&router.seams);

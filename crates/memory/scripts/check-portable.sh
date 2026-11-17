@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The portable core (design/36-PORTABLE-CORE.md): these crates build and keep a clean dependency
 # tree with `--no-default-features`, so an app on macOS, Windows or another desktop can host
-# almanac in process. Everything else (memory-dbus, memory-dbus-serve, memoryd, memory-fake) is a
+# The memory service in process. Everything else (memory-dbus, memory-dbus-serve, memoryd, memory-fake) is a
 # desktop extra or a test helper and is not checked here.
 #
 # No network: every cargo call is --offline against the vendored/cached registry.

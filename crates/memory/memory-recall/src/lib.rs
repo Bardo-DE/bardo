@@ -1,6 +1,6 @@
 //! A rebuildable search index, generic and reusable: FTS5 lexical search through rusqlite, an
 //! `Embedder` trait and a `VectorIndex` trait with exact scan as the default backend, and
-//! reciprocal-rank fusion of the two. It knows nothing of almanac.
+//! reciprocal-rank fusion of the two. It knows nothing of the memory service.
 //!
 //! No `unsafe` and no SQLite extension: exact scan is a BLOB column compared in Rust.
 

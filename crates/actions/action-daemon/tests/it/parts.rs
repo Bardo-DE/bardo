@@ -148,7 +148,7 @@ fn the_queue_hands_over_everything_oldest_first_once() {
 
 #[tokio::test]
 async fn no_memory_on_the_desktop_is_an_unavailable_link_not_a_panic() {
-    let memory = AlmanacMemory::over(Absent);
+    let memory = MemoryServiceLink::over(Absent);
     let space = provenance::SpaceId::parse("work").expect("space");
     let got = memory.ask(memory_core::MemoryRequest::Spaces).await;
     assert_eq!(got, Err(LinkFault::Unavailable));

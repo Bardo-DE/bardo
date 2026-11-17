@@ -1,6 +1,6 @@
 [package]
 name = "memory-seal"
-description = "almanac's per-Space keys, subkey derivation, the sealed-file format and the key store seam."
+description = "memory's per-Space keys, subkey derivation, the sealed-file format and the key store seam."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

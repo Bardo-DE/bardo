@@ -10,7 +10,7 @@ use memory_core::WaitingSetting;
 use std::collections::BTreeMap;
 use std::path::Path;
 
-/// The settings file whose looser values wait for confirmation (almanac's, under the config
+/// The settings file whose looser values wait for confirmation (the memory service's, under the config
 /// home).
 const MEMORY_FILE: &str = "memory/settings.toml";
 

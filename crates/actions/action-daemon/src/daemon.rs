@@ -39,7 +39,7 @@ use agent_skills::{Roots, discover};
 use agent_skills_disk::DiskFolder;
 use base_path::AbsPath;
 use base_xdg::{PathError, Xdg};
-use companion_memory::{AlmanacMemory, AlmanacSessionLog};
+use companion_memory::{MemoryServiceLink, MemorySessionLog};
 use companion_memory_core::QueuedSink;
 use permission_core::Floor;
 use provenance::SpaceId;
@@ -367,10 +367,10 @@ pub async fn start(
             .with_rules(permissions.clone()),
         sink: QueuedSink::new(),
         clock: SystemClock,
-        memory: AlmanacMemory::over(memory_client::DbusTransport::new(session.clone())),
+        memory: MemoryServiceLink::over(memory_client::DbusTransport::new(session.clone())),
         writer: InferdWriter::on_bus(session, trace.clone()),
         reader: ReaderClient::new(session.clone()),
-        log: DaemonLog::Almanac(AlmanacSessionLog::over(
+        log: DaemonLog::Memory(MemorySessionLog::over(
             memory_client::DbusTransport::new(session.clone()),
             SpaceId::desktop(),
             SystemClock,

@@ -4,7 +4,7 @@ For the owner, on this machine, with sill not running. Everything is installed f
 root step is a copy of one file. The companion talks to inferd, inferd to OpenRouter with a key that only
 accountd holds (inferd asks it for the key when a turn needs it). About ten minutes.
 
-Run the first step from the checkouts the installer builds from: `~/docket`, `~/porter`, `~/almanac` and
+Run the first step from the checkouts the installer builds from: `~/docket`, `~/porter`, `~/memory` and
 `~/models` (the model catalogue inferd reads).
 
 ## 1. Build and install

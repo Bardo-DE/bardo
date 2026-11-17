@@ -13,7 +13,7 @@ style guides every repo follows; this file is the Settings app's map and rules, 
 | --- | --- |
 | Bardo (`../bardo`, path deps) | `ds` (components, `Ds`, `ds::prelude`), `ui-settings` (schema types, `discover`, `Loaded`, `use_environment`), `ui-blitz` (`launch`), `ui-helpers` (`Family`, `OsRelease`: the distro and its release, for an install line; `read_text_capped`, `write_atomic`: the one reader and writer of a person's file; no PackageKit), `base-time` (`deadline::{Deadline, within}`: a deadline for every call to another process), `ui-extensions` (the Extensions scan, `choices_for`, `ExtensionsSettings::with`: taken by `settings-app-files` only), `ui-lint` and `ui-harness` (dev only) |
 | docket (`../docket`, path deps; a private repo, which the Settings app may name) | `action-provider` with its `dbus` feature (`IntentProvider`, `serve_on`), `action-core` (manifest and call types), `action-dbus` (the bus connection type), `action-settings` (the assistant's places: `Places`, `read_places`, `write_places`; the outside agents: `read_agents`, `write_agent_choice`), `agent-registry` (`AgentsDir`) and `bardo-agents` (its `store`: what is installed there), named by `settings-app-files` only; `prov` and `account-core` from `../porter`, the label and name types those signatures use. Used by `settings-app-intents`, and `action-settings` by the model, the files and the window. Its `scripts/check-intents.sh` is run on this repo |
-| almanac (`../almanac`, path dep) | `memory-core` (`Removal`, `MemoryFate`, `HistoryFate`: the Space-removal choice and the JSON memory reads; `WaitingSetting`: one looser memory setting that waits for the person) |
+| The memory service (`../memory`, path dep) | `memory-core` (`Removal`, `MemoryFate`, `HistoryFate`: the Space-removal choice and the JSON memory reads; `WaitingSetting`: one looser memory setting that waits for the person) |
 | porter (`../porter`, path deps) | `account-core` (`Tier`), `account-dbus` (accountd's bus vocabulary), `account-wire` (`names`: the bus names and object paths of accountd and inferd, `ParentWindow`, `Refusal`), `account-client` (`Porter<T>` and its handles: `accounts().add`, `spaces().{list, remove}`; `AccountsError`, `SpacesError`, `LinkError`) over `account-client-dbus` (`Bus::over(..).accounts_at(owner)`: every call to the owner that was confirmed). `settings-app-intents` also takes `prov` from here |
 | The sync service (`../sync`, path dep) | `sync-bus` (syncd's bus names, object paths and proxy: `SyncProxy`, `SYNC_BUS`, `SYNC_PATH`, `SYNC_ERROR_*`, `STATUS_KEY_QUOTA`) |
 | The inference service (`../inference`, path deps) | `inference-core` (`tier_label`, `Why`, `Declined`, `InferEvent`: the picker's vocabulary and the reason footer's facts), `inference-tailnet` (the guest and candidate rows), `inference-dbus` (`inference_dbus::inference`: `INFERENCE_SETTINGS_PATH`, `InferenceProxy`; `LocalEngine`, `EngineState`, the running rows), `inference-client` (`Inference`, `DbusTransport::{list_local_engines, list_running, start_model, stop_model}`; `SessionUnits`, `INFERD_UNIT`, `LendingConfig`: the restart of the assistant's service in the person's session and the lending switch's drop-in) |
@@ -51,9 +51,9 @@ in that list: `ui-settings` builds it (FINDINGS "ui-settings drags zbus into a p
 ### The fence
 
 `settings-app-ui` names only `settings-app-client` (the one door to the computer), `settings-app-model` (the facts, and
-`settings_app_model::external`: the ids and enums of porter, docket, almanac and the chord keymap that the facts
+`settings_app_model::external`: the ids and enums of porter, docket, the memory service and the chord keymap that the facts
 are made of, plus `toml::Value`, named once there) and bardo. Its `[dependencies]` cannot name
-`settings-app-files`, `settings-app-system`, `porter-*`, `almanac-*`, `docket-*` or `zbus`, so a view cannot
+`settings-app-files`, `settings-app-system`, `porter-*`, `memory-*`, `docket-*` or `zbus`, so a view cannot
 read a file or call a service; `scripts/check-boundary.sh` enforces it (`DIRECT`, and the exact
 `EDGES` row). What a view needs from the files is `settings-app-client`: the settings, agents, places and
 keymap files and the style and program scans are re-exported or wrapped there (`files.rs`), and the
@@ -193,7 +193,7 @@ a `params` list even when empty), add its arm in `settings-app-intents/src/ask.r
   a connection that owns `org.bardo.Intents1` (a provider answers nobody else), the way intentd calls
   an app. `settings-app/tests/install.rs` runs `scripts/install.sh` into a scratch `DESTDIR`.
 - `settings-app-ui/tests/ui/intelligence/` (`sections`, `absent`, `picker`) drives the Intelligence page: a stand-in schema for the companion
-  (sill has none yet) tests the section order, `intelligence_programs.rs` the rows docket, almanac and cua
+  (sill has none yet) tests the section order, `intelligence_programs.rs` the rows docket, the memory service and cua
   ship (sections, Advanced, writes, the apps rows editor), `support/inferd/` is a
   fake settings module hosted in memory (`Inferd::hosted`, `Sandbox::with_modules`; no bus). Without a bus or
   modules the app gets `BusSource::Absent`. The real path is `settings-app-system/tests/system/modules_bus.rs` (a module on a

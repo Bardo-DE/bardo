@@ -1,4 +1,4 @@
-//! Where almanac's cursor stood after the rows a page of a session's log ended on, so the next
+//! Where the memory service's cursor stood after the rows a page of a session's log ended on, so the next
 //! page resumes there. Only the newest stop of each session is kept: paging goes forward, and a
 //! read from an older position just counts from the first row.
 

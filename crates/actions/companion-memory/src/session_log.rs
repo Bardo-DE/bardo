@@ -1,10 +1,10 @@
-//! A session's durable log over almanac: `agent-session`'s `SessionLog` through `RecordDurable`
+//! A session's durable log over the memory service: `agent-session`'s `SessionLog` through `RecordDurable`
 //! (an append answers only when the event is on disk) and `Entries` (one session's events in
 //! append order, found by the session thing they name as their `Subject`).
 //!
-//! Each entry is an `Area { Companion }` event of kind `companion.session.<slug>`; almanac keeps
+//! Each entry is an `Area { Companion }` event of kind `companion.session.<slug>`; the memory service keeps
 //! those out of recall. The position (`Seq`) is docket's own count carried in the stored body,
-//! because almanac's sequence is the Space's and interleaves its own audit events. The log lives
+//! because the memory service's sequence is the Space's and interleaves its own audit events. The log lives
 //! in one Space, named when it is built.
 
 use crate::cursor_cache::CursorCache;
@@ -34,15 +34,15 @@ const ENTRY_KINDS: &str = "companion.session.*";
 /// Rows read at a time when the tail of a log is looked for.
 const TAIL_PAGE: u32 = 200;
 
-/// A session's log in one almanac Space, over any `memory_client::Transport`.
+/// A session's log in one memory service Space, over any `memory_client::Transport`.
 #[derive(Debug)]
-pub struct AlmanacSessionLog<T: Transport, K: Clock> {
+pub struct MemorySessionLog<T: Transport, K: Clock> {
     memory: Memory<T>,
     space: SpaceId,
     clock: K,
     /// The next position of each session this writer has seen the end of.
     next: Mutex<BTreeMap<SessionId, Seq>>,
-    /// Where almanac's cursor stood after the rows a page ended on.
+    /// Where the memory service's cursor stood after the rows a page ended on.
     cursors: CursorCache,
 }
 
@@ -52,7 +52,7 @@ struct Tail {
     last: Option<String>,
 }
 
-impl<T: Transport, K: Clock> AlmanacSessionLog<T, K> {
+impl<T: Transport, K: Clock> MemorySessionLog<T, K> {
     /// The log of every session, kept in `space`, over `transport`, stamped by `clock`.
     pub fn over(transport: T, space: SpaceId, clock: K) -> Self {
         Self {
@@ -182,7 +182,7 @@ fn stored_seq(json: &str) -> Option<Seq> {
         .map(Seq)
 }
 
-/// What a failed call to almanac means to the log: a store that will not remember is `Refused`;
+/// What a failed call to the memory service means to the log: a store that will not remember is `Refused`;
 /// one that cannot answer (a lock, no daemon, a failing disk) is `Unavailable`. Either refuses
 /// the reveal an entry guards.
 fn fault_of(error: &ClientError) -> LogFault {
@@ -196,7 +196,7 @@ fn fault_of(error: &ClientError) -> LogFault {
     }
 }
 
-impl<T: Transport, K: Clock> SessionLog for AlmanacSessionLog<T, K> {
+impl<T: Transport, K: Clock> SessionLog for MemorySessionLog<T, K> {
     async fn append(
         &self,
         session: &SessionId,

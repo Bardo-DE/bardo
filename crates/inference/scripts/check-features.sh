@@ -26,9 +26,9 @@ BUILDS=(
   "inferd (default) :: -p inference-daemon"
 
   # inference-client, in the sets its consumers name: the Settings app's Settings (dbus, lending), docket and
-  # almanac (dbus), inferd's tests (dbus), an app that hosts inference itself (engines).
+  # The memory service (dbus), inferd's tests (dbus), an app that hosts inference itself (engines).
   "inference-client (no features) :: -p inference-client --no-default-features"
-  "inference-client (dbus: inferd's tests, docket, almanac) :: -p inference-client --no-default-features --features dbus"
+  "inference-client (dbus: inferd's tests, docket, the memory service) :: -p inference-client --no-default-features --features dbus"
   "inference-client (dbus,lending: the Settings app) :: -p inference-client --no-default-features --features dbus,lending"
 )
 

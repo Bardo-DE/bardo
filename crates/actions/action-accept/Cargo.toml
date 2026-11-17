@@ -5,7 +5,7 @@ publish.workspace = true
 
 # The daemons run as their own processes from these thin mains: the same daemon the packaged
 # binaries run (`run_with`, given the proc root and model tap from the environment), under names that cannot collide with theirs in one target directory. memoryd's
-# memoryd and inferd are not here: `build.rs` builds the packaged binaries of almanac (with its
+# memoryd and inferd are not here: `build.rs` builds the packaged binaries of the memory service (with its
 # `test-keys` feature), porter and the inference service, from their folders of this workspace.
 version.workspace = true
 edition.workspace = true

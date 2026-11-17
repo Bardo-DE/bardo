@@ -1,5 +1,5 @@
-//! The router's records as almanac's events. Never content: ids, kinds, decisions. A message and
-//! an episode are almanac's own bodies; everything else is an `Area { area: Docket }` payload
+//! The router's records as the memory service's events. Never content: ids, kinds, decisions. A message and
+//! an episode are the memory service's own bodies; everything else is an `Area { area: Docket }` payload
 //! in `action-core`'s serde form, with the things it names for cascade-forget.
 //!
 //! What memoryd checks of a record from the router (memory-service `record_fault`): a message
@@ -21,7 +21,7 @@ use std::collections::BTreeSet;
 
 /// The header kind of a record.
 ///
-/// It is `docket.<what>`, almanac's `companion.message` and
+/// It is `docket.<what>`, the memory service's `companion.message` and
 /// `companion.episode` for the two typed bodies, `companion.session.<slug>` for a record of
 /// the companion's own sessions and `helpers.card`, `helpers.job` or `helpers.post` for the
 /// helpers' own.
@@ -217,10 +217,10 @@ fn who_and_how(record: &AuditRecord, space: &SpaceId) -> (Actor, Effect, Label) 
     }
 }
 
-/// The almanac record for one audit record, in the Space it happened in.
+/// The memory record for one audit record, in the Space it happened in.
 ///
 /// `space` is where the caller says the record belongs; the Space a call, a started task, a
-/// message or an episode names itself wins over it. A message and an episode are almanac's own
+/// message or an episode names itself wins over it. A message and an episode are the memory service's own
 /// bodies; everything else is an `Area { Docket }` payload carrying the record's serde form.
 #[must_use]
 pub fn record_of(record: &AuditRecord, space: &SpaceId) -> Record {

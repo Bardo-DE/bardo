@@ -1,6 +1,6 @@
 [package]
 name = "memory-infer"
-description = "almanac's two models through inferd (org.bardo.Inference1, over inference-client's Transport): an embedder for recall and a consolidator that drafts hunks, each with its deadlines. No daemon: an app that is not memoryd can use them over its own transport."
+description = "memory's two models through inferd (org.bardo.Inference1, over inference-client's Transport): an embedder for recall and a consolidator that drafts hunks, each with its deadlines. No daemon: an app that is not memoryd can use them over its own transport."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

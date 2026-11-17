@@ -339,7 +339,7 @@ async fn every_member_over_the_bus_answers_what_the_router_answers() {
     }
     pair.both(IntentsRequest::SessionRecall {
         session: session.clone(),
-        ask: almanac_core_recall(),
+        ask: memory_core_recall(),
     })
     .await;
 
@@ -535,7 +535,7 @@ async fn every_member_over_the_bus_answers_what_the_router_answers() {
     );
 }
 
-fn almanac_core_recall() -> RecallAsk {
+fn memory_core_recall() -> RecallAsk {
     RecallAsk::Recent(RecentQuery {
         since: UnixSeconds(0),
         kinds: vec![],

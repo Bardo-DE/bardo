@@ -1,4 +1,4 @@
-//! almanac's D-Bus API, the caller's half (memory.md section 3.10): `org.bardo.Memory1` at
+//! The memory service's D-Bus API, the caller's half (memory.md section 3.10): `org.bardo.Memory1` at
 //! `/org/bardo/Memory1` as three interfaces (`Record`, `Recall`, `Control`) with a zbus proxy
 //! each, the argument codec between `memory-core` requests and the member arguments, `invoke`
 //! (a call over a connection) and the typed errors. Bodies are the serde JSON of `memory-core`

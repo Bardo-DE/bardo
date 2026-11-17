@@ -255,7 +255,7 @@ const fn w(key: &'static str, v: &'static str) -> SettingRow {
 }
 
 /// Every row, in the order the Intelligence page lists them. The retention row `companion.*`
-/// (30 days) is almanac's `RuleSet::standard()`; the desktop-scope join rule is `prov`'s.
+/// (30 days) is the memory service's `RuleSet::standard()`; the desktop-scope join rule is `prov`'s.
 pub const SETTING_ROWS: &[SettingRow] = &[
     w("agent.start_mode", "auto"),
     w("agent.auto.inside", "runs"),

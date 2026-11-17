@@ -1,6 +1,6 @@
 [package]
 name = "memory-files"
-description = "almanac's agent memory files on disk: the plain and sealed directory vaults, and an in-memory vault for tests."
+description = "memory's agent memory files on disk: the plain and sealed directory vaults, and an in-memory vault for tests."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

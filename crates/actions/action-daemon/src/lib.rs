@@ -5,7 +5,7 @@
 //! - `builtin_manifests`, `CompanionProvider`, `CheckpointsProvider`, `HostedLink`: the providers
 //!   whose router-side half intentd hosts (`MemoryProvider` is `companion-memory`'s), and the `AppLink`
 //!   that answers them in process.
-//! - `AlmanacMemory`: the router's memory seam over memoryd; `AuditLog`: the way of the event
+//! - `MemoryServiceLink`: the router's memory seam over memoryd; `AuditLog`: the way of the event
 //!   sink (`companion_memory_core::QueuedSink`) to memoryd.
 //! - `DbusLink`, `SheetConfirmer`, `FileGrants`, `InferdModel`, `ReaderClient`: the
 //!   system implementations of the other seams.
@@ -54,7 +54,7 @@ pub use audit::{AuditLog, Flushed};
 pub use builtin::{HostedLink, builtin_manifests, is_builtin};
 pub use builtin_checkpoints::{CheckpointsPort, CheckpointsProvider};
 pub use builtin_companion::{CompanionPort, CompanionProvider};
-pub use companion_memory::AlmanacMemory;
+pub use companion_memory::MemoryServiceLink;
 pub use config::{ConfigError, IntentdConfig};
 pub use daemon::{DaemonFault, HarnessSeams, Running, Setup, data_dirs, run, run_with, start};
 pub use defaults::{DEFAULT_GRANTS_FILE, default_grants_file, revoking};

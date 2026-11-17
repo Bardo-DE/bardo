@@ -1,7 +1,7 @@
 //! Routines: a helper's standing instructions, run without being asked.
 //!
 //! A routine is a goal in the person's words (Trusted, written when the routine is made) and what
-//! starts it: a time, an almanac event, or another job ending done. A run is an ordinary job on the
+//! starts it: a time, a memory service event, or another job ending done. A run is an ordinary job on the
 //! helper's board; the last 20 runs are kept, and three that do not finish in a row pause the
 //! routine.
 //!

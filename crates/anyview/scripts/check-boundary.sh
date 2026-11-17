@@ -238,7 +238,7 @@ DIRECT=(
 # alone: 701.
 # Bardo v0.3.45's ui-extensions (the desktop's Extensions, MIT OR Apache-2.0, over the plugin host, already in
 # the viewer's tree) finds the chosen look's sheet: one more in the viewer alone: 702.
-# The agent layer's Round A (porter f7e47a71, almanac 8d91de73, docket 01390d02): account-core keeps its
+# The agent layer's Round A (porter f7e47a71, the memory service 8d91de73, docket 01390d02): account-core keeps its
 # secrets in secrecy (with subtle, const-hex and cpufeatures) and memory-core names entries by ulid, all
 # pure Rust under licences deny.toml already allows; action-provider takes action-client's place: 706.
 # Round B (porter 31799cfa, docket 77be9598) splits code the viewer already had into crates of its own:

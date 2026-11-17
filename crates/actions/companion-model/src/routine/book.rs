@@ -51,7 +51,7 @@ pub enum RoutineEvent {
         /// The local clock.
         zone: Zone,
     },
-    /// An almanac event happened that one routine watches.
+    /// A memory service event happened that one routine watches.
     Saw {
         /// The routine.
         routine: RoutineId,

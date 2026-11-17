@@ -1,4 +1,4 @@
-//! Watching the almanac for the events routines wait for: when to ask again, which Space to ask
+//! Watching the memory service for the events routines wait for: when to ask again, which Space to ask
 //! about which kinds, which events were already acted on, and which routines an event is for.
 //! Asking is the host's; this is what is asked and what the answers mean.
 
@@ -7,15 +7,15 @@ use memory_core::{EventRef, KindPattern};
 use provenance::{HelperId, SpaceId, UnixSeconds};
 use std::collections::VecDeque;
 
-/// How often the almanac is asked for events, in seconds.
+/// How often the memory service is asked for events, in seconds.
 const EVENTS_EVERY: i64 = 30;
-/// How far back a question to the almanac reaches past the last one, in seconds, so an event on the
+/// How far back a question to the memory service reaches past the last one, in seconds, so an event on the
 /// boundary is not lost (events are told apart by their handle).
 const OVERLAP: i64 = 2;
 /// The most event handles remembered.
 const MOST_SEEN: usize = 512;
 
-/// A question to the almanac: which events of these kinds happened in a Space since a time.
+/// A question to the memory service: which events of these kinds happened in a Space since a time.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EventAsk {
     /// The Space.
@@ -26,7 +26,7 @@ pub struct EventAsk {
     pub kinds: Vec<KindPattern>,
 }
 
-/// An event the almanac answered with: its handle and its kind, nothing of its content.
+/// An event the memory service answered with: its handle and its kind, nothing of its content.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Seen {
     /// The event.
@@ -35,7 +35,7 @@ pub struct Seen {
     pub kind: String,
 }
 
-/// When the almanac was last asked, and which events have been acted on.
+/// When the memory service was last asked, and which events have been acted on.
 #[derive(Debug)]
 pub struct EventWatch {
     polled: UnixSeconds,
@@ -100,7 +100,7 @@ impl SpaceWatch {
     }
 }
 
-/// What to ask the almanac since `since`: one question per Space (Spaces are walls), for the events
+/// What to ask the memory service since `since`: one question per Space (Spaces are walls), for the events
 /// the book's watching routines wait for.
 ///
 /// A routine watches its helper's Space, or the one it names; `space_of` tells a helper's Space,

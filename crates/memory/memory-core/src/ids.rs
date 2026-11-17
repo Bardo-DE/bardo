@@ -1,4 +1,4 @@
-//! The ids almanac mints or names: facts, topics, rules, plans, kinds, paths and the counters
+//! The ids the memory service mints or names: facts, topics, rules, plans, kinds, paths and the counters
 //! of the log. Grammars are checked once where text enters.
 
 use crate::text::{decode_lower_hex, dotted, element_ok, text_id};

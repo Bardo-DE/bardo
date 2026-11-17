@@ -7,11 +7,11 @@ use provenance::SpaceId;
 
 /// Memory, as the router asks it (`Caller::router()`).
 #[derive(Debug, Clone)]
-pub struct AlmanacMemory<T: Transport> {
+pub struct MemoryServiceLink<T: Transport> {
     memory: Memory<T>,
 }
 
-impl<T: Transport> AlmanacMemory<T> {
+impl<T: Transport> MemoryServiceLink<T> {
     /// Asks memoryd over `transport`.
     pub fn over(transport: T) -> Self {
         Self {
@@ -20,7 +20,7 @@ impl<T: Transport> AlmanacMemory<T> {
     }
 }
 
-impl<T: Transport> MemoryLink for AlmanacMemory<T> {
+impl<T: Transport> MemoryLink for MemoryServiceLink<T> {
     async fn ask(&self, request: MemoryRequest) -> Result<MemoryReply, LinkFault> {
         match self.memory.ask(request).await {
             Ok(reply) => Ok(reply),

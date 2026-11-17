@@ -1,8 +1,8 @@
-//! docket's memory seam, pure: the router's audit records as almanac's events, and the bounded
+//! docket's memory seam, pure: the router's audit records as the memory service's events, and the bounded
 //! queue the router appends them to. No transport and no IO: `companion-memory` holds the glue that
-//! drains the queue into an almanac `Memory`.
+//! drains the queue into a memory service `Memory`.
 //!
-//! - [`record_of`], [`kind_tag_of`], [`space_named_by`]: the router's audit records as almanac's
+//! - [`record_of`], [`kind_tag_of`], [`space_named_by`]: the router's audit records as the memory service's
 //!   events.
 //! - [`QueuedSink`]: the bounded event sink the host drains.
 

@@ -1,6 +1,6 @@
 [package]
 name = "memory-store"
-description = "The seams almanac's service stands on, as traits and types only: the event log, the file vault and the search index. No SQLite, no OpenSSL, no runtime."
+description = "The seams the memory service's service stands on, as traits and types only: the event log, the file vault and the search index. No SQLite, no OpenSSL, no runtime."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

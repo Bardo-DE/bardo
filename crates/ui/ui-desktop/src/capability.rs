@@ -81,7 +81,7 @@ impl Capability {
             // accountd, porter repo (porter/crates/accountd/src/lib.rs:2); also named by
             // ui-settings' live client docs.
             Capability::Accounts => Some(session("org.bardo.Accounts1")),
-            // memoryd, design/33-AGENT.md section 5 (almanac repo).
+            // memoryd, design/33-AGENT.md section 5 (the memory repo).
             Capability::Memory => Some(session("org.bardo.Memory1")),
             // companiond, design/33-AGENT.md section 5 (docket repo).
             Capability::Companion => Some(session("org.bardo.Companion1")),

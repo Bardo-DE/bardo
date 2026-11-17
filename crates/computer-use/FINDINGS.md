@@ -70,7 +70,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
   client reads `Id` after `RunAdded`, and keeps its path-to-id map for `RunRemoved` (the object is
   gone by then).
 - **Records:** `Routed` and `Asked.question_id` were added; `HandedBack.user_events` is
-  `Vec<EventRef>` (cua-bus depends on almanac-core, ask 72; the machine leaves it empty, the
+  `Vec<EventRef>` (cua-bus depends on memory-core, ask 72; the machine leaves it empty, the
   events of the person between the take-over and the hand-back are memoryd's to name once a seam
   carries them).
 - **`MaskedRegion` is `MaskRegion`**; `ScrollSteps` is `Notches` with a `ScrollDir`; `PxSize` is
@@ -95,14 +95,14 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
   on docket's line (cuad waits for its connection to close).
 - Dev-dependencies of cuad's tests only, so not in any tree the boundary script checks: `intentd`,
   `docket-fake`, `docket-router` (a real intentd over docket's fakes on a private bus) and
-  `almanac-fake` with `almanac-client`'s `in_process` (a real memory service); `tokio`'s `test-util`.
+  `memory-fake` with `memory-client`'s `in_process` (a real memory service); `tokio`'s `test-util`.
 - cua-eval only, the model layer's crates at the pinned rev: `cua-session`, `cua-vendors`, `model-catalog`, `model-http` (feature `hyper`), `model-openai-compat` and `vision-prep` (feature `pixels`, so `image` and `fast_image_resize`), the same ones porter's inferd uses to run a step. The eval's 8x16 font is cut from Hack Regular by `scripts/dev/gen-eval-font.py`; no font crate.
 - Not added: `ashpd`, `pipewire` (KWin).
 
 ## Upstream asks (nothing was edited in another repo)
 
 Closed by the w4-cua fill, from the asks lists (and by f4-cua-seat: 114, 149): 62 (cuad calls `Intents::gate_grant` and
-`gate_check`), 72 (`HandedBack.user_events`, cua-bus on almanac-core), 92 (`Observation.notes`), the
+`gate_check`), 72 (`HandedBack.user_events`, cua-bus on memory-core), 92 (`Observation.notes`), the
 docket label ask (the router joins `Untrusted(Screen)` into the run's session at `Gate.Check`), the
 docket `InProcess` feature ask (it is behind `in_process`), and the porter `StepNote` ask
 (`CuaStepRequest.notes` exists).
@@ -142,7 +142,7 @@ docket `InProcess` feature ask (it is behind `in_process`), and the porter `Step
   `ContextSnapshot` of the window the run works in, so `Observation.context` is always `Absent`
   (`RunEffect::FetchContext` is carried out as "no answer"). Ask: a `Context` member for the cua
   role that returns the snapshot of an app's window.
-- **almanac `Memory1`:** `HandedBack.user_events` needs a read of the person's events between two
+- **The memory service `Memory1`:** `HandedBack.user_events` needs a read of the person's events between two
   instants for the cua caller; `Caller::Cuad` records `Area(Cua)` only. Ask: a bounded `Recent`
   for `Caller::Cuad`, limited to events of the window's app after a given `Seq`.
 - **The compositor:** serve `bardo_agent_manager_v1` from `~/desktop-protocols/protocols/bardo-agent-v1.xml` (the XML left cua at S0-CU2); the
@@ -261,7 +261,7 @@ the machine under it. What was decided:
 - **`FakeDesktop::next_event`** wakes when an event is raised (it used to wait forever if none was
   queued when it was first polled). `cua_fake::scene` holds the scenes the tests share.
 - **Tests.** `cuad/tests/it/links.rs` runs `IntentsGate` and `DaemonLinks` against a real intentd on a
-  private bus (docket's fakes behind it) and a real memory service (almanac's fakes);
+  private bus (docket's fakes behind it) and a real memory service (the memory service's fakes);
   `cuad/tests/it/serve.rs` runs `serve_on_with` on a private bus with callers introduced as their process's app and role;
   `cuad/tests/it/{supervisor,inflight}.rs` run the supervisor over the fakes with paused time.
 - **Not done:** `CuaProvider` offers no `dry_run`, search or suggest; procedures
@@ -312,9 +312,9 @@ the machine under it. What was decided:
   `Cua1` calls name); the session is `Supervisor::view(run).task.session`. The asking session stays in
   `CuaTask.conversation` (and `RunStarted`); every record names it as a `Subject` thing
   (`org.bardo.Companion` / `companion.session`, as docket's log does) and the app as a `Source` thing
-  (`<app>` / `desktop.app`; almanac's `ThingRole` has only `Subject` and `Source`).
+  (`<app>` / `desktop.app`; the memory service's `ThingRole` has only `Subject` and `Source`).
 - **Ask 114**: `Cargo.lock` is refreshed (adds `tokio`, `futures-util`, `rustix`, `cua-parse` edges) and
-  `--locked` passes against porter, docket, the model layer and almanac master.
+  `--locked` passes against porter, docket, the model layer and the memory service master.
 
 ## The f4-cua-capture fill (2026-10-06): the stock wayland backends and the daemon's seams
 
@@ -370,7 +370,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
    `RunBudget::PROPOSED`, 2026-10-27).
 2. **Left out: `cua.screens.keep` and `cua.screens.keep_days`** (schema row not shipped, nothing reads
    them). `CuaConfig` carries both, but no code stores a step's thumbnail in the Space's encrypted store,
-   so a row would do nothing. Closes when cuad keeps thumbnails (almanac store) and reads them: add the two
+   so a row would do nothing. Closes when cuad keeps thumbnails (the memory store) and reads them: add the two
    rows and the two table entries in `settings/keys.rs`; the schema test fails until both are there.
 3. **The reader is `cuad::settings`** (`read(text, base)`, `Locator`). The file is
    `$XDG_CONFIG_HOME/cua/settings.toml` (then `$XDG_CONFIG_DIRS`; the first file that reads wins whole). A value
@@ -400,7 +400,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
 7. **`cuad --write-schema DIR`** writes `cua.settings.toml` for a local install, like `actions-mcp
    --write-schema`.
 8. **Lockfile.** `notify` joins cua's `Cargo.lock` (cuad's watch). The watch code is the same shape as
-   docket's intentd and almanac's memoryd (`SettingsWatch`); one shared crate replaces the three copies when
+   docket's intentd and the memory service's memoryd (`SettingsWatch`); one shared crate replaces the three copies when
    porter has a place for it.
 9. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent`
    mark) and parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a
@@ -410,7 +410,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-The model layer, porter, almanac, docket and desktop-protocols are git dependencies at pinned revs in the root
+The model layer, porter, the memory service, docket and desktop-protocols are git dependencies at pinned revs in the root
 `Cargo.toml`, spelled `https://github.com/PoHsuanLai/<repo>` (no `.git`) as the other repos spell them, so one copy
 of each crate is in the graph. For cross-repo work, override a pin with a
 `[patch."https://github.com/PoHsuanLai/<repo>"]` table of `path` lines in a `.cargo/config.toml` in a directory
@@ -553,7 +553,7 @@ a real desktop. The model-time figures are wall time on a shared machine and are
 - **API.** `serve_on(connection, supervisor, table)` takes the callers table (`read_callers`);
   `serve_on_with(connection, supervisor, identity)` is the seam. No environment variable or feature
   switches the proc root in the shipped binary.
-- **Pins.** porter `7911dee`, the model layer `f42e737`, and docket `187751f` (with almanac `8a07b35`, the one
+- **Pins.** porter `7911dee`, the model layer `f42e737`, and docket `187751f` (with the memory service `8a07b35`, the one
   docket pins) move together: `Identity` exists from docket `187751f`. `docket-dbus` is a new
   direct dependency of cuad.
 - **Tests.** The classify table, the shipped file's three rows, a squatter of the shell's name (not

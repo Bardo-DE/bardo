@@ -33,7 +33,7 @@ Marks: **[freeze now]** means the type, signature or format is fixed in the free
 
 ### 2.1 Placement
 
-A **new repo `~/almanac`** (github.com/Bardo-DE/almanac). It is shaped like porter: a workspace, frozen interfaces, `todo!()` stubs listed in FINDINGS.md, `scripts/check-boundary.sh`, and `dbus/*.xml` checked against the skeletons. The daemon is **`memoryd`**, named for the concept like porter's `accountd`, `inferd` and `syncd`. The bus name is `org.bardo.Memory1`.
+A **new repo `~/memory`** (github.com/Bardo-DE/memory). It is shaped like porter: a workspace, frozen interfaces, `todo!()` stubs listed in FINDINGS.md, `scripts/check-boundary.sh`, and `dbus/*.xml` checked against the skeletons. The daemon is **`memoryd`**, named for the concept like porter's `accountd`, `inferd` and `syncd`. The bus name is `org.bardo.Memory1`.
 
 Why a separate repo: memory is not accounts. The three owned crates (`eventlog`, `memfiles`, `recall`) are meant to be reusable. memoryd also has its own confinement unit.
 
@@ -711,9 +711,9 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 **Wave 0 (prerequisites, sequential, user/toolchain owner)**
 1. Add the dependency lines of §2.3 to `bardo/docs/workspace-deps.toml`, including the rusqlite sqlcipher line.
 2. The actions area freezes `prov` (Label, Integrity, Confirmation, and SpaceId and Actor if they agree, §7).
-3. Create the empty repo `~/almanac`, copying porter's `rust-toolchain.toml` (1.98.1), `.cargo/config.toml`, `deny.toml`, `rustfmt.toml` and `CONVENTIONS.md` pointer.
+3. Create the empty repo `~/memory`, copying porter's `rust-toolchain.toml` (1.98.1), `.cargo/config.toml`, `deny.toml`, `rustfmt.toml` and `CONVENTIONS.md` pointer.
 
-**Freeze wave (one agent; owns all of `~/almanac`)**
+**Freeze wave (one agent; owns all of `~/memory`)**
 - Every crate in §2.2 except `recall-sqlite-vec`.
 - All of §3 as compiling types, traits and XML.
 - Pure functions that pin formats are implemented now: `header_bytes`, `link`, `verify_chain`, `parse_topic`/`render_topic`, `seal`/`unseal`, `derive`, `admit`, `fuse_rrf`, `chunk`, `join`, `allowed`, and the §4 step tables.
@@ -744,7 +744,7 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 
 **Verify commands** (porter's gate, every exit code checked; `recall-fastembed` is excluded because ort downloads binaries):
 ```bash
-cd ~/almanac
+cd ~/memory
 cargo fmt --all --check
 cargo clippy --workspace --exclude recall-fastembed --all-targets --all-features -- -D warnings
 cargo test --workspace --exclude recall-fastembed --all-features

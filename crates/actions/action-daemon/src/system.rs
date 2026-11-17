@@ -9,7 +9,7 @@ use action_review::InferReviewer;
 use action_router::{NoLog, Seams};
 use action_store::SystemClock;
 use agent_session::{Appended, LogFault, LogPage, PageSize, Seq, SessionEntry, SessionLog};
-use companion_memory::{AlmanacMemory, AlmanacSessionLog};
+use companion_memory::{MemoryServiceLink, MemorySessionLog};
 use companion_memory_core::QueuedSink;
 use provenance::SessionId;
 
@@ -22,7 +22,7 @@ use provenance::SessionId;
 #[derive(Debug)]
 pub enum DaemonLog<M: memory_client::Transport> {
     /// Sessions are recorded in memoryd.
-    Almanac(AlmanacSessionLog<M, SystemClock>),
+    Memory(MemorySessionLog<M, SystemClock>),
     /// Sessions are not recorded.
     Off(NoLog),
 }
@@ -35,7 +35,7 @@ impl<M: memory_client::Transport> SessionLog for DaemonLog<M> {
         entry: &SessionEntry,
     ) -> Result<Appended, LogFault> {
         match self {
-            DaemonLog::Almanac(log) => log.append(session, seq, entry).await,
+            DaemonLog::Memory(log) => log.append(session, seq, entry).await,
             DaemonLog::Off(log) => log.append(session, seq, entry).await,
         }
     }
@@ -47,14 +47,14 @@ impl<M: memory_client::Transport> SessionLog for DaemonLog<M> {
         size: PageSize,
     ) -> Result<LogPage, LogFault> {
         match self {
-            DaemonLog::Almanac(log) => log.page(session, from, size).await,
+            DaemonLog::Memory(log) => log.page(session, from, size).await,
             DaemonLog::Off(log) => log.page(session, from, size).await,
         }
     }
 
     async fn sessions(&self) -> Result<Vec<SessionId>, LogFault> {
         match self {
-            DaemonLog::Almanac(log) => log.sessions().await,
+            DaemonLog::Memory(log) => log.sessions().await,
             DaemonLog::Off(log) => log.sessions().await,
         }
     }
@@ -79,7 +79,7 @@ pub struct SystemSeams<P: inference_client::Transport, M: memory_client::Transpo
     /// The clock.
     pub clock: SystemClock,
     /// Memory.
-    pub memory: AlmanacMemory<M>,
+    pub memory: MemoryServiceLink<M>,
     /// The policy writer.
     pub writer: InferdWriter<P>,
     /// The reader.
@@ -97,7 +97,7 @@ impl<P: inference_client::Transport, M: memory_client::Transport> Seams for Syst
     type Grants = FileGrants;
     type Sink = QueuedSink;
     type Time = SystemClock;
-    type Memory = AlmanacMemory<M>;
+    type Memory = MemoryServiceLink<M>;
     type Writer = InferdWriter<P>;
     type Reading = ReaderClient;
     type Log = DaemonLog<M>;

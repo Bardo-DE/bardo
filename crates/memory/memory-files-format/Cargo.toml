@@ -1,6 +1,6 @@
 [package]
 name = "memory-files-format"
-description = "almanac's agent memory file format: parse and render of topic files and trailers, and the fact store over a vault seam. No file IO."
+description = "memory's agent memory file format: parse and render of topic files and trailers, and the fact store over a vault seam. No file IO."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

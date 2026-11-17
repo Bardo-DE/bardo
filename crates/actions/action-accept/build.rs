@@ -1,5 +1,5 @@
 //! Builds the three daemons the acceptance runs as the packaged binaries: the accounts daemon (`accountd` (it
-//! holds the AI keys), the inference service's `inferd` and almanac's `memoryd`. `accountd` and `memoryd` are built with
+//! holds the AI keys), the inference service's `inferd` and the memory service's `memoryd`. `accountd` and `memoryd` are built with
 //! `test-keys`, because the private bus has no Secret Service, and all three with `test-proc-root`,
 //! so callers are named from a fake proc root. Each is built from its own folder, into a target
 //! directory inside this build's (`<target>/accept-siblings/<repo>`), so the nextest archive's

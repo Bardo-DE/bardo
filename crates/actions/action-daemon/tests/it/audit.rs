@@ -1,4 +1,4 @@
-//! The audit trail from the router to memoryd: each record becomes an almanac `Record` that
+//! The audit trail from the router to memoryd: each record becomes a memory service `Record` that
 //! memoryd admits, the queue is bounded, and when memoryd is away nothing is lost until the
 //! queue is full and nothing is written twice. The bus is a private one and memoryd is the
 //! fake that serves the real wire.
@@ -237,7 +237,7 @@ fn a_record_that_names_no_space_goes_where_the_caller_puts_it() {
 }
 
 #[test]
-fn a_message_and_an_episode_keep_almanacs_own_typed_bodies() {
+fn a_message_and_an_episode_keep_the_memory_services_own_typed_bodies() {
     let sent = record_of(&message(), &space("desktop"));
     let EventBody::Message(body) = &sent.body else {
         panic!("{:?}", sent.body)

@@ -1,4 +1,4 @@
-//! The routines' host in the daemon: the hub's board and records, the almanac through the router,
+//! The routines' host in the daemon: the hub's board and records, the memory service through the router,
 //! the system's zone, and the systemd timers when a directory for them is given.
 
 use super::host::Host;
@@ -18,7 +18,7 @@ use companion_tasks::Surface;
 use memory_core::{BodyMode, RecentQuery, TrustFilter};
 use provenance::{HelperId, SpaceId, UnixSeconds};
 
-/// The most events one question to the almanac returns.
+/// The most events one question to the memory service returns.
 const MOST_EVENTS: u32 = 200;
 
 /// Where the systemd timers go, if anywhere.

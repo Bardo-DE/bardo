@@ -177,7 +177,7 @@ fn an_empty_table_names_no_unit_and_an_app_is_still_an_app() {
 }
 
 #[test]
-fn the_roles_map_onto_almanacs_callers() {
+fn the_roles_map_onto_the_memory_services_callers() {
     let table = table_from_toml(TABLE).expect("table");
     let named = |unit: &str| table.resolve_unit(unit).map(caller_for);
     assert_eq!(named("bardo-actiond.service"), Some(Caller::router()));

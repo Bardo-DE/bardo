@@ -1,4 +1,4 @@
-//! The seams almanac's service stands on, as traits and types only.
+//! The seams the memory service's service stands on, as traits and types only.
 //!
 //! * the event log: [`LogRead`], [`LogWrite`], [`Entry`], [`Header`] and the chain check,
 //! * the file vault: [`Vault`] and [`VaultPath`],

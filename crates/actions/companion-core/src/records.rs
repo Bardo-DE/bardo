@@ -1,5 +1,5 @@
 //! Grouping by Space: the helpers' records are stored in the Space of their helper, and a
-//! routine's watches ask the almanac one Space at a time. Spaces are walls, so nothing here mixes
+//! routine's watches ask the memory service one Space at a time. Spaces are walls, so nothing here mixes
 //! two of them.
 
 use companion_model::helper::{Board, CardRecord, HelperRecord};

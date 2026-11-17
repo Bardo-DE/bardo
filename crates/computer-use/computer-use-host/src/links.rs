@@ -74,7 +74,7 @@ fn view_of(app: &str, kind: &str, key: &str) -> Result<ThingView, RecordError> {
 }
 
 /// The things every record of a run names: the conversation (`Subject`, exactly as docket's
-/// session log names it) and the app the run drives (`Source`; almanac has no `Object` role).
+/// session log names it) and the app the run drives (`Source`; the memory service has no `Object` role).
 fn things_of(ctx: &RecordContext) -> Result<Vec<(ThingView, ThingRole)>, RecordError> {
     Ok(vec![
         (
@@ -92,7 +92,7 @@ fn things_of(ctx: &RecordContext) -> Result<Vec<(ThingView, ThingRole)>, RecordE
     ])
 }
 
-/// The almanac event for `record`: an `EventBody::Area` of area `Cua` whose JSON is the record's
+/// The memory service event for `record`: an `EventBody::Area` of area `Cua` whose JSON is the record's
 /// serde form and whose kind tag is its slug, by the actor `Companion { session, role: Cua }`.
 ///
 /// Pure. A step's effect is the record's own; every other record is a `Read`.

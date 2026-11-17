@@ -70,7 +70,7 @@ pub struct Binaries {
     pub companiond: PathBuf,
     /// `accept-readerd`.
     pub readerd: PathBuf,
-    /// almanac's packaged `memoryd`, built with `test-keys`.
+    /// The memory service's packaged `memoryd`, built with `test-keys`.
     pub memoryd: PathBuf,
     /// porter's packaged `accountd`, built with `test-keys`: it holds the AI keys.
     pub accountd: PathBuf,

@@ -30,7 +30,7 @@
 # could not start from there, and bardo-companiond could not read its config and skills). The porter units need nothing: they make their own
 # directories. --cloud installs the inference service's dist/inferd-cloud.conf as bardo-inferd.service.d/cloud.conf (network
 # on); it is opt-in because local engines share inferd's sandbox, so an on-device-only setup keeps none.
-# memoryd has no unit in almanac/dist: almanac/dbus/bardo-memoryd.service is its unit, started by D-Bus
+# memoryd has no unit in memory/dist: memory/dbus/bardo-memoryd.service is its unit, started by D-Bus
 # activation (org.bardo.Memory1.service names it), and that is what is installed.
 #
 # Needs root, and is printed but never run: /etc/bardo/accountd-callers.toml (the caller table accountd
@@ -47,7 +47,7 @@ TREE="$(cd "$DOCKET/../.." && pwd)"   # the bardo tree
 CRATES="$TREE/crates"
 PORTER="$CRATES/accounts"
 INFERENCE="$CRATES/inference"
-ALMANAC="$CRATES/memory"
+MEMORY="$CRATES/memory"
 MODELS="$CRATES/models"
 CUA="$CRATES/computer-use"
 
@@ -94,7 +94,7 @@ BINARIES=(
   "bardo-agent docket agent-acp-bin"
   "bardo-agent-net-forward docket agent-acp-bin"
   "bardo-agent-net-enter docket agent-acp-bin"
-  "bardo-memoryd almanac memory-daemon"
+  "bardo-memoryd the memory service memory-daemon"
   "bardo-inferd the inference service inference-daemon"
   "bardo-accountd porter account-daemon"
 )
@@ -142,19 +142,19 @@ build_plan() {
     plan bin "$(bin_source "$name" "$repo")" "$BIN/$name"
   done
   plan_units "$DOCKET/dist"; plan_units "$PORTER/dist"; plan_units "$INFERENCE/dist"
-  plan unit "$ALMANAC/dbus/bardo-memoryd.service" "$UNITS/bardo-memoryd.service"
-  plan_sandbox "$ALMANAC/dbus/bardo-memoryd.service"
+  plan unit "$MEMORY/dbus/bardo-memoryd.service" "$UNITS/bardo-memoryd.service"
+  plan_sandbox "$MEMORY/dbus/bardo-memoryd.service"
   plan_dbus "$DOCKET/dist/dbus"; plan_dbus "$PORTER/dist/dbus"; plan_dbus "$INFERENCE/dist/dbus"
-  plan dbus "$ALMANAC/dbus/org.bardo.Memory1.service" "$DBUS/org.bardo.Memory1.service"
+  plan dbus "$MEMORY/dbus/org.bardo.Memory1.service" "$DBUS/org.bardo.Memory1.service"
   plan_tree data "$DOCKET/dist/skills" "$DATA/bardo/skills"
   plan_tree data "$DOCKET/policy/presets" "$DATA/bardo/actions/permissions"
   local dir
-  for dir in "$DOCKET" "$ALMANAC" "$PORTER" "$INFERENCE" "$CUA"; do
+  for dir in "$DOCKET" "$MEMORY" "$PORTER" "$INFERENCE" "$CUA"; do
     plan_tree data "$dir/dist/intents" "$DATA/bardo/intents"
     plan_tree data "$dir/dist/settings" "$DATA/bardo/settings"
   done
   plan data "$INFERENCE/dist/inference.settings.toml" "$DATA/bardo/settings/inference.settings.toml"
-  plan data "$ALMANAC/memory-settings/schema/memory.settings.toml" "$DATA/bardo/settings/memory.settings.toml"
+  plan data "$MEMORY/memory-settings/schema/memory.settings.toml" "$DATA/bardo/settings/memory.settings.toml"
   plan_tree data "$PORTER/providers" "$DATA/bardo/accounts/providers"
   plan_tree data "$MODELS/catalog" "$DATA/bardo/models/catalog"
   local cfg
@@ -166,7 +166,7 @@ build_plan() {
   done
   if [ "$CLOUD" = 1 ]; then plan dropin "$INFERENCE/dist/inferd-cloud.conf" "$UNITS/bardo-inferd.service.d/cloud.conf"; fi
   plan config "$INFERENCE/dist/inferd.toml" "$CONFIG/bardo/inference/inferd.toml"
-  plan config "$ALMANAC/dbus/memoryd-callers.toml" "$CONFIG/bardo/memoryd/callers.toml"
+  plan config "$MEMORY/dbus/memoryd-callers.toml" "$CONFIG/bardo/memoryd/callers.toml"
 }
 
 bin_source() { # name repo -> the file to install
@@ -350,7 +350,7 @@ at startup, too:
   sudo install -D -m644 $DOCKET/dist/companiond-callers.toml /etc/bardo/companiond-callers.toml
   sudo install -D -m644 $DOCKET/dist/readerd-callers.toml /etc/bardo/readerd-callers.toml
   sudo install -D -m644 $DOCKET/dist/agent-acp-callers.toml /etc/bardo/agent-acp-callers.toml
-  sudo install -D -m644 $ALMANAC/dbus/memoryd-callers.toml /etc/bardo/memoryd-callers.toml
+  sudo install -D -m644 $MEMORY/dbus/memoryd-callers.toml /etc/bardo/memoryd-callers.toml
 
 Then:  systemctl --user daemon-reload
        systemctl --user restart bardo-accountd bardo-inferd

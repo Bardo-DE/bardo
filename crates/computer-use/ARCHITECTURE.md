@@ -82,9 +82,9 @@ are named by both the desktop and the crates that serve it), and `computer-use-b
 where the leaf types its records and the `Start` body name now live (it links none of the capability crates). See FINDINGS, "Spec
 conflicts".
 
-The repo order is the model layer, porter, almanac, docket, cua, sill. cua reaches the model layer's
+The repo order is the model layer, porter, the memory service, docket, cua, sill. cua reaches the model layer's
 `computer-use-action` and `model-replay`, porter's `prov`, `account-core`, `inference-core`,
-almanac's `memory-core` and `memory-client`, and docket's `action-core`
+The memory service's `memory-core` and `memory-client`, and docket's `action-core`
 (`CuaAsk`, `GateAnswer`, `MessageDraft`) and `action-client`
 (`IntentProvider`, `Intents`), all by sibling path until pinned git revs replace them. Nothing of
 sill may enter any tree here. cua never reaches `permission-policy`: the router is the one decision
@@ -145,7 +145,7 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | the Wayland protocol | `bardo-agent-v1.xml` in `~/desktop-protocols` (the one home), used by computer-use-desktop and computer-use-capture-wayland; the server side is the fork's, later the compositor's |
 | the `computeruse.run.start` action | `manifests/org.bardo.ComputerUse.toml`, served by `bardo-computer-use::CuaProvider` |
 | what the screen model is told about the task and the earlier attempts | `CuaTask.asked` (the person's latest sentence) and `CuaTask.earlier` (this provider's stored records of the conversation, oldest first), both filled by the router from the `asked` and `earlier` parameters of `computeruse.run.start` (`Filled::PersonWords`, `Filled::OwnHistory { kinds: "cua.*" }`; the planner never sees or sends them) and read by `bardo-computer-use::provider::start_of` (an element that is not a record is skipped, bad JSON is none). `cua_run::briefing` builds the session's opening: the task line is `asked` when present, else `goal`; the hints, in order, are "The assistant's plan for this run: <goal>" (only when `asked` is present and differs), then "Earlier attempts at this (check the screen before trusting them):" and the digest lines, then the desktop's shared hints. `cua_run::attempts` is the digest: the last three runs in the task's app (the current run left out), each as `Attempt k:`, a `Tried:` line of verbs with repeats collapsed and a mark when not plainly done ("no visible change", "refused", "failed", "not run"; a stored input is "no visible change" when the `cua.step.seen` after it says so), and the end in the words of the planner's report (`said_of`); at most twelve lines. Never a coordinate, typed text or thought. A stalled run's report uses the same step words (`RunTrack.tried`, `stall_words`). The run's taint is the join of the goal's, `asked`'s and `earlier`'s labels |
-| the event-log record | `cua_bus::CuaRecord`; `bardo-computer-use::record_of` makes the almanac `EventBody::Area { area: Cua }`, naming the conversation (`CuaTask.conversation`, the thing docket's session log uses) as `Subject` and the run's app as `Source`, so the router reads a conversation's earlier runs by `Entries { about }` |
+| the event-log record | `cua_bus::CuaRecord`; `bardo-computer-use::record_of` makes the memory service `EventBody::Area { area: Cua }`, naming the conversation (`CuaTask.conversation`, the thing docket's session log uses) as `Subject` and the run's app as `Source`, so the router reads a conversation's earlier runs by `Entries { about }` |
 | views of the above for the shell | sill's `shell-model` (`run_state_of(slug, outcome)`); cua defines none |
 
 ## 4. Traits
@@ -273,7 +273,7 @@ action it leads to is gated like any other.
 
 - Licence `MIT OR Apache-2.0`; edition 2024; `unsafe_code = "deny"`; `rust-toolchain.toml` pins
   1.98.1 and `deny.toml` is the licence gate.
-- Cross-repo dependencies are git dependencies at pinned revs (the model layer, porter, almanac, docket,
+- Cross-repo dependencies are git dependencies at pinned revs (the model layer, porter, the memory service, docket,
   desktop-protocols), so a plain clone builds with no sibling checkout; the URLs and revs match the
   other repos' pins of the same crates, or cargo links two copies. External versions are copied from Bardo's `docs/workspace-deps.toml`, never chosen here;
   FINDINGS lists the ones added to this workspace.

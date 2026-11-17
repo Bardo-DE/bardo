@@ -1,4 +1,4 @@
-//! Watching the almanac: when to ask again, and which events were already acted on.
+//! Watching the memory service: when to ask again, and which events were already acted on.
 
 use companion_core::EventWatch;
 use memory_core::{EventRef, ReplicaId, Seq};
@@ -13,7 +13,7 @@ fn event(seq: u64) -> EventRef {
 }
 
 #[test]
-fn the_almanac_is_asked_every_half_minute_from_the_last_question() {
+fn the_memory_service_is_asked_every_half_minute_from_the_last_question() {
     let mut watch = EventWatch::new(UnixSeconds(1_000));
     assert_eq!(watch.due(UnixSeconds(1_029)), None);
     assert_eq!(watch.due(UnixSeconds(1_030)), Some(UnixSeconds(1_000)));

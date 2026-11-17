@@ -1,4 +1,4 @@
-//! Payloads other areas own. almanac stores them as opaque JSON (their serde form) and never
+//! Payloads other areas own. The memory service stores them as opaque JSON (their serde form) and never
 //! names their types: that keeps the repo graph acyclic.
 
 use crate::ids::KindTag;

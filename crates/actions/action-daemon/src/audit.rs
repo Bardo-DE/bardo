@@ -4,7 +4,7 @@
 //! records it had to drop, and which Space memoryd refused.
 
 use action_core::AuditRecord;
-use companion_memory::{AlmanacMemory, AuditState, Link};
+use companion_memory::{AuditState, Link, MemoryServiceLink};
 use memory_client::Transport;
 use provenance::SpaceId;
 use std::collections::BTreeSet;
@@ -16,7 +16,7 @@ use companion_memory_core::QueuedSink;
 /// Writes the router's records into memoryd.
 #[derive(Debug)]
 pub struct AuditLog<T: Transport> {
-    memory: AlmanacMemory<T>,
+    memory: MemoryServiceLink<T>,
     state: AuditState,
 }
 
@@ -24,7 +24,7 @@ impl<T: Transport> AuditLog<T> {
     /// A log that writes through `transport`.
     pub fn over(transport: T) -> Self {
         Self {
-            memory: AlmanacMemory::over(transport),
+            memory: MemoryServiceLink::over(transport),
             state: AuditState::default(),
         }
     }

@@ -1,10 +1,10 @@
-//! The caller table as files, and porter's caller mapped onto almanac's.
+//! The caller table as files, and porter's caller mapped onto the memory service's.
 //!
 //! The identification is porter's (`account_callers::ProcCallers`: the bus names the pid, the pid's
 //! cgroup names the unit or the app scope), and so is the reading of the table files
 //! (`account_callers::load_callers`). What is memoryd's own is where they are —
 //! `/etc/bardo/memoryd-callers.toml` with the user's `<config>/bardo/memoryd/callers.toml` laid
-//! over it — and [`caller_for`] that turns a porter role into one of almanac's callers. The router, the shell, cuad and the Settings app are the four fixed
+//! over it — and [`caller_for`] that turns a porter role into one of the memory service's callers. The router, the shell, cuad and the Settings app are the four fixed
 //! callers; every other identified process is an app.
 
 use caller_role_types::CallerRole;
@@ -17,7 +17,7 @@ pub const SHELL_APP: &str = "org.bardo.Shell";
 /// The app that is the System Settings app, the Settings app (its row has the `settings` role).
 pub const SETTINGS_APP: &str = "org.bardo.Settings";
 
-/// almanac's caller for the process porter identified.
+/// The memory service's caller for the process porter identified.
 ///
 /// Cuad is the `cua` role, the shell the `sheet_host` role of [`SHELL_APP`], the router the `agent`
 /// role of [`ROUTER_APP`], the Settings app the `settings` role of [`SETTINGS_APP`]; any other row,

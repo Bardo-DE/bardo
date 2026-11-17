@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh: install almanac's memory daemon (memoryd), for the whole machine or for one user.
+# install.sh: install the memory service's memory daemon (memoryd), for the whole machine or for one user.
 #
 #   scripts/install.sh                   build (release, --locked) and install under /usr/local;
 #                                        the steps that need root use $SUDO, else sudo, else doas,
@@ -31,7 +31,7 @@
 #                                        memoryd reads it at start, so restart it after
 set -euo pipefail
 
-REPO_NAME="almanac"
+REPO_NAME="memory"
 NEEDS_GIT=1
 FIRST_SERVICE="bardo-memoryd"
 CARGO_EXTRA=(--config net.git-fetch-with-cli=true)

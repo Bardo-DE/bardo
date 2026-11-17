@@ -202,7 +202,7 @@ pub struct Job {
     /// Why its last try did not finish; it is open again.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub failed: Option<JobFault>,
-    /// The almanac event that started it, when a routine's run: a handle, never part of the goal.
+    /// The memory service event that started it, when a routine's run: a handle, never part of the goal.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub about: Option<EventRef>,
     /// The most steps this job takes, when a routine's run sets a budget of its own: the job

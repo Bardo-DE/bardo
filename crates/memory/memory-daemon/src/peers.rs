@@ -4,7 +4,7 @@
 //! says which process owns a connection and `/proc/<pid>/cgroup` says which unit or app scope
 //! it runs in (porter's `ProcCallers`; the executable is not read, because a Landlock domain
 //! may not read another process's `exe`). `memoryd-callers.toml` gives the unit or app its role
-//! and `callers::caller_for` maps that role onto almanac's callers. A process in no named unit
+//! and `callers::caller_for` maps that role onto the memory service's callers. A process in no named unit
 //! and no app scope (a terminal's child) is refused. This is advisory for unsandboxed
 //! processes (porter R12).
 
@@ -38,7 +38,7 @@ fn hears_signals(caller: &Caller) -> bool {
     matches!(caller.role(), CallerRole::Agent | CallerRole::SheetHost)
 }
 
-/// Peers by process: porter's [`ProcCallers`] over the connection, mapped onto almanac's callers.
+/// Peers by process: porter's [`ProcCallers`] over the connection, mapped onto the memory service's callers.
 #[derive(Debug)]
 pub struct ProcPeers {
     callers: ProcCallers,

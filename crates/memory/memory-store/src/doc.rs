@@ -3,7 +3,7 @@
 use memory_core::Integrity;
 use std::collections::BTreeSet;
 
-/// A document's id: opaque to recall (almanac uses `f:<fact>` and `e:<replica>:<seq>`).
+/// A document's id: opaque to recall (the memory service uses `f:<fact>` and `e:<replica>:<seq>`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct DocId(pub String);
 
@@ -15,7 +15,7 @@ pub struct TopK(pub u32);
 ///
 /// recall names no porter type, so it carries the tag from the caller to the embedder untouched and
 /// never reads it: the caller that builds the documents and the embedder that receives them agree
-/// on its spelling (almanac uses the data-class slug, `mail`, `notes`, and so on). The empty tag,
+/// on its spelling (the memory service uses the data-class slug, `mail`, `notes`, and so on). The empty tag,
 /// the default, says "no class": an embedder treats it as its own strictest pin.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Default)]
 pub struct ClassTag(pub String);

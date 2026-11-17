@@ -1,4 +1,4 @@
-//! The pure file format of almanac's agent memory: the topic file (front matter, dated headings,
+//! The pure file format of the memory service's agent memory: the topic file (front matter, dated headings,
 //! bullets with their trailers; frozen, with parse and render built) and the fact `Store` over a
 //! vault seam. No file is touched here: the vault comes from `memory-store`, and `memfiles`
 //! supplies the ones on disk.

@@ -1,4 +1,4 @@
-//! What a run writes to the event log. cuad stores each record as an almanac
+//! What a run writes to the event log. cuad stores each record as a memory service
 //! `EventBody::Area { area: Cua }` whose `json` is the serde form below and whose kind tag is
 //! the variant's slug (`cua.run.started`, ...). The actor is
 //! `Actor::Companion { session, role: Cua { run } }` ([`cua_actor`]).
@@ -249,7 +249,7 @@ impl CuaRecord {
     }
 }
 
-/// The actor of every record of a run, as the almanac log stores it.
+/// The actor of every record of a run, as the memory log stores it.
 #[must_use]
 pub fn cua_actor(session: SessionId, run: RunId) -> Actor {
     Actor::Companion {

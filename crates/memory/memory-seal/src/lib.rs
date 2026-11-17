@@ -1,4 +1,4 @@
-//! almanac's keys and the sealed-file format: a root key per Space, subkeys per purpose,
+//! The memory service's keys and the sealed-file format: a root key per Space, subkeys per purpose,
 //! XChaCha20-Poly1305 files bound to their Space and path, and the key store seam.
 //!
 //! Pure over its seams and portable: `ProvidedKeys` is the key store with no platform behind it;

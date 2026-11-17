@@ -5,7 +5,7 @@
 use action_core::{AuditRecord, HaltCause};
 use action_core::{EventSink, LinkFault, MemoryLink};
 use base_ids::Count;
-use companion_memory::{AlmanacMemory, AuditState, Link};
+use companion_memory::{AuditState, Link, MemoryServiceLink};
 use companion_memory_core::QueuedSink;
 use memory_client::{Absent, InProcess};
 use memory_core::{BodyMode, MemoryReply, MemoryRequest, RecentQuery, TrustFilter};
@@ -49,7 +49,7 @@ async fn stored(memory: &impl MemoryLink) -> usize {
 #[tokio::test]
 async fn records_reach_in_process_memory_in_the_space_the_host_names() {
     let service = Arc::new(fake_service(ScriptedConsolidator::default()));
-    let memory = AlmanacMemory::over(InProcess::new(service, Caller::router()));
+    let memory = MemoryServiceLink::over(InProcess::new(service, Caller::router()));
     let sink = queued(3);
     let mut state = AuditState::default();
     let report = state.flush(&memory, &sink, |_| Some(work())).await;
@@ -70,7 +70,7 @@ async fn records_reach_in_process_memory_in_the_space_the_host_names() {
 async fn no_memory_keeps_the_records_queued_and_the_next_flush_writes_them() {
     let sink = queued(2);
     let mut state = AuditState::default();
-    let away = AlmanacMemory::over(Absent);
+    let away = MemoryServiceLink::over(Absent);
     assert_eq!(
         away.ask(MemoryRequest::Spaces).await.err(),
         Some(LinkFault::Unavailable)
@@ -86,7 +86,7 @@ async fn no_memory_keeps_the_records_queued_and_the_next_flush_writes_them() {
     );
 
     let service = Arc::new(fake_service(ScriptedConsolidator::default()));
-    let back = AlmanacMemory::over(InProcess::new(service, Caller::router()));
+    let back = MemoryServiceLink::over(InProcess::new(service, Caller::router()));
     let report = state.flush(&back, &sink, |_| Some(work())).await;
     assert_eq!(report.flushed.written, 2);
     assert_eq!(report.link, (Link::Down, Link::Up));
@@ -98,7 +98,7 @@ async fn a_full_queue_drops_the_oldest_and_the_report_counts_them() {
     let sink = QueuedSink::bounded(2);
     (1..=4).for_each(|at| sink.append(halt(at)));
     let mut state = AuditState::default();
-    let away = AlmanacMemory::over(Absent);
+    let away = MemoryServiceLink::over(Absent);
     let report = state.flush(&away, &sink, |_| Some(work())).await;
     assert_eq!(report.overflow, 2);
     assert_eq!(report.flushed.lost, 2);

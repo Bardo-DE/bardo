@@ -1,5 +1,5 @@
-//! `SessionLog`: the seam to the durable store. companion-memory implements it over almanac in S1;
-//! until almanac's session-log asks land (FINDINGS: kind-prefix `Recent` with a cursor, a durable
+//! `SessionLog`: the seam to the durable store. companion-memory implements it over the memory service in S1;
+//! until the memory service's session-log asks land (FINDINGS: kind-prefix `Recent` with a cursor, a durable
 //! append ack, not-for-recall) this crate asks nothing of it but two calls.
 //!
 //! The writer owns the per-session position (`Seq`, from 0, carried in the stored body): an

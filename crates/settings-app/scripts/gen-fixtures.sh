@@ -7,7 +7,7 @@
 #   Bardo       ui-settings' `write_schema` example (the UI kit has no app binary)
 #   inferd      ../inference/dist/inference.settings.toml (written by hand, no --write-schema yet)
 #   docket      ../actions/dist/settings/actions.settings.toml
-#   almanac     ../memory/memory-settings/schema/memory.settings.toml
+#   The memory service     ../memory/memory-settings/schema/memory.settings.toml
 #   cua         ../computer-use/dist/settings/computer-use.settings.toml
 #
 # Usage: scripts/gen-fixtures.sh

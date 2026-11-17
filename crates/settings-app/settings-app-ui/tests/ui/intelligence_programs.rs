@@ -1,4 +1,4 @@
-//! The Intelligence page over the schemas docket, almanac and cua ship: each row in the section
+//! The Intelligence page over the schemas docket, the memory service and cua ship: each row in the section
 //! its own `section` names, a write in the program's own file, and rows that do not fit left alone.
 
 use crate::support::Sandbox;
@@ -128,10 +128,8 @@ fn a_write_lands_in_the_file_of_the_program_that_owns_the_row() {
     let tidy = ".ds-segmented[aria-label=\"Tidy memory\"] .ds-segmented-segment:nth-of-type(2)";
     scroll_into_view(&mut harness, tidy);
     click(&mut harness, tidy);
-    let almanac = sandbox
-        .read("memory/settings.toml")
-        .expect("almanac's file");
-    assert!(almanac.contains("when = \"manual\""), "{almanac}");
+    let memory = sandbox.read("memory/settings.toml").expect("memory's file");
+    assert!(memory.contains("when = \"manual\""), "{memory}");
     assert_eq!(sandbox.read("computer-use/settings.toml"), None);
 
     flip(&mut harness, "Pause when I touch the window");

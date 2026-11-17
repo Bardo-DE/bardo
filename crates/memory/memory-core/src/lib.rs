@@ -1,4 +1,4 @@
-//! almanac's vocabulary: the things events are about, the typed event bodies, facts, retention
+//! The memory service's vocabulary: the things events are about, the typed event bodies, facts, retention
 //! rules and the pure admission rule, the memory wire (`MemoryRequest`, `MemoryReply`), the
 //! timeline and export shapes, and where memory lives on disk.
 //!

@@ -4,7 +4,7 @@
 use clap::Parser;
 use std::process::ExitCode;
 
-/// almanac's memory daemon (`org.bardo.Memory1`).
+/// The memory service's memory daemon (`org.bardo.Memory1`).
 #[derive(Debug, Parser)]
 #[command(name = "bardo-memoryd", version)]
 struct Args {

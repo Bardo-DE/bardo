@@ -28,5 +28,5 @@ pub(crate) fn document(interfaces: [&dyn Interface; 3]) -> String {
 
 /// The answer of every skeleton method: the interface is frozen, its behaviour not built.
 pub(crate) fn frozen() -> fdo::Error {
-    fdo::Error::NotSupported("almanac: frozen interface, not implemented".into())
+    fdo::Error::NotSupported("memory: frozen interface, not implemented".into())
 }

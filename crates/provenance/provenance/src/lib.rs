@@ -2,7 +2,7 @@
 //! four effects, the merged [`Actor`], the FIDES label lattice that follows data, and the
 //! confirmation receipt that is the only witness able to raise a label.
 //!
-//! It lives in porter because memory (almanac) and the action router (docket) both need these
+//! It lives in porter because memory (the memory service) and the action router (docket) both need these
 //! types and neither may depend on the other. Pure and portable: serde only.
 //!
 //! The one message model ([`Message`]) every agent uses, the roster's [`AgentRef`], and the

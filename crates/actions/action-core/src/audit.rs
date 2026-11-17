@@ -1,6 +1,6 @@
 //! What the router appends to the event log. Never content: ids, kinds, decisions, codes.
 //! intentd stores most of these as `EventBody::Area { area: Docket }` in this serde form, with
-//! the things each names for cascade-forget; a message and an episode are almanac's own typed
+//! the things each names for cascade-forget; a message and an episode are the memory service's own typed
 //! bodies, so they travel as such.
 
 use crate::budget::HaltCause;
@@ -248,10 +248,10 @@ pub enum AuditRecord {
         /// How long the confirmed words are.
         bytes: u32,
     },
-    /// A message was delivered. Stored as almanac's `EventBody::Message`.
+    /// A message was delivered. Stored as the memory service's `EventBody::Message`.
     Message(Box<Message>),
     /// A task ended and left its skeleton, or the idle pass added its narrative. Stored as
-    /// almanac's `EventBody::Episode`.
+    /// The memory service's `EventBody::Episode`.
     Episode(Box<Episode>),
     /// A record of the companion's own session (`Session.Note`): stored as
     /// `Area { Companion }` of kind `companion.session.<slug>`, trusted and private to its Space.

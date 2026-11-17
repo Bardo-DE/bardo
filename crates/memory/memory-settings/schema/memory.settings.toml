@@ -1,4 +1,4 @@
-# almanac's settings schema in the design/22 format (section 9.2). Installed to
+# The memory service's settings schema in the design/22 format (section 9.2). Installed to
 # $XDG_DATA_DIRS/bardo/settings/memory.settings.toml; `memoryd --write-schema <dir>` writes it for a
 # local install. The values live in $XDG_CONFIG_HOME/bardo/memory/settings.toml, for example `[memory.files]`
 # then `at_rest = "plain"`; memoryd reads them live (crates/memory/memory-settings, crates/memory/memory-host). Every row

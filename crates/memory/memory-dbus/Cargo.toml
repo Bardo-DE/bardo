@@ -1,6 +1,6 @@
 [package]
 name = "memory-dbus"
-description = "almanac's D-Bus API: org.bardo.Memory1 as zbus proxies, the argument codec, the errors and bus names, and the daemon's half: the served objects, the signals and the introspection."
+description = "memory's D-Bus API: org.bardo.Memory1 as zbus proxies, the argument codec, the errors and bus names, and the daemon's half: the served objects, the signals and the introspection."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -81,7 +81,7 @@ BANS=(
 # no runtime, no bus. memoryd is the place that reaches the daemon's runtime, so it has no rule.
 EFFECTS="zbus zvariant tokio reqwest hyper oo7 ort fastembed"
 # memory-core is also light enough for computer-use-bus to depend on (interface ask 26: `HandedBack`
-# carries `almanac_core::EventRef`; cua's own EFFECTS list adds these to ours), so it reaches none
+# carries `memory_core::EventRef`; cua's own EFFECTS list adds these to ours), so it reaches none
 # of them either.
 BARDO_COMPUTER_USE_EFFECTS="hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi rmcp cedar-policy"
 # What a storage-free crate must never link: the SQL engine, SQLCipher's host crate and OpenSSL.
@@ -274,17 +274,17 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# Nothing of almanac's reaches another area's repo.
+# Nothing of the memory service's reaches another area's repo.
 for banned in action-core action-router action-daemon computer-use-run computer-use-bus computer-use-daemon companion-wire; do
   if cargo tree --workspace -i "$banned" -e normal,build,dev 2>/dev/null | grep -q .; then
-    echo "LEAK: the workspace depends on $banned (almanac stores other areas' payloads opaquely)"
+    echo "LEAK: the workspace depends on $banned (the memory service stores other areas' payloads opaquely)"
     fail=1
   fi
 done
 # model-provider comes in under inference-core (a reply's `charge` is its `Money`; owner 2026-10-28),
-# so only a direct edge from one of almanac's own crates is a leak: almanac never names a model payload.
+# so only a direct edge from one of the memory service's own crates is a leak: the memory service never names a model payload.
 if cargo tree --workspace -i model-provider -e normal,build,dev --depth 1 2>/dev/null | grep -q "($PWD/"; then
-  echo "LEAK: an almanac crate depends on model-provider directly (almanac stores model payloads opaquely)"
+  echo "LEAK: a memory crate depends on model-provider directly (the memory service stores model payloads opaquely)"
   fail=1
 fi
 

@@ -24,7 +24,7 @@ pub use confirm::{CONFIRMED_FILE, ConfirmError, Confirmations, gate, waiting};
 pub use loosen::{lines, loosenings};
 pub use read::read;
 
-/// The schema almanac ships for its settings (design/22 section 9.2).
+/// The schema the memory service ships for its settings (design/22 section 9.2).
 pub const SCHEMA: &str = include_str!("../schema/memory.settings.toml");
 
 /// The file the settings live in, under the configuration directory.

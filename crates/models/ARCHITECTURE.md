@@ -94,7 +94,7 @@ manifests (their direct edges and the same lists), and they alone may reach `ort
 Downstream, porter's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-provider`,
 `computer-use-session`, `model-catalog`, `engine-supervisor`, `model-http`, `model-wire`,
 `model-openai-compat`, `model-extract`, `speech-provider` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); docket's `voiced` takes
-`speech-vad`; inference-core takes `computer-use-action` only. cuad, almanac, docket and sill do not name
+`speech-vad`; inference-core takes `computer-use-action` only. cuad, the memory service, docket and sill do not name
 The model layer.
 
 ## 2. Modules

@@ -1,4 +1,4 @@
-//! The loose memory settings over almanac's real schema: which keys can wait, the pairs a save
+//! The loose memory settings over the memory service's real schema: which keys can wait, the pairs a save
 //! confirms, the value the note names, and the state's bookkeeping.
 
 use memory_core::WaitingSetting;
@@ -43,7 +43,7 @@ fn pair(key: &str, value: &str) -> SettingPair {
 }
 
 #[test]
-fn only_almanacs_keys_are_memory_settings_and_only_their_pages_hold_them() {
+fn only_the_memory_services_keys_are_memory_settings_and_only_their_pages_hold_them() {
     let catalogue = real("consent-which-keys");
     for (path, want) in [
         (AT_REST, true),

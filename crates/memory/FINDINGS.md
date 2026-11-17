@@ -2,7 +2,7 @@
 
 Open items and standing facts. An entry names the condition that closes it. At the freeze
 (porter 4623e18) there were 59 `todo!()` bodies; fill waves 1 and 2 (eventlog, memfiles, recall, seal,
-watch, almanac-service) removed 53 and the bus and daemon wave (F2 memoryd, below) removed the last
+watch, memory-service) removed 53 and the bus and daemon wave (F2 memoryd, below) removed the last
 6, so **0 remain**. No contract test is `#[ignore]`d.
 
 ## Type rules and twin removal (2026-10-28)
@@ -12,7 +12,7 @@ for two-way outcomes; growing sets are data; newtypes only with a rule); `Box<dy
 configuration-picked implementations. Enum audit lane E-A1: done A1 (`SpaceVault` once, in memfiles), A2 (store
 uses core's `IndexView`, `StaleWhy`, `DegradedWhy`, `Count`), A3 (`allowed` returns `Result<(), Refusal>`), A4
 phase 1 (`TrustTier` is `Integrity`), A5 (`HitWhy` is `RecallWhy`), A7 (`Enforcement` is `Confinement`), and P7
-(`desktop_admits` moved from prov to `almanac-core::desktop`, returning `Result<(), DesktopRefusal>`). At the next
+(`desktop_admits` moved from prov to `memory-core::desktop`, returning `Result<(), DesktopRefusal>`). At the next
 prov re-pin `flow_to(..) == Flow::Denied` in `desktop.rs` becomes `!flow_to(..)`. Skipped: A6, A11-A15 (wire
 shapes, other repos use them, or a prov bump), A8 (`RecordState` is the persisted subset of `RunState`, a rule),
 A9 (the macro states each slug once and tests use `ALL`), A10 (`change_for` branches on `Verb`), A14, A16
@@ -24,17 +24,17 @@ None. What still waits on other repos is under "Open" below (porter's transports
 
 ## Built at the freeze (pinned by tests)
 
-almanac-core (ids and grammars, `admit`, `allowed`'s inputs, every wire and stored form round
-trip, kind tags, `Dirs`), almanac-seal (derivation goldens, seal/unseal, `MemoryKeys`),
+memory-core (ids and grammars, `admit`, `allowed`'s inputs, every wire and stored form round
+trip, kind tags, `Dirs`), memory-seal (derivation goldens, seal/unseal, `MemoryKeys`),
 eventlog (header bytes golden, chain, `verify_chain`, `MemoryLog`, schema as SQL), memfiles
 (topic file golden, trailer grammar, `VaultPath`, `MemoryVault`, `Primer`), recall (`fuse_rrf`,
 `chunk`, `nearest_exact`, the vector BLOB, the index state machine, `FakeEmbedder`),
-almanac-tidy (the fact and consolidation machines, the prompt and its parse, the removal notes, `Change`),
-almanac-search (the recall document ids, `DocRef`),
-almanac-service (the authorisation matrix, the Space and plan machines,
+memory-tidy (the fact and consolidation machines, the prompt and its parse, the removal notes, `Change`),
+memory-search (the recall document ids, `DocRef`),
+memory-service (the authorisation matrix, the Space and plan machines,
 `Plan::digest`, retention, the export writer and event lines, the config files, timeline rows),
-almanac-watch (`join`), almanac-dbus (proxies, `MemoryError`), almanac-dbus-serve (skeletons, introspection XML),
-almanac-client (`Memory`, `Absent`, `InProcess`), almanac-fake, memoryd (`xdg`).
+memory-watch (`join`), memory-dbus (proxies, `MemoryError`), memory-dbus-serve (skeletons, introspection XML),
+memory-client (`Memory`, `Absent`, `InProcess`), memory-fake, memoryd (`xdg`).
 
 ## The companion amendment (2026-10-03)
 
@@ -59,8 +59,8 @@ went stale.
 **Messages: an `EventBody::Message` variant, not a text field on `AreaPayload`.** The research
 (G4) asked for both a searchable-text hook on `AreaPayload` and a `RecallOver` option. We chose
 the typed variant, and `RecallOver::{Messages, Episodes}` beside the existing `Events`, because:
-(1) the message is `prov`'s type and almanac may name it (an `AreaPayload` exists only to keep
-other areas' types out of almanac); (2) with a typed body the searchable text and the label of
+(1) the message is `prov`'s type and the memory service may name it (an `AreaPayload` exists only to keep
+other areas' types out of the memory service); (2) with a typed body the searchable text and the label of
 each part are pure functions of the body (`EventBody::index_texts`), so the index is rebuildable
 from the log and the text cannot drift from the stored value; with an owner-supplied
 `AreaPayload.text` the owner could index text its JSON does not contain, and the label of that
@@ -76,8 +76,8 @@ parent, space, started, ended, outcome: EpisodeOutcome, skeleton, narrative }`. 
 (trusted by construction, no model) holds `asked: Vec<MessageText>`, typed `StepLine`s (action,
 target things, effect, `StepOutcome`, undo handle), `touched` things (for cascade-forget) and
 typed `ResultLine`s (count, thing or outcome ref; text only by reference). `Narrative` is the
-model-written text with its own `Label` and the `ModelRole` that wrote it. The type is almanac's
-(not docket's, as research C.2 first drew it) because almanac stores and recalls it and may name
+model-written text with its own `Label` and the `ModelRole` that wrote it. The type is the memory service's
+(not docket's, as research C.2 first drew it) because the memory service stores and recalls it and may name
 only `prov` types; docket builds the skeleton and the idle pass writes the narrative. Events are
 immutable, so a narrated episode is a second `Episode` event with the same id and skeleton
 (`Episode::narrates`), and the service indexes only the newest event per id. Rollups stay plain
@@ -93,8 +93,8 @@ estimate is characters over 4 until the assembler measures the real tokenizer). 
 
 **Upstream asks (m-asks).** `RecentQuery.bodies: BodyMode { Without, Json }` and
 `RecentEntry.body: Option<JsonText>` (None unless asked and present; the label always travels in
-the entry); the D-Bus method takes the query as JSON, so the XML is unchanged. `almanac-client`'s
-`almanac-service` dependency is behind the default-off feature `in_process` (`InProcess`).
+the entry); the D-Bus method takes the query as JSON, so the XML is unchanged. `memory-client`'s
+`memory-service` dependency is behind the default-off feature `in_process` (`InProcess`).
 
 **What changed that tests pin (and what was added, not changed).** `RuleSet::standard()` gained
 `days("companion.*", 30)`; `is_audit_class` now includes `Message` and `Episode` bodies;
@@ -102,7 +102,7 @@ the entry); the D-Bus method takes the query as JSON, so the XML is unchanged. `
 renumbered; the introspection test expects 30 methods and the XML gained the two members;
 `recall`'s card-literal test gained the two fields and the embed calls gained the role.
 
-**For the almanac fill (service) waves.** `Record` admission checks that `Record.label` is at
+**For the memory service fill (service) waves.** `Record` admission checks that `Record.label` is at
 least as restrictive as the join of `index_texts()` labels and, for a message, that `Record.actor`
 matches `from` (`Message::sender_matches`) and that `Message::check` passes; a skeleton with an
 untrusted label is refused (`Invalid`). `Propose` into the `desktop` Space must call
@@ -187,10 +187,10 @@ Nothing below is built; the interfaces it will use are.
     in a payload).
   - `RuleSet.defaults` is `Vec<KindRetention { kind, retention }>`, not `Vec<(KindPattern,
     Retention)>`: tuples of mixed types do not survive `memory.toml` readably.
-  - `ChainReport`, `Break`, `Head`, `Checkpoint` and `Link32`/`Digest32` live in `almanac-core`
+  - `ChainReport`, `Break`, `Head`, `Checkpoint` and `Link32`/`Digest32` live in `memory-core`
     (not `eventlog`) because `MemoryReply::Verified` and `SpaceStatus` carry them; `eventlog` uses
     them. `SpaceStatus.index` is the wire form `IndexView`, mapped from `recall::IndexState`
-    (recall is generic and cannot name almanac-core); likewise `RecallWhy` vs `almanac_store::HitWhy`.
+    (recall is generic and cannot name memory-core); likewise `RecallWhy` vs `memory_store::HitWhy`.
   - `seal` returns `Result<Vec<u8>, SealError>` (a new `TooLarge` variant) where memory.md writes
     `Vec<u8>`: the cipher can refuse a huge plaintext and `expect` is not allowed.
     `KeyError` gained `Exists`; `LogError` gained `BadDigest` and `NoSuchEntry`; `LogRead` gained
@@ -205,7 +205,7 @@ Nothing below is built; the interfaces it will use are.
     (`org.bardo.Memory1.Error.*`), so the mapping to `Refusal` is 1:1 (memory.md listed seven).
     `Export` is `(s options, h out) -> s manifest`; `RecordBatch` and `Propose` have two out
     arguments.
-  - `memoryd` does not link `almanac-client` (it has no use for it); its porter edges are
+  - `memoryd` does not link `memory-client` (it has no use for it); its porter edges are
     `porter-core`, `porter-infer` and `inferd-client` (`InferdEmbedder` and `InferdConsolidator`), and
     `porter-client` with `porter-client-dbus` (the Spaces registry).
   - `sqlite-vec` is not a dependency: exact scan is the default (QUESTIONS P5, no `unsafe`);
@@ -222,7 +222,7 @@ Nothing below is built; the interfaces it will use are.
   per-item forget is logical deletion plus SQLite `secure_delete`. The UI states this limit
   (memory.md conflict 2).
 - **porter's `prov::Label` constructors and `Label::join` are stubs** until porter's fill, so
-  almanac's tests build labels from their fields and `check_draft` is a stub with them.
+  The memory service's tests build labels from their fields and `check_draft` is a stub with them.
 - **Cross-repo dependencies are git deps at pinned revs** (`porter-core`, `prov`, `porter-client`,
   `porter-client-dbus`, `porter-dbus` from `https://github.com/Bardo-DE/porter`; `porter-infer`,
   `inferd-client`, `inference-dbus` from `https://github.com/Bardo-DE/steward`), so a plain `git clone`
@@ -235,7 +235,7 @@ Nothing below is built; the interfaces it will use are.
   ```toml
   [patch."https://github.com/Bardo-DE/porter"]
   porter-core = { path = "/path/to/porter/crates/porter-core" }
-  # one line per porter crate almanac names; add the same for models/bardo crates if the
+  # one line per porter crate memory names; add the same for models/bardo crates if the
   # local porter checkout pins a different rev than the one in Cargo.lock
 
   [patch."https://github.com/Bardo-DE/prov"]
@@ -247,7 +247,7 @@ Nothing below is built; the interfaces it will use are.
   The gate builds outside the jail (git deps are fetched there); the jail only runs the archived
   tests.
 
-## Service fill (wave F2, almanac-service)
+## Service fill (wave F2, memory-service)
 
 Decisions the fill made where the frozen text left room:
 
@@ -257,7 +257,7 @@ Decisions the fill made where the frozen text left room:
   changed. A locked key buffers `Record`s (at most `BUFFER_LIMIT`, flushed when the Space opens);
   every other request answers `SpaceLocked`.
 - **A Space is checked out for the length of a request** (Index writes hold `&mut` across the
-  embedding and `almanac-service` may not link tokio); a second request for the same Space meanwhile
+  embedding and `memory-service` may not link tokio); a second request for the same Space meanwhile
   would be `Busy`, so the service queues requests per Space itself (below).
 - **Search runs the index halves itself** (`Index::lexical`, `VectorIndex::nearest`, `fuse_rrf`):
   `Index::search` holds a shared borrow of SQLite connections across the query embedding, which makes
@@ -279,10 +279,10 @@ Decisions the fill made where the frozen text left room:
 
 ## Bus and daemon fill (wave F2, memoryd)
 
-**The bus.** `almanac-dbus` has one member table, both ways: `encode_request`/`decode_request` and
+**The bus.** `memory-dbus` has one member table, both ways: `encode_request`/`decode_request` and
 `decode_reply`/`encode_reply` (`codec/`), `invoke` (the caller's half, over the proxies) and the
-served objects (`almanac-dbus-serve`'s `serve/`, the daemon's half, over a `Serve` handler). The frozen unit-struct
-skeletons stay as the introspection source; `almanac-dbus-serve/tests/it/served.rs` pins that the objects memoryd
+served objects (`memory-dbus-serve`'s `serve/`, the daemon's half, over a `Serve` handler). The frozen unit-struct
+skeletons stay as the introspection source; `memory-dbus-serve/tests/it/served.rs` pins that the objects memoryd
 serves introspect the same, and both equal `dbus/org.bardo.Memory1.xml`. The XML gained `Control.Sweep`
 (30 methods became 31). Conventions the codec fixes: a Space argument is its plain id and every other
 typed argument is JSON; a Space argument that differs from the Space inside the body is `Invalid`;
@@ -295,7 +295,7 @@ error of its name, one to one. `DbusTransport::call` maps a missing daemon
 
 **Who is calling.** `Peers` turns the sender's unique name into a `Caller`. `ProcPeers` is porter's
 `ProcCallers` (bus pid, then `/proc/<pid>/cgroup` alone; no `exe`, which a Landlock domain cannot
-read) with `callers::caller_for` mapping porter's caller onto almanac's: role `cua` is `Cuad`,
+read) with `callers::caller_for` mapping porter's caller onto the memory service's: role `cua` is `Cuad`,
 role `sheet_host` of app `org.bardo.Shell` is `ShellUi`, role `settings` of app `org.bardo.Settings`
 (the unit `org.bardo.Settings.service`, the Settings app) is `Settings`, role `agent` of app
 `org.bardo.Intents` is `Router`, every other identified process is `App`. The table is `/etc/bardo/memoryd-callers.toml`
@@ -303,7 +303,7 @@ with `<config>/bardo/memoryd/callers.toml` laid over it (user rows win; a missin
 bad one stops the daemon): porter's `[[caller]]` rows of `app`, optional `unit`, `role`.
 `dbus/memory-callers.toml` is the packaged system file. `TablePeers` is the test seam.
 
-**One queue per Space.** The queue lives in `almanac-service` (`queue`), in front of
+**One queue per Space.** The queue lives in `memory-service` (`queue`), in front of
 `MemoryService::handle`, `export`, `sweep_space` and `check_keys`, so memoryd and an app hosting the
 service in process (`InProcess`) behave alike. A request that names Spaces waits until nothing
 running, and nothing ahead of it in the line, holds one of them (a message holds the receiver's);
@@ -328,7 +328,7 @@ count or length as fatal (another vector space). It carries one `DataClass` (def
 on-device floor), because `Embedder::embed` has no per-document class. `InferdConsolidator` sends
 `Task::Extract` in the background with the most sensitive class among the labels it reads; the
 model answers `{"hunks": [...]}` of `promote`, `supersede` and `flag` that cite links, and memoryd
-builds the facts (label = the join of what they cite, `almanac_tidy::cited_label`, which
+builds the facts (label = the join of what they cite, `memory_tidy::cited_label`, which
 `check_draft` also uses; id from a hash of the run and the text; date from the run). A hunk that
 cites nothing in the input is dropped, an answer that is not the object is `Unparseable`.
 `ConsolidationInput` gained `now`.
@@ -379,10 +379,10 @@ the card of the default embedding model (768 numbers, nomic prefixes) and must m
 serves.
 
 **Embedding by data class (ask 70/80).** `recall::Doc.class` is a `ClassTag` (the data-class slug;
-recall names no porter type; empty means "no class"). `almanac-service` sets it from the strictest
-class of the document's label (`almanac_store::class_of`, which now also ranks `Prompt` after `Voice`; the tag is
-`class_tag`/`class_from_tag`, beside `ClassTag` in `almanac-store`). `recall::Embedder::embed_classed` (defaulted to `embed`) receives
-each batch with its texts' classes, and `almanac_infer::InferdEmbedder` partitions the batch by class, opens one
+recall names no porter type; empty means "no class"). `memory-service` sets it from the strictest
+class of the document's label (`memory_store::class_of`, which now also ranks `Prompt` after `Voice`; the tag is
+`class_tag`/`class_from_tag`, beside `ClassTag` in `memory-store`). `recall::Embedder::embed_classed` (defaulted to `embed`) receives
+each batch with its texts' classes, and `memory_infer::InferdEmbedder` partitions the batch by class, opens one
 session per class for that call (sessions are not kept), and returns the vectors in input order.
 Strictest-class pinning: one index is one model, so a class can only decide whether the model may
 receive the text, not which model embeds it. The card's model must satisfy the strictest class the
@@ -400,18 +400,18 @@ events only through their things; `Forget` by Space or Kind reaches them. `Actor
 (slug `terminal`) is the timeline's own bucket for it (`You` is the person only; `Mcp` got its own bucket in the w4 fill).
 
 **Interface ask 26 (cua `HandedBack.user_events`): decided, and done on this side.** Option taken:
-`cua-bus` depends on `almanac-core` and carries `almanac_core::EventRef`; no memory call at record
-time. Why: `almanac-core` is already pure (its tree is `porter-core`, `prov`, serde, thiserror),
-cua is above almanac in the repo order and cuad already depends on it, so the edge costs cua-bus
+`cua-bus` depends on `memory-core` and carries `memory_core::EventRef`; no memory call at record
+time. Why: `memory-core` is already pure (its tree is `porter-core`, `prov`, serde, thiserror),
+cua is above the memory service in the repo order and cuad already depends on it, so the edge costs cua-bus
 nothing it does not already link; a memory call at record time would need `Caller::Cuad` to read
 events, which the authorisation matrix refuses on purpose (cuad handles untrusted screen text).
 `scripts/check-boundary.sh` now also forbids cua's own effects list (`hyper-util rustls pipewire
-wayland-* reis atspi rmcp cedar-policy`) from `almanac-core`, so the edge cannot break cua's
-boundary later. What cua does (not in this repo): add `almanac-core` to cua-bus's `Cargo.toml` and to
+wayland-* reis atspi rmcp cedar-policy`) from `memory-core`, so the edge cannot break cua's
+boundary later. What cua does (not in this repo): add `memory-core` to cua-bus's `Cargo.toml` and to
 its row in `check-boundary.sh`, and give `HandedBack` `user_events: Vec<EventRef>`. The router, not
 cuad, reads the person's events during the takeover (`Recent`, a `Router` call) and hands them over.
 
-### Closed by the w4 fill (branch w4-almanac; asks 73-77, 93, 94)
+### Closed by the w4 fill (branch w4-memory; asks 73-77, 93, 94)
 
 - **A restart adopts the index** (73). `recall::Index::sync(docs, embedder)` is what the service
   runs when a Space opens (it replaced the rebuild). `index.db`'s `meta` now records the embedder's
@@ -440,7 +440,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   `ConsolidationInput.topics: Vec<InputTopic { topic, text }>` holds every topic file as the
   service would write it. The prompt lists them and asks for `{"kind":"tidy","topic","after"}`;
   `parse_draft` turns one into `Hunk::Tidy` with the text the model was shown as `before`, and
-  drops it when the topic was not shown, the file is unchanged or `almanac_service::
+  drops it when the topic was not shown, the file is unchanged or `memory_service::
   tidy_is_acceptable` refuses it (a tidy keeps every fact's id, author, label, links and date).
   The ExternalEdit baseline is `meta/baseline.json` in the Space's vault (sealed): each topic
   file's text as the service last left it. Before a request that may write topic files (`Propose`,
@@ -482,7 +482,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   (the optional half of ask 77) is not done: the served objects equal them by test and the XML is
   generated from them.
 
-### Closed by the f4 fill (branch f4-almanac; ask 115 and docket's `Spaces` ask)
+### Closed by the f4 fill (branch f4-memory; ask 115 and docket's `Spaces` ask)
 
 - **The key check listens** (115): `memoryd/src/keyring.rs`. `LockChanges::on(connection)` matches
   `org.freedesktop.DBus.Properties.PropertiesChanged` under `/org/freedesktop/secrets`;
@@ -501,7 +501,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
 - Checked and already closed by the w4 fill: asks 73, 74, 75, 76, 91 (Cli/Terminal bucket), 93, 94
   (Mcp bucket).
 
-### Closed by the f4-almanac-2 lane (docket's acceptance asks 2 and 3)
+### Closed by the f4-memory-2 lane (docket's acceptance asks 2 and 3)
 
 - **`desktop` is always there** (docket FINDINGS "The f4-e2e acceptance" 2; SPEC 3.1, QUESTIONS P6):
   the service never refused an unregistered Space (a Space is provisioned on first use), so a
@@ -509,7 +509,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   Space)` is now refused (`Invalid`, "the desktop Space cannot be deleted"): it holds memory outside
   every Space and the final head of each deleted Space. Tests: `memoryd/tests/it/desktop.rs`.
 - **File keys for the packaged binary, TEST ONLY** (docket ask 3): feature `test-keys` (memoryd,
-  and the `almanac-keyfile` crate that holds `FileKeys`, written through `atomic-write-file` so the key file is synced), off by default and never in a release or dist build.
+  and the `memory-keyfile` crate that holds `FileKeys`, written through `atomic-write-file` so the key file is synced), off by default and never in a release or dist build.
   `MEMORYD_KEYS=file:<path>` selects a sealed file of Space keys; the daemon says so on standard
   error and adds the file's directory to its Landlock policy. The wrapping key is a constant in
   the source: the file keeps keys from sitting as plain text and protects nothing else, so it is
@@ -518,13 +518,13 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   tests for both builds, `memoryd/tests/it/binary.rs` runs the feature-built binary on a private
   bus with `env_clear` and scratch HOME/XDG, claims `org.bardo.Memory1` and takes a `Record` into
   `desktop`; the feature-off twin runs in a default-feature build).
-- **Landlock broke caller identity** (CLOSED by the f4-almanac-callers lane): under its own
+- **Landlock broke caller identity** (CLOSED by the f4-memory-callers lane): under its own
   Landlock domain memoryd cannot read `/proc/<pid>/exe` of a process outside the domain, so the
   exe-based `ProcPeers` refused every caller. Callers are now identified by porter's
   `ProcCallers` from `/proc/<pid>/cgroup` (service unit, `app-*.scope`, Flatpak scope; anything
   else, such as a terminal's child, is `NotAllowed`). The ruleset reads `/proc` files only
   (`Policy::read_files`: `ReadFile`, no listing, no execute) and `/proc` is no longer a readable
-  tree. almanac now depends on `porter-dbus` (check-boundary row). `MEMORYD_SANDBOX=off` stays
+  tree. The memory service now depends on `porter-dbus` (check-boundary row). `MEMORYD_SANDBOX=off` stays
   test-only, but `memoryd/tests/it/binary.rs` runs with the sandbox ON.
 - **`MEMORYD_PROC_ROOT=<dir>` for docket-accept (TEST ONLY, feature `test-proc-root`, separate from `test-keys`; the acceptance build enables both)**: memoryd reads
   `<dir>/<pid>/cgroup` instead of `/proc/<pid>/cgroup`, and `<dir>` joins the sandbox's
@@ -542,7 +542,7 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
 
 ### Open after the f4 fill
 
-- **`landlock` is not in Bardo's pinned dependency block** (`docs/workspace-deps.toml`): almanac's
+- **`landlock` is not in Bardo's pinned dependency block** (`docs/workspace-deps.toml`): the memory service's
   `Cargo.toml` names `landlock = "0.4"` (0.4.7 in the lockfile, MIT OR Apache-2.0) ahead of it. The
   line joins Bardo's file first. Bardo's session owns it.
 - **The lock signal against a real Secret Service** is unproven: gnome-keyring and KWallet differ in
@@ -552,27 +552,27 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
 ## f4-settings: the settings schema and its reader
 
 The Settings app (the Settings app) builds its Intelligence page from the schema each daemon ships (design/22
-section 9.2). almanac's covers the `memory.*` keys of section 3.28 that memoryd reads, and memoryd
+section 9.2). The memory service's covers the `memory.*` keys of section 3.28 that memoryd reads, and memoryd
 reads them.
 
-1. **`crates/almanac-settings/schema/almanac.settings.toml` has 5 rows**, none `agent = "settable"` (`memory.*` is never
+1. **`crates/memory-settings/schema/memory.settings.toml` has 5 rows**, none `agent = "settable"` (`memory.*` is never
    agent-settable). **On the Intelligence page** (section 5, Memory): `memory.files.at_rest` (toggle),
    `memory.consolidation.when` (segmented: nightly, manual, never), `memory.consolidation.apply` (toggle: auto, review). **Advanced:** `memory.retention.
    {search,session}_days` (1..=3650). The unexplained-file keep (7 days), audit body (90), audit header (365)
-   and pending-fact wait (14) are constants in `almanac-core` `rules.rs`, not settings (settings prune
+   and pending-fact wait (14) are constants in `memory-core` `rules.rs`, not settings (settings prune
    2026-10-27); a file that still sets them has the keys listed as unknown and ignored.
 2. **Left out of the schema, because nothing could read it:**
    - ~~`memory.consolidation.apply`~~ is built (see "consolidate-apply" below).
    - **`memory.join_window_ms`** (Advanced). memoryd does not run the file watch yet (`Watcher` is exported,
-     nothing starts it, so `almanac_watch::join` never runs and `JoinWindow::PROPOSED` is used by nobody).
+     nothing starts it, so `memory_watch::join` never runs and `JoinWindow::PROPOSED` is used by nobody).
      Closes when memoryd wires the watch: `JoinWindow(ms)` from this setting, 100..=10000.
-3. **The reader is `almanac-settings`** (`read(text, base)`, `MemorySettings`; pure, it reads no file) and **`almanac-host`** finds and reads the file (`Locator`). The file is
-   `$XDG_CONFIG_HOME/almanac/settings.toml` (then `$XDG_CONFIG_DIRS`; the first file that reads wins whole). A
+3. **The reader is `memory-settings`** (`read(text, base)`, `MemorySettings`; pure, it reads no file) and **`memory-host`** finds and reads the file (`Locator`). The file is
+   `$XDG_CONFIG_HOME/memory/settings.toml` (then `$XDG_CONFIG_DIRS`; the first file that reads wins whole). A
    value of the wrong type, out of range or not a word of its key falls back **to the base value of that key**
    (`MemorySettings::default()`, the shipped defaults) and is logged (`memoryd: settings: memory.retention.search_days:
    outside 1..=3650; using the previous value`). A file that is not TOML keeps every base value; a key the file
    stops setting is its base again. Unknown keys (including `memory.join_window_ms`) are listed and ignored.
-4. **memoryd follows the file live** (`settings_watch.rs`: a `notify` watch on `$XDG_CONFIG_HOME/almanac`, 30 ms
+4. **memoryd follows the file live** (`settings_watch.rs`: a `notify` watch on `$XDG_CONFIG_HOME/memory`, 30 ms
    debounce, the whole file read again, `MemoryService::apply_settings`). Every request builds its `Cx` from the
    settings in force, so a change applies to the next request:
    - retention: `RuleSet::with_retention(&RetentionDays)` lays the person's days over the rules' defaults
@@ -590,19 +590,19 @@ reads them.
      which reads the setting afresh each night. **The nightly run does not ask whether the desktop is idle or
      on AC power** (`RunEvent::Tick { Idle, Ac }` is not consulted): memoryd has no idle or power source yet.
      Closes when sill's idle state reaches memoryd.
-5. **The sandbox names the settings directory** (`Policy.read_dirs`, `<config>/almanac`): `prepare` makes it at
+5. **The sandbox names the settings directory** (`Policy.read_dirs`, `<config>/memory`): `prepare` makes it at
    start and Landlock gives it read rights only, so a settings file the Settings app writes later is covered
    (a rule can only name a path that exists when it is applied). memoryd never writes it.
-6. **`memoryd --write-schema DIR`** writes `almanac.settings.toml` for a local install. `notify` is now a
-   dependency of memoryd as well as almanac-watch (`scripts/check-boundary.sh` comment updated); the watch
+6. **`memoryd --write-schema DIR`** writes `memory.settings.toml` for a local install. `notify` is now a
+   dependency of memoryd as well as memory-watch (`scripts/check-boundary.sh` comment updated); the watch
    code has the same shape as docket's intentd and cua's cuad (`SettingsWatch`): one shared crate replaces the
    three copies when porter has a place for it.
 7. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent` mark) and
    parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a scratch
    project: a dev-dependency on ds-settings would unify zbus's executor features); every schema key is read
-   (table test), every key has a bad-value fallback case; `almanac-fake/tests/it/settings.rs` changes the
+   (table test), every key has a bad-value fallback case; `memory-fake/tests/it/settings.rs` changes the
    settings under a serving service (pending ttl, new Space vault, sweep retention, `when`);
-   `almanac-core/tests/it/retention_days.rs`; `memoryd/tests/it/settings.rs` changes the file under a running
+   `memory-core/tests/it/retention_days.rs`; `memoryd/tests/it/settings.rs` changes the file under a running
    service and waits on the watch's own event.
 
 
@@ -645,7 +645,7 @@ The owner's four answers to the "consolidate-apply" questions, built. `todo!()` 
    nothing. Fields: `format = 1`, `run`, `state` (`proposed | applied | reverted | discarded |
    superseded`), `drafted`, `settled` (when it left `proposed`), `cut` and `head` (the log cut the run
    was drafted from and the head it read to), `erased`, `[[hunks]]` (the serde form of `Hunk`) and
-   `[[skipped]]` (`hunk` + `reason`). Golden: `almanac-fake/tests/golden/run_proposed.toml`.
+   `[[skipped]]` (`hunk` + `reason`). Golden: `memory-fake/tests/golden/run_proposed.toml`.
    A hunk is its own pre-image for the apply-time re-check (Tidy and ExternalEdit carry `before`,
    Promote and Supersede carry the facts and links `Grounds` looks up), so no separate pre-image
    table is stored for a proposal (nothing has been changed yet).
@@ -706,30 +706,30 @@ text is matched, so a forgotten event whose text lives only in a pre-image is co
 Wire: none. The refusal is the existing `Invalid(String)`; a shell may match that reason text to
 say so. The same forget already scrubbed the served `DraftView` and the run files (`must_go`); the
 `LastRun` held nothing else with text (`added` and `superseded` are ids). Tests:
-`almanac-fake/tests/it/forget_revert.rs` (six).
+`memory-fake/tests/it/forget_revert.rs` (six).
 
 The earlier gap (a forgotten event whose text lives only in a pre-image) is closed by the rule above.
 
 ## Portable core (design/36)
 
-- Built: `almanac-watch` feature `linux` (default) holds `InotifyWatch`; `almanac-seal` `ProvidedKeys` is the
+- Built: `memory-watch` feature `linux` (default) holds `InotifyWatch`; `memory-seal` `ProvidedKeys` is the
   portable key store (a master key the app provides); `scripts/check-portable.sh` gates the core crates
-  with `--no-default-features` and cross-target checks. `almanac-seal`/`almanac-watch` `pure-hash` (off by
+  with `--no-default-features` and cross-target checks. `memory-seal`/`memory-watch` `pure-hash` (off by
   default) builds blake3 without C for a cross check.
-- Built: `almanac-local` (below), the portable disk `Backend`; `almanac-client` `desktop = ["dbus"]`
+- Built: `memory-local` (below), the portable disk `Backend`; `memory-client` `desktop = ["dbus"]`
   (default on) is the app-level desktop switch (ARCHITECTURE 1a names the two kinds of feature).
 - Open: `InotifyWatch` pairs renames by inotify cookie; a notify-backed watcher for macOS/Windows needs its
   own translation (FSEvents and ReadDirectoryChanges report renames differently).
-- Open: cross-checking `eventlog`, `recall`, `almanac-service` and `almanac-client` needs the target's C
+- Open: cross-checking `eventlog`, `recall`, `memory-service` and `memory-client` needs the target's C
   toolchain for SQLCipher and OpenSSL; only a macOS/Windows CI runner can check them.
 
-## almanac-local (design/36)
+## memory-local (design/36)
 
-`almanac-local` is what an app that hosts its own memory (mailo on macOS or Windows) opens instead of
+`memory-local` is what an app that hosts its own memory (mailo on macOS or Windows) opens instead of
 memoryd's `SystemBackend`: `LocalBackend` over `SqliteLog` (SQLCipher `events.db`), `SealedDir` or `PlainDir`
 by the Space's `VaultKind`, `ExactScan` over FTS5 (`index.db`) and `ProvidedKeys`. It reads no environment,
 no XDG directory, no `/proc`, no wall clock; it uses no D-Bus, inotify or Landlock. The app then serves
-`Memory::over(InProcess::new(Arc::new(almanac_local::open(backend, rules)?), caller))`.
+`Memory::over(InProcess::new(Arc::new(memory_local::open(backend, rules)?), caller))`.
 
 What an app must provide:
 - **A root directory** (`Root::new(path)`, e.g. its application-support directory). Below it: `data/bardo/memory`
@@ -738,10 +738,10 @@ What an app must provide:
   run. A different one is not an error at open: the first request on a Space answers `Refusal::SpaceLocked`
   (`LogError::Locked` underneath, mapped by the service's `backend_refusal` as is a locked key store; a sealed file read is `VaultError::Sealed`). `ProvidedKeys` persists nothing, so
   erasing a Space for good is the app discarding the key it provided (`destroy` bars it only for this process).
-- **A clock** (`almanac_service::Clock`): `almanac_local::SystemClock` (one `SystemTime::now`) is the only real
+- **A clock** (`memory_service::Clock`): `memory_local::SystemClock` (one `SystemTime::now`) is the only real
   one, and memoryd uses it too; `LocalBackend` takes the clock as a parameter, so tests pass a stepped one and only
-  `SystemClock`'s own doc test reads the time. It lives here, not in `almanac-service`, which stays free of ambient
-  reads (`almanac-local` already reads OS randomness for ids).
+  `SystemClock`'s own doc test reads the time. It lives here, not in `memory-service`, which stays free of ambient
+  reads (`memory-local` already reads OS randomness for ids).
 - **Optionally an embedder** (`with_embedder`; a generic parameter, not a trait object, because `Embedder`
   returns `impl Future`). The default `NoEmbedder` always answers `Unavailable`, so the index stays lexical-only
   (FTS5 keyword search) and the exact scan has nothing to scan. The embedder's card names the vector space; a
@@ -749,7 +749,7 @@ What an app must provide:
 - **Optionally a consolidator** (`with_consolidator`); the default answers `Unavailable`, so a consolidation
   run fails and changes nothing.
 - **Optionally a watcher.** The backend takes no `FileWatch`: file-change capture is the app's own loop
-  (`almanac_watch::FileWatch` and `join`, then `Record`/`ExplainFile` through the client). There is no portable
+  (`memory_watch::FileWatch` and `join`, then `Record`/`ExplainFile` through the client). There is no portable
   watcher yet (see Open, above).
 
 The app calls `create_space(&service, id, VaultKind)` once per Space (it writes `spaces.toml`); `open` registers
@@ -758,7 +758,7 @@ its own), and it keeps it: there is no `memory.toml`. Settings reach the service
 Cross-target: the crate depends on SQLCipher with vendored OpenSSL, so only a macOS or Windows runner can
 check it (the same note as `eventlog`; `check-portable.sh` reports it).
 
-Closed asks (almanac-local follow-ups): a locked log or key store opening a Space is `Refusal::SpaceLocked`
+Closed asks (memory-local follow-ups): a locked log or key store opening a Space is `Refusal::SpaceLocked`
 (it was `Invalid("event log: the event log is locked")`; the wire text changes only for that case, the
 `SpaceLocked` error name already exists in memoryd's codec), and the portable `SystemClock` (once `WallClock`).
 
@@ -769,13 +769,13 @@ Closed asks (almanac-local follow-ups): a locked log or key store opening a Spac
 It now returns `AreaPayload.json` unchanged; `Message` and `Episode` keep their serde form, as documented.
 No other read path carries bodies (search hits and recall carry text, not bodies). docket's master reads both
 forms, so the change is compatible. Tests: `recent_with_bodies_returns_an_area_payload_in_the_owners_form`
-in almanac-fake (`service.rs`) and almanac-local (`disk.rs`).
+in memory-fake (`service.rs`) and memory-local (`disk.rs`).
 
 ## session-log: Entries, RecordDurable and not-for-recall (docket's asks A1, A3, A4)
 
 docket's durable sessions (`agent-spec/acp-sessions.md` section 5) append `SessionEntry` events under
 `companion.session.*` and rebuild from them. Taint is a write-ahead entry, so docket must know an entry is
-durable before it reveals text, and must fail closed when almanac cannot say so.
+durable before it reveals text, and must fail closed when the memory service cannot say so.
 
 **A1, paging one session.** New request `Entries(SpaceId, EntriesQuery)` and reply `Entries(EntriesPage)`; bus
 member `Recall.Entries`; client `Memory::entries`. `Recent` is untouched (its query is built by struct literal
@@ -816,21 +816,21 @@ fails closed. `RecordBatch` has no durable form yet.
 `of_body`: `companion.session.*` is `No`. A rule over the kind, not a field on `Record`, because (1) `Record` is
 built by struct literal in docket, so a field is a breaking change; (2) a per-event flag is a promise each writer
 must remember to make and a bug in one code path puts model-derived text into recall, while a kind rule is
-enforced by almanac for every writer and every future `companion.session.<slug>`; (3) the index and consolidation
+enforced by the memory service for every writer and every future `companion.session.<slug>`; (3) the index and consolidation
 are rebuilt from the log alone, and a function of the kind is the only classification the log already stores
 (the chained header holds the kind; a body flag would be erasable); (4) it costs no wire or storage change.
 The limit: a stream outside the prefix cannot opt in without a new prefix in `NOT_FOR_RECALL`. Enforced in
 `event_docs` (so record-time indexing, rebuild, sweep and forget all agree; search and `Inject` read the index),
 in the consolidation input (so no draft names a session event), and in `Related` (a session names its thing, and
 a related-events read is a recall read). The primer and facts follow from consolidation. There is no profile
-read in almanac. `Recent`, `Entries`, `Timeline` and export return the entries. Not enforced: `Propose` can still
+read in the memory service. `Recent`, `Entries`, `Timeline` and export return the entries. Not enforced: `Propose` can still
 cite a session event as a fact's link (the caller is the router or shell and names the event deliberately).
 
-Tests: `almanac-core/tests/it/companion.rs` (the kind rule), `almanac-fake/tests/it/session_log.rs` (paging with
+Tests: `memory-core/tests/it/companion.rs` (the kind rule), `memory-fake/tests/it/session_log.rs` (paging with
 interleaved events, cursor resume, bodies, monotonic ack, refusal when paused, not-for-recall in search, inject,
-related, consolidation, and present in Recent, Entries and export), `almanac-fake/tests/it/open_refusals.rs`
-(locked, full, failing log), `almanac-local/tests/it/disk.rs` (an acked append survives a reopen and pages back),
-`almanac-dbus` codec and introspection tests (new members, errors), `almanac-core/tests/it/wire.rs`.
+related, consolidation, and present in Recent, Entries and export), `memory-fake/tests/it/open_refusals.rs`
+(locked, full, failing log), `memory-local/tests/it/disk.rs` (an acked append survives a reopen and pages back),
+`memory-dbus` codec and introspection tests (new members, errors), `memory-core/tests/it/wire.rs`.
 
 **Session log over the real bus.** The session-log lane added `Recall.Entries` and `Record.RecordDurable` to the
 codec, skeletons, `serve.rs` and the XML but not to the client's `invoke`, so over D-Bus both answered
@@ -867,7 +867,7 @@ app's own). What this adds, on porter 993c56b (`Spaces1`, `SpaceId::{kind, for_a
 - **Crash safety.** Events and facts are matched against what the destination already holds (an event by times, actor,
   kind, label and body digest; a fact by id), then the Space is deleted, so a repeat finishes a half move without
   duplicates; a key already destroyed with no Space entry left means only the directories remain, and they are
-  removed. memoryd writes `removals.toml` (the logic is `almanac_tidy::Removals` over the `RemovalLedger` seam; `memoryd::FileLedger` keeps the file with `atomic-write-file`, which syncs the file and the directory, where the hand-written rename did not) (`removed = [{ space, removal = { memories, history } }]`; a bare space name
+  removed. memoryd writes `removals.toml` (the logic is `memory_tidy::Removals` over the `RemovalLedger` seam; `memoryd::FileLedger` keeps the file with `atomic-write-file`, which syncs the file and the directory, where the hand-written rename did not) (`removed = [{ space, removal = { memories, history } }]`; a bare space name
   from an older file reads as `KEEP_ALL`) before moving, for the shell's call as well as for the registry's, and
   strikes the Space out after; it finishes the open notes at start (`Daemon::resume_removals`) with the choice noted.
 - **Spaces the registry does not know.** At start, after subscribing, `Daemon::reconcile` settles every desktop-wide
@@ -899,7 +899,7 @@ app's write from another process's. Done (owner decision 2026-10-16): a value lo
 shipped default takes effect only after the person confirmed exactly that value, and the
 confirmation is kept where the agent sandbox and the apps cannot write.
 
-- What counts as looser is unchanged (`almanac_service::loosenings`): retention or pending-fact
+- What counts as looser is unchanged (`memory_service::loosenings`): retention or pending-fact
   days below the shipped ones, `at_rest = "plain"`, `apply = "auto"` when the shipped value is
   `review`. A value that is not looser needs nothing.
 - The store is `confirmed-settings.toml` in memoryd's own data directory (`Dirs::memory()`, the
@@ -907,7 +907,7 @@ confirmation is kept where the agent sandbox and the apps cannot write.
   not): key to value pairs under `[confirmed]`, written atomically (temp file, synced, renamed,
   `write_private_atomic`). Only memoryd writes it.
 - Every read (at start, on each file change and after each confirmation) goes through
-  `almanac_host::Locator::read`, which puts back the shipped value of each looser value the store does not hold
+  `memory_host::Locator::read`, which puts back the shipped value of each looser value the store does not hold
   as exactly that value, and reports it as `Why::NotConfirmed` with a line such as
   "memory.consolidation.apply: auto waits for you to confirm it in Settings". A confirmed value
   applies and is still logged as loosened. A file that later changes the value falls back again
@@ -939,7 +939,7 @@ confirmation is kept where the agent sandbox and the apps cannot write.
   reader `read_settings` is not.
 
 Interface note for the Settings app (the Settings app): after the person saves a looser-than-shipped value
-on a page, the app writes it to `almanac/settings.toml` and calls
+on a page, the app writes it to `memory/settings.toml` and calls
 `org.bardo.Memory1.Control.ConfirmSettings` with that key and value (`a{ss}`, for example
 `{"memory.retention.search_days": "7"}`; numbers in decimal, words as the file has them). The
 person's save is the agreement. Until the call is made, the value waits and the shipped value is in
@@ -996,61 +996,61 @@ itself to its own folders, though this computer's system can only enforce part o
 builds; show nothing for it (or treat any unknown word the same way). Not done: the Settings UI.
 
 ## Layering lanes A3.3 and A3.6 (2026-10-28)
-- `almanac-infer` (tier C) holds the inferd embedder and consolidator and their deadlines, over
+- `memory-infer` (tier C) holds the inferd embedder and consolidator and their deadlines, over
   inferd-client's `Transport` and nothing else, so an app that is not memoryd can use them. The
-  prompt and its parse were already in the service (A0.3); they moved on into `almanac-tidy`.
-- `almanac-tidy` (tier P) holds the fact and consolidation machines, the prompt and parse,
+  prompt and its parse were already in the service (A0.3); they moved on into `memory-tidy`.
+- `memory-tidy` (tier P) holds the fact and consolidation machines, the prompt and parse,
   `tidy_is_acceptable`, `Change`/`changes` and the removal notes (`RemovalLedger`, `Removals`).
   The removal notes' text has its own `NotesFileError` (it used the service's `ConfigError`).
-  `class_of`, `class_tag` and `class_from_tag` moved to `almanac-store`, next to `ClassTag`, so
-  `almanac-infer` needs no service.
-- `almanac-search` followed in lane A3.6b (below).
+  `class_of`, `class_tag` and `class_from_tag` moved to `memory-store`, next to `ClassTag`, so
+  `memory-infer` needs no service.
+- `memory-search` followed in lane A3.6b (below).
 
 ## Layering lane A3.6b (2026-10-28)
-- `almanac-search` (tier P) holds `Search` and `Inject` and the recall documents. It reads a Space
+- `memory-search` (tier P) holds `Search` and `Inject` and the recall documents. It reads a Space
   only through `SpaceReader`: the index, the log entry at a sequence number, the event reference
-  and the stored facts. `Open<B>` implements it in `almanac-service/src/readers.rs`.
-- The query is embedded first (`almanac_search::embed_query`, the only async step) and the vector
+  and the stored facts. `Open<B>` implements it in `memory-service/src/readers.rs`.
+- The query is embedded first (`memory_search::embed_query`, the only async step) and the vector
   is passed in, so a search never holds the index across an await (the index's SQLite
   connections are not `Sync`). The audit of a read, and `recent`, `related`, `provenance`,
   `facts` and `primer`, stay in the service (`search.rs` became `readers.rs`).
 - The document model (`event_docs`, `fact_doc`, `indexed_docs`, `DocRef`, `newest_episodes`,
   `present`) moved with it from the service's `docs.rs`; `record_fault` stays in the service.
-- `almanac-search` has no tests of Search itself: the service's integration tests and the
-  `almanac-client`, `almanac-local` and `memoryd` tests run it through the service.
+- `memory-search` has no tests of Search itself: the service's integration tests and the
+  `memory-client`, `memory-local` and `memoryd` tests run it through the service.
 
 ## Layering lane A3.4 (2026-10-28)
-- `almanac-dbus` is the caller's half: proxies, bus names, `MemoryError`, the codec and `invoke`.
-  `almanac-dbus-serve` (tier C, depends on `almanac-dbus`) is the daemon's half: the served
+- `memory-dbus` is the caller's half: proxies, bus names, `MemoryError`, the codec and `invoke`.
+  `memory-dbus-serve` (tier C, depends on `memory-dbus`) is the daemon's half: the served
   objects, `Serve`, `Signal` with `emit`/`emit_to`, and the frozen skeletons with `introspection`.
   Only `memoryd` uses it. `serve.rs` (795 lines) became `serve/{mod,record,recall,control,signal}.rs`.
 - `Confinement` moved to `memoryd::sandbox` (a Landlock concept). `Serve::confinement` now
   answers the wire word (`&'static str`, default `CONFINEMENT_OFF`); the words stay in the XML
-  contract. The `as_word` test in `almanac-dbus` went: `memoryd`'s sandbox and bus tests pin the
+  contract. The `as_word` test in `memory-dbus` went: `memoryd`'s sandbox and bus tests pin the
   same four words.
 
 ## Layering lane A3.5: `Caller` is not wire (2026-10-28)
-- Decision: `Caller` moved from `almanac-core` to `almanac-service` (`caller.rs`, beside `auth.rs`,
+- Decision: `Caller` moved from `memory-core` to `memory-service` (`caller.rs`, beside `auth.rs`,
   which is its only decider). It is not part of the wire. Evidence: no request, reply, signal,
   D-Bus argument, memfile or event-log record carries one. The module doc already said "derived by
-  the transport, never sent in a request"; `almanac-dbus` and `almanac-dbus-serve` never name it
-  (`almanac-dbus-serve/src/serve/mod.rs:30` is a comment); `memoryd` builds it from the peer's
+  the transport, never sent in a request"; `memory-dbus` and `memory-dbus-serve` never name it
+  (`memory-dbus-serve/src/serve/mod.rs:30` is a comment); `memoryd` builds it from the peer's
   process identity (`memoryd/src/callers.rs` `caller_for`, `peers.rs`); the only place its serde
-  derives were used was a round-trip test in `almanac-core/tests/it/forms.rs`. Both derives and
+  derives were used was a round-trip test in `memory-core/tests/it/forms.rs`. Both derives and
   that test are gone. In-process users pick one when they build `InProcess::new(service, caller)`.
-- Every importer in almanac now takes it from `almanac_service::Caller` (client `InProcess`, fake,
-  local, memoryd, tests). No re-export is left in `almanac-core`.
-- Needs a change at the next re-pin (`use almanac_core::Caller` becomes `use almanac_service::Caller`):
+- Every importer in the memory service now takes it from `memory_service::Caller` (client `InProcess`, fake,
+  local, memoryd, tests). No re-export is left in `memory-core`.
+- Needs a change at the next re-pin (`use memory_core::Caller` becomes `use memory_service::Caller`):
   docket (`docket-inapp` tests `audit_queue`, `multi`, `seams`; `docket-memory` tests `portable`,
   `session_log`; `intentd` test support only mentions it in a comment), cua (`cuad` tests
   `links.rs:102,223`). sill, the Settings app, files, mailo and anyview do not name it. Those users already
-  depend on `almanac-service` for `MemoryService`, since `InProcess` takes one.
+  depend on `memory-service` for `MemoryService`, since `InProcess` takes one.
 
 ## Layering lane U0.9a: hex and ulid swaps (2026-10-28)
 - Decision: our hand-written hex and fact-id encoders went to public crates. `hex_of` is gone: every
   call site uses `const_hex::encode` (const-hex 1.19.3, MIT OR Apache-2.0; no newer 1.x was in the
   local registry, so this is the newest on crates.io). `from_hex` became
-  `almanac_core::decode_lower_hex::<N>`, a three-line guard over `const_hex::decode_to_array`: const-hex
+  `memory_core::decode_lower_hex::<N>`, a three-line guard over `const_hex::decode_to_array`: const-hex
   also takes uppercase digits and a `0x` prefix, and every serialised form here is exactly `2 * N`
   lowercase digits, so the guard checks the length and refuses uppercase (a prefixed string of the
   right length decodes to fewer bytes and fails). `FactId::mint` is now
@@ -1059,13 +1059,13 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
   from the top, 80 random bits, five bits a digit from the most significant end, 26 chars. The
   golden test `minted_fact_ids_keep_their_exact_text` pins seven ids computed with a line-for-line
   port of the old encoder before the swap. `is_fact_id` stays: it checks text read from files.
-- Other hand-written hex in almanac: none (`{:02x}` and friends do not occur).
+- Other hand-written hex in the memory service: none (`{:02x}` and friends do not occur).
 - Users in other repos: none. `git grep` at origin/master of docket, cua, sill and the Settings app finds no use of
-  `almanac_core::hex_of` or `from_hex` (the Settings app has its own unrelated `settings-app-ui` `hex_of`). docket's
+  `memory_core::hex_of` or `from_hex` (the Settings app has its own unrelated `settings-app-ui` `hex_of`). docket's
   own `format!("{b:02x}")` copies are the docket lane's.
 - Licences: MIT and MIT OR Apache-2.0 are in deny.toml's list. `ulid` pulls `web-time` only on wasm.
 
 ## Round B re-pin (2026-10-28)
 - porter 31799cfa (step 3 + spending), the model layer c8fed624 (via porter-infer), prov 628083b3. Paths per ~/rs-wt/step3-core/PATHMAP.md and ~/rs-wt/spending/PATHMAP.md: ids from `porter-ids`, model kinds and needs from `porter-capability`/`porter-match`, the accounts frame from `porter-wire`; `porter_core::consent::Usage`; `CoreError::MalformedValue` for a JSON text that is not JSON; `TokenUsage.charge`; `flow_to` is a bool.
 - `DataClass` is `#[non_exhaustive]` now, so a class porter adds is no longer a compile error here. `class_of` instead counts a class it has no place for as the most sensitive, never as the app's own data; the order test that relied on the exhaustive match is gone, and the tag test is a table.
-- model-provider now reaches almanac under porter-infer (`TokenUsage.charge` is its `Money`). The owner relaxed the boundary rule (2026-10-28): only a direct dependency of an almanac crate on model-provider is a leak; the other area bans stay whole-tree.
+- model-provider now reaches the memory service under porter-infer (`TokenUsage.charge` is its `Money`). The owner relaxed the boundary rule (2026-10-28): only a direct dependency of a memory crate on model-provider is a leak; the other area bans stay whole-tree.

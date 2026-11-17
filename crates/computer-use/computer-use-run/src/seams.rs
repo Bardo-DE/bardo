@@ -88,7 +88,7 @@ pub trait GateLink: Send + Sync {
     fn check(&self, ask: CuaAsk) -> impl Future<Output = Result<Self::Check, LinkError>> + Send;
 }
 
-/// Where run records go: almanac's event log, through memoryd.
+/// Where run records go: the memory service's event log, through memoryd.
 pub trait RecordSink: Send + Sync {
     /// Appends one record of a run.
     fn record(&self, record: CuaRecord) -> impl Future<Output = Result<(), LinkError>> + Send;

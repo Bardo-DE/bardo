@@ -6,7 +6,7 @@ use memory_core::KindPattern;
 use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
 
-/// Which almanac events start a routine: a kind (new mail, a file in a Space) in a Space. The
+/// Which the memory service events start a routine: a kind (new mail, a file in a Space) in a Space. The
 /// event's content never reaches the routine's goal; the run is handed the event as a handle.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct EventMatch {
@@ -32,7 +32,7 @@ impl EventMatch {
 pub enum Trigger {
     /// A time rule.
     At(Schedule),
-    /// An almanac event.
+    /// A memory service event.
     On(EventMatch),
     /// Another job ending done.
     AfterJob(JobId),

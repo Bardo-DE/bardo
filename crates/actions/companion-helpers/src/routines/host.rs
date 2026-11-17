@@ -1,6 +1,6 @@
 //! What the routines' scheduler needs from its surroundings, as one seam: the local zone, the
 //! helpers' Spaces and names, posting a job, how a job ended, the stored records, the sentences the
-//! person is told, the almanac's events, the systemd timers and keeping the desktop awake. The
+//! person is told, the memory service's events, the systemd timers and keeping the desktop awake. The
 //! daemon passes the hub's; a test passes a fake that records what it was asked.
 
 use companion_core::{EventAsk, Seen, UnitFile};
@@ -36,7 +36,7 @@ pub trait Host: Send + Sync + 'static {
     /// Tells the person a sentence about a helper, once.
     fn say(&self, helper: &HelperId, text: String);
 
-    /// The events the almanac holds for `ask`.
+    /// The events the memory service holds for `ask`.
     fn events(&self, ask: EventAsk) -> impl Future<Output = Vec<Seen>> + Send;
 
     /// Makes the systemd user timers exactly `units` (the whole set, every time it changes).

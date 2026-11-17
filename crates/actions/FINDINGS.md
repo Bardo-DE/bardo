@@ -253,8 +253,8 @@ on the terminal (`intentd/examples/try_apps.rs`), all with a scratch HOME and XD
 
 Built in the w4-docket fill (each with tests on a private bus, a scripted inferd or the fakes):
 
-1. **The audit trail reaches memoryd.** `record_of` maps every `AuditRecord` to an almanac `Record` that memoryd
-   admits (a message and an episode are almanac's own typed bodies, the rest `Area { Docket }` in their serde form
+1. **The audit trail reaches memoryd.** `record_of` maps every `AuditRecord` to a memory service `Record` that memoryd
+   admits (a message and an episode are the memory service's own typed bodies, the rest `Area { Docket }` in their serde form
    with a call's targets as the `things` for cascade-forget; a record's Space is the one it names, else the Space of
    the call it reviews, else the session or task the router still holds, else `desktop`). `QueuedSink` is bounded
    (4096 records; the oldest are dropped and counted) and shared by clone; `AuditLog` writes one batch per Space as the
@@ -505,7 +505,7 @@ Interface asks left after the w5 fill, as the f4-docket fill leaves them (the fu
 - Bardo: `mcp.enabled` (item 3 of the w5 fill): until the settings row exists the edge reads its own
   `actions-mcp.toml`.
 - cuad: use `gate_check_watched`, open its run's session, and have `cua.run.start` answer the session it opened.
-- almanac: let `Caller::Router` ask `MemoryRequest::Spaces` (see the f4-docket fill, item 5).
+- The memory service: let `Caller::Router` ask `MemoryRequest::Spaces` (see the f4-docket fill, item 5).
 - A recent entry whose label is untrusted comes without a body (a message carrying what a worker read, a narrated episode):
   a restart falls back to the trusted skeleton events; nothing more can be rebuilt from them.
 
@@ -537,8 +537,8 @@ Branch `f4-docket`. Each item has tests on a private bus, in process, or over th
 5. **A restart reads more Spaces than `companiond.toml`'s**: `RecallAsk::Spaces` / `RecallView::Spaces`
    (any session may ask): the router answers the open and paused Spaces memory lists, the Spaces it holds a session
    or a task in, and the desktop; `restore` takes the union with the configured list. Memory's `Spaces` read is
-   the shell's today (`almanac-service::auth::allowed`), so the router's own Spaces are the answer until
-   almanac lets `Caller::Router` ask it. Ask (almanac): in `allowed`, move `R::Spaces` from the
+   the shell's today (`memory-service::auth::allowed`), so the router's own Spaces are the answer until
+   The memory service lets `Caller::Router` ask it. Ask (the memory service): in `allowed`, move `R::Spaces` from the
    `Caller::ShellUi`-only group to `R::Spaces => yes_if(router_or_shell)`.
 6. **The `Proceed` wait is a setting**: `AgentConfig.confirm_proceed` (`agent.confirm.proceed_ms`, 10 000, serde
    default so an old `intentd.toml` still reads; shipped in `dist/intentd.toml`). `FixedClock` is a virtual clock
@@ -575,9 +575,9 @@ recipient `Quoted{from: Mail}`, taint `ReadUntrusted(Mail)`), and one ignored (f
 2. **Records that name no Space go to `desktop`** (`intentd/src/audit.rs`). `desktop` stays the default Space
    (SPEC P6). When memoryd refuses a Space's records, intentd now says so once per Space on stderr (`tell_refused`)
    and counts every lost record in `Control.State` (`KillSwitch::audit_lost`, additive, `serde(default)`). The run
-   still registers `desktop` until almanac makes memoryd always know it.
-3. **memoryd cannot run as its binary without a Secret Service.** CLOSED (f4-e2e-2, `MEMORYD_KEYS`; sandbox on since f4-e2e-3). Was: `accept-memoryd` is almanac's `main.rs` with
-   `MemoryKeys` and no Landlock. Ask (almanac, `memoryd/src/main.rs`): an environment switch such as
+   still registers `desktop` until the memory service makes memoryd always know it.
+3. **memoryd cannot run as its binary without a Secret Service.** CLOSED (f4-e2e-2, `MEMORYD_KEYS`; sandbox on since f4-e2e-3). Was: `accept-memoryd` is the memory service's `main.rs` with
+   `MemoryKeys` and no Landlock. Ask (the memory service, `memoryd/src/main.rs`): an environment switch such as
    `MEMORYD_KEYS=file:<path>` selecting a file-backed `KeyStore` for a scratch HOME, so the packaged binary itself
    can be started in the jail.
 4. **inferd has no replay engine.** CLOSED (f4-e2e-2, porter's replay engine). Was: the run speaks the `Inference1` wire from a fake (`src/inferd.rs`). Ask
@@ -591,7 +591,7 @@ recipient `Quoted{from: Mail}`, taint `ReadUntrusted(Mail)`), and one ignored (f
 ### f4-e2e-2: real inferd and memoryd binaries
 
 Branch `f4-e2e-2`. The acceptance now runs porter's packaged `inferd` (replay engine, cassettes in
-`dev/accept/cassettes`) and almanac's packaged `memoryd` (`test-keys`, sandbox off) as processes; the library
+`dev/accept/cassettes`) and the memory service's packaged `memoryd` (`test-keys`, sandbox off) as processes; the library
 memoryd main and the scripted `Inference1` are removed. `crates/docket-accept/build.rs` builds both from their own
 workspaces (`$CARGO`, `--locked`, cargo variables scrubbed) into `<target>/accept-siblings/`, so the gate's
 nextest archive finds them inside the jail's bound target dir; the paths are baked in as `ACCEPT_INFERD` and
@@ -626,9 +626,9 @@ companiond and readerd by unit. The reader-class assertion is back (flow c: the 
 
 ## Upstream asks
 
-Nothing below was edited in the other repos. Asks 1 to 4 of the freeze are cleared: almanac's
+Nothing below was edited in the other repos. Asks 1 to 4 of the freeze are cleared: the memory service's
 `RecentEntry` carries `body` under `BodyMode::Json` (companiond reads it through `RecentSource`),
-almanac-client's `almanac-service` is behind `in_process`, Bardo's `ds-intents` has the voice
+memory-client's `memory-service` is behind `in_process`, Bardo's `ds-intents` has the voice
 marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo's
 `docs/workspace-deps.toml` has `pipewire = "0.10"`.
 
@@ -663,8 +663,8 @@ marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo'
   `companion-wire` depends on `docket-core`. `Companion1` exposes them as `Roster()`.
 - **`planner_view` and the `HandleTable` live in `docket-router`**, not `docket-core` (SPEC 3.8):
   the table is router state, and `docket-core` keeps only the shapes.
-- **Episodes are almanac's** (`Episode`, `Skeleton`), not docket-owned as research C.2 first drew
-  them; `docket-core` depends on `almanac-core` to build the skeleton (`skeleton_of`, `close`) and
+- **Episodes are the memory service's** (`Episode`, `Skeleton`), not docket-owned as research C.2 first drew
+  them; `docket-core` depends on `memory-core` to build the skeleton (`skeleton_of`, `close`) and
   the router records it at task end. The idle pass writes the narrative through `Session.Note`.
 - **Intents1 members**: `Session.Open` takes a `SessionOpen` (Space, agent, parent) not a Space;
   `Session.Resolve` takes the session too (a handle table is per session); new `.Session.Note`,
@@ -695,8 +695,8 @@ marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo'
 
 ## Decisions beyond the spec
 
-- `docket-core` depends on `almanac-core` and `model-provider`; `policy-point`, `action-review`,
-  `docket-router`, `companion-wire`, `agent-loop` take `porter-core` or `almanac-core` directly;
+- `docket-core` depends on `memory-core` and `model-provider`; `policy-point`, `action-review`,
+  `docket-router`, `companion-wire`, `agent-loop` take `porter-core` or `memory-core` directly;
   `docket-dbus` takes `porter-dbus` (for `Details` and `OPTION_TRACEPARENT`, not redefined);
   `voice-wire` takes `porter-infer` (`Readiness`, `ServedBy`, `ModelError`, `InferRefusal`);
   `readerd` takes `docket-dbus`. The edge table in `ARCHITECTURE.md` is the exact list.
@@ -733,7 +733,7 @@ marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo'
    `tighten` changes in one line and the cascade tests change with it. Your call.
 2. `companion.task.message` is a read. If a message across Spaces should be at least an undoable
    write (and so reviewed when tainted), say so; delivery itself is already gated by the receiver.
-3. `docket-core` linking `almanac-core` means every app that uses docket's client links almanac's
+3. `docket-core` linking `memory-core` means every app that uses docket's client links the memory service's
    pure vocabulary. The alternative is a docket-only mirror of the episode and recall shapes.
 
 ## inferd link (ask 81)
@@ -975,7 +975,7 @@ An action's declared effect is a **ceiling**; an action may opt in to a per-call
 
 - **Manifest.** `per_call = "classified"` on an `[[actions]]` row (`ActionDecl::per_call: PerCall`, serde
   default `declared`, not written when it is the default; existing files and `..`-less Rust literals other than
-  docket's own test fixtures are unaffected, and no `ActionDecl` literal exists in sill, cua, almanac or mailo).
+  docket's own test fixtures are unaffected, and no `ActionDecl` literal exists in sill, cua, the memory service or mailo).
 - **Classify.** For an opted-in action called by an agent session, the router first asks the provider
   (`IntentProvider::classify`, `IntentProvider1.Classify(invocation s, options a{sv}) -> s`, the answer is a
   `Result<CallClass, AppRefusal>` in JSON; `CallClass` is `{"kind":"effect","v":"read"}` or
@@ -1006,12 +1006,12 @@ An action's declared effect is a **ceiling**; an action may opt in to a per-call
 For the owner's live demo of the companion on a cloud model (runbook: `docs/demo-cloud.md`).
 
 - **`dist/install-dev.sh`** installs the stack for one user from the sibling checkouts (`../porter`,
-  `../almanac`, `../models`, this one), builds with `cargo build --release --locked`, never runs sudo, and
+  `../memory`, `../models`, this one), builds with `cargo build --release --locked`, never runs sudo, and
   records what it wrote in `~/.local/state/bardo-dev/install-dev.manifest` for `--uninstall` (a config the person
   edited is kept; directories are removed only if the install made them and they are empty). Tested in a jail
   (`docket-cli/tests/it/install_dev.rs`: HOME, XDG and PREFIX in a tempdir, fake binaries through
   `INSTALL_DEV_BIN_DIR`, cleared environment).
-  - memoryd has no unit in `almanac/dist`: `almanac/dbus/memoryd.service` is its unit, started by D-Bus
+  - memoryd has no unit in `memory/dist`: `memory/dbus/memoryd.service` is its unit, started by D-Bus
     activation (`org.bardo.Memory1.service` names it); that is what is installed.
   - Beyond the brief, because the demo does not work without them: porter's `providers/*.toml` (accountd cannot
     `add openrouter` without its provider file) to `$XDG_DATA_HOME/porter/providers`, and the model layer's `catalog/*.toml`
@@ -1134,7 +1134,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
 1. **Routing property.** `org.bardo.Companion1.Answer` gained a read-only property `Routing` (`s`): JSON of
    `Vec<companion_wire::RouteNote { stage, served, why: Vec<WhyWord>, reached: Option<Reached> }>`, the last model turn
    that announced anything (`[]` before one did). Set before `AnswerAdded`, like `Session`. `AnswerWire`, `FooterWire`
-   and `AskWire` are unchanged, so no literal in sill, cua or almanac breaks.
+   and `AskWire` are unchanged, so no literal in sill, cua or the memory service breaks.
 2. **The line.** `companion_wire::footer_line(&[RouteNote]) -> String` prints "Heard by Whisper · Answered by Claude
    Haiku 4.5 via OpenRouter (already loaded)"; sill and the Settings app both call it. Model names are made from the id
    (`model_name`: "claude-haiku-4-5" is "Claude Haiku 4.5"); a catalogue display name would be better when porter has one.
@@ -1571,10 +1571,10 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
 2. DONE. Reviewer and policy writer over a model. `docket-models` (portable) holds `TransportModel<T>`,
    `TransportWriter<T>` and `reviewer_over`; intentd's `InferdModel` and `InferdWriter` are thin adapters
    (the bus constructor). `InAppKit::writer` takes the writer, `InAppParts::reviewer` the cascade.
-3. DONE. Memory. `docket-memory` (portable) holds `AlmanacMemory<T>` over any almanac-client Transport
-   (intentd's `AlmanacMemory` is the same type), and `InAppKit::memory` plus `AuditTo::Memory` give the
+3. DONE. Memory. `docket-memory` (portable) holds `MemoryServiceLink<T>` over any memory-client Transport
+   (intentd's `MemoryServiceLink` is the same type), and `InAppKit::memory` plus `AuditTo::Memory` give the
    planner primer, profile, recall and episodes and write the turn's audit as records with the task's
-   episode. Tested over almanac's `in_process` transport with almanac-fake's backend.
+   episode. Tested over the memory service's `in_process` transport with memory-fake's backend.
 4. DONE. Consent storage. `FileGrantStore` (docket-inapp): a path the app gives, intentd's file format,
    atomic writes, typed `GrantFileError`; a write that fails is kept for `take_fault` because the
    `GrantStore` seam has no way to say so. The app decides where the file lives.
@@ -1608,7 +1608,7 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
   `writer.rs` bodies to `docket-models`; intentd's `memory.rs`, `record.rs`, `sink.rs` and the logic of
   `audit.rs` to `docket-memory` (`AuditLog` keeps the memoryd link and the `eprintln` lines; the pure
   `AuditState::flush` returns a `Report` and prints nothing, and works over `MemoryLink` instead of the
-  almanac `Memory`, with the same mapping of refusals and link faults); readerd's `request.rs` and
+  The memory service `Memory`, with the same mapping of refusals and link faults); readerd's `request.rs` and
   `answer.rs` (and their tests) to `docket-reader`, with `read` taken out of `ReaderService`.
 - New: `FileGrantStore`, `SystemClock`, `InAppKit` and `AuditTo`, the recall sections of the planner's view
   (`recall.rs`), the end-of-turn `Session.Note(End)` so the router leaves the task's episode, and
@@ -1621,7 +1621,7 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
 
 Interface asks.
 - porter: item 1 (a `SessionHost` that routes to a model without the bus) and the Windows named pipe.
-- almanac: none (item 3 is done over `almanac-client` `in_process`).
+- The memory service: none (item 3 is done over `memory-client` `in_process`).
 - Bardo: `ds-desktop` for item 10; nothing else.
 - The model layer: none.
 
@@ -1661,11 +1661,11 @@ Items 5, 8 and 9 of "portable-core" are done.
 - Multi-task tests: two tasks and the front pointer, the roster, a side conversation that becomes an
   episode after the quiet time (virtual clock), restart recovery picking up the unfinished front task
   and leaving a finished one.
-- Found: almanac's `Recent` with `BodyMode::Json` answers an `Area` payload as the whole body
+- Found: the memory service's `Recent` with `BodyMode::Json` answers an `Area` payload as the whole body
   (`{"kind":"area","v":{"area":..,"kind":..,"json":"<owner's form>"}}`), not the owner's form its doc
   promises (`RecentEntry::body`), so `companiond`'s `recover` met `Malformed` on a real service (docket-fake's
   memory answers the owner's form, which is why no test saw it). `recover` now reads either form
-  (`owner_form`, unit-tested). Almanac may fix the service to match its doc; nothing here depends on it.
+  (`owner_form`, unit-tested). The memory service may fix the service to match its doc; nothing here depends on it.
 
 Still missing for the in-app agent (none blocks the app):
 
@@ -1681,8 +1681,8 @@ Still missing for the in-app agent (none blocks the app):
 4. `Companion::act`/`propose` (cards) have no in-app door yet; an app has no answer object to press.
 
 Interface asks.
-- almanac: `RecentEntry::body` for an `Area` payload should be the payload's `json` (the owner's form), as
-  documented (`almanac-service/src/search.rs` `recent_entry`). docket reads both until then.
+- The memory service: `RecentEntry::body` for an `Area` payload should be the payload's `json` (the owner's form), as
+  documented (`memory-service/src/search.rs` `recent_entry`). docket reads both until then.
 - Bardo / apps: none.
 
 ## A model's mistake on bardo_read ended the turn (live smoke, Qwen3-8B, 2026-10-07)
@@ -1812,7 +1812,7 @@ Decisions made (confirm or overrule):
   S1 maps them (two `From` impls, one test with a wildcard-free match each).
 - The slug `opened` and `closed` are shared with companiond's old records. A body is legacy exactly
   when it has no `version` key; `decode` routes on that.
-- `seq` is the writer's own per-session count, in the body, because almanac's sequence is per Space
+- `seq` is the writer's own per-session count, in the body, because the memory service's sequence is per Space
   (ask A3) and a per-session gap could not be seen otherwise. Legacy bodies are numbered by place.
 - A call is two entries, `Call` then `Step`; a `Call` with no `Step` is `Interrupted`. A reply that
   was never a call (`StepLine::unread`) has a `Step` and no `Call`. The plan reports interruption as
@@ -1844,14 +1844,14 @@ Decisions made (confirm or overrule):
 - The traits use `-> impl Future + Send`. Events are pulled with `next_event`, so no
   `Stream` type or executor is named; the note's `impl Stream` can wrap this later.
 
-The `SessionLog` seam, and what docket-memory needs from almanac in S1 (lane session-log):
+The `SessionLog` seam, and what docket-memory needs from the memory service in S1 (lane session-log):
 - `append(session, seq, &entry) -> Result<Appended{seq}, LogFault>`: answers only when durable
   (A3 `Append { ack: Durable }`). A typed refusal (full, Space set to forget, unavailable) must reach
   the caller as `LogFault::Refused` or `Unavailable`; for a `Taint` entry the caller refuses the
   reveal. `OutOfOrder{expected}` is the store refusing a `seq` that is not its next for the session:
-  almanac has no per-session position, so docket-memory counts them (read the last row's `seq`).
+  The memory service has no per-session position, so docket-memory counts them (read the last row's `seq`).
 - `page(session, from: Option<Seq>, PageSize) -> LogPage{rows, next}`: one session's rows, oldest
-  first, each decoded by `decode(slug, json, place)`. Almanac must serve `Recent` filtered by kind
+  first, each decoded by `decode(slug, json, place)`. The memory service must serve `Recent` filtered by kind
   prefix `companion.session.` with `BodyMode::Json`, newest-first with a cursor (A1); docket-memory
   filters to the session by a `session` key it wraps around the stored body (the body of S0 carries
   none, deliberately, so the log key is the one source) and reverses to oldest first.
@@ -1862,18 +1862,18 @@ The `SessionLog` seam, and what docket-memory needs from almanac in S1 (lane ses
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-porter, almanac, the model layer and Bardo are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
-`fuzz/Cargo.toml`): a plain `git clone` builds with no sibling. The URLs are spelled as porter and almanac spell
+porter, the memory service, the model layer and Bardo are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
+`fuzz/Cargo.toml`): a plain `git clone` builds with no sibling. The URLs are spelled as porter and the memory service spell
 them (`https://github.com/PoHsuanLai/<repo>`, no `.git`) and the revs match porter's pins of the model layer and Bardo,
 so one copy of `cua-action` and `model-*` is in the graph.
 
 - **Override for cross-repo work**: a `[patch."https://github.com/PoHsuanLai/<repo>"]` table with `path` lines
   for each crate named, in a `.cargo/config.toml` in a directory ABOVE the checkout (cargo merges parent
   directories' config; never commit it). Commit `Cargo.lock` only from a build without the override.
-- **`docket-accept/build.rs`** no longer reads `../porter` and `../almanac`: it runs `cargo install --git <url>
+- **`docket-accept/build.rs`** no longer reads `../porter` and `../memory`: it runs `cargo install --git <url>
   --rev <pin> --locked --debug` for `inferd` and `memoryd`, reading the rev from the workspace manifest's own
-  porter and almanac lines, into `<target>/accept-siblings/<repo>`. It needs network at build time (the gate's build
-  step has it; its jail runs the finished archive). `ACCEPT_PORTER_DIR` / `ACCEPT_ALMANAC_DIR` name a local checkout
+  porter and the memory service lines, into `<target>/accept-siblings/<repo>`. It needs network at build time (the gate's build
+  step has it; its jail runs the finished archive). `ACCEPT_PORTER_DIR` / `ACCEPT_MEMORY_DIR` name a local checkout
   instead.
 - **Still sibling-based by design** (developer tools, not the build): `dist/install-dev.sh`
   (`INSTALL_DEV_SIBLINGS`), `dev/live-smoke.sh` and `docket-accept`'s catalogue default (`../models/catalog`;
@@ -1883,7 +1883,7 @@ so one copy of `cua-action` and `model-*` is in the graph.
 
 `docket-router` now keeps each session's durable record as it goes and rebuilds a session from it:
 `Router::restore_session`, over the `SessionLog` seam (`Seams::Log`) that `docket-memory` implements on
-almanac (`AlmanacSessionLog`). The in-memory `SessionRecord` is still the source of truth for every
+The memory service (`MemorySessionLog`). The in-memory `SessionRecord` is still the source of truth for every
 reader; the log is written beside it and read only by a restore. No D-Bus member was added.
 
 **Where the async appends happen (decision: a queue the router flushes outside its lock, with a
@@ -1926,11 +1926,11 @@ choice is testable with `MemoryLog` (`LogMood::RefusingTaint`, `crash_after(n)`)
   untrusted window title mints untrusted handles without tainting the live session) restores `Tainted`. The
   fold counts any untrusted handle label as taint (S0), so the durable record is the more conservative one.
 - A write that fails with an unknown outcome (the store may have kept it) is handled by the log, not the
-  router: `AlmanacSessionLog` reads the end of the log again on the next append and treats the same entry at
+  router: `MemorySessionLog` reads the end of the log again on the next append and treats the same entry at
   the position just written as acknowledged. A store holding another position than the writer's
   (`OutOfOrder`: another writer, or a fresh session that reused the name of a stored one) stops that
   session's writer for good: every later reveal and call of it is refused until it is restored from the log.
-- The log lives in one Space (the desktop Space, named when `AlmanacSessionLog` is built). `SessionLog`
+- The log lives in one Space (the desktop Space, named when `MemorySessionLog` is built). `SessionLog`
   carries no Space; a per-Space placement needs the trait to take one (S2).
 - Implicit sessions (an app, a terminal or an MCP client that opened none) are not recorded (`Wal::Off`).
 - Ids: session, task, turn and call numbers come from one counter. `adopt_sessions` (called by intentd at
@@ -1969,13 +1969,13 @@ check before asking again"), counts as a failed call for the breaker's history, 
 plan. The cost is one arm in five exhaustive matches (agent-loop twice, docket-planner, router, docket-tasks).
 `CallRefusal::NotRecorded` is the other new variant (and `McpRefusal::NotRecorded`).
 
-**Finding for almanac: the bus client cannot call `Entries` or `RecordDurable`.** almanac master's
-`almanac-dbus/src/invoke.rs` (the zbus proxy dispatch behind `DbusTransport`) has no `Recall.Entries` and no
+**Finding for the memory service: the bus client cannot call `Entries` or `RecordDurable`.** the memory service master's
+`memory-dbus/src/invoke.rs` (the zbus proxy dispatch behind `DbusTransport`) has no `Recall.Entries` and no
 `Record.RecordDurable` arm: both answer `Invalid("no member ...")` over the bus, though the codec, the
 service and the in-process transport have them. Until that lands, intentd's log is `DaemonLog::Off`
 (sessions unrecorded, one stderr line at start) rather than refusing every call for want of a record: the
 daemon probes the log once at start (`adopt_sessions`) and falls back if it is not usable. The same
-fallback covers memoryd being down at start. Once almanac ships the arms the same code records sessions with
+fallback covers memoryd being down at start. Once the memory service ships the arms the same code records sessions with
 no change here; an acceptance run with a restart in the middle is then the S2 check.
 
 **For S2 (convergence).** companiond's `TaskRuntime` and docket-tasks' `recover` still read and write the old
@@ -1986,7 +1986,7 @@ session record: a front task and its roster come from `restore_session`, `recove
 which is why S1 added none). `SessionLog` should take the Space then. Skills reload by id only: a version
 mismatch is not warned yet.
 
-Tests (all over `MemoryLog` or almanac-fake, scripted models, no network, no wall clock; `crash_after(n)`
+Tests (all over `MemoryLog` or memory-fake, scripted models, no network, no wall clock; `crash_after(n)`
 is the crash): `docket-router/tests/it/restore.rs` (the order of a session's entries, the failed taint write
 refusing the reveal and leaving the session at its prior taint, a reveal withheld from the reply when its
 handle cannot be kept, restore never asking the writer, handles as labels that cannot be shown or read, an
@@ -1995,8 +1995,8 @@ under the same policy after a restart, a new session never taking a stored name,
 handles and no taint restoring tainted and repaired, the crash between every pair of appends of a
 scenario, and the same property under proptest: whatever was revealed, a restore is at least as tainted);
 `docket-router/src/rebuild.rs` (the pure rules, one test each); `docket-memory/tests/it/session_log.rs` (the
-log contract over almanac: paging at any size from any position, out-of-order, no memory is a refusal, an
-acknowledgement lost on the way written once, the listing, and a whole session restored from almanac after
+log contract over the memory service: paging at any size from any position, out-of-order, no memory is a refusal, an
+acknowledgement lost on the way written once, the listing, and a whole session restored from the memory service after
 the router is dropped); `docket-planner` (the interrupted line).
 
 ### Restore on use checks the caller
@@ -3567,7 +3567,7 @@ owns, `GetNameOwner` or a uid alone; an unidentified caller is refused.
 - **Open**: the harness cannot give the shell a fixed role at memoryd (its system file path is fixed at
   `/etc/bardo/memory-callers.toml`, the user's file may not carry `sheet_host`); the harness already writes the system file
   to `<scratch>/system/memory-callers.toml` and sets `MEMORYD_SYSTEM_CALLERS`, which memoryd honours under its fixture-`/proc` gate
-  (almanac 448f615); docket-acp and docket-agent need to be started in `docket-acp.scope` / `docket-agent.scope`
+  (the memory service 448f615); docket-acp and docket-agent need to be started in `docket-acp.scope` / `docket-agent.scope`
   (`systemd-run --user --scope --unit=...`) and inferd's and memoryd's tables need rows for them; the MCP bridge an
   external agent starts inside its sandbox cannot be placed in the fake proc root.
 
@@ -3683,7 +3683,7 @@ its app's prefix; the brief said `helpers.*`).
 
 **Assumed from porter (the coordinator re-pins):** `prov::HelperId` (a serde string; only
 `docket_core::helper::ids` names its construction), `AgentRole::Helper { helper, task }`,
-`Asker`, `OpenOptions::{with_asker, with_model}`, `almanac_core::AreaTag::Helpers`. Messages to
+`Asker`, `OpenOptions::{with_asker, with_model}`, `memory_core::AreaTag::Helpers`. Messages to
 and from a job rely on `AgentRef::of(&Actor::Companion { role: Helper { task, .. }, .. })`
 being `Some(AgentRef::Worker { task })` and on `sender_matches` agreeing.
 
@@ -3784,7 +3784,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 
 - `MemoryLink`, `LinkFault`, `SpaceMemories` and `EventSink` are in `docket-core` (`memory_link.rs`); `docket-router` no longer defines or re-exports them. `LinkFault` came along because `MemoryLink::ask` returns it (`AppLink` in the router uses it too). `EventSink` came along because `QueuedSink` implements it: with it in the router, `docket-memory` would still depend on the whole router. Every importer in this repo now names `docket_core::...`.
 - `docket-memory` has no regular dependency on `docket-router` any more (it is a dev-dependency, for the session-log test that runs a real router). Its `RULES` row drops the Cedar exception.
-- `docket-memory-core` (pure) holds `record_of`, `kind_tag_of`, `space_named_by` and `QueuedSink` / `QUEUE_LIMIT`, with the record-mapping test. `docket-memory` keeps `AlmanacMemory`, `AlmanacSessionLog` and `AuditState`. The re-exports of these names in `intentd` and `docket-inapp` are gone: import them from `docket_memory_core`.
+- `docket-memory-core` (pure) holds `record_of`, `kind_tag_of`, `space_named_by` and `QueuedSink` / `QUEUE_LIMIT`, with the record-mapping test. `docket-memory` keeps `MemoryServiceLink`, `MemorySessionLog` and `AuditState`. The re-exports of these names in `intentd` and `docket-inapp` are gone: import them from `docket_memory_core`.
 - Not done: the `kind_tag_of` / `record_of` `expect`s on fixed literals (H19), and `docket-memory`'s `Link` enum keeps its name. Not verified by a build in the lane that made the change.
 
 ## Layering lane D0.5 (2026-10-28)
@@ -3959,7 +3959,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - Hex: the hand `format!("{b:02x}")` loops in `agents-core` (`Sha256Hex::of`), `docket-checkpoint` (plan digest) and `docket-acp-host` (token) are `const_hex::encode` (lower case, same strings). `agents-core` already had the golden for `abc`.
 - FNV: `docket-launch` `names.rs` `digest` and `docket-accept` `runlink.rs` `short_run` use `fnv::FnvHasher`; the old values are pinned in tests (`acp-db007849f35ebbe5` for 64 `a`, `/tmp/dl-c037e38128f29d69` for `/tmp/scratch-root`), computed from the old fold before the swap.
 - Percent-encoding: `docket-checkpoint-git` `segment` uses `utf8_percent_encode` with an `AsciiSet` of everything but letters, digits, `_` and `-`. The crate writes upper-case `%2F`; we kept today's lower-case `%2f` with a one-line map over the chunks, so refs of sessions already stored do not move.
-- Random bytes: `docket-acp-host` `token.rs` uses `getrandom::fill` (0.3, as almanac) instead of reading `/dev/urandom`; a test checks the token and nonce shape.
+- Random bytes: `docket-acp-host` `token.rs` uses `getrandom::fill` (0.3, as the memory service) instead of reading `/dev/urandom`; a test checks the token and nonce shape.
 - Not verified by a build in the lane that made the change; `cargo metadata --offline` resolved all four crates from the local registry.
 
 ## Layering lane D0.22: docket-accept through harness seams only; docket-live (2026-10-28)
@@ -3985,7 +3985,7 @@ Two commits: the harness seams first, then the split.
 - The `ProcRoot` type itself was already one type, porter's `porter_daemon::ProcRoot`; docket had a second spelling of it in companiond (`HarnessSeams::proc_root: PathBuf`, compared with `/proc` to find the fixture; `serve_on_rooted` and `serve_with_routines` took a `PathBuf`). companiond now takes `ProcRoot` from `main` through `HarnessSeams`, as intentd does; `serve_on_rooted`, `serve_with_routines` and `Speakers::new` take a `ProcRoot`; `serve_on` passes `ProcRoot::System`. `accept-companiond` builds `ProcRoot::Fake` (docket-accept gains a `porter-daemon` dependency; companiond does not re-export it).
 - One behaviour note: intentd's cli-role test is now `TerminalScope::from_cgroup(..).is_ok()` (the same scope rule as companiond's, and the leaf must be graphic ASCII, at most 255 bytes) where it was `is_terminal_scope` on the whole path; every scope the table of the old test names gives the same answer.
 - readerd's and docket-acp-bin's `HarnessSeams` (and its crate-private `Callers`) take `ProcRoot` too, with hand-written `Default` (`ProcRoot::System`; `ProcRoot` has no `Default`). `docket-accept`'s `seams::proc_root` returns a `ProcRoot` for every daemon, so no `Option<PathBuf>` is left on the proc-root path. `Identity::on` (docket-dbus) still takes `Option<&Path>`; the daemons convert at the call with `ProcRoot::fixture()`. readerd and docket-acp-bin gain a `porter-daemon` dependency.
-- almanac (memoryd) has its own `MEMORYD_PROC_ROOT` choice and cgroup read; not touched. For a later lane: it could take `porter_daemon::ProcRoot` the same way.
+- The memory service (memoryd) has its own `MEMORYD_PROC_ROOT` choice and cgroup read; not touched. For a later lane: it could take `porter_daemon::ProcRoot` the same way.
 - `Folder` seam: not added. The only audit row (H16, `docket-checkpoint-git` `files.rs` and `git.rs`) asks for a fake of `symlink_metadata`, `remove` and `create_dir_all`, but those tests exist to meet hostile folders (symlinks, permissions) and must run on the real file system; a fake would test the fake. No other C-tier library reads a directory in a way a test wants to fake (`docket-skills-disk` already has `DiskFolder` behind a skills trait).
 - Not verified by a build in the lane that made the change; `cargo metadata --offline` resolved.
 
@@ -4029,7 +4029,7 @@ Two commits: the harness seams first, then the split.
 
 ## Layering lane D4.13d: companion-model (2026-10-28)
 
-- New P crate `companion-model`: `helper` (with `agent`, `apps`, `apps_wire`, `board`, `card`, `hand`, `ids`, `job`, `notice`, `post`, `reach`, `records`, `rules`, `seat`), `routine` (with `book`, `kept`, `schedule`, `trigger`) and `hand` left `docket-core` with their tests. It depends on `docket-vocab`, `docket-manifest`, `docket-permissions-core`, `porter-core`, `porter-infer` (moved with `helper/card.rs`), `prov`, `almanac-core`, `serde`, `serde_json` and `thiserror`, and on no `docket-core` item; `check-core-layers.sh` found 0 upward edges. `docket-core` depends on it and no longer on `porter-infer`.
+- New P crate `companion-model`: `helper` (with `agent`, `apps`, `apps_wire`, `board`, `card`, `hand`, `ids`, `job`, `notice`, `post`, `reach`, `records`, `rules`, `seat`), `routine` (with `book`, `kept`, `schedule`, `trigger`) and `hand` left `docket-core` with their tests. It depends on `docket-vocab`, `docket-manifest`, `docket-permissions-core`, `porter-core`, `porter-infer` (moved with `helper/card.rs`), `prov`, `memory-core`, `serde`, `serde_json` and `thiserror`, and on no `docket-core` item; `check-core-layers.sh` found 0 upward edges. `docket-core` depends on it and no longer on `porter-infer`.
 - Paths: `helper` and `routine` stay public modules, so `docket_core::helper::X` is `companion_model::helper::X` and `docket_core::routine::X` is `companion_model::routine::X`. The `hand` items were re-exported at the `docket-core` root and are now at the `companion-model` root (`companion_model::WatchedAgent`, `HandTo`, `HandNote`, `Watching`, `WatchOwner`, `WatchedLine`, `AppSessionId`, `AppSessionIdError`, `SeenCommand`, `SeenCommandFault`).
 - Re-exports gone: `docket-core`'s root `pub use hand::{...}` and its `pub mod helper` / `pub mod routine`. Importers in this repo (`companion-core`, `companion-wire`, `companion-client`, `companiond`, `docket-acp`, `docket-acp-bin`, `docket-acp-host`, `docket-client`, `docket-helpers`, `docket-launch`, `docket-memory-core`, `docket-native`, `docket-planner`, `docket-router`, `docket-session`, `docket-tasks`, `intentd`, `acp-core`, and `docket-core`'s own `audit`, `confirm`, `roster`, `task` and `wire`) say `companion_model::`.
 - Files split to stay under 500 lines: `helper/board.rs` (794) into `board.rs` (types, queries, `step`) and `board/moves.rs` (one method per event); `routine/book.rs` (543) into `book.rs` and `shapes.rs` (`NewRoutine`, `RunRequest`, `JobEnd`, `RoutineRecord`, `RoutineNotice`); the board test file into `board.rs` and `board_records.rs`.
@@ -4040,7 +4040,7 @@ Two commits: the harness seams first, then the split.
 ## Layering lane D4.13e (with D4.2): docket-gate-wire and docket-wire (2026-10-28)
 
 - New P crate `docket-gate-wire` (`gate`, 69 lines): `CuaAsk`, `NodeFacts`, `EffectBasis`, `GateAnswer`. It sits above `docket-core` because `GateAnswer` holds `CallRefusal`. It depends on `docket-core`, `cua-action`, `porter-core`, `prov` and `serde`; `docket-core` no longer depends on `cua-action`.
-- New P crate `docket-wire`: `wire` (split into `bodies`, `request`, `reply`; the `IntentsRequest::member` impl was already its own file and is `member`), `caller`, `started`, `task` and `summon`. It depends on `docket-core`, `docket-gate-wire`, `docket-vocab`, `docket-manifest`, `docket-permissions-core`, `companion-model`, `porter-core`, `prov`, `almanac-core`, `serde` and `thiserror`. Nothing left in `docket-core` reads any of them (`check-core-layers.sh`: 0 upward edges).
+- New P crate `docket-wire`: `wire` (split into `bodies`, `request`, `reply`; the `IntentsRequest::member` impl was already its own file and is `member`), `caller`, `started`, `task` and `summon`. It depends on `docket-core`, `docket-gate-wire`, `docket-vocab`, `docket-manifest`, `docket-permissions-core`, `companion-model`, `porter-core`, `prov`, `memory-core`, `serde` and `thiserror`. Nothing left in `docket-core` reads any of them (`check-core-layers.sh`: 0 upward edges).
 - Moved public items, each under the same name: gate-wire `CuaAsk`, `EffectBasis`, `GateAnswer`, `NodeFacts`; wire `Displayed`, `Envelope`, `GrantAnswer`, `GrantAsk`, `HelperNote`, `IntentsReply`, `IntentsRequest`, `JournalFilter`, `NoteAsk`, `ReadAsk`, `RecallAsk`, `RecallView`, `RecentLine`, `Resolved`, `SessionModeAsk`, `SessionNote`, `StoredAsk`, `StoredRow`, `StoredView`, `UndoReport`, `WidenAnswer`, `WidenAsk`, `WireRefusal`, `CallerId`, `CallerRole`, `Member`, `is_terminal_scope`, `NotATerminalScope`, `StartedFrom`, `TerminalScope`, `LedgerStep`, `SessionOpen`, `SessionOpened`, `TaskKind`, `TaskLedger`, `TaskStart`, `close`, `skeleton_of`, `step_outcome`, `SummonAnswer`, `SummonOrigin`, `SummonSerial`, `VoiceIntent`.
 - Re-exports gone: `docket-core`'s root `pub use` of all of the above, including `gate`'s `pub use cua_action::{RunMode, WindowClass, WindowTrust}` (say `cua_action::` now), and the test-support `pub use docket_core::VoiceIntent` in `voiced`.
 - Files split to stay under 500 lines: `wire.rs` (675) into `bodies.rs` (319), `request.rs` (272), `reply.rs` (95) and `member.rs` (60).
@@ -4099,7 +4099,7 @@ Two commits: the harness seams first, then the split.
 - `opening` stays in the router: it is almost all `impl Router`. Its only free function, `end_task`, moved to `docket-context::tasks`.
 - No re-exports: the router's `lib.rs` no longer exports the moved names. Importers in `docket-eval`, `docket-fake`, `docket-inapp`, `docket-memory` (test), `intentd`, `readerd` (test) and the router's tests use `docket_context::<module>::`. The `pub(crate)` items the router uses are `pub` with docs.
 - Tests: `machines.rs`, `tasks.rs` and the registry and handle half of `behaviour.rs` moved to `docket-context/tests/it`; the message half of `behaviour.rs` stays.
-- `docket-context` also depends on `action-review`, `docket-skills`, `policy-point` and `almanac-core` (all P tier): `RouterState` holds a `Breaker` and the skill list, `spacing` names `SpaceRelation`, `rebuild` names `EpisodeId`.
+- `docket-context` also depends on `action-review`, `docket-skills`, `policy-point` and `memory-core` (all P tier): `RouterState` holds a `Breaker` and the skill list, `spacing` names `SpaceRelation`, `rebuild` names `EpisodeId`.
 - `docket-router` no longer depends on `futures-channel`. Rows added in `scripts/check-boundary.sh` (layers and rules) and `scripts/check-portable.sh`.
 - Not verified by a build; rustfmt ran on the touched files. `Cargo.lock` was edited by hand for the new crate and its edges.
 

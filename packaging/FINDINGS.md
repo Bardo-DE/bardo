@@ -85,7 +85,7 @@ polkit does; confirm on a machine.
 
 ## desk-callers (2026-10-16)
 
-The top-level `install.sh` now installs almanac (the memory daemon, `/etc/bardo/memory-callers.toml`) and
+The top-level `install.sh` now installs the memory service (the memory daemon, `/etc/bardo/memory-callers.toml`) and
 docket (its four daemons, `bardo-do`, and the `/etc/bardo/*-callers.toml` tables), between porter and detent.
 Both are in `ORDER`, the `--only` help, the README list and `gate/installer-check.sh` (stubs, plan order, the
 staged arguments, and the not-staged case).
@@ -103,8 +103,8 @@ What I found and decided:
 - `release/build.sh` is not changed: it builds by name from a fixed list and neither is in it. Adding them
   needs the installers to stage `/etc/bardo` inside the prefix (a `--sysconfdir`, or put_system-style output for
   `memory-callers.toml` and the docket tables), because build.sh refuses files outside `/opt/bardo/current` and
-  `release.py` allows system files only in listed folders. Ask almanac and docket for `--sysconfdir`, then add
-  `build_almanac` and `build_docket` (build locked, `--no-build --bin-dir`). The manifest already lists both
+  `release.py` allows system files only in listed folders. Ask the memory service and docket for `--sysconfdir`, then add
+  `build_memory` and `build_docket` (build locked, `--no-build --bin-dir`). The manifest already lists both
   with gate rows; revs untouched.
 - `install/uninstall.sh` is the session's alone; no top-level uninstall lists components.
 
@@ -125,23 +125,23 @@ What I found and decided:
 - `pack.sh` needed no change: it lists whatever is staged. `release/selftest.sh` (the "release (pack, verify, hostile
   releases)" check) now also stages a font and a modules-load file and asserts the font link and the system entry.
 
-## Release bundle: almanac and docket (lane desk-callers, 2026-10-16)
+## Release bundle: the memory service and docket (lane desk-callers, 2026-10-16)
 
-- `release/build.sh` builds almanac (`memoryd`) and docket (its four daemons, `bardo-do`, `docket-acp`; not the
+- `release/build.sh` builds the memory service (`memoryd`) and docket (its four daemons, `bardo-do`, `docket-acp`; not the
   voice daemon) after porter, locked, then runs their installers with `--bin-dir`, `--prefix /opt/bardo/current`,
   `--destdir <stage>` and `--sysconfdir /opt/bardo/current/system/etc`. The caller tables land as system files in
-  `/etc/bardo`, docket's default settings in `/etc/xdg/bardo`. These steps need almanac >= 6aade09 and docket >=
+  `/etc/bardo`, docket's default settings in `/etc/xdg/bardo`. These steps need the memory service >= 6aade09 and docket >=
   e44112c (the `--sysconfdir` commits); the manifest revs are unchanged and the next bump brings them, so a release
   built before that fails in these two steps.
 - Decision (owner, 2026-10-16): `/etc/xdg/bardo`, the XDG system-wide config folder, is an allowed system folder
   (the updater aa427f2, `ALLOWED_SYSTEM_DIRS`), and the updater leaves alone a file a person edited there. `release.py` and
   `release/README.md` carry the same list; `manifest.toml` moves only the updater's rev to aa427f2. The selftest accepts
   a file in `/etc/xdg/bardo` and refuses one at `/etc/xdg/other.toml` (now 25 hostile releases).
-- `install/cargo.sh` gives almanac the `net.git-fetch-with-cli` setting its own installer passes (docket's does not).
+- `install/cargo.sh` gives the memory service the `net.git-fetch-with-cli` setting its own installer passes (docket's does not).
 - Not exported: `bardo-do` and `docket-acp` stay under `/opt/bardo/current/bin` (no `/usr/local/bin` link in
   `exports.toml` yet), and the shell completions and interface XML ship in the bundle without links.
-- The release workflow has a new job `agents` (almanac and docket together; both need perl and make, which
-  `release/deps.sh` already installs). Not run here; it fails until the manifest carries almanac >= 6aade09 and
+- The release workflow has a new job `agents` (the memory service and docket together; both need perl and make, which
+  `release/deps.sh` already installs). Not run here; it fails until the manifest carries the memory service >= 6aade09 and
   docket >= e44112c.
 
 ## desk-pprefix (2026-10-16)
@@ -165,8 +165,8 @@ tables at `$sysconfdir/porter`):
 - The model catalog was installed by nothing on this repo's master, so inferd had no model catalogue on a fresh install.
   `install.sh` now has a `models` step right after porter (`scripts/install.sh --prefix P --sysconfdir S [--destdir D]`,
   The model layer 3ae1211; it builds nothing and writes only `<prefix>/share/models/catalog`). Outside a `--destdir` it is left to
-  the person like almanac (its installer escalates itself). `release/build.sh` has `build_models` (`--no-build`, staged
-  under `share/models`, an auto-exported folder in `release.py`) and the CI `agents` job builds `almanac,docket,models`.
+  the person like the memory service (its installer escalates itself). `release/build.sh` has `build_models` (`--no-build`, staged
+  under `share/models`, an auto-exported folder in `release.py`) and the CI `agents` job builds `memory,docket,models`.
   Not run: the CI job and `build_models` (no build here; the model layer installer's dry run lists the catalog files).
 - A prefix other than `/usr` and `/usr/local` is on no search path the session has. The plan now prints (never writes)
   an `environment.d` line `XDG_DATA_DIRS=<prefix>/share:/usr/local/share:/usr/share` for the D-Bus service files and the
@@ -189,7 +189,7 @@ tables at `$sysconfdir/porter`):
   D-Bus activation files and the interface XML under `<prefix>/share/dbus-1`, the Settings schema under
   `<prefix>/share/bardo/settings`, and `/etc/bardo/cuad-callers.toml`. Read in full: nothing else is written, and
   `CONF_DIR` (`/etc/xdg/bardo`) is computed but never used.
-- No `--sysconfdir` is passed, as for almanac and docket: cuad reads `/etc/bardo/cuad-callers.toml` and the person's file
+- No `--sysconfdir` is passed, as for the memory service and docket: cuad reads `/etc/bardo/cuad-callers.toml` and the person's file
   only (`crates/cuad/src/callers.rs`), so a table placed elsewhere would be ignored. Outside a `--destdir` the step is left
   to the person, as themselves (the installer refuses root and escalates per step). `gate/installer-check.sh` checks the
   stub, the order, the arguments, the no-`--sysconfdir` rule and the left-to-you case.
@@ -202,7 +202,7 @@ tables at `$sysconfdir/porter`):
   /opt/bardo/current`, `--destdir <stage>`, `--sysconfdir /opt/bardo/current/system/etc`). Everything it stages is in an
   exported folder (`libexec/bardo` and `share/dbus-1/interfaces` stay in the bundle without links, as docket's do) or is
   the one system file `system/etc/bardo/cuad-callers.toml`, in `/etc/bardo`, an allowed system folder; no new folder is
-  needed. The CI `agents` job builds `almanac,docket,models,cua`. cua's own build config needs no
+  needed. The CI `agents` job builds `memory,docket,models,cua`. cua's own build config needs no
   `net.git-fetch-with-cli` entry in `install/cargo.sh` (its config file has none, like docket's).
 - Not run: the CI job and `build_cua` (no build here). `gate/installer-check.sh` and a dry run passed.
 
@@ -298,7 +298,7 @@ check first is listed under "Not verified" at the end of this section.
 - `manifest.toml` moves the updater from aa427f2 to 769704c, the tip with the exact list, the three helpers and the session
   calls. The release cannot be installed by the older helper once it carries a path the older list does not name; the
   hand-installed helper must be replaced on each computer (the updater's `scripts/install.sh`).
-- Every file `build.sh` stages is on the list. porter, almanac, docket and cua stage their caller tables through their own
+- Every file `build.sh` stages is on the list. porter, the memory service, docket and cua stage their caller tables through their own
   installers, so a name they write that the list does not cover is only found when `pack` runs in CI.
 - Superseded wording above: "allowed system folders" (this file and the README) now means the list; the stale line in
   "Whether the release should write `/etc/pam.d` at all" is answered: one file, `/etc/pam.d/sill`, named.
