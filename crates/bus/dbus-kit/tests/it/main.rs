@@ -96,7 +96,7 @@ async fn a_name_claimed_after_serving_answers_its_first_call() {
             .at("/org/example/Echo", Echo)
             .await
             .expect("registered");
-        zbus_ready::serving(&server)
+        dbus_kit::ready::serving(&server)
             .await
             .expect("the server answers");
         server
@@ -126,7 +126,7 @@ async fn a_name_claimed_after_serving_answers_its_first_call() {
 async fn a_connection_with_no_objects_still_comes_ready() {
     let bus = PrivateBus::start().await;
     let connection = bus.connect().await;
-    zbus_ready::serving(&connection)
+    dbus_kit::ready::serving(&connection)
         .await
         .expect("the root node answers Peer");
 }

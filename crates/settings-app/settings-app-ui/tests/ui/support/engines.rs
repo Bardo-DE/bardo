@@ -119,7 +119,7 @@ pub async fn serve(bus: &PrivateBus, found: bool) -> Fake {
         .at(INFERENCE_PATH, Inference(Arc::clone(&state)))
         .await
         .expect("inferd served");
-    zbus_ready::serving(&inferd)
+    dbus_kit::ready::serving(&inferd)
         .await
         .expect("the object server answers");
     inferd
@@ -132,7 +132,7 @@ pub async fn serve(bus: &PrivateBus, found: bool) -> Fake {
         .at(SYSTEMD_PATH, Manager(Arc::clone(&state)))
         .await
         .expect("the manager served");
-    zbus_ready::serving(&systemd)
+    dbus_kit::ready::serving(&systemd)
         .await
         .expect("the object server answers");
     systemd

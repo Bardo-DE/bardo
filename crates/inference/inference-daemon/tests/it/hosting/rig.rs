@@ -625,7 +625,7 @@ impl World {
                     .at(account_wire::names::TAILNET_PATH, tailscale.object())
                     .await
                     .expect("serve the fake Tailnet1");
-                zbus_ready::serving(&held)
+                dbus_kit::ready::serving(&held)
                     .await
                     .expect("the object server answers");
                 held.request_name("org.bardo.Accounts1")

@@ -28,7 +28,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 # handler). Named here so `cargo test -p ui-helpers` alone builds it so, not only when another
 # workspace member happens to turn the feature on.
 zbus = {workspace = true, features = ["default", "tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [features]
 default = ["quire-desktop"]

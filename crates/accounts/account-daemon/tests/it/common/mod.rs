@@ -135,7 +135,7 @@ impl Rig {
             .expect("host object");
         // As the real host must: the name only once the connection answers calls (accountd's
         // `Open` to a host still starting was dropped without an answer).
-        zbus_ready::serving(&host_connection)
+        dbus_kit::ready::serving(&host_connection)
             .await
             .expect("the host takes calls");
         host_connection

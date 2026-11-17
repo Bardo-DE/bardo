@@ -8,7 +8,7 @@
 //! is `AccessDenied`, as is a sender accountd does not know.
 
 use crate::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 
 /// The interface, written once. `#[bus_interface]` makes [`SpacesProxy`] for its callers from this
 /// trait, [`SpacesServer`] for the daemon to implement and [`SpacesServed`] to register.

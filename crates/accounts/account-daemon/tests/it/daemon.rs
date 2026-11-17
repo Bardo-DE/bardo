@@ -7,7 +7,7 @@ use crate::common::bus::PrivateBus;
 
 use account_daemon::paths::Paths;
 use account_daemon::{Config, Daemon};
-use account_dbus::BusTarget;
+use dbus_kit::connect::BusTarget;
 use account_wire::names::ACCOUNTS_BUS;
 use base_testkit::{Deadline, GENEROUS};
 use std::path::Path;

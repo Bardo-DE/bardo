@@ -229,7 +229,7 @@ async fn desk_on(
         .at("/org/bardo/Intents1", StandInControl(Arc::clone(&held)))
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(&intentd)
+    dbus_kit::ready::serving(&intentd)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     intentd

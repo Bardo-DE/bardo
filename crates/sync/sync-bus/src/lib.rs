@@ -10,7 +10,7 @@ mod names;
 mod photos_picker;
 mod storage;
 
-use account_dbus::{Document, Unserved};
+use dbus_kit::{Document, Unserved};
 
 pub use interface::{SyncProxy, SyncServed, SyncServer};
 pub use names::*;

@@ -64,7 +64,7 @@ pub use message::{MessageProxy, MessageSkeleton};
 pub use names::{
     AGENT_HOST_BUS, AGENT_HOST_PATH, COMPANION_BUS, COMPANION_PATH, CONFIRM_BUS, CONFIRM_PATH,
     INTENTS_BUS, INTENTS_PATH, OPTION_ACTIVATION, OPTION_WATCH, PROVIDER_PATH, READER_BUS,
-    READER_PATH, answer_path, request_path, session_connection,
+    READER_PATH, answer_path, request_path,
 };
 pub use provider::{IntentProviderProxy, IntentProviderSkeleton};
 pub use reach::{IntentReachProxy, ReachNow, ReachServer};

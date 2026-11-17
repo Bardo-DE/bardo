@@ -209,8 +209,8 @@ pub(crate) async fn rig_as(bus: &PrivateBus, scratch: &TempDir, who: Who) -> Rig
     callers.make(&transom, who);
     let shell = connect(bus, Some("org.bardo.Shell")).await;
     // The shell's connection already serves objects when the picker exports its own; without
-    // this, a look sent before zbus's object server runs is dropped unanswered (see zbus-ready).
-    zbus_ready::serving(&shell)
+    // this, a look sent before zbus's object server runs is dropped unanswered (see dbus-kit's ready).
+    dbus_kit::ready::serving(&shell)
         .await
         .unwrap_or_else(|e| panic!("the shell's connection takes calls: {e}"));
     let (publisher, view) = seat();

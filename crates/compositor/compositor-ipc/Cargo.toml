@@ -34,7 +34,7 @@ desktop-protocols = {path = "../../wayland/desktop-protocols"}
 tracing = { workspace = true }
 # Keysym names in the inject grammar (`key Return down`).
 xkbcommon = {workspace = true, features = ["wayland"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}

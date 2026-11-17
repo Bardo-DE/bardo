@@ -28,7 +28,7 @@ caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "fs", "signal"]}
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }

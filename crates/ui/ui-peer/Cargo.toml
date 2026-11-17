@@ -10,9 +10,9 @@ publish.workspace = true
 
 [dependencies]
 thiserror = { workspace = true }
-# A wall-clock delay on its own timer thread, so the deadline works under any executor (zbus's
-# own, tokio, a test's block_on).
-futures-timer = { workspace = true }
+# The bound itself: a wall-clock delay on its own timer thread, so the deadline works under any
+# executor (zbus's own, tokio, a test's block_on).
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 # The tests' runtime; the crate itself names none.

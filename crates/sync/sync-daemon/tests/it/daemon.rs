@@ -5,7 +5,7 @@
 
 use crate::common::bus::PrivateBus;
 
-use account_dbus::BusTarget;
+use dbus_kit::connect::BusTarget;
 use base_testkit::{Deadline, GENEROUS};
 use std::path::Path;
 use std::time::Duration;

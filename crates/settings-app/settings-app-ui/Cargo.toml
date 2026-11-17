@@ -56,7 +56,7 @@ action-settings = {path = "../../actions/action-settings"}
 inference-client = {path = "../../inference/inference-client", features = ["lending"]}
 # The Keyboard test names chords.
 keymap = {path = "../../keymap/keymap"}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 # The settle waits on real threads with the one deadline.
 base-testkit = {path = "../../base/base-testkit"}
 

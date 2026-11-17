@@ -41,7 +41,7 @@ async fn changed_reaches_the_peers_that_may_read_and_not_one_that_was_refused() 
     )
     .await
     .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -120,7 +120,7 @@ async fn a_module_that_does_not_answer_ends_every_call_as_a_timeout() {
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     serve(&daemon, PATH, Hanging).await.expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");

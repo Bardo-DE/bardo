@@ -243,7 +243,7 @@ pub async fn serve_on(
     link.identify_with(peers::peers_on(connection.clone(), callers));
     settings::spawn_watch(connection.clone());
     peers::spawn_watch(&connection).await?;
-    connection.request_name(BUS_NAME).await?;
+    dbus_kit::name::claim(&connection, BUS_NAME).await?;
     if let Ok(remote) = connection
         .object_server()
         .interface::<_, remote_desktop::RemoteDesktopService>(PORTAL_PATH)

@@ -14,7 +14,7 @@ memory-dbus = {path = "../memory-dbus"}
 zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [lints]
 workspace = true

@@ -16,7 +16,7 @@ use account_capability::Claim;
 use account_core::consent::Usage;
 use account_core::{AccountId, AccountState, AppId, AppName, DataClass, GrantId, Isolation};
 use account_core::{AiAccountRow, AuthKind, ProviderId};
-use account_dbus::Call;
+use dbus_kit::Call;
 use account_dbus::accounts::{BrokerServed, BrokerServer, RowArg};
 use account_dbus::accounts::{ai_account_to_dbus, own_server_to_dbus, verdict_to_dbus};
 use account_service_accounts::LocalFault;

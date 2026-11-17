@@ -198,7 +198,6 @@ members = [
     "crates/accounts/account-core",
     "crates/accounts/account-daemon-support",
     "crates/accounts/account-dbus",
-    "crates/accounts/account-dbus-macros",
     "crates/accounts/account-discover",
     "crates/accounts/account-fake",
     "crates/accounts/account-fake-servers",
@@ -314,7 +313,8 @@ members = [
     "crates/input/input-broker-daemon",
     "crates/input/input-broker-client",
     "crates/input/input-broker-wire",
-    "crates/zbus-ready",
+    "crates/bus/dbus-kit",
+    "crates/bus/dbus-kit-macros",
     "xtask",
 ]
 exclude = [

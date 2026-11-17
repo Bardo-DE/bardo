@@ -1,9 +1,7 @@
 //! Running a call to a peer under a [`Deadline`].
 
 use crate::Deadline;
-use std::future::poll_fn;
-use std::pin::{Pin, pin};
-use std::task::Poll;
+use dbus_kit::timeout::{TimedOut, within as bounded};
 use std::time::Duration;
 
 /// A peer that did not answer inside its deadline. The words are for a person: "The package
@@ -43,21 +41,9 @@ pub async fn within<T>(
     peer: &'static str,
     work: impl Future<Output = T>,
 ) -> Result<T, NotAnswering> {
-    let mut work = pin!(work);
-    let mut timer = futures_timer::Delay::new(deadline.duration());
-    poll_fn(move |cx| {
-        if let Poll::Ready(done) = work.as_mut().poll(cx) {
-            return Poll::Ready(Ok(done));
-        }
-        match Pin::new(&mut timer).poll(cx) {
-            Poll::Ready(()) => Poll::Ready(Err(NotAnswering {
-                peer,
-                after: deadline.duration(),
-            })),
-            Poll::Pending => Poll::Pending,
-        }
-    })
-    .await
+    bounded(deadline.duration(), work)
+        .await
+        .map_err(|TimedOut { after }| NotAnswering { peer, after })
 }
 
 #[cfg(test)]
@@ -87,7 +73,7 @@ mod tests {
     #[tokio::test]
     async fn a_late_answer_is_not_waited_for() {
         let slow = async {
-            futures_timer::Delay::new(Duration::from_secs(30)).await;
+            tokio::time::sleep(Duration::from_secs(30)).await;
         };
         let started = std::time::Instant::now();
         let got: Result<(), NotAnswering> = within(SHORT, "Accounts", slow).await;

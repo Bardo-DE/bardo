@@ -109,7 +109,7 @@ async fn a_refused_owner_is_sent_nothing_and_no_secret() {
     let settings = bus.connect().await;
     let witness = Witness::default();
     serve(&daemon, PATH, witness.clone()).await.expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -152,14 +152,14 @@ async fn a_new_owner_of_the_name_is_checked_again() {
     let settings = bus.connect().await;
     let (at_first, at_second) = (Witness::default(), Witness::default());
     serve(&first, PATH, at_first.clone()).await.expect("serves");
-    zbus_ready::serving(&first)
+    dbus_kit::ready::serving(&first)
         .await
         .expect("the object server answers");
     first.request_name(NAME).await.expect("name");
     serve(&second, PATH, at_second.clone())
         .await
         .expect("serves");
-    zbus_ready::serving(&second)
+    dbus_kit::ready::serving(&second)
         .await
         .expect("the object server answers");
 
@@ -255,7 +255,7 @@ async fn a_schema_over_a_cap_is_refused_and_one_at_the_cap_is_read() {
         let name = format!("org.bardo.Caps{n}");
         let module = Accounts::with_schema(None, LiveSchema { version: 1, key });
         serve(&daemon, PATH, module).await.expect("serves");
-        zbus_ready::serving(&daemon)
+        dbus_kit::ready::serving(&daemon)
             .await
             .expect("the object server answers");
         daemon.request_name(name.as_str()).await.expect("name");
@@ -319,7 +319,7 @@ async fn a_value_over_the_cap_is_refused() {
     let daemon = bus.connect().await;
     let settings = bus.connect().await;
     serve(&daemon, PATH, Bulky).await.expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");

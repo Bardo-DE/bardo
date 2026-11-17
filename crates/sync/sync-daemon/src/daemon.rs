@@ -27,7 +27,7 @@ use account_callers::choose_proc_root;
 use account_callers::{CallerFileError, ProcCallers};
 use account_client::{AccountsLink, GrantsLink, Porter};
 use account_client_dbus::Bus;
-use account_dbus::BusTarget;
+use dbus_kit::connect::BusTarget;
 use base_time::SystemClock;
 use base_xdg::PathError;
 use drive_fuse::Mounter;

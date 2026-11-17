@@ -4,7 +4,7 @@
 //! asks `Identities1.Offer`, and one that wants an AI key asks inferd's `Keys`.
 
 use crate::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
 
 /// The interface, written once. `#[bus_interface]` makes [`ManagerProxy`] for its callers from this

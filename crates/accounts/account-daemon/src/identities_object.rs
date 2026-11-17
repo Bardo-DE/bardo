@@ -34,7 +34,8 @@ use account_core::consent::{AccountChoice, AskPurpose, ConsentAnswer, ConsentAsk
 use account_core::{AccountLabel, DataClass, Identity, IdentityId, IdentityKind};
 use account_dbus::accounts::sheet::SheetKind;
 use account_dbus::accounts::{IdentitiesServed, IdentitiesServer, identity_to_dbus};
-use account_dbus::{Call, Details};
+use account_dbus::Details;
+use dbus_kit::Call;
 use account_identities::Unsaved;
 use account_secrets::sealed_key;
 use account_service_core::registry::Registry;

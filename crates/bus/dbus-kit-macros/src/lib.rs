@@ -32,8 +32,8 @@
 //! introspection (a member without it has none there), and `#[bus(out_args("a", "b"))]` names
 //! the parts of a tuple answer.
 //!
-//! The expansion names `::account_dbus::Call` and `::account_dbus::Unserved`, so a crate that uses it
-//! depends on account-dbus, which declares its own interfaces under `extern crate self as account_dbus`.
+//! The expansion names `::dbus_kit::Call` and `::dbus_kit::Unserved`, so a crate that uses it
+//! depends on dbus-kit, which holds both.
 
 use proc_macro::TokenStream;
 use proc_macro2::TokenStream as TokenStream2;
@@ -103,7 +103,7 @@ fn expand(args: &TokenStream2, mut item: ItemTrait) -> syn::Result<TokenStream2>
     let unserved_methods = members.iter().filter_map(Member::unserved_method);
     let trait_doc = format!(
         "The daemon's side of `{interface}`: what the object that answers implements, and \
-         registers as [`{served_struct}`]. Each method is given the [`Call`](::account_dbus::Call) of the message \
+         registers as [`{served_struct}`]. Each method is given the [`Call`](::dbus_kit::Call) of the message \
          first."
     );
     let struct_doc = format!(
@@ -131,19 +131,19 @@ fn expand(args: &TokenStream2, mut item: ItemTrait) -> syn::Result<TokenStream2>
             #(#served_members)*
         }
 
-        impl #served_struct<::account_dbus::Unserved> {
+        impl #served_struct<::dbus_kit::Unserved> {
             /// Writes this interface's introspection into `xml`, as an `<interface>` element one
             /// level in: a document collects its interfaces' own.
             #vis fn introspect(xml: &mut ::std::string::String) {
                 ::zbus::object_server::Interface::introspect_to_writer(
-                    &Self(::account_dbus::Unserved),
+                    &Self(::dbus_kit::Unserved),
                     xml,
                     1,
                 );
             }
         }
 
-        impl #server_trait for ::account_dbus::Unserved {
+        impl #server_trait for ::dbus_kit::Unserved {
             type Error = ::zbus::fdo::Error;
             #(#unserved_methods)*
         }
@@ -269,7 +269,7 @@ impl Member {
         Some(match self.kind {
             Kind::Method => quote! {
                 #(#docs)*
-                fn #name(&self, call: ::account_dbus::Call<'_> #(, #names: #types)*)
+                fn #name(&self, call: ::dbus_kit::Call<'_> #(, #names: #types)*)
                     -> impl ::core::future::Future<
                         Output = ::core::result::Result<#ok, Self::Error>
                     > + ::core::marker::Send;
@@ -316,7 +316,7 @@ impl Member {
                         #(#names: #types,)*
                     ) -> ::core::result::Result<#ok, <S as #server>::Error> {
                         self.0
-                            .#name(::account_dbus::Call { header, emitter, connection } #(, #names)*)
+                            .#name(::dbus_kit::Call { header, emitter, connection } #(, #names)*)
                             .await
                     }
                 }
@@ -352,7 +352,7 @@ impl Member {
         let (_, types) = self.owned_args();
         Some(match self.kind {
             Kind::Method => quote! {
-                fn #name(&self, _: ::account_dbus::Call<'_> #(, _: #types)*)
+                fn #name(&self, _: ::dbus_kit::Call<'_> #(, _: #types)*)
                     -> impl ::core::future::Future<
                         Output = ::core::result::Result<#ok, Self::Error>
                     > + ::core::marker::Send

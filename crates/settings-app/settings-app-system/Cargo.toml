@@ -50,7 +50,7 @@ thiserror = { workspace = true }
 tokio = {workspace = true, features = ["macros", "net", "rt-multi-thread", "sync", "time"]}
 toml = { workspace = true }
 zbus = {workspace = true, features = ["default", "tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 # The integration tests use the fakes, which the library has behind `testing`.

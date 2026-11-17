@@ -45,7 +45,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 toml = { workspace = true }
 tracing = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [features]
 # Span export over OTLP (action-log's `otlp`), switched on at run time by `OTEL_EXPORTER_OTLP_ENDPOINT`.

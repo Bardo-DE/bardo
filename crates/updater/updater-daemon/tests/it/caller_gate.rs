@@ -232,7 +232,7 @@ fn a_refused_caller_is_told_access_is_denied_in_plain_words() {
                 .at(PATH, updates)
                 .await
                 .expect("serve");
-            zbus_ready::serving(&server)
+            dbus_kit::ready::serving(&server)
                 .await
                 .expect("the object server answers");
             server.request_name(BUS_NAME).await.expect("the name");

@@ -87,7 +87,7 @@ async fn bench_on(session: Option<&str>, router: Router, handle: Handle) -> Opti
             .await
             .unwrap_or_else(|e| panic!("{e}")),
     };
-    zbus_ready::serving(&intentd)
+    dbus_kit::ready::serving(&intentd)
         .await
         .expect("the object server answers");
     desk.seated().await;

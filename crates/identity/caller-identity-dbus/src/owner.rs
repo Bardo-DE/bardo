@@ -1,11 +1,12 @@
 //! "The owner of this well-known name must hold this role", and a watch for the name changing hands.
 
+use crate::BUS_TIMEOUT;
 use crate::error::WhoError;
 use crate::manager::UnitSource;
-use crate::timeout::{TimedOut, bounded};
 use crate::who::BusPeers;
 use caller_identity_core::{Refused, Requirement};
 use caller_identity_linux::ProcFs;
+use dbus_kit::timeout::{TimedOut, within};
 use std::future::poll_fn;
 use std::pin::Pin;
 use zbus::export::futures_core::Stream;
@@ -64,10 +65,13 @@ impl<P: ProcFs + 'static, U: UnitSource> BusPeers<P, U> {
         let bus = DBusProxy::new(&self.connection)
             .await
             .map_err(WhoError::Bus)?;
-        let stream = bounded(bus.receive_name_owner_changed_with_args(&[(0, name)]))
-            .await
-            .map_err(|TimedOut| WhoError::Timeout)?
-            .map_err(WhoError::Bus)?;
+        let stream = within(
+            BUS_TIMEOUT,
+            bus.receive_name_owner_changed_with_args(&[(0, name)]),
+        )
+        .await
+        .map_err(|TimedOut { .. }| WhoError::Timeout)?
+        .map_err(WhoError::Bus)?;
         Ok(OwnerWatch { stream })
     }
 }

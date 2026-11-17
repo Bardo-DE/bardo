@@ -89,7 +89,7 @@ ddc = { workspace = true }
 ddc-i2c = { workspace = true, features = ["with-linux"] }
 nonstick = { workspace = true }
 percent-encoding = { workspace = true }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}

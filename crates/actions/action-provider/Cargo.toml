@@ -20,11 +20,11 @@ serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
 thiserror = { workspace = true }
 zbus = {workspace = true, features = ["tokio"], optional = true}
-zbus-ready = {path = "../../zbus-ready", optional = true}
+dbus-kit = { path = "../../bus/dbus-kit", optional = true }
 
 [features]
 # `serve` and `serve_on`: the provider on the session bus (Linux, the desktop's intentd calls it).
-dbus = ["dep:action-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus", "dep:zbus-ready"]
+dbus = ["dep:action-dbus", "dep:futures-util", "dep:serde", "dep:serde_json", "dep:zbus", "dep:dbus-kit"]
 
 [lints]
 workspace = true

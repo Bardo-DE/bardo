@@ -23,7 +23,7 @@ use super::CandidateArg;
 use crate::Details;
 use crate::json_value::bad;
 use account_core::CoreError;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 use zbus::zvariant::{OwnedFd, OwnedObjectPath};
 
 /// The JSON text of `value`: how a need, a list of grants or a list of accounts crosses.

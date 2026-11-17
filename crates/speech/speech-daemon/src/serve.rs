@@ -19,7 +19,6 @@ use speech_audio::AudioDevice;
 use speech_dbus::{VOICE_BUS, VOICE_PATH};
 use std::sync::{Arc, Mutex};
 use tokio::sync::mpsc;
-use zbus::fdo::RequestNameFlags;
 
 /// Everything outside the bus that voiced leans on, as seams: the audio device, inferd, the
 /// engine warmer, the person's consent, and who the callers are.
@@ -165,15 +164,11 @@ where
         .object_server()
         .at(VOICE_PATH, VoiceSkeleton::serving(handle))
         .await?;
-    zbus_ready::serving(&connection).await?;
-    let reply = connection
-        .request_name_with_flags(VOICE_BUS, RequestNameFlags::DoNotQueue.into())
-        .await?;
-    if !matches!(
-        reply,
-        zbus::fdo::RequestNameReply::PrimaryOwner | zbus::fdo::RequestNameReply::AlreadyOwner
-    ) {
-        return Err(zbus::Error::NameTaken);
+    dbus_kit::ready::serving(&connection).await?;
+    match dbus_kit::name::claim(&connection, VOICE_BUS).await {
+        Ok(()) => {}
+        Err(dbus_kit::name::ClaimError::Taken(_)) => return Err(zbus::Error::NameTaken),
+        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => return Err(source),
     }
     Ok(Running {
         connection,

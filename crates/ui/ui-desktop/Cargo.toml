@@ -15,7 +15,7 @@ zbus = {workspace = true, features = ["default"], optional = true}
 
 [dev-dependencies]
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [features]
 # `Desktop::probe` and `Desktop::watch` over the session bus (and the system bus for PackageKit).

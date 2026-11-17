@@ -21,7 +21,8 @@ use account_dbus::accounts::sheet::{
     OPTION_HANDLE_TOKEN, SheetKind, is_handle_token, request_path_in, response_of,
 };
 use account_dbus::accounts::{RequestServed, RequestServer, ServiceRoot};
-use account_dbus::{Call, Details};
+use account_dbus::Details;
+use dbus_kit::Call;
 use account_wire::AccountsReply;
 use account_wire::Refusal;
 use std::collections::HashSet;

@@ -1,6 +1,6 @@
 [package]
-name = "account-dbus-macros"
-description = "account-dbus's one attribute: a bus interface written once, as the client's proxy trait, becomes its proxy, the trait a daemon implements and the zbus object that serves it."
+name = "dbus-kit-macros"
+description = "The one attribute dbus-kit's users write interfaces with: a bus interface written once, as the client's proxy trait, becomes its proxy, the trait a daemon implements and the zbus object that serves it."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

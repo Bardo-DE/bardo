@@ -20,7 +20,7 @@ use account_callers::load_callers;
 use account_callers::{CallerFileError, ProcCallers};
 use account_core::ProviderId;
 use account_core::store::RegistryStore;
-use account_dbus::BusTarget;
+use dbus_kit::connect::BusTarget;
 use account_families::DynProvider;
 use account_families::set::{FamilyIo, ProviderNames, load_specs, local_runtimes, served};
 use account_identities::SheetsDesk;

@@ -328,7 +328,7 @@ pub async fn run_with(
     let bus_fault = |e: zbus::Error| AgentFault::Bus(e.to_string());
     let places = Places::read(env);
     let var = |name: &str| places.var(name);
-    let bus = action_dbus::session_connection(&var)
+    let bus = dbus_kit::connect::session_from_env(&var)
         .await
         .map_err(bus_fault)?;
     let HarnessSeams {
@@ -358,7 +358,7 @@ pub async fn run_with(
         )
         .await
         .map_err(bus_fault)?;
-    zbus_ready::serving(&bus).await.map_err(bus_fault)?;
+    dbus_kit::ready::serving(&bus).await.map_err(bus_fault)?;
     bus.request_name(AGENT_HOST_BUS).await.map_err(bus_fault)?;
     service.until_done().await;
     Box::pin(service.close()).await;

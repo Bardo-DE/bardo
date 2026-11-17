@@ -23,7 +23,7 @@ use crate::paths::AccountDir;
 use account_callers::Callers;
 use account_client::GrantsLink;
 #[cfg(feature = "photos-picker")]
-use account_dbus::Call;
+use dbus_kit::Call;
 #[cfg(feature = "photos-picker")]
 use account_wire::Refusal;
 use std::collections::BTreeMap;

@@ -131,7 +131,7 @@ where
         .at(path, interface)
         .await
         .unwrap_or_else(|e| panic!("{e}"));
-    zbus_ready::serving(connection)
+    dbus_kit::ready::serving(connection)
         .await
         .expect("the object server answers");
 }

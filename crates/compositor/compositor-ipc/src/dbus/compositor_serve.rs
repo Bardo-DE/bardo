@@ -16,7 +16,6 @@ use calloop::channel::{Channel, SyncSender, sync_channel};
 use std::sync::{Arc, mpsc};
 use std::time::Duration;
 use zbus::Connection;
-use zbus::fdo::RequestNameFlags;
 
 /// Makes the caller check once the bus connection exists.
 type BuildCheck = Box<dyn FnOnce(&Connection) -> Arc<dyn CallerCheck> + Send>;
@@ -199,11 +198,12 @@ async fn connect(
     if let Some(link) = privacy {
         serve_privacy(&connection, for_privacy, link).await?;
     }
-    zbus_ready::serving(&connection).await?;
-    connection
-        .request_name_with_flags(BUS_NAME, RequestNameFlags::DoNotQueue.into())
-        .await?;
-    Ok(connection)
+    dbus_kit::ready::serving(&connection).await?;
+    match dbus_kit::name::claim(&connection, BUS_NAME).await {
+        Ok(()) => Ok(connection),
+        Err(dbus_kit::name::ClaimError::Taken(_)) => Err(zbus::Error::NameTaken),
+        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err(source),
+    }
 }
 
 #[cfg(test)]

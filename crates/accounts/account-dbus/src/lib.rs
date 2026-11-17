@@ -7,7 +7,7 @@
 //! Photos Picker) are in the ferry repo, written under the same `#[bus_interface]`.
 //!
 //! Each interface is written once, as the trait its callers use, under `#[bus_interface]`
-//! (`account-dbus-macros`). The same trait gives the caller's `<Name>Proxy`, the `<Name>Server`
+//! (`dbus-kit`). The same trait gives the caller's `<Name>Proxy`, the `<Name>Server`
 //! trait a daemon implements and the `<Name>Served<S>` object that serves an `S: <Name>Server`;
 //! a daemon registers `<Name>Served(its_object)` and emits the interface's signals through it.
 //! The introspection is the interface's own (`<Name>Served::<Unserved>::introspect`), and the
@@ -20,7 +20,7 @@
 //! The interfaces are [`accounts`], accountd's (`Manager`, `Account`, `Request`, `AccountsSheet`,
 //! `Identities`, `Spaces`, `Tailnet`, `Keys`, `Launcher`, `Broker`), a module with their bus
 //! names, keys and row codecs. What every daemon's interfaces share is at the root: [`Details`],
-//! the call a server method answers, the failure of a bus call and [`BusTarget`]. The portal
+//! the failure of a bus call. The portal
 //! shape of a sheet's answer is [`accounts::sheet`]. Who is calling is `account-callers`.
 
 extern crate self as account_dbus;
@@ -29,8 +29,6 @@ mod args;
 mod destination;
 mod failure;
 mod json_value;
-mod serve;
-mod target;
 
 pub mod accounts;
 
@@ -38,8 +36,6 @@ pub use args::Details;
 pub use destination::Destination;
 pub use failure::{BusFailure, classify, is_invalid_args, is_limits_exceeded, is_unknown_object};
 pub use json_value::{from_vardict, to_vardict};
-pub use serve::{Call, Document, Unserved};
-pub use target::BusTarget;
 /// The session-bus connection transports and daemons hold.
 pub use zbus::Connection as BusConnection;
 /// The bus library's error, which [`classify`] reads.

@@ -6,7 +6,8 @@ use super::resolve::{ConfirmError, ConflictNumber, How, SettleError, SyncNowErro
 use super::status::{conflict_details, held_details, progress_details, status_details};
 use crate::scheduler::Pausing;
 use account_callers::{Caller, Callers};
-use account_dbus::{Call, Details};
+use account_dbus::Details;
+use dbus_kit::Call;
 use account_wire::Refusal;
 use std::collections::BTreeMap;
 use std::pin::Pin;
@@ -261,7 +262,7 @@ impl<C: Callers> SyncServer for SyncObject<C> {
     }
 }
 
-/// Serves `org.bardo.Sync1` on `connection` over `hub`, with `callers` saying who calls, and claims `org.bardo.Sync1` once the connection takes calls ([`zbus_ready::serving`]).
+/// Serves `org.bardo.Sync1` on `connection` over `hub`, with `callers` saying who calls, and claims `org.bardo.Sync1` once the connection takes calls ([`dbus_kit::ready::serving`]).
 ///
 /// Any other object on `connection` (the Photos picker) is registered before this is called.
 ///
@@ -312,7 +313,7 @@ pub async fn serve<C: Callers>(connection: &Connection, hub: Hub, callers: C) ->
     });
     // Every object is registered (the Photos picker, when it runs, before this); the name is the
     // promise that calls are taken: claim it only once they are.
-    zbus_ready::serving(connection).await?;
-    connection.request_name(SYNC_BUS).await?;
+    dbus_kit::ready::serving(connection).await?;
+    dbus_kit::name::claim(connection, SYNC_BUS).await?;
     Ok(())
 }

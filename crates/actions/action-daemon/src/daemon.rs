@@ -600,7 +600,7 @@ pub async fn run_with(
         setup.callers =
             callers::read_at(system, env).map_err(|e| DaemonFault::Callers(e.to_string()))?;
     }
-    let session = action_dbus::session_connection(env)
+    let session = dbus_kit::connect::session_from_env(env)
         .await
         .map_err(|e| DaemonFault::Serve(ServeFault::Bus(e.to_string())))?;
     let system = BusConnection::system().await.ok();

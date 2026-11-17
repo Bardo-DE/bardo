@@ -236,7 +236,7 @@ pub async fn run_with(
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<(), ServeFault> {
     let config = CompaniondConfig::from_env(env).map_err(|e| ServeFault::Config(e.to_string()))?;
-    let connection = action_dbus::session_connection(env)
+    let connection = dbus_kit::connect::session_from_env(env)
         .await
         .map_err(|e| ServeFault::Bus(e.to_string()))?;
     let callers = match &seams.system_callers {

@@ -305,7 +305,7 @@ impl FakeSill {
             .at("/org/bardo/Confirm1", ConfirmServer(sill.clone()))
             .await
             .expect("export Confirm1");
-        zbus_ready::serving(connection)
+        dbus_kit::ready::serving(connection)
             .await
             .expect("the object server answers");
         for name in names {

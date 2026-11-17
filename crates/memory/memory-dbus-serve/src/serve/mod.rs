@@ -111,8 +111,10 @@ pub async fn serve_on<S: Serve>(connection: &Connection, handler: Arc<S>) -> zbu
         .at(MEMORY_PATH, RecallObject(Arc::clone(&handler)))
         .await?;
     server.at(MEMORY_PATH, ControlObject(handler)).await?;
-    zbus_ready::serving(connection).await?;
-    connection.request_name(MEMORY_BUS).await
+    dbus_kit::ready::serving(connection).await?;
+    dbus_kit::name::claim(connection, MEMORY_BUS)
+        .await
+        .map_err(Into::into)
 }
 
 /// The introspection of the served objects: the same document as the skeletons' (`introspection`).

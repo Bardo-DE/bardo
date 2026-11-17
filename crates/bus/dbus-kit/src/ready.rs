@@ -10,8 +10,8 @@
 //! So a service registers all its objects, then waits on [`serving`], then calls `request_name`
 //! (or hands its unique name to anyone).
 //!
-//! This crate is a workaround. When zbus waits for its own object server task, delete the crate
-//! and its calls (`grep -rn zbus_ready::`).
+//! This module is a workaround. When zbus waits for its own object server task, delete the module
+//! and its calls (`grep -rn ready::serving`).
 
 use std::pin::Pin;
 use std::sync::Arc;

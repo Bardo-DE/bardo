@@ -30,7 +30,7 @@ async fn set_get_describe_and_changed_round_trip() {
     serve(&daemon, PATH, Accounts::new(Some(role)))
         .await
         .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -89,7 +89,7 @@ async fn a_daemon_originated_change_reaches_the_reader() {
     let served = serve(&daemon, PATH, Accounts::new(None))
         .await
         .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -122,7 +122,7 @@ async fn an_action_key_runs_through_set() {
     serve(&daemon, PATH, Shared(std::sync::Arc::clone(&module)))
         .await
         .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -140,7 +140,7 @@ async fn set_from_a_caller_without_the_role_is_refused_by_name() {
     serve(&daemon, PATH, Shared(std::sync::Arc::clone(&module)))
         .await
         .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -190,7 +190,7 @@ async fn unknown_keys_and_bad_values_have_their_own_names() {
     serve(&daemon, PATH, Accounts::new(Some(role)))
         .await
         .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");
@@ -267,7 +267,7 @@ async fn a_set_to_an_unavailable_choice_is_refused_with_its_reason() {
     serve(&daemon, PATH, Accounts::with_schema(Some(role), schema))
         .await
         .expect("serves");
-    zbus_ready::serving(&daemon)
+    dbus_kit::ready::serving(&daemon)
         .await
         .expect("the object server answers");
     daemon.request_name(NAME).await.expect("name");

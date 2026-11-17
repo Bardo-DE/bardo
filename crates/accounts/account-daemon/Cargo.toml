@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 base-xdg = { path = "../../base/base-xdg" }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 account-core = {path = "../account-core"}
 account-match = {path = "../account-match"}
 account-capability = {path = "../account-capability"}

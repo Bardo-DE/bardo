@@ -42,7 +42,7 @@ inference-dbus = {path = "../inference-dbus"}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {workspace = true, features = ["tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 # The daemon the bus tests start (Linux only, as the transport is).
 [target.'cfg(target_os = "linux")'.dev-dependencies]

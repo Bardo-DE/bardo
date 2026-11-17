@@ -158,8 +158,8 @@ pub async fn serve_with<H: Host, C: Callers>(
     }
     // Every object is registered; the name is the promise that calls are taken: claim it only
     // once they are.
-    zbus_ready::serving(connection).await?;
-    connection.request_name(ACCOUNTS_BUS).await?;
+    dbus_kit::ready::serving(connection).await?;
+    dbus_kit::name::claim(connection, ACCOUNTS_BUS).await?;
     Ok(())
 }
 

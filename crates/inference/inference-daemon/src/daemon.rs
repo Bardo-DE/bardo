@@ -29,7 +29,7 @@ use crate::toolproof::ToolProofs;
 use crate::watch::Watch;
 use account_callers::{ProcRoot, choose_proc_root, proc_notice};
 use account_client_dbus::Bus;
-use account_dbus::BusTarget;
+use dbus_kit::connect::BusTarget;
 use account_http_reqwest::{Limits, ReqwestHttp};
 use account_tailscale::LocalApi;
 use base_time::{Clock, SystemClock};

@@ -75,7 +75,7 @@ pub async fn run_with(
     seams: HarnessSeams,
     env: &impl Fn(&str) -> Option<String>,
 ) -> Result<(), ServeFault> {
-    let connection = action_dbus::session_connection(env)
+    let connection = dbus_kit::connect::session_from_env(env)
         .await
         .map_err(|e| ServeFault::Bus(e.to_string()))?;
     let table = match &seams.system_callers {

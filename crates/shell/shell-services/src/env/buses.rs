@@ -3,6 +3,7 @@
 
 use std::time::Instant;
 
+use dbus_kit::connect::BusTarget;
 use zbus::Connection;
 
 use crate::supervise::Backoff;
@@ -107,17 +108,13 @@ impl Bus {
 
     /// One attempt at the route.
     async fn open(&self) -> Result<Connection, OpenError> {
-        let connection = match (&self.route, self.kind) {
+        let target = match (&self.route, self.kind) {
             (BusRoute::Absent, _) => return Err(OpenError::Absent),
-            (BusRoute::Usual, BusKind::System) => Connection::system().await,
-            (BusRoute::Usual, BusKind::Session) => Connection::session().await,
-            (BusRoute::Address(address), _) => {
-                zbus::connection::Builder::address(address.as_str())?
-                    .build()
-                    .await
-            }
+            (BusRoute::Usual, BusKind::System) => BusTarget::System,
+            (BusRoute::Usual, BusKind::Session) => BusTarget::Session,
+            (BusRoute::Address(address), _) => BusTarget::Address(address.clone()),
         };
-        connection.map_err(OpenError::Refused)
+        target.connect().await.map_err(OpenError::Refused)
     }
 }
 
@@ -136,12 +133,6 @@ pub enum ConnectError {
 enum OpenError {
     Absent,
     Refused(zbus::Error),
-}
-
-impl From<zbus::Error> for OpenError {
-    fn from(error: zbus::Error) -> Self {
-        OpenError::Refused(error)
-    }
 }
 
 /// The system and the session bus.
