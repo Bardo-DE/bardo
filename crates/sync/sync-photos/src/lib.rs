@@ -11,6 +11,8 @@
 //!   later write winning (`ConflictRule::LastWriterPerField`). Each device writes its own
 //!   `<device>.json` and reads the others', so no remote file has two writers.
 //!
+//! - `desk`: [`desk::Pickers`], the Google Photos Pickers of the accounts syncd runs, and
+//!   [`desk::PickerDesk`], the seam the bus object asks through.
 //! - `cas`: [`ContentId`] and the atomic file writes.
 //! - `hlc`: [`Hlc`], [`HlcClock`] and [`DeviceId`].
 //! - `manifest`: [`Manifest`], its merge and the [`Edit`]s.
@@ -26,6 +28,7 @@
 //! fresh account, streaming transfers of originals larger than one `Http` body (porter's FINDINGS.md).
 
 pub mod cas;
+pub mod desk;
 pub mod google;
 mod hlc;
 mod library;

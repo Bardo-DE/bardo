@@ -20,10 +20,10 @@ use sync_bus::{
     ITEM_KEY_FRACTION, ITEM_KEY_KEPT, ITEM_KEY_KIND, ITEM_KEY_OTHER, ITEM_KEY_STATE, ITEM_KEY_URL,
     StorageProxy,
 };
-use sync_daemon::datasets::drive::{DriveSet, LiveDrive};
 use sync_daemon::service::{serve, serve_storage};
-use sync_daemon::words;
 use sync_driver::hub::{Access, Hub};
+use sync_storage::drive::{DriveSet, LiveDrive};
+use sync_storage::words;
 use zbus::export::futures_core::Stream;
 use zbus::zvariant::OwnedValue;
 

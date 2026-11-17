@@ -145,7 +145,8 @@ EDGES=(
   "sync-vdir: base-fs sync-pim-feed"
   "sync-pim-mirror: account-capability account-client account-core account-match base-ids sync-core sync-driver sync-engine sync-journal-sqlite sync-pim-feed sync-vdir sync-xdg"
   "sync-photos: account-capability account-client account-core base-fs base-ids base-time base-url http-core http-relay sync-core sync-driver sync-engine sync-journal-sqlite sync-relay sync-xdg"
-  "sync-daemon: account-callers account-capability account-client account-client-dbus account-core account-dbus account-match account-wire base-fs base-ids base-time base-url base-xdg dbus-kit drive-fs drive-fuse http-core replica-gdrive replica-graph settings-dbus settings-types sync-bus sync-core sync-driver sync-engine sync-journal-sqlite sync-photos sync-pim-mirror sync-relay sync-xdg"
+  "sync-daemon: account-callers account-capability account-client account-client-dbus account-core account-dbus account-match account-wire base-ids base-time base-xdg dbus-kit drive-fs drive-fuse settings-dbus settings-types sync-bus sync-core sync-driver sync-engine sync-photos sync-pim-mirror sync-storage sync-xdg"
+  "sync-storage: account-capability account-client account-core account-dbus account-match base-fs base-ids base-url drive-fs drive-fuse http-core replica-gdrive replica-graph sync-bus sync-core sync-driver sync-engine sync-journal-sqlite sync-photos sync-pim-mirror sync-relay sync-xdg"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -171,7 +172,7 @@ done
 # a program that runs the daemon inside itself gives it a `Config` and nothing else. The binary (main.rs) and the test-only files
 # are outside the rule; `std::env::temp_dir` is a scratch name in tests, not a read of a variable.
 # The awk remembers the last `fn` it saw, which is the function the next line is in.
-env_reads=$(find sync-daemon/src sync-engine/src sync-journal-sqlite/src sync-xdg/src sync-driver/src sync-relay/src sync-pim-feed/src sync-vdir/src sync-pim-mirror/src sync-photos/src -name '*.rs' \
+env_reads=$(find sync-daemon/src sync-engine/src sync-journal-sqlite/src sync-xdg/src sync-driver/src sync-relay/src sync-pim-feed/src sync-vdir/src sync-pim-mirror/src sync-photos/src sync-storage/src -name '*.rs' \
   ! -name main.rs ! -name tests.rs ! -name testing.rs ! -name testkit.rs ! -path '*/tests/*' -print0 \
   | xargs -0 awk '
     FNR == 1 { current = "" }

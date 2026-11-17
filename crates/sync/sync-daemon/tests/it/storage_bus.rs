@@ -34,16 +34,16 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_bus::SyncProxy;
 use sync_bus::{CONFLICT_KEY_NUMBER, RESOLVE_KEEP_REMOTE, SYNC_ERROR_NO_SUCH_CONFLICT};
-use sync_daemon::datasets::storage::{
-    ClientStorageGrants, FILES_APP, PHOTOS_APP, StorageConfig, StorageGrants, StorageKind,
-    StorageSupervisor,
-};
 use sync_daemon::keep::sync_app;
 use sync_daemon::service::serve;
 use sync_driver::hub::{Access, DatasetName, Hub};
 use sync_engine::scheduler::{Network, Settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use sync_pim_mirror::{AccountdUnavailable, Wiring};
+use sync_storage::storage::{
+    ClientStorageGrants, FILES_APP, PHOTOS_APP, StorageConfig, StorageGrants, StorageKind,
+    StorageSupervisor,
+};
 use sync_xdg::{AccountDir, Paths};
 use tokio::sync::watch;
 use zbus::export::futures_core::Stream;

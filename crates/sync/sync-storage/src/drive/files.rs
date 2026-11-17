@@ -315,7 +315,7 @@ impl DriveSet {
         };
         drive.set_paused(paused);
         if let Some(file) = &self.settings
-            && let Err(why) = crate::settings::write_paused(file, id, paused)
+            && let Err(why) = crate::knobs::write_paused(file, id, paused)
         {
             eprintln!("syncd: whether the drive is paused could not be saved: {why}");
         }
@@ -327,7 +327,7 @@ impl DriveSet {
     pub fn was_paused(&self, id: &str) -> bool {
         self.settings
             .as_ref()
-            .is_some_and(|file| crate::settings::read_paused(file).contains(id))
+            .is_some_and(|file| crate::knobs::read_paused(file).contains(id))
     }
 
     /// Keeps the drive `id` downloaded whole, or no longer, from now on and after a restart: the
@@ -337,7 +337,7 @@ impl DriveSet {
     /// syncd's settings could not be written; nothing changed.
     pub fn set_keep_all(&self, id: &str, on: bool) -> std::io::Result<()> {
         if let Some(file) = &self.settings {
-            crate::settings::write_keep_all(file, id, on)?;
+            crate::knobs::write_keep_all(file, id, on)?;
         }
         if let Some(drive) = self.get(id) {
             drive.drive.set_keep_all(on);
@@ -350,7 +350,7 @@ impl DriveSet {
     #[must_use]
     pub fn keeps_all(&self, id: &str) -> bool {
         match &self.settings {
-            Some(file) => crate::settings::read_keep_all(file).contains(id),
+            Some(file) => crate::knobs::read_keep_all(file).contains(id),
             None => self.get(id).is_some_and(|live| live.drive.keeps_all()),
         }
     }
@@ -426,14 +426,14 @@ impl DriveSet {
     pub fn forget(&self, id: &str) {
         held(&self.held).remove(id);
         if let Some(file) = &self.settings
-            && crate::settings::read_paused(file).contains(id)
-            && let Err(why) = crate::settings::write_paused(file, id, false)
+            && crate::knobs::read_paused(file).contains(id)
+            && let Err(why) = crate::knobs::write_paused(file, id, false)
         {
             eprintln!("syncd: whether the drive is paused could not be saved: {why}");
         }
         if let Some(file) = &self.settings
-            && crate::settings::read_keep_all(file).contains(id)
-            && let Err(why) = crate::settings::write_keep_all(file, id, false)
+            && crate::knobs::read_keep_all(file).contains(id)
+            && let Err(why) = crate::knobs::write_keep_all(file, id, false)
         {
             eprintln!("syncd: whether to keep the drive downloaded could not be saved: {why}");
         }

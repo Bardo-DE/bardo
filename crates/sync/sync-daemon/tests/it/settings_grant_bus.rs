@@ -30,9 +30,6 @@ use settings_types::schema::KeyPath;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use sync_bus::SyncProxy;
-use sync_daemon::datasets::storage::{
-    ClientStorageGrants, FILES_APP, PHOTOS_APP, StorageConfig, StorageSupervisor,
-};
 use sync_daemon::keep::{SyncClass, sync_allowed};
 use sync_daemon::service::serve;
 use sync_daemon::settings::{SETTINGS_PATH, SyncSettings, serve_settings};
@@ -40,6 +37,9 @@ use sync_driver::hub::{Access, Hub};
 use sync_engine::scheduler::{Network, Settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use sync_pim_mirror::Wiring;
+use sync_storage::storage::{
+    ClientStorageGrants, FILES_APP, PHOTOS_APP, StorageConfig, StorageSupervisor,
+};
 use sync_xdg::{AccountDir, Paths};
 use tokio::sync::watch;
 

@@ -12,7 +12,7 @@
 //!   neither is what stays on this computer (`drive_fs::local_only`: the desktop's trash).
 //! - An item changed here is `waiting`, then `uploading` with its fraction while it is sent; a
 //!   file kept in two versions is `conflict`, and `other` is the other version's path; one the
-//!   drive refused is `error` with the words (`crate::words`).
+//!   drive refused is `error` with the words (`sync_storage::words`).
 //! - `SaveCopy` exports each online document (`drive_fs::Drive::save_copy`) and answers each
 //!   copy's absolute path; the copy waits to upload beside its document.
 //! - `Watch` joins the caller's connection to those told `DrivesChanged` and `ItemsChanged`
@@ -20,8 +20,6 @@
 //!   ten times a second, each changed item with the folders above it.
 
 use super::errors::RefusedError;
-use crate::datasets::drive::{DriveEvent, DriveSet, LiveDrive};
-use crate::words;
 use account_callers::{Caller, CallerRole, Callers};
 use account_dbus::Details;
 use dbus_kit::Call;
@@ -39,6 +37,8 @@ use sync_bus::{
     ItemDetails, ItemKind, ItemState, Refused, Saved, StorageServed, StorageServer,
 };
 use sync_driver::hub::Access;
+use sync_storage::drive::{DriveEvent, DriveSet, LiveDrive};
+use sync_storage::words;
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
 use zbus::fdo::DBusProxy;

@@ -29,7 +29,6 @@ pub use classes::{
     need_for, photos_key, sync_allowed, sync_app, sync_key, sync_offers,
 };
 
-use crate::datasets::drive::{DriveSet, Kept};
 use account_capability::CapabilityKind;
 use account_client::{
     Accounts, AccountsError, AccountsLink, ConsentOffer, Grants, GrantsError, GrantsLink,
@@ -41,6 +40,7 @@ use account_wire::{ParentWindow, Refusal};
 use std::sync::Arc;
 use sync_driver::hub::Hub;
 use sync_driver::removal;
+use sync_storage::drive::{DriveSet, Kept};
 use sync_xdg::{AccountDir, Paths};
 
 /// Why "Add Account" did not end in an account.
@@ -324,7 +324,7 @@ impl<T: GrantsLink + AccountsLink> Keep<T> {
                     })?;
             }
             let offer = ConsentOffer {
-                need: crate::datasets::storage::drive_need(),
+                need: sync_storage::storage::drive_need(),
                 class: account_core::DataClass::Files,
                 usage: Usage::Background,
                 account: Some(account.clone()),

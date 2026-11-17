@@ -11,7 +11,7 @@
 //!   or Drive's, by the endpoint the account has), the Photos datasets over `Photos/Originals`
 //!   and `Photos/Metadata` of a Microsoft account, or Google Photos' upload folder and picker
 //!   for a Google one; and the whole drive's listing
-//!   ([`crate::datasets::drive`]) of an account the person turned on "Show in Files" for.
+//!   ([`crate::drive`]) of an account the person turned on "Show in Files" for.
 //!
 //! A person needs: a Microsoft or Google account in accountd, and a grant for `org.bardo.Sync`
 //! made in Settings (class Files for the app folder, class Photos for Photos: the account's

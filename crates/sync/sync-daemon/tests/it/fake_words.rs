@@ -2,8 +2,8 @@
 //! the live service says.
 
 use drive_fs::Reason;
-use sync_daemon::words;
 use sync_fakes::storage::words as fake;
+use sync_storage::words;
 
 #[test]
 fn the_fake_of_the_service_gives_the_words_of_the_live_one() {

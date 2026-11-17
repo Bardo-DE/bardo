@@ -21,8 +21,8 @@ use sync_bus::SyncProxy;
 use sync_bus::{
     CONFLICT_KEY_NUMBER, RESOLVE_KEEP_LOCAL, RESOLVE_KEEP_REMOTE, SYNC_ERROR_NO_SUCH_CONFLICT,
 };
-use sync_daemon::datasets::storage::FILES_APP;
 use sync_driver::hub::DatasetName;
+use sync_storage::storage::FILES_APP;
 use zbus::export::futures_core::Stream;
 
 async fn names(sync: &SyncProxy<'_>) -> Vec<String> {

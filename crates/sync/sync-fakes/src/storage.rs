@@ -34,7 +34,7 @@ pub const TICK: Duration = Duration::from_millis(100);
 const STEP: f64 = 0.05;
 
 /// The words a refused action gives, as Files may show them: the same as the live service
-/// (`sync_daemon::words::reason`; a test in syncd holds the two together).
+/// (`sync_storage::words::reason`; a test in syncd holds the two together).
 pub mod words {
     /// A path on no drive.
     pub const NOT_ON_A_DRIVE: &str = "This item isn't in a cloud drive.";

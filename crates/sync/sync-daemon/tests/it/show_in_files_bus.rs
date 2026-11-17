@@ -37,22 +37,20 @@ use settings_types::schema::KeyPath;
 use std::sync::Arc;
 use std::time::Duration;
 use sync_core::ItemPath;
-use sync_daemon::datasets::drive::LiveDrive;
-use sync_daemon::datasets::drive::journal_path;
-use sync_daemon::datasets::storage::{
-    ClientStorageGrants, DriveMount, StorageConfig, StorageSupervisor,
-};
 use sync_daemon::keep::{SyncClass, claims_whole_drive, drive_allowed, sync_allowed};
 use sync_daemon::service::serve;
 use sync_daemon::settings::{
     CACHE_LIMIT, FILES_NOT_ON, SETTINGS_PATH, SyncSettings, serve_settings,
 };
-use sync_daemon::words;
 use sync_driver::hub::{Access, Hub};
 use sync_engine::scheduler::{Network, Settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use sync_journal_sqlite::DriveJournal;
 use sync_pim_mirror::Wiring;
+use sync_storage::drive::LiveDrive;
+use sync_storage::drive::journal_path;
+use sync_storage::storage::{ClientStorageGrants, DriveMount, StorageConfig, StorageSupervisor};
+use sync_storage::words;
 use sync_xdg::{AccountDir, Paths};
 use tokio::sync::watch;
 
@@ -744,6 +742,8 @@ async fn porter_mountd_is_asked_when_it_listens_and_its_words_are_shown() {
     let (_, said) = drive.state();
     assert_eq!(
         said.as_deref(),
-        Some(sync_daemon::words::refusal(mountd::wire::Code::FolderInUse))
+        Some(sync_storage::words::refusal(
+            mountd::wire::Code::FolderInUse
+        ))
     );
 }

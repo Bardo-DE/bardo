@@ -11,7 +11,6 @@
 //! `Photos` kind of the provider file. syncd's key for it is `Photos`-kind, class `Photos`
 //! ([`photos_key`]), so a `Storage` grant of syncd's (the Drive app folder) never reaches them.
 
-use crate::datasets::storage::{drive_need, photos_need, storage_need};
 use account_capability::StorageScope;
 use account_capability::{Capability, CapabilityKind, Offer};
 use account_core::AccountId;
@@ -21,6 +20,7 @@ use account_core::{
     consent::{Decision, Grant, Usage},
 };
 use account_match::{Match, Need, matches};
+use sync_storage::storage::{drive_need, photos_need, storage_need};
 
 /// What syncd is allowed to keep of an account.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

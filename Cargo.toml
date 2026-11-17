@@ -175,6 +175,7 @@ members = [
     "crates/sync/sync-pim-feed",
     "crates/sync/sync-pim-mirror",
     "crates/sync/sync-relay",
+    "crates/sync/sync-storage",
     "crates/sync/sync-vdir",
     "crates/sync/sync-xdg",
     "crates/sync/sync-fakes",

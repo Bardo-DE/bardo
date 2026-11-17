@@ -33,14 +33,14 @@ use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use sync_daemon::datasets::storage::{
-    ClientStorageGrants, StorageConfig, StorageGrants, StorageKind, StorageSupervisor,
-};
 use sync_daemon::keep::sync_app;
 use sync_daemon::service::serve;
 use sync_driver::hub::{Access, Hub};
 use sync_engine::scheduler::{Network, Settings};
 use sync_pim_mirror::{AccountdUnavailable, Wiring};
+use sync_storage::storage::{
+    ClientStorageGrants, StorageConfig, StorageGrants, StorageKind, StorageSupervisor,
+};
 use sync_xdg::{AccountDir, Paths};
 use tokio::sync::watch;
 
@@ -400,10 +400,8 @@ pub fn local(rig: &Rig, rel: &str) -> std::path::PathBuf {
 #[cfg(feature = "photos-picker")]
 pub async fn serve_picker(rig: &Rig) {
     let owners = sync_driver::hub::Access {
-        owners: [
-            account_core::AppName::parse(sync_daemon::datasets::storage::PHOTOS_APP).expect("app"),
-        ]
-        .into(),
+        owners: [account_core::AppName::parse(sync_storage::storage::PHOTOS_APP).expect("app")]
+            .into(),
     };
     sync_daemon::service::serve_picker(
         &rig.server,

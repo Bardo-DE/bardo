@@ -219,7 +219,7 @@ fn syncd_is_one_app_id_in_every_test_and_doc() {
 fn the_shipped_rescan_is_ten_minutes_and_only_a_test_build_can_change_it() {
     let ten_minutes = std::time::Duration::from_secs(600);
     assert_eq!(
-        sync_daemon::datasets::storage::StorageConfig::default().rescan,
+        sync_storage::storage::StorageConfig::default().rescan,
         ten_minutes
     );
     assert_eq!(sync_pim_mirror::PimConfig::default().rescan, ten_minutes);

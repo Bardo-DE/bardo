@@ -18,7 +18,7 @@ use sync_bus::{
     PICKER_ERROR_NO_SUCH_SESSION, PICKER_ERROR_NOT_YET, PICKER_PICKED, PICKER_WAITING,
     PhotosPickerProxy,
 };
-use sync_daemon::datasets::storage::{FILES_APP, PHOTOS_APP};
+use sync_storage::storage::{FILES_APP, PHOTOS_APP};
 use zbus::export::futures_core::Stream;
 
 const DENIED: &str = "org.bardo.Accounts1.Error.Denied";

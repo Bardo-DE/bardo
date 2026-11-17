@@ -39,6 +39,7 @@
 
 mod errors;
 mod object;
+#[cfg(feature = "photos-picker")]
 mod picker;
 mod resolve;
 mod status;
@@ -48,7 +49,6 @@ pub use errors::RefusedError;
 pub use object::serve;
 #[cfg(feature = "photos-picker")]
 pub use picker::serve_picker;
-pub use picker::{PickerDesk, Pickers};
 pub use resolve::{UnknownHow, parse_how};
 pub use status::{conflict_details, held_details, progress_details, status_details};
 pub use storage::{FilesApps, ITEMS_EVERY, absolute, drive_details, item_details, serve_storage};

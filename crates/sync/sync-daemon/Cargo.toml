@@ -1,6 +1,6 @@
 [package]
 name = "sync-daemon"
-description = "ferry's sync daemon: org.bardo.Sync1 over sync-core replicas. The program: it wires the engine (sync-engine, sync-driver, sync-journal-sqlite), the datasets (sync-pim-mirror, sync-photos, the storage folder and the whole drives shown in Files) and the replicas (sync-relay) together, serves the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client), and resolves its paths and starts."
+description = "ferry's sync daemon: org.bardo.Sync1 over sync-core replicas. The program: it wires the engine (sync-engine, sync-driver), the datasets (sync-pim-mirror, sync-storage with Photos) and the journal (sync-journal-sqlite) together, serves the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client), and resolves its paths and starts."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -12,18 +12,15 @@ publish.workspace = true
 base-xdg = { path = "../../base/base-xdg" }
 sync-driver = {path = "../sync-driver"}
 sync-engine = {path = "../sync-engine"}
-sync-journal-sqlite = {path = "../sync-journal-sqlite"}
 sync-photos = {path = "../sync-photos"}
 sync-pim-mirror = {path = "../sync-pim-mirror"}
-sync-relay = {path = "../sync-relay"}
+sync-storage = {path = "../sync-storage"}
 sync-xdg = {path = "../sync-xdg"}
 dbus-kit = { path = "../../bus/dbus-kit" }
 sync-bus = {path = "../sync-bus"}
 drive-fs = {path = "../drive-fs"}
 drive-fuse = {path = "../drive-fuse"}
 sync-core = {path = "../sync-core"}
-replica-gdrive = {path = "../replica-gdrive"}
-replica-graph = {path = "../replica-graph"}
 # Accounts, grants and relays: accountd's, reached through account-client (the bus transport in
 # the daemon). Nothing of porter's account stack is a dependency of syncd; the dev-dependencies
 # host one in process for the tests.
@@ -39,20 +36,14 @@ account-capability = {path = "../../accounts/account-capability"}
 account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
-base-url = { path = "../../base/base-url" }
-base-fs = {path = "../../base/base-fs"}
-http-core = {path = "../../network/http-core"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
 settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}
 serde_json = { workspace = true }
-hex = { workspace = true }
-sha2 = { workspace = true }
 thiserror = { workspace = true }
 # `signal`: SIGTERM unmounts the drives before the process ends.
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "signal", "sync", "time"]}
 toml = { workspace = true }
-toml_edit = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
@@ -60,6 +51,11 @@ base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 sync-engine = {path = "../sync-engine", features = ["testing"]}
 sync-journal-sqlite = {path = "../sync-journal-sqlite", features = ["testing"]}
+sync-relay = {path = "../sync-relay"}
+base-url = { path = "../../base/base-url" }
+http-core = {path = "../../network/http-core"}
+replica-gdrive = {path = "../replica-gdrive"}
+replica-graph = {path = "../replica-graph"}
 http-relay = {path = "../../accounts/http-relay"}
 sync-pim-feed = {path = "../sync-pim-feed"}
 sync-vdir = {path = "../sync-vdir"}

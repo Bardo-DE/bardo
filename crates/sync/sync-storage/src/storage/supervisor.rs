@@ -14,7 +14,7 @@
 //!   dataset `<account>/google_photos_upload` (owner `org.bardo.Photos`), and the picker the
 //!   Photos app imports through ([`StorageSupervisor::google_picker`]).
 //! - `Drive` (`DataClass::Files`, a grant that reaches the whole store): the whole drive's
-//!   listing into `<account>/storage_drive` ([`crate::datasets::drive::keep_listing`]), every
+//!   listing into `<account>/storage_drive` ([`crate::drive::keep_listing`]), every
 //!   [`StorageConfig::drive_every`]. It is no dataset of the hub: nothing syncs, it is listed.
 //!
 //! A new grant starts its mirror. A grant that is gone (revoked, or the account removed) stops
@@ -27,7 +27,7 @@ use super::folder::{FolderDataset, SLUG};
 use super::grants::{
     AppFolderStore, StorageGrants, StorageKind, app_folder_store, google_photos_endpoints,
 };
-use crate::datasets::drive::{
+use crate::drive::{
     self, CacheKnob, DriveReplica, DriveSet, Listed, LiveDrive, SIGN_IN_WORDS, UNREADABLE_WORDS,
 };
 use account_client::GrantsLink;
@@ -172,7 +172,7 @@ pub struct StorageSupervisor<T: GrantsLink, G> {
     config: StorageConfig,
     running: BTreeMap<(AccountDir, StorageKind), Running<T>>,
     /// The Google Photos pickers running now, for the bus object that serves them.
-    pickers: crate::service::Pickers<T>,
+    pickers: sync_photos::desk::Pickers<T>,
     silent: BTreeSet<StorageKind>,
     drives: DriveSet,
     limit: CacheKnob,
@@ -207,7 +207,7 @@ where
             wiring,
             grants,
             running: BTreeMap::new(),
-            pickers: crate::service::Pickers::default(),
+            pickers: sync_photos::desk::Pickers::default(),
             silent: BTreeSet::new(),
             drives,
             limit: Arc::new(watch::channel(config.cache_limit).0),
@@ -227,7 +227,7 @@ where
     }
 
     /// The pickers as the bus object reads them: kept current by every `tick`.
-    pub fn pickers(&self) -> crate::service::Pickers<T> {
+    pub fn pickers(&self) -> sync_photos::desk::Pickers<T> {
         self.pickers.clone()
     }
 

@@ -194,7 +194,8 @@ pub fn choose(kind: PimKind, candidate: &Candidate) -> Result<Chosen, NoSource> 
 }
 
 /// The account's server of `family`, else its first.
-pub(crate) fn endpoint_of(
+#[must_use]
+pub fn endpoint_of(
     candidate: &Candidate,
     family: account_core::Family,
 ) -> Option<&ServiceEndpoint> {

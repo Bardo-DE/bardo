@@ -1,8 +1,8 @@
 //! syncd: the program of design/31 §6, as a library so each part is tested without the binary.
 //! What it runs is in the crates it is built from: the engine and the scheduler (`sync-engine`),
 //! the SQLite journal (`sync-journal-sqlite`), the loop and the hub (`sync-driver`), the datasets
-//! (`sync-pim-mirror`, `sync-photos`; the drive and the storage folder are here), and the replicas
-//! over accountd's relays (`sync-relay`).
+//! (`sync-pim-mirror`, `sync-photos`, and the storage folder and drives of `sync-storage`), and the
+//! replicas over accountd's relays (`sync-relay`).
 //!
 //! - `keep`: what syncd keeps of the accounts accountd has: the sync switches (each is a grant
 //!   accountd asks the person for the first time), "Show in Files" and removal, all through
@@ -14,14 +14,9 @@
 // depth of 128.
 #![recursion_limit = "256"]
 pub mod daemon;
-pub mod datasets;
 pub mod keep;
 pub mod paths;
 pub mod service;
 pub mod settings;
-pub mod words;
 
 pub use daemon::{Config, Daemon, StartError};
-
-#[cfg(test)]
-mod testing;

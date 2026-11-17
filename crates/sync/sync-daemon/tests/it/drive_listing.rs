@@ -1,4 +1,4 @@
-//! The drive listing (`sync_daemon::datasets::drive`) against the fake Graph drive and the fake Google
+//! The drive listing (`sync_storage::drive`) against the fake Graph drive and the fake Google
 //! My Drive, over loopback with the bearer added as the relay adds it: a whole drive listed into
 //! its journal and read back by path and id, a pass cut short and resumed, a restart that keeps
 //! the tree, a folder moved, an anchor that expired, and access not given yet.
@@ -17,9 +17,9 @@ use sync_core::{
     Blob, ByteRange, ChangePage, Cursor, Folders, ItemKind, ItemPath, PutItem, PutRefused, Quota,
     RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
-use sync_daemon::datasets::drive::{DriveReplica, Listed, list_once};
 use sync_fake_graph::FakeGraph;
 use sync_journal_sqlite::DriveJournal;
+use sync_storage::drive::{DriveReplica, Listed, list_once};
 
 const TOKEN: &str = "ey.fake-access-token";
 const NOW: UnixSeconds = UnixSeconds(1_000);
