@@ -13,16 +13,16 @@ use account_capability::Capability;
 use account_capability::CapabilityKind;
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_core::AccountId;
+use account_core::request_to;
 use account_core::{
     AccountLabel, Audience, Credential, EndpointUrl, Family, IssuedToken, Restriction,
     SecretPurpose, SecretText, ServiceEndpoint,
 };
+use account_provider::{Presented, ProviderError, ProviderSession, ProviderSpec, Signed};
 use http_core::http::Method;
 use http_core::http::header::{ACCEPT, AUTHORIZATION, HeaderName};
 use http_core::http::request::Builder;
-use account_core::request_to;
 use http_core::{Http, SensitiveHeader};
-use account_provider::{Presented, ProviderError, ProviderSession, ProviderSpec, Signed};
 
 /// The key a presented credential holds, or `Unauthorized` when the account has none.
 pub(crate) fn key_of(presented: &Presented) -> Result<&SecretText, ProviderError> {

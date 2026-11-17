@@ -27,7 +27,6 @@ use account_core::{
 };
 use account_fake::FakeProvider;
 use account_fake_servers::Running;
-use http_relay::RelayStream;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;
@@ -35,6 +34,7 @@ use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use common::hosted::{Link, host};
 use common::{Known, client};
+use http_relay::RelayStream;
 use replica_graph::{CHUNK_UNIT, Uploads};
 use std::collections::BTreeSet;
 use std::sync::Arc;

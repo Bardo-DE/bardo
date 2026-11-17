@@ -17,7 +17,6 @@ use account_fake_servers::{FakeNextcloud, LoginPolicy, NextcloudHandle, Running,
 use account_families::DynProvider;
 use account_family_kit::Pacing;
 use account_family_nextcloud::NextcloudProvider;
-use http_core::SharedHttp;
 use account_match::Need;
 use account_match::StorageNeed;
 use account_service_accounts::AllowFor;
@@ -26,6 +25,7 @@ use account_sheet::{FieldKind, SheetView};
 use account_wire::{AccountsReply, AccountsRequest};
 use account_wire::{ParentWindow, Refusal};
 use common::{Brief, Fakes, Kept, Opens, Person, Service, TestSheets, plain, service};
+use http_core::SharedHttp;
 use std::time::Duration;
 
 fn app(name: &str) -> AppId {

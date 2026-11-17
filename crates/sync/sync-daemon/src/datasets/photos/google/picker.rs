@@ -13,10 +13,10 @@
 //! a plain token or refused, a file name is cut to its last component and made unique.
 
 use crate::datasets::photos::cas;
+use base_url::WebUrl;
 use http_core::http::request::Builder;
 use http_core::http::{Method, Response};
 use http_core::{Http, HttpError, request};
-use base_url::WebUrl;
 use serde::Deserialize;
 use std::fmt::Write as _;
 use std::path::PathBuf;

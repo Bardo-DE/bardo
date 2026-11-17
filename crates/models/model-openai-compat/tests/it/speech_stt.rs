@@ -129,7 +129,9 @@ async fn every_failure_of_a_transcription_is_the_error_it_means_and_names_no_tex
 
 #[tokio::test]
 async fn nobody_listening_is_unreachable_and_a_silent_server_times_out() {
-    let nowhere = OpenAiTranscription::new(model_http_reqwest::client(endpoint(HttpTarget::Unix(scratch()))));
+    let nowhere = OpenAiTranscription::new(model_http_reqwest::client(endpoint(HttpTarget::Unix(
+        scratch(),
+    ))));
     let got = nowhere
         .transcribe(
             &stt(LangChoice::Auto),

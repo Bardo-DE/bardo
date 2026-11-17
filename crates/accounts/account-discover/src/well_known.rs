@@ -5,11 +5,11 @@ use crate::mail::mail_claim;
 use account_capability::{Access, Capability, CapabilityKind, Delta, MailTransport};
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_capability::{PimCap, PimTransport};
-use account_core::{EndpointUrl, Family, LoginName, ServiceEndpoint, Tls};
-use http_core::http::{Method, Response};
 use account_core::request_to;
-use http_core::{HeaderText, Http};
+use account_core::{EndpointUrl, Family, LoginName, ServiceEndpoint, Tls};
 use account_provider::DomainName;
+use http_core::http::{Method, Response};
+use http_core::{HeaderText, Http};
 use serde::Deserialize;
 use std::collections::BTreeMap;
 

@@ -36,22 +36,22 @@ pub use sync::{SyncCursor, TaskCursor};
 pub use tasks::{GoogleTasksFeed, GoogleTasksSource};
 
 use super::graph::{encode, get, unreached};
-use sync_core::status::retry_after;
 use crate::datasets::pim::discover::DiscoverError;
 use crate::datasets::pim::relay::pim_http;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
+use base_time::UnixSeconds;
+use base_url::WebUrl;
 use http_core::HttpError;
 use http_core::http::Response;
 use http_relay::{RelayDial, RelayHttp};
-use base_time::UnixSeconds;
-use base_url::WebUrl;
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
 use sync_core::ReplicaError;
+use sync_core::status::retry_after;
 
 /// The pages a listing of collections is followed for before a looping server is given up on.
 const MAX_PAGES: usize = 50;

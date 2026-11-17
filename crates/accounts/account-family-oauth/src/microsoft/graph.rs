@@ -5,9 +5,9 @@
 use crate::oauth::{failure, get};
 use account_capability::Claim;
 use account_core::EndpointUrl;
-use http_core::Http;
 use account_oauth_probe_proto::microsoft::{self, ME, is_personal};
 use account_provider::{Issuer, ProviderError, ProviderSpec};
+use http_core::Http;
 
 /// What probing an account found.
 #[derive(Debug, Clone, PartialEq, Eq)]

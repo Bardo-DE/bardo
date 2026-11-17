@@ -1,8 +1,8 @@
 //! What a status the replica did not expect means to the contract: a write that was refused
 //! ([`PutRefused`]). The statuses every HTTP replica reads alike are sync-core's `status`.
 
-use http_core::http::Response;
 use base_time::UnixSeconds;
+use http_core::http::Response;
 use sync_core::PutRefused;
 use sync_core::status::retry_after;
 

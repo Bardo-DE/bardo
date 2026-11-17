@@ -5,9 +5,9 @@ use super::fault;
 use account_core::EndpointUrl;
 use account_family_kit::Io;
 use account_family_kit::password::fault_of;
-use http_core::Http;
 use account_nextcloud_proto::flow::{self, Polled, Started};
 use account_sheet::SignInFault;
+use http_core::Http;
 
 /// Starts a flow at `server`.
 pub(super) async fn start(io: &Io, server: &EndpointUrl) -> Result<Started, SignInFault> {

@@ -5,7 +5,10 @@ use model_http::{BodyKind, ResponseHead, WaitSeconds};
 
 fn retry_after_of(value: &str) -> Option<WaitSeconds> {
     let mut headers = HeaderMap::new();
-    headers.insert("retry-after", HeaderValue::from_str(value).expect("a header value"));
+    headers.insert(
+        "retry-after",
+        HeaderValue::from_str(value).expect("a header value"),
+    );
     ResponseHead::of(StatusCode::TOO_MANY_REQUESTS, &headers).retry_after
 }
 

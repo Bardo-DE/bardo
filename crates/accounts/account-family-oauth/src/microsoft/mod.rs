@@ -17,12 +17,12 @@ use account_core::{
     AccountLabel, Audience, Credential, EndpointUrl, Family, GrantedScopes, LoginName, Restriction,
     SecretPurpose, ServiceEndpoint, TenantConsent, Tls, TokenKind,
 };
-use http_core::Http;
 use account_oauth::{TokenResponse, refresh_scoped};
 use account_provider::{Issuer, ProviderError, ProviderSpec, Signed};
 use account_sheet::SignInFault;
 use base_url::UrlScheme;
 use graph::{Found, probe, whoami};
+use http_core::Http;
 
 /// Microsoft's rules.
 #[derive(Debug, Clone, Copy, Default)]

@@ -6,8 +6,8 @@
 
 use inference_router::attached::{NotReady, Target};
 use model_http::{
-    BodySink, Exchange, Framing, HttpError, HttpStatus, ResponseHead, RouteRoot,
-    Timeouts, Transport, UrlPath, Verb, WaitMs,
+    BodySink, Exchange, Framing, HttpError, HttpStatus, ResponseHead, RouteRoot, Timeouts,
+    Transport, UrlPath, Verb, WaitMs,
 };
 use std::ops::ControlFlow;
 

@@ -11,7 +11,7 @@
 //! `--registry-file FILE` reads the snapshot from a file instead of the registry. `install` says
 //! `installing ID VERSION` on its first line before it reaches the network.
 
-use agent_install::fetch::{Https, Fetch, FetchFault};
+use agent_install::fetch::{Fetch, FetchFault, Https};
 use agent_install::run::System;
 use agent_install::store::{agents, versions};
 use agent_install::{Standing, Want, install, offers, standing};

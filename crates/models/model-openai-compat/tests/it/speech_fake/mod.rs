@@ -12,9 +12,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
-use model_http::{
-    AuthHeader, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs,
-};
+use model_http::{AuthHeader, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs};
 use model_openai_compat::{KOKORO_FORMAT, KokoroSpeech, OpenAiTranscription};
 use model_provider::ModelName;
 use speech_provider::{

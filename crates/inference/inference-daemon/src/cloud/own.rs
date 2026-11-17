@@ -31,9 +31,8 @@ use inference_core::Takes;
 use inference_router::catalog::{capabilities_of, parse_entry_text};
 use model_catalog::{Locality, ModelEntry, Reach};
 use model_http::{
-    AuthHeader, BodySink, Exchange, Framing, HostName, HttpEndpoint, HttpStatus,
-    HttpTarget, Port, Proxy, ResponseHead, RouteRoot, Timeouts, TlsRoots, Transport, UrlPath, Verb,
-    WaitMs,
+    AuthHeader, BodySink, Exchange, Framing, HostName, HttpEndpoint, HttpStatus, HttpTarget, Port,
+    Proxy, ResponseHead, RouteRoot, Timeouts, TlsRoots, Transport, UrlPath, Verb, WaitMs,
 };
 use std::collections::BTreeMap;
 use std::ops::ControlFlow;

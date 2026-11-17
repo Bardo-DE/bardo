@@ -25,8 +25,7 @@ use computer_use_eval::report::{Check, Report, render};
 use computer_use_eval::run::RunRecord;
 use keymap::Platform;
 use model_http::{
-    AuthHeader, HostName, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts, UrlPath,
-    WaitMs,
+    AuthHeader, HostName, HttpEndpoint, HttpTarget, Port, Proxy, Timeouts, UrlPath, WaitMs,
 };
 use model_openai_compat::{Flavor, OpenAiCodec};
 use std::path::PathBuf;
@@ -197,7 +196,8 @@ async fn play(args: &Args, corpus: &Corpus) -> Result<Played, PlayError> {
                 }
             };
             let provider = Arc::new(
-                OpenAiCodec::new(Flavor::Vllm).provider(model_http_reqwest::client(endpoint(args.port, auth))),
+                OpenAiCodec::new(Flavor::Vllm)
+                    .provider(model_http_reqwest::client(endpoint(args.port, auth))),
             );
             let player = format!("local:{}", args.model);
             let runs = run_live(corpus, provider, &plan, &player, args.repeat, &args.only).await?;

@@ -12,13 +12,13 @@ use account_fake_servers::{
     Accounts, FakeDns, FakeImap, FakeSmtp, MailHandle, Running, Secret, mailbox,
 };
 use account_family_generic::{DavLookup, GenericProvider, MailLookup};
-use http_core::SharedHttp;
 use account_provider::{
     Provider, SignIn, SignInMode, SignInStart, SignInStep, Signed, parse_provider,
 };
 use account_sheet::{
     FieldAnswer, FieldKind, Hop, MailServers, Manual, SignInFault, SignInInput, edit_form,
 };
+use http_core::SharedHttp;
 
 const ADDRESS: &str = "ada@example.test";
 const STORED: &str = "stored-pw-example";

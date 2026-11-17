@@ -17,7 +17,6 @@ use account_fake_servers::{
     Running, autoconfig_xml, mailbox,
 };
 use account_family_generic::{DavLookup, FixedLookup, GenericProvider, MailLookup};
-use http_core::SharedHttp;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, SignInMode, SignInStart,
     SignInStep, Signed, parse_provider,
@@ -25,6 +24,7 @@ use account_provider::{
 use account_sheet::{FieldAnswer, FieldKind, SignInFault, SignInInput};
 use common::mail::{MailWorld, Wire};
 use common::{Fakes, Place, all_on, drive, plain, secret};
+use http_core::SharedHttp;
 
 fn spec(text: &str) -> ProviderSpec {
     parse_provider(text).expect("the shipped file")

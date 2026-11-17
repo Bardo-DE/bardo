@@ -5,9 +5,9 @@ use crate::stream::RelayStream;
 use account_client::{Grants, GrantsError, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
-use http_core::HttpError;
 use account_wire::Refusal;
 use base_url::{Origin, UrlScheme};
+use http_core::HttpError;
 use std::sync::Arc;
 
 /// Why a relay could not be had, as the client takes it.

@@ -12,8 +12,8 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
-use shell_launcher::UnixTime;
 use http_reqwest::{Limits, ReqwestHttp};
+use shell_launcher::UnixTime;
 
 use crate::clock::modified_of;
 

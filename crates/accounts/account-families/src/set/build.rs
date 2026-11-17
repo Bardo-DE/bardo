@@ -8,8 +8,8 @@ use account_core::AuthKind;
 use account_family_generic::{DavLookup, FixedLookup, GenericProvider, Lookup, MailLookup};
 use account_family_nextcloud::NextcloudProvider;
 use account_family_oauth::{BrowserIssuer, Google, Microsoft, OAuthEnv, OAuthProvider, Standard};
-use http_reqwest::ReqwestHttp;
 use account_provider::{Discovery, Issuer, ProviderSpec};
+use http_reqwest::ReqwestHttp;
 
 /// Nextcloud, when `spec` signs in by Login Flow v2.
 pub(super) fn nextcloud(spec: ProviderSpec, io: &FamilyIo) -> Built {

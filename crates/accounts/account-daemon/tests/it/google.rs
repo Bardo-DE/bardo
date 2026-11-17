@@ -19,7 +19,6 @@ use account_fake::{MemoryStore, RecordingAudit};
 use account_fake_servers::{Google, shipped};
 use account_families::DynProvider;
 use account_family_oauth::{Google as GoogleRules, OAuthEnv, OAuthProvider};
-use http_reqwest::ReqwestHttp;
 use account_oauth::{ClientRegistry, ClientTraits};
 use account_provider::{ClientChannel, ClientEntry, ClientId, ClientsFile, Issuer};
 use account_secrets::Secrets;
@@ -30,6 +29,7 @@ use base_time::FixedClock;
 use common::bus::PrivateBus;
 use common::host::{HostLog, SheetHost, send_input};
 use common::{Shared, Tap, caller, contains};
+use http_reqwest::ReqwestHttp;
 use std::sync::Arc;
 use std::time::Duration;
 

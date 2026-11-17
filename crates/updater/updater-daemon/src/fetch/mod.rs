@@ -2,8 +2,8 @@
 
 mod cache;
 mod feed;
-mod stage;
 mod http_fetch;
+mod stage;
 
 pub use cache::prune_cache;
 pub use feed::{FeedError, Fetched, latest, of_version};

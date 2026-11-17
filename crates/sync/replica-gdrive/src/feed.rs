@@ -18,12 +18,12 @@ use crate::addr::{Root, item_path, literal};
 use crate::json::{Change as Wire, ChangeList, File, FileList, StartToken};
 use crate::refuse::read_error;
 use crate::replica::GdriveReplica;
-use http_core::http::header::CONTENT_TYPE;
-use http_core::http::{Method, Response};
-use http_core::{Http, request};
 use base_ids::Bytes;
 use base_time::UnixSeconds;
 use base_url::WebUrl;
+use http_core::http::header::CONTENT_TYPE;
+use http_core::http::{Method, Response};
+use http_core::{Http, request};
 use sync_core::DELETED;
 use sync_core::status::unreached;
 use sync_core::{

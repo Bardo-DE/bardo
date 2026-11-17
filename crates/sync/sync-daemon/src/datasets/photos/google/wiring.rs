@@ -15,8 +15,8 @@ use crate::webdav::BuildError;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
-use http_relay::{RelayDial, RelayHttp, RelayLimits, Routed, bare_url};
 use base_url::{Origin, WebUrl};
+use http_relay::{RelayDial, RelayHttp, RelayLimits, Routed, bare_url};
 use std::sync::Arc;
 
 /// What the upload API sends through.

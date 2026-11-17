@@ -4,8 +4,8 @@
 //! within a size, and the cache is kept to a number of files and bytes.
 
 mod cache;
-mod http;
 mod fetcher;
+mod http;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};

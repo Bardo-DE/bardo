@@ -8,8 +8,8 @@
 
 use super::PimKind;
 use account_dav_proto::discover::{Home, Next, Reach, Scope, Walk};
-use http_core::{Http, HttpError};
 use base_url::WebUrl;
+use http_core::{Http, HttpError};
 
 /// One calendar or address book on the server.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -4,10 +4,10 @@
 use account_core::{EndpointUrl, LoginName, SecretText};
 use account_family_kit::Io;
 use account_family_kit::password::{basic, sensitive};
-use http_core::{Http, HttpError};
 use account_nextcloud_proto::Error;
 use account_nextcloud_proto::revoke::{self, Revoked};
 use account_provider::{ProviderError, RevokeOutcome};
+use http_core::{Http, HttpError};
 
 /// Deletes the app password. A server that already refuses it has nothing left to revoke; one
 /// without the endpoint (before Nextcloud 13) sends the person to their security settings.

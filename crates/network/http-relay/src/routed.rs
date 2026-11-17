@@ -7,9 +7,9 @@
 //! refuses for an origin the provider file does not declare). The replica itself never adds an
 //! `Authorization` header, so a credential cannot follow a link to another host.
 
+use base_url::{Origin, WebUrl};
 use http_core::http::{Request, Response};
 use http_core::{Http, HttpError};
-use base_url::{Origin, WebUrl};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, PoisonError};
 

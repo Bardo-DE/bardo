@@ -1,10 +1,10 @@
 //! [`RelayHttp`]: hyper's HTTP/1 connection over the streams a [`Dial`] opens.
 
+use http_body_util::combinators::UnsyncBoxBody;
+use http_body_util::{BodyExt, Full};
 use http_core::HttpError;
 use http_core::http::header::{ACCEPT_ENCODING, HOST, HeaderValue};
 use http_core::http::{Request, Response, StatusCode, Uri};
-use http_body_util::combinators::UnsyncBoxBody;
-use http_body_util::{BodyExt, Full};
 use hyper::body::{Body, Bytes, Incoming};
 use hyper::client::conn::http1::{self, SendRequest};
 use hyper_util::rt::TokioIo;

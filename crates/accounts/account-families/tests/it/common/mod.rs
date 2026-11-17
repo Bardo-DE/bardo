@@ -10,11 +10,11 @@ pub mod mail;
 
 use account_capability::KindToggle;
 use account_core::SecretText;
+use account_provider::{SignIn, SignInStep};
+use account_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput, SheetView};
 use http_core::http::{Request, Response};
 use http_core::{Http, HttpError};
 use http_reqwest::ReqwestHttp;
-use account_provider::{SignIn, SignInStep};
-use account_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput, SheetView};
 use std::sync::{Arc, Mutex};
 
 /// One place a name is served: `host`'s paths under `prefix` go to `port` on loopback.

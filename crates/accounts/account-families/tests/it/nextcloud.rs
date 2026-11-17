@@ -16,7 +16,6 @@ use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Request, Scheme, send};
 use account_fake_servers::{FakeNextcloud, LoginPolicy, NextcloudHandle, Running, shipped};
 use account_family_nextcloud::{NextcloudProvider, NextcloudSession};
-use http_core::{NoSleep, SharedHttp};
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, RevokeOutcome, SignInMode, SignInStart,
     SignInStep, Signed,
@@ -24,6 +23,7 @@ use account_provider::{
 use account_sheet::{FieldKind, SignInFault, SignInInput};
 use base_url::WebUrl;
 use common::{Fakes, all_on, plain};
+use http_core::{NoSleep, SharedHttp};
 use std::time::Duration;
 
 struct World {

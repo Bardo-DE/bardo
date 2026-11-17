@@ -1,11 +1,11 @@
 //! Recorded multistatus fixtures (the shapes Nextcloud and Sabre-based servers answer) through
 //! the replica, with a scripted HTTP seam in place of a server: no network, no socket.
 
-use http_core::http::{Request, Response};
-use http_core::{Http, HttpError};
 use base_ids::Bytes;
 use base_time::UnixSeconds;
 use base_url::WebUrl;
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
 use replica_webdav::WebDavReplica;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};

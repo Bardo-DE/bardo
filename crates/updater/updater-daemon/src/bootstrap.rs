@@ -4,7 +4,7 @@ use crate::clock::jitter_seed;
 use crate::config::Config;
 use crate::dirs::Dirs;
 use crate::elevate::{Helpers, Pkexec};
-use crate::fetch::{Source, HttpFetch};
+use crate::fetch::{HttpFetch, Source};
 use crate::keys::load_key;
 use crate::layout::Layout;
 use crate::service::{Anchor, Context};

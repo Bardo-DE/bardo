@@ -2,11 +2,11 @@
 //! token made into a media item. Pure over any [`Http`]; in syncd the `Http` is a relay that adds
 //! the bearer.
 
+use base_time::UnixSeconds;
+use base_url::WebUrl;
 use http_core::http::request::Builder;
 use http_core::http::{Method, Response, StatusCode};
 use http_core::{HeaderText, Http, HttpError, request};
-use base_time::UnixSeconds;
-use base_url::WebUrl;
 use serde::Deserialize;
 use sync_core::Clock;
 

@@ -7,12 +7,12 @@
 
 use account_fake_servers::dav::Behaviour;
 use account_fake_servers::{DavHandle, FakeDav, Running};
+use base_time::UnixSeconds;
+use base_url::WebUrl;
 use http_core::http::header::{AUTHORIZATION, HeaderValue};
 use http_core::http::{Request, Response};
 use http_core::{Http, HttpError};
 use http_relay::{Dial, RelayHttp, RelayLimits};
-use base_time::UnixSeconds;
-use base_url::WebUrl;
 use replica_webdav::WebDavReplica;
 use sync_core::Clock;
 use tokio::net::TcpStream;

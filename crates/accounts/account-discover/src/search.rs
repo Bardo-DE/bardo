@@ -21,10 +21,10 @@ use crate::found::{Cause, DiscoverFault, Found, SearchOptions, Source};
 use crate::mx::{ProviderLead, ispdb_candidates, lookup_mx, provider_leads};
 use crate::srv::{found_from_srv_with, lookup_srv};
 use account_core::Tls;
-use http_core::http::Method;
-use http_core::{Http, HttpError, request};
 use account_provider::{DomainMatch, ProviderSet};
 use base_url::WebUrl;
+use http_core::http::Method;
+use http_core::{Http, HttpError, request};
 use std::fmt;
 use std::sync::Arc;
 

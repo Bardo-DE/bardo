@@ -6,10 +6,10 @@
 //! task waits on a timer), so a loaded machine cannot make a gap longer than the idle time.
 
 use account_core::stream::{ByteStream, duplex};
+use base_url::WebUrl;
 use http_core::http::{Method, Request};
 use http_core::{Http, HttpError, request};
 use http_relay::{Dial, RelayHttp, RelayLimits, RelayStream};
-use base_url::WebUrl;
 use std::sync::Mutex;
 use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};

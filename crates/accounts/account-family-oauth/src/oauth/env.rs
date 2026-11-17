@@ -11,9 +11,9 @@
 
 use crate::env_common::{ClientFiles, Clock, Random, clients_now, clock_of, system_random};
 use account_core::EndpointUrl;
-use http_core::Http;
 use account_oauth::ClientRegistry;
 use account_provider::{ClientChannel, Issuer};
+use http_core::Http;
 use std::borrow::Cow;
 use std::sync::Arc;
 use std::time::Duration;

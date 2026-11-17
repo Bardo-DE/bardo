@@ -5,9 +5,9 @@
 
 use crate::exchange::{ExchangeFault, refresh};
 use account_core::{Credential, GrantedScopes};
-use http_core::Http;
 use account_provider::{ClientEntry, IssuerEndpoints};
 use base_time::UnixSeconds;
+use http_core::Http;
 
 pub use account_core::token::{RENEW_MARGIN_SECONDS, is_due};
 
@@ -82,8 +82,8 @@ mod tests {
 
     use crate::scripted::{Scripted, answer};
     use account_core::SecretText;
-    use http_core::HttpError;
     use account_provider::{ClientChannel, ClientId, Issuer};
+    use http_core::HttpError;
 
     fn client() -> ClientEntry {
         ClientEntry {
