@@ -1,11 +1,11 @@
 use super::*;
-use crate::attached::local_model;
 use crate::entries;
 use crate::lab::Lab;
 use account_capability::ModelId;
 use account_fake_servers::net::Bind;
 use base_testkit::Scratch;
 use inference_router::attached::config::{Attached, Place, Reach};
+use inference_router::attached::local_model;
 use inference_router::catalog::parse_entry_text;
 use inference_router::startup::Level;
 use std::sync::Mutex;

@@ -16,6 +16,7 @@ model-catalog = {path = "../../models/model-catalog"}
 rustix = {workspace = true, features = ["std", "process"]}
 
 [dev-dependencies]
+account-capability = {path = "../../accounts/account-capability"}
 base-testkit = {path = "../../base/base-testkit"}
 inference-router = {path = "../inference-router", features = ["testing"]}
 

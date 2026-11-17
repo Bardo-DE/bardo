@@ -7699,6 +7699,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "inference-agent-proto"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "base-ids",
+ "inference-core",
+ "serde_json",
+]
+
+[[package]]
 name = "inference-bridge"
 version = "0.1.0"
 dependencies = [
@@ -7807,11 +7818,14 @@ dependencies = [
  "hex",
  "http-core",
  "http-reqwest",
+ "inference-agent-proto",
  "inference-client",
  "inference-core",
  "inference-dbus",
+ "inference-fs",
  "inference-probe",
  "inference-router",
+ "inference-settings",
  "inference-tailnet",
  "inference-turns",
  "iso_currency",
@@ -7855,6 +7869,19 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "zbus",
+]
+
+[[package]]
+name = "inference-fs"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "base-secret",
+ "base-testkit",
+ "inference-bridge",
+ "inference-router",
+ "model-catalog",
+ "rustix 1.1.6",
 ]
 
 [[package]]
@@ -7909,9 +7936,29 @@ dependencies = [
  "model-openai-compat",
  "model-provider",
  "model-vision-prep",
- "rustix 1.1.6",
  "serde",
  "speech-provider",
+ "thiserror 2.0.21",
+ "toml",
+]
+
+[[package]]
+name = "inference-settings"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-core",
+ "account-match",
+ "base-ids",
+ "base-time",
+ "chrono",
+ "inference-core",
+ "inference-router",
+ "model-extract",
+ "model-provider",
+ "rust_decimal",
+ "serde",
+ "serde_json",
  "thiserror 2.0.21",
  "toml",
 ]
@@ -7952,7 +7999,9 @@ dependencies = [
  "engine-supervisor",
  "inference-bridge",
  "inference-core",
+ "inference-fs",
  "inference-router",
+ "inference-settings",
  "model-extract",
  "model-http",
  "model-http-reqwest",
