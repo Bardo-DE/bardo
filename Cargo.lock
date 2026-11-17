@@ -1025,6 +1025,7 @@ dependencies = [
  "action-review",
  "action-router",
  "action-settings",
+ "action-settings-fs",
  "action-store",
  "action-testbus",
  "action-vocab",
@@ -1323,6 +1324,7 @@ dependencies = [
  "action-manifest",
  "action-router",
  "action-settings",
+ "action-settings-fs",
  "action-testbus",
  "action-tools",
  "action-vocab",
@@ -1430,7 +1432,6 @@ name = "action-settings"
 version = "0.1.0"
 dependencies = [
  "action-core",
- "action-store",
  "action-vocab",
  "agent-registry",
  "model-provider",
@@ -1438,11 +1439,24 @@ dependencies = [
  "rust_decimal",
  "serde",
  "settings-store",
- "settings-store-fs",
- "tempfile",
  "thiserror 2.0.21",
  "toml",
  "toml_edit",
+]
+
+[[package]]
+name = "action-settings-fs"
+version = "0.1.0"
+dependencies = [
+ "action-core",
+ "action-settings",
+ "action-store",
+ "agent-registry",
+ "model-provider",
+ "rust_decimal",
+ "settings-store",
+ "settings-store-fs",
+ "tempfile",
 ]
 
 [[package]]
@@ -1587,6 +1601,7 @@ dependencies = [
  "action-manifest",
  "action-provider",
  "action-settings",
+ "action-settings-fs",
  "action-store",
  "action-vocab",
  "action-wire",
@@ -1692,6 +1707,7 @@ dependencies = [
  "action-core",
  "action-fake",
  "action-settings",
+ "action-settings-fs",
  "action-testbus",
  "action-vocab",
  "agent-acp-core",
@@ -3916,6 +3932,7 @@ dependencies = [
  "action-procroot",
  "action-router",
  "action-settings",
+ "action-settings-fs",
  "action-store",
  "action-testbus",
  "action-vocab",
@@ -4137,6 +4154,7 @@ dependencies = [
  "desktop-protocols",
  "jiff",
  "key-remap-client",
+ "key-remap-core",
  "keymap",
  "nix 0.31.3",
  "rustix 1.1.6",
@@ -8593,7 +8611,6 @@ dependencies = [
  "key-remap-proto",
  "keymap",
  "rustix 1.1.6",
- "shell-verbs",
  "tempfile",
 ]
 
@@ -8602,6 +8619,8 @@ name = "key-remap-core"
 version = "0.1.0"
 dependencies = [
  "key-remap-proto",
+ "keymap",
+ "shell-verbs",
  "thiserror 2.0.21",
  "toml",
 ]
@@ -12985,6 +13004,7 @@ name = "settings-app-files"
 version = "0.1.0"
 dependencies = [
  "action-settings",
+ "action-settings-fs",
  "agent-install",
  "agent-registry",
  "base-fs",
@@ -12992,10 +13012,12 @@ dependencies = [
  "freedesktop-icons",
  "key-remap-client",
  "keymap",
+ "memory-core",
  "serde_json",
  "settings-app-model",
  "settings-app-testkit",
  "settings-store",
+ "settings-store-fs",
  "settings-types",
  "thiserror 2.0.21",
  "toml",
@@ -13071,13 +13093,11 @@ dependencies = [
  "base-time",
  "inference-core",
  "inference-tailnet",
- "key-remap-client",
+ "key-remap-core",
  "keymap",
  "memory-core",
  "regex",
  "serde_json",
- "settings-app-testkit",
- "settings-store-fs",
  "settings-types",
  "toml",
  "ui-helpers",

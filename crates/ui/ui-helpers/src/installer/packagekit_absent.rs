@@ -10,11 +10,13 @@ pub struct PackageKit;
 
 impl PackageKit {
     /// The system's `PackageKit`; without `quire-desktop` there is none to reach.
+    #[must_use]
     pub fn system() -> PackageKit {
         PackageKit
     }
 
     /// Accepted for the same call sites as the real backend; there is no wait to bound.
+    #[must_use]
     pub fn with_timeouts(self, timeouts: Timeouts) -> PackageKit {
         let _ = timeouts;
         self

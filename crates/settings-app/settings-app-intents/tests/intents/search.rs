@@ -2,8 +2,8 @@
 //! from the catalogue; the provider itself answers no search and opens what a hit names.
 
 use crate::support::{World, entity};
-use settings_app_intents::search_entries;
 use settings_app_files::discover_under;
+use settings_app_intents::search_entries;
 use settings_app_model::{Catalogue, Notice, OriginRule, PageSlug};
 use settings_app_testkit::{Scratch, seed_schemas};
 

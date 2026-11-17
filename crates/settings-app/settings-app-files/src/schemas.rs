@@ -35,9 +35,11 @@ pub fn judge(rule: &OriginRule, dir: &Path) -> SchemaOrigin {
         .unwrap_or_else(|| origin_of_dir(dir))
 }
 
-/// The origin of `dir`: `System` only when the folder and every parent above it (after links
-/// are resolved) are root's and closed to everyone else, since a writable parent could swap
-/// the folder. A folder that cannot be read is the person's.
+/// The origin of `dir`.
+///
+/// `System` only when the folder and every parent above it (after links are resolved) are root's
+/// and closed to everyone else, since a writable parent could swap the folder. A folder that
+/// cannot be read is the person's.
 #[must_use]
 pub fn origin_of_dir(dir: &Path) -> SchemaOrigin {
     let Ok(real) = dir.canonicalize() else {

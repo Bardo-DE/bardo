@@ -36,6 +36,7 @@ impl AgentRecords for DiskRecords<'_> {
 /// The rows of `agents.toml` (its text) against the records in `dir`.
 ///
 /// Reads files; starts nothing. See [`action_settings::read_agents`].
+#[must_use]
 pub fn read_agents_in(agents_toml: &str, dir: &AgentsDir) -> Agents {
     read_agents(agents_toml, &DiskRecords(dir))
 }
