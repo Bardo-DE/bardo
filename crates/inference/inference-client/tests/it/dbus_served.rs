@@ -21,9 +21,9 @@ use common::served::{Gate, Route, Scripted};
 use inference_client::{DbusTransport, InferSession, Inference};
 use inference_core::testing::{Script, ScriptStep};
 use inference_core::{
-    AttachIndex, ClientFrame, ComputerUseBegin, ComputerUseStepReply, EmbedReply, EmbedRequest, EmbedRole,
-    EmbedVector, ImageSource, InferEvent, InferRefusal, InferReply, InferRequest, Readiness,
-    RequestKind, ServedBy, TurnUsage,
+    AttachIndex, ClientFrame, ComputerUseBegin, ComputerUseStepReply, EmbedReply, EmbedRequest,
+    EmbedRole, EmbedVector, ImageSource, InferEvent, InferRefusal, InferReply, InferRequest,
+    Readiness, RequestKind, ServedBy, TurnUsage,
 };
 use inference_router::session::RouteDecision;
 use std::sync::Arc;

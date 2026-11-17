@@ -16,9 +16,10 @@ use computer_use_capture::PixelBuf;
 use computer_use_run::{FrameAttachment, StepEvent, StepSink};
 use inference_client::{Transport, TransportError};
 use inference_core::{
-    AttachIndex, ClientFrame, ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, FrameImage, FrameLayout,
-    ImageSource, InferEvent, InferReply, InferSession, MaskedRegions, NoteFrom, OpenOptions,
-    PlaceRow, Readiness, ServedBy, SessionError, StepIndex, StepNote, TurnUsage, WindowGeometry,
+    AttachIndex, ClientFrame, ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest,
+    FrameImage, FrameLayout, ImageSource, InferEvent, InferReply, InferSession, MaskedRegions,
+    NoteFrom, OpenOptions, PlaceRow, Readiness, ServedBy, SessionError, StepIndex, StepNote,
+    TurnUsage, WindowGeometry,
 };
 use rustix::fs::{SealFlags, fcntl_get_seals};
 use std::collections::{BTreeSet, VecDeque};

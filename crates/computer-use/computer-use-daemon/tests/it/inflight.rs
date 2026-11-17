@@ -11,9 +11,8 @@ use computer_use_run::{
     ComputerUseModel, ComputerUseModelError, FrameAttachment, Parts, RunPhase, Seams, StepSink,
 };
 use inference_core::{
-    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TokenUsage,
+    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage,
 };
-use inference_core::{ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage};
 
 /// A model that never answers, and counts the sessions it was begun for.
 struct Mute {

@@ -18,10 +18,8 @@ use computer_use_action::{
 };
 use computer_use_run::{ComputerUseModel, ComputerUseModelError, FrameAttachment, StepSink};
 use inference_core::{
-    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TokenUsage,
+    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage,
 };
-use computer_use_run::{ComputerUseModel, ComputerUseModelError, FrameAttachment, StepSink};
-use inference_core::{ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage};
 use keyboard_types::Key;
 use std::collections::{BTreeSet, VecDeque};
 use std::str::FromStr;

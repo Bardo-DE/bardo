@@ -1,7 +1,9 @@
 //! The state and the values that go in and out of a session (data only).
 
 use base_ids::Tokens;
-use computer_use_action::{ActionProfile, ComputerUseAction, ComputerUseDialect, ModelSpace, Point, WindowSpace};
+use computer_use_action::{
+    ActionProfile, ComputerUseAction, ComputerUseDialect, ModelSpace, Point, WindowSpace,
+};
 use computer_use_parse::{Dropped, ParseError};
 use computer_use_vendors::StepResult;
 use model_provider::{

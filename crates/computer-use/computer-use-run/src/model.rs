@@ -4,7 +4,8 @@ use crate::screen::{ScreenRead, ScreenText};
 use crate::turn::FrameAttachment;
 use computer_use_action::{ComputerUseAction, WindowSpace};
 use inference_core::{
-    ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply, ComputerUseStepRequest, ModelError, ServedBy, TurnUsage,
+    ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply, ComputerUseStepRequest,
+    ModelError, ServedBy, TurnUsage,
 };
 use serde::{Deserialize, Serialize};
 

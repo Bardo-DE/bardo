@@ -20,8 +20,8 @@ use computer_use_session::{
 };
 use computer_use_vendors::StepResult;
 use inference_core::{
-    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, DropReason, DroppedAction, NoteFrom, PrevResult,
-    ServedBy, StepNote, TurnUsage,
+    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, DropReason, DroppedAction,
+    NoteFrom, PrevResult, ServedBy, StepNote, TurnUsage,
 };
 use model_catalog::{ModelEntry, parse_entry};
 use model_provider::{

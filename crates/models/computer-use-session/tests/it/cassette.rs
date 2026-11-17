@@ -13,7 +13,9 @@ use std::ops::ControlFlow;
 use std::sync::Mutex;
 
 use base_ids::Tokens;
-use computer_use_action::{ComputerUseAction, ComputerUseDialect, ModelSpace, TextDialect, ToolDialect};
+use computer_use_action::{
+    ComputerUseAction, ComputerUseDialect, ModelSpace, TextDialect, ToolDialect,
+};
 use computer_use_session::{ComputerUseSession, StepOutcome, TranscriptSink};
 use model_http::{BodyKind, BodySink, Exchange, HttpError, HttpStatus, ResponseHead, Transport};
 use model_openai_compat::{Flavor, OpenAiCodec};

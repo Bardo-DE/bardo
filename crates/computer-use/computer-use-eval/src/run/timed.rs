@@ -1,8 +1,12 @@
 //! A model with a stopwatch, and what it said.
 
 use computer_use_action::{ComputerUseAction, WindowSpace};
-use computer_use_run::{ComputerUseModel, ComputerUseModelError, FrameAttachment, StepEvent, StepSink};
-use inference_core::{ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage};
+use computer_use_run::{
+    ComputerUseModel, ComputerUseModelError, FrameAttachment, StepEvent, StepSink,
+};
+use inference_core::{
+    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TurnUsage,
+};
 use std::time::Instant;
 
 /// Whether a run's steps are timed.

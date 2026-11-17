@@ -27,9 +27,10 @@ const BY_SENSITIVITY: [DataClass; 13] = [
     DataClass::Public,
 ];
 
-/// The class a request over `labels` is sent as. A class this build has no place for (the accounts service
-/// added it after this list was written) counts as the most sensitive, so it is never sent as
-/// the app's own data.
+/// The class a request over `labels` is sent as.
+///
+/// A class this build has no place for (the accounts service added it after this list was
+/// written) counts as the most sensitive, so it is never sent as the app's own data.
 pub fn class_of<'a>(labels: impl IntoIterator<Item = &'a Label>) -> DataClass {
     let present: Vec<&Label> = labels.into_iter().collect();
     let classes = || present.iter().flat_map(|l| l.classes.iter().copied());

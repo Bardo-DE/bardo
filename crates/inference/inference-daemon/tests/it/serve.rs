@@ -14,8 +14,8 @@ use account_match::{ComputerUseNeed, SpeechNeed};
 use base_ids::{Count, Tokens};
 use inference_core::{
     AttachIndex, AudioFrame, AudioRate, Base64Bytes, ChatControl, ChatMessage, ChatReply,
-    ChatRequest, ClientFrame, ComputerUseBegin, ComputerUseStepReply, ImagePart, ImageSource, InferEvent,
-    InferRefusal, InferReply, InferRequest, MessagePart, ModelError, Role, StopReason,
+    ChatRequest, ClientFrame, ComputerUseBegin, ComputerUseStepReply, ImagePart, ImageSource,
+    InferEvent, InferRefusal, InferReply, InferRequest, MessagePart, ModelError, Role, StopReason,
     ToolParallelism, TranscribeBegin, TranscribeMode, TranscribeReply, TurnUsage,
 };
 use inference_daemon::serve_session;

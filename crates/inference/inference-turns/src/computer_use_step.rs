@@ -31,7 +31,8 @@ use inference_core::{
 };
 use inference_router::local::LocalModel;
 use model_provider::{
-    Batching, ComputerUseSupport, ImageInput, Limits, Provider, Reasoning, ToolCallId, ToolParallelism,
+    Batching, ComputerUseSupport, ImageInput, Limits, Provider, Reasoning, ToolCallId,
+    ToolParallelism,
 };
 use model_vision_prep::{Encoding, FrameMap, RawFrame, prepare};
 use std::ops::ControlFlow;

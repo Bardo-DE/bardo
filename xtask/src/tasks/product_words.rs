@@ -207,7 +207,7 @@ fn problems(root: &std::path::Path, files: &[String]) -> Result<Vec<String>> {
         for (number, line) in text.lines().enumerate() {
             if manifest {
                 if let Some(header) = line.trim().strip_prefix('[') {
-                    table = header.trim_end_matches(']').to_owned();
+                    header.trim_end_matches(']').clone_into(&mut table);
                 }
                 if !is_manifest_line(&table, line) {
                     continue;
