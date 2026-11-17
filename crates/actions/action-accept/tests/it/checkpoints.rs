@@ -19,17 +19,15 @@ use provenance::{ActionName, AgentRef, Label, Labelled, SpaceId};
 use std::path::Path;
 use std::process::Command;
 
-/// Whether git is there; a run that requires the tools fails without it, any other skips.
-fn git_is_here() -> bool {
-    let here = Command::new("git")
-        .arg("--version")
-        .output()
-        .is_ok_and(|out| out.status.success());
+/// Fails, saying so, where git is missing: it is a required test tool.
+fn require_git() {
     assert!(
-        here || std::env::var_os("BARDO_ACTIONS_REQUIRE_TOOLS").is_none(),
-        "git is required (BARDO_ACTIONS_REQUIRE_TOOLS is set)"
+        Command::new("git")
+            .arg("--version")
+            .output()
+            .is_ok_and(|out| out.status.success()),
+        "git is a required test tool (install git)"
     );
-    here
 }
 
 /// `git init` in `dir` with a HOME and a configuration of the world's own.
@@ -80,9 +78,7 @@ fn restore_call(session: &provenance::SessionId, point: i64, plan: &str) -> Call
     reason = "a test that builds one long scenario, read top to bottom"
 )]
 async fn a_turn_saves_a_point_and_the_person_restores_it_after_the_plan_and_the_sheet() {
-    if !git_is_here() {
-        return;
-    }
+    require_git();
     let world = World::start(&binaries(), Consent::Standing, FLOW_A).await;
     let work = world.dir.path().join("project");
     std::fs::create_dir_all(&work).expect("project folder");

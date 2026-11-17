@@ -61,9 +61,7 @@ impl Workbench for Bench {
 
 #[tokio::test]
 async fn the_git_store_keeps_the_store_contract() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let bare = scratch.path("bare");
     std::fs::create_dir_all(&bare).expect("bare folder");
     let bench = Bench {
@@ -100,9 +98,7 @@ fn their_history(scratch: &Scratch, repo: &Path) -> Vec<String> {
 
 #[tokio::test]
 async fn taking_and_planning_leave_the_persons_index_head_branches_and_stash_as_they_were() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     std::fs::write(repo.join("tracked.txt"), "v1").expect("write");
     scratch.git(&repo, &["add", "tracked.txt"]);
@@ -148,9 +144,7 @@ async fn taking_and_planning_leave_the_persons_index_head_branches_and_stash_as_
 
 #[tokio::test]
 async fn a_workspace_below_the_top_of_a_repository_is_saved_and_restored_by_its_own_paths() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     let work = repo.join("sub");
     std::fs::create_dir_all(&work).expect("sub");
@@ -187,9 +181,7 @@ async fn a_workspace_below_the_top_of_a_repository_is_saved_and_restored_by_its_
 
 #[tokio::test]
 async fn a_file_that_became_ignored_leaves_later_points_and_an_older_point_still_brings_it_back() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     let (kept, later) = (repo.join("a.txt"), repo.join("later.txt"));
     std::fs::write(&kept, "one").expect("write");
@@ -238,9 +230,7 @@ async fn a_file_that_became_ignored_leaves_later_points_and_an_older_point_still
 #[cfg(unix)]
 #[tokio::test]
 async fn a_restore_does_not_write_through_a_link_that_took_the_place_of_a_folder() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     std::fs::create_dir_all(repo.join("dir")).expect("dir");
     std::fs::write(repo.join("dir/f.txt"), "inside").expect("write");
@@ -280,9 +270,7 @@ async fn a_restore_does_not_write_through_a_link_that_took_the_place_of_a_folder
 #[tokio::test]
 async fn a_restore_that_fails_while_writing_deletes_nothing_and_says_it_stopped_part_way() {
     use std::os::unix::fs::PermissionsExt;
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     let (shut, kept) = (repo.join("shut"), repo.join("kept.txt"));
     std::fs::create_dir_all(&shut).expect("dir");

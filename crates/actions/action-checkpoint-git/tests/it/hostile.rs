@@ -18,9 +18,7 @@ fn script(path: &Path, marker: &Path) {
 
 #[tokio::test]
 async fn a_hook_a_filter_and_a_monitor_planted_in_the_folder_never_run() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     let (hook, filter, monitor) = (
         scratch.path("ran-hook"),

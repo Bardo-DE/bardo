@@ -34,9 +34,7 @@ fn recorded() -> (Arc<Mutex<Vec<GitError>>>, impl Fn(&GitError) + Send + Sync) {
 
 #[tokio::test]
 async fn a_command_past_its_deadline_is_killed_and_the_cause_is_a_timeout() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     let (seen, tell) = recorded();
     let limits = Limits {
@@ -57,9 +55,7 @@ async fn a_command_past_its_deadline_is_killed_and_the_cause_is_a_timeout() {
 
 #[tokio::test]
 async fn a_listing_over_the_output_limit_is_a_folder_too_large() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     std::fs::write(repo.join("a-long-enough-name.txt"), "x").expect("write");
     let limits = Limits {
@@ -75,9 +71,7 @@ async fn a_listing_over_the_output_limit_is_a_folder_too_large() {
 
 #[tokio::test]
 async fn a_failed_command_keeps_the_tail_of_its_stderr_for_the_log_only() {
-    let Some(scratch) = Scratch::new() else {
-        return;
-    };
+    let scratch = Scratch::new();
     let repo = scratch.repo("repo");
     std::fs::write(repo.join("a.txt"), "x").expect("write");
     let (seen, tell) = recorded();

@@ -19,18 +19,12 @@ fn git_exists() -> bool {
 }
 
 impl Scratch {
-    /// A scratch folder, or none when git is missing and the run does not require it.
-    pub fn new() -> Option<Scratch> {
-        if !git_exists() {
-            assert!(
-                std::env::var_os("BARDO_ACTIONS_REQUIRE_TOOLS").is_none(),
-                "git is required (BARDO_ACTIONS_REQUIRE_TOOLS is set)"
-            );
-            return None;
-        }
+    /// A scratch folder. Fails, saying so, where git is missing: it is a required test tool.
+    pub fn new() -> Scratch {
+        assert!(git_exists(), "git is a required test tool (install git)");
         let dir = tempfile::tempdir().expect("scratch folder");
         std::fs::create_dir_all(dir.path().join("home")).expect("home");
-        Some(Scratch { dir })
+        Scratch { dir }
     }
 
     pub fn path(&self, name: &str) -> PathBuf {
