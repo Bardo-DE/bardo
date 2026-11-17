@@ -1,7 +1,7 @@
 //! Running a call to a peer under a [`Deadline`].
 
 use crate::Deadline;
-use dbus_kit::timeout::{TimedOut, within as bounded};
+use base_time::timeout::{TimedOut, within as bounded};
 use std::time::Duration;
 
 /// A peer that did not answer inside its deadline. The words are for a person: "The package

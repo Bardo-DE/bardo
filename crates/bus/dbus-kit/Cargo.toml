@@ -13,9 +13,6 @@ dbus-kit-macros = { path = "../dbus-kit-macros" }
 zbus = { workspace = true }
 tokio = { workspace = true, features = ["time", "macros"], optional = true }
 thiserror = { workspace = true }
-# A wall-clock delay on its own timer thread, so a bound works under any executor (zbus's own,
-# tokio, a test's block_on).
-futures-timer = { workspace = true }
 
 [features]
 # zbus runs on tokio, as every daemon of the desktop does. A program on zbus's own executor turns

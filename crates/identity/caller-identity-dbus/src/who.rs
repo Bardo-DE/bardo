@@ -12,7 +12,7 @@ use caller_identity_core::{
     UnitName, WhyNot, judge,
 };
 use caller_identity_linux::{Alive, Pinned, Prober, ProcFs, RealProc};
-use dbus_kit::timeout::{TimedOut, within};
+use base_time::timeout::{TimedOut, within};
 use std::os::fd::AsFd;
 use std::sync::Arc;
 use zbus::Connection;

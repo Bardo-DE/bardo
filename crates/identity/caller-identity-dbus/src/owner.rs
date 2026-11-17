@@ -6,7 +6,7 @@ use crate::manager::UnitSource;
 use crate::who::BusPeers;
 use caller_identity_core::{Refused, Requirement};
 use caller_identity_linux::ProcFs;
-use dbus_kit::timeout::{TimedOut, within};
+use base_time::timeout::{TimedOut, within};
 use std::future::poll_fn;
 use std::pin::Pin;
 use zbus::export::futures_core::Stream;

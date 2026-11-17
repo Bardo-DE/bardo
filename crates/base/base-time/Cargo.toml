@@ -11,6 +11,12 @@ publish.workspace = true
 [dependencies]
 chrono = { workspace = true, features = ["alloc"] }
 serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+# `within`'s bound: a wall-clock delay on its own timer thread, so it works under any executor.
+futures-timer = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt", "time"] }
 
 [lints]
 workspace = true

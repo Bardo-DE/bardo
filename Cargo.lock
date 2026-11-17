@@ -2915,7 +2915,10 @@ name = "base-time"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "futures-timer",
  "serde",
+ "thiserror 2.0.21",
+ "tokio",
 ]
 
 [[package]]
@@ -3453,6 +3456,7 @@ dependencies = [
 name = "caller-identity-dbus"
 version = "0.1.0"
 dependencies = [
+ "base-time",
  "caller-identity-core",
  "caller-identity-linux",
  "dbus-kit",
@@ -5278,7 +5282,6 @@ name = "dbus-kit"
 version = "0.1.0"
 dependencies = [
  "dbus-kit-macros",
- "futures-timer",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
@@ -15803,7 +15806,7 @@ dependencies = [
 name = "ui-peer"
 version = "0.1.0"
 dependencies = [
- "dbus-kit",
+ "base-time",
  "thiserror 2.0.21",
  "tokio",
 ]

@@ -12,7 +12,7 @@ publish.workspace = true
 caller-identity-linux = {path = "../caller-identity-linux"}
 caller-identity-core = {path = "../caller-identity-core"}
 zbus = {workspace = true}
-dbus-kit = {path = "../../bus/dbus-kit", default-features = false}
+base-time = { path = "../../base/base-time" }
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt"], optional = true}
 
@@ -20,8 +20,8 @@ tokio = {workspace = true, features = ["rt"], optional = true}
 # zbus runs on its own executor by default. A tokio program turns `default-features` off and
 # `tokio` on: zbus then runs on that runtime and `Offload::Tokio` becomes available.
 default = ["async-io"]
-async-io = ["zbus/async-io", "dbus-kit/async-io"]
-tokio = ["dep:tokio", "zbus/tokio", "dbus-kit/tokio"]
+async-io = ["zbus/async-io"]
+tokio = ["dep:tokio", "zbus/tokio"]
 # Test seams (`BusPeers::introduce`); a shipped binary never enables it.
 fake = ["caller-identity-linux/fake"]
 # Forwarded to caller-identity-core (`roles`).

@@ -8,7 +8,7 @@ use caller_identity_core::{
     DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
 };
 use caller_identity_linux::{ProcFs, path_trust};
-use dbus_kit::timeout::{TimedOut, within};
+use base_time::timeout::{TimedOut, within};
 use std::collections::HashMap;
 use std::path::Path;
 use zbus::Connection;
