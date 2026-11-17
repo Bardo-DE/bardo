@@ -150,6 +150,8 @@ fn only_one_opener_holds_the_opening_lock_at_a_time() {
             thread::spawn(|| {
                 let _opening = blitz_embed::adapter::opening();
                 assert_eq!(INSIDE.fetch_add(1, Ordering::SeqCst), 0);
+                // Holds the lock long enough for another opener to overlap if the lock failed:
+                // a best-effort window for a race, not a wait for anything.
                 thread::sleep(Duration::from_millis(5));
                 INSIDE.fetch_sub(1, Ordering::SeqCst);
             })

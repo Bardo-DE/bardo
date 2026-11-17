@@ -58,7 +58,9 @@ async fn a_tailscale_that_is_starting_changes_nothing() {
     let (fake, api) = fake("observe-starting", Daemon::Running(network(&a))).await;
     let (_observer, seen) = observed(&api).await;
     fake.set(Daemon::Changing);
-    // Starting settles nothing: what was known stays (the look is made again soon).
+    // Starting settles nothing: what was known stays (the look is made again soon). Best-effort
+    // absence check: a look that settles nothing publishes nothing, so there is no event to wait
+    // on; the pause lets a wrong "gone" show, and the quiet look above proves a look is seen.
     tokio::time::sleep(std::time::Duration::from_millis(800)).await;
     assert!(seen.borrow().is_some(), "still this computer");
 }
