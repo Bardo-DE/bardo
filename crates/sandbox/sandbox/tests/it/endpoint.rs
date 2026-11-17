@@ -1,5 +1,5 @@
 //! The endpoint-only mode for real: bubblewrap, the forwarder binary, the bridge, and a loopback
-//! listener standing in for a model endpoint. Skips, with a printed reason, where bwrap, user
+//! listener standing in for a model endpoint. Fails, saying what is missing, where bwrap, user
 //! namespaces or a loopback are missing. Scratch directories only.
 
 use base_path::AbsPath;
@@ -21,7 +21,7 @@ fn abs(path: &Path) -> AbsPath {
     AbsPath::parse(path.to_str().expect("utf8")).expect("abs")
 }
 
-fn run_in_sandbox(program: &Path, net: AgentNet, cwd: &Path, script: &str) -> Option<String> {
+fn run_in_sandbox(program: &Path, net: AgentNet, cwd: &Path, script: &str) -> String {
     let env = vec![EnvVar {
         name: "PATH".to_owned(),
         value: "/usr/bin:/bin".to_owned(),
@@ -35,21 +35,19 @@ fn run_in_sandbox(program: &Path, net: AgentNet, cwd: &Path, script: &str) -> Op
         .stdin(Stdio::null())
         .stderr(Stdio::null())
         .output()
-        .ok()?;
-    Some(String::from_utf8_lossy(&out.stdout).into_owned())
+        .unwrap_or_else(|e| panic!("bwrap at {} did not run: {e}", program.display()));
+    String::from_utf8_lossy(&out.stdout).into_owned()
 }
 
-fn rig() -> Option<(std::path::PathBuf, TcpListener, tempfile::TempDir)> {
+fn rig() -> (std::path::PathBuf, TcpListener, tempfile::TempDir) {
     let Some(program) = bwrap() else {
         panic!("bwrap is a required test tool (install bubblewrap)");
     };
-    let Ok(listener) = TcpListener::bind("127.0.0.1:0") else {
-        eprintln!("SKIP endpoint test: no loopback here");
-        return None;
-    };
+    let listener = TcpListener::bind("127.0.0.1:0")
+        .unwrap_or_else(|e| panic!("the endpoint tests need a loopback interface: {e}"));
     let dir = tempfile::tempdir().expect("scratch");
     std::fs::create_dir_all(dir.path().join("work/app")).expect("cwd");
-    Some((program, listener, dir))
+    (program, listener, dir)
 }
 
 const CLIENT: &str =
@@ -57,9 +55,7 @@ const CLIENT: &str =
 
 #[test]
 fn the_agent_reaches_the_endpoint_through_the_forwarder_and_the_bridge() {
-    let Some((program, listener, dir)) = rig() else {
-        return;
-    };
+    let (program, listener, dir) = rig();
     let port = listener.local_addr().expect("addr").port();
     let cwd = dir.path().join("work/app");
     let socket = dir.path().join("ep.sock");
@@ -77,32 +73,26 @@ fn the_agent_reaches_the_endpoint_through_the_forwarder_and_the_bridge() {
         port,
     ));
     let script = CLIENT.replace("PORT", &port.to_string());
-    let Some(out) = run_in_sandbox(&program, net, &cwd, &script) else {
-        return;
-    };
-    if out.is_empty() {
-        eprintln!("SKIP endpoint test: the sandbox did not start here");
-        return;
-    }
+    let out = run_in_sandbox(&program, net, &cwd, &script);
+    assert!(
+        !out.is_empty(),
+        "the sandbox did not start (bwrap needs user namespaces)"
+    );
     assert_eq!(out.trim(), "got pong");
     server.join().expect("server");
 }
 
 #[test]
 fn without_the_forwarder_the_hosts_loopback_is_unreachable() {
-    let Some((program, listener, dir)) = rig() else {
-        return;
-    };
+    let (program, listener, dir) = rig();
     let port = listener.local_addr().expect("addr").port();
     let cwd = dir.path().join("work/app");
     let script = format!("{}; echo done", CLIENT.replace("PORT", &port.to_string()));
-    let Some(out) = run_in_sandbox(&program, AgentNet::None, &cwd, &script) else {
-        return;
-    };
-    if !out.contains("done") {
-        eprintln!("SKIP endpoint test: the sandbox did not start here");
-        return;
-    }
+    let out = run_in_sandbox(&program, AgentNet::None, &cwd, &script);
+    assert!(
+        out.contains("done"),
+        "the sandbox did not start (bwrap needs user namespaces): {out:?}"
+    );
     assert!(!out.contains("got"), "{out}");
     listener.set_nonblocking(true).expect("nonblocking");
     assert!(

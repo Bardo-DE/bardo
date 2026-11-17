@@ -50,20 +50,20 @@ async fn a_confined_process_speaks_lines_over_its_stdio_with_exactly_the_environ
         AgentNet::None,
     );
     let mut procs = BwrapProcs::new(sandbox, root.path().to_owned());
-    let Ok((wire, mut proc)) = procs.start(&run).await else {
-        eprintln!("SKIP real process test: the sandbox did not start here");
-        return;
-    };
+    let (wire, mut proc) = procs.start(&run).await.unwrap_or_else(|e| {
+        panic!("the sandbox did not start (bwrap and user namespaces are required): {e}")
+    });
     let StdioWire {
         mut stdout,
         mut stdin,
     } = wire;
     stdin.write_all(b"hello\n").await.expect("write");
     let mut first = String::new();
-    if stdout.read_line(&mut first).await.unwrap_or(0) == 0 {
-        eprintln!("SKIP real process test: the sandbox did not run here");
-        return;
-    }
+    assert_ne!(
+        stdout.read_line(&mut first).await.unwrap_or(0),
+        0,
+        "the sandbox started but ran nothing (bwrap needs user namespaces)"
+    );
     assert_eq!(first.trim_end(), "got hello");
     let mut names = Vec::new();
     loop {

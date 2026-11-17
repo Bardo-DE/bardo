@@ -468,20 +468,16 @@ fn timed(stream: &UnixStream) {
         .expect("timeout");
 }
 
-fn listener() -> Option<(TcpListener, u16)> {
-    let Ok(listener) = TcpListener::bind("127.0.0.1:0") else {
-        eprintln!("SKIP egress proxy test: no loopback here");
-        return None;
-    };
+fn listener() -> (TcpListener, u16) {
+    let listener = TcpListener::bind("127.0.0.1:0")
+        .unwrap_or_else(|e| panic!("the egress proxy tests need a loopback interface: {e}"));
     let port = listener.local_addr().expect("addr").port();
-    Some((listener, port))
+    (listener, port)
 }
 
 #[test]
 fn a_connect_tunnel_reaches_the_resolved_address_and_carries_early_bytes() {
-    let Some((server, port)) = listener() else {
-        return;
-    };
+    let (server, port) = listener();
     let rig = rig(port);
     let echo = std::thread::spawn(move || {
         let (mut conn, _) = server.accept().expect("accept");
@@ -518,9 +514,7 @@ fn a_connect_tunnel_reaches_the_resolved_address_and_carries_early_bytes() {
 
 #[test]
 fn a_plain_request_is_forwarded_unchanged() {
-    let Some((server, port)) = listener() else {
-        return;
-    };
+    let (server, port) = listener();
     let rig = rig(port);
     let request = format!(
         "GET http://files.example.test:{port}/x?y=1 HTTP/1.1\r\nHost: files.example.test\r\n\r\n"
@@ -557,9 +551,7 @@ fn a_plain_request_is_forwarded_unchanged() {
 fn refusals_answer_in_plain_text_and_never_connect() {
     // The listener is never accepted on: a connect that got through would still succeed in the
     // kernel's queue, so the journal is what proves the verdict.
-    let Some((_server, port)) = listener() else {
-        return;
-    };
+    let (_server, port) = listener();
     let rig = rig(port);
     let rows: Vec<(String, &str, Option<&str>, Outcome)> = vec![
         (

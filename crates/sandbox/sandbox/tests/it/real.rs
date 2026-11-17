@@ -1,4 +1,4 @@
-//! The real sandbox (bubblewrap). Each test skips, with a printed reason, where bwrap is missing
+//! The real sandbox (bubblewrap). Each test fails, saying why, where bwrap is missing
 //! or the kernel refuses user namespaces (a locked-down build jail may). They use a scratch directory as
 //! the working directory and never the real home.
 
@@ -8,28 +8,31 @@ use sandbox::{
 };
 use std::path::Path;
 
-fn sandbox() -> Option<BwrapSandbox> {
+fn sandbox() -> BwrapSandbox {
     sandbox_with(&Hardening::default())
 }
 
-/// A sandbox for `hardening`, or `None` (printing why) where this host cannot make one. Where
-/// there is no systemd user manager the default (cgroup) limits are refused, and the test falls
-/// back to rlimits so the rest of the sandbox is still exercised.
-fn sandbox_with(hardening: &Hardening) -> Option<BwrapSandbox> {
+/// A sandbox for `hardening`. Where there is no systemd user manager the default (cgroup) limits
+/// are refused, and the test falls back to rlimits so the rest of the sandbox is still
+/// exercised. Panics, saying why, where this host cannot make one at all.
+fn sandbox_with(hardening: &Hardening) -> BwrapSandbox {
     let path = std::env::var("PATH").unwrap_or_default();
     let session = UserSession::from_env();
     let rlimit = Hardening {
         limits: LimitPolicy::Rlimit(Limits::default()),
         ..hardening.clone()
     };
+    let mut refusals = Vec::new();
     for h in [hardening, &rlimit] {
         match BwrapSandbox::detect_with(&path, h, &session) {
-            Ok(s) => return Some(s),
-            Err(why) => eprintln!("real sandbox: {why}"),
+            Ok(s) => return s,
+            Err(why) => refusals.push(why.to_string()),
         }
     }
-    eprintln!("SKIP real sandbox test");
-    None
+    panic!(
+        "no real sandbox here (bwrap and user namespaces are required test tools): {}",
+        refusals.join("; ")
+    );
 }
 
 fn launch(cwd: &Path, line: &[&str]) -> Launch {
@@ -65,7 +68,7 @@ fn scratch() -> (tempfile::TempDir, std::path::PathBuf) {
 
 #[test]
 fn a_write_inside_the_cwd_works_and_one_outside_fails() {
-    let Some(sandbox) = sandbox() else { return };
+    let sandbox = sandbox();
     let (root, cwd) = scratch();
     let sibling = root.path().join("work/other");
     std::fs::create_dir_all(&sibling).expect("sibling");
@@ -92,11 +95,11 @@ fn a_write_inside_the_cwd_works_and_one_outside_fails() {
 
 #[test]
 fn the_network_is_unreachable() {
-    let Some(sandbox) = sandbox() else { return };
-    if !Path::new("/usr/bin/bash").exists() && !Path::new("/bin/bash").exists() {
-        eprintln!("SKIP network test: no bash to open /dev/tcp");
-        return;
-    }
+    let sandbox = sandbox();
+    assert!(
+        Path::new("/usr/bin/bash").exists() || Path::new("/bin/bash").exists(),
+        "bash is a required test tool: it opens /dev/tcp"
+    );
     let (_root, cwd) = scratch();
     let mut shell = Shell::new(sandbox);
     // A listener on the host's loopback: the sandbox has its own loopback, so it cannot reach it.
@@ -131,7 +134,7 @@ fn the_network_is_unreachable() {
 
 #[test]
 fn the_environment_carries_no_secrets_and_a_fixed_home() {
-    let Some(sandbox) = sandbox() else { return };
+    let sandbox = sandbox();
     let (_root, cwd) = scratch();
     let mut shell = Shell::new(sandbox);
     let (out, exit) = run(&mut shell, &cwd, "env; ls /home /root /var/log 2>&1; true");
@@ -160,7 +163,7 @@ fn the_environment_carries_no_secrets_and_a_fixed_home() {
 /// ends the command by signal (a step; it used to be a test of its own).
 #[test]
 fn a_kill_straight_after_create_ends_everything() {
-    let Some(sandbox) = sandbox() else { return };
+    let sandbox = sandbox();
     let (_root, cwd) = scratch();
     let mut shell = Shell::new(sandbox);
     for round in 0..25 {
@@ -190,7 +193,7 @@ fn a_kill_straight_after_create_ends_everything() {
 fn parallel_kills_straight_after_create_end_everything() {
     const THREADS: usize = 16;
     const ROUNDS: usize = 12;
-    let Some(sandbox) = sandbox() else { return };
+    let sandbox = sandbox();
     let (_root, cwd) = scratch();
     let stuck: usize = std::thread::scope(|scope| {
         let workers: Vec<_> = (0..THREADS)
@@ -225,7 +228,7 @@ fn parallel_kills_straight_after_create_end_everything() {
 
 #[test]
 fn a_cwd_that_is_not_a_directory_or_is_too_shallow_cannot_be_sandboxed() {
-    let Some(sandbox) = sandbox() else { return };
+    let sandbox = sandbox();
     let mut shell = Shell::new(sandbox);
     for bad in ["/", "/home", "/does/not/exist/at/all"] {
         let ask = Launch::new(
@@ -252,9 +255,7 @@ fn the_cpu_time_limit_reaches_the_command() {
         }),
         ..Hardening::default()
     };
-    let Some(sandbox) = sandbox_with(&hardening) else {
-        return;
-    };
+    let sandbox = sandbox_with(&hardening);
     let (_root, cwd) = scratch();
     let mut shell = Shell::new(sandbox);
     let (out, exit) = run(&mut shell, &cwd, "ulimit -t");
@@ -266,11 +267,11 @@ fn the_cpu_time_limit_reaches_the_command() {
 /// leaves ordinary work alone.
 #[test]
 fn the_default_filter_blocks_a_nested_user_namespace() {
-    let Some(sandbox) = sandbox() else { return };
-    if !Path::new("/usr/bin/unshare").exists() {
-        eprintln!("SKIP seccomp test: no unshare");
-        return;
-    }
+    let sandbox = sandbox();
+    assert!(
+        Path::new("/usr/bin/unshare").exists(),
+        "unshare is a required test tool (util-linux)"
+    );
     let (_root, cwd) = scratch();
     let mut shell = Shell::new(sandbox);
     let (out, exit) = run(&mut shell, &cwd, "unshare -U true; echo status=$?");

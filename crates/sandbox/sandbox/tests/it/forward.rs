@@ -43,10 +43,8 @@ fn the_bridge_reaches_the_ipv4_loopback_and_nothing_else() {
 
 #[test]
 fn a_connection_to_the_bridge_socket_reaches_the_loopback_listener() {
-    let Ok(listener) = TcpListener::bind("127.0.0.1:0") else {
-        eprintln!("SKIP bridge test: no loopback here");
-        return;
-    };
+    let listener = TcpListener::bind("127.0.0.1:0")
+        .unwrap_or_else(|e| panic!("the bridge test needs a loopback interface: {e}"));
     let port = listener.local_addr().expect("addr").port();
     let dir = tempfile::tempdir().expect("scratch");
     let socket = dir.path().join("ep.sock");

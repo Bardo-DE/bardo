@@ -126,10 +126,10 @@ async fn a_process_in_the_sandbox_with_no_network_reaches_its_sessions_edge_and_
     };
     let socket = base_path::AbsPath::parse(edge.bind().socket.as_str()).expect("abs");
     let listing = run(&socket, edge.token().reveal()).expect("bwrap runs");
-    if listing.trim().is_empty() {
-        eprintln!("SKIP edge sandbox test: namespaces are denied here");
-        return;
-    }
+    assert!(
+        !listing.trim().is_empty(),
+        "the sandbox listed nothing (bwrap needs user namespaces)"
+    );
     assert!(listing.contains("mail__mail_thread_read"), "{listing}");
     // A wrong token from inside is a stranger, and the answer says nothing more.
     let wrong = run(&socket, &"0".repeat(64)).expect("bwrap runs");
