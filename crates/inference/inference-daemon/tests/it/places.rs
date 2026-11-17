@@ -8,6 +8,7 @@ use account_callers::Caller;
 use account_capability::ModelId;
 use account_capability::Tier;
 use account_core::{AppId, AppName, DataClass, Isolation};
+use caller_role_types::CallerRole;
 use hosting::accountd::{FakeAccount, Standing};
 use hosting::engine::{Chat, Script};
 use hosting::entries;
@@ -16,7 +17,6 @@ use hosting::rig::{Hosted, Plan, Trust, World};
 use inference_client::{ClientError, TransportError};
 use inference_core::{ComputerName, PlaceKind, PlaceRow, PlaceState, Takes};
 use inference_daemon::{Attached, Place, Reach};
-use caller_role_types::CallerRole;
 
 fn app(name: &str) -> AppId {
     AppId {

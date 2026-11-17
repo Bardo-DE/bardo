@@ -131,7 +131,7 @@ async fn answered(bus: &bus::PrivateBus, proc_root: &Path, table: Table) -> (boo
     daemon.owns_its_name(&dbus).await;
     let proxy = InferenceProxy::new(&client).await.expect("proxy");
     let need = need_to_dbus(&Need::Llm(LlmNeed::new(
-        Default::default(),
+        std::collections::BTreeSet::default(),
         base_ids::Tokens(1),
     )));
     let reply = bus::within(
