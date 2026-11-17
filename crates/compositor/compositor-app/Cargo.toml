@@ -31,7 +31,7 @@ compositor-motion = {path = "../compositor-motion"}
 compositor-render = {path = "../compositor-render"}
 compositor-icons = {path = "../compositor-icons"}
 compositor-chrome = {path = "../compositor-chrome"}
-compositor-wayland = {path = "../compositor-wayland", features = ["bardo"]}
+compositor-wayland = {path = "../compositor-wayland", features = ["shell-protocols"]}
 compositor-backend = {path = "../compositor-backend"}
 compositor-agent = {path = "../compositor-agent"}
 compositor-ipc = {path = "../compositor-ipc"}

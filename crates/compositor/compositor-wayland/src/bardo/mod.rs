@@ -1,6 +1,6 @@
 //! The private `bardo_*` protocols served to the shell and the agent tier (P2-Z.
 //!
-//! Behind the crate's `bardo` feature, A8): `bardo_desktop_manager_v1` (the desktop model of apps,
+//! Behind the crate's `shell-protocols` feature, A8): `bardo_desktop_manager_v1` (the desktop model of apps,
 //! windows and Spaces) and `bardo_shell_v1` (the shell's surface roles and the events only the
 //! compositor sees). `bardo_window_manager_v1`, which every app may use, stays beside the standard
 //! protocols in [`crate::bardo_window`].

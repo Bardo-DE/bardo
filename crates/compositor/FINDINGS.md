@@ -1451,7 +1451,7 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
   (a `Tier` beside the sandbox table); `LayerBook::role_holder`; the model's routing of both new events
   (`model/desktop_requests.rs`, `model/shell_requests.rs`: roles, dock-local minimise targets, and every desktop ask that
   an existing machine already carries, reached through `wlr_request`, `place`, `workspace_request`, `activation`,
-  `hide_app`, `hide_others`, `close_all_of`). `casement-wayland`: feature `bardo` (A8), `bardo::{desktop, shell}`
+  `hide_app`, `hide_others`, `close_all_of`). `casement-wayland`: feature `shell-protocols` (A8), `bardo::{desktop, shell}`
   with the part, handler trait, global and object dispatch, the refusal of management on an agent connection
   (`Standing`), the object makers, and `capture_source` (types, the book, `capture_size`, the part);
   `window_of_identifier`. `casement-agent`: `Handed`, `RefuseWhy::NoSocket`. `casement-ipc`: `Compositor1` (object, types,
@@ -1489,7 +1489,7 @@ Nothing here compiled or run (the lane does not build). Plan: 20 §4.15 and §4.
   (`minimise_rects`) exists. `Model::activate_app`, `hide_app`, `unhide_app`, `hide_others` and `close_all_of` exist, so only
   `ToSpace`, `Assign` and Space `MoveTo` are stubs in the model; `ForceQuit` and `Reopen` answer `CoreNote::Deferred` (P3 and P4).
   `Model::step` had to grow two arms; 04's wording ("`bardo_toplevel`, `bardo_space`") is superseded by `bardo_desktop_v1` (C6).
-- **A8 is partial.** The `bardo` feature gates the two new servers and their `WaylandStates` fields. `bardo_window` stays
+- **A8 is partial.** The `shell-protocols` feature gates the two new servers and their `WaylandStates` fields. `bardo_window` stays
   outside it: every app and shell-host's identity probe use it, and moving it needs a conditional field in the P0 aggregate for
   no consumer yet. `casement` names the feature explicitly; the workspace dependency keeps the default.
 - **Open items this freeze adds.** (1) A dock's `set_minimise_target` and a window-list client's `set_rectangle` write one
