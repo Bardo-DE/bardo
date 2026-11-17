@@ -169,8 +169,10 @@ step "removing"
 for entry in "${found[@]}"; do
   kind=${entry%% *}
   path=${entry#* }
+  # Every found path is absolute (the finders add them that way); refuse anything else before rm -rf.
+  case $path in /?*) ;; *) echo "old-layout.sh: refusing to remove '$path'" >&2; exit 1 ;; esac
   note "remove: $destdir$path"
-  [ "$dry" = 1 ] || { if [ "$kind" = tree ]; then rm -rf -- "${destdir:?}$path"; else rm -f -- "$destdir$path"; fi; }
+  [ "$dry" = 1 ] || { if [ "$kind" = tree ]; then rm -rf -- "$destdir$path"; else rm -f -- "$destdir$path"; fi; }
 done
 # The folders the old caller tables lived in, when nothing else is left in them.
 if [ "$dry" = 0 ]; then
