@@ -3,8 +3,8 @@
 use crate::config_file::ConfigFile;
 use crate::origin::{OriginRule, SchemaOrigin};
 use crate::warning::{StaleReason, Warning};
-use std::path::PathBuf;
 use settings_types::schema::{AgentSetting, AppId, Footnote, ForeignTables, KeySpec, Schema};
+use std::path::PathBuf;
 
 /// The schema `version` this app reads.
 const SUPPORTED_VERSION: u16 = 1;

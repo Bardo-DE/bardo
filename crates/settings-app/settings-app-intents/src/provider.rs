@@ -19,9 +19,9 @@ use settings_app_model::{
     AgentSetting, Arrival, Catalogue, Control, KeyEntry, Notice, Outbox, PageSlug, TextFault,
     arrival, show_value,
 };
-use std::sync::{Arc, Mutex, MutexGuard};
 use settings_types::schema::KeyPath;
 use settings_types::target::SettingsTarget;
+use std::sync::{Arc, Mutex, MutexGuard};
 
 /// The most things a suggestion or a preview lists.
 const LISTED: usize = 20;

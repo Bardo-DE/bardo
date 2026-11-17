@@ -10,8 +10,8 @@ use crate::support::drive::{click, scroll_into_view};
 use crate::support::inferd::Inferd;
 use settings_app_model::{ASSISTANT_MODEL_SLUG, EngineStanding, InstallScope, PageSlug};
 use settings_app_ui::Opening;
-use ui_harness::{Harness, Input};
 use settings_dbus::Verdict;
+use ui_harness::{Harness, Input};
 
 const MODEL_BUTTON: &str = ".assistant-model .ds-popup .ds-button";
 const ENGINE_BUTTON: &str = "#picker-engine-ai-model-text-balanced .ds-popup .ds-button";

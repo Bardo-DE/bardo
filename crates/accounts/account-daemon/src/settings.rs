@@ -34,9 +34,9 @@ use account_wire::AccountsReply;
 use account_wire::ParentWindow;
 use account_wire::names::ACCOUNTS_SETTINGS_PATH;
 use base_fs::atomic::AtomicFile;
-use std::sync::Arc;
 use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Snapshot, Verdict, serve};
 use settings_types::schema::KeyPath;
+use std::sync::Arc;
 use zbus::Connection;
 
 /// The settings module's path.

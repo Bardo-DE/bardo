@@ -4,8 +4,11 @@
 use super::*;
 use crate::Absence;
 use crate::picker::Described;
+use settings_types::schema::{
+    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
+    LiveAction, Page, Section,
+};
 use std::collections::BTreeMap;
-use settings_types::schema::{ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page, Section};
 
 pub(super) fn path(text: &str) -> KeyPath {
     KeyPath(text.to_owned())

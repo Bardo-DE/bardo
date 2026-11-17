@@ -2,9 +2,9 @@
 //! the file watch and by `bardo-shell reload`.
 
 use layer_shell_host::HostEvent;
+use settings_store_fs::Store;
 use shell_settings::ShellFile;
 use tokio::sync::watch;
-use settings_store_fs::Store;
 
 use crate::daemon::msg::ShellMsg;
 

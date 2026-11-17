@@ -17,6 +17,7 @@ thiserror = { workspace = true }
 serde_json = { workspace = true }
 toml = { workspace = true }
 notify = { workspace = true }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
 input-linux = { workspace = true }
 input-broker-client = {path = "../input-broker-client"}

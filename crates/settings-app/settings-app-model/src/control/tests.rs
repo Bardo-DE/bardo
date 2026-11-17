@@ -1,7 +1,10 @@
 use super::{Control, FileOnly};
+use settings_types::schema::{
+    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
+    LiveAction, Page, Section, WordLabels,
+};
 use std::collections::BTreeMap;
 use toml::Value;
-use settings_types::schema::{ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page, Section, WordLabels};
 
 fn spec(kind: KeyKind, default: Value) -> KeySpec {
     KeySpec {

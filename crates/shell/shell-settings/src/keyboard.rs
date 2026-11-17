@@ -6,11 +6,11 @@
 
 use key_remap_proto::ProfileName;
 use serde::{Deserialize, Serialize};
+use settings_store::InvalidKey;
+use settings_types::schema::Page;
 use shell_launcher::AppId;
 use shell_model::keyboard::UserOverrides;
 use std::collections::BTreeMap;
-use settings_store::InvalidKey;
-use settings_types::schema::Page;
 
 /// One row of `keyboard.overrides`: an app and the keycap profile its windows get.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsRow)]

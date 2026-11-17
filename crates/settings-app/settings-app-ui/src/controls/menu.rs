@@ -11,10 +11,10 @@ use dioxus::prelude::*;
 )]
 use settings_app_model::external::toml;
 use settings_app_model::{stray_word, word_label};
+use settings_types::schema::WordLabels;
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use settings_types::schema::WordLabels;
 
 /// A pop-up button over the words, the stored word chosen. A stored word that is not among them
 /// (a look whose Extension was removed or turned off) is kept: it is listed greyed, with why under

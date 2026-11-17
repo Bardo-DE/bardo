@@ -3,9 +3,9 @@
 use crate::config::convert;
 use compositor_core::settings::CasementSettings;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 use settings_types::Count;
 use settings_types::schema::Page;
+use ui_core::word::Word;
 
 /// How a display's first scale is chosen (`outputs.first_sight_scale`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

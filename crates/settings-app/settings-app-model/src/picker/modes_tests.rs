@@ -2,8 +2,11 @@
 //! models sit in the module's groups. Local's questions are in `local_tests`.
 
 use super::*;
+use settings_types::schema::{
+    AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec,
+    Label, Page, Section, WordLabels,
+};
 use std::collections::BTreeMap;
-use settings_types::schema::{AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels};
 
 pub(super) const ROW: &str = "ai.model.text.balanced";
 const OTHER_TIER: &str = "ai.model.text.fast";

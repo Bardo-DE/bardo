@@ -5,8 +5,8 @@
 //! `settings-app-ui`'s.
 
 use crate::{Absence, Described, Live};
-use std::collections::BTreeMap;
 use settings_types::schema::{Exposure, KeyKind, KeyPath};
+use std::collections::BTreeMap;
 
 /// The section of the module whose text rows these are.
 pub const PROGRAMS_SECTION: &str = "Local models";

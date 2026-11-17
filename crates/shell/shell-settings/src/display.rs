@@ -5,9 +5,9 @@
 //! compositor owns a display's scale.
 
 use serde::{Deserialize, Serialize};
-use shell_model::displays::{FontRenderingMode, HardwareVolume, KeysTarget, NightWarmthMode};
 use settings_types::Percent;
 use settings_types::schema::Page;
+use shell_model::displays::{FontRenderingMode, HardwareVolume, KeysTarget, NightWarmthMode};
 
 /// Displays.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]

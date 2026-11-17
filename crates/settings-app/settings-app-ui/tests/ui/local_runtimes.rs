@@ -9,9 +9,9 @@ use settings_app_model::PageSlug;
 use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use settings_app_ui::Opening;
+use settings_dbus::Verdict;
 use ui_components::prelude::Scheme;
 use ui_harness::Harness;
-use settings_dbus::Verdict;
 
 const ROWS: &str = ".runtimes .ds-field-row";
 const OLLAMA: &str = ".runtimes [aria-label=\"Ollama\"] .ds-field-row-control .ds-button";

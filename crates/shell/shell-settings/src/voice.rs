@@ -6,8 +6,8 @@
 //! [`params`].
 
 use serde::{Deserialize, Serialize};
-use shell_model::voice::VoiceParams;
 use settings_types::schema::Page;
+use shell_model::voice::VoiceParams;
 
 pub use shell_model::voice::{HoldToTalk, VoiceConsent};
 

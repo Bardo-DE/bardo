@@ -29,12 +29,15 @@ use account_core::AccountId;
 use account_core::{Account, Family};
 use account_wire::ParentWindow;
 use drive_core::CacheLimit;
+use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
+use settings_types::schema::{
+    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
+    LiveAction, Note, Page, Section, WordLabels,
+};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 use toml_edit::{Array, DocumentMut, Item};
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
-use settings_types::schema::{ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Note, Page, Section, WordLabels};
 use zbus::Connection;
 
 /// The settings module's path.

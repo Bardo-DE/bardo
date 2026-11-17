@@ -27,5 +27,8 @@ pub use schema_files::{
 };
 pub use store::Store;
 pub use text::{FileText, SETTINGS_CAP, file_text};
-pub use watch::{DEBOUNCE, FileWatcher, LocatedWatch, Settled, Watch, WatchState, watch_file};
+pub use watch::{
+    DEBOUNCE, FileWatcher, LocatedWatch, Settled, Watch, WatchState, watch_file,
+    watch_file_on_thread,
+};
 pub use writer::SettingsWriter;

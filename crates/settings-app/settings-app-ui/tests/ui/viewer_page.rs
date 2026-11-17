@@ -8,7 +8,9 @@ use crate::support::drive::{click, page_of, title_of};
 use settings_app_files::load;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use settings_types::schema::{AppId, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema, Section};
+use settings_types::schema::{
+    AppId, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema, Section,
+};
 
 const FILE: &str = "anyview/settings.toml";
 

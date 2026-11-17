@@ -6,8 +6,11 @@ use crate::support::corners::Fake;
 use crate::support::drive::{click, page_of, showing, type_into};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
+use settings_types::schema::{
+    AppId, ControlName, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema,
+    Section,
+};
 use ui_harness::Harness;
-use settings_types::schema::{AppId, ControlName, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema, Section};
 
 mod forms;
 mod sheet;

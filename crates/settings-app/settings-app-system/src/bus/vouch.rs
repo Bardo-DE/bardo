@@ -1,7 +1,7 @@
 //! Who vouches that the owner of a service's bus name is that service.
 
-use std::sync::Arc;
 use settings_dbus::{OwnerAnswer, OwnerCheck, SenderName};
+use std::sync::Arc;
 
 /// An owner check a bus is held to, shared by every call made on it. The session bus needs none
 /// named: it uses the desktop's caller table. A bus a test builds names one (`Vouch::of`).

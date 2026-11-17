@@ -14,8 +14,8 @@ use crate::support::inferd::Inferd;
 use action_settings::{CloudAllowed, read_places};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_harness::{Harness, Input};
 use settings_dbus::Verdict;
+use ui_harness::{Harness, Input};
 
 mod agents;
 mod cloud;

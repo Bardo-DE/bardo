@@ -17,9 +17,9 @@ pub use handle::{Module, ModuleHandle, reread};
 
 use crate::bus::Daemon;
 use settings_app_model::{Absence, Described, Work};
+use settings_types::schema::{KeyKind, KeyPath};
 use std::fmt::Debug;
 use tokio::sync::mpsc::UnboundedSender;
-use settings_types::schema::{KeyKind, KeyPath};
 
 /// What is learned about the daemon, in the order it happens.
 #[derive(Debug)]

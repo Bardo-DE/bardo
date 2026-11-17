@@ -8,8 +8,8 @@ use crate::memory_consent::MemoryConsent;
 use crate::page_body::PageBody;
 use dioxus::prelude::*;
 use settings_app_model::{Offers, PageModel, PageSlug, holds_memory_settings};
-use ui_components::prelude::PageHeader;
 use settings_types::schema::KeyPath;
+use ui_components::prelude::PageHeader;
 
 /// The page `slug`, scrolling; a drill-in row of its advanced keys takes the place of the page
 /// until the back button is pressed.

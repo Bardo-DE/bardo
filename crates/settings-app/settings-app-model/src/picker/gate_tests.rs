@@ -4,8 +4,8 @@
 use super::tests::{menu, path, ready_of, value_at};
 use super::*;
 use crate::accounts::AddEnd;
-use std::collections::BTreeMap;
 use settings_types::schema::{KeyKind, KeySpec};
+use std::collections::BTreeMap;
 
 fn grouped_menu() -> KeySpec {
     use settings_types::schema::{ChoiceGroup, ChoiceWord};

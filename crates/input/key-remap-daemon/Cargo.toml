@@ -17,6 +17,7 @@ key-remap-evdev = { path = "../key-remap-evdev" }
 keymap = {path = "../../keymap/keymap"}
 thiserror = { workspace = true }
 notify = { workspace = true }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
 caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 service-locator = {features = ["guard"], path = "../../platform/service-locator"}

@@ -5,9 +5,9 @@ use crate::read::text_of;
 use crate::unknown::unknown_keys;
 use crate::values::{ConfigHome, FileValues};
 use settings_app_model::{Control, FileSpec};
-use std::collections::BTreeMap;
-use settings_types::schema::KeyPath;
 use settings_store::{InvalidKey, Loaded};
+use settings_types::schema::KeyPath;
+use std::collections::BTreeMap;
 
 /// What `spec`'s file holds: every valid value laid over the keys' defaults.
 ///

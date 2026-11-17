@@ -2,8 +2,8 @@
 //! All Advanced (§5).
 
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 use settings_types::schema::Page;
+use ui_core::word::Word;
 
 /// `scrollbar.track_click_mode`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

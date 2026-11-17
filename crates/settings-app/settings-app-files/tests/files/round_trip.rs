@@ -3,9 +3,12 @@
 use settings_app_files::{ConfigHome, FilesError, load, save};
 use settings_app_model::{ConfigFile, FileSpec};
 use settings_app_testkit::Scratch;
+use settings_types::schema::{
+    AgentSetting, Exposure, FilePath, ForeignTables, Help, KeyKind, KeyPath, KeySpec, Label, Page,
+    Section, WordLabels,
+};
 use std::collections::BTreeMap;
 use toml::Value;
-use settings_types::schema::{AgentSetting, Exposure, FilePath, ForeignTables, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 

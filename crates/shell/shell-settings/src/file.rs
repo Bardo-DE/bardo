@@ -6,8 +6,8 @@
 //! watching.
 
 use serde::{Deserialize, Serialize};
-use settings_types::AppName;
 use settings_store::{FileName, Format, SettingsDoc};
+use settings_types::AppName;
 
 use crate::bar::BarSettings;
 use crate::calendar::CalendarSettings;

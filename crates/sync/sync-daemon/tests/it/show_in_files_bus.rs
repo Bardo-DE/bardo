@@ -32,6 +32,8 @@ use common::hosted::{Hosted, Link, Service, host_with};
 use common::{Known, client};
 use drive_core::{CacheLimit, FreeSpace, ItemState, Reason};
 use drive_fuse::{Mounter, mountd};
+use settings_dbus::{AnyOwner, LiveClient};
+use settings_types::schema::KeyPath;
 use std::sync::Arc;
 use std::time::Duration;
 use sync_core::ItemPath;
@@ -51,8 +53,6 @@ use sync_daemon::settings::{
 use sync_daemon::words;
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use tokio::sync::watch;
-use settings_dbus::{AnyOwner, LiveClient};
-use settings_types::schema::KeyPath;
 
 const ACCOUNT: &str = "graph-acct";
 const SEGMENT: &str = "graph_acct";

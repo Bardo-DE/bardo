@@ -1,8 +1,8 @@
 //! The choices a `Provided` key offers: the usable Extensions of its capability, `standard`
 //! first. The files layer finds them; this is only their shape and how a key takes them.
 
-use std::collections::BTreeMap;
 use settings_types::schema::{STANDARD, WordLabels};
+use std::collections::BTreeMap;
 
 /// What a menu of installed things shows for one capability.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -57,8 +57,8 @@ pub fn stray_word<'a>(words: &[String], value: &'a toml::Value) -> Option<&'a st
 #[cfg(test)]
 mod tests {
     use super::{Offer, Offers, stray_word};
-    use toml::Value;
     use settings_types::schema::WordLabels;
+    use toml::Value;
 
     fn paper() -> Offer {
         Offer {

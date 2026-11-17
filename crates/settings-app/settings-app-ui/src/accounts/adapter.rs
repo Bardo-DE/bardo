@@ -6,11 +6,11 @@ use crate::copy::account_sync::{KEEP_HELP, hold_banner};
 use crate::copy::accounts::{removal, secret_standing};
 use dioxus::prelude::*;
 use settings_app_model::{ClientValue, HoldCounts, RemovalQuestion, SyncHold};
+use settings_types::schema::ActionWeight;
 use ui_components::components::controls::button_model::{Answers, Bezel, ImagePosition};
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use settings_types::schema::ActionWeight;
 
 /// Whether an action's weight makes its button destructive.
 fn is_destructive(weight: ActionWeight) -> bool {

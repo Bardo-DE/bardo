@@ -5,8 +5,8 @@ use super::choice::{ChoiceGap, Gate, gate_of};
 use super::model::{ChoiceSection, Ready, sections_of, slot_of, unavailable_of};
 use crate::coding_agents::GROUP_KEY;
 use crate::words::word_label;
-use std::collections::BTreeMap;
 use settings_types::schema::{KeyKind, KeyPath, KeySpec, WordLabels};
+use std::collections::BTreeMap;
 
 /// The prefix of a pool's path: `ai.auto.pool.<slot>`.
 const POOL_PREFIX: &str = "ai.auto.pool.";

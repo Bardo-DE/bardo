@@ -1,9 +1,9 @@
 //! The values of one settings file.
 
 use settings_app_model::ConfigFile;
+use settings_types::schema::KeyPath;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use settings_types::schema::KeyPath;
 
 /// `$XDG_CONFIG_HOME` (or a scratch directory standing in for it): the directory the settings
 /// files' `bardo/<app>/<name>.toml` paths are under.

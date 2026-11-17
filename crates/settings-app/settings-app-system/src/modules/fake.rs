@@ -9,13 +9,13 @@ use super::{Followed, Module, ModuleHandle, ModulesLink, reread};
 use crate::bus::{Daemon, absence_of};
 use crate::lock::locked;
 use settings_app_model::{Absence, Described, Work};
+use settings_dbus::{Access, LiveError, LiveModule, LiveSchema, Verdict};
+use settings_types::schema::{KeyKind, KeyPath};
 use std::fmt;
 use std::sync::{Arc, Mutex};
 use tokio::sync::broadcast::{self, error::RecvError};
 use tokio::sync::mpsc::UnboundedSender;
 use tokio::sync::watch;
-use settings_dbus::{Access, LiveError, LiveModule, LiveSchema, Verdict};
-use settings_types::schema::{KeyKind, KeyPath};
 
 /// How many changes wait for a follower that is slow to take them.
 const BACKLOG: usize = 64;

@@ -10,13 +10,13 @@ use crate::picker::NoteLine;
 use dioxus::prelude::*;
 use settings_app_client::{Client, Want};
 use settings_app_model::{Live, ProgramRow, ProgramsInput};
+use settings_types::schema::KeyPath;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use settings_types::schema::KeyPath;
 
 /// The row that opens the programs, when inferd lists any; nothing otherwise.
 #[component]

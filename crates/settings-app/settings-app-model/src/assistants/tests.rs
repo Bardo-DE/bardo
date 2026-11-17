@@ -178,8 +178,8 @@ mod offers {
     use crate::assistants::{PlaceRef, offers_for};
     use crate::picker::{AutoPool, Busy, ChoiceSection, KindRows, LocalAsk, ModelRow, Ready};
     use account_sheet::ProviderGroup;
-    use std::collections::BTreeMap;
     use settings_types::schema::{KeyPath, WordLabels};
+    use std::collections::BTreeMap;
 
     fn picker(words: &[&str]) -> Ready {
         Ready {

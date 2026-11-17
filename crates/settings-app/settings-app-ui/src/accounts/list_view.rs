@@ -11,6 +11,7 @@ use settings_app_model::{
     Account, AccountKey, AccountStatus, AccountsPane as Pane, Attention, ClientText, ClientValue,
     ModuleId, ModuleRow, SyncBook,
 };
+use settings_types::schema::ActionWeight;
 use ui_components::base::vocab::RowState;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::controls::badge::{Badge, BadgeContent, BadgeTone};
@@ -19,7 +20,6 @@ use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use settings_types::schema::ActionWeight;
 
 /// What the list's foot does: add an account, or remove the one the list rests on.
 #[derive(Clone, Copy, PartialEq)]

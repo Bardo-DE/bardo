@@ -11,6 +11,7 @@ use settings_app_model::{
     ConfigFile, ExtensionList, ExtensionRow, ExtensionStanding, ExtensionTrouble,
     InstalledExtensions, Offer, Offers,
 };
+use settings_types::schema::{FilePath, KeyPath};
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 use ui_extensions::plugin_host::manifest::Raw;
@@ -19,7 +20,6 @@ use ui_extensions::{
     Capability, ExtensionId, ExtensionsFile, Found, Power, Problem, Search, YOUR_CHANGES_ID,
     YourChanges, choices_for,
 };
-use settings_types::schema::{FilePath, KeyPath};
 
 /// The file that lists the Extensions turned off, under the config home.
 const FILE: &str = "bardo/extensions.toml";

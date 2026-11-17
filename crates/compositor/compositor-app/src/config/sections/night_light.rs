@@ -3,9 +3,9 @@
 use crate::config::convert;
 use compositor_core::settings::CasementSettings;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 use settings_types::Count;
 use settings_types::schema::Page;
+use ui_core::word::Word;
 
 /// When night light is on (`night_light.mode`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

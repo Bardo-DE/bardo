@@ -5,8 +5,8 @@
 //! the gains are palmrest's (`mouse-gestures/gestures.toml`, §3.9), not here.
 
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 use settings_types::schema::Page;
+use ui_core::word::Word;
 
 /// `scroll.natural`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

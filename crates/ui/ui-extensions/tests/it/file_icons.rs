@@ -5,11 +5,11 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
+use settings_types::schema::Provided;
 use ui_extensions::{
     ExtensionId, FileFacts, FileIcons, FolderFacts, IconPick, Search, YourChanges,
 };
 use ui_helpers::mime::{FileName, MimeDb, MimeLayer, MimeType, NameGuess};
-use settings_types::schema::Provided;
 use ui_style::icon::file_kind::{ExtLabel, FileKind, FolderKind};
 
 use crate::support::{ICONS, Scratch, install_entries};

@@ -5,8 +5,11 @@ use settings_app_model::{
     Block, Catalogue, ConfigFile, Control, HOT_CORNERS_CONTROL, ProgramSchema, advanced_sections,
     basic_sections, blocks,
 };
+use settings_types::schema::{
+    AgentSetting, AppId, ControlName, Exposure, FilePath, ForeignTables, Help, KeyKind, KeyPath,
+    KeySpec, Label, Page, Section, WordLabels,
+};
 use std::collections::BTreeMap;
-use settings_types::schema::{AgentSetting, AppId, ControlName, Exposure, FilePath, ForeignTables, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels};
 
 fn key(path: &str, kind: KeyKind, marked: bool, exposure: Exposure) -> KeySpec {
     KeySpec {

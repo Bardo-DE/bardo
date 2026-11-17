@@ -4,6 +4,7 @@
 //! And the consent sheet's answer written into `settings.toml`. The machines run in the voice
 //! service (`shell_services::voice`); the settings keys are the ones `voiced` reads on every begin.
 
+use settings_store_fs::Store;
 use shell_ipc::response::Response;
 use shell_ipc::show::VoiceRequest;
 use shell_model::companion::CompanionCommand;
@@ -11,7 +12,6 @@ use shell_model::voice::{AskScope, CancelCause, VoiceCommand, VoiceConsent, Voic
 use shell_settings::ShellFile;
 use tokio::runtime::Handle;
 use tokio::sync::{mpsc::UnboundedReceiver, watch};
-use settings_store_fs::Store;
 
 use crate::companion::focus_of;
 use crate::daemon::settings::{load, write_key};

@@ -9,6 +9,8 @@ use settings_app_model::{
     Clearing, FirstRun, FirstRunEffect, FirstRunInput, PageKind, PickerInput, PickerState, Stage,
     first_run_step,
 };
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::AppName;
 use std::sync::Arc;
 use ui_blitz::{AppHandle, TokioSpawner, use_app_handle};
 use ui_components::components::content::label::{LabelRole, LabelStyle};
@@ -19,8 +21,6 @@ use ui_components::root::pass_through::ExtraClass;
 use ui_components::stack::toast_hub::ToastHub;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::ControlSize;
-use settings_types::AppName;
-use settings_store_fs::{ConfigRoot, Store};
 use ui_settings::use_environment;
 
 fn send(state: &mut Signal<FirstRun>, input: FirstRunInput) -> Vec<FirstRunEffect> {

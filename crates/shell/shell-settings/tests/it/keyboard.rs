@@ -4,8 +4,8 @@
 use crate::common;
 
 use common::TempDir;
-use shell_settings::{APP, KeyboardOverride, KeyboardSettings, ShellFile, overrides};
 use settings_store_fs::{ConfigRoot, Store};
+use shell_settings::{APP, KeyboardOverride, KeyboardSettings, ShellFile, overrides};
 
 fn row(app: &str, profile: &str) -> KeyboardOverride {
     KeyboardOverride {

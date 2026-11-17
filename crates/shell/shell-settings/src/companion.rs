@@ -6,9 +6,9 @@
 use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
+use settings_types::schema::Page;
 use shell_model::companion::{CompanionParams, SummonParams};
 use ui_core::word::Word;
-use settings_types::schema::Page;
 
 pub use shell_model::companion::InField;
 

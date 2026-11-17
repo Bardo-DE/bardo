@@ -8,9 +8,9 @@
 
 use plugin_host::manifest::Provides;
 use plugin_host::registry::Installed;
-use settings_types::target::ExtensionId;
 use settings_store::InvalidKey;
 use settings_types::schema::{KeyPath, KeySpec, Provided, STANDARD, WordLabels};
+use settings_types::target::ExtensionId;
 
 use crate::capability::Capability;
 use crate::provision::Provision;

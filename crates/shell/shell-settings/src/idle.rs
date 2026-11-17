@@ -5,9 +5,9 @@
 //! `session.lock_grace_s` (`crate::schema` moves that one key).
 
 use serde::{Deserialize, Serialize};
-use shell_model::idle::IdleLock;
 use settings_types::Mins;
 use settings_types::schema::Page;
+use shell_model::idle::IdleLock;
 
 /// bardo-shell's idle service.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]

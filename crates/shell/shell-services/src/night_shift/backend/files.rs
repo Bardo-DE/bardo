@@ -8,13 +8,13 @@ use std::io::ErrorKind;
 use std::path::Path;
 
 use serde::{Deserialize, Serialize};
+use settings_store::Edit;
+use settings_store_fs::{SettingsError, SettingsWriter};
+use settings_types::schema::KeyPath;
 use shell_model::ids::OutputName;
 use shell_model::night_shift::{Manual, MinuteOfDay, NightLight, Schedule, UnixSeconds, Warmth};
 use toml::{Table, Value};
-use settings_types::schema::KeyPath;
 use ui_core::word::Word;
-use settings_store::Edit;
-use settings_store_fs::{SettingsError, SettingsWriter};
 
 use crate::durable;
 use base_fs::NewFileMode;

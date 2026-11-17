@@ -7,8 +7,8 @@ use std::path::{Path, PathBuf};
 use plugin_host::manifest::Raw;
 use plugin_host::registry::{Candidate, Origin};
 use plugin_host::{Layout, Rejected};
-use settings_types::target::ExtensionId;
 use settings_store_fs::{data_dirs_list_from, data_home_from};
+use settings_types::target::ExtensionId;
 
 /// The folder under a data directory where Extensions live: `<data>/bardo/extensions/<id>/`.
 const APP: &str = "bardo";

@@ -7,9 +7,9 @@
 //! writer takes, sets only the keys it is given and renames the result into place.
 
 use serde::Serialize;
-use shell_settings::ShellFile;
-use settings_types::schema::KeyPath;
 use settings_store_fs::{SettingsError, SettingsWriter, Store};
+use settings_types::schema::KeyPath;
+use shell_settings::ShellFile;
 
 /// The key could not be written; the file was left as it was.
 #[derive(Debug, thiserror::Error)]

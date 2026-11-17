@@ -3,13 +3,13 @@
 
 use std::cell::RefCell;
 
+use settings_store_fs::Store;
 use shell_model::desktop::DesktopCommand;
 use shell_settings::ShellFile;
 use shell_ui_kit::links::Links;
 use shell_ui_kit::services::Services;
 use tokio::runtime::Handle;
 use tokio::sync::watch;
-use settings_store_fs::Store;
 
 use crate::actions::show_desktop::Stash;
 use crate::daemon::settings::StyleKeeper;

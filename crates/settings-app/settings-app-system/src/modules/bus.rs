@@ -6,10 +6,10 @@ use crate::bus::{
     BusSource, Daemon, attach_listening, connect, next_change, next_owner, owner_changes,
 };
 use settings_app_model::Work;
-use std::sync::Arc;
-use tokio::sync::mpsc::UnboundedSender;
 use settings_dbus::Changes;
 use settings_types::schema::KeyKind;
+use std::sync::Arc;
+use tokio::sync::mpsc::UnboundedSender;
 use zbus::fdo::NameOwnerChangedStream;
 
 /// The modules of the daemons on `bus`.

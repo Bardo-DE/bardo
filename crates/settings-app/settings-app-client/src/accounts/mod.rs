@@ -25,8 +25,8 @@ use settings_app_system::accounts::AccountsLink;
 use settings_app_system::bus::{BusSource, Daemon, plain};
 use settings_app_system::modules::ModulesLink;
 use settings_app_system::sync::SyncLink;
-use std::sync::Arc;
 use settings_dbus::LiveError;
+use std::sync::Arc;
 
 /// The Accounts pane's handle: cheap to clone, one live value behind it.
 #[derive(Debug, Clone)]

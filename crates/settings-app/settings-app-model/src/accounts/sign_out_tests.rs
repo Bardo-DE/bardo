@@ -3,8 +3,8 @@
 use super::tests::{action, apply, fixed, path, row, state_of};
 use super::*;
 use crate::picker::Described;
-use std::collections::BTreeMap;
 use settings_types::schema::ActionWeight;
+use std::collections::BTreeMap;
 
 /// A coding-agent account as accountd describes it: signed in inside the agent, so its only
 /// action is Sign out.

@@ -7,8 +7,11 @@ use crate::catalogue::Catalogue;
 use crate::page::PageSlug;
 use crate::page_kind::PageKind;
 use crate::picker::{Described, PickerInput, PickerState, step};
+use settings_types::schema::{
+    AgentSetting, ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+    UnavailableReason, WordLabels,
+};
 use std::collections::BTreeMap;
-use settings_types::schema::{AgentSetting, ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, UnavailableReason, WordLabels};
 
 fn path(text: &str) -> KeyPath {
     KeyPath(text.to_owned())

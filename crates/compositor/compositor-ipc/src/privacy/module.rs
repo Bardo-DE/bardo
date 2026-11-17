@@ -15,10 +15,12 @@ use crate::dbus::{CallerCheck, require};
 use caller_identity_dbus::caller_identity_core::roles;
 use calloop::channel::SyncSender;
 use compositor_core::privilege::Edit;
+use settings_dbus::{
+    Access, Caller, LiveError, LiveModule, LiveSchema, Served, Snapshot, Verdict, serve,
+};
+use settings_types::schema::KeyPath;
 use std::sync::Arc;
 use std::sync::mpsc::TrySendError;
-use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Snapshot, Verdict, serve};
-use settings_types::schema::KeyPath;
 use zbus::Connection;
 
 /// Where the module is served.

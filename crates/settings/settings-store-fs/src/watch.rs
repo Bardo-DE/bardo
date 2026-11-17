@@ -9,8 +9,9 @@ use crate::text::{FileText, SETTINGS_CAP, file_text};
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use settings_store::latest::{self, Receiver, Sender};
 use settings_store::{Loaded, Read, SettingsDoc, read_within};
-use std::ffi::OsStr;
+use std::ffi::{OsStr, OsString};
 use std::path::{Path, PathBuf};
+use std::sync::mpsc::RecvTimeoutError;
 use std::time::Duration;
 use ui_core::spawner::Spawner;
 
@@ -311,5 +312,82 @@ async fn settle_located<T: Clone>(
         if out.send(read()).is_err() {
             return;
         }
+    }
+}
+
+/// Watches `dir` for writes to the file named `name` on a thread of its own, for a program that
+/// runs no async runtime: `settled` is called after every burst of events has been quiet for
+/// [`DEBOUNCE`], and ends the thread by returning `false`. Returns the watcher, which must be kept
+/// alive; dropping it ends the thread. The directory must exist.
+///
+/// # Errors
+///
+/// Returns the `notify::Error` when `dir` cannot be watched or the thread cannot start.
+pub fn watch_file_on_thread(
+    dir: &Path,
+    name: &str,
+    thread_name: String,
+    mut settled: impl FnMut() -> bool + Send + 'static,
+) -> notify::Result<RecommendedWatcher> {
+    let (tx, rx) = std::sync::mpsc::channel::<()>();
+    let file = OsString::from(name);
+    let mut watcher = notify::recommended_watcher(move |res: notify::Result<notify::Event>| {
+        if let Ok(event) = res
+            && touches_the_file(&event, &file)
+        {
+            // The thread is gone once the watch ended; nobody is left to tell.
+            let _ = tx.send(());
+        }
+    })?;
+    watcher.watch(dir, RecursiveMode::NonRecursive)?;
+    std::thread::Builder::new()
+        .name(thread_name)
+        .spawn(move || {
+            while rx.recv().is_ok() {
+                // Every further event restarts the window: a rename can fire more than one.
+                loop {
+                    match rx.recv_timeout(DEBOUNCE) {
+                        Ok(()) => {}
+                        Err(RecvTimeoutError::Timeout) => break,
+                        Err(RecvTimeoutError::Disconnected) => return,
+                    }
+                }
+                if !settled() {
+                    return;
+                }
+            }
+        })
+        .map_err(notify::Error::io)?;
+    Ok(watcher)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::touches_the_file;
+    use notify::event::{AccessKind, CreateKind, EventKind};
+    use std::ffi::OsStr;
+    use std::path::PathBuf;
+
+    fn event(kind: EventKind, path: &str) -> notify::Event {
+        notify::Event::new(kind).add_path(PathBuf::from(path))
+    }
+
+    #[test]
+    fn only_a_write_to_the_named_file_matters() {
+        let name = OsStr::new("settings.toml");
+        let write = EventKind::Create(CreateKind::File);
+        for (path, want) in [
+            ("/c/bardo/shell/settings.toml", true),
+            ("/c/bardo/shell/other.toml", false),
+            ("/c/bardo/shell/settings.toml.swp", false),
+            ("/c/bardo/shell/.settings.toml.tmp", false),
+        ] {
+            assert_eq!(touches_the_file(&event(write, path), name), want, "{path}");
+        }
+        let read = EventKind::Access(AccessKind::Any);
+        assert!(!touches_the_file(
+            &event(read, "/c/bardo/shell/settings.toml"),
+            name
+        ));
     }
 }

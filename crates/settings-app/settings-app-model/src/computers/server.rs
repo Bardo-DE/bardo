@@ -6,9 +6,9 @@ use crate::Described;
 use crate::picker::Ready;
 use account_capability::ModelId;
 use account_core::SecretText;
+use settings_types::schema::ChoicePlace;
 use std::io;
 use std::path::{Path, PathBuf};
-use settings_types::schema::ChoicePlace;
 
 /// What is wrong with the Add a server sheet.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

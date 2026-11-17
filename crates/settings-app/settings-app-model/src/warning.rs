@@ -1,7 +1,7 @@
 //! Why a schema was left out.
 
-use std::fmt;
 use settings_types::schema::AppId;
+use std::fmt;
 
 /// What made a schema stale.
 #[derive(Debug, Clone, PartialEq, Eq)]

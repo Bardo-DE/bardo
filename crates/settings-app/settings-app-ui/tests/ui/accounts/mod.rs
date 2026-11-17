@@ -15,11 +15,11 @@ use settings_app_client::Vouch;
 use settings_app_model::{ModuleId, PageSlug};
 use settings_app_system::modules::FakeModules;
 use settings_app_ui::Opening;
+use settings_dbus::{LiveClient, LiveError, Verdict};
+use settings_types::schema::KeyPath;
 use std::time::Duration;
 use ui_components::prelude::Scheme;
 use ui_harness::{Backdrop, Harness, Input};
-use settings_dbus::{LiveClient, LiveError, Verdict};
-use settings_types::schema::KeyPath;
 
 mod add;
 mod keys;

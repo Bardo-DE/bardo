@@ -5,11 +5,13 @@ use crate::private_bus::PrivateBus;
 use settings_app_model::Absence;
 use settings_app_system::bus::{BusSource, Daemon, Vouch};
 use settings_app_system::modules::{Followed, ModulesLink, OnBus};
+use settings_dbus::{Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
+use settings_types::schema::{
+    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
+};
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 use tokio::sync::mpsc::unbounded_channel;
-use settings_dbus::{Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
-use settings_types::schema::{AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels};
 
 /// The bus name and path the module is served at.
 const NAME: &str = "org.bardo.TestModules1";

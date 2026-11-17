@@ -7,10 +7,10 @@ use super::sections::{
     XwaylandSection,
 };
 use serde::{Deserialize, Serialize};
-use std::path::Path;
-use settings_types::AppName;
-use settings_store_fs::{ConfigRoot, Store, Watch};
 use settings_store::{FileName, Format, SettingsDoc};
+use settings_store_fs::{ConfigRoot, Store, Watch};
+use settings_types::AppName;
+use std::path::Path;
 
 /// `compositor/settings.toml`: one section per `CasementSettings` part. A key it does not read
 /// is reported on load and dropped on save (ui-settings).

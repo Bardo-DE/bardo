@@ -4,8 +4,8 @@
 use inference_daemon::config::InferdConfig;
 use inference_daemon::peers::CallerTable;
 use inference_daemon::settings::{self, CLASSES};
-use std::path::PathBuf;
 use settings_types::schema::{ForeignTables, KeyKind, KeySpec, Schema};
+use std::path::PathBuf;
 
 fn dist(file: &str) -> String {
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))

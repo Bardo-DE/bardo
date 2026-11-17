@@ -8,6 +8,7 @@ use std::time::Instant;
 use layer_shell_host::{
     CloseReason, HostCtx, HostEvent, KeyboardFocus, LayerOp, PalmrestAction, SurfaceId,
 };
+use settings_store_fs::Store;
 use shell_bar::Bar;
 use shell_ipc::request::Request;
 use shell_ipc::response::{Failure, FailureKind, Response};
@@ -24,7 +25,6 @@ use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::surface::{OutputPolicy, Surface};
 use tokio::sync::watch;
 use ui_settings::Environment;
-use settings_store_fs::Store;
 
 use super::msg::ShellMsg;
 use super::palmrest::{self, Plan};

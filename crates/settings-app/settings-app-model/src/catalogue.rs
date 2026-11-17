@@ -11,7 +11,9 @@ use crate::page::{PageSlug, sidebar_place};
 use crate::page_kind::PageKind;
 use crate::updates::software_update_page;
 use crate::wifi::wifi_page;
-use settings_types::schema::{Exposure, Footnote, ForeignTables, KeyKind, KeyPath, KeySpec, Page, PageTable};
+use settings_types::schema::{
+    Exposure, Footnote, ForeignTables, KeyKind, KeyPath, KeySpec, Page, PageTable,
+};
 
 /// The keys of one section that share an exposure, in schema order.
 #[derive(Debug, Clone, PartialEq)]

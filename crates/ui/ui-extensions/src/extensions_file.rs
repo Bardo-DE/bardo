@@ -6,9 +6,9 @@
 //! no key of it is agent-settable.
 
 use serde::{Deserialize, Serialize};
-use settings_types::target::ExtensionId;
-use settings_types::schema::{Page, Schema, SettingsSchema};
 use settings_store::{FileName, Format, SettingsDoc};
+use settings_types::schema::{Page, Schema, SettingsSchema};
+use settings_types::target::ExtensionId;
 use settings_types::{SettingsRow, SettingsSchema};
 
 /// One Extension that is turned off, by id.

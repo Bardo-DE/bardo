@@ -13,10 +13,10 @@ use crate::support::running::{Fake, serve};
 use inference_dbus::inference::{RunState, RunningModel};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
+use settings_dbus::Verdict;
 use std::time::Duration;
 use ui_components::prelude::ShortcutKey;
 use ui_harness::{Harness, Input};
-use settings_dbus::Verdict;
 
 const READY: &str = "[data-run=\"ready\"]";
 const STOPPED: &str = "[data-run=\"stopped\"]";

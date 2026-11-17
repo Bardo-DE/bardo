@@ -6,7 +6,10 @@ use crate::support::drive::{click, page_of, title_of};
 use crate::support::pictures::Fake;
 use settings_app_model::{AddOutcome, PageSlug};
 use settings_app_ui::Opening;
-use settings_types::schema::{AppId, ControlName, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema, Section};
+use settings_types::schema::{
+    AppId, ControlName, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema,
+    Section,
+};
 
 const FILE: &str = "shell/settings.toml";
 

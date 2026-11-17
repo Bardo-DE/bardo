@@ -12,8 +12,8 @@ pub use fake::{FakePrivacy, PrivacyAsked};
 
 use crate::modules::Module;
 use settings_app_model::Work;
-use std::fmt::Debug;
 use settings_types::schema::KeyPath;
+use std::fmt::Debug;
 
 /// What the Privacy page asks of the compositor's module, through the client the pane follows it
 /// with.

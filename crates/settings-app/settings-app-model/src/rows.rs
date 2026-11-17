@@ -2,8 +2,8 @@
 //! every row a line of text per column, checked against the column's kind.
 
 use regex::Regex;
-use std::sync::Arc;
 use settings_types::schema::{Column, ColumnKind};
+use std::sync::Arc;
 
 /// The columns of a rows key, in the order the schema gives them, with each pattern compiled
 /// once here and not each time a cell is checked.

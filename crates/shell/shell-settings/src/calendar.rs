@@ -2,8 +2,8 @@
 //! §1.12, which bardo-shell moves into the notification center's widgets as macOS 11 does). All Advanced.
 
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 use settings_types::schema::Page;
+use ui_core::word::Word;
 
 /// The first column of the month grid.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

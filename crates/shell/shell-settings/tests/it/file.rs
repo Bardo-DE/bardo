@@ -6,12 +6,12 @@ use crate::common;
 use common::TempDir;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::Px;
 use shell_settings::{
     APP, BarSettings, ControlCenterSettings, DockSettings, LauncherSettings, NotificationsSettings,
     Percent, ScrollSettings, ScrollbarSettings, ShellFile, TrackClick,
 };
-use settings_store_fs::{ConfigRoot, Store};
-use settings_types::Px;
 
 /// The store whose `bardo-shell` directory is inside `dir`.
 fn store(dir: &TempDir) -> Store {

@@ -9,12 +9,12 @@
 
 use std::path::Path;
 
-use shell_settings::{APP, ShellFile};
+use settings_store::{Loaded, SettingsDoc};
 #[cfg(test)]
 use settings_store_fs::SettingsError;
-use settings_types::AppName;
 use settings_store_fs::{ConfigRoot, Store};
-use settings_store::{Loaded, SettingsDoc};
+use settings_types::AppName;
+use shell_settings::{APP, ShellFile};
 
 /// The store of `shell/settings.toml` under `config`, `$XDG_CONFIG_HOME` as `Env` resolved it (a
 /// scratch directory in a test or a dev script).

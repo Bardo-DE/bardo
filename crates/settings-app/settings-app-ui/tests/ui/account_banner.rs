@@ -7,9 +7,9 @@ use crate::support::drive::click;
 use crate::support::drive::settle_on_threads;
 use settings_app_model::PageSlug;
 use settings_app_ui::{Opening, STYLE};
+use settings_dbus::Verdict;
 use ui_harness::Harness;
 use ui_lint::{LintConfig, markup};
-use settings_dbus::Verdict;
 
 const BANNER: &str = "[data-accounts=\"attention\"]";
 const BANNER_BUTTON: &str = "[data-accounts=\"attention\"] .ds-button";

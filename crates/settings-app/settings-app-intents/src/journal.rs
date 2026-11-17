@@ -3,8 +3,8 @@
 
 use action_vocab::UndoToken;
 use settings_app_model::ConfigFile;
-use std::collections::BTreeMap;
 use settings_types::schema::KeyPath;
+use std::collections::BTreeMap;
 
 /// How many changes can be taken back; the oldest is forgotten first.
 const KEPT: usize = 256;

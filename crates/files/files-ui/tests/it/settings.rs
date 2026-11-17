@@ -9,10 +9,10 @@ use files_core::{Behaviour, FileName, FolderPath, ItemRef};
 use files_trash::{FakeTrash, Trash};
 use files_ui::settings::{self, FilesDoc, NewWindow};
 use files_ui::{PlaceKind, Preferences, Sidebar};
-use tempfile::TempDir;
-use tokio::runtime::Handle;
 use settings_store_fs::ConfigRoot;
 use settings_types::schema::Schema;
+use tempfile::TempDir;
+use tokio::runtime::Handle;
 
 /// A scratch config folder whose `files/settings.toml` says `text`.
 fn written(text: &str) -> (TempDir, ConfigRoot) {

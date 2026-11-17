@@ -4,6 +4,7 @@
 //! the next hold either begun (Allow) or never attempted (Not Now). Never the person's `~/.config`.
 
 use crate::voice_support::{BeginAnswer, Desk, desk_or_return};
+use settings_store_fs::{ConfigRoot, Store};
 use shell_app::policy::Policy;
 use shell_app::policy::voice::VoiceBridge;
 use shell_app::voice::write_consent;
@@ -13,7 +14,6 @@ use shell_settings::{APP, ShellFile};
 use shell_testkit::TempDir;
 use speech_wire::{VoiceRefusal, VoiceTrigger};
 use tokio::sync::watch;
-use settings_store_fs::{ConfigRoot, Store};
 
 fn start() -> VoiceCommand {
     VoiceCommand::Start {

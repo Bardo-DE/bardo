@@ -10,10 +10,10 @@ use dioxus::prelude::*;
 )]
 use settings_app_model::external::toml;
 use settings_app_model::word_label;
+use settings_types::schema::WordLabels;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use settings_types::schema::WordLabels;
 
 /// One segment per word, the stored word selected.
 #[component]

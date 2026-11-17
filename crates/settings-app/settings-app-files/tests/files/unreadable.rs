@@ -3,8 +3,8 @@
 
 use crate::round_trip::{home, read_file, save_key, spec, word, write_file};
 use settings_app_files::{FilesError, load};
-use std::os::unix::fs::{PermissionsExt, symlink};
 use settings_types::schema::KeyPath;
+use std::os::unix::fs::{PermissionsExt, symlink};
 
 /// What a refused save must leave behind: the file, byte for byte.
 fn assert_refused_and_untouched(

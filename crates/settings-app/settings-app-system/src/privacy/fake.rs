@@ -4,8 +4,8 @@ use super::PrivacyLink;
 use crate::fake_kit::Kit;
 use crate::modules::Module;
 use settings_app_model::Work;
-use std::sync::Arc;
 use settings_types::schema::KeyPath;
+use std::sync::Arc;
 
 /// What the page asked of the module.
 #[derive(Debug, Clone, PartialEq, Eq)]

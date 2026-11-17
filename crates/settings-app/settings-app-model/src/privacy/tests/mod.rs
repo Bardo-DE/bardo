@@ -7,8 +7,11 @@ mod step;
 
 use super::*;
 use crate::picker::Described;
+use settings_types::schema::{
+    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
+    LiveAction, Note, Page, Section,
+};
 use std::collections::BTreeMap;
-use settings_types::schema::{ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Note, Page, Section};
 
 const GRIM: &str = "/usr/bin/grim";
 const LOUPE: &str = "org.gnome.Loupe";

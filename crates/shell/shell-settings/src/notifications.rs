@@ -2,8 +2,8 @@
 //! are Advanced.
 
 use serde::{Deserialize, Serialize};
-use shell_model::notifications::{Presentation, Swipe};
 use settings_types::schema::Page;
+use shell_model::notifications::{Presentation, Swipe};
 
 /// Notification banners.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]

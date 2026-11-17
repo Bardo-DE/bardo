@@ -3,9 +3,9 @@
 use crate::allow::allowing;
 use crate::services::{SERVICE_PROOF, required_role};
 use caller_identity_dbus::BusPeers;
+use settings_dbus::{OwnerAnswer, OwnerCheck, SenderName, Verdict};
 use std::fmt;
 use std::sync::Arc;
-use settings_dbus::{OwnerAnswer, OwnerCheck, SenderName, Verdict};
 
 /// Whether the owner of a service's bus name holds the role of that service, at the proof a unit
 /// gives.

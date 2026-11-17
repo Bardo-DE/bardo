@@ -3,10 +3,10 @@
 
 use crate::bus::{Rows, read};
 use settings_app_model::{Absence, Described, Work};
-use std::fmt::Debug;
-use std::sync::Arc;
 use settings_dbus::{LiveClient, LiveError, LiveSchema};
 use settings_types::schema::{KeyKind, KeyPath, KeySpec};
+use std::fmt::Debug;
+use std::sync::Arc;
 
 /// What a pane asks of a module it follows.
 pub trait ModuleHandle: Debug + Send + Sync {

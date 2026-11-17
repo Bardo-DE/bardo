@@ -6,8 +6,8 @@
 
 use super::power::PrivacyPower;
 use crate::picker::Described;
-use std::collections::BTreeMap;
 use settings_types::schema::{KeyKind, KeyPath, KeySpec};
+use std::collections::BTreeMap;
 
 /// Before the power in a row's path.
 const PREFIX: &str = "privacy.";

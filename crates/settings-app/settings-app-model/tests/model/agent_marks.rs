@@ -4,9 +4,9 @@ use settings_app_model::{
     AgentSetting, Catalogue, OriginRule, SchemaOrigin, discover, discover_under,
 };
 use settings_app_testkit::{Scratch, fixture_dir};
+use settings_types::schema::KeyPath;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
-use settings_types::schema::KeyPath;
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const MAGNIFICATION: &str = "dock.magnification";

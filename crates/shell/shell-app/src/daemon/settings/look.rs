@@ -12,6 +12,7 @@ use std::time::Duration;
 
 use layer_shell_host::HostHandle;
 use notify::{RecursiveMode, Watcher};
+use settings_store_fs::{Store, WatchState};
 use shell_services::env::Dirs;
 use tokio::runtime::Runtime;
 use tokio::sync::mpsc;
@@ -19,7 +20,6 @@ use ui_blitz::TokioSpawner;
 use ui_components::style::kit::LookStyle;
 use ui_extensions::{Capability, ExtensionsFile, Search, look};
 use ui_settings::AppearanceFile;
-use settings_store_fs::{Store, WatchState};
 
 use super::store::report;
 use crate::daemon::msg::ShellMsg;
