@@ -6,6 +6,7 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Mutex, MutexGuard, OnceLock};
 
+use crate::AdapterPref;
 use crate::gpu::context::{GpuContext, devices_created};
 use crate::gpu::presenter::FrameTarget;
 use crate::gpu::render::capture_document;
@@ -14,7 +15,6 @@ use crate::gpu::swapchain::{
     alpha_mode_of, choose_alpha, choose_present, pixel_extent, present_mode_of,
 };
 use crate::stats::{AlphaMode, PresentMode};
-use crate::{AdapterPref, Scale120, Size};
 use anyrender::{PaintRef, PaintScene as _, RenderContext, ResourceId, Scene};
 use blitz_dom::node::ComputedStyles;
 use blitz_dom::{Document as _, DocumentConfig, Widget};
@@ -22,6 +22,7 @@ use blitz_traits::events::UiEvent;
 use blitz_traits::shell::{ColorScheme, Viewport};
 use dioxus::prelude::*;
 use dioxus_native_dom::{CustomWidgetAttr, DioxusDocument};
+use layer_shell_types::{Scale120, Size};
 use peniko::kurbo::{Affine, Rect};
 use peniko::{Fill, ImageBrush, ImageSampler};
 use wgpu::{CompositeAlphaMode as A, PresentMode as P};

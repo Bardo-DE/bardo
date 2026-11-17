@@ -59,7 +59,7 @@ pub(crate) fn follow_configure(
     logical: Size,
     surface_scale: Scale120,
 ) {
-    let buffer = scale::buffer_size(logical, surface_scale);
+    let buffer = layer_shell_types::buffer_size(logical, surface_scale);
     follow_buffer_scale(state, wl_surface, logical, surface_scale);
 
     if let Some(host_surface) = state.surfaces.get_mut(&id)

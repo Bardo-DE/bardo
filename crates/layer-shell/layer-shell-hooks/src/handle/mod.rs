@@ -77,6 +77,7 @@ pub struct HandleParts {
 
 impl SurfaceHandle {
     /// The handle for surface `id` of role `kind`.
+    #[must_use]
     pub fn new(id: SurfaceId, kind: RoleKind, parts: HandleParts) -> SurfaceHandle {
         let HandleParts {
             requests,

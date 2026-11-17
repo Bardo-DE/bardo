@@ -32,12 +32,14 @@ use layer_shell_types::FrameTick;
 
 /// What the frame machine is told about a surface: animating when its document is
 /// (`document`), or when a drive is held (`drive`). Pure.
+#[must_use]
 pub fn pacing(document: bool, drive: bool) -> bool {
     document || drive
 }
 
 /// The tick at `at`, after the previous tick of this run at `previous` (none: a new run).
 /// Pure.
+#[must_use]
 pub fn tick_after(previous: Option<Duration>, at: Duration) -> FrameTick {
     let dt = previous.map_or(Duration::ZERO, |before| at.saturating_sub(before));
     FrameTick { at, dt }
@@ -60,6 +62,7 @@ pub struct FrameTicks(Rc<RefCell<TickState>>);
 
 impl FrameTicks {
     /// Whether a drive is held.
+    #[must_use]
     pub fn drive(&self) -> bool {
         self.0.borrow().drives > 0
     }
@@ -93,11 +96,13 @@ impl FrameTicks {
     }
 
     /// Ticks published so far.
+    #[must_use]
     pub fn count(&self) -> u64 {
         self.0.borrow().count
     }
 
     /// The first tick after the `seen`th: resolves with its number and the latest tick.
+    #[must_use]
     pub fn after(&self, seen: u64) -> NextTick {
         NextTick {
             ticks: self.clone(),

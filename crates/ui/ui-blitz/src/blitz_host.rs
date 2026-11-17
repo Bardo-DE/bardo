@@ -42,8 +42,8 @@ use ui_components::host::position::{TextPosition, TextRange};
 use ui_components::host::probe::Probe;
 use ui_components::host::reveal::Scrolled;
 use ui_components::prelude::*;
-use ui_host_hooks::{FocusFallback, TokenSource};
 use ui_host_hooks::clipboard::Clipboard;
+use ui_host_hooks::{FocusFallback, TokenSource};
 
 /// How a document finds an element by selector, once it has a document to search.
 pub(crate) type FindDocument = Rc<dyn Fn(&str) -> Found>;
@@ -109,7 +109,7 @@ impl Provided {
     #[must_use]
     pub fn of(wiring: Wiring) -> Self {
         let clipboard = Rc::clone(&wiring.clipboard);
-        let tokens = BlitzTokens::new(Some(wiring.phase.after_resolve()));
+        let tokens = BlitzTokens::source(Some(wiring.phase.after_resolve()));
         Provided {
             host: Rc::new(BlitzHost::new(wiring)),
             clipboard,
@@ -171,8 +171,9 @@ impl BlitzHost {
     }
 }
 
-/// Register [`Wiring::standalone`]'s host as the one a root with no host gets from
-/// `ui_host_hooks::provide_host`: a shell's surface or a popup's document, which no
+/// Register [`Wiring::standalone`]'s host for roots that have none.
+///
+/// It is the one a root with no host gets from `ui_host_hooks::provide_host`: a shell's surface or a popup's document, which no
 /// `ui_blitz::launch` started. Call it once at the start of a program that hosts such roots (or
 /// of a test that renders one on its own); calling it again changes nothing.
 ///
@@ -187,7 +188,7 @@ pub fn use_standalone_host() {
         let mut provided = Provided::of(Wiring::standalone());
         // The document that hosts the root keeps its own registry of readings, a root context its
         // host provided before the root rendered; the wiring's own phase follows no document.
-        provided.tokens = BlitzTokens::new(try_consume_context::<AfterResolve>());
+        provided.tokens = BlitzTokens::source(try_consume_context::<AfterResolve>());
         provided.provide()
     });
 }

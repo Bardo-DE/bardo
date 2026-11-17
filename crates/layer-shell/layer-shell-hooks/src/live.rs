@@ -39,11 +39,13 @@ impl<T: Copy + PartialEq> Live<T> {
     }
 
     /// The value now.
+    #[must_use]
     pub fn get(&self) -> T {
         self.0.borrow().current
     }
 
     /// Changes so far.
+    #[must_use]
     pub fn changes(&self) -> u64 {
         self.0.borrow().changes
     }
@@ -63,6 +65,7 @@ impl<T: Copy + PartialEq> Live<T> {
     }
 
     /// The first change after the `seen`th: resolves with the change count and the value.
+    #[must_use]
     pub fn changed_after(&self, seen: u64) -> NextValue<T> {
         NextValue {
             live: self.clone(),

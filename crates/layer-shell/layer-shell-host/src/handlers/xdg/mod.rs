@@ -46,7 +46,7 @@ impl WindowHandler for HostState {
         let Some((logical, surface_scale)) = record_toplevel_configure(self, id, &configure) else {
             return;
         };
-        let buffer = scale::buffer_size(logical, surface_scale);
+        let buffer = layer_shell_types::buffer_size(logical, surface_scale);
         follow_buffer_scale(self, window.wl_surface(), logical, surface_scale);
 
         if let Some(host_surface) = self.surfaces.get_mut(&id) {
@@ -76,7 +76,7 @@ impl PopupHandler for HostState {
         let Some((logical, surface_scale)) = record_popup_configure(self, id, &config) else {
             return;
         };
-        let buffer = scale::buffer_size(logical, surface_scale);
+        let buffer = layer_shell_types::buffer_size(logical, surface_scale);
         follow_buffer_scale(self, popup.wl_surface(), logical, surface_scale);
 
         if let Some(host_surface) = self.surfaces.get_mut(&id) {
@@ -116,7 +116,7 @@ fn record_toplevel_configure(
     state: &mut HostState,
     id: SurfaceId,
     configure: &WindowConfigure,
-) -> Option<(Size, scale::Scale120)> {
+) -> Option<(Size, layer_shell_types::Scale120)> {
     let host_surface = state.surfaces.get_mut(&id)?;
     let frame_now = host_surface.document_size();
     let Role::Toplevel {
@@ -155,7 +155,7 @@ fn record_popup_configure(
     state: &mut HostState,
     id: SurfaceId,
     config: &PopupConfigure,
-) -> Option<(Size, scale::Scale120)> {
+) -> Option<(Size, layer_shell_types::Scale120)> {
     let host_surface = state.surfaces.get_mut(&id)?;
     if !matches!(host_surface.role, Role::Popup { .. }) {
         return None;

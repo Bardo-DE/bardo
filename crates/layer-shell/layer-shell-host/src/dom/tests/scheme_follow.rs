@@ -15,9 +15,9 @@ use tokio::sync::watch;
 
 use crate::dom::document::SurfaceDocument;
 use crate::dom::tests::env::test_env;
-use crate::use_watch;
 use crate::wake::{WokenSet, surface_waker};
 use layer_shell_hooks::HostRoot;
+use layer_shell_hooks::use_watch;
 use layer_shell_types::SurfaceId;
 
 const WIDTH: u32 = 200;

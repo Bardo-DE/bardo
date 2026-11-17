@@ -27,7 +27,6 @@ mod tests {
     use blitz_traits::shell::{ColorScheme, Viewport};
     use dioxus::prelude::*;
 
-    use super::*;
     use crate::clipboard::SharedSelection;
     use crate::dom::document::{DocumentEnv, SurfaceDocument};
     use crate::dom::shell_provider::HostShellProvider;

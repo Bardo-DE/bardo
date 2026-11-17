@@ -46,6 +46,7 @@ impl HostRoot {
     }
 
     /// Build the `VirtualDom`, with every context provided, ready for `DioxusDocument::new`.
+    #[must_use]
     pub fn into_vdom(self) -> VirtualDom {
         let vdom = (self.make)();
         for provide in self.contexts {

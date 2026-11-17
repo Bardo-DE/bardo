@@ -14,9 +14,9 @@ use crate::clipboard::SharedSelection;
 use crate::dom::document::SurfaceDocument;
 use crate::dom::shell_provider::HostShellProvider;
 use crate::dom::tests::env::test_env;
-use crate::use_watch;
 use crate::wake::{WokenSet, surface_waker};
 use layer_shell_hooks::HostRoot;
+use layer_shell_hooks::use_watch;
 use layer_shell_types::SurfaceId;
 
 /// Every text node's content, concatenated, for a coarse "did the DOM render X" assertion.

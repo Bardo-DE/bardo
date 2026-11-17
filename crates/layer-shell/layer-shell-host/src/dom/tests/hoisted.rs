@@ -16,8 +16,8 @@ use tokio::sync::watch;
 
 use crate::dom::document::SurfaceDocument;
 use crate::dom::tests::env::test_env;
-use crate::use_watch;
 use layer_shell_hooks::HostRoot;
+use layer_shell_hooks::use_watch;
 
 const WIDTH: u32 = 100;
 const HEIGHT: u32 = 200;

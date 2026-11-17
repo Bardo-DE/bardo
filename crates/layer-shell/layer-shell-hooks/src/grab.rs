@@ -58,6 +58,10 @@ pub enum GrabRefused {
 
 /// The serial to start a move or resize of surface `id` with, or why the compositor would
 /// ignore it. Pure.
+///
+/// # Errors
+///
+/// [`GrabRefused`] when the compositor would ignore a grab started now.
 pub fn grab_serial(facts: PointerFacts, id: SurfaceId) -> Result<u32, GrabRefused> {
     if facts.focus != Some(id) {
         return Err(GrabRefused::PointerElsewhere);
@@ -75,6 +79,7 @@ pub struct GrabRecord(Rc<Cell<PointerFacts>>);
 
 impl GrabRecord {
     /// The facts now.
+    #[must_use]
     pub fn get(&self) -> PointerFacts {
         self.0.get()
     }
@@ -87,6 +92,10 @@ impl GrabRecord {
     }
 
     /// [`grab_serial`] on the facts now.
+    ///
+    /// # Errors
+    ///
+    /// [`GrabRefused`] when the compositor would ignore a grab started now.
     pub fn serial_for(&self, id: SurfaceId) -> Result<u32, GrabRefused> {
         grab_serial(self.get(), id)
     }

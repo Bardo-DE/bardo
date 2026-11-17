@@ -4,8 +4,9 @@
 use calloop::ping::make_ping;
 
 use super::{Flush, ORDER, Phase, run};
-use crate::{BlurSpec, ExclusiveZone, HostError, RegionSpec, SurfaceId};
+use crate::HostError;
 use layer_shell_hooks::{Request, RequestQueue};
+use layer_shell_types::{BlurSpec, ExclusiveZone, RegionSpec, SurfaceId};
 use layer_shell_types::{CommonOp, LayerOp, SurfaceOp};
 
 /// What the fake saw, in order.

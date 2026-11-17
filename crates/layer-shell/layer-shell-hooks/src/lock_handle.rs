@@ -23,6 +23,7 @@ pub struct LockHandle {
 }
 
 impl LockHandle {
+    #[must_use]
     pub fn new(id: LockId, requests: RequestQueue, phase: Live<LockPhase>) -> LockHandle {
         LockHandle {
             id,

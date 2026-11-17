@@ -12,11 +12,13 @@ pub struct SurfaceIds(Arc<AtomicU64>);
 
 impl SurfaceIds {
     /// A fresh allocator; the first id it returns is `SurfaceId(1)`.
+    #[must_use]
     pub fn new() -> SurfaceIds {
         SurfaceIds::default()
     }
 
     /// The next unused id.
+    #[must_use]
     pub fn next(&self) -> SurfaceId {
         // Relaxed is enough: uniqueness needs only the atomicity of the add, not ordering with
         // any other memory.

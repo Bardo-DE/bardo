@@ -68,7 +68,7 @@ pub(crate) struct BlitzTokens {
 impl BlitzTokens {
     /// The source of a document whose resolved frames `after` reports (`None` for a root that is
     /// not hosted by a document with a resolve step).
-    pub(crate) fn new(after: Option<AfterResolve>) -> Rc<dyn TokenSource> {
+    pub(crate) fn source(after: Option<AfterResolve>) -> Rc<dyn TokenSource> {
         Rc::new(BlitzTokens { after })
     }
 }

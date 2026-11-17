@@ -19,7 +19,7 @@ use layer_shell_hooks::{
 };
 use layer_shell_hooks::{GrabRefused, PointerFacts, Press};
 use layer_shell_types::{CommonOp, FrameTick, Maximize, ResizeEdge, WindowOp};
-use layer_shell_types::{PlacementSupport, Scale120, SurfaceId, SurfaceOp, ToplevelState};
+use layer_shell_types::{Scale120, SurfaceId, SurfaceOp, ToplevelState};
 
 fn parts(requests: RequestQueue, ticks: FrameTicks, scale: Live<Scale120>) -> HandleParts {
     HandleParts {

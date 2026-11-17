@@ -15,7 +15,9 @@ use layer_shell_types::{ElementId, ScrollState};
 use crate::handle::use_surface;
 use crate::live::Live;
 
-/// The scrollers a surface's components watch, by element id. Shared between the host (which
+/// The scrollers a surface's components watch, by element id.
+///
+/// Shared between the host (which
 /// publishes) and the surface's `SurfaceHandle`, on the main thread. An entry stays for the
 /// surface's life once watched.
 #[derive(Debug, Clone, Default)]
@@ -23,6 +25,7 @@ pub struct ScrollBoard(Rc<RefCell<HashMap<ElementId, Live<ScrollState>>>>);
 
 impl ScrollBoard {
     /// The live state of `id`, created on first watch.
+    #[must_use]
     pub fn watch(&self, id: &ElementId) -> Live<ScrollState> {
         self.0
             .borrow_mut()
@@ -32,6 +35,7 @@ impl ScrollBoard {
     }
 
     /// Every watched id and its live state.
+    #[must_use]
     pub fn watched(&self) -> Vec<(ElementId, Live<ScrollState>)> {
         self.0
             .borrow()

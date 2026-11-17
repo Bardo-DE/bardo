@@ -83,6 +83,7 @@ impl RequestQueue {
     }
 
     /// Everything queued so far, oldest first.
+    #[must_use]
     pub fn drain(&self) -> Vec<Request> {
         self.queue.borrow_mut().drain(..).collect()
     }

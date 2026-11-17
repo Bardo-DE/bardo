@@ -184,6 +184,7 @@ pub fn read_html() -> Result<String, ClipboardError> {
 }
 
 /// What a paste inserts: the HTML with its plain text when there is HTML, else the text.
+#[must_use]
 pub fn pasted(html: Option<String>, text: Option<String>) -> Option<Pasted> {
     match (html.filter(|html| !html.is_empty()), text) {
         (Some(html), text) => Some(Pasted::Html {

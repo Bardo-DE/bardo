@@ -41,6 +41,7 @@ impl WheelFeed {
 
     /// Start listening: events published from now on queue for the returned listener, until it
     /// is dropped.
+    #[must_use]
     pub fn listen(&self) -> WheelListener {
         let mut listeners = self.0.borrow_mut();
         listeners.next += 1;
@@ -66,6 +67,7 @@ pub struct WheelListener {
 
 impl WheelListener {
     /// The next event this listener has not seen.
+    #[must_use]
     pub fn next(&self) -> NextWheel<'_> {
         NextWheel { listener: self }
     }

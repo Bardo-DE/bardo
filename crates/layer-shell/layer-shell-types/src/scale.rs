@@ -6,8 +6,9 @@ pub use blitz_embed_types::units::Scale120;
 use crate::geometry::px_of;
 use crate::region::Px;
 
-/// The largest width or height, in pixels, the host accepts from the compositor for a surface,
-/// logical or buffer: the 2D texture limit of the device the host asks for
+/// The largest width or height, in pixels, the host accepts from the compositor for a surface.
+///
+/// Logical or buffer, it is the 2D texture limit of the device the host asks for
 /// (`wgpu::Limits::default()`), so a buffer of this size can always be configured. A larger
 /// number is a lie or a bug, and a swapchain that size would be a validation error.
 pub const MAX_SURFACE_EXTENT: Px = 8192;
@@ -22,12 +23,14 @@ pub struct Size {
 
 impl Size {
     /// Whether both sides are positive: only then can a viewport destination or a buffer be set.
+    #[must_use]
     pub fn has_area(self) -> bool {
         self.width > 0 && self.height > 0
     }
 }
 
 /// A width or height the compositor sent on the wire, kept within [`MAX_SURFACE_EXTENT`].
+#[must_use]
 pub fn wire_extent(value: u32) -> Px {
     Px::try_from(value).map_or(MAX_SURFACE_EXTENT, |px| px.min(MAX_SURFACE_EXTENT))
 }
@@ -46,6 +49,7 @@ pub fn buffer_size(logical: Size, scale: Scale120) -> Size {
 
 /// One logical dimension converted to its physical (buffer) equivalent at `scale`, rounded half
 /// away from zero, at most [`MAX_SURFACE_EXTENT`].
+#[must_use]
 pub fn logical_to_physical(value: Px, scale: Scale120) -> Px {
     round_half_away_from_zero(f64::from(value) * scale.factor()).min(MAX_SURFACE_EXTENT)
 }
@@ -59,9 +63,11 @@ pub enum BufferMapping {
     Integer(i32),
 }
 
-/// The mapping for a surface of `logical` size at `scale`, given the fractional scale the
-/// compositor last preferred for it: the viewport once it has said one, else the rounded
+/// The mapping for a surface of `logical` size at `scale`.
+///
+/// Given the fractional scale the compositor last preferred for it: the viewport once it has said one, else the rounded
 /// integer scale (a compositor without fractional-scale, or one that has not sent it yet).
+#[must_use]
 pub fn buffer_mapping(
     preferred: Option<Scale120>,
     logical: Size,
