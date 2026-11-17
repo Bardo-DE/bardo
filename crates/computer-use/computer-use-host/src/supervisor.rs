@@ -173,7 +173,7 @@ impl<S: Seams> Supervisor<S> {
 
     /// Reports what the settings file's read fell back on and applies its values.
     pub fn adopt(&self, loaded: &Loaded<ComputerUseSettings>) {
-        for line in loaded.lines("computer_use_daemon") {
+        for line in loaded.lines("bardo-computer-use") {
             eprintln!("{line}");
         }
         self.apply_settings(&loaded.value);
