@@ -1,5 +1,5 @@
-//! `cargo xtask gate`: the workspace-deps, renderer-edges, domain-order and product-words checks, then fmt, clippy and tests on
-//! the affected set.
+//! `cargo xtask gate`: the workspace-deps, renderer-edges, domain-order, product-words, error-names, no-mod-rs and
+//! no-prefs checks, then fmt, clippy and tests on the affected set.
 
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
@@ -25,6 +25,15 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
         return Ok(finish("gate", false));
     }
     if !super::product_words::run()? {
+        return Ok(finish("gate", false));
+    }
+    if !super::error_names::run()? {
+        return Ok(finish("gate", false));
+    }
+    if !super::no_mod_rs::run()? {
+        return Ok(finish("gate", false));
+    }
+    if !super::no_prefs::run()? {
         return Ok(finish("gate", false));
     }
     if !super::shear::run()? {

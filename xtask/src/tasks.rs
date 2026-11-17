@@ -2,9 +2,12 @@
 
 pub mod deny;
 pub mod domain_order;
+pub mod error_names;
 pub mod gate;
 pub mod install;
 pub mod legacy;
+pub mod no_mod_rs;
+pub mod no_prefs;
 pub mod product_words;
 pub mod renderer_edges;
 pub mod shear;

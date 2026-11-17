@@ -17,12 +17,15 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, domain-order, product-words and shear, then fmt, clippy and tests on the affected set
+  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, domain-order, product-words, error-names, no-mod-rs, no-prefs and shear, then fmt, clippy and tests on the affected set
   check deny                    cargo deny check (needs cargo-deny)
   check test-modules            every tests/it file is a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
   check domain-order            a library crate depends only on its own domain folder or a lower one
   check product-words           no retired product name in a .rs file, a file name or a Cargo.toml feature or description
+  check error-names             a type that implements std::error::Error has a name ending in Error
+  check no-mod-rs               no mod.rs file and no #[path] attribute
+  check no-prefs                no identifier ending in Prefs
   check renderer-edges          only the renderer crates and the programs depend on the renderer
   check shear                   no crate declares a dependency it does not use (needs cargo-shear)
   check legacy [<repo>]         run the old per-repo check-*.sh scripts unchanged
@@ -82,7 +85,7 @@ fn run() -> Result<bool> {
         "check" => {
             let which = parser
                 .value()
-                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges, domain-order, product-words, shear or legacy")?
+                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges, domain-order, product-words, error-names, no-mod-rs, no-prefs, shear or legacy")?
                 .string()?;
             match which.as_str() {
                 "deny" => {
@@ -108,6 +111,18 @@ fn run() -> Result<bool> {
                 "product-words" => {
                     reject_extra(&mut parser)?;
                     tasks::product_words::run()
+                }
+                "error-names" => {
+                    reject_extra(&mut parser)?;
+                    tasks::error_names::run()
+                }
+                "no-mod-rs" => {
+                    reject_extra(&mut parser)?;
+                    tasks::no_mod_rs::run()
+                }
+                "no-prefs" => {
+                    reject_extra(&mut parser)?;
+                    tasks::no_prefs::run()
                 }
                 "shear" => {
                     reject_extra(&mut parser)?;
