@@ -252,7 +252,7 @@ $XDG_RUNTIME_DIR/bardo/memory/edit/<space>/...   # decrypted edit copies (tmpfs)
 **Topic file** (the canonical plain form; sealed vaults store exactly these bytes, sealed):
 ```markdown
 ---
-format: bardo-memory 1
+format: quire-memory 1
 topic: people/sam-lee
 title: Sam Lee
 ---
@@ -273,7 +273,7 @@ Format rules:
 
 Contract: `render_topic(&parse_topic(s)?) == s` for any `s` that `render_topic` produced. Parsing is strict on the comment grammar and lenient everywhere else.
 
-**Sealed file:** `b"QMEM\x01"` ‖ 24-byte nonce ‖ XChaCha20-Poly1305(ciphertext). The associated data is `space ‖ vault-relative path`, so a sealed file moved to another path or another Space fails to open. The key is `derive(space_key, "bardo-memory 1 files")`.
+**Sealed file:** `b"QMEM\x01"` ‖ 24-byte nonce ‖ XChaCha20-Poly1305(ciphertext). The associated data is `space ‖ vault-relative path`, so a sealed file moved to another path or another Space fails to open. The key is `derive(space_key, "quire-memory 1 files")`.
 
 **Event header canonical bytes (v1)**, the input to the chain:
 ```
@@ -293,7 +293,7 @@ The header holds no thing ids or text. Subjects and sources are in the body and 
 
 **Export** (the fd receives a tar stream) [freeze now]:
 ```
-bardo-memory-export-1/manifest.json   # ExportManifest: format, spaces, counts, created, chain heads
+quire-memory-export-1/manifest.json   # ExportManifest: format, spaces, counts, created, chain heads
 <space>/events.jsonl                   # one line per entry: header fields + link + body-or-"erased"
 <space>/facts/**.md  <space>/procedures/**.md  <space>/pending/**.md   (plain, never sealed)
 rules.toml

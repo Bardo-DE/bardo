@@ -1,10 +1,10 @@
 //! The export: a tar stream whose layout, entry lines and writer are pinned here.
 //!
 //! ```text
-//! bardo-memory-export-1/manifest.json     ExportManifest
-//! bardo-memory-export-1/<space>/events.jsonl   one EventLine per entry
-//! bardo-memory-export-1/<space>/facts/**.md, procedures/**.md, pending/**.md   plain, never sealed
-//! bardo-memory-export-1/rules.toml
+//! quire-memory-export-1/manifest.json     ExportManifest
+//! quire-memory-export-1/<space>/events.jsonl   one EventLine per entry
+//! quire-memory-export-1/<space>/facts/**.md, procedures/**.md, pending/**.md   plain, never sealed
+//! quire-memory-export-1/rules.toml
 //! ```
 //!
 //! The index and the keys are never exported. `events.jsonl` lets a third party verify the
@@ -106,25 +106,25 @@ impl EventLine {
     }
 }
 
-/// `bardo-memory-export-1/manifest.json`.
+/// `quire-memory-export-1/manifest.json`.
 #[must_use]
 pub fn manifest_path() -> String {
     format!("{EXPORT_ROOT}/manifest.json")
 }
 
-/// `bardo-memory-export-1/rules.toml`.
+/// `quire-memory-export-1/rules.toml`.
 #[must_use]
 pub fn rules_path() -> String {
     format!("{EXPORT_ROOT}/rules.toml")
 }
 
-/// `bardo-memory-export-1/<space>/events.jsonl`.
+/// `quire-memory-export-1/<space>/events.jsonl`.
 #[must_use]
 pub fn events_path(space: &SpaceId) -> String {
     format!("{EXPORT_ROOT}/{space}/events.jsonl")
 }
 
-/// `bardo-memory-export-1/<space>/<vault path>` (facts, procedures, pending).
+/// `quire-memory-export-1/<space>/<vault path>` (facts, procedures, pending).
 #[must_use]
 pub fn file_path(space: &SpaceId, rel: &VaultPath) -> String {
     format!("{EXPORT_ROOT}/{space}/{rel}")

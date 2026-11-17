@@ -12,7 +12,7 @@ kind = "tidy"
 topic = "people/ana"
 before = """
 ---
-format: bardo-memory 1
+format: quire-memory 1
 topic: people/ana
 title: people/ana
 ---
@@ -24,7 +24,7 @@ title: people/ana
 """
 after = """
 ---
-format: bardo-memory 1
+format: quire-memory 1
 topic: people/ana
 title: people/ana
 ---

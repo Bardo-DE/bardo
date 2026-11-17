@@ -65,7 +65,7 @@ fn unseal_reports_each_malformation() {
         ("half a magic", b"QM".to_vec(), SealError::Truncated),
         (
             "not sealed",
-            b"---\nformat: bardo-memory 1\n".to_vec(),
+            b"---\nformat: quire-memory 1\n".to_vec(),
             SealError::BadMagic,
         ),
         ("magic only", b"QMEM".to_vec(), SealError::Truncated),

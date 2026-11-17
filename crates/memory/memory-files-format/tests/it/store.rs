@@ -120,7 +120,7 @@ fn append_is_add_only() {
 fn a_persons_edits_survive_an_append() {
     on_every_vault(|store| {
         let t = topic("prefs");
-        let text = "---\nformat: bardo-memory 1\ntopic: prefs\ntitle: Prefs\n---\n\n- A bullet I typed.\nA note.\n";
+        let text = "---\nformat: quire-memory 1\ntopic: prefs\ntitle: Prefs\n---\n\n- A bullet I typed.\nA note.\n";
         store
             .vault()
             .write_atomic(&VaultPath::topic(&t), text.as_bytes())

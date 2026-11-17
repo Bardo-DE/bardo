@@ -275,17 +275,17 @@ Digest), body json)`. The header holds no thing id and no text. Golden:
 `crates/eventlog/tests/golden/header_v1.{hex,link}`.
 
 **Sealed file**: `"QMEM" 0x01 ‖ nonce [24] ‖ XChaCha20-Poly1305`, associated data
-`lp(space) ‖ lp(vault path)`; key `derive(key, Files)`; subkey contexts `"bardo-memory 1
+`lp(space) ‖ lp(vault path)`; key `derive(key, Files)`; subkey contexts `"quire-memory 1
 <eventlog|index|files|digest>"`. Golden: `crates/almanac-seal/tests/golden/derive.txt`.
 
-**Topic file**: front matter (`format: bardo-memory 1`, `topic`, `title`), dated headings derived
+**Topic file**: front matter (`format: quire-memory 1`, `topic`, `title`), dated headings derived
 from each fact's `at` in the injected time zone, one `- text` bullet per fact followed by its
 trailer `  <!-- fact: <id>; at: <utc>; by: <json>; label: <json>[; from: <json>][; supersedes:
 <json>] -->`. A bullet with no trailer is the person's edit (`Unstamped`); other lines are
 `Verbatim`; `valid` and `origin` are reserved. `render(parse(s)) == s` for any `s` that render
 produced. Golden: `crates/memfiles-format/tests/golden/people-sam-lee.md`.
 
-**Export**: a tar stream under `bardo-memory-export-1/`: `manifest.json`, `<space>/events.jsonl`
+**Export**: a tar stream under `quire-memory-export-1/`: `manifest.json`, `<space>/events.jsonl`
 (one `EventLine` per entry: header fields, link, body or `"erased"`), `<space>/facts|procedures|
 pending/**.md` plain, `rules.toml`. Never the index, never the keys. Golden:
 `crates/almanac-service/tests/golden/events.jsonl` and the layout test.

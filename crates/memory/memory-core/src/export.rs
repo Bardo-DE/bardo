@@ -7,9 +7,9 @@ use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
 /// The top directory of the tar stream; its trailing number is the export format.
-pub const EXPORT_ROOT: &str = "bardo-memory-export-1";
+pub const EXPORT_ROOT: &str = "quire-memory-export-1";
 /// The manifest's `format` field.
-pub const EXPORT_FORMAT: &str = "bardo-memory-export 1";
+pub const EXPORT_FORMAT: &str = "quire-memory-export 1";
 
 /// One Space in an export.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
