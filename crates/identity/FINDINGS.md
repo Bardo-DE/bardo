@@ -29,7 +29,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 6. **`FixtureProc` is behind `fake`.** The plan listed it as public; as a test helper it follows the
    convention "test helpers are not API".
 7. **`peephole::peephole_core` and `peephole_bus::peephole` are crate re-exports,** not glob re-exports.
-8. **Roles added to the plan's list:** `updater` (slipway.service), `memory` (memoryd.service) and
+8. **Roles added to the plan's list:** `updater` (bardo-updater.service), `memory` (memoryd.service) and
    `manager` (the systemd image). The plan's SETTINGS-05 row names `updater` and `memory`.
 9. **`Cgroup` proof is reachable only with a hidden image.** A readable but user-writable image is
    `Unverified`, whatever its cgroup says, so no `Cgroup` standing exists for a hostile image.

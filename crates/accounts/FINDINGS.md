@@ -2716,7 +2716,7 @@ the installing; ARCHITECTURE section 11 has the trust design.
 
 ### Interface asks
 
-- sill/slipway: install `porter-engine-helper` at `/usr/libexec/bardo/` and
+- sill/updater: install `porter-engine-helper` at `/usr/libexec/bardo/` and
   `dist/org.bardo.porter.engines.policy` at `/usr/share/polkit-1/actions/` (scripts/install.sh does
   both); make sure nothing sets `NoNewPrivileges` on Settings' unit.
 - stoker: `EngineKind::Strata`, so a Strata the person pointed at can be started with a model.

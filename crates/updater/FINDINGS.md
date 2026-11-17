@@ -5,17 +5,17 @@ Departures from the plan, standing facts and open items. An entry names the cond
 ## Decisions and departures
 
 1. **Polkit: installing is allow_active without a password; going back asks for one (owner, 2026-10-16).**
-   `org.bardo.slipway.apply` has `allow_active=yes`, `allow_inactive=no`, `allow_any=no`. That is safe only because
-   `slipway-apply` installs nothing that does not verify against the release key on the computer and refuses
+   `org.bardo.updater.apply` has `allow_active=yes`, `allow_inactive=no`, `allow_any=no`. That is safe only because
+   `bardo-updater-apply` installs nothing that does not verify against the release key on the computer and refuses
    anything not newer than what runs; it cannot be pointed at another root or key (it reads
-   `/etc/slipway/config.toml`, not the caller's configuration) and, since decision 23, it cannot go back at all.
-   Going back is `slipway-rollback` under `org.bardo.slipway.rollback` (`auth_admin_keep`). The health program
-   `slipway-health` has `org.bardo.slipway.health` (`yes`), see decision 22. Closes if the owner wants a password
+   `/etc/updater/config.toml`, not the caller's configuration) and, since decision 23, it cannot go back at all.
+   Going back is `bardo-updater-rollback` under `org.bardo.updater.rollback` (`auth_admin_keep`). The health program
+   `bardo-updater-health` has `org.bardo.updater.health` (`yes`), see decision 22. Closes if the owner wants a password
    for installs: change `allow_active` of the first action to `auth_admin_keep`.
 2. **Test signature is a documentation example.** There is no way to run minisign here, so the real
-   signature test (`slipway-core/tests/it/digest_sign.rs`) uses the key and prehashed signature of the
+   signature test (`updater-core/tests/it/digest_sign.rs`) uses the key and prehashed signature of the
    four bytes `test` copied from minisign-verify 0.2.5's own docs (`src/lib.rs`). Install tests in
-   `slipway` use an accept-all or reject-all `Authenticator` instead of signing their own
+   `updater` use an accept-all or reject-all `Authenticator` instead of signing their own
    `release.toml`; the pure signature path is exercised only through the documentation pair. Closes when a
    CI-produced `release.toml` + `.minisig` pair is added as a fixture.
 3. **Methods return at once.** `Check()`, `Install(version)` and `Rollback()` return as soon as the work has
@@ -29,12 +29,12 @@ Departures from the plan, standing facts and open items. An entry names the cond
 6. **Export targets must be shipped.** An `[[export]]` whose `target` is neither a listed file nor a folder
    holding listed files is refused when the release is parsed; a dangling link is a defect. The CI lane
    must not export a path it does not put in the bundle.
-7. **`.slipway/` is reserved.** The verified `release.toml` and signature are kept at
-   `<release>/.slipway/` and bundle paths under it are refused.
+7. **`.updater/` is reserved.** The verified `release.toml` and signature are kept at
+   `<release>/.updater/` and bundle paths under it are refused.
 8. **Stale exports come from the kept record**, not from scanning the system: the links to drop are those
    in the `release.toml` kept inside the release being left, and only when they still point into the root.
 9. **One system settings file decides the root and the key.** The privileged helper reads only
-   `/etc/slipway/config.toml`; the daemon and the command line read it first and then the person's file,
+   `/etc/updater/config.toml`; the daemon and the command line read it first and then the person's file,
    which may only set `settings_command` and `name` (other keys there are ignored, silently). So the two
    cannot disagree. `scripts/install.sh` writes the file once (`root`, `pubkey_path`) and never overwrites
    one; it says so when the existing file names another root than `--root`.
@@ -46,7 +46,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     notices). The owner is looked up per pressed button of one of our notifications, not per signal.
 12. **A rolled-back version is refused until a newer one is published.** After an automatic or a manual
     rollback the next checks leave `State` at `idle` and `Available` empty for that version and anything
-    older (`slipway_core::offer`). The person cannot re-install the refused version from the page; the way
+    older (`updater_core::offer`). The person cannot re-install the refused version from the page; the way
     back to it is a newer release, or deleting `refused` from the state file. Closes if the owner wants a
     "try again" button.
 13. **Bundle folders are `0755`.** The tar's folder modes were ignored and folders got the helper's umask,
@@ -63,14 +63,14 @@ Departures from the plan, standing facts and open items. An entry names the cond
     covers accept and refuse.
 16. **System files (lane distro-slip).** `[[system]]` in `release.toml` and `SyncSystem` (see ARCHITECTURE
     "System files"). Open question 5 is closed (ROOT-07).
-17. **SELinux labels (lane distro-slip).** `slipway-apply` runs `restorecon` on the root and on placed
+17. **SELinux labels (lane distro-slip).** `bardo-updater-apply` runs `restorecon` on the root and on placed
     system files where SELinux is in use; `scripts/install.sh` adds the `semanage fcontext` rules.
     Not run on a real SELinux computer: the first Fedora install should check `ls -Z /opt/bardo/current/bin`
     and that `bardo-key-remap.service` starts under the enforcing policy.
 
 18. **The helper does not trust what the caller can touch (audit ROOT-01, ROOT-05, ROOT-06).** It sets
     umask 022 first (via `rustix`, no `unsafe`); makes the new tree `0700`/`0600` until whole; keeps
-    `.slipway/release.toml` root-owned `0644`; checks the kept record's signature again whenever it reads
+    `.updater/release.toml` root-owned `0644`; checks the kept record's signature again whenever it reads
     it (`recorded()`), so an on-disk record is trusted only as far as the key vouches for it; re-hashes a
     system file against the signed digest at the moment it is copied; keeps the lock in `<root>/.private`;
     opens named files without following links or waiting on pipes; and copies the bundle once into an
@@ -95,7 +95,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     a download there still fails. Not run against the real release site: whether GitHub's download redirect
     keeps the `Range` header is unchecked (if it does not, the first bytes are dropped and it still works, just
     slower).22. **The session gets two calls, and the rollback it may make needs no password (ROOT-02, ROOT-03).**
-    `slipway confirm` and the new `slipway recover` are the contract (ARCHITECTURE s.7). The automatic
+    `updater confirm` and the new `updater recover` are the contract (ARCHITECTURE s.7). The automatic
     rollback is decided by a root-side record counting different boots, not by the person's state file, so
     it cannot be forced by a program of the person. **Needs the owner's eye:** it is a rollback with no
     password (the other, on request, will ask for one, decision 23), bounded by "more than two different
@@ -107,13 +107,13 @@ Departures from the plan, standing facts and open items. An entry names the cond
     "a floor version a rollback may not go below" in root-owned state, which would make a security fix
     un-roll-back-able even with the password. `Install(version)` is limited to a newer release signed by the project
     and (since the version argument, ROOT-04) to the exact version the caller names, so a release that arrived after
-    the person was shown another is never installed unseen (ARCHITECTURE s.6). The CLI `slipway rollback` from a
-    terminal is refused by the gate; the way back there is `pkexec /usr/libexec/slipway-rollback`.
+    the person was shown another is never installed unseen (ARCHITECTURE s.6). The CLI `updater rollback` from a
+    terminal is refused by the gate; the way back there is `pkexec /usr/libexec/bardo-updater-rollback`.
 24. **Callers are identified by peephole, not by the name of their cgroup (ROOT-04 daemon side, wave 2).**
     `service/caller.rs` and the `callers` setting (a list of unit and app names; the settings file may still carry the
     key, it is ignored) are gone; `service/gate.rs` asks peephole which program is calling and checks roles from the
     desktop's table: `Install` for `shell` (at `Full`, the unit manager confirms its unit), `settings` and
-    `updater_cli` (the `slipway` program; both at `Exe`, because Settings is also started by a launcher and the program
+    `updater_cli` (the `updater` program; both at `Exe`, because Settings is also started by a launcher and the program
     from a terminal, neither of which has a unit to prove); `Rollback` for `shell` and `settings`; `Check` for any
     caller peephole can identify at all (an unreadable or vanished sender is refused; an unverified one is not, since
     `Check` only looks). Replaced by the table: `DEFAULT_CALLERS`, `Config::callers`, `leaf_of`, `is_allowed`.
@@ -140,7 +140,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     password for the person at the keyboard, the very thing the exact system-file list (ROOT-07) closes for rules. It is
     removed; the list is ten folders, the desktop's `release.py` has the same ten, and `release/selftest.sh` forges a
     release exporting there (`export-polkit`) and checks `verify.sh` refuses it. The desktop ships no polkit action
-    (slipway's own policy comes from `scripts/install.sh`; the key remap daemon's file is a rule, named in the exact list), so nothing
+    (the updater's own policy comes from `scripts/install.sh`; the key remap daemon's file is a rule, named in the exact list), so nothing
     needed a replacement. Were one ever needed, it would be one exact `/usr/share/polkit-1/actions` rule in `system.rs`
     for that file name, and the check that it does not give `allow_active=yes` to a privileged action would have to
     be added to the desktop's `release/check-helpers.py` first. Test: `export_links_are_allowed_only_below_the_listed_folders`
@@ -166,20 +166,20 @@ Departures from the plan, standing facts and open items. An entry names the cond
 
 ## Open questions
 
-1. **`slipway confirm` writes the state file directly**, not through the daemon, so it works when the
+1. **`updater confirm` writes the state file directly**, not through the daemon, so it works when the
    daemon is down; a read-modify-write race with the daemon's own writes is possible but both write
    whole-file renames and the fields are disjoint in practice.
 2. **No `XDG_SESSION_ID`, second login on the same boot.** Indistinguishable from a daemon restart, so a
    release that never confirmed is rolled back at the next boot instead of the next login. Closes if a
    session manager without that variable matters; a per-login runtime-dir marker would settle it.
-3. **The first install has no slipway.** `install.sh` installs the helper, the policy, the unit, the bus
-   file and the settings, but the user unit and the bus file start `<root>/current/bin/slipway`, which
-   exists only after the first release is installed, and `slipway install` needs the running service.
-   The desktop README ("First install on a machine") says `sudo ./dist/install.sh ... && slipway install`;
-   neither works as written (the script is `scripts/install.sh`, and there is no `slipway` binary yet).
-   Closes when the first-install path is decided: `install.sh --with-cli` copying a built `slipway` to
-   `PREFIX/bin`, or a `slipway-apply <staged dir>` run by hand with a release downloaded by `curl`.
-4. **A root other than `/opt/bardo`.** `install.sh --root` retargets slipway's own unit and bus file, but the
+3. **The first install has no updater.** `install.sh` installs the helper, the policy, the unit, the bus
+   file and the settings, but the user unit and the bus file start `<root>/current/bin/updater`, which
+   exists only after the first release is installed, and `updater install` needs the running service.
+   The desktop README ("First install on a machine") says `sudo ./dist/install.sh ... && updater install`;
+   neither works as written (the script is `scripts/install.sh`, and there is no `updater` binary yet).
+   Closes when the first-install path is decided: `install.sh --with-cli` copying a built `updater` to
+   `PREFIX/bin`, or a `bardo-updater-apply <staged dir>` run by hand with a release downloaded by `curl`.
+4. **A root other than `/opt/bardo`.** `install.sh --root` retargets the updater's own unit and bus file, but the
    units and files inside the bundle name `/opt/bardo/current/...` (the pipeline hard-codes `PREFIX`), so a
    different root only works for a bundle built for it.
 
@@ -196,73 +196,73 @@ Departures from the plan, standing facts and open items. An entry names the cond
 ## Release pipeline
 
 `desktop/release/release.py` (lane `wh-desk-release`, not landed when this was written) against
-`slipway-core`'s validation. Slipway's side was fixed where slipway was wrong; the pipeline's side is
+`updater-core`'s validation. The updater's side was fixed where the updater was wrong; the pipeline's side is
 written as the exact change, for that lane (nothing of its was edited).
 
 Agree already (checked line by line): the three asset names, `format = 1`, `[[file]]` fields, `mode = 0o...`
 integers, the export directories (the same list on both sides; now ten, see decisions 15 and 26), absolute clean export links, `target`
 relative to the current release, no links or devices in the bundle, folders only where files live (the
-pipeline emits only the ancestors of files, slipway refuses any other folder), unique entries, bundle
+pipeline emits only the ancestors of files, the updater refuses any other folder), unique entries, bundle
 digest and size, `components` as a string table, build metadata refused on both sides.
 
-Slipway was wrong (fixed here):
+The updater was wrong (fixed here):
 
-- **Folder export targets.** Slipway accepted a folder holding listed files as an export target; the
-  pipeline requires `target in files`. Slipway now requires a listed file.
+- **Folder export targets.** The updater accepted a folder holding listed files as an export target; the
+  pipeline requires `target in files`. The updater now requires a listed file.
 - **`release.toml` size limit.** 1 MiB admitted only about 5000 files although 100000 are allowed. Now 24 MiB.
-- **Folder modes.** The pipeline writes folders `0755` in the tar; slipway ignored that and used the umask.
+- **Folder modes.** The pipeline writes folders `0755` in the tar; the updater ignored that and used the umask.
   Now `0755`, see Decision 13.
 
-The pipeline is wrong or looser than slipway (slipway will refuse what the pipeline passes); the exact
+The pipeline is wrong or looser than the updater (the updater will refuse what the pipeline passes); the exact
 changes for `release.py`:
 
-1. **`.slipway/` is reserved.** `clean_path` accepts a first part of `.slipway`; slipway refuses it (the
+1. **`.updater/` is reserved.** `clean_path` accepts a first part of `.updater`; the updater refuses it (the
    verified `release.toml` is kept there). In `clean_path`, after the loop, add
-   `if path.split("/")[0] == ".slipway": raise Refused(f"{what} {path!r}: .slipway is reserved")`.
+   `if path.split("/")[0] == ".updater": raise Refused(f"{what} {path!r}: .updater is reserved")`.
    Applies to staged files, the manifest's files, and export targets (they all go through `clean_path`).
-2. **Modes.** `check_manifest` accepts any mode up to `0o777`; slipway refuses a mode writable by group or
+2. **Modes.** `check_manifest` accepts any mode up to `0o777`; the updater refuses a mode writable by group or
    others or not readable by the owner. Replace the mode condition with
    `not isinstance(f.get("mode"), int) or f["mode"] & ~0o777 or f["mode"] & 0o022 or not f["mode"] & 0o400`.
    (`pack` itself only writes 0644/0755, so this only matters to `verify`.)
 3. **Version.** `SEMVER` accepts leading zeros (`01.2.3`) and empty or leading-zero prerelease parts
-   (`1.0.0-a..b`, `1.0.0-01`) that slipway's parser refuses. Use the semver.org expression without build
+   (`1.0.0-a..b`, `1.0.0-01`) that updater's parser refuses. Use the semver.org expression without build
    metadata: `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-((0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?$`.
-4. **Date.** `DATE` checks the shape only; slipway parses RFC 3339, so `2026-13-45T25:61:61Z` passes the
-   pipeline and fails slipway. In `check_manifest` add
+4. **Date.** `DATE` checks the shape only; the updater parses RFC 3339, so `2026-13-45T25:61:61Z` passes the
+   pipeline and fails updater. In `check_manifest` add
    `datetime.datetime.strptime(doc["date"], "%Y-%m-%dT%H:%M:%SZ")` inside a `try/except ValueError` that raises
    `Refused("date is not a real time")`.
-5. **Limits.** Slipway refuses a bundle of 0 bytes or over 8 GiB (`8 << 30`), more than 100000 files,
+5. **Limits.** The updater refuses a bundle of 0 bytes or over 8 GiB (`8 << 30`), more than 100000 files,
    notes over 16 KiB (`16 * 1024` bytes of UTF-8), a `release.toml` over 24 MiB (`24 << 20`) and more than
    16 GiB (`16 << 30`) of files in total. Check all five in `pack` (after the text is built) and in `verify`
    (`bundle["size"]`, `len(files)`, `len(notes.encode())`, the file size of `release.toml`, the sum of
    `m.size` in `check_bundle`).
 6. **Raw DEL in strings.** `toml_str` is `json.dumps(..., ensure_ascii=False)`, which leaves U+007F as is;
-   TOML forbids it in a basic string, so notes containing it sign fine and then fail to parse in slipway.
+   TOML forbids it in a basic string, so notes containing it sign fine and then fail to parse in updater.
    Return `json.dumps(text, ensure_ascii=False).replace("\x7f", "\\u007f")`.
-7. **Signature kind.** Slipway verifies with legacy signatures disallowed (the prehashed `ED` kind only).
+7. **Signature kind.** The updater verifies with legacy signatures disallowed (the prehashed `ED` kind only).
    Current minisign signs prehashed by default; an old one signs legacy unless told otherwise, and
-   `minisign -V` in `check_signature` accepts both, so CI would pass what slipway refuses. After
+   `minisign -V` in `check_signature` accepts both, so CI would pass what the updater refuses. After
    `minisign -V` succeeds in `check_signature`, read the second line of `release.toml.minisig`, base64-decode
    it, and `raise Refused("release.toml.minisig: not a prehashed signature")` unless it starts with `b"ED"`.
    (Not run here: no minisign on this computer.)
 8. **README.** "First install on a machine" says `./dist/install.sh --pubkey`; the script is
    `scripts/install.sh` with `--root`, `--pubkey`, `--prefix`, `--destdir`, `--sysconfdir` (see Open
-   question 3 for the part that does not work yet). Change `cd slipway && sudo ./dist/install.sh` to
-   `cd slipway && sudo scripts/install.sh --pubkey /path/to/release.pub`.
+   question 3 for the part that does not work yet). Change `cd updater && sudo ./dist/install.sh` to
+   `cd updater && sudo scripts/install.sh --pubkey /path/to/release.pub`.
 
 Notes for the pipeline lane that are not mismatches:
 
-- `build.sh` puts `slipway-apply` into the bundle at `libexec/slipway-apply` and slipway's `dist/` under
-  `share/slipway/dist/`. Nothing uses either: the helper that polkit names is `/usr/libexec/slipway-apply`
+- `build.sh` puts `bardo-updater-apply` into the bundle at `libexec/bardo-updater-apply` and the updater's `dist/` under
+  `share/updater/dist/`. Nothing uses either: the helper that polkit names is `/usr/libexec/bardo-updater-apply`
   from `install.sh`, deliberately not updated by a release (a release would replace a root-run binary).
-  Keep `share/slipway/dist/` out of the auto-exported directories, as now: slipway's own unit and bus file are
+  Keep `share/updater/dist/` out of the auto-exported directories, as now: the updater's own unit and bus file are
   installed by `install.sh`, and an export onto the same path would be reported as a conflict and left alone.
 - Everything in `AUTO_EXPORT_DIRS` is exported as a link `/usr/<rel>` into `/opt/bardo/current/<rel>`. systemd
   and the bus follow such links; polkit's action directory is the one to confirm on a real machine.
 
 ## Not verified (no compiler in this lane)
 
-Nothing from the second slipway lane was compiled or run (only `cargo fmt -p` and the shell parts of
+Nothing from the second the updater lane was compiled or run (only `cargo fmt -p` and the shell parts of
 `scripts/install.sh` under a temporary `--destdir`). Guesses to check first when building:
 
 - `zbus` 5.19: `fdo::DBusProxy::new(&Connection)`, `get_name_owner(BusName)`, `Message::header().sender()`
@@ -276,17 +276,17 @@ Nothing from the second slipway lane was compiled or run (only `cargo fmt -p` an
 Production-audit lane pa-slip (2026-10-16) was also written without a compiler. Look first at:
 
 - `Cargo.lock`: `rustix` (features `std`, `fs`, `process`; already in the lock at 1.1.x) is a new direct dependency
-  of `slipway`; the lock file needs refreshing. `rustix::fs::statvfs`, `rustix::process::{umask, chdir,
+  of `updater`; the lock file needs refreshing. `rustix::fs::statvfs`, `rustix::process::{umask, chdir,
   setrlimit, geteuid}` and `rustix::fs::mkfifoat` (tests) were read against rustix 1.1.5's source only.
 - `service/object.rs`: the `#[zbus(header)]` parameter on the methods (copied from sill's picker object).
 - `fetch/ureq_fetch.rs`: `RequestBuilder::header("Range", String)`, `response.status().as_u16()`,
   `timeout_recv_response` / `timeout_recv_body` on the config builder (ureq 3.4.2).
-- `slipway-root` `apply/step.rs` `Switch` / `Links` rewind, and the `Result<Result<..>, JoinError>` handling in
+- `updater-root` `apply/step.rs` `Switch` / `Links` rewind, and the `Result<Result<..>, JoinError>` handling in
   `service/engine.rs` `install`.
-- `slipway-root/tests/it/apply_hardening.rs` changes the process-wide umask for a moment (to 0 and 077) and puts it
+- `updater-root/tests/it/apply_hardening.rs` changes the process-wide umask for a moment (to 0 and 077) and puts it
   back to 022; a concurrent test would at worst see a different umask, and none asserts a mode that the code
   does not set explicitly.
-- The polkit file (`dist/org.bardo.slipway.policy`) now holds three actions; `pkexec` finds the one for a
+- The polkit file (`dist/org.bardo.updater.policy`) now holds three actions; `pkexec` finds the one for a
   program by the `exec.path` annotation, so the three programs must be installed at the paths it names.
 - Not covered by any test (needs a real polkit): the password prompt. The caller checks are tested on a private bus
   (`tests/it/caller_gate.rs`).
@@ -296,13 +296,13 @@ Production-audit lane pa-slip (2026-10-16) was also written without a compiler. 
 Written without a compiler (only `cargo fmt -p`, and the shell parts of `scripts/install.sh` run under a temporary
 `--destdir`, also with a stand-in `id` printing 0 to see the root refusal). Done:
 
-- **The root programs are their own crate.** `crates/slipway-root` holds `apply/`, `helper.rs`, `layout.rs`,
+- **The root programs are their own crate.** `crates/updater-root` holds `apply/`, `helper.rs`, `layout.rs`,
   `fsutil.rs`, `keys.rs`, `report.rs` and the three `bin/` files; binary names and installed paths are unchanged.
-  Direct dependencies: `slipway-core`, `thiserror`, `semver`, `toml`, `rustix`, `tar`, `zstd` (no `sha2`: the
-  digests come through `slipway_core::Hasher`). `serde`, `tracing` and everything heavy are gone from it.
+  Direct dependencies: `updater-core`, `thiserror`, `semver`, `toml`, `rustix`, `tar`, `zstd` (no `sha2`: the
+  digests come through `updater_core::Hasher`). `serde`, `tracing` and everything heavy are gone from it.
   `scripts/check-boundary.sh` fails if it reaches `ureq`, `rustls`, `zbus` or `tokio`.
-- **Settings.** The privileged programs no longer deserialize the service's whole `Config`: `slipway_root::settings::
-  RootSettings` reads `root` and `pubkey_path` from `/etc/slipway/config.toml` (any other key is ignored), and the
+- **Settings.** The privileged programs no longer deserialize the service's whole `Config`: `updater_root::settings::
+  RootSettings` reads `root` and `pubkey_path` from `/etc/updater/config.toml` (any other key is ignored), and the
   service's `Config` takes its defaults and the file path from there. A `root` or `pubkey_path` that is not a string is
   now refused with a plain sentence.
 - **`scripts/install.sh`.** `install -d -m755` / `install -m MODE` (beside the target, then renamed over), its own
@@ -311,28 +311,28 @@ Written without a compiler (only `cargo fmt -p`, and the shell parts of `scripts
 - **CI.** The repository had no workflow; `.github/workflows/ci.yml` runs format, clippy, boundaries, tests and
   `cargo deny check licenses` and `advisories` (weekly too). `deny.toml` gains `[advisories]`.
 - **Tests moved with the code:** `apply_*`, `exports_applied`, `system_applied` and the command-line table now live in
-  `slipway-root/tests/it`, with new tables for `RootSettings`; the keys, file-operation and installed-releases tests
-  moved from `slipway`'s `small.rs`.
+  `updater-root/tests/it`, with new tables for `RootSettings`; the keys, file-operation and installed-releases tests
+  moved from `updater`'s `small.rs`.
 
 Deferred or to check:
 
 - **Desktop repository (not touched here):** its release workflow and `release/build.sh` build the three programs with
-  `-p updater-daemon` and copy `slipway-apply`, `slipway-rollback`, `slipway-health` from slipway's target directory; they now
-  come from `-p updater-root` (the user program `slipway` stays `-p updater-daemon`). Its README "First install" command
-  `cargo build ... -p updater-daemon --bin slipway-apply --bin slipway-rollback --bin slipway-health` becomes
+  `-p updater-daemon` and copy `bardo-updater-apply`, `bardo-updater-rollback`, `bardo-updater-health` from the updater's target directory; they now
+  come from `-p updater-root` (the user program `updater` stays `-p updater-daemon`). Its README "First install" command
+  `cargo build ... -p updater-daemon --bin bardo-updater-apply --bin bardo-updater-rollback --bin bardo-updater-health` becomes
   `cargo build --release --locked -p updater-root`. `release/check-system-list.sh` reads
-  `crates/slipway-core/src/release/system.rs`; `ALLOWED_SYSTEM_FILES` did not move.
+  `crates/updater-core/src/release/system.rs`; `ALLOWED_SYSTEM_FILES` did not move.
 - **Test support is duplicated.** `tests/it/support.rs` (the bundle builder and `Sandbox`) exists in both
-  `slipway` and `slipway-root`, trimmed to what each uses, because both crates' tests install a bundle. Closes when a
-  shared dev-only crate (or `slipway-root` behind a `testing` feature) is worth its weight.
+  `updater` and `updater-root`, trimmed to what each uses, because both crates' tests install a bundle. Closes when a
+  shared dev-only crate (or `updater-root` behind a `testing` feature) is worth its weight.
 - **`cargo deny check advisories` was not run.** If the lock holds an unmaintained or yanked crate, the first CI run
   names it; add an `ignore` entry with a reason, or move the dependency.
-- **`slipway-root` still has `rustix` and `toml`** as direct dependencies: `rustix` for the umask, the limits and the
+- **`updater-root` still has `rustix` and `toml`** as direct dependencies: `rustix` for the umask, the limits and the
   free-space check (no `unsafe` allowed), `toml` for the health record. Both are small and were already in the lock.
-- **`Cargo.lock` was edited by hand** (new `slipway-root` package; `slipway` loses `rustix`, gains `slipway-root`).
+- **`Cargo.lock` was edited by hand** (new `updater-root` package; `updater` loses `rustix`, gains `updater-root`).
   Refresh it with `cargo metadata` to confirm.
 - Not verified by reading alone: `toml::from_str::<toml::Table>` and `toml::Value::String` in toml 0.9 (`settings.rs`),
-  that no test in `slipway` still uses an item trimmed from its `support.rs` (`pack_special`, `build_around`, `read`,
+  that no test in `updater` still uses an item trimmed from its `support.rs` (`pack_special`, `build_around`, `read`,
   `link`, `previous`, `releases`), and `install -m` placing the file with exactly the mode asked on GNU and busybox
   `install` (the script then compares modes with `stat`, as before).
 
@@ -342,7 +342,7 @@ Written without a compiler (only `cargo fmt -p`). Done: ROOT-04 daemon side (dec
 helper's reload step (decision 25). Look first at:
 
 - `Cargo.lock`: `peephole-bus` (git tag `v0.1.0`; features `tokio`, `desktop`; `fake` in dev) is a new direct dependency of
-  `slipway`, with `peephole`, `peephole-core` and a second `toml` major (1.x) behind it. `deny.toml` has no `[sources]`
+  `updater`, with `peephole`, `peephole-core` and a second `toml` major (1.x) behind it. `deny.toml` has no `[sources]`
   table, so a git source is only a warning; add `allow-git` for the peephole repository if the gate treats it as an error.
 - `service/run.rs`: the object is now served on a connection built without a name, then the name is requested
   (`Connection::object_server().at(..)`, `Connection::request_name(..)`), because the identification needs the connection.
@@ -350,7 +350,7 @@ helper's reload step (decision 25). Look first at:
   parameter); `Send` for the futures of `require`/`who` inside a zbus interface method; `Header::sender()` borrowed across an
   await.
 - `service/refusal.rs`: the derive names the new variant `org.bardo.Updates1.Error.AccessDenied`.
-- `slipway-root/src/apply/settle.rs`: the program lists are fixed paths; `Fake` in `system_applied.rs` answers by exact path.
+- `updater-root/src/apply/settle.rs`: the program lists are fixed paths; `Fake` in `system_applied.rs` answers by exact path.
 - Tests `caller_gate.rs` need `dbus-daemon` on `PATH` (as peephole's own tests do) and the `fake` feature of
   `peephole-bus` (dev-dependency); they start a private bus and never touch the session bus. `Settings` is introduced at
   `Exe` and the shell at `Full` there; the real judgement of a process is peephole's own tests.
@@ -363,14 +363,14 @@ helper's reload step (decision 25). Look first at:
 Written without a compiler (only `bash -n` and a `--destdir` trial of `scripts/install.sh` with stand-in helpers, under
 umask 077 and 022). Closes the desktop lane's asks 1 to 4 (audit ROOT-17):
 
-- **The split already existed** (lane pa-slip2): `slipway-root` is the privileged package, with `slipway-apply`,
-  `slipway-rollback` and `slipway-health` and seven direct dependencies. No further split: a crate of its own for
-  `slipway-apply` alone would duplicate `layout`, `fsutil`, `keys` and `settings` that the other two programs share.
+- **The split already existed** (lane pa-slip2): `updater-root` is the privileged package, with `bardo-updater-apply`,
+  `bardo-updater-rollback` and `bardo-updater-health` and seven direct dependencies. No further split: a crate of its own for
+  `bardo-updater-apply` alone would duplicate `layout`, `fsutil`, `keys` and `settings` that the other two programs share.
   Open, and not worth a crate yet: all three programs link the same code, so the rollback program also links the
   unpack path it never runs.
 - **`scripts/check-boundary.sh`** now checks the root tree with normal and build dependencies and a longer exclusion
   list (the user-level program, `peephole*`, network client and TLS, bus, async runtime and its parts, `tracing*`), and
-  pins the direct dependencies of `slipway-root` to `slipway-core`, `thiserror`, `semver`, `toml`, `rustix`, `tar`,
+  pins the direct dependencies of `updater-root` to `updater-core`, `thiserror`, `semver`, `toml`, `rustix`, `tar`,
   `zstd`. Adding a direct dependency to the privileged programs is now a change to this script, on purpose.
 - **`scripts/install.sh`** builds from `/` with `--manifest-path`, the pinned toolchain through `RUSTUP_TOOLCHAIN` and
   `net.git-fetch-with-cli=true` (the lock holds a git dependency), so no `.cargo/config.toml` of the source folder
@@ -404,7 +404,7 @@ stages the units its caller table names under `system/`, with their drop-ins app
   `SystemFound::ExportLink` and is replaced the same way; a link anywhere else, or one that climbs out of the root,
   is still the person's and a conflict. The replacement is the atomic rename of `write_atomic_mode`, which
   replaces the link itself and never writes through it.
-- Tests: `slipway-core` `system.rs` (the table, the plan, the both-linked-and-placed refusal) and `slipway-root`
+- Tests: `updater-core` `system.rs` (the table, the plan, the both-linked-and-placed refusal) and `updater-root`
   `system_applied.rs` (the upgrade across, the stale link, the three kinds of link in the way).
 - Not run: the new tests were written by reading. The new helper must be installed by hand on every computer before
   a release that holds these files is published.

@@ -61,7 +61,7 @@ fn speaks(session: &BusRoute, mode: SessionMode) -> Speaks {
 
 /// The update service's program: beside this one in the release folder, else where it is
 /// exported. `exists` says whether a file is there.
-fn slipway_program(bin_dir: Option<&Path>, exists: impl Fn(&Path) -> bool) -> Option<PathBuf> {
+fn updater_program(bin_dir: Option<&Path>, exists: impl Fn(&Path) -> bool) -> Option<PathBuf> {
     bin_dir
         .map(|dir| dir.join("bardo-updater"))
         .into_iter()
@@ -112,7 +112,7 @@ pub fn spawn_confirmation(rt: &Handle, env: &Env, host: HostHandle<ShellMsg>) {
         .await
         .unwrap_or(Answered::No);
         if answered == Answered::Yes {
-            let program = slipway_program(bin_dir.as_deref(), Path::is_file);
+            let program = updater_program(bin_dir.as_deref(), Path::is_file);
             if let Confirmed::Not(why) = confirm(children.as_ref(), program) {
                 eprintln!("bardo-shell: telling the update service this release is good: {why}");
             }
@@ -165,8 +165,8 @@ mod tests {
     use shell_services::env::{BusRoute, Children, RecordedChildren, SessionMode};
 
     use super::{
-        Answered, Confirmed, EXPORTED, Speaks, confirm, confirm_command, host_answers,
-        slipway_program, speaks,
+        Answered, Confirmed, EXPORTED, Speaks, confirm, confirm_command, host_answers, speaks,
+        updater_program,
     };
 
     #[test]
@@ -263,7 +263,7 @@ mod tests {
         ];
         for (name, bin_dir, present, want) in cases {
             let found =
-                slipway_program(bin_dir, |path| present.iter().any(|p| p.as_path() == path));
+                updater_program(bin_dir, |path| present.iter().any(|p| p.as_path() == path));
             assert_eq!(found.as_ref(), want, "{name}");
         }
     }

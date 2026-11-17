@@ -29,10 +29,10 @@ bytes, times and what it saw on disk.
 ## 2. Layout
 
 ```
-crates/slipway-core/src/{lib, version, digest, sign, path, audit, exports, system, health, schedule, progress}.rs
+crates/updater-core/src/{lib, version, digest, sign, path, audit, exports, system, health, schedule, progress}.rs
                         release/{mod, error, file, export, system}.rs      plan/{mod, prune}.rs
 crates/bardo-updater-root/src/{lib, settings, layout, fsutil, keys, report, helper}.rs
-                        bin/{slipway_apply, slipway_rollback, slipway_health}.rs
+                        bin/{updater_apply, updater_rollback, updater_health}.rs
                         apply/{mod, error, staged, unpack, step, install, exports, system, relabel, lock, open, harden, private, synced, guard}.rs
 crates/bardo-updater/src/{lib, main, config, dirs, state, clock, elevate, problem, report, health, login, bootstrap}.rs
                    fetch/{mod, feed, stage, cache, http_fetch}.rs
@@ -171,7 +171,7 @@ program is described in section 7.
 
 Settings come from two files. The system file `/etc/bardo/updater.toml` (written once by
 `scripts/install.sh`, never overwritten by it) holds `root` and `pubkey_path` and may hold any other
-setting; `bardo-updater-apply` reads only it (and only its `root` and `pubkey_path`, `slipway_root::settings`), and the daemon and the command line read it first, so they
+setting; `bardo-updater-apply` reads only it (and only its `root` and `pubkey_path`, `updater_root::settings`), and the daemon and the command line read it first, so they
 cannot disagree about the root or the key. The person's own `$XDG_CONFIG_HOME/bardo-updater/config.toml`
 may only set `settings_command` and `name` (what the notification's button runs and what the software
 is called); every other key in it is ignored.
@@ -209,7 +209,7 @@ checks the signature of `release.toml` and then the bundle's size and digest, an
 Its root and key come from `/etc/bardo/updater.toml`, never from the caller. Exit codes: 0 done,
 1 failed, 2 usage, 3 refused (not newer / nothing to go back to), 4 did not verify, 5 busy, 6 no key.
 
-On success the helper prints a report on its standard output (`slipway_root::report::Report`): `current <version>`,
+On success the helper prints a report on its standard output (`updater_root::report::Report`): `current <version>`,
 then one `left-alone <path>` per link or system file it left alone because something else is in the way, and one
 `warning <text>` per thing that did not work but did not stop the update (the same lines also go to its error
 output for a person running it by hand). The update service parses it, logs each line, and tells the person once
@@ -266,7 +266,7 @@ version, pending marker, refused version) is written beside and renamed over. Th
 are only read.
 
 A version that was rolled back, automatically at start-up or by `Rollback()`, is remembered as
-`refused` (the newest such). `slipway_core::offer` is the rule: a found version is offered only when
+`refused` (the newest such). `updater_core::offer` is the rule: a found version is offered only when
 it is newer than what runs and newer than the refused one, so the next check leaves `State` at `idle`
 with `Available` empty until something newer is published.
 
@@ -326,7 +326,7 @@ is indistinguishable from a restart, so the check waits for the next boot.
 | --- | --- | --- |
 | `fetch::Fetch` | `HttpFetch` (HTTPS only, over `http-reqwest`) | in-memory map (`tests/it/feed_stage.rs`) |
 | `elevate::Elevate` | `Pkexec` (three programs) | recording stand-ins (`tests/it/health_start.rs`, `session_guard.rs`); `sh` scripts for `Pkexec` itself (`elevate_run.rs`) |
-| `slipway_core::Authenticator` | `PublicKey` (minisign) | accept-all and reject-all (`tests/it/support.rs`) |
+| `updater_core::Authenticator` | `PublicKey` (minisign) | accept-all and reject-all (`tests/it/support.rs`) |
 | `Layout { root, export_base }` | `/opt/bardo` and `/` | a temporary directory for both |
 | `login::here(var, read)` | `login::current()`: the environment and `/proc` | closures |
 

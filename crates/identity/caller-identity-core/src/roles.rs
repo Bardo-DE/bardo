@@ -19,7 +19,7 @@ pub const AGENT_TIER: RoleName = RoleName::from_static("agent_tier");
 pub const SETTINGS: RoleName = RoleName::from_static("settings");
 /// The software-update service (`bardo-updater.service`).
 pub const UPDATER: RoleName = RoleName::from_static("updater");
-/// The `slipway` command line: a program, not a service.
+/// The `updater` command line: a program, not a service.
 pub const UPDATER_CLI: RoleName = RoleName::from_static("updater_cli");
 /// The touchpad daemon (`mouse_gestures`).
 pub const PAD_DAEMON: RoleName = RoleName::from_static("pad_daemon");

@@ -92,7 +92,7 @@ exe  = [
 ]
 role = "updater"
 
-# The slipway command line. A program: it has no unit, so its ceiling is Exe.
+# The updater command line. A program: it has no unit, so its ceiling is Exe.
 [[peer]]
 app  = "org.bardo.Updater"
 exe  = [
