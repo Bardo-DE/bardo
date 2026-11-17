@@ -188,7 +188,7 @@ fn config_files_round_trip() {
     };
     rules.rules = vec![
         r("r-space", RuleScope::Space(space("work"))),
-        r("r-app", RuleScope::App(app("org.bardo.Mail"))),
+        r("r-app", RuleScope::App(app("org.quire.Mail"))),
         r(
             "r-kind",
             RuleScope::Kind(KindPattern::parse("mail.*").expect("k")),

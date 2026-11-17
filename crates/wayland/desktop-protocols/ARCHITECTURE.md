@@ -32,9 +32,9 @@ action-core, prov) take default features; Wayland clients take `client`; the com
 
 | File | Interfaces | Advertised on | Server | Clients |
 | --- | --- | --- | --- | --- |
-| `protocols/bardo-desktop-v1.xml` | `bardo_desktop_manager_v1` (version 2), `bardo_desktop_app_v1` (version 2: `subject`, the program behind the app as the compositor established it), `bardo_desktop_window_v1`, `bardo_desktop_space_v1` | Shell and Agent connections (management requests are `not_permitted` on Agent) | the compositor | sill (full), cuad (read-only) |
-| `protocols/bardo-shell-v1.xml` | `bardo_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | the compositor | sill through layer-shell-host |
-| `protocols/bardo-window-v1.xml` | `bardo_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `bardo_window_v1` | every connection | the compositor | layer-shell-host, ui-blitz, any app |
+| `protocols/bardo-desktop-v1.xml` | `bardo_desktop_manager_v1` (version 2), `bardo_desktop_app_v1` (version 2: `subject`, the program behind the app as the compositor established it), `bardo_desktop_window_v1`, `bardo_desktop_space_v1` | Shell and Agent connections (management requests are `not_permitted` on Agent) | compositor | sill (full), cuad (read-only) |
+| `protocols/bardo-shell-v1.xml` | `bardo_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | compositor | sill through layer-shell-host |
+| `protocols/bardo-window-v1.xml` | `bardo_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `bardo_window_v1` | every connection | compositor | layer-shell-host, ui-blitz, any app |
 | `protocols/bardo-sensitive-v1.xml` | `bardo_sensitive_manager_v1`, `bardo_sensitive_surface_v1` | every connection, once served | not served yet | layer-shell-host, ui-blitz, any app |
 | `protocols/bardo-agent-v1.xml` | `bardo_agent_manager_v1`, `bardo_agent_lease_v1` | Agent connections, once served | not served yet | cuad |
 | `protocols/bardo-trusted-surface-v1.xml` | `bardo_trusted_manager_v1`, `bardo_trusted_surface_v1` | Shell connections, once served | not served yet | sill |

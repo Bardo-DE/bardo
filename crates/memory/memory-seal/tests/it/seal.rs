@@ -163,7 +163,7 @@ fn oo7_items_are_found_by_schema_and_space() {
     let attrs = oo7_attributes();
     assert_eq!(
         attrs[0],
-        ("xdg:schema", "org.bardo.Memory.SpaceKey".to_owned())
+        ("xdg:schema", "org.quire.Memory.SpaceKey".to_owned())
     );
     assert_eq!(attrs[1], ("space", "work".to_owned()));
 }

@@ -64,10 +64,10 @@ impl Purpose {
     #[must_use]
     pub const fn context(self) -> &'static str {
         match self {
-            Purpose::Eventlog => "bardo-memory 1 eventlog",
-            Purpose::Index => "bardo-memory 1 index",
-            Purpose::Files => "bardo-memory 1 files",
-            Purpose::Digest => "bardo-memory 1 digest",
+            Purpose::Eventlog => "quire-memory 1 eventlog",
+            Purpose::Index => "quire-memory 1 index",
+            Purpose::Files => "quire-memory 1 files",
+            Purpose::Digest => "quire-memory 1 digest",
         }
     }
 }
