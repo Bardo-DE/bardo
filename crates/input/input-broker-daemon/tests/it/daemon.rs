@@ -45,7 +45,8 @@ const WIDE: Caps = Caps {
 };
 
 /// How long a connection waits, once it is next in line, before it is identified: long enough for
-/// the one before it to have taken its slot.
+/// the one before it to have taken its slot. The slot is the daemon's own state and nothing
+/// announces it, so this stays a pause that orders the test's connections, not a wait for an event.
 const SETTLE: Duration = Duration::from_millis(10);
 
 #[derive(Default)]

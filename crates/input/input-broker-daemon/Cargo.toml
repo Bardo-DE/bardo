@@ -38,6 +38,7 @@ caller-identity-linux = {path = "../../identity/caller-identity-linux"}
 caller-identity-core = {features = ["desktop"], path = "../../identity/caller-identity-core"}
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit"}
 # Test seams (a fixture file tree standing for /proc and the table files); never in a shipped build.
 caller-identity-linux = {features = ["fake"], path = "../../identity/caller-identity-linux"}
 input-broker-client = {path = "../input-broker-client"}

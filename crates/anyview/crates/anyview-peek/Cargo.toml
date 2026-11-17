@@ -44,6 +44,7 @@ mp4parse = { workspace = true, optional = true }
 symphonia = { workspace = true, features = ["aac", "aiff", "alac", "flac", "id3v1", "id3v2", "ape", "isomp4", "mp3", "ogg", "pcm", "vorbis", "wav"], optional = true }
 
 [dev-dependencies]
+base-testkit = {path = "../../../base/base-testkit"}
 ui-components = {path = "../../../ui/ui-components"}
 # Pins the time zone the expected dates are written in.
 anyview-core = {path = "../anyview-core", features = ["testing"]}

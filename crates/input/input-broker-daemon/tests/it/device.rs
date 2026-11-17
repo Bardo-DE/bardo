@@ -5,7 +5,6 @@ use input_broker_daemon::backend::real::UinputBackend;
 use input_broker_daemon::backend::{Backend, Device};
 use input_broker_wire::codes::{ABS_MT_SLOT, EV_ABS};
 use input_broker_wire::{Create, Event, plan};
-use std::time::{Duration, Instant};
 
 /// Whether an input device called `name` is registered with the kernel.
 fn registered(name: &str) -> bool {
@@ -29,15 +28,9 @@ fn phys_of(name: &str) -> Option<String> {
         .and_then(|e| std::fs::read_to_string(e.path().join("device/phys")).ok())
 }
 
-fn wait_for(name: &str, present: bool) -> bool {
-    let deadline = Instant::now() + Duration::from_secs(2);
-    while Instant::now() < deadline {
-        if registered(name) == present {
-            return true;
-        }
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    false
+/// Waits until the kernel has (or has not) an input device called `name`.
+fn wait_for(what: &str, name: &str, present: bool) {
+    base_testkit::eventually_blocking(what, || registered(name) == present);
 }
 
 #[test]
@@ -45,10 +38,7 @@ fn wait_for(name: &str, present: bool) -> bool {
 fn a_real_touchpad_appears_takes_a_frame_and_disappears() {
     let spec = plan(&Create::touchpad()).expect("plans").spec;
     let mut device = UinputBackend::default().create(&spec).expect("a touchpad");
-    assert!(
-        wait_for("mouse-gestures touchpad", true),
-        "the device did not appear"
-    );
+    wait_for("the touchpad to appear", "mouse-gestures touchpad", true);
     assert_eq!(
         phys_of("mouse-gestures touchpad").as_deref().map(str::trim),
         Some("input-broker/pad_daemon"),
@@ -58,10 +48,7 @@ fn a_real_touchpad_appears_takes_a_frame_and_disappears() {
         .write(&[Event::new(EV_ABS, ABS_MT_SLOT, 0), Event::SYNC])
         .expect("a frame");
     drop(device);
-    assert!(
-        wait_for("mouse-gestures touchpad", false),
-        "the device did not go"
-    );
+    wait_for("the touchpad to go", "mouse-gestures touchpad", false);
 }
 
 #[test]
@@ -69,18 +56,17 @@ fn a_real_touchpad_appears_takes_a_frame_and_disappears() {
 fn a_real_keyboard_with_lights_is_handed_over_as_a_descriptor() {
     let spec = plan(&Create::keyboard()).expect("plans").spec;
     let device = UinputBackend::default().create(&spec).expect("a keyboard");
-    assert!(
-        wait_for("key-remap keyboard", true),
-        "the device did not appear"
-    );
+    wait_for("the keyboard to appear", "key-remap keyboard", true);
     let fd = device.into_fd();
-    assert!(
-        wait_for("key-remap keyboard", true),
-        "it stays while the descriptor lives"
+    wait_for(
+        "the keyboard to stay while the descriptor lives",
+        "key-remap keyboard",
+        true,
     );
     drop(fd);
-    assert!(
-        wait_for("key-remap keyboard", false),
-        "it goes with the descriptor"
+    wait_for(
+        "the keyboard to go with the descriptor",
+        "key-remap keyboard",
+        false,
     );
 }

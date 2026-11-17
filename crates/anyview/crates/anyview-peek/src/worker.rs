@@ -438,15 +438,9 @@ mod tests {
         );
         release.send(()).unwrap_or_else(|e| panic!("{e}"));
         // The hung look ends and settles the count; the worker looks again.
-        let mut said = answered(&worker, "later");
-        for _ in 0..100 {
-            if said == Said::Looked("later".to_owned()) {
-                break;
-            }
-            std::thread::sleep(Duration::from_millis(20));
-            said = answered(&worker, "later");
-        }
-        assert_eq!(said, Said::Looked("later".to_owned()));
+        base_testkit::eventually_blocking("the worker to look again", || {
+            answered(&worker, "later") == Said::Looked("later".to_owned())
+        });
     }
 
     #[test]

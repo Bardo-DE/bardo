@@ -213,6 +213,8 @@ fn a_connection_with_a_device_may_stay_silent() {
     let (ctx, _) = context(palmrest());
     let (mut client, thread) = connect(&ctx);
     client.create(&Create::wheel()).unwrap();
+    // A best-effort absence check: the handshake timeout is the daemon's own socket timer, so
+    // nothing announces that it did not fire; this waits past it (1 s) for a close that must not come.
     std::thread::sleep(Duration::from_millis(1_300));
     // Still there after longer than the handshake timeout.
     assert_eq!(
