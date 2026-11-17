@@ -2,7 +2,6 @@
 //! rendered through dioxus-ssr and linted as markup. Every state here is additive; the states
 //! that existed before are in `components_controls.rs` and `components_lists.rs`.
 
-#[path = "button_field_tile_states/cases.rs"]
 mod cases;
 use crate::support::scoped;
 use crate::support::specimen;

@@ -18,5 +18,4 @@ pub fn rows(autohide: bool, magnification: bool) -> Vec<DockMenuRow> {
 }
 
 #[cfg(test)]
-#[path = "divider_tests.rs"]
 mod tests;

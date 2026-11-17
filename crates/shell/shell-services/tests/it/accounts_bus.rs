@@ -4,7 +4,6 @@
 //! waits on a published state or on the stand-in's record; a test skips, saying so, without a
 //! `dbus-daemon`. Never the person's session bus.
 
-#[path = "accounts_support/mod.rs"]
 pub(crate) mod accounts_support;
 
 use std::time::Duration;

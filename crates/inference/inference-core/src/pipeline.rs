@@ -410,8 +410,6 @@ pub fn picks_for(map: &crate::choice::TierMap, tier: Tier) -> SlotPicks {
 }
 
 #[cfg(test)]
-#[path = "pipeline/props.rs"]
 mod props;
 #[cfg(test)]
-#[path = "pipeline/tests.rs"]
 mod tests;

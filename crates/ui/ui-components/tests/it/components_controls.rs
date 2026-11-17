@@ -2,9 +2,7 @@
 //! every state rendered through dioxus-ssr and linted as markup, plus scans that every `ds-`
 //! class a state renders is styled by that component's CSS and that the CSS uses tokens only.
 
-#[path = "controls/cases.rs"]
 mod cases;
-#[path = "controls/cases_catalogue.rs"]
 mod cases_catalogue;
 use crate::css_scan;
 use crate::support::scoped;

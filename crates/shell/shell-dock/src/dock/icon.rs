@@ -128,5 +128,4 @@ fn logical(side: f64) -> LogicalPx {
 }
 
 #[cfg(test)]
-#[path = "icon_tests.rs"]
 mod tests;

@@ -2,7 +2,6 @@
 //! socket path with made-up text and a made-up image; the other test needs no compositor. Nothing
 //! read back is printed: a mismatch says only that it differs.
 
-#[path = "clipboard_support/mod.rs"]
 mod clipboard_support;
 
 use std::time::Duration;

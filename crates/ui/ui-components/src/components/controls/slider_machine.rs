@@ -125,5 +125,4 @@ pub(crate) fn keyed(value: Fraction, nudge: Nudge, step: KeyStep) -> Fraction {
 }
 
 #[cfg(test)]
-#[path = "slider_machine_tests.rs"]
 mod tests;

@@ -306,7 +306,6 @@ mod step;
 pub use step::step;
 
 #[cfg(test)]
-#[path = "session/step_tests/mod.rs"]
 mod step_tests;
 
 #[cfg(test)]

@@ -2,7 +2,6 @@
 //! linted as markup. The props are additive; `SidebarItem`'s class list gained `ds-drop-place`
 //! (the drop styling it now shares with `TreeItem`).
 
-#[path = "button_pass_through_and_outline_states/cases.rs"]
 mod cases;
 use crate::support::scoped;
 use crate::support::specimen;

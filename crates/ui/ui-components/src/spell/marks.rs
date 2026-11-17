@@ -144,5 +144,4 @@ pub fn shown<'a>(
 }
 
 #[cfg(test)]
-#[path = "marks_tests.rs"]
 mod tests;

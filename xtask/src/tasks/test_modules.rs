@@ -19,44 +19,37 @@ fn declared_by(line: &str) -> Option<&str> {
     rest.split([';', ' ', '{']).next()
 }
 
-/// The names in `entries` (`(file name, is a directory with a mod.rs)`) that `main` leaves out:
-/// a `name.rs`, or a directory with a `mod.rs`, that no `mod name` declares. Directories without
-/// a `mod.rs` hold data, or files a `#[path]` module includes, and are not modules.
-fn undeclared(main: &str, entries: &[(String, bool)]) -> Vec<String> {
+/// The names in `entries` (file names) that `main` leaves out: a `name.rs` that no `mod name`
+/// declares. A directory next to it holds the children of `name`, or data, and is not a module.
+fn undeclared(main: &str, entries: &[String]) -> Vec<String> {
     let declared: Vec<&str> = main.lines().filter_map(declared_by).collect();
     let mut left_out: Vec<String> = entries
         .iter()
-        .filter_map(|(name, is_module_dir)| {
-            let module = if *is_module_dir {
-                name.as_str()
-            } else {
-                name.strip_suffix(".rs").filter(|stem| *stem != "main")?
-            };
-            (!declared.contains(&module)).then(|| name.clone())
+        .filter(|name| {
+            name.strip_suffix(".rs")
+                .filter(|stem| *stem != "main")
+                .is_some_and(|module| !declared.contains(&module))
         })
+        .cloned()
         .collect();
     left_out.sort();
     left_out
 }
 
-/// The entries of `dir` that can be modules: `.rs` files, and directories with their own `mod.rs`.
+/// The `.rs` files of `dir`.
 #[expect(
     clippy::case_sensitive_file_extension_comparisons,
     reason = "Rust source files are named in lower case; a case-insensitive match would admit files cargo does not read"
 )]
-fn entries_of(dir: &Path) -> Result<Vec<(String, bool)>> {
+fn entries_of(dir: &Path) -> Result<Vec<String>> {
     let mut entries = Vec::new();
     for entry in fs::read_dir(dir)? {
         let path = entry?.path();
         let Some(name) = path.file_name().and_then(|name| name.to_str()) else {
             continue;
         };
-        if path.is_dir() {
-            if path.join("mod.rs").exists() {
-                entries.push((name.to_owned(), true));
-            }
-        } else if name.ends_with(".rs") {
-            entries.push((name.to_owned(), false));
+        if !path.is_dir() && name.ends_with(".rs") {
+            entries.push(name.to_owned());
         }
     }
     Ok(entries)
@@ -86,23 +79,16 @@ pub fn run() -> Result<bool> {
 mod tests {
     use super::undeclared;
 
-    fn file(name: &str) -> (String, bool) {
-        (name.to_owned(), false)
+    fn names(files: &[&str]) -> Vec<String> {
+        files.iter().map(|name| (*name).to_owned()).collect()
     }
 
     #[test]
-    fn a_file_or_module_directory_without_a_mod_line_is_left_out() {
+    fn a_file_without_a_mod_line_is_left_out() {
         let main = "mod alpha;\npub mod beta;\n#[path = \"x/y.rs\"]\nmod gamma;\nmod delta {\n}\n";
-        let entries = [
-            file("main.rs"),
-            file("alpha.rs"),
-            file("beta.rs"),
-            file("gamma.rs"),
-            file("delta.rs"),
-            file("lost.rs"),
-            ("lost_dir".to_owned(), true),
-            ("alpha".to_owned(), true),
-        ];
-        assert_eq!(undeclared(main, &entries), ["lost.rs", "lost_dir"]);
+        let entries = names(&[
+            "main.rs", "alpha.rs", "beta.rs", "gamma.rs", "delta.rs", "lost.rs",
+        ]);
+        assert_eq!(undeclared(main, &entries), ["lost.rs"]);
     }
 }

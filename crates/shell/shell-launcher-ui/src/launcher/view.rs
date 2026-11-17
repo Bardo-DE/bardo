@@ -276,5 +276,4 @@ pub fn toggled(expanded: &Expanded, section: Section) -> Expanded {
 }
 
 #[cfg(test)]
-#[path = "view_tests.rs"]
 mod view_tests;

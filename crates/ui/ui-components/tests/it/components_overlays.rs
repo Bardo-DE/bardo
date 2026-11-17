@@ -2,15 +2,11 @@
 //! in every state rendered inside a `Ds` through dioxus-ssr and linted as markup against the
 //! stylesheet; the root's toast host; the layer stack a floating component joins.
 
-#[path = "overlays/cases.rs"]
 mod cases;
 use crate::support::dom_time;
 use crate::support::specimen;
-#[path = "overlays/hover_card_flag.rs"]
 mod hover_card_flag;
-#[path = "overlays/hover_card_hooks.rs"]
 mod hover_card_hooks;
-#[path = "overlays/palette_and_hover_targets.rs"]
 mod palette_and_hover_targets;
 
 use cases::{CASES, Case};

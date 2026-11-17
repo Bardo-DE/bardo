@@ -166,5 +166,4 @@ fn code_spans(text: &str) -> Vec<WordSpan> {
 }
 
 #[cfg(test)]
-#[path = "words_tests.rs"]
 mod tests;

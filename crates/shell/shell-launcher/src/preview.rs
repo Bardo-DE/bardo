@@ -167,5 +167,4 @@ pub fn excerpt_of(bytes: &[u8], limit: ExcerptLimit) -> Excerpt {
 const BINARY_PROBE: usize = 1024;
 
 #[cfg(test)]
-#[path = "preview_tests.rs"]
 mod preview_tests;

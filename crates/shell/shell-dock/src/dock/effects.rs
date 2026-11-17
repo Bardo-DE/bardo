@@ -124,5 +124,4 @@ fn reorder(item: &DockItem, to: u32, pins: &DockPins) -> Option<PinEvent> {
 }
 
 #[cfg(test)]
-#[path = "effects_tests.rs"]
 mod tests;

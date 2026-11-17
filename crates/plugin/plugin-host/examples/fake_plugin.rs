@@ -10,7 +10,7 @@
 
 // `shapes` is also read by the host side of the tests, which use what this program does not.
 #[allow(dead_code)]
-#[path = "shapes/mod.rs"]
+#[path = "shared/shapes.rs"]
 mod shapes;
 
 use plugin_host::testing::{Ending, Fake, Fault, Step, fault_argument};

@@ -154,5 +154,4 @@ fn watch_folders(
 }
 
 #[cfg(test)]
-#[path = "look_tests.rs"]
 pub(super) mod tests;

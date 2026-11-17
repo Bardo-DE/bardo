@@ -2,7 +2,6 @@
 //! rendered through dioxus-ssr and linted as markup. The trailing slot's `data-slot="trailing"`
 //! shows in these and in the mail-app tree states.
 
-#[path = "row_outline_editing_states/cases.rs"]
 mod cases;
 use crate::support::scoped;
 use crate::support::specimen;

@@ -135,5 +135,4 @@ pub fn main(action: &StyleAction) -> ExitCode {
 }
 
 #[cfg(test)]
-#[path = "style_tests.rs"]
 mod tests;

@@ -14,7 +14,7 @@
 //! `cargo run -p shell-launcher-ui --example launcher_demo`
 
 #[allow(dead_code, reason = "the demo uses part of the test bench")]
-#[path = "../tests/it/launcher_support/mod.rs"]
+#[path = "../tests/it/launcher_support.rs"]
 mod launcher_support;
 
 use std::fmt::Debug;

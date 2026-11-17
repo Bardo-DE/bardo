@@ -2,13 +2,9 @@
 //! and every `ds-` class in it is styled by the stylesheet.
 
 use crate::support::specimens::Specimen;
-#[path = "control_center/panels.rs"]
 mod panels;
-#[path = "control_center/panes.rs"]
 mod panes;
-#[path = "control_center/rows.rs"]
 mod rows;
-#[path = "control_center/tiles.rs"]
 mod tiles;
 
 use dioxus::prelude::*;

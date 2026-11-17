@@ -2,7 +2,6 @@
 //! rendered through dioxus-ssr and linted as markup, and
 //! every `ds-` class in one styled by its own component's sheet.
 
-#[path = "structure/cases.rs"]
 mod cases;
 use crate::support::specimen;
 

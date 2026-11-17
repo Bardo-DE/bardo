@@ -3,7 +3,6 @@
 //! `components_controls.rs`, `components_lists.rs`, `button_field_tile_states_ssr.rs` and
 //! `provider_and_button_face_states_ssr.rs`; the overlays are in `components_overlays.rs`.
 
-#[path = "button_leading_and_label_run_states/cases.rs"]
 mod cases;
 use crate::support::specimen;
 

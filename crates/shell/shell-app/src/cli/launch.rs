@@ -125,5 +125,4 @@ pub fn main(args: &LaunchArgs) -> ExitCode {
 }
 
 #[cfg(test)]
-#[path = "launch_tests.rs"]
 mod tests;

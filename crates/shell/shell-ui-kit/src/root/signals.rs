@@ -69,5 +69,4 @@ pub fn use_host_scale() -> Scale {
 }
 
 #[cfg(test)]
-#[path = "signals_tests.rs"]
 mod tests;

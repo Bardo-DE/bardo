@@ -4,21 +4,16 @@
 //! moment of a row's exit; the drag ghost driven by a `DragTracker`; the Space editor's field
 //! plane decoded and probed; and the contrast pills against `space::readout`.
 
-#[path = "lists/cases.rs"]
 mod cases;
 use crate::css_scan;
 use crate::support::dom_time;
 use crate::support::specimen;
-#[path = "lists/live.rs"]
 mod live;
 #[path = "lists/motion.rs"]
 mod motion;
-#[path = "lists/rows.rs"]
 mod rows;
 use crate::support::scoped;
-#[path = "lists/strip_press.rs"]
 mod strip_press;
-#[path = "lists/thread_row.rs"]
 mod thread_row;
 
 use cases::CASES;

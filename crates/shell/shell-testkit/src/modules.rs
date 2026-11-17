@@ -4,7 +4,7 @@
 use std::path::{Path, PathBuf};
 
 /// Fails when a `*.rs` file in the crate's `tests/it` is not declared by `mod <name>;` in
-/// `main.rs`, or a directory with a `mod.rs` is declared by no file there. Pass
+/// `main.rs` or by another file there (a support module that tests include by path). Pass
 /// `env!("CARGO_MANIFEST_DIR")`.
 ///
 /// # Panics
@@ -12,7 +12,6 @@ use std::path::{Path, PathBuf};
 /// Panics, naming the files, when a module is not declared.
 pub fn assert_all_modules_included(manifest_dir: &str) {
     let dir = Path::new(manifest_dir).join("tests").join("it");
-    let main = read(&dir.join("main.rs"));
     let everywhere = sources(&dir)
         .iter()
         .map(|path| read(path))
@@ -21,11 +20,7 @@ pub fn assert_all_modules_included(manifest_dir: &str) {
     let missing: Vec<String> = entries(&dir)
         .into_iter()
         .filter_map(|path| module_of(&path))
-        .filter(|(name, is_dir)| {
-            let declared = if *is_dir { &everywhere } else { &main };
-            !declared.contains(&format!("mod {name};"))
-        })
-        .map(|(name, _)| name)
+        .filter(|name| !everywhere.contains(&format!("mod {name};")))
         .collect();
     assert!(
         missing.is_empty(),
@@ -61,13 +56,12 @@ fn sources(dir: &Path) -> Vec<PathBuf> {
         .collect()
 }
 
-/// The module a top-level entry stands for: a `.rs` file other than `main.rs`, or a directory
-/// with a `mod.rs` (a directory without one holds `#[path]` files, which name themselves).
-fn module_of(path: &Path) -> Option<(String, bool)> {
-    let stem = path.file_stem()?.to_str()?.to_owned();
-    if path.is_dir() {
-        path.join("mod.rs").is_file().then_some((stem, true))
-    } else {
-        (path.extension()? == "rs" && stem != "main").then_some((stem, false))
+/// The module a top-level entry stands for: a `.rs` file other than `main.rs`. A directory next
+/// to it holds the children of that module, or data.
+fn module_of(path: &Path) -> Option<String> {
+    if path.is_dir() || path.extension()? != "rs" {
+        return None;
     }
+    let stem = path.file_stem()?.to_str()?.to_owned();
+    (stem != "main").then_some(stem)
 }

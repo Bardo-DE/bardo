@@ -95,12 +95,10 @@ use inference_router::testkit::entries;
 #[cfg(test)]
 // `say` and `chats` (tests/it/hosting/lab.rs) are used by no test yet; the allow stays for them.
 #[allow(dead_code, reason = "`say` and `chats` are used by no test yet")]
-#[path = "../tests/it/hosting/lab.rs"]
 mod lab;
 
 /// The fake speech host the speech tests share with the hosted ones.
 #[cfg(test)]
-#[path = "../tests/it/hosting/speech_host.rs"]
 mod speech_host;
 
 #[cfg(test)]

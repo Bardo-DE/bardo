@@ -13,6 +13,6 @@ mod sandbox;
 mod settings;
 mod support;
 // The wire samples live in memory-core's test support.
-#[path = "../../../memory-core/tests/it/support/mod.rs"]
+#[path = "../../../memory-core/tests/it/support.rs"]
 mod wire;
 mod xdg;

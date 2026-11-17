@@ -18,5 +18,4 @@ pub fn rows(files: Option<&AppId>, empty_trash: Availability) -> Vec<DockMenuRow
 }
 
 #[cfg(test)]
-#[path = "trash_tests.rs"]
 mod tests;

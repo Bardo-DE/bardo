@@ -2,7 +2,6 @@
 //! linted as markup. Every state here is additive; the states that existed before are in
 //! `components_controls.rs`, `components_lists.rs` and `button_field_tile_states_ssr.rs`.
 
-#[path = "provider_and_button_face_states/cases.rs"]
 mod cases;
 use crate::support::scoped;
 use crate::support::specimen;

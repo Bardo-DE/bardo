@@ -1,7 +1,6 @@
 //! Form, `FormSection`, `IconTile` and `PaneStack` in every state rendered through dioxus-ssr and
 //! linted as markup; every class they draw is styled by the components' sheets.
 
-#[path = "forms/cases.rs"]
 mod cases;
 use crate::css_scan;
 use crate::support::scoped;

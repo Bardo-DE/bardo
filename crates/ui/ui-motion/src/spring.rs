@@ -179,5 +179,4 @@ fn under(d0: f64, v0: f64, omega: f64, zeta: f64, t: f64) -> (f64, f64) {
 }
 
 #[cfg(test)]
-#[path = "spring_tests.rs"]
 mod tests;

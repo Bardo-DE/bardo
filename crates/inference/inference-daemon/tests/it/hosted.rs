@@ -409,11 +409,8 @@ fn computer_use_need() -> Need {
     Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into()))
 }
 
-#[path = "hosted/computer_use.rs"]
 mod computer_use;
 
-#[path = "hosted/members.rs"]
 mod members;
 
-#[path = "hosted/running.rs"]
 mod running;

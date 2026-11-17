@@ -14,7 +14,6 @@ mod headless;
     reason = "the module is shared with the demos; the tests use part of it"
 )]
 mod dock;
-#[path = "../../examples/demo_lock/guard.rs"]
 #[allow(
     dead_code,
     reason = "the module is shared with the demo; the tests use part of it"

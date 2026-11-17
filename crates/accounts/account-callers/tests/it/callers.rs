@@ -3,7 +3,6 @@
 //! `/proc` or `/etc`: the roots and the table paths are the test's own. Needs feature
 //! `test-proc-root` (main.rs declares this module only then).
 
-#[path = "callers/bus.rs"]
 mod bus;
 
 use account_callers::{Caller, CallerTable, Callers, ProcCallers};

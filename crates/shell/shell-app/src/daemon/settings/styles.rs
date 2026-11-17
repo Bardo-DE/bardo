@@ -248,5 +248,4 @@ pub fn spawn_turn_on_follower(
 }
 
 #[cfg(test)]
-#[path = "styles_tests.rs"]
 mod tests;

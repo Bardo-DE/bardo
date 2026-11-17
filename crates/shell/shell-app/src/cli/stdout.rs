@@ -50,5 +50,4 @@ pub fn print(text: &str) -> Emitted {
 }
 
 #[cfg(test)]
-#[path = "stdout_tests.rs"]
 mod tests;

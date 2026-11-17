@@ -377,5 +377,4 @@ fn spring(
 }
 
 #[cfg(test)]
-#[path = "press_tests.rs"]
 mod tests;

@@ -210,5 +210,4 @@ fn effects(change: Change, out: &mut Vec<RevealEffect>) {
 }
 
 #[cfg(test)]
-#[path = "reveal_tests.rs"]
 mod tests;

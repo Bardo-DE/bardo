@@ -263,5 +263,4 @@ fn PanelPopover(module: Option<ControlCenterModule>) -> Element {
 }
 
 #[cfg(test)]
-#[path = "menu_popup_tests.rs"]
 mod tests;

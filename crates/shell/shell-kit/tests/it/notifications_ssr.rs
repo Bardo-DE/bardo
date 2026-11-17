@@ -1,7 +1,6 @@
 //! The notification parts as markup: every specimen lints clean and uses only `ds-` classes
 //! the stylesheet styles.
 
-#[path = "notifications/cases.rs"]
 mod cases;
 use crate::support::specimens::Specimen;
 

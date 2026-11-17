@@ -289,5 +289,4 @@ fn release_speed(last: Sample, before: Option<Sample>, at: Stamp) -> Speed {
 }
 
 #[cfg(test)]
-#[path = "swipe_tests.rs"]
 mod tests;

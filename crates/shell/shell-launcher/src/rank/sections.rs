@@ -397,5 +397,4 @@ fn capped(
 }
 
 #[cfg(test)]
-#[path = "sections_tests.rs"]
 mod sections_tests;

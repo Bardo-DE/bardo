@@ -319,5 +319,4 @@ fn next_token(token: HoldToken) -> HoldToken {
 }
 
 #[cfg(test)]
-#[path = "step_table.rs"]
 mod tests;

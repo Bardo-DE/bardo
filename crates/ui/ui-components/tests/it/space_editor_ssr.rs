@@ -4,11 +4,8 @@
 //! linted against the stylesheet the design system draws with.
 
 use crate::css_scan;
-#[path = "lists/editor.rs"]
 mod field_plane;
-#[path = "lists/png.rs"]
 mod png;
-#[path = "lists/space_editor_rows.rs"]
 mod space_editor_rows;
 
 use css_scan::{classes, styles_class};

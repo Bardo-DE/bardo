@@ -238,5 +238,4 @@ fn settle(dock: &DockState, now: Stamp, p: &DockParams) -> DockState {
 }
 
 #[cfg(test)]
-#[path = "hover_tests.rs"]
 mod tests;

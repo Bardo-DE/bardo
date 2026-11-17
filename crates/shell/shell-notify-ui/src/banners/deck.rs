@@ -229,5 +229,4 @@ pub(super) fn arrive(deck: &mut Deck, card: Card, now: Stamp, out: &mut Vec<Deck
 }
 
 #[cfg(test)]
-#[path = "deck_tests.rs"]
 mod tests;

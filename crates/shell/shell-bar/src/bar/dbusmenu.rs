@@ -118,5 +118,4 @@ fn between_rules(entries: Vec<MenuItem<BarPick>>) -> Vec<MenuItem<BarPick>> {
 }
 
 #[cfg(test)]
-#[path = "dbusmenu_tests.rs"]
 mod tests;

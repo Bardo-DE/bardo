@@ -228,5 +228,4 @@ fn mix_of(section: Section) -> Mix {
 }
 
 #[cfg(test)]
-#[path = "sections_view_tests.rs"]
 mod sections_view_tests;

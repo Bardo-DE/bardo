@@ -152,5 +152,4 @@ fn refusal(kind: FailureKind, message: String) -> Response {
 }
 
 #[cfg(test)]
-#[path = "launch_tests.rs"]
 mod tests;
