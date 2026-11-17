@@ -78,7 +78,13 @@ fn hello_fanout_filters_and_claims() {
         Ok(FromSocket::Pointer(true))
     );
 
-    std::thread::sleep(Duration::from_millis(50)); // let b's Subscribe land before the fan-out
+    // What b says after its Subscribe is heard after it: once the reader hears b's lock, the
+    // Subscribe has landed and the fan-out below meets the filter.
+    send(&b, &ToDaemon::SessionLock { locked: true });
+    assert_eq!(
+        claims.recv_timeout(Duration::from_secs(2)),
+        Ok(FromSocket::Session(true))
+    );
     let touches = ToHost::Touches { active: true };
     let tap = ToHost::Tap {
         kind: TapKind::Two,
