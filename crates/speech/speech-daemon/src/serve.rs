@@ -165,11 +165,7 @@ where
         .at(VOICE_PATH, VoiceSkeleton::serving(handle))
         .await?;
     dbus_kit::ready::serving(&connection).await?;
-    match dbus_kit::name::claim(&connection, VOICE_BUS).await {
-        Ok(()) => {}
-        Err(dbus_kit::name::ClaimError::Taken(_)) => return Err(zbus::Error::NameTaken),
-        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => return Err(source),
-    }
+    dbus_kit::name::claim(&connection, VOICE_BUS).await?;
     Ok(Running {
         connection,
         task: tokio::spawn(core.run(inbox)),

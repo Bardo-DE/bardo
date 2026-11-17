@@ -22,7 +22,7 @@ pub async fn add_account(bus: &BusSource) -> AddEnd {
     let asked = answered(
         Deadline::PROMPT,
         peer::ACCOUNTS,
-        registry.add(ProviderHint::Any, &ParentWindow::Unparented),
+        Box::pin(registry.add(ProviderHint::Any, &ParentWindow::Unparented)),
     )
     .await;
     match asked {

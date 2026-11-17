@@ -72,7 +72,7 @@ pub async fn claim(connection: &BusConnection) -> Result<(), DaemonFault> {
     match dbus_kit::name::claim(connection, MCP_BUS).await {
         Ok(()) => Ok(()),
         Err(dbus_kit::name::ClaimError::Taken(_)) => Err(DaemonFault::NameTaken),
-        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err(source.into()),
+        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err((*source).into()),
     }
 }
 

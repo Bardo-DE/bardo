@@ -1,6 +1,6 @@
 //! The one bound on a call to a peer.
 
-use std::future::{Future, poll_fn};
+use std::future::poll_fn;
 use std::pin::{Pin, pin};
 use std::task::Poll;
 use std::time::Duration;

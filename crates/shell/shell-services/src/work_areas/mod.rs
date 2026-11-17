@@ -19,9 +19,6 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
-/// The well-known name of the interface and its object path (quire's `ui-desktop` names the
-/// same one for its `Outputs` capability).
-
 /// The work areas as a [`Service`].
 #[derive(Debug)]
 pub enum WorkAreaService {}

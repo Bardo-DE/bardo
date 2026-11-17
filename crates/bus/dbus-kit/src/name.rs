@@ -16,7 +16,7 @@ pub enum ClaimError {
         name: String,
         /// What the bus said.
         #[source]
-        source: zbus::Error,
+        source: Box<zbus::Error>,
     },
 }
 
@@ -37,7 +37,7 @@ pub async fn claim(connection: &Connection, name: &str) -> Result<(), ClaimError
         }
         Err(source) => Err(ClaimError::Bus {
             name: name.to_owned(),
-            source,
+            source: Box::new(source),
         }),
     }
 }
@@ -48,7 +48,7 @@ impl From<ClaimError> for zbus::Error {
     fn from(error: ClaimError) -> Self {
         match error {
             ClaimError::Taken(_) => zbus::Error::NameTaken,
-            ClaimError::Bus { source, .. } => source,
+            ClaimError::Bus { source, .. } => *source,
         }
     }
 }

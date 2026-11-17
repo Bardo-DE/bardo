@@ -102,6 +102,6 @@ async fn ask_for(connection: &Connection, name: &'static str) -> Result<bool, zb
     match dbus_kit::name::claim(connection, name).await {
         Ok(()) => Ok(true),
         Err(dbus_kit::name::ClaimError::Taken(_)) => Ok(false),
-        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err(source),
+        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err(*source),
     }
 }

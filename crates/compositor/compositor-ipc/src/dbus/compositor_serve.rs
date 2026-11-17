@@ -200,11 +200,8 @@ async fn connect(
         serve_privacy(&connection, for_privacy, link).await?;
     }
     dbus_kit::ready::serving(&connection).await?;
-    match dbus_kit::name::claim(&connection, BUS_NAME).await {
-        Ok(()) => Ok(connection),
-        Err(dbus_kit::name::ClaimError::Taken(_)) => Err(zbus::Error::NameTaken),
-        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err(source),
-    }
+    dbus_kit::name::claim(&connection, BUS_NAME).await?;
+    Ok(connection)
 }
 
 #[cfg(test)]

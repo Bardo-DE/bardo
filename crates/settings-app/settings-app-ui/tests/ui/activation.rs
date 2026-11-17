@@ -12,7 +12,7 @@ use settings_app_ui::Opening;
 use sync_bus::SYNC_BUS;
 use ui_harness::Harness;
 
-/// MEMORY_BUS is a daemon no page reads here: starting it would be a start for a page nobody opened.
+/// `MEMORY_BUS` is a daemon no page reads here: starting it would be a start for a page nobody opened.
 const ALL: [&str; 4] = [ACCOUNTS_BUS, INFERENCE_BUS, SYNC_BUS, MEMORY_BUS];
 
 fn page(slug: &str) -> Opening {

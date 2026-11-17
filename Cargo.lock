@@ -229,6 +229,7 @@ dependencies = [
  "base-url",
  "base-xdg",
  "clap",
+ "dbus-kit",
  "rustix 1.1.6",
  "serde",
  "serde_json",
@@ -238,7 +239,6 @@ dependencies = [
  "toml",
  "ui-settings",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -265,26 +265,17 @@ version = "0.1.0"
 dependencies = [
  "account-capability",
  "account-core",
- "account-dbus-macros",
  "account-tailscale",
  "account-wire",
  "base-ids",
  "base-time",
+ "dbus-kit",
  "proptest",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
-]
-
-[[package]]
-name = "account-dbus-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.119",
 ]
 
 [[package]]
@@ -332,11 +323,11 @@ name = "account-fake-secret-service"
 version = "0.1.0"
 dependencies = [
  "base-time",
+ "dbus-kit",
  "serde",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -810,6 +801,7 @@ dependencies = [
  "account-sheet",
  "account-wire",
  "base-testkit",
+ "dbus-kit",
  "serde_json",
  "tokio",
  "zbus",
@@ -902,6 +894,7 @@ dependencies = [
  "base-time",
  "companion-daemon",
  "companion-wire",
+ "dbus-kit",
  "fnv",
  "futures-util",
  "inference-core",
@@ -915,7 +908,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -977,11 +969,11 @@ dependencies = [
  "base-time",
  "companion-client",
  "companion-wire",
+ "dbus-kit",
  "futures-util",
  "inference-core",
  "memory-core",
  "memory-dbus",
- "memory-dbus-serve",
  "model-provider",
  "permission-core",
  "provenance",
@@ -992,7 +984,6 @@ dependencies = [
  "tokio",
  "url",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -1118,13 +1109,13 @@ dependencies = [
  "companion-memory-core",
  "companion-model",
  "computer-use-action",
+ "dbus-kit",
  "futures-util",
  "inference-client",
  "inference-core",
  "memory-client",
  "memory-core",
  "memory-dbus",
- "memory-dbus-serve",
  "model-provider",
  "notify",
  "permission-core",
@@ -1140,7 +1131,6 @@ dependencies = [
  "toml",
  "tracing",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -1400,6 +1390,7 @@ dependencies = [
  "action-tools",
  "action-vocab",
  "action-wire",
+ "dbus-kit",
  "permission-core",
  "provenance",
  "rmcp",
@@ -1431,13 +1422,13 @@ dependencies = [
  "action-manifest",
  "action-vocab",
  "action-wire",
+ "dbus-kit",
  "futures-util",
  "provenance",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -1679,6 +1670,7 @@ dependencies = [
  "companion-model",
  "companion-tasks",
  "companion-wire",
+ "dbus-kit",
  "futures-util",
  "permission-core",
  "provenance",
@@ -1688,7 +1680,6 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -2027,6 +2018,7 @@ dependencies = [
  "agent-reader",
  "base-ids",
  "base-testkit",
+ "dbus-kit",
  "futures-util",
  "inference-client",
  "inference-core",
@@ -2039,7 +2031,6 @@ dependencies = [
  "tokio",
  "tracing",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -3501,12 +3492,11 @@ version = "0.1.0"
 dependencies = [
  "caller-identity-core",
  "caller-identity-linux",
- "futures-timer",
+ "dbus-kit",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -3975,6 +3965,8 @@ dependencies = [
  "companion-model",
  "companion-tasks",
  "companion-wire",
+ "computer-use-dbus",
+ "dbus-kit",
  "futures-util",
  "inference-client",
  "inference-core",
@@ -3989,7 +3981,6 @@ dependencies = [
  "toml",
  "tracing",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -4243,6 +4234,7 @@ name = "compositor-ctl"
 version = "0.1.0"
 dependencies = [
  "base-xdg",
+ "compositor-dbus",
  "compositor-privacy",
  "desktop-client",
  "image",
@@ -4250,6 +4242,13 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "wayland-client",
+ "zbus",
+]
+
+[[package]]
+name = "compositor-dbus"
+version = "0.1.0"
+dependencies = [
  "zbus",
 ]
 
@@ -4278,6 +4277,8 @@ dependencies = [
  "calloop",
  "compositor-backend",
  "compositor-core",
+ "compositor-dbus",
+ "dbus-kit",
  "desktop-protocols",
  "thiserror 2.0.21",
  "tokio",
@@ -4288,7 +4289,6 @@ dependencies = [
  "ui-style",
  "xkbcommon 0.9.0",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -4351,6 +4351,7 @@ version = "0.1.0"
 dependencies = [
  "base-xdg",
  "compositor-core",
+ "compositor-dbus",
  "compositor-testkit",
  "desktop-client",
  "desktop-protocols",
@@ -4540,6 +4541,7 @@ dependencies = [
  "computer-use-run",
  "computer-use-seat-input",
  "computer-use-system",
+ "dbus-kit",
  "futures-util",
  "inference-core",
  "key-remap-client",
@@ -4554,6 +4556,7 @@ dependencies = [
  "rust_decimal",
  "serde",
  "serde_json",
+ "shell-dbus",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
@@ -4819,6 +4822,7 @@ dependencies = [
  "account-match",
  "action-client",
  "base-ids",
+ "compositor-dbus",
  "computer-use-a11y-atspi",
  "computer-use-a11y-tree",
  "computer-use-action",
@@ -5323,6 +5327,27 @@ checksum = "c3c91aea6668645415331133ed6f8ddf0e7f40160cd97a12d59e68716a58704b"
 dependencies = [
  "libc",
  "system-deps",
+]
+
+[[package]]
+name = "dbus-kit"
+version = "0.1.0"
+dependencies = [
+ "dbus-kit-macros",
+ "futures-timer",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "zbus",
+]
+
+[[package]]
+name = "dbus-kit-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.119",
 ]
 
 [[package]]
@@ -6394,6 +6419,7 @@ dependencies = [
  "action-wire",
  "base-ids",
  "base-testkit",
+ "dbus-kit",
  "files-core",
  "files-desktop",
  "files-fs",
@@ -6409,7 +6435,6 @@ dependencies = [
  "toml",
  "ui-helpers",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -7699,6 +7724,7 @@ dependencies = [
  "base-url",
  "base-xdg",
  "computer-use-action",
+ "dbus-kit",
  "inference-core",
  "inference-daemon",
  "inference-dbus",
@@ -7711,7 +7737,6 @@ dependencies = [
  "tokio",
  "ui-settings",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -7775,6 +7800,7 @@ dependencies = [
  "computer-use-parse",
  "computer-use-session",
  "computer-use-vendors",
+ "dbus-kit",
  "engine-manifest",
  "engine-probe",
  "engine-spec",
@@ -7813,7 +7839,6 @@ dependencies = [
  "tracing",
  "ui-settings",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -7823,11 +7848,11 @@ dependencies = [
  "account-capability",
  "account-core",
  "account-dbus",
- "account-dbus-macros",
  "account-match",
  "account-wire",
  "base-ids",
  "base-testkit",
+ "dbus-kit",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -9434,6 +9459,7 @@ dependencies = [
  "base-xdg",
  "blake3",
  "clap",
+ "dbus-kit",
  "getrandom 0.4.3",
  "inference-client",
  "inference-core",
@@ -9443,7 +9469,6 @@ dependencies = [
  "memory-core",
  "memory-daemon",
  "memory-dbus",
- "memory-dbus-serve",
  "memory-eventlog",
  "memory-fake",
  "memory-files",
@@ -9466,30 +9491,18 @@ dependencies = [
  "thiserror 2.0.21",
  "tokio",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
 name = "memory-dbus"
 version = "0.1.0"
 dependencies = [
+ "dbus-kit",
  "memory-core",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
  "zbus",
-]
-
-[[package]]
-name = "memory-dbus-serve"
-version = "0.1.0"
-dependencies = [
- "memory-core",
- "memory-dbus",
- "serde",
- "serde_json",
- "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -11504,10 +11517,14 @@ dependencies = [
  "base-time",
  "base-xdg",
  "caller-identity-dbus",
+ "compositor-dbus",
+ "dbus-kit",
  "image",
  "pipewire",
  "portal-core",
+ "portal-dbus",
  "rustix 1.1.6",
+ "shell-dbus",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
@@ -11515,6 +11532,13 @@ dependencies = [
  "tracing-subscriber",
  "wayland-client",
  "wayland-protocols",
+ "zbus",
+]
+
+[[package]]
+name = "portal-dbus"
+version = "0.1.0"
+dependencies = [
  "zbus",
 ]
 
@@ -12906,11 +12930,18 @@ dependencies = [
 name = "settings-app-callers"
 version = "0.1.0"
 dependencies = [
+ "account-wire",
  "caller-identity-dbus",
+ "compositor-dbus",
+ "memory-dbus",
+ "portal-dbus",
  "rustix 1.1.6",
  "settings-app-testkit",
+ "shell-dbus",
+ "sync-bus",
  "thiserror 2.0.21",
  "ui-settings",
+ "updater-dbus",
  "zbus",
 ]
 
@@ -13028,6 +13059,8 @@ dependencies = [
  "anyview-platform",
  "base-time",
  "bluez-proxy",
+ "compositor-dbus",
+ "dbus-kit",
  "desktop-client",
  "desktop-protocols",
  "engine-install",
@@ -13039,21 +13072,24 @@ dependencies = [
  "inference-tailnet",
  "md-5 0.10.6",
  "memory-core",
+ "memory-dbus",
  "model-catalog",
  "networkmanager-proxy",
+ "portal-dbus",
  "serde_json",
  "settings-app-callers",
  "settings-app-files",
  "settings-app-model",
  "settings-app-system",
+ "shell-dbus",
  "sync-bus",
  "thiserror 2.0.21",
  "tokio",
  "toml",
  "ui-peer",
  "ui-settings",
+ "updater-dbus",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -13070,6 +13106,7 @@ dependencies = [
  "account-wire",
  "action-settings",
  "base-testkit",
+ "dbus-kit",
  "dioxus",
  "dioxus-ssr",
  "image",
@@ -13077,6 +13114,7 @@ dependencies = [
  "inference-core",
  "inference-dbus",
  "keymap",
+ "memory-dbus",
  "settings-app-callers",
  "settings-app-client",
  "settings-app-files",
@@ -13093,7 +13131,6 @@ dependencies = [
  "ui-lint",
  "ui-settings",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -13169,6 +13206,7 @@ dependencies = [
  "base-xdg",
  "caller-identity-dbus",
  "clap",
+ "dbus-kit",
  "keyboard-types 0.7.0",
  "layer-shell-host",
  "notify",
@@ -13205,7 +13243,6 @@ dependencies = [
  "ui-lint",
  "ui-settings",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -13231,6 +13268,13 @@ dependencies = [
  "ui-harness",
  "ui-lint",
  "ui-settings",
+]
+
+[[package]]
+name = "shell-dbus"
+version = "0.1.0"
+dependencies = [
+ "zbus",
 ]
 
 [[package]]
@@ -13507,9 +13551,11 @@ dependencies = [
  "caller-identity-dbus",
  "companion-model",
  "companion-wire",
+ "compositor-dbus",
  "computer-use-action",
  "computer-use-bus",
  "computer-use-dbus",
+ "dbus-kit",
  "ddc",
  "ddc-i2c",
  "desktop-client",
@@ -13533,10 +13579,12 @@ dependencies = [
  "percent-encoding",
  "permission-core",
  "permission-policy",
+ "portal-dbus",
  "provenance",
  "rustix 1.1.6",
  "serde",
  "serde_json",
+ "shell-dbus",
  "shell-launcher",
  "shell-model",
  "shell-testkit",
@@ -13556,7 +13604,6 @@ dependencies = [
  "wayland-client",
  "wayland-protocols",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -13921,6 +13968,7 @@ dependencies = [
  "action-wire",
  "base-time",
  "clap",
+ "dbus-kit",
  "futures-util",
  "inference-client",
  "inference-core",
@@ -13939,7 +13987,6 @@ dependencies = [
  "toml",
  "tracing",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -14564,8 +14611,8 @@ name = "sync-bus"
 version = "0.1.0"
 dependencies = [
  "account-dbus",
- "account-dbus-macros",
  "base-ids",
+ "dbus-kit",
  "serde",
  "zbus",
 ]
@@ -14621,6 +14668,7 @@ dependencies = [
  "base64 0.22.1",
  "chrono",
  "clap",
+ "dbus-kit",
  "drive-core",
  "drive-fuse",
  "hex",
@@ -14646,7 +14694,6 @@ dependencies = [
  "ui-settings",
  "windows-zones",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -14672,10 +14719,10 @@ dependencies = [
  "account-dbus",
  "base-testkit",
  "clap",
+ "dbus-kit",
  "sync-bus",
  "tokio",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -15462,11 +15509,12 @@ dependencies = [
 name = "ui-desktop"
 version = "0.1.0"
 dependencies = [
+ "dbus-kit",
  "dioxus",
+ "shell-dbus",
  "tokio",
  "ui-peer",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -15550,13 +15598,13 @@ dependencies = [
  "base-testkit",
  "base-time",
  "base-xdg",
+ "dbus-kit",
  "serde",
  "thiserror 2.0.21",
  "tokio",
  "toml",
  "ui-peer",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -15604,7 +15652,7 @@ dependencies = [
 name = "ui-peer"
 version = "0.1.0"
 dependencies = [
- "futures-timer",
+ "dbus-kit",
  "thiserror 2.0.21",
  "tokio",
 ]
@@ -15616,6 +15664,7 @@ dependencies = [
  "base-fs",
  "base-time",
  "base-xdg",
+ "dbus-kit",
  "dioxus",
  "futures-timer",
  "notify",
@@ -15633,7 +15682,6 @@ dependencies = [
  "ui-settings-derive",
  "ui-style",
  "zbus",
- "zbus-ready",
 ]
 
 [[package]]
@@ -15833,6 +15881,7 @@ dependencies = [
  "base-time",
  "base-xdg",
  "caller-identity-dbus",
+ "dbus-kit",
  "semver",
  "serde",
  "tar",
@@ -15843,11 +15892,18 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "updater-core",
+ "updater-dbus",
  "updater-root",
  "ureq",
  "zbus",
- "zbus-ready",
  "zstd",
+]
+
+[[package]]
+name = "updater-dbus"
+version = "0.1.0"
+dependencies = [
+ "zbus",
 ]
 
 [[package]]
@@ -17742,15 +17798,6 @@ dependencies = [
  "zbus-lockstep",
  "zbus_xml",
  "zvariant",
-]
-
-[[package]]
-name = "zbus-ready"
-version = "0.1.0"
-dependencies = [
- "tempfile",
- "tokio",
- "zbus",
 ]
 
 [[package]]

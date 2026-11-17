@@ -234,7 +234,7 @@ where
     match dbus_kit::name::claim(connection, name.as_str()).await {
         Ok(()) => Ok(()),
         Err(dbus_kit::name::ClaimError::Taken(_)) => Err(ServeError::Taken(name)),
-        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err(source.into()),
+        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err((*source).into()),
     }
 }
 
