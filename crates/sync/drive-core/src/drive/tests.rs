@@ -1,6 +1,6 @@
 use super::*;
 use crate::testing::{MemoryListing, MemorySource};
-use base_testkit::Scratch;
+use base_testkit::{Scratch, eventually};
 
 struct Rig {
     dir: Scratch,
@@ -68,17 +68,6 @@ impl Rig {
         names.sort();
         names
     }
-}
-
-async fn eventually(what: &str, mut check: impl FnMut() -> bool) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if check() {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(5)).await;
-    }
-    deadline.fail(what);
 }
 
 #[tokio::test]
@@ -641,6 +630,9 @@ async fn a_second_drive_over_one_cache_waits_for_the_first_to_go() {
     // nothing the first does after can write over it.
     let first = rig.drive.clone();
     let gone = std::thread::spawn(move || {
+        // Best-effort ordering: the second open waits on the cache's file lock, which announces
+        // nothing while it waits, so the first lets go a moment after the second has begun to wait.
+        // If the second is slow to begin, it only takes the lock at once, and the test still holds.
         std::thread::sleep(Duration::from_millis(100));
         first.keep(&remote("k"), false).expect("unkeep");
         drop(first);

@@ -27,7 +27,7 @@ thiserror = { workspace = true }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 drive-core = { path = ".", features = ["testing"] }
 tokio = {version = "1", features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

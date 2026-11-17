@@ -1,6 +1,6 @@
 use super::*;
 use crate::testing::{MemoryListing, MemorySink, MemorySource, Refuse, Took};
-use base_testkit::Scratch;
+use base_testkit::{Scratch, eventually};
 
 struct Rig {
     dir: Scratch,
@@ -77,6 +77,14 @@ async fn restarted(rig: Rig) -> Rig {
     }
 }
 
+/// A best-effort absence check: lets `ms` of the wall clock pass so a send that must not happen
+/// has had its chance. Nothing announces a send that does not happen, and the sender times its
+/// quiet window and its backoff by `Instant`, not by a clock a test can step, so neither a marker
+/// nor a paused clock reaches it. The windows are several times the 30 ms quiet time.
+async fn rule_out_stray(ms: u64) {
+    tokio::time::sleep(Duration::from_millis(ms)).await;
+}
+
 fn remote(id: &str) -> NodeId {
     NodeId::Remote(RemoteId(id.to_owned()))
 }
@@ -128,20 +136,9 @@ impl Rig {
     /// Waits for `n` changes to be sent, and checks no more follow.
     async fn sent(&self, n: usize) {
         eventually(&format!("{n} changes sent"), || self.sink.took().len() >= n).await;
-        tokio::time::sleep(Duration::from_millis(80)).await;
+        rule_out_stray(80).await;
         assert_eq!(self.sink.took().len(), n, "{:?}", self.sink.took());
     }
-}
-
-async fn eventually(what: &str, mut check: impl FnMut() -> bool) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if check() {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(5)).await;
-    }
-    deadline.fail(what);
 }
 
 #[tokio::test]
@@ -189,7 +186,7 @@ async fn a_file_made_and_removed_before_it_was_sent_is_never_sent() {
         b"temp"
     );
     rig.drive.release_write(handle);
-    tokio::time::sleep(Duration::from_millis(150)).await;
+    rule_out_stray(150).await;
     assert_eq!(rig.sink.took(), []);
     assert!(rig.names(&NodeId::Top).is_empty());
     assert_eq!(rig.drive.local_bytes(), 0);
@@ -280,13 +277,13 @@ async fn offline_or_paused_a_change_waits_and_is_sent_after() {
     let rig = rig().await;
     rig.sink.refuse(Some(Refuse::Offline));
     let id = rig.write_new(&NodeId::Top, "a.txt", b"abc").await;
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    rule_out_stray(100).await;
     assert_eq!(rig.state(&id), ItemState::Waiting);
     rig.drive.set_paused(true);
     rig.sink.refuse(None);
     rig.drive.set_offline(true);
     rig.drive.set_offline(false);
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    rule_out_stray(100).await;
     assert_eq!(rig.sink.took(), [], "held while paused");
     assert_eq!(rig.state(&id), ItemState::Waiting);
     rig.drive.set_paused(false);
@@ -371,7 +368,7 @@ async fn a_name_the_drive_refuses_is_refused_when_made_and_lock_files_stay_here(
     );
     let lock = rig.write_new(&NodeId::Top, "~$Plan.docx", b"me").await;
     let other = rig.write_new(&NodeId::Top, ".~lock.Plan.odt#", b"me").await;
-    tokio::time::sleep(Duration::from_millis(150)).await;
+    rule_out_stray(150).await;
     assert_eq!(rig.sink.took(), [], "lock files are never sent");
     assert_eq!(rig.state(&lock), ItemState::Downloaded);
     assert_eq!(rig.state(&other), ItemState::Downloaded);
@@ -384,7 +381,7 @@ async fn eviction_never_takes_what_was_changed_here() {
     rig.drive.set_paused(true);
     rig.write_at("r", 0, b"DRIVE").await;
     rig.drive.set_limit(CacheLimit::Bytes(0));
-    tokio::time::sleep(Duration::from_millis(50)).await;
+    rule_out_stray(50).await;
     assert_eq!(
         rig.drive.read(&remote("r"), 0, 64).await.expect("read"),
         b"DRIVE bytes"
@@ -409,7 +406,7 @@ async fn opened_and_closed_with_nothing_written_is_left_as_the_drive_has_it() {
         .await
         .expect("open");
     rig.drive.release_write(handle);
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    rule_out_stray(100).await;
     assert_eq!(rig.sink.took(), []);
     assert_eq!(rig.drive.unsent(), 0);
 }
@@ -543,7 +540,7 @@ async fn a_removal_of_a_file_changed_on_the_drive_brings_the_drives_version_back
     let mut names = rig.names(&NodeId::Top);
     names.sort();
     assert_eq!(names, ["Keep", "Plan.txt"]);
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    rule_out_stray(100).await;
     assert_eq!(rig.sink.took(), [], "nothing was removed");
     assert_eq!(rig.drive.unsent(), 0);
 }
@@ -647,7 +644,7 @@ async fn the_desktop_trash_stays_here_and_sends_what_goes_in_to_the_recycle_bin(
     // Emptied: only the bytes here go.
     rig.drive.remove(&note).expect("empty");
     rig.drive.remove_folder(&info).expect("empty");
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    rule_out_stray(100).await;
     assert_eq!(rig.sink.took().len(), 2);
 }
 
@@ -715,7 +712,7 @@ async fn a_write_while_its_upload_lands_is_never_lost() {
     meet(&hook).await.expect("met");
     *held(&rig.drive.inner.write_hook) = None;
     rig.sink.release();
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    rule_out_stray(100).await;
     meet(&hook).await.expect("met");
     writing.await.expect("joined").expect("write");
     rig.drive.release_write(handle);
@@ -986,7 +983,7 @@ async fn a_new_file_whose_answer_was_lost_is_taken_as_made_and_never_made_twice(
         rig.sink.tries() >= 2 && rig.drive.unsent() == 0
     })
     .await;
-    tokio::time::sleep(Duration::from_millis(80)).await;
+    rule_out_stray(80).await;
     assert_eq!(rig.sink.took(), [Took::New(None, "a.txt".into(), 7)]);
     assert_eq!(rig.names(&NodeId::Top), ["a.txt"]);
 }
@@ -1002,7 +999,7 @@ async fn new_bytes_whose_answer_was_lost_are_taken_as_sent_not_split_off() {
         rig.sink.tries() >= 2 && rig.drive.unsent() == 0
     })
     .await;
-    tokio::time::sleep(Duration::from_millis(80)).await;
+    rule_out_stray(80).await;
     assert_eq!(rig.sink.took(), [Took::Replace("r".into(), 9)]);
     assert_eq!(rig.names(&NodeId::Top), ["r.txt"]);
 }
@@ -1027,7 +1024,7 @@ async fn what_is_made_under_a_reserved_id_is_made_once_however_often_it_is_sent(
         rig.sink.tries() >= 4 && rig.drive.unsent() == 0
     })
     .await;
-    tokio::time::sleep(Duration::from_millis(80)).await;
+    rule_out_stray(80).await;
     let NodeId::Remote(folder) = &work else {
         panic!("{work:?}")
     };
@@ -1048,7 +1045,7 @@ async fn a_sign_in_the_drive_refuses_holds_what_waits_until_it_is_signed_in_agai
     rig.write_new(&NodeId::Top, "a.txt", b"a").await;
     eventually("held", || rig.drive.signed_out()).await;
     // Longer than the first wait after a change the drive could not take.
-    tokio::time::sleep(Duration::from_millis(1500)).await;
+    rule_out_stray(1500).await;
     assert_eq!(rig.sink.tries(), 1, "nothing more is sent meanwhile");
     rig.sink.refuse(None);
     rig.drive.set_signed_out(false);
@@ -1213,7 +1210,7 @@ async fn bytes_written_between_two_tries_under_a_reserved_id_are_sent_over_what_
         rig.sink.uploads().len() >= 2 && rig.drive.unsent() == 0
     })
     .await;
-    tokio::time::sleep(Duration::from_millis(80)).await;
+    rule_out_stray(80).await;
     assert_eq!(
         rig.sink.uploads(),
         [b"first".to_vec(), b"FIRST, then more".to_vec()]
@@ -1246,7 +1243,7 @@ async fn a_new_file_is_never_taken_for_a_drive_item_another_change_here_is_of() 
     // The drive's "a.txt" holds just these bytes, and is the file renamed here.
     rig.write_new(&NodeId::Top, "a.txt", b"same").await;
     eventually("tried", || rig.sink.tries() >= 2).await;
-    tokio::time::sleep(Duration::from_millis(200)).await;
+    rule_out_stray(200).await;
     let edit = rig
         .drive
         .inner
@@ -1282,7 +1279,7 @@ async fn a_write_through_a_file_saved_over_never_lands_in_the_bytes_that_replace
     meet(&hook).await.expect("met");
     let drive = rig.drive.clone();
     let late = tokio::spawn(async move { drive.write(handle, 0, b"ZZZ").await });
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    rule_out_stray(100).await;
     held(&rig.drive.inner.hooks).remove("saved over");
     meet(&hook).await.expect("met");
     saving.await.expect("joined").expect("saved");
@@ -1394,7 +1391,7 @@ async fn an_older_copy_of_the_index_is_never_written_over_a_newer_one() {
         .expect("folder");
     let inner = Arc::clone(&rig.drive.inner);
     let newer = tokio::task::spawn_blocking(move || inner.flush_now());
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    rule_out_stray(100).await;
     held(&rig.drive.inner.hooks).remove("flush");
     meet(&hook).await.expect("met");
     older.await.expect("joined").expect("written");
