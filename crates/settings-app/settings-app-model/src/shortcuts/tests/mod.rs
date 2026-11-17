@@ -95,7 +95,7 @@ fn the_page_lists_every_handled_action_and_no_unhandled_desktop_one() {
         .iter()
         .flat_map(|group| group.actions())
         .collect();
-    for (action, _) in key_remap_client::handled_actions() {
+    for (action, _) in key_remap_core::handled_actions() {
         assert!(
             shown.contains(&action),
             "{action:?} is handled but not listed"
@@ -104,7 +104,7 @@ fn the_page_lists_every_handled_action_and_no_unhandled_desktop_one() {
     for group in ShortcutGroup::ALL {
         for action in group.actions() {
             if group.is_desktop_action(action) {
-                assert!(key_remap_client::handler(action).is_some(), "{action:?}");
+                assert!(key_remap_core::handler(action).is_some(), "{action:?}");
             }
         }
     }

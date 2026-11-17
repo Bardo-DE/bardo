@@ -261,7 +261,7 @@ mod tests {
 
     #[test]
     fn the_rows_are_the_handled_table() {
-        use key_remap_client::Handler;
+        use key_remap_core::Handler;
         for action in StandardAction::all() {
             let want = match shell_action(action) {
                 Some(BindingAction::Desktop(_)) => Some(Handler::Compositor),
@@ -271,10 +271,10 @@ mod tests {
                 }
                 None | Some(_) => None,
             };
-            assert_eq!(key_remap_client::handler(action), want, "{}", action.slug());
+            assert_eq!(key_remap_core::handler(action), want, "{}", action.slug());
         }
         assert!(
-            key_remap_client::handled_actions().all(|(action, _)| shell_action(action).is_some())
+            key_remap_core::handled_actions().all(|(action, _)| shell_action(action).is_some())
         );
     }
 

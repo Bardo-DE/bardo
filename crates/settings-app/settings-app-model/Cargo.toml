@@ -25,7 +25,7 @@ action-settings = {path = "../../actions/action-settings"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
-key-remap-client = {path = "../../input/key-remap-client"}
+key-remap-core = {path = "../../input/key-remap-core"}
 account-core = {path = "../../accounts/account-core"}
 inference-core = {path = "../../inference/inference-core"}
 regex = { workspace = true, features = ["std", "perf", "unicode"] }

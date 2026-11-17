@@ -15,7 +15,6 @@ keymap = {path = "../../keymap/keymap"}
 base-fs = { path = "../../base/base-fs" }
 base-xdg = { path = "../../base/base-xdg" }
 rustix = {workspace = true, features = ["default", "event", "fs", "net", "time", "process"]}
-shell-verbs = {path = "../../wayland/shell-verbs"}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}

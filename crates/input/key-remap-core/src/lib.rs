@@ -16,6 +16,7 @@ mod config;
 mod escape;
 mod event;
 mod gate;
+mod handled;
 mod held;
 mod key;
 mod layout;
@@ -33,6 +34,7 @@ pub use config::{
 pub use escape::Escape;
 pub use event::{DeviceId, Edge, Logical, OutEvent, Physical};
 pub use gate::{Decision, KEYS_DOWN_BYTES, KeysDown, check_gate};
+pub use handled::{Handler, handled_actions, handler};
 pub use held::{Held, Record};
 pub use key::Key;
 pub use layout::{Layout, role};

@@ -10,6 +10,8 @@ repository.workspace = true
 
 [dependencies]
 key-remap-proto = { path = "../key-remap-proto" }
+keymap = {path = "../../keymap/keymap"}
+shell-verbs = {path = "../../wayland/shell-verbs"}
 thiserror = { workspace = true }
 toml = { workspace = true }
 
