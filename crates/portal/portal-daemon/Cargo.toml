@@ -40,6 +40,7 @@ pipewire = { workspace = true }
 image = { workspace = true, features = ["png"] }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 # `introduce` makes a test's connection stand as the frontend or the shell without looking at it.
 caller-identity-dbus = {default-features = false, features = ["desktop", "fake", "tokio"], path = "../../identity/caller-identity-dbus"}
 tempfile = { workspace = true }

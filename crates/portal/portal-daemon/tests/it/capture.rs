@@ -190,17 +190,17 @@ fn display_behind_a_line() -> (
 ) {
     use portal_daemon::capture::{DisplayName, FakeLine};
     use std::sync::Arc;
-    use std::time::{Duration, Instant};
 
     let line = Arc::new(FakeLine::granting());
     let waiting = Arc::clone(&line);
     std::thread::spawn(move || {
-        let give_up = Instant::now() + Duration::from_secs(10);
-        while Instant::now() < give_up {
-            if let Some(server) = waiting.take_server() {
-                return answer_round_trips(server);
-            }
-            std::thread::sleep(Duration::from_millis(1));
+        let mut server = None;
+        base_testkit::eventually_blocking("the line to hand out a connection", || {
+            server = waiting.take_server();
+            server.is_some()
+        });
+        if let Some(server) = server {
+            answer_round_trips(server);
         }
     });
     let display = DisplayName::session().with_portal_line(Arc::<FakeLine>::clone(&line));

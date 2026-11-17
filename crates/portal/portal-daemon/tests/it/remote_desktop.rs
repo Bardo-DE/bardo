@@ -369,7 +369,6 @@ async fn a_restarted_portal_counts_above_the_last_run_and_drops_its_leftovers() 
         service.begin(&key(1)).await;
         service.connect(&key(1)).await.expect("a socket");
         numbers.push(eis.asked()[0].0);
-        tokio::time::sleep(std::time::Duration::from_millis(2)).await;
     }
     assert!(
         numbers[0] > 1_000_000 && numbers[1] > numbers[0],

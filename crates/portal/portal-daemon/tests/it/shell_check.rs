@@ -164,17 +164,10 @@ async fn a_question_ends_as_a_no_when_the_shell_changes_while_it_is_open() {
         tokio::spawn(async move { ask(&asker).await })
     };
     // Wait until the shell has the question in front of it, then let it go.
-    for _ in 0..100 {
-        if asking.load(Ordering::SeqCst) == 1 {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    assert_eq!(
-        asking.load(Ordering::SeqCst),
-        1,
-        "the question reached the shell"
-    );
+    base_testkit::eventually("the question to reach the shell", || {
+        asking.load(Ordering::SeqCst) == 1
+    })
+    .await;
     shell
         .release_name(SHELL_NAME)
         .await
