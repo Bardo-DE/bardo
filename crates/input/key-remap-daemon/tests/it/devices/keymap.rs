@@ -1,7 +1,7 @@
 //! The keymap file through the real daemon: served, watched, a bad edit keeping the last good
 //! copy, registrations ending with their connection.
 
-use crate::support::Scene;
+use super::support::Scene;
 use key_remap_client::{KeyRemapSource, Origin};
 use keymap::{AppAction, AppId, ChangeCallback, DefaultChord, KeymapSource};
 use std::sync::Arc;

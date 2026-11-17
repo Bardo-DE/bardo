@@ -21,7 +21,6 @@ layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
 ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 
 [dev-dependencies]
-shell-testkit = {path = "../shell-testkit"}
 ui-harness = {path = "../../ui/ui-harness"}
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
 image = { workspace = true, features = ["png", "jpeg", "webp"] }

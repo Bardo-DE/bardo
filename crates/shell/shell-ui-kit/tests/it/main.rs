@@ -5,9 +5,3 @@ mod calendar_render;
 mod cancelled_animation;
 mod notification_card_render;
 mod widgets_render;
-
-/// A file in `tests/it` that `main.rs` does not list would compile to nothing.
-#[test]
-fn every_test_file_is_included() {
-    shell_testkit::assert_all_modules_included(env!("CARGO_MANIFEST_DIR"));
-}

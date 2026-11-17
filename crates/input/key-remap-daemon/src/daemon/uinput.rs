@@ -3,7 +3,7 @@
 //! The unit tests use `RecordingEmitter`, or a `Device` over the stand-in for the device service
 //! (`source.rs`); neither touches `/dev/uinput`. The events it writes are the pure `events`
 //! functions, which are tested; creation on the node itself, and the read of LED changes, run
-//! only in the gated device tests (`tests/devices`).
+//! only in the gated device tests (`tests/it/devices`).
 
 use super::events::{
     EV_KEY, EV_LED, EV_REL, EV_SYN, InputEvent, MAX_CODE, REL_HWHEEL, REL_HWHEEL_HI_RES, REL_WHEEL,

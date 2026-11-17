@@ -15,7 +15,6 @@ ui-components = {path = "../../ui/ui-components"}
 shell-model = {path = "../shell-model"}
 
 [dev-dependencies]
-shell-testkit = {path = "../shell-testkit"}
 
 [lints]
 workspace = true

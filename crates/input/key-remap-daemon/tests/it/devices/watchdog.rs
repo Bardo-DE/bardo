@@ -1,6 +1,6 @@
 //! `sd_notify`: readiness, then a ping often enough for `WatchdogSec`.
 
-use crate::support::{Scene, WATCHDOG, ok};
+use super::support::{Scene, WATCHDOG, ok};
 use key_remap_devtest::Daemon;
 use std::time::Duration;
 

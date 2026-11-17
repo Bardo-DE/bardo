@@ -1,6 +1,6 @@
 //! Who may steer the key remap daemon: the seat's owner, not any other local user.
 
-use crate::support::{Rig, Scene, ok};
+use super::support::{Rig, Scene, ok};
 use key_remap_devtest::FOCUS_SETTLE;
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::process::CommandExt;

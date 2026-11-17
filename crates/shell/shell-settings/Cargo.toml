@@ -19,7 +19,6 @@ serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 
 [dev-dependencies]
-shell-testkit = {path = "../shell-testkit"}
 provenance = {path = "../../provenance/provenance"}
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 

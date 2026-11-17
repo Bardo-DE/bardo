@@ -9,7 +9,7 @@
     reason = "tests unwrap fixtures they just built; a failure is the test failing"
 )]
 
-#[path = "archive/support.rs"]
+#[path = "it/support.rs"]
 mod support;
 
 use anyview_archive::{ExtractLimits, extract};

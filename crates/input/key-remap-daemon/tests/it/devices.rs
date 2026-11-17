@@ -3,7 +3,7 @@
 //!
 //! These create input devices, so each is `#[ignore]`d and asserts `BARDO_KEY_REMAP_DEVICE_TESTS=1`;
 //! CI runs them as root with `-- --ignored --test-threads=1` (one keyboard name, one daemon at
-//! a time). Only `key_table` runs in a plain `cargo test`.
+//! a time, filtered to `devices::`). Only `key_table` runs in a plain `cargo test`.
 
 mod conflict;
 mod key_table;

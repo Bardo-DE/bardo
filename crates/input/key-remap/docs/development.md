@@ -129,7 +129,7 @@ The key remap daemon grabs the user's only keyboard, so:
 
 - **Tests create no input device unless they are the gated device tests.** The ordinary suite
   drives the core with scripts and a recording sink and never constructs the uinput device. The
-  device tests (`crates/key_remap/tests/devices`) are the one exception: each is `#[ignore]`d and
+  device tests (`crates/input/key-remap-daemon/tests/it/devices`) are the one exception: each is `#[ignore]`d and
   asserts `BARDO_KEY_REMAP_DEVICE_TESTS=1`, so neither `cargo test` nor `cargo test -- --ignored` alone
   creates a device. CI runs them (see Tests).
 - **Virtual devices are never grabbed**, so another remapper's output cannot loop back through
@@ -242,7 +242,7 @@ Three tiers, each in its own CI job (`.github/workflows/ci.yml`).
    grab gate with a key held, Apple vs PC layout, and a property test that every emitted press
    has exactly one release. Socket tests run on a private socket in a temp directory. Scripts
    are synthesised in `tests/support`. No device is touched.
-2. **The device tests** (`devices`). `crates/key_remap/tests/devices` runs the built `key_remap` binary
+2. **The device tests** (`devices`). `crates/input/key-remap-daemon/tests/it/devices` runs the built `key_remap` binary
    against a fake keyboard on `/dev/uinput` and reads the "the key remap daemon keyboard" it writes back from
    `/dev/input`, through the real evdev grab, the real uinput device and the real socket. The
    harness is the `key-remap-devtest` crate. Every test is `#[ignore]`d and asserts
@@ -252,9 +252,9 @@ Three tiers, each in its own CI job (`.github/workflows/ci.yml`).
    ```bash
    sudo modprobe uinput
    cargo build -p key-remap-daemon --bins --examples
-   cargo test -p key-remap-daemon --test devices --no-run     # build as yourself
+   cargo test -p key-remap-daemon --test it --no-run     # build as yourself
    sudo -E env "PATH=$PATH" BARDO_KEY_REMAP_DEVICE_TESTS=1 \
-     target/debug/deps/devices-<hash> --ignored --test-threads=1
+     target/debug/deps/it-<hash> devices:: --ignored --test-threads=1
    ```
 
    They need root (the nodes are `root:input`), run one at a time (one fake name, one daemon),

@@ -56,9 +56,5 @@ pdf = ["ui-blitz/pdf"]
 # `menu_export`: the exported menu bar, driven over a private bus.
 menus = ["ui-blitz/menus"]
 
-[[test]]
-name = "menu_export"
-required-features = ["menus"]
-
 [lints]
 workspace = true

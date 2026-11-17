@@ -6,7 +6,7 @@
 
 #![allow(clippy::unwrap_used, reason = "tests may unwrap")]
 
-#[path = "text/support.rs"]
+#[path = "it/support.rs"]
 mod support;
 
 use anyview_core::{Peek, PeekBudget};

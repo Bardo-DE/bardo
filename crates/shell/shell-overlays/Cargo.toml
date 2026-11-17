@@ -34,7 +34,6 @@ layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
 shell-services = {path = "../shell-services"}
 ui-settings = { path = "../../ui/ui-settings", default-features = false, features = ["dioxus"] }
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
-shell-testkit = {path = "../shell-testkit"}
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
 ui-harness = {path = "../../ui/ui-harness"}
 image = { workspace = true, features = ["png", "jpeg", "webp"] }

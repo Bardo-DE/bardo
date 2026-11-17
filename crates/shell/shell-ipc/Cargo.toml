@@ -18,7 +18,6 @@ serde_json = { workspace = true }
 thiserror = { workspace = true }
 
 [dev-dependencies]
-shell-testkit = {path = "../shell-testkit"}
 key-remap-proto = {path = "../../input/key-remap-proto"}
 
 [features]

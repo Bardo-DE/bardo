@@ -25,7 +25,6 @@ layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
 # `desktop_wl::project_*`, which `tests/it/dock_wlr.rs` feeds from a fake compositor.
 shell-services = {path = "../shell-services"}
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
-shell-testkit = {path = "../shell-testkit"}
 ui-harness = {path = "../../ui/ui-harness"}
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
 ui-lint = {path = "../../ui/ui-lint"}

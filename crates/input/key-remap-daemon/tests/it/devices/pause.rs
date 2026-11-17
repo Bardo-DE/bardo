@@ -1,6 +1,6 @@
 //! The emergency chord and `Resume`, end to end.
 
-use crate::support::{Rig, ok};
+use super::support::{Rig, ok};
 use key_remap_devtest::ExternalGrab;
 use std::time::Duration;
 

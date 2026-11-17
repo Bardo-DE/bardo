@@ -1,6 +1,6 @@
 //! Lock LEDs written to the virtual keyboard, as a compositor does, reach the physical one.
 
-use crate::support::{Rig, ok};
+use super::support::{Rig, ok};
 use key_remap_devtest::LED_CAPSL;
 use std::time::Duration;
 

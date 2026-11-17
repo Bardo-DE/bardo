@@ -100,7 +100,7 @@ name = "demo_window"
 required-features = ["debug-inject"]
 
 # The session lock's acceptance; its guard against locking a real session is table-tested in
-# tests/shell_host (`guard.rs` is included there).
+# tests/it (`guard.rs` is included there).
 [[example]]
 name = "demo_lock"
 

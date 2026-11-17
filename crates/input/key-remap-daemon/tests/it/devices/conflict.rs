@@ -1,6 +1,6 @@
 //! Another program holding the keyboard.
 
-use crate::support::{FAKE_NAME, GRAB_WITHIN, Scene, ok};
+use super::support::{FAKE_NAME, GRAB_WITHIN, Scene, ok};
 use key_remap_devtest::{ExternalGrab, FakeKeyboard, FakeSpec};
 use key_remap_proto::Grab;
 use std::time::Duration;

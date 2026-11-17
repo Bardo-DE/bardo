@@ -60,7 +60,6 @@ ui-host-hooks = {path = "../../ui/ui-host-hooks"}
 harness = ["dep:ui-harness"]
 
 [dev-dependencies]
-shell-testkit = {path = "../shell-testkit"}
 # The crate's own tests drive surfaces through `harness`.
 shell-ui-kit = {path = ".", features = ["harness"]}
 # `lint` is off by default: only test builds need `ds::lint::markup`.

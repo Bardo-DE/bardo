@@ -6,7 +6,6 @@
 
 #![cfg(target_os = "linux")]
 
-#[path = "menu_export/bus.rs"]
 mod bus;
 
 use bus::PrivateBus;

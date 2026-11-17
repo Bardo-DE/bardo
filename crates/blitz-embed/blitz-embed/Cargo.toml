@@ -35,8 +35,8 @@ settings = ["blitz", "dep:serde"]
 
 # The integration tests drive Blitz documents.
 [[test]]
-name = "blitz_kit"
-path = "tests/blitz_kit/main.rs"
+name = "it"
+path = "tests/it/main.rs"
 required-features = ["blitz"]
 
 [lints]

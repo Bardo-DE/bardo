@@ -1,7 +1,7 @@
 //! Mappings through the whole path: the kernel's evdev node in, the kernel's uinput device out.
 //! The traces are the ones `tests/scenarios.rs` asserts on the pure core.
 
-use crate::support::{Rig, ok};
+use super::support::{Rig, ok};
 use key_remap_devtest::FOCUS_SETTLE;
 
 #[test]

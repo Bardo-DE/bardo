@@ -2,9 +2,3 @@
 
 mod autostart;
 mod trash;
-
-/// A file in `tests/it` that `main.rs` does not list would compile to nothing.
-#[test]
-fn every_test_file_is_included() {
-    shell_testkit::assert_all_modules_included(env!("CARGO_MANIFEST_DIR"));
-}

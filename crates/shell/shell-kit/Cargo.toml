@@ -18,7 +18,6 @@ serde_json = { workspace = true }
 image = { workspace = true, features = ["png", "jpeg", "webp"] }
 
 [dev-dependencies]
-shell-testkit = {path = "../shell-testkit"}
 dioxus-ssr = { workspace = true }
 ui-blitz = {path = "../../ui/ui-blitz"}
 ui-core = {path = "../../ui/ui-core", features = ["testing"]}

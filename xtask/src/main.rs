@@ -17,9 +17,9 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, domain-order, product-words, error-names, no-mod-rs, no-prefs and shear, then fmt, clippy and tests on the affected set
+  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, domain-order, product-words, error-names, no-mod-rs, no-prefs, test-modules and shear, then fmt, clippy and tests on the affected set
   check deny                    cargo deny check (needs cargo-deny)
-  check test-modules            every tests/it file is a module of its main.rs
+  check test-modules            one test binary per crate (tests/it), every tests/it file a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
   check domain-order            a library crate depends only on its own domain folder or a lower one
   check product-words           no retired product name in a .rs file, a file name or a Cargo.toml feature or description
