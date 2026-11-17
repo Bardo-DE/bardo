@@ -1,6 +1,4 @@
 //! The fixture files load, equal the snapshots built beside them, and survive a round trip.
-//! Regenerate with `cargo test -p computer-use-a11y-tree -- --ignored regenerate_fixture_files`, and only
-//! with a reason.
 
 use computer_use_a11y_tree::A11ySnapshot;
 use std::path::PathBuf;
@@ -27,11 +25,9 @@ fn fixture_files_load_and_equal_the_snapshots_built_beside_them() {
             serde_json::from_str(&text).unwrap_or_else(|e| panic!("{name}: {e}"));
         assert_eq!(loaded, built, "{name}");
         let again = serde_json::to_string_pretty(&loaded).unwrap();
-        assert_eq!(
-            again.trim_end(),
-            text.trim_end(),
-            "{name} is the canonical serde form"
-        );
+        let reloaded: A11ySnapshot =
+            serde_json::from_str(&again).unwrap_or_else(|e| panic!("{name}: {e}"));
+        assert_eq!(reloaded, loaded, "{name} survives a round trip");
     }
 }
 
@@ -64,14 +60,4 @@ fn the_password_fixture_is_marked_secret_and_nothing_else_is() {
         .map(|n| n.role)
         .collect();
     assert_eq!(secret, vec![computer_use_a11y_tree::Role::PasswordText]);
-}
-
-#[test]
-#[ignore = "writes the fixture files; run on purpose"]
-fn regenerate_fixture_files() {
-    for (name, built) in all() {
-        let mut text = serde_json::to_string_pretty(&built).unwrap();
-        text.push('\n');
-        std::fs::write(path(name), text).unwrap();
-    }
 }

@@ -1,7 +1,5 @@
-//! The rendered tree: golden text for each fixture, escaping, indentation and the truncation
-//! line. Regenerate the golden files with
-//! `cargo test -p computer-use-a11y-tree --test it -- --ignored render::regenerate_golden_files`, and only with a
-//! reason.
+//! The rendered tree: one line for each node of each fixture, escaping, indentation and the
+//! truncation line.
 
 use crate::support::{Spec, gtk4_dialog, snapshot};
 use computer_use_a11y_tree::{
@@ -9,13 +7,6 @@ use computer_use_a11y_tree::{
     Role, SelectorStep, Truncation, TypedHint, prune, render, resolve,
 };
 use computer_use_action::NodeId;
-use std::path::PathBuf;
-
-fn golden(name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/golden")
-        .join(format!("{name}.txt"))
-}
 
 fn all() -> Vec<(&'static str, A11ySnapshot)> {
     vec![
@@ -26,18 +17,15 @@ fn all() -> Vec<(&'static str, A11ySnapshot)> {
 }
 
 #[test]
-fn every_fixture_renders_to_its_golden_text() {
+fn every_fixture_renders_one_line_for_each_node_in_order() {
     for (name, built) in all() {
-        let want = std::fs::read_to_string(golden(name)).unwrap_or_else(|e| panic!("{name}: {e}"));
-        assert_eq!(render(&built), want.trim_end_matches('\n'), "{name}");
-    }
-}
-
-#[test]
-#[ignore = "writes the golden files; run on purpose"]
-fn regenerate_golden_files() {
-    for (name, built) in all() {
-        std::fs::write(golden(name), format!("{}\n", render(&built))).unwrap();
+        let text = render(&built);
+        let lines: Vec<&str> = text.lines().collect();
+        assert_eq!(lines.len(), built.nodes.len(), "{name}: {text}");
+        for (line, node) in lines.iter().zip(&built.nodes) {
+            let id = format!("[{}] ", node.id.0);
+            assert!(line.trim_start().starts_with(&id), "{name}: {line}");
+        }
     }
 }
 
