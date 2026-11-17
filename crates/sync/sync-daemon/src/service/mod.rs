@@ -1,4 +1,4 @@
-//! `org.bardo.Sync1` at `/org/bardo/Sync1`, served over the [`Hub`] (design/31 §4.4).
+//! `org.bardo.Sync1` at `/org/bardo/Sync1`, served over the `sync_driver::hub::Hub` (design/31 §4.4).
 //!
 //! - The caller is the connection's, found by account-dbus's `Callers` (cgroup, the one table both
 //!   daemons share); a sender nothing names is `AccessDenied` and a caller never says who it is.
@@ -25,7 +25,7 @@
 //!   syncd writes no audit events (it has none for pause and resume either), so this is not
 //!   audited.
 //! - `SyncNow(dataset)` ("Sync now") has a dataset sync at once instead of at its next scheduled
-//!   look: [`Hub::sync_now`] wakes its driver, which runs a cycle right away, or right after the
+//!   look: `Hub::sync_now` wakes its driver, which runs a cycle right away, or right after the
 //!   one running. Whoever may pause the dataset may call it; a dataset the caller cannot see
 //!   answers `NoFittingAccount`, a paused one `org.bardo.Sync1.Error.Paused`. The reply comes
 //!   when the request is taken, not when the cycle ends.
@@ -38,7 +38,6 @@
 //!   broadcast; a connection that leaves the bus is forgotten.
 
 mod errors;
-mod hub;
 mod object;
 mod picker;
 mod resolve;
@@ -46,13 +45,10 @@ mod status;
 mod storage;
 
 pub use errors::RefusedError;
-pub use hub::{Access, Cycles, DatasetName, Event, Handle, Hub, Nudge, StatusSnapshot};
 pub use object::serve;
 #[cfg(feature = "photos-picker")]
 pub use picker::serve_picker;
 pub use picker::{PickerDesk, Pickers};
-pub use resolve::{
-    Confirm, ConfirmError, ConflictNumber, How, Settle, SettleError, SyncNowError, UnknownHow,
-};
+pub use resolve::{UnknownHow, parse_how};
 pub use status::{conflict_details, held_details, progress_details, status_details};
 pub use storage::{FilesApps, ITEMS_EVERY, absolute, drive_details, item_details, serve_storage};

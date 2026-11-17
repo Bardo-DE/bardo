@@ -19,7 +19,7 @@
 //! - [`Keep::add_and_keep`]: "Add Account": accountd's add-account sheet, then the first thing
 //!   the account offers for syncd to keep switched on.
 //! - [`Keep::remove`]: forgets an account here: stops its datasets, deletes its journals and
-//!   mirrors ([`crate::removal::wipe`]) and takes back syncd's grants of it. The account stays in
+//!   mirrors ([`sync_driver::removal::wipe`]) and takes back syncd's grants of it. The account stays in
 //!   accountd, which the person removes it from.
 
 mod classes;
@@ -30,9 +30,6 @@ pub use classes::{
 };
 
 use crate::datasets::drive::{DriveSet, Kept};
-use crate::paths::{AccountDir, Paths};
-use crate::removal;
-use crate::service::Hub;
 use account_capability::CapabilityKind;
 use account_client::{
     Accounts, AccountsError, AccountsLink, ConsentOffer, Grants, GrantsError, GrantsLink,
@@ -42,6 +39,9 @@ use account_core::consent::{Grant, Usage};
 use account_core::{Account, AccountId, GrantKey, ProviderHint};
 use account_wire::{ParentWindow, Refusal};
 use std::sync::Arc;
+use sync_driver::hub::Hub;
+use sync_driver::removal;
+use sync_xdg::{AccountDir, Paths};
 
 /// Why "Add Account" did not end in an account.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]

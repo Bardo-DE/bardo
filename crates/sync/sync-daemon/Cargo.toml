@@ -1,6 +1,6 @@
 [package]
 name = "sync-daemon"
-description = "ferry's sync daemon: org.bardo.Sync1 over sync-core replicas. The library holds the SQLite journal, the engine over a Replica and a Dataset, the pure scheduler, the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client); the binary resolves its paths and serves. Datasets: the calendar, contacts and tasks mirror (CalDAV, CardDAV, Microsoft Graph and Google), the storage folder (WebDAV, OneDrive and Google Drive app folders), the whole drives shown in Files, and Photos for an account whose Photos row is on."
+description = "ferry's sync daemon: org.bardo.Sync1 over sync-core replicas. The program: it wires the engine (sync-engine, sync-driver, sync-journal-sqlite), the datasets (sync-pim-mirror, sync-photos, the storage folder and the whole drives shown in Files) and the replicas (sync-relay) together, serves the bus objects and the Settings rows over the accounts accountd has (it reaches accounts, grants and relays only through account-client), and resolves its paths and starts."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,6 +10,13 @@ publish.workspace = true
 
 [dependencies]
 base-xdg = { path = "../../base/base-xdg" }
+sync-driver = {path = "../sync-driver"}
+sync-engine = {path = "../sync-engine"}
+sync-journal-sqlite = {path = "../sync-journal-sqlite"}
+sync-photos = {path = "../sync-photos"}
+sync-pim-mirror = {path = "../sync-pim-mirror"}
+sync-relay = {path = "../sync-relay"}
+sync-xdg = {path = "../sync-xdg"}
 dbus-kit = { path = "../../bus/dbus-kit" }
 sync-bus = {path = "../sync-bus"}
 drive-fs = {path = "../drive-fs"}
@@ -17,8 +24,6 @@ drive-fuse = {path = "../drive-fuse"}
 sync-core = {path = "../sync-core"}
 replica-gdrive = {path = "../replica-gdrive"}
 replica-graph = {path = "../replica-graph"}
-replica-webdav = {path = "../replica-webdav"}
-windows-zones = {path = "../windows-zones"}
 # Accounts, grants and relays: accountd's, reached through account-client (the bus transport in
 # the daemon). Nothing of porter's account stack is a dependency of syncd; the dev-dependencies
 # host one in process for the tests.
@@ -36,19 +41,12 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 base-fs = {path = "../../base/base-fs"}
-account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav-proto"}
 http-core = {path = "../../network/http-core"}
-http-relay = {path = "../../accounts/http-relay"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
 settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}
-rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
-serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-jiff = { workspace = true }
 hex = { workspace = true }
-mime_guess = {workspace = true}
-nanohtml2text = { workspace = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
 # `signal`: SIGTERM unmounts the drives before the process ends.
@@ -60,7 +58,11 @@ zbus = {workspace = true, features = ["tokio"]}
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
-sync-daemon = { path = ".", features = ["testing"] }
+sync-engine = {path = "../sync-engine", features = ["testing"]}
+sync-journal-sqlite = {path = "../sync-journal-sqlite", features = ["testing"]}
+http-relay = {path = "../../accounts/http-relay"}
+sync-pim-feed = {path = "../sync-pim-feed"}
+sync-vdir = {path = "../sync-vdir"}
 base64 = { workspace = true }
 tempfile = { workspace = true }
 sync-fake-graph = {path = "../sync-fake-graph"}
@@ -89,8 +91,6 @@ tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "r
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
 # check-boundary.sh checks it too.
 test-proc-root = ["account-callers/test-proc-root"]
-# `MemoryDataset`, the in-memory local side the engine's tests (and daemon tests) drive.
-testing = []
 # Serves `org.bardo.Photos1.Picker` beside Sync1 (sync-bus's feature of the same name declares
 # it). Off by default: no Photos app ships in v1.
 photos-picker = ["sync-bus/photos-picker"]

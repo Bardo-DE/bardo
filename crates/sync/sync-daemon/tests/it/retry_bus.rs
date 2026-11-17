@@ -11,12 +11,11 @@ use account_secrets::MemorySecrets;
 use account_service_core::registry::Registry;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use sync_daemon::datasets::pim::{
-    AccountdUnavailable, PimConfig, PimGrants, PimKind, PimSupervisor, Wiring,
-};
-use sync_daemon::paths::Paths;
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access, Hub};
+use sync_driver::hub::{Access, Hub};
+use sync_engine::scheduler::{Network, Settings};
+use sync_pim_feed::PimKind;
+use sync_pim_mirror::{AccountdUnavailable, PimConfig, PimGrants, PimSupervisor, Wiring};
+use sync_xdg::Paths;
 use tokio::sync::watch;
 
 /// Grants that cannot be asked while `down` is set, and are none otherwise.
@@ -68,9 +67,7 @@ async fn a_look_that_could_not_ask_for_grants_says_it_was_not_whole_and_the_next
         owners: Access::default(),
         clock: sync_core::Clock::new(base_time::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
-            1_700_000_000_000,
-        )),
+        millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
     };
     let down = Arc::new(AtomicBool::new(true));
     let mut supervisor = PimSupervisor::new(

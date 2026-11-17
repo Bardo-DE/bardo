@@ -21,7 +21,6 @@
 
 use super::errors::RefusedError;
 use crate::datasets::drive::{DriveEvent, DriveSet, LiveDrive};
-use crate::service::Access;
 use crate::words;
 use account_callers::{Caller, CallerRole, Callers};
 use account_dbus::Details;
@@ -39,6 +38,7 @@ use sync_bus::{
     ITEM_KEY_KEPT, ITEM_KEY_KIND, ITEM_KEY_OTHER, ITEM_KEY_STATE, ITEM_KEY_URL, ITEM_KEY_WORDS,
     ItemDetails, ItemKind, ItemState, Refused, Saved, StorageServed, StorageServer,
 };
+use sync_driver::hub::Access;
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
 use zbus::fdo::DBusProxy;

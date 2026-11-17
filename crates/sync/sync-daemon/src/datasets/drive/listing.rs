@@ -3,14 +3,13 @@
 //! what it no longer finds when it ends. Nothing is downloaded and nothing is written to the
 //! drive; that is S2's, on demand.
 
-use super::journal::DriveJournal;
-use crate::journal::JournalError;
 use http_core::Http;
 use replica_gdrive::GdriveReplica;
 use replica_graph::GraphReplica;
 use std::sync::Arc;
 use std::time::Duration;
 use sync_core::{Cursor, Folders, More, Replica, ReplicaError, RetryAfter};
+use sync_journal_sqlite::{DriveJournal, SqliteError as JournalError};
 use tokio::sync::watch;
 
 /// A replica of a whole drive whose tree the listing keeps between processes.

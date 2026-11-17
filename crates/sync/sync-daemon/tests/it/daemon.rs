@@ -10,9 +10,9 @@ use dbus_kit::connect::BusTarget;
 use std::path::Path;
 use std::time::Duration;
 use sync_bus::SYNC_BUS;
-use sync_daemon::paths::Paths;
-use sync_daemon::scheduler::Network;
 use sync_daemon::{Config, Daemon};
+use sync_engine::scheduler::Network;
+use sync_xdg::Paths;
 
 /// The paths for a person whose whole home is `home`; every file is under it.
 fn paths(home: &Path) -> Paths {

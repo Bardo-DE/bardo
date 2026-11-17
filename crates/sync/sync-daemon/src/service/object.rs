@@ -1,10 +1,8 @@
 //! The `Sync1` object and the tasks beside it: the roster of callers and the signal relay.
 
 use super::errors::RefusedError;
-use super::hub::{DatasetName, Event, Hub};
-use super::resolve::{ConfirmError, ConflictNumber, How, SettleError, SyncNowError};
+use super::resolve::parse_how;
 use super::status::{conflict_details, held_details, progress_details, status_details};
-use crate::scheduler::Pausing;
 use account_callers::{Caller, Callers};
 use account_dbus::Details;
 use account_wire::Refusal;
@@ -14,6 +12,9 @@ use std::pin::Pin;
 use std::sync::{Arc, Mutex, PoisonError};
 use sync_bus::{SYNC_BUS, SYNC_PATH};
 use sync_bus::{SyncServed, SyncServer};
+use sync_driver::hub::{DatasetName, Event, Hub};
+use sync_driver::resolve::{ConfirmError, ConflictNumber, SettleError, SyncNowError};
+use sync_engine::scheduler::Pausing;
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
 use zbus::fdo::DBusProxy;
@@ -79,7 +80,7 @@ impl<C: Callers> Core<C> {
         }
     }
 
-    /// Sends `event` to each connection that is told of it (see [`Hub::hears`]).
+    /// Sends `event` to each connection that is told of it (see `Hub::hears`).
     async fn relay(&self, event: &Event) {
         let names: Vec<String> = held(&self.roster)
             .iter()
@@ -179,7 +180,7 @@ impl<C: Callers> SyncServer for SyncObject<C> {
     ) -> Result<(), RefusedError> {
         let caller = self.0.identify(&header).await?;
         // The words first: a malformed call is the caller's to fix whatever it may see.
-        let how = how.parse::<How>().map_err(RefusedError::invalid)?;
+        let how = parse_how(&how).map_err(RefusedError::invalid)?;
         let name = self.0.visible(&caller, &dataset)?;
         self.0
             .hub

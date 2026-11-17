@@ -132,12 +132,7 @@ pub struct Engine<R, D, K> {
 
 impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
     /// An engine over `replica` and `dataset`, keeping its state in `journal`.
-    pub fn new(
-        replica: R,
-        dataset: D,
-        journal: impl JournalStore + 'static,
-        clock: K,
-    ) -> Self {
+    pub fn new(replica: R, dataset: D, journal: impl JournalStore + 'static, clock: K) -> Self {
         Self {
             replica,
             dataset,

@@ -32,14 +32,15 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::time::Duration;
-use sync_daemon::datasets::pim::{
-    AccountdUnavailable, COLOR, ClientGrants, DISPLAYNAME, PimConfig, PimGrants, PimKind,
-    PimSupervisor, Wiring, is_complete, items_in,
-};
 use sync_daemon::keep::{Keep, sync_app as syncd_app};
-use sync_daemon::paths::Paths;
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access, Hub};
+use sync_driver::hub::{Access, Hub};
+use sync_engine::scheduler::{Network, Settings};
+use sync_pim_feed::{PimKind, is_complete};
+use sync_pim_mirror::{
+    AccountdUnavailable, ClientGrants, PimConfig, PimGrants, PimSupervisor, Wiring,
+};
+use sync_vdir::{COLOR, DISPLAYNAME, items_in};
+use sync_xdg::Paths;
 use tokio::sync::watch;
 
 const PASSWORD: &str = "S3CRET-PIM-APP-PASSWORD";
@@ -319,9 +320,7 @@ async fn rig(with_grants: bool) -> Rig {
         owners: Access::default(),
         clock: sync_core::Clock::new(base_time::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
-            1_700_000_000_000,
-        )),
+        millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
     };
     let accountd_up = Arc::new(AtomicBool::new(true));
     let asked = Arc::new(AtomicUsize::new(0));

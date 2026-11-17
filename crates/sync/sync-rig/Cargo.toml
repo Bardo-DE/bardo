@@ -34,7 +34,8 @@ zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 sync-core = {path = "../sync-core"}
-sync-daemon = {path = "../sync-daemon", features = ["testing"]}
+sync-daemon = {path = "../sync-daemon"}
+sync-driver = {path = "../sync-driver"}
 account-callers = {features = ["test-proc-root"], path = "../../accounts/account-callers"}
 account-core = {path = "../../accounts/account-core"}
 base-time = { path = "../../base/base-time" }

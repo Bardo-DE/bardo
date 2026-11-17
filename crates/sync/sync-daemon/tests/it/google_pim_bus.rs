@@ -34,14 +34,13 @@ use serde_json::{Value, json};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
-use sync_daemon::datasets::pim::{
-    COLOR, ClientGrants, DISPLAYNAME, PimConfig, PimKind, PimSupervisor, Wiring, is_complete,
-    items_in,
-};
 use sync_daemon::keep::sync_app as syncd_app;
-use sync_daemon::paths::Paths;
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access, Hub};
+use sync_driver::hub::{Access, Hub};
+use sync_engine::scheduler::{Network, Settings};
+use sync_pim_feed::{PimKind, is_complete};
+use sync_pim_mirror::{ClientGrants, PimConfig, PimSupervisor, Wiring};
+use sync_vdir::{COLOR, DISPLAYNAME, items_in};
+use sync_xdg::Paths;
 use tokio::sync::watch;
 
 const ACCOUNT: &str = "g-pim";
@@ -276,9 +275,7 @@ async fn rig(kinds: &[PimKind]) -> Rig {
         owners: Access::default(),
         clock: sync_core::Clock::new(base_time::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
-            1_700_000_000_000,
-        )),
+        millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
     };
     let supervisor = PimSupervisor::new(
         wiring,

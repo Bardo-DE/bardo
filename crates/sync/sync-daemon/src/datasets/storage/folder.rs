@@ -7,12 +7,12 @@
 //! (`.tmp-*`, see `cas`) are never listed. Symbolic links are not followed or listed. Empty
 //! folders are not items.
 
-use crate::dataset::{Dataset, DatasetError, DatasetId, fingerprint};
-use crate::datasets::photos::cas::{self, hash_file};
 use base_ids::Bytes;
 use std::io;
 use std::path::{Component, Path, PathBuf};
 use sync_core::{Blob, ConflictRule, ContentHash, ItemPath, LocalId, Scanned};
+use sync_engine::dataset::{Dataset, DatasetError, DatasetId, fingerprint};
+use sync_photos::cas::{self, hash_file};
 
 /// The dataset's name.
 pub const SLUG: &str = "storage_app_folder";
@@ -327,6 +327,6 @@ mod tests {
         let (folder, _dir) = dataset("folder-rule");
         assert_eq!(folder.id().as_str(), SLUG);
         assert_eq!(folder.conflict_rule(), ConflictRule::ShowInApp);
-        assert_eq!(folder.direction(), crate::dataset::Direction::TwoWay);
+        assert_eq!(folder.direction(), sync_engine::dataset::Direction::TwoWay);
     }
 }

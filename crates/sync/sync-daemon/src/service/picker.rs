@@ -16,10 +16,6 @@
 #[cfg(feature = "photos-picker")]
 use super::errors::RefusedError;
 #[cfg(feature = "photos-picker")]
-use super::hub::Access;
-use crate::datasets::photos::google::{GooglePicker, PickerError, PickerState, SessionId};
-use crate::paths::AccountDir;
-#[cfg(feature = "photos-picker")]
 use account_callers::Callers;
 use account_client::GrantsLink;
 #[cfg(feature = "photos-picker")]
@@ -32,6 +28,10 @@ use std::sync::{Arc, Mutex, PoisonError};
 use sync_bus::SYNC_PATH;
 #[cfg(feature = "photos-picker")]
 use sync_bus::{PICKER_PICKED, PICKER_WAITING, PhotosPickerServed, PhotosPickerServer};
+#[cfg(feature = "photos-picker")]
+use sync_driver::hub::Access;
+use sync_photos::google::{GooglePicker, PickerError, PickerState, SessionId};
+use sync_xdg::AccountDir;
 #[cfg(feature = "photos-picker")]
 use zbus::Connection;
 #[cfg(feature = "photos-picker")]

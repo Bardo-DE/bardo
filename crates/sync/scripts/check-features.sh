@@ -19,6 +19,11 @@ BUILDS=(
   # unified in. Then with the Photos Picker, the one feature it has that is off by default.
   "syncd (default) :: -p sync-daemon"
   "syncd (photos-picker) :: -p sync-daemon --features photos-picker"
+  # The engine and the journal, alone and with the test seams they offer.
+  "sync-engine (default) :: -p sync-engine"
+  "sync-engine (testing) :: -p sync-engine --features testing"
+  "sync-journal-sqlite (default) :: -p sync-journal-sqlite"
+  "sync-journal-sqlite (testing) :: -p sync-journal-sqlite --features testing"
   # The bus interfaces, alone and with the Photos Picker.
   "sync-bus (default) :: -p sync-bus"
   "sync-bus (photos-picker) :: -p sync-bus --features photos-picker"

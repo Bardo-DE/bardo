@@ -10,7 +10,8 @@ use common::Known;
 use common::bus::PrivateBus;
 use std::time::Duration;
 use sync_bus::SYNC_BUS;
-use sync_daemon::service::{Hub, serve};
+use sync_daemon::service::serve;
+use sync_driver::hub::Hub;
 
 /// How long the start may show it is waiting for the held runtime, and how long a call has to
 /// leave before the runtime runs (see `HeldRuntime`).

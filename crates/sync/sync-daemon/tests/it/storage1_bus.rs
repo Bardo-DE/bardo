@@ -21,8 +21,9 @@ use sync_bus::{
     StorageProxy,
 };
 use sync_daemon::datasets::drive::{DriveSet, LiveDrive};
-use sync_daemon::service::{Access, Hub, serve, serve_storage};
+use sync_daemon::service::{serve, serve_storage};
 use sync_daemon::words;
+use sync_driver::hub::{Access, Hub};
 use zbus::export::futures_core::Stream;
 use zbus::zvariant::OwnedValue;
 

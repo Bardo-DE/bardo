@@ -560,7 +560,7 @@ fn edit_storage(
     })
 }
 
-/// A drive's folder as people see it: each is a folder of `~/Cloud` ([`crate::paths::Paths`]).
+/// A drive's folder as people see it: each is a folder of `~/Cloud` (`sync_xdg::Paths`).
 fn shown_folder(path: &Path) -> String {
     match path.file_name() {
         Some(name) => format!("~/Cloud/{}", name.to_string_lossy()),

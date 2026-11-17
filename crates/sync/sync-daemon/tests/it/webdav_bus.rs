@@ -34,15 +34,16 @@ use sync_bus::STATUS_KEY_QUOTA;
 use sync_bus::SyncProxy;
 use sync_core::Clock;
 use sync_core::ConflictRule;
-use sync_daemon::clock::Wall;
-use sync_daemon::dataset::MemoryDataset;
-use sync_daemon::driver::Driver;
-use sync_daemon::engine::Engine;
-use sync_daemon::journal::Journal;
 use sync_daemon::keep::sync_app;
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access as Visible, DatasetName, Hub, serve};
-use sync_daemon::webdav::webdav_replica;
+use sync_daemon::service::serve;
+use sync_driver::Driver;
+use sync_driver::clock::Wall;
+use sync_driver::hub::{Access as Visible, DatasetName, Hub};
+use sync_engine::dataset::MemoryDataset;
+use sync_engine::engine::Engine;
+use sync_engine::scheduler::{Network, Settings};
+use sync_journal_sqlite::Journal;
+use sync_relay::webdav::webdav_replica;
 use tokio::sync::{Notify, watch};
 use zbus::zvariant::OwnedValue;
 
@@ -263,7 +264,7 @@ async fn a_folder_syncs_against_nextcloud_through_the_relay_and_status_shows_the
 
     assert!(
         !rig.hub
-            .forget_account(&sync_daemon::paths::AccountDir::parse("a1").expect("account"))
+            .forget_account(&sync_xdg::AccountDir::parse("a1").expect("account"))
             .is_empty(),
         "the account had datasets"
     );

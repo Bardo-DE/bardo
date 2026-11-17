@@ -27,26 +27,9 @@ use super::folder::{FolderDataset, SLUG};
 use super::grants::{
     AppFolderStore, StorageGrants, StorageKind, app_folder_store, google_photos_endpoints,
 };
-use crate::clock::Wall;
-use crate::dataset::{Dataset, DatasetId};
 use crate::datasets::drive::{
-    self, CacheKnob, DriveJournal, DriveReplica, DriveSet, Listed, LiveDrive, SIGN_IN_WORDS,
-    UNREADABLE_WORDS,
+    self, CacheKnob, DriveReplica, DriveSet, Listed, LiveDrive, SIGN_IN_WORDS, UNREADABLE_WORDS,
 };
-use crate::datasets::photos::google::{
-    GooglePicker, PhotosApi, PhotosPicker, SLUG as UPLOAD_SLUG, UploadReplica, library_http,
-    picker_http,
-};
-use crate::datasets::photos::{DeviceId, PhotoLibrary, PhotosRun, PhotosWiring};
-use crate::datasets::pim::Wiring;
-use crate::driver::Driver;
-use crate::engine::Engine;
-use crate::gdrive::gdrive_replica;
-use crate::graph::graph_replica;
-use crate::journal::Journal;
-use crate::paths::AccountDir;
-use crate::scheduler::next_look;
-use crate::service::{Access, DatasetName};
 use account_client::GrantsLink;
 use account_core::{AppName, Candidate, EndpointUrl};
 use base_url::WebUrl;
@@ -58,6 +41,22 @@ use std::sync::Arc;
 use std::time::Duration;
 use sync_bus::DriveState;
 use sync_core::{DriveWrite, Replica};
+use sync_driver::Driver;
+use sync_driver::clock::Wall;
+use sync_driver::hub::{Access, DatasetName};
+use sync_engine::dataset::{Dataset, DatasetId};
+use sync_engine::engine::Engine;
+use sync_engine::scheduler::next_look;
+use sync_journal_sqlite::{DriveJournal, Journal};
+use sync_photos::google::{
+    GooglePicker, PhotosApi, PhotosPicker, SLUG as UPLOAD_SLUG, UploadReplica, library_http,
+    picker_http,
+};
+use sync_photos::{DeviceId, PhotoLibrary, PhotosRun, PhotosWiring};
+use sync_pim_mirror::Wiring;
+use sync_relay::gdrive::gdrive_replica;
+use sync_relay::graph::graph_replica;
+use sync_xdg::AccountDir;
 use tokio::sync::{Notify, watch};
 use tokio::task::JoinHandle;
 
@@ -111,7 +110,7 @@ impl Default for StorageConfig {
             rescan: Duration::from_secs(600),
             files_owners: owned_by(FILES_APP),
             photos_owners: owned_by(PHOTOS_APP),
-            google_album: crate::datasets::photos::google::ALBUM_TITLE.to_owned(),
+            google_album: sync_photos::google::ALBUM_TITLE.to_owned(),
             drive_every: Duration::from_secs(300),
             mount: DriveMount::Off,
             cache_limit: CacheLimit::Automatic,
@@ -560,7 +559,7 @@ where
         });
         let set = self.drives.clone();
         let weak = Arc::downgrade(&live);
-        let told = move |pass: &Result<drive::Pass, crate::journal::JournalError>| {
+        let told = move |pass: &Result<drive::Pass, sync_journal_sqlite::SqliteError>| {
             let Some(live) = weak.upgrade() else { return };
             let (state, words) = match pass {
                 Ok(pass) => match pass.outcome {
@@ -763,7 +762,7 @@ where
             network: wiring.network.clone(),
             owners: self.config.photos_owners.clone(),
         };
-        let run = crate::datasets::photos::start(
+        let run = sync_photos::start(
             &photos,
             account,
             library,
@@ -772,8 +771,8 @@ where
         )
         .map_err(|e| e.to_string())?;
         let names = [
-            crate::datasets::photos::PhotoOriginals::SLUG,
-            crate::datasets::photos::PhotoMetadata::SLUG,
+            sync_photos::PhotoOriginals::SLUG,
+            sync_photos::PhotoMetadata::SLUG,
         ]
         .into_iter()
         .filter_map(DatasetId::parse)
@@ -833,7 +832,7 @@ where
 /// Whether the files on demand are reconciled with the listing after `pass`: only once it
 /// ended caught up. What a pass cut short (offline, refused, failed) lacks is not gone from the
 /// drive, so nothing cached or kept is dropped against it.
-fn reconciles(pass: &Result<drive::Pass, crate::journal::JournalError>) -> bool {
+fn reconciles(pass: &Result<drive::Pass, sync_journal_sqlite::SqliteError>) -> bool {
     matches!(pass, Ok(pass) if pass.outcome == Listed::Done)
 }
 
@@ -936,7 +935,7 @@ mod tests {
 
     #[test]
     fn only_a_pass_that_ended_caught_up_reconciles_the_cache() {
-        let ended = |outcome| -> Result<drive::Pass, crate::journal::JournalError> {
+        let ended = |outcome| -> Result<drive::Pass, sync_journal_sqlite::SqliteError> {
             Ok(drive::Pass {
                 outcome,
                 ..drive::Pass::default()
@@ -951,16 +950,16 @@ mod tests {
         ] {
             assert!(!reconciles(&ended(cut)), "{cut:?}");
         }
-        assert!(!reconciles(&Err(crate::journal::JournalError::Corrupt(
-            "a test".into()
-        ))));
+        assert!(!reconciles(&Err(
+            sync_journal_sqlite::SqliteError::Corrupt("a test".into())
+        )));
     }
 
     #[tokio::test]
     async fn a_drive_held_while_its_account_is_removed_is_not_started() {
         let root_guard = crate::testing::scratch("held-drive");
         let root = root_guard.path().to_owned();
-        let paths = crate::paths::Paths {
+        let paths = sync_xdg::Paths {
             journals: root.join("state/bardo/sync"),
             mirrors: root.join("data/bardo/sync/vdir"),
             callers_system: root.join("none"),

@@ -49,7 +49,11 @@ pub(crate) fn prepare(connection: &mut Connection) -> Result<(), SqliteError> {
 }
 
 /// [`prepare`] for any `schema` and `version`; the drive listing's file has its own.
-pub(crate) fn prepare_with(
+///
+/// # Errors
+///
+/// Returns a [`SqliteError`] when the file cannot be read or its tables cannot be made.
+pub fn prepare_with(
     connection: &mut Connection,
     schema: &str,
     version: u32,

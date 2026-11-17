@@ -8,7 +8,6 @@
 //! its Photos folders), a `google_drive` endpoint is Drive's app data folder, and the
 //! `google_photos_upload` and `google_photos_picker` endpoints are Google Photos.
 
-use crate::datasets::pim::AccountdUnavailable;
 use account_capability::{Access, Albums, Delta, LibraryRead, StorageScope};
 use account_client::{Found, Grants, GrantsLink};
 use account_core::consent::Usage;
@@ -16,6 +15,7 @@ use account_core::{Candidate, DataClass, Family, ServiceEndpoint};
 use account_match::Need;
 use account_match::{PhotosNeed, StorageNeed};
 use std::sync::Arc;
+use sync_pim_mirror::AccountdUnavailable;
 
 /// What a Storage grant of syncd's is for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

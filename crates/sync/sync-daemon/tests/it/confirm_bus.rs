@@ -22,13 +22,14 @@ use sync_core::{
     BaseVersion, Blob, ByteRange, ChangePage, ConflictRule, Cursor, ItemPath, MemoryReplica,
     PutItem, PutRefused, PutTarget, Quota, RemoteId, RemoteVersion, Replica, ReplicaError,
 };
-use sync_daemon::clock::Wall;
-use sync_daemon::dataset::{MemoryDataset, replica_hash};
-use sync_daemon::driver::Driver;
-use sync_daemon::engine::Engine;
-use sync_daemon::journal::Journal;
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access as Visible, DatasetName, Hub, serve};
+use sync_daemon::service::serve;
+use sync_driver::Driver;
+use sync_driver::clock::Wall;
+use sync_driver::hub::{Access as Visible, DatasetName, Hub};
+use sync_engine::dataset::{MemoryDataset, replica_hash};
+use sync_engine::engine::Engine;
+use sync_engine::scheduler::{Network, Settings};
+use sync_journal_sqlite::Journal;
 use tokio::sync::{Notify, watch};
 use zbus::export::futures_core::Stream;
 

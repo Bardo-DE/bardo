@@ -34,16 +34,17 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_bus::SyncProxy;
 use sync_bus::{CONFLICT_KEY_NUMBER, RESOLVE_KEEP_REMOTE, SYNC_ERROR_NO_SUCH_CONFLICT};
-use sync_daemon::datasets::pim::{AccountdUnavailable, Wiring};
 use sync_daemon::datasets::storage::{
     ClientStorageGrants, FILES_APP, PHOTOS_APP, StorageConfig, StorageGrants, StorageKind,
     StorageSupervisor,
 };
 use sync_daemon::keep::sync_app;
-use sync_daemon::paths::{AccountDir, Paths};
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access, DatasetName, Hub, serve};
+use sync_daemon::service::serve;
+use sync_driver::hub::{Access, DatasetName, Hub};
+use sync_engine::scheduler::{Network, Settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
+use sync_pim_mirror::{AccountdUnavailable, Wiring};
+use sync_xdg::{AccountDir, Paths};
 use tokio::sync::watch;
 use zbus::export::futures_core::Stream;
 
@@ -219,9 +220,7 @@ async fn rig(photos: PhotosGrant) -> Rig {
         owners: Access::default(),
         clock: sync_core::Clock::new(base_time::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
-            1_700_000_000_000,
-        )),
+        millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
     };
     let supervisor = StorageSupervisor::new(
         wiring,
@@ -414,7 +413,7 @@ async fn a_revoked_grant_drops_the_dataset_keeps_the_files_and_a_removed_account
 
     // AccountRemoved: the wipe takes the folder and the journal with it.
     rig.shown.store(false, Ordering::SeqCst);
-    sync_daemon::removal::wipe(&rig.paths, &rig.hub, &rig.account)
+    sync_driver::removal::wipe(&rig.paths, &rig.hub, &rig.account)
         .await
         .expect("wipe");
     rig.supervisor.tick().await;

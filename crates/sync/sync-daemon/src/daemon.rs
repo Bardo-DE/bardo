@@ -13,15 +13,11 @@
 //! a `watch::Receiver<Network>`: NetworkManager is not read yet, so the binary hands in a
 //! receiver that says "unmetered and up" for good.
 
-use crate::datasets::photos::Millis;
-use crate::datasets::pim::{ClientGrants, PimConfig, PimSupervisor, Wiring};
 use crate::datasets::storage::DriveMount;
 use crate::datasets::storage::{ClientStorageGrants, StorageConfig, StorageSupervisor};
 use crate::keep::Keep;
-use crate::paths::{BUILD, HONOURS_PROC_ROOT, Paths, rescan};
-use crate::scheduler::{Network, Settings};
+use crate::paths::{BUILD, HONOURS_PROC_ROOT, rescan};
 use crate::service;
-use crate::service::{Access, Hub};
 use crate::settings::{SyncSettings, read_cache_limit, serve_settings};
 use account_callers::choose_proc_root;
 use account_callers::{CallerFileError, ProcCallers};
@@ -33,6 +29,11 @@ use dbus_kit::connect::BusTarget;
 use drive_fuse::Mounter;
 use std::path::PathBuf;
 use std::sync::Arc;
+use sync_driver::hub::{Access, Hub};
+use sync_engine::clock::Millis;
+use sync_engine::scheduler::{Network, Settings};
+use sync_pim_mirror::{ClientGrants, PimConfig, PimSupervisor, Wiring};
+use sync_xdg::Paths;
 use tokio::sync::watch;
 use tokio::task::JoinHandle;
 use zbus::Connection;

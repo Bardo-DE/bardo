@@ -30,16 +30,17 @@ use settings_types::schema::KeyPath;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use sync_bus::SyncProxy;
-use sync_daemon::datasets::pim::Wiring;
 use sync_daemon::datasets::storage::{
     ClientStorageGrants, FILES_APP, PHOTOS_APP, StorageConfig, StorageSupervisor,
 };
 use sync_daemon::keep::{SyncClass, sync_allowed};
-use sync_daemon::paths::{AccountDir, Paths};
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access, Hub, serve};
+use sync_daemon::service::serve;
 use sync_daemon::settings::{SETTINGS_PATH, SyncSettings, serve_settings};
+use sync_driver::hub::{Access, Hub};
+use sync_engine::scheduler::{Network, Settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
+use sync_pim_mirror::Wiring;
+use sync_xdg::{AccountDir, Paths};
 use tokio::sync::watch;
 
 const ACCOUNT: &str = "graph-acct";
@@ -177,9 +178,7 @@ async fn rig() -> Rig {
         owners: Access::default(),
         clock: sync_core::Clock::new(base_time::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
-            1_700_000_000_000,
-        )),
+        millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
     };
     let supervisor = StorageSupervisor::new(
         wiring,

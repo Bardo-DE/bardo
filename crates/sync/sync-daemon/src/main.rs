@@ -20,8 +20,8 @@
 
 use clap::Parser;
 use std::process::ExitCode;
-use sync_daemon::scheduler::Network;
 use sync_daemon::{Config, Daemon};
+use sync_engine::scheduler::Network;
 
 /// ferry's sync service (`org.bardo.Sync1`).
 #[derive(Debug, Parser)]

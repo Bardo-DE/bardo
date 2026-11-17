@@ -16,11 +16,9 @@ use google_rig::{
 use std::sync::atomic::Ordering;
 use sync_bus::SyncProxy;
 use sync_core::ItemState;
-use sync_daemon::datasets::photos::google::{
-    ALBUM_TITLE, PickerError, PickerState, SLUG, SessionEnd, SessionId,
-};
 use sync_daemon::datasets::storage::{FILES_APP, PHOTOS_APP};
-use sync_daemon::journal::Journal;
+use sync_journal_sqlite::Journal;
+use sync_photos::google::{ALBUM_TITLE, PickerError, PickerState, SLUG, SessionEnd, SessionId};
 
 async fn names(sync: &SyncProxy<'_>) -> Vec<String> {
     sync.datasets().await.expect("datasets")
@@ -433,7 +431,7 @@ async fn the_google_photos_follow_the_photos_grant_and_leave_what_is_on_disk() {
     assert!(ledger.exists());
     rig.photos_shown.store(false, Ordering::SeqCst);
     rig.files_shown.store(false, Ordering::SeqCst);
-    sync_daemon::removal::wipe(&rig.paths, &rig.hub, &rig.account)
+    sync_driver::removal::wipe(&rig.paths, &rig.hub, &rig.account)
         .await
         .expect("wipe");
     rig.supervisor.tick().await;

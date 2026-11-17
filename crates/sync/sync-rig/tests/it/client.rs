@@ -15,7 +15,8 @@ use std::collections::BTreeSet;
 use std::process::Stdio;
 use std::sync::{Arc, Mutex};
 use sync_core::{BaseVersion, Conflict, RemoteId, RemoteSide, RemoteVersion, StoredConflict};
-use sync_daemon::service::{Access, DatasetName, Event, Hub, Nudge, serve};
+use sync_daemon::service::serve;
+use sync_driver::hub::{Access, DatasetName, Event, Hub, Nudge};
 use tokio::io::{AsyncBufReadExt, BufReader};
 use tokio::process::Command;
 

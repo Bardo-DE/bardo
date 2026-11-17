@@ -4,11 +4,11 @@
 //! sides must converge to the same state.
 
 use super::rig::*;
-use sync_engine::engine::SyncError;
-use sync_engine::journal::JournalError;
 use account_capability::StorageCap;
 use std::collections::BTreeMap;
 use sync_core::ItemState;
+use sync_engine::engine::SyncError;
+use sync_engine::journal::JournalError;
 
 type Files = BTreeMap<String, Vec<u8>>;
 

@@ -22,7 +22,7 @@ use sync_bus::{
     CONFLICT_KEY_NUMBER, RESOLVE_KEEP_LOCAL, RESOLVE_KEEP_REMOTE, SYNC_ERROR_NO_SUCH_CONFLICT,
 };
 use sync_daemon::datasets::storage::FILES_APP;
-use sync_daemon::service::DatasetName;
+use sync_driver::hub::DatasetName;
 use zbus::export::futures_core::Stream;
 
 async fn names(sync: &SyncProxy<'_>) -> Vec<String> {
@@ -333,7 +333,7 @@ async fn the_dataset_follows_the_grant_and_an_account_removal_wipes_the_mirror()
 
     // AccountRemoved: the wipe takes the folder and the journal with it.
     rig.files_shown.store(false, Ordering::SeqCst);
-    sync_daemon::removal::wipe(&rig.paths, &rig.hub, &rig.account)
+    sync_driver::removal::wipe(&rig.paths, &rig.hub, &rig.account)
         .await
         .expect("wipe");
     rig.supervisor.tick().await;

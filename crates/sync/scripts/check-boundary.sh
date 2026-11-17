@@ -7,7 +7,7 @@
 # check for OUTPUT instead: any line naming the dependency is a leak.
 #
 # ferry reaches accounts through porter's crates, taken by git rev. The pure crates below (the
-# sync contract, the replicas, the drive, the mount helper) reach no bus, no service and no secret
+# sync contract, the engine, the replicas, the drive, the mount helper) reach no bus, no service and no secret
 # store of porter's; only syncd, the bus crate and the test tooling name those, and syncd names no
 # account crate at all (see ACCOUNTS ONLY THROUGH PORTER-CLIENT below).
 set -uo pipefail
@@ -26,6 +26,8 @@ RULES=(
   "quickxorhash: $EFFECTS"
   "windows-zones: $EFFECTS"
   "sync-core: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
+  "sync-engine: $EFFECTS $BARDO_ACCOUNT_HIDDEN rusqlite"
+  "sync-journal-sqlite: $NO_BUS $BARDO_ACCOUNT_HIDDEN"
   "replica-webdav: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
   "replica-graph: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
   "replica-gdrive: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
@@ -134,7 +136,16 @@ EDGES=(
   "sync-fake-graph: account-core account-fake account-fake-servers account-ids account-provider quickxorhash"
   "sync-rig: sync-bus sync-fake-graph account-dbus account-fake-servers account-rig"
   "sync-fakes: sync-bus account-dbus"
-  "sync-daemon: settings-dbus settings-types account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus base-fs http-core http-relay sync-bus drive-fs drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
+  "sync-engine: account-capability base-ids base-time sync-core"
+  "sync-journal-sqlite: base-ids base-time drive-fs sync-core sync-engine"
+  "sync-xdg: account-callers base-xdg"
+  "sync-driver: account-callers account-core base-time sync-core sync-engine sync-xdg"
+  "sync-relay: account-client account-core base-ids base-url http-relay replica-gdrive replica-graph replica-webdav sync-core"
+  "sync-pim-feed: account-capability account-client account-core account-dav-proto base-ids base-time base-url http-core http-relay replica-webdav sync-core sync-engine sync-relay windows-zones"
+  "sync-vdir: base-fs sync-pim-feed"
+  "sync-pim-mirror: account-capability account-client account-core account-match base-ids sync-core sync-driver sync-engine sync-journal-sqlite sync-pim-feed sync-vdir sync-xdg"
+  "sync-photos: account-capability account-client account-core base-fs base-ids base-time base-url http-core http-relay sync-core sync-driver sync-engine sync-journal-sqlite sync-relay sync-xdg"
+  "sync-daemon: account-callers account-capability account-client account-client-dbus account-core account-dbus account-match account-wire base-fs base-ids base-time base-url base-xdg dbus-kit drive-fs drive-fuse http-core replica-gdrive replica-graph settings-dbus settings-types sync-bus sync-core sync-driver sync-engine sync-journal-sqlite sync-photos sync-pim-mirror sync-relay sync-xdg"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"
@@ -155,12 +166,12 @@ for member in $(sed -n 's#^    "crates/sync/\(.*\)",$#\1#p' ../../Cargo.toml); d
   printf '%s\n' "${EDGES[@]}" | grep -q "^$member:" || { echo "ERROR: $member has no row in EDGES"; fail=1; }
 done
 
-# syncd's library reads the environment in no function but `from_env` (the daemon's
-# `Config::from_env` and the directory helpers it calls), so a program that runs the daemon
-# inside itself gives it a `Config` and nothing else. The binary (main.rs) and the test-only files
+# syncd's libraries (the daemon and every crate split out of it) read the environment in no
+# function but `from_env` (the daemon's `Config::from_env` and the directory helpers it calls), so
+# a program that runs the daemon inside itself gives it a `Config` and nothing else. The binary (main.rs) and the test-only files
 # are outside the rule; `std::env::temp_dir` is a scratch name in tests, not a read of a variable.
 # The awk remembers the last `fn` it saw, which is the function the next line is in.
-env_reads=$(find sync-daemon/src -name '*.rs' \
+env_reads=$(find sync-daemon/src sync-engine/src sync-journal-sqlite/src sync-xdg/src sync-driver/src sync-relay/src sync-pim-feed/src sync-vdir/src sync-pim-mirror/src sync-photos/src -name '*.rs' \
   ! -name main.rs ! -name tests.rs ! -name testing.rs ! -name testkit.rs ! -path '*/tests/*' -print0 \
   | xargs -0 awk '
     FNR == 1 { current = "" }

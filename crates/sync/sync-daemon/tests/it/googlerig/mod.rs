@@ -33,14 +33,15 @@ use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
-use sync_daemon::datasets::pim::{AccountdUnavailable, Wiring};
 use sync_daemon::datasets::storage::{
     ClientStorageGrants, StorageConfig, StorageGrants, StorageKind, StorageSupervisor,
 };
 use sync_daemon::keep::sync_app;
-use sync_daemon::paths::{AccountDir, Paths};
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access, Hub, serve};
+use sync_daemon::service::serve;
+use sync_driver::hub::{Access, Hub};
+use sync_engine::scheduler::{Network, Settings};
+use sync_pim_mirror::{AccountdUnavailable, Wiring};
+use sync_xdg::{AccountDir, Paths};
 use tokio::sync::watch;
 
 pub const ACCOUNT: &str = "google-acct";
@@ -195,9 +196,7 @@ impl Rig {
             owners: Access::default(),
             clock: sync_core::Clock::new(base_time::SystemClock),
             nonce: "t1".to_owned(),
-            millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
-                1_700_000_000_000,
-            )),
+            millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
         };
         StorageSupervisor::new(
             wiring,
@@ -376,9 +375,7 @@ fn placeholder(
             owners: Access::default(),
             clock: sync_core::Clock::new(base_time::SystemClock),
             nonce: "t1".to_owned(),
-            millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
-                1_700_000_000_000,
-            )),
+            millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
         },
         Gate {
             real: ClientStorageGrants::new(Arc::clone(accounts)),
@@ -402,7 +399,7 @@ pub fn local(rig: &Rig, rel: &str) -> std::path::PathBuf {
 /// supervisor (the pickers it starts at each tick).
 #[cfg(feature = "photos-picker")]
 pub async fn serve_picker(rig: &Rig) {
-    let owners = sync_daemon::service::Access {
+    let owners = sync_driver::hub::Access {
         owners: [
             account_core::AppName::parse(sync_daemon::datasets::storage::PHOTOS_APP).expect("app"),
         ]

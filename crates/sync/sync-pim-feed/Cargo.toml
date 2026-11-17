@@ -23,7 +23,7 @@ sync-core = {path = "../sync-core"}
 sync-engine = {path = "../sync-engine"}
 sync-relay = {path = "../sync-relay"}
 windows-zones = {path = "../windows-zones"}
-chrono = { workspace = true, features = ["alloc"] }
+jiff = { workspace = true }
 hex = { workspace = true }
 nanohtml2text = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

@@ -19,13 +19,14 @@ use sync_core::{
     BaseVersion, Conflict, ConflictRule, LocalId, MemoryReplica, Quota, RemoteId, RemoteSide,
     RemoteVersion, StoredConflict,
 };
-use sync_daemon::clock::Wall;
-use sync_daemon::dataset::MemoryDataset;
-use sync_daemon::driver::Driver;
-use sync_daemon::engine::Engine;
-use sync_daemon::journal::Journal;
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access as Visible, DatasetName, Event, Hub, StatusSnapshot, serve};
+use sync_daemon::service::serve;
+use sync_driver::Driver;
+use sync_driver::clock::Wall;
+use sync_driver::hub::{Access as Visible, DatasetName, Event, Hub, StatusSnapshot};
+use sync_engine::dataset::MemoryDataset;
+use sync_engine::engine::Engine;
+use sync_engine::scheduler::{Network, Settings};
+use sync_journal_sqlite::Journal;
 use tokio::sync::{Notify, watch};
 use zbus::export::futures_core::Stream;
 use zbus::zvariant::OwnedValue;
@@ -214,7 +215,7 @@ async fn a_caller_sees_what_it_owns_settings_sees_all_and_status_carries_quota_a
             .expect_err("paused");
         assert_eq!(error_name(&err), SYNC_ERROR_PAUSED);
     }
-    assert_eq!(photos.pausing(), sync_daemon::scheduler::Pausing::Paused);
+    assert_eq!(photos.pausing(), sync_engine::scheduler::Pausing::Paused);
     let status = proxy(&settings)
         .await
         .status("a1/photos_originals")
@@ -226,7 +227,7 @@ async fn a_caller_sees_what_it_owns_settings_sees_all_and_status_carries_quota_a
         .resume("a1/photos_originals")
         .await
         .expect("resume");
-    assert_eq!(photos.pausing(), sync_daemon::scheduler::Pausing::Running);
+    assert_eq!(photos.pausing(), sync_engine::scheduler::Pausing::Running);
 }
 
 async fn next<S: Stream + Unpin>(stream: &mut S) -> S::Item {
@@ -401,7 +402,7 @@ async fn a_running_engine_syncs_to_its_replica_and_the_bus_shows_it_until_it_is_
     // Removing the account's datasets from the hub ends the driver.
     assert!(
         !rig.hub
-            .forget_account(&sync_daemon::paths::AccountDir::parse("a1").expect("account"))
+            .forget_account(&sync_xdg::AccountDir::parse("a1").expect("account"))
             .is_empty(),
         "the account had datasets"
     );

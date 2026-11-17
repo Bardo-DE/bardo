@@ -22,8 +22,8 @@ use base_time::FixedClock;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use sync_daemon::keep::{Keep, sync_app};
-use sync_daemon::paths::Paths;
-use sync_daemon::service::Hub;
+use sync_driver::hub::Hub;
+use sync_xdg::Paths;
 
 /// The person at accountd's sheet host: every consent ask is allowed, for the first account it
 /// offers, for good, and the asks are counted; the conversations (a sign-in) are `inner`'s.

@@ -1,13 +1,13 @@
 //! The vardicts `Sync1` sends: `Status` (anchor age, pending, conflicts, paused, syncing, quota) and the
 //! two signals' details.
 
-use super::hub::{DatasetName, StatusSnapshot};
-use crate::scheduler::Pausing;
 use account_dbus::{Details, to_vardict, zvariant};
 use account_wire::names::ACCOUNTS_PATH;
 use serde_json::json;
 use sync_bus::{CONFLICT_KEY_NUMBER, STATUS_KEY_QUOTA};
 use sync_core::{BaseVersion, MassDelete, Quota, RemoteSide, StoredConflict};
+use sync_driver::hub::{DatasetName, StatusSnapshot};
+use sync_engine::scheduler::Pausing;
 use zvariant::{Dict, OwnedValue, Signature, Value};
 
 /// `Status` keys.

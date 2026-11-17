@@ -1,11 +1,6 @@
 //! The shared test rig: a world of one replica, one dataset, one clock and a journal file that
 //! engines can be opened on again, as a restarted process would.
 
-use sync_engine::clock::ManualClock;
-use sync_engine::dataset::MemoryDataset;
-use sync_engine::engine::{Engine, Report};
-use sync_engine::journal::{JournalError, JournalStore, Op};
-use sync_journal_sqlite::Journal;
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use base_ids::Bytes;
 use base_time::UnixSeconds;
@@ -17,6 +12,11 @@ use sync_core::{
     MemoryReplica, PutItem, PutRefused, PutTarget, Quota, RemoteId, RemoteVersion, Replica,
     ReplicaError,
 };
+use sync_engine::clock::ManualClock;
+use sync_engine::dataset::MemoryDataset;
+use sync_engine::engine::{Engine, Report};
+use sync_engine::journal::{JournalError, JournalStore, Op};
+use sync_journal_sqlite::Journal;
 
 pub fn caps(hashes: HashKind, quota: bool, delta: Delta) -> StorageCap {
     StorageCap {
@@ -325,7 +325,10 @@ impl JournalStore for CutHandle {
         JournalStore::items(&self.0.inner)
     }
 
-    fn item_by_remote(&self, id: &RemoteId) -> Result<Option<sync_core::JournalItem>, JournalError> {
+    fn item_by_remote(
+        &self,
+        id: &RemoteId,
+    ) -> Result<Option<sync_core::JournalItem>, JournalError> {
         JournalStore::item_by_remote(&self.0.inner, id)
     }
 

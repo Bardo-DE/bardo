@@ -119,7 +119,7 @@ fn showing_drives_in_files_left_the_sandbox_as_it_was() {
 #[test]
 fn every_path_syncd_writes_is_writable_under_the_unit() {
     use std::path::{Path, PathBuf};
-    use sync_daemon::paths::{AccountDir, Paths};
+    use sync_xdg::{AccountDir, Paths};
 
     let unit = dist("bardo-syncd.service");
     // The unit's specifiers as a person with HOME=/h has them.
@@ -222,10 +222,7 @@ fn the_shipped_rescan_is_ten_minutes_and_only_a_test_build_can_change_it() {
         sync_daemon::datasets::storage::StorageConfig::default().rescan,
         ten_minutes
     );
-    assert_eq!(
-        sync_daemon::datasets::pim::PimConfig::default().rescan,
-        ten_minutes
-    );
+    assert_eq!(sync_pim_mirror::PimConfig::default().rescan, ten_minutes);
     let daemon = include_str!("../../src/daemon.rs");
     // The variable goes through `paths::rescan`, which ignores it outside a test build.
     assert!(

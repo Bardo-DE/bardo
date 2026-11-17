@@ -12,13 +12,14 @@
 //! nothing twice. A drive not shown (Files turned off, or it did not start) has its cache
 //! opened for this; a cache that cannot be read stops the removal.
 
-use crate::paths::{AccountDir, Paths};
 use drive_fs::{Changed, Drive, DriveConfig, NodeId};
 use drive_fuse::Mounted;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, PoisonError};
 use sync_bus::DriveState;
+use sync_journal_sqlite::DriveJournal;
+use sync_xdg::{AccountDir, Paths};
 use tokio::sync::{broadcast, watch};
 use tokio::task::JoinHandle;
 
@@ -391,7 +392,7 @@ impl DriveSet {
         let drive = if let Some(drive) = drive {
             drive
         } else {
-            let listing = super::DriveJournal::open(&journal).map_err(|e| e.to_string())?;
+            let listing = DriveJournal::open(&journal).map_err(|e| e.to_string())?;
             Drive::open(DriveConfig::new(cache), Arc::new(listing), Arc::new(Away))
                 .await
                 .map_err(|e| e.to_string())?
@@ -771,8 +772,7 @@ mod tests {
         let account = AccountDir::parse("one").expect("account");
         super::super::note_folder(&paths, &account, "OneDrive").expect("noted");
         let journal = Arc::new(
-            super::super::DriveJournal::open(&super::super::journal_path(&paths, &account))
-                .expect("journal"),
+            DriveJournal::open(&super::super::journal_path(&paths, &account)).expect("journal"),
         );
         let source = Arc::new(MemorySource::default());
         let sink = Arc::new(drive_fs::testing::MemorySink::new(

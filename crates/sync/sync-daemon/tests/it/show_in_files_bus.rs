@@ -38,20 +38,22 @@ use std::sync::Arc;
 use std::time::Duration;
 use sync_core::ItemPath;
 use sync_daemon::datasets::drive::LiveDrive;
-use sync_daemon::datasets::drive::{DriveJournal, journal_path};
-use sync_daemon::datasets::pim::Wiring;
+use sync_daemon::datasets::drive::journal_path;
 use sync_daemon::datasets::storage::{
     ClientStorageGrants, DriveMount, StorageConfig, StorageSupervisor,
 };
 use sync_daemon::keep::{SyncClass, claims_whole_drive, drive_allowed, sync_allowed};
-use sync_daemon::paths::{AccountDir, Paths};
-use sync_daemon::scheduler::{Network, Settings};
-use sync_daemon::service::{Access, Hub, serve};
+use sync_daemon::service::serve;
 use sync_daemon::settings::{
     CACHE_LIMIT, FILES_NOT_ON, SETTINGS_PATH, SyncSettings, serve_settings,
 };
 use sync_daemon::words;
+use sync_driver::hub::{Access, Hub};
+use sync_engine::scheduler::{Network, Settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
+use sync_journal_sqlite::DriveJournal;
+use sync_pim_mirror::Wiring;
+use sync_xdg::{AccountDir, Paths};
 use tokio::sync::watch;
 
 const ACCOUNT: &str = "graph-acct";
@@ -204,9 +206,7 @@ async fn build(
         owners: Access::default(),
         clock: sync_core::Clock::new(base_time::SystemClock),
         nonce: "t1".to_owned(),
-        millis: Arc::new(sync_daemon::datasets::photos::ManualMillis::at(
-            1_700_000_000_000,
-        )),
+        millis: Arc::new(sync_engine::clock::ManualMillis::at(1_700_000_000_000)),
     };
     let supervisor = StorageSupervisor::new(
         wiring,

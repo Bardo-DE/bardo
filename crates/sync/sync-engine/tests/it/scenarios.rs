@@ -1,7 +1,4 @@
 use super::rig::*;
-use sync_engine::dataset::{Dataset, DatasetError, DatasetId, MemoryDataset};
-use sync_engine::engine::{Engine, Outcome};
-use sync_journal_sqlite::Journal;
 use account_capability::{Delta, HashKind};
 use base_ids::Bytes;
 use base_url::WebUrl;
@@ -12,6 +9,9 @@ use sync_core::{
     LocalId, PutRefused, RemoteId, RemoteItem, RemoteSide, RemoteVersion, ReplicaError, Resolution,
     RetryAfter, Scanned,
 };
+use sync_engine::dataset::{Dataset, DatasetError, DatasetId, MemoryDataset};
+use sync_engine::engine::{Engine, Outcome};
+use sync_journal_sqlite::Journal;
 
 fn files(pairs: &[(&str, &str)]) -> BTreeMap<String, Vec<u8>> {
     pairs

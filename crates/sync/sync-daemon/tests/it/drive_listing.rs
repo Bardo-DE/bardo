@@ -17,8 +17,9 @@ use sync_core::{
     Blob, ByteRange, ChangePage, Cursor, Folders, ItemKind, ItemPath, PutItem, PutRefused, Quota,
     RemoteId, RemoteVersion, Replica, ReplicaError, RetryAfter,
 };
-use sync_daemon::datasets::drive::{DriveJournal, DriveReplica, Listed, list_once};
+use sync_daemon::datasets::drive::{DriveReplica, Listed, list_once};
 use sync_fake_graph::FakeGraph;
+use sync_journal_sqlite::DriveJournal;
 
 const TOKEN: &str = "ey.fake-access-token";
 const NOW: UnixSeconds = UnixSeconds(1_000);
