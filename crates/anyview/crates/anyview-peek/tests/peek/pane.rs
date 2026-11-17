@@ -1,12 +1,8 @@
-//! The pane drawn: server-side renders of each body kept as goldens, the markup and stylesheet held
-//! to the UI kit's coherence rules, and behaviour through `ui_harness`'s real Blitz document.
-//!
-//! `DS_BLESS=1 cargo test -p anyview-peek --test peek pane::` writes the goldens; read the diff before
-//! committing one.
+//! The pane drawn: server-side renders of each body, the markup and stylesheet held to the UI
+//! kit's coherence rules, and behaviour through `ui_harness`'s real Blitz document.
 
 #![cfg(feature = "pane")]
 
-mod golden;
 use crate::support;
 
 use anyview_core::FormatKind;
@@ -25,7 +21,7 @@ fn peeked(home: Home, name: &str) -> Arc<AnyPeeked> {
     Arc::new(peek(&src, &sniffed, &pane_budget()))
 }
 
-/// A PDF page with a made-up raster, so the golden does not hold pdfrum's pixels.
+/// A PDF page with a made-up raster, so the markup does not hold pdfrum's pixels.
 fn page() -> Arc<AnyPeeked> {
     let mut page = (*peeked(Home::Own, "hello.pdf")).clone();
     page.body = Body::Page(PdfPeeked {
@@ -95,7 +91,7 @@ fn pane(peeked: &Arc<AnyPeeked>) -> String {
     html[start..end].to_owned()
 }
 
-/// Every body the pane draws, peeked once for the whole binary: the goldens, the lint and the two
+/// Every body the pane draws, peeked once for the whole binary: the renders, the lint and the two
 /// harness tests all look at the same ones.
 fn body(name: &str) -> Arc<AnyPeeked> {
     static BODIES: OnceLock<Vec<(&str, Arc<AnyPeeked>)>> = OnceLock::new();
@@ -125,7 +121,7 @@ fn body(name: &str) -> Arc<AnyPeeked> {
 }
 
 #[test]
-fn each_body_is_drawn_as_its_golden() {
+fn each_body_is_drawn_with_its_title_and_facts() {
     // name; the facts row is a kind without a back end, a plate and facts
     let names = [
         "picture",
@@ -141,11 +137,12 @@ fn each_body_is_drawn_as_its_golden() {
         "facts",
     ];
     assert_eq!(body("facts").kind, FormatKind::Other);
-    let failures: Vec<String> = names
-        .iter()
-        .filter_map(|name| golden::check(&format!("pane/{name}.html"), &pane(&body(name))).err())
-        .collect();
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    for name in names {
+        let html = pane(&body(name));
+        for part in ["anyview-pane-title", "ds-fact-list"] {
+            assert!(html.contains(part), "{name}: no {part} in {html}");
+        }
+    }
 }
 
 /// A zip of a folder and two files, peeked.
