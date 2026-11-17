@@ -21,7 +21,7 @@ use std::sync::Arc;
 use sync_bus::SYNC_PATH;
 use sync_bus::{PICKER_PICKED, PICKER_WAITING, PhotosPickerServed, PhotosPickerServer};
 use sync_driver::hub::Access;
-use sync_photos::desk::{PickerDesk, Started};
+use sync_photos::desk::PickerDesk;
 use sync_photos::google::{PickerError, PickerState, SessionId};
 use sync_xdg::AccountDir;
 use zbus::Connection;
