@@ -38,31 +38,34 @@ listed except where noted.
 | 0 | `shell-launcher` | Launcher core: `Provider`, `Query` (generation, cancel), `Item`, `Activation`, matching (nucleo), ranking, sections, frecency, the shared actions a row's keys are (`keys.rs`), preview facts. Pure; a future repo | `memory-core`, `action-core`, `action-vocab`, `ui-core` (`MemoryVerb`), `prov`; nucleo-matcher, serde |
 | 0 | `shell-testkit` | Dev only: `PrivateBus`, `TempDir`, signal helpers, stand-in programs in `examples/` | none; std only (its dev dependencies, the crates it tests, are outside the table) |
 | 0 | `shell-kit` | The shell-only parts over `ds`, moved here from quire's `ui-shell` (2026-10-07): bar, dock, control center, lock, switcher, OSD, idle dim, notifications, thumbnails, battery, clock, now playing, user picture, emoji, month grid, date picker, the widget contract and its two widgets (calendar, up next), with the shell's tokens (`tokens/`), sheets (`sheets.rs`), `KIT`, `kits()` and `stylesheet()` (the whole shell stylesheet: quire's plus these) and their SSR goldens and behaviour tests | none of ours; quire's `ds`, `ui-core`, `ui-shell` (its `KIT` and sheets). Dev: `ui-blitz`, `ui-harness`, `ui-lint`, `ui-settings` |
-| 1 | `shell-model` | Pure vocabulary: ids, units, `Attempt`, every service's `State`/`Command`/`Event`/`Effect` and its `step`, vocabulary enums shared by a settings key and a service, and the shell's actions (`actions/`: `ActionDef`, `Effect`, `Ask`) | `shell-launcher`, `chordkit` (`StandardAction`), `key-remap-proto`, `ui-core` (`Stamp`, `Machine`), `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `action-wire`, `memory-core`, `companion-wire`, `computer-use-bus`, `prov`, `account-core`, `account-capability`, `account-ids`, `account-sheet` (the accounts sheet's `SheetView`/`SheetInput`, serde data), `inference-core` (`ModelRef`, `ServedBy`: serde data a helper's model is named by), `desktop-protocols` (`vocab` only: the desktop views' enums), `ui-helpers` (no features: `match_app` and `AppKeys`, the one matcher of a window to its desktop entry); serde, jiff, thiserror |
+| 1 | `shell-model` | Pure vocabulary: ids, units, `Attempt`, `Dirs` (the person's directories, read from the process once), `service` (the `Service` trait: name, state, command; `Handle`, `Control`, `ServiceIo`, `Gone`: what a surface holds of a running service; tokio's `sync` channels only) and every service's marker (`ClockService`, ...) beside its `State`/`Command`/`Event`/`Effect` and its `step`, vocabulary enums shared by a settings key and a service, and the shell's actions (`actions/`: `ActionDef`, `Effect`, `Ask`) | `shell-launcher`, `chordkit` (`StandardAction`), `key-remap-proto`, `ui-core` (`Stamp`, `Machine`), `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `action-wire`, `memory-core`, `companion-wire`, `computer-use-bus`, `prov`, `account-core`, `account-capability`, `account-ids`, `account-sheet` (the accounts sheet's `SheetView`/`SheetInput`, serde data), `inference-core` (`ModelRef`, `ServedBy`: serde data a helper's model is named by), `desktop-protocols` (`vocab` only: the desktop views' enums), `ui-helpers` (no features: `match_app` and `AppKeys`, the one matcher of a window to its desktop entry); serde, jiff, thiserror |
 | 2 | `shell-settings` | `settings.toml` as data: one struct per domain, `ShellFile`, schema, typed values parsed at load. No I/O, no runtime, no dioxus | `shell-model`, `shell-launcher`, `key-remap-proto`, `ui-core`, `ui-settings` (no features) |
 | 2 | `shell-ipc` | The wire: `Request`/`Response`, one JSON line, 64 KiB cap. Serialises `shell-model` types | `shell-model`, `shell-launcher`; serde, serde_json, thiserror; clap (optional, `cli`: the request types are the command line's grammar) |
-| 3 | `shell-services` | Effects: `Env` seams, `Service` trait, runner, `Handle`, `Control`, one dir per service `{mod.rs, backend/}`. UI-free | `shell-model`, `shell-launcher`, `key-remap-proto`, `ui-core` (`Stamp`), `ui-settings` (`SettingsWriter`, for Night Shift's edits to casement's file), `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `action-wire`, `action-dbus`, `action-client`, `action-provider`, `companion-wire`, `computer-use-bus`, `computer-use-dbus`, `memory-core`, `memory-dbus`, `prov`, `account-core`, `account-ids`, `account-sheet`, `inference-tailnet` (steward's), `account-tailscale`, `account-wire`, `sync-bus` (syncd's bus name and proxy, for the sync-hold service), `inference-core` (steward's; `Slot` and `ModelRef`, to keep a helper's pool), `account-dbus` (who owns a bus name: caller identity; accountd's `Account` proxy, for the one `State` watch the client has no stream of), `account-client` and `account-client-dbus` (the accounts service's view of accountd: `Accounts<Bus>::{watch, needing_reauth, view, reauthenticate_shown}`), `inference-client` (steward's, `dbus` feature only: the typed guest calls and change stream for the guest-asks service; the places and engines a helper's model is picked from), `speech-dbus`, `anyview-core`, `anyview-platform` (the viewer's D-Bus request, for the launch service), `desktop-protocols` (`vocab`), `desktop-client` (`client` feature: the wire behind `desktop_wl` and the native displays route); tokio, zbus, rustix, libpulse, notify, nonstick, ddc, image, toml |
-| 4 | `shell-search` | The launcher's runner (`ResultsService`), `providers/` (the files provider reads the viewer's history and takes the shared file actions), clip images | `shell-services`, `shell-model`, `shell-launcher`, `anyview-core`, `anyview-store`, `ui-core`, `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `memory-core`, `companion-wire`, `prov`, `ui-settings` (no features: the schema files the settings provider indexes); fend, emojis |
-| 5 | `shell-ui-kit` | What every surface shares: `Services` registry, `SettingsFeed`, `SurfaceRoot`, `Surface` and its `mount`, `links/`, hooks, `look`, `panel`, `shell_style`, `sheet_stage` (the enter / shown / leaving-with-exit stage of a sheet), `MenuPopup<M>`, `app_icons`, `status`, `notification_card`, `widgets/`, `harness` (feature: fake services, `SurfaceHarness`) | `shell-kit`, `shell-search`, `shell-services`, `shell-settings`, `shell-model`, `shell-launcher`, `companion-wire`, `action-core`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `account-core`, `account-capability`, `prov`, `ui-core`, `ds`, `ui-behaviour` (`Dir`, in the switcher link), `ui-settings` (dioxus), `ui-host-hooks`, `ui-harness` (optional: feature `harness`), `layer-shell-types`, `layer-shell-hooks`; dioxus, resvg, image; dev: `ui-lint` |
-| 6 | `shell-bar` | Bar, its menus, tray, control center and its modules | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `shell-services`*; `shell-kit`, `ds`, `ui-settings`, `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`; dev: `ui-lint`, `layer-shell-host` (the demo), `shell-host-config` |
-| 6 | `shell-dock` | Dock, magnify, context menus (an app tile's, the Trash tile's, the dock's own) | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `shell-services`*; `shell-kit`, `ds`, `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`; dev: `ui-lint`, `layer-shell-host` (the demo), `shell-host-config` |
-| 6 | `shell-launcher-ui` | Launcher panel and catcher, rows, preview pane, actions | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `shell-search`*, `shell-services`*, `anyview-core`, `anyview-image`, `anyview-peek` (what a file's pane looks like), `anyview-platform` (the thumbnail cache behind a video's frame, `preview::frames`), `memory-core`, `companion-wire`, `action-core`, `companion-model`, `permission-core`, `action-vocab`, `prov` (a companion row's pane and keys); `shell-kit`, `ds`, `ui-behaviour` (`Dir`, in the companion filter), `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`; dev: `ui-lint`, `ui-shell`, `ui-blitz` (the PDF raster test), `layer-shell-host` (the demo), `shell-host-config` |
-| 6 | `shell-notify-ui` | Banners, notification center, screenshot thumbnail | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-services`*; `shell-kit`, `ds`, `ui-settings`, `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks` |
-| 6 | `shell-overlays` | OSD, power menu, polkit prompt, switcher, idle dim, hot corners, wallpaper, lock | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `shell-services`*; `ds`, `ui-behaviour` (the switcher and hot-corner machines), `ui-shell` (the accounts sheet), `shell-kit`, `ui-settings`, `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`, `account-core`, `account-capability`, `account-ids`, `account-sheet` (the accounts sheet's props) |
-| 6 | `shell-host-config` | What a shell process hands layer-shell-host: `host_config(&Dirs)` (quire's faces, the pre-paint pass, the file roots; it also registers the document host the surfaces' roots get), `faces`, `prepaint`, `file_roots`. The one place the surfaces' libraries meet the host and the renderer, so they name neither | `shell-services`; `ds`, `ui-blitz`, `layer-shell-host` |
+| 1 | `shell-desktop-fs` | Plain file helpers over the freedesktop folders that services and surfaces both use: the home Trash, autostart entries, the icon theme lookup. Files only, no bus, no runtime | `shell-model`, `shell-launcher`; freedesktop-icons, serde |
+| 3 | `shell-services` | Effects: `Env` seams, the `Run` trait (what a marker of `shell-model` needs to be run: its deps and its task), runner, one dir per service `{mod.rs, backend/}`. UI-free | `shell-model`, `shell-desktop-fs`, `shell-launcher`, `key-remap-proto`, `ui-core` (`Stamp`), `ui-settings` (`SettingsWriter`, for Night Shift's edits to casement's file), `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `action-wire`, `action-dbus`, `action-client`, `action-provider`, `companion-wire`, `computer-use-bus`, `computer-use-dbus`, `memory-core`, `memory-dbus`, `prov`, `account-core`, `account-ids`, `account-sheet`, `inference-tailnet` (steward's), `account-tailscale`, `account-wire`, `sync-bus` (syncd's bus name and proxy, for the sync-hold service), `inference-core` (steward's; `Slot` and `ModelRef`, to keep a helper's pool), `account-dbus` (who owns a bus name: caller identity; accountd's `Account` proxy, for the one `State` watch the client has no stream of), `account-client` and `account-client-dbus` (the accounts service's view of accountd: `Accounts<Bus>::{watch, needing_reauth, view, reauthenticate_shown}`), `inference-client` (steward's, `dbus` feature only: the typed guest calls and change stream for the guest-asks service; the places and engines a helper's model is picked from), `speech-dbus`, `anyview-core`, `anyview-platform` (the viewer's D-Bus request, for the launch service), `desktop-protocols` (`vocab`), `desktop-client` (`client` feature: the wire behind `desktop_wl` and the native displays route); tokio, zbus, rustix, libpulse, notify, nonstick, ddc, image, toml |
+| 4 | `shell-search` | The launcher's runner (`impl Run for ResultsService`), `providers/` (the files provider reads the viewer's history and takes the shared file actions) | `shell-services`, `shell-model`, `shell-launcher`, `anyview-core`, `anyview-store`, `ui-core`, `action-core`, `companion-model`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `memory-core`, `companion-wire`, `prov`, `ui-settings` (no features: the schema files the settings provider indexes); fend, emojis |
+| 5 | `shell-ui-kit` | What every surface shares: `Services` registry (the struct, `Member`, the fakes; `shell-app` starts them), `SettingsFeed`, `SurfaceRoot`, `Surface` and its `mount`, `links/`, hooks, `look`, `panel`, `shell_style`, `sheet_stage` (the enter / shown / leaving-with-exit stage of a sheet), `MenuPopup<M>`, `app_icons`, `status`, `notification_card`, `widgets/`, `harness` (feature: fake services, `SurfaceHarness`) | `shell-kit`, `shell-desktop-fs`, `shell-settings`, `shell-model`, `shell-launcher`, `companion-wire`, `action-core`, `computer-use-action`, `action-manifest`, `permission-core`, `action-vocab`, `account-core`, `account-capability`, `prov`, `ui-core`, `ds`, `ui-behaviour` (`Dir`, in the switcher link), `ui-settings` (dioxus), `ui-host-hooks`, `ui-harness` (optional: feature `harness`), `layer-shell-types`, `layer-shell-hooks`; dioxus, resvg, image; dev: `ui-lint` |
+| 6 | `shell-bar` | Bar, its menus, tray, control center and its modules | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`; `shell-kit`, `ds`, `ui-settings`, `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`; dev: `ui-lint`, `layer-shell-host` (the demo), `shell-host-config` |
+| 6 | `shell-dock` | Dock, magnify, context menus (an app tile's, the Trash tile's, the dock's own) | `shell-ui-kit`, `shell-model`, `shell-desktop-fs` (the Trash and autostart), `shell-settings`, `shell-launcher`; `shell-kit`, `ds`, `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`; dev: `ui-lint`, `layer-shell-host` (the demo), `shell-host-config`, `shell-services` (a fake compositor's projections) |
+| 6 | `shell-launcher-ui` | Launcher panel and catcher, rows, preview pane, actions | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`, `anyview-core`, `anyview-image`, `anyview-peek` (what a file's pane looks like), `anyview-platform` (the thumbnail cache behind a video's frame, `preview::frames`), `memory-core`, `companion-wire`, `action-core`, `companion-model`, `permission-core`, `action-vocab`, `prov` (a companion row's pane and keys); `shell-kit`, `ds`, `ui-behaviour` (`Dir`, in the companion filter), `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`; dev: `ui-lint`, `ui-shell`, `ui-blitz` (the PDF raster test), `layer-shell-host` (the demo), `shell-host-config`, `shell-search` (the real providers the tests give the panel) |
+| 6 | `shell-notify-ui` | Banners, notification center, screenshot thumbnail | `shell-ui-kit`, `shell-model`, `shell-settings`; `shell-kit`, `ds`, `ui-settings`, `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks` |
+| 6 | `shell-overlays` | OSD, power menu, polkit prompt, switcher, idle dim, hot corners, wallpaper, lock | `shell-ui-kit`, `shell-model`, `shell-settings`, `shell-launcher`; `ds`, `ui-behaviour` (the switcher and hot-corner machines), `ui-shell` (the accounts sheet), `shell-kit`, `ui-settings`, `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`, `account-core`, `account-capability`, `account-ids`, `account-sheet` (the accounts sheet's props) |
+| 6 | `shell-host-config` | What a shell process hands layer-shell-host: `host_config(&Dirs)` (quire's faces, the pre-paint pass, the file roots; it also registers the document host the surfaces' roots get), `faces`, `prepaint`, `file_roots`. The one place the surfaces' libraries meet the host and the renderer, so they name neither | `shell-model` (`Dirs`); `ds`, `ui-blitz`, `layer-shell-host` |
 | 7 | `bardo-shell` | Binary and library: `actions/`, `cli/`, `daemon/`, `ipc/`, `policy/` | every crate above except `shell-testkit`; `ui-blitz`, `ui-settings`, `layer-shell-host`, `shell-host-config` (the host's configuration), `ui-host-hooks`, `layer-shell-types`, `layer-shell-hooks`, `shell-verbs` (the verbs casement's keymap sends and the command line each spells); clap, latchkey, `ui-lint` and `shell-kit` (`bardo-shell style check` lints against its `kits()`); dev: `shell-testkit`, `shell-ui-kit` (harness), `ds` |
 
-`*` A surface crate names `shell-services` (and `shell-search` for the launcher) only for service
-marker types (`BatteryService`), `Control` and `Handle`, the type arguments of `use_service`.
-It never names `Env`, `Service::run`, `spawn` or a `backend`. Surface crates never depend on one
-another, and none depends on `bardo-shell`.
+A surface crate names no service crate: the marker types (`BatteryService`), `Control` and `Handle`, the
+type arguments of `use_service`, are `shell-model`'s, beside the state they publish. It never names
+`Env`, `Run::run`, `spawn` or a `backend`: the daemon (`bardo-shell`'s `daemon::start`) is the one
+place that starts the services. Surface crates never depend on one another, and none depends on
+`bardo-shell`.
 
 Boundary script (`scripts/check-boundary.sh`; `RULES` check the output of `cargo tree -i`, never
 its status, and `EDGES` compare each crate's direct path dependencies with the table above):
 
 | Crates | Reach none of (through any path) |
 | --- | --- |
-| `shell-launcher`, `shell-model`, `shell-ipc` | dioxus, dioxus-core, zbus, wayland-client, tokio, libpulse-binding, layer-shell-host, ds, ui-shell, shell-kit, ui-blitz, blitz-dom |
+| `shell-launcher`, `shell-ipc` | dioxus, dioxus-core, zbus, wayland-client, tokio, libpulse-binding, layer-shell-host, ds, ui-shell, shell-kit, ui-blitz, blitz-dom |
+| `shell-model` | the same, except tokio (its `sync` channels are `service`) |
 | `shell-settings`, `shell-search` | dioxus, dioxus-core, blitz-dom, layer-shell-host, ds, ui-shell, shell-kit, ui-blitz (`ui-settings` brings zbus and tokio to both) |
 | `shell-services` | the same, and `ui-settings` |
 | `shell-testkit` | every other sill crate |
@@ -77,11 +80,11 @@ re-export; the one type a module is named after may sit in its `mod.rs`.
 
 | Crate | Modules (layer order) |
 | --- | --- |
-| `shell-model` | `units`, `ids`, `attempt`, `vocab` (enums shared with settings), then one dir per service (`battery`, `clock`, ... 31 services, `companion` and `intents` among them: its `sheet/`, `terminal/` and `shell/` sub-dirs are the confirmation queue, the terminal's grants and the shell's own actions; `results` holds search state; `focus` holds the focus mode, which is not a service; `keyboard` holds the pure keyboard-profile choice, which is not a service either, and `keycap` the keycap service's state and its pure decisions: the focus to send, the notice to post, how to read the unit, how long to wait to reconnect). Each service dir: `mod.rs`, `model.rs` (State), `command.rs` (Command, Event, Effect), `step.rs`, `tests.rs`; a sub-concept gets a sub-dir with the same roles. Service dirs never import each other |
+| `shell-model` | `units`, `ids`, `attempt`, `dirs`, `service`, `vocab` (enums shared with settings), then one dir per service (`battery`, `clock`, ... 31 services, `companion` and `intents` among them: its `sheet/`, `terminal/` and `shell/` sub-dirs are the confirmation queue, the terminal's grants and the shell's own actions; `results` holds search state; `focus` holds the focus mode, which is not a service; `keyboard` holds the pure keyboard-profile choice, which is not a service either, and `keycap` the keycap service's state and its pure decisions: the focus to send, the notice to post, how to read the unit, how long to wait to reconnect). Each service dir: `mod.rs`, `model.rs` (State), `command.rs` (Command, Event, Effect), `step.rs`, `tests.rs`; a sub-concept gets a sub-dir with the same roles. Service dirs never import each other |
 | `shell-settings` | `section` (trait), one file per domain (`bar`, `dock`, ..., 22 domains), `file` (`ShellFile`, `SettingsDoc` impl), `schema`, `keys` (typed enums and unit newtypes that no service shares) |
 | `shell-ipc` | `line` (encode, decode, cap), `error`, `request` (the flat `Request`), `response`, `show`, `status`, `act`, `debug` (the words its variants carry, one file per group) |
-| `shell-services` | `error`, `control`, `stream`, `env/`, `service`, then `debounced` (a watch that reports a burst of events as one settled touch), then one dir per service (29, all but `results`) in dependency order of their `Deps`; a service dir never imports another service dir: cross-service data is `shell-model` types in `Deps` |
-| `shell-search` | `preview` (a clipboard image), `providers/<kind>/` (`files/`: `actions` (the shared file actions as a row's), `viewed` (the viewer's history as rows and uses)), `results/` (`registry`, `run`, `sink`, `history`, `frecency_file`, `effect`), `ResultsService` in `results/mod.rs` |
+| `shell-services` | `error`, `stream`, `env/`, `service` (`Run`, `spawn`), then `debounced` (a watch that reports a burst of events as one settled touch), then one dir per service (29, all but `results`) in dependency order of their `Deps`; a service dir never imports another service dir: cross-service data is `shell-model` types in `Deps` |
+| `shell-search` | `providers/<kind>/` (`files/`: `actions` (the shared file actions as a row's), `viewed` (the viewer's history as rows and uses)), `results/` (`registry`, `run`, `sink`, `history`, `frecency_file`, `effect`), `ResultsService` in `results/mod.rs` |
 | `shell-kit` | `tokens`, then leaf parts `battery`, `clock`, `emoji`, `month_grid`, `now_playing`, `notifications`, `osd`, `idle_dim`, `dock`, `bar`, `control_center`, `switcher`, `date_picker` < `user_picture`, `thumbs` < `lock` < `widget` (`contract`, `card`, `frame`, `timeline`, `calendar`) < `sheets`, `kit` < `prelude` |
 | `shell-ui-kit` | `look`, `links/`, `settings`, `shell_style`, `sheet_stage/`, `services`, `hooks/`, `panel`, `root`, `surface/` (`mount`, `lock`, `start`, `place`, `naming`, `outputs`, `lifecycle`, `preset`), `menu/`, `status/`, `app_icons/`, `notification_card/`, `widgets/`, `harness/` (feature `harness`) |
 | each surface crate | one dir per surface, named after it (`osd/`, `dock/`, `banners/`); `lib.rs` re-exports each surface marker type and nothing else |
@@ -168,16 +171,16 @@ code into `tests.rs`. Exceptions and renames:
 | `tray/{model,icon}.rs`; `tray/host.rs` (498) | `shell-model/src/tray/`; `tray/backend/{host,items,menu}.rs` |
 | `now_playing/{model,art}.rs` (names); `mpris.rs`, `live.rs` (498) | `shell-model/src/now_playing/`; `now_playing/backend/{mpris,run}.rs`, `now_playing/backend/art/{mod,fetcher,http,cache}.rs` |
 | `battery`, `kbd_backlight`, `power_profile`, `volume`, `session`, `badges`, `clock`: `model.rs`, `format.rs` | `shell-model/src/<x>/`; `live.rs`, `upower.rs`, `ppd.rs` -> `<x>/backend/` |
-| `providers/`, `results/{registry,run,sink,history,frecency_file,effect}.rs`, `preview.rs` | `shell-search/src/providers/`, `results/`, `preview.rs` |
+| `providers/`, `results/{registry,run,sink,history,frecency_file,effect}.rs`, `preview.rs` | `shell-search/src/providers/`, `results/` |
 | `results/{model,arrange,policy}.rs` | `shell-model/src/results/` |
-| `services.rs` (`Services`, `Member`) | `shell-ui-kit/src/services/` (`registry.rs` declares every service; `Services::start` spawns them) |
+| `services.rs` (`Services`, `Member`) | `shell-ui-kit/src/services/` (`registry.rs` declares every service); `shell-app/src/daemon/start.rs` spawns them |
 | `magnify/` | `shell-dock/src/magnify/` |
 | `switcher.rs` | `shell-overlays/src/switcher/apps.rs` |
 | `curve.rs` (unused) | deleted; easing is `ui-motion`'s |
 | `programs.rs` | deleted; nothing read the process scan |
 | `env/scratch.rs`, `examples/*` (13 stand-ins), `tests/support/*` | `shell-testkit` (`TempDir`, `PrivateBus`, `signals`; stand-ins in its `examples/`) |
 | `tests/*_live.rs` | `crates/sill-services/tests/<service>_bus.rs` on `PrivateBus`; `#[ignore]` only when a compositor is needed |
-| `error.rs`, `control.rs`, `stream.rs`, `service.rs`, `env/` | stay |
+| `error.rs`, `stream.rs`, `service.rs`, `env/` | stay (`control.rs`, `Handle`, `ServiceIo` and the `Service` trait later moved to `shell-model::service`; `service.rs` keeps `Run` and `spawn`) |
 
 ### `shell-settings`, `shell-ipc`, `shell-launcher`
 
@@ -190,7 +193,7 @@ code into `tests.rs`. Exceptions and renames:
 | `watch.rs`, `file.rs` `load`/`save`/`try_load`/`unknown_keys` | `sill/src/daemon/settings/{watch,store}.rs` over `ds_settings::Store`; `file.rs` keeps `ShellFile` and `impl SettingsDoc` |
 | `feed.rs` (`SettingsFeed`) | `shell-ui-kit/src/settings.rs` |
 | `shell-ipc/src/{desktop,idle,launcher,session}.rs` | `show.rs`, `status.rs`, `act.rs`, `debug.rs`; the 28 `Report*`/`Fake*` mirrors go (a report is the `shell-model` type, serialised) |
-| `shell-launcher/src/{preview,preview_tests}.rs` | stay (pure facts); `shell-services/src/preview.rs` moves to `shell-search` |
+| `shell-launcher/src/{preview,preview_tests}.rs` | stay (pure facts); `shell-services/src/preview.rs` moved to `shell-search`, and its one function (`clip_image`) to `shell_model::clipboard` |
 
 ### `sill-surfaces` (ends deleted)
 
@@ -316,7 +319,7 @@ Look a concept up here before writing it. If it has a home, extend it.
 | A service's pure transition | `sill_model::<service>::step::step` |
 | A service's I/O | `sill_services::<service>::backend` |
 | Every running service's handle, `Member`, `use_service` | `sill_ui_kit::services`, `sill_ui_kit::hooks` |
-| Declaring a service, starting every service in `Deps` order, the fakes | `sill_ui_kit::services::registry` (`services!`; `Services::start`, `Services::fake`) |
+| Declaring a service, starting every service in `Deps` order, the fakes | `shell_ui_kit::services::registry` (`services!`; `Services::fake`), and `shell_app::daemon::start::start` (the spawns, in `Deps` order) |
 | Units and ids (`Cpx`, `Minutes`, `AppId`, `WorkspaceKey`) | `sill_model::{units, ids}` (`Percent`, `Fraction`, `Stamp`: `ui-core`) |
 | Retry and stale-answer stamps | `sill_model::attempt` |
 | A closed vocabulary shared by a settings key and a service | `sill_model::vocab` or the service dir, implementing `ds_core::Word` |
@@ -391,20 +394,26 @@ Look a concept up here before writing it. If it has a home, extend it.
 
 ## 5. Canonical traits
 
-### `Service` (`sill_services::service`)
+### `Service` (`shell_model::service`) and `Run` (`shell_services::service`)
 
 ```rust
+// shell-model: what a service is, from the outside; no I/O.
 pub trait Service: Sized + 'static {
     const NAME: &'static str;
-    type State: Clone + Default + PartialEq + Send + Sync + 'static; // sill_model type; default = absent
-    type Command: Send + 'static;                                    // sill_model type
-    type Deps: Clone + Send + 'static;                               // sill_model receivers, Controls; () if none; cloned for each restart
+    type State: Clone + Default + PartialEq + Send + Sync + 'static; // shell_model type; default = absent
+    type Command: Send + 'static;                                    // shell_model type
+}
+pub struct Handle<S: Service> { pub state: watch::Receiver<S::State>, pub control: Control<S::Command> }
+pub struct Control<C>; // send(C) -> Result<(), Gone>
+
+// shell-services: what running it needs.
+pub trait Run: Service {
+    type Deps: Clone + Send + 'static;  // shell_model receivers, Controls; () if none; cloned for each restart
     fn initial(env: &Env, deps: &Self::Deps) -> Self::State { Self::State::default() }
     fn run(env: &Env, deps: Self::Deps, io: ServiceIo<Self>)
         -> impl Future<Output = Result<(), ServiceError>> + Send + 'static;
 }
-pub struct Handle<S: Service> { pub state: watch::Receiver<S::State>, pub control: Control<S::Command> }
-pub fn spawn<S: Service>(rt: &tokio::runtime::Handle, env: &Env, deps: S::Deps) -> Handle<S>;
+pub fn spawn<S: Run>(rt: &tokio::runtime::Handle, env: &Env, deps: S::Deps) -> Handle<S>;
 ```
 
 `spawn` keeps the service running: a task that panics, returns an error, or ends cleanly after
@@ -414,8 +423,9 @@ fresh channel halves; the keeper carries commands in and state out, so a restart
 last published state. A bus absent by choice and a compositor without the protocol are not
 restarted.
 
-Implementors: the 30 `<Module>Service` markers (`enum XService {}`), 29 in `shell-services`,
-`ResultsService` in `shell-search`. Add an implementor for a new long-lived backend that
+Implementors of `Service`: the `<Module>Service` markers (`enum XService {}`), each in its
+`shell-model` module beside its state; `shell-services` implements `Run` for them, and
+`shell-search` for `ResultsService`. Add an implementor for a new long-lived backend that
 publishes one state. Add nothing for a helper without a task. Not a `Service`: a one-shot call
 (`launch::open`), a pure derivation (`switcher::apps`), or a UI link.
 
@@ -596,7 +606,8 @@ Each ends with its tests. Name the concept once and use it in every file name be
 2. `pub mod <x>;` in `shell-model/src/lib.rs`.
 3. A new ambient thing (a bus, a directory, a program) is a field on `Env` in
    `shell-services/src/env/`, set in `from_process` and `isolated`, with a stand-in.
-4. `shell-services/src/<x>/mod.rs`: `pub enum XService {}` and `impl Service` (`run` calls
+4. `shell-model/src/<x>/mod.rs`: `pub enum XService {}` and `impl Service` (`NAME`, `State`,
+   `Command`). `shell-services/src/<x>/mod.rs`: `impl Run for XService` (`Deps`, and `run` calling
    `backend::run`); `backend/run.rs` and its effect files. Never `Connection::system()`,
    `std::env`, `Command::new` or `Zoned::now` outside `Env`. Build the backend from the kit, and
    write only what is specific to the service:
@@ -612,14 +623,16 @@ Each ends with its tests. Name the concept once and use it in every file name be
      `Posting`, the action key and `shown_for`;
    - watch files and folders with `debounced::Debounced`, and a Wayland connection with
      `wayland_thread::Follow`.
-5. `pub mod <x>;` in `shell-services/src/lib.rs`; re-export the marker only.
-6. `shell-ui-kit/src/services/registry.rs`: one line in `services!`, after the services in its
-   deps: `field: XService = <deps expression>;` (add `=> <fake state>` when its fake should not
-   start at the default). That one line is the `Services` field, the `Member` impl, the spawn
-   (declaration order is start order, and a deps expression can only name services above it) and
-   the fake. If a test or demo needs to feed it, claim its halves in
-   `shell-ui-kit/src/harness/fake/feeds.rs` (`Feeds`); an unclaimed fake is kept alive for you.
-   Anything the deps need from the daemon (a channel it reads) is a field of `Wiring`.
+5. `pub mod <x>;` in `shell-services/src/lib.rs`; re-export the `Links` type only (the marker is in
+   `shell-model`).
+6. `shell-ui-kit/src/services/registry.rs`: one line in `services!`: `field: XService;` (add
+   `=> <fake state>` when its fake should not start at the default). That one line is the
+   `Services` field, the `Member` impl and the fake. The spawn is `shell-app/src/daemon/start.rs`:
+   `spawn::<XService>(rt, env, <deps>)` after the services in its deps, and the field in the
+   `Services { .. }` literal at its end (a missing one does not compile). If a test or demo needs
+   to feed it, claim its halves in `shell-ui-kit/src/harness/fake/feeds.rs` (`Feeds`); an unclaimed
+   fake is kept alive for you. Anything the deps need from the daemon (a channel it reads) is a
+   field of `Wiring`, there too.
 7. A service that claims a bus name needs nothing to be told: `Env::claims` decides. If it must
    stay passive until the person's settings say what to do, add a `Policy` (recipe below).
 8. Tests: the `step` table in `shell-model`; `shell-services/tests/<x>_bus.rs` on `PrivateBus`
@@ -873,7 +886,7 @@ The notification center is the only place widgets are drawn; their providers liv
 ## 8. The daemon
 
 `bardo-shell run` (`daemon/run.rs`) takes the single-instance lock, builds `Env` (`run_args.rs`),
-starts services (`Services::start`) and settings (`daemon/settings/`), starts the IPC server
+starts services (`daemon::start::start`) and settings (`daemon/settings/`), starts the IPC server
 (`ipc/server.rs`), connects the host and reconciles one row of surfaces per output
 (`outputs.rs`, `daemon/surfaces.rs`). `Links` is built once in `run.rs`. The `debug`
 feature adds `bardo-shell debug ...` and the fake DDC flags; a build without it refuses them.
