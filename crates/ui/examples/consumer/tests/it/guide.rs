@@ -146,7 +146,8 @@ use ui_components::base::press::{PointerButton, Press};
 fn BarRoot() -> Element {
     let appearance = Appearance::default();
     let look = SpaceLook::default();
-    ui_blitz::provide_host();
+    ui_blitz::use_standalone_host();
+    ui_host_hooks::provide_host();
     rsx! { Ds { appearance, material: Material::Bar, look, YourPage {} } }
 }
 
@@ -161,7 +162,8 @@ fn StatusItems() -> Element {
 fn LauncherRoot() -> Element {
     let appearance = Appearance::default();
     let look = SpaceLook::default();
-    ui_blitz::provide_host();
+    ui_blitz::use_standalone_host();
+    ui_host_hooks::provide_host();
     rsx! { Ds { appearance, material: Material::Sheet, look, YourPage {} } }
 }
 
@@ -472,7 +474,7 @@ fn UserStyled() -> Element {
         move || {
             let desktop = desktop.clone();
             async move {
-                let spawner = ui_blitz::TokioSpawner::current();
+                let spawner = ui_host_hooks::TokioSpawner::current();
                 let mut watch = desktop.watch::<UserStyle>(&spawner);
                 while let Some(loaded) = watch.changed().await {
                     styles.write().desktop = loaded.value;
@@ -483,7 +485,7 @@ fn UserStyled() -> Element {
     use_future(move || {
         let own = own.clone();
         async move {
-            let spawner = ui_blitz::TokioSpawner::current();
+            let spawner = ui_host_hooks::TokioSpawner::current();
             let mut watch = own.watch::<UserStyle>(&spawner);
             while let Some(loaded) = watch.changed().await {
                 styles.write().app = loaded.value;

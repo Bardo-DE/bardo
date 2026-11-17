@@ -20,6 +20,7 @@ settings-store-fs = { path = "../../../settings/settings-store-fs" }
 settings-types = { path = "../../../settings/settings-types" }
 ui-settings = { path = "../../ui-settings", features = ["dioxus"] }
 ui-blitz = { path = "../../ui-blitz" }
+ui-host-hooks = { path = "../../ui-host-hooks" }
 
 # ---- lines copied from quire/docs/workspace-deps.toml (pinned block) ----
 # ds's own dependency tree (dioxus-native, blitz-*, anyrender, ...) resolves against quire's own

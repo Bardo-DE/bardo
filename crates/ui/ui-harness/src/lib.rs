@@ -61,3 +61,5 @@ pub use input::{
 pub use painter::PaintTime;
 pub use recorded_window::WindowHosting;
 pub use snapshot::{Viewport, snapshot, snapshot_at, snapshot_placed, snapshot_with};
+/// The folders a harness document may read `file:` pictures from (`HarnessConfig::with_file_roots`).
+pub use ui_blitz::FileRoots;

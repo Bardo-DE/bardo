@@ -12,12 +12,11 @@
 mod runtime;
 
 use crate::error::LaunchError;
-pub use runtime::{RuntimeGuard, TokioSpawner, enter_runtime};
+pub use runtime::{RuntimeGuard, enter_runtime};
 
 use crate::app_handle::AppHandle;
 use crate::app_id::AppId;
 use crate::app_life::{LastWindowClosed, Lifecycle};
-use crate::click_focus::FocusFallback;
 use crate::contexts::RootContexts;
 use crate::frame_links::FrameLinks;
 use crate::gpu_request::GpuRequest;
@@ -40,6 +39,7 @@ use std::sync::Arc;
 use std::time::Instant;
 use tokio::runtime::Handle;
 use ui_components::window::icon::WindowIcon;
+use ui_host_hooks::FocusFallback;
 
 /// How the window starts, and what its document is given: build it with [`AppConfig::new`] and
 /// the `with_*` methods.

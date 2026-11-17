@@ -12,9 +12,9 @@ mod keep {
 
     use dioxus::prelude::*;
     use std::time::Duration;
-    use ui_blitz::FocusFallback;
     use ui_components::prelude::*;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+    use ui_host_hooks::FocusFallback;
 
     const VIEW: Viewport = Viewport {
         width: 400,
@@ -143,7 +143,6 @@ mod kept_click {
 
     use dioxus::prelude::*;
     use std::time::Duration;
-    use ui_blitz::FocusFallback;
     use ui_components::base::press::Press;
     use ui_components::components::app::hover_strip::{ActionId, HoverStrip, StripAction};
     use ui_components::components::controls::button_model::{Bezel, ImagePosition};
@@ -152,6 +151,7 @@ mod kept_click {
     use ui_components::prelude::*;
     use ui_harness::harness::settle_until;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+    use ui_host_hooks::FocusFallback;
 
     const VIEW: Viewport = Viewport {
         width: 480,
@@ -374,12 +374,12 @@ mod removed {
 
     use dioxus::prelude::*;
     use std::time::Duration;
-    use ui_blitz::FocusFallback;
     use ui_components::base::press::Press;
     use ui_components::host::measure::{Anchor, MountedRef};
     use ui_components::prelude::*;
     use ui_harness::harness::settle_until;
     use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+    use ui_host_hooks::FocusFallback;
 
     const VIEW: Viewport = Viewport {
         width: 480,

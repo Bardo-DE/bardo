@@ -27,17 +27,6 @@ use std::rc::Rc;
 use ui_components::host::fallback::Fallback;
 use ui_components::prelude::*;
 
-/// Where the keyboard goes after a click on nothing focusable, for a window or a harness.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum FocusFallback {
-    /// To the nearest focusable ancestor (a `tabindex`, or a natively focusable element), as
-    /// in a browser; nowhere if there is none.
-    #[default]
-    Ancestor,
-    /// Blitz's own: the focus is cleared.
-    BlitzDefault,
-}
-
 /// Give the element pressed at the document's hover node (or its nearest focusable ancestor)
 /// the keyboard now, read and written through `root`.
 pub(crate) fn take(root: &MountedData) -> Focused {

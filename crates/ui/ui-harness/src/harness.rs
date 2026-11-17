@@ -263,7 +263,7 @@ impl Harness {
         self.settle();
     }
 
-    /// What was last copied (Ctrl+C in a field, `ui_blitz::clipboard::write_text`): the
+    /// What was last copied (Ctrl+C in a field, `ui_host_hooks::clipboard::write_text`): the
     /// harness's clipboard is in memory, never the desktop's.
     #[must_use]
     pub fn clipboard_text(&self) -> Option<String> {
@@ -271,7 +271,7 @@ impl Harness {
     }
 
     /// What was last put on the harness's primary selection
-    /// (`ui_blitz::clipboard::write_to(ClipboardTarget::Primary, ..)`).
+    /// (`ui_host_hooks::clipboard::write_to(ClipboardTarget::Primary, ..)`).
     #[must_use]
     pub fn primary_text(&self) -> Option<String> {
         self.doc.shell.primary_text()

@@ -239,7 +239,7 @@ pub(crate) fn Action(
 }
 
 /// A button that copies `text`: the host does the copying (it hears `oncopy`; ui-shell may not
-/// depend on ui-blitz, so `ui_blitz::clipboard::write_text` is the host's call), and `state` is
+/// depend on ui-blitz, so `ui_host_hooks::clipboard::write_text` is the host's call), and `state` is
 /// the host's word on whether it has, so the label can say "Copied".
 #[component]
 pub(crate) fn CopyAction(

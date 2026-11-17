@@ -8,7 +8,7 @@
 
 use blitz_dom::BaseDocument;
 use blitz_embed::snap::snap_layout;
-use blitz_embed::units::Scale120;
+use blitz_embed_types::units::Scale120;
 
 /// Snap every box of `doc` to its viewport's device pixel grid; nothing at a whole scale.
 pub fn snap_to_device(doc: &mut BaseDocument) {

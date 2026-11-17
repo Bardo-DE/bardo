@@ -1,25 +1,17 @@
 //! A token's resolved value for Rust geometry: a custom property as an element's computed style
-//! holds it after the cascade (the quire sheet, the look, the person's own sheet), with every
-//! `var()` substituted. Tokens are declared on `.ds` and inherit, so any element inside a
-//! surface sees them with their overrides; a dock's gap or a menu's row height that a look may
-//! move is read here, not from a settings key.
-//!
-//! The sheets reach the document as a `<style>` whose text follows the `Styles` signal (a look
-//! or a style sheet change restyles the document on the next frame). A component that sizes
-//! itself from tokens uses [`use_resolved`]: the host reads them after every resolved frame
-//! (through the blitz-embed `AfterResolve` it provides), outside render, and sets the component's signal only when the reading changed, so a
-//! restyle re-renders it with the new values and nothing waits on a timer.
-//!
-//! [`Tokens`] reads on demand instead, for a read in an event handler or a task. It answers
-//! `None` while the document is borrowed, which is always the case during a component's render.
+//! holds it after the cascade, with every `var()` substituted, read from a Blitz document. The
+//! hooks that components call (`use_resolved`, `use_tokens`) are `ui_host_hooks`'s; this is the
+//! document side they read through: [`Resolved`] on a node, and the [`TokenSource`] this crate
+//! provides to every document it hosts.
 
 use blitz_dom::{Atom, BaseDocument, NodeId};
-use blitz_embed::after_resolve::{AfterResolve, Registration};
-use dioxus::prelude::*;
+use blitz_embed::after_resolve::AfterResolve;
+use dioxus::prelude::MountedData;
 use dioxus_native_dom::NodeHandle;
+use std::any::Any;
 use std::rc::Rc;
 use ui_components::prelude::Px;
-use ui_components::style::task::try_set;
+use ui_host_hooks::{Reading, TokenReader, TokenSource};
 
 /// Reads of resolved custom properties on one node of a document.
 #[derive(Debug)]
@@ -55,176 +47,57 @@ impl Resolved {
     }
 }
 
-/// A component's on-demand reader of the tokens its own element sees.
-///
-/// Give [`Tokens::mounted`] to the element's `onmounted`, then read lengths and numbers in an event
-/// handler or a task (a hit test, a drag). Before the element mounts, or while the document is
-/// borrowed (during any render), a read is `None` and the caller keeps its shipped constant. A
-/// value render needs comes from [`use_resolved`].
-#[derive(Clone, Copy, PartialEq)]
-pub struct Tokens {
-    element: Signal<Option<Rc<MountedData>>>,
-}
-
-impl std::fmt::Debug for Tokens {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Tokens").finish_non_exhaustive()
-    }
-}
-
-/// The reader for the calling component's element.
-#[must_use]
-pub fn use_tokens() -> Tokens {
-    Tokens {
-        element: use_signal(|| None),
-    }
-}
-
-impl Tokens {
-    /// Remember the element whose tokens this reads.
-    #[expect(
-        clippy::needless_pass_by_value,
-        reason = "`onmounted` handlers hand over an owned event, and callers across the shell pass it straight on"
-    )]
-    pub fn mounted(mut self, event: MountedEvent) {
-        self.element.set(Some(event.data()));
-    }
-
-    /// `name` as a length on the element ([`Resolved::length`]).
-    #[must_use]
-    pub fn length(&self, name: &str) -> Option<Px> {
-        self.read(|doc, node| Resolved::length(doc, node, name))
-    }
-
-    /// `name` as a plain number on the element ([`Resolved::number`]).
-    #[must_use]
-    pub fn number(&self, name: &str) -> Option<f32> {
-        self.read(|doc, node| Resolved::number(doc, node, name))
-    }
-
-    fn read<T>(&self, answer: impl FnOnce(&BaseDocument, NodeId) -> Option<T>) -> Option<T> {
-        let element = self.element.peek().clone()?;
-        let handle = element.downcast::<NodeHandle>()?;
-        let doc = handle.try_doc()?;
-        answer(&doc, handle.node_id())
-    }
-}
-
-/// The tokens one element sees, for a [`use_resolved`] reader.
-#[derive(Clone, Copy)]
-pub struct Lookup<'a> {
+/// One node's resolved properties, for a reading that holds the document.
+struct NodeTokens<'a> {
     doc: &'a BaseDocument,
     node: NodeId,
 }
 
-impl Lookup<'_> {
-    /// `name` as a length on the element ([`Resolved::length`]).
-    #[must_use]
-    pub fn length(&self, name: &str) -> Option<Px> {
-        Resolved::length(self.doc, self.node, name)
-    }
-
-    /// `name` as a plain number on the element ([`Resolved::number`]).
-    #[must_use]
-    pub fn number(&self, name: &str) -> Option<f32> {
-        Resolved::number(self.doc, self.node, name)
+impl TokenReader for NodeTokens<'_> {
+    fn text(&self, name: &str) -> Option<String> {
+        Resolved::text(self.doc, self.node, name)
     }
 }
 
-impl std::fmt::Debug for Lookup<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Lookup")
-            .field("node", &self.node)
-            .finish_non_exhaustive()
+/// A document's [`TokenSource`]: reads on demand through the element's node, and follows the
+/// document's resolved frames through its [`AfterResolve`] when it has one.
+pub(crate) struct BlitzTokens {
+    after: Option<AfterResolve>,
+}
+
+impl BlitzTokens {
+    /// The source of a document whose resolved frames `after` reports (`None` for a root that is
+    /// not hosted by a document with a resolve step).
+    pub(crate) fn new(after: Option<AfterResolve>) -> Rc<dyn TokenSource> {
+        Rc::new(BlitzTokens { after })
     }
 }
 
-/// What a [`use_resolved`] reader last read: give [`ResolvedTokens::mounted`] to the element's
-/// `onmounted` and read [`ResolvedTokens::value`] in render.
-pub struct ResolvedTokens<T: 'static> {
-    value: Signal<Option<T>>,
-    registration: Signal<Option<Registration>>,
-    after: CopyValue<Option<AfterResolve>>,
-    read: fn(&Lookup) -> T,
-}
-
-impl<T> Clone for ResolvedTokens<T> {
-    fn clone(&self) -> Self {
-        *self
-    }
-}
-
-impl<T> Copy for ResolvedTokens<T> {}
-
-impl<T> PartialEq for ResolvedTokens<T> {
-    fn eq(&self, other: &Self) -> bool {
-        self.value == other.value
-    }
-}
-
-impl<T> std::fmt::Debug for ResolvedTokens<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("ResolvedTokens").finish_non_exhaustive()
-    }
-}
-
-/// A value the calling component builds from the tokens its element sees, kept current by the host.
-///
-/// `read` runs after every resolved frame from the element's mount on, and the value changes
-/// (re-rendering the component) only when what `read` returns does. `None` until the first frame
-/// after mount; the caller keeps its shipped value until then.
-pub fn use_resolved<T: PartialEq + Clone + 'static>(read: fn(&Lookup) -> T) -> ResolvedTokens<T> {
-    ResolvedTokens {
-        value: use_signal(|| None),
-        registration: use_signal(|| None),
-        after: use_hook(|| CopyValue::new(try_consume_context::<AfterResolve>())),
-        read,
-    }
-}
-
-impl<T: PartialEq + Clone + 'static> ResolvedTokens<T> {
-    /// The value as last read; `None` before the first frame after mount, and without a
-    /// host that provides an `AfterResolve` (a ui-blitz window, the harness or a layer-shell-host
-    /// surface).
-    #[must_use]
-    pub fn value(&self) -> ReadSignal<Option<T>> {
-        self.value.into()
-    }
-
-    /// Start reading the element `event` names, replacing a reading of an earlier element.
-    #[expect(
-        clippy::needless_pass_by_value,
-        reason = "`onmounted` handlers hand over an owned event, and callers across the shell pass it straight on"
-    )]
-    pub fn mounted(mut self, event: MountedEvent) {
-        let Some(after) = self.after.peek().clone() else {
+impl TokenSource for BlitzTokens {
+    fn read(&self, element: &MountedData, ask: &mut dyn FnMut(&dyn TokenReader)) {
+        let Some(handle) = element.downcast::<NodeHandle>() else {
             return;
         };
-        let Some(node) = event
-            .data()
-            .downcast::<NodeHandle>()
-            .map(NodeHandle::node_id)
-        else {
+        let Some(doc) = handle.try_doc() else {
             return;
         };
-        let (sink, read) = (self.value, self.read);
-        let mut last: Option<T> = None;
+        ask(&NodeTokens {
+            doc: &doc,
+            node: handle.node_id(),
+        });
+    }
+
+    fn watch(&self, element: &MountedData, mut reading: Reading) -> Option<Box<dyn Any>> {
+        let after = self.after.as_ref()?;
+        let node = element.downcast::<NodeHandle>().map(NodeHandle::node_id)?;
         let registration = after.watch(
             node,
-            Box::new(move |doc, node| {
-                let now = read(&Lookup { doc, node });
-                if last.as_ref() == Some(&now) {
-                    return None;
-                }
-                last = Some(now.clone());
-                Some(Box::new(move || try_set(sink, Some(now)).is_ok()))
-            }),
+            Box::new(move |doc, node| reading(&NodeTokens { doc, node })),
         );
-        self.registration.set(Some(registration));
+        Some(Box::new(registration))
     }
 }
 
-/// A finite decimal with no unit.
 fn parse_number(text: &str) -> Option<f32> {
     text.trim()
         .parse::<f32>()

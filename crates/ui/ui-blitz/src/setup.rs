@@ -2,7 +2,6 @@
 //! and the headless document (`HarnessConfig`), so a window, a test and a snapshot of the same
 //! app see the same providers.
 
-use crate::click_focus::FocusFallback;
 use crate::contexts::RootContexts;
 use crate::frame_links::FrameLinks;
 use crate::link_open::LinkFailureHandler;
@@ -11,6 +10,7 @@ use crate::shell_keys::ShellKeys;
 use blitz_embed::net::FileRoots;
 use dioxus::prelude::VirtualDom;
 use ui_components::keys::KeySource;
+use ui_host_hooks::FocusFallback;
 
 /// The app's providers for one document.
 #[derive(Debug, Clone, Default)]

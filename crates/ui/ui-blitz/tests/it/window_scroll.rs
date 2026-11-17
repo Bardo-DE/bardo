@@ -10,9 +10,9 @@ mod eased {
     //! for the same ease of the detents it hears. The harness runs the window's scroll step before
     //! every frame it lays out, as the window loop does, on its virtual clock.
 
-    use blitz_embed::element_id::ElementId;
     use blitz_embed::scroll::doc::{geom, scroller_by_id};
     use blitz_embed::scroll::geom::ScrollAxis;
+    use blitz_embed_types::element_id::ElementId;
     use dioxus::prelude::*;
     use std::cell::RefCell;
     use std::time::Duration;
@@ -366,9 +366,9 @@ mod frames {
     //! engine's rules, eased like any scroller; at the frame's end the scroller around the frame
     //! takes over; and a wheel over nothing that scrolls goes on to the document.
 
-    use blitz_embed::element_id::ElementId;
     use blitz_embed::scroll::doc::{geom, scroller_by_id};
     use blitz_embed::scroll::geom::ScrollAxis;
+    use blitz_embed_types::element_id::ElementId;
     use dioxus::prelude::*;
     use std::cell::RefCell;
     use std::time::Duration;
@@ -800,9 +800,9 @@ mod native {
     //! of the system's. A component that windows over a scroller's offset (`VirtualList`) is handed
     //! the offset the frame draws, not the previous frame's.
 
-    use blitz_embed::element_id::ElementId;
     use blitz_embed::scroll::doc::{geom, scroller_by_id};
     use blitz_embed::scroll::geom::ScrollAxis;
+    use blitz_embed_types::element_id::ElementId;
     use dioxus::prelude::*;
     use keymap::Platform;
     use std::time::Duration;

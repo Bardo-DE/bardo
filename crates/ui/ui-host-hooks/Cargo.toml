@@ -1,0 +1,19 @@
+[package]
+name = "ui-host-hooks"
+description = "What a quire component calls on the document that hosts it, with no Blitz, GPU or windowing type: the document host, styles guard, resolved tokens, clipboard and spawner seams."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+base-fs = { path = "../../base/base-fs" }
+ui-components = {path = "../ui-components"}
+dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
+tokio = {workspace = true, features = ["rt"]}
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

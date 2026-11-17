@@ -1,4 +1,5 @@
-//! `ui_components::prelude::DocumentHost` on Blitz, and [`provide_host`], the one call that gives a root all of it.
+//! `ui_components::prelude::DocumentHost` on Blitz, and [`use_standalone_host`], which registers it
+//! as the host `ui_host_hooks::provide_host` gives a root that has none.
 //!
 //! The host is built from what a document's owner knows: where the keyboard goes after a click on
 //! nothing focusable, the keeper that watches removals, how to find an element by selector, which
@@ -6,8 +7,8 @@
 //! and the harness own all of it; a shell's surface root has the click-focus part and no more,
 //! and its host answers what a document alone can.
 
-use crate::click_focus::{FocusFallback, fallback, restore, take};
-use crate::clipboard::{Clipboard, System};
+use crate::click_focus::{fallback, restore, take};
+use crate::clipboard::System;
 use crate::drop_hit::drop_hit;
 use crate::edit::set_ime_cursor_area;
 use crate::edit::{capture, caret_rect, forget, hit_test, listen, selection_rects, set_ime};
@@ -19,7 +20,9 @@ use crate::focus_keep::{FocusKeeper, hand_back_seam};
 use crate::measure::measure;
 use crate::node_ref::same;
 use crate::phase::Phase;
+use crate::resolved::BlitzTokens;
 use crate::reveal::reveal;
+use blitz_embed::after_resolve::AfterResolve;
 use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -39,6 +42,8 @@ use ui_components::host::position::{TextPosition, TextRange};
 use ui_components::host::probe::Probe;
 use ui_components::host::reveal::Scrolled;
 use ui_components::prelude::*;
+use ui_host_hooks::{FocusFallback, TokenSource};
+use ui_host_hooks::clipboard::Clipboard;
 
 /// How a document finds an element by selector, once it has a document to search.
 pub(crate) type FindDocument = Rc<dyn Fn(&str) -> Found>;
@@ -88,6 +93,9 @@ impl Wiring {
 pub struct Provided {
     pub host: Rc<dyn DocumentHost>,
     pub clipboard: Rc<dyn Clipboard>,
+    /// How `ui_host_hooks::use_resolved` and `use_tokens` read the document: through the
+    /// wiring's phase, which runs after each resolved frame.
+    pub tokens: Rc<dyn TokenSource>,
 }
 
 impl std::fmt::Debug for Provided {
@@ -101,9 +109,11 @@ impl Provided {
     #[must_use]
     pub fn of(wiring: Wiring) -> Self {
         let clipboard = Rc::clone(&wiring.clipboard);
+        let tokens = BlitzTokens::new(Some(wiring.phase.after_resolve()));
         Provided {
             host: Rc::new(BlitzHost::new(wiring)),
             clipboard,
+            tokens,
         }
     }
 
@@ -116,7 +126,9 @@ impl Provided {
     pub fn provide(self) -> Rc<dyn DocumentHost> {
         dioxus::core::provide_root_context(Rc::clone(&self.clipboard));
         dioxus::core::provide_root_context(Rc::clone(&self.host));
+        dioxus::core::provide_root_context(Rc::clone(&self.tokens));
         provide_context(self.clipboard);
+        provide_context(self.tokens);
         provide_context(self.host)
     }
 }
@@ -159,27 +171,25 @@ impl BlitzHost {
     }
 }
 
-/// Give the calling root the whole Blitz host.
-///
-/// The focus, caret, geometry, edit and drop parts of [`ui_components::prelude::DocumentHost`] and
-/// the clipboard, together, so no root holds a subset. Call it at the top of a root
-/// `ui_blitz::launch` did not start (a shell's surface, a popup's document), before any quire
-/// component reads the document. A root that already has a host (a window's, the harness's) keeps
-/// it, so a component calling this under one takes what the window wired.
+/// Register [`Wiring::standalone`]'s host as the one a root with no host gets from
+/// `ui_host_hooks::provide_host`: a shell's surface or a popup's document, which no
+/// `ui_blitz::launch` started. Call it once at the start of a program that hosts such roots (or
+/// of a test that renders one on its own); calling it again changes nothing.
 ///
 /// The host of a root like that has the window's click-focus part (a press on nothing focusable
 /// leaves the keyboard on the nearest focusable ancestor, so Escape still reaches the surface),
-/// has no lookup by selector and no keeper for removed elements, and its edit surfaces are fed no IME events: the window
-/// loop that owns those is `launch`'s and the harness's. Nor does it reach a window shell, so
-/// [`clipboard::write_text`](crate::clipboard::write_text) answers
-/// [`ClipboardError::NoShell`](crate::clipboard::ClipboardError::NoShell) there, never a
-/// success that wrote nothing.
-#[must_use]
-pub fn provide_host() -> Rc<dyn DocumentHost> {
-    use_hook(|| {
-        try_consume_context::<Rc<dyn DocumentHost>>()
-            .unwrap_or_else(|| Provided::of(Wiring::standalone()).provide())
-    })
+/// has no lookup by selector and no keeper for removed elements, and its edit surfaces are fed no
+/// IME events: the window loop that owns those is `launch`'s and the harness's. Nor does it reach
+/// a window shell, so `ui_host_hooks::clipboard::write_text` answers `ClipboardError::NoShell`
+/// there, never a success that wrote nothing.
+pub fn use_standalone_host() {
+    ui_host_hooks::set_standalone_host(|| {
+        let mut provided = Provided::of(Wiring::standalone());
+        // The document that hosts the root keeps its own registry of readings, a root context its
+        // host provided before the root rendered; the wiring's own phase follows no document.
+        provided.tokens = BlitzTokens::new(try_consume_context::<AfterResolve>());
+        provided.provide()
+    });
 }
 
 impl DocumentHost for BlitzHost {

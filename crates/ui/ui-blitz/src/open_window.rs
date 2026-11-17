@@ -19,6 +19,7 @@ use crate::window_size::WindowSize;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_components::window::icon::WindowIcon;
+use ui_host_hooks::WindowControl;
 
 /// How a window starts: the first one `launch` opens (inside its `AppConfig`) and any opened
 /// later with [`open_window`].
@@ -114,6 +115,18 @@ impl std::fmt::Debug for WindowHandle {
 }
 
 impl WindowHandle {
+    /// What a window's root may ask of its window, as `ui_host_hooks::use_window_control` reads
+    /// it.
+    #[must_use]
+    pub fn control(&self) -> WindowControl {
+        let closing = self.clone();
+        let focusing = self.clone();
+        WindowControl::new(
+            move || closing.close(),
+            move |token| focusing.focus_with_token(token),
+        )
+    }
+
     /// The handle of the window `requests` knows as `key`.
     pub(crate) fn new(key: WindowKey, requests: Requests) -> Self {
         WindowHandle { key, requests }

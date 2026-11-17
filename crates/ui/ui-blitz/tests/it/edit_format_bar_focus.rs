@@ -6,13 +6,13 @@
 use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::time::Duration;
-use ui_blitz::FocusFallback;
 use ui_components::components::controls::segmented::Tracking;
 use ui_components::edit::handle::use_edit_handle;
 use ui_components::edit::input::{EditInput, KeyInput};
 use ui_components::edit::pointer::{EditFocus, EditPointer};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+use ui_host_hooks::FocusFallback;
 
 const VIEW: Viewport = Viewport {
     width: 400,

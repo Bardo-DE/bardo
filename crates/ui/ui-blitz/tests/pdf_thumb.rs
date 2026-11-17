@@ -18,8 +18,9 @@ use std::fmt::Write as _;
 use std::path::PathBuf;
 use std::sync::OnceLock;
 use std::time::Duration;
-use ui_blitz::{DeviceBox, PdfFileThumb, ThumbRequest};
-use ui_blitz::{pdf_thumb_blocking, pdf_thumb_bytes, pdf_thumb_cached};
+use ui_blitz::{
+    DeviceBox, PdfFileThumb, ThumbRequest, pdf_thumb_blocking, pdf_thumb_bytes, pdf_thumb_cached,
+};
 use ui_components::components::content::pdf_thumb::{PdfPage, PdfTrouble};
 use ui_components::components::lists::preview::content::PANE_MEDIA;
 use ui_components::components::lists::preview::content::PaneContent;

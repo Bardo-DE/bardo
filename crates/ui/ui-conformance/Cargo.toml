@@ -13,6 +13,7 @@ keymap = {path = "../../keymap/keymap"}
 ui-components = {path = "../ui-components"}
 ui-shell = {path = "../ui-shell"}
 ui-blitz = {path = "../ui-blitz", default-features = false, features = ["testing"]}
+ui-host-hooks = {path = "../ui-host-hooks"}
 ui-harness = {path = "../ui-harness", default-features = false}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 image = { workspace = true, features = ["png", "jpeg"] }

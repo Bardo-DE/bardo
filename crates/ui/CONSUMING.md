@@ -101,7 +101,7 @@ local checkouts, `[patch."https://github.com/Bardo-DE/blitz-kit"]` pointing at a
 runs `app` until its window closes and returns `Result<(), LaunchError>` (no runtime, or an event loop that cannot run; `main` can return it). The app's `tokio::spawn` calls run on a runtime `launch` builds and owns, or on the caller's own via `AppConfig::with_runtime(handle)`. A `WindowSize` is what the window opens at and, with
 `.with_least(width, height)`, the least a person may resize it to: give the least your layout's
 panes fit in, so no pane is squeezed past its own least (`WindowSpec::new` takes the same value
-for a later window). It enters the process-wide Tokio runtime that `ds_blitz::TokioSpawner`
+for a later window). It enters the process-wide Tokio runtime that `ui_host_hooks::TokioSpawner`
 hands `use_environment`, registers quire's faces, provides the document host (`provide_host`,
 section 6, "For a bar"), and tracks the input modality. `AppConfig` also takes
 `with_app_id`, `with_decorations(Decorations::Client)` for an app whose root draws
@@ -1202,17 +1202,19 @@ External icons and a caller-driven tooltip (FINDINGS "Pointer events"):
 For a bar (FINDINGS "Bar gaps"):
 
 - **A Blitz host that is not `ds_blitz::launch`** (layer-shell-host's surfaces, a popup's document)
-  calls `ds_blitz::provide_host()` at the top of its root component, before any quire
+  calls `ui_host_hooks::provide_host()` (a library takes `ui-host-hooks`, never `ui-blitz`) at the top of its root component, before any quire
   component reads the document. It installs every part of `ds::prelude::DocumentHost` at once (rects,
   focus, caret, scroll, edit, drop), so a root can never hold a subset; a root under a window's
-  or the harness's host keeps that one. Drop your own copy of the twelve-line measurer. With no
+  or the harness's host keeps that one. The program that hosts such roots registers the renderer's
+  host once at start (`ui_blitz::use_standalone_host()`); a root with no host and no registration
+  panics. Drop your own copy of the twelve-line measurer. With no
   host at all (`ds::host::no_host::NoHost`, a server render) a rect read answers unknown and the anchor is not
   placed.
 
   ```rust,ignore
   #[component]
   fn BarRoot() -> Element {
-      ds_blitz::provide_host();
+      ui_host_hooks::provide_host();
       rsx! { Ds { appearance, material: Material::Bar, look, /* … */ } }
   }
   ```
@@ -1313,7 +1315,7 @@ For a launcher and a dock (FINDINGS "Launcher gaps"):
   ```rust,ignore
   #[component]
   fn LauncherRoot() -> Element {
-      ds_blitz::provide_host();
+      ui_host_hooks::provide_host();
       rsx! { Ds { appearance, material: Material::Sheet, look, /* … */ } }
   }
   ```

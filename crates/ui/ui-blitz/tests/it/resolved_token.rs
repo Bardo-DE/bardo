@@ -72,14 +72,14 @@ fn a_token_reads_back_as_a_length_or_a_number_and_else_none() {
     });
 }
 
-static READER: GlobalSignal<Option<ui_blitz::Tokens>> = Signal::global(|| None);
+static READER: GlobalSignal<Option<ui_host_hooks::Tokens>> = Signal::global(|| None);
 
 #[expect(
     non_snake_case,
     reason = "a Dioxus component function is named in CamelCase"
 )]
 fn Mounted() -> Element {
-    let tokens = ui_blitz::use_tokens();
+    let tokens = ui_host_hooks::use_tokens();
     use_hook(|| *READER.write() = Some(tokens));
     rsx! {
         style { ".ds {{ --gap: 7px; --gain: 2 }}" }
@@ -109,7 +109,7 @@ static SHEET: GlobalSignal<&'static str> = Signal::global(|| ".ds { --gap: 7px }
     reason = "a Dioxus component function is named in CamelCase"
 )]
 fn Sized() -> Element {
-    let gap = ui_blitz::use_resolved(|tokens| tokens.length("--gap"));
+    let gap = ui_host_hooks::use_resolved(|tokens| tokens.length("--gap"));
     // Render reads the published value: no document borrow, no timer.
     *GAP.write() = gap.value()().flatten();
     rsx! {

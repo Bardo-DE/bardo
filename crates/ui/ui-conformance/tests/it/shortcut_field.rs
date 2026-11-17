@@ -5,9 +5,9 @@ use dioxus::prelude::*;
 use keymap::keyboard_types::Modifiers as ChordModifiers;
 use keymap::{Chord, Key as ChordKey};
 use std::time::Duration;
-use ui_blitz::FocusFallback;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+use ui_host_hooks::FocusFallback;
 
 const VIEW: Viewport = Viewport {
     width: 420,

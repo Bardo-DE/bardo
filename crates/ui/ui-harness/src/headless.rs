@@ -29,11 +29,7 @@ use std::rc::Rc;
 use std::sync::Arc;
 use std::task::{Context, Waker};
 use std::time::Duration;
-use ui_blitz::FocusFallback;
-use ui_blitz::ScrollHandle;
-use ui_blitz::WindowSizer;
 use ui_blitz::clipboard::Memory;
-use ui_blitz::font_context;
 use ui_blitz::seam::DocRef;
 use ui_blitz::seam::DsNet;
 use ui_blitz::seam::EditListeners;
@@ -52,11 +48,15 @@ use ui_blitz::seam::{
 };
 use ui_blitz::seam::{LinkInbox, frame_links, read_link};
 use ui_blitz::seam::{Provided, Wiring};
-use ui_blitz::{FrameHandler, FrameImageClick, FrameLinkHover, FrameLinkMenu};
+use ui_blitz::{
+    FrameHandler, FrameImageClick, FrameLinkHover, FrameLinkMenu, ScrollHandle, WindowSizer,
+    font_context,
+};
 use ui_components::file_drop::board::FileDropBoard;
 use ui_components::host::gesture::GestureBus;
 use ui_components::prelude::*;
 use ui_core::time::clock::now;
+use ui_host_hooks::FocusFallback;
 
 /// Whether a document is laid out as it renders: a shell surface is not until it is mapped.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
@@ -239,6 +239,7 @@ impl Headless {
         doc.vdom
             .provide_root_context(ScrollHandle::new(scroll.clone(), Rc::new(|| {})));
         doc.vdom.provide_root_context(provided.clipboard);
+        doc.vdom.provide_root_context(provided.tokens);
         doc.vdom
             .provide_root_context(FileDropBoard::new(Rc::clone(&provided.host)));
         doc.vdom.provide_root_context(provided.host);

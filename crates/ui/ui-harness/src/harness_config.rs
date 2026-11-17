@@ -9,14 +9,10 @@ use crate::headless::Layout;
 use crate::recorded_window::WindowHosting;
 use crate::snapshot::Viewport;
 use keymap::Platform;
-use ui_blitz::AdapterPref;
-use ui_blitz::FileRoots;
-use ui_blitz::FocusFallback;
-use ui_blitz::FrameLinks;
-use ui_blitz::NetPolicy;
-use ui_blitz::RootContexts;
 use ui_blitz::seam::Setup;
+use ui_blitz::{AdapterPref, FileRoots, FrameLinks, NetPolicy, RootContexts};
 use ui_components::keys::KeySource;
+use ui_host_hooks::FocusFallback;
 
 /// A headless document's size and providers.
 ///

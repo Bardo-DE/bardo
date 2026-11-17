@@ -2,7 +2,7 @@
 //! have one, so only Linux reaches it (through arboard's Linux extension); every other platform
 //! reads nothing and refuses a write.
 
-use super::ClipboardError;
+use ui_host_hooks::clipboard::ClipboardError;
 
 /// The text on the primary selection.
 #[cfg(target_os = "linux")]
@@ -34,14 +34,14 @@ pub(super) fn write(text: &str) -> Result<(), ClipboardError> {
         .lock()
         .unwrap_or_else(PoisonError::into_inner);
     if owner.is_none() {
-        *owner = Some(arboard::Clipboard::new().map_err(ClipboardError::Refused)?);
+        *owner = Some(arboard::Clipboard::new().map_err(ClipboardError::refused)?);
     }
     let clipboard = owner.as_mut().ok_or(ClipboardError::Unavailable)?;
     clipboard
         .set()
         .clipboard(LinuxClipboardKind::Primary)
         .text(text)
-        .map_err(ClipboardError::Refused)
+        .map_err(ClipboardError::refused)
 }
 
 /// No primary selection here.

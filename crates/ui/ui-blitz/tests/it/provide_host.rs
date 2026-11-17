@@ -1,18 +1,19 @@
-//! `ui_blitz::provide_host` gives a root every part of the document host in one call, so a
+//! `ui_host_hooks::provide_host` gives a root every part of the document host in one call, so a
 //! shell's surface root can never hold a subset, and it keeps the host a window or the harness
 //! already wired.
 
 use dioxus::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
-use ui_blitz::clipboard::{ClipboardError, write_text};
 use ui_components::prelude::*;
+use ui_host_hooks::clipboard::{ClipboardError, write_text};
 
 /// What the roots under test saw, handed out through a root context.
 #[derive(Clone, Default)]
 struct Seen(Rc<RefCell<Vec<Rc<dyn DocumentHost>>>>);
 
 fn render(root: fn() -> Element) -> Vec<Rc<dyn DocumentHost>> {
+    ui_blitz::use_standalone_host();
     let seen = Seen::default();
     let mut dom = VirtualDom::new(root);
     dom.provide_root_context(seen.clone());
@@ -25,7 +26,7 @@ fn render(root: fn() -> Element) -> Vec<Rc<dyn DocumentHost>> {
     reason = "a Dioxus component function is named in CamelCase"
 )]
 fn Bare() -> Element {
-    let host = ui_blitz::provide_host();
+    let host = ui_host_hooks::provide_host();
     consume_context::<Seen>().0.borrow_mut().push(host);
     rsx! {}
 }
@@ -35,7 +36,7 @@ fn Bare() -> Element {
     reason = "a Dioxus component function is named in CamelCase"
 )]
 fn Nested() -> Element {
-    let host = ui_blitz::provide_host();
+    let host = ui_host_hooks::provide_host();
     consume_context::<Seen>().0.borrow_mut().push(host);
     rsx! { Inner {} }
 }
@@ -45,7 +46,7 @@ fn Nested() -> Element {
     reason = "a Dioxus component function is named in CamelCase"
 )]
 fn Inner() -> Element {
-    let host = ui_blitz::provide_host();
+    let host = ui_host_hooks::provide_host();
     consume_context::<Seen>().0.borrow_mut().push(host);
     rsx! {}
 }
@@ -103,11 +104,12 @@ fn a_bare_roots_clipboard_write_says_it_wrote_nothing_instead_of_succeeding() {
         reason = "a Dioxus component function is named in CamelCase"
     )]
     fn Copier() -> Element {
-        let _host = ui_blitz::provide_host();
+        let _host = ui_host_hooks::provide_host();
         let result = write_text("ada@example.org");
         consume_context::<Wrote>().0.borrow_mut().push(result);
         rsx! {}
     }
+    ui_blitz::use_standalone_host();
     let wrote = Wrote::default();
     let mut dom = VirtualDom::new(Copier);
     dom.provide_root_context(wrote.clone());
@@ -125,9 +127,10 @@ fn the_host_is_there_for_a_task_on_the_root_scope() {
         reason = "a Dioxus component function is named in CamelCase"
     )]
     fn Surface() -> Element {
-        let _host = ui_blitz::provide_host();
+        let _host = ui_host_hooks::provide_host();
         rsx! {}
     }
+    ui_blitz::use_standalone_host();
     let mut dom = VirtualDom::new(Surface);
     dom.rebuild_in_place();
     let from_root = dom.in_scope(ScopeId::ROOT, try_consume_context::<Rc<dyn DocumentHost>>);

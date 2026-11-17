@@ -17,11 +17,7 @@ use std::collections::VecDeque;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use ui_desktop::Outputs;
-
-/// The app's event loop has ended (or is ending), so the request was not taken.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
-#[error("the app's event loop has ended")]
-pub struct AppEnded;
+use ui_host_hooks::{AppControl, AppEnded};
 
 /// What a thread asked of the loop. The root is built on the loop's thread (a `Root` holds an
 /// `Rc`), from a closure that carries only `Send` data.
@@ -73,6 +69,13 @@ impl std::fmt::Debug for AppHandle {
 }
 
 impl AppHandle {
+    /// What a window's root may ask of the app, as `ui_host_hooks::use_app_control` reads it.
+    #[must_use]
+    pub fn control(&self) -> AppControl {
+        let handle = self.clone();
+        AppControl::new(move || handle.quit())
+    }
+
     /// A handle bound to no app yet. Hand it to `AppConfig::with_handle`.
     #[must_use]
     pub fn new() -> Self {

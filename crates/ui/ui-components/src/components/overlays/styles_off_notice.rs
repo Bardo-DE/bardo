@@ -19,7 +19,7 @@ pub fn styles_off_text(program: &str) -> String {
 }
 
 /// The notice for `program`. `onturnon` runs when the person presses **Turn On Again**: the app
-/// clears the guard (`ui_blitz::StylesGuard::turn_on_again`) and draws with its styles again.
+/// clears the guard (`ui_host_hooks::StylesGuard::turn_on_again`) and draws with its styles again.
 #[component]
 pub fn StylesOffNotice(#[props(into)] program: String, onturnon: EventHandler<()>) -> Element {
     rsx! {

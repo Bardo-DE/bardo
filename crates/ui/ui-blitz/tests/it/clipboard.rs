@@ -4,11 +4,11 @@
 
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_blitz::clipboard::{
-    ClipboardError, ClipboardTarget, read_from, read_text, write_text, write_to,
-};
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+use ui_host_hooks::clipboard::{
+    ClipboardError, ClipboardTarget, read_from, read_text, write_text, write_to,
+};
 
 const VIEW: Viewport = Viewport {
     width: 360,
@@ -141,8 +141,9 @@ fn the_primary_selection_and_the_clipboard_are_separate_slots() {
 mod files {
     use std::path::PathBuf;
     use std::sync::Arc;
-    use ui_blitz::clipboard::{Clipboard, ClipboardFiles, FileOp, Memory};
+    use ui_blitz::clipboard::Memory;
     use ui_blitz::seam::MemoryShell;
+    use ui_host_hooks::clipboard::{Clipboard, ClipboardFiles, FileOp};
 
     fn memory() -> (Arc<MemoryShell>, Memory) {
         let shell = Arc::new(MemoryShell::default());

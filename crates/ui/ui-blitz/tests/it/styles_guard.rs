@@ -2,9 +2,9 @@
 //! and the record file's life in a scratch state directory (tests never touch the real system).
 
 use std::path::PathBuf;
-use ui_blitz::StylesGuard;
-use ui_blitz::styles_guard::{Record, decide, parse, render};
 use ui_components::style::kit::{Fingerprint, LookStyle, Styles, UserStyle};
+use ui_host_hooks::StylesGuard;
+use ui_host_hooks::styles_guard::{Record, decide, parse, render};
 
 const A: Fingerprint = Fingerprint(0xa);
 const B: Fingerprint = Fingerprint(0xb);

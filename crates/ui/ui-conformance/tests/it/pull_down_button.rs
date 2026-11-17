@@ -4,9 +4,9 @@
 
 use dioxus::prelude::*;
 use std::time::Duration;
-use ui_blitz::FocusFallback;
 use ui_components::prelude::*;
 use ui_harness::{Clock, Harness, HarnessConfig, Input, Viewport};
+use ui_host_hooks::FocusFallback;
 
 const VIEW: Viewport = Viewport {
     width: 420,

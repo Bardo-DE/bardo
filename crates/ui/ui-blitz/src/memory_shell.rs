@@ -3,10 +3,10 @@
 //! copy wrote, without the desktop's clipboard; and the IME requests an edit surface makes, so a test sees them. Nothing
 //! else a shell does (a cursor, a title, a redraw) has anywhere to go headless.
 
-use crate::clipboard::ClipboardFiles;
 use blitz_traits::shell::{ClipboardError, ShellProvider};
 use std::sync::{Mutex, PoisonError};
 use ui_components::prelude::*;
+use ui_host_hooks::clipboard::ClipboardFiles;
 
 /// A shell whose clipboard and IME state are in memory.
 #[derive(Debug)]

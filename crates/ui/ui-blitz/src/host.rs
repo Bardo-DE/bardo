@@ -38,8 +38,7 @@
 //! the document itself and hands the app nothing else that can see it.
 
 use crate::blitz_host::{Provided, Wiring};
-use crate::click_focus::FocusFallback;
-use crate::clipboard::{Clipboard, System};
+use crate::clipboard::System;
 use crate::edit_ime::{EditListeners, ime_of};
 use crate::edit_window::captured_of;
 use crate::focus_keep::{FocusKeeper, keep};
@@ -77,6 +76,8 @@ use ui_components::file_drop::board::FileDropBoard;
 use ui_components::host::resized::WindowResized;
 use ui_components::prelude::*;
 use ui_components::window::host::use_window_host_provider;
+use ui_host_hooks::FocusFallback;
+use ui_host_hooks::clipboard::Clipboard;
 
 /// What `Host` wraps, and what the app gave its document.
 #[derive(Props, Clone)]

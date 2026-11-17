@@ -10,13 +10,13 @@ use dioxus::prelude::*;
 use settings_store_fs::{ConfigRoot, Store};
 use settings_types::AppName;
 use std::sync::Arc;
-use ui_blitz::TokioSpawner;
 use ui_components::components::controls::button_model::Answers;
 use ui_components::components::menus::item::item::MenuImage;
 use ui_components::focus::request::use_focus_request;
 use ui_components::host::measure::{Anchor, MountedRef};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
+use ui_host_hooks::TokioSpawner;
 use ui_settings::{SystemPrefsSource, use_environment};
 
 /// This example's own stylesheet, quire tokens only (`tests/coherence.rs::our_stylesheet_lints_clean`).
@@ -26,7 +26,7 @@ pub const STYLE: &str = include_str!("style.css");
 ///
 /// Reads its settings through `ui_settings::use_environment` (`../../CONSUMING.md` "Reading
 /// appearance"), live file and portal watches included. Its watches run on the Tokio runtime
-/// that `ui_blitz::launch` enters, through `ui_blitz::TokioSpawner`.
+/// that `ui_blitz::launch` enters, through `ui_host_hooks::TokioSpawner`.
 #[component]
 pub fn App() -> Element {
     let store = Store::new(ConfigRoot::Xdg, AppName::foreign("consumer"));

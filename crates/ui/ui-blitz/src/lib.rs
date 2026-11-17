@@ -1,15 +1,16 @@
 //! Blitz glue for quire: launching an app and opening its windows, registering the faces, the
-//! clipboard and the host seams (`provide_host`), PDF output (feature `pdf`), printing (feature
-//! `print`), spellchecking (feature `spell`), the crash guard for the person's styles
-//! (`styles_guard`), the menu bar exported over D-Bus (feature `menus`),
-//! and the device-pixel layout snap (`snap`). The only
-//! quire crate that names the blitz crates; the test driver lives in `ui-harness`, which builds
-//! its document from the parts in `seam` (feature `testing`).
+//! clipboards and the document host (`use_standalone_host`), PDF output (feature `pdf`), printing
+//! (feature `print`), spellchecking (feature `spell`), the menu bar exported over D-Bus (feature
+//! `menus`), and the device-pixel layout snap (`snap`). The renderer: it names the blitz crates,
+//! and fills the seams of `ui-host-hooks`, which is what a UI library links instead (the document
+//! host, the styles guard, the resolved tokens, the clipboard calls, the `TokioSpawner`). The test
+//! driver lives in `ui-harness`, which builds its document from the parts in `seam` (feature
+//! `testing`).
 //!
 //! It is also the only quire crate that may depend on `tokio` (`scripts/check-boundary.sh`
 //! forbids it to `ds`): `launch` owns the process-wide runtime (`launch::runtime`), so the
-//! `TokioSpawner` it hands `ui_settings::use_environment` has a runtime to run its portal and
-//! file-watch tasks on, and `enter_runtime` lends it to a test driver.
+//! `ui_host_hooks::TokioSpawner` it hands `ui_settings::use_environment` has a runtime to run its
+//! portal and file-watch tasks on, and `enter_runtime` lends it to a test driver.
 
 mod app_handle;
 mod app_id;
@@ -91,7 +92,6 @@ pub mod snap;
 #[cfg(feature = "spell")]
 pub mod spell;
 mod startup_token;
-pub mod styles_guard;
 mod texture_layer;
 mod wake;
 #[cfg(all(target_os = "linux", feature = "quire-desktop"))]
@@ -114,13 +114,12 @@ mod window_sizer;
 #[cfg(all(target_os = "linux", feature = "quire-desktop"))]
 mod xdg_activation;
 
-pub use app_handle::{AppEnded, AppHandle, AppHold, use_app_handle};
+pub use app_handle::{AppHandle, AppHold, use_app_handle};
 pub use app_id::AppId;
 pub use app_life::LastWindowClosed;
 pub use blitz_embed::adapter::{ADAPTER_ENV, AdapterPref};
 pub use blitz_embed::net::FileRoots;
-pub use blitz_host::provide_host;
-pub use click_focus::FocusFallback;
+pub use blitz_host::use_standalone_host;
 pub use close_request::use_close_request;
 pub use content_fit::{ContentFit, use_content_fit};
 pub use contexts::RootContexts;
@@ -133,7 +132,7 @@ pub use frame_menu::FrameLinkMenu;
 pub use frame_tag::FrameTag;
 pub use gpu_request::GpuRequest;
 pub use keymap_detect::system_key_source;
-pub use launch::{AppConfig, RuntimeGuard, TokioSpawner, enter_runtime, launch, launch_idle};
+pub use launch::{AppConfig, RuntimeGuard, enter_runtime, launch, launch_idle};
 pub use link_open::{LinkFailureHandler, LinkOpenError};
 pub use net_policy::{AppNet, NetDecision, NetPolicy, NetReply, NetRequest};
 pub use open_window::{WindowHandle, WindowSpec, open_window, open_window_with, use_window_handle};
@@ -150,10 +149,9 @@ pub use pdf_thumb::{
 };
 #[cfg(feature = "print")]
 pub use print::{PrintError, PrintOutcome, print_dialog};
-pub use resolved::{Lookup, Resolved, ResolvedTokens, Tokens, use_resolved, use_tokens};
+pub use resolved::Resolved;
 pub use shell_keys::ShellKeys;
 pub use snap::snap_to_device;
-pub use styles_guard::{StylesGuard, use_styles_guard};
 pub use texture_layer::{
     Gpu, GpuError, Pace, PixelFormat, Pixels, PixelsError, Sampling, TexelRect, Texels, TextureFit,
     TextureHandle, TextureLayer, use_gpu,
@@ -162,10 +160,10 @@ pub use ui_emoji::{EMOJI_FAMILY_ENV, EmojiChoice, colrv1_emoji_file};
 pub use window::{Decorations, WinitWindow};
 pub use window_scroll::{ScrollBounds, ScrollHandle, use_scroll_handle};
 // What a scroll command names: the container's element `id`, the axis, and how it moves.
-pub use blitz_embed::element_id::ElementId;
 pub use blitz_embed::scroll::cmd::ScrollCmd;
 pub use blitz_embed::scroll::engine::ScrollAnimate;
 pub use blitz_embed::scroll::geom::ScrollAxis;
+pub use blitz_embed_types::element_id::ElementId;
 pub use screen_area::{Reserve, ScreenArea, ScreenOf, WorkBasis};
 pub use size_ledger::{SizeOrigin, SizeRequest};
 pub use window_fit::Fit;
