@@ -4,9 +4,9 @@
 use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held};
 use crate::support::drive::click;
+use crate::support::drive::settle_on_threads;
 use settings_app_model::PageSlug;
 use settings_app_ui::{Opening, STYLE};
-use std::time::Duration;
 use ui_harness::Harness;
 use ui_lint::{LintConfig, markup};
 use ui_settings::live::Verdict;
@@ -17,19 +17,6 @@ const SIGN_IN_ROW: &str = "[aria-label=\"Sign in again\"] .ds-field-row-control 
 const EXPIRY_ROW: &str = "[aria-label=\"Sign-in\"]";
 const ENDING: &str = "Google signs this account out on 2026-10-14";
 const ENDED: &str = "Signed out by Google on 2026-10-14";
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemon answers on a real thread; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
-}
 
 /// A Google account with the given standing and expiry words.
 fn google(id: &str, label: &str, state: &str, words: Option<&str>) -> Held {
@@ -56,14 +43,14 @@ fn world(name: &str, rows: Vec<Held>, chosen: &str) -> World {
     let mut harness = Sandbox::new(name)
         .with_modules(fake.hosted())
         .harness_in(opening, ui_components::prelude::Scheme::Light);
-    settle(&mut harness, "the list", |h| {
+    settle_on_threads(&mut harness, "the list", |h| {
         h.count(".account-row-body") >= count
     });
     click(
         &mut harness,
         &format!("#account-{}", chosen.replace('.', "-")),
     );
-    settle(&mut harness, "the account", |h| {
+    settle_on_threads(&mut harness, "the account", |h| {
         h.attr(".accounts-detail", "data-account").as_deref() == Some(chosen)
     });
     World { harness, fake }
@@ -150,7 +137,7 @@ fn the_banners_button_starts_the_sign_in_in_accountd_for_either_banner() {
         let mut w = world(name, rows, "work.example");
         assert!(w.fake.sets().is_empty(), "{name}: nothing was set yet");
         click(&mut w.harness, BANNER_BUTTON);
-        settle(&mut w.harness, "the action", |_| !w.fake.sets().is_empty());
+        settle_on_threads(&mut w.harness, "the action", |_| !w.fake.sets().is_empty());
         assert_eq!(
             w.fake.sets(),
             [(

@@ -4,12 +4,12 @@
 
 use crate::support::Sandbox;
 use crate::support::compositor::{Compositor, Row};
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, scroll_into_view, sidebar_page};
 use settings_app_model::PageSlug;
 use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_harness::{Harness, Input};
 
 const GRIM: &str = "/usr/bin/grim";
@@ -19,19 +19,6 @@ const LOUPE: &str = "org.gnome.Loupe";
 /// A power's row of a program: `privacy-<program>-<power>`, as the page names it.
 fn line(program: &str, power: &str) -> String {
     format!("#privacy-{program}-{power}")
-}
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemon answers on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
 }
 
 struct World {
@@ -64,7 +51,7 @@ fn world(name: &str, rows: Option<Vec<Row>>) -> World {
 }
 
 fn listed(world: &mut World) {
-    settle(&mut world.harness, "the list", |h| {
+    settle_on_threads(&mut world.harness, "the list", |h| {
         h.count("[data-privacy=\"list\"]") == 1
     });
 }
@@ -158,14 +145,14 @@ fn a_choice_is_sent_as_the_one_change_and_the_list_follows() {
     let screen = line("usr-bin-grim", "screen");
     // The menu: Allowed, Denied, Ask.
     choose(&mut w.harness, &screen, 2);
-    settle(&mut w.harness, "the answer", |h| {
+    settle_on_threads(&mut w.harness, "the answer", |h| {
         label_of(h, &screen).as_deref() == Some("Denied")
     });
     assert_eq!(w.fake.log(), ["set privacy.screen.aaa off"]);
 
     let clipboard = line("usr-bin-grim", "clipboard");
     choose(&mut w.harness, &clipboard, 3);
-    settle(&mut w.harness, "the question to come back", |h| {
+    settle_on_threads(&mut w.harness, "the question to come back", |h| {
         label_of(h, &clipboard).as_deref() == Some("Ask")
     });
     assert_eq!(

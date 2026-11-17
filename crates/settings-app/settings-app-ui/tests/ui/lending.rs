@@ -4,11 +4,11 @@
 //! down its calls; the files are in a scratch folder.
 
 use crate::support::Sandbox;
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, scroll_into_view};
 use crate::support::lending::SHIPPED;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_harness::Harness;
 
 const LABEL: &str = "Let my other computers use this computer's models";
@@ -33,25 +33,12 @@ fn plain(harness: &Harness) -> String {
     harness.html().replace("&#39;", "'").replace("&#x27;", "'")
 }
 
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
-}
-
 /// The window with the switch pressed once: the question is up.
 fn asked(sandbox: &Sandbox) -> Harness {
     let mut harness = sandbox.harness(intelligence());
     scroll_into_view(&mut harness, &toggle());
     click(&mut harness, &toggle());
-    settle(&mut harness, "the question", |h| {
+    settle_on_threads(&mut harness, "the question", |h| {
         plain(h).contains(QUESTION)
     });
     harness
@@ -91,7 +78,7 @@ fn cancel_writes_nothing() {
     let sandbox = Sandbox::new("lending-cancel");
     let mut harness = asked(&sandbox);
     click(&mut harness, CANCEL);
-    settle(&mut harness, "the question to go", |h| {
+    settle_on_threads(&mut harness, "the question to go", |h| {
         !plain(h).contains(QUESTION)
     });
     assert_eq!(sandbox.drop_in(), None);
@@ -105,7 +92,7 @@ fn allow_sets_sharing_up_and_then_writes_the_setting() {
     let sandbox = Sandbox::new("lending-allow");
     let mut harness = asked(&sandbox);
     click(&mut harness, ALLOW);
-    settle(&mut harness, "the setting", |_| {
+    settle_on_threads(&mut harness, "the setting", |_| {
         serve_setting(&sandbox).is_some()
     });
     assert_eq!(serve_setting(&sandbox), Some(true));
@@ -114,7 +101,7 @@ fn allow_sets_sharing_up_and_then_writes_the_setting() {
         sandbox.units().calls(),
         ["reload", "restart bardo-inferd.service"]
     );
-    settle(&mut harness, "the switch on", |h| {
+    settle_on_threads(&mut harness, "the switch on", |h| {
         checked(h).as_deref() == Some("true")
     });
 }
@@ -125,7 +112,7 @@ fn a_restart_that_fails_is_told_in_plain_words_and_the_setting_stays_off() {
     sandbox.units().refuse_restart();
     let mut harness = asked(&sandbox);
     click(&mut harness, ALLOW);
-    settle(&mut harness, "the sentence", |h| {
+    settle_on_threads(&mut harness, "the sentence", |h| {
         h.html().contains("the models service did not restart")
     });
     assert_eq!(serve_setting(&sandbox), None);
@@ -139,7 +126,7 @@ fn a_different_file_is_named_in_the_question_and_replaced_on_allow() {
     let mut harness = asked(&sandbox);
     assert!(harness.html().contains("replaces it"), "{}", harness.html());
     click(&mut harness, ALLOW);
-    settle(&mut harness, "the setting", |_| {
+    settle_on_threads(&mut harness, "the setting", |_| {
         serve_setting(&sandbox).is_some()
     });
     assert_eq!(sandbox.drop_in().as_deref(), Some(SHIPPED));
@@ -154,10 +141,10 @@ fn turning_it_off_takes_sharing_away_without_asking() {
     scroll_into_view(&mut harness, &toggle());
     assert_eq!(checked(&harness).as_deref(), Some("true"));
     click(&mut harness, &toggle());
-    settle(&mut harness, "the file to go", |_| {
+    settle_on_threads(&mut harness, "the file to go", |_| {
         sandbox.drop_in().is_none()
     });
-    settle(&mut harness, "the setting off", |_| {
+    settle_on_threads(&mut harness, "the setting off", |_| {
         serve_setting(&sandbox) == Some(false)
     });
     assert!(!plain(&harness).contains(QUESTION), "off asks nothing");
@@ -165,7 +152,7 @@ fn turning_it_off_takes_sharing_away_without_asking() {
         sandbox.units().calls(),
         ["reload", "restart bardo-inferd.service"]
     );
-    settle(&mut harness, "the switch off", |h| {
+    settle_on_threads(&mut harness, "the switch off", |h| {
         checked(h).as_deref() == Some("false")
     });
 }

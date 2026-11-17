@@ -7,6 +7,7 @@ use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held, ModuleAt, SECRET};
 use crate::support::bus::PrivateBus;
 use crate::support::drive::click;
+use crate::support::drive::settle_on_threads;
 use crate::support::syncd::{Standing, Syncd};
 use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_SETTINGS_PATH};
 use settings_app_callers::{RoleCheck, RoleName, introduce_service, private_peers, roles};
@@ -66,19 +67,6 @@ fn accounts() -> Opening {
         page: Some(PageSlug("accounts".to_owned())),
         query: String::new(),
     }
-}
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
 }
 
 fn runtime() -> tokio::runtime::Runtime {
@@ -187,11 +175,11 @@ fn start_syncing(
         .on_bus(&bus.address)
         .with_modules(modules.clone());
     let mut harness = sandbox.harness_in(accounts(), scheme);
-    settle(&mut harness, "the list", |h| {
+    settle_on_threads(&mut harness, "the list", |h| {
         h.count(".accounts-list") == 1 || h.count(".accounts-empty") == 1
     });
     // Each module answers on its own; the list is whole once every served one has.
-    settle(&mut harness, "every module's rows", |h| {
+    settle_on_threads(&mut harness, "every module's rows", |h| {
         expected == 0 || h.count(".account-row-body") >= expected
     });
     World {
@@ -226,7 +214,7 @@ fn press_revoke(w: &mut World) {
 /// Chooses `account` in the list and waits for its detail beside it.
 fn open(w: &mut World, account: Acct) {
     click(&mut w.harness, account.row);
-    settle(&mut w.harness, "the account", |h| {
+    settle_on_threads(&mut w.harness, "the account", |h| {
         h.attr(".accounts-detail", "data-account").as_deref() == Some(account.id)
     });
 }

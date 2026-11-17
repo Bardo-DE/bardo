@@ -2,11 +2,11 @@
 //! module in memory. Nothing is chosen until the person chooses, and an unset model shows as such.
 
 use crate::support::Sandbox;
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, scroll_into_view, sidebar_page};
 use crate::support::inferd::Inferd;
 use settings_app_model::{ASSISTANT_MODEL_SLUG, ASSISTANT_SETUP_SLUG, Notice, PageSlug};
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_harness::{Harness, Input};
 use ui_settings::live::Verdict;
 
@@ -25,19 +25,6 @@ fn opening(slug: &str) -> Opening {
         page: Some(PageSlug(slug.to_owned())),
         query: String::new(),
     }
-}
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
 }
 
 /// The row's button text, once the picker is there.
@@ -81,7 +68,7 @@ fn world(name: &str, slug: &str, fake: Inferd) -> World {
 }
 
 fn ready(world: &mut World) {
-    settle(&mut world.harness, "the picker", |h| {
+    settle_on_threads(&mut world.harness, "the picker", |h| {
         h.attr(".picker", "data-picker").as_deref() == Some("ready")
     });
 }

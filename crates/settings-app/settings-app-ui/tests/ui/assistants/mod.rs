@@ -8,12 +8,12 @@ use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held};
 use crate::support::bus::PrivateBus;
 use crate::support::computers::{Asker, Fake, Lender, Own, serve_with};
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, click_when_still, scroll_into_view, type_into};
 use crate::support::inferd::Inferd;
 use action_settings::{CloudAllowed, read_places};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_harness::{Harness, Input};
 use ui_settings::live::Verdict;
 
@@ -30,19 +30,6 @@ fn intelligence() -> Opening {
         page: Some(PageSlug("intelligence".to_owned())),
         query: String::new(),
     }
-}
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
 }
 
 /// The page over a fake accountd module in memory holding `held`, in a world whose docket file holds `file`.
@@ -66,7 +53,7 @@ fn world_with(name: &str, held: Vec<Held>, file: Option<&str>, agents: Option<&s
         sandbox.write("actions/agents.toml", text);
     }
     let mut harness = sandbox.harness(intelligence());
-    settle(&mut harness, "the places", |h| {
+    settle_on_threads(&mut harness, "the places", |h| {
         h.count("[data-assistants=\"places\"]") == 1
     });
     World { sandbox, harness }
@@ -158,7 +145,7 @@ fn build(
         sandbox.write(SETTINGS, text);
     }
     let mut harness = sandbox.harness(intelligence());
-    settle(&mut harness, "the computers", |h| h.count(GROUP) == 1);
+    settle_on_threads(&mut harness, "the computers", |h| h.count(GROUP) == 1);
     Computers {
         sandbox,
         harness,
@@ -178,7 +165,7 @@ fn group_text(harness: &Harness) -> String {
 
 fn press(harness: &mut Harness, aria: &str) {
     let selector = format!("{GROUP} .ds-button[aria-label=\"{aria}\"]");
-    settle(harness, aria, |h| h.count(&selector) == 1);
+    settle_on_threads(harness, aria, |h| h.count(&selector) == 1);
     scroll_into_view(harness, &selector);
     click(harness, &selector);
 }

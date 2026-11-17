@@ -6,29 +6,16 @@
 use crate::support::Sandbox;
 use crate::support::bus::PrivateBus;
 use crate::support::drive::click;
+use crate::support::drive::settle_on_threads;
 use crate::support::handover::HandsOver;
 use crate::support::portal;
 use settings_app_client::Vouch;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use std::sync::atomic::Ordering;
-use std::time::Duration;
 use ui_harness::Harness;
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
-}
 
 /// The unique name that owns `name` now.
 fn owner(rt: &tokio::runtime::Runtime, via: &zbus::Connection, name: &str) -> String {
@@ -74,10 +61,10 @@ fn an_app_is_taken_back_at_the_portal_that_was_checked() {
         query: String::new(),
     });
     let remove = "[aria-label=\"Remove Video Meet\"]";
-    settle(&mut harness, "the list", |h| h.count(remove) == 1);
+    settle_on_threads(&mut harness, "the list", |h| h.count(remove) == 1);
     handover.store(true, Ordering::SeqCst);
     click(&mut harness, remove);
-    settle(&mut harness, "the removal", |_| {
+    settle_on_threads(&mut harness, "the removal", |_| {
         !original.revoked().is_empty()
     });
     assert_eq!(

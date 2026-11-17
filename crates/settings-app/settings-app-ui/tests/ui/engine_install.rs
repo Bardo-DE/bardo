@@ -5,11 +5,11 @@
 
 use crate::support::Sandbox;
 use crate::support::desk::{Fake, nothing_installed};
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, scroll_into_view};
 use crate::support::inferd::Inferd;
 use settings_app_model::{ASSISTANT_MODEL_SLUG, EngineStanding, InstallScope, PageSlug};
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_harness::{Harness, Input};
 use ui_settings::live::Verdict;
 
@@ -18,19 +18,6 @@ const ENGINE_BUTTON: &str = "#picker-engine-ai-model-text-balanced .ds-popup .ds
 const SHEET: &str = "[data-engine-sheet]";
 const GO: &str = ".engine-sheet-buttons .ds-button[data-answers=\"return\"]";
 const LEAVE: &str = ".engine-sheet-buttons .ds-button[data-answers=\"escape\"]";
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fakes answer on real threads, and the engines are looked at again every couple of
-    // seconds, so the budget is generous and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
-}
 
 /// Clicks the menu item `nth` (from 1), the way a person points at it first.
 fn pick(harness: &mut Harness, nth: usize) {
@@ -56,14 +43,14 @@ fn world(name: &str, desk: Fake) -> World {
             query: String::new(),
         });
     let mut world = World { desk, harness };
-    settle(&mut world.harness, "the picker", |h| {
+    settle_on_threads(&mut world.harness, "the picker", |h| {
         h.attr(".picker", "data-picker").as_deref() == Some("ready")
     });
     scroll_into_view(&mut world.harness, MODEL_BUTTON);
     click(&mut world.harness, MODEL_BUTTON);
     // Items: None, Automatic, Local.
     pick(&mut world.harness, 3);
-    settle(&mut world.harness, "the engines", |h| {
+    settle_on_threads(&mut world.harness, "the engines", |h| {
         h.count(ENGINE_BUTTON) == 1
     });
     world
@@ -80,7 +67,7 @@ fn an_engine_that_is_not_there_asks_to_be_downloaded_and_not_now_leaves_everythi
     let mut world = world("engine-ask", Fake::with(nothing_installed()));
     // Items: llama.cpp (it runs the models listed), then vLLM and Strata, which could be got.
     choose_engine(&mut world, 2);
-    settle(&mut world.harness, "the sheet", |h| h.count(SHEET) == 1);
+    settle_on_threads(&mut world.harness, "the sheet", |h| h.count(SHEET) == 1);
     let html = world.harness.html();
     assert!(html.contains("Download vLLM?"), "{html}");
     assert!(
@@ -105,7 +92,7 @@ fn an_engine_that_is_not_there_asks_to_be_downloaded_and_not_now_leaves_everythi
 fn download_starts_one_for_everyone_follows_it_and_continue_restarts_the_assistant() {
     let mut world = world("engine-download", Fake::with(nothing_installed()));
     choose_engine(&mut world, 2);
-    settle(&mut world.harness, "the sheet", |h| h.count(SHEET) == 1);
+    settle_on_threads(&mut world.harness, "the sheet", |h| h.count(SHEET) == 1);
     click(&mut world.harness, GO);
     assert_eq!(
         world.desk.installs(),
@@ -118,17 +105,17 @@ fn download_starts_one_for_everyone_follows_it_and_continue_restarts_the_assista
     let mut rows = nothing_installed();
     rows[1].standing = EngineStanding::Installing(500);
     world.desk.show(rows.clone());
-    settle(&mut world.harness, "the bar", |h| {
+    settle_on_threads(&mut world.harness, "the bar", |h| {
         h.html().contains("Downloading vLLM")
     });
     rows[1].standing = EngineStanding::Ready;
     world.desk.show(rows);
-    settle(&mut world.harness, "the end", |h| {
+    settle_on_threads(&mut world.harness, "the end", |h| {
         h.attr(SHEET, "data-engine-sheet").as_deref() == Some("done")
     });
     assert!(world.harness.html().contains("vLLM Is Ready"));
     click(&mut world.harness, GO);
-    settle(&mut world.harness, "the restart", |_| {
+    settle_on_threads(&mut world.harness, "the restart", |_| {
         world.desk.restarts() >= 1
     });
     assert_eq!(world.desk.restarts(), 1, "the assistant restarts once");

@@ -6,6 +6,7 @@
 
 use crate::support::Sandbox;
 use crate::support::bus::PrivateBus;
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, keys, scroll_into_view};
 use crate::support::inferd::{Inferd, NOT_WHOLE};
 use crate::support::running::{Fake, serve};
@@ -30,19 +31,6 @@ fn intelligence() -> Opening {
         page: Some(PageSlug("intelligence".to_owned())),
         query: String::new(),
     }
-}
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fakes answer on real threads; a loaded machine running every test at once can take
-    // several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
 }
 
 struct World {
@@ -93,7 +81,7 @@ fn a_ready_model_shows_ready_the_memory_it_takes_and_stop_and_a_stopped_one_offe
             RunningModel::new("local/holo", RunState::Stopped, "llama-server", 0),
         ],
     );
-    settle(&mut w.harness, "the ready model", |h| h.count(READY) == 1);
+    settle_on_threads(&mut w.harness, "the ready model", |h| h.count(READY) == 1);
     let ready = row_text(&w.harness, READY);
     assert!(
         ready.contains("Ready") && ready.contains("14.2 GB"),
@@ -112,13 +100,13 @@ fn a_ready_model_shows_ready_the_memory_it_takes_and_stop_and_a_stopped_one_offe
 #[test]
 fn a_start_shows_progress_until_the_assistant_says_the_model_is_ready() {
     let mut w = world("models-start", vec![qwen(RunState::Stopped)]);
-    settle(&mut w.harness, "the stopped model", |h| {
+    settle_on_threads(&mut w.harness, "the stopped model", |h| {
         h.count(START_QWEN) == 1
     });
     w.fake.hold_starts();
     scroll_into_view(&mut w.harness, START_QWEN);
     click(&mut w.harness, START_QWEN);
-    settle(&mut w.harness, "the starting state", |h| {
+    settle_on_threads(&mut w.harness, "the starting state", |h| {
         h.count("[data-run=\"starting\"]") == 1
     });
     assert_eq!(
@@ -128,7 +116,7 @@ fn a_start_shows_progress_until_the_assistant_says_the_model_is_ready() {
     );
     assert!(row_text(&w.harness, "[data-run=\"starting\"]").contains("Starting"));
     w.fake.finish();
-    settle(&mut w.harness, "the ready state", |h| h.count(READY) == 1);
+    settle_on_threads(&mut w.harness, "the ready state", |h| h.count(READY) == 1);
     assert!(row_text(&w.harness, READY).contains("14.2 GB"));
     assert_eq!(w.harness.count(STOP_QWEN), 1, "it can be stopped now");
     assert_eq!(w.fake.calls(), ["start local/qwen"]);
@@ -136,12 +124,12 @@ fn a_start_shows_progress_until_the_assistant_says_the_model_is_ready() {
 
 /// Opens the sheet of programs.
 fn programs_open(w: &mut World) {
-    settle(&mut w.harness, "the programs row", |h| {
+    settle_on_threads(&mut w.harness, "the programs row", |h| {
         h.count(OPEN_PROGRAMS) == 1
     });
     scroll_into_view(&mut w.harness, OPEN_PROGRAMS);
     click(&mut w.harness, OPEN_PROGRAMS);
-    settle(&mut w.harness, "the sheet", |h| h.count(VLLM) == 1);
+    settle_on_threads(&mut w.harness, "the sheet", |h| h.count(VLLM) == 1);
 }
 
 /// Types `text` into the field and presses Enter.
@@ -162,7 +150,7 @@ fn an_engine_program_row_is_a_field_that_says_it_is_found_automatically_and_sets
         "an empty field says what empty means"
     );
     enter_path(&mut w, "/usr/bin/python3");
-    settle(&mut w.harness, "the set", |_| {
+    settle_on_threads(&mut w.harness, "the set", |_| {
         !w.module.sets.lock().expect("sets").is_empty()
     });
     assert_eq!(
@@ -180,7 +168,7 @@ fn a_path_the_module_refuses_shows_its_words_under_the_field_and_is_not_in_force
     let mut w = world("programs-refused", Vec::new());
     programs_open(&mut w);
     enter_path(&mut w, "python3");
-    settle(&mut w.harness, "the refusal", |h| {
+    settle_on_threads(&mut w.harness, "the refusal", |h| {
         h.count(PROGRAM_NOTE) == 1
     });
     assert_eq!(row_text(&w.harness, PROGRAM_NOTE), NOT_WHOLE);

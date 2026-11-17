@@ -6,6 +6,7 @@ use crate::support::Sandbox;
 use crate::support::bus::PrivateBus;
 use crate::support::compositor::{Compositor, Row};
 use crate::support::drive::click;
+use crate::support::drive::settle_on_threads;
 use crate::support::portal::{Fake, Remembered, serve};
 use settings_app_client::Vouch;
 use settings_app_model::PageSlug;
@@ -13,7 +14,6 @@ use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use settings_app_system::updates::NOW;
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_harness::Harness;
 use ui_settings::live::AnyOwner;
 
@@ -31,19 +31,6 @@ fn privacy() -> Opening {
         page: Some(PageSlug("privacy".to_owned())),
         query: String::new(),
     }
-}
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
 }
 
 /// The apps the portal remembers: one a system desktop entry names, one that has no entry, and
@@ -126,14 +113,14 @@ fn without_styles(html: &str) -> String {
 }
 
 fn listed(w: &mut World) {
-    settle(&mut w.harness, "the list", |h| h.count(GROUP) == 1);
+    settle_on_threads(&mut w.harness, "the list", |h| h.count(GROUP) == 1);
 }
 
 /// The programs above are on the page too. They load on their own and push the rows below down
 /// when they come, so a click aimed before then can land on another row.
 fn steady(w: &mut World) {
     listed(w);
-    settle(&mut w.harness, "the programs above", |h| {
+    settle_on_threads(&mut w.harness, "the programs above", |h| {
         h.count("[data-privacy=\"list\"]") == 1
     });
 }
@@ -165,7 +152,7 @@ fn the_apps_the_portal_remembers_are_named_by_the_id_it_proved_and_say_when_and_
     );
     assert_eq!(w.harness.count("[aria-label^=\"Remove \"]"), 3);
     // The programs above load on their own; they come too.
-    settle(&mut w.harness, "the programs above", |h| {
+    settle_on_threads(&mut w.harness, "the programs above", |h| {
         h.count("[data-privacy=\"list\"]") == 1
     });
 }
@@ -177,7 +164,7 @@ fn remove_takes_the_app_back_and_its_row_goes() {
     let portal = w.portal.as_ref().expect("a portal");
     assert!(portal.revoked().is_empty());
     click(&mut w.harness, REMOVE_MEET);
-    settle(&mut w.harness, "the row to go", |h| {
+    settle_on_threads(&mut w.harness, "the row to go", |h| {
         h.count(REMOVE_MEET) == 0
     });
     let portal = w.portal.as_ref().expect("a portal");
@@ -196,7 +183,7 @@ fn a_refusal_is_told_in_plain_words_and_the_row_stays() {
     steady(&mut w);
     w.portal.as_ref().expect("a portal").refuse_next();
     click(&mut w.harness, REMOVE_MEET);
-    settle(&mut w.harness, "the toast", |h| h.count(".ds-toast") == 1);
+    settle_on_threads(&mut w.harness, "the toast", |h| h.count(".ds-toast") == 1);
     let toast = w.harness.text_of(".ds-toast").unwrap_or_default();
     assert!(
         toast.contains("Screen sharing could not be changed"),
@@ -206,11 +193,11 @@ fn a_refusal_is_told_in_plain_words_and_the_row_stays() {
     assert_eq!(w.harness.count(REMOVE_MEET), 1, "the app is still listed");
     // A second press works: the first refusal did not leave the list stuck. The toast sits over
     // the last row at this window size, so the press waits for it to go.
-    settle(&mut w.harness, "the toast to go", |h| {
+    settle_on_threads(&mut w.harness, "the toast to go", |h| {
         h.count(".ds-toast") == 0
     });
     click(&mut w.harness, REMOVE_MEET);
-    settle(&mut w.harness, "the row to go", |h| {
+    settle_on_threads(&mut w.harness, "the row to go", |h| {
         h.count(REMOVE_MEET) == 0
     });
 }

@@ -3,12 +3,12 @@
 //! real folder is never touched.
 
 use crate::support::Sandbox;
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, click_when_still, scroll_into_view};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
-use std::time::Duration;
 use ui_harness::Harness;
 
 const AGENTS: &str = "# mine\n[[agent]]\nprogram = \"claude-code\"\nlabel = \"Claude Code\"\nregistry = \"claude-code\"\nversion = \"1.0.0\"\n";
@@ -49,18 +49,6 @@ fn intelligence() -> Opening {
     }
 }
 
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The program runs on a real thread; the budget is generous and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
-}
-
 /// A world whose program does `list` and `install` as the two scripts say.
 fn world(name: &str, list: &str, install: &str) -> Sandbox {
     let sandbox = Sandbox::new(name);
@@ -73,11 +61,11 @@ fn world(name: &str, list: &str, install: &str) -> Sandbox {
 }
 
 fn open_sheet(harness: &mut Harness) {
-    settle(harness, "the group", |h| h.count(GROUP) == 1);
+    settle_on_threads(harness, "the group", |h| h.count(GROUP) == 1);
     let open = format!("{GROUP} button[aria-label=\"Add a coding assistant\"]");
     scroll_into_view(harness, &open);
     click_when_still(harness, &open);
-    settle(harness, "the sheet", |h| h.count(SHEET) == 1);
+    settle_on_threads(harness, "the sheet", |h| h.count(SHEET) == 1);
 }
 
 fn sheet_text(harness: &Harness) -> String {
@@ -89,7 +77,7 @@ fn the_list_on_offer_is_shown_and_an_assistant_not_installed_is_downloaded_then_
     let sandbox = world("online-assistants-ok", LISTS, INSTALLS);
     let mut harness = sandbox.harness(intelligence());
     open_sheet(&mut harness);
-    settle(&mut harness, "the list", |h| {
+    settle_on_threads(&mut harness, "the list", |h| {
         sheet_text(h).contains("Codex")
     });
     let text = sheet_text(&harness);
@@ -109,7 +97,7 @@ fn the_list_on_offer_is_shown_and_an_assistant_not_installed_is_downloaded_then_
     assert_eq!(sandbox.read("actions/agents.toml").as_deref(), Some(AGENTS));
 
     click(&mut harness, &format!("{SHEET} [aria-label=\"Add\"]"));
-    settle(&mut harness, "the sheet closing", |h| h.count(SHEET) == 0);
+    settle_on_threads(&mut harness, "the sheet closing", |h| h.count(SHEET) == 0);
     let written = sandbox.read("actions/agents.toml").expect("the file");
     for want in [
         "program = \"codex\"",
@@ -127,7 +115,7 @@ fn the_list_on_offer_is_shown_and_an_assistant_not_installed_is_downloaded_then_
             .is_dir(),
         "downloaded"
     );
-    settle(&mut harness, "the new row", |h| {
+    settle_on_threads(&mut harness, "the new row", |h| {
         h.text_of(GROUP).unwrap_or_default().contains("Codex")
     });
 }
@@ -138,11 +126,11 @@ fn a_download_that_fails_keeps_the_sheet_open_with_the_sentence() {
     let sandbox = world("online-assistants-fail", LISTS, &failing);
     let mut harness = sandbox.harness(intelligence());
     open_sheet(&mut harness);
-    settle(&mut harness, "the list", |h| {
+    settle_on_threads(&mut harness, "the list", |h| {
         sheet_text(h).contains("Codex")
     });
     click(&mut harness, &format!("{SHEET} [aria-label=\"Add\"]"));
-    settle(&mut harness, "the sentence", |h| {
+    settle_on_threads(&mut harness, "the sentence", |h| {
         sheet_text(h).contains(CHECKSUM)
     });
     assert_eq!(harness.count(SHEET), 1, "the sheet stays");
@@ -159,7 +147,7 @@ fn a_list_that_cannot_be_fetched_says_why_and_still_offers_the_installed_ones() 
     );
     let mut harness = sandbox.harness(intelligence());
     open_sheet(&mut harness);
-    settle(&mut harness, "the reason", |h| {
+    settle_on_threads(&mut harness, "the reason", |h| {
         sheet_text(h).contains(NO_ROUTE)
     });
     let text = sheet_text(&harness);
@@ -170,7 +158,7 @@ fn a_list_that_cannot_be_fetched_says_why_and_still_offers_the_installed_ones() 
     );
 
     click(&mut harness, &format!("{SHEET} [aria-label=\"Add\"]"));
-    settle(&mut harness, "the sheet closing", |h| h.count(SHEET) == 0);
+    settle_on_threads(&mut harness, "the sheet closing", |h| h.count(SHEET) == 0);
     let written = sandbox.read("actions/agents.toml").expect("the file");
     assert!(written.contains("program = \"gemini\""), "{written}");
 }

@@ -3,12 +3,12 @@
 
 use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held};
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, page_of, scroll_into_view};
 use settings_app_model::PageSlug;
 use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_components::prelude::Scheme;
 use ui_harness::Harness;
 use ui_settings::live::Verdict;
@@ -22,19 +22,6 @@ fn intelligence() -> Opening {
         page: Some(PageSlug("intelligence".to_owned())),
         query: String::new(),
     }
-}
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
 }
 
 /// Two runtimes on this computer (one stopped) and two accounts that are not.
@@ -59,7 +46,7 @@ fn world_in(name: &str, scheme: Scheme, accounts: Vec<Held>) -> World {
     let mut harness = Sandbox::new(name)
         .with_modules(modules.clone())
         .harness_in(intelligence(), scheme);
-    settle(&mut harness, "the runtimes", |h| {
+    settle_on_threads(&mut harness, "the runtimes", |h| {
         h.attr(".runtimes", "data-runtimes").as_deref() == Some("list")
     });
     World {
@@ -136,7 +123,7 @@ fn a_runtime_that_goes_offline_is_greyed_when_accountd_says_a_row_changed() {
         &ui_settings::schema::KeyPath("accounts.ollama.state".to_owned()),
         toml::Value::String("offline".to_owned()),
     );
-    settle(&mut w.harness, "the row greying", |h| {
+    settle_on_threads(&mut w.harness, "the row greying", |h| {
         states(h) == [Some("offline".to_owned()), Some("offline".to_owned())]
     });
 }
@@ -146,7 +133,7 @@ fn managing_a_runtime_opens_its_account_in_the_accounts_pane() {
     let mut w = world("runtimes-manage");
     scroll_into_view(&mut w.harness, OLLAMA);
     click(&mut w.harness, OLLAMA);
-    settle(&mut w.harness, "the account", |h| {
+    settle_on_threads(&mut w.harness, "the account", |h| {
         h.count(".accounts-detail") == 1
     });
     assert_eq!(page_of(&w.harness).as_deref(), Some("accounts"));
@@ -165,7 +152,7 @@ fn an_accountd_that_names_no_place_lists_no_runtime() {
     let mut harness = Sandbox::new(name)
         .with_modules(fake.hosted())
         .harness(intelligence());
-    settle(&mut harness, "the empty list", |h| {
+    settle_on_threads(&mut harness, "the empty list", |h| {
         h.attr(".runtimes", "data-runtimes").as_deref() == Some("empty")
     });
     assert!(harness.html().contains("Nothing is running here yet"));
@@ -184,7 +171,7 @@ fn without_accountd_the_list_says_so_and_the_page_still_works() {
     let mut harness = Sandbox::new("runtimes-no-accountd")
         .with_modules(FakeModules::new())
         .harness(intelligence());
-    settle(&mut harness, "accountd given up on", |h| {
+    settle_on_threads(&mut harness, "accountd given up on", |h| {
         h.html().contains("The accounts service is not running")
     });
 }

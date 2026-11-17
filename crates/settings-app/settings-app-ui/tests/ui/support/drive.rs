@@ -116,6 +116,33 @@ pub fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool
     panic!("{what} never happened:\n{}", harness.html());
 }
 
+/// Lets the window run until `done` holds when what it waits for is done on real threads (a fake
+/// daemon's reply, a file read): the harness's clock steps while the threads work, and the wait
+/// ends by the clock's deadline, not by a count of steps.
+///
+/// # Panics
+/// If `done` never holds in [`base_testkit::GENEROUS`], naming `what`.
+pub fn settle_on_threads(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
+    base_testkit::eventually_blocking(what, || {
+        if done(harness) {
+            return true;
+        }
+        harness.advance(Duration::from_millis(50));
+        false
+    });
+}
+
+/// Lets the window and its threads run for `steps` steps, to check that something does NOT
+/// happen. This is a best-effort absence check: nothing announces that a thread which has nothing
+/// to do is done, so it can only give the thread a fair while; a miss on a very slow machine
+/// passes the test, never fails it.
+pub fn let_threads_run(harness: &mut Harness, steps: u32) {
+    for _ in 0..steps {
+        harness.advance(Duration::from_millis(50));
+        std::thread::sleep(Duration::from_millis(20));
+    }
+}
+
 /// Lets the window run until something matches `selector`.
 pub fn showing(harness: &mut Harness, what: &str, selector: &'static str) {
     settle(harness, what, |h| h.count(selector) > 0);

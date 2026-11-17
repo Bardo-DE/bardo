@@ -4,24 +4,12 @@
 use crate::support::Sandbox;
 use crate::support::accountd::{Accountd, Held};
 use crate::support::drive::page_of;
+use crate::support::drive::settle_on_threads;
 use settings_app_model::{AccountSegment, AccountTarget, Notice, PageSlug};
 use settings_app_ui::Opening;
 use std::time::Duration;
 use ui_harness::Harness;
 use ui_settings::live::Verdict;
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
-}
 
 fn detail(segment: &str) -> Notice {
     Notice::OpenAccount(AccountTarget::Detail(AccountSegment(segment.to_owned())))
@@ -53,7 +41,7 @@ fn an_account_segment_opens_that_accounts_detail_and_an_unknown_one_the_list() {
         let name = format!("notice-account-{segment}");
         let (mut harness, outbox, _keep) = world(&name);
         outbox.send(detail(segment)).expect("listening");
-        settle(&mut harness, "the page", |h| match opens {
+        settle_on_threads(&mut harness, "the page", |h| match opens {
             Some(id) => h.attr(".accounts-detail", "data-account").as_deref() == Some(id),
             None => h.count(".accounts-list") == 1,
         });
@@ -65,13 +53,13 @@ fn an_account_segment_opens_that_accounts_detail_and_an_unknown_one_the_list() {
 fn the_list_request_leaves_an_open_account() {
     let (mut harness, outbox, _keep) = world("notice-account-list");
     outbox.send(detail("home")).expect("listening");
-    settle(&mut harness, "the account", |h| {
+    settle_on_threads(&mut harness, "the account", |h| {
         h.count(".accounts-detail") == 1
     });
     outbox
         .send(Notice::OpenAccount(AccountTarget::List))
         .expect("listening");
-    settle(&mut harness, "the list", |h| h.count(".accounts-list") == 1);
+    settle_on_threads(&mut harness, "the list", |h| h.count(".accounts-list") == 1);
 }
 
 #[test]

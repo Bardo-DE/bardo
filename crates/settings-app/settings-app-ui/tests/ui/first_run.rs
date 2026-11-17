@@ -4,9 +4,9 @@
 
 use crate::support::Sandbox;
 use crate::support::drive::click;
+use crate::support::drive::settle_on_threads;
 use crate::support::inferd::Inferd;
 use settings_app_files::FirstRunMark;
-use std::time::Duration;
 use ui_components::prelude::Scheme;
 use ui_harness::{Harness, Input};
 use ui_settings::live::Verdict;
@@ -15,19 +15,6 @@ const LOCAL_ONLY: &str = ".first-run [aria-label=\"Keep AI on this computer\"] .
 const DONE: &str = ".first-run > .ds-button";
 const MENU: &str = ".first-run .ds-popup .ds-button";
 const POOL_NOTE: &str = "Turn on at least one model.";
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fake daemons answer on real threads; a loaded machine running every test at once can
-    // take several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
-}
 
 fn stage(harness: &Harness) -> Option<String> {
     harness.attr(".first-run", "data-first-run")
@@ -57,7 +44,7 @@ fn world_with(name: &str, scheme: Scheme, inferd: Inferd) -> World {
     let mut harness = sandbox.first_run_harness_in(scheme);
     // The model row arrives after the first frame and moves Done down; a click aimed before it
     // lands misses. Wait for the whole window.
-    settle(&mut harness, "the window", |h| {
+    settle_on_threads(&mut harness, "the window", |h| {
         h.attr(".picker", "data-picker").as_deref() == Some("ready")
     });
     World {
@@ -80,7 +67,7 @@ fn ai_stays_on_this_computer_by_default_and_done_writes_it_and_remembers() {
     );
     assert!(!mark(&w.sandbox));
     click(&mut w.harness, DONE);
-    settle(&mut w.harness, "the save", |h| {
+    settle_on_threads(&mut w.harness, "the save", |h| {
         stage(h).as_deref() == Some("done")
     });
     assert!(
@@ -137,7 +124,7 @@ fn automatic_opens_its_list_and_local_asks_how_it_runs_then_which_model() {
     open_and_count_marked(&mut w);
     // Items: Automatic, Local, the Anthropic header, claude, the Google header, gemini.
     pick(&mut w, 1);
-    settle(&mut w.harness, "Automatic", |h| {
+    settle_on_threads(&mut w.harness, "Automatic", |h| {
         h.html().contains(POOL_NOTE)
     });
     assert_eq!(
@@ -149,7 +136,7 @@ fn automatic_opens_its_list_and_local_asks_how_it_runs_then_which_model() {
     click(&mut w.harness, MENU);
     pick(&mut w, 2);
     let model = "#picker-local-model-ai-model-text-balanced .ds-popup .ds-button";
-    settle(&mut w.harness, "the questions", |h| h.count(model) == 1);
+    settle_on_threads(&mut w.harness, "the questions", |h| h.count(model) == 1);
     assert!(w.harness.html().contains("llama.cpp"));
     assert_eq!(
         w.inferd.sets.lock().expect("sets").len(),
@@ -158,7 +145,7 @@ fn automatic_opens_its_list_and_local_asks_how_it_runs_then_which_model() {
     );
     click(&mut w.harness, model);
     pick(&mut w, 1);
-    settle(&mut w.harness, "the set", |_| {
+    settle_on_threads(&mut w.harness, "the set", |_| {
         w.inferd.sets.lock().expect("sets").len() == 2
     });
     assert_eq!(
@@ -177,7 +164,7 @@ fn the_modules_note_shows_under_the_row_and_under_the_list_once() {
     assert!(w.harness.html().contains(NOTE));
     open_and_count_marked(&mut w);
     pick(&mut w, 1);
-    settle(&mut w.harness, "Automatic", |h| {
+    settle_on_threads(&mut w.harness, "Automatic", |h| {
         h.html().contains(POOL_NOTE)
     });
     assert_eq!(
@@ -196,7 +183,7 @@ fn switching_it_off_writes_off() {
         Some("false")
     );
     click(&mut w.harness, DONE);
-    settle(&mut w.harness, "the save", |h| {
+    settle_on_threads(&mut w.harness, "the save", |h| {
         stage(h).as_deref() == Some("done")
     });
     assert!(written(&w.sandbox).contains("local_only = false"));
@@ -206,10 +193,10 @@ fn switching_it_off_writes_off() {
 fn without_a_bus_there_is_no_model_menu_and_done_still_finishes() {
     let sandbox = Sandbox::new("first-run-no-bus");
     let mut harness = sandbox.first_run_harness();
-    settle(&mut harness, "the window", |h| stage(h).is_some());
+    settle_on_threads(&mut harness, "the window", |h| stage(h).is_some());
     assert_eq!(harness.count(MENU), 0);
     click(&mut harness, DONE);
-    settle(&mut harness, "the save", |h| {
+    settle_on_threads(&mut harness, "the save", |h| {
         stage(h).as_deref() == Some("done")
     });
     assert!(written(&sandbox).contains("local_only = true"));
@@ -221,9 +208,9 @@ fn without_inferds_schema_nothing_is_written_and_nothing_is_remembered() {
     let sandbox = Sandbox::new("first-run-no-schema");
     sandbox.remove_schema("inference");
     let mut harness = sandbox.first_run_harness();
-    settle(&mut harness, "the window", |h| stage(h).is_some());
+    settle_on_threads(&mut harness, "the window", |h| stage(h).is_some());
     click(&mut harness, DONE);
-    settle(&mut harness, "the refusal", |h| {
+    settle_on_threads(&mut harness, "the refusal", |h| {
         h.html().contains("The model settings are not installed")
     });
     assert!(!mark(&sandbox));
@@ -235,9 +222,9 @@ fn the_same_write_the_page_makes_leaves_every_other_key_of_the_file() {
     let sandbox = Sandbox::new("first-run-keeps-keys");
     sandbox.write("inference/inferd.toml", "# mine\n[ai]\nfuture = 3\n");
     let mut harness = sandbox.first_run_harness();
-    settle(&mut harness, "the window", |h| stage(h).is_some());
+    settle_on_threads(&mut harness, "the window", |h| stage(h).is_some());
     click(&mut harness, DONE);
-    settle(&mut harness, "the save", |h| {
+    settle_on_threads(&mut harness, "the save", |h| {
         stage(h).as_deref() == Some("done")
     });
     let text = written(&sandbox);

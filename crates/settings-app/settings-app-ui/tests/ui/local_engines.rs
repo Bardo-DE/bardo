@@ -7,10 +7,10 @@
 use crate::support::Sandbox;
 use crate::support::bus::PrivateBus;
 use crate::support::drive::{click, scroll_into_view};
+use crate::support::drive::{let_threads_run, settle_on_threads};
 use crate::support::engines::{Fake, serve};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_harness::Harness;
 
 const NOTE: &str = "[data-engine-note]";
@@ -31,27 +31,6 @@ fn intelligence() -> Opening {
     Opening {
         page: Some(PageSlug("intelligence".to_owned())),
         query: String::new(),
-    }
-}
-
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    // The fakes answer on real threads; a loaded machine running every test at once can take
-    // several seconds, so the budget is generous (15 s) and costs nothing when it settles.
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
-}
-
-/// Lets whatever the window would still send reach the fakes.
-fn let_it_pass(harness: &mut Harness) {
-    for _ in 0..20 {
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
     }
 }
 
@@ -90,7 +69,7 @@ fn world(name: &str, os_release: &str, found: bool) -> World {
 #[test]
 fn a_missing_llama_cpp_shows_the_line_the_command_and_the_button_and_nothing_about_the_rest() {
     let mut w = world("engines-missing", FEDORA, false);
-    settle(&mut w.harness, "the note", |h| h.count(NOTE) == 1);
+    settle_on_threads(&mut w.harness, "the note", |h| h.count(NOTE) == 1);
     let note = w.harness.text_of(NOTE).unwrap_or_default();
     assert!(note.contains(SETUP_LINE), "{note}");
     assert_eq!(
@@ -114,10 +93,10 @@ fn a_missing_llama_cpp_shows_the_line_the_command_and_the_button_and_nothing_abo
 #[test]
 fn start_using_it_asks_first_and_cancel_restarts_nothing() {
     let mut w = world("engines-cancel", FEDORA, false);
-    settle(&mut w.harness, "the note", |h| h.count(NOTE) == 1);
+    settle_on_threads(&mut w.harness, "the note", |h| h.count(NOTE) == 1);
     scroll_into_view(&mut w.harness, START);
     click(&mut w.harness, START);
-    settle(&mut w.harness, "the question", |h| h.count(ASKED) == 1);
+    settle_on_threads(&mut w.harness, "the question", |h| h.count(ASKED) == 1);
     let words = w.harness.text_of(ASKED).unwrap_or_default();
     assert!(words.contains("conversation that is open stops"), "{words}");
     for developer in ["systemd", "D-Bus", "inferd"] {
@@ -125,10 +104,11 @@ fn start_using_it_asks_first_and_cancel_restarts_nothing() {
     }
     assert!(w.fake.restarts().is_empty(), "asking restarts nothing");
     click(&mut w.harness, CANCEL);
-    settle(&mut w.harness, "the question to go", |h| {
+    settle_on_threads(&mut w.harness, "the question to go", |h| {
         h.count(ASKED) == 0
     });
-    let_it_pass(&mut w.harness);
+    // Lets whatever the window would still send reach the fakes.
+    let_threads_run(&mut w.harness, 20);
     assert!(w.fake.restarts().is_empty(), "Cancel restarts nothing");
     assert_eq!(w.harness.count(NOTE), 1, "the note stays");
 }

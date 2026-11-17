@@ -3,6 +3,7 @@
 //! file when it changes elsewhere.
 
 use crate::support::Sandbox;
+use crate::support::drive::settle_on_threads;
 use crate::support::drive::{click, scroll_into_view};
 use keymap::{Chord, Desktop, Overrides, Platform};
 use settings_app_model::PageSlug;
@@ -198,15 +199,10 @@ fn the_list_follows_the_file_when_it_changes_elsewhere() {
     let (sandbox, mut harness) = open("shortcuts-follow", None);
     assert_eq!(harness.count(RESET_COPY), 0);
     sandbox.write(KEYMAP, "copy = Super+Alt+C\n");
-    // The watch looks on its own thread, on real time: give it a generous while.
-    for _ in 0..200 {
-        if harness.count(RESET_COPY) == 1 {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(50));
-    }
-    panic!("the list never followed the file:\n{}", harness.html());
+    // The watch looks on its own thread, on real time.
+    settle_on_threads(&mut harness, "the list followed the file", |h| {
+        h.count(RESET_COPY) == 1
+    });
 }
 
 #[test]

@@ -2,9 +2,9 @@
 
 use crate::support::Sandbox;
 use crate::support::drive::click;
+use crate::support::drive::{let_threads_run, settle_on_threads};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use std::time::Duration;
 use ui_harness::Harness;
 
 const SWITCH: &str = ".section .ds-toggle[*|aria-label=\"Use my styles\"]";
@@ -16,18 +16,6 @@ fn appearance() -> Opening {
         page: Some(PageSlug("appearance".to_owned())),
         query: String::new(),
     }
-}
-
-/// Lets the file reads finish: they run on their own threads.
-fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    for _ in 0..750 {
-        if done(harness) {
-            return;
-        }
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    panic!("{what} never happened:\n{}", harness.html());
 }
 
 #[test]
@@ -61,10 +49,7 @@ fn styles_with_nothing_to_say_have_no_line() {
     let sandbox = Sandbox::new("style-notes-none");
     sandbox.write("bardo/style.css", "body { color: red; }\n");
     let mut harness = sandbox.harness(appearance());
-    for _ in 0..40 {
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
+    let_threads_run(&mut harness, 40);
     assert_eq!(harness.count(LINE), 0, "{}", harness.html());
 }
 
@@ -80,7 +65,7 @@ fn the_notes_of_every_style_file_are_counted_and_listed_with_their_file_and_line
         "\nwindow { box-shadow: 0 0 200px black; }\n",
     );
     let mut harness = sandbox.harness(appearance());
-    settle(&mut harness, "the notes line", |h| h.count(LINE) == 1);
+    settle_on_threads(&mut harness, "the notes line", |h| h.count(LINE) == 1);
     assert_eq!(
         harness
             .text_of(&format!("{LINE} .ds-field-row-title"))
@@ -108,7 +93,7 @@ fn a_class_an_installed_app_publishes_is_not_an_internal_selector() {
     let without = Sandbox::new("style-notes-unpublished");
     without.write("bardo/style.css", style);
     let mut harness = without.harness(appearance());
-    settle(&mut harness, "the notes line", |h| h.count(LINE) == 1);
+    settle_on_threads(&mut harness, "the notes line", |h| h.count(LINE) == 1);
     assert_eq!(
         harness
             .text_of(&format!("{LINE} .ds-field-row-title"))
@@ -121,9 +106,6 @@ fn a_class_an_installed_app_publishes_is_not_an_internal_selector() {
     with.write("bardo/style.css", style);
     with.write_data("bardo/selectors/shell.toml", published);
     let mut harness = with.harness(appearance());
-    for _ in 0..40 {
-        harness.advance(Duration::from_millis(50));
-        std::thread::sleep(Duration::from_millis(20));
-    }
+    let_threads_run(&mut harness, 40);
     assert_eq!(harness.count(LINE), 0, "{}", harness.html());
 }
