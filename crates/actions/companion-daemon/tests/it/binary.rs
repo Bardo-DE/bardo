@@ -12,7 +12,6 @@ use companion_wire::FrontTask;
 use provenance::{AgentRef, TaskId};
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
-use std::time::Duration;
 use zbus::fdo::DBusProxy;
 
 /// A child that is killed when the test ends, however it ends.
@@ -47,13 +46,12 @@ async fn has_owner(connection: &zbus::Connection, name: &str) -> bool {
 }
 
 async fn until_served(connection: &zbus::Connection) {
-    let deadline = base_testkit::Deadline::generous();
-    while !has_owner(connection, "org.bardo.Companion1").await {
-        if deadline.passed() {
-            deadline.fail("companiond to claim org.bardo.Companion1");
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually_some_async("companiond to claim its name", || async {
+        has_owner(connection, "org.bardo.Companion1")
+            .await
+            .then_some(())
+    })
+    .await;
 }
 
 fn turn() -> String {
@@ -149,13 +147,11 @@ async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
     // Stopping it frees the name.
     daemon.0.kill().expect("kill");
     daemon.0.wait().expect("wait");
-    let deadline = base_testkit::Deadline::generous();
-    while has_owner(&me, "org.bardo.Companion1").await {
-        if deadline.passed() {
-            deadline.fail("the name to be freed after the daemon is killed");
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually_some_async(
+        "the name to be freed after the daemon is killed",
+        || async { (!has_owner(&me, "org.bardo.Companion1").await).then_some(()) },
+    )
+    .await;
 }
 
 #[test]

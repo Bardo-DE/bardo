@@ -53,7 +53,7 @@ otlp = ["action-log/otlp"]
 
 [dev-dependencies]
 base-time = { path = "../../base/base-time" }
-base-testkit = { path = "../../base/base-testkit" }
+base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }

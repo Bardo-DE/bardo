@@ -111,13 +111,10 @@ async fn dropping_the_listeners_closes_every_one_of_them_and_the_connections_on_
     drop(l.lending);
     // The address refuses, a moment after the listener is let go of, and the connection that
     // was being served is ended with it.
-    let deadline = base_testkit::Deadline::generous();
-    while listening_at(at(a.me, port)).await {
-        if deadline.passed() {
-            deadline.fail("the listener to close");
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-    }
+    base_testkit::eventually_some_async("the listener to close", || async {
+        (!listening_at(at(a.me, port)).await).then_some(())
+    })
+    .await;
     let mut held = held;
     let mut byte = [0_u8; 1];
     let ended = tokio::time::timeout(GENEROUS, held.read(&mut byte)).await;
@@ -310,20 +307,16 @@ async fn a_computer_has_a_few_connections_at_once_and_no_more() {
     assert!(answer.contains(Refusal::Busy.slug()), "{answer}");
     // Closing one makes room.
     drop(first);
-    let mut room = false;
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() && !room {
+    base_testkit::eventually_some_async("a connection closed to make room for another", || async {
         let mut again = connect_from(a.pi, at(a.me, port)).await.unwrap();
         again.write_all(b"ping").await.unwrap();
         let mut head = [0_u8; 4];
-        room = matches!(
+        let room = matches!(
             tokio::time::timeout(GENEROUS, again.read_exact(&mut head)).await,
             Ok(Ok(_))
         ) && &head == b"pong";
-        if !room {
-            tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-        }
-    }
-    assert!(room, "a connection closed makes room for another");
+        room.then_some(())
+    })
+    .await;
     drop(second);
 }

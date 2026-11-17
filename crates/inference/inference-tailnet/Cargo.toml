@@ -22,7 +22,7 @@ http-body-util = { workspace = true, optional = true }
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"], optional = true}
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 # The integration tests use the listeners, the dial and the relay, which the `io` feature builds.
 inference-tailnet = {path = ".", features = ["io", "persist"]}
 account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
