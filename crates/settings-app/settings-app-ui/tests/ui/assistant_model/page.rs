@@ -95,7 +95,7 @@ fn picking_a_model_sets_the_assistants_row_and_no_other() {
     open_and_count_marked(&mut world.harness, BUTTON);
     // Items: Off, Automatic, Local, the Anthropic header, then claude.
     pick(&mut world.harness, 5);
-    settle(&mut world.harness, "the set", |h| {
+    settle_on_threads(&mut world.harness, "the set", |h| {
         shown(h, BUTTON).as_deref() == Some("claude")
     });
     assert_eq!(
@@ -123,7 +123,7 @@ fn a_model_that_needs_an_account_stays_pickable_and_offers_to_add_one_instead_of
     );
     pick(&mut world.harness, 5);
     // No account service is on the bus, so the add sheet cannot open; the person is told calmly.
-    settle(&mut world.harness, "the line", |h| {
+    settle_on_threads(&mut world.harness, "the line", |h| {
         h.html()
             .contains("Could not add an account. Try again later.")
     });

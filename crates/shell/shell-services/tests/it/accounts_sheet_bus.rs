@@ -292,6 +292,19 @@ async fn accountd_opens_updates_and_closes_and_hears_what_the_person_does() {
 
 const BROWSER: &str = r#"{"kind":"browser_wait","v":{"provider":"google","url":"https://accounts.example.org/auth"}}"#;
 
+/// The next `count` launches the shell asks for, waited for.
+async fn opened(shell: &mut Shell, count: usize) -> Vec<LaunchCommand> {
+    let mut got = Vec::new();
+    while got.len() < count {
+        let next = tokio::time::timeout(base_testkit::GENEROUS, shell.launched.recv())
+            .await
+            .expect("the shell asked to open the page")
+            .expect("the launch channel stayed open");
+        got.push(next);
+    }
+    got
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
     let Some(bus) = PrivateBus::start() else {
@@ -303,18 +316,6 @@ async fn a_browser_step_opens_its_page_and_shown_again_opens_it_again() {
     serving(&mut shell).await;
     let mut inputs = inputs_of(&accountd).await;
     let sheet = host(&accountd).await;
-    // The next `count` launches the shell asks for, waited for.
-    async fn opened(shell: &mut Shell, count: usize) -> Vec<LaunchCommand> {
-        let mut got = Vec::new();
-        while got.len() < count {
-            let next = tokio::time::timeout(base_testkit::GENEROUS, shell.launched.recv())
-                .await
-                .expect("the shell asked to open the page")
-                .expect("the launch channel stayed open");
-            got.push(next);
-        }
-        got
-    }
     let page = || {
         LaunchCommand::Open(shell_model::launch::OpenRequest {
             target: shell_launcher::OpenTarget::Url("https://accounts.example.org/auth".to_owned()),

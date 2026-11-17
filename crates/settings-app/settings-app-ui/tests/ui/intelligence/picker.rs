@@ -11,7 +11,7 @@ fn the_picker_lists_a_group_per_kind_and_a_row_per_tier_in_design_words() {
         .expect("values")
         .insert("ai.model.llm.balanced".to_owned(), "local/qwen".to_owned());
     let mut harness = sandbox.with_modules(fake.hosted()).harness(intelligence());
-    settle(&mut harness, "the picker", |h| h.count(".picker-kind") == 2);
+    settle_on_threads(&mut harness, "the picker", |h| h.count(".picker-kind") == 2);
 
     assert_eq!(
         harness.count(".picker-kind .ds-field-row"),
@@ -43,7 +43,7 @@ fn choosing_a_model_shows_loading_it_until_inferd_answers_then_sets_it() {
     let fake = Inferd::new(Verdict::Allow);
     *fake.held.lock().expect("held") = true;
     let mut harness = sandbox.with_modules(fake.hosted()).harness(intelligence());
-    settle(&mut harness, "the picker", |h| h.count(".picker-kind") == 2);
+    settle_on_threads(&mut harness, "the picker", |h| h.count(".picker-kind") == 2);
 
     let fast = ".picker-kind .ds-field-row:nth-child(1)";
     let button = format!("{fast} .ds-popup .ds-button");
@@ -60,7 +60,7 @@ fn choosing_a_model_shows_loading_it_until_inferd_answers_then_sets_it() {
         .expect("the menu is open");
     harness.send(Input::pointer_move(item));
     click(&mut harness, ".ds-menu-item:nth-child(5) .ds-menu-label");
-    settle(&mut harness, "Loading holo", |h| {
+    settle_on_threads(&mut harness, "Loading holo", |h| {
         h.html().contains("Loading holo")
     });
     assert_eq!(
@@ -75,7 +75,7 @@ fn choosing_a_model_shows_loading_it_until_inferd_answers_then_sets_it() {
     );
 
     fake.release.notify_one();
-    settle(&mut harness, "the set to finish", |h| {
+    settle_on_threads(&mut harness, "the set to finish", |h| {
         !h.html().contains("Loading holo")
     });
     assert_eq!(
@@ -111,7 +111,7 @@ fn the_footer_says_why_when_it_is_on_and_is_gone_when_it_is_off() {
             .with_reasons(feed)
             .with_modules(fake.hosted())
             .harness(intelligence());
-        settle(&mut harness, "the picker", |h| h.count(".picker-kind") == 2);
+        settle_on_threads(&mut harness, "the picker", |h| h.count(".picker-kind") == 2);
         assert_eq!(
             harness.count(".picker-reason"),
             0,
@@ -120,7 +120,7 @@ fn the_footer_says_why_when_it_is_on_and_is_gone_when_it_is_off() {
 
         events.send(InferEvent::Why(Why::Warm)).expect("sent");
         if shown {
-            settle(&mut harness, "the reason", |h| {
+            settle_on_threads(&mut harness, "the reason", |h| {
                 h.text_of(".picker-reason")
                     .is_some_and(|t| t.contains("Already running."))
             });
@@ -130,7 +130,7 @@ fn the_footer_says_why_when_it_is_on_and_is_gone_when_it_is_off() {
                     because: DeclinedBecause::NotInstalled,
                 }))
                 .expect("sent");
-            settle(&mut harness, "the refusal", |h| {
+            settle_on_threads(&mut harness, "the refusal", |h| {
                 h.text_of(".picker-reason").is_some_and(|t| {
                     t.contains("holo can't do this: it isn't on this computer yet.")
                 })

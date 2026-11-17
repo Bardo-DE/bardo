@@ -19,7 +19,7 @@ fn a_bus_with_none_of_the_three_says_the_service_is_not_running() {
     let mut harness = Sandbox::new("accounts-none")
         .with_modules(FakeModules::new())
         .harness(accounts());
-    settle(&mut harness, "the pane giving up", |h| {
+    settle_on_threads(&mut harness, "the pane giving up", |h| {
         h.html().contains("The accounts service is not running")
     });
 }
@@ -30,7 +30,7 @@ fn accountd_refusing_settings_is_said_in_its_own_words() {
     let mut harness = Sandbox::new("accounts-refused")
         .with_modules(fake.hosted())
         .harness(accounts());
-    settle(&mut harness, "the refusal", |h| {
+    settle_on_threads(&mut harness, "the refusal", |h| {
         h.html().contains("opened from the desktop")
     });
     assert_no_developer_words(&harness);
@@ -72,7 +72,7 @@ fn a_program_that_took_accountds_name_is_not_read_and_is_sent_nothing() {
     let mut harness = Sandbox::new("accounts-squatter")
         .on_bus_vouched(&bus.address, vouch)
         .harness(accounts());
-    settle(&mut harness, "the pane giving up", |h| {
+    settle_on_threads(&mut harness, "the pane giving up", |h| {
         h.html().contains("could not be confirmed")
     });
     assert_eq!(
@@ -95,7 +95,7 @@ fn a_program_with_another_services_role_is_not_accountd_either() {
     let mut harness = Sandbox::new("accounts-wrong-role")
         .on_bus_vouched(&bus.address, vouch)
         .harness(accounts());
-    settle(&mut harness, "the pane giving up", |h| {
+    settle_on_threads(&mut harness, "the pane giving up", |h| {
         h.html().contains("could not be confirmed")
     });
     assert_eq!(other.calls(), 0);
@@ -111,7 +111,7 @@ fn the_program_that_holds_accountds_role_is_read() {
     let mut harness = Sandbox::new("accounts-owner-vouched")
         .on_bus_vouched(&bus.address, vouch)
         .harness(accounts());
-    settle(&mut harness, "the rows", |h| {
+    settle_on_threads(&mut harness, "the rows", |h| {
         h.count(".account-row-body") == 2
     });
     assert!(accountd.calls() > 0);

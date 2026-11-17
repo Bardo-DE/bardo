@@ -3,7 +3,6 @@
 
 use crate::speech_fake;
 
-
 use model_openai_compat::{KOKORO_FORMAT, encode_speech_request};
 use model_provider::{ModelName, ProviderError, ServerStatus};
 use proptest::prelude::*;

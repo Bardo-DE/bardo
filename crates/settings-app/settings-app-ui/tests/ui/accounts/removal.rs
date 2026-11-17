@@ -8,7 +8,7 @@ fn removing_an_account_asks_first_and_keeping_it_does_nothing() {
     let held = w.accountd.accounts.lock().expect("accounts").len();
     detail(&mut w);
     click(&mut w.harness, REMOVE);
-    settle(&mut w.harness, "the question", |h| {
+    settle_on_threads(&mut w.harness, "the question", |h| {
         h.html().contains("Remove account Home cloud?")
     });
     assert!(
@@ -19,7 +19,7 @@ fn removing_an_account_asks_first_and_keeping_it_does_nothing() {
         &mut w.harness,
         ".ds-alert [data-role=\"normal\"], .ds-alert .ds-button",
     );
-    settle(&mut w.harness, "the question to go", |h| {
+    settle_on_threads(&mut w.harness, "the question to go", |h| {
         !h.html().contains("Remove account Home cloud?")
     });
     assert!(w.accountd.sets().is_empty());
@@ -32,14 +32,14 @@ fn confirming_the_removal_removes_the_account_and_returns_to_the_list() {
     let held = w.accountd.accounts.lock().expect("accounts").len();
     detail(&mut w);
     click(&mut w.harness, REMOVE);
-    settle(&mut w.harness, "the question", |h| {
+    settle_on_threads(&mut w.harness, "the question", |h| {
         h.html().contains("Remove account Home cloud?")
     });
     click(
         &mut w.harness,
         ".ds-alert .ds-button[data-role=\"destructive\"]",
     );
-    settle(&mut w.harness, "the removal", |_| {
+    settle_on_threads(&mut w.harness, "the removal", |_| {
         w.accountd.accounts.lock().expect("accounts").len() == held - 1
     });
     assert_eq!(
@@ -49,7 +49,7 @@ fn confirming_the_removal_removes_the_account_and_returns_to_the_list() {
             toml::Value::Boolean(true)
         )]
     );
-    settle(&mut w.harness, "the list", |h| {
+    settle_on_threads(&mut w.harness, "the list", |h| {
         h.count(".accounts-list") == 1 && !h.html().contains("Home cloud")
     });
     assert!(w.harness.html().contains("Work mail"));
@@ -63,18 +63,18 @@ fn confirming_the_removal_removes_the_account_and_returns_to_the_list() {
 fn an_account_with_a_dotted_id_opens_and_removes_by_its_whole_id() {
     let mut w = world("accounts-dotted");
     click(&mut w.harness, WORK.row);
-    settle(&mut w.harness, "the account", |h| {
+    settle_on_threads(&mut w.harness, "the account", |h| {
         h.attr(".accounts-detail", "data-account").as_deref() == Some("work.example")
     });
     click(&mut w.harness, REMOVE);
-    settle(&mut w.harness, "the question", |h| {
+    settle_on_threads(&mut w.harness, "the question", |h| {
         h.html().contains("Remove account Work mail?")
     });
     click(
         &mut w.harness,
         ".ds-alert .ds-button[data-role=\"destructive\"]",
     );
-    settle(&mut w.harness, "the set", |_| !w.accountd.sets().is_empty());
+    settle_on_threads(&mut w.harness, "the set", |_| !w.accountd.sets().is_empty());
     assert_eq!(w.accountd.sets()[0].0, "accounts.work.example.remove");
 }
 
@@ -84,7 +84,7 @@ fn the_remove_answer_is_legible_in_light_and_dark() {
         let mut w = world_in(&format!("accounts-legible-{tag}"), scheme);
         detail(&mut w);
         click(&mut w.harness, REMOVE);
-        settle(&mut w.harness, "the question", |h| {
+        settle_on_threads(&mut w.harness, "the question", |h| {
             h.html().contains("Remove account Home cloud?")
         });
         let ratio = label_contrast(
@@ -107,11 +107,11 @@ fn the_minus_waits_for_a_selection_then_asks_before_removing_the_selected_accoun
         "nothing is selected"
     );
     click(&mut w.harness, "[aria-posinset=\"3\"] .account-row-body");
-    settle(&mut w.harness, "the minus", |h| {
+    settle_on_threads(&mut w.harness, "the minus", |h| {
         h.attr(MINUS, "data-availability").as_deref() != Some("disabled")
     });
     click(&mut w.harness, MINUS);
-    settle(&mut w.harness, "the question", |h| {
+    settle_on_threads(&mut w.harness, "the question", |h| {
         h.html().contains("Remove account Work mail?")
     });
     assert!(

@@ -9,7 +9,7 @@ fn the_pane_says_no_developer_words_with_the_modules_up_or_gone() {
     let mut harness = Sandbox::new("accounts-plain-none")
         .with_modules(FakeModules::new())
         .harness(accounts());
-    settle(&mut harness, "the pane giving up", |h| {
+    settle_on_threads(&mut harness, "the pane giving up", |h| {
         h.html().contains("The accounts service is not running")
     });
     assert_no_developer_words(&harness);
@@ -29,7 +29,7 @@ fn the_account_type_is_drawn_with_the_providers_mark() {
     let mut harness = Sandbox::new("accounts-mark")
         .with_modules(fake.hosted())
         .harness(accounts());
-    settle(&mut harness, "the list", |h| h.count(".accounts-list") == 1);
+    settle_on_threads(&mut harness, "the list", |h| h.count(".accounts-list") == 1);
     // The list draws each account's mark, and says the kind of account under its name.
     assert_eq!(
         harness.count(".accounts-list .ds-provider[data-kind=\"face\"]"),
@@ -46,7 +46,7 @@ fn the_account_type_is_drawn_with_the_providers_mark() {
             .contains("Fastmail")
     );
     click(&mut harness, "#account-local-ai");
-    settle(&mut harness, "the account", |h| {
+    settle_on_threads(&mut harness, "the account", |h| {
         h.attr(".accounts-detail", "data-account").as_deref() == Some("local-ai")
     });
     assert_eq!(
@@ -56,7 +56,7 @@ fn the_account_type_is_drawn_with_the_providers_mark() {
         harness.html()
     );
     click(&mut harness, "#account-mail");
-    settle(&mut harness, "the account", |h| {
+    settle_on_threads(&mut harness, "the account", |h| {
         h.attr(".accounts-detail", "data-account").as_deref() == Some("mail")
     });
     assert_eq!(

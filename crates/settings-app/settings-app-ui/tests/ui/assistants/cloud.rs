@@ -3,7 +3,7 @@
 use super::*;
 
 fn the_cloud_account_is_listed(w: &mut World) {
-    settle(&mut w.harness, "the account", |h| h.count(CLOUD) == 1);
+    settle_on_threads(&mut w.harness, "the account", |h| h.count(CLOUD) == 1);
 }
 
 #[test]
@@ -36,7 +36,7 @@ fn turning_a_cloud_account_on_asks_in_plain_words_and_yes_writes_it() {
     let mut w = world("assistants-confirm", vec![acme()], None);
     the_cloud_account_is_listed(&mut w);
     click(&mut w.harness, CLOUD);
-    settle(&mut w.harness, "the question", |h| {
+    settle_on_threads(&mut w.harness, "the question", |h| {
         h.html().contains("Turn on me@acme.example?")
     });
     let html = w.harness.html().replace("&#39;", "'");
@@ -49,7 +49,7 @@ fn turning_a_cloud_account_on_asks_in_plain_words_and_yes_writes_it() {
         &mut w.harness,
         ".ds-alert .ds-button[data-answers=\"return\"]",
     );
-    settle(&mut w.harness, "the write", |_| {
+    settle_on_threads(&mut w.harness, "the write", |_| {
         written(&w.sandbox).is_some()
     });
     let places = written(&w.sandbox).expect("written");
@@ -62,14 +62,14 @@ fn cancel_leaves_the_account_off_and_writes_nothing() {
     let mut w = world("assistants-cancel", vec![acme()], None);
     the_cloud_account_is_listed(&mut w);
     click(&mut w.harness, CLOUD);
-    settle(&mut w.harness, "the question", |h| {
+    settle_on_threads(&mut w.harness, "the question", |h| {
         h.html().contains("Turn on me@acme.example?")
     });
     click(
         &mut w.harness,
         ".ds-alert .ds-button[data-answers=\"escape\"]",
     );
-    settle(&mut w.harness, "the question to go", |h| {
+    settle_on_threads(&mut w.harness, "the question to go", |h| {
         !h.html().contains("Turn on me@acme.example?")
     });
     assert_eq!(written(&w.sandbox), None);
@@ -89,10 +89,10 @@ fn a_computer_of_the_persons_switches_without_a_question_and_the_file_follows() 
         vec![],
         vec![],
     );
-    settle(&mut c.harness, "the computer", |h| h.count(LAB) == 1);
+    settle_on_threads(&mut c.harness, "the computer", |h| h.count(LAB) == 1);
     assert_eq!(c.harness.attr(LAB, "aria-checked").as_deref(), Some("true"));
     click(&mut c.harness, LAB);
-    settle(&mut c.harness, "the write", |_| {
+    settle_on_threads(&mut c.harness, "the write", |_| {
         written(&c.sandbox).is_some_and(|places| !places.own[0].allowed)
     });
     assert!(!c.harness.html().contains("Turn on lab-server?"));
@@ -112,7 +112,7 @@ fn ask_me_each_time_sits_under_a_cloud_rows_advanced_and_writes_ask() {
         ".ds-disclosure-trigger[aria-label=\"Advanced, me@acme.example\"]",
     );
     let ask = "[aria-label=\"Ask me each time\"] .ds-toggle";
-    settle(&mut w.harness, "the switch", |h| h.count(ask) == 1);
+    settle_on_threads(&mut w.harness, "the switch", |h| h.count(ask) == 1);
     assert_eq!(
         w.harness.count(
             "[aria-label=\"Advanced, This computer\"] ~ * [aria-label=\"Ask me each time\"]"
@@ -121,7 +121,7 @@ fn ask_me_each_time_sits_under_a_cloud_rows_advanced_and_writes_ask() {
         "this computer has no such switch"
     );
     click_when_still(&mut w.harness, ask);
-    settle(&mut w.harness, "the write", |_| {
+    settle_on_threads(&mut w.harness, "the write", |_| {
         written(&w.sandbox)
             .is_some_and(|places| places.cloud[0].allowed == CloudAllowed::AskEachTime)
     });
@@ -133,7 +133,7 @@ fn an_assistant_that_signs_itself_in_keeps_its_own_row_apart_from_the_places() {
         .in_group("agent")
         .signing_in("agent");
     let mut w = world("assistants-external", vec![acme(), claude], None);
-    settle(&mut w.harness, "the assistants", |h| {
+    settle_on_threads(&mut w.harness, "the assistants", |h| {
         h.count("[data-assistants=\"coding\"]") == 1
     });
     let html = w.harness.html();
@@ -141,7 +141,7 @@ fn an_assistant_that_signs_itself_in_keeps_its_own_row_apart_from_the_places() {
     assert!(others.contains("Claude Code") && others.contains("Needs sign-in"));
     assert!(!others.contains("me@acme.example"), "no combined list");
     click(&mut w.harness, "[aria-label=\"Sign in Claude Code\"]");
-    settle(&mut w.harness, "the account", |h| {
+    settle_on_threads(&mut w.harness, "the account", |h| {
         h.count(".accounts-detail") == 1
     });
 }
@@ -154,7 +154,7 @@ fn an_assistant_docket_and_accountd_both_know_is_one_row_with_both_facts() {
     let mut w = world_with("assistants-joined", vec![claude], None, Some(AGENTS));
     let group = "[data-assistants=\"coding\"]";
     // The row is there from docket's list; accountd's status joins it once its list arrives.
-    settle(&mut w.harness, "the status", |h| {
+    settle_on_threads(&mut w.harness, "the status", |h| {
         h.text_of(group)
             .is_some_and(|t| t.contains("Needs sign-in"))
     });

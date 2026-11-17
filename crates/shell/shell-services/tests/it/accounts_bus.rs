@@ -113,7 +113,7 @@ async fn needing(shell: &mut Shell, count: usize) -> bool {
 
 /// The person presses the notice's button. The service reads the notes' current notice before it
 /// weighs a press, so the press needs no head start over it.
-async fn press(shell: &Shell, id: NotificationId) {
+fn press(shell: &Shell, id: NotificationId) {
     let _ = shell
         .notes
         .control
@@ -160,7 +160,7 @@ async fn a_refused_account_posts_a_notice_and_its_button_signs_in_again() {
     );
     assert!(needing(&mut shell, 1).await);
 
-    press(&shell, id).await;
+    press(&shell, id);
     assert!(
         until_reauthenticated(&accountd, 1).await,
         "Reauthenticate was never called"
@@ -303,7 +303,7 @@ async fn an_action_signal_from_any_other_connection_signs_nothing_in() {
     assert_eq!(accountd.reauthentications(), 0);
 
     // The same words from the notifications server do.
-    press(&shell, id).await;
+    press(&shell, id);
     assert!(until_reauthenticated(&accountd, 1).await);
 }
 

@@ -200,10 +200,6 @@ async fn a_workers_report_still_ends_its_task_while_its_session_waits() {
     assert!(!w.companion.runtimes.contains_key(&wtask));
 }
 
-#[expect(
-    clippy::too_many_lines,
-    reason = "one scenario told in order; splitting it would hide the sequence being tested"
-)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn the_answer_object_names_its_session_and_close_removes_it() {
     let scratch = tempfile::tempdir().expect("scratch");

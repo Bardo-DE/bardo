@@ -13,7 +13,6 @@ use settings_app_client::Vouch;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use std::sync::atomic::Ordering;
-use ui_harness::Harness;
 use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 

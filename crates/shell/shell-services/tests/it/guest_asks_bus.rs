@@ -253,7 +253,7 @@ async fn notice_gone(shell: &mut Shell, why: &str) {
     );
 }
 
-async fn press(shell: &Shell, id: NotificationId, verdict: Verdict) {
+fn press(shell: &Shell, id: NotificationId, verdict: Verdict) {
     // The service reads the notes' current notice before it weighs a press, so the press needs
     // no head start over it.
     let _ = shell
@@ -300,7 +300,7 @@ async fn a_computer_asking_is_asked_about_and_allow_reaches_inferd_as_a_word() {
         .await
     );
 
-    press(&shell, id, Verdict::Allow).await;
+    press(&shell, id, Verdict::Allow);
     until("inferd was not answered", || !inferd.answers().is_empty()).await;
     assert_eq!(inferd.answers(), [(NODE.to_owned(), "allow".to_owned())]);
     notice_gone(&mut shell, "the notification stayed after the answer").await;
@@ -340,7 +340,7 @@ async fn a_question_already_waiting_is_told_at_start_and_one_answered_elsewhere_
         .lock()
         .unwrap_or_else(std::sync::PoisonError::into_inner)
         .gone = true;
-    press(&shell, id, Verdict::Deny).await;
+    press(&shell, id, Verdict::Deny);
     until("the press was not given to inferd", || {
         !inferd.answers().is_empty()
     })

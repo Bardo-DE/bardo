@@ -35,7 +35,7 @@ fn show_in_files_is_syncds_switch_with_its_line_under_it_and_a_turn_on_is_a_set(
         w.harness.html()
     );
     click(&mut w.harness, SHOW_IN_FILES);
-    settle(&mut w.harness, "the set", |_| !w.syncd.sets().is_empty());
+    settle_on_threads(&mut w.harness, "the set", |_| !w.syncd.sets().is_empty());
     assert_eq!(
         w.syncd.sets(),
         [(
@@ -60,14 +60,14 @@ fn the_sync_switches_are_syncds_and_set_on_and_off_in_syncds_module() {
         Some("false")
     );
     click(&mut w.harness, KEEP_FILES);
-    settle(&mut w.harness, "the switch on", |h| {
+    settle_on_threads(&mut w.harness, "the switch on", |h| {
         h.attr(KEEP_FILES, "aria-checked").as_deref() == Some("true")
     });
-    settle(&mut w.harness, "the pane to be free", |h| {
+    settle_on_threads(&mut w.harness, "the pane to be free", |h| {
         h.attr(UPLOAD_PHOTOS, "data-availability").as_deref() != Some("disabled")
     });
     click(&mut w.harness, KEEP_FILES);
-    settle(&mut w.harness, "the second set", |_| {
+    settle_on_threads(&mut w.harness, "the second set", |_| {
         w.syncd.sets().len() == 2
     });
     let want = |on: bool| {
@@ -114,7 +114,7 @@ fn a_synced_dataset_says_when_it_synced_and_how_full_the_storage_is_and_a_ring_t
         sync1,
     );
     open(&mut w, SYNC);
-    settle(&mut w.harness, "the sync line", |h| {
+    settle_on_threads(&mut w.harness, "the sync line", |h| {
         h.html().contains("Synced 5 minutes ago. 2.1 GB of 15 GB")
     });
     assert_eq!(w.harness.count(RING), 0, "nothing is moving");
@@ -126,7 +126,7 @@ fn a_synced_dataset_says_when_it_synced_and_how_full_the_storage_is_and_a_ring_t
         "accounts.home.sync.files",
         toml::Value::Boolean(true),
     );
-    settle(&mut w.harness, "the ring", |h| h.count(RING) == 1);
+    settle_on_threads(&mut w.harness, "the ring", |h| h.count(RING) == 1);
     assert_eq!(
         w.harness
             .count("#account-sync-home .ds-progress[data-style=\"ring\"]"),
@@ -147,5 +147,5 @@ fn a_synced_dataset_says_when_it_synced_and_how_full_the_storage_is_and_a_ring_t
         "accounts.home.sync.files",
         toml::Value::Boolean(true),
     );
-    settle(&mut w.harness, "the ring to stop", |h| h.count(RING) == 0);
+    settle_on_threads(&mut w.harness, "the ring to stop", |h| h.count(RING) == 0);
 }

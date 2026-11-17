@@ -43,9 +43,10 @@ pub async fn eventually_some<T>(what: &str, mut look: impl FnMut() -> Option<T>)
     }
 }
 
-/// Waits until the asynchronous `look` gives a value, looking again every few milliseconds, up to
-/// [`crate::GENEROUS`] by the clock, and returns it. For a condition that is itself a call (a
-/// D-Bus read, a request) and so cannot be a plain closure.
+/// Waits until the asynchronous `look` gives a value and returns it.
+///
+/// For a condition that is itself a call (a D-Bus read, a request) and so cannot be a plain
+/// closure. It looks again every few milliseconds, up to [`crate::GENEROUS`] by the clock.
 ///
 /// # Panics
 /// When no value comes in time, naming `what`.

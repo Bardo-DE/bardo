@@ -68,7 +68,7 @@ fn rows_render_from_the_schemas_sections_and_labels_with_no_local_table() {
     let sandbox = Sandbox::new("intelligence-slots");
     let fake = Inferd::new(Verdict::Allow).on_slots();
     let mut harness = sandbox.with_modules(fake.hosted()).harness(intelligence());
-    settle(&mut harness, "the picker", |h| h.count(".picker-kind") == 3);
+    settle_on_threads(&mut harness, "the picker", |h| h.count(".picker-kind") == 3);
     assert_eq!(harness.count(".picker-kind .ds-field-row"), 5);
     assert_eq!(
         harness.count(".picker-area"),
@@ -96,7 +96,7 @@ fn grouped_choices_render_under_headers_ungrouped_first_in_first_appearance_orde
     let sandbox = Sandbox::new("intelligence-groups");
     let fake = Inferd::new(Verdict::Allow).on_slots();
     let mut harness = sandbox.with_modules(fake.hosted()).harness(intelligence());
-    settle(&mut harness, "the picker", |h| h.count(".picker-kind") == 3);
+    settle_on_threads(&mut harness, "the picker", |h| h.count(".picker-kind") == 3);
     open_first_menu(&mut harness);
     in_order(
         &harness.html(),
@@ -117,7 +117,7 @@ fn an_old_key_module_still_renders() {
     let sandbox = Sandbox::new("intelligence-old-keys");
     let fake = Inferd::new(Verdict::Allow);
     let mut harness = sandbox.with_modules(fake.hosted()).harness(intelligence());
-    settle(&mut harness, "the picker", |h| h.count(".picker-kind") == 2);
+    settle_on_threads(&mut harness, "the picker", |h| h.count(".picker-kind") == 2);
     assert_eq!(harness.count(".picker-area"), 1, "the section is the area");
     in_order(
         &harness.html(),
@@ -142,7 +142,7 @@ fn an_unavailable_choice_is_greyed_with_its_reason_and_cannot_be_set() {
         "Needs a newer version".to_owned(),
     );
     let mut harness = sandbox.with_modules(fake.hosted()).harness(intelligence());
-    settle(&mut harness, "the picker", |h| h.count(".picker-kind") == 3);
+    settle_on_threads(&mut harness, "the picker", |h| h.count(".picker-kind") == 3);
     open_first_menu(&mut harness);
 
     let html = harness.html();

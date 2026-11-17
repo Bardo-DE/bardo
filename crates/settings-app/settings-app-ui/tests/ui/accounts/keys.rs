@@ -13,7 +13,7 @@ fn an_ai_key_shows_its_permits_with_revoke_and_revoking_goes_to_accountd() {
         Some("Revoke Photos allowed: llm")
     );
     press_revoke(&mut w);
-    settle(&mut w.harness, "the revoke", |_| {
+    settle_on_threads(&mut w.harness, "the revoke", |_| {
         !w.accountd.sets().is_empty()
     });
     assert_eq!(
@@ -24,7 +24,7 @@ fn an_ai_key_shows_its_permits_with_revoke_and_revoking_goes_to_accountd() {
         )]
     );
     assert!(w.syncd.sets().is_empty() && w.inferd.sets().is_empty());
-    settle(&mut w.harness, "the permit to leave the page", |h| {
+    settle_on_threads(&mut w.harness, "the permit to leave the page", |h| {
         !h.html().contains("Photos allowed: llm")
     });
 }
@@ -35,7 +35,7 @@ fn a_switch_sets_the_service_in_accountd_and_the_answer_stays_on_screen() {
     open(&mut w, KEY);
     assert_eq!(w.harness.attr(LLM, "aria-checked").as_deref(), Some("true"));
     click(&mut w.harness, LLM);
-    settle(&mut w.harness, "the set", |_| !w.accountd.sets().is_empty());
+    settle_on_threads(&mut w.harness, "the set", |_| !w.accountd.sets().is_empty());
     assert_eq!(
         w.accountd.sets(),
         [(
@@ -43,7 +43,7 @@ fn a_switch_sets_the_service_in_accountd_and_the_answer_stays_on_screen() {
             toml::Value::Boolean(false)
         )]
     );
-    settle(&mut w.harness, "the switch to read off", |h| {
+    settle_on_threads(&mut w.harness, "the switch to read off", |h| {
         h.attr(LLM, "aria-checked").as_deref() == Some("false")
     });
 }

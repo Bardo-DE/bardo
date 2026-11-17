@@ -7,6 +7,7 @@ use crate::support::drive::{click, scroll_into_view, sidebar_page};
 use crate::support::inferd::Inferd;
 use settings_app_model::{ASSISTANT_MODEL_SLUG, ASSISTANT_SETUP_SLUG, Notice, PageSlug};
 use settings_app_ui::Opening;
+use std::time::Duration;
 use ui_harness::{Harness, Input};
 use ui_settings::live::Verdict;
 

@@ -37,7 +37,7 @@ fn the_first_run_step_has_no_sidebar_and_continue_waits_for_a_choice() {
 
     open_and_count_marked(&mut world.harness, SETUP_BUTTON);
     pick(&mut world.harness, 4);
-    settle(&mut world.harness, "Continue", |h| {
+    settle_on_threads(&mut world.harness, "Continue", |h| {
         h.attr(CONTINUE, "data-availability").as_deref() != Some("disabled")
     });
 }

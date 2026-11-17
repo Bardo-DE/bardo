@@ -29,7 +29,7 @@ fn an_absent_inferd_blocks_nothing_on_the_page() {
 fn a_bus_with_no_inferd_on_it_says_inferd_is_not_running() {
     let sandbox = Sandbox::new("intelligence-no-inferd").with_modules(FakeModules::new());
     let mut harness = sandbox.harness(intelligence());
-    settle(&mut harness, "the picker giving up", |h| {
+    settle_on_threads(&mut harness, "the picker giving up", |h| {
         h.attr(".picker", "data-picker").as_deref() == Some("unavailable")
     });
     assert!(harness.html().contains("Models are not available now"));
@@ -40,7 +40,7 @@ fn inferd_refusing_settings_is_said_in_its_own_words() {
     let sandbox = Sandbox::new("intelligence-refused");
     let fake = Inferd::new(Verdict::Refuse);
     let mut harness = sandbox.with_modules(fake.hosted()).harness(intelligence());
-    settle(&mut harness, "the refusal", |h| {
+    settle_on_threads(&mut harness, "the refusal", |h| {
         h.attr(".picker", "data-picker").as_deref() == Some("unavailable")
     });
     assert!(harness.html().contains("Open Settings from the desktop"));
@@ -53,7 +53,7 @@ fn an_inferd_that_starts_after_the_page_opened_is_found_and_one_that_stops_is_mi
     let mut harness = sandbox
         .with_modules(modules.clone())
         .harness(intelligence());
-    settle(&mut harness, "the card", |h| {
+    settle_on_threads(&mut harness, "the card", |h| {
         h.attr(".picker", "data-picker").as_deref() == Some("unavailable")
     });
     assert!(harness.html().contains("Models are not available now"));
@@ -61,20 +61,20 @@ fn an_inferd_that_starts_after_the_page_opened_is_found_and_one_that_stops_is_mi
 
     let fake = Inferd::new(Verdict::Allow);
     fake.host_on(&modules);
-    settle(&mut harness, "the picker to appear", |h| {
+    settle_on_threads(&mut harness, "the picker to appear", |h| {
         h.count(".picker-kind") == 2
     });
     assert_eq!(harness.count(".picker-kind .ds-field-row"), 4);
 
     modules.away(&Daemon::inferd(), Absence::NotRunning);
-    settle(&mut harness, "the card to return", |h| {
+    settle_on_threads(&mut harness, "the card to return", |h| {
         h.attr(".picker", "data-picker").as_deref() == Some("unavailable")
     });
     assert!(harness.html().contains("Models are not available now"));
     assert_eq!(harness.count(".picker-kind"), 0);
 
     fake.host_on(&modules);
-    settle(&mut harness, "the picker to come back", |h| {
+    settle_on_threads(&mut harness, "the picker to come back", |h| {
         h.count(".picker-kind") == 2
     });
 }

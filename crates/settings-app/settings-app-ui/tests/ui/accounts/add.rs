@@ -16,12 +16,12 @@ fn the_list_has_an_add_account_button_and_a_refused_ask_is_told_calmly() {
         Some("Remove Account")
     );
     click(&mut w.harness, ADD);
-    settle(&mut w.harness, "the line", |h| {
+    settle_on_threads(&mut w.harness, "the line", |h| {
         h.html()
             .contains("Could not add an account. Try again later.")
     });
     // The button is free again after the sheet ended.
-    settle(&mut w.harness, "the button", |h| {
+    settle_on_threads(&mut w.harness, "the button", |h| {
         h.attr(ADD, "data-availability").as_deref() != Some("disabled")
     });
 }
@@ -48,7 +48,7 @@ fn the_sign_in_step_lists_what_is_signed_in_and_offers_add_account_and_skip() {
         let mut harness = Sandbox::new(name)
             .with_modules(fake.hosted())
             .harness(setup_opening());
-        settle(&mut harness, "the step's rows", |h| {
+        settle_on_threads(&mut harness, "the step's rows", |h| {
             h.count(".accounts-setup .account-row-body") == rows.len()
                 && h.count(".accounts-setup") == 1
         });
@@ -71,11 +71,11 @@ fn the_sign_in_step_lists_what_is_signed_in_and_offers_add_account_and_skip() {
         }
         // Add Account… is the same ask the page makes; a service that refuses is told calmly.
         click(&mut harness, ADD_ACCOUNT);
-        settle(&mut harness, "the line", |h| {
+        settle_on_threads(&mut harness, "the line", |h| {
             h.html()
                 .contains("Could not add an account. Try again later.")
         });
-        settle(&mut harness, "the button", |h| {
+        settle_on_threads(&mut harness, "the button", |h| {
             h.attr(ADD_ACCOUNT, "data-availability").as_deref() != Some("disabled")
         });
         // Skip leaves nothing behind.

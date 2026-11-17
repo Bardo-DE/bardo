@@ -117,12 +117,12 @@ fn resting_the_pointer_on_an_app_names_the_services_it_uses() {
     );
     open(&mut w, KEY);
     let row = "#permission-accounts-claude-key-grant-g3";
-    settle(&mut w.harness, "the permit rows", |h| {
+    settle_on_threads(&mut w.harness, "the permit rows", |h| {
         h.count(row) == 1 && h.html().contains("Allowed on 8 Oct")
     });
     let at = w.harness.centre(row).expect("the row is laid out");
     w.harness.send(Input::pointer_move(at));
-    settle(&mut w.harness, "the card", |h| {
+    settle_on_threads(&mut w.harness, "the card", |h| {
         h.html().contains("Uses Language model, Speech")
     });
     assert!(

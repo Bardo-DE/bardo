@@ -121,15 +121,21 @@ pub fn settle(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool
 /// ends by the clock's deadline, not by a count of steps.
 ///
 /// # Panics
-/// If `done` never holds in [`base_testkit::GENEROUS`], naming `what`.
+/// If `done` never holds in [`base_testkit::GENEROUS`]: the failure names `what` and carries the
+/// document, so a wrong selector shows what is there instead.
 pub fn settle_on_threads(harness: &mut Harness, what: &str, done: impl Fn(&Harness) -> bool) {
-    base_testkit::eventually_blocking(what, || {
-        if done(harness) {
-            return true;
+    let deadline = base_testkit::Deadline::generous();
+    while !done(harness) {
+        if deadline.passed() {
+            deadline.fail(&format!(
+                "{what}, with the window showing:\n{}",
+                harness.html()
+            ));
         }
         harness.advance(Duration::from_millis(50));
-        false
-    });
+        // The threads that answer are real: give them the processor between looks.
+        std::thread::sleep(Duration::from_millis(10));
+    }
 }
 
 /// Lets the window and its threads run for `steps` steps, to check that something does NOT

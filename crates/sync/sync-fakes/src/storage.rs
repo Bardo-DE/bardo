@@ -1187,6 +1187,10 @@ impl StorageServer for FakeStorage {
 
     /// The fake tells every connection; it takes the call so Files can make it as it will to
     /// syncd.
+    #[expect(
+        clippy::unused_async_trait_impl,
+        reason = "the trait method is async; this impl has nothing to wait for"
+    )]
     async fn watch(&self, _: Call<'_>) -> fdo::Result<()> {
         self.watches.fetch_add(1, Ordering::SeqCst);
         Ok(())

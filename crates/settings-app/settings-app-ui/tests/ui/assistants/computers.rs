@@ -29,19 +29,19 @@ const SERVER_SHEET: &str = "[data-system=\"add-server\"]";
 fn a_server_is_added_from_its_sheet_and_shows_in_the_list_with_remove() {
     let mut c = computers_with_models("computers-server", vec![LAB_COMPUTER]);
     press(&mut c.harness, "Add a server");
-    settle(&mut c.harness, "the sheet", |h| h.count(SERVER_SHEET) == 1);
+    settle_on_threads(&mut c.harness, "the sheet", |h| h.count(SERVER_SHEET) == 1);
     let sheet = c.harness.text_of(SERVER_SHEET).unwrap_or_default();
     assert!(
         sheet.contains("The server must answer on this computer."),
         "{sheet}"
     );
-    settle(&mut c.harness, "the models", |h| {
+    settle_on_threads(&mut c.harness, "the models", |h| {
         h.count("#server-model") == 1
     });
     type_into(&mut c.harness, "#server-name", "studio");
     type_into(&mut c.harness, "#server-port", "8080");
     click(&mut c.harness, "#server-add");
-    settle(&mut c.harness, "the server in the list", |h| {
+    settle_on_threads(&mut c.harness, "the server in the list", |h| {
         h.count(SERVER_SHEET) == 0 && group_text(h).contains("studio")
     });
     assert_eq!(
@@ -61,15 +61,15 @@ fn a_guest_is_allowed_denied_and_forgotten() {
     let asking = "Asking to use this computer's models";
     assert!(group_text(&c.harness).contains(asking));
     press(&mut c.harness, "Allow laptop");
-    settle(&mut c.harness, "approved", |h| {
+    settle_on_threads(&mut c.harness, "approved", |h| {
         group_text(h).contains("Can use this computer's models")
     });
     press(&mut c.harness, "Don\u{2019}t Allow laptop");
-    settle(&mut c.harness, "denied", |h| {
+    settle_on_threads(&mut c.harness, "denied", |h| {
         group_text(h).contains("Not allowed to use this computer's models")
     });
     press(&mut c.harness, "Forget laptop");
-    settle(&mut c.harness, "forgotten", |h| {
+    settle_on_threads(&mut c.harness, "forgotten", |h| {
         !group_text(h).contains("laptop")
     });
     assert_eq!(

@@ -664,6 +664,7 @@ dependencies = [
  "base-time",
  "base-url",
  "clap",
+ "futures-util",
  "rustix 1.1.6",
  "serde",
  "serde_json",
@@ -972,6 +973,7 @@ dependencies = [
  "agent-skills",
  "agent-skills-disk",
  "base-ids",
+ "base-testkit",
  "base-time",
  "companion-client",
  "companion-wire",
@@ -1109,6 +1111,7 @@ dependencies = [
  "base-fs",
  "base-ids",
  "base-path",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "companion-memory",
@@ -1357,6 +1360,7 @@ dependencies = [
 name = "action-log"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "serde_json",
  "thiserror 2.0.21",
  "tracing",
@@ -1530,6 +1534,7 @@ name = "action-testbus"
 version = "0.1.0"
 dependencies = [
  "action-dbus",
+ "base-testkit",
  "tempfile",
  "zbus",
 ]
@@ -2021,6 +2026,7 @@ dependencies = [
  "action-wire",
  "agent-reader",
  "base-ids",
+ "base-testkit",
  "futures-util",
  "inference-client",
  "inference-core",
@@ -2436,6 +2442,7 @@ dependencies = [
  "anyview-fs",
  "anyview-image",
  "anyview-text",
+ "base-testkit",
  "dioxus",
  "dioxus-ssr",
  "log",
@@ -2968,6 +2975,9 @@ dependencies = [
 [[package]]
 name = "base-testkit"
 version = "0.1.0"
+dependencies = [
+ "tokio",
+]
 
 [[package]]
 name = "base-time"
@@ -3958,6 +3968,7 @@ dependencies = [
  "agent-skills",
  "agent-skills-disk",
  "base-ids",
+ "base-testkit",
  "base-time",
  "companion-core",
  "companion-helpers",
@@ -3998,6 +4009,7 @@ dependencies = [
  "action-wire",
  "agent-planner",
  "base-ids",
+ "base-testkit",
  "base-time",
  "chrono",
  "companion-core",
@@ -4146,6 +4158,7 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "base-fs",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "calloop",
@@ -4260,6 +4273,7 @@ version = "0.1.0"
 dependencies = [
  "account-core",
  "account-dbus",
+ "base-testkit",
  "caller-identity-dbus",
  "calloop",
  "compositor-backend",
@@ -4358,6 +4372,7 @@ name = "compositor-testkit"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-testkit",
  "base-time",
  "compositor-app",
  "compositor-backend",
@@ -4512,6 +4527,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-ids",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "computer-use-action",
@@ -6018,6 +6034,7 @@ name = "engine-install"
 version = "0.1.0"
 dependencies = [
  "base-secret",
+ "base-testkit",
  "engine-manifest",
  "engine-probe",
  "engine-spec",
@@ -6376,6 +6393,7 @@ dependencies = [
  "action-vocab",
  "action-wire",
  "base-ids",
+ "base-testkit",
  "files-core",
  "files-desktop",
  "files-fs",
@@ -6444,6 +6462,7 @@ dependencies = [
  "anyview-image",
  "anyview-peek",
  "anyview-platform",
+ "base-testkit",
  "chrono",
  "dioxus",
  "files-core",
@@ -7760,6 +7779,7 @@ dependencies = [
  "engine-probe",
  "engine-spec",
  "engine-supervisor",
+ "futures-util",
  "getrandom 0.4.3",
  "hex",
  "inference-bridge",
@@ -8000,6 +8020,7 @@ name = "input-broker-daemon"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-testkit",
  "base-time",
  "caller-identity-core",
  "caller-identity-linux",
@@ -8564,6 +8585,7 @@ name = "key-remap-client"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-testkit",
  "base-xdg",
  "key-remap-proto",
  "keymap",
@@ -8585,6 +8607,7 @@ dependencies = [
 name = "key-remap-daemon"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "caller-identity-core",
  "caller-identity-linux",
  "input-broker-client",
@@ -8604,6 +8627,7 @@ dependencies = [
 name = "key-remap-devtest"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "key-remap-client",
  "key-remap-evdev",
  "key-remap-proto",
@@ -8799,6 +8823,7 @@ dependencies = [
  "anyrender_vello_cpu",
  "anyrender_vello_hybrid",
  "base-fs",
+ "base-testkit",
  "base-xdg",
  "blitz-dom",
  "blitz-embed",
@@ -9707,6 +9732,7 @@ dependencies = [
 name = "memory-watch"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "blake3",
  "memory-core",
  "notify",
@@ -9838,6 +9864,7 @@ name = "model-http"
 version = "0.1.0"
 dependencies = [
  "base-secret",
+ "base-testkit",
  "proptest",
  "rcgen",
  "reqwest",
@@ -9855,6 +9882,7 @@ dependencies = [
 name = "model-openai-compat"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "base64 0.22.1",
  "log",
  "model-http",
@@ -11382,6 +11410,7 @@ checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
 name = "plugin-host"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "rustix 1.1.6",
  "serde",
  "serde_json",
@@ -11471,6 +11500,7 @@ name = "portal-daemon"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "caller-identity-dbus",
@@ -12831,6 +12861,7 @@ dependencies = [
 name = "service-locator"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "base-xdg",
  "caller-identity-core",
  "caller-identity-linux",
@@ -12855,6 +12886,7 @@ dependencies = [
 name = "settings-app"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "clap",
  "settings-app-callers",
  "settings-app-client",
@@ -12906,6 +12938,7 @@ dependencies = [
  "agent-install",
  "agent-registry",
  "base-fs",
+ "base-testkit",
  "freedesktop-icons",
  "key-remap-client",
  "keymap",
@@ -13036,6 +13069,7 @@ dependencies = [
  "account-dbus",
  "account-wire",
  "action-settings",
+ "base-testkit",
  "dioxus",
  "dioxus-ssr",
  "image",
@@ -13131,6 +13165,7 @@ name = "shell-app"
 version = "0.1.0"
 dependencies = [
  "account-core",
+ "base-testkit",
  "base-xdg",
  "caller-identity-dbus",
  "clap",
@@ -13411,6 +13446,7 @@ dependencies = [
  "anyview-core",
  "anyview-store",
  "base-fs",
+ "base-testkit",
  "base-time",
  "companion-model",
  "companion-wire",
@@ -13464,6 +13500,7 @@ dependencies = [
  "base-fs",
  "base-ids",
  "base-secret",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "bluez-proxy",
@@ -15317,6 +15354,7 @@ dependencies = [
  "anyrender_vello_hybrid",
  "arboard",
  "base-fs",
+ "base-testkit",
  "base-xdg",
  "blitz-dom",
  "blitz-embed",
@@ -15400,6 +15438,7 @@ dependencies = [
 name = "ui-core"
 version = "0.1.0"
 dependencies = [
+ "base-testkit",
  "futures-timer",
  "keyboard-types 0.7.0",
  "keymap",
@@ -15477,6 +15516,7 @@ dependencies = [
  "anyrender",
  "anyrender_vello_cpu",
  "anyrender_vello_hybrid",
+ "base-testkit",
  "blitz-dom",
  "blitz-embed",
  "blitz-html",
@@ -15507,6 +15547,7 @@ name = "ui-helpers"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "serde",
@@ -15788,6 +15829,7 @@ name = "updater-daemon"
 version = "0.1.0"
 dependencies = [
  "base-fs",
+ "base-testkit",
  "base-time",
  "base-xdg",
  "caller-identity-dbus",
@@ -17590,6 +17632,7 @@ dependencies = [
  "anyhow",
  "cargo_metadata",
  "lexopt",
+ "toml",
 ]
 
 [[package]]
