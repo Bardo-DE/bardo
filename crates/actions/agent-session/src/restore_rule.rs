@@ -36,7 +36,7 @@ fn reach(role: CallerRole) -> Reach {
         CallerRole::Field
         | CallerRole::Editor
         | CallerRole::Reader
-        | CallerRole::Cua
+        | CallerRole::ComputerUse
         | CallerRole::Mcp
         | CallerRole::Cli
         | CallerRole::Confirm
@@ -164,18 +164,18 @@ mod tests {
                 "another client gets unknown",
             ),
             (
-                CallerRole::Cua,
+                CallerRole::ComputerUse,
                 &b,
                 Some(&a),
                 false,
-                "cua cannot restore another's",
+                "computer_use cannot restore another's",
             ),
             (
-                CallerRole::Cua,
+                CallerRole::ComputerUse,
                 &a,
                 Some(&a),
                 true,
-                "cua restores its own run",
+                "computer_use restores its own run",
             ),
             (
                 CallerRole::Reader,

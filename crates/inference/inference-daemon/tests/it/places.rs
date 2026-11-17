@@ -149,7 +149,7 @@ async fn a_computer_that_does_not_answer_is_listed_but_not_ready() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn only_settings_the_shell_the_companion_and_cuad_may_list_the_places() {
+async fn only_settings_the_shell_the_companion_and_computer_use_daemon_may_list_the_places() {
     let (world, _lab) = world("callers", CallerRole::Settings, "org.bardo.Settings").await;
     let me = world.client.unique_name().expect("unique name").to_string();
     let cases = [
@@ -159,7 +159,7 @@ async fn only_settings_the_shell_the_companion_and_cuad_may_list_the_places() {
         (CallerRole::Agent, "org.bardo.Reader", false),
         (CallerRole::Agent, "org.bardo.Intents", false),
         (CallerRole::App, "org.bardo.Memory", false),
-        (CallerRole::Cua, "org.bardo.ComputerUse", true),
+        (CallerRole::ComputerUse, "org.bardo.ComputerUse", true),
         (CallerRole::AgentLauncher, "org.bardo.AgentLauncher", false),
     ];
     for (role, name, allowed) in cases {
@@ -350,7 +350,7 @@ mod routing {
         for (role, name) in [
             (CallerRole::Settings, "org.bardo.Settings"),
             (CallerRole::App, "org.bardo.Memory"),
-            (CallerRole::Cua, "org.bardo.ComputerUse"),
+            (CallerRole::ComputerUse, "org.bardo.ComputerUse"),
         ] {
             world.peers.introduce(
                 &me,

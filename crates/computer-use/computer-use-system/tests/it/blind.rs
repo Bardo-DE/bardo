@@ -3,8 +3,8 @@
 use crate::scripted::*;
 use account_capability::ModelId;
 use account_core::AccountId;
-use computer_use_run::{CuaModel, CuaModelError, ModelSight};
-use computer_use_system::InferdCuaModel;
+use computer_use_run::{ComputerUseModel, ComputerUseModelError, ModelSight};
+use computer_use_system::InferdComputerUseModel;
 use inference_core::{
     Declined, DeclinedBecause, InferEvent, InferRefusal, InferReply, ModelRef, PlaceId, PlaceModel,
     PlaceRow, PlaceState, Takes,
@@ -26,10 +26,10 @@ async fn a_chosen_model_that_cannot_read_images_is_told_by_name_and_not_retried(
         declined_blind(),
         InferEvent::Finished(InferReply::Refused(InferRefusal::Unavailable)),
     ]]);
-    let mut model = InferdCuaModel::over(transport);
+    let mut model = InferdComputerUseModel::over(transport);
     assert_eq!(
         model.begin(begin()).await,
-        Err(CuaModelError::CannotSeeScreen)
+        Err(ComputerUseModelError::CannotSeeScreen)
     );
     assert_eq!(
         model.cannot_see_words(),
@@ -42,10 +42,10 @@ async fn no_model_that_reads_images_says_porters_sentence() {
     let (transport, _) = Scripted::new(vec![vec![InferEvent::Finished(InferReply::Refused(
         InferRefusal::NoModelSeesScreen,
     ))]]);
-    let mut model = InferdCuaModel::over(transport);
+    let mut model = InferdComputerUseModel::over(transport);
     assert_eq!(
         model.begin(begin()).await,
-        Err(CuaModelError::CannotSeeScreen)
+        Err(ComputerUseModelError::CannotSeeScreen)
     );
     assert_eq!(
         model.cannot_see_words().as_deref(),
@@ -97,10 +97,10 @@ async fn only_models_all_known_not_to_read_images_make_the_screen_blind() {
         (vec![], ModelSight::MaySee),
     ];
     for (places, want) in rows {
-        let mut model = InferdCuaModel::over(Scripted::placing(places.clone()));
+        let mut model = InferdComputerUseModel::over(Scripted::placing(places.clone()));
         assert_eq!(model.sight().await, want, "{places:?}");
     }
-    let mut silent = InferdCuaModel::over(Scripted::unreachable());
+    let mut silent = InferdComputerUseModel::over(Scripted::unreachable());
     assert_eq!(
         silent.sight().await,
         ModelSight::MaySee,

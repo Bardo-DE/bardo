@@ -6,12 +6,12 @@ use action_gate_wire::EffectBasis;
 use base_ids::Count;
 use computer_use_action::RunMode;
 use computer_use_action::{
-    Button, Chord, ClickCount, Coord, CuaAction, DeviceSize, Point, Repeat, Target, TypedText,
-    WindowSpace,
+    Button, Chord, ClickCount, ComputerUseAction, Coord, DeviceSize, Point, Repeat, Target,
+    TypedText, WindowSpace,
 };
 use computer_use_bus::{
-    ActionResult, AuthorisedBy, BlockedOn, CuaOutcome, CuaRecord, FrameNote, LocalRefusal, Refusal,
-    RunBudget, RunBudgetKind, TargetedAction, ThoughtDigest, WindowRef,
+    ActionResult, AuthorisedBy, BlockedOn, ComputerUseOutcome, ComputerUseRecord, FrameNote,
+    LocalRefusal, Refusal, RunBudget, RunBudgetKind, TargetedAction, ThoughtDigest, WindowRef,
 };
 use computer_use_desktop::{BackendKind, Digest32};
 use computer_use_run::{
@@ -31,8 +31,8 @@ fn run(n: u32) -> RunId {
     RunId::parse(&format!("r-{n}")).unwrap()
 }
 
-pub fn started(n: u32, of: &str) -> CuaRecord {
-    CuaRecord::RunStarted {
+pub fn started(n: u32, of: &str) -> ComputerUseRecord {
+    ComputerUseRecord::RunStarted {
         run: run(n),
         session: SessionId::parse("s-2").unwrap(),
         conversation: SessionId::parse("s-1").unwrap(),
@@ -45,8 +45,8 @@ pub fn started(n: u32, of: &str) -> CuaRecord {
     }
 }
 
-fn step(n: u32, action: CuaAction<WindowSpace>, result: ActionResult) -> CuaRecord {
-    CuaRecord::Step {
+fn step(n: u32, action: ComputerUseAction<WindowSpace>, result: ActionResult) -> ComputerUseRecord {
+    ComputerUseRecord::Step {
         run: run(n),
         n: StepIndex(1),
         thought: ThoughtDigest(Digest32([7; 32])),
@@ -66,8 +66,8 @@ fn step(n: u32, action: CuaAction<WindowSpace>, result: ActionResult) -> CuaReco
     }
 }
 
-fn finished(n: u32, outcome: CuaOutcome) -> CuaRecord {
-    CuaRecord::Finished {
+fn finished(n: u32, outcome: ComputerUseOutcome) -> ComputerUseRecord {
+    ComputerUseRecord::Finished {
         run: run(n),
         outcome,
         steps: Count(3),
@@ -76,8 +76,8 @@ fn finished(n: u32, outcome: CuaOutcome) -> CuaRecord {
     }
 }
 
-fn click_at(x: u32, y: u32) -> CuaAction<WindowSpace> {
-    CuaAction::Click {
+fn click_at(x: u32, y: u32) -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Click {
         at: Target::Point(Point::new(Coord(x), Coord(y))),
         button: Button::Left,
         count: ClickCount::One,
@@ -85,22 +85,22 @@ fn click_at(x: u32, y: u32) -> CuaAction<WindowSpace> {
     }
 }
 
-fn drag() -> CuaAction<WindowSpace> {
-    CuaAction::Drag {
+fn drag() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Drag {
         from: Target::Point(Point::new(Coord(1234), Coord(5678))),
         to: Target::Point(Point::new(Coord(4321), Coord(8765))),
         button: Button::Left,
     }
 }
 
-fn typing() -> CuaAction<WindowSpace> {
-    CuaAction::Type {
+fn typing() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Type {
         text: TypedText::new("90210").unwrap(),
     }
 }
 
-fn enter() -> CuaAction<WindowSpace> {
-    CuaAction::Key {
+fn enter() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Key {
         chord: Chord::new(BTreeSet::new(), keyboard_types::Key::Enter).unwrap(),
         repeat: Repeat::ONCE,
     }
@@ -111,13 +111,13 @@ fn no_progress() -> ActionResult {
 }
 
 /// Three steps and an end, for run `n` in `of`.
-fn attempt(n: u32, of: &str) -> Vec<CuaRecord> {
+fn attempt(n: u32, of: &str) -> Vec<ComputerUseRecord> {
     vec![
         started(n, of),
         step(n, click_at(4817, 3), ActionResult::Done),
         step(n, click_at(4817, 3), no_progress()),
         step(n, drag(), ActionResult::Done),
-        finished(n, CuaOutcome::BudgetOut(RunBudgetKind::Stall)),
+        finished(n, ComputerUseOutcome::BudgetOut(RunBudgetKind::Stall)),
     ]
 }
 
@@ -144,7 +144,8 @@ fn runs_in_other_apps_are_left_out() {
 
 #[test]
 fn the_last_three_runs_stay_numbered_from_the_first_kept() {
-    let records: Vec<CuaRecord> = (1..=5).flat_map(|n| attempt(n, "org.gimp.GIMP")).collect();
+    let records: Vec<ComputerUseRecord> =
+        (1..=5).flat_map(|n| attempt(n, "org.gimp.GIMP")).collect();
     let lines = digest(&records, &app("org.gimp.GIMP"), None);
     let heads: Vec<&String> = lines.iter().filter(|l| l.starts_with("Attempt")).collect();
     assert_eq!(heads, ["Attempt 3:", "Attempt 4:", "Attempt 5:"]);
@@ -220,7 +221,8 @@ fn a_long_run_of_steps_keeps_the_newest_groups() {
 
 #[test]
 fn whole_attempts_go_from_the_oldest_end_to_fit_the_lines() {
-    let records: Vec<CuaRecord> = (1..=3).flat_map(|n| attempt(n, "org.gimp.GIMP")).collect();
+    let records: Vec<ComputerUseRecord> =
+        (1..=3).flat_map(|n| attempt(n, "org.gimp.GIMP")).collect();
     let limits = Limits {
         attempts: 3,
         lines: 7,
@@ -234,9 +236,12 @@ fn whole_attempts_go_from_the_oldest_end_to_fit_the_lines() {
 #[test]
 fn how_a_run_ended_is_said_in_plain_words() {
     let mut records = vec![started(1, "org.gimp.GIMP")];
-    records.push(finished(1, CuaOutcome::Done));
+    records.push(finished(1, ComputerUseOutcome::Done));
     records.push(started(2, "org.gimp.GIMP"));
-    records.push(finished(2, CuaOutcome::Blocked(BlockedOn::ConsentDenied)));
+    records.push(finished(
+        2,
+        ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied),
+    ));
     let lines = digest(&records, &app("org.gimp.GIMP"), None);
     assert_eq!(lines[1], "Tried: no actions.");
     assert_eq!(lines[2], "It said it was done.");
@@ -292,8 +297,8 @@ fn an_input_that_ran_and_changed_nothing_is_marked() {
     );
 }
 
-fn seen(n: u32, unchanged: bool) -> CuaRecord {
-    CuaRecord::Seen {
+fn seen(n: u32, unchanged: bool) -> ComputerUseRecord {
+    ComputerUseRecord::Seen {
         run: run(n),
         n: StepIndex(2),
         unchanged,

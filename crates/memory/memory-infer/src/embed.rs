@@ -216,7 +216,7 @@ pub(crate) fn vectors_of(
             why: "cancelled".to_owned(),
         }),
         InferReply::Chat(_)
-        | InferReply::CuaStep(_)
+        | InferReply::ComputerUseStep(_)
         | InferReply::Transcribed(_)
         | InferReply::Spoke(_) => Err(fatal("inferd answered with another kind of reply")),
     }

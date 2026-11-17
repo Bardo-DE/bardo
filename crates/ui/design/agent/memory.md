@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/memory.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area: memory — implementation spec (plan for the freeze)
 
-Status: PROPOSAL to lock. Sources: COMPANION.md item 11, Security items 1, 2 and 6, Deferred; research-agent-memory.md §7; research-os-memory.md §8 P1–P10; research-ecosystem-infra.md §2 and §7 (crates 2–4); cua-integration.md §6; intents-research/models.md; design/31 and the accounts service (the code shape is copied from the accounts service); design/21-SPACES; Bardo CONVENTIONS.md and docs/workspace-deps.toml.
+Status: PROPOSAL to lock. Sources: COMPANION.md item 11, Security items 1, 2 and 6, Deferred; research-agent-memory.md §7; research-os-memory.md §8 P1–P10; research-ecosystem-infra.md §2 and §7 (crates 2–4); computer-use-integration.md §6; intents-research/models.md; design/31 and the accounts service (the code shape is copied from the accounts service); design/21-SPACES; Bardo CONVENTIONS.md and docs/workspace-deps.toml.
 Marks: **[freeze now]** means the type, signature or format is fixed in the freeze wave, with `todo!()` bodies where the behaviour is not built yet. **[later]** means the place is named now and the shape is decided when the work happens. **[Q]** means only the user can answer.
 
 ---
@@ -23,8 +23,8 @@ Marks: **[freeze now]** means the type, signature or format is fixed in the free
 - The planner's working memory and the handover context (query, results, selection) belong to the agent-loop area. Only what the user confirms reaches `memfiles`.
 - The launcher's entity "shadow index" belongs to the intents/actions router. It may reuse the `recall` crate, but it is not memoryd's data.
 - The policy decision point and Cedar belong to actions. memoryd only stores the decisions as audit events.
-- AT-SPI capture of third-party apps belongs to the a11y/CUA areas. They record through the same `Record` API (`Channel::Atspi`).
-- Screenshots: none are stored by memoryd. CUA step thumbnails are the CUA area's own store (cua-integration §6.2).
+- AT-SPI capture of third-party apps belongs to the a11y/COMPUTER_USE areas. They record through the same `Record` API (`Channel::Atspi`).
+- Screenshots: none are stored by memoryd. Computer-use step thumbnails are the computer use area's own store (computer-use-integration §6.2).
 - **Deferred, room left but not decided:** sync between machines, bi-temporal validity, and whether other people's data counts as memory (§3.11).
 
 ---
@@ -104,7 +104,7 @@ pub enum Actor {
     System { part: SystemPart },                    // memoryd itself, the router, the watcher
     Unknown,                                        // a file change nobody explained
 }
-pub enum AgentTier { Planner, Reader, Cua { run: RunId } }
+pub enum AgentTier { Planner, Reader, ComputerUse { run: RunId } }
 pub enum Channel { Atspi, Dbus, Portal, Mpris, FileWatch }
 pub enum SystemPart { Memory, Router, Watcher, Consolidation, Retention }
 pub struct SessionId(String);  pub struct RunId(String);   // slug grammar
@@ -140,7 +140,7 @@ pub enum EventBody {
     File    { change: FileChange, file: FileView, why: FileWhy },
     Search  { app: AppName, text: String, scope: ThingKind, results: Count },
     Session { session: SessionId, step: SessionStep },          // companion session start/prompt/end
-    Cua     { run: RunId, step: CuaStep },                      // cua.* (cua-integration §6.1), opaque to us
+    ComputerUse     { run: RunId, step: ComputerUseStep },                      // cua.* (computer-use-integration §6.1), opaque to us
     Policy  { request: PolicyRequestView, decision: Decision }, // audit from permission-policy
     Consent { grant: GrantView, answer: ConsentAnswerView },
     Memory  { op: MemoryOp },                                   // memoryd's own audit
@@ -159,7 +159,7 @@ pub enum MemoryOp {
     RuleChanged { rule: RuleId }, Checkpoint { cut: Seq, link: Link32 },
     Dropped { count: Count, reason: DropReason },
 }
-/// Policy/Consent/Cua/Session payload structs are owned by their areas and re-declared here
+/// Policy/Consent/ComputerUse/Session payload structs are owned by their areas and re-declared here
 /// with exactly their serde form (round-trip tested against their bytes) [later per area].
 
 /// What a writer sends. Stamped by memoryd with seq, recorded time, replica and caller.
@@ -192,7 +192,7 @@ pub struct RuleSet { pub rules: Vec<RememberRule>, pub defaults: Vec<(KindPatter
 pub enum Admission { Keep { retention: Retention }, HeaderOnly { retention: Retention }, Drop(DropReason) }
 pub enum DropReason { Paused, Never(RuleId), ThingMarked, SpaceLocked, CallerNotAllowed, SpaceUnknown }
 
-/// Pure. Audit-class events (actor Companion or System(Router), body Policy/Consent/Action/Cua)
+/// Pure. Audit-class events (actor Companion or System(Router), body Policy/Consent/Action/ComputerUse)
 /// are never Dropped: at worst HeaderOnly. Most specific scope wins (Thing > Path > Kind > App >
 /// Actor > Space); at equal specificity Never > HeaderOnly > Full.
 pub fn admit(record: &Record, rules: &RuleSet, state: &SpaceState, marks: &Marks) -> Admission;
@@ -242,7 +242,7 @@ $XDG_DATA_HOME/bardo/memory/
   <space>/facts/INDEX.md              # primer, regenerated by consolidation, <= 200 lines
   <space>/facts/<topic>.md            # topic files (sealed or plain per vault)
   <space>/pending/<fact-id>.md        # untrusted-derived drafts awaiting confirmation
-  <space>/procedures/<app>/<name>.md  # CUA procedures (format: cua area; same metadata trailer)
+  <space>/procedures/<app>/<name>.md  # COMPUTER_USE procedures (format: computer_use area; same metadata trailer)
   <space>/consolidation/<run>.toml    # the diff of one run + pre-images for revert (kept until next run)
 $XDG_CACHE_HOME/bardo/memory/<space>/index.db   # recall index, SQLCipher; deletable, rebuilt
 $XDG_CONFIG_HOME/bardo/memory.toml               # RuleSet + defaults (written only by memoryd)
@@ -649,7 +649,7 @@ A deleted source automatically creates an internal `Thing` plan, applied without
 Harness: `memory-fake` provides:
 - `fake_service(ScriptedConsolidator)` → a `MemoryService` over `MemoryKeys`, `MemoryLog`, `MemoryVault`, `Index<ExactScan>` (in-memory SQLite) and `FakeEmbedder`;
 - `FixedClock(NOW)`, three Spaces (`work`, `home`, `desktop`), and a scratch `Dirs` from `tempfile`;
-- fixtures: `mail_thread_archived`, `file_saved_from_attachment`, `companion_forwarded`, `cua_run_step`, `policy_ask`;
+- fixtures: `mail_thread_archived`, `file_saved_from_attachment`, `companion_forwarded`, `computer_use_run_step`, `policy_ask`;
 - golden files under `crates/*/tests/golden/`.
 
 No test touches a bus, a keyring, the network or real XDG directories. The D-Bus test only introspects skeletons in memory.
@@ -769,7 +769,7 @@ cargo deny check licenses
   - Chat for consolidation.
   - The embedding model's identity comes from `ServedBy.model` into the stored `EmbedderCard`.
   - inferd owns the GPU queue, so the default embedder is `InferdEmbedder`. `FastembedEmbedder` exists for standalone or portable use.
-- **cua:** `cua.*` payloads (opaque `CuaStep` re-declared), procedures written through memfiles with the same metadata trailer, and the run-link purge on forget.
+- **Computer use:** `cua.*` payloads (opaque `ComputerUseStep` re-declared), procedures written through memfiles with the same metadata trailer, and the run-link purge on forget.
 - **ux:** draws the timeline, "what it knows", forget preview, pending, the consolidation diff, rules and pause. Uses §3.11 only. Pause appears in the presence glow.
 - **Bardo Spaces/settings:** the stable `SpaceId` per workspace (design/21 §11.3) and the design/22 rows for `memory.retention.*`, `memory.pending_ttl_days`, `memory.join_window_ms`, `memory.consolidation.*`.
 - **agent-loop:** reads `Primer` at session start and `Search` as needed. The handover working memory is its own.

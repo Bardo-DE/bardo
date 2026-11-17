@@ -264,7 +264,7 @@ mod tests {
 
     #[test]
     fn another_space_shows_presence_only() {
-        let run = AgentRef::Cua {
+        let run = AgentRef::ComputerUse {
             run: provenance::RunId::parse("r-1").expect("run"),
         };
         let roster = Roster {

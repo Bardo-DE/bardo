@@ -11,12 +11,12 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    the OS (MOK, BIOS) the K5 Max must be on Cable or 2.4G, not Bluetooth.
 2. **Bring the sibling checkouts up to date.** The install builds with `--locked`, and `Cargo.lock`
    was resolved against the current master of every repo next to `~/shell`: `memory`, `anyview`,
-   `blitz-embed`, `cua`, `actions`, `key_remap`, `accounts`, `bardo`, `layer-shell-host`, plus `models` and
+   `blitz-embed`, `computer_use`, `actions`, `key_remap`, `accounts`, `bardo`, `layer-shell-host`, plus `models` and
    `desktop-protocols` (reached through them). `mouse_gestures` is not needed to build. A stale one
    (`anyview` was 11 commits behind once) stops the build with a raw cargo error, so check first:
 
    ```sh
-   for r in anyview Bardo layer-shell-host the key remap daemon blitz-embed memory cua actions accounts models desktop-protocols; do
+   for r in anyview Bardo layer-shell-host the key remap daemon blitz-embed memory computer_use actions accounts models desktop-protocols; do
      git -C ~/$r pull --ff-only || echo "NOT FAST-FORWARD: $r"; done
    git -C ~/anyview pull --ff-only                          # the one that was behind
    cd ~/shell && git status --short && git log --oneline -1  # clean, master
@@ -172,7 +172,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
   end with a plain failure within a few seconds, and the session keeps working.
 - `journalctl --user -u memoryd -b`: no crash loop. With the keyring locked or absent, memoryd reports the
   Space locked and intentd counts audit records as lost; that is expected.
-- `journalctl --user -u cuad -b`: idle, no error loop; `cua.enabled` stays off.
+- `journalctl --user -u computer_use_daemon -b`: idle, no error loop; `computer_use.enabled` stays off.
 - Any hang or loop: save the journal lines for the agent session.
 
 ## 4. Known gaps (decided, not bugs)

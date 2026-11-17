@@ -30,7 +30,7 @@ fn the_closure_follows_things_events_and_fact_links() {
     let log = log_of(&[
         record(thing_body("org.bardo.Mail", "a"), user("org.bardo.Mail")),
         record(thing_body("org.bardo.Mail", "b"), user("org.bardo.Mail")),
-        record(area_body(AreaTag::Cua), planner()),
+        record(area_body(AreaTag::ComputerUse), planner()),
     ]);
     let event = |seq| {
         Link::Event(EventRef {

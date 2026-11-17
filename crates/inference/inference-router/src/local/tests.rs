@@ -10,7 +10,7 @@ fn each_entry_with_a_capability_and_a_configured_engine_becomes_a_model() {
     let scratch = Scratch::new("local");
     let models = models(&scratch);
     let ids: Vec<&str> = models.iter().map(|m| m.card.model.as_str()).collect();
-    assert_eq!(ids, ["tiny-chat", "tiny-embed", "tiny-cua"]);
+    assert_eq!(ids, ["tiny-chat", "tiny-embed", "tiny-computer-use"]);
     for model in &models {
         assert_eq!(model.card.account.as_str(), LOCAL_ACCOUNT);
         assert_eq!(model.card.locality, Locality::OnDevice);
@@ -24,7 +24,7 @@ fn each_entry_with_a_capability_and_a_configured_engine_becomes_a_model() {
     assert_eq!(chat.spec.need.0, 100 + 9 + 50);
     assert!(chat.socket.0.ends_with("llama_server-tiny-chat.sock"));
     assert_eq!(models[2].flavor, Some(Flavor::Vllm));
-    assert_eq!(models[2].spec.id.0, "vllm:tiny-cua");
+    assert_eq!(models[2].spec.id.0, "vllm:tiny-computer-use");
 }
 
 #[test]
@@ -48,7 +48,7 @@ fn an_embedding_model_carries_its_catalog_table() {
 #[test]
 fn an_engine_kind_with_no_program_is_not_offered() {
     let scratch = Scratch::new("local-programs");
-    let entries: Vec<_> = [entries::chat(), entries::cua()]
+    let entries: Vec<_> = [entries::chat(), entries::computer_use()]
         .iter()
         .map(|text| parse_entry_text(text).expect("entry"))
         .collect();
@@ -60,7 +60,7 @@ fn an_engine_kind_with_no_program_is_not_offered() {
     };
     let only_vllm = build(&entries, &config, scratch.path());
     let ids: Vec<&str> = only_vllm.iter().map(|m| m.card.model.as_str()).collect();
-    assert_eq!(ids, ["tiny-cua"]);
+    assert_eq!(ids, ["tiny-computer-use"]);
     assert!(build(&entries, &EngineConfig::default(), scratch.path()).is_empty());
     // vLLM runs without writing bytecode into the environment it was sealed in.
     let env: Vec<(&str, &str)> = only_vllm[0]

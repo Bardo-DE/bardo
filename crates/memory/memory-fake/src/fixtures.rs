@@ -153,18 +153,22 @@ fn area(area: AreaTag, kind: &str, json: &str) -> Option<EventBody> {
     }))
 }
 
-/// One computer-use step, as cuad records it.
+/// One computer-use step, as the computer-use daemon records it.
 #[must_use]
-pub fn cua_run_step() -> Option<Record> {
+pub fn computer_use_run_step() -> Option<Record> {
     let run = RunId::parse("r-1").ok()?;
     Some(record(
         Actor::Companion {
             session: SessionId::parse("s-1").ok()?,
-            role: AgentRole::Cua { run },
+            role: AgentRole::ComputerUse { run },
         },
         Effect::Read,
         mail_label(),
-        area(AreaTag::Cua, "cua.step", r#"{"step":1,"action":"observe"}"#)?,
+        area(
+            AreaTag::ComputerUse,
+            "cua.step",
+            r#"{"step":1,"action":"observe"}"#,
+        )?,
         Cause::None,
     ))
 }

@@ -6,7 +6,7 @@ mod agent;
 mod agent_login;
 mod ai;
 mod ai_props;
-mod cua;
+mod computer_use;
 mod effective;
 #[cfg(any(test, feature = "testing"))]
 pub mod fixtures;
@@ -28,7 +28,7 @@ pub use ai::{
     LlmWire, Modality, RerankCap, SpeechCap, SpeechMode,
 };
 pub use ai_props::{Billing, Locality, Tier};
-pub use cua::{CuaBatching, CuaCap, CuaEnv};
+pub use computer_use::{ComputerUseBatching, ComputerUseCap, ComputerUseEnv};
 pub use effective::{KindToggle, effective};
 pub use kinds::{Capability, CapabilityKind, Service, service};
 pub use mail::{IdentityCap, LabelModel, MailCap, MailTransport};

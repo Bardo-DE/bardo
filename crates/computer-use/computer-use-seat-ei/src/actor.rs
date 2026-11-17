@@ -110,7 +110,7 @@ pub(super) async fn spawn(
     let (stop_tx, stop_rx) = watch::channel(0_u64);
     let grant = lease.clone();
     std::thread::Builder::new()
-        .name("cua-ei".into())
+        .name("computer-use-ei".into())
         .spawn(move || {
             let runtime = tokio::runtime::Builder::new_current_thread()
                 .enable_all()

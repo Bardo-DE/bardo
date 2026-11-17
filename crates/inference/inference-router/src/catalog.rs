@@ -12,8 +12,8 @@
 
 use account_capability::ModelId;
 use account_capability::{
-    Capability, CuaBatching, CuaCap, CuaEnv, EmbedCap, EmbedPrompts, LanguageSet, LanguageTag,
-    LlmCap, LlmFeature, LlmWire, Modality, SpeechCap, SpeechMode,
+    Capability, ComputerUseBatching, ComputerUseCap, ComputerUseEnv, EmbedCap, EmbedPrompts,
+    LanguageSet, LanguageTag, LlmCap, LlmFeature, LlmWire, Modality, SpeechCap, SpeechMode,
 };
 use account_capability::{Claim, Offer, Provenance, Subject};
 use base_ids::{Count, Px};
@@ -21,7 +21,7 @@ use computer_use_action::CuaDialect;
 use engine_spec::{SpecError, check_entry, engine};
 use model_catalog::{CatalogError, Modality as CatalogModality, ModelEntry, parse_entry};
 use model_provider::{
-    Caps, Constraint, CuaSupport, EmbedCaps, InputKind, Support, ToolSupport, Zoom,
+    Caps, ComputerUseSupport, Constraint, EmbedCaps, InputKind, Support, ToolSupport, Zoom,
 };
 use model_vision_prep::ResizeRule;
 use speech_provider::{LangSet, SpeechDir};
@@ -109,7 +109,7 @@ pub fn capabilities_of(entry: &ModelEntry) -> Vec<Capability> {
             offered.push(Capability::Llm(llm_cap(caps, entry)));
         }
         if takes(CatalogModality::Image) && gives(CatalogModality::Actions) {
-            offered.extend(cua_cap(caps).map(Capability::ComputerUse));
+            offered.extend(computer_use_cap(caps).map(Capability::ComputerUse));
         }
     }
     if takes(CatalogModality::Text) && gives(CatalogModality::Vector) {
@@ -164,9 +164,9 @@ fn llm_cap(caps: &Caps, entry: &ModelEntry) -> LlmCap {
 /// A computer-use claim needs a dialect an engine on this computer can speak (a tool call or the
 /// text of UI-TARS: `computer-use-session` builds the prompt and reads the reply of both; a vendor's wire
 /// needs the vendor's backend) and a model that sees images.
-fn cua_cap(caps: &Caps) -> Option<CuaCap> {
-    let CuaSupport::Dialect {
-        dialect: CuaDialect::Tool(_) | CuaDialect::Text(_),
+fn computer_use_cap(caps: &Caps) -> Option<ComputerUseCap> {
+    let ComputerUseSupport::Dialect {
+        dialect: ComputerUseDialect::Tool(_) | ComputerUseDialect::Text(_),
         batching,
         zoom,
         ..
@@ -174,11 +174,11 @@ fn cua_cap(caps: &Caps) -> Option<CuaCap> {
     else {
         return None;
     };
-    Some(CuaCap {
-        environments: BTreeSet::from([CuaEnv::Desktop]),
+    Some(ComputerUseCap {
+        environments: BTreeSet::from([ComputerUseEnv::Desktop]),
         batching: match batching {
-            model_provider::Batching::One => CuaBatching::One,
-            model_provider::Batching::Many => CuaBatching::Many,
+            model_provider::Batching::One => ComputerUseBatching::One,
+            model_provider::Batching::Many => ComputerUseBatching::Many,
         },
         zoom: match zoom {
             Zoom::Absent => false,

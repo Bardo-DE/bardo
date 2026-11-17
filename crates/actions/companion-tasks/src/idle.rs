@@ -151,7 +151,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
     }
 
     /// The person said something to a subagent: its policy is narrowed from their words, through
-    /// the router's policy writer, never wider than it has. A run's session is cuad's, so only a
+    /// the router's policy writer, never wider than it has. A run's session is the computer-use daemon's, so only a
     /// worker of ours is narrowed here.
     async fn narrow(&self, agent: &AgentRef, turn: action_core::UserTurn) {
         let session = self
@@ -166,7 +166,7 @@ impl<P: Planner, I: IntentsTransport, K: Clock, S: Surface> Companion<P, I, K, S
         }
     }
 
-    /// The typed steps a worker took since `since`, and its session; a run's are cuad's.
+    /// The typed steps a worker took since `since`, and its session; a run's are the computer-use daemon's.
     fn side_steps(
         &self,
         agent: &AgentRef,

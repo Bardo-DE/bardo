@@ -44,7 +44,7 @@ fn every_actor() -> Vec<Actor> {
         },
         Actor::Companion {
             session,
-            role: AgentRole::Cua { run: run() },
+            role: AgentRole::ComputerUse { run: run() },
         },
         Actor::Companion {
             session: SessionId::parse("s-2").expect("session id"),
@@ -86,12 +86,12 @@ fn actors_round_trip_and_pin_their_json() {
     for a in &every_actor() {
         round_trip(a);
     }
-    let cua = Actor::Companion {
+    let computer_use = Actor::Companion {
         session: SessionId::parse("s-1").expect("id"),
-        role: AgentRole::Cua { run: run() },
+        role: AgentRole::ComputerUse { run: run() },
     };
     assert_eq!(
-        round_trip(&cua),
+        round_trip(&computer_use),
         r#"{"kind":"companion","v":{"session":"s-1","role":{"kind":"cua","v":{"run":"r-7"}}}}"#
     );
     assert_eq!(round_trip(&Actor::Unknown), r#"{"kind":"unknown"}"#);
@@ -266,7 +266,7 @@ fn labels_round_trip_and_pin_their_json() {
         ModelRole::Reader,
         ModelRole::Reviewer,
         ModelRole::PolicyWriter,
-        ModelRole::Cua,
+        ModelRole::ComputerUse,
         ModelRole::Consolidator,
     ] {
         round_trip(&role);

@@ -277,7 +277,11 @@ mod tests {
 
     #[test]
     fn agent_settable_emits_a_compile_time_never_settable_guard() {
-        const CASES: &[(&str, &str)] = &[("cua", "cua.f"), ("agent", "agent.f"), ("d", "d.f")];
+        const CASES: &[(&str, &str)] = &[
+            ("computer_use", "computer_use.f"),
+            ("agent", "agent.f"),
+            ("d", "d.f"),
+        ];
         for (domain, path) in CASES {
             let source = format!(
                 "#[settings(file = \"a/s.toml\", domain = \"{domain}\", page = Page::Dock)] \

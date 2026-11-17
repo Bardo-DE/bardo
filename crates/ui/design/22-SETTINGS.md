@@ -50,7 +50,7 @@ doc is the authority on where each key actually lives, and supersedes those inli
 | --- | --- | --- |
 | `$XDG_CONFIG_HOME/bardo/appearance.toml` | `ui-settings` (crate `crates/ds-settings`, PLAN "Design: `<ds>`") | `appearance`, `motion` (level selector only), `icons` |
 | `$XDG_CONFIG_HOME/shell/settings.toml` | `bardo-shell` (crate `shell-services`/`shell-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
-| `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (the accounts service), intentd and companiond (the actions service), memoryd (the memory service), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: the actions service `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is the accounts service's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
+| `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (the accounts service), intentd and companiond (the actions service), memoryd (the memory service), the computer-use daemon (computer use); each repo names its file and ships its schema (section 9.2). Named so far: the actions service `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is the accounts service's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `computer_use` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
 | `$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml` | `mouse_gestures` (the gesture daemon, PLAN Appendix B); `bardo-shell`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
 
@@ -419,8 +419,8 @@ The model layer: where data may go, which model fills each tier, how the engines
 | `ai.engine.vram_headroom_mib` | `Count` | `1024` | `0..=16384` MiB left free when an engine loads | models.md section 3.7 | proposed (companion freeze, 2026-10-02) |
 | `ai.engine.vllm.python` | text, a path | `~/vllm/.venv/bin/python` | the uv environment vLLM runs from | models.md section 3.7 | proposed (companion freeze, 2026-10-02) |
 | `ai.engine.llama_server.path` | text, a path | `llama-server` | looked up on the engine unit's `PATH` when it has no slash | models.md section 3.7 | proposed (companion freeze, 2026-10-02) |
-| `ai.cua.history_frames` | `Count` | `3` | `1..=8`; screenshots a computer-use step keeps in the prompt | models.md section 3.8 | proposed (companion freeze, 2026-10-02) |
-| `ai.cua.repair_attempts` | `Count` | `1` | `0..=3`; re-asks after an unparseable step | models.md section 3.8 | proposed (companion freeze, 2026-10-02) |
+| `ai.computer_use.history_frames` | `Count` | `3` | `1..=8`; screenshots a computer-use step keeps in the prompt | models.md section 3.8 | proposed (companion freeze, 2026-10-02) |
+| `ai.computer_use.repair_attempts` | `Count` | `1` | `0..=3`; re-asks after an unparseable step | models.md section 3.8 | proposed (companion freeze, 2026-10-02) |
 | `ai.structured.open_text` | `Count` | `4096` | `256..=65536` characters; the longest free-text value a structured output may carry | inferd's structured-output limits (ask 143) | proposed (agent stack, 2026-10-06) |
 | `ai.structured.open_list` | `Count` | `256` | `16..=4096`; the most items an open list in a structured output may carry | inferd's structured-output limits (ask 143) | proposed (agent stack, 2026-10-06) |
 | `ai.structured.depth` | `Count` | `16` | `4..=64`; the deepest nesting a structured output may have | inferd's structured-output limits (ask 143) | proposed (agent stack, 2026-10-06) |
@@ -471,34 +471,34 @@ What the companion remembers and for how long. Page Intelligence, section Memory
 | `memory.consolidation.apply` | `ConsolidateApply::{Auto,Review}` | `Auto` | `Auto` applies tidy, stamp and trusted hunks, revertible, with the diff visible; `Review` waits for each hunk (QUESTIONS Me4) | memory.md; QUESTIONS Me4 | proposed (companion freeze, 2026-10-02) |
 
 
-### 3.29 `cua` (cua)
+### 3.29 `computer_use` (computer use)
 
-Computer use, off by default and on per app. Page Intelligence, section Computer use (`cua.enabled`, `cua.apps`, `cua.default_mode`, `cua.autopause`, `cua.accessibility`); the rest Advanced. The per-run `denials` budget is deleted: the router's breaker (`agent.budget.denials_in_a_row`) counts them (SPEC C12).
+Computer use, off by default and on per app. Page Intelligence, section Computer use (`computer_use.enabled`, `computer_use.apps`, `computer_use.default_mode`, `computer_use.autopause`, `computer_use.accessibility`); the rest Advanced. The per-run `denials` budget is deleted: the router's breaker (`agent.budget.denials_in_a_row`) counts them (SPEC C12).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `cua.enabled` | `CuaEnabled::{Off,On}` | `Off` | while `Off` the computer-use provider is `Hidden` and no pixel step runs | cua.md section 3.8; QUESTIONS P2, P3 | proposed (companion freeze, 2026-10-02) |
-| `cua.apps` | list of tables `{ app, allow }` | empty: no app is on | `app` a desktop-entry id; `allow` is `ask`, `session` or `always`; a browser never takes `always` (QUESTIONS S9) | cua.md; QUESTIONS S9 | proposed (companion freeze, 2026-10-02) |
-| `cua.default_mode` | `CuaDefaultMode::{Auto,InPlace,AgentWorkspace}` | `Auto` | `Auto` is the agent workspace where the compositor supports it, else in place (QUESTIONS U11) | SPEC section 2; QUESTIONS U11 | proposed (companion freeze, 2026-10-02) |
-| `cua.autopause` | `CuaAutopause::{On,Off}` | `On` | pause a run that shares the seat when the person touches the window | cua.md section 4 | proposed (companion freeze, 2026-10-02) |
-| `cua.accessibility` | `CuaAccessibility::{On,Off}` | `On` | read the controls of the window a run is using (that window only), so a step names the control it clicks; `Off` goes on from pixels. Row "Read app controls" | owner, 2026-10-20 | settled (owner, 2026-10-20) |
-| `cua.budget.steps` | `Count` | `40` | `1..=500` per run | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.budget.active_s` | `Secs` | `600` | `10..=7200` | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.budget.stall_frames` | `Count` | `3` | `1..=20`; identical frames before a run counts as stalled | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.budget.actions_per_min` | `Count` | `60` | `1..=600` | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.budget.model_failures` | `Count` | `2` | `0..=10` | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.budget.spend_microusd` | `MicroUsd` | `0` | 0 is local only | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.settle.quiet_ms` | `Ms` | `250` | `50..=2000`; the screen is settled after this much quiet | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.settle.timeout_ms` | `Ms` | `3000` | `500..=30000` | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.wait.max_ms` | `Ms` | `5000` | `500..=60000`; the longest a `Wait` action may ask | cua.md section 7 | proposed (companion freeze, 2026-10-02) |
-| `cua.tree.max_nodes` | `Count` | `400` | `50..=5000`; accessibility nodes sent to the model | cua.md section 3 | proposed (companion freeze, 2026-10-02) |
-| `cua.screens.keep` | `CuaKeepScreens::{Off,On}` | `Off` | `On` keeps thumbnails of each step in the Space's encrypted store (QUESTIONS S11) | cua.md section 5; QUESTIONS S11 | proposed (companion freeze, 2026-10-02) |
-| `cua.screens.keep_days` | `Count` | `7` | `1..=365` d | cua.md section 5 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.enabled` | `ComputerUseEnabled::{Off,On}` | `Off` | while `Off` the computer-use provider is `Hidden` and no pixel step runs | computer_use.md section 3.8; QUESTIONS P2, P3 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.apps` | list of tables `{ app, allow }` | empty: no app is on | `app` a desktop-entry id; `allow` is `ask`, `session` or `always`; a browser never takes `always` (QUESTIONS S9) | computer_use.md; QUESTIONS S9 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.default_mode` | `ComputerUseDefaultMode::{Auto,InPlace,AgentWorkspace}` | `Auto` | `Auto` is the agent workspace where the compositor supports it, else in place (QUESTIONS U11) | SPEC section 2; QUESTIONS U11 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.autopause` | `ComputerUseAutopause::{On,Off}` | `On` | pause a run that shares the seat when the person touches the window | computer_use.md section 4 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.accessibility` | `ComputerUseAccessibility::{On,Off}` | `On` | read the controls of the window a run is using (that window only), so a step names the control it clicks; `Off` goes on from pixels. Row "Read app controls" | owner, 2026-10-20 | settled (owner, 2026-10-20) |
+| `computer_use.budget.steps` | `Count` | `40` | `1..=500` per run | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.budget.active_s` | `Secs` | `600` | `10..=7200` | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.budget.stall_frames` | `Count` | `3` | `1..=20`; identical frames before a run counts as stalled | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.budget.actions_per_min` | `Count` | `60` | `1..=600` | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.budget.model_failures` | `Count` | `2` | `0..=10` | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.budget.spend_microusd` | `MicroUsd` | `0` | 0 is local only | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.settle.quiet_ms` | `Ms` | `250` | `50..=2000`; the screen is settled after this much quiet | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.settle.timeout_ms` | `Ms` | `3000` | `500..=30000` | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.wait.max_ms` | `Ms` | `5000` | `500..=60000`; the longest a `Wait` action may ask | computer_use.md section 7 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.tree.max_nodes` | `Count` | `400` | `50..=5000`; accessibility nodes sent to the model | computer_use.md section 3 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.screens.keep` | `ComputerUseKeepScreens::{Off,On}` | `Off` | `On` keeps thumbnails of each step in the Space's encrypted store (QUESTIONS S11) | computer_use.md section 5; QUESTIONS S11 | proposed (companion freeze, 2026-10-02) |
+| `computer_use.screens.keep_days` | `Count` | `7` | `1..=365` d | computer_use.md section 5 | proposed (companion freeze, 2026-10-02) |
 
 
 ### 3.30 `companion` (shell/settings.toml)
 
-The summon and the confirmation. Page Intelligence, sections Companion and Confirmations. The undo window, the default run place and the touch pause moved to `agent.undo.keep_h`, `cua.default_mode` and `cua.autopause` (SPEC section 2). `companion.double_tap_ms` and `companion.confirm_arm_ms` are Advanced.
+The summon and the confirmation. Page Intelligence, sections Companion and Confirmations. The undo window, the default run place and the touch pause moved to `agent.undo.keep_h`, `computer_use.default_mode` and `computer_use.autopause` (SPEC section 2). `companion.double_tap_ms` and `companion.confirm_arm_ms` are Advanced.
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -867,7 +867,7 @@ only in v1, no widget; a later wave may promote one if the user asks.
 | **Spotlight** (the shell M9, Q303) | `launcher.clipboard_history` (a privacy choice people should find), `launcher.web_search`, `launcher.emoji_skin_tone`; the rest of `launcher.*` stays Advanced |
 | **Privacy & Security** (the compositor's per-app permission rows; `Page::Privacy`, wire `privacy`) | the rows the compositor publishes through its settings module (one per app and permission); no keys of the UI kit's own | 
 | **Power** (added Q445; the shell's own idle service, section 3.24) | `idle.screen_off_ac_min`, `idle.screen_off_battery_min`, `idle.suspend_ac_min`, `idle.suspend_battery_min`, `idle.lock`, `session.lock_grace_s` (`Shell` under `idle.times` is what makes the `idle.screen_off_*`/`idle.suspend_*` sliders apply; under `Desktop` they still render, disabled, so the row explains itself) |
-| **Intelligence** (the companion, design/32; the shell's `companion` domain and the daemons' schemas) | Companion: `companion.summon`, `companion.in_field`, `companion.notify`; Models: `ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>` (the live picker, section 9.4); Memory: `memory.files.at_rest`, `memory.consolidation.when`, `memory.consolidation.apply`, and the memory view (a live module); Computer use: `cua.enabled`, `cua.apps`, `cua.default_mode`, `cua.autopause`; Privacy: `agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h` |
+| **Intelligence** (the companion, design/32; the shell's `companion` domain and the daemons' schemas) | Companion: `companion.summon`, `companion.in_field`, `companion.notify`; Models: `ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>` (the live picker, section 9.4); Memory: `memory.files.at_rest`, `memory.consolidation.when`, `memory.consolidation.apply`, and the memory view (a live module); Computer use: `computer_use.enabled`, `computer_use.apps`, `computer_use.default_mode`, `computer_use.autopause`; Privacy: `agent.strictness`, `agent.mcp.expose`, `agent.undo.keep_h` |
 | **Viewer** (anyview, section 3.31) | Window: `viewer.chrome.hide_after`, `viewer.warm_for`; Viewing: `viewer.zoom.step`, `viewer.media.seek_step`; History: `viewer.history.cap`, `viewer.versions.keep`; Export: `viewer.export.jpeg_quality`, `viewer.export.avif_quality`, `viewer.export.paper`, `viewer.export.orientation`; `viewer.peek.*` and `viewer.image.*` are Advanced |
 | **Advanced** (file only) | everything else in section 3: `bar.*` except `bar.autohide`, `menus.*`, `control_center.*`, `scrollbar.*`, `scroll.momentum_*`/`rubber_band_*`/`wheel_detent_px`, `dock.*` geometry beyond the Dock page's list above, `palm_rejection.*`, `gestures.g4_*`/`live_workspace_*`, `session.*` other than `lock_grace_s` (Accounts page, all Advanced) |
 

@@ -15,8 +15,8 @@ use crate::world::{EvalA11y, EvalCapture, EvalClock, EvalDesktop, EvalSeams, Eva
 use computer_use_desktop::{BackendCaps, BackendKind};
 use computer_use_fake::MemoryEvents;
 use computer_use_run::{
-    Clock, Collected, CuaConfig, CuaModel, CuaSignal, Exec, FORCED_NO, FORCED_YES, Held, Run,
-    RunEffect, RunEnv, RunInput, Seam,
+    Clock, Collected, ComputerUseConfig, ComputerUseModel, ComputerUseSignal, Exec, FORCED_NO,
+    FORCED_YES, Held, Run, RunEffect, RunEnv, RunInput, Seam,
 };
 use provenance::{Label, Labelled, RunId};
 use std::collections::VecDeque;
@@ -42,7 +42,7 @@ pub enum SetupError {
 /// # Errors
 ///
 /// Returns a [`SetupError`] when the run's world cannot be set up.
-pub async fn play<M: CuaModel + 'static>(
+pub async fn play<M: ComputerUseModel + 'static>(
     arena: &Arena,
     model: M,
     player: &str,
@@ -67,12 +67,12 @@ pub async fn play<M: CuaModel + 'static>(
         rules: &rules,
     };
     let env = RunEnv::new(
-        &CuaConfig::default(),
+        &ComputerUseConfig::default(),
         BackendCaps::of(BackendKind::KwinStock),
         rules.clone(),
     );
     let id = RunId::parse("r-1").map_err(|e| SetupError::Id(e.to_string()))?;
-    let (run, _) = Run::start(id, arena.cua_task()?, env, arena.clock.stamp());
+    let (run, _) = Run::start(id, arena.computer_use_task()?, env, arena.clock.stamp());
     let mut model = Timed::new(model, stopwatch);
     let ended = drive(run, world, &mut model, arena).await;
     let latencies = std::mem::take(&mut model.took);
@@ -84,7 +84,7 @@ pub async fn play<M: CuaModel + 'static>(
 }
 
 /// Carries the run's effects out and feeds the answers back until it ends.
-async fn drive<M: CuaModel + 'static>(
+async fn drive<M: ComputerUseModel + 'static>(
     run: Run,
     seam: Seam<'_, EvalSeams<Timed<M>>>,
     model: &mut Timed<M>,
@@ -104,7 +104,7 @@ async fn drive<M: CuaModel + 'static>(
             exec.carry_out(effect, Some(&mut *model), &mut out).await;
         }
         let asked = out.signals.drain(..).find_map(|s| match s {
-            CuaSignal::AskUser(id, _) => Some(id),
+            ComputerUseSignal::AskUser(id, _) => Some(id),
             _ => None,
         });
         if let Some(id) = asked {
@@ -142,7 +142,7 @@ async fn drive<M: CuaModel + 'static>(
 }
 
 /// What the world does when nothing is queued: a screen that changes, or time that passes.
-async fn idle<M: CuaModel + 'static>(
+async fn idle<M: ComputerUseModel + 'static>(
     run: &Run,
     exec: &mut Exec<'_, EvalSeams<Timed<M>>>,
     clock: &EvalClock,

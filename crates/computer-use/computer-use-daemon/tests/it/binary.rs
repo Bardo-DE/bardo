@@ -1,5 +1,5 @@
-//! The `cuad` binary on a private bus with a cleared environment and no compositor: it starts,
-//! owns both of its names, reports the backend as unavailable, leaves `cua.enabled` off, and
+//! The `computer_use_daemon` binary on a private bus with a cleared environment and no compositor: it starts,
+//! owns both of its names, reports the backend as unavailable, leaves `computer_use.enabled` off, and
 //! stops cleanly on SIGTERM and when the bus goes away.
 
 use crate::support::bus::PrivateBus;
@@ -9,7 +9,7 @@ use std::process::{Child, Command, ExitStatus, Stdio};
 use zbus::fdo;
 use zbus::names::BusName;
 
-/// A running `cuad`, killed by PID if the test ends before it does.
+/// A running `computer_use_daemon`, killed by PID if the test ends before it does.
 struct Daemon(Child);
 
 impl Daemon {
@@ -25,7 +25,7 @@ impl Daemon {
             .stdout(Stdio::null())
             .stderr(Stdio::piped())
             .spawn()
-            .expect("cuad starts");
+            .expect("computer_use_daemon starts");
         Self(child)
     }
 
@@ -34,7 +34,7 @@ impl Daemon {
     }
 
     fn wait(&mut self) -> ExitStatus {
-        self.0.wait().expect("cuad exits")
+        self.0.wait().expect("computer_use_daemon exits")
     }
 }
 
@@ -66,7 +66,7 @@ fn sigterm(pid: u32) {
 }
 
 #[tokio::test]
-async fn cuad_without_a_compositor_serves_its_names_and_says_the_backend_is_none() {
+async fn computer_use_daemon_without_a_compositor_serves_its_names_and_says_the_backend_is_none() {
     let dir = tempfile::tempdir().expect("dir");
     let bus = PrivateBus::start(dir.path());
     let mut daemon = Daemon::start(&bus, dir.path(), &[]);
@@ -84,7 +84,7 @@ async fn cuad_without_a_compositor_serves_its_names_and_says_the_backend_is_none
 }
 
 #[tokio::test]
-async fn cuad_stops_when_the_bus_goes_away() {
+async fn computer_use_daemon_stops_when_the_bus_goes_away() {
     let dir = tempfile::tempdir().expect("dir");
     let bus = PrivateBus::start(dir.path());
     let mut daemon = Daemon::start(&bus, dir.path(), &[]);

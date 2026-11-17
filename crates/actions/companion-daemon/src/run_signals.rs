@@ -1,4 +1,4 @@
-//! How on-screen runs end, heard from the run daemon. `Cua1.Run.Finished` says by an enumerated
+//! How on-screen runs end, heard from the run daemon. `ComputerUse1.Run.Finished` says by an enumerated
 //! kind why a run did not finish; the companion turns it into fixed words on the run's roster
 //! line. Only the owner of the daemon's bus name is heard, and only its enumerated fields are
 //! read: what the run wrote in its report is not in the signal and never reaches the planner
@@ -42,7 +42,7 @@ pub(crate) async fn watch<P, I, K>(
     let (Some(rule), Ok(dbus), Ok(name)) = (
         rule(),
         DBusProxy::new(&connection).await,
-        BusName::try_from(computer_use_dbus::CUA_BUS),
+        BusName::try_from(computer_use_dbus::COMPUTER_USE_BUS),
     ) else {
         return;
     };

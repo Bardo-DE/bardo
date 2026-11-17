@@ -1,7 +1,7 @@
 # The computer-use prompt of UI-TARS-1.5.
 # Source: bytedance/UI-TARS, codes/ui_tars/prompt.py (COMPUTER_USE_DOUBAO), Apache-2.0,
 # Copyright (c) 2025 Bytedance Ltd. and/or its affiliates (SPDX-License-Identifier: Apache-2.0).
-# Placeholders filled by cua-session: {language}, {instruction}. Lines starting with `#` at the top of
+# Placeholders filled by computer-use-session: {language}, {instruction}. Lines starting with `#` at the top of
 # this file are the header and are not sent.
 You are a GUI agent. You are given a task and your action history, with screenshots. You need to perform the next action to complete the task.
 

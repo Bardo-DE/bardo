@@ -3,7 +3,7 @@
 //! A platform's table is a complete base plus a short list of rows that differ. Every standard
 //! action has a row on every platform: a chord, or an explicit "none" with the reason.
 
-mod cua;
+mod common;
 mod gnome;
 mod kde;
 mod mac;
@@ -58,16 +58,16 @@ impl ConventionTable {
             | Platform::Linux {
                 desktop: Desktop::Ours,
             } => (&[], mac::ROWS, &mac::SPACES),
-            Platform::Windows => (windows::ROWS, cua::ROWS, &windows::SPACES),
+            Platform::Windows => (windows::ROWS, common::ROWS, &windows::SPACES),
             Platform::Linux {
                 desktop: Desktop::Kde,
-            } => (kde::ROWS, cua::ROWS, &kde::SPACES),
+            } => (kde::ROWS, common::ROWS, &kde::SPACES),
             Platform::Linux {
                 desktop: Desktop::Gnome,
-            } => (gnome::ROWS, cua::ROWS, &gnome::SPACES),
+            } => (gnome::ROWS, common::ROWS, &gnome::SPACES),
             Platform::Linux {
                 desktop: Desktop::Other,
-            } => (&[], cua::ROWS, &cua::SPACES),
+            } => (&[], common::ROWS, &common::SPACES),
         };
         ConventionTable {
             platform,

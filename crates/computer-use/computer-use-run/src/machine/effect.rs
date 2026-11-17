@@ -1,19 +1,20 @@
-//! What the machine wants done: every effect, and every signal the bus emits. cuad carries them
+//! What the machine wants done: every effect, and every signal the bus emits. The computer-use daemon carries them
 //! out; the machine never touches the world.
 
 use crate::model::ThoughtText;
 use crate::screen::ScreenText;
 use crate::turn::FrameAttachment;
 use action_core::MessageDraft;
-use action_gate_wire::CuaAsk;
+use action_gate_wire::ComputerUseAsk;
 use computer_use_a11y_tree::{NodeBudget, NodeSelector};
 use computer_use_bus::{
-    ActionOutcome, AskBody, CuaOutcome, CuaRecord, QuestionId, RunStateSlug, TargetedAction,
+    ActionOutcome, AskBody, ComputerUseOutcome, ComputerUseRecord, QuestionId, RunStateSlug,
+    TargetedAction,
 };
 use computer_use_capture::FrameWant;
 use computer_use_desktop::{GlowState, LeaseId, LeaseRequest, Ms, Suspend};
 use computer_use_seat_input::PlannedAction;
-use inference_core::{CuaStepRequest, StepIndex};
+use inference_core::{ComputerUseStepRequest, StepIndex};
 use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
 
@@ -27,10 +28,10 @@ pub enum HintSource {
     NoHints,
 }
 
-/// What the bus tells watchers (the `Cua1.Run` signals).
+/// What the bus tells watchers (the `ComputerUse1.Run` signals).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum CuaSignal {
+pub enum ComputerUseSignal {
     /// The phase changed.
     StateChanged(RunStateSlug),
     /// A step began.
@@ -45,7 +46,7 @@ pub enum CuaSignal {
     AskUser(QuestionId, AskBody),
     /// The run ended. The report to its requester is a `provenance::Message` sent by
     /// `RunEffect::Report`.
-    Finished(CuaOutcome),
+    Finished(ComputerUseOutcome),
 }
 
 /// One effect of the run machine.
@@ -87,14 +88,14 @@ pub enum RunEffect {
     /// Send the model its turn (the request, and the frame beside it).
     CallModel {
         /// The request.
-        request: Box<CuaStepRequest>,
+        request: Box<ComputerUseStepRequest>,
         /// The frame.
         frame: FrameAttachment,
     },
     /// Cancel the model call.
     CancelModel,
     /// `Gate.Check`: may the head action run?
-    Check(Box<CuaAsk>),
+    Check(Box<ComputerUseAsk>),
     /// `Request.Proceed`: the lease is suspended, the router may show the confirmation.
     Proceed,
     /// Deliver input.
@@ -113,9 +114,9 @@ pub enum RunEffect {
     /// Show what the run is doing.
     Glow(GlowState),
     /// Tell watchers.
-    Emit(CuaSignal),
+    Emit(ComputerUseSignal),
     /// Write to the event log.
-    Record(Box<CuaRecord>),
+    Record(Box<ComputerUseRecord>),
     /// Speak to the requester: a draft of kind `Report` (Done, Failed, Cancelled or Progress).
     /// Sent through `Intents1.Message.Send`; the router stamps it.
     Report(Box<MessageDraft>),

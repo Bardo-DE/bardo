@@ -5,9 +5,9 @@ use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use inference_core::{
-    AttachIndex, Base64Bytes, ChatMessage, ChatRequest, CuaBegin, CuaStepRequest, FrameImage,
-    FrameLayout, ImagePart, ImageSource, LangPick, MediaType, Role, ServedBy, SpeakReply,
-    SpeakRequest, StepIndex, ToolCallId, ToolStatus, TranscribeBegin, TranscribeMode,
+    AttachIndex, Base64Bytes, ChatMessage, ChatRequest, ComputerUseBegin, ComputerUseStepRequest,
+    FrameImage, FrameLayout, ImagePart, ImageSource, LangPick, MediaType, Role, ServedBy,
+    SpeakReply, SpeakRequest, StepIndex, ToolCallId, ToolStatus, TranscribeBegin, TranscribeMode,
     TranscribeReply, WindowGeometry,
 };
 
@@ -51,7 +51,7 @@ fn tool_result(parts: Vec<MessagePart>) -> MessagePart {
 }
 
 fn step() -> InferRequest {
-    InferRequest::CuaStep(CuaStepRequest::new(
+    InferRequest::ComputerUseStep(ComputerUseStepRequest::new(
         StepIndex(0),
         WindowGeometry {
             logical: computer_use_action::Size::new(
@@ -106,9 +106,9 @@ fn the_images_a_request_carries_are_counted_wherever_they_sit() {
         ("a computer-use step is one frame", step(), 1),
         (
             "a begin carries none",
-            InferRequest::CuaBegin(CuaBegin::new(
+            InferRequest::ComputerUseBegin(ComputerUseBegin::new(
                 "g".into(),
-                account_capability::CuaEnv::Desktop,
+                account_capability::ComputerUseEnv::Desktop,
             )),
             0,
         ),

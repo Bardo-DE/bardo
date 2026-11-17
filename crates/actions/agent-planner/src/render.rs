@@ -41,7 +41,7 @@ fn agent(agent: &AgentRef) -> String {
     match agent {
         AgentRef::Companion => "assistant".to_owned(),
         AgentRef::Worker { .. } => "a background task".to_owned(),
-        AgentRef::Cua { .. } => "an on-screen run".to_owned(),
+        AgentRef::ComputerUse { .. } => "an on-screen run".to_owned(),
         AgentRef::User => "the person".to_owned(),
     }
 }
@@ -451,7 +451,7 @@ mod tests {
             narrative: None,
         };
         let roster = RosterLine {
-            agent: AgentRef::Cua {
+            agent: AgentRef::ComputerUse {
                 run: provenance::RunId::parse("r-1").expect("run"),
             },
             space: provenance::SpaceId::desktop(),
@@ -479,7 +479,13 @@ mod tests {
             roster_line(&refused),
             "- an on-screen run in desktop [failed: could not take the window]: "
         );
-        for banned in ["t-179", "r-1", "computeruse.run.start", "cua", "companion"] {
+        for banned in [
+            "t-179",
+            "r-1",
+            "computeruse.run.start",
+            "computer_use",
+            "companion",
+        ] {
             assert!(!text.to_lowercase().contains(banned), "{banned} in {text}");
         }
     }
@@ -551,7 +557,7 @@ mod tests {
                 space: SpaceId::desktop(),
             },
             from: Address {
-                agent: AgentRef::Cua {
+                agent: AgentRef::ComputerUse {
                     run: provenance::RunId::parse("r-1").expect("run"),
                 },
                 space: SpaceId::desktop(),

@@ -61,11 +61,11 @@ pub enum WholeMask {
     Blacked(MaskReason),
 }
 
-/// What was masked in one frame, and by whom. Pixels never leave cuad unmasked, whichever side
+/// What was masked in one frame, and by whom. Pixels never leave the computer-use daemon unmasked, whichever side
 /// did it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MaskReport {
-    /// The compositor (fork) or cuad (stock).
+    /// The compositor (fork) or the computer-use daemon (stock).
     pub applied_by: MaskWhere,
     /// Whole-frame mask, if any.
     pub whole: WholeMask,
@@ -163,14 +163,14 @@ mod tests {
     #[test]
     fn a_report_pins_its_json() {
         let report = MaskReport {
-            applied_by: MaskWhere::Cuad,
+            applied_by: MaskWhere::ComputerUseDaemon,
             whole: WholeMask::None,
             regions: vec![],
         };
         let json = serde_json::to_string(&report).unwrap();
         assert_eq!(
             json,
-            r#"{"applied_by":"cuad","whole":{"kind":"none"},"regions":[]}"#
+            r#"{"applied_by":"computer_use_daemon","whole":{"kind":"none"},"regions":[]}"#
         );
         assert_eq!(serde_json::from_str::<MaskReport>(&json).unwrap(), report);
         let whole = WholeMask::Blacked(MaskReason::SensitiveWindow);

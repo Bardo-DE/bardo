@@ -1,8 +1,8 @@
-//! The seam a run reaches its model through: inferd in cuad, a script in tests.
+//! The seam a run reaches its model through: inferd in the computer-use daemon, a script in tests.
 
 use crate::screen::{ScreenRead, ScreenText};
 use crate::turn::FrameAttachment;
-use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{ComputerUseAction, WindowSpace};
 use inference_core::{
     CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError, ServedBy, TurnUsage,
 };
@@ -15,7 +15,7 @@ pub enum StepEvent {
     /// Some of the model's thought, as it streams (text of the model: `Debug` never prints it).
     ThoughtDelta(ThoughtText),
     /// An action the model proposed, in window space, before the batch is complete.
-    ActionProposed(CuaAction<WindowSpace>),
+    ActionProposed(ComputerUseAction<WindowSpace>),
 }
 
 /// A piece of a model's thought. `Debug` prints its length only.
@@ -38,7 +38,7 @@ pub trait StepSink: Send {
 /// Why a model call failed, in the words the run machine counts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, thiserror::Error)]
 #[serde(rename_all = "snake_case")]
-pub enum CuaModelError {
+pub enum ComputerUseModelError {
     /// Worth retrying: the engine is busy, loading or unreachable.
     #[error("transient")]
     Transient,
@@ -54,33 +54,33 @@ pub enum CuaModelError {
     CannotSeeScreen,
 }
 
-impl From<CuaStepFailure> for CuaModelError {
+impl From<ComputerUseStepFailure> for ComputerUseModelError {
     /// inferd's failure, sorted into what the machine can act on: an unreachable, rate-limited
     /// or not-ready engine is transient; an unreadable reply is a parse failure; a refusal, an
     /// authorisation failure or a context overflow is fatal.
-    fn from(failure: CuaStepFailure) -> Self {
+    fn from(failure: ComputerUseStepFailure) -> Self {
         match failure {
-            CuaStepFailure::Unparseable => CuaModelError::Parse,
-            CuaStepFailure::ModelFailed(error) => match error {
+            ComputerUseStepFailure::Unparseable => ComputerUseModelError::Parse,
+            ComputerUseStepFailure::ModelFailed(error) => match error {
                 ModelError::Unreachable | ModelError::RateLimited(_) | ModelError::NotReady => {
-                    CuaModelError::Transient
+                    ComputerUseModelError::Transient
                 }
                 // A step that was all thinking chose no action: the same as one we could not read.
                 ModelError::Unparseable
                 | ModelError::Unreadable
-                | ModelError::OnlyThought { .. } => CuaModelError::Parse,
+                | ModelError::OnlyThought { .. } => ComputerUseModelError::Parse,
                 // Out of credit, or a sign-in the provider refused: no retry gets past either.
                 ModelError::Unauthorized
                 | ModelError::PaymentRequired
                 | ModelError::SignInRefused
                 | ModelError::Refused
-                | ModelError::ContextOverflow => CuaModelError::Fatal,
+                | ModelError::ContextOverflow => ComputerUseModelError::Fatal,
                 // A failure this build does not know is never retried.
                 #[expect(
                     clippy::match_same_arms,
                     reason = "the catch-all for variants this build does not know shares the body of the known fatal ones only by choice"
                 )]
-                _ => CuaModelError::Fatal,
+                _ => ComputerUseModelError::Fatal,
             },
         }
     }
@@ -111,7 +111,7 @@ pub enum ModelSight {
 pub const NO_SIGHT_NOTE: &str = "No model here can see the screen, so the assistant can't use apps for you. Choose one that reads images.";
 
 /// A computer-use model for one run.
-pub trait CuaModel: Send {
+pub trait ComputerUseModel: Send {
     /// Whether a model can serve a run now. Only a model that is plainly not there is
     /// [`ModelReach::Missing`]; one that is loading, downloadable or not reachable is left to
     /// the run, which says why if it cannot go on. By default a model serves.
@@ -125,22 +125,25 @@ pub trait CuaModel: Send {
         async { ModelSight::MaySee }
     }
 
-    /// The sentence a person reads when the last failure was [`CuaModelError::CannotSeeScreen`];
+    /// The sentence a person reads when the last failure was [`ComputerUseModelError::CannotSeeScreen`];
     /// none when the model has no words of its own for it.
     fn cannot_see_words(&self) -> Option<String> {
         None
     }
 
     /// Starts the run's session with the goal and hints.
-    fn begin(&mut self, begin: CuaBegin) -> impl Future<Output = Result<(), CuaModelError>> + Send;
+    fn begin(
+        &mut self,
+        begin: ComputerUseBegin,
+    ) -> impl Future<Output = Result<(), ComputerUseModelError>> + Send;
 
     /// One step: the request, the frame beside it, and where to send events as they stream.
     fn step(
         &mut self,
-        request: CuaStepRequest,
+        request: ComputerUseStepRequest,
         frame: FrameAttachment,
         sink: &mut impl StepSink,
-    ) -> impl Future<Output = Result<CuaStepReply, CuaModelError>> + Send;
+    ) -> impl Future<Output = Result<ComputerUseStepReply, ComputerUseModelError>> + Send;
 
     /// Tokens used by the last step.
     fn usage(&self) -> TurnUsage;
@@ -166,63 +169,63 @@ mod tests {
 
     #[test]
     fn inferd_failures_sort_into_transient_parse_and_fatal() {
-        const CASES: &[(&str, CuaStepFailure, CuaModelError)] = &[
+        const CASES: &[(&str, ComputerUseStepFailure, ComputerUseModelError)] = &[
             (
                 "unparseable",
-                CuaStepFailure::Unparseable,
-                CuaModelError::Parse,
+                ComputerUseStepFailure::Unparseable,
+                ComputerUseModelError::Parse,
             ),
             (
                 "unreachable",
-                CuaStepFailure::ModelFailed(ModelError::Unreachable),
-                CuaModelError::Transient,
+                ComputerUseStepFailure::ModelFailed(ModelError::Unreachable),
+                ComputerUseModelError::Transient,
             ),
             (
                 "rate limited",
-                CuaStepFailure::ModelFailed(ModelError::RateLimited(5)),
-                CuaModelError::Transient,
+                ComputerUseStepFailure::ModelFailed(ModelError::RateLimited(5)),
+                ComputerUseModelError::Transient,
             ),
             (
                 "not ready",
-                CuaStepFailure::ModelFailed(ModelError::NotReady),
-                CuaModelError::Transient,
+                ComputerUseStepFailure::ModelFailed(ModelError::NotReady),
+                ComputerUseModelError::Transient,
             ),
             (
                 "model unparseable",
-                CuaStepFailure::ModelFailed(ModelError::Unparseable),
-                CuaModelError::Parse,
+                ComputerUseStepFailure::ModelFailed(ModelError::Unparseable),
+                ComputerUseModelError::Parse,
             ),
             (
                 "unreadable",
-                CuaStepFailure::ModelFailed(ModelError::Unreadable),
-                CuaModelError::Parse,
+                ComputerUseStepFailure::ModelFailed(ModelError::Unreadable),
+                ComputerUseModelError::Parse,
             ),
             (
                 "only thought",
-                CuaStepFailure::ModelFailed(ModelError::OnlyThought {
+                ComputerUseStepFailure::ModelFailed(ModelError::OnlyThought {
                     stop: StopReason::EndTurn,
                     thought_len: 12,
                 }),
-                CuaModelError::Parse,
+                ComputerUseModelError::Parse,
             ),
             (
                 "unauthorized",
-                CuaStepFailure::ModelFailed(ModelError::Unauthorized),
-                CuaModelError::Fatal,
+                ComputerUseStepFailure::ModelFailed(ModelError::Unauthorized),
+                ComputerUseModelError::Fatal,
             ),
             (
                 "refused",
-                CuaStepFailure::ModelFailed(ModelError::Refused),
-                CuaModelError::Fatal,
+                ComputerUseStepFailure::ModelFailed(ModelError::Refused),
+                ComputerUseModelError::Fatal,
             ),
             (
                 "overflow",
-                CuaStepFailure::ModelFailed(ModelError::ContextOverflow),
-                CuaModelError::Fatal,
+                ComputerUseStepFailure::ModelFailed(ModelError::ContextOverflow),
+                ComputerUseModelError::Fatal,
             ),
         ];
         for (name, failure, want) in CASES {
-            assert_eq!(CuaModelError::from(*failure), *want, "{name}");
+            assert_eq!(ComputerUseModelError::from(*failure), *want, "{name}");
         }
     }
 

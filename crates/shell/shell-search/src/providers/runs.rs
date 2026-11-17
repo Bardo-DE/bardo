@@ -3,7 +3,7 @@
 //! What each was asked, where it stands and the controls its state offers.
 //!
 //! A search lists the runs still going; asked alone (the Runs filter) it lists every
-//! run cuad still holds, the ended ones too.
+//! run the computer-use daemon still holds, the ended ones too.
 //!
 //! Enter on a run is "Watch" where there is a window to watch, and nothing else: stopping or
 //! taking over is always a deliberate pick from the row's actions.
@@ -16,7 +16,7 @@ use shell_launcher::{
 use shell_model::companion::{Companion, RunFacts, run_controls, run_state_of};
 use tokio::sync::watch;
 
-/// Rows from cuad's runs.
+/// Rows from the computer-use daemon's runs.
 #[derive(Debug, Clone)]
 pub struct RunsProvider {
     pub companion: watch::Receiver<Companion>,
@@ -111,7 +111,7 @@ fn row(state: &Companion, run: &RunFacts, at: usize) -> Item {
 #[cfg(test)]
 mod tests {
     use computer_use_action::RunMode;
-    use computer_use_bus::{CuaOutcome, RunStateSlug};
+    use computer_use_bus::{ComputerUseOutcome, RunStateSlug};
     use provenance::RunId;
     use shell_launcher::{Cancel, VecSink};
 
@@ -140,7 +140,7 @@ mod tests {
                 RunMode::AgentWorkspace,
             ),
             RunFacts {
-                outcome: Some(CuaOutcome::Done),
+                outcome: Some(ComputerUseOutcome::Done),
                 ..run(
                     "r-2",
                     "find a flight",

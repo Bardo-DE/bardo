@@ -15,7 +15,7 @@ path = "src/lib.rs"
 name = "bardo-compositor"
 path = "src/main.rs"
 # The real session needs the device libraries (A2): a build without the default features is the
-# headless library only (what the test kit, cua's tests and a harness take).
+# headless library only (what the test kit, computer use's tests and a harness take).
 required-features = ["tty", "libinput"]
 
 [dependencies]

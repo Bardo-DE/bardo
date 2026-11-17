@@ -98,7 +98,7 @@ impl<H: Host, C: Callers> SpacesObject<H, C> {
         match caller.role {
             CallerRole::App | CallerRole::Settings | CallerRole::SheetHost => Ok(caller),
             CallerRole::Agent
-            | CallerRole::Cua
+            | CallerRole::ComputerUse
             | CallerRole::AgentLauncher
             | CallerRole::Terminal
             | CallerRole::Compositor

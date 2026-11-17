@@ -16,9 +16,9 @@ the reducers, pairing, `supports`, validation, frame conversion and the fake are
 
 | Item | Closes when |
 | --- | --- |
-| `wayland-scanner`, `wayland-server`, `bitflags` and `quick-xml` (dev) are declared here, outside the pinned block copied from Bardo's `docs/workspace-deps.toml` (the scanner and server lines are cua's; bitflags is named by wayland-scanner's code for the `mac_mods` bitfield; quick-xml is the scanner's own parser, used by the introspection tests) | Bardo's pinned block carries the four lines and this workspace copies them verbatim |
-| `bardo-agent-v1.xml` exists in two places: here and `cua/protocols/` | cua's `bardo-agent-protocol` becomes a re-export of `client::bardo_agent_v1` and cua deletes its copy (lane S0-CU2); `tests/it/xml_introspection.rs` then holds the bytes through its pin alone |
-| `bardo-agent-v1.xml`'s is still the draft cua held | P4-Z amends v1 in place (`max_edge`, `type_text`, `set_task`, `receipt`) and finishes the description for the compositor, updating the pin |
+| `wayland-scanner`, `wayland-server`, `bitflags` and `quick-xml` (dev) are declared here, outside the pinned block copied from Bardo's `docs/workspace-deps.toml` (the scanner and server lines are computer use's; bitflags is named by wayland-scanner's code for the `mac_mods` bitfield; quick-xml is the scanner's own parser, used by the introspection tests) | Bardo's pinned block carries the four lines and this workspace copies them verbatim |
+| `bardo-agent-v1.xml` exists in two places: here and `computer_use/protocols/` | computer use's `bardo-agent-protocol` becomes a re-export of `client::bardo_agent_v1` and computer use deletes its copy (lane S0-CU2); `tests/it/xml_introspection.rs` then holds the bytes through its pin alone |
+| `bardo-agent-v1.xml`'s is still the draft computer use held | P4-Z amends v1 in place (`max_edge`, `type_text`, `set_task`, `receipt`) and finishes the description for the compositor, updating the pin |
 | `bardo-agent-v1.xml`'s `<copyright>` has the dual-licence line but not the MIT permission text the other five carry | the P4-Z amendment above adds it |
 | `desktop-client` declares `wayland-protocols-wlr` and `rustix` (features `fs`) in this workspace, outside Bardo's pinned block (the first is the compositor's line; rustix is for the capture buffer's memfd, so no mmap and no unsafe) | Bardo's pinned block carries them |
 | `desktop-client` wire layer: a list handle is held back (pending, invisible) while the wlr manager is offered, until `toplevel::pair` matches it; a window the wlr manager never reports stays invisible, and a window whose title changed between the two `done`s can fail to pair | a real-compositor run shows the heuristic is not enough on the wlr arm (Bardo arm already links by identifier and never pairs) |
@@ -33,7 +33,7 @@ the reducers, pairing, `supports`, validation, frame conversion and the fake are
 | `set_rectangle` takes a `wl_surface` of the caller's, in its surface coordinates, not a global rectangle | the caller registers surfaces with `DesktopClient::register_surface` and the command names a `SurfaceKey`; the dock's minimise target works only for a surface the client owns |
 | the ext toplevel list and the wlr handle name no common id | `toplevel::pair` matches them on app id and title in arrival order; two identical windows opened together can swap identifiers. The outcome is deterministic: the first unpaired list entry takes the first unpaired managed handle, each side once (tested with identical windows). A compositor that links them (the compositor's Bardo arm will) replaces the heuristic |
 | a wlr toplevel names its outputs as `wl_output` objects, a head by name | the wire layer resolves `wl_output.name` (version 4) and everything speaks `OutputName`; a compositor with `wl_output` below 4 cannot be matched, and `DesktopClient::new` fails with `WireError::OutputTooOld` |
-| the wlr toplevel protocol has no pid, no geometry and no workspace | `Toplevel` has none; cua's `pid` stays unknown and geometry must come from elsewhere (Bardo arm or the accessibility tier). Which workspace a toplevel is on is not in `ext-workspace-v1` either |
+| the wlr toplevel protocol has no pid, no geometry and no workspace | `Toplevel` has none; computer use's `pid` stays unknown and geometry must come from elsewhere (Bardo arm or the accessibility tier). Which workspace a toplevel is on is not in `ext-workspace-v1` either |
 | `ext-workspace-v1` applies requests only at `commit`, and the compositor may refuse silently | `ActivateWorkspace` etc. are staged and `CommitWorkspaces` sends them; the only confirmation is the next `done` showing the new state |
 | `zwlr-output-management-v1` configurations carry a serial and are cancelled if heads changed | `ConfigOutcome::Cancelled` means rebuild from the new state; `HeadConfig` lists only what the caller changes and the wire layer mentions the other enabled heads |
 | `ext-image-copy-capture-v1` may offer dma-buf only | the wire layer supports shm; a compositor with no shm format fails the capture with `CaptureFailure::NoShmFormat` |
@@ -52,7 +52,7 @@ the reducers, pairing, `supports`, validation, frame conversion and the fake are
   `tile_zone`'s). It is in the XML so `TileZone` has a protocol home and a generated twin.
 - **Error enums have no vocab type.** They are raised by the server through the generated
   `Error` enums; nothing pure needs them. `tests/it/xml_introspection.rs` pins them instead.
-- **Receipt canonical bytes (history).** `vocab::receipt` was deleted on 2026-10-28 (no caller); the algorithm below is what cua and the compositor agree on if it returns. Per item: a tag byte (motion 0, button 1, key 2, text 3,
+- **Receipt canonical bytes (history).** `vocab::receipt` was deleted on 2026-10-28 (no caller); the algorithm below is what computer use and the compositor agree on if it returns. Per item: a tag byte (motion 0, button 1, key 2, text 3,
   scroll 4), then each field little-endian (`i32`, `u32`; a text item's `fnv` as `u64`; an edge
   as its `u32` code). The digest is FNV-1a 64 over the concatenation, little-endian.
   `presses` counts button presses and `keys` key presses (releases are not counted); `events`
@@ -369,7 +369,7 @@ say `since="6"`.
   `ALL` and `argv` come from one `shell_verbs!` table; `WireCode::to_wire` replaces the hand ladders to
   the generated enums; `PlaceTarget::zone` and `From<TileZone>` replace the zone ladders.
 - `MacMods` is `HeldMods` (`held_mods.rs`); its bits and the XML bitfield's name `mac_mods` are unchanged.
-- `vocab::receipt` (P-5) is deleted: no caller in the compositor, the shell, the Settings app, cua, the actions service or key_remap.
+- `vocab::receipt` (P-5) is deleted: no caller in the compositor, the shell, the Settings app, computer use, the actions service or key_remap.
 - Kept on purpose: `TrustedKind` and `TrustedAnchor` (the XML enums are frozen interface and
   `every_xml_enum_has_a_vocab_type` needs a vocab twin), `Withdrawn` (same file, same reason), and `GlowCode`
   (`desktop_client::bardo::Lease::glow` carries it). Closing them takes an owner call on the XML.

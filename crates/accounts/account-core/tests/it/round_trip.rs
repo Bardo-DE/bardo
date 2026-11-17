@@ -9,8 +9,9 @@ use account_core::consent::{
 use account_core::*;
 use account_match::Need;
 use account_match::{
-    AgentNeed, CuaNeed, DimsNeed, EmbedNeed, IdentityNeed, ImageGenNeed, KeyValueNeed, LlmNeed,
-    MailNeed, NotesNeed, PhotosNeed, PimNeed, PushNeed, RerankNeed, SpeechNeed, StorageNeed,
+    AgentNeed, ComputerUseNeed, DimsNeed, EmbedNeed, IdentityNeed, ImageGenNeed, KeyValueNeed,
+    LlmNeed, MailNeed, NotesNeed, PhotosNeed, PimNeed, PushNeed, RerankNeed, SpeechNeed,
+    StorageNeed,
 };
 use base_ids::word::word as word_of;
 use base_ids::*;
@@ -115,9 +116,9 @@ fn every_capability() -> Vec<Capability> {
         Capability::Rerank(RerankCap {
             max_docs: Count(100),
         }),
-        Capability::ComputerUse(CuaCap {
-            environments: [CuaEnv::Desktop, CuaEnv::Browser].into(),
-            batching: CuaBatching::Many,
+        Capability::ComputerUse(ComputerUseCap {
+            environments: [ComputerUseEnv::Desktop, ComputerUseEnv::Browser].into(),
+            batching: ComputerUseBatching::Many,
             zoom: true,
             max_image: Px(1568),
             wire: LlmWire::ChatCompletions,
@@ -178,7 +179,7 @@ fn every_need() -> Vec<Need> {
         Need::Speech(SpeechNeed::new([SpeechMode::Realtime].into())),
         Need::ImageGen(ImageGenNeed::new([ImageMode::Inpaint].into(), Px(512))),
         Need::Rerank(RerankNeed::new(Count(10))),
-        Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop].into())),
+        Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into())),
         Need::KeyValue(KeyValueNeed::new(Delta::Poll, Bytes(1024))),
         Need::Push(PushNeed::new()),
         Need::Agent(AgentNeed::new(
@@ -500,7 +501,7 @@ fn computer_use_slugs_are_stable() {
     let json = serde_json::to_string(&CapabilityKind::ComputerUse).expect("json");
     assert_eq!(json, "\"computer_use\"");
     assert!(CapabilityKind::ComputerUse.is_ai());
-    let env = serde_json::to_string(&CuaEnv::Browser).expect("json");
+    let env = serde_json::to_string(&ComputerUseEnv::Browser).expect("json");
     assert_eq!(env, "\"browser\"");
 }
 

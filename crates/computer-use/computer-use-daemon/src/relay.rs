@@ -7,7 +7,7 @@ use computer_use_bus::AskBody;
 use computer_use_dbus::run_path;
 use computer_use_host::Supervisor;
 use computer_use_host::SupervisorEvent;
-use computer_use_run::{CuaSignal, Seams};
+use computer_use_run::{ComputerUseSignal, Seams};
 use provenance::RunId;
 use std::collections::BTreeSet;
 use std::sync::Arc;
@@ -91,28 +91,28 @@ async fn say<S: Seams>(
         SupervisorEvent::Signal(run, signal) => {
             let path = run_path(&run);
             match signal {
-                CuaSignal::StateChanged(slug) => {
+                ComputerUseSignal::StateChanged(slug) => {
                     let state = computer_use_bus::slug_of(&slug).unwrap_or_default();
                     emit_run(connection, &path, "StateChanged", &(state,)).await;
                 }
-                CuaSignal::StepStarted(step) => {
+                ComputerUseSignal::StepStarted(step) => {
                     emit_run(connection, &path, "StepStarted", &(step.0,)).await;
                 }
-                CuaSignal::ThoughtDelta(step, text) => {
+                ComputerUseSignal::ThoughtDelta(step, text) => {
                     emit_to_shell(connection, who, &path, "ThoughtDelta", &(step.0, text.0)).await;
                 }
-                CuaSignal::ActionProposed(step, action) => {
+                ComputerUseSignal::ActionProposed(step, action) => {
                     if let Ok(body) = enveloped(action) {
                         emit_to_shell(connection, who, &path, "ActionProposed", &(step.0, body))
                             .await;
                     }
                 }
-                CuaSignal::ActionDone(step, outcome) => {
+                ComputerUseSignal::ActionDone(step, outcome) => {
                     if let Ok(body) = enveloped(outcome) {
                         emit_to_shell(connection, who, &path, "ActionDone", &(step.0, body)).await;
                     }
                 }
-                CuaSignal::AskUser(question, ask) => {
+                ComputerUseSignal::AskUser(question, ask) => {
                     let ask: AskBody = ask;
                     if let Ok(body) = enveloped(ask) {
                         emit_to_shell(connection, who, &path, "AskUser", &(question.0, body)).await;
@@ -120,7 +120,7 @@ async fn say<S: Seams>(
                 }
                 // The run's end is told with its `RunEnd`, once the report is out, so the
                 // signal has no bus member of its own.
-                CuaSignal::Finished(_) => {}
+                ComputerUseSignal::Finished(_) => {}
             }
         }
         SupervisorEvent::Ended(run, end) => {
@@ -196,7 +196,7 @@ pub(crate) async fn relay<S: Seams>(
             }
             Err(broadcast::error::RecvError::Lagged(missed)) => {
                 eprintln!(
-                    "cuad: the bus relay missed {missed} events; reconciling the run objects"
+                    "computer_use_daemon: the bus relay missed {missed} events; reconciling the run objects"
                 );
                 for event in reconcile(&exported, &supervisor.runs()) {
                     note_exported(&mut exported, &event);

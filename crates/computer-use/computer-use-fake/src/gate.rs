@@ -1,7 +1,7 @@
 //! A router gate that answers from a table.
 
 use action_core::CallRefusal;
-use action_gate_wire::{CuaAsk, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk};
 use computer_use_run::{GateCheck, GateEvent, GateLink, LinkError};
 use provenance::{ConfirmId, RunId, SessionId, SpaceId};
@@ -15,7 +15,7 @@ pub enum Verdict {
     Run,
     /// Refuse it.
     Refuse(CallRefusal),
-    /// Ask the person (cuad hears `Confirming`, calls `Proceed`), then answer this.
+    /// Ask the person (the computer-use daemon hears `Confirming`, calls `Proceed`), then answer this.
     AskThen(GateAnswer),
     /// Ask the person and never answer: the check hangs after `Confirming` until it is closed
     /// (a run paused during a confirmation).
@@ -28,7 +28,7 @@ pub enum Verdict {
 pub struct FakePdp {
     grants: Mutex<VecDeque<GrantAnswer>>,
     verdicts: Mutex<VecDeque<Verdict>>,
-    checks: Mutex<Vec<CuaAsk>>,
+    checks: Mutex<Vec<ComputerUseAsk>>,
     grant_asks: Mutex<Vec<GrantAsk>>,
     /// Whether the person never answers the consent question: the call never returns.
     grant_hangs: bool,
@@ -101,7 +101,7 @@ impl FakePdp {
     /// # Panics
     ///
     /// Panics if the lock was poisoned by a panic on another thread.
-    pub fn checks(&self) -> Vec<CuaAsk> {
+    pub fn checks(&self) -> Vec<ComputerUseAsk> {
         self.checks.lock().expect("fake gate lock").clone()
     }
 
@@ -186,7 +186,7 @@ impl GateLink for FakePdp {
         clippy::unused_async_trait_impl,
         reason = "GateLink declares `check` async; the fake has nothing to await"
     )]
-    async fn check(&self, ask: CuaAsk) -> Result<FakeCheck, LinkError> {
+    async fn check(&self, ask: ComputerUseAsk) -> Result<FakeCheck, LinkError> {
         self.checks.lock().expect("fake gate lock").push(ask);
         let verdict = self
             .verdicts

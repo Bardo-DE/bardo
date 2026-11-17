@@ -1,4 +1,4 @@
-# cua eval: holo-3.1-9b-greedy
+# Computer-use eval: holo-3.1-9b-greedy
 
 Played by: holo-3.1-9b on a local engine (loopback port 8000), thinking Off, 1 run(s) per task.
 28 runs over 31 tasks. Bounds are 95% Wilson intervals; a rate over few runs has a wide one.

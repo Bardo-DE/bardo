@@ -1,4 +1,4 @@
-//! A frame's bytes as a sealed memfd: what rides beside a `CuaStep` on the inferd session's fd.
+//! A frame's bytes as a sealed memfd: what rides beside a `ComputerUseStep` on the inferd session's fd.
 
 use computer_use_run::FrameAttachment;
 use rustix::fs::{MemfdFlags, SealFlags, fcntl_add_seals, memfd_create};
@@ -22,7 +22,7 @@ pub struct FrameFdError(#[from] std::io::Error);
 /// `FrameFdError` when the memfd cannot be created, written, rewound or sealed.
 pub fn frame_fd(frame: &FrameAttachment) -> Result<OwnedFd, FrameFdError> {
     let fd = memfd_create(
-        "cuad-frame",
+        "computer-use-daemon-frame",
         MemfdFlags::CLOEXEC | MemfdFlags::ALLOW_SEALING,
     )
     .map_err(std::io::Error::from)?;

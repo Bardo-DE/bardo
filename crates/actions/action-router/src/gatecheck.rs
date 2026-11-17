@@ -1,4 +1,4 @@
-//! The computer-use gate: `cuad` asks leave for every pixel step and asks the person for
+//! The computer-use gate: `computer_use_daemon` asks leave for every pixel step and asks the person for
 //! standing consent to use an app. One decision point: the same halt, the same budget, the
 //! same Cedar policy and the same breaker.
 
@@ -18,7 +18,7 @@ use action_core::{
 use action_gate::facts::{budget_fact, run_facts, taint_fact};
 use action_gate::gate::{GateInputs, Pending, gate};
 use action_gate::prepared::grant_state;
-use action_gate_wire::{CuaAsk, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, GateAnswer};
 use action_manifest::{AgentReach, Lasting};
 use action_vocab::{Clock, Depth, LabelText, Origin};
 use action_wire::{GrantAnswer, GrantAsk, IntentsReply};
@@ -44,14 +44,14 @@ fn is_asked_run(actor: &Actor, named: Option<&RunId>) -> bool {
     match (actor, named) {
         (
             Actor::Companion {
-                role: AgentRole::Cua { run },
+                role: AgentRole::ComputerUse { run },
                 ..
             },
             Some(want),
         ) => run == want,
         (
             Actor::Companion {
-                role: AgentRole::Cua { .. },
+                role: AgentRole::ComputerUse { .. },
                 ..
             },
             None,
@@ -111,7 +111,7 @@ impl<S: Seams> Router<S> {
             id,
             space: space.clone(),
             actor: Actor::System {
-                part: provenance::SystemPart::Cua,
+                part: provenance::SystemPart::ComputerUse,
             },
             app: ask_app.clone(),
             action: words(what),
@@ -139,7 +139,7 @@ impl<S: Seams> Router<S> {
         // The caller's own setting and what the router holds (the person's limits, the
         // administrator's floor): the stronger wins, so a stored entry can only tighten a request.
         let held = self.limits_on(&LimitCall {
-            caller: &GrantCaller::Cua,
+            caller: &GrantCaller::ComputerUse,
             app: &ask.app,
             action: None,
             space: &ask.space,
@@ -199,7 +199,7 @@ impl<S: Seams> Router<S> {
                         self.seams.grants().record(Grant {
                             id,
                             key: ActionGrantKey {
-                                caller: GrantCaller::Cua,
+                                caller: GrantCaller::ComputerUse,
                                 owner: ask.app.clone(),
                                 target: GrantTarget::App,
                                 class,
@@ -250,7 +250,7 @@ impl<S: Seams> Router<S> {
 
     /// Remembers on the screen runs the person allowed to use the app, so the policy sees the
     /// steps of those runs as allowed (`run`). It ends with each run's session. The ask names the
-    /// run it is for; one that names none (an older `cuad`) covers every live screen run in the
+    /// run it is for; one that names none (an older `computer_use_daemon`) covers every live screen run in the
     /// Space.
     fn allow_screen_runs(&self, ask: &GrantAsk) {
         let mut st = self.locked();
@@ -273,9 +273,9 @@ impl<S: Seams> Router<S> {
         clippy::too_many_lines,
         reason = "one sequence of steps over shared locals, in the order the rules apply; the parts have no use apart"
     )]
-    pub(crate) async fn gate_check(&self, ask: CuaAsk, watch: &Watch) -> IntentsReply {
+    pub(crate) async fn gate_check(&self, ask: ComputerUseAsk, watch: &Watch) -> IntentsReply {
         let now = self.seams.clock().now();
-        // Whatever cuad claims, the screen is somebody else's words: the run's session takes in
+        // Whatever the computer-use daemon claims, the screen is somebody else's words: the run's session takes in
         // `Untrusted(Screen { app })`, so every report it sends later carries that label.
         let screen = Label::untrusted(
             Source::Screen {
@@ -288,7 +288,7 @@ impl<S: Seams> Router<S> {
         {
             let mut st = self.locked();
             if let Some(record) = st.sessions.values_mut().find(|r| {
-                matches!(&r.actor, Actor::Companion { role: AgentRole::Cua { run }, .. } if *run == ask.run)
+                matches!(&r.actor, Actor::Companion { role: AgentRole::ComputerUse { run }, .. } if *run == ask.run)
             }) {
                 absorb(record, &screen);
             }
@@ -298,7 +298,7 @@ impl<S: Seams> Router<S> {
             let Some((run_session, record)) = st
                 .sessions
                 .iter()
-                .find(|(_, r)| matches!(&r.actor, Actor::Companion { role: AgentRole::Cua { run }, .. } if *run == ask.run))
+                .find(|(_, r)| matches!(&r.actor, Actor::Companion { role: AgentRole::ComputerUse { run }, .. } if *run == ask.run))
             else {
                 return IntentsReply::Gate(GateAnswer::Refused(CallRefusal::Halted(SpaceScope::Any)));
             };
@@ -308,7 +308,7 @@ impl<S: Seams> Router<S> {
                 .grants()
                 .iter()
                 .filter(|g| {
-                    g.key.caller == GrantCaller::Cua
+                    g.key.caller == GrantCaller::ComputerUse
                         && g.key.owner == ask.app
                         && g.key.space == SpaceScope::Only(ask.space.clone())
                 })
@@ -350,7 +350,7 @@ impl<S: Seams> Router<S> {
             // The same facts as an agent's call: the limits (the person's, the assistant's and the
             // floor's) cover a pixel step like any other change.
             let limited = self.limits_on(&LimitCall {
-                caller: &GrantCaller::Cua,
+                caller: &GrantCaller::ComputerUse,
                 app: &ask.app,
                 action: None,
                 space: &ask.space,
@@ -441,7 +441,12 @@ impl<S: Seams> Router<S> {
     }
 
     /// Asks the person about one step, once a watching requester has stopped its own input.
-    async fn confirm_step(&self, ask: &CuaAsk, watch: &Watch, why: Vec<AskReason>) -> IntentsReply {
+    async fn confirm_step(
+        &self,
+        ask: &ComputerUseAsk,
+        watch: &Watch,
+        why: Vec<AskReason>,
+    ) -> IntentsReply {
         let refused = |end| IntentsReply::Gate(GateAnswer::Refused(CallRefusal::Unconfirmed(end)));
         let Some(request) =
             self.sheet(&ask.app, &ask.space, "Let it do this step", ask.effect, why)

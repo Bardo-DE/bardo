@@ -89,7 +89,7 @@ fn chat(c: &Capabilities, locality: &Locality) -> Result<(), CatalogError> {
 fn client_parsed(c: &Capabilities, text: &TextOut) -> Result<(), CatalogError> {
     let format_read = matches!(
         c.actions_out,
-        Some(CuaSupport::Dialect { profile, .. }) if profile.calls.is_read_by_us()
+        Some(ComputerUseSupport::Dialect { profile, .. }) if profile.calls.is_read_by_us()
     );
     if (text.tools == ToolSupport::ClientParsed) == format_read {
         Ok(())

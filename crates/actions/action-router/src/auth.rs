@@ -4,7 +4,8 @@ use action_vocab::CallerRole;
 use action_wire::Member;
 
 use CallerRole::{
-    AcpAgent, App, Cli, Companion, Compositor, Control, Cua, Editor, Field, Launcher, Mcp, Reader,
+    AcpAgent, App, Cli, Companion, Compositor, ComputerUse, Control, Editor, Field, Launcher, Mcp,
+    Reader,
 };
 
 /// The roles that may call `member`.
@@ -19,7 +20,7 @@ fn roles(member: Member) -> &'static [CallerRole] {
         Member::IndexPush | Member::IndexReset => &[App],
         Member::SearchQuery | Member::SearchCancel => &[Launcher, Companion, Cli, App],
         // The person's surfaces, the planner, MCP, a terminal, and an app calling its own
-        // actions. cuad asks through the gate, not through Perform; the reader acts on nothing.
+        // actions. The computer-use daemon asks through the gate, not through Perform; the reader acts on nothing.
         Member::Perform => &[Launcher, Field, Companion, Mcp, Cli, App, AcpAgent],
         Member::DryRun => &[Launcher, Field, Companion, Mcp, Cli, App],
         Member::Preview | Member::Suggest => &[Launcher, Field, Companion, Mcp, App],
@@ -29,10 +30,18 @@ fn roles(member: Member) -> &'static [CallerRole] {
         Member::Context => &[Launcher, Companion, Cli],
         // The computer-use daemon opens and closes the session of its own run (`opening.rs`
         // refuses it any other kind), so the run is ruled in a session before its first step.
-        Member::SessionOpen => &[Launcher, Field, Editor, Companion, Cua, AcpAgent],
+        Member::SessionOpen => &[Launcher, Field, Editor, Companion, ComputerUse, AcpAgent],
         // A terminal closes the watch session it opened and no other (`watched.rs` refuses it
         // anything else).
-        Member::SessionClose => &[Launcher, Field, Editor, Companion, Cua, Cli, AcpAgent],
+        Member::SessionClose => &[
+            Launcher,
+            Field,
+            Editor,
+            Companion,
+            ComputerUse,
+            Cli,
+            AcpAgent,
+        ],
         // Only the person's own surfaces record a turn: a model cannot say what the person said.
         // A terminal is one of them for `bardo-do ask` (the person at a keyboard, the same user),
         // and its turns are recorded as `Caller::terminal()`, never as the launcher's.
@@ -73,9 +82,9 @@ fn roles(member: Member) -> &'static [CallerRole] {
         Member::CheckpointWatched => &[Companion],
         Member::SessionTaskPolicy | Member::SessionWiden => &[Launcher, Field, Companion],
         // The person talks to a subagent through the launcher; agents and runs report.
-        Member::MessageSend => &[Launcher, Field, Companion, Cua],
-        Member::MessageInbox => &[Launcher, Companion, Cua],
-        Member::GateGrant | Member::GateCheck => &[Cua],
+        Member::MessageSend => &[Launcher, Field, Companion, ComputerUse],
+        Member::MessageInbox => &[Launcher, Companion, ComputerUse],
+        Member::GateGrant | Member::GateCheck => &[ComputerUse],
         Member::ControlHalt | Member::ControlState => &[Compositor, Control],
         Member::ControlResume => &[Control],
         // A terminal reads only its own rows (`control_journal` cuts the list).

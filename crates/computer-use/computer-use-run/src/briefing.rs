@@ -1,7 +1,7 @@
 //! What the screen model is told when its session opens: the task line and the hints. Pure.
 
 use crate::attempts::digest;
-use computer_use_bus::CuaTask;
+use computer_use_bus::ComputerUseTask;
 use provenance::RunId;
 
 /// The heading over the earlier attempts.
@@ -9,7 +9,7 @@ const EARLIER: &str = "Earlier attempts at this (check the screen before trustin
 
 /// The task line: the person's own sentence when the router had one, otherwise the planner's goal.
 #[must_use]
-pub fn task_line(task: &CuaTask) -> String {
+pub fn task_line(task: &ComputerUseTask) -> String {
     match &task.asked {
         Some(asked) => asked.value.clone(),
         None => task.goal.value.clone(),
@@ -22,7 +22,7 @@ pub fn task_line(task: &CuaTask) -> String {
 /// differs, then the earlier attempts of `run`'s conversation (a heading and one hint per line),
 /// then `shared`, the hints about the desktop.
 #[must_use]
-pub fn hints(task: &CuaTask, run: &RunId, shared: &[String]) -> Vec<String> {
+pub fn hints(task: &ComputerUseTask, run: &RunId, shared: &[String]) -> Vec<String> {
     let mut hints = Vec::new();
     if let Some(asked) = &task.asked
         && asked.value != task.goal.value

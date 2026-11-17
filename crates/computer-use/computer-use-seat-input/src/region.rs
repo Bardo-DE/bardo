@@ -8,7 +8,7 @@
 use computer_use_action::{Coord, Point, WindowSpace};
 use computer_use_desktop::{GlobalCoord, GlobalRect};
 
-/// A point in the EI region's space. Lives in this module only: nothing else in cua names it.
+/// A point in the EI region's space. Lives in this module only: nothing else in computer use names it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GlobalPoint(pub i32, pub i32);
 

@@ -1,5 +1,5 @@
 //! The accessibility source of the running daemon. With no tree (`computer-use.toml` `a11y = "off"`) the
-//! seam is `None`, and cuad still starts, answers the bus, and says what is missing.
+//! seam is `None`, and the computer-use daemon still starts, answers the bus, and says what is missing.
 
 use computer_use_a11y_atspi::AtspiSource;
 use computer_use_a11y_tree::{A11yError, A11ySnapshot, A11ySource, A11yTarget, NodeBudget};
@@ -20,10 +20,12 @@ impl A11ySource for LoggedAtspi {
         let ms = started.elapsed().as_millis();
         match &snapshot {
             Ok(tree) => eprintln!(
-                "cuad: accessibility tree: {} nodes in {ms} ms",
+                "computer_use_daemon: accessibility tree: {} nodes in {ms} ms",
                 tree.nodes.len()
             ),
-            Err(error) => eprintln!("cuad: no accessibility tree after {ms} ms: {error:?}"),
+            Err(error) => {
+                eprintln!("computer_use_daemon: no accessibility tree after {ms} ms: {error:?}")
+            }
         }
         snapshot
     }

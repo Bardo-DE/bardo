@@ -18,7 +18,8 @@ pub enum AgentRef {
         task: TaskId,
     },
     /// A computer-use run.
-    Cua {
+    #[serde(rename = "cua")]
+    ComputerUse {
         /// The run.
         run: RunId,
     },
@@ -40,7 +41,7 @@ impl AgentRef {
                 AgentRole::Worker { task } | AgentRole::Helper { task, .. } => {
                     AgentRef::Worker { task: task.clone() }
                 }
-                AgentRole::Cua { run } => AgentRef::Cua { run: run.clone() },
+                AgentRole::ComputerUse { run } => AgentRef::ComputerUse { run: run.clone() },
             }),
             Actor::Mcp { .. }
             | Actor::Acp { .. }

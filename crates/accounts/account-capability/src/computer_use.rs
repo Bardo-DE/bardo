@@ -9,11 +9,11 @@ use std::collections::BTreeSet;
 
 /// A computer-use model.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct CuaCap {
+pub struct ComputerUseCap {
     /// The environments it can operate.
-    pub environments: BTreeSet<CuaEnv>,
+    pub environments: BTreeSet<ComputerUseEnv>,
     /// Whether it proposes one action per step or several.
-    pub batching: CuaBatching,
+    pub batching: ComputerUseBatching,
     /// Whether it can ask to zoom into a region.
     #[serde(with = "crate::terms::present")]
     pub zoom: bool,
@@ -26,7 +26,7 @@ pub struct CuaCap {
 /// What a computer-use model operates.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum CuaEnv {
+pub enum ComputerUseEnv {
     /// A desktop window.
     Desktop,
     /// A web page.
@@ -38,7 +38,7 @@ pub enum CuaEnv {
 /// How many actions one model step may carry.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum CuaBatching {
+pub enum ComputerUseBatching {
     /// One action per step.
     One,
     /// A short batch per step.

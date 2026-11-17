@@ -40,7 +40,14 @@ mod tests {
             for why in ControlRefusal::ALL {
                 let words = words_of(why, enabled);
                 assert!(words.ends_with('.'), "{why:?}: {words}");
-                for word in ["Disabled", "Lease", "BadTask", "cua", "D-Bus", "org."] {
+                for word in [
+                    "Disabled",
+                    "Lease",
+                    "BadTask",
+                    "computer_use",
+                    "D-Bus",
+                    "org.",
+                ] {
                     assert!(!words.contains(word), "{why:?}: {words}");
                 }
             }

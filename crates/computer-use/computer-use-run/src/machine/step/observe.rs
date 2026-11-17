@@ -15,7 +15,7 @@ use crate::stall::{Repeats, Stall};
 use base_ids::Count;
 use computer_use_action::ActionClass;
 use computer_use_bus::{ActionOutcome, ActionResult, FrameNote};
-use computer_use_bus::{CuaOutcome, CuaRecord, FailReason, RunBudgetKind};
+use computer_use_bus::{ComputerUseOutcome, ComputerUseRecord, FailReason, RunBudgetKind};
 use computer_use_capture::{FrameWant, digest};
 
 /// Whether one of the actions ended as done and sent input.
@@ -49,7 +49,7 @@ pub(super) fn observed(run: &mut Run, fx: &mut Vec<RunEffect>, mut obs: Observat
         && let Some(before) = &run.track.look
     {
         run.track.unchanged = look.unchanged_since(before);
-        fx.push(RunEffect::Record(Box::new(CuaRecord::Seen {
+        fx.push(RunEffect::Record(Box::new(ComputerUseRecord::Seen {
             run: run.id.clone(),
             n,
             unchanged: run.track.unchanged,
@@ -84,7 +84,7 @@ pub(super) fn observed(run: &mut Run, fx: &mut Vec<RunEffect>, mut obs: Observat
         return;
     }
     if over_budget(run, RunBudgetKind::Steps) {
-        finish_plain(run, fx, CuaOutcome::BudgetOut(RunBudgetKind::Steps));
+        finish_plain(run, fx, ComputerUseOutcome::BudgetOut(RunBudgetKind::Steps));
         return;
     }
     run.working = Some(Box::new(obs));
@@ -101,7 +101,7 @@ pub(super) fn capture_failed(
     };
     match (error, run.track.capture) {
         (computer_use_capture::CaptureError::SourceGone, _) => {
-            finish_plain(run, fx, CuaOutcome::Failed(FailReason::WindowGone));
+            finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::WindowGone));
         }
         (_, CaptureTries::First) => {
             run.track.capture = CaptureTries::Retried;
@@ -111,7 +111,7 @@ pub(super) fn capture_failed(
             });
         }
         (_, CaptureTries::Retried) => {
-            finish_plain(run, fx, CuaOutcome::Failed(FailReason::Capture));
+            finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Capture));
         }
     }
 }

@@ -153,7 +153,7 @@ async fn a_loosened_value_waits_until_the_settings_app_confirms_it_over_the_bus(
     for caller in [
         app.clone(),
         Caller::router(),
-        Caller::cuad(),
+        Caller::computer_use_daemon(),
         Caller::shell_ui(),
     ] {
         let client = world.client(caller.clone()).await;
@@ -166,7 +166,7 @@ async fn a_loosened_value_waits_until_the_settings_app_confirms_it_over_the_bus(
     assert!(!dirs.confirmed_settings_toml().exists());
 
     // The waiting list is read by the Settings app and the shell, and by no one else.
-    for caller in [app, Caller::router(), Caller::cuad()] {
+    for caller in [app, Caller::router(), Caller::computer_use_daemon()] {
         let client = world.client(caller.clone()).await;
         assert_eq!(
             pending_over_bus(&client).await,

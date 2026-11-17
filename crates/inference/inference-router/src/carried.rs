@@ -66,11 +66,11 @@ impl Tally {
                 chat.messages.iter().map(|m| images_in(&m.parts)).sum(),
                 V1_RATE,
             ),
-            InferRequest::CuaStep(_) => (1, V1_RATE),
+            InferRequest::ComputerUseStep(_) => (1, V1_RATE),
             InferRequest::Transcribe(begin) => (0, begin.rate),
             InferRequest::Embed(_)
             | InferRequest::Task(_)
-            | InferRequest::CuaBegin(_)
+            | InferRequest::ComputerUseBegin(_)
             | InferRequest::Speak(_) => (0, V1_RATE),
         };
         Self {

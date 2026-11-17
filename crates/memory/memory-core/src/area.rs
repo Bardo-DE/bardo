@@ -12,8 +12,8 @@ slug_enum!(
     AreaTag {
         /// The actions service: policy decisions, consent, calls, undo, breaker (`AuditRecord`).
         Actions => "docket",
-        /// cua: run steps (`CuaRecord`).
-        Cua => "cua",
+        /// Computer use: run steps (`ComputerUseRecord`).
+        ComputerUse => "cua",
         /// The companion's session records (`SessionRecord`).
         Companion => "companion",
         /// The person's helpers: the board's jobs and the helpers' posts (`swarm.md`).

@@ -23,7 +23,7 @@ trait), section 5 (the gate in one picture), section 6 (copy the recipe).
 | `permission-core` | the permission model (P): review rulings and strictness (`Ruling`, `AskReason`, `Strictness`), the modes and their rows (`Mode`), grants per action and per Space (`ActionGrant`, `reconcile`), standing grants and the rule for offering one (`StandingGrant`, `may_offer`, `find_standing_for`), limits (`Limit`, `limited`), rule files (`rule_text`) and the administrator's floor (`Floor`), the agent's own actions and the commands it runs (`exec_*`, `execute`), and the task policy (`TaskPolicy`, `compare`, `covers`, `TrustedPattern`) with the reach menu (`offered_to`). Split out of `action-core` (D4.10a); nothing re-exports it. `sandbox`'s `AbsPath` and `Cover` are named from `sandbox` | none |
 | `companion-model` | the helpers' model (P), split out of `action-core` (D4.13d); nothing re-exports it: `helper` (the helpers the person keeps: the card, jobs, posts and the pure board `step`, the reach built from named apps, the records that make the board durable; design note `swarm.md`), and `routine` (a helper's standing instructions: the schedule in plain words, the trigger (a time, a memory service event, another job done), the pure book and its `step`: a missed time is skipped unless the person chose `RunOnceOnWake`, three runs in a row that do not finish pause the routine, the last 20 runs kept); the words of a conversation moving between the actions service and an app's own terminal program (`hand`): `AppSessionId` (the app's own id for a conversation, one plain word that is safe on a command line), `WatchedAgent` (program and `AppSessionId`), `SeenCommand` (the argv a terminal saw in a pane: bounded, never stored or logged, its `Debug` shows only the word count), `Watching` and `Held` (the answer to `Checkpoint.WatchAgent`: `Terminal` is a session the terminal opened and closes, `Companion` is the companion's handed-over session, which the terminal marks turns on and never closes) | none |
 | `action-core` | the vocabulary above `action-vocab`, `action-manifest`, `permission-core` and `companion-model`: `conforms`, context and its handle-substituted view, previews, calls and every way they end, the undo journal, confirmation, budgets (`charge`, `halted`), the planner and reader contract, the roster and episode lines, messages (the draft, the delivery), audit records, `AgentConfig` and the settings rows | none |
-| `action-gate-wire` | the computer-use gate's wire (P), split out of `action-core` (D4.2, landed with D4.13e); nothing re-exports it: `CuaAsk`, `NodeFacts` and `EffectBasis` (what `bardo-computer-use` sends to `Intents1.Gate.Check`) and `GateAnswer` (the router's answer, which holds `action-core`'s `CallRefusal`, so this crate sits above core). `RunMode`, `WindowClass` and `WindowTrust` are `computer-use-action`'s: say `cua_action::` | none |
+| `action-gate-wire` | the computer-use gate's wire (P), split out of `action-core` (D4.2, landed with D4.13e); nothing re-exports it: `ComputerUseAsk`, `NodeFacts` and `EffectBasis` (what `bardo-computer-use` sends to `Intents1.Gate.Check`) and `GateAnswer` (the router's answer, which holds `action-core`'s `CallRefusal`, so this crate sits above core). `RunMode`, `WindowClass` and `WindowTrust` are `computer-use-action`'s: say `computer_use_action::` | none |
 | `action-wire` | the `Intents1` wire (P), split out of `action-core` (D4.13e); nothing re-exports it: `IntentsRequest` and `IntentsReply` with their bodies (`bodies`), `Member` and `IntentsRequest::member` (`member`), the caller (`CallerId`, `is_terminal_scope`; the roles are `action_vocab::CallerRole`), where a conversation was started from (`StartedFrom`), tasks and the episode skeleton (`SessionOpen`, `TaskLedger`, `skeleton_of`, `close`) and summon and voice intents. Above `action-core` and `action-gate-wire` | none |
 | `action-store` | the actions service's disk and timers under the pure core: `write_atomic` (over `atomic-write-file`: temporary file, fsync, rename, directory fsync) and `read_optional`, the grant file's disk rules (`read_grant_file`, `read_grant_list`, `write_grant_list`, `GrantFileError`) and the `WriteLock` a grant store holds as a field, the runtime-free waits on a peer (`within`, `until`, `stop_after`, `Cancel`, `Stop`, `Waits`; only the portable `companion-tasks` takes them over its clock seam, while the runtime crates `agent-launch` and `agent-acp-host` call `tokio::time::timeout` and keep only `Waits`) with `thread_sleep`, the timer under `SystemClock`, and `SystemClock`, the one system `Clock`. Client/IO tier: it names no app, window or label | files, threads |
 | `agent-skills` | skills: the `skill.toml` and `SKILL.md` format and its validation, discovery from directories the daemon hands in (`Roots`), read through a `SkillFolder` the caller injects (`subdirs`, `read`, typed `FolderError`), reach against the registered manifests, preselection by `when`, the load cap, `uses_first` | directory reads only |
@@ -106,11 +106,11 @@ in a P crate, a C crate depending on an A crate, two kinds of re-export, a crate
 table) and asserts that each one fails. The RULES in the same script still hold what each crate
 reaches through any path (cargo tree).
 
-The repo order is the model layer, the accounts service, the inference service, the memory service, the actions service, cua, the shell. The actions service reaches the model layer's pure
+The repo order is the model layer, the accounts service, the inference service, the memory service, the actions service, computer use, the shell. The actions service reaches the model layer's pure
 crates (`computer-use-action`, `model-provider`, `speech-vad`), the accounts service (`account-core`, `account-client`,
 `account-client-dbus`, `account-dbus`), the inference service (`inference-core`, `inference-client`, `inference-dbus`), the `prov` repo, the memory service (`memory-core`, `memory-client`) and
 Bardo's view-only `ui-intents`, all as pinned git revs in the root `Cargo.toml` (no
-`path = "../repo"` and no `[patch]`). Nothing of `cua` or `shell` may enter any tree here.
+`path = "../repo"` and no `[patch]`). Nothing of `computer_use` or `shell` may enter any tree here.
 
 `action-cli` (`bardo-do`) reaches the bus only through `action-client` (today it has no direct normal dependency on `action-dbus` or `zbus`; the layer check no longer pins that), and none of `action-router`, `permission-policy`, `action-review` or `cedar-policy` anywhere in its tree. A terminal has no way around bardo-actiond's gate.
 
@@ -136,7 +136,7 @@ feature (the transport), `bardo-actiond` (the cross-app broker and its audit tra
 identity over many tasks), `bardo-readerd` (the quarantined reader as a process around `agent-reader`), `bardo-voiced` (the
 microphone), `bardo-actions-mcp`, `bardo-do` (`action-cli`), `companion-client`, `action-settings` (the
 settings file the shell's pages write), `action-testbus`, `action-accept` and
-`agent-live`. cua (computer use) is above the actions service and desktop only. These light up when
+`agent-live`. Computer use (computer use) is above the actions service and desktop only. These light up when
 `org.bardo.Intents1` answers; a missing one means the in-app path, never an error.
 
 Two kinds of Cargo feature, kept apart. A *platform feature* says what the OS provides (inotify,
@@ -239,7 +239,7 @@ missing" list in `FINDINGS.md` (portable-core).
 | episodes and their skeleton | the memory service `Episode`; the actions service builds the skeleton (`action-wire::skeleton_of`) and the router records it |
 | the one message model | the accounts service `prov::Message`; the actions service's `MessageDraft`, `Delivery`, `InboundLine` are input and views |
 | the task policy, `compare`, `covers`, `PolicyWriter`; `paths` bound the files a call targets (whole components, the standing-grant path semantics; an empty list leaves files unbounded; a target outside is `OutsideTask`; dropping every path is a widening; the writer's relative paths are anchored to the session's directory by the router) | `permission-core::task_policy` (`PolicyWriter` in `action-core::derived`), `action-router::policy` |
-| the session budget, ledger, kill switch | `action-core::budget` (`computer-use-run`'s per-run budget is cua's) |
+| the session budget, ledger, kill switch | `action-core::budget` (`computer-use-run`'s per-run budget is computer use's) |
 | the `Intents1` wire and who may call which member | `action-wire` (`IntentsRequest`, `IntentsReply`, `CallerId`; the roles are `action_vocab::CallerRole`); the table `action-router::auth` |
 | the interfaces as D-Bus | `action-dbus` and `dbus/*.xml`; `Voice1` is `bardo-voiced`'s |
 | the planner loop, the assembler, restart | `agent-loop` |
@@ -247,7 +247,7 @@ missing" list in `FINDINGS.md` (portable-core).
 | settings values | `action-core::config` (`AgentConfig`, `SETTING_ROWS`); the keys are the shell's |
 | turns and who may record one | `action-core::planner` (`TurnIn`, `UserTurn`, `TurnVia`; a turn's `from` is a `action_vocab::Caller`); the role table in `auth` |
 | structured-output shapes | the model layer `model-provider::Shape`; `ValueSchema::shape` maps into it, inferd owns repair and retry |
-| computer-use actions | the model layer `computer-use-action`; `CuaAsk` is the gate's input |
+| computer-use actions | the model layer `computer-use-action`; `ComputerUseAsk` is the gate's input |
 
 ## 4. Traits
 

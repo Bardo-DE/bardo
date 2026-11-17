@@ -1,4 +1,4 @@
-//! The seam cuad injects input through.
+//! The seam the computer-use daemon injects input through.
 
 use crate::caps::SeatCaps;
 use crate::keymap::Keymap;
@@ -41,7 +41,7 @@ pub trait AgentSeat: Send + Sync {
         ops: &[InputOp],
     ) -> impl Future<Output = Result<InputReceipt, SeatError>> + Send;
 
-    /// Starts or stops delivery without ending the lease. On stock this is how cuad keeps its
+    /// Starts or stops delivery without ending the lease. On stock this is how the computer-use daemon keeps its
     /// own input out of a confirmation.
     fn emulation(
         &self,

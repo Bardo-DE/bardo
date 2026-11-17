@@ -94,8 +94,8 @@ pub struct Capabilities {
     /// A speech table in the `out` direction.
     pub audio_out: Option<SpeechCaps>,
     pub vector_out: Option<EmbedCaps>,
-    /// Never `CuaSupport::Absent`: no actions output, no table.
-    pub actions_out: Option<CuaSupport>,
+    /// Never `ComputerUseSupport::Absent`: no actions output, no table.
+    pub actions_out: Option<ComputerUseSupport>,
 }
 
 /// What a model without an image input reports as its image limits: no images, no resizing.
@@ -128,7 +128,7 @@ impl Capabilities {
             images: self.image_in.unwrap_or(NO_IMAGES),
             context: text.context,
             max_output: text.max_output,
-            computer_use: self.actions_out.unwrap_or(CuaSupport::Absent),
+            computer_use: self.actions_out.unwrap_or(ComputerUseSupport::Absent),
         })
     }
 

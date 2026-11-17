@@ -1,20 +1,20 @@
-# cua's settings schema in the design/22 format (section 9.2). Installed to
+# Computer use's settings schema in the design/22 format (section 9.2). Installed to
 # $XDG_DATA_DIRS/bardo/settings/computer-use.settings.toml; `bardo-computer-use --write-schema <dir>` writes it for a local
-# install. The values live in $XDG_CONFIG_HOME/bardo/computer-use/settings.toml, for example `[cua]` then
+# install. The values live in $XDG_CONFIG_HOME/bardo/computer-use/settings.toml, for example `[computer_use]` then
 # `enabled = true`; bardo-computer-use reads them live (crates/computer-use/computer-use-daemon/src/settings). Every row is hands-off
 # for an agent (no `agent = "settable"`): cua.* is never agent-settable, so the companion can never
 # switch computer use on for itself. The rows design/22 section 5 puts on the Intelligence page are
 # Computer use's four; the spending cap is Advanced. Not here, because nothing reads them yet:
-# `cua.screens.keep` and `cua.screens.keep_days` (FINDINGS).
+# `computer_use.screens.keep` and `computer_use.screens.keep_days` (FINDINGS).
 # The schema carries no live note, so the warning that no model reads images while computer use
 # is on is the daemon's `SightNote` property (org.bardo.ComputerUse1.Manager), which the shell shows beside
-# `cua.enabled`.
+# `computer_use.enabled`.
 app = "computer-use"
 file = "computer-use/settings.toml"
 version = 1
 
 [[key]]
-path = "cua.enabled"
+path = "computer_use.enabled"
 default = false
 label = "Let the assistant use my apps for me"
 help = "Lets the assistant look at an app and click and type in it, only in the apps you list. Off by default."
@@ -28,7 +28,7 @@ kind = "toggle"
 kind = "intelligence"
 
 [[key]]
-path = "cua.apps"
+path = "computer_use.apps"
 default = []
 label = "Apps it may use"
 help = "The apps the assistant may use. Ask checks with you the first time in a conversation; Always never asks."
@@ -62,7 +62,7 @@ variants = ["ask", "always"]
 kind = "intelligence"
 
 [[key]]
-path = "cua.default_mode"
+path = "computer_use.default_mode"
 default = "auto"
 label = "Where it works"
 help = "Where the assistant works: on its own screen, or in the window you see."
@@ -84,7 +84,7 @@ in_place = "In place"
 agent_workspace = "Agent workspace"
 
 [[key]]
-path = "cua.autopause"
+path = "computer_use.autopause"
 default = true
 label = "Pause when I touch the window"
 help = "Pauses the assistant when you use the mouse or keyboard on a shared screen."
@@ -98,7 +98,7 @@ kind = "toggle"
 kind = "intelligence"
 
 [[key]]
-path = "cua.accessibility"
+path = "computer_use.accessibility"
 default = true
 label = "Read app controls"
 help = "Lets the assistant read the buttons and fields of the window it is using."
@@ -112,7 +112,7 @@ kind = "toggle"
 kind = "intelligence"
 
 [[key]]
-path = "cua.budget.spend_microusd"
+path = "computer_use.budget.spend_microusd"
 default = 0
 label = "Spending per run"
 help = "The most one run may spend on paid models. 0 keeps it on this computer."

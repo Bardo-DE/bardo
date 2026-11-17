@@ -111,7 +111,7 @@ async fn an_assistant_computer_use_or_a_launcher_never_makes_a_space() {
     // A launcher may only report an agent's state, so it is refused a list as well.
     for role in [
         CallerRole::Agent,
-        CallerRole::Cua,
+        CallerRole::ComputerUse,
         CallerRole::AgentLauncher,
     ] {
         let them = spaces(&rig.client_as(caller("org.bardo.Companion", role)).await).await;

@@ -100,7 +100,7 @@ fn summary_row(name: &str, t: &Tally) -> String {
 pub fn render(report: &Report<'_>) -> String {
     let all = pairs(report);
     let mut out = String::new();
-    let _ = writeln!(out, "# cua eval: {}\n", report.label);
+    let _ = writeln!(out, "# computer-use eval: {}\n", report.label);
     let _ = writeln!(out, "Played by: {}.", report.engine);
     let _ = writeln!(
         out,

@@ -60,10 +60,10 @@ pub fn planner() -> Actor {
     }
 }
 
-pub fn cua_actor() -> Actor {
+pub fn computer_use_actor() -> Actor {
     Actor::Companion {
         session: SessionId::parse("s-1").expect("s"),
-        role: AgentRole::Cua {
+        role: AgentRole::ComputerUse {
             run: RunId::parse("r-1").expect("r"),
         },
     }

@@ -1,4 +1,4 @@
-//! Who may call what on `Cua1`, and how a call is refused.
+//! Who may call what on `ComputerUse1`, and how a call is refused.
 
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +13,7 @@ pub enum ControlRefusal {
     WrongState,
     /// No such question.
     UnknownQuestion,
-    /// `cua.enabled` is off.
+    /// `computer_use.enabled` is off.
     Disabled,
     /// No such window.
     WindowUnknown,
@@ -42,10 +42,10 @@ impl ControlRefusal {
     ];
 }
 
-/// Who is calling, derived by cuad from the connection (never sent in a body).
+/// Who is calling, derived by the computer-use daemon from the connection (never sent in a body).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum CuaCaller {
+pub enum ComputerUseCaller {
     /// intentd: the router, acting for a `computeruse.run.start` call.
     Router,
     /// companiond: the planner.
@@ -56,11 +56,11 @@ pub enum CuaCaller {
     Other,
 }
 
-/// A member of `Cua1.Manager` or `Cua1.Run` a caller may try. Reading a property is not a
+/// A member of `ComputerUse1.Manager` or `ComputerUse1.Run` a caller may try. Reading a property is not a
 /// member: properties and signals are open to any caller.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum CuaMember {
+pub enum ComputerUseMember {
     /// `Manager.Start`.
     Start,
     /// `Manager.Runs`.
@@ -81,18 +81,18 @@ pub enum CuaMember {
     HandBack,
 }
 
-impl CuaMember {
+impl ComputerUseMember {
     /// Every member.
-    pub const ALL: [CuaMember; 9] = [
-        CuaMember::Start,
-        CuaMember::Runs,
-        CuaMember::StopAll,
-        CuaMember::Cancel,
-        CuaMember::Pause,
-        CuaMember::Resume,
-        CuaMember::Answer,
-        CuaMember::TakeOver,
-        CuaMember::HandBack,
+    pub const ALL: [ComputerUseMember; 9] = [
+        ComputerUseMember::Start,
+        ComputerUseMember::Runs,
+        ComputerUseMember::StopAll,
+        ComputerUseMember::Cancel,
+        ComputerUseMember::Pause,
+        ComputerUseMember::Resume,
+        ComputerUseMember::Answer,
+        ComputerUseMember::TakeOver,
+        ComputerUseMember::HandBack,
     ];
 }
 
@@ -103,18 +103,18 @@ impl CuaMember {
 /// person); `Runs` is open. A confirmation never comes through here: it is the router's, answered
 /// through `Confirm1`.
 #[must_use]
-pub fn permits(caller: CuaCaller, member: CuaMember) -> bool {
-    use CuaCaller::{Companion, Router, Shell};
+pub fn permits(caller: ComputerUseCaller, member: ComputerUseMember) -> bool {
+    use ComputerUseCaller::{Companion, Router, Shell};
     match member {
-        CuaMember::Runs => true,
-        CuaMember::Start => matches!(caller, Router | Companion),
-        CuaMember::StopAll
-        | CuaMember::Cancel
-        | CuaMember::Pause
-        | CuaMember::Resume
-        | CuaMember::TakeOver
-        | CuaMember::HandBack => matches!(caller, Router | Companion | Shell),
-        CuaMember::Answer => matches!(caller, Shell),
+        ComputerUseMember::Runs => true,
+        ComputerUseMember::Start => matches!(caller, Router | Companion),
+        ComputerUseMember::StopAll
+        | ComputerUseMember::Cancel
+        | ComputerUseMember::Pause
+        | ComputerUseMember::Resume
+        | ComputerUseMember::TakeOver
+        | ComputerUseMember::HandBack => matches!(caller, Router | Companion | Shell),
+        ComputerUseMember::Answer => matches!(caller, Shell),
     }
 }
 
@@ -124,11 +124,11 @@ mod tests {
 
     #[test]
     fn who_may_call_what() {
-        use CuaCaller::{Companion, Other, Router, Shell};
-        use CuaMember::*;
+        use ComputerUseCaller::{Companion, Other, Router, Shell};
+        use ComputerUseMember::*;
         struct Row {
-            member: CuaMember,
-            allowed: &'static [CuaCaller],
+            member: ComputerUseMember,
+            allowed: &'static [ComputerUseCaller],
         }
         let table = [
             Row {
@@ -168,7 +168,7 @@ mod tests {
                 allowed: &[Router, Companion, Shell],
             },
         ];
-        assert_eq!(table.len(), CuaMember::ALL.len());
+        assert_eq!(table.len(), ComputerUseMember::ALL.len());
         for row in &table {
             for caller in [Router, Companion, Shell, Other] {
                 assert_eq!(
@@ -183,12 +183,16 @@ mod tests {
 
     #[test]
     fn only_the_shell_answers_a_question_and_nobody_unknown_controls_anything() {
-        for caller in [CuaCaller::Router, CuaCaller::Companion, CuaCaller::Other] {
-            assert!(!permits(caller, CuaMember::Answer), "{caller:?}");
+        for caller in [
+            ComputerUseCaller::Router,
+            ComputerUseCaller::Companion,
+            ComputerUseCaller::Other,
+        ] {
+            assert!(!permits(caller, ComputerUseMember::Answer), "{caller:?}");
         }
-        for member in CuaMember::ALL {
-            if member != CuaMember::Runs {
-                assert!(!permits(CuaCaller::Other, member), "{member:?}");
+        for member in ComputerUseMember::ALL {
+            if member != ComputerUseMember::Runs {
+                assert!(!permits(ComputerUseCaller::Other, member), "{member:?}");
             }
         }
     }
@@ -209,17 +213,17 @@ mod tests {
                 | ControlRefusal::ModelUnavailable => 1,
             };
         }
-        for member in CuaMember::ALL {
+        for member in ComputerUseMember::ALL {
             let _count = match member {
-                CuaMember::Start
-                | CuaMember::Runs
-                | CuaMember::StopAll
-                | CuaMember::Cancel
-                | CuaMember::Pause
-                | CuaMember::Resume
-                | CuaMember::Answer
-                | CuaMember::TakeOver
-                | CuaMember::HandBack => 1,
+                ComputerUseMember::Start
+                | ComputerUseMember::Runs
+                | ComputerUseMember::StopAll
+                | ComputerUseMember::Cancel
+                | ComputerUseMember::Pause
+                | ComputerUseMember::Resume
+                | ComputerUseMember::Answer
+                | ComputerUseMember::TakeOver
+                | ComputerUseMember::HandBack => 1,
             };
         }
     }

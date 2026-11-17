@@ -48,7 +48,7 @@ impl RunBudget {
     /// ask: a render or an export may take long, a run may not take forever.
     pub const ACTIVE_CEILING: Ms = Ms(7_200_000);
 
-    /// The proposed defaults (design/22 `cua.budget.*`): 40 steps, 1800 s active, 3 stall
+    /// The proposed defaults (design/22 `computer_use.budget.*`): 40 steps, 1800 s active, 3 stall
     /// frames, 60 actions a minute, 2 model failures, no spend.
     pub const PROPOSED: RunBudget = RunBudget {
         steps: Count(40),

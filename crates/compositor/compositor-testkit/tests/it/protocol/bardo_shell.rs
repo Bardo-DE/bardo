@@ -106,7 +106,7 @@ fn the_proven_role_decides_which_connection_a_program_is_handed() {
         .expect("shell gets the shell");
     let agent = fixture
         .connect_through_handout(&callers::agent_tier(), ConnectionRole::Agent)
-        .expect("cuad gets the agent tier");
+        .expect("computer_use_daemon gets the agent tier");
     assert!(sees(&mut fixture, shell, INTERFACE), "the shell");
     let portal = fixture
         .connect_through_handout(&callers::portal(), ConnectionRole::Portal)

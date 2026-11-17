@@ -995,7 +995,7 @@ P2-Z-sh (compositor-scope/20-FREEZE-PLAN.md section 4.10, P2 row), implemented w
   it and closes the windows one by one (`SurfaceClosed`). The dispatch is for `HostState`
   itself, not generic, because it queues the event. Written without a build.
 - **Dependency.** `desktop-protocols` (feature `client`), git rev
-  b59d1d7da33e0aa1f4460ea515e64d5e4f51f112, the pin the shell and cua use (workspace root, outside the
+  b59d1d7da33e0aa1f4460ea515e64d5e4f51f112, the pin the shell and computer use use (workspace root, outside the
   bardo-pinned block). Its `rust-version` is 1.92 against this workspace's 1.91.
 - **F50.** Closed on a compositor that advertises `bardo_window_manager_v1` (the compositor), as far as
   the host goes: the request exists and is sent. It stays open on KWin (nothing to

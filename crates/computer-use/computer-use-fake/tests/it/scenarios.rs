@@ -5,20 +5,20 @@ use crate::support::*;
 use action_core::{CallRefusal, ConfirmEnd, InboundLine};
 use action_gate_wire::GateAnswer;
 use action_wire::GrantAnswer;
-use computer_use_action::CuaAction;
-use computer_use_bus::{BlockedOn, CuaOutcome, CuaRecord, FailReason, ScreenKind};
+use computer_use_action::ComputerUseAction;
+use computer_use_bus::{BlockedOn, ComputerUseOutcome, ComputerUseRecord, FailReason, ScreenKind};
 use computer_use_desktop::{BackendKind, Suspend};
 use computer_use_fake::{
     DesktopCall, FakeA11y, FakeDesktop, FakePdp, Fixture, SeatEvent, Verdict, run_harness,
     run_harness_answering,
 };
-use computer_use_run::{CuaModelError, CuaSignal, FORCED_NO, FORCED_YES, RunPhase};
+use computer_use_run::{ComputerUseModelError, ComputerUseSignal, FORCED_NO, FORCED_YES, RunPhase};
 use computer_use_seat_input::Emulation;
 use inference_core::{NoteFrom, PrevResult, StepNote};
 use permission_core::DenyCode;
 use provenance::{Address, AgentRef, MessageId, MessageKind, ReportStatus, ThreadId};
 
-fn outcome_of(report: &computer_use_fake::HarnessReport) -> CuaOutcome {
+fn outcome_of(report: &computer_use_fake::HarnessReport) -> ComputerUseOutcome {
     match report.run.phase {
         RunPhase::Finished(outcome) => outcome,
         ref other => panic!("not finished: {other:?}"),
@@ -34,7 +34,7 @@ fn on_stock_input_stops_before_the_prompt_shows_and_starts_after_the_answer() {
         pdp,
     );
     let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
-    assert_eq!(outcome_of(&report), CuaOutcome::Done);
+    assert_eq!(outcome_of(&report), ComputerUseOutcome::Done);
     let seat: Vec<&'static str> = w
         .seat
         .events()
@@ -58,7 +58,12 @@ fn on_stock_input_stops_before_the_prompt_shows_and_starts_after_the_answer() {
             .iter()
             .any(|c| matches!(c, DesktopCall::Suspended(_, Suspend::Consent)))
     );
-    let kinds: Vec<String> = w.events.records().iter().map(CuaRecord::kind).collect();
+    let kinds: Vec<String> = w
+        .events
+        .records()
+        .iter()
+        .map(ComputerUseRecord::kind)
+        .collect();
     assert_eq!(
         kinds,
         [
@@ -83,7 +88,7 @@ fn a_refused_action_is_told_to_the_model_and_the_run_goes_on() {
         pdp,
     );
     let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
-    assert_eq!(outcome_of(&report), CuaOutcome::Done);
+    assert_eq!(outcome_of(&report), ComputerUseOutcome::Done);
     let second = &w.model.requests()[1];
     assert_eq!(second.prev, vec![PrevResult::Refused("not allowed".into())]);
     assert!(
@@ -98,7 +103,7 @@ fn a_refused_action_is_told_to_the_model_and_the_run_goes_on() {
 #[test]
 fn input_goes_only_to_the_window_that_is_focused_and_visible() {
     type Change = fn(&mut computer_use_desktop::ToplevelInfo);
-    type Action = fn() -> computer_use_action::CuaAction<computer_use_action::WindowSpace>;
+    type Action = fn() -> computer_use_action::ComputerUseAction<computer_use_action::WindowSpace>;
     // Keys need the focus; a click does not (it is how a window gets it), but no input goes to a
     // window the person cannot see.
     let cases: [(&str, Action, Change); 3] = [
@@ -128,7 +133,7 @@ fn input_goes_only_to_the_window_that_is_focused_and_visible() {
         )
         .impatient();
         let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
-        assert_eq!(outcome_of(&report), CuaOutcome::Done, "{name}");
+        assert_eq!(outcome_of(&report), ComputerUseOutcome::Done, "{name}");
         assert!(
             w.seat
                 .events()
@@ -149,7 +154,10 @@ fn input_that_cannot_be_written_down_ends_the_run() {
     );
     w.events.refuse_records();
     let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
-    assert_eq!(outcome_of(&report), CuaOutcome::Failed(FailReason::Log));
+    assert_eq!(
+        outcome_of(&report),
+        ComputerUseOutcome::Failed(FailReason::Log)
+    );
 }
 
 #[test]
@@ -197,7 +205,7 @@ fn a_refused_consent_blocks_the_run_before_any_window_is_taken() {
     let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
     assert_eq!(
         outcome_of(&report),
-        CuaOutcome::Blocked(BlockedOn::ConsentDenied)
+        ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied)
     );
     assert!(w.desktop.calls().is_empty(), "no lease, no glow");
     assert_eq!(
@@ -220,7 +228,7 @@ fn a_message_that_arrived_becomes_a_note_on_the_next_turn_and_the_run_is_told_no
         id: MessageId::parse("m-5").unwrap(),
         thread: ThreadId::parse("m-5").unwrap(),
         to: Address::new(
-            AgentRef::Cua {
+            AgentRef::ComputerUse {
                 run: provenance::RunId::parse("r-1").unwrap(),
             },
             space(),
@@ -246,18 +254,21 @@ fn a_message_that_arrived_becomes_a_note_on_the_next_turn_and_the_run_is_told_no
 fn a_fatal_model_ends_the_run_failed_and_the_lease_is_given_back() {
     let mut w = world(
         BackendKind::KwinStock,
-        vec![Err(CuaModelError::Fatal)],
+        vec![Err(ComputerUseModelError::Fatal)],
         FakePdp::allow_all(),
     );
     let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
-    assert_eq!(outcome_of(&report), CuaOutcome::Failed(FailReason::Model));
+    assert_eq!(
+        outcome_of(&report),
+        ComputerUseOutcome::Failed(FailReason::Model)
+    );
     assert!(matches!(
         w.desktop.calls().last(),
         Some(DesktopCall::Released(_))
     ));
     assert_eq!(
         report.signals.last(),
-        Some(&CuaSignal::Finished(outcome_of(&report)))
+        Some(&ComputerUseSignal::Finished(outcome_of(&report)))
     );
 }
 
@@ -265,12 +276,15 @@ fn a_fatal_model_ends_the_run_failed_and_the_lease_is_given_back() {
 fn a_model_that_runs_dry_is_a_failed_run_not_a_hang() {
     let mut w = world(BackendKind::KwinStock, vec![], FakePdp::allow_all());
     let report = block_on(run_harness(started(BackendKind::KwinStock), &mut w)).expect("ends");
-    assert_eq!(outcome_of(&report), CuaOutcome::Failed(FailReason::Model));
+    assert_eq!(
+        outcome_of(&report),
+        ComputerUseOutcome::Failed(FailReason::Model)
+    );
 }
 
 #[test]
 fn a_question_nobody_answers_is_stuck_not_silently_finished() {
-    let ask = CuaAction::Ask {
+    let ask = ComputerUseAction::Ask {
         question: computer_use_action::Summary::new("Which one?").unwrap(),
         choices: vec![],
     };
@@ -322,7 +336,7 @@ fn a_screen_that_talks_to_the_assistant_stops_the_run_when_the_person_says_no() 
     .expect("ends");
     assert_eq!(
         outcome_of(&report),
-        CuaOutcome::Blocked(BlockedOn::ScreenSuspicious(ScreenKind::Instruction))
+        ComputerUseOutcome::Blocked(BlockedOn::ScreenSuspicious(ScreenKind::Instruction))
     );
     assert!(
         w.model.requests().is_empty(),
@@ -335,7 +349,12 @@ fn a_screen_that_talks_to_the_assistant_stops_the_run_when_the_person_says_no() 
             .all(|e| !matches!(e, SeatEvent::Performed(..))),
         "nothing was injected"
     );
-    let kinds: Vec<String> = w.events.records().iter().map(CuaRecord::kind).collect();
+    let kinds: Vec<String> = w
+        .events
+        .records()
+        .iter()
+        .map(ComputerUseRecord::kind)
+        .collect();
     assert_eq!(
         kinds,
         [
@@ -356,14 +375,19 @@ fn a_yes_goes_on_and_the_same_screen_is_recorded_but_not_asked_again() {
         vec![FORCED_YES.to_owned()],
     ))
     .expect("ends");
-    assert_eq!(outcome_of(&report), CuaOutcome::Done);
+    assert_eq!(outcome_of(&report), ComputerUseOutcome::Done);
     let asked = report
         .signals
         .iter()
-        .filter(|s| matches!(s, CuaSignal::AskUser(..)))
+        .filter(|s| matches!(s, ComputerUseSignal::AskUser(..)))
         .count();
     assert_eq!(asked, 1, "asked once for the window and the kind");
-    let kinds: Vec<String> = w.events.records().iter().map(CuaRecord::kind).collect();
+    let kinds: Vec<String> = w
+        .events
+        .records()
+        .iter()
+        .map(ComputerUseRecord::kind)
+        .collect();
     assert_eq!(
         kinds,
         [

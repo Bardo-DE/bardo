@@ -4,7 +4,7 @@ use super::act::act;
 use super::refuse;
 use super::screen;
 use crate::machine::control::{self, pause};
-use crate::machine::effect::{CuaSignal, RunEffect};
+use crate::machine::effect::{ComputerUseSignal, RunEffect};
 use crate::machine::finish::{Said, finish, finish_plain};
 use crate::machine::ops::{
     AlsoContext, action_ended, aim, ask_for, drop_rest, enter, next, nodes_of, observe,
@@ -16,10 +16,11 @@ use crate::machine::track::{Held, SettleWatch};
 use crate::sensitivity::{FORCED_NO, FORCED_YES, WindowSensitivity, window_sensitivity};
 use action_core::CallRefusal;
 use action_gate_wire::GateAnswer;
-use computer_use_action::{ActionClass, CuaAction, FinishOutcome};
+use computer_use_action::{ActionClass, ComputerUseAction, FinishOutcome};
 use computer_use_bus::{
-    ActionOutcome, ActionResult, AskBody, AuthorisedBy, BlockedOn, ConfirmBy, CuaOutcome,
-    CuaRecord, FailReason, LocalRefusal, QuestionId, Refusal, SuccessCheck, TargetedAction,
+    ActionOutcome, ActionResult, AskBody, AuthorisedBy, BlockedOn, ComputerUseOutcome,
+    ComputerUseRecord, ConfirmBy, FailReason, LocalRefusal, QuestionId, Refusal, SuccessCheck,
+    TargetedAction,
 };
 use computer_use_capture::{FrameWant, Settle};
 use computer_use_desktop::{ConsentGuard, Ms, Stamp, Suspend};
@@ -34,7 +35,7 @@ pub(super) fn authorise(
     head: TargetedAction,
 ) {
     let Some(obs) = run.working.clone() else {
-        finish_plain(run, fx, CuaOutcome::Failed(FailReason::Capture));
+        finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Capture));
         return;
     };
     if let Some(why) = refuse::before_input(run, &obs, &head.action) {
@@ -128,7 +129,7 @@ pub(super) fn wait(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, n: StepInd
 pub(super) fn conclude(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
     let Some(TargetedAction {
         action:
-            CuaAction::Finish {
+            ComputerUseAction::Finish {
                 outcome,
                 summary,
                 extracted,
@@ -141,9 +142,16 @@ pub(super) fn conclude(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
     let said = Said { summary, extracted };
     match (outcome, run.task.success.clone()) {
         (FinishOutcome::Failed | FinishOutcome::Infeasible, _) => {
-            finish(run, fx, CuaOutcome::Failed(FailReason::Infeasible), &said);
+            finish(
+                run,
+                fx,
+                ComputerUseOutcome::Failed(FailReason::Infeasible),
+                &said,
+            );
         }
-        (FinishOutcome::Done, SuccessCheck::ModelSays) => finish(run, fx, CuaOutcome::Done, &said),
+        (FinishOutcome::Done, SuccessCheck::ModelSays) => {
+            finish(run, fx, ComputerUseOutcome::Done, &said)
+        }
         (FinishOutcome::Done, SuccessCheck::TreeHas(selector) | SuccessCheck::Both(selector)) => {
             enter(run, fx, RunPhase::Verifying(n));
             fx.push(RunEffect::VerifyTree(selector));
@@ -152,7 +160,7 @@ pub(super) fn conclude(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
 }
 
 pub(super) fn ask(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex, head: &TargetedAction) {
-    let CuaAction::Ask { question, choices } = &head.action else {
+    let ComputerUseAction::Ask { question, choices } = &head.action else {
         return;
     };
     run.pending.actions.truncate(1);
@@ -185,8 +193,11 @@ pub(super) fn raise(
             .map(|c| Labelled::new((*c).to_owned(), label.clone()))
             .collect(),
     };
-    fx.push(RunEffect::Emit(CuaSignal::AskUser(id, body.clone())));
-    fx.push(RunEffect::Record(Box::new(CuaRecord::Asked {
+    fx.push(RunEffect::Emit(ComputerUseSignal::AskUser(
+        id,
+        body.clone(),
+    )));
+    fx.push(RunEffect::Record(Box::new(ComputerUseRecord::Asked {
         run: run.id.clone(),
         n,
         question_id: id,
@@ -237,7 +248,7 @@ fn held_answer(
     run.track.held = Held::Nothing;
     fx.push(RunEffect::Glow(computer_use_desktop::GlowState::Working));
     if answer.value == FORCED_YES {
-        fx.push(RunEffect::Record(Box::new(CuaRecord::Confirmed {
+        fx.push(RunEffect::Record(Box::new(ComputerUseRecord::Confirmed {
             run: run.id.clone(),
             n,
             by: ConfirmBy::ShellPrompt,
@@ -294,7 +305,7 @@ pub(super) fn answered(
         .pending
         .actions
         .pop_back()
-        .unwrap_or_else(|| targeted(run, CuaAction::Observe));
+        .unwrap_or_else(|| targeted(run, ComputerUseAction::Observe));
     run.pending.actions.clear();
     let outcome = ActionOutcome {
         action,
@@ -309,7 +320,7 @@ pub(super) fn confirming(run: &mut Run, fx: &mut Vec<RunEffect>, id: provenance:
     let RunPhase::Authorising(n) = run.phase else {
         return;
     };
-    if run.env.caps.consent == ConsentGuard::CuadSuspendsInput
+    if run.env.caps.consent == ConsentGuard::ComputerUseDaemonSuspendsInput
         && let Some(lease) = run.lease
     {
         fx.push(RunEffect::SuspendLease(lease, Suspend::Consent));
@@ -323,7 +334,7 @@ pub(super) fn confirming(run: &mut Run, fx: &mut Vec<RunEffect>, id: provenance:
 
 /// Input flows again after a confirmation, on the backend that stopped it.
 pub(super) fn resume_after_confirmation(run: &Run, fx: &mut Vec<RunEffect>) {
-    if run.env.caps.consent == ConsentGuard::CuadSuspendsInput
+    if run.env.caps.consent == ConsentGuard::ComputerUseDaemonSuspendsInput
         && let Some(lease) = run.lease
     {
         fx.push(RunEffect::ResumeLease(lease));
@@ -343,10 +354,10 @@ pub(super) fn verdict(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, answer:
         GateAnswer::Run => {
             if confirmed {
                 let by = match run.env.caps.consent {
-                    ConsentGuard::CuadSuspendsInput => ConfirmBy::ShellPrompt,
+                    ConsentGuard::ComputerUseDaemonSuspendsInput => ConfirmBy::ShellPrompt,
                     ConsentGuard::CompositorOrigin => ConfirmBy::PhysicalInput,
                 };
-                fx.push(RunEffect::Record(Box::new(CuaRecord::Confirmed {
+                fx.push(RunEffect::Record(Box::new(ComputerUseRecord::Confirmed {
                     run: run.id.clone(),
                     n,
                     by,
@@ -362,7 +373,11 @@ pub(super) fn verdict(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, answer:
             act(run, fx, at, n);
         }
         GateAnswer::Refused(CallRefusal::Paused(_)) => {
-            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::PolicyDenials));
+            finish_plain(
+                run,
+                fx,
+                ComputerUseOutcome::Blocked(BlockedOn::PolicyDenials),
+            );
         }
         GateAnswer::Refused(CallRefusal::Halted(_)) => pause(run, fx),
         GateAnswer::Refused(refusal) => {

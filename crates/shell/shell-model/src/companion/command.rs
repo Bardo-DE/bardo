@@ -226,7 +226,7 @@ pub enum CompanionEvent {
     Run(Box<RunFacts>),
     /// A run's object went away.
     RunGone(RunId),
-    /// What cuad says about the screen model, as it appeared and again when it changed.
+    /// What the computer-use daemon says about the screen model, as it appeared and again when it changed.
     Sight(SightState),
     /// The undo journal, newest first.
     Journal(Vec<UndoEntry>),

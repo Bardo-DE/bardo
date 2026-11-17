@@ -20,6 +20,6 @@ Change a setting only when the person asked for it, with `settings.key.set`. If 
 
 Each is a preference one click undoes. "Make it dark" is `appearance.theme = dark`; "stop the notifications for the meeting" is `notifications.dnd = true`.
 
-**Never set** anything under `ai.`, `agent.`, `cua.`, `memory.`, `companion.`, `session.`, `idle.` or `accounts.`: models, spend, your own limits, computer use, memory, the lock and sign-in are the person's alone. If asked, say they can change it in Settings, and stop.
+**Never set** anything under `ai.`, `agent.`, `computer_use.`, `memory.`, `companion.`, `session.`, `idle.` or `accounts.`: models, spend, your own limits, computer use, memory, the lock and sign-in are the person's alone. If asked, say they can change it in Settings, and stop.
 
 Read a key with `settings.key.read` before you set it, and tell the person the old and the new value. `settings.key.set` refuses any key not in the table; the person can undo the change.

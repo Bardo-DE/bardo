@@ -62,7 +62,7 @@ fn table() -> CallerTable {
     serde_json::from_value(serde_json::json!({"caller": [
         {"app": "org.bardo.Settings", "role": "settings"},
         {"app": "org.bardo.Intent", "unit": "bardo-actiond.service", "role": "agent"},
-        {"app": "org.bardo.ComputerUse", "unit": "bardo-computer-use.service", "role": "cua"},
+        {"app": "org.bardo.ComputerUse", "unit": "bardo-computer-use.service", "role": "computer_use"},
         {"app": "org.bardo.Shell", "role": "sheet_host"},
         {"app": "org.bardo.Inference", "unit": "bardo-inferd.service", "role": "account_daemon_support"},
         {"app": "org.example.Sheets", "role": "sheet_host"},
@@ -173,7 +173,7 @@ fn a_process_is_named_by_its_scope_or_unit() {
             got(
                 "org.bardo.ComputerUse",
                 Isolation::Unsandboxed,
-                CallerRole::Cua,
+                CallerRole::ComputerUse,
             ),
         ),
         (

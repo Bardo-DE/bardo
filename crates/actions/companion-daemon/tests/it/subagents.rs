@@ -247,12 +247,12 @@ async fn a_report_from_a_run_is_a_typed_line_and_a_failure_makes_the_answer_wait
     let mut w = world(vec![]);
     let front = w.open("work").await;
     let run = RunId::parse("r-3").expect("run");
-    let cua = w
+    let computer_use = w
         .companion
         .intents
         .session_open(SessionOpen {
             space: space("work"),
-            agent: AgentRef::Cua { run: run.clone() },
+            agent: AgentRef::ComputerUse { run: run.clone() },
             parent: Some(front.task.clone()),
             cwd: None,
             started_from: None,
@@ -265,7 +265,7 @@ async fn a_report_from_a_run_is_a_typed_line_and_a_failure_makes_the_answer_wait
     w.companion
         .intents
         .send(
-            cua.session.clone(),
+            computer_use.session.clone(),
             MessageDraft {
                 to: Address::new(AgentRef::Companion, space("work")),
                 thread: None,
@@ -287,7 +287,7 @@ async fn a_report_from_a_run_is_a_typed_line_and_a_failure_makes_the_answer_wait
         .roster()
         .entries
         .into_iter()
-        .find(|l| l.agent == AgentRef::Cua { run: run.clone() })
+        .find(|l| l.agent == AgentRef::ComputerUse { run: run.clone() })
         .expect("the run is on the roster");
     assert_eq!(line.state, RosterState::Failed);
     let answer = w.companion.shared.answer(&front.task).expect("answer");
@@ -409,12 +409,12 @@ async fn a_request_in_a_message_is_still_gated_by_the_receivers_own_policy() {
     ]);
     let work = w.open("work").await;
     let run = RunId::parse("r-1").expect("run");
-    let cua = w
+    let computer_use = w
         .companion
         .intents
         .session_open(SessionOpen {
             space: space("home"),
-            agent: AgentRef::Cua { run },
+            agent: AgentRef::ComputerUse { run },
             parent: None,
             cwd: None,
             started_from: None,
@@ -427,7 +427,7 @@ async fn a_request_in_a_message_is_still_gated_by_the_receivers_own_policy() {
     w.companion
         .intents
         .send(
-            cua.session,
+            computer_use.session,
             MessageDraft {
                 to: Address::new(AgentRef::Companion, space("work")),
                 thread: None,

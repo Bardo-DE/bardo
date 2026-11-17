@@ -5,12 +5,12 @@ use crate::observation::{CursorObs, Observation, TreeObs};
 use crate::shortcut_guard::control_for;
 use action_core::{InboundLine, InboundPart, Reveal};
 use computer_use_a11y_tree::{A11yNode, render};
-use computer_use_action::{ActionClass, CuaAction, WindowSpace};
+use computer_use_action::{ActionClass, ComputerUseAction, WindowSpace};
 use computer_use_bus::{ActionOutcome, ActionResult, LocalRefusal, Refusal};
 use computer_use_capture::{PixelBuf, WholeMask};
 use inference_core::{
-    AttachIndex, CuaStepRequest, FrameImage, FrameLayout, ImageSource, MaskedRegions, NoteFrom,
-    PrevResult, StepNote, TreeText, WindowGeometry,
+    AttachIndex, ComputerUseStepRequest, FrameImage, FrameLayout, ImageSource, MaskedRegions,
+    NoteFrom, PrevResult, StepNote, TreeText, WindowGeometry,
 };
 use provenance::{AgentRef, Integrity};
 use serde::{Deserialize, Serialize};
@@ -67,12 +67,12 @@ fn prev_result(outcome: &ActionOutcome, nodes: &[A11yNode], unchanged: bool) -> 
 }
 
 /// Whether the action sent input to the window.
-pub(crate) fn sent_input(action: &CuaAction<WindowSpace>) -> bool {
+pub(crate) fn sent_input(action: &ComputerUseAction<WindowSpace>) -> bool {
     matches!(action.class(), ActionClass::Pointer | ActionClass::Keyboard)
 }
 
 /// What the action is called in the words to the model.
-fn verb(action: &CuaAction<WindowSpace>) -> &'static str {
+fn verb(action: &ComputerUseAction<WindowSpace>) -> &'static str {
     Verb::of(action).map_or("action", Verb::words)
 }
 
@@ -139,7 +139,7 @@ fn masked_regions(obs: &Observation) -> MaskedRegions {
 /// person's is their own words, and neither is authority), then the person's answers to the
 /// model's own questions. Pure.
 #[must_use]
-pub fn turn(obs: &Observation) -> (CuaStepRequest, FrameAttachment) {
+pub fn turn(obs: &Observation) -> (ComputerUseStepRequest, FrameAttachment) {
     turn_after(obs, false)
 }
 
@@ -148,7 +148,7 @@ pub fn turn(obs: &Observation) -> (CuaStepRequest, FrameAttachment) {
 /// An input that ran and left
 /// the screen as it was is reported to the model as such (the accounts service's `PrevResult` has no word for
 /// "ran, no change", so it goes as a failure with plain words).
-pub fn turn_after(obs: &Observation, unchanged: bool) -> (CuaStepRequest, FrameAttachment) {
+pub fn turn_after(obs: &Observation, unchanged: bool) -> (ComputerUseStepRequest, FrameAttachment) {
     let nodes: &[A11yNode] = match &obs.tree {
         TreeObs::Present(snapshot) => &snapshot.nodes,
         TreeObs::Absent(_) => &[],
@@ -158,7 +158,7 @@ pub fn turn_after(obs: &Observation, unchanged: bool) -> (CuaStepRequest, FrameA
         TreeObs::Absent(_) => None,
         TreeObs::Present(snapshot) => Some(TreeText(render(snapshot))),
     };
-    let mut request = CuaStepRequest::new(
+    let mut request = ComputerUseStepRequest::new(
         obs.step,
         WindowGeometry {
             logical: obs.window.size,

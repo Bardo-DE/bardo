@@ -180,10 +180,10 @@ with scripted seams (`inferd/tests/serve.rs`) and from the client over a private
   `Routed` went out, so `InTurn` implies it.
 - 2 (audio): `SessionOut::Audio(AudioFrame)` for an accepted frame, and `SessionOut::EndAudio`
   for `EndOfAudio` (the ask named only the first; the engine needs both).
-- 3 (cua begin): `CuaProgress { NotBegun, Begun }` on `Idle` and `InTurn`. A `CuaBegin` turn that
-  ends in `InferReply::CuaStep(_)` (an empty `CuaStepReply` is the acknowledgement: there is no
+- 3 (computer use begin): `ComputerUseProgress { NotBegun, Begun }` on `Idle` and `InTurn`. A `ComputerUseBegin` turn that
+  ends in `InferReply::ComputerUseStep(_)` (an empty `ComputerUseStepReply` is the acknowledgement: there is no
   other reply variant for a begin) begins the run; a failed or cancelled one does not; a second
-  begin starts another run. `CuaStep` before a begin is refused `Unsupported`, also when it comes
+  begin starts another run. `ComputerUseStep` before a begin is refused `Unsupported`, also when it comes
   up from the queue.
 - 4 (queue): `InTurn.queued: Option<InferRequest>`. A request that fits queues (depth one); a
   second, or one that does not fit, is refused at once. The queued request starts when the turn
@@ -195,20 +195,20 @@ with scripted seams (`inferd/tests/serve.rs`) and from the client over a private
   nothing). `Confidentiality` derives `Ord` (variant order; not the lattice order, which is
   `join`). Constructors of `ConfirmReceipt` gain the field (the memory service `memfiles` and the actions tests).
   Nothing in the actions service or the memory service calls `declassify` yet.
-- 23 (notes): `CuaStepRequest.notes: Vec<StepNote>`; `StepNote { from: NoteFrom::{Person,
+- 23 (notes): `ComputerUseStepRequest.notes: Vec<StepNote>`; `StepNote { from: NoteFrom::{Person,
   Agent}, text }`, oldest first, `Debug` shows lengths only. A note is input, never authority:
-  cua-session fences an agent's note as untrusted.
+  computer-use-session fences an agent's note as untrusted.
 - 61 (prompt class): `DataClass::Prompt` (slug `prompt`): what the person typed or said to the
   companion and what a reviewer or planner quotes of it. Its floor in the proposed AI policy is
   on this computer (`Policy::proposed`, setting key `ai.floor.prompt`, proposed beside
   `ai.floor.voice`). No `VocabVersion` bump (nothing persists grants yet; the amendment before
   this one did the same). The actions service call site: `crates/action-review/src/infer.rs`,
   `REVIEW_CLASS` changes from `DataClass::Notes` to `DataClass::Prompt` (and its comment).
-- 67: `Target::Centre` already exists in the model layer's `cua-action`; the accounts service has no executor, so the
+- 67: `Target::Centre` already exists in the model layer's `computer-use-action`; the accounts service has no executor, so the
   The accounts side is a wire row (`a_scroll_with_no_coordinate_and_a_bad_argument_cross_the_wire`).
-  The executor is cua's: `seat-input::plan` must resolve `Target::Centre` against the window
+  The executor is computer use's: `seat-input::plan` must resolve `Target::Centre` against the window
   size it plans for. `DropReason::BadArgument` joined inference-core's mirror (after
-  `MissingArgument`, as in the model layer's cua-parse).
+  `MissingArgument`, as in the model layer's computer-use-parse).
 - 70 (per-document class for embeddings): no account-core change is needed. `EmbedRequest.class`
   and the session's class already pin one class per request and per session, and the machine
   refuses a request whose class differs. The shape to write on the memory service's side: `recall::Doc`
@@ -235,12 +235,12 @@ with scripted seams (`inferd/tests/serve.rs`) and from the client over a private
   `readerd` build `account_client::AnyTransport` the same way memoryd does
   (`DbusTransport::over(connection)`); the router's reviewer pinning (ask 16) is now the
   `DataClass::Prompt` floor.
-- cua: `cuad/src/model.rs` `InferdCuaModel::{begin, step}`: `Transport::open(Need::ComputerUse,
-  DataClass::Screen, tier)`, `send(Request(CuaBegin))` and read to `Finished(CuaStep(_))` (the
-  acknowledgement), then per step `send_attached(Request(CuaStep), vec![memfd])` with the
+- Computer use: `computer_use_daemon/src/model.rs` `InferdComputerUseModel::{begin, step}`: `Transport::open(Need::ComputerUse,
+  DataClass::Screen, tier)`, `send(Request(ComputerUseBegin))` and read to `Finished(ComputerUseStep(_))` (the
+  acknowledgement), then per step `send_attached(Request(ComputerUseStep), vec![memfd])` with the
   `FrameAttachment` as a memfd and `FrameImage.source = Attached(AttachIndex(0))`; forward
-  `ThoughtDelta` and `ActionProposed` to the sink. `cua-run/src/turn.rs` `turn` and
-  `cua-fake/tests/fakes.rs` `blank_request` gain `notes` (the run's inbound messages become
+  `ThoughtDelta` and `ActionProposed` to the sink. `computer-use-run/src/turn.rs` `turn` and
+  `computer-use-fake/tests/fakes.rs` `blank_request` gain `notes` (the run's inbound messages become
   `StepNote`s). `seat-input::plan` resolves `Target::Centre`. Any exhaustive match on
   `DropReason` gains `BadArgument`.
 - The memory service `memfiles` settle(Keep) and tests construct `ConfirmReceipt` (ask 5, field `covers`).
@@ -250,7 +250,7 @@ with scripted seams (`inferd/tests/serve.rs`) and from the client over a private
 Lane `f3-inferd`. inferd is a daemon: `Inference1.Open` checks the caller, routes, makes the
 socketpair and runs `serve_session` over four real seams; `Availability`, `Prepare`, `Usage`,
 `Rescan`, `EnginesChanged` and `Gpu` are served too. `todo!()` bodies in inferd: 6 before (the two
-`Engines` bodies, `local_claims`, `CuaRun::step`, the speech runner's two), 3 after (`CuaRun::step`
+`Engines` bodies, `local_claims`, `ComputerUseRun::step`, the speech runner's two), 3 after (`ComputerUseRun::step`
 and the speech runner's two); 22 in the workspace before, 18 after (the other 15 are not this lane's). The tests are in `inferd/src/*/tests.rs`, `tests/serve.rs`,
 `tests/hosted.rs` (the whole daemon on a private bus with fake engines) and `tests/dist.rs`.
 
@@ -258,9 +258,9 @@ Decisions, where the specs were silent:
 
 - **Caller identity** is the executable behind the bus connection, through a caller table in
   the system file `/etc/accounts/inferd-callers.toml` (CALLER-INFERD: once `[callers]` of the
-  person's `inferd.toml`, which let a person's file give a program cua, Settings or the agent
-  launcher; a `[callers]` there is now ignored with one line at start). The role is `Cua` for cuad's
-  executable and `App` for every other named one; only `Cua` is routed a computer-use need (`Denied`
+  person's `inferd.toml`, which let a person's file give a program computer use, Settings or the agent
+  launcher; a `[callers]` there is now ignored with one line at start). The role is `ComputerUse` for the computer-use daemon's
+  executable and `App` for every other named one; only `ComputerUse` is routed a computer-use need (`Denied`
   otherwise). A sender nobody names gets `AccessDenied` from the bus, which the client reports as
   `TransportError::Denied` with that text (`Malformed` before "Fill W5: accounts").
 - **Consent** for a model on this computer is granted (no grant to store: the data does not leave
@@ -292,20 +292,20 @@ Decisions, where the specs were silent:
   memoryd: memoryd's `Record` has no area tag for inference and `prov` no system part for inferd,
   and the accounts service does not depend on the memory service. `images` and `audio_ms` are true since "Fill W4: accounts":
   `AuditSink::record` is also given what the request carried.
-- **Computer use** (the interim below was replaced in "Fill W5: accounts" by the model layer's `CuaSession`): `cua_step` runs one step for the tool dialects (`QwenComputerUse`, `Holo31`):
+- **Computer use** (the interim below was replaced in "Fill W5: accounts" by the model layer's `ComputerUseSession`): `computer_use_step` runs one step for the tool dialects (`QwenComputerUse`, `Holo31`):
   `vision-prep::prepare` for a raw frame (an encoded one is sent as it is), a model turn with the
-  `computer_use` function, `cua-parse`, `FrameMap` into window space, an out-of-frame point
+  `computer_use` function, `computer-use-parse`, `FrameMap` into window space, an out-of-frame point
   dropped. The prompt is ours and provisional, the history is the last four steps as text, and a
   reply that does not parse is not repaired. A model whose dialect is a text or wire one makes no
-  computer-use claim. An empty `CuaStepReply` acknowledges `CuaBegin`.
+  computer-use claim. An empty `ComputerUseStepReply` acknowledges `ComputerUseBegin`.
 
 Interface asks (nothing frozen was changed):
 
-1. (closed in W4 with a `StepJob`) the accounts service `inferd::cua_run::CuaRun::step(&mut self, request, sink)` cannot run: it has neither the
+1. (closed in W4 with a `StepJob`) the accounts service `inferd::computer_use_run::ComputerUseRun::step(&mut self, request, sink)` cannot run: it has neither the
    pinned model's provider nor the bytes behind `ImageSource::Attached`. Proposed:
    `step(&mut self, job: StepJob<'_>, sink)` with `StepJob { model: &LocalModel, provider: &P,
-   frames: &Frames, request: &CuaStepRequest }`, or delete it once `cua-session` is filled and
-   `cua_step` shrinks to the model turn.
+   frames: &Frames, request: &ComputerUseStepRequest }`, or delete it once `computer-use-session` is filled and
+   `computer_use_step` shrinks to the model turn.
 2. (closed in W5: `ModelEntry.embed`) the model layer `ModelEntry` has no embedding fields: add `embed: Option<EmbedCaps>` (dims, batch limit,
    input limit, query and document prefixes, `EmbedCaps` already exists in `model-provider`), read
    when a role is `embeddings`. Until then `inferd.toml` carries `[[embedding]]` rows
@@ -336,7 +336,7 @@ Still needed before a real local model answers on login:
   `--host <socket>` and vLLM's `--uds` need the same spike.
 - The speech runner (`SpeechRunner::{transcribe, speak}`, the model layer's `speech-host-client` and the
   host binary): a speech need is `Unavailable` today.
-- The model layer's `cua-session` bodies, and a recorded Holo-3.1-4B step to confirm the `computer_use`
+- The model layer's `computer-use-session` bodies, and a recorded Holo-3.1-4B step to confirm the `computer_use`
   schema, the grid of 1000 and the reasoning-off sampling.
 - Spend meters and caps behind `Usage`; per-process GPU accounting; telemetry spans from
   `traceparent`; validate-and-repair of structured output (ask 4).
@@ -351,8 +351,8 @@ Still needed before a real local model answers on login:
   `action-review/src/infer.rs` `REVIEW_CLASS` is `DataClass::Prompt` (earlier note); the reviewer
   and the planner open `Need::Llm` sessions that this router answers with the model the tier map
   names.
-- cua `cuad/src/model.rs` `InferdCuaModel::{begin, step}`: opens `Need::ComputerUse(Desktop)` with
-  class `Screen` as the `cua` caller; the first request must be `CuaBegin`; steps carry the frame as
+- Computer use `computer_use_daemon/src/model.rs` `InferdComputerUseModel::{begin, step}`: opens `Need::ComputerUse(Desktop)` with
+  class `Screen` as the `computer_use` caller; the first request must be `ComputerUseBegin`; steps carry the frame as
   attach index 0 (raw, `FrameLayout::Raw`, preferred); expect `Waiting(Loadable)` before `Routed`
   on a cold engine and `Finished(Failed(Unparseable))` for a reply with no call.
 - The shell / the Settings app: `Inference1.Gpu` and `EnginesChanged` are live; `Prepare` on double-tap ⌘.
@@ -362,7 +362,7 @@ Still needed before a real local model answers on login:
 
 Lane `w4-accounts`, branch `w4-accounts` from f4c4d59. `todo!()` bodies in the workspace: 18 before, 8
 after (the 10 gone: `SocketTransport::{call, open_with}`, `SocketSession::{send, next}`,
-`InProcess::open_with`, `InProcessSession::{send, next}`, `CuaRun::step`, and the two of
+`InProcess::open_with`, `InProcessSession::{send, next}`, `ComputerUseRun::step`, and the two of
 `AccountService`, which refuse now). What remains is in the table at the top: `Oo7Secrets` (4),
 `Broker::infer`, the speech runner (2), accountd's `SheetPrompter`.
 
@@ -434,8 +434,8 @@ broker a session is `Unreachable`, as when inferd is not running, so memoryd-sty
 degrade the same way in process. `InProcessSession` stays as `NoBroker`'s session, which cannot
 exist. The accounts service's own `Broker` is still a stub, so nothing in this repo is a broker yet.
 
-**`CuaRun::step`** (ask 97): `step(&mut self, StepJob { model, provider, frames, request }, sink)`
-over `cua_step` (the run owns the history; a failed step is not remembered, so the same step can be
+**`ComputerUseRun::step`** (ask 97): `step(&mut self, StepJob { model, provider, frames, request }, sink)`
+over `computer_use_step` (the run owns the history; a failed step is not remembered, so the same step can be
 asked again; a sink `Stop` ends the proposals). `runner::Turns` runs computer-use steps through it.
 
 **`AuditSink`** (ask 101): `record(spec, served, reply, &Carried)`; `Carried { images, audio_ms }`
@@ -452,9 +452,9 @@ were dropped while they waited), for the close and leaving-caller tests.
 1. **`TransportError::Denied` not added.** A bus refusal (`AccessDenied`) is still
    `TransportError::Malformed("refused by the bus: ...")`, because adding a variant breaks two
    exhaustive matches: the memory service `crates/memoryd/src/infer/embed.rs:189` (`transport_failure`:
-   `Unreachable | Closed`, `Malformed`) and cua `crates/cuad/src/model.rs:63` (`Unreachable`,
+   `Unreachable | Closed`, `Malformed`) and computer use `crates/computer_use_daemon/src/model.rs:63` (`Unreachable`,
    `Closed | Malformed`). Proposed: `TransportError::Denied(String)` after those two matches gain
-   an arm (the memory service: unavailable or fatal; cua: `CuaModelError::Fatal`), then
+   an arm (the memory service: unavailable or fatal; computer use: `ComputerUseModelError::Fatal`), then
    `DbusTransport`'s `bus_error` maps `BusFailure::Denied` to it. The actions service's `exit.rs` has no
    exhaustive match on the accounts service's type (its `TransportError` is its own).
 2. **The service locator agent** (mailo's agent, or accountd built without zbus) reads the first frame of
@@ -474,7 +474,7 @@ were dropped while they waited), for the close and leaving-caller tests.
 ### Call sites that change or may change after W4
 
 - No exhaustive match downstream breaks: the memory service (without recall-fastembed) and the actions service pass
-  `cargo check --locked --workspace --all-targets --all-features` against this worktree; cua passes
+  `cargo check --locked --workspace --all-targets --all-features` against this worktree; computer use passes
   without `--locked` (its own `Cargo.lock` already fails `--locked` against the accounts service master, with or
   without this lane). `InProcess` gains a defaulted fifth type parameter
   (`InProcess<P, S, U, K>` still names the no-broker form); nothing downstream names it yet.
@@ -484,9 +484,9 @@ were dropped while they waited), for the close and leaving-caller tests.
   inference is `Unreachable`, which memoryd's degrade path already handles).
 - shell/the Settings app: an add-account or re-sign-in sheet is a Request whose `Response` arrives later;
   `AddAccount` answers `unavailable` until a family signs in.
-- cua `cuad/src/model.rs`: `TransportError::Malformed` text for a refused caller starts
+- Computer use `computer_use_daemon/src/model.rs`: `TransportError::Malformed` text for a refused caller starts
   "refused by the bus" (unchanged); see ask 1.
-- memory/actions/cua tests that implement `account_client::Transport` need no change; a test that
+- memory/actions/computer_use tests that implement `account_client::Transport` need no change; a test that
   implements `inferd::serve::AuditSink` gains the `&Carried` parameter (none found outside this
   repo).
 
@@ -526,7 +526,7 @@ unchanged by it).
 Lane `w5-accounts`. inferd now reads what the model layer's W4 gave it. No `todo!()` was left to fill in this
 lane (the count of `todo!(` in the workspace stays 8, `inferd::speech` 2 of them; the speech runner
 still waits for `speech-host-client`); the work was the call sites of the model layer's asks
-98, 99 (decided: kept), 100 and the `cua-session` wiring, and the accounts service's half of item 113.
+98, 99 (decided: kept), 100 and the `computer-use-session` wiring, and the accounts service's half of item 113.
 
 ### Decisions
 
@@ -561,12 +561,12 @@ still waits for `speech-host-client`); the work was the call sites of the model 
   a schema the vocabulary refuses (a number, a `pattern`, an open object) and any request that
   carries tools of its own (its turn may end in a call of one of them and rightly not in the
   shape).
-- **`cua-session` wiring (`cua_step`, `cua_run`, `tee`).** `CuaRun` holds the `CuaBegin` and, from
-  the first step on (the model is known there), a `CuaSession`. A step is `request`, one turn
+- **`computer-use-session` wiring (`computer_use_step`, `computer_use_run`, `tee`).** `ComputerUseRun` holds the `ComputerUseBegin` and, from
+  the first step on (the model is known there), a `ComputerUseSession`. A step is `request`, one turn
   through a `TranscriptSink` (inside `tee::Tee`, which also streams the thoughts), `absorb_for`,
-  and one more turn for a `StepOutcome::Repair`. `cua_step::open` builds the `CuaProfile` from the
+  and one more turn for a `StepOutcome::Repair`. `computer_use_step::open` builds the `ComputerUseProfile` from the
   entry (`caps.computer_use` dialect, `caps.images.{rule, space}`, history = `per_prompt - 1`
-  frames (3 for Holo means 2: `CuaProfile::for_model` with `FrameBudget::within(per_prompt)`), one repair, PNG) and the `TurnSettings` (the entry's `reasoning_off`
+  frames (3 for Holo means 2: `ComputerUseProfile::for_model` with `FrameBudget::within(per_prompt)`), one repair, PNG) and the `TurnSettings` (the entry's `reasoning_off`
   sampling, `max_output`, reasoning `Off`, `ToolParallelism` from the batching, the flavor's
   extras). `PrevResult` is `StepResult` (`Done`, `Refused`, `NotRun`; `Failed`, `UserDeclined`
   and `UserActed` are `Refused` with their words; the call ids are minted, a tool or text dialect
@@ -575,7 +575,7 @@ still waits for `speech-host-client`); the work was the call sites of the model 
   action is refused, costs one more turn; a step whose reply never parsed counts as taken (the model layer
   remembers it, the next prompt lists it) while one that failed to reach the engine does not; the
   past frames are in the prompt (the interim sent text only); the text dialect (UI-TARS) is
-  served, so `catalog::cua_cap` claims for a `Text` dialect as well as a `Tool` one (a vendor
+  served, so `catalog::computer_use_cap` claims for a `Text` dialect as well as a `Tool` one (a vendor
   `Wire` still makes no claim: it needs the vendor's backend).
 - **Window contents and notes** are `ObservationIn::with_tree` and `with_notes` (the model layer's W5 fields).
   The model layer's `StepNote` is one line of text, so a note keeps who said it in its words ("The person
@@ -586,17 +586,17 @@ still waits for `speech-host-client`); the work was the call sites of the model 
   where it was `Malformed("refused by the bus: ...")`. The two matches that would have broken are
   given an arm in follow-up branches, to merge together with this one: the memory service
   `memoryd/src/infer/embed.rs` (`Denied` is `fatal(why)`, as `Malformed` was: asking again does not
-  help) and cua `cuad/src/model.rs` (`Denied` is `CuaModelError::Fatal`).
+  help) and computer use `computer_use_daemon/src/model.rs` (`Denied` is `ComputerUseModelError::Fatal`).
 
 ### Tests
 
 `structured` (shape table, tools-of-its-own, a fit, a repair that names the field and never echoes
 the reply, an exhausted repair, a cut reply, a content filter, an engine failure, a bare choice, a
-stopped listener), `tee`, `cua_step` over a scripted provider (the request carries the goal,
+stopped listener), `tee`, `computer_use_step` over a scripted provider (the request carries the goal,
 results, notes, tree and the frame; the settings come from the entry; a raw frame becomes a PNG; a
 point outside the frame is dropped after one repair; a reply with no call is asked again once with
 the same frame; a reply that never parses still counts; an engine failure does not; the prompt
-never holds more frames than the model takes; a stopped sink asks nobody for a repair), `cua_run`,
+never holds more frames than the model takes; a stopped sink asks nobody for a repair), `computer_use_run`,
 `catalog` (the dialects that claim, the `embed` table), and the hosted harness (a JSON reply
 repaired before the app sees it, a refused schema sent unchecked, a choice, a computer-use repair
 and the earlier frame in the next step, `Denied` over a real bus). Nothing needs a GPU, a network
@@ -604,7 +604,7 @@ or the real bus.
 
 ### Interface asks from W5
 
-1. **the model layer `CuaSession::absorb_for`** could take the session by `&mut` or return the old one when
+1. **the model layer `ComputerUseSession::absorb_for`** could take the session by `&mut` or return the old one when
    a repair turn fails, so inferd need not clone the session (past frames included) before each
    step. `StepNote` could keep who said it (`NoteFrom`) instead of one line of text.
 2. **A per-model `reasoning_default`** in the catalog (does the template think when nothing is
@@ -616,11 +616,11 @@ or the real bus.
 ### Seams served
 
 - inferd to the model layer `model-catalog` (`embed`), `model-extract` (`ShapedSession`, `choose`) and
-  `cua-session` (`CuaSession`, `TranscriptSink`); account-client `TransportError::Denied` to
-  memoryd's embedder (the memory service) and cuad's model (cua).
+  `computer-use-session` (`ComputerUseSession`, `TranscriptSink`); account-client `TransportError::Denied` to
+  memoryd's embedder (the memory service) and the computer-use daemon's model (computer use).
 - End to end scenarios (`~/rs-wt/integration/MAP.md`): memoryd embeds through inferd with the
   catalog's prefixes; the action reviewer and the policy writer get a checked JSON reply or
-  `Unparseable`; cuad's step loop against a Holo engine, including a repair turn; an unknown caller
+  `Unparseable`; the computer-use daemon's step loop against a Holo engine, including a repair turn; an unknown caller
   gets `Denied`.
 
 ## The companion amendment (2026-10-03)
@@ -635,11 +635,11 @@ pure tables and tests; no new `todo!()` in the accounts service (one pure functi
   Outcome, Undo}`), `label` (travels, the sender's taint included) and `sent`. There was no
   separate return or result type in `prov` or `account-core` to remove; `inference-core`'s
   `PrevResult` is the model transport's computer-use feedback, not an agent message, and stays.
-  The actions service and cua must not add a result type: a computer-use run's final result is a `Report`
+  The actions service and computer use must not add a result type: a computer-use run's final result is a `Report`
   whose parts hold `Outcome` refs and text.
 - The rule "a message carries no authority" is in `prov`'s crate docs, in `message.rs` and in
   `ARCHITECTURE.md` section 9 (repo rules).
-- `AgentRef { Companion, Worker { task }, Cua { run }, User }` (the roster's party; `Reader`
+- `AgentRef { Companion, Worker { task }, ComputerUse { run }, User }` (the roster's party; `Reader`
   and `Planner` are both `Companion`), `Address`, `Crossing`, and `AgentRef::of(&Actor)`.
 - `AgentRole::Worker { task: TaskId }`. `ActorKind` is unchanged: a worker is
   `ActorKind::Companion` (policy tables and retention classes key on the kind; a worker is the
@@ -674,7 +674,7 @@ Decisions, where the brief or the plan left a choice:
   provider crate. PLAN G1 wrote `FamilyRef`; there is no second type. `account_provider::Family`
   is gone (no consumer named it).
 - **No dependency list of account-core, -provider, -secrets, -service, -client, -dbus, -infer,
-  -fake or `prov` changed**, because the memory service, the actions service, cua and the shell lock them: a changed list is
+  -fake or `prov` changed**, because the memory service, the actions service, computer use and the shell lock them: a changed list is
   a `--locked` failure there. That is why `RelayPlan`, `ByteStream` and the in-memory `duplex`
   are in account-core, why `StoreError` and `SheetFault` write `Display` by hand, and why the
   caller table's TOML is read by the daemon (`CallerTable` is serde only).
@@ -745,7 +745,7 @@ Decisions, where the brief or the plan left a choice:
 5. **Bardo `ds-shell::accounts`** maps `SheetView` states: `Consent`, `Providers`, `SignIn`
    (fields are kinds; the UI words them), `BrowserWait`, `ShowCode`, `Review` (with the
    add-and-allow `allow` app), `Working`, `Failed`, `Done`.
-6. **the actions service and cua `check-boundary.sh`** (PLAN §5): `Accounts::open_authenticated` joins the forbidden calls in agent crates.
+6. **the actions service and computer use `check-boundary.sh`** (PLAN §5): `Accounts::open_authenticated` joins the forbidden calls in agent crates.
 
 ## The AI broker leaves the accounts service (2026-10-29)
 
@@ -759,7 +759,7 @@ inferd, inferd-client, inference-core, inference-router, inference-turns, infere
 
 ## Open
 
-- inferd's model layer edges are by sibling path (`model-provider`, `model-catalog`, `engine-supervisor`, `model-http`, `model-openai-compat`, `vision-prep`, `cua-parse`, `speech-provider`), like `cua-action`; the pinned git revs replace them with Bardo's block. `cua-session`, `cua-vendors` (for `StepResult`) and `model-extract` are edges since W5; `speech-host-client` is since the voice-inferd lane (inferd's `SttBackend::SpeechHost`).
+- inferd's model layer edges are by sibling path (`model-provider`, `model-catalog`, `engine-supervisor`, `model-http`, `model-openai-compat`, `vision-prep`, `computer-use-parse`, `speech-provider`), like `computer-use-action`; the pinned git revs replace them with Bardo's block. `computer-use-session`, `computer-use-vendors` (for `StepResult`) and `model-extract` are edges since W5; `speech-host-client` is since the voice-inferd lane (inferd's `SttBackend::SpeechHost`).
 - `InferSession` and its `SessionError` live in inference-core (re-exported by account-client), not in account-client as models §3.8 words it: `account-fake` implements the trait for `FakeInferSession` and must not depend on the client. `next()` returns `Result<InferEvent, SessionError>` (`Closed` after the daemon ends the session) where the spec says `InferEvent`.
 - `DroppedAction`, `DropReason` and `SafetyHint` are named by the specs but not defined; inference-core defines them (`SafetyHint` mirrors the model layer's `SafetySignal`: `RequireConfirmation`, `Blocked`; both only add asks).
 - The picker is a plain list (QUESTIONS V4): no recommended or best row and no ranking language; `Tier` stays because apps ask by tier and `Open` takes one. `picker_rows` breaks ties by the catalog's order, not by label.
@@ -775,7 +775,7 @@ inferd, inferd-client, inference-core, inference-router, inference-turns, infere
 
 ## Fill F4: inferd on the model layer 9052bf3 (2026-10-06)
 
-- `cua_step::step` takes the run's `&mut CuaSession` and `CuaRun` keeps one session across steps (no clone, no `Failed.kept`); a step that fails after a repair calls `refill_repairs`.
+- `computer_use_step::step` takes the run's `&mut ComputerUseSession` and `ComputerUseRun` keeps one session across steps (no clone, no `Failed.kept`); a step that fails after a repair calls `refill_repairs`.
 - `Reasoning::EngineDefault` is sent as `EngineDefault` (it was `Off`); the sampling for it is `SamplingDefaults::for_reasoning`, which follows the entry's `reasoning_default`. Computer-use turns keep `Reasoning::Off` on purpose.
 
 ## Fill F4: inferd replay engine (2026-10-06)
@@ -981,7 +981,7 @@ Lane `w6c-graph`, branch `w6c-graph` from 11651d4; its asks are closed by lane `
 3. **Closed.** Storage over Graph asks `Files.ReadWrite.AppFolder` (account-families microsoft
    `scopes.rs`) and the provider row says `scope = "app_folder"`.
 4. **Closed.** `FakeProtocol::Graph`; no consumer names `FakeProtocol` (grepped the memory service, the actions service,
-   cua, the shell at origin/master), so it is additive for them. `FakeGraph::protocol()` answers it.
+   Computer use, the shell at origin/master), so it is additive for them. `FakeGraph::protocol()` answers it.
 
 ## Fill voice-inferd: Transcribe over the speech host
 
@@ -989,7 +989,7 @@ Lane `voice-inferd`, branch from 0941881. account-client `Transport::prepare`; i
 
 - **`Transport::prepare(need, class, tier, options) -> Result<Readiness, TransportError>`**, over
   `Inference1.Prepare` (`DbusTransport`) and through `SessionHost::prepare` (`InProcess`); `AnyTransport`
-  forwards it. Both traits have a default body (`Unreachable`), because the memory service, the actions service, cua, the shell and mailo
+  forwards it. Both traits have a default body (`Unreachable`), because the memory service, the actions service, computer use, the shell and mailo
   have `impl Transport` of their own (checked by grep, read only), so none of them changes. `SocketTransport` keeps
   the default (the service locator socket carries `Open` only). `Accounts::prepare` is the app-facing call. The bus answers a
   slug: `ready`, `loading`, `loadable`, `downloading` (its progress is not on the bus, so it reads
@@ -1130,7 +1130,7 @@ Lane `voice-inferd`, branch from 0941881. account-client `Transport::prepare`; i
 - Signing in again never shows the "Choose what to use" review, for every family. Microsoft's sign-in (`MicrosoftSignIn::conclude`) answers `Done` straight after its Graph read when started in `SignInMode::Reauthenticate` (it still reads `/me`, so `store_renewed` can refuse another person's login); the generic, Nextcloud and API-key families already did. As a net for any family, the sheet machine (`account_core::sheet::step`, `Progress::Review` while `Purpose::Reauthenticate`) confirms a review at once with no choices instead of drawing it. `store_renewed` replaces only credentials and state, so the account's capabilities, endpoints and service toggles are unchanged. Tests: `signin::a_loopback_sign_in_again_ends_done_without_a_review` (its device-code twin went with the device-code path, lane fix-client), `a_sign_in_again_that_offers_a_review_is_never_asked_again_and_keeps_its_services`, `machine_tests::a_review_offered_to_a_sign_in_again_is_confirmed_unchanged_not_shown`.
 - Settings can let syncd sync an account: accountd's settings module has `accounts.<id>.sync.files` ("Keep this account's files on this computer") and `accounts.<id>.sync.photos` ("Back up photos"), toggles that default `off`, Settings role only, never agent-settable. `on` records an always-allow `Storage` grant of class `Files` or `Photos`, usage `Background`, for `org.bardo.Sync` (an unsandboxed native app, as the caller table names it), replacing a kept refusal of the same key; `off` removes it (audited `Granted` / `Revoked`). The dataset drops at syncd's next rescan and the mirror's files stay (W6c's rule). A row is offered for an account only when syncd can mirror it: Storage present and a Graph endpoint (the only store syncd mirrors; a WebDAV account has no row), and Photos only when the store takes resumable uploads (`chunked_upload`), which original photos need (`account_service::sync_offers`). `Changed` is sent by the module's `Set` and, when syncd's grant appears or goes by any other route (the grant's own Revoke row), by the hub (`settings_news`). The Photos datasets still run only behind syncd's Photos switch (off by default: there is no Photos app).
 - Ask for the Settings app (not done here, the Settings app is read only): `settings-app-model/src/accounts/model.rs` `classify` keeps a `KeyKind::Toggle` row only when its path holds `.service.`, so the two sync rows are dropped and the pane shows nothing new. Wanted: a `Row::Sync` for a toggle whose path ends `.sync.files` or `.sync.photos`, an `AccountSync { path, label: spec.label, on }` list on `Account` (the label is the plain sentence the module sends, not `humanize` of the kind), and `settings-app-ui` `detail_view` drawing each as a switch under the account's services, set like a service switch (`Set(path, "on" | "off")`).
-| I5 git deps for the model layer and Bardo | Done in the root `Cargo.toml`: the model layer `https://github.com/Bardo-DE/stoker` rev `b24f6d456e7915f1052c722f5aebabf1ee0f0e74`, Bardo `https://github.com/Bardo-DE/quire.git` rev `4289e369cb62066d3ce9b80058f659a8c0f98b03`. Local override: a git-ignored `.cargo/config.toml` with `[patch."<url>"]` lines to `../models/crates/<crate>` and `../bardo/crates/<ds-crate>` (ARCHITECTURE section 1). Open: each sibling-path consumer needs the same `[patch]` in its own workspace root (committed there), or its graph holds two copies of ds-* and the model crates; the owners of the shell, the Settings app, the compositor, cua, the actions service and the memory service apply it (diffs in ~/rs-wt/i5-gitdeps/consumer-patches) |
+| I5 git deps for the model layer and Bardo | Done in the root `Cargo.toml`: the model layer `https://github.com/Bardo-DE/stoker` rev `b24f6d456e7915f1052c722f5aebabf1ee0f0e74`, Bardo `https://github.com/Bardo-DE/quire.git` rev `4289e369cb62066d3ce9b80058f659a8c0f98b03`. Local override: a git-ignored `.cargo/config.toml` with `[patch."<url>"]` lines to `../models/crates/<crate>` and `../bardo/crates/<ds-crate>` (ARCHITECTURE section 1). Open: each sibling-path consumer needs the same `[patch]` in its own workspace root (committed there), or its graph holds two copies of ds-* and the model crates; the owners of the shell, the Settings app, the compositor, computer use, the actions service and the memory service apply it (diffs in ~/rs-wt/i5-gitdeps/consumer-patches) |
 
 ## Lane grant-names (a grant row names the app, not its bus id, 2026-10-07)
 
@@ -1179,7 +1179,7 @@ What the next lanes add:
 Covered (acp-sessions.md section 8 P4, P6, P8; section 12 R3; the agent session's additions of 2026-10-08):
 
 - **Bus**: a second interface, `org.bardo.Inference1.Agents`, on inferd's bus name and object (`/org/bardo/Inference1`; `Inference1`'s seven members are unchanged and `tests/introspection.rs` still counts them). `dbus/org.bardo.Inference1.Agents.xml`, `Bus::InferenceAgents`, `AgentsProxy`/`AgentsSkeleton`. `OpenEndpoint(program s, route (sssas), class s, protocols as, options a{sv}) -> (sssqsss)` and `CloseEndpoint(session s)`. The route is `(kind, id, models, ids)`: kind `account` (id an `AccountId`) or `model` (id a catalogue id: a supervised engine, a runtime the person runs, an attached engine); models `listed` (exactly the ids given; for a model route, none given means its own catalogue id) or `any` (a typed route option: whatever the agent names). The reply is `(session, scheme, host, port, base_url, token, protocol)`: scheme `http`, host `127.0.0.1`, an ephemeral port (typed fields, so the launcher can hand `host:port` to a sandbox allowlist), `protocol` the one `base_url` is for (`anthropic_messages`: the origin, for `ANTHROPIC_BASE_URL`, whose SDK appends `/v1/messages`; `openai_compatible`: the origin plus `/v1`), chosen as the first of Anthropic, OpenAI that the program lists and the route can speak. The unix-socket variant is dropped (agents take http base URLs).
-- **Who**: `Role::AgentLauncher` (`inferd.toml` `[callers] agent_launcher = [units]`, never listed by default; the commented line is read back by `tests/dist.rs`; mapped from `CallerRole::AgentLauncher`, placed after cuad's row and before any app's so an app entry cannot claim its unit). The launcher is refused every other member of inferd (`Open`, `Availability`, `Prepare`, `Usage`, `Rescan`: `AccessDenied`) and every other role, and a stranger, is refused `OpenEndpoint` `AccessDenied`. Typed causes on the bus are `org.bardo.Inference1.Error.{EndpointOff, UnsupportedProtocol, NoSuchRoute, NotGranted, FloorRefused, NoSuchSession, Unavailable}` plus the bus's `AccessDenied` and `InvalidArgs`.
+- **Who**: `Role::AgentLauncher` (`inferd.toml` `[callers] agent_launcher = [units]`, never listed by default; the commented line is read back by `tests/dist.rs`; mapped from `CallerRole::AgentLauncher`, placed after the computer-use daemon's row and before any app's so an app entry cannot claim its unit). The launcher is refused every other member of inferd (`Open`, `Availability`, `Prepare`, `Usage`, `Rescan`: `AccessDenied`) and every other role, and a stranger, is refused `OpenEndpoint` `AccessDenied`. Typed causes on the bus are `org.bardo.Inference1.Error.{EndpointOff, UnsupportedProtocol, NoSuchRoute, NotGranted, FloorRefused, NoSuchSession, Unavailable}` plus the bus's `AccessDenied` and `InvalidArgs`.
 - **Setting**: `ai.agents.endpoint = "off" | "on"`, default **off** (R5), a toggle row of the Intelligence page (hands-off for agents like the other `ai.*` rows); off refuses `OpenEndpoint` `EndpointOff`. Read at each open, so it takes effect for new sessions only; turning it off does not end sessions that are open (the launcher closes them, or the policy checks below refuse their requests).
 - **The token and the port**: 32 random bytes from the kernel, prefixed `sk-account-agent-`, fresh per session, compared in constant time, `Debug` shows its length only, in no log line, audit line, error or file, and on the bus exactly once, in the reply to the launcher's open (the bus-scan test counts: one message holds it). It ends with the session. **Any process on this computer can connect to the port: the token is the whole guard**, and the listener is plain HTTP on loopback (no TLS). A request without the right token is refused 401 from its head, before its body is read. Sessions end at `CloseEndpoint` (the listener is closed and every request in flight is cancelled before the call returns) and when the launcher's bus connection leaves (a `NameOwnerChanged` watch per launcher connection).
 - **The wire**: `POST /v1/messages` (Anthropic, streaming SSE and whole), `POST /v1/messages/count_tokens`, `POST /v1/chat/completions` (OpenAI, streaming with `[DONE]` and whole, `stream_options.include_usage` honoured), `GET /v1/models` and `GET /v1/models/{id}` (Anthropic's list shape when the request has `anthropic-version`, OpenAI's otherwise). Auth is `x-api-key` or `Authorization: Bearer`; `anthropic-version` and `anthropic-beta` are forwarded to an Anthropic account. A path without the `/v1` prefix is accepted. HTTP/1.1, one request per connection (`Connection: close`), bodies by `Content-Length` or chunked, up to 64 MiB. Errors are in the protocol's own shape (`fail.rs`): 401 authentication_error, 403 permission_error, 404 not_found_error / model_not_found, 400 invalid_request_error, 413, 429 rate_limit_error, 529 overloaded_error (503 for OpenAI), 502 api_error. A provider's error body is never relayed (it may echo the prompt); the agent is told the kind.
@@ -1415,7 +1415,7 @@ touched Google or the network.
   `memory-service/src/class.rs` `BY_SENSITIVITY: [DataClass; 12]` (add `Tasks` after `Calendar`, 13) and
   `memoryd/tests/it/infer.rs` (an exhaustive `match` at line 777 and a list at 791: `DataClass::Tasks =>
   "tasks"`); actions `agent-reader/src/request.rs` `BY_SENSITIVITY: [DataClass; 12]` (add `Tasks`; without
-  it a Tasks-labelled input is classed as the person's own words, `Prompt`); the shell, the Settings app, mailo and cua
+  it a Tasks-labelled input is classed as the person's own words, `Prompt`); the shell, the Settings app, mailo and computer use
   match no `DataClass`. Syncd's `PimKind` and `Chosen` are used by no consumer.
 
 ## Lane p5-audit (what was released to whom, agent-session ask P5)
@@ -1476,7 +1476,7 @@ Covered (base `dc7dd65`; the launcher side is agent-acp-server's):
 - **Settings.** A session grant's row reads "<App> can use <Service> (this session)" (the service word is `service_label`, and accountd's `AppNames` names the agent app from its provider file, so the agent's key row reads "Claude Code can use Language model (this session)"; an agent program with no `agent_login` provider file reads "org.bardo.Agent.<program> can use ..."); and a session grant coming or going is said as `Changed("accounts.<id>.grant.<grant>", "added" | "removed")` so a pane that follows `Changed` reads the schema again and the row appears and disappears with the session (other grants' rows are not announced, as before). Revoking the row in Settings ends the grant and its credentials as any grant (`grant_revoked`), and the session stays open.
 - **account-client.** `Launcher::begin_session(&LauncherSession)`, `end_session(&LauncherSession)`, `request_agent_grant(&AgentProgram, DataClass, Option<&LauncherSession>) -> Candidate` (subscribes to the Request first and closes the sheet if the call is dropped; the candidate's `grant` is the id to give `issue_credential`; a closed sheet is `Refused(Dismissed)`), and `LauncherError::{SessionTaken, UnknownSession}`.
 - **Tests.** account-core: `store` (`a_document_stored_at_vocabulary_seven_is_read_unchanged_and_its_scopes_still_read`, `a_session_grant_survives_the_document_and_keeps_its_form`), `audit` (the new words and events), `launcher_session`, `tests/round_trip.rs` (`a_session_scope_round_trips_with_its_session_and_the_old_scopes_keep_their_words`, `a_consent_ask_names_its_session_only_when_it_has_one`, `the_vocabulary_is_version_eight`); account-dbus codec (a session grant over the D-Bus shape), `introspection` (ten Peer methods), `launcher` faults; account-service `tests/session_scope.rs` (`the_ask_carries_the_session_only_when_the_request_was_made_in_one`, `a_session_answer_is_recorded_for_the_session_the_ask_carried`, `a_session_scope_the_ask_did_not_offer_makes_no_grant`, `once_and_always_still_work_in_a_session_ask`, `ending_a_session_removes_its_grants_alone_and_audits_each`, `add_account_in_a_session_ask_is_dismissed_not_granted_for_good`); accountd `tests/session_scope.rs` (bus: `a_session_belongs_to_the_connection_that_began_it_and_only_a_registered_launcher_may`, `a_session_grant_is_asked_only_for_an_open_session_of_the_launcher_and_its_own_program`, `the_sheet_offers_this_session_only_just_when_the_request_carries_an_open_session`, `ending_the_session_removes_its_grant_and_ends_the_credentials_under_it`, `a_launcher_that_leaves_closes_its_sessions_and_nobody_else_hears_of_it`, `a_session_that_closes_while_its_sheet_is_open_leaves_no_grant`, `a_process_credential_takes_an_open_session_grant_and_still_refuses_a_once_grant`, `inferds_verdict_reads_a_session_grant_as_allowed_while_it_is_open_and_not_after`, `settings_shows_a_session_grant_for_this_session_and_the_row_goes_with_it`, `a_session_grant_in_the_store_does_not_survive_a_restart`), `hub` (`a_session_grants_row_is_said_to_come_and_go_and_another_grants_is_not`); inferd `cloud::accountd` (`a_row_is_a_verdict_and_a_malformed_one_grants_nothing` with the session rows); account-client `tests/process_credential.rs` (`a_session_grant_backs_a_credential_and_ending_the_session_ends_both`).
-- **Consumer arms** (read-only grep of `origin/master`). *the shell*: `shell-overlays` `accounts_sheet/events.rs:21` maps `AllowScope::{Once, Always}` to `GrantScope`, `shell-model` `accounts/sheet/command.rs:28` (`Do::Allow(GrantScope)`) and `step.rs:225` carry it, so a third button "This session only" (shown when the ask's `session` is `Some`, answering `GrantScope::Session(id)`) needs an `AllowScope::Session` and an arm there; `GrantScope` is not `Copy` now, so any `#[derive(Copy)]` on a type holding it (`Do`, `SheetAction`) must drop `Copy`; the two `ConsentAsk { .. }` literals in `shell-model/.../tests/step.rs:60` and `shell-overlays/.../accounts_sheet/tests.rs:81` need `session: None`. *The Settings app*: none. *mailo*: `mail-app/src/ui/add_account/host.rs` implements `Sheets::consent(ConsentAsk, ..)` only (no field read). *the actions service* and *cua*: their `GrantScope` is `action_core`'s own; `actions-mcp` tests build the accounts service `Grant`s with `GrantScope::Always` (no change). No consumer matches the accounts service's `GrantScope` exhaustively except the shell's mapping above.
+- **Consumer arms** (read-only grep of `origin/master`). *the shell*: `shell-overlays` `accounts_sheet/events.rs:21` maps `AllowScope::{Once, Always}` to `GrantScope`, `shell-model` `accounts/sheet/command.rs:28` (`Do::Allow(GrantScope)`) and `step.rs:225` carry it, so a third button "This session only" (shown when the ask's `session` is `Some`, answering `GrantScope::Session(id)`) needs an `AllowScope::Session` and an arm there; `GrantScope` is not `Copy` now, so any `#[derive(Copy)]` on a type holding it (`Do`, `SheetAction`) must drop `Copy`; the two `ConsentAsk { .. }` literals in `shell-model/.../tests/step.rs:60` and `shell-overlays/.../accounts_sheet/tests.rs:81` need `session: None`. *The Settings app*: none. *mailo*: `mail-app/src/ui/add_account/host.rs` implements `Sheets::consent(ConsentAsk, ..)` only (no field read). *the actions service* and *computer use*: their `GrantScope` is `action_core`'s own; `actions-mcp` tests build the accounts service `Grant`s with `GrantScope::Always` (no change). No consumer matches the accounts service's `GrantScope` exhaustively except the shell's mapping above.
 
 Left open:
 
@@ -1575,7 +1575,7 @@ Left open:
 - **The inferd hangs (verified, reproduced, a daemon bug).** `agents::outside_the_grant_...`, `proc_root::a_caller_in_the_fake_proc_root_...`, `cloud::local_only_refuses_...` and `replayed::a_chat_session_is_answered_from_the_cassette` each hung a gate to the 600 s limit; any inferd bus test could. What waited: the test's first method call to `org.bardo.Inference1` (`Open`, `Availability`, `OpenEndpoint`, `Prepare`, `Rescan`), for a reply that never came. Why: zbus starts a connection's object server lazily, at the first `object_server()`, on a task of its own, and that task only then adds the match that receives method calls; a call that reaches the connection before it listens matches no receiver and is dropped, with no reply and no error (the connection builder's `serve_at` waits for the task; `object_server().at()` does not). `service::serve_on` registered the object and claimed the name at once, so on a loaded machine the name could be owned, and the first caller's call arrive, before the dispatcher listened. The real daemon has the same window (the first call after a start, or a call D-Bus activation queued for the name). Fix: `inferd::service::dispatching(connection)`, called by `serve_on` before `request_name`, pings the connection itself (`org.freedesktop.DBus.Peer.Ping` through the bus, 50 ms per look, 30 s bound) until it is answered, so the name is claimed only once calls are taken. accountd's `serve_with` had the same order (it does more before claiming, so it lost a call more rarely: one hang in 200 stress runs, `agent_login::set_agent_state_audits_a_change_once_and_a_repeat_not_at_all`) and gets the same wait (a private copy in `core.rs`; accountd does not depend on inferd). Tests: `inferd::it start::a_call_made_as_soon_as_the_name_is_owned_is_answered` and `accountd::it start::...` (the same): the daemon connection's object server is started on a runtime the test holds back for 2 s; a daemon that claims its name first is "serving" at once and the test's call is dropped (no answer in 10 s: fails), one that waits is answered (both pass in about 2.3 s, the hold).
 - **The accountd audit failure (verified, a daemon bug).** `agent_launcher::login_and_logout_requests_and_their_state_changes_are_audited_without_the_login` read the audit as soon as the launcher heard the request, but `Launchers::ask` wrote `AgentLoginAsked`/`AgentLogoutAsked` after the signal was sent, so the line could be missing, and a launcher's quick reply could put its state line before the ask. The line is now written before the signal leaves (a send that fails leaves the line and answers `NoLauncher`). Test: `agent_launcher::a_request_is_recorded_before_the_launcher_hears_it` (an audit sink that waits up to 500 ms, at the line, for a listener on the launcher's connection to hear the request: written after the signal it has heard it, written before it has not).
 - **Every wait of the tests named above has a deadline (60 s, `hosting::bus::{DEADLINE, within}`)**: the private bus's address (read on a thread), each connection, and every method call on a rig connection (`method_timeout`); the World's fake accountd and `serve_on`; `proc_root`'s wait for the name (which also fails at once, with the daemon's standard error, if inferd exits) and its `Availability` (only `AccessDenied` counts as "not named"; any other end fails); `OpenEndpoint` and the agent HTTP client's connect, write and whole read; `cloud`'s `Open`, send and each event. A hang is now a failure that says what it waited for.
-- **Runs.** `~/rs-wt/fix-hang/stress.sh` runs the gate's jail on the lane's archive with a filter and `--stress-count` (lane-local nextest config: a test is ended at 120 s). Before the fix, `binary_id(inferd::it) | binary_id(accountd::it)` (255 tests) 200 times: 8 inferd runs failed, every one a first call to Inference1 timing out (`members`, `probed`, `replayed` twice, `speech`, `cua`, `agents`, `voice_chat`). With the inferd fix, 200 times: no inferd failure, one accountd hang (above). With both, 300 times (257 tests): no inferd failure and no hang; one failure, `bus_sheets` (below).
+- **Runs.** `~/rs-wt/fix-hang/stress.sh` runs the gate's jail on the lane's archive with a filter and `--stress-count` (lane-local nextest config: a test is ended at 120 s). Before the fix, `binary_id(inferd::it) | binary_id(accountd::it)` (255 tests) 200 times: 8 inferd runs failed, every one a first call to Inference1 timing out (`members`, `probed`, `replayed` twice, `speech`, `computer_use`, `agents`, `voice_chat`). With the inferd fix, 200 times: no inferd failure, one accountd hang (above). With both, 300 times (257 tests): no inferd failure and no hang; one failure, `bus_sheets` (below).
 - **Left (other lanes' files).** syncd's `service::object` registers its objects and claims `org.bardo.Sync1` the same way (`syncd/src/service/object.rs`, before `request_name`) and needs the same wait. accountd's sheet host in its test rig (`tests/it/common/mod.rs`) and `settings` module served after the name are not covered. Also seen in the stress runs, not caused by this and not fixed: `accountd::it bus_sheets::a_caller_that_closes_the_request_takes_the_host_sheet_down` ("timed out waiting for the host to be told to close", 4 in 200) and `process_credential::a_launcher_that_leaves_ends_its_credentials_and_only_its_own` (1 in 200). inferd's settings object (`serve_settings`) is registered after the name is claimed, so a Settings call in that window is answered `UnknownObject` (an answer, not a hang).
 
 ## Lane spaces (Space ids per app but linkable, and the desktop-wide Space registry; base `260a14d`, 2026-10-09)
@@ -1590,7 +1590,7 @@ Owner decision (2026-10-09): Spaces are per app, but linkable. Each app keeps it
   - `Create(name s, look s) -> s`: the new id, `space-<n>` from a counter kept in the file (never from the name; an id already taken, such as an adopted one, is skipped), so a rename keeps it.
   - `Rename(id s, name s)`, `SetLook(id s, look s)`, `Remove(id s)`.
   - Signal `Changed(id s, what s)`, `what` = `created`, `renamed`, `look`, `removed`, sent one by one to each connection accountd knows (has called it; a client calls `List` once). 
-  - Who: any identified caller may `List`; `Create` only `CallerRole::App`, `Settings` and `SheetHost` (never `Agent`, `Cua`, `AgentLauncher` or `AccountDaemon`: a Space is a consent scope the person makes; an assistant that should make one asks through the actions service and the confirming app calls `Create`; Whopper 2026-10-09); `Rename`, `SetLook`, `Remove` only `CallerRole::Settings` and `SheetHost` (as `Accounts1` checks roles: the caller table, then the role); anyone else and unknown senders get `org.freedesktop.DBus.Error.AccessDenied`.
+  - Who: any identified caller may `List`; `Create` only `CallerRole::App`, `Settings` and `SheetHost` (never `Agent`, `ComputerUse`, `AgentLauncher` or `AccountDaemon`: a Space is a consent scope the person makes; an assistant that should make one asks through the actions service and the confirming app calls `Create`; Whopper 2026-10-09); `Rename`, `SetLook`, `Remove` only `CallerRole::Settings` and `SheetHost` (as `Accounts1` checks roles: the caller table, then the role); anyone else and unknown senders get `org.freedesktop.DBus.Error.AccessDenied`.
   - Bounds: a name is 1 to 64 characters, not blank, no control characters (`SpaceName`); a look is at most 1024 bytes of UTF-8, opaque (Bardo sends its `SpaceLook` as compact JSON; the accounts service never parses it; empty is the default look) (`SpaceLook`). Out of bounds, or a Space that is not there: `InvalidArgs` with a plain sentence.
   - Limit: `Create` at most `accountd::CREATES_PER_WINDOW` (10) per app (`AppName`) within `accountd::CREATE_WINDOW` (60 s); more answers `org.freedesktop.DBus.Error.LimitsExceeded` "Too many new Spaces at once: at most 10 a minute. Try again in a minute." Counted in memory (a restart forgets it).
   - Storage: `spaces.json` beside `registry.json` (`SpacesStore::File(<registry dir>)`; tests use `SpacesStore::Memory`), `{"version":1,"next":n,"spaces":[DesktopSpaceRecord...]}`, written through `store::file::AtomicFile`, the code fix-store gave the registry (moved out of `store.rs` and shared, not copied): a staging name of its own, synced, renamed, `spaces.json.bak` kept. A `spaces.json` that cannot be read is never written over: the list is served empty, every change answers `Failed` "The Spaces could not be saved.", and accountd logs the file's path.
@@ -1603,7 +1603,7 @@ Owner decision (2026-10-09): Spaces are per app, but linkable. Each app keeps it
 
 ## Lane fix-start (services answer from their first call; the last flaky tests; rel-13 follow-up, base `b903574`, 2026-10-09)
 
-- **One start for every daemon: `account_dbus::serve_ready(&Connection)` (verified: inferd and accountd each had a private copy of the wait, and syncd's `service::serve` claimed `org.bardo.Sync1` with none).** The wait moved into account-dbus (`src/ready.rs`, the same look: `org.freedesktop.DBus.Peer.Ping` to the connection itself through the bus, 50 ms per look, an error after 30 s) and is the one function inferd (`service::serve_on`), accountd (`core::serve_with`) and syncd (`service::object::serve`) call after their last object is registered and before `request_name`. `inferd::service::dispatching` (pub, no caller outside inferd; none in the shell, the Settings app, mailo, the actions service, the memory service or cua by grep of origin/master) and accountd's copy are gone. account-dbus's `tokio` moved from dev-dependencies to dependencies (for the deadline). The accounts service's own lock is unchanged (its entry listed dev-dependencies already), but a consumer that takes account-dbus by path lists only its normal dependencies: the shell's (and the Settings app's) `Cargo.lock` gains `"tokio"` under `account-dbus`, so their `--locked` check needs that one lock line (for their owners). Consumer checks on `f5c769c`: the memory service, the actions service and cua (`[patch]` with every accounts crate their locks name, `--offline`, each crate seen built from the lane's worktree) pass; the shell `--locked` is refused for that lock line, and with `--offline` stops in `shell-settings` on Bardo's `Schema` (no field `foreign`), the check's Bardo sibling (`bardo-0.2.13`, as the brief sets it) being older than the shell's own pin, not the accounts service. A consumer that takes the accounts service by git gets the line when it moves its rev. The test-side fakes that serve an object and then claim a name do the same: accountd's sheet host in `tests/it/common` and `tests/it/google.rs`, syncd's fake accountd in `tests/it/wipe_bus.rs` (a daemon's call to a fake still starting was dropped the same way). Test: `syncd::it start::a_call_made_as_soon_as_the_name_is_owned_is_answered`, built like inferd's and accountd's (the object server's runtime held back 2 s; a syncd that claims first drops the call and the test's 10 s wait fails; with the wait it passes in about 2.4 s). Left (other lanes' files): account-rig's fake Secret Service (`secrets_service.rs`, now the `fake-secret-service` crate), inferd's fake accountd (`tests/it/hosting/accountd.rs`) and account-client's fake daemons (`tests/it/common/inferd.rs`, `dbus_open.rs`, `dbus_sheets.rs`) claim their names without the wait; each can call `account_dbus::serve_ready` first.
+- **One start for every daemon: `account_dbus::serve_ready(&Connection)` (verified: inferd and accountd each had a private copy of the wait, and syncd's `service::serve` claimed `org.bardo.Sync1` with none).** The wait moved into account-dbus (`src/ready.rs`, the same look: `org.freedesktop.DBus.Peer.Ping` to the connection itself through the bus, 50 ms per look, an error after 30 s) and is the one function inferd (`service::serve_on`), accountd (`core::serve_with`) and syncd (`service::object::serve`) call after their last object is registered and before `request_name`. `inferd::service::dispatching` (pub, no caller outside inferd; none in the shell, the Settings app, mailo, the actions service, the memory service or computer use by grep of origin/master) and accountd's copy are gone. account-dbus's `tokio` moved from dev-dependencies to dependencies (for the deadline). The accounts service's own lock is unchanged (its entry listed dev-dependencies already), but a consumer that takes account-dbus by path lists only its normal dependencies: the shell's (and the Settings app's) `Cargo.lock` gains `"tokio"` under `account-dbus`, so their `--locked` check needs that one lock line (for their owners). Consumer checks on `f5c769c`: the memory service, the actions service and computer use (`[patch]` with every accounts crate their locks name, `--offline`, each crate seen built from the lane's worktree) pass; the shell `--locked` is refused for that lock line, and with `--offline` stops in `shell-settings` on Bardo's `Schema` (no field `foreign`), the check's Bardo sibling (`bardo-0.2.13`, as the brief sets it) being older than the shell's own pin, not the accounts service. A consumer that takes the accounts service by git gets the line when it moves its rev. The test-side fakes that serve an object and then claim a name do the same: accountd's sheet host in `tests/it/common` and `tests/it/google.rs`, syncd's fake accountd in `tests/it/wipe_bus.rs` (a daemon's call to a fake still starting was dropped the same way). Test: `syncd::it start::a_call_made_as_soon_as_the_name_is_owned_is_answered`, built like inferd's and accountd's (the object server's runtime held back 2 s; a syncd that claims first drops the call and the test's 10 s wait fails; with the wait it passes in about 2.4 s). Left (other lanes' files): account-rig's fake Secret Service (`secrets_service.rs`, now the `fake-secret-service` crate), inferd's fake accountd (`tests/it/hosting/accountd.rs`) and account-client's fake daemons (`tests/it/common/inferd.rs`, `dbus_open.rs`, `dbus_sheets.rs`) claim their names without the wait; each can call `account_dbus::serve_ready` first.
 - **Every object before the name (verified for inferd only: its settings module was served by `main` after `serve_on` had claimed the name, so a Settings call in that window was `UnknownObject`).** New `inferd::service::serve_with_settings(connection, daemon, settings)` registers `Inference1` (and the agent endpoints), then the settings module, then waits and claims; `main` calls it (`serve_on` stays for the tests that serve no module). Order checked in the other two: accountd registers Manager, Grants, Tokens, Peer, `Spaces1` (lane spaces, at `/org/bardo/Spaces1`), the account objects and its settings module, and starts its roster watch, all before the claim (fix-hang's note that accountd's module came after the name is not so); syncd registers the Photos picker (when on) in `main` before `service::serve`, which registers `Sync1` and then claims. Test: `inferd::it settings_module::the_settings_module_answers_a_call_made_as_soon_as_the_name_is_owned` (a Settings caller calls `Describe` the moment the bus says the name is owned; under the old order that call raced the module's registration and was answered `UnknownObject` whenever it won; the test cannot force the old order's loss, so it fails only when the call wins).
 - **`process_credential::a_launcher_that_leaves_ends_its_credentials_and_only_its_own` (verified, a daemon race, not the test's).** It failed once in fix-hang's runs with `left: [] right: [LauncherGone]`: the file had gone but the audit had no `ProcessCredentialRevoked`. `Credentials::end_where` (and `take`) unlinked a credential's file inside the call, and the callers in `handoff.rs` wrote the audit line afterwards, so a reader who saw the file gone (the test, or a launcher watching its file) could find no line saying why. Now both take a `note` that is called, with the lock released, before the file goes, and every end path (launcher gone, grant revoked or account removed, session closed, `RevokeProcessCredential`) audits through it; a credential taken back unissued (its grant went while the key was read) is still not audited. The signal to the launcher still follows the line. Test: `accountd credentials::tests::the_end_is_noted_while_the_file_is_still_there` (the note sees the file still there, for `end_where` and for `take`; under the old order there was no note before the unlink, and the audit came after it).
 - **`bus_sheets::a_caller_that_closes_the_request_takes_the_host_sheet_down` (verified, a daemon race, not the test's: 5 in fix-hang's 500 stress runs, "timed out waiting for the host to be told to close").** The test waits until the host has logged `Open`, then closes the Request. The host logs the call as it receives it, before its reply reaches accountd; `Request.Close` aborts the sheet's task, and if that happened while `BusSheets::open_link` was still awaiting `Open`'s reply, the flow was dropped before the `BusLink` existed, and only `BusLink`'s `Drop` sent `Close`. So the host kept showing a sheet nobody would answer: a real bug for a person whose app gives up on a sheet just as it appears. Now the handle is held in a `Shown` guard from the moment `Open` is sent; its `Drop` sends `Close` (the link owns it once `Open` returns). A host that refused `Open` is also sent `Close` for that handle; its answer is not read. Test: `accountd::it bus_sheets::a_caller_that_closes_the_request_while_open_is_on_its_way_back_takes_the_sheet_down` (the test host's `Open` returns 2 s after it logs the sheet, `SheetHost::slow_to_return`; the Request is closed in that window; before the fix nothing ever told the host, so the 5 s wait fails every time; with it the host is told at once).
@@ -1632,9 +1632,9 @@ Owner decision (2026-10-09): Spaces are per app, but linkable. Each app keeps it
 
 ## Lane cleanup-dead (mechanical removals, second audit; base `e3d8f2c`, 2026-10-09)
 
-- **dead-1 (done): six pub items with no caller are removed**: `Engines::with_auto`, `ProcessHost::with_diagnostics` (inferd), `InProcess::with_relays` (account-client), `OpenOptions::with_traceparent` (inference-core), `account_dav::names::SYNC_TOKEN`, and the fake Google's `GoogleHandle::set_drive_knobs`. Consumer check: `git grep -w` on origin/master of the shell, the Settings app, mailo, the actions service, the memory service, cua, Bardo, and origin/main of anyview and temor finds none of them. inferd's `auto.rs` module doc now names the real path (`settings::resolve` calls `AutoConfig::resolve` and puts the policy into the settings with `Engines::with_settings`).
+- **dead-1 (done): six pub items with no caller are removed**: `Engines::with_auto`, `ProcessHost::with_diagnostics` (inferd), `InProcess::with_relays` (account-client), `OpenOptions::with_traceparent` (inference-core), `account_dav::names::SYNC_TOKEN`, and the fake Google's `GoogleHandle::set_drive_knobs`. Consumer check: `git grep -w` on origin/master of the shell, the Settings app, mailo, the actions service, the memory service, computer use, Bardo, and origin/main of anyview and temor finds none of them. inferd's `auto.rs` module doc now names the real path (`settings::resolve` calls `AutoConfig::resolve` and puts the policy into the settings with `Engines::with_settings`).
 - **dead-1 (skipped, one item): the fake Google's `drive_files`** is kept: syncd's test `crates/syncd/tests/it/gdrive_bus.rs:275` uses it.
-- **dead-2 (done): the deprecated `AiKind` alias and the old `Slot::Llm`, `SpeechIn`, `SpeechOut` consts are removed** (inference-core `slot.rs`, `lib.rs`). The old slugs `llm`, `speech_in`, `speech_out` still read (serde and `Slot::from_slug` aliases). Consumers: none in code of the shell, the Settings app, mailo, the actions service, the memory service, cua. **For Whopper, Bardo design docs that name `AiKind`** (not edited here): `design/31-ACCOUNTS.md` lines 146 and 801; `design/agent/SPEC.md` lines 204 and 323; `design/agent/models.md` lines 584, 585, 587, 591 and 594 (in those three files `AiKind` is the design's own enum, not the accounts service alias; Whopper decides whether to rename them to `Slot`).
+- **dead-2 (done): the deprecated `AiKind` alias and the old `Slot::Llm`, `SpeechIn`, `SpeechOut` consts are removed** (inference-core `slot.rs`, `lib.rs`). The old slugs `llm`, `speech_in`, `speech_out` still read (serde and `Slot::from_slug` aliases). Consumers: none in code of the shell, the Settings app, mailo, the actions service, the memory service, computer use. **For Whopper, Bardo design docs that name `AiKind`** (not edited here): `design/31-ACCOUNTS.md` lines 146 and 801; `design/agent/SPEC.md` lines 204 and 323; `design/agent/models.md` lines 584, 585, 587, 591 and 594 (in those three files `AiKind` is the design's own enum, not the accounts service alias; Whopper decides whether to rename them to `Slot`).
 - **dead-3 (done): `org.bardo.Photos1.Picker` is no longer served or declared by default.** It sits behind a cargo feature `photos-picker`, off by default, in account-dbus (the introspection and the module) and syncd. The code and its tests stay; the Sync1 introspection test checks the default surface, and the picker's surface when the feature is on. `dbus/org.bardo.Sync1.xml` no longer lists the Picker interface. **Desktop:** nothing in v1 calls the Picker (no Photos app, D6/D7). The desktop must not call `org.bardo.Photos1.Picker` in the default build; a build with `--features photos-picker` serves it again.
 - **dead-4 (done): `Dialect::Vllm` is removed** (account-client `engines/engine.rs`); the `engines` feature stays (off by default, no consumer yet).
 - **dead-7 (done): the unused `account-fake` dev-dependency is removed** from storage-gdrive, storage-graph and storage-webdav; `Cargo.lock` loses only those three lines.
@@ -1646,7 +1646,7 @@ Owner decision (2026-10-09): Spaces are per app, but linkable. Each app keeps it
 ## Lane fix-client (account-client and sign-in; idiom-2, idiom-6, idiom-7, idiom-12, dead-5; base `e3d8f2c`, rebased on fix-io's `7f96357`, 2026-10-09)
 
 - **idiom-2 (verified): a cancelled turn's events could land in the next turn.** `EngineSession` shared one channel between turns; cancel aborted the task without waiting, so on a multi-thread runtime the old task could still send after the next turn began. Each turn now owns its channel (`Turn { task, inbox }`); cancel drops the turn, receiver included, so anything the old task still sends goes nowhere. The session's own events (`Routed`, a refusal, `Cancelled`) stay on the session's channel, read first; only a turn's own `Finished` ends the turn. Test: `engines::a_cancelled_turn_never_reaches_the_next_one` (4 worker threads, 60 rounds of cancel-then-new-turn; with the old shared channel an "old" delta or the old `Finished` would show among the new turn's events). 30 repeated runs and one full account-client run passed.
-- **idiom-6 (verified): `#[non_exhaustive]` on `ClientError`, `TransportError`, `SpacesError`, `LauncherError`, `ChildKeyError` only.** `ClientError::Refused` no longer prints the refusal with Debug: a plain sentence per refusal (the match names every `Refusal`, so a new one cannot go unsaid). Consumer impact (origin/master of the shell, the Settings app, mailo, the actions service, the memory service, cua, Bardo; anyview and temor have none): the Settings app `add_io.rs`, mailo `link/client.rs`, the actions service `agent-launch/src/dbus.rs` (LauncherError) and `voiced/src/link.rs` have a wildcard arm; the actions service's `SpacesError` and other `TransportError` uses only name the type. **the memory service `crates/memoryd/src/infer/embed.rs:191` (`transport_failure`) matches `TransportError` with no wildcard and will stop compiling: it needs a `_` arm.** the shell, cua and Bardo have no match on these account-client enums (their hits are action-client, memory-client or the shell's own types, or design docs).
+- **idiom-6 (verified): `#[non_exhaustive]` on `ClientError`, `TransportError`, `SpacesError`, `LauncherError`, `ChildKeyError` only.** `ClientError::Refused` no longer prints the refusal with Debug: a plain sentence per refusal (the match names every `Refusal`, so a new one cannot go unsaid). Consumer impact (origin/master of the shell, the Settings app, mailo, the actions service, the memory service, computer use, Bardo; anyview and temor have none): the Settings app `add_io.rs`, mailo `link/client.rs`, the actions service `agent-launch/src/dbus.rs` (LauncherError) and `voiced/src/link.rs` have a wildcard arm; the actions service's `SpacesError` and other `TransportError` uses only name the type. **the memory service `crates/memoryd/src/infer/embed.rs:191` (`transport_failure`) matches `TransportError` with no wildcard and will stop compiling: it needs a `_` arm.** the shell, computer use and Bardo have no match on these account-client enums (their hits are action-client, memory-client or the shell's own types, or design docs).
 - **idiom-7 (verified): errors that kept only text now keep their source.** accountd `providers::SkipReason` (unreadable / malformed / name is not id / would widen) in place of `String`; inferd `peers::TableError`, `ConfigError::Toml(toml::de::Error)` and a `RunError` for `main`; syncd `pim::mirrors::OpenError` (journal / mirror / rewrite / name taken); `ChildKeyError::Unreadable(io::ErrorKind)`. Skipped: accountd's and syncd's `callers_file` (fix-io moved it into account-dbus). account-secrets' `map_err(|_| ..)` is left as it is. The log text of each is the same sentence as before.
 - **idiom-12 (verified): the key file is read into one wiped buffer.** `credential.rs` `read_all_at` preads into a `Zeroizing<Vec<u8>>` of at most 16 KiB plus one byte (it never grows, so no stale copy; a longer file is `Unreadable(InvalidData)`). The Nextcloud Login Flow v2 poll token is a `SecretText` (Debug prints no value). Tests: `credential::tests::a_key_file_over_the_limit_is_unreadable_and_one_at_the_limit_is_read`, and the flow test checks Debug does not show the token. account-client gains `zeroize` (one lock line).
 - **dead-5 (decided: deleted).** accountd cannot tell that no browser is available: the terminal host's `open_browser` spawns `xdg-open` and drops the result, and the sheet's `OpenBrowser` step has no way to report a failure back. So there is nothing to choose a device code on. Removed `SignInFlow`, `MicrosoftEnv::with_flow` and the `flow` field, `begin_device`, `await_device`, the device state and the three device-code sign-in tests (the reauth-grant note above names the one that went). `account-oauth`'s device-code functions and the fake issuer's device grant were deleted later, in step 0. `SignInStep::ShowCode` stays in account-core (agent login uses it).
@@ -1868,7 +1868,7 @@ A computer lends the models that run on it to the person's other computers over 
 
 **Who imports it now** (all switched to `use account_fs::atomic::...`, each with `account-fs = { workspace = true }` beside its `account-core` line; the root `[workspace.dependencies]` gains `account-fs = { path = "crates/account-fs" }`): accountd (`store.rs`, `spaces.rs`: `AtomicFile`), inferd (`attached/computers.rs`, `cloud/spend.rs`, `settings/file.rs`: `AtomicWrite`), account-secrets (`file.rs`), inference-tailnet (`guests.rs`: `AtomicWrite`), syncd (`datasets/photos/cas.rs`, `datasets/pim/vdir.rs`). Nothing in the accounts service re-exports the old path: account-core cannot, since account-fs is not one of its dependencies and the other way would be a cycle.
 
-**Consumers outside the accounts service** (`git grep -n "account_core::atomic"`, rc 1 = no match): the actions service, the memory service, cua, mailo, the shell, the Settings app and the compositor at `origin/master`, and anyview at `origin/main`: zero hits in all eight. Nothing outside the accounts service imports `account_core::atomic`, so no consumer breaks.
+**Consumers outside the accounts service** (`git grep -n "account_core::atomic"`, rc 1 = no match): the actions service, the memory service, computer use, mailo, the shell, the Settings app and the compositor at `origin/master`, and anyview at `origin/main`: zero hits in all eight. Nothing outside the accounts service imports `account_core::atomic`, so no consumer breaks.
 
 **Boundary.** account-fs reaches none of the effect crates; account-core reaches none (unchanged). The EDGES table has a `account-fs:` row (no deps) and the five users list it. `Cargo.lock` gains only the `account-fs` entry and the new `account-fs` dependency lines.
 
@@ -1899,10 +1899,10 @@ Every old `Clock` and `FixedClock` path still compiles with the same behaviour. 
 
 **Docs.** account-core's lib doc names `clock` and says `SystemClock` reads the wall clock only when a daemon calls it. ARCHITECTURE section 1's account-core row lists the clock module; "one home per concept" now says the system clock is `account-core::clock::SystemClock`, called only by the daemons. Only accountd, syncd and inferd read the system clock.
 
-**Consumer grep** (`git grep`, origin/master for the actions service, the memory service, cua, mailo, the shell, the Settings app and the compositor; origin/main for anyview; these are the refs as last fetched locally, not re-fetched). Pattern: `account_service::Clock`, `account_service::{... Clock ...}`, `account_fake::{FixedClock}`, `account_fake::FixedClock`, `storage_webdav::Clock`, `inferd::clock`, `syncd::clock`, `account_fake::clock`, `account_service::clock`.
-- Zero hits in the actions service, the memory service, cua, the shell, the Settings app, the compositor and anyview.
+**Consumer grep** (`git grep`, origin/master for the actions service, the memory service, computer use, mailo, the shell, the Settings app and the compositor; origin/main for anyview; these are the refs as last fetched locally, not re-fetched). Pattern: `account_service::Clock`, `account_service::{... Clock ...}`, `account_fake::{FixedClock}`, `account_fake::FixedClock`, `storage_webdav::Clock`, `inferd::clock`, `syncd::clock`, `account_fake::clock`, `account_service::clock`.
+- Zero hits in the actions service, the memory service, computer use, the shell, the Settings app, the compositor and anyview.
 - mailo: one hit, `crates/mail-app/src/ui/add_account/host.rs:19`, `use account_service::{AccountService, Clock, ...}`, which still resolves. Its own `SystemClock` (host.rs:148-150, `pub(super) struct SystemClock` implementing `account_service::Clock`) is the duplicate that can become `account_core::clock::SystemClock` in a later batch. mailo's two `account_fake`/`account_service` files (host.rs, provider.rs) import no fake clock.
-- Other repos' own `FixedClock`/`SystemClock` types (action-fake, memory-fake, cua-fake, memoryd, cuad, shell-services) are their own traits (`action_router::Clock`, `memory`'s `Clock`, `cua`'s `Clock`, the shell's `WallClock`), not the accounts service's, and are untouched.
+- Other repos' own `FixedClock`/`SystemClock` types (action-fake, memory-fake, computer-use-fake, memoryd, the computer-use daemon, shell-services) are their own traits (`action_router::Clock`, `memory`'s `Clock`, `computer_use`'s `Clock`, the shell's `WallClock`), not the accounts service's, and are untouched.
 
 **Verification.** `cargo check --workspace --all-features --tests` passes; `cargo nextest run -p account-core -p account-service -p account-fake -p replica-webdav`: 312 of 312 pass; `cargo clippy --workspace --all-targets --all-features -- -D warnings` is clean; `cargo fmt --all --check` is clean; `scripts/check-boundary.sh` holds (account-core and account-core/src/clock.rs reach no std effects); `cargo metadata --locked` succeeds and Cargo.lock is unchanged.
 
@@ -1917,13 +1917,13 @@ Every old `Clock` and `FixedClock` path still compiles with the same behaviour. 
 - Behaviour: the same, except `AuthFailed` now counts as a refusal (it was "unreachable" in inferd's two hand-rolled matches).
 - Tests: the verdict and key tests moved with the code (`peer::verdict::tests::*`), `peer::tests::a_bus_error_says_whether_to_ask_again`, `removals::tests::*`, inferd's `what_inferd_does_about_each_way_accountd_can_fail` and `report::tests::an_error_name_says_whether_to_ask_again` (now through `PeerError`), and on the bus `account-client/tests/it/dbus_peer.rs` (an accounts daemon reads typed verdicts, others are `Denied`, no accountd is `Unreachable`). `AccountRemoved` is covered by syncd's `wipe_bus`, the news by inferd's `places.rs` EnginesChanged tests.
 
-**2. One classification, one `NoAllowedPlace`.** `PeerError::from(&BusError)` is `account_dbus::classify` plus `is_invalid_args`; `TransportError`'s `bus_error` is the same `classify`. inferd matches no bus error name any more (the remaining `AccessDenied` strings in inferd are replies it sends). `ClientError::NoAllowedPlace` is gone: `ClientError::Transport(#[from] TransportError)` carries `TransportError::NoAllowedPlace`; `ClientError::no_allowed_place()` reads it. Grep at origin/master (the actions service, the memory service, cua, mailo, the shell, the Settings app, the compositor; anyview at origin/main): nobody matches `ClientError::NoAllowedPlace`, so there is no deprecated path (the actions service's `Routed::NoAllowedPlace` is its own enum). A match on `ClientError::Transport(_)` now also receives the place refusal; none exists.
+**2. One classification, one `NoAllowedPlace`.** `PeerError::from(&BusError)` is `account_dbus::classify` plus `is_invalid_args`; `TransportError`'s `bus_error` is the same `classify`. inferd matches no bus error name any more (the remaining `AccessDenied` strings in inferd are replies it sends). `ClientError::NoAllowedPlace` is gone: `ClientError::Transport(#[from] TransportError)` carries `TransportError::NoAllowedPlace`; `ClientError::no_allowed_place()` reads it. Grep at origin/master (the actions service, the memory service, computer use, mailo, the shell, the Settings app, the compositor; anyview at origin/main): nobody matches `ClientError::NoAllowedPlace`, so there is no deprecated path (the actions service's `Routed::NoAllowedPlace` is its own enum). A match on `ClientError::Transport(_)` now also receives the place refusal; none exists.
 
-**3. Typed errors.** `table_from_toml` returns `CallerTomlError { message }` (same text; `in_file(path)` makes the `CallerFileError`); `load_callers` and `table_from_file` already returned `CallerFileError`. Nobody outside the accounts service calls `table_from_toml` (the memory service's memoryd has its own copy). `TransportError::Denied(String)` and `Malformed(String)` are NOT changed in this lane: consumers rely on the strings. cua-eval-cloud `provider.rs:61-64` matches both and formats `Denied(why)`; cuad `tests/it/model.rs:140` and the memory service memoryd `tests/it/infer.rs:112` build `Denied(why.clone())`; memoryd `embed.rs:196` passes both `why` as a `String`; the Settings app `add_io.rs:32` matches `Malformed(why) if why.contains("LimitsExceeded")`; the shell `app_menu_bus.rs:350` is the actions service's own type. Proposal for the coordinated batch: `Denied(Denial)` with `Denial { text }` and `Malformed(Malformation)` with `MalformedKind {Bus, Frame, Socket, Reply, Session}` plus the text, both `Deref<Target = str>`, `Display` the same, `From<&str>` and `From<String>`; that keeps `why.contains(..)` and `{why}` working, and breaks only code that builds a variant from a `String` or passes `why` where a `String` is wanted (the three places above), so it needs those consumers' rev bump. A `Busy`/limits variant would replace the Settings app's string test.
+**3. Typed errors.** `table_from_toml` returns `CallerTomlError { message }` (same text; `in_file(path)` makes the `CallerFileError`); `load_callers` and `table_from_file` already returned `CallerFileError`. Nobody outside the accounts service calls `table_from_toml` (the memory service's memoryd has its own copy). `TransportError::Denied(String)` and `Malformed(String)` are NOT changed in this lane: consumers rely on the strings. computer-use-eval-cloud `provider.rs:61-64` matches both and formats `Denied(why)`; the computer-use daemon `tests/it/model.rs:140` and the memory service memoryd `tests/it/infer.rs:112` build `Denied(why.clone())`; memoryd `embed.rs:196` passes both `why` as a `String`; the Settings app `add_io.rs:32` matches `Malformed(why) if why.contains("LimitsExceeded")`; the shell `app_menu_bus.rs:350` is the actions service's own type. Proposal for the coordinated batch: `Denied(Denial)` with `Denial { text }` and `Malformed(Malformation)` with `MalformedKind {Bus, Frame, Socket, Reply, Session}` plus the text, both `Deref<Target = str>`, `Display` the same, `From<&str>` and `From<String>`; that keeps `why.contains(..)` and `{why}` working, and breaks only code that builds a variant from a `String` or passes `why` where a `String` is wanted (the three places above), so it needs those consumers' rev bump. A `Busy`/limits variant would replace the Settings app's string test.
 
 **Public changes.** Added: `account_client::{peer::*, Removals, RemovedAccount}`, `Accounts<DbusTransport>::watch_removals`, `ClientError::no_allowed_place`, `account_dbus::{AccountRemoved, AccountRemovedStream, CallerTomlError}`, `accountd::CallerTomlError`. Changed: `account_dbus::table_from_toml`'s error type (no consumer). Removed: `ClientError::NoAllowedPlace`, `From<TransportError> for ClientError` by hand (now derived, same conversion except the place refusal). inferd: `cloud::accountd::AccountVerdict` is a re-export, `PeerAccountd::new` and `PeerReports::new` keep their signatures. Wire and VocabVersion: unchanged.
 
-**Consumers** (built with every accounts crate from this worktree, `cargo check --workspace --all-targets --offline`): the actions service, the memory service, cua and mailo: all four build clean. The shell, the Settings app and the compositor: grep at origin/master finds no use of anything changed here (the Settings app uses `ClientError::{AlreadyAdded, Refused, Transport}` and `TransportError::Malformed(why)`, both unchanged).
+**Consumers** (built with every accounts crate from this worktree, `cargo check --workspace --all-targets --offline`): the actions service, the memory service, computer use and mailo: all four build clean. The shell, the Settings app and the compositor: grep at origin/master finds no use of anything changed here (the Settings app uses `ClientError::{AlreadyAdded, Refused, Transport}` and `TransportError::Malformed(why)`, both unchanged).
 
 ## Lane layers-families (account-families reads no environment and no system clock; base `5abe1d2`, rebased on `84242b5`, 2026-10-10)
 
@@ -1934,7 +1934,7 @@ Every old `Clock` and `FixedClock` path still compiles with the same behaviour. 
 - Still read by the families: `/dev/urandom` for PKCE (`system_random`, the `Random` default). It is randomness, not the environment or the clock; the brief did not list it. Left as is.
 - The removed `own_clients_path` test covered the XDG-then-HOME rule; accountd's `paths.rs` tests cover the same rule through `Paths::resolve` (`xdg_variables_win_and_relative_ones_are_ignored`, `the_families_read_the_clients_file_settings_writes`).
 - Tests: the constructors gained a clock argument, so the call sites changed beyond their imports: `tests/it/google/rig.rs` and `tests/it/microsoft/rig.rs` pass a `FixedClock` that their own `with_clock` replaces; `tests/it/microsoft/signin.rs` and accountd's `tests/it/google.rs` pass `SystemClock` (what they used before); the two in-module tests of `google/env.rs` pass a `FixedClock`. No assertion changed.
-- Deprecated wrappers: none. Grep at origin/master (the actions service, the memory service, cua, mailo, the Settings app, the shell, the compositor; anyview at origin/main) for `account_families`, `MicrosoftEnv`, `GoogleEnv`, `MicrosoftProvider::new`, `GoogleProvider::new`, `ClientFiles::system` and `own_clients_path` finds no hit. mailo mentions account-families only in a comment (`mail-app/src/ui/add_account/provider.rs:13`) and does not depend on it.
+- Deprecated wrappers: none. Grep at origin/master (the actions service, the memory service, computer use, mailo, the Settings app, the shell, the compositor; anyview at origin/main) for `account_families`, `MicrosoftEnv`, `GoogleEnv`, `MicrosoftProvider::new`, `GoogleProvider::new`, `ClientFiles::system` and `own_clients_path` finds no hit. mailo mentions account-families only in a comment (`mail-app/src/ui/add_account/provider.rs:13`) and does not depend on it.
 
 **2. check-boundary checks account-families per family feature.** Default features are empty, so the old rule only proved the empty set. Each feature listed under `[features]` in `crates/account-families/Cargo.toml` now has a row in `FAMILY_FORBIDS` (what it may not reach) and `FAMILY_EDGES` (its exact direct accounts-* dependencies). A feature with no row fails the check. Measured with `cargo tree -p account-families --no-default-features --features <f> -e normal,build --offline`:
 
@@ -1970,7 +1970,7 @@ Every other forbidden effect (`zbus`, `zvariant`, `reqwest`, `ureq`, `oo7`, `key
 
 **Tests** (private bus, no env var read, in the jail): `accountd::daemon::a_daemon_built_from_a_config_serves_its_name_and_stops_when_told`, and the same name in `syncd` and `inferd` (tests/it/daemon.rs). Each builds from a `Config` over scratch paths, checks the name is owned and answers a Ping, runs, stops, and waits (account_fake::Deadline) for the name to go. The syncd dist test that grepped main.rs for `rescan(BUILD, rescan_var` now greps daemon.rs.
 
-**Behaviour differences.** The order of start-up steps is unchanged. accountd opens its secret store at the top of `build` (it did in main, right after the paths); a `test-keys` file that cannot be opened is now reported by `build`, not by `from_env`. inferd closes its connection after a clean stop (the process used to exit). Consumers: none of the actions service, the memory service, cua, mailo, the shell, the Settings app, the compositor (origin/master) or anyview (origin/main) depends on accountd, syncd or inferd (grep of Cargo.toml and `use` lines).
+**Behaviour differences.** The order of start-up steps is unchanged. accountd opens its secret store at the top of `build` (it did in main, right after the paths); a `test-keys` file that cannot be opened is now reported by `build`, not by `from_env`. inferd closes its connection after a clean stop (the process used to exit). Consumers: none of the actions service, the memory service, computer use, mailo, the shell, the Settings app, the compositor (origin/master) or anyview (origin/main) depends on accountd, syncd or inferd (grep of Cargo.toml and `use` lines).
 
 ## Lane layers-client-feature (Whopper F2: account-client's `in-process` feature; base `326564f`, 2026-10-10)
 
@@ -1981,11 +1981,11 @@ Every other forbidden effect (`zbus`, `zvariant`, `reqwest`, `ureq`, `oo7`, `key
 - `--features dbus,infer`: 71 without `in-process`, 78 with it (+7);
 - `--features dbus` alone: 66.
 
-**Consumers** (check worktrees detached at origin/master in `~/rs-wt/layers-client-feature/<repo>`; the actions service, mailo, cua by git pin with a `[patch."https://github.com/Bardo-DE/porter"]` over every accounts crate in its lock; the memory service and cua also use `../accounts` paths, which resolve to this worktree):
-- Does any consumer use `account_client::InProcess`? No. The actions service, the memory service and cua have their own `InProcess` types (action-client, memory-client); mailo's `account-client` is `default-features = false`, and its only `InProcess` mentions are in comments. So the follow-up to turn `in-process` off by default needs no consumer change; mailo already builds without it.
+**Consumers** (check worktrees detached at origin/master in `~/rs-wt/layers-client-feature/<repo>`; the actions service, mailo, computer use by git pin with a `[patch."https://github.com/Bardo-DE/porter"]` over every accounts crate in its lock; the memory service and computer use also use `../accounts` paths, which resolve to this worktree):
+- Does any consumer use `account_client::InProcess`? No. The actions service, the memory service and computer use have their own `InProcess` types (action-client, memory-client); mailo's `account-client` is `default-features = false`, and its only `InProcess` mentions are in comments. So the follow-up to turn `in-process` off by default needs no consumer change; mailo already builds without it.
 - The actions service: `cargo check --workspace --all-targets --offline` passes; every accounts crate compiled from the worktree (the first run's log). The action-accept build script runs `cargo install --git`, which needs the network, so the check set `ACCEPT_ACCOUNT_DIR` and `ACCEPT_MEMORY_DIR` to the local checkouts.
 - The memory service: passes; account-client, -core, -dbus, -fs, -infer, -provider, -secrets, -service and prov compiled from the worktree.
-- cua: passes; the same nine crates compiled from the worktree.
+- Computer use: passes; the same nine crates compiled from the worktree.
 - mailo: FAILS, and not because of this lane. `account-core`'s `SignInFault` gained `NotRunning`, `SignedOut` and `NotAllowed` in `fd823ec` (tailnet-account), and mailo's `crates/mail-app/src/ui/add_account/map.rs:842` (`fault_of`) matches it exhaustively. account-core is byte-identical between `326564f` and this lane's tip, so the same error occurs on the base. Mailo needs three arms (or `_`) before it can take the accounts service master. Not fixed here: it is mailo's repo.
 - Not checked: the shell, the Settings app, the compositor, anyview (the lane brief asks for all eight; the lead's instruction named these four).
 
@@ -2074,12 +2074,12 @@ The test count is +1 net because the cuts (-8) and merges (-17) are matched by t
 
 **Tests** (`crates/account-client/tests/it/dbus_guests.rs`, in the existing binary, against a scripted `org.bardo.Inference1` on a private bus): `guests_decode_into_typed_rows`, `a_guest_row_that_says_less_than_promised_is_malformed_not_a_panic` (bad state slug, bad node id, missing keys), `the_answer_crosses_as_its_slug_and_forgetting_names_the_node` (Allow is `allow`, Deny is `deny`), `a_refusal_comes_back_as_a_typed_reason_with_the_sentence` (a known name and an unknown one), `candidates_decode_with_their_models_and_approval`, `a_tailnet_computer_is_added_by_node_and_answers_its_place`, `a_computer_added_by_hand_sends_how_to_reach_each_model_and_is_removed_by_name` (port, socket and key arguments), `the_stream_hears_of_a_computer_asking_and_of_the_answers_changing` (Asks, Changed, a malformed ask read as Changed), `a_caller_the_daemon_refuses_is_denied_and_no_daemon_is_unreachable`; and `the_guest_and_computer_calls_are_unsupported_in_process` in `in_process_session.rs`. They assert values and run only in the jailed gate.
 
-**Consumers** (check worktrees at origin/master in `~/rs-wt/client-guests`; the actions service 5964800, the memory service c6effb7, cua 6150644, mailo e958659 by git pin with a `[patch."https://github.com/Bardo-DE/porter"]` over every accounts crate in the lock, `cargo check --workspace --all-targets --offline`; the shell 07bdf95d `--locked --features shell/debug`, the Settings app 1d875e5; each log shows "Checking <crate> v0.1.0 (.../client-guests/accounts/...)" for every one):
+**Consumers** (check worktrees at origin/master in `~/rs-wt/client-guests`; the actions service 5964800, the memory service c6effb7, computer use 6150644, mailo e958659 by git pin with a `[patch."https://github.com/Bardo-DE/porter"]` over every accounts crate in the lock, `cargo check --workspace --all-targets --offline`; the shell 07bdf95d `--locked --features shell/debug`, the Settings app 1d875e5; each log shows "Checking <crate> v0.1.0 (.../client-guests/accounts/...)" for every one):
 - The actions service: passes; account-client, -core, -dbus, -fake, -infer, -provider, -secrets, -service and prov from the worktree (ACCEPT_ACCOUNT_DIR and ACCEPT_MEMORY_DIR set, as in the earlier lane, so the accept build script needs no network).
 - The memory service: passes; client, core, dbus, infer, provider, secrets, service, prov from the worktree.
-- cua: passes; the same eight.
+- Computer use: passes; the same eight.
 - mailo: passes (the `SignInFault` arms landed on its master); client, core, dbus, discover, http, oauth, provider, proxy, secrets, service from the worktree.
-- The shell: passes with `--locked`; core, dbus, infer, prov from the worktree. Run in `~/rs-wt/client-guests/b10/`, where `accounts` is a symlink to this worktree and the actions service, the memory service, cua, Bardo, anyview, blitz-kit, the key remap daemon, shell-host and the mouse gestures daemon are the batch-9 checkouts of `~/rs-wt/wh-batch9` (the shared `~/bardo` is behind the shell's pin, and the newer the actions service and the memory service at origin/master make the shell's lock drift: both unrelated to the accounts service).
+- The shell: passes with `--locked`; core, dbus, infer, prov from the worktree. Run in `~/rs-wt/client-guests/b10/`, where `accounts` is a symlink to this worktree and the actions service, the memory service, computer use, Bardo, anyview, blitz-kit, the key remap daemon, shell-host and the mouse gestures daemon are the batch-9 checkouts of `~/rs-wt/wh-batch9` (the shared `~/bardo` is behind the shell's pin, and the newer the actions service and the memory service at origin/master make the shell's lock drift: both unrelated to the accounts service).
 - The Settings app: passes with `--offline`, not `--locked`: its `Cargo.lock` still lists `account-provider`, `account-secrets` and `account-service` under account-client, and loses them (the `in-process` feature, lane layers-client-feature, not this one); the Settings app's owner re-locks. client, core, dbus, infer, provider, prov from the worktree.
 
 **Open.** None for this lane. `GuestChanges` is a D-Bus stream; a socket carrier has no guests, so its `watch_guests` stays `Unsupported` until inferd has a socket.
@@ -2094,7 +2094,7 @@ The test count is +1 net because the cuts (-8) and merges (-17) are matched by t
 
 **The 19 sets and their consumers** (from each consumer's manifest at origin/master):
 - `inferd`, `accountd`, `syncd` (default features, each with `-p` alone). inferd is the actions service's sibling binary; accountd and syncd are the desktop's.
-- account-client, no features (mailo's pure client). `dbus` (the Settings app's Settings). `dbus,infer` with no default features (inferd's build as the actions service makes it). `dbus` with the defaults (inferd, syncd, the actions service, the memory service, cua). `socket` and `socket,infer` (the socket carrier for other desktops and macOS; no consumer found in origin/master manifests). Defaults (the actions service, the memory service, cua). `engines` (no consumer found; kept so it cannot break unseen).
+- account-client, no features (mailo's pure client). `dbus` (the Settings app's Settings). `dbus,infer` with no default features (inferd's build as the actions service makes it). `dbus` with the defaults (inferd, syncd, the actions service, the memory service, computer use). `socket` and `socket,infer` (the socket carrier for other desktops and macOS; no consumer found in origin/master manifests). Defaults (the actions service, the memory service, computer use). `engines` (no consumer found; kept so it cannot break unseen).
 - account-secrets: `testing` (mailo mail-core, mail-app); `oo7` (mail-runtime, Linux); `keyring` (mail-runtime, macOS and Windows).
 - account-discover and account-http, no features (mailo mail-core, mail-runtime).
 - account-oauth, no features (mailo); `io` (mail-runtime).
@@ -2216,11 +2216,11 @@ Owner's choice (c): `dist/inferd-tailnet.conf` stays opt-in. The accounts servic
 ## Lane layers-dbus-modules (L8: account-dbus's `names`, `callers` and `sheet` as public modules; base `a1a07f5`, 2026-10-10)
 
 1. **Modules.** `account_dbus::names` (bus names, paths, option and result keys, error prefixes), `account_dbus::callers` (`CallerTable`, `ProcCallers`, `CallerRole`, `Caller`, `Callers`, `CallerRow`, `AppTitle`, `MainPids`, `SYSTEMD*`; with feature `callers-file` also `load_callers`, `table_from_file`, `table_from_toml`, `CallerFileError`, `CallerTomlError`, re-exported from the file module) and `account_dbus::sheet` (request path helpers, `Response`, `ResponseCode`, `SheetKind`, `reply_of`, `response_of`) are `pub mod` with a module doc each. The proxies, skeletons and codecs stay at the root (they are the "existing proxy and interface items"). Every root re-export stays for one batch, each group carrying a `#[doc]` line that says where the items live now. No code moved, so no test changed. ARCHITECTURE.md section 1 says so.
-2. **`account_dbus::zvariant` is kept.** None of the six consumers at origin/master uses it (they all say `zbus::zvariant`; the actions service 1b905ed, the memory service 7af8f0b, cua bf1a40f, mailo e958659, the Settings app f1b57a1, the shell 9fed7387), but the accounts service's own crates do: 21 uses in 9 files (inferd `src/service.rs` and `tests/it/places.rs`; accountd `tests/it/{file_keys,session_scope,process_credential}.rs`; account-client `src/transport/{dbus_infer,dbus_computers,dbus_accounts}.rs` and `tests/it/accountd_requests.rs`). Dropping it is a one-line change after those become `zbus::zvariant`; it was not done here because it cannot be compiled by this lane.
+2. **`account_dbus::zvariant` is kept.** None of the six consumers at origin/master uses it (they all say `zbus::zvariant`; the actions service 1b905ed, the memory service 7af8f0b, computer use bf1a40f, mailo e958659, the Settings app f1b57a1, the shell 9fed7387), but the accounts service's own crates do: 21 uses in 9 files (inferd `src/service.rs` and `tests/it/places.rs`; accountd `tests/it/{file_keys,session_scope,process_credential}.rs`; account-client `src/transport/{dbus_infer,dbus_computers,dbus_accounts}.rs` and `tests/it/accountd_requests.rs`). Dropping it is a one-line change after those become `zbus::zvariant`; it was not done here because it cannot be compiled by this lane.
 3. **Import rewrites each consumer can do later** (the line becomes the same list with `names::`, `callers::` or `sheet::` in the path; items from the root-only group such as `Details`, `AgentsProxy`, `InferenceProxy` stay at the root, so a mixed line splits in two). Counts are lines at origin/master that name a moved item:
    - The actions service: 4. `use account_dbus::{CallerTable, ProcCallers};` becomes `use account_dbus::callers::{CallerTable, ProcCallers};` (intentd `src/peer.rs:25`, voiced `src/peer.rs:10`); `use account_dbus::{Details, SPACE_KEY_CREATED, SPACE_KEY_LOOK, SPACE_KEY_NAME, SPACES_PATH};` becomes `use account_dbus::Details;` plus `use account_dbus::names::{SPACE_KEY_CREATED, SPACE_KEY_LOOK, SPACE_KEY_NAME, SPACES_PATH};` (intentd `tests/it/support/spaces.rs:4`); `pub use account_dbus::{Details, OPTION_TRACEPARENT};` splits the same way (action-dbus `src/lib.rs:53`).
    - The memory service: 8. `callers`: memoryd `src/callers.rs:11` `{CallerRole, CallerTable}` and `:62` `account_dbus::Caller`, `src/peers.rs:13` `{Callers, ProcCallers}`, `:31` and `:38` `account_dbus::CallerTable`, `src/run.rs:19`, `tests/it/peers.rs:11`; `names`: `tests/it/support/inferd.rs:8` `{Details, INFERENCE_BUS, INFERENCE_PATH, NeedArg}` splits into `{Details, NeedArg}` and `names::{INFERENCE_BUS, INFERENCE_PATH}`.
-   - cua: 0 (no `account_dbus` path in its Rust files).
+   - Computer use: 0 (no `account_dbus` path in its Rust files).
    - mailo: 1. `use account_dbus::{ACCOUNTS_BUS, ACCOUNTS_PATH, ManagerSkeleton};` becomes `use account_dbus::ManagerSkeleton;` plus `use account_dbus::names::{ACCOUNTS_BUS, ACCOUNTS_PATH};` (`mail-runtime/tests/link_bus.rs:9`).
    - The Settings app: 10, all `names`: `src/live/holds.rs:8`, `src/live/daemon.rs:3-6`, `src/computers/io.rs:10-13`, `src/computers/rows.rs:5-8`, `tests/intelligence.rs:384` (`account_dbus::INFERENCE_BUS` becomes `account_dbus::names::INFERENCE_BUS`), `tests/support/{accountd,inferd,spaces,syncd,computers}.rs`.
    - The shell: 9. `names`: `shell-services` `accounts/backend/wire.rs:4`, `accounts/sheet/backend/{objects.rs:5,run.rs:7,serve.rs:3}` (`SHEET_BUS`, `SHEET_PATH` are in `names`), `guest_asks/backend/{run.rs:5,wire.rs:3,wire.rs:10}`, `sync_hold/backend/wire.rs:9`; `callers`: `app_menu/agent/identity.rs:7` `{CallerTable, ProcCallers}`.
@@ -2237,11 +2237,11 @@ Not compiled by the lane. Things to look at first if the gate fails: `crates/acc
    - account-proxy, account-sync, storage-webdav, storage-graph and storage-gdrive have no hand-written `Display` any more (grep for `Display for` and `Error for` in each: none), so nothing was changed there.
    - Cargo.toml: `thiserror = { workspace = true }` added to account-service, prov and account-dbus. **Cargo.lock needs the re-lock** (three dependency lines).
 2. **Compiled doc examples** (plain code blocks, so `cargo test --doc` runs them; each mirrors calls that an existing test makes): account-core (`AccountId::parse`, `object_segment`), inference-core (a `ChatRequest` through JSON and back, the way `tests/it/round_trip.rs` builds one), account-http (`HttpRequest::new(..).with_header(..).with_body(..)`, `HttpResponse::retry_after_seconds`; no feature needed), account-provider (`shipped()` and `ProviderSet::get`), account-sync (`DatasetKind::conflict_rule`, `mass_delete(&[], &[])`), account-secrets (`attributes` of a `SecretKey`, as its unit test does; the store itself needs a feature or a platform keyring, so it is not in the example), account-service (`sync_allowed` over no grants, and the two error sentences). account-client's `ignore` block is now `no_run`: a function generic over `Transport` that calls `find`, then `request_grant`, with the imports shown. Not shown, on purpose: `AccountService` (building one needs every seam), `Broker`, and a `Replica`. If a doc test fails, look first at inference-core (the `ChatRequest` field list) and account-client (`no_run` still compiles it).
-3. **`#[non_exhaustive]`** on the public error enums that will grow and that no other crate matches exhaustively: `account_service::{StoreError, SheetFault}`, `account_provider::{ProviderFileError, ClientsFileError}`, `inference_core::{TextError, ScoresError}`. Grep of the six consumers at origin/master (the actions service 1b905ed, the memory service 7af8f0b, cua bf1a40f, mailo e958659, the Settings app f1b57a1, the shell 9fed7387) and of this workspace: every outside use is a construction (`Err(SheetFault::Closed)`), a `#[from]` field or a pattern with one variant. The only exhaustive match is `add_flow.rs:494` inside account-service itself, which the attribute does not touch. mailo's `host.rs` builds `SheetFault::Closed` and `Unavailable`, and its own `StoreError` is another type.
+3. **`#[non_exhaustive]`** on the public error enums that will grow and that no other crate matches exhaustively: `account_service::{StoreError, SheetFault}`, `account_provider::{ProviderFileError, ClientsFileError}`, `inference_core::{TextError, ScoresError}`. Grep of the six consumers at origin/master (the actions service 1b905ed, the memory service 7af8f0b, computer use bf1a40f, mailo e958659, the Settings app f1b57a1, the shell 9fed7387) and of this workspace: every outside use is a construction (`Err(SheetFault::Closed)`), a `#[from]` field or a pattern with one variant. The only exhaustive match is `add_flow.rs:494` inside account-service itself, which the attribute does not touch. mailo's `host.rs` builds `SheetFault::Closed` and `Unavailable`, and its own `StoreError` is another type.
    Left for L5's coordinated batch, because a match elsewhere would need a `_` arm (file:line):
    - `AgentFault`, `LocalFault`: accountd `src/peer.rs:414-418` and `:440`.
    - `SecretsError`: accountd `src/keys.rs:65-66`.
-   - `ProviderError`: inference-bridge `src/reply.rs:149-157`, cua `cua-eval-cloud/src/provider.rs`.
+   - `ProviderError`: inference-bridge `src/reply.rs:149-157`, computer use `computer-use-eval-cloud/src/provider.rs`.
    - `HttpError`: inferd `src/attached/check.rs:160`, and mailo's lookups.
    - `SessionError`: account-client `src/error.rs:201-202` and `src/transport/pipe.rs:75-89`.
    - `ModelError`, `InferRefusal`, `ReplicaError`, `PutRefused`, `CoreError`, `StoreFault` and the other core and infer enums were not examined deeper than that: they are matched across crates.
@@ -2258,7 +2258,7 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
 **Not compiled.** Written under the no-build rule: the coordinator compiles and gates. Every move is `git mv` (history follows) plus path fixes; `inferd` re-exports every moved path with `pub use`, so no `inferd::...` path a consumer or a test names has changed.
 
 **The set, and why each module is in or out** (inferd's `src` module tree at `a1a07f5`):
-- IN `router` (+ `router::placed`): pure over a list of models. `check_class` (was `cua_run::check_class`) and `slots_of` (was `settings::keys::slots_of`) moved in with it, since the route and the plan need them.
+- IN `router` (+ `router::placed`): pure over a list of models. `check_class` (was `computer_use_run::check_class`) and `slots_of` (was `settings::keys::slots_of`) moved in with it, since the route and the plan need them.
 - IN `swap`: pure over the model layer's `budget`.
 - IN `catalog` and `local` (the model book): `LocalModel`, `EngineConfig`, `build`. `NamedEngine` (the `[engines.<name>]` replay table, was in `replay`) moved to `local` because `EngineConfig` embeds it; `replay` keeps the path.
 - IN `attached::{config, key, target, model}` and `NotReady` (split out of `attached::check`): the attached engines as values, because `LocalModel.attached` and `EngineConfig.attached` need them. OUT: `attached::{check (the probe), book, computers}`: they connect and write files, they are the daemon's.
@@ -2271,7 +2271,7 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
 
 **Visibility widened** (all `pub(crate)` or `pub(super)` that a caller in another crate now needs): `router::fits` (inferd's `engines` and `engines::places` call it), `carried::Tally` and its `begin`, `heard`, `closing` (the fd server's loop, in inferd). Kept `pub(crate)`: `router::consent_of`, `router::plain`, `local::flavor_of`, `session::model_of` (all used only inside the crate).
 
-**Boundary.** check-boundary: `inference-router` forbids EFFECTS (zbus, tokio, hyper, ...) and `inferd`; an EDGES row (account-core, inference-core, cua-action, engine-supervisor, model-catalog, model-http (types only: no `hyper`), model-openai-compat, model-provider, speech-provider, vision-prep); a grep rule that the inference libraries read no environment variable; `check-portable.sh` checks the crate builds and reaches no zbus. inferd's EDGES row gains `inference-router`.
+**Boundary.** check-boundary: `inference-router` forbids EFFECTS (zbus, tokio, hyper, ...) and `inferd`; an EDGES row (account-core, inference-core, computer-use-action, engine-supervisor, model-catalog, model-http (types only: no `hyper`), model-openai-compat, model-provider, speech-provider, vision-prep); a grep rule that the inference libraries read no environment variable; `check-portable.sh` checks the crate builds and reaches no zbus. inferd's EDGES row gains `inference-router`.
 
 **Tests.** They moved with their code (swap, catalog, local, router, placed, session and its `step_tests` tables, carried, startup, attached key/model/config, audio). Two tests of the attached tables read `inferd.toml` (`InferdConfig`) and stayed in inferd as `attached/config_file_tests.rs`. The `pipeline` tests (a run over the replay engine and `Supervised`) stay in inferd: they are edge tests of the plan and the run together. `testkit::{Scratch, models, cloud_card}` and the test catalog entries (`entries.rs`, with the `qwen3.5-35b-a3b-fp8.toml` fixture) moved to the router's `testkit`; inferd's `testkit` re-exports them and keeps `Recorder` (it needs tokio and the model layer's `EngineHost`). The integration tests (`tests/it/hosting/mod.rs`) take `entries` from there.
 
@@ -2289,8 +2289,8 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
 **Not compiled.** As above.
 
 **The set, and why each is in or out:**
-- IN `bridge` (+ `bridge::request`), `tee`, `structured` (+ `limits`), `cua_step`, `cua_run`, `audit`, and the stage runner of `pipeline` (was `pipeline/run.rs`): they depend on the router crate's `LocalModel`, seams and clock, on the model layer, and on nothing of inferd's. `structured::limits` keeps `Limits`, `StructuredConfig` (the `[ai.structured]` rows) and `Resolved`; `AiConfig`, the whole `[ai]` table of `inferd.toml`, stays in inferd (`structured/ai.rs`) because it holds every settings row, and `AiConfig::resolve` calls `StructuredConfig::resolve`.
-- `runner` is split, not moved. IN (new `inference_turns::local`): `LocalTurns<U: EngineUse>`: the chat, embedding and computer-use turns of a session pinned to a `LocalModel` (was `Job::{chat, checked, embed, cua}`), `TokioSleep`, `RETRY`, `chat_provider`, `ToSession`, `note_no_scores`, and the new `run_chat`. New `turn::Turn` (the turn in flight, was in `runner`). OUT, in inferd's `runner`: `Pin`/`Pinned` (they hold a `CloudPin`), `Turns` (adds the hosted model's turn, the speech turn, `Hearing`), and the `TurnRunner` impl. Why: a hosted model's turn needs `Cloud` (accountd's verdicts and keys, spend) and a speech turn needs the speech host; neither belongs in a library an app uses without the daemon.
+- IN `bridge` (+ `bridge::request`), `tee`, `structured` (+ `limits`), `computer_use_step`, `computer_use_run`, `audit`, and the stage runner of `pipeline` (was `pipeline/run.rs`): they depend on the router crate's `LocalModel`, seams and clock, on the model layer, and on nothing of inferd's. `structured::limits` keeps `Limits`, `StructuredConfig` (the `[ai.structured]` rows) and `Resolved`; `AiConfig`, the whole `[ai]` table of `inferd.toml`, stays in inferd (`structured/ai.rs`) because it holds every settings row, and `AiConfig::resolve` calls `StructuredConfig::resolve`.
+- `runner` is split, not moved. IN (new `inference_turns::local`): `LocalTurns<U: EngineUse>`: the chat, embedding and computer-use turns of a session pinned to a `LocalModel` (was `Job::{chat, checked, embed, computer_use}`), `TokioSleep`, `RETRY`, `chat_provider`, `ToSession`, `note_no_scores`, and the new `run_chat`. New `turn::Turn` (the turn in flight, was in `runner`). OUT, in inferd's `runner`: `Pin`/`Pinned` (they hold a `CloudPin`), `Turns` (adds the hosted model's turn, the speech turn, `Hearing`), and the `TurnRunner` impl. Why: a hosted model's turn needs `Cloud` (accountd's verdicts and keys, spend) and a speech turn needs the speech host; neither belongs in a library an app uses without the daemon.
 - `EngineUse` is the one new trait: "this engine is in use", which `Supervised` implements in inferd (`supervise.rs`) by calling its own `used`; `()` implements it for an app that starts no engine.
 - OUT `pipeline::live` (`Hearing` needs `Engines`), `speech`, `cloud`, `agent`.
 
@@ -2300,13 +2300,13 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
 
 **What a third-party app now depends on to route and run turns:** `inference-router` (the list of models it has -> `router::choose` / `pipeline::decide_text` -> a `Decided`; `catalog` + `local::build` to list this computer's models from the model layer's catalogue; `session::step` and the `seams` if it runs a session server) and `inference-turns` (`local::LocalTurns` or `local::run_chat` over any `model_provider::Provider`, `structured`, `audit`, `pipeline::run_pipeline`), plus `inference-core` and `account-core` for the vocabulary and the model layer's crates by git rev. No zbus, no inferd, no accountd. It needs a tokio runtime for the turns (none for the router).
 
-**account-client `engines` (item 3).** Rebuilt over `inference-turns` (`dep:inference-turns` in the feature): removed `TokioSleep` and the `RETRY` const (now `inference_turns::local::{TokioSleep, RETRY}`) from `engines/wire.rs`, and the `Forward` sink with its `provider.turn` / `chat_reply` / `model_error` match from `engines/turn.rs` (now `run_chat`): 48 lines deleted, 17 added. The client's reply is the same (its events go to its own channel, it has no engine to touch and, as before, says nothing of option shares). Not changed, because it is not the same logic: the table and `admit` (the client's rule is "nothing is chosen by default", the router's `choose` picks by tier and readiness), `EngineSession` (a one-turn-at-a-time session that refuses a second request; the session machine queues one), the `Temperature` body shaping and the TLS engine (inferd's `cloud::wire` has the same two-line shaping for a hosted model: a later move into inference-turns would remove that copy too). inference-router is not a client dependency: nothing in the client duplicates what it holds. The cost: the `engines` feature now also builds `inference-turns` and what it brings (inference-router, the model layer's `cua-session`, `cua-vendors`, `cua-parse`, `model-extract`, `engine-supervisor`, `vision-prep` with `pixels`).
+**account-client `engines` (item 3).** Rebuilt over `inference-turns` (`dep:inference-turns` in the feature): removed `TokioSleep` and the `RETRY` const (now `inference_turns::local::{TokioSleep, RETRY}`) from `engines/wire.rs`, and the `Forward` sink with its `provider.turn` / `chat_reply` / `model_error` match from `engines/turn.rs` (now `run_chat`): 48 lines deleted, 17 added. The client's reply is the same (its events go to its own channel, it has no engine to touch and, as before, says nothing of option shares). Not changed, because it is not the same logic: the table and `admit` (the client's rule is "nothing is chosen by default", the router's `choose` picks by tier and readiness), `EngineSession` (a one-turn-at-a-time session that refuses a second request; the session machine queues one), the `Temperature` body shaping and the TLS engine (inferd's `cloud::wire` has the same two-line shaping for a hosted model: a later move into inference-turns would remove that copy too). inference-router is not a client dependency: nothing in the client duplicates what it holds. The cost: the `engines` feature now also builds `inference-turns` and what it brings (inference-router, the model layer's `computer-use-session`, `computer-use-vendors`, `computer-use-parse`, `model-extract`, `engine-supervisor`, `vision-prep` with `pixels`).
 
 **Line counts (inferd, `.rs`, tests inside `src` included):** `src` 35,664 before; 28,359 after layers-router; 24,949 after layers-turns. `tests/` 13,803 before, 13,582 after (`entries.rs` moved). The new crates: inference-router 7,772 (of which about 3,550 are unit tests), inference-turns 3,628 (about 1,930 unit tests).
 
 **Boundary.** check-boundary: `inference-turns` forbids zbus, zvariant, reqwest, ureq, oo7, keyring, secret-service, interprocess, the service locator, ds-settings and `inferd` (it may reach tokio and hyper: it runs turns); an EDGES row; the environment grep covers it; `account-client`'s EDGES row gains `inference-turns` (feature `engines`); `check-portable.sh` checks it builds and reaches no zbus.
 
-**Tests.** Moved with their code: `bridge::request`, `structured`, `cua_step`, `cua_run`, `audit`. `[ai.structured]`'s tests (`limits_tests`) read `inferd.toml`, so they stayed in inferd (`structured/limits_tests.rs`). `runner`'s tests stayed with the part that stayed (they now import `RunningTurn` themselves). The `pipeline` tests stayed (see layers-router).
+**Tests.** Moved with their code: `bridge::request`, `structured`, `computer_use_step`, `computer_use_run`, `audit`. `[ai.structured]`'s tests (`limits_tests`) read `inferd.toml`, so they stayed in inferd (`structured/limits_tests.rs`). `runner`'s tests stayed with the part that stayed (they now import `RunningTurn` themselves). The `pipeline` tests stayed (see layers-router).
 
 **Look here first if it does not compile.** `crates/inference-turns/src/local.rs` (`run_chat`'s `Send` bounds on the two closures; `TurnSink: Send`), `crates/inferd/src/runner.rs` (`Job::local()` builds a `LocalTurns<Supervised>`; `Supervised: Sync` for the borrow across the await), `crates/inferd/src/structured.rs` and `structured/ai.rs` (the `limits` module re-exports), `crates/account-client/src/engines/turn.rs` (the `send` closure's parameter type is inferred from `UnboundedSender::send`), the new manifests (re-lock: `inference-router`, `inference-turns`, and `inference-turns` under account-client).
 
@@ -2321,8 +2321,8 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
 **What changed in the model layer that the accounts service sees (read at the sha).**
 - `ProviderError::{PaymentRequired(ProviderDetail), AuthRejected(ProviderDetail)}`; a bare 401 is still `Unauthorized`; `retry_class` is `Never` for both. `ProviderDetail { status, message }` is redacted and cut to 240 characters.
 - `Constraint::JsonObject` and `OutputShape::JsonObject` (`model-extract` picks it after `JsonSchema` and `Gbnf`, only for an object-shaped reply, puts the schema in the system prompt and still validates). `enforceable(flavor)` lists it for every flavor.
-- `cua_parse::SCROLL_PIXELS_RULE`; catalogue entries `holo-3.1-9b`, `holo4-35b-a3b-fp8` (both `json_schema`), `deepseek-v4-pro` (`json_object`), `muse-spark-1.3-contributor`.
-- Internal only, no accounts service change: `cua-parse` tools take a `ToolDialect` instead of a `holo` bool, Holo's `finish` reads `text` when there is no `summary`, `cua-vendors` `AnthropicTool`, tests moved to `tests/it`.
+- `computer_use_parse::SCROLL_PIXELS_RULE`; catalogue entries `holo-3.1-9b`, `holo4-35b-a3b-fp8` (both `json_schema`), `deepseek-v4-pro` (`json_object`), `muse-spark-1.3-contributor`.
+- Internal only, no accounts service change: `computer-use-parse` tools take a `ToolDialect` instead of a `holo` bool, Holo's `finish` reads `text` when there is no `summary`, `computer-use-vendors` `AnthropicTool`, tests moved to `tests/it`.
 
 **Changes.**
 - `ModelError` (inference-core, serde `kind`) gains `PaymentRequired` ("the account needs payment") and `SignInRefused` ("the company refused the sign-in"), wire slugs `payment_required` and `sign_in_refused`. The provider's own message stays out of the error (it is in the logs of the model layer's side only). **Consumer break:** the actions service's exhaustive match on `ModelError` needs the two arms (as for `OnlyThought` before). I did not mark the enum `#[non_exhaustive]` because inferd's exhaustive `Failure::of_model` would then need a wildcard; say if you want it.
@@ -2430,15 +2430,15 @@ Not compiled by the lane. First places to look if the gate fails: `#[error("{}: 
   - before: `let proc_root = speaker::proc_root_from(std::env::var(speaker::PROC_ROOT_VAR).ok().as_deref());`
   - after: `let choice = account_daemon_support::ProcRoot::choose(speaker::PROC_GATE, speaker::PROC_ROOT_VAR, |name| std::env::var_os(name));` then `if let Some(line) = choice.notice("companiond", speaker::PROC_ROOT_VAR) { eprintln!("{line}"); }` then `let proc_root = choice.path().to_path_buf();`. companiond's `PathBuf` field and `serve_on_rooted` do not change. companiond's `from_env`-style rule (if it has one) applies to this line: it is the one environment read.
 
-*Settings-file watch.* In each of `crates/intentd/src/settings_watch.rs`, `crates/memoryd/src/settings_watch.rs` and `crates/cuad/src/watch.rs` the pieces that stay are `DEBOUNCE`, `WatchState`, `SettingsWatch`, `settle`, `apply` and `apply_next`. What goes: `touches`, `start_watcher`, the private error enum (`WatchError` in memoryd, `StartError` in cuad; intentd has `String`), and the `notify` imports.
-- the `use` line (intentd 8, memoryd 7, cuad 7)
+*Settings-file watch.* In each of `crates/intentd/src/settings_watch.rs`, `crates/memoryd/src/settings_watch.rs` and `crates/computer_use_daemon/src/watch.rs` the pieces that stay are `DEBOUNCE`, `WatchState`, `SettingsWatch`, `settle`, `apply` and `apply_next`. What goes: `touches`, `start_watcher`, the private error enum (`WatchError` in memoryd, `StartError` in the computer-use daemon; intentd has `String`), and the `notify` imports.
+- the `use` line (intentd 8, memoryd 7, the computer-use daemon 7)
   - before: `use notify::{RecommendedWatcher, RecursiveMode, Watcher};` and `use std::ffi::OsStr;`
-  - after: `use account_daemon_support::Watch;` (cuad also drops `use std::path::PathBuf;`)
+  - after: `use account_daemon_support::Watch;` (the computer-use daemon also drops `use std::path::PathBuf;`)
 - the field
   - before: `_watcher: Option<RecommendedWatcher>,`
   - after: `_watcher: Option<Watch>,`
-- the watcher start (intentd's `start_watcher` at 46-65, memoryd's 64-85, cuad's 62-83): delete the function and call `Watch` from `start`. The three functions are the same body: `locator.watch_dir()` (a missing directory is the first error), `create_dir_all`, the file name of the settings constant (`action_settings::SETTINGS_FILE`, `SETTINGS_FILE` of memory_service, `SETTINGS_FILE` of cua_host), `notify::recommended_watcher` with the `touches` filter sending `()`, `watch(&dir, NonRecursive)`.
-  - before (in `start`): `match start_watcher(&locator, signal) { Ok(watcher) => { ... _watcher: Some(watcher) ... } Err(reason) => Self { ..., state: WatchState::Blind { reason }, ... } }` (memoryd and cuad: `reason: reason.to_string()` / `error.to_string()`)
+- the watcher start (intentd's `start_watcher` at 46-65, memoryd's 64-85, the computer-use daemon's 62-83): delete the function and call `Watch` from `start`. The three functions are the same body: `locator.watch_dir()` (a missing directory is the first error), `create_dir_all`, the file name of the settings constant (`action_settings::SETTINGS_FILE`, `SETTINGS_FILE` of memory_service, `SETTINGS_FILE` of computer_use_host), `notify::recommended_watcher` with the `touches` filter sending `()`, `watch(&dir, NonRecursive)`.
+  - before (in `start`): `match start_watcher(&locator, signal) { Ok(watcher) => { ... _watcher: Some(watcher) ... } Err(reason) => Self { ..., state: WatchState::Blind { reason }, ... } }` (memoryd and the computer-use daemon: `reason: reason.to_string()` / `error.to_string()`)
   - after (in `start`), one shape for all three:
     ```rust
     let started = locator
@@ -2470,14 +2470,14 @@ No build was run; the coordinator compiles and gates. Consumer list: `~/rs-wt/la
   `AccountsReply`, `wire::Refusal`, `ConsentAnswer`, `CoreError`, `StoreFault`, `PathError`, `EndpointFault`,
   `MarkFaceError`, `SignInFault`, `LoginFault`, `LoginOutcome`, `AuditEvent`, `Need`, `RelayAuth`; inference-core
   `InferRequest`, `RequestKind`, `InferReply`, `InferEvent`, `ClientFrame`, `InferRefusal`, `ModelError`, `SessionError`,
-  `pipeline::Refusal`, `DeclinedBecause`, `CuaStepFailure`, `MessagePart`, `ImageSource`, `ReplyShape`, `Task`,
+  `pipeline::Refusal`, `DeclinedBecause`, `ComputerUseStepFailure`, `MessagePart`, `ImageSource`, `ReplyShape`, `Task`,
   `ToolChoice`, `Reasoning`, `StopReason`; account-provider `ProviderError`, `SignInMode`, `SignInStep`, `RevokeOutcome`;
   account-service `AgentFault`, `LocalFault`, `LoginEnd`; inference-router `AttachedError`, `KeyFileProblem`, `Unplaced`;
   inference-tailnet `GuestEvent`.
 - **Marked structs, each with `new` (+ `with_*` for defaulted fields), fields still `pub`**: account-core `ConsentAsk`,
   `AccountChoice`, `IssuedToken`, `Restriction` (`none()` + `with_*`), `Limit`, `Candidate`, `Machine`, `GuestRow`,
   `RelayPlan`, `AuditEntry`, and the 15 need structs; inference-core `ChatRequest`, `ChatControl` (now also `Default`),
-  `EmbedRequest`, `TaskRequest`, `SpeakRequest`, `TranscribeBegin`, `CuaBegin`, `CuaStepRequest`, `CuaStepReply`,
+  `EmbedRequest`, `TaskRequest`, `SpeakRequest`, `TranscribeBegin`, `ComputerUseBegin`, `ComputerUseStepRequest`, `ComputerUseStepReply`,
   `OpenOptions` (`with_traceparent` re-added), `OpenFrame`, `ChatReply`, `EmbedReply`, `TranscribeReply`, `SpeakReply`,
   `PlaceRow`, `PlaceRefusal`, `RouteAsk`; account-provider `SignInStart`, `Signed`.
 - **Kept exhaustive on purpose**: `Found`/`NoAccount` (the doc says a closed set the app renders arm by arm), `Flow`,
@@ -2506,7 +2506,7 @@ No build was run; the coordinator compiles and gates. Consumer list: `~/rs-wt/la
   `account-dbus/src/machines.rs`, `account-tailscale/src/status.rs` (`Machine::new(..).with_*`),
   `account-families/src/google/signin.rs` (`Restriction` builder), `account-proxy/src/http1/head.rs` (`credential`
   now returns `Result`), `inference-bridge/src/request.rs` (`reasoning`/`task_instruction` now return `Result`),
-  `inferd/src/engines/places.rs` (`PlaceRow::new` after `id` moves), `inference-turns/src/cua_step.rs:~241`,
+  `inferd/src/engines/places.rs` (`PlaceRow::new` after `id` moves), `inference-turns/src/computer_use_step.rs:~241`,
   `LlmNeed::new(Default::default(), ..)` inference in inferd tests.
 - No Cargo.toml changes.
 ## Lane sync-now ("Sync now", faster syncd bus tests, the beta.1 notes; base `3356848`, 2026-10-10, no-build)
@@ -2670,7 +2670,7 @@ accountd now holds identities, Spaces and Tailscale and nothing grant-keyed.
 
 - **A user's file cannot give a role with standing.** `CallerRole::is_fixed` (every role but `App` and `Agent`); `CallerTable::layered` leaves out a user row that gives one, with one line on stderr (the accounts service #5).
 - **A scope is never more than an app.** A scope has no main process, so `found_of_pid` gives a scope row's fixed role a plain app's. The shell's rows are `shell.service` (the accounts service #4; the desktop session starts the shell as a transient `shell.service`, desktop 1b77646), so its role goes to the unit's main process. The `bardo-shell.scope` rows and `TRANSITION_SCOPES` are gone, and inferd's `[callers] shell` refuses any entry that is not a `.service` (`BadShellEntry`).
-- **One way to ask.** `ProcCallers` with `Callers::caller_of(sender)` is how a daemon learns who is calling; the agent daemons (cuad, voiced, companiond, the actions service, the memory service) move onto it from owning a well-known bus name.
+- **One way to ask.** `ProcCallers` with `Callers::caller_of(sender)` is how a daemon learns who is calling; the agent daemons (the computer-use daemon, voiced, companiond, the actions service, the memory service) move onto it from owning a well-known bus name.
 
 ## Lane ui-engines: engines the person can download (2026-10-17)
 

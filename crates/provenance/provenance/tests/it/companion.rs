@@ -79,7 +79,7 @@ fn every_agent_ref_address_kind_and_part_round_trips() {
     for agent in [
         AgentRef::Companion,
         worker("t-4"),
-        AgentRef::Cua {
+        AgentRef::ComputerUse {
             run: RunId::parse("r-7").expect("run"),
         },
         AgentRef::User,
@@ -227,8 +227,8 @@ fn the_roster_reference_follows_the_actor() {
             Some(worker("t-5")),
         ),
         (
-            companion(AgentRole::Cua { run: run.clone() }),
-            Some(AgentRef::Cua { run }),
+            companion(AgentRole::ComputerUse { run: run.clone() }),
+            Some(AgentRef::ComputerUse { run }),
         ),
         (
             Actor::System {

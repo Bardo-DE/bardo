@@ -61,8 +61,8 @@ fn who_sees_a_dataset_by_role_and_ownership() {
             false,
         ),
         (
-            "cua",
-            caller("org.bardo.ComputerUse", CallerRole::Cua),
+            "computer_use",
+            caller("org.bardo.ComputerUse", CallerRole::ComputerUse),
             false,
         ),
     ];

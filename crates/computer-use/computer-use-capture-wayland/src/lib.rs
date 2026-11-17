@@ -1,5 +1,5 @@
 //! ext-image-copy-capture over a wayland connection: the stock toplevel source (masking in
-//! cuad) and Bardo masked source (masking in the compositor, over an agent lease).
+//! The computer-use daemon) and Bardo masked source (masking in the compositor, over an agent lease).
 //!
 //! Stock frames are unmasked and not damage-gated (Spike A): `frame` applies the caller's mask
 //! hints with [`apply_masks`] and `damage` is a pixel diff between consecutive frames. Capture
@@ -61,7 +61,7 @@ impl StockToplevelCapture {
         }
     }
 
-    /// Stamps frames and damage with `clock` instead of milliseconds since construction. cuad
+    /// Stamps frames and damage with `clock` instead of milliseconds since construction. The computer-use daemon
     /// passes its own clock: the run machine compares these stamps with its own.
     #[must_use]
     pub fn with_clock(mut self, clock: Arc<dyn StampClock>) -> Self {
@@ -135,7 +135,7 @@ impl WindowCapture for StockToplevelCapture {
             Arc::clone(&self.pump),
             Arc::clone(&self.clock),
             key,
-            Masking::Cuad,
+            Masking::ComputerUseDaemon,
         )
         .await
     }

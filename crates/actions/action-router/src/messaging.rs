@@ -183,7 +183,7 @@ impl<S: Seams> Router<S> {
                     AgentRef::Companion | AgentRef::Worker { .. },
                     CallerRole::Companion
                 )
-                | (AgentRef::Cua { .. }, CallerRole::Cua)
+                | (AgentRef::ComputerUse { .. }, CallerRole::ComputerUse)
         );
         if !allowed {
             return IntentsReply::Refused(WireRefusal::NotAllowed);

@@ -46,7 +46,7 @@ LAYERS=(
 # KNOWN: a violation that exists today, with the plan lane (~/rs-wt/agent-layers/PLAN.md) that
 # removes it. "crate: ban: lane". A row whose violation is gone fails, so the list only shrinks.
 # computer-use-eval-cloud reads the environment inside a library module instead of main.rs.
-# `Role::SheetHost` is a action-core wire name; cua names it only in test code, which the bans
+# `Role::SheetHost` is a action-core wire name; computer use names it only in test code, which the bans
 # skip, so it needs no row.
 KNOWN=(
   "computer-use-eval-cloud: env-var: C5.3"
@@ -77,7 +77,7 @@ BANS=(
 # bus, a runtime, an HTTP client, a wayland connection, an EIS client, an accessibility stack,
 # a database, a file watcher, an embedding runtime, the MCP SDK or the policy engine: their
 # backends are the C crates computer-use-capture-wayland, computer-use-seat-ei and computer-use-a11y-atspi. `toml` is parsed at the
-# edge (cuad), never below it.
+# edge (the computer-use daemon), never below it.
 EFFECTS="zbus zvariant tokio reqwest hyper hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy toml"
 RULES=(
   "computer-use-desktop: $EFFECTS"
@@ -117,9 +117,9 @@ RULES=(
   "computer-use-system: reqwest hyper hyper-util rustls pipewire ort fastembed rmcp cedar-policy"
   # The daemon reaches the bus, a runtime, wayland, EIS and AT-SPI. It never reaches HTTP,
   # an embedding runtime, the MCP SDK or the policy engine. One decision point lives in the router
-  # and cuad asks it through `Intents1.Gate` (SPEC C10): cuad has no edge to `permission-policy`
+  # and the computer-use daemon asks it through `Intents1.Gate` (SPEC C10): the computer-use daemon has no edge to `permission-policy`
   # (LAYERS above), and action-client's `InProcess` (which links action-router, hence cedar) is
-  # behind its `in_process` feature, which only cuad's tests turn on (a dev-dependency).
+  # behind its `in_process` feature, which only the computer-use daemon's tests turn on (a dev-dependency).
   "computer-use-daemon: reqwest hyper hyper-util rustls pipewire ort fastembed rmcp cedar-policy"
 )
 
@@ -299,7 +299,7 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# cua sits above the actions service and below the shell in the repo order (the model layer, the accounts service, the memory service, the actions service, cua,
+# Computer use sits above the actions service and below the shell in the repo order (the model layer, the accounts service, the memory service, the actions service, computer use,
 # The shell), and the GPL compositors are separate processes: nothing of the shell's, and
 # nothing of theirs (smithay itself), may enter any tree of this workspace,
 # dev-dependencies included.
@@ -314,7 +314,7 @@ for name in $THEIRS; do
   fi
 done
 if printf '%s\n' "$workspace_tree" | grep -q '^shell-'; then
-  echo "LEAK: the workspace depends on a shell crate, which sits above cua"
+  echo "LEAK: the workspace depends on a shell crate, which sits above computer_use"
   theirs_found=1
   fail=1
 fi
@@ -322,7 +322,7 @@ if [ "$theirs_found" -eq 0 ]; then
   echo "boundary holds: no shell crate and nothing of the compositor enters the workspace"
 fi
 
-# cuad's `fixture-callers` is a security switch: with it on, cuad takes who is calling from a
+# The computer-use daemon's `fixture-callers` is a security switch: with it on, the computer-use daemon takes who is calling from a
 # process tree and callers file the harness names. Built as the installer builds it (`-p` each
 # installed package, no dev-dependencies), no shipped package turns it on.
 for pkg in computer-use-daemon; do
@@ -338,8 +338,8 @@ done
 
 # No shipped source names the harness's variables, apart from the two constants, each behind
 # `#[cfg(feature = "fixture-callers")]` on the line before.
-leaks=$(grep -rnE 'CUAD_TEST_|PROC_ROOT' */ --include='*.rs' --exclude-dir=tests \
-  | grep -vE '^computer-use-daemon/src/callers.rs:[0-9]+:pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR): &str = "CUAD_TEST_(SYSTEM_CALLERS|PROC_ROOT)";$' \
+leaks=$(grep -rnE 'BARDO_COMPUTER_USE_TEST_|PROC_ROOT' */ --include='*.rs' --exclude-dir=tests \
+  | grep -vE '^computer-use-daemon/src/callers.rs:[0-9]+:pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR): &str = "BARDO_COMPUTER_USE_TEST_(SYSTEM_CALLERS|PROC_ROOT)";$' \
   | grep -vE '^computer-use-daemon/src/callers.rs:[0-9]+:.*env\(PROC_ROOT_VAR\)' || true)
 for line in $(grep -nE '^pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR)' computer-use-daemon/src/callers.rs | cut -d: -f1); do
   sed -n "$((line - 1))p" computer-use-daemon/src/callers.rs | grep -qx '#\[cfg(feature = "fixture-callers")\]' \

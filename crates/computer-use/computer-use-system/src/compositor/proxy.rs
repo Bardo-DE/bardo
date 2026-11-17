@@ -3,7 +3,7 @@
 use compositor_dbus::{BUS_NAME, Compositor1Proxy};
 use std::os::fd::OwnedFd;
 
-// The calls cuad makes are the compositor's `Compositor1`. The role is the compositor's to check: a
+// The calls the computer-use daemon makes are the compositor's `Compositor1`. The role is the compositor's to check: a
 // connection that is not allowed the agent role gets an access-denied error, which surfaces as
 // the call failing.
 

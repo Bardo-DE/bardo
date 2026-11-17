@@ -3,14 +3,14 @@
 
 use std::collections::VecDeque;
 
-use computer_use_action::{ActionProfile, CuaDialect, ModelSpace, ResolutionWording};
+use computer_use_action::{ActionProfile, ComputerUseDialect, ModelSpace, ResolutionWording};
 use computer_use_parse::{CursorAt, DropReason, ParseError};
 use computer_use_vendors::StepResult;
 use model_vision_prep::FrameMap;
 
 use crate::dialect;
 use crate::history::{self, HistoryTurn};
-use crate::{CuaTaskText, MaskedRegions, ObservationIn, StepLines, StepNote};
+use crate::{ComputerUseTaskText, MaskedRegions, ObservationIn, StepLines, StepNote};
 use crate::{answer, calls};
 
 /// How much of a refusal's reason is shown to the model.
@@ -57,17 +57,17 @@ pub(crate) fn points(map: &FrameMap) -> String {
     }
 }
 
-pub(crate) fn instruction(task: &CuaTaskText) -> String {
+pub(crate) fn instruction(task: &ComputerUseTaskText) -> String {
     let hints = task.hints.iter().map(|hint| format!("\nHint: {hint}"));
     std::iter::once(task.goal.clone()).chain(hints).collect()
 }
 
 /// The system message, or `None` for a vendor wire (its tool declaration carries the prompt).
 pub(crate) fn system_text(
-    dialect: CuaDialect,
+    dialect: ComputerUseDialect,
     actions: ActionProfile,
     map: &FrameMap,
-    task: &CuaTaskText,
+    task: &ComputerUseTaskText,
 ) -> Option<String> {
     let spec = dialect::spec(dialect);
     let system = spec.system(actions, map, task);
@@ -153,7 +153,7 @@ fn earlier_line(turn: &HistoryTurn) -> String {
 }
 
 /// The goal and the hints, one line each.
-pub(crate) fn goal_lines(task: &CuaTaskText) -> Vec<String> {
+pub(crate) fn goal_lines(task: &ComputerUseTaskText) -> Vec<String> {
     std::iter::once(format!("Goal: {}", task.goal))
         .chain(task.hints.iter().map(|hint| format!("Hint: {hint}")))
         .collect()
@@ -163,9 +163,9 @@ pub(crate) fn goal_lines(task: &CuaTaskText) -> Vec<String> {
 /// earlier steps that have no frame of their own, what happened to the last actions, the masked
 /// regions and the cursor.
 pub(crate) fn observation_lines(
-    dialect: CuaDialect,
+    dialect: ComputerUseDialect,
     actions: ActionProfile,
-    task: &CuaTaskText,
+    task: &ComputerUseTaskText,
     history: &VecDeque<HistoryTurn>,
     lines: StepLines,
     obs: &ObservationIn,
@@ -250,7 +250,11 @@ fn reason_words(reason: DropReason) -> &'static str {
 }
 
 /// The user message of a repair. It names what was wrong and never repeats the reply.
-pub(crate) fn repair_text(dialect: CuaDialect, actions: ActionProfile, fault: &Fault) -> String {
+pub(crate) fn repair_text(
+    dialect: ComputerUseDialect,
+    actions: ActionProfile,
+    fault: &Fault,
+) -> String {
     let what = match fault {
         Fault::Unparsed(ParseError::TooLarge) => "Your last reply was too long.".to_owned(),
         Fault::Unparsed(_) => "Your last reply did not hold an action I can run.".to_owned(),

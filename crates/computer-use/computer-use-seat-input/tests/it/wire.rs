@@ -1,7 +1,8 @@
 //! Every wire type of the seat survives serde and pins the JSON other crates read.
 
 use computer_use_action::{
-    Button, Coord, CuaAction, Notches, Point, ScrollDir, Size, Summary, TypedText, WindowSpace,
+    Button, ComputerUseAction, Coord, Notches, Point, ScrollDir, Size, Summary, TypedText,
+    WindowSpace,
 };
 use computer_use_desktop::{Ms, SeatIsolation};
 use computer_use_seat_input::{
@@ -73,7 +74,7 @@ fn planning_types_and_errors_round_trip() {
     round_trip(&ResolvedPoints::None);
     round_trip(&ResolvedPoints::One(at(5, 5)));
     let planned = PlannedAction {
-        action: CuaAction::<WindowSpace>::Finish {
+        action: ComputerUseAction::<WindowSpace>::Finish {
             outcome: computer_use_action::FinishOutcome::Done,
             summary: Summary::new("done").unwrap(),
             extracted: vec![],

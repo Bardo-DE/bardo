@@ -17,7 +17,7 @@ pub use consolidation::{
 };
 pub use consolidator::ScriptedConsolidator;
 pub use fixtures::{
-    companion_forwarded, cua_run_step, file_saved_from_attachment, mail, mail_label,
+    companion_forwarded, computer_use_run_step, file_saved_from_attachment, mail, mail_label,
     mail_thread_archived, policy_ask, session_entry, session_thing, thing, trusted_label,
 };
 pub use scratch::Scratch;

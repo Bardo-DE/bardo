@@ -27,7 +27,7 @@ fn an_embedding_entry_makes_a_claim_from_its_embed_table() {
 #[test]
 fn a_computer_use_entry_claims_for_the_dialects_an_engine_here_can_speak() {
     let claims = |dialect: &str| {
-        let text = entries::cua().replace(r#"{ kind = "tool", v = "holo31" }"#, dialect);
+        let text = entries::computer_use().replace(r#"{ kind = "tool", v = "holo31" }"#, dialect);
         capabilities_of(&parse_entry(&text).expect("entry"))
             .iter()
             .any(|c| matches!(c, Capability::ComputerUse(_)))
@@ -38,7 +38,7 @@ fn a_computer_use_entry_claims_for_the_dialects_an_engine_here_can_speak() {
         !claims(r#"{ kind = "wire", v = "open_ai_computer" }"#),
         "a vendor's wire needs the vendor's backend"
     );
-    let text = entries::cua().replace(
+    let text = entries::computer_use().replace(
         r#"{ kind = "tool", v = "holo31" }"#,
         r#"{ kind = "wire", v = "open_ai_computer" }"#,
     );

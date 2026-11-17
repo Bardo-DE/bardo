@@ -1,9 +1,9 @@
-//! The desktop vocabulary every cua crate shares, and the seams cuad reaches the desktop
+//! The desktop vocabulary every computer-use crate shares, and the seams the computer-use daemon reaches the desktop
 //! through.
 //!
 //! It is the base of the repo: windows ([`ToplevelInfo`]), leases ([`LeaseRequest`],
 //! [`LeaseGrant`], [`Leased`]), what a backend can do ([`BackendCaps`]), what the glow shows
-//! ([`GlowState`]), what the desktop reports ([`DesktopEvent`]), and the units the other cua
+//! ([`GlowState`]), what the desktop reports ([`DesktopEvent`]), and the units the other computer use
 //! crates share ([`Stamp`], [`Ms`], [`Digest32`]).
 //! `RunMode` and `WindowTrust` live in the model layer's `computer-use-action` (with `WindowClass`) and are
 //! re-exported here.

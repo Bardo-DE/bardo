@@ -7,7 +7,7 @@ use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
 use std::os::fd::OwnedFd;
 
-/// A lease, as cuad numbers them.
+/// A lease, as the computer-use daemon numbers them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct LeaseId(pub u64);
@@ -45,7 +45,7 @@ pub enum EiOrigin {
     SenderSocket,
 }
 
-/// The EIS socket cuad speaks to. The descriptor is not data: it travels beside the grant.
+/// The EIS socket the computer-use daemon speaks to. The descriptor is not data: it travels beside the grant.
 #[derive(Debug)]
 pub struct EiSocket(pub OwnedFd);
 
@@ -88,13 +88,13 @@ pub enum SeatIsolation {
 pub enum Suspend {
     /// The person took over.
     TakeOver,
-    /// A confirmation is showing; on stock, cuad stops emulating until it is answered.
+    /// A confirmation is showing; on stock, the computer-use daemon stops emulating until it is answered.
     Consent,
     /// The run is paused.
     Paused,
 }
 
-/// Why a lease ended without cuad asking.
+/// Why a lease ended without the computer-use daemon asking.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RevokeReason {

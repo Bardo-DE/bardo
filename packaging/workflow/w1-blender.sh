@@ -24,8 +24,8 @@
 #   W1_SCREEN_URL    the model that looks at the screen, the same way (a tunnel to the one on fatcat)
 # The script never starts a model. Start the screen model on fatcat yourself, only when you are ready, and stop it after.
 # Optional: W1_PLANNER_MODEL (default qwen3-4b-instruct-2507-fp8), W1_SCREEN_MODEL (default holo4-35b-a3b-fp8),
-# W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_COMPOSITOR / _SHELL / _CUA / _ACTIONS
-# (build folders, default /mnt/data/cargo/w1-*), W1_COMPOSITOR, W1_FAKE_LOGIND, W1_SHELL, W1_CUAD, W1_BRINGUP,
+# W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_COMPOSITOR / _SHELL / _COMPUTER_USE / _ACTIONS
+# (build folders, default /mnt/data/cargo/w1-*), W1_COMPOSITOR, W1_FAKE_LOGIND, W1_SHELL, W1_COMPUTER_USE_DAEMON, W1_BRINGUP,
 # W1_BARDO_DO (a program by path), W1_BROWSER_CMD, W1_SIB (the folder holding bardo-compositor, bardo-shell, ...),
 # W1_MODEL_CATALOG, W1_PROVIDERS, W1_SHOT_EVERY (seconds, default 120).
 #
@@ -49,12 +49,12 @@ SCREEN_MODEL=${W1_SCREEN_MODEL:-holo4-35b-a3b-fp8}
 T_COMPOSITOR=${W1_TARGET_COMPOSITOR:-/mnt/data/cargo/w1-compositor}
 T_TOOLS=${W1_TARGET_COMPOSITOR_TOOLS:-/mnt/data/cargo/w1-compositor-tools}
 T_SHELL=${W1_TARGET_SHELL:-/mnt/data/cargo/w1-shell}
-T_CUA=${W1_TARGET_CUA:-/mnt/data/cargo/w1-cua}
+T_COMPUTER_USE=${W1_TARGET_COMPUTER_USE:-/mnt/data/cargo/w1-computer-use}
 T_ACTIONS=${W1_TARGET_ACTIONS:-/mnt/data/cargo/w1-actions}
 COMPOSITOR=${W1_COMPOSITOR:-$T_COMPOSITOR/debug/bardo-compositor}
 FAKE_LOGIND=${W1_FAKE_LOGIND:-$T_TOOLS/debug/fake-logind}
 SHELL=${W1_SHELL:-$T_SHELL/debug/bardo-shell}
-CUAD=${W1_CUAD:-$T_CUA/debug/bardo-computer-use}
+COMPUTER_USE_DAEMON=${W1_COMPUTER_USE_DAEMON:-$T_COMPUTER_USE/debug/bardo-computer-use}
 BRINGUP=${W1_BRINGUP:-$T_ACTIONS/debug/agent-bringup}
 BARDO_DO=${W1_BARDO_DO:-$T_ACTIONS/debug/accept-bardo-do}
 
@@ -80,7 +80,7 @@ print_build() {
 # 3. the shell (bar, dock, launcher)
 (cd $SIB/bardo-shell && CARGO_TARGET_DIR=$T_SHELL nice cargo build -p shell-app --features debug)
 # 4. the screen helper
-(cd $SIB/cua && CARGO_TARGET_DIR=$T_CUA nice cargo build -p computer-use-daemon --features fixture-callers)
+(cd $SIB/computer_use && CARGO_TARGET_DIR=$T_COMPUTER_USE nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command
 (cd $SIB/actions && CARGO_TARGET_DIR=$T_ACTIONS nice cargo build -p action-accept --bins)
 EOF
@@ -160,7 +160,7 @@ pick_browser() {
 
 require_built() {
   local missing=0 path
-  for path in "$COMPOSITOR" "$FAKE_LOGIND" "$SHELL" "$CUAD" "$BRINGUP" "$BARDO_DO" \
+  for path in "$COMPOSITOR" "$FAKE_LOGIND" "$SHELL" "$COMPUTER_USE_DAEMON" "$BRINGUP" "$BARDO_DO" \
               "$(dirname "$BRINGUP")/accept-actiond" "$(dirname "$BRINGUP")/accept-companiond"; do
     [ -x "$path" ] || { note "Not built yet: $path"; missing=1; }
   done
@@ -291,7 +291,7 @@ write_floor() {
   # A proposal for an administrator-owned permission folder: the programs this run starts and what they may do.
   local f=$RUN/floor/privacy.toml prog power
   : >"$f"
-  for prog in "$CUAD:screen" "$CUAD:keys" "$CUAD:windows"; do
+  for prog in "$COMPUTER_USE_DAEMON:screen" "$COMPUTER_USE_DAEMON:keys" "$COMPUTER_USE_DAEMON:windows"; do
     power=${prog##*:}; prog=${prog%:*}
     printf '\n[[rule]]\npower = "%s"\nsubject = { program = "%s" }\nanswer = "allow"\n' "$power" "$(readlink -f "$prog")" >>"$f"
   done
@@ -366,7 +366,7 @@ prepare_models() {
     --screen-id "$SCREEN_MODEL" --screen-url "${W1_SCREEN_URL%/}" >"$AGENTS/config/bardo/inference/inferd.toml"
   mkdir -p "$HOME_S/.config/bardo/computer-use"
   "${PY[@]}" bardo-computer-use-settings --app "org.blender.Blender=${W1_BLENDER_ALLOW:-ask}" --app "$BROWSER_APP=ask" \
-    --steps "${W1_CUA_STEPS:-400}" --active-s "${W1_CUA_ACTIVE_S:-3600}" >"$HOME_S/.config/bardo/computer-use/settings.toml"
+    --steps "${W1_COMPUTER_USE_STEPS:-400}" --active-s "${W1_COMPUTER_USE_ACTIVE_S:-3600}" >"$HOME_S/.config/bardo/computer-use/settings.toml"
 }
 
 start_assistant() {
@@ -424,11 +424,11 @@ unit = "bardo-shell.service"
 role = "sheet_host"
 EOF
   in_env bash -c 'mkdir -p "$1/proc/$$" "$1/proc/units"; printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-computer-use.service\n" > "$1/proc/$$/cgroup"; echo $$ > "$1/proc/units/bardo-computer-use.service"; exec env BARDO_COMPUTER_USE_TEST_PROC_ROOT="$1/proc" BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS="$2" "$3"' \
-    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$CUAD" >"$RUN/bardo-computer-use.log" 2>&1 </dev/null &
-  local cuad_pid=$!
-  record bardo-computer-use "$cuad_pid"
+    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$COMPUTER_USE_DAEMON" >"$RUN/bardo-computer-use.log" 2>&1 </dev/null &
+  local computer_use_daemon_pid=$!
+  record bardo-computer-use "$computer_use_daemon_pid"
   sleep 2
-  kill -0 "$cuad_pid" 2>/dev/null || { tail -5 "$RUN/bardo-computer-use.log" >&2; die "the screen helper did not start (see $RUN/bardo-computer-use.log)"; }
+  kill -0 "$computer_use_daemon_pid" 2>/dev/null || { tail -5 "$RUN/bardo-computer-use.log" >&2; die "the screen helper did not start (see $RUN/bardo-computer-use.log)"; }
 }
 
 start_page() {

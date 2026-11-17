@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-desktop"
-description = "The desktop vocabulary every cua crate shares: windows, leases, backend capabilities, glow, units and the Desktop and LeaseControl seams."
+description = "The desktop vocabulary every computer-use crate shares: windows, leases, backend capabilities, glow, units and the Desktop and LeaseControl seams."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

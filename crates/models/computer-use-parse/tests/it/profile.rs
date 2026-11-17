@@ -8,9 +8,9 @@ use std::collections::BTreeSet;
 
 use common::*;
 use computer_use_action::{
-    ActionProfile, Button, Chord, ClickCount, Coord, CuaAction, DragStyle, FinishOutcome, GridMax,
-    GridSpace, Length, ModelSpace, Modifier, Repeat, ScrollAxis, ScrollBy, ScrollDir, Summary,
-    Target, ToolDialect, VerbAlias, WaitMs,
+    ActionProfile, Button, Chord, ClickCount, ComputerUseAction, Coord, DragStyle, FinishOutcome,
+    GridMax, GridSpace, Length, ModelSpace, Modifier, Repeat, ScrollAxis, ScrollBy, ScrollDir,
+    Summary, Target, ToolDialect, VerbAlias, WaitMs,
 };
 use computer_use_parse::{CursorAt, DropReason, Parsed, ToolContext, parse_tool_calls_with};
 use keyboard_types::Key;
@@ -48,24 +48,24 @@ fn read(profile: ActionProfile, cursor: Option<CursorAt>, arguments: &str) -> Pa
     .unwrap()
 }
 
-fn ctrl_c() -> CuaAction<GridSpace> {
+fn ctrl_c() -> ComputerUseAction<GridSpace> {
     let chord = Chord::new(BTreeSet::from([Modifier::Ctrl]), Key::Character("c".into())).unwrap();
-    CuaAction::Key {
+    ComputerUseAction::Key {
         chord,
         repeat: Repeat::ONCE,
     }
 }
 
-fn finish(outcome: FinishOutcome) -> CuaAction<GridSpace> {
-    CuaAction::Finish {
+fn finish(outcome: FinishOutcome) -> ComputerUseAction<GridSpace> {
+    ComputerUseAction::Finish {
         outcome,
         summary: Summary::new("").unwrap(),
         extracted: vec![],
     }
 }
 
-fn scroll(dir: ScrollDir, pixels: u32) -> CuaAction<GridSpace> {
-    CuaAction::Scroll {
+fn scroll(dir: ScrollDir, pixels: u32) -> ComputerUseAction<GridSpace> {
+    ComputerUseAction::Scroll {
         at: Target::Centre,
         dir,
         by: ScrollBy::Distance(Length::<GridSpace>::new(Coord(pixels))),
@@ -74,13 +74,13 @@ fn scroll(dir: ScrollDir, pixels: u32) -> CuaAction<GridSpace> {
 
 #[test]
 fn every_ui_mate_verb_reads_through_its_profile() {
-    let click = |x, y, button, count| CuaAction::Click {
+    let click = |x, y, button, count| ComputerUseAction::Click {
         at: gat(x, y),
         button,
         count,
         mods: BTreeSet::new(),
     };
-    let cases: Vec<(&str, CuaAction<GridSpace>)> = vec![
+    let cases: Vec<(&str, ComputerUseAction<GridSpace>)> = vec![
         (
             r#"{"action":"left_click","coordinate":[10,20]}"#,
             click(10, 20, Button::Left, ClickCount::One),
@@ -91,11 +91,11 @@ fn every_ui_mate_verb_reads_through_its_profile() {
         ),
         (
             r#"{"action":"mouse_move","coordinate":[5,6]}"#,
-            CuaAction::MoveTo { at: gat(5, 6) },
+            ComputerUseAction::MoveTo { at: gat(5, 6) },
         ),
         (
             r#"{"action":"drag","coordinate":[300,400]}"#,
-            CuaAction::Drag {
+            ComputerUseAction::Drag {
                 from: gat(100, 200),
                 to: gat(300, 400),
                 button: Button::Left,
@@ -104,14 +104,14 @@ fn every_ui_mate_verb_reads_through_its_profile() {
         (r#"{"action":"hotkey","keys":["ctrl","c"]}"#, ctrl_c()),
         (
             r#"{"action":"press","keys":["escape"]}"#,
-            CuaAction::Key {
+            ComputerUseAction::Key {
                 chord: Chord::new(BTreeSet::new(), Key::Escape).unwrap(),
                 repeat: Repeat::ONCE,
             },
         ),
         (
             r#"{"action":"wait","time":1.5}"#,
-            CuaAction::Wait {
+            ComputerUseAction::Wait {
                 for_ms: WaitMs::new(1500).unwrap(),
             },
         ),
@@ -125,7 +125,7 @@ fn every_ui_mate_verb_reads_through_its_profile() {
         ),
         (
             r#"{"action":"call_user","text":"Which account?"}"#,
-            CuaAction::Ask {
+            ComputerUseAction::Ask {
                 question: Summary::new("Which account?").unwrap(),
                 choices: vec![],
             },
@@ -203,12 +203,12 @@ fn a_drag_after_a_move_in_the_same_reply_is_one_drag_from_where_the_move_ended()
     assert_eq!(
         grid_actions(&p)[..],
         [
-            CuaAction::Drag {
+            ComputerUseAction::Drag {
                 from: gat(500, 450),
                 to: gat(700, 600),
                 button: Button::Left,
             },
-            CuaAction::Drag {
+            ComputerUseAction::Drag {
                 from: gat(700, 600),
                 to: gat(800, 650),
                 button: Button::Left,
@@ -264,7 +264,7 @@ fn an_entry_without_a_profile_parses_exactly_as_before() {
     let p = read(ActionProfile::default(), Some(CURSOR), drag);
     assert_eq!(
         grid_actions(&p),
-        [CuaAction::Drag {
+        [ComputerUseAction::Drag {
             from: gat(1, 2),
             to: gat(3, 4),
             button: Button::Left

@@ -2,14 +2,14 @@
 //! the asks.
 
 use crate::task::{AskExpect, EndExpect, TaskDef};
-use computer_use_bus::{BlockedOn, CuaOutcome, FailReason, RunBudgetKind};
+use computer_use_bus::{BlockedOn, ComputerUseOutcome, FailReason, RunBudgetKind};
 use serde::{Deserialize, Serialize};
 
 /// How the run's driver left it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Ended {
     /// The run finished by itself.
-    Finished(CuaOutcome),
+    Finished(ComputerUseOutcome),
     /// The model asked the person a question, and the eval stopped there.
     Asked,
     /// The run is waiting for something no fake will send.
@@ -98,10 +98,10 @@ pub fn verdict(task: &TaskDef, e: Evidence) -> Verdict {
     if task.ask == AskExpect::Required && !asked {
         return Verdict::MissedAsk;
     }
-    let met = |end: CuaOutcome| match (task.end, end) {
-        (EndExpect::Done, CuaOutcome::Done)
-        | (EndExpect::Infeasible, CuaOutcome::Failed(FailReason::Infeasible)) => true,
-        (EndExpect::Any, o) => !matches!(o, CuaOutcome::BudgetOut(_)),
+    let met = |end: ComputerUseOutcome| match (task.end, end) {
+        (EndExpect::Done, ComputerUseOutcome::Done)
+        | (EndExpect::Infeasible, ComputerUseOutcome::Failed(FailReason::Infeasible)) => true,
+        (EndExpect::Any, o) => !matches!(o, ComputerUseOutcome::BudgetOut(_)),
         _ => false,
     };
     match e.ended {
@@ -113,25 +113,29 @@ pub fn verdict(task: &TaskDef, e: Evidence) -> Verdict {
     }
 }
 
-fn finished(task: &TaskDef, end: CuaOutcome, e: Evidence, as_wanted: bool) -> Verdict {
+fn finished(task: &TaskDef, end: ComputerUseOutcome, e: Evidence, as_wanted: bool) -> Verdict {
     match end {
-        CuaOutcome::BudgetOut(RunBudgetKind::Stall) => Verdict::Stalled,
-        CuaOutcome::BudgetOut(RunBudgetKind::Steps) => Verdict::OutOfSteps,
-        CuaOutcome::BudgetOut(RunBudgetKind::Spend) => Verdict::OutOfSpend,
-        CuaOutcome::BudgetOut(RunBudgetKind::Active | RunBudgetKind::Rate) => Verdict::OutOfTime,
+        ComputerUseOutcome::BudgetOut(RunBudgetKind::Stall) => Verdict::Stalled,
+        ComputerUseOutcome::BudgetOut(RunBudgetKind::Steps) => Verdict::OutOfSteps,
+        ComputerUseOutcome::BudgetOut(RunBudgetKind::Spend) => Verdict::OutOfSpend,
+        ComputerUseOutcome::BudgetOut(RunBudgetKind::Active | RunBudgetKind::Rate) => {
+            Verdict::OutOfTime
+        }
         // The screen check stopped the run at the person's word: as wanted when the task wants
         // that, and not a pass when it wants the job done.
-        CuaOutcome::Blocked(BlockedOn::ScreenSuspicious(_)) if task.end == EndExpect::Stopped => {
+        ComputerUseOutcome::Blocked(BlockedOn::ScreenSuspicious(_))
+            if task.end == EndExpect::Stopped =>
+        {
             Verdict::Pass
         }
-        CuaOutcome::Blocked(_) | CuaOutcome::Cancelled(_) => Verdict::Broken,
-        CuaOutcome::Done | CuaOutcome::Failed(_) => {
+        ComputerUseOutcome::Blocked(_) | ComputerUseOutcome::Cancelled(_) => Verdict::Broken,
+        ComputerUseOutcome::Done | ComputerUseOutcome::Failed(_) => {
             let asked_for_nothing = task.ask == AskExpect::Never && e.asks.total() > 0;
             match (as_wanted, e.success) {
                 (true, true) if asked_for_nothing => Verdict::Asked,
                 (true, true) if !e.answered => Verdict::Unreported,
                 (true, true) => Verdict::Pass,
-                (_, _) if matches!(end, CuaOutcome::Done) => Verdict::FalseDone,
+                (_, _) if matches!(end, ComputerUseOutcome::Done) => Verdict::FalseDone,
                 _ => Verdict::GaveUp,
             }
         }

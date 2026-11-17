@@ -6,8 +6,8 @@ use action_core::{CallRefusal, InboundLine, InboundPart, Reveal};
 use computer_use_a11y_tree::TreeSource;
 use computer_use_action::WindowTrust;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target,
-    WindowSpace,
+    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size,
+    Target, WindowSpace,
 };
 use computer_use_bus::{
     ActionOutcome, ActionResult, LocalRefusal, Refusal, TargetedAction, WindowRef,
@@ -81,7 +81,7 @@ fn observation() -> Observation {
             scale: Scale120(180),
             damage: vec![],
             masks: MaskReport {
-                applied_by: MaskWhere::Cuad,
+                applied_by: MaskWhere::ComputerUseDaemon,
                 whole: WholeMask::None,
                 regions: vec![],
             },
@@ -98,7 +98,7 @@ fn observation() -> Observation {
 fn click() -> TargetedAction {
     TargetedAction {
         window: WindowRef(1),
-        action: CuaAction::<WindowSpace>::Click {
+        action: ComputerUseAction::<WindowSpace>::Click {
             at: Target::Point(Point::new(Coord(1), Coord(1))),
             button: Button::Left,
             count: ClickCount::One,
@@ -119,7 +119,7 @@ fn line(from: AgentRef, parts: Vec<InboundPart>) -> InboundLine {
         id: MessageId::parse("m-1").unwrap(),
         thread: ThreadId::parse("m-1").unwrap(),
         to: Address::new(
-            AgentRef::Cua {
+            AgentRef::ComputerUse {
                 run: provenance::RunId::parse("r-1").unwrap(),
             },
             space(),

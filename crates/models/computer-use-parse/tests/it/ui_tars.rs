@@ -6,8 +6,8 @@ use std::collections::BTreeSet;
 
 use common::*;
 use computer_use_action::{
-    Button, Chord, ClickCount, CuaAction, FinishOutcome, Modifier, Notches, Repeat, ScrollBy,
-    ScrollDir, Summary, TypedText, WaitMs,
+    Button, Chord, ClickCount, ComputerUseAction, FinishOutcome, Modifier, Notches, Repeat,
+    ScrollBy, ScrollDir, Summary, TypedText, WaitMs,
 };
 use computer_use_parse::{ByteOffset, DropReason, ParseError};
 use keyboard_types::Key;
@@ -34,7 +34,7 @@ fn ui_tars_examples_parse() {
     let chord = Chord::new(BTreeSet::from([Modifier::Ctrl]), Key::Character("c".into())).unwrap();
     assert_eq!(
         image_actions(&p),
-        [CuaAction::Key {
+        [ComputerUseAction::Key {
             chord,
             repeat: Repeat::ONCE
         }]
@@ -42,18 +42,18 @@ fn ui_tars_examples_parse() {
 
     let p = ui_tars(&fixture("type_escaped.txt")).unwrap();
     let text = TypedText::new("it's \"quoted\"\nsecond line").unwrap();
-    assert_eq!(image_actions(&p), [CuaAction::Type { text }]);
+    assert_eq!(image_actions(&p), [ComputerUseAction::Type { text }]);
 
     let p = ui_tars(&fixture("scroll_then_wait.txt")).unwrap();
     assert_eq!(
         image_actions(&p),
         [
-            CuaAction::Scroll {
+            ComputerUseAction::Scroll {
                 at: at(500, 500),
                 dir: ScrollDir::Down,
                 by: ScrollBy::Notches(Notches(5)),
             },
-            CuaAction::Wait {
+            ComputerUseAction::Wait {
                 for_ms: WaitMs::new(5000).unwrap()
             },
         ]
@@ -62,7 +62,7 @@ fn ui_tars_examples_parse() {
     let p = ui_tars(&fixture("finished.txt")).unwrap();
     assert_eq!(
         image_actions(&p),
-        [CuaAction::Finish {
+        [ComputerUseAction::Finish {
             outcome: FinishOutcome::Done,
             summary: Summary::new("The file is saved.").unwrap(),
             extracted: vec![],
@@ -76,7 +76,7 @@ fn click_family_and_drag() {
         "Thought: t\nAction: left_double(start_box='(1,2)')\n\nright_single(start_box='(3,4)')\n\ndrag(start_box='(5,6)', end_box='(7,8)')",
     )
     .unwrap();
-    let click = |to, button, count| CuaAction::Click {
+    let click = |to, button, count| ComputerUseAction::Click {
         at: to,
         button,
         count,
@@ -87,7 +87,7 @@ fn click_family_and_drag() {
         [
             click(at(1, 2), Button::Left, ClickCount::Two),
             click(at(3, 4), Button::Right, ClickCount::One),
-            CuaAction::Drag {
+            ComputerUseAction::Drag {
                 from: at(5, 6),
                 to: at(7, 8),
                 button: Button::Left
@@ -127,7 +127,7 @@ fn thought_is_optional_and_the_last_action_line_counts() {
 #[test]
 fn hotkey_spellings() {
     let key = |text: &str| match &image_actions(&ui_tars(text).unwrap())[0] {
-        CuaAction::Key { chord, .. } => (chord.mods.clone(), chord.key.clone()),
+        ComputerUseAction::Key { chord, .. } => (chord.mods.clone(), chord.key.clone()),
         other => panic!("{other:?}"),
     };
     let ctrl_shift_t = (
@@ -211,7 +211,7 @@ fn grid_points_past_the_top_are_refused_never_clamped() {
     assert_eq!(drops(&p), [("click", DropReason::OutOfFrame)]);
     assert_eq!(
         grid_actions(&p)[0],
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: gat(1000, 0),
             button: Button::Left,
             count: ClickCount::One,

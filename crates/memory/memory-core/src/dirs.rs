@@ -124,7 +124,7 @@ impl Dirs {
         self.space(space).join("pending")
     }
 
-    /// CUA procedures (the cua area's format, the same metadata trailer).
+    /// Computer use procedures (the computer use area's format, the same metadata trailer).
     #[must_use]
     pub fn procedures(&self, space: &SpaceId) -> PathBuf {
         self.space(space).join("procedures")

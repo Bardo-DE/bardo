@@ -31,7 +31,7 @@ pub fn caps(output: &[Constraint], tools: ToolSupport) -> Caps {
         },
         context: Tokens(8192),
         max_output: Tokens(512),
-        computer_use: CuaSupport::Absent,
+        computer_use: ComputerUseSupport::Absent,
     }
 }
 

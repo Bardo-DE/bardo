@@ -12,7 +12,7 @@
 //!   person's thinking while it waits.
 //! - [`structured`]: a reply of a JSON shape or a choice is validated, and repaired within the
 //!   limits (`inference_settings::structured::Limits`), before the app is told it.
-//! - [`cua_step`] and [`computer_use_run`]: one computer-use step over a model turn, and the run of steps
+//! - [`computer_use_step`] and [`computer_use_run`]: one computer-use step over a model turn, and the run of steps
 //!   of one session.
 //! - [`local`]: the turns on a local model ([`local::LocalTurn`], a `inference_core::Model` for one
 //!   request: chat, tasks, embeddings; [`local::LocalTurns`]: computer-use steps) over [`local::chat_provider`], retried as the daemon retries;
@@ -27,7 +27,7 @@
 pub mod audit;
 pub mod bridge;
 pub mod computer_use_run;
-pub mod cua_step;
+pub mod computer_use_step;
 pub mod local;
 pub mod pipeline;
 pub mod structured;

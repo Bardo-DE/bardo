@@ -12,7 +12,7 @@ use model_vision_prep::FrameMap;
 
 use super::ActionDialect;
 use crate::prompt::{body, points, resolution, shown_name};
-use crate::{CuaTaskText, TurnTranscript, answer, calls, shown};
+use crate::{ComputerUseTaskText, TurnTranscript, answer, calls, shown};
 
 const QWEN_SYSTEM: &str = include_str!("../../prompts/qwen_computer_use.txt");
 const QWEN_TOOL: &str = include_str!("../../prompts/qwen_computer_use.tool.txt");
@@ -35,7 +35,7 @@ impl ActionDialect for Qwen {
         &self,
         actions: ActionProfile,
         map: &FrameMap,
-        _task: &CuaTaskText,
+        _task: &ComputerUseTaskText,
     ) -> Option<String> {
         Some(
             body(QWEN_SYSTEM)
@@ -90,7 +90,7 @@ impl ActionDialect for Holo {
         &self,
         _actions: ActionProfile,
         map: &FrameMap,
-        _task: &CuaTaskText,
+        _task: &ComputerUseTaskText,
     ) -> Option<String> {
         Some(body(HOLO_SYSTEM).replace("{points}", &points(map)))
     }

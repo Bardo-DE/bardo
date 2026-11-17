@@ -2,7 +2,7 @@
 
 use action_core::*;
 use action_fake::*;
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_manifest::{Lasting, TitleTrust, ValidManifest};
 use action_provider::IntentProvider;
 use action_review::{ReviewVerdict, Reviewer};
@@ -411,19 +411,22 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
         },
     }]);
     let router = std::sync::Arc::new(router);
-    let cuad = CallerId {
+    let computer_use_daemon = CallerId {
         app: account_core::AppId {
             name: AppName::parse("org.bardo.ComputerUse").expect("app"),
             isolation: account_core::Isolation::Unsandboxed,
         },
-        roles: BTreeSet::from([CallerRole::Cua]),
+        roles: BTreeSet::from([CallerRole::ComputerUse]),
     };
-    let intents = Intents::over(InProcess::new(std::sync::Arc::clone(&router), cuad));
+    let intents = Intents::over(InProcess::new(
+        std::sync::Arc::clone(&router),
+        computer_use_daemon,
+    ));
     let run = RunId::parse("r-1").expect("run");
     intents
         .session_open(SessionOpen {
             space: space(),
-            agent: AgentRef::Cua { run: run.clone() },
+            agent: AgentRef::ComputerUse { run: run.clone() },
             parent: None,
             cwd: None,
             started_from: None,
@@ -432,15 +435,15 @@ async fn a_watched_gate_check_in_process_says_confirming_and_waits_for_proceed()
             acts_for: None,
         })
         .await
-        .expect("cuad opens its run's session");
-    let ask = CuaAsk {
+        .expect("computer_use_daemon opens its run's session");
+    let ask = ComputerUseAsk {
         run,
         step: 1,
         app: AppName::parse("org.bardo.Mail").expect("app"),
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space(),
-        action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,
+        action: computer_use_action::ComputerUseAction::<computer_use_action::WindowSpace>::Observe,
         node: None,
         effect: provenance::Effect::Outbound,
         basis: EffectBasis::DefaultTable,

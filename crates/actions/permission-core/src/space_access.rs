@@ -49,7 +49,7 @@ impl GrantCaller {
         match self {
             GrantCaller::App(app) => Some(app),
             GrantCaller::Companion
-            | GrantCaller::Cua
+            | GrantCaller::ComputerUse
             | GrantCaller::Mcp(_)
             | GrantCaller::Cli
             | GrantCaller::Editor(_)

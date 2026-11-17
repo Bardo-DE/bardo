@@ -26,7 +26,7 @@ fn table() -> CallerTable {
             row(
                 "org.bardo.ComputerUse",
                 Some("bardo-computer-use.service"),
-                CallerRole::Cua,
+                CallerRole::ComputerUse,
             ),
         ],
     }
@@ -41,7 +41,7 @@ fn a_unit_resolves_to_its_app_and_role() {
         ),
         (
             "bardo-computer-use.service",
-            Some(("org.bardo.ComputerUse", CallerRole::Cua)),
+            Some(("org.bardo.ComputerUse", CallerRole::ComputerUse)),
         ),
         // A row without a unit names no unit.
         ("bardo-settings.service", None),
@@ -165,7 +165,7 @@ fn a_user_row_cannot_raise_a_system_app_to_a_fixed_role() {
         callers: vec![row("org.example.Notes", None, CallerRole::App)],
     };
     let user = CallerTable {
-        callers: vec![row("org.example.Notes", None, CallerRole::Cua)],
+        callers: vec![row("org.example.Notes", None, CallerRole::ComputerUse)],
     };
     let merged = CallerTable::layered(system, user);
     assert_eq!(merged.role_of(&name("org.example.Notes")), CallerRole::App);
@@ -185,7 +185,7 @@ fn a_user_row_cannot_replace_a_fixed_system_row_with_another_fixed_role() {
         merged
             .resolve_unit("bardo-computer-use.service")
             .map(|c| c.role),
-        Some(CallerRole::Cua)
+        Some(CallerRole::ComputerUse)
     );
 }
 

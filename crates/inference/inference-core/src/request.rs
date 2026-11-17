@@ -1,6 +1,7 @@
 //! What an app sends: one model whatever the provider; wire formats stay in the adapters.
-//! Streaming events are in `event`, the computer-use step in `cua`, speech in `speech`.
+//! Streaming events are in `event`, the computer-use step in `computer_use`, speech in `speech`.
 
+use crate::computer_use::{ComputerUseBegin, ComputerUseStepRequest};
 use crate::control::{ChatControl, ThoughtSeal};
 use crate::cua::{CuaBegin, CuaStepRequest};
 use crate::ids::{AttachIndex, Base64Bytes, SchemaText, ToolCallId, ToolName};
@@ -24,9 +25,9 @@ pub enum InferRequest {
     /// A task above raw chat; the shell uses these, never model ids.
     Task(TaskRequest),
     /// Opens a computer-use run on this session.
-    CuaBegin(CuaBegin),
+    ComputerUseBegin(ComputerUseBegin),
     /// One computer-use step: a frame in, actions out.
-    CuaStep(CuaStepRequest),
+    ComputerUseStep(ComputerUseStepRequest),
     /// Speech to text; audio follows as `ClientFrame::Audio` frames.
     Transcribe(TranscribeBegin),
     /// Text to speech; audio comes back as `InferEvent::Spoken` events.
@@ -43,10 +44,10 @@ pub enum RequestKind {
     Embed,
     /// [`InferRequest::Task`].
     Task,
-    /// [`InferRequest::CuaBegin`].
-    CuaBegin,
-    /// [`InferRequest::CuaStep`].
-    CuaStep,
+    /// [`InferRequest::ComputerUseBegin`].
+    ComputerUseBegin,
+    /// [`InferRequest::ComputerUseStep`].
+    ComputerUseStep,
     /// [`InferRequest::Transcribe`].
     Transcribe,
     /// [`InferRequest::Speak`].
@@ -61,8 +62,8 @@ impl InferRequest {
             InferRequest::Chat(_) => RequestKind::Chat,
             InferRequest::Embed(_) => RequestKind::Embed,
             InferRequest::Task(_) => RequestKind::Task,
-            InferRequest::CuaBegin(_) => RequestKind::CuaBegin,
-            InferRequest::CuaStep(_) => RequestKind::CuaStep,
+            InferRequest::ComputerUseBegin(_) => RequestKind::ComputerUseBegin,
+            InferRequest::ComputerUseStep(_) => RequestKind::ComputerUseStep,
             InferRequest::Transcribe(_) => RequestKind::Transcribe,
             InferRequest::Speak(_) => RequestKind::Speak,
         }
@@ -79,7 +80,7 @@ impl InferRequest {
                 .flat_map(|message| message.parts.iter())
                 .flat_map(MessagePart::images)
                 .collect(),
-            InferRequest::CuaStep(step) => vec![&step.frame.source],
+            InferRequest::ComputerUseStep(step) => vec![&step.frame.source],
             _ => vec![],
         };
         sources

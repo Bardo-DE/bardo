@@ -362,7 +362,7 @@ need a person, a real compositor or real eyes.
   terminal again (the sheet's `Exclusive` keyboard is released when it leaves).
 - [ ] **Phase A is forgeable**: a key typed by uinput answers the sheet. Known; Phase B closes it.
 
-## The assistant (a shell session with intentd, companiond, cuad and memoryd installed)
+## The assistant (a shell session with intentd, companiond, the computer-use daemon and memoryd installed)
 
 The service, the machines and the launcher's mode are tested on stand-ins and fakes; these need
 the real daemons or a real keyboard.
@@ -386,7 +386,7 @@ the real daemons or a real keyboard.
 - [ ] **Command-period** in the prompt: stops the answer being made; on a run's row (Tab to Runs) it
   stops the run. `bardo-shell companion stop-all` pauses every run that is going and leaves paused and ended
   ones alone.
-- [ ] **A run's row** (a real cua run): the row follows the run's phase; "Take Over" and "Hand Back"
+- [ ] **A run's row** (a real computer-use run): the row follows the run's phase; "Take Over" and "Hand Back"
   change the state; "Watch" does nothing from the shell (the compositor's) and must not close the panel.
 - [ ] **Undo**: after an assistant action, the Assistant filter lists it under recent activity with
   "Undo"; Enter undoes it and the row reads "Undone".

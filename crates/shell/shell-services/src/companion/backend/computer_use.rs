@@ -1,4 +1,4 @@
-//! The computer-use runs cuad has, as `RunFacts`: the manager's list and its `RunAdded` and
+//! The computer-use runs the computer-use daemon has, as `RunFacts`: the manager's list and its `RunAdded` and
 //! `RunRemoved`, and one follower per run over its properties and signals. A run is named by its
 //! `Id` property, read once when its object appears; the path is only where to find it, so each
 //! path is remembered with its id for `RunRemoved`, which comes after the object is gone.
@@ -7,8 +7,8 @@
 use std::collections::HashMap;
 
 use computer_use_action::RunMode;
-use computer_use_bus::{BudgetBody, CuaOutcome, RunEnd, RunStateSlug, WindowBody};
-use computer_use_dbus::{CUA_BUS, ManagerProxy, RunProxy};
+use computer_use_bus::{BudgetBody, ComputerUseOutcome, RunEnd, RunStateSlug, WindowBody};
+use computer_use_dbus::{COMPUTER_USE_BUS, ManagerProxy, RunProxy};
 use provenance::RunId;
 use shell_launcher::RunControl;
 use shell_model::companion::{CompanionEvent, RunFacts, SightState};
@@ -22,13 +22,13 @@ use crate::call_error::CallError;
 use crate::owner;
 use crate::stream::next;
 
-/// Follow cuad while it is on the bus: every run it has, as it adds and removes them.
+/// Follow the computer-use daemon while it is on the bus: every run it has, as it adds and removes them.
 pub(super) async fn follow(connection: Connection, events: UnboundedSender<CompanionEvent>) {
     owner::while_owned(
         &connection,
-        CUA_BUS,
+        COMPUTER_USE_BUS,
         || manage(&connection, &events),
-        // With cuad gone nothing is known about the screen model, so nothing is said. A send
+        // With the computer-use daemon gone nothing is known about the screen model, so nothing is said. A send
         // that fails means the events have no receiver, which ends `manage` on its own.
         || {
             let _ = events.send(CompanionEvent::Sight(SightState::Sees));
@@ -48,7 +48,7 @@ async fn manage(connection: &Connection, events: &UnboundedSender<CompanionEvent
     ) else {
         return std::future::pending().await;
     };
-    // Older cuad has no `SightNote`: it then says nothing.
+    // Older the computer-use daemon has no `SightNote`: it then says nothing.
     let mut notes = manager.receive_sight_note_changed().await;
     let sight = |note: Option<String>| {
         events.send(CompanionEvent::Sight(SightState::of(
@@ -217,7 +217,7 @@ async fn read(run: &RunId, proxy: &RunProxy<'_>) -> Result<RunFacts, CallError> 
         window,
         step: proxy.step().await?,
         state,
-        outcome: None::<CuaOutcome>,
+        outcome: None::<ComputerUseOutcome>,
         mode,
         thought: None,
         budget,

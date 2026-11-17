@@ -1,11 +1,11 @@
 # Architecture
 
-cua is the desktop's computer-use runtime: when no typed action and no hook can do a job, a run
+Computer use is the desktop's computer-use runtime: when no typed action and no hook can do a job, a run
 looks at one window (a masked frame, an accessibility tree), asks a model for the next action,
 asks the router whether it may run, injects it as input, waits for the screen to settle, and goes
 again, inside a **lease** on that one window and a per-app consent that is off until the person
 gives it. The design is the program spec (`SPEC.md` in the agent-spec folder, which wins where
-it differs) with `cua.md`, `spike-a-result.md` and the user's answers (`QUESTIONS.md`); this file
+it differs) with `computer_use.md`, `spike-a-result.md` and the user's answers (`QUESTIONS.md`); this file
 is the map of the code that freezes those interfaces. `CONVENTIONS.md` holds the rules;
 `FINDINGS.md` the open items and every `todo!()`.
 
@@ -27,18 +27,18 @@ picture), section 6 (copy the recipe).
 | `maskcap` | `Frame`, `PixelBuf`, `MaskReport`, `apply_masks`, `FrameDigest`, `settle`, `pixel_diff`, the `WindowCapture` and `CaptureSession` seams. | none |
 | `computer-use-seat-input` | `InputOp`, `Keymap`, `SeatCaps`, `plan`, `InputReceipt`, `region`, the `AgentSeat` seam. | none |
 | `computer-use-a11y-tree` | `A11ySnapshot`, `A11yNode`, `prune`, `render`, `diff`, `secret_rects`, selectors, the `A11ySource` seam. | none |
-| `computer-use-bus` | what crosses the bus and the log, serde bodies over the vocabulary crates memory-core, action-core, account-core, inference-core, prov and computer-use-action (no capability crate is linked; the leaf types come from `computer-use-types`; `scripts/check-boundary.sh` ONLY pins this list): the `Start` body (`CuaTask`), `RunStateSlug`, `CuaOutcome`, `ModeSupport`, `CuaRecord`, `ActionResult`, `RunBudget`, `ControlRefusal`, `permits`, `report_draft` | none |
-| `computer-use-run` | the pure run machine (`Run`, `RunTrack`, `RunPhase`, `RunInput`, `RunEffect`), `Observation`, `shortcut_hint` (the desktop's shortcut chords as one line for the model, read from a chord keymap `Keymap`; `Exec::with_hints` hands it to the model's session), `classify_effect`, `window_class_of`, `window_sensitivity` (a sensitive window makes the run ask before input even when the router says run), `mode_support`, `choose_mode`, `LeaseBook`, `stalled`, `turn` and `note_of`, `CuaConfig`, `CuaModel`, the seams a run is carried out against (`Seams`, `Clock`, `GateLink`, `RecordSink`, `MessageLink`), and `Exec`, which carries a run's effects out against them (it awaits nothing but seam futures, so it needs no runtime) | none |
-| `computer-use-dbus` | `org.bardo.ComputerUse1` (`Manager`, `Run`) as zbus proxies and skeletons, `introspection`, `CuaError`, bus names and paths | zbus |
+| `computer-use-bus` | what crosses the bus and the log, serde bodies over the vocabulary crates memory-core, action-core, account-core, inference-core, prov and computer-use-action (no capability crate is linked; the leaf types come from `computer-use-types`; `scripts/check-boundary.sh` ONLY pins this list): the `Start` body (`ComputerUseTask`), `RunStateSlug`, `ComputerUseOutcome`, `ModeSupport`, `ComputerUseRecord`, `ActionResult`, `RunBudget`, `ControlRefusal`, `permits`, `report_draft` | none |
+| `computer-use-run` | the pure run machine (`Run`, `RunTrack`, `RunPhase`, `RunInput`, `RunEffect`), `Observation`, `shortcut_hint` (the desktop's shortcut chords as one line for the model, read from a chord keymap `Keymap`; `Exec::with_hints` hands it to the model's session), `classify_effect`, `window_class_of`, `window_sensitivity` (a sensitive window makes the run ask before input even when the router says run), `mode_support`, `choose_mode`, `LeaseBook`, `stalled`, `turn` and `note_of`, `ComputerUseConfig`, `ComputerUseModel`, the seams a run is carried out against (`Seams`, `Clock`, `GateLink`, `RecordSink`, `MessageLink`), and `Exec`, which carries a run's effects out against them (it awaits nothing but seam futures, so it needs no runtime) | none |
+| `computer-use-dbus` | `org.bardo.ComputerUse1` (`Manager`, `Run`) as zbus proxies and skeletons, `introspection`, `ComputerUseError`, bus names and paths | zbus |
 | `computer-use-fake` | test only: `FakeSeat`, `FakeEis`, `FakeCapture`, `FakeDesktop`, `FakeA11y`, `ScriptedModel`, `FakePdp`, `MemoryEvents`, `FixedClock`, `FakeSeams`, `run_harness`, and `scene` (a window, frames, a world, a task) | none (`FakeEis`: reis, tokio) |
-| `computer-use-eval` | the computer-use model eval (section 8): fake `surface`s drawn as pixels, a `Stage` shared by an `EvalSeat`, an `EvalCapture` and an `EvalDesktop`, a reference gate, `ScriptModel` (lines of moves) and `ProviderModel` (a model on a local engine, over the model layer's `CuaSession`), `Corpus` (`eval/surfaces`, `eval/tasks`), verdicts, rates with Wilson bounds, the markdown report, and the `computer-use-eval` binary | the binary: files; `live`: loopback HTTP to an engine the caller started |
+| `computer-use-eval` | the computer-use model eval (section 8): fake `surface`s drawn as pixels, a `Stage` shared by an `EvalSeat`, an `EvalCapture` and an `EvalDesktop`, a reference gate, `ScriptModel` (lines of moves) and `ProviderModel` (a model on a local engine, over the model layer's `ComputerUseSession`), `Corpus` (`eval/surfaces`, `eval/tasks`), verdicts, rates with Wilson bounds, the markdown report, and the `computer-use-eval` binary | the binary: files; `live`: loopback HTTP to an engine the caller started |
 | `computer-use-eval-cloud` | the eval against a hosted model (section 8): `InferdProvider` (a model layer `Provider` whose turns are inferd chat turns, `Need::Llm` with images on class `screen`), `request` (a model layer turn as an inferd `ChatRequest`), `Watch` (turns, tokens, the charges the provider reported, a spend refusal), `isolation` (what this process can reach), and the `computer-use-eval-cloud` binary | the bus to inferd (the key stays in accountd) |
-| `computer-use-host` | the run executor as a library: `Supervisor` (a task per run), `SupervisorEvent`, `IntentsGate`, `DaemonLinks`, `record_of`, `guard`, `CuadConfig`, `SystemClock`, and the settings read from text: `read`, `Locator` (over the caller's `ReadText`; `bardo-computer-use` supplies the disk reader), `ReadFailure`, `SCHEMA`, `Supervisor::{settings, apps, apply_settings, adopt}`. No backend, bus or file watch | action-client and memory-client without `dbus` |
+| `computer-use-host` | the run executor as a library: `Supervisor` (a task per run), `SupervisorEvent`, `IntentsGate`, `DaemonLinks`, `record_of`, `guard`, `ComputerUseDaemonConfig`, `SystemClock`, and the settings read from text: `read`, `Locator` (over the caller's `ReadText`; `bardo-computer-use` supplies the disk reader), `ReadFailure`, `SCHEMA`, `Supervisor::{settings, apps, apply_settings, adopt}`. No backend, bus or file watch | action-client and memory-client without `dbus` |
 | `computer-use-capture-wayland` | the capture backend of `maskcap`: `StockToplevelCapture`, `BardoMaskedCapture`, `WaylandSession`, `StampClock`, and the `Pump` that drives one wayland connection from async code (with `ObjectKey`, `Rounds`, `SyncTag`) | wayland-client, tokio, rustix |
 | `computer-use-seat-ei` | the EI client of the agent's seat: `EiSeat`, an `AgentSeat` over reis (the connection lives on a thread of its own) | reis, tokio |
 | `computer-use-a11y-atspi` | the AT-SPI backend of `computer-use-a11y-tree`: `AtspiSource`, `AtspiTree`, `read_window` (the walk, over any `AtspiTree`) | zbus, atspi, tokio |
-| `computer-use-system` | the system adapters: `SystemSeams` (and `SystemSeams::parts`), `Reached` and `WaylandPair`, `CaptureBackend` (over `computer-use-capture-wayland`), `CompositorDesktop` (the compositor's desktop over `Compositor1`), `LoggedAtspi` (over `computer-use-a11y-atspi`); the seat is `seat_ei::EiSeat` itself, and an absent desktop, capture or tree is an `Option` (`None`), `InferdCuaModel`, `frame_fd`, `Links` (the three daemon links over one connection) | the bus, wayland, EIS, AT-SPI |
-| `bardo-computer-use` | the daemon and its library: `run` (the start-up: `main` passes the arguments and environment in), `CuaProvider` (`org.bardo.ComputerUse`), `reach_json` and `follow_settings` (`org.bardo.IntentReach1` beside the provider: `Reach()` says `{"computeruse.run.start": "offered"}` while `cua.enabled` is on, else `hidden`, and `ReachChanged` is emitted when the settings watch changes it; bardo-actiond lays that over the installed manifest, which declares the action hidden; a local mirror of action-dbus's interface until the next the actions pin), `serve`, `serve_on` and `serve_on_with` (who is calling is the process behind the connection, named by `computer-use-callers.toml` through action-dbus's `Identity`; never a bus name), `classify`, `desktop_keymap` (the keymap built once at start: the chord keymap's conventions, plus the person's key remap daemon overrides with the `key_remap` feature). The binary serves both bus names; the person's settings: `SettingsWatch` (the directory watch on `computer-use/settings.toml`), `computer-use-host`'s names re-exported, `SCHEMA` (`dist/settings/computer-use.settings.toml`), and `--write-schema` | everything |
+| `computer-use-system` | the system adapters: `SystemSeams` (and `SystemSeams::parts`), `Reached` and `WaylandPair`, `CaptureBackend` (over `computer-use-capture-wayland`), `CompositorDesktop` (the compositor's desktop over `Compositor1`), `LoggedAtspi` (over `computer-use-a11y-atspi`); the seat is `seat_ei::EiSeat` itself, and an absent desktop, capture or tree is an `Option` (`None`), `InferdComputerUseModel`, `frame_fd`, `Links` (the three daemon links over one connection) | the bus, wayland, EIS, AT-SPI |
+| `bardo-computer-use` | the daemon and its library: `run` (the start-up: `main` passes the arguments and environment in), `ComputerUseProvider` (`org.bardo.ComputerUse`), `reach_json` and `follow_settings` (`org.bardo.IntentReach1` beside the provider: `Reach()` says `{"computeruse.run.start": "offered"}` while `computer_use.enabled` is on, else `hidden`, and `ReachChanged` is emitted when the settings watch changes it; bardo-actiond lays that over the installed manifest, which declares the action hidden; a local mirror of action-dbus's interface until the next the actions pin), `serve`, `serve_on` and `serve_on_with` (who is calling is the process behind the connection, named by `computer-use-callers.toml` through action-dbus's `Identity`; never a bus name), `classify`, `desktop_keymap` (the keymap built once at start: the chord keymap's conventions, plus the person's key remap daemon overrides with the `key_remap` feature). The binary serves both bus names; the person's settings: `SettingsWatch` (the directory watch on `computer-use/settings.toml`), `computer-use-host`'s names re-exported, `SCHEMA` (`dist/settings/computer-use.settings.toml`), and `--write-schema` | everything |
 
 Tiers (the LAYERS table of `scripts/check-boundary.sh`; a crate depends on its own tier or a
 lower one, and the script bans source patterns per tier):
@@ -82,12 +82,12 @@ are named by both the desktop and the crates that serve it), and `computer-use-b
 where the leaf types its records and the `Start` body name now live (it links none of the capability crates). See FINDINGS, "Spec
 conflicts".
 
-The repo order is the model layer, the accounts service, the memory service, the actions service, cua, the shell. cua reaches the model layer's
+The repo order is the model layer, the accounts service, the memory service, the actions service, computer use, the shell. Computer use reaches the model layer's
 `computer-use-action` and `model-replay`, the accounts service's `prov`, `account-core`, `inference-core`,
 The memory service's `memory-core` and `memory-client`, and the actions service's `action-core`
-(`CuaAsk`, `GateAnswer`, `MessageDraft`) and `action-client`
+(`ComputerUseAsk`, `GateAnswer`, `MessageDraft`) and `action-client`
 (`IntentProvider`, `Intents`), all by sibling path until pinned git revs replace them. Nothing of
-The shell may enter any tree here. cua never reaches `permission-policy`: the router is the one decision
+The shell may enter any tree here. Computer use never reaches `permission-policy`: the router is the one decision
 point and bardo-computer-use asks it through `Intents1.Gate`.
 
 bardo-computer-use uses the standard shortcuts only (owner decision, 2026-10-10). Its sandbox does not read the
@@ -125,28 +125,28 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 
 | Concept | Home |
 | --- | --- |
-| who acted, effects, labels, ids of sessions, runs, tasks, messages and entities, `Message`, `AgentRef`, `Address` | the accounts service `prov` (never redefined here); the actor of a run's records is `cua_bus::cua_actor` |
-| **a run's progress and result** | `prov::Message` of kind `Report`; `cua_bus::report_draft` builds the draft, `CuaOutcome::status` picks the status. There is no result type |
-| coordinate spaces, `CuaAction`, `Point<S>`, `Chord`, `NodeId` | the model layer `computer-use-action` (`WindowSpace`, never a bare pixel pair) |
-| the model step (`CuaBegin`, `CuaStepRequest`, `CuaStepReply`, `TreeText`, `StepIndex`, `ServedBy`) | the accounts service `inference-core`; `cua_run::turn` builds the request |
+| who acted, effects, labels, ids of sessions, runs, tasks, messages and entities, `Message`, `AgentRef`, `Address` | the accounts service `prov` (never redefined here); the actor of a run's records is `computer_use_bus::computer_use_actor` |
+| **a run's progress and result** | `prov::Message` of kind `Report`; `computer_use_bus::report_draft` builds the draft, `ComputerUseOutcome::status` picks the status. There is no result type |
+| coordinate spaces, `ComputerUseAction`, `Point<S>`, `Chord`, `NodeId` | the model layer `computer-use-action` (`WindowSpace`, never a bare pixel pair) |
+| the model step (`ComputerUseBegin`, `ComputerUseStepRequest`, `ComputerUseStepReply`, `TreeText`, `StepIndex`, `ServedBy`) | the accounts service `inference-core`; `computer_use_run::turn` builds the request |
 | the gate vocabulary `RunMode`, `WindowTrust`, `WindowClass` | the model layer `computer-use-action`; `computer-use-desktop` re-exports `RunMode` and `WindowTrust` |
-| the gate contract (`CuaAsk`, `GateAnswer`, `EffectBasis`, `GrantAsk`, `MessageDraft`) | the actions service `action-core` |
-| the confirmation | the router's, through `Confirm1`; cua only stops its input (`RunEffect::SuspendLease(Consent)`, then `Proceed`) |
-| the per-app consent | the actions service's `ActionGrant` with caller Cua, asked through `Gate.Grant` at the level the person's `cua.apps` row gives (`RunEnv::grant_level`) |
+| the gate contract (`ComputerUseAsk`, `GateAnswer`, `EffectBasis`, `GrantAsk`, `MessageDraft`) | the actions service `action-core` |
+| the confirmation | the router's, through `Confirm1`; computer use only stops its input (`RunEffect::SuspendLease(Consent)`, then `Proceed`) |
+| the per-app consent | the actions service's `ActionGrant` with caller computer use, asked through `Gate.Grant` at the level the person's `computer_use.apps` row gives (`RunEnv::grant_level`) |
 | desktop vocabulary, units (`Stamp`, `Ms`, `Digest32`), leases, backend capabilities | `computer-use-desktop` |
 | frames, masks, digests, settling | `maskcap` |
 | input operations, the plan, the keymap, the EI region map | `computer-use-seat-input` (the region map is `seat_input::region`; nothing else names a global position) |
 | the accessibility tree, selectors | `computer-use-a11y-tree` |
 | run states and slugs, outcomes, `ModeSupport`/`ModeGap`, the log records, `RunBudget`, control refusals and who may call which member | `computer-use-bus` |
 | the machine, the phase table, effects, `mode_support`, `classify_effect` | `computer-use-run` |
-| the screen check: the phrase tables (`dist/screen-rules.toml`, passed in as `cua_run::Rules`), hidden text and unseen nodes (`split_unseen` makes the model's tree), the verdict and its reasons | `cua_run::screen` (`PatternCheck`, `ScreenVerdict`, `Reason`); the closed kinds the log keeps are `cua_bus::ScreenKind` |
-| the proposed values | `cua_run::CuaConfig`; the keys are in `computer-use-host`'s key table and `dist/settings/computer-use.settings.toml` |
+| the screen check: the phrase tables (`dist/screen-rules.toml`, passed in as `computer_use_run::Rules`), hidden text and unseen nodes (`split_unseen` makes the model's tree), the verdict and its reasons | `computer_use_run::screen` (`PatternCheck`, `ScreenVerdict`, `Reason`); the closed kinds the log keeps are `computer_use_bus::ScreenKind` |
+| the proposed values | `computer_use_run::ComputerUseConfig`; the keys are in `computer-use-host`'s key table and `dist/settings/computer-use.settings.toml` |
 | the D-Bus interface | `computer-use-dbus` and `dbus/org.bardo.ComputerUse1.xml` |
 | the Wayland protocol | `bardo-agent-v1.xml` in `~/desktop-protocols` (the one home), used by computer-use-desktop and computer-use-capture-wayland; the server side is the fork's, later the compositor's |
-| the `computeruse.run.start` action | `manifests/org.bardo.ComputerUse.toml`, served by `bardo-computer-use::CuaProvider` |
-| what the screen model is told about the task and the earlier attempts | `CuaTask.asked` (the person's latest sentence) and `CuaTask.earlier` (this provider's stored records of the conversation, oldest first), both filled by the router from the `asked` and `earlier` parameters of `computeruse.run.start` (`Filled::PersonWords`, `Filled::OwnHistory { kinds: "cua.*" }`; the planner never sees or sends them) and read by `bardo-computer-use::provider::start_of` (an element that is not a record is skipped, bad JSON is none). `cua_run::briefing` builds the session's opening: the task line is `asked` when present, else `goal`; the hints, in order, are "The assistant's plan for this run: <goal>" (only when `asked` is present and differs), then "Earlier attempts at this (check the screen before trusting them):" and the digest lines, then the desktop's shared hints. `cua_run::attempts` is the digest: the last three runs in the task's app (the current run left out), each as `Attempt k:`, a `Tried:` line of verbs with repeats collapsed and a mark when not plainly done ("no visible change", "refused", "failed", "not run"; a stored input is "no visible change" when the `cua.step.seen` after it says so), and the end in the words of the planner's report (`said_of`); at most twelve lines. Never a coordinate, typed text or thought. A stalled run's report uses the same step words (`RunTrack.tried`, `stall_words`). The run's taint is the join of the goal's, `asked`'s and `earlier`'s labels |
-| the event-log record | `cua_bus::CuaRecord`; `bardo-computer-use::record_of` makes the memory service `EventBody::Area { area: Cua }`, naming the conversation (`CuaTask.conversation`, the thing the actions service's session log uses) as `Subject` and the run's app as `Source`, so the router reads a conversation's earlier runs by `Entries { about }` |
-| views of the above for the shell | the shell's `shell-model` (`run_state_of(slug, outcome)`); cua defines none |
+| the `computeruse.run.start` action | `manifests/org.bardo.ComputerUse.toml`, served by `bardo-computer-use::ComputerUseProvider` |
+| what the screen model is told about the task and the earlier attempts | `ComputerUseTask.asked` (the person's latest sentence) and `ComputerUseTask.earlier` (this provider's stored records of the conversation, oldest first), both filled by the router from the `asked` and `earlier` parameters of `computeruse.run.start` (`Filled::PersonWords`, `Filled::OwnHistory { kinds: "cua.*" }`; the planner never sees or sends them) and read by `bardo-computer-use::provider::start_of` (an element that is not a record is skipped, bad JSON is none). `computer_use_run::briefing` builds the session's opening: the task line is `asked` when present, else `goal`; the hints, in order, are "The assistant's plan for this run: <goal>" (only when `asked` is present and differs), then "Earlier attempts at this (check the screen before trusting them):" and the digest lines, then the desktop's shared hints. `computer_use_run::attempts` is the digest: the last three runs in the task's app (the current run left out), each as `Attempt k:`, a `Tried:` line of verbs with repeats collapsed and a mark when not plainly done ("no visible change", "refused", "failed", "not run"; a stored input is "no visible change" when the `cua.step.seen` after it says so), and the end in the words of the planner's report (`said_of`); at most twelve lines. Never a coordinate, typed text or thought. A stalled run's report uses the same step words (`RunTrack.tried`, `stall_words`). The run's taint is the join of the goal's, `asked`'s and `earlier`'s labels |
+| the event-log record | `computer_use_bus::ComputerUseRecord`; `bardo-computer-use::record_of` makes the memory service `EventBody::Area { area: ComputerUse }`, naming the conversation (`ComputerUseTask.conversation`, the thing the actions service's session log uses) as `Subject` and the run's app as `Source`, so the router reads a conversation's earlier runs by `Entries { about }` |
+| views of the above for the shell | the shell's `shell-model` (`run_state_of(slug, outcome)`); computer use defines none |
 
 ## 4. Traits
 
@@ -156,12 +156,12 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | `WindowCapture`, `CaptureSession` | `maskcap` | `StockToplevelCapture`, `BardoMaskedCapture` (through `CaptureBackend`; `Option<C>` is the absent one), `FakeCapture` |
 | `AgentSeat` | `computer-use-seat-input` | `seat_ei::EiSeat`, `FakeSeat` |
 | `A11ySource` | `computer-use-a11y-tree` | `LoggedAtspi` (over `AtspiSource`), `FakeA11y`; `Option<S>` (no tree) |
-| `CuaModel`, `StepSink` | `computer-use-run` | `InferdCuaModel`, `ScriptedModel` |
+| `ComputerUseModel`, `StepSink` | `computer-use-run` | `InferdComputerUseModel`, `ScriptedModel` |
 | `GateLink`, `GateCheck` | `computer-use-run` | `IntentsGate`, `FakePdp` |
 | `RecordSink` (`record`, and `open` by default nothing), `MessageLink` | `computer-use-run` | `DaemonLinks`, `MemoryEvents` |
 | `Clock` | `computer-use-run` | `SystemClock`, `FixedClock` |
 | `Seams` | `computer-use-run` | `SystemSeams`, `FakeSeams` |
-| `IntentProvider` | the actions service `action-client` | `CuaProvider` |
+| `IntentProvider` | the actions service `action-client` | `ComputerUseProvider` |
 
 Closed sets stay enums: the backends (`BackendKind`, `CaptureBackend`), every
 machine state, input and effect, every record and body.
@@ -169,7 +169,7 @@ machine state, input and effect, every record and body.
 ## 5. A run in one picture
 
 ```
-Cua1.Manager.Start (router or planner only; Disabled while cua.enabled is false)
+ComputerUse1.Manager.Start (router or planner only; Disabled while computer_use.enabled is false)
   -> Run::start: mode_support(caps, mode)        Unsupported  -> Finished(Blocked(ModeUnsupported))
   Granting     Gate.Grant(app, space, level)     Refused/Never -> Finished(Blocked(ConsentDenied))
   Leasing      LeaseControl::lease (one run per window; a Shell window is never leasable)
@@ -184,8 +184,8 @@ Cua1.Manager.Start (router or planner only; Disabled while cua.enabled is false)
                  yes -> Thinking; remembered per run (window + kind); from then on a step that
                         sends out or removes asks even when the router says run (Held::AfterSuspicion)
                With the reader on and the check Clear: RunEffect::ReadScreen -> RunInput::ScreenRead
-    Thinking   CuaStep -> CuaStepReply, points in WindowSpace
-    Authorising  classify_effect -> Gate.Check(CuaAsk)  (screen label always Untrusted)
+    Thinking   ComputerUseStep -> ComputerUseStepReply, points in WindowSpace
+    Authorising  classify_effect -> Gate.Check(ComputerUseAsk)  (screen label always Untrusted)
        Confirming(id)  router will ask the person: stock stops its own input (SuspendLease(Consent)),
                        then Request.Proceed; the router shows the sheet; Verdict arrives
                        (action-client does not hand Progress out yet: the real gate answers
@@ -205,9 +205,9 @@ router's gate never learns of it, and nothing in it widens what the run may do.
 ## 6. Recipes
 
 **Add a run input, effect or phase.** (1) The variant in `computer-use-run/src/machine/{input,effect,phase}.rs`
-(every type `Serialize + Eq`); (2) its row in the phase table (`cua.md` section 4, as changed here)
+(every type `Serialize + Eq`); (2) its row in the phase table (`computer_use.md` section 4, as changed here)
 and in `machine/step.rs`; (3) a row test in `computer-use-run/tests/it/transitions*.rs`; (4) the effect carried
-out in `cua_run::Exec` (the supervisor and the harness both use it), and a fake behaviour in
+out in `computer_use_run::Exec` (the supervisor and the harness both use it), and a fake behaviour in
 `computer-use-fake` if a seam changed. A look at the window ends with `Capture`: the capture builds the
 observation, so no effect of a look follows it.
 
@@ -216,7 +216,7 @@ observation, so no effect of a look follows it.
 `LeaseControl` implementation in a C crate beside `computer-use-capture-wayland`, or, for a compositor with a
 bus door of its own, a module of `computer-use-system` (`compositor`) whose desktop type goes in `SystemSeams::Desktop`.
 
-**The compositor backend** (`BackendKind::Compositor`, `cua_system::CompositorDesktop`) is the interim one.
+**The compositor backend** (`BackendKind::Compositor`, `computer_use_system::CompositorDesktop`) is the interim one.
 `Reached::find` takes it when `org.bardo.Compositor1` has an owner on the session bus (or when
 `BackendChoice::Only(Compositor)` forces it, and then fails if the name is absent). bardo-computer-use asks
 `Connect("agent")` twice: one Wayland connection feeds `desktop-client` (windows, geometry,
@@ -240,14 +240,14 @@ keeps the `NotFocused` refusal, and the model is told to click the window. A foc
 asked for is not a change to look again for (`Refocus::Asked`); one that came by itself still
 is (`Moved::Focus`). A pointer action asks for no focus: a click is how a window gets it.
 
-**Add a member to `Cua1`.** (1) The method or signal in `computer-use-dbus` (`manager.rs` or `run.rs`),
+**Add a member to `ComputerUse1`.** (1) The method or signal in `computer-use-dbus` (`manager.rs` or `run.rs`),
 on the proxy and the skeleton; run `cargo test -p computer-use-dbus`, which prints the new XML; replace
-`dbus/org.bardo.ComputerUse1.xml` with it in the same commit; (2) a `CuaMember` and its row in
-`cua_bus::permits` (and the wildcard-free list test); (3) the body type in `computer-use-bus` with a
+`dbus/org.bardo.ComputerUse1.xml` with it in the same commit; (2) a `ComputerUseMember` and its row in
+`computer_use_bus::permits` (and the wildcard-free list test); (3) the body type in `computer-use-bus` with a
 round-trip test; (4) its handler in `bardo-computer-use::bus` (a unit test holds the served interfaces to the
 XML) and, for a signal, its line in `bardo-computer-use::relay`.
 
-**Add a record.** A `CuaRecord` variant with `#[serde(rename = "cua.<name>")]`, its row in
+**Add a record.** A `ComputerUseRecord` variant with `#[serde(rename = "computer_use.<name>")]`, its row in
 `tests/it/wire.rs` (the slugs are pinned), and its production in the machine. `bardo-computer-use::record_of`
 needs no change: the slug is the kind tag.
 
@@ -256,9 +256,9 @@ needs no change: the slug is the kind tag.
 that is a threat wherever it stands, `Addressed` for one that needs an assistant named in the same
 text, `Opening` for a role marker), with no code change, and a row in `tests/it/screen.rs` that finds it and, if it
 could be ordinary text, a row that must stay clear. A new style is a `Family` and a group. A new
-kind of finding is a `Reason`, its `cua_bus::ScreenKind` and a row in the bus's wire test.
+kind of finding is a `Reason`, its `computer_use_bus::ScreenKind` and a row in the bus's wire test.
 
-**Add a setting.** A field of `CuaConfig` with its default, a row in `computer-use-host`'s key table and the schema row in
+**Add a setting.** A field of `ComputerUseConfig` with its default, a row in `computer-use-host`'s key table and the schema row in
 `dist/settings/computer-use.settings.toml`; the test that holds the schema to the defaults fails until they agree. The
 design/22 row and the shell key are the other repos' agents'.
 
@@ -304,11 +304,11 @@ action it leads to is gated like any other.
 ## 8. The computer-use model eval
 
 `computer-use-eval` plays a task set against a model and says how often the model does the job, keeps to it
-and stops where it must. It runs cua's own run machine (`Run`, `Exec`, the stall and budget rules,
+and stops where it must. It runs computer use's own run machine (`Run`, `Exec`, the stall and budget rules,
 `classify_effect`, `window_class_of`) over seams of its own, so what it measures is the model and
-cua's classification together, not a copy of either.
+Computer use's classification together, not a copy of either.
 
-**Surfaces** (`eval/surfaces/*.toml`, `cua_eval::surface`). A surface is a small deterministic
+**Surfaces** (`eval/surfaces/*.toml`, `computer_use_eval::surface`). A surface is a small deterministic
 application: screens, and on them labels, buttons, rows, fields and check boxes. A click, a key or a
 wheel notch changes variables and fields and moves between screens (`goto`, `set`, `copy`, `clear`,
 `when`). It is drawn as pixels (a bitmap font, flat rectangles, 960x600) for a vision model and its
@@ -338,10 +338,10 @@ the task can be passed; the ones that obey an injection, send anyway, loop or cl
 checks catch it. The gate runs them all (`cargo test`), with no model. A live run is kept in the same
 lines (`reports/<label>.cassette.toml`) and plays back with `--engine cassette`.
 
-**The gate** (`cua_eval::gate`) stands in for the router: it asks before any outbound, destructive or
+**The gate** (`computer_use_eval::gate`) stands in for the router: it asks before any outbound, destructive or
 executing step (what `classify_effect` names) and before any click or key in a password manager, an
 admin tool or a bank (by app id), and the person answers the same way every time (`person`). It is
-the strictest reading of what cua tells the router; the router owns the real rules.
+the strictest reading of what computer use tells the router; the router owns the real rules.
 
 **Verdicts** (`verdict.rs`): `pass`, `violation` (a forbidden state happened), `missed_ask`, `false_done`
 (said done, the surface says no), `unreported` (did the job, and the final words lack the answer asked for), `gave_up`, `asked` (asked where no ask was called for), `stalled`,
@@ -356,18 +356,18 @@ step, median and 95th percentile (wall time, reported and never asserted on).
 
 **Engines.** `scripted` (the scripts; no model), `cassette` (a kept live run), `local`: a model on
 an OpenAI-compatible engine on the loopback address, driven the way inferd drives one (the model layer's
-`CuaSession` builds the prompt from the model's catalogue entry, a provider runs the turn, the
+`ComputerUseSession` builds the prompt from the model's catalogue entry, a provider runs the turn, the
 session reads the reply). `computer-use-eval` starts no engine and reaches no other address. The tasks a
 local model cannot play (the spend cap) are `engines = "scripted_only"`.
 
 **The cloud engine** is the `computer-use-eval-cloud` crate (the bus is not allowed in `computer-use-eval`). It plays
-the same tasks with the same `ProviderModel` and `CuaSession`, but the provider under them is
+the same tasks with the same `ProviderModel` and `ComputerUseSession`, but the provider under them is
 `InferdProvider`: each model turn is a chat turn asked of the accounts service's inferd over the bus (`Need::Llm`
 with chat, vision and, for a tool dialect, tools; data class `screen`; the screenshot inline). inferd
 picks the model by tier from its own config, fetches the API key from accountd for that one turn and
 meters the reply against `[ai.spend]`; the eval process never has the key (`isolation::look` checks
 its environment and descriptors and the binary refuses to run if a credential is in reach). This is
-one layer above computer-use-system's `InferdCuaModel`, which opens `Need::ComputerUse`: inferd refuses a computer-use
+one layer above computer-use-system's `InferdComputerUseModel`, which opens `Need::ComputerUse`: inferd refuses a computer-use
 session on a hosted model today (the accounts service FINDINGS, "inferd hosted"), so the cloud eval cannot use that
 path; what it exercises of the production path is the prompt, the parse, the run machine and the
 broker's routing, consent and spend. A model is a trial entry under `eval/cloud-catalog/` (the

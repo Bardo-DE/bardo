@@ -2,11 +2,11 @@
 
 use provenance::RunId;
 
-/// cuad's bus name.
-pub const CUA_BUS: &str = "org.bardo.ComputerUse1";
-/// cuad's root object (`Manager`).
-pub const CUA_PATH: &str = "/org/bardo/ComputerUse1";
-/// The bus name cuad also owns, as the provider of the `computeruse.run.start` action
+/// The computer-use daemon's bus name.
+pub const COMPUTER_USE_BUS: &str = "org.bardo.ComputerUse1";
+/// The computer-use daemon's root object (`Manager`).
+pub const COMPUTER_USE_PATH: &str = "/org/bardo/ComputerUse1";
+/// The bus name the computer-use daemon also owns, as the provider of the `computeruse.run.start` action
 /// (`org.bardo.IntentProvider1` at the actions service's `PROVIDER_PATH`).
 pub const PROVIDER_BUS: &str = "org.bardo.ComputerUse";
 
@@ -29,7 +29,7 @@ pub fn run_path(run: &RunId) -> String {
             }
         })
         .collect();
-    format!("{CUA_PATH}/run/{segment}")
+    format!("{COMPUTER_USE_PATH}/run/{segment}")
 }
 
 #[cfg(test)]

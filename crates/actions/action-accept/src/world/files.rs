@@ -106,7 +106,7 @@ role = "agent"
 [[caller]]
 app = "org.bardo.ComputerUse"
 unit = "bardo-computer-use.service"
-role = "cua"
+role = "computer_use"
 
 [[caller]]
 app = "org.bardo.Shell"

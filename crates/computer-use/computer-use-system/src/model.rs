@@ -1,15 +1,15 @@
 //! The computer-use model over inferd.
 
 use crate::frame_fd::frame_fd;
-use account_capability::CuaEnv;
+use account_capability::ComputerUseEnv;
 use account_capability::Tier;
 use account_core::DataClass;
-use account_match::CuaNeed;
+use account_match::ComputerUseNeed;
 use account_match::Need;
 use base_ids::Tokens;
 use computer_use_run::{
-    CuaModel, CuaModelError, FrameAttachment, ModelReach, ModelSight, StepEvent, StepSink,
-    ThoughtText,
+    ComputerUseModel, ComputerUseModelError, FrameAttachment, ModelReach, ModelSight, StepEvent,
+    StepSink, ThoughtText,
 };
 use inference_client::{OpenOptions, Transport, TransportError};
 use inference_core::{
@@ -20,20 +20,20 @@ use inference_core::{
 };
 use std::collections::BTreeSet;
 
-/// A [`CuaModel`] over one inferd session (`Need::ComputerUse`, class `Screen`).
+/// A [`ComputerUseModel`] over one inferd session (`Need::ComputerUse`, class `Screen`).
 ///
-/// It sends `CuaBegin` once, then a `CuaStep` per turn with the frame as a memfd attached to the
+/// It sends `ComputerUseBegin` once, then a `ComputerUseStep` per turn with the frame as a memfd attached to the
 /// session's fd, never base64 on the bus. The route is chosen once, so the session is pinned to one
 /// model.
 ///
-/// `begin` reads to the empty `CuaStepReply` that acknowledges it (the protocol has no other
+/// `begin` reads to the empty `ComputerUseStepReply` that acknowledges it (the protocol has no other
 /// reply for a begin; one with actions in it is a protocol fault). `step` forwards each
 /// `ThoughtDelta` and `ActionProposed` to the sink as it arrives and ends on `Finished`. A model
 /// failure ends the step and leaves the session usable (its history is intact); a session that
 /// closes or breaks is dropped, and every later step is `Fatal`: the run cannot continue on
 /// another model.
 #[derive(Debug)]
-pub struct InferdCuaModel<T: Transport> {
+pub struct InferdComputerUseModel<T: Transport> {
     transport: T,
     tier: Tier,
     session: Option<T::Session>,
@@ -44,7 +44,7 @@ pub struct InferdCuaModel<T: Transport> {
     blind: Option<String>,
 }
 
-impl<T: Transport> InferdCuaModel<T> {
+impl<T: Transport> InferdComputerUseModel<T> {
     /// A model that has not opened its session yet; `begin` opens it, on the `Balanced` tier.
     pub fn over(transport: T) -> Self {
         Self {
@@ -57,7 +57,7 @@ impl<T: Transport> InferdCuaModel<T> {
         }
     }
 
-    /// The tier the session is opened on (`CuadConfig::tier`).
+    /// The tier the session is opened on (`ComputerUseDaemonConfig::tier`).
     #[must_use]
     pub fn on_tier(self, tier: Tier) -> Self {
         Self { tier, ..self }
@@ -65,42 +65,44 @@ impl<T: Transport> InferdCuaModel<T> {
 }
 
 /// The need a run of `env` opens its session with.
-fn need_for(env: CuaEnv) -> Need {
-    Need::ComputerUse(CuaNeed::new(BTreeSet::from([env])))
+fn need_for(env: ComputerUseEnv) -> Need {
+    Need::ComputerUse(ComputerUseNeed::new(BTreeSet::from([env])))
 }
 
 /// An unreachable inferd is worth retrying; a hung-up, confused or refusing one is not (a refused
-/// caller stays refused until inferd's caller table names cuad).
+/// caller stays refused until inferd's caller table names the computer-use daemon).
 #[expect(
     clippy::needless_pass_by_value,
     reason = "used as the function of `map_err`, which hands the error over"
 )]
-fn transport_failure(error: TransportError) -> CuaModelError {
+fn transport_failure(error: TransportError) -> ComputerUseModelError {
     match error {
-        TransportError::Unreachable => CuaModelError::Transient,
-        _ => CuaModelError::Fatal,
+        TransportError::Unreachable => ComputerUseModelError::Transient,
+        _ => ComputerUseModelError::Fatal,
     }
 }
 
 /// Why a turn ended without the reply it was waiting for. `blind` is the sentence inferd's
 /// notice that the chosen model cannot read images left: a refusal that follows it is that
 /// refusal, not a model that is merely not there.
-fn failed_turn(reply: &InferReply, blind: Option<&str>) -> CuaModelError {
+fn failed_turn(reply: &InferReply, blind: Option<&str>) -> ComputerUseModelError {
     match reply {
-        InferReply::Failed(error) => CuaStepFailure::ModelFailed(*error).into(),
-        InferReply::Refused(InferRefusal::NoModelSeesScreen) => CuaModelError::CannotSeeScreen,
+        InferReply::Failed(error) => ComputerUseStepFailure::ModelFailed(*error).into(),
+        InferReply::Refused(InferRefusal::NoModelSeesScreen) => {
+            ComputerUseModelError::CannotSeeScreen
+        }
         InferReply::Refused(InferRefusal::Unavailable) if blind.is_some() => {
-            CuaModelError::CannotSeeScreen
+            ComputerUseModelError::CannotSeeScreen
         }
         InferReply::Refused(InferRefusal::Unavailable) | InferReply::Cancelled => {
-            CuaModelError::Transient
+            ComputerUseModelError::Transient
         }
         InferReply::Refused(_)
-        | InferReply::CuaStep(_)
+        | InferReply::ComputerUseStep(_)
         | InferReply::Chat(_)
         | InferReply::Embed(_)
         | InferReply::Transcribed(_)
-        | InferReply::Spoke(_) => CuaModelError::Fatal,
+        | InferReply::Spoke(_) => ComputerUseModelError::Fatal,
     }
 }
 
@@ -114,12 +116,12 @@ fn zero() -> TurnUsage {
     }
 }
 
-impl<T: Transport> CuaModel for InferdCuaModel<T> {
+impl<T: Transport> ComputerUseModel for InferdComputerUseModel<T> {
     /// Asks inferd (`Prepare`, which also warms the model) whether the engine for a desktop
     /// run can be had. Only `Unavailable` is a no: loading, downloading, an inferd that does
     /// not answer and a refusal are left to the run, which reports why if it cannot go on.
     async fn reach(&mut self) -> ModelReach {
-        let need = need_for(CuaEnv::Desktop);
+        let need = need_for(ComputerUseEnv::Desktop);
         let asked = self
             .transport
             .prepare(&need, DataClass::Screen, self.tier, &OpenOptions::default())
@@ -130,7 +132,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
         }
     }
 
-    async fn begin(&mut self, begin: CuaBegin) -> Result<(), CuaModelError> {
+    async fn begin(&mut self, begin: ComputerUseBegin) -> Result<(), ComputerUseModelError> {
         let need = need_for(begin.env);
         let mut session = self
             .transport
@@ -138,21 +140,21 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
             .await
             .map_err(transport_failure)?;
         session
-            .send(ClientFrame::Request(InferRequest::CuaBegin(begin)))
+            .send(ClientFrame::Request(InferRequest::ComputerUseBegin(begin)))
             .await
             .map_err(|error| {
                 tracing::warn!(%error, "could not send the begin frame to the model");
-                CuaModelError::Fatal
+                ComputerUseModelError::Fatal
             })?;
         loop {
             let event = session.next().await.map_err(|error| {
                 tracing::warn!(%error, "the model session broke before it began");
-                CuaModelError::Fatal
+                ComputerUseModelError::Fatal
             })?;
             match event {
                 InferEvent::Routed(served) => self.served = Some(served),
                 InferEvent::Declined(declined) => self.note_declined(&declined),
-                InferEvent::Finished(InferReply::CuaStep(ack)) if is_ack(&ack) => break,
+                InferEvent::Finished(InferReply::ComputerUseStep(ack)) if is_ack(&ack) => break,
                 InferEvent::Finished(other) => return Err(self.ended(&other)),
                 _ => {}
             }
@@ -163,11 +165,11 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
 
     async fn step(
         &mut self,
-        mut request: CuaStepRequest,
+        mut request: ComputerUseStepRequest,
         frame: FrameAttachment,
         sink: &mut impl StepSink,
-    ) -> Result<CuaStepReply, CuaModelError> {
-        let session = self.session.as_mut().ok_or(CuaModelError::Fatal)?;
+    ) -> Result<ComputerUseStepReply, ComputerUseModelError> {
+        let session = self.session.as_mut().ok_or(ComputerUseModelError::Fatal)?;
         // The bytes ride as the first descriptor, whatever the request says: the layout is the
         // buffer's own.
         request.frame.source = ImageSource::Attached(AttachIndex(0));
@@ -178,12 +180,12 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
         };
         let fd = frame_fd(&frame).map_err(|error| {
             tracing::warn!(%error, "could not make a descriptor of the frame");
-            CuaModelError::Fatal
+            ComputerUseModelError::Fatal
         })?;
         self.usage = None;
         let sent = session
             .send_attached(
-                ClientFrame::Request(InferRequest::CuaStep(request)),
+                ClientFrame::Request(InferRequest::ComputerUseStep(request)),
                 vec![fd],
             )
             .await;
@@ -193,7 +195,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
         loop {
             let event = match self.session.as_mut() {
                 Some(session) => session.next().await,
-                None => return Err(CuaModelError::Fatal),
+                None => return Err(ComputerUseModelError::Fatal),
             };
             match event {
                 Ok(InferEvent::ThoughtDelta(text)) => {
@@ -205,7 +207,7 @@ impl<T: Transport> CuaModel for InferdCuaModel<T> {
                 Ok(InferEvent::Routed(served)) => self.served = Some(served),
                 Ok(InferEvent::Declined(declined)) => self.note_declined(&declined),
                 Ok(InferEvent::Usage(usage)) => self.usage = Some(usage),
-                Ok(InferEvent::Finished(InferReply::CuaStep(reply))) => return Ok(reply),
+                Ok(InferEvent::Finished(InferReply::ComputerUseStep(reply))) => return Ok(reply),
                 Ok(InferEvent::Finished(other)) => return Err(self.ended(&other)),
                 Ok(_) => {}
                 Err(error) => return Err(self.lost(&error)),
@@ -252,9 +254,9 @@ fn sight_of(places: &[PlaceRow]) -> ModelSight {
     }
 }
 
-impl<T: Transport> InferdCuaModel<T> {
+impl<T: Transport> InferdComputerUseModel<T> {
     /// A turn ended without its reply: sorted, and the sentence kept when it is about the screen.
-    fn ended(&mut self, reply: &InferReply) -> CuaModelError {
+    fn ended(&mut self, reply: &InferReply) -> ComputerUseModelError {
         if matches!(reply, InferReply::Refused(InferRefusal::NoModelSeesScreen)) {
             self.blind = Some(NO_MODEL_SEES_SCREEN.to_owned());
         }
@@ -270,15 +272,15 @@ impl<T: Transport> InferdCuaModel<T> {
     }
 
     /// The session broke: it is gone, and so is the history the model was pinned to.
-    fn lost(&mut self, error: &SessionError) -> CuaModelError {
+    fn lost(&mut self, error: &SessionError) -> ComputerUseModelError {
         tracing::warn!(%error, "the model session broke");
         self.session = None;
-        CuaModelError::Fatal
+        ComputerUseModelError::Fatal
     }
 }
 
 /// The empty reply that acknowledges a begin.
-fn is_ack(reply: &CuaStepReply) -> bool {
+fn is_ack(reply: &ComputerUseStepReply) -> bool {
     reply.thought.is_none()
         && reply.actions.is_empty()
         && reply.dropped.is_empty()

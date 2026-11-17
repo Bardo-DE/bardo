@@ -106,7 +106,7 @@ fn the_first_row_for_a_unit_wins() {
         row(
             "org.bardo.ComputerUse",
             Some("bardo-computer-use.service"),
-            CallerRole::Cua,
+            CallerRole::ComputerUse,
             &[],
         ),
         row(
@@ -121,7 +121,7 @@ fn the_first_row_for_a_unit_wins() {
         .expect("a row");
     assert_eq!(
         (found.app.as_str(), found.role.as_str()),
-        ("org.bardo.ComputerUse", "cua")
+        ("org.bardo.ComputerUse", "computer_use")
     );
 }
 

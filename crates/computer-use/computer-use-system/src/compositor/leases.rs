@@ -1,4 +1,4 @@
-//! The leases cuad holds on the compositor: one per window, numbered by the compositor.
+//! The leases the computer-use daemon holds on the compositor: one per window, numbered by the compositor.
 
 use computer_use_desktop::{DesktopError, LeaseId, ToplevelIdent};
 use std::collections::BTreeMap;

@@ -7,16 +7,16 @@ use action_core::{ConfirmAnswer, GrantScope};
 use action_daemon::{AcpGate, IntentdConfig, ProcRoot, serve_on_gated};
 use action_dbus::callers::{CallerTable, Identity};
 use action_fake::{ScriptedConfirmer, fake_router};
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_router::Router;
 use action_vocab::CallerRole;
 use action_wire::SessionOpen;
 use caller_role_types::CallerRole as Role;
-use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{ComputerUseAction, WindowSpace};
 use computer_use_action::{RunMode, WindowTrust};
 use computer_use_bus::{
-    ActionResult, AuthorisedBy, CuaOutcome, CuaRecord, FrameNote, TargetedAction, ThoughtDigest,
-    WindowRef,
+    ActionResult, AuthorisedBy, ComputerUseOutcome, ComputerUseRecord, FrameNote, TargetedAction,
+    ThoughtDigest, WindowRef,
 };
 use computer_use_capture::FrameDigest;
 use computer_use_daemon::IntentsGate;
@@ -31,7 +31,7 @@ use std::sync::Arc;
 use zbus::Connection;
 
 pub(crate) const COMPANION: &str = "org.bardo.Companion1";
-pub(crate) const CUAD: &str = "org.bardo.ComputerUse1";
+pub(crate) const COMPUTER_USE_DAEMON: &str = "org.bardo.ComputerUse1";
 
 pub(crate) fn mail() -> AppName {
     AppName::parse("org.bardo.Mail").unwrap()
@@ -78,7 +78,10 @@ pub(crate) async fn desk(answers: Vec<ConfirmAnswer>) -> Desk {
         CallerRole::Companion,
         vec![AppName::parse(COMPANION).unwrap()],
     );
-    roles.insert(CallerRole::Cua, vec![AppName::parse(CUAD).unwrap()]);
+    roles.insert(
+        CallerRole::ComputerUse,
+        vec![AppName::parse(COMPUTER_USE_DAEMON).unwrap()],
+    );
     let config = IntentdConfig {
         roles,
         reviewers: None,
@@ -119,10 +122,14 @@ impl Desk {
         Intents::over(DbusTransport::new(connection))
     }
 
-    pub(crate) async fn cuad_connection(&self) -> Connection {
+    pub(crate) async fn computer_use_daemon_connection(&self) -> Connection {
         let connection = self.bus.connect().await;
-        connection.request_name(CUAD).await.expect("a name");
-        self.who.introduce_app(&connection, CUAD, Role::Cua);
+        connection
+            .request_name(COMPUTER_USE_DAEMON)
+            .await
+            .expect("a name");
+        self.who
+            .introduce_app(&connection, COMPUTER_USE_DAEMON, Role::ComputerUse);
         connection
     }
 
@@ -146,7 +153,7 @@ impl Desk {
         planner
             .session_open(SessionOpen {
                 space: work(),
-                agent: AgentRef::Cua { run: run() },
+                agent: AgentRef::ComputerUse { run: run() },
                 parent: None,
                 cwd: None,
                 external: None,
@@ -160,15 +167,15 @@ impl Desk {
     }
 }
 
-pub(crate) fn step(effect: Effect) -> CuaAsk {
-    CuaAsk {
+pub(crate) fn step(effect: Effect) -> ComputerUseAsk {
+    ComputerUseAsk {
         run: run(),
         step: 1,
         app: mail(),
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: work(),
-        action: CuaAction::<WindowSpace>::Observe,
+        action: ComputerUseAction::<WindowSpace>::Observe,
         node: None,
         effect,
         basis: EffectBasis::DefaultTable,
@@ -180,24 +187,24 @@ pub(crate) fn step(effect: Effect) -> CuaAsk {
     }
 }
 
-pub(crate) async fn answered(gate: &IntentsGate<DbusTransport>, ask: CuaAsk) -> GateAnswer {
+pub(crate) async fn answered(gate: &IntentsGate<DbusTransport>, ask: ComputerUseAsk) -> GateAnswer {
     let mut check = gate.check(ask).await.expect("a check");
     loop {
         match check.next().await.expect("an event") {
             GateEvent::Answered(answer) => return answer,
-            // The router is about to ask the person: cuad's input is idle, so say go on.
+            // The router is about to ask the person: the computer-use daemon's input is idle, so say go on.
             GateEvent::Confirming(_) => check.proceed().await.expect("proceed"),
         }
     }
 }
 
-pub(crate) fn record_of_run(run: &RunId) -> Vec<CuaRecord> {
+pub(crate) fn record_of_run(run: &RunId) -> Vec<ComputerUseRecord> {
     let action = TargetedAction {
         window: WindowRef(1),
-        action: CuaAction::<WindowSpace>::Observe,
+        action: ComputerUseAction::<WindowSpace>::Observe,
     };
     vec![
-        CuaRecord::RunStarted {
+        ComputerUseRecord::RunStarted {
             run: run.clone(),
             session: SessionId::parse("s-2").unwrap(),
             conversation: SessionId::parse("s-1").unwrap(),
@@ -208,7 +215,7 @@ pub(crate) fn record_of_run(run: &RunId) -> Vec<CuaRecord> {
             backend: computer_use_desktop::BackendKind::KwinStock,
             budget: computer_use_bus::RunBudget::PROPOSED,
         },
-        CuaRecord::Step {
+        ComputerUseRecord::Step {
             run: run.clone(),
             n: inference_core::StepIndex(1),
             thought: ThoughtDigest(Digest32([1; 32])),
@@ -223,9 +230,9 @@ pub(crate) fn record_of_run(run: &RunId) -> Vec<CuaRecord> {
             },
             input: None,
         },
-        CuaRecord::Finished {
+        ComputerUseRecord::Finished {
             run: run.clone(),
-            outcome: CuaOutcome::Done,
+            outcome: ComputerUseOutcome::Done,
             steps: base_ids::Count(1),
             charges: inference_core::ChargeTotal::default(),
             report: None,

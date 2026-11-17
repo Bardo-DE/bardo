@@ -1,15 +1,15 @@
 //! The proposed values the specs name, as one typed configuration with its defaults. This crate
-//! never reads settings: `computer-use-host` holds the key table and the schema, and cuad receives a
-//! [`CuaConfig`].
+//! never reads settings: `computer-use-host` holds the key table and the schema, and the computer-use daemon receives a
+//! [`ComputerUseConfig`].
 //!
-//! `cua.budget.denials` is not here: the router's breaker (`agent.breaker.*`) counts denials.
+//! `computer_use.budget.denials` is not here: the router's breaker (`agent.breaker.*`) counts denials.
 
 use computer_use_a11y_tree::NodeBudget;
 use computer_use_bus::RunBudget;
 use computer_use_desktop::Ms;
 use serde::{Deserialize, Serialize};
 
-/// `cua.default_mode`.
+/// `computer_use.default_mode`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DefaultMode {
@@ -57,29 +57,29 @@ pub const TREE_MAX_NODES: NodeBudget = NodeBudget(400);
     reason = "one field per boolean `cua.*` settings key; they are independent switches"
 )]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CuaConfig {
-    /// `cua.enabled`: off until the person turns it on, and then still needs the per-app
-    /// consent. Off, `Cua1.Start` answers `Disabled` and the `org.bardo.ComputerUse` action is hidden.
+pub struct ComputerUseConfig {
+    /// `computer_use.enabled`: off until the person turns it on, and then still needs the per-app
+    /// consent. Off, `ComputerUse1.Start` answers `Disabled` and the `org.bardo.ComputerUse` action is hidden.
     pub enabled: bool,
-    /// `cua.default_mode`.
+    /// `computer_use.default_mode`.
     pub default_mode: DefaultMode,
-    /// `cua.budget.*`.
+    /// `computer_use.budget.*`.
     pub budget: RunBudget,
-    /// `cua.autopause`: whether physical input pauses a run on a shared seat.
+    /// `computer_use.autopause`: whether physical input pauses a run on a shared seat.
     pub autopause: bool,
-    /// `cua.accessibility` (on): whether a run reads the controls (buttons, fields) of the
+    /// `computer_use.accessibility` (on): whether a run reads the controls (buttons, fields) of the
     /// window it is using, as the app describes them. Only that window's; with it off a run
     /// goes from pixels.
     pub accessibility: bool,
-    /// `cua.screens.keep`: whether thumbnails of steps are kept in the Space's encrypted store.
+    /// `computer_use.screens.keep`: whether thumbnails of steps are kept in the Space's encrypted store.
     pub keep_screens: bool,
-    /// `cua.screens.keep_days` (7).
+    /// `computer_use.screens.keep_days` (7).
     pub keep_days: Days,
 }
 
-impl Default for CuaConfig {
+impl Default for ComputerUseConfig {
     fn default() -> Self {
-        CuaConfig {
+        ComputerUseConfig {
             enabled: false,
             default_mode: DefaultMode::Auto,
             budget: RunBudget::PROPOSED,

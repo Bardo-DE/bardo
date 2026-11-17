@@ -23,7 +23,7 @@ role = "agent"
 [[caller]]
 app = "org.bardo.ComputerUse"
 unit = "bardo-computer-use.service"
-role = "cua"
+role = "computer_use"
 
 [[caller]]
 app = "org.bardo.Shell"
@@ -141,7 +141,7 @@ fn a_process_is_identified_by_its_cgroup() {
     let flatpak = app("org.example.Mail", Isolation::Flatpak);
     for (pid, expected) in [
         (10, Some(Caller::router())),
-        (11, Some(Caller::cuad())),
+        (11, Some(Caller::computer_use_daemon())),
         (12, Some(Caller::shell_ui())),
         (13, app("org.bardo.Companion", Isolation::Unsandboxed)),
         (14, None),
@@ -182,7 +182,10 @@ fn the_roles_map_onto_the_memory_services_callers() {
     let named = |unit: &str| table.resolve_unit(unit).map(caller_for);
     assert_eq!(named("bardo-actiond.service"), Some(Caller::router()));
     assert_eq!(named("bardo-shell.service"), Some(Caller::shell_ui()));
-    assert_eq!(named("bardo-computer-use.service"), Some(Caller::cuad()));
+    assert_eq!(
+        named("bardo-computer-use.service"),
+        Some(Caller::computer_use_daemon())
+    );
     assert_eq!(
         named("org.bardo.Settings.service"),
         Some(Caller::settings())

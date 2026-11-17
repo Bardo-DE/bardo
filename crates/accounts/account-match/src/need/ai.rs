@@ -4,8 +4,8 @@
 
 use crate::short::{Shortfall, Wants, first_short};
 use account_capability::{
-    CuaCap, CuaEnv, EmbedCap, ImageGenCap, ImageMode, LlmCap, LlmFeature, Modality, RerankCap,
-    SpeechCap, SpeechMode,
+    ComputerUseCap, ComputerUseEnv, EmbedCap, ImageGenCap, ImageMode, LlmCap, LlmFeature, Modality,
+    RerankCap, SpeechCap, SpeechMode,
 };
 use base_ids::{Count, Dims, Px, Tokens};
 use serde::{Deserialize, Serialize};
@@ -112,15 +112,15 @@ impl RerankNeed {
 /// A computer-use model. Only the environments are asked for; protocol fields (batching, wire,
 /// image size) are the engine's business.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub struct CuaNeed {
+pub struct ComputerUseNeed {
     /// Environments it must operate.
-    pub environments: BTreeSet<CuaEnv>,
+    pub environments: BTreeSet<ComputerUseEnv>,
 }
 
-impl CuaNeed {
+impl ComputerUseNeed {
     /// A computer-use model that operates these environments.
     #[must_use]
-    pub fn new(environments: BTreeSet<CuaEnv>) -> Self {
+    pub fn new(environments: BTreeSet<ComputerUseEnv>) -> Self {
         Self { environments }
     }
 }
@@ -178,8 +178,8 @@ impl Wants<RerankCap> for RerankNeed {
     }
 }
 
-impl Wants<CuaCap> for CuaNeed {
-    fn short_of(&self, offer: &CuaCap) -> Option<Shortfall> {
+impl Wants<ComputerUseCap> for ComputerUseNeed {
+    fn short_of(&self, offer: &ComputerUseCap) -> Option<Shortfall> {
         first_short(&[(
             self.environments.is_subset(&offer.environments),
             Shortfall::Environments,

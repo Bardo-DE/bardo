@@ -7,7 +7,7 @@
 
 use crate::chord_scope::standard_actions_of;
 use computer_use_a11y_tree::{A11yNode, NodeState, Role};
-use computer_use_action::{CuaAction, NodeId, WindowSpace};
+use computer_use_action::{ComputerUseAction, NodeId, WindowSpace};
 use keymap::StandardAction;
 
 /// The standard actions that make or open something in the window, which a control usually does
@@ -60,8 +60,8 @@ fn names(node: &A11yNode, word: &str) -> bool {
 
 /// The first visible, enabled control in `nodes` whose meaning is the same as the chord of a
 /// `Key` action; `None` for any other action and for no tree (`nodes` empty).
-pub fn control_for(action: &CuaAction<WindowSpace>, nodes: &[A11yNode]) -> Option<Control> {
-    let CuaAction::Key { chord, .. } = action else {
+pub fn control_for(action: &ComputerUseAction<WindowSpace>, nodes: &[A11yNode]) -> Option<Control> {
+    let ComputerUseAction::Key { chord, .. } = action else {
         return None;
     };
     if chord.mods.is_empty() {

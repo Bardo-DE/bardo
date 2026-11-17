@@ -8,7 +8,7 @@
 //!
 //! The roles come from the daemon's own file, `<daemon>-callers.toml`: the system's under
 //! `/etc/bardo` and the person's under their configuration directory, laid over it
-//! ([`read_table`]). Only the system's file can give a fixed role (`sheet_host`, `cua`, ...), and
+//! ([`read_table`]). Only the system's file can give a fixed role (`sheet_host`, `computer_use`, ...), and
 //! a scope row is never more than a plain app, so the shell is `bardo-shell.service` and nothing else.
 //!
 //! A test (or a host that knows its own clients) names the callers of its private bus with

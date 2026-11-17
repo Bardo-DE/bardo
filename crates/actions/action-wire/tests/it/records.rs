@@ -1,10 +1,10 @@
 //! Wire shapes and words of the wire crate.
 
 use crate::support::*;
-use action_gate_wire::{CuaAsk, EffectBasis};
+use action_gate_wire::{ComputerUseAsk, EffectBasis};
 use action_vocab::{ActionRef, Args, CallRequest, CallerRole, Origin, TargetValue};
 use action_wire::{GrantAsk, IntentsReply, IntentsRequest, Member};
-use computer_use_action::{CuaAction, RunMode, WindowSpace, WindowTrust};
+use computer_use_action::{ComputerUseAction, RunMode, WindowSpace, WindowTrust};
 use permission_core::Level;
 use provenance::Effect;
 use serde::{Serialize, de::DeserializeOwned};
@@ -17,15 +17,15 @@ fn round<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(value: &
 }
 
 #[test]
-fn the_cua_ask_carries_an_untrusted_screen_label() {
-    let ask = CuaAsk {
+fn the_computer_use_ask_carries_an_untrusted_screen_label() {
+    let ask = ComputerUseAsk {
         run: provenance::RunId::parse("r-1").expect("r"),
         step: 4,
         app: app("org.mozilla.Firefox"),
         trust: WindowTrust::Flatpak,
         mode: RunMode::InPlace,
         space: space("work"),
-        action: CuaAction::<WindowSpace>::Observe,
+        action: ComputerUseAction::<WindowSpace>::Observe,
         node: None,
         effect: Effect::Read,
         basis: EffectBasis::DefaultTable,

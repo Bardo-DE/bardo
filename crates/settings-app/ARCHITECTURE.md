@@ -193,7 +193,7 @@ a `params` list even when empty), add its arm in `settings-app-intents/src/ask.r
   a connection that owns `org.bardo.Intents1` (a provider answers nobody else), the way intentd calls
   an app. `settings-app/tests/install.rs` runs `scripts/install.sh` into a scratch `DESTDIR`.
 - `settings-app-ui/tests/ui/intelligence/` (`sections`, `absent`, `picker`) drives the Intelligence page: a stand-in schema for the companion
-  (the shell has none yet) tests the section order, `intelligence_programs.rs` the rows the actions service, the memory service and cua
+  (the shell has none yet) tests the section order, `intelligence_programs.rs` the rows the actions service, the memory service and computer use
   ship (sections, Advanced, writes, the apps rows editor), `support/inferd/` is a
   fake settings module hosted in memory (`Inferd::hosted`, `Sandbox::with_modules`; no bus). Without a bus or
   modules the app gets `BusSource::Absent`. The real path is `settings-app-system/tests/system/modules_bus.rs` (a module on a

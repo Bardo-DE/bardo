@@ -21,11 +21,11 @@ use provenance::{Actor, ActorKind, SystemPart};
 pub fn is_audit_class(record: &Record) -> bool {
     let by_actor = matches!(
         record.actor.kind(),
-        ActorKind::Companion | ActorKind::Cua | ActorKind::Cli
+        ActorKind::Companion | ActorKind::ComputerUse | ActorKind::Cli
     ) || matches!(
         record.actor,
         Actor::System {
-            part: SystemPart::Router | SystemPart::Cua
+            part: SystemPart::Router | SystemPart::ComputerUse
         }
     );
     by_actor

@@ -55,7 +55,7 @@ impl Default for Staged {
 }
 
 impl Staged {
-    /// The app was not asked: no seam carries `Context` to cuad yet.
+    /// The app was not asked: no seam carries `Context` to the computer-use daemon yet.
     pub(super) fn no_context(&mut self) {
         self.context = ContextObs::Absent;
     }
@@ -232,7 +232,7 @@ impl<S: Seams> Exec<'_, S> {
     /// changes nothing by it) and a note for the model's next turn.
     async fn read_inbox(&mut self, out: &mut impl Outlet) {
         let ask = InboxAsk {
-            agent: AgentRef::Cua {
+            agent: AgentRef::ComputerUse {
                 run: self.run.clone(),
             },
             after: self.last_message.clone(),

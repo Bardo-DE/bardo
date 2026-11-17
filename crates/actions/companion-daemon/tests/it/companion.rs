@@ -12,7 +12,7 @@ use std::sync::Mutex;
 
 fn note(status: ReportStatus, attention: Attention) -> CompletionNote {
     CompletionNote {
-        agent: AgentRef::Cua {
+        agent: AgentRef::ComputerUse {
             run: RunId::parse("r-3").expect("run"),
         },
         status,
@@ -202,7 +202,7 @@ fn replay_reads_oldest_first_skips_the_routers_log_and_refuses_a_body_it_cannot_
     assert_eq!(replay_of(&routers), Ok(vec![]));
 }
 
-/// A record of a run as cuad writes it (`computer-use-bus`'s `CuaRecord`: tag `kind`, content `v`).
+/// A record of a run as the computer-use daemon writes it (`computer-use-bus`'s `ComputerUseRecord`: tag `kind`, content `v`).
 fn run_record(kind: &str, v: &serde_json::Value) -> String {
     serde_json::json!({ "kind": kind, "v": v }).to_string()
 }
@@ -297,7 +297,7 @@ fn recover_events(events: &[agent_loop::ReplayEvent]) -> RosterState {
     rebuilt
         .tasks
         .iter()
-        .find(|t| matches!(t.agent, AgentRef::Cua { .. }))
+        .find(|t| matches!(t.agent, AgentRef::ComputerUse { .. }))
         .map(|t| t.state)
         .expect("the run is on the roster")
 }

@@ -11,7 +11,7 @@ use memory_core::{AppId, AppName, Isolation};
 /// its own things:
 ///
 /// - `Agent`: the actions service's intentd, the router;
-/// - `Cua`: cuad, for its run records;
+/// - `ComputerUse`: the computer-use daemon, for its run records;
 /// - `SheetHost`: the shell's own UI (the shell), the person;
 /// - `Settings`: the System Settings app (the Settings app), the person, saving a setting. Not an app with
 ///   memory: it may only confirm a loosened memory setting and read the ones that wait for it.
@@ -33,9 +33,10 @@ impl Caller {
     #[must_use]
     pub fn new(role: CallerRole, app: AppId) -> Self {
         let role = match role {
-            CallerRole::Agent | CallerRole::Cua | CallerRole::SheetHost | CallerRole::Settings => {
-                role
-            }
+            CallerRole::Agent
+            | CallerRole::ComputerUse
+            | CallerRole::SheetHost
+            | CallerRole::Settings => role,
             _ => CallerRole::App,
         };
         Self { role, app }
@@ -53,10 +54,10 @@ impl Caller {
         Self::fixed(CallerRole::Agent, "org.bardo.Intents")
     }
 
-    /// cuad.
+    /// The computer-use daemon.
     #[must_use]
-    pub fn cuad() -> Self {
-        Self::fixed(CallerRole::Cua, "org.bardo.ComputerUse")
+    pub fn computer_use_daemon() -> Self {
+        Self::fixed(CallerRole::ComputerUse, "org.bardo.ComputerUse")
     }
 
     /// The shell's own UI (the shell): the person.

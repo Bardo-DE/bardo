@@ -1,4 +1,4 @@
-//! The companion service on a private bus: stand-ins for intentd, companiond, cuad, memoryd and
+//! The companion service on a private bus: stand-ins for intentd, companiond, the computer-use daemon, memoryd and
 //! an app own their names; the shell is the connection the intents service would publish on its
 //! seat. Everything waits on the service's published state or on a stand-in's record, never on a
 //! clock; a test skips, saying so, without a `dbus-daemon`. Never the person's session bus.
@@ -369,12 +369,12 @@ async fn the_journal_is_read_and_follows_the_intentd_signal_and_an_undo_reads_it
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn runs_follow_cuad_and_are_steered_through_their_objects() {
+async fn runs_follow_computer_use_daemon_and_are_steered_through_their_objects() {
     let mut desk = desk_or_return!();
-    let cuad = desk.peer("org.bardo.ComputerUse1").await;
+    let computer_use_daemon = desk.peer("org.bardo.ComputerUse1").await;
     let sight = Arc::new(Mutex::new("No model here can see the screen.".to_owned()));
     serve(
-        &cuad,
+        &computer_use_daemon,
         "/org/bardo/ComputerUse1",
         StandInManager {
             runs: vec![run_path("r_1")],
@@ -387,7 +387,8 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
         log: desk.log.clone(),
         state: Arc::new(Mutex::new("acting".to_owned())),
     };
-    cuad.object_server()
+    computer_use_daemon
+        .object_server()
         .at(run_path("r_1"), object.clone())
         .await
         .unwrap_or_else(|e| panic!("{e}"));
@@ -401,15 +402,16 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
     assert_eq!(facts.mode, computer_use_action::RunMode::InPlace);
     // The run says it paused: the facts follow.
     *object.state.lock().unwrap_or_else(|e| panic!("{e}")) = "paused".to_owned();
-    cuad.emit_signal(
-        None::<&str>,
-        run_path("r_1"),
-        "org.bardo.ComputerUse1.Run",
-        "StateChanged",
-        &("paused",),
-    )
-    .await
-    .unwrap_or_else(|e| panic!("{e}"));
+    computer_use_daemon
+        .emit_signal(
+            None::<&str>,
+            run_path("r_1"),
+            "org.bardo.ComputerUse1.Run",
+            "StateChanged",
+            &("paused",),
+        )
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
     desk.state(|c| (c.runs[&run].state == computer_use_bus::RunStateSlug::Paused).then_some(()))
         .await;
     // A control is the run object's own method.
@@ -419,21 +421,22 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
     });
     desk.log_has("cancel r-1").await;
     // The run's object goes away: so do its facts.
-    cuad.emit_signal(
-        None::<&str>,
-        "/org/bardo/ComputerUse1",
-        "org.bardo.ComputerUse1.Manager",
-        "RunRemoved",
-        &(run_path("r_1"),),
-    )
-    .await
-    .unwrap_or_else(|e| panic!("{e}"));
+    computer_use_daemon
+        .emit_signal(
+            None::<&str>,
+            "/org/bardo/ComputerUse1",
+            "org.bardo.ComputerUse1.Manager",
+            "RunRemoved",
+            &(run_path("r_1"),),
+        )
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
     desk.state(|c| c.runs.is_empty().then_some(())).await;
-    // cuad's note about the screen model reached the companion, and clearing it clears it there.
+    // The computer-use daemon's note about the screen model reached the companion, and clearing it clears it there.
     desk.state(|c| matches!(c.sight, SightState::CannotSee(_)).then_some(()))
         .await;
     sight.lock().unwrap_or_else(|e| panic!("{e}")).clear();
-    let manager = cuad
+    let manager = computer_use_daemon
         .object_server()
         .interface::<_, StandInManager>("/org/bardo/ComputerUse1")
         .await
@@ -451,10 +454,11 @@ async fn runs_follow_cuad_and_are_steered_through_their_objects() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_at() {
     let mut desk = desk_or_return!();
-    let cuad = desk.peer("org.bardo.ComputerUse1").await;
+    let computer_use_daemon = desk.peer("org.bardo.ComputerUse1").await;
     // A path that says nothing about the run's id: the object's `Id` is the only name.
     let path = run_path("object_nine");
-    cuad.object_server()
+    computer_use_daemon
+        .object_server()
         .at(
             "/org/bardo/ComputerUse1",
             StandInManager {
@@ -465,7 +469,7 @@ async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_
         .await
         .unwrap_or_else(|e| panic!("{e}"));
     serve(
-        &cuad,
+        &computer_use_daemon,
         path.clone(),
         StandInRunObject {
             id: "r_9",
@@ -478,24 +482,25 @@ async fn a_run_is_named_by_its_id_property_and_removed_by_the_path_it_was_added_
     let run = RunId::parse("r-9").unwrap_or_else(|e| panic!("{e}"));
     let known = desk.state(|c| c.runs.keys().next().cloned()).await;
     assert_eq!(known, run, "the run is the one its Id property names");
-    cuad.emit_signal(
-        None::<&str>,
-        "/org/bardo/ComputerUse1",
-        "org.bardo.ComputerUse1.Manager",
-        "RunRemoved",
-        &(path,),
-    )
-    .await
-    .unwrap_or_else(|e| panic!("{e}"));
+    computer_use_daemon
+        .emit_signal(
+            None::<&str>,
+            "/org/bardo/ComputerUse1",
+            "org.bardo.ComputerUse1.Manager",
+            "RunRemoved",
+            &(path,),
+        )
+        .await
+        .unwrap_or_else(|e| panic!("{e}"));
     desk.state(|c| c.runs.is_empty().then_some(())).await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
     let mut desk = desk_or_return!();
-    let cuad = desk.peer("org.bardo.ComputerUse1").await;
+    let computer_use_daemon = desk.peer("org.bardo.ComputerUse1").await;
     serve(
-        &cuad,
+        &computer_use_daemon,
         "/org/bardo/ComputerUse1",
         StandInManager {
             runs: vec![run_path("r_1"), run_path("r_2")],
@@ -504,7 +509,8 @@ async fn stop_all_pauses_each_run_that_is_going_and_no_other() {
     )
     .await;
     for (id, state) in [("r_1", "acting"), ("r_2", "paused")] {
-        cuad.object_server()
+        computer_use_daemon
+            .object_server()
             .at(
                 run_path(id),
                 StandInRunObject {

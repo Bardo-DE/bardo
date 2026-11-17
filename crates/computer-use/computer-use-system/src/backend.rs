@@ -1,5 +1,5 @@
 //! The capture backend the system seam chooses between: the stock toplevel source with masking
-//! in cuad, or the fork's masked source. Both open the same session type.
+//! in the computer-use daemon, or the fork's masked source. Both open the same session type.
 
 use computer_use_capture::{CaptureError, WindowCapture};
 use computer_use_capture_wayland::{
@@ -10,11 +10,11 @@ use std::sync::Arc;
 use wayland_client::Connection;
 
 /// Whether the compositor of `kind` masks frames itself, so the fork's masked source is used;
-/// otherwise the stock source is used and `computer_use_capture::apply_masks` runs in cuad.
+/// otherwise the stock source is used and `computer_use_capture::apply_masks` runs in the computer-use daemon.
 fn compositor_masks(kind: BackendKind) -> bool {
     match BackendCaps::of(kind).masking {
         MaskWhere::Compositor => true,
-        MaskWhere::Cuad => false,
+        MaskWhere::ComputerUseDaemon => false,
     }
 }
 

@@ -1,10 +1,10 @@
 //! A model that says what it was scripted to say.
 
 use base_ids::Tokens;
-use computer_use_action::{CuaAction, ImageSpace, ModelSpace, ToolDialect, WindowSpace};
+use computer_use_action::{ComputerUseAction, ImageSpace, ModelSpace, ToolDialect, WindowSpace};
 use computer_use_parse::{InSpace, ParseLimits, Parsed, parse_text, parse_tool_calls};
 use computer_use_run::{
-    CuaModel, CuaModelError, FrameAttachment, ModelReach, ModelSight, StepSink,
+    ComputerUseModel, ComputerUseModelError, FrameAttachment, ModelReach, ModelSight, StepSink,
 };
 use inference_core::{
     CuaBegin, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, SafetyHint, ServedBy,
@@ -22,22 +22,22 @@ pub enum ScriptError {
     NotAStep(u32),
 }
 
-/// A [`CuaModel`] that answers each step with the next scripted reply or error, and records
+/// A [`ComputerUseModel`] that answers each step with the next scripted reply or error, and records
 /// what it was asked.
 #[derive(Debug)]
 pub struct ScriptedModel {
-    script: VecDeque<Result<CuaStepReply, CuaModelError>>,
+    script: VecDeque<Result<ComputerUseStepReply, ComputerUseModelError>>,
     served: Option<ServedBy>,
     reach: ModelReach,
     sight: ModelSight,
-    began: Vec<CuaBegin>,
-    requests: Vec<CuaStepRequest>,
+    began: Vec<ComputerUseBegin>,
+    requests: Vec<ComputerUseStepRequest>,
 }
 
 impl ScriptedModel {
     /// A model that plays `script` in order; past its end every step fails `Fatal`.
     #[must_use]
-    pub fn new(script: Vec<Result<CuaStepReply, CuaModelError>>) -> Self {
+    pub fn new(script: Vec<Result<ComputerUseStepReply, ComputerUseModelError>>) -> Self {
         Self {
             script: script.into(),
             served: None,
@@ -96,21 +96,21 @@ impl ScriptedModel {
 
     /// The goals it was begun with.
     #[must_use]
-    pub fn begun(&self) -> &[CuaBegin] {
+    pub fn begun(&self) -> &[ComputerUseBegin] {
         &self.began
     }
 
     /// The step requests it received.
     #[must_use]
-    pub fn requests(&self) -> &[CuaStepRequest] {
+    pub fn requests(&self) -> &[ComputerUseStepRequest] {
         &self.requests
     }
 }
 
-impl CuaModel for ScriptedModel {
+impl ComputerUseModel for ScriptedModel {
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "CuaModel declares `reach` async; the fake has nothing to await"
+        reason = "ComputerUseModel declares `reach` async; the fake has nothing to await"
     )]
     async fn reach(&mut self) -> ModelReach {
         self.reach
@@ -118,7 +118,7 @@ impl CuaModel for ScriptedModel {
 
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "CuaModel declares `sight` async; the fake has nothing to await"
+        reason = "ComputerUseModel declares `sight` async; the fake has nothing to await"
     )]
     async fn sight(&mut self) -> ModelSight {
         self.sight
@@ -126,26 +126,28 @@ impl CuaModel for ScriptedModel {
 
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "CuaModel declares `begin` async; the fake has nothing to await"
+        reason = "ComputerUseModel declares `begin` async; the fake has nothing to await"
     )]
-    async fn begin(&mut self, begin: CuaBegin) -> Result<(), CuaModelError> {
+    async fn begin(&mut self, begin: ComputerUseBegin) -> Result<(), ComputerUseModelError> {
         self.began.push(begin);
         Ok(())
     }
 
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "CuaModel declares `step` async; the fake has nothing to await"
+        reason = "ComputerUseModel declares `step` async; the fake has nothing to await"
     )]
     async fn step(
         &mut self,
-        request: CuaStepRequest,
+        request: ComputerUseStepRequest,
         frame: FrameAttachment,
         sink: &mut impl StepSink,
-    ) -> Result<CuaStepReply, CuaModelError> {
+    ) -> Result<ComputerUseStepReply, ComputerUseModelError> {
         let _ = (frame, sink);
         self.requests.push(request);
-        self.script.pop_front().unwrap_or(Err(CuaModelError::Fatal))
+        self.script
+            .pop_front()
+            .unwrap_or(Err(ComputerUseModelError::Fatal))
     }
 
     fn usage(&self) -> TurnUsage {
@@ -164,20 +166,20 @@ impl CuaModel for ScriptedModel {
 }
 
 /// How a provider's failure reaches the machine.
-fn model_error(error: &ProviderError) -> CuaModelError {
+fn model_error(error: &ProviderError) -> ComputerUseModelError {
     match error {
         ProviderError::Unreachable
         | ProviderError::NotReady
         | ProviderError::Timeout
         | ProviderError::RateLimited(_)
-        | ProviderError::Server(_) => CuaModelError::Transient,
-        ProviderError::Unreadable(_) => CuaModelError::Parse,
+        | ProviderError::Server(_) => ComputerUseModelError::Transient,
+        ProviderError::Unreadable(_) => ComputerUseModelError::Parse,
         ProviderError::Unauthorized
         | ProviderError::AuthRejected(_)
         | ProviderError::PaymentRequired(_)
         | ProviderError::ContextOverflow { .. }
         | ProviderError::BadRequest(_)
-        | ProviderError::Refused(_) => CuaModelError::Fatal,
+        | ProviderError::Refused(_) => ComputerUseModelError::Fatal,
     }
 }
 
@@ -232,7 +234,7 @@ fn parsed_of(turn: &Turn) -> Option<Parsed> {
         .find(|p| !actions_of(&p.actions).is_empty())
 }
 
-fn actions_of(space: &InSpace) -> Vec<CuaAction<WindowSpace>> {
+fn actions_of(space: &InSpace) -> Vec<ComputerUseAction<WindowSpace>> {
     let same = |p: computer_use_action::Point<ImageSpace>| {
         Ok::<_, std::convert::Infallible>(computer_use_action::Point::new(p.x, p.y))
     };
@@ -249,13 +251,13 @@ fn actions_of(space: &InSpace) -> Vec<CuaAction<WindowSpace>> {
     }
 }
 
-fn reply_of(it: &Interaction) -> Result<CuaStepReply, ScriptError> {
+fn reply_of(it: &Interaction) -> Result<ComputerUseStepReply, ScriptError> {
     let turn = turn_of(&it.events);
     let parsed = parsed_of(&turn).ok_or(ScriptError::NotAStep(it.id.0))?;
     let thought = Some(turn.thought)
         .filter(|t| !t.is_empty())
         .or(parsed.thought.clone());
-    let mut reply = CuaStepReply::new(actions_of(&parsed.actions))
+    let mut reply = ComputerUseStepReply::new(actions_of(&parsed.actions))
         .with_dropped(
             parsed
                 .dropped

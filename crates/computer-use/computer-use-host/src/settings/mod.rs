@@ -12,12 +12,12 @@ mod read;
 #[cfg(test)]
 mod tests;
 
-use computer_use_run::CuaConfig;
+use computer_use_run::ComputerUseConfig;
 
 pub use apps::{AppAllow, AppRule, Apps, is_browser};
 pub use read::read;
 
-/// The schema cua ships for its settings (design/22 section 9.2).
+/// The schema computer use ships for its settings (design/22 section 9.2).
 pub const SCHEMA: &str = include_str!("../../../dist/settings/computer-use.settings.toml");
 
 /// The file the settings live in, under the configuration directory.
@@ -34,18 +34,18 @@ pub fn locator(env: &impl Fn(&str) -> Option<String>) -> settings_store_fs::Loca
 
 /// Every value of the file, typed.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CuaSettings {
+pub struct ComputerUseSettings {
     /// The proposed values, with the person's choices in them.
-    pub config: CuaConfig,
-    /// `cua.apps`: the apps computer use may drive.
+    pub config: ComputerUseConfig,
+    /// `computer_use.apps`: the apps computer use may drive.
     pub apps: Apps,
 }
 
-impl CuaSettings {
+impl ComputerUseSettings {
     /// The settings of a machine with no file: `config`'s values and no restriction on apps (what
     /// a supervisor built in code runs under; the daemon reads the file and lists the apps).
     #[must_use]
-    pub fn over(config: CuaConfig) -> Self {
+    pub fn over(config: ComputerUseConfig) -> Self {
         Self {
             config,
             apps: Apps::Unrestricted,

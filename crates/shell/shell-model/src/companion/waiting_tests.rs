@@ -96,7 +96,7 @@ fn a_row_says_the_words_and_who_asked_in_plain_words() {
                 '5',
                 "Prefers mornings",
                 Actor::System {
-                    part: SystemPart::Cua,
+                    part: SystemPart::ComputerUse,
                 },
                 Vec::new(),
             ),

@@ -28,7 +28,7 @@ testing = ["compositor-render/testing"]
 # bardo-compositorctl's injection path (B10): minting Physical/Remote/Test origins from Debug1.
 debug-inject = []
 # The real tty adapters (`tty/*_real.rs`, `gpu/render_nodes_real.rs`): libseat, udev, DRM, GBM
-# (A2). Off by default so headless consumers (the test kit, cua's tests, a harness) build with
+# (A2). Off by default so headless consumers (the test kit, computer use's tests, a harness) build with
 # no system libraries; the `compositor` binary turns it on. Only smithay's own features, which
 # bring the device crates, so no crate is added beyond the union the binary already links.
 tty = [

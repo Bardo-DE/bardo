@@ -2,7 +2,7 @@
 //! actions, and a block removes the actions and ends the run as infeasible. Nothing a vendor says
 //! can take an ask away or make an action more permitted.
 
-use computer_use_action::{CoordSpace, CuaAction, FinishOutcome, Summary};
+use computer_use_action::{ComputerUseAction, CoordSpace, FinishOutcome, Summary};
 use computer_use_parse::InSpace;
 use model_provider::SafetySignal;
 
@@ -16,20 +16,23 @@ fn summary(prefix: &str, text: &str) -> Summary {
     Summary::new(text).unwrap_or_else(|_| unreachable!("the text is cut and cleaned"))
 }
 
-fn apply<S: CoordSpace>(actions: Vec<CuaAction<S>>, safety: &[SafetySignal]) -> Vec<CuaAction<S>> {
+fn apply<S: CoordSpace>(
+    actions: Vec<ComputerUseAction<S>>,
+    safety: &[SafetySignal],
+) -> Vec<ComputerUseAction<S>> {
     let blocked = safety.iter().find_map(|s| match s {
         SafetySignal::Blocked(why) => Some(why),
         SafetySignal::RequireConfirmation(_) => None,
     });
     if let Some(why) = blocked {
-        return vec![CuaAction::Finish {
+        return vec![ComputerUseAction::Finish {
             outcome: FinishOutcome::Infeasible,
             summary: summary("The model's provider blocked this: ", why),
             extracted: Vec::new(),
         }];
     }
     let asks = safety.iter().filter_map(|s| match s {
-        SafetySignal::RequireConfirmation(what) => Some(CuaAction::Ask {
+        SafetySignal::RequireConfirmation(what) => Some(ComputerUseAction::Ask {
             question: summary("The model's provider asks you to confirm: ", what),
             choices: Vec::new(),
         }),

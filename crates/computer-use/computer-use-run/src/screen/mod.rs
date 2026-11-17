@@ -1,6 +1,6 @@
 //! The screen check: does what the model is about to be shown hold text aimed at it?
 //!
-//! cua labels everything it reads off the screen `Untrusted(Screen)` and shows it as data; this
+//! Computer use labels everything it reads off the screen `Untrusted(Screen)` and shows it as data; this
 //! is the stage that *looks*. Each turn, before the model is called, the run machine asks a
 //! [`PatternCheck`] about the window's title and its accessibility tree (the text the model will
 //! read). It is deterministic and uses no model:
@@ -196,7 +196,7 @@ impl<'a> ScreenView<'a> {
 ///
 /// It checks the phrase tables and hidden characters, and whether
 /// the node holding them is unseen. No model; the quarantined reader adds its own verdict through
-/// `CuaModel::classify_screen` (see `RunEffect::ReadScreen`).
+/// `ComputerUseModel::classify_screen` (see `RunEffect::ReadScreen`).
 #[derive(Debug, Clone, Copy)]
 pub struct PatternCheck<'a> {
     rules: &'a InjectionRules,

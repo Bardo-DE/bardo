@@ -1,6 +1,6 @@
 //! The checks every control call passes before it reaches a run.
 
-use computer_use_bus::{ControlRefusal, CuaCaller, CuaMember, permits};
+use computer_use_bus::{ComputerUseCaller, ComputerUseMember, ControlRefusal, permits};
 
 /// `Ok` when `caller` may call `member` now: it is on the allow-list for the member (`NotPermitted`
 /// otherwise), and computer use is on for `Start` (`Disabled` otherwise).
@@ -11,10 +11,14 @@ use computer_use_bus::{ControlRefusal, CuaCaller, CuaMember, permits};
 ///
 /// Returns [`ControlRefusal::NotPermitted`] when `caller` may not call `member`, and
 /// [`ControlRefusal::Disabled`] when `member` is `Start` and computer use is off.
-pub fn guard(caller: CuaCaller, member: CuaMember, enabled: bool) -> Result<(), ControlRefusal> {
+pub fn guard(
+    caller: ComputerUseCaller,
+    member: ComputerUseMember,
+    enabled: bool,
+) -> Result<(), ControlRefusal> {
     if !permits(caller, member) {
         Err(ControlRefusal::NotPermitted)
-    } else if member == CuaMember::Start && !enabled {
+    } else if member == ComputerUseMember::Start && !enabled {
         Err(ControlRefusal::Disabled)
     } else {
         Ok(())
@@ -29,65 +33,65 @@ mod tests {
     fn start_refused_for_non_planner_caller_and_while_disabled() {
         struct Row {
             name: &'static str,
-            caller: CuaCaller,
-            member: CuaMember,
+            caller: ComputerUseCaller,
+            member: ComputerUseMember,
             enabled: bool,
             want: Result<(), ControlRefusal>,
         }
         let rows = [
             Row {
                 name: "router starts",
-                caller: CuaCaller::Router,
-                member: CuaMember::Start,
+                caller: ComputerUseCaller::Router,
+                member: ComputerUseMember::Start,
                 enabled: true,
                 want: Ok(()),
             },
             Row {
                 name: "planner starts",
-                caller: CuaCaller::Companion,
-                member: CuaMember::Start,
+                caller: ComputerUseCaller::Companion,
+                member: ComputerUseMember::Start,
                 enabled: true,
                 want: Ok(()),
             },
             Row {
                 name: "shell may not start",
-                caller: CuaCaller::Shell,
-                member: CuaMember::Start,
+                caller: ComputerUseCaller::Shell,
+                member: ComputerUseMember::Start,
                 enabled: true,
                 want: Err(ControlRefusal::NotPermitted),
             },
             Row {
                 name: "a stranger may not start",
-                caller: CuaCaller::Other,
-                member: CuaMember::Start,
+                caller: ComputerUseCaller::Other,
+                member: ComputerUseMember::Start,
                 enabled: true,
                 want: Err(ControlRefusal::NotPermitted),
             },
             Row {
                 name: "off refuses the router",
-                caller: CuaCaller::Router,
-                member: CuaMember::Start,
+                caller: ComputerUseCaller::Router,
+                member: ComputerUseMember::Start,
                 enabled: false,
                 want: Err(ControlRefusal::Disabled),
             },
             Row {
                 name: "off tells a stranger nothing",
-                caller: CuaCaller::Other,
-                member: CuaMember::Start,
+                caller: ComputerUseCaller::Other,
+                member: ComputerUseMember::Start,
                 enabled: false,
                 want: Err(ControlRefusal::NotPermitted),
             },
             Row {
                 name: "stop-all works while off",
-                caller: CuaCaller::Shell,
-                member: CuaMember::StopAll,
+                caller: ComputerUseCaller::Shell,
+                member: ComputerUseMember::StopAll,
                 enabled: false,
                 want: Ok(()),
             },
             Row {
                 name: "only the shell answers",
-                caller: CuaCaller::Companion,
-                member: CuaMember::Answer,
+                caller: ComputerUseCaller::Companion,
+                member: ComputerUseMember::Answer,
                 enabled: true,
                 want: Err(ControlRefusal::NotPermitted),
             },

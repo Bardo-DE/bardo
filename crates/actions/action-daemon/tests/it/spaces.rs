@@ -86,7 +86,7 @@ fn removing_a_space_drops_its_grants_and_leaves_every_other() {
     let dir = tempfile::tempdir().expect("scratch");
     let store = FileGrants::at(dir.path().join("grants.json"));
     store.record(grant("g-1", GrantCaller::Companion, only("work")));
-    store.record(grant("g-2", GrantCaller::Cua, only("home")));
+    store.record(grant("g-2", GrantCaller::ComputerUse, only("home")));
     store.record(grant("g-3", GrantCaller::Cli, SpaceScope::Any));
     let ended = store
         .end_space(&SpaceId::parse("work").expect("space"))
@@ -228,7 +228,11 @@ async fn a_restart_drops_the_grants_of_a_space_that_went_and_audits_it() {
                 grant("g-1", GrantCaller::Companion, only("work")),
                 grant("g-2", GrantCaller::Companion, only("home")),
                 grant("g-3", GrantCaller::Companion, SpaceScope::Any),
-                grant("g-4", GrantCaller::Cua, only("app:org.bardo.Mail:2")),
+                grant(
+                    "g-4",
+                    GrantCaller::ComputerUse,
+                    only("app:org.bardo.Mail:2"),
+                ),
             ],
             &[],
         );

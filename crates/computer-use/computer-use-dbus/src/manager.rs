@@ -12,7 +12,7 @@ use zbus::zvariant::OwnedObjectPath;
     default_path = "/org/bardo/ComputerUse1"
 )]
 pub trait Manager {
-    /// Starts a run (`CuaEnvelope<CuaTask>` JSON); answers its object. The router and the planner
+    /// Starts a run (`ComputerUseEnvelope<ComputerUseTask>` JSON); answers its object. The router and the planner
     /// only.
     fn start(&self, task: &str) -> zbus::Result<OwnedObjectPath>;
 

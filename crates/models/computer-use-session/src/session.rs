@@ -13,15 +13,15 @@ use model_vision_prep::FrameMap;
 use crate::history::{self, HistoryTurn};
 use crate::prompt::{self, Fault};
 use crate::{
-    CuaProfile, CuaTaskText, MaskedRegions, ObservationIn, RepairBudget, StepIndex, StepOutcome,
-    TurnSettings, TurnTranscript, dialect, window,
+    ComputerUseProfile, ComputerUseTaskText, MaskedRegions, ObservationIn, RepairBudget, StepIndex,
+    StepOutcome, TurnSettings, TurnTranscript, dialect, window,
 };
 use crate::{answer, calls};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CuaSession {
-    profile: CuaProfile,
-    task: CuaTaskText,
+pub struct ComputerUseSession {
+    profile: ComputerUseProfile,
+    task: ComputerUseTaskText,
     model: ModelName,
     settings: TurnSettings,
     history: VecDeque<HistoryTurn>,
@@ -30,11 +30,15 @@ pub struct CuaSession {
     repairs_left: RepairBudget,
 }
 
-impl CuaSession {
+impl ComputerUseSession {
     #[must_use]
-    pub fn begin(profile: CuaProfile, task: CuaTaskText, model: ModelName) -> CuaSession {
+    pub fn begin(
+        profile: ComputerUseProfile,
+        task: ComputerUseTaskText,
+        model: ModelName,
+    ) -> ComputerUseSession {
         let repairs_left = profile.repair;
-        CuaSession {
+        ComputerUseSession {
             profile,
             task,
             model,
@@ -48,8 +52,8 @@ impl CuaSession {
     /// The same session with these request settings (sampling, output limit, reasoning, how many
     /// earlier steps are listed). The daemon takes them from the model's catalog entry.
     #[must_use]
-    pub fn with_settings(self, settings: TurnSettings) -> CuaSession {
-        CuaSession { settings, ..self }
+    pub fn with_settings(self, settings: TurnSettings) -> ComputerUseSession {
+        ComputerUseSession { settings, ..self }
     }
 
     /// Gives the repair budget back in full. A caller whose step failed after a repair (the model

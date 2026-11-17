@@ -11,13 +11,13 @@
 //! prompts and reads exactly as it did before.
 //!
 //! ```
-//! use computer_use_action::{ActionProfile, CuaDialect, GridMax, ModelSpace, ToolDialect};
-//! use computer_use_session::{CuaProfile, CuaSession, CuaTaskText, FrameBudget, RepairBudget};
+//! use computer_use_action::{ActionProfile, ComputerUseDialect, GridMax, ModelSpace, ToolDialect};
+//! use computer_use_session::{ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, RepairBudget};
 //! use model_provider::ModelName;
 //! use model_vision_prep::{Encoding, PatchFactor, PixelCount, ResizeRule};
 //!
-//! let profile = CuaProfile {
-//!     dialect: CuaDialect::Tool(ToolDialect::Holo31),
+//! let profile = ComputerUseProfile {
+//!     dialect: ComputerUseDialect::Tool(ToolDialect::Holo31),
 //!     actions: ActionProfile::default(),
 //!     rule: ResizeRule::SmartResize {
 //!         factor: PatchFactor(32),
@@ -29,8 +29,8 @@
 //!     repair: RepairBudget(1),
 //!     encoding: Encoding::Png,
 //! };
-//! let task = CuaTaskText { goal: "save the file".into(), hints: vec![] };
-//! let session = CuaSession::begin(profile, task, ModelName("holo".into()));
+//! let task = ComputerUseTaskText { goal: "save the file".into(), hints: vec![] };
+//! let session = ComputerUseSession::begin(profile, task, ModelName("holo".into()));
 //! // A new session remembers no step and holds its whole repair budget.
 //! assert_eq!(session.remembered(), 0);
 //! assert_eq!(session.repairs_left(), RepairBudget(1));
@@ -49,8 +49,9 @@ mod window;
 
 pub use dialect::{ActionDialect, spec};
 pub use model::{
-    CuaProfile, CuaTaskText, FrameBudget, MaskedRegions, ObservationIn, RepairBudget, StepIndex,
-    StepLines, StepNote, StepOutcome, TreeText, TurnSettings, TurnTranscript,
+    ComputerUseProfile, ComputerUseTaskText, FrameBudget, MaskedRegions, ObservationIn,
+    RepairBudget, StepIndex, StepLines, StepNote, StepOutcome, TreeText, TurnSettings,
+    TurnTranscript,
 };
-pub use session::CuaSession;
+pub use session::ComputerUseSession;
 pub use transcript::TranscriptSink;

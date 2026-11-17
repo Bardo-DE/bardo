@@ -109,7 +109,8 @@ pub fn grant_state(v: &Verdict) -> GrantState {
 pub fn usage_of(actor: &Actor) -> Usage {
     match actor {
         Actor::Companion {
-            role: AgentRole::Worker { .. } | AgentRole::Cua { .. } | AgentRole::Helper { .. },
+            role:
+                AgentRole::Worker { .. } | AgentRole::ComputerUse { .. } | AgentRole::Helper { .. },
             ..
         } => Usage::Background,
         _ => Usage::Interactive,

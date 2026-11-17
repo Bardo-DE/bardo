@@ -32,7 +32,7 @@ pub(crate) fn land_in_receiver(record: &mut Record) {
 }
 
 /// What an app's own claim about a label comes to: an app can lower integrity or raise
-/// confidentiality, never claim `Trusted` or leave its Space. The router, cuad and the shell
+/// confidentiality, never claim `Trusted` or leave its Space. The router, the computer-use daemon and the shell
 /// stamp their own labels.
 pub(crate) fn floored(caller: &Caller, mut record: Record) -> Record {
     if caller.role() == CallerRole::App {

@@ -1,22 +1,22 @@
 //! `org.bardo.IntentReach1` on the provider's object: whether `computeruse.run.start` is on now.
 //!
 //! The installed manifest (`manifests/org.bardo.ComputerUse.toml`) declares the action `hidden`, as it is
-//! while `cua.enabled = off`; intentd only knows installed files, so cuad says the live value
-//! here and intentd lays it over the manifest. cuad reloads the person's settings file while it
-//! runs ([`follow_settings`]), so a change of `cua.enabled` is announced with `ReachChanged`.
+//! while `computer_use.enabled = off`; intentd only knows installed files, so the computer-use daemon says the live value
+//! here and intentd lays it over the manifest. The computer-use daemon reloads the person's settings file while it
+//! runs ([`follow_settings`]), so a change of `computer_use.enabled` is announced with `ReachChanged`.
 //!
 //! This mirrors action-dbus's `IntentReach1` (name, `Reach() -> s`, signal `ReachChanged`)
-//! because cua does not take the actions service's newer pin yet; it moves to action-dbus's `ReachServer` at
+//! because computer use does not take the actions service's newer pin yet; it moves to action-dbus's `ReachServer` at
 //! the next the actions pin.
 
 use action_dbus::PROVIDER_PATH;
-use computer_use_host::{CuaSettings, Supervisor};
+use computer_use_host::{ComputerUseSettings, Supervisor};
 use computer_use_run::Seams;
 use settings_store_fs::LocatedWatch;
 use std::sync::Arc;
 use zbus::object_server::SignalEmitter;
 
-/// The one action cuad provides.
+/// The one action the computer-use daemon provides.
 const ACTION: &str = "computeruse.run.start";
 
 /// `{ "computeruse.run.start": "offered" | "hidden" }` for the setting.
@@ -42,11 +42,11 @@ impl<S: Seams> ReachObject<S> {
 }
 
 /// Applies each change of the settings file to `supervisor`, and says `ReachChanged` on
-/// `connection` when `cua.enabled` is what changed. Returns when the watch ends.
+/// `connection` when `computer_use.enabled` is what changed. Returns when the watch ends.
 pub async fn follow_settings<S: Seams>(
     connection: &zbus::Connection,
     supervisor: &Supervisor<S>,
-    watch: &mut LocatedWatch<CuaSettings>,
+    watch: &mut LocatedWatch<ComputerUseSettings>,
 ) {
     loop {
         let before = supervisor.settings().enabled;

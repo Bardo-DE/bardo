@@ -1,4 +1,4 @@
-//! The transition rows of the phase table (`cua.md` section 4, as the router's gate changed
+//! The transition rows of the phase table (`computer_use.md` section 4, as the router's gate changed
 //! it): `step` finds the row of an input in the run's phase. One module per kind of row.
 
 mod act;
@@ -26,9 +26,10 @@ use crate::machine::track::RunTrack;
 use crate::mode::mode_support;
 use crate::stall::Repeats;
 use action_wire::GrantAnswer;
-use computer_use_bus::CuaTask;
+use computer_use_bus::ComputerUseTask;
 use computer_use_bus::{
-    BlockedOn, CuaOutcome, CuaRecord, FailReason, ModeSupport, RunBudgetKind, TaskTarget,
+    BlockedOn, ComputerUseOutcome, ComputerUseRecord, FailReason, ModeSupport, RunBudgetKind,
+    TaskTarget,
 };
 use computer_use_capture::{FrameWant, Settle};
 use computer_use_desktop::{Stamp, ToplevelIdent};
@@ -36,7 +37,7 @@ use inference_core::StepIndex;
 use provenance::RunId;
 
 /// The window a task names.
-fn window_of(task: &CuaTask) -> Option<&ToplevelIdent> {
+fn window_of(task: &ComputerUseTask) -> Option<&ToplevelIdent> {
     match &task.target {
         TaskTarget::Window(ident) => Some(ident),
         TaskTarget::App(_) => None,
@@ -45,7 +46,12 @@ fn window_of(task: &CuaTask) -> Option<&ToplevelIdent> {
 
 /// A run, started: `Granting`, asking the router for the per-app consent; or, at once, over:
 /// the mode is one the backend cannot run, or the task names an app and not a window.
-pub(crate) fn start(id: RunId, task: CuaTask, env: RunEnv, at: Stamp) -> (Run, Vec<RunEffect>) {
+pub(crate) fn start(
+    id: RunId,
+    task: ComputerUseTask,
+    env: RunEnv,
+    at: Stamp,
+) -> (Run, Vec<RunEffect>) {
     // Never more trusted than the goal, the person's words the router filled, or the records it
     // read: the join of them.
     let taint = [
@@ -76,7 +82,7 @@ pub(crate) fn start(id: RunId, task: CuaTask, env: RunEnv, at: Stamp) -> (Run, V
         finish_plain(
             &mut run,
             &mut fx,
-            CuaOutcome::Blocked(BlockedOn::ModeUnsupported(mode)),
+            ComputerUseOutcome::Blocked(BlockedOn::ModeUnsupported(mode)),
         );
     } else if window_of(&run.task).is_none() {
         finish_no_window(&mut run, &mut fx);
@@ -113,7 +119,7 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         RunInput::UserTakeOver => take_over(run, fx, at),
         RunInput::UserHandBack => hand_back(run, fx),
         RunInput::Routed(served) => {
-            fx.push(RunEffect::Record(Box::new(CuaRecord::Routed {
+            fx.push(RunEffect::Record(Box::new(ComputerUseRecord::Routed {
                 run: run.id.clone(),
                 served_by: served.clone(),
             })));
@@ -122,7 +128,11 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         RunInput::Tick => tick(run, fx, at),
         RunInput::Granted(answer) => granted(run, fx, answer),
         RunInput::GrantFailed(_) => {
-            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::ConsentDenied));
+            finish_plain(
+                run,
+                fx,
+                ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied),
+            );
         }
         RunInput::GrantUnanswered if run.phase == RunPhase::Granting => {
             finish_unanswered(run, fx);
@@ -136,7 +146,11 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         }
         RunInput::Leased(grant) => leased(run, fx, grant.id),
         RunInput::LeaseRefused(_) => {
-            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::LeaseRefused));
+            finish_plain(
+                run,
+                fx,
+                ComputerUseOutcome::Blocked(BlockedOn::LeaseRefused),
+            );
         }
         RunInput::AcquireFailed(failure) => acquire_failed(run, fx, &failure),
         RunInput::Observed(obs) => observed(run, fx, *obs),
@@ -149,12 +163,18 @@ fn dispatch(run: &mut Run, fx: &mut Vec<RunEffect>, input: RunInput, at: Stamp) 
         RunInput::Confirming(id) => confirming(run, fx, id),
         RunInput::Verdict(answer) => verdict(run, fx, at, answer),
         RunInput::GateFailed(_) => {
-            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::RouterUnreachable));
+            finish_plain(
+                run,
+                fx,
+                ComputerUseOutcome::Blocked(BlockedOn::RouterUnreachable),
+            );
         }
         RunInput::Injected(receipt) => injected(run, fx, at, receipt),
         RunInput::InjectFailed(error) => inject_failed(run, fx, error),
         RunInput::StateMoved(_) => state_moved(run, fx),
-        RunInput::RecordFailed => finish_plain(run, fx, CuaOutcome::Failed(FailReason::Log)),
+        RunInput::RecordFailed => {
+            finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Log))
+        }
         RunInput::Damage(damage) => damaged(run, fx, at, damage),
         RunInput::Checked(result) => checked(run, fx, result),
         RunInput::UserAnswer(question, answer) => answered(run, fx, at, question, answer),
@@ -184,7 +204,11 @@ fn granted(run: &mut Run, fx: &mut Vec<RunEffect>, answer: GrantAnswer) {
         // no lease is taken. The bus has no separate word for it: to a reader it is a consent
         // that was not given.
         (GrantAnswer::Refused(_) | GrantAnswer::Never, _) => {
-            finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::ConsentDenied));
+            finish_plain(
+                run,
+                fx,
+                ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied),
+            );
         }
     }
 }
@@ -194,7 +218,7 @@ fn leased(run: &mut Run, fx: &mut Vec<RunEffect>, lease: computer_use_desktop::L
         return;
     }
     run.lease = Some(lease);
-    fx.push(RunEffect::Record(Box::new(CuaRecord::RunStarted {
+    fx.push(RunEffect::Record(Box::new(ComputerUseRecord::RunStarted {
         run: run.id.clone(),
         session: run.task.session.clone(),
         conversation: run.task.conversation.clone(),
@@ -225,7 +249,11 @@ fn leased_elsewhere(run: &mut Run, fx: &mut Vec<RunEffect>, lease: computer_use_
     }
     // Held for a moment so the finish gives it back.
     run.lease = Some(lease);
-    finish_plain(run, fx, CuaOutcome::Blocked(BlockedOn::LeaseRefused));
+    finish_plain(
+        run,
+        fx,
+        ComputerUseOutcome::Blocked(BlockedOn::LeaseRefused),
+    );
 }
 
 fn over_budget(run: &Run, kind: RunBudgetKind) -> bool {
@@ -242,7 +270,11 @@ fn over_budget(run: &Run, kind: RunBudgetKind) -> bool {
 
 fn tick(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp) {
     if run.phase.is_active() && over_budget(run, RunBudgetKind::Active) {
-        finish_plain(run, fx, CuaOutcome::BudgetOut(RunBudgetKind::Active));
+        finish_plain(
+            run,
+            fx,
+            ComputerUseOutcome::BudgetOut(RunBudgetKind::Active),
+        );
         return;
     }
     settling(run, fx, at);

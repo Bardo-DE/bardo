@@ -31,13 +31,13 @@ pub enum CallerRole {
     /// key behind a permit. It also reads the person's computers from `org.bardo.Tailnet1`, as
     /// the accounts service daemons do. Given by the unit that is inferd, never by an app scope's name.
     AiBroker,
-    /// intentd, companiond, readerd, cuad, bardo-do, bardo-actions-mcp: refused accountd's `Keys`
+    /// intentd, companiond, readerd, the computer-use daemon, bardo-do, bardo-actions-mcp: refused accountd's `Keys`
     /// (`RequestKey`) and `AddAccount` and `Reauthenticate`; they keep inferd's own inference
     /// calls. memoryd takes the one named `org.bardo.Intents` for the action router, and inferd
     /// the ones its table lists under `places` for those that may choose where the assistant runs.
     Agent,
-    /// cuad, for inferd: the only role that may open a computer-use session.
-    Cua,
+    /// The computer-use daemon, for inferd: the only role that may open a computer-use session.
+    ComputerUse,
     /// The agent launcher (bardo-agent-acp), which runs external coding agents: may call accountd's
     /// `Launcher` interface (`RegisterLauncher`, `BeginSession`, `EndSession`, `RequestAgentKey`,
     /// `ReportAgentLogin`, `ReportAgentLogout`, `IssueProcessCredential` and
@@ -58,7 +58,7 @@ pub enum CallerRole {
 
 impl CallerRole {
     /// Whether the role stands for more than a plain app, so only the system's table may give
-    /// it: `Settings`, `SheetHost`, `AccountDaemon`, `AiBroker`, `AgentLauncher`, `Cua`, `Terminal` and
+    /// it: `Settings`, `SheetHost`, `AccountDaemon`, `AiBroker`, `AgentLauncher`, `ComputerUse`, `Terminal` and
     /// `Compositor`. `App` and `Agent` hold no standing beyond an app (`Agent` is refused more
     /// than `App` is), so a user's file may name them.
     #[must_use]
@@ -80,7 +80,7 @@ mod tests {
             CallerRole::SheetHost,
             CallerRole::AccountDaemon,
             CallerRole::AiBroker,
-            CallerRole::Cua,
+            CallerRole::ComputerUse,
             CallerRole::AgentLauncher,
             CallerRole::Terminal,
             CallerRole::Compositor,

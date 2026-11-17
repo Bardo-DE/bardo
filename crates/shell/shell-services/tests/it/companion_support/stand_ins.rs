@@ -1,5 +1,5 @@
 //! The stand-ins the companion service talks to on a private bus: intentd's session, search,
-//! control and run objects, companiond and its answer, an app that serves the summon, cuad's
+//! control and run objects, companiond and its answer, an app that serves the summon, the computer-use daemon's
 //! manager and runs, and memoryd. Each records what it was asked on the shared [`Log`].
 
 use std::sync::{Arc, Mutex};
@@ -439,7 +439,7 @@ impl StandInApp {
     }
 }
 
-// ---- cuad ----
+// ---- The computer-use daemon ----
 
 #[derive(Default)]
 pub struct StandInManager {

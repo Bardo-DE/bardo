@@ -46,10 +46,10 @@ pub fn inferd_toml(root: &Path, extra: &str) -> Result<String, ExtraFault> {
     Ok(action_accept::world::inferd_toml(root, &model, None))
 }
 
-/// The rows an install gives inferd beside the apps: `cua` (cuad, the only caller that may open a
+/// The rows an install gives inferd beside the apps: `computer_use` (the computer-use daemon, the only caller that may open a
 /// computer-use session), the shell's unit (here `bardo-shell.service`, the unit the fake proc root puts
 /// the shell in) and the daemons that may choose where the assistant runs.
-const SHELL_CALLERS: &str = "cua = [\"bardo-computer-use.service\"]\nshell = [\"bardo-shell.service\"]\nplaces = [\"bardo-companiond.service\", \"bardo-readerd.service\", \"bardo-actiond.service\"]\n\n";
+const SHELL_CALLERS: &str = "computer_use = [\"bardo-computer-use.service\"]\nshell = [\"bardo-shell.service\"]\nplaces = [\"bardo-companiond.service\", \"bardo-readerd.service\", \"bardo-actiond.service\"]\n\n";
 
 /// inferd's system caller table for a root: the shell and the places rows, then the apps.
 #[must_use]

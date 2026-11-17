@@ -9,16 +9,18 @@ use account_core::AppName;
 use base_ids::Px;
 use base_time::UnixSeconds;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, FinishOutcome, PixelFormat, Point, RunMode,
-    Scale120, Size, Summary, Target, WindowSpace, WindowTrust,
+    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, FinishOutcome, PixelFormat, Point,
+    RunMode, Scale120, Size, Summary, Target, WindowSpace, WindowTrust,
 };
-use computer_use_bus::{CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget};
+use computer_use_bus::{
+    ComputerUseTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget,
+};
 use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{
     BackendCaps, BackendKind, MaskWhere, Stamp, ToplevelIdent, ToplevelInfo,
 };
-use computer_use_run::{CuaConfig, CuaModelError, Rules, Run, RunEnv};
-use inference_core::CuaStepReply;
+use computer_use_run::{ComputerUseConfig, ComputerUseModelError, Rules, Run, RunEnv};
+use inference_core::ComputerUseStepReply;
 use provenance::{
     Address, AgentRef, Confidentiality, Integrity, Label, Labelled, RunId, SessionId, Source,
     SpaceId,
@@ -61,7 +63,7 @@ pub fn frame(seq: u64) -> Frame {
         scale: Scale120(120),
         damage: vec![],
         masks: MaskReport {
-            applied_by: MaskWhere::Cuad,
+            applied_by: MaskWhere::ComputerUseDaemon,
             whole: WholeMask::None,
             regions: vec![],
         },
@@ -102,13 +104,15 @@ pub fn window() -> ToplevelInfo {
 /// # Errors
 ///
 /// Never returns an error; the `Result` is the shape a scripted reply has.
-pub fn reply(action: CuaAction<WindowSpace>) -> Result<CuaStepReply, CuaModelError> {
-    Ok(CuaStepReply::new(vec![action]))
+pub fn reply(
+    action: ComputerUseAction<WindowSpace>,
+) -> Result<ComputerUseStepReply, ComputerUseModelError> {
+    Ok(ComputerUseStepReply::new(vec![action]))
 }
 
 #[must_use]
-pub fn click() -> CuaAction<WindowSpace> {
-    CuaAction::Click {
+pub fn click() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Click {
         at: Target::Point(Point::new(Coord(10), Coord(10))),
         button: Button::Left,
         count: ClickCount::One,
@@ -122,8 +126,8 @@ pub fn click() -> CuaAction<WindowSpace> {
 ///
 /// Panics if the literal chord does not parse (a bug).
 #[must_use]
-pub fn ctrl_a() -> CuaAction<WindowSpace> {
-    CuaAction::Key {
+pub fn ctrl_a() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Key {
         chord: serde_json::from_str(r#"{"mods":["ctrl"],"key":{"Character":"a"}}"#)
             .expect("Ctrl+A"),
         repeat: computer_use_action::Repeat::ONCE,
@@ -136,8 +140,8 @@ pub fn ctrl_a() -> CuaAction<WindowSpace> {
 ///
 /// Panics if the literal summary is rejected (a bug).
 #[must_use]
-pub fn finish() -> CuaAction<WindowSpace> {
-    CuaAction::Finish {
+pub fn finish() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Finish {
         outcome: FinishOutcome::Done,
         summary: Summary::new("Signed in.").unwrap(),
         extracted: vec![],
@@ -159,7 +163,7 @@ pub fn user_goal() -> Labelled<String> {
 
 pub fn world(
     kind: BackendKind,
-    script: Vec<Result<CuaStepReply, CuaModelError>>,
+    script: Vec<Result<ComputerUseStepReply, ComputerUseModelError>>,
     gate: FakePdp,
 ) -> World {
     world_over(kind, script, gate, Fixture::FirefoxForm)
@@ -169,7 +173,7 @@ pub fn world(
 /// sign-in form uses one without a password field.
 pub fn world_over(
     kind: BackendKind,
-    script: Vec<Result<CuaStepReply, CuaModelError>>,
+    script: Vec<Result<ComputerUseStepReply, ComputerUseModelError>>,
     gate: FakePdp,
     fixture: Fixture,
 ) -> World {
@@ -203,8 +207,8 @@ pub fn rules() -> Rules {
 ///
 /// Panics if a literal id does not parse (a bug).
 #[must_use]
-pub fn task() -> CuaTask {
-    CuaTask {
+pub fn task() -> ComputerUseTask {
+    ComputerUseTask {
         app: app(),
         goal: user_goal(),
         asked: None,
@@ -233,6 +237,10 @@ pub fn task() -> CuaTask {
 /// Panics if a literal id does not parse (a bug).
 #[must_use]
 pub fn started(kind: BackendKind) -> Run {
-    let env = RunEnv::new(&CuaConfig::default(), BackendCaps::of(kind), rules());
+    let env = RunEnv::new(
+        &ComputerUseConfig::default(),
+        BackendCaps::of(kind),
+        rules(),
+    );
     Run::start(RunId::parse("r-1").unwrap(), task(), env, Stamp(0)).0
 }

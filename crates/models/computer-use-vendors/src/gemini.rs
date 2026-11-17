@@ -12,8 +12,8 @@
 //! and a newline.
 
 use computer_use_action::{
-    Button, ClickCount, CuaAction, GridMax, GridSpace, Notches, ScrollBy, ScrollDir, Target,
-    TypedText,
+    Button, ClickCount, ComputerUseAction, GridMax, GridSpace, Notches, ScrollBy, ScrollDir,
+    Target, TypedText,
 };
 use computer_use_parse::{DropReason, bounded, chord_from_words};
 use serde_json::Value;
@@ -33,8 +33,8 @@ fn at(args: &Args, x: &str, y: &str) -> Verdict<Target<GridSpace>> {
     )?))
 }
 
-fn click(args: &Args, button: Button, count: ClickCount) -> Verdict<CuaAction<GridSpace>> {
-    Ok(CuaAction::Click {
+fn click(args: &Args, button: Button, count: ClickCount) -> Verdict<ComputerUseAction<GridSpace>> {
+    Ok(ComputerUseAction::Click {
         at: at(args, "x", "y")?,
         button,
         count,
@@ -82,7 +82,7 @@ pub(crate) fn is_function(name: &str) -> bool {
     )
 }
 
-pub(crate) fn action(verb: &str, args: &Args) -> Verdict<CuaAction<GridSpace>> {
+pub(crate) fn action(verb: &str, args: &Args) -> Verdict<ComputerUseAction<GridSpace>> {
     match verb {
         "click" => click(args, Button::Left, ClickCount::One),
         "double_click" => click(args, Button::Left, ClickCount::Two),
@@ -90,29 +90,29 @@ pub(crate) fn action(verb: &str, args: &Args) -> Verdict<CuaAction<GridSpace>> {
         "type" => {
             let enter = args.get("press_enter") == Some(&Value::Bool(true));
             let text = format!("{}{}", string(args, "text")?, if enter { "\n" } else { "" });
-            Ok(CuaAction::Type {
+            Ok(ComputerUseAction::Type {
                 text: bounded(TypedText::new(text))?,
             })
         }
         "scroll" => {
             let pixels = number(args, "magnitude_in_pixels")?;
             let notches = u16::try_from(pixels.div_ceil(NOTCH_PIXELS).max(1)).unwrap_or(u16::MAX);
-            Ok(CuaAction::Scroll {
+            Ok(ComputerUseAction::Scroll {
                 at: at(args, "x", "y")?,
                 dir: direction(string(args, "direction")?)?,
                 by: ScrollBy::Notches(Notches(notches)),
             })
         }
-        "drag_and_drop" => Ok(CuaAction::Drag {
+        "drag_and_drop" => Ok(ComputerUseAction::Drag {
             from: at(args, "start_x", "start_y")?,
             to: at(args, "end_x", "end_y")?,
             button: Button::Left,
         }),
-        "press_key" => Ok(CuaAction::Key {
+        "press_key" => Ok(ComputerUseAction::Key {
             chord: chord_from_words(&[string(args, "key")?])?,
             repeat: computer_use_action::Repeat::ONCE,
         }),
-        "hotkey" => Ok(CuaAction::Key {
+        "hotkey" => Ok(ComputerUseAction::Key {
             chord: keys(args)?,
             repeat: computer_use_action::Repeat::ONCE,
         }),

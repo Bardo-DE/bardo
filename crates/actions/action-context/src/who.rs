@@ -100,7 +100,7 @@ impl Who {
             && !matches!(
                 self.actor,
                 Actor::Companion {
-                    role: AgentRole::Cua { .. },
+                    role: AgentRole::ComputerUse { .. },
                     ..
                 }
             )
@@ -109,9 +109,9 @@ impl Who {
         }
         match &self.actor {
             Actor::Companion {
-                role: AgentRole::Cua { .. },
+                role: AgentRole::ComputerUse { .. },
                 ..
-            } => GrantCaller::Cua,
+            } => GrantCaller::ComputerUse,
             Actor::Mcp { client } => GrantCaller::Mcp(client.clone()),
             Actor::Acp { program, .. } => GrantCaller::AcpAgent(program.into()),
             Actor::Cli => GrantCaller::Cli,
@@ -218,7 +218,7 @@ impl RouterState {
             CallerRole::Cli => (Actor::Cli, Voice::Cli),
             CallerRole::App => (Actor::App { app: app.clone() }, Voice::App),
             CallerRole::Reader
-            | CallerRole::Cua
+            | CallerRole::ComputerUse
             | CallerRole::Confirm
             | CallerRole::Compositor
             | CallerRole::Control => return Err(WireRefusal::NotAllowed),
@@ -331,9 +331,9 @@ pub fn actor_of(
             session: session.clone(),
             role: AgentRole::Worker { task: task.clone() },
         },
-        AgentRef::Cua { run } => Actor::Companion {
+        AgentRef::ComputerUse { run } => Actor::Companion {
             session: session.clone(),
-            role: AgentRole::Cua { run: run.clone() },
+            role: AgentRole::ComputerUse { run: run.clone() },
         },
         AgentRef::User => Actor::User {
             via: opener.clone(),

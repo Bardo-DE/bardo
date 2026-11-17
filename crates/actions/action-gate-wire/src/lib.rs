@@ -1,4 +1,4 @@
-//! The computer-use gate: what `cuad` sends to `Intents1.Gate.Check` for every pixel step, and
+//! The computer-use gate: what `computer_use_daemon` sends to `Intents1.Gate.Check` for every pixel step, and
 //! what the router answers. One decision point, one breaker, one audit.
 //!
 //! Pure and portable: serde only. Sits above `action-core`, whose `CallRefusal` the answer holds,
@@ -7,7 +7,7 @@
 
 use account_core::AppName;
 use action_core::CallRefusal;
-use computer_use_action::{CuaAction, RunMode, WindowClass, WindowSpace, WindowTrust};
+use computer_use_action::{ComputerUseAction, RunMode, WindowClass, WindowSpace, WindowTrust};
 use provenance::{ActionName, Labelled};
 use provenance::{Effect, Label, RunId, SpaceId};
 use serde::{Deserialize, Serialize};
@@ -35,7 +35,7 @@ pub struct NodeFacts {
 
 /// One pixel step, asking leave to run.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CuaAsk {
+pub struct ComputerUseAsk {
     /// The run.
     pub run: RunId,
     /// Which step.
@@ -49,7 +49,7 @@ pub struct CuaAsk {
     /// The Space.
     pub space: SpaceId,
     /// The action, in window coordinates.
-    pub action: CuaAction<WindowSpace>,
+    pub action: ComputerUseAction<WindowSpace>,
     /// The node it touches, if any.
     pub node: Option<NodeFacts>,
     /// The step's effect.

@@ -244,7 +244,8 @@ fn advertise_seat(connection: &reis::request::Connection) {
 
 /// A keymap file the keyboard device can send.
 fn keymap_file(keymap: &str) -> Option<(OwnedFd, u32)> {
-    let fd = rustix::fs::memfd_create("cua-fake-keymap", rustix::fs::MemfdFlags::CLOEXEC).ok()?;
+    let fd = rustix::fs::memfd_create("computer-use-fake-keymap", rustix::fs::MemfdFlags::CLOEXEC)
+        .ok()?;
     let mut file = std::fs::File::from(fd);
     let mut text = keymap.as_bytes().to_vec();
     text.push(0);

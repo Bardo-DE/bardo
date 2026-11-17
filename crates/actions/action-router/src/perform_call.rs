@@ -45,7 +45,7 @@ impl<S: Seams> Router<S> {
         let (run_id, session) = match (&p.who.actor, &p.who.session) {
             (
                 Actor::Companion {
-                    role: AgentRole::Cua { run },
+                    role: AgentRole::ComputerUse { run },
                     ..
                 },
                 session,

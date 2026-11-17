@@ -1,7 +1,7 @@
 //! The task a run starts from: the `Start` body.
 
 use crate::budget::RunBudget;
-use crate::record::CuaRecord;
+use crate::record::ComputerUseRecord;
 use account_core::AppName;
 use action_vocab::Value;
 use computer_use_action::RunMode;
@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 pub enum TaskTarget {
     /// This window.
     Window(ToplevelIdent),
-    /// A window of this app: cuad picks the window when exactly one qualifies; launching an app
+    /// A window of this app: the computer-use daemon picks the window when exactly one qualifies; launching an app
     /// into the mode is a later wave, and a run started with this target ends `Blocked` until it
     /// lands.
     App(AppName),
@@ -50,7 +50,7 @@ pub enum SuccessCheck {
 /// Where the run's reports go: the requester's address, and the conversation they continue.
 ///
 /// Progress and the final report are `provenance::Message`s of kind `Report`, sent through
-/// `Intents1.Message.Send` (cua's role may send); the router stamps the id, the sender and the
+/// `Intents1.Message.Send` (computer use's role may send); the router stamps the id, the sender and the
 /// label. A report carries no authority.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ReportRoute {
@@ -62,11 +62,11 @@ pub struct ReportRoute {
     pub in_reply_to: Option<MessageId>,
 }
 
-/// The `Start` body: everything a run needs, built by cuad from the `computeruse.run.start` call.
+/// The `Start` body: everything a run needs, built by the computer-use daemon from the `computeruse.run.start` call.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CuaTask {
+pub struct ComputerUseTask {
     /// The app of the window the run works in (the per-app consent and the records name it).
-    /// cuad resolves it before the task is built, whichever way the target was given.
+    /// The computer-use daemon resolves it before the task is built, whichever way the target was given.
     pub app: AppName,
     /// What to do: trusted when the person typed it, otherwise carrying the label of whoever
     /// wrote it.
@@ -78,15 +78,15 @@ pub struct CuaTask {
     /// This provider's records of the conversation, oldest first, as the router filled them,
     /// with the join of their labels. The run tells the model what earlier attempts did.
     #[serde(default)]
-    pub earlier: Option<Labelled<Vec<CuaRecord>>>,
+    pub earlier: Option<Labelled<Vec<ComputerUseRecord>>>,
     /// Where.
     pub target: TaskTarget,
-    /// How: the mode is concrete here (`auto` is resolved by cuad before the task is built).
+    /// How: the mode is concrete here (`auto` is resolved by the computer-use daemon before the task is built).
     pub mode: RunMode,
     /// The Space the run acts in.
     pub space: SpaceId,
     /// The session the run acts for; the actor of its records is
-    /// `Actor::Companion { session, role: Cua { run } }`.
+    /// `Actor::Companion { session, role: ComputerUse { run } }`.
     pub session: SessionId,
     /// The conversation the run works for (the session that asked for it); the run's own
     /// session replaces `session`, this stays. Every record names it.

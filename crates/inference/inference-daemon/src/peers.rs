@@ -5,9 +5,9 @@
 //! caller table, the system file `/etc/bardo/inferd-callers.toml`
 //! (`account_callers::INFERD_CALLERS`, which a person cannot write; never `inferd.toml`), is rows of
 //! that shared table, keyed by systemd unit (the programs a unit runs are `account_callers::CallerRow::images`:
-//! daemons by convention, the Settings app and the shell in `bin`): cuad's units with the `Cua` role,
+//! daemons by convention, the Settings app and the shell in `bin`): the computer-use daemon's units with the `ComputerUse` role,
 //! each app's with `App`. This is advisory for unsandboxed processes (the accounts service R12): a
-//! process that can start an allowed unit or app scope can be that caller. cuad is a fixed unit and
+//! process that can start an allowed unit or app scope can be that caller. The computer-use daemon is a fixed unit and
 //! the only caller that may open a computer-use session; an app is whichever unit the table
 //! names for it, or any identified app scope.
 
@@ -43,7 +43,7 @@ pub enum TableError {
 /// What a caller may ask inferd for, over the shared roles ([`CallerRole`]): every role not named
 /// here asks for models as a plain app does.
 pub trait CallerMay {
-    /// Whether it may list the places: Settings, the shell, the companion, and cuad, which reads
+    /// Whether it may list the places: Settings, the shell, the companion, and the computer-use daemon, which reads
     /// what the ready models take in to say plainly when none of them can see the screen.
     fn may_list_places(&self) -> bool;
     /// Whether it may list the local engine kinds: Settings, the shell and the companion.
@@ -61,7 +61,7 @@ pub trait CallerMay {
 impl CallerMay for Caller {
     fn may_list_places(&self) -> bool {
         match self.role {
-            CallerRole::Cua => true,
+            CallerRole::ComputerUse => true,
             _ => self.may_list_engines(),
         }
     }
@@ -90,7 +90,7 @@ impl CallerMay for Caller {
 /// Which systemd unit is which caller.
 ///
 /// ```toml
-/// cua = ["bardo-computer-use.service"]
+/// Computer use = ["bardo-computer-use.service"]
 /// settings = ["org.bardo.Settings.service"]
 /// [apps]
 /// "org.bardo.Memory" = ["bardo-memoryd.service"]
@@ -102,7 +102,7 @@ impl CallerMay for Caller {
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct CallerTable {
     #[serde(default)]
-    cua: BTreeSet<String>,
+    computer_use: BTreeSet<String>,
     /// The units of the agent launcher.
     #[serde(default)]
     agent_launcher: BTreeSet<Unit>,
@@ -140,11 +140,11 @@ fn settings_unit(entry: &str) -> Option<(String, AppName)> {
 }
 
 impl CallerTable {
-    /// A table naming cuad's units and each app's.
+    /// A table naming the computer-use daemon's units and each app's.
     #[must_use]
-    pub fn new(cua: BTreeSet<String>, apps: BTreeMap<AppName, BTreeSet<String>>) -> Self {
+    pub fn new(computer_use: BTreeSet<String>, apps: BTreeMap<AppName, BTreeSet<String>>) -> Self {
         Self {
-            cua,
+            computer_use,
             agent_launcher: BTreeSet::new(),
             apps: apps
                 .into_iter()
@@ -221,16 +221,16 @@ impl CallerTable {
         }
     }
 
-    /// The rows of the shared table this table is: cuad's first, so an app entry cannot claim its
+    /// The rows of the shared table this table is: the computer-use daemon's first, so an app entry cannot claim its
     /// unit (the shared table answers with the first row that names one).
     #[must_use]
     pub fn rows(&self) -> account_callers::CallerTable {
-        let cua_app = AppName::parse(CUA_APP).ok();
-        let cua = cua_app.into_iter().flat_map(|app| {
-            self.cua.iter().map(move |unit| CallerRow {
+        let computer_use_app = AppName::parse(COMPUTER_USE_APP).ok();
+        let computer_use = computer_use_app.into_iter().flat_map(|app| {
+            self.computer_use.iter().map(move |unit| CallerRow {
                 unit: Some(unit.clone()),
                 app: app.clone(),
-                role: CallerRole::Cua,
+                role: CallerRole::ComputerUse,
                 exe: Vec::new(),
                 name: None,
             })
@@ -285,7 +285,7 @@ impl CallerTable {
             })
         });
         account_callers::CallerTable {
-            callers: cua
+            callers: computer_use
                 .chain(launcher)
                 .chain(settings)
                 .chain(shell)
@@ -301,8 +301,8 @@ impl CallerTable {
     }
 }
 
-/// The app cuad is.
-const CUA_APP: &str = "org.bardo.ComputerUse";
+/// The app the computer-use daemon is.
+const COMPUTER_USE_APP: &str = "org.bardo.ComputerUse";
 
 /// The app the agent launcher is.
 const LAUNCHER_APP: &str = "org.bardo.AgentLauncher";

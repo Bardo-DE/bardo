@@ -1,9 +1,9 @@
-//! Whether the model that works apps can see the screen, as cuad says beside computer use.
+//! Whether the model that works apps can see the screen, as the computer-use daemon says beside computer use.
 
 /// The most characters of a note that are kept.
 const NOTE_LIMIT: usize = 240;
 
-/// The sentence cuad says about the screen model: never empty, at most [`NOTE_LIMIT`] characters.
+/// The sentence the computer-use daemon says about the screen model: never empty, at most [`NOTE_LIMIT`] characters.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct NoteText(String);
 
@@ -22,11 +22,11 @@ impl NoteText {
     }
 }
 
-/// Whether the screen can be seen. It stays `Sees` while cuad is away: nothing is warned about
+/// Whether the screen can be seen. It stays `Sees` while the computer-use daemon is away: nothing is warned about
 /// what is not known.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub enum SightState {
-    /// A model that reads images serves computer use, or cuad is not there to say.
+    /// A model that reads images serves computer use, or the computer-use daemon is not there to say.
     #[default]
     Sees,
     /// None does, and this is what to tell the person.
@@ -34,7 +34,7 @@ pub enum SightState {
 }
 
 impl SightState {
-    /// The state cuad's `SightNote` property names: empty is `Sees`.
+    /// The state the computer-use daemon's `SightNote` property names: empty is `Sees`.
     pub fn of(note: &str) -> SightState {
         NoteText::new(note).map_or(SightState::Sees, SightState::CannotSee)
     }

@@ -34,7 +34,7 @@ impl FrameBudget {
         FrameBudget(u8::try_from(per_prompt.0.saturating_sub(1)).unwrap_or(u8::MAX))
     }
 
-    /// `wanted` (the setting `ai.cua.history_frames`), cut to what `per_prompt` allows.
+    /// `wanted` (the setting `ai.computer_use.history_frames`), cut to what `per_prompt` allows.
     #[must_use]
     pub fn at_most(self, per_prompt: ImageCount) -> FrameBudget {
         FrameBudget(self.0.min(FrameBudget::within(per_prompt).0))
@@ -51,8 +51,8 @@ pub struct StepLines(pub u8);
 ///
 /// How the model samples and how long it may answer.
 ///
-/// `CuaProfile` is frozen and carries none of it, so the daemon sets it from the model's
-/// catalog entry with [`CuaSession::with_settings`](crate::CuaSession::with_settings); a session
+/// `ComputerUseProfile` is frozen and carries none of it, so the daemon sets it from the model's
+/// catalog entry with [`ComputerUseSession::with_settings`](crate::ComputerUseSession::with_settings); a session
 /// that is never given settings uses [`TurnSettings::default`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TurnSettings {
@@ -93,8 +93,8 @@ impl Default for TurnSettings {
 
 /// How one model is prompted and parsed.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct CuaProfile {
-    pub dialect: CuaDialect,
+pub struct ComputerUseProfile {
+    pub dialect: ComputerUseDialect,
     /// How the model's calls differ from the dialect's common convention (the catalogue entry's
     /// action profile); the default states no difference.
     pub actions: ActionProfile,
@@ -105,19 +105,19 @@ pub struct CuaProfile {
     pub encoding: Encoding,
 }
 
-impl CuaProfile {
+impl ComputerUseProfile {
     /// The profile of a model whose catalog entry says how it takes images: the resize rule and
     /// the point space come from `images`, and the history is `wanted` cut to
     /// `images.per_prompt - 1` frames (the current frame is one of the prompt's images).
     #[must_use]
     pub fn for_model(
-        dialect: CuaDialect,
+        dialect: ComputerUseDialect,
         images: &ImageLimits,
         wanted: FrameBudget,
         repair: RepairBudget,
         encoding: Encoding,
-    ) -> CuaProfile {
-        CuaProfile {
+    ) -> ComputerUseProfile {
+        ComputerUseProfile {
             dialect,
             actions: ActionProfile::default(),
             rule: images.rule,
@@ -130,24 +130,24 @@ impl CuaProfile {
 
     /// The same profile for a model whose catalog entry states an action profile.
     #[must_use]
-    pub fn with_actions(self, actions: ActionProfile) -> CuaProfile {
-        CuaProfile { actions, ..self }
+    pub fn with_actions(self, actions: ActionProfile) -> ComputerUseProfile {
+        ComputerUseProfile { actions, ..self }
     }
 }
 
 /// The task as the planner states it: typed text from the planner, not a raw untrusted blob.
 #[derive(Clone, PartialEq, Eq)]
-pub struct CuaTaskText {
+pub struct ComputerUseTaskText {
     pub goal: String,
     pub hints: Vec<String>,
 }
 
 // The goal is what the person asked for: Debug shows sizes only.
-impl core::fmt::Debug for CuaTaskText {
+impl core::fmt::Debug for ComputerUseTaskText {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
-            "CuaTaskText(<goal {} chars, {} hints>)",
+            "ComputerUseTaskText(<goal {} chars, {} hints>)",
             self.goal.chars().count(),
             self.hints.len()
         )
@@ -254,11 +254,11 @@ impl TurnTranscript {
 pub enum StepOutcome {
     Actions {
         thought: Option<String>,
-        actions: Vec<CuaAction<WindowSpace>>,
+        actions: Vec<ComputerUseAction<WindowSpace>>,
         dropped: Vec<Dropped>,
     },
     /// The reply did not parse and a repair is left: send this prompt (it carries no new frame).
     Repair(TurnRequest),
-    /// The reply did not parse and no repair is left. It counts as a step; cuad decides.
+    /// The reply did not parse and no repair is left. It counts as a step; the computer-use daemon decides.
     Unparseable(ParseError),
 }

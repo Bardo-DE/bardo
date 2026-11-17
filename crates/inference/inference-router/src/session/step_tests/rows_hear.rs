@@ -46,7 +46,7 @@ fn hearing_with(
         served: served(),
         answer: answer(),
         routed: RoutedNote::Pending,
-        cua: CuaProgress::NotBegun,
+        computer_use: ComputerUseProgress::NotBegun,
         heard: HeardAudio {
             begin: begin(),
             frames,

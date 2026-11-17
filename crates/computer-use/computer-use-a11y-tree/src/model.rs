@@ -125,7 +125,7 @@ pub enum TypedHint {
     Action(ActionName),
 }
 
-/// How many nodes a snapshot keeps (cuad uses 400).
+/// How many nodes a snapshot keeps (the computer-use daemon uses 400).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct NodeBudget(pub u32);

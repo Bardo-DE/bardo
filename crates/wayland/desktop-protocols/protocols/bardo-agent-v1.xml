@@ -7,8 +7,8 @@
   </copyright>
 
   <description summary="agent leases: one window, an agent seat, masked capture, glow">
-    The private protocol between cuad (the computer-use daemon) and the compositor.
-    cuad leases one toplevel at a time. A lease binds four things to that window and to nothing
+    The private protocol between computer_use_daemon (the computer-use daemon) and the compositor.
+    computer_use_daemon leases one toplevel at a time. A lease binds four things to that window and to nothing
     else: an input seat of its own (the person's cursor and focus are untouched), a capture source
     whose buffers arrive masked, the glow and the agent's cursor, and the hardware kill chord's
     power to end it.
@@ -17,12 +17,12 @@
     geometry, the same frame as the captured buffer after division by the output scale), except
     where a request says otherwise.
 
-    The manager is offered only to a client the compositor can name as cuad: through
+    The manager is offered only to a client the compositor can name as computer_use_daemon: through
     wp_security_context_v1 and an app-id allow-list in the compositor. A client that binds it without
     being allow-listed is disconnected with `not_permitted`.
 
     Warning: this protocol is a draft and may change. The server side lives in the
-    compositor (compositor); the client side is cuad's `cua-desktop`.
+    compositor (compositor); the client side is computer_use_daemon's `computer-use-desktop`.
 
     Not served yet: compositor does not advertise this global on any connection today, so a client
     that looks for it finds nothing. Nothing may rely on a promise made here until the server lands.
@@ -30,7 +30,7 @@
 
   <interface name="bardo_agent_manager_v1" version="1">
     <description summary="creates leases">
-      The global cuad binds. One manager per client; a second bind from another client while a
+      The global computer_use_daemon binds. One manager per client; a second bind from another client while a
       lease exists is refused.
     </description>
 
@@ -38,7 +38,7 @@
       <description summary="protocol errors">
         Raised on the manager object.
       </description>
-      <entry name="not_permitted" value="0" summary="the client is not the allow-listed cuad"/>
+      <entry name="not_permitted" value="0" summary="the client is not the allow-listed computer_use_daemon"/>
       <entry name="bad_mode" value="1" summary="a mode value this version does not define"/>
       <entry name="lease_held" value="2" summary="the toplevel already has a live lease"/>
     </enum>
@@ -79,8 +79,8 @@
     </description>
 
     <enum name="revoke_reason">
-      <description summary="why a lease ended without cuad asking">
-        The values are cua-desktop's `RevokeReason::code`.
+      <description summary="why a lease ended without computer_use_daemon asking">
+        The values are computer-use-desktop's `RevokeReason::code`.
       </description>
       <entry name="kill_chord" value="0" summary="the hardware kill chord"/>
       <entry name="window_closed" value="1" summary="the toplevel was destroyed"/>
@@ -90,7 +90,7 @@
 
     <enum name="suspend_reason">
       <description summary="why input stops without ending the lease">
-        The values are cua-desktop's `Suspend::code`.
+        The values are computer-use-desktop's `Suspend::code`.
       </description>
       <entry name="take_over" value="0" summary="the person took over"/>
       <entry name="consent" value="1" summary="a confirmation is showing"/>
@@ -99,7 +99,7 @@
 
     <enum name="glow_state">
       <description summary="what the run looks like from outside">
-        The values are cua-desktop's `GlowState::code`. Only `acting` reads the rectangle of
+        The values are computer-use-desktop's `GlowState::code`. Only `acting` reads the rectangle of
         `set_glow`.
       </description>
       <entry name="off" value="0" summary="nothing"/>
@@ -147,7 +147,7 @@
 
     <event name="physical_input">
       <description summary="the person used the keyboard or pointer">
-        Sent when physical input arrives while the lease is active, so cuad can pause the run.
+        Sent when physical input arrives while the lease is active, so computer_use_daemon can pause the run.
         Coalesced: at most one per 100 ms.
       </description>
     </event>
@@ -174,7 +174,7 @@
     </request>
 
     <request name="set_mask_hints">
-      <description summary="regions cuad wants masked">
+      <description summary="regions computer_use_daemon wants masked">
         Replaces the hints. `hints` is an array of records, each five little-endian 32-bit
         unsigned integers: x, y, width, height (window-local logical pixels) and a mask_reason
         value. A length that is not a multiple of 20 bytes is a protocol error on the lease

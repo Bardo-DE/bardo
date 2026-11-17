@@ -1,7 +1,7 @@
 //! What inferd answers.
 
+use crate::computer_use::ComputerUseStepReply;
 use crate::control::StopReason;
-use crate::cua::CuaStepReply;
 use crate::error::{InferRefusal, ModelError};
 use crate::scores::OptionScores;
 use account_capability::Locality;
@@ -19,8 +19,8 @@ pub enum InferReply {
     Chat(ChatReply),
     /// For `Embed`.
     Embed(EmbedReply),
-    /// For `CuaStep`.
-    CuaStep(CuaStepReply),
+    /// For `ComputerUseStep`.
+    ComputerUseStep(ComputerUseStepReply),
     /// For `Transcribe`.
     Transcribed(TranscribeReply),
     /// For `Speak`.

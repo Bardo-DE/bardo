@@ -1,8 +1,8 @@
 //! The transition function of one session (see the parent module for the states).
 
 use super::{
-    AudioCursor, CuaProgress, EngineNow, HeardAudio, MAX_HEARD_MS, Phase, RoutedNote, Routing,
-    SessionIn, SessionOut, SessionSpec, fits, model_of,
+    AudioCursor, ComputerUseProgress, EngineNow, HeardAudio, MAX_HEARD_MS, Phase, RoutedNote,
+    Routing, SessionIn, SessionOut, SessionSpec, fits, model_of,
 };
 use crate::audio::{audio_ms, check_audio};
 use account_match::Need;
@@ -65,7 +65,7 @@ pub fn step(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<S
                 served,
                 answer,
                 routed: RoutedNote::Pending,
-                cua: CuaProgress::NotBegun,
+                computer_use: ComputerUseProgress::NotBegun,
             };
             match queued {
                 Some(request) => request_in_idle(spec, idle, request),
@@ -200,19 +200,27 @@ fn close(phase: &Phase) -> (Phase, Vec<SessionOut>) {
 
 /// What a session of this class may carry: everything on it has the class it was opened with,
 /// a computer-use session carries only `Screen`, and a step needs a begun run.
-fn admits(spec: &SessionSpec, cua: CuaProgress, request: &InferRequest) -> bool {
+fn admits(spec: &SessionSpec, computer_use: ComputerUseProgress, request: &InferRequest) -> bool {
     let carried = match request {
         InferRequest::Chat(r) => Some(r.class),
         InferRequest::Embed(r) => Some(r.class),
         InferRequest::Task(r) => Some(r.class),
         InferRequest::Speak(r) => Some(r.class),
-        InferRequest::CuaBegin(_) | InferRequest::CuaStep(_) | InferRequest::Transcribe(_) => None,
+        InferRequest::ComputerUseBegin(_)
+        | InferRequest::ComputerUseStep(_)
+        | InferRequest::Transcribe(_) => None,
     };
     let kind = request.kind();
-    let computer_use_session = matches!(kind, RequestKind::CuaBegin | RequestKind::CuaStep);
-    let cua_ok = !computer_use_session || crate::router::check_class(spec.class).is_ok();
-    let begun = kind != RequestKind::CuaStep || cua == CuaProgress::Begun;
-    cua_ok && begun && carried.is_none_or(|class| class == spec.class) && fits(&spec.need, kind)
+    let computer_use_session = matches!(
+        kind,
+        RequestKind::ComputerUseBegin | RequestKind::ComputerUseStep
+    );
+    let computer_use_ok = !computer_use_session || crate::router::check_class(spec.class).is_ok();
+    let begun = kind != RequestKind::ComputerUseStep || computer_use == ComputerUseProgress::Begun;
+    computer_use_ok
+        && begun
+        && carried.is_none_or(|class| class == spec.class)
+        && fits(&spec.need, kind)
 }
 
 /// A request arrives in an idle (or just-readied) session. A turn that starts says who answers
@@ -226,12 +234,12 @@ fn request_in_idle(
         served,
         answer,
         routed,
-        cua,
+        computer_use,
     } = &idle
     else {
         return (idle, vec![]);
     };
-    if !admits(spec, *cua, &request) {
+    if !admits(spec, *computer_use, &request) {
         return (idle, vec![refused(InferRefusal::Unsupported)]);
     }
     let kind = request.kind();
@@ -251,7 +259,7 @@ fn request_in_idle(
         answer: answer.clone(),
         kind,
         audio,
-        cua: *cua,
+        computer_use: *computer_use,
         queued: None,
     };
     (
@@ -272,13 +280,13 @@ const V1_RATE: AudioRate = AudioRate(16_000);
 /// (up to [`MAX_HEARD_MS`]) until the chat it belongs to. Nothing is announced yet. A rate other
 /// than v1's is refused, as a transcription's frames would be.
 fn start_hearing(before: Phase, begin: &TranscribeBegin) -> (Phase, Vec<SessionOut>) {
-    let (served, answer, routed, cua, engine) = match before {
+    let (served, answer, routed, computer_use, engine) = match before {
         Phase::Idle {
             served,
             answer,
             routed,
-            cua,
-        } => (served, answer, routed, cua, EngineNow::Ready),
+            computer_use,
+        } => (served, answer, routed, computer_use, EngineNow::Ready),
         Phase::Waiting {
             served,
             answer,
@@ -287,7 +295,7 @@ fn start_hearing(before: Phase, begin: &TranscribeBegin) -> (Phase, Vec<SessionO
             served,
             answer,
             RoutedNote::Pending,
-            CuaProgress::NotBegun,
+            ComputerUseProgress::NotBegun,
             EngineNow::Loading,
         ),
         other => return (other, vec![refused(InferRefusal::Unsupported)]),
@@ -296,7 +304,7 @@ fn start_hearing(before: Phase, begin: &TranscribeBegin) -> (Phase, Vec<SessionO
         served,
         answer,
         routed,
-        cua,
+        computer_use,
         heard: HeardAudio {
             begin: begin.clone(),
             frames: Vec::new(),
@@ -319,14 +327,14 @@ fn settle(hearing: Phase) -> Phase {
             served,
             answer,
             routed,
-            cua,
+            computer_use,
             engine: EngineNow::Ready,
             ..
         } => Phase::Idle {
             served,
             answer,
             routed,
-            cua,
+            computer_use,
         },
         Phase::Hearing { served, answer, .. } => Phase::Waiting {
             served,
@@ -346,7 +354,7 @@ fn hearing(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
         served,
         answer,
         routed,
-        cua,
+        computer_use,
         heard,
         audio,
         engine,
@@ -360,7 +368,7 @@ fn hearing(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
         served: served.clone(),
         answer: answer.clone(),
         routed,
-        cua,
+        computer_use,
         heard,
         audio,
         engine,
@@ -374,7 +382,7 @@ fn hearing(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
                 answer: answer.clone(),
                 kind: RequestKind::Chat,
                 audio: AudioCursor::NoAudio,
-                cua,
+                computer_use,
                 queued: None,
             },
             vec![SessionOut::Hear(heard), SessionOut::StartTurn(request)],
@@ -407,7 +415,7 @@ fn hearing(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
             (same(heard, AudioCursor::NoAudio, engine, chat), vec![])
         }
         SessionIn::Frame(ClientFrame::Request(request @ InferRequest::Chat(_)))
-            if ended && chat.is_none() && admits(spec, cua, &request) =>
+            if ended && chat.is_none() && admits(spec, computer_use, &request) =>
         {
             match engine {
                 EngineNow::Ready => begin_turn(request, heard),
@@ -452,14 +460,14 @@ fn turn_over(
     let Ended {
         served,
         answer,
-        cua,
+        computer_use,
         queued,
     } = ended;
     let idle = Phase::Idle {
         served,
         answer,
         routed: RoutedNote::Sent,
-        cua,
+        computer_use,
     };
     match queued {
         None => (idle, effects),
@@ -474,7 +482,7 @@ fn turn_over(
 struct Ended {
     served: ServedBy,
     answer: StageNote,
-    cua: CuaProgress,
+    computer_use: ComputerUseProgress,
     queued: Option<InferRequest>,
 }
 
@@ -484,16 +492,16 @@ fn in_turn(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
         answer,
         kind,
         audio,
-        cua,
+        computer_use,
         queued,
     } = phase
     else {
         return (phase, vec![]);
     };
-    let ended = |cua| Ended {
+    let ended = |computer_use| Ended {
         served: served.clone(),
         answer: answer.clone(),
-        cua,
+        computer_use,
         queued: queued.clone(),
     };
     let same = |audio, queued| Phase::InTurn {
@@ -501,23 +509,28 @@ fn in_turn(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
         answer: answer.clone(),
         kind,
         audio,
-        cua,
+        computer_use,
         queued,
     };
     match input {
         SessionIn::TurnEvent(event) => (same(audio, queued), vec![SessionOut::Emit(event)]),
         SessionIn::TurnDone(reply) => {
-            let begun = kind == RequestKind::CuaBegin && matches!(reply, InferReply::CuaStep(_));
-            let cua = if begun { CuaProgress::Begun } else { cua };
+            let begun = kind == RequestKind::ComputerUseBegin
+                && matches!(reply, InferReply::ComputerUseStep(_));
+            let computer_use = if begun {
+                ComputerUseProgress::Begun
+            } else {
+                computer_use
+            };
             turn_over(
                 spec,
-                ended(cua),
+                ended(computer_use),
                 vec![SessionOut::Audit(reply.clone()), finished(reply)],
             )
         }
         SessionIn::Frame(ClientFrame::Cancel) => turn_over(
             spec,
-            ended(cua),
+            ended(computer_use),
             vec![
                 SessionOut::DropTurn,
                 SessionOut::Audit(InferReply::Cancelled),
@@ -525,7 +538,7 @@ fn in_turn(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
             ],
         ),
         SessionIn::Frame(ClientFrame::Request(request)) => {
-            match (&queued, admits(spec, cua, &request)) {
+            match (&queued, admits(spec, computer_use, &request)) {
                 (None, true) => (same(audio, Some(request)), vec![]),
                 _ => (
                     same(audio, queued),
@@ -545,7 +558,7 @@ fn in_turn(spec: &SessionSpec, phase: Phase, input: SessionIn) -> (Phase, Vec<Se
             Ok(next) => (same(next, queued), vec![SessionOut::Audio(frame)]),
             Err(error) => turn_over(
                 spec,
-                ended(cua),
+                ended(computer_use),
                 vec![
                     SessionOut::DropTurn,
                     SessionOut::Audit(InferReply::Failed(error)),

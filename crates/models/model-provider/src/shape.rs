@@ -4,7 +4,7 @@
 //! (the reader's `ValueSchema`, the review verdict, the policy patch, consolidation facts; planner
 //! steps are tool calls whose schemas already come from action declarations), we need regex,
 //! choice and GBNF output that `schemars` cannot give, and our types are `Eq` newtypes whose serde
-//! form is the schema. One conversion lives here so the actions service, the memory service and cua do not each write one.
+//! form is the schema. One conversion lives here so the actions service, the memory service and computer use do not each write one.
 //! The checker is ours (`Shape::check`), not a `jsonschema` crate.
 //!
 mod check;

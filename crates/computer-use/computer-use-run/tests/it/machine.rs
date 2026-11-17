@@ -1,21 +1,23 @@
-//! The run machine's transitions, as the phase table of cua.md section 4 (changed for the
+//! The run machine's transitions, as the phase table of computer_use.md section 4 (changed for the
 //! router's gate) states them.
 
 use crate::support::rules;
 use account_core::{AppName, DataClass};
 use action_wire::GrantAnswer;
 use computer_use_action::RunMode;
-use computer_use_action::{Button, ClickCount, Coord, CuaAction, Point, Target, WindowSpace};
+use computer_use_action::{
+    Button, ClickCount, ComputerUseAction, Coord, Point, Target, WindowSpace,
+};
 use computer_use_bus::{
-    BlockedOn, BudgetUse, CancelledBy, CuaOutcome, CuaTask, ReportRoute, RunBudget, RunOrigin,
-    SuccessCheck, TargetedAction, TaskTarget, WindowRef,
+    BlockedOn, BudgetUse, CancelledBy, ComputerUseOutcome, ComputerUseTask, ReportRoute, RunBudget,
+    RunOrigin, SuccessCheck, TargetedAction, TaskTarget, WindowRef,
 };
 use computer_use_desktop::{
     BackendCaps, BackendKind, ConsentGuard, DesktopEvent, LeaseId, Stamp, Suspend, ToplevelIdent,
 };
 use computer_use_run::{
-    ActionQueue, CuaConfig, CuaSignal, Repeats, Run, RunEffect, RunEnv, RunInput, RunPhase,
-    RunTrack,
+    ActionQueue, ComputerUseConfig, ComputerUseSignal, Repeats, Run, RunEffect, RunEnv, RunInput,
+    RunPhase, RunTrack,
 };
 use inference_core::StepIndex;
 use provenance::{
@@ -53,8 +55,8 @@ fn screen_label() -> Label {
     }
 }
 
-fn task(target: TaskTarget, mode: RunMode) -> CuaTask {
-    CuaTask {
+fn task(target: TaskTarget, mode: RunMode) -> ComputerUseTask {
+    ComputerUseTask {
         app: app(),
         goal: user_goal(),
         asked: None,
@@ -81,7 +83,11 @@ fn window() -> TaskTarget {
 }
 
 fn env(kind: BackendKind) -> RunEnv {
-    RunEnv::new(&CuaConfig::default(), BackendCaps::of(kind), rules())
+    RunEnv::new(
+        &ComputerUseConfig::default(),
+        BackendCaps::of(kind),
+        rules(),
+    )
 }
 
 fn run_id() -> RunId {
@@ -110,7 +116,7 @@ fn in_phase(phase: RunPhase, kind: BackendKind) -> Run {
 fn click() -> TargetedAction {
     TargetedAction {
         window: WindowRef(1),
-        action: CuaAction::<WindowSpace>::Click {
+        action: ComputerUseAction::<WindowSpace>::Click {
             at: Target::Point(Point::new(Coord(10), Coord(10))),
             button: Button::Left,
             count: ClickCount::One,
@@ -140,9 +146,9 @@ fn report_text(effects: &[RunEffect]) -> Option<String> {
     })
 }
 
-fn finished_signal(effects: &[RunEffect]) -> Option<CuaOutcome> {
+fn finished_signal(effects: &[RunEffect]) -> Option<ComputerUseOutcome> {
     effects.iter().find_map(|e| match e {
-        RunEffect::Emit(CuaSignal::Finished(outcome)) => Some(*outcome),
+        RunEffect::Emit(ComputerUseSignal::Finished(outcome)) => Some(*outcome),
         _ => None,
     })
 }
@@ -192,7 +198,7 @@ fn a_never_answer_blocks_the_run_on_consent_and_takes_no_lease() {
     let (run, effects) = run.step(RunInput::Granted(GrantAnswer::Never), Stamp(10));
     assert_eq!(
         run.phase,
-        RunPhase::Finished(CuaOutcome::Blocked(BlockedOn::ConsentDenied))
+        RunPhase::Finished(ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied))
     );
     assert!(
         !effects
@@ -211,7 +217,7 @@ fn a_mode_the_backend_cannot_run_or_an_app_target_ends_the_run_at_once() {
     );
     assert_eq!(
         run.phase,
-        RunPhase::Finished(CuaOutcome::Blocked(BlockedOn::ModeUnsupported(
+        RunPhase::Finished(ComputerUseOutcome::Blocked(BlockedOn::ModeUnsupported(
             RunMode::AgentWorkspace
         )))
     );
@@ -224,7 +230,7 @@ fn a_mode_the_backend_cannot_run_or_an_app_target_ends_the_run_at_once() {
     );
     assert_eq!(
         run.phase,
-        RunPhase::Finished(CuaOutcome::Blocked(BlockedOn::NeedsCapability))
+        RunPhase::Finished(ComputerUseOutcome::Blocked(BlockedOn::NeedsCapability))
     );
     let said = report_text(&effects).unwrap_or_default();
     assert!(said.contains("has no open window"), "{said}");
@@ -242,11 +248,11 @@ fn a_refused_consent_ends_the_run_blocked_and_reports_failed() {
     let (run, effects) = run.step(RunInput::Granted(refused), Stamp(10));
     assert_eq!(
         run.phase,
-        RunPhase::Finished(CuaOutcome::Blocked(BlockedOn::ConsentDenied))
+        RunPhase::Finished(ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied))
     );
     assert_eq!(
         finished_signal(&effects),
-        Some(CuaOutcome::Blocked(BlockedOn::ConsentDenied))
+        Some(ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied))
     );
     assert_eq!(report_status(&effects), Some(ReportStatus::Failed));
     assert!(
@@ -259,7 +265,7 @@ fn a_refused_consent_ends_the_run_blocked_and_reports_failed() {
 
 #[test]
 fn finished_ignores_every_input() {
-    let finished = RunPhase::Finished(CuaOutcome::Cancelled(CancelledBy::User));
+    let finished = RunPhase::Finished(ComputerUseOutcome::Cancelled(CancelledBy::User));
     let inputs = [
         RunInput::UserPause,
         RunInput::UserResume,
@@ -283,7 +289,7 @@ fn a_confirmation_suspends_the_lease_on_stock() {
     let n = StepIndex(2);
     let cases = [(
         BackendKind::KwinStock,
-        ConsentGuard::CuadSuspendsInput,
+        ConsentGuard::ComputerUseDaemonSuspendsInput,
         true,
     )];
     for (kind, guard, suspends) in cases {
@@ -344,7 +350,7 @@ fn a_message_changes_no_authority() {
         id: provenance::MessageId::parse("m-1").unwrap(),
         thread: provenance::ThreadId::parse("m-1").unwrap(),
         from: Address::new(AgentRef::User, space()),
-        to: Address::new(AgentRef::Cua { run: run_id() }, space()),
+        to: Address::new(AgentRef::ComputerUse { run: run_id() }, space()),
         crosses: false,
         kind: MessageKind::Request,
         parts: vec![],

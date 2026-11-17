@@ -56,7 +56,11 @@ fn a_fixed_role_service_proved_by_its_unit_keeps_its_role() {
             CallerRole::AccountDaemon,
         ),
         ("org.bardo.Shell", "sheet_host", CallerRole::SheetHost),
-        ("org.bardo.ComputerUse", "cua", CallerRole::Cua),
+        (
+            "org.bardo.ComputerUse",
+            "computer_use",
+            CallerRole::ComputerUse,
+        ),
         ("org.bardo.Settings", "settings", CallerRole::Settings),
     ];
     for (app, role, expected) in cases {

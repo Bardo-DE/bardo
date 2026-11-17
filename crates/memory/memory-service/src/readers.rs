@@ -25,8 +25,8 @@ pub(crate) fn caller_actor(caller: &Caller) -> Actor {
         CallerRole::Agent => Actor::System {
             part: SystemPart::Router,
         },
-        CallerRole::Cua => Actor::System {
-            part: SystemPart::Cua,
+        CallerRole::ComputerUse => Actor::System {
+            part: SystemPart::ComputerUse,
         },
         CallerRole::SheetHost => Actor::User {
             via: caller.app_id().name.clone(),

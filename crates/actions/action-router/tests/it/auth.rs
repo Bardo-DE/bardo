@@ -116,9 +116,9 @@ fn only_the_reader_resolves_a_handle_and_never_a_planner() {
 }
 
 #[test]
-fn only_cuad_uses_the_gate_and_only_control_resumes() {
-    assert_eq!(role_set(Member::GateCheck), [CallerRole::Cua]);
-    assert_eq!(role_set(Member::GateGrant), [CallerRole::Cua]);
+fn only_computer_use_daemon_uses_the_gate_and_only_control_resumes() {
+    assert_eq!(role_set(Member::GateCheck), [CallerRole::ComputerUse]);
+    assert_eq!(role_set(Member::GateGrant), [CallerRole::ComputerUse]);
     assert_eq!(role_set(Member::ControlResume), [CallerRole::Control]);
     assert_eq!(
         role_set(Member::ControlHalt),
@@ -139,7 +139,7 @@ fn nobody_but_the_planner_reads_memory_or_notes_an_episode() {
 
 #[test]
 fn a_run_may_send_a_report_but_a_reader_may_send_nothing() {
-    assert!(permits(CallerRole::Cua, Member::MessageSend));
+    assert!(permits(CallerRole::ComputerUse, Member::MessageSend));
     assert!(permits(CallerRole::Launcher, Member::MessageSend));
     for member in Member::ALL {
         if member != Member::Manifests {
@@ -179,7 +179,7 @@ fn a_caller_acts_in_the_first_of_its_roles_that_may_make_the_call() {
     assert_eq!(
         acting_role(&shell, Member::GateCheck),
         None,
-        "shell is not cuad"
+        "shell is not computer_use_daemon"
     );
     let plain = BTreeSet::new();
     assert_eq!(

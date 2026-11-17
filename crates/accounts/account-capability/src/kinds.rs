@@ -11,7 +11,7 @@
 
 use crate::agent::AgentCap;
 use crate::ai::{EmbedCap, ImageGenCap, LlmCap, RerankCap, SpeechCap};
-use crate::cua::CuaCap;
+use crate::computer_use::ComputerUseCap;
 use crate::mail::{IdentityCap, MailCap};
 use crate::photos::PhotosCap;
 use crate::pim::{NotesCap, PimCap};
@@ -55,7 +55,7 @@ macro_rules! capability_kinds {
             /// Reranking.
             Rerank(RerankCap, RerankNeed, "Result ranking", ai),
             /// A model that operates a window from screenshots.
-            ComputerUse(CuaCap, CuaNeed, "Operating windows", ai),
+            ComputerUse(ComputerUseCap, ComputerUseNeed, "Operating windows", ai),
             /// Small synced items.
             KeyValue(KeyValueCap, KeyValueNeed, "Small synced items"),
             /// A push channel.

@@ -1,8 +1,8 @@
 <!-- paths: skip -->
-<!-- Reference copy of ~/rs-wt/agent-spec/cua.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
-# Area: cua — the computer-use runtime and its desktop plumbing
+<!-- Reference copy of ~/rs-wt/agent-spec/computer_use.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
+# Area: computer use — the computer-use runtime and its desktop plumbing
 
-Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, the UI kit design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), Bardo CONVENTIONS.md and ARCHITECTURE.md (`Machine`), the accounts service (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
+Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, computer-use-integration.md, research-ecosystem-{agents,infra}.md, research-computer-use-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, the UI kit design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), Bardo CONVENTIONS.md and ARCHITECTURE.md (`Machine`), the accounts service (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
 
 I also checked the installed binaries on this machine (Fedora 44: the compositor, kwin 6.7.5) and the nested compositor globals the harness recorded (`~/shell-host/scripts/dev/out/globals.txt`):
 
@@ -17,7 +17,7 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 ## 1. Scope and non-goals
 
 **In scope**
-- **`cuad`**: the daemon that owns the step loop (observe → model step → policy check → act → settle). It also owns budgets, the CUA consent gate, masking policy, audit records, the per-window lease, and the `org.bardo.ComputerUse1` control plane.
+- **`computer_use_daemon`**: the daemon that owns the step loop (observe → model step → policy check → act → settle). It also owns budgets, the computer use consent gate, masking policy, audit records, the per-window lease, and the `org.bardo.ComputerUse1` control plane.
 - **The run state machine**: pure, with every state, input, effect and transition (§4).
 - **Observations**: masked window frame, an optional a11y tree, typed context, the agent cursor and the outcomes of the previous step. Also the `computer-use-a11y-tree` model (snapshot, prune, render to text, diff, selectors).
 - **`computer-use-seat-input`**: the agent seat over reis/libei against the compositor's EIS server, plus pure action→input planning and keymap/text handling.
@@ -29,27 +29,27 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 - **Spikes first**, each with acceptance criteria.
 
 **Non-goals**
-- Model choice, the model wire formats, action parsing, image resize/encode, and inferd routing. These belong to the **models** area. cua consumes `computer-use-action` and the `CuaModel` seam.
-- Cedar policy text, the typed-action registry, `prov` labels, and the confirmation wording. These belong to the **actions** area. cua builds the request and executes the verdict.
-- Event-log storage, hash chain, memfiles and recall. These belong to the **memory** area. cua defines its record payloads only.
-- The launcher's run strip and orb drawing. These belong to whoever owns the shell's launcher and companion UX; cua provides the `Cua1` bus they subscribe to.
-- The planner and router tiering decision (typed action, then hook, then CUA). cua is called; it does not decide to be called.
+- Model choice, the model wire formats, action parsing, image resize/encode, and inferd routing. These belong to the **models** area. Computer use consumes `computer-use-action` and the `ComputerUseModel` seam.
+- Cedar policy text, the typed-action registry, `prov` labels, and the confirmation wording. These belong to the **actions** area. Computer use builds the request and executes the verdict.
+- Event-log storage, hash chain, memfiles and recall. These belong to the **memory** area. Computer use defines its record payloads only.
+- The launcher's run strip and orb drawing. These belong to whoever owns the shell's launcher and companion UX; computer use provides the `ComputerUse1` bus they subscribe to.
+- The planner and router tiering decision (typed action, then hook, then computer use). Computer use is called; it does not decide to be called.
 - uinput, in any form, ever.
 
 **Conflicts with the docs, and the resolution I propose**
-1. **COMPANION settled item 4 ("No screen clicking") against the CUA tier.** cua-integration proposes replacing item 4. Until the user confirms, `cuad` ships with `cua.enabled = off` and nothing else depends on it. *User question Q1.*
-2. **Floating-point coordinates.** cua-integration uses `f32` `LogicalPoint`; the accounts service's rule allows floats only in `EmbedVector`. Resolution: integer `Lpx(i32)` window-local logical px. Model-frame coordinate types (normalised 0-999 grid, model-pixel space) stay inside the models area's adapters.
-3. **"Second wl_seat" (cua-integration §4.2) against "computer-use-seat-input over reis" (COMPANION build map).** Resolution: one client path. Injection is always EI through reis. On the fork, the EI sender context is bound to a compositor-side agent seat; on stock, it lands on the user's seat (`SeatIsolation::SharedSeat`).
-4. **Where masking happens.** cua-integration masks in the compositor; the infra survey masks in the capturing process. Resolution: both, chosen by backend. `MaskReport.applied_by: MaskWhere {Compositor, Cuad}` records which one ran, and pixels never leave `cuad` unmasked in either case.
-5. **Where `cuad` runs.** cua-integration offers "a daemon, or a module inside the shell host". Resolution: its own daemon. It holds a privileged Wayland connection and an EIS fd, needs its own systemd sandbox, and must not share a process with GPU UI. layer-shell-host stays a UI host.
-6. **`HandBack` has two meanings in cua-integration** (user→agent at the start, and resuming after a takeover). Resolution: `Run.HandBack` only resumes a taken-over run. Starting from the user's manual work is `Manager.Start` with `origin = Handover`.
-7. **No CUA need or CUA grant in the accounts service.** the accounts service's `Need` has no `cua` kind and `GrantKey` has no Space. Resolution: the models area adds `Need::Cua` (a 31-ACCOUNTS edit). The CUA grant `(app, Space) → Once/Always` lives in the actions area's action-grant store, not in the accounts service's account grants (§7).
+1. **COMPANION settled item 4 ("No screen clicking") against the computer use tier.** computer-use-integration proposes replacing item 4. Until the user confirms, `computer_use_daemon` ships with `computer_use.enabled = off` and nothing else depends on it. *User question Q1.*
+2. **Floating-point coordinates.** computer-use-integration uses `f32` `LogicalPoint`; the accounts service's rule allows floats only in `EmbedVector`. Resolution: integer `Lpx(i32)` window-local logical px. Model-frame coordinate types (normalised 0-999 grid, model-pixel space) stay inside the models area's adapters.
+3. **"Second wl_seat" (computer-use-integration §4.2) against "computer-use-seat-input over reis" (COMPANION build map).** Resolution: one client path. Injection is always EI through reis. On the fork, the EI sender context is bound to a compositor-side agent seat; on stock, it lands on the user's seat (`SeatIsolation::SharedSeat`).
+4. **Where masking happens.** computer-use-integration masks in the compositor; the infra survey masks in the capturing process. Resolution: both, chosen by backend. `MaskReport.applied_by: MaskWhere {Compositor, ComputerUseDaemon}` records which one ran, and pixels never leave `computer_use_daemon` unmasked in either case.
+5. **Where `computer_use_daemon` runs.** computer-use-integration offers "a daemon, or a module inside the shell host". Resolution: its own daemon. It holds a privileged Wayland connection and an EIS fd, needs its own systemd sandbox, and must not share a process with GPU UI. layer-shell-host stays a UI host.
+6. **`HandBack` has two meanings in computer-use-integration** (user→agent at the start, and resuming after a takeover). Resolution: `Run.HandBack` only resumes a taken-over run. Starting from the user's manual work is `Manager.Start` with `origin = Handover`.
+7. **No computer use need or computer use grant in the accounts service.** the accounts service's `Need` has no `computer_use` kind and `GrantKey` has no Space. Resolution: the models area adds `Need::ComputerUse` (a 31-ACCOUNTS edit). The computer use grant `(app, Space) → Once/Always` lives in the actions area's action-grant store, not in the accounts service's account grants (§7).
 
 ---
 
 ## 2. Repos and crates
 
-### New repo `~/cua` (working name; Q3), MIT OR Apache-2.0, account-style
+### New repo `~/computer_use` (working name; Q3), MIT OR Apache-2.0, account-style
 
 Workspace conventions are copied from the accounts service: `rust-toolchain.toml` at 1.98.1, the UI kit's `deny.toml` verbatim, `CONVENTIONS.md` pointing at the UI kit's with the accounts service additions (closed sets are enums with serde slugs and no `Word`; async seams are `-> impl Future + Send`; closed sets of implementations are enums, not `dyn`; `todo!()` only behind a frozen interface and listed in FINDINGS; nothing ambient below the daemon). It also gets `ARCHITECTURE.md`, `FINDINGS.md`, `dbus/`, `protocols/` and `scripts/`.
 
@@ -60,10 +60,10 @@ Workspace conventions are copied from the accounts service: `rust-toolchain.toml
 | `maskcap` | `Frame`, `PixelBuf`, `MaskRegion`, `MaskReport`, `apply_masks`, `FrameDigest`, settle logic; traits `WindowCapture` and `CaptureSession`; feature `wayland` = ext-image-copy-capture plus Bardo masked source | none by default | core yes |
 | `computer-use-desktop` | `ToplevelInfo`, `LeaseRequest`/`LeaseGrant`, `BackendCaps`, `GlowState`, `DesktopEvent`; traits `Desktop` and `LeaseControl`; feature `wayland` = the Wayland client toolkit, ext-workspace and the bardo-agent protocol | none by default | core yes |
 | `bardo-agent-protocol` | `protocols/bardo-agent-v1.xml` plus wayland-scanner bindings; features `client` and `server` (the fork uses `server`) | none | yes |
-| `computer-use-run` | pure core: ids, `CuaTask`, `CuaResult`, `RunMode`, `Budget`, `Observation`, `ActionOutcome`, `classify_effect`, `LeaseBook`, the run machine (`Run::step`), stall detection, `CuaRecord` (event-log payloads), `Procedure` types, the `Cua1` wire bodies, `mode_support` | none | yes |
+| `computer-use-run` | pure core: ids, `ComputerUseTask`, `ComputerUseResult`, `RunMode`, `Budget`, `Observation`, `ActionOutcome`, `classify_effect`, `LeaseBook`, the run machine (`Run::step`), stall detection, `ComputerUseRecord` (event-log payloads), `Procedure` types, the `ComputerUse1` wire bodies, `mode_support` | none | yes |
 | `computer-use-dbus` | `org.bardo.ComputerUse1` zbus proxies and skeletons, `dbus/org.bardo.ComputerUse1.xml`, codec, introspection test | zbus | Linux |
 | `computer-use-fake` | test-only: `FakeSeat`, `FakeEis` (an in-process reis EIS server on a socketpair), `FakeCapture`, `FakeDesktop`, `FakeA11y`, `ScriptedModel` (over models' replay provider), `FakePdp`, `MemoryEvents`, `FixedClock`, `run_harness` | none | yes |
-| `cuad` | the daemon: env and settings, effect executor, zbus server, caller checks, backend selection; `dist/bardo-computer-use.service` and the D-Bus activation file | everything | Linux |
+| `computer_use_daemon` | the daemon: env and settings, effect executor, zbus server, caller checks, backend selection; `dist/bardo-computer-use.service` and the D-Bus activation file | everything | Linux |
 
 **Allowed edges** (checked by `scripts/check-boundary.sh`, copied from the accounts service's script and adapted):
 
@@ -76,9 +76,9 @@ Workspace conventions are copied from the accounts service: `rust-toolchain.toml
 | `computer-use-run` | `computer-use-action`, `computer-use-a11y-tree`, `computer-use-seat-input`, `maskcap`, `computer-use-desktop` (all default features), `prov`, `bardo-intents` (types), `account-core` (`DataClass`, `AppId`, `Locality`) |
 | `computer-use-dbus` | `computer-use-run` |
 | `computer-use-fake` | everything above with default features, plus `reis` (for `FakeEis`), plus models' `model-provider` (replay) |
-| `cuad` | all of the above with their I/O features, plus `model-provider` (models), `permission-policy` (actions), `eventlog` (memory), `account-client` (`DbusTransport`) |
+| `computer_use_daemon` | all of the above with their I/O features, plus `model-provider` (models), `permission-policy` (actions), `eventlog` (memory), `account-client` (`DbusTransport`) |
 
-**External boundary.** Every crate except `computer-use-dbus`, `cuad` and the backend features never reaches `zbus`, `zvariant`, `tokio`, `wayland-client`, `wayland-backend`, `reis`, `atspi`, `reqwest` or `hyper` (default features). `computer-use-run` additionally never reaches `cedar-policy` or `rusqlite`: verdicts and records cross as data.
+**External boundary.** Every crate except `computer-use-dbus`, `computer_use_daemon` and the backend features never reaches `zbus`, `zvariant`, `tokio`, `wayland-client`, `wayland-backend`, `reis`, `atspi`, `reqwest` or `hyper` (default features). `computer-use-run` additionally never reaches `cedar-policy` or `rusqlite`: verdicts and records cross as data.
 
 ### Fork repo `~/bardo/compositor` (GPL-3.0-only, branch `bardo`, rebased on upstream release tags)
 
@@ -91,17 +91,17 @@ All Bardo code goes in `src/bardo/` (agent seat, masked source, lease and glow g
 - **Later, joins the block:** `ashpd 0.13` (RemoteDesktop/ScreenCast portal fallback if `GetSenderSocket` is owner-restricted) and `pipewire` (KWin window capture; [unverified] version and licence).
 - **From other areas:** `computer-use-action`, `model-provider` (models); `prov`, `permission-policy`, `bardo-intents` (actions); `eventlog`, `memfiles` (memory); `account-core` (`DataClass::Screen`, `AppId`, `Locality`).
 
-Image resize and encoding are models' `model-vision-prep`. cua hands over raw masked pixels.
+Image resize and encoding are models' `model-vision-prep`. Computer use hands over raw masked pixels.
 
 ---
 
 ## 3. Frozen interfaces
 
-### 3.0 What cua needs from `computer-use-action` (owned by **models**; listed so both specs agree) — freeze now
+### 3.0 What computer use needs from `computer-use-action` (owned by **models**; listed so both specs agree) — freeze now
 
 ```rust
 // computer-use-action: types only, serde (kind/v adjacently tagged), no floats.
-pub struct WindowRef(pub u32);                 // per-run handle; cuad maps it to a ToplevelIdent
+pub struct WindowRef(pub u32);                 // per-run handle; computer_use_daemon maps it to a ToplevelIdent
 pub struct Lpx(pub i32);                       // logical px, window-local
 pub struct WinPoint { pub x: Lpx, pub y: Lpx } // origin = top-left of the window geometry (the cropped frame)
 pub struct WinSize { pub w: Lpx, pub h: Lpx }
@@ -115,7 +115,7 @@ pub struct ClickCount(pub u8);                 // 1..=3, checked at parse
 pub struct Repeat(pub u8);
 pub struct ScrollSteps(pub i16);               // wheel detents; sign = direction
 pub struct Ms(pub u32);
-pub enum CuaAction {
+pub enum ComputerUseAction {
     Click  { at: ActionTarget, button: Button, count: ClickCount, mods: BTreeSet<Modifier> },
     Move   { to: ActionTarget },
     Drag   { from: ActionTarget, to: ActionTarget, button: Button },
@@ -128,10 +128,10 @@ pub enum CuaAction {
     Ask    { question: String, choices: Vec<String> },
 }
 pub struct Extracted { pub name: String, pub value: String }   // computer-use-run labels these Untrusted(Screen)
-pub struct TargetedAction { pub window: WindowRef, pub action: CuaAction }
+pub struct TargetedAction { pub window: WindowRef, pub action: ComputerUseAction }
 
 // The model turn, built by computer-use-run from an Observation; adapters resize/encode it.
-pub struct CuaTurn { pub step: u32, pub frame: RawFrame, pub geometry: TurnGeometry,
+pub struct ComputerUseTurn { pub step: u32, pub frame: RawFrame, pub geometry: TurnGeometry,
                      pub tree_text: TreeText, pub prev: Vec<PrevNote>, pub notes: Vec<String> }
 pub enum TreeText { Absent, Present(String) }
 pub struct RawFrame { pub format: PixelFormat, pub size: PxSize, pub stride: u32, pub data: Arc<[u8]> }
@@ -142,15 +142,15 @@ pub enum Thought { None, Text(String) }
 pub enum StepEvent { ThoughtDelta(String), ActionProposed(TargetedAction) }
 ```
 
-`CuaModel` / `CuaSession` (trait in models' `model-provider`). cua relies on exactly this:
+`ComputerUseModel` / `ComputerUseSession` (trait in models' `model-provider`). Computer use relies on exactly this:
 
 ```rust
-fn step(&mut self, turn: CuaTurn, sink: &mut dyn FnMut(StepEvent), cancel: &CancelToken)
-    -> impl Future<Output = Result<StepReply, CuaModelError>> + Send;
+fn step(&mut self, turn: ComputerUseTurn, sink: &mut dyn FnMut(StepEvent), cancel: &CancelToken)
+    -> impl Future<Output = Result<StepReply, ComputerUseModelError>> + Send;
 fn usage(&self) -> Usage;
 ```
 
-`CuaModelError` must let cua tell retryable from fatal: `Transient`, `Parse` (counted as a step) and `Fatal` kinds.
+`ComputerUseModelError` must let computer use tell retryable from fatal: `Transient`, `Parse` (counted as a step) and `Fatal` kinds.
 
 ### 3.1 `computer-use-a11y-tree` — freeze now (the `atspi` backend body later)
 
@@ -181,7 +181,7 @@ pub enum NodeState { Enabled, Focusable, Focused, Selected, Checked, Expanded, E
 pub enum NodeAction { Click, Press, Activate, Toggle, Expand, Other(String) }
 pub enum TypedHint { None, Action(ActionName) }     // ActionName from bardo-intents
 pub enum Sensitivity { Normal, Secret }             // PasswordText role or a Bardo Sensitivity flag
-pub struct NodeBudget(pub u32);                     // setting cua.tree.max_nodes (proposed 400)
+pub struct NodeBudget(pub u32);                     // setting computer_use.tree.max_nodes (proposed 400)
 
 pub fn prune(s: &A11ySnapshot, budget: NodeBudget) -> A11ySnapshot;          // visible+actionable first
 pub fn render(s: &A11ySnapshot) -> String;   // "[12] button \"Save\" enabled,focusable @340,20 80x24"; Secret values never rendered
@@ -223,7 +223,7 @@ pub enum ScrollKind { Discrete, Smooth }
 
 /// Pure. Node targets are resolved by the caller to a WinPoint (centre of bounds, clamped inside).
 pub fn plan(action: &PlannedAction, keymap: &Keymap, caps: &SeatCaps) -> Result<Vec<InputOp>, PlanError>;
-pub struct PlannedAction { pub action: CuaAction, pub at: ResolvedPoints, pub window: WinSize }
+pub struct PlannedAction { pub action: ComputerUseAction, pub at: ResolvedPoints, pub window: WinSize }
 pub enum PlanError { OutsideWindow(WinPoint), Unmappable(char), NotAnInput /* Done/Ask/Zoom/Wait */, UnknownKey(String) }
 
 pub struct InputReceipt { pub lease: LeaseId, pub ops: u32, pub text_path: Option<TextPath>,
@@ -241,7 +241,7 @@ pub trait AgentSeat: Send + Sync {
 pub enum SeatError { NotConnected, Refused, OutsideLease, TargetGone, Suspended, Keymap(String), Protocol(String) }
 ```
 
-Backend enum in `cuad`: `SeatBackend { Ei(EiSeat) }`; tests use `FakeSeat` and `EiSeat` over `FakeEis`. Mapping from the window to the EI region: on the fork, the lease's EI region *is* the window (identity). On stock, `GlobalPoint = window_origin + WinPoint`, taken from `computer-use-desktop` geometry. That transform lives in `computer-use-seat-input::region` (pure).
+Backend enum in `computer_use_daemon`: `SeatBackend { Ei(EiSeat) }`; tests use `FakeSeat` and `EiSeat` over `FakeEis`. Mapping from the window to the EI region: on the fork, the lease's EI region *is* the window (identity). On stock, `GlobalPoint = window_origin + WinPoint`, taken from `computer-use-desktop` geometry. That transform lives in `computer-use-seat-input::region` (pure).
 
 ### 3.3 `maskcap` — freeze now
 
@@ -255,7 +255,7 @@ pub struct Frame {
 }
 pub struct PixelBuf { pub format: PixelFormat, pub size: PxSize, pub stride: u32, pub data: Arc<[u8]> }
 pub struct MaskReport { pub applied_by: MaskWhere, pub whole: WholeMask, pub regions: Vec<MaskedRegion> }
-pub enum MaskWhere { Compositor, Cuad }
+pub enum MaskWhere { Compositor, ComputerUseDaemon }
 pub enum WholeMask { None, Blacked(MaskReason) }
 pub struct MaskedRegion { pub rect: WinRect, pub why: MaskReason }
 pub enum MaskReason { PasswordField, SurfaceDeclared, A11ySecret, SensitiveWindow, OtherSpace, OverlayOutsideLease }
@@ -280,7 +280,7 @@ pub enum FrameWant { Now, AfterDamage }
 pub enum CaptureError { SourceGone, Refused, Withheld /* hidden window not rendered */, Format, Protocol(String) }
 ```
 
-Backends: `CaptureBackend { StockToplevel(..), BardoMasked(..) }`. On stock, `hints` (from `computer-use-a11y-tree::secret_rects`, sensitive-window rules and the text-input heuristic) are applied by `apply_masks` in `cuad` (`applied_by = Cuad`). On the fork, hints are sent to the compositor and the buffer arrives masked (`applied_by = Compositor`).
+Backends: `CaptureBackend { StockToplevel(..), BardoMasked(..) }`. On stock, `hints` (from `computer-use-a11y-tree::secret_rects`, sensitive-window rules and the text-input heuristic) are applied by `apply_masks` in `computer_use_daemon` (`applied_by = ComputerUseDaemon`). On the fork, hints are sent to the compositor and the buffer arrives masked (`applied_by = Compositor`).
 
 ### 3.4 `computer-use-desktop` — freeze now
 
@@ -307,7 +307,7 @@ pub enum RevokeReason { KillChord, WindowClosed, SpaceChanged, Compositor }
 pub struct BackendCaps { pub kind: BackendKind, pub seat: SeatIsolation, pub masking: MaskWhere,
     pub consent: ConsentGuard, pub hidden: HiddenCapture, pub glow: GlowDraw }
 pub enum BackendKind { The compositor, StockCompositor, KwinStock }
-pub enum ConsentGuard { CompositorOrigin, CuadSuspendsInput }
+pub enum ConsentGuard { CompositorOrigin, ComputerUseDaemonSuspendsInput }
 pub enum HiddenCapture { Renders, Withheld }
 pub enum GlowDraw { Compositor, ShellOnly }
 
@@ -333,9 +333,9 @@ pub enum DesktopError { NoSuchWindow, NotLeasable(WindowTrust), ModeUnsupported(
 pub struct RunId(pub u64);
 pub struct StepIndex(pub u32);
 pub struct QuestionId(pub u64);
-pub struct Stamp(pub u64);                           // ms from cuad's clock origin
+pub struct Stamp(pub u64);                           // ms from computer_use_daemon's clock origin
 
-pub struct CuaTask {
+pub struct ComputerUseTask {
     pub goal: Labelled<String>,                      // Trusted(User) when typed by the user
     pub target: TaskTarget, pub mode: RunMode, pub space: SpaceId,
     pub budget: Budget, pub data_in: Vec<Labelled<Value>>, // bardo-intents Value
@@ -368,18 +368,18 @@ pub enum ActionResult { Done, NotExecuted, Refused(DenyReason), UserDeclined, Fa
 pub enum EffectClass { Read, UndoableWrite, Outbound, Destructive }   // mirrors actions' Effect; From impl there
 pub enum EffectSource { NodeTypedAction(ActionName), WindowClass(WindowClass), DefaultTable }
 pub enum WindowClass { Ordinary, MailCompose, Terminal, Payments, Admin, PasswordManager, Banking }
-pub fn classify_effect(a: &CuaAction, node: Option<&A11yNode>, class: WindowClass) -> (EffectClass, EffectSource);
+pub fn classify_effect(a: &ComputerUseAction, node: Option<&A11yNode>, class: WindowClass) -> (EffectClass, EffectSource);
 
 pub struct AuthAsk { pub run: RunId, pub step: StepIndex, pub action: TargetedAction, pub effect: EffectClass,
     pub source: EffectSource, pub app: AppName, pub trust: WindowTrust, pub space: SpaceId,
     pub mode: RunMode, pub taint: Label /* prov */ }
-pub enum CuaVerdict { Allow, Ask(ConfirmText), Deny(DenyReason) }
+pub enum ComputerUseVerdict { Allow, Ask(ConfirmText), Deny(DenyReason) }
 pub struct ConfirmText(pub String);       // produced by the router from the action, never by the model
 pub enum DenyReason { Policy(String), OutsideLease, SecretField, Budget }
 
-pub struct CuaResult { pub run: RunId, pub outcome: CuaOutcome, pub summary: Labelled<String>,
+pub struct ComputerUseResult { pub run: RunId, pub outcome: ComputerUseOutcome, pub summary: Labelled<String>,
     pub extracted: Vec<Labelled<Extracted>>, pub steps: u32, pub cost: MicroUsd }
-pub enum CuaOutcome { Done, Failed(FailReason), Blocked(BlockedOn), Cancelled(CancelledBy), BudgetOut(BudgetKind) }
+pub enum ComputerUseOutcome { Done, Failed(FailReason), Blocked(BlockedOn), Cancelled(CancelledBy), BudgetOut(BudgetKind) }
 pub enum FailReason { WindowGone, Model, Capture, Input, CheckFailed }
 pub enum BlockedOn { ConsentDenied, LeaseRefused, PolicyDenials, ModeUnsupported(RunMode), NeedsCapability }
 pub enum CancelledBy { User, KillSwitch, Planner }
@@ -388,7 +388,7 @@ pub enum BudgetKind { Steps, Active, Stall, Rate, Spend }
 pub fn mode_support(caps: &BackendCaps, mode: RunMode) -> ModeSupport;
 pub enum ModeSupport { Full, HandsOff /* shared seat: physical input auto-pauses */, Unsupported(ModeGap) }
 pub enum ModeGap { HiddenCaptureWithheld, NoNestedHost, ShellWindow }
-pub fn turn(obs: &Observation) -> CuaTurn;            // Observation -> model turn (tree rendered, prev notes, mask notes)
+pub fn turn(obs: &Observation) -> ComputerUseTurn;            // Observation -> model turn (tree rendered, prev notes, mask notes)
 pub struct LeaseBook { /* window -> run; pure */ }    // one run per window, one window per run (v1)
 pub fn stalled(history: &[FrameDigest], limit: u8) -> Stall;
 pub enum Stall { Moving, Stalled }
@@ -397,10 +397,10 @@ pub enum Stall { Moving, Stalled }
 The run machine has the same shape as `ds_core::Machine`, but is not tied to it: `computer-use-run` is portable and sits below the design system, like the accounts service.
 
 ```rust
-pub struct Run { pub id: RunId, pub task: CuaTask, pub phase: RunPhase, pub used: BudgetUse, pub taint: Label,
+pub struct Run { pub id: RunId, pub task: ComputerUseTask, pub phase: RunPhase, pub used: BudgetUse, pub taint: Label,
                  pub digests: Vec<FrameDigest>, pub pending: ActionQueue }
 impl Run {
-    pub fn start(id: RunId, task: CuaTask, at: Stamp) -> (Run, Vec<RunEffect>);
+    pub fn start(id: RunId, task: ComputerUseTask, at: Stamp) -> (Run, Vec<RunEffect>);
     pub fn step(self, input: RunInput, at: Stamp) -> (Run, Vec<RunEffect>);
     pub fn wake(&self) -> Option<Stamp>;
 }
@@ -408,13 +408,13 @@ pub enum RunPhase {                          // see §4 for transitions
     Granting, Leasing, Observing(StepIndex), Thinking(StepIndex), Authorising(StepIndex),
     Confirming(StepIndex, ConfirmText), Acting(StepIndex), Settling(StepIndex, Settle),
     Verifying(StepIndex), WaitingForUser(StepIndex, QuestionId), Paused(StepIndex),
-    TakenOver(StepIndex, Stamp), Finished(CuaOutcome),
+    TakenOver(StepIndex, Stamp), Finished(ComputerUseOutcome),
 }
 pub enum RunInput {
     Grant(GrantVerdict), Leased(LeaseGrant), LeaseRefused(DesktopError),
     Observed(Box<Observation>), CaptureFailed(CaptureError),
     ModelEvent(StepEvent), ModelReplied(StepReply), ModelFailed(ModelFailure),
-    Verdict(CuaVerdict), ConsentAnswered(Answer), Injected(InputReceipt), InjectFailed(SeatError),
+    Verdict(ComputerUseVerdict), ConsentAnswered(Answer), Injected(InputReceipt), InjectFailed(SeatError),
     Damage(DamageAt), Checked(CheckResult),
     UserPause, UserResume, UserCancel, UserAnswer(QuestionId, Labelled<String>), UserTakeOver, UserHandBack,
     Desktop(DesktopEvent), Tick,
@@ -427,23 +427,23 @@ pub enum RunEffect {
     CheckGrant { app: AppName, space: SpaceId }, ShowGrantPrompt { app: AppName, space: SpaceId },
     AcquireLease(LeaseRequest), ReleaseLease(LeaseId), SuspendLease(LeaseId, Suspend), ResumeLease(LeaseId),
     Capture { want: FrameWant, hints: HintSource }, Snapshot(NodeBudget), FetchContext,
-    CallModel(CuaTurn), CancelModel,
+    CallModel(ComputerUseTurn), CancelModel,
     Authorise(AuthAsk), ShowConsent(ConfirmText), DismissConsent,
     Inject(PlannedAction), WatchSettle { quiet: Ms, timeout: Ms }, CancelSettle,
     VerifyTree(NodeSelector), Glow(GlowState),
-    Emit(CuaSignal), Record(CuaRecord),
+    Emit(ComputerUseSignal), Record(ComputerUseRecord),
 }
-pub enum CuaSignal { StateChanged(RunStateSlug), StepStarted(StepIndex), ThoughtDelta(StepIndex, String),
+pub enum ComputerUseSignal { StateChanged(RunStateSlug), StepStarted(StepIndex), ThoughtDelta(StepIndex, String),
     ActionProposed(StepIndex, TargetedAction), ActionDone(StepIndex, ActionOutcome),
-    AskUser(QuestionId, AskBody), Finished(CuaResult) }
+    AskUser(QuestionId, AskBody), Finished(ComputerUseResult) }
 ```
 
 ### 3.6 Event-log records (payloads; storage is **memory**'s `eventlog`) — freeze now
 
-Actor is `Actor::Companion(CuaRun(RunId))`. The kind slug is the serde tag (`cua.run.started`, …). No pixels and no thought text are stored. A thought becomes a digest; a frame becomes a digest and a size.
+Actor is `Actor::Companion(ComputerUseRun(RunId))`. The kind slug is the serde tag (`cua.run.started`, …). No pixels and no thought text are stored. A thought becomes a digest; a frame becomes a digest and a size.
 
 ```rust
-pub enum CuaRecord {
+pub enum ComputerUseRecord {
     RunStarted { run: RunId, goal: Labelled<String>, plan_step: PlanStepRef, app: AppName, space: SpaceId,
                  mode: RunMode, backend: BackendKind, served_by: ServedByNote, locality: Locality, budget: Budget },
     Step { run: RunId, n: StepIndex, thought: ThoughtDigest, action: TargetedAction, effect: EffectClass,
@@ -452,7 +452,7 @@ pub enum CuaRecord {
     Asked { run: RunId, n: StepIndex, question: Labelled<String> },
     Confirmed { run: RunId, n: StepIndex, answer: Answer, by: ConfirmBy },
     TakenOver { run: RunId, n: StepIndex }, HandedBack { run: RunId, n: StepIndex, user_events: Vec<EventId> },
-    Finished { run: RunId, outcome: CuaOutcome, steps: u32, cost: MicroUsd, extracted: Vec<EventLinkedValue> },
+    Finished { run: RunId, outcome: ComputerUseOutcome, steps: u32, cost: MicroUsd, extracted: Vec<EventLinkedValue> },
     ProcedureLearned { procedure: ProcedureId, from: RunId },                    // later
 }
 pub enum AuthorisedBy { Policy, User }
@@ -460,7 +460,7 @@ pub enum ConfirmBy { PhysicalInput, ShellPrompt /* stock guard */ }
 pub enum FrameNote { NotKept { digest: FrameDigest, size: PxSize }, Kept { thumb: ThumbRef, expires: Stamp } }
 ```
 
-Default: `NotKept`. The setting `cua.screens.keep` (proposed `off`) controls this; kept thumbnails go to the Space's encrypted store and are forget-cascaded by memory.
+Default: `NotKept`. The setting `computer_use.screens.keep` (proposed `off`) controls this; kept thumbnails go to the Space's encrypted store and are forget-cascaded by memory.
 
 ### 3.7 Procedures file format — later (Phase 3; types sketched now)
 
@@ -480,7 +480,7 @@ act  = { click = { node = [{ role = "link", name = "Billing" }] } }
 post = { node = [{ role = "heading", name = "Invoices" }] }
 ```
 
-### 3.8 D-Bus `org.bardo.ComputerUse1` (`computer-use-dbus`, served by `cuad`) — freeze now
+### 3.8 D-Bus `org.bardo.ComputerUse1` (`computer-use-dbus`, served by `computer_use_daemon`) — freeze now
 
 Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is one protocol with two carriers, as in 31 §4.3. Caller identity comes from the connection (the accounts service `AppId`) and is never sent.
 
@@ -520,7 +520,7 @@ Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is 
 - `org.bardo.ComputerUse1.Error.NotPermitted` — the caller is not on the allow-list.
 - `.WrongState`
 - `.UnknownQuestion`
-- `.Disabled` — `cua.enabled` is off.
+- `.Disabled` — `computer_use.enabled` is off.
 - `.WindowUnknown`
 - `.LeaseHeld`
 - `.ModeUnsupported`
@@ -531,11 +531,11 @@ Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is 
 - `Cancel`, `Pause`, `Resume`, `TakeOver`, `HandBack`, `StopAll`: the planner and the shell (the shell launcher/orb).
 - `Answer`: the shell only.
 
-CUA consent and effect confirmations never come through `Answer`. They are drawn by the compositor (fork) or accounts-ui (stock), and their answer arrives as `RunInput::ConsentAnswered` from cuad's own prompter seam.
+Computer use consent and effect confirmations never come through `Answer`. They are drawn by the compositor (fork) or accounts-ui (stock), and their answer arrives as `RunInput::ConsentAnswered` from the computer-use daemon's own prompter seam.
 
 ### 3.9 Private Wayland protocol `bardo-agent-v1` (`bardo-agent-protocol`) — freeze the XML in the freeze wave; the server side is fork fill
 
-- **`bardo_agent_manager_v1`** (global; offered only to clients cuad's systemd unit runs under, through the security-context and an app-id allow-list in the fork).
+- **`bardo_agent_manager_v1`** (global; offered only to clients the computer-use daemon's systemd unit runs under, through the security-context and an app-id allow-list in the fork).
   - `create_lease(id: new_id bardo_agent_lease_v1, toplevel: object ext_foreign_toplevel_handle_v1, mode: uint)`.
 - **`bardo_agent_lease_v1`**
   - Events: `granted`, `revoked(reason: uint)`, `ei_socket(fd)` (an EIS sender context bound to this lease's agent seat; absolute region = window geometry, window-local), `physical_input`, `geometry(w, h, scale120)`.
@@ -582,7 +582,7 @@ CUA consent and effect confirmations never come through `Answer`. They are drawn
 | Verifying(n) | Checked(Fail) | Observing(n+1) | prev = CheckFailed |
 | WaitingForUser(n,q) | UserAnswer(q, a) | Observing(n+1) | prev = Answered(a); Record |
 | any active, Confirming, WaitingForUser | UserPause | Paused(n) | CancelModel, CancelSettle, DismissConsent, SuspendLease(Paused), Glow(WaitingForYou); the queue is dropped |
-| active, with ModeSupport = HandsOff | Desktop(PhysicalInput) with `cua.autopause=on` | Paused(n) | same as UserPause |
+| active, with ModeSupport = HandsOff | Desktop(PhysicalInput) with `computer_use.autopause=on` | Paused(n) | same as UserPause |
 | Paused(n) | UserResume | Observing(n+1) | ResumeLease, Capture, Glow(Working) |
 | any non-terminal except TakenOver | UserTakeOver | TakenOver(n, now) | CancelModel, DismissConsent, SuspendLease(TakeOver), Glow(Off), Record(TakenOver) |
 | TakenOver(n, t) | UserHandBack | Observing(n+1) | ResumeLease, prev = UserActed{since: t}, Record(HandedBack), Capture |
@@ -608,7 +608,7 @@ CUA consent and effect confirmations never come through `Answer`. They are drawn
 Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests run only against fakes. Live checks are dev scripts.
 
 **`computer-use-run`**
-- `wire_bodies_round_trip`: every `Cua1` body and every `CuaRecord` variant survives serde, with `kind`/`v` tags and the vocab envelope.
+- `wire_bodies_round_trip`: every `ComputerUse1` body and every `ComputerUseRecord` variant survives serde, with `kind`/`v` tags and the vocab envelope.
 - `record_kind_slugs_are_stable`: a table of variant → `cua.run.started` and the rest.
 - `run_transitions_table`: one row per §4 line; asserts the next phase and the exact effects list.
 - `finished_ignores_every_input`.
@@ -655,7 +655,7 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 - `introspection_matches_xml`: fails until `dbus/org.bardo.ComputerUse1.xml` equals the skeleton's introspection, as in the accounts service.
 - `error_names_cover_control_refusal`.
 
-**`cuad`**
+**`computer_use_daemon`**
 - `end_to_end_scripted_run_done`, over `computer-use-fake::run_harness` with a zbus p2p connection on a socketpair, `ScriptedModel` replaying a click-then-done cassette, `FakeSeat`, `FakeCapture` and `FakePdp`. It asserts the signals in order, two records, and that the lease is released.
 - `start_refused_for_non_planner_caller`.
 - `kill_chord_finishes_all_runs`.
@@ -675,7 +675,7 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 
 ## 6. Spikes, then work breakdown
 
-Spikes run on throwaway compositors only, with a private runtime dir and a private D-Bus bus (layer-shell-host's `accept-lock.sh` pattern). The person's `wayland-0` is never touched. Spike code lives in `cua/spike/` and `scripts/dev/spike-*.sh` and writes `scripts/dev/out/spike-*.json`. The scripts reuse `~/shell-host/scripts/dev/{nested.sh,kwin-virtual.sh}` through `SHELL_HOST_DIR`.
+Spikes run on throwaway compositors only, with a private runtime dir and a private D-Bus bus (layer-shell-host's `accept-lock.sh` pattern). The person's `wayland-0` is never touched. Spike code lives in `computer_use/spike/` and `scripts/dev/spike-*.sh` and writes `scripts/dev/out/spike-*.json`. The scripts reuse `~/shell-host/scripts/dev/{nested.sh,kwin-virtual.sh}` through `SHELL_HOST_DIR`.
 
 **Spike A: a stock compositor, nested (3 days)**
 1. **Capture.** Capture one toplevel through `ext_foreign_toplevel_image_capture_source` plus ext-image-copy-capture, at scale 1.0 and 1.5. Pass if:
@@ -713,7 +713,7 @@ Also check whether accesskit can carry `TypedHint` (a custom property or `author
 
 Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents` types, and memory's `eventlog` record seam are frozen first, or in the same wave with this spec's §3.0 as the contract. Spikes A, B and E run in parallel; they need no types.
 
-- **Agent `cua-freeze`** owns all of `~/cua`:
+- **Agent `computer-use-freeze`** owns all of `~/computer_use`:
   - the workspace, CONVENTIONS, ARCHITECTURE (crate map, one-home table, traits, recipes), FINDINGS (every `todo!()`);
   - `dbus/org.bardo.ComputerUse1.xml` and `protocols/bardo-agent-v1.xml`;
   - every crate's types and traits, with `todo!()` bodies for behaviour;
@@ -725,26 +725,26 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents`
 ### Fill waves (disjoint file ownership)
 
 - **Fill 1 (pure, 4 agents in parallel)**
-  1. `crates/cua-run/src/{run/**, budget.rs, stall.rs, effect_class.rs, lease_book.rs, mode.rs, turn.rs}`
+  1. `crates/computer-use-run/src/{run/**, budget.rs, stall.rs, effect_class.rs, lease_book.rs, mode.rs, turn.rs}`
   2. `crates/a11y-tree/src/{prune.rs, render.rs, diff.rs, secret.rs}` plus fixtures
   3. `crates/seat-input/src/{plan.rs, chord.rs, keymap.rs, region.rs}`
   4. `crates/maskcap/src/{apply.rs, digest.rs, settle.rs}`
 - **Fill 2 (backends, 4 agents; each after its spike)**
-  1. `crates/seat-input/src/ei/**` plus `crates/cua-fake/src/eis.rs`
+  1. `crates/seat-input/src/ei/**` plus `crates/computer-use-fake/src/eis.rs`
   2. `crates/maskcap/src/wayland/**`
   3. `crates/a11y-tree/src/atspi/**`
-  4. `crates/cua-desktop/src/wayland/**`
-- **Fill 3 (1 agent):** `crates/cuad/**`, `crates/cua-dbus/src/codec.rs`, `crates/cua-fake/src/{harness.rs, model.rs, policy.rs, events.rs, desktop.rs, capture.rs}`, and `dist/`.
-- **Fill 4 (1 agent, `~/bardo/compositor` `src/bardo/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/bardo/compositor/target/release/the compositor`).
-- **Fill 5 (later):** procedures (`computer-use-run/src/procedure.rs`, plus replay in cuad), NestedSession mode (KWin host), the KWin backend, the `bardo_sensitive_v1` client in layer-shell-host.
+  4. `crates/computer-use-desktop/src/wayland/**`
+- **Fill 3 (1 agent):** `crates/computer_use_daemon/**`, `crates/computer-use-dbus/src/codec.rs`, `crates/computer-use-fake/src/{harness.rs, model.rs, policy.rs, events.rs, desktop.rs, capture.rs}`, and `dist/`.
+- **Fill 4 (1 agent, `~/bardo/compositor` `src/bardo/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/computer_use/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/bardo/compositor/target/release/the compositor`).
+- **Fill 5 (later):** procedures (`computer-use-run/src/procedure.rs`, plus replay in the computer-use daemon), NestedSession mode (KWin host), the KWin backend, the `bardo_sensitive_v1` client in layer-shell-host.
 
 ### Fork changes (the compositor) against stock
 
 | # | Change | On stock, instead |
 |---|---|---|
 | F1 | Agent seat: a smithay `Seat` per lease. Its EIS context comes from `lease.ei_socket`; focus is limited to the leased toplevel's surface tree (its popups and subsurfaces); its own cursor sprite. Upstreamable form: implement `ext-transient-seat-v1` and bind EI contexts to it; the lease filter stays ours | EI through `GetSenderSocket` lands on the user's seat: `SharedSeat`, InPlace = HandsOff |
-| F2 | `InputOrigin {Physical, Agent(lease), RemoteDesktop}` on every event. Consent surfaces, the session lock and shell layer surfaces accept Physical only; the agent seat cannot focus them | cuad stops emulating while its own consent prompt shows (`CuadSuspendsInput`); third-party prompts (polkit) overlapping the window remain a stated residual risk |
-| F3 | Masked capture source: masks from text-input password purpose, `bardo_sensitive_v1`, cuad's `set_mask_hints`, and sensitive-window rules, all applied before the buffer leaves | stock toplevel source plus `apply_masks` inside cuad |
+| F2 | `InputOrigin {Physical, Agent(lease), RemoteDesktop}` on every event. Consent surfaces, the session lock and shell layer surfaces accept Physical only; the agent seat cannot focus them | the computer-use daemon stops emulating while its own consent prompt shows (`ComputerUseDaemonSuspendsInput`); third-party prompts (polkit) overlapping the window remain a stated residual risk |
+| F3 | Masked capture source: masks from text-input password purpose, `bardo_sensitive_v1`, the computer-use daemon's `set_mask_hints`, and sensitive-window rules, all applied before the buffer leaves | stock toplevel source plus `apply_masks` inside the computer-use daemon |
 | F4 | Lease and glow: the compositor draws the glow and the agent cursor from lease state | the shell's orb only (`GlowDraw::ShellOnly`) |
 | F5 | Kill chord: a hardware chord handled in the compositor revokes every lease | control-centre `StopAll` only |
 | F6 | Settling from capture-session damage | already stock (ext-image-copy-capture frames wait for damage) |
@@ -752,7 +752,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents`
 
 ### Verify commands
 
-`~/cua`:
+`~/computer_use`:
 
 ```bash
 cargo fmt --all --check
@@ -764,66 +764,66 @@ cargo deny check licenses
 
 Spikes and acceptance (dev only, never in CI): `scripts/dev/spike-{a,b,e}.sh`, `scripts/dev/accept-{agent-seat,masking}.sh`.
 
-Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~/cua` acceptance scripts against it.
+Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~/computer_use` acceptance scripts against it.
 
 ---
 
 ## 7. Dependencies on other areas, and questions for the user
 
 **models**
-- `computer-use-action` exactly as §3.0: integer `Lpx`, `ActionTarget::Node`, `CuaTurn`, `StepReply`, `StepEvent`.
-- `CuaModel`/`CuaSession` with cooperative cancel, and the `Transient`/`Parse`/`Fatal` error split.
+- `computer-use-action` exactly as §3.0: integer `Lpx`, `ActionTarget::Node`, `ComputerUseTurn`, `StepReply`, `StepEvent`.
+- `ComputerUseModel`/`ComputerUseSession` with cooperative cancel, and the `Transient`/`Parse`/`Fatal` error split.
 - The replay provider for `ScriptedModel`.
-- `Need::Cua` added to the accounts service and 31-ACCOUNTS, with `DataClass::Screen` keeping the OnDevice floor.
+- `Need::ComputerUse` added to the accounts service and 31-ACCOUNTS, with `DataClass::Screen` keeping the OnDevice floor.
 - Frame transport to inferd as an fd/memfd, never base64 on the bus.
 
 **actions**
 - `prov`: `Labelled<T>`, `Label`, `Source::Screen{app, window}`, join.
 - `permission-policy`: `decide(AuthAsk-shaped request) -> Allow | Ask(ConfirmText) | Deny`, with Cedar context fields `effect`, `taint`, `window_trust`, `app_id`, `mode`, `space`, `data_class = screen`.
-- The CUA grant store keyed by `(AppName, SpaceId)` with Once/Always, denial wins, and a "sensitive classes never Always" list.
+- The computer use grant store keyed by `(AppName, SpaceId)` with Once/Always, denial wins, and a "sensitive classes never Always" list.
 - `bardo-intents` `Context`, `Value`, `ActionName`, `Effect` (with a `From` mapping to `EffectClass`).
 - The router's tier decision that calls `Start`.
 
 **memory**
-- `eventlog` append taking `CuaRecord` as a namespaced kind with actor `Companion(CuaRun)`.
+- `eventlog` append taking `ComputerUseRecord` as a namespaced kind with actor `Companion(ComputerUseRun)`.
 - The Space's encrypted thumbnail store, with forget cascade, for `FrameNote::Kept`.
 - `memfiles` folder `procedures/` (later).
 - Supplying the user's recent events for `HandedBack.user_events` and Handover starts.
 
 **launcher / companion UX (the shell)**
-- `CuaRunProvider` in shell-launcher; a new `Activation::Cua(RunControl)` variant (following the warn-before-lint-rules practice).
+- `ComputerUseRunProvider` in shell-launcher; a new `Activation::ComputerUse(RunControl)` variant (following the warn-before-lint-rules practice).
 - The orb presence mapping from §4.
 - The Ask form calls `Run.Answer`.
 
 **accounts / the accounts service**
-- `AppId` derived from the connection, for cuad's caller checks.
-- accounts-ui draws the CUA grant prompt on stock.
+- `AppId` derived from the connection, for the computer-use daemon's caller checks.
+- accounts-ui draws the computer use grant prompt on stock.
 
 **design/22-SETTINGS** rows needed, each with its proposed default:
 
 | Key | Proposed |
 |---|---|
-| `cua.enabled` | off |
-| `cua.default_mode` | agent_workspace |
-| `cua.budget.steps` | 40 |
-| `cua.budget.active_s` | 600 |
-| `cua.budget.stall_frames` | 3 |
-| `cua.budget.actions_per_min` | 60 |
-| `cua.budget.denials` | 3 |
-| `cua.budget.model_failures` | 2 |
-| `cua.budget.spend_microusd` | 0 = local only |
-| `cua.settle.quiet_ms` | 250 |
-| `cua.settle.timeout_ms` | 3000 |
-| `cua.wait.max_ms` | 5000 |
-| `cua.autopause` | on |
-| `cua.tree.max_nodes` | 400 |
-| `cua.screens.keep` | off |
-| `cua.screens.keep_days` | 7 |
+| `computer_use.enabled` | off |
+| `computer_use.default_mode` | agent_workspace |
+| `computer_use.budget.steps` | 40 |
+| `computer_use.budget.active_s` | 600 |
+| `computer_use.budget.stall_frames` | 3 |
+| `computer_use.budget.actions_per_min` | 60 |
+| `computer_use.budget.denials` | 3 |
+| `computer_use.budget.model_failures` | 2 |
+| `computer_use.budget.spend_microusd` | 0 = local only |
+| `computer_use.settle.quiet_ms` | 250 |
+| `computer_use.settle.timeout_ms` | 3000 |
+| `computer_use.wait.max_ms` | 5000 |
+| `computer_use.autopause` | on |
+| `computer_use.tree.max_nodes` | 400 |
+| `computer_use.screens.keep` | off |
+| `computer_use.screens.keep_days` | 7 |
 
 **Questions only the user can answer**
-1. Confirm replacing COMPANION item 4 with: "typed actions and hooks first; a CUA tier, off by default per app, inside the lease and consent stack."
-2. Ship v1 on a stock compositor (shared seat, HandsOff in place, masking inside cuad, consent guard by suspending input), with the fork as phase 2? Or require the fork before any release? My recommendation is stock first; the fork is required before "keep working while it acts".
-3. The repo name (`cua` is a placeholder), and confirmation that `cuad` is its own daemon rather than part of layer-shell-host.
+1. Confirm replacing COMPANION item 4 with: "typed actions and hooks first; a computer use tier, off by default per app, inside the lease and consent stack."
+2. Ship v1 on a stock compositor (shared seat, HandsOff in place, masking inside the computer-use daemon, consent guard by suspending input), with the fork as phase 2? Or require the fork before any release? My recommendation is stock first; the fork is required before "keep working while it acts".
+3. The repo name (`computer_use` is a placeholder), and confirmation that `computer_use_daemon` is its own daemon rather than part of layer-shell-host.
 4. Should actions target a11y nodes (`ActionTarget::Node`) when a tree exists? My recommendation is yes, and to freeze both forms now.
 5. Default run mode: agent workspace (out of sight, glow plus peek) or in place?
 6. The budget defaults above, and who may raise them.
@@ -831,11 +831,11 @@ Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~
 8. Browser grants: Once/per-session only, or is "Always" allowed?
 9. CJK and Unicode typing: may the agent use the virtual-keyboard keymap trick on stock (it targets the user's focus), or only the fork's agent text-input?
 10. Procedures: auto-propose promotion to a typed action, or only on an explicit "save as routine"?
-11. Is KWin a product target (portable CUA) or only the nested-session host and spike reference? And who owns the compositor overall (cua, or a compositor area shared with the double-tap ⌘ work)?
+11. Is KWin a product target (portable computer use) or only the nested-session host and spike reference? And who owns the compositor overall (computer use, or a compositor area shared with the double-tap ⌘ work)?
 12. Keep screenshots off by default with no thumbnails? Recommended: yes.
 
 ### Critical files for implementation
-- /home/pohsuanlai/rs-wt/companion/cua-integration.md
+- /home/pohsuanlai/rs-wt/companion/computer-use-integration.md
 - /home/pohsuanlai/accounts/ARCHITECTURE.md (the repo shape, boundary script and frozen-trait conventions to copy)
 - /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.4 Inference1, §4.5 consent, §5.5 data-class floors)
 - /home/pohsuanlai/shell-host/scripts/dev/README.md (the nested compositor and headless KWin harness the spikes reuse)

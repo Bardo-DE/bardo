@@ -10,8 +10,8 @@ use crate::gate::FakePdp;
 use crate::model::ScriptedModel;
 use crate::seat::FakeSeat;
 use computer_use_run::{
-    Clock, Collected, CuaSignal, Exec, Parts, Run, RunEffect, RunInput, RunPhase, Seam, Seams,
-    StepNote,
+    Clock, Collected, ComputerUseSignal, Exec, Parts, Run, RunEffect, RunInput, RunPhase, Seam,
+    Seams, StepNote,
 };
 use std::collections::VecDeque;
 
@@ -39,7 +39,7 @@ pub struct HarnessReport {
     /// The run, as it ended.
     pub run: Run,
     /// The signals, in order.
-    pub signals: Vec<CuaSignal>,
+    pub signals: Vec<ComputerUseSignal>,
     /// The log lines of taking the window, in order.
     pub notes: Vec<StepNote>,
 }
@@ -136,7 +136,7 @@ pub async fn run_harness_answering(
             exec.carry_out(effect, Some(&mut *model), &mut out).await;
         }
         for signal in &out.signals {
-            if let CuaSignal::AskUser(id, _) = signal
+            if let ComputerUseSignal::AskUser(id, _) = signal
                 && let Some(answer) = answers.pop_front()
             {
                 out.inputs.push_back(RunInput::UserAnswer(

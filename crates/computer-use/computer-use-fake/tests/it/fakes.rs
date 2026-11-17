@@ -3,11 +3,11 @@
 
 use account_core::{AppName, DataClass};
 use action_core::{CallRefusal, ConfirmEnd, DraftPart, InboxAsk, MessageDraft};
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk};
 use base_ids::Px;
 use computer_use_action::{Coord, DeviceSize, PixelFormat, Point, Rect, Scale120, Size};
-use computer_use_bus::CuaRecord;
+use computer_use_bus::ComputerUseRecord;
 use computer_use_capture::{
     CaptureError, CaptureSession, Frame, FrameSeq, MaskReport, PixelBuf, WholeMask, WindowCapture,
 };
@@ -19,10 +19,10 @@ use computer_use_fake::{
     DesktopCall, FakeCapture, FakeDesktop, FakePdp, MemoryEvents, ScriptedModel, Verdict,
 };
 use computer_use_run::{
-    CuaModel, CuaModelError, FrameAttachment, GateCheck, GateEvent, GateLink, MessageLink,
-    RecordSink, StepSink,
+    ComputerUseModel, ComputerUseModelError, FrameAttachment, GateCheck, GateEvent, GateLink,
+    MessageLink, RecordSink, StepSink,
 };
-use inference_core::{CuaBegin, CuaStepReply, StepIndex};
+use inference_core::{ComputerUseBegin, ComputerUseStepReply, StepIndex};
 use provenance::{
     Address, AgentRef, Confidentiality, Effect, Integrity, Label, MessageKind, MessageText, RunId,
     SessionId, Source, SpaceId,
@@ -83,21 +83,21 @@ fn request(ident: &str, mode: RunMode) -> LeaseRequest {
     }
 }
 
-fn ask() -> CuaAsk {
+fn ask() -> ComputerUseAsk {
     let label = Label {
         integrity: Integrity::Untrusted,
         confidentiality: Confidentiality::Private(BTreeSet::from([space()])),
         classes: BTreeSet::from([DataClass::Screen]),
         sources: BTreeSet::from([Source::Screen { app: app() }]),
     };
-    CuaAsk {
+    ComputerUseAsk {
         run: RunId::parse("r-1").unwrap(),
         step: 1,
         app: app(),
         trust: WindowTrust::Native,
         mode: RunMode::InPlace,
         space: space(),
-        action: computer_use_action::CuaAction::Observe,
+        action: computer_use_action::ComputerUseAction::Observe,
         node: None,
         effect: Effect::Read,
         basis: EffectBasis::DefaultTable,
@@ -188,7 +188,7 @@ fn memory_events_keep_records_and_reports_and_number_the_messages() {
     );
     assert_eq!(events.sent().len(), 2);
     assert_eq!(events.sent()[0].0, session);
-    let record = CuaRecord::TakenOver {
+    let record = ComputerUseRecord::TakenOver {
         run: RunId::parse("r-1").unwrap(),
         n: StepIndex(2),
     };
@@ -260,7 +260,7 @@ fn frame(seq: u64) -> Frame {
             size: Size::new(Coord(1), Coord(1)),
         }],
         masks: MaskReport {
-            applied_by: MaskWhere::Cuad,
+            applied_by: MaskWhere::ComputerUseDaemon,
             whole: WholeMask::None,
             regions: vec![],
         },
@@ -306,8 +306,8 @@ impl StepSink for Sink {
     fn event(&mut self, _event: computer_use_run::StepEvent) {}
 }
 
-fn blank_request() -> inference_core::CuaStepRequest {
-    inference_core::CuaStepRequest::new(
+fn blank_request() -> inference_core::ComputerUseStepRequest {
+    inference_core::ComputerUseStepRequest::new(
         StepIndex(1),
         inference_core::WindowGeometry {
             logical: Size::new(Coord(1), Coord(1)),
@@ -327,11 +327,14 @@ fn blank_request() -> inference_core::CuaStepRequest {
 
 #[test]
 fn the_scripted_model_plays_its_script_then_fails_fatally_and_remembers_the_goal() {
-    let reply = CuaStepReply::new(vec![]);
-    let mut model = ScriptedModel::new(vec![Ok(reply.clone()), Err(CuaModelError::Transient)]);
-    let begin = CuaBegin::new(
+    let reply = ComputerUseStepReply::new(vec![]);
+    let mut model = ScriptedModel::new(vec![
+        Ok(reply.clone()),
+        Err(ComputerUseModelError::Transient),
+    ]);
+    let begin = ComputerUseBegin::new(
         "download the invoice".into(),
-        account_capability::CuaEnv::Desktop,
+        account_capability::ComputerUseEnv::Desktop,
     );
     ready(model.begin(begin.clone())).unwrap();
     assert_eq!(model.begun(), &[begin]);
@@ -342,11 +345,11 @@ fn the_scripted_model_plays_its_script_then_fails_fatally_and_remembers_the_goal
     );
     assert_eq!(
         ready(model.step(blank_request(), attachment(), &mut Sink)),
-        Err(CuaModelError::Transient)
+        Err(ComputerUseModelError::Transient)
     );
     assert_eq!(
         ready(model.step(blank_request(), attachment(), &mut Sink)),
-        Err(CuaModelError::Fatal),
+        Err(ComputerUseModelError::Fatal),
         "past the script"
     );
     assert_eq!(model.requests().len(), 3);

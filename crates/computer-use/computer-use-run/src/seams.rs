@@ -1,13 +1,13 @@
-//! What cuad plugs into a run: the clock, the router's gate, the event log and the message
+//! What the computer-use daemon plugs into a run: the clock, the router's gate, the event log and the message
 //! path. Closed sets of implementations are generic parameters, never `dyn`.
 
-use crate::model::CuaModel;
+use crate::model::ComputerUseModel;
 use crate::rules::Rules;
 use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
-use action_gate_wire::{CuaAsk, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk, WireRefusal};
 use computer_use_a11y_tree::A11ySource;
-use computer_use_bus::{CuaRecord, CuaTask};
+use computer_use_bus::{ComputerUseRecord, ComputerUseTask};
 use computer_use_capture::WindowCapture;
 use computer_use_desktop::{Desktop, LeaseControl, Stamp};
 use computer_use_seat_input::AgentSeat;
@@ -30,9 +30,9 @@ pub enum LinkError {
 }
 
 /// The clock. Only the daemon reads the system's. Wall time is [`base_time::Clock::now`]; this
-/// adds cuad's own stamps and the timers.
+/// adds the computer-use daemon's own stamps and the timers.
 pub trait Clock: base_time::Clock {
-    /// Now, on cuad's clock.
+    /// Now, on the computer-use daemon's clock.
     fn stamp(&self) -> Stamp;
 
     /// Ready once `limit` has passed. A clock with no timers (a harness) never is, so what is
@@ -47,7 +47,7 @@ pub trait Clock: base_time::Clock {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum GateEvent {
-    /// The router will ask the person; cuad must stop its input, then call `proceed`.
+    /// The router will ask the person; the computer-use daemon must stop its input, then call `proceed`.
     Confirming(ConfirmId),
     /// The router's answer. The last event.
     Answered(GateAnswer),
@@ -74,7 +74,7 @@ pub trait GateLink: Send + Sync {
     /// The per-app consent (`Gate.Grant`): the router asks the person on first use.
     fn grant(&self, ask: GrantAsk) -> impl Future<Output = Result<GrantAnswer, LinkError>> + Send;
 
-    /// Opens the session a run acts in (`Session.Open` with `AgentRef::Cua { run }`). The
+    /// Opens the session a run acts in (`Session.Open` with `AgentRef::ComputerUse { run }`). The
     /// router finds a run's rules by that session, so it comes before the run's first check.
     /// `conversation` is the session that started the run: the run follows its mode.
     fn open_session(
@@ -85,18 +85,24 @@ pub trait GateLink: Send + Sync {
     ) -> impl Future<Output = Result<SessionId, LinkError>> + Send;
 
     /// One step's check (`Gate.Check`).
-    fn check(&self, ask: CuaAsk) -> impl Future<Output = Result<Self::Check, LinkError>> + Send;
+    fn check(
+        &self,
+        ask: ComputerUseAsk,
+    ) -> impl Future<Output = Result<Self::Check, LinkError>> + Send;
 }
 
 /// Where run records go: the memory service's event log, through memoryd.
 pub trait RecordSink: Send + Sync {
     /// Appends one record of a run.
-    fn record(&self, record: CuaRecord) -> impl Future<Output = Result<(), LinkError>> + Send;
+    fn record(
+        &self,
+        record: ComputerUseRecord,
+    ) -> impl Future<Output = Result<(), LinkError>> + Send;
 
     /// A run is about to begin: what a sink needs to know about it besides each record (the
     /// session it acts for, its Space and app), which a run that is blocked before it has a
     /// window never says in a record of its own. Nothing to do by default.
-    fn open(&self, run: &RunId, task: &CuaTask) -> impl Future<Output = ()> + Send {
+    fn open(&self, run: &RunId, task: &ComputerUseTask) -> impl Future<Output = ()> + Send {
         let _ = (run, task);
         async {}
     }
@@ -136,7 +142,7 @@ pub trait Seams: Send + Sync + 'static {
     /// Accessibility snapshots.
     type A11y: A11ySource + 'static;
     /// The model.
-    type Model: CuaModel + 'static;
+    type Model: ComputerUseModel + 'static;
     /// The router's gate.
     type Gate: GateLink<Check: 'static> + 'static;
     /// The event log and the message path.

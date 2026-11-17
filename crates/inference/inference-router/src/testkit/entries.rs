@@ -52,14 +52,14 @@ weights = { kind = "gguf", v = { model = "e.gguf", mmproj = "" } }
 }
 
 #[must_use]
-pub fn cua() -> String {
+pub fn computer_use() -> String {
     format!(
-        r#"id = "tiny-cua"
+        r#"id = "tiny-computer-use"
 label = "Tiny computer use"
 licence = {{ kind = "open", v = "MIT" }}
 family = "test"
 cold_start_estimate_s = 0
-source = {{ kind = "hugging_face", v = {{ repo = "test/tiny-cua", revision = "0000000000000000000000000000000000000003" }} }}
+source = {{ kind = "hugging_face", v = {{ repo = "test/tiny-computer-use", revision = "0000000000000000000000000000000000000003" }} }}
 vram = {{ weights_mib = 100, kv_per_1k_ctx_mib = 1, overhead_mib = 50 }}
 inputs = ["text", "image"]
 outputs = ["text", "actions"]

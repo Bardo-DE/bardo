@@ -1,12 +1,12 @@
 use super::*;
 use crate::need::AgentNeed;
-use crate::need::{CuaNeed, LlmNeed, MailNeed, PhotosNeed, StorageNeed};
+use crate::need::{ComputerUseNeed, LlmNeed, MailNeed, PhotosNeed, StorageNeed};
 use account_capability::fixtures::{llm, mail, storage};
 use account_capability::{
     Access, Albums, CapabilityKind, Delta, LibraryRead, LlmFeature, PhotosCap, StorageScope,
 };
 use account_capability::{AgentCap, AgentProgram, AgentProtocol, EnvName};
-use account_capability::{CuaBatching, CuaCap, CuaEnv, LlmWire};
+use account_capability::{ComputerUseBatching, ComputerUseCap, ComputerUseEnv, LlmWire};
 use base_ids::{Px, Tokens};
 
 fn agent(program: &str, base_url_env: Option<&str>, protocols: &[AgentProtocol]) -> Offer {
@@ -39,18 +39,18 @@ fn present(capability: Capability) -> Offer {
     Offer::Present(capability)
 }
 
-fn computer_use(environments: &[CuaEnv]) -> Offer {
-    present(Capability::ComputerUse(CuaCap {
+fn computer_use(environments: &[ComputerUseEnv]) -> Offer {
+    present(Capability::ComputerUse(ComputerUseCap {
         environments: environments.iter().copied().collect(),
-        batching: CuaBatching::Many,
+        batching: ComputerUseBatching::Many,
         zoom: false,
         max_image: Px(1568),
         wire: LlmWire::ChatCompletions,
     }))
 }
 
-fn cua_need(environments: &[CuaEnv]) -> Need {
-    Need::ComputerUse(CuaNeed {
+fn computer_use_need(environments: &[ComputerUseEnv]) -> Need {
+    Need::ComputerUse(ComputerUseNeed {
         environments: environments.iter().copied().collect(),
     })
 }
@@ -249,19 +249,19 @@ fn cases() -> Vec<(&'static str, Need, Offer, Match)> {
         ),
         (
             "computer use on the desktop fits a desktop model",
-            cua_need(&[CuaEnv::Desktop]),
-            computer_use(&[CuaEnv::Desktop, CuaEnv::Browser]),
+            computer_use_need(&[ComputerUseEnv::Desktop]),
+            computer_use(&[ComputerUseEnv::Desktop, ComputerUseEnv::Browser]),
             Match::Fits,
         ),
         (
             "computer use on a phone falls short on environments",
-            cua_need(&[CuaEnv::Desktop, CuaEnv::Mobile]),
-            computer_use(&[CuaEnv::Desktop]),
+            computer_use_need(&[ComputerUseEnv::Desktop, ComputerUseEnv::Mobile]),
+            computer_use(&[ComputerUseEnv::Desktop]),
             Match::Short(Shortfall::Environments),
         ),
         (
             "a computer-use need is not met by a chat model",
-            cua_need(&[CuaEnv::Desktop]),
+            computer_use_need(&[ComputerUseEnv::Desktop]),
             present(llm(&[LlmFeature::Vision], 8_000)),
             Match::OtherKind,
         ),

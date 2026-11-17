@@ -37,7 +37,7 @@ pub enum GrantCaller {
     /// The companion's agents.
     Companion,
     /// The computer-use runtime.
-    Cua,
+    ComputerUse,
     /// This external MCP client.
     Mcp(provenance::ClientName),
     /// A process running `bardo-do`.
@@ -68,7 +68,7 @@ impl GrantCaller {
     pub fn kind(&self) -> ActorKind {
         match self {
             GrantCaller::Companion => ActorKind::Companion,
-            GrantCaller::Cua => ActorKind::Cua,
+            GrantCaller::ComputerUse => ActorKind::ComputerUse,
             GrantCaller::Cli => ActorKind::Cli,
             GrantCaller::App(_) => ActorKind::App,
             // An editor drives us over ACP as an outside client; an agent we run is prov's `Acp`.

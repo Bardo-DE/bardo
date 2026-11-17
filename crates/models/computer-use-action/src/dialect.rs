@@ -4,7 +4,7 @@
 //! A dialect is the convention a model's calls follow. A model that follows it with small
 //! differences (a renamed verb, a drag from the cursor) does not get a dialect of its own: its
 //! catalogue entry carries an [`ActionProfile`](crate::ActionProfile) next to the dialect, so
-//! `ToolDialect` and `CuaDialect` stay plain, `Copy` names.
+//! `ToolDialect` and `ComputerUseDialect` stay plain, `Copy` names.
 
 use serde::{Deserialize, Serialize};
 
@@ -43,7 +43,7 @@ pub enum ToolDialect {
 /// How a model's actions are written and parsed.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum CuaDialect {
+pub enum ComputerUseDialect {
     Wire(WireDialect),
     Text(TextDialect),
     Tool(ToolDialect),

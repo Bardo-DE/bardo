@@ -1,8 +1,8 @@
 use super::*;
-use account_capability::CuaEnv;
+use account_capability::ComputerUseEnv;
 use base_testkit::Scratch;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
+    Button, ClickCount, ComputerUseAction, Coord, Point, Scale120, Size, Target, WindowSpace,
 };
 use computer_use_session::TreeText;
 use inference_core::{AttachIndex, ImageSource, MediaType, StepIndex};
@@ -16,7 +16,7 @@ use std::collections::BTreeSet;
 use std::io::Write;
 use std::os::fd::OwnedFd;
 
-fn cua_model(scratch: &Scratch) -> LocalModel {
+fn computer_use_model(scratch: &Scratch) -> LocalModel {
     models(scratch).remove(2)
 }
 
@@ -28,13 +28,13 @@ fn memfd(bytes: &[u8]) -> OwnedFd {
     fd
 }
 
-fn begin() -> CuaBegin {
-    CuaBegin::new("open settings".into(), CuaEnv::Desktop)
+fn begin() -> ComputerUseBegin {
+    ComputerUseBegin::new("open settings".into(), ComputerUseEnv::Desktop)
         .with_hints(vec!["it is in the menu".into()])
 }
 
-fn request(layout: FrameLayout) -> CuaStepRequest {
-    CuaStepRequest::new(
+fn request(layout: FrameLayout) -> ComputerUseStepRequest {
+    ComputerUseStepRequest::new(
         StepIndex(3),
         inference_core::WindowGeometry {
             logical: Size::new(Coord(200), Coord(100)),
@@ -53,7 +53,7 @@ fn request(layout: FrameLayout) -> CuaStepRequest {
     }])
 }
 
-fn png_request() -> CuaStepRequest {
+fn png_request() -> ComputerUseStepRequest {
     request(FrameLayout::Encoded(MediaType::Png))
 }
 
@@ -69,7 +69,7 @@ fn turn_end() -> TurnEnd {
     TurnEnd {
         stop: StopReason::ToolUse,
         usage: TurnUsage::default(),
-        served: ModelName("tiny-cua".into()),
+        served: ModelName("tiny-computer-use".into()),
         first_token: None,
     }
 }
@@ -89,18 +89,18 @@ fn says(events: Vec<TurnEvent>) -> ScriptedProvider {
     ScriptedProvider::new(vec![], vec![script(events)])
 }
 
-fn session(model: &LocalModel) -> CuaSession {
+fn session(model: &LocalModel) -> ComputerUseSession {
     open(model, &begin(), Tokens(u32::MAX)).expect("a session")
 }
 
-type Stepped = Result<CuaStepReply, Failed>;
+type Stepped = Result<ComputerUseStepReply, Failed>;
 
 async fn run_one(
     provider: &ScriptedProvider,
-    request: &CuaStepRequest,
-) -> (Stepped, CuaSession, Vec<InferEvent>) {
-    let scratch = Scratch::new("cua-step");
-    let model = cua_model(&scratch);
+    request: &ComputerUseStepRequest,
+) -> (Stepped, ComputerUseSession, Vec<InferEvent>) {
+    let scratch = Scratch::new("computer-use-step");
+    let model = computer_use_model(&scratch);
     let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
     let mut seen = Vec::new();
     let mut kept = session(&model);
@@ -112,8 +112,8 @@ async fn run_one(
     (result, kept, seen)
 }
 
-fn click_at(x: u32, y: u32) -> CuaAction<WindowSpace> {
-    CuaAction::Click {
+fn click_at(x: u32, y: u32) -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Click {
         at: Target::Point(Point::new(Coord(x), Coord(y))),
         button: Button::Left,
         count: ClickCount::One,
@@ -168,7 +168,7 @@ async fn the_prompt_carries_the_goal_the_results_the_notes_the_tree_and_the_fram
     let provider = says(vec![click(r#"{"action":"terminate","status":"success"}"#)]);
     let _ = run_one(&provider, &png_request()).await;
     let sent = &provider.requests()[0];
-    assert_eq!(sent.model.0, "tiny-cua");
+    assert_eq!(sent.model.0, "tiny-computer-use");
     let system = texts(sent, Role::System).join("\n");
     assert!(system.contains("1000"), "the grid is named: {system}");
     let user = texts(sent, Role::User).join("\n");
@@ -195,8 +195,8 @@ async fn the_request_is_set_from_the_catalog_entry() {
     let provider = says(vec![click(r#"{"action":"terminate","status":"success"}"#)]);
     let _ = run_one(&provider, &png_request()).await;
     let sent = &provider.requests()[0];
-    let scratch = Scratch::new("cua-settings");
-    let model = cua_model(&scratch);
+    let scratch = Scratch::new("computer-use-settings");
+    let model = computer_use_model(&scratch);
     let entry = model.sampling().expect("sampling");
     assert_eq!(
         sent.sampling, entry.reasoning_off,
@@ -213,9 +213,10 @@ async fn the_request_is_set_from_the_catalog_entry() {
 
 #[tokio::test]
 async fn a_model_trained_to_think_before_it_acts_is_run_with_its_reasoning() {
-    let scratch = Scratch::new("cua-think");
-    let mut model = cua_model(&scratch);
-    let Some(CuaSupport::Dialect { profile, .. }) = &mut model.entry.capabilities.actions_out
+    let scratch = Scratch::new("computer-use-think");
+    let mut model = computer_use_model(&scratch);
+    let Some(ComputerUseSupport::Dialect { profile, .. }) =
+        &mut model.entry.capabilities.actions_out
     else {
         panic!("the fixture has a dialect");
     };
@@ -256,15 +257,15 @@ async fn an_engine_failure_is_told_as_such_and_the_step_does_not_count() {
     };
     assert_eq!(
         failure,
-        CuaStepFailure::ModelFailed(ModelError::Unreachable)
+        ComputerUseStepFailure::ModelFailed(ModelError::Unreachable)
     );
     assert_eq!(kept.remembered(), 0);
 }
 
 #[tokio::test]
 async fn the_prompt_holds_one_frame_fewer_than_the_model_takes_and_lists_the_steps() {
-    let scratch = Scratch::new("cua-history");
-    let model = cua_model(&scratch);
+    let scratch = Scratch::new("computer-use-history");
+    let model = computer_use_model(&scratch);
     let per_prompt = model.caps().expect("caps").images.per_prompt.0;
     assert_eq!(per_prompt, 3);
     let scripts = (0..5)
@@ -314,8 +315,8 @@ async fn a_stop_from_the_sink_ends_the_turn_so_there_is_nothing_to_act_on_and_no
             )]),
         ],
     );
-    let scratch = Scratch::new("cua-stop");
-    let model = cua_model(&scratch);
+    let scratch = Scratch::new("computer-use-stop");
+    let model = computer_use_model(&scratch);
     let frames = inference_fs::read_frames(vec![memfd(b"png")]).expect("frames");
     let mut count = 0;
     let mut kept = session(&model);
@@ -334,22 +335,22 @@ async fn a_stop_from_the_sink_ends_the_turn_so_there_is_nothing_to_act_on_and_no
     assert_eq!(count, 1, "the first stop ends the pushing");
     assert_eq!(
         result.err().map(|failed| failed.failure),
-        Some(CuaStepFailure::Unparseable)
+        Some(ComputerUseStepFailure::Unparseable)
     );
     assert_eq!(provider.requests().len(), 1, "nobody is asked for a repair");
 }
 
 #[test]
 fn a_session_opens_for_a_tool_or_text_dialect_and_for_nothing_else() {
-    let scratch = Scratch::new("cua-open");
+    let scratch = Scratch::new("computer-use-open");
     let mut models = models(&scratch);
     assert!(open(&models[2], &begin(), Tokens(u32::MAX)).is_some());
     assert!(
         open(&models[0], &begin(), Tokens(u32::MAX)).is_none(),
         "a chat model has no dialect"
     );
-    models[2].entry.capabilities.actions_out = Some(CuaSupport::Dialect {
-        dialect: CuaDialect::Wire(computer_use_action::WireDialect::OpenAiComputer),
+    models[2].entry.capabilities.actions_out = Some(ComputerUseSupport::Dialect {
+        dialect: ComputerUseDialect::Wire(computer_use_action::WireDialect::OpenAiComputer),
         batching: Batching::One,
         zoom: model_provider::Zoom::Absent,
         profile: computer_use_action::ActionProfile::default(),
@@ -421,8 +422,8 @@ fn the_observation_carries_the_window_contents_and_the_notes_with_who_said_them(
 
 #[tokio::test]
 async fn an_engine_failure_after_a_repair_gives_the_repair_budget_back() {
-    let scratch = Scratch::new("cua-refill");
-    let model = cua_model(&scratch);
+    let scratch = Scratch::new("computer-use-refill");
+    let model = computer_use_model(&scratch);
     let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
     let provider = ScriptedProvider::new(
         vec![],
@@ -448,7 +449,7 @@ async fn an_engine_failure_after_a_repair_gives_the_repair_budget_back() {
     assert!(matches!(
         result,
         Err(Failed {
-            failure: CuaStepFailure::ModelFailed(ModelError::Unreachable)
+            failure: ComputerUseStepFailure::ModelFailed(ModelError::Unreachable)
         })
     ));
     assert_eq!(provider.requests().len(), 2, "the turn, then the repair");

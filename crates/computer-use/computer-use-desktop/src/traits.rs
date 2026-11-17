@@ -1,4 +1,4 @@
-//! The two seams cuad reaches the desktop through.
+//! The two seams the computer-use daemon reaches the desktop through.
 
 use crate::caps::{BackendCaps, BackendKind};
 use crate::error::DesktopError;
@@ -13,7 +13,7 @@ pub trait Desktop: Send + Sync {
     fn caps(&self) -> BackendCaps;
 
     /// The backend that is actually there: `caps().kind`, or `None` for a desktop that could not
-    /// be reached at all (cuad then reports `Backend = none` and offers no mode).
+    /// be reached at all (the computer-use daemon then reports `Backend = none` and offers no mode).
     fn backend(&self) -> Option<BackendKind> {
         Some(self.caps().kind)
     }

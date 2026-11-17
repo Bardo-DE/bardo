@@ -2,7 +2,7 @@
 //!
 //! A stock compositor does not gate frames on damage: every captured frame reports full damage
 //! within about 10 ms, even for a static window. So on stock the [`DamageAt`] events are made by
-//! cuad's pixel diff ([`DamageSource::PixelDiff`]); on the fork they come from the compositor.
+//! The computer-use daemon's pixel diff ([`DamageSource::PixelDiff`]); on the fork they come from the compositor.
 
 use crate::pixels::{BYTES_PER_PIXEL, PixelBuf};
 use computer_use_action::{Coord, Point, Rect, Size, WindowSpace};
@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 pub enum DamageSource {
     /// The compositor reported it.
     Compositor,
-    /// cuad compared two frames.
+    /// The computer-use daemon compared two frames.
     PixelDiff,
 }
 

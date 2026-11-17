@@ -1,21 +1,22 @@
 //! Builders the step tables share.
 
 pub(super) use crate::session::{
-    AudioCursor, CuaProgress, Phase, RoutedNote, Routing, SessionIn, SessionOut, SessionSpec, step,
+    AudioCursor, ComputerUseProgress, Phase, RoutedNote, Routing, SessionIn, SessionOut,
+    SessionSpec, step,
 };
 use account_capability::ModelId;
-use account_capability::{CuaEnv, LanguageTag, SpeechMode};
+use account_capability::{ComputerUseEnv, LanguageTag, SpeechMode};
 use account_capability::{Locality, Tier};
 use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_match::Need;
-use account_match::{CuaNeed, LlmNeed, SpeechNeed};
+use account_match::{ComputerUseNeed, LlmNeed, SpeechNeed};
 use base_ids::Tokens;
 use inference_core::{
-    AudioFrame, AudioRate, Base64Bytes, ClientFrame, CuaBegin, CuaStepReply, InferEvent,
-    InferRefusal, InferReply, InferRequest, LangPick, ModelError, ModelRef, Readiness, RequestKind,
-    ServedBy, SpeakRequest, Task, TaskRequest, TranscribeBegin, TranscribeMode, Why,
+    AudioFrame, AudioRate, Base64Bytes, ClientFrame, ComputerUseBegin, ComputerUseStepReply,
+    InferEvent, InferRefusal, InferReply, InferRequest, LangPick, ModelError, ModelRef, Readiness,
+    RequestKind, ServedBy, SpeakRequest, Task, TaskRequest, TranscribeBegin, TranscribeMode, Why,
 };
 
 pub(super) fn model() -> ModelRef {
@@ -100,9 +101,9 @@ pub(super) fn speech_spec(class: DataClass) -> SessionSpec {
     }
 }
 
-pub(super) fn cua_spec(class: DataClass) -> SessionSpec {
+pub(super) fn computer_use_spec(class: DataClass) -> SessionSpec {
     SessionSpec {
-        need: Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop].into())),
+        need: Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into())),
         class,
         tier: Tier::Best,
         usage: account_core::consent::Usage::Interactive,
@@ -136,8 +137,11 @@ pub(super) fn speak(class: DataClass) -> InferRequest {
     ))
 }
 
-pub(super) fn cua_begin() -> InferRequest {
-    InferRequest::CuaBegin(CuaBegin::new("rename".into(), CuaEnv::Desktop))
+pub(super) fn computer_use_begin() -> InferRequest {
+    InferRequest::ComputerUseBegin(ComputerUseBegin::new(
+        "rename".into(),
+        ComputerUseEnv::Desktop,
+    ))
 }
 
 pub(super) fn audio(at: u64, samples: usize) -> ClientFrame {
@@ -164,26 +168,26 @@ pub(super) fn waiting_for(
 }
 
 pub(super) fn idle(routed: RoutedNote) -> Phase {
-    idle_cua(routed, CuaProgress::NotBegun)
+    idle_computer_use(routed, ComputerUseProgress::NotBegun)
 }
 
-pub(super) fn idle_cua(routed: RoutedNote, cua: CuaProgress) -> Phase {
+pub(super) fn idle_computer_use(routed: RoutedNote, computer_use: ComputerUseProgress) -> Phase {
     Phase::Idle {
         served: served(),
         answer: answer(),
         routed,
-        cua,
+        computer_use,
     }
 }
 
 pub(super) fn in_turn(kind: RequestKind, audio: AudioCursor) -> Phase {
-    in_turn_with(kind, audio, CuaProgress::NotBegun, None)
+    in_turn_with(kind, audio, ComputerUseProgress::NotBegun, None)
 }
 
 pub(super) fn in_turn_with(
     kind: RequestKind,
     audio: AudioCursor,
-    cua: CuaProgress,
+    computer_use: ComputerUseProgress,
     queued: Option<InferRequest>,
 ) -> Phase {
     Phase::InTurn {
@@ -191,7 +195,7 @@ pub(super) fn in_turn_with(
         answer: answer(),
         kind,
         audio,
-        cua,
+        computer_use,
         queued,
     }
 }
@@ -200,7 +204,7 @@ pub(super) fn queued_chat(queued: Option<InferRequest>) -> Phase {
     in_turn_with(
         RequestKind::Chat,
         AudioCursor::NoAudio,
-        CuaProgress::NotBegun,
+        ComputerUseProgress::NotBegun,
         queued,
     )
 }
@@ -210,11 +214,11 @@ pub(super) fn lost_reply() -> InferReply {
 }
 
 pub(super) fn begun_ack() -> InferReply {
-    InferReply::CuaStep(CuaStepReply::new(vec![]))
+    InferReply::ComputerUseStep(ComputerUseStepReply::new(vec![]))
 }
 
-pub(super) fn cua_step() -> InferRequest {
-    InferRequest::CuaStep(inference_core::CuaStepRequest::new(
+pub(super) fn computer_use_step() -> InferRequest {
+    InferRequest::ComputerUseStep(inference_core::ComputerUseStepRequest::new(
         inference_core::StepIndex(0),
         inference_core::WindowGeometry {
             logical: computer_use_action::Size::new(

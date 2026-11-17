@@ -16,7 +16,7 @@ use crate::{
 /// parser drops them, so a model cannot act through a verb the schema lacks.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case", bound = "")]
-pub enum CuaAction<S: CoordSpace> {
+pub enum ComputerUseAction<S: CoordSpace> {
     Click {
         at: Target<S>,
         button: Button,
@@ -100,19 +100,21 @@ pub enum ActionClass {
     Conclude,
 }
 
-impl<S: CoordSpace> CuaAction<S> {
+impl<S: CoordSpace> ComputerUseAction<S> {
     #[must_use]
     pub fn class(&self) -> ActionClass {
         match self {
-            CuaAction::Observe | CuaAction::Zoom { .. } | CuaAction::Wait { .. } => {
-                ActionClass::Observe
+            ComputerUseAction::Observe
+            | ComputerUseAction::Zoom { .. }
+            | ComputerUseAction::Wait { .. } => ActionClass::Observe,
+            ComputerUseAction::Click { .. }
+            | ComputerUseAction::MoveTo { .. }
+            | ComputerUseAction::Drag { .. }
+            | ComputerUseAction::Scroll { .. } => ActionClass::Pointer,
+            ComputerUseAction::Type { .. } | ComputerUseAction::Key { .. } => ActionClass::Keyboard,
+            ComputerUseAction::Finish { .. } | ComputerUseAction::Ask { .. } => {
+                ActionClass::Conclude
             }
-            CuaAction::Click { .. }
-            | CuaAction::MoveTo { .. }
-            | CuaAction::Drag { .. }
-            | CuaAction::Scroll { .. } => ActionClass::Pointer,
-            CuaAction::Type { .. } | CuaAction::Key { .. } => ActionClass::Keyboard,
-            CuaAction::Finish { .. } | CuaAction::Ask { .. } => ActionClass::Conclude,
         }
     }
 
@@ -126,65 +128,67 @@ impl<S: CoordSpace> CuaAction<S> {
         self,
         f: impl Fn(Point<S>) -> Result<Point<T>, E>,
         g: impl Fn(Length<S>) -> Result<Length<T>, E>,
-    ) -> Result<CuaAction<T>, E> {
+    ) -> Result<ComputerUseAction<T>, E> {
         let target = |t: Target<S>| match t {
             Target::Point(p) => f(p).map(Target::Point),
             Target::Node(n) => Ok(Target::Node(n)),
             Target::Centre => Ok(Target::Centre),
         };
         Ok(match self {
-            CuaAction::Click {
+            ComputerUseAction::Click {
                 at,
                 button,
                 count,
                 mods,
-            } => CuaAction::Click {
+            } => ComputerUseAction::Click {
                 at: target(at)?,
                 button,
                 count,
                 mods,
             },
-            CuaAction::MoveTo { at } => CuaAction::MoveTo { at: target(at)? },
-            CuaAction::Drag { from, to, button } => CuaAction::Drag {
+            ComputerUseAction::MoveTo { at } => ComputerUseAction::MoveTo { at: target(at)? },
+            ComputerUseAction::Drag { from, to, button } => ComputerUseAction::Drag {
                 from: target(from)?,
                 to: target(to)?,
                 button,
             },
-            CuaAction::Type { text } => CuaAction::Type { text },
-            CuaAction::Key { chord, repeat } => CuaAction::Key { chord, repeat },
-            CuaAction::Scroll { at, dir, by } => {
+            ComputerUseAction::Type { text } => ComputerUseAction::Type { text },
+            ComputerUseAction::Key { chord, repeat } => ComputerUseAction::Key { chord, repeat },
+            ComputerUseAction::Scroll { at, dir, by } => {
                 let by = match by {
                     ScrollBy::Notches(n) => ScrollBy::Notches(n),
                     ScrollBy::Distance(len) => ScrollBy::Distance(g(len)?),
                 };
-                CuaAction::Scroll {
+                ComputerUseAction::Scroll {
                     at: target(at)?,
                     dir,
                     by,
                 }
             }
-            CuaAction::Wait { for_ms } => CuaAction::Wait { for_ms },
-            CuaAction::Zoom { region } => {
+            ComputerUseAction::Wait { for_ms } => ComputerUseAction::Wait { for_ms },
+            ComputerUseAction::Zoom { region } => {
                 let w = g(Length::new(region.size.w))?.coord();
                 let h = g(Length::new(region.size.h))?.coord();
-                CuaAction::Zoom {
+                ComputerUseAction::Zoom {
                     region: Rect {
                         origin: f(region.origin)?,
                         size: Size::new(w, h),
                     },
                 }
             }
-            CuaAction::Observe => CuaAction::Observe,
-            CuaAction::Finish {
+            ComputerUseAction::Observe => ComputerUseAction::Observe,
+            ComputerUseAction::Finish {
                 outcome,
                 summary,
                 extracted,
-            } => CuaAction::Finish {
+            } => ComputerUseAction::Finish {
                 outcome,
                 summary,
                 extracted,
             },
-            CuaAction::Ask { question, choices } => CuaAction::Ask { question, choices },
+            ComputerUseAction::Ask { question, choices } => {
+                ComputerUseAction::Ask { question, choices }
+            }
         })
     }
 }

@@ -38,9 +38,9 @@ fn kind_of(row: &toml::Table) -> (&str, &toml::Table) {
     )
 }
 
-pub(super) fn base() -> CuaSettings {
-    CuaSettings {
-        config: computer_use_run::CuaConfig::default(),
+pub(super) fn base() -> ComputerUseSettings {
+    ComputerUseSettings {
+        config: computer_use_run::ComputerUseConfig::default(),
         apps: Apps::Listed(Vec::new()),
     }
 }
@@ -81,7 +81,7 @@ fn the_schema_has_the_shape_the_settings_app_loads() {
     for row in rows() {
         let p = path(&row);
         assert!(seen.insert(p.to_owned()), "duplicate {p}");
-        assert!(p.starts_with("cua."), "{p}");
+        assert!(p.starts_with("computer_use."), "{p}");
         for field in ["label", "help", "section"] {
             assert!(!row[field].as_str().expect(field).is_empty(), "{p} {field}");
         }
@@ -134,11 +134,11 @@ fn the_intelligence_page_shows_computer_use_and_the_rest_is_advanced() {
     assert_eq!(
         shown,
         [
-            "cua.enabled",
-            "cua.apps",
-            "cua.default_mode",
-            "cua.autopause",
-            "cua.accessibility"
+            "computer_use.enabled",
+            "computer_use.apps",
+            "computer_use.default_mode",
+            "computer_use.autopause",
+            "computer_use.accessibility"
         ]
     );
 }
@@ -258,15 +258,15 @@ fn each_key_lands_in_the_typed_value_the_design_names() {
     let one = |p: &str, v: toml::Value| read(&doc(p, v), base()).value.config;
     let int = toml::Value::Integer;
     let word = |w: &str| toml::Value::String(w.to_owned());
-    assert!(one("cua.enabled", toml::Value::Boolean(true)).enabled);
+    assert!(one("computer_use.enabled", toml::Value::Boolean(true)).enabled);
     assert_eq!(
-        one("cua.default_mode", word("agent_workspace")).default_mode,
+        one("computer_use.default_mode", word("agent_workspace")).default_mode,
         DefaultMode::AgentWorkspace
     );
-    assert!(!one("cua.autopause", toml::Value::Boolean(false)).autopause);
-    assert!(!one("cua.accessibility", toml::Value::Boolean(false)).accessibility);
+    assert!(!one("computer_use.autopause", toml::Value::Boolean(false)).autopause);
+    assert!(!one("computer_use.accessibility", toml::Value::Boolean(false)).accessibility);
     assert_eq!(
-        one("cua.budget.spend_microusd", int(2_500_000))
+        one("computer_use.budget.spend_microusd", int(2_500_000))
             .budget
             .spend,
         model_provider::Money::usd(rust_decimal::Decimal::new(2_500_000, 6))
@@ -293,12 +293,12 @@ fn a_bad_value_falls_back_for_that_key_alone() {
         };
         for value in bad {
             // A second, good key in the same file still applies.
-            let other = if p == "cua.budget.spend_microusd" {
-                "cua.enabled"
+            let other = if p == "computer_use.budget.spend_microusd" {
+                "computer_use.enabled"
             } else {
-                "cua.budget.spend_microusd"
+                "computer_use.budget.spend_microusd"
             };
-            let good = if other == "cua.enabled" {
+            let good = if other == "computer_use.enabled" {
                 toml::Value::Boolean(true)
             } else {
                 toml::Value::Integer(700)
@@ -306,7 +306,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
             let text = merged(&[(p, value.clone()), (other, good)]);
             let loaded = read(&text, base());
             let mut want = base();
-            if other == "cua.enabled" {
+            if other == "computer_use.enabled" {
                 want.config.enabled = true;
             } else {
                 want.config.budget.spend =
@@ -323,12 +323,15 @@ fn a_bad_value_falls_back_for_that_key_alone() {
 fn a_fallback_is_the_base_value_not_the_default() {
     let mut start = base();
     start.config.budget.spend = model_provider::Money::usd(rust_decimal::Decimal::new(11, 6));
-    let loaded = read("[cua.budget]\nspend_microusd = -1\n", start.clone());
+    let loaded = read(
+        "[computer_use.budget]\nspend_microusd = -1\n",
+        start.clone(),
+    );
     assert_eq!(loaded.value, start);
     assert_eq!(
         loaded.invalid,
         vec![InvalidKey {
-            path: "cua.budget.spend_microusd".into(),
+            path: "computer_use.budget.spend_microusd".into(),
             reason: "outside 0..=1000000000".into(),
         }]
     );
@@ -336,7 +339,7 @@ fn a_fallback_is_the_base_value_not_the_default() {
 
 #[test]
 fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
-    let loaded = read("[cua\nenabled = true", base());
+    let loaded = read("[computer_use\nenabled = true", base());
     assert_eq!(loaded.value, base());
     assert!(loaded.invalid[0].reason.starts_with("not TOML"));
 }
@@ -344,14 +347,17 @@ fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
 #[test]
 fn unknown_keys_are_reported_and_the_retired_screens_keys_are_among_them() {
     let loaded = read(
-        "version = 1\n[cua.screens]\nkeep = true\n[cua]\nenabled = true\n",
+        "version = 1\n[computer_use.screens]\nkeep = true\n[computer use]\nenabled = true\n",
         base(),
     );
     assert!(loaded.value.config.enabled);
-    assert_eq!(loaded.unknown, [UnknownKey("cua.screens.keep".to_owned())]);
     assert_eq!(
-        loaded.lines("cuad"),
-        ["cuad: settings: cua.screens.keep: no such key, ignored"]
+        loaded.unknown,
+        [UnknownKey("computer_use.screens.keep".to_owned())]
+    );
+    assert_eq!(
+        loaded.lines("computer_use_daemon"),
+        ["computer_use_daemon: settings: computer_use.screens.keep: no such key, ignored"]
     );
 }
 
@@ -362,23 +368,23 @@ fn app(id: &str) -> AppName {
 #[test]
 fn the_apps_list_reads_row_by_row_and_a_browser_is_never_always() {
     let text = r#"
-[[cua.apps]]
+[[computer_use.apps]]
 app = "org.gnome.Calculator"
 allow = "always"
 
-[[cua.apps]]
+[[computer_use.apps]]
 app = "org.mozilla.firefox"
 allow = "always"
 
-[[cua.apps]]
+[[computer_use.apps]]
 app = "not an id"
 allow = "ask"
 
-[[cua.apps]]
+[[computer_use.apps]]
 app = "org.gnome.TextEditor"
 allow = "sometimes"
 
-[[cua.apps]]
+[[computer_use.apps]]
 app = "org.gnome.Calculator"
 allow = "session"
 "#;
@@ -405,11 +411,14 @@ allow = "session"
         refused,
         [
             (
-                "cua.apps[1]",
+                "computer_use.apps[1]",
                 "a browser is never `always`; it asks every run"
             ),
-            ("cua.apps[2]", "no desktop-entry id in `app`"),
-            ("cua.apps[3]", "`allow` is not ask, session or always"),
+            ("computer_use.apps[2]", "no desktop-entry id in `app`"),
+            (
+                "computer_use.apps[3]",
+                "`allow` is not ask, session or always"
+            ),
         ]
     );
 }
@@ -417,10 +426,10 @@ allow = "session"
 #[test]
 fn no_apps_key_leaves_the_base_list_and_a_non_list_falls_back() {
     assert_eq!(
-        read("[cua]\nenabled = true\n", base()).value.apps,
+        read("[computer use]\nenabled = true\n", base()).value.apps,
         Apps::Listed(vec![])
     );
-    let loaded = read("[cua]\napps = \"all\"\n", base());
+    let loaded = read("[computer use]\napps = \"all\"\n", base());
     assert_eq!(loaded.value.apps, Apps::Listed(vec![]));
     assert_eq!(
         loaded.invalid[0].reason,

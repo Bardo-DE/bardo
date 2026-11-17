@@ -723,7 +723,7 @@ async fn who_may_read_the_computers() {
     for role in [
         CallerRole::App,
         CallerRole::Agent,
-        CallerRole::Cua,
+        CallerRole::ComputerUse,
         CallerRole::AgentLauncher,
     ] {
         let denied = world.machines_as(role).await.expect_err("refused");

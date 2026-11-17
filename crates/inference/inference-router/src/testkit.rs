@@ -12,14 +12,14 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 static NEXT: AtomicU32 = AtomicU32::new(0);
 
-/// The three test models (`tiny-chat`, `tiny-embed`, `tiny-cua`), with engine programs
+/// The three test models (`tiny-chat`, `tiny-embed`, `tiny-computer-use`), with engine programs
 /// configured and the weights directories created under `scratch`.
 ///
 /// # Panics
 /// when an embedded test entry does not parse or a weights directory cannot be created.
 #[must_use]
 pub fn models(scratch: &Path) -> Vec<LocalModel> {
-    let entries: Vec<_> = [entries::chat(), entries::embed(), entries::cua()]
+    let entries: Vec<_> = [entries::chat(), entries::embed(), entries::computer_use()]
         .iter()
         .map(|text| parse_entry_text(text).expect("entry"))
         .collect();

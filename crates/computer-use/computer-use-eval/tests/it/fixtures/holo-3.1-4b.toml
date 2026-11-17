@@ -10,7 +10,7 @@
 #   function, so the action schema is the one computer-use-session's prompt declares (dialect holo31).
 # - sampling: proposals, not read from the card (it gives none). reasoning_on is the Qwen3 family's
 #   published thinking setting (0.6, top_p 0.95, top_k 20); reasoning_off is greedy, so the same
-#   screen gives the same click. A recorded step (dev/cua-step-holo.sh) confirms or corrects them.
+#   screen gives the same click. A recorded step (dev/computer-use-step-holo.sh) confirms or corrects them.
 # - reasoning_default: "on", a proposal: Qwen3.5-family templates think unless enable_thinking is false.
 #   Reasoning::EngineDefault sends no switch, so it takes the reasoning_on sampling. Confirmed or
 #   corrected by the same recorded step.

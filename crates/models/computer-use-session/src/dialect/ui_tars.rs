@@ -6,7 +6,7 @@ use model_vision_prep::FrameMap;
 
 use super::ActionDialect;
 use crate::prompt::{body, instruction};
-use crate::{CuaTaskText, TurnTranscript};
+use crate::{ComputerUseTaskText, TurnTranscript};
 
 const SYSTEM: &str = include_str!("../../prompts/ui_tars_15.txt");
 /// The language of `Thought:`.
@@ -29,7 +29,7 @@ impl ActionDialect for UiTars {
         &self,
         _actions: ActionProfile,
         _map: &FrameMap,
-        task: &CuaTaskText,
+        task: &ComputerUseTaskText,
     ) -> Option<String> {
         Some(
             body(SYSTEM)

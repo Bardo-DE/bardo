@@ -2,7 +2,7 @@
 //! be written to a trace and replayed.
 
 use crate::machine::acquire::AcquireFailure;
-use crate::model::{CuaModelError, StepEvent};
+use crate::model::{ComputerUseModelError, StepEvent};
 use crate::observation::Observation;
 use crate::screen::ScreenRead;
 use crate::seams::LinkError;
@@ -34,7 +34,7 @@ pub enum Moved {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ModelReply {
     /// The reply, in window space.
-    pub reply: CuaStepReply,
+    pub reply: ComputerUseStepReply,
     /// Tokens used.
     pub usage: TurnUsage,
     /// What the provider said the reply cost; `None` when it said nothing (a local model).
@@ -81,7 +81,7 @@ pub enum RunInput {
     /// The model answered.
     ModelReplied(Box<ModelReply>),
     /// The model failed.
-    ModelFailed(CuaModelError),
+    ModelFailed(ComputerUseModelError),
     /// The model cannot read images; the sentence it gave for it, if any.
     ModelBlind(Option<String>),
     /// The quarantined reader's answer about the screen's text (`RunEffect::ReadScreen`).

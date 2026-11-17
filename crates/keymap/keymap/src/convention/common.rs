@@ -1,4 +1,4 @@
-//! The common Ctrl-based conventions (IBM CUA lineage): the base of Windows and Linux.
+//! The common Ctrl-based conventions (the IBM Common User Access lineage): the base of Windows and Linux.
 
 use super::{
     Row::{Key, Unbound},

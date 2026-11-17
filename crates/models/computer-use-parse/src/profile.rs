@@ -6,7 +6,8 @@
 //! on to the dialect's own table, so the default profile changes nothing.
 
 use computer_use_action::{
-    ActionProfile, Button, CoordSpace, CuaAction, DragStyle, ScrollAxis, Summary, Target, VerbAlias,
+    ActionProfile, Button, ComputerUseAction, CoordSpace, DragStyle, ScrollAxis, Summary, Target,
+    VerbAlias,
 };
 use serde_json::Value;
 
@@ -38,7 +39,7 @@ pub(crate) fn action<S: CoordSpace>(
     ctx: Ctx,
     verb: &str,
     args: &Args,
-) -> Option<Verdict<CuaAction<S>>> {
+) -> Option<Verdict<ComputerUseAction<S>>> {
     let profile = context.profile;
     let alias = profile.aliases.resolve(verb);
     let canonical: &str = alias.map_or(verb, |a| a.canonical());
@@ -58,11 +59,13 @@ pub(crate) fn action<S: CoordSpace>(
 /// drags from where it moved, as the model meant.
 pub(crate) fn cursor_after<S: CoordSpace>(
     cursor: Option<CursorAt>,
-    action: &CuaAction<S>,
+    action: &ComputerUseAction<S>,
 ) -> Option<CursorAt> {
     let target = match action {
-        CuaAction::Click { at, .. } | CuaAction::MoveTo { at } | CuaAction::Scroll { at, .. } => at,
-        CuaAction::Drag { to, .. } => to,
+        ComputerUseAction::Click { at, .. }
+        | ComputerUseAction::MoveTo { at }
+        | ComputerUseAction::Scroll { at, .. } => at,
+        ComputerUseAction::Drag { to, .. } => to,
         _ => return cursor,
     };
     match target {
@@ -75,8 +78,8 @@ pub(crate) fn cursor_after<S: CoordSpace>(
 }
 
 /// `call_user` with `text`: the model asks the person.
-fn call_user<S: CoordSpace>(args: &Args) -> Verdict<CuaAction<S>> {
-    Ok(CuaAction::Ask {
+fn call_user<S: CoordSpace>(args: &Args) -> Verdict<ComputerUseAction<S>> {
+    Ok(ComputerUseAction::Ask {
         question: bounded(Summary::new(string(args, "text")?))?,
         choices: Vec::new(),
     })
@@ -88,9 +91,9 @@ fn drag_from_cursor<S: CoordSpace>(
     context: &ToolContext,
     ctx: Ctx,
     args: &Args,
-) -> Verdict<CuaAction<S>> {
+) -> Verdict<ComputerUseAction<S>> {
     let from = context.cursor.ok_or(DropReason::MissingArgument)?;
-    Ok(CuaAction::Drag {
+    Ok(ComputerUseAction::Drag {
         from: Target::Point(ctx.point(from.x, from.y)?),
         to: Target::Point(point(ctx, args, &[""])?),
         button: Button::Left,
@@ -102,7 +105,7 @@ fn scroll_by_direction<S: CoordSpace>(
     verbs: &Verbs,
     ctx: Ctx,
     args: &Args,
-) -> Verdict<CuaAction<S>> {
+) -> Verdict<ComputerUseAction<S>> {
     let axis = match args.get("direction") {
         None => Axis::Vertical,
         Some(Value::String(word)) => match word.trim().to_ascii_lowercase().as_str() {

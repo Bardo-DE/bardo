@@ -2,8 +2,8 @@
 //! here as values, and the binary's `main` only passes them in.
 
 use crate::{
-    Apps, CuaSettings, CuadConfig, ServeError, Supervisor, SystemClock, caller_identity,
-    follow_settings, locator, read_callers, serve_on_as, watch_settings,
+    Apps, ComputerUseDaemonConfig, ComputerUseSettings, ServeError, Supervisor, SystemClock,
+    caller_identity, follow_settings, locator, read_callers, serve_on_as, watch_settings,
 };
 use computer_use_host::{RULES_FILE, parse_rules, shipped_rules};
 use computer_use_run::Rules;
@@ -67,13 +67,17 @@ fn write_schema(dir: &Path) -> Result<(), Fatal> {
     std::fs::write(dir.join("computer-use.settings.toml"), crate::SCHEMA).map_err(io)
 }
 
-fn load_config(path: Option<&Path>) -> Result<CuadConfig, Fatal> {
+fn load_config(path: Option<&Path>) -> Result<ComputerUseDaemonConfig, Fatal> {
     let Some(path) = path else {
-        return Ok(CuadConfig::default());
+        return Ok(ComputerUseDaemonConfig::default());
     };
     match std::fs::read_to_string(path) {
-        Ok(text) => CuadConfig::from_toml(&text).map_err(|e| Fatal::Config(e.to_string())),
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(CuadConfig::default()),
+        Ok(text) => {
+            ComputerUseDaemonConfig::from_toml(&text).map_err(|e| Fatal::Config(e.to_string()))
+        }
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            Ok(ComputerUseDaemonConfig::default())
+        }
         Err(e) => Err(Fatal::Config(format!("{}: {e}", path.display()))),
     }
 }
@@ -120,7 +124,7 @@ pub async fn run(
     let platform = keymap::detect(keymap::HostOs::compiled(), env);
     let (keymap, problems) = crate::desktop_keymap(platform, env);
     for problem in problems {
-        eprintln!("cuad: {problem}");
+        eprintln!("computer_use_daemon: {problem}");
     }
     let hints: Vec<String> = computer_use_run::shortcut_hint(&keymap)
         .into_iter()
@@ -129,19 +133,19 @@ pub async fn run(
         .await
         .map_err(|e| Fatal::Bus(e.to_string()))?;
     let reached = Reached::find(&config, &connection).await?;
-    eprintln!("cuad: {}", reached.describe());
+    eprintln!("computer_use_daemon: {}", reached.describe());
     let links = Links::over(&connection, config.tier);
     let parts = SystemSeams::parts(&config, links, reached, SystemClock::start(), rules);
     let supervisor = Arc::new(Supervisor::with_hints(parts, config, hints));
     // The person's settings (`computer-use/settings.toml`) over the configuration's values, now and
     // whenever the file changes. Until the file lists an app, none is on.
-    let base = CuaSettings {
+    let base = ComputerUseSettings {
         config: supervisor.settings(),
         apps: Apps::Listed(Vec::new()),
     };
     let mut watched = watch_settings(&locator(&env), base);
     if let WatchState::Blind { reason } = watched.state() {
-        eprintln!("cuad: settings are read once, not watched: {reason}");
+        eprintln!("computer_use_daemon: settings are read once, not watched: {reason}");
     }
     supervisor.adopt(&watched.current());
     let following = Arc::clone(&supervisor);

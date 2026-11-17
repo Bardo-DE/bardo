@@ -117,7 +117,7 @@ annotated sample configuration). One `Open` is:
 
 1. **Who.** `peers`: the bus names the sender's pid, `/proc/<pid>/exe` names the program, the
    caller table names the `Caller` (an `AppId` and a `Role`). A sender the table does not name gets
-   `org.freedesktop.DBus.Error.AccessDenied`. The role `Cua` (cuad's executable) is the only one
+   `org.freedesktop.DBus.Error.AccessDenied`. The role `ComputerUse` (the computer-use daemon's executable) is the only one
    that may open a computer-use session; any other caller's route is `Refused(Denied)`.
 2. **Where.** A socketpair; one end goes back as the reply descriptor, `serve_session` runs on the
    other over this session's four seams:
@@ -132,7 +132,7 @@ annotated sample configuration). One `Open` is:
      unload on the supervisor's idle timer, so `release` does nothing.
    - `TurnRunner` is `runner::Turns`: the model layer's `OpenAiCompat` (`Driver<OpenAiCodec, HttpClient>`)
      over the engine's Unix socket, wrapped in `Retrying`; `bridge` maps both ways; computer-use
-     steps are `cua_step` over the model layer's `CuaSession`; a reply of a shape inferd can read is run
+     steps are `computer_use_step` over the model layer's `ComputerUseSession`; a reply of a shape inferd can read is run
      under `structured` (a `ShapedSession`: validate, repair once); a `Transcribe` turn is
      `speech::SpeechRunner` over `SttBackend::SpeechHost` (the model layer's `speech-host-client` to the supervised
      speech host, a CPU engine probed with the host protocol's `Hello`): the session's audio frames

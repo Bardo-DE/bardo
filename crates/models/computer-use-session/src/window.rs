@@ -1,32 +1,32 @@
 //! Parsed actions into window space: a point that falls outside the frame is dropped, never
 //! clamped.
 
-use computer_use_action::{CoordSpace, CuaAction, Length, Point, WindowSpace};
+use computer_use_action::{ComputerUseAction, CoordSpace, Length, Point, WindowSpace};
 use computer_use_parse::{DropReason, Dropped, InSpace, VerbText};
 use model_vision_prep::{FrameMap, MapError};
 
 /// The verb a dropped action is reported under.
-fn verb_of<S: CoordSpace>(action: &CuaAction<S>) -> &'static str {
+fn verb_of<S: CoordSpace>(action: &ComputerUseAction<S>) -> &'static str {
     match action {
-        CuaAction::Click { .. } => "click",
-        CuaAction::MoveTo { .. } => "move",
-        CuaAction::Drag { .. } => "drag",
-        CuaAction::Type { .. } => "type",
-        CuaAction::Key { .. } => "key",
-        CuaAction::Scroll { .. } => "scroll",
-        CuaAction::Wait { .. } => "wait",
-        CuaAction::Zoom { .. } => "zoom",
-        CuaAction::Observe => "observe",
-        CuaAction::Finish { .. } => "finish",
-        CuaAction::Ask { .. } => "ask",
+        ComputerUseAction::Click { .. } => "click",
+        ComputerUseAction::MoveTo { .. } => "move",
+        ComputerUseAction::Drag { .. } => "drag",
+        ComputerUseAction::Type { .. } => "type",
+        ComputerUseAction::Key { .. } => "key",
+        ComputerUseAction::Scroll { .. } => "scroll",
+        ComputerUseAction::Wait { .. } => "wait",
+        ComputerUseAction::Zoom { .. } => "zoom",
+        ComputerUseAction::Observe => "observe",
+        ComputerUseAction::Finish { .. } => "finish",
+        ComputerUseAction::Ask { .. } => "ask",
     }
 }
 
 fn map_all<S: CoordSpace>(
-    actions: Vec<CuaAction<S>>,
+    actions: Vec<ComputerUseAction<S>>,
     point: impl Fn(Point<S>) -> Result<Point<WindowSpace>, MapError>,
     length: impl Fn(Length<S>) -> Result<Length<WindowSpace>, MapError>,
-) -> (Vec<CuaAction<WindowSpace>>, Vec<Dropped>) {
+) -> (Vec<ComputerUseAction<WindowSpace>>, Vec<Dropped>) {
     let mut kept = Vec::new();
     let mut dropped = Vec::new();
     for action in actions {
@@ -46,7 +46,7 @@ fn map_all<S: CoordSpace>(
 pub(crate) fn to_window(
     actions: InSpace,
     map: &FrameMap,
-) -> (Vec<CuaAction<WindowSpace>>, Vec<Dropped>) {
+) -> (Vec<ComputerUseAction<WindowSpace>>, Vec<Dropped>) {
     match actions {
         InSpace::Image(list) => map_all(
             list,

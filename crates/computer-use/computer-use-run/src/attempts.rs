@@ -4,8 +4,10 @@
 use crate::machine::finish::said_of;
 use crate::turn::sent_input;
 use account_core::AppName;
-use computer_use_action::{CuaAction, WindowSpace};
-use computer_use_bus::{ActionResult, CuaOutcome, CuaRecord, LocalRefusal, Refusal};
+use computer_use_action::{ComputerUseAction, WindowSpace};
+use computer_use_bus::{
+    ActionResult, ComputerUseOutcome, ComputerUseRecord, LocalRefusal, Refusal,
+};
 use provenance::RunId;
 use serde::{Deserialize, Serialize};
 
@@ -32,15 +34,15 @@ pub enum Verb {
 impl Verb {
     /// The verb of `action`; none for the ones that touch nothing (look, zoom, finish, ask).
     #[must_use]
-    pub fn of(action: &CuaAction<WindowSpace>) -> Option<Verb> {
+    pub fn of(action: &ComputerUseAction<WindowSpace>) -> Option<Verb> {
         match action {
-            CuaAction::Click { .. } => Some(Verb::Click),
-            CuaAction::MoveTo { .. } => Some(Verb::PointerMove),
-            CuaAction::Drag { .. } => Some(Verb::Drag),
-            CuaAction::Scroll { .. } => Some(Verb::Scroll),
-            CuaAction::Type { .. } => Some(Verb::Typing),
-            CuaAction::Key { .. } => Some(Verb::KeyPress),
-            CuaAction::Wait { .. } => Some(Verb::Wait),
+            ComputerUseAction::Click { .. } => Some(Verb::Click),
+            ComputerUseAction::MoveTo { .. } => Some(Verb::PointerMove),
+            ComputerUseAction::Drag { .. } => Some(Verb::Drag),
+            ComputerUseAction::Scroll { .. } => Some(Verb::Scroll),
+            ComputerUseAction::Type { .. } => Some(Verb::Typing),
+            ComputerUseAction::Key { .. } => Some(Verb::KeyPress),
+            ComputerUseAction::Wait { .. } => Some(Verb::Wait),
             _ => None,
         }
     }
@@ -103,7 +105,7 @@ impl Tried {
     /// stored step's comes from the `cua.step.seen` that follows it).
     #[must_use]
     pub fn of(
-        action: &CuaAction<WindowSpace>,
+        action: &ComputerUseAction<WindowSpace>,
         result: &ActionResult,
         unchanged: bool,
     ) -> Option<Tried> {
@@ -160,7 +162,7 @@ pub fn steps_words(tried: &[Tried]) -> String {
 /// What a stalled run tells its planner: the screen stopped changing, and what was tried.
 #[must_use]
 pub fn stall_words(tried: &[Tried]) -> String {
-    let base = said_of(CuaOutcome::BudgetOut(
+    let base = said_of(ComputerUseOutcome::BudgetOut(
         computer_use_bus::RunBudgetKind::Stall,
     ));
     if tried.is_empty() {
@@ -175,9 +177,9 @@ pub fn stall_words(tried: &[Tried]) -> String {
 }
 
 /// How an attempt ended, in a sentence.
-fn end_words(outcome: CuaOutcome) -> &'static str {
+fn end_words(outcome: ComputerUseOutcome) -> &'static str {
     match (outcome, said_of(outcome)) {
-        (CuaOutcome::Done, _) => "It said it was done.",
+        (ComputerUseOutcome::Done, _) => "It said it was done.",
         (_, "") => "It was stopped.",
         (_, said) => said,
     }
@@ -207,12 +209,12 @@ struct Attempt {
     /// The actions since the last look, as they read if that look shows no change: where each
     /// sits in `tried`, and its words then.
     unseen: Vec<(usize, Tried)>,
-    outcome: Option<CuaOutcome>,
+    outcome: Option<ComputerUseOutcome>,
 }
 
 impl Attempt {
     /// A step's action: it reads as done until a look says otherwise.
-    fn step(&mut self, action: &CuaAction<WindowSpace>, result: &ActionResult) {
+    fn step(&mut self, action: &ComputerUseAction<WindowSpace>, result: &ActionResult) {
         let Some(tried) = Tried::of(action, result, false) else {
             return;
         };
@@ -249,7 +251,11 @@ impl Attempt {
 /// The briefing's lines about earlier runs in `app`, oldest first, from the conversation's
 /// records; `current` is left out. See [`digest_within`].
 #[must_use]
-pub fn digest(records: &[CuaRecord], app: &AppName, current: Option<&RunId>) -> Vec<String> {
+pub fn digest(
+    records: &[ComputerUseRecord],
+    app: &AppName,
+    current: Option<&RunId>,
+) -> Vec<String> {
     digest_within(records, app, current, Limits::BRIEFING)
 }
 
@@ -259,7 +265,7 @@ pub fn digest(records: &[CuaRecord], app: &AppName, current: Option<&RunId>) -> 
 /// counts when its start names `app`, the newest `limits.attempts` stay, and whole attempts are
 /// dropped from the oldest end until the lines fit.
 pub fn digest_within(
-    records: &[CuaRecord],
+    records: &[ComputerUseRecord],
     app: &AppName,
     current: Option<&RunId>,
     limits: Limits,
@@ -267,7 +273,9 @@ pub fn digest_within(
     let mut attempts: Vec<Attempt> = Vec::new();
     for record in records {
         match record {
-            CuaRecord::RunStarted { run, app: of, .. } if of == app && Some(run) != current => {
+            ComputerUseRecord::RunStarted { run, app: of, .. }
+                if of == app && Some(run) != current =>
+            {
                 attempts.push(Attempt {
                     run: run.clone(),
                     tried: Vec::new(),
@@ -275,7 +283,7 @@ pub fn digest_within(
                     outcome: None,
                 });
             }
-            CuaRecord::Step {
+            ComputerUseRecord::Step {
                 run,
                 action,
                 result,
@@ -285,12 +293,12 @@ pub fn digest_within(
                     attempt.step(&action.action, result);
                 }
             }
-            CuaRecord::Seen { run, unchanged, .. } => {
+            ComputerUseRecord::Seen { run, unchanged, .. } => {
                 if let Some(attempt) = attempts.iter_mut().find(|a| &a.run == run) {
                     attempt.seen(*unchanged);
                 }
             }
-            CuaRecord::Finished { run, outcome, .. } => {
+            ComputerUseRecord::Finished { run, outcome, .. } => {
                 if let Some(attempt) = attempts.iter_mut().find(|a| &a.run == run) {
                     attempt.outcome = Some(*outcome);
                 }

@@ -12,7 +12,7 @@ use crate::support::world::*;
 use action_client::{Transport, TransportError};
 use action_core::*;
 use action_dbus::{Bus, introspection};
-use action_gate_wire::{CuaAsk, EffectBasis};
+use action_gate_wire::{ComputerUseAsk, EffectBasis};
 use action_vocab::{
     ActionRef, Args, CallRequest, Caller, CallerRole, Generation, Handle, LabelText, NoteSlug,
     Origin, ParamName, TargetValue, TurnId, UndoId, Workspace,
@@ -65,15 +65,15 @@ fn call(name: &str, key: &str) -> CallRequest {
     }
 }
 
-fn cua_ask() -> CuaAsk {
-    CuaAsk {
+fn computer_use_ask() -> ComputerUseAsk {
+    ComputerUseAsk {
         run: provenance::RunId::parse("r-1").expect("run"),
         step: 1,
         app: mail(),
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space("work"),
-        action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,
+        action: computer_use_action::ComputerUseAction::<computer_use_action::WindowSpace>::Observe,
         node: None,
         effect: Effect::Read,
         basis: EffectBasis::DefaultTable,
@@ -139,14 +139,14 @@ async fn every_member_over_the_bus_answers_what_the_router_answers() {
     let world = World::serving(mail_router(), everything_config()).await;
     let (everything, _keep) = world.client(&[EVERYTHING]).await;
     // The connection is introduced as the sheet host, the highest standing one app holds: the roles
-    // that need `cua` or `compositor` in the table are not backed, and it has no more than that.
+    // that need `computer_use` or `compositor` in the table are not backed, and it has no more than that.
     let all_roles: Vec<CallerRole> = CallerRole::ALL
         .iter()
         .copied()
         .filter(|r| {
             !matches!(
                 r,
-                CallerRole::App | CallerRole::Cua | CallerRole::Compositor
+                CallerRole::App | CallerRole::ComputerUse | CallerRole::Compositor
             )
         })
         .collect();
@@ -487,7 +487,8 @@ async fn every_member_over_the_bus_answers_what_the_router_answers() {
         run: Some(provenance::RunId::parse("r-1").expect("run")),
     }))
     .await;
-    pair.both(IntentsRequest::GateCheck(cua_ask())).await;
+    pair.both(IntentsRequest::GateCheck(computer_use_ask()))
+        .await;
 
     // The control centre: state, halt, resume, and the terminal's grants.
     pair.both(IntentsRequest::ControlState).await;

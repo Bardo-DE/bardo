@@ -2,7 +2,7 @@
 //!
 //! A task is played on a fake surface (`surface`): a small deterministic application that is
 //! drawn as pixels for the model and acted on through the same seat, capture and desktop seams a
-//! real run uses, with cua's own run machine in between (`run`). The model is a script (`script`)
+//! real run uses, with computer use's own run machine in between (`run`). The model is a script (`script`)
 //! or a real one on a local engine (`live`). A reference gate (`gate`) stands in for the router.
 //! What comes out is a verdict per run (`verdict`), rates with bounds (`metrics`) and a markdown
 //! report (`report`). Nothing here touches the desktop, an app, an account or the network.

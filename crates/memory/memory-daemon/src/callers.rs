@@ -4,7 +4,7 @@
 //! cgroup names the unit or the app scope), and so is the reading of the table files
 //! (`account_callers::load_callers`). What is memoryd's own is where they are —
 //! `/etc/bardo/memoryd-callers.toml` with the user's `<config>/bardo/memoryd/callers.toml` laid
-//! over it — and [`caller_for`] that turns an accounts role into one of the memory service's callers. The router, the shell, cuad and the Settings app are the four fixed
+//! over it — and [`caller_for`] that turns an accounts role into one of the memory service's callers. The router, the shell, the computer-use daemon and the Settings app are the four fixed
 //! callers; every other identified process is an app.
 
 use caller_role_types::CallerRole;
@@ -19,7 +19,7 @@ pub const SETTINGS_APP: &str = "org.bardo.Settings";
 
 /// The memory service's caller for the process the accounts service identified.
 ///
-/// Cuad is the `cua` role, the shell the `sheet_host` role of [`SHELL_APP`], the router the `agent`
+/// The computer-use daemon is the `computer_use` role, the shell the `sheet_host` role of [`SHELL_APP`], the router the `agent`
 /// role of [`ROUTER_APP`], the Settings app the `settings` role of [`SETTINGS_APP`]; any other row,
 /// or an app scope or Flatpak scope the table does not name, is that app. The fixed callers need
 /// the role as well as the app, so a row cannot make an app the router by naming it.
@@ -27,7 +27,7 @@ pub const SETTINGS_APP: &str = "org.bardo.Settings";
 pub fn caller_for(found: account_callers::Caller) -> Caller {
     let name = found.app.name.as_str();
     let role = match found.role {
-        CallerRole::Cua => CallerRole::Cua,
+        CallerRole::ComputerUse => CallerRole::ComputerUse,
         CallerRole::SheetHost if name == SHELL_APP => CallerRole::SheetHost,
         CallerRole::Agent if name == ROUTER_APP => CallerRole::Agent,
         CallerRole::Settings if name == SETTINGS_APP => CallerRole::Settings,

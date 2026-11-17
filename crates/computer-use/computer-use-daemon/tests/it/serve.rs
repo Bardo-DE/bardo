@@ -1,6 +1,6 @@
-//! cuad on a private bus: `org.bardo.ComputerUse1` for the shell, the planner and strangers, and the
+//! The computer-use daemon on a private bus: `org.bardo.ComputerUse1` for the shell, the planner and strangers, and the
 //! `org.bardo.ComputerUse` provider for the router. Every connection of a test is one process, so each
-//! caller is introduced as the app and role its process would have in cuad's callers table
+//! caller is introduced as the app and role its process would have in the computer-use daemon's callers table
 //! (`Who`); a bus name decides nothing, and a program that owns `org.bardo.Shell` is only the
 //! shell if its process is.
 
@@ -8,10 +8,12 @@ use crate::support::bus::PrivateBus;
 use crate::support::enabled;
 use action_dbus::callers::Identity;
 use caller_role_types::CallerRole;
-use computer_use_action::{CuaAction, Summary};
-use computer_use_bus::{BudgetBody, CuaEnvelope, CuaOutcome, CuaTask, RunEnd, WindowBody};
+use computer_use_action::{ComputerUseAction, Summary};
+use computer_use_bus::{
+    BudgetBody, ComputerUseEnvelope, ComputerUseOutcome, ComputerUseTask, RunEnd, WindowBody,
+};
 use computer_use_daemon::{Supervisor, serve_on_with, shipped_callers};
-use computer_use_dbus::{CUA_BUS, ManagerProxy, RunProxy};
+use computer_use_dbus::{COMPUTER_USE_BUS, ManagerProxy, RunProxy};
 use computer_use_desktop::BackendKind;
 use computer_use_fake::FakePdp;
 use computer_use_fake::scene::{click, finish, reply, task, world};
@@ -30,7 +32,7 @@ struct Fixture {
     _daemon: Connection,
 }
 
-/// Who a caller's process is, as cuad's callers table would name it.
+/// Who a caller's process is, as the computer-use daemon's callers table would name it.
 #[derive(Clone, Copy)]
 enum Who {
     Router,
@@ -72,7 +74,9 @@ async fn named(fx: &Fixture, who: Who) -> Connection {
 }
 
 async fn fixture(
-    script: Vec<Result<inference_core::CuaStepReply, computer_use_run::CuaModelError>>,
+    script: Vec<
+        Result<inference_core::ComputerUseStepReply, computer_use_run::ComputerUseModelError>,
+    >,
 ) -> Fixture {
     fixture_in(world(BackendKind::KwinStock, script, FakePdp::allow_all())).await
 }
@@ -90,7 +94,7 @@ async fn fixture_in(world: computer_use_fake::World) -> Fixture {
     ));
     let serving = serve_on_with(&daemon, Arc::clone(&supervisor), Arc::clone(&who))
         .await
-        .expect("cuad serves");
+        .expect("computer_use_daemon serves");
     Fixture {
         _dir: dir,
         bus,
@@ -101,12 +105,12 @@ async fn fixture_in(world: computer_use_fake::World) -> Fixture {
     }
 }
 
-fn start_body(task: CuaTask) -> String {
-    serde_json::to_string(&CuaEnvelope::current(task)).unwrap()
+fn start_body(task: ComputerUseTask) -> String {
+    serde_json::to_string(&ComputerUseEnvelope::current(task)).unwrap()
 }
 
-fn ask() -> CuaAction<computer_use_action::WindowSpace> {
-    CuaAction::Ask {
+fn ask() -> ComputerUseAction<computer_use_action::WindowSpace> {
+    ComputerUseAction::Ask {
         question: Summary::new("Which account?").unwrap(),
         choices: vec![],
     }
@@ -114,7 +118,7 @@ fn ask() -> CuaAction<computer_use_action::WindowSpace> {
 
 async fn manager(connection: &Connection) -> ManagerProxy<'_> {
     ManagerProxy::builder(connection)
-        .destination(CUA_BUS)
+        .destination(COMPUTER_USE_BUS)
         .unwrap()
         .build()
         .await
@@ -179,7 +183,8 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
         .expect("a signal");
     let args = signal.args().unwrap();
     assert_eq!(args.question, 1);
-    let body: CuaEnvelope<computer_use_bus::AskBody> = serde_json::from_str(args.ask).unwrap();
+    let body: ComputerUseEnvelope<computer_use_bus::AskBody> =
+        serde_json::from_str(args.ask).unwrap();
     assert_eq!(body.body.question.value, "Which account?");
     assert_eq!(
         body.body.question.label.integrity,
@@ -193,11 +198,11 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
     assert_eq!(run_s.step().await.unwrap(), 1);
     assert_eq!(run_s.goal().await.unwrap(), "sign in");
     assert_eq!(run_s.mode().await.unwrap(), "in_place");
-    let window: CuaEnvelope<WindowBody> =
+    let window: ComputerUseEnvelope<WindowBody> =
         serde_json::from_str(&run_s.window().await.unwrap()).unwrap();
     assert_eq!(window.body.app.as_str(), "org.mozilla.firefox");
     assert_eq!(window.body.title.0, "Sign in");
-    let budget: CuaEnvelope<BudgetBody> =
+    let budget: ComputerUseEnvelope<BudgetBody> =
         serde_json::from_str(&run_s.budget().await.unwrap()).unwrap();
     assert_eq!(budget.body.limits, computer_use_bus::RunBudget::PROPOSED);
 
@@ -235,8 +240,9 @@ async fn the_planner_starts_a_run_the_shell_answers_it_and_the_end_is_told_on_th
         .await
         .expect("the run ends")
         .expect("a signal");
-    let end: CuaEnvelope<RunEnd> = serde_json::from_str(signal.args().unwrap().end).unwrap();
-    assert_eq!(end.body.outcome, CuaOutcome::Done);
+    let end: ComputerUseEnvelope<RunEnd> =
+        serde_json::from_str(signal.args().unwrap().end).unwrap();
+    assert_eq!(end.body.outcome, ComputerUseOutcome::Done);
     assert!(matches!(
         end.body.report,
         computer_use_bus::ReportDelivery::Sent(_)
@@ -329,10 +335,11 @@ async fn start_and_stop_are_refused_to_the_wrong_callers_with_their_error_names(
         .await
         .expect("it ends")
         .expect("a signal");
-    let end: CuaEnvelope<RunEnd> = serde_json::from_str(signal.args().unwrap().end).unwrap();
+    let end: ComputerUseEnvelope<RunEnd> =
+        serde_json::from_str(signal.args().unwrap().end).unwrap();
     assert_eq!(
         end.body.outcome,
-        CuaOutcome::Cancelled(computer_use_bus::CancelledBy::KillSwitch)
+        ComputerUseOutcome::Cancelled(computer_use_bus::CancelledBy::KillSwitch)
     );
 }
 
@@ -524,7 +531,7 @@ async fn what_the_model_proposes_and_the_screen_asks_reaches_the_shell_and_no_on
         "the proposed action is the shell's"
     );
     fx.supervisor
-        .stop_all(computer_use_bus::CuaCaller::Shell)
+        .stop_all(computer_use_bus::ComputerUseCaller::Shell)
         .unwrap();
 }
 
@@ -591,7 +598,7 @@ async fn a_program_that_took_the_shells_name_is_not_the_shell() {
         "org.bardo.ComputerUse1.Error.NotPermitted"
     );
     fx.supervisor
-        .stop_all(computer_use_bus::CuaCaller::Shell)
+        .stop_all(computer_use_bus::ComputerUseCaller::Shell)
         .unwrap();
 }
 
@@ -774,7 +781,7 @@ async fn no_app_and_no_focus_gives_the_choices_even_when_the_shell_has_it() {
     );
     // An open app the person has not listed is no choice: it would only be refused next.
     fx.supervisor
-        .apply_settings(&computer_use_daemon::CuaSettings {
+        .apply_settings(&computer_use_daemon::ComputerUseSettings {
             config: fx.supervisor.settings(),
             apps: computer_use_daemon::Apps::Listed(vec![computer_use_daemon::AppRule {
                 app: provenance::AppName::parse("app.zen_browser.zen").expect("an app"),

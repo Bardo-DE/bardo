@@ -74,7 +74,7 @@ impl<C: WindowCapture> WindowCapture for Option<C> {
 
 /// One open capture of one window.
 pub trait CaptureSession: Send {
-    /// A masked frame. `hints` are the regions cuad wants masked; on the fork they go to the
+    /// A masked frame. `hints` are the regions the computer-use daemon wants masked; on the fork they go to the
     /// compositor, on stock `apply_masks` runs here (`MaskReport::applied_by` says which).
     fn frame(
         &mut self,

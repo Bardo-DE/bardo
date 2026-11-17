@@ -1,4 +1,4 @@
-# cua eval: kimi-k3-grid1000
+# Computer-use eval: kimi-k3-grid1000
 
 Played by: kimi-k3 through inferd on a private bus (Need::Llm with images on class screen, tier Balanced, the key held by accountd), thinking Off, sampling from the entry, 1 run(s) per task; 73 model turns, 146617 prompt and 16313 reply tokens, $0.3676 at the list price, inferd's ledger $0.3677; ran to the end; isolation: 9 environment variables, 0 with a credential-looking name, 0 key file(s) open: clean.
 28 runs over 31 tasks. Bounds are 95% Wilson intervals; a rate over few runs has a wide one.

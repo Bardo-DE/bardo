@@ -9,7 +9,7 @@ use super::observe::visibility_of;
 use crate::machine::input::Moved;
 use crate::observation::{Focus, Visibility};
 use account_core::AppName;
-use computer_use_action::{Coord, CuaAction, Size, WindowSpace};
+use computer_use_action::{ComputerUseAction, Coord, Size, WindowSpace};
 use computer_use_desktop::{
     GlobalRect, Pid, SeatIsolation, ToplevelIdent, ToplevelInfo, ToplevelState,
 };
@@ -102,21 +102,21 @@ pub(super) enum Takes {
 }
 
 /// What `action` sends. A click with modifiers holds keys down, and keys go to the focused
-/// window. `CuaAction` is non-exhaustive: an action this does not name yet is taken as keys, the
+/// window. `ComputerUseAction` is non-exhaustive: an action this does not name yet is taken as keys, the
 /// stricter check, until it is decided here.
-pub(super) fn takes(action: &CuaAction<WindowSpace>) -> Takes {
+pub(super) fn takes(action: &ComputerUseAction<WindowSpace>) -> Takes {
     match action {
-        CuaAction::Type { .. } | CuaAction::Key { .. } => Takes::Keys,
-        CuaAction::Click { mods, .. } if !mods.is_empty() => Takes::Keys,
-        CuaAction::Click { .. }
-        | CuaAction::MoveTo { .. }
-        | CuaAction::Drag { .. }
-        | CuaAction::Scroll { .. }
-        | CuaAction::Wait { .. }
-        | CuaAction::Zoom { .. }
-        | CuaAction::Observe
-        | CuaAction::Finish { .. }
-        | CuaAction::Ask { .. } => Takes::Pointer,
+        ComputerUseAction::Type { .. } | ComputerUseAction::Key { .. } => Takes::Keys,
+        ComputerUseAction::Click { mods, .. } if !mods.is_empty() => Takes::Keys,
+        ComputerUseAction::Click { .. }
+        | ComputerUseAction::MoveTo { .. }
+        | ComputerUseAction::Drag { .. }
+        | ComputerUseAction::Scroll { .. }
+        | ComputerUseAction::Wait { .. }
+        | ComputerUseAction::Zoom { .. }
+        | ComputerUseAction::Observe
+        | ComputerUseAction::Finish { .. }
+        | ComputerUseAction::Ask { .. } => Takes::Pointer,
     }
 }
 
@@ -203,7 +203,7 @@ mod tests {
     #[test]
     fn keys_and_a_click_with_modifiers_take_the_keyboard() {
         use computer_use_action::{Button, ClickCount, Modifier, Point, Target};
-        let click = |mods: &[Modifier]| CuaAction::Click {
+        let click = |mods: &[Modifier]| ComputerUseAction::Click {
             at: Target::Point(Point::new(Coord(1), Coord(1))),
             button: Button::Left,
             count: ClickCount::One,
@@ -212,7 +212,7 @@ mod tests {
         let table = [
             ("a plain click", click(&[]), Takes::Pointer),
             ("a click with Ctrl", click(&[Modifier::Ctrl]), Takes::Keys),
-            ("a look", CuaAction::Observe, Takes::Pointer),
+            ("a look", ComputerUseAction::Observe, Takes::Pointer),
         ];
         for (name, action, want) in table {
             assert_eq!(takes(&action), want, "{name}");

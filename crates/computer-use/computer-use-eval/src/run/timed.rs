@@ -42,17 +42,17 @@ impl<M> Timed<M> {
     }
 }
 
-impl<M: CuaModel> CuaModel for Timed<M> {
-    async fn begin(&mut self, begin: CuaBegin) -> Result<(), CuaModelError> {
+impl<M: ComputerUseModel> ComputerUseModel for Timed<M> {
+    async fn begin(&mut self, begin: ComputerUseBegin) -> Result<(), ComputerUseModelError> {
         self.inner.begin(begin).await
     }
 
     async fn step(
         &mut self,
-        mut request: CuaStepRequest,
+        mut request: ComputerUseStepRequest,
         frame: FrameAttachment,
         sink: &mut impl StepSink,
-    ) -> Result<CuaStepReply, CuaModelError> {
+    ) -> Result<ComputerUseStepReply, ComputerUseModelError> {
         // The eval's models read pixels only: the tree is for the run's own rules.
         request.tree = None;
         let began = Instant::now();
@@ -122,10 +122,10 @@ fn brief(thought: Option<&str>) -> String {
 }
 
 /// What a reply says in its `Finish` actions: the summary and the values it extracted.
-fn finish_words(actions: &[CuaAction<WindowSpace>]) -> String {
+fn finish_words(actions: &[ComputerUseAction<WindowSpace>]) -> String {
     let mut words = String::new();
     for action in actions {
-        if let CuaAction::Finish {
+        if let ComputerUseAction::Finish {
             summary, extracted, ..
         } = action
         {

@@ -23,7 +23,7 @@ fn checked_in_introspection_matches_the_interfaces() {
 #[test]
 fn speech_and_computer_use_are_fd_only() {
     let xml = inference::INFERENCE.introspection();
-    for word in ["Transcribe", "Speak", "Audio", "Cua", "Listen"] {
+    for word in ["Transcribe", "Speak", "Audio", "ComputerUse", "Listen"] {
         assert!(
             !xml.contains(word),
             "{word} must travel on the Open fd, not as a member"

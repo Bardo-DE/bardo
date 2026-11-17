@@ -2,7 +2,9 @@
 
 use std::collections::VecDeque;
 
-use computer_use_action::{ActionProfile, CoordSpace, CuaAction, CuaDialect, HistoryShape, Target};
+use computer_use_action::{
+    ActionProfile, ComputerUseAction, ComputerUseDialect, CoordSpace, HistoryShape, Target,
+};
 use computer_use_parse::InSpace;
 use model_provider::{ImageInput, Message, Part, Role, ToolCall, ToolResult};
 
@@ -72,13 +74,17 @@ pub(crate) fn cut(reply: &str) -> String {
 
 /// Whether the earlier steps are replayed as the model's own turns: a tool dialect whose profile
 /// says so. The text dialect always alternates, and a vendor wire keeps real messages.
-pub(crate) fn replays_own(dialect: CuaDialect, actions: ActionProfile) -> bool {
+pub(crate) fn replays_own(dialect: ComputerUseDialect, actions: ActionProfile) -> bool {
     crate::dialect::spec(dialect).is_tool() && actions.history == HistoryShape::OwnReplies
 }
 
 /// The reply text a turn keeps. A model whose own replies are replayed keeps them from the start
 /// of its reasoning (what comes before an opening `<think>` is dropped) and longer.
-pub(crate) fn kept_reply(dialect: CuaDialect, actions: ActionProfile, reply: &str) -> String {
+pub(crate) fn kept_reply(
+    dialect: ComputerUseDialect,
+    actions: ActionProfile,
+    reply: &str,
+) -> String {
     if !replays_own(dialect, actions) {
         return cut(reply);
     }
@@ -135,14 +141,14 @@ pub(crate) fn phrases(actions: &InSpace) -> Vec<String> {
     }
 }
 
-fn phrase<S: CoordSpace>(action: &CuaAction<S>) -> String {
+fn phrase<S: CoordSpace>(action: &ComputerUseAction<S>) -> String {
     let at = |target: &Target<S>| match target {
         Target::Point(p) => format!("({}, {})", p.x.0, p.y.0),
         Target::Node(_) => "an element".to_owned(),
         Target::Centre => "the centre".to_owned(),
     };
     match action {
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: target,
             button,
             count,
@@ -153,11 +159,13 @@ fn phrase<S: CoordSpace>(action: &CuaAction<S>) -> String {
             count_of(*count),
             at(target)
         ),
-        CuaAction::MoveTo { at: target } => format!("move the pointer to {}", at(target)),
-        CuaAction::Drag { from, to, .. } => format!("drag from {} to {}", at(from), at(to)),
-        CuaAction::Type { text } => format!("typed {} characters", text.as_str().chars().count()),
-        CuaAction::Key { .. } => "pressed a key combination".to_owned(),
-        CuaAction::Scroll {
+        ComputerUseAction::MoveTo { at: target } => format!("move the pointer to {}", at(target)),
+        ComputerUseAction::Drag { from, to, .. } => format!("drag from {} to {}", at(from), at(to)),
+        ComputerUseAction::Type { text } => {
+            format!("typed {} characters", text.as_str().chars().count())
+        }
+        ComputerUseAction::Key { .. } => "pressed a key combination".to_owned(),
+        ComputerUseAction::Scroll {
             at: target, dir, ..
         } => {
             format!(
@@ -166,11 +174,11 @@ fn phrase<S: CoordSpace>(action: &CuaAction<S>) -> String {
                 at(target)
             )
         }
-        CuaAction::Wait { for_ms } => format!("wait {} ms", for_ms.ms()),
-        CuaAction::Zoom { .. } => "zoom".to_owned(),
-        CuaAction::Observe => "look at the screen again".to_owned(),
-        CuaAction::Finish { .. } => "finish".to_owned(),
-        CuaAction::Ask { .. } => "ask the person".to_owned(),
+        ComputerUseAction::Wait { for_ms } => format!("wait {} ms", for_ms.ms()),
+        ComputerUseAction::Zoom { .. } => "zoom".to_owned(),
+        ComputerUseAction::Observe => "look at the screen again".to_owned(),
+        ComputerUseAction::Finish { .. } => "finish".to_owned(),
+        ComputerUseAction::Ask { .. } => "ask the person".to_owned(),
     }
 }
 

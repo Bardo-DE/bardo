@@ -324,7 +324,7 @@ async fn only_an_app_or_an_accounts_service_daemon_asks_about_grants_and_a_stran
         CallerRole::Settings,
         CallerRole::SheetHost,
         CallerRole::Agent,
-        CallerRole::Cua,
+        CallerRole::ComputerUse,
         CallerRole::AgentLauncher,
         CallerRole::AiBroker,
         CallerRole::Terminal,

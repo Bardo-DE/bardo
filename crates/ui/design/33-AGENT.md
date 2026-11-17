@@ -22,7 +22,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | actions | `agent/actions.md`, `agent/actions-addendum.md` (the addendum wins) | typed actions, the router, policy, review, the planner and reader contract, auto mode, task policy |
 | gating research | `agent/research-action-gating.md` | the research behind the policy grid and the breaker |
 | memory | `agent/memory.md` | event log, memory files, recall, sealing, the memory daemon |
-| computer use | `agent/cua.md` | accessibility tree, agent seat, masked capture, leases, the run machine |
+| computer use | `agent/computer_use.md` | accessibility tree, agent seat, masked capture, leases, the run machine |
 | ux | `agent/ux.md` | The UI kit components, the shell surfaces, the summon and double-tap machines |
 | consolidation | `agent/SPEC.md` | names, one home per type, frozen interfaces, flows, the freeze plan |
 
@@ -34,14 +34,14 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | The accounts service | the account and capability layer, plus `prov` (labels and the shared who and what vocabulary), `SpaceId`, streaming inference, inferd | yes |
 | The memory service (new) | memory: event log, memory files, recall, the memory daemon | yes (daemon Linux) |
 | The actions service (new) | typed actions, router, policy, review, the MCP edge, and the companion agent (loop, daemon, reader), plus the adapter Bardo apps use | core yes; daemons Linux |
-| cua (new) | computer use: accessibility tree, agent seat, masked capture, leases, run machine, the daemon, the compositor protocol | core yes; daemon Linux |
+| Computer use (new) | computer use: accessibility tree, agent seat, masked capture, leases, run machine, the daemon, the compositor protocol | core yes; daemon Linux |
 | The compositor (new, GPL) | the compositor's agent seat, masked source, trusted surface, glow, kill chord | no |
 | Bardo | `ui-intents`, the companion components and vocabulary, design docs | yes |
 | The shell | launcher companion mode, the companion service, providers, overlays, settings domain | no |
 | The Settings app | the Intelligence page row and icon | no |
 
 Direction, acyclic and enforced per repo by each `check-boundary.sh`: the model layer, then the accounts service, then
-The memory service, then the actions service, then cua, then the shell. Bardo depends on none of them; the actions service's adapter depends
+The memory service, then the actions service, then computer use, then the shell. Bardo depends on none of them; the actions service's adapter depends
 on the UI kit's `ui-intents`.
 
 ## 4. Where the shared types live
@@ -56,7 +56,7 @@ The spec's section 2 holds the whole table; the ones the UI kit's part touches:
   `ConfirmAnswer`), `TaintLine` (was `TaintNote`) and `GestureMark` are the card's own view.
 - Glow: the protocol values are the compositor's; the UI kit's `GlowLook` (was `GlowState`) feeds
   `glow_spec`.
-- Settings: `agent.undo.keep_h`, `cua.autopause` and `cua.default_mode` replace the three
+- Settings: `agent.undo.keep_h`, `computer_use.autopause` and `computer_use.default_mode` replace the three
   duplicate `companion.*` keys (`22-SETTINGS.md` sections 3.26 to 3.30).
 
 ## 5. Daemons and buses
@@ -68,7 +68,7 @@ The spec's section 2 holds the whole table; the ones the UI kit's part touches:
 | companiond | the actions service | `org.bardo.Companion1`: prepare, open, ask, close, and an answer object per task | intentd, inferd |
 | readerd | the actions service | `org.bardo.Reader1`: the quarantined reader, a separate process | intentd, inferd |
 | memoryd | the memory service | `org.bardo.Memory1`: record, recall, control | inferd |
-| cuad | cua | `org.bardo.ComputerUse1`, and a provider as `org.bardo.ComputerUse` | intentd's gate, inferd, memory, the compositor |
+| The computer-use daemon | computer use | `org.bardo.ComputerUse1`, and a provider as `org.bardo.ComputerUse` | intentd's gate, inferd, memory, the compositor |
 | The shell's daemon | the shell | `org.bardo.Confirm1` and a provider as `org.bardo.Shell` | all of the above as a client |
 
 Caller identity is always derived from the connection, never sent. Every interface we own is
@@ -102,7 +102,7 @@ Caller identity is always derived from the connection, never sent. Every interfa
 
 `ui-core::vocab` (the companion vocabulary), `ui-intents`, `ds::components::companion`, the
 `ui-shell` confirmation card and glow values, the orb duration tokens, `Page::Intelligence`, the
-`22-SETTINGS.md` rows for every `ai`, `agent`, `memory`, `cua` and `companion` key, and this
+`22-SETTINGS.md` rows for every `ai`, `agent`, `memory`, `computer_use` and `companion` key, and this
 documentation. Every behaviour behind a frozen signature is `todo!()`, listed in `FINDINGS.md`.
 The UI kit does not own `31-ACCOUNTS.md` (the accounts service's agent edits it), the `TextField` and `CommandPalette`
 prompt props (Bardo fill), or anything in the other repos.
@@ -110,6 +110,6 @@ prompt props (Bardo fill), or anything in the other repos.
 ## 9. The freeze plan
 
 The spec's section 6 orders the agents (dependency list, the model layer, Bardo, the accounts service, the memory service and the actions service,
-cua and the compositor fork, the shell and the Settings app), the spikes that block fills, and the fill waves.
+Computer use and the compositor fork, the shell and the Settings app), the spikes that block fills, and the fill waves.
 Every repo's gate is format, clippy with warnings denied, tests, the boundary script and the
 licence check, and the UI kit's adds the consumer check; each exit code is checked and nothing is piped.

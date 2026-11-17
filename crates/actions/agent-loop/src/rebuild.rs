@@ -21,7 +21,7 @@ pub enum ReplayWhat {
     Message(Box<Message>),
     /// A task or side episode.
     Episode(Box<Episode>),
-    /// A computer-use run's state, mapped from `Area{Cua}` by the caller.
+    /// A computer-use run's state, mapped from `Area{ComputerUse}` by the caller.
     Run {
         /// The run.
         run: RunId,
@@ -188,7 +188,12 @@ pub fn rebuild(events: &[ReplayEvent]) -> Rebuilt {
                 }
             }
             ReplayWhat::Run { run, space, state } => {
-                entry(&mut out.tasks, &AgentRef::Cua { run: run.clone() }, space).state = *state;
+                entry(
+                    &mut out.tasks,
+                    &AgentRef::ComputerUse { run: run.clone() },
+                    space,
+                )
+                .state = *state;
             }
         }
     }

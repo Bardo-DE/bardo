@@ -2,7 +2,7 @@
 //! `computer-use-vendors`.
 
 use computer_use_action::{
-    ActionProfile, CuaAction, FinishOutcome, ModelSpace, Summary, WireDialect,
+    ActionProfile, ComputerUseAction, FinishOutcome, ModelSpace, Summary, WireDialect,
 };
 use computer_use_parse::{ByteOffset, InSpace, ParseError, ParseLimits, Parsed, ToolContext};
 use computer_use_vendors::WireCodec;
@@ -71,7 +71,7 @@ fn finished_by_talking(text: &str) -> Result<Parsed, ParseError> {
     }
     Ok(Parsed {
         thought: None,
-        actions: InSpace::Image(vec![CuaAction::Finish {
+        actions: InSpace::Image(vec![ComputerUseAction::Finish {
             outcome: FinishOutcome::Done,
             summary,
             extracted: Vec::new(),

@@ -5,17 +5,17 @@
 use crate::support::*;
 use action_core::*;
 use action_fake::ScriptedConfirmer;
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_router::{Flag, Queue, Watch};
 use action_vocab::{CallRequest, CallerRole, Millis, Origin, TargetValue, Value};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, SessionOpen, WireRefusal};
-use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{ComputerUseAction, WindowSpace};
 use computer_use_action::{RunMode, WindowTrust};
 use provenance::{AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, UnixSeconds};
 use std::sync::Arc;
 
-fn cuad() -> CallerId {
-    caller("org.bardo.ComputerUse", CallerRole::Cua)
+fn computer_use_daemon() -> CallerId {
+    caller("org.bardo.ComputerUse", CallerRole::ComputerUse)
 }
 
 fn yes() -> ConfirmAnswer {
@@ -31,15 +31,15 @@ fn yes() -> ConfirmAnswer {
     }
 }
 
-fn step(run: &RunId) -> CuaAsk {
-    CuaAsk {
+fn step(run: &RunId) -> ComputerUseAsk {
+    ComputerUseAsk {
         run: run.clone(),
         step: 1,
         app: mail_app(),
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space("work"),
-        action: CuaAction::<WindowSpace>::Observe,
+        action: ComputerUseAction::<WindowSpace>::Observe,
         node: None,
         effect: Effect::Outbound,
         basis: EffectBasis::DefaultTable,
@@ -54,7 +54,7 @@ fn step(run: &RunId) -> CuaAsk {
 fn open_run(run: &RunId) -> IntentsRequest {
     IntentsRequest::SessionOpen(SessionOpen {
         space: space("work"),
-        agent: AgentRef::Cua { run: run.clone() },
+        agent: AgentRef::ComputerUse { run: run.clone() },
         parent: None,
         cwd: None,
         started_from: None,
@@ -65,15 +65,21 @@ fn open_run(run: &RunId) -> IntentsRequest {
 }
 
 #[tokio::test]
-async fn cuad_opens_the_session_of_its_own_run_and_its_first_step_is_ruled_not_halted() {
+async fn computer_use_daemon_opens_the_session_of_its_own_run_and_its_first_step_is_ruled_not_halted()
+ {
     let router = router();
     let run = RunId::parse("r-1").expect("run");
-    let opened = ask(&router, &cuad(), open_run(&run)).await;
+    let opened = ask(&router, &computer_use_daemon(), open_run(&run)).await;
     assert!(
         matches!(opened, IntentsReply::SessionOpened(_)),
         "{opened:?}"
     );
-    let first = ask(&router, &cuad(), IntentsRequest::GateCheck(step(&run))).await;
+    let first = ask(
+        &router,
+        &computer_use_daemon(),
+        IntentsRequest::GateCheck(step(&run)),
+    )
+    .await;
     assert_eq!(
         first,
         IntentsReply::Gate(GateAnswer::Refused(CallRefusal::Unconfirmed(
@@ -84,13 +90,13 @@ async fn cuad_opens_the_session_of_its_own_run_and_its_first_step_is_ruled_not_h
 }
 
 #[tokio::test]
-async fn cuad_opens_a_run_and_nothing_else_and_a_run_has_one_session() {
+async fn computer_use_daemon_opens_a_run_and_nothing_else_and_a_run_has_one_session() {
     let router = router();
     let run = RunId::parse("r-2").expect("run");
     for agent in [AgentRef::Companion, AgentRef::User] {
         let reply = ask(
             &router,
-            &cuad(),
+            &computer_use_daemon(),
             IntentsRequest::SessionOpen(SessionOpen {
                 space: space("work"),
                 agent,
@@ -106,11 +112,11 @@ async fn cuad_opens_a_run_and_nothing_else_and_a_run_has_one_session() {
         assert_eq!(reply, IntentsReply::Refused(WireRefusal::NotAllowed));
     }
     assert!(matches!(
-        ask(&router, &cuad(), open_run(&run)).await,
+        ask(&router, &computer_use_daemon(), open_run(&run)).await,
         IntentsReply::SessionOpened(_)
     ));
     assert_eq!(
-        ask(&router, &cuad(), open_run(&run)).await,
+        ask(&router, &computer_use_daemon(), open_run(&run)).await,
         IntentsReply::Refused(WireRefusal::Malformed),
         "a second session for the same run"
     );
@@ -122,20 +128,22 @@ async fn cuad_opens_a_run_and_nothing_else_and_a_run_has_one_session() {
 }
 
 #[tokio::test]
-async fn cuad_closes_only_the_sessions_it_opened() {
+async fn computer_use_daemon_closes_only_the_sessions_it_opened() {
     let router = router();
     let run = RunId::parse("r-3").expect("run");
-    let IntentsReply::SessionOpened(mine) = ask(&router, &cuad(), open_run(&run)).await else {
+    let IntentsReply::SessionOpened(mine) =
+        ask(&router, &computer_use_daemon(), open_run(&run)).await
+    else {
         panic!("opened")
     };
     let theirs = open(&router, "work", AgentRef::Companion).await;
     let close = |session| IntentsRequest::SessionClose { session };
     assert_eq!(
-        ask(&router, &cuad(), close(theirs.session)).await,
+        ask(&router, &computer_use_daemon(), close(theirs.session)).await,
         IntentsReply::Refused(WireRefusal::NotAllowed)
     );
     assert_eq!(
-        ask(&router, &cuad(), close(mine.session)).await,
+        ask(&router, &computer_use_daemon(), close(mine.session)).await,
         IntentsReply::Done
     );
 }
@@ -172,7 +180,7 @@ fn watched() -> (Watch, Remote) {
 async fn run_with_session(router: &action_router::Router<action_fake::FakeSeams>) -> RunId {
     let run = RunId::parse("r-4").expect("run");
     assert!(matches!(
-        ask(router, &cuad(), open_run(&run)).await,
+        ask(router, &computer_use_daemon(), open_run(&run)).await,
         IntentsReply::SessionOpened(_)
     ));
     run
@@ -184,7 +192,7 @@ async fn a_watcher_is_told_before_the_sheet_and_the_sheet_waits_for_proceed() {
     let run = run_with_session(&router).await;
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     let (watch, remote) = watched();
-    let caller = cuad();
+    let caller = computer_use_daemon();
     let check = router.handle_watched(&caller, IntentsRequest::GateCheck(step(&run)), watch);
     let remote_side = async {
         let CallProgress::Confirming(id) = remote.progress.next().await else {
@@ -214,7 +222,7 @@ async fn a_request_withdrawn_before_proceed_draws_no_sheet() {
     let run = run_with_session(&router).await;
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     let (watch, remote) = watched();
-    let caller = cuad();
+    let caller = computer_use_daemon();
     let check = router.handle_watched(&caller, IntentsRequest::GateCheck(step(&run)), watch);
     let remote_side = async {
         let _ = remote.progress.next().await;
@@ -235,7 +243,12 @@ async fn nobody_watching_means_no_wait() {
     let mut router = router();
     let run = run_with_session(&router).await;
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
-    let answer = ask(&router, &cuad(), IntentsRequest::GateCheck(step(&run))).await;
+    let answer = ask(
+        &router,
+        &computer_use_daemon(),
+        IntentsRequest::GateCheck(step(&run)),
+    )
+    .await;
     assert_eq!(answer, IntentsReply::Gate(GateAnswer::Run));
 }
 
@@ -346,7 +359,7 @@ async fn a_watcher_that_never_proceeds_is_refused_unasked_after_the_configured_t
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     let run = run_with_session(&router).await;
     let (watch, _remote) = watched();
-    let caller = cuad();
+    let caller = computer_use_daemon();
     let check = router.handle_watched(&caller, IntentsRequest::GateCheck(step(&run)), watch);
     let clock_side = async {
         // The router asks the clock for the Proceed deadline: the configured one.

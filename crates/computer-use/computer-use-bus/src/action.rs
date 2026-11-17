@@ -2,7 +2,7 @@
 
 use crate::ids::WindowRef;
 use action_core::CallRefusal;
-use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{ComputerUseAction, WindowSpace};
 use computer_use_types::SeatError;
 use provenance::Labelled;
 use serde::{Deserialize, Serialize};
@@ -13,10 +13,10 @@ pub struct TargetedAction {
     /// The window, by the run's handle.
     pub window: WindowRef,
     /// The action.
-    pub action: CuaAction<WindowSpace>,
+    pub action: ComputerUseAction<WindowSpace>,
 }
 
-/// What stopped an action before the router saw it: cua's own pre-checks.
+/// What stopped an action before the router saw it: computer use's own pre-checks.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LocalRefusal {
@@ -41,7 +41,7 @@ pub enum LocalRefusal {
 pub enum Refusal {
     /// The router (policy, consent, breaker, budget).
     Gate(CallRefusal),
-    /// cua's own pre-check.
+    /// Computer use's own pre-check.
     Local(LocalRefusal),
 }
 

@@ -137,7 +137,7 @@ pub fn side_step(
 fn side_id(conv: &SideConv) -> String {
     let who = match &conv.with {
         AgentRef::Worker { task } => task.as_str().to_owned(),
-        AgentRef::Cua { run } => run.as_str().to_owned(),
+        AgentRef::ComputerUse { run } => run.as_str().to_owned(),
         AgentRef::Companion => "companion".to_owned(),
         AgentRef::User => "user".to_owned(),
     };

@@ -21,7 +21,7 @@ editor = ["org.bardo.Acp"]
 # calls, each ruled like any agent's.
 acp_agent = ["org.bardo.AcpAgent"]
 reader = ["org.bardo.Reader1"]
-cua = ["org.bardo.ComputerUse1"]
+computer_use = ["org.bardo.ComputerUse1"]
 mcp = ["org.bardo.ActionsMcp"]
 confirm = ["org.bardo.Shell"]
 control = ["org.bardo.Shell"]

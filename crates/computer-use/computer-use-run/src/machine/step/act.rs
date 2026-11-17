@@ -11,10 +11,10 @@ use crate::machine::run::Run;
 use crate::machine::track::SettleWatch;
 use crate::observation::CursorObs;
 use base_ids::Count;
-use computer_use_action::{CuaAction, Point, WindowSpace};
+use computer_use_action::{ComputerUseAction, Point, WindowSpace};
 use computer_use_bus::{
-    ActionOutcome, ActionResult, CuaOutcome, FailReason, LocalRefusal, Refusal, RunBudgetKind,
-    TargetedAction,
+    ActionOutcome, ActionResult, ComputerUseOutcome, FailReason, LocalRefusal, Refusal,
+    RunBudgetKind, TargetedAction,
 };
 use computer_use_capture::{DamageAt, FrameWant, Settle, settle};
 use computer_use_desktop::{Ms, Stamp};
@@ -30,12 +30,12 @@ pub(super) fn act(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, n: StepInde
     let in_minute = u32::try_from(run.track.acted.len()).unwrap_or(u32::MAX);
     run.used.actions_last_minute = Count(in_minute);
     if in_minute >= run.task.budget.actions_per_min.0 {
-        finish_plain(run, fx, CuaOutcome::BudgetOut(RunBudgetKind::Rate));
+        finish_plain(run, fx, ComputerUseOutcome::BudgetOut(RunBudgetKind::Rate));
         return;
     }
     let (Some(head), Some(obs)) = (run.pending.actions.front().cloned(), run.working.clone())
     else {
-        finish_plain(run, fx, CuaOutcome::Failed(FailReason::Input));
+        finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Input));
         return;
     };
     if let Ok(planned) = aim(&obs, &head.action) {
@@ -62,7 +62,7 @@ pub(super) fn injected(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, receip
     run.track.acted.push(at);
     run.track.waited = None;
     let Some(head) = run.pending.actions.pop_front() else {
-        finish_plain(run, fx, CuaOutcome::Failed(FailReason::Input));
+        finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Input));
         return;
     };
     run.track.last_input = Some(head.action.clone());
@@ -101,17 +101,17 @@ pub(super) fn injected(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, receip
 
 /// Where the pointer ends up after an action, as far as the action says.
 pub(super) fn pointer_end(
-    action: &CuaAction<WindowSpace>,
+    action: &ComputerUseAction<WindowSpace>,
     _receipt: &InputReceipt,
 ) -> Option<Point<WindowSpace>> {
     match action {
-        CuaAction::Click { at, .. } | CuaAction::MoveTo { at } | CuaAction::Scroll { at, .. } => {
-            match at {
-                computer_use_action::Target::Point(p) => Some(*p),
-                _ => None,
-            }
-        }
-        CuaAction::Drag {
+        ComputerUseAction::Click { at, .. }
+        | ComputerUseAction::MoveTo { at }
+        | ComputerUseAction::Scroll { at, .. } => match at {
+            computer_use_action::Target::Point(p) => Some(*p),
+            _ => None,
+        },
+        ComputerUseAction::Drag {
             to: computer_use_action::Target::Point(p),
             ..
         } => Some(*p),
@@ -124,11 +124,11 @@ pub(super) fn inject_failed(run: &mut Run, fx: &mut Vec<RunEffect>, error: SeatE
         return;
     };
     if error == SeatError::TargetGone {
-        finish_plain(run, fx, CuaOutcome::Failed(FailReason::WindowGone));
+        finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::WindowGone));
         return;
     }
     let Some(head) = run.pending.actions.pop_front() else {
-        finish_plain(run, fx, CuaOutcome::Failed(FailReason::Input));
+        finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Input));
         return;
     };
     let result = match error {
@@ -148,7 +148,7 @@ pub(super) fn state_moved(run: &mut Run, fx: &mut Vec<RunEffect>) {
         return;
     };
     let Some(head) = run.pending.actions.pop_front() else {
-        finish_plain(run, fx, CuaOutcome::Failed(FailReason::Input));
+        finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Input));
         return;
     };
     let result = ActionResult::Refused(Refusal::Local(LocalRefusal::StateMoved));
@@ -270,12 +270,12 @@ pub(super) fn checked(
     match result {
         crate::machine::input::CheckResult::Pass => {
             let said = match head.map(|h| h.action) {
-                Some(CuaAction::Finish {
+                Some(ComputerUseAction::Finish {
                     summary, extracted, ..
                 }) => Said { summary, extracted },
-                _ => Said::of(CuaOutcome::Done),
+                _ => Said::of(ComputerUseOutcome::Done),
             };
-            finish(run, fx, CuaOutcome::Done, &said);
+            finish(run, fx, ComputerUseOutcome::Done, &said);
         }
         crate::machine::input::CheckResult::Fail => {
             run.pending.actions.clear();

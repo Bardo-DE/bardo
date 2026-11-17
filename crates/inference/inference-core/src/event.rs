@@ -7,7 +7,7 @@ use crate::reply::{InferReply, ServedBy, TurnUsage};
 use crate::request::{InferRequest, ToolCall};
 use crate::speech::{AudioFrame, AudioFrameOut, HeardDelta};
 use base_ids::Count;
-use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{ComputerUseAction, WindowSpace};
 use serde::{Deserialize, Serialize};
 
 /// A frame from the client to inferd. Audio frames follow a `Transcribe` request.
@@ -68,7 +68,7 @@ pub enum InferEvent {
     /// A function call the model made.
     ToolCall(ToolCall),
     /// A computer-use action as parsed, for the acting-here glow preview.
-    ActionProposed(CuaAction<WindowSpace>),
+    ActionProposed(ComputerUseAction<WindowSpace>),
     /// Tokens spent so far.
     Usage(TurnUsage),
     /// What the recogniser has heard.

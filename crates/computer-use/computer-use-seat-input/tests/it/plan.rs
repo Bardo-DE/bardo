@@ -1,8 +1,8 @@
 //! What `plan` produces: structure, not timing (the size of a `Gap` is the fill's to choose).
 
 use computer_use_action::{
-    Button, Chord, ClickCount, Coord, CuaAction, Length, Modifier, NodeId, Notches, Point, Repeat,
-    ScrollBy, ScrollDir, Size, Target, WindowSpace,
+    Button, Chord, ClickCount, ComputerUseAction, Coord, Length, Modifier, NodeId, Notches, Point,
+    Repeat, ScrollBy, ScrollDir, Size, Target, WindowSpace,
 };
 use computer_use_desktop::SeatIsolation;
 use computer_use_seat_input::{
@@ -51,7 +51,7 @@ fn us_keymap() -> Keymap {
 fn click(button: Button, count: ClickCount, mods: &[Modifier]) -> PlannedAction {
     let point = at(10, 20);
     PlannedAction {
-        action: CuaAction::Click {
+        action: ComputerUseAction::Click {
             at: Target::Point(point),
             button,
             count,
@@ -139,7 +139,7 @@ fn plan_click_double_right_mods_table() {
 #[test]
 fn plan_drag_emits_down_moves_up() {
     let drag = PlannedAction {
-        action: CuaAction::Drag {
+        action: ComputerUseAction::Drag {
             from: Target::Point(at(10, 10)),
             to: Target::Point(at(200, 100)),
             button: Button::Left,
@@ -178,7 +178,7 @@ fn plan_rejects_point_outside_window_and_what_is_not_input() {
         Err(PlanError::OutsideWindow(at(900, 10)))
     );
     let observe = PlannedAction {
-        action: CuaAction::Observe,
+        action: ComputerUseAction::Observe,
         at: ResolvedPoints::None,
         window: window(),
     };
@@ -191,7 +191,7 @@ fn plan_rejects_point_outside_window_and_what_is_not_input() {
 #[test]
 fn unmappable_char_errors_named_when_only_the_key_code_path_exists() {
     let typed = PlannedAction {
-        action: CuaAction::Type {
+        action: ComputerUseAction::Type {
             text: computer_use_action::TypedText::new("你").unwrap(),
         },
         at: ResolvedPoints::None,
@@ -214,7 +214,7 @@ fn a_chord_presses_modifiers_then_the_key_and_releases_in_reverse() {
         )
         .unwrap();
         let action = PlannedAction {
-            action: CuaAction::Key {
+            action: ComputerUseAction::Key {
                 chord,
                 repeat: Repeat::ONCE,
             },
@@ -240,7 +240,7 @@ fn a_chord_presses_modifiers_then_the_key_and_releases_in_reverse() {
 }
 
 fn at_target(
-    action: CuaAction<WindowSpace>,
+    action: ComputerUseAction<WindowSpace>,
     given: ResolvedPoints,
     window: Size<WindowSpace>,
 ) -> PlannedAction {
@@ -268,7 +268,7 @@ fn the_centre_target_is_the_centre_of_the_window_it_is_planned_for() {
     ];
     let scroll = |window| {
         at_target(
-            CuaAction::Scroll {
+            ComputerUseAction::Scroll {
                 at: Target::Centre,
                 dir: ScrollDir::Down,
                 by: ScrollBy::Notches(Notches(3)),
@@ -298,7 +298,7 @@ fn the_centre_target_is_the_centre_of_the_window_it_is_planned_for() {
     }
     // The same for the other pointer actions, and the caller's `at` never overrides a centre.
     let click = at_target(
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: Target::Centre,
             button: Button::Left,
             count: ClickCount::One,
@@ -312,7 +312,7 @@ fn the_centre_target_is_the_centre_of_the_window_it_is_planned_for() {
         InputOp::MoveTo(at(400, 300))
     );
     let hover = at_target(
-        CuaAction::MoveTo { at: Target::Centre },
+        ComputerUseAction::MoveTo { at: Target::Centre },
         ResolvedPoints::None,
         window(),
     );
@@ -321,7 +321,7 @@ fn the_centre_target_is_the_centre_of_the_window_it_is_planned_for() {
         Ok(vec![InputOp::MoveTo(at(400, 300))])
     );
     let drag = at_target(
-        CuaAction::Drag {
+        ComputerUseAction::Drag {
             from: Target::Centre,
             to: Target::Point(at(700, 500)),
             button: Button::Left,
@@ -341,7 +341,7 @@ fn the_centre_target_is_the_centre_of_the_window_it_is_planned_for() {
 fn nodes_come_from_the_caller_and_every_point_is_checked_against_the_window() {
     let click_at = |target, given| {
         at_target(
-            CuaAction::Click {
+            ComputerUseAction::Click {
                 at: target,
                 button: Button::Left,
                 count: ClickCount::One,
@@ -383,7 +383,7 @@ fn nodes_come_from_the_caller_and_every_point_is_checked_against_the_window() {
 fn a_scroll_by_distance_is_whole_notches_of_at_least_one() {
     let by = |px: u32| {
         let action = at_target(
-            CuaAction::Scroll {
+            ComputerUseAction::Scroll {
                 at: Target::Centre,
                 dir: ScrollDir::Up,
                 by: ScrollBy::Distance(Length::new(Coord(px))),
@@ -412,7 +412,7 @@ fn a_scroll_by_distance_is_whole_notches_of_at_least_one() {
 #[test]
 fn typing_goes_by_the_seats_text_path() {
     let typed = |text: &str| PlannedAction {
-        action: CuaAction::Type {
+        action: ComputerUseAction::Type {
             text: computer_use_action::TypedText::new(text).unwrap(),
         },
         at: ResolvedPoints::None,
@@ -468,10 +468,10 @@ fn typing_goes_by_the_seats_text_path() {
 #[test]
 fn what_is_not_input_and_unknown_keys_are_named() {
     for action in [
-        CuaAction::Wait {
+        ComputerUseAction::Wait {
             for_ms: computer_use_action::WaitMs::new(10).unwrap(),
         },
-        CuaAction::Observe,
+        ComputerUseAction::Observe,
     ] {
         let planned = at_target(action, ResolvedPoints::None, window());
         assert_eq!(
@@ -480,7 +480,7 @@ fn what_is_not_input_and_unknown_keys_are_named() {
         );
     }
     let hyper = at_target(
-        CuaAction::Key {
+        ComputerUseAction::Key {
             chord: Chord::new(BTreeSet::new(), keyboard_types::Key::Hyper).unwrap(),
             repeat: Repeat::ONCE,
         },

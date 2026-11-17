@@ -40,7 +40,7 @@ fn link_label(link: &Link, space: &SpaceId, entries: &[Entry], stored: &[Stored]
             integrity: Integrity::Untrusted,
             confidentiality: Confidentiality::Private(BTreeSet::from([space.clone()])),
             classes: BTreeSet::new(),
-            sources: BTreeSet::from([Source::Model(ModelRole::Cua)]),
+            sources: BTreeSet::from([Source::Model(ModelRole::ComputerUse)]),
         }),
     }
 }

@@ -1,8 +1,8 @@
 //! Who may ask what: the authorisation matrix as a pure function.
 //!
-//! | Request | App | Router | Cuad | `ShellUi` | Settings |
+//! | Request | App | Router | the computer-use daemon | `ShellUi` | Settings |
 //! |---|---|---|---|---|---|
-//! | Record, `RecordBatch` | own things; actor `User{via: self}` or `App{self}` | any actor, never `Memory` bodies | `Area(Cua)` bodies with a `Cua` run actor; `Message` bodies sent by that same run | no | no |
+//! | Record, `RecordBatch` | own things; actor `User{via: self}` or `App{self}` | any actor, never `Memory` bodies | `Area(ComputerUse)` bodies with a `ComputerUse` run actor; `Message` bodies sent by that same run | no | no |
 //! | `ExplainFile`, Mark | own | yes | no | yes | no |
 //! | Search, Facts, Related, Provenance, Primer, Inject, Recent, Entries, Spaces | no | yes (audited as `Memory.Read`) | no | yes | no |
 //! | Propose, `PlanForget` | no | yes | no | yes | no |
@@ -74,18 +74,18 @@ fn app_may_record(app: &AppName, record: &Record) -> bool {
     clippy::match_same_arms,
     reason = "the kinds a run may not record are listed, so a new kind is a decision; the last arm refuses any kind this build does not know"
 )]
-fn cuad_may_record(record: &Record) -> bool {
+fn computer_use_daemon_may_record(record: &Record) -> bool {
     let Actor::Companion {
-        role: AgentRole::Cua { run },
+        role: AgentRole::ComputerUse { run },
         ..
     } = &record.actor
     else {
         return false;
     };
     match &record.body {
-        EventBody::Area(p) => p.area == AreaTag::Cua,
+        EventBody::Area(p) => p.area == AreaTag::ComputerUse,
         // A run's own report, as itself.
-        EventBody::Message(m) => m.from.agent == AgentRef::Cua { run: run.clone() },
+        EventBody::Message(m) => m.from.agent == AgentRef::ComputerUse { run: run.clone() },
         EventBody::Thing { .. }
         | EventBody::File { .. }
         | EventBody::Search { .. }
@@ -103,7 +103,7 @@ fn router_may_record(record: &Record) -> bool {
 fn may_record(caller: &Caller, record: &Record) -> bool {
     match caller.role() {
         CallerRole::Agent => router_may_record(record),
-        CallerRole::Cua => cuad_may_record(record),
+        CallerRole::ComputerUse => computer_use_daemon_may_record(record),
         CallerRole::SheetHost | CallerRole::Settings => false,
         _ => app_may_record(&caller.app_id().name, record),
     }
@@ -147,12 +147,12 @@ fn by_class(caller: &Caller, request: &MemoryRequest) -> Result<(), Refusal> {
         R::RecordBatch(records) => yes_if(records.iter().all(|r| may_record(caller, r))),
         R::ExplainFile(claim) => match caller.role() {
             CallerRole::Agent | CallerRole::SheetHost => Ok(()),
-            CallerRole::Cua | CallerRole::Settings => NO,
+            CallerRole::ComputerUse | CallerRole::Settings => NO,
             _ => yes_if(app_may_explain(&caller.app_id().name, claim)),
         },
         R::Mark(mark) => match caller.role() {
             CallerRole::Agent | CallerRole::SheetHost => Ok(()),
-            CallerRole::Cua | CallerRole::Settings => NO,
+            CallerRole::ComputerUse | CallerRole::Settings => NO,
             _ => yes_if(mark.thing.app == caller.app_id().name),
         },
         R::Propose(_, draft) => match &draft.on_behalf {
@@ -211,13 +211,14 @@ fn spaces_of(request: &MemoryRequest) -> Vec<&SpaceId> {
 
 /// An app reaches only Spaces open to it: its own App Spaces, the desktop and the desktop-wide
 /// Spaces (the accounts service's `SpaceScope::open_to`). The name is the caller's, never read from the id.
-/// Router, cuad, the shell and the Settings app are not apps and act across Spaces (the Settings
+/// Router, the computer-use daemon, the shell and the Settings app are not apps and act across Spaces (the Settings
 /// app's two members name none, and every other request of it is refused by class).
 fn space_is_open(caller: &Caller, request: &MemoryRequest) -> Result<(), Refusal> {
     match caller.role() {
-        CallerRole::Agent | CallerRole::Cua | CallerRole::SheetHost | CallerRole::Settings => {
-            Ok(())
-        }
+        CallerRole::Agent
+        | CallerRole::ComputerUse
+        | CallerRole::SheetHost
+        | CallerRole::Settings => Ok(()),
         _ => {
             let name = &caller.app_id().name;
             let open = spaces_of(request)

@@ -16,11 +16,11 @@
 //! speech turn (a speech engine is not an OpenAI-compatible one).
 
 use crate::bridge::{self, Frames};
-use crate::computer_use_run::{CuaRun, StepJob};
+use crate::computer_use_run::{ComputerUseRun, StepJob};
 use engine_supervisor::EngineId;
 use inference_core::{
-    ChatReply, ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, InferEvent, InferRefusal,
-    InferReply, ModelError, ServedBy,
+    ChatReply, ChatSink, ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply,
+    InferEvent, InferRefusal, InferReply, ModelError, ServedBy,
 };
 use inference_router::local::LocalModel;
 use inference_router::seams::TurnStep;
@@ -205,7 +205,7 @@ fn refused(refusal: InferRefusal) -> InferReply {
 pub struct LocalTurns<U> {
     engines: U,
     steps: mpsc::UnboundedSender<TurnStep>,
-    run: Arc<Mutex<Option<CuaRun>>>,
+    run: Arc<Mutex<Option<ComputerUseRun>>>,
 }
 
 impl<U: EngineUse> LocalTurns<U> {
@@ -214,7 +214,7 @@ impl<U: EngineUse> LocalTurns<U> {
     pub fn new(
         engines: U,
         steps: mpsc::UnboundedSender<TurnStep>,
-        run: Arc<Mutex<Option<CuaRun>>>,
+        run: Arc<Mutex<Option<ComputerUseRun>>>,
     ) -> Self {
         Self {
             engines,
@@ -233,18 +233,19 @@ impl<U: EngineUse> LocalTurns<U> {
         &self.steps
     }
 
-    /// A `CuaBegin`: the session's run starts afresh with this goal; the reply is an empty step.
-    pub fn begin_cua(&self, begin: CuaBegin) -> InferReply {
-        *self.run.lock().unwrap_or_else(PoisonError::into_inner) = Some(CuaRun::begin(begin));
-        InferReply::CuaStep(CuaStepReply::new(Vec::new()))
+    /// A `ComputerUseBegin`: the session's run starts afresh with this goal; the reply is an empty step.
+    pub fn begin_computer_use(&self, begin: ComputerUseBegin) -> InferReply {
+        *self.run.lock().unwrap_or_else(PoisonError::into_inner) =
+            Some(ComputerUseRun::begin(begin));
+        InferReply::ComputerUseStep(ComputerUseStepReply::new(Vec::new()))
     }
 
     /// One computer-use step of the session's run on `model`; refused `Unsupported` when no run
     /// has begun or the model has no chat wire.
-    pub async fn cua(
+    pub async fn computer_use(
         &self,
         model: &LocalModel,
-        request: &inference_core::CuaStepRequest,
+        request: &inference_core::ComputerUseStepRequest,
         frames: &Frames,
         ceiling: base_ids::Tokens,
     ) -> InferReply {
@@ -269,10 +270,10 @@ impl<U: EngineUse> LocalTurns<U> {
         match run.step(job, &mut sink).await {
             Ok(reply) => {
                 *self.run.lock().unwrap_or_else(PoisonError::into_inner) = Some(run);
-                InferReply::CuaStep(reply)
+                InferReply::ComputerUseStep(reply)
             }
-            Err(CuaStepFailure::Unparseable) => InferReply::Failed(ModelError::Unparseable),
-            Err(CuaStepFailure::ModelFailed(error)) => InferReply::Failed(error),
+            Err(ComputerUseStepFailure::Unparseable) => InferReply::Failed(ModelError::Unparseable),
+            Err(ComputerUseStepFailure::ModelFailed(error)) => InferReply::Failed(error),
         }
     }
 }

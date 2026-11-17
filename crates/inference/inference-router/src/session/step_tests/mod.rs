@@ -2,7 +2,7 @@
 //! for any input.
 
 mod helpers;
-mod rows_cua;
+mod rows_computer_use;
 mod rows_hear;
 mod rows_queue;
 mod rows_route;
@@ -18,7 +18,7 @@ fn rows() -> Vec<Row> {
         rows_route::rows(),
         rows_turn::rows(),
         rows_queue::rows(),
-        rows_cua::rows(),
+        rows_computer_use::rows(),
     ]
     .concat()
 }

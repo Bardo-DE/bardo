@@ -3,10 +3,10 @@
 use std::collections::BTreeSet;
 
 use computer_use_action::{
-    ActionClass, Button, Choice, Chord, ChordError, ClickCount, Coord, CuaAction, Extracted,
-    ExtractedText, FieldName, FinishOutcome, GridSpace, ImageSpace, Length, Modifier, NodeId,
-    Notches, Point, Rect, Repeat, ScrollBy, ScrollDir, Size, Summary, Target, TextError, TypedText,
-    WaitMs, WindowSpace,
+    ActionClass, Button, Choice, Chord, ChordError, ClickCount, ComputerUseAction, Coord,
+    Extracted, ExtractedText, FieldName, FinishOutcome, GridSpace, ImageSpace, Length, Modifier,
+    NodeId, Notches, Point, Rect, Repeat, ScrollBy, ScrollDir, Size, Summary, Target, TextError,
+    TypedText, WaitMs, WindowSpace,
 };
 use keyboard_types::Key;
 
@@ -18,51 +18,51 @@ fn at(x: u32, y: u32) -> Target<WindowSpace> {
     Target::Point(p(x, y))
 }
 
-fn every_action() -> Vec<CuaAction<WindowSpace>> {
+fn every_action() -> Vec<ComputerUseAction<WindowSpace>> {
     let chord = Chord::new(BTreeSet::from([Modifier::Ctrl]), Key::Character("a".into())).unwrap();
     vec![
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: at(10, 20),
             button: Button::Left,
             count: ClickCount::Two,
             mods: BTreeSet::from([Modifier::Shift]),
         },
-        CuaAction::MoveTo {
+        ComputerUseAction::MoveTo {
             at: Target::Node(NodeId(7)),
         },
-        CuaAction::Drag {
+        ComputerUseAction::Drag {
             from: at(1, 2),
             to: at(3, 4),
             button: Button::Right,
         },
-        CuaAction::Type {
+        ComputerUseAction::Type {
             text: TypedText::new("hello\nworld").unwrap(),
         },
-        CuaAction::Key {
+        ComputerUseAction::Key {
             chord,
             repeat: Repeat::new(3).unwrap(),
         },
-        CuaAction::Scroll {
+        ComputerUseAction::Scroll {
             at: at(5, 6),
             dir: ScrollDir::Down,
             by: ScrollBy::Distance(Length::new(Coord(120))),
         },
-        CuaAction::Scroll {
+        ComputerUseAction::Scroll {
             at: at(5, 6),
             dir: ScrollDir::Up,
             by: ScrollBy::Notches(Notches(3)),
         },
-        CuaAction::Wait {
+        ComputerUseAction::Wait {
             for_ms: WaitMs::new(500).unwrap(),
         },
-        CuaAction::Zoom {
+        ComputerUseAction::Zoom {
             region: Rect {
                 origin: p(0, 0),
                 size: Size::new(Coord(64), Coord(48)),
             },
         },
-        CuaAction::Observe,
-        CuaAction::Finish {
+        ComputerUseAction::Observe,
+        ComputerUseAction::Finish {
             outcome: FinishOutcome::Done,
             summary: Summary::new("sent").unwrap(),
             extracted: vec![Extracted {
@@ -70,7 +70,7 @@ fn every_action() -> Vec<CuaAction<WindowSpace>> {
                 value: ExtractedText::new("12.50").unwrap(),
             }],
         },
-        CuaAction::Ask {
+        ComputerUseAction::Ask {
             question: Summary::new("Which one?").unwrap(),
             choices: vec![
                 Choice::new("first").unwrap(),
@@ -196,13 +196,13 @@ fn map_points_halves_points_and_lengths_and_passes_nodes() {
     let half_len = |l: Length<WindowSpace>| -> Result<Length<ImageSpace>, ()> {
         Ok(Length::new(Coord(l.coord().0 / 2)))
     };
-    let mapped: Vec<CuaAction<ImageSpace>> = every_action()
+    let mapped: Vec<ComputerUseAction<ImageSpace>> = every_action()
         .into_iter()
         .map(|a| a.map_points(half_point, half_len).unwrap())
         .collect();
     assert_eq!(
         mapped[0],
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: Target::Point(Point::new(Coord(5), Coord(10))),
             button: Button::Left,
             count: ClickCount::Two,
@@ -211,13 +211,13 @@ fn map_points_halves_points_and_lengths_and_passes_nodes() {
     );
     assert_eq!(
         mapped[1],
-        CuaAction::MoveTo {
+        ComputerUseAction::MoveTo {
             at: Target::Node(NodeId(7))
         }
     );
     assert_eq!(
         mapped[5],
-        CuaAction::Scroll {
+        ComputerUseAction::Scroll {
             at: Target::Point(Point::new(Coord(2), Coord(3))),
             dir: ScrollDir::Down,
             by: ScrollBy::Distance(Length::new(Coord(60))),
@@ -225,7 +225,7 @@ fn map_points_halves_points_and_lengths_and_passes_nodes() {
     );
     assert_eq!(
         mapped[8],
-        CuaAction::Zoom {
+        ComputerUseAction::Zoom {
             region: Rect {
                 origin: Point::new(Coord(0), Coord(0)),
                 size: Size::new(Coord(32), Coord(24))
@@ -247,7 +247,7 @@ fn map_points_stops_at_the_first_error() {
 
 #[test]
 fn the_centre_target_maps_unchanged_and_round_trips() {
-    let scroll = CuaAction::<WindowSpace>::Scroll {
+    let scroll = ComputerUseAction::<WindowSpace>::Scroll {
         at: Target::Centre,
         dir: ScrollDir::Up,
         by: ScrollBy::Distance(Length::new(Coord(10))),
@@ -258,7 +258,7 @@ fn the_centre_target_maps_unchanged_and_round_trips() {
         .unwrap();
     assert_eq!(
         mapped,
-        CuaAction::Scroll {
+        ComputerUseAction::Scroll {
             at: Target::Centre,
             dir: ScrollDir::Up,
             by: ScrollBy::Distance(Length::new(Coord(20))),

@@ -3,7 +3,7 @@
 //!
 //! This is the interim backend. The compositor scopes the leased input to one window and its
 //! popups and refuses it anywhere else, but it is still the person's seat and cursor
-//! (`SeatIsolation::SharedSeat`) and cuad masks the frames. The agent seat of its own, the
+//! (`SeatIsolation::SharedSeat`) and the computer-use daemon masks the frames. The agent seat of its own, the
 //! compositor's masking and the agent Space are the compositor P4.
 
 mod leases;
@@ -59,7 +59,7 @@ impl CompositorDesktop {
             events,
         };
         std::thread::Builder::new()
-            .name("cuad-compositor".into())
+            .name("computer-use-daemon-compositor".into())
             .spawn(move || watch::run(fd, &shared, ready))
             .map_err(protocol)?;
         // The sender dropping unanswered says nothing more than that the thread is gone.
@@ -169,7 +169,7 @@ impl LeaseControl for CompositorDesktop {
         reason = "the trait method is async and this implementation has nothing to wait for"
     )]
     async fn suspend(&self, lease: LeaseId, why: Suspend) -> Result<(), DesktopError> {
-        // On a shared seat cuad stops emulating; the compositor is told nothing.
+        // On a shared seat the computer-use daemon stops emulating; the compositor is told nothing.
         let _ = why;
         self.leases().check(lease)
     }

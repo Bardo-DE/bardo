@@ -1,11 +1,12 @@
-//! `CuaSession`: prompt assembly, the history window, parse with one repair, and the mapping into
+//! `ComputerUseSession`: prompt assembly, the history window, parse with one repair, and the mapping into
 //! window space, over scripted replies and a `ScriptedProvider`.
 
 use crate::support;
 use std::ops::ControlFlow;
 
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, CuaDialect, ModelSpace, Point, TextDialect, ToolDialect,
+    Button, ClickCount, ComputerUseAction, ComputerUseDialect, Coord, ModelSpace, Point,
+    TextDialect, ToolDialect,
 };
 use computer_use_parse::{DropReason, ParseError};
 use computer_use_session::{
@@ -18,9 +19,9 @@ use model_provider::{
 };
 use support::*;
 
-const HOLO: CuaDialect = CuaDialect::Tool(ToolDialect::Holo31);
-const QWEN: CuaDialect = CuaDialect::Tool(ToolDialect::QwenComputerUse);
-const UI_TARS: CuaDialect = CuaDialect::Text(TextDialect::UiTars15);
+const HOLO: ComputerUseDialect = ComputerUseDialect::Tool(ToolDialect::Holo31);
+const QWEN: ComputerUseDialect = ComputerUseDialect::Tool(ToolDialect::QwenComputerUse);
+const UI_TARS: ComputerUseDialect = ComputerUseDialect::Text(TextDialect::UiTars15);
 
 fn texts(request: &TurnRequest) -> Vec<String> {
     request
@@ -50,7 +51,7 @@ fn click_at(x: u32, y: u32) -> String {
 fn actions(
     outcome: StepOutcome,
 ) -> (
-    Vec<CuaAction<computer_use_action::WindowSpace>>,
+    Vec<ComputerUseAction<computer_use_action::WindowSpace>>,
     Vec<computer_use_parse::Dropped>,
 ) {
     match outcome {
@@ -222,7 +223,7 @@ fn a_click_maps_from_the_grid_into_the_window() {
     let (actions, dropped) = actions(outcome);
     assert!(dropped.is_empty());
     let [
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at, button, count, ..
         },
     ] = &*actions
@@ -291,7 +292,7 @@ fn a_scroll_distance_maps_with_the_points() {
     );
     let (kept, _) = actions(outcome);
     let [
-        CuaAction::Scroll {
+        ComputerUseAction::Scroll {
             by: computer_use_action::ScrollBy::Distance(len),
             ..
         },
@@ -464,7 +465,7 @@ fn ui_tars_points_map_from_image_pixels() {
     };
     assert_eq!(thought.as_deref(), Some("go."));
     let [
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: computer_use_action::Target::Point(point),
             ..
         },

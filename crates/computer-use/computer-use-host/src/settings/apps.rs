@@ -1,4 +1,4 @@
-//! `cua.apps`: which apps computer use may drive and how it asks for each.
+//! `computer_use.apps`: which apps computer use may drive and how it asks for each.
 
 use account_core::AppName;
 use permission_core::Level;
@@ -44,7 +44,7 @@ impl AppAllow {
     }
 }
 
-/// One row of `cua.apps`.
+/// One row of `computer_use.apps`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct AppRule {
     /// The app, by desktop-entry id.
@@ -58,7 +58,7 @@ pub struct AppRule {
 pub enum Apps {
     /// Every app: what a supervisor built in code runs under, so its own tests need no list.
     Unrestricted,
-    /// Only these (the settings file's `cua.apps`; empty means no app is on).
+    /// Only these (the settings file's `computer_use.apps`; empty means no app is on).
     Listed(Vec<AppRule>),
 }
 

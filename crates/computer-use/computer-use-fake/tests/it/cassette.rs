@@ -2,10 +2,12 @@
 
 use base_ids::Tokens;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size,
+    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size,
 };
 use computer_use_fake::{ScriptError, ScriptedModel};
-use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepEvent, StepSink};
+use computer_use_run::{
+    ComputerUseModel, ComputerUseModelError, FrameAttachment, StepEvent, StepSink,
+};
 use inference_core::{DropReason, SafetyHint, StepIndex};
 use model_provider::{
     ChoiceScores, EngineExtras, JsonText, Knob, Limits, Message, Milli, ModelName, OutputShape,
@@ -101,8 +103,8 @@ fn attachment() -> FrameAttachment {
     FrameAttachment(computer_use_fake::scene::frame(1).pixels)
 }
 
-fn blank_request() -> inference_core::CuaStepRequest {
-    inference_core::CuaStepRequest::new(
+fn blank_request() -> inference_core::ComputerUseStepRequest {
+    inference_core::ComputerUseStepRequest::new(
         StepIndex(1),
         inference_core::WindowGeometry {
             logical: Size::new(Coord(1), Coord(1)),
@@ -120,8 +122,8 @@ fn blank_request() -> inference_core::CuaStepRequest {
     )
 }
 
-fn left_click(x: u32, y: u32) -> CuaAction<computer_use_action::WindowSpace> {
-    CuaAction::Click {
+fn left_click(x: u32, y: u32) -> ComputerUseAction<computer_use_action::WindowSpace> {
+    ComputerUseAction::Click {
         at: computer_use_action::Target::Point(Point::new(Coord(x), Coord(y))),
         button: Button::Left,
         count: ClickCount::One,
@@ -174,11 +176,11 @@ async fn a_cassette_replays_as_window_space_steps() {
     assert_eq!(second.dropped.len(), 1);
     assert_eq!(second.dropped[0].verb, "frobnicate");
     assert_eq!(second.dropped[0].reason, DropReason::UnsupportedVerb);
-    assert_eq!(next!().await, Err(CuaModelError::Transient));
-    assert_eq!(next!().await, Err(CuaModelError::Fatal));
-    assert_eq!(next!().await, Err(CuaModelError::Parse));
+    assert_eq!(next!().await, Err(ComputerUseModelError::Transient));
+    assert_eq!(next!().await, Err(ComputerUseModelError::Fatal));
+    assert_eq!(next!().await, Err(ComputerUseModelError::Parse));
     // Past the end of the script.
-    assert_eq!(next!().await, Err(CuaModelError::Fatal));
+    assert_eq!(next!().await, Err(ComputerUseModelError::Fatal));
 }
 
 #[test]

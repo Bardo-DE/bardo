@@ -5,7 +5,7 @@ use super::phase::{Bound, PHASE_LIMIT, bounded};
 use super::{Exec, Outlet, Progress, Step, StepNote};
 use crate::machine::acquire::{AcquireFailure, AcquirePhase, AcquireWhy};
 use crate::machine::input::{ModelReply, Moved, RunInput};
-use crate::model::{CuaModel, CuaModelError, StepEvent, StepSink};
+use crate::model::{ComputerUseModel, ComputerUseModelError, StepEvent, StepSink};
 use crate::seams::{Clock, GateCheck, Seams};
 use crate::turn::FrameAttachment;
 use account_capability::Locality;
@@ -15,7 +15,7 @@ use computer_use_desktop::{
 };
 use computer_use_desktop::{ToplevelIdent, ToplevelInfo};
 use computer_use_seat_input::{AgentSeat, Emulation, InputOp, PlannedAction, SeatError, plan};
-use inference_core::{CuaBegin, CuaStepRequest};
+use inference_core::{ComputerUseBegin, ComputerUseStepRequest};
 
 /// The lease a run holds, and the capture session over its window.
 pub(super) struct Held<S: Seams> {
@@ -303,14 +303,14 @@ impl<S: Seams> Exec<'_, S> {
     pub(super) async fn call_model(
         &mut self,
         model: &mut S::Model,
-        request: CuaStepRequest,
+        request: ComputerUseStepRequest,
         frame: FrameAttachment,
         out: &mut impl Outlet,
     ) {
         if !self.model_open {
-            let begin = CuaBegin::new(
+            let begin = ComputerUseBegin::new(
                 crate::briefing::task_line(&self.task),
-                account_capability::CuaEnv::Desktop,
+                account_capability::ComputerUseEnv::Desktop,
             )
             .with_hints(self.hints.clone());
             if let Err(error) = model.begin(begin).await {
@@ -345,9 +345,9 @@ impl<S: Seams> Exec<'_, S> {
 
 /// What the machine is told when the model's call failed with `error`: a model that cannot read
 /// images says so in its own words.
-fn failed_input(model: &impl CuaModel, error: CuaModelError) -> RunInput {
+fn failed_input(model: &impl ComputerUseModel, error: ComputerUseModelError) -> RunInput {
     match error {
-        CuaModelError::CannotSeeScreen => RunInput::ModelBlind(model.cannot_see_words()),
+        ComputerUseModelError::CannotSeeScreen => RunInput::ModelBlind(model.cannot_see_words()),
         other => RunInput::ModelFailed(other),
     }
 }

@@ -5,7 +5,7 @@
 //! `actiond-callers.toml`, gives the role). The roles of `actiond.toml` are those of the app the
 //! process is, and a role that stands for more than an app is played only by a process whose
 //! callers-file role backs it ([`backs`]): the sheet roles (`launcher`, `confirm`, `control`) by
-//! the `sheet_host` of the system's table, `cua` by `cua`, the other daemons' roles by a role
+//! the `sheet_host` of the system's table, `computer_use` by `computer_use`, the other daemons' roles by a role
 //! above a plain app. A scope never has one (the accounts service gives a scope row a plain app's role).
 //!
 //! A connection nothing identifies is nobody and is refused, with one exception that is not a
@@ -66,14 +66,14 @@ pub(crate) enum Found {
 }
 
 /// Whether a process the callers file gives the role `held` may play the intentd role `role`.
-/// The sheet roles need the system's `sheet_host`, `cua` and `compositor` need their own, and
+/// The sheet roles need the system's `sheet_host`, `computer_use` and `compositor` need their own, and
 /// the roles of the other daemons and of the editor hosts need a role above a plain app (`agent`,
 /// or any fixed role). The roles of a plain app, a terminal's child and a field are open to any
 /// identified caller: `actiond.toml` lists who plays them.
 pub(crate) fn backs(role: CallerRole, held: Role) -> bool {
     match role {
         CallerRole::Launcher | CallerRole::Confirm | CallerRole::Control => held == Role::SheetHost,
-        CallerRole::Cua => held == Role::Cua,
+        CallerRole::ComputerUse => held == Role::ComputerUse,
         CallerRole::Compositor => held == Role::Compositor,
         CallerRole::Companion
         | CallerRole::Reader

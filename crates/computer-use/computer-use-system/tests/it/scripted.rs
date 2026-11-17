@@ -3,14 +3,14 @@
 
 use std::io::Read;
 
-use account_capability::CuaEnv;
+use account_capability::ComputerUseEnv;
 use account_capability::{Locality, ModelId, Tier};
 use account_core::{AccountId, DataClass};
 use account_match::Need;
 use base_ids::Tokens;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target,
-    WindowSpace,
+    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size,
+    Target, WindowSpace,
 };
 use computer_use_capture::PixelBuf;
 use computer_use_run::{FrameAttachment, StepEvent, StepSink};
@@ -222,12 +222,12 @@ pub(crate) fn served() -> ServedBy {
     }
 }
 
-pub(crate) fn empty_reply() -> CuaStepReply {
-    CuaStepReply::new(vec![])
+pub(crate) fn empty_reply() -> ComputerUseStepReply {
+    ComputerUseStepReply::new(vec![])
 }
 
-pub(crate) fn click() -> CuaAction<WindowSpace> {
-    CuaAction::Click {
+pub(crate) fn click() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Click {
         at: Target::Point(Point::new(Coord(3), Coord(4))),
         button: Button::Left,
         count: ClickCount::One,
@@ -235,14 +235,15 @@ pub(crate) fn click() -> CuaAction<WindowSpace> {
     }
 }
 
-pub(crate) fn begin() -> CuaBegin {
-    CuaBegin::new("archive the thread".into(), CuaEnv::Desktop).with_hints(vec!["mail".into()])
+pub(crate) fn begin() -> ComputerUseBegin {
+    ComputerUseBegin::new("archive the thread".into(), ComputerUseEnv::Desktop)
+        .with_hints(vec!["mail".into()])
 }
 
 pub(crate) fn ack() -> Vec<InferEvent> {
     vec![
         InferEvent::Routed(served()),
-        InferEvent::Finished(InferReply::CuaStep(empty_reply())),
+        InferEvent::Finished(InferReply::ComputerUseStep(empty_reply())),
     ]
 }
 
@@ -269,8 +270,8 @@ pub(crate) fn attachment() -> FrameAttachment {
     })
 }
 
-pub(crate) fn request(note: &str) -> CuaStepRequest {
-    CuaStepRequest::new(
+pub(crate) fn request(note: &str) -> ComputerUseStepRequest {
+    ComputerUseStepRequest::new(
         StepIndex(1),
         WindowGeometry {
             logical: Size::new(Coord(2), Coord(2)),

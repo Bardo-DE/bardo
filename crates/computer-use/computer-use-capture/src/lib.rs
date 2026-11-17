@@ -1,7 +1,7 @@
 //! Masked per-window capture.
 //!
 //! A [`Frame`] is a window's pixels with the regions that must not reach a model already blacked
-//! ([`MaskReport`] says who did it: the compositor on the fork, cuad on stock). The crate also
+//! ([`MaskReport`] says who did it: the compositor on the fork, the computer-use daemon on stock). The crate also
 //! holds the digest used for stall detection and the event log ([`FrameDigest`]), the settling
 //! decision ([`settle`], [`DamageAt`], [`pixel_diff`]) and the two seams ([`WindowCapture`],
 //! [`CaptureSession`]).

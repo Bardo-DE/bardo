@@ -1206,7 +1206,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   ds context model.
 
 - **The viewer's package budget is 682 (was 670).** the actions service's app side brings twelve packages, all behind
-  `desktop`: action-client, action-core, action-dbus, account-core, account-dbus, prov, memory-core, cua-action,
+  `desktop`: action-client, action-core, action-dbus, account-core, account-dbus, prov, memory-core, computer-use-action,
   model-provider, genai-names, vision-prep and base64 0.22.1. Most are vocabulary crates action-core names in its
   signatures, not code the viewer runs. `anyview-peek` stays at 590. Ends when action-core splits the app-facing
   types from the planner and reader vocabulary.

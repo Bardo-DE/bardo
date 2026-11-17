@@ -296,7 +296,7 @@ mod tests {
         ));
         let _ = std::fs::remove_dir_all(&dir);
         let mut schema = sample();
-        schema.key[0].path = KeyPath("cua.enabled".to_owned());
+        schema.key[0].path = KeyPath("computer_use.enabled".to_owned());
         schema.key[0].agent = AgentSetting::Settable;
         write_schema(&schema, &dir).unwrap();
         assert_eq!(discover(std::slice::from_ref(&dir)), Vec::new());

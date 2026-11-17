@@ -1,7 +1,7 @@
 //! Reading a key press on the surface: text to insert, a clipboard gesture, or a key for the app.
 //!
 //! Pure, so the table below is the whole rule. Which chord is a paste is the keymap's (Command+V on
-//! a Mac and our desktop, Ctrl+V elsewhere); the CUA clipboard keys every platform shares
+//! a Mac and our desktop, Ctrl+V elsewhere); the computer use clipboard keys every platform shares
 //! (Shift+Insert, Ctrl+Insert, Shift+Delete) are read as they are.
 
 use crate::edit::input::KeyInput;

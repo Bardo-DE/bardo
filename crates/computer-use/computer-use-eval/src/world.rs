@@ -18,7 +18,7 @@ use computer_use_desktop::{
     ToplevelIdent, ToplevelInfo,
 };
 use computer_use_fake::{FakeDesktop, MemoryEvents};
-use computer_use_run::{Clock, CuaModel, Seams};
+use computer_use_run::{Clock, ComputerUseModel, Seams};
 use computer_use_seat_input::{
     AgentSeat, Emulation, InputOp, InputOrigin, InputReceipt, Keymap, SeatCaps, SeatError,
 };
@@ -46,7 +46,7 @@ impl Clock for EvalClock {
 #[derive(Debug)]
 pub struct EvalSeams<M>(PhantomData<fn() -> M>);
 
-impl<M: CuaModel + 'static> Seams for EvalSeams<M> {
+impl<M: ComputerUseModel + 'static> Seams for EvalSeams<M> {
     type Desktop = EvalDesktop;
     type Seat = EvalSeat;
     type Capture = EvalCapture;
@@ -229,7 +229,7 @@ impl CaptureSession for EvalCaptureSession {
             scale: Scale120(120),
             damage: vec![],
             masks: MaskReport {
-                applied_by: computer_use_desktop::MaskWhere::Cuad,
+                applied_by: computer_use_desktop::MaskWhere::ComputerUseDaemon,
                 whole: WholeMask::None,
                 regions: vec![],
             },

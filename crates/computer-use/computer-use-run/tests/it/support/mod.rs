@@ -11,12 +11,12 @@ use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, FinishOutcome, PixelFormat, Point, Rect,
-    Scale120, Size, Summary, Target, WaitMs, WindowSpace,
+    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, FinishOutcome, PixelFormat, Point,
+    Rect, Scale120, Size, Summary, Target, WaitMs, WindowSpace,
 };
 use computer_use_action::{RunMode, WindowTrust};
 use computer_use_bus::{
-    CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget, WindowRef,
+    ComputerUseTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget, WindowRef,
 };
 use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{
@@ -24,8 +24,8 @@ use computer_use_desktop::{
     ToplevelIdent, ToplevelInfo, WindowTitle, WorkspaceRef,
 };
 use computer_use_run::{
-    ContextObs, CuaConfig, CursorObs, Focus, ModelReply, Observation, Rules, Run, RunEffect,
-    RunEnv, RunInput, RunPhase, TreeObs, Visibility, WindowInfo,
+    ComputerUseConfig, ContextObs, CursorObs, Focus, ModelReply, Observation, Rules, Run,
+    RunEffect, RunEnv, RunInput, RunPhase, TreeObs, Visibility, WindowInfo,
 };
 use inference_core::{CuaStepReply, StepIndex, TurnUsage};
 use provenance::{
@@ -64,8 +64,8 @@ pub fn screen_label() -> Label {
     }
 }
 
-pub fn task(success: SuccessCheck) -> CuaTask {
-    CuaTask {
+pub fn task(success: SuccessCheck) -> ComputerUseTask {
+    ComputerUseTask {
         app: app(),
         goal: user_goal(),
         asked: None,
@@ -94,7 +94,11 @@ pub fn rules() -> Rules {
 }
 
 pub fn env(kind: BackendKind) -> RunEnv {
-    RunEnv::new(&CuaConfig::default(), BackendCaps::of(kind), rules())
+    RunEnv::new(
+        &ComputerUseConfig::default(),
+        BackendCaps::of(kind),
+        rules(),
+    )
 }
 
 pub fn run_id() -> RunId {
@@ -146,7 +150,7 @@ pub fn frame(byte: u8) -> Frame {
         scale: Scale120(120),
         damage: vec![],
         masks: MaskReport {
-            applied_by: MaskWhere::Cuad,
+            applied_by: MaskWhere::ComputerUseDaemon,
             whole: WholeMask::None,
             regions: vec![],
         },
@@ -209,8 +213,8 @@ pub fn observation(byte: u8, tree: TreeObs) -> Observation {
     }
 }
 
-pub fn click_at(x: u32, y: u32) -> CuaAction<WindowSpace> {
-    CuaAction::Click {
+pub fn click_at(x: u32, y: u32) -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Click {
         at: Target::Point(Point::new(Coord(x), Coord(y))),
         button: Button::Left,
         count: ClickCount::One,
@@ -218,8 +222,8 @@ pub fn click_at(x: u32, y: u32) -> CuaAction<WindowSpace> {
     }
 }
 
-pub fn click_node(id: u32) -> CuaAction<WindowSpace> {
-    CuaAction::Click {
+pub fn click_node(id: u32) -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Click {
         at: Target::Node(computer_use_action::NodeId(id)),
         button: Button::Left,
         count: ClickCount::One,
@@ -227,21 +231,21 @@ pub fn click_node(id: u32) -> CuaAction<WindowSpace> {
     }
 }
 
-pub fn wait(ms: u32) -> CuaAction<WindowSpace> {
-    CuaAction::Wait {
+pub fn wait(ms: u32) -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Wait {
         for_ms: WaitMs::new(ms).unwrap(),
     }
 }
 
-pub fn finish(outcome: FinishOutcome, text: &str) -> CuaAction<WindowSpace> {
-    CuaAction::Finish {
+pub fn finish(outcome: FinishOutcome, text: &str) -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Finish {
         outcome,
         summary: Summary::new(text).unwrap(),
         extracted: vec![],
     }
 }
 
-pub fn reply(actions: Vec<CuaAction<WindowSpace>>) -> Box<ModelReply> {
+pub fn reply(actions: Vec<ComputerUseAction<WindowSpace>>) -> Box<ModelReply> {
     Box::new(ModelReply {
         reply: CuaStepReply::new(actions).with_thought("think".to_owned()),
         usage: TurnUsage {
@@ -266,7 +270,7 @@ pub struct Drive {
 
 impl Drive {
     /// A run started on `kind` for `task`, at instant 0, with its first effects.
-    pub fn start(kind: BackendKind, task: CuaTask) -> Drive {
+    pub fn start(kind: BackendKind, task: ComputerUseTask) -> Drive {
         let (run, effects) = Run::start(run_id(), task, env(kind), Stamp(0));
         Drive {
             run,
@@ -289,7 +293,7 @@ impl Drive {
     }
 
     /// Brings a started run to `Observing(1)` through the consent and the lease.
-    pub fn leased(kind: BackendKind, task: CuaTask) -> Drive {
+    pub fn leased(kind: BackendKind, task: ComputerUseTask) -> Drive {
         let mut d = Drive::start(kind, task);
         d.feed(RunInput::Granted(action_wire::GrantAnswer::Granted));
         d.feed(RunInput::Leased(grant(kind)));
@@ -297,7 +301,7 @@ impl Drive {
     }
 
     /// Brings a leased run to `Thinking(1)` having observed `byte`.
-    pub fn thinking(kind: BackendKind, task: CuaTask, tree: TreeObs) -> Drive {
+    pub fn thinking(kind: BackendKind, task: ComputerUseTask, tree: TreeObs) -> Drive {
         let mut d = Drive::leased(kind, task);
         d.feed(RunInput::Observed(Box::new(observation(1, tree))));
         d

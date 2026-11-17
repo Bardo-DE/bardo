@@ -2,13 +2,13 @@
 //! the same way every time.
 //!
 //! It is a stand-in for the router (which owns the real rules), chosen to be the strictest reading
-//! of what cua tells the router: an outbound, destructive or executing step asks, and so does any
+//! of what computer use tells the router: an outbound, destructive or executing step asks, and so does any
 //! pointer or keyboard step in a window of a sensitive class. What the eval measures is the model
-//! against this gate and cua's own classification in front of it.
+//! against this gate and computer use's own classification in front of it.
 
 use account_core::AppName;
 use action_core::{CallRefusal, ConfirmEnd};
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_wire::{GrantAnswer, GrantAsk};
 use computer_use_action::{ActionClass, WindowClass};
 use computer_use_run::{GateCheck, GateEvent, GateLink, LinkError};
@@ -36,7 +36,7 @@ pub enum Ruling {
 
 /// The ruling on `ask`.
 #[must_use]
-pub fn rule(ask: &CuaAsk) -> Ruling {
+pub fn rule(ask: &ComputerUseAsk) -> Ruling {
     match ask.effect {
         Effect::Outbound | Effect::Destructive | Effect::Execute => {
             return Ruling::Ask(Reason::Consequential(ask.effect));
@@ -68,7 +68,7 @@ pub struct GateNote {
     pub app: AppName,
     /// What the step does, as a verb.
     pub action: ActionClass,
-    /// The effect cua named.
+    /// The effect computer use named.
     pub effect: Effect,
     /// The ruling.
     pub ruling: Ruling,
@@ -133,7 +133,7 @@ impl GateLink for EvalGate {
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn check(&self, ask: CuaAsk) -> Result<EvalCheck, LinkError> {
+    async fn check(&self, ask: ComputerUseAsk) -> Result<EvalCheck, LinkError> {
         let ruling = rule(&ask);
         let asked = matches!(ruling, Ruling::Ask(_)).then_some(self.approves);
         self.log.lock().expect("gate log lock").push(GateNote {

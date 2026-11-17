@@ -7,36 +7,36 @@ use serde::{Deserialize, Serialize};
 #[serde(transparent)]
 pub struct QuestionId(pub u64);
 
-/// A per-run handle for the window an action targets; cuad maps it to a `ToplevelIdent`.
+/// A per-run handle for the window an action targets; the computer-use daemon maps it to a `ToplevelIdent`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct WindowRef(pub u32);
 
-/// The vocabulary version of the `Cua1` bodies.
+/// The vocabulary version of the `ComputerUse1` bodies.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
-pub struct CuaVocab(pub u32);
+pub struct ComputerUseVocab(pub u32);
 
-impl CuaVocab {
+impl ComputerUseVocab {
     /// The version this build writes.
-    pub const CURRENT: CuaVocab = CuaVocab(1);
+    pub const CURRENT: ComputerUseVocab = ComputerUseVocab(1);
 }
 
 /// A body with the vocabulary it is written in: `{"vocab": 1, "body": ...}`. One protocol with
 /// one carrier: D-Bus strings holding this JSON.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CuaEnvelope<T> {
+pub struct ComputerUseEnvelope<T> {
     /// The vocabulary.
-    pub vocab: CuaVocab,
+    pub vocab: ComputerUseVocab,
     /// The body.
     pub body: T,
 }
 
-impl<T> CuaEnvelope<T> {
+impl<T> ComputerUseEnvelope<T> {
     /// `body` in the current vocabulary.
     pub fn current(body: T) -> Self {
         Self {
-            vocab: CuaVocab::CURRENT,
+            vocab: ComputerUseVocab::CURRENT,
             body,
         }
     }
@@ -66,18 +66,21 @@ mod tests {
             slug_of(&BackendKind::KwinStock).as_deref(),
             Some("kwin_stock")
         );
-        assert_eq!(slug_of(&CuaVocab::CURRENT), None);
+        assert_eq!(slug_of(&ComputerUseVocab::CURRENT), None);
         assert_eq!(
-            slug_of(&crate::CuaOutcome::BudgetOut(crate::RunBudgetKind::Steps)).as_deref(),
+            slug_of(&crate::ComputerUseOutcome::BudgetOut(
+                crate::RunBudgetKind::Steps
+            ))
+            .as_deref(),
             Some("budget_out")
         );
     }
 
     #[test]
     fn the_envelope_pins_its_json() {
-        let json = serde_json::to_string(&CuaEnvelope::current(QuestionId(4))).unwrap();
+        let json = serde_json::to_string(&ComputerUseEnvelope::current(QuestionId(4))).unwrap();
         assert_eq!(json, r#"{"vocab":1,"body":4}"#);
-        let back: CuaEnvelope<QuestionId> = serde_json::from_str(&json).unwrap();
+        let back: ComputerUseEnvelope<QuestionId> = serde_json::from_str(&json).unwrap();
         assert_eq!(back.body, QuestionId(4));
     }
 }

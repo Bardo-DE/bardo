@@ -2,13 +2,14 @@
 //! a vardict whose entries are the need's fields by name.
 
 use account_capability::{
-    Access, AgentProgram, AgentProtocol, Albums, CuaEnv, Delta, LibraryRead, LlmFeature, Modality,
-    SpeechMode, StorageScope,
+    Access, AgentProgram, AgentProtocol, Albums, ComputerUseEnv, Delta, LibraryRead, LlmFeature,
+    Modality, SpeechMode, StorageScope,
 };
 use account_match::Need;
 use account_match::{
-    AgentNeed, CuaNeed, DimsNeed, EmbedNeed, IdentityNeed, ImageGenNeed, KeyValueNeed, LlmNeed,
-    MailNeed, NotesNeed, PhotosNeed, PimNeed, PushNeed, RerankNeed, SpeechNeed, StorageNeed,
+    AgentNeed, ComputerUseNeed, DimsNeed, EmbedNeed, IdentityNeed, ImageGenNeed, KeyValueNeed,
+    LlmNeed, MailNeed, NotesNeed, PhotosNeed, PimNeed, PushNeed, RerankNeed, SpeechNeed,
+    StorageNeed,
 };
 use base_ids::{Bytes, Count, Dims, Px, Tokens};
 use inference_dbus::inference::{NeedArg, need_from_dbus, need_to_dbus};
@@ -83,7 +84,9 @@ fn every_need() -> Vec<(&'static str, Need)> {
         ("rerank", Need::Rerank(RerankNeed::new(Count(10)))),
         (
             "computer_use",
-            Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop, CuaEnv::Browser].into())),
+            Need::ComputerUse(ComputerUseNeed::new(
+                [ComputerUseEnv::Desktop, ComputerUseEnv::Browser].into(),
+            )),
         ),
         (
             "key_value",

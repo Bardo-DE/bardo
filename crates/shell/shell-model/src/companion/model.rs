@@ -8,7 +8,7 @@ use action_core::{Hit, UndoEntry};
 use action_vocab::{ActionRef, CardActionId, Handle};
 use companion_wire::{AnswerWire, RouteNote};
 use computer_use_action::RunMode;
-use computer_use_bus::{BudgetBody, CuaOutcome, RunStateSlug};
+use computer_use_bus::{BudgetBody, ComputerUseOutcome, RunStateSlug};
 use memory_core::{FactView, TimelineEntry};
 use provenance::{AppName, EntityKind, RunId, SessionId, TaskId};
 use shell_launcher::Generation;
@@ -58,7 +58,7 @@ pub enum Busy {
     Refused(CardActionId),
 }
 
-/// One computer-use run, as cuad publishes it.
+/// One computer-use run, as the computer-use daemon publishes it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RunFacts {
     /// The run.
@@ -72,7 +72,7 @@ pub struct RunFacts {
     /// Its phase.
     pub state: RunStateSlug,
     /// How it ended, once it has.
-    pub outcome: Option<CuaOutcome>,
+    pub outcome: Option<ComputerUseOutcome>,
     /// How it reaches its window.
     pub mode: RunMode,
     /// Some of the model's last thought, as data.
@@ -142,7 +142,7 @@ pub struct Companion {
     pub answers: BTreeMap<TaskId, AnswerFacts>,
     /// The task the launcher returns to.
     pub front: Option<TaskId>,
-    /// The runs cuad has, by run.
+    /// The runs the computer-use daemon has, by run.
     pub runs: BTreeMap<RunId, RunFacts>,
     /// Whether the model that works apps can see the screen.
     pub sight: SightState,

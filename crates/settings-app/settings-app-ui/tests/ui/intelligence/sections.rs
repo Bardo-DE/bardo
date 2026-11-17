@@ -5,7 +5,7 @@ use super::*;
 #[test]
 fn the_sections_follow_design_order_whatever_order_the_programs_were_read_in() {
     let sandbox = Sandbox::new("intelligence-order");
-    // Memory and Computer use come from the memory service's and cua's own schemas, Assistant from the actions service's;
+    // Memory and Computer use come from the memory service's and computer use's own schemas, Assistant from the actions service's;
     // bardo-shell's rows of the same Assistant section have no schema yet, so a stand-in names them.
     sandbox.add_schema(
         "shell-companion",

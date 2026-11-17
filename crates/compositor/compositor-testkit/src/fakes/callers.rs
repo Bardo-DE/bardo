@@ -34,7 +34,7 @@ pub fn shell() -> Proven {
     )
 }
 
-/// The agent tier (cuad).
+/// The agent tier (the computer-use daemon).
 ///
 /// # Panics
 ///

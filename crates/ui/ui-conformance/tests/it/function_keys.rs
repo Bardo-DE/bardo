@@ -1,5 +1,5 @@
 //! A function key sent through the harness reaches an app as the chord keymap's action: F9 is
-//! `ToggleSidebar` in the CUA table, and a Mac table (Ctrl+Command+S) leaves it alone.
+//! `ToggleSidebar` in the computer-use table, and a Mac table (Ctrl+Command+S) leaves it alone.
 
 use dioxus::prelude::*;
 use keymap::{Action, Context, Desktop, Platform, StandardAction};
@@ -69,7 +69,7 @@ fn heard(harness: &Harness) -> String {
 }
 
 #[test]
-fn f9_is_toggle_sidebar_under_the_cua_table() {
+fn f9_is_toggle_sidebar_under_the_computer_use_table() {
     let mut harness = started(Platform::Linux {
         desktop: Desktop::Other,
     });

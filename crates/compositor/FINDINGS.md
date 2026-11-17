@@ -1636,7 +1636,7 @@ image type inferred from `create_buffer`, as `canvas` does), `compositor/src/han
 Lane P2-Q2 (not compiled; the orchestrator gates). Removed rows: the ten `todo!()` of the P2-Z table and the seven
 ignored tests of this lane; two tests were rewritten (below).
 
-- **Units are fixed, not configuration.** The plan names them (`shell.service` the shell, `cuad.service` the agent tier),
+- **Units are fixed, not configuration.** The plan names them (`shell.service` the shell, `computer_use_daemon.service` the agent tier),
   so `role_for` is a `match`. Moving them to a typed list is a one-function change if the accounts service's unit check wants it.
 - **Departure: `on_set_minimise_target` takes the window, not the identifier string.** The dispatch turns the identifier
   into a `WindowId` and keeps it only when `BardoShellHandler::window_known` says the model has it; the part gets
@@ -1733,10 +1733,10 @@ Test unit overrides for jailed desktop scenarios (no systemd, so no unit in `/pr
 
 - **Contract.** Environment variable `COMPOSITOR_DEBUG_PEER_UNITS="<program-or-pid>=<unit>[,<program-or-pid>=<unit>...]"`.
   Left side all digits: a process id; anything else: a program name compared with `/proc/<pid>/comm` (the kernel keeps
-  15 bytes, so a longer name is cut to 15 before comparing; the shell and cuad fit). Right side: a service unit name
+  15 bytes, so a longer name is cut to 15 before comparing; the shell and the computer-use daemon fit). Right side: a service unit name
   (`name.service`, no slash). Entries are comma-separated, spaces around them are trimmed, the first matching entry
   wins. Example for "shell is shell.service": `COMPOSITOR_DEBUG_PEER_UNITS="shell=shell.service"`; with the agent tier too:
-  `"shell=shell.service,cuad=cuad.service"`. A malformed value makes the compositor exit 64 with the reason on stderr.
+  `"shell=shell.service,computer_use_daemon=computer_use_daemon.service"`. A malformed value makes the compositor exit 64 with the reason on stderr.
 - **Only with `debug-inject`.** `crates/compositor/src/debug_peer_units.rs` (the only place the variable is named) is a
   module of the binary compiled under `cfg(feature = "debug-inject")`; `main.rs` reads it there and passes the typed
   `PeerUnitTable` through `RunConfig::with_debug_peer_units` (the field exists only under the feature). A build without the
@@ -4500,7 +4500,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
   The compositor holds the client by its pidfd, so the pid cannot be reused while the client is held: the pid compare is equivalent.
   Test: `a11y.rs` on a private bus.
 - **Debug units (`debug-inject`).** `DebugPeerUnits` is now a `CallerCheck`: a peer the test table matches stands as the role of
-  `shell.service` (shell), `cuad.service` (agent_tier) or `bardo-portal.service` (portal), `Proof::Full`, app `org.bardo.TestOnly`, and
+  `shell.service` (shell), `computer_use_daemon.service` (agent_tier) or `bardo-portal.service` (portal), `Proof::Full`, app `org.bardo.TestOnly`, and
   every other peer goes to the real check. `CallerSetup::with_test_units(table)`; it logs nothing itself (the root's one "TEST ONLY"
   warning stays).
 - **Deviations from the design text.**
@@ -4528,7 +4528,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
     (the client's pinned pid), feeding the `Channel<A11yVerdict>` back as `WindowHintChange::A11y(verdict.root)`.
 - **Interface asks.** Bardo `ds-settings`: a `Page::Privacy` (label "Privacy", between Accounts and Keyboard & Shortcuts); then
   `PRIVACY_PAGE` in `compositor-ipc/src/privacy/keys.rs` becomes `Page::Privacy`. The release lane's `desktop-callers.toml` must have
-  the rows `shell` (shell.service), `agent_tier` (cuad.service), `portal` (bardo-portal.service), `settings` (the Settings app) and `manager`
+  the rows `shell` (shell.service), `agent_tier` (computer_use_daemon.service), `portal` (bardo-portal.service), `settings` (the Settings app) and `manager`
   (systemd, `Exe`) with `exe` lists.
 - **Not verified by reading (the gate run looks here).** That `BusPeers::who`'s future is `Send` (the boxed `WhoFuture` and zbus
   interface methods need it); that `Arc::new(BusPeers)` coerces at the closure return in `CallerSetup::with`; `tokio::spawn` of
@@ -5016,7 +5016,7 @@ foreign toplevel list state); `desktop-protocols` is a path dependency (no rev t
   `cfg!(any(testing, debug-inject))`), `dbus/callers.rs` (Full admitted, Exe/Cgroup refused, Dev admitted only for its own role, and only with
   `dev-rows`).
 - **Harness lane.** Write `desktop-callers.toml` next to `privacy.toml` in the folder passed as `--system-dir`, mode 0600, one `[[peer]]` per
-  stand-in with `exe` the `readlink -f` path of its build-folder image (the shell: `shell`; the Settings app: `settings`; the portal: `portal`; cuad:
+  stand-in with `exe` the `readlink -f` path of its build-folder image (the shell: `shell`; the Settings app: `settings`; the portal: `portal`; the computer-use daemon:
   `agent_tier`). `desktop/gate/check-no-fake.sh` must still see no `dev-rows` in a shipped build.
 - **Known limit, test builds only.** A developer row makes any program the person can write a service of its role at `Proof::Dev`, and
   `client_standing` then gives it the role's powers; that is the point of the file and why a release build compiles it out.
@@ -5247,7 +5247,7 @@ Code: `crates/compositor/src/timing/` (pure records, table-tested; `Sink` is the
 
 ## Agent leases (interim P4 input, 2026-10-20)
 
-- **What it is.** `Compositor1.LeaseWindow` gives the agent tier (cuad) an EIS socket for one window. Its input is
+- **What it is.** `Compositor1.LeaseWindow` gives the agent tier (the computer-use daemon) an EIS socket for one window. Its input is
   `Origin::Agent(lease)`: the reach table lets it reach that window and its popups only; `core_loop::agent_gate` drops it on
   Mission Control, window frames and Split View dividers, during a move, resize or divider drag, while a surface outside the leased window and its
   popups holds the pointer grab or the keyboard focus, and for touch, gestures and switches. Keys never fire bindings, Escape never leaves Mission
@@ -5263,7 +5263,7 @@ Code: `crates/compositor/src/timing/` (pure records, table-tested; `Sink` is the
   button serial still proves a popup grab and a clipboard selection inside the leased app. Only the shell's windows are
   refused a lease: a privileged window of another program (a password prompt) is leasable until the reach table's `Trusted`
   target is wired. A window that closes ends its lease in the model at once (all input refused), but the socket stays open
-  until `EndLease`, a hang-up or the caller leaving the bus. cuad ends it on the window's close.
+  until `EndLease`, a hang-up or the caller leaving the bus. The computer-use daemon ends it on the window's close.
 
 ## Edge reveal (wh-reveal, 2026-10-22)
 

@@ -49,8 +49,8 @@ const FIRST_FRAME_LIMIT: Duration = Duration::from_secs(20);
 /// Who blacks the regions of a frame.
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum Masking {
-    /// cuad does, on the unmasked frame (stock).
-    Cuad,
+    /// The computer-use daemon does, on the unmasked frame (stock).
+    ComputerUseDaemon,
     /// The compositor does, before the buffer leaves; the hints go to this lease.
     Compositor(Key),
 }
@@ -246,9 +246,9 @@ impl CaptureSession for WaylandSession {
         };
         let logical = Size::new(Coord(raw.size.w), Coord(raw.size.h));
         let (pixels, regions, applied_by) = match self.masking {
-            Masking::Cuad => {
+            Masking::ComputerUseDaemon => {
                 let (pixels, regions) = apply_masks(&raw, LOGICAL, hints);
-                (pixels, regions, MaskWhere::Cuad)
+                (pixels, regions, MaskWhere::ComputerUseDaemon)
             }
             // Already black where the compositor was told to; the hints are what was asked.
             Masking::Compositor(_) => (raw, hints.to_vec(), MaskWhere::Compositor),

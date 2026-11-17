@@ -180,7 +180,7 @@ pub struct JournalFilter {
     pub limit: Count,
 }
 
-/// The CUA consent grant (`Gate.Grant`).
+/// The computer use consent grant (`Gate.Grant`).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct GrantAsk {
     /// The app.
@@ -194,7 +194,7 @@ pub struct GrantAsk {
     pub level: permission_core::Level,
     /// The screen run this request is for. With it, the person's yes covers that run alone; a
     /// request from before this field names no run, and covers every live screen run in the
-    /// Space. `cuad` should send it, so two runs in one Space each get their own start sheet.
+    /// Space. `computer_use_daemon` should send it, so two runs in one Space each get their own start sheet.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub run: Option<provenance::RunId>,
 }

@@ -109,7 +109,7 @@ fn a_space_the_registry_lacks_ends_its_grants_and_only_those() {
 fn removing_a_space_drops_what_is_scoped_to_it_and_never_widens_the_rest() {
     let held = vec![
         grant("g-1", GrantCaller::Companion, only("work")),
-        grant("g-2", GrantCaller::Cua, only("work")),
+        grant("g-2", GrantCaller::ComputerUse, only("work")),
         grant("g-3", GrantCaller::Companion, only("home")),
         grant("g-4", GrantCaller::Companion, SpaceScope::Any),
     ];

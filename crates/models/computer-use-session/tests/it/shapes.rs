@@ -1,11 +1,13 @@
-use computer_use_action::{ActionProfile, CuaDialect, GridMax, ModelSpace, ToolDialect};
-use computer_use_session::{CuaProfile, CuaSession, CuaTaskText, FrameBudget, RepairBudget};
+use computer_use_action::{ActionProfile, ComputerUseDialect, GridMax, ModelSpace, ToolDialect};
+use computer_use_session::{
+    ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, RepairBudget,
+};
 use model_provider::ModelName;
 use model_vision_prep::{Encoding, PatchFactor, PixelCount, ResizeRule};
 
-fn profile() -> CuaProfile {
-    CuaProfile {
-        dialect: CuaDialect::Tool(ToolDialect::Holo31),
+fn profile() -> ComputerUseProfile {
+    ComputerUseProfile {
+        dialect: ComputerUseDialect::Tool(ToolDialect::Holo31),
         actions: ActionProfile::default(),
         rule: ResizeRule::SmartResize {
             factor: PatchFactor(32),
@@ -21,10 +23,13 @@ fn profile() -> CuaProfile {
 
 #[test]
 fn begin_builds_a_session_without_touching_the_model() {
-    let task = CuaTaskText {
+    let task = ComputerUseTaskText {
         goal: "save the file".into(),
         hints: vec![],
     };
-    let _session = CuaSession::begin(profile(), task.clone(), ModelName("holo".into()));
-    assert_eq!(format!("{task:?}"), "CuaTaskText(<goal 13 chars, 0 hints>)");
+    let _session = ComputerUseSession::begin(profile(), task.clone(), ModelName("holo".into()));
+    assert_eq!(
+        format!("{task:?}"),
+        "ComputerUseTaskText(<goal 13 chars, 0 hints>)"
+    );
 }

@@ -8,8 +8,8 @@ use computer_use_a11y_tree::{
     A11yNode, A11ySnapshot, NodeState, NodeValue, Parent, Role, TreeSource, Truncation, TypedHint,
 };
 use computer_use_action::{
-    Button, Chord, ClickCount, Coord, CuaAction, DeviceSize, FinishOutcome, PixelFormat, Point,
-    Rect, Repeat, Scale120, Size, Summary, Target, TypedText, WaitMs, WindowSpace,
+    Button, Chord, ClickCount, ComputerUseAction, Coord, DeviceSize, FinishOutcome, PixelFormat,
+    Point, Rect, Repeat, Scale120, Size, Summary, Target, TypedText, WaitMs, WindowSpace,
 };
 use computer_use_action::{WindowClass, WindowTrust};
 use computer_use_bus::WindowRef;
@@ -30,8 +30,8 @@ fn point() -> Target<WindowSpace> {
     Target::Point(Point::new(Coord(10), Coord(10)))
 }
 
-fn click() -> CuaAction<WindowSpace> {
-    CuaAction::Click {
+fn click() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Click {
         at: point(),
         button: Button::Left,
         count: ClickCount::One,
@@ -39,14 +39,14 @@ fn click() -> CuaAction<WindowSpace> {
     }
 }
 
-fn typing() -> CuaAction<WindowSpace> {
-    CuaAction::Type {
+fn typing() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Type {
         text: TypedText::new("hello").unwrap(),
     }
 }
 
-fn enter() -> CuaAction<WindowSpace> {
-    CuaAction::Key {
+fn enter() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Key {
         chord: Chord::new(BTreeSet::new(), keyboard_types::Key::Enter).unwrap(),
         repeat: Repeat::ONCE,
     }
@@ -55,8 +55,8 @@ fn enter() -> CuaAction<WindowSpace> {
 fn chord_press(
     mods: &[computer_use_action::Modifier],
     key: keyboard_types::Key,
-) -> CuaAction<WindowSpace> {
-    CuaAction::Key {
+) -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Key {
         chord: Chord::new(mods.iter().copied().collect(), key).unwrap(),
         repeat: Repeat::ONCE,
     }
@@ -142,15 +142,15 @@ fn classify_effect_table() {
     use WindowClass::{MailCompose, Ordinary, Payments, Terminal};
     struct Row {
         name: &'static str,
-        action: CuaAction<WindowSpace>,
+        action: ComputerUseAction<WindowSpace>,
         class: WindowClass,
         want: (Effect, EffectBasis),
     }
-    let observe = CuaAction::<WindowSpace>::Observe;
-    let wait = CuaAction::<WindowSpace>::Wait {
+    let observe = ComputerUseAction::<WindowSpace>::Observe;
+    let wait = ComputerUseAction::<WindowSpace>::Wait {
         for_ms: WaitMs::new(500).unwrap(),
     };
-    let finish = CuaAction::<WindowSpace>::Finish {
+    let finish = ComputerUseAction::<WindowSpace>::Finish {
         outcome: FinishOutcome::Done,
         summary: Summary::new("done").unwrap(),
         extracted: vec![],
@@ -475,7 +475,7 @@ fn observation(tree: A11ySnapshot, masked: usize) -> Observation {
             scale: Scale120(120),
             damage: vec![],
             masks: MaskReport {
-                applied_by: computer_use_desktop::MaskWhere::Cuad,
+                applied_by: computer_use_desktop::MaskWhere::ComputerUseDaemon,
                 whole: WholeMask::None,
                 regions,
             },

@@ -20,7 +20,7 @@ A9 (the macro states each slug once and tests use `ALL`), A10 (`change_for` bran
 
 ## Stubs behind frozen interfaces
 
-None. What still waits on other repos is under "Open" below (the accounts service's transports, the actions service, cua).
+None. What still waits on other repos is under "Open" below (the accounts service's transports, the actions service, computer use).
 
 ## Built at the freeze (pinned by tests)
 
@@ -66,7 +66,7 @@ from the log and the text cannot drift from the stored value; with an owner-supp
 `AreaPayload.text` the owner could index text its JSON does not contain, and the label of that
 text would be unchecked; (3) cascade-forget gets the entities a message names
 (`EventBody::thing_refs`) with no extra field; (4) `AreaPayload` stays frozen, so the actions service's and
-cua's payloads are unaffected. The cost is a variant: `kind()` is `companion.message`, the
+Computer use's payloads are unaffected. The cost is a variant: `kind()` is `companion.message`, the
 `wire.rs` request/reply samples and the auth matrix gained rows, and `EventBody` boxes both new
 payloads (`Message`, `Episode`) to keep the enum small. `AreaPayload` has no searchable text; if
 The actions service later wants its own payloads searchable it adds a field then.
@@ -132,7 +132,7 @@ Nothing below is built; the interfaces it will use are.
    Space plus `desktop`, and logs each injection as `Memory.Read`.
 4. **The roster** (G12). `Roster { entries }`, `RosterLine { agent: AgentRef, space, state,
    goal: Reveal<String>, last: StepLine, told: Option<first 80 chars of the user's turn> }`,
-   derived by companiond from its tasks, `Cua1` signals and `Recent` messages; a line for another
+   derived by companiond from its tasks, `ComputerUse1` signals and `Recent` messages; a line for another
    Space shows presence only, no goal text (Q8); exposed to the shell's Runs filter.
 5. **Side-episode capture** (C.6). When the person's side conversation with a worker or run ends
    (row closed, or 2 minutes idle) write an `Episode { kind: Side }` from the user's turns and
@@ -156,7 +156,7 @@ Nothing below is built; the interfaces it will use are.
    when a worker or run reports `Done`, `Failed` or `Cancelled`; the orb shows Waiting only when
    the result needs the person.
 10. **Restart rebuild** (G16). companiond rebuilds the roster and the front task from
-    `Area{Companion}`, `Area{Cua}`, message and episode events (via `Recent`) on start.
+    `Area{Companion}`, `Area{ComputerUse}`, message and episode events (via `Recent`) on start.
 11. **Settings and rows** (D.2 G2, G11): `companion.budget.*`, the retention row for
     `companion.*`, and the Space-scope rule that desktop-scope reads join through
     `Confidentiality::join` so they do not widen a Space task.
@@ -165,11 +165,11 @@ Nothing below is built; the interfaces it will use are.
 
 - **Spec conflicts and their resolutions** (SPEC.md wins over memory.md; items below are where the two
   left room or disagreed):
-  - `Caller` is `App | Router | Cuad | ShellUi` (SPEC 3.4; `Settings` was added for ALM-16, see
+  - `Caller` is `App | Router | ComputerUseDaemon | ShellUi` (SPEC 3.4; `Settings` was added for ALM-16, see
     there: the Settings app may use only the two settings members); the `Companion` column of memory.md 3.9
     moved to `Router`. Reads (`Search`, `Facts`, `Related`, `Provenance`, `Primer`) and `Propose`
-    and `PlanForget` are `Router` or `ShellUi`; `Cuad` may only `Record` `Area(Cua)` bodies by a
-    `Cua` run actor. There is no `Caller::Companion`, so `Refusal::OutsideSpace` and the
+    and `PlanForget` are `Router` or `ShellUi`; `ComputerUseDaemon` may only `Record` `Area(ComputerUse)` bodies by a
+    `ComputerUse` run actor. There is no `Caller::Companion`, so `Refusal::OutsideSpace` and the
     "companion cannot read another Space" test are the router's (the actions service's) check; memoryd keeps
     the refusal for requests that name a Space the caller class may not use.
   - The Space is part of every request that names one. memory.md 3.9 writes `Related(ThingRef)` and
@@ -181,7 +181,7 @@ Nothing below is built; the interfaces it will use are.
   - `Actor`, `Effect`, `Label`, `SpaceId`, `EntityId`, `RunId` and `SessionId` are the accounts service's `prov`
     and `account-core`; `AgentTier` is `prov::AgentRole`; `ThingRef/ThingKind/ThingKey` are aliases of
     `EntityId/EntityKind/EntityKey`; `ActionName` is `prov`'s and not re-declared.
-  - `EventBody` has no `Action`, `Session`, `Cua`, `Policy` or `Consent`: other areas' payloads are
+  - `EventBody` has no `Action`, `Session`, `ComputerUse`, `Policy` or `Consent`: other areas' payloads are
     `Area(AreaPayload)` (an `AreaTag`, the owner's `KindTag`, `JsonText`, and the `things` for
     cascade-forget). `UndoRef` stays on `TimelineEntry` (always `None` until the actions service supplies the token
     in a payload).
@@ -217,7 +217,7 @@ Nothing below is built; the interfaces it will use are.
   Promote hunks with pre-images kept (`RunEffect::ApplyHunks`); Me5 the retention table and the
   14-day pending TTL (`RuleSet::standard`, `PENDING_TTL_DAYS`); Me6 apps do not query memory in v1
   (the matrix); Me7 plain tar export, the digest subkey only when ticked (`VerificationKey`);
-  Me8 not memory's (the cua area).
+  Me8 not memory's (the computer use area).
 - **Physical erasure** on copy-on-write storage is only guaranteed by destroying a Space's key;
   per-item forget is logical deletion plus SQLite `secure_delete`. The UI states this limit
   (memory.md conflict 2).
@@ -295,7 +295,7 @@ error of its name, one to one. `DbusTransport::call` maps a missing daemon
 
 **Who is calling.** `Peers` turns the sender's unique name into a `Caller`. `ProcPeers` is the accounts service's
 `ProcCallers` (bus pid, then `/proc/<pid>/cgroup` alone; no `exe`, which a Landlock domain cannot
-read) with `callers::caller_for` mapping the accounts service's caller onto the memory service's: role `cua` is `Cuad`,
+read) with `callers::caller_for` mapping the accounts service's caller onto the memory service's: role `computer_use` is `ComputerUseDaemon`,
 role `sheet_host` of app `org.bardo.Shell` is `ShellUi`, role `settings` of app `org.bardo.Settings`
 (the unit `org.bardo.Settings.service`, the Settings app) is `Settings`, role `agent` of app
 `org.bardo.Intents` is `Router`, every other identified process is `App`. The table is `/etc/bardo/memoryd-callers.toml`
@@ -399,17 +399,17 @@ it explicitly and match nothing by actor, so an app rule or an app forget reache
 events only through their things; `Forget` by Space or Kind reaches them. `ActorFilter::Terminal`
 (slug `terminal`) is the timeline's own bucket for it (`You` is the person only; `Mcp` got its own bucket in the w4 fill).
 
-**Interface ask 26 (cua `HandedBack.user_events`): decided, and done on this side.** Option taken:
-`cua-bus` depends on `memory-core` and carries `memory_core::EventRef`; no memory call at record
+**Interface ask 26 (computer use `HandedBack.user_events`): decided, and done on this side.** Option taken:
+`computer-use-bus` depends on `memory-core` and carries `memory_core::EventRef`; no memory call at record
 time. Why: `memory-core` is already pure (its tree is `account-core`, `prov`, serde, thiserror),
-cua is above the memory service in the repo order and cuad already depends on it, so the edge costs cua-bus
-nothing it does not already link; a memory call at record time would need `Caller::Cuad` to read
-events, which the authorisation matrix refuses on purpose (cuad handles untrusted screen text).
-`scripts/check-boundary.sh` now also forbids cua's own effects list (`hyper-util rustls pipewire
-wayland-* reis atspi rmcp cedar-policy`) from `memory-core`, so the edge cannot break cua's
-boundary later. What cua does (not in this repo): add `memory-core` to cua-bus's `Cargo.toml` and to
+Computer use is above the memory service in the repo order and the computer-use daemon already depends on it, so the edge costs computer-use-bus
+nothing it does not already link; a memory call at record time would need `Caller::ComputerUseDaemon` to read
+events, which the authorisation matrix refuses on purpose (the computer-use daemon handles untrusted screen text).
+`scripts/check-boundary.sh` now also forbids computer use's own effects list (`hyper-util rustls pipewire
+wayland-* reis atspi rmcp cedar-policy`) from `memory-core`, so the edge cannot break computer_use's
+boundary later. What computer use does (not in this repo): add `memory-core` to computer-use-bus's `Cargo.toml` and to
 its row in `check-boundary.sh`, and give `HandedBack` `user_events: Vec<EventRef>`. The router, not
-cuad, reads the person's events during the takeover (`Recent`, a `Router` call) and hands them over.
+The computer-use daemon, reads the person's events during the takeover (`Recent`, a `Router` call) and hands them over.
 
 ### Closed by the w4 fill (branch w4-memory; asks 73-77, 93, 94)
 
@@ -532,11 +532,11 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   feature the variable is ignored and a line says `ignoring it and reading /proc`. A harness
   writes, for each test process pid (the bus's pid of the connection), a file
   `<dir>/<pid>/cgroup` containing `0::/system.slice/intentd.service` (router),
-  `0::/system.slice/shell.service` (shell), `0::/system.slice/cuad.service` (cuad) or
+  `0::/system.slice/shell.service` (shell), `0::/system.slice/computer_use_daemon.service` (the computer-use daemon) or
   `0::/user.slice/app.slice/app-org.example.Mail-1.scope` (an app), plus a callers file with
   `[[caller]]` rows for the units (the format above). Files may be written after the daemon
-  starts: it reads at call time. Unit names checked: intentd, companiond, readerd, cuad,
-  voiced, actions-mcp (actions/cua `dist/*.service`), the shell (`shell/dist/shell.service`), inferd.
+  starts: it reads at call time. Unit names checked: intentd, companiond, readerd, the computer-use daemon,
+  voiced, actions-mcp (actions/computer_use `dist/*.service`), the shell (`shell/dist/shell.service`), inferd.
   `~/desktop` has no unit files. `voiced.service` and `actions-mcp.service` have no row (neither
   calls memoryd yet).
 
@@ -595,7 +595,7 @@ reads them.
    (a rule can only name a path that exists when it is applied). memoryd never writes it.
 6. **`memoryd --write-schema DIR`** writes `memory.settings.toml` for a local install. `notify` is now a
    dependency of memoryd as well as memory-watch (`scripts/check-boundary.sh` comment updated); the watch
-   code has the same shape as the actions service's intentd and cua's cuad (`SettingsWatch`): one shared crate replaces the
+   code has the same shape as the actions service's intentd and computer use's computer-use daemon (`SettingsWatch`): one shared crate replaces the
    three copies when the accounts service has a place for it.
 7. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent` mark) and
    parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a scratch
@@ -847,7 +847,7 @@ app's own). What this adds, on the accounts service 993c56b (`Spaces1`, `SpaceId
 
 - **Ownership.** `allowed` refuses an app's request that names another app's own Space (`Refusal::OutsideSpace`, the
   existing refusal: "reaches into another Space"); a desktop-wide Space and `desktop` are open. An app's batch is
-  checked record by record. The router, cuad, the shell and the Settings app are not apps and are not held to it.
+  checked record by record. The router, the computer-use daemon, the shell and the Settings app are not apps and are not held to it.
 - **Removal.** `MemoryRequest::RemoveSpace(space, Removal)` with `Removal { memories: MemoryFate, history: HistoryFate }`
   (shell only; D-Bus `Control.RemoveSpace(space, removal)`, `removal` the JSON
   `{"memories":"move_to_apps"|"delete","history":"keep"|"delete"}`, answering `Relocation` JSON
@@ -1042,7 +1042,7 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
   local, memoryd, tests). No re-export is left in `memory-core`.
 - Needs a change at the next re-pin (`use memory_core::Caller` becomes `use memory_service::Caller`):
   The actions service (`agent-inapp` tests `audit_queue`, `multi`, `seams`; `companion-memory` tests `portable`,
-  `session_log`; `intentd` test support only mentions it in a comment), cua (`cuad` tests
+  `session_log`; `intentd` test support only mentions it in a comment), computer use (`computer_use_daemon` tests
   `links.rs:102,223`). The shell, the Settings app, files, mailo and anyview do not name it. Those users already
   depend on `memory-service` for `MemoryService`, since `InProcess` takes one.
 
@@ -1060,7 +1060,7 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
   golden test `minted_fact_ids_keep_their_exact_text` pins seven ids computed with a line-for-line
   port of the old encoder before the swap. `is_fact_id` stays: it checks text read from files.
 - Other hand-written hex in the memory service: none (`{:02x}` and friends do not occur).
-- Users in other repos: none. `git grep` at origin/master of the actions service, cua, the shell and the Settings app finds no use of
+- Users in other repos: none. `git grep` at origin/master of the actions service, computer use, the shell and the Settings app finds no use of
   `memory_core::hex_of` or `from_hex` (the Settings app has its own unrelated `settings-app-ui` `hex_of`). The actions service's
   own `format!("{b:02x}")` copies are the actions service lane's.
 - Licences: MIT and MIT OR Apache-2.0 are in deny.toml's list. `ulid` pulls `web-time` only on wasm.

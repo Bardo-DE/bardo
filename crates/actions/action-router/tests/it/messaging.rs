@@ -424,7 +424,7 @@ async fn nobody_reads_another_partys_inbox() {
     let (_worker, _front) = world(&router).await;
     let reply = ask(
         &router,
-        &caller("org.bardo.ComputerUse", CallerRole::Cua),
+        &caller("org.bardo.ComputerUse", CallerRole::ComputerUse),
         IntentsRequest::MessageInbox(InboxAsk {
             agent: AgentRef::Companion,
             after: None,

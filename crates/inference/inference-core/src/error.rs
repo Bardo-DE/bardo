@@ -25,7 +25,7 @@ pub enum InferRefusal {
     #[error("spend cap reached")]
     OverBudget,
     /// The request does not fit the session's need (a chat request on a speech session, a
-    /// computer-use need with a class other than `Screen`, `CuaStep` before `CuaBegin`, audio
+    /// computer-use need with a class other than `Screen`, `ComputerUseStep` before `ComputerUseBegin`, audio
     /// outside a `Transcribe` turn).
     #[error("request does not fit this session")]
     Unsupported,

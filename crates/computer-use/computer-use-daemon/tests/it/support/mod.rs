@@ -7,29 +7,29 @@
 pub mod bus;
 
 use computer_use_bus::RunEnd;
-use computer_use_daemon::{CuadConfig, Supervisor, SupervisorEvent};
+use computer_use_daemon::{ComputerUseDaemonConfig, Supervisor, SupervisorEvent};
 use computer_use_desktop::BackendKind;
 use computer_use_fake::scene::{world, world_over};
 use computer_use_fake::{FakePdp, FakeSeams, Fixture};
-use computer_use_run::{CuaConfig, CuaModelError, CuaSignal};
-use inference_core::CuaStepReply;
+use computer_use_run::{ComputerUseConfig, ComputerUseModelError, ComputerUseSignal};
+use inference_core::ComputerUseStepReply;
 use provenance::RunId;
 use std::time::Duration;
 use tokio::sync::broadcast::Receiver;
 
-pub fn enabled() -> CuadConfig {
-    CuadConfig {
-        settings: CuaConfig {
+pub fn enabled() -> ComputerUseDaemonConfig {
+    ComputerUseDaemonConfig {
+        settings: ComputerUseConfig {
             enabled: true,
-            ..CuaConfig::default()
+            ..ComputerUseConfig::default()
         },
-        ..CuadConfig::default()
+        ..ComputerUseDaemonConfig::default()
     }
 }
 
 pub fn supervisor(
     kind: BackendKind,
-    script: Vec<Result<CuaStepReply, CuaModelError>>,
+    script: Vec<Result<ComputerUseStepReply, ComputerUseModelError>>,
     gate: FakePdp,
 ) -> Supervisor<FakeSeams> {
     Supervisor::new(world(kind, script, gate), enabled())
@@ -38,7 +38,7 @@ pub fn supervisor(
 /// [`supervisor`] over another window's accessibility tree.
 pub fn supervisor_over(
     kind: BackendKind,
-    script: Vec<Result<CuaStepReply, CuaModelError>>,
+    script: Vec<Result<ComputerUseStepReply, ComputerUseModelError>>,
     gate: FakePdp,
     fixture: Fixture,
 ) -> Supervisor<FakeSeams> {
@@ -50,7 +50,7 @@ pub fn supervisor_over(
 pub async fn ended_with(
     events: &mut Receiver<SupervisorEvent>,
     run: &RunId,
-) -> (RunEnd, Vec<CuaSignal>) {
+) -> (RunEnd, Vec<ComputerUseSignal>) {
     let wait = async {
         let mut signals = Vec::new();
         loop {

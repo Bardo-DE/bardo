@@ -5,7 +5,8 @@ use crate::provider::{OpenAppsAsk, StartRefusal, StartRequest};
 use crate::reasons::words_of;
 use account_core::AppName;
 use computer_use_bus::{
-    ControlRefusal, CuaCaller, CuaTask, ReportRoute, RunOrigin, SuccessCheck, TaskTarget,
+    ComputerUseCaller, ComputerUseTask, ControlRefusal, ReportRoute, RunOrigin, SuccessCheck,
+    TaskTarget,
 };
 use computer_use_desktop::WindowTrust;
 use computer_use_desktop::{Desktop, RunMode, ToplevelInfo, ToplevelState};
@@ -83,7 +84,7 @@ fn choose_app(windows: &[ToplevelInfo], allows: &Apps) -> TaskRefusal {
 pub(crate) async fn task_for<S: Seams>(
     supervisor: &Supervisor<S>,
     request: &StartRequest,
-) -> Result<CuaTask, TaskRefusal> {
+) -> Result<ComputerUseTask, TaskRefusal> {
     let caps = supervisor.desktop().caps();
     let mode = match request.mode {
         DefaultMode::InPlace => RunMode::InPlace,
@@ -134,7 +135,7 @@ pub(crate) async fn task_for<S: Seams>(
             }
         }
     };
-    Ok(CuaTask {
+    Ok(ComputerUseTask {
         app,
         goal: request.goal.clone(),
         asked: request.asked.clone(),
@@ -164,7 +165,7 @@ pub(crate) async fn starts<S: Seams>(
     while let Some(request) = queue.recv().await {
         let started = match task_for(&supervisor, &request).await {
             Ok(task) => supervisor
-                .start(CuaCaller::Router, task)
+                .start(ComputerUseCaller::Router, task)
                 .await
                 .map_err(TaskRefusal::from),
             Err(refusal) => Err(refusal),

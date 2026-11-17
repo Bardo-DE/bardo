@@ -1,4 +1,4 @@
-//! `org.bardo.Intents1.Gate`: the computer-use gate, for cuad.
+//! `org.bardo.Intents1.Gate`: the computer-use gate, for the computer-use daemon.
 
 use account_dbus::Details;
 use zbus::fdo;
@@ -15,7 +15,7 @@ pub trait Gate {
     /// and the run it is for). Answers a Request whose `Response` carries a `GrantAnswer`.
     fn grant(&self, ask: &str) -> zbus::Result<OwnedObjectPath>;
 
-    /// Checks one pixel step (`CuaAsk` JSON). Answers a Request whose `Response` carries a `GateAnswer`.
+    /// Checks one pixel step (`ComputerUseAsk` JSON). Answers a Request whose `Response` carries a `GateAnswer`.
     fn check(&self, ask: &str, options: &Details) -> zbus::Result<OwnedObjectPath>;
 }
 

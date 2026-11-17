@@ -1,4 +1,4 @@
-//! The JSON bodies of the `Cua1` properties and signals.
+//! The JSON bodies of the `ComputerUse1` properties and signals.
 
 use crate::budget::{BudgetUse, RunBudget};
 use account_core::AppName;

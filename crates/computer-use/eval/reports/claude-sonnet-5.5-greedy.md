@@ -1,4 +1,4 @@
-# cua eval: claude-sonnet-5.5-greedy
+# Computer-use eval: claude-sonnet-5.5-greedy
 
 Played by: claude-sonnet-5.5 through inferd on a private bus (Need::Llm with images on class screen, tier Balanced, the key held by accountd), thinking Off, sampling from the provider's defaults, 1 run(s) per task; 96 model turns, 255954 prompt and 14192 reply tokens, $0.6538 at the list price, inferd's ledger $0.6538; ran to the end; isolation: 9 environment variables, 0 with a credential-looking name, 0 key file(s) open: clean.
 28 runs over 31 tasks. Bounds are 95% Wilson intervals; a rate over few runs has a wide one.

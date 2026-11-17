@@ -35,7 +35,7 @@ impl<S: Seams> Router<S> {
         role: CallerRole,
         open: SessionOpen,
     ) -> IntentsReply {
-        if role == CallerRole::Cua && !matches!(open.agent, AgentRef::Cua { .. }) {
+        if role == CallerRole::ComputerUse && !matches!(open.agent, AgentRef::ComputerUse { .. }) {
             return refuse(WireRefusal::NotAllowed);
         }
         // The host of an external agent opens that agent's session and nothing else, and says
@@ -47,9 +47,9 @@ impl<S: Seams> Router<S> {
             (CallerRole::AcpAgent, _) => return refuse(WireRefusal::NotAllowed),
             _ => None,
         };
-        if let AgentRef::Cua { run } = &open.agent
+        if let AgentRef::ComputerUse { run } = &open.agent
             && self.locked().sessions.values().any(|r| {
-                matches!(&r.actor, Actor::Companion { role: AgentRole::Cua { run: held }, .. } if held == run)
+                matches!(&r.actor, Actor::Companion { role: AgentRole::ComputerUse { run: held }, .. } if held == run)
             })
         {
             return refuse(WireRefusal::Malformed);
@@ -68,10 +68,9 @@ impl<S: Seams> Router<S> {
         // Only the computer-use daemon may say which conversation a run works for, and only for
         // the run's own session: from anyone else it is ignored, so no session can borrow a looser
         // conversation's mode.
-        let acts_for = open
-            .acts_for
-            .clone()
-            .filter(|_| role == CallerRole::Cua && matches!(open.agent, AgentRef::Cua { .. }));
+        let acts_for = open.acts_for.clone().filter(|_| {
+            role == CallerRole::ComputerUse && matches!(open.agent, AgentRef::ComputerUse { .. })
+        });
         self.open_session(
             &caller.app.name,
             SessionOpen {
@@ -102,7 +101,7 @@ impl<S: Seams> Router<S> {
         };
         let task = match &open.agent {
             AgentRef::Worker { task } => task.clone(),
-            AgentRef::Companion | AgentRef::Cua { .. } | AgentRef::User => minted,
+            AgentRef::Companion | AgentRef::ComputerUse { .. } | AgentRef::User => minted,
         };
         if st.tasks.get(&task).is_some() {
             return refuse(WireRefusal::Malformed);
@@ -241,7 +240,7 @@ impl<S: Seams> Router<S> {
         };
         if matches!(
             role,
-            CallerRole::Field | CallerRole::Cua | CallerRole::Editor | CallerRole::AcpAgent
+            CallerRole::Field | CallerRole::ComputerUse | CallerRole::Editor | CallerRole::AcpAgent
         ) && record.opener != caller.app.name
         {
             return refuse(WireRefusal::NotAllowed);

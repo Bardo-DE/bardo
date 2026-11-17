@@ -28,7 +28,7 @@ fn a_live_schema_with_a_never_settable_key_marked_settable_is_rejected() {
         "accounts.clients.google",
         "ai.local_only",
         "ai.models.default",
-        "cua.enabled",
+        "computer_use.enabled",
         "agent.budget",
         "memory.on",
         "companion.mood",

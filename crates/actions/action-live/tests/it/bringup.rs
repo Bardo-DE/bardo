@@ -226,9 +226,9 @@ fn inferd_is_never_given_a_local_engine() {
     let shell = callers["shell"].as_array().expect("a shell row");
     assert_eq!(shell[0].as_str(), Some("bardo-shell.service"));
     assert!(callers["places"].is_array());
-    // cuad may open a computer-use session, as on an install.
+    // The computer-use daemon may open a computer-use session, as on an install.
     assert_eq!(
-        callers["cua"][0].as_str(),
+        callers["computer_use"][0].as_str(),
         Some("bardo-computer-use.service")
     );
 

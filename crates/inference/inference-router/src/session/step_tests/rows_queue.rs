@@ -64,7 +64,7 @@ pub(super) fn rows() -> Vec<Row> {
             in_turn_with(
                 RequestKind::Transcribe,
                 expecting(512),
-                CuaProgress::NotBegun,
+                ComputerUseProgress::NotBegun,
                 Some(speak(DataClass::Voice)),
             ),
             frame(audio(0, 8)),

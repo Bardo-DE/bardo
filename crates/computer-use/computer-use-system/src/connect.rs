@@ -1,8 +1,8 @@
-//! cuad's links to the daemons it works with, over one session-bus connection: the router
+//! The computer-use daemon's links to the daemons it works with, over one session-bus connection: the router
 //! (`Intents1`) for the gate and the message path, memoryd (`Memory1`) for the event log and
 //! inferd (`Inference1`) for the model.
 
-use crate::model::InferdCuaModel;
+use crate::model::InferdComputerUseModel;
 use account_capability::Tier;
 use action_client::Intents;
 use computer_use_host::DaemonLinks;
@@ -18,7 +18,7 @@ pub struct Links {
     /// The event log and the message path.
     pub events: DaemonLinks<memory_client::DbusTransport, action_client::DbusTransport>,
     /// The model, over inferd on the same bus.
-    pub model: InferdCuaModel<inference_client::DbusTransport>,
+    pub model: InferdComputerUseModel<inference_client::DbusTransport>,
 }
 
 impl Links {
@@ -33,8 +33,10 @@ impl Links {
                 Memory::over(memory_client::DbusTransport::new(connection.clone())),
                 Intents::over(action_client::DbusTransport::new(connection.clone())),
             ),
-            model: InferdCuaModel::over(inference_client::DbusTransport::over(connection.clone()))
-                .on_tier(tier),
+            model: InferdComputerUseModel::over(inference_client::DbusTransport::over(
+                connection.clone(),
+            ))
+            .on_tier(tier),
         }
     }
 }

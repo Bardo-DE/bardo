@@ -2,7 +2,7 @@
 //!
 //! The deterministic check cannot see a paraphrase. When the person has switched the reader on,
 //! the screen's text is also handed to the quarantined reader, which reads untrusted text under a
-//! closed task, has no tools and answers a typed value only. cua asks for one of three words
+//! closed task, has no tools and answers a typed value only. Computer use asks for one of three words
 //! ([`ScreenRead`]); nothing the reader says becomes text in the run.
 
 use super::excerpt::readable;

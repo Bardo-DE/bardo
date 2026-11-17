@@ -49,7 +49,7 @@ ACCOUNTS="$CRATES/accounts"
 INFERENCE="$CRATES/inference"
 MEMORY="$CRATES/memory"
 MODELS="$CRATES/models"
-CUA="$CRATES/computer-use"
+COMPUTER_USE="$CRATES/computer-use"
 
 PREFIX="${PREFIX:-$HOME/.local}"
 DRY=0
@@ -149,7 +149,7 @@ build_plan() {
   plan_tree data "$ACTIONS/dist/skills" "$DATA/bardo/skills"
   plan_tree data "$ACTIONS/policy/presets" "$DATA/bardo/actions/permissions"
   local dir
-  for dir in "$ACTIONS" "$MEMORY" "$ACCOUNTS" "$INFERENCE" "$CUA"; do
+  for dir in "$ACTIONS" "$MEMORY" "$ACCOUNTS" "$INFERENCE" "$COMPUTER_USE"; do
     plan_tree data "$dir/dist/intents" "$DATA/bardo/intents"
     plan_tree data "$dir/dist/settings" "$DATA/bardo/settings"
   done

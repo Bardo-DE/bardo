@@ -9,7 +9,7 @@
 use super::Exec;
 use crate::machine::effect::RunEffect;
 use crate::machine::input::{CheckResult, RunInput};
-use crate::model::CuaModelError;
+use crate::model::ComputerUseModelError;
 use crate::screen::ScreenRead;
 use crate::seams::{LinkError, Seams};
 use computer_use_capture::CaptureError;
@@ -54,9 +54,10 @@ pub fn deadline_of(effect: &RunEffect) -> Option<Deadline> {
             QUICK,
             Some(RunInput::CaptureFailed(CaptureError::Protocol(timed_out()))),
         ),
-        RunEffect::CallModel { .. } => {
-            (MODEL, Some(RunInput::ModelFailed(CuaModelError::Transient)))
-        }
+        RunEffect::CallModel { .. } => (
+            MODEL,
+            Some(RunInput::ModelFailed(ComputerUseModelError::Transient)),
+        ),
         RunEffect::ReadScreen(_) => (QUICK, Some(RunInput::ScreenRead(ScreenRead::Unavailable))),
         RunEffect::Check(_) => (GATE, Some(RunInput::GateFailed(LinkError::Unavailable))),
         RunEffect::Inject(_) => (

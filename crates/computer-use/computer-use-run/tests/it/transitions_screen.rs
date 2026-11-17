@@ -7,14 +7,14 @@ use crate::support::*;
 use account_core::AppName;
 use action_gate_wire::GateAnswer;
 use computer_use_a11y_tree::Role;
-use computer_use_action::{Chord, CuaAction, Modifier, Repeat, WindowSpace};
+use computer_use_action::{Chord, ComputerUseAction, Modifier, Repeat, WindowSpace};
 use computer_use_bus::{
-    ActionResult, BlockedOn, CuaOutcome, CuaRecord, LocalRefusal, QuestionId, Refusal, ScreenKind,
-    SuccessCheck,
+    ActionResult, BlockedOn, ComputerUseOutcome, ComputerUseRecord, LocalRefusal, QuestionId,
+    Refusal, ScreenKind, SuccessCheck,
 };
 use computer_use_desktop::{BackendKind, Stamp};
 use computer_use_run::{
-    CuaSignal, FORCED_NO, FORCED_YES, Held, ReaderMode, Run, RunEffect, RunInput, RunPhase,
+    ComputerUseSignal, FORCED_NO, FORCED_YES, Held, ReaderMode, Run, RunEffect, RunInput, RunPhase,
     ScreenRead,
 };
 use inference_core::StepIndex;
@@ -61,7 +61,9 @@ fn screen_records(d: &Drive) -> Vec<(Vec<ScreenKind>, bool)> {
         .iter()
         .filter_map(|e| match e {
             RunEffect::Record(r) => match &**r {
-                CuaRecord::ScreenSuspicious { kinds, asked, .. } => Some((kinds.clone(), *asked)),
+                ComputerUseRecord::ScreenSuspicious { kinds, asked, .. } => {
+                    Some((kinds.clone(), *asked))
+                }
                 _ => None,
             },
             _ => None,
@@ -69,8 +71,8 @@ fn screen_records(d: &Drive) -> Vec<(Vec<ScreenKind>, bool)> {
         .collect()
 }
 
-fn super_tab() -> CuaAction<WindowSpace> {
-    CuaAction::Key {
+fn super_tab() -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Key {
         chord: Chord::new(BTreeSet::from([Modifier::Super]), keyboard_types::Key::Tab).unwrap(),
         repeat: Repeat::ONCE,
     }
@@ -94,7 +96,7 @@ fn a_suspicious_look_asks_before_the_model_is_called() {
         .effects
         .iter()
         .find_map(|e| match e {
-            RunEffect::Emit(CuaSignal::AskUser(_, body)) => Some(body.clone()),
+            RunEffect::Emit(ComputerUseSignal::AskUser(_, body)) => Some(body.clone()),
             _ => None,
         })
         .expect("the person is asked");
@@ -134,7 +136,7 @@ fn a_no_ends_the_run_blocked_with_the_kind_and_a_plain_report() {
     d.feed(answer(1, FORCED_NO));
     assert_eq!(
         *d.phase(),
-        RunPhase::Finished(CuaOutcome::Blocked(BlockedOn::ScreenSuspicious(
+        RunPhase::Finished(ComputerUseOutcome::Blocked(BlockedOn::ScreenSuspicious(
             ScreenKind::Instruction
         )))
     );
@@ -155,7 +157,7 @@ fn a_yes_calls_the_model_and_is_remembered_for_that_window_and_kind() {
     assert!(d.has(|e| matches!(e, RunEffect::CallModel { .. })));
     assert!(d.has(|e| matches!(
         e,
-        RunEffect::Record(r) if matches!(**r, CuaRecord::Confirmed { .. })
+        RunEffect::Record(r) if matches!(**r, ComputerUseRecord::Confirmed { .. })
     )));
     assert_eq!(d.run.track.held, Held::Nothing);
     assert!(d.run.track.screen.suspicious);
@@ -167,7 +169,7 @@ fn a_yes_calls_the_model_and_is_remembered_for_that_window_and_kind() {
     d.feed(observed(2, vec![planted()]));
     assert_eq!(*d.phase(), RunPhase::Thinking(StepIndex(2)));
     assert!(d.has(|e| matches!(e, RunEffect::CallModel { .. })));
-    assert!(!d.has(|e| matches!(e, RunEffect::Emit(CuaSignal::AskUser(..)))));
+    assert!(!d.has(|e| matches!(e, RunEffect::Emit(ComputerUseSignal::AskUser(..)))));
     assert_eq!(
         screen_records(&d),
         vec![(vec![ScreenKind::Instruction], false)]
@@ -193,7 +195,7 @@ fn a_new_kind_in_the_same_window_asks_again() {
         )]
     );
     let question = d.effects.iter().find_map(|e| match e {
-        RunEffect::Emit(CuaSignal::AskUser(_, body)) => Some(body.question.value.clone()),
+        RunEffect::Emit(ComputerUseSignal::AskUser(_, body)) => Some(body.question.value.clone()),
         _ => None,
     });
     assert!(
@@ -366,7 +368,7 @@ fn the_readers_answer_decides_between_the_model_and_the_question() {
     d.feed(answer(1, FORCED_NO));
     assert_eq!(
         *d.phase(),
-        RunPhase::Finished(CuaOutcome::Blocked(BlockedOn::ScreenSuspicious(
+        RunPhase::Finished(ComputerUseOutcome::Blocked(BlockedOn::ScreenSuspicious(
             ScreenKind::ReaderFlagged
         )))
     );

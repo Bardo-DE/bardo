@@ -84,7 +84,7 @@ text_id!(
     is_id
 );
 text_id!(
-    /// One computer-use run. A slug minted by cuad (`r-<n>`).
+    /// One computer-use run. A slug minted by the computer-use daemon (`r-<n>`).
     RunId,
     "run id",
     is_id

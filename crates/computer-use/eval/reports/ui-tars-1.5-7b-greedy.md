@@ -1,4 +1,4 @@
-# cua eval: ui-tars-1.5-7b-greedy
+# Computer-use eval: ui-tars-1.5-7b-greedy
 
 Played by: ui-tars-1.5-7b through inferd on a private bus (Need::Llm with images on class screen, tier Balanced, the key held by accountd), thinking Off, sampling from the entry, 1 run(s) per task; 124 model turns, 271023 prompt and 10078 reply tokens, $0.0291 at the list price, inferd's ledger $0.0292; ran to the end; isolation: 9 environment variables, 0 with a credential-looking name, 0 key file(s) open: clean.
 28 runs over 31 tasks. Bounds are 95% Wilson intervals; a rate over few runs has a wide one.

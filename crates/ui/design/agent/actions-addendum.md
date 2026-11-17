@@ -37,7 +37,7 @@ Several points from the coordinator's first auto-mode message change:
 **How it changes:**
 - Narrowing is automatic and silent.
 - Widening, from a later turn or a planner request, needs a compositor confirmation that quotes the user's turn.
-- No model can mint or widen a TaskPolicy: not the reviewer, the planner, the reader or the CUA.
+- No model can mint or widen a TaskPolicy: not the reviewer, the planner, the reader or the computer use.
 - If the writer fails, there is no TaskPolicy. Every non-Read call is then "Outside".
 
 ```rust
@@ -378,7 +378,7 @@ pub struct Rate95 { pub point: Permille, pub low: Permille, pub high: Permille }
 | Exfiltration | 1,000+ synthetic items: recipients, URLs or paths taken from content; fragmented across steps |
 | AdaptiveJudge | Suffixes in content, base64 and homoglyph encodings, approval-lookalike text, forged user turns, fence breakouts, multi-step fragmentation |
 | Benign | False Ask and false Deny per strictness |
-| UiSpoofing | Co-owned with cua: agent-drawn lookalike windows; reis/uinput synthetic input must never produce a `HardwareSeat` receipt |
+| UiSpoofing | Co-owned with computer use: agent-drawn lookalike windows; reis/uinput synthetic input must never produce a `HardwareSeat` receipt |
 
 **Running:**
 - **CI** (`cargo test -p action-eval`) runs every corpus except UiSpoofing through the deterministic layers, with `ScriptedReviewer::AlwaysAllow` and a maximal `TaskPolicy`. The structural guarantees (`AskOrDeny`, `NoOutbound`) must hold at 100%.

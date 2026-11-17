@@ -1,18 +1,18 @@
-//! `InferdCuaModel` over a scripted inferd session: what it opens, what it sends (the frame as a
+//! `InferdComputerUseModel` over a scripted inferd session: what it opens, what it sends (the frame as a
 //! sealed memfd at `AttachIndex(0)`, the layout from the buffer), what it forwards to the sink,
 //! and how every way a turn can end is sorted. Nothing here touches a bus, a GPU or a real inferd.
 
 use crate::scripted::*;
-use account_capability::CuaEnv;
+use account_capability::ComputerUseEnv;
 use account_capability::Tier;
 use account_core::DataClass;
 use account_match::Need;
 use computer_use_action::{DeviceSize, PixelFormat};
-use computer_use_run::{CuaModel, CuaModelError, ModelReach, StepEvent};
-use computer_use_system::InferdCuaModel;
+use computer_use_run::{ComputerUseModel, ComputerUseModelError, ModelReach, StepEvent};
+use computer_use_system::InferdComputerUseModel;
 use inference_core::{
-    AttachIndex, ClientFrame, CuaStepReply, FrameLayout, ImageSource, InferEvent, InferRefusal,
-    InferReply, InferRequest, ModelError, Readiness,
+    AttachIndex, ClientFrame, ComputerUseStepReply, FrameLayout, ImageSource, InferEvent,
+    InferRefusal, InferReply, InferRequest, ModelError, Readiness,
 };
 use rustix::fs::SealFlags;
 use std::collections::BTreeSet;
@@ -20,7 +20,7 @@ use std::collections::BTreeSet;
 #[tokio::test]
 async fn begin_opens_a_computer_use_screen_session_and_reads_to_the_acknowledgement() {
     let (transport, log) = Scripted::new(vec![ack()]);
-    let mut model = InferdCuaModel::over(transport).on_tier(Tier::Best);
+    let mut model = InferdComputerUseModel::over(transport).on_tier(Tier::Best);
     assert_eq!(model.served(), None);
     model.begin(begin()).await.expect("begun");
 
@@ -31,11 +31,13 @@ async fn begin_opens_a_computer_use_screen_session_and_reads_to_the_acknowledgem
     let Need::ComputerUse(need) = need else {
         panic!("{need:?}")
     };
-    assert_eq!(need.environments, BTreeSet::from([CuaEnv::Desktop]));
+    assert_eq!(need.environments, BTreeSet::from([ComputerUseEnv::Desktop]));
     assert_eq!((*class, *tier), (DataClass::Screen, Tier::Best));
     assert_eq!(
         log.frames,
-        vec![ClientFrame::Request(InferRequest::CuaBegin(begin()))]
+        vec![ClientFrame::Request(
+            InferRequest::ComputerUseBegin(begin())
+        )]
     );
     assert_eq!(log.attachments, vec![vec![]], "a begin carries no frame");
     drop(log);
@@ -44,7 +46,8 @@ async fn begin_opens_a_computer_use_screen_session_and_reads_to_the_acknowledgem
 
 #[tokio::test]
 async fn a_step_sends_the_frame_as_a_sealed_memfd_and_forwards_what_streams() {
-    let reply = CuaStepReply::new(vec![click()]).with_thought("the button is at 3,4".into());
+    let reply =
+        ComputerUseStepReply::new(vec![click()]).with_thought("the button is at 3,4".into());
     let (transport, log) = Scripted::new(vec![
         ack(),
         vec![
@@ -54,10 +57,10 @@ async fn a_step_sends_the_frame_as_a_sealed_memfd_and_forwards_what_streams() {
             InferEvent::ThoughtDelta("is at 3,4".into()),
             InferEvent::ActionProposed(click()),
             InferEvent::Usage(usage(20)),
-            InferEvent::Finished(InferReply::CuaStep(reply.clone())),
+            InferEvent::Finished(InferReply::ComputerUseStep(reply.clone())),
         ],
     ]);
-    let mut model = InferdCuaModel::over(transport);
+    let mut model = InferdComputerUseModel::over(transport);
     model.begin(begin()).await.expect("begun");
     let mut sink = Collect::default();
     let got = model
@@ -78,7 +81,7 @@ async fn a_step_sends_the_frame_as_a_sealed_memfd_and_forwards_what_streams() {
     assert_eq!(model.usage(), usage(20), "the last usage of the step");
 
     let log = log.lock().expect("lock");
-    let ClientFrame::Request(InferRequest::CuaStep(sent)) = &log.frames[1] else {
+    let ClientFrame::Request(InferRequest::ComputerUseStep(sent)) = &log.frames[1] else {
         panic!("{:?}", log.frames[1])
     };
     assert_eq!(sent.frame.source, ImageSource::Attached(AttachIndex(0)));
@@ -104,78 +107,78 @@ async fn a_step_sends_the_frame_as_a_sealed_memfd_and_forwards_what_streams() {
 async fn every_way_a_turn_can_end_is_sorted_for_the_run_machine() {
     let failed = |e| vec![InferEvent::Finished(InferReply::Failed(e))];
     let refused = |r| vec![InferEvent::Finished(InferReply::Refused(r))];
-    let cases: Vec<(&str, Vec<InferEvent>, CuaModelError)> = vec![
+    let cases: Vec<(&str, Vec<InferEvent>, ComputerUseModelError)> = vec![
         (
             "engine away",
             failed(ModelError::Unreachable),
-            CuaModelError::Transient,
+            ComputerUseModelError::Transient,
         ),
         (
             "engine loading",
             failed(ModelError::NotReady),
-            CuaModelError::Transient,
+            ComputerUseModelError::Transient,
         ),
         (
             "rate limited",
             failed(ModelError::RateLimited(3)),
-            CuaModelError::Transient,
+            ComputerUseModelError::Transient,
         ),
         (
             "unreadable",
             failed(ModelError::Unreadable),
-            CuaModelError::Parse,
+            ComputerUseModelError::Parse,
         ),
         (
             "unparseable",
             failed(ModelError::Unparseable),
-            CuaModelError::Parse,
+            ComputerUseModelError::Parse,
         ),
         (
             "model refused",
             failed(ModelError::Refused),
-            CuaModelError::Fatal,
+            ComputerUseModelError::Fatal,
         ),
         (
             "overflow",
             failed(ModelError::ContextOverflow),
-            CuaModelError::Fatal,
+            ComputerUseModelError::Fatal,
         ),
         (
             "no model",
             refused(InferRefusal::Unavailable),
-            CuaModelError::Transient,
+            ComputerUseModelError::Transient,
         ),
         (
             "no model sees the screen",
             refused(InferRefusal::NoModelSeesScreen),
-            CuaModelError::CannotSeeScreen,
+            ComputerUseModelError::CannotSeeScreen,
         ),
         (
             "no grant",
             refused(InferRefusal::NeedsGrant),
-            CuaModelError::Fatal,
+            ComputerUseModelError::Fatal,
         ),
         (
             "over budget",
             refused(InferRefusal::OverBudget),
-            CuaModelError::Fatal,
+            ComputerUseModelError::Fatal,
         ),
         (
             "cancelled",
             vec![InferEvent::Finished(InferReply::Cancelled)],
-            CuaModelError::Transient,
+            ComputerUseModelError::Transient,
         ),
         (
             "another kind of reply",
             vec![InferEvent::Finished(InferReply::Embed(
                 inference_core::EmbedReply::new(vec![], usage(1), served()),
             ))],
-            CuaModelError::Fatal,
+            ComputerUseModelError::Fatal,
         ),
     ];
     for (name, turn, want) in cases {
         let (transport, _) = Scripted::new(vec![ack(), turn]);
-        let mut model = InferdCuaModel::over(transport);
+        let mut model = InferdComputerUseModel::over(transport);
         model.begin(begin()).await.expect("begun");
         let got = model
             .step(request("x"), attachment(), &mut Collect::default())
@@ -186,7 +189,9 @@ async fn every_way_a_turn_can_end_is_sorted_for_the_run_machine() {
 
 #[tokio::test]
 async fn a_model_failure_leaves_the_session_usable_and_a_closed_one_does_not() {
-    async fn step(model: &mut InferdCuaModel<Scripted>) -> Result<CuaStepReply, CuaModelError> {
+    async fn step(
+        model: &mut InferdComputerUseModel<Scripted>,
+    ) -> Result<ComputerUseStepReply, ComputerUseModelError> {
         model
             .step(request("x"), attachment(), &mut Collect::default())
             .await
@@ -196,13 +201,18 @@ async fn a_model_failure_leaves_the_session_usable_and_a_closed_one_does_not() {
         vec![InferEvent::Finished(InferReply::Failed(
             ModelError::NotReady,
         ))],
-        vec![InferEvent::Finished(InferReply::CuaStep(empty_reply()))],
+        vec![InferEvent::Finished(InferReply::ComputerUseStep(
+            empty_reply(),
+        ))],
         // The session ends in the middle of this turn: no Finished.
         vec![InferEvent::ThoughtDelta("half".into())],
     ]);
-    let mut model = InferdCuaModel::over(transport);
+    let mut model = InferdComputerUseModel::over(transport);
     model.begin(begin()).await.expect("begun");
-    assert_eq!(step(&mut model).await, Err(CuaModelError::Transient));
+    assert_eq!(
+        step(&mut model).await,
+        Err(ComputerUseModelError::Transient)
+    );
     assert_eq!(
         step(&mut model).await,
         Ok(empty_reply()),
@@ -210,12 +220,12 @@ async fn a_model_failure_leaves_the_session_usable_and_a_closed_one_does_not() {
     );
     assert_eq!(
         step(&mut model).await,
-        Err(CuaModelError::Fatal),
+        Err(ComputerUseModelError::Fatal),
         "the session closed mid-turn"
     );
     assert_eq!(
         step(&mut model).await,
-        Err(CuaModelError::Fatal),
+        Err(ComputerUseModelError::Fatal),
         "and the history is gone"
     );
 }
@@ -236,7 +246,7 @@ async fn only_a_model_that_is_plainly_not_there_is_missing_before_a_run_starts()
             None => Scripted::unreachable(),
         };
         assert_eq!(
-            InferdCuaModel::over(transport).reach().await,
+            InferdComputerUseModel::over(transport).reach().await,
             want,
             "{readiness:?}"
         );
@@ -246,35 +256,38 @@ async fn only_a_model_that_is_plainly_not_there_is_missing_before_a_run_starts()
 #[tokio::test]
 async fn faults_before_and_around_the_session() {
     // inferd away: worth retrying. A step before a begin: nothing to step.
-    let mut down = InferdCuaModel::over(Scripted::unreachable());
-    assert_eq!(down.begin(begin()).await, Err(CuaModelError::Transient));
+    let mut down = InferdComputerUseModel::over(Scripted::unreachable());
+    assert_eq!(
+        down.begin(begin()).await,
+        Err(ComputerUseModelError::Transient)
+    );
     assert_eq!(
         down.step(request("x"), attachment(), &mut Collect::default())
             .await,
-        Err(CuaModelError::Fatal)
+        Err(ComputerUseModelError::Fatal)
     );
-    // inferd refusing the caller (its table does not name cuad) is not worth retrying.
+    // inferd refusing the caller (its table does not name the computer-use daemon) is not worth retrying.
     assert_eq!(
-        InferdCuaModel::over(Scripted::denying("the caller is not in its caller table"))
+        InferdComputerUseModel::over(Scripted::denying("the caller is not in its caller table"))
             .begin(begin())
             .await,
-        Err(CuaModelError::Fatal)
+        Err(ComputerUseModelError::Fatal)
     );
     // A begin answered with a step (actions in the acknowledgement) is a protocol fault.
-    let acting = CuaStepReply::new(vec![click()]);
-    let (transport, _) = Scripted::new(vec![vec![InferEvent::Finished(InferReply::CuaStep(
-        acting,
-    ))]]);
+    let acting = ComputerUseStepReply::new(vec![click()]);
+    let (transport, _) = Scripted::new(vec![vec![InferEvent::Finished(
+        InferReply::ComputerUseStep(acting),
+    )]]);
     assert_eq!(
-        InferdCuaModel::over(transport).begin(begin()).await,
-        Err(CuaModelError::Fatal)
+        InferdComputerUseModel::over(transport).begin(begin()).await,
+        Err(ComputerUseModelError::Fatal)
     );
     // A refused begin says why it ended.
     let (transport, _) = Scripted::new(vec![vec![InferEvent::Finished(InferReply::Refused(
         InferRefusal::RequiresCloud(DataClass::Screen),
     ))]]);
     assert_eq!(
-        InferdCuaModel::over(transport).begin(begin()).await,
-        Err(CuaModelError::Fatal)
+        InferdComputerUseModel::over(transport).begin(begin()).await,
+        Err(ComputerUseModelError::Fatal)
     );
 }

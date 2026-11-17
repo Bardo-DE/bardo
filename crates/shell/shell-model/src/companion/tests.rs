@@ -11,7 +11,7 @@ use companion_wire::{
     StepWireState,
 };
 use computer_use_action::RunMode;
-use computer_use_bus::{CuaOutcome, RunStateSlug};
+use computer_use_bus::{ComputerUseOutcome, RunStateSlug};
 use provenance::{
     ActionName, AppName, Effect, EntityId, EntityKey, EntityKind, Label, Labelled, RunId, TaskId,
 };
@@ -192,7 +192,7 @@ fn presence_priority_table() {
             state_with(
                 &[],
                 &[RunFacts {
-                    outcome: Some(CuaOutcome::Done),
+                    outcome: Some(ComputerUseOutcome::Done),
                     ..run("r-1", RunStateSlug::Finished, RunMode::InPlace)
                 }],
                 Summon::Rest,
@@ -817,7 +817,7 @@ fn the_screen_model_note_sets_and_clears_what_the_companion_says() {
 #[test]
 fn stop_all_pauses_the_runs_that_are_going_and_no_other() {
     let finished = RunFacts {
-        outcome: Some(CuaOutcome::Done),
+        outcome: Some(ComputerUseOutcome::Done),
         ..run("r-4", RunStateSlug::Finished, RunMode::InPlace)
     };
     let state = state_with(

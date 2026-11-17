@@ -11,13 +11,13 @@
 //!
 //! - the supervisor, its drive loop and its event stream ([`SupervisorEvent`]);
 //! - the safety tables the supervisor applies to every start and every call ([`guard`],
-//!   [`CuadConfig`]);
+//!   [`ComputerUseDaemonConfig`]);
 //! - the links over the actions service's and the memory service's transports: the router's gate ([`IntentsGate`]), the
 //!   message path and the record sink ([`DaemonLinks`], [`record_of`]);
 //! - the person's settings, read from text ([`read`], [`locator`] over the caller's
 //!   [`settings_store_fs::ReadText`]) and applied with `Supervisor::adopt` as the caller's watch reports each change.
 //!
-//! `cuad` is the daemon over this crate: the system seams, the D-Bus service and the file watch.
+//! `computer_use_daemon` is the daemon over this crate: the system seams, the D-Bus service and the file watch.
 //!
 //! # A supervisor over the fakes
 //!
@@ -25,15 +25,15 @@
 //! use computer_use_desktop::BackendKind;
 //! use computer_use_fake::FakePdp;
 //! use computer_use_fake::scene::world;
-//! use computer_use_host::{CuadConfig, Supervisor};
-//! use computer_use_run::CuaConfig;
+//! use computer_use_host::{ComputerUseDaemonConfig, Supervisor};
+//! use computer_use_run::ComputerUseConfig;
 //!
-//! let config = CuadConfig {
-//!     settings: CuaConfig {
+//! let config = ComputerUseDaemonConfig {
+//!     settings: ComputerUseConfig {
 //!         enabled: true,
-//!         ..CuaConfig::default()
+//!         ..ComputerUseConfig::default()
 //!     },
-//!     ..CuadConfig::default()
+//!     ..ComputerUseDaemonConfig::default()
 //! };
 //! let parts = world(BackendKind::KwinStock, Vec::new(), FakePdp::allow_all());
 //! let supervisor = Supervisor::new(parts, config);
@@ -55,13 +55,13 @@ mod settings;
 mod supervisor;
 
 pub use clock::SystemClock;
-pub use config::{A11yChoice, BackendChoice, ConfigError, CuadConfig};
+pub use config::{A11yChoice, BackendChoice, ComputerUseDaemonConfig, ConfigError};
 pub use events::{RunView, SupervisorEvent};
 pub use gate::{IntentsCheck, IntentsGate};
 pub use guard::guard;
 pub use links::{DaemonLinks, RecordContext, RecordError, record_of};
 pub use rules::{RULES_FILE, RulesError, SHIPPED_RULES, parse_rules, shipped_rules};
 pub use settings::{
-    AppAllow, AppRule, Apps, CuaSettings, SCHEMA, SETTINGS_FILE, is_browser, locator, read,
+    AppAllow, AppRule, Apps, ComputerUseSettings, SCHEMA, SETTINGS_FILE, is_browser, locator, read,
 };
 pub use supervisor::{Supervisor, mint_run_id};

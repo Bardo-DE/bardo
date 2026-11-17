@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-bus"
-description = "What crosses cuad's bus and its event log: the Cua1 bodies, the Start task, run states and outcomes, CuaRecord, the control refusals and who may call which member. Serde bodies over the vocabulary of memory-core, action-core, account-core, inference-core, prov and computer-use-action; no capability crate (accessibility, input, capture) is linked; results are prov Report messages."
+description = "What crosses the computer-use daemon's bus and its event log: the ComputerUse1 bodies, the Start task, run states and outcomes, ComputerUseRecord, the control refusals and who may call which member. Serde bodies over the vocabulary of memory-core, action-core, account-core, inference-core, prov and computer-use-action; no capability crate (accessibility, input, capture) is linked; results are prov Report messages."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

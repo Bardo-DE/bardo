@@ -24,5 +24,5 @@ pub fn introspection() -> String {
 
 /// The answer of every skeleton method: the interface is frozen, its behaviour not built.
 pub(crate) fn frozen() -> fdo::Error {
-    fdo::Error::NotSupported("cua: frozen interface, not implemented".into())
+    fdo::Error::NotSupported("computer_use: frozen interface, not implemented".into())
 }

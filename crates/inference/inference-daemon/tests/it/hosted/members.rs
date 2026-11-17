@@ -62,10 +62,10 @@ async fn availability_prepare_and_the_gpu_answer_over_the_bus() {
     assert_eq!(world.host.spawned.lock().expect("lock").len(), 1);
 
     // A refusal answers with its slug.
-    let cua = need_to_dbus(&cua_need());
+    let computer_use = need_to_dbus(&computer_use_need());
     assert_eq!(
         inference
-            .prepare(&cua, "screen", "fast", &Details::new())
+            .prepare(&computer_use, "screen", "fast", &Details::new())
             .await
             .expect("prepare"),
         "denied"

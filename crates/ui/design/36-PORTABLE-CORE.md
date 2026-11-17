@@ -32,7 +32,7 @@ more: the extras are additive, never a different program.
 | anyview | viewing, thumbnails, plugins with the helper installer | Quick Look peek from the shell; intents; share sheet |
 | The accounts service | accounts engine and providers, hosted in-process or as a service locator agent | accountd as the session's one account store; system consent sheet; syncd |
 | The memory service | memory files, event log, search, sealing, in-process `Memory` | memoryd: one memory for every app, file watching, consolidation on a timer |
-| The actions service | an in-app agent: router, policy point, reviewer, agent loop, skills over the app's own intents, confirm sheet drawn in-app | companiond and intentd: one companion across all apps; `bardo do`; cua (computer use); voiced; readerd quarantine |
+| The actions service | an in-app agent: router, policy point, reviewer, agent loop, skills over the app's own intents, confirm sheet drawn in-app | companiond and intentd: one companion across all apps; `bardo do`; computer use (computer use); voiced; readerd quarantine |
 | desktop only | | the shell, layer-shell-host, the compositor, the Settings app, the key remap daemon, the mouse gestures daemon |
 
 ## 3. In code

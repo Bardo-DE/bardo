@@ -9,7 +9,7 @@
 use crate::intents::{ClientError, Intents};
 use crate::transport::{Transport, TransportError};
 use action_core::{ActivationToken, CallProgress, CallRefusal, ConfirmId, Outcome};
-use action_gate_wire::{CuaAsk, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, GateAnswer};
 use action_vocab::{CallRequest, WindowKey};
 use action_wire::{IntentsReply, IntentsRequest};
 use provenance::SessionId;
@@ -213,7 +213,7 @@ impl<T: Transport> Intents<T> {
     ///
     /// Returns [`ClientError`] when the request could not be made or the service's reply was not
     /// the one wanted.
-    pub async fn gate_check_watched(&self, ask: CuaAsk) -> Result<GateWatch, ClientError> {
+    pub async fn gate_check_watched(&self, ask: ComputerUseAsk) -> Result<GateWatch, ClientError> {
         let Watched { events, steering } = self
             .transport()
             .watch(IntentsRequest::GateCheck(ask))

@@ -2,13 +2,16 @@
 //! dropped, the model is handed on, and nothing the run was about to do happens.
 
 use crate::support::*;
-use computer_use_bus::{CancelledBy, CuaCaller, CuaMember, CuaOutcome};
+use computer_use_bus::{CancelledBy, ComputerUseCaller, ComputerUseMember, ComputerUseOutcome};
 use computer_use_daemon::Supervisor;
 use computer_use_desktop::BackendKind;
 use computer_use_fake::scene::{click, reply, task, world};
 use computer_use_fake::{FakePdp, FakeSeams};
 use computer_use_run::{
-    CuaModel, CuaModelError, FrameAttachment, Parts, RunPhase, Seams, StepSink,
+    ComputerUseModel, ComputerUseModelError, FrameAttachment, Parts, RunPhase, Seams, StepSink,
+};
+use inference_core::{
+    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TokenUsage,
 };
 use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TurnUsage};
 
@@ -17,22 +20,22 @@ struct Mute {
     begun: u32,
 }
 
-impl CuaModel for Mute {
+impl ComputerUseModel for Mute {
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "CuaModel declares `begin` async; this stub has nothing to await"
+        reason = "ComputerUseModel declares `begin` async; this stub has nothing to await"
     )]
-    async fn begin(&mut self, _begin: CuaBegin) -> Result<(), CuaModelError> {
+    async fn begin(&mut self, _begin: ComputerUseBegin) -> Result<(), ComputerUseModelError> {
         self.begun += 1;
         Ok(())
     }
 
     async fn step(
         &mut self,
-        _request: CuaStepRequest,
+        _request: ComputerUseStepRequest,
         _frame: FrameAttachment,
         _sink: &mut impl StepSink,
-    ) -> Result<CuaStepReply, CuaModelError> {
+    ) -> Result<ComputerUseStepReply, ComputerUseModelError> {
         std::future::pending().await
     }
 
@@ -89,18 +92,21 @@ fn mute() -> Supervisor<MuteSeams> {
 async fn cancel_drops_the_model_call_and_the_run_ends_cancelled() {
     let sup = mute();
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Thinking(_))).await;
-    sup.control(CuaCaller::Shell, &id, CuaMember::Cancel)
+    sup.control(ComputerUseCaller::Shell, &id, ComputerUseMember::Cancel)
         .unwrap();
     let end = ended(&mut events, &id).await;
-    assert_eq!(end.outcome, CuaOutcome::Cancelled(CancelledBy::User));
+    assert_eq!(
+        end.outcome,
+        ComputerUseOutcome::Cancelled(CancelledBy::User)
+    );
     assert!(sup.runs().is_empty());
     // The lease went back and the window is free for another run, whose model call can begin
     // at once because the first let go of the model.
-    let again = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let again = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &again, |p| matches!(p, RunPhase::Thinking(_))).await;
-    sup.stop_all(CuaCaller::Shell).unwrap();
+    sup.stop_all(ComputerUseCaller::Shell).unwrap();
     ended(&mut events, &again).await;
 }
 
@@ -108,9 +114,9 @@ async fn cancel_drops_the_model_call_and_the_run_ends_cancelled() {
 async fn pausing_a_run_that_is_thinking_stops_its_input_and_nothing_is_injected_after() {
     let sup = mute();
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Thinking(_))).await;
-    sup.control(CuaCaller::Shell, &id, CuaMember::Pause)
+    sup.control(ComputerUseCaller::Shell, &id, ComputerUseMember::Pause)
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Paused(_))).await;
     assert!(
@@ -119,11 +125,11 @@ async fn pausing_a_run_that_is_thinking_stops_its_input_and_nothing_is_injected_
             .iter()
             .all(|e| !matches!(e, computer_use_fake::SeatEvent::Performed(..)))
     );
-    sup.control(CuaCaller::Shell, &id, CuaMember::Cancel)
+    sup.control(ComputerUseCaller::Shell, &id, ComputerUseMember::Cancel)
         .unwrap();
     assert_eq!(
         ended(&mut events, &id).await.outcome,
-        CuaOutcome::Cancelled(CancelledBy::User),
+        ComputerUseOutcome::Cancelled(CancelledBy::User),
         "a paused run can still be cancelled"
     );
 }
@@ -131,7 +137,7 @@ async fn pausing_a_run_that_is_thinking_stops_its_input_and_nothing_is_injected_
 #[tokio::test(start_paused = true)]
 async fn a_model_call_that_never_returns_is_given_up_on_and_counted() {
     let sup = mute();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Thinking(_))).await;
     tokio::time::sleep(std::time::Duration::from_secs(200)).await;
     let failures = sup.view(&id).map(|v| v.budget.used.model_failures.0);
@@ -139,7 +145,7 @@ async fn a_model_call_that_never_returns_is_given_up_on_and_counted() {
         failures.is_some_and(|n| n >= 1),
         "the call hit its deadline: {failures:?}"
     );
-    sup.stop_all(CuaCaller::Shell).unwrap();
+    sup.stop_all(ComputerUseCaller::Shell).unwrap();
 }
 
 #[tokio::test(start_paused = true)]
@@ -148,11 +154,11 @@ async fn the_active_budget_runs_out_while_an_effect_is_stuck() {
     let mut events = sup.subscribe();
     let mut short = task();
     short.budget.active = computer_use_desktop::Ms(5_000);
-    let id = sup.start(CuaCaller::Router, short).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, short).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Thinking(_))).await;
     let end = ended(&mut events, &id).await;
     assert_eq!(
         end.outcome,
-        CuaOutcome::BudgetOut(computer_use_bus::RunBudgetKind::Active)
+        ComputerUseOutcome::BudgetOut(computer_use_bus::RunBudgetKind::Active)
     );
 }

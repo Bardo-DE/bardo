@@ -610,7 +610,7 @@ impl Engines {
         named: Option<&ModelRef>,
         who: &Who,
     ) -> Result<(Routing, Pinned), Unplaced> {
-        if matches!(spec.need, Need::ComputerUse(_)) && role != CallerRole::Cua {
+        if matches!(spec.need, Need::ComputerUse(_)) && role != CallerRole::ComputerUse {
             return Err(Unplaced::Other(InferRefusal::Denied.into()));
         }
         let settings = self.settings();
@@ -796,7 +796,7 @@ impl Engines {
         self.prepare_as(need, class, tier, CallerRole::App)
     }
 
-    /// `prepare` for a caller of this role (only cuad may warm a computer-use model).
+    /// `prepare` for a caller of this role (only the computer-use daemon may warm a computer-use model).
     ///
     /// # Errors
     ///

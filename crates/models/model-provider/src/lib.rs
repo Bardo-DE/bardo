@@ -33,8 +33,8 @@ mod shape;
 mod units;
 
 pub use caps::{
-    Batching, Caps, Constraint, CuaSupport, ImageLimits, InputKind, ShapeWithTools, Support,
-    ToolSupport, Zoom,
+    Batching, Caps, ComputerUseSupport, Constraint, ImageLimits, InputKind, ShapeWithTools,
+    Support, ToolSupport, Zoom,
 };
 /// Re-exported so a crate that builds `ImageLimits` need not depend on `computer-use-action` and
 /// `model-vision-prep` itself (a dependency edge changes every consumer's lock file).

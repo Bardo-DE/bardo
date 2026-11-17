@@ -66,7 +66,7 @@
       </description>
       <entry name="user" value="0" summary="the person"/>
       <entry name="companion" value="1" summary="the companion"/>
-      <entry name="cua" value="2" summary="a computer-use run"/>
+      <entry name="computer_use" value="2" summary="a computer-use run"/>
       <entry name="mcp" value="3" summary="an MCP client"/>
       <entry name="cli" value="4" summary="a command-line tool"/>
       <entry name="app" value="5" summary="an app"/>

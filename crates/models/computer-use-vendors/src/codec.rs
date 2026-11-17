@@ -1,6 +1,6 @@
 //! The codec trait, implemented by each [`WireDialect`].
 
-use computer_use_action::{CoordSpace, CuaAction, ImageSpace, Size, WireDialect};
+use computer_use_action::{ComputerUseAction, CoordSpace, ImageSpace, Size, WireDialect};
 use computer_use_parse::{Batch, DropReason, InSpace, ParseLimits, Parsed};
 use model_provider::{ImageInput, JsonText, NativeTool, Part, SafetySignal, ToolCall, ToolSpec};
 use serde::{Deserialize, Serialize};
@@ -120,13 +120,16 @@ impl<S: CoordSpace> Tally<S> {
         self.batch.push(verb, Err(DropReason::BadArgument));
     }
 
-    fn push(&mut self, verb: &str, action: Verdict<CuaAction<S>>) {
+    fn push(&mut self, verb: &str, action: Verdict<ComputerUseAction<S>>) {
         self.batch.push(verb, action);
     }
 
     /// Every call being no tool of the dialect, or no JSON object, is a fault of the whole
     /// reply; anything else is per-call drops in the `Parsed`.
-    fn finish(self, wrap: impl FnOnce(Vec<CuaAction<S>>) -> InSpace) -> Result<Parsed, WireError> {
+    fn finish(
+        self,
+        wrap: impl FnOnce(Vec<ComputerUseAction<S>>) -> InSpace,
+    ) -> Result<Parsed, WireError> {
         if self.calls > 0 && self.unreadable == self.calls {
             return Err(WireError::BadArguments);
         }

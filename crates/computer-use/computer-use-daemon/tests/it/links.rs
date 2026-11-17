@@ -1,4 +1,4 @@
-//! cuad's seams over the real daemons: the router's gate and message path through action-client's
+//! The computer-use daemon's seams over the real daemons: the router's gate and message path through action-client's
 //! `DbusTransport` against a real intentd (over the actions service's fakes) on a private bus, and the event
 //! log through memory-client against a real memory service (over the memory service's fakes). Each caller is
 //! a connection that owns the well-known name its role is configured to have.
@@ -26,7 +26,9 @@ async fn the_gate_asks_the_person_once_per_app_and_then_runs_reads_and_asks_agai
     let desk = desk(vec![yes()]).await;
     let planner = desk.as_companion().await;
     desk.open_sessions(&planner).await;
-    let gate = IntentsGate::over(DbusTransport::new(desk.cuad_connection().await));
+    let gate = IntentsGate::over(DbusTransport::new(
+        desk.computer_use_daemon_connection().await,
+    ));
 
     assert_eq!(
         gate.grant(GrantAsk {
@@ -53,7 +55,9 @@ async fn the_gate_asks_the_person_once_per_app_and_then_runs_reads_and_asks_agai
 #[tokio::test]
 async fn a_refused_consent_and_a_run_nobody_opened_are_the_routers_answers_not_errors() {
     let desk = desk(vec![]).await;
-    let gate = IntentsGate::over(DbusTransport::new(desk.cuad_connection().await));
+    let gate = IntentsGate::over(DbusTransport::new(
+        desk.computer_use_daemon_connection().await,
+    ));
     assert_eq!(
         gate.grant(GrantAsk {
             app: mail(),
@@ -76,7 +80,9 @@ async fn a_check_that_is_dropped_before_its_answer_leaves_the_gate_usable() {
     let desk = desk(vec![yes()]).await;
     let planner = desk.as_companion().await;
     desk.open_sessions(&planner).await;
-    let gate = IntentsGate::over(DbusTransport::new(desk.cuad_connection().await));
+    let gate = IntentsGate::over(DbusTransport::new(
+        desk.computer_use_daemon_connection().await,
+    ));
     gate.grant(GrantAsk {
         app: mail(),
         space: work(),
@@ -101,7 +107,7 @@ fn links(
     memory: Arc<memory_service::MemoryService<memory_fake::FakeBackend>>,
 ) -> DaemonLinks<InProcess<memory_fake::FakeBackend>, DbusTransport> {
     DaemonLinks::over(
-        Memory::over(InProcess::new(memory, Caller::cuad())),
+        Memory::over(InProcess::new(memory, Caller::computer_use_daemon())),
         Intents::over(DbusTransport::new(connection)),
     )
     .reading_time_from(|| base_time::UnixSeconds(1_700_000_000))
@@ -125,7 +131,7 @@ async fn reports_go_to_the_requester_and_messages_for_the_run_come_back_through_
     let service = Arc::new(memory_fake::fake_service(
         memory_fake::ScriptedConsolidator::default(),
     ));
-    let cuad = links(desk.cuad_connection().await, service);
+    let computer_use_daemon = links(desk.computer_use_daemon_connection().await, service);
 
     // The run reports Done to the planner, in the run's own session.
     let draft = MessageDraft {
@@ -137,7 +143,7 @@ async fn reports_go_to_the_requester_and_messages_for_the_run_come_back_through_
         },
         parts: vec![DraftPart::Text(MessageText::new("Downloaded the invoice."))],
     };
-    let delivery = cuad
+    let delivery = computer_use_daemon
         .send(run_session.clone(), draft)
         .await
         .expect("delivered");
@@ -150,11 +156,11 @@ async fn reports_go_to_the_requester_and_messages_for_the_run_come_back_through_
         .expect("the planner's inbox");
     assert_eq!(heard.len(), 1);
     assert_eq!(heard[0].id, delivery.message);
-    assert_eq!(heard[0].from.agent, AgentRef::Cua { run: run() });
+    assert_eq!(heard[0].from.agent, AgentRef::ComputerUse { run: run() });
 
     // The planner says something to the run; the run reads it.
     let note = MessageDraft {
-        to: Address::new(AgentRef::Cua { run: run() }, work()),
+        to: Address::new(AgentRef::ComputerUse { run: run() }, work()),
         thread: None,
         in_reply_to: None,
         kind: MessageKind::Note,
@@ -165,9 +171,9 @@ async fn reports_go_to_the_requester_and_messages_for_the_run_come_back_through_
         .send(planner_session, note)
         .await
         .expect("sent to the run");
-    let lines = cuad
+    let lines = computer_use_daemon
         .inbox(InboxAsk {
-            agent: AgentRef::Cua { run: run() },
+            agent: AgentRef::ComputerUse { run: run() },
             after: None,
         })
         .await
@@ -186,7 +192,7 @@ async fn reports_go_to_the_requester_and_messages_for_the_run_come_back_through_
     let _ = text_of;
 
     // A session that does not exist is the router's refusal, not a panic.
-    let refused = cuad
+    let refused = computer_use_daemon
         .send(
             SessionId::parse("s-99").unwrap(),
             MessageDraft {
@@ -206,21 +212,24 @@ async fn reports_go_to_the_requester_and_messages_for_the_run_come_back_through_
 }
 
 #[tokio::test]
-async fn records_reach_memory_as_cua_events_of_the_runs_session_and_space() {
+async fn records_reach_memory_as_computer_use_events_of_the_runs_session_and_space() {
     let desk = desk(vec![]).await;
     let service = Arc::new(memory_fake::fake_service(
         memory_fake::ScriptedConsolidator::default(),
     ));
-    let cuad = links(desk.cuad_connection().await, Arc::clone(&service));
+    let computer_use_daemon = links(
+        desk.computer_use_daemon_connection().await,
+        Arc::clone(&service),
+    );
     let task = computer_use_fake::scene::task();
     let mut task = task;
     task.app = mail();
     task.space = work();
     task.session = SessionId::parse("s-2").unwrap();
     task.conversation = SessionId::parse("s-1").unwrap();
-    cuad.open(&run(), &task).await;
+    computer_use_daemon.open(&run(), &task).await;
     for record in record_of_run(&run()) {
-        cuad.record(record).await.expect("recorded");
+        computer_use_daemon.record(record).await.expect("recorded");
     }
     let shell = Memory::over(InProcess::new(service, Caller::shell_ui()));
     let page = shell
@@ -243,14 +252,21 @@ async fn records_reach_memory_as_cua_events_of_the_runs_session_and_space() {
     let kinds: Vec<String> = page
         .entries
         .iter()
-        .filter_map(|entry| format!("{entry:?}").split("cua.").nth(1).map(str::to_owned))
+        .filter_map(|entry| {
+            format!("{entry:?}")
+                .split("computer_use.")
+                .nth(1)
+                .map(str::to_owned)
+        })
         .map(|rest| rest.split('"').next().unwrap_or_default().to_owned())
         .collect();
     assert_eq!(page.entries.len(), 3, "{kinds:?}");
 
     // A record of a run nobody opened has no session to belong to.
     let stray = RunId::parse("r-9").unwrap();
-    let refused = cuad.record(record_of_run(&stray).remove(2)).await;
+    let refused = computer_use_daemon
+        .record(record_of_run(&stray).remove(2))
+        .await;
     assert!(
         matches!(refused, Err(computer_use_run::LinkError::Protocol(_))),
         "{refused:?}"

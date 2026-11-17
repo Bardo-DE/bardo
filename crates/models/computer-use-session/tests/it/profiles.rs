@@ -4,16 +4,17 @@
 use crate::support;
 
 use computer_use_action::{
-    ActionProfile, AnswerShape, CallFormat, Coord, CuaAction, CuaDialect, DragStyle, GridMax,
-    HistoryShape, ModelSpace, Point, ResolutionWording, ScrollAxis, ToolDialect, VerbAlias,
+    ActionProfile, AnswerShape, CallFormat, ComputerUseAction, ComputerUseDialect, Coord,
+    DragStyle, GridMax, HistoryShape, ModelSpace, Point, ResolutionWording, ScrollAxis,
+    ToolDialect, VerbAlias,
 };
 use computer_use_parse::DropReason;
-use computer_use_session::{CuaSession, StepOutcome, TurnTranscript};
+use computer_use_session::{ComputerUseSession, StepOutcome, TurnTranscript};
 use model_provider::{ModelName, Part, Role, StopReason, ToolSpec};
 use support::*;
 
-const QWEN: CuaDialect = CuaDialect::Tool(ToolDialect::QwenComputerUse);
-const HOLO: CuaDialect = CuaDialect::Tool(ToolDialect::Holo31);
+const QWEN: ComputerUseDialect = ComputerUseDialect::Tool(ToolDialect::QwenComputerUse);
+const HOLO: ComputerUseDialect = ComputerUseDialect::Tool(ToolDialect::Holo31);
 
 fn ui_mate() -> ActionProfile {
     ActionProfile {
@@ -31,9 +32,9 @@ fn ui_mate() -> ActionProfile {
     }
 }
 
-fn session_with(actions: ActionProfile) -> CuaSession {
+fn session_with(actions: ActionProfile) -> ComputerUseSession {
     let profile = profile(QWEN, grid(), 0, 0).with_actions(actions);
-    CuaSession::begin(profile, task(), ModelName("ui-mate".into()))
+    ComputerUseSession::begin(profile, task(), ModelName("ui-mate".into()))
 }
 
 /// The system text, and the declared function's description and parameters.
@@ -135,7 +136,10 @@ fn a_drag_from_the_cursor_uses_the_cursor_of_the_step() {
         panic!("actions")
     };
     assert!(dropped.is_empty(), "{dropped:?}");
-    assert!(matches!(&*actions, [CuaAction::Drag { .. }]), "{actions:?}");
+    assert!(
+        matches!(&*actions, [ComputerUseAction::Drag { .. }]),
+        "{actions:?}"
+    );
     // Without a cursor the drag has no start and is dropped, whatever the call says.
     let StepOutcome::Actions {
         actions, dropped, ..
@@ -153,9 +157,9 @@ fn read_by_us(calls: CallFormat) -> ActionProfile {
 }
 
 /// A session with one repair, for a model whose profile says we read its calls.
-fn reading(calls: CallFormat) -> CuaSession {
+fn reading(calls: CallFormat) -> ComputerUseSession {
     let profile = profile(QWEN, grid(), 0, 1).with_actions(read_by_us(calls));
-    CuaSession::begin(profile, task(), ModelName("ui-mate".into()))
+    ComputerUseSession::begin(profile, task(), ModelName("ui-mate".into()))
 }
 
 fn xml_call(action: &str, extra: &str) -> String {
@@ -215,7 +219,7 @@ fn a_call_in_the_reply_text_becomes_an_action_as_a_server_parsed_one_does() {
     };
     assert!(dropped.is_empty(), "{dropped:?}");
     assert!(
-        matches!(&*actions, [CuaAction::Click { .. }]),
+        matches!(&*actions, [ComputerUseAction::Click { .. }]),
         "{actions:?}"
     );
     // The same call as the engine would hand it over gives the same action.
@@ -308,7 +312,7 @@ fn a_call_in_a_foreign_form_is_not_read_and_the_repair_says_how_to_write_one() {
         "the repair never repeats the reply: {asked}"
     );
     // The same fault in a model the engine serves gets the plain message.
-    let mut plain = CuaSession::begin(
+    let mut plain = ComputerUseSession::begin(
         profile(QWEN, grid(), 0, 1).with_actions(ui_mate()),
         task(),
         ModelName("ui-mate".into()),
@@ -327,7 +331,7 @@ fn a_call_in_a_foreign_form_is_not_read_and_the_repair_says_how_to_write_one() {
 fn on_grid_999(actions: ActionProfile) -> (String, String) {
     let space = ModelSpace::Grid(GridMax(999));
     let profile = profile(QWEN, space, 0, 0).with_actions(actions);
-    let session = CuaSession::begin(profile, task(), ModelName("ui-mate".into()));
+    let session = ComputerUseSession::begin(profile, task(), ModelName("ui-mate".into()));
     let request = session.request(&obs(0), &map(space), frame("f"));
     let Part::Text(system) = &request.messages[0].parts[0] else {
         panic!("a system text")
@@ -393,7 +397,7 @@ fn the_step_is_worded_by_the_action_sentence_and_a_missing_wrapper_still_acts() 
         ),
     ] {
         let profile = profile(QWEN, grid(), 0, 0).with_actions(shaped);
-        let mut s = CuaSession::begin(profile, task(), ModelName("ui-mate".into()));
+        let mut s = ComputerUseSession::begin(profile, task(), ModelName("ui-mate".into()));
         let sent = s.request(&obs(0), &m, frame("f"));
         let StepOutcome::Actions {
             thought, actions, ..
@@ -403,7 +407,7 @@ fn the_step_is_worded_by_the_action_sentence_and_a_missing_wrapper_still_acts() 
         };
         assert_eq!(thought.as_deref(), Some(words), "{what}");
         assert!(
-            matches!(&*actions, [CuaAction::Click { .. }]),
+            matches!(&*actions, [ComputerUseAction::Click { .. }]),
             "{what}: {actions:?}"
         );
     }
@@ -416,7 +420,7 @@ fn a_repair_of_a_shaped_reply_restates_the_order() {
         ..read_by_us(CallFormat::Qwen3CoderXml)
     };
     let profile = profile(QWEN, grid(), 0, 1).with_actions(shaped);
-    let mut s = CuaSession::begin(profile, task(), ModelName("ui-mate".into()));
+    let mut s = ComputerUseSession::begin(profile, task(), ModelName("ui-mate".into()));
     let m = map(grid());
     let sent = s.request(&obs(0), &m, frame("f"));
     let StepOutcome::Repair(repair) = s.absorb_for(&sent, said("<think>hmm</think>"), &m) else {
@@ -459,18 +463,18 @@ fn the_resolution_is_worded_as_the_profile_says() {
     );
 }
 
-fn replaying(history: u8) -> CuaSession {
+fn replaying(history: u8) -> ComputerUseSession {
     let actions = ActionProfile {
         history: HistoryShape::OwnReplies,
         ..read_by_us(CallFormat::Qwen3CoderXml)
     };
     let profile = profile(QWEN, grid(), history, 0).with_actions(actions);
-    CuaSession::begin(profile, task(), ModelName("ui-mate".into()))
+    ComputerUseSession::begin(profile, task(), ModelName("ui-mate".into()))
 }
 
 /// Takes `replies` as the first steps, each answering a frame `f0`, `f1`, ..., and returns the
 /// request for the next step.
-fn after(mut s: CuaSession, replies: &[String]) -> model_provider::TurnRequest {
+fn after(mut s: ComputerUseSession, replies: &[String]) -> model_provider::TurnRequest {
     let m = map(grid());
     for (n, reply) in replies.iter().enumerate() {
         let sent = s.request(

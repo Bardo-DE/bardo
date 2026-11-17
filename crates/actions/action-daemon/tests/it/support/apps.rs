@@ -28,7 +28,7 @@ use zbus::fdo;
 use zbus::zvariant::OwnedObjectPath;
 
 /// The role the callers table gives a process that plays `roles`: the sheet host for the sheet
-/// roles, `cua` and `compositor` for theirs, an agent for a daemon's or an editor's, a plain app
+/// roles, `computer_use` and `compositor` for theirs, an agent for a daemon's or an editor's, a plain app
 /// for the rest.
 pub fn held_by(roles: &BTreeSet<CallerRole>) -> Role {
     let plays = |wanted: &[CallerRole]| wanted.iter().any(|r| roles.contains(r));
@@ -38,8 +38,8 @@ pub fn held_by(roles: &BTreeSet<CallerRole>) -> Role {
         CallerRole::Control,
     ]) {
         Role::SheetHost
-    } else if plays(&[CallerRole::Cua]) {
-        Role::Cua
+    } else if plays(&[CallerRole::ComputerUse]) {
+        Role::ComputerUse
     } else if plays(&[CallerRole::Compositor]) {
         Role::Compositor
     } else if plays(&[

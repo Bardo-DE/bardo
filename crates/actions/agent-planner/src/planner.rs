@@ -396,7 +396,7 @@ impl<P: Transport> PlannerModel<P> {
         let tier = choose_tier(&Availability {
             typed: true,
             hook: false,
-            cua: false,
+            computer_use: false,
         })
         .ok_or(ReplyFault::NoSuchTool(String::new()))?;
         Ok(PlannedCall {

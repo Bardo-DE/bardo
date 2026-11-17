@@ -132,7 +132,9 @@ pub const NO_MODEL_SEES_SCREEN: &str =
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_capability::{CuaBatching, CuaCap, CuaEnv, LlmCap, LlmWire};
+    use account_capability::{
+        ComputerUseBatching, ComputerUseCap, ComputerUseEnv, LlmCap, LlmWire,
+    };
     use base_ids::{Px, Tokens};
 
     fn llm(features: &[LlmFeature]) -> Capability {
@@ -144,10 +146,10 @@ mod tests {
         })
     }
 
-    fn cua() -> Capability {
-        Capability::ComputerUse(CuaCap {
-            environments: [CuaEnv::Desktop].into(),
-            batching: CuaBatching::One,
+    fn computer_use() -> Capability {
+        Capability::ComputerUse(ComputerUseCap {
+            environments: [ComputerUseEnv::Desktop].into(),
+            batching: ComputerUseBatching::One,
             zoom: false,
             max_image: Px(1024),
             wire: LlmWire::ChatCompletions,
@@ -158,8 +160,11 @@ mod tests {
     fn a_model_is_named_by_what_its_capabilities_take() {
         let cases = [
             (vec![], Takes::Unknown),
-            (vec![cua()], Takes::Unknown),
-            (vec![llm(&[LlmFeature::Chat]), cua()], Takes::TextOnly),
+            (vec![computer_use()], Takes::Unknown),
+            (
+                vec![llm(&[LlmFeature::Chat]), computer_use()],
+                Takes::TextOnly,
+            ),
             (vec![llm(&[LlmFeature::Chat])], Takes::TextOnly),
             (
                 vec![llm(&[LlmFeature::Chat, LlmFeature::Vision])],

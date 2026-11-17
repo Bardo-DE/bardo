@@ -3,8 +3,8 @@
 # stable proptest suite (`never_panics`) is what CI runs. Needs `cargo install cargo-fuzz` and a
 # nightly toolchain.
 #
-#   dev/fuzz-cua-parse.sh                 # every target, 60 s each
-#   dev/fuzz-cua-parse.sh parse_text 600  # one target, 600 s
+#   dev/fuzz-computer-use-parse.sh                 # every target, 60 s each
+#   dev/fuzz-computer-use-parse.sh parse_text 600  # one target, 600 s
 set -euo pipefail
 cd "$(dirname "$0")/../computer-use-parse"
 export RUSTUP_TOOLCHAIN=nightly

@@ -1,6 +1,8 @@
 //! The run itself: its state, and the three functions that drive it.
 
-use crate::config::{CuaConfig, SETTLE, SettleLimits, TREE_MAX_NODES, WAIT_MAX, WAIT_TOTAL};
+use crate::config::{
+    ComputerUseConfig, SETTLE, SettleLimits, TREE_MAX_NODES, WAIT_MAX, WAIT_TOTAL,
+};
 use crate::machine::effect::RunEffect;
 use crate::machine::input::RunInput;
 use crate::machine::phase::{ActionQueue, RunPhase};
@@ -11,7 +13,7 @@ use crate::rules::Rules;
 use crate::screen::ReaderMode;
 use crate::stall::Repeats;
 use computer_use_a11y_tree::NodeBudget;
-use computer_use_bus::{BudgetUse, CuaTask, RunStateSlug};
+use computer_use_bus::{BudgetUse, ComputerUseTask, RunStateSlug};
 use computer_use_desktop::{BackendCaps, LeaseId, Ms, Stamp};
 use inference_core::ServedBy;
 use permission_core::Level;
@@ -39,7 +41,7 @@ pub struct RunEnv {
     /// The screen rules: the phrases, window classes, commit words and sensitive titles this run
     /// checks a screen against.
     pub rules: Rules,
-    /// The consent level the person set for this run's app (`cua.apps`), sent with the grant.
+    /// The consent level the person set for this run's app (`computer_use.apps`), sent with the grant.
     /// The supervisor decides it; the caller's task never carries it.
     #[serde(default = "strictest_grant")]
     pub grant_level: Level,
@@ -62,7 +64,7 @@ fn strictest_grant() -> Level {
 impl RunEnv {
     /// The environment of a run under `config` on a backend with `caps`.
     #[must_use]
-    pub fn new(config: &CuaConfig, caps: BackendCaps, rules: Rules) -> RunEnv {
+    pub fn new(config: &ComputerUseConfig, caps: BackendCaps, rules: Rules) -> RunEnv {
         RunEnv {
             caps,
             settle: SETTLE,
@@ -103,7 +105,7 @@ pub struct Run {
     /// Its id.
     pub id: RunId,
     /// What it was asked.
-    pub task: CuaTask,
+    pub task: ComputerUseTask,
     /// The world it runs in.
     pub env: RunEnv,
     /// Where it is.
@@ -136,7 +138,12 @@ impl Run {
     /// `Blocked(ModeUnsupported(mode))`, and a target of `TaskTarget::App` as
     /// `Blocked(NeedsCapability)` until launching into a mode lands.
     #[must_use]
-    pub fn start(id: RunId, task: CuaTask, env: RunEnv, at: Stamp) -> (Run, Vec<RunEffect>) {
+    pub fn start(
+        id: RunId,
+        task: ComputerUseTask,
+        env: RunEnv,
+        at: Stamp,
+    ) -> (Run, Vec<RunEffect>) {
         step::start(id, task, env, at)
     }
 

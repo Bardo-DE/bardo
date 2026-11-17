@@ -1,4 +1,4 @@
-//! The Intelligence page over the schemas the actions service, the memory service and cua ship: each row in the section
+//! The Intelligence page over the schemas the actions service, the memory service and computer use ship: each row in the section
 //! its own `section` names, a write in the program's own file, and rows that do not fit left alone.
 
 use crate::support::Sandbox;
@@ -133,11 +133,11 @@ fn a_write_lands_in_the_file_of_the_program_that_owns_the_row() {
     assert_eq!(sandbox.read("computer-use/settings.toml"), None);
 
     flip(&mut harness, "Pause when I touch the window");
-    let cua = sandbox
+    let computer_use = sandbox
         .read("computer-use/settings.toml")
-        .expect("cua's file");
-    assert!(cua.contains("autopause = false"), "{cua}");
-    assert!(!cua.contains("when"), "{cua}");
+        .expect("computer_use's file");
+    assert!(computer_use.contains("autopause = false"), "{computer_use}");
+    assert!(!computer_use.contains("when"), "{computer_use}");
 
     assert_eq!(
         sandbox.read("inference/inferd.toml"),
@@ -175,7 +175,8 @@ fn lending_this_computers_models_is_off_until_the_switch_is_flipped() {
 #[test]
 fn rows_that_do_not_fit_are_shown_as_written_and_never_rewritten() {
     let sandbox = Sandbox::new("programs-rows-foreign");
-    let written = "[cua]\napps = [{ app = \"org.a.B\", allow = \"ask\", note = \"mine\" }]\n";
+    let written =
+        "[computer use]\napps = [{ app = \"org.a.B\", allow = \"ask\", note = \"mine\" }]\n";
     sandbox.write("computer-use/settings.toml", written);
     let harness = sandbox.harness(intelligence());
     assert_eq!(harness.count(".key-rows"), 0);

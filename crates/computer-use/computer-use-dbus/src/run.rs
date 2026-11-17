@@ -3,7 +3,7 @@
 use zbus::fdo;
 use zbus::object_server::SignalEmitter;
 
-/// The caller's side. The service is cuad's name, set per proxy with the run's path.
+/// The caller's side. The service is the computer-use daemon's name, set per proxy with the run's path.
 #[zbus::proxy(
     interface = "org.bardo.ComputerUse1.Run",
     default_service = "org.bardo.ComputerUse1"

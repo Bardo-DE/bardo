@@ -11,7 +11,7 @@
 //! Points are in the pixels of the resized image the model was shown.
 
 use computer_use_action::{
-    Button, ClickCount, CoordSpace, CuaAction, FinishOutcome, Notches, ScrollBy, ScrollDir,
+    Button, ClickCount, ComputerUseAction, CoordSpace, FinishOutcome, Notches, ScrollBy, ScrollDir,
     Summary, Target, TypedText, WaitMs,
 };
 
@@ -62,7 +62,7 @@ fn action_marker(text: &str) -> Option<usize> {
         .last()
 }
 
-fn action<S: CoordSpace>(ctx: Ctx, call: &Call<'_>) -> Result<CuaAction<S>, DropReason> {
+fn action<S: CoordSpace>(ctx: Ctx, call: &Call<'_>) -> Result<ComputerUseAction<S>, DropReason> {
     let point = |name: &[&str]| -> Result<_, DropReason> {
         let value = name
             .iter()
@@ -76,7 +76,7 @@ fn action<S: CoordSpace>(ctx: Ctx, call: &Call<'_>) -> Result<CuaAction<S>, Drop
         "click" | "left_single" => Ok(click(start()?, Button::Left, ClickCount::One)),
         "left_double" | "double_click" => Ok(click(start()?, Button::Left, ClickCount::Two)),
         "right_single" | "right_click" => Ok(click(start()?, Button::Right, ClickCount::One)),
-        "drag" => Ok(CuaAction::Drag {
+        "drag" => Ok(ComputerUseAction::Drag {
             from: Target::Point(start()?),
             to: Target::Point(point(&["end_box", "end_point"])?),
             button: Button::Left,
@@ -86,34 +86,34 @@ fn action<S: CoordSpace>(ctx: Ctx, call: &Call<'_>) -> Result<CuaAction<S>, Drop
                 .arg("key")
                 .or_else(|| call.arg("keys"))
                 .ok_or(DropReason::MissingArgument)?;
-            Ok(CuaAction::Key {
+            Ok(ComputerUseAction::Key {
                 chord: chord::from_text(keys)?,
                 repeat: computer_use_action::Repeat::ONCE,
             })
         }
         "type" => {
             let text = call.arg("content").ok_or(DropReason::MissingArgument)?;
-            Ok(CuaAction::Type {
+            Ok(ComputerUseAction::Type {
                 text: bounded(TypedText::new(text))?,
             })
         }
-        "scroll" => Ok(CuaAction::Scroll {
+        "scroll" => Ok(ComputerUseAction::Scroll {
             at: Target::Point(start()?),
             dir: direction(call.arg("direction"))?,
             by: ScrollBy::Notches(Notches(SCROLL_NOTCHES)),
         }),
-        "wait" => Ok(CuaAction::Wait {
+        "wait" => Ok(ComputerUseAction::Wait {
             for_ms: match WaitMs::new(WAIT_MS) {
                 Ok(wait) => wait,
                 Err(_out_of_range) => return Err(DropReason::BadNumber),
             },
         }),
-        "finished" => Ok(CuaAction::Finish {
+        "finished" => Ok(ComputerUseAction::Finish {
             outcome: FinishOutcome::Done,
             summary: bounded(Summary::new(call.arg("content").unwrap_or_default()))?,
             extracted: Vec::new(),
         }),
-        "call_user" => Ok(CuaAction::Ask {
+        "call_user" => Ok(ComputerUseAction::Ask {
             question: bounded(Summary::new("The model asks for the person to take over."))?,
             choices: Vec::new(),
         }),

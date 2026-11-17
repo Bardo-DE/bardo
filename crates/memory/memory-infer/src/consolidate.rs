@@ -124,7 +124,7 @@ impl<T: Transport> Consolidator for InferdConsolidator<T> {
             InferReply::Failed(why) => Err(failure(why)),
             InferReply::Cancelled => Err(ConsolidateError::Busy),
             InferReply::Embed(_)
-            | InferReply::CuaStep(_)
+            | InferReply::ComputerUseStep(_)
             | InferReply::Transcribed(_)
             | InferReply::Spoke(_) => Err(ConsolidateError::Unparseable),
         }

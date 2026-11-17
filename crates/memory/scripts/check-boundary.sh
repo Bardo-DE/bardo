@@ -81,7 +81,7 @@ BANS=(
 # no runtime, no bus. memoryd is the place that reaches the daemon's runtime, so it has no rule.
 EFFECTS="zbus zvariant tokio reqwest hyper oo7 ort fastembed"
 # memory-core is also light enough for computer-use-bus to depend on (interface ask 26: `HandedBack`
-# carries `memory_core::EventRef`; cua's own EFFECTS list adds these to ours), so it reaches none
+# carries `memory_core::EventRef`; computer use's own EFFECTS list adds these to ours), so it reaches none
 # of them either.
 BARDO_COMPUTER_USE_EFFECTS="hyper-util rustls pipewire wayland-client wayland-backend wayland-server reis atspi rmcp cedar-policy"
 # What a storage-free crate must never link: the SQL engine, SQLCipher's host crate and OpenSSL.

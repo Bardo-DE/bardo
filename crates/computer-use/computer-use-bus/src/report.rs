@@ -2,11 +2,11 @@
 //! There is no separate result type.
 //!
 //! What a run hands the router is a [`MessageDraft`]; the router stamps the id, the sender
-//! (`AgentRef::Cua { run }`), the label and the time. The label must include
+//! (`AgentRef::ComputerUse { run }`), the label and the time. The label must include
 //! `Untrusted(Screen { app })` for everything the run read off the screen: the summary and
 //! every extracted value are screen text (FINDINGS, upstream asks).
 
-use crate::state::CuaOutcome;
+use crate::state::ComputerUseOutcome;
 use action_core::{Delivery, DraftPart, MessageDraft, SendRefusal};
 use base_ids::Count;
 use computer_use_action::{Extracted, Summary};
@@ -31,7 +31,7 @@ pub enum ReportDelivery {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct RunEnd {
     /// How it ended.
-    pub outcome: CuaOutcome,
+    pub outcome: ComputerUseOutcome,
     /// Steps taken.
     pub steps: Count,
     /// Active time used.
@@ -205,7 +205,7 @@ mod tests {
     #[test]
     fn run_end_and_delivery_pin_their_json() {
         let end = RunEnd {
-            outcome: CuaOutcome::Done,
+            outcome: ComputerUseOutcome::Done,
             steps: Count(9),
             active: Ms(41_000),
             charges: ChargeTotal::default(),

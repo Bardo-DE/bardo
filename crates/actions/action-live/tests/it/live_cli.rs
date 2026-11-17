@@ -99,7 +99,7 @@ fn a_live_engine_needs_the_owners_config_and_never_a_callers_table() {
     assert!(matches!(none, Err(EngineError::NoConfig("local"))));
     let dir = tempfile::tempdir().expect("scratch");
     let with = dir.path().join("with.toml");
-    std::fs::write(&with, "[callers]\ncua = [\"x.service\"]\n").expect("write");
+    std::fs::write(&with, "[callers]\ncomputer_use = [\"x.service\"]\n").expect("write");
     assert!(matches!(
         Engine::Cloud.source(String::new(), Some(&with)),
         Err(EngineError::HasCallers)

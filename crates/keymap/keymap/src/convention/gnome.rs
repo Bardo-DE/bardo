@@ -1,4 +1,4 @@
-//! GNOME: the CUA base with GNOME's own defaults.
+//! GNOME: the common base with GNOME's own defaults.
 
 use super::{
     Row::{Key, Unbound},

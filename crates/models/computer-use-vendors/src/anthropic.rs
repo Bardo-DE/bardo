@@ -14,7 +14,7 @@
 use std::collections::BTreeSet;
 
 use computer_use_action::{
-    Button, ClickCount, CuaAction, ImageSpace, Modifier, Notches, Rect, Repeat, ScrollBy,
+    Button, ClickCount, ComputerUseAction, ImageSpace, Modifier, Notches, Rect, Repeat, ScrollBy,
     ScrollDir, Size, Target, TypedText, WaitMs,
 };
 use computer_use_parse::{DropReason, bounded, chord_from_words};
@@ -88,8 +88,8 @@ fn modifiers(args: &Args) -> Verdict<BTreeSet<Modifier>> {
         .collect()
 }
 
-fn click(args: &Args, button: Button, count: ClickCount) -> Verdict<CuaAction<ImageSpace>> {
-    Ok(CuaAction::Click {
+fn click(args: &Args, button: Button, count: ClickCount) -> Verdict<ComputerUseAction<ImageSpace>> {
+    Ok(ComputerUseAction::Click {
         at: at(args, "coordinate")?,
         button,
         count,
@@ -130,9 +130,9 @@ fn seconds(args: &Args) -> Verdict<WaitMs> {
         .ok_or(DropReason::BadNumber)
 }
 
-pub(crate) fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> {
+pub(crate) fn action(verb: &str, args: &Args) -> Verdict<ComputerUseAction<ImageSpace>> {
     match verb {
-        "screenshot" => Ok(CuaAction::Observe),
+        "screenshot" => Ok(ComputerUseAction::Observe),
         "zoom" => zoom(args),
         "left_click" => click(args, Button::Left, ClickCount::One),
         "right_click" => click(args, Button::Right, ClickCount::One),
@@ -143,13 +143,13 @@ pub(crate) fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> 
             if args.contains_key("text") {
                 return Err(DropReason::BadArgument);
             }
-            Ok(CuaAction::Drag {
+            Ok(ComputerUseAction::Drag {
                 from: at(args, "start_coordinate")?,
                 to: at(args, "coordinate")?,
                 button: Button::Left,
             })
         }
-        "mouse_move" => Ok(CuaAction::MoveTo {
+        "mouse_move" => Ok(ComputerUseAction::MoveTo {
             at: at(args, "coordinate")?,
         }),
         "scroll" => {
@@ -160,13 +160,13 @@ pub(crate) fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> 
                 .ok()
                 .filter(|n| *n > 0)
                 .ok_or(DropReason::BadNumber)?;
-            Ok(CuaAction::Scroll {
+            Ok(ComputerUseAction::Scroll {
                 at: at(args, "coordinate")?,
                 dir: direction(string(args, "scroll_direction")?)?,
                 by: ScrollBy::Notches(Notches(amount)),
             })
         }
-        "type" => Ok(CuaAction::Type {
+        "type" => Ok(ComputerUseAction::Type {
             text: bounded(TypedText::new(string(args, "text")?))?,
         }),
         "key" => {
@@ -174,7 +174,7 @@ pub(crate) fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> 
                 None => 1,
                 Some(v) => crate::args::whole(v)?,
             };
-            Ok(CuaAction::Key {
+            Ok(ComputerUseAction::Key {
                 chord: chord(string(args, "text")?)?,
                 repeat: u8::try_from(times)
                     .ok()
@@ -182,7 +182,7 @@ pub(crate) fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> 
                     .ok_or(DropReason::BadNumber)?,
             })
         }
-        "wait" => Ok(CuaAction::Wait {
+        "wait" => Ok(ComputerUseAction::Wait {
             for_ms: seconds(args)?,
         }),
         _ => Err(DropReason::UnsupportedVerb),
@@ -190,7 +190,7 @@ pub(crate) fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> 
 }
 
 /// `region: [x0, y0, x1, y1]` as a rectangle.
-fn zoom(args: &Args) -> Verdict<CuaAction<ImageSpace>> {
+fn zoom(args: &Args) -> Verdict<ComputerUseAction<ImageSpace>> {
     let corners: Vec<u32> = field(args, "region")?
         .as_array()
         .ok_or(DropReason::BadArgument)?
@@ -207,7 +207,7 @@ fn zoom(args: &Args) -> Verdict<CuaAction<ImageSpace>> {
     let (Some(w), Some(h)) = (w, h) else {
         return Err(DropReason::BadNumber);
     };
-    Ok(CuaAction::Zoom {
+    Ok(ComputerUseAction::Zoom {
         region: Rect {
             origin: point((x0, y0), None)?,
             size: Size::new(computer_use_action::Coord(w), computer_use_action::Coord(h)),

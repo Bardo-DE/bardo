@@ -20,7 +20,7 @@
 #
 #   scenario-build.sh --accounts   only what the accounts-* scenarios need (bardo-compositor, bardo-settings, bardo-shell with the probe, the accounts service and its rig, the sync service and its rig, the inference service)
 #   scenario-build.sh --w2         only what scenarios/w2-excalidraw.sh needs (bardo-compositor, bardo-shell, and the two below):
-#   build/cua-target/debug/bardo-computer-use                                          bardo-computer-use (the screen helper) with --features fixture-callers: a plain build identifies nobody
+#   build/computer-use-target/debug/bardo-computer-use                                          bardo-computer-use (the screen helper) with --features fixture-callers: a plain build identifies nobody
 #   build/actions-target/debug/{agent-bringup,accept-*}                  action-accept's test builds (the assistant's services on a fake /proc, bardo-do)
 #
 # Nothing is written into the tree.
@@ -138,9 +138,9 @@ build_inference() {
 
 # bardo-computer-use, the screen helper. The fixture-callers feature makes it read caller identities from a fake
 # /proc (BARDO_COMPUTER_USE_TEST_PROC_ROOT): nothing in the jail runs in a systemd scope. A test build, never shipped.
-build_cuad() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/cua-target" nice cargo build -p computer-use-daemon --features fixture-callers) &&
-    built_at cua-target
+build_computer_use_daemon() {
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/computer-use-target" nice cargo build -p computer-use-daemon --features fixture-callers) &&
+    built_at computer-use-target
 }
 
 # The assistant's services as action-accept builds (fixture identities, scripted stand-ins), agent-bringup and bardo-do's
@@ -164,7 +164,7 @@ fi
 stage "bardo-compositor (bootstrap --build-only)" build_compositor
 if [ "$only_w2" = 1 ]; then
   stage "bardo-shell (--features debug)" build_shell
-  stage "bardo-computer-use (--features fixture-callers)" build_cuad
+  stage "bardo-computer-use (--features fixture-callers)" build_computer_use_daemon
   stage "action-accept (the assistant's services, test builds)" build_actions
   echo "scenario-build: done for W2 ($SCEN_BUILD)"
   exit 0

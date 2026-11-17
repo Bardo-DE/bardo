@@ -13,7 +13,7 @@ fn the_tier_rule_prefers_typed_then_hook_then_pixels() {
             Availability {
                 typed: true,
                 hook: true,
-                cua: true,
+                computer_use: true,
             },
             Some(Tier::Typed),
         ),
@@ -22,7 +22,7 @@ fn the_tier_rule_prefers_typed_then_hook_then_pixels() {
             Availability {
                 typed: false,
                 hook: true,
-                cua: true,
+                computer_use: true,
             },
             Some(Tier::Hook),
         ),
@@ -31,25 +31,25 @@ fn the_tier_rule_prefers_typed_then_hook_then_pixels() {
             Availability {
                 typed: false,
                 hook: false,
-                cua: true,
+                computer_use: true,
             },
-            Some(Tier::Cua),
+            Some(Tier::ComputerUse),
         ),
         (
             "nothing reaches the app",
             Availability {
                 typed: false,
                 hook: false,
-                cua: false,
+                computer_use: false,
             },
             None,
         ),
         (
-            "cua off by default is not offered",
+            "computer_use off by default is not offered",
             Availability {
                 typed: false,
                 hook: true,
-                cua: false,
+                computer_use: false,
             },
             Some(Tier::Hook),
         ),
@@ -108,7 +108,7 @@ fn completion_lines_are_typed_facts_and_attention_is_rare() {
         why: None,
         attention: Attention::Quiet,
     };
-    let run = AgentRef::Cua {
+    let run = AgentRef::ComputerUse {
         run: RunId::parse("r-3").expect("run"),
     };
     assert_eq!(
@@ -127,7 +127,7 @@ fn completion_lines_are_typed_facts_and_attention_is_rare() {
     let refused = CompletionNote {
         why: Some(action_core::EndWhy::WindowRefused),
         ..note(
-            AgentRef::Cua {
+            AgentRef::ComputerUse {
                 run: RunId::parse("r-3").expect("run"),
             },
             ReportStatus::Failed,

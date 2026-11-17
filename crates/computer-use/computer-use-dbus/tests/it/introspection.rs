@@ -1,7 +1,7 @@
 //! The checked-in introspection file is the interface the skeletons declare. A change to a
 //! signature changes the file in the same commit.
 
-use computer_use_bus::CuaMember;
+use computer_use_bus::ComputerUseMember;
 use computer_use_dbus::{FILE_NAME, introspection};
 use std::path::PathBuf;
 
@@ -62,7 +62,10 @@ fn every_member_of_the_spec_is_declared() {
     }
     // One method per member the allow-list table names (computer-use-bus): nothing is callable that the
     // table does not rule on.
-    assert_eq!(xml.matches("<method ").count(), CuaMember::ALL.len());
+    assert_eq!(
+        xml.matches("<method ").count(),
+        ComputerUseMember::ALL.len()
+    );
 }
 
 #[test]

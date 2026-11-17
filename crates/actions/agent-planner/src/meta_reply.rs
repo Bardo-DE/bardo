@@ -165,7 +165,7 @@ fn related_output(args: &Json, view: &PlannerView) -> ModelOutput {
     let Some(tier) = choose_tier(&Availability {
         typed: true,
         hook: false,
-        cua: false,
+        computer_use: false,
     }) else {
         return ModelOutput::Unread(ReplyFault::NoSuchTool(String::new()));
     };

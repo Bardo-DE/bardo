@@ -1,12 +1,12 @@
 //! One computer-use step over a model turn.
 //!
-//! The model layer's `CuaSession` builds the prompt and reads the
+//! The model layer's `ComputerUseSession` builds the prompt and reads the
 //! reply, and this module is the turn between them. It prepares the frame, runs the turn through
 //! a transcript sink, hands the transcript to `absorb_for` and, when that asks for a repair, runs
 //! one more turn with the request it returns.
 //!
 //! What the model layer leaves to the daemon is done here, from the model's catalog entry: the
-//! `CuaProfile` (dialect, resize rule and space of the entry, a history of one frame fewer than
+//! `ComputerUseProfile` (dialect, resize rule and space of the entry, a history of one frame fewer than
 //! the model takes per prompt, one repair) and the `TurnSettings` (the entry's output limit, how
 //! many calls a turn may make, the engine's extras, and reasoning off with its sampling, except for
 //! a model trained to think before its action, which runs with the engine's reasoning and the
@@ -21,13 +21,13 @@ use crate::tee::{Echo, Tee};
 use base_ids::Tokens;
 use computer_use_action::{AnswerShape, CuaDialect};
 use computer_use_session::{
-    CuaProfile, CuaSession, CuaTaskText, FrameBudget, ObservationIn, RepairBudget, StepLines,
-    StepNote as NoteLine, StepOutcome, TurnSettings,
+    ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, ObservationIn,
+    RepairBudget, StepLines, StepNote as NoteLine, StepOutcome, TurnSettings,
 };
 use computer_use_vendors::StepResult;
 use inference_core::{
-    CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, DroppedAction, FrameLayout, InferEvent,
-    ModelError, NoteFrom, PrevResult, StepNote,
+    ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply, ComputerUseStepRequest,
+    DroppedAction, FrameLayout, InferEvent, ModelError, NoteFrom, PrevResult, StepNote,
 };
 use inference_router::local::LocalModel;
 use model_provider::{
@@ -41,17 +41,17 @@ use std::ops::ControlFlow;
 #[derive(Debug)]
 pub struct Failed {
     /// What the app is told.
-    pub failure: CuaStepFailure,
+    pub failure: ComputerUseStepFailure,
 }
 
-impl From<CuaStepFailure> for Failed {
-    fn from(failure: CuaStepFailure) -> Self {
+impl From<ComputerUseStepFailure> for Failed {
+    fn from(failure: ComputerUseStepFailure) -> Self {
         Self { failure }
     }
 }
 
 fn unreadable() -> Failed {
-    CuaStepFailure::ModelFailed(ModelError::Unreadable).into()
+    ComputerUseStepFailure::ModelFailed(ModelError::Unreadable).into()
 }
 
 /// The session for a run on this model, or none when the model has no tool or text dialect.
@@ -59,9 +59,13 @@ fn unreadable() -> Failed {
 /// A vendor's wire needs the vendor's backend, not an engine on this computer.
 /// A reply is never asked to be longer than `ceiling`.
 #[must_use]
-pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<CuaSession> {
+pub fn open(
+    model: &LocalModel,
+    begin: &ComputerUseBegin,
+    ceiling: Tokens,
+) -> Option<ComputerUseSession> {
     let caps = model.caps()?;
-    let CuaSupport::Dialect {
+    let ComputerUseSupport::Dialect {
         dialect,
         batching,
         profile: actions,
@@ -70,12 +74,12 @@ pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<Cua
     else {
         return None;
     };
-    if matches!(dialect, CuaDialect::Wire(_)) {
+    if matches!(dialect, ComputerUseDialect::Wire(_)) {
         return None;
     }
     // As many past frames as the model takes with the current one (`per_prompt - 1`); the model layer cuts
     // the wish to what the entry allows.
-    let profile = CuaProfile::for_model(
+    let profile = ComputerUseProfile::for_model(
         dialect,
         &caps.images,
         FrameBudget::within(caps.images.per_prompt),
@@ -105,11 +109,11 @@ pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<Cua
         engine: bridge::extras(model.flavor),
         lines: StepLines(8),
     };
-    let task = CuaTaskText {
+    let task = ComputerUseTaskText {
         goal: begin.goal.clone(),
         hints: begin.hints.clone(),
     };
-    Some(CuaSession::begin(profile, task, model.name.clone()).with_settings(settings))
+    Some(ComputerUseSession::begin(profile, task, model.name.clone()).with_settings(settings))
 }
 
 /// What happened to each action of the previous step, as the model layer's prompt has it. The calls'
@@ -150,7 +154,7 @@ fn note_line(note: &StepNote) -> NoteLine {
 
 /// What the runner saw before this step, with the window's contents and the notes when there are
 /// any.
-fn observation(request: &CuaStepRequest) -> ObservationIn {
+fn observation(request: &ComputerUseStepRequest) -> ObservationIn {
     let seen = ObservationIn::new(
         request.step,
         request.cursor,
@@ -166,7 +170,7 @@ fn observation(request: &CuaStepRequest) -> ObservationIn {
 
 /// The frame as an image the model is shown.
 fn frame_image(
-    request: &CuaStepRequest,
+    request: &ComputerUseStepRequest,
     frames: &Frames,
     map: &FrameMap,
 ) -> Result<ImageInput, BridgeError> {
@@ -207,13 +211,13 @@ fn frame_image(
 /// Returns [`Failed`] when the model has no readable catalog entry, the frame cannot be prepared,
 /// the turn fails or is cut, or the reply never parses.
 pub async fn step<P: Provider>(
-    session: &mut CuaSession,
+    session: &mut ComputerUseSession,
     model: &LocalModel,
     provider: &P,
-    request: &CuaStepRequest,
+    request: &ComputerUseStepRequest,
     frames: &Frames,
     mut forward: impl FnMut(InferEvent) -> ControlFlow<()> + Send,
-) -> Result<CuaStepReply, Failed> {
+) -> Result<ComputerUseStepReply, Failed> {
     let caps = model.caps().ok_or_else(unreadable)?;
     #[expect(
         clippy::map_err_ignore,
@@ -238,13 +242,15 @@ pub async fn step<P: Provider>(
             Ok(end) => end,
             Err(error) => {
                 session.refill_repairs();
-                return Err(CuaStepFailure::ModelFailed(bridge::model_error(&error)).into());
+                return Err(
+                    ComputerUseStepFailure::ModelFailed(bridge::model_error(&error)).into(),
+                );
             }
         };
         if tee.flow() == ControlFlow::Break(()) {
             session.refill_repairs();
             // The session is gone: the cut turn holds no call, and a repair would be asked of nobody.
-            return Err(CuaStepFailure::Unparseable.into());
+            return Err(ComputerUseStepFailure::Unparseable.into());
         }
         // Where the cursor was: a model that drags from the cursor needs it, or its drags drop.
         let outcome = session.absorb_at(&sent, tee.finish(end), &map, request.cursor);
@@ -260,7 +266,7 @@ pub async fn step<P: Provider>(
                         break;
                     }
                 }
-                let mut reply = CuaStepReply::new(actions).with_dropped(
+                let mut reply = ComputerUseStepReply::new(actions).with_dropped(
                     dropped
                         .iter()
                         .map(|d| DroppedAction {
@@ -277,7 +283,7 @@ pub async fn step<P: Provider>(
             StepOutcome::Repair(next) => sent = next,
             StepOutcome::Unparseable(_) => {
                 return Err(Failed {
-                    failure: CuaStepFailure::Unparseable,
+                    failure: ComputerUseStepFailure::Unparseable,
                 });
             }
         }

@@ -11,7 +11,9 @@ use account_core::AppName;
 use base_ids::Count;
 use base_time::UnixSeconds;
 use computer_use_action::RunMode;
-use computer_use_bus::{CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget};
+use computer_use_bus::{
+    ComputerUseTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget,
+};
 use computer_use_desktop::{Stamp, ToplevelIdent};
 use computer_use_fake::FixedClock;
 use keymap::Keymap;
@@ -99,7 +101,7 @@ impl Arena {
         }
     }
 
-    pub(super) fn cua_task(&self) -> Result<CuaTask, SetupError> {
+    pub(super) fn computer_use_task(&self) -> Result<ComputerUseTask, SetupError> {
         let id = |e: &dyn std::fmt::Display| SetupError::Id(e.to_string());
         let space = SpaceId::parse("desktop").map_err(|e| id(&e))?;
         let app = AppName::parse(&self.stage.window().app).map_err(|e| id(&e))?;
@@ -112,7 +114,7 @@ impl Arena {
             )),
             ..RunBudget::PROPOSED
         };
-        Ok(CuaTask {
+        Ok(ComputerUseTask {
             app,
             goal: Labelled::new(
                 self.goal_text(),

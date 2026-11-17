@@ -1,19 +1,19 @@
-//! cuad: the computer-use daemon, as a library and a binary.
+//! The computer-use daemon: the computer-use daemon, as a library and a binary.
 //!
 //! It owns the step loop of every run: the pure machine ([`computer_use_run::Run`]) says what to do, the
 //! [`Supervisor`] does it against the seams (`computer_use_system::SystemSeams` in the daemon, `computer-use-fake`
 //! in tests) and feeds the answers back. It serves `org.bardo.ComputerUse1` (`computer-use-dbus`) and
 //! `org.bardo.IntentProvider1` as `org.bardo.ComputerUse` with one action, `computeruse.run.start`
-//! ([`CuaProvider`]).
+//! ([`ComputerUseProvider`]).
 //!
-//! On a stock compositor masking is cuad's (`MaskReport::applied_by = Cuad`) and the consent
-//! guard is cuad stopping its own input; the compositor P4 moves both into the compositor.
+//! On a stock compositor masking is the computer-use daemon's (`MaskReport::applied_by = ComputerUseDaemon`) and the consent
+//! guard is the computer-use daemon stopping its own input; the compositor P4 moves both into the compositor.
 //!
 //! A run's progress and result go to the requester as `provenance::Message` reports through the
 //! router. A message that arrives carries no authority.
 //!
 //! What it holds: the tables ([`guard`], [`classify`], [`manifest_for`], [`record_of`],
-//! [`CuadConfig::from_toml`]), the supervisor ([`Supervisor`]: a task per run over
+//! [`ComputerUseDaemonConfig::from_toml`]), the supervisor ([`Supervisor`]: a task per run over
 //! [`computer_use_run::Exec`], with the person's controls, the desktop's events and the clock racing
 //! whatever the run waits on), the bus ([`serve`], [`serve_on`]) and the start-up ([`run`]). The
 //! adapters to the system (input over EIS, window capture, the compositor desktop, the model over
@@ -37,14 +37,14 @@ pub use callers::{
     shipped as shipped_callers,
 };
 pub use computer_use_host::{
-    A11yChoice, AppAllow, AppRule, Apps, BackendChoice, ConfigError, CuaSettings, CuadConfig,
-    DaemonLinks, IntentsCheck, IntentsGate, RecordContext, RecordError, RunView, SCHEMA,
-    SETTINGS_FILE, Supervisor, SupervisorEvent, SystemClock, guard, is_browser, locator,
-    mint_run_id, read, record_of,
+    A11yChoice, AppAllow, AppRule, Apps, BackendChoice, ComputerUseDaemonConfig,
+    ComputerUseSettings, ConfigError, DaemonLinks, IntentsCheck, IntentsGate, RecordContext,
+    RecordError, RunView, SCHEMA, SETTINGS_FILE, Supervisor, SupervisorEvent, SystemClock, guard,
+    is_browser, locator, mint_run_id, read, record_of,
 };
 pub use daemon::{Fatal, run};
 pub use keymap::desktop_keymap;
-pub use provider::{CuaProvider, ProviderError, StartRefusal, StartRequest, manifest_for};
+pub use provider::{ComputerUseProvider, ProviderError, StartRefusal, StartRequest, manifest_for};
 pub use reach::{follow_settings, reach_json};
 pub use serve::{ServeError, Serving, serve, serve_on, serve_on_as, serve_on_with};
 pub use watch::watch_settings;

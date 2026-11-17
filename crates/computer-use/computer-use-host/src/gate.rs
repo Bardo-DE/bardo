@@ -1,7 +1,7 @@
 //! The router's gate over `Intents1`: `Gate.Grant`, `Session.Open` for the run's own session and
 //! the watched `Gate.Check` (action-client's `Intents::gate_check_watched`).
 //!
-//! A step's check says `Confirming(id)` when the router is about to ask the person: cuad stops
+//! A step's check says `Confirming(id)` when the router is about to ask the person: the computer-use daemon stops
 //! its own input (the run machine suspends the lease), calls `proceed`, and the router
 //! asks the person.
 //! The verdict is the last event. A paused run takes its check back with `close`, and the question
@@ -10,7 +10,7 @@
 use action_client::{
     ClientError, GateEvent as Heard, GateSteer, GateWatch, Intents, Transport, TransportError,
 };
-use action_gate_wire::CuaAsk;
+use action_gate_wire::ComputerUseAsk;
 use action_wire::{GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionOpen};
 use computer_use_run::{GateCheck, GateEvent, GateLink, LinkError};
 use provenance::{AgentRef, RunId, SessionId, SpaceId};
@@ -114,7 +114,7 @@ impl<T: Transport + 'static> GateLink for IntentsGate<T> {
     ) -> Result<SessionId, LinkError> {
         let open = SessionOpen {
             space: space.clone(),
-            agent: AgentRef::Cua { run: run.clone() },
+            agent: AgentRef::ComputerUse { run: run.clone() },
             parent: None,
             // A computer-use run has no working directory, is no external agent, and was not
             // started from a terminal.
@@ -131,7 +131,7 @@ impl<T: Transport + 'static> GateLink for IntentsGate<T> {
             .map_err(link_error)
     }
 
-    async fn check(&self, ask: CuaAsk) -> Result<IntentsCheck, LinkError> {
+    async fn check(&self, ask: ComputerUseAsk) -> Result<IntentsCheck, LinkError> {
         let watch = Intents::over(Shared(Arc::clone(&self.transport)))
             .gate_check_watched(ask)
             .await
@@ -188,7 +188,7 @@ mod tests {
     use action_core::{CallProgress, CallRefusal, ConfirmEnd};
     use action_gate_wire::{EffectBasis, GateAnswer};
     use action_wire::WireRefusal;
-    use computer_use_action::{CuaAction, RunMode, WindowSpace, WindowTrust};
+    use computer_use_action::{ComputerUseAction, RunMode, WindowSpace, WindowTrust};
     use provenance::ConfirmId;
     use provenance::{Effect, Label};
     use std::collections::VecDeque;
@@ -233,15 +233,15 @@ mod tests {
         }
     }
 
-    fn cua_ask() -> CuaAsk {
-        CuaAsk {
+    fn computer_use_ask() -> ComputerUseAsk {
+        ComputerUseAsk {
             run: RunId::parse("r-1").unwrap(),
             step: 1,
             app: account_core::AppName::parse("org.bardo.Mail").unwrap(),
             trust: WindowTrust::Bardo,
             mode: RunMode::InPlace,
             space: SpaceId::parse("work").unwrap(),
-            action: CuaAction::<WindowSpace>::Observe,
+            action: ComputerUseAction::<WindowSpace>::Observe,
             node: None,
             effect: Effect::Read,
             basis: EffectBasis::DefaultTable,
@@ -263,7 +263,7 @@ mod tests {
             gate.grant(grant_ask()).await,
             Ok(GrantAnswer::Refused(ConfirmEnd::Expired))
         );
-        let mut check = gate.check(cua_ask()).await.expect("a check");
+        let mut check = gate.check(computer_use_ask()).await.expect("a check");
         assert_eq!(
             check.next().await,
             Ok(GateEvent::Answered(GateAnswer::Refused(
@@ -318,7 +318,7 @@ mod tests {
             );
             // A transport that fails says so when the check starts; a reply that is not a
             // verdict is heard when the check is read.
-            let got = match gate.check(cua_ask()).await {
+            let got = match gate.check(computer_use_ask()).await {
                 Err(error) => error,
                 Ok(mut check) => check.next().await.expect_err("no verdict"),
             };
@@ -331,7 +331,7 @@ mod tests {
         let gate = IntentsGate::over(Scripted::saying(vec![Ok(IntentsReply::Gate(
             GateAnswer::Run,
         ))]));
-        let mut check = gate.check(cua_ask()).await.expect("a check");
+        let mut check = gate.check(computer_use_ask()).await.expect("a check");
         assert_eq!(check.proceed().await, Ok(()));
         assert_eq!(check.next().await, Ok(GateEvent::Answered(GateAnswer::Run)));
         assert!(matches!(check.next().await, Err(LinkError::Protocol(_))));
@@ -416,7 +416,7 @@ mod tests {
             Said::Progress(CallProgress::Confirming(confirm_id())),
             Said::Answer(Box::new(IntentsReply::Gate(GateAnswer::Run))),
         ]));
-        let mut check = gate.check(cua_ask()).await.expect("a check");
+        let mut check = gate.check(computer_use_ask()).await.expect("a check");
         assert_eq!(check.next().await, Ok(GateEvent::Confirming(confirm_id())));
         assert_eq!(check.proceed().await, Ok(()));
         assert_eq!(check.next().await, Ok(GateEvent::Answered(GateAnswer::Run)));
@@ -431,7 +431,7 @@ mod tests {
         let gate = IntentsGate::over(watching(vec![Said::Progress(CallProgress::Confirming(
             confirm_id(),
         ))]));
-        let mut check = gate.check(cua_ask()).await.expect("a check");
+        let mut check = gate.check(computer_use_ask()).await.expect("a check");
         assert_eq!(check.next().await, Ok(GateEvent::Confirming(confirm_id())));
         assert_eq!(check.close().await, Ok(()));
         drop(check);
@@ -445,7 +445,7 @@ mod tests {
         let gate = IntentsGate::over(watching(vec![Said::Progress(CallProgress::Confirming(
             confirm_id(),
         ))]));
-        let check = gate.check(cua_ask()).await.expect("a check");
+        let check = gate.check(computer_use_ask()).await.expect("a check");
         drop(check);
         tokio::task::yield_now().await;
         let steered = gate.transport().steered.lock().expect("lock").clone();
@@ -474,7 +474,7 @@ mod tests {
             asked,
             vec![IntentsRequest::SessionOpen(SessionOpen {
                 space,
-                agent: AgentRef::Cua { run },
+                agent: AgentRef::ComputerUse { run },
                 parent: None,
                 cwd: None,
                 external: None,

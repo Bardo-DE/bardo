@@ -7,7 +7,7 @@ use action_core::CallRefusal;
 use action_gate_wire::EffectBasis;
 use base_ids::Count;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, Point, Summary, Target, WindowSpace,
+    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, Point, Summary, Target, WindowSpace,
 };
 use computer_use_action::{RunMode, WindowClass};
 use computer_use_bus::*;
@@ -54,7 +54,7 @@ fn user(text: &str) -> Labelled<String> {
 fn click() -> TargetedAction {
     TargetedAction {
         window: WindowRef(1),
-        action: CuaAction::<WindowSpace>::Click {
+        action: ComputerUseAction::<WindowSpace>::Click {
             at: Target::Point(Point::new(Coord(340), Coord(20))),
             button: Button::Left,
             count: ClickCount::One,
@@ -78,11 +78,11 @@ fn round_trip<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(val
     clippy::too_many_lines,
     reason = "a table of one sample per record kind; splitting it would only scatter the list"
 )]
-fn every_record() -> Vec<(CuaRecord, &'static str)> {
+fn every_record() -> Vec<(ComputerUseRecord, &'static str)> {
     let step = StepIndex(3);
     vec![
         (
-            CuaRecord::RunStarted {
+            ComputerUseRecord::RunStarted {
                 run: run(),
                 session: SessionId::parse("s-2").unwrap(),
                 conversation: SessionId::parse("s-1").unwrap(),
@@ -96,7 +96,7 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             "cua.run.started",
         ),
         (
-            CuaRecord::Routed {
+            ComputerUseRecord::Routed {
                 run: run(),
                 served_by: ServedBy {
                     account: AccountId::parse("local").unwrap(),
@@ -107,7 +107,7 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             "cua.run.routed",
         ),
         (
-            CuaRecord::Step {
+            ComputerUseRecord::Step {
                 run: run(),
                 n: step,
                 thought: ThoughtDigest(Digest32([7; 32])),
@@ -131,7 +131,7 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             "cua.step",
         ),
         (
-            CuaRecord::Asked {
+            ComputerUseRecord::Asked {
                 run: run(),
                 n: step,
                 question_id: QuestionId(2),
@@ -140,7 +140,7 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             "cua.asked",
         ),
         (
-            CuaRecord::Confirmed {
+            ComputerUseRecord::Confirmed {
                 run: run(),
                 n: step,
                 by: ConfirmBy::ShellPrompt,
@@ -148,14 +148,14 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             "cua.confirmed",
         ),
         (
-            CuaRecord::TakenOver {
+            ComputerUseRecord::TakenOver {
                 run: run(),
                 n: step,
             },
             "cua.taken_over",
         ),
         (
-            CuaRecord::HandedBack {
+            ComputerUseRecord::HandedBack {
                 run: run(),
                 n: step,
                 user_events: vec![],
@@ -163,9 +163,9 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             "cua.handed_back",
         ),
         (
-            CuaRecord::Finished {
+            ComputerUseRecord::Finished {
                 run: run(),
-                outcome: CuaOutcome::Done,
+                outcome: ComputerUseOutcome::Done,
                 steps: Count(9),
                 charges: ChargeTotal::default(),
                 report: Some(MessageId::parse("m-88").unwrap()),
@@ -173,14 +173,14 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             "cua.run.finished",
         ),
         (
-            CuaRecord::ProcedureLearned {
+            ComputerUseRecord::ProcedureLearned {
                 procedure: "org.mozilla.firefox/download-invoice".into(),
                 from: run(),
             },
             "cua.procedure.learned",
         ),
         (
-            CuaRecord::ScreenSuspicious {
+            ComputerUseRecord::ScreenSuspicious {
                 run: run(),
                 n: step,
                 kinds: vec![ScreenKind::Instruction, ScreenKind::HiddenCharacters],
@@ -189,7 +189,7 @@ fn every_record() -> Vec<(CuaRecord, &'static str)> {
             "cua.screen.suspicious",
         ),
         (
-            CuaRecord::Seen {
+            ComputerUseRecord::Seen {
                 run: run(),
                 n: step,
                 unchanged: true,
@@ -231,10 +231,13 @@ fn a_finished_record_pins_its_json() {
 }
 
 #[test]
-fn the_actor_of_a_run_is_a_cua_actor_that_maps_to_the_cua_roster_party() {
-    let actor = cua_actor(SessionId::parse("s-2").unwrap(), run());
-    assert_eq!(actor.kind(), provenance::ActorKind::Cua);
-    assert_eq!(AgentRef::of(&actor), Some(AgentRef::Cua { run: run() }));
+fn the_actor_of_a_run_is_a_computer_use_actor_that_maps_to_the_computer_use_roster_party() {
+    let actor = computer_use_actor(SessionId::parse("s-2").unwrap(), run());
+    assert_eq!(actor.kind(), provenance::ActorKind::ComputerUse);
+    assert_eq!(
+        AgentRef::of(&actor),
+        Some(AgentRef::ComputerUse { run: run() })
+    );
 }
 
 #[test]
@@ -287,7 +290,7 @@ fn action_results_pin_their_json() {
 
 #[test]
 fn a_task_round_trips_with_its_report_route() {
-    let task = CuaTask {
+    let task = ComputerUseTask {
         app: AppName::parse("org.mozilla.firefox").unwrap(),
         goal: user("download the March invoice"),
         asked: None,
@@ -307,12 +310,12 @@ fn a_task_round_trips_with_its_report_route() {
             in_reply_to: Some(MessageId::parse("m-41").unwrap()),
         },
     };
-    let json = round_trip(&CuaEnvelope::current(task.clone()));
+    let json = round_trip(&ComputerUseEnvelope::current(task.clone()));
     assert!(
         json.starts_with(r#"{"vocab":1,"body":{"app":"org.mozilla.firefox","goal":"#),
         "{json}"
     );
-    let window = CuaTask {
+    let window = ComputerUseTask {
         target: TaskTarget::Window(ToplevelIdent::parse("w1").unwrap()),
         origin: RunOrigin::Handover { since: Stamp(5) },
         ..task
@@ -347,12 +350,12 @@ fn the_report_of_a_finished_run_is_a_report_message_whatever_the_outcome() {
         in_reply_to: None,
     };
     let outcomes = [
-        CuaOutcome::Done,
-        CuaOutcome::Failed(FailReason::WindowGone),
-        CuaOutcome::Failed(FailReason::CannotSeeScreen),
-        CuaOutcome::Blocked(BlockedOn::ConsentDenied),
-        CuaOutcome::Cancelled(CancelledBy::User),
-        CuaOutcome::BudgetOut(RunBudgetKind::Steps),
+        ComputerUseOutcome::Done,
+        ComputerUseOutcome::Failed(FailReason::WindowGone),
+        ComputerUseOutcome::Failed(FailReason::CannotSeeScreen),
+        ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied),
+        ComputerUseOutcome::Cancelled(CancelledBy::User),
+        ComputerUseOutcome::BudgetOut(RunBudgetKind::Steps),
     ];
     for outcome in outcomes {
         let draft = report_draft(&route, outcome.status(), &Summary::new("").unwrap(), &[]);
@@ -381,7 +384,7 @@ fn a_handed_back_record_carries_the_events_the_person_made_and_pins_its_json() {
             seq: Seq(42),
         },
     ];
-    let record = CuaRecord::HandedBack {
+    let record = ComputerUseRecord::HandedBack {
         run: run(),
         n: inference_core::StepIndex(3),
         user_events: events.clone(),
@@ -395,8 +398,8 @@ fn a_handed_back_record_carries_the_events_the_person_made_and_pins_its_json() {
         json.contains(r#""seq":41"#) && json.contains(r#""seq":42"#),
         "{json}"
     );
-    let back: CuaRecord = serde_json::from_str(&json).unwrap();
-    let CuaRecord::HandedBack { user_events, .. } = back else {
+    let back: ComputerUseRecord = serde_json::from_str(&json).unwrap();
+    let ComputerUseRecord::HandedBack { user_events, .. } = back else {
         panic!("not a hand-back")
     };
     assert_eq!(user_events, events, "oldest first, as given");

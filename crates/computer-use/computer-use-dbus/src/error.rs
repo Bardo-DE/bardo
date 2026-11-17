@@ -5,7 +5,7 @@ use computer_use_bus::ControlRefusal;
 /// The errors the control interfaces return.
 #[derive(Debug, zbus::DBusError)]
 #[zbus(prefix = "org.bardo.ComputerUse1.Error")]
-pub enum CuaError {
+pub enum ComputerUseError {
     /// zbus's own failures.
     #[zbus(error)]
     ZBus(zbus::Error),
@@ -15,7 +15,7 @@ pub enum CuaError {
     WrongState(String),
     /// No such question.
     UnknownQuestion(String),
-    /// `cua.enabled` is off.
+    /// `computer_use.enabled` is off.
     Disabled(String),
     /// No such window.
     WindowUnknown(String),
@@ -29,38 +29,38 @@ pub enum CuaError {
     ModelUnavailable(String),
 }
 
-impl CuaError {
+impl ComputerUseError {
     /// The refusal this error carries, or `None` for a bus failure.
     #[must_use]
     pub fn refusal(&self) -> Option<ControlRefusal> {
         match self {
-            CuaError::ZBus(_) => None,
-            CuaError::NotPermitted(_) => Some(ControlRefusal::NotPermitted),
-            CuaError::WrongState(_) => Some(ControlRefusal::WrongState),
-            CuaError::UnknownQuestion(_) => Some(ControlRefusal::UnknownQuestion),
-            CuaError::Disabled(_) => Some(ControlRefusal::Disabled),
-            CuaError::WindowUnknown(_) => Some(ControlRefusal::WindowUnknown),
-            CuaError::LeaseHeld(_) => Some(ControlRefusal::LeaseHeld),
-            CuaError::ModeUnsupported(_) => Some(ControlRefusal::ModeUnsupported),
-            CuaError::BadTask(_) => Some(ControlRefusal::BadTask),
-            CuaError::ModelUnavailable(_) => Some(ControlRefusal::ModelUnavailable),
+            ComputerUseError::ZBus(_) => None,
+            ComputerUseError::NotPermitted(_) => Some(ControlRefusal::NotPermitted),
+            ComputerUseError::WrongState(_) => Some(ControlRefusal::WrongState),
+            ComputerUseError::UnknownQuestion(_) => Some(ControlRefusal::UnknownQuestion),
+            ComputerUseError::Disabled(_) => Some(ControlRefusal::Disabled),
+            ComputerUseError::WindowUnknown(_) => Some(ControlRefusal::WindowUnknown),
+            ComputerUseError::LeaseHeld(_) => Some(ControlRefusal::LeaseHeld),
+            ComputerUseError::ModeUnsupported(_) => Some(ControlRefusal::ModeUnsupported),
+            ComputerUseError::BadTask(_) => Some(ControlRefusal::BadTask),
+            ComputerUseError::ModelUnavailable(_) => Some(ControlRefusal::ModelUnavailable),
         }
     }
 }
 
-impl From<ControlRefusal> for CuaError {
+impl From<ControlRefusal> for ComputerUseError {
     fn from(refusal: ControlRefusal) -> Self {
         let text = String::new();
         match refusal {
-            ControlRefusal::NotPermitted => CuaError::NotPermitted(text),
-            ControlRefusal::WrongState => CuaError::WrongState(text),
-            ControlRefusal::UnknownQuestion => CuaError::UnknownQuestion(text),
-            ControlRefusal::Disabled => CuaError::Disabled(text),
-            ControlRefusal::WindowUnknown => CuaError::WindowUnknown(text),
-            ControlRefusal::LeaseHeld => CuaError::LeaseHeld(text),
-            ControlRefusal::ModeUnsupported => CuaError::ModeUnsupported(text),
-            ControlRefusal::BadTask => CuaError::BadTask(text),
-            ControlRefusal::ModelUnavailable => CuaError::ModelUnavailable(text),
+            ControlRefusal::NotPermitted => ComputerUseError::NotPermitted(text),
+            ControlRefusal::WrongState => ComputerUseError::WrongState(text),
+            ControlRefusal::UnknownQuestion => ComputerUseError::UnknownQuestion(text),
+            ControlRefusal::Disabled => ComputerUseError::Disabled(text),
+            ControlRefusal::WindowUnknown => ComputerUseError::WindowUnknown(text),
+            ControlRefusal::LeaseHeld => ComputerUseError::LeaseHeld(text),
+            ControlRefusal::ModeUnsupported => ComputerUseError::ModeUnsupported(text),
+            ControlRefusal::BadTask => ComputerUseError::BadTask(text),
+            ControlRefusal::ModelUnavailable => ComputerUseError::ModelUnavailable(text),
         }
     }
 }
@@ -73,7 +73,7 @@ mod tests {
     #[test]
     fn error_names_cover_control_refusal() {
         for refusal in ControlRefusal::ALL {
-            let error = CuaError::from(refusal);
+            let error = ComputerUseError::from(refusal);
             assert_eq!(error.refusal(), Some(refusal));
             assert_eq!(
                 error.name().as_str(),

@@ -1,4 +1,4 @@
-//! `org.bardo.ComputerUse`: cuad as an intent provider, with one action, `computeruse.run.start`.
+//! `org.bardo.ComputerUse`: the computer-use daemon as an intent provider, with one action, `computeruse.run.start`.
 
 use account_core::AppName;
 use action_core::{
@@ -8,7 +8,7 @@ use action_core::{
 use action_manifest::{AgentReach, Manifest, ManifestError, ValidManifest, validate};
 use action_provider::IntentProvider;
 use action_vocab::{EntityRef, ParamName, UndoToken, Value};
-use computer_use_bus::{ControlRefusal, CuaRecord};
+use computer_use_bus::{ComputerUseRecord, ControlRefusal};
 use computer_use_desktop::ToplevelIdent;
 use computer_use_run::DefaultMode;
 use provenance::{
@@ -68,7 +68,7 @@ pub enum StartRefusal {
     NeedsApp(Vec<AppName>),
 }
 
-/// What `computeruse.run.start` asked for, as the daemon needs it to make a [`computer_use_bus::CuaTask`].
+/// What `computeruse.run.start` asked for, as the daemon needs it to make a [`computer_use_bus::ComputerUseTask`].
 #[derive(Debug)]
 pub struct StartRequest {
     /// What to do: the planner's words, with their label.
@@ -77,12 +77,12 @@ pub struct StartRequest {
     pub asked: Option<Labelled<String>>,
     /// This provider's earlier records of the conversation, oldest first, as the router filled
     /// them; none when it had none.
-    pub earlier: Option<Labelled<Vec<CuaRecord>>>,
+    pub earlier: Option<Labelled<Vec<ComputerUseRecord>>>,
     /// The window to work in, when the planner named one.
     pub window: Option<ToplevelIdent>,
     /// The app, when it named that instead. With neither, the window the person is in.
     pub app: Option<AppName>,
-    /// Where to run, as the planner chose; `auto` is resolved by cuad, which knows its backend.
+    /// Where to run, as the planner chose; `auto` is resolved by the computer-use daemon, which knows its backend.
     pub mode: DefaultMode,
     /// The session that asked.
     pub session: SessionId,
@@ -110,17 +110,17 @@ pub struct ProviderQueues {
     pub open_apps: mpsc::UnboundedReceiver<OpenAppsAsk>,
 }
 
-/// cuad's provider.
+/// The computer-use daemon's provider.
 #[derive(Debug)]
-pub struct CuaProvider {
+pub struct ComputerUseProvider {
     manifest: ValidManifest,
     starts: Option<mpsc::UnboundedSender<StartRequest>>,
     open_apps: Option<mpsc::UnboundedSender<OpenAppsAsk>>,
 }
 
-impl CuaProvider {
+impl ComputerUseProvider {
     /// A provider whose action is offered or hidden by `enabled`. It starts nothing (`perform`
-    /// is `Unsupported`); the daemon builds one with [`CuaProvider::starting`].
+    /// is `Unsupported`); the daemon builds one with [`ComputerUseProvider::starting`].
     ///
     /// # Errors
     ///
@@ -255,7 +255,7 @@ fn start_of(
 
 /// The records in `json`, a JSON array of record bodies: an element that is not a record is
 /// skipped, and text that is not an array holds none.
-fn records_of(json: &str) -> Vec<CuaRecord> {
+fn records_of(json: &str) -> Vec<ComputerUseRecord> {
     serde_json::from_str::<Vec<serde_json::Value>>(json)
         .unwrap_or_default()
         .into_iter()
@@ -295,7 +295,7 @@ fn refusal_of(refused: StartRefusal) -> AppRefusal {
     }
 }
 
-impl IntentProvider for CuaProvider {
+impl IntentProvider for ComputerUseProvider {
     fn manifest(&self) -> &ValidManifest {
         &self.manifest
     }
@@ -315,7 +315,7 @@ impl IntentProvider for CuaProvider {
             .await
             .map_err(|_| AppRefusal::Busy)?
             .map_err(refusal_of)?;
-        // The run's id is cuad's own word; its report arrives as a message.
+        // The run's id is the computer-use daemon's own word; its report arrives as a message.
         Ok(Outcome {
             value: Some(Labelled::new(
                 Value::Text(id.as_str().to_owned()),
@@ -333,7 +333,7 @@ impl IntentProvider for CuaProvider {
 
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "IntentProvider declares this method async; cuad has nothing to await here"
+        reason = "IntentProvider declares this method async; the computer-use daemon has nothing to await here"
     )]
     async fn dry_run(&self, inv: Invocation) -> Result<Preview, AppRefusal> {
         let _ = inv;
@@ -342,7 +342,7 @@ impl IntentProvider for CuaProvider {
 
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "IntentProvider declares this method async; cuad has nothing to await here"
+        reason = "IntentProvider declares this method async; the computer-use daemon has nothing to await here"
     )]
     async fn undo(&self, token: UndoToken, actor: Actor) -> Result<(), UndoFault> {
         let _ = (token, actor);
@@ -351,7 +351,7 @@ impl IntentProvider for CuaProvider {
 
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "IntentProvider declares this method async; cuad has nothing to await here"
+        reason = "IntentProvider declares this method async; the computer-use daemon has nothing to await here"
     )]
     async fn search(&self, text: &str) -> Vec<Hit> {
         let _ = text;
@@ -360,7 +360,7 @@ impl IntentProvider for CuaProvider {
 
     #[expect(
         clippy::unused_async_trait_impl,
-        reason = "IntentProvider declares this method async; cuad has nothing to await here"
+        reason = "IntentProvider declares this method async; the computer-use daemon has nothing to await here"
     )]
     async fn preview(&self, id: &EntityId) -> Preview {
         let _ = id;

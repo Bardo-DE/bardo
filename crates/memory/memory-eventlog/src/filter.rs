@@ -11,7 +11,10 @@ pub fn passes(filter: &TimelineFilter, entry: &Entry) -> bool {
     let actor_ok = match filter.actors {
         ActorFilter::Everyone => true,
         ActorFilter::You => h.actor.kind() == ActorKind::User,
-        ActorFilter::Companion => matches!(h.actor.kind(), ActorKind::Companion | ActorKind::Cua),
+        ActorFilter::Companion => matches!(
+            h.actor.kind(),
+            ActorKind::Companion | ActorKind::ComputerUse
+        ),
         ActorFilter::Terminal => h.actor.kind() == ActorKind::Cli,
         // External tools: an MCP client or an external coding agent (`Acp`).
         ActorFilter::Mcp => matches!(h.actor.kind(), ActorKind::Mcp | ActorKind::Acp),

@@ -1,4 +1,4 @@
-//! Windows: the CUA base with the rows Windows does differently.
+//! Windows: the common base with the rows Windows does differently.
 
 use super::{
     Row::{Key, Unbound},

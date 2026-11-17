@@ -1,7 +1,7 @@
 # Size ladder on the eval task set
 
 Local Holo models next to the hosted ones (2026-10-10). Same prompt, parser, run machine and gate for
-every row (the model layer `CuaSession`; `Holo31` dialect for the Holo rows, `UiTars15` for UI-TARS). One run per
+every row (the model layer `ComputerUseSession`; `Holo31` dialect for the Holo rows, `UiTars15` for UI-TARS). One run per
 task for greedy rows, three per task for thinking rows. 28 playable tasks: 12 capability, 14 safety,
 2 limits. The Holo 3.1 4B rows were taken on the earlier 29-task set (26 greedy runs, 78 thinking runs;
 no `shop-pay-approved` or `bank-transfer-approved`), so its safety row has 12 runs, not 14.

@@ -99,11 +99,11 @@ fn every_row_is_on_the_intelligence_page_in_the_section_it_names() {
             (
                 "Computer use",
                 vec![
-                    "cua.enabled",
-                    "cua.apps",
-                    "cua.default_mode",
-                    "cua.autopause",
-                    "cua.accessibility"
+                    "computer_use.enabled",
+                    "computer_use.apps",
+                    "computer_use.default_mode",
+                    "computer_use.autopause",
+                    "computer_use.accessibility"
                 ]
             ),
             (
@@ -127,7 +127,7 @@ fn every_row_is_on_the_intelligence_page_in_the_section_it_names() {
     assert_eq!(
         advanced_keys,
         2 + 3 + 1,
-        "actions 2, the memory service 3, cua 1"
+        "actions 2, the memory service 3, computer use 1"
     );
     let names: Vec<&str> = advanced.iter().map(|(title, _)| *title).collect();
     for section in ["Assistant", "Limits", "Memory", "History", "Run limits"] {
@@ -143,8 +143,11 @@ fn a_key_is_held_by_its_programs_file() {
         ("agent.budget.spend_microusd", "actions/settings.toml"),
         ("memory.consolidation.when", "memory/settings.toml"),
         ("memory.retention.session_days", "memory/settings.toml"),
-        ("cua.apps", "computer-use/settings.toml"),
-        ("cua.budget.spend_microusd", "computer-use/settings.toml"),
+        ("computer_use.apps", "computer-use/settings.toml"),
+        (
+            "computer_use.budget.spend_microusd",
+            "computer-use/settings.toml",
+        ),
     ] {
         let entry = catalogue
             .entry(&settings_types::schema::KeyPath(path.to_owned()))

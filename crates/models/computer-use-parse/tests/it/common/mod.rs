@@ -7,8 +7,8 @@
 use std::collections::BTreeSet;
 
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, GridMax, GridSpace, ImageSpace, ModelSpace, Point,
-    Target, TextDialect, ToolDialect,
+    Button, ClickCount, ComputerUseAction, Coord, GridMax, GridSpace, ImageSpace, ModelSpace,
+    Point, Target, TextDialect, ToolDialect,
 };
 use computer_use_parse::{
     DropReason, InSpace, ParseError, ParseLimits, Parsed, parse_text, parse_tool_calls,
@@ -23,8 +23,8 @@ pub fn gat(x: u32, y: u32) -> Target<GridSpace> {
     Target::Point(Point::new(Coord(x), Coord(y)))
 }
 
-pub fn left_click(to: Target<ImageSpace>) -> CuaAction<ImageSpace> {
-    CuaAction::Click {
+pub fn left_click(to: Target<ImageSpace>) -> ComputerUseAction<ImageSpace> {
+    ComputerUseAction::Click {
         at: to,
         button: Button::Left,
         count: ClickCount::One,
@@ -58,14 +58,14 @@ pub fn tools(dialect: ToolDialect, calls: &[ToolCall]) -> Result<Parsed, ParseEr
     parse_tool_calls(dialect, ModelSpace::Image, calls, ParseLimits::default())
 }
 
-pub fn image_actions(parsed: &Parsed) -> &[CuaAction<ImageSpace>] {
+pub fn image_actions(parsed: &Parsed) -> &[ComputerUseAction<ImageSpace>] {
     match &parsed.actions {
         InSpace::Image(actions) => actions,
         InSpace::Grid(..) => panic!("expected image space"),
     }
 }
 
-pub fn grid_actions(parsed: &Parsed) -> &[CuaAction<GridSpace>] {
+pub fn grid_actions(parsed: &Parsed) -> &[ComputerUseAction<GridSpace>] {
     match &parsed.actions {
         InSpace::Grid(_, actions) => actions,
         InSpace::Image(_) => panic!("expected grid space"),

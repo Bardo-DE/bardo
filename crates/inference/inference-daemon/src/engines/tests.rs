@@ -3,8 +3,8 @@ use crate::supervise::Ports;
 use crate::testkit::{Recorder, models};
 use account_capability::Billing;
 use account_capability::ModelId;
-use account_capability::{Capability, CuaEnv, LlmCap, LlmFeature, LlmWire};
-use account_match::{CuaNeed, LlmNeed, SpeechNeed};
+use account_capability::{Capability, ComputerUseEnv, LlmCap, LlmFeature, LlmWire};
+use account_match::{ComputerUseNeed, LlmNeed, SpeechNeed};
 use base_ids::Tokens;
 use base_testkit::Scratch;
 use engine_supervisor::{
@@ -17,8 +17,8 @@ fn llm() -> Need {
     Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))
 }
 
-fn cua() -> Need {
-    Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop].into()))
+fn computer_use() -> Need {
+    Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into()))
 }
 
 fn spec(need: Need, class: DataClass) -> SessionSpec {
@@ -302,30 +302,38 @@ async fn prepare_warms_a_stopped_engine_and_a_later_prepare_says_ready() {
     );
     // Refusals come back as refusals.
     assert_eq!(
-        engines.prepare(&cua(), DataClass::Screen, Tier::Fast),
+        engines.prepare(&computer_use(), DataClass::Screen, Tier::Fast),
         Err(InferRefusal::Denied),
         "an app may not warm a computer-use model"
     );
     assert_eq!(
-        engines.prepare_as(&cua(), DataClass::Screen, Tier::Fast, CallerRole::Cua),
+        engines.prepare_as(
+            &computer_use(),
+            DataClass::Screen,
+            Tier::Fast,
+            CallerRole::ComputerUse
+        ),
         Ok(Readiness::Loading)
     );
 }
 
 #[tokio::test(start_paused = true)]
-async fn only_cuad_is_routed_a_computer_use_need() {
-    let scratch = Scratch::new("eng-cua");
+async fn only_computer_use_daemon_is_routed_a_computer_use_need() {
+    let scratch = Scratch::new("eng-computer-use");
     let engines = start(&scratch, Recorder::default());
     assert_eq!(
         engines
-            .route(&spec(cua(), DataClass::Screen), CallerRole::App)
+            .route(&spec(computer_use(), DataClass::Screen), CallerRole::App)
             .err(),
         Some(InferRefusal::Denied)
     );
     let (decision, _) = engines
-        .route(&spec(cua(), DataClass::Screen), CallerRole::Cua)
+        .route(
+            &spec(computer_use(), DataClass::Screen),
+            CallerRole::ComputerUse,
+        )
         .expect("route");
-    assert_eq!(decision.served.model.as_str(), "tiny-cua");
+    assert_eq!(decision.served.model.as_str(), "tiny-computer-use");
 }
 
 #[tokio::test(start_paused = true)]
@@ -343,23 +351,23 @@ async fn what_an_app_is_told_without_a_session_reveals_no_identity() {
         ),
         (
             "computer use for an app",
-            cua(),
+            computer_use(),
             DataClass::Screen,
             CallerRole::App,
             Availability::Denied,
         ),
         (
-            "computer use for cuad",
-            cua(),
+            "computer use for computer_use_daemon",
+            computer_use(),
             DataClass::Screen,
-            CallerRole::Cua,
+            CallerRole::ComputerUse,
             Availability::Granted,
         ),
         (
             "computer use on mail",
-            cua(),
+            computer_use(),
             DataClass::Mail,
-            CallerRole::Cua,
+            CallerRole::ComputerUse,
             Availability::Unsupported,
         ),
         (

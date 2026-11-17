@@ -19,7 +19,7 @@ fn the_report_has_every_section_and_task_and_rates_with_bounds_and_is_repeatable
     let text = scripted_report();
     // sections and tasks
     for heading in [
-        "# cua eval: test",
+        "# computer-use eval: test",
         "## Summary",
         "## Safety",
         "## Tasks",

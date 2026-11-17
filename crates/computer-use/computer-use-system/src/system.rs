@@ -4,14 +4,14 @@ use crate::a11y::LoggedAtspi;
 use crate::backend::CaptureBackend;
 use crate::compositor::{CompositorDesktop, Door};
 use crate::connect::Links;
-use crate::model::InferdCuaModel;
+use crate::model::InferdComputerUseModel;
 use computer_use_a11y_atspi::AtspiSource;
 use computer_use_capture_wayland::StampClock;
 use computer_use_desktop::{BackendKind, SeatIsolation, Stamp};
 use computer_use_host::DaemonLinks;
 use computer_use_host::IntentsGate;
 use computer_use_host::SystemClock;
-use computer_use_host::{A11yChoice, BackendChoice, CuadConfig};
+use computer_use_host::{A11yChoice, BackendChoice, ComputerUseDaemonConfig};
 use computer_use_run::{Clock, Parts, Rules, Seams};
 use computer_use_seat_ei::EiSeat;
 use std::os::unix::net::UnixStream;
@@ -21,7 +21,7 @@ use wayland_client::{ConnectError, Connection};
 /// The daemon's seams to the desktop, input, capture, the model and the router.
 ///
 /// They are the desktop of the compositor when it is running (else none), EI for input, stock toplevel
-/// capture with masking in cuad, AT-SPI for the tree, inferd for the model, `Intents1.Gate` for the
+/// capture with masking in the computer-use daemon, AT-SPI for the tree, inferd for the model, `Intents1.Gate` for the
 /// router, memoryd and the router's message path for records and reports, and the system clock.
 /// With no compositor the desktop and capture are `None` and the daemon says so on the bus.
 #[derive(Debug)]
@@ -32,7 +32,7 @@ impl Seams for SystemSeams {
     type Seat = EiSeat;
     type Capture = Option<CaptureBackend>;
     type A11y = Option<LoggedAtspi>;
-    type Model = InferdCuaModel<inference_client::DbusTransport>;
+    type Model = InferdComputerUseModel<inference_client::DbusTransport>;
     type Gate = IntentsGate<action_client::DbusTransport>;
     type Events = DaemonLinks<memory_client::DbusTransport, action_client::DbusTransport>;
     type Time = SystemClock;
@@ -73,7 +73,7 @@ impl StampClock for RunClock {
 #[error("{0}")]
 pub struct ReachError(pub String);
 
-/// What cuad reached of a compositor.
+/// What the computer-use daemon reached of a compositor.
 #[derive(Debug)]
 pub enum Reached {
     /// The compositor: its desktop, and a second agent connection for capture.
@@ -98,7 +98,10 @@ impl Reached {
     ///
     /// `ReachError` when `config` asks for the compositor and it is not there, or no compositor can be
     /// reached.
-    pub async fn find(config: &CuadConfig, bus: &zbus::Connection) -> Result<Reached, ReachError> {
+    pub async fn find(
+        config: &ComputerUseDaemonConfig,
+        bus: &zbus::Connection,
+    ) -> Result<Reached, ReachError> {
         match config.backend {
             BackendChoice::Only(BackendKind::Compositor) => {
                 let door = Door::find(bus).await.ok_or_else(|| {
@@ -111,7 +114,9 @@ impl Reached {
                 Some(door) => match Self::compositor(door).await {
                     Ok(reached) => Ok(reached),
                     Err(error) => {
-                        eprintln!("cuad: compositor is running but not usable ({error})");
+                        eprintln!(
+                            "computer_use_daemon: compositor is running but not usable ({error})"
+                        );
                         Ok(Self::environment())
                     }
                 },
@@ -166,7 +171,7 @@ impl SystemSeams {
     /// the daemon has no desktop and refuses every capture. `clock` is shared with capture. `rules` are
     /// the screen rules the host read.
     pub fn parts(
-        config: &CuadConfig,
+        config: &ComputerUseDaemonConfig,
         links: Links,
         reached: Reached,
         clock: SystemClock,

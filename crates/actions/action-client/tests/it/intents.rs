@@ -2,7 +2,7 @@
 
 use action_client::{ClientError, Intents, Transport, TransportError};
 use action_core::*;
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_vocab::{ActionRef, Args, CallRequest, Handle, Origin, TargetValue, TurnId, Workspace};
 use action_wire::{
     Displayed, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, Member, WireRefusal,
@@ -55,15 +55,15 @@ fn call() -> CallRequest {
     }
 }
 
-fn ask_for_run() -> CuaAsk {
-    CuaAsk {
+fn ask_for_run() -> ComputerUseAsk {
+    ComputerUseAsk {
         run: provenance::RunId::parse("r-1").expect("run"),
         step: 1,
         app: AppName::parse("org.bardo.Mail").expect("app"),
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: provenance::SpaceId::parse("work").expect("space"),
-        action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,
+        action: computer_use_action::ComputerUseAction::<computer_use_action::WindowSpace>::Observe,
         node: None,
         effect: provenance::Effect::Read,
         basis: EffectBasis::DefaultTable,

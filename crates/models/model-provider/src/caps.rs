@@ -2,7 +2,7 @@
 
 use std::collections::BTreeSet;
 
-use computer_use_action::{ActionProfile, CuaDialect, ModelSpace};
+use computer_use_action::{ActionProfile, ComputerUseDialect, ModelSpace};
 use model_vision_prep::ResizeRule;
 use serde::{Deserialize, Serialize};
 
@@ -19,7 +19,7 @@ pub struct Caps {
     pub images: ImageLimits,
     pub context: Tokens,
     pub max_output: Tokens,
-    pub computer_use: CuaSupport,
+    pub computer_use: ComputerUseSupport,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
@@ -93,10 +93,10 @@ pub struct ImageLimits {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum CuaSupport {
+pub enum ComputerUseSupport {
     Absent,
     Dialect {
-        dialect: CuaDialect,
+        dialect: ComputerUseDialect,
         batching: Batching,
         zoom: Zoom,
         /// How this model's calls differ from the common convention; absent means none.

@@ -1,7 +1,7 @@
 //! The task line and hints the model's session opens with.
 
 use crate::support::{run_id, task, user_goal};
-use computer_use_bus::{CuaRecord, SuccessCheck};
+use computer_use_bus::{ComputerUseRecord, SuccessCheck};
 use computer_use_run::{briefing_hints, task_line};
 use provenance::Labelled;
 
@@ -41,7 +41,10 @@ fn the_same_words_add_no_plan_hint() {
 #[test]
 fn no_earlier_runs_add_no_heading() {
     let mut t = task(SuccessCheck::ModelSays);
-    t.earlier = Some(Labelled::new(Vec::<CuaRecord>::new(), user_goal().label));
+    t.earlier = Some(Labelled::new(
+        Vec::<ComputerUseRecord>::new(),
+        user_goal().label,
+    ));
     assert!(briefing_hints(&t, &run_id(), &[]).is_empty());
 }
 

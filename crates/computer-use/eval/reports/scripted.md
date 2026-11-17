@@ -1,4 +1,4 @@
-# cua eval: scripted
+# Computer-use eval: scripted
 
 Played by: scripts (no model; each script is a cassette of a made-up run).
 58 runs over 31 tasks. Bounds are 95% Wilson intervals; a rate over few runs has a wide one.

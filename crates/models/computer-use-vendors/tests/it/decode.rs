@@ -2,8 +2,8 @@
 //! Anthropic toolset and `computer_20251124`, `OpenAI`'s `computer_call`, Gemini's computer use.
 
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, GridMax, GridSpace, ImageSpace, Modifier, Notches,
-    ScrollBy, ScrollDir, Target, WireDialect,
+    Button, ClickCount, ComputerUseAction, Coord, GridMax, GridSpace, ImageSpace, Modifier,
+    Notches, ScrollBy, ScrollDir, Target, WireDialect,
 };
 use computer_use_parse::{DropReason, InSpace, Parsed};
 use computer_use_vendors::{WireCodec, WireError};
@@ -23,7 +23,12 @@ fn decode(dialect: WireDialect, calls: &[ToolCall]) -> Result<Parsed, WireError>
     dialect.decode(calls, &[])
 }
 
-fn image(parsed: Parsed) -> (Vec<CuaAction<ImageSpace>>, Vec<(String, DropReason)>) {
+fn image(
+    parsed: Parsed,
+) -> (
+    Vec<ComputerUseAction<ImageSpace>>,
+    Vec<(String, DropReason)>,
+) {
     let InSpace::Image(actions) = parsed.actions else {
         panic!("image space")
     };
@@ -65,14 +70,14 @@ fn the_toolset_members_decode() {
     let kinds: Vec<&str> = actions
         .iter()
         .map(|a| match a {
-            CuaAction::Click { .. } => "click",
-            CuaAction::Drag { .. } => "drag",
-            CuaAction::Scroll { .. } => "scroll",
-            CuaAction::Zoom { .. } => "zoom",
-            CuaAction::Type { .. } => "type",
-            CuaAction::Key { .. } => "key",
-            CuaAction::Wait { .. } => "wait",
-            CuaAction::Observe => "observe",
+            ComputerUseAction::Click { .. } => "click",
+            ComputerUseAction::Drag { .. } => "drag",
+            ComputerUseAction::Scroll { .. } => "scroll",
+            ComputerUseAction::Zoom { .. } => "zoom",
+            ComputerUseAction::Type { .. } => "type",
+            ComputerUseAction::Key { .. } => "key",
+            ComputerUseAction::Wait { .. } => "wait",
+            ComputerUseAction::Observe => "observe",
             other => panic!("{other:?}"),
         })
         .collect();
@@ -84,14 +89,14 @@ fn the_toolset_members_decode() {
     );
     assert_eq!(
         actions[0],
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: point(500, 300),
             button: Button::Left,
             count: ClickCount::One,
             mods: [Modifier::Shift].into(),
         }
     );
-    let CuaAction::Scroll { at, dir, by } = &actions[2] else {
+    let ComputerUseAction::Scroll { at, dir, by } = &actions[2] else {
         unreachable!()
     };
     assert_eq!(
@@ -102,14 +107,14 @@ fn the_toolset_members_decode() {
             &ScrollBy::Notches(Notches(3))
         )
     );
-    let CuaAction::Zoom { region } = &actions[3] else {
+    let ComputerUseAction::Zoom { region } = &actions[3] else {
         unreachable!()
     };
     assert_eq!(
         (region.origin.x.0, region.size.w.0, region.size.h.0),
         (100, 300, 150)
     );
-    let CuaAction::Wait { for_ms } = &actions[6] else {
+    let ComputerUseAction::Wait { for_ms } = &actions[6] else {
         unreachable!()
     };
     assert_eq!(for_ms.ms(), 2000);
@@ -132,16 +137,16 @@ fn the_2025_tool_names_the_member_in_the_input() {
     assert_eq!(dropped, vec![]);
     assert!(matches!(
         &actions[0],
-        CuaAction::Click {
+        ComputerUseAction::Click {
             count: ClickCount::Two,
             ..
         }
     ));
-    let CuaAction::Key { repeat, .. } = &actions[1] else {
+    let ComputerUseAction::Key { repeat, .. } = &actions[1] else {
         unreachable!()
     };
     assert_eq!(repeat.times(), 2);
-    assert_eq!(actions[2], CuaAction::Observe);
+    assert_eq!(actions[2], ComputerUseAction::Observe);
     // The toolset's names are not this tool's.
     assert_eq!(
         decode(LEGACY, &[call("left_click", r#"{"coordinate":[1,1]}"#)]),
@@ -194,7 +199,7 @@ fn what_we_do_not_act_on_or_cannot_place_is_dropped_with_its_reason() {
         // One good call beside it, so the reply as a whole still decodes.
         let calls = [call(name, input), call("screenshot", "{}")];
         let (actions, dropped) = image(decode(TOOLSET, &calls).unwrap());
-        assert_eq!(actions, vec![CuaAction::Observe], "{name} {input}");
+        assert_eq!(actions, vec![ComputerUseAction::Observe], "{name} {input}");
         assert_eq!(
             dropped,
             vec![((*name).to_owned(), *reason)],
@@ -247,14 +252,14 @@ fn openai_decodes_the_actions_of_a_computer_call() {
     );
     assert_eq!(
         actions[0],
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: point(405, 157),
             button: Button::Left,
             count: ClickCount::One,
             mods: BTreeSet::default()
         }
     );
-    let CuaAction::Scroll {
+    let ComputerUseAction::Scroll {
         dir,
         by: ScrollBy::Distance(len),
         ..
@@ -264,9 +269,9 @@ fn openai_decodes_the_actions_of_a_computer_call() {
     };
     assert_eq!((*dir, len.coord()), (ScrollDir::Up, Coord(300)));
     assert!(
-        matches!(&actions[4], CuaAction::Drag { from, to, .. } if *from == point(1, 2) && *to == point(9, 10))
+        matches!(&actions[4], ComputerUseAction::Drag { from, to, .. } if *from == point(1, 2) && *to == point(9, 10))
     );
-    assert!(matches!(&actions[5], CuaAction::Wait { for_ms } if for_ms.ms() == 2000));
+    assert!(matches!(&actions[5], ComputerUseAction::Wait { for_ms } if for_ms.ms() == 2000));
     // The older single-action form, and the verbs that do not decode.
     let single = [call(
         "computer",
@@ -305,14 +310,14 @@ fn gemini_points_are_a_grid_of_one_thousand() {
     assert_eq!(max, GridMax(1000));
     let at: Target<GridSpace> =
         Target::Point(computer_use_action::Point::new(Coord(500), Coord(250)));
-    assert!(matches!(&actions[0], CuaAction::Click { at: a, .. } if *a == at));
-    let CuaAction::Type { text } = &actions[1] else {
+    assert!(matches!(&actions[0], ComputerUseAction::Click { at: a, .. } if *a == at));
+    let ComputerUseAction::Type { text } = &actions[1] else {
         unreachable!()
     };
     assert_eq!(text.as_str(), "hi\n");
     assert!(matches!(
         &actions[2],
-        CuaAction::Scroll {
+        ComputerUseAction::Scroll {
             by: ScrollBy::Notches(Notches(3)),
             ..
         }
@@ -351,7 +356,7 @@ fn gemini_safety_only_adds() {
         panic!()
     };
     assert_eq!(actions.len(), plain_actions.len() + 1);
-    assert!(matches!(&actions[0], CuaAction::Ask { .. }));
+    assert!(matches!(&actions[0], ComputerUseAction::Ask { .. }));
     assert_eq!(&actions[1..], &*plain_actions);
     // A block removes the actions and ends the run as infeasible.
     let blocked = gemini
@@ -362,7 +367,7 @@ fn gemini_safety_only_adds() {
     };
     assert!(matches!(
         &*actions,
-        [CuaAction::Finish {
+        [ComputerUseAction::Finish {
             outcome: computer_use_action::FinishOutcome::Infeasible,
             ..
         }]

@@ -224,7 +224,7 @@ fn the_terminal_names_its_reason() {
 fn a_standing_grant_is_for_the_terminal_alone() {
     // The same context on any other caller is not a grant: a companion still takes its own row.
     let pdp = pdp();
-    for kind in [ActorKind::Companion, ActorKind::Mcp, ActorKind::Cua] {
+    for kind in [ActorKind::Companion, ActorKind::Mcp, ActorKind::ComputerUse] {
         let request = with(Effect::Outbound, |r| {
             r.principal.kind = kind;
             r.context.terminal = TerminalGrant::Granted;

@@ -9,7 +9,7 @@
 //!   With no compositor the `None` cases answer, and the bus says `Backend = none`.
 //! - [`CompositorDesktop`] is the desktop of the compositor: windows from the agent connection and a lease
 //!   per window from `Compositor1`.
-//! - [`InferdCuaModel`] is the computer-use model over an inferd session, and [`frame_fd`] the
+//! - [`InferdComputerUseModel`] is the computer-use model over an inferd session, and [`frame_fd`] the
 //!   sealed memfd a frame rides in.
 //!
 //! The backends themselves are in `computer-use-seat-ei`, `computer-use-capture-wayland` and `computer-use-a11y-atspi`.
@@ -27,5 +27,5 @@ pub use backend::CaptureBackend;
 pub use compositor::{CompositorDesktop, Door};
 pub use connect::Links;
 pub use frame_fd::{FrameFdError, frame_fd};
-pub use model::InferdCuaModel;
+pub use model::InferdComputerUseModel;
 pub use system::{ReachError, Reached, SystemSeams, WaylandPair};

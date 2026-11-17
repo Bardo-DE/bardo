@@ -1,4 +1,4 @@
-# cua eval: holo4-35b-a3b-thinking
+# Computer-use eval: holo4-35b-a3b-thinking
 
 Played by: holo4-35b-a3b-fp8 on a local engine (loopback port 18437), thinking On, 3 run(s) per task.
 84 runs over 31 tasks. Bounds are 95% Wilson intervals; a rate over few runs has a wide one.

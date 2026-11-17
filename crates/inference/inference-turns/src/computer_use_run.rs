@@ -1,7 +1,7 @@
 //! Computer-use steps as one run on one session: its goal and what it did so far.
 //!
 //! A step runs one model turn through the pinned engine; the prompt, the parse (with one
-//! repair) and the mapping into window space are the model layer's `CuaSession`, which `cua_step` drives.
+//! repair) and the mapping into window space are the model layer's `ComputerUseSession`, which `computer_use_step` drives.
 //! The history lives in the session value the run holds, so the run is pinned to one model.
 
 use crate::bridge::Frames;
@@ -9,7 +9,8 @@ use crate::cua_step::{self, Failed};
 use base_ids::Tokens;
 use computer_use_session::CuaSession;
 use inference_core::{
-    ChatSink, CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, ModelError,
+    ChatSink, ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply,
+    ComputerUseStepRequest, ModelError,
 };
 use inference_router::local::LocalModel;
 use model_provider::Provider;
@@ -23,21 +24,23 @@ pub use inference_router::router::check_class;
 ///
 /// It holds the goal, and the model session once the first step has
 /// chosen the model's profile (the model is the session's pin, known to the step and not to the
-/// `CuaBegin` request).
+/// `ComputerUseBegin` request).
 #[derive(Clone)]
-pub struct CuaRun {
-    begin: CuaBegin,
-    session: Option<CuaSession>,
+pub struct ComputerUseRun {
+    begin: ComputerUseBegin,
+    session: Option<ComputerUseSession>,
 }
 
 // The goal is what the person asked for: Debug shows sizes only.
-impl std::fmt::Debug for CuaRun {
+impl std::fmt::Debug for ComputerUseRun {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "CuaRun({:?}, {} remembered steps)",
+            "ComputerUseRun({:?}, {} remembered steps)",
             self.begin,
-            self.session.as_ref().map_or(0, CuaSession::remembered)
+            self.session
+                .as_ref()
+                .map_or(0, ComputerUseSession::remembered)
         )
     }
 }
@@ -53,15 +56,15 @@ pub struct StepJob<'a, P> {
     /// The descriptors that arrived with the request's frame.
     pub frames: &'a Frames,
     /// The step.
-    pub request: &'a CuaStepRequest,
+    pub request: &'a ComputerUseStepRequest,
     /// The most a reply may write (`LocalModel::reply_ceiling`).
     pub ceiling: Tokens,
 }
 
-impl CuaRun {
+impl ComputerUseRun {
     /// A run for this goal, with nothing done.
     #[must_use]
-    pub fn begin(begin: CuaBegin) -> Self {
+    pub fn begin(begin: ComputerUseBegin) -> Self {
         Self {
             begin,
             session: None,
@@ -78,25 +81,25 @@ impl CuaRun {
     ///
     /// # Errors
     ///
-    /// Returns the [`CuaStepFailure`] of the step: the model's failure, or a reply that could not
+    /// Returns the [`ComputerUseStepFailure`] of the step: the model's failure, or a reply that could not
     /// be parsed or mapped into window space.
     pub async fn step<P: Provider>(
         &mut self,
         job: StepJob<'_, P>,
         sink: &mut impl ChatSink,
-    ) -> Result<CuaStepReply, CuaStepFailure> {
+    ) -> Result<ComputerUseStepReply, ComputerUseStepFailure> {
         if self.session.is_none() {
             self.session = Some(
-                cua_step::open(job.model, &self.begin, job.ceiling)
-                    .ok_or(CuaStepFailure::ModelFailed(ModelError::Unreadable))?,
+                computer_use_step::open(job.model, &self.begin, job.ceiling)
+                    .ok_or(ComputerUseStepFailure::ModelFailed(ModelError::Unreadable))?,
             );
         }
         let session = self
             .session
             .as_mut()
-            .ok_or(CuaStepFailure::ModelFailed(ModelError::Unreadable))?;
+            .ok_or(ComputerUseStepFailure::ModelFailed(ModelError::Unreadable))?;
         let forward = |event| sink.event(event);
-        match cua_step::step(
+        match computer_use_step::step(
             session,
             job.model,
             job.provider,

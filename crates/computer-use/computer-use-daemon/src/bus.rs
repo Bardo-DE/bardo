@@ -2,17 +2,17 @@
 //! list, its signatures and its signals are those of `computer-use-dbus`'s skeletons (a test holds the
 //! introspection of these objects to `dbus/org.bardo.ComputerUse1.xml`).
 //!
-//! Bodies are JSON in an `s` argument, in the `CuaEnvelope` where a body is sent. Who is calling
+//! Bodies are JSON in an `s` argument, in the `ComputerUseEnvelope` where a body is sent. Who is calling
 //! is derived from the process behind the message's sender (`callers`), never from a bus name it
 //! owns and never from anything in a body.
 
 use crate::callers;
 use action_dbus::callers::Callers;
 use computer_use_bus::{
-    CuaCaller, CuaEnvelope, CuaMember, CuaTask, CuaVocab, QuestionId, WindowBody, backend_wire,
-    modes_wire, slug_of,
+    ComputerUseCaller, ComputerUseEnvelope, ComputerUseMember, ComputerUseTask, ComputerUseVocab,
+    QuestionId, WindowBody, backend_wire, modes_wire, slug_of,
 };
-use computer_use_dbus::{CUA_PATH, CuaError, run_path};
+use computer_use_dbus::{COMPUTER_USE_PATH, ComputerUseError, run_path};
 use computer_use_desktop::{Desktop, RunMode, WindowTitle};
 use computer_use_host::Supervisor;
 use computer_use_run::{Seams, mode_support};
@@ -27,12 +27,12 @@ use zbus::zvariant::OwnedObjectPath;
 
 /// The JSON of `body` in the envelope of this vocabulary.
 pub(crate) fn enveloped<T: Serialize>(body: T) -> fdo::Result<String> {
-    serde_json::to_string(&CuaEnvelope::current(body))
+    serde_json::to_string(&ComputerUseEnvelope::current(body))
         .map_err(|e| fdo::Error::Failed(e.to_string()))
 }
 
 /// Who is calling: the process behind the header's sender decides.
-async fn caller_of(who: &impl Callers, header: &Header<'_>) -> CuaCaller {
+async fn caller_of(who: &impl Callers, header: &Header<'_>) -> ComputerUseCaller {
     callers::caller_of(who, header.sender().map(zbus::names::UniqueName::as_str)).await
 }
 
@@ -54,13 +54,13 @@ impl<S: Seams, K: Callers> ManagerObject<S, K> {
         task: String,
         #[zbus(header)] header: Header<'_>,
         #[zbus(connection)] connection: &zbus::Connection,
-    ) -> Result<OwnedObjectPath, CuaError> {
+    ) -> Result<OwnedObjectPath, ComputerUseError> {
         let caller = caller_of(&self.who, &header).await;
-        let envelope: CuaEnvelope<CuaTask> =
-            serde_json::from_str(&task).map_err(|e| CuaError::BadTask(e.to_string()))?;
-        if envelope.vocab != CuaVocab::CURRENT {
-            return Err(CuaError::BadTask(
-                "the vocabulary is not one this cuad speaks".into(),
+        let envelope: ComputerUseEnvelope<ComputerUseTask> =
+            serde_json::from_str(&task).map_err(|e| ComputerUseError::BadTask(e.to_string()))?;
+        if envelope.vocab != ComputerUseVocab::CURRENT {
+            return Err(ComputerUseError::BadTask(
+                "the vocabulary is not one this computer-use daemon speaks".into(),
             ));
         }
         let id = self.supervisor.start(caller, envelope.body).await?;
@@ -91,7 +91,7 @@ impl<S: Seams, K: Callers> ManagerObject<S, K> {
         self.supervisor.runs().iter().map(object_path).collect()
     }
 
-    async fn stop_all(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
+    async fn stop_all(&self, #[zbus(header)] header: Header<'_>) -> Result<(), ComputerUseError> {
         let caller = caller_of(&self.who, &header).await;
         Ok(self.supervisor.stop_all(caller)?)
     }
@@ -143,7 +143,11 @@ pub(crate) struct RunObject<S: Seams, K: Callers> {
 }
 
 impl<S: Seams, K: Callers> RunObject<S, K> {
-    async fn control(&self, member: CuaMember, header: &Header<'_>) -> Result<(), CuaError> {
+    async fn control(
+        &self,
+        member: ComputerUseMember,
+        header: &Header<'_>,
+    ) -> Result<(), ComputerUseError> {
         let caller = caller_of(&self.who, header).await;
         Ok(self.supervisor.control(caller, &self.id, member)?)
     }
@@ -157,16 +161,16 @@ impl<S: Seams, K: Callers> RunObject<S, K> {
 
 #[zbus::interface(name = "org.bardo.ComputerUse1.Run")]
 impl<S: Seams, K: Callers> RunObject<S, K> {
-    async fn cancel(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
-        self.control(CuaMember::Cancel, &header).await
+    async fn cancel(&self, #[zbus(header)] header: Header<'_>) -> Result<(), ComputerUseError> {
+        self.control(ComputerUseMember::Cancel, &header).await
     }
 
-    async fn pause(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
-        self.control(CuaMember::Pause, &header).await
+    async fn pause(&self, #[zbus(header)] header: Header<'_>) -> Result<(), ComputerUseError> {
+        self.control(ComputerUseMember::Pause, &header).await
     }
 
-    async fn resume(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
-        self.control(CuaMember::Resume, &header).await
+    async fn resume(&self, #[zbus(header)] header: Header<'_>) -> Result<(), ComputerUseError> {
+        self.control(ComputerUseMember::Resume, &header).await
     }
 
     async fn answer(
@@ -174,7 +178,7 @@ impl<S: Seams, K: Callers> RunObject<S, K> {
         question: u64,
         answer: String,
         #[zbus(header)] header: Header<'_>,
-    ) -> Result<(), CuaError> {
+    ) -> Result<(), ComputerUseError> {
         let caller = caller_of(&self.who, &header).await;
         // The shell's answer is the person's own words.
         let words = Labelled::new(answer, Label::trusted_user());
@@ -183,12 +187,12 @@ impl<S: Seams, K: Callers> RunObject<S, K> {
             .answer(caller, &self.id, QuestionId(question), words)?)
     }
 
-    async fn take_over(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
-        self.control(CuaMember::TakeOver, &header).await
+    async fn take_over(&self, #[zbus(header)] header: Header<'_>) -> Result<(), ComputerUseError> {
+        self.control(ComputerUseMember::TakeOver, &header).await
     }
 
-    async fn hand_back(&self, #[zbus(header)] header: Header<'_>) -> Result<(), CuaError> {
-        self.control(CuaMember::HandBack, &header).await
+    async fn hand_back(&self, #[zbus(header)] header: Header<'_>) -> Result<(), ComputerUseError> {
+        self.control(ComputerUseMember::HandBack, &header).await
     }
 
     // The `RunId` slug; the path spelling of it is lossy (`-` and `.` become `_`).
@@ -259,7 +263,7 @@ impl<S: Seams, K: Callers> RunObject<S, K> {
 }
 
 /// The path of the Manager.
-pub(crate) const MANAGER_PATH: &str = CUA_PATH;
+pub(crate) const MANAGER_PATH: &str = COMPUTER_USE_PATH;
 
 #[cfg(test)]
 mod tests {
@@ -286,7 +290,7 @@ mod tests {
     fn the_served_interfaces_are_the_declared_ones() {
         let supervisor = Arc::new(Supervisor::new(
             world(BackendKind::KwinStock, vec![], FakePdp::allow_all()),
-            crate::CuadConfig::default(),
+            crate::ComputerUseDaemonConfig::default(),
         ));
         let mut served = String::from(
             "<!DOCTYPE node PUBLIC \"-//freedesktop//DTD D-BUS Object Introspection 1.0//EN\"\n \"http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd\">\n<node>\n",

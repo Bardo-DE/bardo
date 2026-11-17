@@ -1,7 +1,7 @@
-//! cuad: the computer-use daemon.
+//! The computer-use daemon: the computer-use daemon.
 //!
 //! `--write-schema <dir>` writes the settings schema (`computer-use.settings.toml`) there and stops.
-//! It reads `--config <path>` (or `$BARDO_COMPUTER_USE_CONFIG`; no file means the defaults, with `cua.enabled`
+//! It reads `--config <path>` (or `$BARDO_COMPUTER_USE_CONFIG`; no file means the defaults, with `computer_use.enabled`
 //! off) and runs until the bus goes away or it is sent SIGTERM. Exit code 0 is a clean stop; 2 is
 //! a daemon that could not start. This file only passes the process's arguments and environment
 //! in; the start-up is `computer_use_daemon::run`.
@@ -14,7 +14,7 @@ async fn main() -> ExitCode {
     match computer_use_daemon::run(&args, |key| std::env::var(key).ok()).await {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
-            eprintln!("cuad: {error}");
+            eprintln!("computer_use_daemon: {error}");
             ExitCode::from(2)
         }
     }

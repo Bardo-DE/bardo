@@ -48,10 +48,10 @@ pub enum RoutedNote {
 
 /// How far a computer-use run has got on this session: a step needs a begun run.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum CuaProgress {
-    /// No `CuaBegin` has been accepted (every non-computer-use session stays here).
+pub enum ComputerUseProgress {
+    /// No `ComputerUseBegin` has been accepted (every non-computer-use session stays here).
     NotBegun,
-    /// A `CuaBegin` finished with an acknowledgement: steps may follow, and a new `CuaBegin`
+    /// A `ComputerUseBegin` finished with an acknowledgement: steps may follow, and a new `ComputerUseBegin`
     /// starts another run.
     Begun,
 }
@@ -189,7 +189,7 @@ pub enum Phase {
         /// Whether `Routed` was sent.
         routed: RoutedNote,
         /// The computer-use run's progress.
-        cua: CuaProgress,
+        computer_use: ComputerUseProgress,
     },
     /// A language session is collecting the audio of a voice chat: a `Transcribe` request opened
     /// it, audio frames fill it, `EndOfAudio` closes it, and the `Chat` that follows is answered
@@ -203,7 +203,7 @@ pub enum Phase {
         /// Whether `Routed` was sent.
         routed: RoutedNote,
         /// The computer-use run's progress.
-        cua: CuaProgress,
+        computer_use: ComputerUseProgress,
         /// The audio so far, and the next sample expected.
         heard: HeardAudio,
         /// Where the audio has got to: `NoAudio` once `EndOfAudio` has arrived, and only then is
@@ -227,9 +227,9 @@ pub enum Phase {
         kind: RequestKind,
         /// Audio progress, for `Transcribe`.
         audio: AudioCursor,
-        /// The computer-use run's progress before this turn; a `CuaBegin` turn that ends in an
+        /// The computer-use run's progress before this turn; a `ComputerUseBegin` turn that ends in an
         /// acknowledgement moves it to `Begun`.
-        cua: CuaProgress,
+        computer_use: ComputerUseProgress,
         /// A request that arrived during the turn (queue depth one); it starts when the turn
         /// ends, however it ends.
         queued: Option<InferRequest>,
@@ -293,7 +293,9 @@ pub fn fits(need: &Need, kind: RequestKind) -> bool {
     match (need, kind) {
         (Need::Llm(_), RequestKind::Chat | RequestKind::Task)
         | (Need::Embeddings(_), RequestKind::Embed)
-        | (Need::ComputerUse(_), RequestKind::CuaBegin | RequestKind::CuaStep) => true,
+        | (Need::ComputerUse(_), RequestKind::ComputerUseBegin | RequestKind::ComputerUseStep) => {
+            true
+        }
         (Need::Speech(speech), RequestKind::Transcribe) => speech.modes.contains(&SpeechMode::Stt),
         (Need::Speech(speech), RequestKind::Speak) => speech.modes.contains(&SpeechMode::Tts),
         _ => false,
@@ -310,8 +312,8 @@ mod step_tests;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_capability::CuaEnv;
-    use account_match::{CuaNeed, DimsNeed, EmbedNeed, LlmNeed, SpeechNeed};
+    use account_capability::ComputerUseEnv;
+    use account_match::{ComputerUseNeed, DimsNeed, EmbedNeed, LlmNeed, SpeechNeed};
     use base_ids::Tokens;
 
     fn llm() -> Need {
@@ -325,7 +327,15 @@ mod tests {
     #[test]
     fn requests_fit_the_need_the_session_was_opened_with() {
         use RequestKind::*;
-        let kinds = [Chat, Embed, Task, CuaBegin, CuaStep, Transcribe, Speak];
+        let kinds = [
+            Chat,
+            Embed,
+            Task,
+            ComputerUseBegin,
+            ComputerUseStep,
+            Transcribe,
+            Speak,
+        ];
         let cases: Vec<(&str, Need, Vec<RequestKind>)> = vec![
             ("llm", llm(), vec![Chat, Task]),
             (
@@ -338,8 +348,8 @@ mod tests {
             ),
             (
                 "computer use",
-                Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop].into())),
-                vec![CuaBegin, CuaStep],
+                Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into())),
+                vec![ComputerUseBegin, ComputerUseStep],
             ),
             ("speech in", speech(&[SpeechMode::Stt]), vec![Transcribe]),
             ("speech out", speech(&[SpeechMode::Tts]), vec![Speak]),

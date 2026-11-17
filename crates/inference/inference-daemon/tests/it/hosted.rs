@@ -6,11 +6,11 @@
 use crate::hosting;
 
 use account_capability::Tier;
-use account_capability::{CuaEnv, LlmFeature, Modality};
+use account_capability::{ComputerUseEnv, LlmFeature, Modality};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_match::Need;
-use account_match::{CuaNeed, DimsNeed, EmbedNeed, LlmNeed};
+use account_match::{ComputerUseNeed, DimsNeed, EmbedNeed, LlmNeed};
 use base_ids::{Dims, Tokens};
 use caller_role_types::CallerRole;
 use hosting::engine::{Chat, Script};
@@ -387,11 +387,11 @@ async fn a_prompt_class_request_to_a_cloud_only_route_is_refused_by_the_floor() 
     assert!(world.host.spawned.lock().expect("lock").is_empty());
 }
 
-fn cua_world(role: CallerRole) -> Plan {
+fn computer_use_world(role: CallerRole) -> Plan {
     Plan {
-        catalog: vec![("tiny-cua.toml", entries::cua())],
+        catalog: vec![("tiny-computer-use.toml", entries::computer_use())],
         scripts: vec![(
-            "tiny-cua",
+            "tiny-computer-use",
             Script {
                 chat: vec![Chat::Call {
                     name: "computer_use",
@@ -405,12 +405,12 @@ fn cua_world(role: CallerRole) -> Plan {
     }
 }
 
-fn cua_need() -> Need {
-    Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop].into()))
+fn computer_use_need() -> Need {
+    Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into()))
 }
 
-#[path = "hosted/cua.rs"]
-mod cua;
+#[path = "hosted/computer_use.rs"]
+mod computer_use;
 
 #[path = "hosted/members.rs"]
 mod members;

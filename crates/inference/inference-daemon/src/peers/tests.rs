@@ -4,7 +4,7 @@ use account_core::Isolation;
 fn table() -> CallerTable {
     CallerTable::from_toml_text(
         r#"
-cua = ["bardo-computer-use.service"]
+computer_use = ["bardo-computer-use.service"]
 agent_launcher = ["bardo-agent-acp.service"]
 [apps]
 "org.bardo.Memory" = ["bardo-memoryd.service"]
@@ -34,13 +34,15 @@ fn a_unit_is_the_caller_the_table_names_for_it() {
 }
 
 #[test]
-fn cuad_is_the_one_computer_use_caller_and_an_app_entry_cannot_claim_its_unit() {
-    let cuad = table().resolve("bardo-computer-use.service").expect("cuad");
+fn computer_use_daemon_is_the_one_computer_use_caller_and_an_app_entry_cannot_claim_its_unit() {
+    let computer_use_daemon = table()
+        .resolve("bardo-computer-use.service")
+        .expect("computer_use_daemon");
     assert_eq!(
-        named(&cuad),
+        named(&computer_use_daemon),
         (
             "org.bardo.ComputerUse",
-            CallerRole::Cua,
+            CallerRole::ComputerUse,
             Isolation::Unsandboxed
         )
     );
@@ -80,13 +82,13 @@ fn a_program_the_table_does_not_name_is_nobody() {
 #[test]
 fn a_table_with_a_malformed_app_name_does_not_parse() {
     CallerTable::from_toml_text("[apps]\n\"not a name\" = [\"x.service\"]\n").unwrap_err();
-    CallerTable::from_toml_text("cua = 3").unwrap_err();
+    CallerTable::from_toml_text("computer_use = 3").unwrap_err();
 }
 
 #[test]
 fn a_refused_table_says_which_way_it_was_refused_and_keeps_the_parser_error() {
     assert!(matches!(
-        CallerTable::from_toml_text("cua = 3"),
+        CallerTable::from_toml_text("computer_use = 3"),
         Err(TableError::Toml(_))
     ));
     assert!(matches!(
@@ -98,7 +100,7 @@ fn a_refused_table_says_which_way_it_was_refused_and_keeps_the_parser_error() {
 fn placed_table() -> CallerTable {
     CallerTable::from_toml_text(
         r#"
-cua = ["bardo-computer-use.service"]
+computer_use = ["bardo-computer-use.service"]
 shell = ["bardo-shell.service"]
 places = ["bardo-companiond.service", "bardo-readerd.service"]
 [apps]
@@ -122,7 +124,8 @@ fn the_places_rows_make_placers_the_shell_row_makes_the_shell_and_the_rest_stay_
 }
 
 #[test]
-fn settings_the_shell_the_companion_and_cuad_list_places_and_only_placers_choose_them() {
+fn settings_the_shell_the_companion_and_computer_use_daemon_list_places_and_only_placers_choose_them()
+ {
     let table = placed_table().with_settings(["org.bardo.Settings.service".to_owned()].into());
     let who = |unit: &str| table.resolve(unit).expect(unit);
     let list = |unit: &str| who(unit).may_list_places();
@@ -132,7 +135,7 @@ fn settings_the_shell_the_companion_and_cuad_list_places_and_only_placers_choose
     assert!(list("bardo-companiond.service"));
     assert!(
         list("bardo-computer-use.service"),
-        "cuad reads whether a ready model can see"
+        "computer_use_daemon reads whether a ready model can see"
     );
     assert!(!who("bardo-computer-use.service").may_list_engines());
     assert!(!list("bardo-readerd.service"));
@@ -176,10 +179,10 @@ async fn introduced_connections_are_known_and_others_are_not() {
 }
 
 #[test]
-fn the_table_is_rows_of_the_shared_table_with_cuad_first() {
+fn the_table_is_rows_of_the_shared_table_with_computer_use_daemon_first() {
     let rows = table().rows();
     let roles: Vec<_> = rows.callers.iter().map(|row| row.role).collect();
-    assert_eq!(roles[0], caller_role_types::CallerRole::Cua);
+    assert_eq!(roles[0], caller_role_types::CallerRole::ComputerUse);
     assert_eq!(roles[1], caller_role_types::CallerRole::AgentLauncher);
     assert!(
         roles[2..]
@@ -187,11 +190,14 @@ fn the_table_is_rows_of_the_shared_table_with_cuad_first() {
             .all(|r| *r == caller_role_types::CallerRole::App)
     );
     assert_eq!(rows.callers.len(), 7);
-    // The first row for cuad's unit is cuad's, not the sneaky app's.
-    let cuad = rows
+    // The first row for the computer-use daemon's unit is the computer-use daemon's, not the sneaky app's.
+    let computer_use_daemon = rows
         .resolve_unit("bardo-computer-use.service")
-        .expect("cuad");
-    assert_eq!(cuad.role, caller_role_types::CallerRole::Cua);
+        .expect("computer_use_daemon");
+    assert_eq!(
+        computer_use_daemon.role,
+        caller_role_types::CallerRole::ComputerUse
+    );
     let launcher = rows
         .resolve_unit("bardo-agent-acp.service")
         .expect("launcher");

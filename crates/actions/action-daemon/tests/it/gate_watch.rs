@@ -11,7 +11,7 @@ use action_client::{DbusTransport, GateEvent, Intents};
 use action_core::*;
 use action_daemon::{Cadence, IntentdConfig, Setup, start};
 use action_dbus::callers::Identity;
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_vocab::CallerRole;
 use action_wire::SessionOpen;
 use computer_use_action::{RunMode, WindowTrust};
@@ -20,7 +20,7 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 use std::time::Duration;
 
-const CUAD: &str = "org.bardo.ComputerUse";
+const COMPUTER_USE_DAEMON: &str = "org.bardo.ComputerUse";
 const SHELL: &str = "org.bardo.Shell";
 
 fn app(name: &str) -> AppName {
@@ -31,15 +31,15 @@ fn space() -> SpaceId {
     SpaceId::parse("work").expect("space")
 }
 
-fn step(run: &RunId) -> CuaAsk {
-    CuaAsk {
+fn step(run: &RunId) -> ComputerUseAsk {
+    ComputerUseAsk {
         run: run.clone(),
         step: 1,
         app: app("org.bardo.Mail"),
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space(),
-        action: computer_use_action::CuaAction::<computer_use_action::WindowSpace>::Observe,
+        action: computer_use_action::ComputerUseAction::<computer_use_action::WindowSpace>::Observe,
         node: None,
         effect: Effect::Outbound,
         basis: EffectBasis::DefaultTable,
@@ -64,7 +64,7 @@ struct Desk {
     _dir: tempfile::TempDir,
     _bus: PrivateBus,
     shell: FakeShell,
-    cuad: Intents<DbusTransport>,
+    computer_use_daemon: Intents<DbusTransport>,
     run: RunId,
     _connections: Vec<action_dbus::BusConnection>,
     _intentd: action_daemon::Running,
@@ -87,7 +87,7 @@ impl Desk {
         let mut setup = Setup::from_env(&env).expect("setup");
         let config = IntentdConfig {
             roles: BTreeMap::from([
-                (CallerRole::Cua, vec![app(CUAD)]),
+                (CallerRole::ComputerUse, vec![app(COMPUTER_USE_DAEMON)]),
                 (CallerRole::Confirm, vec![app(SHELL)]),
             ]),
             reviewers: None,
@@ -115,30 +115,40 @@ impl Desk {
             &config,
             &["org.bardo.Confirm1", SHELL],
         );
-        let cuad_connection = bus.connect().await;
-        cuad_connection.request_name(CUAD).await.expect("name");
-        introduce(&who, &cuad_connection, &config, &[CUAD]);
-        let cuad = Intents::over(DbusTransport::new(cuad_connection.clone()));
+        let computer_use_daemon_connection = bus.connect().await;
+        computer_use_daemon_connection
+            .request_name(COMPUTER_USE_DAEMON)
+            .await
+            .expect("name");
+        introduce(
+            &who,
+            &computer_use_daemon_connection,
+            &config,
+            &[COMPUTER_USE_DAEMON],
+        );
+        let computer_use_daemon =
+            Intents::over(DbusTransport::new(computer_use_daemon_connection.clone()));
         let run = RunId::parse("r-1").expect("run");
-        cuad.session_open(SessionOpen {
-            space: space(),
-            agent: AgentRef::Cua { run: run.clone() },
-            parent: None,
-            cwd: None,
-            started_from: None,
-            external: None,
-            helper: None,
-            acts_for: None,
-        })
-        .await
-        .expect("cuad opens the session of its own run");
+        computer_use_daemon
+            .session_open(SessionOpen {
+                space: space(),
+                agent: AgentRef::ComputerUse { run: run.clone() },
+                parent: None,
+                cwd: None,
+                started_from: None,
+                external: None,
+                helper: None,
+                acts_for: None,
+            })
+            .await
+            .expect("computer_use_daemon opens the session of its own run");
         Desk {
             _dir: dir,
             _bus: bus,
             shell,
-            cuad,
+            computer_use_daemon,
             run,
-            _connections: vec![daemon, shell_connection, cuad_connection],
+            _connections: vec![daemon, shell_connection, computer_use_daemon_connection],
             _intentd: intentd,
         }
     }
@@ -155,7 +165,7 @@ async fn the_sheet_waits_for_proceed_and_the_verdict_follows_the_answer() {
     let desk = Desk::start().await;
     desk.shell.answer(vec![Answer::With(yes())]);
     let mut watch = desk
-        .cuad
+        .computer_use_daemon
         .gate_check_watched(step(&desk.run))
         .await
         .expect("a watched check");
@@ -179,7 +189,7 @@ async fn the_sheet_waits_for_proceed_and_the_verdict_follows_the_answer() {
 async fn closing_before_proceed_draws_no_sheet_and_closing_a_sheet_withdraws_it() {
     let desk = Desk::start().await;
     let mut early = desk
-        .cuad
+        .computer_use_daemon
         .gate_check_watched(step(&desk.run))
         .await
         .expect("a watched check");
@@ -196,7 +206,7 @@ async fn closing_before_proceed_draws_no_sheet_and_closing_a_sheet_withdraws_it(
 
     desk.shell.answer(vec![Answer::Never]);
     let mut late = desk
-        .cuad
+        .computer_use_daemon
         .gate_check_watched(step(&desk.run))
         .await
         .expect("a watched check");
@@ -223,7 +233,7 @@ async fn an_unwatched_check_does_not_wait_for_anybody() {
     let desk = Desk::start().await;
     desk.shell.answer(vec![Answer::With(yes())]);
     let verdict = desk
-        .cuad
+        .computer_use_daemon
         .gate_check(step(&desk.run))
         .await
         .expect("the verdict");

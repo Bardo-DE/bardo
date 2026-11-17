@@ -3,7 +3,7 @@
 //! The machine decides; [`Exec`] does: it holds the lease, the capture session and the check in
 //! flight of one run, and turns each [`RunEffect`] into calls on the seams and the
 //! [`RunInput`]s they answer with. It is runtime-free (it only awaits seam futures), so the
-//! harness in `computer-use-fake` and the supervisor in `cuad` drive the very same code; what differs
+//! harness in `computer-use-fake` and the supervisor in `computer_use_daemon` drive the very same code; what differs
 //! is how they wait (the supervisor races an effect against the person's controls and the
 //! clock, the harness has none of either).
 
@@ -14,9 +14,9 @@ mod observe;
 mod phase;
 mod session;
 
-use crate::machine::effect::{CuaSignal, RunEffect};
+use crate::machine::effect::{ComputerUseSignal, RunEffect};
 use crate::machine::input::RunInput;
-use crate::model::CuaModel;
+use crate::model::ComputerUseModel;
 use crate::rules::Rules;
 use crate::screen::ScreenRead;
 use crate::seams::{
@@ -25,7 +25,7 @@ use crate::seams::{
 use action_core::{Delivery, SendRefusal};
 use action_wire::{GrantAsk, WireRefusal};
 use base_ids::Count;
-use computer_use_bus::{CuaRecord, CuaTask, ReportDelivery};
+use computer_use_bus::{ComputerUseRecord, ComputerUseTask, ReportDelivery};
 use computer_use_capture::DamageAt;
 pub use deadline::{Deadline, deadline_of};
 pub use phase::{Progress, Step, StepNote};
@@ -38,7 +38,7 @@ pub trait Outlet: Send {
     fn input(&mut self, input: RunInput);
 
     /// A signal for the bus.
-    fn signal(&mut self, signal: CuaSignal);
+    fn signal(&mut self, signal: ComputerUseSignal);
 
     /// A line for the daemon's log about taking a window. Nothing by default.
     fn note(&mut self, note: StepNote) {
@@ -52,7 +52,7 @@ pub struct Collected {
     /// The inputs.
     pub inputs: std::collections::VecDeque<RunInput>,
     /// The signals.
-    pub signals: Vec<CuaSignal>,
+    pub signals: Vec<ComputerUseSignal>,
     /// The log lines of taking a window, in order.
     pub notes: Vec<StepNote>,
 }
@@ -62,7 +62,7 @@ impl Outlet for Collected {
         self.inputs.push_back(input);
     }
 
-    fn signal(&mut self, signal: CuaSignal) {
+    fn signal(&mut self, signal: ComputerUseSignal) {
         self.signals.push(signal);
     }
 
@@ -129,13 +129,13 @@ enum Reported {
 pub struct Exec<'a, S: Seams> {
     seam: Seam<'a, S>,
     run: RunId,
-    task: CuaTask,
+    task: ComputerUseTask,
     held: Option<Held<S>>,
     staged: observe::Staged,
     check: Option<<S::Gate as GateLink>::Check>,
     notes: Vec<inference_core::StepNote>,
     last_message: Option<MessageId>,
-    /// Whether the model's session has been opened (`CuaModel::begin`).
+    /// Whether the model's session has been opened (`ComputerUseModel::begin`).
     model_open: bool,
     announced: Option<inference_core::ServedBy>,
     reported: Reported,
@@ -157,7 +157,7 @@ impl<S: Seams> std::fmt::Debug for Exec<'_, S> {
 impl<'a, S: Seams> Exec<'a, S> {
     /// An executor for `run` doing `task`.
     #[must_use]
-    pub fn new(seam: Seam<'a, S>, run: RunId, task: CuaTask) -> Self {
+    pub fn new(seam: Seam<'a, S>, run: RunId, task: ComputerUseTask) -> Self {
         Self {
             seam,
             run,
@@ -240,7 +240,9 @@ impl<'a, S: Seams> Exec<'a, S> {
             RunEffect::Capture { want, hints } => self.capture(want, hints, out).await,
             RunEffect::CallModel { request, frame } => match model {
                 Some(model) => self.call_model(model, *request, frame, out).await,
-                None => out.input(RunInput::ModelFailed(crate::model::CuaModelError::Fatal)),
+                None => out.input(RunInput::ModelFailed(
+                    crate::model::ComputerUseModelError::Fatal,
+                )),
             },
             RunEffect::ReadScreen(text) => {
                 let read = match model {
@@ -261,7 +263,7 @@ impl<'a, S: Seams> Exec<'a, S> {
         }
     }
 
-    async fn check(&mut self, ask: action_gate_wire::CuaAsk, out: &mut impl Outlet) {
+    async fn check(&mut self, ask: action_gate_wire::ComputerUseAsk, out: &mut impl Outlet) {
         match self.seam.gate.check(ask).await {
             Ok(check) => {
                 self.check = Some(check);
@@ -307,8 +309,8 @@ impl<'a, S: Seams> Exec<'a, S> {
         self.record_failures
     }
 
-    async fn record(&mut self, mut record: CuaRecord, out: &mut impl Outlet) {
-        if let CuaRecord::Finished { report, .. } = &mut record
+    async fn record(&mut self, mut record: ComputerUseRecord, out: &mut impl Outlet) {
+        if let ComputerUseRecord::Finished { report, .. } = &mut record
             && let Reported::Delivered(delivery) = &self.reported
         {
             *report = Some(delivery.message.clone());
@@ -316,7 +318,7 @@ impl<'a, S: Seams> Exec<'a, S> {
         // A record of input that went out must be written: with nothing to account for it the
         // run stops. Any other record that cannot be written is counted and the run goes on
         // (memoryd may be away); nothing here retries it.
-        let injected = matches!(&record, CuaRecord::Step { input: Some(_), .. });
+        let injected = matches!(&record, ComputerUseRecord::Step { input: Some(_), .. });
         if self.seam.events.record(record).await.is_err() {
             self.record_failures = Count(self.record_failures.0.saturating_add(1));
             if injected {

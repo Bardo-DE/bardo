@@ -128,9 +128,9 @@ fn actor_of(agent: &AgentRef) -> Actor {
             session: placeholder_session(),
             role: AgentRole::Worker { task: task.clone() },
         },
-        AgentRef::Cua { run } => Actor::Companion {
+        AgentRef::ComputerUse { run } => Actor::Companion {
             session: placeholder_session(),
-            role: AgentRole::Cua { run: run.clone() },
+            role: AgentRole::ComputerUse { run: run.clone() },
         },
     }
 }

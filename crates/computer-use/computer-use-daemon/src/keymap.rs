@@ -1,7 +1,7 @@
-//! The keymap cuad tells its model about: the platform's conventions and, where the `key_remap`
+//! The keymap the computer-use daemon tells its model about: the platform's conventions and, where the `key_remap`
 //! feature is on, this desktop's own bindings and the person's overrides, read once at start.
 //!
-//! cuad uses the standard shortcuts only (owner decision, 2026-10-10). Its sandbox
+//! The computer-use daemon uses the standard shortcuts only (owner decision, 2026-10-10). Its sandbox
 //! (`dist/bardo-computer-use.service`) keeps the person's home and the key remap daemon socket closed, so their own
 //! remappings are not read and the shortcut hints come from the chord keymap's conventional keymap (with
 //! the desktop's own bindings). A source that cannot be opened is therefore not a problem: it is
@@ -25,7 +25,7 @@ fn is_closed_source(problem: &str) -> bool {
 /// `lookup`; the daemon's `main` passes the process's.
 ///
 /// With the feature, the person's keymap comes from the key remap daemon's daemon, or its files when none
-/// answers; a daemon or file that is closed to cuad (its sandbox) leaves the conventional keymap
+/// answers; a daemon or file that is closed to the computer-use daemon (its sandbox) leaves the conventional keymap
 /// and no problem. Without the feature, only the platform's conventions apply.
 #[cfg(feature = "key-remap")]
 pub fn desktop_keymap(
@@ -99,7 +99,7 @@ mod tests {
 
     #[cfg(feature = "key-remap")]
     #[test]
-    fn sources_closed_to_cuad_leave_the_conventions_and_say_nothing() {
+    fn sources_closed_to_computer_use_daemon_leave_the_conventions_and_say_nothing() {
         // A path below a regular file cannot be opened (not "missing"): what the sandbox does to
         // the person's home.
         let home = tempfile::tempdir().expect("a scratch directory");

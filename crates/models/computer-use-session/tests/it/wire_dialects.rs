@@ -3,13 +3,16 @@
 
 use crate::support;
 
-use computer_use_action::{CuaAction, CuaDialect, FinishOutcome, ModelSpace, WireDialect};
+use computer_use_action::{
+    ComputerUseAction, ComputerUseDialect, FinishOutcome, ModelSpace, WireDialect,
+};
 use computer_use_session::{StepOutcome, TurnTranscript};
 use computer_use_vendors::StepResult;
 use model_provider::{Part, Role, StopReason, ToolCallId, ToolSpec, check_sequence};
 use support::*;
 
-const ANTHROPIC: CuaDialect = CuaDialect::Wire(WireDialect::AnthropicToolset20260801);
+const ANTHROPIC: ComputerUseDialect =
+    ComputerUseDialect::Wire(WireDialect::AnthropicToolset20260801);
 
 fn tool_use(name: &str, input: &str, id: &str) -> TurnTranscript {
     let mut reply = calls(&[]);
@@ -38,7 +41,7 @@ fn the_history_is_real_messages_and_the_results_lead_the_next_turn() {
     let StepOutcome::Actions { actions, .. } = outcome else {
         panic!("actions")
     };
-    assert!(matches!(&*actions, [CuaAction::Click { .. }]));
+    assert!(matches!(&*actions, [ComputerUseAction::Click { .. }]));
 
     let mut o = obs(1);
     o.prev = vec![StepResult::Done(ToolCallId("toolu_1".into()))];
@@ -84,7 +87,7 @@ fn a_reply_of_text_alone_finishes_the_run() {
         panic!("actions")
     };
     let [
-        CuaAction::Finish {
+        ComputerUseAction::Finish {
             outcome, summary, ..
         },
     ] = &*actions
@@ -102,7 +105,7 @@ fn a_reply_of_text_alone_finishes_the_run() {
 
 #[test]
 fn gemini_needs_a_grid_map_and_decodes_into_it() {
-    let dialect = CuaDialect::Wire(WireDialect::GeminiComputerUse);
+    let dialect = ComputerUseDialect::Wire(WireDialect::GeminiComputerUse);
     let m = map(grid());
     let s = session(dialect, grid(), 0, 0);
     let sent = s.request(&obs(0), &m, frame("f"));
@@ -118,5 +121,5 @@ fn gemini_needs_a_grid_map_and_decodes_into_it() {
         panic!("actions")
     };
     assert!(dropped.is_empty());
-    assert!(matches!(&*actions, [CuaAction::Click { .. }]));
+    assert!(matches!(&*actions, [ComputerUseAction::Click { .. }]));
 }

@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-host"
-description = "The run executor, as a library: the supervisor of runs over the seams, the drive loop, the router's gate and the message and record links, and the person's settings read from text. No backend, no bus connection and no file watch: the seams are the caller's. cuad is its daemon."
+description = "The run executor, as a library: the supervisor of runs over the seams, the drive loop, the router's gate and the message and record links, and the person's settings read from text. No backend, no bus connection and no file watch: the seams are the caller's. The computer-use daemon is its daemon."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

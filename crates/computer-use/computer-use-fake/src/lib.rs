@@ -1,4 +1,4 @@
-//! Test support for cua. Nothing here is product code: it exists so every other crate's tests
+//! Test support for computer use. Nothing here is product code: it exists so every other crate's tests
 //! run without a compositor, a seat, a bus or a model.
 //!
 //! - [`FakeSeat`] records input; [`FakeEis`] is an EIS server in the test process (over reis);

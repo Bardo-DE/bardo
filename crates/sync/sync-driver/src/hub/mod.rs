@@ -62,7 +62,7 @@ impl Access {
             CallerRole::App | CallerRole::SheetHost => self.owners.contains(&caller.app.name),
             CallerRole::Agent
             | CallerRole::AiBroker
-            | CallerRole::Cua
+            | CallerRole::ComputerUse
             | CallerRole::AgentLauncher
             | CallerRole::Terminal
             | CallerRole::Compositor => false,
@@ -89,7 +89,7 @@ impl Access {
             | CallerRole::AccountDaemon
             | CallerRole::Agent
             | CallerRole::AiBroker
-            | CallerRole::Cua
+            | CallerRole::ComputerUse
             | CallerRole::AgentLauncher
             | CallerRole::Terminal
             | CallerRole::Compositor => false,

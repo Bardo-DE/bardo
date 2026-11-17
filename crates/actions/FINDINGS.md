@@ -21,7 +21,7 @@ path: a limit's id is a `StandingGrantId`, so Undo on the sheet calls the existi
 approval lifts one; only agents meet them. The administrator's floor is `/etc/bardo/actions-floor.toml`
 (`dist/actions-floor.example.toml`, not installed): a loosest strictness and locked entries; a
 missing file is no floor, a file that does not parse stops intentd. `Gate.Grant` takes the whole
-`GrantAsk` as JSON, so cua's allow level and the run it asks for cross the bus (CUA-14; before,
+`GrantAsk` as JSON, so computer use's allow level and the run it asks for cross the bus (COMPUTER-USE-14; before,
 only the app and the Space did, and a later run of a conversation was asked again). Open:
 agent-inapp's in-process store keeps no limits (the
 trait default holds none); Settings has no list of limits yet; adding a limit is not audited.
@@ -297,7 +297,7 @@ Built in the w4-actions fill (each with tests on a private bus, a scripted infer
    takes the configuration (ask 106).
 6. **A computer-use run is rebuilt on restart** (ask 63): `companiond::recover` reads `cua.run.started`, `cua.asked`,
    `cua.confirmed`, `cua.taken_over`, `cua.handed_back` and `cua.run.finished` as `ReplayWhat::Run`, by the words of
-   `cua-bus`'s `CuaRecord` (the actions service names no cua type); a run whose start is older than the window says nothing.
+   `computer-use-bus`'s `ComputerUseRecord` (the actions service names no computer-use type); a run whose start is older than the window says nothing.
 7. **`tool_schema` routes its text, integer and choice leaves through the model layer's `Shape`** (ask 43); the snapshot is
    unchanged. Entities, handles, dates and the rest stay hand-written: `Shape` has no entity-or-handle form, and a date
    is `{year, month, day}` here against `Shape::Date`'s string, which would change the planner's grammar.
@@ -401,7 +401,7 @@ Open, and the asks they make (nothing was edited in the other crates beyond the 
     narrative `Note` names the episode id and carries the `Narrative` alone; the router merges it.
 11. **A subagent cannot be narrowed from here** (ask): a goal change in a side conversation makes
     `SideEffect::Rederive`, and `Session.Widen` only widens. Ask: a companion-role `Session.Narrow`.
-12. **A run's inbox is cuad's** (ask): companiond cannot read what the person told a computer-use run, so
+12. **A run's inbox is the computer-use daemon's** (ask): companiond cannot read what the person told a computer-use run, so
     `Companiond::told(agent, space, turn)` is its entry. Ask: the router copies person-to-subagent
     messages into the companion's inbox as notes, or `Companion1` gains `Told`.
 13. **Scope left:** a worker runs inside the call that started it (a watch or background task needs a
@@ -432,8 +432,8 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
    text alone, so readerd cannot class it and sends it as the person's own words (`DataClass::Prompt`, pinned on this
    computer); the class of the handle's own label (mail) would pin it harder. Ask: `Session.Resolve` answers the
    handle's label too.
-2. **A computer-use run has a session (ask 124) and its gate check can be watched (ask 123).** The cua role may
-   `Session.Open` and `Session.Close` (its own sessions only) and only for an agent `Cua { run }`; a run has one session,
+2. **A computer-use run has a session (ask 124) and its gate check can be watched (ask 123).** The computer-use role may
+   `Session.Open` and `Session.Close` (its own sessions only) and only for an agent `ComputerUse { run }`; a run has one session,
    whoever opened it. `Router::handle_watched(caller, request, Watch)` and `Watch` (`action-router`: `progress`,
    `proceed` and `closed` callbacks, with the small std-only `Flag` and `Queue`): a gate check that must ask the person
    says `Progress(Confirming(id))`, waits for `Proceed` (10 s, then the step is refused unasked: `Unconfirmed(Expired)`;
@@ -479,7 +479,7 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
      entities with a handle among them is a list of values, as the companion wants.
    - `Session.Narrow(session, turn)` (companion role): the policy writer reads the person's words and the session's policy
      becomes the intersection with the one it has (with none, the parent's bound); a writer that fails changes nothing.
-     companiond sends it for a subagent's side conversation (`SideEffect::Rederive`), workers only: a run's session is cuad's.
+     companiond sends it for a subagent's side conversation (`SideEffect::Rederive`), workers only: a run's session is the computer-use daemon's.
    - `Companion1.Told(agent, space, turn)` (the shell tells the companion what the person said to a subagent; companiond cannot
      read a run's inbox).
    - **`mcp.enabled` (ask, not done here):** Bardo's settings gain a row `mcp.enabled` (an on or off setting: off by default,
@@ -504,7 +504,7 @@ Interface asks left after the w5 fill, as the f4-actions fill leaves them (the f
 - The accounts service: the two effect classes (item 4 of the w5 fill).
 - Bardo: `mcp.enabled` (item 3 of the w5 fill): until the settings row exists the edge reads its own
   `actions-mcp.toml`.
-- cuad: use `gate_check_watched`, open its run's session, and have `cua.run.start` answer the session it opened.
+- The computer-use daemon: use `gate_check_watched`, open its run's session, and have `cua.run.start` answer the session it opened.
 - The memory service: let `Caller::Router` ask `MemoryRequest::Spaces` (see the f4-actions fill, item 5).
 - A recent entry whose label is untrusted comes without a body (a message carrying what a worker read, a narrated episode):
   a restart falls back to the trusted skeleton events; nothing more can be rebuilt from them.
@@ -640,8 +640,8 @@ marks and re-exports `Tally` (action-ui-adapter no longer reaches `ds-core`), an
    it. Still asked of the model layer: an entity-or-handle form (ask 43), so entities and handles can leave
    the hand-written part of `tool_schema`. The reviewer's and the policy writer's schemas are still
    hand-written `serde_json` (ask 14): their records are not `ValueSchema`s.
-3. **cua `cua-bus`** exists: `companiond::recover` reads a run's records from `Recent` as
-   `ReplayWhat::Run` by the words of `CuaRecord`'s serde form and names no cua type; the strings
+3. **computer use `computer-use-bus`** exists: `companiond::recover` reads a run's records from `Recent` as
+   `ReplayWhat::Run` by the words of `ComputerUseRecord`'s serde form and names no computer-use type; the strings
    it reads (`cua.run.started`, `cua.asked`, `cua.confirmed`, `cua.taken_over`, `cua.handed_back`,
    `cua.run.finished`, and the `run`, `space` and `outcome.kind` fields) are pinned by a test.
 4. voice.md section 3.4 (the accounts service's speech items) is all present in `inference-core`
@@ -855,7 +855,7 @@ builds the connection first and passes it here.
    newtype over `String` whose `Debug` is `ActivationToken(..)`; audit records are built from the call, never from
    the delivered invocation. `IntentsRequest::Perform` gained the optional field; over D-Bus it is the string
    option `activation` (`action_dbus::OPTION_ACTIVATION`) in `Run.Perform`'s `options` (`a{sv}`), next to `watch`.
-   The router keeps it only when the acting role is `launcher` and drops it for companion, cli, mcp, field, cua and
+   The router keeps it only when the acting role is `launcher` and drops it for companion, cli, mcp, field, computer use and
    plain apps; it reaches the app for the first call of a chain only (a `Follow::Next` step and a `DryRun` carry
    none). Additive seams, all defaulted: `AppLink::perform_activated` (default: perform without the token;
    `DbusLink` and `HostedLink` deliver it), `IntentProvider::perform_activated` (default: ignore the token, call
@@ -959,8 +959,8 @@ section 9.2). The actions service's covers every `agent.*` key of section 3.27, 
    `SETTING_ROWS` still lists them under the older names (`agent.task_policy.max_s`, `agent.budget.wall_s`,
    no `spend_microusd`) and is read by no daemon; it closes when section 3.27 and the table are made one list
    (the new crate's table is the one the schema is held to).
-7. **Consumers' lockfiles** (cua, the shell) gain `action-settings` and `notify` when they next update the actions service:
-   `cargo update -p action-daemon` (cua also takes it through its dev-dependency on intentd).
+7. **Consumers' lockfiles** (computer use, the shell) gain `action-settings` and `notify` when they next update the actions service:
+   `cargo update -p action-daemon` (computer use also takes it through its dev-dependency on intentd).
 8. **Tests.** The schema parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand
    from a scratch project: a dev-dependency on ds-settings would unify zbus's executor features across this
    workspace) and is held structurally by `action-settings` tests; every schema key is read (table test);
@@ -975,7 +975,7 @@ An action's declared effect is a **ceiling**; an action may opt in to a per-call
 
 - **Manifest.** `per_call = "classified"` on an `[[actions]]` row (`ActionDecl::per_call: PerCall`, serde
   default `declared`, not written when it is the default; existing files and `..`-less Rust literals other than
-  The actions service's own test fixtures are unaffected, and no `ActionDecl` literal exists in the shell, cua, the memory service or mailo).
+  The actions service's own test fixtures are unaffected, and no `ActionDecl` literal exists in the shell, computer use, the memory service or mailo).
 - **Classify.** For an opted-in action called by an agent session, the router first asks the provider
   (`IntentProvider::classify`, `IntentProvider1.Classify(invocation s, options a{sv}) -> s`, the answer is a
   `Result<CallClass, AppRefusal>` in JSON; `CallClass` is `{"kind":"effect","v":"read"}` or
@@ -1017,7 +1017,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
     `add openrouter` without its provider file) to `$XDG_DATA_HOME/accounts/providers`, and the model layer's `catalog/*.toml`
     (inferd reads its model entries only from `$XDG_DATA_HOME/models/catalog` and `/usr/share/models/catalog`;
     without them there is no `cloud/<entry>`).
-  - Left out on purpose: `voiced` (skeleton), `syncd`, `cuad`; `actions/manifests` (the Memory and Companion
+  - Left out on purpose: `voiced` (skeleton), `syncd`, `computer_use_daemon`; `actions/manifests` (the Memory and Companion
     manifests are built into intentd, which logs "built into intentd" and skips a file of theirs). `intentd.toml`,
     `companiond.toml` and `actions-mcp.toml` are installed only if absent as asked, but note that each replaces the
     built-in default whole, so a later change to the shipped file does not reach a machine that has a copy.
@@ -1041,7 +1041,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
   exits **8** (new code, `needs_you`) with "answered in the shell": `bardo-do` is not `Confirm1`, nothing answers
   it, and the conversation is left open for the sheet; a finished conversation is closed. A handle in the text is
   printed as `#n` (a terminal may not `Session.Display`). The seam is `companion_client::CompanionTransport`
-  (`DbusCompanion` over the bus; a new crate rather than a module of `action-client`, so cua's and the shell's lock files, which
+  (`DbusCompanion` over the bus; a new crate rather than a module of `action-client`, so computer use's and the shell's lock files, which
   list action-client's dependencies, do not change); the whole program is `action_cli::program::execute` over the process's `Process` and the `Buses`
   (`SessionBus`); `main.rs` only collects them, and `accept-bardo-do` builds the same `main.rs`. Tests: `action-cli/tests/it/ask.rs` (scripted companion over the fake router), `action-accept/tests/it/terminal.rs`
   (the real `bardo-do` against the real daemons: a read answered, a Forward left waiting for the sheet),
@@ -1134,7 +1134,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
 1. **Routing property.** `org.bardo.Companion1.Answer` gained a read-only property `Routing` (`s`): JSON of
    `Vec<companion_wire::RouteNote { stage, served, why: Vec<WhyWord>, reached: Option<Reached> }>`, the last model turn
    that announced anything (`[]` before one did). Set before `AnswerAdded`, like `Session`. `AnswerWire`, `FooterWire`
-   and `AskWire` are unchanged, so no literal in the shell, cua or the memory service breaks.
+   and `AskWire` are unchanged, so no literal in the shell, computer use or the memory service breaks.
 2. **The line.** `companion_wire::footer_line(&[RouteNote]) -> String` prints "Heard by Whisper · Answered by Claude
    Haiku 4.5 via OpenRouter (already loaded)"; the shell and the Settings app both call it. Model names are made from the id
    (`model_name`: "claude-haiku-4-5" is "Claude Haiku 4.5"); a catalogue display name would be better when the accounts service has one.
@@ -1865,7 +1865,7 @@ The `SessionLog` seam, and what companion-memory needs from the memory service i
 The accounts service, the memory service, the model layer and Bardo are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
 `fuzz/Cargo.toml`): a plain `git clone` builds with no sibling. The URLs are spelled as the accounts service and the memory service spell
 them (`https://github.com/PoHsuanLai/<repo>`, no `.git`) and the revs match the accounts service's pins of the model layer and Bardo,
-so one copy of `cua-action` and `model-*` is in the graph.
+so one copy of `computer-use-action` and `model-*` is in the graph.
 
 - **Override for cross-repo work**: a `[patch."https://github.com/PoHsuanLai/<repo>"]` table with `path` lines
   for each crate named, in a `.cargo/config.toml` in a directory ABOVE the checkout (cargo merges parent
@@ -2005,8 +2005,8 @@ Session ids are sequential (`s-{n}`), so after a restart any caller that may sen
 request could have revived a session it never opened, with its stored policy and handles. Restore on
 use now asks `restore_rule::may_restore` after the log is read and before anything is inserted: the
 opener the log records restores it, and so do the shell (`Launcher`) and the companion, which act on any
-session live. Every other role (Field, Cua, Mcp, Cli, App, Reader, ...) restores only a session its own
-app opened; this is at least as strict as the live checks on Field and Cua in `opening.rs`. A legacy log
+session live. Every other role (Field, computer use, Mcp, Cli, App, Reader, ...) restores only a session its own
+app opened; this is at least as strict as the live checks on Field and computer use in `opening.rs`. A legacy log
 with no opener is restored only for the shell or the companion. A refused restore leaves the session
 unknown and the request gets `NoSuchSession`, the same reply as an id that never existed (a test compares
 the two). The `Reader` is deliberately not in the any-session set: a resolve right after a restart
@@ -2189,7 +2189,7 @@ R1 direction (a): the editor's `allow_always` click creates the standing grant. 
   connection's own app for a `Who` in the `Editor` role. The ACP `clientInfo.name` is NOT used: the
   editor writes it, so any process could claim to be `zed` and inherit its grants. The app name is
   what the router saw on the bus. The cost: a grant is per app, not per editor product, which is the
-  right grain (a fork of an editor is another app). A Cua actor never maps to an editor.
+  right grain (a fork of an editor is another app). A computer use actor never maps to an editor.
 - **An editor session's calls are made by the companion**, so the role is read from the session:
   `Who::editor` is set for a companion whose session's latest turn came from an editor. When the
   person later speaks from the launcher in the same session, the next call is the companion's again,
@@ -2500,7 +2500,7 @@ list, the `agent-session` export document for `load`, and `{vocab, forked, sessi
   when read back from a log). companiond already finds that scope to decide that a caller is a terminal
   (`Speaker::Terminal(scope)`); on `Open` it sets `SessionOpen::started_from` itself from what it saw, overwriting
   anything in the request body. The router keeps `started_from` only from the `companion` role (a launcher, field,
-  editor or cua open drops it), so only the daemon that read the cgroup can claim a terminal.
+  editor or computer use open drops it), so only the daemon that read the cgroup can claim a terminal.
 - **Decision: any cli caller sees them, not only the same terminal.** Terminal scopes are advisory (every terminal
   runs as the person, and intentd already gives the same cli role to every terminal scope), so matching the exact scope
   would add a name check that protects nothing; the name is kept for display and audit. The cli role may list, load
@@ -3473,7 +3473,7 @@ Evidence: `/tmp/action-live.xYM2Fo/out/smoke/flow-c.run*of5.trace.txt` (Kimi K3,
 
 **Threat analysis.** The risk is laundering: an address written by an attacker reaching an outbound action as a trusted recipient. (1) The planner still never reads the address: it gets a handle and the sheet shows the address quoted as mail. (2) The label of the sender handle is untrusted whatever the app says: `third_party` relations are floored in the router, and every relation is joined with the labels of the handles it was found through, so a "trusted" relation cannot clean a thing found in untrusted content (tests: `what_a_relation_takes_from_somebody_elses_words_is_untrusted_whatever_the_app_says`, `a_thing_found_through_untrusted_content_is_untrusted_even_by_a_trusted_relation`). (3) The send meets the unchanged sink rules: `sink_integrity` reads the handle's label, so the recipient sink is untrusted, the task policy's `recipients` (which trace to the person) do not cover it, Cedar asks with `UntrustedSink(Recipient)` and the sheet is once-only with the address quoted (`a_recipient_chosen_through_a_relation_asks_like_any_untrusted_recipient`; accept gate `flow_c_a_reply_to_the_related_sender_is_a_handle_and_still_asks_quoted`). A reviewer is never consulted for it. (4) The resolve call is itself tainting: the untrusted answer is absorbed into the session like any untrusted result, so every later write in the session is `Tainted`. (5) An app that answers with the wrong kind or too many things is refused. (6) What this does not do: it cannot make the person's reply safe to send without asking, and does not try to; a sender who is also a saved contact is still named by the contact key but is still untrusted, because the choice of that contact came from the message. A relation the app declares `app_authored` over a trusted source gives a trusted handle (the owner of a file the person chose); that is the app's declaration and is as strong as its manifest.
 
-**Consumer impact.** All additive: `EntityDecl.relations` and `ActionCard.related` are `serde(default)` and skipped when empty; new public items `RelationDecl`, `Cardinality`, `RelationName`, `RELATION_ARG`, `related_name`, `Manifest::related_kind`, `EntityDecl::{related_action, relation}`, `ManifestError::{DuplicateRelation, RelatedDeclared}` (a new variant of an exhaustive enum: a consumer that matches `ManifestError` without a wildcard must add two arms), `TOOL_RELATED`. A consumer that builds `EntityDecl` or `ActionCard` as a struct literal (the shell, anyview, cua, mailo) must add `relations: vec![]` / `related: vec![]` when it next moves its actions pin; none reads a field that changed. A manifest that validates now has more actions than it declares if it declares relations (`ValidManifest::manifest().actions`), and nothing else about validation changed for a manifest without them. No wire (`Intents1`, `IntentProvider1`, `Companion1`) change.
+**Consumer impact.** All additive: `EntityDecl.relations` and `ActionCard.related` are `serde(default)` and skipped when empty; new public items `RelationDecl`, `Cardinality`, `RelationName`, `RELATION_ARG`, `related_name`, `Manifest::related_kind`, `EntityDecl::{related_action, relation}`, `ManifestError::{DuplicateRelation, RelatedDeclared}` (a new variant of an exhaustive enum: a consumer that matches `ManifestError` without a wildcard must add two arms), `TOOL_RELATED`. A consumer that builds `EntityDecl` or `ActionCard` as a struct literal (the shell, anyview, computer use, mailo) must add `relations: vec![]` / `related: vec![]` when it next moves its actions pin; none reads a field that changed. A manifest that validates now has more actions than it declares if it declares relations (`ValidManifest::manifest().actions`), and nothing else about validation changed for a manifest without them. No wire (`Intents1`, `IntentProvider1`, `Companion1`) change.
 
 **Open.** A provider's `Perform` of `<kind>.related` is still its own code; a helper that answers it from the declaration is possible when a second real app declares relations. `ResultShape::Entities` of the derived action names only the first relation's kind. `agent-inapp` and `actions-kit` use the same planner and so get the tool; neither has a relation to test with. The two `terminal::bardo_do_ask_*` tests of action-accept fail in this sandbox with `only the shell or a terminal speaks for the person` (intentd ignores `INTENTD_PROC_ROOT` without its test feature): an access error on the bus, in code this change does not touch; not checked against the base commit.
 
@@ -3548,11 +3548,11 @@ owns, `GetNameOwner` or a uid alone; an unidentified caller is refused.
 
 - **Role map per daemon** (app, role, in `dist/<daemon>-callers.toml`):
   - intentd (`intentd-callers.toml`): `org.bardo.Shell` `sheet_host` = `shell.service` (the roles `launcher`, `confirm`,
-    `control` need it); `org.bardo.Cua1` `cua` = `cuad.service` (`cua`); `org.bardo.Companion1`, `org.bardo.Reader1`,
+    `control` need it); `org.bardo.ComputerUse1` `computer_use` = `computer_use_daemon.service` (`computer_use`); `org.bardo.Companion1`, `org.bardo.Reader1`,
     `org.bardo.ActionsMcp` `agent` = their `.service` units (`companion`, `reader`, `mcp`); `org.bardo.Acp`,
     `org.bardo.AcpAgent` `agent` = the scopes `agent-acp-server.scope`, `bardo-agent.scope` (`editor`, `acp_agent`). `intentd.toml`
     still says which app plays which role; the table says which process is that app. `Peers::backs` is the bridge: sheet
-    roles need `sheet_host`, `cua` and `compositor` their own, the daemons' and editors' roles any role above a plain app.
+    roles need `sheet_host`, `computer_use` and `compositor` their own, the daemons' and editors' roles any role above a plain app.
     An app scope or Flatpak app is a plain app; a terminal's child (nothing names it) is the cli role.
   - readerd (`readerd-callers.toml`) and agent-acp-server's / bardo-agent's `Confirm1` (`acp-callers.toml`): `org.bardo.Intents`
     `agent` = `intentd.service`, the only caller (`INTENTD`). Provider apps (`action_provider::serve_on`) answer the same
@@ -3672,7 +3672,7 @@ The planner's role (`RoleText`) is where the helper's role and the job's goal ar
 **Public API changes (who is affected).** `action-core`: `helper` module; `SessionOpen::helper`
 (every literal gains `helper: None`); `DenyCode::OwnedByAnotherJob` (the shell matches on
 `DenyCode`: it must handle it); `NoteAsk::Helper`, `AuditRecord::Helper` (a consumer that matches
-`AuditRecord` exhaustively: the shell, cua); `Roster::helpers`, `HelperRosterLine`; new dependency
+`AuditRecord` exhaustively: the shell, computer use); `Roster::helpers`, `HelperRosterLine`; new dependency
 `inference-core`. `action-router`: `HELPER_POST_JOB`, `HELPER_PROPOSE`, `SessionRecord::helper`.
 `agent-planner`: `PlannerModel::{with_open_options, set_role}`, a "Helpers the person keeps"
 section. `companion-tasks`: `HelperDesk`, `Companion::{with_desk, set_desk, open_job, run_job}`,
@@ -3771,7 +3771,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lanes D0.3 and D0.23 (2026-10-28)
 
 - `agent-session`'s test code (`contract`, `fake`, `fake_host`) is behind the `testing` feature. Only dev-dependencies turn it on (action-router, companion-memory, companion-tasks, agent-acp-server, and agent-session's own tests); `action-fake` and `action-accept`, which are test crates, turn it on in their dependencies. `action-eval` links `action-fake`, so a `action-eval` build also enables it.
-- `actions-kit` is deleted. Nothing outside the actions service used it (checked in the shell, the Settings app, files, mailo and cua on origin/master); `agent-inapp` named it only in a doc example, which is gone. `InAppAgent::companion_link`, `record_turn`, `end_recorded` and `RecordedTurn` existed only to feed it and are deleted with their test and the `person` link; no other repo called them.
+- `actions-kit` is deleted. Nothing outside the actions service used it (checked in the shell, the Settings app, files, mailo and computer use on origin/master); `agent-inapp` named it only in a doc example, which is gone. `InAppAgent::companion_link`, `record_turn`, `end_recorded` and `RecordedTurn` existed only to feed it and are deleted with their test and the `person` link; no other repo called them.
 
 ## Layering lane D0.7 (2026-10-28)
 
@@ -3797,7 +3797,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 ## Layering lane D0.12: companion-core (2026-10-28)
 
 - `companion-core` (pure) is new. It holds what companiond decided over values: `conclude` and its types, the board's kept answers, sentences told and proposals as plain state (`Answers`, `ToldLog`, `Proposals`), the logins and terminal hand-over state (`Logins`, `Terminals`), the helper desk's decisions, the routines' scheduler rules (`ended_events`, `event_asks`, `EventWatch`, `Settle`, `new_routine`), the timer text (`units_of`), the zone text (`offset_of`) and the caller policy (`Speaker`, `Call`, `permits`). companiond keeps the tokio tasks, the bus, the disk writes, the `date` call and the sleep loop, and calls it.
-- `JobSpec`, `JobInput`, `OpenedJob`, `JobEnding` and `JobReport` moved from `companion-tasks` to `companion-core` (`companion-tasks` now depends on it). Nothing outside the actions service named them (checked in the shell, the Settings app, files and cua on origin/master).
+- `JobSpec`, `JobInput`, `OpenedJob`, `JobEnding` and `JobReport` moved from `companion-tasks` to `companion-core` (`companion-tasks` now depends on it). Nothing outside the actions service named them (checked in the shell, the Settings app, files and computer use on origin/master).
 - Typed refusals (H5): the desks now refuse with `companion_core::Refusal`, built from `JobRefusal`, `HandFault`, `ReachFault` and `ScheduleFault` where those exist. The plain sentence is made once, in `companiond/src/words.rs`, with the same words as before, so what the shell shows is unchanged. Not done: `HelperReply::Refused(String)`, `SayReply::Refused(String)`, `BroughtBack::Refused(String)` and `RoutineReply::Refused(String)` are still sentences on the wire (companion-wire's lane), and `companion-tasks`' `HelperDesk` defaults still hold `NO_APPS` and `NO_TALK`.
 - `hub.rs` (993 lines) is now `hub.rs`, `jobs.rs` and `routine_link.rs`. `routines/units.rs` is `routines/unit_dir.rs` (the disk half). `companiond/src/serve.rs` was already 556 lines and is touched only for an import; its split is not done.
 - Not done: the hand-over types in `action_core` (`helper`, `routine`, `hand`, `handover`) are still in `action-core`; moving them is the later part of F1. `companiond::HostLink` (`handoff.rs`) is bus IO and stays. Not verified by a build in the lane that made the change.
@@ -3867,7 +3867,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `planner.rs` was 820 lines; the meta tools moved to `meta_tools.rs` and the reply reading to `meta_reply.rs`
   (planner.rs is now 463 lines). `Cargo.lock` was edited by hand (two `account-client` edges out, the
   planner's dev self-dependency in).
-- The shell, the Settings app, files, mailo and cua at origin/master: no use of `PlannerModel` or `agent-planner` (the Settings app's
+- The shell, the Settings app, files, mailo and computer use at origin/master: no use of `PlannerModel` or `agent-planner` (the Settings app's
   FINDINGS.md names `PlannerModel::new` in prose only).
 - Not verified by a build in the lane that made the change.
 
@@ -3934,7 +3934,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `UnitDir`, `SystemZone` (the `date +%z` call) and `Timers` moved with `HubHost`, which owns them. companion-helpers is not in `check-portable.sh`: it has no bus dependency, but the systemd timer directory and the `date` call are the desktop's. Its deny row in `check-boundary.sh` is `$EFFECTS`; `tokio` appears only with the feature.
 - `companiond/src/serve.rs` (557 lines) is split: `background` (the beat and the arrival listener) and `serve_entry` (`serve`, `serve_on`, `serve_on_rooted`) left it. The companiond test `serve.rs` (1004 lines) is split into `serve`, `serve_helpers` and `serve_routines`.
 - Tests: `helpers`, `helper_apps` and `routines` moved to `companion-helpers/tests/it` (the first two split into `helpers`, `helper_desk` and `helper_apps`, `helper_apps_terminal`, with their fixtures in `support/`). companion-helpers has its own copy of `support/infer.rs` and a trimmed `support/world.rs`, because companiond's world is built on `Bell` and the bus tests that stay there use it. Bus-level tests (`serve*`, `terminal`, `handoff`, ...) stay in companiond.
-- Users outside this repo: the shell, the Settings app, files, mailo and cua name none of `Hub`, `HubHost`, `Routines`, `RoutineDesk`, `Host`, `UnitDir`, `SystemZone` or `Timers` of companiond (checked on origin/master), and none depends on companiond.
+- Users outside this repo: the shell, the Settings app, files, mailo and computer use name none of `Hub`, `HubHost`, `Routines`, `RoutineDesk`, `Host`, `UnitDir`, `SystemZone` or `Timers` of companiond (checked on origin/master), and none depends on companiond.
 - Not verified by a build in the lane that made the change.
 
 ## Layering lane D0.21: agent-acp-bin off agent-inapp and action-router; action-host (2026-10-28)
@@ -4039,12 +4039,12 @@ Two commits: the harness seams first, then the split.
 
 ## Layering lane D4.13e (with D4.2): action-gate-wire and action-wire (2026-10-28)
 
-- New P crate `action-gate-wire` (`gate`, 69 lines): `CuaAsk`, `NodeFacts`, `EffectBasis`, `GateAnswer`. It sits above `action-core` because `GateAnswer` holds `CallRefusal`. It depends on `action-core`, `cua-action`, `account-core`, `prov` and `serde`; `action-core` no longer depends on `cua-action`.
+- New P crate `action-gate-wire` (`gate`, 69 lines): `ComputerUseAsk`, `NodeFacts`, `EffectBasis`, `GateAnswer`. It sits above `action-core` because `GateAnswer` holds `CallRefusal`. It depends on `action-core`, `computer-use-action`, `account-core`, `prov` and `serde`; `action-core` no longer depends on `computer-use-action`.
 - New P crate `action-wire`: `wire` (split into `bodies`, `request`, `reply`; the `IntentsRequest::member` impl was already its own file and is `member`), `caller`, `started`, `task` and `summon`. It depends on `action-core`, `action-gate-wire`, `action-vocab`, `action-manifest`, `permission-core`, `companion-model`, `account-core`, `prov`, `memory-core`, `serde` and `thiserror`. Nothing left in `action-core` reads any of them (`check-core-layers.sh`: 0 upward edges).
-- Moved public items, each under the same name: gate-wire `CuaAsk`, `EffectBasis`, `GateAnswer`, `NodeFacts`; wire `Displayed`, `Envelope`, `GrantAnswer`, `GrantAsk`, `HelperNote`, `IntentsReply`, `IntentsRequest`, `JournalFilter`, `NoteAsk`, `ReadAsk`, `RecallAsk`, `RecallView`, `RecentLine`, `Resolved`, `SessionModeAsk`, `SessionNote`, `StoredAsk`, `StoredRow`, `StoredView`, `UndoReport`, `WidenAnswer`, `WidenAsk`, `WireRefusal`, `CallerId`, `CallerRole`, `Member`, `is_terminal_scope`, `NotATerminalScope`, `StartedFrom`, `TerminalScope`, `LedgerStep`, `SessionOpen`, `SessionOpened`, `TaskKind`, `TaskLedger`, `TaskStart`, `close`, `skeleton_of`, `step_outcome`, `SummonAnswer`, `SummonOrigin`, `SummonSerial`, `VoiceIntent`.
-- Re-exports gone: `action-core`'s root `pub use` of all of the above, including `gate`'s `pub use cua_action::{RunMode, WindowClass, WindowTrust}` (say `cua_action::` now), and the test-support `pub use action_core::VoiceIntent` in `voiced`.
+- Moved public items, each under the same name: gate-wire `ComputerUseAsk`, `EffectBasis`, `GateAnswer`, `NodeFacts`; wire `Displayed`, `Envelope`, `GrantAnswer`, `GrantAsk`, `HelperNote`, `IntentsReply`, `IntentsRequest`, `JournalFilter`, `NoteAsk`, `ReadAsk`, `RecallAsk`, `RecallView`, `RecentLine`, `Resolved`, `SessionModeAsk`, `SessionNote`, `StoredAsk`, `StoredRow`, `StoredView`, `UndoReport`, `WidenAnswer`, `WidenAsk`, `WireRefusal`, `CallerId`, `CallerRole`, `Member`, `is_terminal_scope`, `NotATerminalScope`, `StartedFrom`, `TerminalScope`, `LedgerStep`, `SessionOpen`, `SessionOpened`, `TaskKind`, `TaskLedger`, `TaskStart`, `close`, `skeleton_of`, `step_outcome`, `SummonAnswer`, `SummonOrigin`, `SummonSerial`, `VoiceIntent`.
+- Re-exports gone: `action-core`'s root `pub use` of all of the above, including `gate`'s `pub use computer_use_action::{RunMode, WindowClass, WindowTrust}` (say `computer_use_action::` now), and the test-support `pub use action_core::VoiceIntent` in `voiced`.
 - Files split to stay under 500 lines: `wire.rs` (675) into `bodies.rs` (319), `request.rs` (272), `reply.rs` (95) and `member.rs` (60).
-- Tests that went with the modules into one `it` binary in `action-wire`: `episodes`, `task_start` (out of `schema`), `checkpoint` (the request and reply test, out of `action-core`'s), and `records` (the CUA ask, the `cli` role word, the old grant request and the dry run, out of `records` and `permission_records`), plus a small `support`. Tests that build only lower types stay in `action-core`.
+- Tests that went with the modules into one `it` binary in `action-wire`: `episodes`, `task_start` (out of `schema`), `checkpoint` (the request and reply test, out of `action-core`'s), and `records` (the computer use ask, the `cli` role word, the old grant request and the dry run, out of `records` and `permission_records`), plus a small `support`. Tests that build only lower types stay in `action-core`.
 - `scripts/check-boundary.sh`: LAYERS rows (`action-gate-wire` P, `action-wire` P) and RULES rows (effects and `toml` banned); `scripts/check-portable.sh` lists both; `scripts/check-core-layers.sh` drops levels 5 and 6.
 - `voice-wire`, `voice-loop`, `voiced`, `companion-client` and `action-procroot` used only moved items from `action-core`, so their dependency on it became one on `action-wire`.
 - Not verified by a build in the lane that made the change; `cargo metadata --offline` resolved and `cargo fmt --all` ran.
@@ -4107,7 +4107,7 @@ Two commits: the harness seams first, then the split.
 - New P-tier crate `action-gate`: the pure steps of a call's way through the router. It holds `facts`, `gate`, `call`, `classify`, `coverage`, `consent`, `prepared`, `standing_ctx`, `standing_facts`, `driven`, `spans`, `confirm`, `argcheck`, `may_make`, `policylog`, `turn_start`, plus `companion_names` and `brief_sheet` (named by `consent`, `may_make`, `confirm` and `prepared`). It depends on `action-context` and the action-core family, never on `action-router`; the router depends on it. It is a separate crate from `action-gate-wire` (the wire types above `action-core`).
 - Pure parts split off the mixed files, each a module of the new crate: `terminal` (`held`, `kinds_of`, `grant_policy`, `Revoked`), `limits` (`text_arg`, `choice_arg`, `level_of`, `reach_of`, `rule_limit`), `messaging` (`receiving`, `send_refusal`) and the task entity helpers (`task_entity`, `task_of`) in `companion_names`. The router's files keep only `impl Router`.
 - Left in the router, on purpose: `screen_line` in `messaging` (it calls `messages::inbound_line`, and `messages` stays), `brief` (all `impl Router`; its one helper `plain` is a one-line private fn), `standing` (all `impl Router`), `companion`'s private helpers (`failed`, `param`, `text_arg`, `spawner`, `companion`), which build `AppRefusal`s for the router's own actions and have no other user.
-- No re-exports: the router's `lib.rs` no longer exports `call_step` and friends, `classify_step`, `RunFacts` and the fact builders, `gate`, `Pending`, `GateInputs`, `Revoked` or the companion action names. The importers are the router's modules and its tests (`brief`, `helpers`, `notes`, `terminal`); no other crate in the actions service named them, and the shell, the Settings app, files, cua and mailo name only `Router`, `Seams`, `AppLink`, `GrantStore`, `NoLog` and `AppFault`.
+- No re-exports: the router's `lib.rs` no longer exports `call_step` and friends, `classify_step`, `RunFacts` and the fact builders, `gate`, `Pending`, `GateInputs`, `Revoked` or the companion action names. The importers are the router's modules and its tests (`brief`, `helpers`, `notes`, `terminal`); no other crate in the actions service named them, and the shell, the Settings app, files, computer use and mailo name only `Router`, `Seams`, `AppLink`, `GrantStore`, `NoLog` and `AppFault`.
 - The `pub(crate)` items the router uses are `pub` with docs; `Run` and `Next` got `Debug`, `Run` got `Default`. Items only the new crate uses (`sheet_of`, the whole of `standing_facts`) stay crate-private.
 - Tests: `gate.rs` and `call_step.rs` moved to `action-gate/tests/it`; the inline tests of `classify`, `spans` and `standing_facts` moved with their modules. Router tests that drive `Router` stay.
 - `action-router` no longer depends on `url`, `genai-names`, `account-capability` or `serde`; `sandbox`, `model-provider` and `toml` are dev-dependencies now. Rows added in `scripts/check-boundary.sh` (layers and rules) and `scripts/check-portable.sh`.

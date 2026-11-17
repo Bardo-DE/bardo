@@ -6,7 +6,7 @@ use crate::rules::CommitRules;
 use action_gate_wire::EffectBasis;
 use computer_use_a11y_tree::{A11yNode, TypedHint};
 use computer_use_action::WindowClass;
-use computer_use_action::{ActionClass, CuaAction, WindowSpace};
+use computer_use_action::{ActionClass, ComputerUseAction, WindowSpace};
 use keyboard_types::Key;
 use provenance::Effect;
 
@@ -26,7 +26,7 @@ use provenance::Effect;
 #[must_use]
 pub fn classify_effect(
     rules: &CommitRules,
-    action: &CuaAction<WindowSpace>,
+    action: &ComputerUseAction<WindowSpace>,
     node: Option<&A11yNode>,
     class: WindowClass,
 ) -> (Effect, EffectBasis) {
@@ -36,7 +36,7 @@ pub fn classify_effect(
         }
         ActionClass::Pointer | ActionClass::Keyboard => Effect::UndoableWrite,
     };
-    if let CuaAction::Key { chord, .. } = action
+    if let ComputerUseAction::Key { chord, .. } = action
         && acts_on_desktop(chord, OURS)
     {
         return (Effect::Outbound, EffectBasis::DefaultTable);
@@ -61,7 +61,7 @@ pub fn classify_effect(
 /// the commit, so it counts: the window asks rather than guesses.
 fn commits_in(
     rules: &CommitRules,
-    action: &CuaAction<WindowSpace>,
+    action: &ComputerUseAction<WindowSpace>,
     node: Option<&A11yNode>,
     class: WindowClass,
 ) -> bool {
@@ -69,15 +69,15 @@ fn commits_in(
         class,
         WindowClass::MailCompose | WindowClass::Payments | WindowClass::Banking
     );
-    let click = matches!(action, CuaAction::Click { .. });
+    let click = matches!(action, ComputerUseAction::Click { .. });
     form && click && node.is_none_or(|n| commits(rules, n))
 }
 
 /// Typing, or a chord whose key is Enter: what puts typed text on its way.
-fn sends_something(action: &CuaAction<WindowSpace>) -> bool {
+fn sends_something(action: &ComputerUseAction<WindowSpace>) -> bool {
     match action {
-        CuaAction::Type { .. } => true,
-        CuaAction::Key { chord, .. } => chord.key == Key::Enter,
+        ComputerUseAction::Type { .. } => true,
+        ComputerUseAction::Key { chord, .. } => chord.key == Key::Enter,
         _ => false,
     }
 }

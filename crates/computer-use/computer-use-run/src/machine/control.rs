@@ -11,7 +11,8 @@ use crate::mode::mode_support;
 use computer_use_action::Summary;
 use computer_use_bus::TaskTarget;
 use computer_use_bus::{
-    ActionResult, CancelledBy, CuaOutcome, CuaRecord, FailReason, ModeSupport, report_draft,
+    ActionResult, CancelledBy, ComputerUseOutcome, ComputerUseRecord, FailReason, ModeSupport,
+    report_draft,
 };
 use computer_use_capture::FrameWant;
 use computer_use_desktop::{DesktopEvent, GlowState, RevokeReason, Stamp, Suspend};
@@ -96,7 +97,7 @@ pub(crate) fn take_over(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp) {
     stop_waiting(run, fx);
     fx.push(RunEffect::SuspendLease(lease, Suspend::TakeOver));
     fx.push(RunEffect::Glow(GlowState::Off));
-    fx.push(RunEffect::Record(Box::new(CuaRecord::TakenOver {
+    fx.push(RunEffect::Record(Box::new(ComputerUseRecord::TakenOver {
         run: run.id.clone(),
         n,
     })));
@@ -114,7 +115,7 @@ pub(crate) fn hand_back(run: &mut Run, fx: &mut Vec<RunEffect>) {
         fx.push(RunEffect::ResumeLease(lease));
     }
     fx.push(RunEffect::Glow(GlowState::Working));
-    fx.push(RunEffect::Record(Box::new(CuaRecord::HandedBack {
+    fx.push(RunEffect::Record(Box::new(ComputerUseRecord::HandedBack {
         run: run.id.clone(),
         n,
         user_events: Vec::new(),
@@ -126,7 +127,7 @@ pub(crate) fn hand_back(run: &mut Run, fx: &mut Vec<RunEffect>) {
 
 /// The person cancels.
 pub(crate) fn cancel(run: &mut Run, fx: &mut Vec<RunEffect>) {
-    finish_plain(run, fx, CuaOutcome::Cancelled(CancelledBy::User));
+    finish_plain(run, fx, ComputerUseOutcome::Cancelled(CancelledBy::User));
 }
 
 fn window_ident(run: &Run) -> Option<&computer_use_desktop::ToplevelIdent> {
@@ -146,21 +147,25 @@ fn window_ident(run: &Run) -> Option<&computer_use_desktop::ToplevelIdent> {
 pub(crate) fn desktop(run: &mut Run, fx: &mut Vec<RunEffect>, event: DesktopEvent) {
     match event {
         DesktopEvent::KillChord => {
-            finish_plain(run, fx, CuaOutcome::Cancelled(CancelledBy::KillSwitch));
+            finish_plain(
+                run,
+                fx,
+                ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch),
+            );
         }
         DesktopEvent::LeaseRevoked { lease, why } if Some(lease) == run.lease => {
             let outcome = match why {
-                RevokeReason::KillChord => CuaOutcome::Cancelled(CancelledBy::KillSwitch),
+                RevokeReason::KillChord => ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch),
                 RevokeReason::WindowClosed
                 | RevokeReason::SpaceChanged
-                | RevokeReason::Compositor => CuaOutcome::Failed(FailReason::WindowGone),
+                | RevokeReason::Compositor => ComputerUseOutcome::Failed(FailReason::WindowGone),
             };
             // The lease is already gone: nothing to release.
             run.lease = None;
             finish_plain(run, fx, outcome);
         }
         DesktopEvent::WindowClosed(ident) if Some(&ident) == window_ident(run) => {
-            finish_plain(run, fx, CuaOutcome::Failed(FailReason::WindowGone));
+            finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::WindowGone));
         }
         DesktopEvent::PhysicalInput { lease } if Some(lease) == run.lease => {
             let hands_off = mode_support(&run.env.caps, run.task.mode) == ModeSupport::HandsOff;

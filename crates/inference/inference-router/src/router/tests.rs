@@ -1,9 +1,9 @@
 use super::*;
 use account_capability::Billing;
 use account_capability::ModelId;
-use account_capability::{CuaBatching, CuaCap, CuaEnv, LlmCap, LlmWire};
+use account_capability::{ComputerUseBatching, ComputerUseCap, ComputerUseEnv, LlmCap, LlmWire};
 use account_core::AccountId;
-use account_match::{CuaNeed, LlmNeed};
+use account_match::{ComputerUseNeed, LlmNeed};
 use base_ids::{Px, Tokens};
 use inference_core::{AutoMode, AutoRow, TierRow};
 
@@ -47,14 +47,14 @@ fn need() -> Need {
     Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))
 }
 
-fn cua_need() -> Need {
-    Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop].into()))
+fn computer_use_need() -> Need {
+    Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into()))
 }
 
-fn cua_cap() -> Capability {
-    Capability::ComputerUse(CuaCap {
-        environments: [CuaEnv::Desktop].into(),
-        batching: CuaBatching::One,
+fn computer_use_cap() -> Capability {
+    Capability::ComputerUse(ComputerUseCap {
+        environments: [ComputerUseEnv::Desktop].into(),
+        batching: ComputerUseBatching::One,
         zoom: false,
         max_image: Px(1024),
         wire: LlmWire::ChatCompletions,
@@ -208,10 +208,10 @@ fn the_route_table() {
         ),
         (
             "computer use takes screen data only",
-            cua_need(),
+            computer_use_need(),
             DataClass::Mail,
             vec![listed(
-                card("local", "u", Locality::OnDevice, cua_cap()),
+                card("local", "u", Locality::OnDevice, computer_use_cap()),
                 ready,
             )],
             Policy::proposed(),
@@ -219,10 +219,10 @@ fn the_route_table() {
         ),
         (
             "computer use on a screen",
-            cua_need(),
+            computer_use_need(),
             DataClass::Screen,
             vec![listed(
-                card("local", "u", Locality::OnDevice, cua_cap()),
+                card("local", "u", Locality::OnDevice, computer_use_cap()),
                 ready,
             )],
             Policy::proposed(),
@@ -290,7 +290,7 @@ fn needs_map_to_the_picker_kinds() {
         |modes: &[SpeechMode]| Need::Speech(SpeechNeed::new(modes.iter().copied().collect()));
     let cases = [
         (need(), Some(Slot::Text)),
-        (cua_need(), Some(Slot::ComputerUse)),
+        (computer_use_need(), Some(Slot::ComputerUse)),
         (
             Need::Embeddings(EmbedNeed::new(
                 DimsNeed::Any,
@@ -470,14 +470,14 @@ fn a_text_only_model_named_for_computer_use_is_refused_by_name() {
     let models = [
         listed(local("blind"), Readiness::Ready),
         listed(
-            card("local", "sighted", Locality::OnDevice, cua_cap()),
+            card("local", "sighted", Locality::OnDevice, computer_use_cap()),
             Readiness::Ready,
         ),
     ];
     let tiers = TierMap::default().naming(Slot::ComputerUse, &named("blind"));
     let ask = |tiers: &TierMap| {
         choose(
-            &cua_need(),
+            &computer_use_need(),
             DataClass::Screen,
             Tier::Balanced,
             &models,
@@ -502,7 +502,7 @@ fn a_text_only_model_named_for_computer_use_is_refused_by_name() {
 #[test]
 fn computer_use_never_picks_a_model_that_cannot_read_images_even_if_its_card_claims_it() {
     let claims_without_sight = ModelCard {
-        capabilities: vec![llm_cap(), cua_cap()],
+        capabilities: vec![llm_cap(), computer_use_cap()],
         ..local("claims")
     };
     let sees = ModelCard {
@@ -513,13 +513,13 @@ fn computer_use_never_picks_a_model_that_cannot_read_images_even_if_its_card_cla
                 max_output: Tokens(1024),
                 wire: LlmWire::ChatCompletions,
             }),
-            cua_cap(),
+            computer_use_cap(),
         ],
         ..local("sees")
     };
     let ask = |models: &[Listed]| {
         choose(
-            &cua_need(),
+            &computer_use_need(),
             DataClass::Screen,
             Tier::Balanced,
             models,

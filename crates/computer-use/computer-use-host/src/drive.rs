@@ -2,11 +2,11 @@
 //! (the person's controls, the desktop's events, the clock) racing whatever the run is waiting
 //! on.
 
-use crate::config::CuadConfig;
+use crate::config::ComputerUseDaemonConfig;
 use crate::events::{RunView, SupervisorEvent};
 use crate::lock::locked;
-use crate::settings::CuaSettings;
-use computer_use_bus::{BudgetBody, CuaOutcome, RunEnd};
+use crate::settings::ComputerUseSettings;
+use computer_use_bus::{BudgetBody, ComputerUseOutcome, RunEnd};
 use computer_use_desktop::Stamp;
 use computer_use_run::{
     Clock, Exec, Outlet, Parts, Rules, Run, RunEffect, RunInput, RunPhase, Seam, Seams, SlotState,
@@ -45,17 +45,17 @@ pub(crate) struct Shared<S: Seams> {
     pub clock: S::Time,
     /// The screen rules every run checks a screen against.
     pub rules: Rules,
-    pub config: CuadConfig,
+    pub config: ComputerUseDaemonConfig,
     /// What every run's model is told about the desktop when its session opens.
     pub hints: Vec<String>,
     /// The person's settings in force: the config's own until the settings file says otherwise.
-    pub settings: RwLock<CuaSettings>,
+    pub settings: RwLock<ComputerUseSettings>,
     pub bus: broadcast::Sender<SupervisorEvent>,
     pub state: Mutex<State>,
 }
 
 impl<S: Seams> Shared<S> {
-    pub(crate) fn of(parts: Parts<S>, config: CuadConfig, hints: Vec<String>) -> Self {
+    pub(crate) fn of(parts: Parts<S>, config: ComputerUseDaemonConfig, hints: Vec<String>) -> Self {
         let Parts {
             desktop,
             seat,
@@ -77,7 +77,7 @@ impl<S: Seams> Shared<S> {
             events,
             clock,
             rules,
-            settings: RwLock::new(CuaSettings::over(config.settings)),
+            settings: RwLock::new(ComputerUseSettings::over(config.settings)),
             config,
             hints,
             bus: broadcast::channel(1024).0,
@@ -141,7 +141,7 @@ impl<S: Seams> Shared<S> {
 /// What an effect's answers look like on the way back to the task.
 enum Wire {
     Input(RunInput),
-    Signal(computer_use_run::CuaSignal),
+    Signal(computer_use_run::ComputerUseSignal),
 }
 
 struct Channel(mpsc::UnboundedSender<Wire>);
@@ -151,12 +151,12 @@ impl Outlet for Channel {
         let _ = self.0.send(Wire::Input(input));
     }
 
-    fn signal(&mut self, signal: computer_use_run::CuaSignal) {
+    fn signal(&mut self, signal: computer_use_run::ComputerUseSignal) {
         let _ = self.0.send(Wire::Signal(signal));
     }
 
     fn note(&mut self, note: computer_use_run::StepNote) {
-        eprintln!("cuad: {note}");
+        eprintln!("computer_use_daemon: {note}");
     }
 }
 
@@ -216,7 +216,7 @@ impl Machine {
     }
 }
 
-fn run_end<S: Seams>(exec: &Exec<'_, S>, run: &Run, outcome: CuaOutcome) -> RunEnd {
+fn run_end<S: Seams>(exec: &Exec<'_, S>, run: &Run, outcome: ComputerUseOutcome) -> RunEnd {
     RunEnd {
         outcome,
         steps: run.used.steps,

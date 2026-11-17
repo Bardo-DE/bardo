@@ -128,7 +128,7 @@ async fn apps_and_accounts_service_daemons_use_identities_and_everything_else_is
     let opened = rig.host_log.calls().opened.len();
     let refused_roles = [
         Some(CallerRole::Agent),
-        Some(CallerRole::Cua),
+        Some(CallerRole::ComputerUse),
         Some(CallerRole::AgentLauncher),
         Some(CallerRole::AiBroker),
         Some(CallerRole::Terminal),

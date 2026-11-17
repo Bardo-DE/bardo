@@ -1,4 +1,4 @@
-//! The quiet line under a card's fields when no model can see the screen: what cuad says, and a
+//! The quiet line under a card's fields when no model can see the screen: what the computer-use daemon says, and a
 //! button to the Settings page where the model is chosen.
 
 use dioxus::prelude::*;

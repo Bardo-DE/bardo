@@ -15,7 +15,7 @@ async fn the_daemon_links_are_built_over_one_connection_and_each_reaches_its_nei
     let planner = desk.as_companion().await;
     desk.open_sessions(&planner).await;
     let links = computer_use_system::Links::over(
-        &desk.cuad_connection().await,
+        &desk.computer_use_daemon_connection().await,
         account_capability::Tier::Balanced,
     );
     assert_eq!(
@@ -35,7 +35,7 @@ async fn the_daemon_links_are_built_over_one_connection_and_each_reaches_its_nei
     let waiting = links
         .events
         .inbox(InboxAsk {
-            agent: AgentRef::Cua { run: run() },
+            agent: AgentRef::ComputerUse { run: run() },
             after: None,
         })
         .await;
@@ -53,13 +53,15 @@ async fn the_daemon_links_are_built_over_one_connection_and_each_reaches_its_nei
 #[tokio::test]
 async fn the_run_opens_its_own_session_once_and_a_withdrawn_check_leaves_the_gate_usable() {
     let desk = desk(vec![yes()]).await;
-    let gate = IntentsGate::over(DbusTransport::new(desk.cuad_connection().await));
+    let gate = IntentsGate::over(DbusTransport::new(
+        desk.computer_use_daemon_connection().await,
+    ));
     // A conversation the router does not hold is ignored: the run opens in the start mode.
     let conversation = SessionId::parse("s-9").unwrap();
     let session = gate
         .open_session(&run(), &work(), &conversation)
         .await
-        .expect("the cua role opens the session of its own run");
+        .expect("the computer-use role opens the session of its own run");
     assert_eq!(
         gate.open_session(&run(), &work(), &conversation).await,
         Err(computer_use_run::LinkError::Refused(

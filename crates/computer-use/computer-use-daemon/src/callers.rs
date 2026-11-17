@@ -1,4 +1,4 @@
-//! Who is calling cuad: the process behind the connection, never a name it owns. Anyone can own
+//! Who is calling the computer-use daemon: the process behind the connection, never a name it owns. Anyone can own
 //! a well-known bus name (a program that starts while the shell restarts can take
 //! `org.bardo.Shell`), so a role comes from the process: the accounts service's callers table (this daemon's
 //! `computer-use-callers.toml`, shipped as `dist/computer-use-callers.toml`) names the unit or app scope behind
@@ -10,7 +10,7 @@ use action_dbus::callers::{
     read_table_in, table_from_toml,
 };
 use caller_role_types::CallerRole;
-use computer_use_bus::CuaCaller;
+use computer_use_bus::ComputerUseCaller;
 use std::path::PathBuf;
 
 /// The file name, under `/etc/bardo` and the person's `bardo/computer-use` configuration folder.
@@ -22,12 +22,12 @@ const SHIPPED: &str = include_str!("../../dist/computer-use-callers.toml");
 pub const COMPANION: Standing = Standing::new("org.bardo.Companion1", CallerRole::Agent);
 
 /// The standing each caller class needs, in the order they are tried. The shell is the actions service's
-/// [`SHELL`] and the router the actions service's [`INTENTD`], so cuad and the daemons beside it agree on who
+/// [`SHELL`] and the router the actions service's [`INTENTD`], so the computer-use daemon and the daemons beside it agree on who
 /// they are.
-const CLASSES: [(Standing, CuaCaller); 3] = [
-    (INTENTD, CuaCaller::Router),
-    (COMPANION, CuaCaller::Companion),
-    (SHELL, CuaCaller::Shell),
+const CLASSES: [(Standing, ComputerUseCaller); 3] = [
+    (INTENTD, ComputerUseCaller::Router),
+    (COMPANION, ComputerUseCaller::Companion),
+    (SHELL, ComputerUseCaller::Shell),
 ];
 
 /// The table the package ships. A shipped file that does not read is an empty table: nobody is
@@ -82,22 +82,22 @@ pub fn identity(
 
 /// Which class `caller` is: the first whose standing it holds; `Other` when it holds none.
 #[must_use]
-pub fn classify(caller: &Caller) -> CuaCaller {
+pub fn classify(caller: &Caller) -> ComputerUseCaller {
     CLASSES
         .iter()
         .find(|(standing, _)| standing.held_by(caller))
-        .map_or(CuaCaller::Other, |(_, class)| *class)
+        .map_or(ComputerUseCaller::Other, |(_, class)| *class)
 }
 
 /// Who the connection `sender` (the message header's sender, a unique name) is. A message with
 /// no sender, and a process nothing identifies, are `Other`.
-pub async fn caller_of(who: &impl Callers, sender: Option<&str>) -> CuaCaller {
+pub async fn caller_of(who: &impl Callers, sender: Option<&str>) -> ComputerUseCaller {
     let Some(sender) = sender else {
-        return CuaCaller::Other;
+        return ComputerUseCaller::Other;
     };
     who.caller_of(sender)
         .await
-        .map_or(CuaCaller::Other, |caller| classify(&caller))
+        .map_or(ComputerUseCaller::Other, |caller| classify(&caller))
 }
 
 /// The unique name of the connection that owns [`shell_dbus::SHELL_BUS`] if, and only if, its process holds
@@ -132,37 +132,37 @@ mod tests {
             (
                 "the router",
                 caller("org.bardo.Intents", CallerRole::Agent),
-                CuaCaller::Router,
+                ComputerUseCaller::Router,
             ),
             (
                 "the planner",
                 caller("org.bardo.Companion1", CallerRole::Agent),
-                CuaCaller::Companion,
+                ComputerUseCaller::Companion,
             ),
             (
                 "the shell",
                 caller("org.bardo.Shell", CallerRole::SheetHost),
-                CuaCaller::Shell,
+                ComputerUseCaller::Shell,
             ),
             (
                 "an app scope called like the shell",
                 caller("org.bardo.Shell", CallerRole::App),
-                CuaCaller::Other,
+                ComputerUseCaller::Other,
             ),
             (
                 "the router's name with the shell's role",
                 caller("org.bardo.Intents", CallerRole::SheetHost),
-                CuaCaller::Other,
+                ComputerUseCaller::Other,
             ),
             (
                 "a stranger",
                 caller("org.example.Evil", CallerRole::App),
-                CuaCaller::Other,
+                ComputerUseCaller::Other,
             ),
             (
                 "a stranger with a fixed role",
                 caller("org.example.Evil", CallerRole::SheetHost),
-                CuaCaller::Other,
+                ComputerUseCaller::Other,
             ),
         ];
         for (name, who, want) in cases {

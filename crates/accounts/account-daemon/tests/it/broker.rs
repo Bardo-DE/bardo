@@ -215,7 +215,7 @@ async fn only_the_ai_broker_asks_and_every_other_role_is_refused() {
         CallerRole::SheetHost,
         CallerRole::AccountDaemon,
         CallerRole::Agent,
-        CallerRole::Cua,
+        CallerRole::ComputerUse,
         CallerRole::AgentLauncher,
         CallerRole::Terminal,
         CallerRole::Compositor,

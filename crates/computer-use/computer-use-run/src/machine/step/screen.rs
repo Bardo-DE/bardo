@@ -20,7 +20,9 @@ use crate::screen::{
 };
 use crate::sensitivity::{FORCED_NO, FORCED_YES};
 use crate::turn::turn_after;
-use computer_use_bus::{BlockedOn, ConfirmBy, CuaOutcome, CuaRecord, FailReason, ScreenKind};
+use computer_use_bus::{
+    BlockedOn, ComputerUseOutcome, ComputerUseRecord, ConfirmBy, FailReason, ScreenKind,
+};
 use computer_use_desktop::GlowState;
 use inference_core::StepIndex;
 use provenance::{Effect, Labelled};
@@ -53,7 +55,7 @@ pub(super) fn stage(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
 /// The model's turn from the step's observation.
 pub(super) fn call_model(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex) {
     let Some(obs) = run.working.as_deref() else {
-        finish_plain(run, fx, CuaOutcome::Failed(FailReason::Capture));
+        finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Capture));
         return;
     };
     let (request, frame) = turn_after(obs, run.track.unchanged);
@@ -144,12 +146,14 @@ fn flagged(run: &mut Run, fx: &mut Vec<RunEffect>, n: StepIndex, verdict: &Scree
         .iter()
         .all(|k| run.track.screen.allowed.contains(&(window.clone(), *k)));
     run.track.screen.suspicious = true;
-    fx.push(RunEffect::Record(Box::new(CuaRecord::ScreenSuspicious {
-        run: run.id.clone(),
-        n,
-        kinds: kinds.clone(),
-        asked: !remembered,
-    })));
+    fx.push(RunEffect::Record(Box::new(
+        ComputerUseRecord::ScreenSuspicious {
+            run: run.id.clone(),
+            n,
+            kinds: kinds.clone(),
+            asked: !remembered,
+        },
+    )));
     if remembered {
         call_model(run, fx, n);
         return;
@@ -171,7 +175,7 @@ pub(super) fn answered(
     let asking = run.track.screen.asking.take();
     if answer.value == FORCED_YES {
         fx.push(RunEffect::Glow(GlowState::Working));
-        fx.push(RunEffect::Record(Box::new(CuaRecord::Confirmed {
+        fx.push(RunEffect::Record(Box::new(ComputerUseRecord::Confirmed {
             run: run.id.clone(),
             n,
             by: ConfirmBy::ShellPrompt,
@@ -189,7 +193,7 @@ pub(super) fn answered(
         finish_plain(
             run,
             fx,
-            CuaOutcome::Blocked(BlockedOn::ScreenSuspicious(kind)),
+            ComputerUseOutcome::Blocked(BlockedOn::ScreenSuspicious(kind)),
         );
     }
 }

@@ -426,7 +426,7 @@ A settled item is deleted, not marked closed.
   again on `ManifestChanged`) into `Companion::openers` (`openers_of`: each declared entity kind
   whose app declares `action_core::open_name`); the things provider performs the open call as the
   launcher with no session and no window, and a thing whose app declares none has no Enter action.
-- **A run is named by cuad's `Id` property**, read when its object is added; each path is kept with
+- **A run is named by the computer-use daemon's `Id` property**, read when its object is added; each path is kept with
   its id so `RunRemoved`, which comes after the object is gone, finds it.
 - **`companion.*` is a settings domain** (`shell_settings::CompanionSettings`, design/22 section
   3.30): `double_tap_ms` and `app_wait_ms` (`Ms`, held to 150..=600 and 40..=500) and `in_field`

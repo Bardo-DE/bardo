@@ -27,7 +27,7 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 | `memory-settings` | pure: what the person can set for memory: `MemorySettings`, `ConsolidateWhen`, `ConsolidateApply`, `SCHEMA` (`schema/memory.settings.toml`, the file the Settings app draws them from; `memoryd --write-schema` writes it), `SETTINGS_FILE`, the lenient reader `read` (`Loaded`, `Fallback`, `Why`), the key table, and the consent gate (`Confirmations`, `gate`, `waiting`, `loosenings`: a value looser than shipped applies only once the person confirmed it). No file is read | none |
 | `memory-tidy` | pure: what memory learns and keeps tidy: the fact lifecycle machine (`fact`), the consolidation run machine, the `Consolidator` seam and `check_draft` (`consolidation`), the consolidation prompt and the parse of the model's draft (`render_prompt`, `parse_draft`), `tidy_is_acceptable`, `changes` (what a reply changed, as the pure `Change` events the daemon turns into bus signals), the removal notes (`Removals` over the `RemovalLedger` seam and the `removals.toml` text) | none |
 | `memory-search` | pure: how memory is searched: `docs` (the recall documents facts and events contribute to the index: `event_docs`, `fact_doc`, `indexed_docs`, `DocRef`, `newest_episodes`), `SpaceReader` (the narrow view of a Space that a search reads: its index, its log entries, its stored facts), `embed_query`, `search` and `inject` (fused lexical and semantic ranking, reciprocal-rank merge of facts and events, the token budget) | none |
-| `memory-service` | memoryd's core over seams: `Caller` (who is asking: `App`, `Router`, `Cuad`, `ShellUi`, `Settings`; derived by the transport, never sent) and `allowed`, the matrix over it, the per-Space request queue (`Claim`), the Space and forget-plan machines, the run that drives `memory-tidy`'s fact and consolidation machines over a `Backend`, the readers (`SpaceReader` for `Open`; the ranking is `memory-search`'s), retention, timeline rows, the export writer, the config file text (`memory.toml`, `spaces.toml`; the files themselves are `memory-host`'s), `Backend` and `MemoryService`; it takes the person's `MemorySettings` from `memory-settings`, injected through `apply_settings`, `Backend` and `MemoryService`. Depends on `memory-tidy`, `memory-search`, `memory-store` and `memory-files-format`, never on `eventlog` or `recall`, so it links no SQLite, SQLCipher or OpenSSL | none (seams are passed in) |
+| `memory-service` | memoryd's core over seams: `Caller` (who is asking: `App`, `Router`, `ComputerUseDaemon`, `ShellUi`, `Settings`; derived by the transport, never sent) and `allowed`, the matrix over it, the per-Space request queue (`Claim`), the Space and forget-plan machines, the run that drives `memory-tidy`'s fact and consolidation machines over a `Backend`, the readers (`SpaceReader` for `Open`; the ranking is `memory-search`'s), retention, timeline rows, the export writer, the config file text (`memory.toml`, `spaces.toml`; the files themselves are `memory-host`'s), `Backend` and `MemoryService`; it takes the person's `MemorySettings` from `memory-settings`, injected through `apply_settings`, `Backend` and `MemoryService`. Depends on `memory-tidy`, `memory-search`, `memory-store` and `memory-files-format`, never on `eventlog` or `recall`, so it links no SQLite, SQLCipher or OpenSSL | none (seams are passed in) |
 | `memory-infer` | the inferd adapters over inference-client's `Transport`: `InferdEmbedder` (an `Embedder`), `InferdConsolidator` (a `Consolidator`) and their `Deadlines`. No daemon, so an app other than memoryd can use them | inferd, through the transport it is given |
 | `memory-host` | the files memory keeps beside its Spaces: `Locator` (finds `$XDG_CONFIG_HOME/memory/settings.toml`, then `$XDG_CONFIG_DIRS`; reads it through `memory-settings` and keeps the confirmations store), `write_private_atomic`, `read_config`. Used by memoryd and `memory-local` | the filesystem |
 | `memory-watch` | `FileWatch`, `WatchError`, the pure `join` of observed changes and app-supplied reasons; `InotifyWatch` (notify 8.2) behind the `linux` feature | inotify (feature `linux`) |
@@ -86,7 +86,7 @@ A crate depends on its own tier or a lower one (P < C < A), never up; `dev-depen
 
 The script also reports source files over 500 lines (`--long-files`, report only) and seeds one violation per tier to prove the bans fire (`--self-test`). The `KNOWN` list names each violation that exists today and the plan lane (`~/rs-wt/agent-layers/PLAN.md`) that removes it; a row whose violation is gone fails, so the list only shrinks. It is empty today.
 
-The memory service never depends on the model layer, the actions service or cua: their payloads (policy, consent, computer-use
+The memory service never depends on the model layer, the actions service or computer use: their payloads (policy, consent, computer-use
 steps, sessions) are `EventBody::Area` in their owners' serde form, and `check-boundary.sh`
 fails if any of their crates enters the tree. Other crates reach the accounts service's names through
 `memory-core`'s re-exports, so the dependency tiers stay this exact.
@@ -257,7 +257,7 @@ system/events.db                    desktop-level log: Space created or deleted,
 <space>/facts/INDEX.md              the primer, regenerated by consolidation, at most 200 lines
 <space>/facts/<topic>.md            topic files (sealed or plain per vault)
 <space>/pending/<fact-id>.md        facts derived from untrusted text, awaiting the person
-<space>/procedures/<app>/<name>.md  CUA procedures (the cua area's format; the same trailer)
+<space>/procedures/<app>/<name>.md  COMPUTER_USE procedures (the computer_use area's format; the same trailer)
 <space>/consolidation/<run>.toml    one run: its hunks, skipped hunks, cut and outcome (proposed, applied, reverted, discarded, superseded); written when drafted, rewritten on each outcome, never deleted
 <space>/meta/marks.json             "do not remember" marks (vault file)
 <space>/meta/baseline.json          each topic file's text as the service last left it (an edit is a difference)
@@ -311,7 +311,7 @@ exceptions are types the memory service may name because they live in `prov` or 
 
 **Messages and episodes in the log.** `Record.actor` is the stamped sender and `Record.label` is
 the message's own label (for an episode, the join of its parts'); only the router records them,
-except that cuad may record a run's own `Message` (the run is the sender). Both are audit
+except that the computer-use daemon may record a run's own `Message` (the run is the sender). Both are audit
 class: a pause or a `Never` rule keeps the header and drops the body, and retention is
 `companion.*`, 30 days. Recall indexes a message as one document (`e:<replica>:<seq>`, facet
 `message`) and an episode as up to two: its trusted skeleton (`e:`, facet `episode`) and its
@@ -375,7 +375,7 @@ in the opener, the golden updated in the same commit (review the diff of the gol
 `memory-fake` is the harness: `fake_service(ScriptedConsolidator::default())` builds a
 `MemoryService` over `MemoryKeys`, `MemoryLog`, `MemoryVault`, an `Index<ExactScan>` over
 in-memory SQLite, `FakeEmbedder` and `SteppedClock` (at `NOW`); `Scratch` gives scratch XDG roots;
-`mail_thread_archived`, `file_saved_from_attachment`, `companion_forwarded`, `cua_run_step` and
+`mail_thread_archived`, `file_saved_from_attachment`, `companion_forwarded`, `computer_use_run_step` and
 `policy_ask` are the fixtures; `FakeBackend::vault_of` and `advance_clock` let a test edit files
 behind the service's back and move time. Tests never touch the real session bus, a keyring, the
 network or the real XDG directories: `memoryd/tests/it/support` starts a private `dbus-daemon` on a

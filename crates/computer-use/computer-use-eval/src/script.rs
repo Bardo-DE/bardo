@@ -13,8 +13,12 @@
 use crate::stage::Stage;
 use base_ids::Tokens;
 use computer_use_action::{
-    Button, Chord, ClickCount, Coord, CuaAction, FinishOutcome, Modifier, Notches, Point, Repeat,
-    ScrollBy, ScrollDir, Summary, Target, TypedText, WaitMs, WindowSpace,
+    Button, Chord, ClickCount, ComputerUseAction, Coord, FinishOutcome, Modifier, Notches, Point,
+    Repeat, ScrollBy, ScrollDir, Summary, Target, TypedText, WaitMs, WindowSpace,
+};
+use computer_use_run::{ComputerUseModel, ComputerUseModelError, FrameAttachment, StepSink};
+use inference_core::{
+    ComputerUseBegin, ComputerUseStepReply, ComputerUseStepRequest, ServedBy, TokenUsage,
 };
 use computer_use_run::{CuaModel, CuaModelError, FrameAttachment, StepSink};
 use inference_core::{CuaBegin, CuaStepReply, CuaStepRequest, ServedBy, TurnUsage};
@@ -145,7 +149,7 @@ impl Move {
     /// # Errors
     ///
     /// Returns a [`MoveError`] when the move names something that is not on the screen that shows now.
-    pub fn resolve(&self, stage: &Stage) -> Result<CuaAction<WindowSpace>, MoveError> {
+    pub fn resolve(&self, stage: &Stage) -> Result<ComputerUseAction<WindowSpace>, MoveError> {
         let target = |at: &Where| -> Result<Target<WindowSpace>, MoveError> {
             let [x, y] = match at {
                 Where::Pixel(x, y) => [*x, *y],
@@ -157,33 +161,33 @@ impl Move {
         };
         let bad = |what: &'static str, e: String| MoveError::Argument(what, e);
         Ok(match self {
-            Move::Click(at, button, count) => CuaAction::Click {
+            Move::Click(at, button, count) => ComputerUseAction::Click {
                 at: target(at)?,
                 button: *button,
                 count: *count,
                 mods: BTreeSet::new(),
             },
-            Move::Type(text) => CuaAction::Type {
+            Move::Type(text) => ComputerUseAction::Type {
                 text: TypedText::new(text.replace("\\n", "\n"))
                     .map_err(|e| bad("type", e.to_string()))?,
             },
-            Move::Key(text) => CuaAction::Key {
+            Move::Key(text) => ComputerUseAction::Key {
                 chord: chord_of(text)?,
                 repeat: Repeat::new(1).map_err(|e| bad("key", e.to_string()))?,
             },
-            Move::Scroll(at, dir, n) => CuaAction::Scroll {
+            Move::Scroll(at, dir, n) => ComputerUseAction::Scroll {
                 at: target(at)?,
                 dir: *dir,
                 by: ScrollBy::Notches(Notches(*n)),
             },
-            Move::Wait(ms) => CuaAction::Wait {
+            Move::Wait(ms) => ComputerUseAction::Wait {
                 for_ms: WaitMs::new(*ms).map_err(|e| bad("wait", e.to_string()))?,
             },
-            Move::Ask(question) => CuaAction::Ask {
+            Move::Ask(question) => ComputerUseAction::Ask {
                 question: Summary::new(question).map_err(|e| bad("ask", e.to_string()))?,
                 choices: vec![],
             },
-            Move::Finish(outcome, summary) => CuaAction::Finish {
+            Move::Finish(outcome, summary) => ComputerUseAction::Finish {
                 outcome: *outcome,
                 summary: Summary::new(summary).map_err(|e| bad("finish", e.to_string()))?,
                 extracted: vec![],
@@ -212,13 +216,13 @@ fn chord_of(text: &str) -> Result<Chord, MoveError> {
 
 /// The line that says `action`, with every point as a pixel: how a live run is kept.
 #[must_use]
-pub fn line_of(action: &CuaAction<WindowSpace>) -> String {
+pub fn line_of(action: &ComputerUseAction<WindowSpace>) -> String {
     let at = |t: &Target<WindowSpace>| match t {
         Target::Point(p) => format!("{} {}", p.x.0, p.y.0),
         Target::Node(_) | Target::Centre => "0 0".to_owned(),
     };
     match action {
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at: t,
             button,
             count,
@@ -231,12 +235,12 @@ pub fn line_of(action: &CuaAction<WindowSpace>) -> String {
             };
             format!("{verb} {}", at(t))
         }
-        CuaAction::Type { text } => format!("type {}", text.as_str().replace('\n', "\\n")),
-        CuaAction::Key { chord, .. } => {
+        ComputerUseAction::Type { text } => format!("type {}", text.as_str().replace('\n', "\\n")),
+        ComputerUseAction::Key { chord, .. } => {
             let mods: Vec<String> = chord.mods.iter().map(|m| format!("{m:?}+")).collect();
             format!("key {}{}", mods.concat(), chord.key)
         }
-        CuaAction::Scroll { at: t, dir, by } => {
+        ComputerUseAction::Scroll { at: t, dir, by } => {
             let n = match by {
                 ScrollBy::Notches(n) => n.0,
                 ScrollBy::Distance(d) => u16::try_from(d.coord().0.div_ceil(40)).unwrap_or(1),
@@ -244,9 +248,9 @@ pub fn line_of(action: &CuaAction<WindowSpace>) -> String {
             let way = if *dir == ScrollDir::Up { "up" } else { "down" };
             format!("scroll {} {way} {n}", at(t))
         }
-        CuaAction::Wait { for_ms } => format!("wait {}", for_ms.ms()),
-        CuaAction::Ask { question, .. } => format!("ask {}", question.as_str()),
-        CuaAction::Finish {
+        ComputerUseAction::Wait { for_ms } => format!("wait {}", for_ms.ms()),
+        ComputerUseAction::Ask { question, .. } => format!("ask {}", question.as_str()),
+        ComputerUseAction::Finish {
             outcome, summary, ..
         } => {
             let how = match outcome {
@@ -256,10 +260,10 @@ pub fn line_of(action: &CuaAction<WindowSpace>) -> String {
             };
             format!("finish {how} {}", summary.as_str())
         }
-        CuaAction::MoveTo { .. }
-        | CuaAction::Drag { .. }
-        | CuaAction::Zoom { .. }
-        | CuaAction::Observe => "wait 0".to_owned(),
+        ComputerUseAction::MoveTo { .. }
+        | ComputerUseAction::Drag { .. }
+        | ComputerUseAction::Zoom { .. }
+        | ComputerUseAction::Observe => "wait 0".to_owned(),
     }
 }
 
@@ -299,12 +303,12 @@ impl ScriptModel {
     }
 }
 
-impl CuaModel for ScriptModel {
+impl ComputerUseModel for ScriptModel {
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn begin(&mut self, _begin: CuaBegin) -> Result<(), CuaModelError> {
+    async fn begin(&mut self, _begin: ComputerUseBegin) -> Result<(), ComputerUseModelError> {
         Ok(())
     }
 
@@ -314,16 +318,16 @@ impl CuaModel for ScriptModel {
     )]
     async fn step(
         &mut self,
-        _request: CuaStepRequest,
+        _request: ComputerUseStepRequest,
         _frame: FrameAttachment,
         _sink: &mut impl StepSink,
-    ) -> Result<CuaStepReply, CuaModelError> {
-        let next = self.moves.pop_front().ok_or(CuaModelError::Fatal)?;
+    ) -> Result<ComputerUseStepReply, ComputerUseModelError> {
+        let next = self.moves.pop_front().ok_or(ComputerUseModelError::Fatal)?;
         let action = next.resolve(&self.stage).map_err(|error| {
             tracing::warn!(%error, "a scripted move names something that is not on the screen");
-            CuaModelError::Fatal
+            ComputerUseModelError::Fatal
         })?;
-        Ok(CuaStepReply::new(vec![action]))
+        Ok(ComputerUseStepReply::new(vec![action]))
     }
 
     fn usage(&self) -> TurnUsage {

@@ -382,7 +382,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> Inference<P, O
         computers.relabel(&names);
     }
 
-    /// The caller of `Places`: Settings, the shell, the companion or cuad.
+    /// The caller of `Places`: Settings, the shell, the companion or the computer-use daemon.
     async fn place_lister(&self, header: &Header<'_>) -> fdo::Result<Caller> {
         let caller = self.identified(header).await?;
         if caller.may_list_places() {

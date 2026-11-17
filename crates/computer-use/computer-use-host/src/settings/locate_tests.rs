@@ -41,11 +41,14 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
     let files = Files(vec![
         at(
             "/home",
-            Some("[cua.budget]\nspend_microusd = 900\n".to_owned()),
+            Some("[computer_use.budget]\nspend_microusd = 900\n".to_owned()),
         ),
         at(
             "/etc",
-            Some("[cua.budget]\nspend_microusd = 1900\n[cua]\nenabled = true\n".to_owned()),
+            Some(
+                "[computer_use.budget]\nspend_microusd = 1900\n[computer use]\nenabled = true\n"
+                    .to_owned(),
+            ),
         ),
     ]);
     let locator = locator_for("/home", "/etc");
@@ -68,7 +71,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         at("/blocked", None),
         at(
             "/etc",
-            Some("[cua.budget]\nspend_microusd = 1900\n".to_owned()),
+            Some("[computer_use.budget]\nspend_microusd = 1900\n".to_owned()),
         ),
     ]);
     let loaded = locator_for("/blocked", "/etc").read_with(&files, base(), read);

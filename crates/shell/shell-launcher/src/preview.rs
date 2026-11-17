@@ -44,7 +44,7 @@ pub enum Preview {
     Helper(HelperId),
     /// The card of a helper not made yet.
     NewHelper,
-    /// A computer-use run: its row read live from cuad.
+    /// A computer-use run: its row read live from the computer-use daemon.
     Run(RunId),
     /// A memory row: its sources and what derives from it, read live from memoryd.
     Memory(MemoryItem),

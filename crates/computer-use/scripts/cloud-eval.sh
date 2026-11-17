@@ -8,7 +8,7 @@
 #       [--catalog DIR] [--tier fast|balanced|best] [--cents N] [-- extra computer-use-eval-cloud flags]
 #
 # --accountd  the accounts service's accountd built with `--features test-proc-root,test-keys`.
-# --inferd    the accounts service's inferd built with `--features test-proc-root`, at the accounts rev cua pins.
+# --inferd    the accounts service's inferd built with `--features test-proc-root`, at the accounts rev computer-use pins.
 # --eval      the computer-use-eval-cloud binary.
 # --home      the filled accountd home (the actions service's dev/live/cloud-key.sh): `accountd.keys` (0600) is only
 #             pointed at by accountd's BARDO_ACCOUNTD_KEYS, never read by this script or the eval.

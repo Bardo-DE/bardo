@@ -3,13 +3,13 @@
 use crate::support::*;
 use action_core::*;
 use action_fake::ScriptedConfirmer;
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_router::GrantStore;
 use action_vocab::CallerRole;
 use action_wire::{
     CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionOpen, WireRefusal,
 };
-use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{ComputerUseAction, WindowSpace};
 use computer_use_action::{RunMode, WindowTrust};
 use permission_core::{
     ActionGrantKey, DenyCode, GrantCaller, GrantTarget, Level, Limit, LimitCaller, LimitKey,
@@ -19,8 +19,8 @@ use provenance::{
     AgentRef, ConfirmReceipt, Effect, InputProof, Label, RunId, SpaceScope, UnixSeconds,
 };
 
-fn cuad() -> CallerId {
-    caller("org.bardo.ComputerUse", CallerRole::Cua)
+fn computer_use_daemon() -> CallerId {
+    caller("org.bardo.ComputerUse", CallerRole::ComputerUse)
 }
 
 fn yes() -> ConfirmAnswer {
@@ -36,15 +36,15 @@ fn yes() -> ConfirmAnswer {
     }
 }
 
-fn step(run: &RunId, effect: Effect) -> CuaAsk {
-    CuaAsk {
+fn step(run: &RunId, effect: Effect) -> ComputerUseAsk {
+    ComputerUseAsk {
         run: run.clone(),
         step: 1,
         app: mail_app(),
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space("work"),
-        action: CuaAction::<WindowSpace>::Observe,
+        action: ComputerUseAction::<WindowSpace>::Observe,
         node: None,
         effect,
         basis: EffectBasis::DefaultTable,
@@ -62,7 +62,7 @@ async fn run_session(router: &action_router::Router<action_fake::FakeSeams>, run
         &companion(),
         IntentsRequest::SessionOpen(SessionOpen {
             space: space("work"),
-            agent: AgentRef::Cua { run: run.clone() },
+            agent: AgentRef::ComputerUse { run: run.clone() },
             parent: None,
             cwd: None,
             started_from: None,
@@ -83,7 +83,7 @@ async fn a_pixel_step_that_changes_needs_the_persons_consent_for_the_app_and_the
     run_session(&router, &run).await;
     let looked = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::Read)),
     )
     .await;
@@ -94,7 +94,7 @@ async fn a_pixel_step_that_changes_needs_the_persons_consent_for_the_app_and_the
     );
     let first = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::UndoableWrite)),
     )
     .await;
@@ -108,7 +108,7 @@ async fn a_pixel_step_that_changes_needs_the_persons_consent_for_the_app_and_the
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     let granted = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
@@ -121,14 +121,14 @@ async fn a_pixel_step_that_changes_needs_the_persons_consent_for_the_app_and_the
     assert!(!router.seams.grants.grants().is_empty());
     let second = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::UndoableWrite)),
     )
     .await;
     assert_eq!(second, IntentsReply::Gate(GateAnswer::Run));
     let outbound = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::Outbound)),
     )
     .await;
@@ -146,7 +146,7 @@ async fn a_dismissed_grant_request_records_nothing() {
     let router = router();
     let reply = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
@@ -168,7 +168,7 @@ async fn a_step_of_a_run_nobody_opened_is_refused() {
     let run = RunId::parse("r-9").expect("run");
     let reply = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::Read)),
     )
     .await;
@@ -352,7 +352,7 @@ async fn a_run_that_looked_at_a_screen_reports_with_the_screens_label() {
         &companion(),
         IntentsRequest::SessionOpen(SessionOpen {
             space: space("work"),
-            agent: AgentRef::Cua { run: run.clone() },
+            agent: AgentRef::ComputerUse { run: run.clone() },
             parent: Some(front.task.clone()),
             cwd: None,
             started_from: None,
@@ -388,7 +388,7 @@ async fn a_run_that_looked_at_a_screen_reports_with_the_screens_label() {
     assert!(!screen(&sent(&router)), "nothing was on screen yet");
     ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
@@ -399,7 +399,7 @@ async fn a_run_that_looked_at_a_screen_reports_with_the_screens_label() {
     .await;
     let step = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::Read)),
     )
     .await;
@@ -431,7 +431,7 @@ async fn report(
     };
     ask(
         router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::MessageSend {
             session: session.clone(),
             draft,
@@ -492,7 +492,7 @@ async fn granted_run(router: &action_router::Router<action_fake::FakeSeams>) -> 
     router.seams.grants.record(account_core::consent::Grant {
         id: account_core::GrantId::parse("g-1").expect("grant"),
         key: ActionGrantKey {
-            caller: GrantCaller::Cua,
+            caller: GrantCaller::ComputerUse,
             owner: mail_app(),
             target: GrantTarget::App,
             class: account_core::DataClass::Screen,
@@ -512,7 +512,7 @@ async fn a_limit_of_never_refuses_a_pixel_step_and_one_of_ask_asks() {
     let run = granted_run(&router).await;
     let first = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::Read)),
     )
     .await;
@@ -523,7 +523,7 @@ async fn a_limit_of_never_refuses_a_pixel_step_and_one_of_ask_asks() {
         .add_limit(limit_on_mail(LimitLevel::AlwaysAsk));
     let asked = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::Read)),
     )
     .await;
@@ -540,7 +540,7 @@ async fn a_limit_of_never_refuses_a_pixel_step_and_one_of_ask_asks() {
         .add_limit(limit_on_mail(LimitLevel::Never));
     let refused = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&run, Effect::Read)),
     )
     .await;
@@ -562,7 +562,7 @@ async fn the_start_sheet_covers_the_run_it_names_and_not_another_run_in_the_spac
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     let granted = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
@@ -575,14 +575,14 @@ async fn the_start_sheet_covers_the_run_it_names_and_not_another_run_in_the_spac
     assert_eq!(granted, IntentsReply::Granted(GrantAnswer::Granted));
     let allowed = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&first, Effect::UndoableWrite)),
     )
     .await;
     assert_eq!(allowed, IntentsReply::Gate(GateAnswer::Run));
     let other = ask(
         &router,
-        &cuad(),
+        &computer_use_daemon(),
         IntentsRequest::GateCheck(step(&second, Effect::UndoableWrite)),
     )
     .await;

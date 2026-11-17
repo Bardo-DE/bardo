@@ -1,14 +1,16 @@
 //! What one action dialect does differently from the others, as a trait; [`spec`] is the one
-//! place that maps a [`CuaDialect`] to its implementation.
+//! place that maps a [`ComputerUseDialect`] to its implementation.
 
 use std::borrow::Cow;
 
-use computer_use_action::{ActionProfile, CuaDialect, ModelSpace, ToolDialect, WireDialect};
+use computer_use_action::{
+    ActionProfile, ComputerUseDialect, ModelSpace, ToolDialect, WireDialect,
+};
 use computer_use_parse::{ParseError, ParseLimits, Parsed, ToolContext};
 use model_provider::ToolSpec;
 use model_vision_prep::FrameMap;
 
-use crate::{CuaTaskText, TurnTranscript};
+use crate::{ComputerUseTaskText, TurnTranscript};
 
 mod tool;
 mod ui_tars;
@@ -37,7 +39,7 @@ pub trait ActionDialect: Sync {
         &self,
         _actions: ActionProfile,
         _map: &FrameMap,
-        _task: &CuaTaskText,
+        _task: &ComputerUseTaskText,
     ) -> Option<String> {
         None
     }
@@ -71,13 +73,13 @@ pub trait ActionDialect: Sync {
     ) -> Result<Parsed, ParseError>;
 }
 
-/// The implementation of `dialect`. The only `match` on `CuaDialect` that picks behaviour.
+/// The implementation of `dialect`. The only `match` on `ComputerUseDialect` that picks behaviour.
 #[must_use]
-pub fn spec(dialect: CuaDialect) -> &'static dyn ActionDialect {
+pub fn spec(dialect: ComputerUseDialect) -> &'static dyn ActionDialect {
     match dialect {
-        CuaDialect::Text(text) => ui_tars::of(text),
-        CuaDialect::Tool(ToolDialect::QwenComputerUse) => &tool::Qwen,
-        CuaDialect::Tool(ToolDialect::Holo31) => &tool::Holo,
-        CuaDialect::Wire(wire) => wire::of(wire),
+        ComputerUseDialect::Text(text) => ui_tars::of(text),
+        ComputerUseDialect::Tool(ToolDialect::QwenComputerUse) => &tool::Qwen,
+        ComputerUseDialect::Tool(ToolDialect::Holo31) => &tool::Holo,
+        ComputerUseDialect::Wire(wire) => wire::of(wire),
     }
 }

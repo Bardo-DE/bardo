@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-action"
-description = "The provider-neutral computer-use action vocabulary: typed coordinate spaces, CuaAction, keys, bounded text, dialect names."
+description = "The provider-neutral computer-use action vocabulary: typed coordinate spaces, ComputerUseAction, keys, bounded text, dialect names."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

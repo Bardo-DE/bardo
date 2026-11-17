@@ -1,9 +1,9 @@
-//! What a person sees of a run's state, derived from cuad's phase and outcome, and the controls
+//! What a person sees of a run's state, derived from the computer-use daemon's phase and outcome, and the controls
 //! each state offers. Both are total tables.
 
 use base_words::Word;
 use computer_use_action::RunMode;
-use computer_use_bus::{CuaOutcome, RunStateSlug};
+use computer_use_bus::{ComputerUseOutcome, RunStateSlug};
 use provenance::RunId;
 use shell_launcher::RunControl;
 
@@ -48,11 +48,11 @@ impl RunState {
     }
 }
 
-/// The state a run is in, from cuad's phase and, for a finished run, how it ended. A finished
+/// The state a run is in, from the computer-use daemon's phase and, for a finished run, how it ended. A finished
 /// run whose outcome has not arrived yet reads `Stopped`: it is over, and nothing says it
 /// succeeded.
 #[must_use]
-pub fn run_state_of(slug: RunStateSlug, outcome: Option<CuaOutcome>) -> RunState {
+pub fn run_state_of(slug: RunStateSlug, outcome: Option<ComputerUseOutcome>) -> RunState {
     match slug {
         RunStateSlug::Granting | RunStateSlug::Leasing => RunState::Starting,
         RunStateSlug::Observing
@@ -65,10 +65,12 @@ pub fn run_state_of(slug: RunStateSlug, outcome: Option<CuaOutcome>) -> RunState
         RunStateSlug::Paused => RunState::Paused,
         RunStateSlug::TakenOver => RunState::TakenOver,
         RunStateSlug::Finished => match outcome {
-            Some(CuaOutcome::Done) => RunState::Done,
-            Some(CuaOutcome::Failed(_) | CuaOutcome::Blocked(_)) => RunState::Failed,
-            Some(CuaOutcome::Cancelled(_)) | None => RunState::Stopped,
-            Some(CuaOutcome::BudgetOut(_)) => RunState::BudgetOut,
+            Some(ComputerUseOutcome::Done) => RunState::Done,
+            Some(ComputerUseOutcome::Failed(_) | ComputerUseOutcome::Blocked(_)) => {
+                RunState::Failed
+            }
+            Some(ComputerUseOutcome::Cancelled(_)) | None => RunState::Stopped,
+            Some(ComputerUseOutcome::BudgetOut(_)) => RunState::BudgetOut,
         },
     }
 }
@@ -126,7 +128,7 @@ mod tests {
     #[test]
     fn every_phase_reads_as_one_state() {
         use RunStateSlug as S;
-        let table: &[(S, Option<CuaOutcome>, RunState)] = &[
+        let table: &[(S, Option<ComputerUseOutcome>, RunState)] = &[
             (S::Granting, None, RunState::Starting),
             (S::Leasing, None, RunState::Starting),
             (S::Observing, None, RunState::Running),
@@ -139,30 +141,30 @@ mod tests {
             (S::WaitingForUser, None, RunState::NeedsYou),
             (S::Paused, None, RunState::Paused),
             (S::TakenOver, None, RunState::TakenOver),
-            (S::Finished, Some(CuaOutcome::Done), RunState::Done),
+            (S::Finished, Some(ComputerUseOutcome::Done), RunState::Done),
             (
                 S::Finished,
-                Some(CuaOutcome::Failed(FailReason::WindowGone)),
+                Some(ComputerUseOutcome::Failed(FailReason::WindowGone)),
                 RunState::Failed,
             ),
             (
                 S::Finished,
-                Some(CuaOutcome::Blocked(BlockedOn::ConsentDenied)),
+                Some(ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied)),
                 RunState::Failed,
             ),
             (
                 S::Finished,
-                Some(CuaOutcome::Cancelled(CancelledBy::User)),
+                Some(ComputerUseOutcome::Cancelled(CancelledBy::User)),
                 RunState::Stopped,
             ),
             (
                 S::Finished,
-                Some(CuaOutcome::Cancelled(CancelledBy::KillSwitch)),
+                Some(ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch)),
                 RunState::Stopped,
             ),
             (
                 S::Finished,
-                Some(CuaOutcome::BudgetOut(RunBudgetKind::Spend)),
+                Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Spend)),
                 RunState::BudgetOut,
             ),
             (S::Finished, None, RunState::Stopped),

@@ -7,7 +7,7 @@ use action_core::{
     KillSwitch, MessageDraft, Outcome, Preview, SearchAsk, SuggestAsk, TurnEnd, TurnIn, UndoEntry,
     UndoScope,
 };
-use action_gate_wire::{CuaAsk, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, GateAnswer};
 use action_manifest::ValidManifest;
 use action_vocab::{ActionRef, CallRequest, EntityRef, Handle, TurnId, UndoId, WindowKey};
 use action_wire::{
@@ -400,7 +400,7 @@ impl<T: Transport> Intents<T> {
     ///
     /// Returns [`ClientError`] when the request could not be made or the service's reply was not
     /// the one wanted.
-    pub async fn gate_check(&self, ask: CuaAsk) -> Result<GateAnswer, ClientError> {
+    pub async fn gate_check(&self, ask: ComputerUseAsk) -> Result<GateAnswer, ClientError> {
         self.ask(IntentsRequest::GateCheck(ask), |r| match r {
             IntentsReply::Gate(answer) => Some(answer),
             _ => None,

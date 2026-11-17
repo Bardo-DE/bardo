@@ -1,6 +1,6 @@
 [package]
 name = "computer-use-fake"
-description = "Test support for cua: a fake agent seat, an in-process EIS server, scripted capture, desktop, accessibility tree, model, gate and event sinks, and the harness that drives a run over them."
+description = "Test support for computer use: a fake agent seat, an in-process EIS server, scripted capture, desktop, accessibility tree, model, gate and event sinks, and the harness that drives a run over them."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

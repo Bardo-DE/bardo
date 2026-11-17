@@ -114,7 +114,7 @@ fn the_unit_gives_engines_the_gpu_and_only_this_computers_own_addresses() {
     assert_eq!(key(&unit, "IPAddressDeny"), Some("any"));
     assert_eq!(key(&unit, "IPAddressAllow"), Some("localhost"));
     assert_eq!(key(&unit, "DevicePolicy"), Some("closed"));
-    // Engines' JIT needs writable and executable memory, so the one line cuad's unit has is absent.
+    // Engines' JIT needs writable and executable memory, so the one line the computer-use daemon's unit has is absent.
     assert_eq!(key(&unit, "MemoryDenyWriteExecute"), None);
     assert!(unit.lines().any(|line| line.starts_with("DeviceAllow=")));
     // What inferd writes is created by systemd before the sandbox starts.
@@ -187,8 +187,10 @@ fn the_tailnet_drop_in_opens_the_networks_own_addresses_and_nothing_else() {
 #[test]
 fn the_shipped_table_names_the_callers_the_design_calls_for() {
     let callers = shipped_callers();
-    let cua = callers.resolve("bardo-computer-use.service").expect("cuad");
-    assert_eq!(cua.role, CallerRole::Cua);
+    let computer_use = callers
+        .resolve("bardo-computer-use.service")
+        .expect("computer_use_daemon");
+    assert_eq!(computer_use.role, CallerRole::ComputerUse);
     for exe in [
         "bardo-memoryd",
         "bardo-actiond",

@@ -8,8 +8,8 @@
 use std::collections::BTreeSet;
 
 use computer_use_action::{
-    Button, ClickCount, Coord, CoordSpace, CuaAction, GridMax, Length, ModelSpace, Point, Target,
-    TextError,
+    Button, ClickCount, ComputerUseAction, Coord, CoordSpace, GridMax, Length, ModelSpace, Point,
+    Target, TextError,
 };
 
 use crate::{DropReason, Dropped, InSpace, ParseError, ParseLimits, Parsed, VerbText};
@@ -74,12 +74,12 @@ pub(crate) fn in_space(
 #[derive(Debug)]
 pub(crate) struct Collected<S: CoordSpace> {
     thought: Option<String>,
-    actions: Vec<CuaAction<S>>,
+    actions: Vec<ComputerUseAction<S>>,
     dropped: Vec<Dropped>,
 }
 
 impl<S: CoordSpace> Collected<S> {
-    fn parsed(self, wrap: impl FnOnce(Vec<CuaAction<S>>) -> InSpace) -> Parsed {
+    fn parsed(self, wrap: impl FnOnce(Vec<ComputerUseAction<S>>) -> InSpace) -> Parsed {
         Parsed {
             thought: self.thought,
             actions: wrap(self.actions),
@@ -92,7 +92,7 @@ impl<S: CoordSpace> Collected<S> {
 #[derive(Debug)]
 pub struct Batch<S: CoordSpace> {
     limit: usize,
-    actions: Vec<CuaAction<S>>,
+    actions: Vec<ComputerUseAction<S>>,
     dropped: Vec<Dropped>,
 }
 
@@ -107,12 +107,12 @@ impl<S: CoordSpace> Batch<S> {
     }
 
     /// Keeps a verb's action while there is room; otherwise records why the verb is gone.
-    pub fn push(&mut self, verb: &str, result: Result<CuaAction<S>, DropReason>) {
+    pub fn push(&mut self, verb: &str, result: Result<ComputerUseAction<S>, DropReason>) {
         // A drag that starts where the batch's last move ended is the gesture the two calls make
         // together (a model that drags from the cursor moves there first): the move goes, since
         // a drag moves to its start itself. A runner that performs one input per look would
         // otherwise make the move and never the drag.
-        if let (Ok(CuaAction::Drag { from, .. }), Some(CuaAction::MoveTo { at })) =
+        if let (Ok(ComputerUseAction::Drag { from, .. }), Some(ComputerUseAction::MoveTo { at })) =
             (&result, self.actions.last())
             && at == from
         {
@@ -158,7 +158,7 @@ impl<S: CoordSpace> Batch<S> {
     pub fn into_parsed(
         self,
         thought: Option<String>,
-        wrap: impl FnOnce(Vec<CuaAction<S>>) -> InSpace,
+        wrap: impl FnOnce(Vec<ComputerUseAction<S>>) -> InSpace,
     ) -> Result<Parsed, ParseError> {
         self.finish(thought).map(|collected| collected.parsed(wrap))
     }
@@ -182,8 +182,8 @@ pub(crate) fn click<S: CoordSpace>(
     at: Point<S>,
     button: Button,
     count: ClickCount,
-) -> CuaAction<S> {
-    CuaAction::Click {
+) -> ComputerUseAction<S> {
+    ComputerUseAction::Click {
         at: Target::Point(at),
         button,
         count,

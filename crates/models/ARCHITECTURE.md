@@ -17,12 +17,12 @@ trait), section 6 (copy the recipe).
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
-| `computer-use-action` | the provider-neutral action vocabulary: coordinate spaces (`CoordSpace`, `WindowSpace`, `ImageSpace`, `GridSpace`), `Point`/`Size`/`Rect`/`Length`, `Target`, `CuaAction<S>`, `ActionClass`, keys and chords, bounded text, dialect names (`CuaDialect`, `ModelSpace`), `ActionProfile` and the answer-shape options it carries (`CallFormat`, `AnswerShape`, `HistoryShape`, `ResolutionWording`) | none |
+| `computer-use-action` | the provider-neutral action vocabulary: coordinate spaces (`CoordSpace`, `WindowSpace`, `ImageSpace`, `GridSpace`), `Point`/`Size`/`Rect`/`Length`, `Target`, `ComputerUseAction<S>`, `ActionClass`, keys and chords, bounded text, dialect names (`ComputerUseDialect`, `ModelSpace`), `ActionProfile` and the answer-shape options it carries (`CallFormat`, `AnswerShape`, `HistoryShape`, `ResolutionWording`) | none |
 | `model-vision-prep` | `ResizeRule`, `fit`, `image_tokens`, `FrameMap`, `RawFrame`, `prepare` (feature `pixels`) | none; `pixels` is CPU only |
 | `model-provider` | `TurnRequest`, `Message`, `Part`, `ToolSpec`, `TurnEvent`, `TurnSink`, `Caps`, the `Provider` trait (with `charges() -> Charges`), `ProviderError`; `money` (`Money`, `Charges`, `MoneyError`: only what a provider reports, no price table); the controls (`Sampling`, `ToolParallelism`, `EngineExtras`, `ThoughtSeal`, `Knob`); `embed` (`Embedder`, `EmbedTurn`, `EmbedRole`, `plan_batches`); `shape` (`Shape`, `Extract`, the schema, GBNF and regex conversions); `retry` (`RetryClass`, `next_wait`, `Retrying`); `logprobs` (`ChoiceScores`, `FirstTokenLogprobs`, `Logprob`, the `option_permille` helper); `sequence` (`check`); feature `testing`: `ScriptedProvider` | none |
 | `computer-use-parse` | `parse_text`, `parse_tool_calls`, `parse_tool_calls_with` (`ToolContext`, `CursorAt`), `read_calls` (calls read from the reply text, `ParamKinds`), `answer_parts` (the `<think>` and `<action>` of a reply), `Parsed`, `Dropped`, `ParseLimits` | none |
-| `computer-use-vendors` | the `WireCodec` trait and one codec per `WireDialect` (formerly `cua-wire`): tool declarations, decoders and result encoders for the Anthropic, OpenAI and Gemini computer-use tools | none |
-| `computer-use-session` | `CuaSession`: history window, prompt assembly (`prompts/`), parse with one repair, mapping to window space; `TurnSettings`, `TranscriptSink`; `trait ActionDialect` with default methods (`wire`, `is_text`, `is_tool`, `system`, `schema`, `tools`, `retry`, `parse`), one impl per family and `spec(dialect) -> &'static dyn ActionDialect` (the only `match` on `CuaDialect` that picks behaviour; the dialect stays the serde key) | none |
+| `computer-use-vendors` | the `WireCodec` trait and one codec per `WireDialect` (formerly `computer-use-wire`): tool declarations, decoders and result encoders for the Anthropic, OpenAI and Gemini computer-use tools | none |
+| `computer-use-session` | `ComputerUseSession`: history window, prompt assembly (`prompts/`), parse with one repair, mapping to window space; `TurnSettings`, `TranscriptSink`; `trait ActionDialect` with default methods (`wire`, `is_text`, `is_tool`, `system`, `schema`, `tools`, `retry`, `parse`), one impl per family and `spec(dialect) -> &'static dyn ActionDialect` (the only `match` on `ComputerUseDialect` that picks behaviour; the dialect stays the serde key) | none |
 | `model-replay` | cassette format, `ReplayProvider`, `RecordingProvider` over a `CassetteSink`; `wire`: wire cassettes recorded and replayed at the `Transport` seam (`RecordingTransport`, `ReplayTransport`, `ChunkPlan`); `check_sequence`; `speech`: speech cassettes (audio as digests), `SpeechReplay`, `RecordingSpeech` | an injected sink |
 | `model-catalog` | `ModelEntry` (`family`, `cold_start_estimate_s`, `Capabilities`: `Modality` inputs and outputs with the detail tables `text_out`, `image_in`, `audio_in`, `audio_out`, `vector_out`, `actions_out`), `EngineProfile` (may narrow inputs and outputs; `context_arg: ContextArg` says how the engine takes its window), `TextOut` (`context`/`max_output` are what one engine line serves; `context_max`, `max_output_max`, `context_min` are the model's own limits, all optional), `Locality` (`OnDevice`, or `Remote { reach }` with `Reach { provider, model, wire }` (no prices)), `Slot`, `fits`, `slot_members`, `reachable`, `parse_entry`, `merge_catalogs`; the shipped `catalog/*.toml`. The older view (`roles`, `caps`, `sampling`, `speech`, `embed`) is derived and deprecated: use `Slot` | none |
 | `engine-spec` | what differs between the engines, as `trait Engine` with default methods (`slug`, `disk_word`, `bus_word`, `running_word`, `packages`, `package_paths`, `pointed`, `command`, `seat_flags`, `env`, `caches_prompts`, `hears`, `speaks`, `accepts`, `requires_gpu_estimate`), one unit struct per engine and `engine(kind) -> &'static dyn Engine` (the only `match` on `EngineKind` that picks behaviour; the kind stays the serde key); `ENGINES`, `engine_from_disk_word`; the launch values (`Launch`, `LaunchArgs`, `HostEnv`, `ProgramPath`, `EnginePaths` as a map by kind, `repo_dir`, `snapshot_dir`); `PackageSource` and its types; `check_entry` (what an entry needs of its engines) | none |
@@ -94,7 +94,7 @@ manifests (their direct edges and the same lists), and they alone may reach `ort
 Downstream, the accounts service's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-provider`,
 `computer-use-session`, `model-catalog`, `engine-supervisor`, `model-http`, `model-wire`,
 `model-openai-compat`, `model-extract`, `speech-provider` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); the actions service's `voiced` takes
-`speech-vad`; inference-core takes `computer-use-action` only. cuad, the memory service, the actions service and the shell do not name
+`speech-vad`; inference-core takes `computer-use-action` only. The computer-use daemon, the memory service, the actions service and the shell do not name
 The model layer.
 
 ## 2. Modules
@@ -129,7 +129,7 @@ The model layer.
 | Concept | Home |
 | --- | --- |
 | coordinate spaces and typed points | `computer-use-action::space`, `geometry` |
-| the action enum, its class, its space mapping | `computer-use-action::action` (`CuaAction::class`, `map_points`) |
+| the action enum, its class, its space mapping | `computer-use-action::action` (`ComputerUseAction::class`, `map_points`) |
 | limits on model-supplied text, numbers | `computer-use-action::text`, `keys` (checked at construction and on deserialisation) |
 | dialect names | `computer-use-action::dialect` |
 | how one model's calls differ from its dialect's convention | `computer-use-action::profile` (`ActionProfile`, in the catalogue entry's `actions_out`); read by `computer-use-parse::profile`, shown by `computer-use-session::shown` |
@@ -280,7 +280,7 @@ pub trait Extract: Sized { fn shape() -> Shape; fn read(json: &JsonText) -> Resu
 pub trait WireSink: Send + Sync { fn write(&self, exchange: &WireExchange) -> Result<(), SinkError>; }
 ```
 
-Closed sets stay enums: `CuaAction`, `Target`, `CuaDialect` (`WireDialect`, `TextDialect`,
+Closed sets stay enums: `ComputerUseAction`, `Target`, `ComputerUseDialect` (`WireDialect`, `TextDialect`,
 `ToolDialect`), `ModelSpace`, `ResizeRule`, `Part`, `ToolSpec`, `TurnEvent`, `ProviderError`,
 `EngineState`, `SupervisorIn`, `SupervisorOut`, `HttpTarget`, `AuthHeader`, `Flavor`,
 `WeightFiles`, `Licence`, `EngineKind`, `CatalogKind`, `PcmFormat`, `SttMode`,
@@ -298,7 +298,7 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 | `computer-use-action`: every type, `class`, `map_points`, the text and number limits | built, tested (round trips, pinned JSON, tables, compile-fail) |
 | `model-vision-prep`: types and serde | built, tested (`fit` against the reference `smart_resize`, the map tables and proptest, `prepare` with the `pixels` feature) |
 | `model-provider`: every type, `JsonText`, `ToolName`, `ImageBytes`, `ScriptedProvider` | built, tested |
-| `computer-use-parse`: types and limits | built, tested (UiTars15, QwenComputerUse and a provisional Holo31; `never_panics` proptest; nightly fuzz targets in `crates/cua-parse/fuzz`) |
+| `computer-use-parse`: types and limits | built, tested (UiTars15, QwenComputerUse and a provisional Holo31; `never_panics` proptest; nightly fuzz targets in `crates/computer-use-parse/fuzz`) |
 | `computer-use-vendors`: trait, enum, `StepResult`, the four codecs | built, tested (doc examples, stop-at-first-failure, safety only adds, a total-decoding proptest); no cloud backend calls them yet |
 | `computer-use-session`: types, `begin`, `request`, `absorb`, `absorb_for` (both `&mut self`, in place) | built, tested (history window, one repair, mapping, vendor wire history, wire-cassette runs of Holo, Qwen and UI-TARS); the Holo and Qwen schemas are ours until a recorded step |
 | `model-replay`: cassette format (engine stamp, context sizes, speech caps, interaction id and hash, `Strict` mode), round trip; wire cassette format, `RecordingTransport` and `ReplayTransport` | built, tested (SSE and NDJSON recordings under every chunking); the providers, `RequestPrint::{of, hash}`, `check_sequence`, `Cassette::check_sequences` per their F1 state |
@@ -343,7 +343,7 @@ models are Qwen fine-tunes that rename a verb, drag from the cursor or take a sc
 an argument. State the differences in the entry's `actions_out` as `profile = { aliases = [..],
 drag = .., scroll = .. }` (see `ui-mate-27b.toml`); the parser reads through it and the session
 shows the model its own verbs. A difference the profile cannot say (a verb that holds a key
-down) is a new `VerbAlias` or `CuaAction` variant, which is code.
+down) is a new `VerbAlias` or `ComputerUseAction` variant, which is code.
 
 **Add a model trained on its own answer shape**: no code. A fine-tuned model does best when it is
 shown the shape it was trained on, and its reference harness is the source (read what it puts in the
@@ -464,8 +464,8 @@ run by hand against the user's own engine.
   flavor), never a JSON value merged into a request.
 - **A model's words are untrusted.** Parsers drop what they do not know, and a point outside
   the frame is refused, never clamped.
-- **No hard-coded proposed values.** The six `ai.engine.*` values and `ai.cua.history_frames`,
-  `ai.cua.repair_attempts` are settings read by the daemon; `SupervisorConfig::default()` holds
+- **No hard-coded proposed values.** The six `ai.engine.*` values and `ai.computer_use.history_frames`,
+  `ai.computer_use.repair_attempts` are settings read by the daemon; `SupervisorConfig::default()` holds
   the proposed numbers only as the settings' defaults.
 
 ## 9. Install

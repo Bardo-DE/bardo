@@ -2,7 +2,7 @@
 # (capture of one leased window, the lease protocol), an EIS socket (the agent's input), the
 # accessibility bus, and talks D-Bus to the router, inferd and memoryd. It holds no files and
 # no network. Each sandbox line says what it protects. Computer use is off by default
-# (`cua.enabled`): the unit may be installed and idle.
+# (`computer_use.enabled`): the unit may be installed and idle.
 #
 # How the settings reach the daemon: bardo-computer-use reads `bardo/computer-use/settings.toml` from `$XDG_CONFIG_HOME`
 # (under the person's home), then from each of `$XDG_CONFIG_DIRS` (`/etc/xdg` by default). The
@@ -11,7 +11,7 @@
 # watched; the system-wide `/etc/xdg/bardo/computer-use/settings.toml` (readable: `ProtectSystem=strict` only
 # forbids writes) applies when the person has none. A file that exists and cannot be read is logged at start
 # and on every change ("settings: <path>: could not be read"), not skipped silently. Until a
-# file lists an app, no app is on (`cua.apps` starts empty), so an installed unit with no
+# file lists an app, no app is on (`computer_use.apps` starts empty), so an installed unit with no
 # settings file does nothing.
 #
 # Who may call the daemon: /etc/bardo/computer-use-callers.toml (dist/computer-use-callers.toml) names the units

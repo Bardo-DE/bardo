@@ -187,7 +187,7 @@ fn undo_all_replays_newest_first_and_only_what_is_available() {
     let mut journal = UndoJournal::new();
     let actor = Actor::Companion {
         session: SessionId::parse("s-1").expect("s"),
-        role: AgentRole::Cua {
+        role: AgentRole::ComputerUse {
             run: RunId::parse("r-1").expect("r"),
         },
     };

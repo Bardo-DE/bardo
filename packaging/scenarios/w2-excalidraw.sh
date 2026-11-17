@@ -25,7 +25,7 @@
 # W2_PLANNER_SERVED / W2_SCREEN_SERVED, W2_BROWSER (default $JAIL_REAL_HOME/.local/opt/zen/zen), W2_BROWSER_APP
 # (the window id, default app.zen_browser.zen), W2_DRAW_DIR (the offline build, default
 # $JAIL_REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0), W2_MODEL_CATALOG, W2_PROVIDERS, W2_SHOT_EVERY (seconds,
-# default 120), W2_CUA_STEPS (default 300), W2_CUA_ACTIVE_S (default 1800), W2_AFTER_SAVE_S (how long to keep waiting for
+# default 120), W2_COMPUTER_USE_STEPS (default 300), W2_COMPUTER_USE_ACTIVE_S (default 1800), W2_AFTER_SAVE_S (how long to keep waiting for
 # the turn to end after the drawing is saved, default 300), W2_CLICK_PAGE (1, the default: the person clicks into the
 # lamp page, so the browser is the active app; 0: no click, so the screen helper has to ask the compositor for focus).
 #
@@ -78,7 +78,7 @@ harness/scenario-build.sh --w2
 # 3. the shell with its test features (the stand-in screen-brightness file)
 (cd $SCEN_SIB/shell && CARGO_TARGET_DIR=$SCEN_BUILD/shell-target nice cargo build -p shell-app --features debug)
 # 4. the screen helper with the fixture caller table (a plain build identifies nobody)
-(cd $SCEN_SIB/computer-use && CARGO_TARGET_DIR=$SCEN_BUILD/cua-target nice cargo build -p computer-use-daemon --features fixture-callers)
+(cd $SCEN_SIB/computer-use && CARGO_TARGET_DIR=$SCEN_BUILD/computer-use-target nice cargo build -p computer-use-daemon --features fixture-callers)
 # 5. the assistant's services, the bring-up tool and the terminal command (action-accept: test builds)
 (cd $SCEN_SIB/actions && CARGO_TARGET_DIR=$SCEN_BUILD/actions-target nice cargo build -p action-accept --bins)
 # and, once, the offline drawing app (needs node and npm; changes nothing outside its folder):
@@ -140,7 +140,7 @@ require_models() {
 }
 
 DK="$SCEN_BUILD/actions-target/debug"
-CUAD="$SCEN_BUILD/cua-target/debug/bardo-computer-use"
+COMPUTER_USE_DAEMON="$SCEN_BUILD/computer-use-target/debug/bardo-computer-use"
 BRINGUP="$DK/agent-bringup"
 BARDO_DO="$DK/accept-bardo-do"
 REAL_HOME=${JAIL_REAL_HOME:-$HOME}
@@ -149,8 +149,8 @@ DRAW_DIR=${W2_DRAW_DIR:-$REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0}
 
 require_models
 scenario_need "$SCEN_TOOLS/bin/bardo-compositor" "$SCEN_TOOLS/bin/bardo-compositorctl" "$SCEN_TOOLS/bin/fake-logind" \
-  "$SCEN_BUILD/shell-target/debug/bardo-shell" "$CUAD" "$BRINGUP" "$BARDO_DO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
-scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" compositor-target shell-target cua-target actions-target
+  "$SCEN_BUILD/shell-target/debug/bardo-shell" "$COMPUTER_USE_DAEMON" "$BRINGUP" "$BARDO_DO" "$DK/accept-actiond" "$DK/accept-companiond" "$DK/accept-readerd"
+scenario_fresh "harness/scenario-build.sh --w2 (outside the jail)" compositor-target shell-target computer-use-target actions-target
 [ -x "$BROWSER" ] || die "the browser $BROWSER is not there (set W2_BROWSER to Zen's program)"
 [ -s "$DRAW_DIR/main.js" ] || die "the drawing app is not built at $DRAW_DIR: run $WF/fixtures/w2/build-excalidraw.sh outside the jail"
 for tool in socat curl python3 busctl gdbus; do command -v "$tool" >/dev/null || die "$tool is missing"; done
@@ -254,7 +254,7 @@ prepare_models() {
     --screen-id "$SCREEN_MODEL" --screen-url "http://127.0.0.1:$SCREEN_PORT" >"$AGENTS/config/bardo/inference/inferd.toml" || return 3
   mkdir -p "$CONFIG/bardo/computer-use"
   # The browser is allowed outright: nobody is here to answer, and the jail is the boundary.
-  "${PY1[@]}" bardo-computer-use-settings --app "$BROWSER_APP=ask" --steps "${W2_CUA_STEPS:-300}" --active-s "${W2_CUA_ACTIVE_S:-1800}" \
+  "${PY1[@]}" bardo-computer-use-settings --app "$BROWSER_APP=ask" --steps "${W2_COMPUTER_USE_STEPS:-300}" --active-s "${W2_COMPUTER_USE_ACTIVE_S:-1800}" \
     >"$CONFIG/bardo/computer-use/settings.toml"
 }
 
@@ -355,7 +355,7 @@ step_models() {
 step_stack() {
   local providers=${W2_PROVIDERS:-$SCEN_SIB/accounts/providers} extra=()
   [ ! -d "$providers" ] || extra+=(--providers "$providers")
-  # The screen helper's action, installed where the router reads apps' actions (as cua's installer does under
+  # The screen helper's action, installed where the router reads apps' actions (as computer use's installer does under
   # <prefix>/share/bardo/intents): without it the assistant has no way to use an app on the screen.
   mkdir -p "$AGENTS/data/bardo/intents"
   cp "$SCEN_SIB/computer-use/manifests/org.bardo.ComputerUse.toml" "$AGENTS/data/bardo/intents/" || return 1
@@ -440,7 +440,7 @@ unit = "bardo-shell.service"
 role = "sheet_host"
 EOF
   in_app_env bash -c 'mkdir -p "$1/proc/$$" "$1/proc/units"; printf "0::/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-computer-use.service\n" > "$1/proc/$$/cgroup"; echo $$ > "$1/proc/units/bardo-computer-use.service"; exec env BARDO_COMPUTER_USE_TEST_PROC_ROOT="$1/proc" BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS="$2" "$3"' \
-    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$CUAD" >"$RUN/bardo-computer-use.log" 2>&1 </dev/null &
+    _ "$AGENTS" "$RUN/computer-use-callers.toml" "$COMPUTER_USE_DAEMON" >"$RUN/bardo-computer-use.log" 2>&1 </dev/null &
   local pid=$!
   record bardo-computer-use "$pid"
   sleep 2

@@ -17,8 +17,8 @@
 //! shows what the model writes; the fixtures under `fixtures/` pin what is read today.
 
 use computer_use_action::{
-    Button, Choice, ClickCount, CoordSpace, CuaAction, FinishOutcome, Notches, ScrollBy, ScrollDir,
-    Summary, Target, TypedText, WaitMs,
+    Button, Choice, ClickCount, ComputerUseAction, CoordSpace, FinishOutcome, Notches, ScrollBy,
+    ScrollDir, Summary, Target, TypedText, WaitMs,
 };
 use model_provider::ToolCall;
 use serde_json::{Map, Value};
@@ -73,7 +73,7 @@ impl Tools<'_> {
         context: &ToolContext,
         ctx: Ctx,
         call: &ToolCall,
-    ) -> (String, Verdict<CuaAction<S>>) {
+    ) -> (String, Verdict<ComputerUseAction<S>>) {
         let name = call.name.as_str();
         let Ok(Value::Object(args)) = serde_json::from_str::<Value>(call.input.as_str()) else {
             return (name.to_owned(), Err(DropReason::MissingArgument));
@@ -101,7 +101,7 @@ pub(crate) fn verb_action<S: CoordSpace>(
     ctx: Ctx,
     verb: &str,
     args: &Args,
-) -> Verdict<CuaAction<S>> {
+) -> Verdict<ComputerUseAction<S>> {
     let at = |prefixes: &[&str]| point(ctx, args, prefixes);
     match verbs.canonical(verb) {
         "left_click" => Ok(click(at(&[""])?, Button::Left, ClickCount::One)),
@@ -109,42 +109,42 @@ pub(crate) fn verb_action<S: CoordSpace>(
         "middle_click" => Ok(click(at(&[""])?, Button::Middle, ClickCount::One)),
         "double_click" => Ok(click(at(&[""])?, Button::Left, ClickCount::Two)),
         "triple_click" => Ok(click(at(&[""])?, Button::Left, ClickCount::Three)),
-        "mouse_move" => Ok(CuaAction::MoveTo {
+        "mouse_move" => Ok(ComputerUseAction::MoveTo {
             at: Target::Point(at(&[""])?),
         }),
         // Qwen: `start_coordinate` is the start and `coordinate` the end.
-        "left_click_drag" => Ok(CuaAction::Drag {
+        "left_click_drag" => Ok(ComputerUseAction::Drag {
             from: Target::Point(at(&["start_"])?),
             to: Target::Point(at(&["end_", ""])?),
             button: Button::Left,
         }),
-        "type" => Ok(CuaAction::Type {
+        "type" => Ok(ComputerUseAction::Type {
             text: bounded(TypedText::new(string(args, "text")?))?,
         }),
-        "key" => Ok(CuaAction::Key {
+        "key" => Ok(ComputerUseAction::Key {
             chord: keys(args)?,
             repeat: computer_use_action::Repeat::ONCE,
         }),
         "scroll" => scroll(verbs, ctx, args, Axis::Vertical),
         "hscroll" => scroll(verbs, ctx, args, Axis::Horizontal),
-        "wait" => Ok(CuaAction::Wait {
+        "wait" => Ok(ComputerUseAction::Wait {
             for_ms: seconds(args.get("time").ok_or(DropReason::MissingArgument)?)?,
         }),
-        "terminate" => Ok(CuaAction::Finish {
+        "terminate" => Ok(ComputerUseAction::Finish {
             outcome: outcome(string(args, "status")?)?,
             summary: bounded(Summary::new(final_words(args)))?,
             extracted: Vec::new(),
         }),
-        "answer" => Ok(CuaAction::Finish {
+        "answer" => Ok(ComputerUseAction::Finish {
             outcome: FinishOutcome::Done,
             summary: bounded(Summary::new(string(args, "text")?))?,
             extracted: Vec::new(),
         }),
-        "ask" if verbs.has("ask") => Ok(CuaAction::Ask {
+        "ask" if verbs.has("ask") => Ok(ComputerUseAction::Ask {
             question: bounded(Summary::new(string(args, "question")?))?,
             choices: choices(args)?,
         }),
-        "observe" if verbs.has("observe") => Ok(CuaAction::Observe),
+        "observe" if verbs.has("observe") => Ok(ComputerUseAction::Observe),
         _ => Err(DropReason::UnsupportedVerb),
     }
 }
@@ -257,7 +257,7 @@ pub(crate) fn scroll<S: CoordSpace>(
     ctx: Ctx,
     args: &Args,
     axis: Axis,
-) -> Verdict<CuaAction<S>> {
+) -> Verdict<ComputerUseAction<S>> {
     let at = if names_a_point(args, "") {
         Target::Point(point(ctx, args, &[""])?)
     } else {
@@ -290,13 +290,13 @@ pub(crate) fn scroll<S: CoordSpace>(
                 (Axis::Horizontal, true) => ScrollDir::Right,
                 (Axis::Horizontal, false) => ScrollDir::Left,
             };
-            Ok(CuaAction::Scroll {
+            Ok(ComputerUseAction::Scroll {
                 at,
                 dir,
                 by: ScrollBy::Distance(scroll_length(magnitude)),
             })
         }
-        (None, Some(dir)) if verbs.scroll_by_direction => Ok(CuaAction::Scroll {
+        (None, Some(dir)) if verbs.scroll_by_direction => Ok(ComputerUseAction::Scroll {
             at,
             dir: direction(dir.as_str().ok_or(DropReason::BadArgument)?)?,
             by: ScrollBy::Notches(Notches(SCROLL_NOTCHES)),

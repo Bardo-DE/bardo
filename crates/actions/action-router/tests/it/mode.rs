@@ -5,13 +5,13 @@
 use crate::support::*;
 use action_core::*;
 use action_fake::ScriptedConfirmer;
-use action_gate_wire::{CuaAsk, EffectBasis, GateAnswer};
+use action_gate_wire::{ComputerUseAsk, EffectBasis, GateAnswer};
 use action_vocab::{CallRequest, CallerRole, Origin};
 use action_wire::{
     CallerId, GrantAnswer, GrantAsk, IntentsReply, IntentsRequest, SessionModeAsk, SessionOpen,
     SessionOpened, WireRefusal,
 };
-use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{ComputerUseAction, WindowSpace};
 use computer_use_action::{RunMode, WindowTrust};
 use permission_core::{AskOrRun, Floor, FloorFile, Level, LockedRow, Mode, Strictness};
 use provenance::{
@@ -176,7 +176,7 @@ async fn the_shell_switches_the_mode_and_no_other_role_can() {
     for (name, role) in [
         ("org.bardo.Companion", CallerRole::Companion),
         ("org.bardo.AcpAgent", CallerRole::AcpAgent),
-        ("org.bardo.ComputerUse", CallerRole::Cua),
+        ("org.bardo.ComputerUse", CallerRole::ComputerUse),
         ("org.bardo.Do", CallerRole::Cli),
         ("org.bardo.Actions", CallerRole::Mcp),
         ("org.bardo.Mail", CallerRole::App),
@@ -261,15 +261,15 @@ async fn a_child_takes_its_parents_mode_and_follows_its_changes() {
         .expect("the child follows its parent to Auto");
 }
 
-fn step(run: &RunId, effect: Effect) -> CuaAsk {
-    CuaAsk {
+fn step(run: &RunId, effect: Effect) -> ComputerUseAsk {
+    ComputerUseAsk {
         run: run.clone(),
         step: 1,
         app: mail_app(),
         trust: WindowTrust::Bardo,
         mode: RunMode::InPlace,
         space: space("work"),
-        action: CuaAction::<WindowSpace>::Observe,
+        action: ComputerUseAction::<WindowSpace>::Observe,
         node: None,
         effect,
         basis: EffectBasis::DefaultTable,
@@ -287,7 +287,7 @@ async fn open_run(router: &Router, run: &RunId, parent: Option<provenance::TaskI
         &companion(),
         IntentsRequest::SessionOpen(SessionOpen {
             space: space("work"),
-            agent: AgentRef::Cua { run: run.clone() },
+            agent: AgentRef::ComputerUse { run: run.clone() },
             parent,
             cwd: None,
             started_from: None,
@@ -307,7 +307,7 @@ async fn open_run_for(router: &Router, who: &CallerId, run: &RunId, conversation
         who,
         IntentsRequest::SessionOpen(SessionOpen {
             space: space("work"),
-            agent: AgentRef::Cua { run: run.clone() },
+            agent: AgentRef::ComputerUse { run: run.clone() },
             parent: None,
             cwd: None,
             started_from: None,
@@ -323,7 +323,7 @@ async fn open_run_for(router: &Router, who: &CallerId, run: &RunId, conversation
 async fn gate(router: &Router, run: &RunId, effect: Effect) -> IntentsReply {
     ask(
         router,
-        &caller("org.bardo.ComputerUse", CallerRole::Cua),
+        &caller("org.bardo.ComputerUse", CallerRole::ComputerUse),
         IntentsRequest::GateCheck(step(run, effect)),
     )
     .await
@@ -341,7 +341,7 @@ async fn a_screen_run_takes_the_mode_of_the_conversation_that_started_it() {
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     let granted = ask(
         &router,
-        &caller("org.bardo.ComputerUse", CallerRole::Cua),
+        &caller("org.bardo.ComputerUse", CallerRole::ComputerUse),
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
@@ -432,14 +432,14 @@ async fn a_run_follows_the_conversation_the_screen_daemon_names_and_nobody_else_
     let front = ready_in(&router, Some(Mode::Manual)).await;
     let named = RunId::parse("r-1").expect("run");
     let borrowed = RunId::parse("r-2").expect("run");
-    let cuad = caller("org.bardo.ComputerUse", CallerRole::Cua);
-    open_run_for(&router, &cuad, &named, &front.session).await;
+    let computer_use_daemon = caller("org.bardo.ComputerUse", CallerRole::ComputerUse);
+    open_run_for(&router, &computer_use_daemon, &named, &front.session).await;
     // The companion may open a run's session, but its word on the conversation is ignored.
     open_run_for(&router, &companion(), &borrowed, &front.session).await;
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     let granted = ask(
         &router,
-        &cuad,
+        &computer_use_daemon,
         IntentsRequest::GateGrant(GrantAsk {
             app: mail_app(),
             space: space("work"),
@@ -470,15 +470,15 @@ async fn a_conversation_that_let_a_run_use_an_app_is_not_asked_again_by_its_next
     let mut router = router();
     let front = ready_in(&router, Some(Mode::Auto)).await;
     let other = ready_in(&router, Some(Mode::Auto)).await;
-    let cuad = caller("org.bardo.ComputerUse", CallerRole::Cua);
+    let computer_use_daemon = caller("org.bardo.ComputerUse", CallerRole::ComputerUse);
     let (first, second, elsewhere) = (
         RunId::parse("r-1").expect("run"),
         RunId::parse("r-2").expect("run"),
         RunId::parse("r-3").expect("run"),
     );
-    open_run_for(&router, &cuad, &first, &front.session).await;
-    open_run_for(&router, &cuad, &second, &front.session).await;
-    open_run_for(&router, &cuad, &elsewhere, &other.session).await;
+    open_run_for(&router, &computer_use_daemon, &first, &front.session).await;
+    open_run_for(&router, &computer_use_daemon, &second, &front.session).await;
+    open_run_for(&router, &computer_use_daemon, &elsewhere, &other.session).await;
     // The screen daemon's own setting asks every run; the person's yes still covers the
     // conversation.
     let start = |run: &RunId| {
@@ -491,12 +491,12 @@ async fn a_conversation_that_let_a_run_use_an_app_is_not_asked_again_by_its_next
     };
     router.seams.confirmer = ScriptedConfirmer::answering(vec![yes()]);
     assert_eq!(
-        ask(&router, &cuad, start(&first)).await,
+        ask(&router, &computer_use_daemon, start(&first)).await,
         IntentsReply::Granted(GrantAnswer::Granted)
     );
     router.seams.confirmer = ScriptedConfirmer::answering(vec![]);
     assert_eq!(
-        ask(&router, &cuad, start(&second)).await,
+        ask(&router, &computer_use_daemon, start(&second)).await,
         IntentsReply::Granted(GrantAnswer::Granted),
         "the same conversation's next run is not asked"
     );
@@ -507,7 +507,7 @@ async fn a_conversation_that_let_a_run_use_an_app_is_not_asked_again_by_its_next
     );
     assert!(
         matches!(
-            ask(&router, &cuad, start(&elsewhere)).await,
+            ask(&router, &computer_use_daemon, start(&elsewhere)).await,
             IntentsReply::Granted(GrantAnswer::Refused(_))
         ),
         "another conversation is asked, and nobody answers here"

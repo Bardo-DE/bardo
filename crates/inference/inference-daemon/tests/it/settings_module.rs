@@ -555,7 +555,7 @@ async fn nobody_but_the_settings_role_may_describe_get_or_set() {
     let stranger = rig.bus.connect().await;
     for connection in [
         rig.client(CallerRole::App).await,
-        rig.client(CallerRole::Cua).await,
+        rig.client(CallerRole::ComputerUse).await,
         stranger,
     ] {
         let client = Rig::live(&connection);

@@ -6,7 +6,7 @@ use action_core::EndWhy;
 use provenance::{AgentRef, MessageId};
 use std::collections::BTreeMap;
 
-/// The report a `Cua1.Run.Finished` signal names and why the run ended, when the signal says both
+/// The report a `ComputerUse1.Run.Finished` signal names and why the run ended, when the signal says both
 /// in its enumerated fields (`{"body": {"outcome": .., "report": {"kind": "sent", "v": {"message": ..}}}}`).
 #[must_use]
 pub fn report_end(signal: &str) -> Option<(MessageId, EndWhy)> {
@@ -65,7 +65,7 @@ mod tests {
     #[test]
     fn a_reason_and_its_report_meet_whichever_comes_first() {
         let report = MessageId::parse("m-48").expect("id");
-        let run = AgentRef::Cua {
+        let run = AgentRef::ComputerUse {
             run: provenance::RunId::parse("r-1").expect("run"),
         };
         let mut late = RunEnds::default();

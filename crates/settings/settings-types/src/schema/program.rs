@@ -139,7 +139,7 @@ mod tests {
         const NEVER: &[&str] = &[
             "agent.budget",
             "ai.model",
-            "cua.enabled",
+            "computer_use.enabled",
             "memory.on",
             "companion.mood",
             "session.lock_grace_s",

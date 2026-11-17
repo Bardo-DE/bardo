@@ -1,13 +1,13 @@
-//! cuad's configuration: the computer-use settings the person chooses, plus which backend. Parsed
+//! The computer-use daemon's configuration: the computer-use settings the person chooses, plus which backend. Parsed
 //! once, at the edge. Who may call is not here: it is the process behind a connection, named by
 //! `computer-use-callers.toml`.
 
 use account_capability::Tier;
 use computer_use_desktop::BackendKind;
-use computer_use_run::CuaConfig;
+use computer_use_run::ComputerUseConfig;
 use serde::{Deserialize, Serialize};
 
-/// Which backend cuad uses.
+/// Which backend the computer-use daemon uses.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum BackendChoice {
@@ -18,7 +18,7 @@ pub enum BackendChoice {
     Only(BackendKind),
 }
 
-/// Whether cuad reads the accessibility tree.
+/// Whether the computer-use daemon reads the accessibility tree.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum A11yChoice {
@@ -27,16 +27,16 @@ pub enum A11yChoice {
     Off,
     /// AT-SPI, over the session's accessibility bus. The default: where there is no such bus (a
     /// sandbox), a snapshot says so and the run goes on from pixels. The person's
-    /// `cua.accessibility` setting still turns reading off for every run.
+    /// `computer_use.accessibility` setting still turns reading off for every run.
     #[default]
     Atspi,
 }
 
-/// Everything cuad reads at start.
+/// Everything the computer-use daemon reads at start.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CuadConfig {
+pub struct ComputerUseDaemonConfig {
     /// The settings (`cua.*`).
-    pub settings: CuaConfig,
+    pub settings: ComputerUseConfig,
     /// Which backend.
     pub backend: BackendChoice,
     /// The tier asked of inferd for the computer-use need (`Need::ComputerUse`, class `Screen`).
@@ -46,10 +46,10 @@ pub struct CuadConfig {
     pub a11y: A11yChoice,
 }
 
-impl Default for CuadConfig {
+impl Default for ComputerUseDaemonConfig {
     fn default() -> Self {
         Self {
-            settings: CuaConfig::default(),
+            settings: ComputerUseConfig::default(),
             backend: BackendChoice::Detect,
             tier: Tier::Balanced,
             a11y: A11yChoice::default(),
@@ -62,7 +62,7 @@ impl Default for CuadConfig {
 #[error("computer-use.toml: {0}")]
 pub struct ConfigError(pub String);
 
-impl CuadConfig {
+impl ComputerUseDaemonConfig {
     /// Reads a configuration from TOML text; a missing file is the caller's decision, a
     /// malformed one is an error here.
     ///
@@ -81,6 +81,6 @@ mod tests {
 
     #[test]
     fn a_malformed_configuration_is_an_error() {
-        CuadConfig::from_toml("settings = 3").unwrap_err();
+        ComputerUseDaemonConfig::from_toml("settings = 3").unwrap_err();
     }
 }

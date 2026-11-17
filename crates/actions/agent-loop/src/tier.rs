@@ -12,7 +12,7 @@ pub enum Tier {
     /// A hook the platform offers (D-Bus, a portal, MPRIS).
     Hook,
     /// Pixels: `org.bardo.ComputerUse` through `computeruse.run.start`.
-    Cua,
+    ComputerUse,
 }
 
 /// What reaches an app: for each tier, whether it is there.
@@ -22,8 +22,8 @@ pub struct Availability {
     pub typed: bool,
     /// A hook covers it.
     pub hook: bool,
-    /// Computer use is on for the app (`cua.enabled`, off by default).
-    pub cua: bool,
+    /// Computer use is on for the app (`computer_use.enabled`, off by default).
+    pub computer_use: bool,
 }
 
 /// The first tier that is there, in order; none when nothing reaches the app (the answer is
@@ -33,7 +33,7 @@ pub fn choose_tier(available: &Availability) -> Option<Tier> {
     [
         (Tier::Typed, available.typed),
         (Tier::Hook, available.hook),
-        (Tier::Cua, available.cua),
+        (Tier::ComputerUse, available.computer_use),
     ]
     .into_iter()
     .find_map(|(tier, offered)| offered.then_some(tier))

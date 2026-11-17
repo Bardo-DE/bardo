@@ -1,4 +1,4 @@
-//! From what the desktop client reduced to what cuad's seams speak: pure, no connection.
+//! From what the desktop client reduced to what the computer-use daemon's seams speak: pure, no connection.
 
 use account_core::AppName;
 use base_ids::Px;
@@ -140,7 +140,7 @@ pub(super) fn app_name(app_id: &str) -> AppName {
         .unwrap_or_else(|_| AppName::parse("app.unknown").expect("a valid app name"))
 }
 
-/// How far cua may trust a window, from its app id alone (no sandbox information is read
+/// How far computer use may trust a window, from its app id alone (no sandbox information is read
 /// here): the shell's own windows are never leasable, other Bardo apps are ours, everything
 /// else is native.
 pub(super) fn trust_of(app_id: &str) -> WindowTrust {
@@ -154,7 +154,7 @@ pub(super) fn trust_of(app_id: &str) -> WindowTrust {
     }
 }
 
-/// What `raised` tells cuad: a window that closed (named from `before`, since the state has
+/// What `raised` tells the computer-use daemon: a window that closed (named from `before`, since the state has
 /// forgotten it) and one that moved or resized (named from `now`).
 pub(super) fn events(raised: &[Raised], before: &Idents, now: &Idents) -> Vec<DesktopEvent> {
     raised

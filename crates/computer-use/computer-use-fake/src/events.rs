@@ -1,7 +1,7 @@
 //! The event log and the message path, in memory.
 
 use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
-use computer_use_bus::CuaRecord;
+use computer_use_bus::ComputerUseRecord;
 use computer_use_run::{LinkError, MessageLink, RecordSink};
 use provenance::{MessageId, SessionId, ThreadId};
 use std::collections::VecDeque;
@@ -13,7 +13,7 @@ use std::sync::Mutex;
 pub struct MemoryEvents {
     /// Whether the log refuses every record.
     refusing: Mutex<bool>,
-    records: Mutex<Vec<CuaRecord>>,
+    records: Mutex<Vec<ComputerUseRecord>>,
     sent: Mutex<Vec<(SessionId, MessageDraft)>>,
     inbox: Mutex<VecDeque<InboundLine>>,
 }
@@ -51,7 +51,7 @@ impl MemoryEvents {
     /// # Panics
     ///
     /// Panics if the lock was poisoned by a panic on another thread.
-    pub fn records(&self) -> Vec<CuaRecord> {
+    pub fn records(&self) -> Vec<ComputerUseRecord> {
         self.records.lock().expect("memory events lock").clone()
     }
 
@@ -70,7 +70,7 @@ impl RecordSink for MemoryEvents {
         clippy::unused_async_trait_impl,
         reason = "RecordSink declares `record` async; the fake has nothing to await"
     )]
-    async fn record(&self, record: CuaRecord) -> Result<(), LinkError> {
+    async fn record(&self, record: ComputerUseRecord) -> Result<(), LinkError> {
         if *self.refusing.lock().expect("memory events lock") {
             return Err(LinkError::Unavailable);
         }

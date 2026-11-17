@@ -2,9 +2,9 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/ux.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area "ux": the companion's user-facing surfaces (UI kit components, the shell surfaces)
 
-Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, cua-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in Bardo `ds`/`ui-core`/`ui-settings`, the shell `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and the Settings app.
+Status: plan for the implementation spec. Grounded in COMPANION.md settled items 1-11, computer-use-integration.md §4.3-§5 and §7, agent-ux.md P1-P8, models.md (Intents1 proposal), design/30 (§0 rules, §1.5 vocabulary, VoiceOrb row, §3.4), design/22 §3/§9, design/31 §2.3/§4.5/§5.5/§5.6, and the code in Bardo `ds`/`ui-core`/`ui-settings`, the shell `shell-launcher`/`shell-launcher-ui`/`shell-ipc`/`shell-settings`/`shell-bar`, and the Settings app.
 
-Other area names below ("actions", "context", "agent", "cua", "memory", "models", "security", "compositor") are my best guess at the sibling spec files. Map them to the real names when you merge.
+Other area names below ("actions", "context", "agent", "computer_use", "memory", "models", "security", "compositor") are my best guess at the sibling spec files. Map them to the real names when you merge.
 
 ---
 
@@ -15,7 +15,7 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 - **Launcher companion mode** and its coupling with app actions: headless runs, previews, compact forms, promote into the app window.
 - **Presence.** One `CompanionPresence` vocabulary. `CompanionOrb` built on `VoiceOrb`. A bar item and a control-centre module. The acting-here glow is data that compositor draws.
 - **Answer surfaces.** Native cards: text answer, draft reply, proposed event, plan list with run/edit, inline replace with undo, compact form, refusal. Every card has a footer showing which model served it, the sources and the scope.
-- **CUA run rows**: Watch, Take over, Resume, Hand back, Stop, Replay, Undo all.
+- **Computer-use run rows**: Watch, Take over, Resume, Hand back, Stop, Replay, Undo all.
 - **Compositor-drawn confirmation**: the visuals and the arming behaviour. The request type comes from "actions"/"security".
 - **Memory control UI**: timeline, forget (with cascade preview), keep or discard pending facts, the consolidation diff, export.
 - **Activity / undo strip.**
@@ -23,7 +23,7 @@ Other area names below ("actions", "context", "agent", "cua", "memory", "models"
 - **Settings**: the `companion` domain keys, a new `Page::Intelligence`, the control-centre module, and the page layout.
 
 **Non-goals**
-- The planner, router policy, typed-action registry, Context call, memory store, inferd routing, the CUA loop, and the compositor protocols. Those belong to other areas. UX states only what it consumes from them.
+- The planner, router policy, typed-action registry, Context call, memory store, inferd routing, the computer use loop, and the compositor protocols. Those belong to other areas. UX states only what it consumes from them.
 - Voice ("hold ⌘"). The prop slot is reserved; nothing else.
 - Threads as windows (agent-ux P6), ambient suggestions (P9), ask-the-screen (P10).
 - Restyling the command pill or list search. design/30 §3.4 says "command pill and list search stay as is". Companion mode is purely additive: a field in `Input` mode is byte-for-byte what it is today.
@@ -46,7 +46,7 @@ Dependency direction (unchanged rules): `ui-core < ui-style < ui-motion < ds < u
 | `Page::Intelligence` | Bardo `ui-settings::schema::key::Page` | new variant | then the Settings app `page.rs` row + icon |
 | Launcher verbs: `ProviderKind::{Companion, Runs, Memory}`, `Subject`/`Preview` variants, `Activation::Companion(CompanionAct)` | the shell `shell-launcher` | existing closed enums gain variants | warn-before-lint practice; wire-pin test extended |
 | Companion service model: summon machine, double-tap machine, presence, runs, activity, answers | the shell `shell-model::companion/` | new service dir (`model.rs`, `command.rs`, `step.rs`, `summon.rs`, `tap.rs`, `tests.rs`) | depends on the areas' serde-only wire crates |
-| Companion service effects (D-Bus client to agent/cua/memory daemons; app `Summon` call) | the shell `shell-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
+| Companion service effects (D-Bus client to agent/computer_use/memory daemons; app `Summon` call) | the shell `shell-services::companion/{mod.rs, backend/}` | new | fake backend for tests |
 | `bardo-shell companion summon\|tap\|dismiss\|stop-all` | the shell `shell-ipc::show` (`ShowRequest::Companion`), `shell/src/cli` | new request | |
 | Providers `CompanionProvider`, `RunsProvider`, `MemoryProvider` | the shell `shell-search::providers/{companion,runs,memory}/` | new | rows from the companion service state |
 | Wire to props conversions (`view_of_*`) | the shell `shell-ui-kit::companion/` | new module | the only place wire types meet ds props |
@@ -243,7 +243,7 @@ pub struct ProposedEvent {
 pub enum RefusedView {
     NeedsCloud { class: String },      // accounts RequiresCloud; action "Allow Once…" -> accounts-ui
     NotAllowed { what: String },       // policy Denied / grant missing
-    NoWay { app: String },             // no typed action, CUA off for app
+    NoWay { app: String },             // no typed action, COMPUTER_USE off for app
     OverBudget,
     Failed { why: String },
 }
@@ -472,7 +472,7 @@ pub struct CompanionSettings {
 Keys on `Page::Intelligence` owned by other areas (UX fixes only the section order: Companion, Models, Memory, Computer use, Privacy):
 - "models": `ai.local_only`, `ai.floor.<class>`, tiers via the inferd live module.
 - "memory": `memory.*`, live module.
-- "cua"/"security": `cua.apps` rows, budgets.
+- "computer_use"/"security": `computer_use.apps` rows, budgets.
 
 **D-Bus that UX needs from other areas** (freeze together with them; suggested shapes):
 
@@ -480,7 +480,7 @@ Keys on `Page::Intelligence` owned by other areas (UX fixes only the section ord
 |---|---|---|
 | context (app side, the app's own name) | `Summon(serial t, origin s) -> s` (`SummonAnswer` slug) | §4.1. ds answers via `CompanionPort` |
 | agent | `org.bardo.Companion1`: property `Presence s`; `Ask(prompt s, context s, origin s, parent_window s) -> o` Answer; Answer `.Updated(answer s)` (serde `AnswerWire`), `.Act(action s) -> o`, `.Cancel()`; signal `ActivityAppended(s)`, `ActivityChanged(s)`; `Undo(entry s) -> o`; `PauseSpace(space s)` | launcher, ds port, bar |
-| cua | `org.bardo.ComputerUse1` as in cua-integration §3.4 (`State`, `Step`, `Window`, `StepStarted`, `ThoughtDelta`, `AskUser`, `Finished`, `Pause/Resume/TakeOver/HandBack/Cancel`) plus `Replay(run)` and `UndoAll(run)` | `RunRow` |
+| Computer use | `org.bardo.ComputerUse1` as in computer-use-integration §3.4 (`State`, `Step`, `Window`, `StepStarted`, `ThoughtDelta`, `AskUser`, `Finished`, `Pause/Resume/TakeOver/HandBack/Cancel`) plus `Replay(run)` and `UndoAll(run)` | `RunRow` |
 | memory | `Timeline(space s, before t, limit u) -> s`, `ForgetPreview(item s) -> s`, `Forget(item s) -> o`, `Keep(item s)`, `Discard(item s)`, `Diff(night s) -> s`, `Export(space s, fd h) -> o` | `MemoryTimeline` |
 | models | `Inference1.Usage`, and a `Models(tier s) -> s` list with state; `Choose(session, model)` | `ServedByChip` |
 | actions / security | `ConfirmRequest` type (router-generated text, effect, taint, offer) and the compositor delivery | `ConfirmCard` |
@@ -701,7 +701,7 @@ Fakes and fixtures:
   - `shell-bar/control_center/modules/companion/**` and its bar item;
   - `shell-overlays/{confirm,glow}/**` (phase A);
   - `shell-notify-ui` (NeedsYou notification only).
-- **W6, integration** (after the agent, cua, memory and models areas fill their daemons): replace fakes; end-to-end in a nested compositor with a private bus and scratch HOME.
+- **W6, integration** (after the agent, computer use, memory and models areas fill their daemons): replace fakes; end-to-end in a nested compositor with a private bus and scratch HOME.
 
 ---
 
@@ -711,14 +711,14 @@ Fakes and fixtures:
 - **actions**: Effect, Preview/Outcome/Refusal/ParamDecl (→ `CompactForm`), `Activation::Intent`, Follow::Open (promote), shared undo labels and keys, `ConfirmRequest`.
 - **context**: the app-side `Summon` method, typed Context to chips, the client crate that implements `CompanionPort`.
 - **agent**: `Companion1` (presence, Ask/Answer stream as `AnswerWire`, activity, undo, PauseSpace).
-- **cua**: `Cua1` plus Replay and UndoAll; RunPlace.
+- **Computer use**: `ComputerUse1` plus Replay and UndoAll; RunPlace.
 - **memory**: timeline, forget preview and cascade, pending facts, diff, export.
 - **models**: model list and state, session choice, `ServedBy`.
 - **security**: router-generated confirm text, the taint flag, rules for the "Always" offer, the kill chord.
 - **compositor**: double-tap detection (the `Tap` machine is the reference), the glow protocol, trusted surfaces, agent-seat exclusion.
 
 **Conflicts found, with proposed resolutions**
-1. **Esc on a run.** cua-integration §5 says Esc pauses a run and a second Esc cancels. The launcher rule is that Esc closes one level. Proposal: Esc keeps the launcher's meaning (the run continues, as on the Mac); stopping uses ⌘. or the Stop button, plus the compositor's hardware kill chord.
+1. **Esc on a run.** computer-use-integration §5 says Esc pauses a run and a second Esc cancels. The launcher rule is that Esc closes one level. Proposal: Esc keeps the launcher's meaning (the run continues, as on the Mac); stopping uses ⌘. or the Stop button, plus the compositor's hardware kill chord.
 2. **"In a field the field becomes the prompt"** does not fit multiline and editor fields, where it would replace the body being edited. Proposal: an anchored prompt there (`PromptHost::Anchored`, Writing-Tools style); Secure fields always decline.
 3. **R2 "one infinite loop".** design/30 allows the spinner and the Active orb. The compositor glow pulse while Working or Acting is a third loop, outside bardo. Proposal: allow it only while a run is live, never in Idle or Waiting.
 4. **Only the user changes design/30.** New catalogue rows (CompanionOrb, ContextChips, AnswerCard family, PlanList, RunRow, ActivityStrip, MemoryTimeline, ConfirmCard) and the three orb duration tokens need user approval. Until then they are marked "proposed" in DESIGN.md.

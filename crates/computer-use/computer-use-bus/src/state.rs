@@ -100,10 +100,10 @@ pub enum CancelledBy {
 }
 
 /// How a run ended. The run's report to its requester is a `provenance::Message` whose status is
-/// [`CuaOutcome::status`]; this is the detail the event log and the run row keep.
+/// [`ComputerUseOutcome::status`]; this is the detail the event log and the run row keep.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum CuaOutcome {
+pub enum ComputerUseOutcome {
     /// Finished what was asked.
     Done,
     /// Could not.
@@ -116,17 +116,17 @@ pub enum CuaOutcome {
     BudgetOut(RunBudgetKind),
 }
 
-impl CuaOutcome {
+impl ComputerUseOutcome {
     /// The status of the report a run with this outcome sends: `Done` is done, a cancel is
     /// cancelled, everything else is failed.
     #[must_use]
     pub fn status(&self) -> ReportStatus {
         match self {
-            CuaOutcome::Done => ReportStatus::Done,
-            CuaOutcome::Cancelled(_) => ReportStatus::Cancelled,
-            CuaOutcome::Failed(_) | CuaOutcome::Blocked(_) | CuaOutcome::BudgetOut(_) => {
-                ReportStatus::Failed
-            }
+            ComputerUseOutcome::Done => ReportStatus::Done,
+            ComputerUseOutcome::Cancelled(_) => ReportStatus::Cancelled,
+            ComputerUseOutcome::Failed(_)
+            | ComputerUseOutcome::Blocked(_)
+            | ComputerUseOutcome::BudgetOut(_) => ReportStatus::Failed,
         }
     }
 }
@@ -196,7 +196,7 @@ pub fn modes_wire(support: &[(RunMode, ModeSupport)]) -> BTreeMap<String, String
         .collect()
 }
 
-/// The `Backend` property: the backend's slug, or `none` when cuad has no desktop.
+/// The `Backend` property: the backend's slug, or `none` when the computer-use daemon has no desktop.
 #[must_use]
 pub fn backend_wire(kind: Option<BackendKind>) -> String {
     kind.and_then(|k| crate::slug_of(&k))
@@ -236,33 +236,33 @@ mod tests {
     #[test]
     fn every_outcome_maps_to_one_report_status() {
         let table = [
-            (CuaOutcome::Done, ReportStatus::Done),
+            (ComputerUseOutcome::Done, ReportStatus::Done),
             (
-                CuaOutcome::Failed(FailReason::WindowGone),
+                ComputerUseOutcome::Failed(FailReason::WindowGone),
                 ReportStatus::Failed,
             ),
             (
-                CuaOutcome::Failed(FailReason::Infeasible),
+                ComputerUseOutcome::Failed(FailReason::Infeasible),
                 ReportStatus::Failed,
             ),
             (
-                CuaOutcome::Blocked(BlockedOn::ConsentDenied),
+                ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied),
                 ReportStatus::Failed,
             ),
             (
-                CuaOutcome::Blocked(BlockedOn::ModeUnsupported(RunMode::AgentWorkspace)),
+                ComputerUseOutcome::Blocked(BlockedOn::ModeUnsupported(RunMode::AgentWorkspace)),
                 ReportStatus::Failed,
             ),
             (
-                CuaOutcome::Cancelled(CancelledBy::User),
+                ComputerUseOutcome::Cancelled(CancelledBy::User),
                 ReportStatus::Cancelled,
             ),
             (
-                CuaOutcome::Cancelled(CancelledBy::KillSwitch),
+                ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch),
                 ReportStatus::Cancelled,
             ),
             (
-                CuaOutcome::BudgetOut(RunBudgetKind::Spend),
+                ComputerUseOutcome::BudgetOut(RunBudgetKind::Spend),
                 ReportStatus::Failed,
             ),
         ];
@@ -274,35 +274,38 @@ mod tests {
     #[test]
     fn outcomes_pin_their_json() {
         let table = [
-            (CuaOutcome::Done, r#"{"kind":"done"}"#),
+            (ComputerUseOutcome::Done, r#"{"kind":"done"}"#),
             (
-                CuaOutcome::Failed(FailReason::CheckFailed),
+                ComputerUseOutcome::Failed(FailReason::CheckFailed),
                 r#"{"kind":"failed","v":"check_failed"}"#,
             ),
             (
-                CuaOutcome::Blocked(BlockedOn::ModeUnsupported(RunMode::NestedSession)),
+                ComputerUseOutcome::Blocked(BlockedOn::ModeUnsupported(RunMode::NestedSession)),
                 r#"{"kind":"blocked","v":{"kind":"mode_unsupported","v":"nested_session"}}"#,
             ),
             (
-                CuaOutcome::Blocked(BlockedOn::RouterUnreachable),
+                ComputerUseOutcome::Blocked(BlockedOn::RouterUnreachable),
                 r#"{"kind":"blocked","v":{"kind":"router_unreachable"}}"#,
             ),
             (
-                CuaOutcome::Blocked(BlockedOn::ScreenSuspicious(ScreenKind::Instruction)),
+                ComputerUseOutcome::Blocked(BlockedOn::ScreenSuspicious(ScreenKind::Instruction)),
                 r#"{"kind":"blocked","v":{"kind":"screen_suspicious","v":"instruction"}}"#,
             ),
             (
-                CuaOutcome::Cancelled(CancelledBy::KillSwitch),
+                ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch),
                 r#"{"kind":"cancelled","v":"kill_switch"}"#,
             ),
             (
-                CuaOutcome::BudgetOut(RunBudgetKind::Stall),
+                ComputerUseOutcome::BudgetOut(RunBudgetKind::Stall),
                 r#"{"kind":"budget_out","v":"stall"}"#,
             ),
         ];
         for (outcome, json) in table {
             assert_eq!(serde_json::to_string(&outcome).unwrap(), json);
-            assert_eq!(serde_json::from_str::<CuaOutcome>(json).unwrap(), outcome);
+            assert_eq!(
+                serde_json::from_str::<ComputerUseOutcome>(json).unwrap(),
+                outcome
+            );
         }
     }
 

@@ -258,7 +258,7 @@ mod tests {
             CallerRole::Settings,
             CallerRole::SheetHost,
             CallerRole::AccountDaemon,
-            CallerRole::Cua,
+            CallerRole::ComputerUse,
         ] {
             assert_eq!(admitted(role), everywhere, "{role:?}");
         }

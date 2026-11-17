@@ -1,8 +1,8 @@
 # Fuzz targets for computer-use-parse (QUESTIONS P11). Not a workspace member and nightly only: it is run
-# by hand with `dev/fuzz-cua-parse.sh`, never by CI or the stable gate. Its `[workspace]` table
+# by hand with `dev/fuzz-computer-use-parse.sh`, never by CI or the stable gate. Its `[workspace]` table
 # keeps cargo from reading it as part of the model layer's.
 [package]
-name = "cua-parse-fuzz"
+name = "computer-use-parse-fuzz"
 version = "0.0.0"
 edition = "2024"
 publish = false

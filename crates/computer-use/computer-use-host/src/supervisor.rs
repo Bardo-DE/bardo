@@ -1,24 +1,25 @@
 //! The supervisor: every live run, the lease book, and the control calls on them.
 
-use crate::config::CuadConfig;
+use crate::config::ComputerUseDaemonConfig;
 use crate::drive::{LiveRun, Shared, drive};
 use crate::events::{RunView, SupervisorEvent};
 use crate::guard::guard;
-use crate::settings::{Apps, CuaSettings};
+use crate::settings::{Apps, ComputerUseSettings};
 use computer_use_bus::{
-    BudgetBody, ControlRefusal, CuaCaller, CuaMember, CuaTask, ModeSupport, QuestionId, TaskTarget,
+    BudgetBody, ComputerUseCaller, ComputerUseMember, ComputerUseTask, ControlRefusal, ModeSupport,
+    QuestionId, TaskTarget,
 };
 use computer_use_desktop::Desktop;
 use computer_use_run::{
-    Clock, CuaConfig, CuaModel, GateLink, LeaseBook, ModelReach, ModelSight, NO_SIGHT_NOTE, Parts,
-    Run, RunEnv, RunInput, RunPhase, Seams, mode_support,
+    Clock, ComputerUseConfig, ComputerUseModel, GateLink, LeaseBook, ModelReach, ModelSight,
+    NO_SIGHT_NOTE, Parts, Run, RunEnv, RunInput, RunPhase, Seams, mode_support,
 };
 use provenance::{Integrity, Labelled, ModelRole, RunId, Source};
 use settings_store::Loaded;
 use std::sync::Arc;
 use tokio::sync::{broadcast, mpsc};
 
-/// The id of the `n`th run cuad starts: `r-<n>`.
+/// The id of the `n`th run the computer-use daemon starts: `r-<n>`.
 ///
 /// # Panics
 ///
@@ -30,7 +31,7 @@ pub fn mint_run_id(n: u64) -> RunId {
 
 /// `task` with everything the planner wrote marked as the planner's: its goal and the values it
 /// passes in carry no more trust than the planner has, whatever label they came with.
-fn untrusted_from_planner(mut task: CuaTask) -> CuaTask {
+fn untrusted_from_planner(mut task: ComputerUseTask) -> ComputerUseTask {
     let mark = |label: &mut provenance::Label| {
         label.integrity = Integrity::Untrusted;
         label.sources.insert(Source::Model(ModelRole::Planner));
@@ -75,11 +76,11 @@ impl<S: Seams> Drop for Supervisor<S> {
 
 /// Whether a control call makes sense in a phase: the shell's buttons only show what applies,
 /// but a call can arrive late.
-fn applies(member: CuaMember, phase: &RunPhase) -> bool {
+fn applies(member: ComputerUseMember, phase: &RunPhase) -> bool {
     let live = !phase.is_finished();
     match member {
-        CuaMember::Cancel => live,
-        CuaMember::Pause => matches!(
+        ComputerUseMember::Cancel => live,
+        ComputerUseMember::Pause => matches!(
             phase,
             RunPhase::Observing(_)
                 | RunPhase::Thinking(_)
@@ -90,27 +91,27 @@ fn applies(member: CuaMember, phase: &RunPhase) -> bool {
                 | RunPhase::Verifying(_)
                 | RunPhase::WaitingForUser(..)
         ),
-        CuaMember::Resume => matches!(phase, RunPhase::Paused(_)),
-        CuaMember::TakeOver => {
+        ComputerUseMember::Resume => matches!(phase, RunPhase::Paused(_)),
+        ComputerUseMember::TakeOver => {
             live && !matches!(
                 phase,
                 RunPhase::Granting | RunPhase::Leasing | RunPhase::TakenOver(..)
             )
         }
-        CuaMember::HandBack => matches!(phase, RunPhase::TakenOver(..)),
+        ComputerUseMember::HandBack => matches!(phase, RunPhase::TakenOver(..)),
         // Not run controls, and any member this build does not know: nothing applies.
         _ => false,
     }
 }
 
 /// The input a control member is.
-fn input_of(member: CuaMember) -> Option<RunInput> {
+fn input_of(member: ComputerUseMember) -> Option<RunInput> {
     match member {
-        CuaMember::Cancel => Some(RunInput::UserCancel),
-        CuaMember::Pause => Some(RunInput::UserPause),
-        CuaMember::Resume => Some(RunInput::UserResume),
-        CuaMember::TakeOver => Some(RunInput::UserTakeOver),
-        CuaMember::HandBack => Some(RunInput::UserHandBack),
+        ComputerUseMember::Cancel => Some(RunInput::UserCancel),
+        ComputerUseMember::Pause => Some(RunInput::UserPause),
+        ComputerUseMember::Resume => Some(RunInput::UserResume),
+        ComputerUseMember::TakeOver => Some(RunInput::UserTakeOver),
+        ComputerUseMember::HandBack => Some(RunInput::UserHandBack),
         // Not run controls, and any member this build does not know: no input.
         _ => None,
     }
@@ -118,26 +119,30 @@ fn input_of(member: CuaMember) -> Option<RunInput> {
 
 impl<S: Seams> Supervisor<S> {
     /// A supervisor over `parts` under `config`.
-    pub fn new(parts: Parts<S>, config: CuadConfig) -> Self {
+    pub fn new(parts: Parts<S>, config: ComputerUseDaemonConfig) -> Self {
         Self::with_hints(parts, config, Vec::new())
     }
 
     /// A supervisor whose runs tell their model `hints` about the desktop when the session opens
     /// (the shortcut line, `computer_use_run::shortcut_hint`, for one). The caller builds them once at
     /// start; nothing here reads an environment.
-    pub fn with_hints(parts: Parts<S>, config: CuadConfig, hints: Vec<String>) -> Self {
+    pub fn with_hints(
+        parts: Parts<S>,
+        config: ComputerUseDaemonConfig,
+        hints: Vec<String>,
+    ) -> Self {
         Self {
             shared: Arc::new(Shared::of(parts, config, hints)),
         }
     }
 
-    /// The configuration cuad started with.
+    /// The configuration the computer-use daemon started with.
     #[must_use]
-    pub fn config(&self) -> &CuadConfig {
+    pub fn config(&self) -> &ComputerUseDaemonConfig {
         &self.shared.config
     }
 
-    fn live(&self) -> CuaSettings {
+    fn live(&self) -> ComputerUseSettings {
         match self.shared.settings.read() {
             Ok(live) => live.clone(),
             Err(poisoned) => poisoned.into_inner().clone(),
@@ -148,7 +153,7 @@ impl<S: Seams> Supervisor<S> {
     /// Every new run and every guard reads them afresh, so a change applies to the next one (a
     /// run already going keeps the values it started with).
     #[must_use]
-    pub fn settings(&self) -> CuaConfig {
+    pub fn settings(&self) -> ComputerUseConfig {
         self.live().config
     }
 
@@ -159,7 +164,7 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// Puts the person's settings in force for every call after this one.
-    pub fn apply_settings(&self, settings: &CuaSettings) {
+    pub fn apply_settings(&self, settings: &ComputerUseSettings) {
         match self.shared.settings.write() {
             Ok(mut live) => *live = settings.clone(),
             Err(poisoned) => *poisoned.into_inner() = settings.clone(),
@@ -167,8 +172,8 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// Reports what the settings file's read fell back on and applies its values.
-    pub fn adopt(&self, loaded: &Loaded<CuaSettings>) {
-        for line in loaded.lines("cuad") {
+    pub fn adopt(&self, loaded: &Loaded<ComputerUseSettings>) {
+        for line in loaded.lines("computer_use_daemon") {
             eprintln!("{line}");
         }
         self.apply_settings(&loaded.value);
@@ -287,11 +292,11 @@ impl<S: Seams> Supervisor<S> {
     /// the app or the window, the mode is not supported, or the window already has a run.
     pub async fn start(
         &self,
-        caller: CuaCaller,
-        mut task: CuaTask,
+        caller: ComputerUseCaller,
+        mut task: ComputerUseTask,
     ) -> Result<RunId, ControlRefusal> {
-        guard(caller, CuaMember::Start, self.settings().enabled)?;
-        // Computer use is on per app (`cua.apps`): an app the person has not listed is not on.
+        guard(caller, ComputerUseMember::Start, self.settings().enabled)?;
+        // Computer use is on per app (`computer_use.apps`): an app the person has not listed is not on.
         let Some(allow) = self.apps().rule_for(&task.app) else {
             return Err(ControlRefusal::Disabled);
         };
@@ -306,7 +311,7 @@ impl<S: Seams> Supervisor<S> {
         }
         if let TaskTarget::Window(ident) = &task.target {
             let known = self.shared.desktop.windows().await.map_err(|e| {
-                eprintln!("cuad: the desktop's windows could not be listed: {e}");
+                eprintln!("computer_use_daemon: the desktop's windows could not be listed: {e}");
                 ControlRefusal::WindowUnknown
             })?;
             let window = known
@@ -322,7 +327,7 @@ impl<S: Seams> Supervisor<S> {
         // The caller's body is a request, not a grant: limits stay within the person's own,
         // and a planner's words never count as the person's.
         task.budget = task.budget.capped_by(self.settings().budget);
-        if caller == CuaCaller::Companion {
+        if caller == ComputerUseCaller::Companion {
             task = untrusted_from_planner(task);
         }
         let env = RunEnv::new(&self.settings(), caps, self.shared.rules.clone())
@@ -333,7 +338,7 @@ impl<S: Seams> Supervisor<S> {
             let id = mint_run_id(state.next + 1);
             if let TaskTarget::Window(ident) = &task.target {
                 state.leases = state.leases.claim(ident, &id).map_err(|held| {
-                    eprintln!("cuad: a window was asked for twice: {held}");
+                    eprintln!("computer_use_daemon: a window was asked for twice: {held}");
                     ControlRefusal::LeaseHeld
                 })?;
             }
@@ -395,7 +400,7 @@ impl<S: Seams> Supervisor<S> {
         let state = self.shared.state();
         let live = state.live.get(run).ok_or(ControlRefusal::WrongState)?;
         live.control.send(input).map_err(|e| {
-            eprintln!("cuad: a run takes no more control: {e}");
+            eprintln!("computer_use_daemon: a run takes no more control: {e}");
             ControlRefusal::WrongState
         })
     }
@@ -408,9 +413,9 @@ impl<S: Seams> Supervisor<S> {
     /// the call does not apply to the run's phase.
     pub fn control(
         &self,
-        caller: CuaCaller,
+        caller: ComputerUseCaller,
         run: &RunId,
-        member: CuaMember,
+        member: ComputerUseMember,
     ) -> Result<(), ControlRefusal> {
         guard(caller, member, self.settings().enabled)?;
         let view = self.view(run).ok_or(ControlRefusal::WrongState)?;
@@ -429,12 +434,12 @@ impl<S: Seams> Supervisor<S> {
     /// not waiting on `question`.
     pub fn answer(
         &self,
-        caller: CuaCaller,
+        caller: ComputerUseCaller,
         run: &RunId,
         question: QuestionId,
         answer: Labelled<String>,
     ) -> Result<(), ControlRefusal> {
-        guard(caller, CuaMember::Answer, self.settings().enabled)?;
+        guard(caller, ComputerUseMember::Answer, self.settings().enabled)?;
         let view = self.view(run).ok_or(ControlRefusal::WrongState)?;
         match view.phase {
             RunPhase::WaitingForUser(_, asked) if asked == question => {
@@ -449,8 +454,8 @@ impl<S: Seams> Supervisor<S> {
     /// # Errors
     ///
     /// Returns a [`ControlRefusal`] when the caller may not stop runs.
-    pub fn stop_all(&self, caller: CuaCaller) -> Result<(), ControlRefusal> {
-        guard(caller, CuaMember::StopAll, self.settings().enabled)?;
+    pub fn stop_all(&self, caller: ComputerUseCaller) -> Result<(), ControlRefusal> {
+        guard(caller, ComputerUseMember::StopAll, self.settings().enabled)?;
         let state = self.shared.state();
         for live in state.live.values() {
             let _ = live.control.send(RunInput::Desktop(

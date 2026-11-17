@@ -20,8 +20,8 @@ pub enum CallerRole {
     Companion,
     /// readerd: the only caller that may resolve a handle.
     Reader,
-    /// cuad.
-    Cua,
+    /// The computer-use daemon.
+    ComputerUse,
     /// bardo-actions-mcp.
     Mcp,
     /// Any process running `bardo-do`: connection-derived, like every role.
@@ -49,7 +49,7 @@ impl CallerRole {
         CallerRole::Editor,
         CallerRole::Companion,
         CallerRole::Reader,
-        CallerRole::Cua,
+        CallerRole::ComputerUse,
         CallerRole::Mcp,
         CallerRole::Cli,
         CallerRole::Confirm,

@@ -1,7 +1,7 @@
 //! The names of our own span attributes, in the `bardo.*` namespace.
 //!
 //! Pure constants and slug functions: no `tracing` dependency here. Spans are created only in the
-//! daemons (inferd, companiond, readerd, cuad, memoryd, intentd), each in one `telemetry.rs`
+//! daemons (inferd, companiond, readerd, the computer-use daemon, memoryd, intentd), each in one `telemetry.rs`
 //! whose `macro_rules!` span constructors spell these names as literals; a unit test there asserts
 //! the macro's declared field set equals [`attr::ALL`] (and `model-genai-names` for the `gen_ai.*`
 //! half). The OpenTelemetry `GenAI` names live in the model layer's `model-genai-names`, the lowest repo.
@@ -48,8 +48,8 @@ pub mod attr {
         /// The pipeline stage.
         STAGE = "bardo.pipeline.stage",
         /// The computer-use step number.
-        CUA_STEP = "bardo.cua.step",
+        COMPUTER_USE_STEP = "bardo.computer_use.step",
         /// The computer-use mode.
-        CUA_MODE = "bardo.cua.mode",
+        COMPUTER_USE_MODE = "bardo.computer_use.mode",
     }
 }

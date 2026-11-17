@@ -13,7 +13,7 @@ pub const PORTAL: RoleName = RoleName::from_static("portal");
 pub const PORTAL_FRONTEND: RoleName = RoleName::from_static("portal_frontend");
 /// The compositor (`compositor`).
 pub const COMPOSITOR: RoleName = RoleName::from_static("compositor");
-/// The agent tier (`cuad`): the process that drives other programs for an assistant.
+/// The agent tier (`computer_use_daemon`): the process that drives other programs for an assistant.
 pub const AGENT_TIER: RoleName = RoleName::from_static("agent_tier");
 /// The Settings app.
 pub const SETTINGS: RoleName = RoleName::from_static("settings");

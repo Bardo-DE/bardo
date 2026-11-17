@@ -3,13 +3,13 @@
 
 use account_capability::Locality;
 use account_capability::ModelId;
-use account_capability::{CuaEnv, LanguageTag};
+use account_capability::{ComputerUseEnv, LanguageTag};
 use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use base_ids::Permille;
 use computer_use_action::{
-    Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target, WindowSpace,
+    ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size, Target, WindowSpace,
 };
 use inference_core::*;
 use serde::Serialize;
@@ -38,8 +38,8 @@ fn window_point(x: u32, y: u32) -> Point<WindowSpace> {
     Point::new(Coord(x), Coord(y))
 }
 
-fn step_request() -> CuaStepRequest {
-    CuaStepRequest::new(
+fn step_request() -> ComputerUseStepRequest {
+    ComputerUseStepRequest::new(
         StepIndex(3),
         WindowGeometry {
             logical: Size::new(Coord(1280), Coord(800)),
@@ -203,7 +203,7 @@ fn debug_never_shows_what_the_person_said_or_saw() {
     let shown = [
         format!(
             "{:?}",
-            CuaBegin::new("pay the plumber".into(), CuaEnv::Desktop)
+            ComputerUseBegin::new("pay the plumber".into(), ComputerUseEnv::Desktop)
         ),
         format!("{:?}", TreeText("password: hunter2".into())),
         format!(
@@ -300,16 +300,16 @@ fn every_data_class_has_a_floor_decision() {
 fn a_scroll_with_no_coordinate_and_a_bad_argument_cross_the_wire() {
     // Ask 67: the model named nowhere, so the executor resolves the centre of the frame; and a
     // dropped action may say its argument was unusable. Both mirror the model layer's computer-use-parse.
-    let scroll = CuaAction::Scroll {
+    let scroll = ComputerUseAction::Scroll {
         at: Target::Centre,
         dir: computer_use_action::ScrollDir::Down,
         by: computer_use_action::ScrollBy::Notches(computer_use_action::Notches(3)),
     };
-    let reply = CuaStepReply::new(vec![scroll]).with_dropped(vec![DroppedAction {
+    let reply = ComputerUseStepReply::new(vec![scroll]).with_dropped(vec![DroppedAction {
         verb: "key".into(),
         reason: DropReason::BadArgument,
     }]);
-    let json = round_trip(&InferReply::CuaStep(reply));
+    let json = round_trip(&InferReply::ComputerUseStep(reply));
     assert!(json.contains(r#""kind":"centre""#), "{json}");
     assert!(json.contains(r#""reason":"bad_argument""#), "{json}");
 }
@@ -370,7 +370,7 @@ fn a_frame_names_how_many_descriptors_ride_with_it() {
         ("inside a tool result", chat(vec![nested]), 3),
         (
             "a computer-use frame",
-            ClientFrame::Request(InferRequest::CuaStep(step_request())),
+            ClientFrame::Request(InferRequest::ComputerUseStep(step_request())),
             1,
         ),
         ("cancel", ClientFrame::Cancel, 0),

@@ -28,8 +28,8 @@
 mod asker;
 mod audit;
 mod choice;
+mod computer_use;
 mod control;
-mod cua;
 mod error;
 mod event;
 mod hardware;
@@ -60,14 +60,14 @@ pub use choice::{
     AGENT_ACCOUNT, AutoRow, Fit, LicenceClass, ModelRef, PickerInput, PickerRow, PoolRow, TierMap,
     TierRow, picker_rows, tier_choice, tier_label,
 };
+pub use computer_use::{
+    ComputerUseBegin, ComputerUseStepFailure, ComputerUseStepReply, ComputerUseStepRequest,
+    DropReason, DroppedAction, FrameImage, FrameLayout, MaskedRegions, MediaType, NoteFrom,
+    PrevResult, SafetyHint, StepIndex, StepNote, TreeText, WindowGeometry,
+};
 pub use control::{
     ChatControl, Effort, Knob, Milli, Reasoning, Sampling, Seed, StopReason, ThoughtSeal,
     ToolChoice, ToolParallelism,
-};
-pub use cua::{
-    CuaBegin, CuaStepFailure, CuaStepReply, CuaStepRequest, DropReason, DroppedAction, FrameImage,
-    FrameLayout, MaskedRegions, MediaType, NoteFrom, PrevResult, SafetyHint, StepIndex, StepNote,
-    TreeText, WindowGeometry,
 };
 pub use error::{InferRefusal, ModelError};
 pub use event::{ClientFrame, InferEvent, ModelLabel, QueueFact, StageNote};

@@ -45,7 +45,7 @@
   see them, which is right because the compositor takes them first.
 
 - **Plain types (2026-10-28).** The type rule changed. `Platform`, `Desktop` and the
-  slug strings stay as they are: cua depends on them. The nine `Ctrl+1`..`Ctrl+9` reserved rows on
+  slug strings stay as they are: computer use depends on them. The nine `Ctrl+1`..`Ctrl+9` reserved rows on
   our desktop are one `CtrlDigit` rule, so the reason reads "switches to a Space" without the number.
   `AltGr` waits for wave 2 (Bardo uses it).
 - **keyboard-types (2026-11-15).** The chord keymap's own `Modifier`, `Modifiers`, `NamedKey` and `AltGr` are

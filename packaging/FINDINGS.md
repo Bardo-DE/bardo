@@ -181,32 +181,32 @@ tables at `$sysconfdir/accounts`):
   and `/usr/lib/systemd/user`, and the caller tables go to `/etc/accounts` as system files. `release/build.sh` is unchanged
   apart from the model step.
 
-## desk-cua: the helper for apps that are not ours (B6, 2026-10-16)
+## desk-computer-use: the helper for apps that are not ours (B6, 2026-10-16)
 
-- `install.sh` has a `cua` step right after the actions service (`scripts/install.sh --prefix P [--destdir D]`, cua f6fe8bc, the
-  manifest rev). It builds the daemon `cuad` from source (release, locked) unless the programs are given, and writes
-  `<prefix>/libexec/bardo/cuad`, `<prefix>/lib/systemd/user/cuad.service` with its `.service.d/sandbox.conf`, the two
+- `install.sh` has a `computer_use` step right after the actions service (`scripts/install.sh --prefix P [--destdir D]`, computer use f6fe8bc, the
+  manifest rev). It builds the daemon `computer_use_daemon` from source (release, locked) unless the programs are given, and writes
+  `<prefix>/libexec/bardo/computer_use_daemon`, `<prefix>/lib/systemd/user/computer_use_daemon.service` with its `.service.d/sandbox.conf`, the two
   D-Bus activation files and the interface XML under `<prefix>/share/dbus-1`, the Settings schema under
-  `<prefix>/share/bardo/settings`, and `/etc/bardo/cuad-callers.toml`. Read in full: nothing else is written, and
+  `<prefix>/share/bardo/settings`, and `/etc/bardo/computer-use-callers.toml`. Read in full: nothing else is written, and
   `CONF_DIR` (`/etc/xdg/bardo`) is computed but never used.
-- No `--sysconfdir` is passed, as for the memory service and the actions service: cuad reads `/etc/bardo/cuad-callers.toml` and the person's file
-  only (`crates/cuad/src/callers.rs`), so a table placed elsewhere would be ignored. Outside a `--destdir` the step is left
+- No `--sysconfdir` is passed, as for the memory service and the actions service: the computer-use daemon reads `/etc/bardo/computer-use-callers.toml` and the person's file
+  only (`crates/computer_use_daemon/src/callers.rs`), so a table placed elsewhere would be ignored. Outside a `--destdir` the step is left
   to the person, as themselves (the installer refuses root and escalates per step). `gate/installer-check.sh` checks the
   stub, the order, the arguments, the no-`--sysconfdir` rule and the left-to-you case.
 - Build prerequisites: its installer wants cargo, a C compiler, pkg-config and git, and the dependencies build sqlite with a
   vendored openssl (perl and make). All are already in `install/packages.sh` (build group) and `release/deps.sh`; no new
-  package is needed. Run-time: at-spi2-core (already the `at-spi` row, a recommended need); the cua installer prints a
+  package is needed. Run-time: at-spi2-core (already the `at-spi` row, a recommended need); the computer use installer prints a
   note when the accessibility service is missing. No runtime library beyond the ones the other programs already load,
   so `release/deps.sh` is unchanged (the CI check of linked libraries will say if that is wrong).
-- Release: `release/build.sh` has `build_cua` (`cargo build -p computer-use-daemon`, then the installer with `--bin-dir`, `--prefix
+- Release: `release/build.sh` has `build_computer_use` (`cargo build -p computer-use-daemon`, then the installer with `--bin-dir`, `--prefix
   /opt/bardo/current`, `--destdir <stage>`, `--sysconfdir /opt/bardo/current/system/etc`). Everything it stages is in an
   exported folder (`libexec/bardo` and `share/dbus-1/interfaces` stay in the bundle without links, as the actions service's do) or is
-  the one system file `system/etc/bardo/cuad-callers.toml`, in `/etc/bardo`, an allowed system folder; no new folder is
-  needed. The CI `agents` job builds `memory,actions,models,cua`. cua's own build config needs no
+  the one system file `system/etc/bardo/computer-use-callers.toml`, in `/etc/bardo`, an allowed system folder; no new folder is
+  needed. The CI `agents` job builds `memory,actions,models,computer_use`. Computer use's own build config needs no
   `net.git-fetch-with-cli` entry in `install/cargo.sh` (its config file has none, like the actions service's).
-- Not run: the CI job and `build_cua` (no build here). `gate/installer-check.sh` and a dry run passed.
+- Not run: the CI job and `build_computer_use` (no build here). `gate/installer-check.sh` and a dry run passed.
 
-## desk-cua: xwayland-satellite on every distribution (D5, 2026-10-16)
+## desk-computer-use: xwayland-satellite on every distribution (D5, 2026-10-16)
 
 - Facts, read on GitHub today: licence MPL-2.0 (`LICENSE`; Cargo.toml `license = "MPL-2.0"`), which is fine for a
   separate program; latest release v0.8.3 (2026-09-24, not a prerelease), with a committed `Cargo.lock` (so `--locked`
@@ -298,7 +298,7 @@ check first is listed under "Not verified" at the end of this section.
 - `manifest.toml` moves the updater from aa427f2 to 769704c, the tip with the exact list, the three helpers and the session
   calls. The release cannot be installed by the older helper once it carries a path the older list does not name; the
   hand-installed helper must be replaced on each computer (the updater's `scripts/install.sh`).
-- Every file `build.sh` stages is on the list. The accounts service, the memory service, the actions service and cua stage their caller tables through their own
+- Every file `build.sh` stages is on the list. The accounts service, the memory service, the actions service and computer use stage their caller tables through their own
   installers, so a name they write that the list does not cover is only found when `pack` runs in CI.
 - Superseded wording above: "allowed system folders" (this file and the README) now means the list; the stale line in
   "Whether the release should write `/etc/pam.d` at all" is answered: one file, `/etc/pam.d/shell`, named.
@@ -640,7 +640,7 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   `/usr/lib/systemd/user`; the unit manager's judge (`caller-identity-dbus` `fragment`, `trust_of_path` over `symlink_metadata`) reads a link
   (mode 0777) as `Writable`, so the unit never proves `Full` (the unverified note of NEW-PI-1 is now settled the other way for a link:
   it reads writable). `release/build.sh` `plain_units` stages every unit that a `unit =` row of `dist/desktop-callers.toml` names
-  (the shell, the compositor, the portal, Settings, accountd, syncd, inferd, memoryd, intentd, companiond, cuad) as a system file at
+  (the shell, the compositor, the portal, Settings, accountd, syncd, inferd, memoryd, intentd, companiond, the computer-use daemon) as a system file at
   `/usr/lib/systemd/user/X.service`, with its `sandbox.conf` drop-ins appended to its text (the same to systemd, and a drop-in that is
   a link would also read as writable), and the portal frontend's drop-in at `.../xdg-desktop-portal.service.d/10-bardo.conf`; it
   stops if a named unit is still staged where it would be exported. The paths are in `release/stage-owners.list` by exact name.

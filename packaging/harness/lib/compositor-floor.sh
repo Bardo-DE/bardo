@@ -104,7 +104,7 @@ floor_image() {
     bardo-inferd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/inference-target/debug/bardo-inferd" ;;
     xdg-desktop-portal) path=/usr/libexec/xdg-desktop-portal ;;
     bardo-compositor) path="${SCEN_TOOLS:?floor_image: scenario.sh is not sourced}/bin/bardo-compositor" ;;
-    bardo-computer-use) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/cua-target/debug/bardo-computer-use" ;;
+    bardo-computer-use) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/computer-use-target/debug/bardo-computer-use" ;;
     fake-shell) path=$(command -v python3 2>/dev/null) || return 1 ;;
     bardo-settings) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/detent-target/debug/bardo-settings" ;;
     demo_*) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/shell-host-target/debug/examples/$1" ;;

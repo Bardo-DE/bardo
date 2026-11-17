@@ -6,14 +6,14 @@
 
 use crate::common;
 
-use account_capability::CuaEnv;
+use account_capability::ComputerUseEnv;
 use account_capability::ModelId;
 use account_capability::{Locality, Tier};
 use account_core::AccountId;
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_match::Need;
-use account_match::{CuaNeed, DimsNeed, EmbedNeed};
+use account_match::{ComputerUseNeed, DimsNeed, EmbedNeed};
 use base_ids::{Dims, Tokens};
 use common::bus::PrivateBus;
 use common::inferd::{Behaviour, FakeInferd, Served};
@@ -192,23 +192,23 @@ async fn a_loading_engine_is_a_waiting_event_until_it_is_ready() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_computer_use_run_needs_its_begin_and_its_frame_rides_as_a_memfd() {
-    let ack = InferReply::CuaStep(CuaStepReply::new(vec![]));
-    let step_reply = InferReply::CuaStep(
-        CuaStepReply::new(vec![computer_use_action::CuaAction::Observe])
+    let ack = InferReply::ComputerUseStep(ComputerUseStepReply::new(vec![]));
+    let step_reply = InferReply::ComputerUseStep(
+        ComputerUseStepReply::new(vec![computer_use_action::ComputerUseAction::Observe])
             .with_thought("done".into()),
     );
     let scripts = vec![
         Script {
-            kind: RequestKind::CuaBegin,
+            kind: RequestKind::ComputerUseBegin,
             steps: vec![ScriptStep::Emit(InferEvent::Finished(ack.clone()))],
         },
         Script {
-            kind: RequestKind::CuaStep,
+            kind: RequestKind::ComputerUseStep,
             steps: vec![ScriptStep::Emit(InferEvent::Finished(step_reply.clone()))],
         },
     ];
     let rig = rig_again(scripts).await;
-    let need = Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop].into()));
+    let need = Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into()));
     let mut session = rig
         .accounts
         .session(&need, DataClass::Screen, Tier::Best)
@@ -216,7 +216,7 @@ async fn a_computer_use_run_needs_its_begin_and_its_frame_rides_as_a_memfd() {
         .expect("open");
     let frame =
         || rustix::fs::memfd_create("frame", rustix::fs::MemfdFlags::CLOEXEC).expect("memfd");
-    let step = ClientFrame::Request(InferRequest::CuaStep(step_request()));
+    let step = ClientFrame::Request(InferRequest::ComputerUseStep(step_request()));
 
     session
         .send_attached(step.clone(), vec![frame()])
@@ -231,10 +231,9 @@ async fn a_computer_use_run_needs_its_begin_and_its_frame_rides_as_a_memfd() {
     );
 
     session
-        .send(ClientFrame::Request(InferRequest::CuaBegin(CuaBegin::new(
-            "rename".into(),
-            CuaEnv::Desktop,
-        ))))
+        .send(ClientFrame::Request(InferRequest::ComputerUseBegin(
+            ComputerUseBegin::new("rename".into(), ComputerUseEnv::Desktop),
+        )))
         .await
         .expect("send");
     assert_eq!(session.next().await, Ok(InferEvent::Routed(served_by())));
@@ -249,13 +248,16 @@ async fn a_computer_use_run_needs_its_begin_and_its_frame_rides_as_a_memfd() {
     let kinds: Vec<(RequestKind, usize)> = seen.iter().map(|(r, n)| (r.kind(), *n)).collect();
     assert_eq!(
         kinds,
-        vec![(RequestKind::CuaBegin, 0), (RequestKind::CuaStep, 1)],
+        vec![
+            (RequestKind::ComputerUseBegin, 0),
+            (RequestKind::ComputerUseStep, 1)
+        ],
         "the engine saw the begin, then the step with its one descriptor"
     );
 }
 
-fn step_request() -> inference_core::CuaStepRequest {
-    inference_core::CuaStepRequest::new(
+fn step_request() -> inference_core::ComputerUseStepRequest {
+    inference_core::ComputerUseStepRequest::new(
         inference_core::StepIndex(0),
         inference_core::WindowGeometry {
             logical: computer_use_action::Size::new(

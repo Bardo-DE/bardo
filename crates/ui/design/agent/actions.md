@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/actions.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area "actions": the typed action layer and its safety core
 
-Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, the UI kit design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, Bardo CONVENTIONS.md, the accounts service (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, Bardo `ds` host seams and `toast_hub::UndoToken`.
+Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), computer-use-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, the UI kit design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, Bardo CONVENTIONS.md, the accounts service (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, Bardo `ds` host seams and `toast_hub::UndoToken`.
 
 This version includes the coordinator's scope addition, the **auto-mode action reviewer** (§3.9, §4.4, §5.6).
 
@@ -27,11 +27,11 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 
 **Not in scope** (owner area in brackets)
 - The agent loop and planner prompting, session UX and the orb [planner/agent-loop, ux].
-- Drawing confirmations, the compositor protocol and the kill chord's key handling [cua, ux].
-- The CUA step loop and pixel actions [cua]. They pass through our gate as a caller kind.
+- Drawing confirmations, the compositor protocol and the kill chord's key handling [computer use, ux].
+- The computer-use step loop and pixel actions [computer use]. They pass through our gate as a caller kind.
 - Model serving, the grammar and the choice of reviewer or reader model [models].
 - Event-log storage and its hash chain, memory files and the recall index [memory].
-- Sandboxing and egress [security, if it is an area; else cua].
+- Sandboxing and egress [security, if it is an area; else computer use].
 - App-specific actions such as mailo's verbs (mailo session, fill wave).
 
 ---
@@ -44,7 +44,7 @@ It mirrors the accounts service's layout, conventions, gate and `check-boundary.
 
 | Crate | Purpose | I/O | Portable |
 |---|---|---|---|
-| `prov` | `Label`, `Integrity`, `Confidentiality`, `Source`, `Labelled<T>`, `join`, `Quarantined<T>`, `Witness` | none | yes; reusable by cua, memory and eventlog |
+| `prov` | `Label`, `Integrity`, `Confidentiality`, `Source`, `Labelled<T>`, `join`, `Quarantined<T>`, `Witness` | none | yes; reusable by computer use, memory and eventlog |
 | `action-core` | the vocabulary (ids, manifest, effect, params and values, context, preview, invocation, outcome, refusal, undo, confirm, budget, halt, planner/reader contract, authorization), `validate`, `tool_schema`, the wire enums and frames | none | yes |
 | `permission-policy` | Cedar schema, default policies, `Pdp::decide`, policy tests | none (cedar-policy only) | yes |
 | `action-review` | `ReviewRequest`, `Verdict`, prompt rendering with quoted data, verdict parsing, the `Reviewer` trait, `combine`; `InferReviewer` (stub) over inference-core's `Model` | none | yes |
@@ -124,7 +124,7 @@ pub enum Source {
     Model(ModelRole),        // text a model produced (planner, reader, reviewer)
     Mcp(ClientName),         // an external MCP client's arguments
 }
-pub enum ModelRole { Planner, Reader, Reviewer, Cua }
+pub enum ModelRole { Planner, Reader, Reviewer, ComputerUse }
 
 pub struct Label {
     pub integrity: Integrity,
@@ -325,7 +325,7 @@ pub enum Preview {
 
 ```rust
 /// Who acts. Set by the router from the caller's derived identity, never self-asserted.
-pub enum Actor { User, Companion { session: SessionId }, Cua { run: RunId }, Mcp { client: ClientName }, App(AppName) }
+pub enum Actor { User, Companion { session: SessionId }, ComputerUse { run: RunId }, Mcp { client: ClientName }, App(AppName) }
 pub enum Origin { Launcher, InWindowField, Companion, Shortcut, Mcp, AppInternal }
 
 /// What the router sends to IntentProvider1.Perform. The app sees actor and origin (to label
@@ -376,7 +376,7 @@ pub enum UndoFault { Gone, Conflict, AppUnavailable }
 
 ```rust
 pub struct ActionGrantKey {
-    pub caller: ActorKind,                         // Companion | Cua | Mcp(ClientName) | App(AppName)
+    pub caller: ActorKind,                         // Companion | ComputerUse | Mcp(ClientName) | App(AppName)
     pub owner: AppName,
     pub target: GrantTarget,
     pub class: DataClass,
@@ -384,7 +384,7 @@ pub struct ActionGrantKey {
     pub space: SpaceScope,                         // account_core
 }
 pub enum GrantTarget { App, Action(ActionName) }   // "the companion may use Mail" vs one verb
-pub enum ActorKind { User, Companion, Cua, Mcp(ClientName), App(AppName) }
+pub enum ActorKind { User, Companion, ComputerUse, Mcp(ClientName), App(AppName) }
 pub type ActionGrant = account_core::consent::Grant<ActionGrantKey>;
 ```
 
@@ -663,7 +663,7 @@ Caller roles are configured in `intentd`'s config:
 - `launcher`: the shell. Gets Actor::User when `Origin::Launcher`/`InWindowField`.
 - `companion`: the agent daemon. Actor::Companion.
 - `reader`: the reader process.
-- `cua`: cuad.
+- `computer_use`: the computer-use daemon.
 - `mcp`: bardo-actions-mcp.
 - `compositor`: may call `Halt`.
 - `control`: the shell's control centre. May call `Halt`/`Resume`.
@@ -696,7 +696,7 @@ Caller roles are configured in `intentd`'s config:
 | signal `UndoChanged(token s, state s)` | Cmd+Z in the app keeps the router's journal true |
 | signal `IndexStale(epoch t)` | asks the router to request a `Reset` |
 
-**`org.bardo.Confirm1`** at `/org/bardo/Confirm1`, served by the compositor fork (cua/ux areas own it). The fallback is a separate sheet process.
+**`org.bardo.Confirm1`** at `/org/bardo/Confirm1`, served by the compositor fork (computer_use/ux areas own it). The fallback is a separate sheet process.
 - `Confirm(request s) -> o`, where the Request carries `Response(u, answer s)`.
 - `Cancel(id s)`.
 - The interface is frozen now; who serves it is decided later.
@@ -949,10 +949,10 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### Fill wave 3 (other areas join)
 
-- The compositor `Confirm1` server and the kill chord [cua/ux].
+- The compositor `Confirm1` server and the kill chord [computer_use/ux].
 - The real reviewer and reader models through inferd [models].
 - `eventlog` [memory].
-- The CUA gate integration [cua].
+- The computer-use gate integration [computer use].
 
 ---
 
@@ -962,7 +962,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 | Area | What we need from it | What it needs from us |
 |---|---|---|
-| **cua** | Draws `org.bardo.Confirm1` and the acting-here glow; kill chord → `Control.Halt`; effect classification for pixel actions | `permission-policy::Decision`, `gate`, `Actor::Cua`, `Effect`, `ConfirmRequest`, `prov::Source::Screen` |
+| **Computer use** | Draws `org.bardo.Confirm1` and the acting-here glow; kill chord → `Control.Halt`; effect classification for pixel actions | `permission-policy::Decision`, `gate`, `Actor::ComputerUse`, `Effect`, `ConfirmRequest`, `prov::Source::Screen` |
 | **ux** | Look of the confirmation and companion strip, Activity/"Undo all" UI, launcher companion mode | `Preview`, `UndoEntry`, `Journal`, `Control` signals, the shell variants |
 | **models** | inferd serving the reviewer and reader models (small local, no tools, grammar-constrained JSON), model latency | `ReviewRequest`/`render`/`parse_verdict`, `ValueSchema` → grammar, `tool_schema` |
 | **memory** | `eventlog` crate taking `AuditRecord`; `Actor` shared; memfiles' write action declared `Lasting::AgentMemory` | `AuditRecord`, `Actor`, `prov::Label`, `EntityId` |
@@ -977,7 +977,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
   - The reviewer only judges tainted undoable writes. It also judges outbound actions that a user-stated Authorization covers.
   - `TrustMore` widens this; `AskMore` narrows it.
   - Taint's role (Security item 2): it voids `Always` grants and Authorizations, and gates `Lasting` writes.
-- **C3. Unforgeable consent.** COMPANION Security 4 requires compositor-drawn confirmations; the fork may be late. Resolution: until it lands, a separate sheet process serves `Confirm1` and receipts carry `InputProof::SheetFallback`. This is acceptable for tier 1 because typed actions inject no input. The CUA tier must not ship on the fallback.
+- **C3. Unforgeable consent.** COMPANION Security 4 requires compositor-drawn confirmations; the fork may be late. Resolution: until it lands, a separate sheet process serves `Confirm1` and receipts carry `InputProof::SheetFallback`. This is acceptable for tier 1 because typed actions inject no input. The computer use tier must not ship on the fallback.
 - **C4. MCP.** 31 §5.5 makes inferd the MCP host. The build map makes `bardo-actions-mcp` edge-only. Resolution: MCP in both directions lives in `bardo-actions-mcp`. Imported tools become router actions of a pseudo-app `mcp.<server>`, default `Outbound`, each in bubblewrap. inferd drops the role (an edit to 31).
 - **C5. Provider kinds.** models.md has `ProviderKind::App(AppName)`, which breaks the shell's `Copy` + `ALL` Tab order. Resolution: one `ProviderKind::Things`, with per-kind scoping later (`Scope::Kind`).
 - **C6. Companion work is deferred.** 30 §3.4 says "Deferred, map only: one-input/companion/AI work". Resolution: freeze types only; `ds` is untouched until U6.
@@ -1009,7 +1009,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 | `Activation` (closed) | `+ Intent(CallRequest)` only. `Launch`, `Open`, `Copy` and the rest stay the host's own verbs and are also served as actions of `org.bardo.Shell` by the same executor, so the companion uses the path you use. |
 | `Preview` (pure from the row) | `+ Preview::Intent(action_core::Preview)`, fetched lazily by `Run.Preview` after selection dwell (150 ms) |
 | `Query.scope` | Later: `Scope::Kind(EntityKind)` for typed pickers |
-| `CuaRunProvider` (cua doc) | The cua area's; it uses the same seam |
+| `ComputerUseRunProvider` (computer use doc) | The computer use area's; it uses the same seam |
 
 ### Critical files for implementation
 

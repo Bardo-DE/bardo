@@ -3,7 +3,7 @@
 desktop-protocols holds the desktop's private Wayland protocols, `bardo_*_v1`: the XML, the pure
 wire vocabulary every tier shares, and the wayland-scanner bindings for clients and the
 compositor. It is a leaf: it depends on nothing of ours, so the compositor (the compositor), the shell
-(the shell, layer-shell-host), the agent tier (cua, the actions service, the accounts service's `prov`), the portal (the portal) and
+(the shell, layer-shell-host), the agent tier (computer use, the actions service, the accounts service's `prov`), the portal (the portal) and
 Bardo's `ui-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
 `FINDINGS.md` the open items.
 
@@ -36,7 +36,7 @@ action-core, prov) take default features; Wayland clients take `client`; the com
 | `protocols/bardo-shell-v1.xml` | `bardo_shell_v1` (version 5: `permission_ask`, `permission_withdraw`, `permission_answer`, the consent question; version 6: `displays_trial`, `displays_trial_end`, `displays_trial_answer`, the display trial, and the `answered_too_soon` error) | Shell connections | compositor | sill through layer-shell-host |
 | `protocols/bardo-window-v1.xml` | `bardo_window_manager_v1` (version 2: `quit`, the person asked the app to quit), `bardo_window_v1` | every connection | compositor | layer-shell-host, ui-blitz, any app |
 | `protocols/bardo-sensitive-v1.xml` | `bardo_sensitive_manager_v1`, `bardo_sensitive_surface_v1` | every connection, once served | not served yet | layer-shell-host, ui-blitz, any app |
-| `protocols/bardo-agent-v1.xml` | `bardo_agent_manager_v1`, `bardo_agent_lease_v1` | Agent connections, once served | not served yet | cuad |
+| `protocols/bardo-agent-v1.xml` | `bardo_agent_manager_v1`, `bardo_agent_lease_v1` | Agent connections, once served | not served yet | the computer-use daemon |
 | `protocols/bardo-trusted-surface-v1.xml` | `bardo_trusted_manager_v1`, `bardo_trusted_surface_v1` | Shell connections, once served | not served yet | the shell |
 
 A protocol whose Server cell says "not served yet" has no server in the compositor: it is not
@@ -165,7 +165,7 @@ holds the frozen interface as tables (every message with its arguments, every er
   `bardo_desktop_app_v1` (version 2: the `subject` event, sent only to a client that bound the
   manager at version 2; the app objects take the manager's version, which is why the manager
   grows with the app).
-- **`bardo-agent-v1.xml` came from cua byte for byte**; `tests/it/xml_introspection.rs` pins its
+- **`bardo-agent-v1.xml` came from computer use byte for byte**; `tests/it/xml_introspection.rs` pins its
   bytes. A change to it updates the pin in the same commit.
 - **Clean room:** the XML is written from our own design notes; every interface here is ours
   (`check-boundary.sh` row 5).
@@ -231,7 +231,7 @@ passes the `Connection`); a proxy never enters the state, a key does
 `supports`); every growing public type is `non_exhaustive` with a constructor.
 
 Consumers: the shell maps `DesktopState` into its `DesktopView` (app grouping, most-recently-used
-order and Spaces are the shell's); cua's toplevel client moves onto it later; `bardo-compositorctl shot`
+order and Spaces are the shell's); computer use's toplevel client moves onto it later; `bardo-compositorctl shot`
 and the testclient use `DesktopCommand::CaptureOutput` and `Frame::to_rgba8`.
 
 ## 9. Consent: `bardo_shell_v1` version 5

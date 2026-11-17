@@ -115,7 +115,7 @@ fn a_request_the_service_will_refuse_holds_nothing() {
     let table = [
         (Caller::shell_ui(), settle(), Claim::Everything),
         (Caller::router(), settle(), Claim::Nothing),
-        (Caller::cuad(), forget(), Claim::Nothing),
+        (Caller::computer_use_daemon(), forget(), Claim::Nothing),
         (Caller::shell_ui(), forget(), Claim::Everything),
         (Caller::router(), search_in("work"), spaces(&["work"])),
     ];

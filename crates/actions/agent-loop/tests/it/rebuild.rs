@@ -106,14 +106,14 @@ fn a_restart_rebuilds_the_roster_and_the_front_task_from_the_stored_records() {
     let run = roster
         .entries
         .iter()
-        .find(|l| matches!(l.agent, AgentRef::Cua { .. }))
+        .find(|l| matches!(l.agent, AgentRef::ComputerUse { .. }))
         .expect("run");
     assert_eq!(run.detail, RosterDetail::PresenceOnly);
     let seen = roster.seen_from(&space("work"));
     let in_home = seen
         .entries
         .iter()
-        .find(|l| matches!(l.agent, AgentRef::Cua { .. }))
+        .find(|l| matches!(l.agent, AgentRef::ComputerUse { .. }))
         .expect("run");
     assert_eq!(in_home.detail, RosterDetail::PresenceOnly);
 }

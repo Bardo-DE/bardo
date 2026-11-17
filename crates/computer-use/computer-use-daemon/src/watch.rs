@@ -3,12 +3,15 @@
 //! editor replace the inode by rename), then the whole file is read again through the lenient
 //! reader. The watch and its debounce are `settings-store-fs`'s.
 
-use computer_use_host::{CuaSettings, read};
+use computer_use_host::{ComputerUseSettings, read};
 use settings_store_fs::{LocatedWatch, Locator};
 
 /// Reads the file now over `base` and starts watching it. Must run inside a tokio runtime.
 #[must_use]
-pub fn watch_settings(locator: &Locator, base: CuaSettings) -> LocatedWatch<CuaSettings> {
+pub fn watch_settings(
+    locator: &Locator,
+    base: ComputerUseSettings,
+) -> LocatedWatch<ComputerUseSettings> {
     let reader = locator.clone();
     let (watch, task) = LocatedWatch::start(locator, move || reader.read(base.clone(), read));
     if let Some(task) = task {

@@ -6,14 +6,16 @@ use action_gate_wire::GateAnswer;
 use action_wire::GrantAnswer;
 use computer_use_action::{Coord, Rect, Size};
 use computer_use_bus::{
-    ActionResult, BlockedOn, CancelledBy, CuaOutcome, FailReason, QuestionId, RunBudgetKind,
-    SuccessCheck,
+    ActionResult, BlockedOn, CancelledBy, ComputerUseOutcome, FailReason, QuestionId,
+    RunBudgetKind, SuccessCheck,
 };
 use computer_use_capture::{CaptureError, DamageAt, DamageSource, Settle};
 use computer_use_desktop::{
     BackendKind, DesktopEvent, GlowState, LeaseId, RevokeReason, Stamp, Suspend, ToplevelIdent,
 };
-use computer_use_run::{CheckResult, CuaModelError, RunEffect, RunInput, RunPhase, StepEvent};
+use computer_use_run::{
+    CheckResult, ComputerUseModelError, RunEffect, RunInput, RunPhase, StepEvent,
+};
 use computer_use_seat_input::{InputOrigin, InputReceipt, SeatError};
 use inference_core::StepIndex;
 use provenance::{ConfirmId, MessageKind, ReportStatus};
@@ -75,7 +77,7 @@ fn kinds(effects: &[RunEffect]) -> Vec<String> {
         .collect()
 }
 
-fn finished_with(d: &Drive) -> Option<CuaOutcome> {
+fn finished_with(d: &Drive) -> Option<ComputerUseOutcome> {
     match d.phase() {
         RunPhase::Finished(o) => Some(*o),
         _ => None,
@@ -138,7 +140,7 @@ fn a_tick_past_the_active_budget_ends_the_run_and_wake_names_the_deadline() {
     d.feed_after(deadline.0 - d.at.0, RunInput::Tick);
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::BudgetOut(RunBudgetKind::Active))
+        Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Active))
     );
     assert!(d.has(|e| matches!(e, RunEffect::CancelModel)));
     assert_eq!(d.run.wake(), None);
@@ -178,12 +180,12 @@ fn cancel_the_kill_chord_and_a_revoked_lease_each_end_the_run_their_own_way() {
     let cases = [
         (
             RunInput::UserCancel,
-            CuaOutcome::Cancelled(CancelledBy::User),
+            ComputerUseOutcome::Cancelled(CancelledBy::User),
             true,
         ),
         (
             RunInput::Desktop(DesktopEvent::KillChord),
-            CuaOutcome::Cancelled(CancelledBy::KillSwitch),
+            ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch),
             true,
         ),
         (
@@ -191,7 +193,7 @@ fn cancel_the_kill_chord_and_a_revoked_lease_each_end_the_run_their_own_way() {
                 lease: LeaseId(1),
                 why: RevokeReason::KillChord,
             }),
-            CuaOutcome::Cancelled(CancelledBy::KillSwitch),
+            ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch),
             false,
         ),
         (
@@ -199,14 +201,14 @@ fn cancel_the_kill_chord_and_a_revoked_lease_each_end_the_run_their_own_way() {
                 lease: LeaseId(1),
                 why: RevokeReason::WindowClosed,
             }),
-            CuaOutcome::Failed(FailReason::WindowGone),
+            ComputerUseOutcome::Failed(FailReason::WindowGone),
             false,
         ),
         (
             RunInput::Desktop(DesktopEvent::WindowClosed(
                 ToplevelIdent::parse("w1").unwrap(),
             )),
-            CuaOutcome::Failed(FailReason::WindowGone),
+            ComputerUseOutcome::Failed(FailReason::WindowGone),
             true,
         ),
     ];
@@ -281,7 +283,7 @@ fn every_input_in_every_phase_has_a_row_and_leaves_a_valid_run() {
                 "x".into(),
             ))),
             RunInput::ModelReplied(reply(vec![click_at(1, 1)])),
-            RunInput::ModelFailed(CuaModelError::Transient),
+            RunInput::ModelFailed(ComputerUseModelError::Transient),
             RunInput::ScreenRead(computer_use_run::ScreenRead::Instructions),
             RunInput::Confirming(ConfirmId::parse("c-9").unwrap()),
             RunInput::Verdict(GateAnswer::Run),
@@ -345,14 +347,14 @@ fn the_mode_and_the_target_decide_at_the_start_what_a_run_may_do() {
     let d = Drive::start(STOCK, app_task);
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Blocked(BlockedOn::NeedsCapability))
+        Some(ComputerUseOutcome::Blocked(BlockedOn::NeedsCapability))
     );
     let mut hidden = task(model_says());
     hidden.mode = computer_use_action::RunMode::AgentWorkspace;
     let d = Drive::start(STOCK, hidden);
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Blocked(BlockedOn::ModeUnsupported(
+        Some(ComputerUseOutcome::Blocked(BlockedOn::ModeUnsupported(
             computer_use_action::RunMode::AgentWorkspace
         ))),
         "stock cannot run the agent workspace"

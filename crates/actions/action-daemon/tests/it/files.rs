@@ -183,7 +183,7 @@ fn the_shipped_defaults_allow_the_shell_in_both_usages_and_nothing_else() {
         ..shell_key(Usage::Interactive)
     };
     let other_caller = ActionGrantKey {
-        caller: GrantCaller::Cua,
+        caller: GrantCaller::ComputerUse,
         ..shell_key(Usage::Interactive)
     };
     for key in [other_app, other_class, other_caller] {

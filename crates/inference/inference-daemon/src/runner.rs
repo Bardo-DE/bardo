@@ -32,7 +32,7 @@ use inference_router::session::HeardAudio;
 use inference_settings::structured::Limits;
 use inference_turns::Turn;
 use inference_turns::bridge::Frames;
-use inference_turns::computer_use_run::CuaRun;
+use inference_turns::computer_use_run::ComputerUseRun;
 use inference_turns::local::{LocalTurns, ToSession};
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex, OnceLock};
@@ -76,7 +76,7 @@ pub struct Turns {
     pin: Pin,
     engines: Supervised,
     tier: Tier,
-    run: Arc<Mutex<Option<CuaRun>>>,
+    run: Arc<Mutex<Option<ComputerUseRun>>>,
     limits: Limits,
     cloud: Option<Cloud>,
     hearing: Option<Hearing>,
@@ -220,7 +220,7 @@ struct Job {
     pinned: Option<Pinned>,
     engines: Supervised,
     tier: Tier,
-    run: Arc<Mutex<Option<CuaRun>>>,
+    run: Arc<Mutex<Option<ComputerUseRun>>>,
     limits: Limits,
     cloud: Option<Cloud>,
     seating: Option<Seating>,
@@ -305,10 +305,10 @@ impl Job {
         self.engines.used(&model.spec.id);
         let local = self.local();
         let reply = match request {
-            InferRequest::CuaBegin(begin) => local.begin_cua(begin),
-            InferRequest::CuaStep(step) => {
+            InferRequest::ComputerUseBegin(begin) => local.begin_computer_use(begin),
+            InferRequest::ComputerUseStep(step) => {
                 let ceiling = self.ceiling(&model);
-                local.cua(&model, &step, frames, ceiling).await
+                local.computer_use(&model, &step, frames, ceiling).await
             }
             InferRequest::Transcribe(begin) => {
                 self.transcribe(&model, served, &begin, ChannelAudio(audio))

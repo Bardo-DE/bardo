@@ -4,11 +4,12 @@ use account_core::AppName;
 use base_ids::Px;
 use base_time::UnixSeconds;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, FinishOutcome, PixelFormat, Point, RunMode,
-    Scale120, Size, Summary, Target, WindowSpace, WindowTrust,
+    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, FinishOutcome, PixelFormat, Point,
+    RunMode, Scale120, Size, Summary, Target, WindowSpace, WindowTrust,
 };
 use computer_use_bus::{
-    CuaOutcome, CuaTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck, TaskTarget,
+    ComputerUseOutcome, ComputerUseTask, ReportRoute, RunBudget, RunOrigin, SuccessCheck,
+    TaskTarget,
 };
 use computer_use_capture::{Frame, FrameSeq, MaskReport, PixelBuf, WholeMask};
 use computer_use_desktop::{BackendCaps, BackendKind, MaskWhere, Stamp, ToplevelIdent};
@@ -17,9 +18,9 @@ use computer_use_fake::{
     MemoryEvents, ScriptedModel, SeatEvent, World, run_harness_answering,
 };
 use computer_use_run::{
-    AcquirePhase, CuaConfig, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step,
+    AcquirePhase, ComputerUseConfig, FORCED_YES, Progress, Run, RunEnv, RunPhase, Step,
 };
-use inference_core::CuaStepReply;
+use inference_core::ComputerUseStepReply;
 use provenance::{
     Address, AgentRef, Confidentiality, Integrity, Label, Labelled, RunId, SessionId, Source,
     SpaceId,
@@ -49,7 +50,7 @@ fn frame(seq: u64) -> Frame {
         scale: Scale120(120),
         damage: vec![],
         masks: MaskReport {
-            applied_by: MaskWhere::Cuad,
+            applied_by: MaskWhere::ComputerUseDaemon,
             whole: WholeMask::None,
             regions: vec![],
         },
@@ -78,8 +79,8 @@ fn window() -> computer_use_desktop::ToplevelInfo {
     }
 }
 
-fn reply(action: CuaAction<WindowSpace>) -> CuaStepReply {
-    CuaStepReply::new(vec![action])
+fn reply(action: ComputerUseAction<WindowSpace>) -> ComputerUseStepReply {
+    ComputerUseStepReply::new(vec![action])
 }
 
 fn user_goal() -> Labelled<String> {
@@ -94,7 +95,9 @@ fn user_goal() -> Labelled<String> {
     )
 }
 
-fn new_world(script: Vec<Result<CuaStepReply, computer_use_run::CuaModelError>>) -> World {
+fn new_world(
+    script: Vec<Result<ComputerUseStepReply, computer_use_run::ComputerUseModelError>>,
+) -> World {
     World {
         desktop: FakeDesktop::new(BackendKind::KwinStock, vec![window()]),
         seat: FakeSeat::new(computer_use_desktop::SeatIsolation::SharedSeat, Stamp(0)),
@@ -109,7 +112,7 @@ fn new_world(script: Vec<Result<CuaStepReply, computer_use_run::CuaModelError>>)
 }
 
 fn new_run() -> Run {
-    let task = CuaTask {
+    let task = ComputerUseTask {
         app: app(),
         goal: user_goal(),
         asked: None,
@@ -130,7 +133,7 @@ fn new_run() -> Run {
         },
     };
     let env = RunEnv::new(
-        &CuaConfig::default(),
+        &ComputerUseConfig::default(),
         BackendCaps::of(BackendKind::KwinStock),
         computer_use_fake::scene::rules(),
     );
@@ -175,7 +178,7 @@ fn a_stalled_step_of_taking_the_window_names_itself_and_gives_the_lease_back() {
         let (report, world) = stalled(phase);
         assert_eq!(
             report.run.phase,
-            RunPhase::Finished(CuaOutcome::Blocked(
+            RunPhase::Finished(ComputerUseOutcome::Blocked(
                 computer_use_bus::BlockedOn::LeaseRefused
             )),
             "{name}"
@@ -215,9 +218,9 @@ fn a_stalled_step_of_taking_the_window_names_itself_and_gives_the_lease_back() {
 /// steps' results and what the desktop was asked.
 fn on_an_unfocused_window(
     kind: BackendKind,
-    first: CuaAction<WindowSpace>,
+    first: ComputerUseAction<WindowSpace>,
 ) -> (usize, Vec<String>, Vec<DesktopCall>) {
-    let finish = CuaAction::Finish {
+    let finish = ComputerUseAction::Finish {
         outcome: FinishOutcome::Done,
         summary: Summary::new("Signed in.").unwrap(),
         extracted: vec![],
@@ -235,7 +238,10 @@ fn on_an_unfocused_window(
         vec![FORCED_YES.to_owned()],
     ))
     .expect("the run ends");
-    assert_eq!(report.run.phase, RunPhase::Finished(CuaOutcome::Done));
+    assert_eq!(
+        report.run.phase,
+        RunPhase::Finished(ComputerUseOutcome::Done)
+    );
     let performed = world
         .seat
         .events()
@@ -269,7 +275,7 @@ fn keys_need_the_focus_on_the_persons_seat_and_a_click_does_not() {
         "refused as not focused: {steps:?}"
     );
 
-    let click = CuaAction::Click {
+    let click = ComputerUseAction::Click {
         at: Target::Point(Point::new(Coord(10), Coord(10))),
         button: Button::Left,
         count: ClickCount::One,
@@ -301,13 +307,13 @@ fn keys_for_an_unfocused_leased_window_ask_compositor_to_focus_it_and_land() {
 /// app is not followed.
 #[test]
 fn the_run_looks_at_and_clicks_in_the_dialog_its_window_opened() {
-    let click = CuaAction::Click {
+    let click = ComputerUseAction::Click {
         at: Target::Point(Point::new(Coord(10), Coord(10))),
         button: Button::Left,
         count: ClickCount::One,
         mods: BTreeSet::new(),
     };
-    let finish = CuaAction::Finish {
+    let finish = ComputerUseAction::Finish {
         outcome: FinishOutcome::Done,
         summary: Summary::new("Opened.").unwrap(),
         extracted: vec![],
@@ -331,7 +337,10 @@ fn the_run_looks_at_and_clicks_in_the_dialog_its_window_opened() {
     ))
     .expect("the run ends");
 
-    assert_eq!(report.run.phase, RunPhase::Finished(CuaOutcome::Done));
+    assert_eq!(
+        report.run.phase,
+        RunPhase::Finished(ComputerUseOutcome::Done)
+    );
     let opened: Vec<String> = world
         .capture
         .opened()

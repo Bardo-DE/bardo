@@ -124,7 +124,7 @@ async fn only_an_app_settings_or_the_shell_may_ask() {
     }
     for role in [
         CallerRole::Agent,
-        CallerRole::Cua,
+        CallerRole::ComputerUse,
         CallerRole::AgentLauncher,
         CallerRole::AiBroker,
         CallerRole::Terminal,

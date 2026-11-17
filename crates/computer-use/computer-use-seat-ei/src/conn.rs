@@ -122,7 +122,7 @@ impl Conn {
     ) -> Result<(Conn, Keymap), SeatError> {
         let context = ei::Context::new(UnixStream::from(socket)).map_err(protocol)?;
         let (link, mut events) = context
-            .handshake_tokio("cua-seat", ei::handshake::ContextType::Sender)
+            .handshake_tokio("computer-use-seat", ei::handshake::ContextType::Sender)
             .await
             .map_err(protocol)?;
         let mut devices: Vec<Device> = Vec::new();

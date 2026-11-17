@@ -87,12 +87,12 @@ fn a_table_of_callers_and_the_roles_their_standing_backs() {
             Some(("org.bardo.Reader1", &[CallerRole::Reader])),
         ),
         row(
-            "cuad's unit plays the cua role, an agent of that app does not",
-            held("org.bardo.ComputerUse1", Role::Cua),
-            Some(("org.bardo.ComputerUse1", &[CallerRole::Cua])),
+            "computer_use_daemon's unit plays the computer-use role, an agent of that app does not",
+            held("org.bardo.ComputerUse1", Role::ComputerUse),
+            Some(("org.bardo.ComputerUse1", &[CallerRole::ComputerUse])),
         ),
         row(
-            "an agent in cuad's app is not cuad",
+            "an agent in the computer-use daemon's app is not computer_use_daemon",
             held("org.bardo.ComputerUse1", Role::Agent),
             Some(("org.bardo.ComputerUse1", &[])),
         ),
@@ -224,12 +224,12 @@ fn a_process_is_identified_by_its_unit_and_a_scope_or_a_stranger_is_not_the_unit
             )),
         ),
         (
-            "cuad's unit",
+            "computer_use_daemon's unit",
             9,
-            Some(("org.bardo.ComputerUse1", &[CallerRole::Cua])),
+            Some(("org.bardo.ComputerUse1", &[CallerRole::ComputerUse])),
         ),
         (
-            "an app scope called like cuad",
+            "an app scope called like computer_use_daemon",
             10,
             Some(("org.bardo.ComputerUse1", &[])),
         ),

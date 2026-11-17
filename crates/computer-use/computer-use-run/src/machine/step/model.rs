@@ -2,7 +2,7 @@
 
 use super::authorise::{ask, authorise, conclude, wait};
 use super::over_budget;
-use crate::machine::effect::{CuaSignal, RunEffect};
+use crate::machine::effect::{ComputerUseSignal, RunEffect};
 use crate::machine::finish::{Said, finish, finish_plain, summary};
 use crate::machine::ops::{
     AlsoContext, action_ended, drop_rest, next, observe, step_of, targeted, thought_digest,
@@ -10,11 +10,13 @@ use crate::machine::ops::{
 use crate::machine::phase::RunPhase;
 use crate::machine::run::Run;
 use base_ids::Count;
-use computer_use_action::{ActionClass, CuaAction};
-use computer_use_bus::{ActionOutcome, ActionResult, CuaOutcome, FailReason, RunBudgetKind};
+use computer_use_action::{ActionClass, ComputerUseAction};
+use computer_use_bus::{
+    ActionOutcome, ActionResult, ComputerUseOutcome, FailReason, RunBudgetKind,
+};
 use computer_use_capture::FrameWant;
 use computer_use_desktop::Stamp;
-use inference_core::{CuaStepReply, StepIndex};
+use inference_core::{ComputerUseStepReply, StepIndex};
 
 pub(super) fn model_event(run: &mut Run, fx: &mut Vec<RunEffect>, event: crate::model::StepEvent) {
     let RunPhase::Thinking(n) = run.phase else {
@@ -22,11 +24,11 @@ pub(super) fn model_event(run: &mut Run, fx: &mut Vec<RunEffect>, event: crate::
     };
     match event {
         crate::model::StepEvent::ThoughtDelta(text) => {
-            fx.push(RunEffect::Emit(CuaSignal::ThoughtDelta(n, text)));
+            fx.push(RunEffect::Emit(ComputerUseSignal::ThoughtDelta(n, text)));
         }
         crate::model::StepEvent::ActionProposed(action) => {
             run.track.proposed = run.track.proposed.saturating_add(1);
-            fx.push(RunEffect::Emit(CuaSignal::ActionProposed(
+            fx.push(RunEffect::Emit(ComputerUseSignal::ActionProposed(
                 n,
                 targeted(run, action),
             )));
@@ -38,7 +40,7 @@ pub(super) fn model_event(run: &mut Run, fx: &mut Vec<RunEffect>, event: crate::
 pub(super) fn model_failure(run: &mut Run, fx: &mut Vec<RunEffect>, again: StepIndex) {
     run.used.model_failures = Count(run.used.model_failures.0.saturating_add(1));
     if run.used.model_failures > run.task.budget.model_failures {
-        finish_plain(run, fx, CuaOutcome::Failed(FailReason::Model));
+        finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Model));
     } else {
         run.pending.actions.clear();
         observe(run, fx, again, FrameWant::Now, AlsoContext::No);
@@ -48,19 +50,20 @@ pub(super) fn model_failure(run: &mut Run, fx: &mut Vec<RunEffect>, again: StepI
 pub(super) fn model_failed(
     run: &mut Run,
     fx: &mut Vec<RunEffect>,
-    error: crate::model::CuaModelError,
+    error: crate::model::ComputerUseModelError,
 ) {
     let RunPhase::Thinking(n) = run.phase else {
         return;
     };
     match error {
-        crate::model::CuaModelError::Transient | crate::model::CuaModelError::Parse => {
+        crate::model::ComputerUseModelError::Transient
+        | crate::model::ComputerUseModelError::Parse => {
             model_failure(run, fx, n);
         }
-        crate::model::CuaModelError::Fatal => {
-            finish_plain(run, fx, CuaOutcome::Failed(FailReason::Model));
+        crate::model::ComputerUseModelError::Fatal => {
+            finish_plain(run, fx, ComputerUseOutcome::Failed(FailReason::Model));
         }
-        crate::model::CuaModelError::CannotSeeScreen => model_blind(run, fx, None),
+        crate::model::ComputerUseModelError::CannotSeeScreen => model_blind(run, fx, None),
     }
 }
 
@@ -78,7 +81,7 @@ pub(super) fn model_blind(run: &mut Run, fx: &mut Vec<RunEffect>, words: Option<
     finish(
         run,
         fx,
-        CuaOutcome::Failed(FailReason::CannotSeeScreen),
+        ComputerUseOutcome::Failed(FailReason::CannotSeeScreen),
         &said,
     );
 }
@@ -95,10 +98,10 @@ pub(super) fn model_replied(
     run.used.spend = run.used.spend.counting(reply.charge);
     let local_only = run.task.budget.spend.amount.is_zero();
     if over_budget(run, RunBudgetKind::Spend) || (reply.cloud && local_only) {
-        finish_plain(run, fx, CuaOutcome::BudgetOut(RunBudgetKind::Spend));
+        finish_plain(run, fx, ComputerUseOutcome::BudgetOut(RunBudgetKind::Spend));
         return;
     }
-    let CuaStepReply {
+    let ComputerUseStepReply {
         thought,
         actions,
         safety,
@@ -113,7 +116,7 @@ pub(super) fn model_replied(
     }
     let already = usize::try_from(run.track.proposed).unwrap_or(usize::MAX);
     for action in actions.iter().skip(already) {
-        fx.push(RunEffect::Emit(CuaSignal::ActionProposed(
+        fx.push(RunEffect::Emit(ComputerUseSignal::ActionProposed(
             n,
             targeted(run, action.clone()),
         )));
@@ -132,7 +135,7 @@ pub(super) fn proceed(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, want: F
     match head.action.class() {
         ActionClass::Pointer | ActionClass::Keyboard => authorise(run, fx, n, head),
         ActionClass::Observe => {
-            if let CuaAction::Wait { for_ms } = head.action {
+            if let ComputerUseAction::Wait { for_ms } = head.action {
                 wait(run, fx, at, n, for_ms.ms());
             } else {
                 run.pending.actions.pop_front();
@@ -146,7 +149,7 @@ pub(super) fn proceed(run: &mut Run, fx: &mut Vec<RunEffect>, at: Stamp, want: F
             }
         }
         ActionClass::Conclude => match &head.action {
-            CuaAction::Finish { .. } => conclude(run, fx, n),
+            ComputerUseAction::Finish { .. } => conclude(run, fx, n),
             _ => ask(run, fx, n, &head),
         },
     }

@@ -6,11 +6,11 @@
 use crate::support;
 
 use account_capability::Tier;
-use account_capability::{CuaEnv, SpeechMode};
+use account_capability::{ComputerUseEnv, SpeechMode};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use account_match::Need;
-use account_match::{CuaNeed, SpeechNeed};
+use account_match::{ComputerUseNeed, SpeechNeed};
 use base_ids::{Count, Tokens};
 use inference_core::{
     AttachIndex, AudioFrame, AudioRate, Base64Bytes, ChatControl, ChatMessage, ChatReply,
@@ -455,32 +455,34 @@ async fn the_audit_is_told_what_each_request_carried() {
     );
 }
 
-fn cua() -> SessionSpec {
+fn computer_use() -> SessionSpec {
     spec(
-        Need::ComputerUse(CuaNeed::new([CuaEnv::Desktop].into())),
+        Need::ComputerUse(ComputerUseNeed::new([ComputerUseEnv::Desktop].into())),
         DataClass::Screen,
     )
 }
 
 #[tokio::test]
 async fn a_computer_use_step_before_a_begin_is_refused_and_after_one_it_runs() {
-    let mut rig = start(FixedRouter::ready(), Engines::default(), cua());
+    let mut rig = start(FixedRouter::ready(), Engines::default(), computer_use());
     let step = |n: u32| {
-        ClientFrame::Request(InferRequest::CuaStep(inference_core::CuaStepRequest::new(
-            inference_core::StepIndex(n),
-            inference_core::WindowGeometry {
-                logical: computer_use_action::Size::new(
-                    computer_use_action::Coord(1),
-                    computer_use_action::Coord(1),
-                ),
-                scale: computer_use_action::Scale120(120),
-            },
-            inference_core::FrameImage {
-                source: ImageSource::Attached(AttachIndex(0)),
-                layout: inference_core::FrameLayout::Encoded(inference_core::MediaType::Png),
-            },
-            None,
-        )))
+        ClientFrame::Request(InferRequest::ComputerUseStep(
+            inference_core::ComputerUseStepRequest::new(
+                inference_core::StepIndex(n),
+                inference_core::WindowGeometry {
+                    logical: computer_use_action::Size::new(
+                        computer_use_action::Coord(1),
+                        computer_use_action::Coord(1),
+                    ),
+                    scale: computer_use_action::Scale120(120),
+                },
+                inference_core::FrameImage {
+                    source: ImageSource::Attached(AttachIndex(0)),
+                    layout: inference_core::FrameLayout::Encoded(inference_core::MediaType::Png),
+                },
+                None,
+            ),
+        ))
     };
     rig.client.send(&step(0), &[memfd(b"frame 0")]).await;
     assert_eq!(
@@ -492,15 +494,15 @@ async fn a_computer_use_step_before_a_begin_is_refused_and_after_one_it_runs() {
 
     rig.client
         .send(
-            &ClientFrame::Request(InferRequest::CuaBegin(CuaBegin::new(
+            &ClientFrame::Request(InferRequest::ComputerUseBegin(ComputerUseBegin::new(
                 "rename".into(),
-                CuaEnv::Desktop,
+                ComputerUseEnv::Desktop,
             ))),
             &[],
         )
         .await;
     started(&rig, 1).await;
-    let ack = InferReply::CuaStep(CuaStepReply::new(vec![]));
+    let ack = InferReply::ComputerUseStep(ComputerUseStepReply::new(vec![]));
     push(&rig, 0, TurnStep::Done(ack.clone()));
     assert_eq!(
         rig.client.until_finished().await,

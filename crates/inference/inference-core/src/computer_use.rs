@@ -1,11 +1,13 @@
-//! The computer-use step: the contract between cuad and inferd. Every point is in
+//! The computer-use step: the contract between the computer-use daemon and inferd. Every point is in
 //! `WindowSpace` (logical window pixels); inferd's `computer-use-session` maps to and from the model's
 //! own space and drops anything out of frame.
 
 use crate::error::ModelError;
 use crate::request::ImageSource;
-use account_capability::CuaEnv;
-use computer_use_action::{CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace};
+use account_capability::ComputerUseEnv;
+use computer_use_action::{
+    ComputerUseAction, DeviceSize, PixelFormat, Point, Scale120, Size, WindowSpace,
+};
 use serde::{Deserialize, Serialize};
 use std::fmt;
 
@@ -13,22 +15,22 @@ pub use computer_use_parse::DropReason;
 pub use computer_use_session::{MaskedRegions, StepIndex, TreeText};
 pub use model_vision_prep::MediaType;
 
-/// Opens a computer-use run: the goal and the planner's hints. Later `CuaStep` requests on the
+/// Opens a computer-use run: the goal and the planner's hints. Later `ComputerUseStep` requests on the
 /// same session continue it; the session is pinned to one model so its history stays valid.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CuaBegin {
+pub struct ComputerUseBegin {
     /// What the person asked for.
     pub goal: String,
     /// Short typed hints from the planner.
     pub hints: Vec<String>,
     /// What is operated.
-    pub env: CuaEnv,
+    pub env: ComputerUseEnv,
 }
 
-impl CuaBegin {
+impl ComputerUseBegin {
     /// A run toward `goal` in `env`, with no hints.
     #[must_use]
-    pub fn new(goal: String, env: CuaEnv) -> Self {
+    pub fn new(goal: String, env: ComputerUseEnv) -> Self {
         Self {
             goal,
             hints: Vec::new(),
@@ -45,11 +47,11 @@ impl CuaBegin {
 }
 
 // The goal is what the person asked for: Debug shows sizes only.
-impl fmt::Debug for CuaBegin {
+impl fmt::Debug for ComputerUseBegin {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "CuaBegin(<goal {} chars, {} hints>, {:?})",
+            "ComputerUseBegin(<goal {} chars, {} hints>, {:?})",
             self.goal.chars().count(),
             self.hints.len(),
             self.env
@@ -59,7 +61,7 @@ impl fmt::Debug for CuaBegin {
 
 /// One step: what the window shows now and what happened to the last actions.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CuaStepRequest {
+pub struct ComputerUseStepRequest {
     /// Which step.
     pub step: StepIndex,
     /// The window's size and scale.
@@ -79,7 +81,7 @@ pub struct CuaStepRequest {
     pub notes: Vec<StepNote>,
 }
 
-impl CuaStepRequest {
+impl ComputerUseStepRequest {
     /// Step `step`: what the window shows (`frame`, in `window`) and its accessibility text. No
     /// pointer position, no earlier results, no masked regions and no notes until the `with_*`
     /// methods say so.
@@ -215,22 +217,22 @@ pub enum PrevResult {
 
 /// The model's answer to one step.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct CuaStepReply {
+pub struct ComputerUseStepReply {
     /// Its reasoning, when it gave any.
     pub thought: Option<String>,
     /// The actions to try, in order, in window space.
-    pub actions: Vec<CuaAction<WindowSpace>>,
+    pub actions: Vec<ComputerUseAction<WindowSpace>>,
     /// What was read but not usable.
     pub dropped: Vec<DroppedAction>,
     /// Vendor hints. They only ever add asks.
     pub safety: Vec<SafetyHint>,
 }
 
-impl CuaStepReply {
+impl ComputerUseStepReply {
     /// A reply proposing these actions: no reasoning, nothing dropped and no vendor hints until
     /// the `with_*` methods say so.
     #[must_use]
-    pub fn new(actions: Vec<CuaAction<WindowSpace>>) -> Self {
+    pub fn new(actions: Vec<ComputerUseAction<WindowSpace>>) -> Self {
         Self {
             thought: None,
             actions,
@@ -283,7 +285,7 @@ pub enum SafetyHint {
 /// Why a step produced no reply.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
-pub enum CuaStepFailure {
+pub enum ComputerUseStepFailure {
     /// The reply could not be parsed, even after the repair attempt.
     Unparseable,
     /// The model call failed.

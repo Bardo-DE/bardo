@@ -12,7 +12,7 @@
 #
 # The four fixed callers are told apart by role and app together:
 #   role "agent"      + app org.bardo.Intents -> the router (bardo-actiond)
-#   role "cua"                                -> bardo-computer-use
+#   role "computer_use"                                -> bardo-computer-use
 #   role "sheet_host" + app org.bardo.Shell   -> the shell (bardo-shell)
 #   role "settings"   + app org.bardo.Settings -> the Settings app (bardo-settings)
 # Every other row is an app with that identity.
@@ -25,7 +25,7 @@ role = "agent"
 [[caller]]
 app = "org.bardo.ComputerUse"
 unit = "bardo-computer-use.service"
-role = "cua"
+role = "computer_use"
 
 [[caller]]
 app = "org.bardo.Shell"

@@ -1,6 +1,6 @@
 //! The phases of a run, and the small facts about them that other crates read.
 
-use computer_use_bus::{CuaOutcome, QuestionId, RunStateSlug, TargetedAction};
+use computer_use_bus::{ComputerUseOutcome, QuestionId, RunStateSlug, TargetedAction};
 use computer_use_capture::Settle;
 use computer_use_desktop::Stamp;
 use inference_core::StepIndex;
@@ -37,7 +37,7 @@ pub enum RunPhase {
     /// The person has the window, since this instant.
     TakenOver(StepIndex, Stamp),
     /// Over.
-    Finished(CuaOutcome),
+    Finished(ComputerUseOutcome),
 }
 
 impl RunPhase {
@@ -103,7 +103,7 @@ impl RunPhase {
 
     /// How the run ended; none while it goes on.
     #[must_use]
-    pub fn outcome(&self) -> Option<CuaOutcome> {
+    pub fn outcome(&self) -> Option<ComputerUseOutcome> {
         match self {
             RunPhase::Finished(outcome) => Some(*outcome),
             _ => None,
@@ -208,7 +208,7 @@ mod tests {
                 active: false,
             },
             Row {
-                phase: RunPhase::Finished(CuaOutcome::Cancelled(CancelledBy::User)),
+                phase: RunPhase::Finished(ComputerUseOutcome::Cancelled(CancelledBy::User)),
                 slug: RunStateSlug::Finished,
                 step: None,
                 active: false,

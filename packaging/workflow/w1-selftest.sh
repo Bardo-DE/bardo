@@ -100,9 +100,9 @@ has "bardo-inferd settings: screen slot" "$cfg" '[ai.model.computer_use]'
 has "bardo-inferd settings: floors stay near" "$cfg" 'screen = "local_network"'
 lacks "bardo-inferd settings: nothing may go anywhere" "$cfg" '"anywhere"'
 python3 -I -c 'import tomllib,sys; tomllib.loads(sys.stdin.read())' <<<"$cfg" && ok "bardo-inferd settings: valid" || bad "bardo-inferd settings: valid"
-cua=$("${PY[@]}" bardo-computer-use-settings --app org.blender.Blender=ask --app app.zen_browser.zen=ask)
-has "screen helper settings: on" "$cua" 'enabled = "on"'
-has "screen helper settings: Blender listed" "$cua" 'app = "org.blender.Blender"'
+computer_use=$("${PY[@]}" bardo-computer-use-settings --app org.blender.Blender=ask --app app.zen_browser.zen=ask)
+has "screen helper settings: on" "$computer_use" 'enabled = "on"'
+has "screen helper settings: Blender listed" "$computer_use" 'app = "org.blender.Blender"'
 
 printf 'ID=fedora\n' >"$scratch/os"; has "hint: Fedora" "$("${PY[@]}" hint blender --os-release "$scratch/os")" "sudo dnf install blender"
 printf 'ID=ubuntu\nID_LIKE=debian\n' >"$scratch/os"; has "hint: Ubuntu" "$("${PY[@]}" hint firefox --os-release "$scratch/os")" "sudo apt install firefox"

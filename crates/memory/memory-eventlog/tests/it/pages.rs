@@ -121,7 +121,7 @@ fn each_actor_filter_picks_its_own_kinds_and_the_terminal_has_a_bucket() {
     let actors = [
         user(),
         companion(AgentRole::Planner),
-        companion(AgentRole::Cua {
+        companion(AgentRole::ComputerUse {
             run: RunId::parse("r-1").expect("run"),
         }),
         Actor::Mcp {

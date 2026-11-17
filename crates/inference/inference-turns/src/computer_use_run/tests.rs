@@ -1,8 +1,8 @@
 use super::*;
-use account_capability::CuaEnv;
+use account_capability::ComputerUseEnv;
 use base_testkit::Scratch;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, Point, Scale120, Size, Target, WindowSpace,
+    Button, ClickCount, ComputerUseAction, Coord, Point, Scale120, Size, Target, WindowSpace,
 };
 use inference_core::{
     AttachIndex, FrameImage, FrameLayout, InferEvent, InferRefusal, MediaType, StepIndex,
@@ -26,12 +26,12 @@ fn memfd(bytes: &[u8]) -> OwnedFd {
     fd
 }
 
-fn begin() -> CuaBegin {
-    CuaBegin::new("open settings".into(), CuaEnv::Desktop)
+fn begin() -> ComputerUseBegin {
+    ComputerUseBegin::new("open settings".into(), ComputerUseEnv::Desktop)
 }
 
-fn request(step: u32) -> CuaStepRequest {
-    CuaStepRequest::new(
+fn request(step: u32) -> ComputerUseStepRequest {
+    ComputerUseStepRequest::new(
         StepIndex(step),
         WindowGeometry {
             logical: Size::new(Coord(200), Coord(100)),
@@ -59,14 +59,14 @@ fn script(events: Vec<TurnEvent>) -> Script {
         end: Ok(TurnEnd {
             stop: StopReason::ToolUse,
             usage: TurnUsage::default(),
-            served: ModelName("tiny-cua".into()),
+            served: ModelName("tiny-computer-use".into()),
             first_token: None,
         }),
     }
 }
 
-fn at(x: u32, y: u32) -> CuaAction<WindowSpace> {
-    CuaAction::Click {
+fn at(x: u32, y: u32) -> ComputerUseAction<WindowSpace> {
+    ComputerUseAction::Click {
         at: Target::Point(Point::new(Coord(x), Coord(y))),
         button: Button::Left,
         count: ClickCount::One,
@@ -98,17 +98,17 @@ struct Rig {
 impl Rig {
     fn new() -> Self {
         Self {
-            scratch: Scratch::new("cua-run"),
+            scratch: Scratch::new("computer-use-run"),
         }
     }
 
     async fn step(
         &self,
-        run: &mut CuaRun,
+        run: &mut ComputerUseRun,
         provider: &ScriptedProvider,
         number: u32,
         sink: &mut Events,
-    ) -> Result<CuaStepReply, CuaStepFailure> {
+    ) -> Result<ComputerUseStepReply, ComputerUseStepFailure> {
         let model = models(&self.scratch).remove(2);
         let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
         let request = request(number);
@@ -137,7 +137,7 @@ async fn a_step_streams_its_thought_and_proposals_into_the_sink_and_returns_the_
     );
     let mut sink = Events::default();
     let reply = Rig::new()
-        .step(&mut CuaRun::begin(begin()), &provider, 0, &mut sink)
+        .step(&mut ComputerUseRun::begin(begin()), &provider, 0, &mut sink)
         .await
         .expect("a reply");
     assert_eq!(reply.actions, vec![at(100, 25)]);
@@ -150,8 +150,10 @@ async fn a_step_streams_its_thought_and_proposals_into_the_sink_and_returns_the_
     );
 }
 
-fn remembered(run: &CuaRun) -> usize {
-    run.session.as_ref().map_or(0, CuaSession::remembered)
+fn remembered(run: &ComputerUseRun) -> usize {
+    run.session
+        .as_ref()
+        .map_or(0, ComputerUseSession::remembered)
 }
 
 fn images(provider: &ScriptedProvider, which: usize) -> usize {
@@ -183,7 +185,7 @@ async fn the_run_remembers_its_steps_and_a_step_that_failed_to_reach_the_engine_
         ],
     );
     let rig = Rig::new();
-    let mut run = CuaRun::begin(begin());
+    let mut run = ComputerUseRun::begin(begin());
     assert_eq!(remembered(&run), 0);
     let mut sink = Events::default();
     rig.step(&mut run, &provider, 0, &mut sink)
@@ -192,7 +194,7 @@ async fn the_run_remembers_its_steps_and_a_step_that_failed_to_reach_the_engine_
     assert_eq!(remembered(&run), 1);
     assert_eq!(
         rig.step(&mut run, &provider, 1, &mut sink).await.err(),
-        Some(CuaStepFailure::ModelFailed(
+        Some(ComputerUseStepFailure::ModelFailed(
             inference_core::ModelError::Unreachable
         ))
     );
@@ -229,11 +231,11 @@ async fn a_reply_that_never_parses_is_a_step_the_model_took() {
             script(vec![TurnEvent::TextDelta("hmm".into())]),
         ],
     );
-    let mut run = CuaRun::begin(begin());
+    let mut run = ComputerUseRun::begin(begin());
     let got = Rig::new()
         .step(&mut run, &provider, 0, &mut Events::default())
         .await;
-    assert_eq!(got.err(), Some(CuaStepFailure::Unparseable));
+    assert_eq!(got.err(), Some(ComputerUseStepFailure::Unparseable));
     assert_eq!(
         remembered(&run),
         1,
@@ -243,12 +245,12 @@ async fn a_reply_that_never_parses_is_a_step_the_model_took() {
 
 #[tokio::test]
 async fn a_model_with_no_computer_use_dialect_cannot_run_a_step() {
-    let scratch = Scratch::new("cua-chat");
+    let scratch = Scratch::new("computer-use-chat");
     let chat = models(&scratch).remove(0);
     let provider = ScriptedProvider::new(vec![], vec![]);
     let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
     let request = request(0);
-    let got = CuaRun::begin(begin())
+    let got = ComputerUseRun::begin(begin())
         .step(
             StepJob {
                 model: &chat,
@@ -262,7 +264,7 @@ async fn a_model_with_no_computer_use_dialect_cannot_run_a_step() {
         .await;
     assert_eq!(
         got.err(),
-        Some(CuaStepFailure::ModelFailed(
+        Some(ComputerUseStepFailure::ModelFailed(
             inference_core::ModelError::Unreadable
         ))
     );
@@ -282,7 +284,7 @@ async fn a_sink_that_stops_ends_the_proposals_but_not_the_reply() {
         ..Events::default()
     };
     let reply = Rig::new()
-        .step(&mut CuaRun::begin(begin()), &provider, 0, &mut sink)
+        .step(&mut ComputerUseRun::begin(begin()), &provider, 0, &mut sink)
         .await
         .expect("a reply");
     assert_eq!(sink.seen.len(), 1, "one proposal, then Stop");
@@ -336,7 +338,7 @@ async fn one_session_serves_every_step_and_a_failed_repair_leaves_its_budget_who
         ],
     );
     let rig = Rig::new();
-    let mut run = CuaRun::begin(begin());
+    let mut run = ComputerUseRun::begin(begin());
     let mut sink = Events::default();
     let mut counts = Vec::new();
     for (number, ok) in [(0, true), (1, false), (1, true), (2, true)] {

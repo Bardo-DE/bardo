@@ -1,22 +1,23 @@
 //! The phase table, one row at a time: the next phase and the effects that matter. The
-//! rows follow `cua.md` section 4 as the router's gate changed it.
+//! rows follow `computer_use.md` section 4 as the router's gate changed it.
 
 use crate::support::*;
 use action_core::{CallRefusal, ConfirmEnd};
 use action_gate_wire::GateAnswer;
 use action_wire::GrantAnswer;
 use computer_use_action::{
-    Choice, Coord, CuaAction, Extracted, ExtractedText, FieldName, FinishOutcome, Rect, Size,
-    Summary,
+    Choice, ComputerUseAction, Coord, Extracted, ExtractedText, FieldName, FinishOutcome, Rect,
+    Size, Summary,
 };
 use computer_use_bus::{
-    ActionOutcome, ActionResult, BlockedOn, CuaOutcome, CuaRecord, FailReason, LocalRefusal,
-    QuestionId, Refusal, RunBudgetKind, SuccessCheck,
+    ActionOutcome, ActionResult, BlockedOn, ComputerUseOutcome, ComputerUseRecord, FailReason,
+    LocalRefusal, QuestionId, Refusal, RunBudgetKind, SuccessCheck,
 };
 use computer_use_capture::{CaptureError, DamageAt, DamageSource, FrameWant, Settle};
 use computer_use_desktop::{BackendKind, GlowState, LeaseId, Stamp, Suspend, ToplevelIdent};
 use computer_use_run::{
-    CheckResult, CuaModelError, CuaSignal, RunEffect, RunInput, RunPhase, SettleWatch, StepEvent,
+    CheckResult, ComputerUseModelError, ComputerUseSignal, RunEffect, RunInput, RunPhase,
+    SettleWatch, StepEvent,
 };
 use computer_use_seat_input::{InputOrigin, InputReceipt, SeatError};
 use inference_core::StepIndex;
@@ -86,13 +87,13 @@ fn states(effects: &[RunEffect]) -> Vec<computer_use_bus::RunStateSlug> {
     effects
         .iter()
         .filter_map(|e| match e {
-            RunEffect::Emit(CuaSignal::StateChanged(s)) => Some(*s),
+            RunEffect::Emit(ComputerUseSignal::StateChanged(s)) => Some(*s),
             _ => None,
         })
         .collect()
 }
 
-fn finished_with(d: &Drive) -> Option<CuaOutcome> {
+fn finished_with(d: &Drive) -> Option<ComputerUseOutcome> {
     match d.phase() {
         RunPhase::Finished(o) => Some(*o),
         _ => None,
@@ -131,7 +132,7 @@ fn the_consent_row_leases_the_window_on_yes_and_blocks_on_no() {
         d.feed(input);
         assert_eq!(
             finished_with(&d),
-            Some(CuaOutcome::Blocked(BlockedOn::ConsentDenied)),
+            Some(ComputerUseOutcome::Blocked(BlockedOn::ConsentDenied)),
             "{name}"
         );
     }
@@ -148,7 +149,10 @@ fn the_lease_row_starts_the_first_look_and_the_capture_comes_last() {
     assert!(d.has(|e| matches!(e, RunEffect::Glow(GlowState::Working))));
     assert!(d.has(|e| matches!(e, RunEffect::FetchContext)));
     assert!(d.has(|e| matches!(e, RunEffect::Snapshot(_))));
-    assert!(d.has(|e| matches!(e, RunEffect::Emit(CuaSignal::StepStarted(StepIndex(1))))));
+    assert!(d.has(|e| matches!(
+        e,
+        RunEffect::Emit(ComputerUseSignal::StepStarted(StepIndex(1)))
+    )));
     assert_eq!(
         d.effects.last(),
         Some(&RunEffect::Capture {
@@ -164,7 +168,7 @@ fn the_lease_row_starts_the_first_look_and_the_capture_comes_last() {
     ));
     assert_eq!(
         finished_with(&refused),
-        Some(CuaOutcome::Blocked(BlockedOn::LeaseRefused))
+        Some(ComputerUseOutcome::Blocked(BlockedOn::LeaseRefused))
     );
     assert!(
         !refused.has(|e| matches!(e, RunEffect::ReleaseLease(_))),
@@ -196,12 +200,12 @@ fn equal_frames_in_a_row_end_the_run_as_a_stall() {
     let mut d = Drive::leased(STOCK, task(model_says()));
     for _ in 0..2 {
         d.feed(RunInput::Observed(Box::new(observation(5, tree(vec![])))));
-        d.feed(RunInput::ModelFailed(CuaModelError::Transient));
+        d.feed(RunInput::ModelFailed(ComputerUseModelError::Transient));
     }
     d.feed(RunInput::Observed(Box::new(observation(5, tree(vec![])))));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::BudgetOut(RunBudgetKind::Stall))
+        Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Stall))
     );
 }
 
@@ -212,13 +216,13 @@ fn the_step_budget_ends_the_run_when_the_step_past_it_is_observed() {
     let mut d = Drive::leased(STOCK, t);
     d.feed(RunInput::Observed(Box::new(observation(1, tree(vec![])))));
     assert_eq!(*d.phase(), RunPhase::Thinking(StepIndex(1)));
-    d.feed(RunInput::ModelFailed(CuaModelError::Parse));
+    d.feed(RunInput::ModelFailed(ComputerUseModelError::Parse));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(1)));
     d.run.phase = RunPhase::Observing(StepIndex(2));
     d.feed(RunInput::Observed(Box::new(observation(2, tree(vec![])))));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::BudgetOut(RunBudgetKind::Steps))
+        Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Steps))
     );
 }
 
@@ -231,13 +235,13 @@ fn a_failed_capture_is_tried_again_once_and_a_gone_window_ends_the_run() {
     d.feed(RunInput::CaptureFailed(CaptureError::Protocol("x".into())));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Failed(FailReason::Capture))
+        Some(ComputerUseOutcome::Failed(FailReason::Capture))
     );
     let mut gone = Drive::leased(STOCK, task(model_says()));
     gone.feed(RunInput::CaptureFailed(CaptureError::SourceGone));
     assert_eq!(
         finished_with(&gone),
-        Some(CuaOutcome::Failed(FailReason::WindowGone))
+        Some(ComputerUseOutcome::Failed(FailReason::WindowGone))
     );
     assert!(gone.has(|e| matches!(e, RunEffect::ReleaseLease(LeaseId(1)))));
 }
@@ -248,7 +252,7 @@ fn what_the_model_says_while_thinking_is_announced_once() {
     d.feed(RunInput::ModelEvent(StepEvent::ActionProposed(click_at(
         1, 1,
     ))));
-    assert!(d.has(|e| matches!(e, RunEffect::Emit(CuaSignal::ActionProposed(..)))));
+    assert!(d.has(|e| matches!(e, RunEffect::Emit(ComputerUseSignal::ActionProposed(..)))));
     d.feed(RunInput::ModelReplied(reply(vec![
         click_at(1, 1),
         click_at(2, 2),
@@ -256,7 +260,7 @@ fn what_the_model_says_while_thinking_is_announced_once() {
     let announced = d
         .effects
         .iter()
-        .filter(|e| matches!(e, RunEffect::Emit(CuaSignal::ActionProposed(..))))
+        .filter(|e| matches!(e, RunEffect::Emit(ComputerUseSignal::ActionProposed(..))))
         .count();
     assert_eq!(announced, 1, "the streamed one is not announced again");
 }
@@ -371,7 +375,7 @@ fn a_verdict_to_run_injects_and_the_input_settles_before_the_next_look() {
     ));
     assert_eq!(kinds(&d.effects), ["cua.step"]);
     assert!(d.has(|e| matches!(e, RunEffect::WatchSettle { .. })));
-    assert!(d.has(|e| matches!(e, RunEffect::Emit(CuaSignal::ActionDone(..)))));
+    assert!(d.has(|e| matches!(e, RunEffect::Emit(ComputerUseSignal::ActionDone(..)))));
     assert!(
         d.run.pending.actions.is_empty(),
         "the rest of the batch is dropped"
@@ -428,7 +432,10 @@ fn an_empty_queue_after_settling_looks_again_after_the_damage() {
             hints: computer_use_run::HintSource::FromTree
         })
     );
-    assert!(d.has(|e| matches!(e, RunEffect::Emit(CuaSignal::StepStarted(StepIndex(2))))));
+    assert!(d.has(|e| matches!(
+        e,
+        RunEffect::Emit(ComputerUseSignal::StepStarted(StepIndex(2)))
+    )));
     assert_eq!(d.run.track.settle, SettleWatch::Idle);
 }
 
@@ -525,7 +532,7 @@ fn a_long_wait_is_not_a_stall_until_the_total_is_spent() {
     }
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::BudgetOut(RunBudgetKind::Stall))
+        Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Stall))
     );
     assert!(waited > total, "only after the total: {waited} ms");
 }
@@ -537,7 +544,9 @@ fn the_person_can_stop_a_run_in_the_middle_of_a_long_wait() {
     d.feed_after(5000, RunInput::UserCancel);
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Cancelled(computer_use_bus::CancelledBy::User))
+        Some(ComputerUseOutcome::Cancelled(
+            computer_use_bus::CancelledBy::User
+        ))
     );
     assert!(d.has(|e| matches!(e, RunEffect::CancelSettle)));
     assert_eq!(d.run.track.settle, SettleWatch::Idle);
@@ -546,8 +555,8 @@ fn the_person_can_stop_a_run_in_the_middle_of_a_long_wait() {
 #[test]
 fn zoom_and_observe_just_look_again_and_drop_the_rest() {
     for look in [
-        CuaAction::Observe,
-        CuaAction::Zoom {
+        ComputerUseAction::Observe,
+        ComputerUseAction::Zoom {
             region: Rect {
                 origin: computer_use_action::Point::new(Coord(0), Coord(0)),
                 size: Size::new(Coord(10), Coord(10)),
@@ -565,7 +574,7 @@ fn zoom_and_observe_just_look_again_and_drop_the_rest() {
 #[test]
 fn finish_done_on_the_models_word_ends_the_run_and_reports_done_with_the_values() {
     let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
-    let finish = CuaAction::Finish {
+    let finish = ComputerUseAction::Finish {
         outcome: FinishOutcome::Done,
         summary: Summary::new("Downloaded it.").unwrap(),
         extracted: vec![Extracted {
@@ -574,7 +583,7 @@ fn finish_done_on_the_models_word_ends_the_run_and_reports_done_with_the_values(
         }],
     };
     d.feed(RunInput::ModelReplied(reply(vec![finish])));
-    assert_eq!(finished_with(&d), Some(CuaOutcome::Done));
+    assert_eq!(finished_with(&d), Some(ComputerUseOutcome::Done));
     let (status, text) = report_of(&d.effects).expect("a report");
     assert_eq!(status, ReportStatus::Done);
     assert_eq!(text, ["Downloaded it.", "invoice_no: 2291"]);
@@ -587,7 +596,7 @@ fn finish_done_on_the_models_word_ends_the_run_and_reports_done_with_the_values(
             RunEffect::ReleaseLease(_) => "release",
             RunEffect::Report(_) => "report",
             RunEffect::Record(_) => "record",
-            RunEffect::Emit(CuaSignal::Finished(_)) => "finished",
+            RunEffect::Emit(ComputerUseSignal::Finished(_)) => "finished",
             _ => "",
         })
         .filter(|s| !s.is_empty())
@@ -606,7 +615,7 @@ fn finish_failed_or_infeasible_ends_failed() {
         )])));
         assert_eq!(
             finished_with(&d),
-            Some(CuaOutcome::Failed(FailReason::Infeasible))
+            Some(ComputerUseOutcome::Failed(FailReason::Infeasible))
         );
         assert_eq!(report_of(&d.effects).unwrap().0, ReportStatus::Failed);
         assert_eq!(report_of(&d.effects).unwrap().1, ["No such page."]);
@@ -629,7 +638,7 @@ fn a_success_check_on_the_tree_must_pass_before_done() {
         assert!(d.has(|e| matches!(e, RunEffect::VerifyTree(_))));
         let mut failing = d.run.clone();
         d.feed(RunInput::Checked(CheckResult::Pass));
-        assert_eq!(finished_with(&d), Some(CuaOutcome::Done));
+        assert_eq!(finished_with(&d), Some(ComputerUseOutcome::Done));
         assert_eq!(report_of(&d.effects).unwrap().1, ["ok"]);
 
         let (run, effects) = {
@@ -652,7 +661,7 @@ fn a_success_check_on_the_tree_must_pass_before_done() {
 #[test]
 fn a_question_waits_for_the_person_and_the_answer_goes_back_as_the_outcome() {
     let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
-    let ask = CuaAction::Ask {
+    let ask = ComputerUseAction::Ask {
         question: Summary::new("Which account?").unwrap(),
         choices: vec![Choice::new("Work").unwrap(), Choice::new("Home").unwrap()],
     };
@@ -660,7 +669,7 @@ fn a_question_waits_for_the_person_and_the_answer_goes_back_as_the_outcome() {
     let q = QuestionId(1);
     assert_eq!(*d.phase(), RunPhase::WaitingForUser(StepIndex(1), q));
     let body = d.effects.iter().find_map(|e| match e {
-        RunEffect::Emit(CuaSignal::AskUser(id, body)) => Some((*id, body.clone())),
+        RunEffect::Emit(ComputerUseSignal::AskUser(id, body)) => Some((*id, body.clone())),
         _ => None,
     });
     let (id, body) = body.expect("an AskUser signal");
@@ -699,38 +708,40 @@ fn a_model_that_cannot_read_images_ends_the_run_at_once_in_its_own_words() {
     named.feed(RunInput::ModelBlind(Some(sentence.to_owned())));
     assert_eq!(
         finished_with(&named),
-        Some(CuaOutcome::Failed(FailReason::CannotSeeScreen)),
+        Some(ComputerUseOutcome::Failed(FailReason::CannotSeeScreen)),
         "not retried, not the generic model failure"
     );
     assert!(named.has(|e| matches!(e, RunEffect::CancelModel)));
     let mut unnamed = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
-    unnamed.feed(RunInput::ModelFailed(CuaModelError::CannotSeeScreen));
+    unnamed.feed(RunInput::ModelFailed(
+        ComputerUseModelError::CannotSeeScreen,
+    ));
     assert_eq!(
         finished_with(&unnamed),
-        Some(CuaOutcome::Failed(FailReason::CannotSeeScreen))
+        Some(ComputerUseOutcome::Failed(FailReason::CannotSeeScreen))
     );
 }
 
 #[test]
 fn model_failures_are_counted_and_the_limit_ends_the_run() {
     let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
-    d.feed(RunInput::ModelFailed(CuaModelError::Transient));
+    d.feed(RunInput::ModelFailed(ComputerUseModelError::Transient));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(1)));
     d.feed(RunInput::Observed(Box::new(observation(2, tree(vec![])))));
-    d.feed(RunInput::ModelFailed(CuaModelError::Parse));
+    d.feed(RunInput::ModelFailed(ComputerUseModelError::Parse));
     assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(1)));
     d.feed(RunInput::Observed(Box::new(observation(3, tree(vec![])))));
-    d.feed(RunInput::ModelFailed(CuaModelError::Transient));
+    d.feed(RunInput::ModelFailed(ComputerUseModelError::Transient));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Failed(FailReason::Model)),
+        Some(ComputerUseOutcome::Failed(FailReason::Model)),
         "the third failure is over the limit of two"
     );
     let mut fatal = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
-    fatal.feed(RunInput::ModelFailed(CuaModelError::Fatal));
+    fatal.feed(RunInput::ModelFailed(ComputerUseModelError::Fatal));
     assert_eq!(
         finished_with(&fatal),
-        Some(CuaOutcome::Failed(FailReason::Model))
+        Some(ComputerUseOutcome::Failed(FailReason::Model))
     );
     assert!(fatal.has(|e| matches!(e, RunEffect::CancelModel)));
 }
@@ -762,7 +773,7 @@ fn spend_over_the_budget_ends_the_run_after_the_reply() {
     d.feed(RunInput::ModelReplied(r));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::BudgetOut(RunBudgetKind::Spend))
+        Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Spend))
     );
     let mut ok = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
     ok.feed(RunInput::ModelReplied(reply(vec![click_at(1, 1)])));
@@ -780,7 +791,7 @@ fn a_zero_spend_cap_stops_on_a_cloud_reply_only() {
     cloud.feed(RunInput::ModelReplied(r));
     assert_eq!(
         finished_with(&cloud),
-        Some(CuaOutcome::BudgetOut(RunBudgetKind::Spend))
+        Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Spend))
     );
     let mut paid = task(model_says());
     paid.budget.spend = Money::usd(Decimal::ONE);
@@ -830,7 +841,7 @@ fn a_paused_session_blocks_the_run_and_a_halted_space_pauses_it() {
     ))));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Blocked(BlockedOn::PolicyDenials))
+        Some(ComputerUseOutcome::Blocked(BlockedOn::PolicyDenials))
     );
     let mut halted = authorising();
     halted.feed(RunInput::Verdict(GateAnswer::Refused(CallRefusal::Halted(
@@ -848,7 +859,7 @@ fn a_router_that_cannot_be_asked_blocks_the_run() {
     ));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Blocked(BlockedOn::RouterUnreachable))
+        Some(ComputerUseOutcome::Blocked(BlockedOn::RouterUnreachable))
     );
 }
 
@@ -880,7 +891,7 @@ fn a_confirmation_that_is_granted_runs_the_action_and_resumes_input_on_stock() {
     d.feed(RunInput::Injected(receipt(50)));
     let step = d.effects.iter().find_map(|e| match e {
         RunEffect::Record(r) => match &**r {
-            CuaRecord::Step { authorised_by, .. } => Some(*authorised_by),
+            ComputerUseRecord::Step { authorised_by, .. } => Some(*authorised_by),
             _ => None,
         },
         _ => None,
@@ -922,7 +933,7 @@ fn the_rate_limit_ends_the_run_before_the_action_that_would_pass_it() {
     d.feed(RunInput::Verdict(GateAnswer::Run));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::BudgetOut(RunBudgetKind::Rate))
+        Some(ComputerUseOutcome::BudgetOut(RunBudgetKind::Rate))
     );
 }
 
@@ -938,7 +949,7 @@ fn input_that_cannot_be_delivered_looks_again_unless_the_window_is_gone() {
     gone.feed(RunInput::InjectFailed(SeatError::TargetGone));
     assert_eq!(
         finished_with(&gone),
-        Some(CuaOutcome::Failed(FailReason::WindowGone))
+        Some(ComputerUseOutcome::Failed(FailReason::WindowGone))
     );
 }
 
@@ -956,10 +967,10 @@ fn the_bus_is_told_how_many_equal_frames_came_in_a_row() {
     let mut d = Drive::leased(STOCK, task(model_says()));
     d.feed(RunInput::Observed(Box::new(observation(5, tree(vec![])))));
     assert_eq!(d.run.used.stalled, base_ids::Count(1));
-    d.feed(RunInput::ModelFailed(CuaModelError::Transient));
+    d.feed(RunInput::ModelFailed(ComputerUseModelError::Transient));
     d.feed(RunInput::Observed(Box::new(observation(5, tree(vec![])))));
     assert_eq!(d.run.used.stalled, base_ids::Count(2));
-    d.feed(RunInput::ModelFailed(CuaModelError::Transient));
+    d.feed(RunInput::ModelFailed(ComputerUseModelError::Transient));
     d.feed(RunInput::Observed(Box::new(observation(6, tree(vec![])))));
     assert_eq!(
         d.run.used.stalled,
@@ -977,7 +988,9 @@ fn an_injection_receipt_with_no_action_waiting_fails_the_run_instead_of_panickin
     d.feed(RunInput::Injected(receipt(0)));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Failed(computer_use_bus::FailReason::Input))
+        Some(ComputerUseOutcome::Failed(
+            computer_use_bus::FailReason::Input
+        ))
     );
     let mut d = Drive::leased(STOCK, task(model_says()));
     d.feed(RunInput::Observed(Box::new(observation(1, tree(vec![])))));
@@ -988,7 +1001,9 @@ fn an_injection_receipt_with_no_action_waiting_fails_the_run_instead_of_panickin
     ));
     assert_eq!(
         finished_with(&d),
-        Some(CuaOutcome::Failed(computer_use_bus::FailReason::Input))
+        Some(ComputerUseOutcome::Failed(
+            computer_use_bus::FailReason::Input
+        ))
     );
 }
 
@@ -1012,7 +1027,7 @@ fn a_sensitive_window_asks_the_person_even_when_the_router_says_run() {
         d.feed(RunInput::Verdict(GateAnswer::Run));
         let q = QuestionId(1);
         assert_eq!(*d.phase(), RunPhase::WaitingForUser(StepIndex(1), q));
-        assert!(d.has(|e| matches!(e, RunEffect::Emit(CuaSignal::AskUser(..)))));
+        assert!(d.has(|e| matches!(e, RunEffect::Emit(ComputerUseSignal::AskUser(..)))));
         assert!(!d.has(|e| matches!(e, RunEffect::Inject(_))), "nothing ran");
         assert_eq!(
             d.run.pending.actions.len(),
@@ -1029,7 +1044,7 @@ fn a_sensitive_window_asks_the_person_even_when_the_router_says_run() {
             assert!(d.has(|e| matches!(e, RunEffect::Inject(_))));
             assert!(d.has(|e| matches!(
                 e,
-                RunEffect::Record(r) if matches!(**r, CuaRecord::Confirmed { .. })
+                RunEffect::Record(r) if matches!(**r, ComputerUseRecord::Confirmed { .. })
             )));
         } else {
             assert_eq!(*d.phase(), RunPhase::Observing(StepIndex(2)));
@@ -1045,7 +1060,10 @@ fn a_sensitive_window_asks_the_person_even_when_the_router_says_run() {
 
 /// Runs one click, lets the screen settle on frame byte 1 again, and has the model answer with
 /// `second` after a look at frame byte `look`.
-fn repeat_after_click(look: u8, second: CuaAction<computer_use_action::WindowSpace>) -> Drive {
+fn repeat_after_click(
+    look: u8,
+    second: ComputerUseAction<computer_use_action::WindowSpace>,
+) -> Drive {
     let mut d = Drive::thinking(STOCK, task(model_says()), tree(vec![]));
     d.feed(RunInput::ModelReplied(reply(vec![click_at(1, 1)])));
     d.feed(RunInput::Verdict(GateAnswer::Run));
@@ -1081,8 +1099,8 @@ fn the_same_input_on_a_screen_that_did_not_change_is_refused_before_it_is_asked(
 fn press(
     mods: &[computer_use_action::Modifier],
     key: keyboard_types::Key,
-) -> CuaAction<computer_use_action::WindowSpace> {
-    CuaAction::Key {
+) -> ComputerUseAction<computer_use_action::WindowSpace> {
+    ComputerUseAction::Key {
         chord: computer_use_action::Chord::new(mods.iter().copied().collect(), key).unwrap(),
         repeat: computer_use_action::Repeat::ONCE,
     }
@@ -1130,17 +1148,17 @@ fn the_look_after_an_input_is_recorded_as_changed_or_not() {
             byte,
             tree(vec![]),
         ))));
-        let seen: Vec<&CuaRecord> = d
+        let seen: Vec<&ComputerUseRecord> = d
             .effects
             .iter()
             .filter_map(|e| match e {
-                RunEffect::Record(r) if matches!(**r, CuaRecord::Seen { .. }) => Some(&**r),
+                RunEffect::Record(r) if matches!(**r, ComputerUseRecord::Seen { .. }) => Some(&**r),
                 _ => None,
             })
             .collect();
         assert_eq!(
             seen,
-            [&CuaRecord::Seen {
+            [&ComputerUseRecord::Seen {
                 run: run_id(),
                 n: StepIndex(2),
                 unchanged,

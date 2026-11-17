@@ -1,6 +1,6 @@
 //! What a parse returns.
 
-use computer_use_action::{CuaAction, GridMax, GridSpace, ImageSpace};
+use computer_use_action::{ComputerUseAction, GridMax, GridSpace, ImageSpace};
 use serde::{Deserialize, Serialize};
 
 use crate::ByteOffset;
@@ -9,8 +9,8 @@ use crate::ByteOffset;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum InSpace {
-    Image(Vec<CuaAction<ImageSpace>>),
-    Grid(GridMax, Vec<CuaAction<GridSpace>>),
+    Image(Vec<ComputerUseAction<ImageSpace>>),
+    Grid(GridMax, Vec<ComputerUseAction<GridSpace>>),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

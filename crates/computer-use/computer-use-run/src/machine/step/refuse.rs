@@ -5,7 +5,7 @@ use crate::machine::ops::nodes_of;
 use crate::machine::run::Run;
 use crate::observation::Observation;
 use crate::shortcut_guard::control_for;
-use computer_use_action::{ActionClass, CuaAction, WindowSpace};
+use computer_use_action::{ActionClass, ComputerUseAction, WindowSpace};
 use computer_use_bus::LocalRefusal;
 
 /// Why the action must not run, if it must not: it repeats the last input on a screen that did
@@ -13,7 +13,7 @@ use computer_use_bus::LocalRefusal;
 pub(super) fn before_input(
     run: &Run,
     obs: &Observation,
-    action: &CuaAction<WindowSpace>,
+    action: &ComputerUseAction<WindowSpace>,
 ) -> Option<LocalRefusal> {
     if !matches!(action.class(), ActionClass::Pointer | ActionClass::Keyboard) {
         return None;

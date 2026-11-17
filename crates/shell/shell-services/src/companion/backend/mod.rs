@@ -1,7 +1,7 @@
 //! The service's effects: the session bus, as the shell.
 
 mod answer;
-mod cua;
+mod computer_use;
 mod helpers;
 mod intents;
 mod memory;

@@ -3,22 +3,23 @@
 
 use crate::support::*;
 use action_gate_wire::GateAnswer;
-use computer_use_action::{CuaAction, Summary};
+use computer_use_action::{ComputerUseAction, Summary};
 use computer_use_bus::{
-    CancelledBy, ControlRefusal, CuaCaller, CuaMember, CuaOutcome, QuestionId, ReportDelivery,
+    CancelledBy, ComputerUseCaller, ComputerUseMember, ComputerUseOutcome, ControlRefusal,
+    QuestionId, ReportDelivery,
 };
 use computer_use_daemon::Supervisor;
 use computer_use_desktop::{BackendKind, DesktopEvent, Suspend};
 use computer_use_fake::scene::{click, finish, reply, task, user_goal, window};
 use computer_use_fake::{DesktopCall, FakePdp, Fixture, SeatEvent, Verdict};
-use computer_use_run::{CuaSignal, FORCED_YES, RunPhase};
+use computer_use_run::{ComputerUseSignal, FORCED_YES, RunPhase};
 use computer_use_seat_input::Emulation;
 use provenance::{Labelled, MessageKind, ReportStatus};
 
 const STOCK: BackendKind = BackendKind::KwinStock;
 
-fn ask() -> CuaAction<computer_use_action::WindowSpace> {
-    CuaAction::Ask {
+fn ask() -> ComputerUseAction<computer_use_action::WindowSpace> {
+    ComputerUseAction::Ask {
         question: Summary::new("Which account?").unwrap(),
         choices: vec![],
     }
@@ -33,7 +34,7 @@ async fn end_to_end_scripted_run_done() {
     );
     let mut events = sup.subscribe();
     let id = sup
-        .start(CuaCaller::Companion, task())
+        .start(ComputerUseCaller::Companion, task())
         .await
         .expect("started");
     assert_eq!(id.as_str(), "r-1");
@@ -41,14 +42,14 @@ async fn end_to_end_scripted_run_done() {
     // click whatever the gate says, and the person says yes.
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     sup.answer(
-        CuaCaller::Shell,
+        ComputerUseCaller::Shell,
         &id,
         QuestionId(1),
         Labelled::new(FORCED_YES.to_owned(), user_goal().label),
     )
     .unwrap();
     let (end, signals) = ended_with(&mut events, &id).await;
-    assert_eq!(end.outcome, CuaOutcome::Done);
+    assert_eq!(end.outcome, ComputerUseOutcome::Done);
     assert_eq!(end.steps, base_ids::Count(2));
     assert!(
         matches!(end.report, ReportDelivery::Sent(_)),
@@ -56,24 +57,24 @@ async fn end_to_end_scripted_run_done() {
     );
     assert!(matches!(
         signals.last(),
-        Some(CuaSignal::Finished(CuaOutcome::Done))
+        Some(ComputerUseSignal::Finished(ComputerUseOutcome::Done))
     ));
     assert!(
         signals
             .iter()
-            .any(|s| matches!(s, CuaSignal::ActionProposed(..)))
+            .any(|s| matches!(s, ComputerUseSignal::ActionProposed(..)))
     );
     assert!(
         signals
             .iter()
-            .any(|s| matches!(s, CuaSignal::ActionDone(..)))
+            .any(|s| matches!(s, ComputerUseSignal::ActionDone(..)))
     );
 
     let kinds: Vec<String> = sup
         .events()
         .records()
         .iter()
-        .map(computer_use_bus::CuaRecord::kind)
+        .map(computer_use_bus::ComputerUseRecord::kind)
         .collect();
     assert_eq!(
         kinds,
@@ -118,11 +119,11 @@ async fn end_to_end_scripted_run_done() {
 async fn start_refused_for_non_planner_caller_and_while_disabled_or_unaimed() {
     let sup = supervisor(STOCK, vec![], FakePdp::allow_all());
     assert_eq!(
-        sup.start(CuaCaller::Shell, task()).await,
+        sup.start(ComputerUseCaller::Shell, task()).await,
         Err(ControlRefusal::NotPermitted)
     );
     assert_eq!(
-        sup.start(CuaCaller::Other, task()).await,
+        sup.start(ComputerUseCaller::Other, task()).await,
         Err(ControlRefusal::NotPermitted)
     );
     let mut missing = task();
@@ -130,13 +131,13 @@ async fn start_refused_for_non_planner_caller_and_while_disabled_or_unaimed() {
         computer_use_desktop::ToplevelIdent::parse("nope").unwrap(),
     );
     assert_eq!(
-        sup.start(CuaCaller::Router, missing).await,
+        sup.start(ComputerUseCaller::Router, missing).await,
         Err(ControlRefusal::WindowUnknown)
     );
     let mut hidden = task();
     hidden.mode = computer_use_action::RunMode::AgentWorkspace;
     assert_eq!(
-        sup.start(CuaCaller::Router, hidden).await,
+        sup.start(ComputerUseCaller::Router, hidden).await,
         Err(ControlRefusal::ModeUnsupported),
         "a stock compositor cannot run the agent workspace"
     );
@@ -149,10 +150,10 @@ async fn start_refused_for_non_planner_caller_and_while_disabled_or_unaimed() {
 
     let off = Supervisor::new(
         computer_use_fake::scene::world(STOCK, vec![], FakePdp::allow_all()),
-        computer_use_daemon::CuadConfig::default(),
+        computer_use_daemon::ComputerUseDaemonConfig::default(),
     );
     assert_eq!(
-        off.start(CuaCaller::Router, task()).await,
+        off.start(ComputerUseCaller::Router, task()).await,
         Err(ControlRefusal::Disabled)
     );
 }
@@ -163,7 +164,7 @@ async fn a_start_the_model_cannot_serve_is_refused_before_it_takes_an_id_or_a_wi
     parts.model = computer_use_fake::ScriptedModel::new(vec![]).missing();
     let sup = Supervisor::new(parts, enabled());
     assert_eq!(
-        sup.start(CuaCaller::Router, task()).await,
+        sup.start(ComputerUseCaller::Router, task()).await,
         Err(ControlRefusal::ModelUnavailable)
     );
     assert_eq!(sup.started(), 0, "no id was used");
@@ -179,7 +180,7 @@ async fn computer_use_on_with_no_model_that_reads_images_says_so_beside_the_sett
         let config = if on {
             enabled()
         } else {
-            computer_use_daemon::CuadConfig::default()
+            computer_use_daemon::ComputerUseDaemonConfig::default()
         };
         Supervisor::new(parts, config).sight_note().await
     };
@@ -207,10 +208,10 @@ async fn a_window_has_one_run_at_a_time() {
         FakePdp::allow_all(),
     );
     let mut events = sup.subscribe();
-    let first = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let first = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &first, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     assert_eq!(
-        sup.start(CuaCaller::Router, task()).await,
+        sup.start(ComputerUseCaller::Router, task()).await,
         Err(ControlRefusal::LeaseHeld)
     );
     assert_eq!(sup.runs(), vec![first.clone()]);
@@ -219,10 +220,10 @@ async fn a_window_has_one_run_at_a_time() {
         book.holder(&computer_use_desktop::ToplevelIdent::parse("w1").unwrap()),
         Some(&first)
     );
-    sup.control(CuaCaller::Shell, &first, CuaMember::Cancel)
+    sup.control(ComputerUseCaller::Shell, &first, ComputerUseMember::Cancel)
         .unwrap();
     ended(&mut events, &first).await;
-    let second = sup.start(CuaCaller::Router, task()).await;
+    let second = sup.start(ComputerUseCaller::Router, task()).await;
     assert_eq!(second.unwrap().as_str(), "r-2", "the window is free again");
 }
 
@@ -234,22 +235,22 @@ async fn the_person_answers_a_question_and_the_run_goes_on() {
         FakePdp::allow_all(),
     );
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     let answer = || Labelled::new("the work one".to_owned(), user_goal().label);
     assert_eq!(
-        sup.answer(CuaCaller::Companion, &id, QuestionId(1), answer()),
+        sup.answer(ComputerUseCaller::Companion, &id, QuestionId(1), answer()),
         Err(ControlRefusal::NotPermitted),
         "only the shell answers"
     );
     assert_eq!(
-        sup.answer(CuaCaller::Shell, &id, QuestionId(7), answer()),
+        sup.answer(ComputerUseCaller::Shell, &id, QuestionId(7), answer()),
         Err(ControlRefusal::UnknownQuestion)
     );
-    sup.answer(CuaCaller::Shell, &id, QuestionId(1), answer())
+    sup.answer(ComputerUseCaller::Shell, &id, QuestionId(1), answer())
         .unwrap();
     let end = ended(&mut events, &id).await;
-    assert_eq!(end.outcome, CuaOutcome::Done);
+    assert_eq!(end.outcome, ComputerUseOutcome::Done);
     let notes = &sup.events().sent();
     assert_eq!(
         notes.iter().map(|(_, d)| d.kind).collect::<Vec<_>>(),
@@ -273,21 +274,30 @@ async fn pause_resume_take_over_and_hand_back_move_a_run_through_its_phases() {
         FakePdp::allow_all(),
     );
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
 
-    let wrong = |member| sup.control(CuaCaller::Shell, &id, member);
-    assert_eq!(wrong(CuaMember::Resume), Err(ControlRefusal::WrongState));
-    assert_eq!(wrong(CuaMember::HandBack), Err(ControlRefusal::WrongState));
+    let wrong = |member| sup.control(ComputerUseCaller::Shell, &id, member);
     assert_eq!(
-        sup.control(CuaCaller::Other, &id, CuaMember::Pause),
+        wrong(ComputerUseMember::Resume),
+        Err(ControlRefusal::WrongState)
+    );
+    assert_eq!(
+        wrong(ComputerUseMember::HandBack),
+        Err(ControlRefusal::WrongState)
+    );
+    assert_eq!(
+        sup.control(ComputerUseCaller::Other, &id, ComputerUseMember::Pause),
         Err(ControlRefusal::NotPermitted)
     );
 
-    sup.control(CuaCaller::Shell, &id, CuaMember::Pause)
+    sup.control(ComputerUseCaller::Shell, &id, ComputerUseMember::Pause)
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Paused(_))).await;
-    assert_eq!(wrong(CuaMember::Pause), Err(ControlRefusal::WrongState));
+    assert_eq!(
+        wrong(ComputerUseMember::Pause),
+        Err(ControlRefusal::WrongState)
+    );
     assert_eq!(
         sup.lease_book()
             .slots
@@ -304,21 +314,29 @@ async fn pause_resume_take_over_and_hand_back_move_a_run_through_its_phases() {
             .any(|c| matches!(c, DesktopCall::Suspended(_, Suspend::Paused)))
     );
 
-    sup.control(CuaCaller::Shell, &id, CuaMember::Resume)
+    sup.control(ComputerUseCaller::Shell, &id, ComputerUseMember::Resume)
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
-    sup.control(CuaCaller::Companion, &id, CuaMember::TakeOver)
-        .unwrap();
+    sup.control(
+        ComputerUseCaller::Companion,
+        &id,
+        ComputerUseMember::TakeOver,
+    )
+    .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::TakenOver(..))).await;
-    sup.control(CuaCaller::Router, &id, CuaMember::HandBack)
+    sup.control(ComputerUseCaller::Router, &id, ComputerUseMember::HandBack)
         .unwrap();
     let end = ended(&mut events, &id).await;
-    assert_eq!(end.outcome, CuaOutcome::Done, "the third reply finishes it");
+    assert_eq!(
+        end.outcome,
+        ComputerUseOutcome::Done,
+        "the third reply finishes it"
+    );
     let kinds: Vec<String> = sup
         .events()
         .records()
         .iter()
-        .map(computer_use_bus::CuaRecord::kind)
+        .map(computer_use_bus::ComputerUseRecord::kind)
         .collect();
     assert!(kinds.contains(&"cua.taken_over".to_owned()), "{kinds:?}");
     assert!(kinds.contains(&"cua.handed_back".to_owned()), "{kinds:?}");
@@ -329,12 +347,15 @@ async fn cancel_ends_a_run_whatever_it_is_waiting_on() {
     // A run waiting for the person.
     let sup = supervisor(STOCK, vec![reply(ask())], FakePdp::allow_all());
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
-    sup.control(CuaCaller::Shell, &id, CuaMember::Cancel)
+    sup.control(ComputerUseCaller::Shell, &id, ComputerUseMember::Cancel)
         .unwrap();
     let end = ended(&mut events, &id).await;
-    assert_eq!(end.outcome, CuaOutcome::Cancelled(CancelledBy::User));
+    assert_eq!(
+        end.outcome,
+        ComputerUseOutcome::Cancelled(CancelledBy::User)
+    );
     assert_eq!(
         sup.events().sent().last().unwrap().1.kind,
         MessageKind::Report {
@@ -342,7 +363,7 @@ async fn cancel_ends_a_run_whatever_it_is_waiting_on() {
         }
     );
     assert_eq!(
-        sup.control(CuaCaller::Shell, &id, CuaMember::Cancel),
+        sup.control(ComputerUseCaller::Shell, &id, ComputerUseMember::Cancel),
         Err(ControlRefusal::WrongState),
         "a run that is over is not there to cancel"
     );
@@ -360,13 +381,13 @@ async fn kill_chord_finishes_all_runs() {
     w.desktop = computer_use_fake::FakeDesktop::new(STOCK, vec![window(), second]);
     let sup = Supervisor::new(w, enabled());
     let mut events = sup.subscribe();
-    let first = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let first = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &first, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     let mut other = task();
     other.target = computer_use_bus::TaskTarget::Window(
         computer_use_desktop::ToplevelIdent::parse("w2").unwrap(),
     );
-    let second_id = sup.start(CuaCaller::Router, other).await.unwrap();
+    let second_id = sup.start(ComputerUseCaller::Router, other).await.unwrap();
     // The first run waits for the person and has let the model go, so the second gets it.
     until(&sup, &second_id, |p| {
         matches!(p, RunPhase::WaitingForUser(..))
@@ -378,7 +399,7 @@ async fn kill_chord_finishes_all_runs() {
         let end = ended(&mut events, id).await;
         assert_eq!(
             end.outcome,
-            CuaOutcome::Cancelled(CancelledBy::KillSwitch),
+            ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch),
             "{id}"
         );
     }
@@ -390,16 +411,16 @@ async fn kill_chord_finishes_all_runs() {
 async fn stop_all_is_the_shells_kill_switch() {
     let sup = supervisor(STOCK, vec![reply(ask())], FakePdp::allow_all());
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::WaitingForUser(..))).await;
     assert_eq!(
-        sup.stop_all(CuaCaller::Other),
+        sup.stop_all(ComputerUseCaller::Other),
         Err(ControlRefusal::NotPermitted)
     );
-    sup.stop_all(CuaCaller::Shell).unwrap();
+    sup.stop_all(ComputerUseCaller::Shell).unwrap();
     assert_eq!(
         ended(&mut events, &id).await.outcome,
-        CuaOutcome::Cancelled(CancelledBy::KillSwitch)
+        ComputerUseOutcome::Cancelled(CancelledBy::KillSwitch)
     );
 }
 
@@ -408,8 +429,11 @@ async fn stock_consent_guard_injects_nothing_while_prompt_shown() {
     let pdp = FakePdp::scripted(vec![], vec![Verdict::AskThen(GateAnswer::Run)]);
     let sup = supervisor(STOCK, vec![reply(click()), reply(finish())], pdp);
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
-    assert_eq!(ended(&mut events, &id).await.outcome, CuaOutcome::Done);
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
+    assert_eq!(
+        ended(&mut events, &id).await.outcome,
+        ComputerUseOutcome::Done
+    );
     let seat: Vec<&'static str> = sup
         .seat()
         .events()
@@ -444,13 +468,16 @@ async fn the_run_acts_in_the_session_it_opened_before_its_first_check() {
     let mut planned = task();
     planned.session = provenance::SessionId::parse("s-1").unwrap();
     planned.conversation = provenance::SessionId::parse("s-1").unwrap();
-    let id = sup.start(CuaCaller::Router, planned).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, planned).await.unwrap();
     assert_eq!(
         sup.view(&id).expect("live").task.session,
         session,
         "the planner's session is not the run's"
     );
-    assert_eq!(ended(&mut events, &id).await.outcome, CuaOutcome::Done);
+    assert_eq!(
+        ended(&mut events, &id).await.outcome,
+        ComputerUseOutcome::Done
+    );
     assert_eq!(sup.gate().opened(), vec![(id.clone(), task().space)]);
     assert_eq!(sup.gate().checks()[0].run, id);
     let sent = sup.events().sent();
@@ -464,10 +491,10 @@ async fn the_run_acts_in_the_session_it_opened_before_its_first_check() {
 async fn pausing_during_a_confirmation_takes_the_check_back() {
     let pdp = FakePdp::scripted(vec![], vec![Verdict::AskAndHang]);
     let sup = supervisor(STOCK, vec![reply(click()), reply(finish())], pdp);
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Confirming(..))).await;
     assert_eq!(sup.gate().closes(), 0);
-    sup.control(CuaCaller::Shell, &id, CuaMember::Pause)
+    sup.control(ComputerUseCaller::Shell, &id, ComputerUseMember::Pause)
         .unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Paused(_))).await;
     assert_eq!(sup.gate().closes(), 1, "the sheet comes down");
@@ -479,13 +506,16 @@ async fn the_callers_body_is_a_request_the_app_is_the_windows_and_limits_stay_in
     let mut elsewhere = task();
     elsewhere.app = account_core::AppName::parse("org.gnome.Terminal").unwrap();
     assert!(matches!(
-        sup.start(CuaCaller::Companion, elsewhere).await,
+        sup.start(ComputerUseCaller::Companion, elsewhere).await,
         Err(ControlRefusal::BadTask)
     ));
     let mut greedy = task();
     greedy.budget.steps = base_ids::Count(1_000_000);
     greedy.budget.stall_frames = base_ids::Count(0);
-    let id = sup.start(CuaCaller::Companion, greedy).await.unwrap();
+    let id = sup
+        .start(ComputerUseCaller::Companion, greedy)
+        .await
+        .unwrap();
     let view = sup.view(&id).expect("live");
     assert_eq!(view.task.budget, computer_use_bus::RunBudget::PROPOSED);
     assert_eq!(
@@ -493,7 +523,7 @@ async fn the_callers_body_is_a_request_the_app_is_the_windows_and_limits_stay_in
         provenance::Integrity::Untrusted,
         "the planner's words are not the person's"
     );
-    sup.stop_all(CuaCaller::Shell).unwrap();
+    sup.stop_all(ComputerUseCaller::Shell).unwrap();
 }
 
 #[tokio::test(start_paused = true)]
@@ -506,7 +536,7 @@ async fn the_grant_carries_the_level_the_persons_row_for_the_app_gives() {
     for (allow, level) in rows {
         let refused = action_wire::GrantAnswer::Refused(action_core::ConfirmEnd::Refused);
         let sup = supervisor(STOCK, vec![], FakePdp::scripted(vec![refused], vec![]));
-        sup.apply_settings(&computer_use_daemon::CuaSettings {
+        sup.apply_settings(&computer_use_daemon::ComputerUseSettings {
             config: sup.settings(),
             apps: computer_use_daemon::Apps::Listed(vec![computer_use_daemon::AppRule {
                 app: computer_use_fake::scene::app(),
@@ -514,7 +544,7 @@ async fn the_grant_carries_the_level_the_persons_row_for_the_app_gives() {
             }]),
         });
         let mut events = sup.subscribe();
-        let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+        let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
         ended(&mut events, &id).await;
         let asks = sup.gate().grant_asks();
         assert_eq!(asks.len(), 1);
@@ -528,7 +558,7 @@ async fn a_desktop_event_the_run_ignores_leaves_the_consent_question_standing() 
     parts.gate = FakePdp::grant_unanswered();
     let sup = Supervisor::new(parts, enabled());
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     until(&sup, &id, |p| matches!(p, RunPhase::Granting)).await;
     sup.desktop().raise(DesktopEvent::ConsentShown);
     tokio::time::sleep(std::time::Duration::from_secs(1)).await;
@@ -541,7 +571,7 @@ async fn a_desktop_event_the_run_ignores_leaves_the_consent_question_standing() 
     let end = ended(&mut events, &id).await;
     assert_eq!(
         end.outcome,
-        CuaOutcome::Blocked(computer_use_bus::BlockedOn::ConsentDenied)
+        ComputerUseOutcome::Blocked(computer_use_bus::BlockedOn::ConsentDenied)
     );
 }
 
@@ -551,12 +581,12 @@ async fn a_consent_nobody_answers_ends_the_run_blocked_and_frees_the_window() {
     parts.gate = FakePdp::grant_unanswered();
     let sup = Supervisor::new(parts, enabled());
     let mut events = sup.subscribe();
-    let id = sup.start(CuaCaller::Router, task()).await.unwrap();
+    let id = sup.start(ComputerUseCaller::Router, task()).await.unwrap();
     tokio::time::sleep(std::time::Duration::from_secs(301)).await;
     let end = ended(&mut events, &id).await;
     assert_eq!(
         end.outcome,
-        CuaOutcome::Blocked(computer_use_bus::BlockedOn::ConsentDenied)
+        ComputerUseOutcome::Blocked(computer_use_bus::BlockedOn::ConsentDenied)
     );
     assert!(matches!(end.report, ReportDelivery::Sent(_)));
     assert!(sup.runs().is_empty());

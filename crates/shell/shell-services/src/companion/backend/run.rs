@@ -4,7 +4,7 @@
 //! daemon, the ask to the app, the warm-up to the companion.
 //!
 //! The seat arrives and leaves with the intents service. While it is held the loop follows the
-//! companion's answers, cuad's runs and intentd's journal and late hits; while it is not, the
+//! companion's answers, the computer-use daemon's runs and intentd's journal and late hits; while it is not, the
 //! machines still run and every lookup answers `Failed`.
 
 use std::collections::{HashMap, HashSet};
@@ -32,7 +32,7 @@ use zbus::Connection;
 use zbus::zvariant::OwnedObjectPath;
 
 use super::probe::{self, Arrival};
-use super::{answer, cua, helpers, intents, memory, tell, terminal, terminals};
+use super::{answer, computer_use, helpers, intents, memory, tell, terminal, terminals};
 use crate::call_error::CallError;
 use crate::companion::CompanionLinks;
 use crate::deadline::{COMPANION_CALL, within};
@@ -459,9 +459,9 @@ impl Live {
         }
     }
 
-    /// Start following what the companion, cuad and intentd say.
+    /// Start following what the companion, the computer-use daemon and intentd say.
     fn watch(&mut self, connection: &Connection) {
-        self.watchers.push(tokio::spawn(cua::follow(
+        self.watchers.push(tokio::spawn(computer_use::follow(
             connection.clone(),
             self.events.clone(),
         )));
@@ -608,7 +608,7 @@ impl Live {
             RunControl::UndoAll => self.undo(UndoScope::Run(run)),
             other => {
                 self.on_bus("steering a run", move |connection| async move {
-                    cua::control(&connection, &run, other).await
+                    computer_use::control(&connection, &run, other).await
                 });
             }
         }

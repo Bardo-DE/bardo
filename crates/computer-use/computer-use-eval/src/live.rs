@@ -1,6 +1,6 @@
 //! A real computer-use model, reached the way inferd reaches one.
 //!
-//! A real computer-use model, reached the way inferd reaches one: the model layer's `CuaSession` builds
+//! A real computer-use model, reached the way inferd reaches one: the model layer's `ComputerUseSession` builds
 //! each step's prompt from the model's catalogue entry, a provider (an engine on this machine,
 //! over loopback HTTP) runs the turn, and the session reads the reply into actions. This is the
 //! same turn inferd makes, without inferd, so the eval needs no daemon and no bus.
@@ -9,13 +9,14 @@
 //! model, an engine or an address.
 
 use base_ids::Tokens;
-use computer_use_action::{CuaDialect, Size, WindowSpace};
+use computer_use_action::{ComputerUseDialect, Size, WindowSpace};
 use computer_use_run::{
-    CuaModel, CuaModelError, FrameAttachment, StepEvent, StepSink, ThoughtText,
+    ComputerUseModel, ComputerUseModelError, FrameAttachment, StepEvent, StepSink, ThoughtText,
 };
 use computer_use_session::{
-    CuaProfile, CuaSession, CuaTaskText, FrameBudget, MaskedRegions, ObservationIn, RepairBudget,
-    StepIndex, StepLines, StepNote as NoteLine, StepOutcome, TranscriptSink, TurnSettings,
+    ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, MaskedRegions,
+    ObservationIn, RepairBudget, StepIndex, StepLines, StepNote as NoteLine, StepOutcome,
+    TranscriptSink, TurnSettings,
 };
 use computer_use_vendors::StepResult;
 use inference_core::{
@@ -24,8 +25,8 @@ use inference_core::{
 };
 use model_catalog::{ModelEntry, parse_entry};
 use model_provider::{
-    Batching, CuaSupport, EngineExtras, ImageBytes, ImageDetail, ImageInput, Limits, ModelName,
-    Provider, ProviderError, Reasoning, Sampling, ToolCallId, ToolParallelism,
+    Batching, ComputerUseSupport, EngineExtras, ImageBytes, ImageDetail, ImageInput, Limits,
+    ModelName, Provider, ProviderError, Reasoning, Sampling, ToolCallId, ToolParallelism,
 };
 use model_vision_prep::{Encoding, FrameMap, RawFrame, prepare};
 use std::sync::Arc;
@@ -54,7 +55,7 @@ pub enum Thinking {
 /// What the entry says about driving the model.
 #[derive(Debug, Clone)]
 pub struct Plan {
-    profile: CuaProfile,
+    profile: ComputerUseProfile,
     settings: TurnSettings,
     name: ModelName,
 }
@@ -80,7 +81,7 @@ impl Plan {
         let images = caps.image_in.ok_or(LiveError::NotComputerUse)?;
         let text_out = caps.text_out.as_ref().ok_or(LiveError::NotComputerUse)?;
         let sampling = text_out.sampling.ok_or(LiveError::NotComputerUse)?;
-        let CuaSupport::Dialect {
+        let ComputerUseSupport::Dialect {
             dialect,
             batching,
             profile: actions,
@@ -89,10 +90,10 @@ impl Plan {
         else {
             return Err(LiveError::NotComputerUse);
         };
-        if matches!(dialect, CuaDialect::Wire(_)) {
+        if matches!(dialect, ComputerUseDialect::Wire(_)) {
             return Err(LiveError::NotComputerUse);
         }
-        let profile = CuaProfile::for_model(
+        let profile = ComputerUseProfile::for_model(
             dialect,
             &images,
             FrameBudget::within(images.per_prompt),
@@ -127,12 +128,12 @@ impl Plan {
     }
 }
 
-/// A [`CuaModel`] over a provider.
+/// A [`ComputerUseModel`] over a provider.
 #[derive(Debug)]
 pub struct ProviderModel<P> {
     provider: Arc<P>,
     plan: Plan,
-    session: Option<CuaSession>,
+    session: Option<ComputerUseSession>,
     served: ServedBy,
     usage: TurnUsage,
 }
@@ -162,15 +163,15 @@ fn said_in(turn: &computer_use_session::TurnTranscript) -> String {
     format!("{} {} {}", turn.thought, turn.text, calls.join(" "))
 }
 
-fn model_error(error: &ProviderError) -> CuaModelError {
+fn model_error(error: &ProviderError) -> ComputerUseModelError {
     match error {
         ProviderError::Unreachable
         | ProviderError::NotReady
         | ProviderError::Timeout
         | ProviderError::RateLimited(_)
-        | ProviderError::Server(_) => CuaModelError::Transient,
-        ProviderError::Unreadable(_) => CuaModelError::Parse,
-        _ => CuaModelError::Fatal,
+        | ProviderError::Server(_) => ComputerUseModelError::Transient,
+        ProviderError::Unreadable(_) => ComputerUseModelError::Parse,
+        _ => ComputerUseModelError::Fatal,
     }
 }
 
@@ -207,7 +208,7 @@ fn note_line(note: &StepNote) -> NoteLine {
     NoteLine(format!("{who}: {}", note.text))
 }
 
-fn observation(request: &CuaStepRequest) -> ObservationIn {
+fn observation(request: &ComputerUseStepRequest) -> ObservationIn {
     let seen = ObservationIn::new(
         StepIndex(request.step.0),
         request.cursor,
@@ -234,29 +235,30 @@ fn dropped_reason(reason: computer_use_parse::DropReason) -> DropReason {
     }
 }
 
-impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
+impl<P: Provider + 'static> ComputerUseModel for ProviderModel<P> {
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
-    async fn begin(&mut self, begin: CuaBegin) -> Result<(), CuaModelError> {
-        let task = CuaTaskText {
+    async fn begin(&mut self, begin: ComputerUseBegin) -> Result<(), ComputerUseModelError> {
+        let task = ComputerUseTaskText {
             goal: begin.goal,
             hints: begin.hints,
         };
-        let session = CuaSession::begin(self.plan.profile.clone(), task, self.plan.name.clone())
-            .with_settings(self.plan.settings.clone());
+        let session =
+            ComputerUseSession::begin(self.plan.profile.clone(), task, self.plan.name.clone())
+                .with_settings(self.plan.settings.clone());
         self.session = Some(session);
         Ok(())
     }
 
     async fn step(
         &mut self,
-        request: CuaStepRequest,
+        request: ComputerUseStepRequest,
         frame: FrameAttachment,
         sink: &mut impl StepSink,
-    ) -> Result<CuaStepReply, CuaModelError> {
-        let session = self.session.as_mut().ok_or(CuaModelError::Fatal)?;
+    ) -> Result<ComputerUseStepReply, ComputerUseModelError> {
+        let session = self.session.as_mut().ok_or(ComputerUseModelError::Fatal)?;
         let window: Size<WindowSpace> = request.window.logical;
         let map = FrameMap::new(
             window,
@@ -266,7 +268,7 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
         )
         .map_err(|error| {
             tracing::warn!(%error, "could not map the window to the model's frame");
-            CuaModelError::Fatal
+            ComputerUseModelError::Fatal
         })?;
         let pixels = &frame.0;
         let raw = RawFrame {
@@ -277,7 +279,7 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
         };
         let prepared = prepare(raw, &map, Encoding::Png).map_err(|error| {
             tracing::warn!(%error, "could not prepare the frame for the model");
-            CuaModelError::Fatal
+            ComputerUseModelError::Fatal
         })?;
         let image = ImageInput {
             media: prepared.media,
@@ -308,7 +310,7 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
                     actions,
                     dropped,
                 } => {
-                    let mut reply = CuaStepReply::new(actions).with_dropped(
+                    let mut reply = ComputerUseStepReply::new(actions).with_dropped(
                         dropped
                             .iter()
                             .map(|d| DroppedAction {
@@ -321,7 +323,7 @@ impl<P: Provider + 'static> CuaModel for ProviderModel<P> {
                     return Ok(reply);
                 }
                 StepOutcome::Repair(next) => sent = next,
-                StepOutcome::Unparseable(_) => return Err(CuaModelError::Parse),
+                StepOutcome::Unparseable(_) => return Err(ComputerUseModelError::Parse),
             }
         }
     }

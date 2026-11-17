@@ -56,7 +56,7 @@ pub fn completion_line(note: &CompletionNote) -> Option<String> {
     let who = match &note.agent {
         AgentRef::Companion => "assistant".to_owned(),
         AgentRef::Worker { .. } => "the background task".to_owned(),
-        AgentRef::Cua { .. } => "the on-screen run".to_owned(),
+        AgentRef::ComputerUse { .. } => "the on-screen run".to_owned(),
         AgentRef::User => "you".to_owned(),
     };
     let how = match note.status {

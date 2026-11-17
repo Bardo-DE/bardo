@@ -213,14 +213,14 @@ def cmd_inferd_config(args):
     return 0
 
 
-def cuad_settings_text(apps, steps, active_s):
-    rows = "".join(f'\n[[cua.apps]]\napp = "{app}"\nallow = "{allow}"\n' for app, allow in apps)
-    return f'[cua]\nenabled = "on"\n\n[cua.budget]\nsteps = {steps}\nactive_s = {active_s}\n{rows}'
+def computer_use_daemon_settings_text(apps, steps, active_s):
+    rows = "".join(f'\n[[computer_use.apps]]\napp = "{app}"\nallow = "{allow}"\n' for app, allow in apps)
+    return f'[computer_use]\nenabled = "on"\n\n[computer_use.budget]\nsteps = {steps}\nactive_s = {active_s}\n{rows}'
 
 
-def cmd_cuad_settings(args):
+def cmd_computer_use_daemon_settings(args):
     apps = [tuple(a.split("=", 1)) for a in args.app]
-    print(cuad_settings_text(apps, args.steps, args.active_s), end="")
+    print(computer_use_daemon_settings_text(apps, args.steps, args.active_s), end="")
     return 0
 
 
@@ -623,7 +623,7 @@ def build_parser():
             (["--reasoning-parser"], {"default": ""}))
     command("bardo-inferd-config", cmd_inferd_config, (["--planner-id"], {"required": True}), (["--planner-url"], {"required": True}),
             (["--screen-id"], {"required": True}), (["--screen-url"], {"required": True}))
-    command("bardo-computer-use-settings", cmd_cuad_settings, (["--app"], {"action": "append", "default": [], "help": "APP=ask|always"}),
+    command("bardo-computer-use-settings", cmd_computer_use_daemon_settings, (["--app"], {"action": "append", "default": [], "help": "APP=ask|always"}),
             (["--steps"], {"type": int, "default": 400}), (["--active-s"], {"type": int, "default": 3600}))
     command("sentence", cmd_sentence, (["--outdir"], {"required": True}))
     command("serve", cmd_serve, (["--dir"], {"default": ""}), (["--mount"], {"action": "append", "default": [], "help": "/PREFIX/=FOLDER"}),

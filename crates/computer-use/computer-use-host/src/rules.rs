@@ -1,4 +1,4 @@
-//! The screen rules cua ships: the phrases, window classes, commit words and sensitive titles
+//! The screen rules computer use ships: the phrases, window classes, commit words and sensitive titles
 //! `computer-use-run` checks a screen against. The pure crate takes them as a [`Rules`] value; this is the
 //! edge that parses the file text. The program embeds `dist/screen-rules.toml`, the installer
 //! also puts a copy in the shared files as a reference, and an administrator's own

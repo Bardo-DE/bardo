@@ -3,12 +3,12 @@
 # service's role goes only to the unit's main process, as the systemd manager says). The roles of
 # actiond.toml belong to the app a caller is; a role that stands for more than an app needs the
 # role below too, and only THIS file (installed as /etc/bardo/actiond-callers.toml) can give a fixed
-# one (sheet_host, cua, compositor); the user's ~/.config/bardo/actions/actiond-callers.toml is laid over it
+# one (sheet_host, computer use, compositor); the user's ~/.config/bardo/actions/actiond-callers.toml is laid over it
 # and its fixed rows are ignored. An app scope (app-<id>-<n>.scope) or Flatpak app is an app without a
 # row here; a process in neither (a terminal's child apart, which is the cli role), is refused.
 #
 #   role "sheet_host" + app org.bardo.Shell      -> the shell: launcher, confirm and control
-#   role "cua"        + app org.bardo.ComputerUse1       -> bardo-computer-use
+#   role "computer_use"        + app org.bardo.ComputerUse1       -> bardo-computer-use
 #   role "agent"      + the daemons' apps        -> bardo-companiond, bardo-readerd, bardo-actions-mcp, bardo-agent-acp, bardo-agent
 #   role "app"        + an app's own service -> org.bardo.Mail.service (mailo intents)
 #
@@ -28,7 +28,7 @@ exe = ["/usr/bin/bardo-shell", "/usr/local/bin/bardo-shell", "/opt/bardo/release
 [[caller]]
 app = "org.bardo.ComputerUse1"
 unit = "bardo-computer-use.service"
-role = "cua"
+role = "computer_use"
 
 [[caller]]
 app = "org.bardo.Companion1"

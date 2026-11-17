@@ -9,7 +9,7 @@ use action_core::{
     ActivationToken, CheckpointId, HaltCause, InboxAsk, IndexBatch, MessageDraft, Rewind,
     SearchAsk, SuggestAsk, TurnEnd, TurnIn, UndoScope, UserTurn,
 };
-use action_gate_wire::CuaAsk;
+use action_gate_wire::ComputerUseAsk;
 use action_vocab::{ActionRef, CallRequest, Handle, TurnId, UndoId, WindowKey, Workspace};
 use companion_model::{RunsIn, WatchedAgent};
 use provenance::{EntityId, SessionId, SpaceScope};
@@ -243,7 +243,7 @@ pub enum IntentsRequest {
     /// `.Gate.Grant`.
     GateGrant(GrantAsk),
     /// `.Gate.Check`.
-    GateCheck(CuaAsk),
+    GateCheck(ComputerUseAsk),
     /// `.Control.Halt`.
     ControlHalt {
         /// Which Spaces.

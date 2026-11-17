@@ -71,7 +71,8 @@ pub enum AgentRole {
     /// The quarantined reader: sees untrusted content, acts on nothing.
     Reader,
     /// A computer-use run.
-    Cua {
+    #[serde(rename = "cua")]
+    ComputerUse {
         /// The run.
         run: RunId,
     },
@@ -121,8 +122,8 @@ pub enum SystemPart {
     Consolidation,
     /// Retention sweeps.
     Retention,
-    /// cuad (a run's own bookkeeping).
-    Cua,
+    /// The computer-use daemon (a run's own bookkeeping).
+    ComputerUse,
 }
 
 slug_enum! {
@@ -134,7 +135,7 @@ slug_enum! {
         /// [`Actor::Companion`] as planner, reader, worker or helper.
         Companion = "companion",
         /// [`Actor::Companion`] as a computer-use run.
-        Cua = "cua",
+        ComputerUse = "cua",
         /// [`Actor::Mcp`].
         Mcp = "mcp",
         /// [`Actor::Acp`].
@@ -159,9 +160,9 @@ impl Actor {
         match self {
             Actor::User { .. } => ActorKind::User,
             Actor::Companion {
-                role: AgentRole::Cua { .. },
+                role: AgentRole::ComputerUse { .. },
                 ..
-            } => ActorKind::Cua,
+            } => ActorKind::ComputerUse,
             Actor::Companion { .. } => ActorKind::Companion,
             Actor::Mcp { .. } => ActorKind::Mcp,
             Actor::Acp { .. } => ActorKind::Acp,

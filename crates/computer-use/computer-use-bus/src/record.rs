@@ -1,17 +1,17 @@
-//! What a run writes to the event log. cuad stores each record as a memory service
-//! `EventBody::Area { area: Cua }` whose `json` is the serde form below and whose kind tag is
+//! What a run writes to the event log. The computer-use daemon stores each record as a memory service
+//! `EventBody::Area { area: ComputerUse }` whose `json` is the serde form below and whose kind tag is
 //! the variant's slug (`cua.run.started`, ...). The actor is
-//! `Actor::Companion { session, role: Cua { run } }` ([`cua_actor`]).
+//! `Actor::Companion { session, role: ComputerUse { run } }` ([`computer_use_actor`]).
 //!
 //! No pixels and no thought text are stored: a thought becomes a digest, a frame a digest and a
 //! size. The run's report to its requester is a `provenance::Message`, stored by the router as an
-//! `EventBody::Message`; [`CuaRecord::Finished`] links to it.
+//! `EventBody::Message`; [`ComputerUseRecord::Finished`] links to it.
 
 use crate::action::{ActionResult, TargetedAction};
 use crate::budget::RunBudget;
 use crate::ids::QuestionId;
 use crate::screen::ScreenKind;
-use crate::state::CuaOutcome;
+use crate::state::ComputerUseOutcome;
 use account_core::AppName;
 use action_gate_wire::EffectBasis;
 use base_ids::Count;
@@ -31,7 +31,7 @@ use serde::{Deserialize, Serialize};
 #[serde(transparent)]
 pub struct ThoughtDigest(pub Digest32);
 
-/// What is kept of a step's frame. `NotKept` is the default; `Kept` needs `cua.screens.keep`.
+/// What is kept of a step's frame. `NotKept` is the default; `Kept` needs `computer_use.screens.keep`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum FrameNote {
@@ -67,14 +67,14 @@ pub enum AuthorisedBy {
 pub enum ConfirmBy {
     /// Hardware input on the compositor's own surface (the fork).
     PhysicalInput,
-    /// The shell's question, after cuad stopped its input (stock).
+    /// The shell's question, after the computer-use daemon stopped its input (stock).
     ShellPrompt,
 }
 
 /// One record of a run.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v")]
-pub enum CuaRecord {
+pub enum ComputerUseRecord {
     /// The run began.
     #[serde(rename = "cua.run.started")]
     RunStarted {
@@ -181,7 +181,7 @@ pub enum CuaRecord {
         /// Which step.
         n: StepIndex,
         /// What the person did to the window meanwhile, as the log's own addresses (the events
-        /// cuad's `Memory1` call finds between the take-over and now), oldest first.
+        /// The computer-use daemon's `Memory1` call finds between the take-over and now), oldest first.
         user_events: Vec<EventRef>,
     },
     /// The run ended.
@@ -190,7 +190,7 @@ pub enum CuaRecord {
         /// The run.
         run: RunId,
         /// How.
-        outcome: CuaOutcome,
+        outcome: ComputerUseOutcome,
         /// Steps taken.
         steps: Count,
         /// The charges the providers reported, and the replies that reported none.
@@ -223,7 +223,7 @@ pub enum CuaRecord {
     },
 }
 
-impl CuaRecord {
+impl ComputerUseRecord {
     /// The kind tag of this record: the serde tag, as stored.
     #[must_use]
     pub fn kind(&self) -> String {
@@ -234,26 +234,26 @@ impl CuaRecord {
     #[must_use]
     pub fn run(&self) -> &RunId {
         match self {
-            CuaRecord::RunStarted { run, .. }
-            | CuaRecord::Routed { run, .. }
-            | CuaRecord::Step { run, .. }
-            | CuaRecord::Seen { run, .. }
-            | CuaRecord::Asked { run, .. }
-            | CuaRecord::Confirmed { run, .. }
-            | CuaRecord::TakenOver { run, .. }
-            | CuaRecord::HandedBack { run, .. }
-            | CuaRecord::Finished { run, .. }
-            | CuaRecord::ScreenSuspicious { run, .. } => run,
-            CuaRecord::ProcedureLearned { from, .. } => from,
+            ComputerUseRecord::RunStarted { run, .. }
+            | ComputerUseRecord::Routed { run, .. }
+            | ComputerUseRecord::Step { run, .. }
+            | ComputerUseRecord::Seen { run, .. }
+            | ComputerUseRecord::Asked { run, .. }
+            | ComputerUseRecord::Confirmed { run, .. }
+            | ComputerUseRecord::TakenOver { run, .. }
+            | ComputerUseRecord::HandedBack { run, .. }
+            | ComputerUseRecord::Finished { run, .. }
+            | ComputerUseRecord::ScreenSuspicious { run, .. } => run,
+            ComputerUseRecord::ProcedureLearned { from, .. } => from,
         }
     }
 }
 
 /// The actor of every record of a run, as the memory log stores it.
 #[must_use]
-pub fn cua_actor(session: SessionId, run: RunId) -> Actor {
+pub fn computer_use_actor(session: SessionId, run: RunId) -> Actor {
     Actor::Companion {
         session,
-        role: AgentRole::Cua { run },
+        role: AgentRole::ComputerUse { run },
     }
 }

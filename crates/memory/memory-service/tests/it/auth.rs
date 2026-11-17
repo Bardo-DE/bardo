@@ -11,7 +11,7 @@ fn callers() -> [(&'static str, Caller); 4] {
     [
         ("app", caller_app(MAIL)),
         ("router", Caller::router()),
-        ("cuad", Caller::cuad()),
+        ("computer_use_daemon", Caller::computer_use_daemon()),
         ("shell", Caller::shell_ui()),
     ]
 }
@@ -22,7 +22,7 @@ fn yes(a: &Result<(), Refusal>) -> bool {
 
 #[test]
 fn recording_follows_the_caller_class() {
-    // (name, request, [app, router, cuad, shell])
+    // (name, request, [app, router, the computer-use daemon, shell])
     let cases: Vec<(&str, MemoryRequest, [bool; 4])> = vec![
         (
             "own thing as the user",
@@ -68,18 +68,21 @@ fn recording_follows_the_caller_class() {
             [true, true, false, false],
         ),
         (
-            "a cua step by the run",
-            MemoryRequest::Record(record(area_body(AreaTag::Cua), cua_actor())),
+            "a computer-use step by the run",
+            MemoryRequest::Record(record(
+                area_body(AreaTag::ComputerUse),
+                computer_use_actor(),
+            )),
             [false, true, true, false],
         ),
         (
-            "a cua step by the planner",
-            MemoryRequest::Record(record(area_body(AreaTag::Cua), planner())),
+            "a computer-use step by the planner",
+            MemoryRequest::Record(record(area_body(AreaTag::ComputerUse), planner())),
             [false, true, false, false],
         ),
         (
-            "an actions service audit by cuad",
-            MemoryRequest::Record(record(area_body(AreaTag::Actions), cua_actor())),
+            "an actions service audit by computer_use_daemon",
+            MemoryRequest::Record(record(area_body(AreaTag::Actions), computer_use_actor())),
             [false, true, false, false],
         ),
         (
@@ -164,14 +167,17 @@ fn explaining_files_and_marking_things() {
         &claim("org.bardo.Files", planner())
     )));
     assert!(yes(&allowed(&Caller::shell_ui(), &claim(MAIL, user(MAIL)))));
-    assert!(!yes(&allowed(&Caller::cuad(), &claim(MAIL, user(MAIL)))));
+    assert!(!yes(&allowed(
+        &Caller::computer_use_daemon(),
+        &claim(MAIL, user(MAIL))
+    )));
     assert!(!yes(&allowed(
         &Caller::settings(),
         &claim(MAIL, user(MAIL))
     )));
     assert!(yes(&allowed(&mail, &mark(MAIL))));
     assert!(!yes(&allowed(&mail, &mark("org.bardo.Files"))));
-    assert!(!yes(&allowed(&Caller::cuad(), &mark(MAIL))));
+    assert!(!yes(&allowed(&Caller::computer_use_daemon(), &mark(MAIL))));
     assert!(!yes(&allowed(&Caller::settings(), &mark(MAIL))));
     assert!(yes(&allowed(&Caller::shell_ui(), &mark("org.bardo.Files"))));
 }
@@ -378,7 +384,7 @@ fn message_from(agent: AgentRef) -> EventBody {
 fn episode_body() -> EventBody {
     EventBody::Episode(Box::new(Episode {
         id: EpisodeId::parse("r-1").expect("id"),
-        agent: AgentRef::Cua {
+        agent: AgentRef::ComputerUse {
             run: RunId::parse("r-1").expect("r"),
         },
         kind: EpisodeKind::Task,
@@ -400,27 +406,30 @@ fn episode_body() -> EventBody {
 
 #[test]
 fn messages_and_episodes_are_recorded_by_the_router_and_a_run_reports_for_itself() {
-    let run = AgentRef::Cua {
+    let run = AgentRef::ComputerUse {
         run: RunId::parse("r-1").expect("r"),
     };
-    let other_run = AgentRef::Cua {
+    let other_run = AgentRef::ComputerUse {
         run: RunId::parse("r-2").expect("r"),
     };
-    // (name, request, [app, router, cuad, shell])
+    // (name, request, [app, router, the computer-use daemon, shell])
     let cases: Vec<(&str, MemoryRequest, [bool; 4])> = vec![
         (
             "a run's report, by the run",
-            MemoryRequest::Record(record(message_from(run.clone()), cua_actor())),
+            MemoryRequest::Record(record(message_from(run.clone()), computer_use_actor())),
             [false, true, true, false],
         ),
         (
             "a run's report claiming to be another run",
-            MemoryRequest::Record(record(message_from(other_run), cua_actor())),
+            MemoryRequest::Record(record(message_from(other_run), computer_use_actor())),
             [false, true, false, false],
         ),
         (
             "a report from the companion, as the run",
-            MemoryRequest::Record(record(message_from(AgentRef::Companion), cua_actor())),
+            MemoryRequest::Record(record(
+                message_from(AgentRef::Companion),
+                computer_use_actor(),
+            )),
             [false, true, false, false],
         ),
         (
@@ -442,8 +451,8 @@ fn messages_and_episodes_are_recorded_by_the_router_and_a_run_reports_for_itself
             [false, true, false, false],
         ),
         (
-            "an episode, by cuad",
-            MemoryRequest::Record(record(episode_body(), cua_actor())),
+            "an episode, by computer_use_daemon",
+            MemoryRequest::Record(record(episode_body(), computer_use_actor())),
             [false, true, false, false],
         ),
         (
@@ -498,7 +507,7 @@ fn another_apps_space_is_refused_for_every_request_that_names_one() {
         allowed(&app_caller, &MemoryRequest::Mark(mark)),
         Err(Refusal::OutsideSpace)
     );
-    // The router, cuad and the shell are not apps: the Space rule is the app's alone.
+    // The router, the computer-use daemon and the shell are not apps: the Space rule is the app's alone.
     let request = MemoryRequest::Record(record_in("app:org.bardo.Files:0"));
     assert_eq!(allowed(&Caller::router(), &request), Ok(()));
     assert_eq!(

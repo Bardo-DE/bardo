@@ -1,4 +1,4 @@
-# cua eval: holo-3.1-9b-thinking
+# Computer-use eval: holo-3.1-9b-thinking
 
 Played by: holo-3.1-9b on a local engine (loopback port 8000), thinking On, 3 run(s) per task.
 84 runs over 31 tasks. Bounds are 95% Wilson intervals; a rate over few runs has a wide one.

@@ -1,7 +1,7 @@
 //! The catalog file: the entry's serde form. Read by `parse_entry`, written by `ModelEntry`'s
 //! `Serialize`.
 
-use model_provider::{CuaSupport, EmbedCaps, ImageLimits};
+use model_provider::{ComputerUseSupport, EmbedCaps, ImageLimits};
 use serde::{Deserialize, Serialize, Serializer};
 use speech_provider::SpeechCaps;
 
@@ -39,7 +39,7 @@ pub struct EntryFile {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub vector_out: Option<EmbedCaps>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub actions_out: Option<CuaSupport>,
+    pub actions_out: Option<ComputerUseSupport>,
     /// Written for a launched on-device entry; a remote or attached one has none.
     #[serde(rename = "engine", default, skip_serializing_if = "Vec::is_empty")]
     pub engines: Vec<EngineProfile>,

@@ -1,8 +1,8 @@
-//! cuad on the bus: `org.bardo.ComputerUse1` for the shell, the planner and the router, and
+//! The computer-use daemon on the bus: `org.bardo.ComputerUse1` for the shell, the planner and the router, and
 //! `org.bardo.IntentProvider1` as `org.bardo.ComputerUse` with the one action `computeruse.run.start`.
 
 use crate::bus::ManagerObject;
-use crate::provider::CuaProvider;
+use crate::provider::ComputerUseProvider;
 use crate::reach::ReachObject;
 use crate::relay::relay;
 use crate::start::{answer_open_apps, starts};
@@ -13,7 +13,7 @@ use action_dbus::callers::{CallerTable, Identity};
 use action_provider::{ContextSource, SummonTarget};
 use action_wire::{SummonAnswer, SummonOrigin, SummonSerial};
 use base_ids::Count;
-use computer_use_dbus::{CUA_BUS, CUA_PATH};
+use computer_use_dbus::{COMPUTER_USE_BUS, COMPUTER_USE_PATH};
 use computer_use_host::Supervisor;
 use computer_use_run::Seams;
 use futures_util::StreamExt;
@@ -33,7 +33,7 @@ fn bus<E: std::fmt::Display>(error: E) -> ServeError {
     ServeError::Bus(error.to_string())
 }
 
-/// cuad shows the app's context to nobody: it has no windows of its own.
+/// The computer-use daemon shows the app's context to nobody: it has no windows of its own.
 struct NoContext;
 
 impl ContextSource for NoContext {
@@ -63,7 +63,7 @@ impl SummonTarget for NoSummon {
     }
 }
 
-/// cuad on a connection: its objects are up and its names are owned while this lives.
+/// The computer-use daemon on a connection: its objects are up and its names are owned while this lives.
 #[derive(Debug)]
 pub struct Serving {
     tasks: Vec<JoinHandle<()>>,
@@ -84,7 +84,7 @@ enum Answering {
     Told(Arc<Identity>),
 }
 
-/// Serves cuad's two interfaces on `connection`, naming callers by `table`.
+/// Serves the computer-use daemon's two interfaces on `connection`, naming callers by `table`.
 ///
 /// They are `org.bardo.ComputerUse1` (`Manager` at `/org/bardo/ComputerUse1`, a `Run` per live run at
 /// `/org/bardo/ComputerUse1/run/<id>`) and `org.bardo.IntentProvider1` as `org.bardo.ComputerUse`. Each caller's role is its process's, named by `table` (`computer-use-callers.toml`) over
@@ -162,7 +162,7 @@ async fn serve_as<S: Seams>(
     connection
         .object_server()
         .at(
-            CUA_PATH,
+            COMPUTER_USE_PATH,
             ManagerObject {
                 supervisor: Arc::clone(&supervisor),
                 who: Arc::clone(&who),
@@ -181,7 +181,8 @@ async fn serve_as<S: Seams>(
         )
         .await
         .map_err(bus)?;
-    let (provider, queues) = CuaProvider::starting(supervisor.settings().enabled).map_err(bus)?;
+    let (provider, queues) =
+        ComputerUseProvider::starting(supervisor.settings().enabled).map_err(bus)?;
     match answering {
         Answering::IntentdOnly => {
             action_provider::serve_on(connection, provider, NoContext, NoSummon)
@@ -194,7 +195,7 @@ async fn serve_as<S: Seams>(
                 .map_err(bus)?;
         }
     }
-    dbus_kit::name::claim(connection, CUA_BUS)
+    dbus_kit::name::claim(connection, COMPUTER_USE_BUS)
         .await
         .map_err(bus)?;
     Ok(Serving {
@@ -211,7 +212,7 @@ async fn serve_as<S: Seams>(
     })
 }
 
-/// Serves cuad on the session bus until the bus goes away, naming callers by `table` (the
+/// Serves the computer-use daemon on the session bus until the bus goes away, naming callers by `table` (the
 /// caller reads `computer-use-callers.toml`, with [`crate::read_callers`], from its own environment).
 ///
 /// # Errors

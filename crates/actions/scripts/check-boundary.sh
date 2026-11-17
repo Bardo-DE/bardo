@@ -7,7 +7,7 @@
 #      each tier has source bans; KNOWN lists the breaches that still stand and the lane that
 #      removes each. `--self-test` seeds two violations into a copy and asserts they fail.
 #   2. RULES: what a crate reaches through ANY path (cargo tree), the effect crates it must not.
-#   3. Repo-wide: nothing of cua or the shell, no test switch in a shipped crate.
+#   3. Repo-wide: nothing of computer use or the shell, no test switch in a shipped crate.
 #
 # `cargo tree -i <dep>` exits 101 when the dependency is absent, which is precisely the state
 # we want. Checking the exit status would therefore fail whenever the boundary holds, so we
@@ -470,14 +470,14 @@ done
 
 layers_check . || fail=1
 
-# The actions service sits below cua and the shell in the repo order (the model layer, the accounts service, the memory service, the actions service, cua, the shell):
+# The actions service sits below computer use and the shell in the repo order (the model layer, the accounts service, the memory service, the actions service, computer use, the shell):
 # nothing of theirs may enter any tree of this workspace, dev-dependencies included.
 THEIRS="computer-use-daemon computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input computer-use-capture bardo-agent-protocol"
 workspace_tree=$(cargo tree --workspace -e normal,build,dev --prefix none --all-features 2>/dev/null | awk '{print $1}' | sort -u)
 theirs_found=0
 for name in $THEIRS; do
   if grep -qx "$name" <<<"$workspace_tree"; then
-    echo "LEAK: the workspace depends on $name (cua), which sits above actions"
+    echo "LEAK: the workspace depends on $name (computer use), which sits above actions"
     theirs_found=1
     fail=1
   fi
@@ -488,7 +488,7 @@ if grep -q '^shell-' <<<"$workspace_tree"; then
   fail=1
 fi
 if [ "$theirs_found" -eq 0 ]; then
-  echo "boundary holds: no cua or the shell crate enters the workspace"
+  echo "boundary holds: no computer use or the shell crate enters the workspace"
 fi
 
 # No shipped crate carries a test-only switch. The proc root of the callers and the model tap are

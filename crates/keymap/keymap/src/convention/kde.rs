@@ -1,4 +1,4 @@
-//! KDE Plasma: the CUA base with Plasma's own defaults.
+//! KDE Plasma: the common base with Plasma's own defaults.
 
 use super::{
     Row::{Key, Unbound},

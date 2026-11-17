@@ -13,7 +13,7 @@ pub enum ConnectionRole {
     Public,
     /// A connection handed to the shell (the shell, layer-shell-host) through `org.bardo.Compositor1`.
     Shell,
-    /// A connection handed to the agent tier (cuad).
+    /// A connection handed to the agent tier (the computer-use daemon).
     Agent,
     /// A connection handed to the desktop portal (the portal) for its screenshots and recordings:
     /// it sees what the public socket sees and is trusted for the screen and the windows

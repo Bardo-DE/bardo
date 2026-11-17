@@ -1,4 +1,4 @@
-//! The small units every cua crate shares: time on cuad's clock, process ids, global logical
+//! The small units every computer-use crate shares: time on the computer-use daemon's clock, process ids, global logical
 //! coordinates and 32-byte digests.
 
 use base_ids::Px;
@@ -11,7 +11,7 @@ use std::fmt::Write as _;
 #[serde(transparent)]
 pub struct Ms(pub u32);
 
-/// An instant: milliseconds since cuad's clock origin. Never wall time; the run machine takes it
+/// An instant: milliseconds since the computer-use daemon's clock origin. Never wall time; the run machine takes it
 /// as an argument.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]

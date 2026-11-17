@@ -54,7 +54,9 @@ impl AtspiSource {
         self.connection
             .get_or_try_init(|| async {
                 let bus = ::atspi::AccessibilityConnection::new().await.map_err(|e| {
-                    eprintln!("cuad: the accessibility bus could not be reached: {e}");
+                    eprintln!(
+                        "computer_use_daemon: the accessibility bus could not be reached: {e}"
+                    );
                     A11yError::NoBus
                 })?;
                 Ok(bus.connection().clone())

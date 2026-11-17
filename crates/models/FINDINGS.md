@@ -29,7 +29,7 @@ trait (default methods, one impl per server) in `model-openai-compat/src/server.
 two-way enums and `Quirks` are gone; the accounts service reads the one row it needs through
 `Flavor::shape_with_tools()`. `OpenAiSpeech` is split into `OpenAiTranscription` and
 `KokoroSpeech`; `SpeechFlavor` is gone. `WireDialect` is its own `WireCodec`. `ToolNeed`,
-`Thinking`, `Done`, `Closed` and `IfMalformed::KeepOpen` are gone. `CuaDialect` gained `wire()`,
+`Thinking`, `Done`, `Closed` and `IfMalformed::KeepOpen` are gone. `ComputerUseDialect` gained `wire()`,
 `is_text()` and `is_tool()`. `EnginePaths::program(kind)` replaces the program ladder.
 Left alone because another repo names them: `Network`, `GpuAccess`, `GpuNeed`, `Batching`,
 `TextDialect`, `EnginePaths` fields, `EngineExtras`.
@@ -55,11 +55,11 @@ Decisions taken from it:
 - **`ToolDialect` gains `Holo31`** beside `QwenComputerUse`. The template does not name Qwen's
   `computer_use` function, so nothing shows Holo uses that argument schema. `QwenComputerUse`
   stays for models that do (Qwen3-VL); the catalog entry for Holo says `holo31`. Both are
-  frozen; `cua-parse` fills `Holo31` from calls recorded by `dev/record-engine.sh`, and the
+  frozen; `computer-use-parse` fills `Holo31` from calls recorded by `dev/record-engine.sh`, and the
   fixtures decide whether the two parsers share code.
 - **`GridMax(1000)` for Holo is the Qwen3-VL family's convention and is unverified**: neither
   the template nor the README states it. `images.space` in the catalog entry is the single place
-  to change it; the first recorded step (`dev/cua-step-holo.sh`, by hand) confirms or corrects it.
+  to change it; the first recorded step (`dev/computer-use-step-holo.sh`, by hand) confirms or corrects it.
 - **`PatchFactor(32)`, `min_pixels = 65536`, `max_pixels = 16777216` are read from the files.**
 - `kv_per_1k_ctx_mib = 32` is derived from `config.json` (above); `weights_mib = 10400`
   and `overhead_mib = 1500` are the proposal's estimates; a measurement in engine fill replaces them.
@@ -111,17 +111,17 @@ Decisions taken from it:
 Every `todo!()` in the repo (the rig amendment added 27, see `The rig amendment` below; the fill wave F1 lanes remove theirs, `model-shape` removed 19 (see `Fill F1: model-shape` below) and the F2 lane `model-driver` removed 13 more, see `Fill F2: model-driver` below; 29 remained; the fill wave W4 lane `w4-models` removed 18 more, see `Fill W4: models` below; 11 remained; the fill wave W5 lane `w5-models` removed the 4 of `OpenAiSpeech`, see `Fill W5: models` below; 7 remained; the voice wave lane `v-host-client` removed the 2 of `speech-host-client`, see its section below, the V-H lane the 2 of `speech-host` and the lane `v-silero` the 3 of `speech-vad-silero`; none remain). Each is a signature other repos build on; the body arrives with
 the work in the "Closes when" line of its crate.
 
-### `cua-parse` (0, filled in wave F1)
+### `computer-use-parse` (0, filled in wave F1)
 
 Both entry points are built. `parse_text` reads the UI-TARS-1.5 grammar (the model-card examples are in `fixtures/ui_tars_15/`); `parse_tool_calls` reads `QwenComputerUse` (Qwen's `computer_use` schema) and `Holo31`.
 
-Still open: the `Holo31` schema is ours, provisional. The chat template names no computer-use function, so the parser reads Qwen's schema plus flat verbs (`click`, `drag`, `move`, `finish`, `ask`, `observe`; a point as `x` and `y` or `coordinate`), and `fixtures/holo_31/` and `fixtures/qwen_cu/` are hand-written from those schemas, not recorded. Closes when `dev/record-engine.sh` records real calls from Holo-3.1-4B and the fixtures and the verb tables are corrected to match. The nightly targets are `crates/cua-parse/fuzz/` (`dev/fuzz-cua-parse.sh`, needs `cargo-fuzz`); `never_panics` (proptest) runs on stable.
+Still open: the `Holo31` schema is ours, provisional. The chat template names no computer-use function, so the parser reads Qwen's schema plus flat verbs (`click`, `drag`, `move`, `finish`, `ask`, `observe`; a point as `x` and `y` or `coordinate`), and `fixtures/holo_31/` and `fixtures/qwen_cu/` are hand-written from those schemas, not recorded. Closes when `dev/record-engine.sh` records real calls from Holo-3.1-4B and the fixtures and the verb tables are corrected to match. The nightly targets are `crates/computer-use-parse/fuzz/` (`dev/fuzz-computer-use-parse.sh`, needs `cargo-fuzz`); `never_panics` (proptest) runs on stable.
 
-### `cua-session` (0, filled in wave W4)
+### `computer-use-session` (0, filled in wave W4)
 
-`CuaSession::request` and `absorb` are built (with `absorb_for`, `with_settings` and `TranscriptSink`); see `Fill W4: models`. The prompt files are in `crates/cua-session/prompts/` with their sources in their headers. Still open: the Holo and Qwen tool schemas are ours until a recorded step (`dev/cua-step-holo.sh`) confirms them.
+`ComputerUseSession::request` and `absorb` are built (with `absorb_for`, `with_settings` and `TranscriptSink`); see `Fill W4: models`. The prompt files are in `crates/computer-use-session/prompts/` with their sources in their headers. Still open: the Holo and Qwen tool schemas are ours until a recorded step (`dev/computer-use-step-holo.sh`) confirms them.
 
-### `cua-vendors` (0, filled in wave W4)
+### `computer-use-vendors` (0, filled in wave W4)
 
 The four codecs (`AnthropicToolset20260801`, `AnthropicComputer20251124`, `OpenAiComputer`, `GeminiComputerUse`) decode, declare and encode results, written from the vendors' documentation of 2026-10-03; no cloud backend exists yet to call them.
 
@@ -190,10 +190,10 @@ Also not yet present, and not `todo!()`:
   `ChildProcesses` and `SystemdUnits` hosts: they join with their dependencies (`zbus` for the
   transient units, `tokio` with `process`) once the pinned block carries the tokio features of
   SPEC.md 1.4. Closes with engine-supervisor's io fill.
-- `cua-session/prompts/{ui_tars_15,qwen_computer_use,holo_31}.txt`: taken from Apache-2.0 model
-  cards with attribution in the file header. Closes with the `CuaSession::request` body.
+- `computer-use-session/prompts/{ui_tars_15,qwen_computer_use,holo_31}.txt`: taken from Apache-2.0 model
+  cards with attribution in the file header. Closes with the `ComputerUseSession::request` body.
 - The `fuzz/` crate (non-workspace, nightly `cargo-fuzz`) and `dev/` scripts
-  (`smart-resize-vectors.py`, `record-engine.sh`, `cua-step-holo.sh`). Close with their crates'
+  (`smart-resize-vectors.py`, `record-engine.sh`, `computer-use-step-holo.sh`). Close with their crates'
   fills.
 - Wire fixtures under `fixtures/`. Recorded by a dev script against the user's own engine, never
   generated in CI.
@@ -337,7 +337,7 @@ Interface asks (nothing in a frozen signature was changed in F1; all four were a
 Filled: `model-wire` (`Driver::{describe, turn, embed}`), `model-http` (`Transport for HttpClient`
 over hyper), `model-openai-compat` (`encode_request`, `classify`, `describe`, `parse_models`,
 `encode_embed`, `decode_embed`), `engine-supervisor::command`. 13 `todo!()` removed, 29 left (the
-audio wire, the speech crates, `cua-session`, `cua-vendors`).
+audio wire, the speech crates, `computer-use-session`, `computer-use-vendors`).
 
 ### Interface asks closed
 
@@ -349,9 +349,9 @@ audio wire, the speech crates, `cua-session`, `cua-vendors`).
 | 20 | `engine-supervisor::command` is filled (below) |
 | 21 | SSE and NDJSON recording tests through wire cassettes: `model-replay/tests/wire_framed.rs` (line endings, comments, BOM, split code points, cut streams, a proptest over events and chunkings, replay under every `ChunkPlan`) and `model-openai-compat/tests/driver.rs` (the same cassettes through `Driver`) |
 | 28 | `DropReason::BadArgument`: an argument that is there and unusable (empty or control-character text, a key chord that is not one key plus modifiers, an unknown direction or finish status, a wrongly typed argument). `MissingArgument` stays for none given |
-| 29 | `Target::Centre` (additive, in `cua-action`): a Qwen or Holo `scroll` that names no point acts at the centre of the frame; it passes through every space mapping unchanged and the executor resolves it against the window. A half-given point is still refused |
+| 29 | `Target::Centre` (additive, in `computer-use-action`): a Qwen or Holo `scroll` that names no point acts at the centre of the frame; it passes through every space mapping unchanged and the executor resolves it against the window. A half-given point is still refused |
 | 30 | Already done by `model-vision` (the `image_tokens` doc says the factor carries the merge); verified |
-| 31 | `check-boundary.sh`: `EXCLUDED` takes a nested path (`cua-parse/fuzz`), reading the crate's name from the first line of `cargo tree` |
+| 31 | `check-boundary.sh`: `EXCLUDED` takes a nested path (`computer-use-parse/fuzz`), reading the crate's name from the first line of `cargo tree` |
 | 49 | `ExtractSession::absorb(base, end, text, calls)` replaces the stub (it was `absorb_for`); no `todo!()` is left in the crate |
 | 50 | `ChatDecoder::fault(&self) -> Option<ProviderError>`, default `None`; `StreamDecoder` implements it (its inherent `fault` is gone); the driver reports it instead of a generic unreadable reply |
 | 51 | `Sleeper::jitter() -> Permille`, default zero; `Retrying` passes it to `next_wait` |
@@ -454,18 +454,18 @@ pairing, which a later catalog change should.
 
 ### Consumers
 
-`accounts` and `actions` consume the model layer by path (`cua-action`, `model-provider`, `speech-vad`). No call
+`accounts` and `actions` consume the model layer by path (`computer-use-action`, `model-provider`, `speech-vad`). No call
 site of a changed signature exists in either repo (searched for `ExtractSession`, `Sleeper`,
 `Retrying`, `CassetteHeader`, `HttpError`, `VllmExtras`, `GuidedBackend`, `ChatDecoder`,
 `StreamDecoder`, `ModelInfo`, `loaded_context`, `Target::`; the actions service's `budget` is its own). Two
-things to know: `cua-action::Target` gained a variant, so an exhaustive `match` on it in the accounts service's
+things to know: `computer-use-action::Target` gained a variant, so an exhaustive `match` on it in the accounts service's
 executor (none today) needs the `Centre` arm; and the accounts service's own `DropReason` mirror
-(`inference-core/src/cua.rs`) has no `BadArgument` yet, which the `cua-parse` to the accounts service mapping will
+(`inference-core/src/computer_use.rs`) has no `BadArgument` yet, which the `computer-use-parse` to the accounts service mapping will
 need when it is written.
 
 ## Fill W4: the model layer (2026-10-03)
 
-Lane `w4-models`. 18 `todo!()` removed (29 to 11): `cua-session` 2, `cua-vendors` 3, the speech
+Lane `w4-models`. 18 `todo!()` removed (29 to 11): `computer-use-session` 2, `computer-use-vendors` 3, the speech
 codec of `model-openai-compat` 4, the `speech-provider` fakes 4, `speech-vad` 5.
 
 ### Interface asks closed
@@ -496,7 +496,7 @@ settings supply; `SchemaLimits::depth` bounds the walk. Two properties are loose
 the field order is the sorted property names (serde_json keeps no insertion order here): both
 only matter to a grammar made from the shape, never to `check`.
 
-### `cua-session`
+### `computer-use-session`
 
 - **Request**: a tool dialect (`QwenComputerUse`, `Holo31`) gets the dialect's system prompt
   (`prompts/*.txt`, the header lines starting with `#` are not sent), one `computer_use` function
@@ -520,7 +520,7 @@ only matter to a grammar made from the shape, never to `check`.
 - **Mapping**: the parse is read in `map.space`; a point outside the frame is dropped
   (`OutOfFrame`, verb `click`, ...), a scroll distance maps with the points.
 - **`TurnSettings`** (sampling, limits, reasoning, tool parallelism, engine extras, how many
-  earlier steps are listed) is not in the frozen `CuaProfile`; `begin` uses greedy sampling,
+  earlier steps are listed) is not in the frozen `ComputerUseProfile`; `begin` uses greedy sampling,
   `Reasoning::Off`, 1024 tokens and eight lines, and the daemon replaces them with
   `with_settings` from the catalog's `reasoning_off` sampling and `max_output`.
 - **`TranscriptSink`** gathers a streamed turn into the `TurnTranscript` that `absorb_for` reads.
@@ -531,7 +531,7 @@ UI-TARS run go through `Driver<OpenAiCodec, RecordingTransport<..>>` over canned
 the cassette is replayed in strict mode under 19 chunk plans (the request must be the same bytes,
 the outcome the same). The streams are hand-written, not recorded.
 
-### `cua-vendors`
+### `computer-use-vendors`
 
 Written from Anthropic's computer-use reference, OpenAI's computer-use guide and Google's
 computer-use page (read 2026-10-03). A call is a `ToolCall` whose name and input the (future)
@@ -554,7 +554,7 @@ Anthropic and OpenAI points are `ImageSpace`; Gemini's are `Grid(1000)` (0..=999
   replaces the actions with `Finish { Infeasible }`.
 - The 2026-08-01 toolset declaration carries no display size (the screenshot says it); the 2025
   tool's carries `display_width_px` and `display_height_px` from the image size.
-- `cua-parse` now exports `Batch`, `bounded`, `chord_from_text` and `chord_from_words`, so the
+- `computer-use-parse` now exports `Batch`, `bounded`, `chord_from_text` and `chord_from_words`, so the
   vendor decoders share the parsers' batch limit, drop reporting and key names.
 
 ### `speech-vad` and the speech fakes
@@ -585,14 +585,14 @@ waits for a multipart POST in `model-http`.
 1. `Gguf { model, mmproj }` has a required `mmproj`: an embedding or text-only GGUF has none (the
    tests write an empty name). Proposed: `mmproj: Option<FileName>` (a serde change).
 2. `ObservationIn` has no place for the accounts service's window-contents text (`TreeText`) or notes
-   (`StepNote`); inferd's `cua_step` puts both in the prompt today. Proposed: `tree: Option<String>`
+   (`StepNote`); inferd's `computer_use_step` puts both in the prompt today. Proposed: `tree: Option<String>`
    and `notes: Vec<Note>` on `ObservationIn` (the accounts service builds it by struct literal, so this breaks
    it once), or a `Context` passed to `request`.
 3. `TurnTranscript` has no safety signals: a vendor's `SafetySignal`s cannot reach `decode`
    through `absorb`. Proposed: `safety: Vec<SafetySignal>` on `TurnTranscript`.
 4. `FrameBudget` counts past frames, so a prompt holds `history + 1` images: Holo's catalog
    limits a prompt to 3 (`--limit-mm-per-prompt image:3`), so the daemon must build the profile
-   with `history = per_prompt - 1`, not the `ai.cua.history_frames` default of 3.
+   with `history = per_prompt - 1`, not the `ai.computer_use.history_frames` default of 3.
 5. `model-http` needs a multipart (or raw-bytes) POST before `OpenAiSpeech` can send
    `encode_transcription`'s body.
 
@@ -602,7 +602,7 @@ waits for a multipart POST in `model-http`.
   to `sp::Reasoning::EngineDefault` (it maps to `Off` today), and `:215-219` `default_sampling`
   needs an arm for it (choose `reasoning_on` when the model's `caps.reasoning` is `Present`, else
   `reasoning_off`); the tests at `bridge/request/tests.rs:81` and `:345` expect `Off` and change
-  with it. `cua_step.rs:300` keeps `Off` on purpose.
+  with it. `computer_use_step.rs:300` keeps `Off` on purpose.
 - `crates/inferd/src/catalog.rs` (`EmbedSpec`, `claims_of`, `capabilities_of`, `embed_cap`),
   `local.rs:96,146,158`, `config.rs:36-38` (`[[embedding]]`), `main.rs:53`, `testkit.rs:41`,
   `bridge/request.rs:341` (`model.embed`) and the tests in `config/tests.rs`, `local/tests.rs`,
@@ -616,13 +616,13 @@ waits for a multipart POST in `model-http`.
   mode); when it is refused, send the schema as the constraint without validating, as today.
   `ReplyShape::Choice` can use `Shape::Choice` the same way. The test at
   `bridge/request/tests.rs:182-189` (`{"type":"object"}`) is the refused case (an open object).
-- `crates/inferd/src/cua_run.rs:49` (`todo!` mentioned in the interface asks) and `cua_step.rs`
-  (the interim prompt, history and parse): replace with `CuaSession::begin`, `request`, one turn
-  through a `TranscriptSink`, `absorb_for`; build `CuaProfile` from `caps.images` and
+- `crates/inferd/src/computer_use_run.rs:49` (`todo!` mentioned in the interface asks) and `computer_use_step.rs`
+  (the interim prompt, history and parse): replace with `ComputerUseSession::begin`, `request`, one turn
+  through a `TranscriptSink`, `absorb_for`; build `ComputerUseProfile` from `caps.images` and
   `caps.computer_use`, `TurnSettings` from the catalog's `sampling.reasoning_off` and `max_output`,
   `ObservationIn.prev` from `PrevResult` (`Done` to `StepResult::Done`, `Refused`, `NotRun`; the
   other `PrevResult`s map to `Refused` with their words), and the `DropReason` mirror
-  (`cua_step.rs:dropped_reason`, `inference-core/src/cua.rs`) is unchanged. `StepOutcome::Repair`
+  (`computer_use_step.rs:dropped_reason`, `inference-core/src/computer_use.rs`) is unchanged. `StepOutcome::Repair`
   means one more `provider.turn` with the returned request.
 - `Target::Centre` and `DropReason::BadArgument` (F2 notes) are still the account-side items.
 - `CodecError` has no accounts service call site.
@@ -637,7 +637,7 @@ literal, nothing outside the model layer builds any of them today).
 
 | Ask | What changed |
 | --- | --- |
-| 122 | `WeightFiles::Gguf.mmproj` is `Option<FileName>` (`#[serde(default)]`, skipped when `None`); `ObservationIn.{tree, notes}`; `TurnTranscript.safety`; `FrameBudget::within` and `CuaProfile::for_model` (history = `per_prompt - 1`); `model-http` `Upload` (a POST of bytes) |
+| 122 | `WeightFiles::Gguf.mmproj` is `Option<FileName>` (`#[serde(default)]`, skipped when `None`); `ObservationIn.{tree, notes}`; `TurnTranscript.safety`; `FrameBudget::within` and `ComputerUseProfile::for_model` (history = `per_prompt - 1`); `model-http` `Upload` (a POST of bytes) |
 | 43, 126 | `Shape::OrHandle(Box<Shape>)`: the inner shape or `{ "handle": n }`; GBNF for `Date`, `DateTime` and `Tagged` |
 | 68 | still open: the speech request spellings wait for a recording |
 
@@ -649,7 +649,7 @@ No shipped catalog file uses `gguf`, and an earlier spelling (`mmproj = ""`) sti
 variant because every reader of the weights already matches `Gguf`, and the only literals were
 The model layer's own tests (the accounts service names neither `WeightFiles` nor `Gguf`).
 
-### `cua-session`
+### `computer-use-session`
 
 - `ObservationIn` gained `tree: Option<TreeText>` and `notes: Vec<StepNote>`; `ObservationIn::new`
   makes one without either, `with_tree` and `with_notes` add them. `TreeText` and `StepNote` write
@@ -663,7 +663,7 @@ The model layer's own tests (the accounts service names neither `WeightFiles` no
   `decode` (a confirmation request is an `Ask` ahead of the actions, a block is `Finish {
   Infeasible }`); the tool and text dialects ignore them (no vendor safety layer speaks there).
 - `FrameBudget::within(per_prompt)` is `per_prompt - 1` (the current frame is one of the images),
-  `FrameBudget::at_most` cuts the setting to it, and `CuaProfile::for_model(dialect, &ImageLimits,
+  `FrameBudget::at_most` cuts the setting to it, and `ComputerUseProfile::for_model(dialect, &ImageLimits,
   wanted, repair, encoding)` builds a profile from a catalog entry's `caps.images`. The test runs
   seven Holo steps (per prompt 3, default history 3) and no request carries more than three images.
 
@@ -736,10 +736,10 @@ W4 API:
 - `Shape` gained a variant: an exhaustive `match` on it needs an `OrHandle` arm (none exists
   outside the model layer).
 - `OpenAiSpeech::new(HttpClient, flavor)` is unchanged; the type is now `OpenAiSpeech<T = HttpClient>`.
-The accounts service call sites that should change: `crates/inferd` where it builds the CUA observation (add
+The accounts service call sites that should change: `crates/inferd` where it builds the computer use observation (add
 `tree` from `TreeText` and `notes` from `StepNote`, and put the vendor's safety signals into the
-transcript), where it builds the CUA profile (`CuaProfile::for_model` with
-`ai.cua.history_frames`), and where it makes the speech providers (`with_known` from the catalog's
+transcript), where it builds the computer use profile (`ComputerUseProfile::for_model` with
+`ai.computer_use.history_frames`), and where it makes the speech providers (`with_known` from the catalog's
 `speech` tables).
 
 ## Open
@@ -748,7 +748,7 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
   - `MiB` lives in `model-catalog` (the catalog's `VramEstimate` needs it, and the supervisor
     sits above the catalog); `UnitSpec`, `Sandbox` and `command` live in `engine-supervisor`
     for the same reason (models.md put `command` in the catalog).
-  - `cua-vendors` depends on `cua-parse` (its `decode` returns `Parsed`) and not on
+  - `computer-use-vendors` depends on `computer-use-parse` (its `decode` returns `Parsed`) and not on
     `vision-prep` (SPEC.md 1.3 lists the reverse; the table there predates `Parsed` having a
     crate of its own). `model-replay` depends on `vision-prep` for `MediaType`.
   - The catalog's `roles` use `CatalogKind`, the model layer's copy of the accounts service's `AiKind`: the model layer cannot
@@ -759,15 +759,15 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
     size) rather than a newtype over `TurnRequest`, which holds the bytes it must not store.
   - `DropReason` gains `OutOfFrame`: the session reports a point that maps outside the frame as a
     dropped action, in the same list as the parser's drops.
-- Limits chosen where the specs named none, frozen with the types (`cua-action/src/text.rs`):
+- Limits chosen where the specs named none, frozen with the types (`computer-use-action/src/text.rs`):
   `Summary` 1024 chars, `Choice` 128 and at most 8 per ask, `TypedText` 2048 (control characters
   other than newline and tab refused), `FieldName` 64, `ExtractedText` 8192, `WaitMs` 60 000,
   `Repeat` 1..=20. `Wait` is classed `Observe` (no side effect), `Zoom` too. A change is a
   SPEC.md edit.
 - `Length::new`/`Point::new`/`Size::new` are the only constructors; the `PhantomData` field is
-  private, so a space cannot be forged by a struct literal outside `cua-action`.
+  private, so a space cannot be forged by a struct literal outside `computer-use-action`.
 - Proposed settings without design/22 rows (Bardo agent owns the rows): `ai.engine.*` (six
-  keys, see `SupervisorConfig::default`), `ai.cua.history_frames` (3), `ai.cua.repair_attempts`
+  keys, see `SupervisorConfig::default`), `ai.computer_use.history_frames` (3), `ai.computer_use.repair_attempts`
   (1), `ai.engine.vllm.python`, `ai.engine.llama_server.path`.
 - The pinned block now carries `hyper`, `hyper-util`, `http-body-util`, `tokio` and `blake3`;
   the workspace names the first four (verbatim) for `model-http`'s `hyper` feature. It also
@@ -801,7 +801,7 @@ above); this lane checked each against the code and tests and found no gap.
 
 | Ask | What changed |
 | --- | --- |
-| 141 | `CuaSession::absorb_for(&mut self, sent, reply, map) -> StepOutcome` and `absorb(&mut self, reply, map) -> StepOutcome` change the session in place; the caller keeps one session and no copy. `refill_repairs(&mut self)` gives the repair budget back when a step fails after a repair. `StepNote` keeps `NoteFrom` on the accounts side (the model layer's `StepNote` is the one line of text) |
+| 141 | `ComputerUseSession::absorb_for(&mut self, sent, reply, map) -> StepOutcome` and `absorb(&mut self, reply, map) -> StepOutcome` change the session in place; the caller keeps one session and no copy. `refill_repairs(&mut self)` gives the repair budget back when a step fails after a repair. `StepNote` keeps `NoteFrom` on the accounts side (the model layer's `StepNote` is the one line of text) |
 | 142 | `SamplingDefaults.reasoning_default: ReasoningDefault` (`on` or `off`, written in every chat entry) and `SamplingDefaults::for_reasoning(Reasoning) -> &Sampling`: `On(_)` takes `reasoning_on`, `Off` takes `reasoning_off`, `EngineDefault` takes the one the model's default names. `holo-3.1-4b` says `on` (Qwen3.5 templates think unless `enable_thinking` is false; a proposal the first recorded step confirms) |
 
 ### Still open for spike S1 (ask 68, needs a real engine)
@@ -817,12 +817,12 @@ above); this lane checked each against the code and tests and found no gap.
 
 ### The accounts service call sites that follow (the accounts service was not edited)
 
-- `crates/inferd/src/cua_step.rs` `step`: take `session: &mut CuaSession`, call
+- `crates/inferd/src/computer_use_step.rs` `step`: take `session: &mut ComputerUseSession`, call
   `session.absorb_for(&sent, tee.finish(end), &map)` (it returns the outcome), drop the
   `let (next, outcome)` and `session = next`; `Unparseable` no longer needs `kept` (the session is
   already updated). On a failure after a repair call `session.refill_repairs()`.
-- `crates/inferd/src/cua_run.rs` `step`: keep `self.session` as the one session
-  (`get_or_insert_with` on `cua_step::open`), pass `&mut` to `cua_step::step`; the `.clone()` and
+- `crates/inferd/src/computer_use_run.rs` `step`: keep `self.session` as the one session
+  (`get_or_insert_with` on `computer_use_step::open`), pass `&mut` to `computer_use_step::step`; the `.clone()` and
   the `Failed.kept` box go.
 - `bridge/request.rs` `default_sampling`: replace the `EngineDefault` arm by
   `sampling.for_reasoning(reasoning)` and send `sp::Reasoning::EngineDefault` unchanged.
@@ -1289,9 +1289,9 @@ Missing, null or malformed `logprobs`, NaN or non-numeric entries, an empty list
 `None`, the turn ends as before, and `log::debug!` says why (`log` is the only new dependency).
 A stream stopped early by the sink also has `None`.
 
-## cua-parse: terminate reads its words from text (2026-10-09, lane `termtext`)
+## computer-use-parse: terminate reads its words from text (2026-10-09, lane `termtext`)
 
-Holo 3.1 4B writes its final answer in a `text` argument, not `summary`. In the cua eval, 28 of 104 live runs ended with no words for the person because only `summary` was read. `terminate` (and Holo's `finish`, which shares the arm) now reads `text` when there is no `summary` argument; a present `summary` wins, and nothing else changed (no other aliases; `answer` still reads `text` only). Covered by `terminate_words_come_from_summary_or_text` in `crates/cua-parse/tests/tools.rs`.
+Holo 3.1 4B writes its final answer in a `text` argument, not `summary`. In the computer-use eval, 28 of 104 live runs ended with no words for the person because only `summary` was read. `terminate` (and Holo's `finish`, which shares the arm) now reads `text` when there is no `summary` argument; a present `summary` wins, and nothing else changed (no other aliases; `answer` still reads `text` only). Covered by `terminate_words_come_from_summary_or_text` in `crates/computer-use-parse/tests/tools.rs`.
 
 ## One HTTP client, one engine enum (2026-10-28, lane `sreq`)
 
@@ -1385,26 +1385,26 @@ lane (no cargo build, check, test or clippy), so the first gate is the first com
 - Not in the trait at that step, added for the accounts service's adoption (below): `bus_word`, `seat_flags`, `env`.
   `program` is `EnginePaths::program(kind)`, a map lookup, not a method.
 
-## One `ActionDialect` trait instead of matches on `CuaDialect` (2026-10-29, lane `tr7`)
+## One `ActionDialect` trait instead of matches on `ComputerUseDialect` (2026-10-29, lane `tr7`)
 
 Trait audit `~/rs-wt/trait-audit/models.md` section 3. Nothing was built or run in this lane (no
 cargo build, check, test or clippy), so the first gate is the first compile.
 
-- `cua-session` gains `trait ActionDialect` (`wire`, `is_text`, `is_tool`, `system`, `schema`,
+- `computer-use-session` gains `trait ActionDialect` (`wire`, `is_text`, `is_tool`, `system`, `schema`,
   `tools`, `retry`, `parse`; only `parse` is required), `src/dialect/` with one impl per family
-  (`UiTars`, `Qwen`, `Holo`, `Wire`) and `spec(CuaDialect) -> &'static dyn ActionDialect`, the only
-  `match` on `CuaDialect` that picks behaviour. It lives in `cua-session` because the methods take
-  `FrameMap`, `CuaTaskText` and `TurnTranscript`. `CuaDialect` stays the serde key.
+  (`UiTars`, `Qwen`, `Holo`, `Wire`) and `spec(ComputerUseDialect) -> &'static dyn ActionDialect`, the only
+  `match` on `ComputerUseDialect` that picks behaviour. It lives in `computer-use-session` because the methods take
+  `FrameMap`, `ComputerUseTaskText` and `TurnTranscript`. `ComputerUseDialect` stays the serde key.
 - Gone: the five matches in `prompt.rs` (`system_text`, `schema_text`, `tools`, `repair_text`) and
-  `reply.rs` (the file); `CuaDialect::wire`, `is_text` and `is_tool` (now trait methods; `spec(d)`
+  `reply.rs` (the file); `ComputerUseDialect::wire`, `is_text` and `is_tool` (now trait methods; `spec(d)`
   returns them).
-- `cua-parse` reads the Holo verbs from a table (`verbs.rs`: synonyms, extra verbs, whether the
+- `computer-use-parse` reads the Holo verbs from a table (`verbs.rs`: synonyms, extra verbs, whether the
   function name is the verb, scroll by direction) instead of eight `== Holo31` guards. A written
   verb is mapped to the convention's name first, so Holo `click` is `left_click`.
 - Left: `Verbs::of(ToolDialect)` and `ui_tars::of(TextDialect)` are matches on the smaller enums
   (`parse_text`'s one-arm match stays; the enum has one variant).
-- `cua-eval`'s `matches!(dialect, CuaDialect::Wire(_))` still compiles; `spec(dialect).wire().is_some()`
-  replaces it when cua adopts the trait.
+- `computer-use-eval`'s `matches!(dialect, ComputerUseDialect::Wire(_))` still compiles; `spec(dialect).wire().is_some()`
+  replaces it when computer use adopts the trait.
 
 ## `Engine` gains the methods the accounts service needs (2026-10-29, lane `tr2`)
 

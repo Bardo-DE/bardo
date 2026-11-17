@@ -5,7 +5,7 @@ use crate::attempts::Tried;
 use crate::progress::Look;
 use crate::screen::ScreenTrack;
 use crate::sensitivity::WindowSensitivity;
-use computer_use_action::{CuaAction, WindowSpace};
+use computer_use_action::{ComputerUseAction, WindowSpace};
 use computer_use_bus::{ActionOutcome, AuthorisedBy, FrameNote, ThoughtDigest};
 use computer_use_capture::DamageAt;
 use computer_use_desktop::{Ms, Stamp};
@@ -113,7 +113,7 @@ pub struct RunTrack {
     /// The input action that ran last, until a wait: repeating it on an unchanged screen is
     /// refused.
     #[serde(default)]
-    pub last_input: Option<CuaAction<WindowSpace>>,
+    pub last_input: Option<ComputerUseAction<WindowSpace>>,
     /// Every action the run has tried and how it ended, for the words of a stall.
     #[serde(default)]
     pub tried: Vec<Tried>,

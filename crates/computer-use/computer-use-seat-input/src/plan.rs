@@ -6,8 +6,8 @@ use crate::keymap::{Keymap, ShiftLevel};
 use crate::op::InputOp;
 use crate::op::{Keycode, Press};
 use computer_use_action::{
-    Chord, ClickCount, Coord, CuaAction, Modifier, Notches, Point, Repeat, ScrollBy, Size, Target,
-    WindowSpace,
+    Chord, ClickCount, ComputerUseAction, Coord, Modifier, Notches, Point, Repeat, ScrollBy, Size,
+    Target, WindowSpace,
 };
 use computer_use_desktop::Ms;
 use keyboard_types::Key;
@@ -39,7 +39,7 @@ pub enum ResolvedPoints {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct PlannedAction {
     /// The action.
-    pub action: CuaAction<WindowSpace>,
+    pub action: ComputerUseAction<WindowSpace>,
     /// Its targets.
     pub at: ResolvedPoints,
     /// The window, for the bounds check.
@@ -289,7 +289,7 @@ pub fn plan(
 ) -> Result<Vec<InputOp>, PlanError> {
     let window = action.window;
     match &action.action {
-        CuaAction::Click {
+        ComputerUseAction::Click {
             at,
             button,
             count,
@@ -301,25 +301,25 @@ pub fn plan(
             let clicking = bracketed(&codes, click_ops(*button, *count));
             Ok(inner.into_iter().chain(clicking).collect())
         }
-        CuaAction::MoveTo { at } => {
+        ComputerUseAction::MoveTo { at } => {
             Ok(vec![InputOp::MoveTo(resolve(at, one(&action.at), window)?)])
         }
-        CuaAction::Drag { from, to, button } => {
+        ComputerUseAction::Drag { from, to, button } => {
             let (given_from, given_to) = ends(&action.at);
             let from = resolve(from, given_from, window)?;
             let to = resolve(to, given_to, window)?;
             Ok(drag_ops(from, to, *button))
         }
-        CuaAction::Scroll { at, dir, by } => {
+        ComputerUseAction::Scroll { at, dir, by } => {
             let point = resolve(at, one(&action.at), window)?;
             Ok(scroll_ops(point, *dir, *by))
         }
-        CuaAction::Type { text } => type_ops(text, keymap, caps),
-        CuaAction::Key { chord, repeat } => chord_ops(chord, *repeat, keymap),
-        CuaAction::Wait { .. }
-        | CuaAction::Zoom { .. }
-        | CuaAction::Observe
-        | CuaAction::Finish { .. }
-        | CuaAction::Ask { .. } => Err(PlanError::NotAnInput),
+        ComputerUseAction::Type { text } => type_ops(text, keymap, caps),
+        ComputerUseAction::Key { chord, repeat } => chord_ops(chord, *repeat, keymap),
+        ComputerUseAction::Wait { .. }
+        | ComputerUseAction::Zoom { .. }
+        | ComputerUseAction::Observe
+        | ComputerUseAction::Finish { .. }
+        | ComputerUseAction::Ask { .. } => Err(PlanError::NotAnInput),
     }
 }

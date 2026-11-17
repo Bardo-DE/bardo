@@ -2,7 +2,7 @@
 //! window, recording a finished action, asking the router about the head action.
 
 use crate::effect_class::classify_effect;
-use crate::machine::effect::{CuaSignal, HintSource, RunEffect};
+use crate::machine::effect::{ComputerUseSignal, HintSource, RunEffect};
 use crate::machine::kept::kept_action;
 use crate::machine::phase::RunPhase;
 use crate::machine::run::Run;
@@ -10,12 +10,12 @@ use crate::observation::{Observation, TreeObs};
 use crate::screen::ReaderWait;
 use crate::window_class::window_class_in;
 use account_core::DataClass;
-use action_gate_wire::CuaAsk;
+use action_gate_wire::ComputerUseAsk;
 use action_gate_wire::NodeFacts;
 use computer_use_a11y_tree::{A11yNode, role_word};
-use computer_use_action::{Coord, CuaAction, Point, Rect, Size, Target, WindowSpace};
+use computer_use_action::{ComputerUseAction, Coord, Point, Rect, Size, Target, WindowSpace};
 use computer_use_bus::{
-    ActionOutcome, ActionResult, CuaRecord, FrameNote, TargetedAction, ThoughtDigest,
+    ActionOutcome, ActionResult, ComputerUseRecord, FrameNote, TargetedAction, ThoughtDigest,
 };
 use computer_use_capture::FrameWant;
 use computer_use_desktop::{Digest32, GlowState, Stamp};
@@ -26,7 +26,9 @@ use provenance::{Label, Source};
 /// Enters `phase`, telling watchers when the slug changes.
 pub(crate) fn enter(run: &mut Run, fx: &mut Vec<RunEffect>, phase: RunPhase) {
     if run.phase.slug() != phase.slug() {
-        fx.push(RunEffect::Emit(CuaSignal::StateChanged(phase.slug())));
+        fx.push(RunEffect::Emit(ComputerUseSignal::StateChanged(
+            phase.slug(),
+        )));
     }
     run.phase = phase;
 }
@@ -53,7 +55,7 @@ pub(crate) fn observe(
     let new_step = run.phase.step() != Some(n) || !matches!(run.phase, RunPhase::Observing(_));
     enter(run, fx, RunPhase::Observing(n));
     if new_step {
-        fx.push(RunEffect::Emit(CuaSignal::StepStarted(n)));
+        fx.push(RunEffect::Emit(ComputerUseSignal::StepStarted(n)));
     }
     fx.push(RunEffect::Snapshot(run.env.tree_max_nodes));
     if context == AlsoContext::Yes {
@@ -97,7 +99,7 @@ pub(crate) fn window_ref(run: &Run) -> computer_use_bus::WindowRef {
 }
 
 /// An action of the model, aimed at the window.
-pub(crate) fn targeted(run: &Run, action: CuaAction<WindowSpace>) -> TargetedAction {
+pub(crate) fn targeted(run: &Run, action: ComputerUseAction<WindowSpace>) -> TargetedAction {
     TargetedAction {
         window: window_ref(run),
         action,
@@ -108,7 +110,7 @@ pub(crate) fn targeted(run: &Run, action: CuaAction<WindowSpace>) -> TargetedAct
 /// answered): attached to a plain look.
 pub(crate) fn synthetic(run: &Run, result: ActionResult) -> ActionOutcome {
     ActionOutcome {
-        action: targeted(run, CuaAction::Observe),
+        action: targeted(run, ComputerUseAction::Observe),
         result,
     }
 }
@@ -160,12 +162,12 @@ pub(crate) fn node_at<'a>(
 }
 
 /// The first target of a pointer action.
-pub(crate) fn first_target(action: &CuaAction<WindowSpace>) -> Option<Target<WindowSpace>> {
+pub(crate) fn first_target(action: &ComputerUseAction<WindowSpace>) -> Option<Target<WindowSpace>> {
     match action {
-        CuaAction::Click { at, .. } | CuaAction::MoveTo { at } | CuaAction::Scroll { at, .. } => {
-            Some(*at)
-        }
-        CuaAction::Drag { from, .. } => Some(*from),
+        ComputerUseAction::Click { at, .. }
+        | ComputerUseAction::MoveTo { at }
+        | ComputerUseAction::Scroll { at, .. } => Some(*at),
+        ComputerUseAction::Drag { from, .. } => Some(*from),
         _ => None,
     }
 }
@@ -219,13 +221,15 @@ fn resolve_target(
 /// The action ready to plan: its targets resolved against this step's tree.
 pub(crate) fn aim(
     obs: &Observation,
-    action: &CuaAction<WindowSpace>,
+    action: &ComputerUseAction<WindowSpace>,
 ) -> Result<PlannedAction, Unaimed> {
     let at = match action {
-        CuaAction::Click { at, .. } | CuaAction::MoveTo { at } | CuaAction::Scroll { at, .. } => {
+        ComputerUseAction::Click { at, .. }
+        | ComputerUseAction::MoveTo { at }
+        | ComputerUseAction::Scroll { at, .. } => {
             resolve_target(obs, at)?.map_or(ResolvedPoints::None, ResolvedPoints::One)
         }
-        CuaAction::Drag { from, to, .. } => {
+        ComputerUseAction::Drag { from, to, .. } => {
             let centre = centre_of(obs.window.size);
             ResolvedPoints::Drag {
                 from: resolve_target(obs, from)?.unwrap_or(centre),
@@ -275,7 +279,11 @@ pub(crate) fn head_effect(run: &Run) -> Option<provenance::Effect> {
 }
 
 /// The question to the router about the head action.
-pub(crate) fn ask_for(run: &Run, obs: &Observation, action: &CuaAction<WindowSpace>) -> CuaAsk {
+pub(crate) fn ask_for(
+    run: &Run,
+    obs: &Observation,
+    action: &ComputerUseAction<WindowSpace>,
+) -> ComputerUseAsk {
     let node = first_target(action).and_then(|t| node_at(obs, &t));
     let class = window_class_in(
         &run.env.rules,
@@ -284,7 +292,7 @@ pub(crate) fn ask_for(run: &Run, obs: &Observation, action: &CuaAction<WindowSpa
         nodes_of(obs),
     );
     let (effect, basis) = classify_effect(&run.env.rules.commit, action, node, class);
-    CuaAsk {
+    ComputerUseAsk {
         run: run.id.clone(),
         step: obs.step.0,
         app: obs.window.app.clone(),
@@ -326,7 +334,7 @@ pub(crate) fn step_record(
             computer_use_action::WindowClass::Ordinary,
         ),
     };
-    RunEffect::Record(Box::new(CuaRecord::Step {
+    RunEffect::Record(Box::new(ComputerUseRecord::Step {
         run: run.id.clone(),
         n: step_of(run),
         thought: run
@@ -355,7 +363,7 @@ pub(crate) fn action_ended(
     input: Option<InputReceipt>,
 ) {
     fx.push(step_record(run, &outcome, input));
-    fx.push(RunEffect::Emit(CuaSignal::ActionDone(
+    fx.push(RunEffect::Emit(ComputerUseSignal::ActionDone(
         step_of(run),
         outcome.clone(),
     )));

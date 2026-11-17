@@ -295,7 +295,7 @@ fn an_asked_record_holds_the_persons_words_and_the_target_agent() {
     };
     let record = SessionRecord::Asked {
         turn,
-        to: AgentRef::Cua {
+        to: AgentRef::ComputerUse {
             run: provenance::RunId::parse("r-3").expect("run"),
         },
         task: task("t-4"),

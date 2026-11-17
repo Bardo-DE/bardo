@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 
 use common::*;
 use computer_use_action::{
-    Button, Choice, Chord, ClickCount, Coord, CuaAction, FinishOutcome, ImageSpace, Length,
+    Button, Choice, Chord, ClickCount, ComputerUseAction, Coord, FinishOutcome, ImageSpace, Length,
     Modifier, Notches, Repeat, ScrollBy, ScrollDir, Summary, Target, ToolDialect, TypedText,
     WaitMs,
 };
@@ -49,11 +49,11 @@ fn qwen_tool_calls_parse() {
     assert_eq!(
         image_actions(&p),
         [
-            CuaAction::Key {
+            ComputerUseAction::Key {
                 chord,
                 repeat: Repeat::ONCE
             },
-            CuaAction::Type {
+            ComputerUseAction::Type {
                 text: TypedText::new("hello").unwrap()
             },
         ]
@@ -63,12 +63,12 @@ fn qwen_tool_calls_parse() {
     assert_eq!(
         image_actions(&p),
         [
-            CuaAction::Scroll {
+            ComputerUseAction::Scroll {
                 at: at(600, 400),
                 dir: ScrollDir::Down,
                 by: ScrollBy::Distance(Length::<ImageSpace>::new(Coord(300))),
             },
-            CuaAction::Finish {
+            ComputerUseAction::Finish {
                 outcome: FinishOutcome::Done,
                 summary: Summary::new("").unwrap(),
                 extracted: vec![],
@@ -85,7 +85,7 @@ fn holo_tool_calls_parse() {
         image_actions(&p),
         [
             left_click(at(500, 250)),
-            CuaAction::Ask {
+            ComputerUseAction::Ask {
                 question: Summary::new("Which account?").unwrap(),
                 choices: vec![
                     Choice::new("Work").unwrap(),
@@ -98,7 +98,7 @@ fn holo_tool_calls_parse() {
 
 #[test]
 fn qwen_click_family() {
-    let click = |to, button, count| CuaAction::Click {
+    let click = |to, button, count| ComputerUseAction::Click {
         at: to,
         button,
         count,
@@ -107,7 +107,7 @@ fn qwen_click_family() {
     let mut accepted = vec![
         (
             r#"{"action":"mouse_move","coordinate":[1,2]}"#.to_owned(),
-            CuaAction::MoveTo { at: at(1, 2) },
+            ComputerUseAction::MoveTo { at: at(1, 2) },
         ),
         // Integral floats are numbers.
         (
@@ -143,7 +143,7 @@ fn the_sign_of_a_scroll_is_what_the_models_are_told() {
     );
     // ...and what both tool dialects read.
     let dir = |p: computer_use_parse::Parsed| match &image_actions(&p)[0] {
-        CuaAction::Scroll { dir, .. } => *dir,
+        ComputerUseAction::Scroll { dir, .. } => *dir,
         other => panic!("a scroll, got {other:?}"),
     };
     for (pixels, want) in [(30, ScrollDir::Up), (-30, ScrollDir::Down)] {
@@ -159,18 +159,18 @@ fn the_sign_of_a_scroll_is_what_the_models_are_told() {
     reason = "one scenario (or table of cases) read top to bottom; splitting it would scatter what a reader checks together"
 )]
 fn qwen_drag_scroll_wait_and_conclusions() {
-    let by = |dir, px| CuaAction::Scroll {
+    let by = |dir, px| ComputerUseAction::Scroll {
         at: at(5, 5),
         dir,
         by: ScrollBy::Distance(Length::new(Coord(px))),
     };
-    let wait = |ms| CuaAction::Wait {
+    let wait = |ms| ComputerUseAction::Wait {
         for_ms: WaitMs::new(ms).unwrap(),
     };
     let accepted = [
         (
             r#"{"action":"left_click_drag","start_coordinate":[1,2],"coordinate":[30,40]}"#,
-            CuaAction::Drag {
+            ComputerUseAction::Drag {
                 from: at(1, 2),
                 to: at(30, 40),
                 button: Button::Left,
@@ -195,7 +195,7 @@ fn qwen_drag_scroll_wait_and_conclusions() {
         // Qwen's schema makes the coordinate optional: the scroll acts at the centre of the frame.
         (
             r#"{"action":"scroll","pixels":10}"#,
-            CuaAction::Scroll {
+            ComputerUseAction::Scroll {
                 at: Target::Centre,
                 dir: ScrollDir::Up,
                 by: ScrollBy::Distance(Length::new(Coord(10))),
@@ -254,12 +254,12 @@ fn qwen_drag_scroll_wait_and_conclusions() {
     }
 
     let failed = qwen(r#"{"action":"terminate","status":"failure"}"#);
-    let CuaAction::Finish { outcome, .. } = &image_actions(&failed)[0] else {
+    let ComputerUseAction::Finish { outcome, .. } = &image_actions(&failed)[0] else {
         panic!()
     };
     assert_eq!(*outcome, FinishOutcome::Failed);
     let answer = qwen(r#"{"action":"answer","text":"42"}"#);
-    let CuaAction::Finish {
+    let ComputerUseAction::Finish {
         outcome, summary, ..
     } = &image_actions(&answer)[0]
     else {
@@ -271,7 +271,7 @@ fn qwen_drag_scroll_wait_and_conclusions() {
 #[test]
 fn terminate_words_come_from_summary_or_text() {
     let words = |p: &computer_use_parse::Parsed| match &image_actions(p)[0] {
-        CuaAction::Finish {
+        ComputerUseAction::Finish {
             outcome, summary, ..
         } => (*outcome, summary.as_str().to_owned()),
         other => panic!("{other:?}"),
@@ -307,7 +307,7 @@ fn terminate_words_come_from_summary_or_text() {
 #[test]
 fn key_spellings_in_tool_calls() {
     let chord = |args: &str| match &image_actions(&qwen(args))[0] {
-        CuaAction::Key { chord, .. } => chord.clone(),
+        ComputerUseAction::Key { chord, .. } => chord.clone(),
         other => panic!("{other:?}"),
     };
     let want = Chord::new(BTreeSet::from([Modifier::Alt]), Key::Tab).unwrap();
@@ -363,7 +363,7 @@ fn holo_schema_variants() {
         (
             "drag",
             r#"{"start_x":1,"start_y":2,"end_x":3,"end_y":4}"#,
-            CuaAction::Drag {
+            ComputerUseAction::Drag {
                 from: at(1, 2),
                 to: at(3, 4),
                 button: Button::Left,
@@ -372,13 +372,13 @@ fn holo_schema_variants() {
         (
             "scroll",
             r#"{"x":9,"y":9,"direction":"Left"}"#,
-            CuaAction::Scroll {
+            ComputerUseAction::Scroll {
                 at: at(9, 9),
                 dir: ScrollDir::Left,
                 by: ScrollBy::Notches(Notches(5)),
             },
         ),
-        ("observe", "{}", CuaAction::Observe),
+        ("observe", "{}", ComputerUseAction::Observe),
     ];
     for (name, args, want) in accepted {
         assert_eq!(image_actions(&holo(name, args)), [want], "{name} {args}");
@@ -387,7 +387,7 @@ fn holo_schema_variants() {
         "finish",
         r#"{"status":"infeasible","summary":"no such menu"}"#,
     );
-    let CuaAction::Finish {
+    let ComputerUseAction::Finish {
         outcome, summary, ..
     } = &image_actions(&p)[0]
     else {

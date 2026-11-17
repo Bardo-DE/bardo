@@ -11,7 +11,7 @@ wire_enum! {
         /// The companion as planner, reader or worker.
         Companion = 1,
         /// The companion as a computer-use run.
-        Cua = 2,
+        ComputerUse = 2,
         /// An MCP client.
         Mcp = 3,
         /// A command-line tool.

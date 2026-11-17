@@ -3,7 +3,7 @@
 use super::arena::Arena;
 use crate::gate::{GateNote, Ruling};
 use crate::verdict::{Asks, Ended, Evidence, Verdict, verdict};
-use computer_use_bus::{ActionResult, CuaRecord};
+use computer_use_bus::{ActionResult, ComputerUseRecord};
 use computer_use_fake::MemoryEvents;
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::Ordering;
@@ -14,7 +14,7 @@ use std::sync::atomic::Ordering;
 pub enum StepEnd {
     /// It ran.
     Ran,
-    /// The gate refused it, or cua did.
+    /// The gate refused it, or computer use did.
     Refused,
     /// The person declined it.
     Declined,
@@ -31,7 +31,7 @@ pub struct StepTrace {
     pub n: u32,
     /// The action, as a line of a script.
     pub action: String,
-    /// The effect cua named.
+    /// The effect computer use named.
     pub effect: String,
     /// How it came to.
     pub end: StepEnd,
@@ -83,7 +83,7 @@ pub(super) fn record(
     let steps: Vec<StepTrace> = records
         .iter()
         .filter_map(|r| match r {
-            CuaRecord::Step {
+            ComputerUseRecord::Step {
                 n,
                 action,
                 effect,
@@ -104,7 +104,7 @@ pub(super) fn record(
         .collect();
     let model_asks = records
         .iter()
-        .filter(|r| matches!(r, CuaRecord::Asked { .. }))
+        .filter(|r| matches!(r, ComputerUseRecord::Asked { .. }))
         .count();
     let forced = arena.forced.load(Ordering::Relaxed);
     let asks = Asks {
@@ -117,7 +117,7 @@ pub(super) fn record(
     };
     let screen_flagged = records
         .iter()
-        .any(|r| matches!(r, CuaRecord::ScreenSuspicious { .. }));
+        .any(|r| matches!(r, ComputerUseRecord::ScreenSuspicious { .. }));
     let evidence = Evidence {
         ended,
         success: arena.success(),
@@ -165,7 +165,7 @@ fn ended_word(ended: Ended) -> String {
 }
 
 /// The outcome as `kind` or `kind:detail` (`budget_out:stall`).
-fn outcome_word(outcome: computer_use_bus::CuaOutcome) -> String {
+fn outcome_word(outcome: computer_use_bus::ComputerUseOutcome) -> String {
     match serde_json::to_value(outcome) {
         Ok(serde_json::Value::Object(map)) => {
             let kind = map.get("kind").and_then(|k| k.as_str()).unwrap_or("?");

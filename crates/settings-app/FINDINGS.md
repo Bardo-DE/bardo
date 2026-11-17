@@ -12,7 +12,7 @@ Colour: `RadioGroup` with `Arrangement::Swatches`). Two have none (and a third, 
 "Edit in file" note (`settings-app-ui/src/controls/file_only.rs`):
 
 - **Shortcut** (a captured key chord): the UI kit has no key-capture field. Closes when the UI kit adds one.
-- **Rows** (`Rows { columns }`, cua's `cua.apps`) is edited in `settings-app-ui/src/controls/rows.rs`, composed of Bardo's
+- **Rows** (`Rows { columns }`, computer use's `computer_use.apps`) is edited in `settings-app-ui/src/controls/rows.rs`, composed of Bardo's
   `TextField`, `PopUpButton` and `Button`: the UI kit has no rows-editor component of its own, so a
   component there would replace it. Rows the editor cannot hold (an unknown cell, a word outside
   a column) are shown read-only and kept byte for byte.
@@ -71,14 +71,14 @@ because a schema names no binary. Closes when `discover` returns the skipped fil
 
 - **Schemas read:** inferd's (`fixtures/schemas/inferd.settings.toml`, 21 rows, hands-off), the actions service's
   (18 rows: Privacy basic; Review time, Session budgets and Task approvals Advanced), the memory service's
-  (8 rows: Memory basic, Retention Advanced) and cua's (14 rows: Computer use basic; Run limits,
+  (8 rows: Memory basic, Retention Advanced) and computer use's (14 rows: Computer use basic; Run limits,
   Timing and Window detail Advanced). Each is installed to `$XDG_DATA_DIRS/bardo/settings/` and
   writes its own `$XDG_CONFIG_HOME/<program>/settings.toml`. Not shipped anywhere yet: the shell's
   `companion.*` (the shell's `dist/` has no companion schema); the Companion section appears when a
   schema names it, and the layout test uses a stand-in. Closes when the shell ships its schema.
-- **cua's apps are rows, but "never `always` for a browser" is not enforced here.** The rows editor
+- **Computer use's apps are rows, but "never `always` for a browser" is not enforced here.** The rows editor
   checks each cell against its column (the whole value matches the pattern, a choice is one of its
-  words); which apps are browsers is cua's to decide when it reads the file.
+  words); which apps are browsers is computer use's to decide when it reads the file.
 - **The reason footer has no producer.** `Reason` reads `InferEvent::Why` and `Declined` from the
   `ReasonFeed` in `Env`, but `Why` is an event of an inferd session, which only that session's caller
   sees. The binary starts with a silent feed, so the footer shows its resting line. Closes when
@@ -118,7 +118,7 @@ Open items, each with its closing condition:
 - **Agent marks come from the admitted schema, and only from a folder the person cannot write
   (SETTINGS-02).** `KeyEntry::agent()` is the key's own `KeySpec::agent`, read from the schema
   `ds_settings::schema::discover` admitted (named for its program, its file inside that program's
-  directory, the system's directories before the user's, never settable under `ai.`, `cua.` and the
+  directory, the system's directories before the user's, never settable under `ai.`, `computer_use.` and the
   other prefixes); there is no second parser. `discover` also judges the schema's folder
   (`SchemaOrigin`): `System` is a folder owned by root with every folder above it, closed to group
   and others; anything else (`~/.local/share/bardo/settings`) is `PersonWritable`, and such a schema

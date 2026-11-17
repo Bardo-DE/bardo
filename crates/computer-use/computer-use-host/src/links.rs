@@ -6,7 +6,7 @@ use account_core::{AppName, DataClass};
 use action_client::{ClientError, Intents, Transport as IntentsTransport, TransportError};
 use action_core::{Delivery, InboundLine, InboxAsk, MessageDraft};
 use base_time::UnixSeconds;
-use computer_use_bus::{CuaRecord, CuaTask};
+use computer_use_bus::{ComputerUseRecord, ComputerUseTask};
 use computer_use_run::{LinkError, MessageLink, RecordSink};
 use memory_client::{Memory, Transport as MemoryTransport};
 use memory_core::{
@@ -92,31 +92,31 @@ fn things_of(ctx: &RecordContext) -> Result<Vec<(ThingView, ThingRole)>, RecordE
     ])
 }
 
-/// The memory service event for `record`: an `EventBody::Area` of area `Cua` whose JSON is the record's
-/// serde form and whose kind tag is its slug, by the actor `Companion { session, role: Cua }`.
+/// The memory service event for `record`: an `EventBody::Area` of area `ComputerUse` whose JSON is the record's
+/// serde form and whose kind tag is its slug, by the actor `Companion { session, role: ComputerUse }`.
 ///
 /// Pure. A step's effect is the record's own; every other record is a `Read`.
 ///
 /// # Errors
 ///
 /// Returns a [`RecordError`] when the record's kind tag or its JSON is not valid.
-pub fn record_of(ctx: &RecordContext, record: &CuaRecord) -> Result<Record, RecordError> {
+pub fn record_of(ctx: &RecordContext, record: &ComputerUseRecord) -> Result<Record, RecordError> {
     let kind = KindTag::parse(&record.kind()).map_err(|e| RecordError::Kind(e.to_string()))?;
     let json = serde_json::to_string(record).map_err(|e| RecordError::Json(e.to_string()))?;
     let json = JsonText::parse(&json).map_err(|e| RecordError::Json(e.to_string()))?;
     let effect = match record {
-        CuaRecord::Step { effect, .. } => *effect,
+        ComputerUseRecord::Step { effect, .. } => *effect,
         _ => Effect::Read,
     };
     let things = things_of(ctx)?;
     Ok(Record {
         space: ctx.space.clone(),
         occurred: ctx.at,
-        actor: computer_use_bus::cua_actor(ctx.session.clone(), record.run().clone()),
+        actor: computer_use_bus::computer_use_actor(ctx.session.clone(), record.run().clone()),
         effect,
         label: ctx.label.clone(),
         body: EventBody::Area(AreaPayload {
-            area: AreaTag::Cua,
+            area: AreaTag::ComputerUse,
             kind,
             json,
             things,
@@ -161,13 +161,13 @@ impl<M: MemoryTransport, I: IntentsTransport> DaemonLinks<M, I> {
     }
 
     /// What `record` needs besides the record: what the run's start taught the links.
-    fn context_of(&self, record: &CuaRecord) -> Option<RecordContext> {
+    fn context_of(&self, record: &ComputerUseRecord) -> Option<RecordContext> {
         let mut runs = locked(&self.runs);
         let context = runs.get(record.run()).map(|known| RecordContext {
             at: (self.now)(),
             ..known.clone()
         });
-        if let CuaRecord::Finished { run, .. } = record {
+        if let ComputerUseRecord::Finished { run, .. } = record {
             runs.remove(run);
         }
         context
@@ -196,7 +196,7 @@ fn router_error(error: ClientError) -> LinkError {
 }
 
 impl<M: MemoryTransport, I: IntentsTransport> RecordSink for DaemonLinks<M, I> {
-    async fn open(&self, run: &RunId, task: &CuaTask) {
+    async fn open(&self, run: &RunId, task: &ComputerUseTask) {
         let label = Label::untrusted(
             Source::Screen {
                 app: task.app.clone(),
@@ -217,7 +217,7 @@ impl<M: MemoryTransport, I: IntentsTransport> RecordSink for DaemonLinks<M, I> {
         );
     }
 
-    async fn record(&self, record: CuaRecord) -> Result<(), LinkError> {
+    async fn record(&self, record: ComputerUseRecord) -> Result<(), LinkError> {
         let Some(context) = self.context_of(&record) else {
             return Err(LinkError::Protocol(format!(
                 "no run to record {} for",
@@ -251,7 +251,7 @@ impl<M: MemoryTransport, I: IntentsTransport> MessageLink for DaemonLinks<M, I> 
 mod tests {
     use super::*;
     use base_ids::Count;
-    use computer_use_bus::{CancelledBy, CuaOutcome};
+    use computer_use_bus::{CancelledBy, ComputerUseOutcome};
     use inference_core::ChargeTotal;
     use provenance::{ActorKind, Confidentiality, Integrity};
     use std::collections::BTreeSet;
@@ -276,22 +276,22 @@ mod tests {
     }
 
     #[test]
-    fn a_record_becomes_an_area_cua_event_by_the_cua_actor() {
-        let record = CuaRecord::Finished {
+    fn a_record_becomes_an_area_computer_use_event_by_the_computer_use_actor() {
+        let record = ComputerUseRecord::Finished {
             run: RunId::parse("r-1").unwrap(),
-            outcome: CuaOutcome::Cancelled(CancelledBy::User),
+            outcome: ComputerUseOutcome::Cancelled(CancelledBy::User),
             steps: Count(3),
             charges: ChargeTotal::default(),
             report: None,
         };
         let event = record_of(&ctx(), &record).expect("an event");
-        assert_eq!(event.actor.kind(), ActorKind::Cua);
+        assert_eq!(event.actor.kind(), ActorKind::ComputerUse);
         assert_eq!(event.effect, Effect::Read);
         assert_eq!(event.label, ctx().label);
         let EventBody::Area(payload) = &event.body else {
             panic!("not an area body")
         };
-        assert_eq!(payload.area, AreaTag::Cua);
+        assert_eq!(payload.area, AreaTag::ComputerUse);
         assert_eq!(payload.kind.as_str(), "cua.run.finished");
         assert_eq!(
             payload.json.as_str(),

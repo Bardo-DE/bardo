@@ -107,7 +107,7 @@ async fn a_frame_carries_the_windows_pixels_at_logical_resolution() {
     assert_eq!(frame.seq.0, 1);
     assert_eq!(
         frame.masks.applied_by,
-        computer_use_desktop::MaskWhere::Cuad
+        computer_use_desktop::MaskWhere::ComputerUseDaemon
     );
     assert_eq!(frame.masks.whole, WholeMask::None);
     assert_eq!(frame.damage.len(), 1, "the first frame is all new");
@@ -122,7 +122,7 @@ async fn a_frame_carries_the_windows_pixels_at_logical_resolution() {
 }
 
 #[tokio::test]
-async fn hints_are_blacked_by_cuad_and_reported() {
+async fn hints_are_blacked_by_computer_use_daemon_and_reported() {
     let mut server = FakeCompositor::start(vec![Window::solid("w1", (4, 3), RED)]);
     let capture = capture(&mut server);
     let mut session = capture.open(&grant("w1")).await.expect("open");
@@ -316,7 +316,7 @@ async fn a_masked_frame_is_the_compositors_and_the_hints_go_to_it() {
         .frame(FrameWant::Now, &[region(1, 0, 2, 1)])
         .await
         .expect("frame");
-    // The fake compositor masks nothing: cuad did not either.
+    // The fake compositor masks nothing: the computer-use daemon did not either.
     assert_eq!(&*frame.pixels.data, &*window.pixels);
     assert_eq!(
         frame.masks.applied_by,

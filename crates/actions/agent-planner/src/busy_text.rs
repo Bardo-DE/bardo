@@ -111,7 +111,7 @@ mod tests {
 
     #[test]
     fn busy_names_the_planners_own_task_only_when_one_of_them_last_used_that_app() {
-        let cua = "org.bardo.ComputerUse";
+        let computer_use = "org.bardo.ComputerUse";
         let table = [
             (
                 "nobody",
@@ -121,15 +121,15 @@ mod tests {
             ),
             (
                 "one task",
-                vec![worker(cua, RosterState::Working)],
+                vec![worker(computer_use, RosterState::Working)],
                 vec![task_card(4)],
                 "started by your background task #4;",
             ),
             (
                 "two tasks",
                 vec![
-                    worker(cua, RosterState::Working),
-                    worker(cua, RosterState::Working),
+                    worker(computer_use, RosterState::Working),
+                    worker(computer_use, RosterState::Working),
                 ],
                 vec![task_card(4), task_card(5)],
                 "started by one of your background tasks (#4, #5);",
@@ -142,7 +142,7 @@ mod tests {
             ),
             (
                 "a task that ended",
-                vec![worker(cua, RosterState::Done)],
+                vec![worker(computer_use, RosterState::Done)],
                 vec![task_card(4)],
                 "so this one cannot start;",
             ),
@@ -154,7 +154,7 @@ mod tests {
                 actions: &[],
                 roster: &roster,
             };
-            let hint = busy_hint(&step(cua), &seen);
+            let hint = busy_hint(&step(computer_use), &seen);
             assert!(hint.contains(want), "case {name}: {hint}");
         }
     }

@@ -5,11 +5,11 @@
 )]
 
 use computer_use_action::{
-    ActionProfile, Coord, CuaDialect, GridMax, ModelSpace, Scale120, Size, WindowSpace,
+    ActionProfile, ComputerUseDialect, Coord, GridMax, ModelSpace, Scale120, Size, WindowSpace,
 };
 use computer_use_session::{
-    CuaProfile, CuaSession, CuaTaskText, FrameBudget, MaskedRegions, ObservationIn, RepairBudget,
-    StepIndex, TurnTranscript,
+    ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, MaskedRegions,
+    ObservationIn, RepairBudget, StepIndex, TurnTranscript,
 };
 use model_provider::{
     ImageInput, JsonText, ModelName, StopReason, ToolCall, ToolCallId, ToolName, TurnEnd, TurnUsage,
@@ -39,8 +39,13 @@ pub fn grid() -> ModelSpace {
     ModelSpace::Grid(GridMax(1000))
 }
 
-pub fn profile(dialect: CuaDialect, space: ModelSpace, history: u8, repair: u8) -> CuaProfile {
-    CuaProfile {
+pub fn profile(
+    dialect: ComputerUseDialect,
+    space: ModelSpace,
+    history: u8,
+    repair: u8,
+) -> ComputerUseProfile {
+    ComputerUseProfile {
         dialect,
         actions: ActionProfile::default(),
         rule: rule(),
@@ -51,15 +56,20 @@ pub fn profile(dialect: CuaDialect, space: ModelSpace, history: u8, repair: u8) 
     }
 }
 
-pub fn task() -> CuaTaskText {
-    CuaTaskText {
+pub fn task() -> ComputerUseTaskText {
+    ComputerUseTaskText {
         goal: "save the file".into(),
         hints: vec!["it is in the File menu".into()],
     }
 }
 
-pub fn session(dialect: CuaDialect, space: ModelSpace, history: u8, repair: u8) -> CuaSession {
-    CuaSession::begin(
+pub fn session(
+    dialect: ComputerUseDialect,
+    space: ModelSpace,
+    history: u8,
+    repair: u8,
+) -> ComputerUseSession {
+    ComputerUseSession::begin(
         profile(dialect, space, history, repair),
         task(),
         ModelName("holo".into()),

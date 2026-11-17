@@ -2,12 +2,12 @@
 
 use super::*;
 use computer_use_action::{
-    Button, ClickCount, Coord, CuaAction, DeviceSize, PixelFormat, Point, Scale120, Size, Target,
-    WindowSpace,
+    Button, ClickCount, ComputerUseAction, Coord, DeviceSize, PixelFormat, Point, Scale120, Size,
+    Target, WindowSpace,
 };
 use inference_core::{
-    AttachIndex, CuaBegin, CuaStepRequest, FrameImage, FrameLayout, ImageSource, StepIndex,
-    WindowGeometry,
+    AttachIndex, ComputerUseBegin, ComputerUseStepRequest, FrameImage, FrameLayout, ImageSource,
+    StepIndex, WindowGeometry,
 };
 use std::io::Write;
 use std::os::fd::OwnedFd;
@@ -21,8 +21,8 @@ fn memfd(bytes: &[u8]) -> OwnedFd {
 }
 
 /// A window of 200 by 100 logical pixels at scale 1, whose frame is a flat grey.
-fn step_request(step: u32) -> CuaStepRequest {
-    CuaStepRequest::new(
+fn step_request(step: u32) -> ComputerUseStepRequest {
+    ComputerUseStepRequest::new(
         StepIndex(step),
         WindowGeometry {
             logical: Size::new(Coord(200), Coord(100)),
@@ -40,22 +40,24 @@ fn step_request(step: u32) -> CuaStepRequest {
     )
 }
 
-fn begin() -> CuaBegin {
-    CuaBegin::new("press the big button".into(), CuaEnv::Desktop)
+fn begin() -> ComputerUseBegin {
+    ComputerUseBegin::new("press the big button".into(), ComputerUseEnv::Desktop)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
-    let world = World::start(cua_world(CallerRole::Cua)).await;
+async fn a_computer_use_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
+    let world = World::start(computer_use_world(CallerRole::ComputerUse)).await;
     let mut session = world
         .accounts
-        .session(&cua_need(), DataClass::Screen, Tier::Best)
+        .session(&computer_use_need(), DataClass::Screen, Tier::Best)
         .await
         .expect("open");
 
     // The begin is acknowledged with an empty step reply.
     session
-        .send(ClientFrame::Request(InferRequest::CuaBegin(begin())))
+        .send(ClientFrame::Request(
+            InferRequest::ComputerUseBegin(begin()),
+        ))
         .await
         .expect("begin");
     let events = until_finished(&mut session).await;
@@ -68,7 +70,7 @@ async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
     assert!(
         matches!(
             events.last(),
-            Some(InferEvent::Finished(InferReply::CuaStep(reply))) if reply.actions.is_empty()
+            Some(InferEvent::Finished(InferReply::ComputerUseStep(reply))) if reply.actions.is_empty()
         ),
         "{events:?}"
     );
@@ -77,13 +79,13 @@ async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
     let frame = vec![0x80_u8; 200 * 100 * 4];
     session
         .send_attached(
-            ClientFrame::Request(InferRequest::CuaStep(step_request(0))),
+            ClientFrame::Request(InferRequest::ComputerUseStep(step_request(0))),
             vec![memfd(&frame)],
         )
         .await
         .expect("step");
     let events = until_finished(&mut session).await;
-    let click = CuaAction::Click {
+    let click = ComputerUseAction::Click {
         at: Target::Point(Point::<WindowSpace>::new(Coord(100), Coord(50))),
         button: Button::Left,
         count: ClickCount::One,
@@ -93,7 +95,7 @@ async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
         events.contains(&InferEvent::ActionProposed(click.clone())),
         "{events:?}"
     );
-    let Some(InferEvent::Finished(InferReply::CuaStep(reply))) = events.last() else {
+    let Some(InferEvent::Finished(InferReply::ComputerUseStep(reply))) = events.last() else {
         panic!("a step reply, got {events:?}");
     };
     // 500 of 1000 on the grid is the middle of a 200 by 100 window.
@@ -101,7 +103,7 @@ async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
     assert_eq!(reply.dropped, vec![]);
 
     // The engine saw the goal, the tool and the frame as an inline PNG.
-    let bodies = world.engines["tiny-cua"].bodies("/v1/chat/completions");
+    let bodies = world.engines["tiny-computer-use"].bodies("/v1/chat/completions");
     assert_eq!(bodies.len(), 1);
     let sent = bodies[0].to_string();
     assert!(sent.contains("press the big button"), "the goal");
@@ -117,11 +119,11 @@ async fn a_cua_step_with_a_memfd_frame_round_trips_to_a_window_space_action() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn only_cuad_may_open_a_computer_use_session() {
-    let world = World::start(cua_world(CallerRole::App)).await;
+async fn only_computer_use_daemon_may_open_a_computer_use_session() {
+    let world = World::start(computer_use_world(CallerRole::App)).await;
     let mut session = world
         .accounts
-        .session(&cua_need(), DataClass::Screen, Tier::Best)
+        .session(&computer_use_need(), DataClass::Screen, Tier::Best)
         .await
         .expect("open");
     let events = until_finished(&mut session).await;
@@ -136,15 +138,15 @@ async fn only_cuad_may_open_a_computer_use_session() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_step_before_a_begin_and_a_wrong_class_are_refused() {
-    let world = World::start(cua_world(CallerRole::Cua)).await;
+    let world = World::start(computer_use_world(CallerRole::ComputerUse)).await;
     let mut early = world
         .accounts
-        .session(&cua_need(), DataClass::Screen, Tier::Best)
+        .session(&computer_use_need(), DataClass::Screen, Tier::Best)
         .await
         .expect("open");
     early
         .send_attached(
-            ClientFrame::Request(InferRequest::CuaStep(step_request(0))),
+            ClientFrame::Request(InferRequest::ComputerUseStep(step_request(0))),
             vec![memfd(&[0; 16])],
         )
         .await
@@ -163,7 +165,7 @@ async fn a_step_before_a_begin_and_a_wrong_class_are_refused() {
     // Anything but screen data on a computer-use session never reaches a model.
     let mut mail = world
         .accounts
-        .session(&cua_need(), DataClass::Mail, Tier::Best)
+        .session(&computer_use_need(), DataClass::Mail, Tier::Best)
         .await
         .expect("open");
     let events = until_finished(&mut mail).await;
@@ -184,9 +186,9 @@ fn click_at_middle() -> Chat {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn a_reply_with_no_call_is_repaired_and_the_next_step_sees_the_earlier_frame() {
-    let mut plan = cua_world(CallerRole::Cua);
+    let mut plan = computer_use_world(CallerRole::ComputerUse);
     plan.scripts = vec![(
-        "tiny-cua",
+        "tiny-computer-use",
         Script {
             chat: vec![
                 Chat::Say(vec!["I cannot see a button"]),
@@ -199,11 +201,13 @@ async fn a_reply_with_no_call_is_repaired_and_the_next_step_sees_the_earlier_fra
     let world = World::start(plan).await;
     let mut session = world
         .accounts
-        .session(&cua_need(), DataClass::Screen, Tier::Best)
+        .session(&computer_use_need(), DataClass::Screen, Tier::Best)
         .await
         .expect("open");
     session
-        .send(ClientFrame::Request(InferRequest::CuaBegin(begin())))
+        .send(ClientFrame::Request(
+            InferRequest::ComputerUseBegin(begin()),
+        ))
         .await
         .expect("begin");
     until_finished(&mut session).await;
@@ -212,20 +216,20 @@ async fn a_reply_with_no_call_is_repaired_and_the_next_step_sees_the_earlier_fra
     for step in 0..2 {
         session
             .send_attached(
-                ClientFrame::Request(InferRequest::CuaStep(step_request(step))),
+                ClientFrame::Request(InferRequest::ComputerUseStep(step_request(step))),
                 vec![memfd(&frame)],
             )
             .await
             .expect("step");
         let events = until_finished(&mut session).await;
-        let Some(InferEvent::Finished(InferReply::CuaStep(reply))) = events.last() else {
+        let Some(InferEvent::Finished(InferReply::ComputerUseStep(reply))) = events.last() else {
             panic!("a step reply, got {events:?}");
         };
         assert_eq!(reply.actions.len(), 1, "step {step}: {events:?}");
     }
 
     // The first step took two turns (the second named what was wrong), the second step one.
-    let bodies = world.engines["tiny-cua"].bodies("/v1/chat/completions");
+    let bodies = world.engines["tiny-computer-use"].bodies("/v1/chat/completions");
     assert_eq!(bodies.len(), 3);
     let repair = bodies[1].to_string();
     assert!(

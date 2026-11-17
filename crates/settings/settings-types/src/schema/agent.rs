@@ -38,7 +38,7 @@ pub const AGENT_SETTABLE_PROPOSED: &[&str] = &[
 pub const AGENT_NEVER_SETTABLE: &[&str] = &[
     "agent.",
     "ai.",
-    "cua.",
+    "computer_use.",
     "memory.",
     "companion.",
     "session.",
@@ -59,7 +59,7 @@ pub const AGENT_NEVER_SETTABLE: &[&str] = &[
 /// use settings_types::SettingsSchema;
 /// use settings_types::schema::Page;
 /// #[derive(Default, serde::Serialize, SettingsSchema)]
-/// #[settings(file = "p/s.toml", domain = "cua", page = Page::Dock)]
+/// #[settings(file = "p/s.toml", domain = "computer_use", page = Page::Dock)]
 /// struct S {
 ///     #[settings(label = "L", agent_settable)]
 ///     enabled: String,
@@ -125,7 +125,7 @@ mod tests {
     #[test]
     fn a_key_under_a_never_prefix_is_never_settable() {
         const CASES: &[(&str, bool)] = &[
-            ("cua.enabled", true),
+            ("computer_use.enabled", true),
             ("agent.budget", true),
             ("ai.model", true),
             ("memory.on", true),
@@ -141,7 +141,7 @@ mod tests {
             ("securityx.level", false),
             ("appearance.theme", false),
             ("cuarto.x", false),
-            ("cua", false),
+            ("computer_use", false),
             ("", false),
         ];
         for (path, want) in CASES {

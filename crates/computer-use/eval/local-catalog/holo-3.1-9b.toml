@@ -1,4 +1,4 @@
-# TRIAL ENTRY for the local-model ladder (cua eval); the model layer's catalogue does not have it.
+# TRIAL ENTRY for the local-model ladder (computer-use eval); the model layer's catalogue does not have it.
 # Holo 3.1 9B (H Company), Qwen3.5 9B base (32 layers, 8 full attention, 4 KV heads of 256: 32 MiB per 1k
 # tokens). Same chat template, image processor (patch 16, merge 2), tool format (qwen3_coder XML) and
 # 0-1000 grid as Holo 3.1 4B, so the dialect, grid and sampling are the 4B entry's. Served with vLLM

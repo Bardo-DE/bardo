@@ -11,8 +11,8 @@
 //! `click` buttons `back` and `forward` are dropped; `wheel` is the middle button.
 
 use computer_use_action::{
-    Button, ClickCount, CuaAction, ImageSpace, Length, ScrollBy, ScrollDir, Target, TypedText,
-    WaitMs,
+    Button, ClickCount, ComputerUseAction, ImageSpace, Length, ScrollBy, ScrollDir, Target,
+    TypedText, WaitMs,
 };
 use computer_use_parse::{DropReason, bounded, chord_from_words};
 use serde_json::Value;
@@ -28,7 +28,7 @@ const _: () = assert!(
 );
 
 /// The actions of one call, each with the verb it is reported under.
-pub(crate) fn actions_of(args: &Args) -> Vec<(String, Verdict<CuaAction<ImageSpace>>)> {
+pub(crate) fn actions_of(args: &Args) -> Vec<(String, Verdict<ComputerUseAction<ImageSpace>>)> {
     let list: Vec<&Value> = match (args.get("actions"), args.get("action")) {
         (Some(Value::Array(items)), _) => items.iter().collect(),
         (None, Some(single)) => vec![single],
@@ -68,7 +68,7 @@ fn keys(args: &Args) -> Verdict<computer_use_action::Chord> {
     chord_from_words(&words)
 }
 
-fn scroll(args: &Args) -> Verdict<CuaAction<ImageSpace>> {
+fn scroll(args: &Args) -> Verdict<ComputerUseAction<ImageSpace>> {
     let across = args.get("scroll_x").map(signed).transpose()?.unwrap_or(0);
     let down = args.get("scroll_y").map(signed).transpose()?.unwrap_or(0);
     let (dir, pixels) = if down.abs() >= across.abs() {
@@ -94,14 +94,14 @@ fn scroll(args: &Args) -> Verdict<CuaAction<ImageSpace>> {
         .ok()
         .filter(|p| *p > 0)
         .ok_or(DropReason::BadNumber)?;
-    Ok(CuaAction::Scroll {
+    Ok(ComputerUseAction::Scroll {
         at: at(args)?,
         dir,
         by: ScrollBy::Distance(Length::new(computer_use_action::Coord(pixels))),
     })
 }
 
-fn drag(args: &Args) -> Verdict<CuaAction<ImageSpace>> {
+fn drag(args: &Args) -> Verdict<ComputerUseAction<ImageSpace>> {
     let path = field(args, "path")?
         .as_array()
         .ok_or(DropReason::BadArgument)?;
@@ -110,7 +110,7 @@ fn drag(args: &Args) -> Verdict<CuaAction<ImageSpace>> {
         at(map)
     };
     match (path.first(), path.last()) {
-        (Some(from), Some(to)) if path.len() >= 2 => Ok(CuaAction::Drag {
+        (Some(from), Some(to)) if path.len() >= 2 => Ok(ComputerUseAction::Drag {
             from: end(from)?,
             to: end(to)?,
             button: Button::Left,
@@ -119,9 +119,9 @@ fn drag(args: &Args) -> Verdict<CuaAction<ImageSpace>> {
     }
 }
 
-fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> {
-    let click = |count| -> Verdict<CuaAction<ImageSpace>> {
-        Ok(CuaAction::Click {
+fn action(verb: &str, args: &Args) -> Verdict<ComputerUseAction<ImageSpace>> {
+    let click = |count| -> Verdict<ComputerUseAction<ImageSpace>> {
+        Ok(ComputerUseAction::Click {
             at: at(args)?,
             button: if matches!(count, ClickCount::One) {
                 button(args)?
@@ -135,22 +135,22 @@ fn action(verb: &str, args: &Args) -> Verdict<CuaAction<ImageSpace>> {
     match verb {
         "click" => click(ClickCount::One),
         "double_click" => click(ClickCount::Two),
-        "move" => Ok(CuaAction::MoveTo { at: at(args)? }),
+        "move" => Ok(ComputerUseAction::MoveTo { at: at(args)? }),
         "scroll" => scroll(args),
         "drag" => drag(args),
-        "keypress" => Ok(CuaAction::Key {
+        "keypress" => Ok(ComputerUseAction::Key {
             chord: keys(args)?,
             repeat: computer_use_action::Repeat::ONCE,
         }),
-        "type" => Ok(CuaAction::Type {
+        "type" => Ok(ComputerUseAction::Type {
             text: bounded(TypedText::new(string(args, "text")?))?,
         }),
-        "wait" => Ok(CuaAction::Wait {
+        "wait" => Ok(ComputerUseAction::Wait {
             for_ms: WaitMs::new(WAIT_MS).unwrap_or_else(|error| {
                 unreachable!("the fixed wait is within a wait's range: {error}")
             }),
         }),
-        "screenshot" => Ok(CuaAction::Observe),
+        "screenshot" => Ok(ComputerUseAction::Observe),
         _ => Err(DropReason::UnsupportedVerb),
     }
 }

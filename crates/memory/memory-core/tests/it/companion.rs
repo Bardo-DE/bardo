@@ -117,7 +117,7 @@ fn messages_and_episodes_are_event_bodies_that_round_trip() {
     let all: Vec<Episode> = vec![
         Episode {
             outcome: EpisodeOutcome::Handed {
-                to: AgentRef::Cua {
+                to: AgentRef::ComputerUse {
                     run: RunId::parse("r-7").expect("run"),
                 },
             },

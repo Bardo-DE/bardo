@@ -390,7 +390,11 @@ async fn the_launchers_connection_going_away_ends_its_sessions() {
 async fn only_the_agent_launcher_may_open_an_endpoint() {
     let world = World::start(plan(vec![anthropic_account()], say("x"), say("y"))).await;
     let route = account_route("anthropic", &["claude-opus-5-5"]);
-    for role in [CallerRole::App, CallerRole::Cua, CallerRole::Settings] {
+    for role in [
+        CallerRole::App,
+        CallerRole::ComputerUse,
+        CallerRole::Settings,
+    ] {
         let other = world.bus.connect().await;
         world.peers.introduce(
             other.unique_name().expect("name").as_str(),
