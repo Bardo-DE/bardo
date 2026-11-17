@@ -6,18 +6,20 @@ use crate::Failure;
 use compositor_testclient::TestClient;
 use compositor_testclient::manage::workspace::{WorkspaceSeen, WorkspaceWatch};
 use serde_json::{Value, json};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
-/// How many turns the probe waits for the first `done`.
-const TURNS: u32 = 250;
-/// How long one turn lasts (so the wait is about five seconds).
+/// How long the probe waits, by the clock, for the first `done`: as long as a starved machine
+/// needs, since a wait whose `done` has come returns at once.
+const PATIENCE: Duration = Duration::from_secs(120);
+/// How long one turn lasts: the pace of looking again, nothing announces the compositor's answer.
 const TURN: Duration = Duration::from_millis(20);
 
 /// Every workspace the compositor announces, one line each.
 pub(crate) fn run() -> Result<(), Failure> {
     let mut client = TestClient::connect_env()?;
     let mut watch = WorkspaceWatch::start(client.globals())?;
-    for _ in 0..TURNS {
+    let give_up = Instant::now() + PATIENCE;
+    while Instant::now() < give_up {
         // The client's tap relays bytes only when the client is pumped: without this the
         // binds never reach the compositor and its answer never reaches the watch's queue.
         client.pump();
@@ -31,7 +33,7 @@ pub(crate) fn run() -> Result<(), Failure> {
         std::thread::sleep(TURN);
     }
     Err(Failure::Probe(
-        "the compositor sent no ext_workspace_manager_v1 done within five seconds".to_owned(),
+        "the compositor sent no ext_workspace_manager_v1 done within two minutes".to_owned(),
     ))
 }
 
