@@ -222,7 +222,7 @@ async fn records_reach_memory_as_cua_events_of_the_runs_session_and_space() {
     for record in record_of_run(&run()) {
         cuad.record(record).await.expect("recorded");
     }
-    let shell = Memory::over(InProcess::new(service, Caller::ShellUi));
+    let shell = Memory::over(InProcess::new(service, Caller::shell_ui()));
     let page = shell
         .timeline(
             MemSpace::parse("work").unwrap(),
