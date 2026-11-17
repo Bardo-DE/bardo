@@ -27,8 +27,8 @@ use std::sync::Arc;
 
 use dioxus::prelude::*;
 use ui_blitz::TokioSpawner;
-use ui_components::base::spawner::Spawner;
 use ui_components::prelude::{AppStyle, Ds, Material, RootExtent};
+use ui_components::spawn::Spawner;
 use ui_settings::use_environment;
 
 use crate::launch::Launch;

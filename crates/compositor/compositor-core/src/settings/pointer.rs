@@ -2,9 +2,9 @@
 //! each device (P1-I1). The stored keys (`pointer.*`, `touchpad.*`) and their conversion are in
 //! `casement/src/config/`.
 
+use base_ids::Fraction;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::vocab::Fraction;
-use ui_core::word::Word;
 
 /// The pointer acceleration curve.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

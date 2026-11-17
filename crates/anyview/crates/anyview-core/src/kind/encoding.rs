@@ -1,6 +1,6 @@
 //! How the bytes of a text file are encoded.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A text encoding that a byte-order mark or valid UTF-8 identifies.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

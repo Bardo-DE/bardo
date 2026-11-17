@@ -1,7 +1,7 @@
 //! Archive and compression formats whose entries the viewer lists.
 
 use super::family::Family;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// An archive or compressed-file format.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

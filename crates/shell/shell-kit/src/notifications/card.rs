@@ -25,7 +25,6 @@ use crate::notifications::parts::{AppMark, CardAction, GroupCount, Hover};
 use crate::notifications::swipe::{NotificationSwipe, use_card_swipe};
 use dioxus::prelude::*;
 use ui_components::base::press::Press;
-use ui_components::base::word::Word;
 use ui_components::components::content::icon_view::IconView;
 use ui_components::components::content::rich_text::Rich;
 use ui_components::components::content::text_runs::{TextLine, text};
@@ -39,6 +38,7 @@ use ui_components::style::appearance::material::Material;
 use ui_components::style::icon::Icon;
 use ui_components::style::icon::render::{Glyph, IconPx, IconSize};
 use ui_components::style::tokens::control_size::ControlSize;
+use ui_components::words::Word;
 
 /// One notification. `app`, `age` (the caller's words: "now", "2m") and `summary` are its first
 /// line; `body` (runs and links, clamped) is optional, as are the group's `count` and the

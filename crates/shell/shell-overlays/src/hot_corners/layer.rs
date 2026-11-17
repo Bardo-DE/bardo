@@ -7,7 +7,7 @@ use layer_shell_host::{
     Margin, OutputInfo, OutputTarget, RegionSpec,
 };
 use ui_behaviour::hot_corner::CornerParams;
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 
 use shell_ui_kit::links::Corner;
 use shell_ui_kit::surface::namespace;

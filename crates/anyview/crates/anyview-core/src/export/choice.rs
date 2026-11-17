@@ -1,7 +1,7 @@
 //! `ExportChoice`: what one format's export sheet is generic over.
 
 use super::extension::ExportExtension;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A format's closed set of exports, with the options each carries.
 ///

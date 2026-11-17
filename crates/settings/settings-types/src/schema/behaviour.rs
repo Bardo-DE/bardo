@@ -4,8 +4,8 @@
 //! control; the timing and the hot spot's size are constants of the machine
 //! (`ui_behaviour::hot_corner::CornerParams`).
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use crate::schema::Page;
 use crate::schema::corners::CornerBindings;
@@ -81,7 +81,7 @@ pub struct HotCornerSettings {
 
 #[cfg(test)]
 mod tests {
-    use ui_core::word::Word;
+    use base_words::Word;
 
     use super::CornerAction;
 

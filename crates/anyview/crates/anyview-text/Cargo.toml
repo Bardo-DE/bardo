@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-words = { path = "../../../base/base-words" }
 anyview-core = {path = "../anyview-core"}
 # `OpenFile`, the one way a path is opened (core does no I/O).
 anyview-fs = {path = "../anyview-fs"}

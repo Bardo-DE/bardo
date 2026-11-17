@@ -1,9 +1,9 @@
 //! `scrollbar.*` (design/22 §3.8; design/11 §11.3.12): the overlay thumb layer-shell-host paints.
 //! All Advanced (§5).
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use settings_types::schema::Page;
-use ui_core::word::Word;
 
 /// `scrollbar.track_click_mode`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

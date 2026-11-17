@@ -388,7 +388,7 @@ fn a_helper_that_needs_the_person_wears_the_waiting_badge() {
 #[test]
 fn what_a_paused_helper_can_be_asked_is_to_resume_and_what_a_running_one_is_to_pause() {
     let label = |phase| {
-        use ui_core::word::Word;
+        use base_words::Word;
         controls_of(phase)
             .into_iter()
             .map(Word::label)

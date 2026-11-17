@@ -11,6 +11,7 @@ publish = false
 [workspace]
 
 [dependencies]
+base-ids = { path = "../../../base/base-ids" }
 compositor-core = { path = "../../compositor-core" }
 compositor-layout = { path = "../../compositor-layout" }
 compositor-motion = { path = "../../compositor-motion" }

@@ -172,7 +172,7 @@ pub fn length_of_micros(micros: u64) -> Option<MediaLength> {
 mod tests {
     use super::*;
     use anyview_core::PixelLen;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     fn seconds(secs: u64) -> Option<MediaLength> {
         length_of_micros(secs * 1_000_000)

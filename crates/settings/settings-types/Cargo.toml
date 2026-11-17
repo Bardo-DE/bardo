@@ -10,8 +10,9 @@ publish.workspace = true
 
 [dependencies]
 settings-types-macros = { path = "../settings-types-macros" }
-# `Word`, the closed vocabulary a settings enum's words come from, and `Fraction`.
-ui-core = { path = "../../ui/ui-core" }
+# `Fraction`, and `Word`: the closed vocabulary a settings enum's words come from.
+base-ids = { path = "../../base/base-ids" }
+base-words = { path = "../../base/base-words" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 toml = { workspace = true }

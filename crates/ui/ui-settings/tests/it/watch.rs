@@ -3,11 +3,11 @@
 
 use crate::support;
 
+use base_spawn::Spawner;
 use settings_store_fs::{DEBOUNCE, WatchState};
 use std::pin::Pin;
 use std::time::Duration;
 use support::Scratch;
-use ui_core::spawner::Spawner;
 use ui_settings::AppearanceFile;
 use ui_style::appearance::theme::Theme;
 

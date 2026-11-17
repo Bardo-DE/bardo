@@ -8,6 +8,7 @@
 
 use std::path::PathBuf;
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use shell_launcher::{AppId, PreviewKind};
 use shell_model::auth::FakeVerdict;
@@ -18,7 +19,6 @@ use shell_model::osd::OsdKind;
 use shell_model::polkit_agent::FakeRequest;
 use shell_model::units::Percent;
 use shell_model::volume::Mute;
-use ui_core::word::Word;
 
 /// A probe. Every one is answered even in a release build; the ones that act are refused there.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

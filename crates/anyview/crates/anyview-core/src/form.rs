@@ -3,7 +3,7 @@
 
 use crate::markup::PageRect;
 use crate::units::PageIndex;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// What a widget is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

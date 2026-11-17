@@ -5,8 +5,8 @@
 
 use crate::lock::vocab::LockLook;
 use dioxus::prelude::*;
-use ui_components::base::word::Word;
 use ui_components::root::common::Common;
+use ui_components::words::Word;
 
 /// The time and the date, as the caller words them ("9:41", "Friday 26 September"): the
 /// caller owns the clock, the locale and the 12 or 24 hour choice, and re-renders on each new

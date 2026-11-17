@@ -5,8 +5,8 @@
 //! to be interactive, and otherwise saves the whole screen where the portal keeps screenshots at
 //! once. So `screen` is exact and `area` and `window` both open the picker.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// `bardo-shell screenshot`'s argument.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]

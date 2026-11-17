@@ -1,9 +1,9 @@
 //! `calendar.*`: where the calendar widgets read events, and how the month is drawn (design/20
 //! §1.12, which bardo-shell moves into the notification center's widgets as macOS 11 does). All Advanced.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use settings_types::schema::Page;
-use ui_core::word::Word;
 
 /// The first column of the month grid.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

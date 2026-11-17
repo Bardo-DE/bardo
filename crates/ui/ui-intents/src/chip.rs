@@ -1,7 +1,7 @@
 //! What a prompt carries with it, as chips.
 
+use base_words::Word;
 use ui_core::vocab::Tally;
-use ui_core::word::Word;
 
 /// What a context chip stands for (`data-kind`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

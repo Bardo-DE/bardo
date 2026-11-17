@@ -1,7 +1,7 @@
 //! The semantic class of a run of code: what it is, never what colour it is. The viewer maps a
 //! class to a design-system colour token, because consumer code does not hard-code colours.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// What a token of source code is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

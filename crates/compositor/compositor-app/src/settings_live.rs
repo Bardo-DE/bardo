@@ -16,12 +16,12 @@
 use crate::State;
 use crate::appearance::ThreadSpawner;
 use crate::config::{self, CasementDoc};
+use base_spawn::Spawner;
 use compositor_core::Event;
 use compositor_core::settings::{CasementSettings, KeyboardSettings, XkbNames};
 use compositor_wayland::seat_keymap::{self, KeymapStep};
 use smithay::reexports::calloop::channel::{self, Event as ChannelEvent};
 use std::path::Path;
-use ui_core::spawner::Spawner;
 
 /// `current` with the parts that follow the file taken from `doc`: the pointer's settings, the key
 /// repeat, the keyboard layout and the night light.

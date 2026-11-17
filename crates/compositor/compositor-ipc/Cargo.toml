@@ -9,12 +9,13 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-ids = { path = "../../base/base-ids" }
+base-spawn = { path = "../../base/base-spawn" }
 compositor-core = {path = "../compositor-core"}
 # Only `VirtualOutputSpec` for the Debug1 object: a release build links neither the backend nor
 # smithay.
 compositor-backend = {path = "../compositor-backend", optional = true}
 # `Fraction`, the pinch scale in the inject grammar.
-ui-core = {path = "../../ui/ui-core", default-features = false}
 account-core = {path = "../../accounts/account-core"}
 # `SpacesProxy::register`: the compositor registers the Spaces it mints with accountd.
 account-dbus = {path = "../../accounts/account-dbus"}

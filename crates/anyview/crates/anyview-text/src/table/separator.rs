@@ -3,7 +3,7 @@
 //! with the character that splits its first rows into the same number of cells.
 
 use anyview_core::Delimiter;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The rows looked at.
 const SAMPLE_ROWS: usize = 20;

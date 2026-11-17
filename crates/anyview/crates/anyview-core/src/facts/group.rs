@@ -1,6 +1,6 @@
 //! The sections a file's facts are listed in, and how much of them a summary line carries.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A section of the Info panel. Closed, so every pane names and orders the sections the same way.
 ///

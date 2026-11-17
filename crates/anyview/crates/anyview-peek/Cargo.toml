@@ -19,6 +19,7 @@ media = ["dep:symphonia", "dep:mp4parse", "dep:matroska-demuxer"]
 pane = ["dep:dioxus", "dep:ui-components", "dep:ui-blitz"]
 
 [dependencies]
+base-words = { path = "../../../base/base-words" }
 anyview-archive = {path = "../anyview-archive"}
 anyview-book = {path = "../anyview-book"}
 anyview-core = {path = "../anyview-core"}

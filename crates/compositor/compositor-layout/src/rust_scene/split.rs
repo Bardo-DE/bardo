@@ -6,9 +6,9 @@ use crate::{
     Arrangement, BackdropTarget, ConfigureNeed, DividerTarget, LayoutReport, OutputSpec, SpaceSpec,
     WindowSpec, WindowTarget,
 };
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::space::SplitPair;
-use ui_core::vocab::Fraction;
 
 /// The width of the strip between the halves, in logical pixels.
 pub(super) const DIVIDER_WIDTH: u32 = 8;

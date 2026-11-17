@@ -6,8 +6,8 @@
 use crate::battery::{Battery, Charge};
 use crate::locker::Host;
 use crate::units::Presence;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// Whole seconds of idleness (the unit every idle time is kept in; the settings' minutes are
 /// multiplied out once, in the daemon's `policy_of`).

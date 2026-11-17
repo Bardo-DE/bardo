@@ -6,11 +6,11 @@
 //! unusable ones aside and rank the rest (protocol, then the person's copy over the system's,
 //! then the newer version, then the id).
 
+use base_words::Word;
 use plugin_host::manifest::ManifestError;
 use plugin_host::registry::{Candidate, Origin, Readiness, Registry, Unusable};
 use plugin_host::{Reparsed, reparse};
 use settings_types::target::ExtensionId;
-use ui_core::word::Word;
 
 use crate::capability::Capability;
 use crate::fault::Fault;

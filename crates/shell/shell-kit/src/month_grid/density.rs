@@ -7,7 +7,7 @@
 //! follows the `WidgetFrame` the grid sits in.
 
 use crate::widget::kind::WidgetSize;
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 
 /// The density a caller asks for.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]

@@ -53,7 +53,7 @@ pub fn visit<V: KindVisitor>(kind: FormatKind, visitor: V) -> V::Out {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     /// Reports the kind a peek is registered for, so the table below can compare it with the kind
     /// the registry was asked about.

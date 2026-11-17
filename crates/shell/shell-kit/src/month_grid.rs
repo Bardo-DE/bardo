@@ -22,9 +22,9 @@ use crate::month_grid::header::header;
 use crate::month_grid::weeks::{MonthSlide, MonthWeeks};
 use crate::widget::scope::use_enclosing_frame;
 use dioxus::prelude::*;
-use ui_components::base::word::Word;
 use ui_components::components::content::text_runs::{TextLine, text};
 use ui_components::root::common::Common;
+use ui_components::words::Word;
 
 /// A month. `data` is the month as the shell laid it out; `weeks` whether each row leads with
 /// its ISO week. With `onstep` the header ends in the previous and next buttons, which call it

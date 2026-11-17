@@ -5,10 +5,10 @@
 
 use std::time::Duration;
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use settings_types::schema::Page;
 use shell_model::companion::{CompanionParams, SummonParams};
-use ui_core::word::Word;
 
 pub use shell_model::companion::InField;
 

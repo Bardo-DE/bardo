@@ -2,10 +2,10 @@
 //! what the libinput seam applies and what the seat compiles.
 
 use super::devices::DeviceSettings;
+use base_ids::Fraction;
 use compositor_core::geometry::{SubPoint, SubPx};
 use compositor_core::input::{AxisFrame, DeviceClass, InputKind};
 use compositor_core::settings::{KeyboardSettings, PointerSettings, XkbNames};
-use ui_core::vocab::Fraction;
 
 /// The settings for a device of `class`: the touchpad profile for a touchpad, the mouse
 /// profile for every other pointing device.
@@ -43,7 +43,7 @@ pub fn device_settings(pointer: &PointerSettings, class: DeviceClass) -> DeviceS
 /// use compositor_backend::input::scaled_scroll;
 /// use compositor_core::geometry::{SubPoint, SubPx};
 /// use compositor_core::input::{AxisFrame, AxisSource, InputKind};
-/// use ui_core::vocab::Fraction;
+/// use base_ids::Fraction;
 ///
 /// let frame = AxisFrame {
 ///     source: AxisSource::Wheel,

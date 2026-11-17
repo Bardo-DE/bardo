@@ -5,7 +5,7 @@
 //! every settings-file watcher is made of ([`watch_file`]).
 //!
 //! The reading and writing of the text itself is `settings-store`; this crate is the edge. A watch
-//! runs as a task on the [`ui_core::spawner::Spawner`] it is handed: no runtime is named here.
+//! runs as a task on the [`base_spawn::Spawner`] it is handed: no runtime is named here.
 
 mod damaged;
 mod error;

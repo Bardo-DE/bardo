@@ -10,10 +10,10 @@ use std::fmt;
 use std::path::PathBuf;
 
 use action_vocab::{EntityRef, UndoId};
+use base_words::Word;
 use memory_core::MemoryItem;
 use provenance::{HelperId, RunId, SessionId, TaskId};
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use crate::ids::{AppId, ClipKey};
 use crate::time::UnixTime;

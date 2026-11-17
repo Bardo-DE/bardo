@@ -12,7 +12,8 @@
 use super::model::IdleDimPhase;
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
-use ui_components::base::vocab::{Fraction, Percent};
+use ui_components::base::vocab::Percent;
+use ui_components::ids::Fraction;
 use ui_components::motion::detail::level::use_level;
 use ui_components::motion::timeline::glide::Glide;
 use ui_components::motion::timeline::playback::use_playback;

@@ -1,6 +1,6 @@
 //! What a state change means to the person looking (design/26-DETAILS.md section 3.1).
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The meaning of one state change. A component's [`crate::detail::detailed::Detailed`]
 /// table names one for

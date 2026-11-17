@@ -9,12 +9,12 @@ use crate::lock::password::Password;
 use crate::lock::vocab::CapsLock;
 use dioxus::prelude::*;
 use ui_components::base::vocab::Availability;
-use ui_components::base::word::Word;
 use ui_components::components::fields::text_field::TextField;
 use ui_components::components::fields::text_field_focus::FieldFocus;
 use ui_components::components::fields::text_field_model::FieldKind;
 use ui_components::style::icon::Icon;
 use ui_components::style::icon::render::{Glyph, IconSize};
+use ui_components::words::Word;
 
 /// How the field is drawn: `data-form`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

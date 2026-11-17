@@ -9,11 +9,11 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-spawn = { path = "../../base/base-spawn" }
 base-fs = { path = "../../base/base-fs" }
 settings-store = { path = "../../settings/settings-store" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
 settings-types = { path = "../../settings/settings-types" }
-ui-core = {path = "../ui-core"}
 # The deadline the portal client runs its calls under (UI-free).
 ui-peer = {path = "../ui-peer"}
 ui-style = {path = "../ui-style", default-features = false}
@@ -29,6 +29,7 @@ toml = { workspace = true }
 objc2-core-foundation = { workspace = true, features = ["std", "CFBase", "CFString", "CFNumber", "CFPreferences", "CFPropertyList"] }
 
 [dev-dependencies]
+base-words = { path = "../../base/base-words" }
 settings-dbus = { path = "../../settings/settings-dbus" }
 tempfile.workspace = true
 ui-components = {path = "../ui-components"}

@@ -9,7 +9,6 @@ use crate::lock::vocab::{CapsLock, LockLook, LockUser, PromptState};
 use crate::user_picture::draw::drawn;
 use dioxus::prelude::*;
 use ui_components::base::vocab::Availability;
-use ui_components::base::word::Word;
 use ui_components::components::content::text_runs::{TextLine, text};
 use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
 use ui_components::components::controls::progress::view::ProgressIndicator;
@@ -20,6 +19,7 @@ use ui_components::root::common::Common;
 use ui_components::style::icon::Icon;
 use ui_components::style::icon::render::{Glyph, IconSize};
 use ui_components::style::tokens::control_size::ControlSize;
+use ui_components::words::Word;
 
 /// The placeholder when the caller gives none.
 const ENTER_PASSWORD: &str = "Enter Password";

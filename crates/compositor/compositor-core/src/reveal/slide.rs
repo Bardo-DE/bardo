@@ -2,7 +2,7 @@
 
 use super::{Look, RevealEdge};
 use crate::geometry::{LogicalPoint, LogicalRect};
-use ui_core::vocab::Fraction;
+use base_ids::Fraction;
 
 /// A surface as it is drawn now.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -20,7 +20,7 @@ pub struct Slid {
 /// ```
 /// use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 /// use compositor_core::reveal::{Look, RevealEdge, slid};
-/// use ui_core::vocab::Fraction;
+/// use base_ids::Fraction;
 ///
 /// let size = |w, h| LogicalSize { w, h };
 /// let output = LogicalRect::new(LogicalPoint { x: 0, y: 0 }, size(100, 100));

@@ -1,8 +1,8 @@
 //! A surface's life as a machine's state, inputs, outputs and settings.
 
 use super::{Exit, Presence};
+use base_words::Word;
 use ui_core::time::stamp::Stamp;
-use ui_core::word::Word;
 use ui_style::appearance::motion::MotionLevel;
 
 use crate::anim::Anim;

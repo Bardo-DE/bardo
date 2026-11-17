@@ -1,7 +1,7 @@
 //! How an item leaves: the `data-exit` word and the animation it plays.
 
 use crate::anim::Anim;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// How an item leaves: `data-exit`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

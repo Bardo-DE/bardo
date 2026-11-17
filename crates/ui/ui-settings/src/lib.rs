@@ -4,7 +4,7 @@
 //! `settings-store-fs`; this crate is what is specific to the toolkit's look.
 //!
 //! `ds` stays effect-free; everything here touches the disk or the bus. A watch or the portal
-//! runs as a task on the [`ui_core::spawner::Spawner`] it is handed: no runtime is named here. Feature `dioxus`
+//! runs as a task on the [`base_spawn::Spawner`] it is handed: no runtime is named here. Feature `dioxus`
 //! adds [`use_environment`], the one signal a surface resolves its look from.
 
 mod appearance;

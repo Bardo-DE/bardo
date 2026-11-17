@@ -6,11 +6,11 @@
 
 use super::shell::QuireShellPart;
 use crate::foreign_toplevel_list::identifier_of;
+use base_ids::Fraction;
 use compositor_core::shell::{ShellRequest, SplitChoices};
 use compositor_core::{Event, WindowId};
 use desktop_protocols::server::bardo_shell_v1::bardo_shell_v1;
 use desktop_protocols::vocab::WireCode;
-use ui_core::vocab::Fraction;
 
 /// The most a share can be: the whole width, in thousandths.
 const WHOLE: u32 = 1000;

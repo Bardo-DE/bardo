@@ -2,8 +2,8 @@
 //! section 3.23): a short list of bindings, each naming the modifier keys held when it fires and
 //! what it does. On disk a binding is one table whose `action` word says which kind it is.
 
+use base_words::Word;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use ui_core::word::Word;
 
 use super::behaviour::CornerAction;
 

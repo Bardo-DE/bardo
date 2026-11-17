@@ -3,13 +3,13 @@
 
 use super::{DeviceVerb, InjectLine, InjectOrigin};
 use crate::error::IpcError;
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, SubPoint, SubPx};
 use compositor_core::input::{
     AxisFrame, AxisSource, ButtonCode, DeviceClass, GestureStep, Keysym, PinchDelta, TouchStep,
 };
 use desktop_protocols::vocab::PressEdge;
 use std::time::Duration;
-use ui_core::vocab::Fraction;
 
 /// One detent is `value120` 120; fake-input.sh's `axis vertical 15` is one detent of 15 px, so a
 /// value counts 8 of the 120ths per pixel.

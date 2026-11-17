@@ -2,8 +2,8 @@
 //! (design/22-SETTINGS.md section 9.1). Every program that draws settings reads this table; none
 //! keeps its own.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use super::key::{KeyKind, KeySpec};
 
@@ -248,7 +248,7 @@ mod tests {
 
     #[test]
     fn a_control_name_round_trips_through_its_id() {
-        for control in <Control as ui_core::word::Word>::ALL {
+        for control in <Control as base_words::Word>::ALL {
             assert_eq!(Control::named(&control.name()), Some(*control));
         }
     }

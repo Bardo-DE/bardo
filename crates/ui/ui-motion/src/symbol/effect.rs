@@ -6,7 +6,7 @@
 //! `Transition` effect plays when its icon arrives, leaves, draws or is replaced.
 
 use crate::epoch::Epoch;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The effects that play once and settle: a hop, a dip, a few swings, a swell, a turn, the
 /// icon's own moving part, the layers lighting in order.

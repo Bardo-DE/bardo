@@ -8,11 +8,11 @@
 use crate::lock::vocab::PromptState;
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
-use ui_components::base::word::Word;
 use ui_components::motion::anim::Anim;
 use ui_components::motion::detail::{once::use_shake, touch::Touch, use_detail::use_detail};
 use ui_components::motion::pulse_key::PulseKey;
 use ui_components::motion::timer::{MotionTimer, use_motion_timer};
+use ui_components::words::Word;
 
 /// Whether the field holds anything: the enter button shows only once it does.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

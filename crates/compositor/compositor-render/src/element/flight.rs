@@ -110,8 +110,8 @@ pub fn rest_place(flight: &Flight) -> (SubPoint, SubSize) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use base_ids::Fraction;
     use compositor_core::geometry::LogicalPoint;
-    use ui_core::vocab::Fraction;
 
     fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
         LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })

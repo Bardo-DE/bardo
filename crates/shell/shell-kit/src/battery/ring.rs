@@ -12,14 +12,14 @@
 //! the bolt) and, under `Readout::Under`, the percentage in a `Label`.
 
 use dioxus::prelude::*;
-use ui_components::base::vocab::Fraction;
-use ui_components::base::word::Word;
 use ui_components::components::content::label::{Label, LabelRole, LabelStyle};
 use ui_components::components::content::status::battery_state::{BatteryPower, BatteryState};
 use ui_components::components::content::text_runs::TextLine;
 use ui_components::components::controls::progress::model::{Progress, ProgressStyle};
 use ui_components::components::controls::progress::view::ProgressIndicator;
+use ui_components::ids::Fraction;
 use ui_components::root::common::Common;
+use ui_components::words::Word;
 
 /// The charging bolt, in its own 10 x 16 box.
 const BOLT: &str = "M7 0 0 9.6h4.6L3.2 16 10 6.4H5.4L7 0Z";

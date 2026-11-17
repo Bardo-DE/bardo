@@ -394,7 +394,7 @@ mod settings_files {
     }
 
     fn use_store(
-        spawner: &dyn ui_components::base::spawner::Spawner,
+        spawner: &dyn ui_components::spawn::Spawner,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let store = Store::new(ConfigRoot::Xdg, AppName::foreign("your-app-id"));
         let loaded = store.load::<YourFile>();

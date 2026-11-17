@@ -3,8 +3,8 @@
 //! every other clock a program draws.
 
 use crate::schema::Page;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// How the person wants hours written (`region.hours`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

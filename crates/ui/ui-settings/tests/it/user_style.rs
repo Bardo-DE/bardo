@@ -4,11 +4,11 @@
 
 use crate::support;
 
+use base_spawn::Spawner;
 use settings_store_fs::{Store, WatchState};
 use std::pin::Pin;
 use std::time::Duration;
 use support::Scratch;
-use ui_core::spawner::Spawner;
 use ui_settings::UserStyle;
 
 /// Generous slack over the 30 ms debounce for a test runner under load.

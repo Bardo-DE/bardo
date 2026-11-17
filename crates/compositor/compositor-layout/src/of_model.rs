@@ -200,11 +200,11 @@ fn placement_of(state: &WindowState) -> WindowPlacement {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use base_ids::Fraction;
     use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
     use compositor_core::space::SplitPair;
     use compositor_core::window::Restore;
     use desktop_protocols::vocab::TileZone;
-    use ui_core::vocab::Fraction;
 
     fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
         LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })

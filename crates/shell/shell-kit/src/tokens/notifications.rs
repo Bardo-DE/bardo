@@ -7,8 +7,8 @@
 //! it). The layer surfaces and the icon's raster are sized from them before a layout
 //! (`shell_ui_kit::notification_card::NotificationTokens`).
 
-use ui_components::base::word::Word;
 use ui_components::style::tokens::token::Token;
+use ui_components::words::Word;
 
 /// One notification geometry token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

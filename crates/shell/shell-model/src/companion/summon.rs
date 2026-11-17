@@ -3,12 +3,12 @@
 //! `app_wait`. A pure machine; the service carries each [`SummonOut`] out.
 
 use action_wire::{SummonAnswer, SummonSerial};
+use base_words::Word;
 use provenance::AppName;
 use serde::{Deserialize, Serialize};
 use shell_launcher::{LauncherMode, WindowKey};
 use ui_core::machine::{Elapsed, Machine};
 use ui_core::time::stamp::Stamp;
-use ui_core::word::Word;
 
 use crate::units::Ms;
 

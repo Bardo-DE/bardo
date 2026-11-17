@@ -1,8 +1,8 @@
 //! Clap's parser for a closed vocabulary: the words of a [`Word`] enum, so a command line takes
 //! the wire enum itself and no mirror enum maps onto it.
 
+use base_words::Word;
 use clap::builder::{PossibleValuesParser, TypedValueParser};
-use ui_core::word::Word;
 
 /// A value that is one of `T`'s slugs, parsed to `T`.
 pub(super) fn word<T: Word + Send + Sync>() -> impl TypedValueParser<Value = T> {

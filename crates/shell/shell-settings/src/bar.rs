@@ -3,10 +3,10 @@
 //! `bar.autohide` is Basic, on the Appearance page beside the menu bar's other keys (the Mac's
 //! Control Centre pane has no page here); the rest are Advanced (§5).
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use settings_types::Percent;
 use settings_types::schema::Page;
-use ui_core::word::Word;
 
 /// `bar.autohide`: when the menu bar hides and shows (macOS: System Settings, Control Centre,
 /// "Automatically hide and show the menu bar"). `FullScreenOnly` is macOS's default.

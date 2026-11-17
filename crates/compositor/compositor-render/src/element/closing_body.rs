@@ -12,6 +12,7 @@ use super::{CasementElement, ClipShape, alpha};
 use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalRect, PhysicalRect, PhysicalSize};
 use smithay::backend::allocator::Fourcc;
 use smithay::backend::renderer::element::memory::{
@@ -23,7 +24,6 @@ use smithay::backend::renderer::gles::GlesTexture;
 use smithay::utils::{Logical, Rectangle, Size, Transform};
 use std::any::Any;
 use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 
 /// Where a closing window's image lives.
 #[derive(Debug, Clone)]

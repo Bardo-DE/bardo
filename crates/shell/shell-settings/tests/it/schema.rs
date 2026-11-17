@@ -151,9 +151,9 @@ fn deep_links_resolve_through_the_schemas() {
 /// the labels System Settings shows; the Mac's default is the full-screen one.
 #[test]
 fn the_menu_bar_choices_are_the_macs() {
+    use base_words::Word;
     use settings_types::schema::KeyKind;
     use shell_settings::MenuBarHiding;
-    use ui_core::word::Word;
     const WORDS: [(MenuBarHiding, &str, &str); 4] = [
         (MenuBarHiding::Always, "always", "Always"),
         (

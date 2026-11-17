@@ -6,7 +6,7 @@ use super::{
     BookFormat, Delimiter, FormatKind, MediaContainer, Mime, OfficeFormat, RasterFormat, TreeFormat,
 };
 use crate::profile::has_stage;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The media types a file of `kind` is sniffed as, in no order and with repeats allowed. Every
 /// kind is answered: a kind with no type of its own (a folder, a file nothing describes) says none.

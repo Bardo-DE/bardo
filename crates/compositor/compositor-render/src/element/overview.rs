@@ -7,10 +7,10 @@ use crate::compositor::Compositor;
 use crate::scene::OutputView;
 use crate::scene::convert::{on_output, sub_of};
 use crate::texture_book::TextureBook;
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, PhysicalRect};
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::utils::CommitCounter;
-use ui_core::vocab::Fraction;
 
 /// The colours Mission Control draws with, premultiplied: the dimming over the picture and the
 /// hovered window's ring.
@@ -46,7 +46,7 @@ impl OverviewLook {
     ///
     /// ```
     /// use compositor_render::{OverviewLook, Rgba8};
-    /// use ui_core::vocab::Fraction;
+    /// use base_ids::Fraction;
     ///
     /// let black = Rgba8 { r: 0, g: 0, b: 0, a: 56 };
     /// let blue = Rgba8 { r: 10, g: 96, b: 255, a: 255 };

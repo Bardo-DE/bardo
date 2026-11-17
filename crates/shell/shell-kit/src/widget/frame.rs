@@ -9,10 +9,10 @@ use crate::widget::contract::WidgetKind;
 use crate::widget::kind::{WidgetSize, WidgetTitle};
 use crate::widget::scope::use_frame_provider;
 use dioxus::prelude::*;
-use ui_components::base::word::Word;
 use ui_components::components::content::text_runs::text;
 use ui_components::root::common::Common;
 use ui_components::style::icon::render::{Glyph, IconSize};
+use ui_components::words::Word;
 
 /// `children` on a widget's card, `size` on the grid unit. `kind` writes `data-widget` (a
 /// `WidgetCard` passes its widget's kind). `title` draws a glyph and a name above the content.

@@ -9,7 +9,7 @@
 //! Room is left for the later data words (`wallpapers`, `sounds`, `cursors`): adding one is a
 //! variant here, an entry type beside [`Look`](crate::Look), and a row in the capability table.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A capability word `ui-extensions` owns. The slug is the word a manifest writes in
 /// `capability = "..."`.
@@ -25,7 +25,7 @@ pub enum Capability {
 #[cfg(test)]
 mod tests {
     use super::Capability;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn the_words_are_the_snake_case_spelling_a_manifest_writes() {

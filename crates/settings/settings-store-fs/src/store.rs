@@ -10,10 +10,10 @@ use crate::root::ConfigRoot;
 use crate::text::{FileText, SETTINGS_CAP, file_text};
 use crate::watch::Watch;
 use base_fs::{NewFileMode, UpdateError, update_atomic, write_atomic};
+use base_spawn::Spawner;
 use settings_store::{Loaded, SettingsDoc, decode, merged, understood};
 use settings_types::AppName;
 use std::path::PathBuf;
-use ui_core::spawner::Spawner;
 
 /// One program's settings directory.
 #[derive(Debug, Clone, PartialEq, Eq)]

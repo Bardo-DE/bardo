@@ -1,7 +1,7 @@
 //! Font file formats.
 
 use super::family::Family;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A font file format.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

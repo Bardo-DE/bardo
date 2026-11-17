@@ -4,7 +4,7 @@
 //! about what is drawn and what plays is here.
 
 use crate::anim::Anim;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One of a switcher's two panes: the root (a control center's grid) or its detail (a module's
 /// list).

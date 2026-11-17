@@ -11,13 +11,13 @@ use super::model::{FieldProblem, FieldRole, FieldText, FormField, FormPart, Step
 use super::wording::{
     ADVANCED_WORDS, field_label, field_placeholder, form_ready, part_words, problem_text,
 };
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_components::components::content::provider_mark::{MarkProvider, MarkStyle};
 use ui_components::components::controls::disclosure::Disclosure;
 use ui_components::components::fields::field_row::{FieldRow, RowLayout};
 use ui_components::components::forms::{form::Form, form_section::FormSection};
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 
 /// The sign-in form for `provider`, whose round `mark` leads the header. `on_input` hears the role of the field and what it now
 /// holds; secret text arrives as [`FieldText::Secret`] and nowhere else. `on_submit` is Continue

@@ -7,8 +7,8 @@
 //! left out.
 
 use super::strip::StripPlan;
+use base_ids::Fraction;
 use smithay::utils::Rectangle;
-use ui_core::vocab::Fraction;
 
 /// How many steps of strength an edge column is drawn at (the error is under `1/(2 * STEPS)`).
 pub const STEPS: u8 = 4;

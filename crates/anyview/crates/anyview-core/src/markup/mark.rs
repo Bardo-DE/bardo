@@ -3,7 +3,7 @@
 use super::MarkColor;
 use super::page::{PagePoint, PageRect, shifted};
 use crate::units::PageIndex;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// What the Markup tool draws or does when the pointer is used on a page.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

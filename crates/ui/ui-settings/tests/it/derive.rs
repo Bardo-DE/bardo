@@ -6,10 +6,10 @@
 use std::borrow::Cow;
 use std::path::PathBuf;
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use settings_types::schema::{Control, ControlName, KeyKind, Page, SettingsSchema};
 use settings_types::{Ms, SettingsSchema};
-use ui_core::word::Word;
 
 /// A sound theme's name: text, though the type is a newtype.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

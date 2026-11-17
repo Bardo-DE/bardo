@@ -7,8 +7,8 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use super::ids::{ActionKey, AppKey, NotificationId, UnixMs};
 use super::markup::Body;

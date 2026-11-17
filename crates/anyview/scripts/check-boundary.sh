@@ -421,8 +421,8 @@ fi
 # The allowed edges between our own crates (ARCHITECTURE.md section 1): each crate's direct normal
 # and build dependencies that live in a path (this workspace and the sibling quire checkout), and
 # nothing else. A dependency on a crate not listed here is a leak; so is one the crate no longer
-# has, so the table stays exact. `ui-core`'s `#[derive(Word)]` is re-exported by `ui-core` itself,
-# so `ui-core-derive` is not an edge.
+# has, so the table stays exact. `#[derive(Word)]` is re-exported by `base-words`, so the macro
+# crate is not an edge.
 EDGES=(
   "anyview: anyview-core anyview-export anyview-fs anyview-image anyview-machines anyview-media anyview-media-host anyview-pdf anyview-peek anyview-platform anyview-plugin anyview-plugin-protocol anyview-runtime anyview-store anyview-ui ds ui-blitz ui-desktop ui-extensions ui-helpers ui-settings"
   "anyview-core: ui-core"

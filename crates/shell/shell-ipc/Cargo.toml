@@ -9,8 +9,8 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-words = { path = "../../base/base-words" }
 clap = {workspace = true, features = ["default", "derive"], optional = true}
-ui-core = {path = "../../ui/ui-core"}
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
 serde = { workspace = true, features = ["derive"] }

@@ -6,7 +6,7 @@
 
 use serde::{Deserialize, Serialize};
 
-pub use ui_core::vocab::Fraction;
+pub use base_ids::Fraction;
 
 /// Logical pixels, as a key stores them.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]

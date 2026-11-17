@@ -29,6 +29,7 @@ ui-blitz = { path = "../../ui-blitz" }
 dioxus = {workspace = true, features = ["macro", "html", "hooks", "signals"]}
 
 [dev-dependencies]
+base-words = { path = "../../../base/base-words" }
 settings-store = { path = "../../../settings/settings-store" }
 serde = {workspace = true, features = ["derive"]}
 dioxus-ssr = {workspace = true}

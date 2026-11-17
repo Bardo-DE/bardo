@@ -2,13 +2,13 @@
 //! of text (`Vec<String>`): the kinds the derive gives them, the schema text they write, and
 //! the settings file they round-trip through (design/22-SETTINGS.md section 9.1).
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use settings_types::schema::{
     Column, ColumnKind, ColumnName, Control, KeyKind, Label, Page, Schema, SettingsRow,
     SettingsSchema,
 };
 use settings_types::{SettingsRow, SettingsSchema};
-use ui_core::word::Word;
 
 /// Which side a pin sits on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]

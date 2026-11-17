@@ -19,6 +19,9 @@ path = "src/main.rs"
 required-features = ["tty", "libinput"]
 
 [dependencies]
+base-ids = { path = "../../base/base-ids" }
+base-spawn = { path = "../../base/base-spawn" }
+base-words = { path = "../../base/base-words" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
 base-fs = { path = "../../base/base-fs" }

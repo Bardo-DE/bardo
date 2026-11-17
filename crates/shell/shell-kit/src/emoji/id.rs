@@ -3,7 +3,7 @@
 
 use super::sheet::SheetPx;
 use serde::{Deserialize, Serialize};
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 
 macro_rules! emoji_set {
     ($(($variant:ident, $slug:literal, $text:literal, $name:literal)),+ $(,)?) => {

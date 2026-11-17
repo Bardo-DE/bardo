@@ -1,11 +1,11 @@
 //! What to do: every verb the command line has, one variant per verb, its grammar in the verb
 //! group's file.
 
+use base_words::Word;
 use clap::Subcommand;
 use shell_ipc::act::{DisplayRequest, SwitcherRequest, WorkspaceRequest};
 use shell_ipc::show::{CompanionRequest, Reveal, VoiceRequest};
 use shell_model::screenshots::ShotKind;
-use ui_core::word::Word;
 
 use super::action::DoArgs;
 use super::debug::DebugAction;

@@ -87,9 +87,6 @@ pub(crate) fn store(home: Option<&Path>) -> Store {
 
 /// A watch on `home`'s document: every settled change of the file arrives whole (ui-settings,
 /// debounced). It runs as a task on `spawn`.
-pub(crate) fn watch(
-    home: Option<&Path>,
-    spawn: &dyn ui_core::spawner::Spawner,
-) -> Watch<CasementDoc> {
+pub(crate) fn watch(home: Option<&Path>, spawn: &dyn base_spawn::Spawner) -> Watch<CasementDoc> {
     store(home).watch::<CasementDoc>(spawn)
 }

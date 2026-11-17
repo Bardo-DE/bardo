@@ -13,6 +13,7 @@ publish.workspace = true
 testing = []
 
 [dependencies]
+base-words = { path = "../../../base/base-words" }
 # The actions and chords of the keymap: a file action's own id and default chord.
 keymap = {path = "../../../keymap/keymap"}
 ui-core = {path = "../../../ui/ui-core"}

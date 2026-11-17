@@ -11,9 +11,9 @@ use crate::{
     anim::Anim,
     timer::{TimerPhase, use_motion_timer},
 };
+use base_words::Word;
 use dioxus::core::queue_effect;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::appearance::motion::MotionLevel;
 use ui_style::icon::Icon;
 use ui_style::icon::posed::Thousandths;

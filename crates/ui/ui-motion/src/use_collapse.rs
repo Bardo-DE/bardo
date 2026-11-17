@@ -3,8 +3,8 @@
 //! Under Reduced it is instant.
 
 use crate::detail::tween::{TweenSpec, use_tween};
+use base_ids::Fraction;
 use ui_core::geometry::units::Px;
-use ui_core::vocab::Fraction;
 use ui_style::tokens::{easing::EasingToken, timing::DurationToken};
 
 /// How open the content is, thousandths: 0 closed, 1000 open.
@@ -71,8 +71,8 @@ pub fn use_collapse(shown: bool) -> Collapse {
 #[cfg(test)]
 mod tests {
     use super::{Collapse, OPEN};
+    use base_ids::Fraction;
     use ui_core::geometry::units::Px;
-    use ui_core::vocab::Fraction;
 
     #[test]
     fn a_collapse_draws_its_share_of_the_measured_height() {

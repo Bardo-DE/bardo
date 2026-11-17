@@ -3,12 +3,12 @@
 
 use crate::appearance::AppearanceFile;
 use crate::portal::{SystemPrefsSource, SystemPrefsWatch};
+use base_spawn::Spawner;
 use dioxus::prelude::*;
 use settings_store::{Loaded, SettingsDoc};
 use settings_store_fs::{Store, Watch};
 use settings_types::ResolvedHours;
 use std::sync::Arc;
-use ui_core::spawner::Spawner;
 use ui_style::appearance::system::SystemPrefs;
 
 /// The inputs to [`ui_components::prelude::resolve`], as they are now.
@@ -17,7 +17,7 @@ use ui_style::appearance::system::SystemPrefs;
 ///
 /// ```no_run
 /// use dioxus::prelude::*;
-/// use ui_components::prelude::*; use ui_core::spawner::Spawner;
+/// use ui_components::prelude::*; use base_spawn::Spawner;
 /// use settings_types::AppName;
 use settings_store_fs::{ConfigRoot, Store};
 use ui_settings::{SystemPrefsSource, use_environment};

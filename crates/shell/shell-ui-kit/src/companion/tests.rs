@@ -5,6 +5,7 @@ use action_vocab::{
     ActionRef, Args, CardActionId, EntityRef, LabelText, ParamName, ParamType, StepId, UndoId,
     Value,
 };
+use base_words::Word;
 use companion_wire::{
     AnswerBody, AnswerPhase, AnswerWire, CardWire, FooterWire, FormWire, NeedsYou, PlanStepWire,
     PlanWire, RefusalWire, StepWireState,
@@ -21,7 +22,6 @@ use ui_components::components::companion::plan::model::{
 };
 use ui_components::components::content::text_runs::TextLine;
 use ui_core::vocab::EffectMark;
-use ui_core::word::Word;
 
 use super::*;
 

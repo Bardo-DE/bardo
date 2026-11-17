@@ -2,7 +2,7 @@
 
 use super::{Look, RevealEdge, slid};
 use crate::geometry::{LogicalPoint, LogicalRect, LogicalSize};
-use ui_core::vocab::Fraction;
+use base_ids::Fraction;
 
 fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
     LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })

@@ -18,7 +18,6 @@ use crate::control_center::module_tile_kind::TileSpan;
 use dioxus::prelude::*;
 use ui_components::base::press::Press;
 use ui_components::base::vocab::{Availability, Check, aria_word};
-use ui_components::base::word::Word;
 use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::content::text_runs::{TextLine, text};
 use ui_components::components::controls::press::{ActivationKeys, PressListeners};
@@ -26,6 +25,7 @@ use ui_components::focus::click::kept_click;
 use ui_components::root::common::Common;
 use ui_components::style::icon::Icon;
 use ui_components::style::icon::render::{Glyph, IconSize};
+use ui_components::words::Word;
 
 /// A control-center module. `onclick` toggles it (a press on the tile, Enter or Space);
 /// `value` is whether it is on. A module with a detail pane passes `on_detail`, which draws the

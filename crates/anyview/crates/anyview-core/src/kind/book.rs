@@ -1,7 +1,7 @@
 //! Books and comics: documents read page by page that are zip files inside.
 
 use super::family::Family;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A book format.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

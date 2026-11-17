@@ -6,6 +6,7 @@ use crate::error::SettingsError;
 use crate::locator::Locator;
 use crate::store::Store;
 use crate::text::{FileText, SETTINGS_CAP, file_text};
+use base_spawn::Spawner;
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
 use settings_store::latest::{self, Receiver, Sender};
 use settings_store::{Loaded, Read, SettingsDoc, read_within};
@@ -13,7 +14,6 @@ use std::ffi::{OsStr, OsString};
 use std::path::{Path, PathBuf};
 use std::sync::mpsc::RecvTimeoutError;
 use std::time::Duration;
-use ui_core::spawner::Spawner;
 
 /// How long the watch waits for a burst of events to settle before re-reading.
 pub const DEBOUNCE: Duration = Duration::from_millis(30);
@@ -179,7 +179,7 @@ fn touches_the_file(event: &notify::Event, name: &OsStr) -> bool {
 
 /// Re-read `path` after every settled burst of events and publish it, until the watcher or the
 /// receiver is dropped. `good` is the last value that read cleanly.
-// The debounce is a wall-clock wait on the spawner's own thread: `ui_core::time::clock::sleep` follows the clock
+// The debounce is a wall-clock wait on the spawner's own thread: a clock sleep follows the clock
 // installed on its caller's thread and is not `Send`, and a task on a runtime has neither.
 async fn settle<D: SettingsDoc + Send>(
     path: PathBuf,

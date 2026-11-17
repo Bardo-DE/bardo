@@ -34,7 +34,7 @@ pub use tree::TreeFormat;
 pub(crate) use family::{Family, from_extension, from_mime};
 pub(crate) use syntax::{for_extension as syntax_for_extension, for_name as syntax_for_name};
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// What a file is. A closed set, so every decision about files is a match on it; the one place
 /// that decides per kind is `crate::profile`.

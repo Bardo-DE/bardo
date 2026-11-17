@@ -1,8 +1,8 @@
 //! The numbers layout reads that are not in the spec.
 
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalSize};
 use compositor_core::settings::CasementSettings;
-use ui_core::vocab::Fraction;
 use ui_style::tokens::chrome::ChromeToken;
 
 /// The margin tiled windows keep from each other and from the edges, in logical pixels.

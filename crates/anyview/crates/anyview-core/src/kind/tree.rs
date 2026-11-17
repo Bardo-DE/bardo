@@ -1,7 +1,7 @@
 //! Structured text shown as a tree.
 
 use super::family::Family;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A format shown as a tree of values.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

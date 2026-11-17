@@ -4,6 +4,7 @@
 
 use super::quire_shell::shell_client;
 use crate::protocol::xdg_shell::{map_toplevel, pointer, settle, windows};
+use base_ids::Fraction;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::input::ButtonCode;
 use compositor_core::policy::ConnectionRole;
@@ -14,7 +15,6 @@ use compositor_testclient::surface::toplevel::WmBase;
 use compositor_testkit::{Fixture, FixtureSpec};
 use compositor_wayland::foreign_toplevel_list::identifier_of;
 use desktop_protocols::vocab::PressEdge;
-use ui_core::vocab::Fraction;
 
 const LEFT_BUTTON: ButtonCode = ButtonCode(0x110);
 

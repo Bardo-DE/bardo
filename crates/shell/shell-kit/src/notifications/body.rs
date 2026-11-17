@@ -7,9 +7,9 @@
 //! fades; one of four fades at rest and not on hover; one of nine fades on both.
 
 use dioxus::prelude::*;
-use ui_components::base::word::Word;
 use ui_components::components::content::rich_text::{Rich, rich};
 use ui_components::host::measure::use_rect;
+use ui_components::words::Word;
 
 /// The lines a body is clamped to at rest.
 const REST_LINES: u8 = 2;

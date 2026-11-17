@@ -4,8 +4,8 @@
 //! bias))`), each a tuned token a look or the person's style sheet may move. The panel's layer
 //! surface is placed from them before it has a layout (`shell_launcher_ui`'s `LauncherTokens`).
 
-use ui_components::base::word::Word;
 use ui_components::style::tokens::token::Token;
+use ui_components::words::Word;
 
 /// One launcher placement token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

@@ -2,6 +2,7 @@
 //! answer smithay's input traits the same way: every kind of event comes back as the kind it
 //! was made from.
 
+use base_ids::Fraction;
 use compositor_backend::DeviceName;
 use compositor_backend::input::{
     EventStamp, VirtualAxis, VirtualButton, VirtualDevice, VirtualGestureBegin, VirtualGestureEnd,
@@ -19,7 +20,6 @@ use compositor_core::time::Mono;
 use desktop_protocols::vocab::PressEdge;
 use smithay::backend::input::InputEvent;
 use std::time::Duration;
-use ui_core::vocab::Fraction;
 
 fn stamp() -> EventStamp {
     EventStamp {
