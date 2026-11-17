@@ -34,6 +34,7 @@ widestring.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true
+base-testkit = { path = "../../base/base-testkit" }
 # The test agent below is built only with this feature. Naming it here switches it on for this
 # crate's own tests, while `cargo install latchkey` (no dev-dependencies) never builds it.
 service-locator = { path = ".", features = ["test-agent", "guard"] }

@@ -8,7 +8,6 @@
 
 use crate::helpers::{agent_in, unique_name};
 use std::process::{Command, Stdio};
-use std::time::{Duration, Instant};
 
 /// The agent binary the tests drive.
 ///
@@ -35,15 +34,11 @@ fn stop(agent: &service_locator::Agent) {
         let _ = writeln!(door, "stop");
         let _ = door.flush();
     }
-    let deadline = Instant::now() + Duration::from_secs(5);
-    while Instant::now() < deadline {
+    base_testkit::eventually_blocking("the agent stopped", || {
         // `Ok(None)` specifically. `Err(Busy)` means the agent is alive and occupied, so
         // reading "not reachable" as "stopped" would be exactly backwards.
-        if matches!(agent.connect(), Ok(None)) {
-            return;
-        }
-        std::thread::sleep(Duration::from_millis(20));
-    }
+        matches!(agent.connect(), Ok(None))
+    });
 }
 
 fn demo(world: &World, command: &str) -> Command {
@@ -111,15 +106,18 @@ fn agent_at(world: &World) -> service_locator::Agent {
 /// Not "until the socket file exists", which is the check this whole crate argues against: after
 /// a `kill -9` the file is there and nobody is home, so a test that waited on it would pass
 /// against the bug it is meant to catch.
-fn answering(agent: &service_locator::Agent, within: Duration) -> bool {
-    let deadline = Instant::now() + within;
-    while Instant::now() < deadline {
-        if matches!(agent.connect(), Ok(Some(_))) {
-            return true;
-        }
-        std::thread::sleep(Duration::from_millis(20));
+fn answering(agent: &service_locator::Agent, what: &str) {
+    base_testkit::eventually_blocking(what, || matches!(agent.connect(), Ok(Some(_))));
+}
+
+/// A child process that is killed and reaped when it goes out of scope, however the test ends.
+struct KillOnDrop(std::process::Child);
+
+impl Drop for KillOnDrop {
+    fn drop(&mut self) {
+        let _ = self.0.kill();
+        let _ = self.0.wait();
     }
-    false
 }
 
 #[test]
@@ -130,10 +128,7 @@ fn a_killed_agent_locks_nobody_out() {
     let world = World::new();
     let agent = agent_at(&world);
     let mut first = demo(&world, "serve").spawn().expect("it starts");
-    assert!(
-        answering(&agent, Duration::from_secs(5)),
-        "the first agent never opened its door"
-    );
+    answering(&agent, "the first agent opened its door");
 
     // `Child::kill` is `SIGKILL` on Unix and `TerminateProcess` on Windows. Both are the case
     // that matters: no Rust code of ours runs on the way out, so nothing this crate wrote can be
@@ -157,11 +152,8 @@ fn a_killed_agent_locks_nobody_out() {
         "the socket is still there and nothing is behind it"
     );
 
-    let mut second = demo(&world, "serve").spawn().expect("it starts");
-    let reached = answering(&agent, Duration::from_secs(5));
-    let _ = second.kill();
-    let _ = second.wait();
-    assert!(reached, "the successor was locked out by a dead process");
+    let _second = KillOnDrop(demo(&world, "serve").spawn().expect("it starts"));
+    answering(&agent, "the successor was not locked out by a dead process");
 }
 
 #[test]
@@ -169,7 +161,7 @@ fn a_second_agent_in_a_second_process_is_refused() {
     let world = World::new();
     let agent = agent_at(&world);
     let mut first = demo(&world, "serve").spawn().expect("it starts");
-    assert!(answering(&agent, Duration::from_secs(5)));
+    answering(&agent, "the first agent opened its door");
 
     // `output()` is safe here where it was not in `a_client_starts_an_agent_and_talks_to_it`:
     // this child is refused and exits immediately, and it starts nothing that could inherit the
@@ -179,10 +171,7 @@ fn a_second_agent_in_a_second_process_is_refused() {
     assert!(!second.status.success(), "two agents answered to one name");
     let said = String::from_utf8_lossy(&second.stderr);
     assert!(said.contains("already running"), "{said}");
-    assert!(
-        answering(&agent, Duration::from_secs(1)),
-        "the refused agent took the first one down with it"
-    );
+    answering(&agent, "the first agent still answers after the refusal");
     let _ = first.kill();
     let _ = first.wait();
 }
