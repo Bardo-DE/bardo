@@ -47,6 +47,12 @@ fn spawn(bus: &PrivateBus, home: &Path, proc_root: Option<&Path>) -> Daemon {
         .env("XDG_DATA_HOME", home.join("data"))
         .env("XDG_RUNTIME_DIR", bus.scratch())
         .env("DBUS_SESSION_BUS_ADDRESS", bus.address())
+        // Never this computer's `/etc/bardo`: a system table in the scratch directory (absent, so
+        // empty: nobody has a fixed role).
+        .env(
+            account_callers::SYSTEM_CALLERS_VAR,
+            home.join("system-callers.toml"),
+        )
         .stdout(Stdio::null())
         .stderr(std::fs::File::create(&stderr).expect("stderr file"));
     if let Some(root) = proc_root {

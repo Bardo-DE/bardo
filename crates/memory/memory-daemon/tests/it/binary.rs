@@ -39,6 +39,13 @@ fn scratch_home(root: &Path) {
         "[[caller]]\napp = \"org.bardo.Intents\"\nunit = \"bardo-actiond.service\"\nrole = \"agent\"\n",
     )
     .expect("callers file");
+    // The system's table, in the scratch root: this computer's `/etc/bardo` is never read. Only
+    // the system's can give the router's unit its role.
+    std::fs::write(
+        root.join("system-callers.toml"),
+        "[[caller]]\napp = \"org.bardo.Intents\"\nunit = \"bardo-actiond.service\"\nrole = \"agent\"\n",
+    )
+    .expect("system callers file");
     let me = root.join("proc").join(std::process::id().to_string());
     std::fs::create_dir_all(&me).expect("fake proc");
     std::fs::write(
@@ -69,6 +76,7 @@ fn daemon_env(root: &Path, bus: &PrivateBus, keys: &str) -> Vec<(&'static str, S
         ("DBUS_SESSION_BUS_ADDRESS", bus.address.clone()),
         ("BARDO_MEMORYD_KEYS", keys.to_owned()),
         ("BARDO_MEMORYD_PROC_ROOT", at("proc")),
+        (memory_daemon::SYSTEM_CALLERS_VAR, at("system-callers.toml")),
     ]
 }
 

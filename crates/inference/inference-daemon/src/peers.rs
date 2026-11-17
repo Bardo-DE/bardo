@@ -356,6 +356,10 @@ impl ProcPeers {
 /// Whether this build honours `BARDO_INFERD_PROC_ROOT`: only with the `test-proc-root` feature.
 pub const HONOURS_PROC_ROOT: bool = cfg!(feature = "test-proc-root");
 
+/// Whether this build honours `BARDO_INFERD_CALLERS`: only with the `test-system-callers` feature, which `test-proc-root`
+/// implies.
+pub const HONOURS_SYSTEM_CALLERS: bool = cfg!(feature = "test-system-callers");
+
 impl Peers for ProcPeers {
     async fn caller_of(&self, sender: &str) -> Option<Caller> {
         account_callers::Callers::caller_of(&self.callers, sender).await

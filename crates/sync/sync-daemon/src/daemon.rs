@@ -14,7 +14,7 @@
 //! receiver that says "unmetered and up" for good.
 
 use crate::keep::Keep;
-use crate::paths::{BUILD, HONOURS_PROC_ROOT, rescan};
+use crate::paths::{BUILD, HONOURS_PROC_ROOT, HONOURS_SYSTEM_CALLERS, rescan};
 use crate::service;
 use crate::settings::{SyncSettings, serve_settings};
 use account_callers::choose_proc_root;
@@ -119,7 +119,7 @@ impl Config {
     pub fn from_env() -> Result<Self, StartError> {
         let mut paths = Paths::resolve(|name| std::env::var(name).ok())?;
         // A test build may read another system caller table (a jail cannot write /etc).
-        let system = account_callers::SystemCallers::choose(HONOURS_PROC_ROOT, |name| {
+        let system = account_callers::SystemCallers::choose(HONOURS_SYSTEM_CALLERS, |name| {
             std::env::var_os(name)
         });
         if let Some(line) = system.notice("syncd") {

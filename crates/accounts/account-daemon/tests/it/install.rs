@@ -273,7 +273,7 @@ fn the_script_builds_the_daemons_with_their_default_features_only() {
     assert_eq!(builds.len(), 1, "{builds:?}");
     assert!(!builds[0].contains("feature"), "{}", builds[0]);
     assert!(builds[0].contains("--release"));
-    for test_only in ["test-keys", "test-proc-root"] {
+    for test_only in ["test-keys", "test-proc-root", "test-system-callers"] {
         assert!(!script.contains(test_only), "{test_only}");
     }
 }

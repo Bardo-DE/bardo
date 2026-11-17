@@ -308,6 +308,12 @@ fn real_inferd(bus: &bus::PrivateBus) -> Started {
             .env("XDG_DATA_HOME", scratch.join("data"))
             .env("XDG_STATE_HOME", scratch.join("state"))
             .env("DBUS_SESSION_BUS_ADDRESS", bus.address())
+            // Never this computer's `/etc/bardo`: a system table in the scratch directory (absent,
+            // so empty: nobody has a fixed role).
+            .env(
+                account_callers::INFERD_CALLERS.var,
+                scratch.join("inferd-callers.toml"),
+            )
             // A Tailscale nobody serves: this computer's real one is never asked.
             .env(
                 "BARDO_INFERD_TAILSCALE_SOCKET",

@@ -12,7 +12,11 @@ publish.workspace = true
 # TEST ONLY, off by default and never in dist: `BARDO_INFERD_PROC_ROOT=<dir>` makes the caller lookup read
 # `<dir>/<pid>/cgroup` instead of `/proc`, for acceptance runs whose processes are in no unit.
 # Without this feature the variable is ignored (with a line on standard error).
-test-proc-root = ["account-callers/test-proc-root"]
+test-proc-root = ["account-callers/test-proc-root", "test-system-callers"]
+# TEST ONLY, off by default and never in dist: `BARDO_INFERD_CALLERS=<file>` makes the daemon read that file as its system caller
+# table, so no test reads this computer's `/etc/bardo`. Without this feature the variable is ignored (with a line on standard
+# error). The crate's own tests turn it on (the dev-dependency on itself); `test-proc-root` implies it.
+test-system-callers = []
 
 [dependencies]
 tracing = { workspace = true }
@@ -90,6 +94,7 @@ zbus = {workspace = true, features = ["tokio"]}
 caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
+inference-daemon = {path = ".", features = ["test-system-callers"]}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 futures-util = { workspace = true, features = ["std"] }
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }

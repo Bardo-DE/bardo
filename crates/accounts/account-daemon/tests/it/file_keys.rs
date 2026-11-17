@@ -49,6 +49,12 @@ fn spawn(bus: &PrivateBus, home: &Path, keys: Option<&str>) -> Daemon {
         .env(
             account_daemon::paths::TAILSCALE_SOCKET_VAR,
             home.join("no-tailscale.sock"),
+        )
+        // Never this computer's `/etc/bardo`: a system table in the scratch directory (absent, so
+        // empty: nobody has a fixed role).
+        .env(
+            account_callers::SYSTEM_CALLERS_VAR,
+            home.join("system-callers.toml"),
         );
     if let Some(keys) = keys {
         command.env("BARDO_ACCOUNTD_KEYS", keys);

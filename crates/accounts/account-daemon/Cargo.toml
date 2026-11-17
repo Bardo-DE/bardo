@@ -54,6 +54,7 @@ account-client-dbus = {path = "../account-client-dbus"}
 base-testkit = {features = ["tokio"], path = "../../base/base-testkit"}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 account-fake = {path = "../account-fake"}
+account-daemon = {path = ".", features = ["test-system-callers"]}
 account-fake-servers = {path = "../account-fake-servers"}
 http-core = {path = "../../network/http-core"}
 http-reqwest = {path = "../../network/http-reqwest"}
@@ -68,7 +69,11 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 # the system caller table, because a jail cannot write /etc/bardo. A release build ignores both
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
 # check-boundary.sh checks it too.
-test-proc-root = ["account-callers/test-proc-root"]
+test-proc-root = ["account-callers/test-proc-root", "test-system-callers"]
+# Test builds only, never default and never in dist: `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes the binary read that file as the
+# system caller table, so no test reads this computer's `/etc/bardo`. A release build ignores the variable and says so once.
+# The crate's own tests turn it on (the dev-dependency on itself); `test-proc-root` implies it.
+test-system-callers = []
 # Test builds only, never default and never in dist: `BARDO_ACCOUNTD_KEYS=file:<absolute path>` keeps
 # credentials in one 0600 plain-text JSON file (account-secrets' `FileSecrets`) instead of the
 # Secret Service, for private-bus and scratch runs with no keyring. A release build ignores the

@@ -63,6 +63,12 @@ fn spawn_over(
             account_daemon::paths::TAILSCALE_SOCKET_VAR,
             home.join("no-tailscale.sock"),
         )
+        // Never this computer's `/etc/bardo`: a system table in the scratch directory (absent, so
+        // empty: nobody has a fixed role).
+        .env(
+            account_callers::SYSTEM_CALLERS_VAR,
+            home.join("system-callers.toml"),
+        )
         .args(args)
         .stdout(Stdio::null())
         .stderr(std::fs::File::create(&stderr).expect("stderr file"));

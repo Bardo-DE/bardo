@@ -413,6 +413,15 @@ else
   echo "test-only: accountd's default features do not include test-proc-root"
 fi
 
+# accountd's test-only system caller table (`BARDO_ACCOUNTD_SYSTEM_CALLERS`, feature `test-system-callers`) is
+# never on in the daemon's normal dependency tree (its own tests turn it on through a dev-dependency).
+if cargo tree -p account-daemon -e normal --depth 0 -f '{p} {f}' 2>/dev/null | grep -q 'test-system-callers'; then
+  echo "LEAK: accountd enables test-system-callers in its normal build"
+  fail=1
+else
+  echo "test-only: accountd's normal build does not include test-system-callers"
+fi
+
 # accountd's file key store (`BARDO_ACCOUNTD_KEYS=file:`, feature `test-keys`, account-secrets'
 # `FileSecrets`) keeps credentials as plain text: neither crate's default build, nor accountd's
 # whole normal dependency tree, may have the feature on.

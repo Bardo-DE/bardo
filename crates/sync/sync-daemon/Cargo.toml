@@ -48,6 +48,7 @@ zbus = {workspace = true, features = ["tokio"]}
 caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
+sync-daemon = {path = ".", features = ["test-system-callers"]}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 sync-engine = {path = "../sync-engine", features = ["testing"]}
@@ -86,7 +87,11 @@ tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "r
 # the system caller table, because a jail cannot write /etc/bardo. A release build ignores both
 # variables. A test in tests/dist.rs fails if this feature is ever default, and
 # check-boundary.sh checks it too.
-test-proc-root = ["account-callers/test-proc-root"]
+test-proc-root = ["account-callers/test-proc-root", "test-system-callers"]
+# Test builds only, never default and never in dist: `BARDO_ACCOUNTD_SYSTEM_CALLERS=<file>` makes the binary read that file as the
+# system caller table, so no test reads this computer's `/etc/bardo`. A release build ignores the variable and says so once.
+# The crate's own tests turn it on (the dev-dependency on itself); `test-proc-root` implies it.
+test-system-callers = []
 # Serves `org.bardo.Photos1.Picker` beside Sync1 (sync-bus's feature of the same name declares
 # it). Off by default: no Photos app ships in v1.
 photos-picker = ["sync-bus/photos-picker"]

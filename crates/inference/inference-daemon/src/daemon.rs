@@ -18,7 +18,7 @@ use crate::config::{ConfigError, Dirs, InferdConfig, ProgramSearch};
 use crate::engines::Engines;
 use crate::hosts::{HealthProbe, HostCloser, NvidiaSmi, ProcessHost};
 use crate::installed::Installed;
-use crate::peers::{CallerTable, HONOURS_PROC_ROOT, ProcPeers};
+use crate::peers::{CallerTable, HONOURS_PROC_ROOT, HONOURS_SYSTEM_CALLERS, ProcPeers};
 use crate::replay::Replays;
 use crate::service::{Inference, serve_with_settings};
 use crate::settings::{ConfigFile, InferdSettings, LocalEngines, Reload};
@@ -170,7 +170,7 @@ impl Config {
         // A test build may read another system caller table (a jail cannot write /etc).
         let callers = account_callers::SystemCallers::choose_file(
             account_callers::INFERD_CALLERS,
-            HONOURS_PROC_ROOT,
+            HONOURS_SYSTEM_CALLERS,
             |name| std::env::var_os(name),
         );
         if let Some(line) = callers.notice("inferd") {

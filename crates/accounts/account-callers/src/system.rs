@@ -4,9 +4,9 @@
 //! launcher) come only from a system table under `/etc/bardo`, which a person cannot write:
 //! accountd and syncd read [`CALLERS`], inferd reads [`INFERD_CALLERS`]. A jailed acceptance
 //! test cannot write `/etc` either, so a test build may be told to read another file instead.
-//! The switch is gated as the proc root is ([`Override`]): a build with the daemon's
-//! `test-proc-root` feature honours the file's variable, every other build ignores it and says so
-//! once at start. An empty value is the same as no value.
+//! The switch is gated by the build ([`Override`]): a build with the daemon's
+//! `test-system-callers` feature (which its `test-proc-root` feature implies) honours the file's
+//! variable, every other build ignores it and says so once at start. An empty value is the same as no value.
 //!
 //! A system table may be installed somewhere other than `/etc/bardo` (a bundle under
 //! `/opt/bardo` ships its own): without the variable, a daemon reads the first of
@@ -123,7 +123,7 @@ impl SystemCallers {
                 file.display()
             )),
             Override::Ignored(file) => Some(format!(
-                "{daemon}: {var}={} ignored: not a test-proc-root build",
+                "{daemon}: {var}={} ignored: not a test build",
                 file.display()
             )),
         }
@@ -244,11 +244,11 @@ mod tests {
             |file| SystemCallers::choose_file(file, false, |_| Some(OsString::from("/x")));
         assert_eq!(
             ignored(CALLERS).notice("myd").expect("line"),
-            "myd: BARDO_ACCOUNTD_SYSTEM_CALLERS=/x ignored: not a test-proc-root build"
+            "myd: BARDO_ACCOUNTD_SYSTEM_CALLERS=/x ignored: not a test build"
         );
         assert_eq!(
             ignored(INFERD_CALLERS).notice("inferd").expect("line"),
-            "inferd: BARDO_INFERD_CALLERS=/x ignored: not a test-proc-root build"
+            "inferd: BARDO_INFERD_CALLERS=/x ignored: not a test build"
         );
         assert_eq!(ignored(CALLERS).path(), Path::new(SYSTEM_CALLERS));
     }
