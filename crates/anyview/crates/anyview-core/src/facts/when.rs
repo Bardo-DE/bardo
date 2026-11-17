@@ -25,6 +25,7 @@ pub struct LocalZone(TimeZone);
 impl LocalZone {
     /// The time zone the system is set to (the `TZ` variable, `/etc/localtime`, the registry);
     /// UTC where it cannot be told.
+    #[must_use]
     pub fn system() -> Self {
         #[cfg(feature = "testing")]
         if let Some(minutes) = PINNED.get() {

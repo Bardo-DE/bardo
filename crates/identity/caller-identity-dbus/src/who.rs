@@ -121,6 +121,10 @@ impl<P, U> BusPeers<P, U> {
     }
 
     #[cfg(not(feature = "fake"))]
+    #[expect(
+        clippy::unused_self,
+        reason = "the same method as the fake build's, which reads the introduced table"
+    )]
     fn introduced_for(&self, _sender: &str) -> Option<Standing> {
         None
     }
