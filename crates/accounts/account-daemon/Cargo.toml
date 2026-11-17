@@ -51,7 +51,7 @@ zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 # The client crates are tested against this daemon (tests/it/client), not the other way round.
 account-client = {path = "../account-client"}
 account-client-dbus = {path = "../account-client-dbus"}
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {features = ["tokio"], path = "../../base/base-testkit"}
 ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
 account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}

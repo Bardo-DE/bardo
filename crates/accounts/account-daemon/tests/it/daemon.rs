@@ -84,7 +84,8 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
     let running = tokio::spawn(daemon.run(async {
         let _ = stopped.await;
     }));
-    // Still serving: `run` does nothing until it is told.
+    // Still serving: `run` does nothing until it is told. Best-effort absence check: a task that
+    // has not ended announces nothing, so a short window is all there is to look through.
     tokio::time::sleep(Duration::from_millis(100)).await;
     assert!(!running.is_finished(), "run waits for its shutdown");
     stop.send(()).expect("run is waiting");

@@ -91,6 +91,8 @@ async fn a_forged_input_is_ignored_whoever_sends_it_and_whatever_handle_it_names
         )
         .await
         .expect("emit");
+    // Best-effort absence check: nothing announces a forgery that was ignored, so a short
+    // window is all there is to look through.
     tokio::time::sleep(Duration::from_millis(200)).await;
     assert!(
         rig.host_log.calls().closed.is_empty(),

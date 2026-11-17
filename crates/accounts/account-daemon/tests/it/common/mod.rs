@@ -236,17 +236,7 @@ impl Rig {
     }
 }
 
-/// Polls `condition` until it holds, up to [`base_testkit::GENEROUS`] by the clock.
-pub async fn eventually(what: &str, mut condition: impl FnMut() -> bool) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if condition() {
-            return;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-    deadline.fail(what);
-}
+pub use base_testkit::eventually;
 
 /// Options whose clients file is a scratch one, so that [`publish`] has something to write, and
 /// the directory it is in: bind it for as long as the rig runs, declared before the rig.

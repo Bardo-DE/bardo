@@ -201,19 +201,16 @@ async fn an_app_is_asked_once_and_then_reaches_the_server_through_a_descriptor()
     );
 
     // The app dropped its end, so the relay ended, and its end is audited beside its opening.
-    let mut closed = Vec::new();
-    for _ in 0..100 {
-        closed = rig
+    let closed = base_testkit::eventually_some("the relay's end to be audited", || {
+        let closed: Vec<_> = rig
             .audit
             .entries()
             .into_iter()
             .filter(|e| matches!(e.event, AuditEvent::ProxyClosed { .. }))
             .collect();
-        if !closed.is_empty() {
-            break;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
-    }
+        (!closed.is_empty()).then_some(closed)
+    })
+    .await;
     assert_eq!(closed.len(), 1, "the relay's end is recorded once");
     assert_eq!(closed[0].app, Some(app("org.bardo.Photos")));
     assert_eq!(closed[0].account, Some(chosen.account.clone()));
