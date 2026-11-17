@@ -22,6 +22,7 @@ pub enum FileText {
 }
 
 /// The text of the file at `path`, at most `cap` bytes of it.
+#[must_use]
 pub fn file_text(path: &Path, cap: ReadCap) -> FileText {
     match read_text_capped(path, cap) {
         Ok(text) => FileText::Text(text),

@@ -117,9 +117,11 @@ pub fn loosenings(value: &MemorySettings) -> Vec<String> {
     loose(value).into_iter().map(|l| l.said).collect()
 }
 
+/// The daemon's log lines for a loaded file.
+///
 /// One line per refused value, unknown key and clamped number of `loaded`, and one per value
 /// looser than the shipped default (ALM-16: the file is unauthenticated, so what it loosens is
-/// always logged), for the daemon's log.
+/// always logged).
 #[must_use]
 pub fn lines(loaded: &Loaded<MemorySettings>, daemon: &str) -> Vec<String> {
     let loose = loosenings(&loaded.value)

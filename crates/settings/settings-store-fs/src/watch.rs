@@ -52,8 +52,9 @@ pub struct FileWatcher {
     _watcher: RecommendedWatcher,
 }
 
-/// The settled changes of one watched file: every burst of events on it arrives as one
-/// [`settled`](Settled::settled), after [`DEBOUNCE`] with no further event. This is the one
+/// The settled changes of one watched file.
+///
+/// Every burst of events on it arrives as one [`settled`](Settled::settled), after [`DEBOUNCE`] with no further event. This is the one
 /// directory watch and the one debounce every settings file's watcher is made of.
 #[derive(Debug)]
 pub struct Settled {
@@ -83,8 +84,9 @@ impl Settled {
     }
 }
 
-/// Watch `dir` (made when it is missing) for writes to the file named `file`: not the directory's
-/// other files, not the temp file the atomic writer (or an editor) writes and renames away, and
+/// Watch `dir` (made when it is missing) for writes to the file named `file`.
+///
+/// Not the directory's other files, not the temp file the atomic writer (or an editor) writes and renames away, and
 /// not a read of it. The watcher is the caller's to keep alive; the [`Settled`] ends when it is
 /// dropped.
 ///
@@ -257,7 +259,7 @@ impl<T: Clone + Send + 'static> LocatedWatch<T> {
         let armed = locator
             .watch_dir()
             .zip(locator.file_name())
-            .ok_or_else(|| SettingsError::NoConfigDir {
+            .ok_or(SettingsError::NoConfigDir {
                 app: "this program",
             })
             .and_then(|(dir, file)| watch_file(&dir, file));
@@ -315,8 +317,9 @@ async fn settle_located<T: Clone>(
     }
 }
 
-/// Watches `dir` for writes to the file named `name` on a thread of its own, for a program that
-/// runs no async runtime: `settled` is called after every burst of events has been quiet for
+/// Watches `dir` for writes to the file named `name` on a thread of its own.
+///
+/// For a program that runs no async runtime: `settled` is called after every burst of events has been quiet for
 /// [`DEBOUNCE`], and ends the thread by returning `false`. Returns the watcher, which must be kept
 /// alive; dropping it ends the thread. The directory must exist.
 ///

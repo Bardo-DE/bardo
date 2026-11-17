@@ -53,6 +53,10 @@ pub fn damage(
 
 /// Before a write at `path`: move the file there aside when it is damaged, so the write does not
 /// destroy what the person had.
+///
+/// # Errors
+///
+/// Returns the error of moving the damaged file aside.
 pub fn keep_damaged(
     path: &Path,
     cap: ReadCap,

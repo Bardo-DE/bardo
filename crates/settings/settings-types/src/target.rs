@@ -1,6 +1,8 @@
-//! Where in Settings a link points: a page, one key, one account, or one Extension. The payload of
-//! the `settings.page.show` intent and the one type every entrance to Settings hands over (the bar,
-//! the launcher, the control centre, the command line, an agent).
+//! Where in Settings a link points.
+//!
+//! A page, one key, one account, or one Extension. The payload of the `settings.page.show` intent
+//! and the one type every entrance to Settings hands over (the bar, the launcher, the control
+//! centre, the command line, an agent).
 //!
 //! The text form is `page:wallpaper`, `key:dock.magnified_size_px`, `account:<id>`,
 //! `extension:<id>`. One `FromStr` and one `Display` are the whole grammar; they round-trip.

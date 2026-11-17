@@ -21,8 +21,9 @@ pub fn write_schema(schema: &Schema, dir: &Path) -> io::Result<PathBuf> {
     write_named(schema, dir, &format!("{}.settings.toml", schema.app.0))
 }
 
-/// Writes `<app-id>.<part>.settings.toml` into `dir`: the schema of a second file the same
-/// program owns, which [`discover`] admits beside its `<app-id>.settings.toml`
+/// Writes `<app-id>.<part>.settings.toml` into `dir`.
+///
+/// It is the schema of a second file the same program owns, which [`discover`] admits beside its `<app-id>.settings.toml`
 /// (`bardo.extensions.settings.toml` for `bardo/extensions.toml`).
 ///
 /// # Errors
@@ -177,7 +178,9 @@ pub fn data_dirs_from(
         .collect()
 }
 
-/// The XDG data search path with the environment handed in: each `$XDG_DATA_DIRS` entry first,
+/// The XDG data search path with the environment handed in.
+///
+/// Each `$XDG_DATA_DIRS` entry first,
 /// then `$XDG_DATA_HOME` (else `home`'s `.local/share`) last, so the person's own directory can
 /// add to what is installed and never shadow it.
 #[must_use]

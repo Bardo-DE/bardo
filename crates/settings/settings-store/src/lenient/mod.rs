@@ -15,7 +15,6 @@ use crate::doc::{FileName, Format};
 pub use limits::{ClampedKey, LimitBounds, Limits};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
-use settings_types::schema::fold_older_commands;
 use std::collections::HashSet;
 use std::fmt;
 use wire::{JsonWire, TomlWire, Wire};
@@ -162,6 +161,7 @@ const MAX_LEAVES: usize = 4_000;
 
 /// `text` as a `D` in `format`, keeping every key that is valid and the default for every key
 /// that is not.
+#[must_use]
 pub fn read<D>(text: &str, format: Format) -> Read<D>
 where
     D: Serialize + DeserializeOwned + Default,
@@ -170,6 +170,7 @@ where
 }
 
 /// [`read`], with every number held to its range in `limits`.
+#[must_use]
 pub fn read_within<D>(text: &str, format: Format, limits: &Limits) -> Read<D>
 where
     D: Serialize + DeserializeOwned + Default,

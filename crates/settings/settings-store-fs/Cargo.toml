@@ -19,8 +19,6 @@ ui-core = { path = "../../ui/ui-core" }
 thiserror = { workspace = true }
 notify = { workspace = true }
 futures-timer = { workspace = true }
-
-[dev-dependencies]
 toml = { workspace = true }
 
 [lints]

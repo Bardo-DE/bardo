@@ -36,11 +36,16 @@ impl Store {
     }
 
     /// The program's config directory, or the error a write or a watch reports without one.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`SettingsError::NoConfigDir`] when the root has no directory for this program.
     pub fn require_dir(&self) -> Result<PathBuf, SettingsError> {
         self.dir().ok_or_else(|| self.no_config_dir())
     }
 
     /// The error for a root that has no directory for this program.
+    #[must_use]
     pub fn no_config_dir(&self) -> SettingsError {
         SettingsError::NoConfigDir {
             app: self.app.name(),

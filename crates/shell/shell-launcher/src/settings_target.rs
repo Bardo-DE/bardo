@@ -9,6 +9,8 @@
 
 pub use settings_types::target::{AccountRef, SettingsTarget};
 
+use settings_types::schema::PageId;
+
 /// serde `with` module: a target as its text.
 pub mod text {
     use serde::{Deserialize, Deserializer, Serializer};

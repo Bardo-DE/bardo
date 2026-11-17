@@ -1,6 +1,8 @@
-//! The newest value one task publishes and another awaits, with no runtime behind it: a
-//! `Mutex`, a version and the waiting task's `Waker`. Every consumer of a settings change is an
-//! async task somewhere (a Dioxus future, a Tokio task), so the wake-up is all this needs.
+//! The newest value one task publishes and another awaits.
+//!
+//! There is no runtime behind it: a `Mutex`, a version and the waiting task's `Waker`. Every
+//! consumer of a settings change is an async task somewhere (a Dioxus future, a Tokio task), so
+//! the wake-up is all this needs.
 
 use std::pin::Pin;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
@@ -62,6 +64,10 @@ pub struct ReceiverGone;
 
 impl<T> Sender<T> {
     /// Publish `value`, waking the receiver.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ReceiverGone`] when the receiver has been dropped.
     pub fn send(&self, value: T) -> Result<(), ReceiverGone> {
         let wakers = {
             let mut slot = self.0.slot();
@@ -77,10 +83,7 @@ impl<T> Sender<T> {
     }
 
     /// The value the receiver would read now. Only the portal client folds changes onto it.
-    #[cfg_attr(
-        not(all(target_os = "linux", feature = "quire-desktop")),
-        allow(dead_code)
-    )]
+    #[must_use]
     pub fn latest(&self) -> T
     where
         T: Clone,
@@ -102,11 +105,13 @@ impl<T> Drop for Sender<T> {
 
 impl<T: Clone> Receiver<T> {
     /// The newest value, seen or not.
+    #[must_use]
     pub fn latest(&self) -> T {
         self.shared.slot().value.clone()
     }
 
     /// Whether a value newer than the last one this receiver took has been published.
+    #[must_use]
     pub fn has_changed(&self) -> bool {
         self.shared.slot().version > self.seen
     }

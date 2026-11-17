@@ -1,5 +1,6 @@
-//! The reader of a daemon's own settings file, driven by a table of keys: each key says what it
-//! takes (a whole number in a range, a switch, one of some words) and where its value lands in the
+//! The reader of a daemon's own settings file, driven by a table of keys.
+//!
+//! Each key says what it takes (a whole number in a range, a switch, one of some words) and where its value lands in the
 //! typed settings. A bad value costs only its own key, which keeps the `base` value and is
 //! reported in [`Loaded::invalid`]; a key no row names is reported in [`Loaded::unknown`].
 //!
@@ -12,6 +13,7 @@ use std::collections::BTreeSet;
 use std::ops::RangeInclusive;
 
 /// What a key's value may be and how it lands in the settings `T`.
+#[derive(Debug)]
 pub enum Rule<T> {
     /// A whole number inside `range`, in the key's unit.
     Number {
@@ -35,6 +37,7 @@ pub enum Rule<T> {
 }
 
 /// One key of the table.
+#[derive(Debug)]
 pub struct RuleKey<T> {
     /// The dotted key path (`agent.budget.spend_microusd`).
     pub path: &'static str,
@@ -75,6 +78,7 @@ pub const fn word<T>(
 }
 
 /// The keys of a file, and what else it may hold without being reported.
+#[derive(Debug)]
 pub struct RuleTable<'a, T> {
     /// The scalar keys, read by their rules.
     pub keys: &'a [RuleKey<T>],
@@ -133,7 +137,9 @@ fn refused<T>(rule: &Rule<T>, value: &mut T, found: &toml::Value) -> Option<Stri
     }
 }
 
-/// Reads `text` over `base`: each key the file sets and the table accepts replaces its base
+/// Reads `text` over `base`, one key at a time.
+///
+/// Each key the file sets and the table accepts replaces its base
 /// value; every other key keeps it. `more` reads what the table cannot (a list of rows) from the
 /// parsed file, changing the value and reporting what it refused.
 ///
