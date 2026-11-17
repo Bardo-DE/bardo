@@ -106,9 +106,9 @@ in a P crate, a C crate depending on an A crate, two kinds of re-export, a crate
 table) and asserts that each one fails. The RULES in the same script still hold what each crate
 reaches through any path (cargo tree).
 
-The repo order is stoker, porter, steward, almanac, docket, cua, sill. docket reaches stoker's pure
+The repo order is stoker, porter, the inference service, almanac, docket, cua, sill. docket reaches stoker's pure
 crates (`computer-use-action`, `model-provider`, `speech-vad`), porter (`account-core`, `account-client`,
-`account-client-dbus`, `account-dbus`), steward (`inference-core`, `inference-client`, `inference-dbus`), the `prov` repo, almanac (`memory-core`, `memory-client`) and
+`account-client-dbus`, `account-dbus`), the inference service (`inference-core`, `inference-client`, `inference-dbus`), the `prov` repo, almanac (`memory-core`, `memory-client`) and
 Bardo's view-only `ui-intents`, all as pinned git revs in the root `Cargo.toml` (no
 `path = "../repo"` and no `[patch]`). Nothing of `cua` or `sill` may enter any tree here.
 

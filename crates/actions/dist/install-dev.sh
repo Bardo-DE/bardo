@@ -28,7 +28,7 @@
 # left out, drop-ins an earlier install put down are removed. Dev-only change to them: when the
 # prefix is under $HOME, the home folder is made read-only instead of hidden (hidden, the programs
 # could not start from there, and bardo-companiond could not read its config and skills). The porter units need nothing: they make their own
-# directories. --cloud installs steward's dist/inferd-cloud.conf as bardo-inferd.service.d/cloud.conf (network
+# directories. --cloud installs the inference service's dist/inferd-cloud.conf as bardo-inferd.service.d/cloud.conf (network
 # on); it is opt-in because local engines share inferd's sandbox, so an on-device-only setup keeps none.
 # memoryd has no unit in almanac/dist: almanac/dbus/bardo-memoryd.service is its unit, started by D-Bus
 # activation (org.bardo.Memory1.service names it), and that is what is installed.
@@ -46,7 +46,7 @@ DOCKET="$(cd "$HERE/.." && pwd)"
 TREE="$(cd "$DOCKET/../.." && pwd)"   # the bardo tree
 CRATES="$TREE/crates"
 PORTER="$CRATES/accounts"
-STEWARD="$CRATES/inference"
+INFERENCE="$CRATES/inference"
 ALMANAC="$CRATES/memory"
 STOKER="$CRATES/models"
 CUA="$CRATES/computer-use"
@@ -95,7 +95,7 @@ BINARIES=(
   "bardo-agent-net-forward docket agent-acp-bin"
   "bardo-agent-net-enter docket agent-acp-bin"
   "bardo-memoryd almanac memory-daemon"
-  "bardo-inferd steward inference-daemon"
+  "bardo-inferd the inference service inference-daemon"
   "bardo-accountd porter account-daemon"
 )
 
@@ -141,19 +141,19 @@ build_plan() {
     read -r name repo pkg <<<"$entry"
     plan bin "$(bin_source "$name" "$repo")" "$BIN/$name"
   done
-  plan_units "$DOCKET/dist"; plan_units "$PORTER/dist"; plan_units "$STEWARD/dist"
+  plan_units "$DOCKET/dist"; plan_units "$PORTER/dist"; plan_units "$INFERENCE/dist"
   plan unit "$ALMANAC/dbus/bardo-memoryd.service" "$UNITS/bardo-memoryd.service"
   plan_sandbox "$ALMANAC/dbus/bardo-memoryd.service"
-  plan_dbus "$DOCKET/dist/dbus"; plan_dbus "$PORTER/dist/dbus"; plan_dbus "$STEWARD/dist/dbus"
+  plan_dbus "$DOCKET/dist/dbus"; plan_dbus "$PORTER/dist/dbus"; plan_dbus "$INFERENCE/dist/dbus"
   plan dbus "$ALMANAC/dbus/org.bardo.Memory1.service" "$DBUS/org.bardo.Memory1.service"
   plan_tree data "$DOCKET/dist/skills" "$DATA/bardo/skills"
   plan_tree data "$DOCKET/policy/presets" "$DATA/bardo/actions/permissions"
   local dir
-  for dir in "$DOCKET" "$ALMANAC" "$PORTER" "$STEWARD" "$CUA"; do
+  for dir in "$DOCKET" "$ALMANAC" "$PORTER" "$INFERENCE" "$CUA"; do
     plan_tree data "$dir/dist/intents" "$DATA/bardo/intents"
     plan_tree data "$dir/dist/settings" "$DATA/bardo/settings"
   done
-  plan data "$STEWARD/dist/inference.settings.toml" "$DATA/bardo/settings/inference.settings.toml"
+  plan data "$INFERENCE/dist/inference.settings.toml" "$DATA/bardo/settings/inference.settings.toml"
   plan data "$ALMANAC/memory-settings/schema/memory.settings.toml" "$DATA/bardo/settings/memory.settings.toml"
   plan_tree data "$PORTER/providers" "$DATA/bardo/accounts/providers"
   plan_tree data "$STOKER/catalog" "$DATA/bardo/models/catalog"
@@ -164,8 +164,8 @@ build_plan() {
     case "$(basename "$cfg")" in voiced.toml|*-callers.toml) continue ;; esac
     plan config "$cfg" "$BARDO_CONFIG/$(basename "$cfg")"
   done
-  if [ "$CLOUD" = 1 ]; then plan dropin "$STEWARD/dist/inferd-cloud.conf" "$UNITS/bardo-inferd.service.d/cloud.conf"; fi
-  plan config "$STEWARD/dist/inferd.toml" "$CONFIG/bardo/inference/inferd.toml"
+  if [ "$CLOUD" = 1 ]; then plan dropin "$INFERENCE/dist/inferd-cloud.conf" "$UNITS/bardo-inferd.service.d/cloud.conf"; fi
+  plan config "$INFERENCE/dist/inferd.toml" "$CONFIG/bardo/inference/inferd.toml"
   plan config "$ALMANAC/dbus/memoryd-callers.toml" "$CONFIG/bardo/memoryd/callers.toml"
 }
 
@@ -339,7 +339,7 @@ launcher writes its row, role agent_launcher). inferd reads who is calling from
 only when they start:
 
   sudo install -D -m644 $PORTER/dist/callers.toml /etc/bardo/accountd-callers.toml
-  sudo install -D -m644 $STEWARD/dist/inferd-callers.toml /etc/bardo/inferd-callers.toml
+  sudo install -D -m644 $INFERENCE/dist/inferd-callers.toml /etc/bardo/inferd-callers.toml
 
 The agent daemons name their callers the same way, by the unit behind a connection, from
 /etc/bardo/<daemon>-callers.toml (the system's file alone can say which unit is the shell;

@@ -47,7 +47,7 @@ settings-app-callers = {path = "../settings-app-callers", features = ["testing"]
 # Reads and writes the settings files and desktop entries the tests seed and check.
 settings-app-files = {path = "../settings-app-files"}
 # The stand-in daemons' wire: bus names, paths and the zbus interfaces they serve (accountd's and
-# syncd's from the sync service, inferd's from steward).
+# syncd's from the sync service, inferd's from the inference service).
 sync-bus = {path = "../../sync/sync-bus"}
 account-dbus = {path = "../../accounts/account-dbus"}
 account-wire = {path = "../../accounts/account-wire"}

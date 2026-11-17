@@ -21,7 +21,7 @@ nothing does.
 | `accountd` | `org.bardo.Accounts1` | Holds the accounts, the consent you gave each app and the audit trail. Signs you in, keeps the passwords and keys in your keyring, and gives apps a short-lived pass or a connection already signed in, never the secret itself. |
 
 The windows you see (the sign-in sheet, the Settings pages) belong to the desktop, not to porter.
-Porter supplies what they show. The AI service (`org.bardo.Inference1`) is not porter's: it lives in the steward repository, which depends on porter. Neither is the sync daemon (`org.bardo.Sync1`), which keeps copies of calendars, contacts, tasks, files and photos in step with the service: it lives in the sync service repository, which depends on porter.
+Porter supplies what they show. The AI service (`org.bardo.Inference1`) is not porter's: it lives in the inference service repository, which depends on porter. Neither is the sync daemon (`org.bardo.Sync1`), which keeps copies of calendars, contacts, tasks, files and photos in step with the service: it lives in the sync service repository, which depends on porter.
 
 ## Install
 

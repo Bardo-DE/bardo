@@ -87,7 +87,7 @@ allow-git = [
     # syncd's bus vocabulary and its test fake (files-desktop, Storage1): the sync service at the rev that pins
     # the same porter. MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/ferry",
-    # The AI crates docket pins (steward) and the provenance types (prov), at the revs docket pins.
+    # The AI crates docket pins (the inference service) and the provenance types (prov), at the revs docket pins.
     # MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/steward",
     "https://github.com/Bardo-DE/prov",

@@ -225,7 +225,7 @@ Nothing below is built; the interfaces it will use are.
   almanac's tests build labels from their fields and `check_draft` is a stub with them.
 - **Cross-repo dependencies are git deps at pinned revs** (`porter-core`, `prov`, `porter-client`,
   `porter-client-dbus`, `porter-dbus` from `https://github.com/Bardo-DE/porter`; `porter-infer`,
-  `inferd-client`, `steward-dbus` from `https://github.com/Bardo-DE/steward`), so a plain `git clone`
+  `inferd-client`, `inference-dbus` from `https://github.com/Bardo-DE/steward`), so a plain `git clone`
   builds with no sibling checkout (Bardo `CONSUMING.md` section 1). The URL spelling and the rev
   match porter's own pins of stoker and Bardo, so cargo sees one copy of each crate. For work that
   spans repos, override the pin locally with a `[patch]` that is never committed: put it in a

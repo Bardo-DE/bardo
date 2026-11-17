@@ -1,15 +1,15 @@
-# What the accounts-* scenarios share: porter's real bardo-accountd, the sync service's bardo-syncd, steward's bardo-inferd, porter's test rig
+# What the accounts-* scenarios share: porter's real bardo-accountd, the sync service's bardo-syncd, the inference service's bardo-inferd, porter's test rig
 # (account-rig-servers: the fakes, account-rig-secrets: a fake Secret Service, account-rig-client: an app), the sync service's test rig
 # (sync-rig-servers: the OAuth issuer and the Graph fake, sync-rig-client: an app talking to bardo-syncd) and inference-rig-client (an app opening an bardo-inferd session) on the
 # private bus bardo-compositor's dev/up.sh made, with bardo-shell drawing the sheets. Sourced after harness/lib/all.sh,
 # harness/lib/scenario.sh and bardo-shell's dev/lib/all.sh (it uses their in_env, bardo-shell, surface_named, capture ...).
 #
-# Identity. The daemons (bardo-inferd is steward's, from build/steward-target) are test-proc-root builds: they name the process behind a bus connection from
+# Identity. The daemons (bardo-inferd is the inference service's, from build/inference-target) are test-proc-root builds: they name the process behind a bus connection from
 # $PROC/<pid>/cgroup (BARDO_ACCOUNTD_PROC_ROOT, BARDO_SYNCD_PROC_ROOT, BARDO_INFERD_PROC_ROOT; bardo-syncd is the sync service's, from build/sync-target), because nothing in the jail runs
 # in a systemd scope; the role of each is the system caller table, porter's dist copy at $ACC_SYSTEM_CALLERS
 # (BARDO_ACCOUNTD_SYSTEM_CALLERS: the jail cannot write /etc/bardo/accountd-callers.toml, and a person's own file gives no fixed role);
 # bardo-inferd's is $BARDO_INFERD_SYSTEM_CALLERS (BARDO_INFERD_CALLERS, in place of /etc/bardo/inferd-callers.toml: porter
-# reads no [callers] from bardo-inferd.toml since CALLER-INFERD; steward's dist/inferd-callers.toml is its shipped copy).
+# reads no [callers] from bardo-inferd.toml since CALLER-INFERD; the inference service's dist/inferd-callers.toml is its shipped copy).
 # `acc_identity UNIT PID` writes a unit's cgroup (bardo-shell.service, bardo-syncd.service, bardo-inferd.service) and, for a service
 # unit, its main pid ($PROC/units/<unit>); `acc_app APP PID` names bardo-settings the Settings unit (org.bardo.Settings.service)
 # and any other app a Flatpak (its scope and $PROC/<pid>/root/.flatpak-info).
@@ -18,7 +18,7 @@
 
 ACC_LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ARIG="$SCEN_BUILD/porter-target/debug"
-ASTW="$SCEN_BUILD/steward-target/debug"
+ASTW="$SCEN_BUILD/inference-target/debug"
 AFER="$SCEN_BUILD/sync-target/debug"
 ACC_PIDS=()
 ACC_BG=()

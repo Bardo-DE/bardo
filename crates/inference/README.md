@@ -1,6 +1,6 @@
-# steward
+# The inference service
 
-Steward is the AI broker of the desktop. One background service, `inferd`, lets apps use a model on
+The inference service is the AI broker of the desktop. One background service, `inferd`, lets apps use a model on
 this computer, on another of your computers (if you allow it) or one you have an account for, under
 the limits you set (what may leave the machine, how much it may spend). Apps ask for what they need
 ("a chat model that reads images"), never for a brand, and never see a key.
@@ -26,8 +26,8 @@ Status: cut from [porter](https://github.com/Bardo-DE/porter) at `e9e7cdcd`; see
 | `inference-bridge` | the one mapping between the wire types and stoker's provider types |
 | `inference-tailnet` | lending models to the person's other computers over their Tailscale network |
 
-`ARCHITECTURE.md` has the map and the allowed edges. steward depends on porter by git rev; porter
-never depends on steward.
+`ARCHITECTURE.md` has the map and the allowed edges. The inference service depends on porter by git rev; porter
+never depends on the inference service.
 
 ## Install
 

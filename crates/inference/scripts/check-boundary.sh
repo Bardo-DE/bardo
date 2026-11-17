@@ -138,8 +138,8 @@ ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? 
 # The allowed edges to the crates of ours and of the repos we pin (this workspace, porter, stoker,
 # Bardo): each crate's DIRECT normal and build dependencies (all features), and nothing else. A
 # dependency not listed is a leak; so is one the crate no longer has, so the table stays exact.
-# Dev dependencies are outside it. steward depends on porter by git rev; porter never depends on
-# steward.
+# Dev dependencies are outside it. The inference service depends on porter by git rev; porter never depends on
+# The inference service.
 EDGES=(
   "inference-daemon: inference-agent-proto inference-fs inference-settings computer-use-action computer-use-parse computer-use-session computer-use-vendors settings-dbus settings-types engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus base-fs http-core http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"
   "inference-client: model-http model-openai-compat model-provider model-wire inference-bridge account-callers account-capability account-core account-dbus base-fs account-ids inference-core account-match inference-tailnet account-tailscale inference-turns account-wire inference-dbus"

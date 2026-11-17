@@ -221,7 +221,7 @@ if [ -f "$dist/clients.toml" ]; then
 fi
 
 # --- The caller tables ---------------------------------------------------------------------------
-# accountd's and syncd's (dist/callers.toml, installed as accountd-callers.toml); steward's install.sh installs the AI broker's own. It is the
+# accountd's and syncd's (dist/callers.toml, installed as accountd-callers.toml); the inference service's install.sh installs the AI broker's own. It is the
 # machine owner's to edit once installed: a copy that differs is kept, and the shipped one is left
 # beside it as <name>.dist for them to compare.
 for table in callers.toml; do

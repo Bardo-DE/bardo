@@ -285,7 +285,7 @@ Open items, each with its closing condition:
   inside inferd-client (`transport/dbus.rs`, `dbus_computers.rs`: `rows.into_iter().map(..).collect::<Result<..>>()`),
   so a single row with an invalid id fails the whole call and the Settings app shows no computers. The Settings app
   only sees the finished `Vec`, so it cannot skip the row; the fix belongs in inferd-client (decode
-  row by row, drop and log the bad one). Open until steward does it; no test here for it.
+  row by row, drop and log the bad one). Open until the inference service does it; no test here for it.
 
 ## Shortcuts (Keyboard page)
 
@@ -613,7 +613,7 @@ is given before it, so a jail with no manager does not stop it (read in peephole
   knowing the sheet says "Your assistant restarts to use it."
 - `bardo-settings`'s `Cargo.lock` needs the new path crates (stoker's `engine-manifest`, `engine-probe`,
   `engine-spec`, `engine-install` and `model-catalog`, which replaced porter's `porter-engines` and
-  `porter-engines-install` in the 2026-10-29 move; steward's `inferd-client` and `steward-dbus`;
+  `porter-engines-install` in the 2026-10-29 move; the inference service's `inferd-client` and `inference-dbus`;
   porter's `porter-client-dbus`) and what they bring (`sha2`, `rustix`, the TLS stack of
   `model-http`): to be locked with the sibling checkouts present.
 

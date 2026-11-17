@@ -3,7 +3,7 @@
 The sync service is the desktop's sync service: it keeps copies of calendars, contacts, tasks, files and
 photos in step with the services an account reaches, and shows an account's whole drive as a folder
 (Files on demand). It was cut from porter 223c7251bff4; porter is accounts only. The sync service depends on
-porter by git rev, as mailo and steward do, and porter never on the sync service (porter's check-boundary
+porter by git rev, as mailo and the inference service do, and porter never on the sync service (porter's check-boundary
 fails if it does). The design is Bardo's `design/31-ACCOUNTS.md` and its sync chapters; this file
 is the map of the code. `CONVENTIONS.md` holds the rules.
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Install bardo-inferd, steward's AI broker: the daemon, its systemd user unit and D-Bus activation
+# Install bardo-inferd, the inference service's AI broker: the daemon, its systemd user unit and D-Bus activation
 # file, the caller table and the AI settings page.
 #
 #   scripts/install.sh [--prefix DIR] [--destdir DIR] [--sysconfdir DIR] [--bin-dir DIR] [--no-build]
@@ -170,7 +170,7 @@ else
             fi
         done
         # Linked by this system's own linker. The source tree's .cargo/config.toml links with
-        # clang and mold, which is how steward is worked on, not something an install may ask the
+        # clang and mold, which is how the inference service is worked on, not something an install may ask the
         # person to have. Cargo reads that file (and rustup the toolchain file) from the
         # directory it runs in, so the build runs from / with the manifest named, the pinned
         # toolchain passed on, and the one setting an install wants from that file given again.

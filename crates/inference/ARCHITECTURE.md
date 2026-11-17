@@ -1,18 +1,18 @@
 # Architecture
 
-steward is the desktop's AI broker: `inferd` serves `org.bardo.Inference1` on the session bus, routes
+The inference service is the desktop's AI broker: `inferd` serves `org.bardo.Inference1` on the session bus, routes
 each session to a model on this computer, on another of the person's computers, or one they hold an
 account for, and runs the turns. This repository was cut from porter at `e9e7cdcd` (CHANGELOG.md).
-The design is Bardo's `design/31-ACCOUNTS.md` and the agent layering in `agent-layers/steward.md`;
+The design is Bardo's `design/31-ACCOUNTS.md` and the agent layering in `agent-layers/inference.md`;
 this file is the map of the code that exists today. `CONVENTIONS.md` holds the rules; `FINDINGS.md`
 the open items.
 
 This cut only moves code. Crate names are porter's; renames and carving into the layers of
-`steward.md` come in later lanes, so the table below is the status quo, not the target.
+`inference.md` come in later lanes, so the table below is the status quo, not the target.
 
 ## 1. Crates and allowed edges
 
-The edge rule: **steward depends on porter by git rev; porter never depends on steward.** Every
+The edge rule: **the inference service depends on porter by git rev; porter never depends on the inference service.** Every
 `porter-*` crate that is not in the table is porter's, taken from `https://github.com/Bardo-DE/porter`
 at the one `rev` in the root `Cargo.toml` (`[workspace.dependencies]`). Stoker's crates and Bardo's
 `ui-settings` are git dependencies at their pinned revs in the same block.
@@ -71,7 +71,7 @@ edited; it is recorded here so the code and the spec agree):
   is mapped without it. `ProviderError::Server(status)` maps to `ModelError::Unreachable`
   (a gateway 5xx is a transient reach failure to an app).
 - **Trace context.** `Inference1.Open`, `Prepare` and `Availability` take an `options` vardict
-  whose reserved key is `traceparent` (`steward_dbus::inference::OPTION_TRACEPARENT`, a
+  whose reserved key is `traceparent` (`inference_dbus::inference::OPTION_TRACEPARENT`, a
   `porter_infer::Traceparent`); `Accounts::session_with` and `Transport::open_with` carry it. No
   content ever goes on a span (`prov::trace`).
 
@@ -181,7 +181,7 @@ is not a place to download and install from: it is never given more.
   hash, size and seal come from the row. The privileged helper accepts those two words and nothing
   else, refuses any other argument before touching anything, and runs only through `pkexec` under the
   polkit action `org.bardo.engines.install`. The helper (`bardo-engine-helper`, from stoker's `engine-install`)
-  and that action are stoker's: stoker's `scripts/install.sh` installs both; steward ships neither.
+  and that action are stoker's: stoker's `scripts/install.sh` installs both; the inference service ships neither.
 - For everyone: the distro's package when the manifest has one for this release and its manager is
   here (and the pinned download if the package fails), else the pinned build, unpacked as root into
   `/usr/local/lib/porter/engines/<engine>/<release>-<backend>/`. A file of root's in a directory

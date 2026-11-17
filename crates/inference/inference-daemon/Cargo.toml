@@ -1,6 +1,6 @@
 [package]
 name = "inference-daemon"
-description = "steward's AI broker daemon: serves org.bardo.Inference1 over inference-core, with the router, the engine host, the model turns and the audit trail behind the session server's four seams."
+description = "inference's AI broker daemon: serves org.bardo.Inference1 over inference-core, with the router, the engine host, the model turns and the audit trail behind the session server's four seams."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
