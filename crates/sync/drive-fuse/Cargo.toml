@@ -1,6 +1,6 @@
 [package]
 name = "drive-fuse"
-description = "A drive of drive-core at a real path: fuser's calls (lookup, getattr, readdir, open, read, release, statfs, and create, mkdir, write, setattr, rename, unlink, rmdir, fsync) mapped onto the core, read-write over a drive that takes changes, mounted through the system's fusermount3 run as a separate process (fuser with no default features: no libfuse is linked). Stale mounts are cleaned before mounting; a computer with no /dev/fuse or fusermount3 is told apart."
+description = "A drive of drive-fs at a real path: fuser's calls (lookup, getattr, readdir, open, read, release, statfs, and create, mkdir, write, setattr, rename, unlink, rmdir, fsync) mapped onto the core, read-write over a drive that takes changes, mounted through the system's fusermount3 run as a separate process (fuser with no default features: no libfuse is linked). Stale mounts are cleaned before mounting; a computer with no /dev/fuse or fusermount3 is told apart."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,7 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-drive-core = {path = "../drive-core"}
+drive-fs = {path = "../drive-fs"}
 # The helper syncd asks to mount when its sandbox may not (its client and wire format).
 drive-mount-daemon = {path = "../drive-mount-daemon"}
 # No default features: the pure-Rust mount, through `fusermount3` as a separate process, and no
@@ -21,7 +21,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
-drive-core = {path = "../drive-core", features = ["testing"]}
+drive-fs = {path = "../drive-fs", features = ["testing"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]

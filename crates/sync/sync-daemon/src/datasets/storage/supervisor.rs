@@ -50,7 +50,7 @@ use crate::service::{Access, DatasetName};
 use account_client::GrantsLink;
 use account_core::{AppName, Candidate, EndpointUrl};
 use base_url::WebUrl;
-use drive_core::{CacheLimit, Drive, DriveConfig, FreeSpace, ReplicaSource};
+use drive_fs::{CacheLimit, Drive, DriveConfig, FreeSpace, ReplicaSource};
 use drive_fuse::{DriveFs, Mounter, Now};
 use sha2::{Digest, Sha256};
 use std::collections::{BTreeMap, BTreeSet};
@@ -489,9 +489,9 @@ where
                 free_space: self.config.free_space,
                 ..DriveConfig::new(wiring.paths.drive_cache_dir(account))
             },
-            Arc::clone(&journal) as Arc<dyn drive_core::Listing>,
+            Arc::clone(&journal) as Arc<dyn drive_fs::Listing>,
             Arc::new(ReplicaSource(Arc::clone(&fetch))),
-            Arc::new(ReplicaSource(Arc::clone(&fetch))) as Arc<dyn drive_core::Sink>,
+            Arc::new(ReplicaSource(Arc::clone(&fetch))) as Arc<dyn drive_fs::Sink>,
         )
         .await
         .map_err(|e| e.to_string())?;
@@ -875,8 +875,8 @@ fn drive_folders(candidates: &[Candidate]) -> BTreeMap<account_core::AccountId, 
 }
 
 /// The folder name of each `(account, provider, label)`: the provider's name, with the label
-/// after it when a provider has two, a `/` shown as drive-core shows it, and two that would
-/// still be one name told apart as drive-core tells a folder's items apart ("`OneDrive` (Work)",
+/// after it when a provider has two, a `/` shown as drive-fs shows it, and two that would
+/// still be one name told apart as drive-fs tells a folder's items apart ("`OneDrive` (Work)",
 /// "`OneDrive` (Work) 2"), the account first by id keeping it, so a folder is never shared and
 /// keeps its name across restarts.
 fn folder_names<'a>(
@@ -893,13 +893,13 @@ fn folder_names<'a>(
         .map(
             |(_, provider, label)| match count.get(provider).copied().unwrap_or(0) {
                 0 | 1 => (*provider).to_owned(),
-                _ => drive_core::naming::shown_base(&format!("{provider} ({label})")),
+                _ => drive_fs::naming::shown_base(&format!("{provider} ({label})")),
             },
         )
         .collect();
     drives
         .into_iter()
-        .zip(drive_core::naming::assign(&bases))
+        .zip(drive_fs::naming::assign(&bases))
         .map(|((account, _, _), folder)| (account, folder))
         .collect()
 }

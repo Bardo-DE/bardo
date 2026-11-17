@@ -1,6 +1,6 @@
 [package]
-name = "drive-core"
-description = "Files on demand over a drive's listing, without a file system: the names a drive's items are shown by, the link files of online documents, the content cache (chunked fetches a read waits on, Keep Downloaded, Remove Download, eviction past a limit) and each item's state. The FUSE adapter (drive-fuse) and syncd's Storage1 are built over it."
+name = "drive-fs"
+description = "Files on demand over a drive's listing, kept on the local disk under a tokio runtime (the file-system mount is drive-fuse): the names a drive's items are shown by, the link files of online documents, the content cache (chunked fetches a read waits on, Keep Downloaded, Remove Download, eviction past a limit) and each item's state. The FUSE adapter (drive-fuse) and syncd's Storage1 are built over it."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -28,7 +28,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
-drive-core = { path = ".", features = ["testing"] }
+drive-fs = { path = ".", features = ["testing"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [features]

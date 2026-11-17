@@ -5828,7 +5828,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8b14ccef22fc6f5a8f4d7d768562a182c04ce9a3b3157b91390b52ddfdf1a76"
 
 [[package]]
-name = "drive-core"
+name = "drive-fs"
 version = "0.1.0"
 dependencies = [
  "account-capability",
@@ -5837,7 +5837,7 @@ dependencies = [
  "base-testkit",
  "base-time",
  "base-url",
- "drive-core",
+ "drive-fs",
  "hex",
  "md-5 0.10.6",
  "quickxorhash",
@@ -5856,7 +5856,7 @@ name = "drive-fuse"
 version = "0.1.0"
 dependencies = [
  "base-testkit",
- "drive-core",
+ "drive-fs",
  "drive-mount-daemon",
  "fuser",
  "rustix 1.1.6",
@@ -14826,7 +14826,7 @@ dependencies = [
  "chrono",
  "clap",
  "dbus-kit",
- "drive-core",
+ "drive-fs",
  "drive-fuse",
  "hex",
  "http-core",

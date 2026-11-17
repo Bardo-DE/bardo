@@ -335,8 +335,8 @@ impl DriveJournal {
     }
 }
 
-impl drive_core::Listing for DriveJournal {
-    fn entry(&self, id: &RemoteId) -> Result<Option<drive_core::Entry>, drive_core::ListingError> {
+impl drive_fs::Listing for DriveJournal {
+    fn entry(&self, id: &RemoteId) -> Result<Option<drive_fs::Entry>, drive_fs::ListingError> {
         let connection = self.connection();
         listed_where(&connection, "id = ?1", params![id.0]).map(|mut rows| rows.pop())
     }
@@ -344,7 +344,7 @@ impl drive_core::Listing for DriveJournal {
     fn children(
         &self,
         folder: Option<&RemoteId>,
-    ) -> Result<Vec<drive_core::Entry>, drive_core::ListingError> {
+    ) -> Result<Vec<drive_fs::Entry>, drive_fs::ListingError> {
         let connection = self.connection();
         match folder {
             None => listed_where(&connection, TOP, params![]),
@@ -355,7 +355,7 @@ impl drive_core::Listing for DriveJournal {
     fn descendants(
         &self,
         folder: &RemoteId,
-    ) -> Result<Vec<drive_core::Entry>, drive_core::ListingError> {
+    ) -> Result<Vec<drive_fs::Entry>, drive_fs::ListingError> {
         let connection = self.connection();
         listed_where(
             &connection,
@@ -377,8 +377,8 @@ fn listed_where(
     connection: &Connection,
     filter: &str,
     values: impl rusqlite::Params,
-) -> Result<Vec<drive_core::Entry>, drive_core::ListingError> {
-    let fault = |e: JournalError| drive_core::ListingError(e.to_string());
+) -> Result<Vec<drive_fs::Entry>, drive_fs::ListingError> {
+    let fault = |e: JournalError| drive_fs::ListingError(e.to_string());
     let sql = format!(
         "SELECT id, CASE WHEN parent IN (SELECT id FROM entries) THEN parent END, name, kind, \
          size, hash, version, modified FROM entries WHERE {filter}"
@@ -393,7 +393,7 @@ fn listed_where(
     Ok(run()
         .map_err(fault)?
         .into_iter()
-        .map(|row| drive_core::Entry {
+        .map(|row| drive_fs::Entry {
             id: row.id,
             parent: row.parent,
             name: row.name,

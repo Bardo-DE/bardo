@@ -7,13 +7,13 @@
 //!   sender syncd does not know, is `AccessDenied`, for every method. `SetPaused` is the shell's
 //!   and Settings' only: an app is `AccessDenied` there too.
 //! - A path is absolute and inside one drive's `path`, by the names the drive's items are shown
-//!   by (`drive_core::naming`). A path on no drive, or not there, is left out of `Items` and
+//!   by (`drive_fs::naming`). A path on no drive, or not there, is left out of `Items` and
 //!   refused by the actions with `NOT_ON_A_DRIVE`; the drive's own folder is no item, and
-//!   neither is what stays on this computer (`drive_core::local_only`: the desktop's trash).
+//!   neither is what stays on this computer (`drive_fs::local_only`: the desktop's trash).
 //! - An item changed here is `waiting`, then `uploading` with its fraction while it is sent; a
 //!   file kept in two versions is `conflict`, and `other` is the other version's path; one the
 //!   drive refused is `error` with the words (`crate::words`).
-//! - `SaveCopy` exports each online document (`drive_core::Drive::save_copy`) and answers each
+//! - `SaveCopy` exports each online document (`drive_fs::Drive::save_copy`) and answers each
 //!   copy's absolute path; the copy waits to upload beside its document.
 //! - `Watch` joins the caller's connection to those told `DrivesChanged` and `ItemsChanged`
 //!   until it leaves the bus. Each drive's item changes are gathered and sent together at most
@@ -26,7 +26,7 @@ use crate::words;
 use account_callers::{Caller, CallerRole, Callers};
 use account_dbus::Details;
 use dbus_kit::Call;
-use drive_core::{Node, NodeId, NodeKind, Reason, Status};
+use drive_fs::{Node, NodeId, NodeKind, Reason, Status};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::pin::Pin;
@@ -84,13 +84,13 @@ fn put(details: &mut Details, key: &str, value: Value<'_>) {
 
 fn state_of(status: &Status) -> ItemState {
     match status.state {
-        drive_core::ItemState::Downloading => ItemState::Downloading,
-        drive_core::ItemState::Downloaded => ItemState::Downloaded,
-        drive_core::ItemState::Waiting => ItemState::Waiting,
-        drive_core::ItemState::Uploading => ItemState::Uploading,
-        drive_core::ItemState::Conflict => ItemState::Conflict,
-        drive_core::ItemState::Error => ItemState::Error,
-        drive_core::ItemState::Cloud => ItemState::Cloud,
+        drive_fs::ItemState::Downloading => ItemState::Downloading,
+        drive_fs::ItemState::Downloaded => ItemState::Downloaded,
+        drive_fs::ItemState::Waiting => ItemState::Waiting,
+        drive_fs::ItemState::Uploading => ItemState::Uploading,
+        drive_fs::ItemState::Conflict => ItemState::Conflict,
+        drive_fs::ItemState::Error => ItemState::Error,
+        drive_fs::ItemState::Cloud => ItemState::Cloud,
     }
 }
 
@@ -560,8 +560,8 @@ pub fn absolute(drive: &LiveDrive, id: &NodeId) -> Option<PathBuf> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use drive_core::testing::{MemoryListing, MemorySource};
-    use drive_core::{Drive, DriveConfig, RemoteId};
+    use drive_fs::testing::{MemoryListing, MemorySource};
+    use drive_fs::{Drive, DriveConfig, RemoteId};
     use tokio::sync::broadcast::error::RecvError;
 
     #[tokio::test]

@@ -14,7 +14,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 # RULES: what a crate reaches through ANY path (transitive, default features). The pure crates
-# never reach a bus, a runtime, an HTTP client or a keyring. drive-core and drive-fuse reach
+# never reach a bus, a runtime, an HTTP client or a keyring. drive-fs and drive-fuse reach
 # tokio (a drive fetches in the background) but never a bus or a client. drive-mount-daemon, the mount
 # helper outside syncd's sandbox, reaches no effect crate and none of porter's or ferry's own:
 # std, rustix and listenfd only (no network, keyring or account data). sync-bus is the interface
@@ -29,9 +29,9 @@ RULES=(
   "replica-webdav: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
   "replica-graph: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
   "replica-gdrive: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
-  "drive-core: $NO_BUS $BARDO_ACCOUNT_HIDDEN"
+  "drive-fs: $NO_BUS $BARDO_ACCOUNT_HIDDEN"
   "drive-fuse: $NO_BUS $BARDO_ACCOUNT_HIDDEN"
-  "drive-mount-daemon: $EFFECTS fuser account-ids account-core base-fs http-core account-secrets account-service account-client sync-core drive-core drive-fuse"
+  "drive-mount-daemon: $EFFECTS fuser account-ids account-core base-fs http-core account-secrets account-service account-client sync-core drive-fs drive-fuse"
   "sync-bus: reqwest hyper ureq oo7 keyring secret-service ui-settings"
 )
 fail=0
@@ -127,14 +127,14 @@ EDGES=(
   "replica-webdav: account-dav-proto account-capability account-ids http-core sync-core"
   "replica-graph: account-capability account-ids http-core sync-core"
   "replica-gdrive: account-capability account-ids http-core sync-core"
-  "drive-core: account-capability account-ids base-fs sync-core quickxorhash"
-  "drive-fuse: drive-core drive-mount-daemon"
+  "drive-fs: account-capability account-ids base-fs sync-core quickxorhash"
+  "drive-fuse: drive-fs drive-mount-daemon"
   "drive-mount-daemon:"
   "sync-bus: account-dbus dbus-kit account-ids"
   "sync-fake-graph: account-core account-fake account-fake-servers account-ids account-provider quickxorhash"
   "sync-rig: sync-bus sync-fake-graph account-dbus account-fake-servers account-rig"
   "sync-fakes: sync-bus account-dbus"
-  "sync-daemon: settings-dbus settings-types account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus base-fs http-core http-relay sync-bus drive-core drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
+  "sync-daemon: settings-dbus settings-types account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus base-fs http-core http-relay sync-bus drive-fs drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"

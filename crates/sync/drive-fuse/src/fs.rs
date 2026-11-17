@@ -1,6 +1,6 @@
 //! fuser's calls over a drive.
 
-use drive_core::{
+use drive_fs::{
     Drive, DriveError, NodeId, NodeKind, ROOT_INO, ReadError, WriteError, WriteHandle,
 };
 use fuser::{
@@ -855,8 +855,8 @@ impl Filesystem for Mounted {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use drive_core::testing::{MemoryListing, MemorySink, MemorySource, Took};
-    use drive_core::{DriveConfig, Reason};
+    use drive_fs::testing::{MemoryListing, MemorySink, MemorySource, Took};
+    use drive_fs::{DriveConfig, Reason};
     use std::sync::Arc;
 
     async fn fs(dir: &base_testkit::Scratch) -> (Arc<MemoryListing>, Arc<MemorySource>, DriveFs) {
@@ -944,7 +944,7 @@ mod tests {
         assert_eq!(fs.read(fh, 0, 10).await, Err(Errno::ENETDOWN));
         let status = fs
             .drive
-            .status(&NodeId::Remote(drive_core::RemoteId("a".into())));
+            .status(&NodeId::Remote(drive_fs::RemoteId("a".into())));
         assert_eq!(status.and_then(|s| s.reason), Some(Reason::Offline));
         assert_eq!(fs.read(999, 0, 1).await, Err(Errno::EBADF));
     }

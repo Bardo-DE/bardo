@@ -1,4 +1,4 @@
-//! A drive-core [`Drive`](drive_core::Drive) at a real path, through FUSE.
+//! A drive-fs [`Drive`](drive_fs::Drive) at a real path, through FUSE.
 //!
 //! - [`DriveFs`]: fuser's calls mapped onto the core. Every call has a plain method of its own
 //!   ([`DriveFs::lookup`], [`DriveFs::getattr`], [`DriveFs::readdir`], [`DriveFs::open`],

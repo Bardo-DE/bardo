@@ -12,7 +12,7 @@ publish.workspace = true
 base-xdg = { path = "../../base/base-xdg" }
 dbus-kit = { path = "../../bus/dbus-kit" }
 sync-bus = {path = "../sync-bus"}
-drive-core = {path = "../drive-core"}
+drive-fs = {path = "../drive-fs"}
 drive-fuse = {path = "../drive-fuse"}
 sync-core = {path = "../sync-core"}
 replica-gdrive = {path = "../replica-gdrive"}
@@ -74,7 +74,7 @@ account-provider = {path = "../../accounts/account-provider"}
 account-secrets = {features = ["testing"], path = "../../accounts/account-secrets"}
 account-service = {path = "../../accounts/account-service"}
 account-service-core = {path = "../../accounts/account-service-core"}
-drive-core = {path = "../drive-core", features = ["testing"]}
+drive-fs = {path = "../drive-fs", features = ["testing"]}
 sync-core = {path = "../sync-core", features = ["testing"]}
 # The words the fake of Storage1 gives are held to the live ones (tests/it/fake_words.rs).
 sync-fakes = {path = "../sync-fakes"}

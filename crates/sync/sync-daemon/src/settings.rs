@@ -28,7 +28,7 @@ use account_client::{AccountsLink, GrantsLink};
 use account_core::AccountId;
 use account_core::{Account, Family};
 use account_wire::ParentWindow;
-use drive_core::CacheLimit;
+use drive_fs::CacheLimit;
 use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
 use settings_types::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
@@ -317,7 +317,7 @@ fn account_keys(account: &Account, provider_label: Option<&str>, files: FilesRow
         );
         row.note = files
             .short_of_room
-            .then(|| Note(crate::words::reason(drive_core::Reason::NoRoomForAll).to_owned()));
+            .then(|| Note(crate::words::reason(drive_fs::Reason::NoRoomForAll).to_owned()));
         keys.push(row);
     }
     keys.push(spec(

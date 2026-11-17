@@ -30,7 +30,7 @@ use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use common::hosted::{Hosted, Link, Service, host_with};
 use common::{Known, client};
-use drive_core::{CacheLimit, FreeSpace, ItemState, Reason};
+use drive_fs::{CacheLimit, FreeSpace, ItemState, Reason};
 use drive_fuse::{Mounter, mountd};
 use settings_dbus::{AnyOwner, LiveClient};
 use settings_types::schema::KeyPath;

@@ -21,7 +21,7 @@ settings-app-ui = {path = "../settings-app-ui"}
 ui-blitz = {path = "../../ui/ui-blitz"}
 base-xdg = { path = "../../base/base-xdg" }
 settings-store-fs = { path = "../../settings/settings-store-fs" }
-ui-settings = { path = "../../ui/ui-settings" }
+ui-settings = { path = "../../ui/ui-settings", features = ["tokio"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [features]

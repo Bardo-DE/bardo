@@ -1,7 +1,7 @@
 //! The fake of `org.bardo.Storage1` (sync-fakes, which the rig serves to Files) says the words
 //! the live service says.
 
-use drive_core::Reason;
+use drive_fs::Reason;
 use sync_daemon::words;
 use sync_fakes::storage::words as fake;
 

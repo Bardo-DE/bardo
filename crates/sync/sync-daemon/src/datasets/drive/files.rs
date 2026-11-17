@@ -1,4 +1,4 @@
-//! The drives shown in Files: each one's files on demand (`drive_core::Drive` over its
+//! The drives shown in Files: each one's files on demand (`drive_fs::Drive` over its
 //! journal), its folder in `~/Cloud`, and where it stands, shared between the storage supervisor
 //! that runs them and `org.bardo.Storage1` that serves them.
 //!
@@ -13,7 +13,7 @@
 //! opened for this; a cache that cannot be read stops the removal.
 
 use crate::paths::{AccountDir, Paths};
-use drive_core::{Changed, Drive, DriveConfig, NodeId};
+use drive_fs::{Changed, Drive, DriveConfig, NodeId};
 use drive_fuse::Mounted;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -24,7 +24,7 @@ use tokio::task::JoinHandle;
 
 /// The cache limit every drive's eviction uses (Settings' `storage.cache_limit`), shared by the
 /// settings module that sets it and the drives that follow it.
-pub type CacheKnob = Arc<watch::Sender<drive_core::CacheLimit>>;
+pub type CacheKnob = Arc<watch::Sender<drive_fs::CacheLimit>>;
 
 /// What a drive needing sign-in says.
 pub const SIGN_IN_WORDS: &str = "Sign in again to see this drive's files.";
@@ -77,14 +77,14 @@ fn not_uploaded(folder: &Path) -> PathBuf {
 /// The bytes of a drive not shown: none can be had (only what is here is read).
 struct Away;
 
-impl drive_core::Source for Away {
+impl drive_fs::Source for Away {
     fn fetch<'a>(
         &'a self,
-        _id: &'a drive_core::RemoteId,
+        _id: &'a drive_fs::RemoteId,
         _start: u64,
         _len: u64,
-    ) -> drive_core::Fetching<'a> {
-        Box::pin(std::future::ready(Err(drive_core::SourceError::Offline)))
+    ) -> drive_fs::Fetching<'a> {
+        Box::pin(std::future::ready(Err(drive_fs::SourceError::Offline)))
     }
 }
 
@@ -222,7 +222,7 @@ impl LiveDrive {
     }
 
     /// Notes that its folder could not be shown on this computer, and the words Files shows
-    /// (drive-core's `NO_FILES_HERE`, or bardo-drive-mount's when it refused).
+    /// (drive-fs's `NO_FILES_HERE`, or bardo-drive-mount's when it refused).
     pub fn set_unshown(&self, words: &str) {
         held(&self.standing).unshown = Some(words.to_owned());
     }
@@ -501,7 +501,7 @@ impl DriveSet {
     }
 
     /// Hears the ids of the drives whose room to keep everything downloaded changes from now on:
-    /// short of it, or no longer ([`drive_core::Drive::short_of_room`]).
+    /// short of it, or no longer ([`drive_fs::Drive::short_of_room`]).
     #[must_use]
     pub fn watch_room(&self) -> broadcast::Receiver<String> {
         self.room.subscribe()
@@ -522,8 +522,8 @@ impl DriveSet {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use drive_core::RemoteId;
-    use drive_core::testing::{MemoryListing, MemorySource};
+    use drive_fs::RemoteId;
+    use drive_fs::testing::{MemoryListing, MemorySource};
 
     #[tokio::test]
     async fn changes_missed_tell_of_every_tracked_item_again() {
@@ -611,7 +611,7 @@ mod tests {
         let settings = dir.join("syncd.toml");
         let listing = Arc::new(MemoryListing::default());
         let source = Arc::new(MemorySource::default());
-        let sink = Arc::new(drive_core::testing::MemorySink::new(
+        let sink = Arc::new(drive_fs::testing::MemorySink::new(
             Arc::clone(&listing),
             Arc::clone(&source),
             4,
@@ -621,7 +621,7 @@ mod tests {
             DriveConfig::new(dir.join("cache")),
             Arc::<MemoryListing>::clone(&listing),
             Arc::<MemorySource>::clone(&source),
-            Arc::<drive_core::testing::MemorySink>::clone(&sink),
+            Arc::<drive_fs::testing::MemorySink>::clone(&sink),
         )
         .await
         .expect("drive");
@@ -714,7 +714,7 @@ mod tests {
         let dir = base_testkit::Scratch::new("drive-files-stuck");
         let listing = Arc::new(MemoryListing::default());
         let source = Arc::new(MemorySource::default());
-        let sink = Arc::new(drive_core::testing::MemorySink::new(
+        let sink = Arc::new(drive_fs::testing::MemorySink::new(
             Arc::clone(&listing),
             Arc::clone(&source),
             4,
@@ -775,7 +775,7 @@ mod tests {
                 .expect("journal"),
         );
         let source = Arc::new(MemorySource::default());
-        let sink = Arc::new(drive_core::testing::MemorySink::new(
+        let sink = Arc::new(drive_fs::testing::MemorySink::new(
             Arc::new(MemoryListing::default()),
             Arc::clone(&source),
             4,

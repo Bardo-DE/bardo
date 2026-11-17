@@ -19,7 +19,7 @@ half (sign-in, consent, the keyring), and ferry depends on it by git rev.
 | --- | --- |
 | `sync-core` | the sync contract: `Replica`, anchors, base versions, conflicts, tombstones, and an in-memory replica |
 | `replica-webdav`, `replica-graph`, `replica-gdrive` | the replicas: WebDAV, OneDrive's Graph and Google Drive |
-| `drive-core`, `drive-fuse`, `drive-mount-daemon` | files on demand over a drive's listing, the FUSE adapter and the mount helper |
+| `drive-fs`, `drive-fuse`, `drive-mount-daemon` | files on demand over a drive's listing, the FUSE adapter and the mount helper |
 | `sync-bus` | the `Sync1`, `Storage1` and Photos Picker interfaces |
 | `syncd` | the daemon: the journal, the engine, the scheduler, the datasets (calendars, contacts, tasks, the storage folder, whole drives, photos) and the bus objects |
 | `quickxorhash`, `windows-zones` | OneDrive's hash and the Windows-to-IANA time zone table |

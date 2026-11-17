@@ -155,7 +155,7 @@ members = [
     "crates/speech/speech-wire",
     "crates/speech/speech-daemon",
     "crates/sync/sync-bus",
-    "crates/sync/drive-core",
+    "crates/sync/drive-fs",
     "crates/sync/drive-fuse",
     "crates/sync/sync-fake-graph",
     "crates/sync/drive-mount-daemon",

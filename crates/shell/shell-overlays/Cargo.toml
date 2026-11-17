@@ -32,7 +32,7 @@ layer-shell-hooks = {path = "../../layer-shell/layer-shell-hooks"}
 [dev-dependencies]
 # The wallpaper demo starts the real service; `tests/it/switcher_wlr.rs` feeds a fake compositor.
 shell-services = {path = "../shell-services"}
-ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
+ui-settings = { path = "../../ui/ui-settings", default-features = false, features = ["dioxus"] }
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
 shell-testkit = {path = "../shell-testkit"}
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}

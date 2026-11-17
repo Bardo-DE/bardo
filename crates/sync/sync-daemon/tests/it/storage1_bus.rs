@@ -9,8 +9,8 @@ use account_callers::CallerRole;
 use account_core::AppName;
 use common::bus::PrivateBus;
 use common::{ACCESS_DENIED, Known, client, error_name, eventually};
-use drive_core::testing::{MemoryListing, MemorySink, MemorySource, Took};
-use drive_core::{Drive, DriveConfig, NodeId, Reason};
+use drive_fs::testing::{MemoryListing, MemorySink, MemorySource, Took};
+use drive_fs::{Drive, DriveConfig, NodeId, Reason};
 use std::collections::BTreeSet;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -253,7 +253,7 @@ async fn download_keep_and_remove_act_and_refuse_with_the_words_files_shows() {
             .ok()
             .flatten()
             .and_then(|n| rig.drive.drive.status(&n.id))
-            .is_some_and(|s| s.state == drive_core::ItemState::Downloaded)
+            .is_some_and(|s| s.state == drive_fs::ItemState::Downloaded)
     })
     .await;
     assert_eq!(
@@ -497,7 +497,7 @@ async fn a_change_made_here_waits_while_paused_then_uploads_and_is_downloaded_on
     eventually("the note to wait to upload", || {
         files
             .status(&id)
-            .is_some_and(|s| s.state == drive_core::ItemState::Waiting)
+            .is_some_and(|s| s.state == drive_fs::ItemState::Waiting)
     })
     .await;
     assert_eq!(
@@ -520,7 +520,7 @@ async fn a_change_made_here_waits_while_paused_then_uploads_and_is_downloaded_on
     // The state turns to uploading before the first bytes move; the fraction is checked once they do.
     eventually("uploading", || {
         files.status(&id).is_some_and(|s| {
-            s.state == drive_core::ItemState::Uploading && s.fraction.is_some_and(|f| f > 0.0)
+            s.state == drive_fs::ItemState::Uploading && s.fraction.is_some_and(|f| f > 0.0)
         })
     })
     .await;
@@ -546,7 +546,7 @@ async fn a_change_made_here_waits_while_paused_then_uploads_and_is_downloaded_on
         matches!(files.canonical(&id), NodeId::Remote(_))
             && files
                 .status(&id)
-                .is_some_and(|s| s.state == drive_core::ItemState::Downloaded)
+                .is_some_and(|s| s.state == drive_fs::ItemState::Downloaded)
     })
     .await;
     assert_eq!(

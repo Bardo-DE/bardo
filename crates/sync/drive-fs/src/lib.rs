@@ -23,7 +23,7 @@
 //!   trash stay here ([`local_only`]).
 //!
 //! ```
-//! use drive_core::naming;
+//! use drive_fs::naming;
 //!
 //! assert_eq!(naming::shown_base("A/B report.pdf"), "A／B report.pdf");
 //! assert_eq!(naming::numbered("Plan.docx", 2), "Plan 2.docx");

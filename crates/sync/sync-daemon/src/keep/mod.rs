@@ -15,7 +15,7 @@
 //!   grant back and keeps the listing, and the access stays given, so on again asks nothing.
 //! - [`Keep::keep_everything`]: "Keep Everything Downloaded" for a drive shown in Files, kept in
 //!   syncd's settings so it holds across restarts (the drive does the keeping:
-//!   `drive_core::Drive::set_keep_all`).
+//!   `drive_fs::Drive::set_keep_all`).
 //! - [`Keep::add_and_keep`]: "Add Account": accountd's add-account sheet, then the first thing
 //!   the account offers for syncd to keep switched on.
 //! - [`Keep::remove`]: forgets an account here: stops its datasets, deletes its journals and
