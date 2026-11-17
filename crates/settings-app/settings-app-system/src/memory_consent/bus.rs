@@ -2,12 +2,13 @@
 //! nothing waits on anyone, and opening Settings must not start it.
 
 use super::proxy::control;
-use super::{MemoryFailure, MemoryLink};
-use crate::bus::{BusSource, Pinned, pinned};
-use crate::deadline::{Deadline, answered, peer};
+use crate::bus::{Pinned, pinned};
 use account_dbus::{BusFailure, classify};
 use memory_core::WaitingSetting;
 use memory_dbus::MEMORY_BUS;
+use settings_app_link::bus::BusSource;
+use settings_app_link::memory_consent::{MemoryFailure, MemoryLink};
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Confinement, SettingPair, Trouble, Work};
 
 /// The bus name memory answers a refusal with when the caller may not do this.

@@ -1,8 +1,8 @@
 //! The pictures behind the Wallpaper page: the ones on offer, adding one, and the small picture
 //! of each for a tile.
 
+use settings_app_link::wallpaper::Pictures;
 use settings_app_model::{AddOutcome, Picture};
-use settings_app_system::wallpaper::Pictures;
 use std::path::PathBuf;
 use std::sync::Arc;
 

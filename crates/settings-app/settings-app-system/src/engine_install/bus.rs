@@ -1,10 +1,8 @@
 //! The real desk: the engines stoker's `engine-install` finds and installs, and what the assistant
 //! says of its own.
 
-use super::Desk;
-use crate::bus::{BusSource, inferd};
-use crate::chooser::{OnPortal, Want, choose};
-use crate::deadline::{Deadline, answered, peer};
+use crate::bus::inferd;
+use crate::chooser::OnPortal;
 use crate::engines::restart;
 use engine_install::{
     EngineInstalls, Fetcher, HelperProgram, InstallChoice, Parts, Standing, StartError,
@@ -13,6 +11,10 @@ use engine_manifest::{BackendChoice, Failure, Manifest, engine_from_slug};
 use engine_probe::{Roots, Scope, read_host};
 use inference_dbus::inference::{EngineState, LocalEngine};
 use model_catalog::EngineKind;
+use settings_app_link::bus::BusSource;
+use settings_app_link::chooser::{Want, choose};
+use settings_app_link::engine_install::Desk;
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{EngineFailure, EngineRow, EngineStanding, EngineWay, InstallScope, Work};
 use std::fmt;
 use std::path::{Path, PathBuf};

@@ -1,8 +1,8 @@
 //! The page when inferd is missing, refusing or starting late.
 
 use super::*;
+use settings_app_link::bus::Daemon;
 use settings_app_model::Absence;
-use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 
 #[test]

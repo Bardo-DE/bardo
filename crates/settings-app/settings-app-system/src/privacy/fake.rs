@@ -1,8 +1,8 @@
 //! The compositor's privacy module from memory: what the page allowed, denied or asked again.
 
-use super::PrivacyLink;
 use crate::fake_kit::Kit;
-use crate::modules::Module;
+use settings_app_link::modules::Module;
+use settings_app_link::privacy::PrivacyLink;
 use settings_app_model::Work;
 use settings_types::schema::KeyPath;
 use std::sync::Arc;

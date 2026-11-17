@@ -1,8 +1,8 @@
 //! The memory service's controls from memory: what waits for the person, and what was confirmed.
 
-use super::{MemoryFailure, MemoryLink};
 use crate::lock::locked;
 use memory_core::WaitingSetting;
+use settings_app_link::memory_consent::{MemoryFailure, MemoryLink};
 use settings_app_model::{Confinement, SettingPair, Work};
 use std::sync::{Arc, Mutex};
 

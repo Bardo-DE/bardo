@@ -2,12 +2,13 @@
 //! adds everything, an identity or an AI key. The Settings role may call `AddAccount`. The sheet
 //! is asked of the owner of the service's name that was confirmed, never of the name.
 
-use crate::bus::{BusSource, pinned_starting};
-use crate::deadline::{Deadline, answered, peer};
+use crate::bus::pinned_starting;
 use account_client::AccountsError;
 use account_core::ProviderHint;
 use account_wire::names::ACCOUNTS_BUS;
 use account_wire::{ParentWindow, Refusal};
+use settings_app_link::bus::BusSource;
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{AccountKey, AddEnd};
 
 /// Asks for the add sheet and waits for it to end.

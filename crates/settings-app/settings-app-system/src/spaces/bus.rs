@@ -1,15 +1,16 @@
 //! The Spaces list and its removal, over accountd's registry and memory's controls. Every call
 //! goes to the owner of the service's name that was confirmed, never to the name.
 
-use super::SpacesLink;
-use crate::bus::{BusSource, absence_of, because, pinned_starting, said};
-use crate::deadline::{Deadline, answered, peer};
+use crate::bus::{absence_of, because, pinned_starting, said};
 use crate::memory_consent::control;
 use account_core::DesktopSpace;
 use account_dbus::{BusFailure, classify};
 use account_wire::names::ACCOUNTS_BUS;
 use memory_core::Removal;
 use memory_dbus::MEMORY_BUS;
+use settings_app_link::bus::BusSource;
+use settings_app_link::spaces::SpacesLink;
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Absence, SpaceKey, SpaceRow, Work, needs_memory};
 use ui_peer::within;
 

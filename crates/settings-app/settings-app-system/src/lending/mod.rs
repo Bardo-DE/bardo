@@ -3,4 +3,4 @@
 
 mod lender;
 
-pub use lender::Lender;
+pub use lender::{from_env, over, session, under_prefix};

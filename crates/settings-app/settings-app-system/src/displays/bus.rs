@@ -5,12 +5,9 @@
 //! The wire client is blocking, so each call runs on a thread of its own with a connection of its
 //! own, and only the real session is ever reached: a test's private bus is no compositor.
 
-use super::DisplaysLink;
 use super::brightness;
 use super::map::{mode_of, monitors_of, transform_of};
-use crate::bus::{BusSource, because, said};
-use crate::deadline::{Deadline, peer};
-use crate::ticks::{Ticker, Ticks};
+use crate::bus::{because, said};
 use desktop_client::client::{DesktopClient, WaylandRoute};
 use desktop_client::output::{
     ConfigOutcome, HeadChangeRequest, HeadConfig, HeadSettings, ModeChoice, OutputConfig,
@@ -19,6 +16,10 @@ use desktop_client::output::{
 use desktop_client::{
     Desktop, DesktopCommand, DesktopConfig, DesktopEvent, OutputName, Point, Protocol, Ticket,
 };
+use settings_app_link::bus::BusSource;
+use settings_app_link::displays::DisplaysLink;
+use settings_app_link::{Deadline, peer};
+use settings_app_link::{Ticker, Ticks};
 use settings_app_model::{
     Absence, Brightness, BrightnessList, DisplayChange, DisplayEdit, DisplayMode, DisplaysStatus,
     OutputId, Work, mode_at,

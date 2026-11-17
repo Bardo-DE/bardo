@@ -1,9 +1,9 @@
 //! The compositor's displays from memory: nothing here reaches a compositor. It writes down what
 //! was asked and moves its own standing the way the real one would.
 
-use super::DisplaysLink;
 use crate::fake_kit::Kit;
-use crate::ticks::Ticks;
+use settings_app_link::Ticks;
+use settings_app_link::displays::DisplaysLink;
 use settings_app_model::{
     Absence, DisplayChange, DisplayEdit, DisplayMode, DisplaysStatus, Work, mode_at,
 };

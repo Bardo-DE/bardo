@@ -1,9 +1,10 @@
 //! The sync service from memory: what it says of each dataset, and how its answers end.
 
-use super::SyncLink;
 use crate::lock::locked;
+use settings_app_link::sync::SyncLink;
 use settings_app_model::{DatasetName, HoldInput, SyncNowEnd, SyncStatus, Work};
 use std::sync::{Arc, Mutex};
+use tokio::sync::mpsc::UnboundedSender;
 
 /// What was asked of the service.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -76,5 +77,9 @@ impl SyncLink for FakeSync {
         let mut book = locked(&self.0);
         book.asked.push(SyncAsked::SyncNow(dataset));
         Box::pin(std::future::ready(book.now))
+    }
+
+    fn follow_holds(&self, _told: UnboundedSender<HoldInput>) -> Work<'_, ()> {
+        Box::pin(std::future::ready(()))
     }
 }

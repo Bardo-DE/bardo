@@ -1,8 +1,8 @@
 //! The small pictures of the Wallpaper page, over a scratch cache: made once from the original,
 //! scaled to the size kept, found again the next time, refused for what is not a picture.
 
-use settings_app_client::{ThumbFault, Thumbnails};
 use settings_app_files::CacheHome;
+use settings_app_system::wallpaper::{ThumbFault, Thumbnails};
 use settings_app_testkit::Scratch;
 use std::path::Path;
 

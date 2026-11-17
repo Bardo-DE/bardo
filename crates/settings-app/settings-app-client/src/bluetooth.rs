@@ -4,8 +4,8 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::bluetooth::{BluetoothLink, BtSession, PairingReply, PairingRequest};
 use settings_app_model::{BtEffect, BtInput, BtState, PairingAnswer, bluetooth_step};
-use settings_app_system::bluetooth::{BluetoothLink, BtSession, PairingReply, PairingRequest};
 use std::sync::{Arc, Mutex, PoisonError};
 
 /// The Bluetooth pane's handle: cheap to clone, one live value behind it.

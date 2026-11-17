@@ -12994,7 +12994,9 @@ dependencies = [
  "settings-app-client",
  "settings-app-files",
  "settings-app-intents",
+ "settings-app-link",
  "settings-app-model",
+ "settings-app-system",
  "settings-app-testkit",
  "settings-app-ui",
  "settings-store-fs",
@@ -13029,10 +13031,10 @@ name = "settings-app-client"
 version = "0.1.0"
 dependencies = [
  "account-provider",
- "base-xdg",
  "inference-core",
  "memory-core",
  "settings-app-files",
+ "settings-app-link",
  "settings-app-model",
  "settings-app-system",
  "settings-dbus",
@@ -13097,6 +13099,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "settings-app-link"
+version = "0.1.0"
+dependencies = [
+ "account-tailscale",
+ "account-wire",
+ "compositor-dbus",
+ "inference-dbus",
+ "memory-core",
+ "settings-app-callers",
+ "settings-app-model",
+ "settings-dbus",
+ "settings-types",
+ "sync-bus",
+ "tokio",
+ "toml",
+ "ui-peer",
+]
+
+[[package]]
 name = "settings-app-model"
 version = "0.1.0"
 dependencies = [
@@ -13141,6 +13162,7 @@ dependencies = [
  "anyview-image",
  "anyview-platform",
  "base-time",
+ "base-xdg",
  "bluez-proxy",
  "compositor-dbus",
  "dbus-kit",
@@ -13162,6 +13184,7 @@ dependencies = [
  "serde_json",
  "settings-app-callers",
  "settings-app-files",
+ "settings-app-link",
  "settings-app-model",
  "settings-app-system",
  "settings-dbus",
@@ -13202,6 +13225,7 @@ dependencies = [
  "settings-app-callers",
  "settings-app-client",
  "settings-app-files",
+ "settings-app-link",
  "settings-app-model",
  "settings-app-system",
  "settings-app-testkit",

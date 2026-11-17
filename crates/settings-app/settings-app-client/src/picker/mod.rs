@@ -17,14 +17,14 @@ use crate::pane::{Machine, Pending, pane};
 use settings_app_files::{
     ConfigHome, DataHome, agents_switch, load_agents, programs_on, turn_on_agents,
 };
+use settings_app_link::accounts::AccountsLink;
+use settings_app_link::bus::{Daemon, words_of};
+use settings_app_link::modules::{ModulesLink, reread};
+use settings_app_link::picker::PickerLink;
 use settings_app_model::{
     AccountsNotice, AgentWord, Described, PickerEffect, PickerInput, PickerState, agent_offers,
     picker_row_is_choice as is_choice, step, with_agents,
 };
-use settings_app_system::accounts::AccountsLink;
-use settings_app_system::bus::{Daemon, words_of};
-use settings_app_system::modules::{ModulesLink, reread};
-use settings_app_system::picker::PickerLink;
 use std::sync::Arc;
 
 /// Where the coding agents are looked for: docket's files and the programs on `PATH`.

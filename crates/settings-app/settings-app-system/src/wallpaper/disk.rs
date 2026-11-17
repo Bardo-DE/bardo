@@ -1,9 +1,11 @@
 //! The pictures of this computer: the system's folders and the added ones, their small pictures in
 //! the shared thumbnail cache, and the desktop's own file chooser.
 
-use super::{Pictures, Thumbnails};
-use crate::chooser::{Asked, OnPortal, Want};
+use super::Thumbnails;
+use crate::chooser::OnPortal;
 use settings_app_files::PictureDirs;
+use settings_app_link::chooser::{Asked, Want};
+use settings_app_link::wallpaper::Pictures;
 use settings_app_model::{AddOutcome, Picture, Work, is_picture};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;

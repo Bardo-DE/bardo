@@ -1,8 +1,8 @@
 //! The Spaces registry and memory from memory: the list, and each removal that was asked.
 
-use super::SpacesLink;
 use crate::fake_kit::Kit;
 use memory_core::Removal;
+use settings_app_link::spaces::SpacesLink;
 use settings_app_model::{Absence, SpaceKey, SpaceRow, Work};
 use std::sync::Arc;
 

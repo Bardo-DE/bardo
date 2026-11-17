@@ -6,9 +6,10 @@
 use super::known::delete_saved;
 use super::profile::connection_of;
 use super::read::{access_point_at, device_at, saved, wifi_device, wireless_at};
-use crate::bus::{BusSource, next, system_connection};
-use crate::deadline::{Deadline, peer};
+use crate::bus::{next, system_connection};
 use networkmanager_proxy::NetworkManagerProxy;
+use settings_app_link::bus::BusSource;
+use settings_app_link::{Deadline, peer};
 use settings_app_model::{
     HiddenLogin, HiddenNetwork, JoinFailure, JoinSecret, JoinVerdict, Passphrase, Ssid, WifiLogin,
     WifiSecurity, WifiVisibility, join_verdict, wifi_security_of,

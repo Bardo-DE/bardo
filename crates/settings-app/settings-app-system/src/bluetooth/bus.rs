@@ -5,10 +5,11 @@
 use super::actions;
 use super::read::{managed, status_of};
 use super::session::open;
-use super::{BluetoothLink, BtSession};
-use crate::bus::{BusSource, system_connection, watch_service};
-use crate::ticks::Ticks;
+use crate::bus::{system_connection, watch_service};
 use bluez_proxy::SERVICE;
+use settings_app_link::Ticks;
+use settings_app_link::bluetooth::{BluetoothLink, BtSession};
+use settings_app_link::bus::BusSource;
 use settings_app_model::{Absence, BtAddress, BtStatus, Work, bt_change_matters};
 use std::collections::HashMap;
 use tokio::sync::OnceCell;

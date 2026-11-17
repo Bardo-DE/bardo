@@ -4,15 +4,13 @@
 
 use crate::live::Live;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::running::RunningLink;
 use settings_app_model::{RunAction, RunEffect, RunInput, RunPane, running_step};
-use settings_app_system::bus::{BusSource, Daemon, connect, next_owner, owner_changes};
-use settings_app_system::running::RunningLink;
 use std::sync::Arc;
 
 /// The running models' handle: cheap to clone, one live value behind it.
 #[derive(Debug, Clone)]
 pub struct Running {
-    bus: BusSource,
     link: Arc<dyn RunningLink>,
     live: Live<RunPane>,
 }
@@ -20,9 +18,8 @@ pub struct Running {
 pane!(Running, RunPane, follow);
 
 impl Running {
-    pub(crate) fn over(bus: BusSource, link: Arc<dyn RunningLink>) -> Running {
+    pub(crate) fn over(link: Arc<dyn RunningLink>) -> Running {
         Running {
-            bus,
             link,
             live: Live::default(),
         }
@@ -36,12 +33,9 @@ impl Running {
 
     /// Reads the list, then reads it again each time a model changes state or inferd comes back.
     async fn follow(&self) {
-        let connection = match connect(&self.bus).await {
-            Ok(connection) => connection,
+        let mut owners = match self.link.owner_changes().await {
+            Ok(owners) => owners,
             Err(absence) => return self.dispatch(RunInput::Found(Err(absence))).await,
-        };
-        let Ok(mut owners) = owner_changes(&connection, &Daemon::inferd()).await else {
-            return;
         };
         loop {
             // Subscribed before the first read, so a change in between is not lost.
@@ -54,7 +48,7 @@ impl Running {
                             Some(()) => self.reread().await,
                             None => break,
                         },
-                        owner = next_owner(&mut owners) => match owner {
+                        owner = owners.recv() => match owner {
                             Some(()) => break,
                             None => return,
                         },
@@ -62,7 +56,7 @@ impl Running {
                 }
                 continue;
             }
-            if next_owner(&mut owners).await.is_none() {
+            if owners.recv().await.is_none() {
                 return;
             }
         }

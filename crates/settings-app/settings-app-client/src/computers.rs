@@ -4,17 +4,15 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::computers::{Change, ChangeFailure, ComputersLink};
 use settings_app_model::{
     ComputersEffect, ComputersInput, ComputersState, ServerRefusal, computers_step,
 };
-use settings_app_system::bus::{BusSource, Daemon, connect, next_owner, owner_changes};
-use settings_app_system::computers::{Change, ChangeFailure, ComputersLink};
 use std::sync::Arc;
 
 /// The computers' handle: cheap to clone, one live value behind it.
 #[derive(Debug, Clone)]
 pub struct Computers {
-    bus: BusSource,
     link: Arc<dyn ComputersLink>,
     live: Live<ComputersState>,
 }
@@ -22,9 +20,8 @@ pub struct Computers {
 pane!(Computers, ComputersState, follow);
 
 impl Computers {
-    pub(crate) fn over(bus: BusSource, link: Arc<dyn ComputersLink>) -> Computers {
+    pub(crate) fn over(link: Arc<dyn ComputersLink>) -> Computers {
         Computers {
-            bus,
             link,
             live: Live::default(),
         }
@@ -38,12 +35,9 @@ impl Computers {
 
     /// Reads the lists, then reads them again each time inferd says they changed or comes back.
     async fn follow(&self) {
-        let connection = match connect(&self.bus).await {
-            Ok(connection) => connection,
+        let mut owners = match self.link.owner_changes().await {
+            Ok(owners) => owners,
             Err(absence) => return self.dispatch(ComputersInput::Found(Err(absence))).await,
-        };
-        let Ok(mut owners) = owner_changes(&connection, &Daemon::inferd()).await else {
-            return;
         };
         loop {
             // Subscribed before the first read, so a change in between is not lost.
@@ -54,7 +48,7 @@ impl Computers {
                     self.reread().await;
                 }
             }
-            if next_owner(&mut owners).await.is_none() {
+            if owners.recv().await.is_none() {
                 return;
             }
         }

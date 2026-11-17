@@ -1,14 +1,15 @@
 //! The network service on the system bus, as the Wi-Fi page's link. It is only ever looked for,
 //! never started.
 
-use super::WifiLink;
 use super::join::{join, join_hidden, sign_in};
 use super::known::forget;
 use super::read::{read, wifi_device, wireless_at};
-use crate::bus::{BusSource, every, said, system_connection, watch_service};
-use crate::deadline::{Deadline, peer};
-use crate::ticks::Ticks;
+use crate::bus::{every, said, system_connection, watch_service};
 use networkmanager_proxy::{NetworkManagerProxy, SERVICE};
+use settings_app_link::Ticks;
+use settings_app_link::bus::BusSource;
+use settings_app_link::wifi::WifiLink;
+use settings_app_link::{Deadline, peer};
 use settings_app_model::{
     Absence, HiddenNetwork, JoinFailure, Passphrase, Ssid, WifiLogin, WifiRadio, WifiStatus, Work,
 };

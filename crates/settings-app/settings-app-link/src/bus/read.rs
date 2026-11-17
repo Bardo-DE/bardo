@@ -1,6 +1,6 @@
 //! Reading a module's rows and their values, as one reading even when the module moves meanwhile.
 
-use super::io::absence_of;
+use super::live_absence;
 use settings_app_model::{Absence, Described};
 use settings_dbus::{LiveClient, LiveError};
 use settings_types::schema::{KeyKind, KeyPath, KeySpec};
@@ -25,6 +25,19 @@ impl Rows for LiveClient {
     }
 }
 
+/// The rows of the live client `client` as they stand now, a value for each row `valued` picks
+/// out.
+///
+/// # Errors
+///
+/// The `Absence` the module's failure maps to, when its rows keep moving or a call fails.
+pub async fn read_live(
+    client: &LiveClient,
+    valued: fn(&KeyKind) -> bool,
+) -> Result<Described, Absence> {
+    read(client, valued).await
+}
+
 /// The module's rows and the value of each row `valued` picks out. A row that was listed and is
 /// unknown when asked for means the rows moved, so the whole reading is made again.
 pub(crate) async fn read(
@@ -34,10 +47,12 @@ pub(crate) async fn read(
     for _ in 1..ATTEMPTS {
         match pass(module, valued).await {
             Err(LiveError::UnknownKey(_)) => {}
-            done => return done.map_err(absence_of),
+            done => return done.map_err(|error| live_absence(&error)),
         }
     }
-    pass(module, valued).await.map_err(absence_of)
+    pass(module, valued)
+        .await
+        .map_err(|error| live_absence(&error))
 }
 
 async fn pass(module: &impl Rows, valued: fn(&KeyKind) -> bool) -> Result<Described, LiveError> {

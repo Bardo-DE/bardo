@@ -1,8 +1,9 @@
 //! Reading the account modules once: what the intents provider answers from. Never starts a
 //! daemon.
 
-use crate::bus::{BusSource, Daemon, because, read_once};
-use crate::deadline::{Deadline, peer};
+use crate::bus::{because, read_once};
+use settings_app_link::bus::{BusSource, Daemon};
+use settings_app_link::{Deadline, peer};
 use settings_app_model::{Absence, AccountsPane, ModuleId, Sources, accounts_row_is_valued};
 use ui_peer::within;
 

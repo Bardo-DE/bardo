@@ -3,9 +3,9 @@
 use crate::follow::{Followed, follow_with};
 use crate::live::Live;
 use crate::pane::{Pane, Pending};
+use settings_app_link::bus::Daemon;
+use settings_app_link::modules::ModulesLink;
 use settings_app_model::{Ready, picker_row_is_choice as is_choice};
-use settings_app_system::bus::Daemon;
-use settings_app_system::modules::ModulesLink;
 use std::sync::Arc;
 
 /// inferd's picker rows, none while inferd is not there.

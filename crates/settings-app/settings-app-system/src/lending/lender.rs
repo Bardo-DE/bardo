@@ -2,27 +2,19 @@
 //! it and the person's own service manager. Behind one handle that the environment carries, so a
 //! test hands in scratch folders and a manager that only writes down what it was asked.
 
-use crate::deadline::{Deadline, peer};
 use inference_client::{
     LendingConfig, LendingError, LendingState, SessionUnits, TailnetLending, UnitFailure,
     UnitManager,
 };
 use settings_app_files::ConfigHome;
+use settings_app_link::lending::{Lend, Lender};
 use settings_app_model::{Existing, LendFailure, Work};
 use std::fmt::Debug;
 use std::path::Path;
 use std::sync::Arc;
-use ui_peer::within;
 
 /// What the log says when the computer's own services cannot be reached.
 const NO_SERVICES: &str = "the session's service manager could not be reached";
-
-/// The two things the switch does, and what is there before it does them.
-trait Lend: Debug + Send + Sync {
-    fn existing(&self) -> Existing;
-    fn enable(&self) -> Work<'_, Result<(), LendFailure>>;
-    fn disable(&self) -> Work<'_, Result<(), LendFailure>>;
-}
 
 fn failure_of(error: &LendingError) -> LendFailure {
     match error {
@@ -133,66 +125,30 @@ impl Lend for Nowhere {
     }
 }
 
-/// How the switch "Let my other computers use this computer's models" reaches the files and the
-/// service manager.
-#[derive(Debug, Clone)]
-pub struct Lender(Arc<dyn Lend>);
+/// The person's own session: the shipped file is looked for where the environment says
+/// (`XDG_DATA_HOME`, `XDG_DATA_DIRS`), the setting kept under `XDG_CONFIG_HOME`.
+pub fn from_env() -> Lender {
+    LendingConfig::from_lookup(|key| std::env::var_os(key))
+        .map_or_else(|| Lender::new(Arc::new(Nowhere)), session)
+}
 
-impl Lender {
-    /// The person's own session: the shipped file is looked for where the environment says
-    /// (`XDG_DATA_HOME`, `XDG_DATA_DIRS`), the setting kept under `XDG_CONFIG_HOME`.
-    pub fn from_env() -> Lender {
-        LendingConfig::from_lookup(|key| std::env::var_os(key))
-            .map_or_else(|| Lender(Arc::new(Nowhere)), Lender::session)
-    }
+/// The person's own session, with porter's file at `<prefix>/share/porter/` and the setting
+/// kept under `config_home`.
+#[must_use]
+pub fn under_prefix(prefix: &Path, config_home: &ConfigHome) -> Lender {
+    session(LendingConfig::under_prefix(
+        prefix,
+        config_home.0.join("systemd/user"),
+    ))
+}
 
-    /// The person's own session, with porter's file at `<prefix>/share/porter/` and the setting
-    /// kept under `config_home`.
-    #[must_use]
-    pub fn under_prefix(prefix: &Path, config_home: &ConfigHome) -> Lender {
-        Lender::session(LendingConfig::under_prefix(
-            prefix,
-            config_home.0.join("systemd/user"),
-        ))
-    }
+/// The person's own session over `config`.
+#[must_use]
+pub fn session(config: LendingConfig) -> Lender {
+    Lender::new(Arc::new(Session(config)))
+}
 
-    /// The person's own session over `config`.
-    #[must_use]
-    pub fn session(config: LendingConfig) -> Lender {
-        Lender(Arc::new(Session(config)))
-    }
-
-    /// Lending by `config` over `manager`: what a test hands in.
-    pub fn over<M: UnitManager + Debug + 'static>(config: LendingConfig, manager: M) -> Lender {
-        Lender(Arc::new(Over(TailnetLending::new(config, manager))))
-    }
-
-    /// What is set up now.
-    #[must_use]
-    pub fn existing(&self) -> Existing {
-        self.0.existing()
-    }
-
-    /// Sets sharing up; why not when it could not be.
-    ///
-    /// # Errors
-    ///
-    /// The `LendFailure` the change ended in, or `NoServices` when the session's services do not
-    /// answer in time.
-    pub async fn enable(&self) -> Result<(), LendFailure> {
-        within(Deadline::ACTION, peer::SERVICES, self.0.enable())
-            .await
-            .map_err(|_silent| LendFailure::NoServices)?
-    }
-
-    /// Takes sharing away; why not when it could not be.
-    ///
-    /// # Errors
-    ///
-    /// As [`Self::enable`].
-    pub async fn disable(&self) -> Result<(), LendFailure> {
-        within(Deadline::ACTION, peer::SERVICES, self.0.disable())
-            .await
-            .map_err(|_silent| LendFailure::NoServices)?
-    }
+/// Lending by `config` over `manager`: what a test hands in.
+pub fn over<M: UnitManager + Debug + 'static>(config: LendingConfig, manager: M) -> Lender {
+    Lender::new(Arc::new(Over(TailnetLending::new(config, manager))))
 }

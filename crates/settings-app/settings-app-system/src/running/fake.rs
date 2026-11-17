@@ -1,8 +1,8 @@
 //! inferd's running models from memory: the list, and each start and stop that was asked.
 
-use super::RunningLink;
 use crate::fake_kit::Kit;
-use crate::ticks::Ticks;
+use settings_app_link::Ticks;
+use settings_app_link::running::RunningLink;
 use settings_app_model::{Absence, ModelRun, RunAction, RunStanding, Work};
 use std::sync::Arc;
 
@@ -60,5 +60,9 @@ impl RunningLink for FakeRunning {
 
     fn changes(&self) -> Work<'_, Result<Ticks, Absence>> {
         Box::pin(std::future::ready(Ok(self.0.listen())))
+    }
+
+    fn owner_changes(&self) -> Work<'_, Result<Ticks, Absence>> {
+        Box::pin(std::future::ready(Err(Absence::NoBus)))
     }
 }

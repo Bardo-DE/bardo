@@ -1,10 +1,10 @@
 //! The page being open: the agent is registered and devices are looked for, and both stop when the
 //! session is dropped.
 
-use super::BtSession;
 use super::agent::{AGENT_PATH, Agent};
 use super::read::{adapter_path, managed};
 use bluez_proxy::{Adapter1Proxy, AgentManager1Proxy, Capability};
+use settings_app_link::bluetooth::BtSession;
 use settings_app_model::Absence;
 use tokio::sync::mpsc;
 use zbus::Connection;

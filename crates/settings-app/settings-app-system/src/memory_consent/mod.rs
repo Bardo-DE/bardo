@@ -12,26 +12,3 @@ pub use bus::OnBus;
 #[cfg(feature = "testing")]
 pub use fake::FakeMemory;
 pub use proxy::control;
-
-use memory_core::WaitingSetting;
-use settings_app_model::{Confinement, SettingPair, Trouble, Work};
-use std::fmt::Debug;
-
-/// Why a call did not return.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum MemoryFailure {
-    /// There is no bus, or memory is not running: there is nothing to say to the person.
-    Absent,
-    /// Memory (or the bus) refused or failed, in a way the person is told.
-    Trouble(Trouble),
-}
-
-/// What the pages that hold memory settings ask of memory.
-pub trait MemoryLink: Debug + Send + Sync {
-    /// The looser values the file holds that wait for the person, in key order, read fresh.
-    fn waiting(&self) -> Work<'_, Result<Vec<WaitingSetting>, MemoryFailure>>;
-    /// Tells memory the person agreed to `pairs`; memory takes all of them or none.
-    fn confirm(&self, pairs: Vec<SettingPair>) -> Work<'_, Result<(), MemoryFailure>>;
-    /// How far memory confines itself, read fresh, only when memory is already running.
-    fn confinement(&self) -> Work<'_, Result<Confinement, MemoryFailure>>;
-}

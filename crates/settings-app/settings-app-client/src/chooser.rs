@@ -1,16 +1,16 @@
 //! A folder or a picture chosen by the person in the desktop's own chooser, never typed.
 
-use settings_app_system::chooser::{OnPortal, choose};
+use settings_app_link::chooser::{PortalLink, choose};
 use std::sync::Arc;
 
-pub use settings_app_system::chooser::{Asked, Want};
+pub use settings_app_link::chooser::{Asked, Want};
 
 /// The desktop's chooser.
 #[derive(Debug, Clone)]
-pub struct Chooser(Arc<OnPortal>);
+pub struct Chooser(Arc<dyn PortalLink>);
 
 impl Chooser {
-    pub(crate) fn over(link: Arc<OnPortal>) -> Chooser {
+    pub(crate) fn over(link: Arc<dyn PortalLink>) -> Chooser {
         Chooser(link)
     }
 

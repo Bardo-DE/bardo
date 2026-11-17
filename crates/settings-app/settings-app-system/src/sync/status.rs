@@ -3,8 +3,8 @@
 //! service; a dataset it does not know, or a service that is not there, gives nothing.
 
 use super::holds::{sync_of, syncd_running};
-use crate::bus::BusSource;
-use crate::deadline::{Deadline, answered, peer};
+use settings_app_link::bus::BusSource;
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{DatasetName, StorageQuota, SyncStatus};
 use std::collections::HashMap;
 use sync_bus::STATUS_KEY_QUOTA;

@@ -1,5 +1,5 @@
 //! What waiting on another process is made of: the deadlines every call runs under, the names of
-//! who is waited on, and the ticks that say "look again". They live in `settings-app-system`, because
+//! who is waited on, and the ticks that say "look again". They live in `settings-app-link`, because
 //! its links return them; the client is where a window reaches them.
 
-pub use settings_app_system::{Deadline, Gone, Ticker, Ticks, answered, peer};
+pub use settings_app_link::{Deadline, Gone, Ticker, Ticks, answered, peer};

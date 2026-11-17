@@ -1,8 +1,9 @@
 //! The assistant's engine list from memory: where llama.cpp stands, and how a restart ends.
 
-use super::EnginesLink;
 use crate::lock::locked;
-use settings_app_model::{LlamaCpp, Restarted, Work};
+use settings_app_link::Ticks;
+use settings_app_link::engines::EnginesLink;
+use settings_app_model::{Absence, LlamaCpp, Restarted, Work};
 use std::sync::{Arc, Mutex};
 
 #[derive(Debug)]
@@ -54,5 +55,9 @@ impl EnginesLink for FakeEngines {
         let mut book = locked(&self.0);
         book.restarts += 1;
         Box::pin(std::future::ready(book.restart))
+    }
+
+    fn owner_changes(&self) -> Work<'_, Result<Ticks, Absence>> {
+        Box::pin(std::future::ready(Err(Absence::NoBus)))
     }
 }

@@ -3,8 +3,8 @@
 
 use super::read::{find_device, managed};
 use crate::bus::said;
-use crate::deadline::{Deadline, peer};
 use bluez_proxy::{Adapter1Proxy, Device1Proxy};
+use settings_app_link::{Deadline, peer};
 use settings_app_model::BtAddress;
 use ui_peer::within;
 use zbus::Connection;

@@ -19,6 +19,7 @@ portal-dbus = { path = "../../portal/portal-dbus" }
 memory-dbus = { path = "../../memory/memory-dbus" }
 updater-dbus = { path = "../../updater/updater-dbus" }
 base-time = { path = "../../base/base-time" }
+base-xdg = { path = "../../base/base-xdg" }
 account-tailscale = {path = "../../accounts/account-tailscale"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}
 account-wire = {path = "../../accounts/account-wire"}
@@ -32,6 +33,7 @@ anyview-platform = {path = "../../anyview/crates/anyview-platform"}
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
 desktop-client = {path = "../../wayland/desktop-client", features = ["client"]}
 settings-app-callers = {path = "../settings-app-callers"}
+settings-app-link = {path = "../settings-app-link"}
 settings-app-files = {path = "../settings-app-files"}
 settings-app-model = {path = "../settings-app-model"}
 ui-peer = {path = "../../ui/ui-peer"}

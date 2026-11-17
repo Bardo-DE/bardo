@@ -1,8 +1,8 @@
 //! What the Hot Corners sheet asks of the computer: the actions installed apps offer, and a file
 //! or a folder chosen by the person.
 
+use settings_app_link::hot_corners::CornerDesk;
 use settings_app_model::{HotActionChoice, HotOpenKind};
-use settings_app_system::hot_corners::CornerDesk;
 use std::sync::Arc;
 
 /// The sheet's desk.

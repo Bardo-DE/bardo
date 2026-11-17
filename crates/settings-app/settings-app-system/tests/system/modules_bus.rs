@@ -2,9 +2,10 @@
 //! read with their values, and a row set through the handle comes back as a change the module sent.
 
 use crate::private_bus::PrivateBus;
+use settings_app_link::bus::{BusSource, Daemon, Vouch};
+use settings_app_link::modules::{Followed, ModulesLink};
 use settings_app_model::Absence;
-use settings_app_system::bus::{BusSource, Daemon, Vouch};
-use settings_app_system::modules::{Followed, ModulesLink, OnBus};
+use settings_app_system::modules::OnBus;
 use settings_dbus::{Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
 use settings_types::schema::{
     AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
@@ -116,7 +117,7 @@ pub(crate) fn daemon() -> Daemon {
 /// What a follower is told, and the module's handle once it is opened.
 async fn opened(
     heard: &mut tokio::sync::mpsc::UnboundedReceiver<Followed>,
-) -> (settings_app_system::modules::Module, String) {
+) -> (settings_app_link::modules::Module, String) {
     match heard.recv().await {
         Some(Followed::Opened(module, described)) => {
             let word = described.values.get(&KeyPath(ROW.to_owned())).cloned();

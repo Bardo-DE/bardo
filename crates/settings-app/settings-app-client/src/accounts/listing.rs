@@ -6,11 +6,11 @@ use super::feeds::Feeds;
 use crate::follow::{Followed, follow_with};
 use crate::live::Live;
 use crate::pane::{Pane, Pending};
+use settings_app_link::bus::Daemon;
+use settings_app_link::modules::ModulesLink;
 use settings_app_model::{
     Absence, AccountsPane, Described, Live as ModelLive, ModuleId, Sources, accounts_row_is_valued,
 };
-use settings_app_system::bus::Daemon;
-use settings_app_system::modules::ModulesLink;
 use std::sync::{Arc, Mutex, PoisonError};
 
 /// How many times a failed read is tried again.

@@ -5,9 +5,10 @@
 use crate::private_bus::PrivateBus;
 use crate::spaces_fakes::serve;
 use memory_core::{HistoryFate, MemoryFate, Removal};
+use settings_app_link::bus::{BusSource, Vouch};
+use settings_app_link::spaces::SpacesLink;
 use settings_app_model::SpaceKey;
-use settings_app_system::bus::{BusSource, Vouch};
-use settings_app_system::spaces::{OnBus, SpacesLink};
+use settings_app_system::spaces::OnBus;
 use settings_dbus::AnyOwner;
 fn link(bus: &PrivateBus) -> OnBus {
     OnBus(BusSource::Address(bus.address.clone(), Vouch::of(AnyOwner)))

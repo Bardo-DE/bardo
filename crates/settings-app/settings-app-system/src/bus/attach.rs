@@ -1,10 +1,8 @@
 //! Meeting a daemon's settings module: connect, open its client and read its rows, once or with
 //! the changes it announces heard from before the reading.
 
-use super::daemon::Daemon;
 use super::io::{absence_of, connect, open};
-use super::read::read;
-use super::source::BusSource;
+use settings_app_link::bus::{BusSource, Daemon, read_live};
 use settings_app_model::{Absence, Described};
 use settings_dbus::{Changes, LiveClient};
 use settings_types::schema::KeyKind;
@@ -22,7 +20,7 @@ pub async fn attach(
     valued: fn(&KeyKind) -> bool,
 ) -> Result<(LiveClient, Described), Absence> {
     let client = open(bus, connection, daemon).await?;
-    let described = read(&client, valued).await?;
+    let described = read_live(&client, valued).await?;
     Ok((client, described))
 }
 
@@ -40,7 +38,7 @@ pub async fn attach_listening(
 ) -> Result<(LiveClient, Described, Changes), Absence> {
     let client = open(bus, connection, daemon).await?;
     let changes = client.changes().await.map_err(absence_of)?;
-    let described = read(&client, valued).await?;
+    let described = read_live(&client, valued).await?;
     Ok((client, described, changes))
 }
 

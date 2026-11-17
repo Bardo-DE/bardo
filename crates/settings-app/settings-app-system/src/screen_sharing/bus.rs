@@ -2,11 +2,12 @@
 //! portal's name that was confirmed. The list starts the portal when nobody owns its name, since
 //! the portal keeps the apps it lets share on disk; taking an app back or letting one in never starts it.
 
-use super::ScreenSharingLink;
 use super::proxy::portal;
-use crate::bus::{BusSource, ToAbsence, because, pinned, pinned_starting, said};
-use crate::deadline::{Deadline, answered, peer};
+use crate::bus::{ToAbsence, because, pinned, pinned_starting, said};
 use portal_dbus::BUS_NAME;
+use settings_app_link::bus::BusSource;
+use settings_app_link::screen_sharing::ScreenSharingLink;
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Absence, ProgramSubject, ScreenGrant, Work, screen_grants_of};
 use ui_peer::within;
 

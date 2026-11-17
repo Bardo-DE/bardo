@@ -1,13 +1,14 @@
 //! The calls about the models inferd runs itself: reading them, starting and stopping one, and the
 //! signal that says to read again. Looking never starts the assistant.
 
-use super::RunningLink;
-use crate::bus::{BusSource, ToAbsence, because, inferd, said};
+use crate::bus::{ToAbsence, because, inferd, inferd_owners, said};
 use crate::computers::relay;
-use crate::deadline::{Deadline, answered, peer};
-use crate::ticks::Ticks;
 use inference_client::TransportError;
 use inference_dbus::inference::{InferenceProxy, RunState, RunningModel};
+use settings_app_link::Ticks;
+use settings_app_link::bus::BusSource;
+use settings_app_link::running::RunningLink;
+use settings_app_link::{Deadline, answered, peer};
 use settings_app_model::{Absence, ModelRun, RunAction, RunStanding, Work};
 use ui_peer::within;
 
@@ -135,5 +136,9 @@ impl RunningLink for OnBus {
 
     fn changes(&self) -> Work<'_, Result<Ticks, Absence>> {
         Box::pin(watch(&self.0))
+    }
+
+    fn owner_changes(&self) -> Work<'_, Result<Ticks, Absence>> {
+        Box::pin(inferd_owners(&self.0))
     }
 }

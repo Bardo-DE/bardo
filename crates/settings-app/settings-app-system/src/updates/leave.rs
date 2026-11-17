@@ -1,19 +1,13 @@
 //! Logging out, so a new version starts: whatever the desktop offers for it, behind one handle the
 //! environment carries, so a test hands in a stand-in that only writes down that it was asked.
 
+use settings_app_link::updates::Departure;
 use settings_app_model::Work;
-use std::fmt::Debug;
 use std::process::{Command, Stdio};
 
 /// What the person reads when logging out could not be started.
 const COULD_NOT: &str =
     "Settings could not start logging out. Log out from the power menu of the desktop instead.";
-
-/// What the page needs to start leaving the session.
-pub trait Departure: Debug + Send + Sync {
-    /// Starts logging out; the sentence that says why not when it could not be started.
-    fn log_out(&self) -> Work<'_, Result<(), String>>;
-}
 
 /// The shell's power menu, opened by its command: the desktop's own, which asks before it logs
 /// out.

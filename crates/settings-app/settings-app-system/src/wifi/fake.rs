@@ -1,9 +1,9 @@
 //! The network service from memory: nothing here reaches a bus. It writes down what the page asked
 //! and moves its own standing the way the real service would.
 
-use super::WifiLink;
 use crate::lock::locked;
-use crate::ticks::{Ticker, Ticks};
+use settings_app_link::wifi::WifiLink;
+use settings_app_link::{Ticker, Ticks};
 use settings_app_model::{
     Absence, HiddenNetwork, JoinFailure, NetworkLink, Passphrase, Ssid, WifiLogin, WifiRadio,
     WifiStatus, Work,

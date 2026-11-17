@@ -1,7 +1,7 @@
 //! The calls the page makes on the compositor's module.
 
-use crate::bus::plain;
-use crate::modules::Module;
+use settings_app_link::bus::plain;
+use settings_app_link::modules::Module;
 use settings_app_model::{ALLOWED_WORD, DENIED_WORD};
 use settings_types::schema::KeyPath;
 

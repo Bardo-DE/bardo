@@ -2,8 +2,9 @@
 //! comes back. Opening, refusing and changing are tested over the bus in `modules_bus`.
 
 use crate::modules_bus::{ROW, Words, daemon, is_text};
+use settings_app_link::modules::{Followed, ModulesLink};
 use settings_app_model::Absence;
-use settings_app_system::modules::{FakeModules, Followed, ModulesLink};
+use settings_app_system::modules::FakeModules;
 use settings_dbus::Verdict;
 use settings_types::schema::KeyPath;
 use tokio::sync::mpsc::{UnboundedReceiver, unbounded_channel};

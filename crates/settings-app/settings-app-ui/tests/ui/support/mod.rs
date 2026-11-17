@@ -23,15 +23,17 @@ pub mod wifi;
 use inference_client::LendingConfig;
 use lending::Units;
 use settings_app_client::{
-    BusSource, ClientBuilder, ClientHomes, CornerDesk, Desk, Lender, NoCorners, NoPictures,
-    PersonLink, Pictures, Quiet, ReasonFeed, Vouch,
+    ClientBuilder, ClientHomes, CornerDesk, Desk, Lender, NoCorners, NoPictures, PersonLink,
+    Pictures, Quiet, ReasonFeed,
 };
 use settings_app_files::{CacheHome, ConfigHome, DataHome, StateHome};
+use settings_app_link::bus::{BusSource, Vouch};
+use settings_app_link::spaces::SpacesLink;
 use settings_app_model::{Absence, OriginRule, Outbox, inbox};
 use settings_app_system::bluetooth::FakeBluetooth;
 use settings_app_system::displays::FakeDisplays;
 use settings_app_system::modules::FakeModules;
-use settings_app_system::spaces::SpacesLink;
+use settings_app_system::services;
 use settings_app_system::updates::{FakeLeaves, FakeUpdates};
 use settings_app_testkit::{Scratch, seed_schemas};
 use settings_app_ui::{App, Env, FirstRunApp, Homes, Opening};
@@ -264,12 +266,17 @@ impl Sandbox {
 
     /// The app's environment, the desktop reporting `scheme`.
     pub fn env(&self, opening: Opening, scheme: Scheme) -> Env {
+        let real = services::over(
+            &self.bus,
+            &self.data_home(),
+            &CacheHome(self.scratch.join("cache")),
+            Vec::new(),
+        );
         let client = ClientBuilder::over(
-            self.bus.clone(),
+            real,
             ClientHomes {
                 config: self.config_home(),
                 data: self.data_home(),
-                cache: CacheHome(self.scratch.join("cache")),
             },
         )
         .with_reasons(self.reasons.clone())
@@ -334,7 +341,7 @@ impl Sandbox {
     /// The lending switch over the scratch folders and the recording manager: never the real
     /// systemd and never the real home.
     pub fn lender(&self) -> Lender {
-        Lender::over(
+        settings_app_system::lending::over(
             LendingConfig::new(
                 self.scratch.join("share/bardo/inference/tailnet.conf"),
                 self.scratch.join("config/systemd/user"),

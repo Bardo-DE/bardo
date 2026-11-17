@@ -5,10 +5,11 @@
 //! and come back, and announces a change the module did not get through a `set`.
 
 use super::caller::Settings;
-use super::{Followed, Module, ModuleHandle, ModulesLink, reread};
-use crate::bus::{Daemon, absence_of};
+use crate::bus::absence_of;
 use crate::lock::locked;
-use settings_app_model::{Absence, Described, Work};
+use settings_app_link::bus::Daemon;
+use settings_app_link::modules::{Followed, Module, ModuleHandle, ModulesLink, reread};
+use settings_app_model::{Absence, Described, ModuleId, Work};
 use settings_dbus::{Access, LiveError, LiveModule, LiveSchema, Verdict};
 use settings_types::schema::{KeyKind, KeyPath};
 use std::fmt;
@@ -101,6 +102,10 @@ impl ModulesLink for FakeModules {
         told: UnboundedSender<Followed>,
     ) -> Work<'a, ()> {
         Box::pin(follow(self.place(daemon), valued, told))
+    }
+
+    fn start<'a>(&'a self, _modules: &'a [ModuleId]) -> Work<'a, ()> {
+        Box::pin(std::future::ready(()))
     }
 }
 

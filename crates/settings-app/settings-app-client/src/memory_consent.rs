@@ -3,10 +3,10 @@
 
 use crate::live::Live;
 use crate::pane::{Pane, Pending};
+use settings_app_link::memory_consent::{MemoryFailure, MemoryLink};
 use settings_app_model::{
     Confinement, ConsentState, KeyEntry, SettingPair, is_memory_setting, to_confirm,
 };
-use settings_app_system::memory_consent::{MemoryFailure, MemoryLink};
 use std::sync::Arc;
 
 /// The state of the looser memory settings and the link to reach memory through.

@@ -4,8 +4,8 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::wifi::WifiLink;
 use settings_app_model::{WifiEffect, WifiInput, WifiState, wifi_step};
-use settings_app_system::wifi::WifiLink;
 use std::sync::Arc;
 
 /// The Wi-Fi pane's handle: cheap to clone, one live value behind it.

@@ -1,8 +1,9 @@
 //! This computer's manifests of installed apps, and the desktop's own file chooser.
 
-use super::CornerDesk;
-use crate::chooser::{OnPortal, Want, choose};
+use crate::chooser::OnPortal;
 use settings_app_files::read_manifests;
+use settings_app_link::chooser::{Want, choose};
+use settings_app_link::hot_corners::CornerDesk;
 use settings_app_model::{HotActionChoice, HotOpenKind, Work, actions_of_all};
 use std::path::PathBuf;
 use std::sync::Arc;

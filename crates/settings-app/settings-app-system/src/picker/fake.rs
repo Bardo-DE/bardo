@@ -1,8 +1,8 @@
 //! inferd's module from memory: what the model picker set, and the words a refusal is made of.
 
-use super::PickerLink;
 use crate::fake_kit::Kit;
-use crate::modules::Module;
+use settings_app_link::modules::Module;
+use settings_app_link::picker::PickerLink;
 use settings_app_model::Work;
 use settings_types::schema::KeyPath;
 use std::sync::Arc;

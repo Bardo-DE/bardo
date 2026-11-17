@@ -5,8 +5,8 @@
 use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
+use settings_app_link::lending::Lender;
 use settings_app_model::{Existing, Sharing, SharingEffect, SharingInput, sharing_step};
-use settings_app_system::lending::Lender;
 
 /// The switch's handle: cheap to clone, one live value behind it.
 #[derive(Debug, Clone)]

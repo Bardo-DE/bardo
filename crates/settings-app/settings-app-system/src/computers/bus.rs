@@ -1,10 +1,7 @@
 //! The computers over inferd, through inferd's client: the places, the Tailscale candidates, the
 //! guests and the changes. The engines signal (a computer answering or not) comes from its proxy.
 
-use super::{Change, ChangeFailure, ComputersLink};
-use crate::bus::{BusSource, Daemon, Pinned, ToAbsence, absence_of, because, inferd, read_once};
-use crate::deadline::{Deadline, answered, peer};
-use crate::ticks::{Ticker, Ticks};
+use crate::bus::{Pinned, ToAbsence, absence_of, because, inferd, inferd_owners, read_once};
 use account_dbus::BusStream;
 use inference_client::{
     ClientError, ComputerReach, ComputerReason, DbusTransport, Inference, NewComputer,
@@ -12,6 +9,10 @@ use inference_client::{
 };
 use inference_dbus::inference::InferenceProxy;
 use inference_tailnet::ComputerCandidate;
+use settings_app_link::bus::{BusSource, Daemon};
+use settings_app_link::computers::{Change, ChangeFailure, ComputersLink};
+use settings_app_link::{Deadline, answered, peer};
+use settings_app_link::{Ticker, Ticks};
 use settings_app_model::{
     Absence, ComputerRow, ComputersFound, ComputersReason, ServerDraft, ServerModel, ServerReach,
     Work, picker_row_is_choice, server_models,
@@ -217,5 +218,9 @@ impl ComputersLink for OnBus {
 
     fn changes(&self) -> Work<'_, Result<Ticks, Absence>> {
         Box::pin(watch(&self.0))
+    }
+
+    fn owner_changes(&self) -> Work<'_, Result<Ticks, Absence>> {
+        Box::pin(inferd_owners(&self.0))
     }
 }

@@ -9,7 +9,7 @@ use crate::support::drive::click;
 use crate::support::drive::settle_on_threads;
 use crate::support::handover::HandsOver;
 use crate::support::portal;
-use settings_app_client::Vouch;
+use settings_app_link::bus::Vouch;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use std::sync::atomic::Ordering;

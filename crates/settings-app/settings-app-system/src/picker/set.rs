@@ -1,7 +1,7 @@
 //! Setting a row of inferd's settings module.
 
-use crate::bus::plain;
-use crate::modules::Module;
+use settings_app_link::bus::plain;
+use settings_app_link::modules::Module;
 use settings_types::schema::KeyPath;
 
 /// Sets the row at `path` to `word`; the module answers when it has put it in force.

@@ -1,5 +1,5 @@
 //! The one door the window uses. A [`Client`] holds every service the Settings app reaches (the
-//! links of `settings-app-system`) and the bus they are looked for on; each pane's handle comes from it,
+//! links of `settings-app-link`); each pane's handle comes from it,
 //! and a handle is a live value to draw and the commands to give it. The window never touches a
 //! link, a deadline or a follow loop.
 
@@ -23,29 +23,28 @@ use crate::wallpaper::Wallpaper;
 use crate::whoami::Whoami;
 use crate::wifi::Wifi;
 use settings_app_files::{ConfigHome, DataHome};
+use settings_app_link::accounts::AccountsLink;
+use settings_app_link::bluetooth::BluetoothLink;
+use settings_app_link::chooser::PortalLink;
+use settings_app_link::computers::ComputersLink;
+use settings_app_link::displays::DisplaysLink;
+use settings_app_link::engine_install::Desk;
+use settings_app_link::engines::EnginesLink;
+use settings_app_link::hot_corners::CornerDesk;
+use settings_app_link::lending::Lender;
+use settings_app_link::memory_consent::MemoryLink;
+use settings_app_link::modules::ModulesLink;
+use settings_app_link::person::PersonLink;
+use settings_app_link::picker::PickerLink;
+use settings_app_link::privacy::PrivacyLink;
+use settings_app_link::running::RunningLink;
+use settings_app_link::screen_sharing::ScreenSharingLink;
+use settings_app_link::spaces::SpacesLink;
+use settings_app_link::sync::SyncLink;
+use settings_app_link::updates::{Departure, UpdatesLink};
+use settings_app_link::wallpaper::Pictures;
+use settings_app_link::wifi::WifiLink;
 use settings_app_model::{Absence, AccountsPane, AddEnd, ModuleId, UnixSeconds, Work};
-use settings_app_system::accounts::AccountsLink;
-use settings_app_system::bluetooth::BluetoothLink;
-use settings_app_system::bus::{BusSource, start};
-use settings_app_system::chooser::OnPortal;
-use settings_app_system::computers::ComputersLink;
-use settings_app_system::displays::DisplaysLink;
-use settings_app_system::engine_install::Desk;
-use settings_app_system::engines::EnginesLink;
-use settings_app_system::hot_corners::CornerDesk;
-use settings_app_system::lending::Lender;
-use settings_app_system::memory_consent::MemoryLink;
-use settings_app_system::modules::ModulesLink;
-use settings_app_system::person::PersonLink;
-use settings_app_system::picker::PickerLink;
-use settings_app_system::privacy::PrivacyLink;
-use settings_app_system::running::RunningLink;
-use settings_app_system::screen_sharing::ScreenSharingLink;
-use settings_app_system::spaces::SpacesLink;
-use settings_app_system::sync::SyncLink;
-use settings_app_system::updates::{Departure, UpdatesLink};
-use settings_app_system::wallpaper::Pictures;
-use settings_app_system::wifi::WifiLink;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -53,9 +52,8 @@ use std::sync::Arc;
 /// Every service the window reaches, behind one value that is cheap to clone.
 #[derive(Debug, Clone)]
 pub struct Client {
-    pub(crate) bus: BusSource,
     pub(crate) modules: Arc<dyn ModulesLink>,
-    pub(crate) chooser: Arc<OnPortal>,
+    pub(crate) chooser: Arc<dyn PortalLink>,
     pub(crate) accounts: Arc<dyn AccountsLink>,
     pub(crate) sync: Arc<dyn SyncLink>,
     pub(crate) picker: Arc<dyn PickerLink>,
@@ -82,12 +80,6 @@ pub struct Client {
 }
 
 impl Client {
-    /// Where the services are looked for.
-    #[must_use]
-    pub fn bus(&self) -> &BusSource {
-        &self.bus
-    }
-
     /// The program that lists and downloads coding assistants, where the launcher found it.
     #[must_use]
     pub fn agents_program(&self) -> Option<&Path> {
@@ -103,7 +95,7 @@ impl Client {
     /// Asks the bus to start the services `modules` are served by, once, as a page is shown.
     /// Nothing is started for a page that was not opened.
     pub async fn start(&self, modules: &[ModuleId]) {
-        start(&self.bus, modules).await;
+        self.modules.start(modules).await;
     }
 
     /// The accounts the modules list now, read once; never starts a daemon.
@@ -157,7 +149,6 @@ impl Client {
     #[must_use]
     pub fn accounts(&self) -> Accounts {
         Accounts::over(
-            self.bus.clone(),
             Arc::clone(&self.modules),
             Arc::clone(&self.accounts),
             Arc::clone(&self.sync),
@@ -202,7 +193,7 @@ impl Client {
     /// The llama.cpp note under "Models on this computer".
     #[must_use]
     pub fn engines(&self) -> Engines {
-        Engines::over(self.bus.clone(), Arc::clone(&self.engines))
+        Engines::over(Arc::clone(&self.engines))
     }
 
     /// The rows that name the program of an engine.
@@ -214,13 +205,13 @@ impl Client {
     /// The models inferd runs itself.
     #[must_use]
     pub fn running(&self) -> Running {
-        Running::over(self.bus.clone(), Arc::clone(&self.running))
+        Running::over(Arc::clone(&self.running))
     }
 
     /// Your computers.
     #[must_use]
     pub fn computers(&self) -> Computers {
-        Computers::over(self.bus.clone(), Arc::clone(&self.computers))
+        Computers::over(Arc::clone(&self.computers))
     }
 
     /// The Privacy pane.

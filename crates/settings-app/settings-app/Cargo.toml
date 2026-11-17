@@ -14,6 +14,8 @@ settings-app-callers = {path = "../settings-app-callers", optional = true}
 settings-app-client = {path = "../settings-app-client"}
 settings-app-files = {path = "../settings-app-files"}
 settings-app-intents = {path = "../settings-app-intents"}
+settings-app-link = {path = "../settings-app-link"}
+settings-app-system = {path = "../settings-app-system"}
 settings-app-model = {path = "../settings-app-model"}
 settings-app-ui = {path = "../settings-app-ui"}
 ui-blitz = {path = "../../ui/ui-blitz"}

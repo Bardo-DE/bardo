@@ -17,14 +17,14 @@ use crate::live::Live;
 use crate::notice::Notice;
 use crate::pane::{Machine, Pending, pane};
 use feeds::Feeds;
+use settings_app_link::accounts::AccountsLink;
+use settings_app_link::bus::{Daemon, plain};
+use settings_app_link::modules::ModulesLink;
+use settings_app_link::sync::SyncLink;
 use settings_app_model::{
     AccountsEffect, AccountsInput, AccountsState, AddEnd, ModuleId, ModuleRow,
     accounts_row_is_valued, accounts_step,
 };
-use settings_app_system::accounts::AccountsLink;
-use settings_app_system::bus::{BusSource, Daemon, plain};
-use settings_app_system::modules::ModulesLink;
-use settings_app_system::sync::SyncLink;
 use settings_dbus::LiveError;
 use std::sync::Arc;
 
@@ -43,13 +43,12 @@ pane!(Accounts, AccountsState, follow_all);
 
 impl Accounts {
     pub(crate) fn over(
-        bus: BusSource,
         modules: Arc<dyn ModulesLink>,
         link: Arc<dyn AccountsLink>,
         sync: Arc<dyn SyncLink>,
     ) -> Accounts {
         Accounts {
-            holds: HeldDeletions::over(bus, Arc::clone(&sync)),
+            holds: HeldDeletions::over(Arc::clone(&sync)),
             datasets: Datasets::over(sync),
             modules,
             link,

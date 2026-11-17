@@ -1,7 +1,7 @@
 //! The person at the top of the sidebar: who is using this computer.
 
+use settings_app_link::person::PersonLink;
 use settings_app_model::Person;
-use settings_app_system::person::PersonLink;
 use std::sync::Arc;
 
 /// The person's handle: cheap to clone.

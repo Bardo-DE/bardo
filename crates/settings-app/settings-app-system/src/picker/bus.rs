@@ -1,8 +1,8 @@
 //! inferd's settings module on the bus, as the picker's link.
 
-use super::PickerLink;
 use super::set::{set, set_pool};
-use crate::modules::Module;
+use settings_app_link::modules::Module;
+use settings_app_link::picker::PickerLink;
 use settings_app_model::Work;
 use settings_types::schema::KeyPath;
 
