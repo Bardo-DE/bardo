@@ -1,5 +1,6 @@
-//! The switch "Let my other computers use this computer's models": what it asks of the computer,
-//! behind one handle that the environment carries, so a test hands in scratch folders and a
+//! The switch "Let my other computers use this computer's models".
+//!
+//! What it asks of the computer, behind one handle that the environment carries, so a test hands in scratch folders and a
 //! manager that only writes down what it was asked.
 
 use crate::deadline::{Deadline, peer};

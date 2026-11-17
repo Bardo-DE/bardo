@@ -47,7 +47,9 @@ fn person_on(bus: &BusSource) -> Arc<dyn PersonLink> {
     }
 }
 
-/// The real services, looked for on `bus`: docket's agents and the added pictures under `data`,
+/// The real services, looked for on `bus`.
+///
+/// Docket's agents and the added pictures under `data`,
 /// the Wallpaper page's small pictures under `cache`, and the apps' actions listed from the
 /// manifests in `intent_dirs`, in the order of trust.
 #[must_use]

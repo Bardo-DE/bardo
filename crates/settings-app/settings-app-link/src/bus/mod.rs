@@ -1,5 +1,6 @@
-//! What every service of the Settings app shares of the bus, without touching it: which bus to
-//! look on (`BusSource`), who vouches for the owner of a service's name, the daemons a pane
+//! What every service of the Settings app shares of the bus, without touching it.
+//!
+//! Which bus to look on (`BusSource`), who vouches for the owner of a service's name, the daemons a pane
 //! reads, and the reading of a live module's rows.
 
 mod daemon;
