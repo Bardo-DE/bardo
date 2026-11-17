@@ -2,7 +2,7 @@
 //! listener and the token.
 
 use super::refusal::{Cause, Refusal};
-use super::route::{Models, Route, Target, admits, agent_app};
+use super::route::{AgentRoute, Models, Target, admits, agent_app};
 use super::session::{Agents, Ctx};
 use super::token::{Token, random_hex};
 use crate::cloud::models::{known_providers, provider_of};
@@ -162,7 +162,7 @@ impl Agents {
                     .ok_or_else(|| Refusal::invalid("a protocol is not an agent protocol"))
             })
             .collect::<Result<_, _>>()?;
-        let route = Route::parse(request.route)?;
+        let route = AgentRoute::parse(request.route)?;
         let app = agent_app(&program);
         let speaks = check_route(&engines, &route, &app, class).await?;
         let protocol = [
@@ -212,7 +212,7 @@ impl Agents {
 /// Checks that the route exists, is granted and may take data of `class`, and says what it speaks.
 async fn check_route(
     engines: &Engines,
-    route: &Route,
+    route: &AgentRoute,
     app: &account_core::AppId,
     class: DataClass,
 ) -> Result<Speaks, Refusal> {

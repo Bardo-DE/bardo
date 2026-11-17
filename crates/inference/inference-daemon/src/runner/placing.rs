@@ -6,7 +6,7 @@
 use super::{Job, Seating};
 use crate::admit::Standing;
 use crate::admit::{Priority, Seats};
-use crate::failure::{EngineView, Retry, Spoke, Tried, explain, log_line, retry};
+use crate::failure::{EngineView, Rerun, Spoke, Tried, explain, log_line, retry};
 use crate::seats::{Pass, seats_in};
 use engine_spec::engine;
 use engine_supervisor::EngineId;
@@ -143,11 +143,11 @@ impl Job {
                     .len()
             });
             match retry(who, error, spoke, tried, others) {
-                Retry::Elsewhere => {
+                Rerun::Elsewhere => {
                     avoid = Some(model.spec.id.clone());
                     tried = Tried::Once;
                 }
-                Retry::No => return reply,
+                Rerun::No => return reply,
             }
         }
     }

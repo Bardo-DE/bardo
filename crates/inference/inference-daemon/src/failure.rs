@@ -66,7 +66,7 @@ pub enum Tried {
 
 /// What to do with a failed request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Retry {
+pub enum Rerun {
     /// Run it again on another healthy instance of the same model.
     Elsewhere,
     /// It fails, with its plain sentence.
@@ -78,12 +78,12 @@ pub enum Retry {
 ///
 /// Nothing else is retried, and never on a different model: there is no quiet fallback.
 #[must_use]
-pub fn retry(who: Priority, error: ModelError, spoke: Spoke, tried: Tried, others: usize) -> Retry {
+pub fn retry(who: Priority, error: ModelError, spoke: Spoke, tried: Tried, others: usize) -> Rerun {
     match (who, error, spoke, tried, others) {
         (Priority::Person, ModelError::EngineStopped, Spoke::Nothing, Tried::Never, 1..) => {
-            Retry::Elsewhere
+            Rerun::Elsewhere
         }
-        _ => Retry::No,
+        _ => Rerun::No,
     }
 }
 

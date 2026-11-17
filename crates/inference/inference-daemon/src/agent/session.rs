@@ -5,7 +5,7 @@
 //! listener and, with its join set, every request in flight and the provider connections behind
 //! them.
 
-use super::route::Route;
+use super::route::AgentRoute;
 use super::token::Token;
 use crate::engines::Engines;
 use account_capability::AgentProgram;
@@ -24,7 +24,7 @@ pub struct Ctx {
     /// The app its grants, spend and audit lines are held under.
     pub app: AppId,
     /// Where requests go.
-    pub route: Route,
+    pub route: AgentRoute,
     /// The data class of everything on the session.
     pub class: DataClass,
     /// The session's secret.

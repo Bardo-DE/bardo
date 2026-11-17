@@ -22,7 +22,7 @@
 use crate::agent::handle::peek;
 use crate::agent::http::{self, ReadError, Request};
 use crate::agent::local;
-use crate::agent::route::{Models, Route, Target};
+use crate::agent::route::{AgentRoute, Models, Target};
 use crate::agent::session::Ctx;
 use crate::agent::token::Token;
 use crate::engines::Engines;
@@ -264,7 +264,7 @@ impl Lender {
                 )
             })?,
             app: guest_app(node),
-            route: Route {
+            route: AgentRoute {
                 target: Target::Model(id.clone()),
                 models: Models::Listed(vec![id.clone()]),
             },

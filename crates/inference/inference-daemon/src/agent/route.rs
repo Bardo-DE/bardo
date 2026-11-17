@@ -34,14 +34,14 @@ pub enum Models {
 
 /// A session's route.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Route {
+pub struct AgentRoute {
     /// Where requests go.
     pub target: Target,
     /// Which ids may be named.
     pub models: Models,
 }
 
-impl Route {
+impl AgentRoute {
     /// The route a bus argument names.
     ///
     /// # Errors

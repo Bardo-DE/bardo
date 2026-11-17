@@ -14,23 +14,23 @@ fn arg(kind: &str, id: &str, mode: &str, ids: &[&str]) -> RouteArg {
 #[test]
 fn routes_read_by_kind_and_by_which_ids_they_serve() {
     let account =
-        Route::parse(arg("account", "anthropic", "listed", &["claude-x"])).expect("route");
+        AgentRoute::parse(arg("account", "anthropic", "listed", &["claude-x"])).expect("route");
     assert_eq!(
         account.target,
         Target::Account(AccountId::parse("anthropic").expect("id"))
     );
     assert!(account.serves("claude-x"));
     assert!(!account.serves("claude-y"));
-    let any = Route::parse(arg("account", "openai", "any", &[])).expect("route");
+    let any = AgentRoute::parse(arg("account", "openai", "any", &[])).expect("route");
     assert!(any.serves("whatever"));
-    let local = Route::parse(arg("model", "qwen3", "listed", &[])).expect("route");
+    let local = AgentRoute::parse(arg("model", "qwen3", "listed", &[])).expect("route");
     assert_eq!(
         local.models,
         Models::Listed(vec!["qwen3".into()]),
         "its own id by default"
     );
     let aliased =
-        Route::parse(arg("model", "qwen3", "listed", &["claude-sonnet-4"])).expect("route");
+        AgentRoute::parse(arg("model", "qwen3", "listed", &["claude-sonnet-4"])).expect("route");
     assert!(aliased.serves("claude-sonnet-4") && !aliased.serves("qwen3"));
 }
 
@@ -46,7 +46,7 @@ fn routes_that_say_nothing_clear_are_refused_invalid() {
         arg("model", "m", "listed", &[""]),
     ];
     for one in bad {
-        let refusal = Route::parse(one.clone()).expect_err(&format!("{one:?}"));
+        let refusal = AgentRoute::parse(one.clone()).expect_err(&format!("{one:?}"));
         assert_eq!(refusal.cause(), Cause::InvalidArgs, "{one:?}");
     }
 }
