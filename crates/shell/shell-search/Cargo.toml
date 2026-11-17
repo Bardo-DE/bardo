@@ -33,6 +33,7 @@ jiff = { workspace = true }
 mime_guess = {workspace = true, features = ["default"]}
 nucleo-matcher = { workspace = true }
 percent-encoding = { workspace = true }
+http-reqwest = {path = "../../network/http-reqwest"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 zbus = {workspace = true, features = ["tokio"]}
 

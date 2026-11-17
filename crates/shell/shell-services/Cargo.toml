@@ -66,6 +66,8 @@ toml = { workspace = true }
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 nix = { workspace = true, features = ["user"] }
 async-trait = { workspace = true }
+http-core = {path = "../../network/http-core"}
+http-reqwest = {path = "../../network/http-reqwest"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 zbus = {workspace = true, features = ["tokio"]}
 networkmanager-proxy = {default-features = false, features = ["tokio"], path = "../../network/networkmanager-proxy"}

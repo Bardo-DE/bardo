@@ -65,8 +65,8 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    | Your picture and name | AccountsService | `accountsservice` | `accountsservice` | `accountsservice` |
 
    Enable what you install (`sudo systemctl enable --now NetworkManager bluetooth upower power-profiles-daemon accounts-daemon`;
-   the unit names differ little between distributions). Two more programs are needed at run time:
-   `curl` (cover art, currency rates) and `xdg-utils` (opening links), the same package names on all
+   the unit names differ little between distributions). One more program is needed at run time:
+   `xdg-utils` (opening links), the same package name on all
    three. External monitor brightness needs the `i2c-dev` module and an ACL on `/dev/i2c-*`: the install
    adds both unless a ddcutil package already does (`ddcutil` on all three).
 5. **keycap** replaces Toshy; the sill session has no Mac layout without it (Cmd stays Cmd). It is

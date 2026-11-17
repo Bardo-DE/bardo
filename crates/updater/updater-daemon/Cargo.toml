@@ -22,7 +22,9 @@ thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 semver = { workspace = true, features = ["serde"] }
-ureq = { workspace = true, features = ["rustls", "json"] }
+base-url = { path = "../../base/base-url" }
+http-core = { path = "../../network/http-core" }
+http-reqwest = { path = "../../network/http-reqwest" }
 zbus = {workspace = true, features = ["tokio"]}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "fs", "signal"]}

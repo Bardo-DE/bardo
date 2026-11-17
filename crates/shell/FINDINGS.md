@@ -185,7 +185,7 @@ A settled item is deleted, not marked closed.
   TZID/floating, DURATION, EXDATE, RECURRENCE-ID; RRULE FREQ daily-yearly, INTERVAL, COUNT,
   UNTIL, BYDAY with ordinals, BYMONTHDAY, BYMONTH, WKST; anything else shows once and logs
   once). `icalendar` and `rrule` bring chrono and a second zone database.
-- **Currency**: the ECB's daily file, fetched with `curl` at most once a day (an hour after a
+- **Currency**: the ECB's daily file, fetched at most once a day (an hour after a
   failure) into the cache, only while `launcher.currency = "ecb"` and only when the text could
   name a currency; never on a keystroke's path.
 - **Emoji**: the `emojis` crate joined with CLDR 48.2's English annotations

@@ -16,7 +16,7 @@ and can be rolled back. The behaviour follows macOS Software Update.
 | `bardo-updater` | downloading (`fetch`), the session service (`service`), the command line (`cli`), the daemon's files (`config`, `state`, `dirs`), the `pkexec` seam (`elevate`), and one binary: `bardo-updater` | files, network, session bus, a child process |
 
 `updater-core` reaches no network, bus, runtime or archive crate. `updater-root` may read archives (`tar`,
-`zstd`) but reaches no network client, TLS, bus or async runtime (`ureq`, `rustls`, `zbus`, `tokio`):
+`zstd`) but reaches no network client, TLS, bus or async runtime (`rustls`, `zbus`, `tokio`):
 the programs that run with administrator rights link only `updater-core`, `thiserror`, `semver`, `toml`,
 `rustix`, `tar` and `zstd` (and what those bring). `scripts/check-boundary.sh` checks both edges: `updater-core`
 reaches none of the network, bus, runtime or archive crates, and the whole tree of `updater-root` (normal and build
@@ -35,7 +35,7 @@ crates/bardo-updater-root/src/{lib, settings, layout, fsutil, keys, report, help
                         bin/{slipway_apply, slipway_rollback, slipway_health}.rs
                         apply/{mod, error, staged, unpack, step, install, exports, system, relabel, lock, open, harden, private, synced, guard}.rs
 crates/bardo-updater/src/{lib, main, config, dirs, state, clock, elevate, problem, report, health, login, bootstrap}.rs
-                   fetch/{mod, feed, stage, cache, ureq_fetch}.rs
+                   fetch/{mod, feed, stage, cache, http_fetch}.rs
                    service/{mod, context, engine, object, notify, run, status}.rs
                    cli/{mod, args, client, wait, confirm, recover}.rs
 dist/   bardo-updater.service  org.bardo.updater.policy  org.bardo.Updates1.service
@@ -253,7 +253,7 @@ is `org.bardo.Updates1.Error.NotAVersion`; anything else that stops the start (w
 The command line reads `Available` (checking first when it is empty) and passes that. Each returns at once, having already moved `State`
 (so a caller that polls `State` never sees the old value after the call returns), and refuses with
 a plain sentence when work is in progress; the work runs on a spawned task and the blocking parts
-(ureq, the helper) on blocking threads.
+(the blocking HTTP client, the helper) on blocking threads.
 
 `service/engine.rs` is the flow: check (latest `release.toml` verified, compared with the installed
 version through `standing`, only `Newer` is offered), notify once per version, download with
@@ -324,7 +324,7 @@ is indistinguishable from a restart, so the check waits for the next boot.
 
 | Trait | Real | Test |
 | --- | --- | --- |
-| `fetch::Fetch` | `UreqFetch` (HTTPS only) | in-memory map (`tests/it/feed_stage.rs`) |
+| `fetch::Fetch` | `HttpFetch` (HTTPS only, over `http-reqwest`) | in-memory map (`tests/it/feed_stage.rs`) |
 | `elevate::Elevate` | `Pkexec` (three programs) | recording stand-ins (`tests/it/health_start.rs`, `session_guard.rs`); `sh` scripts for `Pkexec` itself (`elevate_run.rs`) |
 | `slipway_core::Authenticator` | `PublicKey` (minisign) | accept-all and reject-all (`tests/it/support.rs`) |
 | `Layout { root, export_base }` | `/opt/bardo` and `/` | a temporary directory for both |

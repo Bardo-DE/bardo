@@ -1,10 +1,10 @@
 //! Cover art: every cover is read from bardo-shell's own art cache, which is a folder the shell may draw
-//! from. A remote one is fetched once into it ([`curl`], run by [`ArtFetcher`]), a local `file:` one
+//! from. A remote one is fetched once into it ([`http`], run by [`ArtFetcher`]), a local `file:` one
 //! outside every folder the shell may draw from is copied into it ([`cache::copy_cover`]), each
 //! within a size, and the cache is kept to a number of files and bytes.
 
 mod cache;
-mod curl;
+mod http;
 mod fetcher;
 
 use std::collections::HashMap;
