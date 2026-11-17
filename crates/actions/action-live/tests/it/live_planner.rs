@@ -50,11 +50,11 @@ fn the_catalogue_paths() {
     use std::path::Path;
     assert_eq!(
         default_source(Path::new("/home/me/docket/eval")),
-        Path::new("/home/me/stoker/catalog")
+        Path::new("/home/me/models/catalog")
     );
     assert_eq!(
         default_source(Path::new("/home/me/rs-wt/x/docket/eval")),
-        Path::new("/home/me/rs-wt/x/stoker/catalog")
+        Path::new("/home/me/rs-wt/x/models/catalog")
     );
     assert_eq!(
         world_dir(Path::new("/s")),

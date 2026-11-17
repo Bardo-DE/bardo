@@ -380,7 +380,7 @@ A settled item is deleted, not marked closed.
   also lifts a halt of that Space; a global halt (`all`) stays. The Terminal module draws only
   while there is a grant or a pause to show.
 - **Checkouts.** docket's own path dependencies resolve beside it, so every checkout of sill also
-  needs `../porter`, `../stoker` and `../almanac` (and `../docket`); `~/sill-wt/gate` needs the
+  needs `../porter`, `../models` and `../almanac` (and `../docket`); `~/sill-wt/gate` needs the
   same links as its other siblings.
 
 ## Standing facts: the companion

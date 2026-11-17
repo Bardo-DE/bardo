@@ -3,7 +3,7 @@
 # desktop itself builds without the desktop. Each core below must `cargo check` with the
 # features named, and its normal dependency tree must reach no D-Bus (zbus, zvariant). The
 # account-client build an accounts-only consumer uses (no features) must also reach no inference:
-# no stoker.
+# no model layer.
 #
 # Called from check-boundary.sh, which the lane gate runs. Output says each check and each
 # tree; the exit status is the verdict.
@@ -14,8 +14,8 @@ fail=0
 
 # What no portable core reaches.
 BUS='zbus|zvariant'
-# What the accounts-only builds also never reach: inference, and stoker through it (computer-use-action is
-# stoker's crate, by sibling path).
+# What the accounts-only builds also never reach: inference, and the model layer through it (computer-use-action is
+# The model layer's crate, by sibling path).
 INFER='computer-use-action'
 
 # check <label> <crate> <forbidden regex> [cargo feature flags...]
@@ -37,8 +37,8 @@ check() {
   local leaked
   # `name vX.Y.Z` is the first two fields; a path dependency also names its directory.
   leaked=$(awk '{print $1}' <<<"$tree" | grep -xE "$forbidden" | sort -u | tr '\n' ' ')
-  if grep -q '/stoker/' <<<"$tree" && [[ "$forbidden" == *computer-use-action* ]]; then
-    leaked="$leaked(a stoker path) "
+  if grep -q '/models/' <<<"$tree" && [[ "$forbidden" == *computer-use-action* ]]; then
+    leaked="$leaked(a model layer path) "
   fi
   if [ -n "$leaked" ]; then
     echo "LEAK: $label reaches ${leaked% }"

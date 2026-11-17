@@ -5,7 +5,7 @@
 //!
 //! The pieces, from the bottom:
 //!
-//! - [`bridge`]: porter's requests as stoker's turns over a [`inference_router::local::LocalModel`]
+//! - [`bridge`]: porter's requests as the model layer's turns over a [`inference_router::local::LocalModel`]
 //!   (its catalogue entry's sampling and output limit, its engine's flavor); the mapping itself is
 //!   `inference-bridge`'s and is re-exported.
 //! - [`tee`]: a turn sink that keeps the whole turn for a pure session to read and shows the

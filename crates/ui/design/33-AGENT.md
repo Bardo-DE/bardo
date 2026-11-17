@@ -30,7 +30,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 
 | Repo | Holds | Portable |
 | --- | --- | --- |
-| stoker (new) | the model layer: provider trait, backends, computer-use action and parse, vision prep, catalogue, engine supervisor | yes |
+| The model layer (new) | the model layer: provider trait, backends, computer-use action and parse, vision prep, catalogue, engine supervisor | yes |
 | porter | the account and capability layer, plus `prov` (labels and the shared who and what vocabulary), `SpaceId`, streaming inference, inferd | yes |
 | almanac (new) | memory: event log, memory files, recall, the memory daemon | yes (daemon Linux) |
 | docket (new) | typed actions, router, policy, review, the MCP edge, and the companion agent (loop, daemon, reader), plus the adapter Bardo apps use | core yes; daemons Linux |
@@ -40,7 +40,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | sill | launcher companion mode, the companion service, providers, overlays, settings domain | no |
 | The Settings app | the Intelligence page row and icon | no |
 
-Direction, acyclic and enforced per repo by each `check-boundary.sh`: stoker, then porter, then
+Direction, acyclic and enforced per repo by each `check-boundary.sh`: the model layer, then porter, then
 almanac, then docket, then cua, then sill. Bardo depends on none of them; docket's adapter depends
 on the UI kit's `ui-intents`.
 
@@ -109,7 +109,7 @@ prompt props (Bardo fill), or anything in the other repos.
 
 ## 9. The freeze plan
 
-The spec's section 6 orders the agents (dependency list, stoker, Bardo, porter, almanac and docket,
+The spec's section 6 orders the agents (dependency list, the model layer, Bardo, porter, almanac and docket,
 cua and the compositor fork, sill and the Settings app), the spikes that block fills, and the fill waves.
 Every repo's gate is format, clippy with warnings denied, tests, the boundary script and the
 licence check, and the UI kit's adds the consumer check; each exit code is checked and nothing is piped.

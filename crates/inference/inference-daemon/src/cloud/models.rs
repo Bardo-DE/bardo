@@ -1,8 +1,8 @@
-//! The hosted models an app may be served: stoker's curated remote entries, each through the one
+//! The hosted models an app may be served: the model layer's curated remote entries, each through the one
 //! reach (provider, model id there) that an account of the app's allows.
 //!
 //! A remote entry is a model; its reaches are the accounts that can run it. Which reach is used
-//! is stoker's `reachable` (a company's own account before a gateway's; only a wire this build
+//! is the model layer's `reachable` (a company's own account before a gateway's; only a wire this build
 //! speaks), asked with the providers the app holds a grant on. An entry no granted account
 //! reaches is still a card when the app has an account on it that says `ask` or `denied`, so a
 //! refusal can say "needs a grant" rather than "nothing is available" (routing's `admit` keeps
@@ -18,7 +18,7 @@ use inference_core::{ModelCard, ModelRef, Permit};
 use model_catalog::{Locality, ModelEntry, ProviderId, Reach, Wire, reachable};
 use std::collections::BTreeSet;
 
-/// The wires this build speaks to a hosted model. Anthropic's Messages API waits for a stoker
+/// The wires this build speaks to a hosted model. Anthropic's Messages API waits for a model layer
 /// adapter; Claude goes through `OpenRouter` until then.
 pub const WIRES: [Wire; 1] = [Wire::OpenAiCompat];
 

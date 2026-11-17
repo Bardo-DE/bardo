@@ -177,14 +177,14 @@ fn a_float_file_says_so_a_partial_sample_is_cut_and_mixed_formats_are_refused() 
 
 #[test]
 fn the_boundary_never_appears_in_the_audio() {
-    let hostile = b"------stoker0f3c9a1e".to_vec();
+    let hostile = b"------models0f3c9a1e".to_vec();
     let body = encode_transcription(
         &stt(LangChoice::Auto),
         &[chunk(S16_16K, 0, hostile.clone())],
     )
     .unwrap();
     let boundary = body.content_type.split("boundary=").nth(1).unwrap();
-    assert_ne!(boundary, "----stoker0f3c9a1e");
+    assert_ne!(boundary, "----models0f3c9a1e");
     let (_, wav) = parts(&body);
     assert_eq!(&wav[44..], &*hostile);
 }

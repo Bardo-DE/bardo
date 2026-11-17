@@ -134,7 +134,7 @@
 # reply = 16384
 
 # An embedding model's vector length, limits and prefixes are the catalog entry's `embed` table
-# (stoker catalog file of the model), not this file: memoryd asks for nomic-embed-text v1.5
+# (the model catalog file of the model), not this file: memoryd asks for nomic-embed-text v1.5
 # (768 numbers, `search_query: ` and `search_document: `).
 
 # Who may call is not this file's to say: inferd reads its callers only from the system's table,

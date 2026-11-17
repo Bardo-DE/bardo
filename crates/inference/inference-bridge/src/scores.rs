@@ -6,12 +6,12 @@
 //! ([`option_scores`]) into one `Permille` share per option, in the declared order, adding up to
 //! exactly 1000.
 //!
-//! Stoker's [`FirstTokenLogprobs::option_permille`] does the arithmetic and states the rules once:
+//! The model layer's [`FirstTokenLogprobs::option_permille`] does the arithmetic and states the rules once:
 //! a token counts for the option whose text starts with it; an option missing from the top-k has
 //! mass 0; the largest remainder settles the rounding (ties go to the earlier option); and the
 //! answer is `None` when a token with mass starts two options (first-token scores cannot tell
-//! them apart; stoker carries no whole-sequence log-probabilities to fall back on), when no
-//! option has any mass, or with fewer than two options. A NaN never reaches it (stoker drops the
+//! them apart; the model layer carries no whole-sequence log-probabilities to fall back on), when no
+//! option has any mass, or with fewer than two options. A NaN never reaches it (the model layer drops the
 //! entry) and a `-inf` is a mass of 0. This module only maps its answer onto porter's types, so
 //! the two `Permille` types meet in one place, and checks the result once more.
 

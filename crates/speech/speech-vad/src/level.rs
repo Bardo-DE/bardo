@@ -10,7 +10,7 @@ use speech_provider::Frame512;
 #[serde(transparent)]
 pub struct Level(pub u16);
 
-/// The level of one frame. Integer arithmetic only (no floats anywhere in stoker).
+/// The level of one frame. Integer arithmetic only (no floats anywhere in the model layer).
 #[must_use]
 pub fn level_of(frame: &Frame512) -> Level {
     let energy: u64 = frame

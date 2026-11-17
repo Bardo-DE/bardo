@@ -9,7 +9,7 @@
 //! * [`OwnServer`] is what the accounts give (the account, its name, where it is);
 //! * [`Address`] is where and how: the address's host, port and base path, and whether the
 //!   connection is TLS, plain on this computer, or plain elsewhere (a computer of the person's
-//!   own on their tailnet, which stoker sends no key to);
+//!   own on their tailnet, which the model layer sends no key to);
 //! * [`OwnBook`] keeps what each server listed, in memory, as hosted models with no limit known:
 //!   the context window and the longest reply are 0, meaning not known.
 //!
@@ -68,7 +68,7 @@ pub enum Link {
     Tls,
     /// Plain `http` to this computer.
     PlainLoopback,
-    /// Plain `http` to a computer of the person's own: stoker sends no key over it.
+    /// Plain `http` to a computer of the person's own: the model layer sends no key over it.
     Plain,
 }
 

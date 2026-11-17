@@ -1,8 +1,8 @@
-//! Embeds the catalog stoker ships, as it is in this tree, for `testkit::pinned_stoker_catalog`.
+//! Embeds the catalog the model layer ships, as it is in this tree, for `testkit::pinned_model_catalog`.
 //!
 //! A test runs where the build's sources may not be (an archive run in a jail binds only the
-//! repo and the target directory), so the files go into the test binary itself. stoker lives in
-//! this monorepo at `crates/stoker`, found from this crate's manifest directory. The embedded
+//! repo and the target directory), so the files go into the test binary itself. The model layer lives in
+//! this monorepo at `crates/models`, found from this crate's manifest directory. The embedded
 //! files are named by a hash of their content, so a changed catalog never reuses an old copy.
 
 use std::fmt::Write as _;
@@ -30,7 +30,7 @@ fn main() {
     }
     code.push_str("]\n");
     let out = PathBuf::from(std::env::var_os("OUT_DIR").expect("out dir"));
-    std::fs::write(out.join("stoker_catalog.rs"), code).expect("write the embedded catalog");
+    std::fs::write(out.join("model_catalog.rs"), code).expect("write the embedded catalog");
     println!("cargo:rustc-env=BARDO_ENGINE_CATALOG_REV={hash:016x}");
 }
 

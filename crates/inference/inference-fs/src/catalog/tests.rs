@@ -43,7 +43,7 @@ fn a_missing_directory_is_an_empty_catalog() {
 #[test]
 fn the_catalogue_alone_makes_no_claim_for_an_attached_entry_whatever_its_locality_says() {
     let shipped = CatalogDirs {
-        system: inference_router::testkit::pinned_stoker_catalog(),
+        system: inference_router::testkit::pinned_model_catalog(),
         user: PathBuf::from("/nonexistent/user/catalog"),
     };
     let catalog = read_catalog(&shipped);

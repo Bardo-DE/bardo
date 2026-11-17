@@ -128,7 +128,7 @@ pub(crate) fn slug<T: Serialize>(value: &T) -> String {
     }
 }
 
-/// The shape of a stage's reply, in stoker's vocabulary, so inferd renders it for the engine
+/// The shape of a stage's reply, in the model layer's vocabulary, so inferd renders it for the engine
 /// (a one-token choice for Quick, a record for the others) and owns validation and retry.
 pub fn verdict_shape(stage: Stage) -> Shape {
     let choice =

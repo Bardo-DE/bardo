@@ -1,11 +1,11 @@
 //! One computer-use step over a model turn.
 //!
-//! Stoker's `CuaSession` builds the prompt and reads the
+//! The model layer's `CuaSession` builds the prompt and reads the
 //! reply, and this module is the turn between them. It prepares the frame, runs the turn through
 //! a transcript sink, hands the transcript to `absorb_for` and, when that asks for a repair, runs
 //! one more turn with the request it returns.
 //!
-//! What stoker leaves to the daemon is done here, from the model's catalog entry: the
+//! What the model layer leaves to the daemon is done here, from the model's catalog entry: the
 //! `CuaProfile` (dialect, resize rule and space of the entry, a history of one frame fewer than
 //! the model takes per prompt, one repair) and the `TurnSettings` (the entry's output limit, how
 //! many calls a turn may make, the engine's extras, and reasoning off with its sampling, except for
@@ -13,7 +13,7 @@
 //! sampling for it).
 //!
 //! The window's contents and the notes said to the run are `ObservationIn::with_tree` and
-//! `with_notes`; a note keeps who said it in its words ("The person says: ..."), because stoker's
+//! `with_notes`; a note keeps who said it in its words ("The person says: ..."), because the model layer's
 //! `StepNote` is one line of text.
 
 use crate::bridge::{self, BridgeError, Frames};
@@ -73,7 +73,7 @@ pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<Cua
     if matches!(dialect, CuaDialect::Wire(_)) {
         return None;
     }
-    // As many past frames as the model takes with the current one (`per_prompt - 1`); stoker cuts
+    // As many past frames as the model takes with the current one (`per_prompt - 1`); the model layer cuts
     // the wish to what the entry allows.
     let profile = CuaProfile::for_model(
         dialect,
@@ -112,7 +112,7 @@ pub fn open(model: &LocalModel, begin: &CuaBegin, ceiling: Tokens) -> Option<Cua
     Some(CuaSession::begin(profile, task, model.name.clone()).with_settings(settings))
 }
 
-/// What happened to each action of the previous step, as stoker's prompt has it. The calls'
+/// What happened to each action of the previous step, as the model layer's prompt has it. The calls'
 /// ids are ours (a tool or text dialect does not read them; a vendor wire is not served here).
 /// A failure, and the person's own part in it, are told as a refusal with their words.
 fn prev_results(prev: &[PrevResult]) -> Vec<StepResult> {

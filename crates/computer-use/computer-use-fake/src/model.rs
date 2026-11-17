@@ -69,7 +69,7 @@ impl ScriptedModel {
         self
     }
 
-    /// A script from a recorded cassette: each interaction's reply, parsed by stoker's
+    /// A script from a recorded cassette: each interaction's reply, parsed by the model layer's
     /// `computer-use-parse` into window space.
     ///
     /// A cassette does not say how its model writes actions, so each reply is read as Qwen's

@@ -1,4 +1,4 @@
-//! Hosted models: the curated remote entries of stoker's catalogue, reached through accounts the
+//! Hosted models: the curated remote entries of the model layer's catalogue, reached through accounts the
 //! person gave an app a grant on.
 //!
 //! * [`accountd`]: the seam to accountd (`Peer.Verdicts` for which accounts an app holds a grant
@@ -8,7 +8,7 @@
 //!   and the models each lists, as hosted models with no limit known.
 //! * [`picker`]: the hosted models as the model picker lists them.
 //! * [`wire`]: where each provider is and how a request is shaped for it.
-//! * [`transport`]: stoker's TLS `HttpClient` behind inferd's body shaping.
+//! * [`transport`]: the model layer's TLS `HttpClient` behind inferd's body shaping.
 //! * [`spend`]: the meter and the caps.
 //! * [`turn`]: one chat turn to a hosted model: key, request, reply, meter.
 //!

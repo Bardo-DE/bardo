@@ -1,7 +1,7 @@
 //! Computer-use steps as one run on one session: its goal and what it did so far.
 //!
 //! A step runs one model turn through the pinned engine; the prompt, the parse (with one
-//! repair) and the mapping into window space are stoker's `CuaSession`, which `cua_step` drives.
+//! repair) and the mapping into window space are the model layer's `CuaSession`, which `cua_step` drives.
 //! The history lives in the session value the run holds, so the run is pinned to one model.
 
 use crate::bridge::Frames;
@@ -21,7 +21,7 @@ pub use inference_router::router::check_class;
 
 /// One run's state on one session.
 ///
-/// It holds the goal, and the stoker session once the first step has
+/// It holds the goal, and the model session once the first step has
 /// chosen the model's profile (the model is the session's pin, known to the step and not to the
 /// `CuaBegin` request).
 #[derive(Clone)]

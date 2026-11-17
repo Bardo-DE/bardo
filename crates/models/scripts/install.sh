@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# install.sh: install stoker's model catalogue (the files inferd reads to know which models exist)
-# and the engine helper (engine-install's `bardo-engine-helper`, the one program stoker ships), for the
-# whole machine or for one user. The rest of stoker is libraries and data. The
+# install.sh: install the model layer's model catalogue (the files inferd reads to know which models exist)
+# and the engine helper (engine-install's `bardo-engine-helper`, the one program the model layer ships), for the
+# whole machine or for one user. The rest of the model layer is libraries and data. The
 # speech host that the catalogue's speech models name is not installed, because it needs the
 # sherpa libraries that dev/build-sherpa.sh fetches.
 #
@@ -33,7 +33,7 @@
 # /usr/local is found. A prefix whose share folder is not one of those is not.
 set -euo pipefail
 
-REPO_NAME="stoker"
+REPO_NAME="models"
 NEEDS_GIT=0
 FIRST_SERVICE=""
 CARGO_EXTRA=()

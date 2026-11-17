@@ -48,7 +48,7 @@ CRATES="$TREE/crates"
 PORTER="$CRATES/accounts"
 INFERENCE="$CRATES/inference"
 ALMANAC="$CRATES/memory"
-STOKER="$CRATES/models"
+MODELS="$CRATES/models"
 CUA="$CRATES/computer-use"
 
 PREFIX="${PREFIX:-$HOME/.local}"
@@ -156,7 +156,7 @@ build_plan() {
   plan data "$INFERENCE/dist/inference.settings.toml" "$DATA/bardo/settings/inference.settings.toml"
   plan data "$ALMANAC/memory-settings/schema/memory.settings.toml" "$DATA/bardo/settings/memory.settings.toml"
   plan_tree data "$PORTER/providers" "$DATA/bardo/accounts/providers"
-  plan_tree data "$STOKER/catalog" "$DATA/bardo/models/catalog"
+  plan_tree data "$MODELS/catalog" "$DATA/bardo/models/catalog"
   local cfg
   for cfg in "$DOCKET"/dist/*.toml; do
     # The callers files are the system's (sudo_step prints them): a fixed role (the shell's sheet_host)

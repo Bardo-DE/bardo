@@ -1,6 +1,6 @@
 //! The engine host and the book of models a session may be routed to.
 //!
-//! The engine host: stoker's `engine-supervisor` machine driven over an `EngineHost` (child
+//! The engine host: the model layer's `engine-supervisor` machine driven over an `EngineHost` (child
 //! processes today, systemd transient units later), with the GPU as a shared resource, and the
 //! book of models a session may be routed to. `Engines` is the one object the router, the
 //! `Inference1` handler and the session server share: it knows the models, their readiness, and
@@ -399,7 +399,7 @@ impl Engines {
     }
 
     /// Every model a session may be routed to, with its readiness now and what loading it would
-    /// take (stoker's `budget`, asked speculatively: nothing is started).
+    /// take (the model layer's `budget`, asked speculatively: nothing is started).
     #[must_use]
     pub fn listed(&self) -> Vec<Listed> {
         self.listed_with(&Offered::default())

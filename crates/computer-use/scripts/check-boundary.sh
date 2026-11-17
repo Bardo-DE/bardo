@@ -107,7 +107,7 @@ RULES=(
   # an HTTP client to an engine on this machine; never a bus, a wayland connection, the
   # accessibility stack, a database or the policy engine.
   "computer-use-eval: zbus zvariant wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
-  # The cloud eval is the eval plus the bus to inferd (zbus through inference-client): a stoker Provider whose
+  # The cloud eval is the eval plus the bus to inferd (zbus through inference-client): a model layer Provider whose
   # turns are inferd chat turns, so a hosted model's key stays in accountd. It reaches no wayland
   # connection, accessibility stack, database or policy engine.
   "computer-use-eval-cloud: wayland-client wayland-backend wayland-server atspi oo7 ort fastembed rusqlite notify rmcp cedar-policy"
@@ -213,7 +213,7 @@ for row in "${LAYERS[@]}"; do
   bad=0
   for dep in $deps; do
     dep_tier=$(tier_of "$dep")
-    # A dependency from another repo (stoker, porter, docket, almanac) has no row here.
+    # A dependency from another repo (the model layer, porter, docket, almanac) has no row here.
     [ -z "$dep_tier" ] && continue
     if [ "$(rank "$dep_tier")" -gt "$(rank "$tier")" ]; then
       echo "LAYER: $crate ($tier) depends on $dep ($dep_tier), which is above it"; bad=1; fail=1
@@ -299,7 +299,7 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# cua sits above docket and below sill in the repo order (stoker, porter, almanac, docket, cua,
+# cua sits above docket and below sill in the repo order (the model layer, porter, almanac, docket, cua,
 # sill), and the GPL compositors are separate processes: nothing of sill's, and
 # nothing of theirs (smithay itself), may enter any tree of this workspace,
 # dev-dependencies included.

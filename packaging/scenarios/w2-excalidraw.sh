@@ -24,7 +24,7 @@
 # Optional: W2_PLANNER_MODEL (default qwen3-4b-instruct-2507-fp8), W2_SCREEN_MODEL (default holo4-35b-a3b-fp8),
 # W2_PLANNER_SERVED / W2_SCREEN_SERVED, W2_BROWSER (default $JAIL_REAL_HOME/.local/opt/zen/zen), W2_BROWSER_APP
 # (the window id, default app.zen_browser.zen), W2_DRAW_DIR (the offline build, default
-# $JAIL_REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0), W2_STOKER_CATALOG, W2_PROVIDERS, W2_SHOT_EVERY (seconds,
+# $JAIL_REAL_HOME/.cache/bardo-workflow/excalidraw-0.18.0), W2_MODEL_CATALOG, W2_PROVIDERS, W2_SHOT_EVERY (seconds,
 # default 120), W2_CUA_STEPS (default 300), W2_CUA_ACTIVE_S (default 1800), W2_AFTER_SAVE_S (how long to keep waiting for
 # the turn to end after the drawing is saved, default 300), W2_CLICK_PAGE (1, the default: the person clicks into the
 # lamp page, so the browser is the active app; 0: no click, so the screen helper has to ask the compositor for focus).
@@ -241,8 +241,8 @@ check_model() {
 
 PLANNER_SERVED="" SCREEN_SERVED=""
 prepare_models() {
-  local catalog=$RUN/catalog src=${W2_STOKER_CATALOG:-$SCEN_SIB/models/catalog}
-  [ -d "$src" ] || { note "No model catalogue at $src (set W2_STOKER_CATALOG)."; return 3; }
+  local catalog=$RUN/catalog src=${W2_MODEL_CATALOG:-$SCEN_SIB/models/catalog}
+  [ -d "$src" ] || { note "No model catalogue at $src (set W2_MODEL_CATALOG)."; return 3; }
   mkdir -p "$catalog" "$AGENTS/config/bardo/inference"
   cp "$src"/*.toml "$catalog/"
   [ -f "$catalog/$PLANNER_MODEL.toml" ] || { note "The catalogue has no entry for $PLANNER_MODEL."; return 3; }

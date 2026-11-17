@@ -1,5 +1,5 @@
 //! Computer use (design/31 §2.3): a model that operates a window from screenshots. The dialect
-//! detail (grid size, prompt format) stays in stoker's catalog; this is what an app or the
+//! detail (grid size, prompt format) stays in the model layer's catalog; this is what an app or the
 //! companion may ask for.
 
 use super::ai::LlmWire;

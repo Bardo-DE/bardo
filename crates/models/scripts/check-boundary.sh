@@ -95,7 +95,7 @@ BANS=(
 # HTTP stack (model-http) may reach a runtime but nothing below. The codecs (model-wire,
 # model-openai-compat) and model-extract are pure over the Transport trait, so when
 # `HttpClient`'s transport is used it sits behind a feature that only a daemon turns on, and these rows
-# keep checking default features. Nothing here reaches porter: stoker is portable.
+# keep checking default features. Nothing here reaches porter: the model layer is portable.
 PORTER="account-core inference-core account-client account-provider"
 EFFECTS="tokio hyper hyper-util rustls zbus zvariant reqwest ureq wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify cedar-policy rmcp"
 # Audio devices belong to the voice stack (speech-audio, speech-pipewire, speech-daemon), never to the crates checked here; and no

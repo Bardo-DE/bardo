@@ -86,10 +86,10 @@ fn property(param: &ParamDecl) -> Value {
     schema
 }
 
-/// A leaf parameter as stoker's structured-output vocabulary renders it: text, integers and
+/// A leaf parameter as the model layer's structured-output vocabulary renders it: text, integers and
 /// choices are `Shape`s, so the planner's grammar and the reader's reply shapes say the same
 /// thing the same way. Entities, handles, dates and the rest have no form in that vocabulary
-/// (an entity-or-handle form is an interface ask of stoker), so they stay hand-written below.
+/// (an entity-or-handle form is an interface ask of the model layer), so they stay hand-written below.
 fn shaped(shape: &Shape) -> Value {
     serde_json::from_str(shape.to_json_schema(SchemaDialect::Plain).0.as_str())
         .unwrap_or(Value::Null)

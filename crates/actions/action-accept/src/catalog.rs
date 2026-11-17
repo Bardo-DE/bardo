@@ -2,7 +2,7 @@
 //!
 //! inferd looks in `$XDG_DATA_HOME/bardo/models/catalog` (the user's) and
 //! `/usr/share/bardo/models/catalog`; a harness world's `XDG_DATA_HOME` is scratch, so the entries
-//! are copied there from a directory the run names (default: the sibling stoker checkout's
+//! are copied there from a directory the run names (default: the sibling the model layer checkout's
 //! `catalog/`). Copied, never linked: nothing in the real tree can be written through the world.
 
 use std::path::{Path, PathBuf};
@@ -13,7 +13,7 @@ pub fn world_dir(scratch: &Path) -> PathBuf {
     scratch.join("data/bardo/models/catalog")
 }
 
-/// The default source: `../stoker/catalog` beside the docket checkout whose `eval/` is
+/// The default source: `../models/catalog` beside the docket checkout whose `eval/` is
 /// `eval_dir`, made absolute. Pure: it joins and normalises, it opens nothing.
 #[must_use]
 pub fn default_source(eval_dir: &Path) -> PathBuf {
@@ -27,7 +27,7 @@ pub fn default_source(eval_dir: &Path) -> PathBuf {
     let mut parts: Vec<_> = base.components().collect();
     parts.pop();
     let mut out: PathBuf = parts.iter().collect();
-    out.push("stoker");
+    out.push("models");
     out.push("catalog");
     out
 }

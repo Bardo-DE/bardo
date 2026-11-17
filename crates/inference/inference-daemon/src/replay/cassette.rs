@@ -1,12 +1,12 @@
 //! The replay cassette: a file of (request match, reply) pairs, read from the path
 //! `inferd.toml` names, matched against the chat requests inferd sends an engine.
 //!
-//! The file is stoker's `model-replay` shape: JSON Lines, a header line (its `CassetteHeader`:
+//! The file is the model layer's `model-replay` shape: JSON Lines, a header line (its `CassetteHeader`:
 //! version, engine stamp, model, context) and then one [`Entry`] per line. The header is
-//! stoker's; the lines are inferd's own, because a wire cassette matches a request by its whole
+//! The model layer's; the lines are inferd's own, because a wire cassette matches a request by its whole
 //! body and a scripted conversation cannot (a planner's view carries ids the cassette's author
 //! cannot know), so an entry says what a request must look like ([`When`]) instead. The reply of
-//! an entry may be a recorded `WireReply` of stoker's.
+//! an entry may be a recorded `WireReply` of the model layer's.
 
 use model_replay::{CassetteError, CassetteHeader, CassetteVersion, WireReply};
 use serde::{Deserialize, Serialize};
@@ -143,7 +143,7 @@ impl When {
 /// A cassette in memory.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Cassette {
-    /// Stoker's header.
+    /// The model layer's header.
     pub header: CassetteHeader,
     /// The entries, in file order.
     pub entries: Vec<Entry>,

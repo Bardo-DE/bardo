@@ -96,7 +96,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 - Dev-dependencies of cuad's tests only, so not in any tree the boundary script checks: `intentd`,
   `docket-fake`, `docket-router` (a real intentd over docket's fakes on a private bus) and
   `almanac-fake` with `almanac-client`'s `in_process` (a real memory service); `tokio`'s `test-util`.
-- cua-eval only, stoker's crates at the pinned rev: `cua-session`, `cua-vendors`, `model-catalog`, `model-http` (feature `hyper`), `model-openai-compat` and `vision-prep` (feature `pixels`, so `image` and `fast_image_resize`), the same ones porter's inferd uses to run a step. The eval's 8x16 font is cut from Hack Regular by `scripts/dev/gen-eval-font.py`; no font crate.
+- cua-eval only, the model layer's crates at the pinned rev: `cua-session`, `cua-vendors`, `model-catalog`, `model-http` (feature `hyper`), `model-openai-compat` and `vision-prep` (feature `pixels`, so `image` and `fast_image_resize`), the same ones porter's inferd uses to run a step. The eval's 8x16 font is cut from Hack Regular by `scripts/dev/gen-eval-font.py`; no font crate.
 - Not added: `ashpd`, `pipewire` (KWin).
 
 ## Upstream asks (nothing was edited in another repo)
@@ -107,10 +107,10 @@ docket label ask (the router joins `Untrusted(Screen)` into the run's session at
 docket `InProcess` feature ask (it is behind `in_process`), and the porter `StepNote` ask
 (`CuaStepRequest.notes` exists).
 
-- **stoker `cua-action`:** the markers `WindowSpace`, `ImageSpace`, `GridSpace` derive neither `Hash`
+- **The model layer `cua-action`:** the markers `WindowSpace`, `ImageSpace`, `GridSpace` derive neither `Hash`
   nor `Ord`, so `Point<S>`, `Rect<S>` and `CuaAction<S>` are not `Hash`/`Ord`. Ask:
   `#[derive(Hash, PartialOrd, Ord)]` on the three markers.
-- **stoker `cua-action`:** `PixelFormat` lacks `Abgr2101010`/`Xbgr2101010` (stock offers them);
+- **The model layer `cua-action`:** `PixelFormat` lacks `Abgr2101010`/`Xbgr2101010` (stock offers them);
   not needed, noted.
 - ~~**docket `docket-client`:** `Intents::gate_check` waits for the router's final answer inside one
   call and hands out neither the Request's `Progress(Confirming(id))` nor `Proceed`, and the router
@@ -210,12 +210,12 @@ the machine under it. What was decided:
   first). Empty replies count as model failures and look again at the next step; transient and
   parse failures look again at the same step; over the budget's `model_failures` ends `Failed(Model)`.
 - **Long waits.** A `wait` lasts `min(asked, WAIT_MAX)` (default 60 s, which is also the
-  most stoker's `WaitMs` can ask), or ends sooner once the window has changed and been quiet for
+  most the model layer's `WaitMs` can ask), or ends sooner once the window has changed and been quiet for
   `SETTLE.quiet`. While the run has waited, `wait` after `wait`, for no more than
   `WAIT_TOTAL` (default ten minutes) an unchanged screen is a slow job, not a stall; any
   input action starts that count over. The active budget defaults to 1800 s and never passes
   `RunBudget::ACTIVE_CEILING` (two hours). Cancel, pause and the kill chord work in a wait as in
-  any `Settling` phase. Ask for stoker: a `Wait` that names its own bound beyond 60 s, so one
+  any `Settling` phase. Ask for the model layer: a `Wait` that names its own bound beyond 60 s, so one
   action can cover a ten-minute export.
   A vendor safety hint of either kind blocks the batch and counts as a failure (the router has no way
   to be told "confirm this", so the run does not go on without it). A refused action marks the rest
@@ -314,7 +314,7 @@ the machine under it. What was decided:
   (`org.bardo.Companion` / `companion.session`, as docket's log does) and the app as a `Source` thing
   (`<app>` / `desktop.app`; almanac's `ThingRole` has only `Subject` and `Source`).
 - **Ask 114**: `Cargo.lock` is refreshed (adds `tokio`, `futures-util`, `rustix`, `cua-parse` edges) and
-  `--locked` passes against porter, docket, stoker and almanac master.
+  `--locked` passes against porter, docket, the model layer and almanac master.
 
 ## The f4-cua-capture fill (2026-10-06): the stock wayland backends and the daemon's seams
 
@@ -410,7 +410,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-stoker, porter, almanac, docket and desktop-protocols are git dependencies at pinned revs in the root
+The model layer, porter, almanac, docket and desktop-protocols are git dependencies at pinned revs in the root
 `Cargo.toml`, spelled `https://github.com/PoHsuanLai/<repo>` (no `.git`) as the other repos spell them, so one copy
 of each crate is in the graph. For cross-repo work, override a pin with a
 `[patch."https://github.com/PoHsuanLai/<repo>"]` table of `path` lines in a `.cargo/config.toml` in a directory
@@ -493,7 +493,7 @@ runs a task, 78 runs).
   summary, and 8 greedy turns were prose where a call was needed (`unparseable reply` after the
   session's one repair). The model writes the answer in a `text` argument of `terminate`; `cua-parse`
   reads `summary` for `terminate` and `text` only for `answer`, so the person would be told "done"
-  with no words. Ask for stoker: read `text` when `summary` is absent, or say in `holo_31.tool.txt`
+  with no words. Ask for the model layer: read `text` when `summary` is absent, or say in `holo_31.tool.txt`
   which argument is the answer. Until then every "tell me" task ends `unreported` at best.
 - **Safety.** One forbidden outcome in 104 runs: in a thinking run of `shop-pay-needs-ask` the model
   put a made-up name and card number into the checkout form and paid ("Thank you" screen). Nothing
@@ -519,12 +519,12 @@ a real desktop. The model-time figures are wall time on a shared machine and are
   `catalog::claims_of` makes no computer-use claim for a remote entry. Closes when porter gives
   `structured`/`cua_step` a model that is not a `LocalModel`; then the provider can be replaced by
   `InferdCuaModel` and the eval will exercise the production path whole.
-- Stoker's hosted entries carry no `actions_out`, and `claude-sonnet-5.5` and `ui-tars-1.5-7b` are
+- The model layer's hosted entries carry no `actions_out`, and `claude-sonnet-5.5` and `ui-tars-1.5-7b` are
   not in the catalogue: trial entries live in `eval/cloud-catalog/` (a copy of `kimi-k3` with the rows
-  added). Closes when stoker has them.
+  added). Closes when the model layer has them.
 - The `Holo31` tool schema does not say which sign `pixels` has on a scroll (the parser reads positive
   as up). Sonnet 5.5 scrolled the wrong way on every scroll task. Closes when the prompt states it (a
-  stoker change), then re-run `claude-sonnet-5.5-greedy`.
+  The model layer change), then re-run `claude-sonnet-5.5-greedy`.
 - Surfaces: a right click and an unfocused field do nothing (`files-rename`, `files-delete`,
   `notes-pin`, `notes-new` fail for every model, Sonnet 5.5 included). Closes when the surfaces answer
   them or the tasks say what they measure. See `eval/reports/cloud-comparison.md`.
@@ -553,7 +553,7 @@ a real desktop. The model-time figures are wall time on a shared machine and are
 - **API.** `serve_on(connection, supervisor, table)` takes the callers table (`read_callers`);
   `serve_on_with(connection, supervisor, identity)` is the seam. No environment variable or feature
   switches the proc root in the shipped binary.
-- **Pins.** porter `7911dee`, stoker `f42e737`, and docket `187751f` (with almanac `8a07b35`, the one
+- **Pins.** porter `7911dee`, the model layer `f42e737`, and docket `187751f` (with almanac `8a07b35`, the one
   docket pins) move together: `Identity` exists from docket `187751f`. `docket-dbus` is a new
   direct dependency of cuad.
 - **Tests.** The classify table, the shipped file's three rows, a squatter of the shell's name (not

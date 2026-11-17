@@ -97,12 +97,12 @@ parameter in `ArgsChecked` and `AppLink::perform` can say `AppFault::TimedOut`, 
    shadow index, the goal and last step of a task). They are built by `new` and nothing outside
    docket-router constructs one by literal.
 3. **`tool_schema` keeps its entity and date parts hand-written** (asks 43 and 138, decided in
-   f4-docket). The leaves (text, integer, choice) go through stoker's `Shape`. Entities stay
+   f4-docket). The leaves (text, integer, choice) go through the model layer's `Shape`. Entities stay
    `{app, kind (const), key}` with `{ "handle": n }` as the alternative, because the planner's
    grammar and MCP read JSON Schema, which says `const` and `format: uri` and `Shape` (even with
    `OrHandle`) does not; dates stay the `{year, month, day}` record `args_from_json` already checks
    (a day in its month), because a second string form would be a second parse path for a model to
-   get wrong. Both are pinned by `tool_schema_snapshot`. Nothing is asked of stoker.
+   get wrong. Both are pinned by `tool_schema_snapshot`. Nothing is asked of the model layer.
 4. **A target's Space comes from a resolver** (ask 42, closed in f4-docket). `prov::EntityId` is
    unchanged; `SpaceOf` (`docket-router::spacing`) answers the Space scope of an entity, and the
    router's one resolver is its shadow index (the scope each app pushed with the entity).
@@ -117,7 +117,7 @@ parameter in `ArgsChecked` and `AppLink::perform` can say `AppFault::TimedOut`, 
    (`every_reviewer_request_carries_the_prompt_class_pinned_on_device`) holds every stage to it. The
    test lives in action-review rather than policy-point because policy-point (the Cedar grid) has
    no porter-infer edge and none is added for a test.
-6. **The reviewer's schema is hand-written** (ask 14) until stoker's `Shape::to_json_schema` is
+6. **The reviewer's schema is hand-written** (ask 14) until the model layer's `Shape::to_json_schema` is
    filled; `InferReviewer` then switches to `verdict_shape(stage)`.
 7. **Stage deadlines come from the clock.** `Clock::after(Millis)` is the router's timer: it races
    every `Reviewer::review`. `SystemClock` sleeps on tokio; the fake `FixedClock` completes only
@@ -298,7 +298,7 @@ Built in the w4-docket fill (each with tests on a private bus, a scripted inferd
 6. **A computer-use run is rebuilt on restart** (ask 63): `companiond::recover` reads `cua.run.started`, `cua.asked`,
    `cua.confirmed`, `cua.taken_over`, `cua.handed_back` and `cua.run.finished` as `ReplayWhat::Run`, by the words of
    `cua-bus`'s `CuaRecord` (docket names no cua type); a run whose start is older than the window says nothing.
-7. **`tool_schema` routes its text, integer and choice leaves through stoker's `Shape`** (ask 43); the snapshot is
+7. **`tool_schema` routes its text, integer and choice leaves through the model layer's `Shape`** (ask 43); the snapshot is
    unchanged. Entities, handles, dates and the rest stay hand-written: `Shape` has no entity-or-handle form, and a date
    is `{year, month, day}` here against `Shape::Date`'s string, which would change the planner's grammar.
 
@@ -546,7 +546,7 @@ Branch `f4-docket`. Each item has tests on a private bus, in process, or over th
    `a_watcher_that_never_proceeds_is_refused_unasked_after_the_configured_time` runs on it: the router asks for
    the configured time, 2 499 ms more does nothing, the last millisecond expires the step.
 7. **Ask 42, cross-Space targets**: see Router item 4.
-8. **Asks 43 and 138**: see Router item 3; nothing is asked of stoker.
+8. **Asks 43 and 138**: see Router item 3; nothing is asked of the model layer.
 9. **`companion.task.message` goes through the router**: companiond no longer carries it out (`message_task`,
    `send_to_target` are gone); it is a `Run.Perform` like any call (gated, budgeted, audited) and the hosted provider
    sends the message to the task record's own agent (a worker or a run, not always a worker). Only `companion.task.start`
@@ -635,9 +635,9 @@ marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo'
 1. **porter `prov` fills** are done (`Label::{trusted_user, untrusted, join}`); docket's tests and
    fakes use them. Labels with an app source and no private scope (`Label` with
    `Source::App`, a model's text) still have no constructor and stay literals.
-2. **stoker `model-provider::Shape`** is filled: the reader renders its reply schema through it
+2. **the model layer `model-provider::Shape`** is filled: the reader renders its reply schema through it
    (`ValueSchema::json_schema`) and `tool_schema` routes its text, integer and choice leaves through
-   it. Still asked of stoker: an entity-or-handle form (ask 43), so entities and handles can leave
+   it. Still asked of the model layer: an entity-or-handle form (ask 43), so entities and handles can leave
    the hand-written part of `tool_schema`. The reviewer's and the policy writer's schemas are still
    hand-written `serde_json` (ask 14): their records are not `ValueSchema`s.
 3. **cua `cua-bus`** exists: `companiond::recover` reads a run's records from `Recent` as
@@ -648,7 +648,7 @@ marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo'
    (`TranscribeBegin`, `SpeakRequest`, `AudioFrame`, `HeardDelta`, `ClientFrame::{Audio,
    EndOfAudio}`, `Readiness`): nothing is asked of porter for voice.
 5. **porter `DataClass`:** a class for the person's prompts (item 5 above).
-6. **stoker `Shape::to_json_schema`** (item 6 above) also blocks `InferReviewer`.
+6. **the model layer `Shape::to_json_schema`** (item 6 above) also blocks `InferReviewer`.
 
 ## Spec conflicts resolved
 
@@ -687,7 +687,7 @@ marks and re-exports `Tally` (docket-ds no longer reaches `ds-core`), and Bardo'
   `RepeatState`; `DenyCode` to the agent. `Envelope` exists in `docket-core` (Intents1) and in
   `voice-wire` (Voice1), in different crates; the assembler's budget is `AssemblerBudget`
   (`companion.budget.*`), since `Budget` is the session's.
-- **Rig item 10**: `ValueSchema` renders through stoker's `Shape` (`ValueSchema::shape`), inferd
+- **Rig item 10**: `ValueSchema` renders through the model layer's `Shape` (`ValueSchema::shape`), inferd
   owns repair and retry; the reader, reviewer and policy writer name only the shape. Every
   `agent-loop` and `voice-loop` step input is `Serialize + Eq`.
 - **Voice**: `VoiceIntent`, `SummonOrigin`, `SummonAnswer` and `SummonSerial` are `docket-core`'s
@@ -1006,7 +1006,7 @@ An action's declared effect is a **ceiling**; an action may opt in to a per-call
 For the owner's live demo of the companion on a cloud model (runbook: `docs/demo-cloud.md`).
 
 - **`dist/install-dev.sh`** installs the stack for one user from the sibling checkouts (`../porter`,
-  `../almanac`, `../stoker`, this one), builds with `cargo build --release --locked`, never runs sudo, and
+  `../almanac`, `../models`, this one), builds with `cargo build --release --locked`, never runs sudo, and
   records what it wrote in `~/.local/state/bardo-dev/install-dev.manifest` for `--uninstall` (a config the person
   edited is kept; directories are removed only if the install made them and they are empty). Tested in a jail
   (`docket-cli/tests/it/install_dev.rs`: HOME, XDG and PREFIX in a tempdir, fake binaries through
@@ -1014,8 +1014,8 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
   - memoryd has no unit in `almanac/dist`: `almanac/dbus/memoryd.service` is its unit, started by D-Bus
     activation (`org.bardo.Memory1.service` names it); that is what is installed.
   - Beyond the brief, because the demo does not work without them: porter's `providers/*.toml` (accountd cannot
-    `add openrouter` without its provider file) to `$XDG_DATA_HOME/porter/providers`, and stoker's `catalog/*.toml`
-    (inferd reads its model entries only from `$XDG_DATA_HOME/stoker/catalog` and `/usr/share/stoker/catalog`;
+    `add openrouter` without its provider file) to `$XDG_DATA_HOME/porter/providers`, and the model layer's `catalog/*.toml`
+    (inferd reads its model entries only from `$XDG_DATA_HOME/models/catalog` and `/usr/share/models/catalog`;
     without them there is no `cloud/<entry>`).
   - Left out on purpose: `voiced` (skeleton), `syncd`, `cuad`; `docket/manifests` (the Memory and Companion
     manifests are built into intentd, which logs "built into intentd" and skips a file of theirs). `intentd.toml`,
@@ -1415,7 +1415,7 @@ Fuzz: `fuzz/` (cargo-fuzz, outside the workspace and the gate) with six targets 
 (not installed; the script says so and exits 2, and installs nothing).
 
 Interface asks.
-- stoker (fuzz-decode lane): when a server's tool parser fails and the call is left in the content, a typed field on
+- The model layer (fuzz-decode lane): when a server's tool parser fails and the call is left in the content, a typed field on
   `ChatReply` (say `tool_parse: Option<ToolParseFault>`). `PlannerModel::read` should test it first and map it to
   `PlanFault::CallInText` (the same typed refusal); `leaked_call` stays as the fallback for engines that do not report it.
   No docket code depends on the field.
@@ -1623,7 +1623,7 @@ Interface asks.
 - porter: item 1 (a `SessionHost` that routes to a model without the bus) and the Windows named pipe.
 - almanac: none (item 3 is done over `almanac-client` `in_process`).
 - Bardo: `ds-desktop` for item 10; nothing else.
-- stoker: none.
+- The model layer: none.
 
 ## inapp-tasks: the in-app agent reaches parity with companiond's task model
 
@@ -1862,9 +1862,9 @@ The `SessionLog` seam, and what docket-memory needs from almanac in S1 (lane ses
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-porter, almanac, stoker and Bardo are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
+porter, almanac, the model layer and Bardo are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
 `fuzz/Cargo.toml`): a plain `git clone` builds with no sibling. The URLs are spelled as porter and almanac spell
-them (`https://github.com/PoHsuanLai/<repo>`, no `.git`) and the revs match porter's pins of stoker and Bardo,
+them (`https://github.com/PoHsuanLai/<repo>`, no `.git`) and the revs match porter's pins of the model layer and Bardo,
 so one copy of `cua-action` and `model-*` is in the graph.
 
 - **Override for cross-repo work**: a `[patch."https://github.com/PoHsuanLai/<repo>"]` table with `path` lines
@@ -3394,7 +3394,7 @@ inferd's OpenAI front, and `ChatReply` carries none. The ask (porter, no edit ma
 `porter-infer` `ChatControl` gains `scores: Knob<ScoreOptions>`; with `ReplyShape::Choice`, a
 reply gets `scores: Option<OptionScores>`, one `(option, Permille)` per declared option, the
 first-token log-probabilities of the constrained choice renormalised over the options (sum
-1000). inferd passes it to stoker's `TurnRequest`/`Shape::Choice` (vLLM `logprobs` /
+1000). inferd passes it to the model layer's `TurnRequest`/`Shape::Choice` (vLLM `logprobs` /
 llama.cpp `n_probs`) and back through the Inference1 reply. Then a `Readout` over `InferdModel`
 replaces the stand-in, from the same call the Quick judge already makes.
 
@@ -3533,7 +3533,7 @@ Open, each needs an interface another repo or the wire owns:
   up to here" the person can ask for; it is a new typed request on the sill-facing session API, so it
   waits for that wire change. The router's `rebuild` still restores whole `turns` and `history`; it
   should keep `plan.summary` on the record and hand `live_*` to the view.
-- `CacheBreak` is not sent: porter's `ChatRequest` has no slot for it (stoker's `TurnRequest` has
+- `CacheBreak` is not sent: porter's `ChatRequest` has no slot for it (the model layer's `TurnRequest` has
   `PromptCache` only as an on/off in `LlamaExtras`). It needs a typed `cache_break` field and a
   provider mapping (a cache marker after the system message and the tools).
 - The tools follow the view's action order, which `uses_first` changes when a skill is loaded
@@ -3906,11 +3906,11 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - Tests: `tests/it/judge.rs` (judgement table, Wilson, report shape), `attack.rs` (format, scoring, summary naming, comparison) and `attack_live.rs` moved to `eval-core/tests/it`; the attack-live ones use a local `effect_of` instead of the registry. The sample attack file is repeated in `docket-eval`'s `attack.rs` test, which still loads files.
 - `check.rs`, `ui.rs` and `skills.rs` stay in `docket-eval`: they read files and parse manifests through `docket-router`. Not verified by a build in the lane that made the change.
 
-## Layering lane D0.19: voice dedupe against stoker (2026-10-28)
+## Layering lane D0.19: voice dedupe against the model layer (2026-10-28)
 
-- `voiced`'s own `Framer` is deleted. `frames::Frames` is a thin adapter over `speech_vad::Framer` (stoker takes `AudioChunk` bytes and returns a `Vec`; voiced has `i16` chunks and must forget frames not yet stepped when the utterance is wiped, so `Frames` keeps a queue and `clear` empties it). Odd-byte cuts and the sample index are stoker's. The tests for cutting and clearing moved with it.
+- `voiced`'s own `Framer` is deleted. `frames::Frames` is a thin adapter over `speech_vad::Framer` (the model layer takes `AudioChunk` bytes and returns a `Vec`; voiced has `i16` chunks and must forget frames not yet stepped when the utterance is wiped, so `Frames` keeps a queue and `clear` empties it). Odd-byte cuts and the sample index are the model layer's. The tests for cutting and clearing moved with it.
 - One `Level`: `frames::wire_level(speech_vad::Level) -> voice_wire::Level` is the only conversion (a `From` is not possible, both types are foreign to voiced). The manual `Level(level_of(..).0)` in `hear.rs` is gone. `voice-wire::Level` is unchanged, so sill and the Settings app need no change.
-- One rate: `voice_loop::CAPTURE_RATE` is now a `speech_provider::SampleRate` (voice-loop, P, depends on speech-provider, pure); `samples_in` and `BUFFER_SAMPLES` read `.0`. The frame size is `speech_provider::FRAME_SAMPLES`; `voiced`'s `FRAME` is deleted. Stoker keeps the 16 kHz rate private in `speech_vad::Framer`, so the constant is still written once here; `frames::tests::the_capture_rate_is_the_rate_the_framer_takes` fails if the two differ. Open: stoker could export that rate, and `CAPTURE_RATE` would then be a re-use instead of a copy.
+- One rate: `voice_loop::CAPTURE_RATE` is now a `speech_provider::SampleRate` (voice-loop, P, depends on speech-provider, pure); `samples_in` and `BUFFER_SAMPLES` read `.0`. The frame size is `speech_provider::FRAME_SAMPLES`; `voiced`'s `FRAME` is deleted. The model layer keeps the 16 kHz rate private in `speech_vad::Framer`, so the constant is still written once here; `frames::tests::the_capture_rate_is_the_rate_the_framer_takes` fails if the two differ. Open: the model layer could export that rate, and `CAPTURE_RATE` would then be a re-use instead of a copy.
 - Callers of `CaptureFormat { rate }` and `AudioRate` pass `CAPTURE_RATE.0`.
 - Still open in the voice area (D4.6 to D4.8): voice seams, voice-client, voice-audio.
 - Not verified by a build in the lane that made the change.

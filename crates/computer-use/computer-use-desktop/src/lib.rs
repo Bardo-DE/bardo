@@ -5,7 +5,7 @@
 //! [`LeaseGrant`], [`Leased`]), what a backend can do ([`BackendCaps`]), what the glow shows
 //! ([`GlowState`]), what the desktop reports ([`DesktopEvent`]), and the units the other cua
 //! crates share ([`Stamp`], [`Ms`], [`Digest32`]).
-//! `RunMode` and `WindowTrust` live in stoker's `computer-use-action` (with `WindowClass`) and are
+//! `RunMode` and `WindowTrust` live in the model layer's `computer-use-action` (with `WindowClass`) and are
 //! re-exported here.
 //!
 //! Pure: no backend lives here. A compositor backend implements [`Desktop`] and

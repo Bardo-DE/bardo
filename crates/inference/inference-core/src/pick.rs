@@ -3,7 +3,7 @@
 //!
 //! `pick` is pure: no IO, no clock, no randomness. What it knows about the engines (warm, idle or
 //! mid-turn, what a swap would cost) arrives as plain data in [`PickCandidate`]; the swap cost is
-//! worked out by the caller from stoker's pure `budget`. The hard rules (`ai.local_only`, the
+//! worked out by the caller from the model layer's pure `budget`. The hard rules (`ai.local_only`, the
 //! class floor, consent, spend) are [`admit`]'s and only its: every answer here comes out of
 //! `admit` first, so no pick can serve what `route` would refuse.
 //!

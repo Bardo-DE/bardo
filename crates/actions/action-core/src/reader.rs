@@ -221,7 +221,7 @@ pub fn entity_choice_text(id: &EntityId) -> String {
 }
 
 impl ValueSchema {
-    /// The schema in stoker's structured-output vocabulary, so inferd renders it for the engine
+    /// The schema in the model layer's structured-output vocabulary, so inferd renders it for the engine
     /// (JSON Schema, GBNF or a regex) and owns validation, repair and retry. Entities are named
     /// by [`entity_choice_text`].
     ///
@@ -277,7 +277,7 @@ impl ValueSchema {
 }
 
 impl ValueSchema {
-    /// The schema as JSON Schema text (stoker's `Shape::to_json_schema`, plain dialect): what the
+    /// The schema as JSON Schema text (the model layer's `Shape::to_json_schema`, plain dialect): what the
     /// reader sends inferd as the shape of its reply.
     ///
     /// # Errors

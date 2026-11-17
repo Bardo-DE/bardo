@@ -40,7 +40,7 @@ lists as `release.py`'s):
 - Links (`[[export]]`, derived from the staged tree): everything staged under `share/wayland-sessions`,
   `share/xdg-desktop-portal`, `share/dbus-1/services`, `lib/systemd/user`, `share/applications`,
   `share/polkit-1/actions`, and now `share/bardo` (intents, skills, settings schemas, helpers, icons),
-  `share/porter` (providers, client tables), `share/stoker` (the model catalog) and `share/fonts` (the desktop
+  `share/porter` (providers, client tables), `share/models` (the model catalog) and `share/fonts` (the desktop
   lane ships `fonts/Noto-COLRv1.ttf` to `share/fonts/bardo/`). Commands are `exports.toml` links in `/usr/local/bin`.
   A distribution's own file at the same path is a conflict and is left alone.
 - Files (`[[system]]`, staged in `system/<absolute path>`): `/etc/pam.d/sill`, the key remap daemon's `bardo-key-remap.service` (at
@@ -152,8 +152,8 @@ the desktop `--prefix` (default `/usr/local`) and `--sysconfdir` (default `/etc`
 (`scripts/install.sh` puts providers, `clients.toml`, the tailnet drop-in under `$prefix/share/porter` and the caller
 tables at `$sysconfdir/porter`):
 
-- providers, `clients.toml` and the stoker catalog: accountd, syncd and inferd take `Xdg::shipped("porter/providers")`,
-  `("porter/clients.toml")` and `("stoker/catalog")` (`porter-core/src/xdg.rs`): the first `$XDG_DATA_DIRS` entry
+- providers, `clients.toml` and the model catalog: accountd, syncd and inferd take `Xdg::shipped("porter/providers")`,
+  `("porter/clients.toml")` and `("models/catalog")` (`porter-core/src/xdg.rs`): the first `$XDG_DATA_DIRS` entry
   (default `/usr/local/share:/usr/share`) that has the path, else `/usr/share/...`.
 - `callers.toml` and `inferd-callers.toml`: `/etc/porter/<file>` is searched first (`porter-daemon/src/system_callers.rs`,
   `SYSTEM_CALLERS`, `INFERD_CALLERS`, `search`), so `--sysconfdir /etc` is found. Since 36f5014 the other places are a
@@ -162,12 +162,12 @@ tables at `$sysconfdir/porter`):
 - Not verified: that the user session's `XDG_DATA_DIRS` keeps `/usr/local/share` (unset gives the default; a session that
   sets it without that entry would not find an install under `/usr/local`). Nothing was built or installed;
   `gate/installer-check.sh` and a dry run passed.
-- The stoker catalog was installed by nothing on this repo's master, so inferd had no model catalogue on a fresh install.
-  `install.sh` now has a `stoker` step right after porter (`scripts/install.sh --prefix P --sysconfdir S [--destdir D]`,
-  stoker 3ae1211; it builds nothing and writes only `<prefix>/share/stoker/catalog`). Outside a `--destdir` it is left to
-  the person like almanac (its installer escalates itself). `release/build.sh` has `build_stoker` (`--no-build`, staged
-  under `share/stoker`, an auto-exported folder in `release.py`) and the CI `agents` job builds `almanac,docket,stoker`.
-  Not run: the CI job and `build_stoker` (no build here; the stoker installer's dry run lists the catalog files).
+- The model catalog was installed by nothing on this repo's master, so inferd had no model catalogue on a fresh install.
+  `install.sh` now has a `models` step right after porter (`scripts/install.sh --prefix P --sysconfdir S [--destdir D]`,
+  The model layer 3ae1211; it builds nothing and writes only `<prefix>/share/models/catalog`). Outside a `--destdir` it is left to
+  the person like almanac (its installer escalates itself). `release/build.sh` has `build_models` (`--no-build`, staged
+  under `share/models`, an auto-exported folder in `release.py`) and the CI `agents` job builds `almanac,docket,models`.
+  Not run: the CI job and `build_models` (no build here; the model layer installer's dry run lists the catalog files).
 - A prefix other than `/usr` and `/usr/local` is on no search path the session has. The plan now prints (never writes)
   an `environment.d` line `XDG_DATA_DIRS=<prefix>/share:/usr/local/share:/usr/share` for the D-Bus service files and the
   shipped data. Units are a separate matter: systemd's user manager reads `/usr/lib`, `/usr/local/lib` and
@@ -177,9 +177,9 @@ tables at `$sysconfdir/porter`):
   installer's bardo-compositor.service check (`install/install.sh`) only tests that the file exists under the prefix, so it
   does not catch this.
 - The release bundle is not affected: it lives under `/opt/bardo/current` but `release.py` exports `share/dbus-1/services`,
-  `lib/systemd/user`, `share/porter`, `share/stoker` and the other folders in `AUTO_EXPORT_DIRS` as links into `/usr/share`
+  `lib/systemd/user`, `share/porter`, `share/models` and the other folders in `AUTO_EXPORT_DIRS` as links into `/usr/share`
   and `/usr/lib/systemd/user`, and the caller tables go to `/etc/porter` as system files. `release/build.sh` is unchanged
-  apart from the stoker step.
+  apart from the model step.
 
 ## desk-cua: the helper for apps that are not ours (B6, 2026-10-16)
 
@@ -202,7 +202,7 @@ tables at `$sysconfdir/porter`):
   /opt/bardo/current`, `--destdir <stage>`, `--sysconfdir /opt/bardo/current/system/etc`). Everything it stages is in an
   exported folder (`libexec/bardo` and `share/dbus-1/interfaces` stay in the bundle without links, as docket's do) or is
   the one system file `system/etc/bardo/cuad-callers.toml`, in `/etc/bardo`, an allowed system folder; no new folder is
-  needed. The CI `agents` job builds `almanac,docket,stoker,cua`. cua's own build config needs no
+  needed. The CI `agents` job builds `almanac,docket,models,cua`. cua's own build config needs no
   `net.git-fetch-with-cli` entry in `install/cargo.sh` (its config file has none, like docket's).
 - Not run: the CI job and `build_cua` (no build here). `gate/installer-check.sh` and a dry run passed.
 
@@ -446,7 +446,7 @@ rules (it equals the updater origin/master, 17 rules, `check-system-list.sh` say
   table and the updater need the other three).
 - **Each program is listed in four places**, not three: `/opt/bardo/releases/*/...` (what `/proc/<pid>/exe` shows), `/opt/bardo/current/...`
   (what the release's units say in `ExecStart`, and the caller-identity library matches `ExecStart` against these patterns for `Full`), `/usr/local/...` (a build from
-  source with the default prefix; the daemons in `libexec` also get `/usr/local/libexec/...`, which the caller-identity library's sample lacks) and `/usr/...`.
+  source with the default prefix; the daemons in `libexec` also get `/usr/local/libexec/...`, which caller-identity library's sample lacks) and `/usr/...`.
   `check-callers-table.sh` compares each unit's `ExecStart` in the checkouts with its row (13 of 15 units found; the updater's and
   xdg-desktop-portal's are not in a sibling).
 - **The key remap daemon is no longer installed by the key remap daemon's installer.** Its `install.sh` always places `dist/key_remap.uinput.conf` (`DeviceAllow=/dev/uinput`

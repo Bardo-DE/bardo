@@ -1,4 +1,4 @@
-//! Names and checked text on the inference wire. The tool and JSON ids are stoker's
+//! Names and checked text on the inference wire. The tool and JSON ids are the model layer's
 //! `model-provider` ones, re-exported: one definition on both sides of the bridge.
 
 use base64::Engine as _;

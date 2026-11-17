@@ -52,7 +52,7 @@ Neither the Holo-3.1-4B card nor that page gives the action schema or the coordi
 
 ### 2.1 Placement decision
 
-All model-layer crates go in **a new portable repo** (working name **`stoker`**: it feeds the
+All model-layer crates go in **a new portable repo** (working name **`models`**: it feeds the
 engines; it sits beside porter, the service locator, sill and the Settings app; the user names it, Q1).
 `MIT OR Apache-2.0`, same CONVENTIONS text, its own ARCHITECTURE.md and FINDINGS.md.
 
@@ -61,7 +61,7 @@ Why a new repo rather than inside porter:
 - They must not depend on `account-core`.
 - porter's 31 §8.12 already foresees splitting AI out of porter.
 
-inferd stays in porter (31 §4.1). It is the one place where porter types and stoker types meet:
+inferd stays in porter (31 §4.1). It is the one place where porter types and the model types meet:
 the bridge is `inferd/src/bridge.rs`, the only mapping. One exception: `inference-core` takes a
 dependency on `computer-use-action` (pure, serde only), so that `CuaAction` has one home and is not
 copied into the wire.
@@ -70,11 +70,11 @@ copied into the wire.
 wire (tier, class, usage; no model id). model-provider's `TurnRequest` is the engine-facing
 request (a concrete model, sampling, grammar, native tools, prepared images). They are two
 concepts at two layers, like `Capability::Mail` vs mailo's `AccountCaps`. There is one mapping
-home (`inferd::bridge`), and that keeps the frozen porter wire independent of stoker churn.
+home (`inferd::bridge`), and that keeps the frozen porter wire independent of the model layer churn.
 Alternative: inference-core depends on model-provider's message types. Rejected: it couples the
 frozen app wire to the backend crate.
 
-### 2.2 Crates in `stoker` (layers bottom-up; a lower crate never names a higher one)
+### 2.2 Crates in `models` (layers bottom-up; a lower crate never names a higher one)
 
 | Crate | Content | I/O | Depends on (ours) |
 |---|---|---|---|
@@ -91,7 +91,7 @@ frozen app wire to the backend crate.
 | `model-openai-compat` | pure `codec` (request JSON, SSE chunk to `TurnEvent`) plus `OpenAiCompat: Provider` | yes, through model-http | model-provider, model-http |
 | `model-anthropic`, `model-openai-responses`, `model-gemini` | cloud backends (**later**) | yes | same |
 
-Boundary script (stoker `scripts/check-boundary.sh`, porter's form):
+Boundary script (the model layer `scripts/check-boundary.sh`, porter's form):
 - The pure set is computer-use-action, model-vision-prep (default features), model-provider, computer-use-parse, cua-wire, computer-use-session, model-catalog, model-replay, and engine-supervisor (default features).
 - It never reaches `tokio hyper hyper-util rustls zbus reqwest`.
 - model-vision-prep reaches `fast_image_resize` and `image` only with the `pixels` feature.
@@ -118,7 +118,7 @@ Allowed new edges: `inference-core -> computer-use-action`; `inferd -> computer-
 | hyper-util | 0.1.21 (research-infra, 2026-09-24) | model-http | client legacy pool, tokio rt |
 | http-body-util | 0.1 [unverified] | model-http | streaming bodies |
 | hyper-rustls + rustls | 0.27 / 0.23 [unverified] | model-http (cloud, later) | no OpenSSL |
-| base64 | 0.22 [unverified] | inference-core inline images, backends | Bardo ui-core has a codec, but porter and stoker may not depend on ui-core |
+| base64 | 0.22 [unverified] | inference-core inline images, backends | Bardo ui-core has a codec, but porter and the model layer may not depend on ui-core |
 | fast_image_resize | 6.1.0 (2026-07-21) | model-vision-prep `pixels` | SIMD resize |
 | blake3 | 1 [unverified] | model-replay image digests (31 §5.3 Photos already plans BLAKE3) | |
 | proptest | 1 [unverified], dev only | computer-use-parse, model-vision-prep properties | cargo-fuzz targets live in a non-workspace `fuzz/` crate on nightly (dev script, Q9) |
@@ -408,7 +408,7 @@ By default nothing personal is recorded: images are stored as digests only, and 
 
 ### 3.6 `model-catalog` file format (freeze now)
 
-`catalog/<id>.toml`, installed at `/usr/share/bardo/models/catalog/` and `$XDG_DATA_HOME/stoker/catalog/` (user files win). It follows porter's rule: every field is written, nothing defaults, and a missing field refuses the file.
+`catalog/<id>.toml`, installed at `/usr/share/bardo/models/catalog/` and `$XDG_DATA_HOME/models/catalog/` (user files win). It follows porter's rule: every field is written, nothing defaults, and a missing field refuses the file.
 
 ```toml
 id = "holo-3.1-4b"
@@ -515,7 +515,7 @@ pub struct CuaNeed { pub environments: BTreeSet<CuaEnv> }   // matches: subset; 
 // Capability::ComputerUse(CuaCap), CapabilityKind::ComputerUse, Need::ComputerUse(CuaNeed)
 ```
 
-This is how cua-integration's "`Need` gains the `cua` kind" lands in porter's versioned vocabulary. The dialect detail stays in stoker's `Caps`; its summary becomes a `Claim` at `Provenance::Curated` (from the catalog) or `Discovered`.
+This is how cua-integration's "`Need` gains the `cua` kind" lands in porter's versioned vocabulary. The dialect detail stays in the model layer's `Caps`; its summary becomes a `Claim` at `Provenance::Curated` (from the catalog) or `Discovered`.
 
 **account-provider:** `Discovery::Supervised`. inferd runs these engines. The account is present while the engine is stopped (readiness `Loadable`), unlike probed runtimes, which go `Offline`. File `providers/local.toml`: `auth = local_runtime`, `[ai] locality = on_device, billing = free`, with capability rows written from the catalog at run time.
 
@@ -735,7 +735,7 @@ Shape tests land in the freeze wave and must compile against the `todo!()` bodie
 | inferd | `bridge_maps_every_part` (table) | ChatRequest ↔ TurnRequest; ToolCallPart ↔ ToolCall |
 
 Fakes and fixtures:
-- stoker: `ScriptedProvider`, `ReplayProvider`, `FakeEngineHost` (scripted exits), `FakeReadyProbe`, `FakeGpu`, a loopback OpenAI-compat server (test-only, in `model-http/tests/support/`).
+- The model layer: `ScriptedProvider`, `ReplayProvider`, `FakeEngineHost` (scripted exits), `FakeReadyProbe`, `FakeGpu`, a loopback OpenAI-compat server (test-only, in `model-http/tests/support/`).
 - porter: `FakeModel` (streaming), `FakeInferSession`.
 - Recorded fixtures come only from dev scripts against the user's own engine. They are never generated in CI.
 - Tests never start a real engine, never touch the GPU, never use the real systemd or bus (`FakeEngineHost`), and never read `~/.cache/huggingface`.
@@ -746,14 +746,14 @@ Fakes and fixtures:
 
 **Wave 0: deps (one agent, shared with the other areas).** Edit `~/bardo/docs/workspace-deps.toml`:
 - add the crates in §2.4 and the keyboard-types `serde` and tokio `net, io-util, process` features;
-- add `stoker` crates as git deps pinned by rev, the way the service locator is;
+- add `models` crates as git deps pinned by rev, the way the service locator is;
 - add design/22 rows for every `ai.*` key named here.
 
 Verify with the UI kit's gate.
 
 **Freeze wave (parallel; one agent per repo):**
 
-**F1 stoker** (new repo `~/stoker`, owns every file in it).
+**F1 the model layer** (new repo `~/models`, owns every file in it).
 - F1.0: read Holo-3.1-4B's `chat_template.jinja`, `preprocessor_config.json` and `config.json` read-only through WebFetch of the hub raw files. This fixes the `ToolDialect`, `GridMax` or ImagePx, and the factor. If Holo's schema is not Qwen's `computer_use`, add `ToolDialect::Holo31` before the freeze.
 - Then add, in order: workspace, CONVENTIONS.md (verbatim), ARCHITECTURE.md (crate map, one-home table, traits, recipes "add a backend", "add a dialect", "add a catalog entry"), FINDINGS.md (every `todo!()`), deny.toml, rust-toolchain.toml (porter's pin), `scripts/check-boundary.sh`.
 - Then every crate's types and traits per §3, bodies as `todo!()`, the shape tests of §5, and `catalog/holo-3.1-4b.toml`.
@@ -761,9 +761,9 @@ Verify with the UI kit's gate.
 
 **F2 porter** (owns porter files and **design/31-ACCOUNTS.md** in Bardo, edited in step).
 - §2.3 and §3.8 changes; the vocabulary bump; `providers/local.toml`; regenerated `dbus/org.bardo.Inference1.xml`.
-- ARCHITECTURE edges and `check-boundary.sh` rows (inference-core→computer-use-action; inferd→stoker crates); FINDINGS stubs (`Broker::infer` streaming, session server, Prepare).
+- ARCHITECTURE edges and `check-boundary.sh` rows (inference-core→computer-use-action; inferd→models crates); FINDINGS stubs (`Broker::infer` streaming, session server, Prepare).
 - inferd modules as skeletons.
-- Before computer-use-action lands in the pinned block, porter depends on it through a `[patch]` path to `../stoker` (Bardo CONSUMING.md §1 pattern).
+- Before computer-use-action lands in the pinned block, porter depends on it through a `[patch]` path to `../models` (Bardo CONSUMING.md §1 pattern).
 - design/31 edits: §2.3 (ComputerUse row), §3.3 (Readiness, Supervised), §4.4 (Inference1 members), §5.5 (streaming, tools, CUA steps, picker TierMap), §11 table.
 
 Verify each repo with:
@@ -778,7 +778,7 @@ cargo deny check licenses
 
 In Bardo, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not a gate).
 
-**Fill wave W1 (pure; stoker agents own one crate each, plus one porter agent):**
+**Fill wave W1 (pure; the model agents own one crate each, plus one porter agent):**
 - W1a model-vision-prep plus `dev/smart-resize-vectors.py` (run in the `~/vllm` uv environment).
 - W1b computer-use-parse (UiTars15, QwenComputerUse), proptest, `fuzz/`.
 - W1c model-catalog plus engine-supervisor `step` and `budget`.
@@ -813,7 +813,7 @@ In Bardo, after the design/31 edit: `./scripts/check-doc-paths.sh` (a tool, not 
 | "settings" (design/22) | rows for `ai.model.<kind>.<tier>`, `ai.engine.*`, `ai.cua.history_frames` (3), `ai.cua.repair_attempts` (1) | |
 
 **Questions only the user can answer:**
-1. **Repo.** Is a new portable repo right, and is `stoker` the name, or should these crates live inside porter?
+1. **Repo.** Is a new portable repo right, and is `models` the name, or should these crates live inside porter?
 2. **Engine for Holo-3.1-4B.** The build map says llama.cpp is the default. H Company documents vLLM for the 4B, and a 4B GGUF with mmproj is unverified. Recommendation: vLLM BF16 (10.4 GB) for this model, with the default chosen per catalog entry.
 3. **One model for both tiers.** A planner and Holo-3.1-4B do not both fit in 16 GB. Should Holo-3.1-4B also serve as the planner (it does native function calling), or should the planner swap with the CUA under the eviction rule (cold starts of 30 s or more on vLLM)? Recommendation: one resident model for both.
 4. **Addressing elements.** Should the model address elements by tree node (`Target::Node`) when a tree exists, or always by coordinates? This is cua-integration Q4; it decides whether `Target` is frozen now.

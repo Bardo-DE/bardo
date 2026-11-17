@@ -23,7 +23,7 @@ Status: cut from [porter](https://github.com/Bardo-DE/porter) at `e9e7cdcd`; see
 | `inference-settings` | the `[ai]` rows as values: what they resolve to, their slugs and paths, the structured-reply limits and the spend book |
 | `inference-agent-proto` | an external coding agent's Anthropic and OpenAI protocols as bytes in and out |
 | `inference-turns` | running model turns: chat, embeddings, computer-use steps, structured replies |
-| `inference-bridge` | the one mapping between the wire types and stoker's provider types |
+| `inference-bridge` | the one mapping between the wire types and the model layer's provider types |
 | `inference-tailnet` | lending models to the person's other computers over their Tailscale network |
 
 `ARCHITECTURE.md` has the map and the allowed edges. The inference service depends on porter by git rev; porter
@@ -42,7 +42,7 @@ a file that is already right is left alone, and a caller table you edited is kep
 is put beside it as `inferd-callers.toml.dist`). It never writes into a home folder. `--bin-dir DIR`
 installs a daemon you built yourself instead of building it, and `--help` lists the rest.
 
-Building needs access to the private repositories the dependencies come from (porter, stoker and
+Building needs access to the private repositories the dependencies come from (porter, the model layer and
 Bardo, as git dependencies); there is no public mirror yet.
 
 ## Where files go

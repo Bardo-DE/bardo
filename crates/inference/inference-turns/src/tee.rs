@@ -1,4 +1,4 @@
-//! A turn sink that keeps the whole turn for a pure session to read (stoker's `TranscriptSink`)
+//! A turn sink that keeps the whole turn for a pure session to read (the model layer's `TranscriptSink`)
 //! and shows the session's client what it is thinking while it waits.
 //!
 //! Both users of it, a validated structured reply and a computer-use step, must see the finished

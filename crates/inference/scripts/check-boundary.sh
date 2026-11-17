@@ -135,7 +135,7 @@ ratchet "hand-rolled civil-date arithmetic" '(days_from_civil|civil_from_days|71
 ratchet "a hand-written MD5 (its first round constant)" '0xd76aa478' "" "md-5"
 ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? )?struct Scratch\b' "" "test_kit::Scratch"
 
-# The allowed edges to the crates of ours and of the repos we pin (this workspace, porter, stoker,
+# The allowed edges to the crates of ours and of the repos we pin (this workspace, porter, the model layer,
 # Bardo): each crate's DIRECT normal and build dependencies (all features), and nothing else. A
 # dependency not listed is a leak; so is one the crate no longer has, so the table stays exact.
 # Dev dependencies are outside it. The inference service depends on porter by git rev; porter never depends on

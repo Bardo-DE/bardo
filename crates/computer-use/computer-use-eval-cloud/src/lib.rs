@@ -4,7 +4,7 @@
 //!
 //! `inferd` refuses a computer-use session on a hosted model today (porter FINDINGS, "inferd
 //! hosted"), so this does what computer-use-system's `InferdCuaModel` does for a local one, one layer up:
-//! stoker's `CuaSession` (run by `computer_use_eval::live::ProviderModel`) builds each step's prompt and
+//! The model layer's `CuaSession` (run by `computer_use_eval::live::ProviderModel`) builds each step's prompt and
 //! reads the reply, and the one model turn in between is a chat turn with the screenshot inline,
 //! asked of inferd as `Need::Llm` on data class `Screen` ([`provider::InferdProvider`]).
 

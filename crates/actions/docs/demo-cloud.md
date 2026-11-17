@@ -5,7 +5,7 @@ root step is a copy of one file. The companion talks to inferd, inferd to OpenRo
 accountd holds (inferd asks it for the key when a turn needs it). About ten minutes.
 
 Run the first step from the checkouts the installer builds from: `~/docket`, `~/porter`, `~/almanac` and
-`~/stoker` (the model catalogue inferd reads).
+`~/models` (the model catalogue inferd reads).
 
 ## 1. Build and install
 
@@ -78,7 +78,7 @@ prompt = "anywhere"
 ## 5. Pick a model
 
 Same file, the model rows: `ai.model.llm.<tier>` is `auto`, `""` (the catalogue's choice) or `cloud/<entry id>`,
-an entry of `~/.local/share/stoker/catalog` that your account reaches. The companion plans on `balanced`; the
+an entry of `~/.local/share/models/catalog` that your account reaches. The companion plans on `balanced`; the
 policy writer and the quick reviewer use `fast`. Both must call tools, which these do:
 
 ```toml

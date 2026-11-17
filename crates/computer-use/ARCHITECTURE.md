@@ -31,8 +31,8 @@ picture), section 6 (copy the recipe).
 | `computer-use-run` | the pure run machine (`Run`, `RunTrack`, `RunPhase`, `RunInput`, `RunEffect`), `Observation`, `shortcut_hint` (the desktop's shortcut chords as one line for the model, read from a chord keymap `Keymap`; `Exec::with_hints` hands it to the model's session), `classify_effect`, `window_class_of`, `window_sensitivity` (a sensitive window makes the run ask before input even when the router says run), `mode_support`, `choose_mode`, `LeaseBook`, `stalled`, `turn` and `note_of`, `CuaConfig`, `CuaModel`, the seams a run is carried out against (`Seams`, `Clock`, `GateLink`, `RecordSink`, `MessageLink`), and `Exec`, which carries a run's effects out against them (it awaits nothing but seam futures, so it needs no runtime) | none |
 | `computer-use-dbus` | `org.bardo.ComputerUse1` (`Manager`, `Run`) as zbus proxies and skeletons, `introspection`, `CuaError`, bus names and paths | zbus |
 | `computer-use-fake` | test only: `FakeSeat`, `FakeEis`, `FakeCapture`, `FakeDesktop`, `FakeA11y`, `ScriptedModel`, `FakePdp`, `MemoryEvents`, `FixedClock`, `FakeSeams`, `run_harness`, and `scene` (a window, frames, a world, a task) | none (`FakeEis`: reis, tokio) |
-| `computer-use-eval` | the computer-use model eval (section 8): fake `surface`s drawn as pixels, a `Stage` shared by an `EvalSeat`, an `EvalCapture` and an `EvalDesktop`, a reference gate, `ScriptModel` (lines of moves) and `ProviderModel` (a model on a local engine, over stoker's `CuaSession`), `Corpus` (`eval/surfaces`, `eval/tasks`), verdicts, rates with Wilson bounds, the markdown report, and the `computer-use-eval` binary | the binary: files; `live`: loopback HTTP to an engine the caller started |
-| `computer-use-eval-cloud` | the eval against a hosted model (section 8): `InferdProvider` (a stoker `Provider` whose turns are inferd chat turns, `Need::Llm` with images on class `screen`), `request` (a stoker turn as an inferd `ChatRequest`), `Watch` (turns, tokens, the charges the provider reported, a spend refusal), `isolation` (what this process can reach), and the `computer-use-eval-cloud` binary | the bus to inferd (the key stays in accountd) |
+| `computer-use-eval` | the computer-use model eval (section 8): fake `surface`s drawn as pixels, a `Stage` shared by an `EvalSeat`, an `EvalCapture` and an `EvalDesktop`, a reference gate, `ScriptModel` (lines of moves) and `ProviderModel` (a model on a local engine, over the model layer's `CuaSession`), `Corpus` (`eval/surfaces`, `eval/tasks`), verdicts, rates with Wilson bounds, the markdown report, and the `computer-use-eval` binary | the binary: files; `live`: loopback HTTP to an engine the caller started |
+| `computer-use-eval-cloud` | the eval against a hosted model (section 8): `InferdProvider` (a model layer `Provider` whose turns are inferd chat turns, `Need::Llm` with images on class `screen`), `request` (a model layer turn as an inferd `ChatRequest`), `Watch` (turns, tokens, the charges the provider reported, a spend refusal), `isolation` (what this process can reach), and the `computer-use-eval-cloud` binary | the bus to inferd (the key stays in accountd) |
 | `computer-use-host` | the run executor as a library: `Supervisor` (a task per run), `SupervisorEvent`, `IntentsGate`, `DaemonLinks`, `record_of`, `guard`, `CuadConfig`, `SystemClock`, and the settings read from text: `read`, `Locator` (over the caller's `ReadText`; `bardo-computer-use` supplies the disk reader), `ReadFailure`, `SCHEMA`, `Supervisor::{settings, apps, apply_settings, adopt}`. No backend, bus or file watch | action-client and memory-client without `dbus` |
 | `computer-use-capture-wayland` | the capture backend of `maskcap`: `StockToplevelCapture`, `BardoMaskedCapture`, `WaylandSession`, `StampClock`, and the `Pump` that drives one wayland connection from async code (with `ObjectKey`, `Rounds`, `SyncTag`) | wayland-client, tokio, rustix |
 | `computer-use-seat-ei` | the EI client of the agent's seat: `EiSeat`, an `AgentSeat` over reis (the connection lives on a thread of its own) | reis, tokio |
@@ -82,7 +82,7 @@ are named by both the desktop and the crates that serve it), and `computer-use-b
 where the leaf types its records and the `Start` body name now live (it links none of the capability crates). See FINDINGS, "Spec
 conflicts".
 
-The repo order is stoker, porter, almanac, docket, cua, sill. cua reaches stoker's
+The repo order is the model layer, porter, almanac, docket, cua, sill. cua reaches the model layer's
 `computer-use-action` and `model-replay`, porter's `prov`, `account-core`, `inference-core`,
 almanac's `memory-core` and `memory-client`, and docket's `action-core`
 (`CuaAsk`, `GateAnswer`, `MessageDraft`) and `action-client`
@@ -127,9 +127,9 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 | --- | --- |
 | who acted, effects, labels, ids of sessions, runs, tasks, messages and entities, `Message`, `AgentRef`, `Address` | porter `prov` (never redefined here); the actor of a run's records is `cua_bus::cua_actor` |
 | **a run's progress and result** | `prov::Message` of kind `Report`; `cua_bus::report_draft` builds the draft, `CuaOutcome::status` picks the status. There is no result type |
-| coordinate spaces, `CuaAction`, `Point<S>`, `Chord`, `NodeId` | stoker `computer-use-action` (`WindowSpace`, never a bare pixel pair) |
+| coordinate spaces, `CuaAction`, `Point<S>`, `Chord`, `NodeId` | the model layer `computer-use-action` (`WindowSpace`, never a bare pixel pair) |
 | the model step (`CuaBegin`, `CuaStepRequest`, `CuaStepReply`, `TreeText`, `StepIndex`, `ServedBy`) | porter `inference-core`; `cua_run::turn` builds the request |
-| the gate vocabulary `RunMode`, `WindowTrust`, `WindowClass` | stoker `computer-use-action`; `computer-use-desktop` re-exports `RunMode` and `WindowTrust` |
+| the gate vocabulary `RunMode`, `WindowTrust`, `WindowClass` | the model layer `computer-use-action`; `computer-use-desktop` re-exports `RunMode` and `WindowTrust` |
 | the gate contract (`CuaAsk`, `GateAnswer`, `EffectBasis`, `GrantAsk`, `MessageDraft`) | docket `action-core` |
 | the confirmation | the router's, through `Confirm1`; cua only stops its input (`RunEffect::SuspendLease(Consent)`, then `Proceed`) |
 | the per-app consent | docket's `ActionGrant` with caller Cua, asked through `Gate.Grant` at the level the person's `cua.apps` row gives (`RunEnv::grant_level`) |
@@ -273,7 +273,7 @@ action it leads to is gated like any other.
 
 - Licence `MIT OR Apache-2.0`; edition 2024; `unsafe_code = "deny"`; `rust-toolchain.toml` pins
   1.98.1 and `deny.toml` is the licence gate.
-- Cross-repo dependencies are git dependencies at pinned revs (stoker, porter, almanac, docket,
+- Cross-repo dependencies are git dependencies at pinned revs (the model layer, porter, almanac, docket,
   desktop-protocols), so a plain clone builds with no sibling checkout; the URLs and revs match the
   other repos' pins of the same crates, or cargo links two copies. External versions are copied from Bardo's `docs/workspace-deps.toml`, never chosen here;
   FINDINGS lists the ones added to this workspace.
@@ -355,7 +355,7 @@ never`, gate confirmations on an ordinary job included); stalls; steps per run a
 step, median and 95th percentile (wall time, reported and never asserted on).
 
 **Engines.** `scripted` (the scripts; no model), `cassette` (a kept live run), `local`: a model on
-an OpenAI-compatible engine on the loopback address, driven the way inferd drives one (stoker's
+an OpenAI-compatible engine on the loopback address, driven the way inferd drives one (the model layer's
 `CuaSession` builds the prompt from the model's catalogue entry, a provider runs the turn, the
 session reads the reply). `computer-use-eval` starts no engine and reaches no other address. The tasks a
 local model cannot play (the spend cap) are `engines = "scripted_only"`.
@@ -371,7 +371,7 @@ one layer above computer-use-system's `InferdCuaModel`, which opens `Need::Compu
 session on a hosted model today (porter FINDINGS, "inferd hosted"), so the cloud eval cannot use that
 path; what it exercises of the production path is the prompt, the parse, the run machine and the
 broker's routing, consent and spend. A model is a trial entry under `eval/cloud-catalog/` (the
-hosted entries of stoker's catalogue say nothing of a computer-use dialect); a refusal on a spend
+hosted entries of the model layer's catalogue say nothing of a computer-use dialect); a refusal on a spend
 cap ends the whole eval (`--max-steps` bounds the steps of all runs). `scripts/cloud-eval.sh` builds
 the world: a private bus, scratch HOME and XDG, a fake proc root that places the eval as inferd's
 `bardo-actiond` unit, accountd (the one process whose environment names the key file) and inferd.

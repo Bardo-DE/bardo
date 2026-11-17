@@ -1,5 +1,5 @@
 //! inferd: the AI broker (design/31 §4.1, §5.5): serves `org.bardo.Inference1` on the session
-//! bus. It reads `inferd.toml` (engine programs, the `ai.*` settings rows, the caller table), the stoker
+//! bus. It reads `inferd.toml` (engine programs, the `ai.*` settings rows, the caller table), the model layer
 //! catalog, and runs engines as child processes of its own (the systemd transient-unit host is
 //! not built). Nothing starts an engine until a session asks for its model. `SIGTERM` and `SIGINT`
 //! stop it gracefully: the bus name is released, every engine's process group is ended, and it

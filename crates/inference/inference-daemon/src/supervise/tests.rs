@@ -1,4 +1,4 @@
-//! The driver over stoker's seams, with the clock paused: time moves only when every task waits,
+//! The driver over the model layer's seams, with the clock paused: time moves only when every task waits,
 //! so backoffs and the idle timer cost nothing.
 
 use super::*;

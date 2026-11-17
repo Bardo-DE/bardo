@@ -1,6 +1,6 @@
 //! Model turns on an engine of this computer.
 //!
-//! Stoker's `OpenAiCompat` (`Driver<OpenAiCodec,
+//! The model layer's `OpenAiCompat` (`Driver<OpenAiCodec,
 //! HttpClient>`) against a [`LocalModel`]'s engine, wrapped in `Retrying` (the daemon owns retry,
 //! ARCHITECTURE section 2). A [`LocalTurn`] is a [`inference_core::Model`] made for one request on a
 //! local model: chat (validated and repaired when the request's shape asks), tasks and

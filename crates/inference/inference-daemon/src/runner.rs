@@ -3,7 +3,7 @@
 //! A turn is a task that pushes `TurnStep`s down a channel; dropping the turn aborts the task,
 //! which drops the HTTP future and closes the engine's stream. A chat, task or embedding turn is
 //! one path wherever the model is: a `inference_core::Model` (`inference_turns::local::LocalTurn`
-//! on a model of this computer, stoker's `OpenAiCompat` against the pinned model's engine wrapped
+//! on a model of this computer, the model layer's `OpenAiCompat` against the pinned model's engine wrapped
 //! in `Retrying`; `cloud::turn::CloudModel` on a hosted one), run by `inference_core::answer`.
 //! inferd owns retry (ARCHITECTURE section 2). What stays here is the daemon's half: what a session
 //! is pinned to, where a local request is seated and tried again, and a speech turn.

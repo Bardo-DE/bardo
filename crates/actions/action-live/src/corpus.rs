@@ -73,7 +73,7 @@ pub struct CorpusOptions {
     pub out: PathBuf,
     /// The checked home that holds the cloud key.
     pub keys_home: Option<action_accept::keys_home::KeysHome>,
-    /// The catalogue directory copied into the world (the sibling stoker checkout's by default).
+    /// The catalogue directory copied into the world (the sibling the model layer checkout's by default).
     pub catalog: Option<PathBuf>,
     /// How long each model may take to come up before the run starts (live engines).
     pub patience: Duration,

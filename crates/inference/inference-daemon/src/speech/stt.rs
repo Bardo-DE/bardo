@@ -2,7 +2,7 @@
 //!
 //! Speech to text over the speech host: [`SttBackend`] (the closed set of engines a `Transcribe`
 //! turn can run on, one arm so far), the adapters between inferd's audio and event types and
-//! stoker's, [`SpeechRunner::transcribe`], and [`Ears`], the `Transcriber` a pipeline's `Hear`
+//! The model layer's, [`SpeechRunner::transcribe`], and [`Ears`], the `Transcriber` a pipeline's `Hear`
 //! stage runs on.
 //!
 //! The host is a process of its own (`bardo-speech-host`, supervised as a CPU engine); one connection

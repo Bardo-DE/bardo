@@ -140,7 +140,7 @@ rather than flags.
 | `ComputerUse` | `environments: BTreeSet<CuaEnv {Desktop, Browser, Mobile}>`, `batching: CuaBatching {One, Many}`, `zoom: Offered`, `max_image: Px`, `wire: LlmWire` | P |
 
 `ComputerUse` is a model that operates a window from screenshots (a vision model with a
-computer-use dialect; the dialect detail stays in stoker's catalog and is not asked for). Its
+computer-use dialect; the dialect detail stays in the model layer's catalog and is not asked for). Its
 need is `CuaNeed { environments }`, a subset test. It joined with `VocabVersion(2)`, which also
 added `DataClass::Voice` and the Space dimension of a grant (§4.5). Speech is one capability
 kind with `modes`; the model picker splits it by direction (`AiKind::SpeechIn` for `Stt`,
@@ -278,9 +278,9 @@ AI providers:
 | LM Studio | none | Y | Y | - | - | - | OnDevice | probe `:1234` (M) | v2 |
 | vLLM | none / key | Y | Y | Y STT | - | - | OnDevice / LocalNetwork | user URL, curated | v2 |
 | ComfyUI | none | - | - | - | Y (workflow registry) | - | OnDevice | probe `:8188` + our workflow files | when an ImageGen request kind and a consumer exist |
-| Anthropic | API key; Bedrock/Vertex/Foundry | Y | - | - | - | - | Cloud | `/v1/models` capabilities (H per [A]) |v1, after stoker's cloud backends |
-| OpenAI | API key; ChatGPT sign-in later (R9) | Y | Y | Y | Y | - | Cloud | curated table |v1, after stoker's cloud backends |
-| OpenRouter | OAuth mints key (R10) | Y | Y | L | Y | Y | Cloud | `/api/v1/models` modalities (H) |v1, after stoker's cloud backends |
+| Anthropic | API key; Bedrock/Vertex/Foundry | Y | - | - | - | - | Cloud | `/v1/models` capabilities (H per [A]) |v1, after the model layer's cloud backends |
+| OpenAI | API key; ChatGPT sign-in later (R9) | Y | Y | Y | Y | - | Cloud | curated table |v1, after the model layer's cloud backends |
+| OpenRouter | OAuth mints key (R10) | Y | Y | L | Y | Y | Cloud | `/api/v1/models` modalities (H) |v1, after the model layer's cloud backends |
 | Gemini | AI Studio key; Vertex | Y | Y | Y TTS | Y | - | Cloud | `models.list` (H per [A]) | v2 |
 | Mistral, xAI | API key | Y | Y (Mistral) | Y | Y (xAI) | - | Cloud | model lists (M) | v2 |
 | Azure OpenAI / Foundry | Entra or key; endpoint + deployments | Y | Y | Y | Y | - | Cloud { region } | per deployment, user form | v3 |
@@ -643,7 +643,7 @@ those keys. v3, O.
 | Crates | porter's `account-core`, `-provider`, `-secrets`, `-service`, `-client` (frozen), plus `account-families`, `-oauth`, `-discover`, `-dav`, `-proxy`, extracted from mailo where mailo has the code; mailo builds on them on all three platforms | P |
 | accountd | the whole D-Bus API of §4.4, `OpenAuthenticated` included (owner, 2026-10-05), `Peer` and the sheet conversation; consent; Secret Service via oo7; settings module | P |
 | Kinds | Identity, Mail, Calendar, Contacts, Tasks, Storage (with quota), Llm, Embeddings, Speech, ComputerUse; ImageGen and Rerank when a request kind and a consumer exist | P |
-| Providers | Nextcloud, Microsoft (our own verified multi-tenant client), generic IMAP/SMTP + DAV; AI: Ollama, llama.cpp, the supervised `local`; Anthropic key, OpenAI key and OpenRouter once stoker's cloud backends exist. Google: **TODO** (owner, 2026-10-05) | P |
+| Providers | Nextcloud, Microsoft (our own verified multi-tenant client), generic IMAP/SMTP + DAV; AI: Ollama, llama.cpp, the supervised `local`; Anthropic key, OpenAI key and OpenRouter once the model layer's cloud backends exist. Google: **TODO** (owner, 2026-10-05) | P |
 | syncd | journal, scheduler, `Replica` for WebDAV and Graph (Google Drive with the Google TODO); the `PimMirror` dataset (§6.2); the Photos dataset built and contract-tested | P |
 | inferd | routing, local-only default, data-class floors, per-app grants, spend caps, audit, GPU queue, streaming sessions; no MCP (an edge in docket) | P |
 | UI | the Settings app Accounts and Intelligence pages, sheets drawn by sill (Bardo `ui-shell::accounts` views), first-run steps | P |
@@ -696,7 +696,7 @@ Service and fake servers; the real system is never touched):
 
 **Answered 2026-10-05** (with the accounts plan's D1-D18, `~/rs-wt/accounts/PLAN.md` §7): 1 is
 left as a TODO (no Google work for now); 2 (a); 3 as recommended without Google, with the cloud
-AI keys after stoker's cloud backends and ComfyUI when an ImageGen consumer exists; 14 departs:
+AI keys after the model layer's cloud backends and ComfyUI when an ImageGen consumer exists; 14 departs:
 sill hosts the sheets on our desktop (§4.1). Also decided: `OpenAuthenticated` in v1 (§4.4);
 syncd in v1 with `PimMirror`; JSON registry and jsonl audit; oo7 on Linux and keyring-core
 stores elsewhere. Items 4-13 stand as recommended.
@@ -765,7 +765,7 @@ stores elsewhere. Items 4-13 stand as recommended.
 
 1. Google: a TODO for now (2026-10-05).
 2. Microsoft: ship one verified multi-tenant client.
-3. v1 providers: Nextcloud, Microsoft, generic IMAP/DAV; AI: Ollama, llama.cpp, the supervised `local`; cloud keys after stoker's cloud backends.
+3. v1 providers: Nextcloud, Microsoft, generic IMAP/DAV; AI: Ollama, llama.cpp, the supervised `local`; cloud keys after the model layer's cloud backends.
 4. Photos library home: ask at first launch among Storage accounts.
 5. AI default: local-only on when a local runtime is found.
 6. ChatGPT sign-in: spike the open-source registration in v2.
@@ -814,6 +814,6 @@ dimension of a grant (§2.3, §4.5); streaming inference sessions with tools, co
 and speech on the `Open` fd, `Prepare`, `EnginesChanged` and `Gpu` (§4.4, §5.5); and the removal
 of inferd's MCP host role (§5.5).
 
-The rig amendment (2026-10-03) added, before any fill: chat controls, a stop reason, a thought seal and `Choice` replies on the chat wire; an embedding role, batch limit and prompts; the `options` vardict of `Inference1` with the reserved `traceparent`; and the decision that inferd owns retry and structured-output repair (§5.5). The matching code is porter's `inference-core`, `account-core` and `account-dbus`; stoker's `model-provider`, `model-wire` and `model-extract` hold the engine side.
+The rig amendment (2026-10-03) added, before any fill: chat controls, a stop reason, a thought seal and `Choice` replies on the chat wire; an embedding role, batch limit and prompts; the `options` vardict of `Inference1` with the reserved `traceparent`; and the decision that inferd owns retry and structured-output repair (§5.5). The matching code is porter's `inference-core`, `account-core` and `account-dbus`; the model layer's `model-provider`, `model-wire` and `model-extract` hold the engine side.
 
 The accounts amendment (2026-10-06, porter a209912) froze, before the account fills: endpoints on accounts and candidates, `OpenAuthenticated` in v1 with its relays, the sheet conversation (`Sheets`, `AccountsSheet1`, the `SheetView` machine), `Peer` (no `OpenCredential`), `Adopt`, caller roles, `[matching]`, sign-in and revoke on `Provider`, the persisted registry and audit, `Replica::quota`, and the family crates; `VocabVersion(3)`, and from now on a bump needs a migration row (§4.5 Storage). A grant's audience is a family slug (or a fixed row endpoint) of the families serving its kind, plus `smtp` when a mail row sends.

@@ -87,7 +87,7 @@ pub fn encode_transcription(
         .copied()
         .collect();
     let wav = wav_file(format, &pcm)?;
-    let mut boundary = String::from("----stoker0f3c9a1e");
+    let mut boundary = String::from("----models0f3c9a1e");
     while contains(&wav, boundary.as_bytes()) {
         boundary.push('x');
     }

@@ -358,7 +358,7 @@ fn a_session_opens_for_a_tool_or_text_dialect_and_for_nothing_else() {
 }
 
 #[test]
-fn what_became_of_the_actions_is_told_in_stokers_three_words() {
+fn what_became_of_the_actions_is_told_in_the_model_layers_three_words() {
     let id = |n: usize| CallId(format!("prev-{n}"));
     let got = prev_results(&[
         PrevResult::Done,

@@ -1,9 +1,9 @@
-//! Drives stoker's pure engine machine (`engine_supervisor::step`) with real time and the three
+//! Drives the model layer's pure engine machine (`engine_supervisor::step`) with real time and the three
 //! seams (`EngineHost`, `ReadyProbe`, `GpuProbe`).
 //!
 //! One task owns the `Supervisor`; everything else talks to it through a [`Supervised`] handle
 //! (commands in, snapshots out), so the rest of inferd names none of the three seams' types and a
-//! test swaps them for stoker's fakes.
+//! test swaps them for the model layer's fakes.
 //!
 //! An engine whose window is a launch flag is started with a window chosen at that moment, from the
 //! card's free memory and what the person set ([`Sizing`]); the machine's budget still counts it at

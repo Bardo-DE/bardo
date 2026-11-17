@@ -180,7 +180,7 @@ pub const SERVED: &str = "lab-qwen";
 
 /// The shipped entry of an attached engine, with the served name `SERVED`.
 ///
-/// It is a vendored copy of stoker's `catalog/qwen3.5-35b-a3b-fp8.toml` in `tests/fixtures`, so a
+/// It is a vendored copy of the model layer's `catalog/qwen3.5-35b-a3b-fp8.toml` in `tests/fixtures`, so a
 /// plain clone builds: serving attached, locality on-device, no engine profile.
 #[must_use]
 pub fn attached() -> String {

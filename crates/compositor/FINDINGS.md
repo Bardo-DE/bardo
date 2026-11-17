@@ -325,7 +325,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
   points per inch, whole scale from an ideal of 1.5 while at least 1280 points wide, capped at
   2x; quarter steps otherwise.
 - **`cargo fmt --all` reaches sibling workspaces** through path dependencies;
-  `--check` needs `../stoker` beside porter.
+  `--check` needs `../models` beside porter.
 - **Motion goldens rest on the platform's `f64::exp`** (A25); quantising to `SubPx` keeps the
   chance of a one-ulp flip moving a value tiny, not zero.
 - **smithay 118e34ff, as P0-Z2 found it:** every global's dispatch goes through

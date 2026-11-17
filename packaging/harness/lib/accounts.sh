@@ -259,7 +259,7 @@ inferd_write_config() {
 
 BARDO_INFERD_PID=
 inferd_start() { # needs $CONFIG/bardo/inference/inferd.toml and $BARDO_INFERD_SYSTEM_CALLERS (inferd_write_config)
-  # The model catalog of this tree's stoker, where bardo-inferd reads it ($XDG_DATA_HOME/bardo/models/catalog): without
+  # The model catalog of this tree's model layer, where bardo-inferd reads it ($XDG_DATA_HOME/bardo/models/catalog): without
   # it no hosted model is known, so a turn on an AI key is refused before the key is ever read.
   mkdir -p "$DATA/bardo/models/catalog"
   cp "$SCEN_SIB"/models/catalog/*.toml "$DATA/bardo/models/catalog/"

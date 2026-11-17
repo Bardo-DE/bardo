@@ -1,11 +1,11 @@
 //! A real computer-use model, reached the way inferd reaches one.
 //!
-//! A real computer-use model, reached the way inferd reaches one: stoker's `CuaSession` builds
+//! A real computer-use model, reached the way inferd reaches one: the model layer's `CuaSession` builds
 //! each step's prompt from the model's catalogue entry, a provider (an engine on this machine,
 //! over loopback HTTP) runs the turn, and the session reads the reply into actions. This is the
 //! same turn inferd makes, without inferd, so the eval needs no daemon and no bus.
 //!
-//! The entry is read from a file the caller names (stoker's catalogue); nothing here chooses a
+//! The entry is read from a file the caller names (the model layer's catalogue); nothing here chooses a
 //! model, an engine or an address.
 
 use base_ids::Tokens;

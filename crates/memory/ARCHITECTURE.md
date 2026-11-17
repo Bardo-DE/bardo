@@ -86,7 +86,7 @@ A crate depends on its own tier or a lower one (P < C < A), never up; `dev-depen
 
 The script also reports source files over 500 lines (`--long-files`, report only) and seeds one violation per tier to prove the bans fire (`--self-test`). The `KNOWN` list names each violation that exists today and the plan lane (`~/rs-wt/agent-layers/PLAN.md`) that removes it; a row whose violation is gone fails, so the list only shrinks. It is empty today.
 
-almanac never depends on stoker, docket or cua: their payloads (policy, consent, computer-use
+almanac never depends on the model layer, docket or cua: their payloads (policy, consent, computer-use
 steps, sessions) are `EventBody::Area` in their owners' serde form, and `check-boundary.sh`
 fails if any of their crates enters the tree. Other crates reach porter's names through
 `memory-core`'s re-exports, so the dependency tiers stay this exact.

@@ -470,7 +470,7 @@ done
 
 layers_check . || fail=1
 
-# docket sits below cua and sill in the repo order (stoker, porter, almanac, docket, cua, sill):
+# docket sits below cua and sill in the repo order (the model layer, porter, almanac, docket, cua, sill):
 # nothing of theirs may enter any tree of this workspace, dev-dependencies included.
 THEIRS="computer-use-daemon computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input computer-use-capture bardo-agent-protocol"
 workspace_tree=$(cargo tree --workspace -e normal,build,dev --prefix none --all-features 2>/dev/null | awk '{print $1}' | sort -u)

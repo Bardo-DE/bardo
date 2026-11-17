@@ -27,7 +27,7 @@
 # W1_PLANNER_SERVED / W1_SCREEN_SERVED (the name the server lists), W1_TARGET_COMPOSITOR / _SILL / _CUA / _DOCKET
 # (build folders, default /mnt/data/cargo/w1-*), W1_COMPOSITOR, W1_FAKE_LOGIND, W1_SILL, W1_CUAD, W1_BRINGUP,
 # W1_BARDO_DO (a program by path), W1_BROWSER_CMD, W1_SIB (the folder holding bardo-compositor, bardo-shell, ...),
-# W1_STOKER_CATALOG, W1_PROVIDERS, W1_SHOT_EVERY (seconds, default 120).
+# W1_MODEL_CATALOG, W1_PROVIDERS, W1_SHOT_EVERY (seconds, default 120).
 #
 # Needs Blender, a browser (Zen, else Firefox), grim (optional, for pictures), python3 3.11+, curl, dbus-daemon and gdbus.
 # It never installs anything: a missing program is named with the command that would install it. Everything it
@@ -353,8 +353,8 @@ bus_has_owner() {
 }
 
 prepare_models() {
-  local catalog=$RUN/catalog src=${W1_STOKER_CATALOG:-$SIB/stoker/catalog}
-  [ -d "$src" ] || die "no model catalogue at $src (set W1_STOKER_CATALOG)"
+  local catalog=$RUN/catalog src=${W1_MODEL_CATALOG:-$SIB/models/catalog}
+  [ -d "$src" ] || die "no model catalogue at $src (set W1_MODEL_CATALOG)"
   mkdir -p "$catalog" "$AGENTS/config/bardo/inference"
   cp "$src"/*.toml "$catalog/"
   [ -f "$catalog/$PLANNER_MODEL.toml" ] || die "the catalogue has no entry for $PLANNER_MODEL"

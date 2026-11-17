@@ -1,4 +1,4 @@
-# TRIAL COPY of stoker catalog/kimi-k3.toml with the computer-use rows added (crates/computer-use/computer-use-eval-cloud). Original header:
+# TRIAL COPY of the model catalog/kimi-k3.toml with the computer-use rows added (crates/computer-use/computer-use-eval-cloud). Original header:
 # Kimi K3, a hosted model reached through the providers below. Facts checked on 2026-10-06:
 # - Moonshot: https://platform.kimi.ai/docs/guide/kimi-k3-quickstart and https://platform.kimi.ai/docs/pricing/chat, read 2026-10-06: id kimi-k3, 1,048,576 context, vision input, tool calling, $3.00 / $15.00 per MTok; base URL https://api.moonshot.ai/v1 (OpenAI-compatible). Structured output (json_schema): https://platform.kimi.ai/docs/guide/response_format.
 # - OpenRouter: https://openrouter.ai/api/v1/models listing, read 2026-10-06: id moonshotai/kimi-k3, context 1048576, max completion 943718, $0.00000095 / $0.000014 per token (not Moonshot's own price), tools and structured_outputs listed.

@@ -1,9 +1,9 @@
-# TRIAL ENTRY for the cloud eval (crates/computer-use/computer-use-eval-cloud); stoker's catalogue does not have it.
+# TRIAL ENTRY for the cloud eval (crates/computer-use/computer-use-eval-cloud); the model layer's catalogue does not have it.
 # UI-TARS 1.5 7B (ByteDance), a computer-use specialist, hosted on OpenRouter.
 # - OpenRouter /api/v1/models, read 2026-10-10: id bytedance/ui-tars-1.5-7b, context 128000,
 #   max completion 2048, $0.0000001 / $0.0000002 per token (100000 / 200000 micro-USD per MTok),
 #   input modalities image and text, no tools (supported parameters: sampling knobs only), no reasoning.
-# - The model answers in text (`Thought: ... Action: click(start_box='(x,y)')`): stoker's UI-TARS-1.5
+# - The model answers in text (`Thought: ... Action: click(start_box='(x,y)')`): the model layer's UI-TARS-1.5
 #   dialect. Points are pixels of the image it was shown, resized by Qwen2.5-VL's smart_resize
 #   (factor 28), so the eval sends the image already at that size.
 # - sampling: reasoning is absent, so both settings are greedy.

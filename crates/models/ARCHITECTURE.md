@@ -1,11 +1,11 @@
 # Architecture
 
-stoker is the model layer of the desktop program: one trait for chat, tool-calling, vision and
+The model layer is the model layer of the desktop program: one trait for chat, tool-calling, vision and
 computer-use models; the backends that speak to local engines; the computer-use action
 vocabulary, parsers and per-step session; image preparation; the curated model catalog; and the
 supervisor that starts and stops the engines; and speech: the speech-to-text and text-to-speech
 seams, voice-activity detection, the host process that runs the STT engine, and its client. It is portable and has no dependency on porter:
-porter's `inferd` is where stoker types and porter types meet (`inferd::bridge`). The design
+porter's `inferd` is where the model types and porter types meet (`inferd::bridge`). The design
 is the companion agent spec (`SPEC.md`, `models.md` in the spec worktree); this file is the map of
 the code that freezes its interfaces. `CONVENTIONS.md` holds the rules; `FINDINGS.md` the open
 items.
@@ -95,7 +95,7 @@ Downstream, porter's `inferd` takes `computer-use-action`, `model-vision-prep`, 
 `computer-use-session`, `model-catalog`, `engine-supervisor`, `model-http`, `model-wire`,
 `model-openai-compat`, `model-extract`, `speech-provider` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); docket's `voiced` takes
 `speech-vad`; inference-core takes `computer-use-action` only. cuad, almanac, docket and sill do not name
-stoker.
+The model layer.
 
 ## 2. Modules
 
@@ -181,7 +181,7 @@ stoker.
 
 Names SPEC.md 2 settled for this repo: `CoordSpace` (was `Space`), `ToolCallId` (was `CallId`),
 `TurnUsage` (was `Usage`), `Role` stays `model-provider`'s, `Repeat` stays `computer-use-action`'s, and the
-catalog's `roles` are `CatalogKind`s (stoker's copy of porter's `AiKind`, same slugs); since C1
+catalog's `roles` are `CatalogKind`s (the model layer's copy of porter's `AiKind`, same slugs); since C1
 (agent-spec/capabilities.md) they are derived from the declared capabilities, and `Slot` is the
 name a person picks by.
 
@@ -388,7 +388,7 @@ flag and the window (`Window::Serve` is the entry's `context`, `Window::Chosen` 
 inferd picks from the limits and the free GPU memory). An engine that sets the window per request
 says `context_arg = { kind = "per_request" }` and gets nothing at start.
 
-**Add an engine kind**: its `EngineKind` variant (the one closed set of engines: llama.cpp, vLLM, Strata and the speech engines; nothing else in stoker keeps its own list); a unit struct and `impl Engine` in `engine-spec` that overrides only what differs (`slug` is required; the disk, bus and running words, packages, `command`, `seat_flags`, `env`, `caches_prompts`, `hears`, `speaks`, `accepts`, `requires_gpu_estimate` and `pointed` default), its arm in `engine-spec::engine` and its entry in `ENGINES`; the settings key that fills its `EnginePaths` program (`SpeechHost`: `ai.engine.speech_host.path`; `KokoroFastApi`: `ai.engine.kokoro.python`). A test engine needs only its impl (`engine-spec/tests/it/echo.rs`).
+**Add an engine kind**: its `EngineKind` variant (the one closed set of engines: llama.cpp, vLLM, Strata and the speech engines; nothing else in the model layer keeps its own list); a unit struct and `impl Engine` in `engine-spec` that overrides only what differs (`slug` is required; the disk, bus and running words, packages, `command`, `seat_flags`, `env`, `caches_prompts`, `hears`, `speaks`, `accepts`, `requires_gpu_estimate` and `pointed` default), its arm in `engine-spec::engine` and its entry in `ENGINES`; the settings key that fills its `EnginePaths` program (`SpeechHost`: `ai.engine.speech_host.path`; `KokoroFastApi`: `ai.engine.kokoro.python`). A test engine needs only its impl (`engine-spec/tests/it/echo.rs`).
 
 **Add a hosted entry**: a `catalog/<id>.toml` with `locality = { kind = "remote", v = { reach = [...] } }`
 (each reach: `provider` as porter's provider file id, `model` the provider's own id, `wire`; no
@@ -449,7 +449,7 @@ run by hand against the user's own engine.
   untracked. They join the workspace if the runtime joins the pinned block and the gate can
   build it.
 - **Dependencies** come from Bardo's pinned block (`docs/workspace-deps.toml` there) and the
-  adopted lines of the spec (SPEC.md 1.4), copied verbatim, only the lines stoker names; a new
+  adopted lines of the spec (SPEC.md 1.4), copied verbatim, only the lines the model names; a new
   one joins that file first. No `reqwest` (it cannot reach a Unix socket), no `async-openai`,
   `genai` or `rig`.
 - **Licence** `MIT OR Apache-2.0`. Prompt files and fixtures taken from model cards carry their
@@ -471,11 +471,11 @@ run by hand against the user's own engine.
 ## 9. Install
 
 `scripts/install.sh` installs `catalog/*.toml` under `PREFIX/share/bardo/models/catalog` (inferd reads
-`/usr/share/bardo/models/catalog` and `$XDG_DATA_HOME/stoker/catalog`, so use `--prefix /usr` for a
+`/usr/share/bardo/models/catalog` and `$XDG_DATA_HOME/models/catalog`, so use `--prefix /usr` for a
 machine-wide install). It builds and installs one program, engine-install's `bardo-engine-helper`, at
 `PREFIX/libexec/bardo/bardo-engine-helper`, and on a system install its polkit action
 `org.bardo.engines.install` (`dist/org.bardo.engines.policy`, path rewritten to the prefix); the
-action porter installed before the engines moved here is removed. The rest of stoker is libraries
+action porter installed before the engines moved here is removed. The rest of the model layer is libraries
 and data. Flags: `--prefix DIR` (default `/usr/local`), `--destdir DIR` (for packages), `--user`
 (under `~/.local`, no root, no polkit action), `--dry-run` (print every action), `--no-build` and
 `--bin-dir` (use a helper built elsewhere); `--sandbox` and `--distro` are accepted for the same

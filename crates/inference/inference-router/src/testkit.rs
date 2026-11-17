@@ -1,7 +1,7 @@
 //! Helpers for tests of this crate and of the ones built on it (feature `testing`).
 //!
 //! The catalog entries the tests use, the local models they make, a model of an account that is not
-//! on this computer, and the catalog stoker ships.
+//! on this computer, and the catalog the model layer ships.
 
 pub mod entries;
 
@@ -64,10 +64,10 @@ pub fn cloud_card() -> inference_core::ModelCard {
     }
 }
 
-/// The catalog files stoker ships in this tree, embedded by `build.rs`.
-const SHIPPED_CATALOG: &[(&str, &str)] = include!(concat!(env!("OUT_DIR"), "/stoker_catalog.rs"));
+/// The catalog files the model layer ships in this tree, embedded by `build.rs`.
+const SHIPPED_CATALOG: &[(&str, &str)] = include!(concat!(env!("OUT_DIR"), "/model_catalog.rs"));
 
-/// The catalog stoker ships, in this tree, as a directory a test can read: the files the build
+/// The catalog the model layer ships, in this tree, as a directory a test can read: the files the build
 /// embedded, written once per content hash under the system temp directory.
 ///
 /// A test reads what the build fetched, never a checkout that happens to sit elsewhere, and needs
@@ -76,13 +76,13 @@ const SHIPPED_CATALOG: &[(&str, &str)] = include!(concat!(env!("OUT_DIR"), "/sto
 /// # Panics
 /// when the build embedded no catalog, or the directory cannot be written under the system temp
 /// directory.
-pub fn pinned_stoker_catalog() -> PathBuf {
+pub fn pinned_model_catalog() -> PathBuf {
     assert!(
         !SHIPPED_CATALOG.is_empty(),
-        "this build found no catalog under crates/stoker to embed"
+        "this build found no catalog under crates/models to embed"
     );
     let dir = std::env::temp_dir().join(format!(
-        "porter-stoker-catalog-{}",
+        "porter-model-catalog-{}",
         env!("BARDO_ENGINE_CATALOG_REV")
     ));
     if dir.is_dir() {

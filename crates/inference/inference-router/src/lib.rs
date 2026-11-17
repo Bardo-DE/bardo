@@ -5,7 +5,7 @@
 //!
 //! The pieces, from the bottom:
 //!
-//! - [`catalog`]: stoker's model catalogue (`ModelEntry` text parsed, [`catalog::parse_entry_text`])
+//! - [`catalog`]: the model layer's model catalogue (`ModelEntry` text parsed, [`catalog::parse_entry_text`])
 //!   and the capabilities each entry claims ([`catalog::claims_of`]).
 //! - [`local`]: [`local::LocalModel`], one per catalogue entry a configured engine can serve, with
 //!   its card (what routing sees), the supervisor's spec (how to start its engine) and the socket
@@ -14,7 +14,7 @@
 //! - [`attached`]: engines the person already runs (a socket or a loopback address), as values:
 //!   the table of the file, the token's file, the target of a connect and what is wrong when the
 //!   engine cannot answer.
-//! - [`swap`]: what loading a model now would take, from stoker's pure memory budget
+//! - [`swap`]: what loading a model now would take, from the model layer's pure memory budget
 //!   ([`swap::swap_cost`]), which is the router's `SwapCost` input.
 //! - [`router`]: the models that meet a need, minus what the policy forbids, then the person's
 //!   picks and `inference_core::pick` ([`router::choose`], over [`router::Listed`] models), and

@@ -45,7 +45,7 @@ nothing else we need).
 | Architecture `Qwen3_5ForConditionalGeneration`, base Qwen3.5-4B (the card also lists Qwen3.5-0.8B, 9B and Qwen3.6-35B-A3B as bases); 32 layers, every fourth one full attention (8 of 32), 4 KV heads of head size 256 | `config.json` | the KV estimate: 8 layers x 4 heads x 256 x 2 (K and V) x 2 bytes = 32 KiB per token = **32 MiB per 1k tokens**; the 24 linear-attention layers keep a fixed-size state inside the overhead |
 | Vision tower: patch size 16, spatial merge size 2, temporal patch size 2 | `config.json`, `preprocessor_config.json` | `PatchFactor(32)` (16 x 2), not the 28 of Qwen2.5-VL and UI-TARS-1.5 |
 | Processor `Qwen3VLProcessor`; `size.shortest_edge = 65536`, `size.longest_edge = 16777216` (Qwen's processors name min and max pixels this way) | `preprocessor_config.json` | `min_pixels = 65536`, `max_pixels = 16777216` in `catalog/holo-3.1-4b.toml` (the earlier proposal had 3136 and 1003520) |
-| Image normalisation mean and std 0.5 | `preprocessor_config.json` | engine-side; stoker only resizes and encodes |
+| Image normalisation mean and std 0.5 | `preprocessor_config.json` | engine-side; the model layer only resizes and encodes |
 | Chat template: tools are rendered as JSON function definitions; calls are written as Qwen3-coder XML (`<tool_call><function=name><parameter=key>value</parameter></function></tool_call>`); `<think>` blocks; image and video via `<|vision_start|>`; **no computer-use function and no coordinate convention** anywhere in it | `chat_template.jinja` | tools are `server_parsed` (vLLM `--tool-call-parser qwen3_coder`, as H Company's serving page uses); the action schema is whatever the session's prompt declares |
 | The README gives no action schema, coordinate convention or image size | README | nothing; see below |
 | Licence Apache-2.0 | README, API record | `licence = open(Apache-2.0)` |
@@ -108,7 +108,7 @@ Decisions taken from it:
 
 ## Stubs behind frozen interfaces
 
-Every `todo!()` in the repo (the rig amendment added 27, see `The rig amendment` below; the fill wave F1 lanes remove theirs, `stoker-shape` removed 19 (see `Fill F1: stoker-shape` below) and the F2 lane `stoker-driver` removed 13 more, see `Fill F2: stoker-driver` below; 29 remained; the fill wave W4 lane `w4-stoker` removed 18 more, see `Fill W4: stoker` below; 11 remained; the fill wave W5 lane `w5-stoker` removed the 4 of `OpenAiSpeech`, see `Fill W5: stoker` below; 7 remained; the voice wave lane `v-host-client` removed the 2 of `speech-host-client`, see its section below, the V-H lane the 2 of `speech-host` and the lane `v-silero` the 3 of `speech-vad-silero`; none remain). Each is a signature other repos build on; the body arrives with
+Every `todo!()` in the repo (the rig amendment added 27, see `The rig amendment` below; the fill wave F1 lanes remove theirs, `model-shape` removed 19 (see `Fill F1: model-shape` below) and the F2 lane `model-driver` removed 13 more, see `Fill F2: model-driver` below; 29 remained; the fill wave W4 lane `w4-models` removed 18 more, see `Fill W4: models` below; 11 remained; the fill wave W5 lane `w5-models` removed the 4 of `OpenAiSpeech`, see `Fill W5: models` below; 7 remained; the voice wave lane `v-host-client` removed the 2 of `speech-host-client`, see its section below, the V-H lane the 2 of `speech-host` and the lane `v-silero` the 3 of `speech-vad-silero`; none remain). Each is a signature other repos build on; the body arrives with
 the work in the "Closes when" line of its crate.
 
 ### `cua-parse` (0, filled in wave F1)
@@ -119,7 +119,7 @@ Still open: the `Holo31` schema is ours, provisional. The chat template names no
 
 ### `cua-session` (0, filled in wave W4)
 
-`CuaSession::request` and `absorb` are built (with `absorb_for`, `with_settings` and `TranscriptSink`); see `Fill W4: stoker`. The prompt files are in `crates/cua-session/prompts/` with their sources in their headers. Still open: the Holo and Qwen tool schemas are ours until a recorded step (`dev/cua-step-holo.sh`) confirms them.
+`CuaSession::request` and `absorb` are built (with `absorb_for`, `with_settings` and `TranscriptSink`); see `Fill W4: models`. The prompt files are in `crates/cua-session/prompts/` with their sources in their headers. Still open: the Holo and Qwen tool schemas are ours until a recorded step (`dev/cua-step-holo.sh`) confirms them.
 
 ### `cua-vendors` (0, filled in wave W4)
 
@@ -127,11 +127,11 @@ The four codecs (`AnthropicToolset20260801`, `AnthropicComputer20251124`, `OpenA
 
 ### `engine-supervisor` (0, filled in waves F1 and F2)
 
-`step` and `budget` (F1), `command` (F2): see `Fill F2: stoker-driver`. Still open: the io features (`systemd`, `process`, `nvidia`), see `Open` below.
+`step` and `budget` (F1), `command` (F2): see `Fill F2: model-driver`. Still open: the io features (`systemd`, `process`, `nvidia`), see `Open` below.
 
 ### `model-http` (0, filled in waves F1, F2 and W5)
 
-`SseDecoder`, `NdjsonDecoder` (F1) and `Transport for HttpClient` over hyper behind the `hyper` feature (F2), with the loopback Unix-socket and TCP tests the stub named. TLS and the egress proxy are not built (see `Fill F2: stoker-driver`). W5 added `Upload`, `RawBody`, `ContentType` and `UploadTransport` (a POST of bytes), see `Fill W5: stoker`.
+`SseDecoder`, `NdjsonDecoder` (F1) and `Transport for HttpClient` over hyper behind the `hyper` feature (F2), with the loopback Unix-socket and TCP tests the stub named. TLS and the egress proxy are not built (see `Fill F2: model-driver`). W5 added `Upload`, `RawBody`, `ContentType` and `UploadTransport` (a POST of bytes), see `Fill W5: models`.
 
 ### `model-openai-compat` (0; the chat codec was filled in F1 and F2, the audio codec in W4, the `OpenAiSpeech` provider in W5)
 
@@ -143,7 +143,7 @@ Prints, sequences, the providers, the speech replay and the wire transports are 
 
 ### `model-wire` (0, filled in wave F2)
 
-`Driver::{describe, turn, embed}`: see `Fill F2: stoker-driver`.
+`Driver::{describe, turn, embed}`: see `Fill F2: model-driver`.
 
 ### `model-extract` (0, filled in waves F1 and F2)
 
@@ -167,7 +167,7 @@ The fakes `ScriptedStt`, `ScriptedTts` and `ScriptedVad` play their scripts (tes
 
 ### `speech-vad` (0, filled in wave W4)
 
-`level_of` (integer fixed-point logarithm, -40 dBFS is 333), `EnergyGate`, `Framer` and `endpoint`; see `Fill W4: stoker`.
+`level_of` (integer fixed-point logarithm, -40 dBFS is 333), `EnergyGate`, `Framer` and `endpoint`; see `Fill W4: models`.
 
 ### `speech-vad-silero` (0, filled in wave V; excluded crate)
 
@@ -264,7 +264,7 @@ Left to fill, with the reason (the type is frozen, the spelling is not):
   assembly in the fill puts the attribution header of `research-rig.md` in that file and one
   `THIRD-PARTY-NOTICES` entry in the repo.
 
-## Fill F1: stoker-shape (2026-10-03)
+## Fill F1: model-shape (2026-10-03)
 
 Filled: `model-provider` (`shape`, `retry`, `sequence`, `embed`), `model-extract` (`choose`,
 `request`, `absorb_for`), `model-http` (`SseDecoder`, `NdjsonDecoder`), `model-openai-compat`
@@ -318,7 +318,7 @@ Decisions taken in the bodies:
   usage is clamped (`cached <= input`), the first of `reasoning_content` and `reasoning` wins.
   The SSE caps are 1 MiB per line and 8 MiB of data per event (`LineTooLong`); NDJSON 4 MiB per line.
 
-Interface asks (nothing in a frozen signature was changed in F1; all four were applied in F2, see `Fill F2: stoker-driver`):
+Interface asks (nothing in a frozen signature was changed in F1; all four were applied in F2, see `Fill F2: model-driver`):
 
 1. **`ExtractSession::absorb` cannot build `Extracted::Repair(Box<TurnRequest>)`**: it has no base
    request. Replace `absorb(&mut self, end, text, calls)` with `absorb_for(&mut self, base, end,
@@ -332,7 +332,7 @@ Interface asks (nothing in a frozen signature was changed in F1; all four were a
 4. **`ProviderError::RateLimited(RetrySeconds)` from an envelope has no seconds**: the envelope reader
    answers `RetrySeconds(0)`; the driver replaces it with the head's `Retry-After` when it has one.
 
-## Fill F2: stoker-driver (2026-10-03)
+## Fill F2: model-driver (2026-10-03)
 
 Filled: `model-wire` (`Driver::{describe, turn, embed}`), `model-http` (`Transport for HttpClient`
 over hyper), `model-openai-compat` (`encode_request`, `classify`, `describe`, `parse_models`,
@@ -350,7 +350,7 @@ audio wire, the speech crates, `cua-session`, `cua-vendors`).
 | 21 | SSE and NDJSON recording tests through wire cassettes: `model-replay/tests/wire_framed.rs` (line endings, comments, BOM, split code points, cut streams, a proptest over events and chunkings, replay under every `ChunkPlan`) and `model-openai-compat/tests/driver.rs` (the same cassettes through `Driver`) |
 | 28 | `DropReason::BadArgument`: an argument that is there and unusable (empty or control-character text, a key chord that is not one key plus modifiers, an unknown direction or finish status, a wrongly typed argument). `MissingArgument` stays for none given |
 | 29 | `Target::Centre` (additive, in `cua-action`): a Qwen or Holo `scroll` that names no point acts at the centre of the frame; it passes through every space mapping unchanged and the executor resolves it against the window. A half-given point is still refused |
-| 30 | Already done by `stoker-vision` (the `image_tokens` doc says the factor carries the merge); verified |
+| 30 | Already done by `model-vision` (the `image_tokens` doc says the factor carries the merge); verified |
 | 31 | `check-boundary.sh`: `EXCLUDED` takes a nested path (`cua-parse/fuzz`), reading the crate's name from the first line of `cargo tree` |
 | 49 | `ExtractSession::absorb(base, end, text, calls)` replaces the stub (it was `absorb_for`); no `todo!()` is left in the crate |
 | 50 | `ChatDecoder::fault(&self) -> Option<ProviderError>`, default `None`; `StreamDecoder` implements it (its inherent `fault` is gone); the driver reports it instead of a generic unreadable reply |
@@ -428,7 +428,7 @@ its settings); the request is the endpoint's base plus the path (or the path alo
 `RouteRoot::Server`), `Accept` by framing, the auth header and the extra headers marked sensitive.
 The `hyper` feature is off by default so the codecs reach no HTTP stack; the workspace carries
 `tokio`, `hyper`, `hyper-util` and `http-body-util` from Bardo's pinned block. TLS is the `tls`
-feature (F4 stoker-tls): `tokio-rustls` on the `ring` provider, SNI from the host, ALPN `http/1.1`,
+feature (F4 model-tls): `tokio-rustls` on the `ring` provider, SNI from the host, ALPN `http/1.1`,
 the platform's roots through `rustls-native-certs` (never `webpki-roots`, MPL), chain, dates and name
 always checked; `HttpClient::with_roots(endpoint, TlsRoots::Only(certs))` is the test seam. Without
 the feature a `Tls` target answers `HttpError::Tls` before connecting. **Not built:** the egress
@@ -454,7 +454,7 @@ pairing, which a later catalog change should.
 
 ### Consumers
 
-`porter` and `docket` consume stoker by path (`cua-action`, `model-provider`, `speech-vad`). No call
+`porter` and `docket` consume the model layer by path (`cua-action`, `model-provider`, `speech-vad`). No call
 site of a changed signature exists in either repo (searched for `ExtractSession`, `Sleeper`,
 `Retrying`, `CassetteHeader`, `HttpError`, `VllmExtras`, `GuidedBackend`, `ChatDecoder`,
 `StreamDecoder`, `ModelInfo`, `loaded_context`, `Target::`; docket's `budget` is its own). Two
@@ -463,9 +463,9 @@ executor (none today) needs the `Centre` arm; and porter's own `DropReason` mirr
 (`porter-infer/src/cua.rs`) has no `BadArgument` yet, which the `cua-parse` to porter mapping will
 need when it is written.
 
-## Fill W4: stoker (2026-10-03)
+## Fill W4: the model layer (2026-10-03)
 
-Lane `w4-stoker`. 18 `todo!()` removed (29 to 11): `cua-session` 2, `cua-vendors` 3, the speech
+Lane `w4-models`. 18 `todo!()` removed (29 to 11): `cua-session` 2, `cua-vendors` 3, the speech
 codec of `model-openai-compat` 4, the `speech-provider` fakes 4, `speech-vad` 5.
 
 ### Interface asks closed
@@ -580,7 +580,7 @@ mono WAV file, format 1 or 3, in a multipart body whose boundary is chosen not t
 audio, `language` the primary subtag), `decode_transcription`, `PcmDecoder::feed`. The provider
 waits for a multipart POST in `model-http`.
 
-### Interface asks (for the spec; all five closed in W5, see `Fill W5: stoker`)
+### Interface asks (for the spec; all five closed in W5, see `Fill W5: models`)
 
 1. `Gguf { model, mmproj }` has a required `mmproj`: an embedding or text-only GGUF has none (the
    tests write an empty name). Proposed: `mmproj: Option<FileName>` (a serde change).
@@ -627,11 +627,11 @@ waits for a multipart POST in `model-http`.
 - `Target::Centre` and `DropReason::BadArgument` (F2 notes) are still the porter-side items.
 - `CodecError` has no porter call site.
 
-## Fill W5: stoker (2026-10-03)
+## Fill W5: the model layer (2026-10-03)
 
-Lane `w5-stoker`. 4 `todo!()` removed (the `OpenAiSpeech` provider; 11 to 7). Every change is
+Lane `w5-models`. 4 `todo!()` removed (the `OpenAiSpeech` provider; 11 to 7). Every change is
 additive except the places listed under "Breaks" (a field added to a struct that was built by
-literal, nothing outside stoker builds any of them today).
+literal, nothing outside the model layer builds any of them today).
 
 ### Interface asks closed
 
@@ -647,7 +647,7 @@ literal, nothing outside stoker builds any of them today).
 No shipped catalog file uses `gguf`, and an earlier spelling (`mmproj = ""`) still parses (as
 `Some("")`) and `command` treats an empty name as none: no `--mmproj` flag. Chosen over a second
 variant because every reader of the weights already matches `Gguf`, and the only literals were
-stoker's own tests (porter names neither `WeightFiles` nor `Gguf`).
+The model layer's own tests (porter names neither `WeightFiles` nor `Gguf`).
 
 ### `cua-session`
 
@@ -724,7 +724,7 @@ gives it the catalog's caps.
 - Not zeroized: the WAV and multipart copies of the audio live in plain `Vec<u8>`s until the
   request finishes (`PcmBytes` zeroizes only the chunks the source handed over).
 
-### Breaks (stoker-internal, listed for porter)
+### Breaks (model-internal, listed for porter)
 
 None of these types is built by literal in porter today. If the porter agent builds one from the
 W4 API:
@@ -734,7 +734,7 @@ W4 API:
   calls, end)` (or `TranscriptSink::finish`, which fills `safety`), or add `safety`.
 - `WeightFiles::Gguf { model, mmproj }` takes `mmproj: Option<FileName>`.
 - `Shape` gained a variant: an exhaustive `match` on it needs an `OrHandle` arm (none exists
-  outside stoker).
+  outside the model layer).
 - `OpenAiSpeech::new(HttpClient, flavor)` is unchanged; the type is now `OpenAiSpeech<T = HttpClient>`.
 Porter call sites that should change: `crates/inferd` where it builds the CUA observation (add
 `tree` from `TreeText` and `notes` from `StepNote`, and put the vendor's safety signals into the
@@ -751,7 +751,7 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
   - `cua-vendors` depends on `cua-parse` (its `decode` returns `Parsed`) and not on
     `vision-prep` (SPEC.md 1.3 lists the reverse; the table there predates `Parsed` having a
     crate of its own). `model-replay` depends on `vision-prep` for `MediaType`.
-  - The catalog's `roles` use `CatalogKind`, stoker's copy of porter's `AiKind`: stoker cannot
+  - The catalog's `roles` use `CatalogKind`, the model layer's copy of porter's `AiKind`: the model layer cannot
     name porter. The slugs are identical; porter's `inferd::bridge` owns the total mapping test.
   - `WeightFiles::Gguf` is adjacently tagged (`{ kind = "gguf", v = { model, mmproj } }`) like every
     other data enum, where models.md's example inlined the fields.
@@ -777,7 +777,7 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
 - **The excluded crates' `Cargo.lock` and `target/` are untracked** (`.gitignore`), and their
   third-party dependencies (`ort`, `sherpa-onnx`) are commented in their manifests until the
   pinned block carries them; the skeletons build with path dependencies only.
-- `pipewire` stays out of stoker: capture and playback are docket's `voiced`, and the boundary
+- `pipewire` stays out of the model layer: capture and playback are docket's `voiced`, and the boundary
   check refuses an audio device crate in any speech crate.
 - Speech `Debug` redaction: `PcmBytes`, `Frame512`, `HeardText`, `SpokenText` and `MultipartBody`
   print a length only; `PcmBytes` zeroes its bytes on drop (`zeroize`, in the pinned block).
@@ -791,17 +791,17 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
 - The cassette file is JSON Lines: a header line, then one `Interaction` per line; a wire cassette (`<name>.wire.jsonl`) is the same header and one `WireExchange` per line.
 - Nothing here records, downloads or starts anything; the dev scripts that do are run by hand.
 
-## Fill F4: stoker (2026-10-05)
+## Fill F4: the model layer (2026-10-05)
 
-Lane `f4-stoker`. No `todo!()` removed (7 remain, all in the speech crates, which wait for voice).
-Asks 65, 66, 99, 100 and the stoker half of 122 were already closed in W4 and W5 (the table
+Lane `f4-models`. No `todo!()` removed (7 remain, all in the speech crates, which wait for voice).
+Asks 65, 66, 99, 100 and the model layer half of 122 were already closed in W4 and W5 (the table
 above); this lane checked each against the code and tests and found no gap.
 
 ### Interface asks closed
 
 | Ask | What changed |
 | --- | --- |
-| 141 | `CuaSession::absorb_for(&mut self, sent, reply, map) -> StepOutcome` and `absorb(&mut self, reply, map) -> StepOutcome` change the session in place; the caller keeps one session and no copy. `refill_repairs(&mut self)` gives the repair budget back when a step fails after a repair. `StepNote` keeps `NoteFrom` on the porter side (stoker's `StepNote` is the one line of text) |
+| 141 | `CuaSession::absorb_for(&mut self, sent, reply, map) -> StepOutcome` and `absorb(&mut self, reply, map) -> StepOutcome` change the session in place; the caller keeps one session and no copy. `refill_repairs(&mut self)` gives the repair budget back when a step fails after a repair. `StepNote` keeps `NoteFrom` on the porter side (the model layer's `StepNote` is the one line of text) |
 | 142 | `SamplingDefaults.reasoning_default: ReasoningDefault` (`on` or `off`, written in every chat entry) and `SamplingDefaults::for_reasoning(Reasoning) -> &Sampling`: `On(_)` takes `reasoning_on`, `Off` takes `reasoning_off`, `EngineDefault` takes the one the model's default names. `holo-3.1-4b` says `on` (Qwen3.5 templates think unless `enable_thinking` is false; a proposal the first recorded step confirms) |
 
 ### Still open for spike S1 (ask 68, needs a real engine)
@@ -922,7 +922,7 @@ workspace and the gate (it needs libonnxruntime at run time); no signature chang
 - Tests (14, in the crate, run by hand with `cargo test --manifest-path crates/speech-vad-silero/Cargo.toml`):
   13 model-free through the `Infer` seam (state carrying, reset zeroing, context tail, scaling, failure
   keeps state and says silence, threshold and thousandths tables, proptests, missing file, not-a-model
-  file) and one `#[ignore]`d reference test (`STOKER_SILERO_ONNX` and `ORT_DYLIB_PATH`, every frame
+  file) and one `#[ignore]`d reference test (`MODEL_SILERO_ONNX` and `ORT_DYLIB_PATH`, every frame
   within a thousandth of the CSV).
 - Failure semantics: `push` cannot return an error (frozen signature), so a failed model run returns
   `(Silence, SpeechProb(0))` and keeps the state.
@@ -1180,7 +1180,7 @@ through as `TextDelta` exactly as sent, no `ToolCall*` event is made from it, an
 delivered no call of its own (a model that mentions `<tool_call>` beside a real call is not a
 leak). Read it before `finish`. Tested in `a_call_left_in_the_content_is_text_never_a_call_and_is_flagged`.
 
-Interface ask (the signal reaches a caller only through a type change; the stoker side is done
+Interface ask (the signal reaches a caller only through a type change; the model side is done
 behind the existing types): `model-provider` gains
 `TurnEvent::CallInContent(LeakMarker)` (`LeakMarker` moves from `model-openai-compat::leak` to
 `model-provider`, same slugs), emitted once by the chat decoder with the finish reason (or
@@ -1211,7 +1211,7 @@ is among the caller's engines and its capabilities fit. The budget test only rea
 as local, so it skips attached ones; `vram` is still written (the host's, assumed card 97887 MiB,
 overhead not measured) but nothing reads it.
 
-What porter's I3 lane sees (stoker path dep, nothing in porter needs to change to keep building;
+What porter's I3 lane sees (the model layer path dep, nothing in porter needs to change to keep building;
 porter never builds a `ModelEntry` literally):
 - `parse_entry` accepts the file; `entry.locality` is `OnDevice`, so `local_claims` (the
   `is_on_device()` filter) makes its claims like any local model.
@@ -1247,7 +1247,7 @@ the proptest suites' shared code only and not run under libFuzzer). Seeds are in
 ## First-token log-probabilities for a Choice (2026-10-09, lane `choicelp`)
 
 For docket's shadow decision-model trial: the probability of each declared option from the same call
-that answers it. Stoker carries the raw material; porter renormalises.
+that answers it. The model layer carries the raw material; porter renormalises.
 
 ### Types (`model-provider`)
 
@@ -1270,7 +1270,7 @@ that answers it. Stoker carries the raw material; porter renormalises.
 | vLLM | `logprobs: true`, `top_logprobs: k` (k held to 1..=20) | `choices[0].logprobs.content[0].top_logprobs` |
 | llama-server | the same two OpenAI fields on `/v1/chat/completions` (not the native `n_probs`) | the same path |
 | LiteLLM, OpenRouter | nothing sent (`Quirks.logprobs = Unsupported`) | always `None` |
-| Anthropic and others | no such API in stoker | `None` |
+| Anthropic and others | no such API in the model layer | `None` |
 
 Both rows are from the engines' documented OpenAI-compatible shape and are "to verify" against a
 recorded fixture; the tests use frames written by hand in that shape. No extra network call.
@@ -1324,8 +1324,8 @@ without our own connector.
   is unchanged.
 
 **One `EngineKind` (plan T0.2).** `model-catalog::EngineKind` is the one closed engine set in
-stoker. It gains `Strata` (slug `strata`), so it covers llama.cpp (`llama_server`), vLLM and Strata
-beside the speech engines. Nothing else in stoker had an engine-id enum (`Flavor` in
+The model layer. It gains `Strata` (slug `strata`), so it covers llama.cpp (`llama_server`), vLLM and Strata
+beside the speech engines. Nothing else in the model layer had an engine-id enum (`Flavor` in
 `model-openai-compat` is a wire dialect that includes cloud hosts, and `EngineLabel` in
 `model-replay` is a cassette string). `engine-supervisor::command` has an arm for it and
 `EnginePaths` a `strata_python` field. porter's `porter-engines::EngineId` moves in T1.1 and is
@@ -1333,7 +1333,7 @@ replaced by this enum then.
 
 ## Provider-reported charge (2026-10-28, lane `scharge`)
 
-Owner decision: stoker shows only what the provider reports and keeps no price table.
+Owner decision: the model layer shows only what the provider reports and keeps no price table.
 
 - `model-provider::Money { amount: Decimal, currency: Currency }` (rust_decimal, iso_currency), with
   a typed `checked_add` (`MoneyError`: different currencies, overflow). `Charges { PerReply,
@@ -1358,7 +1358,7 @@ Owner decision: stoker shows only what the provider reports and keeps no price t
 
 ## One `Engine` trait instead of matches on `EngineKind` (2026-10-29, lane `tr1`)
 
-Trait audit `~/rs-wt/trait-audit/stoker.md` section 1, steps a-d. Nothing was built or run in this
+Trait audit `~/rs-wt/trait-audit/models.md` section 1, steps a-d. Nothing was built or run in this
 lane (no cargo build, check, test or clippy), so the first gate is the first compile.
 
 - New pure crate `engine-spec` (tier P, depends on `model-catalog`): `trait Engine` with default
@@ -1387,7 +1387,7 @@ lane (no cargo build, check, test or clippy), so the first gate is the first com
 
 ## One `ActionDialect` trait instead of matches on `CuaDialect` (2026-10-29, lane `tr7`)
 
-Trait audit `~/rs-wt/trait-audit/stoker.md` section 3. Nothing was built or run in this lane (no
+Trait audit `~/rs-wt/trait-audit/models.md` section 3. Nothing was built or run in this lane (no
 cargo build, check, test or clippy), so the first gate is the first compile.
 
 - `cua-session` gains `trait ActionDialect` (`wire`, `is_text`, `is_tool`, `system`, `schema`,

@@ -99,7 +99,7 @@ step_once() {
   rigo $app llm --class files --prompt hello >"$OUT_DIR/once-use.log" 2>&1
   grep -q '"result":"opened"' "$OUT_DIR/once-use.log" || { echo "the once-permit did not open a session: $(cat "$OUT_DIR/once-use.log")" >&2; return 1; }
   if grep -q 'unavailable' "$OUT_DIR/once-use.log"; then
-    echo "the use was refused before the key was read (no hosted model to route to; is the stoker catalog in place?): $(tail -n 3 "$OUT_DIR/once-use.log")" >&2
+    echo "the use was refused before the key was read (no hosted model to route to; is the model catalog in place?): $(tail -n 3 "$OUT_DIR/once-use.log")" >&2
     return 1
   fi
   # Used once: spent, and a second use is not let through.

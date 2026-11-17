@@ -202,7 +202,7 @@ done
 
 # The helper that shows drives in ~/Cloud, built beside the daemons. It is not a daemon on the bus
 # (its socket starts it), so it is not in the list above. The helper that installs an engine for
-# everyone is stoker's (its scripts/install.sh puts it and its polkit action in place).
+# everyone is the model layer's (its scripts/install.sh puts it and its polkit action in place).
 for helper in bardo-drive-mount; do
     if [ ! -x "$built/$helper" ]; then
         echo "install.sh: $built/$helper is not there; build first or point --bin-dir at it" >&2

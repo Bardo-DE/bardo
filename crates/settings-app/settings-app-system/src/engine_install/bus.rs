@@ -1,4 +1,4 @@
-//! The real desk: the engines stoker's `engine-install` finds and installs, and what the assistant
+//! The real desk: the engines the model layer's `engine-install` finds and installs, and what the assistant
 //! says of its own.
 
 use crate::bus::inferd;
@@ -28,7 +28,7 @@ const SHOWN: [EngineKind; 3] = [
     EngineKind::Strata,
 ];
 
-/// Polkit's launcher, and the install helper stoker's install step places.
+/// Polkit's launcher, and the install helper the model layer's install step places.
 const PKEXEC: &str = "/usr/bin/pkexec";
 const HELPER: &str = "/usr/libexec/bardo/bardo-engine-helper";
 
@@ -43,7 +43,7 @@ fn name_of(kind: EngineKind) -> &'static str {
     }
 }
 
-/// The engines stoker's `engine-install` finds and installs, and what the assistant says of them.
+/// The engines the model layer's `engine-install` finds and installs, and what the assistant says of them.
 pub struct OnEngines {
     bus: BusSource,
     chooser: Arc<OnPortal>,

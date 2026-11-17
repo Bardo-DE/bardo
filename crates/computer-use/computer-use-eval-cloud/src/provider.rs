@@ -1,8 +1,8 @@
-//! A stoker [`Provider`] whose turns are inferd chat turns.
+//! A model layer [`Provider`] whose turns are inferd chat turns.
 //!
-//! A stoker [`Provider`] whose turns are inferd chat turns: one session per turn, opened as
+//! A model layer [`Provider`] whose turns are inferd chat turns: one session per turn, opened as
 //! `Need::Llm` (chat, vision, and tools when the turn has some) on data class `Screen`, the
-//! request written with [`crate::request::chat`], the events read back into stoker's.
+//! request written with [`crate::request::chat`], the events read back into the model layer's.
 //!
 //! inferd decides where the turn goes (the tier's row in its config), fetches the key from
 //! accountd for that one turn and meters the reply against `[ai.spend]`. A turn refused on a

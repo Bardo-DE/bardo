@@ -64,7 +64,7 @@ impl ChatSink for Watch {
     }
 }
 
-/// The JSON Schema of the record the larger stages reply with. Hand-written until stoker's
+/// The JSON Schema of the record the larger stages reply with. Hand-written until the model layer's
 /// `Shape::to_json_schema` is filled (then `verdict_shape` replaces it).
 fn record_schema() -> String {
     let codes: Vec<String> = CODES.iter().map(slug).collect();

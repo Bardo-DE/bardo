@@ -299,7 +299,7 @@ fn every_data_class_has_a_floor_decision() {
 #[test]
 fn a_scroll_with_no_coordinate_and_a_bad_argument_cross_the_wire() {
     // Ask 67: the model named nowhere, so the executor resolves the centre of the frame; and a
-    // dropped action may say its argument was unusable. Both mirror stoker's computer-use-parse.
+    // dropped action may say its argument was unusable. Both mirror the model layer's computer-use-parse.
     let scroll = CuaAction::Scroll {
         at: Target::Centre,
         dir: computer_use_action::ScrollDir::Down,

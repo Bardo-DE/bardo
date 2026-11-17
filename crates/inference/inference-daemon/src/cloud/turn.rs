@@ -1,7 +1,7 @@
 //! One chat turn to a hosted model.
 //!
 //! One chat turn to a hosted model: the caps are asked again, the key is fetched from accountd
-//! for this turn only, the request goes out through stoker's `OpenAiCompat` driver over the TLS
+//! for this turn only, the request goes out through the model layer's `OpenAiCompat` driver over the TLS
 //! transport, the events stream back, and what the reply says it used and was charged is metered.
 //!
 //! The key lives from `Peer.ResolveKey` to the end of the turn: it is read from a sealed

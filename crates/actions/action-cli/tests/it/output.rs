@@ -1,6 +1,6 @@
 //! What `bardo-do` prints: JSON goldens (`tests/golden`, rewritten with `UPDATE_GOLDEN=1`),
 //! text on a terminal and JSON when stdout is a pipe, standard input end to end, `describe`
-//! through stoker's `Shape::to_json_schema`, search, context and shell completion.
+//! through the model layer's `Shape::to_json_schema`, search, context and shell completion.
 
 use crate::support::*;
 use account_core::AppName;
@@ -157,7 +157,7 @@ async fn nothing_piped_to_a_dash_is_a_usage_error() {
 }
 
 #[tokio::test]
-async fn describe_prints_the_schema_stoker_renders() {
+async fn describe_prints_the_schema_model_layer_renders() {
     let desk = Desk::new();
     let described = json(&desk.bardo(&["describe", "mail", "message.send"]).await);
     let schema = &described["schema"];

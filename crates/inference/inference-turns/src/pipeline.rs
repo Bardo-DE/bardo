@@ -16,7 +16,7 @@ use inference_router::seams::{RunningTurn, TurnRunner, TurnStep};
 use std::collections::{BTreeMap, VecDeque};
 use std::ops::ControlFlow;
 
-/// What a speech-to-text stage runs on (stoker's `SpeechToText` behind the engine the stage's
+/// What a speech-to-text stage runs on (the model layer's `SpeechToText` behind the engine the stage's
 /// model names; a scripted one in tests). It is inferd's `SpeechRunner::transcribe`'s shape.
 pub trait Transcriber: Send + Sync {
     /// Reads `audio` until it ends, sends `Heard` events to `sink`, and gives the transcript.

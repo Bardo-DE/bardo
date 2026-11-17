@@ -1,5 +1,5 @@
 //! `describe`: the JSON Schema of an action's parameters as the command line takes them, built from
-//! stoker's `Shape` and rendered by `Shape::to_json_schema`.
+//! The model layer's `Shape` and rendered by `Shape::to_json_schema`.
 //!
 //! The command line's forms are the schema's forms: a thing is the text `<kind>:<key>`, a link or a
 //! path is text, a decimal and a duration are the text typed.

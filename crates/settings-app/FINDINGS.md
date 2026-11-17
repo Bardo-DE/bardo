@@ -604,14 +604,14 @@ is given before it, so a jail with no manager does not stop it (read in the call
   was not tried.
 - Strata has no Linux download (its releases are Windows builds; on Linux its setup compiles the
   engine), so the sheet for Strata is "Isn't Available to Download" with "Choose Folder…". Starting
-  Strata with a model is a stoker catalogue job.
+  Strata with a model is a model layer catalogue job.
 - Not run: nothing was compiled. The selectors of `tests/ui/engine_install.rs` (`#picker-engine-ai-model-text-balanced`
   for the "Runs with" row, `.engine-sheet-buttons .ds-button[data-answers=...]`) are read from the
   code, not from a page. The folder chooser's portal call (`engine_install/portal.rs`) was written
   from the portal's documentation and not tried against a portal.
 - The restart that follows Continue stops a conversation that is open; the person pressed Continue
   knowing the sheet says "Your assistant restarts to use it."
-- `bardo-settings`'s `Cargo.lock` needs the new path crates (stoker's `engine-manifest`, `engine-probe`,
+- `bardo-settings`'s `Cargo.lock` needs the new path crates (the model layer's `engine-manifest`, `engine-probe`,
   `engine-spec`, `engine-install` and `model-catalog`, which replaced porter's `porter-engines` and
   `porter-engines-install` in the 2026-10-29 move; the inference service's `inferd-client` and `inference-dbus`;
   porter's `porter-client-dbus`) and what they bring (`sha2`, `rustix`, the TLS stack of

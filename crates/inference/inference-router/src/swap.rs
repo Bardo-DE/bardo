@@ -1,4 +1,4 @@
-//! What loading a model now would take, from stoker's pure `budget`: the router's input `SwapCost`.
+//! What loading a model now would take, from the model layer's pure `budget`: the router's input `SwapCost`.
 //!
 //! Nothing here starts or stops anything; it asks the question "if I wanted this engine now, whom
 //! would the supervisor unload?" and says which of those answers is a swap Automatic may make.

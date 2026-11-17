@@ -204,7 +204,7 @@ fn the_longest_provider_stem_wins() {
 #[test]
 fn every_shipped_hosted_entry_is_reached_through_openrouter_and_through_its_company() {
     let catalog = read_catalog(&CatalogDirs {
-        system: inference_router::testkit::pinned_stoker_catalog(),
+        system: inference_router::testkit::pinned_model_catalog(),
         user: PathBuf::from("/nonexistent/user/catalog"),
     });
     let hosted = remote_entries(&catalog.entries);

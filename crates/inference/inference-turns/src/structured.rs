@@ -1,6 +1,6 @@
-//! Structured replies: validate and repair (ARCHITECTURE section 2, stoker interface ask 100).
+//! Structured replies: validate and repair (ARCHITECTURE section 2, the model interface ask 100).
 //!
-//! `ReplyShape::Json(schema)` and `ReplyShape::Choice` are read as stoker's `Shape` and run under
+//! `ReplyShape::Json(schema)` and `ReplyShape::Choice` are read as the model layer's `Shape` and run under
 //! a `ShapedSession` around the turn, so the reply an app gets has passed `Shape::check`, or the
 //! turn fails `Unparseable` (never a string that merely looks like it). The session picks how to
 //! ask (`choose`: the engine's constraint, else a synthetic `final_result` tool, else the schema in

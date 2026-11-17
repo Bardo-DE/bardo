@@ -15,7 +15,7 @@ use std::fmt::Write as _;
 /// The anchor: the first words of the first system message, kept short.
 const ANCHOR_CHARS: usize = 48;
 
-/// The header line stoker's cassette format starts with.
+/// The header line the model layer's cassette format starts with.
 fn header(build: &str) -> Value {
     json!({
         "vocab": 1,

@@ -2,7 +2,7 @@
 //! and whether a person's own install is still the pinned one.
 //!
 //! inferd does not install anything: its unit has no network and no write access to the person's
-//! files, and it holds their AI keys. Settings installs (stoker's `engine-install`); inferd finds
+//! files, and it holds their AI keys. Settings installs (the model layer's `engine-install`); inferd finds
 //! what was installed and, before each start of a program of a person's own install, checks it
 //! against the manifest's pins ([`Installed::guard`]). What a check finds changed it remembers: the
 //! engine then stands as [`Standing::Changed`] and is not started until it is installed again.

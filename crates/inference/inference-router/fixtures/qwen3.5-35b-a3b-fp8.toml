@@ -1,7 +1,7 @@
-# A copy of stoker's catalog/qwen3.5-35b-a3b-fp8.toml (stoker, same author, MIT OR Apache-2.0),
-# vendored here so the tests build from a plain clone with no sibling stoker checkout. It is the
+# A copy of the model layer's catalog/qwen3.5-35b-a3b-fp8.toml (the model layer, same author, MIT OR Apache-2.0),
+# vendored here so the tests build from a plain clone with no sibling the model checkout. It is the
 # shipped entry of an attached engine; the tests only need its shape (serving attached, locality
-# on-device, no engine profile). Refresh it from stoker when that entry changes.
+# on-device, no engine profile). Refresh it from the model layer when that entry changes.
 #
 # Qwen3.5 35B-A3B (Qwen), the FP8 checkpoint, a mixture-of-experts model (about 3B parameters
 # active per token) that is ATTACHED: it is served on another machine and never started here.

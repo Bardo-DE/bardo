@@ -92,7 +92,7 @@ fn fence_for(inputs: &[Labelled<String>]) -> String {
 /// How the reply is asked for.
 ///
 /// A choice is asked for as a choice. Anything else is JSON under the schema of
-/// `ValueSchema::shape` (stoker's `Shape::to_json_schema`), and a value that is not a record is
+/// `ValueSchema::shape` (the model layer's `Shape::to_json_schema`), and a value that is not a record is
 /// wrapped as `{"answer": ...}`, since a structured reply is an object. A schema that has no shape
 /// in that vocabulary falls back to any JSON object; the answer is checked against the ask
 /// afterwards either way.
@@ -150,7 +150,7 @@ fn message(role: Role, text: String) -> ChatMessage {
 /// The chat request for an ask.
 ///
 /// The fixed instruction, the inputs as fenced data, no tools, and the schema as the reply shape
-/// (`ValueSchema::shape` rendered by stoker's `Shape`; inferd owns validation, repair and retry).
+/// (`ValueSchema::shape` rendered by the model layer's `Shape`; inferd owns validation, repair and retry).
 /// The class is the strictest of the inputs' classes, and the request is interactive.
 #[must_use]
 pub fn reader_request(ask: &ReaderAsk, inputs: &[Labelled<String>]) -> ChatRequest {

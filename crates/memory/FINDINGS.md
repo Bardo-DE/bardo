@@ -227,7 +227,7 @@ Nothing below is built; the interfaces it will use are.
   `porter-client-dbus`, `porter-dbus` from `https://github.com/Bardo-DE/porter`; `porter-infer`,
   `inferd-client`, `inference-dbus` from `https://github.com/Bardo-DE/steward`), so a plain `git clone`
   builds with no sibling checkout (Bardo `CONSUMING.md` section 1). The URL spelling and the rev
-  match porter's own pins of stoker and Bardo, so cargo sees one copy of each crate. For work that
+  match porter's own pins of the model layer and Bardo, so cargo sees one copy of each crate. For work that
   spans repos, override the pin locally with a `[patch]` that is never committed: put it in a
   `.cargo/config.toml` in a directory ABOVE the checkout (cargo merges the config of every parent
   directory; this repo's own `.cargo/config.toml` is tracked), for example
@@ -235,7 +235,7 @@ Nothing below is built; the interfaces it will use are.
   ```toml
   [patch."https://github.com/Bardo-DE/porter"]
   porter-core = { path = "/path/to/porter/crates/porter-core" }
-  # one line per porter crate almanac names; add the same for stoker/bardo crates if the
+  # one line per porter crate almanac names; add the same for models/bardo crates if the
   # local porter checkout pins a different rev than the one in Cargo.lock
 
   [patch."https://github.com/Bardo-DE/prov"]
@@ -1066,6 +1066,6 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
 - Licences: MIT and MIT OR Apache-2.0 are in deny.toml's list. `ulid` pulls `web-time` only on wasm.
 
 ## Round B re-pin (2026-10-28)
-- porter 31799cfa (step 3 + spending), stoker c8fed624 (via porter-infer), prov 628083b3. Paths per ~/rs-wt/step3-core/PATHMAP.md and ~/rs-wt/spending/PATHMAP.md: ids from `porter-ids`, model kinds and needs from `porter-capability`/`porter-match`, the accounts frame from `porter-wire`; `porter_core::consent::Usage`; `CoreError::MalformedValue` for a JSON text that is not JSON; `TokenUsage.charge`; `flow_to` is a bool.
+- porter 31799cfa (step 3 + spending), the model layer c8fed624 (via porter-infer), prov 628083b3. Paths per ~/rs-wt/step3-core/PATHMAP.md and ~/rs-wt/spending/PATHMAP.md: ids from `porter-ids`, model kinds and needs from `porter-capability`/`porter-match`, the accounts frame from `porter-wire`; `porter_core::consent::Usage`; `CoreError::MalformedValue` for a JSON text that is not JSON; `TokenUsage.charge`; `flow_to` is a bool.
 - `DataClass` is `#[non_exhaustive]` now, so a class porter adds is no longer a compile error here. `class_of` instead counts a class it has no place for as the most sensitive, never as the app's own data; the order test that relied on the exhaustive match is gone, and the tag test is a table.
 - model-provider now reaches almanac under porter-infer (`TokenUsage.charge` is its `Money`). The owner relaxed the boundary rule (2026-10-28): only a direct dependency of an almanac crate on model-provider is a leak; the other area bans stay whole-tree.

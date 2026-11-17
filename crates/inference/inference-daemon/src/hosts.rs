@@ -1,7 +1,7 @@
 //! The real seams of the engine supervisor: child processes, a health probe over the engine's
 //! socket, and `nvidia-smi`.
 //!
-//! The tests of the machine use stoker's fakes; these are exercised with harmless programs
+//! The tests of the machine use the model layer's fakes; these are exercised with harmless programs
 //! (`sleep`, a shell script) and never with an engine.
 //!
 //! `ProcessHost` is the unconfined host (models section 3.9: for desktops without systemd, and

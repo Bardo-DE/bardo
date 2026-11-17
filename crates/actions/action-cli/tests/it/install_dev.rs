@@ -2,7 +2,7 @@
 //! scratch tempdir, the binaries are fake files named by `INSTALL_DEV_BIN_DIR` (nothing builds,
 //! nothing is compiled), and the environment is cleared, so the person's real `~/.config`,
 //! `~/.local` and `/etc` are never named. The script reads the sibling checkouts' `dist` files, so the tests that
-//! install skip (and say so) when porter, the inference service, almanac and stoker are not checked out beside docket: a plain
+//! install skip (and say so) when porter, the inference service, almanac and the model layer are not checked out beside docket: a plain
 //! clone builds with no sibling, and this is a developer tool.
 
 use std::collections::BTreeSet;
@@ -31,13 +31,13 @@ fn siblings_present() -> bool {
         "porter/dist",
         "inference/dist",
         "almanac/dbus",
-        "stoker/catalog",
+        "models/catalog",
     ]
     .iter()
     .all(|dir| beside.join(dir).is_dir());
     if !here {
         eprintln!(
-            "skipped: porter, the inference service, almanac and stoker are not checked out beside docket"
+            "skipped: porter, the inference service, almanac and the model layer are not checked out beside docket"
         );
     }
     here

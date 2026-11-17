@@ -16,7 +16,7 @@ pub struct Gathered {
     options: Option<Vec<String>>,
 }
 
-/// The event a stoker event is, if the client sees it: deltas, finished tool calls and usage
+/// The event a model layer event is, if the client sees it: deltas, finished tool calls and usage
 /// (usage is metering that rides on `Finished`, so the client sees it only there).
 #[must_use]
 pub fn event(event: &sp::TurnEvent) -> Option<pi::InferEvent> {

@@ -1,7 +1,7 @@
 # Hosted models on the eval task set
 
 Four hosted runs (2026-10-10) next to the two Holo 3.1 4B reports. Same prompt, parser, run machine and
-gate for all of them (stoker `CuaSession`, `Holo31` or `UiTars15` dialect). Hosted runs go through
+gate for all of them (the model layer `CuaSession`, `Holo31` or `UiTars15` dialect). Hosted runs go through
 inferd on a private bus; the key is held by accountd and the `computer-use-eval-cloud` process refuses to start
 if it can reach a credential (see ARCHITECTURE section 8). One run per task, greedy where the provider
 takes a temperature. 28 playable tasks (3 are scripted-only). The Holo reports were taken on the earlier
@@ -87,7 +87,7 @@ trial entry like `kimi-k3.toml` (spend about 0.05 USD).
 
 ## What a hosted run needs that the catalogue lacks
 
-The trial entries are in `eval/cloud-catalog/` and are not committed to stoker. For stoker's catalogue:
+The trial entries are in `eval/cloud-catalog/` and are not committed to the model layer. For the model layer's catalogue:
 `ui-tars-1.5-7b` and `claude-sonnet-5.5` do not exist there; `kimi-k3` (and every hosted entry) has no
 `actions_out`, so inferd claims no computer-use capability for it and cua's `Need::ComputerUse` could not
 select it even if inferd allowed hosted computer use (it refuses today).

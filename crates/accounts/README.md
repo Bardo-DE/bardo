@@ -38,7 +38,7 @@ shipped one is put beside it as `callers.toml.dist`). It never writes into a hom
 `--bin-dir DIR` installs a service you built yourself instead of building it, and `--help` lists
 the rest.
 
-Building needs access to the private repositories that porter's dependencies come from (stoker
+Building needs access to the private repositories that porter's dependencies come from (the model layer
 and Bardo, as git dependencies); there is no public mirror yet.
 
 ## Where files go

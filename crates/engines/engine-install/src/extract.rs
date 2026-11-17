@@ -363,7 +363,7 @@ mod tests {
             "..",
             "../escaped",
             "sub/../../escaped",
-            "a/../../../stoker/crates",
+            "a/../../../models/crates",
             "./../x",
         ] {
             let (dir, result) = try_unpack(&[link("top/out", EntryType::Symlink, to)]);

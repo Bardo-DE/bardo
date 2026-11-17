@@ -3,8 +3,8 @@
 #![no_main]
 
 use libfuzzer_sys::fuzz_target;
+use model_fuzz::{pieces, split};
 use model_openai_compat::{KOKORO_FORMAT, PcmDecoder};
-use stoker_fuzz::{pieces, split};
 
 fuzz_target!(|data: &[u8]| {
     let (cuts, bytes) = split(data);

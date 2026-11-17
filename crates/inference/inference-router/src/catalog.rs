@@ -58,7 +58,7 @@ pub struct Catalog {
 /// Why an entry's text is not an entry: it does not parse, or an engine it names cannot run it.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum EntryError {
-    /// Stoker's parser refused it.
+    /// The model layer's parser refused it.
     #[error("{0}")]
     Parse(#[from] CatalogError),
     /// It parses, but one of its engines cannot run it (`engine_spec::check_entry`).
@@ -66,7 +66,7 @@ pub enum EntryError {
     Engine(#[from] SpecError),
 }
 
-/// One entry's text as an entry: stoker's parser, then the checks of the engines the entry names
+/// One entry's text as an entry: the model layer's parser, then the checks of the engines the entry names
 /// (a vLLM line needs a GPU estimate, a llama-server line GGUF weights).
 ///
 /// # Errors

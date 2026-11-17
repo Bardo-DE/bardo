@@ -81,7 +81,7 @@ for every review stage; default is the shipped 300/3000/3000 ms for `scripted` a
 engines, because a cloud round trip is slower than the quick stage's 300 ms and a run with the shipped
 bound would ask about everything), `--fnr-max-permille N` (fail when a corpus's false-negative rate has
 a Wilson upper end above N; the person's target, QUESTIONS S5), `--regress DIR` (play the regression
-cassettes, below). `--catalog DIR` (default `../stoker/catalog`). Options of `live-smoke.sh`: `--flow NAME` (any flow of "The flows" below;
+cassettes, below). `--catalog DIR` (default `../models/catalog`). Options of `live-smoke.sh`: `--flow NAME` (any flow of "The flows" below;
 repeatable), `--patience-s N` (seconds to wait for each change of an answer, and for each model's warm-up; default 600).
 
 Exit codes: 0 everything met, 1 a case missed or a flow failed, 2 the run could not start.
@@ -104,10 +104,10 @@ The catalogue has two local text models with tools, `qwen3-4b-instruct-2507-fp8`
 qwen and best on granite, so the second opinion is a different family. They cannot be resident together
 on 16 GB: inferd evicts one for the other, so a run pays a model swap whenever the stage changes family.
 
-**Catalogue.** inferd reads `$XDG_DATA_HOME/stoker/catalog` and `/usr/share/bardo/models/catalog`; in a harness
+**Catalogue.** inferd reads `$XDG_DATA_HOME/models/catalog` and `/usr/share/bardo/models/catalog`; in a harness
 world the first is scratch and the second may be absent, so a run would find no models. `--catalog DIR`
-(both scripts and `agent-live`; default the sibling stoker checkout's `catalog/`, `../stoker/catalog`
-made absolute) names a directory whose `*.toml` files are copied into `<scratch>/data/stoker/catalog`
+(both scripts and `agent-live`; default the sibling the model layer checkout's `catalog/`, `../models/catalog`
+made absolute) names a directory whose `*.toml` files are copied into `<scratch>/data/models/catalog`
 before inferd starts. They are copied, never linked, so nothing in the real tree can be written through
 the world. The report header, `index.txt` and each smoke transcript name the catalogue directory and its
 git commit when it is a git checkout.

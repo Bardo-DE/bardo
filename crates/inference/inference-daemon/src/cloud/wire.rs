@@ -1,5 +1,5 @@
 //! How a request to a hosted model is spoken: where each provider is, which dialect of the
-//! chat-completions wire it takes, and the two fields stoker's codec cannot say.
+//! chat-completions wire it takes, and the two fields the model layer's codec cannot say.
 //!
 //! The codec writes `temperature` on every request and has no `reasoning_effort = "none"`. A
 //! hosted model's entry says "no sampling written: the provider's defaults apply" and gpt-6-luna

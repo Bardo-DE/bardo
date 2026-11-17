@@ -1,4 +1,4 @@
-//! A stoker turn as an inferd chat request: the inverse of what `inference-bridge` does inside inferd.
+//! A model layer turn as an inferd chat request: the inverse of what `inference-bridge` does inside inferd.
 //!
 //! The screenshots go inline (base64 in the frame), the sampling is the entry's or the provider's
 //! as the caller chooses, and nothing here names a model: inferd routes by the tier.

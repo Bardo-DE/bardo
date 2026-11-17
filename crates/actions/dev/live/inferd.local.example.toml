@@ -1,7 +1,7 @@
 # An inferd.toml for `--engine local`. Copy it to dev/live/inferd.local.toml (git ignores that),
 # fix the paths, and pass it with --inferd-config. It is read from the path you give and nowhere
 # else; the harness never opens ~/.config. It must not hold a [callers] table: the world writes the
-# callers (bardo-actiond, bardo-companiond, bardo-readerd, memoryd) itself. The model catalogue is the sibling stoker
+# callers (bardo-actiond, bardo-companiond, bardo-readerd, memoryd) itself. The model catalogue is the sibling the model layer
 # checkout's catalog/ (--catalog DIR to change it), copied into the scratch world.
 #
 # inferd runs in a scratch HOME, so every path is absolute.

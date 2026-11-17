@@ -5,7 +5,7 @@ use speech_provider::SampleRate;
 use std::fmt;
 
 /// The capture and engine rate: 16 kHz mono S16. It is the one rate `speech_vad::Framer` takes;
-/// stoker keeps that rate private, so `voiced` tests that the two agree.
+/// The model layer keeps that rate private, so `voiced` tests that the two agree.
 pub const CAPTURE_RATE: SampleRate = SampleRate(16_000);
 
 /// How many samples `ms` milliseconds hold at [`CAPTURE_RATE`].

@@ -17,7 +17,7 @@ How to read this file:
 |---|---|
 | "context" | docket (`action-core::context`, `IntentProvider1.Context/Summon`), Bardo `ui-intents` (view shapes, seams), docket `action-ui-adapter` (the adapter) |
 | "agent", "planner", "agent-loop", "companion daemon" | docket: `agent-loop`, `companion-wire`, `companiond`, `readerd` (§3.6, §4) |
-| "security" | labels: porter `prov`; policy, review, breaker, budgets: docket; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (stoker `model-http` already takes a proxy `HttpTarget`) |
+| "security" | labels: porter `prov`; policy, review, breaker, budgets: docket; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (the model layer `model-http` already takes a proxy `HttpTarget`) |
 | "compositor" | the compositor (cua repo owns the protocol crate; the compositor branch is shared with double-tap ⌘ later) and sill (`shell-overlays` phase A) |
 | "launcher", "presence", "settings" | ux (sill, the UI kit ds, the Settings app; design/22 rows by Bardo agent) |
 | "intents" | docket |
@@ -35,7 +35,7 @@ Four new library repos plus one GPL fork. Every new repo copies porter's shape: 
 
 | Repo | New? | Holds | Portable |
 |---|---|---|---|
-| `~/stoker` | new (name: Q-P1) | the model layer: provider trait, backends, CUA action/parse/session, vision prep, catalog, engine supervisor | yes, no porter dependency |
+| `~/models` | new (name: Q-P1) | the model layer: provider trait, backends, CUA action/parse/session, vision prep, catalog, engine supervisor | yes, no porter dependency |
 | `~/porter` | existing | + `prov` (labels and shared who/what vocabulary), `SpaceId`, ComputerUse vocabulary, streaming inference, inferd engines | yes |
 | `~/almanac` | new | memory: eventlog, memfiles, recall, memoryd | yes (memoryd Linux) |
 | `~/docket` | new | typed actions, router, policy, review, eval, MCP edge, **and the companion agent** (agent-loop, companiond, readerd), the ds adapter | core yes; daemons Linux |
@@ -58,7 +58,7 @@ the pure, portable foundation that owns `AppName`, `DataClass` and now `SpaceId`
 ### 1.2 Repo dependency direction (acyclic; enforced per repo by `check-boundary.sh` rows)
 
 ```
-stoker  ←  porter  ←  almanac  ←  docket  ←  cua  ←  sill
+models  ←  porter  ←  almanac  ←  docket  ←  cua  ←  sill
    ↑          ↑          ↑          ↑   ↖Bardo(ui-intents only)
    └──────────┴──────────┴──────────┴── mailo, the Settings app (clients only)
 Bardo depends on none of them.  The compositor → cua's bardo-agent-protocol only.
@@ -68,19 +68,19 @@ Bardo depends on none of them.  The compositor → cua's bardo-agent-protocol on
 
 | # | Crate | Repo | Kind | Depends on (ours, cross-repo in **bold**) |
 |---|---|---|---|---|
-| 1 | `computer-use-action` | stoker | pure | — |
-| 2 | `model-vision-prep` | stoker | pure (`pixels` feature: CPU) | computer-use-action |
-| 3 | `model-provider` | stoker | pure | computer-use-action, model-vision-prep |
-| 4 | `computer-use-parse` | stoker | pure, fuzzed | computer-use-action, model-provider |
-| 5 | `computer-use-vendors` (was models' `cua-wire`) | stoker | pure | computer-use-action, model-provider, model-vision-prep |
-| 6 | `computer-use-session` | stoker | pure | 1-5 |
-| 7 | `model-replay` | stoker | pure (+ injected sink) | model-provider |
-| 8 | `model-catalog` | stoker | pure | model-provider, model-vision-prep, computer-use-action |
-| 9 | `engine-supervisor` | stoker | pure core; io features | model-catalog |
-| 10 | `model-http` | stoker | io | — |
-| 11 | `model-openai-compat` | stoker | io | model-provider, model-http |
+| 1 | `computer-use-action` | the model layer | pure | — |
+| 2 | `model-vision-prep` | the model layer | pure (`pixels` feature: CPU) | computer-use-action |
+| 3 | `model-provider` | the model layer | pure | computer-use-action, model-vision-prep |
+| 4 | `computer-use-parse` | the model layer | pure, fuzzed | computer-use-action, model-provider |
+| 5 | `computer-use-vendors` (was models' `cua-wire`) | the model layer | pure | computer-use-action, model-provider, model-vision-prep |
+| 6 | `computer-use-session` | the model layer | pure | 1-5 |
+| 7 | `model-replay` | the model layer | pure (+ injected sink) | model-provider |
+| 8 | `model-catalog` | the model layer | pure | model-provider, model-vision-prep, computer-use-action |
+| 9 | `engine-supervisor` | the model layer | pure core; io features | model-catalog |
+| 10 | `model-http` | the model layer | io | — |
+| 11 | `model-openai-compat` | the model layer | io | model-provider, model-http |
 | 12 | `prov` | porter | pure | account-core |
-| — | account-core, account-provider, inference-core, account-dbus, account-client, account-fake, inferd | porter | existing, changed (§3.2) | inference-core → **computer-use-action**; inferd → **stoker 1-3, 6, 8-11** |
+| — | account-core, account-provider, inference-core, account-dbus, account-client, account-fake, inferd | porter | existing, changed (§3.2) | inference-core → **computer-use-action**; inferd → **the model layer 1-3, 6, 8-11** |
 | 13 | `memory-core` | almanac | pure, serde-only | **account-core, prov** |
 | 14 | `memory-seal` | almanac | pure | memory-core |
 | 15 | `eventlog` | almanac | sqlite | memory-core, memory-seal |
@@ -328,7 +328,7 @@ pub struct TierMap { pub rows: Vec<TierRow> }   pub struct PickerRow { /* models
 //   trait InferSession { send(ClientFrame); next() -> InferEvent }; Transport::infer removed; Accounts::session added.
 ```
 
-### 3.3 stoker `computer-use-action` (merged models.md §3.1 + cua.md §3.0)
+### 3.3 the model layer `computer-use-action` (merged models.md §3.1 + cua.md §3.0)
 
 ```rust
 pub trait CoordSpace: Copy + Eq + core::fmt::Debug + 'static {}
@@ -705,7 +705,7 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 | 1 | Launcher companion mode → sill records `Session.Turn` (role launcher) → `Companion1.Ask` | ux, docket |
 | 2 | agent-loop tier rule: typed action → hook (D-Bus/portal/MPRIS) → CUA. No typed action for Firefox → `Run.Perform(org.bardo.ComputerUse: computeruse.run.start{goal, app, mode})` (Read, AllowFinal; Hidden unless `cua.enabled`) | docket |
 | 3 | cuad: `Gate.Grant(firefox, space)` → first use Ask (Confirm1, OnceOrAlways unless a sensitive class) → lease (AgentWorkspace on the fork; stock: in place, HandsOff) → `Cua1.RunAdded` → sill run row | cua, docket, ux |
-| 4 | Observe: masked capture (cuad on stock, compositor on fork), a11y snapshot, `Inference1.Open(ComputerUse, Screen, tier)` → `CuaBegin`, `CuaStep` (memfd frame, tree text) → `CuaStepReply` in WindowSpace; `ActionProposed` → glow | cua, models (stoker in inferd) |
+| 4 | Observe: masked capture (computer-use-daemon on stock, compositor on fork), a11y snapshot, `Inference1.Open(ComputerUse, Screen, tier)` → `CuaBegin`, `CuaStep` (memfd frame, tree text) → `CuaStepReply` in WindowSpace; `ActionProposed` → glow | cua, models (the model layer in inferd) |
 | 5 | Each action: `classify_effect` → `Gate.Check(CuaAsk)` → router Ruling with screen taint (always Untrusted): clicks in an ordinary window AllowJudged → reviewer Quick; typing into a compose window = Outbound → Ask → `Progress(Confirming)` → cuad suspends EI (stock) → `Proceed` → Confirm1 → answer → `GateAnswer` | cua, docket |
 | 6 | Inject via EI; settle on damage; loop; `Finish{extracted}` → `CuaResult` (summary and extracted labelled Untrusted(Screen)) becomes the `computeruse.run.start` Outcome value; the planner sees handles | cua, docket |
 | 7 | `CuaRecord`s → `Memory1.Record` (Area{Cua}); a downloaded file is recorded by memory's watcher with why = the run | cua, almanac |
@@ -757,12 +757,12 @@ JSON, step tables of the pure parts) pass.
 
 | Spike | Where | Blocks | Does not block |
 |---|---|---|---|
-| **S0 Holo-3.1-4B chat template** (read `chat_template.jinja`, `preprocessor_config.json`, `config.json` via WebFetch; read-only) | stoker agent, step 0 | `ToolDialect` variants, `GridMax`/`PatchFactor` values, `catalog/holo-3.1-4b.toml`, computer-use-parse fixtures (W1b) | geometry and every other stoker type |
+| **S0 Holo-3.1-4B chat template** (read `chat_template.jinja`, `preprocessor_config.json`, `config.json` via WebFetch; read-only) | the model agent, step 0 | `ToolDialect` variants, `GridMax`/`PatchFactor` values, `catalog/holo-3.1-4b.toml`, computer-use-parse fixtures (W1b) | geometry and every other the model type |
 | **S-SQL** SQLCipher bundled build with FTS5 + `cargo deny` | scratch crate `~/rs-wt/spikes/sqlcipher` | wave 0's rusqlite line → almanac freeze (eventlog/recall hold rusqlite types) | — |
 | **S-Cedar** `cargo deny` for cedar-policy 4.13 | wave 0 agent | wave 0 line → docket freeze | — |
 | **Spike A** a stock compositor nested: capture + EI inject (cua.md §6) | `~/rs-wt/spikes/cua-a/`, then moved to `~/cua/spike/` | cua fill 2 (computer-use-seat-input `ei`, maskcap `wayland`, computer-use-desktop `desktop`), stock `mode_support` values, Q-P2 | the cua freeze |
 | **Spike T** Toshy double-tap route (does a tap-vs-hold remap on ⌘ disturb ⌘-click/⌘-drag?) | manual check queued in `sill/docs/manual-checks.md` (needs the real keyboard) | sill W4 wiring of `Tap` vs `Summon`, `dist/toshy/companion_tap.py`; default route A until it runs | the sill freeze (both variants frozen) |
-| models S1 (engines on Unix sockets under `PrivateNetwork`) | dev script, scratch user unit | stoker W2b, inferd W3 | freeze |
+| models S1 (engines on Unix sockets under `PrivateNetwork`) | dev script, scratch user unit | the model layer W2b, inferd W3 | freeze |
 | memory S1 (embedding throughput), S3 (fscrypt), S4 (fanotify), S5 (sqlite-vec), S6 (xattr) | dev scripts | memoryd embedder default, Q-Me1, Q-P4, Q-P5 | freeze |
 | cua Spike B (KWin), E (a11y), C/D (fork) | dev scripts | the KWin backend, the atspi backend, fork fill | freeze |
 
@@ -771,7 +771,7 @@ JSON, step tables of the pure parts) pass.
 | Stage | Agent (repo) | Owns | Verify |
 |---|---|---|---|
 | 0 | **deps** (Bardo) | `docs/workspace-deps.toml` only (§1.4 lines, after S-SQL and S-Cedar) | Bardo gate |
-| 1 | **stoker** (new) | everything in `~/stoker`; S0 first; commits `computer-use-action` first so porter can path-patch it | porter-style gate |
+| 1 | **the model layer** (new) | everything in `~/models`; S0 first; commits `computer-use-action` first so porter can path-patch it | porter-style gate |
 | 1 | **Bardo** | `ui-core/src/vocab.rs`, `ui-intents/**` (new), `ds/src/components/companion/**` + its `mod.rs` line, `ds/src/assembly/sheets.rs`, `ui-shell/src/{confirm,tokens/glow.rs}`, `ui-style` orb tokens (proposed values, marked), `ui-settings/src/schema/key.rs`; docs: `design/22` rows (all `ai.*`, `agent.*`, `memory.*`, `cua.*`, `companion.*` keys), `design/32-COMPANION.md` (from COMPANION.md), `design/33-AGENT.md` (this spec); **not** design/31, TextField or CommandPalette | Bardo gate incl. `check-consumer.sh`, `check-doc-paths.sh` |
 | 2 | **porter** | `crates/prov/**` (new), account-core (`space.rs`, consent generic + Space, ComputerUse, VocabVersion 2), account-provider (`Discovery::Supervised`, `providers/local.toml`), inference-core (§3.2), account-dbus + `dbus/org.bardo.Inference1.xml`, account-client, account-fake, inferd skeleton modules, ARCHITECTURE/FINDINGS/boundary rows, **and `~/bardo/design/31-ACCOUNTS.md`** (§2.3, §3.3, §4.4, §4.5, §5.5 MCP role removed, §11) | porter gate |
 | 3 | **almanac** (new) | everything in `~/almanac` | porter-style gate, `--exclude recall-fastembed` |
@@ -781,7 +781,7 @@ JSON, step tables of the pure parts) pass.
 | 5 | **sill** | ux.md §6 F2 file list with §3.8 here; design/22 is Bardo agent's | sill gate |
 | 5 | **The Settings app** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | the Settings app gate + `scripts/gen-fixtures.sh` |
 
-Porter-style gate (stoker, porter, almanac, docket, cua):
+Porter-style gate (the model layer, porter, almanac, docket, cua):
 
 ```bash
 set -euo pipefail
@@ -803,8 +803,8 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 
 | Wave | Parallel agents (repo: owned paths) | Source |
 |---|---|---|
-| F1 pure | stoker: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. almanac: eventlog; memfiles; recall (+fastembed); seal + watch. docket: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
-| F2 io/backends | stoker: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. almanac: memory-service + memory-fake. docket: intentd (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. cua (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
+| F1 pure | the model layer: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. almanac: eventlog; memfiles; recall (+fastembed); seal + watch. docket: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
+| F2 io/backends | the model layer: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. almanac: memory-service + memory-fake. docket: intentd (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. cua (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
 | F3 daemons | porter: inferd bridge, engines, fd session server with memfds, Prepare, `cua_run`; client `DbusTransport::open`. almanac: memory-dbus, memory-client, memoryd + unit. cua: cuad, computer-use-dbus codec, computer-use-fake harness, `dist/`. docket: action-ui-adapter against bardo. sill W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
 | F4 integration | mailo session (manifest, provider, actor on UndoStack, undo-send window); sill W6 (replace fakes; nested compositor, private bus, scratch HOME); fork fill F1-F7 with acceptance scripts; acceptance `dev/cua-step-holo.sh` (GPU, by hand) | — |
 | Later | cloud backends + computer-use-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `bardo_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |
