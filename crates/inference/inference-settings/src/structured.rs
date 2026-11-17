@@ -59,7 +59,7 @@ impl Row {
 /// The `[ai.structured]` table, as written. Signed, so a negative number reaches the range check
 /// and is rejected there instead of failing the whole file.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct StructuredConfig {
+pub struct StructuredSettings {
     /// `ai.structured.open_text`.
     #[serde(default)]
     pub open_text: Option<i64>,
@@ -93,7 +93,7 @@ impl Limits {
 
 impl Default for Limits {
     fn default() -> Self {
-        StructuredConfig::default().resolve().limits
+        StructuredSettings::default().resolve().limits
     }
 }
 
@@ -106,7 +106,7 @@ pub struct Resolved {
     pub rejected: Vec<&'static str>,
 }
 
-impl StructuredConfig {
+impl StructuredSettings {
     /// The limits for this table.
     #[must_use]
     pub fn resolve(&self) -> Resolved {

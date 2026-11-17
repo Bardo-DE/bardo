@@ -1,7 +1,7 @@
 //! The `[ai]` table of `inferd.toml`: every settings row of the `ai` domain at its settings path.
-//! The structured-output rows inside it are [`StructuredConfig`]; the rest are read by `resolve`.
+//! The structured-output rows inside it are [`StructuredSettings`]; the rest are read by `resolve`.
 
-use crate::structured::{Resolved, StructuredConfig};
+use crate::structured::{Resolved, StructuredSettings};
 use serde::{Deserialize, Serialize};
 
 /// The `[ai]` table: every settings row of the `ai` domain at its settings path.
@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 /// `ai.auto.*`, `ai.spend.*`, `ai.length.*`, `ai.structured.*`). Values are the rows' slugs, resolved (and
 /// refused field by field) by `resolve`.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct AiConfig {
+pub struct AiSettings {
     /// `ai.local_only`: while on, every cloud account is removed from every answer; off, cloud
     /// accounts may serve classes whose floor allows it.
     #[serde(default)]
@@ -24,31 +24,31 @@ pub struct AiConfig {
     pub model: std::collections::BTreeMap<String, std::collections::BTreeMap<String, String>>,
     /// `ai.spend.*`.
     #[serde(default)]
-    pub spend: crate::SpendConfig,
+    pub spend: crate::SpendSettings,
     /// `ai.length.*`.
     #[serde(default)]
-    pub length: crate::LengthConfig,
+    pub length: crate::LengthSettings,
     /// `ai.pipeline.*`.
     #[serde(default)]
-    pub pipeline: crate::PipelineConfig,
+    pub pipeline: crate::PipelineSettings,
     /// `ai.structured.*`.
     #[serde(default)]
-    pub structured: StructuredConfig,
+    pub structured: StructuredSettings,
     /// `ai.auto.*`.
     #[serde(default)]
-    pub auto: crate::AutoConfig,
+    pub auto: crate::AutoSettings,
     /// `ai.attached.*`.
     #[serde(default)]
-    pub attached: crate::AttachedConfig,
+    pub attached: crate::AttachedSettings,
     /// `ai.agents.*`.
     #[serde(default)]
-    pub agents: crate::AgentsConfig,
+    pub agents: crate::AgentsSettings,
     /// `ai.tailnet.*`.
     #[serde(default)]
-    pub tailnet: crate::TailnetConfig,
+    pub tailnet: crate::TailnetSettings,
 }
 
-impl AiConfig {
+impl AiSettings {
     /// The structured-output limits for this configuration.
     #[must_use]
     pub fn resolve(&self) -> Resolved {

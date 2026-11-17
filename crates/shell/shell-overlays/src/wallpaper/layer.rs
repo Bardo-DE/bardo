@@ -1,13 +1,13 @@
 //! The wallpaper's layer surface: Background, every edge, ignoring exclusive zones, no keyboard,
 //! input over the whole output (a press of the secondary button opens the desktop's menu).
 
-use layer_shell_types::{LayerConfig, LayerLevel, OutputInfo};
+use layer_shell_types::{LayerLevel, LayerOptions, OutputInfo};
 
 use shell_ui_kit::surface::{LayerPreset, Pointer};
 
 /// The wallpaper's layer configuration on `output`.
-pub fn layer(output: &OutputInfo) -> LayerConfig {
-    LayerConfig {
+pub fn layer(output: &OutputInfo) -> LayerOptions {
+    LayerOptions {
         // The picture sits on an opaque `--paper` ground over the whole surface (style.css), so
         // the compositor need not blend it or draw what it covers.
         opaque: true,

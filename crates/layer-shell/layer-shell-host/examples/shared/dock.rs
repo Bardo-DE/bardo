@@ -9,7 +9,7 @@ use layer_shell_hooks::{FrameDrive, HostRoot, use_frame_tick, use_surface};
 use layer_shell_host::HostCtx;
 use layer_shell_types::{
     Anchor, BlurSpec, ElementId, ElementRegion, ExclusiveZone, FrameTick, KeyboardMode,
-    LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec,
+    LayerExtent, LayerLevel, LayerOptions, LayerSize, Margin, OutputTarget, RegionSpec,
 };
 
 /// Tiles, gaps and the room the magnified end tiles need.
@@ -116,9 +116,9 @@ fn dock_region(cards: Cards) -> RegionSpec {
 
 /// The dock's layer surface: bottom-centred, never focused, input and blur on `cards`'
 /// elements, tall enough to hold them.
-pub fn dock_config(layer: LayerLevel, cards: Cards) -> LayerConfig {
+pub fn dock_config(layer: LayerLevel, cards: Cards) -> LayerOptions {
     let region = dock_region(cards);
-    LayerConfig {
+    LayerOptions {
         namespace: "dock".to_owned(),
         layer,
         anchor: Anchor::BOTTOM,

@@ -4,7 +4,7 @@
 //! surfaces are spawned with, so the numbers cannot drift from what the compositor reserves), and
 //! published to the work-areas service for `org.bardo.Outputs1`.
 
-use layer_shell_types::{Anchor, ExclusiveZone, LayerConfig, OutputInfo, Rect as HostRect};
+use layer_shell_types::{Anchor, ExclusiveZone, LayerOptions, OutputInfo, Rect as HostRect};
 use shell_bar::Bar;
 use shell_dock::Dock;
 use shell_model::work_areas::{Edge, Rect, WorkArea, WorkAreaCommand, Zone, work_area};
@@ -17,7 +17,7 @@ use crate::outputs::{OutputSurfaces, Outputs};
 /// The strip `config` keeps clear, if it keeps one: it reserves pixels along exactly one edge
 /// (the compositor ignores a zone on a surface anchored to a corner, or to two opposite edges).
 #[must_use]
-pub fn zone_of(config: &LayerConfig) -> Option<Zone> {
+pub fn zone_of(config: &LayerOptions) -> Option<Zone> {
     let ExclusiveZone::Reserve(px) = config.exclusive else {
         return None;
     };
@@ -96,8 +96,8 @@ mod tests {
         RegionSpec,
     };
 
-    fn config(anchor: Anchor, exclusive: ExclusiveZone) -> LayerConfig {
-        LayerConfig {
+    fn config(anchor: Anchor, exclusive: ExclusiveZone) -> LayerOptions {
+        LayerOptions {
             namespace: String::new(),
             layer: LayerLevel::Top,
             anchor,

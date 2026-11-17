@@ -16,7 +16,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use files_core::{FileName, FolderPath, ItemRef, Location};
-use files_fs::FakePrefs;
+use files_fs::FakeFolderSettings;
 use files_trash::{FakeTrash, Trash};
 use files_ui::{PlaceKind, Places, STYLE};
 use ui_components::base::press::PointerButton;
@@ -127,7 +127,7 @@ fn page(pose: Pose) -> String {
         config.path(),
         &opener,
         trash,
-        Arc::new(FakePrefs::new()),
+        Arc::new(FakeFolderSettings::new()),
     )
     .with_home(home.clone())
     .with_places(Places::default().with(PlaceKind::Home, home));

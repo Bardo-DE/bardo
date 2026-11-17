@@ -6,7 +6,7 @@ use crate::state::HostState;
 use crate::toplevel::to_wire_decorations;
 use layer_shell_hooks::HostRoot;
 use layer_shell_types::{
-    BlurSpec, RegionSpec, Scale120, SurfaceId, SurfaceName, ToplevelConfig, ToplevelState,
+    BlurSpec, RegionSpec, Scale120, SurfaceId, SurfaceName, ToplevelOptions, ToplevelState,
 };
 
 use super::rebuild::map;
@@ -18,7 +18,7 @@ use super::{Initial, insert, new_wl_surface};
 pub(crate) fn toplevel(
     state: &mut HostState,
     id: SurfaceId,
-    config: ToplevelConfig,
+    config: ToplevelOptions,
     root: HostRoot,
 ) {
     let name = SurfaceName(config.app_id.clone());
@@ -34,7 +34,7 @@ pub(crate) fn toplevel(
     insert(state, id, role, name, at, regions, root);
 }
 
-pub(super) fn toplevel_role(state: &mut HostState, config: ToplevelConfig) -> Role {
+pub(super) fn toplevel_role(state: &mut HostState, config: ToplevelOptions) -> Role {
     let wl = new_wl_surface(state);
     let window =
         state

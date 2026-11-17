@@ -9,15 +9,15 @@ pub struct LockId(pub u64);
 
 /// How lock surfaces are set up.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LockConfig {
+pub struct LockOptions {
     /// The lock surfaces' name prefix: each is `<namespace>/<output name>` (the output's
     /// registry name when it has no connector name), for `HostCtx::surface_named` and stats.
     pub namespace: String,
 }
 
-impl Default for LockConfig {
-    fn default() -> LockConfig {
-        LockConfig {
+impl Default for LockOptions {
+    fn default() -> LockOptions {
+        LockOptions {
             namespace: "lock".to_owned(),
         }
     }

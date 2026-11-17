@@ -5,8 +5,8 @@
 //! (`reveal.rs` moves it from there).
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputInfo, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };
 use shell_settings::MenuBarHiding;
 
@@ -16,10 +16,10 @@ use shell_ui_kit::autohide::Phase;
 use shell_ui_kit::surface::namespace;
 
 /// The bar's layer configuration on `output`, resting under `mode` (`reveal::mode_on`).
-pub(super) fn layer(output: &OutputInfo, mode: MenuBarHiding, tokens: BarTokens) -> LayerConfig {
+pub(super) fn layer(output: &OutputInfo, mode: MenuBarHiding, tokens: BarTokens) -> LayerOptions {
     let height = u32::from(tokens.height);
     let phase = rest_phase(mode);
-    LayerConfig {
+    LayerOptions {
         namespace: namespace("bar", output),
         layer: LayerLevel::Top,
         anchor: Anchor::TOP | Anchor::LEFT | Anchor::RIGHT,

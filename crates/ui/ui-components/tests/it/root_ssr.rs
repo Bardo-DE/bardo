@@ -12,7 +12,7 @@ use ui_style::space::frame_vars::FrameVars;
 #[derive(Props, Clone, PartialEq)]
 struct Setup {
     appearance: Appearance,
-    system: SystemPrefs,
+    system: SystemSettings,
     look: SpaceLook,
     material: Material,
     blur: bool,
@@ -26,7 +26,7 @@ impl Default for Setup {
     fn default() -> Self {
         Setup {
             appearance: Appearance::default(),
-            system: SystemPrefs::default(),
+            system: SystemSettings::default(),
             look: SpaceLook::default(),
             material: Material::Popover,
             blur: false,
@@ -128,7 +128,7 @@ fn the_root_stamps_exactly_its_attributes() {
         /// The root chrome's attributes: `data-chrome`, `data-frame`, `data-ground`.
         chrome: &'static [(&'static str, &'static str)],
     }
-    let dark_reduced = SystemPrefs::default()
+    let dark_reduced = SystemSettings::default()
         .with_scheme(Scheme::Dark)
         .with_reduced_motion(true);
     let cases = [

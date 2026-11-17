@@ -19,7 +19,7 @@ use crate::state::HostState;
 use crate::surface::HostSurface;
 use layer_shell_hooks::HostRoot;
 use layer_shell_types::{
-    BlurSpec, KeyboardMode, PopupConfig, PopupGrab, PopupPlacement, RegionSpec, Scale120,
+    BlurSpec, KeyboardMode, PopupGrab, PopupOptions, PopupPlacement, RegionSpec, Scale120,
     SurfaceId, SurfaceName,
 };
 
@@ -32,7 +32,7 @@ pub(crate) fn popup(
     state: &mut HostState,
     parent: SurfaceId,
     id: SurfaceId,
-    config: PopupConfig,
+    config: PopupOptions,
     placement: PopupPlacement,
     root: HostRoot,
 ) -> Result<()> {
@@ -66,7 +66,7 @@ pub(crate) fn popup(
 pub(super) fn popup_role(
     state: &mut HostState,
     parent: SurfaceId,
-    config: PopupConfig,
+    config: PopupOptions,
     placement: PopupPlacement,
 ) -> Result<Role> {
     let parent_surface = state

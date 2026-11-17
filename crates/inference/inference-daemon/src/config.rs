@@ -11,7 +11,7 @@ use crate::probe::ProbeConfig;
 use base_xdg::Xdg;
 use inference_router::catalog::CatalogDirs;
 use inference_router::local::EngineConfig;
-use inference_settings::AiConfig;
+use inference_settings::AiSettings;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -42,7 +42,7 @@ pub struct InferdConfig {
     pub engines: EngineConfig,
     /// The `ai.*` settings rows, at their paths.
     #[serde(default)]
-    pub ai: AiConfig,
+    pub ai: AiSettings,
     /// Which ports are probed for the runtimes the person runs themselves (Ollama, llama.cpp,
     /// LM Studio), and how often. Left out of the file while it is the default.
     #[serde(default, skip_serializing_if = "ProbeConfig::is_default")]

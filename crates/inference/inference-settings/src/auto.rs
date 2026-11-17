@@ -1,7 +1,7 @@
 //! The `ai.auto.*` settings rows (design/22 section 3.26): what Automatic does, whether it may
 //! unload an idle model, whether it says why.
 //!
-//! The daemon reads `[ai.auto]` of `inferd.toml`; `resolve` calls [`AutoConfig::resolve`]
+//! The daemon reads `[ai.auto]` of `inferd.toml`; `resolve` calls [`AutoSettings::resolve`]
 //! and puts the policy into the settings the engines run under (`Engines::with_settings`). Nothing
 //! here reads a file or the environment. A value a row does not know falls back to the row's
 //! default, for that field only, and is named in [`ResolvedAuto::rejected`] so the daemon can log
@@ -20,7 +20,7 @@ pub const SHOW_REASON: &str = "ai.auto.show_reason";
 
 /// The `[ai.auto]` table, as written: each value is the row's slug.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct AutoConfig {
+pub struct AutoSettings {
     /// `ai.auto.mode`: `warm_first`.
     #[serde(default)]
     pub mode: Option<String>,
@@ -58,7 +58,7 @@ fn pick<T: Default>(
     }
 }
 
-impl AutoConfig {
+impl AutoSettings {
     /// The rows for this configuration.
     pub fn resolve(&self) -> ResolvedAuto {
         let (mode, a) = pick(self.mode.as_deref(), AutoMode::from_slug, MODE);
@@ -86,21 +86,21 @@ impl AutoConfig {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::AiConfig;
+    use crate::AiSettings;
 
     #[derive(serde::Deserialize, Default)]
     struct File {
         #[serde(default)]
-        ai: AiConfig,
+        ai: AiSettings,
     }
 
-    fn read(text: &str) -> AiConfig {
+    fn read(text: &str) -> AiSettings {
         toml::from_str::<File>(text).expect("reads").ai
     }
 
     #[test]
     fn no_table_is_the_design_defaults() {
-        let resolved = AiConfig::default().auto.resolve();
+        let resolved = AiSettings::default().auto.resolve();
         assert_eq!(resolved.policy, AutoPolicy::default());
         assert_eq!(resolved.policy.allow_evict, AutoEvict::IdleOnly);
         assert!(resolved.policy.show_reason);

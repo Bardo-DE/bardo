@@ -18,8 +18,8 @@ use dioxus::prelude::*;
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ElementId, ElementRegion, ExclusiveZone, KeyboardMode, LayerConfig,
-    LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ElementId, ElementRegion, ExclusiveZone, KeyboardMode, LayerExtent,
+    LayerLevel, LayerOptions, LayerSize, Margin, OutputTarget, RegionSpec,
 };
 use serde_json::json;
 
@@ -46,8 +46,8 @@ fn card_region() -> RegionSpec {
     }])
 }
 
-fn layer_config() -> LayerConfig {
-    LayerConfig {
+fn layer_config() -> LayerOptions {
+    LayerOptions {
         namespace: "swipe-banner".to_owned(),
         layer: LayerLevel::Overlay,
         anchor: Anchor::TOP | Anchor::RIGHT,

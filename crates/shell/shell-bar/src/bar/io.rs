@@ -8,7 +8,7 @@ use ui_components::prelude::*;
 
 use dioxus::prelude::*;
 use layer_shell_hooks::{HostRoot, SurfaceHandle};
-use layer_shell_types::{OutputId, OutputInfo, PopupAnchor, PopupConfig};
+use layer_shell_types::{OutputId, OutputInfo, PopupAnchor, PopupOptions};
 use shell_model::ids::OutputName;
 use shell_ui_kit::links::FocusLink;
 use shell_ui_kit::settings::SettingsFeed;
@@ -360,7 +360,7 @@ fn show(slots: Slots, deps: &SessionDeps, menu: BarMenu) {
     };
     // Fitted to the document (`menu_popup`'s FitContent), which is the card and its room; the
     // cap is the tallest a panel goes, which no text menu (320 tall at most) nears.
-    let config = PopupConfig {
+    let config = PopupOptions {
         anchor: PopupAnchor::Rect,
         ..menu_popup(&deps.namespace, menu.side(), popup_cap(deps.cap))
     };

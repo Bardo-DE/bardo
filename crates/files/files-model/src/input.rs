@@ -3,9 +3,9 @@
 use std::time::Duration;
 
 use files_core::{
-    Behaviour, Bring, CloudDrive, CloudItem, EjectError, Entry, FileName, FolderPath, FolderPrefs,
-    Info, ItemRef, Location, MountError, OpEvent, Refused, Resolution, SavedCopies, Sort, ViewMode,
-    Volume, VolumeId,
+    Behaviour, Bring, CloudDrive, CloudItem, EjectError, Entry, FileName, FolderPath,
+    FolderSettings, Info, ItemRef, Location, MountError, OpEvent, Refused, Resolution, SavedCopies,
+    Sort, ViewMode, Volume, VolumeId,
 };
 
 use crate::app::AppPick;
@@ -61,8 +61,8 @@ pub enum Input {
     Listed(Location, Result<Vec<Entry>, FolderListError>),
     /// A live change from `Effect::Watch`.
     Changed(Location, Change),
-    /// The answer to `Effect::LoadPrefs`.
-    PrefsLoaded(Location, FolderPrefs),
+    /// The answer to `Effect::LoadFolderSettings`.
+    FolderSettingsLoaded(Location, FolderSettings),
     /// Go to a place.
     Go(Location),
     /// Go to a folder and select these entries in it (another program asked to show them, as

@@ -2,16 +2,19 @@
 
 use std::fs;
 
-use files_core::{FolderPath, FolderPrefs, Sort, SortKey, SortOrder, ViewMode};
-use files_fs::{FakePrefs, KEPT, PrefBook, PrefsError, PrefsStore, TomlPrefs};
+use files_core::{FolderPath, FolderSettings, Sort, SortKey, SortOrder, ViewMode};
+use files_fs::{
+    FakeFolderSettings, FolderSettingsError, FolderSettingsStore, KEPT, PrefBook,
+    TomlFolderSettings,
+};
 use tempfile::TempDir;
 
 fn folder(path: &str) -> FolderPath {
     FolderPath::new(path).unwrap()
 }
 
-fn icons_by_size() -> FolderPrefs {
-    FolderPrefs {
+fn icons_by_size() -> FolderSettings {
+    FolderSettings {
         view: ViewMode::Icons,
         sort: Sort {
             key: SortKey::Size,
@@ -26,7 +29,7 @@ fn the_book_remembers_choices_and_forgets_a_return_to_the_defaults() {
     book.set(folder("/a"), icons_by_size());
     assert_eq!(book.get(&folder("/a")), Some(icons_by_size()));
     assert_eq!(book.get(&folder("/b")), None);
-    book.set(folder("/a"), FolderPrefs::default());
+    book.set(folder("/a"), FolderSettings::default());
     assert!(book.is_empty());
 }
 
@@ -47,13 +50,13 @@ fn the_book_round_trips_through_its_text() {
 #[test]
 fn text_is_read_leniently() {
     // label, text, folder asked, what it should give
-    let cases: [(&str, &str, &str, Option<FolderPrefs>); 5] = [
+    let cases: [(&str, &str, &str, Option<FolderSettings>); 5] = [
         (
             "an unknown word costs only itself",
             "[[folder]]\npath = \"/a\"\nview = \"columns\"\nkey = \"size\"\n",
             "/a",
             Some({
-                let mut prefs = FolderPrefs::default();
+                let mut prefs = FolderSettings::default();
                 prefs.sort.key = SortKey::Size;
                 prefs
             }),
@@ -75,9 +78,9 @@ fn text_is_read_leniently() {
             "another table is ignored",
             "[other]\nx = 1\n\n[[folder]]\npath = \"/a\"\nview = \"icons\"\n",
             "/a",
-            Some(FolderPrefs {
+            Some(FolderSettings {
                 view: ViewMode::Icons,
-                ..FolderPrefs::default()
+                ..FolderSettings::default()
             }),
         ),
     ];
@@ -113,12 +116,12 @@ fn the_book_keeps_the_newest_changes_and_no_more() {
 fn the_file_store_keeps_choices_between_runs() {
     let dir = TempDir::new().unwrap();
     let file = dir.path().join("state").join("folders.toml");
-    let first = TomlPrefs::new(file.clone());
-    assert_eq!(first.load(&folder("/a")), FolderPrefs::default());
+    let first = TomlFolderSettings::new(file.clone());
+    assert_eq!(first.load(&folder("/a")), FolderSettings::default());
     first.save(&folder("/a"), icons_by_size()).unwrap();
-    let second = TomlPrefs::new(file);
+    let second = TomlFolderSettings::new(file);
     assert_eq!(second.load(&folder("/a")), icons_by_size());
-    assert_eq!(second.load(&folder("/b")), FolderPrefs::default());
+    assert_eq!(second.load(&folder("/b")), FolderSettings::default());
 }
 
 #[test]
@@ -126,18 +129,18 @@ fn a_file_that_cannot_be_understood_is_left_alone() {
     let dir = TempDir::new().unwrap();
     let file = dir.path().join("folders.toml");
     fs::write(&file, "this is [not toml").unwrap();
-    let store = TomlPrefs::new(file.clone());
-    assert_eq!(store.load(&folder("/a")), FolderPrefs::default());
+    let store = TomlFolderSettings::new(file.clone());
+    assert_eq!(store.load(&folder("/a")), FolderSettings::default());
     assert!(matches!(
         store.save(&folder("/a"), icons_by_size()),
-        Err(PrefsError::Unusable)
+        Err(FolderSettingsError::Unusable)
     ));
     assert_eq!(fs::read_to_string(file).unwrap(), "this is [not toml");
 }
 
 #[test]
 fn the_fake_store_stands_for_a_relaunch() {
-    let store = FakePrefs::new();
+    let store = FakeFolderSettings::new();
     store.save(&folder("/a"), icons_by_size()).unwrap();
     assert_eq!(store.load(&folder("/a")), icons_by_size());
 }

@@ -18,8 +18,8 @@ use dioxus::prelude::*;
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputTarget, RegionSpec,
 };
 
 const CSS: &str = "html,body{margin:0;padding:0;background:white}\
@@ -56,8 +56,8 @@ fn app() -> Element {
     }
 }
 
-fn config() -> LayerConfig {
-    LayerConfig {
+fn config() -> LayerOptions {
+    LayerOptions {
         namespace: "ime-demo".to_string(),
         layer: LayerLevel::Overlay,
         anchor: Anchor::NONE,

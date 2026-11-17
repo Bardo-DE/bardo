@@ -29,7 +29,7 @@ use super::mouse_gestures::{self, Plan};
 use super::msg::ShellMsg;
 use super::settings;
 use super::surfaces::{self, Spawn};
-use crate::edge_reveal::FullScreenPrefs;
+use crate::edge_reveal::FullScreenSettings;
 use crate::ipc::dispatch::{Carried, DesktopLine, Reach, route};
 use crate::ipc::latency;
 use crate::outputs::{OutputAction, OutputSurfaces, Outputs, reconcile};
@@ -272,7 +272,7 @@ fn follow_full_screen(shell: &mut Shell) {
     let prefs = {
         let file = shell.settings.borrow();
         let environment = shell.appearance.borrow();
-        FullScreenPrefs::of(file.bar.autohide, shell_motion(&environment))
+        FullScreenSettings::of(file.bar.autohide, shell_motion(&environment))
     };
     shell.seat.set_prefs(prefs);
     let outputs = &shell.outputs;

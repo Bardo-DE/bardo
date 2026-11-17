@@ -18,8 +18,8 @@ use dioxus::prelude::*;
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostConfig, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputTarget, RegionSpec,
 };
 
 /// How long after the first frame the content is swapped in.
@@ -95,8 +95,8 @@ fn wallpaper(content: Content) -> Element {
 }
 
 /// The wallpaper's layer surface, shaped like bardo-shell's.
-fn wallpaper_config() -> LayerConfig {
-    LayerConfig {
+fn wallpaper_config() -> LayerOptions {
+    LayerOptions {
         namespace: "wallpaper".to_owned(),
         layer: LayerLevel::Background,
         anchor: Anchor::TOP | Anchor::BOTTOM | Anchor::LEFT | Anchor::RIGHT,

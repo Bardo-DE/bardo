@@ -3,12 +3,12 @@
 //! under it. It exists to be the parent of the menu's popup, which the compositor places in the
 //! layer's coordinates.
 
-use layer_shell_types::{LayerConfig, LayerLevel, OutputInfo};
+use layer_shell_types::{LayerLevel, LayerOptions, OutputInfo};
 
 use shell_ui_kit::surface::{LayerPreset, Pointer};
 
 /// The window menu surface's layer configuration on `output`.
-pub fn layer(output: &OutputInfo) -> LayerConfig {
+pub fn layer(output: &OutputInfo) -> LayerOptions {
     LayerPreset::Whole {
         level: LayerLevel::Overlay,
         pointer: Pointer::PassesThrough,

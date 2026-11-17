@@ -31,11 +31,11 @@ mod watch;
 #[cfg(any(test, feature = "testing"))]
 pub use cloud::{CloudCall, FakeClouds, NO_FILE_FORMAT_WORDS, OFFLINE_WORDS};
 pub use cloud::{CloudError, CloudGuard, Clouds, News, NoClouds};
-pub use error::{ListError, PrefsError, WatchError};
+pub use error::{FolderSettingsError, ListError, WatchError};
 #[cfg(any(test, feature = "testing"))]
 pub use fake::{FakeLister, FakeWatcher};
 pub use list::{DiskLister, Lister, Listing};
 #[cfg(any(test, feature = "testing"))]
-pub use prefs::FakePrefs;
-pub use prefs::{KEPT, NoPrefs, PrefBook, PrefsStore, TomlPrefs};
+pub use prefs::FakeFolderSettings;
+pub use prefs::{FolderSettingsStore, KEPT, NoFolderSettings, PrefBook, TomlFolderSettings};
 pub use watch::{FolderEvent, NotifyWatcher, WatchHandle, Watcher};

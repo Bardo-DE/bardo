@@ -6,7 +6,7 @@ use caller_identity_core::Uid;
 use input_broker_client::{Broker, ClientError, Create, DeviceSource, Made, Reason, Session};
 use input_broker_daemon::backend::fake::FakeBackend;
 use input_broker_daemon::clock::Uptime;
-use input_broker_daemon::daemon::{Daemon, Settings};
+use input_broker_daemon::daemon::{Daemon, LoopConfig};
 use input_broker_daemon::identity::fake::FixedAuthority;
 use input_broker_daemon::identity::seat::FixedSeat;
 use input_broker_daemon::identity::{ActiveUid, Authority, Caller, IdentifyError};
@@ -206,7 +206,7 @@ fn start_capped<A: Authority>(
         seat: FixedSeat(ActiveUid(Some(USER))),
         clock: Uptime::new(SystemMonotonic),
     };
-    let settings = Settings {
+    let settings = LoopConfig {
         idle: Duration::from_millis(idle_ms),
         slice: Duration::from_millis(20),
         pending,

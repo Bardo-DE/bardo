@@ -2,14 +2,14 @@
 //! desktop's preferences, both watched.
 
 use crate::appearance::AppearanceFile;
-use crate::portal::{SystemPrefsSource, SystemPrefsWatch};
+use crate::portal::{SystemSettingsSource, SystemSettingsWatch};
 use base_spawn::Spawner;
 use dioxus::prelude::*;
 use settings_store::{Loaded, SettingsDoc};
 use settings_store_fs::{Store, Watch};
 use settings_types::ResolvedHours;
 use std::sync::Arc;
-use ui_style::appearance::system::SystemPrefs;
+use ui_style::appearance::system::SystemSettings;
 
 /// The inputs to [`ui_components::prelude::resolve`], as they are now.
 ///
@@ -20,14 +20,14 @@ use ui_style::appearance::system::SystemPrefs;
 /// use ui_components::prelude::*; use base_spawn::Spawner;
 /// use settings_types::AppName;
 /// use settings_store_fs::{ConfigRoot, Store};
-/// use ui_settings::{SystemPrefsSource, use_environment};
+/// use ui_settings::{SystemSettingsSource, use_environment};
 /// use std::sync::Arc;
 ///
 /// #[component]
 /// fn Root(children: Element) -> Element {
 ///     let spawn = use_context::<Arc<dyn Spawner>>();
 ///     let store = Store::new(ConfigRoot::Xdg, AppName::MAILO);
-///     let env = use_environment(store, SystemPrefsSource::Portal, spawn);
+///     let env = use_environment(store, SystemSettingsSource::Portal, spawn);
 ///     let now = env();
 ///     rsx! {
 ///         Ds {
@@ -45,7 +45,7 @@ pub struct Environment {
     /// `appearance.toml`.
     pub settings: AppearanceFile,
     /// The portal's answer.
-    pub system: SystemPrefs,
+    pub system: SystemSettings,
 }
 
 impl Environment {
@@ -75,7 +75,7 @@ fn report(loaded: &Loaded<AppearanceFile>) {
 /// answered (or, if it does not answer in time, never, and the defaults stand).
 pub fn use_environment(
     store: Store,
-    system: SystemPrefsSource,
+    system: SystemSettingsSource,
     spawner: Arc<dyn Spawner>,
 ) -> ReadSignal<Environment> {
     let mut env = use_signal(Environment::default);
@@ -88,7 +88,7 @@ pub fn use_environment(
             env.with_mut(|e| e.settings = loaded.value);
             let files = store.watch::<AppearanceFile>(&*spawner);
             spawn(follow_files(env, files));
-            let prefs = SystemPrefsWatch::start(&system, &*spawner).await;
+            let prefs = SystemSettingsWatch::start(&system, &*spawner).await;
             env.with_mut(|e| e.system = prefs.current());
             follow_prefs(env, prefs).await;
         }
@@ -106,7 +106,7 @@ async fn follow_files(mut env: Signal<Environment>, mut files: Watch<AppearanceF
 }
 
 /// Apply every change of the desktop's preferences to `env` until the watch stops.
-async fn follow_prefs(mut env: Signal<Environment>, mut prefs: SystemPrefsWatch) {
+async fn follow_prefs(mut env: Signal<Environment>, mut prefs: SystemSettingsWatch) {
     while let Some(system) = prefs.changed().await {
         env.with_mut(|e| e.system = system);
     }

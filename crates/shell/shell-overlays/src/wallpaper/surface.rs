@@ -2,7 +2,7 @@
 
 use dioxus::prelude::Element;
 use layer_shell_hooks::HostRoot;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_model::desktop::ShellRole;
 use shell_settings::ShellFile;
 
@@ -33,7 +33,7 @@ impl Surface for Wallpaper {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerOptions {
         layer(output)
     }
 

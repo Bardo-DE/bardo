@@ -15,8 +15,8 @@ use dioxus::prelude::*;
 use layer_shell_hooks::{HostRoot, use_surface_scale};
 use layer_shell_host::{Host, HostConfig, HostCtx, HostEvent, Prepaint};
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, RegionSpec, SurfaceId,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId,
 };
 
 /// How long the surface gets to settle before the first report, and how long it then idles.
@@ -61,8 +61,8 @@ fn strip() -> Element {
     }
 }
 
-fn strip_config() -> LayerConfig {
-    LayerConfig {
+fn strip_config() -> LayerOptions {
+    LayerOptions {
         namespace: "scale-demo".to_owned(),
         layer: LayerLevel::Top,
         anchor: Anchor::TOP | Anchor::LEFT | Anchor::RIGHT,

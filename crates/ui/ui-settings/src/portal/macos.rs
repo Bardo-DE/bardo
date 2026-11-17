@@ -7,7 +7,7 @@
 //! on a run loop; this crate owns no run loop, so the watch reads the preferences again every
 //! [`EVERY`] and publishes only what changed. A read is three lookups in `cfprefsd`'s cache.
 
-use super::SystemPrefs;
+use super::SystemSettings;
 use base_spawn::Spawner;
 use objc2_core_foundation::{
     CFBoolean, CFNumber, CFPreferencesAppSynchronize, CFPreferencesCopyAppValue, CFPropertyList,
@@ -38,8 +38,8 @@ fn scheme_from_style(style: Option<&str>) -> Scheme {
 }
 
 /// The three answers, as the portal's tables would give them.
-fn prefs_from(style: Option<&str>, reduce_motion: bool, increase_contrast: bool) -> SystemPrefs {
-    SystemPrefs::default()
+fn prefs_from(style: Option<&str>, reduce_motion: bool, increase_contrast: bool) -> SystemSettings {
+    SystemSettings::default()
         .with_scheme(scheme_from_style(style))
         .with_reduced_motion(reduce_motion)
         .with_contrast(if increase_contrast {
@@ -70,7 +70,7 @@ fn flag(key: &str, domain: &CFString) -> bool {
 
 /// The preferences as the user's defaults hold them now; a domain written by another process
 /// since the last read is read afresh.
-fn read() -> SystemPrefs {
+fn read() -> SystemSettings {
     let global = CFString::from_static_str(GLOBAL);
     let accessibility = CFString::from_static_str(ACCESSIBILITY);
     CFPreferencesAppSynchronize(&global);
@@ -85,12 +85,12 @@ fn read() -> SystemPrefs {
 }
 
 /// Every preference, once.
-pub(super) async fn read_all() -> Option<SystemPrefs> {
+pub(super) async fn read_all() -> Option<SystemSettings> {
     Some(read())
 }
 
 /// Read again every [`EVERY`] and publish a change, until the receiver is gone.
-async fn follow(tx: Sender<SystemPrefs>) {
+async fn follow(tx: Sender<SystemSettings>) {
     loop {
         futures_timer::Delay::new(EVERY).await;
         let now = read();
@@ -101,7 +101,7 @@ async fn follow(tx: Sender<SystemPrefs>) {
 }
 
 /// The preferences now and every change after, the watch running on `spawn`.
-pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<SystemPrefs> {
+pub(super) async fn start(spawn: &dyn Spawner) -> Receiver<SystemSettings> {
     let (tx, changes) = latest::channel(read());
     spawn.spawn(Box::pin(follow(tx)));
     changes
@@ -113,34 +113,34 @@ mod tests {
 
     #[test]
     fn the_style_and_the_switches_map_as_the_portal_s_tables_do() {
-        let cases: &[(&str, Option<&str>, bool, bool, SystemPrefs)] = &[
+        let cases: &[(&str, Option<&str>, bool, bool, SystemSettings)] = &[
             (
                 "light: no style",
                 None,
                 false,
                 false,
-                SystemPrefs::default(),
+                SystemSettings::default(),
             ),
             (
                 "dark",
                 Some("Dark"),
                 false,
                 false,
-                SystemPrefs::default().with_scheme(Scheme::Dark),
+                SystemSettings::default().with_scheme(Scheme::Dark),
             ),
             (
                 "an unknown style is light",
                 Some("Graphite"),
                 false,
                 false,
-                SystemPrefs::default(),
+                SystemSettings::default(),
             ),
             (
                 "both switches on",
                 None,
                 true,
                 true,
-                SystemPrefs::default()
+                SystemSettings::default()
                     .with_reduced_motion(true)
                     .with_contrast(Contrast::High),
             ),

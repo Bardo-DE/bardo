@@ -14,7 +14,7 @@ use crate::history::{self, HistoryTurn};
 use crate::prompt::{self, Fault};
 use crate::{
     ComputerUseProfile, ComputerUseTaskText, MaskedRegions, ObservationIn, RepairBudget, StepIndex,
-    StepOutcome, TurnSettings, TurnTranscript, dialect, window,
+    StepOutcome, TurnOptions, TurnTranscript, dialect, window,
 };
 use crate::{answer, calls};
 
@@ -23,7 +23,7 @@ pub struct ComputerUseSession {
     profile: ComputerUseProfile,
     task: ComputerUseTaskText,
     model: ModelName,
-    settings: TurnSettings,
+    settings: TurnOptions,
     history: VecDeque<HistoryTurn>,
     /// Steps taken so far, repaired or not.
     taken: u32,
@@ -42,7 +42,7 @@ impl ComputerUseSession {
             profile,
             task,
             model,
-            settings: TurnSettings::default(),
+            settings: TurnOptions::default(),
             history: VecDeque::new(),
             taken: 0,
             repairs_left,
@@ -52,7 +52,7 @@ impl ComputerUseSession {
     /// The same session with these request settings (sampling, output limit, reasoning, how many
     /// earlier steps are listed). The daemon takes them from the model's catalog entry.
     #[must_use]
-    pub fn with_settings(self, settings: TurnSettings) -> ComputerUseSession {
+    pub fn with_settings(self, settings: TurnOptions) -> ComputerUseSession {
         ComputerUseSession { settings, ..self }
     }
 

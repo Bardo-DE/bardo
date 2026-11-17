@@ -16,7 +16,7 @@ use computer_use_run::{
 use computer_use_session::{
     ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, MaskedRegions,
     ObservationIn, RepairBudget, StepIndex, StepLines, StepNote as NoteLine, StepOutcome,
-    TranscriptSink, TurnSettings,
+    TranscriptSink, TurnOptions,
 };
 use computer_use_vendors::StepResult;
 use inference_core::{
@@ -56,7 +56,7 @@ pub enum Thinking {
 #[derive(Debug, Clone)]
 pub struct Plan {
     profile: ComputerUseProfile,
-    settings: TurnSettings,
+    settings: TurnOptions,
     name: ModelName,
 }
 
@@ -105,7 +105,7 @@ impl Plan {
             Thinking::Off => (sampling.reasoning_off, Reasoning::Off),
             Thinking::On => (sampling.reasoning_on, Reasoning::EngineDefault),
         };
-        let settings = TurnSettings {
+        let settings = TurnOptions {
             sampling,
             limits: Limits {
                 max_output: text_out.max_output,

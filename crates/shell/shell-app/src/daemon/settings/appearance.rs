@@ -9,7 +9,7 @@ use settings_types::AppName;
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
 use ui_host_hooks::TokioSpawner;
-use ui_settings::{AppearanceFile, Environment, SystemPrefsSource, SystemPrefsWatch};
+use ui_settings::{AppearanceFile, Environment, SystemSettingsSource, SystemSettingsWatch};
 
 use super::store::report;
 use crate::daemon::msg::ShellMsg;
@@ -41,7 +41,7 @@ pub fn spawn_appearance_watch(
     let spawner = TokioSpawner::on(runtime.handle().clone());
     let mut files = store.watch::<AppearanceFile>(&spawner);
     runtime.spawn(async move {
-        let mut prefs = SystemPrefsWatch::start(&SystemPrefsSource::Portal, &spawner).await;
+        let mut prefs = SystemSettingsWatch::start(&SystemSettingsSource::Portal, &spawner).await;
         let mut now = Environment {
             system: prefs.current(),
             ..first

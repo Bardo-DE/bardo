@@ -33,7 +33,7 @@ mod tally;
 use backend::real::UinputBackend;
 use base_time::SystemMonotonic;
 use clock::Uptime;
-use daemon::{Daemon, DaemonError, Settings};
+use daemon::{Daemon, DaemonError, LoopConfig};
 use identity::caller_identity_authority::CallerIdentityAuthority;
 use identity::seat::SeatFile;
 use serve::Context;
@@ -62,6 +62,6 @@ pub fn run() -> Result<(), RunError> {
         seat: SeatFile::system(),
         clock: Uptime::new(SystemMonotonic),
     };
-    Daemon::new(listener, context, Settings::default()).run()?;
+    Daemon::new(listener, context, LoopConfig::default()).run()?;
     Ok(())
 }

@@ -30,7 +30,7 @@ use tokio::sync::watch;
 use super::events::Shell;
 use super::msg::ShellMsg;
 use super::targets::{forward, nudge};
-use crate::edge_reveal::FullScreenPrefs;
+use crate::edge_reveal::FullScreenSettings;
 use crate::outputs::Outputs;
 
 /// The route the host connects by: the socket the compositor handed over, else the environment.
@@ -53,14 +53,14 @@ pub struct ShellSeat {
     /// The docks' icons and the targets the compositor holds for them.
     targets: Targets,
     /// What the compositor is told about full screen.
-    prefs: Prefs,
+    prefs: FullScreenSync,
 }
 
 /// The full-screen prefs wanted and what was last sent.
 #[derive(Default)]
-struct Prefs {
-    wanted: Option<FullScreenPrefs>,
-    sent: Option<FullScreenPrefs>,
+struct FullScreenSync {
+    wanted: Option<FullScreenSettings>,
+    sent: Option<FullScreenSettings>,
 }
 
 /// What the minimise targets are worked out from, and what was last sent.
@@ -87,7 +87,7 @@ impl ShellSeat {
             arm: None,
             desktop,
             targets: Targets::default(),
-            prefs: Prefs::default(),
+            prefs: FullScreenSync::default(),
         }
     }
 
@@ -109,7 +109,7 @@ impl ShellSeat {
             arm: None,
             desktop,
             targets: Targets::default(),
-            prefs: Prefs::default(),
+            prefs: FullScreenSync::default(),
         }
     }
 
@@ -146,7 +146,7 @@ impl ShellSeat {
 
     /// The compositor is to hear `prefs` about full screen: sent now when they differ from what
     /// it last heard, and again when the arm starts.
-    pub fn set_prefs(&mut self, prefs: FullScreenPrefs) {
+    pub fn set_prefs(&mut self, prefs: FullScreenSettings) {
         self.prefs.wanted = Some(prefs);
         self.send_prefs();
     }

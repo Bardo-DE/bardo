@@ -1,9 +1,9 @@
 //! Sizes as a role asks for them and as the wire wants them.
 
-use layer_shell_types::{LayerConfig, LayerExtent, Px, Size};
+use layer_shell_types::{LayerExtent, LayerOptions, Px, Size};
 
 /// The size a layer asks for; a `Fill` axis is 0 until the compositor configures it.
-pub(super) fn requested_size(config: &LayerConfig) -> Size {
+pub(super) fn requested_size(config: &LayerOptions) -> Size {
     let px = |extent| match extent {
         LayerExtent::Fill => 0,
         LayerExtent::Px(px) => Px::try_from(px).unwrap_or(Px::MAX),

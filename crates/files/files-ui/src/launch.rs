@@ -8,11 +8,11 @@ use tokio::sync::watch;
 
 use anyview_platform::ThumbnailCache;
 use files_core::{FolderPath, Location};
-use files_fs::{Clouds, PrefsStore};
+use files_fs::{Clouds, FolderSettingsStore};
 use settings_store_fs::{ConfigRoot, Store};
 use settings_types::AppName;
-use ui_components::prelude::SystemPrefs;
-use ui_settings::SystemPrefsSource;
+use ui_components::prelude::SystemSettings;
+use ui_settings::SystemSettingsSource;
 
 use crate::edge::{Apps, IconSources, Opener, Seams, Volumes, Zone};
 use crate::places::Places;
@@ -26,7 +26,7 @@ pub struct AppearanceSource {
     /// The settings folder.
     pub store: Store,
     /// Where the desktop's preferences are read from.
-    pub system: SystemPrefsSource,
+    pub system: SystemSettingsSource,
 }
 
 impl AppearanceSource {
@@ -36,16 +36,16 @@ impl AppearanceSource {
     pub fn desktop() -> AppearanceSource {
         AppearanceSource {
             store: Store::new(ConfigRoot::Xdg, AppName::BARDO),
-            system: SystemPrefsSource::Portal,
+            system: SystemSettingsSource::Portal,
         }
     }
 
     /// A scratch config folder and fixed preferences, for tests and headless runs.
     #[must_use]
-    pub fn scratch(config_dir: PathBuf, system: SystemPrefs) -> AppearanceSource {
+    pub fn scratch(config_dir: PathBuf, system: SystemSettings) -> AppearanceSource {
         AppearanceSource {
             store: Store::new(ConfigRoot::Scratch(config_dir), AppName::BARDO),
-            system: SystemPrefsSource::Fixed(system),
+            system: SystemSettingsSource::Fixed(system),
         }
     }
 }
@@ -188,7 +188,7 @@ impl Launch {
 
     /// The same launch remembering each folder's view and sort in `prefs`.
     #[must_use]
-    pub fn with_prefs(self, prefs: Arc<dyn PrefsStore>) -> Launch {
+    pub fn with_prefs(self, prefs: Arc<dyn FolderSettingsStore>) -> Launch {
         Launch {
             seams: self.seams.with_prefs(prefs),
             ..self

@@ -9,7 +9,7 @@ use crate::region::RegionSpec;
 
 /// Everything `HostCtx::spawn_layer` needs besides the root component.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LayerConfig {
+pub struct LayerOptions {
     /// The layer-shell namespace (`shell-bar`, `shell-dock`); compositors key rules on it, and the
     /// debug commands address the surface by it.
     pub namespace: String,

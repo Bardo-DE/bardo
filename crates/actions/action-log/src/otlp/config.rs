@@ -96,7 +96,7 @@ pub(crate) fn parse_endpoint(raw: &str, source: Source) -> Result<Endpoint, Endp
 
 /// An exporter that is on.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct Settings {
+pub(crate) struct ExporterConfig {
     pub endpoint: Endpoint,
     /// The `service.name` resource attribute.
     pub service: String,
@@ -109,7 +109,7 @@ pub(crate) enum Plan {
     Off,
     /// An endpoint was named and is not acceptable.
     Refused(EndpointError),
-    On(Settings),
+    On(ExporterConfig),
 }
 
 /// The plan for the daemon `daemon`, from a lookup of environment variables. The traces
@@ -131,7 +131,7 @@ pub(crate) fn plan(daemon: &str, get: impl Fn(&str) -> Option<String>) -> Plan {
         return Plan::Off;
     };
     match parse_endpoint(&url, source) {
-        Ok(endpoint) => Plan::On(Settings {
+        Ok(endpoint) => Plan::On(ExporterConfig {
             endpoint,
             service: value("OTEL_SERVICE_NAME").unwrap_or_else(|| daemon.to_owned()),
         }),
@@ -256,7 +256,7 @@ mod tests {
     }
 
     fn on(host: &str, path: &str, service: &str) -> Plan {
-        Plan::On(Settings {
+        Plan::On(ExporterConfig {
             endpoint: endpoint(host, 4318, path),
             service: service.into(),
         })

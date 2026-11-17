@@ -7,7 +7,7 @@
 //! than this surface: the lower part of the expanded bar lies over the top of the windows, as on
 //! the Mac (FINDINGS `mc2`).
 
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_model::desktop::BAR_EXPANDED_PX;
 use shell_settings::ShellFile;
 use ui_components::style::tokens::shell_scale::SHELL_SCALE;
@@ -27,7 +27,7 @@ pub(super) fn surface_px(menu_bar_px: u32) -> u32 {
 }
 
 /// The bar on `output`.
-pub fn layer(output: &OutputInfo, _settings: &ShellFile) -> LayerConfig {
+pub fn layer(output: &OutputInfo, _settings: &ShellFile) -> LayerOptions {
     LayerPreset::Strip {
         height: surface_px(u32::from(SHELL_SCALE.bar.0)),
         bar: PanelBlur {

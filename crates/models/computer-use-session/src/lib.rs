@@ -50,7 +50,7 @@ mod window;
 pub use dialect::{ActionDialect, spec};
 pub use model::{
     ComputerUseProfile, ComputerUseTaskText, FrameBudget, MaskedRegions, ObservationIn,
-    RepairBudget, StepIndex, StepLines, StepNote, StepOutcome, TreeText, TurnSettings,
+    RepairBudget, StepIndex, StepLines, StepNote, StepOutcome, TreeText, TurnOptions,
     TurnTranscript,
 };
 pub use session::ComputerUseSession;

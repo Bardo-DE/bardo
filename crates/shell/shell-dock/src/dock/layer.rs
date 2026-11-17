@@ -8,8 +8,8 @@
 //! an element input region does not.
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputInfo, OutputTarget,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputInfo, OutputTarget,
 };
 use shell_settings::ShellFile;
 
@@ -22,7 +22,7 @@ use shell_ui_kit::surface::namespace;
 pub const GUTTER_PX: u32 = 8;
 
 /// The dock's layer configuration on `output`.
-pub fn layer(output: &OutputInfo, settings: &ShellFile, tokens: DockTokens) -> LayerConfig {
+pub fn layer(output: &OutputInfo, settings: &ShellFile, tokens: DockTokens) -> LayerOptions {
     let dock = &settings.dock;
     let tile = u32::from(dock.tile_size_px.0);
     let magnified = u32::from(dock.magnified_size_px.0);
@@ -33,7 +33,7 @@ pub fn layer(output: &OutputInfo, settings: &ShellFile, tokens: DockTokens) -> L
         Reveal::Fixed
     };
     let reserve = GUTTER_PX + tile + 2 * pad;
-    LayerConfig {
+    LayerOptions {
         namespace: namespace("dock", output),
         layer: LayerLevel::Top,
         anchor: Anchor::BOTTOM | Anchor::LEFT | Anchor::RIGHT,

@@ -1,12 +1,12 @@
 //! `[ai.structured]` as `inferd.toml` holds it: the file's reading into limits.
 
 use super::*;
-use crate::AiConfig;
+use crate::AiSettings;
 
 #[derive(Deserialize, Default)]
 struct File {
     #[serde(default)]
-    ai: AiConfig,
+    ai: AiSettings,
 }
 
 fn resolved(text: &str) -> Resolved {

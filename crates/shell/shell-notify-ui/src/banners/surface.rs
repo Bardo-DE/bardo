@@ -1,7 +1,7 @@
 //! The banner column as a [`Surface`]: one per output, spawned hidden, mapped while a card is up.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{KeyboardFocus, LayerConfig, OutputId, OutputInfo};
+use layer_shell_types::{KeyboardFocus, LayerOptions, OutputId, OutputInfo};
 use shell_model::desktop::ShellRole;
 use shell_settings::ShellFile;
 
@@ -40,7 +40,7 @@ impl Surface for Banners {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerOptions {
         // The shipped tokens: the surface has no document yet; `ColumnView` follows its size
         // and margin with the resolved ones once it is mounted.
         layer(output, &NotificationTokens::default())

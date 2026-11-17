@@ -17,7 +17,7 @@
 //! each finished change is followed by a rescan of the places it touched, told to every tab. The
 //! Trash is listed from [`files_trash::Trash`].
 //!
-//! A folder's view and sort are remembered through [`files_fs::PrefsStore`] on a thread of their own
+//! A folder's view and sort are remembered through [`files_fs::FolderSettingsStore`] on a thread of their own
 //! (`prefs`); Quick Look's previews come from anyview's peek worker (`look`) and arrive as
 //! [`Heard::Looked`], not as an input: a picture is not something the model holds. Get Info's facts
 //! are read by the [`files_fs::Lister`] on a thread and come back as `Input::InfoRead`.
@@ -96,7 +96,7 @@ pub struct Edge {
     /// system would not start its thread.
     ops: Option<Worker<TabId>>,
     /// Remembers how each folder is shown.
-    prefs: prefs::Prefs,
+    prefs: prefs::SettingsThread,
     /// Makes Quick Look's previews.
     peek: PeekWorker,
     /// Lists, opens and ejects the disks.
@@ -128,7 +128,7 @@ impl Edge {
                 eprintln!("bardo-files: the queue of changes could not start: {why}");
             })
             .ok();
-        let prefs = prefs::Prefs::start(Arc::clone(&seams.prefs), heard.clone());
+        let prefs = prefs::SettingsThread::start(Arc::clone(&seams.prefs), heard.clone());
         let disks = volumes::Disks::start(Arc::clone(&seams.volumes), heard.clone());
         let clouds = clouds::CloudDrives::start(Arc::clone(&seams.clouds), heard.clone());
         let maker = Arc::new(Anyview::new(Arc::clone(&seams.thumbnails)));
@@ -192,8 +192,8 @@ impl Edge {
             }
             Effect::Tell(failure) => self.say(Heard::Told(failure.to_string())),
             Effect::Announce(summary) => self.say(Heard::Announced(summary)),
-            Effect::LoadPrefs(at) => self.prefs.load(tab, at),
-            Effect::SavePrefs(at, prefs) => self.prefs.save(at, prefs),
+            Effect::LoadFolderSettings(at) => self.prefs.load(tab, at),
+            Effect::SaveFolderSettings(at, prefs) => self.prefs.save(at, prefs),
             Effect::Look(item) => look::ask(&self.peek, item, self.heard.clone()),
             Effect::ReadInfo(item) => self.read_info(tab, item),
             Effect::ReadDetails(item) => self.read_details(tab, item),

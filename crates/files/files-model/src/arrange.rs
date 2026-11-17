@@ -1,6 +1,6 @@
 //! Which entries a folder shows, and in what order.
 
-use files_core::{Behaviour, Entry, FolderPrefs, SortKey};
+use files_core::{Behaviour, Entry, FolderSettings, SortKey};
 
 use crate::open::{Opens, opens};
 use crate::sort::compare;
@@ -13,7 +13,7 @@ use crate::sort::compare;
 #[must_use]
 pub fn arrange(
     entries: &[Entry],
-    prefs: &FolderPrefs,
+    prefs: &FolderSettings,
     show_hidden: bool,
     behaviour: Behaviour,
 ) -> Vec<usize> {

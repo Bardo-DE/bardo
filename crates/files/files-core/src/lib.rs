@@ -56,7 +56,7 @@ pub use report::{Finish, OpEvent, Outcome};
 pub use size::ByteSize;
 pub use trashed::{TrashId, TrashedItem};
 pub use ui_helpers::mime::{FileName, MimeError, MimeType, NameError};
-pub use view::{FolderPrefs, Sort, SortKey, SortOrder, ViewMode};
+pub use view::{FolderSettings, Sort, SortKey, SortOrder, ViewMode};
 pub use volume::{
     Cause, EjectError, MountError, ProgramName, Volume, VolumeId, VolumeKind, VolumeName,
     VolumeTrouble,

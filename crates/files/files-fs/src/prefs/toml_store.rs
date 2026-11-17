@@ -4,10 +4,10 @@ use std::path::PathBuf;
 use std::sync::{Mutex, MutexGuard, PoisonError};
 
 use base_fs::{NewFileMode, ReadCap, read_text_capped, write_atomic};
-use files_core::{FolderPath, FolderPrefs};
+use files_core::{FolderPath, FolderSettings};
 
-use super::{PrefBook, PrefsStore};
-use crate::error::PrefsError;
+use super::{FolderSettingsStore, PrefBook};
+use crate::error::FolderSettingsError;
 
 /// The most the file may hold: far above [`KEPT`](super::KEPT) folders.
 const CAP: ReadCap = ReadCap::mib(1);
@@ -23,20 +23,20 @@ enum State {
     Unusable,
 }
 
-/// A [`PrefsStore`] over one TOML file. The file is read once, on first use; a missing file is an
+/// A [`FolderSettingsStore`] over one TOML file. The file is read once, on first use; a missing file is an
 /// empty book, and one that is there but can't be read or understood is never written over.
 #[derive(Debug)]
-pub struct TomlPrefs {
+pub struct TomlFolderSettings {
     file: PathBuf,
     state: Mutex<State>,
 }
 
-impl TomlPrefs {
+impl TomlFolderSettings {
     /// A store over `file` (its folder is made on the first save). The caller says where: this
     /// crate reads no environment.
     #[must_use]
-    pub fn new(file: PathBuf) -> TomlPrefs {
-        TomlPrefs {
+    pub fn new(file: PathBuf) -> TomlFolderSettings {
+        TomlFolderSettings {
             file,
             state: Mutex::new(State::Unread),
         }
@@ -56,24 +56,24 @@ impl TomlPrefs {
     }
 }
 
-impl PrefsStore for TomlPrefs {
-    fn load(&self, folder: &FolderPath) -> FolderPrefs {
+impl FolderSettingsStore for TomlFolderSettings {
+    fn load(&self, folder: &FolderPath) -> FolderSettings {
         match &*self.state() {
             State::Ready(book) => book.get(folder).unwrap_or_default(),
-            State::Unread | State::Unusable => FolderPrefs::default(),
+            State::Unread | State::Unusable => FolderSettings::default(),
         }
     }
 
-    fn save(&self, folder: &FolderPath, prefs: FolderPrefs) -> Result<(), PrefsError> {
+    fn save(&self, folder: &FolderPath, prefs: FolderSettings) -> Result<(), FolderSettingsError> {
         let mut state = self.state();
         let State::Ready(book) = &mut *state else {
-            return Err(PrefsError::Unusable);
+            return Err(FolderSettingsError::Unusable);
         };
         book.set(folder.clone(), prefs);
         if let Some(dir) = self.file.parent() {
-            std::fs::create_dir_all(dir).map_err(PrefsError::Folder)?;
+            std::fs::create_dir_all(dir).map_err(FolderSettingsError::Folder)?;
         }
         write_atomic(&self.file, book.render().as_bytes(), NewFileMode::OwnerOnly)
-            .map_err(PrefsError::Write)
+            .map_err(FolderSettingsError::Write)
     }
 }

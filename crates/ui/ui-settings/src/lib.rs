@@ -20,7 +20,7 @@ pub use appearance::{AppearanceFile, AppearanceSettings, IconStyle, IconsSetting
 pub use environment::{Environment, use_environment};
 pub use icon_assets::{app_icon_path, apps_dir};
 pub use portal::{
-    SystemPrefsSource, SystemPrefsWatch, contrast_from_portal, reduced_motion_from_portal,
+    SystemSettingsSource, SystemSettingsWatch, contrast_from_portal, reduced_motion_from_portal,
     scheme_from_portal,
 };
 pub use published_parts::{PublishedParts, discover_parts, parts_dirs, parts_dirs_from};

@@ -3,7 +3,7 @@
 //! layers and the curated root below; every module is private.
 //!
 //! This crate is the host. What a program passes it and reads back is `layer-shell-types`'s
-//! (`LayerConfig`, `OutputInfo`, `SurfaceId`, ...); what a component calls is
+//! (`LayerOptions`, `OutputInfo`, `SurfaceId`, ...); what a component calls is
 //! `layer-shell-hooks`'s (`SurfaceHandle`, `use_surface`, `HostRoot`, ...). A UI library depends
 //! on those two and never on this crate.
 //!

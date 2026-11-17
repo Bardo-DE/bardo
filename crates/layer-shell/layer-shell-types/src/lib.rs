@@ -1,7 +1,7 @@
 //! The layer-shell host's vocabulary as plain data: ids, geometry, regions, scale, the configs a
 //! surface is spawned with, the ops it is told, modifiers and input modality, drags and the
 //! session lock. No renderer, GPU, Wayland or UI toolkit type is named here, so a pure crate can
-//! take a `LayerConfig` or an `OutputInfo` without linking the host.
+//! take a `LayerOptions` or an `OutputInfo` without linking the host.
 //!
 //! `layer-shell-hooks` is what a component calls; `layer-shell-host` is the Wayland host that
 //! renders the surfaces. Every module is private; the curated root below is the API.
@@ -33,17 +33,17 @@ pub use focus::KeyboardFocus;
 pub use geometry::{Margin, Point, enclosing_rect, inflate, px_of};
 pub use id::{OutputId, SurfaceId, SurfaceName};
 pub use layer::{
-    Anchor, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
+    Anchor, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions, LayerSize,
     OutputTarget,
 };
-pub use lock::{Ended, LockConfig, LockError, LockId, LockPhase, LockState};
+pub use lock::{Ended, LockError, LockId, LockOptions, LockPhase, LockState};
 pub use modality::InputModality;
 pub use modifiers::{LockKey, Modifier, Modifiers};
 pub use op::{CommonOp, LayerOp, Repaint, SurfaceOp, Visibility, WindowOp};
 pub use output::OutputInfo;
 pub use placement::PopupPlacement;
 pub use popup::{
-    PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupSize,
+    PopupAdjust, PopupAnchor, PopupEdge, PopupGrab, PopupOffset, PopupOptions, PopupSize,
     offset_rect,
 };
 pub use region::{ElementId, ElementRegion, Px, Rect, RegionSpec, RoundedRect, rounded_strips};
@@ -55,7 +55,7 @@ pub use scroll_state::{ScrollExtent, ScrollPhase, ScrollPoint, ScrollState};
 pub use tick::FrameTick;
 pub use toplevel::{
     Activation, Decorations, Fullscreen, Maximize, ResizeEdge, ResizeMargin, Tile, TileEdges,
-    ToplevelConfig, ToplevelState,
+    ToplevelOptions, ToplevelState,
 };
 pub use wheel::{WheelEvent, WheelMotion, WheelPhase, WheelSource};
 pub use window_placement::{PlacementSupport, WindowPlacement};

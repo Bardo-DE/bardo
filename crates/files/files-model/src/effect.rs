@@ -4,8 +4,8 @@ use std::path::PathBuf;
 
 use crate::app::AppPick;
 use files_core::{
-    FileName, FolderPath, FolderPrefs, ItemRef, Location, OnlineUrl, OpError, OpPlan, Resolution,
-    Summary, VolumeId, VolumeName, VolumeTrouble,
+    FileName, FolderPath, FolderSettings, ItemRef, Location, OnlineUrl, OpError, OpPlan,
+    Resolution, Summary, VolumeId, VolumeName, VolumeTrouble,
 };
 
 /// One file to hand to an app: where it is, and what it is called.
@@ -64,10 +64,10 @@ pub enum Effect {
         /// The name it should have.
         to: FileName,
     },
-    /// Look up how this folder was last shown and answer with `Input::PrefsLoaded`.
-    LoadPrefs(Location),
+    /// Look up how this folder was last shown and answer with `Input::FolderSettingsLoaded`.
+    LoadFolderSettings(Location),
     /// Remember how this folder is shown.
-    SavePrefs(Location, FolderPrefs),
+    SaveFolderSettings(Location, FolderSettings),
     /// Make a preview of this item for Quick Look; the answer is not an input (a picture is not
     /// something the model holds), the window shows it when it arrives.
     Look(ItemRef),

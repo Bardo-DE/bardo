@@ -3,8 +3,8 @@
 //! keyboard, no blur, input the whole square.
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputInfo, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };
 use ui_behaviour::hot_corner::CornerParams;
 use ui_components::words::Word;
@@ -13,7 +13,7 @@ use shell_ui_kit::links::Corner;
 use shell_ui_kit::surface::namespace;
 
 /// `corner` of `output`, [`CornerParams::HOT_SPOT_PX`] logical px square.
-pub fn layer(output: &OutputInfo, corner: Corner) -> LayerConfig {
+pub fn layer(output: &OutputInfo, corner: Corner) -> LayerOptions {
     let anchor = match corner {
         Corner::TopLeft => Anchor::TOP | Anchor::LEFT,
         Corner::TopRight => Anchor::TOP | Anchor::RIGHT,
@@ -21,7 +21,7 @@ pub fn layer(output: &OutputInfo, corner: Corner) -> LayerConfig {
         Corner::BottomRight => Anchor::BOTTOM | Anchor::RIGHT,
     };
     let side = u32::from(CornerParams::HOT_SPOT_PX);
-    LayerConfig {
+    LayerOptions {
         namespace: namespace(&format!("hot-corner-{}", corner.slug()), output),
         layer: LayerLevel::Overlay,
         anchor,

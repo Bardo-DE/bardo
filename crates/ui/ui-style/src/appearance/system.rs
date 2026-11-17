@@ -33,7 +33,7 @@ impl Contrast {
 /// contrast.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Default)]
 #[serde(default)]
-pub struct SystemPrefs {
+pub struct SystemSettings {
     /// The desktop's colour scheme.
     pub scheme: Scheme,
     /// Whether the desktop asks for reduced motion.
@@ -42,7 +42,7 @@ pub struct SystemPrefs {
     pub contrast: Contrast,
 }
 
-impl SystemPrefs {
+impl SystemSettings {
     /// These preferences with the colour scheme `scheme`.
     #[must_use]
     pub const fn with_scheme(mut self, scheme: Scheme) -> Self {

@@ -4,7 +4,7 @@
 //! or over a tile. The widest the popup grows is one number here, not one per surface.
 
 use layer_shell_types::{
-    PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupPlacement,
+    PopupAdjust, PopupAnchor, PopupEdge, PopupGrab, PopupOffset, PopupOptions, PopupPlacement,
     PopupSize, Rect, Size,
 };
 
@@ -38,7 +38,7 @@ pub fn point_anchor(x: i32, y: i32) -> Rect {
 impl PopupGeom {
     /// The popup's configuration.
     #[must_use]
-    pub fn config(self) -> PopupConfig {
+    pub fn config(self) -> PopupOptions {
         let room = PopupRoom::CONTEXT;
         let (edge, gravity, adjust, offset) = match self {
             PopupGeom::AtPoint { clear } => (
@@ -63,7 +63,7 @@ impl PopupGeom {
                 },
             ),
         };
-        PopupConfig {
+        PopupOptions {
             anchor: PopupAnchor::Rect,
             size: PopupSize::FitContent { max: POPUP_MAX },
             edge,

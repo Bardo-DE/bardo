@@ -1,6 +1,6 @@
 //! The one place bardo-shell names layer-shell-host's session lock.
 //!
-//! `HostCtx::lock_session(LockConfig, factory) -> Result<LockId, LockError::{Unsupported,
+//! `HostCtx::lock_session(LockOptions, factory) -> Result<LockId, LockError::{Unsupported,
 //! InProgress}>`, `unlock_session(LockId)`, `lock_surfaces(LockId)`, and `HostEvent::Lock { id,
 //! state: Locked | Unlocked | Finished }`. Lock surfaces are made on request, one per output (and
 //! for outputs added while locked); a lock document reads `layer_shell_hooks::use_lock()` (whose
@@ -15,7 +15,7 @@ use std::fmt;
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{HostCtx, HostEvent};
 use layer_shell_types::{
-    LockConfig, LockError, LockId, LockState, OutputId, OutputInfo, SurfaceId,
+    LockError, LockId, LockOptions, LockState, OutputId, OutputInfo, SurfaceId,
 };
 
 use crate::daemon::msg::ShellMsg;
@@ -23,7 +23,7 @@ use crate::daemon::msg::ShellMsg;
 /// How a session lock is taken: layer-shell-host's setup (from `LOCK.config`) and what builds each
 /// output's lock surface root (the daemon's `surface_root` around `mount_lock`).
 pub struct LockFactory {
-    pub config: LockConfig,
+    pub config: LockOptions,
     pub build: Box<dyn Fn(OutputInfo) -> HostRoot>,
 }
 

@@ -3,14 +3,14 @@
 
 /// What the `[Service]` sections of a unit file and its drop-ins say, folded in order.
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
-pub struct ServiceSettings {
+pub struct ServiceDirectives {
     /// The names `UnsetEnvironment=` removes.
     pub unset: Vec<String>,
     /// The program of the first `ExecStart=`, as written.
     pub exec: Option<String>,
 }
 
-impl ServiceSettings {
+impl ServiceDirectives {
     /// These settings after reading `text`, the next file in precedence order. An empty
     /// assignment starts the list over, as systemd does.
     pub fn fold(mut self, text: &str) -> Self {

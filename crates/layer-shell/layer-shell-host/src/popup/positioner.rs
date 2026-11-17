@@ -1,11 +1,11 @@
-//! The pure translation from a `PopupConfig` plus a resolved anchor rect and content size into
+//! The pure translation from a `PopupOptions` plus a resolved anchor rect and content size into
 //! the values an `xdg_positioner` is configured with, and the refit of a `FitContent` popup.
 //!
 //! Building and committing the actual `xdg_positioner` object is an effect (a Wayland request
 //! against a live connection) and belongs to the caller; this module only computes what to send.
 
 use layer_shell_types::{
-    PopupAdjust, PopupConfig, PopupEdge, PopupPlacement, PopupSize, Rect, Size, offset_rect,
+    PopupAdjust, PopupEdge, PopupOptions, PopupPlacement, PopupSize, Rect, Size, offset_rect,
 };
 
 /// The resolved values an `xdg_positioner` should be configured with: `set_size`,
@@ -20,12 +20,12 @@ pub(crate) struct PositionerParams {
     pub adjust: PopupAdjust,
 }
 
-/// Combine a `PopupConfig` with a resolved anchor rect and a resolved content size into the
+/// Combine a `PopupOptions` with a resolved anchor rect and a resolved content size into the
 /// values to hand the `xdg_positioner`. `size` is the popup's natural size (already measured,
 /// for `PopupSize::FitContent`, or already fixed, for `PopupSize::Fixed`); `FitContent` only
 /// clamps it to its `max`. The config's `offset` translates the anchor rectangle.
 pub(crate) fn positioner_params(
-    config: &PopupConfig,
+    config: &PopupOptions,
     anchor: Rect,
     size: Size,
 ) -> PositionerParams {
@@ -51,7 +51,7 @@ pub(crate) fn positioner_params(
 /// or when the clamped content size already matches `current.size` — the check that stops a
 /// settled popup from repositioning every frame.
 pub(crate) fn refit(
-    config: &PopupConfig,
+    config: &PopupOptions,
     current: PopupPlacement,
     content: Size,
 ) -> Option<PopupPlacement> {
@@ -82,8 +82,8 @@ mod tests {
         gravity: PopupEdge,
         adjust: PopupAdjust,
         size: PopupSize,
-    ) -> PopupConfig {
-        PopupConfig {
+    ) -> PopupOptions {
+        PopupOptions {
             anchor: PopupAnchor::Rect,
             size,
             edge,

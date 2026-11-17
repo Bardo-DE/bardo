@@ -7,7 +7,7 @@
 //!
 //! What the model layer leaves to the daemon is done here, from the model's catalog entry: the
 //! `ComputerUseProfile` (dialect, resize rule and space of the entry, a history of one frame fewer than
-//! the model takes per prompt, one repair) and the `TurnSettings` (the entry's output limit, how
+//! the model takes per prompt, one repair) and the `TurnOptions` (the entry's output limit, how
 //! many calls a turn may make, the engine's extras, and reasoning off with its sampling, except for
 //! a model trained to think before its action, which runs with the engine's reasoning and the
 //! sampling for it).
@@ -22,7 +22,7 @@ use base_ids::Tokens;
 use computer_use_action::{AnswerShape, ComputerUseDialect};
 use computer_use_session::{
     ComputerUseProfile, ComputerUseSession, ComputerUseTaskText, FrameBudget, ObservationIn,
-    RepairBudget, StepLines, StepNote as NoteLine, StepOutcome, TurnSettings,
+    RepairBudget, StepLines, StepNote as NoteLine, StepOutcome, TurnOptions,
 };
 use computer_use_vendors::StepResult;
 use inference_core::{
@@ -94,7 +94,7 @@ pub fn open(
         AnswerShape::ThinkActionCall => Reasoning::EngineDefault,
         AnswerShape::Free => Reasoning::Off,
     };
-    let settings = TurnSettings {
+    let settings = TurnOptions {
         sampling: *model.sampling()?.for_reasoning(reasoning),
         limits: Limits {
             max_output: caps.max_output.min(ceiling),

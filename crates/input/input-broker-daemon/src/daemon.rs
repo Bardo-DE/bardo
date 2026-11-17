@@ -39,7 +39,7 @@ const BACKOFF: Duration = Duration::from_millis(100);
 
 /// Timing of the loop.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Settings {
+pub struct LoopConfig {
     /// Exit after this long with no connection.
     pub idle: Duration,
     /// Look at the clock at least this often.
@@ -48,7 +48,7 @@ pub struct Settings {
     pub pending: Caps,
 }
 
-impl Default for Settings {
+impl Default for LoopConfig {
     fn default() -> Self {
         Self {
             idle: IDLE_EXIT,
@@ -74,7 +74,7 @@ pub enum DaemonError {
 pub struct Daemon<B, A, S, C> {
     listener: OwnedFd,
     context: Arc<Context<B, A, S, C>>,
-    settings: Settings,
+    settings: LoopConfig,
 }
 
 impl<B, A, S, C> Daemon<B, A, S, C>
@@ -85,7 +85,7 @@ where
     C: Monotonic + 'static,
 {
     /// A service on `listener`, a listening `SOCK_SEQPACKET` socket.
-    pub fn new(listener: OwnedFd, context: Context<B, A, S, C>, settings: Settings) -> Self {
+    pub fn new(listener: OwnedFd, context: Context<B, A, S, C>, settings: LoopConfig) -> Self {
         Self {
             listener,
             context: Arc::new(context),
@@ -93,7 +93,7 @@ where
         }
     }
 
-    /// Serves until idle for [`Settings::idle`], then returns.
+    /// Serves until idle for [`LoopConfig::idle`], then returns.
     ///
     /// # Errors
     ///

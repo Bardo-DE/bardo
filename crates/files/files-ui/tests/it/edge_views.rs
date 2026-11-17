@@ -3,8 +3,8 @@
 
 use std::sync::Arc;
 
-use files_core::{ByteSize, FolderPath, FolderPrefs, ItemRef, Location, ViewMode};
-use files_fs::PrefsStore;
+use files_core::{ByteSize, FolderPath, FolderSettings, ItemRef, Location, ViewMode};
+use files_fs::FolderSettingsStore;
 use files_model::{Effect, FolderListError, Input, TabId};
 use files_ui::edge::{Edge, Heard, Seams};
 
@@ -16,45 +16,50 @@ fn a_folders_view_is_remembered_and_loaded_in_the_order_asked() {
     let mut rig = rig();
     let here = folder("/p");
     let place = Location::Folder(here.clone());
-    let prefs = FolderPrefs {
+    let prefs = FolderSettings {
         view: ViewMode::Icons,
-        ..FolderPrefs::default()
+        ..FolderSettings::default()
     };
     // Never changed: the defaults, and saving says nothing.
-    rig.edge
-        .run_in(TabId::FIRST, vec![Effect::LoadPrefs(place.clone())]);
+    rig.edge.run_in(
+        TabId::FIRST,
+        vec![Effect::LoadFolderSettings(place.clone())],
+    );
     assert_eq!(
         next(&mut rig.inbox),
         Heard::Tab(
             TabId::FIRST,
-            Input::PrefsLoaded(place.clone(), FolderPrefs::default())
+            Input::FolderSettingsLoaded(place.clone(), FolderSettings::default())
         )
     );
     rig.edge.run_in(
         TabId::FIRST,
         vec![
-            Effect::SavePrefs(place.clone(), prefs),
-            Effect::LoadPrefs(place.clone()),
+            Effect::SaveFolderSettings(place.clone(), prefs),
+            Effect::LoadFolderSettings(place.clone()),
         ],
     );
     assert_eq!(
         next(&mut rig.inbox),
-        Heard::Tab(TabId::FIRST, Input::PrefsLoaded(place.clone(), prefs))
+        Heard::Tab(
+            TabId::FIRST,
+            Input::FolderSettingsLoaded(place.clone(), prefs)
+        )
     );
     assert_eq!(rig.prefs.load(&here), prefs);
     // The Trash is shown the same way every time.
     rig.edge.run_in(
         TabId::FIRST,
         vec![
-            Effect::SavePrefs(Location::Trash, prefs),
-            Effect::LoadPrefs(Location::Trash),
+            Effect::SaveFolderSettings(Location::Trash, prefs),
+            Effect::LoadFolderSettings(Location::Trash),
         ],
     );
     assert_eq!(
         next(&mut rig.inbox),
         Heard::Tab(
             TabId::FIRST,
-            Input::PrefsLoaded(Location::Trash, FolderPrefs::default())
+            Input::FolderSettingsLoaded(Location::Trash, FolderSettings::default())
         )
     );
 }

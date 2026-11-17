@@ -4,7 +4,7 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use files_fs::{NoPrefs, PrefsStore, TomlPrefs};
+use files_fs::{FolderSettingsStore, NoFolderSettings, TomlFolderSettings};
 use settings_store_fs::ConfigRoot;
 use settings_types::AppName;
 
@@ -19,10 +19,10 @@ pub fn prefs_file(root: &ConfigRoot) -> Option<PathBuf> {
 
 /// The store of folder views for `root`: the file when there is a place for it, else one that
 /// remembers nothing (every folder opens with the defaults).
-pub fn prefs_store(root: &ConfigRoot) -> Arc<dyn PrefsStore> {
+pub fn prefs_store(root: &ConfigRoot) -> Arc<dyn FolderSettingsStore> {
     match prefs_file(root) {
-        Some(file) => Arc::new(TomlPrefs::new(file)),
-        None => Arc::new(NoPrefs),
+        Some(file) => Arc::new(TomlFolderSettings::new(file)),
+        None => Arc::new(NoFolderSettings),
     }
 }
 

@@ -18,9 +18,9 @@ use dioxus::prelude::*;
 use layer_shell_hooks::{HostRoot, use_input_modality, use_surface};
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset,
-    PopupPlacement, PopupSize, Rect, RegionSpec, Size,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputTarget, PopupAdjust, PopupAnchor, PopupEdge, PopupGrab, PopupOffset,
+    PopupOptions, PopupPlacement, PopupSize, Rect, RegionSpec, Size,
 };
 use serde_json::json;
 
@@ -44,8 +44,8 @@ fn print(value: &serde_json::Value) {
     let _ = out.flush();
 }
 
-fn bar_config() -> LayerConfig {
-    LayerConfig {
+fn bar_config() -> LayerOptions {
+    LayerOptions {
         namespace: "popup-keys-bar".to_owned(),
         layer: LayerLevel::Top,
         anchor: Anchor::TOP | Anchor::LEFT | Anchor::RIGHT,
@@ -63,8 +63,8 @@ fn bar_config() -> LayerConfig {
     }
 }
 
-fn popup_config() -> PopupConfig {
-    PopupConfig {
+fn popup_config() -> PopupOptions {
+    PopupOptions {
         anchor: PopupAnchor::Rect,
         size: PopupSize::Fixed,
         edge: PopupEdge::BottomLeft,

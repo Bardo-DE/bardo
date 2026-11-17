@@ -8,7 +8,7 @@ use crate::appearance::{
     accent::Accent,
     appearance::Appearance,
     motion::{Motion, MotionLevel},
-    system::{Contrast, SystemPrefs},
+    system::{Contrast, SystemSettings},
     theme::{Scheme, Theme},
     transparency::Transparency,
 };
@@ -51,7 +51,7 @@ impl Resolved {
 /// choice before it is the desktop's. Whether the shell honours a per-workspace theme is
 /// design/03-COLOR.md open decision 13; this is the proposed reading.
 #[must_use]
-pub fn resolve(app: Appearance, look_theme: Theme, system: SystemPrefs) -> Resolved {
+pub fn resolve(app: Appearance, look_theme: Theme, system: SystemSettings) -> Resolved {
     let scheme = explicit(look_theme)
         .or_else(|| explicit(app.theme))
         .unwrap_or(system.scheme);
@@ -84,13 +84,13 @@ mod tests {
         accent::Accent,
         appearance::Appearance,
         motion::{Motion, MotionLevel},
-        system::{Contrast, SystemPrefs},
+        system::{Contrast, SystemSettings},
         theme::{Scheme, Theme},
         transparency::Transparency,
     };
 
-    const fn prefs(scheme: Scheme, reduced_motion: bool) -> SystemPrefs {
-        SystemPrefs {
+    const fn prefs(scheme: Scheme, reduced_motion: bool) -> SystemSettings {
+        SystemSettings {
             scheme,
             reduced_motion,
             contrast: Contrast::Normal,
@@ -102,7 +102,7 @@ mod tests {
         const NO_PREFERENCE: bool = false;
         const REDUCE: bool = true;
         #[rustfmt::skip]
-        const CASES: &[(&str, Theme, Motion, Theme, SystemPrefs, Scheme, MotionLevel)] = &[
+        const CASES: &[(&str, Theme, Motion, Theme, SystemSettings, Scheme, MotionLevel)] = &[
             ("all follow: desktop dark", Theme::System, Motion::Standard, Theme::System, prefs(Scheme::Dark, NO_PREFERENCE), Scheme::Dark, MotionLevel::Standard),
             ("app light over a dark desktop", Theme::Light, Motion::Standard, Theme::System, prefs(Scheme::Dark, NO_PREFERENCE), Scheme::Light, MotionLevel::Standard),
             ("space dark over an app light", Theme::Light, Motion::Standard, Theme::Dark, prefs(Scheme::Light, NO_PREFERENCE), Scheme::Dark, MotionLevel::Standard),
@@ -159,7 +159,7 @@ mod tests {
                 transparency,
                 ..Appearance::default()
             };
-            let got = resolve(app, Theme::System, SystemPrefs::default());
+            let got = resolve(app, Theme::System, SystemSettings::default());
             assert_eq!(got.transparency, transparency);
             assert_eq!(got.transparency.attribute(), attribute);
         }

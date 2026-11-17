@@ -316,7 +316,7 @@ fn the_badge_times_out_on_ds_motions_own_clock() {
     let resolved = resolve(
         Appearance::default(),
         SpaceLook::default().theme,
-        SystemPrefs::default(),
+        SystemSettings::default(),
     );
     let hold = settle(Anim::Fade, resolved.motion); // never a millisecond literal
 

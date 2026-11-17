@@ -9,7 +9,7 @@ use crate::scale::Size;
 
 /// Everything `HostCtx::spawn_toplevel` needs besides the root component.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct ToplevelConfig {
+pub struct ToplevelOptions {
     /// The `xdg_toplevel.set_app_id` value; also the debug-command name of the window.
     pub app_id: String,
     pub title: String,

@@ -2,7 +2,7 @@
 
 use dioxus::prelude::Element;
 use layer_shell_hooks::HostRoot;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_model::desktop::ShellRole;
 use shell_settings::ShellFile;
 
@@ -35,7 +35,7 @@ impl Surface for Dock {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, settings: &ShellFile, (): ()) -> LayerOptions {
         // The shipped tokens: the surface has no document yet; `dock` follows its layer with the
         // resolved ones once it is mounted.
         layer(output, settings, DockTokens::default())

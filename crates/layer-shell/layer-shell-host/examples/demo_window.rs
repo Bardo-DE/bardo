@@ -20,7 +20,7 @@ use dioxus::prelude::*;
 use layer_shell_hooks::{GrabError, HostRoot, SurfaceHandle, use_surface, use_toplevel_state};
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
-    Decorations, Fullscreen, Maximize, ResizeEdge, Size, SurfaceId, ToplevelConfig,
+    Decorations, Fullscreen, Maximize, ResizeEdge, Size, SurfaceId, ToplevelOptions,
 };
 use serde_json::json;
 
@@ -164,7 +164,7 @@ fn run() -> Result<(), String> {
     let mut id: Option<SurfaceId> = None;
     host.run(move |ctx, event| match event {
         HostEvent::Started => {
-            let config = ToplevelConfig {
+            let config = ToplevelOptions {
                 app_id: "demo_window".to_owned(),
                 title: "demo_window".to_owned(),
                 size: Size {

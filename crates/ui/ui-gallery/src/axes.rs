@@ -178,7 +178,7 @@ mod tests {
                 ..Axes::default()
             }
             .appearance();
-            let resolved = resolve(appearance, Theme::System, SystemPrefs::default());
+            let resolved = resolve(appearance, Theme::System, SystemSettings::default());
             assert_eq!(resolved.motion, level);
         }
     }

@@ -133,7 +133,7 @@ fn prepare_wallpapers(outputs: &Outputs, services: &Services) {
 /// Spawn a layer surface and hide it before its first paint.
 pub(crate) fn spawn_hidden(
     ctx: &mut HostCtx<ShellMsg>,
-    config: layer_shell_types::LayerConfig,
+    config: layer_shell_types::LayerOptions,
     root: HostRoot,
     info: &OutputInfo,
 ) -> Option<SurfaceId> {

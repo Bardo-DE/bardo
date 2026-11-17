@@ -4,7 +4,10 @@ use std::fmt;
 use std::sync::Arc;
 
 use anyview_platform::ThumbnailCache;
-use files_fs::{Clouds, DiskLister, Lister, NoClouds, NoPrefs, NotifyWatcher, PrefsStore, Watcher};
+use files_fs::{
+    Clouds, DiskLister, FolderSettingsStore, Lister, NoClouds, NoFolderSettings, NotifyWatcher,
+    Watcher,
+};
 use files_trash::{SystemTrash, Trash};
 
 use super::{Apps, NoApps, NoThumbnails, NoVolumes, Opener, Volumes};
@@ -21,7 +24,7 @@ pub struct Seams {
     /// The Trash: moving to it, listing it, putting back, erasing.
     pub trash: Arc<dyn Trash>,
     /// Where each folder's view and sort are remembered.
-    pub prefs: Arc<dyn PrefsStore>,
+    pub prefs: Arc<dyn FolderSettingsStore>,
     /// Which apps open what, for Open With.
     pub apps: Arc<dyn Apps>,
     /// The computer's disks: listing, opening and ejecting them.
@@ -40,7 +43,7 @@ impl Seams {
             watcher: Arc::new(NotifyWatcher),
             opener,
             trash: Arc::new(SystemTrash),
-            prefs: Arc::new(NoPrefs),
+            prefs: Arc::new(NoFolderSettings),
             apps: Arc::new(NoApps),
             volumes: Arc::new(NoVolumes),
             clouds: Arc::new(NoClouds),
@@ -74,7 +77,7 @@ impl Seams {
 
     /// The same seams remembering folder views in `prefs`.
     #[must_use]
-    pub fn with_prefs(self, prefs: Arc<dyn PrefsStore>) -> Seams {
+    pub fn with_prefs(self, prefs: Arc<dyn FolderSettingsStore>) -> Seams {
         Seams { prefs, ..self }
     }
 }

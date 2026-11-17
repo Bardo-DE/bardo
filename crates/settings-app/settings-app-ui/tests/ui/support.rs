@@ -40,9 +40,9 @@ use settings_app_ui::{App, Env, FirstRunApp, Homes, Opening};
 use settings_dbus::AnyOwner;
 use settings_types::schema::Schema;
 use std::sync::Arc;
-use ui_components::prelude::{Scheme, SystemPrefs};
+use ui_components::prelude::{Scheme, SystemSettings};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
-use ui_settings::SystemPrefsSource;
+use ui_settings::SystemSettingsSource;
 use wifi::Wifi;
 
 pub const TMP: &str = env!("CARGO_TARGET_TMPDIR");
@@ -310,7 +310,7 @@ impl Sandbox {
                 data: self.data_home(),
                 state: self.state_home(),
             },
-            SystemPrefsSource::Fixed(SystemPrefs::default().with_scheme(scheme)),
+            SystemSettingsSource::Fixed(SystemSettings::default().with_scheme(scheme)),
             opening,
             client,
         )

@@ -10,7 +10,7 @@ use computer_use_action::{
 };
 use computer_use_parse::{DropReason, ParseError};
 use computer_use_session::{
-    MaskedRegions, StepIndex, StepLines, StepOutcome, TranscriptSink, TurnSettings,
+    MaskedRegions, StepIndex, StepLines, StepOutcome, TranscriptSink, TurnOptions,
 };
 use computer_use_vendors::StepResult;
 use model_provider::{
@@ -170,7 +170,7 @@ fn the_request_carries_the_settings_the_daemon_gave() {
             .temperature,
         Milli(0)
     );
-    let mut settings = TurnSettings::default();
+    let mut settings = TurnOptions::default();
     settings.sampling.temperature = Milli(600);
     settings.sampling.top_k = Knob::Set(base_ids::Count(20));
     settings.limits.max_output = base_ids::Tokens(4096);
@@ -390,9 +390,9 @@ fn history_keeps_the_last_n_frames() {
 #[test]
 fn earlier_steps_are_lines_and_typed_text_is_never_repeated() {
     let m = map(grid());
-    let mut s = session(HOLO, grid(), 1, 0).with_settings(TurnSettings {
+    let mut s = session(HOLO, grid(), 1, 0).with_settings(TurnOptions {
         lines: StepLines(2),
-        ..TurnSettings::default()
+        ..TurnOptions::default()
     });
     for (step, input) in [
         click_at(500, 500),

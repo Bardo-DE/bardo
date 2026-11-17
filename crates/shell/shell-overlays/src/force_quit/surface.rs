@@ -2,7 +2,7 @@
 //! opening on its output.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::view::force_quit;
@@ -37,7 +37,7 @@ impl Surface for ForceQuit {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerOptions {
         PRESET.config(Self::NAME, output)
     }
 

@@ -2,7 +2,7 @@
 //! has a sheet open and the sheets' output names this one.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::view::accounts_sheet;
@@ -35,7 +35,7 @@ impl Surface for AccountsSheet {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerOptions {
         PRESET.config(Self::NAME, output)
     }
 

@@ -62,7 +62,7 @@ fn outputs() -> Outputs {
 
 fn never_built() -> LockFactory {
     LockFactory {
-        config: layer_shell_types::LockConfig::default(),
+        config: layer_shell_types::LockOptions::default(),
         build: Box::new(|_| panic!("the fake host builds no surface")),
     }
 }

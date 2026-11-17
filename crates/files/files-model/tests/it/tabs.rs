@@ -44,7 +44,7 @@ fn a_new_tab_opens_on_the_same_place_next_to_the_front_one_and_in_front() {
         vec![
             Effect::List(home()),
             Effect::Watch(home()),
-            Effect::LoadPrefs(home()),
+            Effect::LoadFolderSettings(home()),
         ],
     );
     assert_eq!(effects, want);

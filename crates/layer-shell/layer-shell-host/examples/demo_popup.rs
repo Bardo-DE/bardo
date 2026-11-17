@@ -15,9 +15,9 @@ use dioxus::prelude::*;
 use layer_shell_hooks::{HostRoot, use_surface};
 use layer_shell_host::{Host, HostConfig, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset,
-    PopupPlacement, PopupSize, Rect, RegionSpec, Size,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputTarget, PopupAdjust, PopupAnchor, PopupEdge, PopupGrab, PopupOffset,
+    PopupOptions, PopupPlacement, PopupSize, Rect, RegionSpec, Size,
 };
 
 /// The margin and padding reset the UI kit's `css/reset.css` would bring.
@@ -49,8 +49,8 @@ const GROWN_ROWS: usize = 6;
 /// How long after the popup opens its content grows from `START_ROWS` to `GROWN_ROWS`.
 const GROWTH_DELAY: Duration = Duration::from_millis(300);
 
-fn bar_config() -> LayerConfig {
-    LayerConfig {
+fn bar_config() -> LayerOptions {
+    LayerOptions {
         namespace: "bar".to_owned(),
         layer: LayerLevel::Top,
         anchor: Anchor::TOP | Anchor::LEFT | Anchor::RIGHT,
@@ -68,8 +68,8 @@ fn bar_config() -> LayerConfig {
     }
 }
 
-fn popup_config() -> PopupConfig {
-    PopupConfig {
+fn popup_config() -> PopupOptions {
+    PopupOptions {
         anchor: PopupAnchor::Rect,
         size: PopupSize::FitContent { max: 400 },
         edge: PopupEdge::Bottom,

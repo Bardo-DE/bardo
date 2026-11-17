@@ -27,8 +27,8 @@ use dioxus::prelude::*;
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, RegionSpec, SurfaceId, Visibility,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId, Visibility,
 };
 
 const CSS: &str = "html,body{margin:0;padding:0}\
@@ -80,8 +80,8 @@ fn card(which: Card) -> Element {
     }
 }
 
-fn config(which: Card) -> LayerConfig {
-    LayerConfig {
+fn config(which: Card) -> LayerOptions {
+    LayerOptions {
         namespace: format!("hover-{}", which.name()),
         layer: which.layer(),
         anchor: Anchor::NONE,
@@ -186,8 +186,8 @@ fn slide() -> Element {
     }
 }
 
-fn slide_config() -> LayerConfig {
-    LayerConfig {
+fn slide_config() -> LayerOptions {
+    LayerOptions {
         namespace: "hover-slide".to_string(),
         layer: LayerLevel::Overlay,
         anchor: Anchor::BOTTOM.union(Anchor::LEFT),

@@ -5,18 +5,18 @@
 //! one D-Bus crate is this one (A4). The scheme is `ui_style`'s own `Scheme` (no preference is
 //! light).
 //!
-//! The source is a seam: [`SystemPrefsSource::Portal`] reaches the session bus; a test passes
-//! [`SystemPrefsSource::Fixed`] and never does.
+//! The source is a seam: [`SystemSettingsSource::Portal`] reaches the session bus; a test passes
+//! [`SystemSettingsSource::Fixed`] and never does.
 //!
 //! ```
 //! use compositor_ipc::system_scheme::SchemeWatch;
-//! use ui_settings::SystemPrefsSource;
+//! use ui_settings::SystemSettingsSource;
 //! use ui_style::appearance::theme::Scheme;
 //! use std::ops::ControlFlow;
 //! use std::sync::mpsc;
 //!
 //! let (tx, rx) = mpsc::channel();
-//! let _watch = SchemeWatch::start(SystemPrefsSource::Fixed(Default::default()), move |scheme| {
+//! let _watch = SchemeWatch::start(SystemSettingsSource::Fixed(Default::default()), move |scheme| {
 //!     match tx.send(scheme) {
 //!         Ok(()) => ControlFlow::Continue(()),
 //!         Err(_) => ControlFlow::Break(()),
@@ -31,7 +31,7 @@ use base_spawn::Spawner;
 use std::ops::ControlFlow;
 use std::pin::Pin;
 use tokio::sync::oneshot;
-use ui_settings::{SystemPrefsSource, SystemPrefsWatch};
+use ui_settings::{SystemSettingsSource, SystemSettingsWatch};
 use ui_style::appearance::theme::Scheme;
 
 /// Why the watcher could not start.
@@ -66,7 +66,7 @@ impl SchemeWatch {
     ///
     /// Returns [`SchemeError::Thread`] when the watcher's thread cannot be started.
     pub fn start(
-        source: SystemPrefsSource,
+        source: SystemSettingsSource,
         tell: impl FnMut(Scheme) -> ControlFlow<()> + Send + 'static,
     ) -> Result<SchemeWatch, SchemeError> {
         let runtime = tokio::runtime::Builder::new_current_thread()
@@ -86,12 +86,12 @@ impl SchemeWatch {
 
 /// The first answer, then every change, until `tell` breaks, the portal goes or `stopped` fires.
 async fn follow(
-    source: SystemPrefsSource,
+    source: SystemSettingsSource,
     mut tell: impl FnMut(Scheme) -> ControlFlow<()>,
     mut stopped: oneshot::Receiver<()>,
 ) {
     let spawner = InRuntime(tokio::runtime::Handle::current());
-    let mut watch = SystemPrefsWatch::start(&source, &spawner).await;
+    let mut watch = SystemSettingsWatch::start(&source, &spawner).await;
     if tell(watch.current().scheme).is_break() {
         return;
     }
@@ -117,16 +117,16 @@ mod tests {
     use ui_settings::scheme_from_portal;
 
     /// A fixed source preferring the portal's `color-scheme` `code`.
-    fn fixed(code: u32) -> SystemPrefsSource {
+    fn fixed(code: u32) -> SystemSettingsSource {
         let mut source =
-            SystemPrefsSource::Fixed(ui_style::appearance::system::SystemPrefs::default());
-        if let SystemPrefsSource::Fixed(prefs) = &mut source {
+            SystemSettingsSource::Fixed(ui_style::appearance::system::SystemSettings::default());
+        if let SystemSettingsSource::Fixed(prefs) = &mut source {
             prefs.scheme = scheme_from_portal(code);
         }
         source
     }
 
-    fn watching(source: SystemPrefsSource) -> (SchemeWatch, mpsc::Receiver<Scheme>) {
+    fn watching(source: SystemSettingsSource) -> (SchemeWatch, mpsc::Receiver<Scheme>) {
         let (tx, rx) = mpsc::channel();
         let watch = SchemeWatch::start(source, move |scheme| match tx.send(scheme) {
             Ok(()) => ControlFlow::Continue(()),

@@ -1,7 +1,7 @@
 //! The notification center as a [`Surface`]: one per output, spawned hidden and kept warm.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_model::desktop::ShellRole;
 use shell_settings::ShellFile;
 
@@ -32,7 +32,7 @@ impl Surface for NotificationCenter {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, settings: &ShellFile, (): ()) -> LayerOptions {
         layer(output, settings)
     }
 

@@ -3,7 +3,7 @@
 use std::collections::HashMap;
 
 use files_core::{
-    Behaviour, CloudDrive, CloudItem, Entry, FileName, FolderPath, FolderPrefs, Info, ItemRef,
+    Behaviour, CloudDrive, CloudItem, Entry, FileName, FolderPath, FolderSettings, Info, ItemRef,
     Location, Summary, Volume,
 };
 
@@ -34,7 +34,7 @@ pub struct Browser {
     pub(crate) selection: Selection,
     pub(crate) typeselect: TypeSelect,
     pub(crate) rename: Rename,
-    pub(crate) prefs: FolderPrefs,
+    pub(crate) prefs: FolderSettings,
     pub(crate) show_hidden: bool,
     /// The person's choices about how a window behaves (the window's, shared by its tabs).
     pub(crate) behaviour: Behaviour,
@@ -87,7 +87,7 @@ impl Browser {
             selection: Selection::default(),
             typeselect: TypeSelect::default(),
             rename: Rename::Idle,
-            prefs: FolderPrefs::default(),
+            prefs: FolderSettings::default(),
             show_hidden: false,
             behaviour: Behaviour::default(),
             reveal: Vec::new(),
@@ -159,7 +159,7 @@ impl Browser {
 
     /// How this folder is shown.
     #[must_use]
-    pub fn prefs(&self) -> FolderPrefs {
+    pub fn prefs(&self) -> FolderSettings {
         self.prefs
     }
 
@@ -251,7 +251,7 @@ impl Browser {
         vec![
             Effect::List(to.clone()),
             Effect::Watch(to.clone()),
-            Effect::LoadPrefs(to.clone()),
+            Effect::LoadFolderSettings(to.clone()),
         ]
     }
 

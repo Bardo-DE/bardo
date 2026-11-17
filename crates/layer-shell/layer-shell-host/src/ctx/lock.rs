@@ -26,7 +26,7 @@ use crate::role::Role;
 use crate::state::HostState;
 use layer_shell_hooks::{HostRoot, Live, LockHandle, Request};
 use layer_shell_types::{
-    BlurSpec, Ended, LockConfig, LockError, LockId, LockPhase, OutputId, OutputInfo, RegionSpec,
+    BlurSpec, Ended, LockError, LockId, LockOptions, LockPhase, OutputId, OutputInfo, RegionSpec,
     Size, SurfaceId, SurfaceName,
 };
 
@@ -43,7 +43,7 @@ impl<M: 'static> HostCtx<M> {
     /// `LockError::Unsupported` without the protocol, and `InProgress` while a lock of ours lasts.
     pub fn lock_session(
         &mut self,
-        config: LockConfig,
+        config: LockOptions,
         factory: impl Fn(OutputInfo) -> HostRoot + 'static,
     ) -> Result<LockId, LockError> {
         if let Some(active) = &self.state.lock {

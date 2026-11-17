@@ -24,8 +24,8 @@ use dioxus::prelude::*;
 use layer_shell_hooks::{HostRoot, use_modifiers};
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, RegionSpec, SurfaceId, Visibility,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId, Visibility,
 };
 use serde_json::json;
 
@@ -60,8 +60,8 @@ fn panel() -> Element {
     }
 }
 
-fn config() -> LayerConfig {
-    LayerConfig {
+fn config() -> LayerOptions {
+    LayerOptions {
         namespace: "switcher".to_string(),
         layer: LayerLevel::Overlay,
         anchor: Anchor::NONE,

@@ -28,7 +28,7 @@ use caller_identity_core::{
     CgroupPath, DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
 };
 use caller_identity_linux::{ProcFs, path_trust};
-use directives::ServiceSettings;
+use directives::ServiceDirectives;
 pub use process::ProcessError;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -217,10 +217,10 @@ impl UnitText {
         })
     }
 
-    fn settings<P: ProcFs>(&self, fs: &P) -> Result<ServiceSettings, NotUnitError> {
+    fn settings<P: ProcFs>(&self, fs: &P) -> Result<ServiceDirectives, NotUnitError> {
         self.order
             .iter()
-            .try_fold(ServiceSettings::default(), |acc, path| {
+            .try_fold(ServiceDirectives::default(), |acc, path| {
                 let bytes = fs
                     .read_capped(path, UNIT_FILE_CAP)
                     .map_err(|e| read_fault(path, &e))?;

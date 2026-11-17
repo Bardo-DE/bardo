@@ -1,6 +1,6 @@
 //! The one step function: an input in, a new state and effects out.
 
-use files_core::{Entry, FolderPrefs, Sort, ViewMode};
+use files_core::{Entry, FolderSettings, Sort, ViewMode};
 
 use crate::browser::Browser;
 use crate::effect::Effect;
@@ -53,12 +53,14 @@ impl Browser {
             }
             Input::Listed(at, result) if at == self.location => self.listed(result),
             Input::Changed(at, change) if at == self.location => self.changed(change),
-            Input::PrefsLoaded(at, prefs) if at == self.location => self.with_prefs(prefs),
+            Input::FolderSettingsLoaded(at, prefs) if at == self.location => self.with_prefs(prefs),
             #[expect(
                 clippy::match_same_arms,
                 reason = "a report for a folder no longer shown is dropped; the editing arm above holds input back for a different reason"
             )]
-            Input::Listed(..) | Input::Changed(..) | Input::PrefsLoaded(..) => (self, Vec::new()),
+            Input::Listed(..) | Input::Changed(..) | Input::FolderSettingsLoaded(..) => {
+                (self, Vec::new())
+            }
             Input::Reveal { folder, names } => self.revealing(folder, names),
             Input::Go(to) => self.go(to),
             Input::Properties { folder, names } => self.properties(folder, names),
@@ -176,7 +178,7 @@ impl Browser {
         (browser, effects)
     }
 
-    fn with_prefs(self, prefs: FolderPrefs) -> Stepped {
+    fn with_prefs(self, prefs: FolderSettings) -> Stepped {
         (Browser { prefs, ..self }.refreshed(), Vec::new())
     }
 
@@ -192,8 +194,8 @@ impl Browser {
         self.saved(prefs)
     }
 
-    fn saved(self, prefs: FolderPrefs) -> Stepped {
-        let effects = vec![Effect::SavePrefs(self.location.clone(), prefs)];
+    fn saved(self, prefs: FolderSettings) -> Stepped {
+        let effects = vec![Effect::SaveFolderSettings(self.location.clone(), prefs)];
         (Browser { prefs, ..self }.refreshed(), effects)
     }
 

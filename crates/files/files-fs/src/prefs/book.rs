@@ -3,7 +3,7 @@
 use std::collections::BTreeMap;
 use std::fmt::Write as _;
 
-use files_core::{FolderPath, FolderPrefs, Sort, SortKey, SortOrder, ViewMode};
+use files_core::{FolderPath, FolderSettings, Sort, SortKey, SortOrder, ViewMode};
 
 /// How many folders are remembered; the one least recently changed is forgotten first.
 pub const KEPT: usize = 500;
@@ -11,7 +11,7 @@ pub const KEPT: usize = 500;
 /// A folder's prefs and when they were set, as a count of changes.
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct Remembered {
-    prefs: FolderPrefs,
+    prefs: FolderSettings,
     set: u64,
 }
 
@@ -27,14 +27,14 @@ pub struct PrefBook {
 impl PrefBook {
     /// How `folder` is remembered to be shown, if it is.
     #[must_use]
-    pub fn get(&self, folder: &FolderPath) -> Option<FolderPrefs> {
+    pub fn get(&self, folder: &FolderPath) -> Option<FolderSettings> {
         self.folders.get(folder).map(|found| found.prefs)
     }
 
     /// Remembers `prefs` for `folder`, forgetting the least recently changed folder when the book
     /// is over [`KEPT`].
-    pub fn set(&mut self, folder: FolderPath, prefs: FolderPrefs) {
-        if prefs == FolderPrefs::default() {
+    pub fn set(&mut self, folder: FolderPath, prefs: FolderSettings) {
+        if prefs == FolderSettings::default() {
             self.folders.remove(&folder);
             return;
         }
@@ -116,9 +116,9 @@ impl PrefBook {
 }
 
 /// The prefs one stored table holds.
-fn prefs_of(entry: &toml::Table) -> FolderPrefs {
+fn prefs_of(entry: &toml::Table) -> FolderSettings {
     let word = |key: &str| entry.get(key).and_then(toml::Value::as_str);
-    FolderPrefs {
+    FolderSettings {
         view: word("view")
             .and_then(ViewMode::from_slug)
             .unwrap_or_default(),

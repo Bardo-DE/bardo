@@ -1,7 +1,7 @@
 //! The power menu as a [`Surface`]: one per output, spawned hidden and mapped by its own link.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::view::power_menu;
@@ -39,7 +39,7 @@ impl Surface for PowerMenu {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerOptions {
         PRESET.config(Self::NAME, output)
     }
 

@@ -23,7 +23,7 @@ thread_local! {
 fn app() -> Element {
     use_context_provider(|| PopupLook {
         appearance: Appearance::default(),
-        system: SystemPrefs::default(),
+        system: SystemSettings::default(),
     });
     use_context_provider(|| PopupRoom::CONTEXT);
     rsx! {

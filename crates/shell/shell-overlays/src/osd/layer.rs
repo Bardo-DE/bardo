@@ -10,8 +10,8 @@
 //! gap is smaller: the transparent room may overlap the reserve).
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
-    LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
+    LayerOptions, LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };
 
 use super::tokens::OsdTokens;
@@ -50,8 +50,8 @@ pub fn margin(tokens: OsdTokens) -> Margin {
 }
 
 /// The indicator's layer configuration on `output`.
-pub fn layer(output: &OutputInfo, tokens: OsdTokens) -> LayerConfig {
-    LayerConfig {
+pub fn layer(output: &OutputInfo, tokens: OsdTokens) -> LayerOptions {
+    LayerOptions {
         namespace: namespace("osd", output),
         layer: LayerLevel::Overlay,
         anchor: anchor(),

@@ -13,8 +13,8 @@
 //! would join the bar's hover switch, which Notification Center does not.
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
-    LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
+    LayerOptions, LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };
 
 use shell_settings::ShellFile;
@@ -36,8 +36,8 @@ fn panel_region() -> RegionSpec {
 }
 
 /// The notification center on `output`.
-pub fn layer(output: &OutputInfo, _settings: &ShellFile) -> LayerConfig {
-    LayerConfig {
+pub fn layer(output: &OutputInfo, _settings: &ShellFile) -> LayerOptions {
+    LayerOptions {
         namespace: namespace("notification-center", output),
         layer: LayerLevel::Overlay,
         anchor: Anchor::ALL,

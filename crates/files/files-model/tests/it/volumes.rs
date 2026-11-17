@@ -66,7 +66,7 @@ fn opening_and_ejecting_ask_the_caller_only_when_they_make_sense() {
                 Effect::Unwatch(home()),
                 Effect::List(dir("/run/media/p/STICK")),
                 Effect::Watch(dir("/run/media/p/STICK")),
-                Effect::LoadPrefs(dir("/run/media/p/STICK")),
+                Effect::LoadFolderSettings(dir("/run/media/p/STICK")),
             ],
         ),
         (
@@ -104,7 +104,7 @@ fn answers_go_to_the_disk_or_say_what_failed() {
                 Effect::Unwatch(home()),
                 Effect::List(dir("/run/media/p/CARD")),
                 Effect::Watch(dir("/run/media/p/CARD")),
-                Effect::LoadPrefs(dir("/run/media/p/CARD")),
+                Effect::LoadFolderSettings(dir("/run/media/p/CARD")),
             ],
         ),
         (

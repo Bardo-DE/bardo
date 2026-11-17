@@ -2,7 +2,7 @@
 //! service holds a request and the sheets' output names this one.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::view::capture_sheet;
@@ -38,7 +38,7 @@ impl Surface for CaptureSheet {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerOptions {
         PRESET.config(Self::NAME, output)
     }
 

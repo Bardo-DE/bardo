@@ -4,10 +4,10 @@
 
 use dioxus::prelude::*;
 use layer_shell_hooks::SurfaceHandle;
-use layer_shell_types::LayerConfig;
+use layer_shell_types::LayerOptions;
 
 /// Re-apply `config` on this surface whenever it differs from the last one applied.
-pub fn use_follow_layer(config: LayerConfig) {
+pub fn use_follow_layer(config: LayerOptions) {
     let surface = try_use_context::<SurfaceHandle>();
     let mut last = use_hook(|| CopyValue::new(config.clone()));
     if *last.peek() == config {

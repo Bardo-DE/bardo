@@ -2,7 +2,7 @@
 //! the menu's popup when the link asks for a menu on its output.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::layer::layer;
@@ -29,7 +29,7 @@ impl Surface for WindowMenu {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, _settings: &ShellFile, (): ()) -> LayerOptions {
         layer(output)
     }
 

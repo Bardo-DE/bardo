@@ -27,7 +27,7 @@ use layer_shell_hooks::{DragIcon, DragSpec, HostRoot, use_surface};
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
     Anchor, BlurSpec, DragActions, DragOutcome, DragPayload, ExclusiveZone, KeyboardMode,
-    LayerConfig, LayerExtent, LayerLevel, LayerSize, Margin, OutputTarget, RegionSpec, Size,
+    LayerExtent, LayerLevel, LayerOptions, LayerSize, Margin, OutputTarget, RegionSpec, Size,
 };
 
 const CSS: &str = "html,body{margin:0;padding:0}\
@@ -156,8 +156,8 @@ fn json(outcome: &DragOutcome) -> String {
     serde_json::to_string(outcome).unwrap_or_else(|error| format!("\"{error}\""))
 }
 
-fn config(keyboard: KeyboardMode) -> LayerConfig {
-    LayerConfig {
+fn config(keyboard: KeyboardMode) -> LayerOptions {
+    LayerOptions {
         namespace: "drag-thumb".to_string(),
         layer: LayerLevel::Overlay,
         anchor: Anchor::BOTTOM.union(Anchor::RIGHT),

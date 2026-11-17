@@ -1,7 +1,7 @@
 //! The person's choices about how the window behaves: folders on top, the two warnings, and a
 //! choice changed while the window is open.
 
-use files_core::{Behaviour, Entry, FolderPrefs, OpPlan, Sort, SortKey, SortOrder};
+use files_core::{Behaviour, Entry, FolderSettings, OpPlan, Sort, SortKey, SortOrder};
 use files_model::{Browser, Effect, Input, Modifier, Question, Tabs, arrange};
 
 use crate::changes::{home_folder, trash_browser};
@@ -19,9 +19,9 @@ fn first() -> Behaviour {
 }
 
 fn ordered(entries: &[Entry], sort: Sort, folders_first: bool) -> Vec<String> {
-    let prefs = FolderPrefs {
+    let prefs = FolderSettings {
         sort,
-        ..FolderPrefs::default()
+        ..FolderSettings::default()
     };
     let behaviour = Behaviour {
         folders_first,

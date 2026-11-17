@@ -226,7 +226,7 @@ impl HostSurface {
 /// popup has lifted a `None` layer to `OnDemand`, which the popup's close restores.
 fn record_layer(
     op: &LayerOp,
-    config: &mut layer_shell_types::LayerConfig,
+    config: &mut layer_shell_types::LayerOptions,
     keyboard: &mut layer_shell_types::KeyboardMode,
 ) {
     match op {

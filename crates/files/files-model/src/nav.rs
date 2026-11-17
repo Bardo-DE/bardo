@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use files_core::{FolderPrefs, Location};
+use files_core::{FolderSettings, Location};
 
 use crate::browser::Browser;
 use crate::effect::{Effect, OpenTarget};
@@ -31,7 +31,7 @@ impl Browser {
             selection: Selection::default(),
             typeselect: TypeSelect::default(),
             rename: Rename::Idle,
-            prefs: FolderPrefs::default(),
+            prefs: FolderSettings::default(),
             show_hidden: self.show_hidden,
             reveal: Vec::new(),
             work: self.work,

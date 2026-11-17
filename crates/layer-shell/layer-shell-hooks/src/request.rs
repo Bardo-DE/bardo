@@ -11,7 +11,7 @@ use std::collections::VecDeque;
 use std::fmt;
 use std::rc::Rc;
 
-use layer_shell_types::{DragOutcome, LockId, PopupConfig, PopupPlacement, SurfaceId, SurfaceOp};
+use layer_shell_types::{DragOutcome, LockId, PopupOptions, PopupPlacement, SurfaceId, SurfaceOp};
 use tokio::sync::oneshot;
 
 use crate::drag::DragSpec;
@@ -29,7 +29,7 @@ pub enum Request {
         parent: SurfaceId,
         /// Allocated by the handle, so `open_popup` can return it before the popup exists.
         id: SurfaceId,
-        config: PopupConfig,
+        config: PopupOptions,
         placement: PopupPlacement,
         root: HostRoot,
     },

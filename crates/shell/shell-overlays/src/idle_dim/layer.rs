@@ -4,12 +4,12 @@
 //! idle tracking sees the input as it would without the scrim. The session-lock surfaces are
 //! above every layer surface, so a lock taken while dimmed covers it.
 
-use layer_shell_types::{LayerConfig, LayerLevel, OutputInfo};
+use layer_shell_types::{LayerLevel, LayerOptions, OutputInfo};
 
 use shell_ui_kit::surface::{LayerPreset, Pointer};
 
 /// The dim's layer configuration on `output`.
-pub fn layer(output: &OutputInfo) -> LayerConfig {
+pub fn layer(output: &OutputInfo) -> LayerOptions {
     LayerPreset::Whole {
         level: LayerLevel::Overlay,
         pointer: Pointer::PassesThrough,

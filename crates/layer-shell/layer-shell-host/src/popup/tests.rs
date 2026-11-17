@@ -3,8 +3,8 @@
 
 use crate::popup::{positioner_params, to_wire_constraint_adjustment};
 use layer_shell_types::{
-    ElementId, PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset, PopupSize,
-    Rect, Size,
+    ElementId, PopupAdjust, PopupAnchor, PopupEdge, PopupGrab, PopupOffset, PopupOptions,
+    PopupSize, Rect, Size,
 };
 use wayland_protocols::xdg::shell::client::xdg_positioner::ConstraintAdjustment;
 
@@ -209,7 +209,7 @@ const CASES: &[Case] = &[
 #[test]
 fn positioner_params_matches_the_table() {
     for case in CASES {
-        let config = PopupConfig {
+        let config = PopupOptions {
             anchor: PopupAnchor::Rect,
             size: case.popup_size,
             edge: case.edge,
@@ -238,9 +238,9 @@ fn positioner_params_matches_the_table() {
 
 #[test]
 fn a_config_anchored_to_an_element_positions_the_same_way_as_one_anchored_to_a_rect() {
-    // `PopupConfig` is no longer `Copy` once its anchor can own an `ElementId`;
+    // `PopupOptions` is no longer `Copy` once its anchor can own an `ElementId`;
     // this proves the type still builds and positions correctly either way.
-    let config = PopupConfig {
+    let config = PopupOptions {
         anchor: PopupAnchor::Element(ElementId::new("dock-pill")),
         size: PopupSize::Fixed,
         edge: PopupEdge::Top,

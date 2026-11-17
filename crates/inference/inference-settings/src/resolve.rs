@@ -1,6 +1,6 @@
 //! The file's `[ai]` table as [`Settings`].
 
-use crate::AiConfig;
+use crate::AiSettings;
 use crate::keys::{from_slug, parse_pool_key, slug_of};
 use crate::{AGENT_ENDPOINT, DESCRIBE_IMAGES, LOCAL_ONLY, MY_NETWORK, TAILNET_SERVE, switch_of};
 use crate::{
@@ -46,7 +46,7 @@ pub fn model_text(model: &ModelRef) -> String {
     format!("{}/{}", model.account, model.model)
 }
 
-fn policy_of(ai: &AiConfig, mut policy: Policy, rejected: &mut Vec<String>) -> Policy {
+fn policy_of(ai: &AiSettings, mut policy: Policy, rejected: &mut Vec<String>) -> Policy {
     policy.local_only = switch_of(
         ai.local_only.as_ref(),
         LOCAL_ONLY,
@@ -69,7 +69,7 @@ fn policy_of(ai: &AiConfig, mut policy: Policy, rejected: &mut Vec<String>) -> P
 }
 
 /// The rows of `[ai.model.*]`.
-fn model_rows(ai: &AiConfig) -> Vec<(&str, &str, &str)> {
+fn model_rows(ai: &AiSettings) -> Vec<(&str, &str, &str)> {
     ai.model
         .iter()
         .flat_map(|(slot, tiers)| {
@@ -80,7 +80,7 @@ fn model_rows(ai: &AiConfig) -> Vec<(&str, &str, &str)> {
         .collect()
 }
 
-fn tiers_of(ai: &AiConfig, mut tiers: TierMap, rejected: &mut Vec<String>) -> TierMap {
+fn tiers_of(ai: &AiSettings, mut tiers: TierMap, rejected: &mut Vec<String>) -> TierMap {
     for (slot_slug, tier_slug, text) in model_rows(ai) {
         let path = format!("ai.model.{slot_slug}.{tier_slug}");
         let (Some(kind), Some(tier)) = (Slot::from_slug(slot_slug), from_slug::<Tier>(tier_slug))
@@ -146,7 +146,7 @@ fn tiers_of(ai: &AiConfig, mut tiers: TierMap, rejected: &mut Vec<String>) -> Ti
     tiers
 }
 
-fn describe_images_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
+fn describe_images_of(ai: &AiSettings, rejected: &mut Vec<String>) -> bool {
     switch_of(
         ai.pipeline.describe_images.as_ref(),
         DESCRIBE_IMAGES,
@@ -155,19 +155,19 @@ fn describe_images_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
     )
 }
 
-fn my_network_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
+fn my_network_of(ai: &AiSettings, rejected: &mut Vec<String>) -> bool {
     switch_of(ai.attached.my_network.as_ref(), MY_NETWORK, false, rejected)
 }
 
-fn agent_endpoint_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
+fn agent_endpoint_of(ai: &AiSettings, rejected: &mut Vec<String>) -> bool {
     switch_of(ai.agents.endpoint.as_ref(), AGENT_ENDPOINT, false, rejected)
 }
 
-fn tailnet_serve_of(ai: &AiConfig, rejected: &mut Vec<String>) -> bool {
+fn tailnet_serve_of(ai: &AiSettings, rejected: &mut Vec<String>) -> bool {
     switch_of(ai.tailnet.serve.as_ref(), TAILNET_SERVE, false, rejected)
 }
 
-fn spend_of(ai: &AiConfig, rejected: &mut Vec<String>) -> SpendLine {
+fn spend_of(ai: &AiSettings, rejected: &mut Vec<String>) -> SpendLine {
     let line = |permille: u32| Permille(permille);
     let warn_at = match ai.spend.warn_permille {
         None => line(SPEND_WARN_DEFAULT),
@@ -223,7 +223,7 @@ fn length_of(
     }
 }
 
-fn lengths_of(ai: &AiConfig, rejected: &mut Vec<String>) -> Lengths {
+fn lengths_of(ai: &AiSettings, rejected: &mut Vec<String>) -> Lengths {
     Lengths {
         conversation: length_of(
             ai.length.conversation.as_ref(),
@@ -242,7 +242,7 @@ fn lengths_of(ai: &AiConfig, rejected: &mut Vec<String>) -> Lengths {
 
 /// The settings the `[ai]` table says.
 #[must_use]
-pub fn resolve(ai: &AiConfig) -> Resolved {
+pub fn resolve(ai: &AiSettings) -> Resolved {
     let mut rejected = Vec::new();
     let auto = ai.auto.resolve();
     rejected.extend(auto.rejected.iter().map(|path| (*path).to_owned()));

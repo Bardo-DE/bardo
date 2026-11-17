@@ -10,7 +10,7 @@ pub use ui_style::appearance::appearance::Appearance;
 pub use ui_style::appearance::material::Material;
 pub use ui_style::appearance::motion::Motion;
 pub use ui_style::appearance::motion::MotionLevel;
-pub use ui_style::appearance::system::SystemPrefs;
+pub use ui_style::appearance::system::SystemSettings;
 pub use ui_style::appearance::theme::Scheme;
 pub use ui_style::appearance::theme::Theme;
 pub use ui_style::appearance::transparency::Transparency;

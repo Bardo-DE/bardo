@@ -9,7 +9,7 @@ use smithay_client_toolkit::session_lock::SessionLock;
 use crate::lock::machine::{LockInput, LockMachine};
 use crate::lock::retry::Failures;
 use layer_shell_hooks::{HostRoot, Live};
-use layer_shell_types::{LockConfig, LockId, LockPhase, OutputId, OutputInfo, SurfaceId};
+use layer_shell_types::{LockId, LockOptions, LockPhase, OutputId, OutputInfo, SurfaceId};
 
 /// Builds one output's lock document.
 pub(crate) type LockFactory = Box<dyn Fn(OutputInfo) -> HostRoot>;
@@ -21,7 +21,7 @@ pub(crate) struct ActiveLock {
     /// `unlock_and_destroy`), so it is dropped only once the machine has ended.
     pub(crate) lock: SessionLock,
     pub(crate) machine: LockMachine,
-    pub(crate) config: LockConfig,
+    pub(crate) config: LockOptions,
     pub(crate) factory: LockFactory,
     /// Published to every lock document's `LockHandle`.
     pub(crate) phase: Live<LockPhase>,

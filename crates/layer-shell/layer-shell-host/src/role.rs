@@ -12,7 +12,7 @@ use wayland_client::protocol::wl_surface::WlSurface;
 
 use layer_shell_hooks::RoleKind;
 use layer_shell_types::{
-    KeyboardMode, LayerConfig, PopupConfig, PopupPlacement, SurfaceId, ToplevelConfig,
+    KeyboardMode, LayerOptions, PopupOptions, PopupPlacement, SurfaceId, ToplevelOptions,
     ToplevelState,
 };
 
@@ -21,7 +21,7 @@ use layer_shell_types::{
 pub(crate) enum Role {
     Layer {
         surface: LayerSurface,
-        config: LayerConfig,
+        config: LayerOptions,
         /// The keyboard mode actually in force: `config.keyboard`, or `OnDemand` while a
         /// grabbing popup is open from a `KeyboardMode::None` layer.
         keyboard: KeyboardMode,
@@ -29,12 +29,12 @@ pub(crate) enum Role {
     Popup {
         popup: Popup,
         parent: SurfaceId,
-        config: PopupConfig,
+        config: PopupOptions,
         placement: PopupPlacement,
     },
     Toplevel {
         window: Window,
-        config: ToplevelConfig,
+        config: ToplevelOptions,
         /// As of the last configure (`activated` drives the first-mouse filter).
         state: ToplevelState,
     },
@@ -71,7 +71,7 @@ impl Role {
     }
 
     /// Whether the surface declared that it draws only opaque pixels (a layer surface's
-    /// `LayerConfig::opaque`).
+    /// `LayerOptions::opaque`).
     pub(crate) fn opaque(&self) -> bool {
         match self {
             Role::Layer { config, .. } => config.opaque,

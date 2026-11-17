@@ -2,7 +2,7 @@
 //! 512 spans or 5 seconds from the first) and POSTs each batch. A failed batch is dropped with one
 //! warning per minute at most; a full queue drops the span and counts it.
 
-use super::config::Settings;
+use super::config::ExporterConfig;
 use super::span::Span;
 use super::{SIDE, Side, encode, http};
 use std::io;
@@ -69,11 +69,14 @@ impl Limiter {
 
 /// Starts the worker thread. The queue's sending end is the recorder's; when it is dropped the
 /// worker ends.
-pub(crate) fn spawn(settings: Settings) -> io::Result<(SyncSender<Span>, Arc<Stats>)> {
+pub(crate) fn spawn(settings: ExporterConfig) -> io::Result<(SyncSender<Span>, Arc<Stats>)> {
     spawn_with(settings, WINDOW)
 }
 
-fn spawn_with(settings: Settings, window: Duration) -> io::Result<(SyncSender<Span>, Arc<Stats>)> {
+fn spawn_with(
+    settings: ExporterConfig,
+    window: Duration,
+) -> io::Result<(SyncSender<Span>, Arc<Stats>)> {
     let (out, queue) = mpsc::sync_channel(QUEUE);
     let stats = Arc::new(Stats::default());
     let worker = Worker {
@@ -91,7 +94,7 @@ fn spawn_with(settings: Settings, window: Duration) -> io::Result<(SyncSender<Sp
 #[derive(Debug)]
 struct Worker {
     queue: Receiver<Span>,
-    settings: Settings,
+    settings: ExporterConfig,
     window: Duration,
     stats: Arc<Stats>,
 }
@@ -222,7 +225,7 @@ mod tests {
         let listener = TcpListener::bind("127.0.0.1:0").expect("bind");
         let port = listener.local_addr().expect("address").port();
         let collector = thread::spawn(move || collect_one(&listener));
-        let settings = Settings {
+        let settings = ExporterConfig {
             endpoint: Endpoint {
                 host: "127.0.0.1".into(),
                 port,

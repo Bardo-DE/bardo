@@ -73,7 +73,7 @@ use ui_core::geometry::scale::Scale;
 use ui_core::vocab::modality_word;
 use ui_style::appearance::blur::blur_word;
 use ui_style::appearance::material::Material;
-use ui_style::appearance::{appearance::Appearance, resolve::resolve, system::SystemPrefs};
+use ui_style::appearance::{appearance::Appearance, resolve::resolve, system::SystemSettings};
 use ui_style::kit::Styles;
 use ui_style::scale::use_root_scale;
 use ui_style::scope::{Scope, use_scope_provider};
@@ -95,7 +95,7 @@ pub enum Inject {
 #[component]
 pub fn Ds(
     appearance: Appearance,
-    #[props(default)] system: SystemPrefs,
+    #[props(default)] system: SystemSettings,
     #[props(default)] look: SpaceLook,
     material: Material,
     #[props(default)] blur: bool,

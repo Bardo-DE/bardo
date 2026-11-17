@@ -2,8 +2,8 @@
 //! `top = max(bar_h + 24, round(0.4 H - 230))`, the gap and the bias are `LauncherTokens`).
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputInfo, OutputTarget, Rect,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputInfo, OutputTarget, Rect,
 };
 
 use crate::launcher::hit::{card_region, panel_input};
@@ -71,8 +71,8 @@ pub const MENU_BLUR_RADIUS: i32 = 12;
 /// The panel: Overlay, anchored top only (centred horizontally), keyboard-exclusive, blurred
 /// behind the palette card ([`CARD_ID`]). Its input starts as the whole panel; the panel narrows
 /// it to the card once it has measured one (`hit::PanelHit`).
-pub fn layer(output: &OutputInfo, tokens: LauncherTokens) -> LayerConfig {
-    LayerConfig {
+pub fn layer(output: &OutputInfo, tokens: LauncherTokens) -> LayerOptions {
+    LayerOptions {
         namespace: namespace("launcher", output),
         layer: LayerLevel::Overlay,
         anchor: Anchor::TOP,

@@ -36,7 +36,7 @@ use std::hash::Hash;
 
 use dioxus::prelude::Element;
 use layer_shell_hooks::HostRoot;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_model::desktop::ShellRole;
 use shell_settings::ShellFile;
 
@@ -77,7 +77,7 @@ pub trait Surface: 'static {
     /// The slots this output gets, from the settings and the output's place; empty is none.
     fn slots(place: &Place) -> Vec<Self::Slot>;
     /// The layer configuration of `slot` on `output`.
-    fn layer(output: &OutputInfo, settings: &ShellFile, slot: Self::Slot) -> LayerConfig;
+    fn layer(output: &OutputInfo, settings: &ShellFile, slot: Self::Slot) -> LayerOptions;
     /// Whether a new surface is mapped at once or waits to be shown.
     #[must_use]
     fn start() -> Start {

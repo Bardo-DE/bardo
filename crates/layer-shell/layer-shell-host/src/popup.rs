@@ -1,4 +1,4 @@
-//! `xdg_popup` positioning: the pure translation from a `PopupConfig` to
+//! `xdg_popup` positioning: the pure translation from a `PopupOptions` to
 //! the values an `xdg_positioner` is configured with, and the wire mapping.
 //!
 //! See design/13 §13.3.2; FINDINGS F30.

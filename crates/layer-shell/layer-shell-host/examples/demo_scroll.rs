@@ -21,8 +21,8 @@ use dioxus::prelude::*;
 use layer_shell_hooks::{HostRoot, use_scroll};
 use layer_shell_host::{Host, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
-    LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId,
+    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
+    LayerOptions, LayerSize, Margin, OutputTarget, RegionSpec, SurfaceId,
 };
 
 const CSS: &str = "html,body{margin:0;padding:0;background:rgb(240,240,240)}\
@@ -67,8 +67,8 @@ fn app() -> Element {
     }
 }
 
-fn config() -> LayerConfig {
-    LayerConfig {
+fn config() -> LayerOptions {
+    LayerOptions {
         namespace: "scroll-demo".to_string(),
         layer: LayerLevel::Overlay,
         anchor: Anchor::NONE,

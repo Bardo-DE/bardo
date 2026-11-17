@@ -23,7 +23,7 @@ const GHOST_MAT: u32 = 4;
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct GhostLook {
     pub appearance: Appearance,
-    pub system: SystemPrefs,
+    pub system: SystemSettings,
     pub look: SpaceLook,
 }
 

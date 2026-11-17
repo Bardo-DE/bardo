@@ -10,7 +10,7 @@ use crate::hooks::use_appearance;
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct PopupLook {
     pub appearance: Appearance,
-    pub system: SystemPrefs,
+    pub system: SystemSettings,
 }
 
 /// The transparent room, in logical pixels, between the popup surface's edges and the menu

@@ -5,7 +5,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use anyview_image::{Rgba8, encode_png};
-use files_fs::FakePrefs;
+use files_fs::FakeFolderSettings;
 use files_trash::FakeTrash;
 use tempfile::TempDir;
 use ui_components::prelude::{Point, ShortcutKey};
@@ -25,7 +25,7 @@ fn open(dir: &TempDir) -> (Harness, TempDir) {
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
     let trash = Arc::new(FakeTrash::new(config.path().join("trash")));
-    let prefs = Arc::new(FakePrefs::new());
+    let prefs = Arc::new(FakeFolderSettings::new());
     let launch = launch_remembering(at(dir.path()), config.path(), &opener, trash, prefs);
     let mut window = harness(launch);
     settle_until(&mut window, |h| h.html().contains("zebra.png"));

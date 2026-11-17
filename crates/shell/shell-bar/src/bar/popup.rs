@@ -3,7 +3,7 @@
 //! menus right-aligned to `item.right + 8`, one reusable popup repositioned on hover switch).
 
 use layer_shell_types::{
-    ElementId, PopupAdjust, PopupAnchor, PopupConfig, PopupEdge, PopupGrab, PopupOffset,
+    ElementId, PopupAdjust, PopupAnchor, PopupEdge, PopupGrab, PopupOffset, PopupOptions,
     PopupPlacement, PopupSize, Rect, Size,
 };
 use ui_components::prelude::*;
@@ -110,12 +110,12 @@ pub enum MenuSide {
 /// The popup configuration for a bar menu anchored to the element `button`, fitted to its
 /// content at most `max_px` in each direction, offset from the anchor corner by
 /// [`menu_offset`].
-pub fn menu_popup(button: &str, side: MenuSide, max_px: i32) -> PopupConfig {
+pub fn menu_popup(button: &str, side: MenuSide, max_px: i32) -> PopupOptions {
     let (edge, gravity) = match side {
         MenuSide::Title => (PopupEdge::BottomLeft, PopupEdge::BottomRight),
         MenuSide::Status | MenuSide::OutputEdge => (PopupEdge::BottomRight, PopupEdge::BottomLeft),
     };
-    PopupConfig {
+    PopupOptions {
         anchor: PopupAnchor::Element(ElementId::new(button)),
         size: PopupSize::FitContent { max: max_px },
         edge,
@@ -130,7 +130,7 @@ pub fn menu_popup(button: &str, side: MenuSide, max_px: i32) -> PopupConfig {
 }
 
 /// The offset from the anchor corner design/13 §13.3.2 places a menu at: (-8, +6) for a title,
-/// (+8, +6) for a status item: `PopupConfig::offset`.
+/// (+8, +6) for a status item: `PopupOptions::offset`.
 pub fn menu_offset(side: MenuSide) -> (i32, i32) {
     match side {
         MenuSide::Title => (-8, 6),

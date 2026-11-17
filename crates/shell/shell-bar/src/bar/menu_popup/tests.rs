@@ -124,7 +124,7 @@ fn document(rows: &[TrayMenuEntry]) -> Element {
         },
         look: PopupLook {
             appearance: Appearance::default(),
-            system: SystemPrefs::default(),
+            system: SystemSettings::default(),
         },
     };
     rsx! {

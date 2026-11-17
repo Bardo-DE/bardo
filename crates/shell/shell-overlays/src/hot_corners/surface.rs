@@ -2,7 +2,7 @@
 //! once.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{LayerConfig, OutputInfo};
+use layer_shell_types::{LayerOptions, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::layer::layer;
@@ -30,7 +30,7 @@ impl Surface for HotCorners {
         active_corners(&place.settings.hot_corners)
     }
 
-    fn layer(output: &OutputInfo, _settings: &ShellFile, slot: Corner) -> LayerConfig {
+    fn layer(output: &OutputInfo, _settings: &ShellFile, slot: Corner) -> LayerOptions {
         layer(output, slot)
     }
 

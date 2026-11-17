@@ -29,7 +29,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Wake, Waker};
 use std::thread::Thread;
-use ui_settings::{AppearanceFile, SystemPrefsSource};
+use ui_settings::{AppearanceFile, SystemSettingsSource};
 
 /// The appearance store of `home`: the real config tree, or a stand-in directory (a test or a
 /// jail never reaches the machine's own file).
@@ -102,19 +102,19 @@ pub fn blur_finish(transparency: Transparency, scheme: Scheme) -> BlurFinish {
 ///
 /// ```
 /// use compositor_app::appearance::system_source;
-/// use ui_settings::SystemPrefsSource;
+/// use ui_settings::SystemSettingsSource;
 ///
-/// assert_eq!(system_source(None), SystemPrefsSource::Portal);
+/// assert_eq!(system_source(None), SystemSettingsSource::Portal);
 /// ```
 #[must_use]
 #[expect(
     clippy::default_trait_access,
-    reason = "compositor-app has no dependency on ui-style, so `SystemPrefs` cannot be named here"
+    reason = "compositor-app has no dependency on ui-style, so `SystemSettings` cannot be named here"
 )]
-pub fn system_source(home: Option<&Path>) -> SystemPrefsSource {
+pub fn system_source(home: Option<&Path>) -> SystemSettingsSource {
     match home {
-        None => SystemPrefsSource::Portal,
-        Some(_) => SystemPrefsSource::Fixed(Default::default()),
+        None => SystemSettingsSource::Portal,
+        Some(_) => SystemSettingsSource::Fixed(Default::default()),
     }
 }
 
@@ -181,7 +181,7 @@ impl Heard {
 /// Starts following the desktop's scheme from `source`, its answers sent as `Input::System`. A
 /// watcher that cannot start is logged and `system` stays Light.
 fn follow_desktop(
-    source: SystemPrefsSource,
+    source: SystemSettingsSource,
     sender: channel::Sender<Input>,
 ) -> Option<SchemeWatch> {
     let tell = move |scheme: Scheme| match sender.send(Input::System(scheme)) {
@@ -425,15 +425,15 @@ mod tests {
     #[test]
     #[expect(
         clippy::default_trait_access,
-        reason = "compositor-app has no dependency on ui-style, so `SystemPrefs` cannot be named here"
+        reason = "compositor-app has no dependency on ui-style, so `SystemSettings` cannot be named here"
     )]
     fn a_stand_in_home_never_reaches_a_bus() {
         let jail = Path::new("/nonexistent/compositor-jail");
         assert_eq!(
             system_source(Some(jail)),
-            SystemPrefsSource::Fixed(Default::default())
+            SystemSettingsSource::Fixed(Default::default())
         );
-        assert_eq!(system_source(None), SystemPrefsSource::Portal);
+        assert_eq!(system_source(None), SystemSettingsSource::Portal);
     }
 
     #[test]

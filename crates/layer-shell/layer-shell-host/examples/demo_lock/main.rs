@@ -25,7 +25,7 @@ use std::io::{BufRead, Write};
 
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostCtx, HostEvent};
-use layer_shell_types::{KeyboardFocus, LockConfig, LockId, LockState, OutputInfo, SurfaceId};
+use layer_shell_types::{KeyboardFocus, LockOptions, LockId, LockState, OutputInfo, SurfaceId};
 
 use screen::{Screen, TYPED, lock_screen};
 
@@ -173,7 +173,7 @@ fn lock(ctx: &mut HostCtx<Command>, demo: &mut Demo) {
             },
         )
     };
-    match ctx.lock_session(LockConfig::default(), factory) {
+    match ctx.lock_session(LockOptions::default(), factory) {
         Ok(id) => {
             demo.held = Held::Asked(id);
             say(&format!("requested {{\"id\":{}}}", id.0));

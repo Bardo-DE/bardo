@@ -55,7 +55,7 @@ pub enum WatchError {
 
 /// Why how a folder is shown could not be remembered.
 #[derive(Debug, thiserror::Error)]
-pub enum PrefsError {
+pub enum FolderSettingsError {
     /// The saved file is there but can't be read or understood, so nothing is written over it.
     #[error("How folders are shown can't be remembered right now.")]
     Unusable,

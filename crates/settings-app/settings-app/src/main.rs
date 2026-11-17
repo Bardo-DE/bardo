@@ -22,7 +22,7 @@ use std::sync::Arc;
 use ui_blitz::{
     AppConfig, AppId, Decorations, FileRoots, LaunchError, WindowSize, enter_runtime, launch,
 };
-use ui_settings::SystemPrefsSource;
+use ui_settings::SystemSettingsSource;
 
 /// The window's size in logical pixels.
 const WIDTH: u32 = 900;
@@ -118,7 +118,7 @@ fn environment(opening: Opening) -> Result<Env, ExitCode> {
             data: data_home,
             state: state_home,
         },
-        SystemPrefsSource::Portal,
+        SystemSettingsSource::Portal,
         opening,
         client,
     )

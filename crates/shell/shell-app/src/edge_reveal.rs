@@ -6,7 +6,7 @@
 //! output. The surfaces follow [`EdgeLink`]; the compositor does the sliding.
 //!
 //! The daemon also tells the compositor what the bar does in full screen and how much motion the
-//! person allows ([`FullScreenPrefs`]), and writes which outputs show a full-screen Space, which
+//! person allows ([`FullScreenSettings`]), and writes which outputs show a full-screen Space, which
 //! keeps a `desktop_only` bar up there.
 
 use std::collections::BTreeSet;
@@ -75,20 +75,20 @@ pub fn full_screens(view: &DesktopView, id: impl Fn(&str) -> Option<OutputId>) -
 
 /// What the compositor is told about full screen.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct FullScreenPrefs {
+pub struct FullScreenSettings {
     /// Whether the bar slides in at the top edge or stays up.
     pub bar: FullScreenBar,
     /// Slides, or cross-fades.
     pub motion: WireMotion,
 }
 
-impl FullScreenPrefs {
+impl FullScreenSettings {
     /// The prefs of the bar's `hiding` mode and the `motion` allowed
     /// (`shell_ui_kit::shell_motion`): the modes that keep the bar in full screen
     /// (`desktop_only`, `never`) keep it there.
     #[must_use]
-    pub fn of(hiding: MenuBarHiding, motion: WireMotion) -> FullScreenPrefs {
-        FullScreenPrefs {
+    pub fn of(hiding: MenuBarHiding, motion: WireMotion) -> FullScreenSettings {
+        FullScreenSettings {
             bar: match hiding {
                 MenuBarHiding::Always | MenuBarHiding::FullScreenOnly => FullScreenBar::Reveal,
                 MenuBarHiding::DesktopOnly | MenuBarHiding::Never => FullScreenBar::Keep,
@@ -99,7 +99,7 @@ impl FullScreenPrefs {
 
     /// The commands that bring the compositor from `sent` (nothing yet: `None`) to these prefs.
     #[must_use]
-    pub fn since(self, sent: Option<FullScreenPrefs>) -> Vec<DesktopCommand> {
+    pub fn since(self, sent: Option<FullScreenSettings>) -> Vec<DesktopCommand> {
         let bar = (sent.map(|sent| sent.bar) != Some(self.bar))
             .then_some(DesktopCommand::SetFullScreenBar(self.bar));
         let motion = (sent.map(|sent| sent.motion) != Some(self.motion))
@@ -110,7 +110,7 @@ impl FullScreenPrefs {
 
 #[cfg(test)]
 mod tests {
-    use super::{FullScreenPrefs, Landing, apply, full_screens, landing};
+    use super::{FullScreenSettings, Landing, apply, full_screens, landing};
     use account_core::SpaceId;
     use layer_shell_types::OutputId;
     use shell_model::desktop::{
@@ -205,8 +205,8 @@ mod tests {
             (Never, WireMotion::Full, Keep),
         ];
         for (mode, motion, bar) in cases {
-            let prefs = FullScreenPrefs::of(mode, motion);
-            assert_eq!(prefs, FullScreenPrefs { bar, motion }, "{mode:?}");
+            let prefs = FullScreenSettings::of(mode, motion);
+            assert_eq!(prefs, FullScreenSettings { bar, motion }, "{mode:?}");
             assert_eq!(
                 prefs.since(None),
                 vec![
@@ -217,8 +217,8 @@ mod tests {
             );
             assert_eq!(prefs.since(Some(prefs)), vec![], "{mode:?}");
         }
-        let keep = FullScreenPrefs::of(Never, WireMotion::Full);
-        let reveal = FullScreenPrefs::of(Always, WireMotion::Full);
+        let keep = FullScreenSettings::of(Never, WireMotion::Full);
+        let reveal = FullScreenSettings::of(Always, WireMotion::Full);
         assert_eq!(
             keep.since(Some(reveal)),
             vec![DesktopCommand::SetFullScreenBar(Keep)]

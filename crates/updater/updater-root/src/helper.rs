@@ -13,7 +13,7 @@ use crate::apply::{
 use crate::keys::load_key;
 use crate::layout::Layout;
 use crate::report::Report;
-use crate::settings::{RootSettings, SYSTEM_CONFIG_PATH};
+use crate::settings::{RootConfig, SYSTEM_CONFIG_PATH};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 use updater_core::PublicKey;
@@ -120,7 +120,7 @@ struct Prepared {
 /// Resets the process, then reads the system settings and the key. `Err` carries the exit code, after
 /// the reason was printed.
 fn prepare(program: &str) -> Result<Prepared, Code> {
-    let settings = RootSettings::load(Path::new(SYSTEM_CONFIG_PATH)).map_err(|e| {
+    let settings = RootConfig::load(Path::new(SYSTEM_CONFIG_PATH)).map_err(|e| {
         eprintln!("{program}: {e}");
         Code::Failed
     })?;

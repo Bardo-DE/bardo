@@ -43,7 +43,7 @@ pub(super) fn toplevel_layout(
 }
 
 /// The frame size to record from an `xdg_toplevel.configure`: the compositor's value on an
-/// axis it constrains, or `current` (the last-known frame, initially `ToplevelConfig::size`)
+/// axis it constrains, or `current` (the last-known frame, initially `ToplevelOptions::size`)
 /// on an axis it leaves to the client (`new_size`'s `None`). Configure sizes are window
 /// geometry, so they never include the resize band.
 pub(super) fn toplevel_configured_size(

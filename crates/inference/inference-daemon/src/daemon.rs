@@ -37,7 +37,7 @@ use http_reqwest::{Limits, ReqwestHttp};
 use inference_dbus::inference::INFERENCE_BUS;
 use inference_fs::read_catalog;
 use inference_router::local::{Lengths, LocalModel, build};
-use inference_tailnet::{Config as TailnetConfig, Guests, Timing};
+use inference_tailnet::{Config as TailnetSettings, Guests, Timing};
 use inference_turns::audit::JsonLines;
 use model_catalog::EngineKind;
 use std::os::unix::fs::DirBuilderExt;
@@ -542,7 +542,7 @@ impl Daemon {
                 machines: Arc::new(BusMachines::new(connection.clone())),
                 guests: Arc::new(guests),
                 sockets: dirs.sockets.clone(),
-                config: TailnetConfig::product(crate::tailnet::words::refusal),
+                config: TailnetSettings::product(crate::tailnet::words::refusal),
                 timing: Timing::usual(),
             },
             engines.clone(),

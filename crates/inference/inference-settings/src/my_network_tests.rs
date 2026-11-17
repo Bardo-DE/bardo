@@ -8,7 +8,7 @@ use account_core::DataClass;
 #[derive(serde::Deserialize, Default)]
 struct File {
     #[serde(default)]
-    ai: AiConfig,
+    ai: AiSettings,
 }
 
 fn settings(text: &str) -> (Settings, Vec<String>) {

@@ -11,8 +11,8 @@
 //! Spawned before the OSD, so on the same Overlay layer the OSD draws over a banner.
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputInfo, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };
 
 use shell_ui_kit::notification_card::NotificationTokens;
@@ -46,8 +46,8 @@ pub fn size(tokens: &NotificationTokens) -> LayerSize {
 }
 
 /// The banner column on `output`.
-pub fn layer(output: &OutputInfo, tokens: &NotificationTokens) -> LayerConfig {
-    LayerConfig {
+pub fn layer(output: &OutputInfo, tokens: &NotificationTokens) -> LayerOptions {
+    LayerOptions {
         namespace: namespace("banners", output),
         layer: LayerLevel::Overlay,
         anchor: Anchor::TOP | Anchor::RIGHT | Anchor::BOTTOM,

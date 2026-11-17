@@ -17,8 +17,8 @@ use dioxus::prelude::*;
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostConfig, HostEvent};
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputTarget, RegionSpec,
 };
 
 /// The margin and padding reset the UI kit's `css/reset.css` would bring.
@@ -34,8 +34,8 @@ color:white;font-size:14px;font-family:sans-serif}\
 .checker div:nth-child(odd){background:black}.checker div:nth-child(even){background:white}";
 
 /// The bar's layer surface: top, full width, 32 px, reserving 32 px, never focused.
-fn bar_config(blur: BlurSpec) -> LayerConfig {
-    LayerConfig {
+fn bar_config(blur: BlurSpec) -> LayerOptions {
+    LayerOptions {
         namespace: "bar".to_owned(),
         layer: LayerLevel::Top,
         anchor: Anchor::TOP | Anchor::LEFT | Anchor::RIGHT,
@@ -122,7 +122,7 @@ fn run(args: &[String]) -> Result<(), String> {
     host.run(move |ctx, event| match event {
         HostEvent::Started => {
             dock::install_commands(ctx);
-            let config = LayerConfig {
+            let config = LayerOptions {
                 exclusive: options.exclusive,
                 ..bar_config(options.blur.clone())
             };

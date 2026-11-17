@@ -19,14 +19,14 @@ const PUBKEY_KEY: &str = "pubkey_path";
 
 /// What the privileged programs take from the system settings, each with a default.
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct RootSettings {
+pub struct RootConfig {
     /// Where releases are installed.
     pub root: PathBuf,
     /// The file holding the trusted public key.
     pub pubkey_path: PathBuf,
 }
 
-impl Default for RootSettings {
+impl Default for RootConfig {
     fn default() -> Self {
         Self {
             root: PathBuf::from(DEFAULT_ROOT),
@@ -64,7 +64,7 @@ pub enum SettingsError {
     },
 }
 
-impl RootSettings {
+impl RootConfig {
     /// Reads `path`; a missing file means all defaults.
     ///
     /// # Errors

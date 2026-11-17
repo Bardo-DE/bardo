@@ -1,10 +1,10 @@
 //! The layer configurations the shell's surfaces share. A surface names a [`LayerPreset`] and
-//! the preset fills in the ten fields of a `LayerConfig`, so a sheet is three lines and the
+//! the preset fills in the ten fields of a `LayerOptions`, so a sheet is three lines and the
 //! blur radius is one number ([`PANEL_RADIUS`]), not a copy per surface.
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
-    LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
+    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
+    LayerOptions, LayerSize, Margin, OutputInfo, OutputTarget, RegionSpec,
 };
 
 use super::namespace;
@@ -91,12 +91,12 @@ impl LayerPreset {
 
     /// The configuration of the surface called `name` on `output`.
     #[must_use]
-    pub fn config(self, name: &str, output: &OutputInfo) -> LayerConfig {
+    pub fn config(self, name: &str, output: &OutputInfo) -> LayerOptions {
         let full = LayerSize {
             width: LayerExtent::Fill,
             height: LayerExtent::Fill,
         };
-        let base = LayerConfig {
+        let base = LayerOptions {
             namespace: namespace(name, output),
             layer: LayerLevel::Overlay,
             anchor: Anchor::ALL,
@@ -110,17 +110,17 @@ impl LayerPreset {
             opaque: false,
         };
         match self {
-            LayerPreset::FullOutputSheet { blur } => LayerConfig {
+            LayerPreset::FullOutputSheet { blur } => LayerOptions {
                 keyboard: KeyboardMode::Exclusive,
                 blur: blur.map_or(BlurSpec::None, |panel| BlurSpec::Region(panel.region())),
                 ..base
             },
-            LayerPreset::PanelOnly { panel } => LayerConfig {
+            LayerPreset::PanelOnly { panel } => LayerOptions {
                 keyboard: KeyboardMode::Exclusive,
                 blur: BlurSpec::Region(panel.region()),
                 ..base
             },
-            LayerPreset::Strip { height, .. } => LayerConfig {
+            LayerPreset::Strip { height, .. } => LayerOptions {
                 layer: LayerLevel::Top,
                 anchor: Anchor::TOP | Anchor::LEFT | Anchor::RIGHT,
                 size: LayerSize {
@@ -135,7 +135,7 @@ impl LayerPreset {
                 height,
                 exclusive,
                 card,
-            } => LayerConfig {
+            } => LayerOptions {
                 anchor,
                 size: LayerSize {
                     width: LayerExtent::Px(width),
@@ -145,7 +145,7 @@ impl LayerPreset {
                 blur: BlurSpec::Region(card.region()),
                 ..base
             },
-            LayerPreset::Whole { level, .. } => LayerConfig {
+            LayerPreset::Whole { level, .. } => LayerOptions {
                 layer: level,
                 ..base
             },

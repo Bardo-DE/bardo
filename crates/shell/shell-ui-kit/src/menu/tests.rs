@@ -77,7 +77,7 @@ const STYLE: &str = ".ds-popover { color: red }";
 fn provide_popup_contexts() {
     use_context_provider(|| PopupLook {
         appearance: Appearance::default(),
-        system: SystemPrefs::default(),
+        system: SystemSettings::default(),
     });
     use_context_provider(|| ROOM);
 }

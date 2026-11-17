@@ -102,7 +102,7 @@ impl PopupOffset {
 ///
 /// Not `Copy`: `anchor` may own an `ElementId`.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct PopupConfig {
+pub struct PopupOptions {
     pub anchor: PopupAnchor,
     pub size: PopupSize,
     pub edge: PopupEdge,

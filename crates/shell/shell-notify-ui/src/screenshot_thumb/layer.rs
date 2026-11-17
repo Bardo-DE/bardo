@@ -3,7 +3,7 @@
 //! keyboard, input and blur the thumbnail's own card (`Element("thumb")`), with room around
 //! the card for the Toast material's shadow and the swipe's travel.
 
-use layer_shell_types::{Anchor, ExclusiveZone, LayerConfig, OutputInfo};
+use layer_shell_types::{Anchor, ExclusiveZone, LayerOptions, OutputInfo};
 
 use shell_settings::ShellFile;
 
@@ -37,7 +37,7 @@ const THUMB_CARD: PanelBlur = PanelBlur {
 
 /// The thumbnail on `output`: a column `THUMB_WIDTH` plus room wide, as tall as a 16:10 picture
 /// plus room (a taller picture is letterboxed in the card).
-pub fn layer(output: &OutputInfo, _settings: &ShellFile) -> LayerConfig {
+pub fn layer(output: &OutputInfo, _settings: &ShellFile) -> LayerOptions {
     LayerPreset::Corner {
         anchor: Anchor::BOTTOM | Anchor::RIGHT,
         width: THUMB_WIDTH + 2 * ROOM,

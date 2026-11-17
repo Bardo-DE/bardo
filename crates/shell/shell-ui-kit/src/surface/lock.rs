@@ -2,7 +2,7 @@
 
 use dioxus::prelude::{Element, use_context_provider};
 use layer_shell_hooks::HostRoot;
-use layer_shell_types::{LockConfig, OutputInfo};
+use layer_shell_types::{LockOptions, OutputInfo};
 use shell_settings::ShellFile;
 
 use crate::links::Links;
@@ -15,7 +15,7 @@ pub struct LockSurface {
     /// The surface's name, as [`super::Surface::NAME`].
     pub name: &'static str,
     /// How layer-shell-host sets its surfaces up.
-    pub config: fn(&ShellFile) -> LockConfig,
+    pub config: fn(&ShellFile) -> LockOptions,
     /// The links its document reads by type, given to each root (the lock's `Surface::needs`).
     pub needs: fn(HostRoot, &Links) -> HostRoot,
     /// The document on `output`; it runs as a root component, so it may call hooks.

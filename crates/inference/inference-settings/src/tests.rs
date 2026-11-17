@@ -18,10 +18,10 @@ use inference_router::router::{Decided, Listed, choose};
 #[derive(Deserialize, Default)]
 struct File {
     #[serde(default)]
-    ai: AiConfig,
+    ai: AiSettings,
 }
 
-fn config(text: &str) -> AiConfig {
+fn config(text: &str) -> AiSettings {
     toml::from_str::<File>(text)
         .unwrap_or_else(|e| panic!("{text}: {e}"))
         .ai
@@ -88,7 +88,7 @@ fn served(result: Result<Decided, PickRefusal>) -> String {
 
 #[test]
 fn no_file_is_the_proposed_settings() {
-    let resolved = resolve(&AiConfig::default());
+    let resolved = resolve(&AiSettings::default());
     assert_eq!(resolved.settings.policy, Policy::proposed());
     assert_eq!(resolved.settings.spend.warn_at, Permille(800));
     assert!(resolved.rejected.is_empty());

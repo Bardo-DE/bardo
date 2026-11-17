@@ -2,8 +2,8 @@
 //! everywhere the panel does not take it.
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel, LayerSize,
-    Margin, OutputInfo, OutputTarget, Rect, RegionSpec, RoundedRect,
+    Anchor, BlurSpec, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel, LayerOptions,
+    LayerSize, Margin, OutputInfo, OutputTarget, Rect, RegionSpec, RoundedRect,
 };
 
 use crate::launcher::layer::{CARD_INSET, panel_rect};
@@ -66,8 +66,8 @@ pub fn input(output: &OutputInfo, tokens: LauncherTokens, hit: PanelHit) -> Regi
 }
 
 /// The catcher: Overlay, every edge, no keyboard, no blur, input everywhere.
-pub fn layer(output: &OutputInfo) -> LayerConfig {
-    LayerConfig {
+pub fn layer(output: &OutputInfo) -> LayerOptions {
+    LayerOptions {
         namespace: namespace("launcher-catcher", output),
         layer: LayerLevel::Overlay,
         anchor: Anchor::ALL,

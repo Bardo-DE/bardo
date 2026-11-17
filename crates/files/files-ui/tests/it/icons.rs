@@ -5,8 +5,8 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 
-use files_core::{FolderPath, FolderPrefs, ViewMode};
-use files_fs::{FakePrefs, PrefsStore};
+use files_core::{FolderPath, FolderSettings, ViewMode};
+use files_fs::{FakeFolderSettings, FolderSettingsStore};
 use files_trash::FakeTrash;
 use tempfile::TempDir;
 use ui_components::prelude::{Point, ShortcutKey};
@@ -21,7 +21,7 @@ fn tile(n: usize) -> String {
 }
 
 /// A window on `dir` over `prefs` with the opener it reports to, once it has listed everything.
-fn open(dir: &Path, prefs: &Arc<FakePrefs>) -> (Harness, Arc<RecordingOpener>, TempDir) {
+fn open(dir: &Path, prefs: &Arc<FakeFolderSettings>) -> (Harness, Arc<RecordingOpener>, TempDir) {
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
     let trash = Arc::new(FakeTrash::new(config.path().join("trash")));
@@ -46,7 +46,7 @@ fn click(window: &mut Harness, selector: &str) {
 
 /// A window on `dir` showing icons.
 fn icons(dir: &Path) -> (Harness, Arc<RecordingOpener>, TempDir) {
-    let (mut window, opener, config) = open(dir, &Arc::new(FakePrefs::new()));
+    let (mut window, opener, config) = open(dir, &Arc::new(FakeFolderSettings::new()));
     command(&mut window, ShortcutKey::Char('1'));
     settle_until(&mut window, |h| h.count(".ds-cv-item") > 0);
     (window, opener, config)
@@ -96,7 +96,7 @@ fn space_opens_quick_look_on_the_selected_tile() {
 #[test]
 fn the_view_is_remembered_for_the_folder_and_not_for_another() {
     let dir = scratch_folder();
-    let prefs = Arc::new(FakePrefs::new());
+    let prefs = Arc::new(FakeFolderSettings::new());
     let (mut first, _opener, _config) = open(dir.path(), &prefs);
     command(&mut first, ShortcutKey::Char('1'));
     settle_until(&mut first, |h| h.count(".ds-cv-item") > 0);
@@ -112,7 +112,7 @@ fn the_view_is_remembered_for_the_folder_and_not_for_another() {
 
     let other = scratch_folder();
     let other_folder = FolderPath::new(other.path()).unwrap();
-    assert_eq!(prefs.load(&other_folder), FolderPrefs::default());
+    assert_eq!(prefs.load(&other_folder), FolderSettings::default());
     let (third, _opener, _third) = open(other.path(), &prefs);
     assert_eq!(third.count(".ds-cv-item"), 0, "the list is the default");
 }

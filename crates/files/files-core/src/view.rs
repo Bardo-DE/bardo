@@ -45,7 +45,7 @@ pub struct Sort {
 
 /// How one folder is shown; remembered per folder.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub struct FolderPrefs {
+pub struct FolderSettings {
     /// The view.
     pub view: ViewMode,
     /// The sort.

@@ -5,7 +5,7 @@ use tokio::sync::oneshot;
 
 use layer_shell_types::{
     Anchor, BlurSpec, CommonOp, DragOutcome, ExclusiveZone, FrameTick, KeyboardMode, LayerOp,
-    LayerSize, Margin, PopupConfig, PopupPlacement, RegionSpec, SurfaceId, SurfaceOp, Visibility,
+    LayerSize, Margin, PopupOptions, PopupPlacement, RegionSpec, SurfaceId, SurfaceOp, Visibility,
 };
 
 use super::SurfaceHandle;
@@ -70,7 +70,7 @@ impl SurfaceHandle {
     #[must_use]
     pub fn open_popup(
         &self,
-        config: PopupConfig,
+        config: PopupOptions,
         placement: PopupPlacement,
         root: HostRoot,
     ) -> SurfaceId {

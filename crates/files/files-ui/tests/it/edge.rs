@@ -5,8 +5,8 @@ use std::sync::Arc;
 
 use files_core::{ByteSize, Entry, EntryKind, FileName, FolderPath, ItemRef, Location};
 use files_fs::{
-    FakeLister, FakePrefs, FakeWatcher, FolderEvent, ListError, Lister, NoClouds, NoPrefs,
-    PrefsStore, Watcher,
+    FakeFolderSettings, FakeLister, FakeWatcher, FolderEvent, FolderSettingsStore, ListError,
+    Lister, NoClouds, NoFolderSettings, Watcher,
 };
 use files_model::{Change, Effect, FolderListError, Input, OpenTarget, TabId};
 use files_trash::{FakeTrash, Trash};
@@ -32,7 +32,7 @@ pub(super) struct Rig {
     pub(super) watcher: Arc<FakeWatcher>,
     pub(super) opener: Arc<RecordingOpener>,
     trash: Arc<FakeTrash>,
-    pub(super) prefs: Arc<FakePrefs>,
+    pub(super) prefs: Arc<FakeFolderSettings>,
     _bin: TempDir,
 }
 
@@ -47,13 +47,13 @@ pub(super) fn rig_over(volumes: Arc<dyn Volumes>) -> Rig {
     let opener = Arc::new(RecordingOpener::default());
     let bin = tempfile::tempdir().unwrap();
     let trash = Arc::new(FakeTrash::new(bin.path().join("bin")));
-    let prefs = Arc::new(FakePrefs::new());
+    let prefs = Arc::new(FakeFolderSettings::new());
     let seams = Seams {
         lister: Arc::clone(&lister) as Arc<dyn Lister>,
         watcher: Arc::clone(&watcher) as Arc<dyn Watcher + Send + Sync>,
         opener: Arc::clone(&opener) as Arc<dyn Opener>,
         trash: Arc::clone(&trash) as Arc<dyn Trash>,
-        prefs: Arc::clone(&prefs) as Arc<dyn PrefsStore>,
+        prefs: Arc::clone(&prefs) as Arc<dyn FolderSettingsStore>,
         apps: Arc::new(NoApps),
         volumes,
         clouds: Arc::new(NoClouds),
@@ -248,7 +248,7 @@ fn a_file_no_app_opens_is_told_in_words() {
         watcher: Arc::new(FakeWatcher::new()),
         opener: Arc::new(NoAppOpener),
         trash: Arc::new(FakeTrash::new("/nonexistent/never-used")),
-        prefs: Arc::new(NoPrefs),
+        prefs: Arc::new(NoFolderSettings),
         apps: Arc::new(NoApps),
         volumes: Arc::new(NoVolumes),
         clouds: Arc::new(NoClouds),

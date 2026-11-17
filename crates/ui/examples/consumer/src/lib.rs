@@ -17,7 +17,7 @@ use ui_components::host::measure::{Anchor, MountedRef};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
 use ui_host_hooks::TokioSpawner;
-use ui_settings::{SystemPrefsSource, use_environment};
+use ui_settings::{SystemSettingsSource, use_environment};
 
 /// This example's own stylesheet, Bardo tokens only (`tests/coherence.rs::our_stylesheet_lints_clean`).
 pub const STYLE: &str = include_str!("style.css");
@@ -32,7 +32,7 @@ pub fn App() -> Element {
     let store = Store::new(ConfigRoot::Xdg, AppName::foreign("consumer"));
     let env = use_environment(
         store,
-        SystemPrefsSource::Portal,
+        SystemSettingsSource::Portal,
         Arc::new(TokioSpawner::current()),
     );
     let now = env();

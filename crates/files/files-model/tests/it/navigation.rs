@@ -12,7 +12,7 @@ fn a_new_browser_asks_to_list_watch_and_load_prefs() {
         vec![
             Effect::List(home()),
             Effect::Watch(home()),
-            Effect::LoadPrefs(home())
+            Effect::LoadFolderSettings(home())
         ]
     );
     assert_eq!(browser.location(), &home());
@@ -30,7 +30,7 @@ fn going_somewhere_unwatches_the_old_place_and_loads_the_new() {
             Effect::Unwatch(home()),
             Effect::List(docs.clone()),
             Effect::Watch(docs.clone()),
-            Effect::LoadPrefs(docs.clone()),
+            Effect::LoadFolderSettings(docs.clone()),
         ]
     );
     assert_eq!(browser.location(), &docs);

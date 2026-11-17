@@ -103,7 +103,7 @@ fn the_sent_badge_times_out_on_ds_motions_own_clock() {
     let resolved = resolve(
         Appearance::default(),
         SpaceLook::default().theme,
-        SystemPrefs::default(),
+        SystemSettings::default(),
     );
     let hold = settle(Anim::Fade, resolved.motion);
     harness.advance(hold - std::time::Duration::from_millis(10));
@@ -147,7 +147,7 @@ fn the_menu_opens_and_closes_under_harness() {
             resolve(
                 Appearance::default(),
                 SpaceLook::default().theme,
-                SystemPrefs::default(),
+                SystemSettings::default(),
             )
             .motion,
         ) * 4,

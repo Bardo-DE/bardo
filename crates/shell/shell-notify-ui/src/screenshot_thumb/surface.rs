@@ -2,7 +2,7 @@
 //! output the banners' link names.
 
 use dioxus::prelude::Element;
-use layer_shell_types::{KeyboardFocus, LayerConfig, OutputId, OutputInfo};
+use layer_shell_types::{KeyboardFocus, LayerOptions, OutputId, OutputInfo};
 use shell_settings::ShellFile;
 
 use super::layer::layer;
@@ -38,7 +38,7 @@ impl Surface for ScreenshotThumb {
         vec![()]
     }
 
-    fn layer(output: &OutputInfo, settings: &ShellFile, (): ()) -> LayerConfig {
+    fn layer(output: &OutputInfo, settings: &ShellFile, (): ()) -> LayerOptions {
         layer(output, settings)
     }
 

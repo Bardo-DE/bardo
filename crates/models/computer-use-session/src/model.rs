@@ -55,9 +55,9 @@ pub struct StepLines(pub u8);
 ///
 /// `ComputerUseProfile` is frozen and carries none of it, so the daemon sets it from the model's
 /// catalog entry with [`ComputerUseSession::with_settings`](crate::ComputerUseSession::with_settings); a session
-/// that is never given settings uses [`TurnSettings::default`].
+/// that is never given settings uses [`TurnOptions::default`].
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct TurnSettings {
+pub struct TurnOptions {
     pub sampling: Sampling,
     pub limits: Limits,
     pub reasoning: Reasoning,
@@ -66,12 +66,12 @@ pub struct TurnSettings {
     pub lines: StepLines,
 }
 
-impl Default for TurnSettings {
+impl Default for TurnOptions {
     /// Greedy sampling (the same screen gives the same click), no reasoning, one call per turn,
     /// 1024 tokens of answer, eight earlier steps listed. Provisional: the daemon replaces them
     /// with the catalog's `reasoning_off` sampling and `max_output`.
     fn default() -> Self {
-        TurnSettings {
+        TurnOptions {
             sampling: Sampling {
                 temperature: Milli(0),
                 top_p: Knob::Off,

@@ -1,5 +1,5 @@
 //! The settings the inference broker runs under, as plain values: what the `[ai]` table of
-//! `inferd.toml` says ([`AiConfig`]), what it resolves to ([`resolve`] gives [`Settings`] and the
+//! `inferd.toml` says ([`AiSettings`]), what it resolves to ([`resolve`] gives [`Settings`] and the
 //! rows it refused), the rows' vocabulary (slugs, classes, slots, tiers, paths) and the spend
 //! books the caps are checked against ([`Ledger`]).
 //!
@@ -23,8 +23,8 @@ mod ledger;
 mod resolve;
 pub mod structured;
 
-pub use ai::AiConfig;
-pub use auto::{ALLOW_EVICT, AutoConfig, MODE, ResolvedAuto, SHOW_REASON};
+pub use ai::AiSettings;
+pub use auto::{ALLOW_EVICT, AutoSettings, MODE, ResolvedAuto, SHOW_REASON};
 pub use keys::{
     CLASSES, SLOTS, TIERS, from_slug, model_path, parse_model_path, parse_pool_key,
     parse_pool_path, pool_path, pool_path_of, pool_row_key, slug_of,
@@ -81,7 +81,7 @@ pub(crate) fn switch_of(
 
 /// The `[ai.attached]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct AttachedConfig {
+pub struct AttachedSettings {
     /// `ai.attached.my_network`: whether an engine the person attached on another machine of
     /// theirs (`where = "my-network"`) counts as this computer for a data class whose floor is
     /// "this computer". Off by default: such data goes only to this computer. While on, an
@@ -95,7 +95,7 @@ pub const AGENT_ENDPOINT: &str = "ai.agents.endpoint";
 
 /// The `[ai.agents]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct AgentsConfig {
+pub struct AgentsSettings {
     /// `ai.agents.endpoint`: whether inferd opens loopback model endpoints for the external
     /// coding agents the launcher starts. Off by default, like the other ways in for agents (ACP,
     /// MCP); off, `OpenEndpoint` is refused `EndpointOff`.
@@ -108,7 +108,7 @@ pub const TAILNET_SERVE: &str = "ai.tailnet.serve";
 
 /// The `[ai.tailnet]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct TailnetConfig {
+pub struct TailnetSettings {
     /// `ai.tailnet.serve`: whether this computer lends its own models to the person's other
     /// computers over their Tailscale network. Off by default; while on, inferd listens on this
     /// computer's network addresses (never on every address), and a computer is let in only when
@@ -145,7 +145,7 @@ pub enum LengthSaid {
 
 /// The `[ai.length]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct LengthConfig {
+pub struct LengthSettings {
     /// `ai.length.conversation`.
     #[serde(default)]
     pub conversation: Option<LengthSaid>,
@@ -176,7 +176,7 @@ pub const SPEND_CAP_RANGE: std::ops::RangeInclusive<u32> = 0..=10_000_000;
 
 /// The `[ai.spend]` table, as written. Signed, so a negative number reaches the range check.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SpendConfig {
+pub struct SpendSettings {
     /// `ai.spend.warn_permille`.
     #[serde(default)]
     pub warn_permille: Option<i64>,
@@ -196,7 +196,7 @@ pub struct SpendConfig {
 
 /// The `[ai.pipeline]` table, as written.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct PipelineConfig {
+pub struct PipelineSettings {
     /// `ai.pipeline.describe_images`.
     #[serde(default)]
     pub describe_images: Option<SwitchSaid>,

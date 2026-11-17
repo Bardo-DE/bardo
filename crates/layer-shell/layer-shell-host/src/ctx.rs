@@ -39,7 +39,7 @@ use crate::stats::FrameStats;
 use blitz_embed::adapter::AdapterPref;
 use layer_shell_hooks::HostRoot;
 use layer_shell_types::{
-    LayerConfig, OutputInfo, SurfaceId, SurfaceName, SurfaceOp, ToplevelConfig, Visibility,
+    LayerOptions, OutputInfo, SurfaceId, SurfaceName, SurfaceOp, ToplevelOptions, Visibility,
 };
 
 /// The host, as the shell's event closure sees it.
@@ -91,7 +91,7 @@ impl<M: 'static> HostCtx<M> {
     ///
     /// `HostError::Unsupported` without layer-shell, and the error of making the surface's
     /// presenter.
-    pub fn spawn_layer(&mut self, config: LayerConfig, root: HostRoot) -> Result<SurfaceId> {
+    pub fn spawn_layer(&mut self, config: LayerOptions, root: HostRoot) -> Result<SurfaceId> {
         let id = self.state.ids.next();
         spawn::layer(&mut self.state, id, config, root)?;
         self.presenter_or_close(id)?;
@@ -103,7 +103,7 @@ impl<M: 'static> HostCtx<M> {
     /// # Errors
     ///
     /// The error of making the surface's presenter.
-    pub fn spawn_toplevel(&mut self, config: ToplevelConfig, root: HostRoot) -> Result<SurfaceId> {
+    pub fn spawn_toplevel(&mut self, config: ToplevelOptions, root: HostRoot) -> Result<SurfaceId> {
         let id = self.state.ids.next();
         spawn::toplevel(&mut self.state, id, config, root);
         self.presenter_or_close(id)?;

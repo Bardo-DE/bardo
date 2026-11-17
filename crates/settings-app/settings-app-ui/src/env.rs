@@ -10,7 +10,7 @@ use settings_app_model::{Catalogue, Discovery, Inbox, OriginRule, PageSlug, Warn
 use std::path::PathBuf;
 use std::sync::Arc;
 use ui_helpers::Environment;
-use ui_settings::SystemPrefsSource;
+use ui_settings::SystemSettingsSource;
 
 /// Where the window opens.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
@@ -36,7 +36,7 @@ pub struct Env {
     /// Whether the first run happened, kept under the state home.
     pub first_run: FirstRunMark,
     /// Where the desktop's own preferences come from.
-    pub system: SystemPrefsSource,
+    pub system: SystemSettingsSource,
     /// Where the window opens.
     pub opening: Opening,
     /// What the window is told while it runs; empty until the launcher gives it one.
@@ -82,7 +82,7 @@ impl Env {
     pub fn from_schemas(
         found: Discovery,
         homes: Homes,
-        system: SystemPrefsSource,
+        system: SystemSettingsSource,
         opening: Opening,
         client: Client,
     ) -> Env {

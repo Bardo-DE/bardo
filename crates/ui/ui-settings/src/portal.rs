@@ -1,16 +1,16 @@
 //! The desktop's preferences from the settings portal:
 //! `org.freedesktop.portal.Settings.ReadAll(["org.freedesktop.appearance"])` and
-//! `SettingChanged`, mapped to [`ui_components::prelude::SystemPrefs`]. The mappings are pure tables, tested
+//! `SettingChanged`, mapped to [`ui_components::prelude::SystemSettings`]. The mappings are pure tables, tested
 //! against a fake `ReadAll`/`SettingChanged` payload with no bus involved; only
-//! [`SystemPrefsSource::Portal`] touches `zbus`, and only on Linux with feature `desktop`
+//! [`SystemSettingsSource::Portal`] touches `zbus`, and only on Linux with feature `desktop`
 //! (`portal/bus.rs`). On macOS the same answers come from the user's defaults (`portal/macos.rs`).
 //! A desktop without the portal, or a build for a platform or feature set that has neither
-//! (`portal/absent.rs`), simply answers [`ui_components::prelude::SystemPrefs::default`].
+//! (`portal/absent.rs`), simply answers [`ui_components::prelude::SystemSettings::default`].
 
 use base_spawn::Spawner;
 use settings_store::latest::{self, Receiver};
 use ui_style::appearance::system::Contrast;
-use ui_style::appearance::system::SystemPrefs;
+use ui_style::appearance::system::SystemSettings;
 use ui_style::appearance::theme::Scheme;
 
 // The half that reaches `zbus`, the Mac's defaults, or a stand-in, with the same two entry points.
@@ -48,54 +48,54 @@ pub fn contrast_from_portal(value: u32) -> Contrast {
 
 /// Where the desktop's preferences come from.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum SystemPrefsSource {
+pub enum SystemSettingsSource {
     /// The settings portal on the session bus. A desktop without it, or a build without the portal client answers
     /// the defaults and never changes.
     Portal,
     /// These preferences, forever: a test, a headless render or a pinned appearance.
-    Fixed(SystemPrefs),
+    Fixed(SystemSettings),
 }
 
-impl SystemPrefsSource {
+impl SystemSettingsSource {
     /// Every appearance preference, once. Never fails: a missing bus, portal or namespace is the
     /// defaults.
-    pub async fn read(&self) -> SystemPrefs {
+    pub async fn read(&self) -> SystemSettings {
         match self {
-            SystemPrefsSource::Fixed(prefs) => *prefs,
-            SystemPrefsSource::Portal => bus::read_all().await.unwrap_or_default(),
+            SystemSettingsSource::Fixed(prefs) => *prefs,
+            SystemSettingsSource::Portal => bus::read_all().await.unwrap_or_default(),
         }
     }
 }
 
 /// A subscription to the desktop's appearance preferences.
 #[derive(Debug)]
-pub struct SystemPrefsWatch {
-    changes: Receiver<SystemPrefs>,
+pub struct SystemSettingsWatch {
+    changes: Receiver<SystemSettings>,
 }
 
-impl SystemPrefsWatch {
+impl SystemSettingsWatch {
     /// Subscribe to `source` and then read it, the subscription's task running on `spawn`. A
-    /// [`SystemPrefsSource::Fixed`] watch, a desktop without the portal and a build without the
+    /// [`SystemSettingsSource::Fixed`] watch, a desktop without the portal and a build without the
     /// portal client never fire after their first answer. A portal that does not answer within
     /// [`Deadline::START`](base_time::deadline::Deadline::START) is the defaults, so this returns in a few
     /// seconds at worst; a caller that must not wait at all starts it beside its other work
     /// (`use_environment` does).
-    pub async fn start(source: &SystemPrefsSource, spawn: &dyn Spawner) -> Self {
+    pub async fn start(source: &SystemSettingsSource, spawn: &dyn Spawner) -> Self {
         let changes = match source {
-            SystemPrefsSource::Fixed(prefs) => latest::channel(*prefs).1,
-            SystemPrefsSource::Portal => bus::start(spawn).await,
+            SystemSettingsSource::Fixed(prefs) => latest::channel(*prefs).1,
+            SystemSettingsSource::Portal => bus::start(spawn).await,
         };
-        SystemPrefsWatch { changes }
+        SystemSettingsWatch { changes }
     }
 
     /// The preferences as last read.
     #[must_use]
-    pub fn current(&self) -> SystemPrefs {
+    pub fn current(&self) -> SystemSettings {
         self.changes.latest()
     }
 
     /// Wait for the next change. `None` once the bus connection is gone.
-    pub async fn changed(&mut self) -> Option<SystemPrefs> {
+    pub async fn changed(&mut self) -> Option<SystemSettings> {
         self.changes.changed().await
     }
 }
@@ -104,9 +104,9 @@ impl SystemPrefsWatch {
 mod tests {
     use super::{contrast_from_portal, reduced_motion_from_portal, scheme_from_portal};
 
-    use super::SystemPrefsSource;
+    use super::SystemSettingsSource;
     use ui_style::appearance::system::Contrast;
-    use ui_style::appearance::system::SystemPrefs;
+    use ui_style::appearance::system::SystemSettings;
     use ui_style::appearance::theme::Scheme;
 
     #[test]
@@ -148,10 +148,10 @@ mod tests {
 
     #[tokio::test]
     async fn a_fixed_source_answers_its_own_preferences_and_never_touches_the_bus() {
-        let fixed = SystemPrefs::default()
+        let fixed = SystemSettings::default()
             .with_scheme(Scheme::Dark)
             .with_reduced_motion(true)
             .with_contrast(Contrast::High);
-        assert_eq!(SystemPrefsSource::Fixed(fixed).read().await, fixed);
+        assert_eq!(SystemSettingsSource::Fixed(fixed).read().await, fixed);
     }
 }

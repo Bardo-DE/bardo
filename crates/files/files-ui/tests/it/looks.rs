@@ -5,8 +5,8 @@ use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 
-use files_core::{FolderPath, FolderPrefs};
-use files_fs::{FakePrefs, PrefsStore};
+use files_core::{FolderPath, FolderSettings};
+use files_fs::{FakeFolderSettings, FolderSettingsStore};
 use files_trash::FakeTrash;
 use tempfile::TempDir;
 use ui_components::prelude::{Point, ShortcutKey};
@@ -24,7 +24,7 @@ fn row(n: usize) -> String {
 const SIZE_HEAD: &str = ".ds-vtable-head-track .ds-table-head:nth-child(2) > .ds-table-column";
 
 /// A window on `dir` over `prefs`, once it has listed everything in it.
-fn open(dir: &Path, prefs: &Arc<FakePrefs>) -> (Harness, TempDir) {
+fn open(dir: &Path, prefs: &Arc<FakeFolderSettings>) -> (Harness, TempDir) {
     let config = tempfile::tempdir().unwrap();
     let opener = Arc::new(RecordingOpener::default());
     let trash = Arc::new(FakeTrash::new(config.path().join("trash")));
@@ -54,7 +54,7 @@ fn quick_look_label(window: &Harness) -> Option<String> {
 #[test]
 fn space_opens_quick_look_on_the_selected_file_and_space_or_escape_closes_it() {
     let dir = scratch_folder();
-    let (mut window, _config) = open(dir.path(), &Arc::new(FakePrefs::new()));
+    let (mut window, _config) = open(dir.path(), &Arc::new(FakeFolderSettings::new()));
     click_row(&mut window, 0);
     for closing in [ShortcutKey::Space, ShortcutKey::Escape] {
         press(&mut window, ShortcutKey::Space);
@@ -71,7 +71,7 @@ fn space_opens_quick_look_on_the_selected_file_and_space_or_escape_closes_it() {
 fn command_i_opens_get_info_with_the_size_in_words_and_in_bytes() {
     let dir = scratch_folder();
     std::fs::write(dir.path().join("big.bin"), vec![0u8; 12_345]).unwrap();
-    let (mut window, _config) = open(dir.path(), &Arc::new(FakePrefs::new()));
+    let (mut window, _config) = open(dir.path(), &Arc::new(FakeFolderSettings::new()));
     // By name: big.bin, notes.txt, Projects, report.pdf, zebra.png.
     click_row(&mut window, 0);
     window.send(Input::chord(&[ShortcutKey::Super], ShortcutKey::Char('i')));
@@ -89,7 +89,7 @@ fn command_i_opens_get_info_with_the_size_in_words_and_in_bytes() {
 #[test]
 fn a_sort_change_survives_a_relaunch_through_the_store() {
     let dir = scratch_folder();
-    let prefs = Arc::new(FakePrefs::new());
+    let prefs = Arc::new(FakeFolderSettings::new());
     let (mut first, _config) = open(dir.path(), &prefs);
     assert_eq!(first.text_of(&row(0)).as_deref(), Some("notes.txt"));
     let size = first
@@ -103,7 +103,7 @@ fn a_sort_change_survives_a_relaunch_through_the_store() {
     // The store is written from a thread of its own: wait for the write before the "quit".
     let folder = FolderPath::new(dir.path()).unwrap();
     base_testkit::eventually_blocking("the preferences were saved", || {
-        prefs.load(&folder) != FolderPrefs::default()
+        prefs.load(&folder) != FolderSettings::default()
     });
     drop(first);
 

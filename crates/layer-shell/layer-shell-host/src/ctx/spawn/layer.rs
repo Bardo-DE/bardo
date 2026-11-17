@@ -8,7 +8,7 @@ use crate::layer::{
 use crate::role::Role;
 use crate::state::HostState;
 use layer_shell_hooks::HostRoot;
-use layer_shell_types::{LayerConfig, OutputId, OutputTarget, Scale120, SurfaceId, SurfaceName};
+use layer_shell_types::{LayerOptions, OutputId, OutputTarget, Scale120, SurfaceId, SurfaceName};
 
 use super::rebuild::map;
 use super::size::requested_size;
@@ -18,7 +18,7 @@ use super::{Initial, insert};
 pub(crate) fn layer(
     state: &mut HostState,
     id: SurfaceId,
-    config: LayerConfig,
+    config: LayerOptions,
     root: HostRoot,
 ) -> Result<()> {
     let name = SurfaceName(config.namespace.clone());
@@ -35,7 +35,7 @@ pub(crate) fn layer(
     Ok(())
 }
 
-pub(super) fn layer_role(state: &mut HostState, config: LayerConfig) -> Result<Role> {
+pub(super) fn layer_role(state: &mut HostState, config: LayerOptions) -> Result<Role> {
     let layer_shell = state.layer_shell.as_ref().ok_or(HostError::Unsupported {
         global: "zwlr_layer_shell_v1",
         feature: "layer surfaces",

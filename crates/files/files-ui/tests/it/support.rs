@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, PoisonError};
 
 use files_core::{FolderPath, Location};
-use files_fs::{DiskLister, FakePrefs, FakeWatcher, NoClouds};
+use files_fs::{DiskLister, FakeFolderSettings, FakeWatcher, NoClouds};
 use files_model::AppPick;
 use files_trash::FakeTrash;
 use files_ui::edge::Seams;
@@ -13,7 +13,7 @@ use files_ui::{
     Opener, Zone,
 };
 use tempfile::TempDir;
-use ui_components::prelude::SystemPrefs;
+use ui_components::prelude::SystemSettings;
 use ui_harness::{Harness, HarnessConfig, Viewport};
 
 /// An opener that remembers what it was asked to open, and how.
@@ -133,7 +133,13 @@ pub fn launch_with(
     opener: &Arc<RecordingOpener>,
     trash: Arc<FakeTrash>,
 ) -> Launch {
-    launch_remembering(start, config, opener, trash, Arc::new(FakePrefs::new()))
+    launch_remembering(
+        start,
+        config,
+        opener,
+        trash,
+        Arc::new(FakeFolderSettings::new()),
+    )
 }
 
 /// The same, over the given `prefs`, which stand for the state folder a relaunch finds again.
@@ -142,7 +148,7 @@ pub fn launch_remembering(
     config: &Path,
     opener: &Arc<RecordingOpener>,
     trash: Arc<FakeTrash>,
-    prefs: Arc<FakePrefs>,
+    prefs: Arc<FakeFolderSettings>,
 ) -> Launch {
     let seams = Seams {
         lister: Arc::new(DiskLister),
@@ -159,7 +165,7 @@ pub fn launch_remembering(
         .with_seams(seams)
         .with_appearance(AppearanceSource::scratch(
             config.to_path_buf(),
-            SystemPrefs::default(),
+            SystemSettings::default(),
         ))
         .with_zone(Zone::Utc)
 }

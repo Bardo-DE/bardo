@@ -6,14 +6,14 @@ use base_fs::atomic::AtomicWrite;
 use std::path::{Path, PathBuf};
 use updater_root::fsutil::switch_link;
 use updater_root::keys::{KeyError, from_compiled, load_key};
-use updater_root::settings::{DEFAULT_PUBKEY_PATH, DEFAULT_ROOT, RootSettings, SettingsError};
+use updater_root::settings::{DEFAULT_PUBKEY_PATH, DEFAULT_ROOT, RootConfig, SettingsError};
 
 #[test]
 fn the_settings_give_root_and_key_and_ignore_the_rest() {
-    let defaults = RootSettings::default();
+    let defaults = RootConfig::default();
     assert_eq!(defaults.root, PathBuf::from(DEFAULT_ROOT));
     assert_eq!(defaults.pubkey_path, PathBuf::from(DEFAULT_PUBKEY_PATH));
-    let both = RootSettings {
+    let both = RootConfig {
         root: PathBuf::from("/srv/q"),
         pubkey_path: PathBuf::from("/srv/q.pub"),
     };
@@ -26,14 +26,14 @@ fn the_settings_give_root_and_key_and_ignore_the_rest() {
         ),
         (
             "root = \"/srv/q\"\n",
-            RootSettings {
+            RootConfig {
                 root: PathBuf::from("/srv/q"),
                 ..defaults.clone()
             },
         ),
         (
             "pubkey_path = \"/srv/q.pub\"\n",
-            RootSettings {
+            RootConfig {
                 pubkey_path: PathBuf::from("/srv/q.pub"),
                 ..defaults.clone()
             },
@@ -46,7 +46,7 @@ fn the_settings_give_root_and_key_and_ignore_the_rest() {
         ),
     ];
     for (text, expected) in table {
-        let got = RootSettings::parse(text, Path::new("config.toml")).expect(text);
+        let got = RootConfig::parse(text, Path::new("config.toml")).expect(text);
         assert_eq!(got, expected, "{text:?}");
     }
 }
@@ -60,7 +60,7 @@ fn damaged_or_mistyped_settings_are_refused_and_a_missing_file_is_all_defaults()
         ("root = [\"/a\"]\n", "not a path"),
     ];
     for (text, kind) in table {
-        let err = RootSettings::parse(text, Path::new("config.toml")).expect_err(text);
+        let err = RootConfig::parse(text, Path::new("config.toml")).expect_err(text);
         let matches = match kind {
             "parse" => matches!(err, SettingsError::Parse { .. }),
             _ => matches!(err, SettingsError::NotAPath { .. }),
@@ -68,17 +68,17 @@ fn damaged_or_mistyped_settings_are_refused_and_a_missing_file_is_all_defaults()
         assert!(matches, "{text:?}: {err}");
     }
     let dir = tempfile::tempdir().expect("tempdir");
-    let missing = RootSettings::load(&dir.path().join("none.toml")).expect("missing is fine");
-    assert_eq!(missing, RootSettings::default());
+    let missing = RootConfig::load(&dir.path().join("none.toml")).expect("missing is fine");
+    assert_eq!(missing, RootConfig::default());
     let file = dir.path().join("config.toml");
     std::fs::write(&file, "root = \"/srv/q\"\n").expect("write");
     assert_eq!(
-        RootSettings::load(&file).expect("load").root,
+        RootConfig::load(&file).expect("load").root,
         PathBuf::from("/srv/q")
     );
     // A folder where the file should be is a read problem, not a silent default.
     assert!(matches!(
-        RootSettings::load(dir.path()),
+        RootConfig::load(dir.path()),
         Err(SettingsError::Read { .. })
     ));
 }

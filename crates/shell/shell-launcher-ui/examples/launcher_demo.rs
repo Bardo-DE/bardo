@@ -22,7 +22,7 @@ use std::io::BufRead;
 
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::{Host, HostCtx, HostEvent};
-use layer_shell_types::{LayerConfig, OutputId, OutputInfo, SurfaceId, Visibility};
+use layer_shell_types::{LayerOptions, OutputId, OutputInfo, SurfaceId, Visibility};
 use shell_launcher_ui::{Launcher, LauncherCatcher};
 use shell_settings::ShellFile;
 use shell_ui_kit::links::LauncherLink;
@@ -115,7 +115,7 @@ fn spawn_launcher(ctx: &mut HostCtx<DemoMsg>, output: &OutputInfo, demo: &mut De
 
 fn spawn_hidden(
     ctx: &mut HostCtx<DemoMsg>,
-    config: LayerConfig,
+    config: LayerOptions,
     root: HostRoot,
 ) -> Option<SurfaceId> {
     match ctx.spawn_layer(config, root) {

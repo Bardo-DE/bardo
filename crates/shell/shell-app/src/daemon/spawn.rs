@@ -4,7 +4,7 @@
 
 use layer_shell_hooks::HostRoot;
 use layer_shell_host::HostCtx;
-use layer_shell_types::{LayerConfig, LayerOp, OutputInfo};
+use layer_shell_types::{LayerOp, LayerOptions, OutputInfo};
 use shell_ui_kit::surface::{MountProps, OutputPolicy, OutputRank, Place, Start, Surface, mount};
 
 use crate::daemon::msg::ShellMsg;
@@ -75,7 +75,7 @@ fn close_dropped<S: Surface>(
 }
 
 /// Ask the compositor for `config`'s size when it is not the one last asked for.
-fn resize(ctx: &mut HostCtx<ShellMsg>, surface: &mut Spawned, config: &LayerConfig) {
+fn resize(ctx: &mut HostCtx<ShellMsg>, surface: &mut Spawned, config: &LayerOptions) {
     if surface.size != config.size {
         ctx.apply(surface.id, LayerOp::SetSize(config.size));
         surface.size = config.size;
@@ -90,7 +90,7 @@ fn spawn_slot<S: Surface>(
     spawn: &Spawn,
     link: &S::Link,
     slot: S::Slot,
-    config: LayerConfig,
+    config: LayerOptions,
 ) {
     let props = MountProps::<S>::new(info.clone(), slot);
     let root = S::needs(
@@ -121,7 +121,7 @@ fn spawn_slot<S: Surface>(
 /// Spawn a layer surface, shown or hidden before its first paint; an error is logged.
 fn spawn_layer(
     ctx: &mut HostCtx<ShellMsg>,
-    config: LayerConfig,
+    config: LayerOptions,
     root: HostRoot,
     info: &OutputInfo,
     start: Start,

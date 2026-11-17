@@ -2,8 +2,8 @@
 //! place of a test per surface.
 
 use layer_shell_types::{
-    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerConfig, LayerExtent, LayerLevel,
-    RegionSpec,
+    Anchor, BlurSpec, ElementId, ExclusiveZone, KeyboardMode, LayerExtent, LayerLevel,
+    LayerOptions, RegionSpec,
 };
 use shell_overlays::{
     AccountsSheet, CaptureSheet, ColorSampler, ConfirmSheet, DisplayTrialSheet, EmptyTrashSheet,
@@ -22,12 +22,12 @@ enum Region {
     Panel(i32),
 }
 
-fn layer_of<S: Surface<Slot = ()>>() -> LayerConfig {
+fn layer_of<S: Surface<Slot = ()>>() -> LayerOptions {
     S::layer(&output_named(Some("DP-1")), &ShellFile::default(), ())
 }
 
 /// (surface, its name, blur, input).
-type Case = (LayerConfig, &'static str, Region, Region);
+type Case = (LayerOptions, &'static str, Region, Region);
 
 #[test]
 fn the_sheets_are_keyboard_exclusive_full_output_overlays() {
