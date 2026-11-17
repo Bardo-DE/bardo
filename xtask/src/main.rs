@@ -17,11 +17,12 @@ const USAGE: &str = "\
 usage: cargo xtask <command>
 
 commands:
-  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, domain-order and shear, then fmt, clippy and tests on the affected set
+  gate [--base <rev>] [--all]   workspace-deps, renderer-edges, domain-order, product-words and shear, then fmt, clippy and tests on the affected set
   check deny                    cargo deny check (needs cargo-deny)
   check test-modules            every tests/it file is a module of its main.rs
   check workspace-deps          outside dependencies are pinned in the root workspace table
   check domain-order            a library crate depends only on its own domain folder or a lower one
+  check product-words           no retired product name in a .rs file, a file name or a Cargo.toml feature or description
   check renderer-edges          only the renderer crates and the programs depend on the renderer
   check shear                   no crate declares a dependency it does not use (needs cargo-shear)
   check legacy [<repo>]         run the old per-repo check-*.sh scripts unchanged
@@ -81,7 +82,7 @@ fn run() -> Result<bool> {
         "check" => {
             let which = parser
                 .value()
-                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges, domain-order, shear or legacy")?
+                .context("`check` needs a name: deny, test-modules, workspace-deps, renderer-edges, domain-order, product-words, shear or legacy")?
                 .string()?;
             match which.as_str() {
                 "deny" => {
@@ -103,6 +104,10 @@ fn run() -> Result<bool> {
                 "domain-order" => {
                     reject_extra(&mut parser)?;
                     tasks::domain_order::run()
+                }
+                "product-words" => {
+                    reject_extra(&mut parser)?;
+                    tasks::product_words::run()
                 }
                 "shear" => {
                     reject_extra(&mut parser)?;

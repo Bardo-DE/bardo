@@ -54,7 +54,7 @@ pub const TREE_MAX_NODES: NodeBudget = NodeBudget(400);
 /// Every proposed value of computer use in one place.
 #[expect(
     clippy::struct_excessive_bools,
-    reason = "one field per boolean `cua.*` settings key; they are independent switches"
+    reason = "one field per boolean `computer_use.*` settings key; they are independent switches"
 )]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ComputerUseConfig {

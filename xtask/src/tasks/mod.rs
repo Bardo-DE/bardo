@@ -5,6 +5,7 @@ pub mod domain_order;
 pub mod gate;
 pub mod install;
 pub mod legacy;
+pub mod product_words;
 pub mod renderer_edges;
 pub mod shear;
 pub mod test_modules;

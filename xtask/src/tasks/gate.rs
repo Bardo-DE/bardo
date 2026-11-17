@@ -1,4 +1,4 @@
-//! `cargo xtask gate`: the workspace-deps, renderer-edges and domain-order checks, then fmt, clippy and tests on
+//! `cargo xtask gate`: the workspace-deps, renderer-edges, domain-order and product-words checks, then fmt, clippy and tests on
 //! the affected set.
 
 use std::collections::BTreeSet;
@@ -22,6 +22,9 @@ pub fn run(base: Option<&str>, all: bool) -> Result<bool> {
         return Ok(finish("gate", false));
     }
     if !super::domain_order::run()? {
+        return Ok(finish("gate", false));
+    }
+    if !super::product_words::run()? {
         return Ok(finish("gate", false));
     }
     if !super::shear::run()? {

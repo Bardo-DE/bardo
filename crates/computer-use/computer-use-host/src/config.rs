@@ -35,7 +35,7 @@ pub enum A11yChoice {
 /// Everything the computer-use daemon reads at start.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ComputerUseDaemonConfig {
-    /// The settings (`cua.*`).
+    /// The settings (`computer_use.*`).
     pub settings: ComputerUseConfig,
     /// Which backend.
     pub backend: BackendChoice,

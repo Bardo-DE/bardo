@@ -1,4 +1,4 @@
-//! The person's computer-use settings (design/22 section 3.29): the `cua.*` keys the Settings app
+//! The person's computer-use settings (design/22 section 3.29): the `computer_use.*` keys the Settings app
 //! writes to `$XDG_CONFIG_HOME/computer-use/settings.toml`, read leniently (a bad value falls back, per key,
 //! and is logged) and found through the configuration directories. The pure part (`read`) is text
 //! in, typed values out; the file is the edge (the caller's [`settings_store_fs::ReadText`]), and the live watch on it is the daemon's, which

@@ -1,4 +1,4 @@
-//! The key table: every scalar `cua.*` key of design/22 section 3.29 that the computer-use daemon reads, its rule and
+//! The key table: every scalar `computer_use.*` key of design/22 section 3.29 that the computer-use daemon reads, its rule and
 //! where its value goes. One row per schema row (`dist/settings/computer-use.settings.toml`) except
 //! `computer_use.apps`, which is a list and is read in `apps.rs`/`read.rs`; the tests hold the schema and
 //! this table to each other.

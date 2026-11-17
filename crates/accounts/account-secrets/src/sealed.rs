@@ -14,7 +14,7 @@ use std::os::fd::OwnedFd;
 /// The I/O error of creating the anonymous file, writing the key, rewinding it or sealing it.
 pub fn sealed_key(key: &str) -> io::Result<OwnedFd> {
     let fd = memfd_create(
-        "porter-api-key",
+        "accounts-api-key",
         MemfdFlags::CLOEXEC | MemfdFlags::ALLOW_SEALING,
     )?;
     let mut file = std::fs::File::from(fd);

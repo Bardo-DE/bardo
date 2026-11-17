@@ -140,7 +140,7 @@ pub enum EventBody {
     File    { change: FileChange, file: FileView, why: FileWhy },
     Search  { app: AppName, text: String, scope: ThingKind, results: Count },
     Session { session: SessionId, step: SessionStep },          // companion session start/prompt/end
-    ComputerUse     { run: RunId, step: ComputerUseStep },                      // cua.* (computer-use-integration §6.1), opaque to us
+    ComputerUse     { run: RunId, step: ComputerUseStep },                      // computer_use.* (computer-use-integration §6.1), opaque to us
     Policy  { request: PolicyRequestView, decision: Decision }, // audit from permission-policy
     Consent { grant: GrantView, answer: ConsentAnswerView },
     Memory  { op: MemoryOp },                                   // memoryd's own audit
@@ -205,7 +205,7 @@ pub fn admit(record: &Record, rules: &RuleSet, state: &SpaceState, marks: &Marks
 | `search`, selections | 30 days |
 | unexplained `file.*` | 7 days |
 | things (mail, files, events) | `WhileSourceExists` |
-| `session.*`, `cua.*` | 30 days |
+| `session.*`, `computer_use.*` | 30 days |
 | policy, consent, memory audit | bodies 90 days, headers 1 year |
 | facts | `UntilForgotten` |
 
@@ -769,7 +769,7 @@ cargo deny check licenses
   - Chat for consolidation.
   - The embedding model's identity comes from `ServedBy.model` into the stored `EmbedderCard`.
   - inferd owns the GPU queue, so the default embedder is `InferdEmbedder`. `FastembedEmbedder` exists for standalone or portable use.
-- **Computer use:** `cua.*` payloads (opaque `ComputerUseStep` re-declared), procedures written through memfiles with the same metadata trailer, and the run-link purge on forget.
+- **Computer use:** `computer_use.*` payloads (opaque `ComputerUseStep` re-declared), procedures written through memfiles with the same metadata trailer, and the run-link purge on forget.
 - **ux:** draws the timeline, "what it knows", forget preview, pending, the consolidation diff, rules and pause. Uses §3.11 only. Pause appears in the presence glow.
 - **Bardo Spaces/settings:** the stable `SpaceId` per workspace (design/21 §11.3) and the design/22 rows for `memory.retention.*`, `memory.pending_ttl_days`, `memory.join_window_ms`, `memory.consolidation.*`.
 - **agent-loop:** reads `Primer` at session start and `Search` as needed. The handover working memory is its own.

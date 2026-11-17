@@ -5,7 +5,7 @@
 //! reported in [`Loaded::invalid`]; a key no row names is reported in [`Loaded::unknown`].
 //!
 //! This is the lenient read of a file whose keys are a flat table of rules rather than a serde
-//! document (`agent.*`, `memory.*`, `cua.*`): the same [`Loaded`] comes out as for any other
+//! document (`agent.*`, `memory.*`, `computer_use.*`): the same [`Loaded`] comes out as for any other
 //! settings file.
 
 use crate::lenient::{InvalidKey, Loaded, UnknownKey};

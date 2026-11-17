@@ -2,7 +2,7 @@
 # $XDG_DATA_DIRS/bardo/settings/computer-use.settings.toml; `bardo-computer-use --write-schema <dir>` writes it for a local
 # install. The values live in $XDG_CONFIG_HOME/bardo/computer-use/settings.toml, for example `[computer_use]` then
 # `enabled = true`; bardo-computer-use reads them live (crates/computer-use/computer-use-daemon/src/settings). Every row is hands-off
-# for an agent (no `agent = "settable"`): cua.* is never agent-settable, so the companion can never
+# for an agent (no `agent = "settable"`): computer_use.* is never agent-settable, so the companion can never
 # switch computer use on for itself. The rows design/22 section 5 puts on the Intelligence page are
 # Computer use's four; the spending cap is Advanced. Not here, because nothing reads them yet:
 # `computer_use.screens.keep` and `computer_use.screens.keep_days` (FINDINGS).

@@ -149,7 +149,7 @@ impl<S: Seams> Supervisor<S> {
         }
     }
 
-    /// The `cua.*` values in force now: the person's latest settings, else the configuration's.
+    /// The `computer_use.*` values in force now: the person's latest settings, else the configuration's.
     /// Every new run and every guard reads them afresh, so a change applies to the next one (a
     /// run already going keeps the values it started with).
     #[must_use]

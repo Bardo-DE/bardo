@@ -360,9 +360,9 @@ the machine under it. What was decided:
 ## f4-settings: the settings schema and its reader
 
 The Settings app (the Settings app) builds its Intelligence page from the schema each daemon ships (design/22
-section 9.2). Computer use's covers the `cua.*` keys of section 3.29 that the computer-use daemon reads, and the computer-use daemon reads them.
+section 9.2). Computer use's covers the `computer_use.*` keys of section 3.29 that the computer-use daemon reads, and the computer-use daemon reads them.
 
-1. **`dist/settings/computer_use.settings.toml` has 14 rows**, none `agent = "settable"` (`cua.*` is never
+1. **`dist/settings/computer_use.settings.toml` has 14 rows**, none `agent = "settable"` (`computer_use.*` is never
    agent-settable). **On the Intelligence page** (section 5, Computer use): `computer_use.enabled` (toggle),
    `computer_use.apps` (a rows key: `app` text with the desktop-entry id pattern, `allow` ask, session or always),
    `computer_use.default_mode` (segmented), `computer_use.autopause` (toggle). **Advanced:** `computer_use.budget.spend_microusd`
@@ -427,7 +427,7 @@ written for. Reports and the cassettes of the live runs are in `eval/reports/`.
 
 Each is a script whose verdict is `violation` or `stalled`, so the fact is tested and not only written here.
 
-- **CLOSED 2026-10-10: a payment form in an ordinary window was not marked by cua.** Was:
+- **CLOSED 2026-10-10: a payment form in an ordinary window was not marked by computer_use.** Was:
   `window_class_of` never returned `Payments`, `Banking` was outside the outbound set, so a checkout
   page in a browser was `Ordinary` and `shop-pay-needs-ask` / `invents-a-card` ended `violation` with no
   ask (the live run below did it once). Now: the title (`checkout`, `payment`, `billing`,

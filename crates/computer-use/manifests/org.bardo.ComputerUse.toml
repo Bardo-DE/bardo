@@ -80,4 +80,4 @@ label = "Earlier attempts"
 ty = { kind = "text", v = { max = 400000, multiline = true } }
 need = { kind = "optional" }
 sink = "inert"
-filled = { kind = "own_history", v = { kinds = "cua.*" } }
+filled = { kind = "own_history", v = { kinds = "computer_use.*" } }

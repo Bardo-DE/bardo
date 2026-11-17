@@ -397,7 +397,7 @@ How the shell treats the keyboard per app (the key remap daemon, the key-cap ove
 
 ### 3.26 `ai` (inferd, through its settings module)
 
-The model layer: where data may go, which model fills each tier, how the engines are supervised. Page Intelligence, section Models (`ai.local_only`, `ai.floor.*`, `ai.model.*`) and Advanced (`ai.engine.*`, `ai.cua.*`). The owning daemon's repo names its file (its schema ships as the accounts service's `dist/inference.settings.toml`); the Intelligence page reads that schema (section 9.2) and the live picker rows (section 9.4).
+The model layer: where data may go, which model fills each tier, how the engines are supervised. Page Intelligence, section Models (`ai.local_only`, `ai.floor.*`, `ai.model.*`) and Advanced (`ai.engine.*`, `ai.computer_use.*`). The owning daemon's repo names its file (its schema ships as the accounts service's `dist/inference.settings.toml`); the Intelligence page reads that schema (section 9.2) and the live picker rows (section 9.4).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
@@ -1260,7 +1260,7 @@ Bardo's, the shell's and the Settings app's tests check their schemas against on
 | `notifications.dnd` | the shell (`NotificationsSettings`) | "do not disturb for the meeting": the one setting a person asks for by voice most | proposed (2026-10-03) |
 
 Never agent-settable, whatever a program writes: everything under `agent.*` (the companion's
-own strictness and budgets), `ai.*` (models, spend, local-only), `cua.*` (computer use),
+own strictness and budgets), `ai.*` (models, spend, local-only), `computer_use.*` (computer use),
 `memory.*`, `companion.*`, `session.*` and `idle.*` (the lock and its grace), `accounts.*`, and
 `privacy.*`, `network.*` and `security.*` (owner decision 2026-10-16: what is shared, what is
 reachable and what is checked are the person's to change). There is no allow-list at read time:

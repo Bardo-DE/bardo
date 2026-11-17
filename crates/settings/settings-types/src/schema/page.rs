@@ -33,7 +33,7 @@ pub enum Page {
     Power,
     Apps,
     /// The companion, its models, memory and computer use (design/22-SETTINGS.md sections 3.26 to
-    /// 3.30 `ai.*`, `agent.*`, `memory.*`, `cua.*`, `companion.*`).
+    /// 3.30 `ai.*`, `agent.*`, `memory.*`, `computer_use.*`, `companion.*`).
     Intelligence,
     /// The file viewer's timings, steps, history, export defaults and decoder limits
     /// (design/22-SETTINGS.md section 3.31 `viewer.*`).
