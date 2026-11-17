@@ -63,7 +63,7 @@ inherited, but one the desktop restates for a chord (sill's Cmd+H to Ctrl+H) mus
 - *uinput access (INPUT-02)* is done: the desktop's root service owns `/dev/uinput` and the key remap daemon is handed
   its devices (see "Where the virtual devices come from"). The standalone install keeps `GROUP="input"`.
 - *Unit hardening (INPUT-15), part.* `PrivateUsers=` may unmap the `input` supplementary group,
-  which waits for a `systemd-analyze security` run. `/etc/key_remap` stays root's under `DynamicUser=`:
+  which waits for a `systemd-analyze security` run. `/etc/bardo/key-remap` stays root's under `DynamicUser=`:
   systemd.exec(5) hands the innermost folder to the service's user for `State`/`Cache`/`Logs`/`RuntimeDirectory=`
   but not for `ConfigurationDirectory=`, so the root-only machine file (see "Vendor layer") is read.
 - *Supply chain (INPUT-16)* closed 2026-10-17: CI runs `cargo deny check licenses` and `advisories bans sources` (deny.toml allows crates.io and the three git sources of Cargo.lock); advisories read a live database, so a new one can fail an unchanged tree.
@@ -71,7 +71,7 @@ inherited, but one the desktop restates for a chord (sill's Cmd+H to Ctrl+H) mus
   `keymap-file`'s bounded regular-file read.
 
 **Vendor layer (2026-10-17).** The desktop's Caps Lock rule must ship with every install and release, but a release
-must never write the administrator's `/etc/key_remap`. So the key remap daemon has a fourth layer, `/usr/lib/key_remap/key-remap.toml`
+must never write the administrator's `/etc/bardo/key-remap`. So the key remap daemon has a fourth layer, `/usr/lib/bardo/key-remap/key-remap.toml`
 (`$KEY_REMAP_VENDOR_DIR`), between the built-in mapping and the machine file: built-in < vendor < machine < person.
 It has the machine file's trust (lone-key rules allowed; `[user_layer] sequences` counts when the machine file sets
 none). A missing folder is not watched, so a vendor file installed while the daemon runs is read at its next start.
@@ -83,14 +83,14 @@ folder above it root's, not group/other-writable, and a link never passes. Other
 warning in plain words ("installed defaults: not used, because someone other than an administrator could change this
 file or a folder it is in"; the machine file's says "machine settings: ..."). A missing file or folder is no layer and
 no warning. Both files are capped at 64 KiB (`LAYER_FILE_CAP`). Consequences:
-- An administrator's group-writable `/etc/key_remap/key-remap.toml` stops applying, and the log says why. That is the point:
+- An administrator's group-writable `/etc/bardo/key-remap/key-remap.toml` stops applying, and the log says why. That is the point:
   the user-layer boundary (a rule on a key pressed alone only from a root-owned file) no longer leans on `/etc`
   alone being root's.
 - A test that points `$KEY_REMAP_CONFIG_DIR` at a scratch folder gets no machine layer from a file written there (the
   scratch folder is the test user's). `key-remap-devtest`'s daemon writes none today, so it is unaffected; a test that
   needs a machine layer needs a different seam, not a looser check. `config/tests.rs` proves the refusal on the real
   file system.
-- `/etc/key_remap` is root's under `DynamicUser=` with `ConfigurationDirectory=` (systemd.exec(5): that one folder
+- `/etc/bardo/key-remap` is root's under `DynamicUser=` with `ConfigurationDirectory=` (systemd.exec(5): that one folder
   type is not handed to the service's user), so the shipped unit reads a root-only machine file.
 
 **Who steers (INPUT-03, INPUT-14, wave 2).** The owner decided the key remap daemon gets a light identity check and a reduced
@@ -101,7 +101,7 @@ pin is `Reopened`, and any pin is accepted). Every other process of the active u
 watches the keymap, registers actions and may `Resume`; any other request drops its connection. This is a speed bump,
 not a boundary: a same-user program can move itself into a control group of that name. The boundary is the
 reduced user layer: no rule on a key with no modifier held (Shift counts as one), no `then` that is a list
-or empty, at most 256 rules (the layer is refused whole), unless the root-owned `/etc/key_remap/key-remap.toml` (or the vendor file, see "Vendor layer") says
+or empty, at most 256 rules (the layer is refused whole), unless the root-owned `/etc/bardo/key-remap/key-remap.toml` (or the vendor file, see "Vendor layer") says
 `[user_layer] sequences = true` (that lifts the list ban only; the machine file itself is unrestricted).
 A `Focus` naming a profile nobody defined writes as `default` and is logged once, as before: that is the
 refusal for (d), because a defined profile is the only thing a name can select.
@@ -109,7 +109,7 @@ refusal for (d), because a defined profile is the only thing a name can select.
   only re-grabs and types nothing, and `key_remap resume` from a terminal is the escape-chord recovery.
 - *Consequence: user rules on a bare key move to the machine file.* sill's shipped layer has `capslock` ->
   `ctrl+space`; it is reported and left out of the user layer, and the desktop's packaging now ships it in the vendor file
-  `/usr/lib/key_remap/key-remap.toml` (see "Vendor layer"). `shift+capslock` moves with it (NEW-PI-5, 2026-10-17): Shift is held for every capital letter and every shifted symbol, so it is not a role that makes a key a shortcut. A user rule needs Command, Option or Control; `shift+a`, `shift+7`, `shift+;` and `shift+capslock` are left out of the user layer with a warning. The machine and vendor files may hold them.
+  `/usr/lib/bardo/key-remap/key-remap.toml` (see "Vendor layer"). `shift+capslock` moves with it (NEW-PI-5, 2026-10-17): Shift is held for every capital letter and every shifted symbol, so it is not a role that makes a key a shortcut. A user rule needs Command, Option or Control; `shift+a`, `shift+7`, `shift+;` and `shift+capslock` are left out of the user layer with a warning. The machine and vendor files may hold them.
 - *The user layer is cut when it arrives.* Changing `[user_layer]` in the machine file later does not re-cut a
   layer already in force; the shell sends its file again on change or restart.
 - *Probing needs `ProtectProc=default`.* A process without privileges cannot read another user's
@@ -120,13 +120,13 @@ refusal for (d), because a defined profile is the only thing a name can select.
   the connection that owns `org.kde.KWin` now (`GetNameOwner` per call) and owns its own name with
   `DO_NOT_QUEUE`, exiting if it is taken.
 
-**Where the virtual devices come from (INPUT-02, wave 2).** With `/run/input_broker/input.sock` present, the key remap daemon
+**Where the virtual devices come from (INPUT-02, wave 2).** With `/run/bardo/input-broker/input.sock` present, the key remap daemon
 asks the root service for a `KeyRemapKeyboard` and, per combo device, a `KeyRemapPointer` (the original's name
 as the label; the service adds the suffix), and uses the handed descriptor exactly as it used its own:
 writes, `led_fd` and `leds` are unchanged. Without the socket, or if nothing answers on it, the key remap daemon opens
 `/dev/uinput` as before (the standalone install, and a developer's machine). A refusal is the answer.
 `dist/bardo-key-remap.service` therefore has no `DeviceAllow=/dev/uinput`; `install.sh` adds it as the drop-in
-`bardo-key-remap.service.d/10-uinput.conf` for the standalone install, with `70-key-remap.rules` as before. The desktop's
+`bardo-key-remap.service.d/10-uinput.conf` for the standalone install, with `70-bardo-key-remap.rules` as before. The desktop's
 packaging ships neither the drop-in nor the udev line. `--check-uinput` connects to the service when the socket
 is there (it creates nothing) and otherwise opens the node as before. Unverified: the service's behaviour
 against a real the key remap daemon (needs the desktop gate), and `After=bardo-input-broker.socket` ordering on a real boot.
@@ -215,9 +215,9 @@ display) and the platform sources. The key remap daemon is this desktop's source
 such type. It stores the person's overrides, serves them, tells apps when they change, and
 supplies the desktop's own bindings.
 
-**Two files, the person's last.** The machine's `keymap` (`/etc/key_remap/keymap`, admin-owned,
-optional) is read by the daemon; the person's own `$XDG_CONFIG_HOME/key_remap/keymap` (else
-`~/.config/key_remap/keymap`) is read by `key-remap-client` in each program and never by the daemon.
+**Two files, the person's last.** The machine's `keymap` (`/etc/bardo/key-remap/keymap`, admin-owned,
+optional) is read by the daemon; the person's own `$XDG_CONFIG_HOME/bardo/key-remap/keymap` (else
+`~/.config/bardo/key-remap/keymap`) is read by `key-remap-client` in each program and never by the daemon.
 Both use the chord keymap's overrides line format. The person's file wins per action. Settings ›
 Keyboard writes the person's file (the whole file, to a temporary name and renamed over it) and
 needs no privilege; programs notice by polling its size and time every quarter second, so no
@@ -236,7 +236,7 @@ by `load_reporting`, each labelled "System keymap:" or "Your keymap:".
 `KeyRemapSource::standard()`, whose `load(platform)` is the chord keymap's conventions for our desktop, the
 desktop's own bindings (`key_remap_client::system_bindings`, only what the chord keymap's conventions leave to
 the source), the machine's overrides (asked of the daemon with `KeymapCall::Watch`, or, when no daemon
-answers, read from `/etc/key_remap/keymap`) and then the person's.
+answers, read from `/etc/bardo/key-remap/keymap`) and then the person's.
 `watch(callback)` fires on the daemon's next `Keymap` message that differs from the last one, on a
 change of the person's file, and, while there is no daemon, of the machine's file. Apps may
 `register` their actions so Settings can list them (`registered()`); resolution stays in each
@@ -360,7 +360,7 @@ that key remap daemon grabs the keyboard and remaps, and releases on exit (the g
   deferred half, `ProtectProc=invisible`, stays dropped for the steering check (WAVE2-DESIGN 4.8). The unit now also
   unsets the 22 loader variables so that input broker can prove it `Full`. Closes if steering moves to a mechanism that
   does not read uids.
-- *INPUT-02, the standalone install keeps its `input` group rule.* `install.sh` and `70-key-remap.rules` (a node open
+- *INPUT-02, the standalone install keeps its `input` group rule.* `install.sh` and `70-bardo-key-remap.rules` (a node open
   to the `input` group) are for a machine with no input broker, where the key remap daemon opens `/dev/uinput` itself. The desktop's
   packaging ships neither. Closes when no supported standalone target remains.
 - *INPUT-03, steering identity.* Owner decision: no root identity check for the key remap daemon's own socket; the bound is the

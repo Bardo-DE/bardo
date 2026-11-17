@@ -84,13 +84,13 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
 
 Kept by the mailo session in its own repo.
 
-## the mouse gestures daemon (Magic Mouse daemon, M8; repo ~/mouse_gestures, FINDINGS F1–F21)
+## the mouse gestures daemon (Magic Mouse daemon, M8; repo ~/bardo/mouse-gestures, FINDINGS F1–F21)
 
 Nothing here has run on the real mouse yet; every fixture is synthesised. The Python
 `magic-mouse-kde.service` stays in charge until you switch.
 
-1. **Record real sessions** (safe, read-only): `cd ~/mouse_gestures && cargo run --release -- record /tmp/mm.bin`, then scroll slow, fast, repeated flicks, diagonal and change finger count for about 20 s, Ctrl+C. Five such files replace the synthesised parity fixtures (F9) and verify the +y sign, the rear band side and the ~90 Hz report rate.
-2. **Switch services when ready**: `~/mouse_gestures/install.sh` disables the Python service, enables the mouse gestures daemon with your current feel (`SCROLL_SPEED=32`, `SCROLL_ACCEL_MAX=1`, F6) and rolls back if the mouse gestures daemon does not stay up. Under KDE it sets `foreign_output = "wheel"` so scroll direction does not flip (F7).
+1. **Record real sessions** (safe, read-only): `cd ~/bardo/mouse-gestures && cargo run --release -- record /tmp/mm.bin`, then scroll slow, fast, repeated flicks, diagonal and change finger count for about 20 s, Ctrl+C. Five such files replace the synthesised parity fixtures (F9) and verify the +y sign, the rear band side and the ~90 Hz report rate.
+2. **Switch services when ready**: `~/bardo/mouse-gestures/install.sh` disables the Python service, enables the mouse gestures daemon with your current feel (`SCROLL_SPEED=32`, `SCROLL_ACCEL_MAX=1`, F6) and rolls back if the mouse gestures daemon does not stay up. Under KDE it sets `foreign_output = "wheel"` so scroll direction does not flip (F7).
 3. **Live acceptance** after switching: design/12 §12.8 items 8 (libinput sees finger scroll with an axis stop, no motion, no taps), 9 (calibrate the virtual touchpad's mm/px; at 0.25 it re-lands every ~120 px, F8), 10 (suppression over shell surfaces), 11 (latency on the device), 12 (timestamp calibration).
 4. **After the sensor change (the mouse gestures daemon 7abdae3, F25–F29)**: use the Magic Mouse on the new build for a minute (scroll, swipe, double-tap); it should feel exactly as before, since thresholds are now in mm but convert back to the same values. Optional: `[device] source = "evdev"` in gestures.toml and compare (README "Manual checks"). Other mice and the Magic Mouse 1/USB-C are marked `TODO(untested)`; no check needed.
 

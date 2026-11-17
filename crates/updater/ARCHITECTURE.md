@@ -117,7 +117,7 @@ rule, a login service, the keyboard daemon's unit). The bundle carries them unde
 path>`, `release.toml` lists each destination in `[[system]]`, and `SyncSystem` copies the verified file
 from the new release's tree (atomic rename, the listed mode). The destination must be a path `ALLOWED_SYSTEM_FILES` names:
 a folder and either one exact name or any plain name with a given ending. Today that is `/etc/pam.d/bardo-shell`,
-`/etc/udev/rules.d/{60-sill-ddc,70-key-remap,70-mouse-gestures}.rules`, `/etc/modules-load.d/{sill-ddc,key_remap}.conf`, `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/key_remap` is the administrator's and is not on the list),
+`/etc/udev/rules.d/{60-sill-ddc,70-bardo-key-remap,70-bardo-mouse-gestures}.rules`, `/etc/modules-load.d/{sill-ddc,key_remap}.conf`, `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop's vendor defaults for the keyboard daemon; `/etc/bardo/key-remap` is the administrator's and is not on the list),
 `/etc/modprobe.d/99-bardo-mouse-gestures.conf`, `/usr/lib/systemd/system/{key_remap,input_broker,mouse_gestures}.service`,
 `/usr/lib/systemd/system/bardo-input-broker.socket`, `/etc/udev/rules.d/72-bardo-input-broker.rules`,
 `/etc/modules-load.d/input-broker.conf`, `/etc/polkit-1/rules.d/bardo-key-remap.polkit.rules`, `/etc/porter/{callers,inferd-callers}.toml`,
@@ -126,7 +126,7 @@ installed by hand and not by a release, so a new system file needs a new helper 
 release that places the input service's files (`input_broker.*`, `72-bardo-input-broker.rules`) needs the helper that knows them,
 so re-run the installer (`scripts/install.sh`) from the new source before updating to it; an older helper refuses
 that release whole. The same holds for `/usr/lib/bardo/key-remap/key-remap.toml`. A destination folder that does not exist
-(`/usr/lib/key_remap` on a fresh machine) is made by the write itself (`write_atomic_mode` creates the missing
+(`/usr/lib/bardo/key-remap` on a fresh machine) is made by the write itself (`write_atomic_mode` creates the missing
 parents, `0755` under the helper's umask) and is left in place when the file is later removed; the test
 `a_system_file_is_placed_replaced_and_dropped_with_the_releases` runs in a sandbox with no such folders.
 A file is overwritten or removed only when it still holds exactly what an earlier release placed

@@ -2,7 +2,7 @@
 # Install bardo-shell from the bardo tree: build `bardo-shell` in release, then put the binary, the PAM service,
 # the intents manifest (`org.bardo.Shell`, for intentd and `bardo-do`), the companion skills
 # (dist/skills) and the settings schema where a login reads them, and copy the key remap daemon layer for
-# the bardo-shell session to ~/.config/key-remap/key-remap.toml when that file is missing (never over yours).
+# the bardo-shell session to ~/.config/bardo/key-remap/key-remap.toml when that file is missing (never over yours).
 # The login itself, "Bardo", is the desktop repo's session/ and install/. Run as
 # yourself; the root step asks once. Safe to run again.
 #

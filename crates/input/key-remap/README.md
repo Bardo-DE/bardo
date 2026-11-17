@@ -101,7 +101,7 @@ Settings are read in four layers, each overriding the one before:
    Leave it alone: put your changes in the next file, which overrides it.
 3. `/etc/bardo/key-remap/key-remap.toml`, for the whole machine; changes apply as soon as you save. **It is
    shared by every session on the machine**, the login screen included. It is the administrator's.
-4. `~/.config/key_remap/key-remap.toml`, if your desktop forwards it. This layer is per user and per
+4. `~/.config/bardo/key-remap/key-remap.toml`, if your desktop forwards it. This layer is per user and per
    session: only the desktop you are logged into reads the file and sends it to the key remap daemon, and the key remap daemon
    drops it again when that session ends.
 
@@ -120,14 +120,14 @@ sends Cmd+Space to Alt+Space (KRunner), Cmd+H to a Plasma minimise key and Cmd+S
 Spectacle's Print variants, none of which another desktop binds. Editing the machine file for a
 different desktop would break Plasma, because both desktops share it.
 
-A desktop that forwards `~/.config/key_remap/key-remap.toml` can instead override those rules for its
+A desktop that forwards `~/.config/bardo/key-remap/key-remap.toml` can instead override those rules for its
 own sessions only. sill does this: it reads the seat owner's file and sends it to the key remap daemon as the
 user layer, and Plasma never does. The layer wins over the machine file, so a sill session
 gets Cmd+Space as Super+Space, Cmd+Shift+3/4/5 as Print and Cmd+H as plain Ctrl+H, while a Plasma
 session on the same machine keeps the Plasma rules. sill ships that layer in its
-`dist/key_remap/key-remap.toml` and its installer copies it to `~/.config/key_remap/key-remap.toml` when you
+`dist/key_remap/key-remap.toml` and its installer copies it to `~/.config/bardo/key-remap/key-remap.toml` when you
 have none. The key remap daemon cuts that layer down when it arrives: a rule on a key with no modifier held (Caps Lock alone, say), and
-a rule that types several keys or none, belong in the machine files (the one in `/usr/lib/key_remap` or the one in `/etc/key_remap`); so do more than 256 rules. The machine file can
+a rule that types several keys or none, belong in the machine files (the one in `/usr/lib/bardo/key-remap` or the one in `/etc/bardo/key-remap`); so do more than 256 rules. The machine file can
 let the second kind through for the user layer with `[user_layer]` / `sequences = true`. `replay` takes one file, so to see both layers at once, copy the rules of the user file
 after those of the machine file in a scratch file (later rules win). To check without touching a
 keyboard:
@@ -155,9 +155,9 @@ class lists are at the top of `dist/plasma/bardo-key-remap-focus`. A terminal em
 
 Apps resolve their shortcuts through [the chord keymap](https://github.com/Bardo-DE/chordkit) and never
 check Command or Control themselves. The key remap daemon is this desktop's source for it. Your own changes
-live in `~/.config/key_remap/keymap` (or `$XDG_CONFIG_HOME/key_remap/keymap`), one `action = shortcut`
+live in `~/.config/bardo/key-remap/keymap` (or `$XDG_CONFIG_HOME/bardo/key-remap/keymap`), one `action = shortcut`
 per line (`copy = Primary+Alt+C`, `redo = none`; `#` starts a comment); Settings writes it and
-no privilege is needed. An administrator may add machine-wide changes in `/etc/key_remap/keymap`;
+no privilege is needed. An administrator may add machine-wide changes in `/etc/bardo/key-remap/keymap`;
 yours win. The key remap daemon watches the machine file, keeps its last good copy if an edit is broken, and
 tells running apps when anything changes. A line it cannot read is skipped and reported; a chord
 the desktop keeps for itself (Command+Space, Ctrl+1 to Ctrl+9) is refused with the reason.

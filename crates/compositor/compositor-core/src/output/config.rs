@@ -59,7 +59,7 @@ fn turned(size: PhysicalSize, transform: Transform) -> PhysicalSize {
     }
 }
 
-/// The configuration of every display seen, by key (`$XDG_STATE_HOME/compositor/outputs.toml`).
+/// The configuration of every display seen, by key (`$XDG_STATE_HOME/bardo/compositor/outputs.toml`).
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct SavedOutputs(pub BTreeMap<OutputKey, OutputConfig>);

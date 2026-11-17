@@ -107,7 +107,7 @@ pub struct DeviceInfo { name: String, path: String, vendor: u16, product: u16 }
 subscriber says so, and a subscriber that disconnects stops saying it. Only the shell's `Unlocked`
 counts (another program of the person may say `Locked`, never `Unlocked`), and `PointerOver` and
 `UserConfig` count from the shell alone. `UserConfig` is the text of the person's
-`~/.config/mouse-gestures/gestures.toml` (at most 24 KiB; blank takes the layer away): the daemon cannot
+`~/.config/bardo/mouse-gestures/gestures.toml` (at most 24 KiB; blank takes the layer away): the daemon cannot
 read a home folder, so the shell reads the file and sends it after connecting and when it changes.
 `Run` asks the shell to carry out a gesture's action in the person's session (the workspace steps,
 a shell line, a program); the daemon has no session of its own. While locked no gesture
@@ -193,7 +193,7 @@ The `rm` repeats what `uninstall.sh` does, in case it was already removed. Then
 ## Configuration
 
 `/etc/bardo/mouse-gestures/gestures.toml` for the service (the unit's `ConfigurationDirectory=`), and
-`$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` for the tools a person runs. Only what a person
+`$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml` for the tools a person runs. Only what a person
 chooses is a setting: `scroll.speed` and the six `gestures.gesture_action_map.*` rows (what
 each gesture does). Every other number (the axis lock, the acceleration curve, palm rejection,
 swipe and tap thresholds, the virtual touchpad) is a constant next to the code that uses it.

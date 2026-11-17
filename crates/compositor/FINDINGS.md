@@ -1405,7 +1405,7 @@ still user-run only (C3).
 ## p1-sh
 
 Added `bardo-compositor --state-home DIR` (an explicit directory always wins, headless included; without it headless stays
-ephemeral and the others use `$XDG_STATE_HOME/compositor`, else `$HOME/.local/state/compositor`) and
+ephemeral and the others use `$XDG_STATE_HOME/bardo/compositor`, else `$HOME/.local/state/bardo/compositor`) and
 `compositor-probe workspaces` (one JSON line per workspace: `id`, `name`, `group`, `active`). The placement decision is
 a pure function in `compositor/src/main.rs` over (flag, backend, env). `State::new` builds its store from
 `Seams::real(&config.state_home)` for every backend, so headless needed no wiring to save and load `spaces.toml`.
@@ -2828,7 +2828,7 @@ Lane `input2` (not compiled; the orchestrator gates). Closes the two "Gaps noted
   now compare with `.migrated()` (a missing file loads at the current version). The schema (`compositor.settings.toml`)
   does not list `version`, as `[bindings]` is not listed: the schema test skips nothing because a default
   document serialises without it.
-- **Only a real run proves.** Editing `~/.config/compositor/settings.toml` (or a Settings app save) while a mouse
+- **Only a real run proves.** Editing `~/.config/bardo/compositor/settings.toml` (or a Settings app save) while a mouse
   and a touchpad are in use: the next scroll/tap follows within the 30 ms debounce and no replug; libinput accepts
   re-applying `set_scroll_natural_scroll_enabled`/tap/accel on a live device (RealInputFeed::apply is the same call
   as at appearance); the watcher thread starts under the compositor's real config home; our own stamp write does
@@ -3038,7 +3038,7 @@ Lane `kbdlive` (not compiled; the orchestrator gates). Closes input2's departure
   refusing an unknown layout name (it does with the stock xkeyboard-config); if the gate's data lets it through,
   pick another bad name (a bad `xkb_rules`, say). Windows, spaces, outputs stay read at start.
 - **Only a real run proves.** Editing `keyboard.xkb_layout` (e.g. `us` to `de`, or `us,de` with
-  `grp:alt_shift_toggle` options) in `~/.config/compositor/settings.toml` while a terminal has focus: the next key
+  `grp:alt_shift_toggle` options) in `~/.config/bardo/compositor/settings.toml` while a terminal has focus: the next key
   types the new layout at once with no restart; a held modifier key still releases cleanly; Caps Lock is cleared by
   the switch; a typo in the layout leaves typing unchanged and one warning in the log; `cmd+space` still works.
   Toolkits that cache the keymap (GTK, Qt, Xwayland through xwayland-satellite) must take the new `keymap` event.
@@ -4540,7 +4540,7 @@ Crates `compositor-ipc` and `compositor-agent`. Written without a compiler (lane
 Crates `compositor`, `compositor-testkit`, `bardo-compositorctl`, a new `compositor-privacy`, and the small seams named below in `compositor-ipc`.
 Written without a compiler (lane rules); the gate run is the first build of this branch, which merges the consent gates (`pa2-cwl`)
 and the caller identity (`pa2-cipc`). The contract is ARCHITECTURE.md "Consent for the privileged globals" ("The composition
-root's half"). Owner decisions carried out: per-app consent; the book is `$XDG_STATE_HOME/compositor/privacy.toml`, written only by
+root's half"). Owner decisions carried out: per-app consent; the book is `$XDG_STATE_HOME/bardo/compositor/privacy.toml`, written only by
 The compositor; the administrator's floor is `/etc/bardo/privacy.toml` and `privacy.d/*.toml`, believed only when root-owned and not
 group/world writable; a user-writable program or an interpreter gets Allow Once and is never written to the book.
 
@@ -5073,7 +5073,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
 - **NEW-FA-4 (decided by the owner, 2026-10-17): a virtual device is trusted by who the input broker made it for, not by a guess.** The old rule
   read the bus type and the vendor id (`0x0001`) and wrongly caught a laptop's AT keyboard (`Bus=0011 Vendor=0001`; first fixed by also
   requiring `BUS_VIRTUAL`); the vendor is gone from the decision. The input broker is the only process that can create a uinput device
-  (`dist/72-input-broker.rules`: root-only, no `uaccess`) and proves which service each device is for, so it writes `input_broker/pad_daemon` (the mouse gestures daemon)
+  (`dist/72-bardo-input-broker.rules`: root-only, no `uaccess`) and proves which service each device is for, so it writes `input_broker/pad_daemon` (the mouse gestures daemon)
   or `input_broker/keymap_daemon` (the key remap daemon) into the device's `phys`. `RealInputFeed` reads `/sys/class/input/<sysname>/device/phys` next to the bus
   type (`maker_of`; unreadable reads as unlabelled) and `Maker::parse` (`compositor-core/src/input/maker.rs`) reads it. A virtual-bus device
   labelled for the key remap daemon is `Origin::Physical` (the key remap daemon only replays the person's own keyboard and mouse); one labelled for the mouse gestures daemon, one with no label

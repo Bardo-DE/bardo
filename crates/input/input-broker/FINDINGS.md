@@ -23,7 +23,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    is a system service too since 2026-10-17 (owner decision) and its identity is as strong, but its
    events still pass the ceiling one by one: the ceiling bounds what a bug in its input parsing can type.
 3. **No `RuntimeDirectory=` in the service unit.** The design listed it; stopping the service would
-   delete `/run/input_broker`, and with it the socket systemd keeps for activation. The socket unit makes
+   delete `/run/bardo/input-broker`, and with it the socket systemd keeps for activation. The socket unit makes
    the folder (`DirectoryMode=0755`) and nothing else needs one.
 4. **`MaxConnections=` is not in the socket unit.** It applies to `Accept=yes` sockets only. The
    service caps its own live connections and answers the rest with `Refused(TooMany)`: 16 for strangers
@@ -93,7 +93,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     The compositor used to guess whether input is the person's own hand from a device's bus type and
     vendor id, which wrongly caught a laptop's keyboard and kept the mouse gestures daemon's Magic Mouse clicks off
     the lock screen and consent sheets. The input broker is the only process that can create a uinput
-    device (`dist/72-input-broker.rules`) and it already proves which service each device is for
+    device (`dist/72-bardo-input-broker.rules`) and it already proves which service each device is for
     (`policy.rs`), so it writes that into the device with `UI_SET_PHYS` (`input-linux`'s
     `UInputHandle::set_phys`, before `UI_DEV_SETUP`): `input_broker/pad_daemon` for the mouse gestures daemon's three kinds,
     `input_broker/keymap_daemon` for the key remap daemon's two. The kernel shows it in

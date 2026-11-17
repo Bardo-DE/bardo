@@ -247,7 +247,7 @@ their toolkit via O2's `axis_stop`.
 | Device discovery | scan `/sys/class/hidraw/*/device/uevent` for vendor 004C product 0269 (Python `find_hidraw_device`); reconnect backoff 1 s x2 up to 30 s; 10 consecutive read errors = disconnect (Python) |
 | Service | `bardo-mouse-gestures.service` (systemd user, `graphical-session.target`, `Restart=on-failure`); installing it disables the Python service; uinput ACL wait loop as Python `wait_for_scroll_output` (1 s x2 up to 5 s) |
 | Tools | `mouse_gestures record FILE` (raw reports + monotonic times), `mouse_gestures replay FILE` (drives the pure core; used by tests and tuning), `mouse_gestures --check-uinput` |
-| Config | `~/.config/mouse_gestures/config.toml`, watched (debounce 30 ms); the Python env vars (`SCROLL_SPEED`, `SCROLL_LOCK_*`, `SCROLL_VELOCITY_GAIN_MAX`, `SCROLL_ACCEL_MAX`, `SWIPE_*`) still override for parity runs |
+| Config | `~/.config/bardo/mouse-gestures/config.toml`, watched (debounce 30 ms); the Python env vars (`SCROLL_SPEED`, `SCROLL_LOCK_*`, `SCROLL_VELOCITY_GAIN_MAX`, `SCROLL_ACCEL_MAX`, `SWIPE_*`) still override for parity runs |
 
 ## 12.4 State machine
 
@@ -308,7 +308,7 @@ virtual pad mm   = px * 0.25 (calibrated)
 
 ## 12.6 Configuration
 
-`~/.config/mouse_gestures/config.toml`, edited by the Settings app ("Mouse & Gestures" page).
+`~/.config/bardo/mouse-gestures/config.toml`, edited by the Settings app ("Mouse & Gestures" page).
 
 | Key | Default | Range | Status |
 | --- | --- | --- | --- |

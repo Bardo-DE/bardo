@@ -195,7 +195,7 @@ A settled item is deleted, not marked closed.
 
 - **The key remap daemon**: the daemon's socket is `SOCK_SEQPACKET` (`key-remap-protocol`), held by one thread
   (`poll` on the socket and an eventfd), reconnecting after 1 s doubling to 30 s. Each connection
-  starts with the current `Focus` and the text of `~/.config/key_remap/key-remap.toml`, whatever was sent
+  starts with the current `Focus` and the text of `~/.config/bardo/key-remap/key-remap.toml`, whatever was sent
   before. Unit state comes from systemd's `GetUnit` and `ActiveState` on the system bus after the
   socket has been down 3 s, then every 5 s: `GetUnit` answers `NoSuchUnit` for an installed unit
   that is not loaded (stopped and collected), which reads as `NotInstalled`, and that is as
@@ -1659,7 +1659,7 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
 - **Caps Lock.** Neither Caps Lock rule is in `dist/key_remap/key-remap.toml`: the key remap daemon's user layer
   refuses a rule whose trigger has no modifier (`capslock` -> `ctrl+space`) or only Shift
   (`shift+capslock` -> `capslock`). Both live in the desktop's vendor file,
-  `/usr/lib/key_remap/key-remap.toml` (the desktop repo's `dist/key-remap.toml`).
+  `/usr/lib/bardo/key-remap/key-remap.toml` (the desktop repo's `dist/key-remap.toml`).
 - **Also not run (arming test).** `permission_sheet.rs`' `nothing_answers_until_the_sheet_has_been_up_for_the_arming_time`
   assumes the harness's clock is virtual (about 30 ms pass between the alert mounting and the test's first
   input, 200 ms before the early inputs end, and the late click comes `PERMISSION_ARM_AFTER` later), that a click on

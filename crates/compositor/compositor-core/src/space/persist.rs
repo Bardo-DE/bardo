@@ -1,5 +1,5 @@
 //! The Space ids file: a pure codec between the model's Spaces and the text of
-//! `$XDG_STATE_HOME/compositor/spaces.toml` (A1). Reading and writing that file is the
+//! `$XDG_STATE_HOME/bardo/compositor/spaces.toml` (A1). Reading and writing that file is the
 //! composition root's `SpaceStore` seam; nothing here touches a file (B1).
 //!
 //! What survives a restart is the Space ids (they are ext-workspace's `id`, so a client that

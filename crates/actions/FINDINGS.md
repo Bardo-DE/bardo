@@ -176,7 +176,7 @@ Open, and the asks they make (nothing below was edited in the other repos):
    Ask (Bardo, `ds`): `MenuItem::Item` and the shortcut table gain `action: Option<ActionName>` (or
    `UiOnly(reason)`), and the app's build writes the file from its menu bar and shortcut table (a test that
    walks `MenuBarModel` and the table). Until then the check passes an app with a manifest and prints a note.
-   Today `mailo`, `detent` and `sill` fail the check (a `.desktop` file, no manifest); `anyview` ships no
+   Today `mailo`, `settings-app` and `sill` fail the check (a `.desktop` file, no manifest); `anyview` ships no
    `.desktop` file yet.
 6. **A paused terminal session (ask 89), decided in F3: `Control.Resume` from the control centre.** The breaker
    pauses a session "until the person speaks", and a terminal has no turn to record. `Control.Resume` (the

@@ -160,9 +160,9 @@ The daemon reads its environment once, at start:
 | Variable | Meaning | Default |
 | --- | --- | --- |
 | `NOTIFY_SOCKET`, `WATCHDOG_USEC` | systemd's `sd_notify` socket and watchdog interval | none |
-| `RUNTIME_DIRECTORY` | where `key-remap.sock` lives | `/run/key_remap` |
-| `BARDO_KEY_REMAP_CONFIG_DIR` | where `key-remap.toml` is read, only if root-only (a file in a test's scratch folder is not used) | `/etc/key_remap` |
-| `BARDO_KEY_REMAP_VENDOR_DIR` | where the desktop's shipped `key-remap.toml` is read, under the one above; tests point it at a folder that is not there | `/usr/lib/key_remap` |
+| `RUNTIME_DIRECTORY` | where `key-remap.sock` lives | `/run/bardo/key-remap` |
+| `BARDO_KEY_REMAP_CONFIG_DIR` | where `key-remap.toml` is read, only if root-only (a file in a test's scratch folder is not used) | `/etc/bardo/key-remap` |
+| `BARDO_KEY_REMAP_VENDOR_DIR` | where the desktop's shipped `key-remap.toml` is read, under the one above; tests point it at a folder that is not there | `/usr/lib/bardo/key-remap` |
 | `BARDO_KEY_REMAP_SEAT_FILE` | logind's seat state file, for the active uid | `/run/systemd/seats/seat0` |
 | `BARDO_KEY_REMAP_SYS_INPUT`, `BARDO_KEY_REMAP_DEV_INPUT` | where nodes are listed and opened | `/sys/class/input`, `/dev/input` |
 | `BARDO_KEY_REMAP_UDEV_DATA` | where udev's database says which seat a node is on | `/run/udev/data` |

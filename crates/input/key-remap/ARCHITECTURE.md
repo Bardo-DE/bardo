@@ -297,7 +297,7 @@ trusted, so both are read by one function, `config::trusted::read_layer`, and on
 check, the file and every folder above it root's and not writable by group or others, and a link never passes.
 The file is also read through a 64 KiB cap. A file that fails is no layer and one plain-words warning in the log
 (`installed defaults: ...` or `machine settings: ...`); a missing file or folder is no layer and no warning.
-The vendor folder (`$BARDO_KEY_REMAP_VENDOR_DIR`, else `/usr/lib/key_remap`) is watched as the config folder is, and a
+The vendor folder (`$BARDO_KEY_REMAP_VENDOR_DIR`, else `/usr/lib/bardo/key-remap`) is watched as the config folder is, and a
 missing folder is not watched, so a vendor file installed after the daemon started is read at its next start.
 A test that points `$BARDO_KEY_REMAP_CONFIG_DIR` at a scratch folder has no machine layer from a file in it.
 

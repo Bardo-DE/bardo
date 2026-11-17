@@ -1,5 +1,5 @@
 //! `xdg_toplevel_tag_manager_v1`: a stable tag per toplevel, the key for window placement
-//! memory (`$XDG_STATE_HOME/compositor/windows.toml`, C52).
+//! memory (`$XDG_STATE_HOME/bardo/compositor/windows.toml`, C52).
 
 use crate::states::GlobalFilter;
 use compositor_core::{Event, WindowId};

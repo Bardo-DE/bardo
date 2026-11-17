@@ -1,4 +1,4 @@
-//! The book as text: `$XDG_STATE_HOME/compositor/privacy.toml`. A pure codec: reading and
+//! The book as text: `$XDG_STATE_HOME/bardo/compositor/privacy.toml`. A pure codec: reading and
 //! writing the file is the composition root's seam. Rows that do not parse are dropped (an
 //! answer lost is a question asked again, never a program let in); a file that is not this
 //! version, too large or not text of this shape is an error, and the root sets it aside and

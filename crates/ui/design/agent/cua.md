@@ -80,7 +80,7 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, B
 
 **External boundary.** Every crate except `computer-use-dbus`, `cuad` and the backend features never reaches `zbus`, `zvariant`, `tokio`, `wayland-client`, `wayland-backend`, `reis`, `atspi`, `reqwest` or `hyper` (default features). `computer-use-run` additionally never reaches `cedar-policy` or `rusqlite`: verdicts and records cross as data.
 
-### Fork repo `~/compositor` (GPL-3.0-only, branch `bardo`, rebased on upstream release tags)
+### Fork repo `~/bardo/compositor` (GPL-3.0-only, branch `bardo`, rebased on upstream release tags)
 
 All Bardo code goes in `src/bardo/` (agent seat, masked source, lease and glow globals, input-origin gate, kill chord), with small hook calls into upstream files. The fork depends on `bardo-agent-protocol` (feature `server`) by git rev. The double-tap ⌘ detection (COMPANION item 7) also lands here later; whoever owns it shares the branch. Ownership: Q11.
 
@@ -720,7 +720,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents`
   - all shape tests in §5 that need no behaviour: wire round-trips, slugs, introspection, fixtures load;
   - `scripts/check-boundary.sh`;
   - joining reis and atspi into Bardo's `docs/workspace-deps.toml` first (a Bardo edit, coordinated).
-- **Agent `fork-setup`** owns `~/compositor`: fork at the upstream 1.8 tag, branch `bardo`, an empty `src/bardo/mod.rs` hooked in, `bardo-agent-protocol` (server) advertising stub globals. It builds and runs nested.
+- **Agent `fork-setup`** owns `~/bardo/compositor`: fork at the upstream 1.8 tag, branch `bardo`, an empty `src/bardo/mod.rs` hooked in, `bardo-agent-protocol` (server) advertising stub globals. It builds and runs nested.
 
 ### Fill waves (disjoint file ownership)
 
@@ -735,7 +735,7 @@ Prerequisite: models' `computer-use-action`, actions' `prov` and `bardo-intents`
   3. `crates/a11y-tree/src/atspi/**`
   4. `crates/cua-desktop/src/wayland/**`
 - **Fill 3 (1 agent):** `crates/cuad/**`, `crates/cua-dbus/src/codec.rs`, `crates/cua-fake/src/{harness.rs, model.rs, policy.rs, events.rs, desktop.rs, capture.rs}`, and `dist/`.
-- **Fill 4 (1 agent, `~/compositor` `src/bardo/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/compositor/target/release/the compositor`).
+- **Fill 4 (1 agent, `~/bardo/compositor` `src/bardo/**` only):** fork changes F1-F7 below, then Spikes C and D become acceptance scripts in `~/cua/scripts/dev/accept-{agent-seat,masking}.sh` (with `COMPOSITOR_BIN=~/bardo/compositor/target/release/the compositor`).
 - **Fill 5 (later):** procedures (`computer-use-run/src/procedure.rs`, plus replay in cuad), NestedSession mode (KWin host), the KWin backend, the `bardo_sensitive_v1` client in layer-shell-host.
 
 ### Fork changes (the compositor) against stock
@@ -764,7 +764,7 @@ cargo deny check licenses
 
 Spikes and acceptance (dev only, never in CI): `scripts/dev/spike-{a,b,e}.sh`, `scripts/dev/accept-{agent-seat,masking}.sh`.
 
-Fork: `cargo build --release && cargo test` in `~/compositor`, then the `~/cua` acceptance scripts against it.
+Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~/cua` acceptance scripts against it.
 
 ---
 

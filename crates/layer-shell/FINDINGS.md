@@ -740,7 +740,7 @@ setting).
 
 ### F64. The mouse gestures daemon client and the double-scroll window
 
-The host connects to `/run/mouse_gestures/events.sock` (a constant: the mouse gestures daemon is a system service since
+The host connects to `/run/bardo/mouse-gestures/events.sock` (a constant: the mouse gestures daemon is a system service since
 2026-10-17, so `XDG_RUNTIME_DIR` plays no part) when it exists (non-blocking `SOCK_SEQPACKET` through
 `rustix`), at start, on the next pointer enter while unconnected, when the session locks while
 unconnected, and on a timer after a miss (NEW-QDH-2, below). Wire form is the mouse gestures daemon's, taken from its
@@ -764,8 +764,8 @@ same steps are done here), without the caller table: the group is the only judge
 believed only through `MouseGestures::trusting`, which exists in test builds.
 
 **The person's gesture settings.** The daemon cannot read a home folder, so after `PointerOver` on every
-connect the host sends `UserConfig{toml}`: the text of `$XDG_CONFIG_HOME/mouse_gestures/gestures.toml` (else
-`~/.config/mouse_gestures/gestures.toml`), at most 24 KiB, read without blocking from a regular file; empty
+connect the host sends `UserConfig{toml}`: the text of `$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml` (else
+`~/.config/bardo/mouse-gestures/gestures.toml`), at most 24 KiB, read without blocking from a regular file; empty
 when there is no file or it is unusable, which takes the person's layer away at the daemon. The host
 watches no files, so while the daemon is connected a timer (`ctx::mouse_gestures::watch_settings`, armed once)
 looks at the file's size and modification time every two seconds and sends the text again when either

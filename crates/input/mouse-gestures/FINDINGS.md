@@ -148,13 +148,13 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
 **Deferred from the 2026-10-16 production audit (input).**
 - *Key synthesis access (INPUT-02): done in this repository, the rest is the desktop's.*
   The mouse gestures daemon asks the input service (the input broker, `input-broker-client` at tag `v0.1.0`) for its
-  touchpad and keyboard instead of opening `/dev/uinput`. `dist/70-mouse-gestures.rules` no
+  touchpad and keyboard instead of opening `/dev/uinput`. `dist/70-bardo-mouse-gestures.rules` no
   longer tags the node (the hidraw line stays), `dist/bardo-mouse-gestures.service` has a root-owned
   `ExecStart` and `UnsetEnvironment=` for the library-path variables, and `install.sh` installs
   the program to `/usr/local/bin`. The service refuses a letter, digit, punctuation, Enter,
   Space, Tab, Backspace, Delete or Escape unless ctrl, alt or super is held, so the mouse gestures daemon warns
   at load time about a mapped combination like that. Still to come: the desktop installer
-  placing the service and `72-input-broker.rules` (`pa2-desk`). INPUT-19's remaining half (limit raw
+  placing the service and `72-bardo-input-broker.rules` (`pa2-desk`). INPUT-19's remaining half (limit raw
   hidraw writes to the daemon) is not done: the hidraw rule keeps `uaccess`.
 - *The direct fallback is gone (INPUT-02, 2026-10-17).* `Origin::Service` is the input service alone; with
   the service absent the mouse gestures daemon has no pad and says so. `--direct-uinput` (`Route::Node`) stays for development
@@ -169,7 +169,7 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
 - *Rust 1.92.* `input-broker-client` declares `rust-version = "1.92"`, so the workspace's moved
   from 1.91. The pinned toolchain (1.98.1) already satisfies it.
 - *Who may talk to the mouse gestures daemon (INPUT-03, INPUT-14): done (2026-10-17).* the mouse gestures daemon is a system service
-  (owner decision), so its socket is `/run/mouse_gestures/events.sock`, mode 0666, and the socket thread
+  (owner decision), so its socket is `/run/bardo/mouse-gestures/events.sock`, mode 0666, and the socket thread
   serves only the person at the seat and believes only the shell (peephole, as the key remap daemon's `Steering`)
   about the pointer and an unlocked session. The hidraw rule gives the node to the `input` group and
   no person (INPUT-19's second half: the raw node and its feature reports are no longer reachable
@@ -180,8 +180,8 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
   the lane report). Neither the compositor nor sill publishes a lock state a daemon outside the session
   can read, and logind's `LockedHint` is not set by sill's locker.
 - *Settings and actions after the move to a system service (2026-10-17): done.* The service
-  (a dynamic user with `ProtectHome=yes`) reads `/etc/mouse_gestures/gestures.toml`; the person's
-  `~/.config/mouse_gestures/gestures.toml` reaches it as `ToDaemon::UserConfig`, sent by the shell
+  (a dynamic user with `ProtectHome=yes`) reads `/etc/bardo/mouse-gestures/gestures.toml`; the person's
+  `~/.config/bardo/mouse-gestures/gestures.toml` reaches it as `ToDaemon::UserConfig`, sent by the shell
   (shell-host's the mouse gestures daemon client reads the file, at most 24 KiB, after connecting and whenever it
   changes; it polls the file's modification time every two seconds, since shell-host watches no
   files). The daemon believes it from the shell's connection only, merges it key by key over the
@@ -205,7 +205,7 @@ Mouse 1's report 0x29); `touch.rs` (12-bit wrap of deltas, now on every sensor's
 
 ## Standing facts
 
-**The settings file.** `$XDG_CONFIG_HOME/mouse_gestures/gestures.toml` (22-SETTINGS §2). Two tables:
+**The settings file.** `$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml` (22-SETTINGS §2). Two tables:
 `[scroll]` (`speed`) and `[gestures.gesture_action_map]`. Unknown keys are ignored, so a file
 from before the pruning loads and its removed keys do nothing. Enums are snake_case.
 

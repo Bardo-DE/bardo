@@ -218,7 +218,7 @@ fn export_links_are_allowed_only_below_the_listed_folders() {
         ("/usr/share/fonts/bardo/Noto-COLRv1.ttf", true),
         // Beside a listed folder, not inside it.
         ("/usr/share/bardo2/x", false),
-        ("/usr/share/quirex", false),
+        ("/usr/share/bardox", false),
         ("/usr/share/fonts2/x.ttf", false),
         ("/usr/share/icons/hicolor/x.png", false),
         // The folder itself is not a place for a link.

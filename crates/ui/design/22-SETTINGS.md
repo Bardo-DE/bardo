@@ -42,7 +42,7 @@ preferences:
 
 One TOML file per owning program, replacing the plan's `appearance.json` (PLAN "Design:
 `<ds>`") and the docs' scattered `~/.config/bardo/scroll.json` / `~/.config/bardo/shell/settings.json`
-/ `~/.config/mouse_gestures/config.toml` mentions (`11-BEHAVIOUR-scroll.md#11-6-configuration`,
+/ `~/.config/bardo/mouse-gestures/config.toml` mentions (`11-BEHAVIOUR-scroll.md#11-6-configuration`,
 `10-BEHAVIOUR-dock.md#10-6-configuration`, `12-BEHAVIOUR-gestures.md#12-6-configuration`): this
 doc is the authority on where each key actually lives, and supersedes those inline paths.
 
@@ -52,7 +52,7 @@ doc is the authority on where each key actually lives, and supersedes those inli
 | `$XDG_CONFIG_HOME/shell/settings.toml` | `bardo-shell` (crate `shell-services`/`sill-surfaces`) | `bar`, `dock`, `launcher`, `scroll`, `scrollbar`, `menus`, `switcher`, `notifications`, `control_center`, `spaces`, `osd`, `power_menu`, `display`, `session`, `widgets`, `calendar`, `screenshot`, `hot_corners`, `keyboard` |
 | `$XDG_CONFIG_HOME/<daemon>/…` | the companion's daemons: inferd (porter), intentd and companiond (docket), memoryd (almanac), cuad (cua); each repo names its file and ships its schema (section 9.2). Named so far: docket `$XDG_CONFIG_HOME/actions/settings.toml` (schema `dist/settings/actions.settings.toml`); inferd's schema is porter's `dist/inference.settings.toml` | `ai`, `agent`, `memory`, `cua` (sections 3.26 to 3.29) |
 | `$XDG_CONFIG_HOME/anyview/settings.toml` | `anyview` (the file viewer; its settings module ships the schema, section 9.2) | `viewer` (section 3.31) |
-| `$XDG_CONFIG_HOME/mouse-gestures/gestures.toml` | `mouse_gestures` (the gesture daemon, PLAN Appendix B); `bardo-shell`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
+| `$XDG_CONFIG_HOME/bardo/mouse-gestures/gestures.toml` | `mouse_gestures` (the gesture daemon, PLAN Appendix B); `bardo-shell`/`layer-shell-host` read it read-only for `PointerOver` suppression and the scroll `feel` module | `gestures`, `palm_rejection` |
 
 Rules, all three files:
 

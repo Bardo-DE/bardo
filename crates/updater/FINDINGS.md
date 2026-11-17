@@ -8,7 +8,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    `org.bardo.updater.apply` has `allow_active=yes`, `allow_inactive=no`, `allow_any=no`. That is safe only because
    `bardo-updater-apply` installs nothing that does not verify against the release key on the computer and refuses
    anything not newer than what runs; it cannot be pointed at another root or key (it reads
-   `/etc/updater/config.toml`, not the caller's configuration) and, since decision 23, it cannot go back at all.
+   `/etc/bardo/updater/config.toml`, not the caller's configuration) and, since decision 23, it cannot go back at all.
    Going back is `bardo-updater-rollback` under `org.bardo.updater.rollback` (`auth_admin_keep`). The health program
    `bardo-updater-health` has `org.bardo.updater.health` (`yes`), see decision 22. Closes if the owner wants a password
    for installs: change `allow_active` of the first action to `auth_admin_keep`.
@@ -34,7 +34,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 8. **Stale exports come from the kept record**, not from scanning the system: the links to drop are those
    in the `release.toml` kept inside the release being left, and only when they still point into the root.
 9. **One system settings file decides the root and the key.** The privileged helper reads only
-   `/etc/updater/config.toml`; the daemon and the command line read it first and then the person's file,
+   `/etc/bardo/updater/config.toml`; the daemon and the command line read it first and then the person's file,
    which may only set `settings_command` and `name` (other keys there are ignored, silently). So the two
    cannot disagree. `scripts/install.sh` writes the file once (`root`, `pubkey_path`) and never overwrites
    one; it says so when the existing file names another root than `--root`.
@@ -126,7 +126,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     (the error type that carries them cannot name another family); a refused `Rollback` or `Check` is the bus's own
     `AccessDenied`. (d) The properties are not gated.
 25. **The input service's files are allowed, and the helper tells the system (wave 2, pa2-slip).** Four exact rules
-    were added (`bardo-input-broker.socket`, `bardo-input-broker.service` under `/usr/lib/systemd/system`, `72-input-broker.rules`,
+    were added (`bardo-input-broker.socket`, `bardo-input-broker.service` under `/usr/lib/systemd/system`, `72-bardo-input-broker.rules`,
     `input-broker.conf`); the design text says "three new rules" but lists four files, and the four files are the
     The input broker lane's. After placing or removing system files the helper runs `daemon-reload`, the udev reload and
     trigger for misc devices, and `enable --now bardo-input-broker.socket` (ARCHITECTURE s.4, `apply/settle.rs`). The helper is
@@ -188,7 +188,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    `system/etc/polkit-1/rules.d/00-all.rules` now makes the release unusable instead of giving root. Left to the
    desktop: `pack` should refuse a `system/` tree that differs from the same list (exact diff in the lane report).
    Whoever adds a system file edits the list and installs a new helper by hand (decision 1 of the desktop's
-   FINDINGS: a release never replaces the helper). 2026-10-17: `/usr/lib/key_remap/key-remap.toml` was added (18 rules)
+   FINDINGS: a release never replaces the helper). 2026-10-17: `/usr/lib/bardo/key-remap/key-remap.toml` was added (18 rules)
    for the desktop's keyboard-daemon defaults; no rule was removed, so a rollback to an older release still places
    its files. Machines that already have a helper must re-run the installer before a release that lists it, or the
    helper refuses that release whole.
@@ -302,7 +302,7 @@ Written without a compiler (only `cargo fmt -p`, and the shell parts of `scripts
   digests come through `updater_core::Hasher`). `serde`, `tracing` and everything heavy are gone from it.
   `scripts/check-boundary.sh` fails if it reaches `ureq`, `rustls`, `zbus` or `tokio`.
 - **Settings.** The privileged programs no longer deserialize the service's whole `Config`: `updater_root::settings::
-  RootSettings` reads `root` and `pubkey_path` from `/etc/updater/config.toml` (any other key is ignored), and the
+  RootSettings` reads `root` and `pubkey_path` from `/etc/bardo/updater/config.toml` (any other key is ignored), and the
   service's `Config` takes its defaults and the file path from there. A `root` or `pubkey_path` that is not a string is
   now refused with a plain sentence.
 - **`scripts/install.sh`.** `install -d -m755` / `install -m MODE` (beside the target, then renamed over), its own
@@ -389,7 +389,7 @@ the `--config` flag on the pinned 1.98.1; and the toolchain-install branch of th
 ## System units and plain files (2026-10-17)
 
 `ALLOWED_SYSTEM_FILES` grew to 21 rules, in the order the desktop's `release/system-files.list` has them (after
-`/etc/modprobe.d/99-mouse-gestures.conf`): `/usr/lib/systemd/system/bardo-mouse-gestures.service` (the touchpad daemon became a
+`/etc/modprobe.d/99-bardo-mouse-gestures.conf`): `/usr/lib/systemd/system/bardo-mouse-gestures.service` (the touchpad daemon became a
 system service, as the key remap daemon is), `/usr/lib/systemd/user/*.service` and
 `/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf`. The last two exist because a unit that has to
 prove its standing to its callers cannot be an export link: the unit manager's judge looks at the fragment with

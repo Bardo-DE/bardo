@@ -10,13 +10,13 @@ what a desktop ships and lies under both; leave it alone and override it here.
    vendor file is judged the same way). On Plasma, `install.sh` puts `dist/key_remap.plasma.toml` here first; it already has a `[profile.default]`
    table, so add your rules to the end of its `rules = [...]` list and put `[[device]]` blocks at
    the end of the file.
-2. `~/.config/key_remap/key-remap.toml`, if your desktop forwards it: this layer is yours alone and
+2. `~/.config/bardo/key-remap/key-remap.toml`, if your desktop forwards it: this layer is yours alone and
    exists only while that desktop's session runs. The Plasma focus feed does not forward it, so
    on Plasma use the machine file. sill does forward it.
 
 ## What your own file may say
 
-When a desktop forwards `~/.config/key_remap/key-remap.toml`, the key remap daemon keeps from it only rules that need a
+When a desktop forwards `~/.config/bardo/key-remap/key-remap.toml`, the key remap daemon keeps from it only rules that need a
 modifier held (Command, Option, Control or Shift) and write one stroke, and at most 256 of them; the rest
 are reported and left out. A rule on a key pressed alone, a rule whose `then` is a list of strokes or
 `[]`, and a long list all belong in `/etc/bardo/key-remap/key-remap.toml`, which is not cut down. An administrator who
@@ -30,12 +30,12 @@ sequences = true
 ## Which file, when you use more than one desktop
 
 Put a rule in the machine file when every session should have it: a keyboard's `[[device]]`
-layout, Caps Lock as the input switch. Put it in `~/.config/key_remap/key-remap.toml` when it is about
+layout, Caps Lock as the input switch. Put it in `~/.config/bardo/key-remap/key-remap.toml` when it is about
 one desktop, because the machine file may be the Plasma overlay and the Plasma shortcuts are
 wrong elsewhere. Cmd+Space, for example, is Alt+Space on Plasma and Super+Space on sill:
 
 ```toml
-# ~/.config/key_remap/key-remap.toml, read only by a desktop that forwards it (sill)
+# ~/.config/bardo/key-remap/key-remap.toml, read only by a desktop that forwards it (sill)
 [profile.default]
 rules = [
   { when = "command+space", then = "super+space" },    # the launcher, not KRunner

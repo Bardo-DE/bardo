@@ -141,7 +141,7 @@ pub enum IdleTimesSource {
 impl Env {
     /// The process's own: its buses, its compositor, its directories, the system clock, the
     /// kernel's i2c buses, polkitd on the system bus, logind's session actions, PAM through
-    /// `bardo-shell auth-check`, the system's accounts database and the key remap daemon's socket under `/run/key_remap`.
+    /// `bardo-shell auth-check`, the system's accounts database and the key remap daemon's socket under `/run/bardo/key-remap`.
     #[must_use]
     pub fn from_process() -> Env {
         let buses = Buses::from_process();

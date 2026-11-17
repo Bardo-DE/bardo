@@ -44,12 +44,12 @@ screen's session list the whole time. Nothing below changes Plasma's files.
 
    It installs `/usr/local/bin/bardo-shell`, `/etc/pam.d/bardo-shell`, the intents manifest
    `/usr/local/share/bardo/intents/org.bardo.Shell.toml`, the skills and the settings schema; it also
-   copies the key remap daemon layer to `~/.config/key_remap/key-remap.toml` when you have none (an existing file is
+   copies the key remap daemon layer to `~/.config/bardo/key-remap/key-remap.toml` when you have none (an existing file is
    never touched). It is safe to run again. Then install the session from `~/desktop` (it writes
    `bardo-session` and the `sill (compositor)` entry in `wayland-sessions`). Confirm:
 
    ```sh
-   ls /usr/local/bin/bardo-shell /etc/pam.d/bardo-shell ~/.config/key_remap/key-remap.toml
+   ls /usr/local/bin/bardo-shell /etc/pam.d/bardo-shell ~/.config/bardo/key-remap/key-remap.toml
    ls /usr/share/wayland-sessions/ | grep -i the compositor
    ```
    **System services sill uses (all optional).** Each feature below works only while its service runs
@@ -70,13 +70,13 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    three. External monitor brightness needs the `i2c-dev` module and an ACL on `/dev/i2c-*`: the install
    adds both unless a ddcutil package already does (`ddcutil` on all three).
 5. **The key remap daemon** replaces Toshy; the sill session has no Mac layout without it (Cmd stays Cmd). It is
-   installed and running on this machine; if not, `~/key_remap/install.sh --dry-run`, then
-   `~/key_remap/install.sh` (it builds and installs with sudo; see `~/key_remap/README.md`, "Install").
+   installed and running on this machine; if not, `~/bardo/key-remap/install.sh --dry-run`, then
+   `~/bardo/key-remap/install.sh` (it builds and installs with sudo; see `~/bardo/key-remap/README.md`, "Install").
    Check `systemctl status key_remap` and Cmd+C / Cmd+V in a text field in Plasma.
 
    `/etc/bardo/key-remap/key-remap.toml` is the Plasma overlay and is shared by every session: it writes
    Cmd+Space as Alt+Space (KRunner), which opens nothing in sill. So the sill session has its own layer,
-   `~/.config/key_remap/key-remap.toml` (copied from `dist/key_remap/key-remap.toml` by the install). sill forwards
+   `~/.config/bardo/key-remap/key-remap.toml` (copied from `dist/key_remap/key-remap.toml` by the install). sill forwards
    that file to the key remap daemon and the key remap daemon lays it over the machine file, so in sill Cmd+Space is Super+Space and
    Cmd+Shift+3/4/5 is Print (`bardo-shell screenshot area`); Plasma never forwards it and keeps `alt+space`.
    It also sends Cmd+Tab and Shift+Cmd+Tab to the app switcher (Super+Tab, with Super held while Cmd is held, so the
@@ -107,7 +107,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    wallet Plasma used. `--password-store=gnome-libsecret` also works through the Secret Service but
    is a different store (you sign in once more).
 8. **Mouse settings.** Plasma's per-mouse settings are not copied. The compositor's settings
-   (`~/.config/compositor/settings.toml`, `[pointer] natural_scroll`) hold the mouse options, and natural
+   (`~/.config/bardo/compositor/settings.toml`, `[pointer] natural_scroll`) hold the mouse options, and natural
    scroll is on by default. Change it there if you want the other direction.
 9. Do not install `dist/bardo-shell.service` yourself (the desktop repo's installer puts it under `/etc/systemd/user`, root-held, and the session starts it; a copy under `~/.config` is not trusted) and do not enable `bardo-voiced.service` (see "The agent stack" in
    section 3). `dist/udev` and `dist/modules-load.d` (external monitor brightness) are installed by
@@ -130,7 +130,7 @@ systemctl --user is-active graphical-session.target; echo $XDG_CURRENT_DESKTOP $
 sill ping; sill polkit status; sill idle status        # pong; registered; {"kind":"own"}
 journalctl -b --no-pager | grep -E 'bardo-session|guard' | tail     # no quick exits; cat $XDG_RUNTIME_DIR/bardo-session/guard.log is empty
 # 2 launcher by keyboard (G1/G2/L2): Cmd+Space opens it, again closes it; type "term", Enter; also Super+Space
-#   (Cmd+Space does nothing: Alt+Space is being sent, so ~/.config/key_remap/key-remap.toml is missing; section 1, item 5)
+#   (Cmd+Space does nothing: Alt+Space is being sent, so ~/.config/bardo/key-remap/key-remap.toml is missing; section 1, item 5)
 # 3 GPU (B3): which device did it pick, is sill quiet
 journalctl -b --no-pager | grep -iE 'render device|adapter|vulkan|llvmpipe' | tail
 top -b -n1 | head -12                                    # sill and the compositor not busy at idle
@@ -184,7 +184,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
   for its Force Quit chord (today the chord is swallowed by a command that does nothing). Run
   `bardo-shell force-quit toggle` from a terminal to see the panel.
 - No sink list in the control centre (G352): switch audio in Settings > Sound or `wpctl set-default <id>`.
-- Mouse settings are the compositor's (`~/.config/compositor/settings.toml`, section 1, item 8), or per device in
+- Mouse settings are the compositor's (`~/.config/bardo/compositor/settings.toml`, section 1, item 8), or per device in
   Settings > Mouse (the "the mouse gestures daemon" devices).
 - Night Shift: the control centre's Display module switches the compositor's software night light on until
   tomorrow and sets its warmth; the schedule (times, "always") is the compositor's `[night_light]`, set in
@@ -204,7 +204,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
   (with the cable or 2.4G keyboard if the key remap daemon or Bluetooth is the problem), then either
   - `systemctl restart plasmalogin` and pick Plasma at the login screen (use `sudo`), or
   - remove the sill session: `~/sill/dist/uninstall.sh` (`--dry-run` first;
-    `--forget-seeds` also removes the key remap daemon layer in `~/.config/key_remap`, if you have not changed it). The Plasma entry stays.
+    `--forget-seeds` also removes the key remap daemon layer in `~/.config/bardo/key-remap`, if you have not changed it). The Plasma entry stays.
 - **The keyboard is wrong**: hold both Shift keys and press Esc (the key remap daemon's release), or
   `sudo systemctl stop key_remap`.
 - **The rendering GPU.** sill's own windows render on the same GPU as the compositor, on any

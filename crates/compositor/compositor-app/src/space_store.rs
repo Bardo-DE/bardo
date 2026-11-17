@@ -1,7 +1,7 @@
 //! The Space ids file's I/O seam (A1, P1-Z; filled by P1-M2).
 //!
 //! The codec is pure and lives in core (`compositor_core::space::SpaceFile`); reading and writing
-//! `$XDG_STATE_HOME/compositor/spaces.toml` is this seam. The path comes from an injected
+//! `$XDG_STATE_HOME/bardo/compositor/spaces.toml` is this seam. The path comes from an injected
 //! [`StateDirs`] that `main` resolves from the environment; the library reads none. A write is
 //! atomic (a temporary file in the same directory, then a rename), so a crash never leaves half
 //! a file. `compositor-testkit` exports `MemorySpaceStore`.
@@ -28,7 +28,7 @@ use std::path::{Path, PathBuf};
 /// is not ours (a FIFO or a device at the path is refused too, so start-up cannot hang on it).
 const SPACES_FILE_CAP: ReadCap = ReadCap::kib(512);
 
-/// The directory the compositor keeps its state files in (`$XDG_STATE_HOME/compositor`).
+/// The directory the compositor keeps its state files in (`$XDG_STATE_HOME/bardo/compositor`).
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct StateDirs {
     compositor: PathBuf,

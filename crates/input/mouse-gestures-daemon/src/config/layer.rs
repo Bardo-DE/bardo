@@ -1,7 +1,7 @@
 //! The person's gesture settings over the machine's.
 //!
 //! The mouse gestures daemon is a system service and reads only `/etc/bardo/mouse-gestures/gestures.toml` itself;
-//! the shell sends the text of the person's own `~/.config/mouse-gestures/gestures.toml`
+//! the shell sends the text of the person's own `~/.config/bardo/mouse-gestures/gestures.toml`
 //! (`ToDaemon::UserConfig`), and the two are merged as tables, key
 //! by key, the person's value winning. What a person may not set is dropped with a warning, and
 //! what is too big is not read at all. Pure.

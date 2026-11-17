@@ -143,7 +143,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 ## Needs a real sill (the compositor) login (not the headless compositor)
 
 - [ ] **Cmd+Space through the key remap daemon** opens the launcher (the key remap daemon writes Super+Space from the sill layer
-  `~/.config/key_remap/key-remap.toml`; Alt+Space means the layer is missing and only `/etc/bardo/key-remap/key-remap.toml`, the
+  `~/.config/bardo/key-remap/key-remap.toml`; Alt+Space means the layer is missing and only `/etc/bardo/key-remap/key-remap.toml`, the
   Plasma overlay, applies).
 - [ ] **Super shortcuts** reach the shell (the headless compositor never gets them).
 - [ ] **A compositor shortcut runs `bardo-shell launcher toggle`**: bind Ctrl+Alt+Space to run
@@ -287,7 +287,7 @@ and a stand-in helper; these need polkitd, polkit's own helper and a real passwo
 need the real daemon on a machine with a Mac keyboard (or a PC keyboard with the Mac layout) and
 root for the unit. Install the key remap daemon first (`install.sh` in the key remap daemon repo, with its unit, config
 folder and polkit rule `dist/bardo-key-remap.polkit.rules`), run sill's `dist/install.sh` (it copies the
-sill layer `dist/key_remap/key-remap.toml` to `~/.config/key_remap/key-remap.toml` when missing), then log in to a sill session.
+sill layer `dist/key_remap/key-remap.toml` to `~/.config/bardo/key-remap/key-remap.toml` when missing), then log in to a sill session.
 
 - [ ] `bardo-shell key_remap status` says `connected` with your keyboard listed and `grab` `active`.
 - [ ] Cmd+Space opens the launcher and again closes it (Super+Space, not Alt+Space), and Cmd+Shift+4 starts
@@ -301,7 +301,7 @@ sill layer `dist/key_remap/key-remap.toml` to `~/.config/key_remap/key-remap.tom
   differently there) and other apps do not. Change the `profile`, then delete the row: each
   switches again. A row with `profile = "Bad Name"` is dropped and a `sill: settings.toml:` line
   in the daemon's log says so; the other rows still apply.
-- [ ] Edit `~/.config/key_remap/key-remap.toml` (a rule on a key you can tell): the change applies
+- [ ] Edit `~/.config/bardo/key-remap/key-remap.toml` (a rule on a key you can tell): the change applies
   within a second, no restart.
 - [ ] `sudo pkill -KILL key_remap` once: keys keep working, **no notification** appears (systemd
   brings it back in 200 ms; `bardo-shell key_remap status` is `connected` again).

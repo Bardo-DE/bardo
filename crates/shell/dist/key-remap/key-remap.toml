@@ -1,4 +1,4 @@
-# The key remap daemon: the bardo-shell session's layer. dist/install.sh copies it to ~/.config/key-remap/key-remap.toml when
+# The key remap daemon: the bardo-shell session's layer. dist/install.sh copies it to ~/.config/bardo/key-remap/key-remap.toml when
 # that file is missing (never over yours). bardo-shell forwards that file to the key remap daemon as the seat owner's
 # settings, which lie over /etc/bardo/key-remap/key-remap.toml, so the machine file can stay the Plasma one:
 # Plasma never forwards a user file and keeps its own mapping.
