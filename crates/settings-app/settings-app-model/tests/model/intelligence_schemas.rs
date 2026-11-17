@@ -27,7 +27,7 @@ fn catalogue(test: &str) -> Catalogue {
         install(&scratch, "computer-use", "computer-use"),
     ];
     let joined = std::env::join_paths(&shares).expect("paths");
-    let dirs = ui_settings::schema::data_dirs_from(
+    let dirs = settings_store_fs::data_dirs_from(
         Some(OsString::from(scratch.join("home/share")).as_os_str()),
         Some(joined.as_os_str()),
         Some(OsString::from(scratch.join("home")).as_os_str()),
@@ -142,7 +142,7 @@ fn a_key_is_held_by_its_programs_file() {
         ("cua.budget.spend_microusd", "computer-use/settings.toml"),
     ] {
         let entry = catalogue
-            .entry(&ui_settings::schema::KeyPath(path.to_owned()))
+            .entry(&settings_types::schema::KeyPath(path.to_owned()))
             .unwrap_or_else(|| panic!("{path}"));
         assert_eq!(entry.file.relative(), Path::new(file), "{path}");
     }

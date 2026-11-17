@@ -1,6 +1,6 @@
 [package]
 name = "memory-dbus"
-description = "almanac's D-Bus API: org.bardo.Memory1 as zbus proxies, the argument codec, the errors and bus names. The daemon's half is memory-dbus-serve."
+description = "almanac's D-Bus API: org.bardo.Memory1 as zbus proxies, the argument codec, the errors and bus names, and the daemon's half: the served objects, the signals and the introspection."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -14,6 +14,7 @@ zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [lints]
 workspace = true

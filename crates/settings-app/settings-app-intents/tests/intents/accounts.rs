@@ -10,7 +10,7 @@ use settings_app_model::{
     Absence, Account, AccountKey, AccountService, AccountSpend, AccountStatus, AccountsPane,
     ModuleId, Place,
 };
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 fn account(id: &str, label: &str, status: AccountStatus, kinds: &[&str]) -> Account {
     Account {

@@ -8,7 +8,7 @@
 use super::light_paint::light_colours;
 use crate::appearance::theme::Scheme;
 use crate::tokens::hex::Hex;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One of the three traffic lights.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
@@ -53,7 +53,7 @@ mod tests {
     use super::{Light, light_hue, light_rim};
     use crate::appearance::theme::Scheme;
     use crate::tokens::chrome::light_paint::{LightPaint, LightPart};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     const CSS: &str =
         include_str!("../../../../ui-components/src/components/chrome/window_frame.css");

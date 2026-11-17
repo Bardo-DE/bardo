@@ -12,11 +12,11 @@ use crate::components::menus::item::item::MenuImage;
 use crate::components::menus::item::text::{Emphasis, ItemText};
 use crate::components::menus::item::tip::RowTip;
 use crate::host::event_point::client_point;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Point;
 use ui_core::press::{PointerButton, Press};
 use ui_core::vocab::{Availability, Check, aria_word};
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::icon::render::{Glyph, IconSize};
 

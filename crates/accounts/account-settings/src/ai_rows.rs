@@ -8,8 +8,8 @@ use account_capability::{AbsentReason, CapabilityKind, Offer};
 use account_core::consent::{Decision, Grant, GrantScope};
 use account_core::{Account, AccountState, AuthKind, GrantId};
 use base_ids::word::{from_word, word};
-use ui_settings::live::LiveError;
-use ui_settings::schema::{ActionWeight, Exposure, KeyKind, KeySpec};
+use settings_dbus::LiveError;
+use settings_types::schema::{ActionWeight, Exposure, KeyKind, KeySpec};
 
 /// The kinds of service of `account` that have a switch: the AI and assistant services it
 /// offers, and the ones the person turned off. An account with several models holds one claim

@@ -15,7 +15,6 @@ use crate::bar::pointer::BarPointer;
 use dioxus::prelude::*;
 use ui_components::base::press::Press;
 use ui_components::base::vocab::{Availability, Check, aria_word, emphasis_word};
-use ui_components::base::word::Word;
 use ui_components::components::content::icon_source::IconSource;
 use ui_components::components::content::icon_view::IconView;
 use ui_components::components::content::text_runs::{TextLine, text};
@@ -25,6 +24,7 @@ use ui_components::components::controls::press::{
 };
 use ui_components::root::common::Common;
 use ui_components::style::icon::render::IconSize;
+use ui_components::words::Word;
 
 /// One bar item. `label` is the title, and the item's accessible name when it is drawn as a glyph
 /// only; `icon` puts a glyph before it (an `Icon`, or a layered status glyph), and

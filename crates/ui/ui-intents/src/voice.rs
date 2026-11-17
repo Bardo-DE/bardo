@@ -3,9 +3,9 @@
 //! Plain values: the voice wire's own types are converted into these by `action-ui-adapter`, so
 //! quire never links an agent crate.
 
+use base_words::Word;
 use std::fmt;
 use ui_core::vocab::InputLevel;
-use ui_core::word::Word;
 
 /// How a summon was started (the view of the agent's summon origin).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

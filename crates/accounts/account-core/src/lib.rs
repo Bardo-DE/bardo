@@ -31,6 +31,7 @@ mod space_record;
 pub mod store;
 pub mod stream;
 pub mod token;
+mod web_request;
 
 pub use account::{Account, AccountLabel, AccountState};
 pub use app_id::{AppId, AppLabel, AppName, Isolation};
@@ -69,3 +70,4 @@ pub use space_record::{
     SpaceName,
 };
 pub use token::{Audience, IssuedToken, TokenKind};
+pub use web_request::{request_to, web_url};

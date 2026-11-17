@@ -8,7 +8,7 @@ use memory_core::{HistoryFate, MemoryFate, Removal};
 use settings_app_model::SpaceKey;
 use settings_app_system::bus::{BusSource, Vouch};
 use settings_app_system::spaces::{OnBus, SpacesLink};
-use ui_settings::live::AnyOwner;
+use settings_dbus::AnyOwner;
 fn link(bus: &PrivateBus) -> OnBus {
     OnBus(BusSource::Address(bus.address.clone(), Vouch::of(AnyOwner)))
 }

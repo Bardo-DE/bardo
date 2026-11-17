@@ -1,7 +1,7 @@
 //! Every card's footer: which model served it, what it drew on, what it carried.
 
 use crate::components::content::icon_source::IconSource;
-use ui_core::word::Word;
+use base_words::Word;
 use ui_intents::ContextChip;
 
 /// Where a model ran, `data-place`.

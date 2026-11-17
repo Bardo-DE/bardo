@@ -2,12 +2,13 @@
 //! On the session bus the manager is the person's user manager; on the system bus, the system
 //! one. (Which `GetUnit` and properties it answers is systemd's interface, read here as documented.)
 
+use crate::BUS_TIMEOUT;
 use crate::error::UnitError;
-use crate::timeout::{TimedOut, bounded};
 use caller_identity_core::{
     DropIns, ExePath, FileTrust, Fragment, Loader, Pid, Transient, UnitFacts, UnitName,
 };
 use caller_identity_linux::{ProcFs, path_trust};
+use dbus_kit::timeout::{TimedOut, within};
 use std::collections::HashMap;
 use std::path::Path;
 use zbus::Connection;
@@ -56,9 +57,9 @@ impl<P: ProcFs> ManagerLink<P> {
             "GetUnit",
             &args,
         );
-        let reply = bounded(call)
+        let reply = within(BUS_TIMEOUT, call)
             .await
-            .map_err(|TimedOut| UnitError::Timeout)?
+            .map_err(|TimedOut { .. }| UnitError::Timeout)?
             .map_err(UnitError::Bus)?;
         reply.body().deserialize().map_err(UnitError::Bus)
     }
@@ -77,9 +78,9 @@ impl<P: ProcFs> ManagerLink<P> {
             .await
             .map_err(UnitError::Bus)?;
         let interface = InterfaceName::try_from(interface).map_err(|e| UnitError::Bus(e.into()))?;
-        bounded(proxy.get_all(interface))
+        within(BUS_TIMEOUT, proxy.get_all(interface))
             .await
-            .map_err(|TimedOut| UnitError::Timeout)?
+            .map_err(|TimedOut { .. }| UnitError::Timeout)?
             .map_err(|e| UnitError::Bus(e.into()))
             .map(Props)
     }

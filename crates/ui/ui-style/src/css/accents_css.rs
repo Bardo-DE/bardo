@@ -20,7 +20,7 @@ use crate::tokens::{
     accent_table::{accent_in, accent_of},
     colour::ColourToken,
 };
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The accent quads, light and dark.
 #[must_use]

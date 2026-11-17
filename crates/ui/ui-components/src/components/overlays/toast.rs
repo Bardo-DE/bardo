@@ -20,8 +20,8 @@
 use crate::components::overlays::swipe_glue::use_swipe_glue;
 use crate::stack::host::use_overlays;
 use crate::stack::toast_hub::{ToastAction, ToastHub, ToastState, use_toast_hub};
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 use ui_motion::presence::{
     Exit,

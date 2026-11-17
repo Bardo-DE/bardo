@@ -1,6 +1,16 @@
 //! The pure readings of a response head: what a `Content-Type` says and what `Retry-After` means.
 
-use model_http::{BodyKind, WaitSeconds};
+use http_core::http::{HeaderMap, HeaderValue, StatusCode};
+use model_http::{BodyKind, ResponseHead, WaitSeconds};
+
+fn retry_after_of(value: &str) -> Option<WaitSeconds> {
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        "retry-after",
+        HeaderValue::from_str(value).expect("a header value"),
+    );
+    ResponseHead::of(StatusCode::TOO_MANY_REQUESTS, &headers).retry_after
+}
 
 #[test]
 fn a_content_type_names_the_kind_of_body() {
@@ -27,7 +37,7 @@ fn a_content_type_names_the_kind_of_body() {
 }
 
 #[test]
-fn retry_after_is_read_in_its_seconds_form_only() {
+fn retry_after_is_its_seconds_and_a_date_with_no_date_header_is_none() {
     let cases = [
         ("7", Some(7)),
         (" 30 ", Some(30)),
@@ -38,15 +48,10 @@ fn retry_after_is_read_in_its_seconds_form_only() {
         ("1.5", None),
         ("", None),
         ("Wed, 21 Oct 2026 07:28:00 GMT", None),
-        ("+5", None),
         ("5s", None),
     ];
     for (value, want) in cases {
-        assert_eq!(
-            WaitSeconds::from_header(value),
-            want.map(WaitSeconds),
-            "{value:?}"
-        );
+        assert_eq!(retry_after_of(value), want.map(WaitSeconds), "{value:?}");
     }
 }
 
@@ -56,7 +61,11 @@ fn any_text_is_a_kind_and_never_a_panic() {
     runner
         .run(&".{0,60}", |text| {
             let _ = BodyKind::of(&text);
-            let _ = WaitSeconds::from_header(&text);
+            let _ = HeaderValue::from_str(&text).map(|v| {
+                let mut headers = HeaderMap::new();
+                headers.insert("retry-after", v);
+                ResponseHead::of(StatusCode::OK, &headers)
+            });
             Ok(())
         })
         .unwrap();

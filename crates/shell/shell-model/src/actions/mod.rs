@@ -12,11 +12,11 @@ mod intent;
 mod tests;
 
 pub use ask::{Ask, Needs, Start, Subject};
+use base_words::Word;
 pub use intent::intent_of;
 use keymap::StandardAction;
 use shell_launcher::actions::ActionId;
 use shell_launcher::{Confirm, ProviderKind, SessionAction};
-use ui_core::word::Word;
 
 use crate::screenshots::ShotKind;
 use crate::windows::Step;

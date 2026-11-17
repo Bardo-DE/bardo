@@ -5,15 +5,13 @@ use crate::private_bus::PrivateBus;
 use settings_app_model::Absence;
 use settings_app_system::bus::{BusSource, Daemon, Vouch};
 use settings_app_system::modules::{Followed, ModulesLink, OnBus};
+use settings_dbus::{Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
+use settings_types::schema::{
+    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
+};
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 use tokio::sync::mpsc::unbounded_channel;
-use ui_settings::live::{
-    Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve,
-};
-use ui_settings::schema::{
-    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
-};
 
 /// The bus name and path the module is served at.
 const NAME: &str = "org.bardo.TestModules1";
@@ -135,7 +133,7 @@ async fn a_module_on_the_bus_is_opened_and_its_changes_are_heard() {
     serve(&connection, PATH, Words::holding("first", Verdict::Allow))
         .await
         .expect("serves");
-    zbus_ready::serving(&connection)
+    dbus_kit::ready::serving(&connection)
         .await
         .expect("the object server answers");
     connection.request_name(NAME).await.expect("name");
@@ -172,7 +170,7 @@ async fn a_module_that_refuses_the_settings_app_is_gone_as_not_permitted() {
     serve(&connection, PATH, Words::holding("first", Verdict::Refuse))
         .await
         .expect("serves");
-    zbus_ready::serving(&connection)
+    dbus_kit::ready::serving(&connection)
         .await
         .expect("the object server answers");
     connection.request_name(NAME).await.expect("name");

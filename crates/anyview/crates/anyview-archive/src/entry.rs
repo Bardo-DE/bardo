@@ -1,8 +1,8 @@
 //! What a listing holds: entries with their kind and size, and how many there are.
 
 use anyview_core::{ArchiveFormat, ByteLen};
+use base_words::Word;
 use std::ops::ControlFlow;
-use ui_core::word::Word;
 
 /// What an entry is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

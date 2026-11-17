@@ -2,9 +2,8 @@
 //! `Transport` (`exchange`); the response body is pushed into a sink as it arrives.
 
 use std::ops::ControlFlow;
-#[cfg(feature = "client")]
-use std::sync::Arc;
 
+use http_core::{Progress, SharedStream};
 use serde::{Deserialize, Serialize};
 
 use crate::{HttpEndpoint, ResponseHead, WaitMs};
@@ -42,14 +41,6 @@ impl core::fmt::Debug for RawBody {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "RawBody(<{} bytes>)", self.bytes.len())
     }
-}
-
-/// Whether the last chunk carried anything of the reply. A transport restarts its idle timer only
-/// on `Made`, so a stream of keep-alive comments or empty events cannot hold a turn open.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Progress {
-    Made,
-    Idle,
 }
 
 /// Receives a response: its head once, then the body in chunks (already split into frames when
@@ -121,30 +112,26 @@ pub enum TlsRoots {
 }
 
 /// One endpoint's HTTP client; it is a [`crate::Transport`].
+///
+/// It writes the request and reads the
+/// response head and body; the connection is the [`HttpStream`] it was given (`http-reqwest`'s,
+/// built by `model-http-reqwest`, or a fake).
 #[derive(Debug, Clone)]
 pub struct HttpClient {
     endpoint: HttpEndpoint,
     roots: TlsRoots,
-    /// This client's reqwest client, built on its first exchange. Shared by clones, which have
-    /// the same endpoint and roots.
-    #[cfg(feature = "client")]
-    wire: Arc<crate::connect::Wire>,
+    stream: SharedStream,
 }
 
 impl HttpClient {
-    /// A client trusting the platform's roots for a `Tls` target.
+    /// A client for `endpoint` that sends through `stream`, which trusts `roots` for a `Tls`
+    /// target.
     #[must_use]
-    pub fn new(endpoint: HttpEndpoint) -> Self {
-        Self::with_roots(endpoint, TlsRoots::Platform)
-    }
-
-    #[must_use]
-    pub fn with_roots(endpoint: HttpEndpoint, roots: TlsRoots) -> Self {
+    pub fn new(endpoint: HttpEndpoint, roots: TlsRoots, stream: SharedStream) -> Self {
         Self {
             endpoint,
             roots,
-            #[cfg(feature = "client")]
-            wire: Arc::default(),
+            stream,
         }
     }
 
@@ -158,8 +145,7 @@ impl HttpClient {
         &self.endpoint
     }
 
-    #[cfg(feature = "client")]
-    pub(crate) fn wire(&self) -> &crate::connect::Wire {
-        &self.wire
+    pub(crate) fn stream(&self) -> &SharedStream {
+        &self.stream
     }
 }

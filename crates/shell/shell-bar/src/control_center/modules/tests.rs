@@ -2,7 +2,7 @@
 //! the bar's items stand in the order the settings offer them.
 
 use shell_settings::{ControlCenterModule, ControlCenterSettings};
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 
 use super::{Span, module};
 use crate::bar::BarMenu;

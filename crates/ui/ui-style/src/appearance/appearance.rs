@@ -5,9 +5,9 @@
 //! is that field's default, never a failure of the whole value.
 
 use crate::appearance::{accent::Accent, motion::Motion, theme::Theme, transparency::Transparency};
+use base_words::Word;
 use serde::de::Deserializer;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// How the window looks, as data.
 ///

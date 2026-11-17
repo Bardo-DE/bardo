@@ -14,10 +14,10 @@ use crate::components::menus::menu::menu::Menu;
 use crate::components::menus::menu::placement::MenuPlacement;
 use crate::host::measure::{Anchor, MountedRef, use_rect};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::press::Press;
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::tokens::control_size::ControlSize;
 

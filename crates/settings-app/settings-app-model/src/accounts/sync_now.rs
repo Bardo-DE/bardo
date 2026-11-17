@@ -3,7 +3,7 @@
 
 use super::hold::DatasetName;
 use super::model::AccountKey;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// How the sync service took the request.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -3,12 +3,12 @@
 use crate::config::convert;
 use compositor_core::settings::CasementSettings;
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::Page;
-use ui_settings::{Count, Ms};
+use settings_types::schema::Page;
+use settings_types::{Count, Ms};
 
 /// `keyboard.*`: the keymap and the key repeat. An empty XKB name is libxkbcommon's own default
 /// for it (and its `XKB_DEFAULT_*` environment): nothing here assumes a layout.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "keyboard", page = Page::KeyboardAndShortcuts)]
 pub struct KeyboardSection {

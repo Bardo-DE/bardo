@@ -214,7 +214,7 @@ impl World {
             )
             .await
             .expect("serve");
-        zbus_ready::serving(&daemon)
+        dbus_kit::ready::serving(&daemon)
             .await
             .expect("the object server answers");
         daemon
@@ -677,7 +677,7 @@ async fn calls_aimed_at_the_checked_owner_never_reach_a_program_that_takes_the_n
         )
         .await
         .expect("serve");
-    zbus_ready::serving(&squatter)
+    dbus_kit::ready::serving(&squatter)
         .await
         .expect("the object server answers");
     squatter

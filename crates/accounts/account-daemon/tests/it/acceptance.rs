@@ -14,8 +14,8 @@ use account_dbus::accounts::account_path;
 use account_dbus::accounts::{AccountProxy, IdentitiesProxy};
 use account_secrets::{Secrets, SecretsError};
 use common::*;
-use ui_settings::live::{AnyOwner, LiveClient};
-use ui_settings::schema::KeyPath;
+use settings_dbus::{AnyOwner, LiveClient};
+use settings_types::schema::KeyPath;
 use zbus::zvariant::ObjectPath;
 
 /// The storage account's object, read live each time: a cached property would outlive the

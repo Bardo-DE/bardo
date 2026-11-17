@@ -26,8 +26,9 @@ use crate::accounts_sheet_bus::{
     standing_in,
 };
 use crate::callers_support::{Role, Who};
-use crate::capture_pick_bus::{Shell1Proxy, connect as connect_picker_bus, rig_as};
+use crate::capture_pick_bus::{connect as connect_picker_bus, rig_as};
 use crate::intents_bus::{connect as connect_intents_bus, desk_as, no_menus, request};
+use shell_dbus::Shell1Proxy;
 
 /// How long a thing that must not happen is given to happen.
 const QUIET: Duration = Duration::from_millis(400);

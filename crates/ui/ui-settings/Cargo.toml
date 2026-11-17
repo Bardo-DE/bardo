@@ -1,6 +1,6 @@
 [package]
 name = "ui-settings"
-description = "Settings I/O: SettingsDoc and Store (lenient load, atomic save, directory watch), the appearance file, the settings portal."
+description = "The look's settings I/O: the appearance file, the settings portal, the icon-theme lookup, the Spaces and style files."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,24 +9,19 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-base-time = { path = "../../base/base-time" }
+base-spawn = { path = "../../base/base-spawn" }
 base-fs = { path = "../../base/base-fs" }
-base-xdg = { path = "../../base/base-xdg" }
-ui-core = {path = "../ui-core"}
-# The capped reader and the durable atomic writer every file here goes through (UI-free).
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
+# The deadline the portal client runs its calls under (UI-free).
 ui-peer = {path = "../ui-peer"}
 ui-style = {path = "../ui-style", default-features = false}
-ui-settings-derive = {path = "../ui-settings-derive"}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"], optional = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-thiserror = { workspace = true }
-notify = { workspace = true }
-futures-timer = { workspace = true }
 zbus = {workspace = true, features = ["default"], optional = true}
 toml = { workspace = true }
-# Save merges into the parsed file, keeping unknown keys and comments.
-toml_edit = { workspace = true }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 # The system's appearance and accessibility preferences (`portal/macos.rs`), read from the user's
@@ -34,35 +29,23 @@ toml_edit = { workspace = true }
 objc2-core-foundation = { workspace = true, features = ["std", "CFBase", "CFString", "CFNumber", "CFPreferences", "CFPropertyList"] }
 
 [dev-dependencies]
+base-words = { path = "../../base/base-words" }
+settings-dbus = { path = "../../settings/settings-dbus" }
 tempfile.workspace = true
 ui-components = {path = "../ui-components"}
 # The tests' runtime and the `Spawner` they hand the watches; the crate itself names no runtime.
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
-zbus-ready = { path = "../../zbus-ready" }
 
 [features]
 default = ["quire-desktop"]
-# Our desktop's integration: the settings portal client (`portal/bus.rs`) and, with `live`, the live
-# settings modules. Without it `SystemPrefsSource::Portal` answers the defaults and the appearance
-# file, its watch and `use_environment` work as ever; no D-Bus client is built (design/36 section 1).
+# Our desktop's integration: the settings portal client (`portal/bus.rs`). Without it
+# `SystemPrefsSource::Portal` answers the defaults and the appearance file, its watch and
+# `use_environment` work as ever; no D-Bus client is built (design/36 section 1).
 quire-desktop = ["dep:zbus"]
 # `use_environment`, the signal a surface resolves its look from.
 dioxus = ["dep:dioxus", "ui-style/dioxus"]
 # Drive zbus on the tokio runtime the shell already runs (see the workspace zbus note).
 tokio = ["quire-desktop", "zbus/tokio"]
-# `org.bardo.SettingsModule1` (design/22-SETTINGS.md section 9.4): the live settings modules a
-# daemon serves (accountd, inferd) and the Settings app reads. Uses the `zbus` above under whatever
-# backend the build picked; this feature never selects an executor.
-live = ["quire-desktop"]
-# `live::AnyOwner`, an owner check that passes every owner. For tests and scenarios only: a shipped
-# program supplies a real check, so this stays off in a normal build.
-testing = ["live"]
-
-# The live-module tests need `testing` (`AnyOwner`) beside `live`; the gate runs --all-features.
-[[test]]
-name = "live"
-path = "tests/live/main.rs"
-required-features = ["live", "testing"]
 
 [lints]
 workspace = true

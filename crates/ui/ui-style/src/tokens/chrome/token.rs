@@ -3,7 +3,7 @@
 use super::scale::CHROME_SCALE;
 use crate::tokens::size_scale::WholePx;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One length of the window chrome.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
@@ -50,7 +50,7 @@ fn chrome_css(token: ChromeToken, _scope: TokenScope) -> CssValue {
 mod tests {
     use super::ChromeToken;
     use crate::tokens::token::{Token, TokenScope};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     /// Each token's property and the value the window frame's literals had.
     const CASES: &[(ChromeToken, &str, &str)] = &[

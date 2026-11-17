@@ -1,6 +1,6 @@
 use super::host::{PromptHost, prompt_host};
 use crate::components::fields::text_field_model::FieldKind;
-use ui_core::word::Word;
+use base_words::Word;
 
 #[test]
 fn prompt_host_is_total() {

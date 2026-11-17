@@ -5,7 +5,7 @@
 
 use crate::components::content::image_source::{ImageSize, ImageSource};
 use crate::host::narrow;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// How near a Today tab is to going (design/30 section 2.11).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

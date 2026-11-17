@@ -15,7 +15,7 @@ base-time = { path = "../../base/base-time" }
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 # The example waits for Ctrl-C.

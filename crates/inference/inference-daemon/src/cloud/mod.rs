@@ -281,6 +281,9 @@ impl Cloud {
                 .collect(),
             timeouts: TIMEOUTS,
         };
-        Some(HttpClient::with_roots(endpoint, self.0.roots.clone()))
+        Some(model_http_reqwest::client_with_roots(
+            endpoint,
+            self.0.roots.clone(),
+        ))
     }
 }

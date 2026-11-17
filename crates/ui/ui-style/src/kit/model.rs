@@ -2,8 +2,8 @@
 
 use super::kits::Kits;
 use crate::tokens::{easing::EasingToken, set::TokenSet, timing::DurationToken};
+use base_words::Word;
 use std::borrow::Cow;
-use ui_core::word::Word;
 
 /// Where a kit's sections sit in the cascade, first to last. A user's own style is last, so its
 /// rules win by order and never need `!important`.

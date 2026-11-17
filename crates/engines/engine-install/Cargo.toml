@@ -18,7 +18,8 @@ engine-manifest = {path = "../engine-manifest"}
 engine-probe = {path = "../engine-probe"}
 engine-spec = {path = "../engine-spec"}
 model-catalog = {path = "../../models/model-catalog"}
-model-http = {path = "../../models/model-http", features = ["client", "tls"]}
+model-http = {path = "../../models/model-http"}
+model-http-reqwest = {path = "../../models/model-http-reqwest"}
 # The archives are unpacked in process (`extract`), never by the system's `tar`.
 flate2 = {workspace = true, features = ["default"]}
 tar = {workspace = true}

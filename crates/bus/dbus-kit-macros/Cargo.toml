@@ -1,0 +1,20 @@
+[package]
+name = "dbus-kit-macros"
+description = "The one attribute dbus-kit's users write interfaces with: a bus interface written once, as the client's proxy trait, becomes its proxy, the trait a daemon implements and the zbus object that serves it."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = { workspace = true }
+quote = { workspace = true }
+syn = { workspace = true, features = ["full"] }
+
+[lints]
+workspace = true

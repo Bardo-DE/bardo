@@ -21,12 +21,12 @@ use crate::components::fields::shortcut_field_model::{
 use crate::focus::soon::focus_soon;
 use crate::keys::use_platform;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use keymap::Chord;
 use ui_core::command::chord_text;
 use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 
 /// What the well reads while it is not listening.
 const EMPTY: &str = "Add shortcut";

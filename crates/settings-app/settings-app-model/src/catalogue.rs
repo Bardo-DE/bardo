@@ -11,7 +11,7 @@ use crate::page::{PageSlug, sidebar_place};
 use crate::page_kind::PageKind;
 use crate::updates::software_update_page;
 use crate::wifi::wifi_page;
-use ui_settings::schema::{
+use settings_types::schema::{
     Exposure, Footnote, ForeignTables, KeyKind, KeyPath, KeySpec, Page, PageTable,
 };
 

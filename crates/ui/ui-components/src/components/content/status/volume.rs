@@ -5,8 +5,8 @@
 
 use crate::components::content::level_glyph::glyph::{LevelGlyphView, waves};
 use crate::components::content::level_glyph::vocab::LevelGlyph;
+use base_ids::Fraction;
 use dioxus::prelude::*;
-use ui_core::vocab::Fraction;
 use ui_motion::detail::{detailed::Detailed, moment::Moment};
 use ui_style::icon::render::IconSize;
 

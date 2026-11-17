@@ -13,7 +13,6 @@ use action_router::{Router, Seams, Watch, acting_role};
 use action_wire::{CallerId, IntentsReply, IntentsRequest, Member};
 use std::pin::Pin;
 use std::sync::Arc;
-use zbus::fdo::{RequestNameFlags, RequestNameReply};
 
 /// Why the daemon stopped serving.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -132,18 +131,11 @@ pub async fn serve_on_gated<S: Seams + 'static>(
         Peers::gated(connection.clone(), config, who, proc_root, acp),
     );
     export(connection, &gateway).await.map_err(bus)?;
-    zbus_ready::serving(connection).await.map_err(bus)?;
+    dbus_kit::ready::serving(connection).await.map_err(bus)?;
     // Never queued behind another intentd: two routers would be two breakers and two journals.
-    let reply = connection
-        .request_name_with_flags(INTENTS_BUS, RequestNameFlags::DoNotQueue.into())
+    dbus_kit::name::claim(connection, INTENTS_BUS)
         .await
-        .map_err(bus)?;
-    match reply {
-        RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner => Ok(()),
-        RequestNameReply::InQueue | RequestNameReply::Exists => {
-            Err(ServeFault::Bus(format!("{INTENTS_BUS} is taken")))
-        }
-    }
+        .map_err(|error| ServeFault::Bus(error.to_string()))
 }
 
 /// Claims `org.bardo.Intents1` on the session bus and serves every interface of it over `router`.

@@ -1,7 +1,7 @@
 //! What a row of facts is about, and where each kind of row is listed by default.
 
 use super::FactGroup;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// What a row of facts is about. Closed, so every pane words and orders the same facts the same
 /// way and a label is never a free string.

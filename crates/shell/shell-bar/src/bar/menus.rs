@@ -2,7 +2,7 @@
 //! tracking machine and a [`MenuSide`] for the popup configuration.
 
 use shell_settings::ControlCenterModule;
-use ui_components::base::word::Word;
+use ui_components::words::Word;
 
 use crate::control_center::modules::module;
 

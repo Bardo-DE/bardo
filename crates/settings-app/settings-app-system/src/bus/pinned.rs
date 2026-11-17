@@ -8,7 +8,7 @@ use account_client::Porter;
 use account_client_dbus::Bus;
 use inference_client::DbusTransport;
 use settings_app_model::Absence;
-use ui_settings::live::SenderName;
+use settings_dbus::SenderName;
 use zbus::Connection;
 use zbus::names::UniqueName;
 

@@ -6,9 +6,9 @@ use super::apis_of;
 use super::scopes::Granted;
 use crate::oauth::{failure, get};
 use account_capability::{CapabilityKind, Claim};
-use account_http::Http;
 use account_oauth_probe_proto::google;
 use account_provider::{Issuer, ProviderError, ProviderSpec};
+use http_core::Http;
 
 /// Probes the account behind `token` for every kind `spec` declares.
 pub(super) async fn probe<H: Http>(

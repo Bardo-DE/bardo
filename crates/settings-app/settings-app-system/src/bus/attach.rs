@@ -6,8 +6,8 @@ use super::io::{absence_of, connect, open};
 use super::read::read;
 use super::source::BusSource;
 use settings_app_model::{Absence, Described};
-use ui_settings::live::{Changes, LiveClient};
-use ui_settings::schema::KeyKind;
+use settings_dbus::{Changes, LiveClient};
+use settings_types::schema::KeyKind;
 use zbus::Connection;
 
 /// `daemon`'s module and its rows, when the daemon is already on the bus.

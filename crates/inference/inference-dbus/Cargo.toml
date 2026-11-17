@@ -17,7 +17,7 @@ account-wire = {path = "../../accounts/account-wire"}
 # The shared helpers: `Details`, `Call`, `Document`, `Unserved`, the vardict codec.
 account-dbus = {path = "../../accounts/account-dbus"}
 # `#[bus_interface]`; its expansion names `::porter_dbus::Call` and `::porter_dbus::Unserved`.
-account-dbus-macros = {path = "../../accounts/account-dbus-macros"}
+dbus-kit = { path = "../../bus/dbus-kit" }
 zbus = {workspace = true, features = ["tokio"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

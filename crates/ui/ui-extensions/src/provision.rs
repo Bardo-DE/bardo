@@ -2,9 +2,9 @@
 
 use std::path::Path;
 
+use base_words::Word;
 use plugin_host::manifest::{Entry, PathRole, Provides, Refusal};
 use serde::Deserialize;
-use ui_core::word::Word;
 
 use crate::capability::Capability;
 use crate::fault::Fault;

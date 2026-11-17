@@ -4,7 +4,7 @@
 //! with more than two states, or one that carries more than a fact. The `*_word` functions write a
 //! `bool` as the stylesheet word its `data-*` attribute selects on.
 
-use crate::word::Word;
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 
 /// Whether a control takes input (design/30 section 1.5).
@@ -146,21 +146,11 @@ pub struct RowState {
     pub drop: DropState,
 }
 
-/// A proportion in thousandths: 0 is none, 1000 is all. Written inline as `--f`.
-///
-/// Not clamped by the type: a settings gain may exceed 1000 (design/22-SETTINGS.md section 4
-/// uses the same type); a component clamps what it draws.
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Default, Serialize, Deserialize,
-)]
-#[serde(transparent)]
-pub struct Fraction(pub u16);
-
 /// A percentage, 0 to 100, clamped on construction: `IdleDim`'s `level` (design/22-SETTINGS.md
 /// section 3.24 `idle.dim_level_pct`).
 ///
 /// `ds` may not depend on `ui-settings` (`scripts/check-boundary.sh`), so the two `Percent` types
-/// agree by shape, not by sharing a definition; a caller already holding `ui_settings::Percent`
+/// agree by shape, not by sharing a definition; a caller already holding `settings_types::Percent`
 /// passes its `.0`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(from = "u8", into = "u8")]
@@ -429,32 +419,6 @@ pub fn modality_word(keyboard: bool) -> &'static str {
     if keyboard { "keyboard" } else { "pointer" }
 }
 
-impl Fraction {
-    /// All of it.
-    pub(crate) const ONE: Fraction = Fraction(1000);
-
-    /// The value a component draws: clamped to 0..=1000.
-    #[must_use]
-    pub fn clamped(self) -> Self {
-        Fraction(self.0.min(Self::ONE.0))
-    }
-
-    /// The value in whole percent, rounded: what a battery's figure prints and its
-    /// `aria-valuenow` reads.
-    #[must_use]
-    pub fn whole_percent(self) -> u16 {
-        (self.clamped().0 + 5) / 10
-    }
-
-    /// The clamped value as a CSS number for `--f`: `0.35`, `0`, `1`.
-    #[must_use]
-    pub fn css(self) -> String {
-        let permille = self.clamped().0;
-        let text = format!("{}.{:03}", permille / 1000, permille % 1000);
-        text.trim_end_matches('0').trim_end_matches('.').to_string()
-    }
-}
-
 /// The companion's one presence (design/32 section 3): a look of the orb and the window glow,
 /// never a panel. `data-presence`; stored as its snake-case word.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word, Serialize, Deserialize)]
@@ -542,33 +506,12 @@ mod percent_tests {
 }
 
 #[cfg(test)]
-mod fraction_tests {
-    use super::Fraction;
-
-    #[test]
-    fn a_fraction_reads_as_whole_percent_rounded_and_clamped() {
-        const CASES: &[(u16, u16)] = &[
-            (0, 0),
-            (4, 0),
-            (5, 1),
-            (844, 84),
-            (845, 85),
-            (1000, 100),
-            (1200, 100),
-        ];
-        for &(given, want) in CASES {
-            assert_eq!(Fraction(given).whole_percent(), want, "{given}");
-        }
-    }
-}
-
-#[cfg(test)]
 mod word_tests {
     use super::{
         ActorMark, Availability, Check, CompanionPresence, Dismiss, DropState, EffectMark,
         MemoryVerb, PressPhase, Severity,
     };
-    use crate::word::Word;
+    use base_words::Word;
 
     /// Every member of `T` parses back from its own slug, and no two share one.
     fn round_trips<T: Word + std::fmt::Debug>() {
@@ -640,7 +583,7 @@ mod availability_tests {
 #[cfg(test)]
 mod companion_tests {
     use super::EffectMark;
-    use crate::word::Word;
+    use base_words::Word;
 
     #[test]
     fn effect_marks_order_by_severity() {

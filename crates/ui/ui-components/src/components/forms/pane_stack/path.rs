@@ -2,7 +2,7 @@
 //! empty, so "the page shown" always exists.
 
 /// Which way a stack moved to reach its path, `data-way`.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, ui_core::word::Word)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, base_words::Word)]
 pub enum PaneWay {
     /// A page was pushed over the shown one: the new page comes in from the right.
     #[default]

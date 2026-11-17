@@ -4,8 +4,8 @@
 //! between cells, which a host sets on an element around its widgets (the notification center
 //! writes 160 and 16). A `WidgetFrame` sizes itself from both.
 
-use ui_components::base::word::Word;
 use ui_components::style::tokens::token::Token;
+use ui_components::words::Word;
 
 /// One widget grid token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

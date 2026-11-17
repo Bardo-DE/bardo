@@ -18,7 +18,7 @@
 //! and the compositor are refused `AccessDenied` (a role the table does not name fails closed).
 
 use crate::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 use zbus::zvariant::OwnedObjectPath;
 
 /// The interface, written once. `#[bus_interface]` makes [`KeysProxy`] for its callers from this

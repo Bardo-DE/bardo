@@ -5,7 +5,7 @@
 //! ```no_run
 //! use compositor_backend::input::{AccelProfile, DeviceSettings, InputFeed};
 //! use compositor_core::DeviceId;
-//! use ui_core::vocab::Fraction;
+//! use base_ids::Fraction;
 //!
 //! fn natural(devices: &mut dyn InputFeed, device: DeviceId) {
 //!     let settings = DeviceSettings::new(
@@ -22,7 +22,7 @@
 pub use compositor_core::settings::AccelProfile;
 
 use crate::session::SessionFault;
-use ui_core::vocab::Fraction;
+use base_ids::Fraction;
 
 /// What one device is configured with.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

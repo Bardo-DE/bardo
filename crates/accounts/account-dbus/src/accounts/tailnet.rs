@@ -9,7 +9,7 @@
 //! `AccessDenied`.
 
 use crate::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 
 /// The interface, written once. `#[bus_interface]` makes [`TailnetProxy`] for its callers from this
 /// trait, [`TailnetServer`] for the daemon to implement and [`TailnetServed`] to register.

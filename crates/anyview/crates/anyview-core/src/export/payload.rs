@@ -7,7 +7,7 @@ use crate::kind::SyntaxName;
 use crate::sequence::NonEmpty;
 use crate::source::FilePath;
 use crate::units::{Dpi, PageIndex, PageSelection};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The pixels an encode starts from.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -175,6 +175,8 @@ pub use screen_sharing::{
     screen_sharing_step,
 };
 pub use search::{Found, Hit, Rank, Search, search};
+/// Whether an agent may set a key: quire's own type, carried by each `KeySpec`.
+pub use settings_types::schema::AgentSetting;
 pub use sharing::{
     Existing, LendFailure, SHARING_KEY, Sharing, SharingEffect, SharingInput, sharing_step,
 };
@@ -190,8 +192,6 @@ pub use spaces::{
 };
 pub use style_notes::{NoteRow, StyleFile, StyleNote, StyleNotes, StyleOwner};
 pub use text_form::{TextFault, show_value};
-/// Whether an agent may set a key: quire's own type, carried by each `KeySpec`.
-pub use ui_settings::schema::AgentSetting;
 pub use updates::{
     ByteCount, Checked, Downloaded, Permille, ProblemKind, ReleaseNotes, UnixSeconds, UpdateAction,
     UpdateMeter, UpdateOffer, UpdatePhase, UpdateStanding, UpdateStatus, UpdateVersion, UpdateWire,

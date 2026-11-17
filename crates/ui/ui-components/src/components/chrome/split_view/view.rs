@@ -34,10 +34,10 @@ use crate::components::controls::edge_grab::EdgeGrab;
 use crate::host::measure::use_rect;
 use crate::host::narrow;
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Px;
 use ui_core::vocab::shown_word;
-use ui_core::word::Word;
 
 /// How far an arrow key moves a divider, in pixels.
 const KEY_STEP: f32 = 10.0;

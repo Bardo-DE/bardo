@@ -123,7 +123,7 @@ pub fn SignInFailed(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn only_an_account_already_added_needs_no_retry_by_default() {

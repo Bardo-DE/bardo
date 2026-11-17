@@ -1,6 +1,6 @@
 //! The ECB daily file, off the keystroke path: `refresh_if_due` starts a background fetch at most
 //! once a day (or, after a failed attempt, at most once an hour — a
-//! blocked or offline `curl` must not start again on every keystroke that follows) and lands it
+//! blocked or offline fetch must not start again on every keystroke that follows) and lands it
 //! in the shared rates once it arrives; nothing here runs synchronously inside a query.
 //!
 //! [`due`] is pure and table-tested; the two facts it decides from — the cache file's own
@@ -12,8 +12,8 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
+use http_reqwest::{Limits, ReqwestHttp};
 use shell_launcher::UnixTime;
-use tokio::process::Command;
 
 use crate::clock::modified_of;
 
@@ -48,7 +48,7 @@ fn attempt_path(cache_path: &Path) -> PathBuf {
 
 /// Whether it is worth trying again at `now`: no cache is always worth it; a successful
 /// cache is worth it once it turns a day old; a failed attempt holds off retrying for
-/// [`FAILURE_BACKOFF_SECS`] regardless of the cache's age, so an offline or blocked `curl`
+/// [`FAILURE_BACKOFF_SECS`] regardless of the cache's age, so an offline or blocked fetch
 /// tries again once an hour, not once a keystroke.
 pub fn due(cached_at: Option<UnixTime>, last_attempt: Option<Attempt>, now: UnixTime) -> bool {
     if let Some(Attempt {
@@ -65,17 +65,20 @@ pub fn due(cached_at: Option<UnixTime>, last_attempt: Option<Attempt>, now: Unix
     }
 }
 
-/// How long the whole download may take, in seconds, as `curl` is told it.
-const MAX_SECONDS: &str = "15";
+/// How long the whole download may take.
+const MAX_TIME: Duration = Duration::from_secs(15);
 
-/// The most bytes the download may be, as `curl` is told it: the ECB's daily file is under 2 KiB.
-const MAX_BYTES: &str = "262144";
+/// The most bytes the download may be: the ECB's daily file is under 2 KiB.
+const MAX_BYTES: usize = 262_144;
+
+/// How many redirects one fetch follows (each must stay on `https`).
+const REDIRECTS_MAX: u8 = 3;
 
 /// Set while a fetch is in flight, so two keystrokes in a row never start a second one.
 static FETCHING: AtomicBool = AtomicBool::new(false);
 
 /// If [`due`] (reading `path`'s own `mtime` and the attempt stamp beside it), fetch the ECB's
-/// daily file with `curl` on its own task, record the attempt (its outcome included) and land
+/// daily file on its own task, record the attempt (its outcome included) and land
 /// a successful fetch in `rates`; otherwise (or while one is already in flight) does nothing.
 /// Never blocks its caller: the network call happens after this function has already returned.
 pub fn refresh_if_due(rates: SharedRates, path: PathBuf, now: UnixTime) {
@@ -113,33 +116,32 @@ impl Drop for InFlight {
     }
 }
 
-/// Runs `curl` into a temporary file beside `path`, then renames it in: a reader never sees a
-/// half-written file. `Err` on a non-zero exit (offline, blocked, a proxy refusing it), not
-/// only on an I/O error, so [`refresh_if_due`] records it as a [`Outcome::Failure`] and backs
-/// off.
+/// Fetches the file into a temporary file beside `path`, then renames it in: a reader never sees
+/// a half-written file. `Err` on any failure to get it (offline, blocked, a proxy refusing it, an
+/// answer that is not a success), not only on an I/O error, so [`refresh_if_due`] records it as
+/// a [`Outcome::Failure`] and backs off.
 async fn fetch_into(path: &Path) -> std::io::Result<()> {
     if let Some(dir) = path.parent() {
         tokio::fs::create_dir_all(dir).await?;
     }
     let temp = path.with_extension("xml.tmp");
-    let status = Command::new("curl")
-        .arg("--fail")
-        .arg("--silent")
-        .arg("--show-error")
-        // The file is a few kilobytes: a connection that stalls, a server that never stops or a
-        // redirect to anywhere but the ECB's own https address is given up on.
-        .args(["--max-time", MAX_SECONDS])
-        .args(["--max-filesize", MAX_BYTES])
-        .args(["--proto", "=https", "--proto-redir", "=https"])
-        .arg("--output")
-        .arg(&temp)
-        .arg(ECB_DAILY_URL)
-        .kill_on_drop(true)
-        .status()
-        .await?;
-    if !status.success() {
-        return Err(std::io::Error::other(format!("curl exited {status}")));
+    // The file is a few kilobytes: a connection that stalls, a server that never stops or a
+    // redirect to anywhere but an https address is given up on.
+    let http = ReqwestHttp::new().with_limits(Limits {
+        timeout: MAX_TIME,
+        max_body: MAX_BYTES,
+    });
+    let reply = http
+        .get(ECB_DAILY_URL, REDIRECTS_MAX)
+        .await
+        .map_err(std::io::Error::other)?;
+    if !reply.status().is_success() {
+        return Err(std::io::Error::other(format!(
+            "the server answered {}",
+            reply.status()
+        )));
     }
+    tokio::fs::write(&temp, reply.body()).await?;
     tokio::fs::rename(&temp, path).await?;
     Ok(())
 }

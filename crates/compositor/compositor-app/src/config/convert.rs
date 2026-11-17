@@ -18,9 +18,9 @@ use compositor_core::settings::{
     OutputSettings, PointerProfile, PointerSettings, RepeatRate, SpaceSettings, WindowSettings,
     XkbNames,
 };
+use settings_types::{Count, Ms};
 use std::time::Duration;
 use ui_core::geometry::scale::Scale;
-use ui_settings::{Count, Ms};
 
 /// The smallest and largest `outputs.fixed_scale`, in percent (the schema's range).
 const FIXED_SCALE: (u16, u16) = (100, 400);

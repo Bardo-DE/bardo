@@ -22,13 +22,13 @@ use account_core::{
     LoginName, ReauthReason, Restriction, SecretPurpose, ServiceEndpoint, TenantConsent, Tls,
     TokenKind, TokenLifetime, Verification,
 };
-use account_http::Http;
 use account_oauth::TokenResponse;
 use account_provider::{Issuer, ProviderError, ProviderSpec, Signed};
 use account_sheet::SignInFault;
 use base_ids::Count;
 use base_time::UnixSeconds;
 use base_url::UrlScheme;
+use http_core::Http;
 use probe::probe;
 use reauth::reason_of_refusal;
 use scopes::Granted;

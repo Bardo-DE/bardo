@@ -457,7 +457,7 @@ async fn the_apps_that_declare_an_open_action_are_known_and_a_perform_is_the_lau
     ] {
         object.unwrap_or_else(|e| panic!("{e}"));
     }
-    zbus_ready::serving(&intentd)
+    dbus_kit::ready::serving(&intentd)
         .await
         .expect("the object server answers");
     desk.seated().await;
@@ -533,7 +533,7 @@ async fn something_said_to_a_subagent_is_recorded_sent_and_told_to_the_companion
     ] {
         object.unwrap_or_else(|e| panic!("{e}"));
     }
-    zbus_ready::serving(&intentd)
+    dbus_kit::ready::serving(&intentd)
         .await
         .expect("the object server answers");
     desk.seated().await;

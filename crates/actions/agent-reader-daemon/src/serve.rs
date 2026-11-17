@@ -9,7 +9,7 @@ use action_vocab::Value;
 use inference_client::Transport as InferTransport;
 use provenance::SessionId;
 use std::sync::Arc;
-use zbus::fdo::{self, RequestNameFlags, RequestNameReply};
+use zbus::fdo;
 use zbus::message::Header;
 
 /// Why the daemon stopped serving.
@@ -105,17 +105,10 @@ where
         .at(READER_PATH, object)
         .await
         .map_err(bus)?;
-    zbus_ready::serving(connection).await.map_err(bus)?;
-    let reply = connection
-        .request_name_with_flags(READER_BUS, RequestNameFlags::DoNotQueue.into())
+    dbus_kit::ready::serving(connection).await.map_err(bus)?;
+    dbus_kit::name::claim(connection, READER_BUS)
         .await
-        .map_err(bus)?;
-    match reply {
-        RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner => Ok(()),
-        RequestNameReply::InQueue | RequestNameReply::Exists => {
-            Err(ServeFault::Bus(format!("{READER_BUS} is taken")))
-        }
-    }
+        .map_err(|error| ServeFault::Bus(error.to_string()))
 }
 
 /// Claims `org.bardo.Reader1` on the session bus and serves `Extract(session, ask)` until the

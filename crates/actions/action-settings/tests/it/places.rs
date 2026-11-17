@@ -126,7 +126,7 @@ fn round_trip_and_bad_values_are_off() {
     let loaded = read_places(text);
     assert!(!loaded.places.own[0].allowed);
     assert_eq!(loaded.places.cloud[0].allowed, CloudAllowed::Off);
-    assert_eq!(loaded.fallbacks.len(), 2);
+    assert_eq!(loaded.invalid.len(), 2);
 }
 
 #[test]

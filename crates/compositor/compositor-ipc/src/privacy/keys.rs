@@ -12,11 +12,11 @@ use super::write::{Why, Write};
 use compositor_core::policy::Power;
 use compositor_core::privilege::{Engine, MAX_GRANTS, PrivacyRow, Subject, Verdict};
 use desktop_protocols::vocab::{SubjectKind, WireCode};
-use std::collections::BTreeSet;
-use ui_settings::schema::{
+use settings_types::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Note, Page, Section, WordLabels,
 };
+use std::collections::BTreeSet;
 
 /// The page the keys are listed on: Settings' Privacy page.
 pub const PRIVACY_PAGE: Page = Page::Privacy;

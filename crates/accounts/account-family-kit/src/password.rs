@@ -8,12 +8,12 @@
 //! credential itself.
 
 use account_core::{Credential, SecretText};
-use account_http::HttpError;
-use account_http::http::Request;
-use account_http::http::header::{AUTHORIZATION, HeaderValue};
 use account_provider::{Presented, ProviderError, ProviderSpec};
 use account_sheet::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue, SignInFault};
 use base64::Engine;
+use http_core::HttpError;
+use http_core::http::Request;
+use http_core::http::header::{AUTHORIZATION, HeaderValue};
 
 /// A form field.
 #[must_use]
@@ -68,7 +68,7 @@ pub fn fault_of(error: HttpError) -> SignInFault {
         | HttpError::Tls(..)
         | HttpError::TimedOut
         | HttpError::NotGranted => SignInFault::Unreachable,
-        // too large, malformed, and a failure a later account-http adds
+        // too large, malformed, and a failure a later http-core adds
         _ => SignInFault::Unreadable,
     }
 }

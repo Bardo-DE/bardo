@@ -6,9 +6,9 @@
 //! on top of these.
 
 use crate::refusal::{PutRefused, ReplicaError, RetryAfter};
-use account_http::http::Response;
-use account_http::{HeaderText, HttpError};
 use base_time::UnixSeconds;
+use http_core::http::Response;
+use http_core::{HeaderText, HttpError};
 
 /// How long to wait when the server did not say.
 pub const RETRY: RetryAfter = RetryAfter(30);

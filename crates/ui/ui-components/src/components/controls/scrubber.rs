@@ -17,10 +17,11 @@ use crate::host::measure::client_rect;
 use crate::host::narrow;
 use crate::host::pointer_capture::use_pointer_capture;
 use crate::root::common::Common;
+use base_ids::Fraction;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::geometry::units::{Px, Rect};
-use ui_core::vocab::{Availability, Fraction};
+use ui_core::vocab::Availability;
 use ui_motion::spring::Millis;
 use ui_style::tokens::control_size::ControlSize;
 

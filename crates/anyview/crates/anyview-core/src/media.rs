@@ -3,7 +3,7 @@
 //! entry all say the same things the same way.
 
 use crate::units::MediaTime;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// Which family of stream a track belongs to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

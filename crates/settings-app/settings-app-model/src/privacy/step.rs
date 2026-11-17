@@ -5,7 +5,7 @@ use super::power::PrivacyPower;
 use crate::Absence;
 use crate::Live;
 use crate::picker::Described;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// What the page knows.
 pub type PrivacyState = Live<PrivacyReady>;

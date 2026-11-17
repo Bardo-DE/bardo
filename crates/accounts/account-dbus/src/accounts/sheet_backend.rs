@@ -7,7 +7,7 @@
 //! sender of each signal. An `Input` may carry secret text (a typed password) from the sheet
 //! into accountd, the one place secret text flows into the daemon; nothing here flows outward.
 
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 
 /// The interface, written once. `#[bus_interface]` makes [`AccountsSheetProxy`] for its callers from this
 /// trait, [`AccountsSheetServer`] for the daemon to implement and [`AccountsSheetServed`] to register.

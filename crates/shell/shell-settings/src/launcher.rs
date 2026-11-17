@@ -1,14 +1,14 @@
 //! `launcher.*` (design/22 §3.6; design/13 §13.3.9). All Advanced (§5).
 
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 use shell_launcher::SkinTone;
 use shell_model::clipboard::HistoryMode;
 use shell_model::results::CurrencyPolicy;
 
 /// The launcher panel's placement and rows.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(
     file = "shell/settings.toml", domain = "launcher", page = Page::Appearance,

@@ -10,8 +10,8 @@
 //! (the `bar`).
 
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 
 /// Which edge of the container the bar is pinned to, `data-edge`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

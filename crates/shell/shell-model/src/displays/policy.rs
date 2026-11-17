@@ -4,8 +4,8 @@
 //! not reach (`scripts/check-boundary.sh`), so the daemon translates `DisplaySettings` into a
 //! [`DisplayPolicy`] and sends it with `DisplaysCommand::Policy`.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use crate::units::Percent;
 

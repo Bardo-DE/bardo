@@ -7,12 +7,12 @@
 
 use super::frames;
 use crate::state::State;
+use base_ids::Fraction;
 use compositor_core::Cause;
 use compositor_core::PageMilli;
 use compositor_core::overview::Overview;
 use compositor_layout::{Arrangement, SceneLayout, spec_of_framed};
 use compositor_motion::{MotionBook, retarget};
-use ui_core::vocab::Fraction;
 
 /// A full opening, in thousandths.
 const OPEN: i32 = 1000;

@@ -7,6 +7,7 @@
 //! What assistants asked to remember and the person has not answered comes first, each row with
 //! two actions: Keep and Don't Keep. Enter on such a row does nothing, so a key never keeps one.
 
+use base_words::Word;
 use memory_core::{FactView, MemoryItem, TimelineEntry};
 use shell_launcher::{
     Action, ActionId, ActionKeys, Activation, Choice, CompanionAct, IconRef, Item, ItemId,
@@ -19,7 +20,6 @@ use shell_model::companion::{
 use shell_services::control::Control;
 use tokio::sync::watch;
 use ui_core::vocab::MemoryVerb;
-use ui_core::word::Word;
 
 use super::lookup::block_on;
 

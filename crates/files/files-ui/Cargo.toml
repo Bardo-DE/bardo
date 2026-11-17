@@ -13,6 +13,7 @@ publish.workspace = true
 testing = []
 
 [dependencies]
+base-words = { path = "../../base/base-words" }
 anyview-core = {path = "../../anyview/crates/anyview-core"}
 anyview-fs = {path = "../../anyview/crates/anyview-fs"}
 # The picture of a file for the icon view: scaled and encoded here, kept in the shared thumbnail cache below.
@@ -28,7 +29,10 @@ ui-components = {path = "../../ui/ui-components"}
 ui-blitz = {path = "../../ui/ui-blitz"}
 ui-extensions = {path = "../../ui/ui-extensions"}
 ui-helpers = {default-features = false, path = "../../ui/ui-helpers"}
-ui-settings = {features = ["dioxus"], path = "../../ui/ui-settings"}
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
+ui-settings = { path = "../../ui/ui-settings", features = ["dioxus"] }
 files-core = {path = "../files-core"}
 files-fs = {path = "../files-fs"}
 files-model = {path = "../files-model"}

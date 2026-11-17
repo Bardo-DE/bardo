@@ -13,10 +13,10 @@
 use super::stroked::{KEYBOARD_BODY, KEYBOARD_CORE, KEYBOARD_RAYS, WAVE_1, WAVE_2, WAVE_3};
 use super::stroked::{body, core, rays};
 use super::vocab::LevelGlyph;
+use base_ids::Fraction;
+use base_words::Word;
 use dioxus::core::current_scope_id;
 use dioxus::prelude::*;
-use ui_core::vocab::Fraction;
-use ui_core::word::Word;
 use ui_style::icon::posed::Thousandths;
 use ui_style::icon::render::IconSize;
 use ui_style::icon::shape::Shape;
@@ -173,7 +173,7 @@ fn shape_child(shape: &Shape) -> Element {
 mod tests {
     use super::{Part, Shape, showing, waves};
     use crate::components::content::level_glyph::vocab::LevelGlyph;
-    use ui_core::vocab::Fraction;
+    use base_ids::Fraction;
 
     #[test]
     fn the_waves_follow_the_level_and_mute_brings_the_slash() {

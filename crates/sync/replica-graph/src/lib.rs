@@ -18,8 +18,8 @@
 //!   as a `PATCH`, the recycle bin as a `DELETE`, each with `If-Match`; a large file in an
 //!   upload session that a new replica resumes; the names `OneDrive` refuses ([`accepts_name`]).
 //! - **Quota** is the drive's `quota` (`used`, `total`).
-//! - **The connection** is whatever [`account_http::Http`] the replica is handed. In syncd it is a
-//!   `account_http_relay::Routed`: a `account_http_relay::RelayHttp` over the relays of accountd's
+//! - **The connection** is whatever [`http_core::Http`] the replica is handed. In syncd it is a
+//!   `http_relay::Routed`: a `http_relay::RelayHttp` over the relays of accountd's
 //!   `Tokens.OpenAuthenticated` (whose relay adds the bearer, so syncd never holds a token) for
 //!   the Graph host, and over those of `Tokens.OpenLinked` (no credential) for the hosts of an
 //!   `uploadUrl` and of the redirect a download answers with.

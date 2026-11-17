@@ -1,13 +1,13 @@
 //! The made-up notification and polkit request `bardo-shell debug notify` and `bardo-shell debug polkit` send,
 //! as the `shell-model` values the services would have received from a real sender.
 
+use base_words::Word;
 use clap::{Args, ValueEnum};
 use shell_model::notifications::{
     Action, ActionKey, AppRef, Expiry, Hints, IconRef, NotificationId, NotifyUrgency, Posting,
     parse_body,
 };
 use shell_model::polkit_agent::{ActionId, FakeRequest};
-use ui_core::word::Word;
 
 use super::word::word;
 

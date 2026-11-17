@@ -53,7 +53,9 @@ RULES=(
   "ui-blitz: zbus memfd pdfrum-anyrender pdfrum pdfrum-edit"
   "ui-harness: zbus memfd pdfrum-anyrender pdfrum pdfrum-edit"
   "ui-peer: zbus notify tokio winit dioxus blitz blitz-dom blitz-paint blitz-traits blitz-html blitz-net blitz-shell stylo_taffy dioxus-native dioxus-native-dom anyrender anyrender_vello anyrender_vello_cpu anyrender_vello_hybrid anyrender_skia anyrender_svg pdfrum-anyrender pdfrum-edit wgpu wgpu_context"
-  "ui-core-derive: dioxus zbus tokio"
+  "base-words-macros: dioxus zbus tokio"
+  "base-words: dioxus zbus tokio"
+  "base-spawn: dioxus zbus tokio"
   "ui-settings-derive: dioxus zbus tokio"
 )
 fail=0
@@ -85,15 +87,17 @@ done
 # and build dependencies that live in this workspace, and nothing else. A dependency on a crate
 # not listed here is a leak; so is one the crate no longer has, so the table stays exact.
 EDGES=(
-  "ui-core-derive:"
+  "base-words-macros:"
+  "base-words: base-words-macros"
+  "base-spawn:"
   "ui-settings-derive:"
-  "ui-core: ui-core-derive"
-  "ui-style: ui-core ui-core-derive"
+  "ui-core: base-words"
+  "ui-style: base-ids base-words base-words-macros ui-core"
   "ui-motion: ui-core ui-style"
   "ui-lint: ui-core ui-style"
   "ui-intents: ui-core"
   "ui-behaviour: ui-core"
-  "ui-components: ui-core ui-intents ui-motion ui-style"
+  "ui-components: base-ids base-spawn base-words ui-core ui-intents ui-motion ui-style"
   "ui-shell: ui-components ui-core ui-motion ui-style"
   "ui-settings: ui-core ui-helpers ui-peer ui-style ui-settings-derive"
   "ui-extensions: ui-core ui-helpers ui-settings ui-style"

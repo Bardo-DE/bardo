@@ -1,7 +1,7 @@
 //! What a `Button` is, apart from what it says: its bezel, its role, which window key it answers
 //! and whether its label is drawn (design/30 section 2.1, `NSButton`). Data only.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The bezel: what the button looks like at rest (`NSButton.BezelStyle`), `data-variant`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]
@@ -66,7 +66,7 @@ impl Answers {
 #[cfg(test)]
 mod tests {
     use super::{Answers, Bezel, ImagePosition};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn every_word_parses_back_from_its_slug() {

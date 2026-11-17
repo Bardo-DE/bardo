@@ -1,6 +1,6 @@
 //! The cover jobs: one at a time per player (a newer cover replaces an older one that has not
 //! finished), one per cover however many players name it, a gap between one player's jobs, and a
-//! few at once overall. Each is cut off by a time and a size ([`super::curl`], [`super::cache`]).
+//! few at once overall. Each is cut off by a time and a size ([`super::http`], [`super::cache`]).
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -11,7 +11,7 @@ use shell_model::now_playing::{PlayerId, next_start};
 use tokio::sync::{Semaphore, mpsc};
 use tokio::task::JoinHandle;
 
-use super::{ArtJob, cache, curl};
+use super::{ArtJob, cache, http};
 
 /// How many jobs run at once, whatever the players publish.
 const JOBS_AT_ONCE: usize = 2;
@@ -145,7 +145,7 @@ impl Drop for ArtFetcher {
 /// Run `job`.
 async fn carry_out(job: &ArtJob) -> bool {
     match job {
-        ArtJob::Fetch { url, cache_path } => curl::fetch(url, cache_path).await,
+        ArtJob::Fetch { url, cache_path } => http::fetch(url, cache_path).await,
         ArtJob::Copy { from, cache_path } => {
             let (from, to) = (from.clone(), cache_path.clone());
             tokio::task::spawn_blocking(move || cache::copy_cover(&from, &to).is_ok())

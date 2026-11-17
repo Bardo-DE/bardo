@@ -2,7 +2,7 @@
 
 use settings_app_model::{Catalogue, ConfigFile, ProgramSchema, StaleReason, discover};
 use settings_app_testkit::Scratch;
-use ui_settings::schema::{AppId, FilePath, ForeignTables, Schema};
+use settings_types::schema::{AppId, FilePath, ForeignTables, Schema};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 

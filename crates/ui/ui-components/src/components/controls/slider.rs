@@ -11,8 +11,9 @@ use crate::components::controls::slider_bezel::BezelSlider;
 use crate::components::controls::slider_linear::LinearSlider;
 use crate::components::controls::slider_model::SliderLook;
 use crate::root::common::Common;
+use base_ids::Fraction;
 use dioxus::prelude::*;
-use ui_core::vocab::{Availability, Fraction};
+use ui_core::vocab::Availability;
 use ui_style::tokens::control_size::ControlSize;
 
 /// A value in a range, `value` in thousandths.

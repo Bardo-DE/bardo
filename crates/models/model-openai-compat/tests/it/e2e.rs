@@ -3,9 +3,7 @@
 
 use std::time::Duration;
 
-use model_http::{
-    AuthHeader, HttpClient, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs,
-};
+use model_http::{AuthHeader, HttpEndpoint, HttpTarget, Proxy, Timeouts, UrlPath, WaitMs};
 use model_openai_compat::{Flavor, OpenAiCodec};
 use model_provider::Provider;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -76,7 +74,8 @@ async fn describe_reads_the_models_over_the_socket() {
     )
     .into_bytes()];
     let (path, server) = serve_once(pieces);
-    let provider = OpenAiCodec::new(Flavor::Vllm).provider(HttpClient::new(endpoint(path)));
+    let provider =
+        OpenAiCodec::new(Flavor::Vllm).provider(model_http_reqwest::client(endpoint(path)));
     let models = provider.describe().await.unwrap();
     assert_eq!(models[0].loaded_context.0, 16384);
     assert!(

@@ -4,7 +4,7 @@
 use nucleo_matcher::Matcher;
 use shell_launcher::{FrecencyScore, Needle, RankWeights, Score, rank_text};
 
-use ui_settings::schema::{KeySpec, PageDecl, PageId, PageTable, Schema};
+use settings_types::schema::{KeySpec, PageDecl, PageId, PageTable, Schema};
 
 /// One settings key, flattened out of whichever schema named it (design/22 §9.3: "the query...
 /// resolves... no hand-kept table" — every field here comes straight off the schema).
@@ -122,7 +122,7 @@ impl SettingsIndex {
     /// key matches or more than one does (design/22 §9.3's deep link rule: "a query that
     /// resolves to two keys is not a deep link, it is a search result list").
     ///
-    /// The rule of `ui_settings::schema::deep_link` over the flattened keys, with the query
+    /// The rule of `settings_types::schema::deep_link` over the flattened keys, with the query
     /// trimmed and an empty query resolving to nothing.
     #[must_use]
     pub fn deep_link(&self, query: &str) -> Option<&IndexedKey> {
@@ -147,7 +147,7 @@ mod tests {
     use shell_launcher::Needle;
 
     use super::{IndexedKey, SettingsIndex};
-    use ui_settings::schema::{PageId, Schema};
+    use settings_types::schema::{PageId, Schema};
 
     fn key(path: &str, label: &str, help: &str, page: &str) -> IndexedKey {
         IndexedKey {

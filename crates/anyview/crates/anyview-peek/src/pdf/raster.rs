@@ -11,10 +11,10 @@ use crate::looking::PANE_FIT;
 use anyview_core::{
     ByteLen, FactLabel, FactValue, Facts, FormatKind, Input, Peek, PeekBudget, PixelSize, Sniffed,
 };
+use base_words::Word;
 use ui_blitz::{ThumbRequest, pdf_thumb_blocking, pdf_thumb_bytes};
 use ui_core::geometry::scale::Scale;
 use ui_core::geometry::units::{Px, Size};
-use ui_core::word::Word;
 
 /// The peek of the kind `Pdf`.
 ///

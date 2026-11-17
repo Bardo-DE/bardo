@@ -445,7 +445,7 @@ struct Probe {
     chunks: Vec<Vec<u8>>,
     /// How many times to send the last chunk again (or until the sink stops).
     repeat: usize,
-    progress: std::sync::Mutex<Vec<model_http::Progress>>,
+    progress: std::sync::Mutex<Vec<http_core::Progress>>,
     deadline: std::sync::Mutex<Option<model_http::WaitMs>>,
     sent: std::sync::Mutex<usize>,
 }
@@ -493,7 +493,7 @@ fn probe_turn(
 
 #[test]
 fn only_a_chunk_with_a_frame_in_it_is_progress_and_the_request_deadline_reaches_the_transport() {
-    use model_http::Progress::{Idle, Made};
+    use http_core::Progress::{Idle, Made};
     let probe = Probe {
         chunks: vec![
             b": ping\n\n".to_vec(),

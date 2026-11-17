@@ -25,10 +25,10 @@ use crate::host::measure::{MountedRef, client_rect};
 use crate::keys::use_keys;
 use crate::root::common::Common;
 use crate::stack::hover_hub::{HoverKey, use_hover_hub};
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::time::{FRAME_SLACK, clock::sleep};
 use ui_core::vocab::Shortcut;
-use ui_core::word::Word;
 use ui_motion::hover_intent::HoverProfile;
 
 /// Which side of its target a hint stands on.

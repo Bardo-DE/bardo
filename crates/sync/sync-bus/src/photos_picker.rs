@@ -7,7 +7,7 @@
 //! Google Photos (the account's Photos row in Settings); only the Photos app (`org.bardo.Photos`)
 //! may call it. No token, no URL of Google's bytes, and no picked file's content ever crosses it.
 
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 
 /// The prefix of the errors this interface names itself (a refusal of accountd's vocabulary
 /// keeps its `org.bardo.Accounts1.Error.` name).

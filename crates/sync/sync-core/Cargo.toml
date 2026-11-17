@@ -13,7 +13,7 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-account-http = {path = "../../accounts/account-http"}
+http-core = {path = "../../network/http-core"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 

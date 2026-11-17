@@ -4,11 +4,11 @@
 use super::*;
 use crate::Absence;
 use crate::picker::Described;
-use std::collections::BTreeMap;
-use ui_settings::schema::{
+use settings_types::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Page, Section,
 };
+use std::collections::BTreeMap;
 
 pub(super) fn path(text: &str) -> KeyPath {
     KeyPath(text.to_owned())
@@ -31,7 +31,7 @@ pub(super) fn spec(key: &str, label: &str, kind: KeyKind) -> KeySpec {
         page: Page::Accounts,
         section: Section("Nextcloud".to_owned()),
         exposure: Exposure::Basic,
-        labels: ui_settings::schema::WordLabels::default(),
+        labels: settings_types::schema::WordLabels::default(),
         unavailable: BTreeMap::default(),
         groups: BTreeMap::default(),
         places: BTreeMap::default(),

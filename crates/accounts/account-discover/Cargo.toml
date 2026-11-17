@@ -12,7 +12,7 @@ publish.workspace = true
 account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 base-url = { path = "../../base/base-url" }
-account-http = {path = "../account-http"}
+http-core = {path = "../../network/http-core"}
 account-provider = {path = "../account-provider"}
 roxmltree = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

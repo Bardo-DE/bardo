@@ -2,11 +2,11 @@
 //! models sit in the module's groups. Local's questions are in `local_tests`.
 
 use super::*;
-use std::collections::BTreeMap;
-use ui_settings::schema::{
+use settings_types::schema::{
     AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec,
     Label, Page, Section, WordLabels,
 };
+use std::collections::BTreeMap;
 
 pub(super) const ROW: &str = "ai.model.text.balanced";
 const OTHER_TIER: &str = "ai.model.text.fast";
@@ -337,11 +337,11 @@ fn a_model_that_is_blocked_cannot_be_added_but_can_be_taken_out() {
         if spec.path.0 == POOL {
             spec.unavailable.insert(
                 ChoiceWord("local/holo".to_owned()),
-                ui_settings::schema::UnavailableReason("Needs a newer version".to_owned()),
+                settings_types::schema::UnavailableReason("Needs a newer version".to_owned()),
             );
             spec.unavailable.insert(
                 ChoiceWord("local/qwen".to_owned()),
-                ui_settings::schema::UnavailableReason("Needs a newer version".to_owned()),
+                settings_types::schema::UnavailableReason("Needs a newer version".to_owned()),
             );
         }
     }

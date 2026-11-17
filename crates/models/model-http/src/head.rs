@@ -6,6 +6,9 @@
 
 use serde::{Deserialize, Serialize};
 
+use http_core::HeaderText;
+use http_core::http::{HeaderMap, StatusCode};
+
 use crate::HttpStatus;
 
 /// A request id a server echoed back (`x-request-id`), kept for support and for the audit trail.
@@ -54,22 +57,10 @@ impl From<RequestId> for String {
     }
 }
 
-/// Seconds a server asked us to wait (`Retry-After`, the seconds form only).
+/// Seconds a server asked us to wait (`Retry-After`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct WaitSeconds(pub u32);
-
-impl WaitSeconds {
-    /// A `Retry-After` header value in its seconds form; the HTTP-date form is not read (`None`).
-    #[must_use]
-    pub fn from_header(value: &str) -> Option<WaitSeconds> {
-        let value = value.trim();
-        let digits = !value.is_empty() && value.bytes().all(|b| b.is_ascii_digit());
-        digits
-            .then(|| value.parse().ok().map(WaitSeconds))
-            .flatten()
-    }
-}
 
 /// What the `Content-Type` says the body is. `Html` catches an error page served as 200.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -119,6 +110,24 @@ pub struct ResponseHead {
     /// `Content-Range`, for a client that resumes a download and must see where the bytes start.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub content_range: Option<String>,
+}
+
+impl ResponseHead {
+    /// The head of a response with this status and these headers: the `Content-Type` as a
+    /// [`BodyKind`], and `Retry-After` through the one parser of `http-core` (the date form is
+    /// counted from the response's own `Date`).
+    #[must_use]
+    pub fn of(status: StatusCode, headers: &HeaderMap) -> Self {
+        let text = |name: &str| headers.header(name).map(str::to_owned);
+        Self {
+            status: HttpStatus(status.as_u16()),
+            body: BodyKind::of(&text("content-type").unwrap_or_default()),
+            retry_after: headers.retry_after_seconds_by_date().map(WaitSeconds),
+            request_id: text("x-request-id").and_then(|v| RequestId::new(v).ok()),
+            location: text("location"),
+            content_range: text("content-range"),
+        }
+    }
 }
 
 /// A duration in milliseconds.

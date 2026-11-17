@@ -3,8 +3,8 @@
 use crate::components::companion::answer::action::CardAction;
 use crate::components::companion::answer::footer::ServedByView;
 use crate::components::companion::mark::AppMark;
+use base_words::Word;
 use ui_core::vocab::Tally;
-use ui_core::word::Word;
 
 /// Where a run acts, `data-place`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]

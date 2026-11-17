@@ -1,0 +1,24 @@
+[package]
+name = "settings-types"
+description = "The plain data of settings: the schema a program ships (keys, pages, kinds), where in Settings a link points, the units keys are written in, and a program's config folder name."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+settings-types-macros = { path = "../settings-types-macros" }
+# `Fraction`, and `Word`: the closed vocabulary a settings enum's words come from.
+base-ids = { path = "../../base/base-ids" }
+base-words = { path = "../../base/base-words" }
+serde = { workspace = true, features = ["derive"] }
+thiserror = { workspace = true }
+toml = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

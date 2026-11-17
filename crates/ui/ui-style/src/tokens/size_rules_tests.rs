@@ -4,7 +4,7 @@
 use super::control_size::ControlSize;
 use super::size_scale::{HalfPx, KNOB_INSET, SizeScale, WholePx, on_grid};
 use super::size_vars::{SizeToken, SizeVar};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// Per size: height, radius, capsule radius (half px), knob, switch w x h, switch knob, slider
 /// track and knob, segment and its radius, glyph, label inset, checkbox, spinner, progress bar,

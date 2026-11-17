@@ -353,7 +353,7 @@ pub async fn serve_with(
         )
         .await
         .expect("inferd served");
-    zbus_ready::serving(&connection)
+    dbus_kit::ready::serving(&connection)
         .await
         .expect("the object server answers");
     connection

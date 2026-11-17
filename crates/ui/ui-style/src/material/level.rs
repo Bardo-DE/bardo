@@ -10,7 +10,7 @@ use crate::tokens::{
     hex::{Alpha, Colour, Hex},
     name::VarName,
 };
-use ui_core::word::Word;
+use base_words::Word;
 
 /// `--m-level-fill`: the filled part and the knob.
 pub(crate) const FILL: VarName = VarName("--m-level-fill");

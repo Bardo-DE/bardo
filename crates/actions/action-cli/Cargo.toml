@@ -40,7 +40,7 @@ base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 action-dbus = {path = "../action-dbus", features = ["fixture-callers"]}
 permission-core = {path = "../permission-core"}
 inference-core = {path = "../../inference/inference-core"}
-zbus-ready = {path = "../../zbus-ready"}
+dbus-kit = { path = "../../bus/dbus-kit" }
 action-testbus = {path = "../action-testbus"}
 action-daemon = { path = "../action-daemon" }
 zbus = {workspace = true, features = ["tokio"]}
@@ -49,7 +49,6 @@ action-provider = {path = "../action-provider", features = ["dbus"]}
 action-fake = {path = "../action-fake"}
 action-router = {path = "../action-router"}
 memory-dbus = {path = "../../memory/memory-dbus"}
-memory-dbus-serve = {path = "../../memory/memory-dbus-serve"}
 futures-util = { workspace = true, features = ["std"] }
 memory-core = {path = "../../memory/memory-core"}
 account-core = {path = "../../accounts/account-core"}

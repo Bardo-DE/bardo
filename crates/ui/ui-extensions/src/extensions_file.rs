@@ -6,9 +6,10 @@
 //! no key of it is agent-settable.
 
 use serde::{Deserialize, Serialize};
-use ui_core::settings::ExtensionId;
-use ui_settings::schema::{Page, Schema, SettingsSchema};
-use ui_settings::{FileName, Format, SettingsDoc, SettingsRow, SettingsSchema};
+use settings_store::{FileName, Format, SettingsDoc};
+use settings_types::schema::{Page, Schema, SettingsSchema};
+use settings_types::target::ExtensionId;
+use settings_types::{SettingsRow, SettingsSchema};
 
 /// One Extension that is turned off, by id.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, SettingsRow)]

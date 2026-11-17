@@ -16,10 +16,11 @@ use crate::components::app::send_mood::SendMood;
 use crate::components::controls::progress::model::{Progress, ProgressStyle};
 use crate::components::controls::progress::view::ProgressIndicator;
 use crate::root::common::Common;
+use base_ids::Fraction;
 use dioxus::prelude::*;
 use std::time::Duration;
 use ui_core::time::FRAME_SLACK;
-use ui_core::vocab::{Fraction, shown_word};
+use ui_core::vocab::shown_word;
 use ui_motion::detail::operation::Operation;
 use ui_style::tokens::control_size::ControlSize;
 use ui_style::tokens::delay::DelayToken;
@@ -130,7 +131,7 @@ pub fn SendPill(
 #[cfg(test)]
 mod tests {
     use super::remaining;
-    use ui_core::vocab::Fraction;
+    use base_ids::Fraction;
 
     #[test]
     fn the_ring_holds_what_is_left_of_the_countdown() {

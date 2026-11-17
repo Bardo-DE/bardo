@@ -12,7 +12,7 @@ pub mod inferd;
 
 use memory_core::{Dirs, SpaceId};
 use memory_daemon::{Confinement, Consent, Daemon, SpaceRegistry, SystemBackend, TablePeers};
-use memory_dbus_serve::serve_on;
+use memory_dbus::serve_on;
 use memory_fake::ScriptedConsolidator;
 use memory_recall::{EmbedError, Embedder, FakeEmbedder};
 use memory_seal::{KeyError, KeyStore, MemoryKeys, SpaceKey};

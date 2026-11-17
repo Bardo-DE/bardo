@@ -5,13 +5,13 @@
 
 use account_capability::StorageCap;
 use account_fake_servers::FakeGoogle;
-use account_http::http::header::{AUTHORIZATION, HeaderValue};
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
-use account_http_reqwest::ReqwestHttp;
 use base_testkit::Scratch;
 use base_time::UnixSeconds;
 use base_url::WebUrl;
+use http_core::http::header::{AUTHORIZATION, HeaderValue};
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
+use http_reqwest::ReqwestHttp;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use sync_core::{
     Blob, ByteRange, ChangePage, Cursor, Folders, ItemKind, ItemPath, PutItem, PutRefused, Quota,

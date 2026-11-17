@@ -66,7 +66,7 @@ fn the_file_has_a_page_entry_per_page_and_a_key_entry_per_key() {
         .find(|row| row["key"].as_str() == Some(MAGNIFICATION))
         .expect("the magnification entry");
     let spec = &catalogue
-        .entry(&ui_settings::schema::KeyPath(MAGNIFICATION.to_owned()))
+        .entry(&settings_types::schema::KeyPath(MAGNIFICATION.to_owned()))
         .expect("the key")
         .spec;
     assert_eq!(key["title"].as_str(), Some(spec.label.0.as_str()));

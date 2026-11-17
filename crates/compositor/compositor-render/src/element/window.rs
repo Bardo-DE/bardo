@@ -12,6 +12,7 @@ use crate::pass::BlurLook;
 use crate::scene::OutputView;
 use crate::scene::convert::on_output;
 use crate::texture_book::TextureBook;
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize, SubPoint, SubPx};
 use compositor_core::settings::MinimiseEffect;
 use compositor_motion::PlacedWindow;
@@ -22,7 +23,6 @@ use smithay::backend::renderer::element::surface::{
 use smithay::backend::renderer::element::utils::RescaleRenderElement;
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use smithay::utils::Scale;
-use ui_core::vocab::Fraction;
 
 /// `placed`'s surface tree (subsurfaces, then the root) drawn at its sampled place and opacity on
 /// `view`, front first, with its blur v0 behind it when it asked for one.

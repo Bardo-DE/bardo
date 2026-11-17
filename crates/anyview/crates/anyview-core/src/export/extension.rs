@@ -1,6 +1,6 @@
 //! The file extensions an export writes.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The extension of a file an export writes: a closed set, because only formats the viewer can
 /// encode appear. The slug is the extension without its dot.

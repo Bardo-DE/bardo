@@ -10,8 +10,8 @@
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
-use account_http_relay::{RelayDial, RelayHttp, RelayLimits};
 use base_url::WebUrl;
+use http_relay::{RelayDial, RelayHttp, RelayLimits};
 use replica_webdav::WebDavReplica;
 use std::sync::Arc;
 use sync_core::Clock;

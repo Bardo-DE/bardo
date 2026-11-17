@@ -17,6 +17,7 @@ name = "bardo-actions-mcp"
 path = "src/main.rs"
 
 [dependencies]
+dbus-kit = { path = "../../bus/dbus-kit" }
 action-tools = {path = "../action-tools"}
 action-core = {path = "../action-core"}
 action-client = {path = "../action-client", default-features = false, features = ["dbus"]}

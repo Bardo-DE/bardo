@@ -2,8 +2,8 @@
 //! same two entry points as `portal/bus.rs`, answering the defaults and never changing.
 
 use super::SystemPrefs;
-use crate::latest::{self, Receiver};
-use ui_core::spawner::Spawner;
+use base_spawn::Spawner;
+use settings_store::latest::{self, Receiver};
 
 /// No portal: the caller falls back to the defaults.
 pub(super) async fn read_all() -> Option<SystemPrefs> {

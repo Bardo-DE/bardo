@@ -7,8 +7,8 @@ use crate::components::controls::segmented::SegmentedControl;
 use crate::components::controls::segmented::Tracking;
 use crate::components::fields::text_field::TextField;
 use crate::components::lists::section_header::SectionHeader;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::appearance::{
     motion::Motion,
     theme::{Scheme, Theme},

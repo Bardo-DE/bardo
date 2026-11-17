@@ -4,9 +4,9 @@ use settings_app_model::{
     AgentSetting, Catalogue, OriginRule, SchemaOrigin, discover, discover_under,
 };
 use settings_app_testkit::{Scratch, fixture_dir};
+use settings_types::schema::KeyPath;
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
-use ui_settings::schema::KeyPath;
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const MAGNIFICATION: &str = "dock.magnification";
@@ -105,7 +105,7 @@ fn a_user_schema_cannot_lend_its_marks_to_an_installed_one() {
         std::fs::read_to_string(fixture_dir().join("shell.settings.toml")).expect("fixture");
     let system = schema_dir(&scratch, "system", &plain);
     let user = schema_dir(&scratch, "user", &sill_marking(MAGNIFICATION));
-    // `ui_settings::schema::data_dirs` lists the system's directories first.
+    // `settings_store_fs::data_dirs` lists the system's directories first.
     let found = catalogue(&[&system], &[system.clone(), user]);
     assert_eq!(setting_of(&found, MAGNIFICATION), AgentSetting::HandsOff);
 }

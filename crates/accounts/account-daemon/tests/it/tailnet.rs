@@ -16,7 +16,6 @@ use account_dbus::accounts::{ManagerProxy, Sheet, SpacesProxy, TailnetProxy, mac
 use account_fake::{MemoryStore, RecordingAudit};
 use account_fake_servers::{Daemon, FakeLocalApi, FakePeer, Network};
 use account_families::{DynProvider, TailnetProvider};
-use account_http::{SharedSleep, Sleep};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_sheet::{SheetInput, SheetView, SignInFault};
@@ -27,6 +26,7 @@ use base_time::FixedClock;
 use common::bus::PrivateBus;
 use common::host::{HostLog, SheetHost, send_input};
 use common::{Shared, caller, error_name, eventually};
+use http_core::{SharedSleep, Sleep};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -153,7 +153,7 @@ impl World {
             .at(account_wire::names::SHEET_PATH, host)
             .await
             .expect("host object");
-        zbus_ready::serving(&host_connection)
+        dbus_kit::ready::serving(&host_connection)
             .await
             .expect("the host takes calls");
         host_connection

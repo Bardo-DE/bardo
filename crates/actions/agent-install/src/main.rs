@@ -11,7 +11,7 @@
 //! `--registry-file FILE` reads the snapshot from a file instead of the registry. `install` says
 //! `installing ID VERSION` on its first line before it reaches the network.
 
-use agent_install::fetch::{Curl, Fetch, FetchFault};
+use agent_install::fetch::{Fetch, FetchFault, Https};
 use agent_install::run::System;
 use agent_install::store::{agents, versions};
 use agent_install::{Standing, Want, install, offers, standing};
@@ -74,7 +74,7 @@ enum SnapshotError {
 fn snapshot(file: Option<PathBuf>) -> Result<Snapshot, SnapshotError> {
     let text = match file {
         Some(path) => std::fs::read_to_string(path)?,
-        None => String::from_utf8(Curl.get(REGISTRY)?)?,
+        None => String::from_utf8(Https.get(REGISTRY)?)?,
     };
     Ok(Snapshot::parse(&text)?)
 }
@@ -138,7 +138,7 @@ fn main() -> ExitCode {
         }
         Request::Install { id, version } => {
             println!("installing {id} {version}");
-            match install(&dir, &snap, Want { id, version }, (&Curl, &System)) {
+            match install(&dir, &snap, Want { id, version }, (&Https, &System)) {
                 Ok(done) => {
                     println!(
                         "installed {} {}; pin `version = \"{}\"` in agents.toml",

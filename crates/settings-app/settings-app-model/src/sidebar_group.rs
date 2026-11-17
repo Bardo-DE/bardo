@@ -52,7 +52,7 @@ mod tests {
     use crate::catalogue::PageModel;
     use crate::page::PageSlug;
     use crate::page_kind::PageKind;
-    use ui_settings::schema::Page;
+    use settings_types::schema::Page;
 
     fn model(page: Page) -> PageModel {
         PageModel {

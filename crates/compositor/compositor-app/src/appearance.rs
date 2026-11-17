@@ -16,9 +16,12 @@
 //! directory (a test, a jail) uses a fixed answer and never touches a bus.
 
 use crate::State;
+use base_spawn::Spawner;
 use compositor_ipc::system_scheme::SchemeWatch;
 use compositor_layout::{Scheme, Theme, Transparency, reduced_stand_in, scheme_of};
 use compositor_render::{BlurFinish, Rgba8};
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::AppName;
 use smithay::reexports::calloop::channel::{self, Event as ChannelEvent};
 use std::ops::ControlFlow;
 use std::path::Path;
@@ -26,8 +29,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::task::{Context, Wake, Waker};
 use std::thread::Thread;
-use ui_core::spawner::Spawner;
-use ui_settings::{AppName, AppearanceFile, ConfigRoot, Store, SystemPrefsSource};
+use ui_settings::{AppearanceFile, SystemPrefsSource};
 
 /// The appearance store of `home`: the real config tree, or a stand-in directory (a test or a
 /// jail never reaches the machine's own file).

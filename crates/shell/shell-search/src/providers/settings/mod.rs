@@ -13,8 +13,8 @@ use shell_launcher::{
 
 use index::{IndexedKey, IndexedPage, SettingsIndex};
 use schema_files::{fingerprint, schema_paths};
-use ui_settings::schema::{PageId, Schema};
-use ui_settings::target::SettingsTarget;
+use settings_types::schema::{PageId, Schema};
+use settings_types::target::SettingsTarget;
 
 /// A key's `Item.id`: `activate` strips this back off, rather than re-parsing the row's title.
 const KEY_ID_PREFIX: &str = "key:";

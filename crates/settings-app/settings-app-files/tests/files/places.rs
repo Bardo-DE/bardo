@@ -31,7 +31,7 @@ fn what_is_saved_reads_back_as_docket_reads_it() {
     save_places(&home, &places()).expect("saved");
     let loaded = load_places(&home);
     assert_eq!(loaded.places, places());
-    assert!(loaded.fallbacks.is_empty());
+    assert!(loaded.invalid.is_empty());
 }
 
 #[test]

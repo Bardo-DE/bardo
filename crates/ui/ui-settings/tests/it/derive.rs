@@ -6,10 +6,10 @@
 use std::borrow::Cow;
 use std::path::PathBuf;
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
-use ui_settings::schema::{Control, ControlName, KeyKind, Page, SettingsSchema};
-use ui_settings::{Ms, SettingsSchema};
+use settings_types::schema::{Control, ControlName, KeyKind, Page, SettingsSchema};
+use settings_types::{Ms, SettingsSchema};
 
 /// A sound theme's name: text, though the type is a newtype.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -118,7 +118,7 @@ fn text_defaults_are_their_strings_and_the_schema_round_trips() {
         Some(toml::Value::String("/tmp".to_owned()))
     );
     let text = schema.to_toml();
-    let back = ui_settings::schema::Schema::from_toml(&text).unwrap_or_else(|e| panic!("{e}"));
+    let back = settings_types::schema::Schema::from_toml(&text).unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(back, schema, "{text}");
 }
 

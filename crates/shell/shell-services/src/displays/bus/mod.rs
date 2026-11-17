@@ -28,11 +28,6 @@ use crate::env::Env;
 use crate::error::ServiceError;
 use crate::service::{Service, ServiceIo};
 
-/// The well-known name the interface is served under.
-pub const BUS: &str = "org.bardo.Displays1";
-/// Where the object is exported.
-pub const PATH: &str = "/org/bardo/Displays1";
-
 /// What the service reads and drives: the displays it lists and the displays service it tells.
 #[derive(Debug, Clone)]
 pub struct DisplaysBusLinks {

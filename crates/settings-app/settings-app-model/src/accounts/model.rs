@@ -9,7 +9,7 @@ use super::spend::AccountSpend;
 use crate::Absence;
 use account_core::SignInWay;
 use account_sheet::ProviderGroup;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// Before an id in the key of an account that is syncd's: an id never holds a `/`, so the same
 /// id in two modules is two accounts.

@@ -13,7 +13,7 @@ use account_core::consent::Usage;
 use account_core::{AppId, AppName, DataClass, Isolation};
 use inference_core::{Chooser, ModelRef, Slot};
 use inference_router::router::slots_of;
-use ui_settings::live::LiveError;
+use settings_dbus::LiveError;
 
 /// The `[ai.auto.pool]` table of `inferd.toml`, where a helper's row lives.
 const POOL_TABLE: &str = "ai.auto.pool";

@@ -58,7 +58,7 @@ and every other name is at its home path (the root keeps only the stylesheet ass
 | `ui-style/tokens/accent_table.rs` | 03-COLOR §5 and §20 (8 accents x 4 props) |
 | `ui-style/tokens/label_hue.rs` | `archive/03-COLOR-arc.md` §15 (Candy hues, history); `archive/07-LOOKS.md` §6.2 (`--c-*`) |
 | `ui-style/tokens/hex.rs`, `ui-style/tokens/name.rs` | the value and name types every table uses |
-| `ui-style/tokens/{token,set}.rs`, `ui-core-derive` | `Token` (`#[derive(Word, Token)]`: a family's custom properties and values from its variants' attributes), `TokenScope`, `CssValue`, `TokenSet` (a family as data, placed in the `.ds` block) |
+| `ui-style/tokens/{token,set}.rs`, `base-words-macros` | `Token` (`#[derive(Word, Token)]`: a family's custom properties and values from its variants' attributes), `TokenScope`, `CssValue`, `TokenSet` (a family as data, placed in the `.ds` block) |
 | `ui-style/kit/`, `ui-style/kit/style_kit.rs`, `ui-motion/kit.rs`, `assembly/kit.rs`, `ui-shell/kit.rs` | `Kit` (a layer's token families, stylesheet sections, component `Sheet`s each placed after the sheet it follows, and lint vocabulary), `KitRank`, `Kits` (`stylesheet`, `vocabulary`, `token_blocks`, `sheets`); `ds::kits()` is style, motion and the components; `ds_shell::kits()` adds the shell's, `ds_shell::stylesheet()` is the sheet a shell surface draws with (`Ds { sheet: Some(..) }`); `LintConfig::new(&ds_shell::kits())` |
 | `ui-style/tokens/timing.rs`, `ui-style/tokens/delay.rs` | 05-MOTION §3.1-3.4, §7.2 (`DurationToken`; `DelayToken`, the timer and delay lengths) |
 | `ui-style/tokens/easing.rs` | 05-MOTION §3.1-3.3 |

@@ -15,7 +15,7 @@ account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}
 account-provider = {path = "../account-provider"}
-account-http = {path = "../account-http"}
+http-core = {path = "../../network/http-core"}
 account-discover = {path = "../account-discover"}
 account-proxy = {path = "../account-proxy", features = ["tls"]}
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}

@@ -1,11 +1,11 @@
 //! What a person sees of a run's state, derived from cuad's phase and outcome, and the controls
 //! each state offers. Both are total tables.
 
+use base_words::Word;
 use computer_use_action::RunMode;
 use computer_use_bus::{CuaOutcome, RunStateSlug};
 use provenance::RunId;
 use shell_launcher::RunControl;
-use ui_core::word::Word;
 
 use super::model::Companion;
 

@@ -22,12 +22,12 @@ use inference_daemon::supervise::Supervised;
 use inference_dbus::inference::InferenceProxy;
 use inference_dbus::inference::{INFERENCE_BUS, INFERENCE_PATH, INFERENCE_SETTINGS_PATH};
 use inference_turns::audit::Memory;
-use std::path::PathBuf;
-use std::sync::Arc;
-use ui_settings::live::{AnyOwner, LiveClient, LiveError, LiveSchema};
-use ui_settings::schema::{
+use settings_dbus::{AnyOwner, LiveClient, LiveError, LiveSchema};
+use settings_types::schema::{
     AgentSetting, ChoicePlace, ChoiceWord, Exposure, KeyKind, KeyPath, Page,
 };
+use std::path::PathBuf;
+use std::sync::Arc;
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
 

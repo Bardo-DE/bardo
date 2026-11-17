@@ -10,8 +10,8 @@ use super::text_grounds::{BACKDROPS, TEXT_MATERIALS, TextOn, text_grounds, text_
 use crate::appearance::{accent::Accent, theme::Scheme};
 use crate::tokens::accent_table::accent_of;
 use crate::tokens::hex::{Alpha, Hex};
+use base_words::Word;
 use ui_core::colour::{oklab::Oklab, srgb::Srgb};
-use ui_core::word::Word;
 
 fn roles(hue: u16, weight: BandWeight, scheme: Scheme) -> AccentRoles {
     accent_roles(

@@ -25,7 +25,6 @@ use futures_util::lock::Mutex;
 use provenance::{AgentRef, SessionId, SpaceId, TaskId};
 use std::sync::Arc;
 use zbus::fdo;
-use zbus::fdo::{RequestNameFlags, RequestNameReply};
 use zbus::message::Header;
 use zbus::object_server::SignalEmitter;
 use zbus::zvariant::{ObjectPath, OwnedObjectPath};
@@ -447,17 +446,10 @@ where
             .await
             .map_err(bus)?;
     }
-    zbus_ready::serving(connection).await.map_err(bus)?;
-    let reply = connection
-        .request_name_with_flags(COMPANION_BUS, RequestNameFlags::DoNotQueue.into())
+    dbus_kit::ready::serving(connection).await.map_err(bus)?;
+    dbus_kit::name::claim(connection, COMPANION_BUS)
         .await
-        .map_err(bus)?;
-    match reply {
-        RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner => {}
-        RequestNameReply::InQueue | RequestNameReply::Exists => {
-            return Err(ServeFault::Bus(format!("{COMPANION_BUS} is taken")));
-        }
-    }
+        .map_err(|error| ServeFault::Bus(error.to_string()))?;
     tokio::spawn(forward(
         connection.clone(),
         shared,

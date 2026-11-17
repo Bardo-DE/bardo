@@ -46,11 +46,11 @@ use account_family_kit::Conversation;
 use account_family_kit::Io;
 use account_family_kit::password::secret_presented;
 use account_generic_proto::declared;
-use account_http::{NoSleep, SharedHttp};
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSet, ProviderSpec, RevokeOutcome,
     SignInStart,
 };
+use http_core::{NoSleep, SharedHttp};
 use std::marker::PhantomData;
 
 pub use dns::SharedDns;

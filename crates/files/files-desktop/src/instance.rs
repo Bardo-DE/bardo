@@ -7,7 +7,7 @@
 
 pub use zbus::Connection as Bus;
 use zbus::Connection;
-use zbus::fdo::{DBusProxy, RequestNameFlags, RequestNameReply};
+use zbus::fdo::DBusProxy;
 use zbus::names::BusName;
 
 pub use crate::error::InstanceError;
@@ -59,7 +59,7 @@ pub async fn session() -> Result<Connection, InstanceError> {
 pub async fn claim(connection: &Connection, sink: Sink) -> Result<Claim, InstanceError> {
     // The object goes up before the names, so a call right after the name appears is answered.
     file_manager::serve(connection, sink).await?;
-    zbus_ready::serving(connection).await?;
+    dbus_kit::ready::serving(connection).await?;
     if !ask_for(connection, APP_NAME).await? {
         file_manager::unserve(connection).await;
         return Ok(Claim::Running);
@@ -99,14 +99,9 @@ pub async fn forward(connection: &Connection, show: &Show) -> Result<(), Instanc
 
 /// Asks for `name` without queueing and without replacing its owner: whether it is ours now.
 async fn ask_for(connection: &Connection, name: &'static str) -> Result<bool, zbus::Error> {
-    match connection
-        .request_name_with_flags(name, RequestNameFlags::DoNotQueue.into())
-        .await
-    {
-        Ok(RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner) => Ok(true),
-        Ok(RequestNameReply::Exists | RequestNameReply::InQueue) | Err(zbus::Error::NameTaken) => {
-            Ok(false)
-        }
-        Err(error) => Err(error),
+    match dbus_kit::name::claim(connection, name).await {
+        Ok(()) => Ok(true),
+        Err(dbus_kit::name::ClaimError::Taken(_)) => Ok(false),
+        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err(*source),
     }
 }

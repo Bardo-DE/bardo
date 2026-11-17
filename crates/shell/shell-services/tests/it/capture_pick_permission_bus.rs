@@ -11,7 +11,8 @@ use shell_model::capture_pick::{AskId, AskedBy, CaptureCommand, CapturePicker, P
 use shell_model::desktop::{Consent, ConsentId, DesktopCommand, Memory, Power, SubjectKind};
 use shell_testkit::{PrivateBus, TempDir};
 
-use crate::capture_pick_bus::{Shell1Proxy, rig, serving, wait_for};
+use crate::capture_pick_bus::{rig, serving, wait_for};
+use shell_dbus::Shell1Proxy;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn transom_asks_and_each_button_comes_back_as_its_number() {

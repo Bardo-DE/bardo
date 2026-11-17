@@ -21,8 +21,8 @@ mod tests;
 use memory_core::{RetentionDays, VaultKind};
 
 pub use confirm::{CONFIRMED_FILE, ConfirmError, Confirmations, gate, waiting};
-pub use loosen::loosenings;
-pub use read::{Fallback, Loaded, Why, read};
+pub use loosen::{lines, loosenings};
+pub use read::read;
 
 /// The schema almanac ships for its settings (design/22 section 9.2).
 pub const SCHEMA: &str = include_str!("../schema/memory.settings.toml");

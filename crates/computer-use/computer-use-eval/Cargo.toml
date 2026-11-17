@@ -36,7 +36,8 @@ computer-use-session = {path = "../computer-use-session"}
 computer-use-vendors = {path = "../computer-use-vendors"}
 computer-use-parse = {path = "../computer-use-parse"}
 model-catalog = {path = "../../models/model-catalog"}
-model-http = {features = ["client"], path = "../../models/model-http"}
+model-http = {path = "../../models/model-http"}
+model-http-reqwest = {path = "../../models/model-http-reqwest"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
 model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }

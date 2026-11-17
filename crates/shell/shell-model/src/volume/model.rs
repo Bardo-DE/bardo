@@ -1,7 +1,7 @@
 //! The volume's state.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use crate::units::{Percent, Presence};
 

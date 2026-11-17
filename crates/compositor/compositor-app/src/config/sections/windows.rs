@@ -3,11 +3,11 @@
 use crate::config::convert;
 use compositor_core::settings::{CasementSettings, FirstClick, MinimiseEffect, TitleDoubleClick};
 use serde::{Deserialize, Serialize};
-use ui_settings::Ms;
-use ui_settings::schema::Page;
+use settings_types::Ms;
+use settings_types::schema::Page;
 
 /// `windows.*`: window management.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "windows", page = Page::Appearance)]
 #[expect(

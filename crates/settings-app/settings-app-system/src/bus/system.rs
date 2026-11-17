@@ -6,6 +6,7 @@
 use super::io::because;
 use super::source::BusSource;
 use crate::deadline::{Deadline, peer};
+use dbus_kit::connect::BusTarget;
 use settings_app_model::Absence;
 use ui_peer::within;
 use zbus::Connection;
@@ -28,14 +29,14 @@ pub async fn system_connection(bus: &BusSource) -> Result<Connection, Absence> {
 async fn dial(bus: &BusSource) -> Result<Connection, Absence> {
     match bus {
         BusSource::Absent => Err(Absence::NotRunning),
-        BusSource::Session => Connection::system()
+        BusSource::Session => BusTarget::System
+            .connect()
             .await
             .map_err(because(Absence::NotRunning)),
-        BusSource::Address(address, _) => {
-            let builder = zbus::connection::Builder::address(address.as_str())
-                .map_err(because(Absence::Failed))?;
-            builder.build().await.map_err(because(Absence::NotRunning))
-        }
+        BusSource::Address(address, _) => BusTarget::Address(address.clone())
+            .connect()
+            .await
+            .map_err(because(Absence::NotRunning)),
     }
 }
 

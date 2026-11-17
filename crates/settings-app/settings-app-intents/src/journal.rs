@@ -3,8 +3,8 @@
 
 use action_vocab::UndoToken;
 use settings_app_model::ConfigFile;
+use settings_types::schema::KeyPath;
 use std::collections::BTreeMap;
-use ui_settings::schema::KeyPath;
 
 /// How many changes can be taken back; the oldest is forgotten first.
 const KEPT: usize = 256;
@@ -61,7 +61,7 @@ fn number(token: &UndoToken) -> Option<u64> {
 mod tests {
     use super::{Change, Journal, KEPT};
     use settings_app_model::ConfigFile;
-    use ui_settings::schema::{FilePath, KeyPath};
+    use settings_types::schema::{FilePath, KeyPath};
 
     fn change(n: i64) -> Change {
         Change {

@@ -19,8 +19,8 @@ use crate::shell::{ShellNote, SplitChoices};
 use crate::space::{Space, SpaceContent, SplitPair};
 use crate::window::{Restore, SpacePlace, Window, WindowState};
 use account_core::SpaceId;
+use base_ids::Fraction;
 use desktop_protocols::vocab::{SplitSide, WindowRole};
-use ui_core::vocab::Fraction;
 
 /// Where a new Split View's divider starts: the middle.
 const MIDDLE: Fraction = Fraction(500);

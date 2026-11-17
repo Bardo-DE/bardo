@@ -1,0 +1,12 @@
+[package]
+name = "base-spawn"
+description = "Spawner: the one way library code starts a task that outlives its caller without naming a runtime."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true

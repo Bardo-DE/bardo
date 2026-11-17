@@ -1,6 +1,6 @@
 //! The palette a mark is coloured from.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The colours a mark can have: the palette Preview offers, yellow first.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

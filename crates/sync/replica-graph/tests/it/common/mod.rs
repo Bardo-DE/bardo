@@ -6,12 +6,12 @@
 )]
 
 use account_fake_servers::Running;
-use account_http::http::header::{AUTHORIZATION, HeaderValue};
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
-use account_http_relay::{Dial, RelayHttp, RelayLimits};
 use base_time::UnixSeconds;
 use base_url::WebUrl;
+use http_core::http::header::{AUTHORIZATION, HeaderValue};
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
+use http_relay::{Dial, RelayHttp, RelayLimits};
 use replica_graph::{GraphReplica, Root, Uploads};
 use sync_core::Clock;
 use sync_fake_graph::{FakeGraph, GraphHandle};

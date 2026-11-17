@@ -2,16 +2,14 @@
 //! stand as a chosen program (`BusPeers::introduce`), and a stand-in event loop answers what
 //! gets through the caller check. Nothing here reads the real `/proc` for a caller.
 
-use crate::dbus::{
-    COMPOSITOR_BUS_NAME as BUS_NAME, COMPOSITOR_OBJECT_PATH as OBJECT_PATH, CallerSetup,
-    ConnectAsk, ConnectCall, ConnectReply, serve_compositor_at,
-};
+use crate::dbus::{CallerSetup, ConnectAsk, ConnectCall, ConnectReply, serve_compositor_at};
 use crate::privacy::PrivacyLink;
 use crate::test_bus::{PrivateBus, name_of};
 use caller_identity_dbus::caller_identity_core::{Pin, Proof, Standing, Table};
 use caller_identity_dbus::caller_identity_linux::fake::introduced_service;
 use caller_identity_dbus::{BusPeers, ManagerCheck};
 use calloop::channel::Channel;
+use compositor_dbus::{BUS_NAME, INTERFACE, OBJECT_PATH};
 use std::os::unix::net::UnixStream;
 use std::sync::{Arc, Mutex, OnceLock};
 use std::thread::JoinHandle;
@@ -154,7 +152,7 @@ impl Served {
             .get()
             .expect("served")
             .introduce(&name_of(&client), standing);
-        zbus::Proxy::new(&client, BUS_NAME, OBJECT_PATH, "org.bardo.Compositor1")
+        zbus::Proxy::new(&client, BUS_NAME, OBJECT_PATH, INTERFACE)
             .await
             .expect("proxy")
     }

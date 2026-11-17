@@ -147,7 +147,7 @@ impl FakeAccountd {
             )
             .await
             .expect("serve Launcher");
-        zbus_ready::serving(connection)
+        dbus_kit::ready::serving(connection)
             .await
             .expect("the object server answers");
         connection

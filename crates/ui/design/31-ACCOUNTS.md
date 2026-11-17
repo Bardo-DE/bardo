@@ -800,7 +800,7 @@ an edit here and a change there in step.
 | §5.1 client | `account-client` | `Accounts`, `Found`, `ConsentOffer`, `NoAccount` |
 | §5.5 AI broker | `inference-core` | `InferRequest` (chat with tools and `ChatControl`, embeddings with a role, tasks, computer use, speech), `StopReason`, `OpenOptions`/`Traceparent`, `ClientFrame`/`InferEvent`/`InferReply`, `Readiness`, `AiKind`/`TierMap`/`PickerRow`, `Policy`/`Floor`, `route`, `SpendCap`/`spend_verdict`/`cost`, `AuditEntry`, trait `Model`, `Broker` (stub) |
 | §6 sync | `porter-sync` | `Replica` (with `quota`), `Quota`, `Cursor`, `ChangePage`, `Conflict`, `DatasetKind`/`ConflictRule`, `MemoryReplica` |
-| §3, §4.2, §4.4 families and relays | `account-families`, `account-http`, `account-oauth`, `account-discover`, `porter-dav`, `account-proxy` | `FamilyProvider` (Nextcloud, generic IMAP/DAV, Microsoft, API key, OpenRouter; no Google), the `Http` seam, PKCE and `ClientRegistry`, the `Dns` seam and parsers, `Multistatus`, the IMAP/SMTP/HTTP relay machines and `relay`; skeletons with `todo!()` bodies, each named in porter's FINDINGS with its lane |
+| §3, §4.2, §4.4 families and relays | `account-families`, `http-core`, `account-oauth`, `account-discover`, `porter-dav`, `account-proxy` | `FamilyProvider` (Nextcloud, generic IMAP/DAV, Microsoft, API key, OpenRouter; no Google), the `Http` seam, PKCE and `ClientRegistry`, the `Dns` seam and parsers, `Multistatus`, the IMAP/SMTP/HTTP relay machines and `relay`; skeletons with `todo!()` bodies, each named in porter's FINDINGS with its lane |
 | §4.1 processes | `accountd`, `syncd`, `inferd` | skeletons that build their service and exit "not implemented" |
 
 Frozen decisions that differ from the first proposal of this document, each already applied in

@@ -2,11 +2,11 @@
 //! token made into a media item. Pure over any [`Http`]; in syncd the `Http` is a relay that adds
 //! the bearer.
 
-use account_http::http::request::Builder;
-use account_http::http::{Method, Response, StatusCode};
-use account_http::{HeaderText, Http, HttpError, request};
 use base_time::UnixSeconds;
 use base_url::WebUrl;
+use http_core::http::request::Builder;
+use http_core::http::{Method, Response, StatusCode};
+use http_core::{HeaderText, Http, HttpError, request};
 use serde::Deserialize;
 use sync_core::Clock;
 
@@ -34,7 +34,7 @@ pub enum ApiError {
     Address(#[source] base_ids::IdError),
     /// The request would not build, so it was never sent.
     #[error("the request could not be built")]
-    Request(#[source] account_http::http::Error),
+    Request(#[source] http_core::http::Error),
     /// An HTTP status that was not a success, and the seconds `Retry-After` named.
     #[error("the Photos API answered {status}")]
     Refused {

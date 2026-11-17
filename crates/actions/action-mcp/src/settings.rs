@@ -8,7 +8,7 @@
 //! (`scripts/check-boundary.sh`), so the edge reads the file again whenever it is asked whether it
 //! is on: a change in the Settings app applies to the next request.
 
-use action_settings::{AgentSettings, Locator, read};
+use action_settings::{AgentSettings, locator, read};
 use std::path::PathBuf;
 
 pub use action_settings::{SCHEMA, SETTINGS_FILE};
@@ -24,13 +24,13 @@ pub fn exposed(text: &str) -> bool {
 
 /// The configuration directories, the person's first: `$XDG_CONFIG_HOME`, then `$XDG_CONFIG_DIRS`.
 pub(crate) fn config_dirs(env: &impl Fn(&str) -> Option<String>) -> Vec<PathBuf> {
-    Locator::from_env(env).dirs().to_vec()
+    locator(env).dirs().to_vec()
 }
 
 /// The first settings file of the configuration directories, read; none is off.
 pub fn from_env(env: &impl Fn(&str) -> Option<String>) -> bool {
-    Locator::from_env(env)
-        .read(AgentSettings::default())
+    locator(env)
+        .read(AgentSettings::default(), read)
         .value
         .expose
 }

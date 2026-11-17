@@ -8,8 +8,8 @@ use action_core::{
     AppRefusal, FailText, Follow, Invocation, Outcome, Preview, UndoFault, Undoable,
 };
 use action_vocab::{ChoiceId, LabelText, ParamName, UndoToken, Value};
+use base_words::Word;
 use shell_launcher::AppId;
-use ui_core::word::Word;
 
 use super::action::ShellAction;
 use crate::screenshots::ShotKind;

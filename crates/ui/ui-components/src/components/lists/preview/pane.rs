@@ -15,9 +15,9 @@ use crate::components::controls::key_equivalent::KeyEquivalent;
 use crate::components::controls::progress::spokes::SPIN;
 use crate::components::lists::preview::content::{PaneContent, caption, media};
 use crate::components::lists::preview::cue::{PaneCue, pending_look};
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::{Shortcut, shown_word};
-use ui_core::word::Word;
 use ui_motion::anim::Anim;
 use ui_motion::detail::{
     once::use_cross_fade, operation::Operation, pending::PendingFrame, use_pending::use_pending,

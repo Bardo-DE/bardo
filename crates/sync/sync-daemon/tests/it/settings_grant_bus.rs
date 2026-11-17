@@ -25,6 +25,8 @@ use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use common::hosted::{Hosted, Link, Service, host, keep};
 use common::{Known, client, eventually};
+use settings_dbus::{AnyOwner, LiveClient};
+use settings_types::schema::KeyPath;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use sync_bus::SyncProxy;
@@ -39,8 +41,6 @@ use sync_daemon::service::{Access, Hub, serve};
 use sync_daemon::settings::{SETTINGS_PATH, SyncSettings, serve_settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use tokio::sync::watch;
-use ui_settings::live::{AnyOwner, LiveClient};
-use ui_settings::schema::KeyPath;
 
 const ACCOUNT: &str = "graph-acct";
 const SEGMENT: &str = "graph_acct";

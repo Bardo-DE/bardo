@@ -3,8 +3,8 @@
 use crate::config_file::ConfigFile;
 use crate::origin::{OriginRule, SchemaOrigin};
 use crate::warning::{StaleReason, Warning};
+use settings_types::schema::{AgentSetting, AppId, Footnote, ForeignTables, KeySpec, Schema};
 use std::path::PathBuf;
-use ui_settings::schema::{AgentSetting, AppId, Footnote, ForeignTables, KeySpec, Schema};
 
 /// The schema `version` this app reads.
 const SUPPORTED_VERSION: u16 = 1;
@@ -41,16 +41,16 @@ pub fn discover(dirs: &[PathBuf]) -> Discovery {
     discover_under(dirs, &OriginRule::Ownership)
 }
 
-/// Every schema under `dirs` (`ui_settings::schema::data_dirs`: the system's directories, then `$XDG_DATA_HOME`'s, in the order of trust), the folders judged by `rule`.
+/// Every schema under `dirs` (`settings_store_fs::data_dirs`: the system's directories, then `$XDG_DATA_HOME`'s, in the order of trust), the folders judged by `rule`.
 ///
-/// `ui_settings` admits a schema only for its own program and location (the first one found for a
+/// `settings_store_fs` admits a schema only for its own program and location (the first one found for a
 /// program wins, so the user's directory never replaces an installed schema) and reports the rest
 /// on stderr. One it admits that this app cannot use (an unknown version, a `file` that is not
 /// `<app-dir>/<name>.toml`) is skipped and returned as a warning.
 ///
 /// A key's `agent` mark is that of the schema admitted here, and is honoured only when its folder
 /// is [`SchemaOrigin::System`]: a schema from a folder the person can write still describes its
-/// program, but none of its keys is agent-settable. `ui_settings` does not say which folder a
+/// program, but none of its keys is agent-settable. `settings_store_fs` does not say which folder a
 /// schema came from, so each folder is scanned on its own and a program already found in an
 /// earlier folder is not taken again.
 #[must_use]
@@ -59,7 +59,7 @@ pub fn discover_under(dirs: &[PathBuf], rule: &OriginRule) -> Discovery {
     let mut found = Discovery::default();
     for dir in dirs {
         let origin = rule.judge(dir);
-        for schema in ui_settings::schema::discover(std::slice::from_ref(dir)) {
+        for schema in settings_store_fs::discover(std::slice::from_ref(dir)) {
             if !seen.contains(&schema.app) {
                 seen.push(schema.app.clone());
                 found = admit(found, schema, origin);

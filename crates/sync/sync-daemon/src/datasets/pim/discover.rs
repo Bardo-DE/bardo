@@ -8,8 +8,8 @@
 
 use super::PimKind;
 use account_dav_proto::discover::{Home, Next, Reach, Scope, Walk};
-use account_http::{Http, HttpError};
 use base_url::WebUrl;
+use http_core::{Http, HttpError};
 
 /// One calendar or address book on the server.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -78,7 +78,7 @@ pub async fn discover<H: Http>(
         HttpError::Unreachable(..) | HttpError::TimedOut => DiscoverError::Unreachable,
         _ => DiscoverError::Unreadable,
     };
-    let uri = account_http::uri(endpoint).map_err(sending)?;
+    let uri = http_core::uri(endpoint).map_err(sending)?;
     let (mut walk, mut request) =
         Walk::start(uri, Reach::Collections, &[home_of(kind)], Scope::Anywhere);
     let found = loop {
@@ -113,7 +113,7 @@ pub async fn discover<H: Http>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_http::http::{Request, Response};
+    use http_core::http::{Request, Response};
     use std::sync::Mutex;
 
     /// Answers each PROPFIND from a table of `(path, body)`, remembering what was asked.

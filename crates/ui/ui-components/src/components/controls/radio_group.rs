@@ -16,10 +16,10 @@ use crate::components::controls::press::{ActivationKeys, activates, disabled, us
 use crate::focus::soon::focus_soon;
 use crate::root::common::Common;
 use crate::stack::roving::{Rove, Roving};
+use base_words::Word;
 use dioxus::prelude::*;
 use std::rc::Rc;
 use ui_core::vocab::{Availability, Check};
-use ui_core::word::Word;
 use ui_style::tokens::control_size::ControlSize;
 
 /// How the items are laid out (`data-arrangement`).

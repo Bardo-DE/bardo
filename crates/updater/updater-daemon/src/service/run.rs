@@ -4,12 +4,13 @@ use super::context::Context;
 use super::engine::{Engine, Job};
 use super::gate::{Gate, peers_on};
 use super::notify::{self, RESTORED_TEXT};
-use super::object::{BUS_NAME, PATH, Updates};
+use super::object::Updates;
 use crate::clock::now;
 use crate::health::{Health, on_start};
 use std::sync::Arc;
 use std::time::Duration;
 use updater_core::{Attempt, Due, Outcome, next_check};
+use updater_dbus::{BUS_NAME, PATH};
 
 /// The longest the scheduler sleeps before looking at the clock again.
 const LONGEST_SLEEP: Duration = Duration::from_secs(3600);
@@ -22,6 +23,9 @@ pub enum RunError {
     /// The session bus is not reachable or the name is taken.
     #[error("the update service could not start: {0}")]
     Bus(#[from] zbus::Error),
+    /// The update service's name has another owner, or the bus refused it.
+    #[error("the update service could not take its name: {0}")]
+    Name(#[from] dbus_kit::name::ClaimError),
     /// Waiting for the stop signal failed.
     #[error("the update service could not listen for a stop signal: {0}")]
     Signal(#[from] std::io::Error),
@@ -31,8 +35,8 @@ pub enum RunError {
 ///
 /// # Errors
 ///
-/// [`RunError::Bus`] when the session bus cannot be reached or the name cannot be taken,
-/// [`RunError::Signal`] when waiting for the stop signal fails.
+/// [`RunError::Bus`] when the session bus cannot be reached, [`RunError::Name`] when the name cannot
+/// be taken, [`RunError::Signal`] when waiting for the stop signal fails.
 pub async fn run(ctx: Context) -> Result<(), RunError> {
     let health = on_start(&ctx.layout, &ctx.store, &*ctx.elevate, &ctx.login);
     let settings_command = ctx.config.settings_command.clone();
@@ -46,8 +50,8 @@ pub async fn run(ctx: Context) -> Result<(), RunError> {
         .object_server()
         .at(PATH, Updates::new(Arc::clone(&engine), gate))
         .await?;
-    zbus_ready::serving(&connection).await?;
-    connection.request_name(BUS_NAME).await?;
+    dbus_kit::ready::serving(&connection).await?;
+    dbus_kit::name::claim(&connection, BUS_NAME).await?;
     engine.connect(connection.clone());
     if health == Health::Restored
         && let Err(e) = notify::post(&connection, &engine.posted(), RESTORED_TEXT).await

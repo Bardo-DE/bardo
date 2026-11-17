@@ -2,11 +2,11 @@
 //! placements, where each goes against its anchor and what each shows. One density for all
 //! (row 22, separator 9, inset 5, radius 10); every menu opens at once.
 
+use base_words::Word;
 use ui_core::geometry::{
     placement::{Align, Placement, Side},
     units::{Px, Rect},
 };
-use ui_core::word::Word;
 
 /// The panel's padding: rows sit this far inside its edge, and a submenu's top sits this far
 /// above its parent row.

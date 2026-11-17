@@ -3,8 +3,8 @@
 
 use super::footer::{CardFooter, ServedByView, ServedPlaceKind, SourceChip};
 use crate::components::content::icon_view::IconView;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_intents::ContextChip;
 use ui_style::icon::render::IconSize;
 

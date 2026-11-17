@@ -7,6 +7,7 @@
 //! The card is the preview pane's, not a row's: what Enter does on a helper is nothing, and its
 //! actions are pause or resume and remove (which asks first).
 
+use base_words::Word;
 use companion_model::helper::HelperPhase;
 use companion_wire::{HelperLine, HelperNeeds};
 use shell_launcher::{
@@ -16,7 +17,6 @@ use shell_launcher::{
 };
 use shell_model::companion::{Companion, controls_of};
 use tokio::sync::watch;
-use ui_core::word::Word;
 
 /// The id of the row that starts a new helper.
 const NEW_ID: &str = "helper:new";

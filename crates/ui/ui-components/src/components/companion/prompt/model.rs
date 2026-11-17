@@ -1,6 +1,6 @@
 //! The prompt's state, its inputs and its outputs.
 
-use ui_core::word::Word;
+use base_words::Word;
 use ui_intents::ContextChip;
 
 /// A field's caret and selection, in characters: the anchor and where the caret is.

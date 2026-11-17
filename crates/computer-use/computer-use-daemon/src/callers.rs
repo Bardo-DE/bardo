@@ -17,10 +17,6 @@ pub const FILE: &str = "computer-use-callers.toml";
 
 const SHIPPED: &str = include_str!("../../dist/computer-use-callers.toml");
 
-/// The bus name the shell is addressed by. It only addresses: whoever owns it is asked who it
-/// is ([`SHELL`]) before it is told anything.
-pub const SHELL_BUS: &str = "org.bardo.Shell";
-
 /// companiond, the planner: the `agent` role of the app `org.bardo.Companion1`.
 pub const COMPANION: Standing = Standing::new("org.bardo.Companion1", Role::Agent);
 
@@ -103,12 +99,12 @@ pub async fn caller_of(who: &impl Callers, sender: Option<&str>) -> CuaCaller {
         .map_or(CuaCaller::Other, |caller| classify(&caller))
 }
 
-/// The unique name of the connection that owns [`SHELL_BUS`] if, and only if, its process holds
+/// The unique name of the connection that owns [`shell_dbus::SHELL_BUS`] if, and only if, its process holds
 /// [`SHELL`]; `None` when nobody owns the name or the owner is not the shell. What only the shell
 /// may hear is sent to this name and to no other.
 pub async fn shell_owner(connection: &zbus::Connection, who: &impl Callers) -> Option<String> {
     let dbus = zbus::fdo::DBusProxy::new(connection).await.ok()?;
-    let name = zbus::names::BusName::try_from(SHELL_BUS).ok()?;
+    let name = zbus::names::BusName::try_from(shell_dbus::SHELL_BUS).ok()?;
     let owner = dbus.get_name_owner(name).await.ok()?;
     let standing = who.caller_of(owner.as_str()).await?;
     SHELL.held_by(&standing).then(|| owner.to_string())

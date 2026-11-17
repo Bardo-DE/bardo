@@ -2,8 +2,8 @@
 //! same root. No stylesheet of its own.
 
 use super::chrome::{Ground, RootChrome};
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::appearance::blur::blur_word;
 use ui_style::appearance::material::Material;
 use ui_style::appearance::{accent::Accent, resolve::Resolved, theme::Scheme};

@@ -9,9 +9,9 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-words = { path = "../../../base/base-words" }
 anyview-core = {path = "../anyview-core"}
 bzip2 = { workspace = true }
-ui-core = {path = "../../../ui/ui-core"}
 flate2 = {workspace = true, features = ["rust_backend"]}
 lzma-rust2 = { workspace = true, features = ["std", "xz"] }
 quick-xml = { workspace = true }

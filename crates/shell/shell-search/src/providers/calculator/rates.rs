@@ -2,7 +2,7 @@
 //!
 //! Off by default (`launcher.currency = "off"`): nothing is
 //! fetched and currency codes are not units. With `ecb`, the European Central Bank's daily
-//! reference rates (`eurofxref-daily.xml`, EUR based) are fetched at most once a day by `curl` into
+//! reference rates (`eurofxref-daily.xml`, EUR based) are fetched at most once a day into
 //! `$XDG_CACHE_HOME/bardo/shell/ecb-rates.xml`, off the keystroke path, and handed to fend through its
 //! `ExchangeRateFnV2` (base EUR, which is 1). Units need no network: fend converts them already.
 

@@ -10,8 +10,8 @@ use crate::user_picture::size::PictureSize;
 use serde::Deserialize;
 use std::sync::{LazyLock, OnceLock};
 use std::time::Duration;
-use ui_components::base::word::Word;
 use ui_components::style::icon::url::IconUrl;
+use ui_components::words::Word;
 
 /// The two frame sizes a sheet is drawn at.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

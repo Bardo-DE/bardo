@@ -1,6 +1,6 @@
 //! Whether a field takes input or a prompt.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A field's mode (`data-mode`). `Input` is the field as it has always been; `Prompt` is the
 /// same field taken over by a summon, its query kept for the way back.

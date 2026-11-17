@@ -17,8 +17,8 @@ use inference_router::local::unix_endpoint;
 use inference_router::startup::{Cause, Diagnostics, TailBuf, clear_socket};
 use model_catalog::MiB;
 use model_http::{
-    BodySink, Exchange, Framing, HttpClient, ResponseHead, RouteRoot, Timeouts, Transport, UrlPath,
-    Verb, WaitMs,
+    BodySink, Exchange, Framing, ResponseHead, RouteRoot, Timeouts, Transport, UrlPath, Verb,
+    WaitMs,
 };
 use rustix::process::Pid;
 use speech_host_client::{HostSocket, SpeechHostClient};
@@ -436,7 +436,7 @@ impl ReadyProbe for HealthProbe {
         if self.speech.contains(id) {
             return hello(socket).await;
         }
-        let client = HttpClient::new(unix_endpoint(
+        let client = model_http_reqwest::client(unix_endpoint(
             socket.clone(),
             "",
             Timeouts {

@@ -9,9 +9,11 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-words = { path = "../../base/base-words" }
 base-fs = { path = "../../base/base-fs" }
-ui-core = {path = "../ui-core"}
-ui-settings = {path = "../ui-settings", default-features = false}
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
 # The kinds, folder kinds, extension label and the type-to-kind table the standard set is.
 ui-style = {path = "../ui-style", default-features = false}
 # The capped file reader (a look's stylesheet is read through it).
@@ -20,6 +22,9 @@ ui-helpers = {path = "../ui-helpers", default-features = false}
 plugin-host = {default-features = false, features = ["host"], path = "../../plugin/plugin-host"}
 serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
+
+[dev-dependencies]
+ui-settings = { path = "../ui-settings", default-features = false }
 
 [lints]
 workspace = true

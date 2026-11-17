@@ -1,12 +1,12 @@
 //! The preferences an action flips: the dock's auto-hide and magnification and Do Not Disturb. Each is written to
 //! `settings.toml`, which stays the one truth; the surfaces follow once the file settles.
 
+use settings_store_fs::Store;
 use shell_ipc::response::{FailureKind, Response};
 use shell_model::actions::Pref;
 use shell_settings::ShellFile;
 use shell_ui_kit::links::Delivery;
 use tokio::sync::watch;
-use ui_settings::Store;
 
 use crate::daemon::settings::write_key;
 use crate::ipc::dispatch::{Reach, failed};

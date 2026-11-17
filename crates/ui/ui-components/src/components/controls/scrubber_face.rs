@@ -10,9 +10,10 @@
 
 use crate::components::controls::scrubber_model::{BufferedRange, ScrubPose, merged, time_text};
 use crate::root::common::Common;
+use base_ids::Fraction;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::vocab::{Availability, Fraction};
-use ui_core::word::Word;
+use ui_core::vocab::Availability;
 use ui_motion::spring::Millis;
 use ui_style::tokens::control_size::ControlSize;
 

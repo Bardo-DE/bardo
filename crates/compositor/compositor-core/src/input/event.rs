@@ -4,8 +4,8 @@ use super::{ButtonCode, KeyCode, Origin};
 use crate::geometry::{LogicalPoint, SubPoint};
 use crate::ids::DeviceId;
 use crate::time::Mono;
+use base_ids::Fraction;
 use desktop_protocols::vocab::PressEdge;
-use ui_core::vocab::Fraction;
 
 /// One input event: where from, which device, when, and what.
 #[derive(Debug, Clone, PartialEq, Eq)]

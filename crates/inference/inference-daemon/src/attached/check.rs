@@ -6,8 +6,8 @@
 
 use inference_router::attached::{NotReady, Target};
 use model_http::{
-    BodySink, Exchange, Framing, HttpClient, HttpError, HttpStatus, ResponseHead, RouteRoot,
-    Timeouts, Transport, UrlPath, Verb, WaitMs,
+    BodySink, Exchange, Framing, HttpError, HttpStatus, ResponseHead, RouteRoot, Timeouts,
+    Transport, UrlPath, Verb, WaitMs,
 };
 use std::ops::ControlFlow;
 
@@ -98,7 +98,7 @@ pub async fn probe(target: &Target, served: &str) -> Result<(), NotReady> {
         framing: Framing::Whole,
     };
     let mut reply = Reply::default();
-    let sent = HttpClient::new(endpoint)
+    let sent = model_http_reqwest::client(endpoint)
         .exchange(&exchange, &mut reply)
         .await;
     match (sent, reply.status) {

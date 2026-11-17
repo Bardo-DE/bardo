@@ -2,7 +2,7 @@
 //! the order the Settings app lists them.
 
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 use super::APP;
 use super::words::NewWindowsShow;
@@ -14,7 +14,7 @@ fn page() -> Page {
 
 /// `general.*`: where a new window opens.
 #[derive(
-    Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ui_settings::SettingsSchema,
+    Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, settings_types::SettingsSchema,
 )]
 #[serde(default)]
 #[settings(file = "files/settings.toml", domain = "general", page = page())]
@@ -36,7 +36,7 @@ pub struct GeneralSettings {
 }
 
 /// `sidebar.*`: which rows the sidebar lists.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "files/settings.toml", domain = "sidebar", page = page())]
 #[expect(
@@ -99,7 +99,7 @@ impl Default for SidebarSettings {
 }
 
 /// `advanced.*`: sorting, warnings and the Trash.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "files/settings.toml", domain = "advanced", page = page())]
 #[expect(

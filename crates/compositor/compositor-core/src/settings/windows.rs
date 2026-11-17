@@ -1,8 +1,8 @@
 //! Window-management settings (`windows.*`, 03 §1.17).
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
 use std::time::Duration;
-use ui_core::word::Word;
 
 /// `windows.*`.
 #[expect(

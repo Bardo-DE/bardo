@@ -20,9 +20,9 @@ use inference_core::ChargeTotal;
 use iso_currency::Currency;
 use model_provider::{Charges, Money};
 use rust_decimal::Decimal;
+use settings_dbus::LiveError;
+use settings_types::schema::{Help, KeySpec};
 use std::sync::Arc;
-use ui_settings::live::LiveError;
-use ui_settings::schema::{Help, KeySpec};
 
 /// What accounts have spent on hosted models this month, and the cap on each.
 pub trait SpendBook: Send + Sync + 'static {

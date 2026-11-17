@@ -5,7 +5,7 @@ use super::extension::ExportExtension;
 use super::payload::MetadataCarry;
 use super::target::{RasterTarget, Resize};
 use crate::edit::Adjust;
-use ui_core::word::Word;
+use base_words::Word;
 
 /// An export of a raster image: re-encoded, or placed on a PDF page.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

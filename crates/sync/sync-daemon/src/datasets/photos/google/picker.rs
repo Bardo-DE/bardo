@@ -13,10 +13,10 @@
 //! a plain token or refused, a file name is cut to its last component and made unique.
 
 use crate::datasets::photos::cas;
-use account_http::http::request::Builder;
-use account_http::http::{Method, Response};
-use account_http::{Http, HttpError, request};
 use base_url::WebUrl;
+use http_core::http::request::Builder;
+use http_core::http::{Method, Response};
+use http_core::{Http, HttpError, request};
 use serde::Deserialize;
 use std::fmt::Write as _;
 use std::path::PathBuf;
@@ -104,7 +104,7 @@ pub enum PickerError {
     Address(#[source] base_ids::IdError),
     /// The request would not build, so it was never sent.
     #[error("the request could not be built")]
-    Request(#[source] account_http::http::Error),
+    Request(#[source] http_core::http::Error),
     /// An HTTP status that was not a success.
     #[error("the Picker API answered {0}")]
     Refused(u16),

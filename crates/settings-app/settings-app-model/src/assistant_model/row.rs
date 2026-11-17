@@ -1,7 +1,7 @@
 //! Which row of inferd's picker the assistant is routed by.
 
 use crate::picker::{ModelRow, PickerState, Ready};
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// The assistant's row: the text slot at the balanced tier (the planner asks for that tier),
 /// under the name the module gives it now and the one an older module still gives it.

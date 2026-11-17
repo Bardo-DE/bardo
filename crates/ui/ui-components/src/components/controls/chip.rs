@@ -5,10 +5,10 @@ use crate::components::content::tip_text::TipText;
 use crate::components::content::title_tip::use_tip;
 use crate::components::controls::chip_dot::ChipDot;
 use crate::components::controls::press::{ActivationKeys, PressListeners};
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::press::Press;
 use ui_core::vocab::Check;
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::icon::render::{Glyph, IconSize};
 use ui_style::tokens::label_hue::LabelHue;
@@ -115,7 +115,7 @@ pub fn Chip(
             "data-hue": variant.hue(),
             "data-status": variant.status(),
             "data-pressable": onpress.map(|_| ""),
-            "data-state": onpress.and(pressed).map(ui_core::word::Word::slug),
+            "data-state": onpress.and(pressed).map(base_words::Word::slug),
             role,
             "aria-label": aria,
             if let Some(onpress) = onpress {

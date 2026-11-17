@@ -96,7 +96,6 @@ impl Live {
                     }
                 }
                 Ok(said) = answers.recv() => self.heard_server(said),
-                Ok(()) = self.board.changed() => self.learn(),
                 command = commands.recv() => match command {
                     Some(SyncHoldCommand::Rewatch) => {
                         if let Err(error) = proxy.watch().await {
@@ -126,24 +125,14 @@ impl Live {
         }
     }
 
-    /// Keep the id of each notice the notes now hold for a dataset that is held.
-    fn learn(&mut self) {
-        let datasets: Vec<Dataset> = self
-            .machine
-            .state()
-            .holds
-            .iter()
-            .map(|hold| hold.dataset.clone())
-            .collect();
-        self.board.learn(&datasets);
-    }
-
     /// The server's word: a press of a notice bardo-shell posted opens Settings at the account; a close
-    /// ends the notice's claim.
+    /// ends the notice's claim. The server says each post before any press of it.
     fn heard_server(&mut self, said: Said) {
-        // The notes may already have let go of a notice just pressed.
-        self.learn();
         match said {
+            Said::Posted { id, actions } => {
+                self.board
+                    .posted(id, &actions, dataset_of, |dataset| dataset);
+            }
             Said::Pressed { id, key } => {
                 let Some(dataset) = self.board.answers(id, dataset_of(&key), |dataset| dataset)
                 else {

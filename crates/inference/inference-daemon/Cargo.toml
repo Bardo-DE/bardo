@@ -17,7 +17,7 @@ test-proc-root = ["account-callers/test-proc-root"]
 [dependencies]
 tracing = { workspace = true }
 base-xdg = { path = "../../base/base-xdg" }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}
 account-capability = {path = "../../accounts/account-capability"}
@@ -25,7 +25,7 @@ account-wire = {path = "../../accounts/account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-account-daemon-support = {default-features = false, features = ["watch"], path = "../../accounts/account-daemon-support"}
+account-daemon-support = {path = "../../accounts/account-daemon-support"}
 base-fs = {path = "../../base/base-fs"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 account-callers = {path = "../../accounts/account-callers"}
@@ -36,8 +36,8 @@ account-client-dbus = {path = "../../accounts/account-client-dbus"}
 account-settings = {path = "../../accounts/account-settings"}
 inference-probe = {path = "../inference-probe"}
 inference-dbus = {path = "../inference-dbus"}
-account-http = {path = "../../accounts/account-http"}
-account-http-reqwest = {path = "../../accounts/account-http-reqwest"}
+http-core = {path = "../../network/http-core"}
+http-reqwest = {path = "../../network/http-reqwest"}
 account-provider = {path = "../../accounts/account-provider"}
 inference-tailnet = {path = "../inference-tailnet", features = ["io", "persist"]}
 account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
@@ -49,7 +49,8 @@ inference-router = {path = "../inference-router"}
 # check, the audit trail and the stages of a pipeline.
 inference-turns = {path = "../inference-turns"}
 inference-bridge = {path = "../inference-bridge"}
-ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 iso_currency = { workspace = true, features = ["with-serde"] }
@@ -59,7 +60,8 @@ engine-spec = {path = "../../engines/engine-spec"}
 engine-manifest = {path = "../../engines/engine-manifest"}
 engine-probe = {path = "../../engines/engine-probe"}
 engine-supervisor = {path = "../../engines/engine-supervisor"}
-model-http = {features = ["client", "tls"], path = "../../models/model-http"}
+model-http = {path = "../../models/model-http"}
+model-http-reqwest = {path = "../../models/model-http-reqwest"}
 model-openai-compat = {path = "../../models/model-openai-compat"}
 model-vision-prep = {features = ["pixels"], path = "../../models/model-vision-prep"}
 computer-use-parse = {path = "../../computer-use/computer-use-parse"}
@@ -92,7 +94,7 @@ zbus = {workspace = true, features = ["tokio"]}
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 futures-util = { workspace = true, features = ["std"] }
-ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 # The client side the tests drive inferd through.
 account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}

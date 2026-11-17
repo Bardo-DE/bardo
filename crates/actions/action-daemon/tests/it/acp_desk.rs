@@ -68,7 +68,7 @@ impl Fixture {
             )
             .await
             .expect("served");
-        zbus_ready::serving(&acp)
+        dbus_kit::ready::serving(&acp)
             .await
             .expect("the object server answers");
         acp.request_name(ACP).await.expect("name");

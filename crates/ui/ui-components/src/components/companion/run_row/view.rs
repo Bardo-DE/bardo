@@ -4,8 +4,8 @@ use super::model::RunRowView;
 use crate::components::companion::answer::action::CardActionId;
 use crate::components::companion::outcome::model::Outcome;
 use crate::components::companion::outcome::view::OutcomeMark;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 
 /// A run as a row: its goal, the app, the step it is at and its controls. `on_action` hears the
 /// control picked. `outcome` is a result the person has not seen: a still dot on the row while

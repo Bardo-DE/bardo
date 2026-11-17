@@ -4,8 +4,8 @@
 //! from the dock's at the bottom centre. A tuned token a look or the person's style sheet may
 //! move; the indicator's layer surface reads it before layout (`shell_overlays::osd::tokens`).
 
-use ui_components::base::word::Word;
 use ui_components::style::tokens::token::Token;
+use ui_components::words::Word;
 
 /// The OSD card's tuned token.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]

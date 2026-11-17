@@ -110,7 +110,7 @@ pub async fn serve(connection: &zbus::Connection, unit: FakeUnit) {
         .at(UNIT_PATH, ServiceProps(unit))
         .await
         .expect("serve the service");
-    zbus_ready::serving(connection)
+    dbus_kit::ready::serving(connection)
         .await
         .expect("the object server answers");
     connection

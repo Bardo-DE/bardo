@@ -4,8 +4,8 @@
 use crate::common;
 
 use common::TempDir;
+use settings_store_fs::{ConfigRoot, Store};
 use shell_settings::{APP, KeyboardOverride, KeyboardSettings, ShellFile, overrides};
-use ui_settings::{ConfigRoot, Store};
 
 fn row(app: &str, profile: &str) -> KeyboardOverride {
     KeyboardOverride {
@@ -200,7 +200,7 @@ fn the_default_file_has_no_overrides_and_writes_none() {
 
 #[test]
 fn the_schema_is_an_advanced_rows_key_with_a_profile_pattern() {
-    use ui_settings::schema::{ColumnKind, Exposure, KeyKind, Page};
+    use settings_types::schema::{ColumnKind, Exposure, KeyKind, Page};
     let key = shell_settings::schema()
         .key
         .into_iter()

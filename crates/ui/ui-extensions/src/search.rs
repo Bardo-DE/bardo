@@ -7,8 +7,8 @@ use std::path::{Path, PathBuf};
 use plugin_host::manifest::Raw;
 use plugin_host::registry::{Candidate, Origin};
 use plugin_host::{Layout, Rejected};
-use ui_core::settings::ExtensionId;
-use ui_settings::xdg;
+use settings_store_fs::{data_dirs_list_from, data_home_from};
+use settings_types::target::ExtensionId;
 
 /// The folder under a data directory where Extensions live: `<data>/bardo/extensions/<id>/`.
 const APP: &str = "bardo";
@@ -66,8 +66,8 @@ impl Search {
         home: Option<&OsStr>,
     ) -> Search {
         Search {
-            person: xdg::base_dir(xdg_data_home, home, xdg::DATA_HOME_UNDER_HOME),
-            system: xdg::search_dirs(xdg_data_dirs),
+            person: data_home_from(xdg_data_home, home),
+            system: data_dirs_list_from(xdg_data_dirs),
         }
     }
 

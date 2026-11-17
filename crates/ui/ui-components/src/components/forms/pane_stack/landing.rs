@@ -6,7 +6,7 @@ use super::track::PaneTrack;
 
 /// The id of the back button in `slot` of the stack named `id`.
 pub(crate) fn back_id(id: &str, slot: ui_motion::pane_slide::Pane) -> String {
-    use ui_core::word::Word;
+    use base_words::Word;
     format!("{id}-back-{}", slot.slug())
 }
 

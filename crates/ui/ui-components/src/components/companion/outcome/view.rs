@@ -1,8 +1,8 @@
 //! The unseen-outcome mark component.
 
 use super::model::Outcome;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 
 /// The words a screen reader says for `outcome`.
 fn spoken(outcome: Outcome) -> &'static str {

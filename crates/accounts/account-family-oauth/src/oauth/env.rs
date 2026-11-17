@@ -11,9 +11,9 @@
 
 use crate::env_common::{ClientFiles, Clock, Random, clients_now, clock_of, system_random};
 use account_core::EndpointUrl;
-use account_http::Http;
 use account_oauth::ClientRegistry;
 use account_provider::{ClientChannel, Issuer};
+use http_core::Http;
 use std::borrow::Cow;
 use std::sync::Arc;
 use std::time::Duration;
@@ -153,8 +153,8 @@ impl<H: Http + Default> OAuthEnv<H> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_http::HttpError;
-    use account_http::http::{Request, Response};
+    use http_core::HttpError;
+    use http_core::http::{Request, Response};
 
     #[derive(Default)]
     struct Nowhere;

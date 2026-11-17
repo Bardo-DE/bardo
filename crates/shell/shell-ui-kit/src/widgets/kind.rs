@@ -2,7 +2,7 @@
 //! (design/20 §1.14). Nothing places, orders or sizes them, so there is no setting, only the
 //! closed list the center draws.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One widget of the notification center.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word)]
@@ -15,7 +15,7 @@ pub enum CenterWidget {
 
 #[cfg(test)]
 mod tests {
-    use ui_core::word::Word;
+    use base_words::Word;
 
     use super::CenterWidget;
 

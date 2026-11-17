@@ -1,8 +1,8 @@
 //! Which daemon a live module belongs to.
 
 use account_wire::names::{ACCOUNTS_BUS, ACCOUNTS_SETTINGS_PATH, INFERENCE_BUS};
+use compositor_dbus::BUS_NAME as COMPOSITOR_BUS;
 use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
-use settings_app_callers::COMPOSITOR_BUS;
 use settings_app_model::ModuleId;
 use sync_bus::{SYNC_BUS, SYNC_PATH};
 
@@ -82,9 +82,10 @@ impl Daemon {
 #[cfg(test)]
 mod tests {
     use super::Daemon;
-    use settings_app_callers::{
-        ACCOUNTS_BUS, COMPOSITOR_BUS, INFERENCE_BUS, SYNC_BUS, required_role,
-    };
+    use account_wire::names::{ACCOUNTS_BUS, INFERENCE_BUS};
+    use compositor_dbus::BUS_NAME as COMPOSITOR_BUS;
+    use settings_app_callers::required_role;
+    use sync_bus::SYNC_BUS;
 
     /// The names the panes call and the names the owner check knows the roles of are one list:
     /// a service whose name drifted would be refused as a stranger, and the page would say so.

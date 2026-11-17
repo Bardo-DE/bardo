@@ -1,7 +1,7 @@
 //! The level glyph's vocabulary: which glyph a level carries and where it takes its state from.
 //! Every choice is a named variant (no `bool`).
 use crate::components::content::status::volume::VolumeState;
-use ui_core::vocab::Fraction;
+use base_ids::Fraction;
 
 /// The glyph a level carries, which follows the level.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

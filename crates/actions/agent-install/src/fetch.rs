@@ -1,9 +1,13 @@
 //! The one place the network is reached. `Fetch` is the seam; the install and update commands
-//! pass `Curl`, tests pass `Files` over a directory.
+//! pass `Https`, tests pass `Files` over a directory.
 
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::time::Duration;
+
+use base_url::WebUrl;
+use http_core::http::Method;
+use http_reqwest::blocking::{BlockingHttp, Patience};
 
 /// Why bytes did not arrive. Carries the location and the cause.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
@@ -16,7 +20,7 @@ pub const MAX_BYTES: u64 = 1 << 30;
 /// The largest small document (the registry list) docket takes into memory, in bytes.
 pub const MAX_SMALL_BYTES: u64 = 16 << 20;
 
-/// The longest a whole download may take, in seconds.
+/// The longest the connection may be silent in the middle of a download, in seconds.
 pub const MAX_SECONDS: u64 = 900;
 
 /// The longest the connection may take to be made, in seconds.
@@ -63,58 +67,39 @@ fn into_file(
     done
 }
 
-/// Downloads with the system's `curl`: https only (also across redirects), time and size capped.
+/// Downloads over `http-reqwest`'s blocking client: https only (also across redirects), time and
+/// size capped.
 #[derive(Debug, Clone, Copy)]
-pub struct Curl;
+pub struct Https;
 
-impl Curl {
+impl Https {
     /// Streams `url` into `sink`, stopping the transfer past `max` bytes.
     fn stream(url: &str, sink: &mut impl Write, max: u64) -> Result<(), FetchFault> {
         let fault = |why: String| FetchFault(format!("{url}: {why}"));
         if !url.starts_with("https://") {
             return Err(fault("only https is used".to_owned()));
         }
-        let mut child = Command::new("curl")
-            .args([
-                "--fail",
-                "--silent",
-                "--location",
-                "--proto",
-                "=https",
-                "--proto-redir",
-                "=https",
-                "--connect-timeout",
-            ])
-            .arg(CONNECT_SECONDS.to_string())
-            .arg("--max-time")
-            .arg(MAX_SECONDS.to_string())
-            .arg("--max-filesize")
-            .arg(max.to_string())
-            .arg("--")
-            .arg(url)
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null())
-            .spawn()
-            .map_err(|e| fault(format!("curl did not start: {e}")))?;
-        let Some(mut out) = child.stdout.take() else {
-            let _ = child.kill();
-            let _ = child.wait();
-            return Err(fault("curl gave no output".to_owned()));
-        };
-        let copied = copy_capped(&mut out, sink, max);
-        if copied.is_err() {
-            let _ = child.kill();
+        let client = BlockingHttp::https_only(
+            Patience {
+                connect: Duration::from_secs(CONNECT_SECONDS),
+                read: Duration::from_secs(MAX_SECONDS),
+            },
+            "bardo-agents",
+        )
+        .map_err(|e| fault(e.to_string()))?;
+        let web = WebUrl::parse(url).map_err(|e| fault(e.to_string()))?;
+        let request = http_core::request(Method::GET, &web)
+            .body(Vec::new())
+            .map_err(|e| fault(e.to_string()))?;
+        let mut reply = client.send(request).map_err(|e| fault(e.to_string()))?;
+        if !reply.status.is_success() {
+            return Err(fault(format!("the server answered {}", reply.status)));
         }
-        let status = child.wait().map_err(|e| fault(e.to_string()))?;
-        copied.map_err(|e| fault(e.to_string()))?;
-        status
-            .success()
-            .then_some(())
-            .ok_or_else(|| fault(format!("curl failed: {status}")))
+        copy_capped(&mut reply.body, sink, max).map_err(|e| fault(e.to_string()))
     }
 }
 
-impl Fetch for Curl {
+impl Fetch for Https {
     fn get(&self, url: &str) -> Result<Vec<u8>, FetchFault> {
         let mut bytes = Vec::new();
         Self::stream(url, &mut bytes, MAX_SMALL_BYTES)?;

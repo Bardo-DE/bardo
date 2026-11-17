@@ -7,7 +7,7 @@
 //! rules.
 
 use super::size_scale::{SizeScale, WholePx};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// How big a control is drawn: its height and everything derived from it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Word)]

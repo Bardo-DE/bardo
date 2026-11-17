@@ -10,9 +10,9 @@ use crate::components::fields::text_field_model::{FieldKind, FieldRows};
 use crate::components::fields::text_field_secret::takes_text_out;
 use crate::focus::targets::Told;
 use crate::keys::use_keys;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::Availability;
-use ui_core::word::Word;
 use ui_style::tokens::control_size::ControlSize;
 
 /// Where a field's events go. `onchange` and `onsubmit` take no value: the field already knows it.

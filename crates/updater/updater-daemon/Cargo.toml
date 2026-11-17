@@ -13,6 +13,7 @@ name = "bardo-updater"
 path = "src/main.rs"
 
 [dependencies]
+updater-dbus = { path = "../../updater/updater-dbus" }
 base-fs = { path = "../../base/base-fs" }
 base-time = { path = "../../base/base-time" }
 base-xdg = { path = "../../base/base-xdg" }
@@ -22,13 +23,15 @@ thiserror = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 semver = { workspace = true, features = ["serde"] }
-ureq = { workspace = true, features = ["rustls", "json"] }
+base-url = { path = "../../base/base-url" }
+http-core = { path = "../../network/http-core" }
+http-reqwest = { path = "../../network/http-reqwest" }
 zbus = {workspace = true, features = ["tokio"]}
 caller-identity-dbus = {default-features = false, features = ["tokio", "desktop"], path = "../../identity/caller-identity-dbus"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "fs", "signal"]}
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["fmt", "std", "env-filter"] }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }

@@ -10,8 +10,8 @@
 //! the panes turn back without a jump, and the switcher rests (and `on_settled` hears the pane)
 //! when the spring does. Under Reduced the spring is critically damped and the panes only
 //! cross-fade.
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_motion::pane_slide::{Pane, PaneRole, PaneSlide};
 use ui_motion::use_pane_slide::use_pane_slide;
 

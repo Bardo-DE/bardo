@@ -2,6 +2,7 @@
 
 use crate::support;
 
+use base_ids::Fraction;
 use compositor_core::app::AppKey;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::input::{
@@ -18,7 +19,6 @@ use serde::de::DeserializeOwned;
 use std::collections::BTreeMap;
 use support::{claimed, headless, mode, proven};
 use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 
 /// `value`'s JSON is `json`, and reads back as `value`.
 fn pinned<T: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug>(value: &T, json: &str) {

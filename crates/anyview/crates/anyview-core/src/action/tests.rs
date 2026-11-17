@@ -1,9 +1,9 @@
 use super::*;
+use base_words::Word;
 use keymap::{Action, DefaultChord};
 use ui_core::standard_action::StandardAction;
 use ui_core::testing::word_matches_serde;
 use ui_core::vocab::Shortcut;
-use ui_core::word::Word;
 
 #[test]
 fn actions_are_stored_as_their_slugs() {

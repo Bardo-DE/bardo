@@ -8,6 +8,7 @@ use std::time::Duration;
 
 use crate::BoxFuture;
 use crate::link::BusLink;
+use compositor_dbus::Compositor1Proxy;
 use portal_core::DeviceKinds;
 
 /// How long the compositor has to hand out or take back a socket before the attempt is dropped:
@@ -60,38 +61,6 @@ impl<T: EisHandout + ?Sized> EisHandout for Arc<T> {
     fn end_all(&self) -> BoxFuture<'_, ()> {
         (**self).end_all()
     }
-}
-
-/// The compositor's side of the handshake, as the client sees it.
-///
-/// `ConnectEis(session: t, devices: u) -> (h)`: only this portal's unit may call it. The reply
-/// is the client end of an EIS socket whose input the compositor tags as remote input of
-/// `session`; `devices` is the portal's `types` bit set.
-///
-/// `EndEis(session: t)`: ends every socket handed out for `session`, so its input stops and its
-/// peer sees the connection close. Called when the session is closed.
-///
-/// `Connect(role: s) -> (h)`: a Wayland connection with the role `role`. This portal asks for
-/// `"portal"` for its captures (`capture::CasementLine`): the connection is trusted for the screen
-/// and the windows, so the compositor does not put its own question over the portal's.
-#[zbus::proxy(
-    interface = "org.bardo.Compositor1",
-    default_service = "org.bardo.Compositor1",
-    default_path = "/org/bardo/Compositor1",
-    gen_blocking = false
-)]
-pub trait Compositor1 {
-    /// An EIS socket for a remote-desktop session.
-    fn connect_eis(&self, session: u64, devices: u32) -> zbus::Result<zbus::zvariant::OwnedFd>;
-
-    /// A Wayland connection with the role `role`, when the caller holds the role that stands for it.
-    fn connect(&self, role: &str) -> zbus::Result<zbus::zvariant::OwnedFd>;
-
-    /// End every socket handed out for a session.
-    fn end_eis(&self, session: u64) -> zbus::Result<()>;
-
-    /// End every socket handed out to this portal before now (it has just started).
-    fn end_all_eis(&self) -> zbus::Result<()>;
 }
 
 /// The real hand-out: `org.bardo.Compositor1.ConnectEis` over the session bus, asked from the
@@ -163,39 +132,6 @@ impl EisHandout for CasementEis {
                 }
             }
         })
-    }
-
-    fn end_all(&self) -> BoxFuture<'_, ()> {
-        Box::pin(async move {
-            match tokio::time::timeout(EIS_DEADLINE, self.end_all_now()).await {
-                Ok(Ok(())) => {}
-                Ok(Err(error)) => {
-                    tracing::warn!(%error, "input sockets of an earlier run could not be taken back");
-                }
-                Err(_) => tracing::warn!(
-                    "the compositor did not take back the input sockets of an earlier run in time"
-                ),
-            }
-        })
-    }
-}
-
-impl CasementEis {
-    async fn end_all_now(&self) -> Result<(), EisError> {
-        let proxy = self.proxy().await?;
-        match proxy.end_all_eis().await {
-            Ok(()) => Ok(()),
-            // A compositor that is not there has nothing to end; one that drops sockets by itself
-            // when the portal leaves the bus does not offer this call.
-            Err(zbus::Error::MethodError(name, ..))
-                if ["ServiceUnknown", "NameHasNoOwner", "UnknownMethod"]
-                    .iter()
-                    .any(|tail| name.as_str().ends_with(tail)) =>
-            {
-                Ok(())
-            }
-            Err(error) => Err(EisError::Call(error.to_string())),
-        }
     }
 }
 

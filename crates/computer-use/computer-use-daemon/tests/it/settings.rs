@@ -3,10 +3,11 @@
 
 use crate::support::supervisor;
 use computer_use_bus::{ControlRefusal, CuaCaller};
-use computer_use_daemon::{Apps, CuaSettings, Locator, SettingsWatch, WatchState};
+use computer_use_daemon::{Apps, CuaSettings, locator, watch_settings};
 use computer_use_desktop::BackendKind;
 use computer_use_fake::FakePdp;
 use computer_use_fake::scene::{click, finish, reply, task};
+use settings_store_fs::WatchState;
 use std::path::Path;
 
 /// What the Settings app does: a temp file, then a rename over the settings file.
@@ -37,7 +38,7 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
         config: sup.settings(),
         apps: Apps::Listed(Vec::new()),
     };
-    let mut watch = SettingsWatch::start(Locator::from_env(&env), base);
+    let mut watch = watch_settings(&locator(&env), base);
     assert_eq!(*watch.state(), WatchState::Live);
     sup.apply_settings(&watch.current().value);
     assert_eq!(
@@ -57,7 +58,7 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
     while sup.apps().rule_for(&app).is_none() {
         let loaded = watch.changed().await.expect("the watch is live");
         sup.adopt(&loaded);
-        assert_eq!(loaded.fallbacks, vec![]);
+        assert_eq!(loaded.invalid, vec![]);
     }
     let started = sup.start(CuaCaller::Companion, task()).await;
     assert!(started.is_ok(), "{started:?}");
@@ -97,12 +98,12 @@ async fn a_bad_value_in_the_file_leaves_the_running_value_and_is_reported() {
         config: sup.settings(),
         apps: Apps::Unrestricted,
     };
-    let mut watch = SettingsWatch::start(Locator::from_env(&env), base);
+    let mut watch = watch_settings(&locator(&env), base);
     write_atomically(home.path(), "[cua.budget]\nspend_microusd = -1\n");
     let loaded = watch.changed().await.expect("the watch is live");
     sup.adopt(&loaded);
-    assert_eq!(loaded.fallbacks.len(), 1);
-    assert_eq!(loaded.fallbacks[0].key, "cua.budget.spend_microusd");
+    assert_eq!(loaded.invalid.len(), 1);
+    assert_eq!(loaded.invalid[0].path, "cua.budget.spend_microusd");
     assert_eq!(
         sup.settings().budget.spend,
         model_provider::Money::usd(rust_decimal::Decimal::new(0, 6))
@@ -126,14 +127,11 @@ async fn a_settings_file_that_cannot_be_read_is_reported_and_the_next_directory_
         config: sup.settings(),
         apps: Apps::Unrestricted,
     };
-    let loaded = SettingsWatch::start(Locator::from_env(&env), base).current();
+    let loaded = watch_settings(&locator(&env), base).current();
     assert_eq!(
         loaded.value.config.budget.spend,
         model_provider::Money::usd(rust_decimal::Decimal::new(1900, 6))
     );
-    assert_eq!(loaded.fallbacks.len(), 1);
-    assert!(matches!(
-        loaded.fallbacks[0].why,
-        computer_use_daemon::Why::Unreadable(_)
-    ));
+    assert_eq!(loaded.invalid.len(), 1);
+    assert!(loaded.invalid[0].reason.starts_with("could not be read"));
 }

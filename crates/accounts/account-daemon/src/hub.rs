@@ -10,7 +10,7 @@ use account_service_core::registry::Registry;
 use account_settings::accounts::{Key, expiry_text, path, since_text};
 use account_settings::{EXPIRES, LABEL, REVOKE, SCOPE, SINCE, STATE};
 use base_ids::word::word as word_of;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// One change a client may be told of.
 #[derive(Debug, Clone, PartialEq, Eq)]

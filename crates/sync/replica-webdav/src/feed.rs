@@ -19,9 +19,9 @@ use crate::requests;
 use account_dav_proto::{
     Multistatus, SyncEnd, parse_multistatus, parse_sync_collection, token_expired,
 };
-use account_http::Http;
-use account_http::http::Response;
 use base_ids::Bytes;
+use http_core::Http;
+use http_core::http::Response;
 use std::collections::{BTreeMap, BTreeSet};
 use sync_core::DELETED;
 use sync_core::status::{read_error, unreached};

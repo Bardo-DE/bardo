@@ -2,9 +2,9 @@
 
 use crate::ids::{OutputKey, WindowId};
 use account_core::SpaceId;
+use base_ids::Fraction;
 use desktop_protocols::vocab::SpaceKind;
 use serde::{Deserialize, Serialize};
-use ui_core::vocab::Fraction;
 
 /// One Space: an output's desktop, or a full-screen, Split View or agent Space.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

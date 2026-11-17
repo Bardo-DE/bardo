@@ -18,7 +18,6 @@ use account_fake_servers::{
 };
 use account_families::DynProvider;
 use account_family_generic::{GenericProvider, MailLookup};
-use account_http::SharedHttp;
 use account_provider::parse_provider;
 use account_secrets::MemorySecrets;
 use account_service::{AccountService, Service};
@@ -30,6 +29,7 @@ use account_sheet::{
 };
 use account_wire::{ParentWindow, Refusal};
 use base_time::FixedClock;
+use http_core::SharedHttp;
 
 const ADDRESS: &str = "ada@example.test";
 const PASSWORD: &str = "pw-example-one";

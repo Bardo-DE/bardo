@@ -6,7 +6,7 @@ use std::time::Duration;
 
 use super::{LINE_DEADLINE, LineError, PortalLine};
 use crate::link::BusLink;
-use crate::remote_desktop::eis::Compositor1Proxy;
+use compositor_dbus::Compositor1Proxy;
 
 /// The role the compositor knows this portal's connection by.
 const ROLE: &str = "portal";

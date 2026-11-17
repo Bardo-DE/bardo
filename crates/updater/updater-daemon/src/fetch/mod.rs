@@ -2,14 +2,14 @@
 
 mod cache;
 mod feed;
+mod http_fetch;
 mod stage;
-mod ureq_fetch;
 
 pub use cache::prune_cache;
 pub use feed::{FeedError, Fetched, latest, of_version};
 pub use stage::{Patience, StageError, stage, stage_with};
 
-pub use ureq_fetch::UreqFetch;
+pub use http_fetch::HttpFetch;
 
 use semver::Version;
 use std::io::{self, Read};
@@ -47,7 +47,7 @@ impl std::fmt::Debug for Download {
     }
 }
 
-/// Something that can open a URL. The real one is [`UreqFetch`]; tests serve from memory.
+/// Something that can open a URL. The real one is [`HttpFetch`]; tests serve from memory.
 pub trait Fetch: Send + Sync {
     /// Opens `url` for reading.
     ///

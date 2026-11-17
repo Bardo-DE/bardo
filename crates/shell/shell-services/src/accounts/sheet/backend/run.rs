@@ -27,6 +27,7 @@ use crate::machine::Machine;
 use crate::owner;
 use crate::serve;
 use crate::service::ServiceIo;
+use account_dbus::accounts::AccountsSheetServed;
 
 pub(crate) async fn run(
     bus: Bus,
@@ -51,7 +52,7 @@ pub(crate) async fn run(
                 };
                 connection
                     .object_server()
-                    .at(SHEET_PATH, sheet)
+                    .at(SHEET_PATH, AccountsSheetServed(sheet))
                     .await
                     .map(|_| ())
                     .map_err(serve::refused)

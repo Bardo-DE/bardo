@@ -4,10 +4,10 @@
 use crate::support::Scratch;
 
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::{
+use settings_store::{FileName, Format, Loaded, SettingsDoc};
+use settings_types::schema::{
     CornerAction, CornerBinding, CornerDo, CornerKey, HotCornerSettings, OpenItem,
 };
-use ui_settings::{FileName, Format, Loaded, SettingsDoc};
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
@@ -210,7 +210,7 @@ action = "launcher"
 
 #[test]
 fn the_four_corner_rows_are_one_custom_control_and_the_timing_rows_stay_advanced() {
-    use ui_settings::schema::{Control, Exposure, SettingsSchema};
+    use settings_types::schema::{Control, Exposure, SettingsSchema};
     let schema = HotCornerSettings::schema();
     let rows: Vec<(&str, Control, Exposure)> = schema
         .key

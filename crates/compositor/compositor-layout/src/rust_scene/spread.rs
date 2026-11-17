@@ -206,7 +206,7 @@ fn whole(n: i64) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use ui_core::vocab::Fraction;
+    use base_ids::Fraction;
 
     fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
         LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })

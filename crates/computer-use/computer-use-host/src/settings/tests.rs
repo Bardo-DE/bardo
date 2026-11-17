@@ -1,9 +1,11 @@
 //! The schema, the key table and the reader hold to one another.
 
-use super::keys::{APPS_KEY, Rule, table};
+use super::keys::{APPS_KEY, table};
 use super::*;
 use account_core::AppName;
 use computer_use_run::DefaultMode;
+use settings_store::rules::Rule;
+use settings_store::{InvalidKey, UnknownKey};
 use std::collections::BTreeSet;
 
 fn schema() -> toml::Table {
@@ -204,9 +206,9 @@ fn a_file_of_every_schema_default_changes_nothing() {
         .collect();
     let refs: Vec<(&str, toml::Value)> =
         parts.iter().map(|(p, v)| (p.as_str(), v.clone())).collect();
-    let loaded = read(&merged(&refs), &base());
+    let loaded = read(&merged(&refs), base());
     assert_eq!(loaded.value, base());
-    assert_eq!((loaded.fallbacks, loaded.unknown), (vec![], vec![]));
+    assert_eq!((loaded.invalid, loaded.unknown), (vec![], vec![]));
 }
 
 /// A valid value for the scalar row that is not its default.
@@ -245,15 +247,15 @@ fn every_schema_key_is_read_by_the_daemon() {
         } else {
             other_than_default(&row)
         };
-        let loaded = read(&doc(p, value), &base());
-        assert_eq!(loaded.fallbacks, vec![], "{p}");
+        let loaded = read(&doc(p, value), base());
+        assert_eq!(loaded.invalid, vec![], "{p}");
         assert_ne!(loaded.value, base(), "{p} changed nothing");
     }
 }
 
 #[test]
 fn each_key_lands_in_the_typed_value_the_design_names() {
-    let one = |p: &str, v: toml::Value| read(&doc(p, v), &base()).value.config;
+    let one = |p: &str, v: toml::Value| read(&doc(p, v), base()).value.config;
     let int = toml::Value::Integer;
     let word = |w: &str| toml::Value::String(w.to_owned());
     assert!(one("cua.enabled", toml::Value::Boolean(true)).enabled);
@@ -302,7 +304,7 @@ fn a_bad_value_falls_back_for_that_key_alone() {
                 toml::Value::Integer(700)
             };
             let text = merged(&[(p, value.clone()), (other, good)]);
-            let loaded = read(&text, &base());
+            let loaded = read(&text, base());
             let mut want = base();
             if other == "cua.enabled" {
                 want.config.enabled = true;
@@ -311,8 +313,8 @@ fn a_bad_value_falls_back_for_that_key_alone() {
                     model_provider::Money::usd(rust_decimal::Decimal::new(700, 6));
             }
             assert_eq!(loaded.value, want, "{p} = {value}");
-            assert_eq!(loaded.fallbacks.len(), 1, "{p} = {value}");
-            assert_eq!(loaded.fallbacks[0].key, p);
+            assert_eq!(loaded.invalid.len(), 1, "{p} = {value}");
+            assert_eq!(loaded.invalid[0].path, p);
         }
     }
 }
@@ -321,35 +323,32 @@ fn a_bad_value_falls_back_for_that_key_alone() {
 fn a_fallback_is_the_base_value_not_the_default() {
     let mut start = base();
     start.config.budget.spend = model_provider::Money::usd(rust_decimal::Decimal::new(11, 6));
-    let loaded = read("[cua.budget]\nspend_microusd = -1\n", &start);
+    let loaded = read("[cua.budget]\nspend_microusd = -1\n", start.clone());
     assert_eq!(loaded.value, start);
     assert_eq!(
-        loaded.fallbacks,
-        vec![Fallback {
-            key: "cua.budget.spend_microusd".into(),
-            why: Why::OutOfRange {
-                min: 0,
-                max: 1_000_000_000,
-            },
+        loaded.invalid,
+        vec![InvalidKey {
+            path: "cua.budget.spend_microusd".into(),
+            reason: "outside 0..=1000000000".into(),
         }]
     );
 }
 
 #[test]
 fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
-    let loaded = read("[cua\nenabled = true", &base());
+    let loaded = read("[cua\nenabled = true", base());
     assert_eq!(loaded.value, base());
-    assert!(matches!(loaded.fallbacks[0].why, Why::NotToml(_)));
+    assert!(loaded.invalid[0].reason.starts_with("not TOML"));
 }
 
 #[test]
 fn unknown_keys_are_reported_and_the_retired_screens_keys_are_among_them() {
     let loaded = read(
         "version = 1\n[cua.screens]\nkeep = true\n[cua]\nenabled = true\n",
-        &base(),
+        base(),
     );
     assert!(loaded.value.config.enabled);
-    assert_eq!(loaded.unknown, ["cua.screens.keep"]);
+    assert_eq!(loaded.unknown, [UnknownKey("cua.screens.keep".to_owned())]);
     assert_eq!(
         loaded.lines("cuad"),
         ["cuad: settings: cua.screens.keep: no such key, ignored"]
@@ -383,7 +382,7 @@ allow = "sometimes"
 app = "org.gnome.Calculator"
 allow = "session"
 "#;
-    let loaded = read(text, &base());
+    let loaded = read(text, base());
     assert_eq!(
         loaded.value.apps,
         Apps::Listed(vec![
@@ -397,17 +396,20 @@ allow = "session"
             },
         ])
     );
-    let refused: Vec<(&str, &Why)> = loaded
-        .fallbacks
+    let refused: Vec<(&str, &str)> = loaded
+        .invalid
         .iter()
-        .map(|f| (f.key.as_str(), &f.why))
+        .map(|f| (f.path.as_str(), f.reason.as_str()))
         .collect();
     assert_eq!(
         refused,
         [
-            ("cua.apps[1]", &Why::BrowserNeverAlways),
-            ("cua.apps[2]", &Why::NotAnApp),
-            ("cua.apps[3]", &Why::NotAnAllow),
+            (
+                "cua.apps[1]",
+                "a browser is never `always`; it asks every run"
+            ),
+            ("cua.apps[2]", "no desktop-entry id in `app`"),
+            ("cua.apps[3]", "`allow` is not ask, session or always"),
         ]
     );
 }
@@ -415,12 +417,15 @@ allow = "session"
 #[test]
 fn no_apps_key_leaves_the_base_list_and_a_non_list_falls_back() {
     assert_eq!(
-        read("[cua]\nenabled = true\n", &base()).value.apps,
+        read("[cua]\nenabled = true\n", base()).value.apps,
         Apps::Listed(vec![])
     );
-    let loaded = read("[cua]\napps = \"all\"\n", &base());
+    let loaded = read("[cua]\napps = \"all\"\n", base());
     assert_eq!(loaded.value.apps, Apps::Listed(vec![]));
-    assert_eq!(loaded.fallbacks[0].why, Why::NotAList);
+    assert_eq!(
+        loaded.invalid[0].reason,
+        "not a list of { app, allow } tables"
+    );
 }
 
 #[test]

@@ -2,6 +2,7 @@
 //! between them; the divider's share and each window's minimum width decide the widths.
 
 use crate::support::scene::{ANY_SIZE, knobs, one_desktop, rect, size, window};
+use base_ids::Fraction;
 use compositor_core::WindowId;
 use compositor_core::geometry::LogicalRect;
 use compositor_core::space::SplitPair;
@@ -10,7 +11,6 @@ use compositor_layout::{
     Arrangement, ConfigureNeed, LayoutReport, RustScene, SceneLayout, SceneSpec, SpaceArrangement,
     WindowPlacement,
 };
-use ui_core::vocab::Fraction;
 
 fn min_width(w: u32) -> SizeLimits {
     SizeLimits {

@@ -5,9 +5,9 @@ use super::adapter::ActionButton;
 use crate::copy::accounts::{attention_words, reauth_help};
 use dioxus::prelude::*;
 use settings_app_model::{Account, Attention, ModuleRow};
+use settings_types::schema::ActionWeight;
 use ui_components::prelude::*;
 use ui_components::root::pass_through::{DataAttr, DataName};
-use ui_settings::schema::ActionWeight;
 
 /// The banner for `attention` on `account`; nothing when the account has no Sign in again row to
 /// run. `onsign_in` is given that row.

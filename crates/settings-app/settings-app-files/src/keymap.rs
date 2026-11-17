@@ -35,7 +35,7 @@ impl KeymapFiles {
     /// keymap: what a test over scratch directories reads.
     #[must_use]
     pub fn under(home: &ConfigHome) -> KeymapFiles {
-        let dir = ui_settings::app_folder(&home.0, "key-remap");
+        let dir = settings_types::app_folder(&home.0, "key-remap");
         KeymapFiles {
             source: KeycapSource::new(home.0.join(NO_SOCKET), PathBuf::new(), dir.join("keymap")),
         }

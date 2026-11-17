@@ -14,11 +14,11 @@ use crate::user_picture::size::PictureSize;
 use dioxus::prelude::*;
 use ui_components::base::geometry::units::Px;
 use ui_components::base::vocab::selected_word;
-use ui_components::base::word::Word;
 use ui_components::components::content::avatar::{AvatarFace, AvatarSize, face};
 use ui_components::components::lists::emoji_grid::grid::grid_style;
 use ui_components::components::lists::emoji_grid::nav::{GridMove, GridStep, grid_step};
 use ui_components::root::common::Common;
+use ui_components::words::Word;
 
 /// A picker cell's side: the 64 px disc and 6 px around it.
 pub const PICTURE_CELL: Px = Px(76.0);
@@ -164,7 +164,7 @@ mod tests {
     use super::{cells, marked};
     use crate::emoji::id::EmojiId;
     use crate::user_picture::choice::PictureChoice;
-    use ui_components::base::word::Word;
+    use ui_components::words::Word;
 
     #[test]
     fn the_letter_comes_first_then_the_whole_set() {

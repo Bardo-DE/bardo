@@ -6,7 +6,7 @@ use super::model::{Applying, AwaitingAccount, Busy, Described, PickerState, Read
 use super::pool::PoolWrite;
 use crate::Absence;
 use crate::accounts::AddEnd;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// What happened to the picker.
 #[derive(Debug, Clone, PartialEq)]

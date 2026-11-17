@@ -17,6 +17,10 @@ publish.workspace = true
 dev-callers = ["caller-identity-dbus/dev-rows", "action-dbus/fixture-callers"]
 
 [dependencies]
+portal-dbus = { path = "../../portal/portal-dbus" }
+shell-dbus = { path = "../../shell/shell-dbus" }
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
+base-words = { path = "../../base/base-words" }
 base-fs = { path = "../../base/base-fs" }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 action-wire = {path = "../../actions/action-wire"}
@@ -38,7 +42,9 @@ shell-model = {path = "../shell-model"}
 shell-launcher = {path = "../shell-launcher"}
 ui-core = {path = "../../ui/ui-core"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
-ui-settings = {path = "../../ui/ui-settings", features = ["tokio"]}
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
 key-remap-proto = {path = "../../input/key-remap-proto"}
 action-core = {path = "../../actions/action-core"}
 action-dbus = {path = "../../actions/action-dbus"}
@@ -66,6 +72,8 @@ toml = { workspace = true }
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 nix = { workspace = true, features = ["user"] }
 async-trait = { workspace = true }
+http-core = {path = "../../network/http-core"}
+http-reqwest = {path = "../../network/http-reqwest"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 zbus = {workspace = true, features = ["tokio"]}
 networkmanager-proxy = {default-features = false, features = ["tokio"], path = "../../network/networkmanager-proxy"}
@@ -89,7 +97,7 @@ ddc = { workspace = true }
 ddc-i2c = { workspace = true, features = ["with-linux"] }
 nonstick = { workspace = true }
 percent-encoding = { workspace = true }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}

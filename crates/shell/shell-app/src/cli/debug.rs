@@ -3,10 +3,10 @@
 
 use std::path::PathBuf;
 
+use base_words::Word;
 use clap::Subcommand;
 use shell_ipc::debug::{DebugRequest, KeyAction, KeySpec, Point, PointerButton, SurfaceName};
 use shell_ipc::request::Request;
-use ui_core::word::Word;
 
 use shell_launcher::AppId;
 use shell_model::auth::FakeVerdict;

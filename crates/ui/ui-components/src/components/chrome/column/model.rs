@@ -1,6 +1,6 @@
 //! Column's alignment, gap and extent, as data.
 
-use ui_core::word::Word;
+use base_words::Word;
 use ui_style::tokens::control_size::ControlSize;
 
 /// Where a column puts its children across its width.

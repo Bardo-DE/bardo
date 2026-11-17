@@ -28,7 +28,7 @@ tokio ={workspace = true, features = ["io-util", "macros", "net", "process", "rt
 
 [features]
 # `LocalApi`: the requests over tailscaled's unix socket, spoken with hyper's own HTTP/1 client
-# (the watch stream is a chunked body that stays open, which account-http's whole-body client
+# (the watch stream is a chunked body that stays open, which http-core's whole-body client
 # cannot read). Pulls in the runtime, so it is off by default: the pure build reaches none.
 io = ["dep:hyper", "dep:hyper-util", "dep:http-body-util", "dep:tokio"]
 

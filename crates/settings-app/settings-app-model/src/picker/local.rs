@@ -4,7 +4,7 @@
 use super::choice::{Choice, Gate};
 use super::model::ModelRow;
 use crate::words::humanize;
-use ui_settings::schema::ChoicePlace;
+use settings_types::schema::ChoicePlace;
 
 /// The menu word of the Local choice. It names no model (a model word has an account before a
 /// slash), so it is never written to the module.

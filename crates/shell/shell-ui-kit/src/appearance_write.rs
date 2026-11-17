@@ -1,8 +1,10 @@
 //! The one writer of `bardo/appearance.toml`: a view asks, this function writes, and the
 //! daemon's watch of the file then publishes the change to every surface.
 
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::AppName;
 use ui_components::prelude::Appearance;
-use ui_settings::{AppName, AppearanceFile, ConfigRoot, Store};
+use ui_settings::AppearanceFile;
 
 /// Write `next`'s theme, accent and motion into `bardo/appearance.toml`, keeping everything else
 /// in the file. A file that cannot be written leaves the appearance as it was, which the picker

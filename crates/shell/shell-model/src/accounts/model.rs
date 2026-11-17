@@ -1,6 +1,6 @@
 //! The state types (data only).
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// How accountd names an account to its clients: opaque here, and the only thing a signal, a
 /// reply and the notification's action all say it by.

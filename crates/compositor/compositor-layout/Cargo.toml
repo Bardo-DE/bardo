@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-ids = { path = "../../base/base-ids" }
 compositor-core = {path = "../compositor-core"}
 desktop-protocols = {path = "../../wayland/desktop-protocols"}
 account-core = {path = "../../accounts/account-core"}

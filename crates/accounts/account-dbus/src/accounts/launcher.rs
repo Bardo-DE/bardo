@@ -20,7 +20,7 @@
 //! launcher's own, [`LauncherFault`](crate::accounts::LauncherFault).
 
 use crate::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 use zbus::zvariant::{OwnedFd, OwnedObjectPath};
 
 /// The interface, written once. `#[bus_interface]` makes [`LauncherProxy`] for its callers from this

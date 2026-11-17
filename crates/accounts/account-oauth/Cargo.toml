@@ -11,7 +11,7 @@ publish.workspace = true
 [dependencies]
 account-core = {path = "../account-core"}
 base-time = { path = "../../base/base-time" }
-account-http = {path = "../account-http"}
+http-core = {path = "../../network/http-core"}
 account-provider = {path = "../account-provider"}
 base64 = { workspace = true }
 serde = { workspace = true, features = ["derive"] }

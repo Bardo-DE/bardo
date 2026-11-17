@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 base-xdg = { path = "../../base/base-xdg" }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 sync-bus = {path = "../sync-bus"}
 drive-core = {path = "../drive-core"}
 drive-fuse = {path = "../drive-fuse"}
@@ -28,7 +28,7 @@ account-client-dbus = {path = "../../accounts/account-client-dbus"}
 account-callers = {features = ["file"], path = "../../accounts/account-callers"}
 account-dbus = {path = "../../accounts/account-dbus"}
 # Only `xdg`: the directories a daemon keeps its files under.
-account-daemon-support = {default-features = false, path = "../../accounts/account-daemon-support"}
+account-daemon-support = {path = "../../accounts/account-daemon-support"}
 # The vocabulary: needs, grants, ids, the parent window.
 account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}
@@ -39,9 +39,10 @@ base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 base-fs = {path = "../../base/base-fs"}
 account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav-proto"}
-account-http = {path = "../../accounts/account-http"}
-account-http-relay = {path = "../../accounts/account-http-relay"}
-ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+http-core = {path = "../../network/http-core"}
+http-relay = {path = "../../network/http-relay"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
 serde = { workspace = true, features = ["derive"] }
@@ -60,7 +61,7 @@ zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
-ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 sync-daemon = { path = ".", features = ["testing"] }
 base64 = { workspace = true }
 tempfile = { workspace = true }
@@ -70,7 +71,7 @@ account-client-inproc = {features = ["relays"], path = "../../accounts/account-c
 account-fake = {path = "../../accounts/account-fake"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
-account-http-reqwest = {path = "../../accounts/account-http-reqwest"}
+http-reqwest = {path = "../../network/http-reqwest"}
 account-provider = {path = "../../accounts/account-provider"}
 account-secrets = {features = ["testing"], path = "../../accounts/account-secrets"}
 account-service = {path = "../../accounts/account-service"}

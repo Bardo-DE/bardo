@@ -1,6 +1,6 @@
 //! Which schema files are installed and whether they changed: the directory listing and the
 //! cheap fingerprint the provider's cache compares. Reading a file is
-//! `ui_settings::schema::Schema::from_toml`.
+//! `settings_types::schema::Schema::from_toml`.
 
 use std::fs;
 use std::path::PathBuf;
@@ -8,7 +8,7 @@ use std::path::PathBuf;
 /// Every `*.settings.toml` file directly under each of `dirs`.
 ///
 /// They come in directory order and then file name order within a directory, the order
-/// `ui_settings::schema::discover` reads them in.
+/// `settings_store_fs::discover` reads them in.
 ///
 /// A
 /// directory that does not exist is skipped silently.

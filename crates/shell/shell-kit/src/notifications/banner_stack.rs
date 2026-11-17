@@ -18,11 +18,11 @@ use crate::notifications::banner_row::BannerRow;
 use crate::tokens::notifications::NotificationToken;
 use dioxus::prelude::*;
 use ui_components::base::geometry::units::Px;
-use ui_components::base::word::Word;
 use ui_components::motion::presence::Exit;
 use ui_components::motion::roster::RowPitch;
 use ui_components::motion::use_roster::{LeaveBy, RosterSpec, use_roster};
 use ui_components::root::common::Common;
+use ui_components::words::Word;
 
 /// A banner's identity: the notification's id, which the server gives.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

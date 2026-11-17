@@ -5,7 +5,7 @@
 
 use super::codec::NeedArg;
 use account_dbus::Details;
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 use zbus::zvariant::OwnedFd;
 
 /// The interface, written once. `#[bus_interface]` makes [`InferenceProxy`] for its callers from this

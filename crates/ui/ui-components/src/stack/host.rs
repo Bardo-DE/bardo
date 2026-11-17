@@ -1,7 +1,7 @@
 //! The overlay registry and the host that renders it at the end of `.ds`.
 
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::tokens::layer::ZLayer;
 
 /// Which overlay an entry is, so its owner can replace or remove it.

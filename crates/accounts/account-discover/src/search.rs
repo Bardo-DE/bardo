@@ -21,10 +21,10 @@ use crate::found::{Cause, DiscoverFault, Found, SearchOptions, Source};
 use crate::mx::{ProviderLead, ispdb_candidates, lookup_mx, provider_leads};
 use crate::srv::{found_from_srv_with, lookup_srv};
 use account_core::Tls;
-use account_http::http::Method;
-use account_http::{Http, HttpError, request};
 use account_provider::{DomainMatch, ProviderSet};
 use base_url::WebUrl;
+use http_core::http::Method;
+use http_core::{Http, HttpError, request};
 use std::fmt;
 use std::sync::Arc;
 
@@ -308,7 +308,7 @@ async fn fetch<H: Http>(http: &H, url: &WebUrl) -> Result<String, Miss> {
         .map_err(Miss::garbled)?;
     let response = http.send(asked).await.map_err(|error| match error {
         HttpError::TooLarge | HttpError::Malformed(..) => Miss::garbled(error),
-        // unreachable, TLS, timed out, not granted, and a failure a later account-http adds
+        // unreachable, TLS, timed out, not granted, and a failure a later http-core adds
         _ => Miss::down(error),
     })?;
     match response.status().as_u16() {

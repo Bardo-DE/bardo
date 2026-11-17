@@ -211,7 +211,7 @@ async fn the_outputs_are_read_and_a_change_is_followed() {
         .at("/org/bardo/Outputs1", FakeOutputs(vec![row(1, 32)]))
         .await
         .expect("exports the object");
-    zbus_ready::serving(&shell)
+    dbus_kit::ready::serving(&shell)
         .await
         .expect("the object server answers");
     shell
@@ -279,7 +279,7 @@ async fn hold_outputs(bus: &PrivateBus, answer: Answer) -> zbus::Connection {
         .at("/org/bardo/Outputs1", Shell(answer))
         .await
         .expect("served");
-    zbus_ready::serving(&holder)
+    dbus_kit::ready::serving(&holder)
         .await
         .expect("the object server answers");
     holder

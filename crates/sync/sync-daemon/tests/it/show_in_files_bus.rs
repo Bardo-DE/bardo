@@ -32,6 +32,8 @@ use common::hosted::{Hosted, Link, Service, host_with};
 use common::{Known, client};
 use drive_core::{CacheLimit, FreeSpace, ItemState, Reason};
 use drive_fuse::{Mounter, mountd};
+use settings_dbus::{AnyOwner, LiveClient};
+use settings_types::schema::KeyPath;
 use std::sync::Arc;
 use std::time::Duration;
 use sync_core::ItemPath;
@@ -51,8 +53,6 @@ use sync_daemon::settings::{
 use sync_daemon::words;
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use tokio::sync::watch;
-use ui_settings::live::{AnyOwner, LiveClient};
-use ui_settings::schema::KeyPath;
 
 const ACCOUNT: &str = "graph-acct";
 const SEGMENT: &str = "graph_acct";
@@ -614,7 +614,7 @@ async fn keep_everything_downloaded_is_offered_while_shown_and_outlasts_a_restar
 }
 
 /// The next `Changed` of `row`.
-async fn next_change_of(changes: &mut ui_settings::live::Changes, row: &KeyPath) {
+async fn next_change_of(changes: &mut settings_dbus::Changes, row: &KeyPath) {
     use zbus::export::futures_core::Stream;
     loop {
         let change = tokio::time::timeout(

@@ -15,9 +15,9 @@ use account_provider::Issuer;
 use account_service_core::registry::Registry;
 use account_sheet::ProviderGroup;
 use base_ids::word::{from_word, word};
+use settings_dbus::LiveSchema;
+use settings_types::schema::{Exposure, KeyKind, KeySpec};
 use std::collections::BTreeMap;
-use ui_settings::live::LiveSchema;
-use ui_settings::schema::{Exposure, KeyKind, KeySpec};
 
 /// What the daemon knows that the registry does not: how a provider and an app are called, and
 /// where an account is listed.

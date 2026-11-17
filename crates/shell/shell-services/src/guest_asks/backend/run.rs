@@ -95,7 +95,6 @@ impl Live {
                     }
                 },
                 Ok(said) = answers.recv() => self.heard_server(said, &proxy).await,
-                Ok(()) = self.board.changed() => self.learn(),
                 command = commands.recv() => match command {
                     Some(GuestAsksCommand::Reread) => {
                         self.reread(&proxy).await;
@@ -121,24 +120,13 @@ impl Live {
         }
     }
 
-    /// Keep the id of each notice the notes now hold for a computer that is asking.
-    fn learn(&mut self) {
-        let computers: Vec<Computer> = self
-            .machine
-            .state()
-            .asks
-            .iter()
-            .map(|a| a.node.clone())
-            .collect();
-        self.board.learn(&computers);
-    }
-
     /// The server's word: a press of a notice bardo-shell posted answers the question; a close ends the
-    /// notice's claim.
+    /// notice's claim. The server says each post before any press of it.
     async fn heard_server(&mut self, said: Said, proxy: &Guests) {
-        // The notes may already have let go of a notice just pressed.
-        self.learn();
         match said {
+            Said::Posted { id, actions } => {
+                self.board.posted(id, &actions, choice_of, |(node, _)| node);
+            }
             Said::Pressed { id, key } => {
                 if let Some((node, verdict)) =
                     self.board.answers(id, choice_of(&key), |(node, _)| node)

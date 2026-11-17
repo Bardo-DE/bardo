@@ -3,6 +3,7 @@
 
 use crate::support::driver::{Op, Run, last, map, plug, request, run, run_from, unmap};
 use crate::support::{headless, proven};
+use base_ids::Fraction;
 use compositor_core::desktop::{DesktopRequest, WindowAsk};
 use compositor_core::focus::TokenCheck;
 use compositor_core::input::{DesktopCommand, SpaceStep};
@@ -11,7 +12,6 @@ use compositor_core::space::{SpaceContent, SplitPair};
 use compositor_core::window::WindowState;
 use compositor_core::{Effect, Event, ToplevelRequest, WindowId};
 use desktop_protocols::vocab::{SplitSide, WindowEntry};
-use ui_core::vocab::Fraction;
 
 fn menu(window: u64, entry: WindowEntry) -> Op {
     Op::Event(Event::Shell(ShellRequest::WindowMenuPick {

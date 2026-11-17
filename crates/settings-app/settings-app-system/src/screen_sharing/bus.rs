@@ -6,7 +6,7 @@ use super::ScreenSharingLink;
 use super::proxy::portal;
 use crate::bus::{BusSource, ToAbsence, because, pinned, pinned_starting, said};
 use crate::deadline::{Deadline, answered, peer};
-use settings_app_callers::PORTAL_BUS;
+use portal_dbus::BUS_NAME;
 use settings_app_model::{Absence, ProgramSubject, ScreenGrant, Work, screen_grants_of};
 use ui_peer::within;
 
@@ -22,7 +22,7 @@ const COULD_NOT_REMOVE: &str = "Screen sharing could not be changed. Try again i
 /// The apps that may share the screen without asking again. A portal nobody owns yet is asked to
 /// start first, and its owner must hold the portal's role before it is called, as for any owner.
 async fn list(bus: &BusSource) -> Result<Vec<ScreenGrant>, Absence> {
-    let running = pinned_starting(bus, PORTAL_BUS).await?;
+    let running = pinned_starting(bus, BUS_NAME).await?;
     let proxy = portal(&running).await.map_err(|e| e.absence())?;
     let rows = within(Deadline::READ, peer::PORTAL, proxy.list_grants())
         .await
@@ -34,7 +34,7 @@ async fn list(bus: &BusSource) -> Result<Vec<ScreenGrant>, Absence> {
 /// Takes `app` back: the portal asks the person the next time it wants the screen. The portal's
 /// count of what went is of no use here; none is as good as one, the app is gone from the list.
 async fn revoke(bus: &BusSource, app: &ProgramSubject) -> Result<(), String> {
-    let running = pinned(bus, PORTAL_BUS)
+    let running = pinned(bus, BUS_NAME)
         .await
         .map_err(said(COULD_NOT_REMOVE))?;
     let proxy = portal(&running).await.map_err(said(COULD_NOT_REMOVE))?;
@@ -47,7 +47,7 @@ async fn revoke(bus: &BusSource, app: &ProgramSubject) -> Result<(), String> {
 
 /// Lets `app` share every screen and be controlled without asking, until it is taken back.
 async fn allow(bus: &BusSource, app: &ProgramSubject) -> Result<(), String> {
-    let running = pinned(bus, PORTAL_BUS)
+    let running = pinned(bus, BUS_NAME)
         .await
         .map_err(said(COULD_NOT_REMOVE))?;
     let proxy = portal(&running).await.map_err(said(COULD_NOT_REMOVE))?;

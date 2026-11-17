@@ -114,7 +114,7 @@ impl Bus {
             eprintln!("bardo-shell: notifications: serving {OBJECT_PATH}: {error}");
             return;
         }
-        if let Err(error) = zbus_ready::serving(&self.connection).await {
+        if let Err(error) = dbus_kit::ready::serving(&self.connection).await {
             eprintln!("bardo-shell: notifications: serving {OBJECT_PATH}: {error}");
             return;
         }

@@ -1,8 +1,8 @@
 //! What a `Sidebar` is made of: its sections, top to bottom, and what it is drawn on.
 
 use crate::components::lists::list::model::ListItem;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 
 /// One section of a sidebar.
 #[derive(Debug, Clone, PartialEq)]

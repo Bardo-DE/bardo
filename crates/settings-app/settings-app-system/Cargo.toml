@@ -13,6 +13,11 @@ publish.workspace = true
 testing = ["zbus/p2p"]
 
 [dependencies]
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
+shell-dbus = { path = "../../shell/shell-dbus" }
+portal-dbus = { path = "../../portal/portal-dbus" }
+memory-dbus = { path = "../../memory/memory-dbus" }
+updater-dbus = { path = "../../updater/updater-dbus" }
 base-time = { path = "../../base/base-time" }
 account-tailscale = {path = "../../accounts/account-tailscale"}
 inference-tailnet = {path = "../../inference/inference-tailnet"}
@@ -30,7 +35,8 @@ settings-app-callers = {path = "../settings-app-callers"}
 settings-app-files = {path = "../settings-app-files"}
 settings-app-model = {path = "../settings-app-model"}
 ui-peer = {path = "../../ui/ui-peer"}
-ui-settings = {path = "../../ui/ui-settings", features = ["live", "tokio"]}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 md-5 = { workspace = true }
 engine-install = {path = "../../engines/engine-install"}
 engine-manifest = {path = "../../engines/engine-manifest"}
@@ -50,13 +56,13 @@ thiserror = { workspace = true }
 tokio = {workspace = true, features = ["macros", "net", "rt-multi-thread", "sync", "time"]}
 toml = { workspace = true }
 zbus = {workspace = true, features = ["default", "tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 # The integration tests use the fakes, which the library has behind `testing`.
 settings-app-system = {path = ".", features = ["testing"]}
 settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
-ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["testing"] }
 
 [lints]
 workspace = true

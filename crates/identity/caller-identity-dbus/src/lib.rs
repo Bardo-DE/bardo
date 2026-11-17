@@ -13,7 +13,6 @@ mod error;
 mod manager;
 mod offload;
 mod owner;
-mod timeout;
 mod who;
 
 pub use caller_identity_core;
@@ -22,5 +21,8 @@ pub use error::{UnitError, WhoError, access_denied};
 pub use manager::{DROP_INS_MAX, ManagerLink, SYSTEMD, SYSTEMD_MANAGER, SYSTEMD_PATH, UnitSource};
 pub use offload::{Cancelled, Offload};
 pub use owner::OwnerWatch;
-pub use timeout::BUS_TIMEOUT;
 pub use who::{BusPeers, ManagerCheck};
+
+/// How long any one call to the bus or the unit manager may take before the answer is "no": a
+/// peer that does not answer must not wedge the one asking.
+pub const BUS_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(2);

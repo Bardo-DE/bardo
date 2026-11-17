@@ -1,5 +1,5 @@
 //! `org.bardo.SettingsModule1` at `/org/bardo/Accounts1/settings` (design/22 §9.4, PLAN §2.5),
-//! served through quire's `ui_settings::live`. Only the `Settings` role may `Get`, `Describe`,
+//! served through quire's `settings_dbus`. Only the `Settings` role may `Get`, `Describe`,
 //! `Snapshot` or `Set`: the keys name accounts, and a `Set` removes them. The keys are in
 //! `account-settings`; this file hosts them and applies what is written.
 //!
@@ -34,11 +34,9 @@ use account_wire::AccountsReply;
 use account_wire::ParentWindow;
 use account_wire::names::ACCOUNTS_SETTINGS_PATH;
 use base_fs::atomic::AtomicFile;
+use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Snapshot, Verdict, serve};
+use settings_types::schema::KeyPath;
 use std::sync::Arc;
-use ui_settings::live::{
-    Access, Caller, LiveError, LiveModule, LiveSchema, Snapshot, Verdict, serve,
-};
-use ui_settings::schema::KeyPath;
 use zbus::Connection;
 
 /// The settings module's path.

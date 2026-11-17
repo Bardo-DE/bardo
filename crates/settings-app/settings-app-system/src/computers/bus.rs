@@ -183,7 +183,7 @@ async fn watch(bus: &BusSource) -> Result<Ticks, Absence> {
                 .map_err(|e| e.absence())?;
             Ok::<_, Absence>((guests, engines))
         };
-        let (guests, engines) = within(Deadline::READ, peer::ASSISTANT, subscribed)
+        let (guests, engines) = within(Deadline::READ, peer::ASSISTANT, Box::pin(subscribed))
             .await
             .map_err(because(Absence::Failed))??;
         let (ticker, ticks) = Ticks::channel();

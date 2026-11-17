@@ -1,15 +1,15 @@
 //! `arrange` timing for 50 windows (the plan's budget: p95 at most 200 us), outside `crates/`
 //! because boundary row B8 keeps `Instant::now` there. `layout [ITERATIONS] [--tsv]`.
+use account_core::{ClaimedId, SpaceId};
+use base_ids::Fraction;
+use casement_perf::{Options, time_row};
 use compositor_core::app::AppKey;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::output::{EdidFacts, EdidSerial};
 use compositor_core::window::SizeLimits;
 use compositor_core::{OutputKey, OutputName, WindowId};
 use compositor_layout::*;
-use casement_perf::{Options, time_row};
 use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
-use account_core::{ClaimedId, SpaceId};
 
 fn rect(x: i32, y: i32, w: u32, h: u32) -> LogicalRect {
     LogicalRect::new(LogicalPoint { x, y }, LogicalSize { w, h })

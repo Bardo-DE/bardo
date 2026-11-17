@@ -15,6 +15,7 @@ use crate::element::{
 };
 use crate::element::{alpha, flight_ratio};
 use crate::texture_book::TextureBook;
+use base_ids::Fraction;
 use compositor_core::geometry::{
     LogicalPoint, LogicalRect, LogicalSize, PhysicalRect, PhysicalSize, SubPoint,
 };
@@ -31,7 +32,6 @@ use smithay::backend::renderer::element::surface::render_elements_from_surface_t
 use smithay::reexports::wayland_server::protocol::wl_surface::WlSurface;
 use std::collections::BTreeMap;
 use ui_core::geometry::scale::Scale;
-use ui_core::vocab::Fraction;
 
 /// Where an output sits and how dense it is: what turns the frame's global sub-pixels into this
 /// output's physical pixels. (The plan's sketch had no source for it; FINDINGS.)

@@ -2,7 +2,7 @@
 //! `true`. The binary checks it before it builds a server, so one that was never switched on has
 //! nothing to serve with.
 
-use action_settings::{AgentSettings, Locator, read};
+use action_settings::{AgentSettings, locator, read};
 
 /// Whether the text of a settings file says `agent.acp.expose` is on; anything but `true` is off.
 #[must_use]
@@ -12,10 +12,7 @@ pub fn exposed(text: &str) -> bool {
 
 /// Whether the first settings file of the configuration directories says it is on; none is off.
 pub fn exposed_in(env: &impl Fn(&str) -> Option<String>) -> bool {
-    Locator::from_env(env)
-        .read(AgentSettings::default())
-        .value
-        .acp
+    locator(env).read(AgentSettings::default(), read).value.acp
 }
 
 #[cfg(test)]

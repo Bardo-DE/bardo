@@ -147,7 +147,7 @@ fn value_of_modified_is_the_files_own_date_not_the_documents() {
 
 #[test]
 fn a_section_is_headed_by_what_the_file_is_not_by_the_kind_that_first_used_it() {
-    use ui_core::word::Word;
+    use base_words::Word;
     // label, section heading, row label
     const CASES: &[(FactLabel, &str, &str)] = &[
         (FactLabel::Rows, "Table", "Rows"),

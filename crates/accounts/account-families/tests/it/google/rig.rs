@@ -7,8 +7,6 @@ use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Scheme, send};
 use account_fake_servers::{Google, shipped};
 use account_family_oauth::{Google as GoogleRules, OAuthEnv, OAuthProvider};
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
 use account_oauth::{ClientRegistry, ClientTraits};
 use account_provider::{
     ClientChannel, ClientEntry, ClientId, ClientsFile, Issuer, ProviderSpec, SignIn, SignInMode,
@@ -16,6 +14,8 @@ use account_provider::{
 };
 use account_sheet::SignInInput;
 use base_time::UnixSeconds;
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
 use std::sync::atomic::{AtomicI64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;

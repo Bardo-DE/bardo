@@ -1,10 +1,10 @@
 //! The strip between the halves of a Split View, which the person drags.
 
 use account_core::SpaceId;
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalRect};
 use compositor_core::space::SplitPair;
 use compositor_core::{OutputKey, WindowId};
-use ui_core::vocab::Fraction;
 
 /// A Split View Space's divider: where the strip is, and what a pointer position means for it.
 #[derive(Debug, Clone, PartialEq, Eq)]

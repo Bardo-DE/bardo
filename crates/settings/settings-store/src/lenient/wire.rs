@@ -1,0 +1,255 @@
+//! The two text formats a settings file is written in, seen as key trees: the lenient reader
+//! lays each key of a file over the type's default one at a time, and asks the tree whether a
+//! key survived a round trip through the type.
+
+use super::limits::LimitBounds;
+use serde::Serialize;
+use serde::de::DeserializeOwned;
+
+/// One format's tree of keys.
+pub(super) trait Wire {
+    /// A table of keys (`toml::Table`, a JSON object).
+    type Table: Clone;
+    /// One value in a table.
+    type Value: Clone;
+
+    /// `text` as a table; the reason when it is not this format at all.
+    fn parse(text: &str) -> Result<Self::Table, String>;
+    /// `value` as a table, or `None` when it has no table form.
+    fn encode<D: Serialize>(value: &D) -> Option<Self::Table>;
+    /// A `D` from `table`, or why it is not one.
+    fn decode<D: DeserializeOwned>(table: &Self::Table) -> Result<D, String>;
+    /// Every value in `table` that is not a non-empty table, with its key path, depth first.
+    fn leaves(table: &Self::Table) -> Vec<(Vec<String>, Self::Value)>;
+    /// Put `value` at `path`, replacing a non-table on the way with a table.
+    fn set(table: &mut Self::Table, path: &[String], value: Self::Value);
+    /// Whether `path` names a key in `table`.
+    fn has(table: &Self::Table, path: &[String]) -> bool;
+    /// How many entries the list at `path` in `table` holds; `None` when `path` is not a list.
+    fn list_len(table: &Self::Table, path: &[String]) -> Option<usize>;
+    /// How many entries `value` holds when it is a list.
+    fn value_len(value: &Self::Value) -> Option<usize>;
+    /// `value` brought into `bounds`, or `None` when it is not a number or already inside.
+    fn clamp(value: &Self::Value, bounds: LimitBounds) -> Option<Self::Value>;
+    /// `value` as the short text a report shows.
+    fn show(value: &Self::Value) -> String;
+}
+
+/// TOML, the format of every hand-edited file.
+pub(super) struct TomlWire;
+
+impl Wire for TomlWire {
+    type Table = toml::Table;
+    type Value = toml::Value;
+
+    fn parse(text: &str) -> Result<toml::Table, String> {
+        let mut table = text.parse::<toml::Table>().map_err(|e| e.to_string())?;
+        // An older spelling the reader would otherwise drop key by key (design/22 §3.23).
+        settings_types::schema::fold_older_commands(&mut table);
+        Ok(table)
+    }
+
+    fn encode<D: Serialize>(value: &D) -> Option<toml::Table> {
+        match toml::Value::try_from(value) {
+            Ok(toml::Value::Table(table)) => Some(table),
+            _ => None,
+        }
+    }
+
+    fn decode<D: DeserializeOwned>(table: &toml::Table) -> Result<D, String> {
+        toml::Value::Table(table.clone())
+            .try_into()
+            .map_err(|e: toml::de::Error| e.message().to_owned())
+    }
+
+    fn leaves(table: &toml::Table) -> Vec<(Vec<String>, toml::Value)> {
+        fn walk(table: &toml::Table, prefix: &[String]) -> Vec<(Vec<String>, toml::Value)> {
+            // Key order, whatever the map's own iteration order (a unified `preserve_order`
+            // feature would otherwise make it insertion order and reorder the reports).
+            let mut entries: Vec<_> = table.iter().collect();
+            entries.sort_by(|a, b| a.0.cmp(b.0));
+            entries
+                .into_iter()
+                .flat_map(|(key, value)| {
+                    let path: Vec<String> = prefix.iter().cloned().chain([key.clone()]).collect();
+                    match value {
+                        toml::Value::Table(inner) if !inner.is_empty() => walk(inner, &path),
+                        other => vec![(path, other.clone())],
+                    }
+                })
+                .collect()
+        }
+        walk(table, &[])
+    }
+
+    fn set(table: &mut toml::Table, path: &[String], value: toml::Value) {
+        match path {
+            [] => {}
+            [last] => {
+                table.insert(last.clone(), value);
+            }
+            [first, rest @ ..] => {
+                let entry = table
+                    .entry(first.clone())
+                    .or_insert_with(|| toml::Value::Table(toml::Table::new()));
+                if !entry.is_table() {
+                    *entry = toml::Value::Table(toml::Table::new());
+                }
+                if let toml::Value::Table(inner) = entry {
+                    Self::set(inner, rest, value);
+                }
+            }
+        }
+    }
+
+    fn has(table: &toml::Table, path: &[String]) -> bool {
+        match path {
+            [] => true,
+            [first, rest @ ..] => match table.get(first) {
+                Some(toml::Value::Table(inner)) => Self::has(inner, rest),
+                Some(_) => rest.is_empty(),
+                None => false,
+            },
+        }
+    }
+
+    fn list_len(table: &toml::Table, path: &[String]) -> Option<usize> {
+        let (last, parents) = path.split_last()?;
+        let mut here = table;
+        for key in parents {
+            here = here.get(key)?.as_table()?;
+        }
+        here.get(last).and_then(Self::value_len)
+    }
+
+    fn value_len(value: &toml::Value) -> Option<usize> {
+        value.as_array().map(Vec::len)
+    }
+
+    fn clamp(value: &toml::Value, bounds: LimitBounds) -> Option<toml::Value> {
+        match value {
+            toml::Value::Integer(given) => {
+                let held = (*given).clamp(bounds.min, bounds.max);
+                (held != *given).then_some(toml::Value::Integer(held))
+            }
+            toml::Value::Float(given) if !given.is_nan() => {
+                #[expect(
+                    clippy::cast_precision_loss,
+                    reason = "a limit is far below 2^53, so it is exact in an f64"
+                )]
+                let held = given.clamp(bounds.min as f64, bounds.max as f64);
+                // `clamp` returns the given value as it was, or a bound: a changed bit pattern is
+                // a value that moved.
+                (held.to_bits() != given.to_bits()).then_some(toml::Value::Float(held))
+            }
+            _ => None,
+        }
+    }
+
+    fn show(value: &toml::Value) -> String {
+        value.to_string()
+    }
+}
+
+/// JSON, the format of machine-written stores.
+pub(super) struct JsonWire;
+
+type Object = serde_json::Map<String, serde_json::Value>;
+
+impl Wire for JsonWire {
+    type Table = Object;
+    type Value = serde_json::Value;
+
+    fn parse(text: &str) -> Result<Object, String> {
+        match serde_json::from_str::<serde_json::Value>(text) {
+            Ok(serde_json::Value::Object(object)) => Ok(object),
+            Ok(_) => Err("not a JSON object".to_owned()),
+            Err(e) => Err(e.to_string()),
+        }
+    }
+
+    fn encode<D: Serialize>(value: &D) -> Option<Object> {
+        match serde_json::to_value(value) {
+            Ok(serde_json::Value::Object(object)) => Some(object),
+            _ => None,
+        }
+    }
+
+    fn decode<D: DeserializeOwned>(table: &Object) -> Result<D, String> {
+        serde_json::from_value(serde_json::Value::Object(table.clone())).map_err(|e| e.to_string())
+    }
+
+    fn leaves(table: &Object) -> Vec<(Vec<String>, serde_json::Value)> {
+        fn walk(object: &Object, prefix: &[String]) -> Vec<(Vec<String>, serde_json::Value)> {
+            // Key order, whatever the map's own iteration order (a unified `preserve_order`
+            // feature would otherwise make it insertion order and reorder the reports).
+            let mut entries: Vec<_> = object.iter().collect();
+            entries.sort_by(|a, b| a.0.cmp(b.0));
+            entries
+                .into_iter()
+                .flat_map(|(key, value)| {
+                    let path: Vec<String> = prefix.iter().cloned().chain([key.clone()]).collect();
+                    match value {
+                        serde_json::Value::Object(inner) if !inner.is_empty() => walk(inner, &path),
+                        other => vec![(path, other.clone())],
+                    }
+                })
+                .collect()
+        }
+        walk(table, &[])
+    }
+
+    fn set(table: &mut Object, path: &[String], value: serde_json::Value) {
+        match path {
+            [] => {}
+            [last] => {
+                table.insert(last.clone(), value);
+            }
+            [first, rest @ ..] => {
+                let entry = table
+                    .entry(first.clone())
+                    .or_insert_with(|| serde_json::Value::Object(Object::new()));
+                if !entry.is_object() {
+                    *entry = serde_json::Value::Object(Object::new());
+                }
+                if let serde_json::Value::Object(inner) = entry {
+                    Self::set(inner, rest, value);
+                }
+            }
+        }
+    }
+
+    fn has(table: &Object, path: &[String]) -> bool {
+        match path {
+            [] => true,
+            [first, rest @ ..] => match table.get(first) {
+                Some(serde_json::Value::Object(inner)) => Self::has(inner, rest),
+                Some(_) => rest.is_empty(),
+                None => false,
+            },
+        }
+    }
+
+    fn list_len(table: &Object, path: &[String]) -> Option<usize> {
+        let (last, parents) = path.split_last()?;
+        let mut here = table;
+        for key in parents {
+            here = here.get(key)?.as_object()?;
+        }
+        here.get(last).and_then(Self::value_len)
+    }
+
+    fn value_len(value: &serde_json::Value) -> Option<usize> {
+        value.as_array().map(Vec::len)
+    }
+
+    fn clamp(value: &serde_json::Value, bounds: LimitBounds) -> Option<serde_json::Value> {
+        let given = value.as_i64()?;
+        let held = given.clamp(bounds.min, bounds.max);
+        (held != given).then(|| serde_json::Value::from(held))
+    }
+
+    fn show(value: &serde_json::Value) -> String {
+        value.to_string()
+    }
+}

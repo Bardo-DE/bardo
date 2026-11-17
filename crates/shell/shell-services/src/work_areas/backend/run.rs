@@ -10,7 +10,8 @@ use super::object::OutputsObject;
 use crate::env::{Bus, NameClaims};
 use crate::serve;
 use crate::service::ServiceIo;
-use crate::work_areas::{BUS_NAME, PATH, WorkAreaService};
+use crate::work_areas::WorkAreaService;
+use shell_dbus::{OUTPUTS_BUS, OUTPUTS_PATH};
 
 pub(crate) async fn run(bus: Bus, claims: NameClaims, io: ServiceIo<WorkAreaService>) {
     let ServiceIo {
@@ -36,13 +37,13 @@ pub(crate) async fn run(bus: Bus, claims: NameClaims, io: ServiceIo<WorkAreaServ
 }
 
 async fn claim(bus: &Bus, state: &watch::Sender<WorkAreas>) -> Option<Connection> {
-    let claimed = serve::claim(bus, BUS_NAME, async |connection| {
+    let claimed = serve::claim(bus, OUTPUTS_BUS, async |connection| {
         let object = OutputsObject {
             state: state.subscribe(),
         };
         connection
             .object_server()
-            .at(PATH, object)
+            .at(OUTPUTS_PATH, object)
             .await
             .map(|_| ())
             .map_err(serve::refused)
@@ -57,7 +58,7 @@ async fn claim(bus: &Bus, state: &watch::Sender<WorkAreas>) -> Option<Connection
 async fn announce(connection: &Connection) {
     let Ok(object) = connection
         .object_server()
-        .interface::<_, OutputsObject>(PATH)
+        .interface::<_, OutputsObject>(OUTPUTS_PATH)
         .await
     else {
         return;

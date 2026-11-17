@@ -4,9 +4,9 @@
 use crate::entry::CONTENT_LENGTH;
 use account_dav_proto::http::bytes;
 use account_dav_proto::{Depth, SyncLevel, names};
-use account_http::http::Request;
-use account_http::{HttpError, uri};
 use base_url::WebUrl;
+use http_core::http::Request;
+use http_core::{HttpError, uri};
 
 fn propfind(url: &WebUrl, depth: Depth, props: &[&str]) -> Result<Request<Vec<u8>>, HttpError> {
     Ok(bytes::propfind(uri(url)?, depth, props))

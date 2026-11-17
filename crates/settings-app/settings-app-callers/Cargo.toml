@@ -9,8 +9,15 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+updater-dbus = { path = "../../updater/updater-dbus" }
+sync-bus = { path = "../../sync/sync-bus" }
+shell-dbus = { path = "../../shell/shell-dbus" }
+portal-dbus = { path = "../../portal/portal-dbus" }
+memory-dbus = { path = "../../memory/memory-dbus" }
+compositor-dbus = { path = "../../compositor/compositor-dbus" }
+account-wire = { path = "../../accounts/account-wire" }
 # `OwnerCheck`, `SenderName` and `Verdict`: the check this crate answers.
-ui-settings = {path = "../../ui/ui-settings", features = ["live"]}
+settings-dbus = { path = "../../settings/settings-dbus" }
 caller-identity-dbus = {default-features = false, features = ["desktop", "tokio"], path = "../../identity/caller-identity-dbus"}
 rustix = {workspace = true, features = ["std", "process"], optional = true}
 thiserror = { workspace = true, optional = true }

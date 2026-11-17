@@ -7,10 +7,11 @@ use std::path::{Path, PathBuf};
 use std::time::Duration;
 
 use layer_shell_host::HostEvent;
+use settings_store_fs::Store;
 use ui_blitz::StylesGuard;
 use ui_blitz::TokioSpawner;
 use ui_components::style::kit::{Styles, UserStyle};
-use ui_settings::{AppearanceFile, Store};
+use ui_settings::AppearanceFile;
 
 use super::StyleKeeper;
 use crate::daemon::msg::{Sheet, ShellMsg};
@@ -170,7 +171,7 @@ fn a_change_to_any_sheet_gives_a_turned_off_start_a_fresh_try() {
     let _ = std::fs::remove_dir_all(&dir);
 }
 
-fn text_of<D: ui_settings::SettingsDoc>(store: &Store) -> String {
+fn text_of<D: settings_store::SettingsDoc>(store: &Store) -> String {
     let path = store.path::<D>().unwrap_or_else(|| panic!("no path"));
     std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("{}: {e}", path.display()))
 }

@@ -5,8 +5,8 @@
 //! The shell's own actions (lock, a screenshot, the dock's pins, the switcher's chord, the
 //! workspaces) are `Request::Do`.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// A display key, or a slider standing in for one (`bardo-shell display ...`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

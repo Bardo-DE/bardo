@@ -2,7 +2,7 @@
 
 use super::hex::thousandths;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// A `cubic-bezier()`, control points in thousandths: `(.22,.9,.3,1)` is
 /// `[220, 900, 300, 1000]`. Integers, so a curve is `Eq`.

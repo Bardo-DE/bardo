@@ -9,8 +9,8 @@
 //!
 //! This is not [`crate::ActionId`] (that names an action of one launcher row, such as Reveal).
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 use crate::session::SessionAction;
 
@@ -93,7 +93,7 @@ impl ActionId {
 
 #[cfg(test)]
 mod tests {
-    use ui_core::word::Word;
+    use base_words::Word;
 
     use super::ActionId;
     use crate::session::SessionAction;

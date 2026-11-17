@@ -25,11 +25,11 @@ use crate::json::{File, GeneratedIds};
 use crate::refuse::write_error;
 use crate::replica::GdriveReplica;
 use crate::write::Target;
-use account_http::http::header::CONTENT_TYPE;
-use account_http::http::{Method, Response};
-use account_http::{HeaderText, Http, request};
 use base_url::WebUrl;
 use base_url::percent::encode_unreserved;
+use http_core::http::header::CONTENT_TYPE;
+use http_core::http::{Method, Response};
+use http_core::{HeaderText, Http, request};
 use sync_core::status::{refused, write_unreached};
 use sync_core::{
     BaseVersion, Conflict, DriveWrite, Found, Place, PutRefused, RemoteId, RemoteSide,

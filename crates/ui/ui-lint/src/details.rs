@@ -8,7 +8,7 @@ use super::declaration::push;
 use super::kind;
 use super::rule::{Offence, Profile, Rule};
 use super::walk::Decl;
-use ui_core::word::Word;
+use base_words::Word;
 use ui_style::kit::KnownNames;
 use ui_style::tokens::{easing::EasingToken, timing::DurationToken};
 

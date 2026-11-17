@@ -21,7 +21,7 @@ use crate::reach::{LiveReach, follow as follow_reach};
 use crate::reviewers::reviewer;
 use crate::search_files::ship_search_files;
 use crate::serve::{ServeFault, closed, serve_on_gated};
-use crate::settings_watch::{SettingsWatch, WatchState, apply, apply_next};
+use crate::settings_watch::{apply, apply_next, watch_settings};
 use crate::sheet::SheetConfirmer;
 use crate::signals::{Cadence, pump};
 use crate::space_watch::SpaceKeeper;
@@ -33,7 +33,7 @@ use action_dbus::BusConnection;
 use action_dbus::InferWatch;
 use action_dbus::callers::{CallerTable, Identity};
 use action_router::{Router, Seams};
-use action_settings::{AgentSettings, Locator, REVIEW_CEILING};
+use action_settings::{AgentSettings, REVIEW_CEILING};
 use action_store::SystemClock;
 use agent_skills::{Roots, discover};
 use agent_skills_disk::DiskFolder;
@@ -43,6 +43,7 @@ use companion_memory::{AlmanacMemory, AlmanacSessionLog};
 use companion_memory_core::QueuedSink;
 use permission_core::Floor;
 use provenance::SpaceId;
+use settings_store_fs::{Locator, WatchState};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
@@ -224,7 +225,7 @@ impl Setup {
             callers,
             identity: None,
             proc_root: ProcRoot::Unset,
-            settings: Locator::from_env(env),
+            settings: action_settings::locator(env),
             trace: InferWatch::off(),
             floor: Floor::none(),
             permissions,
@@ -390,7 +391,7 @@ pub async fn start(
     let mut router = Router::new(seams, config.agent, loaded.presets);
     router.floor = floor;
     // The person's settings over actiond.toml's proposed values, now and whenever the file changes.
-    let mut watched = SettingsWatch::start(settings, AgentSettings::over(config.agent));
+    let mut watched = watch_settings(&settings, AgentSettings::over(config.agent));
     if let WatchState::Blind { reason } = watched.state() {
         eprintln!("intentd: settings are read once, not watched: {reason}");
     }
@@ -600,7 +601,7 @@ pub async fn run_with(
         setup.callers =
             callers::read_at(system, env).map_err(|e| DaemonFault::Callers(e.to_string()))?;
     }
-    let session = action_dbus::session_connection(env)
+    let session = dbus_kit::connect::session_from_env(env)
         .await
         .map_err(|e| DaemonFault::Serve(ServeFault::Bus(e.to_string())))?;
     let system = BusConnection::system().await.ok();

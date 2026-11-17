@@ -5,16 +5,16 @@
 //!
 //! The session URL is pre-authenticated and on another host in Graph; it is sent through the same
 //! `Http` as everything else, which routes a request for another origin to a stream that adds no
-//! credential (`account_http_relay::Routed`).
+//! credential (`http_relay::Routed`).
 
 use crate::drive::again;
 use crate::json::Session;
 use crate::replica::GraphReplica;
 use crate::write::Target;
-use account_http::http::header::CONTENT_TYPE;
-use account_http::http::{Method, Response};
-use account_http::{Http, request};
 use base_url::WebUrl;
+use http_core::http::header::CONTENT_TYPE;
+use http_core::http::{Method, Response};
+use http_core::{Http, request};
 use sync_core::status::write_unreached;
 use sync_core::{PutRefused, RetryAfter};
 

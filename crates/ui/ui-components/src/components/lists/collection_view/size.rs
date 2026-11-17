@@ -1,8 +1,8 @@
 //! How big a collection's tiles are, and how many sit in a row.
 
 use crate::host::narrow;
+use base_words::Word;
 use ui_core::geometry::units::Px;
-use ui_core::word::Word;
 
 /// The room under a thumbnail for its caption: one line of the small type plus the gaps around
 /// it. A tile is `thumb + CAPTION_BAND` tall, and the stylesheet reads the same number from the

@@ -8,9 +8,9 @@
 use crate::components::content::level_glyph::vocab::LevelSource;
 use crate::components::controls::level_draw::{Drawn, GlyphAt, INDICATOR, Shape, body, lead};
 use crate::root::common::Common;
+use base_ids::Fraction;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::vocab::Fraction;
-use ui_core::word::Word;
 use ui_style::tokens::control_size::ControlSize;
 
 /// How the level is drawn (`NSLevelIndicator.Style`), `data-style`.
@@ -116,7 +116,7 @@ pub fn LevelIndicator(
 #[cfg(test)]
 mod tests {
     use super::{Band, Bands};
-    use ui_core::vocab::Fraction;
+    use base_ids::Fraction;
 
     #[test]
     fn a_level_falls_into_the_lowest_band_it_reaches() {

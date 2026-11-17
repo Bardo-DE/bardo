@@ -20,8 +20,8 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 account-provider = {path = "../account-provider"}
-account-http = {path = "../account-http"}
-account-http-reqwest = {path = "../account-http-reqwest", optional = true}
+http-core = {path = "../../network/http-core"}
+http-reqwest = {path = "../../network/http-reqwest", optional = true}
 account-discover = {path = "../account-discover", optional = true}
 account-tailscale = {path = "../account-tailscale", optional = true}
 thiserror = { workspace = true, optional = true }
@@ -31,7 +31,7 @@ base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
-account-http-reqwest = {path = "../account-http-reqwest"}
+http-reqwest = {path = "../../network/http-reqwest"}
 account-secrets = {path = "../account-secrets", features = ["testing"]}
 account-service = {path = "../account-service"}
 account-service-core = {path = "../account-service-core"}
@@ -50,7 +50,7 @@ base64 = { workspace = true }
 # `set`: which provider files a daemon serves and the family of each (`set::load_specs`,
 # `family_of`, `served`, `FamilyIo`), over every family it maps: nextcloud, generic, oauth,
 # api_key, agent_login and tailnet, with the system resolver.
-set = ["nextcloud", "generic", "oauth", "api_key", "agent_login", "tailnet", "dep:thiserror", "dep:account-discover", "account-discover/io", "dep:account-http-reqwest"]
+set = ["nextcloud", "generic", "oauth", "api_key", "agent_login", "tailnet", "dep:thiserror", "dep:account-discover", "account-discover/io", "dep:http-reqwest"]
 # Nextcloud (account-family-nextcloud): Login Flow v2, OCS discovery, WebDAV, CalDAV, CardDAV, Notes.
 nextcloud = ["dep:account-family-nextcloud"]
 # Generic IMAP/SMTP and DAV with a password or app password, found by autoconfig
@@ -63,7 +63,7 @@ generic = ["dep:account-family-generic"]
 # IMAP/SMTP XOAUTH2 for a client of the person's own. Microsoft: IMAP/SMTP XOAUTH2 and Graph.
 oauth = ["dep:account-family-oauth"]
 # AI providers with a pasted API key (Anthropic, OpenAI).
-api_key = ["dep:account-http-reqwest"]
+api_key = ["dep:http-reqwest"]
 # Coding agents that sign themselves in (Claude Code, Gemini CLI, Codex): no credential held.
 agent_login = []
 # Tailscale on this computer: asked over its unix socket, no credential held.

@@ -4,7 +4,7 @@ use super::PickerLink;
 use super::set::{set, set_pool};
 use crate::modules::Module;
 use settings_app_model::Work;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// inferd's module, reached through the client the pane follows it with.
 #[derive(Debug, Clone, Copy)]

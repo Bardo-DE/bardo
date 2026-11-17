@@ -5,11 +5,11 @@
 //! struct).
 
 use serde::{Deserialize, Serialize};
-use ui_settings::Secs;
-use ui_settings::schema::Page;
+use settings_types::Secs;
+use settings_types::schema::Page;
 
 /// The lock screen.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(
     file = "shell/settings.toml", domain = "session", page = Page::Accounts,

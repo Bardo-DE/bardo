@@ -55,6 +55,7 @@ agent-native = {path = "../agent-native"}
 agent-planner = {path = "../agent-planner"}
 agent-session = {path = "../agent-session"}
 action-settings = {path = "../action-settings"}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 clap = {workspace = true, features = ["derive", "std", "help", "usage", "error-context"]}
 base-path = { path = "../../base/base-path" }
 sandbox = {features = ["landlock"], path = "../../sandbox/sandbox"}
@@ -67,7 +68,7 @@ provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }
 tokio = {workspace = true, features = ["io-std", "io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
 zbus = {workspace = true, features = ["tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 action-fake = {path = "../action-fake"}

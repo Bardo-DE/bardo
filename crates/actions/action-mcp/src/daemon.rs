@@ -8,8 +8,6 @@ use action_dbus::BusConnection;
 use rmcp::ServiceExt;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use zbus::fdo::RequestNameFlags;
-use zbus::fdo::RequestNameReply;
 
 /// The bus name the shipped `actiond.toml` gives the `mcp` role.
 pub const MCP_BUS: &str = "org.bardo.ActionsMcp";
@@ -71,12 +69,10 @@ impl From<rmcp::service::ServerInitializeError> for DaemonFault {
 /// Returns [`DaemonFault::NameTaken`] when another edge holds the name, or a bus fault when the
 /// name request fails.
 pub async fn claim(connection: &BusConnection) -> Result<(), DaemonFault> {
-    let reply = connection
-        .request_name_with_flags(MCP_BUS, RequestNameFlags::DoNotQueue.into())
-        .await?;
-    match reply {
-        RequestNameReply::PrimaryOwner | RequestNameReply::AlreadyOwner => Ok(()),
-        RequestNameReply::InQueue | RequestNameReply::Exists => Err(DaemonFault::NameTaken),
+    match dbus_kit::name::claim(connection, MCP_BUS).await {
+        Ok(()) => Ok(()),
+        Err(dbus_kit::name::ClaimError::Taken(_)) => Err(DaemonFault::NameTaken),
+        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err((*source).into()),
     }
 }
 
@@ -248,12 +244,15 @@ pub async fn run(args: Args, env: &impl Fn(&str) -> Option<String>) -> Result<()
             "bardo-actions-mcp: off (set agent.mcp.expose = true in actions/settings.toml): no tools are listed"
         );
     }
-    let connection = action_dbus::session_connection(env).await?;
+    let connection = dbus_kit::connect::session_from_env(env).await?;
     let listen = args.socket.map_or(Listen::Stdio, Listen::Socket);
-    let locator = action_settings::Locator::from_env(env);
+    let locator = action_settings::locator(env);
     let expose: ExposeRead = Arc::new(move || {
         locator
-            .read(action_settings::AgentSettings::default())
+            .read(
+                action_settings::AgentSettings::default(),
+                action_settings::read,
+            )
             .value
             .expose
     });

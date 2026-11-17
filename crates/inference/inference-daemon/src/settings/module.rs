@@ -20,12 +20,12 @@ use inference_core::{Chooser, ModelRef, Slot, tier_label};
 use inference_dbus::inference::INFERENCE_SETTINGS_PATH;
 use inference_router::local::LocalModel;
 use inference_router::router::slots_of;
-use std::collections::BTreeMap;
-use ui_settings::live::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
-use ui_settings::schema::{
+use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
+use settings_types::schema::{
     AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help,
     HostName, KeyKind, KeyPath, KeySpec, Label, Page, Section, UnavailableReason, WordLabels,
 };
+use std::collections::BTreeMap;
 
 /// The picker value that is Automatic.
 const AUTO: &str = "auto";

@@ -2,7 +2,7 @@
 //! is acceptable (design/30 section 2.2). Data, and the pure decisions that follow from it.
 
 use crate::components::content::text_runs::TextLine;
-use ui_core::word::Word;
+use base_words::Word;
 use ui_motion::detail::{detailed::Detailed, moment::Moment, stamp::EventStamp};
 
 /// What the field holds (`NSTextField`, `NSSecureTextField`, `NSSearchField`), `data-kind`.

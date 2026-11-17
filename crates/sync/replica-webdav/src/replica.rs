@@ -5,11 +5,11 @@ use crate::path::Root;
 use crate::requests;
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
 use account_dav_proto::parse_multistatus;
-use account_http::http::header::RANGE;
-use account_http::http::{Method, Request, Response};
-use account_http::{Http, request};
 use base_ids::Bytes;
 use base_url::WebUrl;
+use http_core::http::header::RANGE;
+use http_core::http::{Method, Request, Response};
+use http_core::{Http, request};
 use std::sync::{Mutex, MutexGuard, PoisonError};
 use sync_core::Clock;
 use sync_core::status::{read_error, unreached};
@@ -36,7 +36,7 @@ pub(crate) struct State {
     pub folders: std::collections::BTreeSet<RemoteId>,
 }
 
-/// The replica of one `WebDAV` folder, over any [`Http`]: in syncd a `account_http_relay::RelayHttp` on
+/// The replica of one `WebDAV` folder, over any [`Http`]: in syncd a `http_relay::RelayHttp` on
 /// the relay `OpenAuthenticated` opens, in a test the fake server.
 #[derive(Debug)]
 pub struct WebDavReplica<H> {

@@ -11,7 +11,7 @@ use super::rule::{Offence, Profile, Rule};
 use super::text::render;
 use super::tokenize::Located;
 use super::walk::Decl;
-use ui_core::word::Word;
+use base_words::Word;
 use ui_style::kit::KnownNames;
 use ui_style::tokens::type_scale::Family;
 

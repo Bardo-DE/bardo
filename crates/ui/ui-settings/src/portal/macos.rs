@@ -8,13 +8,13 @@
 //! [`EVERY`] and publishes only what changed. A read is three lookups in `cfprefsd`'s cache.
 
 use super::SystemPrefs;
-use crate::latest::{self, Receiver, Sender};
+use base_spawn::Spawner;
 use objc2_core_foundation::{
     CFBoolean, CFNumber, CFPreferencesAppSynchronize, CFPreferencesCopyAppValue, CFPropertyList,
     CFRetained, CFString,
 };
+use settings_store::latest::{self, Receiver, Sender};
 use std::time::Duration;
-use ui_core::spawner::Spawner;
 use ui_style::appearance::system::Contrast;
 use ui_style::appearance::theme::Scheme;
 

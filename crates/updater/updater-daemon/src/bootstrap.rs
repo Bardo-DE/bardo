@@ -4,7 +4,7 @@ use crate::clock::jitter_seed;
 use crate::config::Config;
 use crate::dirs::Dirs;
 use crate::elevate::{Helpers, Pkexec};
-use crate::fetch::{Source, UreqFetch};
+use crate::fetch::{HttpFetch, Source};
 use crate::keys::load_key;
 use crate::layout::Layout;
 use crate::service::{Anchor, Context};
@@ -28,7 +28,7 @@ fn desktop_table() -> Table {
         })
 }
 
-/// The context for the real system: the configured root, the real key, ureq, pkexec.
+/// The context for the real system: the configured root, the real key, its HTTP client, pkexec.
 #[must_use]
 pub fn production(config: Config, dirs: &Dirs) -> Context {
     let anchor: Anchor =
@@ -39,7 +39,7 @@ pub fn production(config: Config, dirs: &Dirs) -> Context {
         cache_dir: dirs.cache_dir.clone(),
         store: StateStore::new(dirs.state_file.clone()),
         source: Source::new(&config.index_url),
-        fetch: Arc::new(UreqFetch::new()),
+        fetch: Arc::new(HttpFetch::new()),
         anchor,
         elevate: Arc::new(Pkexec::new(Helpers::from(&config))),
         login: crate::login::current(),

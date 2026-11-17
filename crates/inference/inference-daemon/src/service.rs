@@ -28,9 +28,10 @@ use account_capability::ModelId;
 use account_capability::Tier;
 use account_core::HelperId;
 use account_core::{DataClass, SecretText};
-use account_dbus::{Call, Details};
+use account_dbus::Details;
 use account_tailscale::NodeId;
 use base_time::Clock;
+use dbus_kit::Call;
 use inference_core::{InferRefusal, PlaceId, PlaceRow, PlaceState};
 use inference_dbus::inference::{
     AgentsServed, InferenceServed, InferenceServer, NeedArg, need_from_dbus,
@@ -902,7 +903,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
             .set(slot, &helper, models)
             .await
             .map_err(|e| match e {
-                ui_settings::live::LiveError::BadValue(why) => fdo::Error::InvalidArgs(why),
+                settings_dbus::LiveError::BadValue(why) => fdo::Error::InvalidArgs(why),
                 other => failed(other),
             })?;
         Ok(InferenceServed::<Self>::engines_changed(&emitter)
@@ -1126,7 +1127,7 @@ pub fn refusal_slug(refusal: &InferRefusal) -> String {
 
 /// Serves `daemon` on `connection` under the bus name and path, and announces engine changes.
 ///
-/// The name is claimed once the connection takes calls ([`zbus_ready::serving`]). The daemon itself
+/// The name is claimed once the connection takes calls ([`dbus_kit::ready::serving`]). The daemon itself
 /// serves its settings module too: [`serve_with_settings`].
 ///
 /// # Errors
@@ -1201,8 +1202,8 @@ where
     also.await?;
     // Every object is registered; the name is the promise that calls are taken: claim it only
     // once they are.
-    zbus_ready::serving(connection).await?;
-    connection.request_name(INFERENCE_BUS).await?;
+    dbus_kit::ready::serving(connection).await?;
+    dbus_kit::name::claim(connection, INFERENCE_BUS).await?;
     let iface: zbus::object_server::InterfaceRef<InferenceServed<Inference<P, O, C>>> =
         connection.object_server().interface(INFERENCE_PATH).await?;
     tokio::spawn(async move {

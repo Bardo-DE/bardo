@@ -5,7 +5,7 @@
 use crate::appearance::{motion::MotionLevel, theme::Scheme};
 use crate::emit::{attr_selector, declaration, rule};
 use crate::tokens::{set::TokenSet, token::TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The blocks for `sets`, in the order given.
 pub(super) fn token_blocks(sets: &[TokenSet]) -> String {

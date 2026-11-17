@@ -65,7 +65,7 @@ pub async fn run(
 ) -> Result<(), AgentFault> {
     let tools = args.mode == Mode::Session;
     let places = Places::read(env);
-    let bus = action_dbus::session_connection(&|name: &str| places.var(name))
+    let bus = dbus_kit::connect::session_from_env(&|name: &str| places.var(name))
         .await
         .map_err(|e| AgentFault::Bus(e.to_string()))?;
     let wiring = wire::build(

@@ -19,7 +19,6 @@ use account_fake::{MemoryStore, RecordingAudit};
 use account_fake_servers::{Google, shipped};
 use account_families::DynProvider;
 use account_family_oauth::{Google as GoogleRules, OAuthEnv, OAuthProvider};
-use account_http_reqwest::ReqwestHttp;
 use account_oauth::{ClientRegistry, ClientTraits};
 use account_provider::{ClientChannel, ClientEntry, ClientId, ClientsFile, Issuer};
 use account_secrets::Secrets;
@@ -30,6 +29,7 @@ use base_time::FixedClock;
 use common::bus::PrivateBus;
 use common::host::{HostLog, SheetHost, send_input};
 use common::{Shared, Tap, caller, contains};
+use http_reqwest::ReqwestHttp;
 use std::sync::Arc;
 use std::time::Duration;
 
@@ -129,7 +129,7 @@ impl World {
             .at(account_wire::names::SHEET_PATH, host)
             .await
             .expect("host object");
-        zbus_ready::serving(&host_connection)
+        dbus_kit::ready::serving(&host_connection)
             .await
             .expect("the host takes calls");
         host_connection
@@ -268,15 +268,15 @@ impl World {
     }
 
     /// Settings' client, as the Settings app.
-    async fn settings(&self) -> ui_settings::live::LiveClient {
+    async fn settings(&self) -> settings_dbus::LiveClient {
         let connection = self
             .connection_as("org.bardo.Settings", CallerRole::Settings)
             .await;
-        ui_settings::live::LiveClient::new(
+        settings_dbus::LiveClient::new(
             &connection,
             "org.bardo.Accounts1",
             &account_daemon::settings_path(),
-            ui_settings::live::AnyOwner,
+            settings_dbus::AnyOwner,
         )
         .expect("client")
     }

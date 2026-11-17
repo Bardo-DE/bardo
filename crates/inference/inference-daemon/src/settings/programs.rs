@@ -7,12 +7,12 @@
 use account_callers::held_under;
 use inference_router::local::EngineConfig;
 use model_catalog::EngineKind;
+use settings_types::schema::{
+    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
+};
 use std::collections::BTreeMap;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
-use ui_settings::schema::{
-    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
-};
 
 /// The section the rows are listed in.
 const SECTION: &str = "Local models";
@@ -83,7 +83,7 @@ impl Row {
             page: Page::Intelligence,
             section: Section(SECTION.to_owned()),
             exposure: Exposure::Advanced,
-            labels: ui_settings::schema::WordLabels::default(),
+            labels: settings_types::schema::WordLabels::default(),
             agent: AgentSetting::HandsOff,
             unavailable: BTreeMap::new(),
             groups: BTreeMap::new(),

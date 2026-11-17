@@ -10,7 +10,8 @@ publish.workspace = true
 
 [dependencies]
 base-fs = { path = "../../base/base-fs" }
-base-xdg = { path = "../../base/base-xdg" }
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 memory-settings = {path = "../memory-settings"}
 memory-core = {path = "../memory-core"}
 

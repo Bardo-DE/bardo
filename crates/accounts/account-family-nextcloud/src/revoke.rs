@@ -4,10 +4,10 @@
 use account_core::{EndpointUrl, LoginName, SecretText};
 use account_family_kit::Io;
 use account_family_kit::password::{basic, sensitive};
-use account_http::{Http, HttpError};
 use account_nextcloud_proto::Error;
 use account_nextcloud_proto::revoke::{self, Revoked};
 use account_provider::{ProviderError, RevokeOutcome};
+use http_core::{Http, HttpError};
 
 /// Deletes the app password. A server that already refuses it has nothing left to revoke; one
 /// without the endpoint (before Nextcloud 13) sends the person to their security settings.
@@ -34,7 +34,7 @@ fn http_fault(error: HttpError) -> ProviderError {
         | HttpError::Tls(..)
         | HttpError::TimedOut
         | HttpError::NotGranted => ProviderError::down(error),
-        // too large, malformed, and a failure a later account-http adds
+        // too large, malformed, and a failure a later http-core adds
         _ => ProviderError::garbled(error),
     }
 }

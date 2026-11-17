@@ -4,7 +4,7 @@ use crate::config::CuadConfig;
 use crate::drive::{LiveRun, Shared, drive};
 use crate::events::{RunView, SupervisorEvent};
 use crate::guard::guard;
-use crate::settings::{Apps, CuaSettings, Loaded};
+use crate::settings::{Apps, CuaSettings};
 use computer_use_bus::{
     BudgetBody, ControlRefusal, CuaCaller, CuaMember, CuaTask, ModeSupport, QuestionId, TaskTarget,
 };
@@ -14,6 +14,7 @@ use computer_use_run::{
     Run, RunEnv, RunInput, RunPhase, Seams, mode_support,
 };
 use provenance::{Integrity, Labelled, ModelRole, RunId, Source};
+use settings_store::Loaded;
 use std::sync::Arc;
 use tokio::sync::{broadcast, mpsc};
 
@@ -166,7 +167,7 @@ impl<S: Seams> Supervisor<S> {
     }
 
     /// Reports what the settings file's read fell back on and applies its values.
-    pub fn adopt(&self, loaded: &Loaded) {
+    pub fn adopt(&self, loaded: &Loaded<CuaSettings>) {
         for line in loaded.lines("cuad") {
             eprintln!("{line}");
         }

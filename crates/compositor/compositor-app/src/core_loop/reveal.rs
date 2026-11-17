@@ -10,6 +10,7 @@
 use super::scene::{Hit, hit_test};
 use crate::exec;
 use crate::state::State;
+use base_ids::Fraction;
 use compositor_core::geometry::{LogicalPoint, LogicalRect};
 use compositor_core::reveal::{Place, RevealEdge, RevealIn, RevealOut, RevealTiming, slid};
 use compositor_core::shell::ShellNote;
@@ -19,7 +20,6 @@ use compositor_core::{Effect, Event, LayerKey, Model, OutputKey};
 use compositor_render::RaisedDraw;
 use compositor_wayland::seat::Candidate;
 use smithay::desktop::PopupManager;
-use ui_core::vocab::Fraction;
 
 /// The surface of `output` that holds the role `edge` reveals: each output has its own bar and
 /// its own dock.

@@ -3,12 +3,12 @@
 //! (`privacy.<power>.<id>` with `.forget` beside a person's answer, a read-out for an
 //! administrator's) and writing down what it was asked.
 
-use std::sync::{Arc, Mutex};
-use ui_settings::live::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict};
-use ui_settings::schema::{
+use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict};
+use settings_types::schema::{
     ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
     LiveAction, Note, Page, Section,
 };
+use std::sync::{Arc, Mutex};
 
 /// The powers the compositor names in a row's path.
 const POWERS: [&str; 7] = [
@@ -94,7 +94,7 @@ fn spec(path: String, label: &str, kind: KeyKind) -> KeySpec {
         page: Page::Apps,
         section: Section("Screen".to_owned()),
         exposure: Exposure::Basic,
-        labels: ui_settings::schema::WordLabels::default(),
+        labels: settings_types::schema::WordLabels::default(),
         unavailable: std::collections::BTreeMap::default(),
         groups: std::collections::BTreeMap::default(),
         places: std::collections::BTreeMap::default(),

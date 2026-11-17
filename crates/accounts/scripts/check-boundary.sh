@@ -11,8 +11,8 @@ cd "$(dirname "$0")/.."
 # RULES: what a crate reaches through ANY path (transitive, default features). The pure crates
 # never reach a bus, a runtime, an HTTP client or a keyring; account-client reaches zbus only
 # through its `dbus` feature; account-dbus reaches tokio only through zbus's `tokio` feature.
-# account-http is the pure seam and reaches none of them; account-proxy and account-oauth reach tokio
-# only through their named I/O feature (`io`). reqwest is named by one crate, account-http-reqwest
+# http-core is the pure seam and reaches none of them; account-proxy and account-oauth reach tokio
+# only through their named I/O feature (`io`). reqwest is named by one crate, http-reqwest
 # (see ONE CLIENT below), and reached through it by the families that send directly. account-families reaches none with default features;
 # each of its family features is checked on its own in FAMILY_FORBIDS below.
 EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
@@ -40,7 +40,7 @@ RULES=(
   "account-sheets: reqwest hyper ureq oo7 keyring secret-service interprocess latchkey ui-settings"
   "account-fake: $EFFECTS"
   "base-testkit: $EFFECTS"
-  "account-http: $EFFECTS"
+  "http-core: $EFFECTS"
   "account-proxy: $EFFECTS"
   "account-oauth: $EFFECTS"
   "account-discover: $EFFECTS"
@@ -85,7 +85,7 @@ done
 
 # SANS-IO PROTOCOL CRATES: every `*-proto` folder of this domain is sans-IO: request builders return
 # `http::Request<Vec<u8>>`, parsers take `&http::Response<Vec<u8>>`, and the caller sends and
-# reads the clock. So none reaches the HTTP seam (account-http), a runtime (tokio) or an HTTP client
+# reads the clock. So none reaches the HTTP seam (http-core), a runtime (tokio) or an HTTP client
 # (reqwest), and none has an `async fn`. The crates are found by name, so a new one is checked
 # without a row here; the crates they may depend on are in EDGES.
 for dir in *-proto; do
@@ -96,7 +96,7 @@ for dir in *-proto; do
     continue
   fi
   clean=1
-  for dep in account-http tokio reqwest; do
+  for dep in http-core tokio reqwest; do
     if cargo tree -p "$crate" -i "$dep" -e normal,build 2>/dev/null | grep -q .; then
       echo "LEAK: $crate (sans-IO) depends on $dep"
       cargo tree -p "$crate" -i "$dep" -e normal,build 2>/dev/null | head -20
@@ -110,7 +110,7 @@ for dir in *-proto; do
     fail=1
   fi
   if [ "$clean" -eq 1 ]; then
-    echo "sans-IO holds: $crate reaches none of account-http tokio reqwest and has no async fn"
+    echo "sans-IO holds: $crate reaches none of http-core tokio reqwest and has no async fn"
   fi
 done
 
@@ -118,8 +118,8 @@ done
 # other. Its default build is checked by RULES above (it reaches none of EFFECTS). A family
 # reaches only what it really uses, so each feature forbids EFFECTS minus what it uses today:
 #   generic:            tokio (account-proxy's `io`, for the relay's login)
-#   oauth:              tokio, hyper, reqwest (account-oauth's `io`, account-http-reqwest)
-#   api_key:            hyper, reqwest, tokio (account-http-reqwest)
+#   oauth:              tokio, hyper, reqwest (account-oauth's `io`, http-reqwest)
+#   api_key:            hyper, reqwest, tokio (http-reqwest)
 #   tailnet:            hyper, tokio (account-tailscale's `io`)
 #   nextcloud, agent_login: none
 #   set:                every family a daemon maps (what oauth, generic, api_key and tailnet
@@ -138,13 +138,13 @@ declare -A FAMILY_FORBIDS=(
   [set]="$DIRECT_FORBIDS"
 )
 declare -A FAMILY_EDGES=(
-  [nextcloud]="account-family-kit account-family-nextcloud account-core account-capability account-sheet account-ids account-http account-provider"
-  [generic]="account-family-kit account-family-generic account-core account-capability account-sheet account-ids account-http account-provider"
-  [oauth]="account-family-kit account-family-oauth account-core account-capability account-sheet account-ids account-http account-provider"
-  [api_key]="account-family-kit account-core account-capability account-sheet account-ids account-http account-http-reqwest account-provider"
-  [agent_login]="account-family-kit account-core account-capability account-sheet account-ids account-http account-provider"
-  [tailnet]="account-family-kit account-core account-capability account-sheet account-ids account-http account-provider account-tailscale"
-  [set]="account-family-kit account-family-nextcloud account-family-generic account-family-oauth account-core account-capability account-sheet account-ids account-discover account-http account-http-reqwest account-provider account-tailscale"
+  [nextcloud]="account-family-kit account-family-nextcloud account-core account-capability account-sheet account-ids http-core account-provider"
+  [generic]="account-family-kit account-family-generic account-core account-capability account-sheet account-ids http-core account-provider"
+  [oauth]="account-family-kit account-family-oauth account-core account-capability account-sheet account-ids http-core account-provider"
+  [api_key]="account-family-kit account-core account-capability account-sheet account-ids http-core http-reqwest account-provider"
+  [agent_login]="account-family-kit account-core account-capability account-sheet account-ids http-core account-provider"
+  [tailnet]="account-family-kit account-core account-capability account-sheet account-ids http-core account-provider account-tailscale"
+  [set]="account-family-kit account-family-nextcloud account-family-generic account-family-oauth account-core account-capability account-sheet account-ids account-discover http-core http-reqwest account-provider account-tailscale"
 )
 family_features=$(awk '/^\[features\]/{f=1;next} /^\[/{f=0} f && /^[A-Za-z0-9_-]+ *=/{sub(/ *=.*/,""); if ($0!="default") print}' account-families/Cargo.toml)
 for feature in $family_features; do
@@ -177,14 +177,14 @@ for feature in $family_features; do
   fi
 done
 
-# ONE CLIENT: reqwest is named by account-http-reqwest and by no other crate of this workspace. Every
+# ONE CLIENT: reqwest is named by http-reqwest and by no other crate of this workspace. Every
 # other crate that sends over a direct connection takes `ReqwestHttp` from it.
-named=$(grep -lE '^reqwest[ .=]' */Cargo.toml | grep -v '^account-http-reqwest/' || true)
+named=$(grep -lE '^reqwest[ .=]' */Cargo.toml | grep -v '^http-reqwest/' || true)
 if [ -n "$named" ]; then
-  echo "LEAK: reqwest is named outside account-http-reqwest: $named"
+  echo "LEAK: reqwest is named outside http-reqwest: $named"
   fail=1
 else
-  echo "boundary holds: only account-http-reqwest names reqwest"
+  echo "boundary holds: only http-reqwest names reqwest"
 fi
 
 # PURE FILES: source that parses what an edge read and never reads it itself. A dependency rule
@@ -297,10 +297,9 @@ EDGES=(
   "account-store: account-core account-capability base-fs"
   "account-identities: account-service-core account-core account-ids base-fs account-secrets account-wire account-sheet"
   "account-spaces: account-core account-ids base-fs"
-  "account-settings: ui-settings account-service-core account-capability account-core account-ids account-provider account-sheet"
-  "account-dbus-macros:"
+  "account-settings: settings-dbus settings-types account-service-core account-capability account-core account-ids account-provider account-sheet"
   "account-callers: account-core"
-  "account-dbus: account-core account-dbus-macros account-tailscale account-wire account-ids"
+  "account-dbus: account-core dbus-kit account-tailscale account-wire account-ids"
   "account-sheets: account-core account-capability account-sheet account-wire account-callers account-dbus account-provider account-service-core"
   "account-client: account-core account-tailscale account-match account-capability account-wire account-ids account-sheet"
   "account-client-dbus: account-client account-core account-match account-wire account-capability account-dbus account-ids account-tailscale"
@@ -308,23 +307,23 @@ EDGES=(
   "account-fake: account-core account-capability account-sheet account-wire account-ids account-provider account-secrets account-service account-service-core"
   "base-testkit:"
   "account-fake-servers: account-dav-proto account-core account-ids account-discover account-fake account-provider base-testkit"
-  "account-http: account-core account-ids"
-  "account-http-reqwest: account-ids account-http"
-  "account-http-relay: account-client account-core account-wire account-ids account-http"
+  "http-core: account-core account-ids"
+  "http-reqwest: account-ids http-core"
+  "http-relay: account-client account-core account-wire account-ids http-core"
   "account-proxy: account-core account-capability account-ids"
-  "account-oauth: account-core account-ids account-http account-provider"
-  "account-discover: account-core account-capability account-ids account-http account-provider"
+  "account-oauth: account-core account-ids http-core account-provider"
+  "account-discover: account-core account-capability account-ids http-core account-provider"
   "account-tailscale: account-ids"
   "account-dav-proto:"
   "account-nextcloud-proto: account-core account-capability account-ids"
   "account-oauth-probe-proto: account-capability account-ids"
   "account-generic-proto: account-dav-proto account-core account-capability account-ids account-provider account-sheet"
-  "account-families: account-family-kit account-family-nextcloud account-family-generic account-family-oauth account-core account-capability account-sheet account-ids account-discover account-http account-http-reqwest account-provider account-tailscale"
-  "account-family-kit: account-core account-provider account-sheet account-http"
-  "account-family-nextcloud: account-family-kit account-nextcloud-proto account-dav-proto account-core account-capability account-sheet account-provider account-http"
-  "account-family-generic: account-family-kit account-generic-proto account-core account-capability account-sheet account-provider account-http account-discover account-proxy"
-  "account-family-oauth: account-family-kit account-oauth-probe-proto account-core account-capability account-sheet account-ids account-provider account-http account-http-reqwest account-oauth"
-  "account-daemon: ui-settings account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth base-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
+  "account-families: account-family-kit account-family-nextcloud account-family-generic account-family-oauth account-core account-capability account-sheet account-ids account-discover http-core http-reqwest account-provider account-tailscale"
+  "account-family-kit: account-core account-provider account-sheet http-core"
+  "account-family-nextcloud: account-family-kit account-nextcloud-proto account-dav-proto account-core account-capability account-sheet account-provider http-core"
+  "account-family-generic: account-family-kit account-generic-proto account-core account-capability account-sheet account-provider http-core account-discover account-proxy"
+  "account-family-oauth: account-family-kit account-oauth-probe-proto account-core account-capability account-sheet account-ids account-provider http-core http-reqwest account-oauth"
+  "account-daemon: settings-dbus settings-types account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth base-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
   "account-rig: account-fake-secret-service account-client account-core account-capability account-wire account-ids account-callers account-fake account-fake-servers base-testkit account-client-dbus"
   "account-fake-secret-service:"
 )

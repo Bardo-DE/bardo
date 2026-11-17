@@ -5,9 +5,9 @@ use super::action::{ActionRole, CardAction, CardActionId};
 use crate::components::companion::effect::view::EffectTag;
 use crate::components::controls::button::Button;
 use crate::components::controls::button_model::Answers;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::vocab::EffectMark;
-use ui_core::word::Word;
 
 /// The buttons of a card in a row. `focused` is the index of the one with the keyboard; the
 /// card's primary action answers Return.

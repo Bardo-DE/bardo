@@ -16,7 +16,8 @@ base-time = { path = "../../base/base-time" }
 account-sheet = {path = "../account-sheet"}
 account-provider = {path = "../account-provider"}
 account-service-core = {path = "../account-service-core"}
-ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 toml = { workspace = true }
 
 [dev-dependencies]

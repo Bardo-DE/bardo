@@ -9,8 +9,10 @@ use tokio::sync::watch;
 use anyview_platform::ThumbnailCache;
 use files_core::{FolderPath, Location};
 use files_fs::{Clouds, PrefsStore};
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::AppName;
 use ui_components::prelude::SystemPrefs;
-use ui_settings::{AppName, ConfigRoot, Store, SystemPrefsSource};
+use ui_settings::SystemPrefsSource;
 
 use crate::edge::{Apps, IconSources, Opener, Seams, Volumes, Zone};
 use crate::places::Places;

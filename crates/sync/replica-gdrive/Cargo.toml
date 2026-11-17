@@ -1,6 +1,6 @@
 [package]
 name = "replica-gdrive"
-description = "The Google Drive replica: sync-core's Replica over the app data folder (`spaces=appDataFolder`, scope drive.appdata) or My Drive (`spaces=drive`, scope drive; Google's own documents and shortcuts as items that open online). Changes by changes.list with a page token as the anchor (a refused token is AnchorExpired), writes checked against the file's `version` first, small files by multipart upload and large ones by a resumable session, md5Checksum as the content hash, quota from `about`. Its HTTP goes through the Http it is handed (in syncd, account-http-relay's RelayHttp over accountd's OpenAuthenticated, which adds the bearer). Pure: no runtime, no socket."
+description = "The Google Drive replica: sync-core's Replica over the app data folder (`spaces=appDataFolder`, scope drive.appdata) or My Drive (`spaces=drive`, scope drive; Google's own documents and shortcuts as items that open online). Changes by changes.list with a page token as the anchor (a refused token is AnchorExpired), writes checked against the file's `version` first, small files by multipart upload and large ones by a resumable session, md5Checksum as the content hash, quota from `about`. Its HTTP goes through the Http it is handed (in syncd, http-relay's RelayHttp over accountd's OpenAuthenticated, which adds the bearer). Pure: no runtime, no socket."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -13,7 +13,7 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-account-http = {path = "../../accounts/account-http"}
+http-core = {path = "../../network/http-core"}
 sync-core = {path = "../sync-core"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -21,7 +21,7 @@ serde_json = { workspace = true }
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
-account-http-relay = {path = "../../accounts/account-http-relay"}
+http-relay = {path = "../../network/http-relay"}
 sync-core = {path = "../sync-core", features = ["testing"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

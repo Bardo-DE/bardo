@@ -1,7 +1,7 @@
 //! The lenient reader of the places: anything it does not clearly understand is Off, never On.
 
 use super::model::{CloudAccount, CloudAllowed, ModelChoice, OwnComputer, PlaceName, Places};
-use crate::{Fallback, Why};
+use settings_store::InvalidKey;
 
 /// Where the places live in the settings file.
 pub const PLACES_PATH: &str = "assistant";
@@ -12,7 +12,7 @@ pub struct PlacesLoaded {
     /// The places in force.
     pub places: Places,
     /// Values refused (the row is then Off).
-    pub fallbacks: Vec<Fallback>,
+    pub invalid: Vec<InvalidKey>,
 }
 
 fn text(t: &toml::Table, key: &str) -> Option<String> {
@@ -38,7 +38,7 @@ fn word<T: Copy>(
     words: &'static [&'static str],
     values: &[T],
     off: T,
-    fallbacks: &mut Vec<Fallback>,
+    invalid: &mut Vec<InvalidKey>,
 ) -> T {
     let found = row
         .get("allowed")
@@ -46,9 +46,9 @@ fn word<T: Copy>(
         .and_then(|w| words.iter().position(|x| *x == w));
     found.map_or_else(
         || {
-            fallbacks.push(Fallback {
-                key: format!("{PLACES_PATH}.{key}.allowed"),
-                why: Why::NotAWord { words },
+            invalid.push(InvalidKey {
+                path: format!("{PLACES_PATH}.{key}.allowed"),
+                reason: format!("not one of {}", words.join(", ")),
             });
             off
         },
@@ -62,10 +62,10 @@ pub fn read_places(text_in: &str) -> PlacesLoaded {
     let Ok(doc) = text_in.parse::<toml::Table>() else {
         return PlacesLoaded {
             places: Places::none(),
-            fallbacks: Vec::new(),
+            invalid: Vec::new(),
         };
     };
-    let mut fallbacks = Vec::new();
+    let mut invalid = Vec::new();
     let this_computer = doc
         .get("assistant")
         .and_then(toml::Value::as_table)
@@ -83,7 +83,7 @@ pub fn read_places(text_in: &str) -> PlacesLoaded {
                     &["off", "on"],
                     &[false, true],
                     false,
-                    &mut fallbacks,
+                    &mut invalid,
                 ),
                 model: model(row),
             })
@@ -105,7 +105,7 @@ pub fn read_places(text_in: &str) -> PlacesLoaded {
                         CloudAllowed::AskEachTime,
                     ],
                     CloudAllowed::Off,
-                    &mut fallbacks,
+                    &mut invalid,
                 ),
                 model: model(row),
             })
@@ -117,6 +117,6 @@ pub fn read_places(text_in: &str) -> PlacesLoaded {
             own,
             cloud,
         },
-        fallbacks,
+        invalid,
     }
 }

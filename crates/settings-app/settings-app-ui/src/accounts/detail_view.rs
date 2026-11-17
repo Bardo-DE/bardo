@@ -16,10 +16,10 @@ use settings_app_model::{
     Account, AccountKey, AccountService, AccountSync, Attention, DatasetName, HoldInput, Holds,
     ModuleId, ModuleRow, SyncBook, SyncHold,
 };
+use settings_types::schema::ActionWeight;
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::prelude::*;
-use ui_settings::schema::ActionWeight;
 
 /// What the detail screen reports to the pane.
 #[derive(Clone, Copy, PartialEq)]

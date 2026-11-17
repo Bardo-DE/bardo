@@ -6,11 +6,11 @@ use crate::support::corners::Fake;
 use crate::support::drive::{click, page_of, showing, type_into};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_harness::Harness;
-use ui_settings::schema::{
+use settings_types::schema::{
     AppId, ControlName, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema,
     Section,
 };
+use ui_harness::Harness;
 
 mod forms;
 mod sheet;
@@ -36,8 +36,8 @@ fn corner_key(path: &str) -> KeySpec {
         page: Page::Dock,
         section: Section("Hot Corners".to_owned()),
         exposure: Exposure::Advanced,
-        labels: ui_settings::schema::WordLabels::default(),
-        agent: ui_settings::schema::AgentSetting::default(),
+        labels: settings_types::schema::WordLabels::default(),
+        agent: settings_types::schema::AgentSetting::default(),
         unavailable: std::collections::BTreeMap::default(),
         groups: std::collections::BTreeMap::default(),
         places: std::collections::BTreeMap::default(),
@@ -56,7 +56,7 @@ fn shell_schema() -> Schema {
         pages: Vec::new(),
         app: AppId("shell".to_owned()),
         file: FilePath(FILE.to_owned()),
-        foreign: ui_settings::schema::ForeignTables::default(),
+        foreign: settings_types::schema::ForeignTables::default(),
         version: 1,
         key: keys,
     }

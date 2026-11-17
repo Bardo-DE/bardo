@@ -30,11 +30,12 @@ use crate::host::measure::use_rect;
 use crate::host::narrow;
 use crate::root::common::Common;
 use crate::root::surface::ClassedScope;
+use base_ids::Fraction;
+use base_words::Word;
 use dioxus::prelude::*;
 use ui_core::geometry::units::Rect;
 use ui_core::press::Press;
-use ui_core::vocab::{Fraction, shown_word};
-use ui_core::word::Word;
+use ui_core::vocab::shown_word;
 use ui_motion::anim::Anim;
 use ui_motion::presence::{
     Exit,

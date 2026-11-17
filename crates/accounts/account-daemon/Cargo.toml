@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 base-xdg = { path = "../../base/base-xdg" }
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 account-core = {path = "../account-core"}
 account-match = {path = "../account-match"}
 account-capability = {path = "../account-capability"}
@@ -19,7 +19,7 @@ account-wire = {path = "../account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-account-daemon-support = {path = "../account-daemon-support", default-features = false, features = ["watch"]}
+account-daemon-support = {path = "../account-daemon-support"}
 base-fs = {path = "../../base/base-fs"}
 account-callers = {path = "../account-callers", features = ["file"]}
 account-dbus = {path = "../account-dbus"}
@@ -37,7 +37,8 @@ account-settings = {path = "../account-settings"}
 account-sheets = {path = "../account-sheets"}
 account-store = {path = "../account-store"}
 account-tailscale = {path = "../account-tailscale", features = ["io"]}
-ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -52,11 +53,11 @@ zbus = {workspace = true, features = ["tokio"]}
 account-client = {path = "../account-client"}
 account-client-dbus = {path = "../account-client-dbus"}
 base-testkit = {features = ["tokio"], path = "../../base/base-testkit"}
-ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}
-account-http = {path = "../account-http"}
-account-http-reqwest = {path = "../account-http-reqwest"}
+http-core = {path = "../../network/http-core"}
+http-reqwest = {path = "../../network/http-reqwest"}
 account-oauth = {path = "../account-oauth"}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}

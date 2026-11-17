@@ -22,7 +22,7 @@
 use crate::Details;
 use crate::json_value::{bad, from_vardict, to_vardict};
 use account_core::{AiAccountRow, CoreError, LlmVerdict, OwnServerRow};
-use account_dbus_macros::bus_interface;
+use dbus_kit::bus_interface;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use serde_json::{Map, Value as Json};

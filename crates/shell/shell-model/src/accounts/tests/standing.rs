@@ -1,5 +1,5 @@
 use crate::accounts::{AccountStanding, SignInAsk};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// The words accountd's `State` property carries (`account-dbus`'s `state_slug`).
 const CASES: &[(&str, Option<AccountStanding>, bool)] = &[

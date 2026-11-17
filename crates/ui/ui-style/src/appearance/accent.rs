@@ -7,8 +7,8 @@
 //! signal colours (`tokens::system_hue`). No older names are read (`postmark`, `amber`,
 //! `violet`): they fall to the default like any other unknown word.
 
+use base_words::Word;
 use serde::{Deserialize, Serialize};
-use ui_core::word::Word;
 
 /// The card's accent, one of eight.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Copy, Hash, Default, Word)]

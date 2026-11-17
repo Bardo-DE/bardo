@@ -251,7 +251,7 @@ mod tests {
     use super::*;
     use crate::accounts::hidden::Hidden;
     use crate::accounts::model::{Attempt, FieldText, ProviderKey};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     fn entry(key: &str, label: &str) -> ProviderEntry {
         ProviderEntry::new(ProviderKey(key.to_owned()), label, MarkProvider::Imap)

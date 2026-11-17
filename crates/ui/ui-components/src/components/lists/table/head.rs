@@ -6,11 +6,11 @@ use crate::components::controls::edge_grab::EdgeGrab;
 use crate::components::lists::table::model::{CellAlign, Sort, SortDirection, TableColumn};
 use crate::components::lists::table::widths::Widths;
 use crate::host::narrow;
+use base_words::Word;
 use dioxus::prelude::*;
 use std::ops::Range;
 use std::rc::Rc;
 use ui_core::geometry::units::Px;
-use ui_core::word::Word;
 use ui_style::icon::Icon;
 use ui_style::icon::render::{Glyph, IconSize};
 

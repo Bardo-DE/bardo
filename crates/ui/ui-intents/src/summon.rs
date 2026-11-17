@@ -1,6 +1,6 @@
 //! The summon seam's plain values: a summon and how a field answers it.
 
-use ui_core::word::Word;
+use base_words::Word;
 
 /// Which summon an ask or an answer belongs to: bardo-shell mints it when it calls the app.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]

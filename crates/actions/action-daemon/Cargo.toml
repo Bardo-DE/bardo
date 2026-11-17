@@ -27,7 +27,6 @@ action-checkpoint-git = {path = "../action-checkpoint-git"}
 permission-core = {path = "../permission-core"}
 account-dbus = {path = "../../accounts/account-dbus"}
 account-callers = {path = "../../accounts/account-callers"}
-account-daemon-support = {default-features = false, features = ["watch"], path = "../../accounts/account-daemon-support"}
 action-core = {path = "../action-core"}
 action-wire = {path = "../action-wire"}
 action-manifest = {path = "../action-manifest", features = ["manifest-file"]}
@@ -39,6 +38,8 @@ action-router = {path = "../action-router"}
 agent-skills = {path = "../agent-skills"}
 agent-skills-disk = {path = "../agent-skills-disk"}
 action-settings = {path = "../action-settings"}
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 action-client = {path = "../action-client", default-features = false, features = ["dbus"]}
 action-provider = {path = "../action-provider"}
 action-dbus = {path = "../action-dbus", features = ["inferd"]}
@@ -65,7 +66,7 @@ thiserror = { workspace = true }
 tracing = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 zbus = {workspace = true, features = ["tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
@@ -82,7 +83,6 @@ action-fake = {path = "../action-fake"}
 inference-core = {features = ["testing"], path = "../../inference/inference-core"}
 account-wire = {path = "../../accounts/account-wire"}
 memory-dbus = {path = "../../memory/memory-dbus"}
-memory-dbus-serve = {path = "../../memory/memory-dbus-serve"}
 agent-reader-daemon = {path = "../agent-reader-daemon"}
 proptest = { workspace = true }
 action-client = {path = "../action-client", default-features = false, features = ["dbus", "in_process"]}

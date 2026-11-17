@@ -1,6 +1,6 @@
 [package]
 name = "model-http"
-description = "HTTP for model endpoints over TCP, Unix sockets and TLS: targets, auth, pure SSE and NDJSON decoders, the client seam, and a reqwest client behind a feature."
+description = "HTTP for model endpoints over TCP, Unix sockets and TLS: targets, auth, the request an exchange comes to, pure SSE and NDJSON decoders, and the exchange-level transport seam over http-core. The connection is model-http-reqwest's."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,32 +8,15 @@ rust-version.workspace = true
 repository.workspace = true
 publish.workspace = true
 
-[features]
-# The reqwest client behind `Transport for HttpClient`. Off by default so that the codecs (which
-# depend on this crate for the seam types) reach no HTTP stack and no runtime; a daemon turns it
-# on.
-client = ["dep:reqwest", "dep:tokio"]
-# TLS for `HttpTarget::Tls`: reqwest's rustls on the ring provider (installed here, never
-# aws-lc), the platform's roots. Off by default (a consumer opts in); without it a `Tls` target
-# answers `HttpError::Tls`.
-tls = ["client", "reqwest/rustls-no-provider", "dep:rustls"]
-
 [dependencies]
 serde = { workspace = true, features = ["derive"] }
 base-secret = { path = "../../base/base-secret" }
 thiserror = { workspace = true }
 tracing = { workspace = true }
-reqwest = { workspace = true, optional = true }
-rustls = { workspace = true, features = ["ring", "std", "tls12"], optional = true }
-tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"], optional = true}
+http-core = { path = "../../network/http-core" }
 
 [dev-dependencies]
-base-testkit = { path = "../../base/base-testkit", features = ["tokio"] }
-rcgen = { workspace = true, features = ["ring", "pem"] }
-tokio-rustls = { workspace = true, features = ["ring", "logging", "tls12"] }
-rustls-pki-types = { workspace = true }
 proptest = { workspace = true }
-tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt", "rt-multi-thread", "sync", "time"]}
 serde_json = { workspace = true }
 
 [lints]

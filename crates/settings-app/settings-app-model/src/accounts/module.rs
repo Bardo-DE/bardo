@@ -4,7 +4,7 @@ use super::sign_in_client::standing_only;
 use crate::Absence;
 use crate::Live;
 use crate::picker::Described;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// A live settings module the pane reads. Each holds its own accounts, and a row's action goes
 /// back to the module the row came from.

@@ -246,7 +246,7 @@ pub async fn serve(
             },
         )
         .await?;
-    zbus_ready::serving(connection).await?;
+    dbus_kit::ready::serving(connection).await?;
     connection.request_name(CONFIRM_BUS).await?;
     connection.request_name("org.bardo.Shell").await?;
     Ok((sheet, requests))

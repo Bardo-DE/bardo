@@ -161,7 +161,7 @@ rusqlite = { version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"]
 tar = "0.4"
 oo7 = "0.6"
 # ---- Accounts (porter; ported from mailo at the versions mailo uses, PLAN ~/rs-wt/accounts) ----
-# account-proxy, account-http: TLS to account servers; the roots are the platform's, webpki-roots as fallback.
+# account-proxy, http-core: TLS to account servers; the roots are the platform's, webpki-roots as fallback.
 tokio-rustls = { version = "0.26", default-features = false, features = ["ring", "tls12", "logging"] }
 rustls-pki-types = "1"
 rustls-native-certs = "0.8"

@@ -1,7 +1,7 @@
 //! What a `ProgressIndicator` is and how far along it stands: data only.
 
-use ui_core::vocab::Fraction;
-use ui_core::word::Word;
+use base_ids::Fraction;
+use base_words::Word;
 use ui_motion::detail::operation::Operation;
 
 /// How progress is drawn (`NSProgressIndicator` style, design/30 section 2.9).
@@ -46,7 +46,7 @@ impl Progress {
 #[cfg(test)]
 mod tests {
     use super::Progress;
-    use ui_core::vocab::Fraction;
+    use base_ids::Fraction;
     use ui_motion::detail::operation::{Operation, PendingToken};
 
     #[test]

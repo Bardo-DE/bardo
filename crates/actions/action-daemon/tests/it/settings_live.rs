@@ -2,10 +2,11 @@
 //! applies to the next decision without a restart. The wait is the watch's own event, never a sleep.
 
 use action_core::AgentConfig;
-use action_daemon::{SettingsWatch, WatchState, apply, apply_next};
+use action_daemon::{apply, apply_next, watch_settings};
 use action_fake::fake_router;
-use action_settings::{AgentSettings, Locator};
+use action_settings::AgentSettings;
 use permission_core::{AskOrRun, Mode};
+use settings_store_fs::WatchState;
 use std::path::Path;
 
 /// What the Settings app does: a temp file, then a rename over the settings file.
@@ -27,8 +28,8 @@ async fn a_change_in_the_file_applies_to_the_router_without_a_restart() {
         _ => None,
     };
     let router = fake_router(AgentConfig::default()).expect("router");
-    let mut watch = SettingsWatch::start(
-        Locator::from_env(&env),
+    let mut watch = watch_settings(
+        &action_settings::locator(&env),
         AgentSettings::over(AgentConfig::default()),
     );
     assert_eq!(*watch.state(), WatchState::Live);
@@ -43,7 +44,7 @@ async fn a_change_in_the_file_applies_to_the_router_without_a_restart() {
         let loaded = apply_next(&router, &mut watch)
             .await
             .expect("the watch is live");
-        assert_eq!(loaded.fallbacks, vec![]);
+        assert_eq!(loaded.invalid, vec![]);
     }
     assert_eq!(router.agent_config().start_mode, Mode::Manual);
     assert_eq!(router.agent_config().rows.auto.inside, AskOrRun::Asks);

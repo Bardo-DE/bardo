@@ -12,7 +12,7 @@ use crate::appearance::theme::Scheme;
 use crate::tokens::hex::Hex;
 use crate::tokens::system_hue::SystemHue;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// What a file is, for drawing its icon. As a token it is the colour of the kind's mark
 /// (`--file-kind-pdf`): the kind's system hue, light scheme in both.

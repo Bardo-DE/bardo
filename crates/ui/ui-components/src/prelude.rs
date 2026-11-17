@@ -19,17 +19,17 @@ pub use ui_style::space::look::{Grain, SpaceLook};
 pub use ui_style::space::provided::{use_space_frame, use_space_look};
 
 // Vocabulary
+pub use base_ids::Fraction;
+pub use base_words::Word;
 pub use ui_core::text::typed::TypedText;
 pub use ui_core::vocab::Availability;
 pub use ui_core::vocab::Check;
 pub use ui_core::vocab::DropState;
-pub use ui_core::vocab::Fraction;
 pub use ui_core::vocab::HasPopup;
 pub use ui_core::vocab::Percent;
 pub use ui_core::vocab::Severity;
 pub use ui_core::vocab::Shortcut;
 pub use ui_core::vocab::ShortcutKey;
-pub use ui_core::word::Word;
 
 // Geometry
 pub use ui_core::geometry::placement::Placement;

@@ -1,4 +1,4 @@
-//! `org.bardo.SettingsModule1` at `/org/bardo/Sync1/settings`, served through quire's `ui_settings::live`: the accounts the person has (accountd's) and what syncd keeps of them.
+//! `org.bardo.SettingsModule1` at `/org/bardo/Sync1/settings`, served through quire's `settings_dbus`: the accounts the person has (accountd's) and what syncd keeps of them.
 //!
 //! Only the `Settings` role may `Get`, `Describe` or `Set`, as in accountd's module.
 //!
@@ -29,17 +29,15 @@ use account_core::AccountId;
 use account_core::{Account, Family};
 use account_wire::ParentWindow;
 use drive_core::CacheLimit;
+use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
+use settings_types::schema::{
+    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
+    LiveAction, Note, Page, Section, WordLabels,
+};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock, PoisonError};
 use toml_edit::{Array, DocumentMut, Item};
-use ui_settings::live::{
-    Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve,
-};
-use ui_settings::schema::{
-    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
-    LiveAction, Note, Page, Section, WordLabels,
-};
 use zbus::Connection;
 
 /// The settings module's path.

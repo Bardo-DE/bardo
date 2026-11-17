@@ -6,8 +6,8 @@
 
 use crate::components::chrome::column::model::{ColumnAlign, ColumnExtent};
 use crate::root::common::Common;
+use base_words::Word;
 use dioxus::prelude::*;
-use ui_core::word::Word;
 use ui_style::tokens::spacing::SpacingToken;
 
 /// A vertical stack: `gap` between children (a spacing step, 8 px unless given; `None`

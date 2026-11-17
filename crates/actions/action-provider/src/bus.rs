@@ -230,15 +230,11 @@ where
         callers,
     };
     connection.object_server().at(PROVIDER_PATH, object).await?;
-    zbus_ready::serving(connection).await?;
-    let reply = connection
-        .request_name_with_flags(name.as_str(), fdo::RequestNameFlags::DoNotQueue.into())
-        .await?;
-    match reply {
-        fdo::RequestNameReply::PrimaryOwner | fdo::RequestNameReply::AlreadyOwner => Ok(()),
-        fdo::RequestNameReply::InQueue | fdo::RequestNameReply::Exists => {
-            Err(ServeError::Taken(name))
-        }
+    dbus_kit::ready::serving(connection).await?;
+    match dbus_kit::name::claim(connection, name.as_str()).await {
+        Ok(()) => Ok(()),
+        Err(dbus_kit::name::ClaimError::Taken(_)) => Err(ServeError::Taken(name)),
+        Err(dbus_kit::name::ClaimError::Bus { source, .. }) => Err((*source).into()),
     }
 }
 

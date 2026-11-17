@@ -3,10 +3,10 @@
 
 use crate::geometry::LogicalRect;
 use crate::ids::{LayerKey, WindowId};
+use base_ids::Fraction;
 use desktop_protocols::vocab::{
     FullScreenBar, Motion, OverviewMode, ShellRole, Toggle, WindowEntry,
 };
-use ui_core::vocab::Fraction;
 
 /// One request from the shell.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -9,6 +9,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
+base-words = { path = "../../base/base-words" }
 base-fs = { path = "../../base/base-fs" }
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 permission-core = {path = "../../actions/permission-core"}
@@ -23,7 +24,9 @@ keymap = {path = "../../keymap/keymap"}
 key-remap-client = {path = "../../input/key-remap-client"}
 shell-kit = {path = "../shell-kit"}
 ui-blitz = {path = "../../ui/ui-blitz"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
+ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
 # The test driver, for the `harness` feature.
 ui-harness = {path = "../../ui/ui-harness", optional = true}

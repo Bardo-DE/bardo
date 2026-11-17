@@ -2,7 +2,7 @@
 //! 3.4, and the exits design/05 sections 8 and 10 give Dismiss), as data: what the lint's
 //! `Rule::OffGrammarTiming` checks a component's `animation` and `transition` against.
 
-use ui_core::word::Word;
+use base_words::Word;
 use ui_style::tokens::{easing::EasingToken, timing::DurationToken};
 
 /// Durations a moment may play for. Left out on purpose: the loops (`--t-awake`), the spinner's

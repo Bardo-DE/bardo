@@ -165,7 +165,7 @@ code into `tests.rs`. Exceptions and renames:
 | `wallpaper/{cache,geometry}.rs` | `shell-model/src/wallpaper/` |
 | `wallpaper/{config,resize,watch,backdrop}.rs` (`config` also reads the old `wallpaper-source` file while the setting is empty), logic in `mod.rs` | `wallpaper/backend/` |
 | `tray/{model,icon}.rs`; `tray/host.rs` (498) | `shell-model/src/tray/`; `tray/backend/{host,items,menu}.rs` |
-| `now_playing/{model,art}.rs` (names); `mpris.rs`, `live.rs` (498) | `shell-model/src/now_playing/`; `now_playing/backend/{mpris,run}.rs`, `now_playing/backend/art/{mod,fetcher,curl,cache}.rs` |
+| `now_playing/{model,art}.rs` (names); `mpris.rs`, `live.rs` (498) | `shell-model/src/now_playing/`; `now_playing/backend/{mpris,run}.rs`, `now_playing/backend/art/{mod,fetcher,http,cache}.rs` |
 | `battery`, `kbd_backlight`, `power_profile`, `volume`, `session`, `badges`, `clock`: `model.rs`, `format.rs` | `shell-model/src/<x>/`; `live.rs`, `upower.rs`, `ppd.rs` -> `<x>/backend/` |
 | `providers/`, `results/{registry,run,sink,history,frecency_file,effect}.rs`, `preview.rs` | `shell-search/src/providers/`, `results/`, `preview.rs` |
 | `results/{model,arrange,policy}.rs` | `shell-model/src/results/` |

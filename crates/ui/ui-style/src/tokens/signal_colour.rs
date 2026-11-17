@@ -11,7 +11,7 @@
 use crate::appearance::system::Contrast;
 use crate::tokens::system_hue::SystemHue;
 use crate::tokens::token::{CssValue, Token, TokenScope};
-use ui_core::word::Word;
+use base_words::Word;
 
 /// One signal colour.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Word, Token)]
@@ -55,7 +55,7 @@ fn signal_css(token: SignalColour, scope: TokenScope) -> CssValue {
 mod tests {
     use super::SignalColour;
     use crate::tokens::token::{Token, TokenScope};
-    use ui_core::word::Word;
+    use base_words::Word;
 
     #[test]
     fn the_folder_follows_the_secondary_label_and_no_two_signals_share_a_hue() {

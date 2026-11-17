@@ -9,6 +9,7 @@
 
 use crate::{ConsolidateApply, MemorySettings};
 use memory_core::{DayCount, VaultKind};
+use settings_store::Loaded;
 
 /// `memory.files.at_rest`.
 const AT_REST: &str = "memory.files.at_rest";
@@ -114,4 +115,17 @@ pub(crate) fn loosenable(key: &str) -> bool {
 #[must_use]
 pub fn loosenings(value: &MemorySettings) -> Vec<String> {
     loose(value).into_iter().map(|l| l.said).collect()
+}
+
+/// The daemon's log lines for a loaded file.
+///
+/// One line per refused value, unknown key and clamped number of `loaded`, and one per value
+/// looser than the shipped default (ALM-16: the file is unauthenticated, so what it loosens is
+/// always logged).
+#[must_use]
+pub fn lines(loaded: &Loaded<MemorySettings>, daemon: &str) -> Vec<String> {
+    let loose = loosenings(&loaded.value)
+        .into_iter()
+        .map(|what| format!("{daemon}: settings: loosened from the shipped default: {what}"));
+    loaded.lines(daemon).into_iter().chain(loose).collect()
 }

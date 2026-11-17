@@ -6,12 +6,13 @@ use super::vouch::Vouch;
 use crate::deadline::{Deadline, peer};
 use account_client::{LinkError, SpacesError};
 use account_dbus::{BusFailure, classify};
+use dbus_kit::connect::BusTarget;
 use inference_client::{ClientError, TransportError};
 use settings_app_callers::{RoleCheck, desktop_peers};
 use settings_app_model::Absence;
+use settings_dbus::{Changes, LiveClient, LiveError, OwnerCheck, SenderName, Verdict};
+use settings_types::schema::KeyPath;
 use ui_peer::within;
-use ui_settings::live::{Changes, LiveClient, LiveError, OwnerCheck, SenderName, Verdict};
-use ui_settings::schema::KeyPath;
 use zbus::Connection;
 use zbus::fdo::{DBusProxy, NameOwnerChangedStream};
 use zbus::names::BusName;
@@ -144,10 +145,9 @@ pub async fn connect(bus: &BusSource) -> Result<Connection, Absence> {
 async fn dial(bus: &BusSource) -> Result<Connection, Absence> {
     match bus {
         BusSource::Absent => Err(Absence::NoBus),
-        BusSource::Session => Connection::session().await.map_err(failed),
-        BusSource::Address(address, _) => zbus::connection::Builder::address(address.as_str())
-            .map_err(failed)?
-            .build()
+        BusSource::Session => BusTarget::Session.connect().await.map_err(failed),
+        BusSource::Address(address, _) => BusTarget::Address(address.clone())
+            .connect()
             .await
             .map_err(failed),
     }

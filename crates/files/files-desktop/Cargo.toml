@@ -32,7 +32,7 @@ thiserror = { workspace = true }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process"]}
 toml = { workspace = true }
 zbus = {workspace = true, features = ["tokio"]}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 
 [dev-dependencies]
 files-desktop = { path = ".", features = ["testing"] }

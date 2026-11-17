@@ -1,8 +1,8 @@
 //! The Rust-only timer lengths (design/30-CATALOGUE.md section 1.2): intent and reading time,
 //! never scaled by the motion level.
 
+use base_words::Word;
 use std::time::Duration;
-use ui_core::word::Word;
 
 /// How long a tooltip waits before it opens cold (design/30-CATALOGUE.md section 1.2).
 ///

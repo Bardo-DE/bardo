@@ -19,10 +19,13 @@ ui-components = {path = "../../ui/ui-components"}
 ui-blitz = {path = "../../ui/ui-blitz"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 ui-lint = {path = "../../ui/ui-lint"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "live", "tokio"]}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
+ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [dev-dependencies]
+memory-dbus = { path = "../../memory/memory-dbus" }
 account-capability = {path = "../../accounts/account-capability"}
 # Fixtures: the in-memory links (the daemons' live settings modules among them: `FakeModules`) and
 # the test kit, and quire's harness. The tests that stand a service that is no live module up on a
@@ -30,7 +33,7 @@ account-capability = {path = "../../accounts/account-capability"}
 # the owner checks) need the commented ones below.
 settings-app-system = {path = "../settings-app-system", features = ["testing"]}
 settings-app-testkit = {path = "../settings-app-testkit"}
-ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["testing"] }
 dioxus-ssr = { workspace = true }
 ui-harness = {path = "../../ui/ui-harness"}
 image = { workspace = true, features = ["png", "jpeg"] }
@@ -56,7 +59,7 @@ action-settings = {path = "../../actions/action-settings"}
 inference-client = {path = "../../inference/inference-client", features = ["lending"]}
 # The Keyboard test names chords.
 keymap = {path = "../../keymap/keymap"}
-zbus-ready = { path = "../../zbus-ready" }
+dbus-kit = { path = "../../bus/dbus-kit" }
 # The settle waits on real threads with the one deadline.
 base-testkit = {path = "../../base/base-testkit"}
 

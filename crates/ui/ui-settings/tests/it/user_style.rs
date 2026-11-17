@@ -4,11 +4,12 @@
 
 use crate::support;
 
+use base_spawn::Spawner;
+use settings_store_fs::{Store, WatchState};
 use std::pin::Pin;
 use std::time::Duration;
 use support::Scratch;
-use ui_core::spawner::Spawner;
-use ui_settings::{Store, UserStyle, WatchState};
+use ui_settings::UserStyle;
 
 /// Generous slack over the 30 ms debounce for a test runner under load.
 const MARGIN: Duration = Duration::from_millis(2_000);
@@ -25,11 +26,13 @@ fn style(text: &str) -> UserStyle {
     UserStyle(text.to_owned())
 }
 
-fn watch(store: &Store) -> ui_settings::Watch<UserStyle> {
+fn watch(store: &Store) -> settings_store_fs::Watch<UserStyle> {
     store.watch::<UserStyle>(&TestSpawner(tokio::runtime::Handle::current()))
 }
 
-async fn next(watch: &mut ui_settings::Watch<UserStyle>) -> ui_settings::Loaded<UserStyle> {
+async fn next(
+    watch: &mut settings_store_fs::Watch<UserStyle>,
+) -> settings_store::Loaded<UserStyle> {
     tokio::time::timeout(MARGIN, watch.changed())
         .await
         .unwrap_or_else(|_| panic!("no change observed within the debounce plus margin"))

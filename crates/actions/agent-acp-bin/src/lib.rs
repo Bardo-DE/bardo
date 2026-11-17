@@ -109,7 +109,9 @@ async fn serve_on(
 ) -> Result<(), LiveFault> {
     let editor = AppName::parse(BUS_NAME).map_err(|e| LiveFault::App(BUS_NAME.to_owned(), e))?;
     let bus = |e: zbus::Error| LiveFault::Bus(e.to_string());
-    let connection = action_dbus::session_connection(env).await.map_err(bus)?;
+    let connection = dbus_kit::connect::session_from_env(env)
+        .await
+        .map_err(bus)?;
     // The sheets intentd hands this process for an editor's session wait on the desk the host
     // shows the editor. Served before the name is claimed, so the first sheet finds it.
     let desk = EditorDesk::new();
@@ -131,7 +133,7 @@ async fn serve_on(
         )
         .await
         .map_err(bus)?;
-    zbus_ready::serving(&connection).await.map_err(bus)?;
+    dbus_kit::ready::serving(&connection).await.map_err(bus)?;
     connection.request_name(BUS_NAME).await.map_err(bus)?;
     let shell = AppName::parse(SHELL).map_err(|e| LiveFault::App(SHELL.to_owned(), e))?;
     let companion = Companion::new(

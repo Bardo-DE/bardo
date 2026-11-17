@@ -168,11 +168,7 @@ fn a_worlds_settings_read_back_clean() {
             &settings_toml(acp),
             AgentSettings::over(AgentConfig::default()),
         );
-        assert!(
-            loaded.fallbacks.is_empty(),
-            "{acp:?}: {:?}",
-            loaded.fallbacks
-        );
+        assert!(loaded.invalid.is_empty(), "{acp:?}: {:?}", loaded.invalid);
         assert!(loaded.unknown.is_empty(), "{acp:?}: {:?}", loaded.unknown);
     }
 }

@@ -13,15 +13,16 @@ use account_capability::Capability;
 use account_capability::CapabilityKind;
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_core::AccountId;
+use account_core::request_to;
 use account_core::{
     AccountLabel, Audience, Credential, EndpointUrl, Family, IssuedToken, Restriction,
     SecretPurpose, SecretText, ServiceEndpoint,
 };
-use account_http::http::Method;
-use account_http::http::header::{ACCEPT, AUTHORIZATION, HeaderName};
-use account_http::http::request::Builder;
-use account_http::{Http, SensitiveHeader, request_to};
 use account_provider::{Presented, ProviderError, ProviderSession, ProviderSpec, Signed};
+use http_core::http::Method;
+use http_core::http::header::{ACCEPT, AUTHORIZATION, HeaderName};
+use http_core::http::request::Builder;
+use http_core::{Http, SensitiveHeader};
 
 /// The key a presented credential holds, or `Unauthorized` when the account has none.
 pub(crate) fn key_of(presented: &Presented) -> Result<&SecretText, ProviderError> {
@@ -283,7 +284,7 @@ mod tests {
         let url = base_url::WebUrl::parse("https://api.example.org/v1/models").expect("url");
         let key = SecretText::new("KEY");
         let headers = |family| {
-            present_key(account_http::request(Method::GET, &url), family, &key)
+            present_key(http_core::request(Method::GET, &url), family, &key)
                 .body(Vec::<u8>::new())
                 .expect("request")
                 .headers()
