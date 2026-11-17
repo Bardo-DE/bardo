@@ -101,7 +101,7 @@ async fn run_one(
 ) -> (Stepped, CuaSession, Vec<InferEvent>) {
     let scratch = Scratch::new("cua-step");
     let model = cua_model(&scratch);
-    let frames = Frames::read(vec![memfd(b"png bytes")]).expect("frames");
+    let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
     let mut seen = Vec::new();
     let mut kept = session(&model);
     let result = step(&mut kept, &model, provider, request, &frames, |event| {
@@ -221,7 +221,7 @@ async fn a_model_trained_to_think_before_it_acts_is_run_with_its_reasoning() {
     };
     profile.answer = computer_use_action::AnswerShape::ThinkActionCall;
     let provider = says(vec![click(r#"{"action":"terminate","status":"success"}"#)]);
-    let frames = Frames::read(vec![memfd(b"png bytes")]).expect("frames");
+    let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
     let mut kept = session(&model);
     let _ = step(
         &mut kept,
@@ -277,7 +277,7 @@ async fn the_prompt_holds_one_frame_fewer_than_the_model_takes_and_lists_the_ste
     let provider = ScriptedProvider::new(vec![], scripts);
     let mut current = session(&model);
     for _ in 0..5 {
-        let frames = Frames::read(vec![memfd(b"png")]).expect("frames");
+        let frames = inference_fs::read_frames(vec![memfd(b"png")]).expect("frames");
         step(
             &mut current,
             &model,
@@ -316,7 +316,7 @@ async fn a_stop_from_the_sink_ends_the_turn_so_there_is_nothing_to_act_on_and_no
     );
     let scratch = Scratch::new("cua-stop");
     let model = cua_model(&scratch);
-    let frames = Frames::read(vec![memfd(b"png")]).expect("frames");
+    let frames = inference_fs::read_frames(vec![memfd(b"png")]).expect("frames");
     let mut count = 0;
     let mut kept = session(&model);
     let result = step(
@@ -423,7 +423,7 @@ fn the_observation_carries_the_window_contents_and_the_notes_with_who_said_them(
 async fn an_engine_failure_after_a_repair_gives_the_repair_budget_back() {
     let scratch = Scratch::new("cua-refill");
     let model = cua_model(&scratch);
-    let frames = Frames::read(vec![memfd(b"png bytes")]).expect("frames");
+    let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
     let provider = ScriptedProvider::new(
         vec![],
         vec![

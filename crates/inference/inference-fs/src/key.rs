@@ -13,9 +13,10 @@ use std::os::unix::fs::MetadataExt;
 /// The longest key kept, in bytes: a token is a few dozen.
 const LONGEST: u64 = 4096;
 
-/// The token in `key`'s file now. It is opened once and looked at through that handle, so the
-/// file that was checked is the file that is read; a symlink is followed to the file it names
-/// (and that file is checked).
+/// The token in `key`'s file now.
+///
+/// It is opened once and looked at through that handle, so the file that was checked is the file
+/// that is read; a symlink is followed to the file it names (and that file is checked).
 ///
 /// # Errors
 /// `KeyFileProblem` when the file is missing, cannot be read, is not a regular file private to

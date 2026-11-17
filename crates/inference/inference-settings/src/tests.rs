@@ -153,7 +153,7 @@ fn every_class_has_its_own_floor_row_and_voice_and_prompt_default_to_this_comput
     for class in CLASSES {
         let path = format!("ai.floor.{}", keys_slug(class));
         let mut table = toml::Table::new();
-        file::put(&mut table, &path, "local_network".into());
+        put(&mut table, &path, "local_network".into());
         let policy = settings(&table.to_string()).policy;
         for other in CLASSES {
             let want = if other == class {
@@ -613,5 +613,22 @@ fn a_length_out_of_range_or_not_a_number_is_automatic_and_said() {
     ] {
         let resolved = resolve(&config(&format!("[ai.length]\n{table} = {row}\n")));
         assert!(resolved.rejected.is_empty(), "{table} {row}");
+    }
+}
+
+/// Sets the dotted `path` in `table`, making the tables on the way.
+fn put(table: &mut toml::Table, path: &str, value: toml::Value) {
+    match path.split_once('.') {
+        None => {
+            table.insert(path.to_owned(), value);
+        }
+        Some((head, rest)) => {
+            let entry = table
+                .entry(head.to_owned())
+                .or_insert_with(|| toml::Value::Table(toml::Table::new()));
+            if let toml::Value::Table(inner) = entry {
+                put(inner, rest, value);
+            }
+        }
     }
 }

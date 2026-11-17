@@ -378,13 +378,7 @@ pub struct ProcPeers {
 }
 
 impl ProcPeers {
-    /// Resolves senders on `connection` through `table`.
-    #[must_use]
-    pub fn new(connection: BusConnection, table: &CallerTable) -> Self {
-        Self::with_root(connection, table, &ProcRoot::Unset)
-    }
-
-    /// As [`ProcPeers::new`], reading the process tree `root` names.
+    /// Resolves senders on `connection` through `table`, reading the process tree `root` names.
     #[must_use]
     pub fn with_root(connection: BusConnection, table: &CallerTable, root: &ProcRoot) -> Self {
         let rows = table.rows();
@@ -396,13 +390,6 @@ impl ProcPeers {
         Self {
             callers: std::sync::Arc::new(callers),
         }
-    }
-
-    /// The same lookup in the shared caller type (`account_callers::Callers`), for the sheet link
-    /// and the Keys object, which check the shell and the app by the shared roles.
-    #[must_use]
-    pub fn shared(&self) -> std::sync::Arc<ProcCallers> {
-        std::sync::Arc::clone(&self.callers)
     }
 }
 

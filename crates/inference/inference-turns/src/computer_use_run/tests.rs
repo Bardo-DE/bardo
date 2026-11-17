@@ -110,7 +110,7 @@ impl Rig {
         sink: &mut Events,
     ) -> Result<CuaStepReply, CuaStepFailure> {
         let model = models(&self.scratch).remove(2);
-        let frames = Frames::read(vec![memfd(b"png bytes")]).expect("frames");
+        let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
         let request = request(number);
         run.step(
             StepJob {
@@ -246,7 +246,7 @@ async fn a_model_with_no_computer_use_dialect_cannot_run_a_step() {
     let scratch = Scratch::new("cua-chat");
     let chat = models(&scratch).remove(0);
     let provider = ScriptedProvider::new(vec![], vec![]);
-    let frames = Frames::read(vec![memfd(b"png bytes")]).expect("frames");
+    let frames = inference_fs::read_frames(vec![memfd(b"png bytes")]).expect("frames");
     let request = request(0);
     let got = CuaRun::begin(begin())
         .step(

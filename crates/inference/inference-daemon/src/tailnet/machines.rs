@@ -46,13 +46,3 @@ impl Machines for BusMachines {
         })
     }
 }
-
-/// No computers: what a daemon without accountd's list has.
-#[derive(Debug, Clone, Copy, Default)]
-pub struct NoMachines;
-
-impl Machines for NoMachines {
-    fn machines(&self) -> Boxed<'_, Vec<Machine>> {
-        Box::pin(async { Vec::new() })
-    }
-}

@@ -219,7 +219,8 @@ fn history_with_calls_results_thoughts_and_roles_maps_part_by_part() {
 #[test]
 fn images_come_inline_or_from_the_descriptors_by_index() {
     let (_scratch, model) = chat_model();
-    let frames = Frames::read(vec![memfd(b"first"), memfd(b"second")]).expect("frames");
+    let frames =
+        inference_fs::read_frames(vec![memfd(b"first"), memfd(b"second")]).expect("frames");
     let image = |source| {
         user(vec![pi::MessagePart::Image(pi::ImagePart {
             media_type: "image/png".into(),
@@ -272,14 +273,17 @@ fn images_come_inline_or_from_the_descriptors_by_index() {
 #[test]
 fn a_descriptor_is_read_from_its_start_whatever_offset_the_sender_left() {
     // `write_all` leaves the offset at the end, which is where a received descriptor shares it.
-    let frames = Frames::read(vec![memfd(b"whole picture")]).expect("frames");
+    let frames = inference_fs::read_frames(vec![memfd(b"whole picture")]).expect("frames");
     assert_eq!(
         frames
             .resolve(&pi::ImageSource::Attached(pi::AttachIndex(0)))
             .expect("bytes"),
         b"whole picture"
     );
-    assert_eq!(Frames::read(vec![]).expect("none"), Frames::default());
+    assert_eq!(
+        inference_fs::read_frames(vec![]).expect("none"),
+        Frames::default()
+    );
 }
 
 fn embed_model() -> (Scratch, LocalModel) {

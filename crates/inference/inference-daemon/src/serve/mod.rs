@@ -13,4 +13,3 @@ mod wire;
 
 pub use driver::serve_session;
 pub use guard::guarded;
-pub use wire::MAX_QUEUED_FDS;

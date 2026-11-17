@@ -18,7 +18,7 @@ mod module;
 mod pool;
 mod programs;
 
-pub use file::{ConfigFile, FileError, Reload, ReloadFailed, Reloaded};
+pub use file::{ConfigFile, Reload};
 pub use local_engines::LocalEngines;
 pub(crate) use missing::engine_name;
 pub use module::{InferdSettings, serve_settings};

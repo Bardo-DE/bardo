@@ -23,7 +23,7 @@ pub mod words;
 
 pub use candidates::{Candidate, Candidates};
 pub use lender::Lender;
-pub use machines::{BusMachines, Machines, NoMachines};
+pub use machines::{BusMachines, Machines};
 
 use crate::attached::relay_socket;
 use crate::engines::Engines;

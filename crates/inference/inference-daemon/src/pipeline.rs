@@ -19,7 +19,5 @@ mod live;
 
 pub use live::Hearing;
 
-pub use inference_router::audio::AudioIn;
-
 #[cfg(test)]
 mod tests;

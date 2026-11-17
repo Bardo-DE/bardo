@@ -71,7 +71,7 @@ fn refusals_and_closed_sets_are_written_as_their_slugs() {
         (InferRefusal::Unsupported, "unsupported"),
     ];
     for (refusal, slug_text) in refusals {
-        assert_eq!(refusal_slug(&refusal), slug_text);
+        assert_eq!(refusal_slug(refusal), slug_text);
     }
     assert_eq!(
         slug(

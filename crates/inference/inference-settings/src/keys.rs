@@ -52,21 +52,26 @@ pub fn model_path(slot: Slot, tier: Tier) -> String {
 }
 
 /// The slot and tier an `ai.model.<slot>.<tier>` path names.
+#[must_use]
 pub fn parse_model_path(path: &str) -> Option<(Slot, Tier)> {
     let (slot, tier) = path.strip_prefix("ai.model.")?.split_once('.')?;
     Some((Slot::from_slug(slot)?, from_slug(tier)?))
 }
 
 /// `ai.auto.pool.<slot>`: the models Automatic chooses among for the slot.
+#[must_use]
 pub fn pool_path(slot: Slot) -> String {
     format!("ai.auto.pool.{}", slot.slug())
 }
 
 /// `ai.auto.pool.<slot>.helper.<id>`: the models Automatic chooses among for the slot when
-/// `chooser` asks. The assistant's is `pool_path`'s, unchanged. In `inferd.toml` a helper's key
+/// `chooser` asks.
+///
+/// The assistant's is `pool_path`'s, unchanged. In `inferd.toml` a helper's key
 /// is the quoted tail (`"text.helper.<id>" = [...]` under `[ai.auto.pool]`), since a table cannot
 /// share a name with the assistant's list. This is the one writer of the path;
 /// [`parse_pool_path`] reads it back.
+#[must_use]
 pub fn pool_path_of(slot: Slot, chooser: &Chooser) -> String {
     match chooser {
         Chooser::Assistant => pool_path(slot),
@@ -76,6 +81,7 @@ pub fn pool_path_of(slot: Slot, chooser: &Chooser) -> String {
 
 /// The slot and chooser the tail of an `ai.auto.pool.` path names: `<slot>` for the assistant,
 /// `<slot>.helper.<id>` for a helper (the id is everything after `helper.`, dots included).
+#[must_use]
 pub fn parse_pool_key(tail: &str) -> Option<(Slot, Chooser)> {
     match tail.split_once('.') {
         None => Some((Slot::from_slug(tail)?, Chooser::Assistant)),
@@ -87,6 +93,7 @@ pub fn parse_pool_key(tail: &str) -> Option<(Slot, Chooser)> {
 }
 
 /// The slot and chooser an `ai.auto.pool.<slot>` or `ai.auto.pool.<slot>.helper.<id>` path names.
+#[must_use]
 pub fn parse_pool_path(path: &str) -> Option<(Slot, Chooser)> {
     parse_pool_key(path.strip_prefix("ai.auto.pool.")?)
 }

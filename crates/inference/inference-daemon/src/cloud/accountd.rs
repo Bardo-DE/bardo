@@ -13,25 +13,15 @@
 //! needs no permit. A seam that has no such account answers none.
 
 use super::own::OwnServer;
-use account_capability::LlmFeature;
 use account_core::consent::{Usage, Verdict};
 use account_core::{AccountId, GrantId};
 use account_core::{AccountState, AppId, DataClass, SecretText};
-use account_match::LlmNeed;
-use account_match::Need;
 use account_wire::Refusal;
-use base_ids::Tokens;
 use std::fmt::Debug;
 use std::pin::Pin;
 
 /// A boxed future, so the seam can be a trait object.
 pub type Boxed<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>;
-
-/// What a language need is, for the verdicts: chat, any context.
-#[must_use]
-pub fn llm_need() -> Need {
-    Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(0)))
-}
 
 /// What the permits say for an app on one account that could serve a need.
 #[derive(Debug, Clone, PartialEq, Eq)]

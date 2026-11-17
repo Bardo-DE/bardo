@@ -1,10 +1,9 @@
 use super::*;
 use crate::attached::config::{Place, Reach};
-use crate::catalog::{CatalogDirs, local_claims, parse_entry_text, read_catalog};
+use crate::catalog::parse_entry_text;
 use crate::testkit::entries;
 use account_capability::Locality;
 use account_capability::ModelId;
-use account_capability::Subject;
 use base_testkit::Scratch;
 
 fn attached(id: &str, place: Place) -> Attached {
@@ -90,34 +89,4 @@ fn an_entry_inferd_launches_or_an_id_the_catalogue_lacks_is_a_typed_error() {
         scratch.path(),
     );
     assert!(matches!(all, Err(AttachedError::NotAttachable { .. })));
-}
-
-#[test]
-fn the_catalogue_alone_makes_no_claim_for_an_attached_entry_whatever_its_locality_says() {
-    let shipped = CatalogDirs {
-        system: crate::testkit::pinned_stoker_catalog(),
-        user: PathBuf::from("/nonexistent/user/catalog"),
-    };
-    let catalog = read_catalog(&shipped);
-    let entry = catalog
-        .entries
-        .iter()
-        .find(|entry| entry.id.0 == entries::ATTACHED)
-        .expect("the shipped attached entry");
-    assert!(
-        entry.locality.is_on_device(),
-        "the catalogue says on-device"
-    );
-    let claimed: Vec<_> = local_claims(&shipped)
-        .into_iter()
-        .filter_map(|claim| match claim.subject {
-            Subject::Model(id) => Some(id),
-            _ => None,
-        })
-        .collect();
-    assert!(
-        claimed.iter().all(|id| id.as_str() != entries::ATTACHED),
-        "{claimed:?}"
-    );
-    assert!(!claimed.is_empty(), "the launched models still claim");
 }

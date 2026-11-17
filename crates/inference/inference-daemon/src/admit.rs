@@ -89,6 +89,7 @@ pub struct Promoted {
 }
 
 /// What a lane held when it went away.
+#[cfg(test)]
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct Orphans {
     /// Requests that had a seat (in flight on the instance).
@@ -157,6 +158,7 @@ impl Admission {
 
     /// A request that lost its lane (see [`Admission::drop_lane`]) is placed again among `lanes`,
     /// keeping its arrival order.
+    #[cfg(test)]
     pub fn rehome(&mut self, ticket: Ticket, priority: Priority, lanes: &[Lane]) -> Option<Placed> {
         self.place(ticket, lanes, priority)
     }
@@ -175,6 +177,7 @@ impl Admission {
     }
 
     /// An instance went away: its lane is removed and everything it held is handed back.
+    #[cfg(test)]
     pub fn drop_lane(&mut self, lane: Lane) -> Orphans {
         let Some(state) = self.lanes.remove(&lane) else {
             return Orphans::default();
@@ -217,6 +220,7 @@ impl Admission {
 
     /// How many requests stand ahead of `ticket`; `None` when it is seated or unknown.
     #[must_use]
+    #[cfg(test)]
     pub fn ahead(&self, ticket: Ticket) -> Option<Count> {
         let (lane, _) = self.at.get(&ticket)?;
         self.waiting(*lane)
@@ -238,6 +242,7 @@ impl Admission {
 
     /// How many requests are seated or waiting in `lane`.
     #[must_use]
+    #[cfg(test)]
     pub fn load(&self, lane: Lane) -> Count {
         count_of(
             self.lanes

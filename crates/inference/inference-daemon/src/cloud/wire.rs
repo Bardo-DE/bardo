@@ -135,7 +135,7 @@ impl BodyShape {
 
     /// `body` (a JSON object as text) with the changes made; a body that is not an object is
     /// returned as it came.
-    pub fn apply(&self, body: &str) -> String {
+    pub fn apply(self, body: &str) -> String {
         let Ok(Value::Object(mut fields)) = serde_json::from_str::<Value>(body) else {
             return body.to_owned();
         };

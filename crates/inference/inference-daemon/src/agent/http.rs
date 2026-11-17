@@ -80,6 +80,7 @@ impl Request {
 
     /// A request for tests and for the dispatcher's own use.
     #[must_use]
+    #[cfg(test)]
     pub fn new(method: &str, target: &str, headers: &[(&str, &str)], body: &[u8]) -> Self {
         Self {
             method: method.to_owned(),

@@ -1296,7 +1296,6 @@ mod proof;
 mod running;
 mod who;
 
-pub use running::RunError;
 pub use who::Who;
 
 impl crate::spend_rows::SpendBook for Engines {

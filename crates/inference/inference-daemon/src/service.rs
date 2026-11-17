@@ -546,7 +546,7 @@ impl<P: Peers, O: AuditOut + 'static, C: Clock + Clone + 'static> InferenceServe
         match prepared {
             Ok(readiness) => Ok(readiness.slug().to_owned()),
             Err(Unplaced::NoPlace(refusal)) => Err(InferError::no_place(refusal)),
-            Err(Unplaced::Other(refusal)) => Ok(refusal_slug(&refusal.refusal)),
+            Err(Unplaced::Other(refusal)) => Ok(refusal_slug(refusal.refusal)),
         }
     }
 
@@ -1121,8 +1121,8 @@ fn place_row(row: PlaceRow) -> (String, Details) {
 
 /// The slug of a refusal (`requires_cloud`, `unavailable`, ...).
 #[must_use]
-pub fn refusal_slug(refusal: &InferRefusal) -> String {
-    slug(refusal, "kind")
+pub fn refusal_slug(refusal: InferRefusal) -> String {
+    slug(&refusal, "kind")
 }
 
 /// Serves `daemon` on `connection` under the bus name and path, and announces engine changes.

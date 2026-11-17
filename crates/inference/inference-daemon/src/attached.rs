@@ -36,10 +36,9 @@ mod config_file_tests;
 pub use book::AttachedBook;
 pub use check::probe;
 pub use computers::{
-    AddedComputer, AddedFile, AddedModel, AddedProblem, ComputerError, Computers, NewComputer,
-    NewModel, NewReach, NewTailnetComputer, relay_socket,
+    AddedFile, ComputerError, Computers, NewComputer, NewModel, NewReach, NewTailnetComputer,
+    relay_socket,
 };
 pub use inference_router::attached::{
-    Attached, AttachedEntry, AttachedError, KeyFile, KeyFileProblem, NotReady, Place, Reach,
-    Target, engine_id, local_model, models,
+    Attached, AttachedError, KeyFileProblem, NotReady, Place, Reach, Target, models,
 };
