@@ -20,6 +20,13 @@ impl Daemon {
             .env("HOME", home)
             .env("XDG_RUNTIME_DIR", home)
             .env("XDG_CONFIG_HOME", home.join("config"))
+            // Never this computer's `/etc/bardo`: a system of its own in the scratch directory
+            // (no callers table, no screen rules: the shipped ones).
+            .env(
+                computer_use_daemon::SYSTEM_CALLERS_VAR,
+                home.join("system").join("computer-use-callers.toml"),
+            )
+            .env(computer_use_daemon::SYSTEM_DIR_VAR, home.join("system"))
             .envs(extra.iter().copied())
             .stdin(Stdio::null())
             .stdout(Stdio::null())

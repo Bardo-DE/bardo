@@ -82,13 +82,10 @@ fn load_config(path: Option<&Path>) -> Result<ComputerUseDaemonConfig, Fatal> {
     }
 }
 
-/// Where an administrator's replacement for the shipped screen rules goes.
-const SYSTEM_DIR: &str = "/etc/bardo";
-
-/// The screen rules: the administrator's `screen-rules.toml` when there is one, else the file the
-/// program ships.
-fn load_rules() -> Result<Rules, Fatal> {
-    let path = Path::new(SYSTEM_DIR).join(RULES_FILE);
+/// The screen rules: the administrator's `screen-rules.toml` (in the folder of the administrator's
+/// files, `/etc/bardo`) when there is one, else the file the program ships.
+fn load_rules(env: &impl Fn(&str) -> Option<String>) -> Result<Rules, Fatal> {
+    let path = crate::callers::system_dir(env).join(RULES_FILE);
     match std::fs::read_to_string(&path) {
         Ok(text) => {
             parse_rules(&text).map_err(|e| Fatal::Config(format!("{}: {e}", path.display())))
@@ -119,7 +116,7 @@ pub async fn run(
         Command::Serve(path) => path,
     };
     let config = load_config(config_path.as_deref())?;
-    let rules = load_rules()?;
+    let rules = load_rules(&env)?;
     // The desktop's shortcut conventions, read once and told to every run's model.
     let platform = keymap::detect(keymap::HostOs::compiled(), env);
     let (keymap, problems) = crate::desktop_keymap(platform, env);

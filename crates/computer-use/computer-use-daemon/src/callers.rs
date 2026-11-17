@@ -59,6 +59,24 @@ pub fn read(env: &impl Fn(&str) -> Option<String>) -> Result<CallerTable, Caller
 #[cfg(feature = "fixture-callers")]
 pub const SYSTEM_CALLERS_VAR: &str = "BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS";
 
+/// The test build's folder of the administrator's files in place of `/etc/bardo`, for the screen
+/// rules (`fixture-callers` only).
+#[cfg(feature = "fixture-callers")]
+pub const SYSTEM_DIR_VAR: &str = "BARDO_COMPUTER_USE_TEST_SYSTEM_DIR";
+
+/// The folder of the administrator's files: `/etc/bardo`, or in a test build the folder
+/// [`SYSTEM_DIR_VAR`] names.
+#[must_use]
+pub fn system_dir(env: &impl Fn(&str) -> Option<String>) -> PathBuf {
+    #[cfg(feature = "fixture-callers")]
+    if let Some(dir) = env(SYSTEM_DIR_VAR).filter(|dir| !dir.is_empty()) {
+        return PathBuf::from(dir);
+    }
+    #[cfg(not(feature = "fixture-callers"))]
+    let _ = env;
+    PathBuf::from(action_dbus::callers::SYSTEM_DIR)
+}
+
 /// The test build's process tree in place of `/proc` and the unit manager (`fixture-callers` only).
 #[cfg(feature = "fixture-callers")]
 pub const PROC_ROOT_VAR: &str = "BARDO_COMPUTER_USE_TEST_PROC_ROOT";

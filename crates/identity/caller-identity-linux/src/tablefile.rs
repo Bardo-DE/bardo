@@ -10,6 +10,10 @@ use std::path::{Path, PathBuf};
 
 /// The largest table file read.
 pub const TABLE_FILE_CAP: u64 = 64 * 1024;
+/// The variable that names the main file of the desktop's table in a test build (the feature
+/// `fake`): [`TableFiles::desktop`].
+#[cfg(feature = "fake")]
+pub const DESKTOP_CALLERS_VAR: &str = "BARDO_DESKTOP_CALLERS";
 /// The most files read from the drop-in directory.
 pub const DROP_IN_FILES_MAX: usize = 64;
 
@@ -28,8 +32,20 @@ impl TableFiles {
     }
 
     /// The desktop's own place: `/etc/bardo/desktop-callers.toml` and `/etc/bardo/desktop-callers.d`.
+    ///
+    /// A build with the feature `fake` (a test build, never a shipped one) reads the main file
+    /// [`DESKTOP_CALLERS_VAR`] names, and the drop-ins in the folder of the same name ending in
+    /// `.d`, when the variable is set, so that no test reads this computer's `/etc/bardo`. A
+    /// scratch file is not root-only, so the table loaded from it is refused: nobody is a
+    /// service, which is what a test that names none wants.
     #[must_use]
     pub fn desktop() -> TableFiles {
+        #[cfg(feature = "fake")]
+        if let Some(main) = std::env::var_os(DESKTOP_CALLERS_VAR).filter(|main| !main.is_empty()) {
+            let mut drop_ins = main.clone();
+            drop_ins.push(".d");
+            return TableFiles::new(PathBuf::from(main), PathBuf::from(drop_ins));
+        }
         TableFiles::new(
             PathBuf::from("/etc/bardo/desktop-callers.toml"),
             PathBuf::from("/etc/bardo/desktop-callers.d"),

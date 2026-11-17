@@ -336,12 +336,12 @@ for pkg in computer-use-daemon; do
   fi
 done
 
-# No shipped source names the harness's variables, apart from the two constants, each behind
+# No shipped source names the harness's variables, apart from the three constants, each behind
 # `#[cfg(feature = "fixture-callers")]` on the line before.
 leaks=$(grep -rnE 'BARDO_COMPUTER_USE_TEST_|PROC_ROOT' */ --include='*.rs' --exclude-dir=tests \
-  | grep -vE '^computer-use-daemon/src/callers.rs:[0-9]+:pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR): &str = "BARDO_COMPUTER_USE_TEST_(SYSTEM_CALLERS|PROC_ROOT)";$' \
+  | grep -vE '^computer-use-daemon/src/callers.rs:[0-9]+:pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR|SYSTEM_DIR_VAR): &str = "BARDO_COMPUTER_USE_TEST_(SYSTEM_CALLERS|PROC_ROOT|SYSTEM_DIR)";$' \
   | grep -vE '^computer-use-daemon/src/callers.rs:[0-9]+:.*env\(PROC_ROOT_VAR\)' || true)
-for line in $(grep -nE '^pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR)' computer-use-daemon/src/callers.rs | cut -d: -f1); do
+for line in $(grep -nE '^pub const (SYSTEM_CALLERS_VAR|PROC_ROOT_VAR|SYSTEM_DIR_VAR)' computer-use-daemon/src/callers.rs | cut -d: -f1); do
   sed -n "$((line - 1))p" computer-use-daemon/src/callers.rs | grep -qx '#\[cfg(feature = "fixture-callers")\]' \
     || leaks="$leaks"$'\n'"computer-use-daemon/src/callers.rs:$line: not behind the fixture-callers cfg"
 done

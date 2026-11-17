@@ -32,5 +32,7 @@ pub use owners::OwnerView;
 pub use pin::{Alive, Pinned};
 pub use probe::{PROBE_MAX_READS, PROBE_READ_CAP, Prober};
 pub use procfs::{Follow, ProcFs, RealProc, trust_of_mode};
+#[cfg(feature = "fake")]
+pub use tablefile::DESKTOP_CALLERS_VAR;
 pub use tablefile::{DROP_IN_FILES_MAX, TABLE_FILE_CAP, TableFiles};
 pub use walk::{WALK_MAX, dirs_trust, path_trust};

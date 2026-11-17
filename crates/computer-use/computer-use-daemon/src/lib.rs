@@ -36,6 +36,8 @@ pub use callers::{
     FILE as CALLERS_FILE, classify, identity as caller_identity, read as read_callers,
     shipped as shipped_callers,
 };
+#[cfg(feature = "fixture-callers")]
+pub use callers::{SYSTEM_CALLERS_VAR, SYSTEM_DIR_VAR};
 pub use computer_use_host::{
     A11yChoice, AppAllow, AppRule, Apps, BackendChoice, ComputerUseDaemonConfig,
     ComputerUseSettings, ConfigError, DaemonLinks, IntentsCheck, IntentsGate, RecordContext,

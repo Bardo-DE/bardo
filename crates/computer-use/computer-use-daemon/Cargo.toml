@@ -22,7 +22,8 @@ path = "src/main.rs"
 default = ["key-remap"]
 key-remap = ["dep:key-remap-client"]
 # A test build only: callers are read from a fixture process tree and a callers file the harness
-# names (`BARDO_COMPUTER_USE_TEST_PROC_ROOT`, `BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS`) in place of `/proc` and `/etc/bardo`.
+# names (`BARDO_COMPUTER_USE_TEST_PROC_ROOT`, `BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS`) in place of `/proc` and `/etc/bardo`, and the
+# screen rules are read from `BARDO_COMPUTER_USE_TEST_SYSTEM_DIR`.
 # Never on in a shipped build.
 fixture-callers = ["action-dbus/fixture-callers"]
 
@@ -58,6 +59,8 @@ futures-util = { workspace = true, features = ["std"] }
 caller-role-types = {path = "../../identity/caller-role-types"}
 
 [dev-dependencies]
+# The tests read a callers table and screen rules of their own, which only a test build does.
+computer-use-daemon = {path = ".", features = ["fixture-callers"]}
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 action-gate-wire = {path = "../../actions/action-gate-wire"}
 permission-core = {path = "../../actions/permission-core"}
