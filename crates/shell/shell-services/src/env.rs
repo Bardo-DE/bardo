@@ -12,6 +12,7 @@ mod ibus;
 mod passwd;
 mod release;
 mod session_actions;
+mod sound;
 mod wall_clock;
 mod wayland;
 
@@ -38,6 +39,7 @@ pub use release::{SESSION_MODE_VAR, SessionMode};
 pub use session_actions::{
     DryRunActions, DryRunOffers, LogindActions, SessionActions, dry_run_line,
 };
+pub use sound::SoundRoute;
 pub use wall_clock::{FixedClock, SystemClock, WallClock};
 pub use wayland::{HandedSocket, WaylandRoute, WaylandUnreachedError};
 
@@ -55,6 +57,8 @@ pub struct Env {
     pub ibus: IbusRoute,
     /// The wall clock the services read.
     pub clock: Arc<dyn WallClock>,
+    /// The sound server the volume service connects to.
+    pub sound: SoundRoute,
     /// The DDC/CI buses external monitors answer on.
     pub ddc: Arc<dyn DdcBus>,
     /// Where idle's screen-off and suspend times come from.
@@ -153,6 +157,7 @@ impl Env {
             dirs: Dirs::from_process(),
             ibus: IbusRoute::from_process(),
             clock: Arc::new(SystemClock),
+            sound: SoundRoute::Server,
             ddc: Arc::new(I2cBuses::default()),
             idle_times: IdleTimesSource::Settings,
             session_actions: Arc::new(LogindActions),
@@ -178,7 +183,7 @@ impl Env {
     /// every directory inside `scratch`, the system clock (read only), DDC monitors from a file
     /// that is not there (none), no polkit helper, session actions that are only recorded, and a
     /// password check that refuses everything, a made-up person for the account, no processes
-    /// running, no child started (each is recorded), no key remap daemon socket, no bus name claimed and callers judged against an empty table (every call to a
+    /// running, no child started (each is recorded), no key remap daemon socket, no sound server, no bus name claimed and callers judged against an empty table (every call to a
     /// shell object is refused until a test says who its stand-ins are). For tests that start
     /// services and must never reach the person's session or files. `scratch` must exist: the
     /// wallpaper service watches the nearest existing folder above the wallpaper's source file.
@@ -191,6 +196,7 @@ impl Env {
             dirs: Dirs::under(scratch),
             ibus: IbusRoute::Absent,
             clock: Arc::new(SystemClock),
+            sound: SoundRoute::Absent,
             ddc: Arc::new(FileBus::new(scratch.join("no-ddc-monitors.json"))),
             idle_times: IdleTimesSource::Settings,
             polkit: polkit_agent::PolkitRoute {
