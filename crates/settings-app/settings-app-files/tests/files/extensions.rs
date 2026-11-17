@@ -10,7 +10,7 @@ use settings_app_model::{
 use settings_app_testkit::{
     Scratch, install_file_icons, install_look, install_torn_look, install_your_changes,
 };
-use ui_settings::schema::{FilePath, ForeignTables, KeyKind};
+use settings_types::schema::{FilePath, ForeignTables, KeyKind};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const PAPER: &str = "org.example.Paper";

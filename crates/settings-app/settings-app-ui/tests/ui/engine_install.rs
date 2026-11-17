@@ -11,7 +11,7 @@ use crate::support::inferd::Inferd;
 use settings_app_model::{ASSISTANT_MODEL_SLUG, EngineStanding, InstallScope, PageSlug};
 use settings_app_ui::Opening;
 use ui_harness::{Harness, Input};
-use ui_settings::live::Verdict;
+use settings_dbus::Verdict;
 
 const MODEL_BUTTON: &str = ".assistant-model .ds-popup .ds-button";
 const ENGINE_BUTTON: &str = "#picker-engine-ai-model-text-balanced .ds-popup .ds-button";

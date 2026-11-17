@@ -7,7 +7,7 @@ use settings_app_model::{
     holds_memory_settings, is_memory_setting, kept_value, tells_confinement, to_confirm,
 };
 use settings_app_testkit::{Scratch, seed_schemas};
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 const AT_REST: &str = "memory.files.at_rest";

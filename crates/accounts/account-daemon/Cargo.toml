@@ -37,7 +37,8 @@ account-settings = {path = "../account-settings"}
 account-sheets = {path = "../account-sheets"}
 account-store = {path = "../account-store"}
 account-tailscale = {path = "../account-tailscale", features = ["io"]}
-ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -52,7 +53,7 @@ zbus = {workspace = true, features = ["tokio"]}
 account-client = {path = "../account-client"}
 account-client-dbus = {path = "../account-client-dbus"}
 base-testkit = {features = ["tokio"], path = "../../base/base-testkit"}
-ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}
 account-http = {path = "../account-http"}

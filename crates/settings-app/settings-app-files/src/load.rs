@@ -6,8 +6,8 @@ use crate::unknown::unknown_keys;
 use crate::values::{ConfigHome, FileValues};
 use settings_app_model::{Control, FileSpec};
 use std::collections::BTreeMap;
-use ui_settings::schema::KeyPath;
-use ui_settings::{InvalidKey, Loaded};
+use settings_types::schema::KeyPath;
+use settings_store::{InvalidKey, Loaded};
 
 /// What `spec`'s file holds: every valid value laid over the keys' defaults.
 ///
@@ -28,7 +28,7 @@ pub fn load(home: &ConfigHome, spec: &FileSpec) -> Loaded<FileValues> {
     match text.parse::<toml::Table>() {
         Ok(mut table) => {
             // A corner's command in its older spelling, read the way the program itself reads it.
-            ui_settings::schema::fold_older_commands(&mut table);
+            settings_types::schema::fold_older_commands(&mut table);
             overlay(spec, &table)
         }
         Err(error) => Loaded::garbled(defaults(spec), error.message().to_owned()),

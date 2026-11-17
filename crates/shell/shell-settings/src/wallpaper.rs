@@ -2,11 +2,11 @@
 //! pictures with "Add Picture..." (`control = "picture"`).
 
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// The desktop's picture.
 #[derive(
-    Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema,
+    Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema,
 )]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "wallpaper", page = Page::declared("wallpaper"))]

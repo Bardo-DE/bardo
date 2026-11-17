@@ -15,7 +15,7 @@ use settings_app_system::modules::FakeModules;
 use settings_app_system::updates::NOW;
 use settings_app_ui::Opening;
 use ui_harness::Harness;
-use ui_settings::live::AnyOwner;
+use settings_dbus::AnyOwner;
 
 const MEET: &str = "org.example.Meet";
 const CALL: &str = "org.example.Call";

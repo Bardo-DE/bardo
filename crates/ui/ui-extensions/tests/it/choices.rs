@@ -3,7 +3,7 @@
 use ui_extensions::look::stylesheet_for;
 use ui_extensions::{Capability, ExtensionId, Search, choices_for, chosen};
 use ui_settings::quire_schema;
-use ui_settings::schema::{Control, KeyKind, KeyPath, Provided};
+use settings_types::schema::{Control, KeyKind, KeyPath, Provided};
 
 use crate::support::{ICONS, Scratch, install_entries, install_look, write};
 

@@ -4,7 +4,7 @@ use crate::config_file::ConfigFile;
 use crate::origin::{OriginRule, SchemaOrigin};
 use crate::warning::{StaleReason, Warning};
 use std::path::PathBuf;
-use ui_settings::schema::{AgentSetting, AppId, Footnote, ForeignTables, KeySpec, Schema};
+use settings_types::schema::{AgentSetting, AppId, Footnote, ForeignTables, KeySpec, Schema};
 
 /// The schema `version` this app reads.
 const SUPPORTED_VERSION: u16 = 1;
@@ -41,7 +41,7 @@ pub fn discover(dirs: &[PathBuf]) -> Discovery {
     discover_under(dirs, &OriginRule::Ownership)
 }
 
-/// Every schema under `dirs` (`ui_settings::schema::data_dirs`: the system's directories, then `$XDG_DATA_HOME`'s, in the order of trust), the folders judged by `rule`.
+/// Every schema under `dirs` (`settings_store_fs::data_dirs`: the system's directories, then `$XDG_DATA_HOME`'s, in the order of trust), the folders judged by `rule`.
 ///
 /// `ui_settings` admits a schema only for its own program and location (the first one found for a
 /// program wins, so the user's directory never replaces an installed schema) and reports the rest
@@ -59,7 +59,7 @@ pub fn discover_under(dirs: &[PathBuf], rule: &OriginRule) -> Discovery {
     let mut found = Discovery::default();
     for dir in dirs {
         let origin = rule.judge(dir);
-        for schema in ui_settings::schema::discover(std::slice::from_ref(dir)) {
+        for schema in settings_store_fs::discover(std::slice::from_ref(dir)) {
             if !seen.contains(&schema.app) {
                 seen.push(schema.app.clone());
                 found = admit(found, schema, origin);

@@ -4,10 +4,10 @@
 //! `Page::KeyboardAndShortcuts`. All Advanced.
 
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// Screenshots.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(
     file = "shell/settings.toml", domain = "screenshot", page = Page::KeyboardAndShortcuts,

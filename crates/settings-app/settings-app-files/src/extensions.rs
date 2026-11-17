@@ -19,7 +19,7 @@ use ui_extensions::{
     Capability, ExtensionId, ExtensionsFile, Found, Power, Problem, Search, YOUR_CHANGES_ID,
     YourChanges, choices_for,
 };
-use ui_settings::schema::{FilePath, KeyPath};
+use settings_types::schema::{FilePath, KeyPath};
 
 /// The file that lists the Extensions turned off, under the config home.
 const FILE: &str = "bardo/extensions.toml";

@@ -16,7 +16,7 @@ use settings_app_ui::Opening;
 use std::time::Duration;
 use ui_components::prelude::ShortcutKey;
 use ui_harness::{Harness, Input};
-use ui_settings::live::Verdict;
+use settings_dbus::Verdict;
 
 const READY: &str = "[data-run=\"ready\"]";
 const STOPPED: &str = "[data-run=\"stopped\"]";

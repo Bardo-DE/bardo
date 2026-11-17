@@ -9,7 +9,7 @@ use ui_extensions::{
     ExtensionId, FileFacts, FileIcons, FolderFacts, IconPick, Search, YourChanges,
 };
 use ui_helpers::mime::{FileName, MimeDb, MimeLayer, MimeType, NameGuess};
-use ui_settings::schema::Provided;
+use settings_types::schema::Provided;
 use ui_style::icon::file_kind::{ExtLabel, FileKind, FolderKind};
 
 use crate::support::{ICONS, Scratch, install_entries};

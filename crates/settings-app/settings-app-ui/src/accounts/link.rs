@@ -3,7 +3,7 @@
 
 use dioxus::prelude::*;
 use settings_app_model::{AccountKey, AccountTarget, AccountsInput, AccountsPane, PageSlug};
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// What the pane is asked to show.
 #[derive(Debug, Clone, PartialEq, Eq)]

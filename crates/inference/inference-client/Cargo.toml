@@ -33,7 +33,6 @@ zbus = {workspace = true, features = ["tokio"], optional = true}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
-ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
 computer-use-action = {path = "../../computer-use/computer-use-action"}
 # The scripted inference session the session tests play (`porter_infer::testing`).
 inference-core = {path = "../inference-core", features = ["testing"]}

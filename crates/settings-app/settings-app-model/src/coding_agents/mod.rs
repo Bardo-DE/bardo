@@ -26,7 +26,7 @@ pub use add_choice::{AddAction, Candidate, Listing, Presence, Step};
 pub use offer::{AgentOffer, AgentReason, offers};
 
 use crate::picker::Described;
-use ui_settings::schema::{ChoiceGroup, ChoiceWord, KeyKind, KeySpec, UnavailableReason};
+use settings_types::schema::{ChoiceGroup, ChoiceWord, KeyKind, KeySpec, UnavailableReason};
 
 /// The reason key of an agent whose switch is off: picking it asks to turn the switch on. A key
 /// the picker matches, never shown; the window words `Gate::TurnOn` itself.

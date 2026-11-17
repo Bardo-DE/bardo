@@ -27,7 +27,7 @@ impl FirstRunMark {
     #[must_use]
     pub fn under(home: &StateHome) -> FirstRunMark {
         FirstRunMark {
-            path: ui_settings::app_folder(&home.0, "settings").join(FILE),
+            path: settings_types::app_folder(&home.0, "settings").join(FILE),
         }
     }
 

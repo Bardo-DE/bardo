@@ -9,7 +9,7 @@ use shell_settings::ShellFile;
 use shell_ui_kit::links::FocusLink;
 use tokio::runtime::Handle;
 use tokio::sync::{mpsc, watch};
-use ui_settings::Store;
+use settings_store_fs::Store;
 
 use super::write_key::write_key;
 

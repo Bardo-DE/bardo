@@ -9,7 +9,7 @@ pub(crate) use settings_app_system::modules::Followed;
 use settings_app_system::modules::{Module, ModulesLink};
 use std::sync::{Arc, Mutex, PoisonError};
 use tokio::sync::mpsc::unbounded_channel;
-use ui_settings::schema::KeyKind;
+use settings_types::schema::KeyKind;
 
 /// The handle of a module while it is there.
 #[derive(Debug, Clone, Default)]

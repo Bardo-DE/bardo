@@ -3,10 +3,10 @@
 
 use serde::{Deserialize, Serialize};
 use shell_model::notifications::{Presentation, Swipe};
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// Notification banners.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(
     file = "shell/settings.toml", domain = "notifications", page = Page::Notifications,

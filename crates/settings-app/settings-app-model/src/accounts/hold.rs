@@ -3,7 +3,7 @@
 //! of one.
 
 use super::model::AccountKey;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// A dataset's name as the sync service gives it: `<account>/<dataset>`, where the account is
 /// the id as one bus-path segment (`.` and `-` read `_`).

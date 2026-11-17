@@ -9,7 +9,7 @@ use settings_app_testkit::{
 use settings_app_ui::Opening;
 use std::time::Duration;
 use ui_harness::Harness;
-use ui_settings::target::SettingsTarget;
+use settings_types::target::SettingsTarget;
 
 const PAPER: &str = "org.example.Paper";
 const LOOK_MENU: &str = "#key-appearance-look .ds-popup .ds-button";

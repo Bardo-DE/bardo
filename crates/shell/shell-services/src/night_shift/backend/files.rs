@@ -1,6 +1,6 @@
 //! The two files: casement's `settings.toml`, of which only `[night_light]` is touched, and the
 //! manual turn-on's `night-shift.json`. Both are parsed once here into the model's types. The
-//! person's `settings.toml` is edited through `ui_settings::SettingsWriter` (every comment, blank
+//! person's `settings.toml` is edited through `settings_store_fs::SettingsWriter` (every comment, blank
 //! line and key order stays, a link to a dotfiles copy is written through, and a change is one
 //! lock and one write); the manual file is bardo-shell's own and private.
 
@@ -11,9 +11,10 @@ use serde::{Deserialize, Serialize};
 use shell_model::ids::OutputName;
 use shell_model::night_shift::{Manual, MinuteOfDay, NightLight, Schedule, UnixSeconds, Warmth};
 use toml::{Table, Value};
-use ui_core::settings::KeyPath;
+use settings_types::schema::KeyPath;
 use ui_core::word::Word;
-use ui_settings::{Edit, SettingsError, SettingsWriter};
+use settings_store::Edit;
+use settings_store_fs::{SettingsError, SettingsWriter};
 
 use crate::durable;
 use base_fs::NewFileMode;

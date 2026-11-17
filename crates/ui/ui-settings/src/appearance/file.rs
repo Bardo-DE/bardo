@@ -1,8 +1,7 @@
 //! `appearance.toml` as a settings document.
 
 use super::{AppearanceFile, quire_schema};
-use crate::doc::{FileName, Format, SettingsDoc};
-use crate::lenient::Limits;
+use settings_store::{FileName, Format, Limits, SettingsDoc};
 
 impl SettingsDoc for AppearanceFile {
     const FILE: FileName = FileName("appearance.toml");

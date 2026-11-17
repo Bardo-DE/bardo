@@ -5,7 +5,7 @@ use settings_app_model::{
     landing, search, visible_pages,
 };
 use settings_app_testkit::{Scratch, seed_schemas};
-use ui_settings::schema::{Exposure, KeyKind, KeyPath, WordLabels};
+use settings_types::schema::{Exposure, KeyKind, KeyPath, WordLabels};
 
 const TMP: &str = env!("CARGO_TARGET_TMPDIR");
 

@@ -7,13 +7,13 @@
 
 use serde::{Deserialize, Serialize};
 use shell_model::voice::VoiceParams;
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 pub use shell_model::voice::{HoldToTalk, VoiceConsent};
 
 /// Hold-to-talk and the answer to its consent sheet.
 #[derive(
-    Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ui_settings::SettingsSchema,
+    Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, settings_types::SettingsSchema,
 )]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "voice", page = Page::Intelligence)]

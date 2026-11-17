@@ -13,7 +13,7 @@ use crate::space_store::StateDirs;
 use crate::xwayland::{self, XwaylandConfig, XwaylandMode};
 use base_xdg::Xdg;
 use compositor_backend::BackendChoice;
-use ui_settings::AppName;
+use settings_types::AppName;
 
 /// The compositor's folder name inside each XDG base (`<base>/bardo/compositor`).
 const APP: AppName = AppName::desktop("compositor");

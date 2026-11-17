@@ -1,11 +1,8 @@
 //! The small builders of a [`KeySpec`] every row of a settings module uses.
 
 use crate::Boxed;
-use ui_settings::live::LiveError;
-use ui_settings::schema::{
-    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
-    LiveAction, Page, Section, WordLabels,
-};
+use settings_dbus::LiveError;
+use settings_types::schema::{ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page, Section, WordLabels};
 
 /// A key on the Accounts page at `path`, in `section`, hands off to agents.
 #[must_use]

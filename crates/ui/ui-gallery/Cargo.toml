@@ -14,7 +14,7 @@ ui-core = {path = "../ui-core"}
 ui-components = {path = "../ui-components"}
 ui-shell = {path = "../ui-shell"}
 ui-lint = {path = "../ui-lint"}
-ui-settings = {path = "../ui-settings", default-features = false}
+ui-settings = { path = "../ui-settings", default-features = false }
 # `pdf`: so a workspace build compiles and tests `PdfFileThumb` (its tests need it).
 ui-blitz = {path = "../ui-blitz", default-features = false, features = ["pdf", "spell"]}
 ui-harness = {path = "../ui-harness", default-features = false}

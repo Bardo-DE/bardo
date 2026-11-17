@@ -8,7 +8,7 @@ use settings_app_model::{Control as Kind, KeyEntry, SectionModel, tells_confinem
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::FieldGroup;
 use ui_components::prelude::Label;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// Whether a search found `entry`.
 pub(crate) fn is_hit(entry: &KeyEntry, hits: &[KeyPath]) -> bool {

@@ -378,7 +378,9 @@ fn space_store_looks() {
 
 /// Section 10, "Settings files".
 mod settings_files {
-    use ui_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store};
+    use settings_types::AppName;
+use settings_store_fs::{ConfigRoot, Store};
+use settings_store::{FileName, Format, SettingsDoc};
 
     #[derive(Debug, Default, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
     #[serde(default)]
@@ -406,8 +408,8 @@ mod settings_files {
 mod schema {
     use serde::{Deserialize, Serialize};
     use ui_components::prelude::*;
-    use ui_settings::SettingsSchema; // the derive macro (macro namespace)
-    use ui_settings::schema::{Page, SettingsSchema}; // the trait `.schema()` needs (type namespace)
+    use settings_types::SettingsSchema; // the derive macro (macro namespace)
+    use settings_types::schema::{Page, SettingsSchema}; // the trait `.schema()` needs (type namespace)
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
     #[serde(rename_all = "snake_case")]
@@ -440,7 +442,7 @@ mod schema {
 
     fn main() {
         let args: Vec<String> = std::env::args().collect();
-        if ui_settings::schema::maybe_write_schema(&ReaderSettings::schema(), &args)
+        if settings_store_fs::maybe_write_schema(&ReaderSettings::schema(), &args)
             .unwrap_or(false)
         {
             return;
@@ -453,7 +455,8 @@ mod schema {
 #[component]
 fn UserStyled() -> Element {
     use ui_components::style::kit::{Styles, UserStyle};
-    use ui_settings::{AppName, ConfigRoot, Store};
+    use settings_types::AppName;
+use settings_store_fs::{ConfigRoot, Store};
 
     let desktop = Store::new(ConfigRoot::Xdg, AppName::QUIRE);
     let own = Store::new(ConfigRoot::Xdg, AppName::foreign("your-app-id"));

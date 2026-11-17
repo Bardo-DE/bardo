@@ -150,10 +150,7 @@ mod tests {
     use crate::page::PageSlug;
     use crate::page_kind::PageKind;
     use std::collections::BTreeMap;
-    use ui_settings::schema::{
-        AgentSetting, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
-        WordLabels,
-    };
+    use settings_types::schema::{AgentSetting, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels};
 
     fn page(kind: Page, titles: &[&str]) -> PageModel {
         PageModel {

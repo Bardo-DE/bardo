@@ -30,7 +30,8 @@ settings-app-callers = {path = "../settings-app-callers"}
 settings-app-files = {path = "../settings-app-files"}
 settings-app-model = {path = "../settings-app-model"}
 ui-peer = {path = "../../ui/ui-peer"}
-ui-settings = {path = "../../ui/ui-settings", features = ["live", "tokio"]}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 md-5 = { workspace = true }
 engine-install = {path = "../../engines/engine-install"}
 engine-manifest = {path = "../../engines/engine-manifest"}
@@ -56,7 +57,7 @@ zbus-ready = { path = "../../zbus-ready" }
 # The integration tests use the fakes, which the library has behind `testing`.
 settings-app-system = {path = ".", features = ["testing"]}
 settings-app-callers = {path = "../settings-app-callers", features = ["testing"]}
-ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["testing"] }
 
 [lints]
 workspace = true

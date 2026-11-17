@@ -23,7 +23,9 @@ keymap = {path = "../../keymap/keymap"}
 key-remap-client = {path = "../../input/key-remap-client"}
 shell-kit = {path = "../shell-kit"}
 ui-blitz = {path = "../../ui/ui-blitz"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
+ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 layer-shell-host = {path = "../../layer-shell/layer-shell-host"}
 # The test driver, for the `harness` feature.
 ui-harness = {path = "../../ui/ui-harness", optional = true}

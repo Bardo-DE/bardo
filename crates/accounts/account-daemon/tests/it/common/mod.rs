@@ -292,8 +292,8 @@ pub fn refusal_name(refusal: Refusal) -> String {
 pub const ACCESS_DENIED: &str = "org.freedesktop.DBus.Error.AccessDenied";
 pub const UNKNOWN_OBJECT: &str = "org.freedesktop.DBus.Error.UnknownObject";
 
-use ui_settings::live::{AnyOwner, LiveClient};
-use ui_settings::schema::KeyPath;
+use settings_dbus::{AnyOwner, LiveClient};
+use settings_types::schema::KeyPath;
 
 /// A client of the settings module as `who`.
 pub async fn settings_as(rig: &Rig, who: Caller) -> LiveClient {

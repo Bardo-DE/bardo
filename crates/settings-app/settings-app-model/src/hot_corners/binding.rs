@@ -210,7 +210,7 @@ impl HotBinding {
 /// A list gives the bindings it can read, the first for each set of keys. A word (the form
 /// before the list) gives one binding with no keys, or none for `none` and for a word this build
 /// does not know. An older `command` word arrives already folded into a list with its command
-/// (`ui_settings::schema::fold_older_commands`, when the file is read).
+/// (`settings_types::schema::fold_older_commands`, when the file is read).
 pub fn bindings_of(value: &Value) -> Vec<HotBinding> {
     let read = match value {
         Value::String(word) => {

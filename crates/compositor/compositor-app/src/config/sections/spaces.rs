@@ -3,10 +3,10 @@
 use crate::config::convert;
 use compositor_core::settings::CasementSettings;
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// `spaces.*`.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "spaces", page = Page::Spaces)]
 pub struct SpacesSection {

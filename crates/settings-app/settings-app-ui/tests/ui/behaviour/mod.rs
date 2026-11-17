@@ -40,6 +40,6 @@ fn harness_spec(sandbox: &Sandbox) -> settings_app_model::FileSpec {
         .expect("bardo-shell's file")
 }
 
-fn detent_model_key(path: &str) -> ui_settings::schema::KeyPath {
-    ui_settings::schema::KeyPath(path.to_owned())
+fn detent_model_key(path: &str) -> settings_types::schema::KeyPath {
+    settings_types::schema::KeyPath(path.to_owned())
 }

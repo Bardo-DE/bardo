@@ -21,7 +21,7 @@ use shell_ui_kit::services::{Services, Wiring};
 use shell_ui_kit::settings::SettingsFeed;
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
-use ui_settings::Store;
+use settings_store_fs::Store;
 
 use super::events::{Shell, handle};
 use super::msg::ShellMsg;

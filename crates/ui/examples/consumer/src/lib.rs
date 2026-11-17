@@ -15,7 +15,9 @@ use ui_components::focus::request::use_focus_request;
 use ui_components::host::measure::{Anchor, MountedRef};
 use ui_components::prelude::*;
 use ui_components::root::common::Common;
-use ui_settings::{AppName, ConfigRoot, Store, SystemPrefsSource, use_environment};
+use settings_types::AppName;
+use settings_store_fs::{ConfigRoot, Store};
+use ui_settings::{SystemPrefsSource, use_environment};
 
 /// This example's own stylesheet, quire tokens only (`tests/coherence.rs::our_stylesheet_lints_clean`).
 pub const STYLE: &str = include_str!("style.css");

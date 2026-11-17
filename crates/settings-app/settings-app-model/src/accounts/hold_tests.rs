@@ -69,7 +69,7 @@ fn nothing_held_refreshes_and_a_refusal_is_told() {
 #[test]
 fn a_hold_belongs_to_its_account_and_sits_on_its_sync_row() {
     let sync = |leaf: &str| AccountSync {
-        path: ui_settings::schema::KeyPath(format!("accounts.work.example.sync.{leaf}")),
+        path: settings_types::schema::KeyPath(format!("accounts.work.example.sync.{leaf}")),
         label: leaf.to_owned(),
         help: String::new(),
         on: true,

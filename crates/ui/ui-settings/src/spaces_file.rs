@@ -2,7 +2,7 @@
 //! its own key and is reported in `Loaded::invalid`; `by_index` is salvaged entry by entry in
 //! `ui_style::space::store`.
 
-use crate::doc::{FileName, Format, SettingsDoc};
+use settings_store::{FileName, Format, SettingsDoc};
 use ui_style::space::store::SpaceStore;
 
 impl SettingsDoc for SpaceStore {

@@ -21,7 +21,7 @@ action-provider = {path = "../../actions/action-provider", features = ["dbus"]}
 action-core = {path = "../../actions/action-core"}
 action-dbus = {path = "../../actions/action-dbus"}
 ui-peer = {path = "../../ui/ui-peer"}
-ui-settings = {path = "../../ui/ui-settings"}
+settings-types = { path = "../../settings/settings-types" }
 account-core = {path = "../../accounts/account-core"}
 provenance = {path = "../../provenance/provenance"}
 thiserror = { workspace = true }

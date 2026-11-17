@@ -31,7 +31,7 @@ use files_trash::SystemTrash;
 use files_ui::settings;
 use files_ui::{IconSources, Launch};
 use ui_extensions::Search;
-use ui_settings::ConfigRoot;
+use settings_store_fs::ConfigRoot;
 
 use crate::apps::InstalledApps;
 use crate::args::{Args, Start};

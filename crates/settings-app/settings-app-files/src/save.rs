@@ -7,7 +7,7 @@ use base_fs::{NewFileMode, update_atomic};
 use settings_app_model::ConfigFile;
 use std::path::Path;
 use toml_edit::{DocumentMut, Item, Table, Value};
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// Sets `path` in `table` (a real or inline table), making the tables on the way, and leaves
 /// every other key exactly as it was.

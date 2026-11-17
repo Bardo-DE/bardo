@@ -19,7 +19,9 @@ ui-components = {path = "../../ui/ui-components"}
 ui-blitz = {path = "../../ui/ui-blitz"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
 ui-lint = {path = "../../ui/ui-lint"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "live", "tokio"]}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
+ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"]}
 
 [dev-dependencies]
@@ -30,7 +32,7 @@ account-capability = {path = "../../accounts/account-capability"}
 # the owner checks) need the commented ones below.
 settings-app-system = {path = "../settings-app-system", features = ["testing"]}
 settings-app-testkit = {path = "../settings-app-testkit"}
-ui-settings = {path = "../../ui/ui-settings", features = ["testing"]}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["testing"] }
 dioxus-ssr = { workspace = true }
 ui-harness = {path = "../../ui/ui-harness"}
 image = { workspace = true, features = ["png", "jpeg"] }

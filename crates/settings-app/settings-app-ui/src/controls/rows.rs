@@ -15,7 +15,7 @@ use ui_components::components::controls::button_model::Bezel;
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_settings::schema::ColumnKind;
+use settings_types::schema::ColumnKind;
 
 /// The cells of every row, and the rows each change would make.
 #[derive(Clone, PartialEq)]

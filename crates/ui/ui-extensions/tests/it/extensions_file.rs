@@ -1,8 +1,9 @@
 //! `extensions.toml`: the schema'd file that holds the ids turned off.
 
 use ui_extensions::{ExtensionId, ExtensionsFile, Power, extensions_schema};
-use ui_settings::schema::{AgentSetting, ColumnKind, KeyKind, Page, Schema};
-use ui_settings::{AppName, ConfigRoot, Store};
+use settings_types::schema::{AgentSetting, ColumnKind, KeyKind, Page, Schema};
+use settings_types::AppName;
+use settings_store_fs::{ConfigRoot, Store};
 
 use crate::support::Scratch;
 

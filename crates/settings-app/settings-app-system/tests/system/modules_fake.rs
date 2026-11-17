@@ -5,8 +5,8 @@ use crate::modules_bus::{ROW, Words, daemon, is_text};
 use settings_app_model::Absence;
 use settings_app_system::modules::{FakeModules, Followed, ModulesLink};
 use tokio::sync::mpsc::{UnboundedReceiver, unbounded_channel};
-use ui_settings::live::Verdict;
-use ui_settings::schema::KeyPath;
+use settings_dbus::Verdict;
+use settings_types::schema::KeyPath;
 
 /// The next thing a follower is told, or a failure when nothing comes.
 async fn next(heard: &mut UnboundedReceiver<Followed>) -> Followed {

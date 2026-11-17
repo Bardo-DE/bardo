@@ -4,7 +4,7 @@
 
 use tokio::net::UnixStream;
 use tokio::sync::OnceCell;
-use ui_settings::live::{Caller, LiveError, SenderName};
+use settings_dbus::{Caller, LiveError, SenderName};
 use zbus::connection::Builder;
 use zbus::{Connection, Guid};
 

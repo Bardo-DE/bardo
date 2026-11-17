@@ -6,10 +6,7 @@ use super::*;
 use crate::Absence;
 use crate::picker::Described;
 use std::collections::BTreeMap;
-use ui_settings::schema::{
-    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
-    LiveAction, Page, Section,
-};
+use settings_types::schema::{ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page, Section};
 
 fn spec(key: &str, kind: KeyKind) -> KeySpec {
     KeySpec {
@@ -23,7 +20,7 @@ fn spec(key: &str, kind: KeyKind) -> KeySpec {
         page: Page::Accounts,
         section: Section("Account".to_owned()),
         exposure: Exposure::Basic,
-        labels: ui_settings::schema::WordLabels::default(),
+        labels: settings_types::schema::WordLabels::default(),
         unavailable: BTreeMap::default(),
         groups: BTreeMap::default(),
         places: BTreeMap::default(),

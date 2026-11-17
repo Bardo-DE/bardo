@@ -20,7 +20,7 @@ pub(super) fn spec(
         page: Page::Accounts,
         section: Section(section.to_owned()),
         exposure: Exposure::Basic,
-        labels: ui_settings::schema::WordLabels::default(),
+        labels: settings_types::schema::WordLabels::default(),
         unavailable: std::collections::BTreeMap::default(),
         groups: std::collections::BTreeMap::default(),
         places: std::collections::BTreeMap::default(),
@@ -73,14 +73,14 @@ pub(super) fn rows_of(held: &Held) -> Vec<KeySpec> {
     }
     if let Some((provider, name)) = &held.provider {
         let mut row = fixed("provider", "Account type", provider);
-        row.labels = ui_settings::schema::WordLabels(
+        row.labels = settings_types::schema::WordLabels(
             [(provider.clone(), name.clone())].into_iter().collect(),
         );
         rows.push(row);
     }
     if let Some(slug) = &held.group {
         let mut row = fixed("group", "Group", slug);
-        row.labels = ui_settings::schema::WordLabels(
+        row.labels = settings_types::schema::WordLabels(
             [
                 ("internet", "Internet Accounts"),
                 ("intelligence", "Intelligence"),

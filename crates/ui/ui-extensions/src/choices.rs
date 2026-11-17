@@ -2,15 +2,15 @@
 //! installed Extensions are known (design: Extensions, section 5).
 //!
 //! A `Provided` settings key stores `standard` or an Extension id and lists no choices
-//! (`ui_settings::schema::KeyKind::Provided`). The caller that draws it builds [`Choices`] from the
+//! (`settings_types::schema::KeyKind::Provided`). The caller that draws it builds [`Choices`] from the
 //! usable Extensions of the key's capability and fills the key with [`Choices::fill`]; the program
 //! that reads it calls [`chosen`].
 
 use plugin_host::manifest::Provides;
 use plugin_host::registry::Installed;
-use ui_core::settings::ExtensionId;
-use ui_settings::InvalidKey;
-use ui_settings::schema::{KeyPath, KeySpec, Provided, STANDARD, WordLabels};
+use settings_types::target::ExtensionId;
+use settings_store::InvalidKey;
+use settings_types::schema::{KeyPath, KeySpec, Provided, STANDARD, WordLabels};
 
 use crate::capability::Capability;
 use crate::provision::Provision;

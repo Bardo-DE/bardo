@@ -15,7 +15,7 @@ use std::path::{Path, PathBuf};
 use base_fs::{NewFileMode, ReadCap, read_text_capped, write_atomic};
 use serde::{Deserialize, Serialize};
 
-use crate::xdg;
+use settings_store_fs::data_search_from;
 
 /// The most a parts file may hold.
 const PARTS_CAP: ReadCap = ReadCap::kib(256);
@@ -136,13 +136,8 @@ pub fn parts_dirs_from(
     xdg_data_dirs: Option<&std::ffi::OsStr>,
     home: Option<&std::ffi::OsStr>,
 ) -> Vec<PathBuf> {
-    xdg::search_dirs(xdg_data_dirs)
+    data_search_from(xdg_data_home, xdg_data_dirs, home)
         .into_iter()
-        .chain(xdg::base_dir(
-            xdg_data_home,
-            home,
-            xdg::DATA_HOME_UNDER_HOME,
-        ))
         .map(|base| base.join("bardo").join("selectors"))
         .collect()
 }

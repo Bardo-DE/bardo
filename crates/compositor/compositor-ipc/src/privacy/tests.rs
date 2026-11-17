@@ -11,8 +11,8 @@ use caller_identity_dbus::caller_identity_linux::fake::introduced_program;
 use calloop::channel::Channel;
 use compositor_core::policy::Power;
 use compositor_core::privilege::{Edit, PrivacyRow, ProgramPath, Subject, UnixSeconds, Verdict};
-use ui_settings::live::LiveSchema;
-use ui_settings::schema::{KeyKind, KeySpec};
+use settings_dbus::LiveSchema;
+use settings_types::schema::{KeyKind, KeySpec};
 use zbus::zvariant::{OwnedValue, Value};
 
 const NOT_PERMITTED: &str = "org.bardo.SettingsModule1.Error.NotPermitted";

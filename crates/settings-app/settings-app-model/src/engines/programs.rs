@@ -6,7 +6,7 @@
 
 use crate::{Absence, Described, Live};
 use std::collections::BTreeMap;
-use ui_settings::schema::{Exposure, KeyKind, KeyPath};
+use settings_types::schema::{Exposure, KeyKind, KeyPath};
 
 /// The section of the module whose text rows these are.
 pub const PROGRAMS_SECTION: &str = "Local models";

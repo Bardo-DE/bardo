@@ -1,0 +1,21 @@
+[package]
+name = "settings-store"
+description = "Settings files as pure functions of text: the lenient read that costs a bad value only its own key, the save that keeps unknown keys and comments, key edits in a file's text, and the table-driven reader of a daemon's own settings."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+settings-types = { path = "../settings-types" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true }
+# Save merges into the parsed file, keeping unknown keys and comments.
+toml_edit = { workspace = true }
+
+[lints]
+workspace = true

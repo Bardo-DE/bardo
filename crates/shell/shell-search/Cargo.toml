@@ -26,7 +26,8 @@ action-core = {path = "../../actions/action-core"}
 provenance = {path = "../../provenance/provenance"}
 companion-wire = {path = "../../actions/companion-wire"}
 memory-core = {path = "../../memory/memory-core"}
-ui-settings = {path = "../../ui/ui-settings", features = ["tokio"]}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
 emojis = { workspace = true }
 fend-core = { workspace = true }
 jiff = { workspace = true }

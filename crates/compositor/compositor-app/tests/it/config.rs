@@ -408,7 +408,7 @@ fn the_schema_is_written_and_reads_back() {
     let read_back = |dir: &Path, step: &str| {
         let text = std::fs::read_to_string(dir.join("compositor.settings.toml"))
             .unwrap_or_else(|e| panic!("{step}: written: {e}"));
-        ui_settings::schema::Schema::from_toml(&text)
+        settings_types::schema::Schema::from_toml(&text)
             .unwrap_or_else(|e| panic!("{step}: parses: {e:?}"))
     };
     let dir = tempfile::tempdir().expect("temp dir");

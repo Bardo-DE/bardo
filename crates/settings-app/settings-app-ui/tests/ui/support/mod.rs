@@ -39,8 +39,8 @@ use std::sync::Arc;
 use ui_components::prelude::{Scheme, SystemPrefs};
 use ui_harness::{Clock, Harness, HarnessConfig, Viewport};
 use ui_settings::SystemPrefsSource;
-use ui_settings::live::AnyOwner;
-use ui_settings::schema::Schema;
+use settings_dbus::AnyOwner;
+use settings_types::schema::Schema;
 use wifi::Wifi;
 
 pub const TMP: &str = env!("CARGO_TARGET_TMPDIR");

@@ -13,7 +13,9 @@ ui-core = {path = "../../ui/ui-core"}
 key-remap-proto = {path = "../../input/key-remap-proto"}
 shell-launcher = {path = "../shell-launcher"}
 shell-model = {path = "../shell-model"}
-ui-settings = {path = "../../ui/ui-settings", features = ["tokio"]}
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
 serde = { workspace = true, features = ["derive"] }
 toml = { workspace = true }
 

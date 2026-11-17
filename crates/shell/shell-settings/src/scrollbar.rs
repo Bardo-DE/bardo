@@ -3,7 +3,7 @@
 
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// `scrollbar.track_click_mode`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
@@ -18,7 +18,7 @@ pub enum TrackClick {
 }
 
 /// The overlay scrollbar's geometry and timing.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "scrollbar", page = Page::MouseAndGestures)]
 pub struct ScrollbarSettings {

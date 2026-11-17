@@ -17,7 +17,6 @@ dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 keymap = {path = "../../keymap/keymap"}
 ui-components = {path = "../../ui/ui-components"}
 ui-behaviour = {path = "../../ui/ui-behaviour"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
 shell-kit = {path = "../shell-kit"}
 ui-shell = {path = "../../ui/ui-shell"}
 jiff = { workspace = true }
@@ -32,6 +31,7 @@ shell-ui-kit = {path = "../shell-ui-kit"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "process", "io-util"]}
 
 [dev-dependencies]
+ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 desktop-client = {path = "../../wayland/desktop-client", features = ["fake"]}
 shell-testkit = {path = "../shell-testkit"}
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}

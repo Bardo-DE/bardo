@@ -1,0 +1,292 @@
+//! The lenient reader every settings file uses (design/22-SETTINGS.md section 2, "Unknown
+//! values fall back to the field's default"): a bad value costs that one key, never the file.
+//!
+//! The doc sketches this as a `deserialize_with` helper that falls back to the field *type's*
+//! `Default`; that would turn a bad number into 0 rather than the key's shipped default. So the fallback is the *struct's* default for that key: start from `D::default()` as a
+//! key tree, lay each key the file sets over it one at a time, and keep a key only if `D` still
+//! deserializes with it. A key `D` accepts but does not store back is one nobody reads: it is
+//! reported in [`Loaded::unknown`]. A TOML file's save leaves it in the file with the comments
+//! around it (`Store::save`); other formats write only the type's own keys.
+
+mod limits;
+mod wire;
+
+use crate::doc::{FileName, Format};
+pub use limits::{ClampedKey, LimitBounds, Limits};
+use serde::Serialize;
+use serde::de::DeserializeOwned;
+use settings_types::schema::fold_older_commands;
+use std::collections::HashSet;
+use std::fmt;
+use wire::{JsonWire, TomlWire, Wire};
+
+/// A settings file as read: the value, and everything in the file that did not become part of
+/// it. Reading never fails; the caller reports what it finds.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Loaded<D> {
+    /// Every valid key laid over the type's defaults.
+    pub value: D,
+    /// Keys the type does not read, dropped.
+    pub unknown: Vec<UnknownKey>,
+    /// Keys whose value was not valid for their field; the field's default was used.
+    pub invalid: Vec<InvalidKey>,
+    /// Numbers outside their key's range ([`SettingsDoc::limits`](crate::SettingsDoc::limits)),
+    /// brought to the nearest end.
+    pub clamped: Vec<ClampedKey>,
+}
+
+/// A key path (`dock.puppy`) the file sets and the type does not read. The path stops at the
+/// first table the type has no key for, so a whole unknown table is one entry.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct UnknownKey(pub String);
+
+/// A key whose value the type refused.
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct InvalidKey {
+    /// The dotted key path; empty when the whole file is not valid text and nothing in it could
+    /// be read.
+    pub path: String,
+    /// Why the value was refused.
+    pub reason: String,
+}
+
+impl fmt::Display for UnknownKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "unknown key `{}` is not read", self.0)
+    }
+}
+
+impl fmt::Display for InvalidKey {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.path.as_str() {
+            "" => write!(
+                f,
+                "not valid, the previous or default settings are used: {}",
+                self.reason
+            ),
+            path => write!(
+                f,
+                "`{path}` is not valid, its default is used: {}",
+                self.reason
+            ),
+        }
+    }
+}
+
+impl<D> Loaded<D> {
+    /// A read that found nothing to report.
+    pub fn clean(value: D) -> Self {
+        Loaded {
+            value,
+            unknown: Vec::new(),
+            invalid: Vec::new(),
+            clamped: Vec::new(),
+        }
+    }
+
+    /// `value` for a file that is not valid text at all: the whole file is the one invalid key.
+    pub fn garbled(value: D, reason: String) -> Self {
+        Loaded {
+            value,
+            unknown: Vec::new(),
+            invalid: vec![InvalidKey {
+                path: String::new(),
+                reason,
+            }],
+            clamped: Vec::new(),
+        }
+    }
+
+    /// One line per refused value, unknown key and clamped number, each beginning with the daemon's
+    /// name, for its log. A value that was refused is replaced by the previous one.
+    #[must_use]
+    pub fn lines(&self, daemon: &str) -> Vec<String> {
+        let refused = self.invalid.iter().map(|key| {
+            let path = if key.path.is_empty() {
+                "settings.toml"
+            } else {
+                key.path.as_str()
+            };
+            format!(
+                "{daemon}: settings: {path}: {}; using the previous value",
+                key.reason
+            )
+        });
+        let unknown = self
+            .unknown
+            .iter()
+            .map(|key| format!("{daemon}: settings: {}: no such key, ignored", key.0));
+        let clamped = self
+            .clamped
+            .iter()
+            .map(|key| format!("{daemon}: settings: {key}"));
+        refused.chain(unknown).chain(clamped).collect()
+    }
+
+    /// One line per unknown, invalid or clamped key, each beginning with the file's name, for the
+    /// caller's own log.
+    pub fn diagnostics(&self, file: FileName) -> Vec<String> {
+        let name = file.0;
+        self.unknown
+            .iter()
+            .map(|key| format!("{name}: {key}"))
+            .chain(self.invalid.iter().map(|key| format!("{name}: {key}")))
+            .chain(self.clamped.iter().map(|key| format!("{name}: {key}")))
+            .collect()
+    }
+}
+
+impl<D: Default> Default for Loaded<D> {
+    fn default() -> Self {
+        Loaded::clean(D::default())
+    }
+}
+
+/// What reading a file's text produced.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Read<D> {
+    /// The text was a file of this format; some keys may still have been refused.
+    Loaded(Loaded<D>),
+    /// The text is not this format at all (a half-written file, a hand edit with a syntax
+    /// error): nothing in it could be read.
+    Garbled {
+        /// Why the text does not parse.
+        reason: String,
+    },
+}
+
+/// The most keys one file may set. The reader lays them over the defaults one at a time, each
+/// time re-reading the whole tree, so its cost grows with the square of this; the largest real
+/// file is a few hundred keys.
+const MAX_LEAVES: usize = 4_000;
+
+/// `text` as a `D` in `format`, keeping every key that is valid and the default for every key
+/// that is not.
+pub fn read<D>(text: &str, format: Format) -> Read<D>
+where
+    D: Serialize + DeserializeOwned + Default,
+{
+    read_within(text, format, &Limits::none())
+}
+
+/// [`read`], with every number held to its range in `limits`.
+pub fn read_within<D>(text: &str, format: Format, limits: &Limits) -> Read<D>
+where
+    D: Serialize + DeserializeOwned + Default,
+{
+    match format {
+        Format::Toml => overlay::<D, TomlWire>(text, limits),
+        Format::Json => overlay::<D, JsonWire>(text, limits),
+        Format::Css => raw::<D>(text),
+    }
+}
+
+/// `text` as the one string a raw document holds: every text is valid, so nothing is reported.
+fn raw<D: DeserializeOwned>(text: &str) -> Read<D> {
+    match serde_json::from_value(serde_json::Value::String(text.to_owned())) {
+        Ok(value) => Read::Loaded(Loaded::clean(value)),
+        Err(error) => Read::Garbled {
+            reason: error.to_string(),
+        },
+    }
+}
+
+fn overlay<D, W>(text: &str, limits: &Limits) -> Read<D>
+where
+    D: Serialize + DeserializeOwned + Default,
+    W: Wire,
+{
+    let given = match W::parse(text) {
+        Ok(given) => given,
+        Err(reason) => return Read::Garbled { reason },
+    };
+    let Some(mut tree) = W::encode(&D::default()) else {
+        return Read::Loaded(Loaded::clean(D::default()));
+    };
+    let leaves = W::leaves(&given);
+    if leaves.len() > MAX_LEAVES {
+        return Read::Garbled {
+            reason: format!("sets more than {MAX_LEAVES} keys"),
+        };
+    }
+    let mut unknown: Vec<UnknownKey> = Vec::new();
+    let mut seen_unknown: HashSet<String> = HashSet::new();
+    let mut invalid = Vec::new();
+    let mut clamped = Vec::new();
+    for (path, value) in leaves {
+        let value = within::<W>(&path, value, limits, &mut clamped);
+        let given_len = W::value_len(&value);
+        let mut candidate = tree.clone();
+        W::set(&mut candidate, &path, value);
+        match W::decode::<D>(&candidate) {
+            Err(reason) => invalid.push(InvalidKey {
+                path: path.join("."),
+                reason,
+            }),
+            Ok(decoded) => match W::encode(&decoded) {
+                Some(stored) if !W::has(&stored, &path) => {
+                    let prefix = unread_prefix::<W>(&stored, &path);
+                    if seen_unknown.insert(prefix.clone()) {
+                        unknown.push(UnknownKey(prefix));
+                    }
+                }
+                Some(stored) => {
+                    if let (Some(given), Some(kept)) = (given_len, W::list_len(&stored, &path))
+                        && kept < given
+                    {
+                        invalid.push(InvalidKey {
+                            path: path.join("."),
+                            reason: format!(
+                                "{} of {given} entries are not valid and were dropped",
+                                given - kept
+                            ),
+                        });
+                    }
+                    tree = candidate;
+                }
+                None => tree = candidate,
+            },
+        }
+    }
+    let value = W::decode(&tree).unwrap_or_default();
+    Read::Loaded(Loaded {
+        value,
+        unknown,
+        invalid,
+        clamped,
+    })
+}
+
+/// `value` brought into the range `limits` gives the key at `path`, noting the change in
+/// `clamped`; a value in range, or a key with no range, comes back as it was.
+fn within<W: Wire>(
+    path: &[String],
+    value: W::Value,
+    limits: &Limits,
+    clamped: &mut Vec<ClampedKey>,
+) -> W::Value {
+    let dotted = path.join(".");
+    let Some(held) = limits
+        .bounds(&dotted)
+        .and_then(|bounds| W::clamp(&value, bounds))
+    else {
+        return value;
+    };
+    clamped.push(ClampedKey {
+        path: dotted,
+        was: W::show(&value),
+        now: W::show(&held),
+    });
+    held
+}
+
+/// The shortest prefix of `path` that `stored` has no key for, dotted.
+fn unread_prefix<W: Wire>(stored: &W::Table, path: &[String]) -> String {
+    let end = (1..=path.len())
+        .find(|&len| !W::has(stored, &path[..len]))
+        .unwrap_or(path.len());
+    path[..end].join(".")
+}
+
+#[cfg(test)]
+mod tests;

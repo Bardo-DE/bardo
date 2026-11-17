@@ -19,7 +19,7 @@ use base_fs::{ReadCap, read_text_capped};
 use plugin_host::manifest::{Entry, Refusal};
 use plugin_host::registry::Registry;
 use serde::Deserialize;
-use ui_settings::schema::Provided;
+use settings_types::schema::Provided;
 
 use crate::fault::Fault;
 use crate::provision::Provision;

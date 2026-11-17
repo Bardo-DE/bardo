@@ -8,12 +8,8 @@ use settings_app_system::modules::{Followed, ModulesLink, OnBus};
 use std::collections::BTreeMap;
 use std::sync::Mutex;
 use tokio::sync::mpsc::unbounded_channel;
-use ui_settings::live::{
-    Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve,
-};
-use ui_settings::schema::{
-    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
-};
+use settings_dbus::{Access, AnyOwner, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
+use settings_types::schema::{AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels};
 
 /// The bus name and path the module is served at.
 const NAME: &str = "org.bardo.TestModules1";

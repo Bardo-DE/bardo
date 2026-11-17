@@ -7,9 +7,9 @@ use layer_shell_host::{HostEvent, HostHandle};
 use tokio::runtime::Runtime;
 use tokio::sync::watch;
 use ui_blitz::TokioSpawner;
-use ui_settings::{
-    AppName, AppearanceFile, ConfigRoot, Environment, Store, SystemPrefsSource, SystemPrefsWatch,
-};
+use settings_types::AppName;
+use ui_settings::{AppearanceFile, Environment, SystemPrefsSource, SystemPrefsWatch};
+use settings_store_fs::{ConfigRoot, Store};
 
 use super::store::report;
 use crate::daemon::msg::ShellMsg;

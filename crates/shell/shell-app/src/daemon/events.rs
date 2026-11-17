@@ -23,7 +23,8 @@ use shell_ui_kit::services::Services;
 use shell_ui_kit::settings::SettingsFeed;
 use shell_ui_kit::surface::{OutputPolicy, Surface};
 use tokio::sync::watch;
-use ui_settings::{Environment, Store};
+use ui_settings::Environment;
+use settings_store_fs::Store;
 
 use super::msg::ShellMsg;
 use super::palmrest::{self, Plan};

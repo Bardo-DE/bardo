@@ -15,7 +15,7 @@ use crate::picker::Described;
 use account_core::SignInWay;
 use account_sheet::ProviderGroup;
 use std::collections::BTreeSet;
-use ui_settings::schema::{KeyKind, KeyPath};
+use settings_types::schema::{KeyKind, KeyPath};
 
 impl Account {
     /// Whether `path` is a row of this account that can be set or run.

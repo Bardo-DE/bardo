@@ -5,8 +5,8 @@
 
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
-use ui_settings::Percent;
-use ui_settings::schema::Page;
+use settings_types::Percent;
+use settings_types::schema::Page;
 
 /// `bar.autohide`: when the menu bar hides and shows (macOS: System Settings, Control Centre,
 /// "Automatically hide and show the menu bar"). `FullScreenOnly` is macOS's default.
@@ -28,7 +28,7 @@ pub enum MenuBarHiding {
 }
 
 /// The top bar's geometry.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "bar", page = Page::Appearance)]
 pub struct BarSettings {

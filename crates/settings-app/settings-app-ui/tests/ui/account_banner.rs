@@ -9,7 +9,7 @@ use settings_app_model::PageSlug;
 use settings_app_ui::{Opening, STYLE};
 use ui_harness::Harness;
 use ui_lint::{LintConfig, markup};
-use ui_settings::live::Verdict;
+use settings_dbus::Verdict;
 
 const BANNER: &str = "[data-accounts=\"attention\"]";
 const BANNER_BUTTON: &str = "[data-accounts=\"attention\"] .ds-button";

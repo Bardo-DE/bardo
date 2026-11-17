@@ -3,7 +3,7 @@
 
 use super::day::CalendarDay;
 use super::model::Account;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// One permission an app holds for the account: a sentence and the action that takes it back.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -136,7 +136,7 @@ pub(super) fn grant_path(account: &super::model::AccountKey, grant: &str) -> Key
 #[cfg(test)]
 mod tests {
     use super::{AccountPermission, GrantDecision};
-    use ui_settings::schema::KeyPath;
+    use settings_types::schema::KeyPath;
 
     fn permission(label: &str) -> AccountPermission {
         AccountPermission {

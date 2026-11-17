@@ -28,7 +28,7 @@ shell-testkit = {path = "../shell-testkit"}
 ui-harness = {path = "../../ui/ui-harness"}
 shell-ui-kit = {path = "../shell-ui-kit", features = ["harness"]}
 ui-lint = {path = "../../ui/ui-lint"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
+ui-settings = { path = "../../ui/ui-settings", features = ["dioxus", "tokio"] }
 layer-shell-host = {path = "../../layer-shell/layer-shell-host", features = ["debug-inject"]}
 
 [[example]]

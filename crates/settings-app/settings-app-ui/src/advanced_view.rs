@@ -12,7 +12,7 @@ use ui_components::components::fields::field_row::FieldGroup;
 use ui_components::components::lists::row::size::RowSize;
 use ui_components::prelude::*;
 use ui_components::root::pass_through::ExtraClass;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// What a page shows: itself, or one of its advanced sections.
 #[derive(Debug, Clone, PartialEq, Eq)]

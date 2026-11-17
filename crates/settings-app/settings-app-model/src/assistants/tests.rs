@@ -179,7 +179,7 @@ mod offers {
     use crate::picker::{AutoPool, Busy, ChoiceSection, KindRows, LocalAsk, ModelRow, Ready};
     use account_sheet::ProviderGroup;
     use std::collections::BTreeMap;
-    use ui_settings::schema::{KeyPath, WordLabels};
+    use settings_types::schema::{KeyPath, WordLabels};
 
     fn picker(words: &[&str]) -> Ready {
         Ready {

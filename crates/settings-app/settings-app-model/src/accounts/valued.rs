@@ -1,6 +1,6 @@
 //! Which rows of the account modules are read with their value.
 
-use ui_settings::schema::KeyKind;
+use settings_types::schema::KeyKind;
 
 /// The rows whose value is read with the rows: the services (on or off) and the client ids.
 #[must_use]

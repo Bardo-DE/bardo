@@ -15,7 +15,7 @@ use action_settings::{CloudAllowed, read_places};
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
 use ui_harness::{Harness, Input};
-use ui_settings::live::Verdict;
+use settings_dbus::Verdict;
 
 mod agents;
 mod cloud;

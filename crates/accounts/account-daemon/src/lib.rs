@@ -24,7 +24,7 @@
 //! - `Account` properties (`Id`, `Provider`, `Label`, `State`, `ReauthReason`, `Capabilities`),
 //!   readable only by the shell (`SheetHost`) and Settings; the manager's signals, unicast to
 //!   those two (`hub`); and `org.bardo.SettingsModule1` at `settings_path()` for the Settings
-//!   role, through quire's `ui_settings::live`: one block per account, the apps using each
+//!   role, through quire's `settings_dbus`: one block per account, the apps using each
 //!   identity (`accounts.<id>.used_by.<n>`, read-only), a switch for each AI service and a Revoke
 //!   for each permit, and the client ids.
 //! - Roles: an `Agent` is refused `AddAccount`, `Reauthenticate` and `RequestKey`

@@ -120,7 +120,7 @@ pub(crate) struct Core<H, C> {
     pub(crate) monotonic: Arc<dyn Monotonic>,
     /// The served settings module, which announces an account's new state as `Changed`; set
     /// once the module is served.
-    pub(crate) settings: OnceLock<ui_settings::live::Served>,
+    pub(crate) settings: OnceLock<settings_dbus::Served>,
     /// The sheets open now, one per app and kind (rel-11).
     pub(crate) open_sheets: crate::open_sheets::OpenSheets,
     /// The Request objects of the sheet methods (account-sheets), at `Accounts1`'s root.

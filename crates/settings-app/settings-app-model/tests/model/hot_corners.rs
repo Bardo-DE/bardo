@@ -6,10 +6,7 @@ use settings_app_model::{
     basic_sections, blocks,
 };
 use std::collections::BTreeMap;
-use ui_settings::schema::{
-    AgentSetting, AppId, ControlName, Exposure, FilePath, ForeignTables, Help, KeyKind, KeyPath,
-    KeySpec, Label, Page, Section, WordLabels,
-};
+use settings_types::schema::{AgentSetting, AppId, ControlName, Exposure, FilePath, ForeignTables, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels};
 
 fn key(path: &str, kind: KeyKind, marked: bool, exposure: Exposure) -> KeySpec {
     KeySpec {

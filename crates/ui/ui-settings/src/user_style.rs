@@ -3,7 +3,7 @@
 //! (ARCHITECTURE.md section 10). The same document is the app's own `style.css` and, under
 //! `AppName::QUIRE`, the desktop-wide one; a program watches both with `Store::watch`.
 
-use crate::doc::{FileName, Format, SettingsDoc};
+use settings_store::{FileName, Format, SettingsDoc};
 use ui_style::kit::UserStyle;
 
 impl SettingsDoc for UserStyle {

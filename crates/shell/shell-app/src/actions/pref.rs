@@ -6,7 +6,7 @@ use shell_model::actions::Pref;
 use shell_settings::ShellFile;
 use shell_ui_kit::links::Delivery;
 use tokio::sync::watch;
-use ui_settings::Store;
+use settings_store_fs::Store;
 
 use crate::daemon::settings::write_key;
 use crate::ipc::dispatch::{Reach, failed};

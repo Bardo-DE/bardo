@@ -2,7 +2,7 @@
 //! names bardo-shell's file, the Settings pages match §5, and the deep links resolve.
 
 use shell_settings::{schema, schemas};
-use ui_settings::schema::{Exposure, Page, Schema, deep_link_path};
+use settings_types::schema::{Exposure, Page, Schema, deep_link_path};
 
 #[test]
 fn schema_round_trip() {
@@ -100,7 +100,7 @@ fn the_power_page_is_idle_and_the_lock_grace() {
 /// The idle times carry their unit (`Secs` "s", `Mins` "min") and their §3.24 range.
 #[test]
 fn idle_times_are_bounded_in_their_units() {
-    use ui_settings::schema::KeyKind;
+    use settings_types::schema::KeyKind;
     const CASES: &[(&str, i64, &str)] = &[
         ("session.lock_grace_s", 60, "s"),
         ("idle.screen_off_ac_min", 240, "min"),
@@ -153,7 +153,7 @@ fn deep_links_resolve_through_the_schemas() {
 fn the_menu_bar_choices_are_the_macs() {
     use shell_settings::MenuBarHiding;
     use ui_core::word::Word;
-    use ui_settings::schema::KeyKind;
+    use settings_types::schema::KeyKind;
     const WORDS: [(MenuBarHiding, &str, &str); 4] = [
         (MenuBarHiding::Always, "always", "Always"),
         (

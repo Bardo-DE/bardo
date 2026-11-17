@@ -2,7 +2,7 @@
 
 use super::hold::{DatasetName, HoldCounts, SyncHold};
 use super::model::Account;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// The most deletions kept at once. A person syncs a handful of datasets; a sync service (or a
 /// program posing as one) that tells more is not believed, so the banners cannot grow with its

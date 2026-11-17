@@ -13,7 +13,7 @@ pub use fake::{FakePicker, PickerAsked};
 use crate::modules::Module;
 use settings_app_model::Work;
 use std::fmt::Debug;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// What the picker asks of inferd's module, through the client the pane follows it with.
 pub trait PickerLink: Debug + Send + Sync {

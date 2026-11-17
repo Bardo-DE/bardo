@@ -62,7 +62,7 @@ pub fn attach(state: &mut State, home: Option<&Path>) -> Result<(), crate::Start
     let mut watch = config::watch(home, &ThreadSpawner);
     ThreadSpawner.spawn(Box::pin(async move {
         while let Some(loaded) = watch.changed().await {
-            for line in loaded.diagnostics(<CasementDoc as ui_settings::SettingsDoc>::FILE) {
+            for line in loaded.diagnostics(<CasementDoc as settings_store::SettingsDoc>::FILE) {
                 tracing::warn!("{line}");
             }
             if sender.send(loaded.value).is_err() {

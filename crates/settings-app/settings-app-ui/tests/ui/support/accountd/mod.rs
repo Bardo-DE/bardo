@@ -15,13 +15,8 @@ use settings_app_system::bus::Daemon;
 use settings_app_system::modules::FakeModules;
 use std::sync::{Arc, Mutex};
 use sync_bus::SYNC_BUS;
-use ui_settings::live::{
-    Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve,
-};
-use ui_settings::schema::{
-    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
-    LiveAction, Page, Section,
-};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Served, Verdict, serve};
+use settings_types::schema::{ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page, Section};
 
 /// Where each daemon's module is: its bus name, the daemon it is looked for as, and its path.
 pub trait ModuleAt {

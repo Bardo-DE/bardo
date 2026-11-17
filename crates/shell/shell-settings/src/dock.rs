@@ -5,11 +5,11 @@
 //! stylesheet tokens (`DockToken`). Pinned apps are placements in `layout.toml`, not here.
 
 use serde::{Deserialize, Serialize};
-use ui_settings::Px;
-use ui_settings::schema::Page;
+use settings_types::Px;
+use settings_types::schema::Page;
 
 /// The dock's settings.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(
     file = "shell/settings.toml", domain = "dock", page = Page::Dock,

@@ -13,11 +13,8 @@ use settings_app_system::modules::FakeModules;
 use std::collections::BTreeMap;
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
-use ui_settings::live::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
-use ui_settings::schema::{
-    AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help,
-    KeyKind, KeyPath, KeySpec, Label, Note, Page, Section, UnavailableReason, WordLabels,
-};
+use settings_dbus::{Access, Caller, LiveError, LiveModule, LiveSchema, Verdict, serve};
+use settings_types::schema::{AgentSetting, ChoiceGroup, ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Note, Page, Section, UnavailableReason, WordLabels};
 
 /// What the module refuses a path that is not whole with, as the real one words it.
 pub const NOT_WHOLE: &str = "Give the whole path of the program, starting with a slash.";

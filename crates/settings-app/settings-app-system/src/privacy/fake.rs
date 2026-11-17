@@ -5,7 +5,7 @@ use crate::fake_kit::Kit;
 use crate::modules::Module;
 use settings_app_model::Work;
 use std::sync::Arc;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// What the page asked of the module.
 #[derive(Debug, Clone, PartialEq, Eq)]

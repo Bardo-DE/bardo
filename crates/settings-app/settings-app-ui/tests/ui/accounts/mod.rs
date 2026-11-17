@@ -18,8 +18,8 @@ use settings_app_ui::Opening;
 use std::time::Duration;
 use ui_components::prelude::Scheme;
 use ui_harness::{Backdrop, Harness, Input};
-use ui_settings::live::{LiveClient, LiveError, Verdict};
-use ui_settings::schema::KeyPath;
+use settings_dbus::{LiveClient, LiveError, Verdict};
+use settings_types::schema::KeyPath;
 
 mod add;
 mod keys;

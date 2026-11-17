@@ -39,7 +39,7 @@ pub fn landing<'a>(
 /// the desktop looks, else the first page listed.
 #[must_use]
 pub fn opening_page(catalogue: &Catalogue) -> Option<PageSlug> {
-    let appearance = PageSlug::of(&ui_settings::schema::Page::Appearance);
+    let appearance = PageSlug::of(&settings_types::schema::Page::Appearance);
     catalogue
         .page(&appearance)
         .or_else(|| catalogue.pages.first())

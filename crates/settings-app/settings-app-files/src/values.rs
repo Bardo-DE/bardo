@@ -3,7 +3,7 @@
 use settings_app_model::ConfigFile;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// `$XDG_CONFIG_HOME` (or a scratch directory standing in for it): the directory the settings
 /// files' `bardo/<app>/<name>.toml` paths are under.
@@ -18,7 +18,7 @@ impl ConfigHome {
     }
 
     /// Where the file `<app>/<name>` of a program is on disk: the program's folder
-    /// (`ui_settings::app_folder`) with the name in it. A path of any other shape is under the
+    /// (`settings_types::app_folder`) with the name in it. A path of any other shape is under the
     /// config home as it stands.
     #[must_use]
     pub fn path_of_relative(&self, relative: &Path) -> PathBuf {
@@ -27,7 +27,7 @@ impl ConfigHome {
         let rest: PathBuf = parts.collect();
         match app {
             Some(app) if !rest.as_os_str().is_empty() => {
-                ui_settings::app_folder(&self.0, app).join(rest)
+                settings_types::app_folder(&self.0, app).join(rest)
             }
             _ => self.0.join(relative),
         }

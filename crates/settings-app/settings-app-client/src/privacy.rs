@@ -10,7 +10,7 @@ use settings_app_system::bus::Daemon;
 use settings_app_system::modules::{ModulesLink, reread};
 use settings_app_system::privacy::PrivacyLink;
 use std::sync::Arc;
-use ui_settings::schema::KeyKind;
+use settings_types::schema::KeyKind;
 
 /// What the person reads when the compositor is gone as a change is sent.
 const NOT_AVAILABLE: &str = "Privacy isn\u{2019}t available right now. Try again in a moment.";

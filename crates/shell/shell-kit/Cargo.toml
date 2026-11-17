@@ -25,7 +25,6 @@ ui-blitz = {path = "../../ui/ui-blitz"}
 ui-core = {path = "../../ui/ui-core", features = ["testing"]}
 ui-harness = {path = "../../ui/ui-harness"}
 ui-lint = {path = "../../ui/ui-lint"}
-ui-settings = {path = "../../ui/ui-settings", features = ["dioxus", "tokio"]}
 
 [lints]
 workspace = true

@@ -8,13 +8,13 @@
 //! as it was, and the first save moves it aside to `<name>.bad-<seconds>`. Reads are capped and
 //! never block on a FIFO, and every write is durable and atomic (`base_fs::write_atomic`).
 
-use crate::damaged::{DamagedFile, Saved, keep_damaged};
-use crate::error::SettingsError;
-use crate::lenient::{FileText, file_text};
-use crate::root::{AppName, ConfigRoot};
 use base_fs::{NewFileMode, ReadCap, write_atomic};
 use serde::Serialize;
 use serde::de::DeserializeOwned;
+use settings_store_fs::{
+    ConfigRoot, DamagedFile, FileText, Saved, SettingsError, file_text, keep_damaged,
+};
+use settings_types::AppName;
 use std::path::{Path, PathBuf};
 use ui_style::space::list::{Epoch, Spaces, Today};
 

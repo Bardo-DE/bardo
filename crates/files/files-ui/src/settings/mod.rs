@@ -3,7 +3,7 @@
 //!
 //! Each table is a struct deriving `SettingsSchema`, so the desktop's Settings app draws a Files
 //! page from the schema `files --write-schema <dir>` writes, and writes the same file this reads.
-//! `ui_settings::Store` reads it leniently (a bad value costs only its key), and [`follow`] watches
+//! `settings_store_fs::Store` reads it leniently (a bad value costs only its key), and [`follow`] watches
 //! it, so a change made in the Settings app reaches an open window.
 //!
 //! What is not a choice stays where it was: how each folder is shown is state (`folders.toml` in
@@ -18,8 +18,10 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use ui_settings::schema::{AppId, FilePath, KeySpec, Schema, SettingsSchema, WordLabels};
-use ui_settings::{AppName, ConfigRoot, FileName, Format, SettingsDoc, Store};
+use settings_types::schema::{AppId, FilePath, KeySpec, Schema, SettingsSchema, WordLabels};
+use settings_types::AppName;
+use settings_store_fs::{ConfigRoot, Store};
+use settings_store::{FileName, Format, SettingsDoc};
 
 use ui_components::prelude::Word;
 
@@ -94,7 +96,7 @@ pub fn schema() -> Schema {
         version: 1,
         key,
         // The file holds no tables of another program's.
-        foreign: ui_settings::schema::ForeignTables::default(),
+        foreign: settings_types::schema::ForeignTables::default(),
         footnotes: Vec::new(),
         // Every key sits on files' own page; none is declared.
         pages: Vec::new(),

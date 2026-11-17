@@ -3,7 +3,7 @@
 
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// One control center module, in `control_center.modules` order.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Word)]
@@ -26,7 +26,7 @@ pub enum ControlCenterModule {
 }
 
 /// The control center popover.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "control_center", page = Page::Appearance)]
 #[expect(

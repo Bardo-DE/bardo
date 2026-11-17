@@ -4,8 +4,8 @@ use crate::config::convert;
 use compositor_core::settings::CasementSettings;
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
-use ui_settings::Count;
-use ui_settings::schema::Page;
+use settings_types::Count;
+use settings_types::schema::Page;
 
 /// When night light is on (`night_light.mode`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
@@ -23,7 +23,7 @@ pub enum NightLightMode {
 
 /// `night_light.*`: the screen warms on a schedule. A display that takes warmth through its own
 /// controls is warmed by sill instead and listed in `skip_outputs`; this is for the rest.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "compositor/settings.toml", domain = "night_light", page = Page::Appearance)]
 pub struct NightLightSection {

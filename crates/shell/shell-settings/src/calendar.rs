@@ -3,7 +3,7 @@
 
 use serde::{Deserialize, Serialize};
 use ui_core::word::Word;
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// The first column of the month grid.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize, Word)]
@@ -17,7 +17,7 @@ pub enum FirstWeekday {
 }
 
 /// The calendar widgets.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "calendar", page = Page::Notifications)]
 pub struct CalendarSettings {

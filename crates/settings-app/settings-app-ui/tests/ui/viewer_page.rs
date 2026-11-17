@@ -8,9 +8,7 @@ use crate::support::drive::{click, page_of, title_of};
 use settings_app_files::load;
 use settings_app_model::PageSlug;
 use settings_app_ui::Opening;
-use ui_settings::schema::{
-    AppId, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema, Section,
-};
+use settings_types::schema::{AppId, Exposure, FilePath, Help, KeyKind, KeyPath, KeySpec, Label, Page, Schema, Section};
 
 const FILE: &str = "anyview/settings.toml";
 
@@ -37,8 +35,8 @@ fn key_in(
         page: Page::Viewer,
         section: Section(section.to_owned()),
         exposure,
-        labels: ui_settings::schema::WordLabels::default(),
-        agent: ui_settings::schema::AgentSetting::default(),
+        labels: settings_types::schema::WordLabels::default(),
+        agent: settings_types::schema::AgentSetting::default(),
         unavailable: std::collections::BTreeMap::default(),
         groups: std::collections::BTreeMap::default(),
         places: std::collections::BTreeMap::default(),
@@ -61,7 +59,7 @@ fn anyview() -> Schema {
         pages: Vec::new(),
         app: AppId("anyview".to_owned()),
         file: FilePath(FILE.to_owned()),
-        foreign: ui_settings::schema::ForeignTables::default(),
+        foreign: settings_types::schema::ForeignTables::default(),
         version: 1,
         key: vec![
             key(

@@ -28,8 +28,9 @@ use tokio::runtime::Runtime;
 use tokio::sync::watch;
 use ui_blitz::{StylesGuard, TokioSpawner};
 use ui_components::style::kit::{StyleHomes, Styles, UserStyle};
-use ui_settings::schema::KeyPath;
-use ui_settings::{AppearanceFile, SettingsError, SettingsWriter, Store, WatchState};
+use settings_types::schema::KeyPath;
+use ui_settings::AppearanceFile;
+use settings_store_fs::{SettingsError, SettingsWriter, Store, WatchState};
 
 use super::look::{ChosenLook, LookSearch, chosen_look, spawn_look_watch};
 use super::store::report;

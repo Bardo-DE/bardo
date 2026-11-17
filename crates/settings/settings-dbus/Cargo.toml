@@ -1,0 +1,39 @@
+[package]
+name = "settings-dbus"
+description = "Live settings modules over D-Bus: org.bardo.SettingsModule1, the skeleton a daemon serves its runtime state with and the client the Settings app reads it through."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+settings-types = { path = "../settings-types" }
+# The deadline every call to another process runs under.
+ui-peer = { path = "../../ui/ui-peer" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+toml = { workspace = true }
+zbus = { workspace = true, features = ["default"] }
+
+[dev-dependencies]
+# The tests' runtime; the crate itself names none.
+tokio = { workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"] }
+zbus-ready = { path = "../../zbus-ready" }
+
+[features]
+# Drive zbus on the tokio runtime the program already runs (see the workspace zbus note).
+tokio = ["zbus/tokio"]
+# `AnyOwner`, an owner check that passes every owner. For tests and scenarios only: a shipped
+# program supplies a real check, so this stays off in a normal build.
+testing = []
+
+[[test]]
+name = "it"
+path = "tests/it/main.rs"
+required-features = ["testing"]
+
+[lints]
+workspace = true

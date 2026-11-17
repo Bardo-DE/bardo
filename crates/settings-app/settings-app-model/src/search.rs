@@ -2,7 +2,7 @@
 
 use crate::catalogue::Catalogue;
 use crate::page::PageSlug;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// How well a key matches, best first.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

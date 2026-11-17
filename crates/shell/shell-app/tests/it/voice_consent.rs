@@ -13,7 +13,7 @@ use shell_settings::{APP, ShellFile};
 use shell_testkit::TempDir;
 use speech_wire::{VoiceRefusal, VoiceTrigger};
 use tokio::sync::watch;
-use ui_settings::{ConfigRoot, Store};
+use settings_store_fs::{ConfigRoot, Store};
 
 fn start() -> VoiceCommand {
     VoiceCommand::Start {

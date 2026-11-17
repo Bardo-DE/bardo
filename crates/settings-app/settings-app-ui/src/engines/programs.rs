@@ -16,7 +16,7 @@ use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::overlays::sheet_width::SheetWidth;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// The row that opens the programs, when inferd lists any; nothing otherwise.
 #[component]

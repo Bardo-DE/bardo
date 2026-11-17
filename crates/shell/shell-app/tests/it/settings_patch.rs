@@ -9,7 +9,7 @@ use shell_model::voice::VoiceConsent;
 use shell_settings::{APP, Percent, ShellFile};
 use shell_testkit::TempDir;
 use tokio::sync::watch;
-use ui_settings::{ConfigRoot, Store};
+use settings_store_fs::{ConfigRoot, Store};
 
 /// What Settings and a person left in the file: a comment, a key the daemon never reads, and a
 /// value its key refuses.

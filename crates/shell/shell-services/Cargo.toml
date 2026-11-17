@@ -38,7 +38,9 @@ shell-model = {path = "../shell-model"}
 shell-launcher = {path = "../shell-launcher"}
 ui-core = {path = "../../ui/ui-core"}
 ui-helpers = {path = "../../ui/ui-helpers", default-features = false}
-ui-settings = {path = "../../ui/ui-settings", features = ["tokio"]}
+settings-store = { path = "../../settings/settings-store" }
+settings-store-fs = { path = "../../settings/settings-store-fs" }
+settings-types = { path = "../../settings/settings-types" }
 key-remap-proto = {path = "../../input/key-remap-proto"}
 action-core = {path = "../../actions/action-core"}
 action-dbus = {path = "../../actions/action-dbus"}

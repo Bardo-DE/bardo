@@ -1,6 +1,6 @@
 //! Turning a schema's stored words into labels.
 
-use ui_settings::schema::WordLabels;
+use settings_types::schema::WordLabels;
 
 /// What a person reads for `word`: the schema's own label when it gave one, else the word
 /// humanized.
@@ -24,7 +24,7 @@ pub fn humanize(word: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::word_label;
-    use ui_settings::schema::WordLabels;
+    use settings_types::schema::WordLabels;
 
     #[test]
     fn a_stored_word_reads_as_a_label() {

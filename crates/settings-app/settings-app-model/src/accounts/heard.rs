@@ -4,7 +4,7 @@ use super::input::AccountsInput;
 use super::module::{ModuleId, ModuleRow};
 use super::reauth_end::{ReauthEnd, is_reauth_row};
 use super::sign_out::SignOutEnd;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 impl AccountsInput {
     /// What `module`'s announcement of `value` at `path` means to the pane: a sign-out's end

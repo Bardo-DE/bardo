@@ -3,10 +3,8 @@
 use super::read::{Rows, read};
 use std::cell::Cell;
 use std::collections::BTreeMap;
-use ui_settings::live::LiveError;
-use ui_settings::schema::{
-    AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels,
-};
+use settings_dbus::LiveError;
+use settings_types::schema::{AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section, WordLabels};
 
 fn row(name: &str) -> KeySpec {
     KeySpec {

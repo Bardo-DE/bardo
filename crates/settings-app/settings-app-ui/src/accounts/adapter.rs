@@ -10,7 +10,7 @@ use ui_components::components::controls::button_model::{Answers, Bezel, ImagePos
 use ui_components::components::overlays::alert_model::{AlertButton, AlertRole, AlertStyle};
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_settings::schema::ActionWeight;
+use settings_types::schema::ActionWeight;
 
 /// Whether an action's weight makes its button destructive.
 fn is_destructive(weight: ActionWeight) -> bool {

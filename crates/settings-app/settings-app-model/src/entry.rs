@@ -3,7 +3,7 @@
 use crate::config_file::ConfigFile;
 use crate::control::Control;
 use crate::extensions::Offers;
-use ui_settings::schema::{AgentSetting, KeyKind, KeySpec};
+use settings_types::schema::{AgentSetting, KeyKind, KeySpec};
 
 /// A schema key with the file that holds its value and the control that draws it.
 #[derive(Debug, Clone, PartialEq)]
@@ -47,7 +47,7 @@ impl KeyEntry {
     }
 
     /// Whether an agent may set the key: the mark of the schema that supplied it, which
-    /// `ui_settings::schema::discover` admitted and `Schema::from_toml` checked (a key under a
+    /// `settings_store_fs::discover` admitted and `Schema::from_toml` checked (a key under a
     /// never-settable prefix cannot carry the mark); `discover` has already cleared it for a schema
     /// from a folder the person can write.
     #[must_use]

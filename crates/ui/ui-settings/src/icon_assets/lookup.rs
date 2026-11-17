@@ -3,7 +3,7 @@
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
-use crate::xdg;
+use settings_store_fs::{data_dirs_list_from, data_home_from};
 
 /// The directory under a data directory that holds the app icons.
 const SUBDIR: &str = "bardo/icons/apps";
@@ -76,19 +76,15 @@ fn set(value: Option<&OsString>) -> Option<&OsString> {
     value.filter(|value| !value.is_empty())
 }
 
-/// `$XDG_DATA_HOME`, else `$HOME/.local/share` (the rules in `crate::xdg`).
+/// `$XDG_DATA_HOME`, else `$HOME/.local/share` (the XDG rules of `base_xdg`).
 fn data_home(env: &AssetsEnv) -> Option<PathBuf> {
-    xdg::base_dir(
-        env.xdg_data_home.as_deref(),
-        env.home.as_deref(),
-        xdg::DATA_HOME_UNDER_HOME,
-    )
+    data_home_from(env.xdg_data_home.as_deref(), env.home.as_deref())
 }
 
 /// Every place to look, in order; none of them checked yet.
 pub fn candidates(env: &AssetsEnv) -> Vec<AssetsDir> {
     let at = |origin| move |path: PathBuf| AssetsDir { path, origin };
-    let shared = xdg::search_dirs(env.xdg_data_dirs.as_deref())
+    let shared = data_dirs_list_from(env.xdg_data_dirs.as_deref())
         .into_iter()
         .map(|dir| dir.join(SUBDIR));
     set(env.quire_icon_assets.as_ref())

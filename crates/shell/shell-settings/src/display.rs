@@ -6,11 +6,11 @@
 
 use serde::{Deserialize, Serialize};
 use shell_model::displays::{FontRenderingMode, HardwareVolume, KeysTarget, NightWarmthMode};
-use ui_settings::Percent;
-use ui_settings::schema::Page;
+use settings_types::Percent;
+use settings_types::schema::Page;
 
 /// Displays.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, ui_settings::SettingsSchema)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, settings_types::SettingsSchema)]
 #[serde(default)]
 #[settings(file = "shell/settings.toml", domain = "display", page = Page::Appearance)]
 pub struct DisplaySettings {

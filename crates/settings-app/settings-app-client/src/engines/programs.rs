@@ -12,7 +12,7 @@ use settings_app_system::bus::Daemon;
 use settings_app_system::modules::ModulesLink;
 use settings_app_system::picker::PickerLink;
 use std::sync::Arc;
-use ui_settings::schema::KeyKind;
+use settings_types::schema::KeyKind;
 
 /// The rows of inferd's module whose value the program rows read: its text rows.
 fn is_text(kind: &KeyKind) -> bool {

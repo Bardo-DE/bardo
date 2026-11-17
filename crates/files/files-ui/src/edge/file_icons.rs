@@ -6,8 +6,8 @@ use std::sync::Arc;
 
 use ui_extensions::{Built, ExtensionsFile, FileIcons, Search};
 use ui_helpers::mime::MimeDb;
-use ui_settings::Store;
-use ui_settings::schema::Provided;
+use settings_store_fs::Store;
+use settings_types::schema::Provided;
 
 /// Where the file icons come from: the Extensions to search and the file type database that names
 /// each file's type. The binary gives the real ones; the default has no Extensions and no types.

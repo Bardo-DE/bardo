@@ -5,8 +5,8 @@
 
 use std::path::Path;
 
+use settings_types::schema::regenerate;
 use ui_settings::quire_schema;
-use ui_settings::schema::regenerate;
 
 const DOC_PATH: &str = "../design/22-SETTINGS.md";
 

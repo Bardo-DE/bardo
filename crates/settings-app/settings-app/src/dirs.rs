@@ -1,14 +1,23 @@
 //! Where the schemas and the settings are, read from the environment once, here at the edge.
 
+use base_xdg::Xdg;
 use settings_app_files::{CacheHome, ConfigHome, DataHome, StateHome};
+use settings_store_fs::data_dirs_list_from;
 use std::ffi::OsStr;
 use std::path::PathBuf;
 
 /// `xdg` when it is a usable path, else `home` (itself usable) with `under_home` below it: the
-/// XDG rule, written once in `base_xdg` and applied through `ui_settings::xdg`, so
+/// XDG rule, written once in `base_xdg`, so
 /// `XDG_CONFIG_HOME=` in a unit file is not "the working directory".
 fn base_from(xdg: Option<&OsStr>, home: Option<&OsStr>, under_home: &str) -> Option<PathBuf> {
-    ui_settings::xdg::base_dir(xdg, home, under_home)
+    let text = |value: Option<&OsStr>| value.and_then(OsStr::to_str).map(str::to_owned);
+    Xdg::new(|name: &str| match name {
+        "XDG_BASE" => text(xdg),
+        "HOME" => text(home),
+        _ => None,
+    })
+    .dir("XDG_BASE", under_home)
+    .ok()
 }
 
 /// `$XDG_CONFIG_HOME`, else `$HOME/.config`.
@@ -77,7 +86,7 @@ fn unique(dirs: Vec<PathBuf>) -> Vec<PathBuf> {
 /// Each `$XDG_DATA_DIRS` entry's `bardo/settings`, then `$XDG_DATA_HOME`'s: the order of trust, a
 /// schema in the person's own directory adds a program and never replaces an installed one's.
 pub fn schema_dirs() -> Vec<PathBuf> {
-    unique(ui_settings::schema::data_dirs())
+    unique(settings_store_fs::data_dirs())
 }
 
 /// Each data directory's `bardo/intents`, the folders of the installed apps' manifests, in the
@@ -108,7 +117,7 @@ fn application_dirs_from(data_home: Option<&DataHome>, data_dirs: Option<&OsStr>
     let shares = data_home
         .into_iter()
         .map(|home| home.0.clone())
-        .chain(ui_settings::xdg::search_dirs(data_dirs));
+        .chain(data_dirs_list_from(data_dirs));
     let exports = data_home
         .into_iter()
         .map(|home| home.0.join("flatpak/exports/share/applications"))
@@ -126,7 +135,7 @@ fn application_dirs_from(data_home: Option<&DataHome>, data_dirs: Option<&OsStr>
 /// separately: where installed Extensions and apps' published style parts are.
 fn system_data_dirs_from(data_home: Option<&DataHome>, data_dirs: Option<&OsStr>) -> Vec<PathBuf> {
     unique(
-        ui_settings::xdg::search_dirs(data_dirs)
+        data_dirs_list_from(data_dirs)
             .into_iter()
             .filter(|dir| data_home.is_none_or(|home| *dir != home.0))
             .collect(),

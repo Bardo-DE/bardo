@@ -11,7 +11,7 @@ use settings_app_system::modules::FakeModules;
 use settings_app_ui::Opening;
 use ui_components::prelude::Scheme;
 use ui_harness::Harness;
-use ui_settings::live::Verdict;
+use settings_dbus::Verdict;
 
 const ROWS: &str = ".runtimes .ds-field-row";
 const OLLAMA: &str = ".runtimes [aria-label=\"Ollama\"] .ds-field-row-control .ds-button";
@@ -120,7 +120,7 @@ fn a_runtime_that_goes_offline_is_greyed_when_accountd_says_a_row_changed() {
     w.fake.stop("ollama", "offline");
     w.modules.announce(
         &Daemon::accountd(),
-        &ui_settings::schema::KeyPath("accounts.ollama.state".to_owned()),
+        &settings_types::schema::KeyPath("accounts.ollama.state".to_owned()),
         toml::Value::String("offline".to_owned()),
     );
     settle_on_threads(&mut w.harness, "the row greying", |h| {

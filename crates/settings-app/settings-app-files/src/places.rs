@@ -10,7 +10,7 @@ use action_settings::{
     PLACES_PATH, Places, PlacesLoaded, SETTINGS_FILE, read_places, write_places,
 };
 use settings_app_model::ConfigFile;
-use ui_settings::schema::{FilePath, KeyPath};
+use settings_types::schema::{FilePath, KeyPath};
 
 fn file() -> Result<ConfigFile, FilesError> {
     ConfigFile::parse(&FilePath(SETTINGS_FILE.to_owned())).map_err(|reason| FilesError::Garbled {

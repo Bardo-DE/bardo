@@ -8,8 +8,8 @@ use crate::bus::{
 use settings_app_model::Work;
 use std::sync::Arc;
 use tokio::sync::mpsc::UnboundedSender;
-use ui_settings::live::Changes;
-use ui_settings::schema::KeyKind;
+use settings_dbus::Changes;
+use settings_types::schema::KeyKind;
 use zbus::fdo::NameOwnerChangedStream;
 
 /// The modules of the daemons on `bus`.

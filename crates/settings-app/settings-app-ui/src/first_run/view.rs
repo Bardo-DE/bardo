@@ -19,7 +19,9 @@ use ui_components::root::pass_through::ExtraClass;
 use ui_components::stack::toast_hub::ToastHub;
 use ui_components::style::icon::family::PlateFamily;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_settings::{AppName, ConfigRoot, Store, use_environment};
+use settings_types::AppName;
+use settings_store_fs::{ConfigRoot, Store};
+use ui_settings::use_environment;
 
 fn send(state: &mut Signal<FirstRun>, input: FirstRunInput) -> Vec<FirstRunEffect> {
     let (next, effects) = first_run_step(state.peek().clone(), input);

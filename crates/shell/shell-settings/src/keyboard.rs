@@ -9,11 +9,11 @@ use serde::{Deserialize, Serialize};
 use shell_launcher::AppId;
 use shell_model::keyboard::UserOverrides;
 use std::collections::BTreeMap;
-use ui_settings::InvalidKey;
-use ui_settings::schema::Page;
+use settings_store::InvalidKey;
+use settings_types::schema::Page;
 
 /// One row of `keyboard.overrides`: an app and the keycap profile its windows get.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ui_settings::SettingsRow)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsRow)]
 pub struct KeyboardOverride {
     /// The desktop-entry id (`org.gnome.Nautilus`).
     #[settings(label = "App")]
@@ -34,7 +34,7 @@ pub struct RejectedRow {
 
 /// The keyboard's per-app profiles.
 #[derive(
-    Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, ui_settings::SettingsSchema,
+    Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize, settings_types::SettingsSchema,
 )]
 #[serde(from = "KeyboardWire")]
 #[settings(file = "shell/settings.toml", domain = "keyboard", page = Page::KeyboardAndShortcuts)]

@@ -4,7 +4,7 @@
 
 use crate::control::Control;
 use crate::range::Number;
-use ui_settings::schema::Provided;
+use settings_types::schema::Provided;
 
 /// Why a text is not a value of the control.
 #[derive(Debug, Clone, PartialEq, Eq)]

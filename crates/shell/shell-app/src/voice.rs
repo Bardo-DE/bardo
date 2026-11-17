@@ -11,7 +11,7 @@ use shell_model::voice::{AskScope, CancelCause, VoiceCommand, VoiceConsent, Voic
 use shell_settings::ShellFile;
 use tokio::runtime::Handle;
 use tokio::sync::{mpsc::UnboundedReceiver, watch};
-use ui_settings::Store;
+use settings_store_fs::Store;
 
 use crate::companion::focus_of;
 use crate::daemon::settings::{load, write_key};

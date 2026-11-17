@@ -9,7 +9,7 @@ use crate::support::inferd::Inferd;
 use settings_app_files::FirstRunMark;
 use ui_components::prelude::Scheme;
 use ui_harness::{Harness, Input};
-use ui_settings::live::Verdict;
+use settings_dbus::Verdict;
 
 const LOCAL_ONLY: &str = ".first-run [aria-label=\"Keep AI on this computer\"] .ds-toggle";
 const DONE: &str = ".first-run > .ds-button";

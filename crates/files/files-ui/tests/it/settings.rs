@@ -11,8 +11,8 @@ use files_ui::settings::{self, FilesDoc, NewWindow};
 use files_ui::{PlaceKind, Preferences, Sidebar};
 use tempfile::TempDir;
 use tokio::runtime::Handle;
-use ui_settings::ConfigRoot;
-use ui_settings::schema::Schema;
+use settings_store_fs::ConfigRoot;
+use settings_types::schema::Schema;
 
 /// A scratch config folder whose `files/settings.toml` says `text`.
 fn written(text: &str) -> (TempDir, ConfigRoot) {

@@ -11,7 +11,7 @@ use ui_components::components::fields::field_row::FieldRow;
 use ui_components::components::menus::pop_up_button::PopUpButton;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_settings::schema::KeyPath;
+use settings_types::schema::KeyPath;
 
 /// The questions under the row at `path`: the engine, then, once there is one, its model.
 #[component]

@@ -1,10 +1,7 @@
 use super::{Control, FileOnly};
 use std::collections::BTreeMap;
 use toml::Value;
-use ui_settings::schema::{
-    ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label,
-    LiveAction, Page, Section, WordLabels,
-};
+use settings_types::schema::{ActionLabel, ActionWeight, AgentSetting, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, LiveAction, Page, Section, WordLabels};
 
 fn spec(kind: KeyKind, default: Value) -> KeySpec {
     KeySpec {
@@ -151,7 +148,7 @@ fn a_control_admits_only_its_own_values() {
 
 #[test]
 fn a_text_key_that_asks_for_pictures_gets_the_grid_and_nothing_else_does() {
-    use ui_settings::schema::ControlName;
+    use settings_types::schema::ControlName;
     let asking = |kind: KeyKind, default: Value| {
         let mut asked = spec(kind, default);
         asked.control = Some(ControlName("picture".to_owned()));
@@ -175,7 +172,7 @@ fn a_text_key_that_asks_for_pictures_gets_the_grid_and_nothing_else_does() {
 
 #[test]
 fn a_key_that_asks_for_the_corners_gets_them_whatever_its_kind_and_holds_words_or_a_list() {
-    use ui_settings::schema::ControlName;
+    use settings_types::schema::ControlName;
     for kind in [KeyKind::Text, KeyKind::List(Box::new(KeyKind::Text))] {
         let mut asked = spec(kind, Value::Array(Vec::new()));
         asked.control = Some(ControlName("corners".to_owned()));

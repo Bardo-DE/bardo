@@ -6,9 +6,7 @@ use crate::Live;
 use crate::coding_agents::TURNED_OFF;
 use crate::words::word_label;
 use std::collections::BTreeMap;
-use ui_settings::schema::{
-    ChoicePlace, ChoiceWord, KeyKind, KeyPath, KeySpec, UnavailableReason, WordLabels,
-};
+use settings_types::schema::{ChoicePlace, ChoiceWord, KeyKind, KeyPath, KeySpec, UnavailableReason, WordLabels};
 
 /// The word that is Automatic, in the module's rows.
 pub(crate) const AUTO: &str = "auto";

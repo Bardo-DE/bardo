@@ -8,7 +8,7 @@
 
 use std::path::Path;
 
-use ui_settings::schema::{Page, Schema, SettingsSchema, deep_link_path};
+use settings_types::schema::{Page, Schema, SettingsSchema, deep_link_path};
 use ui_settings::{AppearanceSettings, IconsSettings};
 
 const DOC_PATH: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../design/22-SETTINGS.md");
@@ -108,9 +108,9 @@ fn icons_keys_exposure() {
     assert_eq!(icons.key.len(), 1);
     for key in &icons.key {
         let want = if BASIC.contains(&key.path.0.as_str()) {
-            ui_settings::schema::Exposure::Basic
+            settings_types::schema::Exposure::Basic
         } else {
-            ui_settings::schema::Exposure::Advanced
+            settings_types::schema::Exposure::Advanced
         };
         assert_eq!(
             key.exposure, want,
@@ -123,8 +123,8 @@ fn icons_keys_exposure() {
 // ---------------------------------------------------------------------------------------------
 // agent_settable (design/22-SETTINGS.md section 9.7)
 
+use settings_types::schema::{AGENT_NEVER_SETTABLE, AGENT_SETTABLE_PROPOSED, AgentSetting};
 use ui_settings::quire_schema;
-use ui_settings::schema::{AGENT_NEVER_SETTABLE, AGENT_SETTABLE_PROPOSED, AgentSetting};
 
 fn settable(schema: &Schema) -> Vec<&str> {
     schema
@@ -137,7 +137,7 @@ fn settable(schema: &Schema) -> Vec<&str> {
 
 #[test]
 fn use_my_styles_is_a_switch_on_the_appearance_page_that_defaults_to_on() {
-    use ui_settings::schema::{KeyKind, Page};
+    use settings_types::schema::{KeyKind, Page};
     let schema = quire_schema();
     let key = schema
         .key
@@ -231,12 +231,12 @@ fn the_design_doc_lists_exactly_the_proposed_keys() {
 // A provided key (design/22-SETTINGS.md section 9.1, `KeyKind::Provided`)
 
 mod provided {
-    use ui_settings::schema::{Control, KeyKind, Provided, Schema, WordLabels};
+    use settings_types::schema::{Control, KeyKind, Provided, Schema, WordLabels};
     use ui_settings::{AppearanceFile, quire_schema};
 
     use crate::support::Scratch;
 
-    fn look_key() -> ui_settings::schema::KeySpec {
+    fn look_key() -> settings_types::schema::KeySpec {
         quire_schema()
             .key
             .into_iter()
@@ -299,11 +299,9 @@ mod provided {
     }
 }
 
-// `LiveSchema` is the `live` feature's.
-#[cfg(feature = "live")]
 mod unavailable {
-    use ui_settings::live::LiveSchema;
-    use ui_settings::schema::{
+    use settings_dbus::LiveSchema;
+    use settings_types::schema::{
         ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
         UnavailableReason,
     };
@@ -321,8 +319,8 @@ mod unavailable {
             page: Page::Intelligence,
             section: Section("Text".to_owned()),
             exposure: Exposure::Basic,
-            labels: ui_settings::schema::WordLabels::default(),
-            agent: ui_settings::schema::AgentSetting::default(),
+            labels: settings_types::schema::WordLabels::default(),
+            agent: settings_types::schema::AgentSetting::default(),
             unavailable: std::collections::BTreeMap::default(),
             groups: std::collections::BTreeMap::default(),
             places: std::collections::BTreeMap::default(),
@@ -393,11 +391,9 @@ mod unavailable {
     }
 }
 
-// `LiveSchema` is the `live` feature's.
-#[cfg(feature = "live")]
 mod groups {
-    use ui_settings::live::LiveSchema;
-    use ui_settings::schema::{
+    use settings_dbus::LiveSchema;
+    use settings_types::schema::{
         ChoiceGroup, ChoiceWord, Exposure, Help, KeyKind, KeyPath, KeySpec, Label, Page, Section,
     };
 
@@ -414,8 +410,8 @@ mod groups {
             page: Page::Intelligence,
             section: Section("Text".to_owned()),
             exposure: Exposure::Basic,
-            labels: ui_settings::schema::WordLabels::default(),
-            agent: ui_settings::schema::AgentSetting::default(),
+            labels: settings_types::schema::WordLabels::default(),
+            agent: settings_types::schema::AgentSetting::default(),
             unavailable: std::collections::BTreeMap::default(),
             groups: groups
                 .iter()
@@ -529,11 +525,9 @@ mod groups {
     }
 }
 
-// `LiveSchema` is the `live` feature's.
-#[cfg(feature = "live")]
 mod places {
-    use ui_settings::live::LiveSchema;
-    use ui_settings::schema::{
+    use settings_dbus::LiveSchema;
+    use settings_types::schema::{
         ChoicePlace, ChoiceWord, CompanyName, EngineName, Exposure, Help, HostName, KeyKind,
         KeyPath, KeySpec, Label, Note, Page, Section,
     };
@@ -555,8 +549,8 @@ mod places {
             page: Page::Intelligence,
             section: Section("Text".to_owned()),
             exposure: Exposure::Basic,
-            labels: ui_settings::schema::WordLabels::default(),
-            agent: ui_settings::schema::AgentSetting::default(),
+            labels: settings_types::schema::WordLabels::default(),
+            agent: settings_types::schema::AgentSetting::default(),
             unavailable: std::collections::BTreeMap::default(),
             groups: std::collections::BTreeMap::default(),
             places: std::collections::BTreeMap::default(),
@@ -680,11 +674,11 @@ mod places {
 // notes, slider ends and section footnotes (bardo-settings's style pass, 2026-10-27)
 
 mod notes_and_footnotes {
-    use ui_settings::schema::{
+    use settings_types::schema::{
         Footnote, FootnoteText, Label, Note, Page, Schema, Section, SettingsSchema, SliderEnds,
     };
 
-    #[derive(Debug, Default, ui_settings::SettingsSchema)]
+    #[derive(Debug, Default, settings_types::SettingsSchema)]
     #[settings(
         file = "bardo/test.toml",
         domain = "dock",
@@ -702,7 +696,7 @@ mod notes_and_footnotes {
         hide: String,
     }
 
-    fn key<'a>(schema: &'a Schema, path: &str) -> &'a ui_settings::schema::KeySpec {
+    fn key<'a>(schema: &'a Schema, path: &str) -> &'a settings_types::schema::KeySpec {
         schema
             .key
             .iter()

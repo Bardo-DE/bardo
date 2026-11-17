@@ -2,13 +2,11 @@
 //! desktop's preferences, both watched.
 
 use crate::appearance::AppearanceFile;
-use crate::doc::SettingsDoc;
-use crate::lenient::Loaded;
 use crate::portal::{SystemPrefsSource, SystemPrefsWatch};
-use crate::region::ResolvedHours;
-use crate::store::Store;
-use crate::watch::Watch;
 use dioxus::prelude::*;
+use settings_store::{Loaded, SettingsDoc};
+use settings_store_fs::{Store, Watch};
+use settings_types::ResolvedHours;
 use std::sync::Arc;
 use ui_core::spawner::Spawner;
 use ui_style::appearance::system::SystemPrefs;
@@ -20,7 +18,9 @@ use ui_style::appearance::system::SystemPrefs;
 /// ```no_run
 /// use dioxus::prelude::*;
 /// use ui_components::prelude::*; use ui_core::spawner::Spawner;
-/// use ui_settings::{AppName, ConfigRoot, Store, SystemPrefsSource, use_environment};
+/// use settings_types::AppName;
+use settings_store_fs::{ConfigRoot, Store};
+use ui_settings::{SystemPrefsSource, use_environment};
 /// use std::sync::Arc;
 ///
 /// #[component]
@@ -50,7 +50,7 @@ pub struct Environment {
 
 impl Environment {
     /// The clock to draw in `locale` (a POSIX locale name, see
-    /// [`time_locale`](crate::time_locale)): `region.hours`, with Automatic settled by the locale.
+    /// [`time_locale`](settings_types::time_locale)): `region.hours`, with Automatic settled by the locale.
     #[must_use]
     pub fn hours(&self, locale: &str) -> ResolvedHours {
         self.settings.region.hours.resolve(locale)
@@ -118,7 +118,7 @@ mod tests {
 
     #[test]
     fn the_clock_follows_the_hours_key_and_then_the_locale() {
-        use crate::region::{HourCycle, ResolvedHours};
+        use settings_types::{HourCycle, ResolvedHours};
         let mut env = Environment::default();
         assert_eq!(env.hours("en_US.UTF-8"), ResolvedHours::H12);
         assert_eq!(env.hours("de_DE"), ResolvedHours::H24);

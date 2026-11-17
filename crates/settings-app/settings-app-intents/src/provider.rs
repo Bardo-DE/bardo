@@ -20,8 +20,8 @@ use settings_app_model::{
     arrival, show_value,
 };
 use std::sync::{Arc, Mutex, MutexGuard};
-use ui_settings::schema::KeyPath;
-use ui_settings::target::SettingsTarget;
+use settings_types::schema::KeyPath;
+use settings_types::target::SettingsTarget;
 
 /// The most things a suggestion or a preview lists.
 const LISTED: usize = 20;

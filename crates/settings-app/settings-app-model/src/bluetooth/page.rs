@@ -1,6 +1,6 @@
 //! The page's place among the pages: quire declares it by the id `bluetooth`.
 
-use ui_settings::schema::Page;
+use settings_types::schema::Page;
 
 /// The page's slug: what `--page` and `open-page` take.
 pub const BLUETOOTH_SLUG: &str = "bluetooth";

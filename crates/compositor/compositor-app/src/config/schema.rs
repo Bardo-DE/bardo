@@ -6,7 +6,7 @@ use super::sections::{
     PointerSection, SpacesSection, TouchpadSection, WindowsSection, XwaylandSection,
 };
 use std::path::Path;
-use ui_settings::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
+use settings_types::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
 
 /// The schema's version: bumped when a key's meaning changes, never for a new key.
 const VERSION: u16 = 1;

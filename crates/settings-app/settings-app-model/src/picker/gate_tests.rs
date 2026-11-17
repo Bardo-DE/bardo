@@ -5,10 +5,10 @@ use super::tests::{menu, path, ready_of, value_at};
 use super::*;
 use crate::accounts::AddEnd;
 use std::collections::BTreeMap;
-use ui_settings::schema::{KeyKind, KeySpec};
+use settings_types::schema::{KeyKind, KeySpec};
 
 fn grouped_menu() -> KeySpec {
-    use ui_settings::schema::{ChoiceGroup, ChoiceWord};
+    use settings_types::schema::{ChoiceGroup, ChoiceWord};
     let mut spec = menu("ai.model.text.fast", "Fast");
     spec.kind = KeyKind::Menu {
         variants: [
@@ -71,7 +71,7 @@ fn grouped_choices_are_ungrouped_first_then_groups_in_first_appearance_order() {
 
 #[test]
 fn an_unavailable_choice_inside_a_group_keeps_its_reason() {
-    use ui_settings::schema::{ChoiceWord, UnavailableReason};
+    use settings_types::schema::{ChoiceWord, UnavailableReason};
     let mut spec = grouped_menu();
     spec.unavailable.insert(
         ChoiceWord("anthropic/claude".to_owned()),
@@ -93,7 +93,7 @@ fn an_unavailable_choice_inside_a_group_keeps_its_reason() {
 
 #[test]
 fn an_unavailable_choice_carries_its_reason_and_choosing_it_sets_nothing() {
-    use ui_settings::schema::{ChoiceWord, UnavailableReason};
+    use settings_types::schema::{ChoiceWord, UnavailableReason};
     let mut gated = menu("ai.model.text.fast", "Language: Fast");
     gated.unavailable.insert(
         ChoiceWord("local/holo".to_owned()),
@@ -179,7 +179,7 @@ fn the_empty_word_reads_none_whatever_the_module_calls_it_and_claims_no_default(
 
 /// The assistant's row with `local/holo` behind an account the person does not have.
 fn gated_text_described() -> Described {
-    use ui_settings::schema::{ChoiceWord, UnavailableReason};
+    use settings_types::schema::{ChoiceWord, UnavailableReason};
     let mut spec = menu("ai.model.text.balanced", "Balanced");
     spec.unavailable.insert(
         ChoiceWord("local/holo".to_owned()),

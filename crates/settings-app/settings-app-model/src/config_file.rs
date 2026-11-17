@@ -2,7 +2,7 @@
 
 use crate::warning::StaleReason;
 use std::path::{Component, Path, PathBuf};
-use ui_settings::schema::FilePath;
+use settings_types::schema::FilePath;
 
 /// `<app-dir>/<name>.toml`, relative to `$XDG_CONFIG_HOME`: exactly two plain components, so a
 /// schema can never name a path outside the config home.
@@ -39,7 +39,7 @@ impl ConfigFile {
 #[cfg(test)]
 mod tests {
     use super::ConfigFile;
-    use ui_settings::schema::FilePath;
+    use settings_types::schema::FilePath;
 
     const CASES: &[(&str, bool)] = &[
         ("shell/settings.toml", true),

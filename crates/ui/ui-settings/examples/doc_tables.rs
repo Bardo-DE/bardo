@@ -7,8 +7,8 @@
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
+use settings_types::schema::{Schema, regenerate};
 use ui_settings::quire_schema;
-use ui_settings::schema::{Schema, regenerate};
 
 /// What the command line asked for.
 struct Request {

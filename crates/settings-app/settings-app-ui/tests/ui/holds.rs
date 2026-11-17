@@ -16,7 +16,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use sync_bus::SYNC_BUS;
 use ui_harness::Harness;
-use ui_settings::live::{AnyOwner, Verdict};
+use settings_dbus::{AnyOwner, Verdict};
 
 const HOME: &str = "#account-home";
 const BANNER: &str = ".accounts-hold .ds-inline-banner";
@@ -35,7 +35,7 @@ struct World {
     rt: tokio::runtime::Runtime,
     _bus: PrivateBus,
     _accounts: zbus::Connection,
-    _served: ui_settings::live::Served,
+    _served: settings_dbus::Served,
     _fake: Accountd,
 }
 

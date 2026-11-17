@@ -9,7 +9,7 @@
 use plugin_host::manifest::ManifestError;
 use plugin_host::registry::{Candidate, Origin, Readiness, Registry, Unusable};
 use plugin_host::{Reparsed, reparse};
-use ui_core::settings::ExtensionId;
+use settings_types::target::ExtensionId;
 use ui_core::word::Word;
 
 use crate::capability::Capability;

@@ -1,4 +1,4 @@
-//! The settings file the daemon reads and writes: one `ui_settings::Store` on the config root
+//! The settings file the daemon reads and writes: one `settings_store_fs::Store` on the config root
 //! `Env` already resolved, and the log lines a load leaves.
 //!
 //! What a file held that did not become a setting (a key nobody reads, a value a key refused, a
@@ -11,8 +11,10 @@ use std::path::Path;
 
 use shell_settings::{APP, ShellFile};
 #[cfg(test)]
-use ui_settings::SettingsError;
-use ui_settings::{AppName, ConfigRoot, Loaded, SettingsDoc, Store};
+use settings_store_fs::SettingsError;
+use settings_types::AppName;
+use settings_store_fs::{ConfigRoot, Store};
+use settings_store::{Loaded, SettingsDoc};
 
 /// The store of `shell/settings.toml` under `config`, `$XDG_CONFIG_HOME` as `Env` resolved it (a
 /// scratch directory in a test or a dev script).

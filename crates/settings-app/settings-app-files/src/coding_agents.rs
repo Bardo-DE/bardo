@@ -9,7 +9,7 @@ use crate::values::ConfigHome;
 use action_settings::{AgentSettings, Found, SETTINGS_FILE, dirs_of, find_known, read};
 use settings_app_model::ConfigFile;
 use std::path::Path;
-use ui_settings::schema::{FilePath, KeyPath};
+use settings_types::schema::{FilePath, KeyPath};
 
 /// The key that switches coding agents on.
 const SWITCH: &str = "agent.acp.agents";

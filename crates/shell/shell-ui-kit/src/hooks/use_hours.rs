@@ -4,7 +4,7 @@
 
 use dioxus::prelude::{try_consume_context, use_hook};
 use shell_model::clock::ClockHours;
-use ui_settings::{ResolvedHours, time_locale};
+use settings_types::{ResolvedHours, time_locale};
 
 use super::use_appearance;
 
@@ -43,7 +43,7 @@ fn clock_hours(hours: ResolvedHours) -> ClockHours {
 #[cfg(test)]
 mod tests {
     use shell_model::clock::ClockHours;
-    use ui_settings::ResolvedHours;
+    use settings_types::ResolvedHours;
 
     use super::clock_hours;
 

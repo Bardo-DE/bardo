@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 # `OwnerCheck`, `SenderName` and `Verdict`: the check this crate answers.
-ui-settings = {path = "../../ui/ui-settings", features = ["live"]}
+settings-dbus = { path = "../../settings/settings-dbus" }
 caller-identity-dbus = {default-features = false, features = ["desktop", "tokio"], path = "../../identity/caller-identity-dbus"}
 rustix = {workspace = true, features = ["std", "process"], optional = true}
 thiserror = { workspace = true, optional = true }

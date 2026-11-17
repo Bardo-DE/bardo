@@ -10,7 +10,8 @@ use shell_settings::{
     APP, BarSettings, ControlCenterSettings, DockSettings, LauncherSettings, NotificationsSettings,
     Percent, ScrollSettings, ScrollbarSettings, ShellFile, TrackClick,
 };
-use ui_settings::{ConfigRoot, Px, Store};
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::Px;
 
 /// The store whose `bardo-shell` directory is inside `dir`.
 fn store(dir: &TempDir) -> Store {

@@ -19,7 +19,7 @@ use settings_app_model::{
 use ui_components::components::content::label::{LabelRole, LabelStyle};
 use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::prelude::*;
-use ui_settings::schema::ActionWeight;
+use settings_types::schema::ActionWeight;
 
 /// What the detail screen reports to the pane.
 #[derive(Clone, Copy, PartialEq)]

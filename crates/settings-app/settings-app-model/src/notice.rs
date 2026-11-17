@@ -9,7 +9,7 @@ use std::future::poll_fn;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::task::{Poll, Waker};
-use ui_settings::target::SettingsTarget;
+use settings_types::target::SettingsTarget;
 
 /// How many notices wait for the window at most. Whoever the activation object admits (the shell,
 /// another Settings, the agent tier) can call it as often as it likes; past this the extra notices

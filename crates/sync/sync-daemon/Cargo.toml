@@ -41,7 +41,8 @@ base-fs = {path = "../../base/base-fs"}
 account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav-proto"}
 account-http = {path = "../../accounts/account-http"}
 account-http-relay = {path = "../../accounts/account-http-relay"}
-ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio"] }
+settings-types = { path = "../../settings/settings-types" }
 clap = {workspace = true, features = ["default", "derive"]}
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
 serde = { workspace = true, features = ["derive"] }
@@ -60,7 +61,7 @@ zbus = {workspace = true, features = ["tokio"]}
 
 [dev-dependencies]
 base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
-ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
+settings-dbus = { path = "../../settings/settings-dbus", features = ["tokio", "testing"] }
 sync-daemon = { path = ".", features = ["testing"] }
 base64 = { workspace = true }
 tempfile = { workspace = true }

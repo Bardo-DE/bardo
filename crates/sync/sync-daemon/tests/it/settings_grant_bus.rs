@@ -39,8 +39,8 @@ use sync_daemon::service::{Access, Hub, serve};
 use sync_daemon::settings::{SETTINGS_PATH, SyncSettings, serve_settings};
 use sync_fake_graph::{FakeGraph, GraphHandle};
 use tokio::sync::watch;
-use ui_settings::live::{AnyOwner, LiveClient};
-use ui_settings::schema::KeyPath;
+use settings_dbus::{AnyOwner, LiveClient};
+use settings_types::schema::KeyPath;
 
 const ACCOUNT: &str = "graph-acct";
 const SEGMENT: &str = "graph_acct";

@@ -24,10 +24,8 @@ use inference_dbus::inference::{INFERENCE_BUS, INFERENCE_PATH, INFERENCE_SETTING
 use inference_turns::audit::Memory;
 use std::path::PathBuf;
 use std::sync::Arc;
-use ui_settings::live::{AnyOwner, LiveClient, LiveError, LiveSchema};
-use ui_settings::schema::{
-    AgentSetting, ChoicePlace, ChoiceWord, Exposure, KeyKind, KeyPath, Page,
-};
+use settings_dbus::{AnyOwner, LiveClient, LiveError, LiveSchema};
+use settings_types::schema::{AgentSetting, ChoicePlace, ChoiceWord, Exposure, KeyKind, KeyPath, Page};
 use zbus::Connection;
 use zbus::export::futures_core::Stream;
 

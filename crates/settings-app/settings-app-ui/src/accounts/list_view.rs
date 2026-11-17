@@ -19,7 +19,7 @@ use ui_components::components::fields::field_row::{FieldGroup, FieldRow};
 use ui_components::components::lists::list::model::ListStyle;
 use ui_components::prelude::*;
 use ui_components::style::tokens::control_size::ControlSize;
-use ui_settings::schema::ActionWeight;
+use settings_types::schema::ActionWeight;
 
 /// What the list's foot does: add an account, or remove the one the list rests on.
 #[derive(Clone, Copy, PartialEq)]
