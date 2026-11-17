@@ -451,7 +451,7 @@ async fn only_the_agent_launcher_may_open_an_endpoint() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn the_setting_off_refuses_and_the_default_is_off() {
-    assert!(!inference_daemon::settings::Settings::default().agent_endpoint);
+    assert!(!inference_settings::Settings::default().agent_endpoint);
     let mut off = plan(vec![anthropic_account()], say("x"), say("y"));
     off.agents = Some(AgentsPlan { endpoint: false });
     let world = World::start(off).await;

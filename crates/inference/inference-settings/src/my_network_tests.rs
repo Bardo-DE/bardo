@@ -2,13 +2,18 @@
 //! that says "this computer".
 
 use super::*;
-use crate::config::InferdConfig;
 use account_capability::Locality;
 use account_core::DataClass;
 
+#[derive(serde::Deserialize, Default)]
+struct File {
+    #[serde(default)]
+    ai: AiConfig,
+}
+
 fn settings(text: &str) -> (Settings, Vec<String>) {
-    let config = InferdConfig::from_toml(text).expect("config");
-    let resolved = resolve(&config);
+    let config = toml::from_str::<File>(text).expect("config");
+    let resolved = resolve(&config.ai);
     (resolved.settings, resolved.rejected)
 }
 

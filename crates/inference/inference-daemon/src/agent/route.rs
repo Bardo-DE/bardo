@@ -5,12 +5,12 @@
 //! never a substitute.
 
 use super::refusal::Refusal;
-use crate::settings::Settings;
 use account_capability::AgentProgram;
 use account_capability::Locality;
 use account_core::AccountId;
 use account_core::{AppId, AppName, DataClass, Isolation};
 use inference_dbus::inference::{MODELS_ANY, MODELS_LISTED, ROUTE_ACCOUNT, ROUTE_MODEL, RouteArg};
+use inference_settings::Settings;
 
 /// What the route is.
 #[derive(Debug, Clone, PartialEq, Eq)]

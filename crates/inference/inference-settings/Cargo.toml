@@ -1,0 +1,31 @@
+[package]
+name = "inference-settings"
+description = "The settings the inference broker runs under, as plain values: the `[ai]` table of the configuration, what it resolves to (policy, tiers, Automatic, spend line, lengths), the rows' slugs and paths, the structured-reply limits and the spend books the caps are checked against. No file, no bus, no runtime."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-core = {path = "../../accounts/account-core"}
+base-ids = { path = "../../base/base-ids" }
+base-time = { path = "../../base/base-time" }
+jiff = { workspace = true }
+inference-core = {path = "../inference-core"}
+inference-router = {path = "../inference-router"}
+model-extract = {path = "../../models/model-extract"}
+model-provider = {path = "../../models/model-provider"}
+rust_decimal = { workspace = true, features = ["std", "serde"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+account-match = {path = "../../accounts/account-match"}
+toml = { workspace = true }
+
+[lints]
+workspace = true

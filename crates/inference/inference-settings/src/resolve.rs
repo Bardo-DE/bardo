@@ -1,18 +1,17 @@
 //! The file's `[ai]` table as [`Settings`].
 
-use super::keys::{from_slug, parse_pool_key, slug_of};
-use super::{AGENT_ENDPOINT, DESCRIBE_IMAGES, LOCAL_ONLY, MY_NETWORK, TAILNET_SERVE, switch_of};
-use super::{
+use crate::AiConfig;
+use crate::keys::{from_slug, parse_pool_key, slug_of};
+use crate::{AGENT_ENDPOINT, DESCRIBE_IMAGES, LOCAL_ONLY, MY_NETWORK, TAILNET_SERVE, switch_of};
+use crate::{
     LENGTH_AUTOMATIC, LENGTH_CONVERSATION, LENGTH_CONVERSATION_RANGE, LENGTH_REPLY,
     LENGTH_REPLY_RANGE, LengthSaid,
 };
-use super::{
+use crate::{
     SPEND_ACCOUNT_DAILY, SPEND_ACCOUNT_MONTHLY, SPEND_APP_DAILY, SPEND_APP_MONTHLY,
     SPEND_CAP_RANGE, SPEND_WARN, SPEND_WARN_DEFAULT, SPEND_WARN_RANGE, ScopeLimits, Settings,
     SpendLimits, SpendLine, cents_to_limit,
 };
-use crate::config::InferdConfig;
-use crate::structured::AiConfig;
 use account_capability::Tier;
 use account_core::DataClass;
 use base_ids::Permille;
@@ -241,22 +240,22 @@ fn lengths_of(ai: &AiConfig, rejected: &mut Vec<String>) -> Lengths {
     }
 }
 
-/// The settings a configuration says.
+/// The settings the `[ai]` table says.
 #[must_use]
-pub fn resolve(config: &InferdConfig) -> Resolved {
+pub fn resolve(ai: &AiConfig) -> Resolved {
     let mut rejected = Vec::new();
-    let auto = config.ai.auto.resolve();
+    let auto = ai.auto.resolve();
     rejected.extend(auto.rejected.iter().map(|path| (*path).to_owned()));
     let settings = Settings {
-        policy: policy_of(&config.ai, Policy::proposed(), &mut rejected),
-        tiers: tiers_of(&config.ai, TierMap::default(), &mut rejected),
+        policy: policy_of(ai, Policy::proposed(), &mut rejected),
+        tiers: tiers_of(ai, TierMap::default(), &mut rejected),
         auto: auto.policy,
-        spend: spend_of(&config.ai, &mut rejected),
-        describe_images: describe_images_of(&config.ai, &mut rejected),
-        my_network: my_network_of(&config.ai, &mut rejected),
-        agent_endpoint: agent_endpoint_of(&config.ai, &mut rejected),
-        tailnet_serve: tailnet_serve_of(&config.ai, &mut rejected),
-        lengths: lengths_of(&config.ai, &mut rejected),
+        spend: spend_of(ai, &mut rejected),
+        describe_images: describe_images_of(ai, &mut rejected),
+        my_network: my_network_of(ai, &mut rejected),
+        agent_endpoint: agent_endpoint_of(ai, &mut rejected),
+        tailnet_serve: tailnet_serve_of(ai, &mut rejected),
+        lengths: lengths_of(ai, &mut rejected),
     };
     Resolved { settings, rejected }
 }

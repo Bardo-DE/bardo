@@ -1,9 +1,7 @@
 //! The `[ai]` table of `inferd.toml`: every settings row of the `ai` domain at its settings path.
-//! The structured-output rows inside it (`StructuredConfig`) are `inference-turns`'; the rest are
-//! read by `settings`.
+//! The structured-output rows inside it are [`StructuredConfig`]; the rest are read by `resolve`.
 
-use inference_turns::structured::StructuredConfig;
-use inference_turns::structured::limits::Resolved;
+use crate::structured::{Resolved, StructuredConfig};
 use serde::{Deserialize, Serialize};
 
 /// The `[ai]` table: every settings row of the `ai` domain at its settings path.
@@ -11,13 +9,13 @@ use serde::{Deserialize, Serialize};
 /// The `[ai]` table: every settings row of the `ai` domain at its settings path, as a settings
 /// writer lays a file out (`ai.local_only`, `ai.floor.<class>`, `ai.model.<kind>.<tier>`,
 /// `ai.auto.*`, `ai.spend.*`, `ai.length.*`, `ai.structured.*`). Values are the rows' slugs, resolved (and
-/// refused field by field) in `settings`.
+/// refused field by field) by `resolve`.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct AiConfig {
     /// `ai.local_only`: while on, every cloud account is removed from every answer; off, cloud
     /// accounts may serve classes whose floor allows it.
     #[serde(default)]
-    pub local_only: Option<crate::settings::SwitchSaid>,
+    pub local_only: Option<crate::SwitchSaid>,
     /// `ai.floor.<class>`: `on_device`, `local_network` or `anywhere`, by class slug.
     #[serde(default)]
     pub floor: std::collections::BTreeMap<String, String>,
@@ -26,28 +24,28 @@ pub struct AiConfig {
     pub model: std::collections::BTreeMap<String, std::collections::BTreeMap<String, String>>,
     /// `ai.spend.*`.
     #[serde(default)]
-    pub spend: crate::settings::SpendConfig,
+    pub spend: crate::SpendConfig,
     /// `ai.length.*`.
     #[serde(default)]
-    pub length: crate::settings::LengthConfig,
+    pub length: crate::LengthConfig,
     /// `ai.pipeline.*`.
     #[serde(default)]
-    pub pipeline: crate::settings::PipelineConfig,
+    pub pipeline: crate::PipelineConfig,
     /// `ai.structured.*`.
     #[serde(default)]
     pub structured: StructuredConfig,
     /// `ai.auto.*`.
     #[serde(default)]
-    pub auto: crate::auto::AutoConfig,
+    pub auto: crate::AutoConfig,
     /// `ai.attached.*`.
     #[serde(default)]
-    pub attached: crate::settings::AttachedConfig,
+    pub attached: crate::AttachedConfig,
     /// `ai.agents.*`.
     #[serde(default)]
-    pub agents: crate::settings::AgentsConfig,
+    pub agents: crate::AgentsConfig,
     /// `ai.tailnet.*`.
     #[serde(default)]
-    pub tailnet: crate::settings::TailnetConfig,
+    pub tailnet: crate::TailnetConfig,
 }
 
 impl AiConfig {

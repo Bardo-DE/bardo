@@ -19,9 +19,7 @@ use account_capability::{Claim, Offer, Provenance, Subject};
 use base_ids::{Count, Dims, Px, Tokens};
 use computer_use_action::CuaDialect;
 use engine_spec::{SpecError, check_entry, engine};
-use model_catalog::{
-    CatalogError, Modality as CatalogModality, ModelEntry, parse_entry,
-};
+use model_catalog::{CatalogError, Modality as CatalogModality, ModelEntry, parse_entry};
 use model_provider::{
     Caps, Constraint, CuaSupport, EmbedCaps, InputKind, Support, ToolSupport, Zoom,
 };

@@ -343,7 +343,7 @@ pub fn provider_requests(world: &World) -> Vec<super::engine::Seen> {
     world.provider.as_ref().expect("provider").requests()
 }
 
-pub fn spent(world: &World, account: &str) -> inference_daemon::cloud::spend::Spent {
+pub fn spent(world: &World, account: &str) -> inference_settings::Spent {
     let cloud = world.served.cloud().expect("cloud");
     let _ = account;
     cloud

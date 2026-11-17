@@ -13,12 +13,12 @@ use super::Cloud;
 use super::accountd::AccountdFault;
 use super::models::RemoteModel;
 use super::wire::{BodyShape, Temperature, flavor_of};
-use crate::settings::SpendLine;
 use account_core::AppId;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferRefusal, Knob, Model,
     ModelCard, ModelError, ServedBy, SpendVerdict, TaskRequest, TokenUsage, TurnError,
 };
+use inference_settings::SpendLine;
 use inference_turns::bridge::{self, DefaultSampling, Frames, JsonReply, Target};
 use inference_turns::local::{RETRY, TokioSleep};
 use model_openai_compat::OpenAiCodec;

@@ -1,4 +1,4 @@
-//! The structured-output limits that `structured` runs under.
+//! The structured-output limits that a structured turn runs under.
 //!
 //! They are what the settings rows `ai.structured.open_text`, `open_list`,
 //! `depth` and `repair_budget` (design/22 section 3.26, interface ask 143) say.
@@ -128,3 +128,6 @@ impl StructuredConfig {
         }
     }
 }
+
+#[cfg(test)]
+mod tests;

@@ -13,7 +13,7 @@ use crate::agent::Agents;
 use crate::attached::{AddedFile, Attached, AttachedBook, Computers};
 use crate::broker::{AccountList, AccountdBroker};
 use crate::cloud::Cloud;
-use crate::cloud::spend::Ledger;
+use crate::cloud::spend;
 use crate::config::{ConfigError, Dirs, InferdConfig, ProgramSearch};
 use crate::engines::Engines;
 use crate::hosts::{HealthProbe, HostCloser, NvidiaSmi, ProcessHost};
@@ -21,7 +21,7 @@ use crate::installed::Installed;
 use crate::peers::{CallerTable, HONOURS_PROC_ROOT, ProcPeers};
 use crate::replay::Replays;
 use crate::service::{Inference, serve_with_settings};
-use crate::settings::{ConfigFile, InferdSettings, LocalEngines, Reload, resolve};
+use crate::settings::{ConfigFile, InferdSettings, LocalEngines, Reload};
 use crate::shutdown::{self, Ended, Shutdown};
 use crate::supervise::{Ports, Programs, Sizing, Supervised};
 use crate::tailnet::{BusMachines, Parts, Tailnet};
@@ -506,7 +506,7 @@ impl Daemon {
         let cloud = Cloud::new(
             Arc::new(broker.clone()),
             &catalog.entries,
-            Ledger::open_at(dirs.spend.clone(), SystemClock.now()),
+            spend::open_at(dirs.spend.clone(), SystemClock.now()),
             Arc::new(SystemClock),
         );
         let book = AttachedBook::new(attached)

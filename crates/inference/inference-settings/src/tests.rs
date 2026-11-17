@@ -1,0 +1,617 @@
+//! Each row changes what the broker decides: the file's text goes through `resolve` and into the
+//! same `choose` a session is routed by.
+
+use super::*;
+use account_capability::ModelId;
+use account_capability::{Billing, Locality, Tier};
+use account_capability::{Capability, LlmCap, LlmFeature, LlmWire};
+use account_core::DataClass;
+use account_match::LlmNeed;
+use account_match::Need;
+use base_ids::{Tokens, TurnCount};
+use inference_core::{
+    AutoEvict, EngineLoad, InferRefusal, LicenceClass, ModelCard, ModelRef, Pick, PickRefusal,
+    Readiness, Slot, SwapCost, Why,
+};
+use inference_router::router::{Decided, Listed, choose};
+
+#[derive(Deserialize, Default)]
+struct File {
+    #[serde(default)]
+    ai: AiConfig,
+}
+
+fn config(text: &str) -> AiConfig {
+    toml::from_str::<File>(text)
+        .unwrap_or_else(|e| panic!("{text}: {e}"))
+        .ai
+}
+
+fn settings(text: &str) -> Settings {
+    let resolved = resolve(&config(text));
+    assert_eq!(resolved.rejected, Vec::<String>::new(), "{text}");
+    resolved.settings
+}
+
+fn need() -> Need {
+    Need::Llm(LlmNeed::new([LlmFeature::Chat].into(), Tokens(1000)))
+}
+
+fn card(account: &str, model: &str, locality: Locality) -> ModelCard {
+    ModelCard {
+        account: AccountId::parse(account).expect("id"),
+        model: ModelId::parse(model).expect("id"),
+        locality,
+        billing: Billing::Free,
+        capabilities: vec![Capability::Llm(LlmCap {
+            features: [LlmFeature::Chat].into(),
+            context: Tokens(8192),
+            max_output: Tokens(1024),
+            wire: LlmWire::ChatCompletions,
+        })],
+    }
+}
+
+fn listed(card: ModelCard, readiness: Readiness) -> Listed {
+    Listed::new(card, readiness, SwapCost::Resident, LicenceClass::Open)
+}
+
+fn local(model: &str) -> Listed {
+    listed(card("local", model, Locality::OnDevice), Readiness::Ready)
+}
+
+fn cloud(model: &str) -> Listed {
+    listed(
+        card("anthropic", model, Locality::Cloud { region: None }),
+        Readiness::Ready,
+    )
+}
+
+/// What the file `text` decides for `class` at `tier` over `models`.
+fn decide(
+    text: &str,
+    class: DataClass,
+    tier: Tier,
+    models: &[Listed],
+) -> Result<Decided, PickRefusal> {
+    let s = settings(text);
+    choose(&need(), class, tier, models, &s.policy, &s.tiers, s.auto)
+}
+
+fn refusal(result: Result<Decided, PickRefusal>) -> InferRefusal {
+    result.expect_err("refused").refusal
+}
+
+fn served(result: Result<Decided, PickRefusal>) -> String {
+    result.expect("served").chosen.model.as_str().to_owned()
+}
+
+#[test]
+fn no_file_is_the_proposed_settings() {
+    let resolved = resolve(&AiConfig::default());
+    assert_eq!(resolved.settings.policy, Policy::proposed());
+    assert_eq!(resolved.settings.spend.warn_at, Permille(800));
+    assert!(resolved.rejected.is_empty());
+}
+
+#[test]
+fn local_only_removes_every_cloud_model_and_off_lets_the_next_rule_speak() {
+    let models = [cloud("claude")];
+    let on = decide(
+        "[ai]\nlocal_only = true\n",
+        DataClass::Public,
+        Tier::Balanced,
+        &models,
+    );
+    assert_eq!(refusal(on), InferRefusal::Unavailable);
+    // Off: a cloud model is reachable; for Public data the rule that stops it is consent.
+    let off = decide(
+        "[ai]\nlocal_only = false\n",
+        DataClass::Public,
+        Tier::Balanced,
+        &models,
+    );
+    assert_eq!(refusal(off), InferRefusal::NeedsGrant);
+    // No row is the proposed `on`.
+    let none = decide("", DataClass::Public, Tier::Balanced, &models);
+    assert_eq!(refusal(none), InferRefusal::Unavailable);
+}
+
+#[test]
+fn a_floor_refuses_the_cloud_until_the_row_widens_it() {
+    let models = [cloud("claude")];
+    let with = |floor: &str| {
+        decide(
+            &format!("[ai]\nlocal_only = false\n[ai.floor]\nnotes = \"{floor}\"\n"),
+            DataClass::Notes,
+            Tier::Balanced,
+            &models,
+        )
+    };
+    assert_eq!(
+        refusal(with("on_device")),
+        InferRefusal::RequiresCloud(DataClass::Notes)
+    );
+    assert_eq!(
+        refusal(with("local_network")),
+        InferRefusal::RequiresCloud(DataClass::Notes)
+    );
+    assert_eq!(refusal(with("anywhere")), InferRefusal::NeedsGrant);
+}
+
+#[test]
+fn every_class_has_its_own_floor_row_and_voice_and_prompt_default_to_this_computer() {
+    let base = settings("").policy;
+    assert_eq!(
+        base.floor(DataClass::Voice),
+        inference_core::Floor::OnDevice
+    );
+    assert_eq!(
+        base.floor(DataClass::Prompt),
+        inference_core::Floor::OnDevice
+    );
+    for class in CLASSES {
+        let path = format!("ai.floor.{}", keys_slug(class));
+        let mut table = toml::Table::new();
+        file::put(&mut table, &path, "local_network".into());
+        let policy = settings(&table.to_string()).policy;
+        for other in CLASSES {
+            let want = if other == class {
+                inference_core::Floor::LocalNetwork
+            } else {
+                base.floor(other)
+            };
+            assert_eq!(policy.floor(other), want, "{path} for {other:?}");
+        }
+    }
+}
+
+fn keys_slug<T: serde::Serialize>(value: T) -> String {
+    keys::slug_of(&value)
+}
+
+#[test]
+fn the_model_row_decides_between_models_and_auto_and_empty_hand_back_to_the_catalogue() {
+    let models = [
+        listed(
+            card("local", "alpha", Locality::OnDevice),
+            Readiness::Loadable,
+        ),
+        local("beta"),
+    ];
+    let row = |value: &str| format!("[ai.model.text]\nbest = \"{value}\"\n");
+    let best = |text: &str| decide(text, DataClass::Notes, Tier::Best, &models);
+    assert_eq!(served(best(&row("local/beta"))), "beta");
+    assert_eq!(served(best(&row("local/alpha"))), "alpha");
+    // Another tier with no row of its own is served by the person's pick for this one.
+    assert_eq!(
+        served(decide(
+            &row("local/beta"),
+            DataClass::Notes,
+            Tier::Fast,
+            &models
+        )),
+        "beta"
+    );
+    // Empty: the catalogue's order, as before any row.
+    let empty = best(&row("")).expect("served");
+    assert_eq!(
+        (empty.chosen.model.as_str(), empty.why),
+        ("alpha", Why::CatalogueOrder)
+    );
+    // Auto is `pick`, which says why.
+    let pooled = format!(
+        "{}[ai.auto.pool]\ntext = [\"local/alpha\", \"local/beta\"]\n",
+        row("auto")
+    );
+    let auto = best(&pooled).expect("served");
+    assert_eq!((auto.chosen.model.as_str(), auto.why), ("beta", Why::Warm));
+    // A named model that is not there is refused, never replaced.
+    best(&row("local/ghost")).unwrap_err();
+}
+
+#[test]
+fn never_evict_refuses_the_swap_idle_only_makes() {
+    let swapping = Listed {
+        swap: SwapCost::Evicts {
+            victim: ModelRef {
+                account: AccountId::parse("local").expect("id"),
+                model: ModelId::parse("old").expect("id"),
+            },
+            load: EngineLoad::Idle,
+            cold_start_estimate_s: 90,
+        },
+        ..listed(
+            card("local", "alpha", Locality::OnDevice),
+            Readiness::Loadable,
+        )
+    };
+    let models = [swapping];
+    let with = |evict: &str| {
+        decide(
+            &format!(
+                "[ai.model.text]\nbalanced = \"auto\"\n[ai.auto]\nallow_evict = \"{evict}\"\n\
+                 [ai.auto.pool]\ntext = [\"local/alpha\"]\n"
+            ),
+            DataClass::Notes,
+            Tier::Balanced,
+            &models,
+        )
+    };
+    assert!(matches!(
+        with("idle_only").expect("swaps").why,
+        Why::Evicted { .. }
+    ));
+    assert_eq!(refusal(with("never")), InferRefusal::Unavailable);
+    assert_eq!(settings("").auto.allow_evict, AutoEvict::IdleOnly);
+}
+
+#[test]
+fn auto_mode_reads_its_one_value() {
+    assert_eq!(
+        settings("[ai.auto]\nmode = \"warm_first\"\n").auto,
+        inference_core::AutoPolicy::default()
+    );
+    let resolved = resolve(&config("[ai.auto]\nmode = \"coldest_first\"\n"));
+    assert_eq!(resolved.rejected, vec!["ai.auto.mode".to_owned()]);
+}
+
+#[test]
+fn the_warn_line_is_the_rows_permille() {
+    let cap = |text: &str| {
+        settings(text).spend.cap(
+            SpendScope::Account(AccountId::parse("anthropic").expect("id")),
+            Period::Daily,
+            Money::usd(Decimal::ONE),
+        )
+    };
+    // `spent` in millionths of a dollar.
+    let verdict = |cap: &SpendCap, spent: i64| {
+        let reported = Money::usd(Decimal::new(spent, 6));
+        let total = ChargeTotal {
+            reported,
+            unpriced: TurnCount(0),
+        };
+        spend_verdict(cap, &total)
+    };
+    let default = cap("");
+    assert_eq!(default.warn_at, Permille(800));
+    assert_eq!(verdict(&default, 600_000), SpendVerdict::Within);
+    let early = cap("[ai.spend]\nwarn_permille = 500\n");
+    assert_eq!(early.warn_at, Permille(500));
+    assert_eq!(verdict(&early, 499_999), SpendVerdict::Within);
+    assert_eq!(verdict(&early, 500_000), SpendVerdict::Warn);
+    assert_eq!(verdict(&early, 1_000_000), SpendVerdict::Stop);
+    // 1..=1000 only; anything else is the default, and says so.
+    for bad in ["0", "1001", "-5"] {
+        let resolved = resolve(&config(&format!("[ai.spend]\nwarn_permille = {bad}\n")));
+        assert_eq!(resolved.settings.spend, SpendLine::default(), "{bad}");
+        assert_eq!(resolved.rejected, vec![SPEND_WARN.to_owned()], "{bad}");
+    }
+    for edge in ["1", "1000"] {
+        assert!(
+            resolve(&config(&format!("[ai.spend]\nwarn_permille = {edge}\n")))
+                .rejected
+                .is_empty()
+        );
+    }
+}
+
+use inference_core::{ChargeTotal, SpendVerdict, spend_verdict};
+
+fn companion() -> account_core::AppId {
+    account_core::AppId {
+        name: account_core::AppName::parse("org.bardo.Companion").expect("name"),
+        isolation: account_core::Isolation::Unsandboxed,
+    }
+}
+
+#[test]
+fn the_cap_rows_are_cents_per_scope_and_period_and_zero_is_no_cap() {
+    let through = AccountId::parse("openrouter").expect("id");
+    let caps = |text: &str| -> Vec<(SpendScope, Period, Money, Permille)> {
+        settings(text)
+            .spend
+            .caps_for(&companion(), &through)
+            .into_iter()
+            .map(|cap| (cap.scope, cap.period, cap.limit, cap.warn_at))
+            .collect()
+    };
+    assert_eq!(caps(""), vec![], "no row, no cap");
+    assert_eq!(
+        caps("[ai.spend]\napp_daily_cents = 0\n"),
+        vec![],
+        "zero is no cap"
+    );
+    let app = SpendScope::App(companion());
+    let account = SpendScope::Account(through.clone());
+    assert_eq!(
+        caps(
+            "[ai.spend]\nwarn_permille = 500\naccount_daily_cents = 250\naccount_monthly_cents = 1\n\
+             app_daily_cents = 10000000\napp_monthly_cents = 7\n"
+        ),
+        vec![
+            (
+                account.clone(),
+                Period::Daily,
+                Money::usd(Decimal::new(250, 2)),
+                Permille(500)
+            ),
+            (
+                account,
+                Period::Monthly,
+                Money::usd(Decimal::new(1, 2)),
+                Permille(500)
+            ),
+            (
+                app.clone(),
+                Period::Daily,
+                Money::usd(Decimal::new(10_000_000, 2)),
+                Permille(500)
+            ),
+            (
+                app,
+                Period::Monthly,
+                Money::usd(Decimal::new(7, 2)),
+                Permille(500)
+            ),
+        ]
+    );
+}
+
+#[test]
+fn a_cap_out_of_range_is_no_cap_and_is_named() {
+    for (row, path) in [
+        ("account_daily_cents", SPEND_ACCOUNT_DAILY),
+        ("account_monthly_cents", SPEND_ACCOUNT_MONTHLY),
+        ("app_daily_cents", SPEND_APP_DAILY),
+        ("app_monthly_cents", SPEND_APP_MONTHLY),
+    ] {
+        for bad in ["-1", "10000001"] {
+            let resolved = resolve(&config(&format!("[ai.spend]\n{row} = {bad}\n")));
+            assert_eq!(
+                resolved.settings.spend,
+                SpendLine::default(),
+                "{row} = {bad}"
+            );
+            assert_eq!(resolved.rejected, vec![path.to_owned()], "{row} = {bad}");
+        }
+        for edge in ["0", "1", "10000000"] {
+            assert!(
+                resolve(&config(&format!("[ai.spend]\n{row} = {edge}\n")))
+                    .rejected
+                    .is_empty(),
+                "{row} = {edge}"
+            );
+        }
+    }
+}
+
+#[test]
+fn a_value_a_row_does_not_accept_is_named_and_falls_back_for_that_row_only() {
+    let text = "[ai]\nlocal_only = \"maybe\"\n[ai.floor]\nmail = \"nowhere\"\ntelepathy = \"anywhere\"\nnotes = \"anywhere\"\n\
+                [ai.model.text]\nfast = \"no-slash\"\nhuge = \"local/a\"\nbalanced = \"local/alpha\"\n\
+                [ai.auto]\nallow_evict = \"sometimes\"\nshow_reason = false\n";
+    let resolved = resolve(&config(text));
+    let mut rejected = resolved.rejected.clone();
+    rejected.sort();
+    assert_eq!(
+        rejected,
+        [
+            "ai.auto.allow_evict",
+            "ai.floor.mail",
+            "ai.floor.telepathy",
+            "ai.local_only",
+            "ai.model.text.fast",
+            "ai.model.text.huge",
+        ]
+    );
+    let s = resolved.settings;
+    assert!(s.policy.local_only);
+    assert_eq!(
+        s.policy.floor(DataClass::Notes),
+        inference_core::Floor::Anywhere
+    );
+    assert_eq!(
+        s.policy.floor(DataClass::Mail),
+        inference_core::Floor::OnDevice
+    );
+    assert!(!s.auto.show_reason);
+    assert!(s.tiers.pick(Slot::Text, Tier::Balanced).is_some());
+    assert_eq!(s.tiers.pick(Slot::Text, Tier::Fast), None);
+}
+
+fn picked(settings: &Settings, slot: Slot) -> Option<Pick> {
+    settings.tiers.pick(slot, Tier::Balanced)
+}
+
+#[test]
+fn every_slot_has_its_own_model_row() {
+    for slug in [
+        "text",
+        "voice_in",
+        "voice_out",
+        "image_in",
+        "computer_use",
+        "embeddings",
+    ] {
+        let slot = from_slug::<Slot>(slug).expect(slug);
+        let got = settings(&format!("[ai.model.{slug}]\nbalanced = \"auto\"\n"));
+        assert!(
+            matches!(picked(&got, slot), Some(Pick::Auto { .. })),
+            "{slug}"
+        );
+    }
+}
+
+#[test]
+fn the_describe_images_row_defaults_off_reads_on_and_names_a_bad_value() {
+    assert!(!settings("").describe_images);
+    for want in [true, false] {
+        let got = settings(&format!("[ai.pipeline]\ndescribe_images = {want}\n"));
+        assert_eq!(got.describe_images, want);
+    }
+    let resolved = resolve(&config("[ai.pipeline]\ndescribe_images = \"maybe\"\n"));
+    assert_eq!(resolved.rejected, vec![DESCRIBE_IMAGES.to_owned()]);
+    assert!(!resolved.settings.describe_images);
+}
+
+#[test]
+fn a_language_model_is_in_the_slots_its_features_put_it_in() {
+    let mut vision = card("local", "seer", Locality::OnDevice);
+    if let Some(Capability::Llm(llm)) = vision.capabilities.first_mut() {
+        llm.features
+            .extend([LlmFeature::Vision, LlmFeature::AudioIn]);
+    }
+    assert_eq!(
+        inference_router::router::slots_of(&vision),
+        vec![Slot::Text, Slot::VoiceIn, Slot::ImageIn]
+    );
+    assert_eq!(
+        inference_router::router::slots_of(&card("local", "plain", Locality::OnDevice)),
+        vec![Slot::Text]
+    );
+}
+
+#[test]
+fn automatics_pool_is_read_per_slot_and_a_row_naming_no_model_is_dropped_and_said() {
+    let got = settings(
+        "[ai.model.text]\nbalanced = \"auto\"\n[ai.auto.pool]\ntext = [\"local/tiny-chat\", \"anthropic/sonnet\"]\n",
+    );
+    let pool: Vec<String> = got
+        .tiers
+        .pool(Slot::Text)
+        .iter()
+        .map(super::resolve::model_text)
+        .collect();
+    assert_eq!(pool, ["local/tiny-chat", "anthropic/sonnet"]);
+    assert!(matches!(
+        picked(&got, Slot::Text),
+        Some(Pick::Auto { pool, .. }) if pool.len() == 2
+    ));
+    assert!(got.tiers.pool(Slot::Embeddings).is_empty());
+    let resolved = resolve(&config(
+        "[ai.auto.pool]\ntext = [\"local/tiny-chat\", \"sonnet\"]\nnot_a_slot = []\n",
+    ));
+    assert_eq!(
+        resolved.rejected,
+        ["ai.auto.pool.not_a_slot", "ai.auto.pool.text"]
+    );
+    assert_eq!(
+        resolved
+            .settings
+            .tiers
+            .pool(inference_core::Slot::Text)
+            .len(),
+        1
+    );
+}
+
+#[test]
+fn a_coding_agent_is_a_choice_of_the_text_slot_and_of_no_pool() {
+    let got = settings("[ai.model.text]\nbalanced = \"agent/claude-code\"\n");
+    assert_eq!(
+        picked(&got, Slot::Text),
+        Some(Pick::Named(ModelRef::agent("claude-code").expect("agent")))
+    );
+    let rows = [
+        (
+            "computer use",
+            "[ai.model.computer_use]\nbalanced = \"agent/claude-code\"\n",
+            "ai.model.computer_use.balanced",
+        ),
+        (
+            "a pool",
+            "[ai.auto.pool]\ntext = [\"local/tiny-chat\", \"agent/claude-code\"]\n",
+            "ai.auto.pool.text",
+        ),
+    ];
+    for (name, text, path) in rows {
+        let resolved = resolve(&config(text));
+        assert_eq!(resolved.rejected, [path], "{name}");
+        assert_eq!(
+            picked(&resolved.settings, Slot::ComputerUse),
+            None,
+            "{name}"
+        );
+        assert!(
+            resolved
+                .settings
+                .tiers
+                .pool(Slot::Text)
+                .iter()
+                .all(|model| !model.is_agent()),
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn a_helper_pool_is_its_own_and_the_old_key_stays_the_assistants() {
+    let text = "[ai.auto.pool]\ntext = [\"local/alpha\"]\n\"text.helper.h-1\" = [\"local/beta\"]\n";
+    let tiers = settings(text).tiers;
+    let helper = inference_core::Chooser::Helper(account_core::HelperId::parse("h-1").expect("id"));
+    let names = |pool: &[inference_core::ModelRef]| -> Vec<String> {
+        pool.iter().map(|model| model.model.to_string()).collect()
+    };
+    assert_eq!(names(tiers.pool(inference_core::Slot::Text)), ["alpha"]);
+    assert_eq!(
+        names(tiers.pool_of(&helper, inference_core::Slot::Text)),
+        ["beta"]
+    );
+    let other = inference_core::Chooser::Helper(account_core::HelperId::parse("h-2").expect("id"));
+    assert!(tiers.pool_of(&other, inference_core::Slot::Text).is_empty());
+    let bad = resolve(&config("[ai.auto.pool]\n\"text.helper.\" = []\n"));
+    assert_eq!(bad.rejected, vec!["ai.auto.pool.text.helper.".to_owned()]);
+}
+
+fn length(text: &str) -> inference_router::local::Lengths {
+    settings(text).lengths
+}
+
+#[test]
+fn the_length_rows_are_automatic_unless_the_person_sets_a_number() {
+    use model_provider::Tokens as Count;
+    let automatic = inference_router::local::Lengths::default();
+    assert_eq!(length(""), automatic);
+    assert_eq!(
+        length("[ai.length]\nconversation = \"automatic\"\nreply = \"automatic\"\n"),
+        automatic
+    );
+    // A number as Settings writes it (in quotes) and as a person writes it by hand.
+    let set = length("[ai.length]\nconversation = \"65536\"\nreply = 16384\n");
+    assert_eq!(set.conversation, Some(Count(65_536)));
+    assert_eq!(set.reply, Some(Count(16_384)));
+    // The rows are separate: one set leaves the other automatic.
+    let one = length("[ai.length]\nreply = 2048\n");
+    assert_eq!((one.conversation, one.reply), (None, Some(Count(2_048))));
+}
+
+#[test]
+fn a_length_out_of_range_or_not_a_number_is_automatic_and_said() {
+    for (table, row, path) in [
+        ("conversation", "2047", LENGTH_CONVERSATION),
+        ("conversation", "1048577", LENGTH_CONVERSATION),
+        ("conversation", "-1", LENGTH_CONVERSATION),
+        ("conversation", "\"long\"", LENGTH_CONVERSATION),
+        ("reply", "255", LENGTH_REPLY),
+        ("reply", "262145", LENGTH_REPLY),
+        ("reply", "\"\"", LENGTH_REPLY),
+    ] {
+        let resolved = resolve(&config(&format!("[ai.length]\n{table} = {row}\n")));
+        assert_eq!(
+            resolved.settings.lengths,
+            inference_router::local::Lengths::default(),
+            "{table} {row}"
+        );
+        assert_eq!(resolved.rejected, vec![path.to_owned()], "{table} {row}");
+    }
+    for (table, row) in [
+        ("conversation", "2048"),
+        ("conversation", "1048576"),
+        ("reply", "256"),
+    ] {
+        let resolved = resolve(&config(&format!("[ai.length]\n{table} = {row}\n")));
+        assert!(resolved.rejected.is_empty(), "{table} {row}");
+    }
+}

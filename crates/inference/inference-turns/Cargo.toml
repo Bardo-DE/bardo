@@ -17,6 +17,8 @@ base-time = { path = "../../base/base-time" }
 inference-core = {path = "../inference-core"}
 inference-bridge = {path = "../inference-bridge"}
 inference-router = {path = "../inference-router"}
+# The structured-reply limits (`ai.structured.*`) a turn runs under.
+inference-settings = {path = "../inference-settings"}
 computer-use-action = {path = "../../models/computer-use-action"}
 computer-use-session = {path = "../../models/computer-use-session"}
 computer-use-vendors = {path = "../../models/computer-use-vendors"}

@@ -1,12 +1,16 @@
-//! `[ai.structured]` as `inferd.toml` holds it: the file's reading into limits. The limits
-//! themselves are `inference_turns::structured::limits`.
+//! `[ai.structured]` as `inferd.toml` holds it: the file's reading into limits.
 
-use crate::config::InferdConfig;
-use inference_turns::structured::limits::*;
-use model_provider::{CharCount, Count};
+use super::*;
+use crate::AiConfig;
+
+#[derive(Deserialize, Default)]
+struct File {
+    #[serde(default)]
+    ai: AiConfig,
+}
 
 fn resolved(text: &str) -> Resolved {
-    InferdConfig::from_toml(text).expect("reads").ai.resolve()
+    toml::from_str::<File>(text).expect("reads").ai.resolve()
 }
 
 #[test]

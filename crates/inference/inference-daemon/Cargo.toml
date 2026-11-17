@@ -42,6 +42,8 @@ account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale
 inference-core = {path = "../inference-core"}
 # The files and descriptors the pure router and bridge are given as values.
 inference-fs = {path = "../inference-fs"}
+# What the `[ai]` rows say, resolved: policy, tiers, Automatic, spend line, lengths, and the spend book.
+inference-settings = {path = "../inference-settings"}
 # Routing and the session machine: the router, the plan, the catalogue, the local model book, the
 # attached engines as values, the seams.
 inference-router = {path = "../inference-router"}
@@ -75,7 +77,6 @@ serde_json = { workspace = true }
 sha2 = { workspace = true }
 # The agent token: its bytes from the system's random source, and its compare in constant time.
 getrandom = { workspace = true }
-jiff = { workspace = true }
 hex = { workspace = true }
 subtle = { workspace = true }
 thiserror = { workspace = true }

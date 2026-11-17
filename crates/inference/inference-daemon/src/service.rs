@@ -13,7 +13,6 @@ use crate::agent::service::AgentsService;
 use crate::attached::{
     ComputerError, Computers, NewComputer, NewModel, NewReach, NewTailnetComputer,
 };
-use crate::cloud::spend::{UsageValue, written};
 use crate::engines::Engines;
 use crate::peers::{Caller, Peers, Role};
 use crate::pipeline::Hearing;
@@ -45,8 +44,9 @@ use inference_dbus::inference::{
 use inference_router::router::placed::{Allowed, Unplaced};
 use inference_router::seams::Seams;
 use inference_router::session::SessionSpec;
+use inference_settings::structured::Limits;
+use inference_settings::{UsageValue, written};
 use inference_turns::audit::{AuditOut, SessionAudit};
-use inference_turns::structured::Limits;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
 use std::os::unix::net::UnixStream as StdStream;

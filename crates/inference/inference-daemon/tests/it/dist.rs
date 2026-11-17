@@ -3,7 +3,7 @@
 
 use inference_daemon::config::InferdConfig;
 use inference_daemon::peers::CallerTable;
-use inference_daemon::settings::{self, CLASSES};
+use inference_settings::{self as settings, CLASSES};
 use settings_types::schema::{ForeignTables, KeyKind, KeySpec, Schema};
 use std::path::PathBuf;
 
@@ -261,7 +261,7 @@ fn schema_keys() -> Vec<KeySpec> {
 /// every class, the tier map, Automatic, the spend line and the structured limits.
 fn effect(text: &str) -> (String, Vec<String>) {
     let config = InferdConfig::from_toml(text).unwrap_or_else(|e| panic!("{text}: {e}"));
-    let resolved = settings::resolve(&config);
+    let resolved = settings::resolve(&config.ai);
     let s = resolved.settings;
     let floors: Vec<_> = CLASSES.iter().map(|class| s.policy.floor(*class)).collect();
     let limits = config.ai.resolve().limits;

@@ -583,7 +583,7 @@ fn reported() -> Money {
 }
 
 /// What the companion has spent today.
-fn spent_today(world: &World) -> inference_daemon::cloud::spend::Spent {
+fn spent_today(world: &World) -> inference_settings::Spent {
     let cloud = world.served.cloud().expect("cloud");
     cloud.ledger().spent(
         &inference_core::SpendScope::App(app(COMPANION)),

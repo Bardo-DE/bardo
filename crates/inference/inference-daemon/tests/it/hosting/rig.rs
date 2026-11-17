@@ -18,7 +18,6 @@ use inference_client::{DbusTransport, Inference as InferenceClient};
 use inference_core::{ModelCard, Policy, Slot, TierMap};
 use inference_daemon::attached::{Attached, AttachedBook};
 use inference_daemon::cloud::Cloud;
-use inference_daemon::cloud::spend::Ledger;
 use inference_daemon::cloud::wire::{Door, Doors};
 use inference_daemon::engines::Engines;
 use inference_daemon::hosts::{HealthProbe, ProcessHost};
@@ -27,7 +26,6 @@ use inference_daemon::probe::ProbeConfig;
 use inference_daemon::replay::Replays;
 use inference_daemon::report::{NoReports, Reports};
 use inference_daemon::service::{Inference, serve_on};
-use inference_daemon::settings::{Settings, SpendLine};
 use inference_daemon::supervise::{Ports, Supervised};
 use inference_daemon::tailnet::{BusMachines, Parts, Tailnet};
 use inference_daemon::watch::{Probing, Watch};
@@ -36,6 +34,7 @@ use inference_router::catalog::CatalogDirs;
 use inference_router::local::NamedEngine;
 use inference_router::local::{EngineConfig, LocalModel, build};
 use inference_router::startup::{Level, Log};
+use inference_settings::{Ledger, Settings, SpendLine};
 use inference_turns::audit::Memory;
 use model_catalog::MiB;
 use model_http::{DerCertificate, TlsRoots};
@@ -499,7 +498,7 @@ impl World {
                     })
             }))
             .chain(plan.pooled.iter().map(|text| {
-                inference_daemon::settings::parse_model(text).expect("an account/model to pool")
+                inference_settings::parse_model(text).expect("an account/model to pool")
             }))
             .collect();
         let mut served = Engines::new(

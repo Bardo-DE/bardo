@@ -4,8 +4,6 @@
 //! they picked, and an empty helper pool is no row, so that helper is not on Automatic.
 
 use super::file::Reload;
-use super::keys::{pool_path, pool_row_key};
-use super::resolve::{model_text, parse_model};
 use crate::cloud::picker::{Choice, choices};
 use account_capability::Locality;
 use account_core::HelperId;
@@ -13,6 +11,7 @@ use account_core::consent::Usage;
 use account_core::{AppId, AppName, DataClass, Isolation};
 use inference_core::{Chooser, ModelRef, Slot};
 use inference_router::router::slots_of;
+use inference_settings::{model_text, parse_model, pool_path, pool_row_key};
 use settings_dbus::LiveError;
 
 /// The `[ai.auto.pool]` table of `inferd.toml`, where a helper's row lives.

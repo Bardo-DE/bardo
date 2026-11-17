@@ -70,7 +70,7 @@ impl Endpoint {
             self.port,
             self.base_url(),
             self.token.expose().to_owned(),
-            crate::settings::slug_of(&self.protocol),
+            inference_settings::slug_of(&self.protocol),
         )
     }
 }
@@ -152,13 +152,13 @@ impl Agents {
         let program = AgentProgram::parse(&request.program).map_err(|error| {
             Refusal::invalid(format!("the program is not an agent program id: {error}"))
         })?;
-        let class: DataClass = crate::settings::from_slug(&request.class)
+        let class: DataClass = inference_settings::from_slug(&request.class)
             .ok_or_else(|| Refusal::invalid("the class is not a data class"))?;
         let protocols: Vec<AgentProtocol> = request
             .protocols
             .iter()
             .map(|slug| {
-                crate::settings::from_slug(slug)
+                inference_settings::from_slug(slug)
                     .ok_or_else(|| Refusal::invalid("a protocol is not an agent protocol"))
             })
             .collect::<Result<_, _>>()?;

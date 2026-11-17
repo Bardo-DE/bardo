@@ -11,7 +11,7 @@
 //! - [`tee`]: a turn sink that keeps the whole turn for a pure session to read and shows the
 //!   person's thinking while it waits.
 //! - [`structured`]: a reply of a JSON shape or a choice is validated, and repaired within the
-//!   limits ([`structured::Limits`]), before the app is told it.
+//!   limits (`inference_settings::structured::Limits`), before the app is told it.
 //! - [`cua_step`] and [`computer_use_run`]: one computer-use step over a model turn, and the run of steps
 //!   of one session.
 //! - [`local`]: the turns on a local model ([`local::LocalTurn`], a `inference_core::Model` for one
@@ -23,13 +23,6 @@
 //!   content), an `AuditSink` for the session server.
 //!
 //! Nothing here reads the environment or opens a bus; the daemon passes in what it knows.
-//!
-//! ```
-//! use inference_turns::structured::Limits;
-//!
-//! // A structured reply is repaired once by default.
-//! assert_eq!(Limits::default().repairs.0, 1);
-//! ```
 
 pub mod audit;
 pub mod bridge;
@@ -42,5 +35,4 @@ pub mod tee;
 pub mod turn;
 
 pub use local::{EngineUse, LocalTurns};
-pub use structured::Limits;
 pub use turn::Turn;

@@ -1,13 +1,13 @@
 //! The `ai.auto.*` settings rows (design/22 section 3.26): what Automatic does, whether it may
 //! unload an idle model, whether it says why.
 //!
-//! The daemon reads `[ai.auto]` of `inferd.toml`; `settings::resolve` calls [`AutoConfig::resolve`]
+//! The daemon reads `[ai.auto]` of `inferd.toml`; `resolve` calls [`AutoConfig::resolve`]
 //! and puts the policy into the settings the engines run under (`Engines::with_settings`). Nothing
 //! here reads a file or the environment. A value a row does not know falls back to the row's
 //! default, for that field only, and is named in [`ResolvedAuto::rejected`] so the daemon can log
 //! it once (as `[ai.structured]` does).
 
-use crate::settings::SwitchSaid;
+use crate::SwitchSaid;
 use inference_core::{AutoEvict, AutoMode, AutoPolicy};
 use serde::{Deserialize, Serialize};
 
@@ -86,11 +86,21 @@ impl AutoConfig {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::InferdConfig;
+    use crate::AiConfig;
+
+    #[derive(serde::Deserialize, Default)]
+    struct File {
+        #[serde(default)]
+        ai: AiConfig,
+    }
+
+    fn read(text: &str) -> AiConfig {
+        toml::from_str::<File>(text).expect("reads").ai
+    }
 
     #[test]
     fn no_table_is_the_design_defaults() {
-        let resolved = InferdConfig::default().ai.auto.resolve();
+        let resolved = AiConfig::default().auto.resolve();
         assert_eq!(resolved.policy, AutoPolicy::default());
         assert_eq!(resolved.policy.allow_evict, AutoEvict::IdleOnly);
         assert!(resolved.policy.show_reason);
@@ -99,11 +109,10 @@ mod tests {
 
     #[test]
     fn the_table_reads_from_the_file() {
-        let config = InferdConfig::from_toml(
+        let config = read(
             "[ai.auto]\nmode = \"warm_first\"\nallow_evict = \"never\"\nshow_reason = false\n",
-        )
-        .expect("reads");
-        let resolved = config.ai.auto.resolve();
+        );
+        let resolved = config.auto.resolve();
         assert_eq!(resolved.policy.allow_evict, AutoEvict::Never);
         assert!(!resolved.policy.show_reason);
         assert!(resolved.rejected.is_empty());
@@ -111,11 +120,8 @@ mod tests {
 
     #[test]
     fn an_unknown_value_falls_back_for_that_field_only() {
-        let config = InferdConfig::from_toml(
-            "[ai.auto]\nallow_evict = \"sometimes\"\nshow_reason = \"maybe\"\n",
-        )
-        .expect("reads");
-        let resolved = config.ai.auto.resolve();
+        let config = read("[ai.auto]\nallow_evict = \"sometimes\"\nshow_reason = \"maybe\"\n");
+        let resolved = config.auto.resolve();
         assert_eq!(resolved.policy.allow_evict, AutoEvict::IdleOnly);
         assert!(resolved.policy.show_reason);
         assert_eq!(resolved.rejected, vec![ALLOW_EVICT, SHOW_REASON]);

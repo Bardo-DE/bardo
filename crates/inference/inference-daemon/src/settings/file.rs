@@ -1,11 +1,11 @@
 //! The configuration file as the settings writer and the daemon share it: read whole, edited at a
 //! settings path, written atomically; and the reload that puts a changed file in force.
 
-use super::resolve::resolve;
 use crate::config::InferdConfig;
 use crate::engines::Engines;
 use crate::supervise::Programs;
 use base_fs::atomic::AtomicWrite;
+use inference_settings::resolve;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
@@ -225,7 +225,7 @@ impl Reload {
     /// Returns [`ReloadFailed`] when the file cannot be read; nothing changes then.
     pub fn now(&self) -> Result<Reloaded, ReloadFailed> {
         let config = self.file.read().map_err(|e| ReloadFailed(e.to_string()))?;
-        let resolved = resolve(&config);
+        let resolved = resolve(&config.ai);
         self.engines.apply(resolved.settings);
         if let Some(programs) = &self.programs {
             programs.follow(&config.engines);

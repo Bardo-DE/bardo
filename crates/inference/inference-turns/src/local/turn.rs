@@ -3,13 +3,14 @@
 
 use super::{EngineUse, chat_provider, client, note_no_scores, run_turn};
 use crate::bridge::{self, BridgeError, Frames};
-use crate::structured::{self, Checked, Limits, Shaping};
+use crate::structured::{self, Checked, Shaping};
 use account_capability::Tier;
 use inference_core::{
     ChatReply, ChatRequest, ChatSink, EmbedReply, EmbedRequest, InferEvent, InferRefusal, Model,
     ModelCard, ServedBy, StopReason, TaskRequest, TokenUsage, TurnError,
 };
 use inference_router::local::LocalModel;
+use inference_settings::structured::Limits;
 use model_openai_compat::OpenAiCodec;
 use model_provider as sp;
 use model_provider::Embedder;

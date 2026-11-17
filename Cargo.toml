@@ -295,6 +295,7 @@ members = [
     "crates/inference/inference-probe",
     "crates/inference/inference-bridge",
     "crates/inference/inference-fs",
+    "crates/inference/inference-settings",
     "crates/inference/inference-core",
     "crates/inference/inference-router",
     "crates/inference/inference-tailnet",

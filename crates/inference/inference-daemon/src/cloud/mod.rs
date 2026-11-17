@@ -25,7 +25,6 @@ pub mod transport;
 pub mod turn;
 pub mod wire;
 
-use crate::settings::SpendLine;
 use account_core::consent::Usage;
 use account_core::{AccountId, GrantId};
 use account_core::{AppId, DataClass, SecretText};
@@ -33,6 +32,7 @@ use accountd::{AccountVerdict, Accountd, AccountdFault};
 use base_time::Clock;
 use base_time::UnixSeconds;
 use inference_core::SpendVerdict;
+use inference_settings::{Ledger, SpendLine};
 use model_catalog::{ModelEntry, ProviderId, Wire};
 use model_http::TlsRoots;
 use model_http::{
@@ -42,7 +42,6 @@ use model_http::{
 use model_http::{UrlPath, WaitMs};
 use models::{RemoteModel, remote_entries, remote_models};
 use own::{OwnBook, OwnServer, Place};
-use spend::Ledger;
 use std::sync::Arc;
 use transport::ShapedTransport;
 use wire::{BodyShape, Doors};

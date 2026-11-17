@@ -13,8 +13,8 @@ use engine_supervisor::{
     EngineHost, EngineId, ExitCode, GpuError, GpuMemory, GpuProbe, HostError, Probe, ReadyProbe,
     UnitSpec,
 };
-use inference_router::local::unix_endpoint;
 use inference_fs::clear_socket;
+use inference_router::local::unix_endpoint;
 use inference_router::startup::{Cause, Diagnostics, TailBuf};
 use model_catalog::MiB;
 use model_http::{

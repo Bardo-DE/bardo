@@ -14,7 +14,7 @@
 //!
 //! The limits (what a schema may leave open, how deep it nests, how many repairs) come from the
 //! daemon's configuration, `[ai.structured]` of `inferd.toml` (settings `ai.structured.*`, design/22
-//! section 3.26), passed in as a [`Limits`]; the constants in `limits` are only the defaults.
+//! section 3.26), passed in as a [`Limits`] (`inference_settings::structured`, which also holds the defaults).
 //!
 //! While the turns run only the thoughts stream: the text of a first attempt may be repaired, so
 //! the reply is told once, when it has been checked.
@@ -24,12 +24,10 @@ use crate::tee::{Echo, Tee};
 use base_ids::Tokens;
 use inference_core::{self as pi, ChargeTotal, InferEvent, ModelError};
 use inference_router::local::LocalModel;
+use inference_settings::structured::Limits;
 use model_extract::{ExtractFailure, Extracted, ShapedSession, ToolsPresent, choose};
 use model_provider::{ChoiceText, JsonText, Provider, SchemaText, Shape, TurnRequest};
 use std::ops::ControlFlow;
-
-pub mod limits;
-pub use limits::{Limits, Resolved, StructuredConfig};
 
 /// Whether a reply is a JSON value or one of the offered strings (which the app gets bare).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

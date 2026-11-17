@@ -29,11 +29,11 @@ use inference_core::{
 use inference_router::local::LocalModel;
 use inference_router::seams::{TurnRunner, TurnStep};
 use inference_router::session::HeardAudio;
+use inference_settings::structured::Limits;
 use inference_turns::Turn;
 use inference_turns::bridge::Frames;
 use inference_turns::computer_use_run::CuaRun;
 use inference_turns::local::{LocalTurns, ToSession};
-use inference_turns::structured::Limits;
 use std::os::fd::OwnedFd;
 use std::sync::{Arc, Mutex, OnceLock};
 use tokio::sync::mpsc;

@@ -25,9 +25,9 @@ use inference_core::{
     MessagePart, ModelRef, Role as ChatRole,
 };
 use inference_daemon::attached::{Attached, KeyFileProblem, NotReady, Place, Reach};
-use inference_daemon::settings::Settings;
 use inference_router::seams::EngineHost;
 use inference_router::startup::Cause;
+use inference_settings::Settings;
 use rustix::process::{Pid, Signal, kill_process};
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;

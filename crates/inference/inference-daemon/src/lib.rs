@@ -21,7 +21,6 @@
 pub mod admit;
 pub mod agent;
 pub mod attached;
-pub mod auto;
 pub mod broker;
 pub mod cloud;
 pub mod config;
@@ -44,7 +43,6 @@ pub mod settings;
 pub mod shutdown;
 pub mod speech;
 pub mod spend_rows;
-pub mod structured;
 pub mod supervise;
 pub mod tailnet;
 pub mod toolproof;
