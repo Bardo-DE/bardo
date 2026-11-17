@@ -328,19 +328,14 @@ async fn used(sync: &SyncProxy<'_>, dataset: &str) -> Option<u64> {
     u64::try_from(&quota["used"]).ok()
 }
 
-/// Polls `Status` until the replica's used bytes are `want` (a minute at most: the journal
-/// syncs to disk on every write, and a loaded machine is slow); the last reading.
-async fn used_reaches(sync: &SyncProxy<'_>, dataset: &str, want: u64) -> Option<u64> {
-    let mut seen = None;
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        seen = used(sync, dataset).await;
-        if seen == Some(want) {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-    seen
+/// Polls `Status` until the replica's used bytes are `want` (the journal syncs to disk on every
+/// write, and a loaded machine is slow).
+async fn used_reaches(sync: &SyncProxy<'_>, dataset: &str, want: u64) {
+    base_testkit::eventually_some_async(
+        "the upload to show as the replica's used bytes",
+        || async { (used(sync, dataset).await == Some(want)).then_some(()) },
+    )
+    .await;
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -370,12 +365,7 @@ async fn a_running_engine_syncs_to_its_replica_and_the_bus_shows_it_until_it_is_
     sync.sync_now("a1/photos_originals")
         .await
         .expect("sync now");
-    let seen = used_reaches(&sync, "a1/photos_originals", 3).await;
-    assert_eq!(
-        seen,
-        Some(3),
-        "the upload shows as the replica's used bytes"
-    );
+    used_reaches(&sync, "a1/photos_originals", 3).await;
     let status = sync.status("a1/photos_originals").await.expect("status");
     assert_eq!(u64::try_from(&status["pending"]).ok(), Some(0));
     assert!(status.contains_key("anchor_age"));
@@ -407,7 +397,7 @@ async fn a_running_engine_syncs_to_its_replica_and_the_bus_shows_it_until_it_is_
     sync.sync_now("a1/photos_originals")
         .await
         .expect("sync now");
-    assert_eq!(used_reaches(&sync, "a1/photos_originals", 7).await, Some(7));
+    used_reaches(&sync, "a1/photos_originals", 7).await;
 
     // Removing the account's datasets from the hub ends the driver.
     assert!(

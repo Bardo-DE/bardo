@@ -270,15 +270,15 @@ fn service(rig: &Rig) -> &Service {
     &rig.hosted.service
 }
 
-async fn eventually(what: &str, mut check: impl AsyncFnMut() -> bool) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if check().await {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-    deadline.fail(what);
+async fn eventually(what: &str, check: impl AsyncFnMut() -> bool) {
+    // The helper's closure hands out a future per look, which cannot borrow the check's own
+    // state across the look; the check sits behind a lock the future takes instead.
+    let check = tokio::sync::Mutex::new(check);
+    base_testkit::eventually_some_async(what, || async {
+        let mut check = check.lock().await;
+        (*check)().await.then_some(())
+    })
+    .await;
 }
 
 fn listed(rig: &Rig, at: &str) -> bool {

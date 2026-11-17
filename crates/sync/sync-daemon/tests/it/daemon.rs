@@ -6,7 +6,7 @@
 use crate::common::bus::PrivateBus;
 
 use account_dbus::BusTarget;
-use base_testkit::{Deadline, GENEROUS};
+use base_testkit::GENEROUS;
 use std::path::Path;
 use std::time::Duration;
 use sync_bus::SYNC_BUS;
@@ -82,11 +82,8 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
         .expect("run ends within the generous wait")
         .expect("run's task");
 
-    let deadline = Deadline::generous();
-    while dbus.name_has_owner(name.clone()).await.expect("ask") {
-        if deadline.passed() {
-            deadline.fail("syncd lets go of its name");
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually_some_async("syncd to let go of its name", || async {
+        (!dbus.name_has_owner(name.clone()).await.expect("ask")).then_some(())
+    })
+    .await;
 }
