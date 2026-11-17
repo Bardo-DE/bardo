@@ -6,7 +6,7 @@
 //! - `webdav`: the `WebDAV` replica of a folder under the account's endpoint, and `webdav::BuildError`.
 //! - `gdrive`: the Google Drive replica of a folder in the account's app data folder.
 //! - `graph`: the Graph (`OneDrive`) replica of a folder in the account's app folder.
-//! - `pim`: the connections and the replica of one CalDAV or CardDAV collection.
+//! - `pim`: the connections and the replica of one `CalDAV` or `CardDAV` collection.
 
 pub mod gdrive;
 pub mod graph;
