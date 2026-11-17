@@ -28,7 +28,7 @@ account-client-dbus = {path = "../../accounts/account-client-dbus"}
 account-callers = {features = ["file"], path = "../../accounts/account-callers"}
 account-dbus = {path = "../../accounts/account-dbus"}
 # Only `xdg`: the directories a daemon keeps its files under.
-account-daemon-support = {default-features = false, path = "../../accounts/account-daemon-support"}
+account-daemon-support = {path = "../../accounts/account-daemon-support"}
 # The vocabulary: needs, grants, ids, the parent window.
 account-core = {path = "../../accounts/account-core"}
 account-match = {path = "../../accounts/account-match"}

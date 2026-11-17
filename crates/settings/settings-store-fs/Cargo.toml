@@ -20,9 +20,5 @@ thiserror = { workspace = true }
 notify = { workspace = true }
 futures-timer = { workspace = true }
 
-[dev-dependencies]
-tempfile = { workspace = true }
-tokio = { workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"] }
-
 [lints]
 workspace = true

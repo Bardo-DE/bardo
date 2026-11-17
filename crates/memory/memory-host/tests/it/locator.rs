@@ -3,7 +3,8 @@
 
 use memory_core::{DayCount, VaultKind};
 use memory_host::Locator;
-use memory_settings::{CONFIRMED_FILE, Fallback, Loaded, MemorySettings, SETTINGS_FILE, Why};
+use memory_settings::{CONFIRMED_FILE, MemorySettings, SETTINGS_FILE, lines};
+use settings_store::{InvalidKey, Loaded};
 
 #[test]
 fn the_locator_reads_the_first_file_of_the_configuration_directories() {
@@ -34,7 +35,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
     let none = Locator::from_env(&|_: &str| None::<String>);
     assert_eq!(
         none.read(MemorySettings::default()),
-        Loaded::of(MemorySettings::default())
+        Loaded::clean(MemorySettings::default())
     );
 }
 
@@ -68,29 +69,25 @@ fn a_loosened_value_applies_only_once_the_person_confirmed_exactly_it() {
     let loaded = locator.read(shipped);
     assert_eq!(loaded.value, shipped);
     assert_eq!(
-        loaded.fallbacks,
+        loaded.invalid,
         [
-            Fallback {
-                key: "memory.retention.search_days".to_owned(),
-                why: Why::NotConfirmed {
-                    value: "3".to_owned()
-                },
+            InvalidKey {
+                path: "memory.retention.search_days".to_owned(),
+                reason: "3 waits for you to confirm it in Settings".to_owned(),
             },
-            Fallback {
-                key: "memory.files.at_rest".to_owned(),
-                why: Why::NotConfirmed {
-                    value: "plain".to_owned()
-                },
+            InvalidKey {
+                path: "memory.files.at_rest".to_owned(),
+                reason: "plain waits for you to confirm it in Settings".to_owned(),
             },
         ]
     );
     assert!(
-        loaded.lines("memoryd").contains(
-            &"memoryd: settings: memory.retention.search_days: 3 waits for you to confirm it in Settings"
+        lines(&loaded, "memoryd").contains(
+            &"memoryd: settings: memory.retention.search_days: 3 waits for you to confirm it in Settings; using the previous value"
                 .to_owned()
         ),
         "{:?}",
-        loaded.lines("memoryd")
+        lines(&loaded, "memoryd")
     );
 
     // One confirmed: that one applies (and is still audited), the other still waits.
@@ -100,10 +97,9 @@ fn a_loosened_value_applies_only_once_the_person_confirmed_exactly_it() {
     let loaded = locator.read(shipped);
     assert_eq!(loaded.value.retention.search, DayCount(3));
     assert_eq!(loaded.value.at_rest, VaultKind::Sealed);
-    assert_eq!(loaded.fallbacks.len(), 1);
+    assert_eq!(loaded.invalid.len(), 1);
     assert_eq!(
-        loaded
-            .lines("memoryd")
+        lines(&loaded, "memoryd")
             .iter()
             .filter(|l| l.contains("loosened"))
             .count(),
@@ -126,7 +122,7 @@ fn a_loosened_value_applies_only_once_the_person_confirmed_exactly_it() {
     .unwrap();
     let loaded = locator.read(shipped);
     assert_eq!(loaded.value.retention.search, DayCount(40));
-    assert_eq!(loaded.fallbacks, vec![]);
+    assert_eq!(loaded.invalid, vec![]);
     assert!(
         std::fs::read_to_string(dir.path().join(CONFIRMED_FILE))
             .unwrap()

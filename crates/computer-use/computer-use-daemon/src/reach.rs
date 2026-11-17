@@ -9,10 +9,10 @@
 //! because cua does not take docket's newer pin yet; it moves to action-dbus's `ReachServer` at
 //! the next docket pin.
 
-use crate::watch::SettingsWatch;
 use action_dbus::PROVIDER_PATH;
-use computer_use_host::Supervisor;
+use computer_use_host::{CuaSettings, Supervisor};
 use computer_use_run::Seams;
+use settings_store_fs::LocatedWatch;
 use std::sync::Arc;
 use zbus::object_server::SignalEmitter;
 
@@ -46,7 +46,7 @@ impl<S: Seams> ReachObject<S> {
 pub async fn follow_settings<S: Seams>(
     connection: &zbus::Connection,
     supervisor: &Supervisor<S>,
-    watch: &mut SettingsWatch,
+    watch: &mut LocatedWatch<CuaSettings>,
 ) {
     loop {
         let before = supervisor.settings().enabled;

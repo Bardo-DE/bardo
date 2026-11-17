@@ -18,10 +18,10 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use settings_types::schema::{AppId, FilePath, KeySpec, Schema, SettingsSchema, WordLabels};
-use settings_types::AppName;
-use settings_store_fs::{ConfigRoot, Store};
 use settings_store::{FileName, Format, SettingsDoc};
+use settings_store_fs::{ConfigRoot, Store};
+use settings_types::AppName;
+use settings_types::schema::{AppId, FilePath, KeySpec, Schema, SettingsSchema, WordLabels};
 
 use ui_components::prelude::Word;
 
@@ -123,5 +123,5 @@ fn with_word_labels(mut key: KeySpec) -> KeySpec {
 ///
 /// Returns the `io::Error` when the file cannot be written.
 pub fn write_schema(dir: &Path) -> io::Result<PathBuf> {
-    schema().write_to(dir)
+    settings_store_fs::write_schema(&schema(), dir)
 }

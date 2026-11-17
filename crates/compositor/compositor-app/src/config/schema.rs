@@ -5,8 +5,8 @@ use super::sections::{
     GesturesSection, GpuSection, KeyboardSection, NightLightSection, OutputsSection,
     PointerSection, SpacesSection, TouchpadSection, WindowsSection, XwaylandSection,
 };
-use std::path::Path;
 use settings_types::schema::{AppId, FilePath, ForeignTables, Schema, SettingsSchema};
+use std::path::Path;
 
 /// The schema's version: bumped when a key's meaning changes, never for a new key.
 const VERSION: u16 = 1;
@@ -46,6 +46,6 @@ pub fn schema() -> Schema {
 ///
 /// Returns [`ConfigError`] when the schema cannot be written to `to`.
 pub fn write_schema(to: &Path) -> Result<(), ConfigError> {
-    schema().write_to(to)?;
+    settings_store_fs::write_schema(&schema(), to)?;
     Ok(())
 }

@@ -1,8 +1,10 @@
 //! The schema, the key table and the reader hold to one another.
 
-use super::keys::{Rule, table};
+use super::keys::table;
 use super::*;
 use memory_core::DayCount;
+use settings_store::rules::Rule;
+use settings_store::{InvalidKey, UnknownKey};
 use std::collections::BTreeSet;
 
 fn schema() -> toml::Table {
@@ -154,6 +156,7 @@ fn the_schema_rows_and_the_key_table_are_the_same_keys_with_the_same_ranges() {
                 assert_eq!(v["max"].as_integer(), Some(*range.end()), "{}", key.path);
             }
             Rule::Word { words: w, .. } => assert_eq!(&words(v), w, "{}", key.path),
+            Rule::Toggle { .. } => panic!("{} is a toggle: memory has none", key.path),
         }
     }
 }
@@ -168,7 +171,7 @@ fn a_file_of_every_schema_default_changes_nothing() {
         parts.iter().map(|(p, v)| (p.as_str(), v.clone())).collect();
     let loaded = read(&merged(&refs), MemorySettings::default());
     assert_eq!(loaded.value, MemorySettings::default());
-    assert_eq!((loaded.fallbacks, loaded.unknown), (vec![], vec![]));
+    assert_eq!((loaded.invalid, loaded.unknown), (vec![], vec![]));
 }
 
 /// A valid value for the row that is not its default.
@@ -195,7 +198,7 @@ fn every_schema_key_is_read_by_the_daemon() {
     for row in rows() {
         let p = path(&row);
         let loaded = read(&one(p, other_than_default(&row)), MemorySettings::default());
-        assert_eq!(loaded.fallbacks, vec![], "{p}");
+        assert_eq!(loaded.invalid, vec![], "{p}");
         assert_ne!(
             loaded.value,
             MemorySettings::default(),
@@ -263,8 +266,8 @@ fn a_bad_value_falls_back_for_that_key_alone() {
                 want.retention.search = DayCount(3);
             }
             assert_eq!(loaded.value, want, "{p} = {value}");
-            assert_eq!(loaded.fallbacks.len(), 1, "{p} = {value}");
-            assert_eq!(loaded.fallbacks[0].key, p);
+            assert_eq!(loaded.invalid.len(), 1, "{p} = {value}");
+            assert_eq!(loaded.invalid[0].path, p);
         }
     }
 }
@@ -276,10 +279,10 @@ fn a_fallback_is_the_base_value_not_the_default() {
     let loaded = read("[memory.retention]\nsearch_days = 0\n", base);
     assert_eq!(loaded.value, base);
     assert_eq!(
-        loaded.fallbacks,
-        vec![Fallback {
-            key: "memory.retention.search_days".into(),
-            why: Why::OutOfRange { min: 1, max: 3650 },
+        loaded.invalid,
+        vec![InvalidKey {
+            path: "memory.retention.search_days".into(),
+            reason: "outside 1..=3650".into(),
         }]
     );
 }
@@ -288,7 +291,7 @@ fn a_fallback_is_the_base_value_not_the_default() {
 fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
     let loaded = read("[memory\nfiles = 1", MemorySettings::default());
     assert_eq!(loaded.value, MemorySettings::default());
-    assert!(matches!(loaded.fallbacks[0].why, Why::NotToml(_)));
+    assert!(loaded.invalid[0].reason.starts_with("not TOML"));
 }
 
 #[test]
@@ -299,7 +302,10 @@ fn unknown_keys_are_reported_and_the_unread_ones_are_among_them() {
     );
     assert_eq!(loaded.value.consolidate, ConsolidateWhen::Manual);
     assert_eq!(loaded.value.apply, ConsolidateApply::Review);
-    assert_eq!(loaded.unknown, ["memory.join_window_ms"]);
+    assert_eq!(
+        loaded.unknown,
+        [UnknownKey("memory.join_window_ms".to_owned())]
+    );
 }
 
 #[test]
@@ -316,7 +322,7 @@ fn what_the_file_loosens_below_the_shipped_defaults_is_named() {
     for (text, count) in table {
         let loaded = read(text, MemorySettings::default());
         assert_eq!(loosenings(&loaded.value).len(), count, "{text}");
-        let lines = loaded.lines("memoryd");
+        let lines = crate::lines(&loaded, "memoryd");
         assert_eq!(
             lines.iter().filter(|l| l.contains("loosened")).count(),
             count,

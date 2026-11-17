@@ -9,6 +9,7 @@
 
 mod damaged;
 mod error;
+mod locator;
 mod root;
 mod schema_files;
 mod store;
@@ -18,6 +19,7 @@ mod writer;
 
 pub use damaged::{DamagedFile, Saved, damage, keep_damaged};
 pub use error::SettingsError;
+pub use locator::{DiskText, Locator, ReadFailure, ReadText};
 pub use root::ConfigRoot;
 pub use schema_files::{
     data_dirs, data_dirs_from, data_dirs_list_from, data_home_from, data_search_from, discover,
@@ -25,5 +27,5 @@ pub use schema_files::{
 };
 pub use store::Store;
 pub use text::{FileText, SETTINGS_CAP, file_text};
-pub use watch::{DEBOUNCE, FileWatcher, Settled, Watch, WatchState, watch_file};
+pub use watch::{DEBOUNCE, FileWatcher, LocatedWatch, Settled, Watch, WatchState, watch_file};
 pub use writer::SettingsWriter;

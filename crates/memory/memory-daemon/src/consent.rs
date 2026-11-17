@@ -7,7 +7,8 @@
 
 use memory_core::{Refusal, WaitingSetting};
 use memory_host::Locator;
-use memory_settings::{ConfirmError, Loaded, MemorySettings};
+use memory_settings::{ConfirmError, MemorySettings};
+use settings_store::Loaded;
 use std::collections::BTreeMap;
 use std::sync::{Mutex, PoisonError};
 
@@ -54,7 +55,10 @@ impl Consent {
     /// # Errors
     /// `Refusal` when any pair is not a setting the person may confirm, or the store cannot be
     /// written.
-    pub fn confirm(&self, values: &BTreeMap<String, String>) -> Result<Loaded, Refusal> {
+    pub fn confirm(
+        &self,
+        values: &BTreeMap<String, String>,
+    ) -> Result<Loaded<MemorySettings>, Refusal> {
         // One writer at a time: the store is read, merged and replaced.
         let _one = self.writing.lock().unwrap_or_else(PoisonError::into_inner);
         self.locator.confirm(values).map_err(refusal_of)?;

@@ -14,7 +14,7 @@ fn main() -> ExitCode {
         Err(code) => return code,
     };
     if let Some(dir) = &cli.write_schema {
-        return match shell_settings::schema().write_to(dir) {
+        return match settings_store_fs::write_schema(&shell_settings::schema(), dir) {
             Ok(path) => shell_app::cli::stdout::print(&format!("{}\n", path.display())).exit_code(),
             Err(error) => {
                 eprintln!(

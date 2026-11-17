@@ -1,31 +1,34 @@
 //! The person's computer-use settings (design/22 section 3.29): the `cua.*` keys the Settings app
 //! writes to `$XDG_CONFIG_HOME/computer-use/settings.toml`, read leniently (a bad value falls back, per key,
 //! and is logged) and found through the configuration directories. The pure part (`read`) is text
-//! in, typed values out; the file is the edge (the caller's [`ReadText`]), and the live watch on it is the daemon's, which
-//! hands each [`Loaded`] to `Supervisor::adopt`.
+//! in, typed values out; the file is the edge (the caller's [`settings_store_fs::ReadText`]), and the live watch on it is the daemon's, which
+//! hands each [`settings_store::Loaded`] to `Supervisor::adopt`.
 
 mod apps;
 mod keys;
-mod locate;
 #[cfg(test)]
 mod locate_tests;
 mod read;
 #[cfg(test)]
 mod tests;
-mod text;
 
 use computer_use_run::CuaConfig;
 
 pub use apps::{AppAllow, AppRule, Apps, is_browser};
-pub use locate::Locator;
-pub use read::{Fallback, Loaded, Why, read};
-pub use text::{ReadFailure, ReadText};
+pub use read::read;
 
 /// The schema cua ships for its settings (design/22 section 9.2).
 pub const SCHEMA: &str = include_str!("../../../dist/settings/computer-use.settings.toml");
 
 /// The file the settings live in, under the configuration directory.
 pub const SETTINGS_FILE: &str = "computer-use/settings.toml";
+
+/// Where the settings file is: `$XDG_CONFIG_HOME/bardo/computer-use/settings.toml`, then the same
+/// under each of `$XDG_CONFIG_DIRS`. Read it with
+/// [`Locator::read_with`](settings_store_fs::Locator::read_with)`(reader, base, read)`.
+pub fn locator(env: &impl Fn(&str) -> Option<String>) -> settings_store_fs::Locator {
+    settings_store_fs::Locator::from_env(env, SETTINGS_FILE)
+}
 
 /// Every value of the file, typed.
 #[derive(Debug, Clone, PartialEq, Eq)]

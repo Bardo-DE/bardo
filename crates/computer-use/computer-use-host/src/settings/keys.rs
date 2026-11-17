@@ -7,59 +7,10 @@ use super::CuaSettings;
 use model_provider::Money;
 use rust_decimal::Decimal;
 use serde::de::DeserializeOwned;
-use std::ops::RangeInclusive;
-
-/// What a key's value may be and how it lands in the settings.
-#[derive(Clone)]
-pub(crate) enum Rule {
-    /// A whole number inside `range`, in the key's unit.
-    Number {
-        range: RangeInclusive<i64>,
-        set: fn(&mut CuaSettings, i64),
-    },
-    /// A switch, stored as TOML `true` or `false`.
-    Toggle { set: fn(&mut CuaSettings, bool) },
-    /// One of `words`: `set` reads the word through serde and says whether the field took it.
-    Word {
-        words: &'static [&'static str],
-        set: fn(&mut CuaSettings, &str) -> bool,
-    },
-}
-
-/// One key of the table.
-#[derive(Clone)]
-pub(crate) struct Key {
-    pub path: &'static str,
-    pub rule: Rule,
-}
+use settings_store::rules::{RuleKey, number, toggle, word};
 
 /// The list key, read apart from the table.
 pub(crate) const APPS_KEY: &str = "cua.apps";
-
-fn num(path: &'static str, range: RangeInclusive<i64>, set: fn(&mut CuaSettings, i64)) -> Key {
-    Key {
-        path,
-        rule: Rule::Number { range, set },
-    }
-}
-
-fn toggle(path: &'static str, set: fn(&mut CuaSettings, bool)) -> Key {
-    Key {
-        path,
-        rule: Rule::Toggle { set },
-    }
-}
-
-fn word(
-    path: &'static str,
-    words: &'static [&'static str],
-    set: fn(&mut CuaSettings, &str) -> bool,
-) -> Key {
-    Key {
-        path,
-        rule: Rule::Word { words, set },
-    }
-}
 
 /// Reads `word` as the serde form of `T`; `None` when it is not one of `T`'s words.
 fn read_word<T: DeserializeOwned>(word: &str) -> Option<T> {
@@ -67,7 +18,7 @@ fn read_word<T: DeserializeOwned>(word: &str) -> Option<T> {
 }
 
 /// Every scalar key, in the order the schema lists them.
-pub(crate) fn table() -> Vec<Key> {
+pub(crate) fn table() -> Vec<RuleKey<CuaSettings>> {
     vec![
         toggle("cua.enabled", |s, v| s.config.enabled = v),
         word(
@@ -77,7 +28,7 @@ pub(crate) fn table() -> Vec<Key> {
         ),
         toggle("cua.autopause", |s, v| s.config.autopause = v),
         toggle("cua.accessibility", |s, v| s.config.accessibility = v),
-        num("cua.budget.spend_microusd", 0..=1_000_000_000, |s, v| {
+        number("cua.budget.spend_microusd", 0..=1_000_000_000, |s, v| {
             // Millionths of a US dollar in the file; 0 is a cap of nothing (local models only).
             s.config.budget.spend = Money::usd(Decimal::new(v, 6));
         }),

@@ -3,7 +3,7 @@
 
 use account_core::AppName;
 use action_core::AgentConfig;
-use action_settings::{AgentSettings, Locator};
+use action_settings::{AgentSettings, locator, read};
 use provenance::SpaceId;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -90,7 +90,7 @@ impl CompaniondConfig {
         }?;
         // The person's settings (`actions/settings.toml`) over the file's proposed values, read
         // once at start: a bad value falls back to the file's and is logged.
-        let loaded = Locator::from_env(env).read(AgentSettings::over(config.agent));
+        let loaded = locator(env).read(AgentSettings::over(config.agent), read);
         for line in loaded.lines("companiond") {
             eprintln!("{line}");
         }

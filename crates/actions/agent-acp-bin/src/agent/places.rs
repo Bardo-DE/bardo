@@ -3,9 +3,9 @@
 //! Read once from the environment the program's `main` passes in, so nothing below `main` reads
 //! the environment.
 
-use action_settings::Locator;
 use agent_launch::login::VisibleLogin;
 use agent_registry::dirs::AgentsDir;
+use settings_store_fs::Locator;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -57,7 +57,7 @@ impl Places {
             .join("bardo")
             .join("actions");
         Self {
-            locator: Locator::from_env(&get),
+            locator: action_settings::locator(&get),
             data,
             home: get("HOME").map(PathBuf::from),
             path: get("PATH").unwrap_or_default(),

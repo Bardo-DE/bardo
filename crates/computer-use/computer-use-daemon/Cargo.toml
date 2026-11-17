@@ -40,6 +40,7 @@ computer-use-run = {path = "../computer-use-run"}
 keymap = {path = "../../keymap/keymap"}
 key-remap-client = {optional = true, path = "../../input/key-remap-client"}
 computer-use-host = {path = "../computer-use-host"}
+settings-store-fs = { path = "../../settings/settings-store-fs" }
 computer-use-dbus = {path = "../computer-use-dbus"}
 action-core = {path = "../../actions/action-core"}
 action-client = {default-features = false, features = ["dbus"], path = "../../actions/action-client"}
@@ -47,7 +48,6 @@ action-provider = {features = ["dbus"], path = "../../actions/action-provider"}
 action-dbus = {path = "../../actions/action-dbus"}
 provenance = {path = "../../provenance/provenance"}
 account-core = {path = "../../accounts/account-core"}
-account-daemon-support = {path = "../../accounts/account-daemon-support"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 toml = { workspace = true }

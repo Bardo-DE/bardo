@@ -8,49 +8,7 @@ use rust_decimal::Decimal;
 use serde::Deserialize;
 use serde::de::value::{Error as DeError, StrDeserializer};
 use serde::de::{DeserializeOwned, IntoDeserializer};
-use std::ops::RangeInclusive;
-
-/// What a key's value may be and how it lands in the settings.
-#[derive(Clone)]
-pub(crate) enum Rule {
-    /// A whole number inside `range`, in the key's unit.
-    Number {
-        range: RangeInclusive<i64>,
-        set: fn(&mut AgentSettings, i64),
-    },
-    /// A switch, stored as TOML `true` or `false`.
-    Toggle { set: fn(&mut AgentSettings, bool) },
-    /// One of `words`, read by the target type's serde name; `set` says whether it took.
-    Word {
-        words: &'static [&'static str],
-        set: fn(&mut AgentSettings, &str) -> bool,
-    },
-}
-
-/// One key of the table.
-#[derive(Clone)]
-pub(crate) struct Key {
-    pub path: &'static str,
-    pub rule: Rule,
-}
-
-const fn num(
-    path: &'static str,
-    range: RangeInclusive<i64>,
-    set: fn(&mut AgentSettings, i64),
-) -> Key {
-    Key {
-        path,
-        rule: Rule::Number { range, set },
-    }
-}
-
-const fn toggle(path: &'static str, set: fn(&mut AgentSettings, bool)) -> Key {
-    Key {
-        path,
-        rule: Rule::Toggle { set },
-    }
-}
+use settings_store::rules::{RuleKey, number, toggle, word};
 
 /// Reads `word` into `slot` by the type's serde name; whether it was one.
 fn parse_into<T: DeserializeOwned>(slot: &mut T, word: &str) -> bool {
@@ -64,19 +22,8 @@ fn parse_into<T: DeserializeOwned>(slot: &mut T, word: &str) -> bool {
     }
 }
 
-const fn word(
-    path: &'static str,
-    words: &'static [&'static str],
-    set: fn(&mut AgentSettings, &str) -> bool,
-) -> Key {
-    Key {
-        path,
-        rule: Rule::Word { words, set },
-    }
-}
-
 /// The start mode and the ten rows of the two modes.
-fn mode_keys() -> Vec<Key> {
+fn mode_keys() -> Vec<RuleKey<AgentSettings>> {
     let inside: &[&str] = &["runs", "asks"];
     let other: &[&str] = &["check", "asks"];
     let ask_or_runs: &[&str] = &["asks", "runs"];
@@ -119,18 +66,18 @@ fn mode_keys() -> Vec<Key> {
 }
 
 /// Every key, in the order the schema lists them.
-pub(crate) fn table() -> Vec<Key> {
+pub(crate) fn table() -> Vec<RuleKey<AgentSettings>> {
     let mut keys = mode_keys();
     keys.extend(rest());
     keys
 }
 
-fn rest() -> Vec<Key> {
+fn rest() -> Vec<RuleKey<AgentSettings>> {
     vec![
         toggle("agent.mcp.expose", |s, on| s.expose = on),
         toggle("agent.acp.expose", |s, on| s.acp = on),
         toggle("agent.acp.agents", |s, on| s.agents = on),
-        num("agent.budget.spend_microusd", 0..=1_000_000_000, |s, v| {
+        number("agent.budget.spend_microusd", 0..=1_000_000_000, |s, v| {
             // Millionths of a US dollar in the file. 0 is a cap of nothing: the turn after any
             // reported charge stops (a free or unpriced turn reports none).
             s.agent.budget.spend = Some(Money::usd(Decimal::new(v, 6)));

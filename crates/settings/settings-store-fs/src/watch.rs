@@ -3,6 +3,7 @@
 //! events settles for [`DEBOUNCE`], then the whole file is re-read.
 
 use crate::error::SettingsError;
+use crate::locator::Locator;
 use crate::store::Store;
 use crate::text::{FileText, SETTINGS_CAP, file_text};
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
@@ -226,6 +227,89 @@ fn reread<D: SettingsDoc + Send>(path: &Path, good: &mut D) -> (Loaded<D>, bool)
         FileText::Missing => {
             *good = D::default();
             (Loaded::default(), false)
+        }
+    }
+}
+
+/// A live watch on the file a [`Locator`] finds, for a daemon whose settings are a typed value
+/// `T` read again after every settled change. Dropping it stops the watch.
+#[derive(Debug)]
+pub struct LocatedWatch<T> {
+    changes: Receiver<Loaded<T>>,
+    state: WatchState,
+    _watcher: Option<FileWatcher>,
+}
+
+impl<T: Clone + Send + 'static> LocatedWatch<T> {
+    /// Reads the file now with `read`, and watches the directory that holds it.
+    ///
+    /// The second half is the task that reads again after every settled change and publishes it;
+    /// the caller runs it on its runtime (`tokio::spawn`). It is `None` when the directory could
+    /// not be watched ([`WatchState::Blind`]): the value stays as first read.
+    #[must_use]
+    pub fn start(
+        locator: &Locator,
+        read: impl Fn() -> Loaded<T> + Send + 'static,
+    ) -> (Self, Option<impl Future<Output = ()> + Send + 'static>) {
+        let initial = read();
+        let (out, changes) = latest::channel(initial);
+        let armed = locator
+            .watch_dir()
+            .zip(locator.file_name())
+            .ok_or_else(|| SettingsError::NoConfigDir {
+                app: "this program",
+            })
+            .and_then(|(dir, file)| watch_file(&dir, file));
+        match armed {
+            Ok((watcher, signals)) => (
+                Self {
+                    changes,
+                    state: WatchState::Live,
+                    _watcher: Some(watcher),
+                },
+                Some(settle_located(signals, read, out)),
+            ),
+            Err(error) => (
+                Self {
+                    changes,
+                    state: WatchState::Blind {
+                        reason: error.to_string(),
+                    },
+                    _watcher: None,
+                },
+                None,
+            ),
+        }
+    }
+
+    /// The file as last read.
+    #[must_use]
+    pub fn current(&self) -> Loaded<T> {
+        self.changes.latest()
+    }
+
+    /// Whether the directory is being watched.
+    #[must_use]
+    pub fn state(&self) -> &WatchState {
+        &self.state
+    }
+
+    /// Waits for the next settled change: the whole file read again. `None` once the watch has
+    /// stopped (or was never live).
+    pub async fn changed(&mut self) -> Option<Loaded<T>> {
+        self.changes.changed().await
+    }
+}
+
+/// Reads again after every settled burst of events and publishes, until the watch is dropped.
+async fn settle_located<T: Clone>(
+    mut signals: Settled,
+    read: impl Fn() -> Loaded<T>,
+    out: Sender<Loaded<T>>,
+) {
+    while signals.settled().await.is_some() {
+        if out.send(read()).is_err() {
+            return;
         }
     }
 }

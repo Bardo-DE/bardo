@@ -6,12 +6,13 @@ use crate::support::{SharedKeys, World, dirs_in};
 use memory_core::{
     AppId, DayCount, Isolation, MemoryReply, MemoryRequest, Refusal, VaultKind, WaitingSetting,
 };
-use memory_daemon::{Consent, SettingsWatch, WatchState, apply, apply_next};
+use memory_daemon::{Consent, apply, apply_next, watch_settings};
 use memory_dbus::{decode_reply, encode_request, invoke};
 use memory_fake::{ScriptedConsolidator, fake_service, mail};
 use memory_host::Locator;
 use memory_service::Caller;
 use memory_settings::{ConsolidateWhen, MemorySettings};
+use settings_store_fs::WatchState;
 use std::collections::BTreeMap;
 use std::path::Path;
 
@@ -50,7 +51,7 @@ async fn a_change_in_the_file_applies_to_the_service_without_a_restart() {
             ("memory.retention.search_days", "3"),
         ]))
         .unwrap();
-    let mut watch = SettingsWatch::start(locator, MemorySettings::default());
+    let mut watch = watch_settings(locator, MemorySettings::default());
     assert_eq!(*watch.state(), WatchState::Live);
     apply(&service, &watch.current());
     assert_eq!(service.settings(), MemorySettings::default());
@@ -63,7 +64,7 @@ async fn a_change_in_the_file_applies_to_the_service_without_a_restart() {
         let loaded = apply_next(&service, &mut watch)
             .await
             .expect("the watch is live");
-        assert_eq!(loaded.fallbacks, vec![]);
+        assert_eq!(loaded.invalid, vec![]);
     }
     let now = service.settings();
     assert_eq!(now.at_rest, VaultKind::Plain);

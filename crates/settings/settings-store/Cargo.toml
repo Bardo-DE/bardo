@@ -17,5 +17,9 @@ toml = { workspace = true }
 # Save merges into the parsed file, keeping unknown keys and comments.
 toml_edit = { workspace = true }
 
+[dev-dependencies]
+# The tests of the latest-value channel drive it on a runtime; the crate itself names none.
+tokio = { workspace = true, features = ["rt-multi-thread", "sync", "time", "macros"] }
+
 [lints]
 workspace = true

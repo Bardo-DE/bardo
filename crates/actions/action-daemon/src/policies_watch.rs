@@ -8,9 +8,9 @@
 //! only if it exists when the daemon starts.
 
 use crate::policies::{PolicyDirs, load_policies};
-use crate::settings_watch::DEBOUNCE;
 use action_router::{Router, Seams};
 use notify::{RecommendedWatcher, RecursiveMode, Watcher};
+use settings_store_fs::DEBOUNCE;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::sync::mpsc;

@@ -6,13 +6,13 @@
 
 mod agents;
 mod keys;
-mod locate;
 mod places;
 mod read;
 #[cfg(test)]
 mod tests;
 
 use action_core::AgentConfig;
+use settings_store_fs::Locator;
 
 pub use agents::{
     AddFault, AgentChoice, AgentRow, Agents, Availability, ChoiceFault, Found, KNOWN, KnownAgent,
@@ -21,19 +21,25 @@ pub use agents::{
     read_agents, unlisted, write_agent_add, write_agent_choice, write_agent_remove,
     write_agent_rewind,
 };
-pub use locate::Locator;
 pub use places::{
     CloudAccount, CloudAllowed, Floor, Known, KnownPlace, ModelChoice, OwnComputer, PLACES_PATH,
     Place, PlaceKind, PlaceName, PlaceSource, Places, PlacesLoaded, Routed, confirm_turn_on,
     kind_label, no_place_says, read_places, route, write_places,
 };
-pub use read::{Fallback, Loaded, Why, read};
+pub use read::read;
 
 /// The schema docket ships for its settings (design/22 section 9.2).
 pub const SCHEMA: &str = include_str!("../../dist/settings/actions.settings.toml");
 
 /// The file the settings live in, under the configuration directory.
 pub const SETTINGS_FILE: &str = "actions/settings.toml";
+
+/// Where the settings file is: `$XDG_CONFIG_HOME/bardo/actions/settings.toml`, then the same
+/// under each of `$XDG_CONFIG_DIRS`. Read it with
+/// [`Locator::read`](settings_store_fs::Locator::read)`(base, read)`.
+pub fn locator(env: &impl Fn(&str) -> Option<String>) -> Locator {
+    Locator::from_env(env, SETTINGS_FILE)
+}
 
 /// The reviewers' own timeouts when the router enforces its deadline: long ones, so the router's
 /// live deadline is the one that fires.

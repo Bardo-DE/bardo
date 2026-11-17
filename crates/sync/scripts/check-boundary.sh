@@ -134,7 +134,7 @@ EDGES=(
   "sync-fake-graph: account-core account-fake account-fake-servers account-ids account-provider quickxorhash"
   "sync-rig: sync-bus sync-fake-graph account-dbus account-fake-servers account-rig"
   "sync-fakes: sync-bus account-dbus"
-  "sync-daemon: ui-settings account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus base-fs account-http account-http-relay sync-bus drive-core drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
+  "sync-daemon: settings-dbus settings-types account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus base-fs account-http account-http-relay sync-bus drive-core drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"

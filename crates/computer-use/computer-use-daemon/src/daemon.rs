@@ -2,13 +2,14 @@
 //! here as values, and the binary's `main` only passes them in.
 
 use crate::{
-    Apps, CuaSettings, CuadConfig, Locator, ServeError, SettingsWatch, Supervisor, SystemClock,
-    WatchState, caller_identity, follow_settings, read_callers, serve_on_as,
+    Apps, CuaSettings, CuadConfig, ServeError, Supervisor, SystemClock, caller_identity,
+    follow_settings, locator, read_callers, serve_on_as, watch_settings,
 };
 use computer_use_host::{RULES_FILE, parse_rules, shipped_rules};
 use computer_use_run::Rules;
 use computer_use_system::{Links, ReachError, Reached, SystemSeams};
 use futures_util::StreamExt;
+use settings_store_fs::WatchState;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::signal::unix::{SignalKind, signal};
@@ -138,7 +139,7 @@ pub async fn run(
         config: supervisor.settings(),
         apps: Apps::Listed(Vec::new()),
     };
-    let mut watched = SettingsWatch::start(Locator::from_env(&env), base);
+    let mut watched = watch_settings(locator(&env), base);
     if let WatchState::Blind { reason } = watched.state() {
         eprintln!("cuad: settings are read once, not watched: {reason}");
     }

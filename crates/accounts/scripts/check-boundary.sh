@@ -297,7 +297,7 @@ EDGES=(
   "account-store: account-core account-capability base-fs"
   "account-identities: account-service-core account-core account-ids base-fs account-secrets account-wire account-sheet"
   "account-spaces: account-core account-ids base-fs"
-  "account-settings: ui-settings account-service-core account-capability account-core account-ids account-provider account-sheet"
+  "account-settings: settings-dbus settings-types account-service-core account-capability account-core account-ids account-provider account-sheet"
   "account-dbus-macros:"
   "account-callers: account-core"
   "account-dbus: account-core account-dbus-macros account-tailscale account-wire account-ids"
@@ -324,7 +324,7 @@ EDGES=(
   "account-family-nextcloud: account-family-kit account-nextcloud-proto account-dav-proto account-core account-capability account-sheet account-provider account-http"
   "account-family-generic: account-family-kit account-generic-proto account-core account-capability account-sheet account-provider account-http account-discover account-proxy"
   "account-family-oauth: account-family-kit account-oauth-probe-proto account-core account-capability account-sheet account-ids account-provider account-http account-http-reqwest account-oauth"
-  "account-daemon: ui-settings account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth base-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
+  "account-daemon: settings-dbus settings-types account-core account-match account-capability account-sheet account-wire account-ids account-daemon-support account-callers account-dbus account-families account-family-oauth base-fs account-identities account-provider account-proxy account-secrets account-service account-service-accounts account-service-core account-settings account-sheets account-spaces account-store account-tailscale"
   "account-rig: account-fake-secret-service account-client account-core account-capability account-wire account-ids account-callers account-fake account-fake-servers base-testkit account-client-dbus"
   "account-fake-secret-service:"
 )

@@ -19,7 +19,7 @@ account-wire = {path = "../account-wire"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-account-daemon-support = {path = "../account-daemon-support", default-features = false, features = ["watch"]}
+account-daemon-support = {path = "../account-daemon-support"}
 base-fs = {path = "../../base/base-fs"}
 account-callers = {path = "../account-callers", features = ["file"]}
 account-dbus = {path = "../account-dbus"}

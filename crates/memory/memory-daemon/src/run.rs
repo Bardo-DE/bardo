@@ -5,8 +5,8 @@
 use crate::keysel::{AnyKeys, KEYS_VAR, SANDBOX_VAR, Sandbox, TestKeys, sandbox_choice, select};
 use crate::{
     Confinement, Consent, Daemon, KeysError, LockChanges, ProcPeers, SHELL_APP, SandboxError,
-    SettingsWatch, SpaceRegistry, SystemBackend, WatchState, XdgError, apply, apply_next,
-    default_card, dirs_from, enforce, inferd_link, policy_for, prepare,
+    SpaceRegistry, SystemBackend, XdgError, apply, apply_next, default_card, dirs_from, enforce,
+    inferd_link, policy_for, prepare, watch_settings,
 };
 use account_callers::{
     CallerFileError, CallerTable, ProcRoot, choose_proc_root, load_callers, proc_notice,
@@ -18,6 +18,7 @@ use memory_host::{Locator, read_config};
 use memory_infer::{InferdConsolidator, InferdEmbedder};
 use memory_service::{ConfigError, MemoryService, rules_from_toml, spaces_from_toml};
 use memory_settings::{ConsolidateWhen, MemorySettings};
+use settings_store_fs::WatchState;
 use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -191,7 +192,7 @@ async fn run(
     // A value looser than the shipped default waits for the person's confirmation, kept in our
     // own data directory (ALM-16).
     let locator = Locator::from_env(&|key| env(key)).confirming(dirs.confirmed_settings_toml());
-    let mut watched = SettingsWatch::start(locator.clone(), MemorySettings::default());
+    let mut watched = watch_settings(locator.clone(), MemorySettings::default());
     if let WatchState::Blind { reason } = watched.state() {
         eprintln!("memoryd: settings are read once, not watched: {reason}");
     }

@@ -337,16 +337,16 @@ async fn call_can_be_used_without_a_server() {
 
 #[tokio::test]
 async fn an_edge_following_the_settings_file_switches_on_and_off_with_it() {
-    use action_settings::{AgentSettings, Locator};
+    use action_settings::{AgentSettings, locator, read};
     let home = tempfile::tempdir().expect("scratch");
     let env = |key: &str| match key {
         "XDG_CONFIG_HOME" => Some(home.path().display().to_string()),
         "XDG_CONFIG_DIRS" => Some(home.path().join("none").display().to_string()),
         _ => None,
     };
-    let locator = Locator::from_env(&env);
+    let locator = locator(&env);
     let rig = rig_with(|edge| {
-        edge.with_expose_read(move || locator.read(AgentSettings::default()).value.expose)
+        edge.with_expose_read(move || locator.read(AgentSettings::default(), read).value.expose)
     })
     .await;
     let write = |text: &str| {
