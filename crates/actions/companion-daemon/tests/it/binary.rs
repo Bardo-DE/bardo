@@ -47,13 +47,13 @@ async fn has_owner(connection: &zbus::Connection, name: &str) -> bool {
 }
 
 async fn until_served(connection: &zbus::Connection) {
-    for _ in 0..200 {
-        if has_owner(connection, "org.bardo.Companion1").await {
-            return;
+    let deadline = base_testkit::Deadline::generous();
+    while !has_owner(connection, "org.bardo.Companion1").await {
+        if deadline.passed() {
+            deadline.fail("companiond to claim org.bardo.Companion1");
         }
-        tokio::time::sleep(Duration::from_millis(50)).await;
+        tokio::time::sleep(Duration::from_millis(20)).await;
     }
-    panic!("companiond never claimed org.bardo.Companion1");
 }
 
 fn turn() -> String {
@@ -149,13 +149,13 @@ async fn the_binary_serves_companion1_and_a_name_alone_is_not_the_shell() {
     // Stopping it frees the name.
     daemon.0.kill().expect("kill");
     daemon.0.wait().expect("wait");
-    for _ in 0..100 {
-        if !has_owner(&me, "org.bardo.Companion1").await {
-            return;
+    let deadline = base_testkit::Deadline::generous();
+    while has_owner(&me, "org.bardo.Companion1").await {
+        if deadline.passed() {
+            deadline.fail("the name to be freed after the daemon is killed");
         }
-        tokio::time::sleep(Duration::from_millis(50)).await;
+        tokio::time::sleep(Duration::from_millis(20)).await;
     }
-    panic!("the name outlived the daemon");
 }
 
 #[test]

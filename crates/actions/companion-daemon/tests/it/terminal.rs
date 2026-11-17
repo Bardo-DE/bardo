@@ -17,12 +17,11 @@ use action_wire::{
 };
 use base_time::Clock as _;
 use companion_daemon::serve_on_rooted;
-use companion_wire::{AnswerPhase, AnswerWire, AskWire};
+use companion_wire::{AnswerPhase, AskWire};
 use futures_util::lock::Mutex;
 use provenance::AgentRef;
 use std::path::Path;
 use std::sync::Arc;
-use std::time::Duration;
 
 fn place(root: &Path, leaf: &str) {
     let at = root.join(std::process::id().to_string());
@@ -116,16 +115,7 @@ async fn a_terminal_opens_asks_and_closes_but_neither_tells_nor_presses_a_card()
         .build()
         .await
         .expect("answer proxy");
-    let mut phase = AnswerPhase::Thinking;
-    for _ in 0..100 {
-        let view: AnswerWire =
-            serde_json::from_str(&answers.view().await.expect("view")).expect("answer");
-        phase = view.phase;
-        if phase == AnswerPhase::Done {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    let phase = crate::serve::view_until_done(&answers).await.phase;
     assert_eq!(phase, AnswerPhase::Done);
 
     // What is the shell's alone stays the shell's.

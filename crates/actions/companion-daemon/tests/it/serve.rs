@@ -51,15 +51,18 @@ pub async fn introspect(connection: &action_dbus::BusConnection, path: &str) -> 
 }
 
 pub async fn view_until_done(answers: &CompanionAnswerProxy<'_>) -> AnswerWire {
-    for _ in 0..100 {
+    let deadline = base_testkit::Deadline::generous();
+    loop {
         let view = answers.view().await.expect("view");
         let answer: AnswerWire = serde_json::from_str(&view).expect("answer");
         if matches!(answer.phase, AnswerPhase::Done | AnswerPhase::Failed) {
             return answer;
         }
+        if deadline.passed() {
+            deadline.fail("the answer to finish");
+        }
         tokio::time::sleep(Duration::from_millis(20)).await;
     }
-    panic!("the answer never finished: {:?}", answers.view().await);
 }
 
 #[expect(

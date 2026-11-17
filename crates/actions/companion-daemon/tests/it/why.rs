@@ -214,14 +214,7 @@ async fn the_answer_object_serves_the_routing_property() {
         .build()
         .await
         .expect("answer proxy");
-    for _ in 0..100 {
-        let view: AnswerWire =
-            serde_json::from_str(&answers.view().await.expect("view")).expect("answer");
-        if matches!(view.phase, AnswerPhase::Done) {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    crate::serve::view_until_done(&answers).await;
     let notes: Vec<RouteNote> =
         serde_json::from_str(&answers.routing().await.expect("routing")).expect("notes");
     assert_eq!(footer_line(&notes), LINE);

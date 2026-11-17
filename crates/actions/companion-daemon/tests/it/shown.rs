@@ -12,7 +12,7 @@ use action_vocab::{Caller, Handle, Origin, WindowKey};
 use action_wire::{SessionOpen, SessionOpened, WireRefusal};
 use base_time::Clock as _;
 use companion_daemon::serve_on_rooted;
-use companion_wire::{AnswerPhase, AnswerWire, AskWire};
+use companion_wire::{AnswerPhase, AskWire};
 use futures_util::StreamExt;
 use futures_util::lock::Mutex;
 use provenance::{AgentRef, SessionId};
@@ -289,14 +289,7 @@ async fn the_answer_object_names_its_session_and_close_removes_it() {
         answers.session().await.expect("session"),
         opened.session.as_str()
     );
-    for _ in 0..100 {
-        let view: AnswerWire =
-            serde_json::from_str(&answers.view().await.expect("view")).expect("answer");
-        if matches!(view.phase, AnswerPhase::Done) {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    crate::serve::view_until_done(&answers).await;
     let session: SessionId =
         SessionId::parse(&answers.session().await.expect("session")).expect("a session id");
     assert_eq!(
