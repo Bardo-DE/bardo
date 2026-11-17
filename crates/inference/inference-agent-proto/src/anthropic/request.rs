@@ -1,6 +1,6 @@
 //! An Anthropic Messages request as inferd's chat request.
 
-use crate::agent::wire::{Parsed, Unmapped, effort_for_budget, limit_of, sampling_of, text_of};
+use crate::wire::{Parsed, Unmapped, effort_for_budget, limit_of, sampling_of, text_of};
 use account_core::DataClass;
 use account_core::consent::Usage;
 use inference_core::{

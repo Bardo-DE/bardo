@@ -20,20 +20,16 @@
 //! connection going away).
 
 pub mod account;
-pub mod anthropic;
-pub mod fail;
 pub mod handle;
 pub mod http;
 pub mod local;
 pub mod meter;
 pub mod open;
-pub mod openai;
 pub mod refusal;
 pub mod route;
 pub mod service;
 pub mod session;
 pub mod token;
-pub mod wire;
 
 pub use open::{Endpoint, OpenRequest};
 pub use route::{Models, Route, Target, agent_app};

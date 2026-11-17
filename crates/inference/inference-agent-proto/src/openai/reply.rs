@@ -1,8 +1,8 @@
 //! An `OpenAI` Chat Completions reply from inferd's: a JSON completion, or the `data:` chunks of a
 //! stream ending in `[DONE]`, and the model list.
 
-use crate::agent::fail::{Failure, Shape};
-use crate::agent::wire::{SseOut, counted};
+use crate::fail::{Failure, Shape};
+use crate::wire::{SseOut, counted};
 use base_ids::Permille;
 use inference_core::{ChatReply, StopReason, ToolCallPart};
 use serde_json::{Value, json};

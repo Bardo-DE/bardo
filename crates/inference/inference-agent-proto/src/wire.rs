@@ -126,7 +126,7 @@ pub trait SseOut: Send {
     /// The end of a reply that finished.
     fn finish(&mut self, reply: &ChatReply) -> String;
     /// The end of a stream that failed after it began.
-    fn error(&mut self, failure: &super::fail::Failure) -> String;
+    fn error(&mut self, failure: &crate::fail::Failure) -> String;
 }
 
 #[cfg(test)]

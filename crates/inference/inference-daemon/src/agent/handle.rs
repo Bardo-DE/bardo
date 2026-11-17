@@ -1,11 +1,12 @@
 //! One connection: read the request, check the token, route by path, answer.
 
-use super::fail::{Cause, Failure, Shape};
 use super::http::{self, ReadError, Request};
 use super::route::{Models, Target};
 use super::session::Ctx;
-use super::wire::Parsed;
-use super::{account, anthropic, local, openai};
+use super::{account, local};
+use inference_agent_proto::fail::{Cause, Failure, Shape};
+use inference_agent_proto::wire::Parsed;
+use inference_agent_proto::{anthropic, openai};
 use serde_json::{Value, json};
 use std::sync::Arc;
 use tokio::io::{AsyncWrite, AsyncWriteExt};

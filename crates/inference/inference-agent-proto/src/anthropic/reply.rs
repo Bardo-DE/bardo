@@ -1,8 +1,8 @@
 //! An Anthropic Messages reply from inferd's: a JSON message, or the event stream an agent reads
 //! (`message_start`, content blocks with their deltas, `message_delta`, `message_stop`).
 
-use crate::agent::fail::{Failure, Shape};
-use crate::agent::wire::{SseOut, args_value, counted};
+use crate::fail::{Failure, Shape};
+use crate::wire::{SseOut, args_value, counted};
 use inference_core::{ChatReply, StopReason, ToolCallPart};
 use serde_json::{Value, json};
 

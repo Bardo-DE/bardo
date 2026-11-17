@@ -40,6 +40,8 @@ account-provider = {path = "../../accounts/account-provider"}
 inference-tailnet = {path = "../inference-tailnet", features = ["io", "persist"]}
 account-tailscale = {features = ["io"], path = "../../accounts/account-tailscale"}
 inference-core = {path = "../inference-core"}
+# An external agent's Anthropic and OpenAI protocols as bytes in and out.
+inference-agent-proto = {path = "../inference-agent-proto"}
 # The files and descriptors the pure router and bridge are given as values.
 inference-fs = {path = "../inference-fs"}
 # What the `[ai]` rows say, resolved: policy, tiers, Automatic, spend line, lengths, and the spend book.

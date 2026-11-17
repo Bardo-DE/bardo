@@ -1,0 +1,19 @@
+[package]
+name = "inference-agent-proto"
+description = "An external coding agent's two model protocols, as bytes in and out: Anthropic Messages and OpenAI Chat Completions requests read into the broker's chat request, replies (a JSON body or an event stream) written from it, and the error answers in each protocol's own shape. No socket, no runtime."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+account-capability = {path = "../../accounts/account-capability"}
+account-core = {path = "../../accounts/account-core"}
+base-ids = { path = "../../base/base-ids" }
+inference-core = {path = "../inference-core"}
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

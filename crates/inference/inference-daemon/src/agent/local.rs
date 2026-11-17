@@ -10,17 +10,17 @@
 //! comes first is held until then, so a model that only reasons can still be told to the agent
 //! as the error it is (`ModelError::OnlyThought`) with a status, not as a stream that ends empty.
 
-use super::fail::{Cause, Failure, Shape};
 use super::http;
 use super::meter::Line;
 use super::open::{local_card, model_ref_of};
 use super::route::admits;
 use super::session::Ctx;
 use super::token::random_hex;
-use super::wire::{Parsed, SseOut, only_thought};
-use super::{anthropic, openai};
 use crate::runner::{Pin, Pinned, Turns};
 use base_ids::Tokens;
+use inference_agent_proto::fail::{Cause, Failure, Shape};
+use inference_agent_proto::wire::{Parsed, SseOut, only_thought};
+use inference_agent_proto::{anthropic, openai};
 use inference_core::{
     ChatReply, InferEvent, InferReply, InferRequest, ModelError, Readiness, ServedBy, TokenUsage,
 };

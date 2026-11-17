@@ -293,6 +293,7 @@ members = [
     "crates/inference/inference-daemon",
     "crates/inference/inference-client",
     "crates/inference/inference-probe",
+    "crates/inference/inference-agent-proto",
     "crates/inference/inference-bridge",
     "crates/inference/inference-fs",
     "crates/inference/inference-settings",

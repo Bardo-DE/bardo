@@ -19,18 +19,19 @@
 //! approval) and nothing else; its first request for a model is refused, and raises the
 //! question to the person once.
 
-use crate::agent::fail::{Cause, Failure, Shape};
 use crate::agent::handle::peek;
 use crate::agent::http::{self, ReadError, Request};
+use crate::agent::local;
 use crate::agent::route::{Models, Route, Target};
 use crate::agent::session::Ctx;
 use crate::agent::token::Token;
-use crate::agent::{local, openai};
 use crate::engines::Engines;
 use account_capability::AgentProgram;
 use account_core::{AppId, AppName, DataClass, Isolation};
 use account_tailscale::NodeId;
 use base_time::Clock;
+use inference_agent_proto::fail::{Cause, Failure, Shape};
+use inference_agent_proto::openai;
 use inference_tailnet::{Approval, Guests, Hello, LentModel, Refusal, State, Visit, Visits};
 use inference_turns::audit::AuditOut;
 use serde_json::json;

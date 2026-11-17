@@ -149,7 +149,7 @@ fn a_stream_opens_and_closes_each_block_and_ends_with_usage() {
 #[test]
 fn a_stream_failure_is_an_error_event_in_anthropics_shape() {
     let mut stream = Stream::new("m", "msg_1");
-    let failure = Failure::new(crate::agent::fail::Cause::Upstream, "the model failed");
+    let failure = Failure::new(crate::fail::Cause::Upstream, "the model failed");
     let seen = events(&stream.error(&failure));
     assert_eq!(seen[0].0, "error");
     assert_eq!(seen[0].1["error"]["type"], "api_error");

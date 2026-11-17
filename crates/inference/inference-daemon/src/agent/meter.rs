@@ -6,11 +6,11 @@
 //! route, the tokens, the charge when the provider reported one and the class; never a prompt, a
 //! reply, a key or the token.
 
-use super::fail::Shape;
 use super::session::Ctx;
 use crate::cloud::Cloud;
 use account_capability::Locality;
 use base_ids::{Bytes, Count, Tokens};
+use inference_agent_proto::fail::Shape;
 use inference_core::{AuditEntry, ServedBy, TokenUsage, Why};
 use inference_turns::audit::AuditOut;
 use model_http::SseDecoder;

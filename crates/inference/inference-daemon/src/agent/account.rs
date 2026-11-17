@@ -12,7 +12,6 @@
 //! a usage chunk so the stream can be metered. A provider's error body is never relayed (it may
 //! echo the prompt); the agent is told the kind of thing that went wrong, in its own error shape.
 
-use super::fail::{Cause, Failure, Shape};
 use super::handle::Peek;
 use super::http::{self, Request};
 use super::meter::{End, Reading, counted, settle};
@@ -25,6 +24,7 @@ use account_capability::Locality;
 use account_capability::ModelId;
 use account_core::AccountId;
 use account_core::consent::{Usage, Verdict};
+use inference_agent_proto::fail::{Cause, Failure, Shape};
 use inference_core::{ServedBy, SpendVerdict};
 use model_catalog::{ProviderId, Wire};
 use model_http::{
