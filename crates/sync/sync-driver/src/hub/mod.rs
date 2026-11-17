@@ -1,5 +1,6 @@
-//! What syncd shares between the engines and the bus: each running dataset's name, who may see
-//! it, its latest status and its pause switch. An engine's driver holds a [`Handle`] and
+//! What syncd shares between the engines and the bus.
+//!
+//! Each running dataset's name, who may see it, its latest status and its pause switch. An engine's driver holds a [`Handle`] and
 //! publishes; the `Sync1` object reads. Nothing here is async or does I/O.
 
 use crate::resolve::{

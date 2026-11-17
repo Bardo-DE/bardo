@@ -207,7 +207,8 @@ impl<R: Replica, D: Dataset, K: Clock> Engine<R, D, K> {
     }
 
     /// The engine's clock now.
-    pub(crate) fn now(&self) -> UnixSeconds {
+    #[must_use]
+    pub fn now(&self) -> UnixSeconds {
         self.clock.now()
     }
 

@@ -14881,7 +14881,6 @@ dependencies = [
  "account-client-dbus",
  "account-client-inproc",
  "account-core",
- "account-dav-proto",
  "account-dbus",
  "account-fake",
  "account-fake-servers",
@@ -14892,7 +14891,6 @@ dependencies = [
  "account-service-core",
  "account-sheet",
  "account-wire",
- "base-fs",
  "base-ids",
  "base-testkit",
  "base-time",
@@ -14903,34 +14901,68 @@ dependencies = [
  "dbus-kit",
  "drive-fs",
  "drive-fuse",
- "hex",
  "http-core",
  "http-relay",
  "http-reqwest",
- "jiff",
- "mime_guess",
- "nanohtml2text",
  "replica-gdrive",
  "replica-graph",
- "replica-webdav",
- "rusqlite",
- "serde",
  "serde_json",
  "settings-dbus",
  "settings-types",
- "sha2 0.10.9",
  "sync-bus",
  "sync-core",
- "sync-daemon",
+ "sync-driver",
+ "sync-engine",
  "sync-fake-graph",
  "sync-fakes",
+ "sync-journal-sqlite",
+ "sync-photos",
+ "sync-pim-feed",
+ "sync-pim-mirror",
+ "sync-relay",
+ "sync-storage",
+ "sync-vdir",
+ "sync-xdg",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
  "toml",
- "toml_edit",
- "windows-zones",
  "zbus",
+]
+
+[[package]]
+name = "sync-driver"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-core",
+ "base-testkit",
+ "base-time",
+ "sync-core",
+ "sync-engine",
+ "sync-journal-sqlite",
+ "sync-xdg",
+ "tempfile",
+ "tokio",
+]
+
+[[package]]
+name = "sync-engine"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "base-ids",
+ "base-time",
+ "base-url",
+ "hex",
+ "sha2 0.10.9",
+ "sync-core",
+ "sync-engine",
+ "sync-journal-sqlite",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
 ]
 
 [[package]]
@@ -14962,6 +14994,125 @@ dependencies = [
 ]
 
 [[package]]
+name = "sync-journal-sqlite"
+version = "0.1.0"
+dependencies = [
+ "base-ids",
+ "base-time",
+ "drive-fs",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sync-core",
+ "sync-engine",
+ "tempfile",
+ "thiserror 2.0.21",
+]
+
+[[package]]
+name = "sync-photos"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "account-capability",
+ "account-client",
+ "account-core",
+ "account-fake-servers",
+ "base-fs",
+ "base-ids",
+ "base-testkit",
+ "base-time",
+ "base-url",
+ "base64 0.22.1",
+ "hex",
+ "http-core",
+ "http-relay",
+ "mime_guess",
+ "replica-webdav",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "sync-core",
+ "sync-driver",
+ "sync-engine",
+ "sync-journal-sqlite",
+ "sync-relay",
+ "sync-xdg",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "sync-pim-feed"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-client",
+ "account-core",
+ "account-dav-proto",
+ "base-ids",
+ "base-time",
+ "base-url",
+ "hex",
+ "http-core",
+ "http-relay",
+ "jiff",
+ "nanohtml2text",
+ "replica-webdav",
+ "serde",
+ "serde_json",
+ "sha2 0.10.9",
+ "sync-core",
+ "sync-engine",
+ "sync-relay",
+ "thiserror 2.0.21",
+ "tokio",
+ "windows-zones",
+]
+
+[[package]]
+name = "sync-pim-mirror"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-client",
+ "account-core",
+ "account-match",
+ "base-ids",
+ "base-time",
+ "base-url",
+ "hex",
+ "sha2 0.10.9",
+ "sync-core",
+ "sync-driver",
+ "sync-engine",
+ "sync-journal-sqlite",
+ "sync-pim-feed",
+ "sync-vdir",
+ "sync-xdg",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+]
+
+[[package]]
+name = "sync-relay"
+version = "0.1.0"
+dependencies = [
+ "account-client",
+ "account-core",
+ "base-ids",
+ "base-url",
+ "http-relay",
+ "replica-gdrive",
+ "replica-graph",
+ "replica-webdav",
+ "sync-core",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "sync-rig"
 version = "0.1.0"
 dependencies = [
@@ -14980,9 +15131,62 @@ dependencies = [
  "sync-bus",
  "sync-core",
  "sync-daemon",
+ "sync-driver",
  "sync-fake-graph",
  "tokio",
  "zbus",
+]
+
+[[package]]
+name = "sync-storage"
+version = "0.1.0"
+dependencies = [
+ "account-capability",
+ "account-client",
+ "account-core",
+ "account-dbus",
+ "account-match",
+ "base-fs",
+ "base-ids",
+ "base-testkit",
+ "base-url",
+ "drive-fs",
+ "drive-fuse",
+ "hex",
+ "http-core",
+ "replica-gdrive",
+ "replica-graph",
+ "sha2 0.10.9",
+ "sync-bus",
+ "sync-core",
+ "sync-driver",
+ "sync-engine",
+ "sync-journal-sqlite",
+ "sync-photos",
+ "sync-pim-mirror",
+ "sync-relay",
+ "sync-xdg",
+ "tempfile",
+ "tokio",
+ "toml",
+ "toml_edit",
+]
+
+[[package]]
+name = "sync-vdir"
+version = "0.1.0"
+dependencies = [
+ "base-fs",
+ "sync-pim-feed",
+ "tempfile",
+]
+
+[[package]]
+name = "sync-xdg"
+version = "0.1.0"
+dependencies = [
+ "account-callers",
+ "base-xdg",
 ]
 
 [[package]]

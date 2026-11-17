@@ -1,5 +1,6 @@
-//! The `[storage]` table of syncd's own settings file (`$XDG_CONFIG_HOME/bardo/sync/syncd.toml`):
-//! the cache limit every drive evicts to, which drives are paused and which are kept downloaded
+//! The `[storage]` table of syncd's own settings file.
+//!
+//! It is `$XDG_CONFIG_HOME/bardo/sync/syncd.toml`: the cache limit every drive evicts to, which drives are paused and which are kept downloaded
 //! whole. Every write edits that table and nothing else, under the file's lock, so another
 //! writer's key is never put back old.
 

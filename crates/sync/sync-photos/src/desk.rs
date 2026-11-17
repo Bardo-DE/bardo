@@ -1,5 +1,6 @@
-//! The Google Photos Picker of each account syncd runs Photos for: the registry the storage
-//! supervisor fills and the bus object reads ([`Pickers`]), and the seam the bus object asks
+//! The Google Photos Picker of each account syncd runs Photos for.
+//!
+//! The registry the storage supervisor fills and the bus object reads ([`Pickers`]), and the seam the bus object asks
 //! through ([`PickerDesk`]), so the object never holds a [`GooglePicker`] of its own.
 
 use crate::google::{GooglePicker, PickerError, PickerState, SessionId};

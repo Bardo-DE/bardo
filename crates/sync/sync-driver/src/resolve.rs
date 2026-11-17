@@ -1,5 +1,6 @@
-//! Settling a stored conflict: the typed words of a resolution, and the request
-//! that goes from the hub to the dataset's driver (which owns the engine and settles it between
+//! Settling a stored conflict.
+//!
+//! The typed words of a resolution, and the request that goes from the hub to the dataset's driver (which owns the engine and settles it between
 //! cycles, so nothing races a cycle writing the journal).
 
 use sync_core::Resolution;

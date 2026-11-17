@@ -27,9 +27,15 @@ pub struct Meta {
     pub color: Option<String>,
 }
 
-/// Writes `bytes` to `dir/name` atomically, through porter's one atomic writer: a temporary file
+/// Writes `bytes` to `dir/name` atomically.
+///
+/// It goes through porter's one atomic writer: a temporary file
 /// in the same directory, synced, renamed into place, the directory synced. The directory is
 /// never made: a collection whose directory is gone stays gone (`NotFound`).
+///
+/// # Errors
+///
+/// Returns the I/O error when the file cannot be written.
 pub fn write_atomic(dir: &Path, name: &str, bytes: &[u8]) -> std::io::Result<()> {
     AtomicWrite::SHARED
         .in_existing_dir()
@@ -37,6 +43,10 @@ pub fn write_atomic(dir: &Path, name: &str, bytes: &[u8]) -> std::io::Result<()>
 }
 
 /// Removes `dir/name`; a file already gone is not an error.
+///
+/// # Errors
+///
+/// Returns the I/O error when the file cannot be removed.
 pub fn remove_file(dir: &Path, name: &str) -> std::io::Result<()> {
     match std::fs::remove_file(dir.join(name)) {
         Err(e) if e.kind() != std::io::ErrorKind::NotFound => Err(e),
@@ -56,10 +66,15 @@ fn keep(dir: &Path, file: &str, value: Option<&str>) -> std::io::Result<()> {
     }
 }
 
-/// Writes the collection's `displayname` and `color` files into `dir`, which must be there
-/// (`PimMirror::open` makes it). A collection whose directory is gone is never made again here:
+/// Writes the collection's `displayname` and `color` files into `dir`, which must be there.
+///
+/// (`PimMirror::open` makes it.) A collection whose directory is gone is never made again here:
 /// the supervisor writes these on every look, outside the engine's cycle, and an account removed
 /// meanwhile had its mirror deleted, which this must not bring back (`NotFound`).
+///
+/// # Errors
+///
+/// Returns the I/O error when a file cannot be written or removed.
 pub fn write_meta(dir: &Path, meta: &Meta) -> std::io::Result<()> {
     keep(dir, DISPLAYNAME, meta.displayname.as_deref())?;
     keep(dir, COLOR, meta.color.as_deref())
@@ -90,6 +105,7 @@ pub fn items_in(dir: &Path, kind: PimKind) -> Vec<String> {
 }
 
 /// The `UID` an iCalendar or vCard text names: the first `UID` property, unfolded.
+#[must_use]
 pub fn uid_of(text: &str) -> Option<String> {
     let mut lines = text.lines().peekable();
     while let Some(line) = lines.next() {
@@ -121,6 +137,7 @@ pub fn uid_of(text: &str) -> Option<String> {
 
 /// The file name an item gets: its UID when that is a safe name, else the server's own file
 /// name, with the kind's extension.
+#[must_use]
 pub fn file_name(kind: PimKind, uid: Option<&str>, server_name: &str) -> String {
     let ext = kind.extension();
     let stem = |text: &str| {

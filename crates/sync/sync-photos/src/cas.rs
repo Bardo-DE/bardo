@@ -1,4 +1,6 @@
-//! Content addressing: an original is stored under the SHA-256 of its bytes, so two imports of
+//! Content addressing.
+//!
+//! An original is stored under the SHA-256 of its bytes, so two imports of
 //! the same photo are one file, locally and on the replica, and a name can be checked against
 //! the bytes it holds. Also the atomic file writes every part of the library uses.
 
@@ -74,6 +76,10 @@ impl std::fmt::Display for ContentId {
 }
 
 /// The id and size of the file at `path`, read in chunks (a photo is never held whole).
+///
+/// # Errors
+///
+/// Returns the I/O error when the file cannot be opened or read.
 pub fn hash_file(path: &Path) -> io::Result<(ContentId, u64)> {
     let mut file = std::fs::File::open(path)?;
     let mut hasher = Sha256::new();
@@ -90,14 +96,23 @@ pub fn hash_file(path: &Path) -> io::Result<(ContentId, u64)> {
     Ok((ContentId::from_digest(hasher.finalize().as_slice()), size))
 }
 
-/// Writes `bytes` to `target` so that a reader sees the old file or the whole new one, through
-/// porter's one atomic writer: a staging file (a dot file named `.tmp-*`, which no scan lists)
+/// Writes `bytes` to `target` so that a reader sees the old file or the whole new one.
+///
+/// It goes through porter's one atomic writer: a staging file (a dot file named `.tmp-*`, which no scan lists)
 /// beside it, synced, renamed over it. Missing directories are made.
+///
+/// # Errors
+///
+/// Returns the I/O error when the file cannot be written.
 pub fn write_atomic(target: &Path, bytes: &[u8]) -> io::Result<()> {
     AtomicWrite::SHARED.write(target, bytes)
 }
 
 /// Copies `source` to `target` the same way.
+///
+/// # Errors
+///
+/// Returns the I/O error when the file cannot be copied.
 pub fn copy_atomic(source: &Path, target: &Path) -> io::Result<()> {
     AtomicWrite::SHARED.copy(source, target)
 }

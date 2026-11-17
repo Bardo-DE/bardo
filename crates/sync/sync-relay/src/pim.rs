@@ -1,6 +1,8 @@
-//! The connections of a mirror: every one is a relay accountd opens (`Tokens.OpenAuthenticated`)
-//! to the account's `CalDAV` or `CardDAV` endpoint, so syncd never holds the credential. The same
-//! dial serves discovery's PROPFINDs and the collection replicas' sync-collection reports.
+//! The connections of a mirror: relays accountd opens to a `CalDAV` or `CardDAV` endpoint.
+//!
+//! Every one is a relay accountd opens (`Tokens.OpenAuthenticated`), so syncd never holds the
+//! credential. The same dial serves discovery's PROPFINDs and the collection replicas'
+//! sync-collection reports.
 //!
 //! The collection's URL is not under the endpoint's path in general (the endpoint is
 //! `.../remote.php/dav/`, a calendar is `.../calendars/<user>/personal/`), which

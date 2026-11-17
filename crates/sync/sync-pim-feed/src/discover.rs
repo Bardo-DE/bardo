@@ -1,4 +1,6 @@
-//! The collections of an account: from the `CalDAV` or `CardDAV` endpoint to the principal, from
+//! The collections of an account.
+//!
+//! From the `CalDAV` or `CardDAV` endpoint to the principal, from
 //! the principal to the calendar or address book home set, and the home's calendars or address
 //! books with their names and colours (RFC 5397, 4791, 6352). The walk is account-dav-proto's
 //! [`Walk`]; this sends its requests and reads what it found.

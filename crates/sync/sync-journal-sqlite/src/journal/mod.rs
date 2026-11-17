@@ -64,9 +64,15 @@ impl Journal {
         Self::open_synchronous(path, "FULL")
     }
 
-    /// A journal whose commits are not flushed to the disk: for the tests that make thousands of
-    /// commits (the thousand photos), which prove the engine, not the disk. The crash tests keep
-    /// `open` (`cut_at` stops a write before it commits, whatever the flush).
+    /// A journal whose commits are not flushed to the disk, for tests.
+    ///
+    /// For the tests that make thousands of commits (the thousand photos), which prove the
+    /// engine, not the disk. The crash tests keep `open`.
+    ///
+    /// # Errors
+    ///
+    /// Returns a [`SqliteError`] when the directory or the database cannot be created, opened or
+    /// set up.
     #[cfg(any(test, feature = "testing"))]
     pub fn open_unflushed(path: &Path) -> Result<Self, SqliteError> {
         Self::open_synchronous(path, "OFF")

@@ -1,6 +1,7 @@
-//! The drive listing's SQLite file: every entry of the drive by id, the anchor the feed stands
-//! at, and the tree the replica learnt (`sync_core::Folders`), each page written in one
-//! transaction. An entry keeps its parent's id and its own name, never its path: a path is
+//! The drive listing's SQLite file.
+//!
+//! Every entry of the drive by id, the anchor the feed stands at, and the tree the replica
+//! learnt (`sync_core::Folders`), each page written in one transaction. An entry keeps its parent's id and its own name, never its path: a path is
 //! built when it is read, so a folder renamed or moved re-paths everything inside it without
 //! one more row written.
 
