@@ -494,7 +494,12 @@ async fn a_change_made_here_waits_while_paused_then_uploads_and_is_downloaded_on
     files.release_write(handle);
     let (_, lock) = files.create(&work, ".~lock.Notes.txt#").expect("lock");
     files.release_write(lock);
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    eventually("the note to wait to upload", || {
+        files
+            .status(&id)
+            .is_some_and(|s| s.state == drive_core::ItemState::Waiting)
+    })
+    .await;
     assert_eq!(
         state_of(&proxy, "Work/Notes.txt").await.as_deref(),
         Some("waiting")

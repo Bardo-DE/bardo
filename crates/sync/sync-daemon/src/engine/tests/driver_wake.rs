@@ -76,32 +76,19 @@ async fn a_clock_that_jumped_while_the_computer_slept_runs_the_next_cycle_within
     let running = tokio::spawn(driver.run());
 
     let has = |path: &str| world.dataset.snapshot().contains_key(path);
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if has("a.txt") {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-    assert!(has("a.txt"), "the first cycle ran at once");
+    base_testkit::eventually("the first cycle ran at once", || has("a.txt")).await;
 
     // Something new on the server, and the computer sleeps for two hours: the wall clock moves
     // on, the timer does not. The driver, asleep until about an hour from the first cycle,
     // must notice within a step.
     world.remote_put("b.txt", b"second").await;
     world.clock.set(5_000 + 7_200);
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if has("b.txt") {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually(
+        "a cycle after the clock jumped (the driver notices within a step, not an hour)",
+        || has("b.txt"),
+    )
+    .await;
     running.abort();
-    assert!(
-        has("b.txt"),
-        "no cycle after the clock jumped (the driver notices within a step, not an hour)"
-    );
 }
 
 #[tokio::test]
@@ -123,7 +110,9 @@ async fn a_pause_made_while_a_cycle_waits_for_its_turn_lets_no_cycle_through() {
         1,
     );
     let running = tokio::spawn(driver.run());
-    // The driver (this runtime's only other task) reaches the lock and waits there.
+    // The driver (this runtime's only other task) reaches the lock and waits there. Nothing
+    // announces that it is waiting, so this pause is best effort: if the driver is slower, the
+    // pause below lands before its cycle and the test still holds, only on a weaker case.
     tokio::time::sleep(Duration::from_millis(50)).await;
 
     let person = Caller {
@@ -135,7 +124,8 @@ async fn a_pause_made_while_a_cycle_waits_for_its_turn_lets_no_cycle_through() {
     };
     assert!(hub.set_pausing(&person, &name, Pausing::Paused));
     drop(running_cycle);
-    // Time for the cycle that would run, were the pause ignored (it ends in milliseconds).
+    // Best-effort absence check: a cycle that does not begin gives no sign, so this gives the
+    // cycle that would run, were the pause ignored, time to show (it ends in milliseconds).
     tokio::time::sleep(Duration::from_millis(500)).await;
     running.abort();
     assert!(
@@ -158,14 +148,10 @@ fn far_polls() -> Settings {
 }
 
 async fn cycles_ended(hub: &Hub, name: &DatasetName, want: u64) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if hub.cycles(name).is_some_and(|cycles| cycles.ended >= want) {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-    deadline.fail("the cycles end");
+    base_testkit::eventually("the cycles end", || {
+        hub.cycles(name).is_some_and(|cycles| cycles.ended >= want)
+    })
+    .await;
 }
 
 #[tokio::test]

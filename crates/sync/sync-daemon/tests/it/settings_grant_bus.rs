@@ -24,10 +24,9 @@ use account_service_core::registry::Registry;
 use base_time::UnixSeconds;
 use common::bus::PrivateBus;
 use common::hosted::{Hosted, Link, Service, host, keep};
-use common::{Known, client};
+use common::{Known, client, eventually};
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
-use std::time::Duration;
 use sync_bus::SyncProxy;
 use sync_daemon::datasets::pim::Wiring;
 use sync_daemon::datasets::storage::{
@@ -208,17 +207,6 @@ fn row(path: &str) -> KeyPath {
 
 fn word(on: bool) -> toml::Value {
     toml::Value::Boolean(on)
-}
-
-async fn eventually(what: &str, mut check: impl FnMut() -> bool) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if check() {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-    deadline.fail(what);
 }
 
 async fn names(rig: &Rig, app: &str) -> Vec<String> {

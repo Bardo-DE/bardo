@@ -77,8 +77,15 @@ async fn storing_what_is_already_there_does_not_touch_the_file() {
         .await
         .expect("store");
     let file = mirror.root().join(&first.local.0);
+    // Push the modified time into the past, so a rewrite would show whatever the clock's grain.
+    let past = std::time::SystemTime::now() - std::time::Duration::from_secs(3600);
+    std::fs::File::options()
+        .write(true)
+        .open(&file)
+        .expect("open")
+        .set_modified(past)
+        .expect("set the modified time");
     let before = std::fs::metadata(&file).expect("m").modified().expect("t");
-    std::thread::sleep(std::time::Duration::from_millis(30));
     mirror
         .store(Some(&first.local), &path("a.ics"), ics("u", "x"))
         .await

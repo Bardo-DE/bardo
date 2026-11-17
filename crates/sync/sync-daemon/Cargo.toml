@@ -59,7 +59,7 @@ toml_edit = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
 sync-daemon = { path = ".", features = ["testing"] }
 base64 = { workspace = true }

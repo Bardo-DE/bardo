@@ -126,20 +126,7 @@ pub fn poll_time(ms: u64) -> std::time::Duration {
     std::time::Duration::from_millis(ms) / sync_daemon::scheduler::Settings::quick().time_scale
 }
 
-/// Polls `check` every 20 ms for up to [`base_testkit::GENEROUS`] by the clock (not by counting
-/// sleeps, which a loaded machine stretches several times over): a passing check returns at
-/// once, and a loaded machine (a load average over a hundred) needs far more than the few
-/// seconds an idle one does.
-pub async fn eventually(what: &str, mut check: impl FnMut() -> bool) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if check() {
-            return;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
-    deadline.fail(what);
-}
+pub use base_testkit::eventually;
 
 /// What a rig's daemon has done so far, as one number that only grows: the cycles every dataset
 /// of `hub` has begun and finished, plus the `requests` its fake server has served. A wait that

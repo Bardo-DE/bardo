@@ -12,7 +12,6 @@ use account_core::{AppId, AppName, Isolation};
 use base_time::UnixSeconds;
 use std::path::Path;
 use std::sync::Arc;
-use std::time::Duration;
 use sync_core::MemoryReplica;
 
 fn replica() -> MemoryReplica {
@@ -105,17 +104,13 @@ async fn starting_photos_registers_both_datasets() {
     let id = run.library().import(&photo).expect("import").id;
     run.changed();
     let originals = DatasetName::parse("a1/photos_originals").expect("name");
-    let mut synced = false;
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        let status = wiring.hub.status_for(&settings_caller(), &originals);
-        synced = status.is_some_and(|s| s.anchor_age.is_some());
-        if synced {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
-    assert!(synced, "the originals dataset ran a cycle");
+    base_testkit::eventually("the originals dataset ran a cycle", || {
+        wiring
+            .hub
+            .status_for(&settings_caller(), &originals)
+            .is_some_and(|s| s.anchor_age.is_some())
+    })
+    .await;
     assert!(run.library().original(&id).is_some());
     drop(run);
 }
