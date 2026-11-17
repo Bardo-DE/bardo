@@ -25,29 +25,44 @@ pub fn segment(label: &str, nth: usize) -> String {
     format!(".ds-segmented[aria-label=\"{label}\"] .ds-segmented-segment:nth-of-type({nth})")
 }
 
-/// Clicks `selector` once it has held still: parts of a page load on their own threads and push
-/// what is below them down when they come, so a click aimed at an element that has just appeared
-/// can land beside it. The element's centre must be the same over `STILL_FRAMES` steps (at most
-/// 15 s) before the click goes.
+/// Clicks `selector` once it has held still (see [`hold_still`]).
 pub fn click_when_still(harness: &mut Harness, selector: &str) {
+    hold_still(harness, selector);
+    click(harness, selector);
+}
+
+/// Lets the window run until `selector` has held still: parts of a page load on their own
+/// threads and push what is below them down when they come, so a click aimed at an element that
+/// has just appeared can land beside it. The element's centre must be the same over
+/// `STILL_FRAMES` steps, within [`base_testkit::GENEROUS`].
+///
+/// # Panics
+/// If it never holds still: the failure carries the document.
+pub fn hold_still(harness: &mut Harness, selector: &str) {
+    let deadline = base_testkit::Deadline::generous();
     let mut last = None;
     let mut same = 0;
-    for _ in 0..750 {
+    loop {
         let now = harness.centre(selector);
         if now.is_some() && now == last {
             same += 1;
             if same == STILL_FRAMES {
-                click(harness, selector);
                 return;
             }
         } else {
             same = 0;
         }
         last = now;
+        if deadline.passed() {
+            deadline.fail(&format!(
+                "{selector} to hold still, with the window showing:\n{}",
+                harness.html()
+            ));
+        }
         harness.advance(Duration::from_millis(50));
+        // The threads that move it are real: give them the processor between looks.
         std::thread::sleep(Duration::from_millis(20));
     }
-    panic!("{selector} never held still:\n{}", harness.html());
 }
 
 /// How many steps in a row an element's centre must not move before `click_when_still` clicks.

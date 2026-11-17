@@ -7,7 +7,7 @@
 use crate::support::Sandbox;
 use crate::support::bus::PrivateBus;
 use crate::support::drive::settle_on_threads;
-use crate::support::drive::{click, keys, scroll_into_view};
+use crate::support::drive::{click, click_when_still, hold_still, keys, scroll_into_view};
 use crate::support::inferd::{Inferd, NOT_WHOLE};
 use crate::support::running::{Fake, serve};
 use inference_dbus::inference::{RunState, RunningModel};
@@ -127,14 +127,18 @@ fn programs_open(w: &mut World) {
     settle_on_threads(&mut w.harness, "the programs row", |h| {
         h.count(OPEN_PROGRAMS) == 1
     });
+    // The page below the row is still loading on its own threads, and moves the row as it does:
+    // the row is scrolled to and clicked once it has stopped moving.
+    hold_still(&mut w.harness, OPEN_PROGRAMS);
     scroll_into_view(&mut w.harness, OPEN_PROGRAMS);
-    click(&mut w.harness, OPEN_PROGRAMS);
+    click_when_still(&mut w.harness, OPEN_PROGRAMS);
     settle_on_threads(&mut w.harness, "the sheet", |h| h.count(VLLM) == 1);
 }
 
 /// Types `text` into the field and presses Enter.
 fn enter_path(w: &mut World, text: &str) {
-    click(&mut w.harness, VLLM);
+    // The sheet slides in: the field is clicked once it has stopped.
+    click_when_still(&mut w.harness, VLLM);
     keys(&mut w.harness, text);
     w.harness.send(Input::key(ShortcutKey::Enter));
     w.harness.advance(Duration::from_millis(400));
