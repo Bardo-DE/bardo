@@ -228,8 +228,8 @@ async fn an_app_adds_an_account_through_a_family_is_granted_it_and_signs_it_in_a
     use account_fake_servers::{FakeDav, FakeDns};
     use account_families::DynProvider;
     use account_family_generic::{DavLookup, GenericProvider};
-    use account_http::SharedHttp;
-    use account_http_reqwest::ReqwestHttp;
+    use http_core::SharedHttp;
+    use http_reqwest::ReqwestHttp;
     use account_match::PimNeed;
     use account_provider::parse_provider;
     use account_secrets::MemorySecrets;
@@ -356,8 +356,8 @@ async fn adding_an_account_that_is_already_here_tells_the_app_which_one_it_is() 
     use account_fake_servers::{FakeDav, FakeDns};
     use account_families::DynProvider;
     use account_family_generic::{DavLookup, GenericProvider};
-    use account_http::SharedHttp;
-    use account_http_reqwest::ReqwestHttp;
+    use http_core::SharedHttp;
+    use http_reqwest::ReqwestHttp;
     use account_provider::parse_provider;
     use account_secrets::MemorySecrets;
     use account_service::AccountService;
@@ -426,17 +426,17 @@ async fn adding_an_account_that_is_already_here_tells_the_app_which_one_it_is() 
 #[derive(Debug, Clone)]
 struct NothingPublished;
 
-impl account_http::Http for NothingPublished {
+impl http_core::Http for NothingPublished {
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "the trait method is async; this implementation has nothing to await"
     )]
     async fn send(
         &self,
-        _request: account_http::http::Request<Vec<u8>>,
-    ) -> Result<account_http::http::Response<Vec<u8>>, account_http::HttpError> {
-        let mut response = account_http::http::Response::new(Vec::new());
-        *response.status_mut() = account_http::http::StatusCode::NOT_FOUND;
+        _request: http_core::http::Request<Vec<u8>>,
+    ) -> Result<http_core::http::Response<Vec<u8>>, http_core::HttpError> {
+        let mut response = http_core::http::Response::new(Vec::new());
+        *response.status_mut() = http_core::http::StatusCode::NOT_FOUND;
         Ok(response)
     }
 }
@@ -458,7 +458,7 @@ async fn a_typed_pop3_server_is_added_through_the_sheet_and_found_by_a_mail_need
     use account_fake_servers::{Accounts as MailAccounts, FakeDns, FakePop3, mailbox};
     use account_families::DynProvider;
     use account_family_generic::{GenericProvider, MailLookup};
-    use account_http::SharedHttp;
+    use http_core::SharedHttp;
     use account_match::MailNeed;
     use account_provider::parse_provider;
     use account_secrets::MemorySecrets;

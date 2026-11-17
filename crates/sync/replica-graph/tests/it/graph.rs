@@ -6,7 +6,7 @@
 use crate::common;
 
 use account_fake_servers::Hit;
-use account_http_relay::{RelayHttp, RelayLimits};
+use http_relay::{RelayHttp, RelayLimits};
 use base_ids::Bytes;
 use common::{Replica, Server, TOKEN, TcpDial};
 use replica_graph::{GraphReplica, Uploads};

@@ -31,7 +31,7 @@ RULES=(
   "replica-gdrive: $EFFECTS $BARDO_ACCOUNT_HIDDEN"
   "drive-core: $NO_BUS $BARDO_ACCOUNT_HIDDEN"
   "drive-fuse: $NO_BUS $BARDO_ACCOUNT_HIDDEN"
-  "drive-mount-daemon: $EFFECTS fuser account-ids account-core base-fs account-http account-secrets account-service account-client sync-core drive-core drive-fuse"
+  "drive-mount-daemon: $EFFECTS fuser account-ids account-core base-fs http-core account-secrets account-service account-client sync-core drive-core drive-fuse"
   "sync-bus: reqwest hyper ureq oo7 keyring secret-service ui-settings"
 )
 fail=0
@@ -60,7 +60,7 @@ for rule in "${RULES[@]}"; do
 done
 
 # ONE CLIENT: reqwest is named by no crate of this workspace. A program that sends over a direct
-# connection takes account-http-reqwest's `ReqwestHttp`, and the sync crates send through the
+# connection takes http-reqwest's `ReqwestHttp`, and the sync crates send through the
 # `Http` seam they are handed.
 named=$(grep -lE '^reqwest[ .=]' */Cargo.toml || true)
 if [ -n "$named" ]; then
@@ -123,10 +123,10 @@ fi
 EDGES=(
   "quickxorhash:"
   "windows-zones:"
-  "sync-core: account-capability account-ids account-http"
-  "replica-webdav: account-dav-proto account-capability account-ids account-http sync-core"
-  "replica-graph: account-capability account-ids account-http sync-core"
-  "replica-gdrive: account-capability account-ids account-http sync-core"
+  "sync-core: account-capability account-ids http-core"
+  "replica-webdav: account-dav-proto account-capability account-ids http-core sync-core"
+  "replica-graph: account-capability account-ids http-core sync-core"
+  "replica-gdrive: account-capability account-ids http-core sync-core"
   "drive-core: account-capability account-ids base-fs sync-core quickxorhash"
   "drive-fuse: drive-core drive-mount-daemon"
   "drive-mount-daemon:"
@@ -134,7 +134,7 @@ EDGES=(
   "sync-fake-graph: account-core account-fake account-fake-servers account-ids account-provider quickxorhash"
   "sync-rig: sync-bus sync-fake-graph account-dbus account-fake-servers account-rig"
   "sync-fakes: sync-bus account-dbus"
-  "sync-daemon: ui-settings account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus base-fs account-http account-http-relay sync-bus drive-core drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
+  "sync-daemon: ui-settings account-dav-proto account-client account-client-dbus account-core account-match account-capability account-wire account-ids account-daemon-support account-callers account-dbus base-fs http-core http-relay sync-bus drive-core drive-fuse sync-core replica-gdrive replica-graph replica-webdav windows-zones"
 )
 for edge in "${EDGES[@]}"; do
   crate="${edge%%:*}"

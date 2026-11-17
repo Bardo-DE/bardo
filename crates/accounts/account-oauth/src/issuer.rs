@@ -1,7 +1,7 @@
 //! What an issuer says when it refuses: the OAuth error body (RFC 6749 section 5.2), read into
 //! text safe to show. It names nothing else of this crate.
 
-use account_http::http::Response;
+use http_core::http::Response;
 
 /// What an issuer wrote in its error body: the `error` code and the human `error_description` (RFC
 /// 6749 section 5.2), for a host to show.

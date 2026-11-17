@@ -49,7 +49,7 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# ONE CLIENT: reqwest is named by account-http-reqwest (porter's crate) and by no crate of this
+# ONE CLIENT: reqwest is named by http-reqwest (porter's crate) and by no crate of this
 # workspace; inferd takes `ReqwestHttp` from it.
 named=$(grep -lE '^reqwest[ .=]' */Cargo.toml || true)
 if [ -n "$named" ]; then
@@ -121,9 +121,9 @@ ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? 
 # Dev dependencies are outside it. steward depends on porter by git rev; porter never depends on
 # steward.
 EDGES=(
-  "inference-daemon: computer-use-action computer-use-parse computer-use-session computer-use-vendors ui-settings engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus base-fs account-http account-http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"
+  "inference-daemon: computer-use-action computer-use-parse computer-use-session computer-use-vendors ui-settings engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus base-fs http-core http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"
   "inference-client: model-http model-openai-compat model-provider model-wire inference-bridge account-callers account-capability account-core account-dbus base-fs account-ids inference-core account-match inference-tailnet account-tailscale inference-turns account-wire inference-dbus"
-  "inference-probe: account-capability account-http account-ids account-provider"
+  "inference-probe: account-capability http-core account-ids account-provider"
   "inference-bridge: model-catalog model-openai-compat model-provider account-capability account-core account-ids inference-core account-match model-vision-prep"
   "inference-core: computer-use-action model-provider account-capability account-core account-ids account-match"
   "inference-router: computer-use-action engine-probe engine-spec engine-supervisor model-catalog model-http model-openai-compat model-provider account-capability account-core account-ids inference-core account-match inference-tailnet account-tailscale speech-provider model-vision-prep"

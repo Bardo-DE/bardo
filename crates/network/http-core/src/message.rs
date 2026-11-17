@@ -3,9 +3,8 @@
 //! `WebUrl`, and [`request`] is the one place it becomes the request's `Uri`.
 
 use crate::error::HttpError;
-use account_core::EndpointUrl;
 use base_time::UnixSeconds;
-use base_url::{UrlScheme, WebUrl};
+use base_url::WebUrl;
 use http::header::{HeaderMap, HeaderName, HeaderValue};
 use http::request::Builder;
 use http::{Method, Request, Response, Uri};
@@ -27,29 +26,6 @@ pub fn request(method: Method, url: &WebUrl) -> Builder {
 /// [`HttpError::Malformed`] when the URL is not one the `http` crate takes as a URI.
 pub fn uri(url: &WebUrl) -> Result<Uri, HttpError> {
     url.as_str().parse().map_err(HttpError::malformed)
-}
-
-/// A request to an endpoint's URL. A scheme that is not HTTP is `Malformed`, and plain `http`
-/// to another computer is `Tls`: no credential is sent in the clear.
-///
-/// # Errors
-/// [`HttpError::Malformed`] when the scheme is not HTTP; [`HttpError::Tls`] for plain `http` to
-/// another computer.
-pub fn request_to(method: Method, url: &EndpointUrl) -> Result<Builder, HttpError> {
-    web_url(url).map(|web| request(method, &web))
-}
-
-/// An endpoint's URL as a web URL. A scheme that is not HTTP is `Malformed`, and plain `http`
-/// to another computer is `Tls`: no credential is sent in the clear.
-///
-/// # Errors
-/// [`HttpError::Malformed`] when the scheme is not HTTP; [`HttpError::Tls`] for plain `http` to
-/// another computer.
-pub fn web_url(url: &EndpointUrl) -> Result<WebUrl, HttpError> {
-    WebUrl::try_from(url).map_err(|error| match url.origin().scheme {
-        UrlScheme::Http => HttpError::tls(error),
-        _ => HttpError::malformed(error),
-    })
 }
 
 /// A header whose value is a credential: marked sensitive, so the request's `Debug` shows
@@ -81,16 +57,23 @@ pub trait HeaderText {
     /// The wait a `Retry-After` header asks for, in seconds: its whole seconds, or the time from
     /// the message's own `Date` header (else from `now`, the caller's clock) to its HTTP date
     /// (none past: `0`). `None` when there is no such header or it is neither. The one parser
-    /// the storage replicas and syncd's sources share; it reads no clock itself.
+    /// of the workspace (replicas, syncd's sources, model calls); it reads no clock itself.
     fn retry_after_seconds(&self, now: UnixSeconds) -> Option<u32> {
-        retry_wait(self.header("retry-after")?, self.header("date"), now)
+        retry_wait(self.header("retry-after")?, self.header("date"), Some(now))
+    }
+
+    /// The same for a caller that has no clock: the date form counts from the message's own
+    /// `Date` header, and is `None` when there is none.
+    fn retry_after_seconds_by_date(&self) -> Option<u32> {
+        retry_wait(self.header("retry-after")?, self.header("date"), None)
     }
 }
 
 /// The wait a `Retry-After` value asks for: whole seconds, or an HTTP date (RFC 9110 section
 /// 5.6.7, read by `httpdate`) less `date`, the sender's own `Date`, or less `now` where there is
-/// none or it is not a date; `0` when the date has passed.
-fn retry_wait(value: &str, date: Option<&str>, now: UnixSeconds) -> Option<u32> {
+/// none or it is not a date (`None` when there is no `now` either); `0` when the date has
+/// passed.
+fn retry_wait(value: &str, date: Option<&str>, now: Option<UnixSeconds>) -> Option<u32> {
     let value = value.trim();
     if let Ok(seconds) = value.parse() {
         return Some(seconds);
@@ -98,10 +81,12 @@ fn retry_wait(value: &str, date: Option<&str>, now: UnixSeconds) -> Option<u32> 
     let at = httpdate::parse_http_date(value).ok()?;
     let from = date
         .and_then(|date| httpdate::parse_http_date(date.trim()).ok())
-        .unwrap_or_else(|| {
-            std::time::UNIX_EPOCH
-                + std::time::Duration::from_secs(u64::try_from(now.0).unwrap_or(0))
-        });
+        .or_else(|| {
+            now.map(|now| {
+                std::time::UNIX_EPOCH
+                    + std::time::Duration::from_secs(u64::try_from(now.0).unwrap_or(0))
+            })
+        })?;
     let wait = at.duration_since(from).map_or(0, |wait| wait.as_secs());
     u32::try_from(wait).ok()
 }
@@ -184,27 +169,6 @@ mod tests {
     }
 
     #[test]
-    fn a_request_to_an_endpoint_refuses_what_is_not_web() {
-        let cases = [
-            ("https://cloud.example.org/dav/", Ok(())),
-            ("http://127.0.0.1:8080/dav/", Ok(())),
-            ("http://cloud.example.org/dav/", Err(HttpError::Tls(None))),
-            ("imaps://mail.example.org", Err(HttpError::Malformed(None))),
-        ];
-        for (text, want) in cases {
-            let url = EndpointUrl::parse(text).expect(text);
-            let got = request_to(Method::GET, &url).map(|_| ());
-            assert_eq!(got, want, "{text}");
-        }
-        let url = EndpointUrl::parse("https://cloud.example.org/dav/").expect("url");
-        let sent = request_to(Method::GET, &url)
-            .expect("builder")
-            .body(Vec::<u8>::new())
-            .expect("request");
-        assert_eq!(sent.uri().to_string(), url.as_str());
-    }
-
-    #[test]
     fn a_credential_never_shows_in_debug_and_a_bad_one_fails_the_build() {
         let url = WebUrl::parse("https://cloud.example.org/").expect("url");
         let sent = request(Method::GET, &url)
@@ -240,17 +204,27 @@ mod tests {
         ];
         // With a `Date`, the caller's clock is not asked.
         for (value, want) in cases {
-            assert_eq!(retry_wait(value, date, now), want, "{value}");
+            assert_eq!(retry_wait(value, date, Some(now)), want, "{value}");
         }
         // Without one, or with one that is no date, it is.
         assert_eq!(
-            retry_wait("Sun, 06 Nov 1994 08:49:37 GMT", None, now),
+            retry_wait("Sun, 06 Nov 1994 08:49:37 GMT", None, Some(now)),
             Some(30)
         );
         assert_eq!(
-            retry_wait("Sun, 06 Nov 1994 08:49:37 GMT", Some("yesterday"), now),
+            retry_wait(
+                "Sun, 06 Nov 1994 08:49:37 GMT",
+                Some("yesterday"),
+                Some(now)
+            ),
             Some(30)
         );
+        // With no clock at all, a date with no `Date` beside it is no wait.
+        assert_eq!(
+            retry_wait("Sun, 06 Nov 1994 08:49:37 GMT", None, None),
+            None
+        );
+        assert_eq!(retry_wait("12", None, None), Some(12));
         let sent = Response::builder()
             .header("Retry-After", "Sun, 06 Nov 1994 08:49:37 GMT")
             .body(Vec::<u8>::new())

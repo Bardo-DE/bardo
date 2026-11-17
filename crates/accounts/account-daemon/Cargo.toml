@@ -55,8 +55,8 @@ base-testkit = {features = ["tokio"], path = "../../base/base-testkit"}
 ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
 account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}
-account-http = {path = "../account-http"}
-account-http-reqwest = {path = "../account-http-reqwest"}
+http-core = {path = "../../network/http-core"}
+http-reqwest = {path = "../../network/http-reqwest"}
 account-oauth = {path = "../account-oauth"}
 rustix = {workspace = true, features = ["std", "event", "fs", "net", "time", "process"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}

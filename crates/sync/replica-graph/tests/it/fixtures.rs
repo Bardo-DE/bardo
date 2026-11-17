@@ -2,8 +2,8 @@
 //! replica, with a scripted HTTP seam in place of a server: no network, no socket. The fixtures
 //! are written from Microsoft's documentation, not recorded from a live account.
 
-use account_http::http::{Request, Response};
-use account_http::{HeaderText, Http, HttpError};
+use http_core::http::{Request, Response};
+use http_core::{HeaderText, Http, HttpError};
 use base_ids::Bytes;
 use base_time::UnixSeconds;
 use base_url::WebUrl;

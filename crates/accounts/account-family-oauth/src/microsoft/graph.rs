@@ -5,7 +5,7 @@
 use crate::oauth::{failure, get};
 use account_capability::Claim;
 use account_core::EndpointUrl;
-use account_http::Http;
+use http_core::Http;
 use account_oauth_probe_proto::microsoft::{self, ME, is_personal};
 use account_provider::{Issuer, ProviderError, ProviderSpec};
 

@@ -12,7 +12,7 @@ use account_fake_servers::{
     Accounts, FakeDns, FakeImap, FakeSmtp, MailHandle, Running, Secret, mailbox,
 };
 use account_family_generic::{DavLookup, GenericProvider, MailLookup};
-use account_http::SharedHttp;
+use http_core::SharedHttp;
 use account_provider::{
     Provider, SignIn, SignInMode, SignInStart, SignInStep, Signed, parse_provider,
 };

@@ -15,8 +15,8 @@ use account_fake_servers::{
 };
 use account_families::DynProvider;
 use account_family_generic::{GenericProvider, MailLookup};
-use account_http::SharedHttp;
-use account_http_reqwest::ReqwestHttp;
+use http_core::SharedHttp;
+use http_reqwest::ReqwestHttp;
 use account_provider::parse_provider;
 use account_secrets::MemorySecrets;
 use account_sheet::{

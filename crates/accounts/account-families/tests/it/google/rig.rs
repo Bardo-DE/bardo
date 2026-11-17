@@ -7,8 +7,8 @@ use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Scheme, send};
 use account_fake_servers::{Google, shipped};
 use account_family_oauth::{Google as GoogleRules, OAuthEnv, OAuthProvider};
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
 use account_oauth::{ClientRegistry, ClientTraits};
 use account_provider::{
     ClientChannel, ClientEntry, ClientId, ClientsFile, Issuer, ProviderSpec, SignIn, SignInMode,

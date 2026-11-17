@@ -13,7 +13,7 @@ use super::env::OAuthEnv;
 use super::issuer::BrowserIssuer;
 use account_capability::{CapabilityKind, StorageScope};
 use account_core::{AccountId, Audience, Credential, IssuedToken, TokenKind};
-use account_http::Http;
+use http_core::Http;
 use account_oauth::{ExchangeFault, endpoints_of, is_due, refresh_scoped_detailed};
 use account_provider::{Presented, ProviderError, ProviderSession, ProviderSpec};
 use base_time::UnixSeconds;
@@ -35,7 +35,7 @@ pub(crate) struct Core<S> {
 }
 
 /// An open OAuth account of the issuer `R`.
-pub struct OAuthSession<R: BrowserIssuer, H = account_http_reqwest::ReqwestHttp> {
+pub struct OAuthSession<R: BrowserIssuer, H = http_reqwest::ReqwestHttp> {
     rules: R,
     account: AccountId,
     spec: Box<ProviderSpec>,

@@ -27,15 +27,16 @@ use crate::datasets::pim::relay::pim_http;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
-use account_http::http::{Method, Response};
-use account_http::{HeaderText, Http, HttpError, request};
-use account_http_relay::{RelayDial, RelayHttp};
+use http_core::http::{Method, Response};
+use http_core::{Http, HttpError, request};
+use http_relay::{RelayDial, RelayHttp};
 use base_ids::Bytes;
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use json::{Calendar, CalendarPage, Event, EventPage};
 use sha2::{Digest, Sha256};
 use std::sync::Arc;
+use sync_core::status::retry_after;
 use sync_core::{Clock, DELETED};
 use sync_core::{
     ItemKind, ItemPath, More, RemoteId, RemoteItem, RemoteVersion, ReplicaError, RetryAfter,
@@ -148,12 +149,6 @@ fn color_of(calendar: &Calendar) -> Option<String> {
         _ => return None,
     };
     Some(named.to_owned())
-}
-
-pub(super) fn retry_after(response: &Response<Vec<u8>>, now: UnixSeconds) -> RetryAfter {
-    response
-        .retry_after_seconds(now)
-        .map_or(RetryAfter(30), RetryAfter)
 }
 
 fn read_error(response: &Response<Vec<u8>>, now: UnixSeconds) -> ReplicaError {

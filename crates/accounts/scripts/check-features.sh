@@ -39,7 +39,7 @@ BUILDS=(
   "account-secrets (oo7: mailo mail-runtime, Linux) :: -p account-secrets --no-default-features --features oo7"
   "account-secrets (keyring: mailo mail-runtime, macOS and Windows) :: -p account-secrets --no-default-features --features keyring"
   "account-discover (no features: mailo mail-core, mail-runtime) :: -p account-discover --no-default-features"
-  "account-http (no features: mailo mail-core, mail-runtime) :: -p account-http --no-default-features"
+  "http-core (no features: mailo mail-core, mail-runtime) :: -p http-core --no-default-features"
   "account-oauth (no features: mailo) :: -p account-oauth --no-default-features"
   "account-oauth (io: mailo mail-runtime) :: -p account-oauth --no-default-features --features io"
   "account-proxy (io: mailo mail-runtime, its link tests) :: -p account-proxy --no-default-features --features io"

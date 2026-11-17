@@ -10,9 +10,9 @@
 use crate::addr::FILE_FIELDS;
 use crate::feed::link;
 use crate::replica::GdriveReplica;
-use account_http::http::header::CONTENT_TYPE;
-use account_http::http::{Method, Response};
-use account_http::{HeaderText, Http, request};
+use http_core::http::header::CONTENT_TYPE;
+use http_core::http::{Method, Response};
+use http_core::{HeaderText, Http, request};
 use sync_core::status::write_unreached;
 use sync_core::{PutRefused, RetryAfter};
 

@@ -10,7 +10,7 @@ use account_discover::well_known_found;
 use account_family_kit::Io;
 use account_family_kit::password::{basic, fault_of, sensitive};
 use account_generic_proto::dav::{self, Root, SERVICES, Service};
-use account_http::Http;
+use http_core::Http;
 use account_provider::ProviderSpec;
 use account_sheet::SignInFault;
 

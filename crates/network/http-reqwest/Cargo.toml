@@ -1,6 +1,6 @@
 [package]
-name = "account-http-reqwest"
-description = "porter's one direct-connection HTTP client: reqwest behind the `Http` seam of account-http, with rustls and the platform's trust roots. The only crate in porter that names reqwest."
+name = "http-reqwest"
+description = "The one direct-connection HTTP client: reqwest behind the `Http` and `HttpStream` seams of http-core, with rustls, the platform's trust roots, an optional Unix socket, and a blocking form for callers with no runtime. The only crate in the workspace that names reqwest."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,14 +10,14 @@ publish.workspace = true
 
 [dependencies]
 base-url = { path = "../../base/base-url" }
-account-http = {path = "../account-http"}
-reqwest = { workspace = true, features = ["rustls-no-provider"] }
+http-core = {path = "../http-core"}
+reqwest = { workspace = true, features = ["blocking", "rustls-no-provider"] }
 rustls = { workspace = true, features = ["ring", "std", "tls12"] }
 tokio = {workspace = true, features = ["io-util", "macros", "net", "process", "rt-multi-thread", "sync", "time"]}
 
 [dev-dependencies]
-account-core = {path = "../account-core"}
-account-fake-servers = {path = "../account-fake-servers"}
+account-core = {path = "../../accounts/account-core"}
+account-fake-servers = {path = "../../accounts/account-fake-servers"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [lints]

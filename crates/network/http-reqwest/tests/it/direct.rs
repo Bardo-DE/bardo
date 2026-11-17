@@ -2,13 +2,13 @@
 //! is returned and not followed, the caps and the timeout hold, and certificates are always
 //! checked.
 
-use account_core::EndpointUrl;
+use account_core::{EndpointUrl, request_to};
 use account_fake_servers::http::{Request, Response, serve};
 use account_fake_servers::net::{Bind, Listener, port_of};
 use account_fake_servers::tls;
-use account_http::http::{self, Method, StatusCode};
-use account_http::{HeaderText, Http, HttpError, request, request_to};
-use account_http_reqwest::{Limits, ReqwestHttp};
+use http_core::http::{self, Method, StatusCode};
+use http_core::{HeaderText, Http, HttpError, request};
+use http_reqwest::{Limits, ReqwestHttp};
 use base_url::WebUrl;
 use std::sync::Arc;
 use std::time::Duration;

@@ -13,7 +13,7 @@ use account_core::{
 };
 use account_fake_servers::{Auth, Call, FakeLlmApi, LlmApiHandle, Running, shipped};
 use account_families::ApiKeyProvider;
-use account_http_reqwest::ReqwestHttp;
+use http_reqwest::ReqwestHttp;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, RevokeOutcome, SignIn, SignInMode,
     SignInStart, SignInStep, Signed,

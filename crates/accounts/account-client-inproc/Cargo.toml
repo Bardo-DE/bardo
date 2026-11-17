@@ -32,8 +32,8 @@ account-fake = {path = "../account-fake"}
 account-fake-servers = {path = "../account-fake-servers"}
 account-families = {path = "../account-families"}
 account-family-generic = {path = "../account-family-generic"}
-account-http = {path = "../account-http"}
-account-http-reqwest = {path = "../account-http-reqwest"}
+http-core = {path = "../../network/http-core"}
+http-reqwest = {path = "../../network/http-reqwest"}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 
 [features]

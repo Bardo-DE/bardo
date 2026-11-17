@@ -29,9 +29,9 @@ use crate::feed::{folder_of, json_string};
 use crate::json::{DriveItem, Session as SessionJson, SessionStatus};
 use crate::refuse::{error_code, write_error};
 use crate::replica::GraphReplica;
-use account_http::http::header::CONTENT_TYPE;
-use account_http::http::{Method, Response};
-use account_http::{Http, request};
+use http_core::http::header::CONTENT_TYPE;
+use http_core::http::{Method, Response};
+use http_core::{Http, request};
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use sync_core::DELETED;
@@ -567,7 +567,7 @@ mod tests {
     }
 
     fn answer(status: u16, code: &str) -> Response<Vec<u8>> {
-        account_http::http::Response::builder()
+        http_core::http::Response::builder()
             .status(status)
             .body(format!(r#"{{"error":{{"code":"{code}","message":"m"}}}}"#).into_bytes())
             .expect("response")

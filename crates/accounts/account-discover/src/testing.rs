@@ -1,8 +1,8 @@
 //! Fakes of the two seams, and the document builders the tests share.
 
 use crate::dns::{Dns, DnsFault, MxRecord, SrvRecord};
-use account_http::http::{Method, Request, Response};
-use account_http::{Http, HttpError};
+use http_core::http::{Method, Request, Response};
+use http_core::{Http, HttpError};
 use account_provider::DomainName;
 use std::collections::HashMap;
 use std::fmt::Write as _;

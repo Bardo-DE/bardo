@@ -7,9 +7,9 @@
 use crate::common;
 
 use account_fake_servers::Running;
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
-use account_http_relay::{RelayHttp, RelayLimits, Routed};
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
+use http_relay::{RelayHttp, RelayLimits, Routed};
 use base_ids::Bytes;
 use base_url::{Origin, WebUrl};
 use common::{TOKEN, TcpDial, client};

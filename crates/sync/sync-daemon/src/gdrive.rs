@@ -10,7 +10,7 @@ use crate::webdav::BuildError;
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
-use account_http_relay::{RelayDial, RelayHttp, RelayLimits};
+use http_relay::{RelayDial, RelayHttp, RelayLimits};
 use base_url::WebUrl;
 use replica_gdrive::GdriveReplica;
 use std::sync::Arc;

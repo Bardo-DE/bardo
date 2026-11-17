@@ -842,13 +842,13 @@ trait WithFolders: Sized {
     fn with_folders(self, folders: sync_core::Folders) -> Self;
 }
 
-impl<H: account_http::Http> WithFolders for replica_graph::GraphReplica<H> {
+impl<H: http_core::Http> WithFolders for replica_graph::GraphReplica<H> {
     fn with_folders(self, folders: sync_core::Folders) -> Self {
         replica_graph::GraphReplica::with_folders(self, folders)
     }
 }
 
-impl<H: account_http::Http> WithFolders for replica_gdrive::GdriveReplica<H> {
+impl<H: http_core::Http> WithFolders for replica_gdrive::GdriveReplica<H> {
     fn with_folders(self, folders: sync_core::Folders) -> Self {
         replica_gdrive::GdriveReplica::with_folders(self, folders)
     }

@@ -5,7 +5,7 @@ use crate::stream::RelayStream;
 use account_client::{Grants, GrantsError, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
-use account_http::HttpError;
+use http_core::HttpError;
 use account_wire::Refusal;
 use base_url::{Origin, UrlScheme};
 use std::sync::Arc;

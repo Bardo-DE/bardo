@@ -1,10 +1,10 @@
 //! Discovery (porter PLAN §2.7), from mailo's `discover` and `mail-proto::discover`: one
 //! function per [`account_provider::Discovery`] kind. Each is a pure parser of what a server
-//! answered, plus the seams it asks through: [`account_http::Http`] for fetches and [`Dns`] for
+//! answered, plus the seams it asks through: [`http_core::Http`] for fetches and [`Dns`] for
 //! SRV and MX records. A fake of each is how the tests run without a network. [`discover_mail`]
 //! is the mail search over all of them, in mailo's order.
 //!
-//! `HickoryDns` (feature `io`) is the system resolver; the HTTP client is account-http's.
+//! `HickoryDns` (feature `io`) is the system resolver; the HTTP client is http-core's.
 
 mod autoconfig;
 mod config;

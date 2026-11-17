@@ -26,8 +26,8 @@
 //!   large file in a resumable session that a new replica resumes ([`accepts_name`]: Drive
 //!   takes any name but an empty one).
 //! - **Quota** is `about`'s `storageQuota` (`usage`, `limit`).
-//! - **The connection** is whatever [`account_http::Http`] the replica is handed. In syncd it is
-//!   `account_http_relay::RelayHttp` over the relays of accountd's `Tokens.OpenAuthenticated`,
+//! - **The connection** is whatever [`http_core::Http`] the replica is handed. In syncd it is
+//!   `http_relay::RelayHttp` over the relays of accountd's `Tokens.OpenAuthenticated`,
 //!   whose relay adds the bearer, so syncd never holds a token. The upload host
 //!   (`/upload/drive/v3`) and a resumable session's URL are the same origin as the API, so one
 //!   relay serves all; a session URL on another origin is refused.

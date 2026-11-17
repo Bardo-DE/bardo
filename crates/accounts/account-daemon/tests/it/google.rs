@@ -19,7 +19,7 @@ use account_fake::{MemoryStore, RecordingAudit};
 use account_fake_servers::{Google, shipped};
 use account_families::DynProvider;
 use account_family_oauth::{Google as GoogleRules, OAuthEnv, OAuthProvider};
-use account_http_reqwest::ReqwestHttp;
+use http_reqwest::ReqwestHttp;
 use account_oauth::{ClientRegistry, ClientTraits};
 use account_provider::{ClientChannel, ClientEntry, ClientId, ClientsFile, Issuer};
 use account_secrets::Secrets;

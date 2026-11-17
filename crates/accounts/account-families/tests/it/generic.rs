@@ -17,7 +17,7 @@ use account_fake_servers::{
     Running, autoconfig_xml, mailbox,
 };
 use account_family_generic::{DavLookup, FixedLookup, GenericProvider, MailLookup};
-use account_http::SharedHttp;
+use http_core::SharedHttp;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, SignInMode, SignInStart,
     SignInStep, Signed, parse_provider,
@@ -441,15 +441,15 @@ struct FakeJmap {
     token: Option<&'static str>,
 }
 
-impl account_http::Http for FakeJmap {
+impl http_core::Http for FakeJmap {
     #[expect(
         clippy::unused_async_trait_impl,
         reason = "`send` implements an async trait method, and this implementation has nothing to wait for"
     )]
     async fn send(
         &self,
-        request: account_http::http::Request<Vec<u8>>,
-    ) -> Result<account_http::http::Response<Vec<u8>>, account_http::HttpError> {
+        request: http_core::http::Request<Vec<u8>>,
+    ) -> Result<http_core::http::Response<Vec<u8>>, http_core::HttpError> {
         use base64::Engine;
         let want = match self.token {
             Some(token) => format!("Bearer {token}"),
@@ -461,7 +461,7 @@ impl account_http::Http for FakeJmap {
         };
         let ok = request
             .headers()
-            .get_all(account_http::http::header::AUTHORIZATION)
+            .get_all(http_core::http::header::AUTHORIZATION)
             .iter()
             .any(|value| value.as_bytes() == want.as_bytes());
         let status = match (self.status, ok) {
@@ -473,7 +473,7 @@ impl account_http::Http for FakeJmap {
             r#"{{"capabilities":{{"urn:ietf:params:jmap:core":{{}},"urn:ietf:params:jmap:mail":{{}},"urn:ietf:params:jmap:submission":{{}}}},"apiUrl":"https://jmap.fake.test/api","username":"{}"}}"#,
             self.api_user
         );
-        Ok(account_http::http::Response::builder()
+        Ok(http_core::http::Response::builder()
             .status(status)
             .body(body.into_bytes())
             .expect("response"))

@@ -39,8 +39,8 @@ base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 base-fs = {path = "../../base/base-fs"}
 account-dav-proto = {features = ["discover"], path = "../../accounts/account-dav-proto"}
-account-http = {path = "../../accounts/account-http"}
-account-http-relay = {path = "../../accounts/account-http-relay"}
+http-core = {path = "../../network/http-core"}
+http-relay = {path = "../../network/http-relay"}
 ui-settings = {features = ["live", "tokio"], path = "../../ui/ui-settings"}
 clap = {workspace = true, features = ["default", "derive"]}
 rusqlite = { workspace = true, features = ["bundled-sqlcipher-vendored-openssl"] }
@@ -70,7 +70,7 @@ account-client-inproc = {features = ["relays"], path = "../../accounts/account-c
 account-fake = {path = "../../accounts/account-fake"}
 account-sheet = {path = "../../accounts/account-sheet"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
-account-http-reqwest = {path = "../../accounts/account-http-reqwest"}
+http-reqwest = {path = "../../network/http-reqwest"}
 account-provider = {path = "../../accounts/account-provider"}
 account-secrets = {features = ["testing"], path = "../../accounts/account-secrets"}
 account-service = {path = "../../accounts/account-service"}

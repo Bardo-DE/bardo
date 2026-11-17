@@ -10,9 +10,9 @@ pub mod mail;
 
 use account_capability::KindToggle;
 use account_core::SecretText;
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
-use account_http_reqwest::ReqwestHttp;
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
+use http_reqwest::ReqwestHttp;
 use account_provider::{SignIn, SignInStep};
 use account_sheet::{FieldAnswer, FieldKind, FieldValue, SheetInput, SheetView};
 use std::sync::{Arc, Mutex};
@@ -79,7 +79,7 @@ impl Http for Fakes {
 #[derive(Debug, Clone, Copy)]
 pub struct Brief;
 
-impl account_http::Sleep for Brief {
+impl http_core::Sleep for Brief {
     async fn sleep(&self, _how_long: std::time::Duration) {
         tokio::time::sleep(std::time::Duration::from_millis(3)).await;
     }

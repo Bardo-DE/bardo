@@ -6,7 +6,7 @@ use super::apis_of;
 use super::scopes::Granted;
 use crate::oauth::{failure, get};
 use account_capability::{CapabilityKind, Claim};
-use account_http::Http;
+use http_core::Http;
 use account_oauth_probe_proto::google;
 use account_provider::{Issuer, ProviderError, ProviderSpec};
 

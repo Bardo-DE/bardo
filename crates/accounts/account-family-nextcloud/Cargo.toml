@@ -16,7 +16,7 @@ account-core = {path = "../account-core"}
 account-capability = {path = "../account-capability"}
 account-sheet = {path = "../account-sheet"}
 account-provider = {path = "../account-provider"}
-account-http = {path = "../account-http"}
+http-core = {path = "../../network/http-core"}
 
 [lints]
 workspace = true

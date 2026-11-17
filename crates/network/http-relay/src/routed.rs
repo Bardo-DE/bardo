@@ -7,8 +7,8 @@
 //! refuses for an origin the provider file does not declare). The replica itself never adds an
 //! `Authorization` header, so a credential cannot follow a link to another host.
 
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
 use base_url::{Origin, WebUrl};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex, PoisonError};
@@ -67,7 +67,7 @@ where
     F: Fn(&Origin) -> L + Send + Sync,
 {
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
-        // The URI is a `WebUrl`'s text (account_http::request), so it reads back as one.
+        // The URI is a `WebUrl`'s text (http_core::request), so it reads back as one.
         let origin = WebUrl::parse(&request.uri().to_string())
             .map_err(HttpError::malformed)?
             .origin();
@@ -81,7 +81,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use account_http::http::Method;
+    use http_core::http::Method;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     /// Answers with its own name.
@@ -98,7 +98,7 @@ mod tests {
     }
 
     fn get(url: &str) -> Request<Vec<u8>> {
-        account_http::request(Method::GET, &WebUrl::parse(url).expect("url"))
+        http_core::request(Method::GET, &WebUrl::parse(url).expect("url"))
             .body(Vec::new())
             .expect("request")
     }

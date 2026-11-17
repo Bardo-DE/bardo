@@ -18,8 +18,8 @@ base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 account-provider = {path = "../account-provider"}
-account-http = {path = "../account-http"}
-account-http-reqwest = {path = "../account-http-reqwest"}
+http-core = {path = "../../network/http-core"}
+http-reqwest = {path = "../../network/http-reqwest"}
 account-oauth = {path = "../account-oauth", features = ["io"]}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

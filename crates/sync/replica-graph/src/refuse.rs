@@ -4,7 +4,7 @@
 //! (open in an Office app there, or checked out).
 
 use crate::json::ErrorBody;
-use account_http::http::Response;
+use http_core::http::Response;
 use base_time::UnixSeconds;
 use sync_core::PutRefused;
 use sync_core::status::retry_after;

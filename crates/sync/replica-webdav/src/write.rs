@@ -9,9 +9,9 @@ use crate::refuse::write_error;
 use crate::replica::WebDavReplica;
 use crate::requests;
 use account_dav_proto::parse_multistatus;
-use account_http::http::header::CONTENT_TYPE;
-use account_http::http::{Method, Request, Response};
-use account_http::{HeaderText, Http, request, webdav};
+use http_core::http::header::CONTENT_TYPE;
+use http_core::http::{Method, Request, Response};
+use http_core::{HeaderText, Http, request, webdav};
 use sync_core::DELETED;
 use sync_core::status::write_unreached;
 use sync_core::{

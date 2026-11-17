@@ -1,7 +1,7 @@
 //! A fake of the `Http` seam for the probe's tests.
 
-use account_http::http::{Method, Request, Response};
-use account_http::{Http, HttpError};
+use http_core::http::{Method, Request, Response};
+use http_core::{Http, HttpError};
 use std::collections::HashMap;
 use std::sync::Mutex;
 

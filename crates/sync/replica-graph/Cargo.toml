@@ -1,6 +1,6 @@
 [package]
 name = "replica-graph"
-description = "The Microsoft Graph replica: sync-core's Replica over OneDrive's app folder (`/me/drive/special/approot`) or the whole drive (`/me/drive/root`). Changes by delta query with the delta link as the anchor (a resync is AnchorExpired), writes guarded by If-Match and conflictBehavior=fail, small files by simple upload and large ones by upload session, quota from the drive. Its HTTP goes through the Http it is handed (in syncd, account-http-relay's RelayHttp over accountd's OpenAuthenticated, which adds the bearer). Pure: no runtime, no socket."
+description = "The Microsoft Graph replica: sync-core's Replica over OneDrive's app folder (`/me/drive/special/approot`) or the whole drive (`/me/drive/root`). Changes by delta query with the delta link as the anchor (a resync is AnchorExpired), writes guarded by If-Match and conflictBehavior=fail, small files by simple upload and large ones by upload session, quota from the drive. Its HTTP goes through the Http it is handed (in syncd, http-relay's RelayHttp over accountd's OpenAuthenticated, which adds the bearer). Pure: no runtime, no socket."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -15,7 +15,7 @@ account-capability = {path = "../../accounts/account-capability"}
 base-ids = { path = "../../base/base-ids" }
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
-account-http = {path = "../../accounts/account-http"}
+http-core = {path = "../../network/http-core"}
 sync-core = {path = "../sync-core"}
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -24,7 +24,7 @@ serde_json = { workspace = true }
 base-testkit = {path = "../../base/base-testkit"}
 sync-fake-graph = {path = "../sync-fake-graph"}
 account-fake-servers = {path = "../../accounts/account-fake-servers"}
-account-http-relay = {path = "../../accounts/account-http-relay"}
+http-relay = {path = "../../network/http-relay"}
 sync-core = {path = "../sync-core", features = ["testing"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"]}
 

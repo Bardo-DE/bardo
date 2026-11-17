@@ -16,7 +16,7 @@ use account_core::{Account, Audience, Credential, EndpointUrl, IssuedToken};
 use account_family_kit::Conversation;
 use account_family_kit::password::password_of;
 use account_family_kit::{Io, Pacing};
-use account_http::{SharedHttp, Sleep};
+use http_core::{SharedHttp, Sleep};
 use account_nextcloud_proto::paths::server_of;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignInStart,

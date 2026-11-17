@@ -17,7 +17,7 @@ use account_core::{
     AccountLabel, Audience, Credential, EndpointUrl, Family, GrantedScopes, LoginName, Restriction,
     SecretPurpose, ServiceEndpoint, TenantConsent, Tls, TokenKind,
 };
-use account_http::Http;
+use http_core::Http;
 use account_oauth::{TokenResponse, refresh_scoped};
 use account_provider::{Issuer, ProviderError, ProviderSpec, Signed};
 use account_sheet::SignInFault;

@@ -4,9 +4,9 @@
 use crate::addr::{Addr, Root};
 use crate::json::{DriveInfo, DriveItem};
 use account_capability::{Access, Delta, HashKind, StorageCap, StorageScope};
-use account_http::http::header::{ACCEPT, HeaderValue, RANGE};
-use account_http::http::{Method, Request, Response};
-use account_http::{HeaderText, Http, request};
+use http_core::http::header::{ACCEPT, HeaderValue, RANGE};
+use http_core::http::{Method, Request, Response};
+use http_core::{HeaderText, Http, request};
 use base_ids::Bytes;
 use base_url::WebUrl;
 use std::sync::{Mutex, MutexGuard, PoisonError};

@@ -1,8 +1,8 @@
 //! [`RelayHttp`]: hyper's HTTP/1 connection over the streams a [`Dial`] opens.
 
-use account_http::HttpError;
-use account_http::http::header::{ACCEPT_ENCODING, HOST, HeaderValue};
-use account_http::http::{Request, Response, StatusCode, Uri};
+use http_core::HttpError;
+use http_core::http::header::{ACCEPT_ENCODING, HOST, HeaderValue};
+use http_core::http::{Request, Response, StatusCode, Uri};
 use http_body_util::combinators::UnsyncBoxBody;
 use http_body_util::{BodyExt, Full};
 use hyper::body::{Body, Bytes, Incoming};
@@ -39,7 +39,7 @@ pub trait Dial: Send + Sync {
 /// How [`RelayHttp`] behaves.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct RelayLimits {
-    /// The most a response body may hold when it is read whole ([`Http::send`](account_http::Http)).
+    /// The most a response body may hold when it is read whole ([`Http::send`](http_core::Http)).
     /// A streamed response ([`RelayHttp::send_streaming`]) has no cap.
     pub max_body: usize,
     /// How many idle connections are kept for the next request.
@@ -179,7 +179,7 @@ impl Pool {
     }
 }
 
-/// An [`Http`](account_http::Http) over a [`Dial`], reusing connections while the server keeps
+/// An [`Http`](http_core::Http) over a [`Dial`], reusing connections while the server keeps
 /// them open.
 ///
 /// A request that finds a kept connection dead, or answered `401` (its credential
@@ -294,7 +294,7 @@ impl<D: Dial> RelayHttp<D> {
     }
 }
 
-impl<D: Dial> account_http::Http for RelayHttp<D> {
+impl<D: Dial> http_core::Http for RelayHttp<D> {
     async fn send(&self, request: Request<Vec<u8>>) -> Result<Response<Vec<u8>>, HttpError> {
         let (parts, body) = request.into_parts();
         let body = Bytes::from(body);
@@ -394,9 +394,9 @@ fn prepare(request: Request<Outgoing>) -> Result<Request<Outgoing>, HttpError> {
         .map_or("/", |target| target.as_str());
     parts.uri = target
         .parse::<Uri>()
-        .map_err(account_http::http::Error::from)?;
+        .map_err(http_core::http::Error::from)?;
     if let (false, Some(authority)) = (parts.headers.contains_key(HOST), authority) {
-        let host = HeaderValue::from_str(&authority).map_err(account_http::http::Error::from)?;
+        let host = HeaderValue::from_str(&authority).map_err(http_core::http::Error::from)?;
         parts.headers.insert(HOST, host);
     }
     parts

@@ -17,8 +17,8 @@ use account_capability::Claim;
 use account_core::AccountId;
 use account_core::{Account, EndpointUrl};
 use account_family_kit::Conversation;
-use account_http::Http;
-use account_http_reqwest::ReqwestHttp;
+use http_core::Http;
+use http_reqwest::ReqwestHttp;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSpec, RevokeOutcome, SignInStart,
 };

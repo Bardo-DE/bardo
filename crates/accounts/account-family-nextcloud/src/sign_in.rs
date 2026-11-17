@@ -7,7 +7,7 @@ use account_core::{AccountLabel, Credential, EndpointUrl, Restriction, SecretPur
 use account_family_kit::Io;
 use account_family_kit::password::{plain, text_of};
 use account_family_kit::{Flow, Move};
-use account_http::Sleep;
+use http_core::Sleep;
 use account_nextcloud_proto::flow::{Granted, Polled, Started};
 use account_nextcloud_proto::paths::server_of;
 use account_provider::{SignInMode, SignInStep, Signed};

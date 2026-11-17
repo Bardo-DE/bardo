@@ -6,8 +6,9 @@ use account_capability::{Access, Capability, CapabilityKind, Delta, MailTranspor
 use account_capability::{Claim, Offer, Provenance, Subject};
 use account_capability::{PimCap, PimTransport};
 use account_core::{EndpointUrl, Family, LoginName, ServiceEndpoint, Tls};
-use account_http::http::{Method, Response};
-use account_http::{HeaderText, Http, request_to};
+use http_core::http::{Method, Response};
+use account_core::request_to;
+use http_core::{HeaderText, Http};
 use account_provider::DomainName;
 use serde::Deserialize;
 use std::collections::BTreeMap;

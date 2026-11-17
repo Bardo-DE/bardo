@@ -22,7 +22,7 @@ use account_core::{
     LoginName, ReauthReason, Restriction, SecretPurpose, ServiceEndpoint, TenantConsent, Tls,
     TokenKind, TokenLifetime, Verification,
 };
-use account_http::Http;
+use http_core::Http;
 use account_oauth::TokenResponse;
 use account_provider::{Issuer, ProviderError, ProviderSpec, Signed};
 use account_sheet::SignInFault;

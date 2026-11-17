@@ -14,7 +14,7 @@ use account_capability::Claim;
 use account_core::AccountId;
 use account_core::{Account, Audience, Credential, IssuedToken};
 use account_family_kit::Conversation;
-use account_http::SharedSleep;
+use http_core::SharedSleep;
 use account_provider::{
     Presented, Provider, ProviderError, ProviderSession, ProviderSpec, RevokeOutcome, SignInMode,
     SignInStart,
@@ -124,7 +124,7 @@ impl ProviderSession for TailnetSession {
 pub(crate) fn build(spec: ProviderSpec, io: &crate::set::FamilyIo) -> crate::set::Built {
     match spec.auth.kind {
         account_core::AuthKind::OwnProgram => {
-            let sleep = SharedSleep::new(account_http_reqwest::TokioSleep);
+            let sleep = SharedSleep::new(http_reqwest::TokioSleep);
             Ok(Box::new(TailnetProvider::new(
                 spec,
                 io.tailscale.clone(),

@@ -12,7 +12,7 @@ use super::{Feed, FeedChange, FeedCursor, Page, PimSource};
 use account_client::{Grants, GrantsLink};
 use account_core::EndpointUrl;
 use account_core::GrantId;
-use account_http_relay::{RelayDial, RelayHttp};
+use http_relay::{RelayDial, RelayHttp};
 use base_url::WebUrl;
 use replica_webdav::WebDavReplica;
 use std::sync::Arc;

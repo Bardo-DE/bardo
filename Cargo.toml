@@ -4,6 +4,9 @@
 resolver = "3"
 members = [
     "crates/network/bluez-proxy",
+    "crates/network/http-core",
+    "crates/network/http-relay",
+    "crates/network/http-reqwest",
     "crates/network/networkmanager-proxy",
     "crates/memory/memory-client",
     "crates/memory/memory-core",
@@ -207,9 +210,6 @@ members = [
     "crates/accounts/account-family-kit",
     "crates/accounts/account-family-nextcloud",
     "crates/accounts/account-family-oauth",
-    "crates/accounts/account-http",
-    "crates/accounts/account-http-relay",
-    "crates/accounts/account-http-reqwest",
     "crates/accounts/account-identities",
     "crates/accounts/account-match",
     "crates/accounts/account-oauth",
@@ -300,6 +300,7 @@ members = [
     "crates/models/model-catalog",
     "crates/models/model-extract",
     "crates/models/model-http",
+    "crates/models/model-http-reqwest",
     "crates/models/model-openai-compat",
     "crates/models/model-provider",
     "crates/models/model-replay",
@@ -727,7 +728,6 @@ trash = "5"
 ulid = { version = "3", default-features = false }
 unicode-segmentation = "1"
 upower_dbus = { git = "https://github.com/pop-os/dbus-settings-bindings", rev = "eed01dd3609e90e3c8cd043656734c500956c793" }
-ureq = { version = "3.4", default-features = false }
 url = "2.5"
 vello_common = "0.1"
 vello_cpu = { git = "https://github.com/Bardo-DE/vello", rev = "5c986661c9e943d26dac8e8ea7812895947722b8" }

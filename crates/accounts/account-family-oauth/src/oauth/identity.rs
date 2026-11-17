@@ -2,8 +2,8 @@
 //! userinfo), and what a non-success status means for the account.
 
 use account_core::EndpointUrl;
-use account_http::Http;
-use account_http::http::Response;
+use http_core::Http;
+use http_core::http::Response;
 use account_oauth_probe_proto::{Failure, bearer_get};
 use account_provider::ProviderError;
 use serde::Deserialize;

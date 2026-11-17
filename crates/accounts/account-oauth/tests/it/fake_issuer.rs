@@ -6,8 +6,8 @@ use account_core::{Credential, SecretText};
 use account_fake_servers::browser::split_loopback;
 use account_fake_servers::http::{Scheme, send};
 use account_fake_servers::{Consent, FakeIssuer, IssuerEvent, Running, TokenResult, follow};
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
 use account_oauth::{
     ExchangeFault, LoopbackFault, LoopbackServer, Pkce, RenewOutcome, authorize_url, exchange_code,
     renew, revoke,
@@ -34,7 +34,7 @@ impl Http for LoopbackHttp {
             .await
             .map_err(HttpError::unreachable)?;
         let answer = response.headers.iter().fold(
-            account_http::http::Response::builder().status(response.status),
+            http_core::http::Response::builder().status(response.status),
             |answer, (name, value)| answer.header(name.as_str(), value.as_str()),
         );
         Ok(answer.body(response.body)?)

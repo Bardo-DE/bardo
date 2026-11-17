@@ -5,7 +5,7 @@
 
 use crate::exchange::{ExchangeFault, refresh};
 use account_core::{Credential, GrantedScopes};
-use account_http::Http;
+use http_core::Http;
 use account_provider::{ClientEntry, IssuerEndpoints};
 use base_time::UnixSeconds;
 
@@ -82,7 +82,7 @@ mod tests {
 
     use crate::scripted::{Scripted, answer};
     use account_core::SecretText;
-    use account_http::HttpError;
+    use http_core::HttpError;
     use account_provider::{ClientChannel, ClientId, Issuer};
 
     fn client() -> ClientEntry {
@@ -105,7 +105,7 @@ mod tests {
     }
 
     async fn renewed(
-        answer: Result<account_http::http::Response<Vec<u8>>, HttpError>,
+        answer: Result<http_core::http::Response<Vec<u8>>, HttpError>,
     ) -> RenewOutcome {
         let http = Scripted::new(vec![answer]);
         renew(

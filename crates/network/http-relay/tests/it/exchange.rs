@@ -2,9 +2,9 @@
 //! reopen after a lapsed credential, a kept connection the server closed, and the response cap.
 
 use crate::server::{After, Seen, serve};
-use account_http::http::{Method, Request, StatusCode};
-use account_http::{Http, HttpError, request};
-use account_http_relay::{Dial, RelayHttp, RelayLimits};
+use http_core::http::{Method, Request, StatusCode};
+use http_core::{Http, HttpError, request};
+use http_relay::{Dial, RelayHttp, RelayLimits};
 use base_url::WebUrl;
 use std::collections::VecDeque;
 use std::sync::atomic::{AtomicUsize, Ordering};

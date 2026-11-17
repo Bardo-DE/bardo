@@ -10,7 +10,7 @@ use account_discover::{DiscoverFault, parse_jmap_session};
 use account_family_kit::Io;
 use account_family_kit::password::{basic, fault_of, sensitive};
 use account_generic_proto::jmap;
-use account_http::Http;
+use http_core::Http;
 use account_sheet::SignInFault;
 
 /// The JMAP endpoint and what the session offers, logged in as `login`.

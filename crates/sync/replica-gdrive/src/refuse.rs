@@ -5,7 +5,7 @@
 //! (`dailyLimitExceeded`, `quotaExceeded`) is waited out for [`DAY_LIMIT`].
 
 use crate::json::ErrorBody;
-use account_http::http::Response;
+use http_core::http::Response;
 use base_time::UnixSeconds;
 use sync_core::status::{self, retry_after};
 use sync_core::{ExportError, PutRefused, ReplicaError, RetryAfter};

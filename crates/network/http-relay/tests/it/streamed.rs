@@ -2,9 +2,9 @@
 //! produced and is never held, and a response is read piece by piece.
 
 use crate::server::{Seen, read_request};
-use account_http::http::{Method, StatusCode};
-use account_http::{Http, HttpError, request};
-use account_http_relay::{Dial, RelayHttp, RelayLimits, RelayStream};
+use http_core::http::{Method, StatusCode};
+use http_core::{Http, HttpError, request};
+use http_relay::{Dial, RelayHttp, RelayLimits, RelayStream};
 use base_url::WebUrl;
 use hyper::body::{Body, Bytes, Frame, SizeHint};
 use std::convert::Infallible;

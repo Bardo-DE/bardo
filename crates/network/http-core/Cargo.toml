@@ -1,6 +1,6 @@
 [package]
-name = "account-http"
-description = "porter's HTTP seam: the `Http` trait over the `http` crate's request and response, which every family, discovery and OAuth call goes through; the clients are account-http-reqwest (direct) and account-http-relay (over an accountd relay)."
+name = "http-core"
+description = "The one HTTP seam: the `Http` trait (whole bodies) and `HttpStream` (a body pushed to a sink as it arrives) over the `http` crate's request and response, the error with its cause, the single `Retry-After` parser and the sleep seam. Pure: the clients are http-reqwest (direct) and http-relay (over an accountd relay)."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -9,7 +9,6 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-core = {path = "../account-core"}
 base-time = { path = "../../base/base-time" }
 base-url = { path = "../../base/base-url" }
 http = { workspace = true }

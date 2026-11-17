@@ -3,7 +3,7 @@
 //! A relay is an authenticated byte stream to one endpoint of a granted account
 //! (`Tokens.OpenAuthenticated`): the daemon at its far end adds the credential and speaks TLS, so
 //! the client writes plain HTTP/1.1 and never holds a password. [`RelayHttp`] runs hyper's HTTP/1
-//! connection over the streams a [`Dial`] opens. It is an [`Http`](account_http::Http) for whole
+//! connection over the streams a [`Dial`] opens. It is an [`Http`](http_core::Http) for whole
 //! bodies, and [`RelayHttp::send_streaming`] sends a request body of any length as it is produced
 //! and hands the response back as a [`RelayBody`] read piece by piece, so a transfer of a file is
 //! never held in memory.
@@ -13,7 +13,7 @@
 //! - [`RelayStream`]: the app's end of an accepted relay as a tokio stream;
 //! - [`RelayDial`]: the [`Dial`] that asks accountd for a relay (`OpenAuthenticated`, or
 //!   `OpenLinked` for a pre-authenticated link on another origin);
-//! - [`Routed`]: the one [`Http`](account_http::Http) that keeps the credentialed host and the
+//! - [`Routed`]: the one [`Http`](http_core::Http) that keeps the credentialed host and the
 //!   linked hosts apart.
 
 mod accounts;

@@ -11,9 +11,9 @@ use account_capability::{
     Capability, EmbedCap, EmbedPrompts, LlmCap, LlmFeature, LlmWire, Modality,
 };
 use account_capability::{Claim, Offer, Provenance, Subject};
-use account_http::http::Method;
-use account_http::http::header::CONTENT_TYPE;
-use account_http::{Http, request};
+use http_core::http::Method;
+use http_core::http::header::CONTENT_TYPE;
+use http_core::{Http, request};
 use account_provider::Port;
 use base_ids::{Count, Dims, Tokens};
 use base_url::WebUrl;

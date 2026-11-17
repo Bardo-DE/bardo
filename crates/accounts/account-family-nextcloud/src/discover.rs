@@ -15,8 +15,9 @@ use account_dav_proto::http::bytes;
 use account_dav_proto::names::{QUOTA_AVAILABLE, QUOTA_USED};
 use account_family_kit::Io;
 use account_family_kit::password::{authorize, basic, fault_of, sensitive};
-use account_http::http::{Request, Response, Uri};
-use account_http::{Http, uri, web_url};
+use http_core::http::{Request, Response, Uri};
+use account_core::web_url;
+use http_core::{Http, uri};
 use account_nextcloud_proto::{endpoints, judged, ocs, paths};
 use account_sheet::SignInFault;
 

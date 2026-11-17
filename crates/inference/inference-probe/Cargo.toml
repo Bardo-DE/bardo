@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 account-capability = {path = "../../accounts/account-capability"}
-account-http = {path = "../../accounts/account-http"}
+http-core = {path = "../../network/http-core"}
 base-ids = { path = "../../base/base-ids" }
 base-url = { path = "../../base/base-url" }
 account-provider = {path = "../../accounts/account-provider"}

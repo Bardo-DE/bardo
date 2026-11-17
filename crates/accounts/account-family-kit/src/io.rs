@@ -1,7 +1,7 @@
 //! What the password families reach the world through: the HTTP client and the clock that paces
 //! a poll. Each is handed in as a shared, type-erased value so no family reaches a runtime itself.
 
-use account_http::{SharedHttp, SharedSleep, Sleep};
+use http_core::{SharedHttp, SharedSleep, Sleep};
 use std::time::Duration;
 
 /// How a sign-in that waits on the person (Login Flow v2) polls: each wait is one `first` longer

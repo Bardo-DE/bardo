@@ -5,7 +5,7 @@
 
 use super::journal::DriveJournal;
 use crate::journal::JournalError;
-use account_http::Http;
+use http_core::Http;
 use replica_gdrive::GdriveReplica;
 use replica_graph::GraphReplica;
 use std::sync::Arc;

@@ -7,10 +7,10 @@
 
 use account_fake_servers::dav::Behaviour;
 use account_fake_servers::{DavHandle, FakeDav, Running};
-use account_http::http::header::{AUTHORIZATION, HeaderValue};
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
-use account_http_relay::{Dial, RelayHttp, RelayLimits};
+use http_core::http::header::{AUTHORIZATION, HeaderValue};
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
+use http_relay::{Dial, RelayHttp, RelayLimits};
 use base_time::UnixSeconds;
 use base_url::WebUrl;
 use replica_webdav::WebDavReplica;

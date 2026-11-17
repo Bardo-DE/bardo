@@ -13,7 +13,7 @@
 use super::env::OAuthEnv;
 use super::issuer::BrowserIssuer;
 use account_family_kit::{Flow, Move};
-use account_http::Http;
+use http_core::Http;
 use account_oauth::{
     AuthCode, AuthorizeAsk, ClientRegistry, ClientTraits, ExchangeFault, LoopbackFault,
     LoopbackServer, OAuthState, Pkce, TokenResponse, authorize_url_for, endpoints_of,

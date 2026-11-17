@@ -1,5 +1,5 @@
 [package]
-name = "account-http-relay"
+name = "http-relay"
 description = "porter's HTTP client over an accountd relay: hyper's HTTP/1 connection over the authenticated byte stream accountd opens, with streamed request and response bodies, connection reuse and a new connection when a kept one's credential lapsed."
 version.workspace = true
 edition.workspace = true
@@ -9,11 +9,11 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-account-core = {path = "../account-core"}
-account-wire = {path = "../account-wire"}
+account-core = {path = "../../accounts/account-core"}
+account-wire = {path = "../../accounts/account-wire"}
 base-url = { path = "../../base/base-url" }
-account-http = {path = "../account-http"}
-account-client = {path = "../account-client"}
+http-core = {path = "../http-core"}
+account-client = {path = "../../accounts/account-client"}
 hyper = { workspace = true, features = ["client", "http1"] }
 hyper-util = { workspace = true, features = ["tokio"] }
 http-body-util = { workspace = true }

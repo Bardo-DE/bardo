@@ -1,7 +1,7 @@
 //! A scripted [`Http`] for the unit tests: answers come off a queue and every request is kept.
 
-use account_http::http::{Request, Response};
-use account_http::{Http, HttpError};
+use http_core::http::{Request, Response};
+use http_core::{Http, HttpError};
 use std::collections::VecDeque;
 use std::sync::Mutex;
 

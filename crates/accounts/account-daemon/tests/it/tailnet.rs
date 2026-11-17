@@ -16,7 +16,7 @@ use account_dbus::accounts::{ManagerProxy, Sheet, SpacesProxy, TailnetProxy, mac
 use account_fake::{MemoryStore, RecordingAudit};
 use account_fake_servers::{Daemon, FakeLocalApi, FakePeer, Network};
 use account_families::{DynProvider, TailnetProvider};
-use account_http::{SharedSleep, Sleep};
+use http_core::{SharedSleep, Sleep};
 use account_service::AccountService;
 use account_service_core::registry::Registry;
 use account_sheet::{SheetInput, SheetView, SignInFault};

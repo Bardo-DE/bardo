@@ -27,7 +27,7 @@ use account_core::{
 };
 use account_fake::FakeProvider;
 use account_fake_servers::Running;
-use account_http_relay::RelayStream;
+use http_relay::RelayStream;
 use account_provider::Provider;
 use account_secrets::{MemorySecrets, Secrets};
 use account_service_core::registry::Registry;

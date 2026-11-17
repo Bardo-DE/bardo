@@ -2,7 +2,7 @@
 //! `loopback`: PKCE values (`pkce`), what a loopback redirect may be (`loopback`, with the
 //! listener behind feature `io`), which client id this build presents (`registry`), when a
 //! token is renewed (`renewal`), and the code exchange, refresh and revoke calls over the
-//! [`account_http::Http`] seam (`exchange`) and the authorize URLs (`authorize`). Randomness
+//! [`http_core::Http`] seam (`exchange`) and the authorize URLs (`authorize`). Randomness
 //! and the clock are arguments; nothing here reads the environment.
 
 mod authorize;
