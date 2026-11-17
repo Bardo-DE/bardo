@@ -1,8 +1,6 @@
 //! fuser's calls over a drive.
 
-use drive_fs::{
-    Drive, DriveError, NodeId, NodeKind, ROOT_INO, ReadError, WriteError, WriteHandle,
-};
+use drive_fs::{Drive, DriveError, NodeId, NodeKind, ROOT_INO, ReadError, WriteError, WriteHandle};
 use fuser::{
     BsdFileFlags, Errno, FileAttr, FileHandle, FileType, Filesystem, FopenFlags, Generation,
     INodeNo, InitFlags, KernelConfig, LockOwner, OpenAccMode, OpenFlags, RenameFlags, ReplyAttr,
