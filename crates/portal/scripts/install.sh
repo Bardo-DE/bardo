@@ -20,9 +20,6 @@
 # is not enabled (that writes under the home directory): the first portal call starts bardo-portal through
 # D-Bus activation.
 #
-# A reinstall over the old layout removes the old names: libexec/transom, transom.service, the
-# org.freedesktop.impl.portal.desktop.bardo activation file and bardo.portal.
-#
 # The script is standalone: it knows nothing of any desktop. Run again, it changes nothing that is
 # already as it should be. It writes nothing under a home directory, and only writes under /etc or
 # /usr when run, without a destdir, by someone who may.
@@ -119,20 +116,6 @@ put 644 "$dist/bardo-portal.service" "$prefix/lib/systemd/user/bardo-portal.serv
 put 644 "$dist/org.freedesktop.impl.portal.desktop.bardo.service" \
     "$prefix/share/dbus-1/services/org.freedesktop.impl.portal.desktop.bardo.service" /usr/libexec/bardo/bardo-portal "$libexec/bardo-portal"
 put 644 "$dist/bardo.portal" "$prefix/share/xdg-desktop-portal/portals/bardo.portal"
-
-# remove TARGET (under DESTDIR) when it is there: the old name of something installed above.
-drop() {
-    if [ -e "$destdir$1" ] || [ -L "$destdir$1" ]; then
-        rm -f "$destdir$1"
-        changed=$((changed + 1))
-        echo "removed $1"
-    fi
-}
-
-drop "$prefix/libexec/transom"
-drop "$prefix/lib/systemd/user/transom.service"
-drop "$prefix/share/dbus-1/services/org.freedesktop.impl.portal.desktop.bardo.service"
-drop "$prefix/share/xdg-desktop-portal/portals/bardo.portal"
 
 if [ "$changed" -eq 0 ]; then
     echo "nothing to change"

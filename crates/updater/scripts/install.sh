@@ -44,10 +44,6 @@
 #                                                      the helper and by the daemon (never overwritten)
 #   PREFIX/share/bardo/updater/release.pub                   the trust anchor (only with --pubkey)
 #
-# A reinstall over the old layout removes the old names (slipway-apply, slipway-rollback, slipway-health in
-# PREFIX/libexec, slipway.service, org.bardo.slipway.policy, org.bardo.Updates1.service); the old
-# system settings and key (SYSCONFDIR/slipway, PREFIX/share/slipway) are moved to the new places once.
-#
 # The system settings file is the one place the install root and the key path are written down: the
 # privileged helper reads only it and the daemon reads it first, so they cannot disagree. A file that
 # is already there is kept as it is (the person or an earlier install chose it); if it names another
@@ -298,40 +294,6 @@ put 644 "$dist/org.bardo.Updates1.service" "$prefix/share/dbus-1/services/org.ba
     /opt/bardo "$root"
 if [ -n "$pubkey" ]; then
     put 644 "$pubkey" "$prefix/share/bardo/updater/release.pub"
-fi
-
-# remove PATH (under DESTDIR) when it is there: the old name of something installed above.
-drop() {
-    if [ -e "$destdir$1" ] || [ -L "$destdir$1" ]; then
-        rm -f "$destdir$1"
-        changed=$((changed + 1))
-        echo "removed $1"
-    fi
-}
-drop "$prefix/libexec/slipway-apply"
-drop "$prefix/libexec/slipway-rollback"
-drop "$prefix/libexec/slipway-health"
-drop "$prefix/lib/systemd/user/slipway.service"
-drop "$prefix/share/polkit-1/actions/org.bardo.slipway.policy"
-drop "$prefix/share/dbus-1/services/org.bardo.Updates1.service"
-
-# The old system settings and key move to the new places, once (an existing new file wins).
-old_settings=$destdir$sysconfdir/slipway/config.toml
-if [ ! -e "$destdir$sysconfdir/bardo/updater.toml" ] && [ -f "$old_settings" ]; then
-    make_dir "$destdir$sysconfdir/bardo"
-    mv "$old_settings" "$destdir$sysconfdir/bardo/updater.toml"
-    sed -i 's#/share/slipway/release.pub#/share/bardo/updater/release.pub#; s#"/opt/bardo#"/opt/bardo#' "$destdir$sysconfdir/bardo/updater.toml"
-    rmdir "$destdir$sysconfdir/slipway" 2>/dev/null || true
-    changed=$((changed + 1))
-    echo "moved $sysconfdir/slipway/config.toml to $sysconfdir/bardo/updater.toml"
-fi
-old_key=$destdir$prefix/share/slipway/release.pub
-if [ ! -e "$destdir$prefix/share/bardo/updater/release.pub" ] && [ -f "$old_key" ]; then
-    make_dir "$destdir$prefix/share/bardo/updater"
-    mv "$old_key" "$destdir$prefix/share/bardo/updater/release.pub"
-    rmdir "$destdir$prefix/share/slipway" 2>/dev/null || true
-    changed=$((changed + 1))
-    echo "moved $prefix/share/slipway/release.pub to $prefix/share/bardo/updater/release.pub"
 fi
 
 # The system settings, written once. An existing file is never touched.

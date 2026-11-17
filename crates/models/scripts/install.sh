@@ -50,9 +50,6 @@ install_rest() {
   # the system's share folder holds. An install for one person has no such action.
   if [ "$MODE" = system ]; then
     put 644 "$ROOT/dist/org.bardo.engines.policy" "$PREFIX/share/polkit-1/actions/org.bardo.engines.policy" policy
-    # Earlier installs left actions under the old names; they name programs that are gone.
-    drop "$PREFIX/share/polkit-1/actions/org.bardo.engines.policy"
-    drop "$PREFIX/share/polkit-1/actions/org.bardo.porter.engines.policy"
   fi
 }
 
