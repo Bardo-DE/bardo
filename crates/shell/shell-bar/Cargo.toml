@@ -10,7 +10,7 @@ publish.workspace = true
 
 [dependencies]
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
-ui-components = {path = "../../ui/ui-components"}
+ui-components = {path = "../../ui/ui-components", features = ["icon-classify"]}
 ui-blitz = {path = "../../ui/ui-blitz"}
 shell-kit = {path = "../shell-kit"}
 image = { workspace = true, features = ["png", "jpeg", "webp"] }

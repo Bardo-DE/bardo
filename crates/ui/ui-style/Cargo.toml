@@ -30,10 +30,11 @@ skrifa = { workspace = true }
 ui-style = {path = ".", default-features = false, features = ["dioxus", "icon-classify"]}
 
 [features]
-default = ["icon-classify"]
+default = []
 # `icon::classify::classify_with`: decoding a status icon's PNG to decide symbolic or image. It links
-# the `image` decoder, so a crate that only reads settings or Extensions (ui-settings,
-# ui-extensions) takes ui-style without it; an app that classifies status icons keeps the default.
+# the `image` decoder, so only a crate that classifies status icons (shell-bar, through
+# ui-components' `icon-classify`) turns it on; everything else, the compositor and the apps that
+# only read appearance settings included, takes ui-style without it.
 icon-classify = ["dep:image"]
 # The scope, scale, task and busy hooks and the `Glyph` component. Without it the crate is plain
 # data (appearance, tokens, palettes, icons, CSS text), so a crate that only reads settings can

@@ -15,7 +15,7 @@ base-words = { path = "../../base/base-words" }
 ui-core = {path = "../ui-core"}
 ui-intents = {path = "../ui-intents"}
 ui-motion = {path = "../ui-motion", features = ["dioxus"]}
-ui-style = {path = "../ui-style", default-features = false, features = ["dioxus", "icon-classify"]}
+ui-style = {path = "../ui-style", default-features = false, features = ["dioxus"]}
 dioxus = { workspace = true, features = ["macro", "html", "hooks", "signals"] }
 # `ds::keys`: the toolkit side of the keymap; sources are injected, none is linked here.
 keymap = {path = "../../keymap/keymap"}
@@ -23,6 +23,11 @@ serde = { workspace = true, features = ["derive"] }
 thiserror = { workspace = true }
 # `ui_manifest`: the conformance file an app's menu items and shortcuts are written to.
 toml = { workspace = true }
+
+[features]
+# `style::icon::classify::classify_with`: decoding a status icon's PNG to decide symbolic or image.
+# It links the `image` decoder, so only the crate that classifies status icons asks for it.
+icon-classify = ["ui-style/icon-classify"]
 
 [dev-dependencies]
 dioxus-ssr = { workspace = true }
