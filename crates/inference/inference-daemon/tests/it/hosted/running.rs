@@ -39,15 +39,13 @@ async fn running(inference: &InferenceProxy<'_>) -> Vec<RunningModel> {
 
 /// The one model of the world, once its engine is `state`.
 async fn in_state(inference: &InferenceProxy<'_>, state: RunState) -> RunningModel {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        let rows = running(inference).await;
-        if let Some(row) = rows.into_iter().find(|row| row.state == state) {
-            return row;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
-    }
-    deadline.fail("the engine to reach the state");
+    base_testkit::eventually_some_async("the engine to reach the state", || async {
+        running(inference)
+            .await
+            .into_iter()
+            .find(|row| row.state == state)
+    })
+    .await
 }
 
 fn name_of(error: &zbus::Error) -> String {

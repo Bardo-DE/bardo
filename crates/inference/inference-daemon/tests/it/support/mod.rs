@@ -22,7 +22,6 @@ use std::io::{IoSlice, Read, Seek};
 use std::mem::MaybeUninit;
 use std::os::fd::{AsFd, OwnedFd};
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
 use tokio::io::{AsyncReadExt, Interest};
 use tokio::net::UnixStream;
 use tokio::sync::{Notify, mpsc};
@@ -285,15 +284,32 @@ impl Client {
     }
 }
 
-/// Waits until `check` holds (at once when it does); panics once the generous wait has passed
-/// by the clock.
-pub async fn eventually(what: &str, mut check: impl FnMut() -> bool) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if check() {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(10)).await;
+/// Waits until `name` has an owner on the bus `client` is on (`owned`), or none (`!owned`). It
+/// wakes on the bus's own `NameOwnerChanged`, not on the clock.
+///
+/// # Panics
+/// When the owner does not change as asked within [`base_testkit::GENEROUS`].
+pub async fn name_owner(client: &zbus::Connection, name: &str, owned: bool) {
+    use futures_util::StreamExt;
+    let dbus = zbus::fdo::DBusProxy::new(client).await.expect("dbus");
+    let bus_name = zbus::names::BusName::try_from(name).expect("bus name");
+    // Subscribed before the first look, so a change between the two is not lost.
+    let mut changes = dbus
+        .receive_name_owner_changed_with_args(&[(0, name)])
+        .await
+        .expect("subscribe to the name's owner");
+    while dbus.name_has_owner(bus_name.clone()).await.expect("ask") != owned {
+        tokio::time::timeout(base_testkit::GENEROUS, changes.next())
+            .await
+            .unwrap_or_else(|_| {
+                panic!(
+                    "{name} to {}",
+                    if owned {
+                        "get an owner"
+                    } else {
+                        "lose its owner"
+                    }
+                )
+            });
     }
-    deadline.fail(what);
 }

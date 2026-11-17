@@ -367,13 +367,7 @@ async fn the_watch_notices_a_change_made_by_someone_else() {
     let show = || engines.settings().auto.show_reason;
     assert!(show());
     std::fs::write(file.path(), "[ai.auto]\nshow_reason = false\n").expect("write");
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if !show() {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    base_testkit::eventually("the change was noticed", || !show()).await;
     watch.abort();
     assert!(!show());
 }

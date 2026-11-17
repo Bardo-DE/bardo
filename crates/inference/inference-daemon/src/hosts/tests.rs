@@ -365,17 +365,12 @@ fn forking(pidfile: &Path) -> UnitSpec {
 
 /// The pid in `pidfile`, once the engine has written it.
 async fn pid_in(pidfile: &Path) -> i32 {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if let Some(pid) = std::fs::read_to_string(pidfile)
+    base_testkit::eventually_some(&format!("a pid in {}", pidfile.display()), || {
+        std::fs::read_to_string(pidfile)
             .ok()
             .and_then(|text| text.trim().parse().ok())
-        {
-            return pid;
-        }
-        tokio::time::sleep(Duration::from_millis(25)).await;
-    }
-    deadline.fail(&format!("a pid in {}", pidfile.display()));
+    })
+    .await
 }
 
 /// Whether the process is gone (a zombie that nobody has collected yet is gone too).
@@ -389,15 +384,8 @@ fn gone(pid: i32) -> bool {
     }
 }
 
-async fn gone_soon(pid: i32) -> bool {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if gone(pid) {
-            return true;
-        }
-        tokio::time::sleep(Duration::from_millis(25)).await;
-    }
-    false
+async fn gone_soon(pid: i32) {
+    base_testkit::eventually(&format!("process {pid} gone"), || gone(pid)).await;
 }
 
 #[tokio::test]
@@ -414,10 +402,7 @@ async fn stopping_an_engine_ends_its_grandchild_even_one_that_ignores_sigterm() 
     // The exit is reported once the group has been killed, so the next engine finds the memory
     // free (a killed process is a moment dying, and a zombie waits for its new parent).
     host.exited(&id("g")).await;
-    assert!(
-        gone_soon(grandchild).await,
-        "gone once the exit is reported"
-    );
+    gone_soon(grandchild).await;
 }
 
 #[tokio::test]
@@ -439,7 +424,7 @@ async fn an_engine_that_exits_by_itself_takes_what_it_left_running_with_it() {
     .expect("spawn");
     assert_eq!(host.exited(&id("l")).await, ExitCode(4));
     let grandchild = pid_in(&pidfile).await;
-    assert!(gone_soon(grandchild).await, "the orphan was swept");
+    gone_soon(grandchild).await;
 }
 
 #[tokio::test]
@@ -451,7 +436,8 @@ async fn dropping_the_host_ends_every_group_still_running() {
     host.spawn(&id("b"), &forking(&b)).await.expect("spawn");
     let (pa, pb) = (pid_in(&a).await, pid_in(&b).await);
     drop(host);
-    assert!(gone_soon(pa).await && gone_soon(pb).await);
+    gone_soon(pa).await;
+    gone_soon(pb).await;
 }
 
 #[tokio::test(start_paused = false)]
@@ -487,11 +473,13 @@ async fn the_supervisor_evicting_an_engine_ends_its_grandchild() {
     );
     assert_eq!(supervised.want(&first).await, Ok(()));
     let grandchild = pid_in(&files[0]).await;
-    // The first engine is idle by now (a turn in the last probe window is never evicted).
-    tokio::time::sleep(Duration::from_millis(300)).await;
+    // The first engine is idle once a probe window has passed (a turn inside it is never
+    // evicted). The supervisor counts on tokio's clock, so step that clock over the window
+    // rather than waiting for it; the processes stay on real time.
+    tokio::time::pause();
+    tokio::time::advance(Duration::from_millis(60)).await;
+    tokio::time::resume();
     assert_eq!(supervised.want(&second).await, Ok(()));
-    assert!(
-        gone_soon(grandchild).await,
-        "the evicted engine's grandchild is gone"
-    );
+    // The evicted engine's grandchild goes with it.
+    gone_soon(grandchild).await;
 }

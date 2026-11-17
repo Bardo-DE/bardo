@@ -271,10 +271,11 @@ async fn the_listener_follows_the_address_tailscale_gives_the_computer() {
     )
     .await
     .expect("goes");
-    within("the old address to refuse", async {
-        while tokio::net::TcpStream::connect(first).await.is_ok() {
-            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-        }
+    base_testkit::eventually_some_async("the old address to refuse", || async {
+        tokio::net::TcpStream::connect(first)
+            .await
+            .is_err()
+            .then_some(())
     })
     .await;
     // And when Tailscale stops, so does the listener.
@@ -296,7 +297,8 @@ async fn candidates_are_looked_at_only_when_read_at_most_once_a_minute_and_only_
         .connect_as(Role::Settings, app("org.bardo.Settings"))
         .await;
     let settings = proxy(&settings).await;
-    // Nobody read the list: nobody was looked at.
+    // Nobody read the list: nobody was looked at. Nothing announces a look that does not happen,
+    // so this is a best-effort absence check: a short real wait, then the count.
     tokio::time::sleep(std::time::Duration::from_millis(300)).await;
     assert_eq!(p.pi.tailscale.as_ref().unwrap().whois_asked(), 0);
     // Read twice, one look.

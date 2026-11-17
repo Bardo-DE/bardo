@@ -410,13 +410,14 @@ pub fn files_holding(dir: &Path, needle: &str) -> Vec<std::path::PathBuf> {
     found
 }
 
-pub async fn refused_to_connect(port: u16) -> bool {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if TcpStream::connect(("127.0.0.1", port)).await.is_err() {
-            return true;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(100)).await;
-    }
-    false
+/// Waits until nothing accepts on `port` any more (a closed listener goes a moment after the
+/// close that asked for it).
+pub async fn refused_to_connect(port: u16) {
+    base_testkit::eventually_some_async("the listener to refuse connections", || async {
+        TcpStream::connect(("127.0.0.1", port))
+            .await
+            .is_err()
+            .then_some(())
+    })
+    .await;
 }

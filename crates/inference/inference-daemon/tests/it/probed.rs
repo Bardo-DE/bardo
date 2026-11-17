@@ -29,7 +29,6 @@ use inference_core::{
 };
 use inference_daemon::probe::ProbeConfig;
 use inference_dbus::inference::InferenceProxy;
-use std::time::Duration;
 
 const MAIL: &str = "org.bardo.Mail";
 const KEY: &str = "sk-or-v1-NOT-USED-LOCAL-ONLY";
@@ -130,10 +129,14 @@ fn reserved_port() -> (tokio::net::TcpSocket, u16) {
     (socket, port)
 }
 
-/// Stops a fake and gives its listener the moment it needs to close.
-async fn stop<T>(fake: T) {
+/// Stops a fake and waits until its listener has closed.
+async fn stop(fake: Running<ModelsHandle>) {
+    let port = port_of(&fake);
     drop(fake);
-    tokio::time::sleep(Duration::from_millis(100)).await;
+    base_testkit::eventually("the stopped fake's port refuses", || {
+        std::net::TcpStream::connect(("127.0.0.1", port)).is_err()
+    })
+    .await;
 }
 
 fn only_ollama(port: u16) -> ProbeConfig {

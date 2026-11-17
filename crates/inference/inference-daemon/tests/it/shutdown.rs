@@ -84,9 +84,10 @@ fn fake_inferd() {
         host.spawn(&EngineId("e".into()), &unit)
             .await
             .expect("spawn");
-        while !dir.join("grandchild").exists() || !dir.join("engine").exists() {
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
+        base_testkit::eventually("the engine and its grandchild wrote their pids", || {
+            dir.join("grandchild").exists() && dir.join("engine").exists()
+        })
+        .await;
         std::fs::write(dir.join("ready"), b"").expect("ready");
         let ended = on_signal(&mut signals, &closer, async {}, bound).await;
         // A host that is closed starts nothing more.
@@ -135,14 +136,7 @@ fn pid_in(file: &Path) -> i32 {
 }
 
 fn wait_for(file: &Path) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if file.exists() {
-            return;
-        }
-        std::thread::sleep(Duration::from_millis(25));
-    }
-    deadline.fail(&format!("{} to appear", file.display()));
+    base_testkit::eventually_blocking(&format!("{} to appear", file.display()), || file.exists());
 }
 
 /// Gone: no such process, or a zombie nobody has collected yet.
@@ -156,15 +150,8 @@ fn gone(pid: i32) -> bool {
     }
 }
 
-fn gone_soon(pid: i32) -> bool {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if gone(pid) {
-            return true;
-        }
-        std::thread::sleep(Duration::from_millis(25));
-    }
-    false
+fn gone_soon(pid: i32) {
+    base_testkit::eventually_blocking(&format!("process {pid} to be gone"), || gone(pid));
 }
 
 fn signal(pid: u32, signal: Signal) {
@@ -172,17 +159,19 @@ fn signal(pid: u32, signal: Signal) {
     kill_process(pid, signal).expect("signal a process this test started");
 }
 
-/// The exit code of `child`, or `None` (then the test fails; the guard kills it). It waits as long
-/// as a starved machine needs: the timing a test proves is in its own `elapsed()` assert.
-fn exit_within(child: &mut Started) -> Option<i32> {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if let Some(status) = child.0.try_wait().expect("wait") {
-            return Some(status.code().unwrap_or(-1));
-        }
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    None
+/// The exit code of `child`. It waits as long as a starved machine needs (and fails the test
+/// then; the guard kills the child): the timing a test proves is in its own `elapsed()` assert.
+fn exit_within(child: &mut Started) -> i32 {
+    let mut code = None;
+    base_testkit::eventually_blocking("the process to exit", || {
+        code = child
+            .0
+            .try_wait()
+            .expect("wait")
+            .map(|status| status.code().unwrap_or(-1));
+        code.is_some()
+    });
+    code.expect("the wait ended with a code")
 }
 
 /// Starts the stand-in and returns it with its engine's and grandchild's pids, both alive.
@@ -194,11 +183,17 @@ fn running(dir: &Scratch, grace_ms: u32, bound_ms: u32) -> (Started, i32, i32) {
     (inferd, engine, grandchild)
 }
 
-/// Ends what a failed test left running.
-fn reap(pids: &[i32]) {
-    for pid in pids {
-        if let Some(pid) = Pid::from_raw(*pid) {
-            let _ = kill_process(pid, Signal::KILL);
+/// Ends what a failed test left running: a pid still alive when this drops is killed.
+struct Reap(Vec<i32>);
+
+impl Drop for Reap {
+    fn drop(&mut self) {
+        for pid in &self.0 {
+            if !gone(*pid)
+                && let Some(pid) = Pid::from_raw(*pid)
+            {
+                let _ = kill_process(pid, Signal::KILL);
+            }
         }
     }
 }
@@ -209,15 +204,14 @@ fn graceful(signal_sent: Signal) {
     // The bound is `LONG_MS`: the stop must end by the grace, not by the bound (which would exit
     // `TIMED_OUT`), and a bound a starved machine cannot reach keeps that from being a race.
     let (mut inferd, engine, grandchild) = running(&dir, 300, LONG_MS);
+    let _reap = Reap(vec![engine, grandchild]);
     let started = Instant::now();
     signal(inferd.0.id(), signal_sent);
     let code = exit_within(&mut inferd);
-    let both = gone_soon(engine) && gone_soon(grandchild);
-    if !both {
-        reap(&[engine, grandchild]);
-    }
-    assert_eq!(code, Some(DONE), "exit within the bound");
-    assert!(both, "the engine and its grandchild are gone");
+    assert_eq!(code, DONE, "exit within the bound");
+    // The engine and its grandchild are gone.
+    gone_soon(engine);
+    gone_soon(grandchild);
     assert!(
         started.elapsed() < Duration::from_millis(u64::from(LONG_MS)),
         "the stop ended before its bound"
@@ -240,21 +234,19 @@ fn sigint_ends_the_engine_group_with_its_grandchild_and_exits_zero() {
 fn a_killed_inferd_takes_its_direct_engine_with_it_and_leaves_the_grandchild_to_the_unit() {
     let dir = Scratch::new("sd");
     let (mut inferd, engine, grandchild) = running(&dir, LONG_MS, LONG_MS);
+    let reap = Reap(vec![engine, grandchild]);
 
     inferd.0.kill().expect("SIGKILL the stand-in");
     inferd.0.wait().expect("reaped");
 
     // PR_SET_PDEATHSIG: the engine is killed with its parent.
-    assert!(
-        gone_soon(engine),
-        "the direct child outlived a SIGKILLed inferd"
-    );
+    gone_soon(engine);
     // It reaches no grandchild: that is the unit's cgroup's to end (KillMode=control-group).
     // Outside a unit it lives on; this test ends it.
     let lives = !gone(grandchild);
-    reap(&[grandchild]);
+    drop(reap);
     assert!(lives, "the grandchild is not the host's to end");
-    assert!(gone_soon(grandchild));
+    gone_soon(grandchild);
 }
 
 #[test]
@@ -262,42 +254,40 @@ fn a_second_signal_during_shutdown_kills_everything_and_exits_at_once() {
     let dir = Scratch::new("sd");
     // A grace of 60 s: the first signal's shutdown is still waiting on the grandchild.
     let (mut inferd, engine, grandchild) = running(&dir, LONG_MS, LONG_MS);
+    let _reap = Reap(vec![engine, grandchild]);
     signal(inferd.0.id(), Signal::TERM);
-    std::thread::sleep(Duration::from_millis(600));
+    // The engine's own end shows the first signal's shutdown has begun (its group got SIGTERM and
+    // is now waited on for the grace), so the second signal cannot merge with the first.
+    gone_soon(engine);
     let waiting = inferd.0.try_wait().expect("wait").is_none() && !gone(grandchild);
     let second = Instant::now();
     if waiting {
         signal(inferd.0.id(), Signal::TERM);
     }
     let code = exit_within(&mut inferd);
-    let both = gone_soon(engine) && gone_soon(grandchild);
-    if !both {
-        reap(&[engine, grandchild]);
-    }
     assert!(
         waiting,
         "the shutdown was still running before the second signal"
     );
-    assert_eq!(code, Some(HURRIED));
+    assert_eq!(code, HURRIED);
     assert!(
         second.elapsed() < Duration::from_millis(u64::from(LONG_MS)),
         "the second signal did not wait for the grace"
     );
-    assert!(both, "the engine and its grandchild are gone");
+    gone_soon(engine);
+    gone_soon(grandchild);
 }
 
 #[test]
 fn a_shutdown_that_overruns_its_bound_kills_everything_and_exits_nonzero() {
     let dir = Scratch::new("sd");
     let (mut inferd, engine, grandchild) = running(&dir, LONG_MS, 700);
+    let _reap = Reap(vec![engine, grandchild]);
     signal(inferd.0.id(), Signal::TERM);
     let code = exit_within(&mut inferd);
-    let both = gone_soon(engine) && gone_soon(grandchild);
-    if !both {
-        reap(&[engine, grandchild]);
-    }
-    assert_eq!(code, Some(TIMED_OUT));
-    assert!(both, "the engine and its grandchild are gone");
+    assert_eq!(code, TIMED_OUT);
+    gone_soon(engine);
+    gone_soon(grandchild);
 }
 
 /// The real inferd on a private bus, no engines, nothing probed: the name is held, then released.
@@ -337,16 +327,10 @@ async fn real_binary_stops_on(signal_sent: Signal) {
     let dbus = zbus::fdo::DBusProxy::new(&client).await.expect("dbus");
     let name = zbus::names::BusName::try_from(INFERENCE_BUS).expect("bus name");
     let mut inferd = real_inferd(&bus);
-    let deadline = base_testkit::Deadline::generous();
-    while !dbus.name_has_owner(name.clone()).await.expect("ask") {
-        if deadline.passed() {
-            deadline.fail("inferd takes its name");
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    crate::support::name_owner(&client, INFERENCE_BUS, true).await;
     signal(inferd.0.id(), signal_sent);
     let code = exit_within(&mut inferd);
-    assert_eq!(code, Some(0), "a graceful stop is exit 0");
+    assert_eq!(code, 0, "a graceful stop is exit 0");
     assert!(
         !dbus.name_has_owner(name).await.expect("ask"),
         "the bus name is released"

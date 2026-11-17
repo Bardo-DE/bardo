@@ -128,7 +128,7 @@ pub(crate) fn mail() -> SessionSpec {
 
 async fn started(rig: &Rig, count: usize) {
     let runner = rig.runner.clone();
-    eventually("the turns started", || {
+    base_testkit::eventually("the turns started", || {
         runner.started.lock().expect("lock").len() >= count
     })
     .await;
@@ -206,7 +206,9 @@ async fn a_loading_engine_shows_waiting_and_a_request_sent_meanwhile_starts_when
         Some(InferEvent::Waiting(inference_core::Readiness::Loadable))
     );
     rig.client.send(&chat(), &[]).await;
-    // Give the server time to read the frame: nothing may start before the engine is ready.
+    // Nothing may start before the engine is ready. Nothing announces a start that does not
+    // happen, so this is a best-effort absence check: a short real wait for the server to read
+    // the frame, then a look.
     tokio::time::sleep(std::time::Duration::from_millis(50)).await;
     assert!(rig.runner.started.lock().expect("lock").is_empty());
     go.notify_one();
@@ -390,13 +392,13 @@ async fn audio_reaches_the_engine_through_the_machine_and_end_of_audio_too() {
     rig.client.send(&pcm(160, 160), &[]).await;
     // An out-of-order frame would end the turn; these are in order, so both arrive.
     let audio = Arc::clone(&rig.runner.audio);
-    eventually("both frames reached the engine", || {
+    base_testkit::eventually("both frames reached the engine", || {
         audio.lock().expect("lock").len() == 2
     })
     .await;
     rig.client.send(&ClientFrame::EndOfAudio, &[]).await;
     let ended = Arc::clone(&rig.runner.audio_ended);
-    eventually("end of audio reached the engine", || {
+    base_testkit::eventually("end of audio reached the engine", || {
         *ended.lock().expect("lock") == 1
     })
     .await;

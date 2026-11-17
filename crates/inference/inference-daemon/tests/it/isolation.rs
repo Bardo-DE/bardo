@@ -59,7 +59,7 @@ async fn a_session_that_panics_is_told_so_and_a_second_session_completes() {
     ));
     healthy.send(&chat(), &[]).await;
     let waiting = runner.clone();
-    eventually("the healthy turn started", move || {
+    base_testkit::eventually("the healthy turn started", move || {
         waiting.started.lock().expect("lock").len() == 1
     })
     .await;

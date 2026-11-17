@@ -306,14 +306,10 @@ async fn cancel_during_hear_stops_both_stages() {
             break;
         }
     }
-    let waited = async {
-        while speech.seen.lock().expect("lock").ends == 0 {
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
-    };
-    tokio::time::timeout(base_testkit::GENEROUS, waited)
-        .await
-        .expect("the host was given the whole utterance");
+    base_testkit::eventually("the host was given the whole utterance", || {
+        speech.seen.lock().expect("lock").ends != 0
+    })
+    .await;
 
     session.send(ClientFrame::Cancel).await.expect("cancel");
     let rest = until_finished(&mut session).await;

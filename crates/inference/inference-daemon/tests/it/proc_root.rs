@@ -11,6 +11,7 @@ use inference_dbus::inference::INFERENCE_BUS;
 use inference_dbus::inference::{InferenceProxy, need_to_dbus};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
+use std::time::Duration;
 
 /// The probe table names no port: this daemon must not ask a port of this computer what it is
 /// (a real Ollama may be on one).
@@ -45,10 +46,18 @@ impl Daemon {
     /// Waits until the daemon owns `org.bardo.Inference1`; a daemon that exits first, or one that
     /// does not own it within the deadline, fails the test with what it said.
     async fn owns_its_name(&mut self, dbus: &zbus::fdo::DBusProxy<'_>) {
+        use futures_util::StreamExt;
         let name = zbus::names::BusName::try_from(INFERENCE_BUS).expect("bus name");
+        // Subscribed before the first look, so a claim between the two is not lost.
+        let mut changes = dbus
+            .receive_name_owner_changed_with_args(&[(0, INFERENCE_BUS)])
+            .await
+            .expect("subscribe to the name's owner");
         let deadline = tokio::time::Instant::now() + bus::DEADLINE;
-        // The daemon's claim is the event; asking again is the only way to see it without a stream.
         while !dbus.name_has_owner(name.clone()).await.expect("ask") {
+            // The claim wakes this at once. Nothing announces the daemon's exit, so the wait is
+            // cut short every so often to look at it.
+            let _ = tokio::time::timeout(Duration::from_millis(50), changes.next()).await;
             if let Ok(Some(status)) = self.child.try_wait() {
                 panic!(
                     "inferd exited ({status}) before owning {INFERENCE_BUS}: {}",
@@ -61,7 +70,6 @@ impl Daemon {
                 bus::DEADLINE.as_secs(),
                 self.said()
             );
-            tokio::time::sleep(std::time::Duration::from_millis(5)).await;
         }
     }
 }

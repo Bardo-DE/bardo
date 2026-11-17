@@ -69,9 +69,10 @@ struct Utterance {
 
 /// Waits while the test holds the host's answer to the end of an utterance.
 async fn held(hold: &AtomicBool) {
-    while hold.load(Ordering::SeqCst) {
-        tokio::time::sleep(std::time::Duration::from_millis(10)).await;
-    }
+    base_testkit::eventually("the host's answer to be released", || {
+        !hold.load(Ordering::SeqCst)
+    })
+    .await;
 }
 
 async fn serve_connection(

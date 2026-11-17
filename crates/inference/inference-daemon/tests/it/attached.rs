@@ -32,7 +32,6 @@ use rustix::process::{Pid, Signal, kill_process};
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
-use std::time::Duration;
 
 const ATTACHED: &str = entries::ATTACHED;
 
@@ -124,14 +123,8 @@ fn lab_process(dir: &Dir, key: Option<&str>) -> Started {
         command.env("FAKE_LAB_KEY", key);
     }
     let child = Started(command.spawn().expect("start the lab"));
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if dir.0.join("ready").exists() {
-            return child;
-        }
-        std::thread::sleep(Duration::from_millis(25));
-    }
-    deadline.fail("the lab to listen");
+    base_testkit::eventually_blocking("the lab to listen", || dir.0.join("ready").exists());
+    child
 }
 
 /// Gone: no such process, or a zombie nobody has collected yet.
@@ -474,7 +467,7 @@ async fn this_device_takes_on_device_only_data_and_my_network_does_not_unless_th
     assert!(world.served.usage_of(&hosting::rig::test_app()).is_empty());
 }
 
-#[tokio::test(flavor = "multi_thread")]
+#[tokio::test]
 async fn an_eviction_pass_leaves_the_attached_engines_process_alive_and_still_ready() {
     let dir = Dir::new();
     let lab = lab_process(&dir, None);
@@ -516,8 +509,12 @@ async fn an_eviction_pass_leaves_the_attached_engines_process_alive_and_still_re
 
     let first = tokio::time::timeout(base_testkit::GENEROUS, world.supervised.want(&a)).await;
     assert_eq!(first, Ok(Ok(())), "the first engine starts");
-    // The first engine goes idle: a turn in the last probe window is never a victim.
-    tokio::time::sleep(Duration::from_millis(900)).await;
+    // The first engine goes idle: a turn in the last probe window is never a victim. The
+    // supervisor counts on tokio's clock, so step that clock over the window (the processes stay
+    // on real time).
+    tokio::time::pause();
+    tokio::time::advance(world.supervised.probe_every() * 2).await;
+    tokio::time::resume();
     let second = tokio::time::timeout(base_testkit::GENEROUS, world.supervised.want(&b)).await;
     assert_eq!(second, Ok(Ok(())), "the second engine starts");
     let states = world.supervised.snapshot().states;
@@ -595,16 +592,19 @@ fn real_inferd(bus: &bus::PrivateBus, config: &str, catalog: &[(&str, String)]) 
     )
 }
 
-/// The exit code of `child`, waited for as long as a starved machine needs, or `None`.
-fn exit_within(child: &mut Started) -> Option<i32> {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if let Some(status) = child.0.try_wait().expect("wait") {
-            return Some(status.code().unwrap_or(-1));
-        }
-        std::thread::sleep(Duration::from_millis(20));
-    }
-    None
+/// The exit code of `child`, waited for as long as a starved machine needs (the test fails then;
+/// the guard kills the child).
+fn exit_within(child: &mut Started) -> i32 {
+    let mut code = None;
+    base_testkit::eventually_blocking("the process to exit", || {
+        code = child
+            .0
+            .try_wait()
+            .expect("wait")
+            .map(|status| status.code().unwrap_or(-1));
+        code.is_some()
+    });
+    code.expect("the wait ended with a code")
 }
 
 fn stderr_of(mut child: Started) -> String {
@@ -630,19 +630,10 @@ async fn sigterm_to_the_real_inferd_leaves_the_attached_engines_process_alive() 
     );
     let mut inferd = real_inferd(&bus, &config, &[("attached.toml", entries::attached())]);
     let client = bus.connect().await;
-    let dbus = zbus::fdo::DBusProxy::new(&client).await.expect("dbus");
-    let name =
-        zbus::names::BusName::try_from(inference_dbus::inference::INFERENCE_BUS).expect("bus name");
-    let deadline = base_testkit::Deadline::generous();
-    while !dbus.name_has_owner(name.clone()).await.expect("ask") {
-        if deadline.passed() {
-            deadline.fail("inferd takes its name");
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    crate::support::name_owner(&client, inference_dbus::inference::INFERENCE_BUS, true).await;
     assert!(alive(pid));
     signal(inferd.0.id(), Signal::TERM);
-    assert_eq!(exit_within(&mut inferd), Some(0));
+    assert_eq!(exit_within(&mut inferd), 0);
     assert!(
         alive(pid),
         "inferd's shutdown did not reach the engine it never started"
@@ -694,7 +685,7 @@ async fn the_real_inferd_refuses_to_start_on_a_bad_attached_table_and_says_which
                 ("tiny-chat.toml", entries::chat()),
             ],
         );
-        assert_eq!(exit_within(&mut inferd), Some(1), "{tables}");
+        assert_eq!(exit_within(&mut inferd), 1, "{tables}");
         let said = stderr_of(inferd);
         assert!(said.contains(why), "{why:?} in {said}");
     }

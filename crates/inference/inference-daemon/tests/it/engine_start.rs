@@ -235,17 +235,6 @@ fn the_failure(world: &World) -> inference_daemon::supervise::Failure {
         .expect("a failure on record")
 }
 
-async fn until(what: &str, mut done: impl FnMut() -> bool) {
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        if done() {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(25)).await;
-    }
-    deadline.fail(what);
-}
-
 #[tokio::test(flavor = "multi_thread")]
 async fn an_engine_that_exits_at_start_fails_prepare_and_open_with_its_cause() {
     let engine = Engine::new("exit3");
@@ -284,8 +273,8 @@ async fn an_engine_that_exits_at_start_fails_prepare_and_open_with_its_cause() {
 
     // The machine's three attempts are over; then a request is failed at once, and none starts
     // the engine again inside the pause.
-    until("the third attempt failed", || engine.runs() == 3).await;
-    until("given up", || {
+    base_testkit::eventually("the third attempt failed", || engine.runs() == 3).await;
+    base_testkit::eventually("given up", || {
         matches!(
             world.supervised.snapshot().states.values().next(),
             Some(engine_supervisor::EngineState::Failed(_))
@@ -313,8 +302,8 @@ async fn once_the_pause_after_giving_up_is_over_the_next_request_tries_again() {
     let engine = Engine::new("exit3");
     let world = paused_world(&engine, Duration::from_secs(180), SHORT_PAUSE).await;
     assert_eq!(prepare(&world).await, "loading");
-    until("the third attempt failed", || engine.runs() == 3).await;
-    until("given up", || {
+    base_testkit::eventually("the third attempt failed", || engine.runs() == 3).await;
+    base_testkit::eventually("given up", || {
         matches!(
             world.supervised.snapshot().states.values().next(),
             Some(engine_supervisor::EngineState::Failed(_))
@@ -323,7 +312,7 @@ async fn once_the_pause_after_giving_up_is_over_the_next_request_tries_again() {
     .await;
     // The supervisor's own clock says the pause is over (it ticks when the pause ends); no
     // wall-clock sleep stands in for it, and nothing here asserts what happened inside it.
-    until("the pause is over", || {
+    base_testkit::eventually("the pause is over", || {
         let snapshot = world.supervised.snapshot();
         snapshot
             .failures
@@ -361,7 +350,7 @@ async fn a_stale_socket_is_removed_and_the_restart_comes_up() {
 
     // The machine starts it again: the host takes the stale socket away, so the second run can
     // bind (it dies with "Address already in use" otherwise) and is ready.
-    until("ready", || {
+    base_testkit::eventually("ready", || {
         matches!(
             world.supervised.snapshot().states.values().next(),
             Some(engine_supervisor::EngineState::Ready { .. })

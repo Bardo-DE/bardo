@@ -183,11 +183,15 @@ async fn fake_on(bind: &Bind) -> account_fake_servers::Running<account_fake_serv
     account_fake_servers::Running::spawn(fake, handle)
 }
 
-/// Stops a fake and gives its listener the moment it needs to close, so the next look is refused
-/// rather than accepted by a socket whose task is already gone.
-async fn stop<T>(fake: T) {
+/// Stops a fake and waits until its listener has closed, so the next look is refused rather than
+/// accepted by a socket whose task is already gone.
+async fn stop(fake: account_fake_servers::Running<account_fake_servers::ModelsHandle>) {
+    let port = port_of(&fake);
     drop(fake);
-    tokio::time::sleep(Duration::from_millis(50)).await;
+    base_testkit::eventually("the stopped fake's port refuses", || {
+        std::net::TcpStream::connect(("127.0.0.1", port)).is_err()
+    })
+    .await;
 }
 
 fn port_of(fake: &account_fake_servers::ModelsHandle) -> u16 {

@@ -6,7 +6,6 @@
 use crate::hosting::bus::{self, PrivateBus};
 
 use account_dbus::BusTarget;
-use base_testkit::Deadline;
 use inference_daemon::config::{Dirs, ProgramSearch};
 use inference_daemon::{Config, Daemon};
 use inference_dbus::inference::INFERENCE_BUS;
@@ -79,7 +78,8 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
 
     let (stop, stopped) = tokio::sync::mpsc::unbounded_channel::<()>();
     let running = tokio::spawn(daemon.run(stopped));
-    // `run` does nothing until it is told.
+    // `run` does nothing until it is told. Nothing announces what a task does not do, so this is
+    // a best-effort absence check: a short real wait, then a look.
     tokio::time::sleep(Duration::from_millis(100)).await;
     assert!(!running.is_finished(), "run waits for its stop");
     stop.send(()).expect("run is waiting");
@@ -88,11 +88,5 @@ async fn a_daemon_built_from_a_config_serves_its_name_and_stops_when_told() {
         .expect("run's task")
         .expect("a clean stop");
 
-    let deadline = Deadline::generous();
-    while dbus.name_has_owner(name.clone()).await.expect("ask") {
-        if deadline.passed() {
-            deadline.fail("inferd lets go of its name");
-        }
-        tokio::time::sleep(Duration::from_millis(20)).await;
-    }
+    crate::support::name_owner(&probe, INFERENCE_BUS, false).await;
 }

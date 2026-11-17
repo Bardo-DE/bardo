@@ -232,18 +232,10 @@ async fn the_audit_entry_of_a_transcription_counts_audio_and_keeps_no_words() {
     speak(&mut session, 2, true).await;
     until_finished(&mut session).await;
     drop(session);
-    let recorded = async {
-        loop {
-            let entries = world.audit.entries();
-            if !entries.is_empty() {
-                return entries;
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
-    };
-    let entries = tokio::time::timeout(base_testkit::GENEROUS, recorded)
-        .await
-        .expect("an audit entry");
+    let entries = base_testkit::eventually_some("an audit entry", || {
+        Some(world.audit.entries()).filter(|entries| !entries.is_empty())
+    })
+    .await;
     assert_eq!(entries.len(), 1);
     let text = format!("{entries:?}");
     assert!(!text.contains("turn the lights"), "{text}");
@@ -251,19 +243,10 @@ async fn the_audit_entry_of_a_transcription_counts_audio_and_keeps_no_words() {
 
 async fn wait_ready(world: &World, spawns: usize) {
     let speech = world.speech.as_ref().expect("speech engines");
-    let ready = async {
-        loop {
-            let up = speech.spawns() >= spawns
-                && world.served.readiness(&world.models[0]) == Readiness::Ready;
-            if up {
-                return;
-            }
-            tokio::time::sleep(Duration::from_millis(10)).await;
-        }
-    };
-    tokio::time::timeout(base_testkit::GENEROUS, ready)
-        .await
-        .expect("the speech engine is ready");
+    base_testkit::eventually("the speech engine is ready", || {
+        speech.spawns() >= spawns && world.served.readiness(&world.models[0]) == Readiness::Ready
+    })
+    .await;
 }
 
 #[tokio::test(flavor = "multi_thread")]

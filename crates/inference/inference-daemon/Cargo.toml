@@ -90,7 +90,8 @@ toml = { workspace = true }
 zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 
 [dev-dependencies]
-base-testkit = {path = "../../base/base-testkit"}
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
+futures-util = { workspace = true, features = ["std"] }
 ui-settings = {features = ["live", "testing", "tokio"], path = "../../ui/ui-settings"}
 # The client side the tests drive inferd through.
 account-client = {path = "../../accounts/account-client"}

@@ -50,18 +50,14 @@ async fn availability_prepare_and_the_gpu_answer_over_the_bus() {
             .expect("prepare"),
         "loading"
     );
-    let mut answer = String::new();
-    let deadline = base_testkit::Deadline::generous();
-    while !deadline.passed() {
-        answer = inference
+    let answer = base_testkit::eventually_some_async("prepare to say ready", || async {
+        let answer = inference
             .prepare(&need, "notes", "fast", &Details::new())
             .await
             .expect("prepare");
-        if answer == Readiness::Ready.slug() {
-            break;
-        }
-        tokio::time::sleep(std::time::Duration::from_millis(20)).await;
-    }
+        (answer == Readiness::Ready.slug()).then_some(answer)
+    })
+    .await;
     assert_eq!(answer, "ready");
     assert_eq!(world.host.spawned.lock().expect("lock").len(), 1);
 
@@ -167,7 +163,7 @@ async fn cancel_ends_the_running_turn_and_closes_the_engines_stream() {
         .await
         .expect("send");
     // Wait until the engine has the request, then change our mind.
-    crate::support::eventually("the engine has the request", || {
+    base_testkit::eventually("the engine has the request", || {
         !world.engines["tiny-chat"]
             .bodies("/v1/chat/completions")
             .is_empty()
