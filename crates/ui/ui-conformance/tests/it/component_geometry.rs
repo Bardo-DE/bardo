@@ -1,6 +1,6 @@
 //! The component bugs the gallery's contact sheets exposed, each
 //! proved on a real Blitz document: a rendered height, a laid-out rect, or a pixel probe. The
-//! markup side of each fix is in ds's goldens; these are the pictures the goldens cannot show.
+//! markup side of each fix is in ds's specimen tests; these are the pictures the markup cannot show.
 
 use dioxus::prelude::*;
 use std::time::Duration;

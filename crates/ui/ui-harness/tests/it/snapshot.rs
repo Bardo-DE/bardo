@@ -1,5 +1,5 @@
 //! Headless pictures: the size a viewport asks for, and time moving between two moments. The
-//! PNGs land in the test's scratch directory for review; nothing compares them to a golden (the
+//! PNGs land in the test's scratch directory for review; nothing compares them to a stored picture (the
 //! rasteriser changes with Blitz revisions).
 
 use dioxus::prelude::*;

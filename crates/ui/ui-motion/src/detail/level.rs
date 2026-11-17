@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 use ui_style::appearance::motion::MotionLevel;
 use ui_style::scope::Scope;
 
-/// The enclosing root's motion level, if there is a root; Standard outside one (a golden render
+/// The enclosing root's motion level, if there is a root; Standard outside one (a bare render
 /// of a bare component).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Level(Option<Signal<Scope>>);

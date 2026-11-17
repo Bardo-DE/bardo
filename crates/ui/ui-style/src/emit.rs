@@ -5,7 +5,7 @@
 //! selector never matches; browsers accept the `*|` form too (spike S2). Class selectors are
 //! unaffected.
 //!
-//! The output is one rule per line and no space inside a rule, so the golden stylesheet diffs
+//! The output is one rule per line and no space inside a rule, so a stylesheet diffs
 //! by rule.
 
 use crate::tokens::name::VarName;
