@@ -72,7 +72,7 @@ sill's `desktop_wl` is not touched here).
 - `backend_for(&ProtocolSet) -> Option<DesktopBackend>`: `Bardo` when `bardo_desktop_manager_v1`
   and the ext list are offered, else `Wlr`, else `Ext`. Globals only. `DesktopState::backend()`.
 - `Protocol::BardoShell` (`bardo_shell_v1`); `Protocol::ALL` has nine entries.
-- Pure model `bardo::Bardo` in `DesktopState::bardo`: `BardoApp`, `BardoWindow`, `BardoSpace`,
+- Pure model `bardo::bardo` in `DesktopState::bardo`: `BardoApp`, `BardoWindow`, `BardoSpace`,
   `Active`, `Shell` (modifiers, switcher, overview layout, reveals). Events are
   `DesktopEvent::{App, Window, Space, Active, Shell}` (the `BardoEvent` level was folded in on 2026-10-28).
 - `reduce` projects Bardo window state onto `Toplevel.flags`, `parent` and `outputs`.

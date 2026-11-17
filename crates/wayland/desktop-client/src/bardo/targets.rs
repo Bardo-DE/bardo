@@ -17,7 +17,7 @@ use crate::state::DesktopState;
 /// The [`CommandError`] that names the first object the command names and `state` lacks.
 ///
 /// ```
-/// use desktop_client::Bardo::check_targets;
+/// use desktop_client::bardo::check_targets;
 /// use desktop_client::{AppKey, CommandError, DesktopCommand, DesktopState};
 ///
 /// let state = DesktopState::default();

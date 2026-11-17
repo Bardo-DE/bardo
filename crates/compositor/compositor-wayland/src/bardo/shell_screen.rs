@@ -20,7 +20,7 @@ const NAMES_OUTPUT: u32 = 7;
 /// for nothing.
 ///
 /// ```
-/// use compositor_wayland::Bardo::shell_screen::on_set_full_screen_bar;
+/// use compositor_wayland::bardo::shell_screen::on_set_full_screen_bar;
 /// assert_eq!(on_set_full_screen_bar(Some(1)).len(), 1);
 /// assert!(on_set_full_screen_bar(Some(9)).is_empty());
 /// assert!(on_set_full_screen_bar(None).is_empty());
@@ -37,7 +37,7 @@ pub fn on_set_full_screen_bar(mode: Option<u32>) -> Vec<Event> {
 /// nothing.
 ///
 /// ```
-/// use compositor_wayland::Bardo::shell_screen::on_set_motion;
+/// use compositor_wayland::bardo::shell_screen::on_set_motion;
 /// assert_eq!(on_set_motion(Some(1)).len(), 1);
 /// assert!(on_set_motion(Some(9)).is_empty());
 /// ```

@@ -717,7 +717,7 @@ use ds::prelude::Px;
 fn every_surface_keeps_content_off_the_box_edges() {
     let view = Viewport { width: 900, height: 700, scale_percent: 100 };
     // Bardo's policy is the 8 px default plus Bardo's own allowances; add yours with a reason.
-    let policy = Policy::Bardo().allowing(&[Allow {
+    let policy = Policy::bardo().allowing(&[Allow {
         class: "unread-count",
         min: Px(4.0),
         reason: "a count badge: design/04 section 12, 4 px either side",

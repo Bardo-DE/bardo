@@ -194,7 +194,7 @@ pub enum DesktopCommand {
         rect: Option<Rect>,
     },
     /// The person answered a question the compositor asked
-    /// ([`ShellEvent::PermissionAsk`](crate::Bardo::ShellEvent::PermissionAsk)); send
+    /// ([`ShellEvent::PermissionAsk`](crate::bardo::ShellEvent::PermissionAsk)); send
     /// [`Answer::Dismissed`] when the sheet goes away without an answer (version 5). Bardo arm,
     /// shell role.
     AnswerPermission {
@@ -204,7 +204,7 @@ pub enum DesktopCommand {
         answer: Answer,
     },
     /// The person answered a question about a changed display setup
-    /// ([`ShellEvent::DisplaysTrial`](crate::Bardo::ShellEvent::DisplaysTrial)); send
+    /// ([`ShellEvent::DisplaysTrial`](crate::bardo::ShellEvent::DisplaysTrial)); send
     /// [`TrialAnswer::Revert`] when the sheet goes away without an answer (version 6). Answering
     /// faster than the person could have read the question is a protocol error for the shell's
     /// connection. Bardo arm, shell role.

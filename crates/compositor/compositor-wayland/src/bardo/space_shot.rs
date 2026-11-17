@@ -56,7 +56,7 @@ pub struct SpaceShotBook {
 /// `side` kept between [`MIN_SIDE`] and [`MAX_SIDE`].
 ///
 /// ```
-/// use compositor_wayland::Bardo::space_shot::clamp_side;
+/// use compositor_wayland::bardo::space_shot::clamp_side;
 /// assert_eq!((clamp_side(0), clamp_side(160), clamp_side(5000)), (1, 160, 1024));
 /// ```
 #[must_use]
@@ -68,7 +68,7 @@ pub fn clamp_side(side: u32) -> u32 {
 /// order. FNV-1a, so the same list gives the same number on every run.
 ///
 /// ```
-/// use compositor_wayland::Bardo::space_shot::look_of;
+/// use compositor_wayland::bardo::space_shot::look_of;
 /// assert_eq!(look_of([1, 2, 3]), look_of([1, 2, 3]));
 /// assert_ne!(look_of([1, 2, 3]), look_of([1, 3, 2]));
 /// ```
@@ -93,7 +93,7 @@ impl SpaceShotBook {
     /// A client made a source of `space` on `output`, `width` by `height` (clamped).
     ///
     /// ```
-    /// use compositor_wayland::Bardo::space_shot::SpaceShotBook;
+    /// use compositor_wayland::bardo::space_shot::SpaceShotBook;
     /// let mut book = SpaceShotBook::default();
     /// assert!(book.sessions().is_empty());
     /// ```
@@ -161,7 +161,7 @@ impl SpaceShotBook {
     /// A frame of `session` was asked for while the Space looks like `look`.
     ///
     /// ```
-    /// use compositor_wayland::Bardo::space_shot::{Look, SpaceSessionId, SpaceShotBook};
+    /// use compositor_wayland::bardo::space_shot::{Look, SpaceSessionId, SpaceShotBook};
     /// let mut book = SpaceShotBook::default();
     /// assert!(book.request(SpaceSessionId(9), Look(1)).is_none());
     /// ```

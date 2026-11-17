@@ -27,8 +27,8 @@ pub struct EmptyTarget;
 /// have clears nothing).
 ///
 /// ```
-/// use compositor_wayland::Bardo::shell_space::on_space_target_clear;
-/// # fn demo(part: &mut compositor_wayland::Bardo::shell::BardoShellPart) {
+/// use compositor_wayland::bardo::shell_space::on_space_target_clear;
+/// # fn demo(part: &mut compositor_wayland::bardo::shell::BardoShellPart) {
 /// on_space_target_clear(part, None);
 /// # }
 /// ```
@@ -45,7 +45,7 @@ pub fn on_space_target_clear(part: &mut BardoShellPart, output: Option<OutputKey
 /// (`None`) without an error, since either may be gone by the time the request arrives.
 ///
 /// ```
-/// use compositor_wayland::Bardo::shell_space::{EmptyTarget, target_rect};
+/// use compositor_wayland::bardo::shell_space::{EmptyTarget, target_rect};
 /// assert!(target_rect(0, 0, 160, 90).is_ok());
 /// assert_eq!(target_rect(0, 0, 0, 90), Err(EmptyTarget));
 /// ```
@@ -68,7 +68,7 @@ pub fn on_space_target(
 /// error.
 ///
 /// ```
-/// use compositor_wayland::Bardo::shell_space::new_target_rect;
+/// use compositor_wayland::bardo::shell_space::new_target_rect;
 /// assert!(new_target_rect(0, 0, 160, 90).is_some());
 /// assert!(new_target_rect(0, 0, 0, 90).is_none());
 /// ```

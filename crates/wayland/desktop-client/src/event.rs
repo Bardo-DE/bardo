@@ -15,7 +15,7 @@ use desktop_protocols::vocab::ActorKind;
 /// Bardo window, keyed by its ext handle's key, where `Toplevel` is the ext or wlr handle.
 ///
 /// ```
-/// use desktop_client::Bardo::{AppChange, AppEvent};
+/// use desktop_client::bardo::{AppChange, AppEvent};
 /// use desktop_client::{AppKey, DesktopEvent, DesktopState, reduce};
 /// use desktop_protocols::vocab::AppLifeKind;
 ///

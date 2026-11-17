@@ -46,7 +46,7 @@ pub fn send_choice_end(part: &BardoShellPart, first: WindowId) {
 ///
 /// ```
 /// use compositor_core::WindowId;
-/// use compositor_wayland::Bardo::shell_split::on_split_pick;
+/// use compositor_wayland::bardo::shell_split::on_split_pick;
 /// assert_eq!(on_split_pick(Some(WindowId(2))).len(), 1);
 /// assert!(on_split_pick(None).is_empty());
 /// ```
@@ -61,7 +61,7 @@ pub fn on_split_pick(window: Option<WindowId>) -> Vec<Event> {
 /// `split_cancel`: the person turned the choice down.
 ///
 /// ```
-/// use compositor_wayland::Bardo::shell_split::on_split_cancel;
+/// use compositor_wayland::bardo::shell_split::on_split_cancel;
 /// assert_eq!(on_split_cancel().len(), 1);
 /// ```
 #[must_use]
@@ -76,7 +76,7 @@ pub fn on_split_cancel() -> Vec<Event> {
 ///
 /// ```
 /// use compositor_core::WindowId;
-/// use compositor_wayland::Bardo::shell_split::on_split_divide;
+/// use compositor_wayland::bardo::shell_split::on_split_divide;
 /// assert_eq!(on_split_divide(Some(WindowId(1)), 400).len(), 1);
 /// assert!(on_split_divide(None, 400).is_empty());
 /// ```

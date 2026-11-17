@@ -17,7 +17,7 @@ const OPEN: u32 = 1000;
 /// asks for nothing.
 ///
 /// ```
-/// use compositor_wayland::Bardo::shell_overview::on_overview;
+/// use compositor_wayland::bardo::shell_overview::on_overview;
 /// assert_eq!(on_overview(Some(0), Some(1)).len(), 1);
 /// assert!(on_overview(Some(9), Some(1)).is_empty());
 /// assert!(on_overview(None, Some(1)).is_empty());

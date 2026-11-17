@@ -51,7 +51,7 @@ struct PendingActive {
 /// Matches window objects with ext handles by identifier.
 ///
 /// ```
-/// use desktop_client::Bardo::{Linker, WindowObject};
+/// use desktop_client::bardo::{Linker, WindowObject};
 /// use desktop_client::{ToplevelIdentifier, ToplevelKey};
 ///
 /// let mut linker = Linker::default();

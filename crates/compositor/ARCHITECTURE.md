@@ -345,7 +345,7 @@ wire glue written in the protocol's module (`Part::new`, `bind`, the dispatch of
 the refusal of management on an agent connection) and its `on_*` and `apply_note` bodies frozen:
 
 ```rust
-// compositor-wayland::Bardo::desktop (feature `bardo`): the root provides the part and what it reads, split
+// compositor-wayland::bardo::desktop (feature `bardo`): the root provides the part and what it reads, split
 // into disjoint borrows. `Part::new::<D>` creates the global.
 pub trait BardoDesktopHandler: EventSink + 'static {  // EventSink::feed(Vec<Event>) is compositor-wayland::handler's, shared by every handler trait
     fn bardo_desktop_parts(&mut self) -> DesktopParts<'_>;          // { part, view: DesktopView { model, outputs } }
@@ -360,7 +360,7 @@ pub fn on_space(part, space: &SpaceId, ask: SpaceAsk) -> Vec<Event>;
 pub fn apply_note(part, view: &DesktopView<'_>, note: &DesktopNote) -> Result<(), WaylandFault>;
 pub enum Standing { Manager, ReadOnly }                           // Shell manages, Agent reads; ReadOnly is refused with not_permitted
 
-// compositor-wayland::Bardo::shell
+// compositor-wayland::bardo::shell
 pub trait BardoShellHandler: EventSink + OutputLookup + 'static {
     fn bardo_shell_part(&mut self) -> &mut BardoShellPart;
     fn layer_of_surface(&self, client: &Client, surface: &WlSurface) -> Option<LayerKey>;

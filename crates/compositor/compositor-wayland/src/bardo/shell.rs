@@ -403,7 +403,7 @@ pub fn on_clear_minimise_target(
 /// ```
 /// use compositor_core::WindowId;
 /// use desktop_protocols::vocab::WindowEntry;
-/// use compositor_wayland::Bardo::shell::on_window_menu_pick;
+/// use compositor_wayland::bardo::shell::on_window_menu_pick;
 /// assert_eq!(on_window_menu_pick(Some(WindowId(1)), Some(WindowEntry::Left)).len(), 1);
 /// assert!(on_window_menu_pick(None, Some(WindowEntry::Left)).is_empty());
 /// assert!(on_window_menu_pick(Some(WindowId(1)), None).is_empty());
@@ -492,7 +492,7 @@ fn send_modifiers(part: &BardoShellPart, mods: HeldMods) {
 /// A `LogicalRect` from the wire's four integers, as the dispatch builds it.
 ///
 /// ```
-/// use compositor_wayland::Bardo::shell::minimise_rect;
+/// use compositor_wayland::bardo::shell::minimise_rect;
 /// let rect = minimise_rect(10, 5, 64, 48);
 /// assert_eq!((rect.origin.x, rect.size.w), (10, 64));
 /// ```
