@@ -64,10 +64,11 @@ fn linear_argb() -> Format {
     }
 }
 
-/// A backend with one output that has presented a frame of [`Scene`], and a client buffer for it;
-/// none when the host cannot start the renderer or has no `/dev/udmabuf`.
-fn rig(renderer: SoftRenderer) -> Option<(HeadlessBackend, OutputName, Dmabuf)> {
-    let spec = VirtualOutputSpec::parse("HEADLESS-1:64x64@60000:120:0,0").ok()?;
+/// A backend with one output that has presented a frame of [`Scene`], and a client buffer for it.
+/// Panics where the host cannot start the renderer or has no `/dev/udmabuf` (the tests that call
+/// it are `#[ignore]`d for that).
+fn rig(renderer: SoftRenderer) -> (HeadlessBackend, OutputName, Dmabuf) {
+    let spec = VirtualOutputSpec::parse("HEADLESS-1:64x64@60000:120:0,0").expect("the output spec");
     let name = spec.name.clone();
     let mut backend = HeadlessBackend::start(HeadlessConfig {
         outputs: vec![spec],
@@ -75,16 +76,16 @@ fn rig(renderer: SoftRenderer) -> Option<(HeadlessBackend, OutputName, Dmabuf)> 
         dmabuf: false,
         cost: RenderCostModel::Fixed(Duration::ZERO),
     })
-    .ok()?;
+    .unwrap_or_else(|e| panic!("the renderer does not start on this machine: {e}"));
     backend.announce();
     backend
         .present(&name, VblankSeq(1), Mono(Duration::ZERO), &Scene)
         .expect("a frame");
     let buffer = FixedUdmabuf::new()
-        .ok()?
+        .unwrap_or_else(|e| panic!("no usable /dev/udmabuf on this machine: {e}"))
         .create_buffer(SIDE, SIDE, Fourcc::Argb8888, &[Modifier::Linear])
-        .ok()?;
-    Some((backend, name, buffer))
+        .expect("a dma-buf can be made on this machine");
+    (backend, name, buffer)
 }
 
 /// What a shared-memory capture of the last frame holds.
@@ -97,15 +98,13 @@ fn shm_image(backend: &HeadlessBackend, name: &OutputName) -> ArgbImage {
 }
 
 #[test]
+#[ignore = "needs /dev/udmabuf (a real kernel device): run with --ignored on a machine with it"]
 fn a_gl_renderer_that_binds_the_buffer_blits_the_frame_with_the_pixels_shm_holds() {
-    let Some((mut backend, name, mut buffer)) = rig(SoftRenderer::Llvmpipe) else {
-        eprintln!("skipped: no GL renderer or no /dev/udmabuf here");
-        return;
-    };
-    if !backend.binds_format(linear_argb()) {
-        eprintln!("skipped: this GL renderer binds no linear dma-buf");
-        return;
-    }
+    let (mut backend, name, mut buffer) = rig(SoftRenderer::Llvmpipe);
+    assert!(
+        backend.binds_format(linear_argb()),
+        "this GL renderer binds no linear dma-buf"
+    );
     backend
         .blit_output_dmabuf(&name, true, whole(), &mut buffer)
         .expect("the frame is blitted");
@@ -114,11 +113,9 @@ fn a_gl_renderer_that_binds_the_buffer_blits_the_frame_with_the_pixels_shm_holds
 }
 
 #[test]
+#[ignore = "needs /dev/udmabuf (a real kernel device): run with --ignored on a machine with it"]
 fn a_software_renderer_refuses_the_direct_draw_and_the_read_back_fills_the_same_pixels() {
-    let Some((mut backend, name, mut buffer)) = rig(SoftRenderer::Pixman) else {
-        eprintln!("skipped: no /dev/udmabuf here");
-        return;
-    };
+    let (mut backend, name, mut buffer) = rig(SoftRenderer::Pixman);
     assert!(
         !backend.binds_format(linear_argb()),
         "pixman keeps its frames on the CPU"
@@ -154,11 +151,9 @@ fn a_software_renderer_refuses_the_direct_draw_and_the_read_back_fills_the_same_
 }
 
 #[test]
+#[ignore = "needs /dev/udmabuf (a real kernel device): run with --ignored on a machine with it"]
 fn an_output_that_has_presented_nothing_has_no_frame_to_blit() {
-    let Some((mut backend, _, mut buffer)) = rig(SoftRenderer::Pixman) else {
-        eprintln!("skipped: no /dev/udmabuf here");
-        return;
-    };
+    let (mut backend, _, mut buffer) = rig(SoftRenderer::Pixman);
     let other = OutputName::parse("HEADLESS-9").expect("a name");
     let error = backend
         .blit_output_dmabuf(&other, true, whole(), &mut buffer)

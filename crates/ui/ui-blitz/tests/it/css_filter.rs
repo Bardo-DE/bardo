@@ -1,6 +1,6 @@
 //! CSS `filter` on a real Blitz document, one swatch per filter function and per filter list,
 //! read back from the pixels of each backend: `vello_cpu` (the harness default, with the pinned
-//! `multithreading`) and `vello_hybrid` (skipped, with a note, where no GPU adapter opens). Every
+//! `multithreading`) and `vello_hybrid` (`#[ignore]`d: it needs a GPU adapter, and fails, saying so, where none opens). Every
 //! case compares the filtered swatch with a control of the same paint and no filter, so a
 //! function that paints nothing reads as the control.
 //!
@@ -249,18 +249,14 @@ enum Verdict {
     Other([u8; 3]),
 }
 
-/// The verdict for `SWATCHES[index]` on `backend`, or `None` where no GPU opens.
-fn verdict(backend: Backend, index: usize) -> Option<Verdict> {
+/// The verdict for `SWATCHES[index]` on `backend`. Panics where the backend needs a GPU and none
+/// opens.
+fn verdict(backend: Backend, index: usize) -> Verdict {
     let config = HarnessConfig::new(VIEW)
         .with_clock(Clock::Virtual)
         .with_backend(backend);
-    let mut harness = match Harness::try_new(PAGES[index], config) {
-        Ok(harness) => harness,
-        Err(error) => {
-            eprintln!("skipped: no GPU ({error})");
-            return None;
-        }
-    };
+    let mut harness = Harness::try_new(PAGES[index], config)
+        .unwrap_or_else(|error| panic!("no GPU adapter opens: {error}"));
     let frame = harness.render().expect("paints");
     let swatch = &SWATCHES[index];
     let control = probe(&frame, &harness, swatch, 1);
@@ -271,25 +267,33 @@ fn verdict(backend: Backend, index: usize) -> Option<Verdict> {
         swatch.plain
     );
     let got = probe(&frame, &harness, swatch, 0);
-    Some(if near(got, swatch.filtered) {
+    if near(got, swatch.filtered) {
         Verdict::Rendered
     } else if near(got, swatch.plain) {
         Verdict::Ignored
     } else {
         Verdict::Other(got)
-    })
+    }
 }
 
-/// One case: `backend` gives `SWATCHES[index]` the verdict `expected`. A hybrid case skips,
-/// with a note, where no GPU adapter opens.
+/// One case: `backend` gives `SWATCHES[index]` the verdict `expected`. The `gpu` cases are
+/// `#[ignore]`d: they need a GPU adapter.
 macro_rules! filter_case {
-    ($($test:ident: $backend:ident, $index:expr => $expected:ident;)*) => {
+    (cpu $($test:ident: $backend:ident, $index:expr => $expected:ident;)*) => {
         $(
             #[test]
             fn $test() {
-                let Some(got) = verdict(Backend::$backend, $index) else {
-                    return;
-                };
+                let got = verdict(Backend::$backend, $index);
+                assert_eq!(got, Verdict::$expected, "{}", SWATCHES[$index].filter);
+            }
+        )*
+    };
+    (gpu $($test:ident: $backend:ident, $index:expr => $expected:ident;)*) => {
+        $(
+            #[test]
+            #[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
+            fn $test() {
+                let got = verdict(Backend::$backend, $index);
                 assert_eq!(got, Verdict::$expected, "{}", SWATCHES[$index].filter);
             }
         )*
@@ -297,6 +301,7 @@ macro_rules! filter_case {
 }
 
 filter_case! {
+    cpu
     vello_cpu_blurs: Cpu, 0 => Rendered;
     vello_cpu_brightens: Cpu, 1 => Rendered;
     vello_cpu_contrasts: Cpu, 2 => Rendered;
@@ -313,6 +318,7 @@ filter_case! {
 }
 
 filter_case! {
+    gpu
     vello_hybrid_blurs: Hybrid, 0 => Rendered;
     vello_hybrid_brightens: Hybrid, 1 => Rendered;
     vello_hybrid_contrasts: Hybrid, 2 => Rendered;

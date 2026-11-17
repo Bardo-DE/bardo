@@ -49,22 +49,12 @@ impl TestBuffer {
         })
     }
 
-    /// [`TestBuffer::new`], or `None` after printing a skip note when this host has no usable
-    /// `/dev/udmabuf` (missing, or opening it is denied). Any other failure panics.
-    pub fn new_or_skip(w: u32, h: u32, node: Option<DrmNode>) -> Option<TestBuffer> {
-        match TestBuffer::new(w, h, node) {
-            Ok(buffer) => Some(buffer),
-            Err(error)
-                if matches!(
-                    error.kind(),
-                    std::io::ErrorKind::NotFound | std::io::ErrorKind::PermissionDenied
-                ) =>
-            {
-                eprintln!("skipped: no /dev/udmabuf here");
-                None
-            }
-            Err(error) => panic!("a test buffer: {error}"),
-        }
+    /// [`TestBuffer::new`]. Panics, saying so, when this host has no usable `/dev/udmabuf`
+    /// (missing, or opening it is denied): the tests that call it are `#[ignore]`d for that.
+    pub fn new_real(w: u32, h: u32, node: Option<DrmNode>) -> TestBuffer {
+        TestBuffer::new(w, h, node).unwrap_or_else(|error| {
+            panic!("a test buffer needs a usable /dev/udmabuf on this machine: {error}")
+        })
     }
 
     /// Writes the pattern of `frame`.

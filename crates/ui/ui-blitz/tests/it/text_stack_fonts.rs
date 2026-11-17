@@ -89,29 +89,27 @@ fn emoji_maps(c: char) -> bool {
     font.charmap().map(c).is_some()
 }
 
-fn applies() -> bool {
-    if ui_blitz::colrv1_emoji_file().is_none() {
-        eprintln!("skipped: no COLRv1 colour emoji font (Noto-COLRv1.ttf) is installed");
-        return false;
-    }
-    if system_only().family_by_name("Noto Color Emoji").is_none() {
-        eprintln!(
-            "skipped: the system does not list the emoji font, so shell-host cannot reach it"
-        );
-        return false;
-    }
-    if system_only().family_by_name("Inter").is_some() {
-        eprintln!("skipped: Inter is installed as a system font here, so shell-host resolves it");
-        return false;
-    }
-    true
+/// What these tests need of the machine's fonts; panics, saying which is not so, when run on one
+/// that lacks it.
+fn require_fonts() {
+    assert!(
+        ui_blitz::colrv1_emoji_file().is_some(),
+        "no COLRv1 colour emoji font (Noto-COLRv1.ttf) is installed"
+    );
+    assert!(
+        system_only().family_by_name("Noto Color Emoji").is_some(),
+        "the system does not list the emoji font, so shell-host cannot reach it"
+    );
+    assert!(
+        system_only().family_by_name("Inter").is_none(),
+        "Inter is installed as a system font here, so shell-host resolves it"
+    );
 }
 
 #[test]
+#[ignore = "depends on the machine's fonts: needs Noto-COLRv1.ttf and Noto Color Emoji installed, and no system-wide Inter"]
 fn the_emoji_face_maps_the_space_and_the_digits() {
-    if !applies() {
-        return;
-    }
+    require_fonts();
     for c in [' ', '0', '1', '2', '9', '#', '*'] {
         assert!(emoji_maps(c), "{c:?} is in Noto Color Emoji's cmap");
     }
@@ -121,10 +119,9 @@ fn the_emoji_face_maps_the_space_and_the_digits() {
 }
 
 #[test]
+#[ignore = "depends on the machine's fonts: needs Noto-COLRv1.ttf and Noto Color Emoji installed, and no system-wide Inter"]
 fn inter_is_not_a_family_in_shell_hosts_font_context() {
-    if !applies() {
-        return;
-    }
+    require_fonts();
     let mut shell = shell_host_fonts();
     assert!(
         shell.collection.family_by_name("Inter").is_none(),
@@ -140,10 +137,9 @@ fn inter_is_not_a_family_in_shell_hosts_font_context() {
 /// Under the UI kit's context the stack is Inter's to the pixel; under layer-shell-host's it is wider than
 /// system-ui alone by the emoji face's advances, which is bardo-shell's "m 9 -extra- 1 .pdf".
 #[test]
+#[ignore = "depends on the machine's fonts: needs Noto-COLRv1.ttf and Noto Color Emoji installed, and no system-wide Inter"]
 fn the_stack_is_inter_under_bardo_and_takes_the_emoji_faces_digits_under_shell_host() {
-    if !applies() {
-        return;
-    }
+    require_fonts();
     for text in TEXTS {
         let bardo_stack = width(ui_blitz::font_context(), STACK, text);
         let bardo_inter = width(ui_blitz::font_context(), "\"Inter\"", text);
@@ -170,10 +166,9 @@ fn the_stack_is_inter_under_bardo_and_takes_the_emoji_faces_digits_under_shell_h
 /// The emoji of `"Inter",system-ui,sans-serif,"Noto Color Emoji"` lay out as system-ui's, not as
 /// the colour face's.
 #[test]
+#[ignore = "depends on the machine's fonts: needs Noto-COLRv1.ttf and Noto Color Emoji installed, and no system-wide Inter"]
 fn an_emoji_face_after_system_ui_is_never_reached_under_shell_host() {
-    if !applies() {
-        return;
-    }
+    require_fonts();
     let colour = width(shell_host_fonts(), "\"Noto Color Emoji\"", EMOJI);
     let system = width(shell_host_fonts(), "system-ui,sans-serif", EMOJI);
     assert!(
@@ -192,10 +187,9 @@ fn an_emoji_face_after_system_ui_is_never_reached_under_shell_host() {
 /// out as the colour face's (a ZWJ family and a flag shape to single glyphs) and ordinary text
 /// is still Inter's.
 #[test]
+#[ignore = "depends on the machine's fonts: needs Noto-COLRv1.ttf and Noto Color Emoji installed, and no system-wide Inter"]
 fn bardo_s_context_reaches_the_colour_face_through_system_ui() {
-    if !applies() {
-        return;
-    }
+    require_fonts();
     let colour = width(ui_blitz::font_context(), "\"Noto Color Emoji\"", EMOJI);
     let plain = width(
         ui_blitz::font_context(),

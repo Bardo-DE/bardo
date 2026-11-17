@@ -55,11 +55,12 @@ fn coloured(harness: &Harness, shot: &image::RgbaImage, selector: &str) -> u32 {
 }
 
 #[test]
+#[ignore = "needs Noto-COLRv1.ttf installed on the machine"]
 fn colrv1_emoji_paint_in_colour_on_vello_cpu() {
-    if ui_blitz::colrv1_emoji_file().is_none() {
-        eprintln!("skipped: no COLRv1 colour emoji font (Noto-COLRv1.ttf) is installed");
-        return;
-    }
+    assert!(
+        ui_blitz::colrv1_emoji_file().is_some(),
+        "no COLRv1 colour emoji font (Noto-COLRv1.ttf) is installed"
+    );
     paints_in_colour("colour_emoji");
 }
 

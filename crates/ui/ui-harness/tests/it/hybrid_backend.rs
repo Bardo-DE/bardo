@@ -1,7 +1,7 @@
 //! The harness's `vello_hybrid` backend: the same document painted on the GPU reads
 //! back as `vello_cpu` paints it, and the on-demand benchmark times a 300-cell `COLRv1` emoji grid
 //! scrolling for 180 frames on both backends (FINDINGS "Hybrid harness backend"). Every GPU case
-//! skips, with a note, where no adapter opens (CI).
+//! is `#[ignore]`d, and fails, saying so, where no adapter opens.
 //!
 //! `cargo test -p ui-blitz --release --test it hybrid_backend -- --ignored --nocapture`
 
@@ -27,25 +27,18 @@ fn swatches() -> Element {
     }
 }
 
-/// A hybrid harness of `app` at `viewport`, or `None` (with a note) where no GPU opens.
-fn hybrid(app: fn() -> Element, viewport: Viewport, pref: AdapterPref) -> Option<Harness> {
+/// A hybrid harness of `app` at `viewport`. Panics where no GPU opens.
+fn hybrid(app: fn() -> Element, viewport: Viewport, pref: AdapterPref) -> Harness {
     let config = HarnessConfig::new(viewport)
         .with_backend(Backend::Hybrid)
         .with_adapter(pref);
-    match Harness::try_new(app, config) {
-        Ok(harness) => Some(harness),
-        Err(error) => {
-            eprintln!("skipped: no GPU ({error})");
-            None
-        }
-    }
+    Harness::try_new(app, config).unwrap_or_else(|error| panic!("no GPU adapter opens: {error}"))
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn hybrid_pictures_read_back_as_vello_cpu_paints_them() {
-    let Some(mut gpu) = hybrid(swatches, SMALL, AdapterPref::Auto) else {
-        return;
-    };
+    let mut gpu = hybrid(swatches, SMALL, AdapterPref::Auto);
     let mut cpu = Harness::new(swatches, SMALL);
     let (a, b) = (
         cpu.render().expect("cpu paints"),
@@ -67,10 +60,9 @@ fn hybrid_pictures_read_back_as_vello_cpu_paints_them() {
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn a_hybrid_frame_times_the_gpu_finishing_it() {
-    let Some(mut gpu) = hybrid(swatches, SMALL, AdapterPref::Auto) else {
-        return;
-    };
+    let mut gpu = hybrid(swatches, SMALL, AdapterPref::Auto);
     let time = gpu.paint_timed().expect("paints");
     assert!(time.total >= time.scene);
     assert_eq!(time.render(), time.total.checked_sub(time.scene).unwrap());
@@ -189,10 +181,10 @@ fn scroll(label: &str, mut harness: Harness) {
 #[test]
 #[ignore = "a benchmark: run with --ignored --nocapture, in release"]
 fn emoji_grid_scrolls_on_both_backends() {
-    if ui_blitz::colrv1_emoji_file().is_none() {
-        eprintln!("skipped: no COLRv1 colour emoji font (Noto-COLRv1.ttf) is installed");
-        return;
-    }
+    assert!(
+        ui_blitz::colrv1_emoji_file().is_some(),
+        "no COLRv1 colour emoji font (Noto-COLRv1.ttf) is installed"
+    );
     println!(
         "{CELLS} COLRv1 cells, {}x{} @ {}%, {FRAMES} frames of {STEP} px",
         GRID.width, GRID.height, GRID.scale_percent
@@ -207,9 +199,7 @@ fn emoji_grid_scrolls_on_both_backends() {
         scroll("vello_cpu", Harness::new(app, GRID));
         let mut seen = Vec::new();
         for pref in [AdapterPref::Discrete, AdapterPref::Integrated] {
-            let Some(harness) = hybrid(app, GRID, pref) else {
-                continue;
-            };
+            let harness = hybrid(app, GRID, pref);
             let adapter = harness.adapter().unwrap_or_default().to_owned();
             if seen.contains(&adapter) {
                 continue;

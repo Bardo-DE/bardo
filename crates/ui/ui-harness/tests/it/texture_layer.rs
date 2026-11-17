@@ -1,6 +1,6 @@
 //! A texture on the GPU shown inside the document: textures of known colours are made on the
 //! harness's own device, a `TextureLayer` places them, and the hybrid painter's pixels are read
-//! back. Every case skips, with a note, where no GPU adapter opens (CI without one).
+//! back. Every case is `#[ignore]`d (it needs a GPU adapter) and fails, saying so, where none opens.
 
 use dioxus::prelude::*;
 use std::sync::{Arc, Mutex};
@@ -64,7 +64,7 @@ fn app() -> Element {
 
 /// A hybrid harness showing `scene`, with the handles its layers use, or `None` (with a note)
 /// where no GPU opens.
-fn gpu_harness(scene: Scene) -> Option<(Harness, Vec<TextureHandle>, SeenDevice)> {
+fn gpu_harness(scene: Scene) -> (Harness, Vec<TextureHandle>, SeenDevice) {
     let handles = Handles::default();
     let seen = SeenDevice::default();
     let viewport = Viewport {
@@ -77,16 +77,10 @@ fn gpu_harness(scene: Scene) -> Option<(Harness, Vec<TextureHandle>, SeenDevice)
         .with_context(scene)
         .with_context(handles.clone())
         .with_context(seen.clone());
-    match Harness::try_new(app, config) {
-        Ok(harness) => {
-            let made = handles.0.lock().expect("lock").clone();
-            Some((harness, made, seen))
-        }
-        Err(error) => {
-            eprintln!("skipped: no GPU ({error})");
-            None
-        }
-    }
+    let harness = Harness::try_new(app, config)
+        .unwrap_or_else(|error| panic!("no GPU adapter opens: {error}"));
+    let made = handles.0.lock().expect("lock").clone();
+    (harness, made, seen)
 }
 
 fn one(fit: TextureFit) -> Scene {
@@ -134,10 +128,9 @@ fn at(image: &image::RgbaImage, x: u32, y: u32) -> [u8; 4] {
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn the_app_sees_the_device_the_renderer_paints_with() {
-    let Some((harness, _, seen)) = gpu_harness(one(TextureFit::Fill)) else {
-        return;
-    };
+    let (harness, _, seen) = gpu_harness(one(TextureFit::Fill));
     let device = harness.gpu().and_then(|gpu| gpu.device());
     assert!(device.is_some(), "the harness's GPU has a device");
     assert_eq!(
@@ -148,10 +141,9 @@ fn the_app_sees_the_device_the_renderer_paints_with() {
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn a_texture_of_known_colours_fills_the_box() {
-    let Some((mut harness, handles, _)) = gpu_harness(one(TextureFit::Fill)) else {
-        return;
-    };
+    let (mut harness, handles, _) = gpu_harness(one(TextureFit::Fill));
     let before = shot(&mut harness);
     assert_eq!(at(&before, 25, 50), CLEAR, "an empty layer draws nothing");
     pair(&handles[0], RED, BLUE);
@@ -252,6 +244,7 @@ const CASES: &[Case] = &[
 ];
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn each_fit_puts_the_picture_where_it_says() {
     for fit in [
         TextureFit::Contain,
@@ -259,9 +252,7 @@ fn each_fit_puts_the_picture_where_it_says() {
         TextureFit::Actual,
         TextureFit::Tile,
     ] {
-        let Some((mut harness, handles, _)) = gpu_harness(one(fit)) else {
-            return;
-        };
+        let (mut harness, handles, _) = gpu_harness(one(fit));
         pair(&handles[0], RED, BLUE);
         let image = shot(&mut harness);
         for (name, case_fit, (x, y), want) in CASES {
@@ -273,14 +264,13 @@ fn each_fit_puts_the_picture_where_it_says() {
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn a_source_rectangle_crops_the_texture() {
     let scene = Scene {
         source: Some(TexelRect::new(1, 0, 1, 1)),
         ..one(TextureFit::Fill)
     };
-    let Some((mut harness, handles, _)) = gpu_harness(scene) else {
-        return;
-    };
+    let (mut harness, handles, _) = gpu_harness(scene);
     pair(&handles[0], RED, BLUE);
     let image = shot(&mut harness);
     assert_eq!(
@@ -292,14 +282,13 @@ fn a_source_rectangle_crops_the_texture() {
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn several_layers_each_draw_their_own_texture() {
     let scene = Scene {
         layers: 3,
         ..one(TextureFit::Fill)
     };
-    let Some((mut harness, handles, _)) = gpu_harness(scene) else {
-        return;
-    };
+    let (mut harness, handles, _) = gpu_harness(scene);
     pair(&handles[0], RED, RED);
     pair(&handles[1], GREEN, GREEN);
     pair(&handles[2], BLUE, BLUE);
@@ -310,10 +299,9 @@ fn several_layers_each_draw_their_own_texture() {
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn a_new_frame_replaces_the_last() {
-    let Some((mut harness, handles, _)) = gpu_harness(one(TextureFit::Fill)) else {
-        return;
-    };
+    let (mut harness, handles, _) = gpu_harness(one(TextureFit::Fill));
     pair(&handles[0], RED, RED);
     let first = at(&shot(&mut harness), 50, 50);
     // The same size: written into the texture the layer already has.
@@ -333,10 +321,9 @@ fn a_new_frame_replaces_the_last() {
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn a_texture_the_app_made_is_drawn_and_written_to_in_place() {
-    let Some((mut harness, handles, _)) = gpu_harness(one(TextureFit::Fill)) else {
-        return;
-    };
+    let (mut harness, handles, _) = gpu_harness(one(TextureFit::Fill));
     let gpu = harness.gpu().expect("a hybrid harness has a GPU");
     let (device, queue) = (gpu.device().expect("device"), gpu.queue().expect("queue"));
     let texture = device.create_texture(&wgpu::TextureDescriptor {
@@ -388,10 +375,9 @@ fn a_texture_the_app_made_is_drawn_and_written_to_in_place() {
 }
 
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn alpha_is_premultiplied_in_the_texture_and_composited_over_what_is_beneath() {
-    let Some((mut harness, handles, _)) = gpu_harness(one(TextureFit::Fill)) else {
-        return;
-    };
+    let (mut harness, handles, _) = gpu_harness(one(TextureFit::Fill));
     // Half-transparent red, both ways of saying it.
     let straight = picture(PixelFormat::Rgba8Straight, 1, 1, &[&[255, 0, 0, 128]]);
     upload(&handles[0], PixelFormat::Rgba8Straight, 1, 1, &straight);

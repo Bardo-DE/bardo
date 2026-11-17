@@ -129,6 +129,7 @@ fn format_steering_offers_the_render_gpus_formats_first() {
 }
 
 #[test]
+#[ignore = "needs /dev/udmabuf (a real kernel device): run with --ignored on a machine with it"]
 fn import_routes_follow_the_plan() {
     let topology = pair(CrossSupport::Direct);
     let (_dir, nodes) = tree(&topology);
@@ -154,10 +155,10 @@ fn import_routes_follow_the_plan() {
 /// its format (A5); returns B's and A's counters after one commit.
 fn display_on_a_client_from_b(
     cross: CrossSupport,
-) -> Option<(
+) -> (
     compositor_backend::gpu::CopyCounters,
     compositor_backend::gpu::CopyCounters,
-)> {
+) {
     let topology = pair(cross);
     let (_dir, mut nodes) = tree(&topology);
     let stack = GpuStack::start(&mut nodes, &GpuChoice::Auto).expect("a stack");
@@ -185,8 +186,8 @@ fn display_on_a_client_from_b(
     let a = stack.plan.render;
 
     let (w, h) = SIZE;
-    let client = TestBuffer::new_or_skip(w, h, Some(drm_node(b)))?;
-    let mut out = TestBuffer::new_or_skip(w, h, Some(drm_node(a)))?;
+    let client = TestBuffer::new_real(w, h, Some(drm_node(b)));
+    let mut out = TestBuffer::new_real(w, h, Some(drm_node(a)));
     assert_eq!(
         client.dmabuf.node().map(|node| node.dev_id()),
         Some(rustix::fs::makedev(b.major, b.minor)),
@@ -216,14 +217,13 @@ fn display_on_a_client_from_b(
             .map(|device| device.counters().snapshot())
             .expect("the device is enumerated")
     };
-    Some((counters_of(&mut gpu, 1), counters_of(&mut gpu, 0)))
+    (counters_of(&mut gpu, 1), counters_of(&mut gpu, 0))
 }
 
 #[test]
+#[ignore = "needs /dev/udmabuf (a real kernel device): run with --ignored on a machine with it"]
 fn display_on_a_client_buffers_from_b_take_the_dma_shadow_copy() {
-    let Some((b, a)) = display_on_a_client_from_b(CrossSupport::Direct) else {
-        return;
-    };
+    let (b, a) = display_on_a_client_from_b(CrossSupport::Direct);
     assert_eq!(b.bind_dmabuf, 1, "B rendered the shadow buffer once");
     assert_eq!(b.copy_texture, 0, "no CPU copy");
     assert_eq!(a.import_memory, 0, "no CPU copy");
@@ -231,24 +231,22 @@ fn display_on_a_client_buffers_from_b_take_the_dma_shadow_copy() {
 }
 
 #[test]
+#[ignore = "needs /dev/udmabuf (a real kernel device): run with --ignored on a machine with it"]
 fn display_on_a_client_buffers_from_b_take_the_cpu_copy_when_a_cannot_import() {
-    let Some((b, a)) = display_on_a_client_from_b(CrossSupport::CopyOnly) else {
-        return;
-    };
+    let (b, a) = display_on_a_client_from_b(CrossSupport::CopyOnly);
     assert_eq!(b.copy_texture, 1, "B's texture was read back once");
     assert_eq!(a.import_memory, 1, "A uploaded it once");
     assert_eq!(b.bind_dmabuf, 0, "no shadow buffer");
 }
 
 #[test]
+#[ignore = "needs /dev/udmabuf (a real kernel device): run with --ignored on a machine with it"]
 fn a_shm_client_renders_exactly_beside_a_foreign_gpu() {
     let (w, h) = SIZE;
     let mut gpu =
         GpuManager::new(SoftGraphicsApi::new(pair(CrossSupport::Direct))).expect("manager");
     let a = drm_node(DrmNodeId::new(226, 128));
-    let Some(mut out) = TestBuffer::new_or_skip(w, h, Some(a)) else {
-        return;
-    };
+    let mut out = TestBuffer::new_real(w, h, Some(a));
     let mut renderer = gpu.renderer(&a, &a, Fourcc::Argb8888).expect("a renderer");
     let bytes = TestBuffer::shm_bytes(w, h, 5);
     let texture = renderer
@@ -260,6 +258,7 @@ fn a_shm_client_renders_exactly_beside_a_foreign_gpu() {
 }
 
 #[test]
+#[ignore = "needs /dev/udmabuf (a real kernel device): run with --ignored on a machine with it"]
 fn unplugging_a_gpu_falls_back_to_shm() {
     let topology = pair(CrossSupport::Direct);
     let (w, h) = SIZE;
@@ -267,12 +266,8 @@ fn unplugging_a_gpu_falls_back_to_shm() {
         drm_node(DrmNodeId::new(226, 128)),
         drm_node(DrmNodeId::new(226, 129)),
     );
-    let (Some(client), Some(mut out)) = (
-        TestBuffer::new_or_skip(w, h, Some(b)),
-        TestBuffer::new_or_skip(w, h, Some(a)),
-    ) else {
-        return;
-    };
+    let client = TestBuffer::new_real(w, h, Some(b));
+    let mut out = TestBuffer::new_real(w, h, Some(a));
     client.fill(1).expect("fill");
     let mut gpu = GpuManager::new(SoftGraphicsApi::new(topology)).expect("manager");
     {

@@ -1,5 +1,5 @@
 //! The picture reaches the screen through the window's device: the pane is drawn by the hybrid
-//! painter and the pixels read back. Skips, with a note, where no GPU adapter opens (CI without one).
+//! painter and the pixels read back. Is `#[ignore]`d (it needs a GPU adapter) and fails, saying so, where none opens.
 
 #![cfg(feature = "pane")]
 
@@ -35,6 +35,7 @@ fn app() -> Element {
     reason = "a pixel position inside the screenshot"
 )]
 #[test]
+#[ignore = "needs a GPU adapter (real hardware): run with --ignored on a machine with one"]
 fn a_picture_is_uploaded_to_the_device_and_drawn_from_it() {
     let (src, sniffed) = fixture(Home::Image, "quadrants.png");
     let peeked = Arc::new(peek(&src, &sniffed, &pane_budget()));
@@ -45,13 +46,8 @@ fn a_picture_is_uploaded_to_the_device_and_drawn_from_it() {
     let config = HarnessConfig::new(VIEW)
         .with_backend(Backend::Hybrid)
         .with_context(Arc::clone(&peeked));
-    let mut harness = match Harness::try_new(app, config) {
-        Ok(harness) => harness,
-        Err(error) => {
-            eprintln!("skipped: no GPU ({error})");
-            return;
-        }
-    };
+    let mut harness = Harness::try_new(app, config)
+        .unwrap_or_else(|error| panic!("no GPU adapter opens: {error}"));
     // The device arrives with the first frame and the picture is written on the render after it.
     harness.render_over(Backdrop::Clear).unwrap();
     let shot = harness.render_over(Backdrop::Clear).unwrap();
