@@ -68,7 +68,7 @@ fn only_the_persons_unspoken_request_on_a_stopped_engine_moves_once_and_only_whe
     let stopped = ModelError::EngineStopped;
     assert_eq!(
         go(Priority::Person, stopped, Spoke::Nothing, Tried::Never, 1),
-        Retry::Elsewhere
+        Rerun::Elsewhere
     );
     let refused = [
         go(Priority::Helper, stopped, Spoke::Nothing, Tried::Never, 1),
@@ -90,7 +90,7 @@ fn only_the_persons_unspoken_request_on_a_stopped_engine_moves_once_and_only_whe
             1,
         ),
     ];
-    assert!(refused.iter().all(|one| *one == Retry::No), "{refused:?}");
+    assert!(refused.iter().all(|one| *one == Rerun::No), "{refused:?}");
 }
 
 #[test]
