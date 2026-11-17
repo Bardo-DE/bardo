@@ -27,6 +27,7 @@ caller-identity-core = {features = ["desktop"], path = "../../identity/caller-id
 
 [dev-dependencies]
 input-broker-client = {features = ["fake"], path = "../input-broker-client"}
+input-broker-wire = {path = "../input-broker-wire"}
 # A held process that is only a claim, for tests of who the socket's peer is; never in a shipped build.
 caller-identity-linux = {features = ["fake"], path = "../../identity/caller-identity-linux"}
 

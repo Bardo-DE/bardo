@@ -4,6 +4,7 @@
 mod decode;
 mod evdev_parity;
 mod gestures_replay;
+mod key_table;
 mod pad_strokes;
 mod recorded_calibration;
 mod reference_cases;

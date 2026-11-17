@@ -1,7 +1,7 @@
 //! The keys the mouse gestures daemon's keyboard may register: the name table of the mouse gestures daemon's `keys.rs` plus its four
 //! left-hand modifiers, with how each may be pressed.
 //!
-//! A test in this crate fails when the mouse gestures daemon's table has a code this one lacks.
+//! A test in the mouse gestures daemon's crate fails when its table has a code this one lacks.
 
 /// How a key may be pressed on the mouse gestures daemon's keyboard.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

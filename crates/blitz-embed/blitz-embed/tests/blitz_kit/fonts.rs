@@ -2,28 +2,20 @@
 //! back to fontconfig's faces): the family is reported, and a document naming that family in
 //! `font-family` measures differently from one naming only `system-ui`.
 //!
-//! Uses a real font's bytes rather than a synthetic one: Inter, read from Bardo's bundled
-//! assets if Bardo is checked out next to this repo, skipped (with a message, not a failure)
-//! otherwise. The kit must not depend on Bardo, so this is a file read, never a dependency.
+//! Uses a real font's bytes rather than a synthetic one: Space Mono, kept in this crate's own
+//! `fixtures/` (its licence beside it). A machine that has the family installed fails the
+//! comparison test, saying so, rather than passing without testing anything.
 
 use crate::support;
-
-use std::path::PathBuf;
 
 use blitz_dom::FontContext;
 use blitz_embed::fonts::{FontFaces, SharedFonts};
 
-const INTER: &str = "inter-normal-400-700-latin.ttf";
+/// The family the fixture face names.
+const FAMILY: &str = "Space Mono";
 
-/// Inter's bytes, leaked to `'static` (`FontFaces`' bound: a real shell's are `include_bytes!`
-/// in its design-system crate), or `None` if Bardo is not checked out beside this repo.
-fn inter_bytes() -> Option<&'static [u8]> {
-    let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../../bardo/crates/ds/assets/fonts")
-        .join(INTER);
-    let bytes = std::fs::read(path).ok()?;
-    Some(Box::leak(bytes.into_boxed_slice()))
-}
+/// The fixture face's bytes.
+const FACE: &[u8] = include_bytes!("fixtures/space-mono-normal-400-latin.ttf");
 
 /// The width `text` lays out at in `stack` under `fonts`.
 fn width(fonts: FontContext, stack: &str, text: &str) -> f64 {
@@ -39,49 +31,38 @@ fn width(fonts: FontContext, stack: &str, text: &str) -> f64 {
 
 #[test]
 fn a_registered_face_is_a_family() {
-    let Some(bytes) = inter_bytes() else {
-        eprintln!("skipped: bardo is not checked out beside this repo");
-        return;
-    };
-    let families = SharedFonts::system().register(bytes);
+    let families = SharedFonts::system().register(FACE);
     assert!(
-        families.contains(&"Inter".to_string()),
-        "Inter is not in {families:?}"
+        families.contains(&FAMILY.to_string()),
+        "{FAMILY} is not in {families:?}"
     );
 }
 
 #[test]
 fn a_registered_faces_stack_measures_differently_from_system_ui() {
-    let Some(bytes) = inter_bytes() else {
-        eprintln!("skipped: bardo is not checked out beside this repo");
-        return;
-    };
     // The bug this pins: with only `SharedFonts::system()`, a font-family naming a bundled face
     // that is not also a system font fell straight through to `system-ui`, indistinguishable
     // from not naming it at all.
-    let unregistered = width(
-        SharedFonts::system().for_document(),
-        "\"Inter\"",
-        "shell-host",
-    );
+    let family = format!("\"{FAMILY}\"");
+    let unregistered = width(SharedFonts::system().for_document(), &family, "shell-host");
     let system = width(
         SharedFonts::system().for_document(),
         "system-ui,sans-serif",
         "shell-host",
     );
-    if (unregistered - system).abs() >= 0.01 {
-        eprintln!("skipped: Inter is a system font here, so it already resolved unregistered");
-        return;
-    }
+    assert!(
+        (unregistered - system).abs() < 0.01,
+        "{FAMILY} is installed on this machine, so it resolves without being registered; this test needs a machine without it"
+    );
 
     let registered = width(
-        SharedFonts::system_with(&FontFaces(vec![bytes])).for_document(),
-        "\"Inter\"",
+        SharedFonts::system_with(&FontFaces(vec![FACE])).for_document(),
+        &family,
         "shell-host",
     );
     assert!(
         (registered - system).abs() >= 1.0,
-        "registering Inter did not change how \"Inter\" lays out ({registered} vs system-ui's {system})"
+        "registering {FAMILY} did not change how it lays out ({registered} vs system-ui's {system})"
     );
 }
 

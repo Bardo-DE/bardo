@@ -10100,6 +10100,7 @@ dependencies = [
  "caller-identity-core",
  "caller-identity-linux",
  "input-broker-client",
+ "input-broker-wire",
  "input-linux",
  "mouse-gestures-proto",
  "notify",
