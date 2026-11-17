@@ -52,7 +52,7 @@ fn a_fixed_role_service_proved_by_its_unit_keeps_its_role() {
     let cases = [
         (
             "org.bardo.Inference",
-            "account_daemon_support",
+            "account_daemon",
             CallerRole::AccountDaemon,
         ),
         ("org.bardo.Shell", "sheet_host", CallerRole::SheetHost),
@@ -80,7 +80,7 @@ fn a_fixed_role_service_with_only_its_program_or_its_cgroup_is_a_plain_app() {
         assert_eq!(
             shown(&service(
                 "org.bardo.Inference",
-                "account_daemon_support",
+                "account_daemon",
                 proof
             )),
             want(

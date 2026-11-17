@@ -347,7 +347,7 @@ fn a_file_that_is_not_toml_keeps_every_base_value_and_says_so() {
 #[test]
 fn unknown_keys_are_reported_and_the_retired_screens_keys_are_among_them() {
     let loaded = read(
-        "version = 1\n[computer_use.screens]\nkeep = true\n[computer use]\nenabled = true\n",
+        "version = 1\n[computer_use.screens]\nkeep = true\n[computer_use]\nenabled = true\n",
         base(),
     );
     assert!(loaded.value.config.enabled);
@@ -426,10 +426,10 @@ allow = "session"
 #[test]
 fn no_apps_key_leaves_the_base_list_and_a_non_list_falls_back() {
     assert_eq!(
-        read("[computer use]\nenabled = true\n", base()).value.apps,
+        read("[computer_use]\nenabled = true\n", base()).value.apps,
         Apps::Listed(vec![])
     );
-    let loaded = read("[computer use]\napps = \"all\"\n", base());
+    let loaded = read("[computer_use]\napps = \"all\"\n", base());
     assert_eq!(loaded.value.apps, Apps::Listed(vec![]));
     assert_eq!(
         loaded.invalid[0].reason,

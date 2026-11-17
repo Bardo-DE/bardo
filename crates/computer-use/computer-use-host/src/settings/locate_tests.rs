@@ -46,7 +46,7 @@ fn the_locator_reads_the_first_file_of_the_configuration_directories() {
         at(
             "/etc",
             Some(
-                "[computer_use.budget]\nspend_microusd = 1900\n[computer use]\nenabled = true\n"
+                "[computer_use.budget]\nspend_microusd = 1900\n[computer_use]\nenabled = true\n"
                     .to_owned(),
             ),
         ),

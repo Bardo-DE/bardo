@@ -406,7 +406,7 @@ export HOME=$S XDG_STATE_HOME=$S/state XDG_CONFIG_HOME=$S/config XDG_DATA_HOME=$
 export XDG_RUNTIME_DIR=$S BARDO_ACCOUNTD_KEYS=file:$S/keys.json   # absolute; created 0600
 mkdir -p $XDG_CONFIG_HOME/bardo/accounts $XDG_DATA_HOME/bardo/accounts/providers
 cp providers/openrouter.toml $XDG_DATA_HOME/bardo/accounts/providers/   # or pass --providers DIR
-printf '[[caller]]\napp = "org.bardo.Inference"\nrole = "account_daemon_support"\n' \
+printf '[[caller]]\napp = "org.bardo.Inference"\nrole = "account_daemon"\n' \
   > $XDG_CONFIG_HOME/bardo/accounts/callers.toml
 # the key on standard input (echo is off only on a tty), then `y` to "Add this account?"
 printf '%s\ny\n' "$(cat openrouter.key)" | accountd add openrouter --allow org.bardo.Actions

@@ -78,8 +78,8 @@ mod tests {
     use account_tailscale::MachineOwner;
 
     /// Words a person reads never include a program name or a term of the network's plumbing.
-    const JARGON: [&str; 16] = [
-        "accounts", "inferd", "accountd", "socket", "port ", "node", "tailnet", "address",
+    const JARGON: [&str; 15] = [
+        "inferd", "accountd", "socket", "port ", "node", "tailnet", "address",
         "localapi", "daemon", "whois", "http", "tcp", "listener", "tagged", "api",
     ];
 

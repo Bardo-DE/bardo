@@ -64,7 +64,7 @@ fn table() -> CallerTable {
         {"app": "org.bardo.Intent", "unit": "bardo-actiond.service", "role": "agent"},
         {"app": "org.bardo.ComputerUse", "unit": "bardo-computer-use.service", "role": "computer_use"},
         {"app": "org.bardo.Shell", "role": "sheet_host"},
-        {"app": "org.bardo.Inference", "unit": "bardo-inferd.service", "role": "account_daemon_support"},
+        {"app": "org.bardo.Inference", "unit": "bardo-inferd.service", "role": "account_daemon"},
         {"app": "org.example.Sheets", "role": "sheet_host"},
         {"app": "org.bardo.Shell", "unit": "bardo-shell.scope", "role": "sheet_host",
          "exe": ["/usr/bin/bardo-shell"]},

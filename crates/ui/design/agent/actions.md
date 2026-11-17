@@ -28,7 +28,7 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 **Not in scope** (owner area in brackets)
 - The agent loop and planner prompting, session UX and the orb [planner/agent-loop, ux].
 - Drawing confirmations, the compositor protocol and the kill chord's key handling [computer use, ux].
-- The computer-use step loop and pixel actions [computer use]. They pass through our gate as a caller kind.
+- The computer-use step loop and pixel actions [computer_use]. They pass through our gate as a caller kind.
 - Model serving, the grammar and the choice of reviewer or reader model [models].
 - Event-log storage and its hash chain, memory files and the recall index [memory].
 - Sandboxing and egress [security, if it is an area; else computer use].
@@ -952,7 +952,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 - The compositor `Confirm1` server and the kill chord [computer_use/ux].
 - The real reviewer and reader models through inferd [models].
 - `eventlog` [memory].
-- The computer-use gate integration [computer use].
+- The computer-use gate integration [computer_use].
 
 ---
 

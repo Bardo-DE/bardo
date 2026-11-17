@@ -191,7 +191,7 @@ pub enum StartError {
     /// The registry file was refused. The words name both files and say nothing
     /// was changed. The daemon stops with [`account_daemon::EXIT_REGISTRY_REFUSED`](crate::EXIT_REGISTRY_REFUSED),
     /// the status `bardo-accountd.service` does not restart on.
-    #[error("{}", account_daemon_support::registry_words(.0.file(), .0.backup(), .0.cause(), "accounts service"))]
+    #[error("{}", account_daemon::registry_words(.0.file(), .0.backup(), .0.cause(), "accounts service"))]
     RegistryRefused(account_store::RegistryRefusal),
     /// The bus cannot be reached.
     #[error("no session bus: {0}")]

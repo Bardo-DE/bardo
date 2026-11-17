@@ -51,7 +51,7 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
     write_atomically(
         home.path(),
         &format!(
-            "[computer use]\nenabled = true\n[[computer_use.apps]]\napp = \"{}\"\nallow = \"ask\"\n",
+            "[computer_use]\nenabled = true\n[[computer_use.apps]]\napp = \"{}\"\nallow = \"ask\"\n",
             app.as_str()
         ),
     );
@@ -69,7 +69,7 @@ async fn a_change_in_the_file_applies_to_the_next_start_without_a_restart() {
     );
 
     // Off again, in the file: the next start is refused, the daemon never restarted.
-    write_atomically(home.path(), "[computer use]\nenabled = false\n");
+    write_atomically(home.path(), "[computer_use]\nenabled = false\n");
     while sup.settings().enabled {
         let loaded = watch.changed().await.expect("the watch is live");
         sup.adopt(&loaded);

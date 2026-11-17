@@ -176,7 +176,7 @@ fn lending_this_computers_models_is_off_until_the_switch_is_flipped() {
 fn rows_that_do_not_fit_are_shown_as_written_and_never_rewritten() {
     let sandbox = Sandbox::new("programs-rows-foreign");
     let written =
-        "[computer use]\napps = [{ app = \"org.a.B\", allow = \"ask\", note = \"mine\" }]\n";
+        "[computer_use]\napps = [{ app = \"org.a.B\", allow = \"ask\", note = \"mine\" }]\n";
     sandbox.write("computer-use/settings.toml", written);
     let harness = sandbox.harness(intelligence());
     assert_eq!(harness.count(".key-rows"), 0);

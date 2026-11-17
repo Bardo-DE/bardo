@@ -11,7 +11,7 @@
 //!   and [`CallerTable::role_of`] gives its role;
 //! - one row is added for the unit manager itself (`systemd`'s image), the role the bus crate
 //!   demands of whoever answers questions about units ([`manager_need`]);
-//! - the role is the accounts service's own spelling (`account_daemon_support`, `sheet_host`) so that nothing is
+//! - the role is the accounts service's own spelling (`account_daemon`, `sheet_host`) so that nothing is
 //!   renamed in either direction;
 //! - the first row for a unit wins, as in [`CallerTable::resolve_unit`].
 

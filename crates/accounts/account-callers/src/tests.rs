@@ -106,7 +106,7 @@ fn a_table_round_trips_through_its_serde_form() {
         serde_json::from_str::<CallerTable>(&json).expect("table"),
         table()
     );
-    assert!(json.contains(r#""role":"account_daemon_support""#));
+    assert!(json.contains(r#""role":"account_daemon""#));
 }
 
 #[test]
