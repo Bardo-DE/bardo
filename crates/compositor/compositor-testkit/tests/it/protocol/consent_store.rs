@@ -5,7 +5,7 @@
 //! cannot be recognised is never written down. Every test uses real files in a scratch folder
 //! (never the real state or `/etc`), a scripted shell for the person, and a fixed date.
 
-use super::consent::{ScriptedShell, advertised, golden_of, program, use_keys};
+use super::consent::{ScriptedShell, advertised, gated_by, program, use_keys};
 use compositor_app::privacy::{FloorFiles, Owner, PrivacyFiles};
 use compositor_core::Event;
 use compositor_core::privilege::{ClientStanding, UnixSeconds, Verdict};
@@ -117,7 +117,7 @@ fn an_answer_is_written_to_the_book_and_a_restart_remembers_it() {
     fixture.pump();
     let shown = advertised(&mut fixture, refused);
     assert!(
-        golden_of(Power::Keys)
+        gated_by(Power::Keys)
             .iter()
             .all(|interface| !shown.contains(interface)),
         "{shown:?}"
@@ -136,7 +136,7 @@ fn the_floor_denies_and_cannot_be_overruled() {
         0o644,
     );
     let (mut fixture, shell) = home.start();
-    let keys = golden_of(Power::Keys);
+    let keys = gated_by(Power::Keys);
     let hidden_from_a_new_client = |fixture: &mut Fixture| {
         let client = fixture.connect_via_ask();
         fixture.pump();
@@ -203,7 +203,7 @@ fn a_floor_file_with_the_wrong_owner_is_ignored_safely() {
         let shown = advertised(&mut fixture, client);
         for power in [Power::Keys, Power::Screen] {
             assert!(
-                golden_of(power)
+                gated_by(power)
                     .iter()
                     .all(|interface| shown.contains(interface)),
                 "{case}: {power:?} is not hidden"

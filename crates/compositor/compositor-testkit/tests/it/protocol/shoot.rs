@@ -1,16 +1,15 @@
 //! Mapped toplevels that are shot: the helper the surface adjuncts (viewporter, single pixel,
-//! alpha modifier) use for their pixman goldens and pixel probes (P0-R-scene's `shoot`).
+//! alpha modifier) use for their pixel probes (P0-R-scene's `shoot`).
 
 use compositor_core::WindowId;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::input::DeviceClass;
 use compositor_core::policy::ConnectionRole;
-use compositor_render::golden::{Golden, GoldenOutcome, GoldenTier, compare};
 use compositor_testclient::TestClient;
 use compositor_testclient::bardo::window::{FrameMode, Window, WindowManager};
 use compositor_testclient::surface::subsurface::Surface;
 use compositor_testclient::surface::toplevel::{Toplevel, WmBase};
-use compositor_testkit::{ClientId, Env, Fixture, FixtureSpec, ShotTarget, TestOrigin};
+use compositor_testkit::{ClientId, Fixture, FixtureSpec, ShotTarget, TestOrigin};
 use std::time::Duration;
 
 /// How long a window's opening motion takes to settle, with room to spare.
@@ -76,19 +75,4 @@ pub(crate) fn windows(fixture: &Fixture) -> Vec<WindowId> {
 /// A shot of `window` in the last frame.
 pub(crate) fn shot_of(fixture: &mut Fixture, window: WindowId) -> image::RgbaImage {
     fixture.shot(ShotTarget::Window(window))
-}
-
-/// Compares `actual` with `tests/golden/scenes/<name>.png` byte for byte (pixman, tier P);
-/// `BARDO_COMPOSITOR_BLESS=1` writes it.
-pub(crate) fn check_pixels(name: &str, actual: &image::RgbaImage) {
-    let env = Env::of_process();
-    let golden = Golden {
-        scene: format!("tests/golden/scenes/{name}"),
-        tier: GoldenTier::Exact,
-    };
-    let outcome = compare(&golden, actual, &env.out_dir, env.bless);
-    assert!(
-        matches!(outcome, GoldenOutcome::Match | GoldenOutcome::Blessed),
-        "{name}: {outcome:?}"
-    );
 }

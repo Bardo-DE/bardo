@@ -1,5 +1,5 @@
-//! The headless renderers: pixman (tier P goldens, byte-exact), llvmpipe GLES on the EGL
-//! surfaceless platform (tier L, effects), and smithay's dummy renderer (tests that draw
+//! The headless renderers: pixman (byte-exact), llvmpipe GLES on the EGL
+//! surfaceless platform (effects), and smithay's dummy renderer (tests that draw
 //! nothing, `testing` only).
 //!
 //! Each output draws into a persistent offscreen image of its mode's size, so the damage

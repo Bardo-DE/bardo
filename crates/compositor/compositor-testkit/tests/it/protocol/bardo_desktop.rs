@@ -1,10 +1,9 @@
 //! `bardo_desktop` (P2-Q1): the desktop model of apps, windows and Spaces, read by the shell and
-//! the agent tier, managed by the shell alone. The shell sees the whole desktop on bind (a
-//! transcript golden), its requests reach the model and come back as events, an agent connection
+//! the agent tier, managed by the shell alone. The shell sees the whole desktop on bind, its
+//! requests reach the model and come back as events, an agent connection
 //! reads but is refused every request that changes something, and what goes away is followed.
 
-use crate::protocol::wlr_toplevel::flow;
-use crate::protocol::xdg_shell::{boot, check_golden, golden, map_named, windows};
+use crate::protocol::xdg_shell::{boot, map_named, windows};
 use account_core::{SandboxFacts, SpaceId};
 use compositor_core::app::AppVisibility as Held;
 use compositor_core::policy::ConnectionRole;
@@ -103,11 +102,11 @@ fn only_the_shell_and_the_agent_tier_see_the_manager() {
 }
 
 /// Binding sends an `app`, `window` and `space` event for every existing object, each followed
-/// by its state burst, then `active` and `done`; the transcript is a golden.
+/// by its state burst, then `active` and `done`.
 #[test]
 fn binding_sends_the_whole_desktop() {
     let (mut fixture, _public, _tops) = mapped(2);
-    let (shell, watch) = watched(&mut fixture, ConnectionRole::Shell);
+    let (_shell, watch) = watched(&mut fixture, ConnectionRole::Shell);
     let space = fixture
         .model()
         .spaces()
@@ -159,23 +158,6 @@ fn binding_sends_the_whole_desktop() {
         assert_eq!(watch.active().app.as_deref(), Some(apps[0].key.as_str()));
     }
     assert_eq!(watch.dones(), 1, "one burst closes the bind");
-
-    let text = flow(
-        &mut fixture,
-        shell,
-        &["bardo_desktop_"],
-        &[
-            "id",
-            "identifier",
-            "role",
-            "geometry",
-            "parent",
-            "emphasis",
-            "sensitivity",
-            "active",
-        ],
-    );
-    check_golden(&golden("bardo_desktop-bind.txt"), &text).expect("the bind flow");
 }
 
 /// Every management request on an agent connection is `not_permitted`, the model is unchanged

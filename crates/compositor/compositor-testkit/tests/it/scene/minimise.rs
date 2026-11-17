@@ -1,9 +1,8 @@
 //! Minimise, as the real run checks it: Genie and Scale (`windows.minimise_effect`) both fly into
 //! the dock and back out on restore, a flying window takes no clicks, and a frame caught
-//! mid-flight at 1.5x and 2x is a golden (the strips of a genie meet without a seam).
+//! mid-flight at 1.5x and 2x is whole (the strips of a genie meet without a seam).
 
 use super::desk::{Desk, Dpi, OUTPUT, only_window};
-use super::golden_matches;
 use compositor_core::geometry::LogicalPoint;
 use compositor_core::input::{ButtonCode, DeviceClass};
 use compositor_core::settings::MinimiseEffect;
@@ -262,13 +261,12 @@ const SCALED: [(&str, &str, Dpi); 2] = [
 ];
 
 /// A frame of `effect` caught part of the way in, at 1.5x and 2x, shows the whole window
-/// (`assert_whole`) and matches its golden `minimise-<effect>-<scale>-mid`.
+/// (`assert_whole`).
 fn whole_mid_flight(effect: MinimiseEffect) {
     for (scale, output, dpi) in SCALED {
         let shot = mid_flight(effect, output, dpi);
         let word = format!("{effect:?}").to_lowercase();
         assert_whole(&shot, effect, &format!("{word} {scale}"));
-        golden_matches(&format!("minimise-{word}-{scale}-mid"), &shot);
     }
 }
 

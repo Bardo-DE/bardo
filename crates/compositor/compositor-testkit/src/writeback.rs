@@ -1,16 +1,11 @@
-//! A KMS writeback frame, compared with a pixman golden (P1-V). Pure: bytes in, verdict out.
+//! A KMS writeback frame, decoded (P1-V). Pure: bytes in, image out.
 //!
 //! A writeback connector hands the frame back as a raw buffer: rows of `pitch` bytes, 4 bytes a
 //! pixel, little-endian `XRGB8888` or `ARGB8888` (blue first in memory). [`decode`] turns that
-//! into an `RgbaImage`; [`tolerance`] is the golden tier a hardware frame is held to (the
-//! hardware blends and rounds differently from pixman, so never `Exact`); [`compare_raw`] does
-//! both and the comparison. `dev/vkms/accept.sh` reaches it through the `writeback-compare`
-//! binary.
+//! into an `RgbaImage`. `dev/vkms/accept.sh` reaches it through the `writeback-check` binary.
 
-use compositor_render::golden::{Golden, GoldenOutcome, GoldenTier, compare};
 use compositor_render::pass::CaptureFormat;
 use image::{Rgba, RgbaImage};
-use std::path::Path;
 
 /// The format named by its DRM fourcc name (`XR24`, `AR24`) or its long name.
 ///
@@ -122,42 +117,4 @@ pub fn decode(frame: &RawFrame, bytes: &[u8]) -> Result<RgbaImage, WritebackErro
         };
         Rgba([bytes[at + 2], bytes[at + 1], bytes[at], alpha])
     }))
-}
-
-/// The golden tier a hardware writeback frame is held to: every channel within `channel` steps
-/// on all but `parts_per_million` of the pixels.
-///
-/// ```
-/// use compositor_render::golden::GoldenTier;
-/// use compositor_testkit::writeback::tolerance;
-/// assert_eq!(tolerance(2, 1000), GoldenTier::Soft { channel: 2, parts_per_million: 1000 });
-/// ```
-#[must_use]
-pub fn tolerance(channel: u8, parts_per_million: u32) -> GoldenTier {
-    GoldenTier::Soft {
-        channel,
-        parts_per_million,
-    }
-}
-
-/// Decodes `bytes` and compares the frame with the golden at `scene` (path without `.png`)
-/// under `tier`. A difference writes the frame and a diff image into `out_dir`.
-///
-/// # Errors
-///
-/// [`WritebackError`] when the frame cannot be decoded or the comparison cannot be written to
-/// `out_dir`.
-pub fn compare_raw(
-    frame: &RawFrame,
-    bytes: &[u8],
-    scene: &str,
-    tier: GoldenTier,
-    out_dir: &Path,
-) -> Result<GoldenOutcome, WritebackError> {
-    let image = decode(frame, bytes)?;
-    let golden = Golden {
-        scene: scene.to_owned(),
-        tier,
-    };
-    Ok(compare(&golden, &image, out_dir, false))
 }

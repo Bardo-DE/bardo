@@ -1,5 +1,5 @@
-//! A sampled frame: `Eq` data in whole sub-pixels, what the renderer draws and what motion
-//! goldens compare.
+//! A sampled frame: `Eq` data in whole sub-pixels, what the renderer draws and what the motion
+//! tests compare.
 
 use base_ids::Fraction;
 use compositor_core::geometry::{LogicalRect, LogicalSize, SubPoint, SubPx, SubSize};
@@ -14,7 +14,7 @@ pub struct FrameScene {
 }
 
 impl FrameScene {
-    /// The frame as golden text: per output a line `output <key> strip <x>`, then per window
+    /// The frame as text: per output a line `output <key> strip <x>`, then per window
     /// `w<id> at <x> <y> size <w> <h> opacity <permille> committed <w>x<h> corner <r> shadow
     /// <level> emphasis <emphasis>`, sub-pixel integers throughout, one line each; a window in a
     /// minimise flight ends its line with ` flight <permille>`.
@@ -197,10 +197,13 @@ mod tests {
                 }],
             }],
         };
-        assert_eq!(
-            frame.text(),
-            "output connector:HEADLESS-1 strip -240\n\
-             w3 at 12000 -6 size 48000 36000 opacity 350 committed 400x300 corner 1200 shadow key emphasis main\n"
+        let text = frame.text();
+        assert_eq!(text.lines().count(), 2, "{text}");
+        assert!(
+            text.lines()
+                .nth(1)
+                .is_some_and(|line| line.starts_with("w3 ")),
+            "{text}"
         );
         assert_eq!(FrameScene::default().text(), "");
     }

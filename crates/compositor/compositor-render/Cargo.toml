@@ -1,6 +1,6 @@
 [package]
 name = "compositor-render"
-description = "The compositor's renderer seam: the Compositor trait over smithay's renderers, the SceneElement set, FrameScene to elements, damage-tracked output rendering and (feature testing) golden comparison."
+description = "The compositor's renderer seam: the Compositor trait over smithay's renderers, the SceneElement set, FrameScene to elements, and damage-tracked output rendering."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -16,15 +16,14 @@ desktop-protocols = {path = "../../wayland/desktop-protocols"}
 ui-core = {path = "../../ui/ui-core", default-features = false}
 smithay = {workspace = true, features = ["backend_egl", "desktop", "renderer_gl", "renderer_pixman", "wayland_frontend"]}
 thiserror = { workspace = true }
-image = { workspace = true, features = ["png", "jpeg"], optional = true }
 
 [dev-dependencies]
-tempfile = { workspace = true }
+image = { workspace = true }
 proptest = { workspace = true }
 
 [features]
-# Headless tests only (B10): smithay's DummyRenderer and the golden helper.
-testing = ["smithay/renderer_test", "dep:image"]
+# Headless tests only (B10): smithay's DummyRenderer.
+testing = ["smithay/renderer_test"]
 
 [lints]
 workspace = true

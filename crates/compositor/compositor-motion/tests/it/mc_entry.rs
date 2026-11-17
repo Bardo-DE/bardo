@@ -99,10 +99,10 @@ fn largest_shift(book: &MotionBook, t: Mono, by_us: u64) -> i32 {
 /// of magnitude above, and it would not scale with the interval.
 const SPEED_CEILING: f64 = 1.25;
 
-/// The libm risk of the goldens (A25): the motion is continuous, so a shift of the clock moves
+/// The libm risk of the sampled frames (A25): the motion is continuous, so a shift of the clock moves
 /// a value by at most `SPEED_CEILING` sub-pixels per microsecond, rounded up once for the
 /// quantising. A one-ulp difference in `exp` is a shift of far less than a microsecond, so it
-/// cannot move a golden by more than that either. The bound is on speed, not on a fixed step,
+/// cannot move a frame by more than that either. The bound is on speed, not on a fixed step,
 /// so it holds as the spring responses are retuned and still fails on a jump.
 #[test]
 fn a_microsecond_moves_no_value_by_more_than_the_speed_ceiling() {
@@ -124,7 +124,7 @@ fn a_microsecond_moves_no_value_by_more_than_the_speed_ceiling() {
             .max();
         assert!(
             at_instants <= bound(by_us),
-            "{by_us} us, golden instants: {at_instants:?}"
+            "{by_us} us, instants: {at_instants:?}"
         );
         assert!(
             sweep <= bound(by_us),

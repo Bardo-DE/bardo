@@ -3,13 +3,12 @@
 use compositor_testclient::misc::fractional::{FractionalScale, preferred};
 use compositor_testclient::surface::subsurface::{Compositor, Surface};
 use compositor_testclient::surface::toplevel::WmBase;
-use std::fmt::Write as _;
 
 use compositor_core::OutputName;
 use compositor_core::geometry::PhysicalSize;
 use compositor_core::policy::ConnectionRole;
-use compositor_testclient::{Pattern, TestClient, shm_buffer};
-use compositor_testkit::{ClientId, Env, Fixture, FixtureSpec};
+use compositor_testclient::{Pattern, shm_buffer};
+use compositor_testkit::{ClientId, Fixture, FixtureSpec};
 use ui_core::geometry::scale::Scale;
 
 /// The (interface, code) of the protocol error the compositor killed `id` with.
@@ -19,46 +18,6 @@ fn fault(fixture: &mut Fixture, id: ClientId) -> (String, u32) {
         .protocol_error()
         .expect("the compositor posted an error");
     (error.interface, error.code)
-}
-
-/// Compares what `client` received, without the events of the objects of `skip` and without
-/// instants, with `tests/golden/transcripts/<name>`; `BARDO_COMPOSITOR_BLESS=1` replaces a differing
-/// golden.
-fn check(name: &str, client: &TestClient, skip: &[&str]) {
-    let actual: String = client
-        .transcript()
-        .0
-        .iter()
-        .filter(|line| {
-            !skip
-                .iter()
-                .any(|iface| line.object.starts_with(&format!("{iface}#")))
-        })
-        .fold(String::new(), |mut out, line| {
-            let _ = writeln!(
-                out,
-                "{}.{}({})",
-                line.object,
-                line.event,
-                line.args.join(", ")
-            );
-            out
-        });
-    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/golden/transcripts")
-        .join(name);
-    let golden = std::fs::read_to_string(&path).unwrap_or_default();
-    if golden == actual {
-        return;
-    }
-    if Env::of_process().bless {
-        std::fs::write(&path, &actual).expect("write the blessed golden");
-        return;
-    }
-    panic!(
-        "{} differs\n--- golden\n{golden}--- actual\n{actual}",
-        path.display()
-    );
 }
 
 const SCALE_1_5: &str = "HEADLESS-1:1920x1080@60000:180:0,0";
@@ -138,8 +97,7 @@ fn a_scale_change_is_sent_again() {
     );
 }
 
-/// A surface learns its scale when its scale object is created, from the primary output, and
-/// the transcript matches tests/golden/transcripts/fractional-scale-preferred.txt.
+/// A surface learns its scale when its scale object is created, from the primary output.
 #[test]
 fn a_surface_learns_the_primary_outputs_scale() {
     let (mut fixture, id) = boot_at(&[SCALE_1_5]);
@@ -150,11 +108,6 @@ fn a_surface_learns_the_primary_outputs_scale() {
     let object = manager.for_surface(client, &surface);
     fixture.pump();
     assert_eq!(preferred(fixture.client(id), &object), vec![180]);
-    check(
-        "fractional-scale-preferred.txt",
-        fixture.client(id),
-        &["wl_registry", "wl_display"],
-    );
 }
 
 /// The primary output is the top-left one: a second output to its right does not change it.

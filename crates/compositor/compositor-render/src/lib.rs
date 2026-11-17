@@ -4,7 +4,7 @@
 //! with the imports every element needs, plus whether effect shaders run. [`output_elements`]
 //! turns one output's sampled [`compositor_motion::OutputFrame`] into [`SceneElement`]s, and
 //! [`render_output`] draws them through smithay's damage tracker. Feature `testing` adds
-//! smithay's `DummyRenderer` and [`golden`], the golden-image comparison the test kit uses.
+//! smithay's `DummyRenderer`.
 //!
 //! Nothing here names a device backend (row B4): no DRM, udev, session or libinput.
 //!
@@ -27,9 +27,6 @@ mod scene;
 mod texture_book;
 
 pub mod pass;
-
-#[cfg(feature = "testing")]
-pub mod golden;
 
 pub use compositor::Compositor;
 pub use damage::{RenderError, RenderSync, Rendered, Routed, render_output, routed};

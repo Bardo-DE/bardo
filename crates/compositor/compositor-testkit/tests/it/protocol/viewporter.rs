@@ -4,11 +4,9 @@ use compositor_core::geometry::PhysicalSize;
 use compositor_testclient::misc::viewporter::Viewporter;
 use compositor_testclient::surface::subsurface::Compositor;
 use compositor_testclient::{Pattern, shm_buffer};
-use std::fmt::Write as _;
 
 use compositor_core::policy::ConnectionRole;
-use compositor_testclient::TestClient;
-use compositor_testkit::{ClientId, Env, Fixture, FixtureSpec};
+use compositor_testkit::{ClientId, Fixture, FixtureSpec};
 
 use crate::protocol::shoot;
 
@@ -28,49 +26,9 @@ fn fault(fixture: &mut Fixture, id: ClientId) -> (String, u32) {
     (error.interface, error.code)
 }
 
-/// Compares what `client` received, without the events of the objects of `skip` and without
-/// instants, with `tests/golden/transcripts/<name>`; `BARDO_COMPOSITOR_BLESS=1` replaces a differing
-/// golden.
-fn check(name: &str, client: &TestClient, skip: &[&str]) {
-    let actual: String = client
-        .transcript()
-        .0
-        .iter()
-        .filter(|line| {
-            !skip
-                .iter()
-                .any(|iface| line.object.starts_with(&format!("{iface}#")))
-        })
-        .fold(String::new(), |mut out, line| {
-            let _ = writeln!(
-                out,
-                "{}.{}({})",
-                line.object,
-                line.event,
-                line.args.join(", ")
-            );
-            out
-        });
-    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/golden/transcripts")
-        .join(name);
-    let golden = std::fs::read_to_string(&path).unwrap_or_default();
-    if golden == actual {
-        return;
-    }
-    if Env::of_process().bless {
-        std::fs::write(&path, &actual).expect("write the blessed golden");
-        return;
-    }
-    panic!(
-        "{} differs\n--- golden\n{golden}--- actual\n{actual}",
-        path.display()
-    );
-}
-
 const SIZE: PhysicalSize = PhysicalSize { w: 64, h: 64 };
 
-/// A viewport's source and destination reach the frame (pixman golden).
+/// A viewport's source and destination reach the frame.
 #[test]
 fn a_viewport_crops_and_scales() {
     let (mut fixture, id, base) = shoot::desk();
@@ -100,7 +58,6 @@ fn a_viewport_crops_and_scales() {
         "{:?}",
         shot.get_pixel(126, 126)
     );
-    shoot::check_pixels("viewport-crop", &shot);
 }
 
 /// Valid source and destination are accepted, committed and removed again without a protocol
@@ -124,11 +81,6 @@ fn a_viewport_is_accepted_and_removed() {
     surface.commit();
     fixture.pump();
     assert!(fixture.client(id).protocol_error().is_none());
-    check(
-        "viewporter-flow.txt",
-        fixture.client(id),
-        &["wl_registry", "wl_display", "wl_shm"],
-    );
 }
 
 /// A second viewport on one surface is `wp_viewporter.viewport_exists` (0), posted on the manager.

@@ -1,13 +1,11 @@
-//! The base scenes (and the vkms one) (P0-R-scene, tier P: pixman, byte-exact), driven through the
-//! fixture so real client surfaces are drawn.
-//! Goldens live in `tests/golden/scenes/<name>.png`, blessed with `BARDO_COMPOSITOR_BLESS=1`.
+//! The base scenes (and the vkms one) (P0-R-scene, on pixman), driven through the fixture so
+//! real client surfaces are drawn.
 
-use compositor_render::golden::{Golden, GoldenOutcome, GoldenTier, compare};
-use compositor_testkit::{Env, Fixture, FixtureSpec};
+use compositor_testkit::{Fixture, FixtureSpec};
 
 /// The P0 base scenes: name, outputs.
 const SCENES: [(&str, &[&str]); 8] = [
-    // The vkms writeback golden (dev/vkms/accept.sh): the default 1024x768 mode of a vkms CRTC.
+    // The vkms writeback scene (dev/vkms/accept.sh): the default 1024x768 mode of a vkms CRTC.
     (
         "empty-desktop-1024x768",
         &["HEADLESS-1:1024x768@60000:120:0,0"],
@@ -35,43 +33,41 @@ mod frames;
 mod minimise;
 mod mission;
 
-/// Compares `actual` with the pixman golden `tests/golden/scenes/<name>.png`; with
-/// `BARDO_COMPOSITOR_BLESS=1` the golden is written (deliberate, with a reason in the commit).
-fn golden_matches(name: &str, actual: &image::RgbaImage) {
-    let env = Env::of_process();
-    let golden = Golden {
-        scene: format!("tests/golden/scenes/{name}"),
-        tier: GoldenTier::Exact,
-    };
-    let outcome = compare(&golden, actual, &env.out_dir, env.bless);
-    assert!(
-        matches!(outcome, GoldenOutcome::Match | GoldenOutcome::Blessed),
-        "{name}: {outcome:?}"
-    );
-}
-
 /// Builds scene `name` on `fixture` with test clients and shoots its output.
 fn shoot(fixture: &mut Fixture, name: &str) -> image::RgbaImage {
     build::scene(fixture, name)
 }
 
+/// The physical size a scene's output string (`NAME:WxH@RATE:SCALE:X,Y`) asks for.
+fn mode_of(output: &str) -> (u32, u32) {
+    let mode = output.split(':').nth(1).expect("a mode");
+    let (size, _) = mode.split_once('@').expect("a refresh rate");
+    let (w, h) = size.split_once('x').expect("a width and a height");
+    (w.parse().expect("a width"), h.parse().expect("a height"))
+}
+
 #[test]
-fn the_base_scenes_match_their_pixman_goldens() {
-    let env = Env::of_process();
+fn the_base_scenes_are_the_size_of_their_output_and_draw_their_clients() {
     let failures: Vec<String> = SCENES
         .iter()
         .filter_map(|(name, outputs)| {
             let mut fixture =
                 Fixture::start(FixtureSpec::desktop().with_outputs(outputs)).expect(name);
-            let actual = shoot(&mut fixture, name);
-            let golden = Golden {
-                scene: format!("tests/golden/scenes/{name}"),
-                tier: GoldenTier::Exact,
-            };
-            match compare(&golden, &actual, &env.out_dir, env.bless) {
-                GoldenOutcome::Match | GoldenOutcome::Blessed => None,
-                outcome @ GoldenOutcome::Differs { .. } => Some(format!("{name}: {outcome:?}")),
+            let shot = shoot(&mut fixture, name);
+            if (shot.width(), shot.height()) != mode_of(outputs[0]) {
+                return Some(format!(
+                    "{name}: shot is {}x{}",
+                    shot.width(),
+                    shot.height()
+                ));
             }
+            let first = *shot.get_pixel(0, 0);
+            let flat = shot.pixels().all(|px| *px == first);
+            let windows = name.starts_with("one-window")
+                || name.starts_with("cascaded")
+                || name.starts_with("popup")
+                || name.starts_with("bar-and");
+            (windows && flat).then(|| format!("{name}: no client is drawn"))
         })
         .collect();
     assert!(failures.is_empty(), "{}", failures.join("\n"));

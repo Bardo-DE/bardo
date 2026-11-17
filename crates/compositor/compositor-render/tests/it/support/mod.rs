@@ -1,7 +1,6 @@
 //! Shared helpers for the renderer-only tests: offscreen targets on pixman and on llvmpipe
-//! GLES, one render through `render_output`, the read-back, and the golden environment.
+//! GLES, one render through `render_output` and the read-back.
 
-use compositor_render::golden::{Env, Golden, GoldenOutcome, GoldenTier, compare};
 use compositor_render::{Compositor, Rendered, SceneElement, render_output, surfaceless_gles};
 use image::RgbaImage;
 use smithay::backend::allocator::Fourcc;
@@ -125,19 +124,4 @@ pub fn beside(images: &[RgbaImage]) -> RgbaImage {
         x += image.width();
     }
     out
-}
-
-/// Compares `actual` with `tests/golden/<name>.png` under `tier`; panics with the outcome when
-/// it differs.
-pub fn check(name: &str, tier: GoldenTier, actual: &RgbaImage) {
-    let golden = Golden {
-        scene: format!("tests/golden/{name}"),
-        tier,
-    };
-    let env = Env::of_process();
-    let outcome = compare(&golden, actual, &env.out_dir, env.bless);
-    assert!(
-        matches!(outcome, GoldenOutcome::Match | GoldenOutcome::Blessed),
-        "{name}: {outcome:?}"
-    );
 }

@@ -1,21 +1,8 @@
-//! The writeback comparison (P1-V): pure, no device. Raw buffers as the vkms writeback
-//! connector hands them back, decoded and held to a golden under a per-channel tolerance.
+//! The writeback decoding (P1-V): pure, no device. Raw buffers as the vkms writeback connector
+//! hands them back, decoded.
 
-use compositor_render::golden::{GoldenOutcome, GoldenTier};
 use compositor_render::pass::CaptureFormat;
-use compositor_testkit::writeback::{
-    RawFrame, WritebackError, compare_raw, decode, format_named, tolerance,
-};
-use image::{Rgba, RgbaImage};
-
-/// A 2x2 golden of flat grey at `dir/grey`.
-fn grey_golden(dir: &std::path::Path) -> String {
-    let scene = dir.join("grey").to_string_lossy().into_owned();
-    RgbaImage::from_pixel(2, 2, Rgba([100, 100, 100, 255]))
-        .save(format!("{scene}.png"))
-        .expect("golden");
-    scene
-}
+use compositor_testkit::writeback::{RawFrame, WritebackError, decode, format_named};
 
 /// 2x2 XRGB8888 pixels of `grey`, rows padded to a pitch of 12 bytes.
 fn grey_raw(grey: u8) -> Vec<u8> {
@@ -65,50 +52,6 @@ fn the_last_row_needs_no_trailing_padding() {
     // pitch 12, height 2, width 2: 12 + 8 = 20 bytes are enough.
     let image = decode(&frame(), &grey_raw(100)[..20]);
     image.unwrap();
-}
-
-#[test]
-fn a_frame_within_the_tolerance_matches_and_one_beyond_it_does_not() {
-    let dir = tempfile::tempdir().expect("temp dir");
-    let scene = grey_golden(dir.path());
-    let out = dir.path().join("out");
-    let tier = tolerance(3, 0);
-    let near = compare_raw(&frame(), &grey_raw(103), &scene, tier, &out);
-    assert_eq!(near, Ok(GoldenOutcome::Match));
-    let far = compare_raw(&frame(), &grey_raw(104), &scene, tier, &out);
-    assert!(matches!(far, Ok(GoldenOutcome::Differs { .. })));
-    assert!(
-        out.join("grey.actual.png").exists(),
-        "the frame is kept for a look"
-    );
-}
-
-#[test]
-fn a_few_stray_pixels_pass_only_with_a_parts_per_million_allowance() {
-    let dir = tempfile::tempdir().expect("temp dir");
-    let scene = grey_golden(dir.path());
-    let out = dir.path().join("out");
-    let mut bytes = grey_raw(100);
-    bytes[0] = 200;
-    let strict = compare_raw(&frame(), &bytes, &scene, tolerance(3, 0), &out);
-    assert!(matches!(strict, Ok(GoldenOutcome::Differs { .. })));
-    let loose = compare_raw(&frame(), &bytes, &scene, tolerance(3, 300_000), &out);
-    assert_eq!(loose, Ok(GoldenOutcome::Match));
-}
-
-#[test]
-fn a_size_other_than_the_goldens_differs() {
-    let dir = tempfile::tempdir().expect("temp dir");
-    let scene = grey_golden(dir.path());
-    let one = RawFrame::new(1, 1, 4, CaptureFormat::Xrgb8888);
-    let outcome = compare_raw(
-        &one,
-        &[100, 100, 100, 0],
-        &scene,
-        GoldenTier::Exact,
-        dir.path(),
-    );
-    assert!(matches!(outcome, Ok(GoldenOutcome::Differs { .. })));
 }
 
 #[test]

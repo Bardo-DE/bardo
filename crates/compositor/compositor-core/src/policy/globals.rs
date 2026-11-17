@@ -142,8 +142,7 @@ pub enum GlobalKind {
 }
 
 impl GlobalKind {
-    /// Every global, in declaration order. The golden table in the tests lists one row per
-    /// entry, so a global added to the table is a row to review.
+    /// Every global, in declaration order.
     pub fn all() -> impl Iterator<Item = GlobalKind> + Clone {
         GLOBALS.iter().map(|global| global.kind)
     }

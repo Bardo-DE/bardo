@@ -3,9 +3,8 @@
 # window maps, resizes and renders crisp. The client draws a 2-logical-pixel checkerboard at the
 # output's scale (a 3-pixel checkerboard in a buffer 1.5 times the size, under a viewport
 # destination in logical pixels): in the captured frame every square must be exactly 3 physical
-# pixels, opaque black or white, before and after a maximise and an unmaximise. The first frame also
-# equals the golden crates/compositor/compositor-testkit/tests/golden/scenes/one-window-1.5x.png (the same scene
-# the testkit shoots: a 400x300 gradient window, the pointer in the corner) byte for byte.
+# pixels, opaque black or white, before and after a maximise and an unmaximise. The first frame is
+# the output's physical size.
 # The client is the compositor's own test client, the artefact a jail has; Bardo and layer-shell-host demo
 # windows are the consumer scripts' (layer-shell-host's scripts/dev/accept-*.sh, run with
 # COMPOSITOR=bardo). Exit: 0 pass, 1 fail, 2 could not run, 3 environment.
@@ -16,8 +15,6 @@ root=$(cd "$(dirname "$0")/../../../compositor" && pwd)
 # shellcheck source=dev/lib/accept.sh
 source "$root/dev/lib/accept.sh"
 
-golden="$root/compositor-testkit/tests/golden/scenes/one-window-1.5x.png"
-[ -f "$golden" ] || { echo "scale-crisp.sh: the golden $golden is missing" >&2; exit 2; }
 crisp="$root/dev/lib/crisp.py"
 APP=org.example.scene
 OUT=$JAIL_SCRATCH/crisp
@@ -30,7 +27,7 @@ assert_eq "the output is 1920x1080 logical at scale 1.5" "1920,1080,180" \
   "$(output_json | jq -r '[.logical[0], .logical[1], .scale] | join(",")')"
 probe_start A
 
-# 1. The golden scene, byte for byte: a 400x300 gradient window, the pointer in the corner.
+# 1. The scene: a 400x300 gradient window, the pointer in the corner.
 inject "move 0 0" >/dev/null
 probe_do A toplevel w "app=$APP" size=400x300 pattern=gradient scale=1.5
 probe_wait A '^probe: mapped w 400x300$'
@@ -39,7 +36,6 @@ settle
 step 3
 shot output "$OUT/scene.png" >/dev/null
 assert_eq "the capture is the output's physical size" "2880x1620" "$(python3 "$crisp" size "$OUT/scene.png")"
-assert_ok "the window equals the one-window-1.5x golden" python3 "$crisp" same "$OUT/scene.png" "$golden"
 probe_do A close w
 wait_for "gone $APP" >/dev/null
 

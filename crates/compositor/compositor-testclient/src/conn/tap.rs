@@ -415,10 +415,14 @@ mod tests {
         compositor.write_all(&event[10..]).expect("second half");
         tap.now = Mono(std::time::Duration::from_millis(9));
         tap.relay();
+        let lines = &tap.transcript.0;
+        assert_eq!(lines.len(), 1);
+        assert_eq!(lines[0].at, Mono(std::time::Duration::from_millis(9)));
         assert_eq!(
-            tap.transcript.text(),
-            "9.000 wl_registry#2.global(1, \"wl_shm\", 2)\n"
+            (lines[0].object.as_str(), lines[0].event.as_str()),
+            ("wl_registry#2", "global")
         );
+        assert_eq!(lines[0].args, ["1", "\"wl_shm\"", "2"]);
         assert_eq!(read_all(&theirs), event);
     }
 
@@ -458,10 +462,18 @@ mod tests {
             .expect("write");
         compositor.write_all(&message(1, 99, &[])).expect("write");
         tap.relay();
+        let lines = &tap.transcript.0;
+        assert_eq!(lines.len(), 2);
         assert_eq!(
-            tap.transcript.text(),
-            "0.000 ?#77.#3(bytes(4))\n0.000 wl_display#1.#99(bytes(0))\n"
+            (lines[0].object.as_str(), lines[0].event.as_str()),
+            ("?#77", "#3")
         );
+        assert_eq!(lines[0].args, ["bytes(4)"]);
+        assert_eq!(
+            (lines[1].object.as_str(), lines[1].event.as_str()),
+            ("wl_display#1", "#99")
+        );
+        assert_eq!(lines[1].args, ["bytes(0)"]);
         assert_eq!(read_all(&theirs).len(), 12 + 8);
     }
 }

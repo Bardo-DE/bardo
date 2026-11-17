@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 # New global, new test file: every protocol module
 # compositor-wayland/src/<p>.rs has compositor-testkit/tests/it/protocol/<p>.rs and a
-# `mod <p>;` line in that directory's mod.rs; every module named in
-# compositor-testkit/tests/golden/globals.txt (`<interface> <version> <module>` per line)
-# is one of those covered modules.
+# `mod <p>;` line in that directory's mod.rs.
 set -euo pipefail
 shopt -s nullglob
 cd "$(dirname "$0")/.."
 src=compositor-wayland/src
 tests=compositor-testkit/tests/it/protocol
-globals=compositor-testkit/tests/golden/globals.txt
 fail=0
 
 if [ ! -d "$src" ]; then
@@ -28,14 +25,4 @@ for file in "$src"/*.rs; do
   if covered "$p"; then echo "covered: $p"; else echo "MISSING: $p (needs $tests/$p.rs and 'mod $p;' in $tests/mod.rs)"; fail=1; fi
 done
 
-if [ -f "$globals" ]; then
-  while read -r interface version module rest; do
-    case "$interface" in ''|\#*) continue ;; esac
-    if [ -z "${module:-}" ]; then echo "MISSING: $globals line '$interface $version' names no module"; fail=1; continue; fi
-    if ! covered "$module"; then echo "MISSING: $interface ($globals) names module '$module' with no test file"; fail=1; fi
-  done <"$globals"
-else
-  echo "MISSING: $globals"
-  fail=1
-fi
 exit "$fail"

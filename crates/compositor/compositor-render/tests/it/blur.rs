@@ -1,5 +1,5 @@
 //! The dual-Kawase blur's numbers and its element's geometry: pure, no renderer. The pixels are
-//! the goldens in `scenes.rs`.
+//! drawn by `scenes.rs`.
 
 use compositor_core::geometry::PhysicalRect;
 use compositor_core::layer::BlurStrength;

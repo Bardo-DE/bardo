@@ -23,7 +23,7 @@ use smithay::wayland::shm::{
 /// A GLES renderer on the EGL surfaceless platform: no DRM node, no window system.
 ///
 /// In the jail this is Mesa's llvmpipe (the jail pins the Mesa EGL vendor), the headless backend's
-/// `SoftRenderer::Llvmpipe` and the tier-L goldens' renderer (SP2).
+/// `SoftRenderer::Llvmpipe` and the tests' GLES renderer (SP2).
 ///
 /// # Errors
 ///

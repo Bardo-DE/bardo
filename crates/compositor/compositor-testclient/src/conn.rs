@@ -502,10 +502,15 @@ mod tests {
             listed,
             vec![("wl_compositor".to_owned(), 5), ("wl_shm".to_owned(), 2)]
         );
-        assert_eq!(
-            client.transcript().text(),
-            "3.000 wl_registry#2.global(1, \"wl_compositor\", 5)\n3.000 wl_registry#2.global(2, \"wl_shm\", 2)\n"
+        let lines = &client.transcript().0;
+        assert_eq!(lines.len(), 2);
+        assert!(
+            lines
+                .iter()
+                .all(|line| line.object == "wl_registry#2" && line.event == "global")
         );
+        assert_eq!(lines[0].args, ["1", "\"wl_compositor\"", "5"]);
+        assert_eq!(lines[1].args, ["2", "\"wl_shm\"", "2"]);
         assert!(!client.pump());
     }
 

@@ -132,7 +132,7 @@ mod tests {
     }
 
     #[test]
-    fn every_global_in_the_golden_but_dmabuf_has_an_entry() {
+    fn every_global_the_compositor_serves_has_an_entry() {
         for name in [
             "wl_compositor",
             "wp_viewporter",

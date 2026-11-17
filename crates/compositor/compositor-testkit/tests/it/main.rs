@@ -1,4 +1,4 @@
-//! compositor-testkit's integration tests: the fixture, the globals golden, adopt, the protocol wire tests and the renderer scenes.
+//! compositor-testkit's integration tests: the fixture, the globals, adopt, the protocol wire tests and the renderer scenes.
 //!
 //! One integration binary: every former `tests/*.rs` is a module here, and `support` is shared.
 

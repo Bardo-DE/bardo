@@ -6,7 +6,7 @@
 #
 #   dev/accept.sh [--jobs N] [--build] [--out DIR] [--timeout SECONDS] [NAME...]
 #
-# NAME is a script's name (`globals`, `globals.sh` or its path); with none, every dev/accept/*.sh.
+# NAME is a script's name (`map-resize`, `map-resize.sh` or its path); with none, every dev/accept/*.sh.
 # Each script's jail gets its own scratch dir, DIR/<name>/ (default dev/out/<run>/accept/), so its
 # runtime dir, bus, outputs and screenshots never meet another script's; its combined output is
 # DIR/<name>.log. The checkout is bound read-only: a script cannot dirty it. Inside an outer jail

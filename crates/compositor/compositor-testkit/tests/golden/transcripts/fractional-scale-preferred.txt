@@ -1,1 +1,0 @@
-wp_fractional_scale_v1#6.preferred_scale(180)

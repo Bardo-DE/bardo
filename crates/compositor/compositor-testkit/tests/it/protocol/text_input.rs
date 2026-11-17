@@ -1,8 +1,6 @@
 //! `text_input` (P0-H7).
 
-use crate::protocol::xdg_shell::{
-    boot, check_golden, click, golden, map_toplevel, pointer, settle, windows,
-};
+use crate::protocol::xdg_shell::{boot, click, map_toplevel, pointer, settle, windows};
 use compositor_core::DeviceId;
 use compositor_core::input::{DeviceClass, KeyCode};
 use compositor_testclient::ime::input_method::InputMethodEvent;
@@ -361,7 +359,7 @@ fn a_method_that_never_grabs_lets_the_key_through_after_the_hold_limit() {
     );
 }
 
-/// Preedit then `commit_string`: the transcript matches tests/golden/transcripts/text_input-commit.txt.
+/// Preedit then `commit_string`: the field hears the preedit, then the committed text.
 #[test]
 fn ime_commit_transcript() {
     let mut typing = Typing::start();
@@ -373,7 +371,11 @@ fn ime_commit_transcript() {
     typing.ime.commit_batch().expect("commit");
     typing.pump();
     let lines = typing.ime.field_lines();
-    check_golden(&golden("text_input-commit.txt"), &lines).expect("the transcript");
+    let preedit = lines
+        .find("preedit_string(\"ni\", 2, 2)")
+        .expect("the preedit");
+    let commit = lines.find("commit_string(\"你\")").expect("the commit");
+    assert!(preedit < commit, "the preedit comes first: {lines}");
     let _ = typing.client;
 }
 

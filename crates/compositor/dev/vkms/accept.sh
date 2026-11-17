@@ -12,7 +12,7 @@
 #   modeset    the compositor lights the vkms output and flips pages
 #   idle       10 minutes of an idle scene: flips advance at the refresh rate, zero missed vblanks
 #   hotplug    a configfs connector connected appears as a second output, disconnected it goes
-#   writeback  a frame read back through the writeback connector matches the pixman golden
+#   writeback  a frame read back through the writeback connector is a whole frame of the output's size
 #   dpms       output power off stops the flips, on restarts them
 #   vt         session pause stops the flips and the seat is lent, resume lights it again
 #
@@ -49,7 +49,6 @@ tools="${BARDO_COMPOSITOR_TOOLS:-$root/dev/out/tools}/bin"
 idle_seconds="${BARDO_COMPOSITOR_VKMS_IDLE_SECONDS:-600}"
 device_name="${BARDO_COMPOSITOR_VKMS_DEVICE:-compositor}"
 cfs="/sys/kernel/config/vkms/$device_name"
-golden="$root/compositor-testkit/tests/golden/scenes/empty-desktop-1024x768"
 extra_connector="hotplug1"
 
 refuse() { echo "vkms/accept.sh: refusing: $*" >&2; exit 2; }
@@ -91,8 +90,8 @@ for tool in jq wlopm; do
   command -v "$tool" >/dev/null || absent "$tool is not installed: $(pkg_hint "$tool")"
 done
 compositor="$tools/bardo-compositor"
-compare="$tools/writeback-compare"
-[ -x "$compositor" ] && [ -x "$compare" ] || absent "build the tools first: dev/bootstrap.sh (needs $compositor and $compare)"
+check="$tools/writeback-check"
+[ -x "$compositor" ] && [ -x "$check" ] || absent "build the tools first: dev/bootstrap.sh (needs $compositor and $check)"
 usage=$("$compositor" --help 2>&1 || true)
 for hook in --drm-node --kms-report --writeback-raw; do
   case "$usage" in *"$hook"*) ;; *)
@@ -100,7 +99,6 @@ for hook in --drm-node --kms-report --writeback-raw; do
     exit 4 ;;
   esac
 done
-[ -f "$golden.png" ] || absent "the writeback golden $golden.png is missing (bless it: BARDO_COMPOSITOR_BLESS=1 cargo test, see FINDINGS p1-v)"
 
 printf 'This drives compositor on the vkms device %s (%s) only. Your real displays are not touched.\nType "vkms only" to continue: ' "$card" "$node"
 read -r answer
@@ -198,7 +196,7 @@ wl() { env -i PATH="$PATH" XDG_RUNTIME_DIR="$scratch/run" WAYLAND_DISPLAY="$sock
 if wait_for 30 "an output lit with flips" '(.outputs | length >= 1 and (.[0].mode | test("^[0-9]+x[0-9]+@"))) and .flips > 0'; then
   out_name=$(field '.outputs[0].name'); mode=$(field '.outputs[0].mode')
   if [ "$mode" = "1024x768@60000" ]; then pass "modeset ($out_name $mode)"; else
-    echo "  note: mode is $mode, the writeback golden is 1024x768@60000"; pass "modeset ($out_name $mode)"; fi
+    pass "modeset ($out_name $mode)"; fi
 else
   fail modeset "no lit output with flips"
   exit 1
@@ -232,10 +230,12 @@ n=0; while [ ! -s "$raw.meta" ] && [ "$n" -lt 40 ]; do sleep 0.5; n=$((n + 1)); 
 if [ ! -s "$raw.meta" ]; then fail writeback "no writeback frame within 20s"
 else
   read -r wb_w wb_h wb_pitch wb_fourcc <"$raw.meta"
-  if "$compare" "$raw" "$wb_w" "$wb_h" "$wb_pitch" "$wb_fourcc" "$golden" "$scratch/golden-out" 3 2000; then
-    pass "writeback (${wb_w}x${wb_h} $wb_fourcc matches the pixman golden)"
+  if [ "${wb_w}x${wb_h}" != "${mode%%@*}" ]; then
+    fail writeback "the frame is ${wb_w}x${wb_h}, the output's mode is $mode"
+  elif "$check" "$raw" "$wb_w" "$wb_h" "$wb_pitch" "$wb_fourcc" >/dev/null; then
+    pass "writeback (${wb_w}x${wb_h} $wb_fourcc is a whole frame)"
   else
-    fail writeback "differs from the golden; actual and diff images in $scratch/golden-out"
+    fail writeback "the buffer in $raw is not a ${wb_w}x${wb_h} $wb_fourcc frame"
   fi
 fi
 

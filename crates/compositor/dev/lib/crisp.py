@@ -7,8 +7,6 @@
       pixels (default 18: a multiple of two cells for CELL 3) of its edge must be exactly that
       checkerboard: opaque black and white only, squares exactly CELL pixels wide. Prints the
       count of wrong pixels and, for the first few, where; exit 0 when none.
-  crisp.py same A.png B.png
-      Exit 0 when the two images are the same size and byte-identical.
   crisp.py black PNG CX CY REACH
       Every pixel at least REACH pixels from (CX, CY) (on either axis) must be opaque black: what a
       session lock's cover shows, bar the cursor.
@@ -44,18 +42,6 @@ def checker(argv):
     return 0 if len(wrong) == 0 else 1
 
 
-def same(argv):
-    a, b = load(argv[0]), load(argv[1])
-    if a.shape != b.shape:
-        print(f"sizes differ: {a.shape[1]}x{a.shape[0]} against {b.shape[1]}x{b.shape[0]}")
-        return 1
-    wrong = np.argwhere((a != b).any(axis=2))
-    print(f"{len(wrong)} of {a.shape[0] * a.shape[1]} pixels differ")
-    for (y, x) in wrong[:5]:
-        print(f"  ({x},{y}) {tuple(a[y, x])} against {tuple(b[y, x])}")
-    return 0 if len(wrong) == 0 else 1
-
-
 def black(argv):
     image = load(argv[0])
     cx, cy, reach = map(int, argv[1:4])
@@ -75,7 +61,7 @@ def size(argv):
 
 
 if __name__ == "__main__":
-    verbs = {"checker": checker, "same": same, "black": black, "size": size}
+    verbs = {"checker": checker, "black": black, "size": size}
     if len(sys.argv) < 3 or sys.argv[1] not in verbs:
         sys.exit(__doc__)
     sys.exit(verbs[sys.argv[1]](sys.argv[2:]))

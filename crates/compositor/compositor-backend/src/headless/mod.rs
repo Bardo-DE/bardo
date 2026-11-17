@@ -602,7 +602,7 @@ pub struct PresentedFrame {
 ///
 /// Every renderer reads back `Abgr8888` (RGBA byte order), so pixman and llvmpipe frames compare
 /// byte for byte (SP2). (The plan's sketch held renderer images; a read-back is what screenshots
-/// and goldens use: FINDINGS.)
+/// and the pixel probes use: FINDINGS.)
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FramePixels {
     /// Read back from pixman or GLES.

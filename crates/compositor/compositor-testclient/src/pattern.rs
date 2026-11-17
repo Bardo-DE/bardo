@@ -1,5 +1,5 @@
 //! Test patterns: pixels whose values say where they are, so a misplaced, scaled or cropped
-//! buffer shows in a golden or a pixel probe.
+//! buffer shows in a pixel probe.
 
 use compositor_core::geometry::PhysicalSize;
 

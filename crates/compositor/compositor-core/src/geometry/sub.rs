@@ -1,5 +1,5 @@
 //! Sub-pixel units: 1/120 of a logical pixel, the unit motion samples into so a frame is `Eq`
-//! data and a motion golden is text (120 because it is the wire's scale denominator, so every
+//! data and a motion sample is text (120 because it is the wire's scale denominator, so every
 //! scale a compositor announces lands on whole device pixels at whole sub-pixels).
 
 use serde::{Deserialize, Serialize};

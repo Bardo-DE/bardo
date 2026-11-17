@@ -23,8 +23,6 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use std::time::Duration;
 use wayland_client::{Connection, QueueHandle, WEnum};
 
-const GOLDEN: &str = include_str!("../../golden/globals.txt");
-
 /// One `permission_ask` the scripted shell heard.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct Asked {
@@ -433,25 +431,36 @@ fn a_program_that_changed_its_image_is_asked_as_unrecognised() {
     assert!(fixture.model().privilege().book().is_empty());
 }
 
-/// The interfaces the golden lists for `power`.
-pub(super) fn golden_of(power: Power) -> Vec<String> {
-    let word = match power {
-        Power::Screen => "screen",
-        Power::Keys => "keys",
-        Power::TypingHelp => "typing_help",
-        Power::Clipboard => "clipboard",
-        Power::Lock => "lock",
-        Power::Displays => "displays",
-        Power::Windows => "windows",
+/// The interfaces a refusal of `power` hides from a program.
+pub(super) fn gated_by(power: Power) -> Vec<String> {
+    let interfaces: &[&str] = match power {
+        Power::Screen => &[
+            "ext_output_image_capture_source_manager_v1",
+            "ext_image_copy_capture_manager_v1",
+            "ext_foreign_toplevel_image_capture_source_manager_v1",
+            "zwlr_screencopy_manager_v1",
+        ],
+        Power::Keys => &["zwp_virtual_keyboard_manager_v1"],
+        Power::TypingHelp => &["zwp_input_method_manager_v2"],
+        Power::Clipboard => &[
+            "ext_data_control_manager_v1",
+            "zwlr_data_control_manager_v1",
+        ],
+        Power::Lock => &["ext_session_lock_manager_v1"],
+        Power::Displays => &[
+            "zwlr_output_manager_v1",
+            "zwlr_output_power_manager_v1",
+            "zwlr_gamma_control_manager_v1",
+        ],
+        Power::Windows => &[
+            "ext_foreign_toplevel_list_v1",
+            "zwlr_foreign_toplevel_manager_v1",
+            "ext_workspace_manager_v1",
+        ],
     };
-    GOLDEN
-        .lines()
-        .map(str::trim)
-        .filter(|line| !line.is_empty() && !line.starts_with('#'))
-        .filter_map(|line| {
-            let fields: Vec<&str> = line.split_whitespace().collect();
-            (fields.get(3) == Some(&word)).then(|| fields[0].to_owned())
-        })
+    interfaces
+        .iter()
+        .map(|interface| (*interface).to_owned())
         .collect()
 }
 
@@ -487,7 +496,7 @@ fn the_globals_of_a_power_refused_before_connecting_are_not_advertised() {
         let refused = fixture.connect_via_ask();
         fixture.pump();
         let shown = advertised(&mut fixture, refused);
-        let hidden = golden_of(power);
+        let hidden = gated_by(power);
         assert!(!hidden.is_empty(), "{power:?} gates a global");
         assert!(
             hidden.iter().all(|interface| !shown.contains(interface)),

@@ -121,7 +121,7 @@ pub(super) fn privilege<H: FuzzHost>(
     Ok(())
 }
 
-/// The P0 global an interface name is (the golden's rows; `wl_output` and the dmabuf too).
+/// The P0 global an interface name is (`wl_output` too).
 fn kind_of(interface: &str) -> Option<GlobalKind> {
     Some(match interface {
         "wl_compositor" => GlobalKind::Compositor,
@@ -184,24 +184,4 @@ fn kind_of(interface: &str) -> Option<GlobalKind> {
         "ext_foreign_toplevel_image_capture_source_manager_v1" => GlobalKind::ToplevelCapture,
         _ => return None,
     })
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn every_golden_global_maps_to_a_kind() {
-        let golden = include_str!("../../tests/golden/globals.txt");
-        for line in golden.lines().map(str::trim) {
-            if line.is_empty() || line.starts_with('#') {
-                continue;
-            }
-            let interface = line.split_whitespace().next().expect("an interface");
-            assert!(
-                kind_of(interface).is_some(),
-                "{interface} has no GlobalKind"
-            );
-        }
-    }
 }

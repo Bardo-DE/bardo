@@ -1,6 +1,6 @@
 //! The server-side frame's rasters: the titlebar with its rounded top corners and its three
-//! lights (the window's shadow is `shadow.rs`). Pure functions of a [`FrameLook`], a size and a scale, so a
-//! golden holds. Analytic coverage (a signed distance per pixel), no sampling, no text.
+//! lights (the window's shadow is `shadow.rs`). Pure functions of a [`FrameLook`], a size and a scale, so the same
+//! pixels come out each time. Analytic coverage (a signed distance per pixel), no sampling, no text.
 
 use compositor_core::geometry::{LogicalSize, buffer_size};
 use compositor_core::window::{FrameColour, FrameLook, FrameMetrics, Light};

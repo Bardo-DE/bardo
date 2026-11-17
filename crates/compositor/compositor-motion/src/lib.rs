@@ -3,7 +3,7 @@
 //! a frame's instant into a [`FrameScene`] of whole sub-pixels (1/120 px).
 //!
 //! Floats live only inside the legs and the sampling arithmetic; [`quantise`] is the one step
-//! back to integer units, so a frame is `Eq` data and a motion golden is text.
+//! back to integer units, so a frame is `Eq` data.
 //!
 //! ```
 //! use compositor_core::time::Mono;

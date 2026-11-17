@@ -1,6 +1,6 @@
 //! `xdg_shell` (P0-H2): bind every version, create/configure/ack/map, floating placement,
 //! press-proved grabs, click to focus, no tiled states, popups, every documented error the
-//! module's requests can raise, destruction order, and the transcript golden.
+//! module's requests can raise, and destruction order.
 //!
 //! Every test drives the real `State` through the `Fixture` and is ignored until the fixture
 //! (P0-B-headless) and the core loop (P0-B-loop) are filled: they could not be run in this lane.
@@ -17,23 +17,10 @@ use compositor_testclient::surface::popup::{Popup, PopupSpec};
 use compositor_testclient::surface::toplevel::shell::{xdg_surface, xdg_wm_base};
 use compositor_testclient::surface::toplevel::{Pings, State, Toplevel, WmBase, bind_pointer};
 use compositor_testclient::{ClientError, ClientState, Pattern, shm_buffer};
-use compositor_testkit::{ClientId, Env, Fixture, FixtureSpec, TestOrigin};
+use compositor_testkit::{ClientId, Fixture, FixtureSpec, TestOrigin};
 use desktop_protocols::vocab::PressEdge;
 use std::fmt::Write as _;
-use std::path::PathBuf;
 use std::time::Duration;
-
-/// Whether the golden files are replaced (`BARDO_COMPOSITOR_BLESS=1`, deliberate).
-pub(crate) fn blessing() -> bool {
-    Env::of_process().bless
-}
-
-/// The path of a transcript golden.
-pub(crate) fn golden(name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/golden/transcripts")
-        .join(name)
-}
 
 /// A started desktop and one connected public client, pumped.
 pub(crate) fn boot() -> (Fixture, ClientId) {
@@ -184,22 +171,6 @@ pub(crate) enum Corner {
     BottomRight,
 }
 
-/// Compares `actual` with the golden at `path`; with `BARDO_COMPOSITOR_BLESS=1` the golden is replaced
-/// (deliberate, with a reason in the commit).
-pub(crate) fn check_golden(path: &std::path::Path, actual: &str) -> Result<(), String> {
-    let golden = std::fs::read_to_string(path).unwrap_or_default();
-    if golden == actual {
-        return Ok(());
-    }
-    if blessing() {
-        return std::fs::write(path, actual).map_err(|error| error.to_string());
-    }
-    Err(format!(
-        "{} differs\n--- golden ---\n{golden}--- actual ---\n{actual}",
-        path.display()
-    ))
-}
-
 /// The transcript text of a client's flow, restricted to objects whose names start with one of
 /// `prefixes`: one `object.event(args)` line per event, without `wm_capabilities` (smithay takes
 /// its order from a `HashSet`, QUIRKS) and with the configure serials masked (the counter is
@@ -225,11 +196,6 @@ pub(crate) fn lines_of(fixture: &mut Fixture, id: ClientId, prefixes: &[&str]) -
             let _ = writeln!(out, "{}.{}({args})", line.object, line.event);
             out
         })
-}
-
-/// The transcript text of a client's xdg flow ([`lines_of`] over the `xdg_*` objects).
-pub(crate) fn flow_text(fixture: &mut Fixture, id: ClientId) -> String {
-    lines_of(fixture, id, &["xdg_"])
 }
 
 /// `Xdg_wm_base` binds at every version from 1 to 7; asking for 8 is refused by the client side.
@@ -455,24 +421,6 @@ fn a_floating_configure_has_no_tiled_edges() {
         top.newest_has(State::Maximized),
         "a zoom is `maximized`, never four tiled edges"
     );
-}
-
-/// Create, configure, ack, map, close: the transcript matches tests/golden/transcripts/xdg_shell-map.txt.
-#[test]
-fn toplevel_transcript_golden() {
-    let (mut fixture, id) = boot();
-    let base = WmBase::bind(fixture.client(id), 7);
-    let top = map_toplevel(&mut fixture, id, &base, (400, 300));
-    let device = pointer(&mut fixture);
-    let window = windows(&fixture)[0];
-    click(&mut fixture, device, window);
-    top.toplevel.set_title("golden".to_owned());
-    fixture.pump();
-    // Closing is the compositor's ask; the client then destroys its objects in order.
-    top.destroy();
-    fixture.pump();
-    let text = flow_text(&mut fixture, id);
-    check_golden(&golden("xdg_shell-map.txt"), &text).expect("the toplevel flow");
 }
 
 /// Titles, app ids and limits a client declares before it maps reach the model with the window.

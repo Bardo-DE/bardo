@@ -21,7 +21,7 @@ the binaries and the test kit (P0-Z2). compositor-intents joins at P4-Z, composi
 | `compositor-core` | the pure model: ids, geometry, time data (`Mono`, `VblankClock`, `TimerBook`, `VirtualClock`), apps, windows, Spaces, layers, the lock, focus and press routing, input origins, reach and bindings, output facts and policy, connection policy (I7), settings, `Event`, `Effect`, `Model::step`, invariants; from P1-Z the GPU plan (`gpu`), the frame scheduler's maths (`frame`) and the Space ids file's codec (`space::SpaceFile`) and, from P2-Z, the shell's and the desktop manager's requests and notes (`shell`, `desktop`) and, from wave 2, per-app consent for the privileged globals (`privilege`, `policy::{power_of, trusted_powers}`) | none |
 | `compositor-layout` | the `SceneLayout` seam: `SceneSpec`, `Arrangement`, `RustScene`, `spec_of(&Model)`; taffy only in `crates/compositor-layout/src/taffy_bridge/` | none |
 | `compositor-motion` | `MotionBook` of ui-motion spring legs, `retarget`, `sample` into an `Eq` `FrameScene` in 1/120 px | none |
-| `compositor-render` | the `Compositor` renderer trait, `SceneElement`, `output_elements` (FrameScene to elements), `render_output` (damage-tracked), blur v0, the lock cover, output read-back (`pass::capture_output`, P1-Z), `golden` (feature `testing`); the workspace's one unsafe module `src/gl_raw.rs` (A17) | the GPU through smithay |
+| `compositor-render` | the `Compositor` renderer trait, `SceneElement`, `output_elements` (FrameScene to elements), `render_output` (damage-tracked), blur v0, the lock cover, output read-back (`pass::capture_output`, P1-Z); the workspace's one unsafe module `src/gl_raw.rs` (A17) | the GPU through smithay |
 | `compositor-wayland` | one module per protocol: a `<Protocol>Part` (smithay's state plus our BTreeMap tables), `Part::new` behind the I7 filter, `on_*` (request to `Event`s), `apply_*` (effect to wire); `WaylandStates`, `GlobalFilter`, `ClientState`, `convert`; from P2-Z `capture_source` (window capture) and, behind the feature `shell-protocols` (default on, A8), `bardo::{desktop, shell}` (the private `bardo_desktop_manager_v1` and `bardo_shell_v1` servers) | the wire |
 | `compositor-backend` | the headless backend (virtual outputs, vblank source, render-cost model, `VirtualInput: InputBackend`), winit (a window is one output at its own size and scale, drawn flipped, and one seat whose keyboard and pointer go through the generic input conversion; no touch), the session seam, the soft-GPU pieces (`SoftPixman`, `FixedUdmabuf`, A4); from P1-Z the tty seams (`tty::{Kms, KmsOpener, ScanoutSurface, TtySession, DeviceSource}`, `input::InputFeed`, `gpu::{RenderNodes, FormatSource}`), `TtyBackend` over them, and their thin real adapters (`*_real.rs`) compiled only under the features `tty` and `libinput` (off by default; A2) | devices under the features, none headless |
 | `compositor-agent` | the privileged-connection hand-out (`connection_role`, `hand_out`: the role check on what the bus thread proved, and the socket pair; P2-Z types, P2-Q2 bodies), agent seat, EIS, masked capture, trusted surface, kill (P4); from P2-T3 `eis` (the remote EIS server for the RemoteDesktop portal: `open`, `RemoteEisSource`, `RemoteInput`, `portal_may_connect`, by the role the caller proved; every event tagged `Origin::Remote`) | sockets |
@@ -30,7 +30,7 @@ the binaries and the test kit (P0-Z2). compositor-intents joins at P4-Z, composi
 | `compositor` | lib + bin: `State` (frozen), `delegates.rs` (frozen), `handlers/<protocol>.rs`, `core_loop`, `exec`, `clients`, `display`, `time/` (the only clock), `config/` (ui-settings), `cli`, `notify` (`Notify`, `SocketNotify`, `Notice`, `watchdog_period`: systemd's READY=1, STOPPING=1 and WATCHDOG=1; csvc; fake `FakeNotify`), `space_sync` (`SpaceSync`: registers the desktops it has not sent yet through `SpaceRegistry`; csvc), `run` (`compositor::run(RunConfig) -> Result<(), RunError>`: the startup and the event loop; `main.rs` is only arguments, `$BARDO_COMPOSITOR_LOG`, `$DBUS_SESSION_BUS_ADDRESS` and the exit code), `debug` (Debug1 in the loop, feature `debug-inject`), `jail_check` (features `testing`, `debug-inject`), `log` (takes its filter as an argument); from P1-Z `seams` (the injected `SpaceStore`, `ShellCalls`, `Spawner` and `LockMarker`), `space_store`, `lock_marker` (the session lock's marker file in the runtime directory: a restart while the shell's lock is held comes back covered), `spawn`, `xwayland`; from P2-Z `connect` (`Compositor1.Connect` answered in the loop: the unit check through `compositor-agent`, the new client inserted with its role); from wave 2 (`pa2-croot`) `privacy` (the model's book and the files: `start`, `reload_floor`, `keep`, `edited`, `publish`), `a11y` (a claimed accessibility root is queued and adopted only when the bus says it is the client's own), `hangup` (`SIGHUP` reads the floor again), `clients::{Judge, Standing}` (who a public client's program is, judged on a thread of its own with a deadline: `clients::probes`), `clients::accept` (a listener that rests on a failed accept instead of ending the loop), `clients::roster` (the connection caps: 384 in all, 48 per app or process), `open_files` (the soft file limit raised at start), `latest_writer` (a file written off the loop, latest text wins: the Spaces file and the privacy book) and `time::WallClock` (the date); its features `tty` and `libinput` (default on) turn the backend's real adapters on | everything, through the crates above |
 | `bardo-compositorctl` | lib + bin: `debug` (Debug1), `shot` (P1), `report` (P5), `privacy list \| reload` (reads the two privacy files through `compositor-privacy`; `reload` sends `SIGHUP` to the process that holds `org.bardo.Compositor1`, after checking it is a compositor) | D-Bus, the wire, files |
 | `compositor-testclient` | typed wayland-client helpers per protocol, `Transcript`, `Pattern`, shm buffers; bins `compositor-probe`, `compositor-shell-exec`; no smithay (B9) | the wire |
-| `compositor-testkit` | `Fixture` over the real `State`, `FixtureSpec`, `TestOrigin`, `FixtureInput`, fakes (session, udev, logind, the mouse gestures daemon, KMS, scanout, libinput settings, the Spaces file, the shell's D-Bus methods, the process table), the soft GPU topology and the jail's fabricated nodes and sys tree, `Env` (goldens), typed fuzz ops; bin `fake-logind` | the jail's scratch only |
+| `compositor-testkit` | `Fixture` over the real `State`, `FixtureSpec`, `TestOrigin`, `FixtureInput`, fakes (session, udev, logind, the mouse gestures daemon, KMS, scanout, libinput settings, the Spaces file, the shell's D-Bus methods, the process table), the soft GPU topology and the jail's fabricated nodes and sys tree, typed fuzz ops; bin `fake-logind` | the jail's scratch only |
 
 Layers, bottom up: `compositor-core` ← `compositor-layout` ← `compositor-motion` (C24) ←
 `compositor-render`; `compositor-core` ← `compositor-wayland`; `compositor-core` + `compositor-render` ←
@@ -109,7 +109,6 @@ A1: `Instant::now`, `SystemTime::now`, smithay's `Clock::now` and calloop's `Tim
 | a renderer and what it can do | `compositor-render::Compositor`, `EffectSupport` |
 | colours handed to a renderer (whole steps of 1/255, A18) | `compositor-render::Rgba8` |
 | the one `unsafe` (EGL display, GLES renderer: A17) | `compositor-render/src/gl_raw.rs` |
-| golden comparison and its tiers | `compositor-render::golden` (feature `testing`); `BARDO_COMPOSITOR_BLESS` read only by `compositor-testkit::Env` |
 | a protocol's state and its request and effect functions | `compositor-wayland::<protocol>` |
 | which globals a client sees (the filter that wraps I7) | `compositor-wayland::GlobalFilter` |
 | a client's key, role and identity | `compositor-wayland::ClientState` (inserted by `compositor::clients::insert_client`) |
@@ -528,7 +527,7 @@ ones, which is how the test kit's `Fixture` gets its fakes.
 1. A key in `MotionKey`, its legs beside `window_motion.rs` / `space_slide.rs`.
 2. `retarget` starts each new leg from the old leg's state; `sample` quantises through
    `quantise`.
-3. A golden in `FrameScene::text` form, blessed once with a reason.
+3. A test that samples the scene and asserts what moved.
 
 **Add a protocol.**
 1. A module `crates/compositor-wayland/src/<p>.rs`: `<P>Part { pub state, ... BTreeMaps }`,
@@ -540,9 +539,7 @@ ones, which is how the test kit's `Fixture` gets its fakes.
    `&mut self.wl.<p>.state`, callbacks converting and calling `on_*`, then `core_loop::feed`.
    `delegates.rs` needs nothing more: `delegate_dispatch2!` routes every global.
 4. A `GlobalKind` variant and its row in the `GLOBALS` table (compositor-core: tier, sandbox
-   yes or no, and a power or none, decided on purpose) and its row in compositor-core's own
-   `tests/golden/globals.txt`, a `tests/golden/globals.txt` row in the test kit
-   (`<interface> <version> <module>`), `crates/compositor-testkit/tests/it/protocol/<p>.rs` with its
+   yes or no, and a power or none, decided on purpose), `crates/compositor-testkit/tests/it/protocol/<p>.rs` with its
    `mod` line in `tests/it/protocol/mod.rs` (`scripts/check-protocol-coverage.sh`), a testclient
    helper module, and for a private request a fuzz op.
 
@@ -584,15 +581,6 @@ smithay's own features bring it (`tty = ["smithay/backend_drm", …]`).
 2. Served by the fake that owns the kind (`fakes/session.rs` for device files; FakeKms at P1).
 3. A QUIRKS row when the fixture records a behaviour fact.
 
-**Add a golden.**
-1. A scene built through the `Fixture` (or a renderer-only element test in compositor-render),
-   compared with `compositor_render::golden::compare` under the right tier: `Exact` for pixman
-   and aligned elements, `Soft { channel: 2, parts_per_million: 1000 }` for llvmpipe effects.
-2. Colours as `Rgba8`, chrome rasterised at the output's native scale, never
-   `TextureFilter::Nearest` (A18).
-3. Bless once with `BARDO_COMPOSITOR_BLESS=1` and a reason in the commit; `tests/golden/MANIFEST.toml`
-   names the pixman, Mesa and LLVM versions it was blessed on.
-
 **Freeze a new item.** Signature and doc, a `todo!()` body naming the lane, a FINDINGS row, and
 its behaviour test written and ignored with that lane's id.
 
@@ -608,9 +596,8 @@ Everything else drives the real `State` through `compositor_testkit::Fixture`: t
 the virtual clock as a calloop event source (A1). `pump` runs until a round moves nothing;
 `advance` stops at every timer and vblank on the way, so how an advance is chopped never shows;
 transcripts carry virtual time only; no test sleeps. Protocol tests live in
-`crates/compositor-testkit/tests/it/protocol/<p>.rs`, one per module; scene goldens in
-`crates/compositor-testkit/tests/it/scene/` (`mod.rs`, `desk.rs`, `build.rs`) with PNGs under `tests/golden/scenes/`; the globals
-golden is `tests/golden/globals.txt`.
+`crates/compositor-testkit/tests/it/protocol/<p>.rs`, one per module; the scenes in
+`crates/compositor-testkit/tests/it/scene/` (`mod.rs`, `desk.rs`, `build.rs`). No test compares output with a stored copy.
 
 Everything runs inside the jail (`~/desktop/harness/jail.sh`): built outside, archived with
 nextest, run inside. Binaries built with `testing` or `debug-inject` refuse to start outside it
@@ -654,5 +641,5 @@ nodes (`--fabricate-gpus N`: `/sys/dev/char/226:(128+n)`, A3) for the multi-GPU 
   smithay (DECISIONS, A13); patches live only in the fork.
 - Frozen files lanes never edit: `crates/compositor/src/state.rs`, `crates/compositor/src/delegates.rs`,
   every `lib.rs`/`mod.rs`, `crates/compositor-wayland/src/states.rs`, every `Cargo.toml`,
-  `tests/golden/globals.txt`, `dev/gate/budgets.toml`, `dev/gate/expected-skips.toml`,
+  `dev/gate/budgets.toml`, `dev/gate/expected-skips.toml`,
   `.config/nextest.toml`, and the docs; a change there is an interface ask.

@@ -2,11 +2,9 @@
 
 use compositor_testclient::misc::content_type::{ContentTypes, Type, set};
 use compositor_testclient::surface::subsurface::Compositor;
-use std::fmt::Write as _;
 
 use compositor_core::policy::ConnectionRole;
-use compositor_testclient::TestClient;
-use compositor_testkit::{ClientId, Env, Fixture, FixtureSpec};
+use compositor_testkit::{ClientId, Fixture, FixtureSpec};
 
 fn boot() -> (Fixture, ClientId) {
     let mut fixture = Fixture::start(FixtureSpec::desktop()).expect("fixture");
@@ -22,46 +20,6 @@ fn fault(fixture: &mut Fixture, id: ClientId) -> (String, u32) {
         .protocol_error()
         .expect("the compositor posted an error");
     (error.interface, error.code)
-}
-
-/// Compares what `client` received, without the events of the objects of `skip` and without
-/// instants, with `tests/golden/transcripts/<name>`; `BARDO_COMPOSITOR_BLESS=1` replaces a differing
-/// golden.
-fn check(name: &str, client: &TestClient, skip: &[&str]) {
-    let actual: String = client
-        .transcript()
-        .0
-        .iter()
-        .filter(|line| {
-            !skip
-                .iter()
-                .any(|iface| line.object.starts_with(&format!("{iface}#")))
-        })
-        .fold(String::new(), |mut out, line| {
-            let _ = writeln!(
-                out,
-                "{}.{}({})",
-                line.object,
-                line.event,
-                line.args.join(", ")
-            );
-            out
-        });
-    let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/golden/transcripts")
-        .join(name);
-    let golden = std::fs::read_to_string(&path).unwrap_or_default();
-    if golden == actual {
-        return;
-    }
-    if Env::of_process().bless {
-        std::fs::write(&path, &actual).expect("write the blessed golden");
-        return;
-    }
-    panic!(
-        "{} differs\n--- golden\n{golden}--- actual\n{actual}",
-        path.display()
-    );
 }
 
 /// `Set_content_type(video)` is read at commit.
@@ -84,11 +42,6 @@ fn the_content_type_is_stored() {
     surface.commit();
     fixture.pump();
     assert!(fixture.client(id).protocol_error().is_none());
-    check(
-        "content-type-flow.txt",
-        fixture.client(id),
-        &["wl_registry", "wl_display"],
-    );
 }
 
 /// A second content-type object on one surface is

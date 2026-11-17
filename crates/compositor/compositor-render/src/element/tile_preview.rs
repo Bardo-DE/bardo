@@ -1,7 +1,7 @@
 //! The preview a drag to a screen edge shows: the rectangle the window would tile to, a rounded
 //! translucent plate (Sequoia). Three solid bands and four corner rasters, so the plate is
 //! exact on whole pixels and only the corners are anti-aliased; the corners are one quadrant of a
-//! circle each, a pure function of the radius and the scale, so a golden holds.
+//! circle each, a pure function of the radius and the scale, so the same pixels come out each time.
 
 use super::corner::{CORNERS, corner_sign};
 use super::frame::{Raster, element, to_buffer, whole};

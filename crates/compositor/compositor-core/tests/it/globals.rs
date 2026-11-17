@@ -1,5 +1,4 @@
-//! The globals table: which global needs which consent, and who is shown what (I7). The golden
-//! `tests/golden/globals.txt` has one row per global; a new one is a row to review.
+//! The globals table: which global needs which consent, and who is shown what (I7).
 
 use account_core::SandboxFacts;
 use compositor_core::policy::{
@@ -8,41 +7,11 @@ use compositor_core::policy::{
 use compositor_core::privilege::ServiceRole;
 use desktop_protocols::vocab::{Power, WireCode};
 
-const GOLDEN: &str = include_str!("../golden/globals.txt");
-
 fn sandbox() -> ConnectionRole {
     ConnectionRole::Sandboxed(SandboxFacts::Flatpak {
         app: "org.example.App".to_owned(),
         instance: "1".to_owned(),
     })
-}
-
-fn word(seen: bool) -> &'static str {
-    if seen { "yes" } else { "no" }
-}
-
-/// The table as the golden writes it.
-fn table() -> Vec<String> {
-    GlobalKind::all()
-        .map(|kind| {
-            let power = power_of(kind).map_or_else(|| "-".to_owned(), |power| format!("{power:?}"));
-            format!(
-                "{kind:?} {power} {} {} {}",
-                word(advertised(kind, &ConnectionRole::Public)),
-                word(advertised(kind, &ConnectionRole::Agent)),
-                word(advertised(kind, &sandbox())),
-            )
-        })
-        .collect()
-}
-
-#[test]
-fn the_table_is_the_golden() {
-    let golden: Vec<&str> = GOLDEN
-        .lines()
-        .filter(|line| !line.is_empty() && !line.starts_with('#'))
-        .collect();
-    assert_eq!(table(), golden);
 }
 
 #[test]

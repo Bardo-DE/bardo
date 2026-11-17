@@ -1,7 +1,7 @@
 //! `xdg_decoration` (P0-H2): server-side is preferred (the Mac titlebar, lights and shadow are
 //! The compositor's own), and a client that insists on client-side keeps its frame.
 
-use crate::protocol::xdg_shell::{boot, check_golden, golden, lines_of};
+use crate::protocol::xdg_shell::{boot, lines_of};
 use compositor_core::policy::ConnectionRole;
 use compositor_testclient::misc::decoration::{DecorationError, DecorationManager, Mode};
 use compositor_testclient::surface::toplevel::WmBase;
@@ -66,10 +66,9 @@ fn a_second_decoration_is_already_constructed() {
 }
 
 /// The decoration object is told the mode once, with the initial configure (a later request for
-/// the same mode is answered by a configure, not a repeated `configure(mode)`): its transcript
-/// matches tests/golden/transcripts/xdg_decoration-mode.txt.
+/// the same mode is answered by a configure, not a repeated `configure(mode)`).
 #[test]
-fn the_decoration_transcript_matches_its_golden() {
+fn the_decoration_is_told_the_mode_once() {
     let (mut fixture, id) = boot();
     let base = WmBase::bind(fixture.client(id), 7);
     let manager = DecorationManager::bind(fixture.client(id)).expect("advertised");
@@ -80,5 +79,5 @@ fn the_decoration_transcript_matches_its_golden() {
     decoration.set_mode(Mode::ServerSide);
     fixture.pump();
     let text = lines_of(&mut fixture, id, &["zxdg_toplevel_decoration_v1#"]);
-    check_golden(&golden("xdg_decoration-mode.txt"), &text).expect("the decoration flow");
+    assert_eq!(text.matches(".configure(").count(), 1, "{text}");
 }

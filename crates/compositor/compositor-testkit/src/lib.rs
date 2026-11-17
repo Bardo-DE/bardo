@@ -4,10 +4,8 @@
 //! assembles its own `State`, and nothing here sleeps: time moves only when a test advances it.
 //!
 //! Also here: the mintable test origins ([`TestOrigin`]), the fakes (session, udev, logind,
-//! The mouse gestures daemon), the soft GPU topology (A3, A4), the golden environment ([`Env`]) and the typed
-//! fuzz ops.
+//! The mouse gestures daemon), the soft GPU topology (A3, A4) and the typed fuzz ops.
 
-mod env;
 pub mod fakes;
 mod fixture;
 pub mod fuzz;
@@ -20,7 +18,6 @@ mod tty_world;
 pub mod udmabuf;
 pub mod writeback;
 
-pub use env::Env;
 pub use fixture::{
     ASKED_PROGRAM, Advanced, ClientId, Fixture, FixtureError, FrameCount, SceneDump, ShotTarget,
     program_standing, trusted_standing,

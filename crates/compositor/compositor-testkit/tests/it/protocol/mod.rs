@@ -1,6 +1,6 @@
 //! One file per protocol module (`scripts/check-protocol-coverage.sh`):
-//! bind every version, happy paths, every protocol error, destruction order, a transcript
-//! golden (11 §3.2). Every test drives the real `State` through the `Fixture`. `sandbox` is
+//! bind every version, happy paths, every protocol error, destruction order. Every test drives
+//! the real `State` through the `Fixture`. `sandbox` is
 //! the one table that is not a protocol: the globals a sandboxed client never sees (I7).
 mod alpha_modifier;
 mod background_effect;

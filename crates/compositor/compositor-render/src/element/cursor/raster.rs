@@ -1,6 +1,6 @@
 //! The compositor's own cursors, rasterised at an output's native scale (A18): black shapes
 //! with a white outline in the Mac manner, drawn from a few primitives by signed distance,
-//! sixteen samples a pixel. Pure integer output for a given scale, so a golden holds.
+//! sixteen samples a pixel. Pure integer output for a given scale, so the same pixels come out each time.
 //!
 //! The shapes are the compositor's own, drawn here: no cursor theme is read (themes arrive with the
 //! settings that name one; FINDINGS).

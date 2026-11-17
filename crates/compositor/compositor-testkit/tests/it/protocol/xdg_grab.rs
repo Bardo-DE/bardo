@@ -251,7 +251,7 @@ impl Desk {
 }
 
 /// Dragging by the title to the left edge tiles the window to the left half on release, the
-/// preview-then-tile steps of Sequoia (the preview itself is the render golden's).
+/// preview-then-tile steps of Sequoia (the preview itself is the renderer scene's).
 #[test]
 fn a_drag_to_the_left_edge_tiles_the_left_half() {
     let mut desk = desk(None);

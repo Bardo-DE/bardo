@@ -434,7 +434,7 @@ fn configure_size(
     }
 }
 
-/// The frame the scene is at now (what a golden of motion reads).
+/// The frame the scene is at now (what the motion tests read).
 pub fn sample_scene(state: &State) -> FrameScene {
     sample_scene_at(state, state.clock.now())
 }

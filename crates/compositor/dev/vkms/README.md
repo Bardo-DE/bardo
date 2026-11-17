@@ -67,7 +67,7 @@ reboot) and `sudo rm /etc/udev/rules.d/99-compositor-vkms.rules`.
 ## Run
 
 ```bash
-dev/bootstrap.sh          # outside the jail: builds the compositor and writeback-compare into dev/out/tools/bin
+dev/bootstrap.sh          # outside the jail: builds the compositor and writeback-check into dev/out/tools/bin
 dev/vkms/accept.sh        # a terminal; type "vkms only"; takes a little over 10 minutes
 ```
 
@@ -86,7 +86,7 @@ hooks yet, 5 a short run.
 | modeset | the compositor, started with `--backend tty --drm-node <vkms card>`, reports one lit output with a mode and a flip count above zero within 30 s |
 | idle | for 600 s with no clients: the compositor stays up, **missed vblanks do not increase**, and flips advance at least 90% of `seconds x refresh` |
 | hotplug | connecting the `hotplug1` connector (configfs `status` = 1) gives two outputs within 15 s, disconnecting it (2) gives one again, the compositor alive |
-| writeback | SIGHUP makes the compositor read one frame back through the vkms writeback connector; `writeback-compare` holds it to `crates/compositor/compositor-testkit/tests/golden/scenes/empty-desktop-1024x768.png` (pixman, empty desktop at 1024x768) within 3 steps per channel on all but 2000 pixels per million |
+| writeback | SIGHUP makes the compositor read one frame back through the vkms writeback connector; `writeback-check` decodes it, and the frame must be the size of the output's mode |
 | dpms | `wlopm --off` reports the output `off` and the flips stop for 3 s; `wlopm --on` reports `on` and the flips restart |
 | vt | SIGUSR1 (session paused) reports the seat `lent` and the flips stop; SIGUSR2 (activated) reports the seat `held`, the one output back on, flips running |
 
@@ -107,5 +107,4 @@ for (exit 4 when missing). The full contract is at the top of `accept.sh`.
   write the raw buffer to `PATH`, then `WIDTH HEIGHT PITCH FOURCC` (`XR24`) to `PATH.meta`.
 - SIGUSR1 is the session paused and SIGUSR2 the session activated: the VT switch, simulated.
 
-The three flags need `--backend tty`, and the last two need `--drm-node`. The writeback golden has
-to be blessed once with `BARDO_COMPOSITOR_BLESS=1` (the scene test `empty-desktop-1024x768`).
+The three flags need `--backend tty`, and the last two need `--drm-node`.

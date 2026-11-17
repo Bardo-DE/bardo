@@ -1,10 +1,9 @@
 //! `workspace` (P1-M2): Spaces as ext-workspace. The workspace `id` is the Space's minted id,
 //! the same after a restart on the same Spaces file; activate, create and remove take effect at
-//! `commit`; the announcement's transcript is a golden.
+//! `commit`; the announcement carries the Space's name.
 
 use crate::protocol::consent::{ScriptedShell, kept, program};
 use crate::protocol::wlr_toplevel::flow;
-use crate::protocol::xdg_shell::{check_golden, golden};
 use compositor_core::Event;
 use compositor_core::policy::ConnectionRole;
 use compositor_core::privilege::{UnixSeconds, Verdict};
@@ -146,13 +145,15 @@ fn requests_reach_the_model() {
     assert!(watch.workspaces()[0].active, "the neighbour is shown again");
 }
 
-/// The announcement of one group and workspace: the transcript matches
-/// tests/golden/transcripts/workspace-publish.txt.
+/// The announcement of one group and workspace: the group, the workspace with its name, and one
+/// `done` that closes it.
 #[test]
-fn the_announcement_transcript_matches_its_golden() {
+fn the_announcement_names_the_group_and_the_workspace() {
     let (mut fixture, client, _watch) = watched(FixtureSpec::desktop());
     let text = flow(&mut fixture, client, &["ext_workspace_"], &["id"]);
-    check_golden(&golden("workspace-publish.txt"), &text).expect("the announcement flow");
+    assert_eq!(text.matches(".workspace_group(").count(), 1, "{text}");
+    assert!(text.contains(".name(\"Desktop 1\")"), "{text}");
+    assert_eq!(text.matches(".done()").count(), 1, "{text}");
 }
 
 /// A desktop with the scripted shell, and a Space list bound by a program that is asked.

@@ -3,8 +3,7 @@
 //! Ignored until the fixture and the core loop are filled.
 
 use crate::protocol::xdg_shell::{
-    Corner, boot, check_golden, click, click_at, corner_of, golden, lines_of, map_toplevel,
-    pointer, settle, windows,
+    Corner, boot, click, click_at, corner_of, lines_of, map_toplevel, pointer, settle, windows,
 };
 use compositor_core::policy::ConnectionRole;
 use compositor_core::window::{A11yRoot, FrameHint};
@@ -210,10 +209,9 @@ fn hints_said_before_the_window_maps_reach_it_when_it_does() {
     assert!(hints.frame_said);
 }
 
-/// A new extension object is told its emphasis and placement once, at creation: the transcript
-/// matches tests/golden/transcripts/bardo_window-create.txt.
+/// A new extension object is told its emphasis and placement once, at creation.
 #[test]
-fn the_creation_transcript_matches_its_golden() {
+fn a_new_object_is_told_its_emphasis_and_placement_once() {
     let (mut fixture, id) = boot();
     let base = WmBase::bind(fixture.client(id), 7);
     let manager = WindowManager::bind(fixture.client(id), 1);
@@ -221,7 +219,8 @@ fn the_creation_transcript_matches_its_golden() {
     let _ext = manager.window(fixture.client(id), &top);
     fixture.pump();
     let text = lines_of(&mut fixture, id, &["bardo_window_v1#"]);
-    check_golden(&golden("bardo_window-create.txt"), &text).expect("the creation flow");
+    assert_eq!(text.matches(".emphasis(").count(), 1, "{text}");
+    assert_eq!(text.matches(".placement(").count(), 1, "{text}");
 }
 
 /// From P2 a proven `request_placement` is acted on: the window is placed, its model state

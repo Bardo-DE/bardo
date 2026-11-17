@@ -11,7 +11,7 @@ use smithay::utils::{Buffer, Physical, Rectangle};
 /// The renderers the compositor composites with: smithay's traits plus what our effect passes need.
 ///
 /// `ExportMem` (reading a frame back) is not a supertrait: smithay's `DummyRenderer` has none,
-/// so capture and goldens ask for it where they read pixels (a departure from the plan's
+/// so capture and the tests ask for it where they read pixels (a departure from the plan's
 /// sketch, FINDINGS). Textures are `Clone + Send + 'static`, which smithay's surface and
 /// memory elements need (true of every renderer the compositor uses).
 ///

@@ -15,7 +15,7 @@ const MAX_OFFSET: f32 = 2.5;
 const LAST_RESORT_OFFSET: f32 = 4.0;
 
 /// How far one unit of `offset * 2^passes` spreads, as a Gaussian's sigma. UNMEASURED: set from
-/// the filter's variance by hand; the golden at 1x and 2x pins what it gives, and design/23 M26
+/// the filter's variance by hand; design/23 M26
 /// (10 to 90 percent over 56 logical pixels for sigma 22) is the figure to calibrate against.
 const SIGMA_PER_STEP: f32 = 0.8;
 

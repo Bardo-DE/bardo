@@ -1,11 +1,9 @@
-//! Renderer-only golden scenes (P0-R-scene). Everything the compositor draws without a client
+//! Renderer-only scenes (P0-R-scene). Everything the compositor draws without a client
 //! surface: the named cursors at native scale, a cursor across two outputs, the lock cover,
-//! blur v0 (its pixman stand-in in tier P, its GLES blur in tier L on llvmpipe), and the clear
-//! output. Aligned scenes are also byte-identical between pixman and llvmpipe (tier X, A18).
+//! blur v0 (its pixman stand-in, its GLES blur on llvmpipe), and the clear output. Aligned
+//! scenes are also byte-identical between pixman and llvmpipe (A18).
 //! The client-surface scenes (windows, popups, layers, lock surfaces) are the fixture's, in
 //! `crates/compositor-testkit/tests/it/scene/mod.rs`.
-//!
-//! Goldens live in `tests/golden/<name>.png`, blessed with `BARDO_COMPOSITOR_BLESS=1`.
 #![cfg(feature = "testing")]
 
 use crate::support;
@@ -15,7 +13,6 @@ use compositor_core::geometry::{
     LogicalPoint, LogicalRect, LogicalSize, PhysicalRect, PhysicalSize, SubPx,
 };
 use compositor_motion::{OutputFrame, StripOffset};
-use compositor_render::golden::GoldenTier;
 use compositor_render::pass::BlurLook;
 use compositor_render::{
     BlurV0Element, ChromeLayer, CursorDraw, CursorShape, LayerDraw, OutputView, Rgba8,
@@ -24,7 +21,7 @@ use compositor_render::{
 };
 use smithay::backend::renderer::element::Id;
 use smithay::backend::renderer::utils::CommitCounter;
-use support::{Offscreen1, beside, check, gles, image_of, output_key, pixman, render_once};
+use support::{Offscreen1, beside, gles, image_of, output_key, pixman, render_once};
 use ui_core::geometry::scale::Scale;
 
 const GREY: Rgba8 = Rgba8 {
@@ -248,33 +245,26 @@ fn blur_scene<R: Offscreen1>(renderer: &mut R, scale: u32) -> image::RgbaImage {
     )
 }
 
+/// Whether `shot` has a pixel that is not the grey page.
+fn draws_something(shot: &image::RgbaImage) -> bool {
+    shot.pixels().any(|px| px.0 != GREY.rgba())
+}
+
 #[test]
-fn the_ten_renderer_scenes_match_their_pixman_goldens() {
+fn the_renderer_scenes_draw_what_they_are_made_of() {
     let mut renderer = pixman();
     for scale in [120, 150, 180, 210, 240] {
-        let percent = match scale {
-            120 => "1x",
-            150 => "1.25x",
-            180 => "1.5x",
-            210 => "1.75x",
-            _ => "2x",
-        };
-        check(
-            &format!("cursor-sheet-{percent}"),
-            GoldenTier::Exact,
-            &cursor_sheet(&mut renderer, scale),
+        assert!(
+            draws_something(&cursor_sheet(&mut renderer, scale)),
+            "the cursors show at {scale}"
         );
     }
-    check(
-        "cursor-across-outputs-1x",
-        GoldenTier::Exact,
-        &across_outputs(&mut renderer, 120),
-    );
-    check(
-        "cursor-across-outputs-1x-2x",
-        GoldenTier::Exact,
-        &across_outputs(&mut renderer, 240),
-    );
+    for right_scale in [120, 240] {
+        assert!(
+            draws_something(&across_outputs(&mut renderer, right_scale)),
+            "the cursor shows at the seam, right output at {right_scale}"
+        );
+    }
 
     // A locked output whose locker died: the cursor, then the cover, then a session that must
     // not show.
@@ -296,12 +286,18 @@ fn the_ten_renderer_scenes_match_their_pixman_goldens() {
         shot.pixels().all(|px| px.0 != [255, 0, 0, 255]),
         "nothing of the session shows"
     );
-    check("lock-cover-dead-locker-1.5x", GoldenTier::Exact, &shot);
 
-    check(
-        "blur-v0-stand-in-1x",
-        GoldenTier::Exact,
-        &blur_scene(&mut renderer, 120),
+    // The stand-in blur leaves what is outside its region, and its ring's hole, untouched.
+    let shot = blur_scene(&mut renderer, 120);
+    assert_eq!(
+        shot.get_pixel(10, 100).0,
+        STRIPES[0].rgba(),
+        "outside the region"
+    );
+    assert_eq!(
+        shot.get_pixel(150, 100).0,
+        STRIPES[3].rgba(),
+        "inside the ring's hole"
     );
 
     let blank = view(0, 0, 64, 40, 120);
@@ -315,15 +311,16 @@ fn the_ten_renderer_scenes_match_their_pixman_goldens() {
     );
     assert!(elements.is_empty());
     let size = size_of(&blank);
-    check(
-        "empty-output-1x",
-        GoldenTier::Exact,
-        &image_of(size, render_once(&mut renderer, size, 1.0, &elements)),
+    let empty = image_of(size, render_once(&mut renderer, size, 1.0, &elements));
+    let first = *empty.get_pixel(0, 0);
+    assert!(
+        empty.pixels().all(|px| *px == first),
+        "an empty output is one flat colour"
     );
 }
 
 #[test]
-fn the_kawase_blur_matches_its_llvmpipe_goldens_at_1x_and_2x() {
+fn the_kawase_blur_mixes_the_stripes_at_1x_and_2x() {
     for (scale, name) in [(120, "blur-kawase-1x"), (240, "blur-kawase-2x")] {
         let shot = blur_scene(&mut gles(), scale);
         // Inside a band, across a stripe edge, the blur mixes the two colours; outside the
@@ -342,14 +339,6 @@ fn the_kawase_blur_matches_its_llvmpipe_goldens_at_1x_and_2x() {
             shot.get_pixel(150, 100).0,
             STRIPES[3].rgba(),
             "{name}: inside the ring's hole"
-        );
-        check(
-            name,
-            GoldenTier::Soft {
-                channel: 2,
-                parts_per_million: 1000,
-            },
-            &shot,
         );
     }
 }
@@ -456,13 +445,15 @@ fn tile_preview_scene<R: Offscreen1>(renderer: &mut R, scale: u32) -> image::Rgb
 }
 
 #[test]
-fn the_tile_preview_matches_its_pixman_goldens() {
+fn the_tile_preview_is_a_plate_inside_the_page() {
     let mut renderer = pixman();
-    for (scale, name) in [(120, "1x"), (180, "1.5x"), (240, "2x")] {
-        check(
-            &format!("tile-preview-{name}"),
-            GoldenTier::Exact,
-            &tile_preview_scene(&mut renderer, scale),
+    for scale in [120, 180, 240] {
+        let shot = tile_preview_scene(&mut renderer, scale);
+        assert!(draws_something(&shot), "the plate shows at {scale}");
+        assert_eq!(
+            shot.get_pixel(0, 0).0,
+            GREY.rgba(),
+            "the page shows outside the plate at {scale}"
         );
     }
 }

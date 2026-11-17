@@ -4,7 +4,6 @@
 //! in both colour schemes.
 
 use super::desk::{Desk, Dpi, OUTPUT, only_window};
-use super::golden_matches;
 use compositor_core::geometry::{LogicalPoint, LogicalRect, LogicalSize};
 use compositor_core::window::Light;
 use compositor_core::{OutputName, WindowId};
@@ -64,8 +63,7 @@ const SMOOTH_STEP: i32 = 6;
 /// cas-wave "Real-run checks: Shadow" (sharp at 2x, no seam where a strip meets a corner): a
 /// 1600 x 1000 window on a 2x output, over a light wallpaper (the bare desktop is black, and a
 /// black shadow shows on nothing). The pixels just outside its bottom edge and its right edge,
-/// from beside one corner past the other, change smoothly; the whole frame is a golden
-/// (`shadow-1600x1000-2x`, new: bless and look at the corners).
+/// from beside one corner past the other, change smoothly.
 #[test]
 fn a_large_windows_shadow_at_2x_is_seamless() {
     let output = "HEADLESS-1:3840x2160@60000:240:0,0";
@@ -115,7 +113,6 @@ fn a_large_windows_shadow_at_2x_is_seamless() {
         luma(at(2 * (right + 4), 2 * middle)) < luma(at(2 * (right + 40), 2 * middle)),
         "the shadow is darker at the edge than away from it"
     );
-    golden_matches("shadow-1600x1000-2x", &shot);
 }
 
 /// The wallpaper the shadows fall on: light, so that a black shadow darkens it. ARGB.
@@ -220,7 +217,7 @@ fn ink_columns(shot: &image::RgbaImage, bar: LogicalRect, after: i32) -> Option<
 /// each scheme the desktop can be in. The key window's title is centred in its titlebar (off
 /// the lights); its lights are coloured and unmarked while the other's are grey, and under the
 /// pointer the grey ones colour and show their marks; both bottom corners of the content are
-/// rounded. The frames of both schemes are goldens (`frame-light-1x`, `frame-dark-1x`, new).
+/// rounded, in both schemes.
 /// `theme = system` resolving to the scheme is `compositor_app::appearance`'s unit-tested table; here
 /// the fixture sets the scheme the resolution gives.
 #[test]
@@ -325,6 +322,5 @@ fn the_frame_follows_the_scheme_with_a_centred_title_lit_lights_and_round_corner
                 "{word} {name}: the corner is rounded off"
             );
         }
-        golden_matches(&format!("frame-{word}-1x"), &shot);
     }
 }

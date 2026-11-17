@@ -1,6 +1,6 @@
 //! KMS writeback (P1-V2): reading one frame of what a CRTC scans out, back through the
 //! device's writeback connector. Only the `--drm-node` test mode on the vkms device turns it
-//! on (`dev/vkms/accept.sh` compares the frame with the pixman golden).
+//! on (`dev/vkms/accept.sh` checks the frame decodes at the output's size).
 //!
 //! [`Writeback`] is the seam. Real: `writeback_real.rs` over the device crates; fake:
 //! `compositor_testkit::fakes::FakeWriteback`. A job is two calls: [`Writeback::begin`] queues

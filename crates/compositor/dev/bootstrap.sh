@@ -67,12 +67,12 @@ build_compositor() {
   cargo build "${flag[@]}" --bins -p compositor-app -p compositor-ctl -p compositor-testclient -p compositor-testkit \
     --features compositor-app/debug-inject
   local bin
-  for bin in bardo-compositor bardo-compositorctl compositor-probe compositor-shell-exec fake-logind writeback-compare; do
+  for bin in bardo-compositor bardo-compositorctl compositor-probe compositor-shell-exec fake-logind writeback-check; do
     # A copy, not a link: a later `cargo clean` must not leave the jail a dangling tool.
     cp -f "$target/$profile/$bin" "$tools/bin/$bin.new"
     mv -f "$tools/bin/$bin.new" "$tools/bin/$bin"
   done
-  echo "bootstrap: bardo-compositor, bardo-compositorctl, compositor-probe, compositor-shell-exec, fake-logind, writeback-compare -> $tools/bin ($profile)"
+  echo "bootstrap: bardo-compositor, bardo-compositorctl, compositor-probe, compositor-shell-exec, fake-logind, writeback-check -> $tools/bin ($profile)"
 }
 
 fetch_foot() {
