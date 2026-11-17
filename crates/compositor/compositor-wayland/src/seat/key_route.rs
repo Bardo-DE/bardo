@@ -86,7 +86,7 @@ impl PastKeys {
 
 /// The way a press goes: past only for a copy from a virtual keyboard made through the protocol
 /// (its ids start at [`VIRTUAL_KEYBOARD_DEVICE`]) while the input method holds the keyboard. A
-/// kernel keyboard, keycap's among them, goes through as before.
+/// kernel keyboard, the key remap daemon's among them, goes through as before.
 fn press_route(origin: &Origin, device: DeviceId, facts: RouteFacts) -> bool {
     let protocol = device.0 >= VIRTUAL_KEYBOARD_DEVICE.0;
     protocol

@@ -1,4 +1,4 @@
-//! The person's `key-remap.toml`: read as text (keycap parses it, leniently) and watched for edits.
+//! The person's `key-remap.toml`: read as text (the key remap daemon parses it, leniently) and watched for edits.
 
 use std::io::ErrorKind;
 use std::path::Path;
@@ -6,7 +6,7 @@ use std::path::Path;
 use crate::debounced::Debounced;
 use crate::error::ServiceError;
 
-/// The file's name inside keycap's config folder.
+/// The file's name inside the key remap daemon's config folder.
 const FILE_NAME: &str = "key-remap.toml";
 
 /// The file's text; `None` when there is no such file or it cannot be read.
@@ -16,7 +16,7 @@ pub(crate) fn read(dir: &Path) -> Option<String> {
         Ok(text) => Some(text),
         Err(error) if error.kind() == ErrorKind::NotFound => None,
         Err(error) => {
-            eprintln!("bardo-shell: keycap: {}: {error}", path.display());
+            eprintln!("bardo-shell: key_remap: {}: {error}", path.display());
             None
         }
     }

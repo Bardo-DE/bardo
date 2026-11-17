@@ -2,8 +2,8 @@
 # Shared by dist/install.sh and dist/uninstall.sh (sourced, never run). Where each piece of bardo-shell
 # goes, and the helpers that print every step and honour --dry-run.
 #
-# Nothing here touches Plasma's files, Toshy's units or keycap's system files: bardo-shell is the files
-# below, the binary, and one user file for keycap (the bardo-shell layer), and nothing else.
+# Nothing here touches Plasma's files, Toshy's units or the key remap daemon's system files: bardo-shell is the files
+# below, the binary, and one user file for the key remap daemon (the bardo-shell layer), and nothing else.
 
 DIST="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$DIST/.." && pwd)"
@@ -16,7 +16,7 @@ PREFIX=/usr/local
 DESTDIR=
 NO_BUILD=0
 
-# The bardo-shell session's keycap layer. bardo-shell forwards this user file to keycap, which lays it over
+# The bardo-shell session's the key remap daemon layer. bardo-shell forwards this user file to the key remap daemon, which lays it over
 # /etc/bardo/key-remap/key-remap.toml (the Plasma overlay, which Plasma never overrides); the file is copied
 # when missing and never overwritten.
 BARDO_KEY_REMAP_LAYER_SRC="$DIST/key-remap/key-remap.toml"
@@ -47,14 +47,14 @@ set_dests
 
 DRY=0
 
-# keycap_rules FILE: each rule of a keycap layer as "[profile] rule", sorted, one per line.
-keycap_rules() {
+# key_remap_rules FILE: each rule of a key remap daemon layer as "[profile] rule", sorted, one per line.
+key_remap_rules() {
   awk '/^\[/ { profile = $0 } /^[[:space:]]*\{[[:space:]]*when/ { sub(/^[[:space:]]+/, ""); sub(/,[[:space:]]*$/, ""); print profile " " $0 }' "$1" | sort -u
 }
 
-# keycap_rules_lacking: the rules dist has and the person's layer lacks, one per line.
-keycap_rules_lacking() {
-  comm -23 <(keycap_rules "$BARDO_KEY_REMAP_LAYER_SRC") <(keycap_rules "$BARDO_KEY_REMAP_LAYER_DEST")
+# key_remap_rules_lacking: the rules dist has and the person's layer lacks, one per line.
+key_remap_rules_lacking() {
+  comm -23 <(key_remap_rules "$BARDO_KEY_REMAP_LAYER_SRC") <(key_remap_rules "$BARDO_KEY_REMAP_LAYER_DEST")
 }
 
 # parse_flags "$@": --dry-run, --prefix DIR, --destdir DIR, --no-build (only where the script sets

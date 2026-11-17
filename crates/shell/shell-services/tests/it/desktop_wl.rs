@@ -568,7 +568,7 @@ fn the_offered_protocols_choose_the_arm() {
 }
 
 #[test]
-fn keycap_is_told_the_window_the_compositor_calls_activated() {
+fn key_remap_is_told_the_window_the_compositor_calls_activated() {
     let mut session = Session::new();
     session
         .say(opens(1, "term", &[], "DP-1"))

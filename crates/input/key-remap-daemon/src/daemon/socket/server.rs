@@ -43,7 +43,7 @@ pub(crate) fn socket_path(runtime_dir: &Path) -> PathBuf {
 }
 
 /// Binds the listening socket, replacing a stale file, mode 0666 so any local desktop can
-/// connect (the seat check and the shell check, not the file mode, decide whom keycap obeys).
+/// connect (the seat check and the shell check, not the file mode, decide whom the key remap daemon obeys).
 pub(crate) fn bind(path: &Path) -> io::Result<OwnedFd> {
     if let Some(dir) = path.parent() {
         std::fs::create_dir_all(dir)?;
@@ -93,7 +93,7 @@ pub(crate) fn spawn(
         vouch,
     };
     std::thread::Builder::new()
-        .name("keycap-socket".to_owned())
+        .name("key-remap-socket".to_owned())
         .spawn(move || server.run())?;
     Ok(SocketHandle { tx, waker })
 }
@@ -134,7 +134,7 @@ impl Server {
             let ready = match self.wait() {
                 Ok(ready) => ready,
                 Err(e) => {
-                    eprintln!("keycap: socket poll failed: {e}");
+                    eprintln!("key_remap: socket poll failed: {e}");
                     return;
                 }
             };
@@ -207,7 +207,7 @@ impl Server {
                     AcceptFailure::NothingPending => return,
                     AcceptFailure::Retry => {}
                     AcceptFailure::Pause => {
-                        eprintln!("keycap: accept failed: {e}; not accepting for a moment");
+                        eprintln!("key_remap: accept failed: {e}; not accepting for a moment");
                         self.intake = Intake::paused_at(clock::now());
                         return;
                     }
@@ -258,7 +258,7 @@ impl Server {
         let (complaints, voice) = std::mem::take(&mut self.complaints).note(uid, clock::now());
         self.complaints = complaints;
         if voice == Voice::Speak {
-            eprintln!("keycap: client uid {uid}: {what}");
+            eprintln!("key_remap: client uid {uid}: {what}");
         }
     }
 
@@ -278,11 +278,9 @@ impl Server {
                 }
                 Ok(ToSocket::Keymap(reading)) => {
                     if let Some(replies) = self.shelf.read(reading) {
-                        self.shelf
-                            .state()
-                            .problems
-                            .iter()
-                            .for_each(|p| eprintln!("keycap: keymap: line {}: {}", p.line, p.what));
+                        self.shelf.state().problems.iter().for_each(|p| {
+                            eprintln!("key_remap: keymap: line {}: {}", p.line, p.what)
+                        });
                         self.deliver(replies);
                     }
                 }

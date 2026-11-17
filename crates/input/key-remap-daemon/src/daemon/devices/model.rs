@@ -34,13 +34,13 @@ pub(super) struct Tracked {
     pub(super) retry: Retry,
 }
 
-/// All keyboards, by the id keycap gave them.
+/// All keyboards, by the id the key remap daemon gave them.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(crate) struct Devices {
     pub(super) tracked: BTreeMap<DeviceId, Tracked>,
     pub(super) next: u32,
     /// The escape chord gave the keyboards back; they stay free until `Resume`. Otherwise
-    /// keycap wants them grabbed.
+    /// The key remap daemon wants them grabbed.
     pub(super) released: bool,
     /// Layouts the config assigns by name or id, over what the vendor says.
     pub(super) overrides: crate::LayoutOverrides,

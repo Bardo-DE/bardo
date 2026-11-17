@@ -13,8 +13,8 @@ sill's `docs/manual-checks.md`; layer-shell-host's item f at 1.5 is listed there
   harness checks the mapping, not a real session.
 - [ ] **Wheel zoom**: hold the platform's primary modifier (Command on our desktop, Ctrl on KDE)
   over a zoomable view and scroll; a plain wheel scrolls.
-- [ ] **A keycap source**: when the desktop's launcher passes keycap's `KeymapSource`, change a
-  standard chord in keycap and watch an open app's menu text follow without a restart (the
+- [ ] **A key remap daemon source**: when the desktop's launcher passes the key remap daemon's `KeymapSource`, change a
+  standard chord in the key remap daemon and watch an open app's menu text follow without a restart (the
   reload runs inside `Ds`'s render and has not been run live).
 
 ## Waiting on you (picks and checks, queued 2026-09-26)

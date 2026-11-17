@@ -1,5 +1,5 @@
 //! The remapper and the Caps Lock rule composed: the one place the two meet. The reader runs it on
-//! the real keyboards and `keycap replay` runs it on a script, so the replay cannot drift from the
+//! the real keyboards and `key_remap replay` runs it on a script, so the replay cannot drift from the
 //! daemon. Pure; the reads and the writes belong to the reader, which tells the machine what it
 //! wrote (`wrote`) only for what reached the wire.
 
@@ -7,7 +7,7 @@ use super::caps::{CapsFix, remaps_caps};
 use super::leds::{Led, LedEvent};
 use crate::{OutEvent, Profiles, RemapInput, RemapOut, Remapper};
 
-/// The remapper and what keycap knows of the Caps Lock lock.
+/// The remapper and what the key remap daemon knows of the Caps Lock lock.
 #[derive(Debug, Clone, Default)]
 pub(crate) struct Machine {
     remapper: Remapper,

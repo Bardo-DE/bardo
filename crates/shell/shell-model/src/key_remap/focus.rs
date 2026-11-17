@@ -1,16 +1,16 @@
-//! What the service tells keycap: the focus when it changes, and what a new connection must
+//! What the service tells the key remap daemon: the focus when it changes, and what a new connection must
 //! hear at once.
 
 use key_remap_proto::{MAX_PACKET, ProfileName, Steer, ToDaemon, encode};
 
-/// `next` when keycap has not been told it yet: keycap hears a `Focus` only when the profile
+/// `next` when the key remap daemon has not been told it yet: the key remap daemon hears a `Focus` only when the profile
 /// changes, never for a window change that leaves it the same.
 #[must_use]
 pub fn focus_to_send(previous: Option<&ProfileName>, next: ProfileName) -> Option<ProfileName> {
     (previous != Some(&next)).then_some(next)
 }
 
-/// The `UserConfig` carrying `toml`, unless it would not fit in one packet (keycap would not
+/// The `UserConfig` carrying `toml`, unless it would not fit in one packet (the key remap daemon would not
 /// read half a config).
 #[must_use]
 pub fn user_config(toml: String) -> Option<ToDaemon> {
@@ -18,7 +18,7 @@ pub fn user_config(toml: String) -> Option<ToDaemon> {
     (encode(&message).len() < MAX_PACKET).then_some(message)
 }
 
-/// What keycap should be running with: the last focus and the last user config sent. A new
+/// What the key remap daemon should be running with: the last focus and the last user config sent. A new
 /// connection starts from nothing, so it is told all of it again.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Wants {

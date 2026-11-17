@@ -1,5 +1,5 @@
 //! `struct input_event` and the two directions of translation: what a grabbed device sent
-//! (`decode`) and what keycap writes (`encode`). Pure.
+//! (`decode`) and what the key remap daemon writes (`encode`). Pure.
 
 use crate::Key;
 use crate::{Edge, Logical, OutEvent, Physical};
@@ -21,7 +21,7 @@ pub(crate) const REL_HWHEEL: u16 = 0x06;
 pub(crate) const REL_WHEEL: u16 = 0x08;
 pub(crate) const REL_WHEEL_HI_RES: u16 = 0x0b;
 pub(crate) const REL_HWHEEL_HI_RES: u16 = 0x0c;
-/// The highest key or button code keycap's virtual keyboard registers.
+/// The highest key or button code the key remap daemon's virtual keyboard registers.
 pub(crate) const MAX_CODE: u16 = 0x2ff;
 
 /// One `struct input_event` without its timestamp (the kernel stamps uinput writes).
@@ -59,7 +59,7 @@ impl InputEvent {
     }
 }
 
-/// What a device event means to keycap.
+/// What a device event means to key_remap.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum Decoded {
     /// A keyboard key transition.

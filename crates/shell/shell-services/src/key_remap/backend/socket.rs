@@ -1,7 +1,7 @@
-//! The thread that holds the connection to keycap: a blocking `SOCK_SEQPACKET` socket and a wake
+//! The thread that holds the connection to the key remap daemon: a blocking `SOCK_SEQPACKET` socket and a wake
 //! descriptor in one `poll`, so a request from the service and a packet from the daemon are both
 //! heard at once. It reconnects with a growing wait when the socket is gone, and starts every
-//! connection by telling keycap the focus and the config it should have.
+//! connection by telling the key remap daemon the focus and the config it should have.
 
 use std::io;
 use std::os::fd::{AsFd, OwnedFd};
@@ -18,7 +18,7 @@ use rustix::net::{
     send, socket_with,
 };
 use rustix::time::Timespec;
-use shell_model::keycap::{KeycapEvent, Wants, reconnect_delay};
+use shell_model::key_remap::{KeyRemapEvent, Wants, reconnect_delay};
 use tokio::sync::mpsc::UnboundedSender;
 
 use crate::error::ServiceError;
@@ -38,7 +38,7 @@ pub(crate) struct Link {
 }
 
 impl Link {
-    /// Send `message` to keycap now, or on the next connection (the thread keeps the latest focus
+    /// Send `message` to the key remap daemon now, or on the next connection (the thread keeps the latest focus
     /// and config and tells a new connection both).
     pub(crate) fn send(&self, message: ToDaemon) {
         self.order(Order::Send(message));
@@ -60,7 +60,7 @@ impl Drop for Link {
 /// Start the thread against `path`; what happens on the socket comes back as `events`.
 pub(crate) fn start(
     path: PathBuf,
-    events: UnboundedSender<KeycapEvent>,
+    events: UnboundedSender<KeyRemapEvent>,
 ) -> Result<Link, ServiceError> {
     let wake = eventfd(0, EventfdFlags::CLOEXEC | EventfdFlags::NONBLOCK)
         .map_err(|errno| ServiceError::Thread(errno.into()))?;
@@ -68,7 +68,7 @@ pub(crate) fn start(
     let (orders, inbox) = mpsc::channel();
     let thread_wake = Arc::clone(&wake);
     thread::Builder::new()
-        .name("keycap".to_owned())
+        .name("key_remap".to_owned())
         .spawn(move || run(&path, &inbox, &thread_wake, &events))
         .map_err(ServiceError::Thread)?;
     Ok(Link { orders, wake })
@@ -99,7 +99,7 @@ fn run(
     path: &Path,
     inbox: &mpsc::Receiver<Order>,
     wake: &OwnedFd,
-    events: &UnboundedSender<KeycapEvent>,
+    events: &UnboundedSender<KeyRemapEvent>,
 ) {
     let mut wants = Wants::default();
     let mut previous_wait = None;
@@ -136,14 +136,14 @@ fn open(path: &Path) -> io::Result<OwnedFd> {
     Ok(fd)
 }
 
-/// A daemon that is not there is the usual case on a machine without keycap and while it
+/// A daemon that is not there is the usual case on a machine without the key remap daemon and while it
 /// restarts; only the unexpected is worth a line.
 fn note_unreached(path: &Path, error: &io::Error) {
     if !matches!(
         error.kind(),
         io::ErrorKind::NotFound | io::ErrorKind::ConnectionRefused
     ) {
-        eprintln!("bardo-shell: keycap: {}: {error}", path.display());
+        eprintln!("bardo-shell: key_remap: {}: {error}", path.display());
     }
 }
 
@@ -224,7 +224,7 @@ fn take_orders(
     turn
 }
 
-/// Whether keycap has said hello on this connection.
+/// Whether the key remap daemon has said hello on this connection.
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Greeting {
     Awaited,
@@ -236,7 +236,7 @@ fn serve(
     fd: &OwnedFd,
     inbox: &mpsc::Receiver<Order>,
     wake: &OwnedFd,
-    events: &UnboundedSender<KeycapEvent>,
+    events: &UnboundedSender<KeyRemapEvent>,
     wants: &mut Wants,
 ) -> Ended {
     let mut greeting = Greeting::Awaited;
@@ -266,7 +266,7 @@ fn serve(
     match (turn, greeting) {
         (Turn::Quit, _) => Ended::Stopped,
         (_, Greeting::Done) => {
-            let _ = events.send(KeycapEvent::Disconnected);
+            let _ = events.send(KeyRemapEvent::Disconnected);
             Ended::Served
         }
         (_, Greeting::Awaited) => Ended::Unserved,
@@ -290,13 +290,13 @@ fn read_packet(fd: &OwnedFd, buffer: &mut [u8]) -> Packet {
     match recv(fd.as_fd(), &mut *buffer, RecvFlags::TRUNC) {
         Ok((0, _)) => Packet::Closed,
         Ok((len, full)) if full > len => {
-            eprintln!("bardo-shell: keycap: a packet of {full} bytes is over the limit");
+            eprintln!("bardo-shell: key_remap: a packet of {full} bytes is over the limit");
             Packet::Skipped
         }
         Ok((len, _)) => match decode::<ToClient>(&buffer[..len]) {
             Ok(message) => Packet::Message(message),
             Err(error) => {
-                eprintln!("bardo-shell: keycap: a packet that is not a message: {error}");
+                eprintln!("bardo-shell: key_remap: a packet that is not a message: {error}");
                 Packet::Skipped
             }
         },
@@ -310,33 +310,33 @@ fn read_packet(fd: &OwnedFd, buffer: &mut [u8]) -> Packet {
 fn handle(
     fd: &OwnedFd,
     message: ToClient,
-    events: &UnboundedSender<KeycapEvent>,
+    events: &UnboundedSender<KeyRemapEvent>,
     wants: &Wants,
     greeting: &mut Greeting,
 ) -> Turn {
     if let Compat::Incompatible { version } = compat(&message) {
         eprintln!(
-            "bardo-shell: keycap: the daemon speaks protocol {version}, this bardo-shell {}; it is left alone",
+            "bardo-shell: key_remap: the daemon speaks protocol {version}, this bardo-shell {}; it is left alone",
             key_remap_proto::PROTOCOL_VERSION
         );
         return Turn::Lost;
     }
     match message {
         ToClient::Hello { status, .. } => {
-            let _ = events.send(KeycapEvent::Hello(status));
+            let _ = events.send(KeyRemapEvent::Hello(status));
             match std::mem::replace(greeting, Greeting::Done) {
                 Greeting::Awaited => greet(fd, wants),
                 Greeting::Done => Turn::Continue,
             }
         }
         ToClient::Status(status) => {
-            let _ = events.send(KeycapEvent::Status(status));
+            let _ = events.send(KeyRemapEvent::Status(status));
             Turn::Continue
         }
         ToClient::ConfigWarnings(warnings) => {
             for warning in warnings {
                 eprintln!(
-                    "bardo-shell: keycap: keycap.toml {}: {}",
+                    "bardo-shell: key_remap: key-remap.toml {}: {}",
                     warning.key, warning.problem
                 );
             }

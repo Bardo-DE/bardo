@@ -12,8 +12,8 @@ use std::sync::Arc;
 
 /// The user at the seat.
 pub(crate) const USER: Uid = Uid::new(1000);
-/// keycap's dynamic user.
-pub(crate) const KEYCAP_UID: Uid = Uid::new(61_234);
+/// The key remap daemon's dynamic user.
+pub(crate) const KEY_REMAP_UID: Uid = Uid::new(61_234);
 /// palmrest's dynamic user.
 pub(crate) const PALMREST_UID: Uid = Uid::new(61_235);
 /// palmrest's control group: a system service's.
@@ -35,12 +35,12 @@ pub(crate) fn palmrest() -> Caller {
     listed("pad_daemon", Proof::Full, PALMREST_UID, PALMREST_CGROUP)
 }
 
-/// The genuine keycap.
-pub(crate) fn keycap() -> Caller {
+/// The genuine key_remap.
+pub(crate) fn key_remap() -> Caller {
     listed(
         "keymap_daemon",
         Proof::Full,
-        KEYCAP_UID,
+        KEY_REMAP_UID,
         "/system.slice/bardo-key-remap.service",
     )
 }

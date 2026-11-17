@@ -13,7 +13,7 @@ pub(crate) enum Routed {
         device: DeviceId,
         events: Vec<InputEvent>,
     },
-    /// The device's queue overflowed: what keycap wrote for it is no longer known to match
+    /// The device's queue overflowed: what the key remap daemon wrote for it is no longer known to match
     /// what it holds, so its state is released.
     Resync(DeviceId),
 }

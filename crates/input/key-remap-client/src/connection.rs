@@ -12,7 +12,7 @@ use std::fmt;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
 
-/// Why talking to keycap failed, in plain words.
+/// Why talking to the key remap daemon failed, in plain words.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ClientError {
     /// Nothing is listening at the path.

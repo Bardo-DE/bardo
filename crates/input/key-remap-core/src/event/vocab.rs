@@ -6,7 +6,7 @@ use crate::key::Key;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Physical(pub Key);
 
-/// A key as keycap writes it. Never converted from `Physical`: a mapping decides that.
+/// A key as the key remap daemon writes it. Never converted from `Physical`: a mapping decides that.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Logical(pub Key);
 

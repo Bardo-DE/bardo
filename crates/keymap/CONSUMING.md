@@ -115,7 +115,7 @@ A terminal (temor) passes `Context::Terminal` and drops its own keymap. The rule
   Smaller and Actual Size there too, as in GNOME Terminal, Konsole and Windows Terminal. Bigger is
   written and labelled with `+` (⌘+, Ctrl++), as menus label it; `resolve` also takes the `=` key
   without Shift for a chord on `+`.
-- On our desktop the compositor (keycap) remaps Command to Ctrl+Shift for terminal windows, so
+- On our desktop the compositor (the key remap daemon) remaps Command to Ctrl+Shift for terminal windows, so
   `resolve` accepts both Super+D and Ctrl+Shift+D in `Context::Terminal` and finds the same action;
   menus show the Super form (`⌘D`). Other platforms have no alias.
 - A Primary chord that already uses Shift (Redo, Save As) is Ctrl+Shift+Alt+key in a terminal on the
@@ -210,7 +210,7 @@ and the person's chord binds, even on a chord a standard action holds (that acti
 chord the platform reserves is refused, with a reason in `with_overrides`' problems.
 `dormant_overrides()` lists only changes to actions nobody registered.
 
-## A source in another repo (keycap)
+## A source in another repo (the key remap daemon)
 
 ```rust
 use chordkit::{Keymap, KeymapSource, Platform, SourceError, SystemBinding, Watch, ChangeCallback};

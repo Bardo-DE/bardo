@@ -1,20 +1,20 @@
-//! The keycap service's systemd path against a stand-in `org.freedesktop.systemd1` on a private
+//! The key remap daemon service's systemd path against a stand-in `org.freedesktop.systemd1` on a private
 //! bus playing the system bus, never the real one. The stand-in's `Manager` answers `GetUnit`
 //! with a unit object whose `ActiveState` the test sets, or with `NoSuchUnit`, and records the
 //! `ResetFailedUnit` and `RestartUnit` calls. The unit waits are shortened through
-//! `Env::keycap_unit_wait`. The tests need a `dbus-daemon` and skip, saying so, without one.
+//! `Env::key_remap_unit_wait`. The tests need a `dbus-daemon` and skip, saying so, without one.
 
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use shell_model::apps::AppIndex;
-use shell_model::keycap::KeycapService;
-use shell_model::keycap::{Attention, KeycapCommand, KeycapState, notice_text};
+use shell_model::key_remap::KeyRemapService;
+use shell_model::key_remap::{Attention, KeyRemapCommand, KeyRemapState, notice_text};
 use shell_model::notifications::{NotesState, NotificationsCommand};
 use shell_model::service::Control;
 use shell_model::windows::WindowModel;
 use shell_services::env::{BusRoute, Buses, Env, UnitWait};
-use shell_services::keycap::KeycapLinks;
+use shell_services::key_remap::KeyRemapLinks;
 use shell_services::service::spawn;
 use shell_testkit::{PrivateBus, TempDir};
 use tokio::sync::{mpsc, watch};
@@ -26,7 +26,7 @@ use zbus::zvariant::OwnedObjectPath;
 const SHORT: Duration = Duration::from_millis(400);
 const LONG: Duration = Duration::from_secs(5);
 
-const UNIT_PATH: &str = "/org/freedesktop/systemd1/unit/keycap_2eservice";
+const UNIT_PATH: &str = "/org/freedesktop/systemd1/unit/bardo_2dkey_2dremap_2eservice";
 
 /// What the stand-in systemd holds and heard.
 #[derive(Debug, Default)]
@@ -115,8 +115,8 @@ async fn serve(bus: &PrivateBus, loaded: bool, active_state: &str) -> (zbus::Con
 
 /// The service with no daemon behind its socket, and the other services' ends.
 struct Rig {
-    state: watch::Receiver<KeycapState>,
-    control: Control<KeycapCommand>,
+    state: watch::Receiver<KeyRemapState>,
+    control: Control<KeyRemapCommand>,
     notices: mpsc::UnboundedReceiver<NotificationsCommand>,
     /// Held so the other services' channels stay open.
     _held: (
@@ -129,11 +129,11 @@ struct Rig {
 
 /// The service with `system` as its system bus and a socket path nobody listens on.
 fn rig(system: BusRoute) -> Rig {
-    let scratch = TempDir::new("keycap-systemd");
+    let scratch = TempDir::new("key-remap-systemd");
     let env = Env {
-        keycap_socket: Some(scratch.path().join("key-remap.sock")),
+        key_remap_socket: Some(scratch.path().join("key-remap.sock")),
         buses: Buses::new(system, BusRoute::Absent),
-        keycap_unit_wait: UnitWait {
+        key_remap_unit_wait: UnitWait {
             grace: Duration::from_millis(100),
             recheck: Duration::from_millis(100),
         },
@@ -143,13 +143,13 @@ fn rig(system: BusRoute) -> Rig {
     let (apps, apps_rx) = watch::channel(AppIndex::default());
     let (notes, notes_rx) = watch::channel(NotesState::default());
     let (notifications, notices) = Control::channel();
-    let links = KeycapLinks {
+    let links = KeyRemapLinks {
         windows: wl_rx,
         apps: apps_rx,
         notifications,
         notes: notes_rx,
     };
-    let handle = spawn::<KeycapService>(&tokio::runtime::Handle::current(), &env, links);
+    let handle = spawn::<KeyRemapService>(&tokio::runtime::Handle::current(), &env, links);
     Rig {
         state: handle.state,
         control: handle.control,
@@ -168,7 +168,7 @@ async fn with_systemd(
     Some((bus, connection, shared))
 }
 
-async fn until(state: &mut watch::Receiver<KeycapState>, want: KeycapState) {
+async fn until(state: &mut watch::Receiver<KeyRemapState>, want: KeyRemapState) {
     let reached = tokio::time::timeout(LONG, state.wait_for(|s| *s == want))
         .await
         .is_ok_and(|r| r.is_ok());
@@ -185,7 +185,7 @@ async fn a_failed_unit_is_failed_and_the_person_is_told() {
         return;
     };
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
-    until(&mut rig.state, KeycapState::Failed).await;
+    until(&mut rig.state, KeyRemapState::Failed).await;
     let posted = tokio::time::timeout(LONG, rig.notices.recv())
         .await
         .unwrap_or_else(|_| panic!("no notice"))
@@ -204,11 +204,11 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
     let Some((bus, _systemd, shared)) = with_systemd(true, "failed").await else {
         return;
     };
-    let scratch = TempDir::new("keycap-grace");
+    let scratch = TempDir::new("key-remap-grace");
     let env = Env {
-        keycap_socket: Some(scratch.path().join("key-remap.sock")),
+        key_remap_socket: Some(scratch.path().join("key-remap.sock")),
         buses: Buses::new(BusRoute::Address(bus.address.clone()), BusRoute::Absent),
-        keycap_unit_wait: UnitWait {
+        key_remap_unit_wait: UnitWait {
             grace: Duration::from_secs(60),
             recheck: Duration::from_secs(60),
         },
@@ -218,10 +218,10 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
     let (_apps, apps) = watch::channel(AppIndex::default());
     let (_notes, notes) = watch::channel(NotesState::default());
     let (notifications, mut notices) = Control::channel();
-    let handle = spawn::<KeycapService>(
+    let handle = spawn::<KeyRemapService>(
         &tokio::runtime::Handle::current(),
         &env,
-        KeycapLinks {
+        KeyRemapLinks {
             windows,
             apps,
             notifications,
@@ -229,7 +229,7 @@ async fn the_unit_is_not_asked_about_within_the_grace_period() {
         },
     );
     tokio::time::sleep(SHORT).await;
-    assert_eq!(*handle.state.borrow(), KeycapState::Unknown);
+    assert_eq!(*handle.state.borrow(), KeyRemapState::Unknown);
     assert!(lock(&shared).calls.is_empty());
     notices.try_recv().unwrap_err();
 }
@@ -240,15 +240,15 @@ async fn a_unit_the_manager_has_not_loaded_is_not_installed_and_silent() {
         return;
     };
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
-    until(&mut rig.state, KeycapState::NotInstalled).await;
+    until(&mut rig.state, KeyRemapState::NotInstalled).await;
     tokio::time::sleep(SHORT).await;
-    assert_eq!(*rig.state.borrow(), KeycapState::NotInstalled);
+    assert_eq!(*rig.state.borrow(), KeyRemapState::NotInstalled);
     assert!(rig.notices.try_recv().is_err(), "nothing is posted");
     let calls = lock(&shared).calls.clone();
     assert_eq!(
         calls,
         ["GetUnit(bardo-key-remap.service)"],
-        "a machine with no keycap is asked once, then left alone"
+        "a machine with no key_remap is asked once, then left alone"
     );
 }
 
@@ -258,9 +258,9 @@ async fn an_activating_unit_is_restarting_and_silent() {
         return;
     };
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
-    until(&mut rig.state, KeycapState::Restarting).await;
+    until(&mut rig.state, KeyRemapState::Restarting).await;
     tokio::time::sleep(SHORT).await;
-    assert_eq!(*rig.state.borrow(), KeycapState::Restarting);
+    assert_eq!(*rig.state.borrow(), KeyRemapState::Restarting);
     assert!(rig.notices.try_recv().is_err(), "nothing is posted");
 }
 
@@ -270,10 +270,10 @@ async fn the_unit_is_read_again_and_a_later_failure_is_seen() {
         return;
     };
     let mut rig = rig(BusRoute::Address(bus.address.clone()));
-    until(&mut rig.state, KeycapState::Restarting).await;
+    until(&mut rig.state, KeyRemapState::Restarting).await;
     rig.notices.try_recv().unwrap_err();
     lock(&shared).active_state = "failed".to_owned();
-    until(&mut rig.state, KeycapState::Failed).await;
+    until(&mut rig.state, KeyRemapState::Failed).await;
     assert!(
         tokio::time::timeout(LONG, rig.notices.recv())
             .await
@@ -288,7 +288,7 @@ async fn retry_resets_the_failure_then_restarts_the_unit() {
     };
     let rig = rig(BusRoute::Address(bus.address.clone()));
     rig.control
-        .send(KeycapCommand::Retry)
+        .send(KeyRemapCommand::Retry)
         .unwrap_or_else(|e| panic!("{e}"));
     let writes = || {
         lock(&shared)
@@ -316,10 +316,10 @@ async fn without_a_system_bus_nothing_is_asked_and_the_state_stays_unknown() {
     };
     let mut rig = rig(BusRoute::Absent);
     rig.control
-        .send(KeycapCommand::Retry)
+        .send(KeyRemapCommand::Retry)
         .unwrap_or_else(|e| panic!("{e}"));
     tokio::time::sleep(SHORT * 2).await;
-    assert_eq!(*rig.state.borrow(), KeycapState::Unknown);
+    assert_eq!(*rig.state.borrow(), KeyRemapState::Unknown);
     rig.notices.try_recv().unwrap_err();
     assert!(lock(&shared).calls.is_empty());
 }

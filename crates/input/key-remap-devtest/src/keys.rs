@@ -1,6 +1,6 @@
-//! The key names the harness speaks: the same lowercase `KEY_*` names keycap prints, for the
-//! keys a fake keyboard has and the keys keycap's mappings write. A test in keycap checks
-//! every row against keycap's own table.
+//! The key names the harness speaks: the same lowercase `KEY_*` names the key remap daemon prints, for the
+//! keys a fake keyboard has and the keys the key remap daemon's mappings write. A test in the key remap daemon checks
+//! every row against the key remap daemon's own table.
 
 /// Name and evdev code of each key the harness knows.
 #[rustfmt::skip]

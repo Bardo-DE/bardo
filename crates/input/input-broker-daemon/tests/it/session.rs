@@ -142,7 +142,7 @@ fn a_kind_the_caller_may_not_have_is_refused_and_nothing_is_made() {
         panic!("a refusal is noted for the log");
     };
     assert_eq!(reason, Reason::NotAllowed);
-    assert_eq!(note.kind, Some(Kind::KeycapKeyboard));
+    assert_eq!(note.kind, Some(Kind::KeyRemapKeyboard));
     assert!(backend.log().specs.is_empty());
 }
 

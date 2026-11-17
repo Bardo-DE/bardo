@@ -1,14 +1,14 @@
-//! The keycap loop: the socket thread's events, the focused window, the config file's edits, the
-//! person's commands and the unit check, stepping [`KeycapState`] and posting its notices.
+//! The key remap daemon loop: the socket thread's events, the focused window, the config file's edits, the
+//! person's commands and the unit check, stepping [`KeyRemapState`] and posting its notices.
 
 use key_remap_proto::{ProfileName, Steer, ToDaemon};
 use shell_model::apps::AppIndex;
+use shell_model::key_remap::{
+    Attention, KeyRemapCommand, KeyRemapEvent, KeyRemapState, NoticeChange, attention,
+    focus_to_send, notice_for, step, user_config, watching_unit,
+};
 use shell_model::keyboard::{
     CategoryTable, OwnProfiles, ShellFocus, UserOverrides, under_shell, wanted,
-};
-use shell_model::keycap::{
-    Attention, KeycapCommand, KeycapEvent, KeycapState, NoticeChange, attention, focus_to_send,
-    notice_for, step, user_config, watching_unit,
 };
 use shell_model::windows::WindowModel;
 use tokio::runtime::Handle;
@@ -16,13 +16,13 @@ use tokio::sync::mpsc::{UnboundedSender, unbounded_channel};
 use tokio::sync::watch;
 use tokio::time::{Duration, Instant, sleep_until};
 
-use super::links::{KeycapLinks, Reach};
+use super::links::{KeyRemapLinks, Reach};
 use super::socket::{self, Link};
 use super::{config, notice, systemd};
 use crate::debounced;
 use crate::error::ServiceError;
 use crate::notices::Board;
-use shell_model::keycap::KeycapService;
+use shell_model::key_remap::KeyRemapService;
 use shell_model::service::ServiceIo;
 
 /// How soon the unit is read after a retry asked systemd to restart it.
@@ -33,16 +33,16 @@ struct Live {
     reach: Reach,
     rt: Handle,
     link: Link,
-    told: UnboundedSender<KeycapEvent>,
-    tx: watch::Sender<KeycapState>,
+    told: UnboundedSender<KeyRemapEvent>,
+    tx: watch::Sender<KeyRemapState>,
     windows: watch::Receiver<WindowModel>,
     apps: watch::Receiver<AppIndex>,
-    /// The one notice about keycap.
+    /// The one notice about key_remap.
     board: Board<()>,
-    state: KeycapState,
+    state: KeyRemapState,
     /// What the notification now says.
     shown: Option<Attention>,
-    /// The profile keycap was last sent.
+    /// The profile the key remap daemon was last sent.
     chosen: Option<ProfileName>,
     overrides: UserOverrides,
     /// Whether the shell's own surfaces hold the keyboard.
@@ -55,8 +55,8 @@ struct Live {
 
 pub(crate) async fn run(
     reach: Reach,
-    links: KeycapLinks,
-    io: ServiceIo<KeycapService>,
+    links: KeyRemapLinks,
+    io: ServiceIo<KeyRemapService>,
 ) -> Result<(), ServiceError> {
     let ServiceIo {
         state: tx,
@@ -70,7 +70,7 @@ pub(crate) async fn run(
     let (told, mut events) = unbounded_channel();
     let link = socket::start(socket, told.clone())?;
     let mut touch = config::watch(&reach.config_dir)
-        .map_err(|error| eprintln!("bardo-shell: keycap: watching key-remap.toml: {error}"))
+        .map_err(|error| eprintln!("bardo-shell: key_remap: watching key-remap.toml: {error}"))
         .ok();
     let (mut windows, mut apps) = (links.windows.clone(), links.apps.clone());
     let mut live = Live {
@@ -84,7 +84,7 @@ pub(crate) async fn run(
         board: Board::new(links.notifications, links.notes, |notes, ()| {
             notice::shown(notes)
         }),
-        state: KeycapState::default(),
+        state: KeyRemapState::default(),
         shown: None,
         chosen: None,
         overrides: UserOverrides::default(),
@@ -119,7 +119,7 @@ async fn due(at: Option<Instant>) {
 }
 
 impl Live {
-    /// Tell keycap what the window and the config file say now, and start watching the unit.
+    /// Tell the key remap daemon what the window and the config file say now, and start watching the unit.
     fn start(&mut self) {
         self.refocus();
         if let Some(message) = config::read(&self.reach.config_dir).and_then(user_config) {
@@ -128,15 +128,15 @@ impl Live {
         self.rearm();
     }
 
-    fn command(&mut self, command: KeycapCommand) {
+    fn command(&mut self, command: KeyRemapCommand) {
         match command {
-            KeycapCommand::Resume => self.link.send(ToDaemon::Steer(Steer::Resume)),
-            KeycapCommand::Retry => self.retry(),
-            KeycapCommand::Overrides(overrides) => {
+            KeyRemapCommand::Resume => self.link.send(ToDaemon::Steer(Steer::Resume)),
+            KeyRemapCommand::Retry => self.retry(),
+            KeyRemapCommand::Overrides(overrides) => {
                 self.overrides = overrides;
                 self.refocus();
             }
-            KeycapCommand::ShellFocus(shell) => {
+            KeyRemapCommand::ShellFocus(shell) => {
                 self.shell = shell;
                 self.refocus();
             }
@@ -146,18 +146,18 @@ impl Live {
     /// Ask systemd to reset and restart the unit, and read it again soon after.
     fn retry(&mut self) {
         let Some(bus) = self.reach.system.clone() else {
-            eprintln!("bardo-shell: keycap: there is no system bus to ask systemd on");
+            eprintln!("bardo-shell: key_remap: there is no system bus to ask systemd on");
             return;
         };
         self.rt.spawn(async move {
             if let Err(error) = systemd::restart(&bus).await {
-                eprintln!("bardo-shell: keycap: restarting bardo-key-remap.service: {error}");
+                eprintln!("bardo-shell: key_remap: restarting bardo-key-remap.service: {error}");
             }
         });
         self.check_at = Some(Instant::now() + AFTER_RETRY);
     }
 
-    /// Send the profile the keyboard's place wants (the shell's surface, else the focused window), when it is not the one keycap has.
+    /// Send the profile the keyboard's place wants (the shell's surface, else the focused window), when it is not the one the key remap daemon has.
     fn refocus(&mut self) {
         let window = wanted(
             &self.overrides,
@@ -173,18 +173,18 @@ impl Live {
         }
     }
 
-    /// Send the config file as it is now; a file that is gone sends an empty config, so keycap
+    /// Send the config file as it is now; a file that is gone sends an empty config, so the key remap daemon
     /// forgets the one it had.
     fn send_config(&mut self) {
         let text = config::read(&self.reach.config_dir).unwrap_or_default();
         match user_config(text) {
             Some(message) => self.link.send(message),
-            None => eprintln!("bardo-shell: keycap: key-remap.toml is too large to send"),
+            None => eprintln!("bardo-shell: key_remap: key-remap.toml is too large to send"),
         }
     }
 
     /// Step the state by `event`, publish it, and tell the person what it newly needs them to know.
-    fn feed(&mut self, event: KeycapEvent) {
+    fn feed(&mut self, event: KeyRemapEvent) {
         let next = step(self.state.clone(), event);
         if next != self.state {
             self.tx.send_replace(next.clone());
@@ -226,7 +226,7 @@ impl Live {
         let told = self.told.clone();
         self.rt.spawn(async move {
             if let Some(unit) = systemd::read_state(&bus).await {
-                let _ = told.send(KeycapEvent::UnitState(unit));
+                let _ = told.send(KeyRemapEvent::UnitState(unit));
             }
         });
     }

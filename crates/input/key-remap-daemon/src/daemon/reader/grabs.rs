@@ -16,7 +16,7 @@ impl<E: Emitter> Reader<E> {
         for id in change.given {
             if let Err(e) = self.twins.retire(id) {
                 eprintln!(
-                    "keycap: releasing the pointer of device {} failed: {e}",
+                    "key_remap: releasing the pointer of device {} failed: {e}",
                     id.0
                 );
             }
@@ -30,14 +30,14 @@ impl<E: Emitter> Reader<E> {
     }
 
     /// Writes the lamps the desktop last set to the freshly grabbed `id`: the kernel stops
-    /// driving them once the device is grabbed, and the desktop only tells keycap about changes.
+    /// driving them once the device is grabbed, and the desktop only tells the key remap daemon about changes.
     fn light(&self, id: DeviceId) {
         let events = self.lamps.events();
         if events.is_empty() {
             return;
         }
         if let Err(e) = self.nodes.write(id, &events) {
-            eprintln!("keycap: setting LEDs on device {} failed: {e}", id.0);
+            eprintln!("key_remap: setting LEDs on device {} failed: {e}", id.0);
         }
     }
 
@@ -51,16 +51,19 @@ impl<E: Emitter> Reader<E> {
             Ok(caps) if caps.needs_twin() => caps,
             Ok(_) => return,
             Err(e) => {
-                eprintln!("keycap: reading the pointer of device {} failed: {e}", id.0);
+                eprintln!(
+                    "key_remap: reading the pointer of device {} failed: {e}",
+                    id.0
+                );
                 return;
             }
         };
         match self.emitter.twin(&caps) {
             Ok(twin) => {
-                eprintln!("keycap: created \"{}\"", caps.name);
+                eprintln!("key_remap: created \"{}\"", caps.name);
                 self.twins.insert(id, twin);
             }
-            Err(e) => eprintln!("keycap: cannot create \"{}\": {e}", caps.name),
+            Err(e) => eprintln!("key_remap: cannot create \"{}\": {e}", caps.name),
         }
     }
 }

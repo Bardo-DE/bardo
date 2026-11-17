@@ -1,4 +1,4 @@
-use crate::support::{KEYCAP_UID, PALMREST_UID, USER, keycap, palmrest};
+use crate::support::{KEY_REMAP_UID, PALMREST_UID, USER, key_remap, palmrest};
 use caller_identity_core::Uid;
 use input_broker_daemon::identity::{ActiveUid, Caller};
 use input_broker_daemon::slots::{Bucket, NoSlot, Slots};
@@ -23,7 +23,11 @@ fn stranger(uid: Uid) -> Caller {
 fn a_caller_that_passes_the_policy_has_a_reserve_and_anyone_else_a_user_pool() {
     let table: &[(&str, Caller, Bucket)] = &[
         ("palmrest", palmrest(), Bucket::Reserved(Maker::PadDaemon)),
-        ("keycap", keycap(), Bucket::Reserved(Maker::KeymapDaemon)),
+        (
+            "key_remap",
+            key_remap(),
+            Bucket::Reserved(Maker::KeymapDaemon),
+        ),
         (
             "a stranger at the seat",
             stranger(USER),
@@ -51,12 +55,12 @@ fn a_caller_that_passes_the_policy_has_a_reserve_and_anyone_else_a_user_pool() {
             Bucket::Stranger(USER),
         ),
         (
-            "keycap's user is not a free pass",
+            "key_remap's user is not a free pass",
             Caller {
                 credential: None,
-                ..keycap()
+                ..key_remap()
             },
-            Bucket::Stranger(KEYCAP_UID),
+            Bucket::Stranger(KEY_REMAP_UID),
         ),
     ];
     for (name, caller, want) in table {

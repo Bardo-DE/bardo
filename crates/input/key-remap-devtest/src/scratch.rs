@@ -21,7 +21,7 @@ impl Scratch {
     pub fn new(label: &str) -> Self {
         let n = NEXT.fetch_add(1, Ordering::Relaxed);
         let dir = std::env::temp_dir().join(format!(
-            "keycap-devtest-{}-{n}-{}",
+            "key-remap-devtest-{}-{n}-{}",
             std::process::id(),
             label.replace(|c: char| !c.is_ascii_alphanumeric() && c != '-', "_")
         ));

@@ -1,4 +1,4 @@
-//! Every TOML file under `dist/` is a config keycap reads: each parses with no warnings, and
+//! Every TOML file under `dist/` is a config the key remap daemon reads: each parses with no warnings, and
 //! lays over the built-in mapping with none either.
 
 use std::fs;

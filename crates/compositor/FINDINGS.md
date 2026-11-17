@@ -673,17 +673,17 @@ W13 8 to 0.
 - **Bindings come from the keymap, not a file or a table** (AUDIT (e)3): before, `settings.bindings` was empty by default
   and held only what a `[bindings]` entry in `settings.toml` said, so a fresh the compositor bound nothing.
   `compositor::keymap::attach` (called from `main.rs` after the outputs are announced) loads
-  `KeycapSource::load_reporting(Linux/Ours)` (chordkit conventions, the desktop's own bindings, the machine
+  `KeyRemapSource::load_reporting(Linux/Ours)` (chordkit conventions, the desktop's own bindings, the machine
   keymap, the person's keymap), maps each standard action the compositor carries out (`keymap/shell.rs`
   `ROWS`: force quit, Space left/right/1-9,
   and sill's launcher, switcher, screenshots and power menu as `sill ...` spawns) to a `BindingAction`, converts
   each chord (`keymap/chord.rs`: Super is Command, Alt is Option; chordkit's `+` and `?` become shifted `=` and
   `/`) and appends the result after the document's own bindings. No `dist/compositor/bindings.toml` ships:
-  the action vocabulary is chordkit's `StandardAction`, so the contract with keycap is action names already.
-- **Reload**: `KeycapSource::watch` (daemon message, or the keymap files polled) sends on a calloop channel; the
+  the action vocabulary is chordkit's `StandardAction`, so the contract with the key remap daemon is action names already.
+- **Reload**: `KeyRemapSource::watch` (daemon message, or the keymap files polled) sends on a calloop channel; the
   handler recomputes the bindings and feeds `Event::SettingsChanged` only when they differ. The watch lives in
   the handler's closure. Under `ConfigHome::At(dir)` (tests, the jail) the source reads only inside `dir`
-  (`keycap/keymap` for the person, `keycap-machine/keymap` for the machine, a socket path that does not exist).
+  (`key_remap/keymap` for the person, `key-remap-machine/keymap` for the machine, a socket path that does not exist).
 - **Known gaps**: `Spawn` and `Call` bindings are still only logged by `carry_out` ("from P2"), so the launcher,
   switcher, screenshot and power-menu chords resolve and are swallowed but do nothing yet. LockScreen,
   MissionControl, AppWindows, NextWindow, NextInputSource and EmojiAndSymbols have no compositor or sill command
@@ -693,7 +693,7 @@ W13 8 to 0.
   are not in `ROWS` (a test asserts none of those chords is bound), and `DesktopCommand::ToggleFullScreenKey`, added
   for full screen and used by nothing else, is dropped. ForceQuit (Cmd+Opt+Esc, system-level), Space switching and
   the sill hand-offs stay.
-- **Dependencies**: `chordkit` (rev ba094c62) and `keycap-client` (rev 31e21db1) are git dependencies of the
+- **Dependencies**: `chordkit` (rev ba094c62) and `key-remap-client` (rev 31e21db1) are git dependencies of the
   workspace and of `compositor`; `Cargo.lock` must be regenerated (`cargo metadata`) with network access.
 - Caps Lock no longer blocks bindings: `deliver::chord_mods` leaves it out of the chord (Num Lock was never in `MacMods`).
 
@@ -3703,7 +3703,7 @@ the pinned sources, none was built. Look here first when it fails to compile.
   already, and the plan's file would only repeat it.
 - **Keys (D12) are an interface ask, not built.** chordkit 55a62b2 has no `StandardAction` for tiling (no left/right/top/bottom/
   quarters/fill/centre/return), so the compositor's `keymap/shell.rs` has no row to bind: the keymap module holds action names only.
-  Ask to chordkit (and keycap for the layers): add `TileLeft`, `TileRight`, `TileTop`, `TileBottom`, `TileTopLeft`,
+  Ask to chordkit (and the key remap daemon for the layers): add `TileLeft`, `TileRight`, `TileTop`, `TileBottom`, `TileTopLeft`,
   `TileTopRight`, `TileBottomLeft`, `TileBottomRight`, `TileFill`, `TileCentre`, `TileReturn` with the Sequoia chords (Globe/Fn+Ctrl
   plus arrows, F, C, R) and, because Fn is often invisible to the OS (D12), the reachable set Ctrl+Option plus the same keys. Then
   The compositor adds eleven rows to `ROWS` mapping to `DesktopCommand::Place(..)`, which already exists. Until then a person can bind
@@ -4094,7 +4094,7 @@ Deferred:
 - CASB-26 (test mode behind a cargo feature): the vkms flags are parsed in `cli.rs`, used by `compositor-testkit` tests and by
   `dev/vkms/accept.sh`; a feature needs those three to turn it on, which cannot be checked without a build. Reachable only by whoever
   builds the command line.
-- CASB-25 (keymap fetch on a worker thread): bounded to about 2 s per keymap change by keycap-client's own timeout; low.
+- CASB-25 (keymap fetch on a worker thread): bounded to about 2 s per keymap change by key-remap-client's own timeout; low.
 - CASB-27, `OOMScoreAdjust=-500` in `dist/compositor.service`: an unprivileged user manager cannot lower a unit's OOM score, so the
   unit would fail to start. Needs a system-level grant (a drop-in installed as root); not added.
 - CASB-12, the `unwrap`s in smithay's libseat session: fixed in the fork (`lane/libseat-errors` 30e544aa, which compositor pins). A failed
@@ -4244,7 +4244,7 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
 - **CASW-13 (partly done): each virtual keyboard has its own device id and a bounded pressed set.** Ids count up from
   `VIRTUAL_KEYBOARD_DEVICE` (`VirtualKeyboardPart::next_device`), so two clients' held keys no longer collide and one's
   `destroyed` releases only its own; a keyboard holds at most 64 keys down (a press past it is dropped). Tests: unit tests in
-  `virtual_keyboard.rs`. **Decided 2026-10-16 (pa-caslim; was deferred):** limiting the VT-switch chord (`vt_chord`) to `Origin::Physical`; keycap's
+  `virtual_keyboard.rs`. **Decided 2026-10-16 (pa-caslim; was deferred):** limiting the VT-switch chord (`vt_chord`) to `Origin::Physical`; the key remap daemon's
   on-screen output is `Origin::Virtual` and may need to switch VT, and bindings from a virtual keyboard are on purpose
   (`fires_bindings`).
 - **CASW-15 (comment corrected, nothing added):** no kill chord exists; the VT-switch chord is the one exempt chord, and the
@@ -4331,7 +4331,7 @@ dropped, never waited for.
   non-shell clients is built (cas11, the display trial; see the section at the end).
 - **CASW-13 (decided 2026-10-16): the VT-switch chord is honoured only from a kernel keyboard** (`Origin::switches_vt`, true for
   `Origin::Physical` only): a virtual keyboard, a remote session, the agent seat and a feed cannot send the compositor to a
-  text console, under a lock or not. keycap's on-screen output therefore cannot switch VT. Test: `only_a_kernel_keyboard_switches_the_vt`
+  text console, under a lock or not. The key remap daemon's on-screen output therefore cannot switch VT. Test: `only_a_kernel_keyboard_switches_the_vt`
   (property over every origin); the chord itself runs only on the tty backend, which no fixture reaches.
 - **CASW-15 (decided 2026-10-16): no extra escape chord.** The module header says the way out of a captured session is the VT chord
   or the pointer; no code added.
@@ -5068,15 +5068,15 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   same pin (`Pinned::of_stream`, `Pinned::pidfd`); the compositor moves to it with porter's next peephole bump
   (porter-dbus pins 0.1.4, and one lock carries one peephole).
 - **NEW-PI-4 (the compositor half), as replaced by NEW-FA-4 below.** A virtual-bus device is `Origin::Virtual` unless the device service made it
-  for keycap (`Origin::of_kernel_device`). A virtual device still moves the pointer, fires bindings and drives swipes (`Origin::is_pad`),
+  for the key remap daemon (`Origin::of_kernel_device`). A virtual device still moves the pointer, fires bindings and drives swipes (`Origin::is_pad`),
   but trusted surfaces, the lock surface and VT switching never hear it.
 - **NEW-FA-4 (decided by the owner, 2026-10-17): a virtual device is trusted by who turnstile made it for, not by a guess.** The old rule
   read the bus type and the vendor id (`0x0001`) and wrongly caught a laptop's AT keyboard (`Bus=0011 Vendor=0001`; first fixed by also
   requiring `BUS_VIRTUAL`); the vendor is gone from the decision. turnstile is the only process that can create a uinput device
   (`dist/72-turnstile.rules`: root-only, no `uaccess`) and proves which service each device is for, so it writes `turnstile/pad_daemon` (palmrest)
-  or `turnstile/keymap_daemon` (keycap) into the device's `phys`. `RealInputFeed` reads `/sys/class/input/<sysname>/device/phys` next to the bus
+  or `turnstile/keymap_daemon` (the key remap daemon) into the device's `phys`. `RealInputFeed` reads `/sys/class/input/<sysname>/device/phys` next to the bus
   type (`maker_of`; unreadable reads as unlabelled) and `Maker::parse` (`compositor-core/src/input/maker.rs`) reads it. A virtual-bus device
-  labelled for keycap is `Origin::Physical` (keycap only replays the person's own keyboard and mouse); one labelled for palmrest, one with no label
+  labelled for the key remap daemon is `Origin::Physical` (the key remap daemon only replays the person's own keyboard and mouse); one labelled for palmrest, one with no label
   (ydotool, a `uinput` group member) and one with any other label (a label that merely starts with `turnstile/`) is `Origin::Virtual`.
   Every device off the virtual bus is physical, as before. The compositor links nothing of turnstile, so `Maker::parse` is its own copy of
   turnstile-wire's `Maker`; `origin.rs` and `maker.rs` tests pin the same strings as turnstile's `maker` test: change one side and change both.
@@ -5112,7 +5112,7 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   peephole: `Prober::image_path(&Pinned) -> Result<Exe, ProbeError>` that reads only the `/proc/<pid>/exe` link (no stat of the target) for
   the comparison.
 - **CASB-07 (software renderer for `--safe`).** Built: see "fc1-safe-scanout" below.
-- **CASB-25** (`keymap::live::load_bindings` is synchronous, bounded by keycap-client's 2 s), **CASB-26** (`test_mode` is compiled in: gating
+- **CASB-25** (`keymap::live::load_bindings` is synchronous, bounded by key-remap-client's 2 s), **CASB-26** (`test_mode` is compiled in: gating
   it by a feature needs the desktop's vkms scripts to build with it), **CASB-28** (no vkms fault-injection gate for the real adapters): lane
   deferrals; no owner decision needed, work not done.
 - **CASC-15.** `Origin::Test` is used by tests in five crates and a doctest; gating it needs a `testing` feature on compositor-core enabled by each.

@@ -11,7 +11,7 @@ use rustix::net::SendFlags;
 use service_locator::guard::Origin;
 use std::collections::BTreeSet;
 
-/// What a connection has shown itself to be. The shell's connections steer keycap; a
+/// What a connection has shown itself to be. The shell's connections steer the key remap daemon; a
 /// connection that only reads the keymap or registers actions is an observer for the seat even
 /// when it runs as the seat owner's uid, so its coming and going never resets the reader.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

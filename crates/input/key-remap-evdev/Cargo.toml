@@ -1,7 +1,7 @@
 [package]
 publish.workspace = true
 name = "key-remap-evdev"
-description = "The evdev and uinput calls keycap and its device-test harness share: ioctls through safe handles, and draining a nonblocking event node"
+description = "The evdev and uinput calls the key remap daemon and its device-test harness share: ioctls through safe handles, and draining a nonblocking event node"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

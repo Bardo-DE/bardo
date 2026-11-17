@@ -108,7 +108,7 @@ fn the_page_lists_every_handled_action_and_no_unhandled_desktop_one() {
             }
         }
     }
-    // The shell handles both since keycap a66556b (shell-verbs), so the Input group lists them.
+    // The shell handles both since the key remap daemon a66556b (shell-verbs), so the Input group lists them.
     assert!(shown.contains(&StandardAction::EmojiAndSymbols));
     assert!(shown.contains(&StandardAction::NextInputSource));
     let groups: Vec<ShortcutGroup> = ShortcutsState::standard()

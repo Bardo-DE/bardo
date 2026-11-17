@@ -1,9 +1,9 @@
-//! `OutMod` and `OutMods`: the modifiers keycap writes.
+//! `OutMod` and `OutMods`: the modifiers the key remap daemon writes.
 
 use super::bitset::bitset;
 use crate::key::Key;
 
-/// A modifier keycap writes, always as its left-hand key.
+/// A modifier the key remap daemon writes, always as its left-hand key.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum OutMod {
     Ctrl,

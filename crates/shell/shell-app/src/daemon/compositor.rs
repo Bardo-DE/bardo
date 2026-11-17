@@ -361,7 +361,7 @@ fn companion_stop(shell: &Shell) {
 fn hold_overlay() {}
 
 /// The modifiers over a shell surface will switch the dock's and bar's Option variants (they
-/// already pick a hot corner's binding, `Shell::held_mods`); keycap stays the source of truth for chords. Lane P3-SILL.
+/// already pick a hot corner's binding, `Shell::held_mods`); the key remap daemon stays the source of truth for chords. Lane P3-SILL.
 fn option_variants() {}
 
 /// The compositor's switcher events (apps, shown, selected, hidden) will drive the switcher

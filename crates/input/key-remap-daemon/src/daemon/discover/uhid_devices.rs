@@ -1,5 +1,5 @@
 //! The Bluetooth devices on the user's desk, with the capability masks their nodes print under
-//! `/sys/class/input`: which of them keycap grabs.
+//! `/sys/class/input`: which of them the key remap daemon grabs.
 
 use super::allowance::VirtualAllowance;
 use super::caps::{Bits, Caps};
@@ -61,7 +61,7 @@ fn eligibility(node: &Node, allow: &VirtualAllowance) -> Eligibility {
         path: PathBuf::from("/dev/input/event0"),
     };
     // Bluetooth HID devices register under `devices/virtual/misc/uhid`, which is not
-    // `devices/virtual/input`, so they are hardware to keycap.
+    // `devices/virtual/input`, so they are hardware to key_remap.
     classify(&caps, &id, false, allow)
 }
 

@@ -10,4 +10,4 @@ mod systemd;
 pub(crate) use links::Reach;
 pub(crate) use run::run;
 
-pub use links::KeycapLinks;
+pub use links::KeyRemapLinks;

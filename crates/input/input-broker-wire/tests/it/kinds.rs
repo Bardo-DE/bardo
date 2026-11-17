@@ -12,13 +12,13 @@ fn every_kind_round_trips_its_code_and_has_one_maker_and_delivery() {
         (Kind::PalmrestWheel, 2, Maker::PadDaemon, Delivery::Proxied),
         (Kind::PalmrestKeys, 3, Maker::PadDaemon, Delivery::Proxied),
         (
-            Kind::KeycapKeyboard,
+            Kind::KeyRemapKeyboard,
             16,
             Maker::KeymapDaemon,
             Delivery::Handed,
         ),
         (
-            Kind::KeycapPointer,
+            Kind::KeyRemapPointer,
             17,
             Maker::KeymapDaemon,
             Delivery::Handed,

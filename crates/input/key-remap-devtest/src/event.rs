@@ -1,4 +1,4 @@
-//! `struct input_event` as bytes, and the rendering of a stream the way `keycap replay` prints
+//! `struct input_event` as bytes, and the rendering of a stream the way `key_remap replay` prints
 //! it: `+leftctrl +c SYN`.
 
 use crate::keys::name_of;

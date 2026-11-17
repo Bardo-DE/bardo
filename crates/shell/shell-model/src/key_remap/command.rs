@@ -5,21 +5,21 @@ use serde::{Deserialize, Serialize};
 
 use crate::keyboard::{ShellFocus, UserOverrides};
 
-/// What a person can ask of keycap from outside the daemon (`bardo-shell keycap retry` and `resume`):
-/// the part of [`KeycapCommand`] that crosses the IPC wire.
+/// What a person can ask of the key remap daemon from outside the daemon (`bardo-shell key_remap retry` and `resume`):
+/// the part of [`KeyRemapCommand`] that crosses the IPC wire.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum KeycapAsk {
+pub enum KeyRemapAsk {
     /// Reset the unit's failure and start it again.
     Retry,
     /// End the pause the escape chord caused.
     Resume,
 }
 
-/// What the keycap service can be told: a person's [`KeycapAsk`], and the settings' overrides.
+/// What the key remap daemon service can be told: a person's [`KeyRemapAsk`], and the settings' overrides.
 /// Not on the wire: the overrides come only from `keyboard.overrides` in the settings file.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum KeycapCommand {
+pub enum KeyRemapCommand {
     /// Reset the unit's failure and start it again.
     Retry,
     /// End the pause the escape chord caused.
@@ -32,11 +32,11 @@ pub enum KeycapCommand {
     ShellFocus(ShellFocus),
 }
 
-impl From<KeycapAsk> for KeycapCommand {
-    fn from(ask: KeycapAsk) -> Self {
+impl From<KeyRemapAsk> for KeyRemapCommand {
+    fn from(ask: KeyRemapAsk) -> Self {
         match ask {
-            KeycapAsk::Retry => KeycapCommand::Retry,
-            KeycapAsk::Resume => KeycapCommand::Resume,
+            KeyRemapAsk::Retry => KeyRemapCommand::Retry,
+            KeyRemapAsk::Resume => KeyRemapCommand::Resume,
         }
     }
 }
@@ -54,12 +54,12 @@ pub enum UnitState {
     NotFound,
 }
 
-/// One fact about keycap, from the socket or from systemd.
+/// One fact about the key remap daemon, from the socket or from systemd.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum KeycapEvent {
+pub enum KeyRemapEvent {
     /// The first packet on a new connection.
     Hello(Status),
-    /// keycap's status changed.
+    /// The key remap daemon's status changed.
     Status(Status),
     /// The socket closed.
     Disconnected,

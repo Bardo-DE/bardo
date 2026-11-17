@@ -56,7 +56,9 @@ pub fn route(ctx: &mut HostCtx<ShellMsg>, reach: &Reach, request: Request) -> Re
                 .send(NotificationsCommand::DismissAll),
             "notifications",
         ),
-        Request::Keycap(command) => sent(services.keycap.control.send(command.into()), "keycap"),
+        Request::KeyRemap(command) => {
+            sent(services.key_remap.control.send(command.into()), "key_remap")
+        }
         Request::Intents(ask) => sent(services.intents.control.send(ask.into()), "intents"),
         Request::FocusLatest => {
             reach.links.banners.ask_keyboard();
@@ -87,7 +89,9 @@ fn report(services: &Services, request: StatusRequest) -> StatusReport {
             StatusReport::Clipboard(ClipboardStatus::of(&services.clipboard.state.borrow()))
         }
         StatusRequest::Idle => StatusReport::Idle(*services.idle.state.borrow()),
-        StatusRequest::Keycap => StatusReport::Keycap(services.keycap.state.borrow().clone()),
+        StatusRequest::KeyRemap => {
+            StatusReport::KeyRemap(services.key_remap.state.borrow().clone())
+        }
         StatusRequest::Intents => {
             StatusReport::Intents(IntentsStatus::of(&services.intents.state.borrow()))
         }

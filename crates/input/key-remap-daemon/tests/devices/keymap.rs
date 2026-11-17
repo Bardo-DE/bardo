@@ -2,7 +2,7 @@
 //! copy, registrations ending with their connection.
 
 use crate::support::Scene;
-use key_remap_client::{KeycapSource, Origin};
+use key_remap_client::{KeyRemapSource, Origin};
 use keymap::{AppAction, AppId, ChangeCallback, DefaultChord, KeymapSource};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -31,7 +31,7 @@ fn the_keymap_file_is_served_watched_and_a_bad_edit_keeps_the_last_good_copy() {
     std::fs::write(&file, "copy = Primary+Alt+C\n").expect("write");
 
     let daemon = scene.daemon();
-    let source = KeycapSource::new(daemon.socket_path(), &file, "");
+    let source = KeyRemapSource::new(daemon.socket_path(), &file, "");
     let first = source.machine();
     assert_eq!(first.origin, Origin::Daemon);
     assert_eq!(first.overrides.entries().len(), 1);
@@ -71,7 +71,7 @@ fn the_keymap_file_is_served_watched_and_a_bad_edit_keeps_the_last_good_copy() {
 fn registrations_are_listed_and_end_when_the_app_lets_go() {
     let scene = Scene::new("keymap-register");
     let daemon = scene.daemon();
-    let source = KeycapSource::new(daemon.socket_path(), scene.dir().join("config/keymap"), "");
+    let source = KeyRemapSource::new(daemon.socket_path(), scene.dir().join("config/keymap"), "");
     let app = AppId::new("mail").expect("app");
     let compose = AppAction::new("mail.compose").expect("action");
     let chord: DefaultChord = "Primary+Shift+N".parse().expect("chord");

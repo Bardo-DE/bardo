@@ -14,7 +14,7 @@ pub(crate) enum KeymapChoice {
     /// The platform's own: chordkit's detection and the sources it has for that platform.
     #[default]
     Detected,
-    /// The app's source (our desktop's keycap, say), for the detected platform.
+    /// The app's source (our desktop's the key remap daemon, say), for the detected platform.
     Given(SharedSource),
     /// The app's source and the platform it serves.
     GivenFor(Platform, SharedSource),

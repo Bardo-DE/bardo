@@ -9,7 +9,7 @@ use keymap::{Action, Chord, Context, Convention, ConventionTable, Keymap, Standa
 
 /// One key cap of a drawn shortcut.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct KeyCap {
+pub struct KeyRemap {
     /// The text on the cap.
     pub text: String,
     /// Whether the cap is an arrow, which draws larger (`data-glyph="arrow"`).
@@ -39,12 +39,12 @@ pub fn shortcut_text(keymap: &Keymap, shortcut: &Shortcut) -> String {
 
 /// The caps `shortcut` is drawn on: the modifiers, then the key.
 #[must_use]
-pub fn shortcut_caps(keymap: &Keymap, shortcut: &Shortcut) -> Vec<KeyCap> {
+pub fn shortcut_caps(keymap: &Keymap, shortcut: &Shortcut) -> Vec<KeyRemap> {
     if !is_chord(shortcut) {
         return shortcut
             .keys()
             .into_iter()
-            .map(|key| KeyCap {
+            .map(|key| KeyRemap {
                 text: key.glyph(),
                 arrow: key.is_arrow(),
             })
@@ -52,7 +52,7 @@ pub fn shortcut_caps(keymap: &Keymap, shortcut: &Shortcut) -> Vec<KeyCap> {
     }
     split_caps(&shortcut_text(keymap, shortcut))
         .into_iter()
-        .map(|text| KeyCap {
+        .map(|text| KeyRemap {
             arrow: arrow(&text),
             text,
         })

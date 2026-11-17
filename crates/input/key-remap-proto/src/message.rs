@@ -5,19 +5,19 @@ use serde::{Deserialize, Serialize};
 use crate::keymap::{KeymapState, Registration};
 use crate::vocab::{ProfileName, Status, Warning};
 
-/// A desktop to keycap: a request to steer it or a call on the keymap. Only the seat owner's
+/// A desktop to the key remap daemon: a request to steer it or a call on the keymap. Only the seat owner's
 /// steering is honoured; the keymap calls are open to every client, because they only read or
 /// inform.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ToDaemon {
-    /// A request that changes keycap.
+    /// A request that changes key_remap.
     Steer(Steer),
     /// A call on the person's keymap.
     Keymap(KeymapCall),
 }
 
-/// What the seat owner's shell asks of keycap.
+/// What the seat owner's shell asks of key_remap.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Steer {
@@ -36,14 +36,14 @@ pub enum KeymapCall {
     /// Send the person's keymap now and again whenever it changes. A client that never sends
     /// this never hears `Keymap`.
     Watch,
-    /// Tell keycap what an app handles. Kept until the connection closes; a later registration
+    /// Tell the key remap daemon what an app handles. Kept until the connection closes; a later registration
     /// of the same app on the same connection replaces the earlier one.
     Register(Registration),
     /// Ask for every registered app's actions, answered with `Registered`.
     List,
 }
 
-/// keycap to a desktop.
+/// The key remap daemon to a desktop.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum ToClient {

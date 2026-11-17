@@ -1,4 +1,4 @@
-//! The one virtual device keycap writes: "key-remap keyboard".
+//! The one virtual device the key remap daemon writes: "key-remap keyboard".
 //!
 //! The unit tests use `RecordingEmitter`, or a `Device` over the stand-in for the device service
 //! (`source.rs`); neither touches `/dev/uinput`. The events it writes are the pure `events`
@@ -29,7 +29,7 @@ pub(crate) const PROBE_PERMIT: &str = "BARDO_KEY_REMAP_ALLOW_UINPUT_PROBE";
 /// The name the virtual keyboard registers under; discovery never grabs a device with it.
 pub(crate) const NAME: &str = "key-remap keyboard";
 /// Vendor id of the virtual keyboard: "KC" in ASCII. Not a registered USB vendor; it only has
-/// to differ from palmrest's 0x0001 and from every keyboard keycap would grab.
+/// to differ from palmrest's 0x0001 and from every keyboard the key remap daemon would grab.
 pub(crate) const VENDOR: u16 = 0x4b43;
 /// Product id of the virtual keyboard.
 pub(crate) const PRODUCT: u16 = 0x0001;

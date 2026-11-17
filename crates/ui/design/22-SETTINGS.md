@@ -389,11 +389,11 @@ sill's own idle service, replacing the desktop idle daemon in a sill session (th
 
 ### 3.25 `keyboard` (shell/settings.toml)
 
-How sill treats the keyboard per app (keycap, the key-cap overlay: which keycap profile an app's keys are drawn with). Page Keyboard and Shortcuts, Advanced (§5).
+How sill treats the keyboard per app (the key remap daemon, the key-cap overlay: which key remap daemon profile an app's keys are drawn with). Page Keyboard and Shortcuts, Advanced (§5).
 
 | Key | Type | Default | Range / Alt | Source | Status |
 | --- | --- | --- | --- | --- | --- |
-| `keyboard.overrides` | list of tables `{ app, profile }` | empty | one row per app: `app` is the desktop-entry id (`org.gnome.Nautilus`) and `profile` a keycap profile name (`[a-z0-9_-]{1,64}`); an invalid `profile` drops that row at load; beats the entry's `X-Keycap-Profile` and its category; a name keycap does not define resolves to `default` | keycap README "Profiles are open" | proposed (2026-10-01) |
+| `keyboard.overrides` | list of tables `{ app, profile }` | empty | one row per app: `app` is the desktop-entry id (`org.gnome.Nautilus`) and `profile` a key remap daemon profile name (`[a-z0-9_-]{1,64}`); an invalid `profile` drops that row at load; beats the entry's `X-Key-Remap-Profile` and its category; a name the key remap daemon does not define resolves to `default` | the key remap daemon README "Profiles are open" | proposed (2026-10-01) |
 
 ### 3.26 `ai` (inferd, through its settings module)
 

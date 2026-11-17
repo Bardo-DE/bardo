@@ -117,7 +117,7 @@ impl AppConfig {
     /// Where the app's keymap comes from, loaded for the platform `keymap::detect_process`
     /// finds (default: chordkit's own source for that platform: kdeglobals on KDE, a saved
     /// dconf dump on GNOME, else the platform's conventions). Our desktop's launcher passes
-    /// keycap's source here. The source is called from any thread when its settings change
+    /// The key remap daemon's source here. The source is called from any thread when its settings change
     /// (`KeymapSource::watch`), so it is `Send + Sync`.
     #[must_use]
     pub fn with_keymap_source(mut self, source: Box<dyn KeymapSource + Send + Sync>) -> Self {

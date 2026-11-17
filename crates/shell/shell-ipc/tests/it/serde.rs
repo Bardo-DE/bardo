@@ -30,7 +30,7 @@ use shell_model::idle::{
 };
 use shell_model::intents::IntentsAsk;
 use shell_model::intents::terminal::{Breaker, ControlReach, parse_grant};
-use shell_model::keycap::{KeycapAsk, KeycapState};
+use shell_model::key_remap::{KeyRemapAsk, KeyRemapState};
 use shell_model::launch::{LaunchTiming, Pid, ScopeUnit, Stamp};
 use shell_model::locker::{Lock, LockCause, LockPhase};
 use shell_model::notifications::{
@@ -194,8 +194,8 @@ fn requests() -> Vec<(Request, &'static str)> {
             r#"{"kind":"status","v":"idle"}"#,
         ),
         (
-            Request::Status(StatusRequest::Keycap),
-            r#"{"kind":"status","v":"keycap"}"#,
+            Request::Status(StatusRequest::KeyRemap),
+            r#"{"kind":"status","v":"key_remap"}"#,
         ),
         (
             Request::Status(StatusRequest::Intents),
@@ -242,12 +242,12 @@ fn requests() -> Vec<(Request, &'static str)> {
             r#"{"kind":"launch","v":"org.mozilla.firefox"}"#,
         ),
         (
-            Request::Keycap(KeycapAsk::Retry),
-            r#"{"kind":"keycap","v":"retry"}"#,
+            Request::KeyRemap(KeyRemapAsk::Retry),
+            r#"{"kind":"key_remap","v":"retry"}"#,
         ),
         (
-            Request::Keycap(KeycapAsk::Resume),
-            r#"{"kind":"keycap","v":"resume"}"#,
+            Request::KeyRemap(KeyRemapAsk::Resume),
+            r#"{"kind":"key_remap","v":"resume"}"#,
         ),
         (
             Request::Debug(DebugRequest::Stats),
@@ -526,11 +526,11 @@ fn responses() -> Vec<(Response, &'static str)> {
             r#"{"kind":"status","v":{"kind":"intents","v":{"link":"serving","showing":"c-1","waiting":2,"grants":["org.bardo.Shell:shell.dock.pin"],"breaker":"tripped","reach":"reached"}}}"#,
         ),
         (
-            Response::Status(StatusReport::Keycap(KeycapState::Failed)),
-            r#"{"kind":"status","v":{"kind":"keycap","v":{"kind":"failed"}}}"#,
+            Response::Status(StatusReport::KeyRemap(KeyRemapState::Failed)),
+            r#"{"kind":"status","v":{"kind":"key_remap","v":{"kind":"failed"}}}"#,
         ),
         (
-            Response::Status(StatusReport::Keycap(KeycapState::Connected {
+            Response::Status(StatusReport::KeyRemap(KeyRemapState::Connected {
                 status: Status {
                     paused: true,
                     keyboards: vec![Keyboard {
@@ -544,7 +544,7 @@ fn responses() -> Vec<(Response, &'static str)> {
                     }],
                 },
             })),
-            r#"{"kind":"status","v":{"kind":"keycap","v":{"kind":"connected","v":{"status":{"paused":true,"keyboards":[{"info":{"name":"Apple Keyboard","path":"/dev/input/event4","vendor":1452,"product":592},"grab":"conflict"}]}}}}}"#,
+            r#"{"kind":"status","v":{"kind":"key_remap","v":{"kind":"connected","v":{"status":{"paused":true,"keyboards":[{"info":{"name":"Apple Keyboard","path":"/dev/input/event4","vendor":1452,"product":592},"grab":"conflict"}]}}}}}"#,
         ),
         (
             Response::Status(StatusReport::Idle(Idle {

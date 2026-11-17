@@ -148,7 +148,7 @@ mod tests {
                 Eligibility::Keyboard,
             ),
             (
-                "keycap's own keyboard stays excluded even when named",
+                "key_remap's own keyboard stays excluded even when named",
                 identity(uinput::NAME, uinput::VENDOR, uinput::PRODUCT),
                 VIRTUAL,
                 VirtualAllowance::Named(uinput::NAME.to_owned()),

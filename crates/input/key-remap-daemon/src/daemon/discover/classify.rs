@@ -1,4 +1,4 @@
-//! The rule that says whether a node is a keyboard keycap should grab.
+//! The rule that says whether a node is a keyboard the key remap daemon should grab.
 
 use super::allowance::VirtualAllowance;
 use super::caps::Caps;
@@ -7,7 +7,7 @@ use crate::daemon::events::{ABS_MT_POSITION_X, ABS_X, EV_ABS, EV_KEY, EV_REL, RE
 use crate::daemon::{pointer, uinput};
 use std::path::{Path, PathBuf};
 
-/// Name prefix of palmrest's virtual devices, which keycap must never grab.
+/// Name prefix of palmrest's virtual devices, which key remap daemon must never grab.
 const PALMREST_PREFIX: &str = "mouse-gestures";
 
 /// Who a node says it is.
@@ -21,7 +21,7 @@ pub(crate) struct Identity {
 
 /// Whether a node is a uinput device, read off its resolved (symlink-free) sysfs path: it sits
 /// under `devices/virtual/input`, where uinput devices register. Another program writes such a
-/// device, so grabbing it would feed that program's output back through keycap.
+/// device, so grabbing it would feed that program's output back through key_remap.
 pub(crate) fn is_virtual(resolved: &Path) -> bool {
     let parts: Vec<_> = resolved.components().collect();
     let virtual_input = ["devices", "virtual", "input"];
@@ -32,7 +32,7 @@ pub(crate) fn is_virtual(resolved: &Path) -> bool {
     })
 }
 
-/// What keycap does with a node.
+/// What the key remap daemon does with a node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub(crate) enum Eligibility {
     /// A keyboard: grab it.
@@ -43,7 +43,7 @@ pub(crate) enum Eligibility {
     NotKeyboard,
 }
 
-/// Whether the node is one of the virtual devices that must never be grabbed: keycap's own
+/// Whether the node is one of the virtual devices that must never be grabbed: the key remap daemon's own
 /// keyboard and pointer twins (grabbing them would feed our output back in) and palmrest's.
 fn is_ours_or_palmrests(id: &Identity) -> bool {
     id.name == uinput::NAME
@@ -74,7 +74,7 @@ fn has_pointer_axes(caps: &Caps) -> bool {
 /// The rule, on capabilities, identity, whether the node is virtual and the allowance. A virtual device is never
 /// grabbed, whoever made it, unless `allow` names it exactly: two remappers grabbing each
 /// other's output is a feedback loop. A named allowance excludes every other device too.
-/// keycap's own device and palmrest's stay excluded even
+/// The key remap daemon's own device and palmrest's stay excluded even
 /// when named.
 pub(crate) fn classify(
     caps: &Caps,

@@ -3,7 +3,7 @@
 //!
 //! Its environment is not read (NEW-FA-1). `/proc/<pid>/environ` is mode 0400 and owned by the
 //! process's user, and the kernel checks that mode before ptrace access, so root holding only
-//! `CAP_SYS_PTRACE` cannot open it for palmrest's or keycap's dynamic user. Only root can set a
+//! `CAP_SYS_PTRACE` cannot open it for palmrest's or the key remap daemon's dynamic user. Only root can set a
 //! system unit's environment, and the unit's root-owned files must unset every loader variable
 //! (`super::directives`); the capability that would open the file would let a compromised service
 //! read every file, and reading the process's memory instead would let it read every process's.

@@ -17,7 +17,7 @@ use super::{Consent, ConsentId, DisplayTrial, OutputPicture, SpacePicture, Trial
 /// One thing the shell protocol said.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ShellNote {
-    /// The modifiers held while the pointer is over a shell surface (keycap stays the source of
+    /// The modifiers held while the pointer is over a shell surface (the key remap daemon stays the source of
     /// truth for chords; this is the pointer-over-shell view, for hot corners and the Option
     /// variants of the dock and bar).
     Modifiers(HeldMods),

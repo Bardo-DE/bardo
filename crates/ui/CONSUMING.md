@@ -2285,7 +2285,7 @@ toolkit integration of chordkit (github.com/Bardo-DE/chordkit, the keymap core):
 becomes a chordkit key press in one place (`ds_core::command::key_input`), resolves to an `Action`
 in the right `Context`, and every shortcut is drawn through chordkit's display. On each OS the
 keymap follows that OS's own shortcut settings when it has any (kdeglobals on KDE, a dconf dump on
-GNOME, our desktop's keycap), and its conventions otherwise (Command on a Mac and our desktop, Ctrl
+GNOME, our desktop's the key remap daemon), and its conventions otherwise (Command on a Mac and our desktop, Ctrl
 on Windows and other Linux). The nouns (`StandardAction`, `AppAction`, `DefaultChord`, `Primary`,
 `Keymap`, `Context`, `Platform`) are chordkit's; Bardo keeps no copy. Add chordkit to your
 workspace by the same git rev as Bardo's (`docs/workspace-deps.toml`).
@@ -2372,13 +2372,13 @@ fn Editor() -> Element {
   settings reloads the keymap. An app that builds a keymap of its own on the system's, outside any
   window, takes `ds_blitz::system_key_source(platform, lookup)` (the config directory read through
   its lookup) and loads and watches the `KeySource` it returns (`source()`, `watch`).
-  Bardo does not depend on keycap: our desktop's launcher plugs its source in,
+  Bardo does not depend on the key remap daemon: our desktop's launcher plugs its source in,
 
   ```text
-  let config = AppConfig::new("Mail", size).with_keymap_source(Box::new(keycap_client::Source::connect()));
+  let config = AppConfig::new("Mail", size).with_keymap_source(Box::new(key_remap_client::Source::connect()));
   ```
 
-  and keycap implements `chordkit::KeymapSource` (`load`, and `watch` for a live reload; the
+  and the key remap daemon implements `chordkit::KeymapSource` (`load`, and `watch` for a live reload; the
   callback may run on any thread and `Ds` re-renders itself to pick it up).
 - **Tests.** `HarnessConfig::with_platform(Platform)` fixes the keymap to a platform's conventions
   and reads no real system; the default is our desktop's (Command arrives as Super).
@@ -2417,8 +2417,8 @@ Line numbers are `~/rs-wt/keymap/SURVEY.md` at the 2026-10-10 tips.
   and `launcher/chord_keys.rs:41-61` are `StandardAction::{Reveal, Copy, QuickLook}` plus `AppAction`s;
   `shell-dock/src/dock/pointer.rs:98` (own `SUPER|CONTROL|META`) uses `ds::base::command::holds_primary`
   or the action. The switcher's `command_keys` (Alt/Meta release) is a modifier *release*, which is
-  not a chord: keep it, on `ds::base::command::modifiers_of`. `dist/keycap/keycap.toml` remap rules
-  stay keycap's. The desktop launcher passes keycap's `KeymapSource` to
+  not a chord: keep it, on `ds::base::command::modifiers_of`. `dist/key_remap/key-remap.toml` remap rules
+  stay the key remap daemon's. The desktop launcher passes the key remap daemon's `KeymapSource` to
   `AppConfig::with_keymap_source`.
 - **temor.** `temor-pane/src/keys/{keymap,chord}.rs` (own `Keymap`/`Chord`/`Mods`) and
   `input/route.rs` `is_command_form` go: resolve with `Context::Terminal`, where Primary is Super on

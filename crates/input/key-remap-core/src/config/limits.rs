@@ -1,4 +1,4 @@
-//! How large a configuration keycap will resolve. The seat owner's settings arrive over a
+//! How large a configuration the key remap daemon will resolve. The seat owner's settings arrive over a
 //! socket any program of theirs can write to, and resolving runs on the thread that also feeds
 //! the watchdog, so a settings file with thousands of profiles must be turned away before it is
 //! resolved, with the previous settings left in force.

@@ -16,7 +16,7 @@ use ui_helpers::{ApplicationEntry, DesktopFile, DesktopGroup, DesktopId, EntryLo
 const CURRENT_DESKTOPS: [&str; 1] = ["bardo"];
 
 /// The desktop entry key naming the keyboard profile an app wants.
-const KEYBOARD_PROFILE_KEY: &str = "X-Keycap-Profile";
+const KEYBOARD_PROFILE_KEY: &str = "X-Key-Remap-Profile";
 
 /// The desktop entry key listing the desktop file names an app had before.
 const RENAMED_FROM_KEY: &str = "X-Flatpak-RenamedFrom";
@@ -105,7 +105,7 @@ fn renamed_from(entry: &DesktopGroup) -> Vec<AppId> {
         .collect()
 }
 
-/// `X-Keycap-Profile`, parsed once here. A value that is not a profile name costs only this
+/// `X-Key-Remap-Profile`, parsed once here. A value that is not a profile name costs only this
 /// key: it is logged and the entry is indexed without a profile, as every other bad field.
 fn keyboard_profile(entry: &DesktopGroup, path: &Path) -> Option<ProfileName> {
     let value = entry.string(KEYBOARD_PROFILE_KEY)?;
@@ -397,25 +397,25 @@ mod tests {
             ),
             (
                 "a declared profile",
-                "X-Keycap-Profile=terminal\n",
+                "X-Key-Remap-Profile=terminal\n",
                 &[],
                 Some("terminal"),
             ),
             (
                 "a profile name is trimmed",
-                "X-Keycap-Profile= game-1 \n",
+                "X-Key-Remap-Profile= game-1 \n",
                 &[],
                 Some("game-1"),
             ),
             (
                 "an invalid profile is ignored",
-                "X-Keycap-Profile=Not A Name\n",
+                "X-Key-Remap-Profile=Not A Name\n",
                 &[],
                 None,
             ),
             (
                 "an empty profile is ignored",
-                "X-Keycap-Profile=\n",
+                "X-Key-Remap-Profile=\n",
                 &[],
                 None,
             ),

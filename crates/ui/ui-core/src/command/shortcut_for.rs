@@ -3,7 +3,7 @@
 //! command panel's hints, a help sheet built in a worker). They draw as `shortcut_text` does for
 //! a chord the keymap binds: `⌘C` on a Mac-style platform, `Ctrl+C` in a word-style one.
 
-use super::shortcut_text::{KeyCap, arrow, split_caps};
+use super::shortcut_text::{KeyRemap, arrow, split_caps};
 use keymap::{Action, Chord, Keymap, Platform};
 
 /// `chord` as `platform` shows it: `⇧⌘Z` on a Mac or our desktop, `Ctrl+Shift+Z` elsewhere.
@@ -14,7 +14,7 @@ pub fn chord_text(platform: Platform, chord: &Chord) -> String {
 
 /// The caps `chord` is drawn on for `platform`: the modifiers, then the key.
 #[must_use]
-pub fn chord_caps(platform: Platform, chord: &Chord) -> Vec<KeyCap> {
+pub fn chord_caps(platform: Platform, chord: &Chord) -> Vec<KeyRemap> {
     caps_of(&chord_text(platform, chord))
 }
 
@@ -28,16 +28,16 @@ pub fn shortcut_text_for(keymap: &Keymap, action: &Action) -> Option<String> {
 
 /// The caps of [`shortcut_text_for`]; empty when the keymap binds `action` to nothing.
 #[must_use]
-pub fn shortcut_caps_for(keymap: &Keymap, action: &Action) -> Vec<KeyCap> {
+pub fn shortcut_caps_for(keymap: &Keymap, action: &Action) -> Vec<KeyRemap> {
     shortcut_text_for(keymap, action)
         .map(|text| caps_of(&text))
         .unwrap_or_default()
 }
 
-fn caps_of(text: &str) -> Vec<KeyCap> {
+fn caps_of(text: &str) -> Vec<KeyRemap> {
     split_caps(text)
         .into_iter()
-        .map(|text| KeyCap {
+        .map(|text| KeyRemap {
             arrow: arrow(&text),
             text,
         })

@@ -14,7 +14,7 @@ pub(super) const MAX_CLIENTS: usize = 32;
 pub(super) const MAX_CLIENTS_PER_UID: usize = 8;
 /// Clients that only watch the keymap or register actions, per uid. Every app of one person
 /// holds one or two, so this is a share for a whole desktop's apps. They are observers for the
-/// seat: they never steer keycap and never count toward `MAX_CLIENTS_PER_UID`.
+/// seat: they never steer the key remap daemon and never count toward `MAX_CLIENTS_PER_UID`.
 pub(super) const MAX_KEYMAP_CLIENTS_PER_UID: usize = 64;
 /// Messages read from one client in one pass over the sockets; the rest wait for the next.
 pub(super) const MESSAGES_PER_PASS: usize = 16;

@@ -123,7 +123,7 @@ pub(crate) fn forward<T: Send + 'static>(
     wrap: fn(T) -> Message,
 ) -> io::Result<()> {
     std::thread::Builder::new()
-        .name(format!("keycap-{name}"))
+        .name(format!("key-remap-{name}"))
         .spawn(move || rx.iter().for_each(|item| inbox.send(wrap(item))))
         .map(drop)
 }

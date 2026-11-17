@@ -29,7 +29,7 @@ is device-generic (see [Sensors](#sensors)).
 Two threads and no async runtime: the **reader** (poll on the sensor's fd, read, decode, step,
 emit, and every housekeeping step between reads) and the **socket** thread (accept, fan-out,
 `PointerOver` and `SessionLock` aggregation), woken by an eventfd so the reader never waits on a
-subscriber. palmrest is a system service (a dynamic user, as keycap is), so the socket is open
+subscriber. palmrest is a system service (a dynamic user, as the key remap daemon is), so the socket is open
 to every local account and the socket thread decides whom to serve: only the person at the seat
 (logind's `seat0` state file, read when someone connects and once a second), and of their programs
 only the shell (the process in `bardo-shell.service` under that person's own manager, held by its pidfd,
@@ -148,7 +148,7 @@ palmrest drives the user's only pointing device, so:
 ./install.sh
 ```
 
-palmrest is a system service, like keycap. `install.sh` builds a release binary and installs, through
+palmrest is a system service, like key_remap. `install.sh` builds a release binary and installs, through
 `sudo`, `doas` or `pkexec` (whichever is found; `$SUDO` overrides; with none it prints the commands
 for you to run as root): the program in `/usr/local/bin` (a root-owned file: the input service
 serves only a palmrest that only root can change), `dist/bardo-mouse-gestures.service` in `/etc/systemd/system`,

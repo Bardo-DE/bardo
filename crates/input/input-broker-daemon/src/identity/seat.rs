@@ -1,4 +1,4 @@
-//! Who is logged in on the seat: the `ACTIVE_UID` line of logind's file, the same fact keycap reads.
+//! Who is logged in on the seat: the `ACTIVE_UID` line of logind's file, the same fact the key remap daemon reads.
 
 use base_fs::{ReadCap, read_text_capped};
 use caller_identity_core::Uid;

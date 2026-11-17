@@ -1,4 +1,4 @@
-use crate::keycap::{Attention, NoticeChange, notice_for, notice_text};
+use crate::key_remap::{Attention, NoticeChange, notice_for, notice_text};
 
 fn conflict(device: &str) -> Attention {
     Attention::Conflict {
@@ -7,7 +7,7 @@ fn conflict(device: &str) -> Attention {
 }
 
 #[test]
-fn the_notice_follows_what_keycap_needs() {
+fn the_notice_follows_what_key_remap_needs() {
     let cases: Vec<(&str, Option<Attention>, Option<Attention>, NoticeChange)> = vec![
         ("nothing to nothing", None, None, NoticeChange::Keep),
         (
@@ -65,7 +65,7 @@ fn each_attention_has_its_words() {
             "failed",
             Attention::Failed,
             "Command-key layout stopped",
-            "Keys work as on a standard keyboard. Run `bardo-shell keycap retry` to try again.",
+            "Keys work as on a standard keyboard. Run `bardo-shell key_remap retry` to try again.",
         ),
         (
             "conflict",
@@ -77,7 +77,7 @@ fn each_attention_has_its_words() {
             "paused",
             Attention::Paused,
             "Command-key layout paused",
-            "Keys work as on a standard keyboard. Run `bardo-shell keycap resume` to turn it back on.",
+            "Keys work as on a standard keyboard. Run `bardo-shell key_remap resume` to turn it back on.",
         ),
     ];
     for (case, attention, summary, body) in cases {

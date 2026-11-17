@@ -1,4 +1,4 @@
-//! The `keycap` command line: the daemon and its small tools. `run` is the one way in, and the
+//! The `key_remap` command line: the daemon and its small tools. `run` is the one way in, and the
 //! only place that reads the process environment.
 
 mod caps_lamp;
@@ -93,7 +93,7 @@ pub fn run(args: impl IntoIterator<Item = String>) -> ExitCode {
         Some(command) => match execute(command, &env) {
             Ok(()) => ExitCode::SUCCESS,
             Err(e) => {
-                eprintln!("keycap: {e}");
+                eprintln!("key_remap: {e}");
                 ExitCode::FAILURE
             }
         },
@@ -133,22 +133,26 @@ fn execute(command: Command, env: &Env) -> Result<(), String> {
 )]
 fn check_devices(env: &Env) -> Result<(), String> {
     match Source::detect(&env.device_service) {
-        Source::Service(broker) => broker
-            .open()
-            .map(drop)
-            .map_err(|e| e.to_string())
-            .and_then(|()| print_out("keycap: the device service answers; devices can be made\n")),
+        Source::Service(broker) => {
+            broker
+                .open()
+                .map(drop)
+                .map_err(|e| e.to_string())
+                .and_then(|()| {
+                    print_out("key_remap: the device service answers; devices can be made\n")
+                })
+        }
         _ => uinput::probe(env.probe, Path::new(UINPUT))
             .map_err(|e| e.to_string())
             .and_then(|()| {
                 print_out(&format!(
-                    "keycap: {UINPUT} can be opened; this user can create devices\n"
+                    "key_remap: {UINPUT} can be opened; this user can create devices\n"
                 ))
             }),
     }
 }
 
-/// Writes `text` to stdout. A closed pipe (`keycap replay f | head`) is the reader's choice,
+/// Writes `text` to stdout. A closed pipe (`key_remap replay f | head`) is the reader's choice,
 /// not a failure.
 fn print_out(text: &str) -> Result<(), String> {
     match std::io::stdout().lock().write_all(text.as_bytes()) {

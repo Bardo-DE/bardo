@@ -1,5 +1,5 @@
-//! The Caps Lock lamp of a keyboard for `keycap status`, read from the kernel's LED class in
-//! sysfs (`<sys>/<eventN>/device/inputN::capslock/brightness`). While keycap holds the keyboard
+//! The Caps Lock lamp of a keyboard for `key_remap status`, read from the kernel's LED class in
+//! sysfs (`<sys>/<eventN>/device/inputN::capslock/brightness`). While the key remap daemon holds the keyboard
 //! the lamp follows the desktop's Caps Lock state, so it is what the letters will do.
 
 use std::fs;

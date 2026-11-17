@@ -41,10 +41,10 @@ pub enum Kind {
     PalmrestWheel,
     /// palmrest's virtual keyboard, for gesture key combinations only.
     PalmrestKeys,
-    /// keycap's virtual keyboard.
-    KeycapKeyboard,
-    /// keycap's virtual pointer, the pointer half of a combo device.
-    KeycapPointer,
+    /// The key remap daemon's virtual keyboard.
+    KeyRemapKeyboard,
+    /// The key remap daemon's virtual pointer, the pointer half of a combo device.
+    KeyRemapPointer,
 }
 
 impl Kind {
@@ -53,8 +53,8 @@ impl Kind {
         Kind::PalmrestTouchpad,
         Kind::PalmrestWheel,
         Kind::PalmrestKeys,
-        Kind::KeycapKeyboard,
-        Kind::KeycapPointer,
+        Kind::KeyRemapKeyboard,
+        Kind::KeyRemapPointer,
     ];
 
     /// The byte on the wire.
@@ -64,8 +64,8 @@ impl Kind {
             Self::PalmrestTouchpad => 1,
             Self::PalmrestWheel => 2,
             Self::PalmrestKeys => 3,
-            Self::KeycapKeyboard => 16,
-            Self::KeycapPointer => 17,
+            Self::KeyRemapKeyboard => 16,
+            Self::KeyRemapPointer => 17,
         }
     }
 
@@ -80,7 +80,7 @@ impl Kind {
     pub const fn delivery(self) -> Delivery {
         match self {
             Self::PalmrestTouchpad | Self::PalmrestWheel | Self::PalmrestKeys => Delivery::Proxied,
-            Self::KeycapKeyboard | Self::KeycapPointer => Delivery::Handed,
+            Self::KeyRemapKeyboard | Self::KeyRemapPointer => Delivery::Handed,
         }
     }
 
@@ -89,7 +89,7 @@ impl Kind {
     pub const fn maker(self) -> Maker {
         match self {
             Self::PalmrestTouchpad | Self::PalmrestWheel | Self::PalmrestKeys => Maker::PadDaemon,
-            Self::KeycapKeyboard | Self::KeycapPointer => Maker::KeymapDaemon,
+            Self::KeyRemapKeyboard | Self::KeyRemapPointer => Maker::KeymapDaemon,
         }
     }
 
@@ -100,8 +100,8 @@ impl Kind {
             Self::PalmrestTouchpad => "mouse-gestures-touchpad",
             Self::PalmrestWheel => "mouse-gestures-wheel",
             Self::PalmrestKeys => "mouse-gestures-keys",
-            Self::KeycapKeyboard => "key-remap-keyboard",
-            Self::KeycapPointer => "key-remap-pointer",
+            Self::KeyRemapKeyboard => "key-remap-keyboard",
+            Self::KeyRemapPointer => "key-remap-pointer",
         }
     }
 }

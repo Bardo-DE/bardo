@@ -11,7 +11,7 @@ enum Step {
     Grab(bool),
     /// The desktop set the Caps Lock LED of the virtual keyboard.
     Led(bool),
-    /// keycap wrote a Caps Lock press from a rule (Shift+Caps Lock).
+    /// The key remap daemon wrote a Caps Lock press from a rule (Shift+Caps Lock).
     Wrote,
     /// A key pressed on an Apple keyboard.
     Press(&'static str),
@@ -85,7 +85,7 @@ fn caps_lock_rule_table() {
             &[Tap],
         ),
         (
-            "keycap restarted while the desktop's lock is on: the new device gets LED On",
+            "key_remap restarted while the desktop's lock is on: the new device gets LED On",
             REMAPPED,
             &[Led(ON), Press("a")],
             &[Tap],

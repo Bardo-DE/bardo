@@ -1,4 +1,4 @@
-//! `dist/keycap.plasma.toml` laid over the built-in mapping: the Plasma shortcuts Toshy gave the
+//! `dist/key_remap.plasma.toml` laid over the built-in mapping: the Plasma shortcuts Toshy gave the
 //! Mac keyboard.
 
 use crate::support::{Rig, focus, press, release};

@@ -4,10 +4,10 @@
 //! of that name. What it gets for doing so is bounded by what the user layer may say
 //! (`ConfigLayer::confined`), which is the part that holds.
 //!
-//! keycap is a dynamic user without privileges, so it cannot read another user's image path;
+//! The key remap daemon is a dynamic user without privileges, so it cannot read another user's image path;
 //! the unit name in the control group is all there is to go on, and the process is held by its
 //! pidfd so the name cannot belong to a process that has since been replaced. The check itself is
-//! `service_locator::guard`; this file is keycap's table and its choice of who is believed.
+//! `service_locator::guard`; this file is the key remap daemon's table and its choice of who is believed.
 
 use caller_identity_core::roles::SHELL;
 use caller_identity_core::{RoleName, Table};
@@ -62,7 +62,7 @@ pub(crate) fn vouch(seat_user: bool) -> Box<dyn Vouch> {
 /// nobody steering, which is the safe way to fail.
 fn steering_check() -> ShellCheck {
     let table = Table::from_toml(STEERING_TABLE).unwrap_or_else(|e| {
-        eprintln!("keycap: nobody may steer: the steering table is unusable: {e}");
+        eprintln!("key_remap: nobody may steer: the steering table is unusable: {e}");
         Table::empty()
     });
     ShellCheck::system(table, vec![SHELL, FOCUS_FEED])

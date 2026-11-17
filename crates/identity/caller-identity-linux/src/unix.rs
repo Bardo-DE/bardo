@@ -1,4 +1,4 @@
-//! The entry point for a unix-socket peer (the Wayland socket, turnstile's socket, keycap's).
+//! The entry point for a unix-socket peer (the Wayland socket, turnstile's socket, the key remap daemon's).
 
 use crate::error::PinError;
 use crate::pin::{Hold, Pinned, open_pidfd};

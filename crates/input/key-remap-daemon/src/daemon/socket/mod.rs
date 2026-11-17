@@ -1,4 +1,4 @@
-//! The socket thread: who may talk to keycap, and what each of them hears.
+//! The socket thread: who may talk to the key remap daemon, and what each of them hears.
 
 #[cfg(test)]
 pub(crate) mod client;

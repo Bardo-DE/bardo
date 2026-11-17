@@ -51,7 +51,7 @@ pub(crate) fn spawn(
         person_file,
     };
     std::thread::Builder::new()
-        .name("keycap-keymap-watch".to_owned())
+        .name("key-remap-keymap-watch".to_owned())
         .spawn(move || run(&socket, files, &on_change, &seen))?;
     Ok(Stop(stopped))
 }

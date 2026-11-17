@@ -92,7 +92,7 @@ pub struct Warning {
     pub problem: String,
 }
 
-/// How keycap holds one keyboard.
+/// How the key remap daemon holds one keyboard.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Grab {
@@ -104,7 +104,7 @@ pub enum Grab {
     Conflict,
 }
 
-/// One keyboard and how keycap holds it; each keyboard has its own grab, so one can be
+/// One keyboard and how the key remap daemon holds it; each keyboard has its own grab, so one can be
 /// active while another conflicts.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Keyboard {
@@ -112,7 +112,7 @@ pub struct Keyboard {
     pub grab: Grab,
 }
 
-/// What keycap is doing, for the desktop to show. No keyboards means none is attached.
+/// What the key remap daemon is doing, for the desktop to show. No keyboards means none is attached.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Status {
     /// Whether the escape chord paused remapping; `Resume` ends it.

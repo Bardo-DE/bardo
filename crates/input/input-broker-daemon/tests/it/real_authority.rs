@@ -29,17 +29,17 @@ unit = "bardo-key-remap.service"
 exe  = ["/usr/local/bin/bardo-key-remap"]
 role = "keymap_daemon"
 "#;
-const KEYCAP_CGROUP: &str = "0::/system.slice/bardo-key-remap.service\n";
-const KEYCAP_UNIT_FILE: &str = "/usr/lib/systemd/system/bardo-key-remap.service";
+const KEY_REMAP_CGROUP: &str = "0::/system.slice/bardo-key-remap.service\n";
+const KEY_REMAP_UNIT_FILE: &str = "/usr/lib/systemd/system/bardo-key-remap.service";
 
 /// The unit's `UnsetEnvironment=` value: every loader variable.
 fn unset() -> String {
     LOADER_VARIABLES.join(" ")
 }
 
-fn keycap_unit() -> String {
+fn key_remap_unit() -> String {
     format!(
-        "[Unit]\nDescription=keycap\n[Service]\nExecStart=/usr/local/bin/bardo-key-remap\nUnsetEnvironment={}\n",
+        "[Unit]\nDescription=key_remap\n[Service]\nExecStart=/usr/local/bin/bardo-key-remap\nUnsetEnvironment={}\n",
         unset()
     )
 }
@@ -54,10 +54,10 @@ fn proc_files(tree: FixtureProc, tracer: u32) -> FixtureProc {
     )
 }
 
-/// The tree of a machine where keycap's unit is the shipped one and its process is clean.
-fn keycap_world() -> FixtureProc {
+/// The tree of a machine where the key remap daemon's unit is the shipped one and its process is clean.
+fn key_remap_world() -> FixtureProc {
     proc_files(
-        tree().file(KEYCAP_UNIT_FILE, keycap_unit(), FileTrust::RootOnly),
+        tree().file(KEY_REMAP_UNIT_FILE, key_remap_unit(), FileTrust::RootOnly),
         0,
     )
 }
@@ -115,11 +115,11 @@ fn role(text: &str) -> RoleName {
 }
 
 #[test]
-fn keycap_in_its_system_unit_with_a_root_owned_image_and_a_proven_unit_is_listed_at_unit_strength()
-{
+fn key_remap_in_its_system_unit_with_a_root_owned_image_and_a_proven_unit_is_listed_at_unit_strength()
+ {
     let conn = socket();
     let image = FixtureImage::Present("/usr/local/bin/bardo-key-remap", FileTrust::RootOnly);
-    let caller = authority(keycap_world(), KEYCAP_CGROUP, image)
+    let caller = authority(key_remap_world(), KEY_REMAP_CGROUP, image)
         .identify(&conn)
         .expect("identified");
     assert_eq!(
@@ -152,32 +152,32 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
     let drop_in = "/usr/lib/systemd/system/bardo-key-remap.service.d/10-local.conf";
     let one_short = LOADER_VARIABLES[1..].join(" ");
     let table: Vec<(&str, FixtureProc, Proof)> = vec![
-        ("the real unit", keycap_world(), Proof::Full),
+        ("the real unit", key_remap_world(), Proof::Full),
         (
             "a harmless root drop-in",
-            keycap_world().file(drop_in, "[Service]\nMemoryMax=1M\n", root),
+            key_remap_world().file(drop_in, "[Service]\nMemoryMax=1M\n", root),
             Proof::Full,
         ),
         ("no unit file at all", proc_files(tree(), 0), Proof::Exe),
         (
             "a unit file a person can write",
-            keycap_world().file(KEYCAP_UNIT_FILE, keycap_unit(), mine),
+            key_remap_world().file(KEY_REMAP_UNIT_FILE, key_remap_unit(), mine),
             Proof::Exe,
         ),
         (
             "a drop-in a person can write",
-            keycap_world().file(drop_in, "[Service]\nMemoryMax=1M\n", mine),
+            key_remap_world().file(drop_in, "[Service]\nMemoryMax=1M\n", mine),
             Proof::Exe,
         ),
         (
             "a root drop-in that empties the unset list",
-            keycap_world().file(drop_in, "[Service]\nUnsetEnvironment=\n", root),
+            key_remap_world().file(drop_in, "[Service]\nUnsetEnvironment=\n", root),
             Proof::Exe,
         ),
         (
             "a unit that leaves one loader variable out",
-            keycap_world().file(
-                KEYCAP_UNIT_FILE,
+            key_remap_world().file(
+                KEY_REMAP_UNIT_FILE,
                 format!(
                     "[Service]\nExecStart=/usr/local/bin/bardo-key-remap\nUnsetEnvironment={one_short}\n"
                 ),
@@ -187,8 +187,8 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
         ),
         (
             "a unit that runs another program",
-            keycap_world().file(
-                KEYCAP_UNIT_FILE,
+            key_remap_world().file(
+                KEY_REMAP_UNIT_FILE,
                 format!(
                     "[Service]\nExecStart=/usr/bin/other\nUnsetEnvironment={}\n",
                     unset()
@@ -199,37 +199,37 @@ fn a_listed_image_is_unit_strength_only_when_the_unit_and_the_process_both_check
         ),
         (
             "a root drop-in for every service on a merged /usr, seen again through /lib",
-            merged_usr(keycap_world(), "/usr/lib")
+            merged_usr(key_remap_world(), "/usr/lib")
                 .file(&format!("/usr/lib/{TIMEOUT_DROP_IN}"), "[Service]\n", root)
                 .file(&format!("/lib/{TIMEOUT_DROP_IN}"), "[Service]\n", mine),
             Proof::Full,
         ),
         (
             "a unit folder linked to a place a person can write",
-            merged_usr(keycap_world(), "/home/someone/units")
+            merged_usr(key_remap_world(), "/home/someone/units")
                 .dir("/home/someone/units", mine)
                 .file(&format!("/lib/{TIMEOUT_DROP_IN}"), "[Service]\n", mine),
             Proof::Exe,
         ),
         (
             "a run-time unit of that name",
-            keycap_world().file("/run/systemd/transient/bardo-key-remap.service", "", root),
+            key_remap_world().file("/run/systemd/transient/bardo-key-remap.service", "", root),
             Proof::Exe,
         ),
         (
             "a process that is being traced",
-            proc_files(keycap_world(), 4242),
+            proc_files(key_remap_world(), 4242),
             Proof::Exe,
         ),
         (
             "a status that cannot be read",
-            tree().file(KEYCAP_UNIT_FILE, keycap_unit(), root),
+            tree().file(KEY_REMAP_UNIT_FILE, key_remap_unit(), root),
             Proof::Exe,
         ),
     ];
     for (name, tree, want) in table {
         let image = FixtureImage::Present("/usr/local/bin/bardo-key-remap", root);
-        let caller = authority(tree, KEYCAP_CGROUP, image)
+        let caller = authority(tree, KEY_REMAP_CGROUP, image)
             .identify(&socket())
             .expect("identified");
         let proof = match caller.credential {
@@ -318,13 +318,13 @@ fn a_user_writable_image_a_stranger_and_a_wrong_row_are_all_unlisted() {
         FileTrust::Writable(Writer::Owner(Uid::new(1000))),
     );
     let stranger = FixtureImage::Present("/usr/bin/vim", FileTrust::RootOnly);
-    let wrong_image = FixtureImage::Present("/tmp/keycap", FileTrust::RootOnly);
+    let wrong_image = FixtureImage::Present("/tmp/key_remap", FileTrust::RootOnly);
     for (name, image) in [
         ("writable", writable),
         ("stranger", stranger),
         ("another path", wrong_image),
     ] {
-        let caller = authority(tree(), KEYCAP_CGROUP, image)
+        let caller = authority(tree(), KEY_REMAP_CGROUP, image)
             .identify(&socket())
             .expect("identified");
         assert_eq!(caller.credential, None, "{name}");
@@ -335,7 +335,7 @@ fn a_user_writable_image_a_stranger_and_a_wrong_row_are_all_unlisted() {
 fn without_a_table_nobody_is_identified() {
     let tree = FixtureProc::new();
     let image = FixtureImage::Present("/usr/local/bin/bardo-key-remap", FileTrust::RootOnly);
-    let err = authority(tree, KEYCAP_CGROUP, image)
+    let err = authority(tree, KEY_REMAP_CGROUP, image)
         .identify(&socket())
         .expect_err("no table");
     assert!(matches!(err, IdentifyError::Table(_)), "{err:?}");
@@ -351,7 +351,7 @@ fn a_table_a_user_can_write_is_not_believed() {
         )
         .dir(DIR, FileTrust::RootOnly);
     let image = FixtureImage::Present("/usr/local/bin/bardo-key-remap", FileTrust::RootOnly);
-    let err = authority(tree, KEYCAP_CGROUP, image)
+    let err = authority(tree, KEY_REMAP_CGROUP, image)
         .identify(&socket())
         .expect_err("untrusted table");
     assert!(matches!(err, IdentifyError::Table(_)), "{err:?}");

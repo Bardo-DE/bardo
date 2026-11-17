@@ -321,11 +321,11 @@ fn the_wanted_profile_follows_the_active_window() {
     assert_eq!(
         wanted(&own_choice, &own, &standard, &ghostty, &index),
         name("mine"),
-        "the user's override beats keycap's own profile for the app"
+        "the user's override beats key_remap's own profile for the app"
     );
 }
 
-/// The keyboard moving between app windows and the shell's surfaces: what keycap is told at each
+/// The keyboard moving between app windows and the shell's surfaces: what the key remap daemon is told at each
 /// step, with the profile of the window underneath as the toplevels give it.
 #[test]
 fn the_shell_holding_the_keyboard_is_keymap_aware_over_any_window() {

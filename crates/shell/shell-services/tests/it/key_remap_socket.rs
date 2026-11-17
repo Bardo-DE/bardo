@@ -1,4 +1,4 @@
-//! The keycap service against a fake daemon: a `SOCK_SEQPACKET` socket in a scratch folder
+//! The key remap daemon service against a fake daemon: a `SOCK_SEQPACKET` socket in a scratch folder
 //! stands in for `/run/bardo/key-remap/key-remap.sock`. No system bus, no real daemon, no real config folder.
 
 use std::os::fd::OwnedFd;
@@ -19,16 +19,16 @@ use shell_launcher::{AppId, WindowKey};
 use shell_model::apps::{
     App, AppIcon, AppIndex, AppsEvent, DbusActivation, Listing, Terminal, step as apps_step,
 };
+use shell_model::key_remap::KeyRemapService;
+use shell_model::key_remap::{Attention, KeyRemapCommand, KeyRemapState, notice_text};
 use shell_model::keyboard::{ShellFocus, UserOverrides};
-use shell_model::keycap::KeycapService;
-use shell_model::keycap::{Attention, KeycapCommand, KeycapState, notice_text};
 use shell_model::notifications::{
     BannerLife, LiveBanner, NotesState, Notification, NotificationId, NotificationsCommand, UnixMs,
 };
 use shell_model::service::Control;
 use shell_model::windows::{Sizing, Toplevel, Toplevels, WindowModel};
 use shell_services::env::Env;
-use shell_services::keycap::KeycapLinks;
+use shell_services::key_remap::KeyRemapLinks;
 use shell_services::service::spawn;
 use shell_testkit::TempDir;
 use tokio::sync::{mpsc, watch};
@@ -136,7 +136,7 @@ fn readable(fd: &OwnedFd, limit: Duration) -> bool {
     poll(&mut fds, Some(&timeout)).is_ok_and(|ready| ready > 0)
 }
 
-/// The fake keycap: a listening socket.
+/// The fake the key remap daemon: a listening socket.
 struct Daemon {
     listener: OwnedFd,
     _folder: TempDir,
@@ -144,7 +144,7 @@ struct Daemon {
 
 impl Daemon {
     fn start() -> (Daemon, PathBuf) {
-        let folder = TempDir::new("keycap-daemon");
+        let folder = TempDir::new("key-remap-daemon");
         let path = folder.path().join("key-remap.sock");
         let listener = socket_with(
             AddressFamily::UNIX,
@@ -198,8 +198,8 @@ impl Peer {
 /// The service, the fake daemon and the other services' ends.
 struct Rig {
     daemon: Daemon,
-    state: watch::Receiver<KeycapState>,
-    control: Control<KeycapCommand>,
+    state: watch::Receiver<KeyRemapState>,
+    control: Control<KeyRemapCommand>,
     wl: watch::Sender<WindowModel>,
     /// Held so the index stays readable; these tests never change it.
     _apps: watch::Sender<AppIndex>,
@@ -211,34 +211,34 @@ struct Rig {
 impl Rig {
     /// Where the service looks for `key-remap.toml`.
     fn config_dir(&self) -> PathBuf {
-        shell_model::dirs::Dirs::under(self.scratch.path()).keycap_config()
+        shell_model::dirs::Dirs::under(self.scratch.path()).key_remap_config()
     }
 }
 
 /// The service against a fake daemon, with `config` as the person's `key-remap.toml` if given.
 fn rig(config: Option<&str>) -> Rig {
     let (daemon, socket) = Daemon::start();
-    let scratch = TempDir::new("keycap-scratch");
-    let config_dir = shell_model::dirs::Dirs::under(scratch.path()).keycap_config();
+    let scratch = TempDir::new("key-remap-scratch");
+    let config_dir = shell_model::dirs::Dirs::under(scratch.path()).key_remap_config();
     if let Some(text) = config {
         std::fs::create_dir_all(&config_dir).unwrap_or_else(|e| panic!("{e}"));
         std::fs::write(config_dir.join("key-remap.toml"), text).unwrap_or_else(|e| panic!("{e}"));
     }
     let env = Env {
-        keycap_socket: Some(socket),
+        key_remap_socket: Some(socket),
         ..Env::isolated(scratch.path())
     };
     let (apps_tx, apps_rx) = watch::channel(apps());
     let (wl, wl_rx) = watch::channel(focused(None));
     let (notifications, notices) = Control::channel();
     let (notes, notes_rx) = watch::channel(NotesState::default());
-    let links = KeycapLinks {
+    let links = KeyRemapLinks {
         windows: wl_rx,
         apps: apps_rx,
         notifications,
         notes: notes_rx,
     };
-    let handle = spawn::<KeycapService>(&tokio::runtime::Handle::current(), &env, links);
+    let handle = spawn::<KeyRemapService>(&tokio::runtime::Handle::current(), &env, links);
     Rig {
         daemon,
         state: handle.state,
@@ -251,7 +251,7 @@ fn rig(config: Option<&str>) -> Rig {
     }
 }
 
-async fn until(state: &mut watch::Receiver<KeycapState>, want: impl Fn(&KeycapState) -> bool) {
+async fn until(state: &mut watch::Receiver<KeyRemapState>, want: impl Fn(&KeyRemapState) -> bool) {
     let give_up = Instant::now() + LONG;
     loop {
         let now = state.borrow_and_update().clone();
@@ -274,7 +274,7 @@ async fn connected(rig: &mut Rig) -> Peer {
         status: running(),
     });
     until(&mut rig.state, |s| {
-        *s == KeycapState::Connected { status: running() }
+        *s == KeyRemapState::Connected { status: running() }
     })
     .await;
     peer
@@ -304,7 +304,7 @@ async fn a_focus_change_to_a_terminal_is_told_once_per_profile_change() {
     assert_eq!(
         peer.next(LONG),
         Some(focus("default")),
-        "the next thing keycap hears is the change back"
+        "the next thing key_remap hears is the change back"
     );
 }
 
@@ -318,7 +318,7 @@ async fn the_shell_holding_the_keyboard_is_told_as_keymap_aware_and_let_go_back(
             .send(command)
             .unwrap_or_else(|_| panic!("the service is gone"));
     };
-    send(KeycapCommand::ShellFocus(ShellFocus::Held));
+    send(KeyRemapCommand::ShellFocus(ShellFocus::Held));
     assert_eq!(peer.next(LONG), Some(focus("keymap-aware")), "the launcher");
     rig.wl.send_replace(focused(Some("foot")));
     assert_eq!(
@@ -326,7 +326,7 @@ async fn the_shell_holding_the_keyboard_is_told_as_keymap_aware_and_let_go_back(
         None,
         "a window change under the shell changes nothing"
     );
-    send(KeycapCommand::ShellFocus(ShellFocus::Elsewhere));
+    send(KeyRemapCommand::ShellFocus(ShellFocus::Elsewhere));
     assert_eq!(
         peer.next(LONG),
         Some(focus("terminal")),
@@ -334,8 +334,8 @@ async fn the_shell_holding_the_keyboard_is_told_as_keymap_aware_and_let_go_back(
     );
 }
 
-fn overriding(rows: &[(&str, &str)]) -> KeycapCommand {
-    KeycapCommand::Overrides(UserOverrides(
+fn overriding(rows: &[(&str, &str)]) -> KeyRemapCommand {
+    KeyRemapCommand::Overrides(UserOverrides(
         rows.iter()
             .map(|&(app, profile)| (AppId(app.to_owned()), name(profile)))
             .collect(),
@@ -393,7 +393,7 @@ async fn the_server_closing_is_a_restart_and_the_next_connection_is_told_the_foc
     assert_eq!(peer.next(LONG), Some(focus("terminal")));
 
     drop(peer);
-    until(&mut rig.state, |s| *s == KeycapState::Restarting).await;
+    until(&mut rig.state, |s| *s == KeyRemapState::Restarting).await;
 
     let again = connected(&mut rig).await;
     assert_eq!(
@@ -425,7 +425,7 @@ async fn the_config_file_is_told_on_connect_and_again_when_it_changes() {
     assert_eq!(
         peer.next(LONG),
         Some(config("")),
-        "a deleted file is an empty config, so keycap forgets the old one"
+        "a deleted file is an empty config, so key_remap forgets the old one"
     );
 }
 
@@ -438,11 +438,11 @@ async fn a_daemon_of_another_protocol_version_is_left_alone() {
         status: running(),
     });
     assert_eq!(peer.next(SHORT), None, "nothing is sent to it");
-    assert_eq!(*rig.state.borrow(), KeycapState::Unknown);
+    assert_eq!(*rig.state.borrow(), KeyRemapState::Unknown);
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn the_notice_is_posted_replaced_and_withdrawn_as_keycap_needs() {
+async fn the_notice_is_posted_replaced_and_withdrawn_as_key_remap_needs() {
     let mut rig = rig(None);
     let peer = connected(&mut rig).await;
     tokio::time::sleep(SHORT).await;
@@ -511,24 +511,24 @@ async fn resume_reaches_the_daemon() {
     let peer = connected(&mut rig).await;
     assert_eq!(peer.next(LONG), Some(focus("default")));
     rig.control
-        .send(shell_model::keycap::KeycapCommand::Resume)
+        .send(shell_model::key_remap::KeyRemapCommand::Resume)
         .unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(peer.next(LONG), Some(ToDaemon::Steer(Steer::Resume)));
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn an_isolated_env_never_connects_and_stays_unknown() {
-    let scratch = TempDir::new("keycap-isolated");
+    let scratch = TempDir::new("key-remap-isolated");
     let env = Env::isolated(Path::new(scratch.path()));
-    assert_eq!(env.keycap_socket, None);
+    assert_eq!(env.key_remap_socket, None);
     let (_apps, apps_rx) = watch::channel(AppIndex::default());
     let (_wl, wl_rx) = watch::channel(WindowModel::default());
     let (notifications, mut notices) = Control::channel();
     let (_notes, notes_rx) = watch::channel(NotesState::default());
-    let handle = spawn::<KeycapService>(
+    let handle = spawn::<KeyRemapService>(
         &tokio::runtime::Handle::current(),
         &env,
-        KeycapLinks {
+        KeyRemapLinks {
             windows: wl_rx,
             apps: apps_rx,
             notifications,
@@ -536,8 +536,8 @@ async fn an_isolated_env_never_connects_and_stays_unknown() {
         },
     );
     for command in [
-        shell_model::keycap::KeycapCommand::Retry,
-        shell_model::keycap::KeycapCommand::Resume,
+        shell_model::key_remap::KeyRemapCommand::Retry,
+        shell_model::key_remap::KeyRemapCommand::Resume,
     ] {
         handle
             .control
@@ -545,6 +545,6 @@ async fn an_isolated_env_never_connects_and_stays_unknown() {
             .unwrap_or_else(|e| panic!("{e}"));
     }
     tokio::time::sleep(SHORT).await;
-    assert_eq!(*handle.state.borrow(), KeycapState::Unknown);
+    assert_eq!(*handle.state.borrow(), KeyRemapState::Unknown);
     notices.try_recv().unwrap_err();
 }

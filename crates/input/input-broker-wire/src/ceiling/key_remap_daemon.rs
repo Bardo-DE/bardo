@@ -1,6 +1,6 @@
-//! keycap's two devices. Both are handed over, so these are the shapes the service itself creates.
+//! The key remap daemon's two devices. Both are handed over, so these are the shapes the service itself creates.
 //!
-//! The keyboard is the full keyboard of keycap's `uinput.rs`: every code from 1 to `KEY_MAX`, the
+//! The keyboard is the full keyboard of the key remap daemon's `uinput.rs`: every code from 1 to `KEY_MAX`, the
 //! six pointer axes a combo device passes through, and the three lights. The pointer is the twin
 //! of one combo device: its request is cut to buttons, relative axes, absolute axes with sane
 //! ranges and pointer properties, so the device the service makes can never register a key below
@@ -16,9 +16,9 @@ use crate::maker::Maker;
 use crate::message::PointerCaps;
 use crate::spec::{AbsAxis, DeviceSpec};
 
-/// What follows the original's name in a pointer's name. keycap never grabs a device that ends with it.
+/// What follows the original's name in a pointer's name. The key remap daemon never grabs a device that ends with it.
 pub const POINTER_SUFFIX: &str = "(key-remap pointer)";
-/// The keyboard's name; keycap never grabs a device with it.
+/// The keyboard's name; the key remap daemon never grabs a device with it.
 pub const KEYBOARD_NAME: &str = "key-remap keyboard";
 /// "KC" in ASCII: not a registered vendor, only different from palmrest's and every real keyboard's.
 const VENDOR: u16 = 0x4b43;

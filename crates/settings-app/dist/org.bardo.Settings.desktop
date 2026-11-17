@@ -10,6 +10,6 @@ DBusActivatable=true
 Categories=Settings;DesktopSettings;
 Keywords=settings;preferences;appearance;dock;mouse;
 StartupWMClass=org.bardo.Settings
-X-Keycap-Profile=keymap-aware
+X-Key-Remap-Profile=keymap-aware
 X-Bardo-BusNames=org.bardo.Settings;
 X-Bardo-IntentsApp=org.bardo.Settings

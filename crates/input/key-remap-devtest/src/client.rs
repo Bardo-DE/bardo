@@ -126,7 +126,7 @@ impl Client {
             .map_err(errno("sending"))
     }
 
-    /// Tells keycap which profile the focused window wants. The daemon does not answer, so a
+    /// Tells the key remap daemon which profile the focused window wants. The daemon does not answer, so a
     /// test that types next waits `FOCUS_SETTLE` first.
     ///
     /// # Errors

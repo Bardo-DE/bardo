@@ -9,7 +9,7 @@ use keymap::{
 };
 use std::fmt;
 use std::sync::Arc;
-use ui_core::command::{KeyCap, shortcut_caps, shortcut_text};
+use ui_core::command::{KeyRemap, shortcut_caps, shortcut_text};
 use ui_core::vocab::Shortcut;
 
 /// The keymap of the window, from its [`KeySource`]. `Copy`: hand it to any handler.
@@ -116,7 +116,7 @@ impl Keys {
 
     /// The caps `shortcut` is drawn on.
     #[must_use]
-    pub fn caps_of(&self, shortcut: &Shortcut) -> Vec<KeyCap> {
+    pub fn caps_of(&self, shortcut: &Shortcut) -> Vec<KeyRemap> {
         let _ = self.generation.read();
         shortcut_caps(&self.state.read().keymap, shortcut)
     }

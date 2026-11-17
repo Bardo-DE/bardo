@@ -1,11 +1,11 @@
-//! key-remap-core: the pure remap core of keycap.
+//! key-remap-core: the pure remap core of key_remap.
 //!
 //! The core is vocabulary (`Key`, `Physical`, `Logical`, `Role`, `OutMod`, `Edge`, `Mono`) and
 //! the layout tables that say which physical key plays which role. Input and output speak
 //! different vocabularies and the types keep them apart; see ARCHITECTURE.md section 8.
 //!
 //! Nothing here opens a file, a device or a socket and nothing reads a clock: time arrives as a
-//! `Mono` argument, config arrives as strings. The daemon crate `keycap` adds those, and a
+//! `Mono` argument, config arrives as strings. The daemon crate `key_remap` adds those, and a
 //! compositor can link this crate alone. `scripts/check-boundary.sh` holds that.
 
 #[macro_use]

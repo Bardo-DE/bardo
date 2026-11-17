@@ -1,4 +1,4 @@
-//! turnstile: the root service that makes palmrest's and keycap's virtual input devices, and no
+//! turnstile: the root service that makes palmrest's and the key remap daemon's virtual input devices, and no
 //! others.
 //!
 //! systemd owns the socket and starts the service on the first connection; the service exits by
@@ -7,7 +7,7 @@
 //! identified by the kernel (the process behind the socket, held by a pidfd), judged against the
 //! root-owned table of desktop programs, and then may ask for exactly the device kinds of its own
 //! program. palmrest's devices are proxied: every event passes the ceiling in `input-broker-wire`.
-//! keycap's are made to a fixed shape and handed over as descriptors.
+//! The key remap daemon's are made to a fixed shape and handed over as descriptors.
 //!
 //! The seams are traits with fakes: [`backend::Backend`] (the kernel), [`identity::Authority`] (who
 //! is calling), [`identity::SeatSource`] (who is logged in) and [`clock::Uptime`]. The tests drive

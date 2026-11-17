@@ -1,6 +1,6 @@
 //! The wire crate's tests: one binary, tables over one-off cases, no I/O.
 
-mod ceiling_keycap;
+mod ceiling_key_remap;
 mod ceiling_keys;
 mod ceiling_pad;
 mod codec;

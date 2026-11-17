@@ -74,7 +74,7 @@ impl Origin {
     }
 
     /// Whether a key chord from this origin may fire a binding: the keyboard the person
-    /// types on, a virtual keyboard (an on-screen one, keycap's output) and the tests. Never
+    /// types on, a virtual keyboard (an on-screen one, the key remap daemon's output) and the tests. Never
     /// the agent seat, a remote session or a feed.
     #[must_use]
     pub fn fires_bindings(&self) -> bool {
@@ -124,7 +124,7 @@ mod tests {
     /// NEW-PI-4, NEW-FA-4: which kernel devices count as the person's hands. Only a virtual-bus
     /// device is ever in doubt; there, the label turnstile wrote decides (never the vendor id).
     #[test]
-    fn a_virtual_device_is_the_persons_hand_only_when_made_for_keycap() {
+    fn a_virtual_device_is_the_persons_hand_only_when_made_for_key_remap() {
         const USB: Option<u16> = Some(0x03);
         const I8042: Option<u16> = Some(0x11);
         const VIRTUAL: Option<u16> = Some(BUS_VIRTUAL);
@@ -146,13 +146,13 @@ mod tests {
                 true,
             ),
             (
-                "keycap's keyboard",
+                "key_remap's keyboard",
                 DeviceClass::Keyboard,
                 ids(VIRTUAL, "input-broker/keymap_daemon"),
                 true,
             ),
             (
-                "keycap's pointer",
+                "key_remap's pointer",
                 DeviceClass::Pointer,
                 ids(VIRTUAL, "input-broker/keymap_daemon\n"),
                 true,
@@ -189,7 +189,7 @@ mod tests {
                 false,
             ),
             (
-                "a keycap label on a USB device",
+                "a key_remap label on a USB device",
                 DeviceClass::Keyboard,
                 ids(USB, "input-broker/keymap_daemon"),
                 true,

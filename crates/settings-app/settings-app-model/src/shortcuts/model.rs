@@ -17,7 +17,7 @@ pub struct KeymapText {
     pub trouble: Option<String>,
 }
 
-/// This computer's keymap, as keycap reads it: already parsed, and what was wrong with it.
+/// This computer's keymap, as the key remap daemon reads it: already parsed, and what was wrong with it.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct MachineLayer {
     /// The changes.

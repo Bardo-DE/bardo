@@ -1,7 +1,7 @@
 //! The whole connection, over a socket pair, with the real client on one end and the fake kernel
 //! and a fixed authority on the other.
 
-use crate::support::{USER, context, keycap, palmrest};
+use crate::support::{USER, context, key_remap, palmrest};
 use input_broker_client::{
     ClientError, Connection, Create, DeviceId, Event, Made, Reason, Sent, Session,
 };
@@ -68,8 +68,8 @@ fn palmrest_gets_a_proxied_wheel_and_loses_it_when_it_hangs_up() {
 }
 
 #[test]
-fn keycap_gets_its_keyboard_as_a_descriptor_that_outlives_the_connection() {
-    let (ctx, kernel) = context(keycap());
+fn key_remap_gets_its_keyboard_as_a_descriptor_that_outlives_the_connection() {
+    let (ctx, kernel) = context(key_remap());
     let (mut client, thread) = connect(&ctx);
     let Made::Handed { fd, .. } = client.create(&Create::keyboard()).expect("created") else {
         panic!("a keyboard is handed");
@@ -119,11 +119,11 @@ fn a_palmrest_running_as_the_person_at_the_seat_is_refused() {
 
 #[test]
 fn the_seat_is_read_at_each_request_not_once() {
-    // keycap before anyone logs in, on a seat with no active user.
+    // The key remap daemon before anyone logs in, on a seat with no active user.
     let kernel = input_broker_daemon::backend::fake::FakeBackend::new();
     let ctx = Arc::new(Context {
         backend: kernel.clone(),
-        authority: FixedAuthority::naming(keycap()),
+        authority: FixedAuthority::naming(key_remap()),
         seat: FixedSeat(ActiveUid(None)),
         clock: input_broker_daemon::clock::Uptime::new(base_time::ManualMonotonic::new()),
     });

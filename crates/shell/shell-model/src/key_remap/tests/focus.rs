@@ -1,6 +1,6 @@
 use key_remap_proto::{MAX_PACKET, ProfileName, Steer, ToDaemon};
 
-use crate::keycap::{Wants, focus_to_send, user_config};
+use crate::key_remap::{Wants, focus_to_send, user_config};
 
 fn name(s: &str) -> ProfileName {
     ProfileName::parse(s).unwrap_or_else(|e| panic!("{s}: {e}"))

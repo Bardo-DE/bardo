@@ -15,8 +15,8 @@ use shell_launcher::actions::ActionId;
 use shell_model::actions::Ask;
 use shell_model::desktop::{DesktopCommand, HeldMods};
 use shell_model::displays::DisplaysCommand;
+use shell_model::key_remap::KeyRemapCommand;
 use shell_model::keyboard::ShellKeys;
-use shell_model::keycap::KeycapCommand;
 use shell_settings::ShellFile;
 use shell_ui_kit::links::{Asked, BannerOutput, Links};
 use shell_ui_kit::services::Services;
@@ -51,7 +51,7 @@ pub struct Shell {
     pub appearance: watch::Sender<Environment>,
     /// The links every surface root is given and the requests write.
     pub links: Links,
-    /// Which of the shell's surfaces hold the keyboard, told to the keycap service.
+    /// Which of the shell's surfaces hold the keyboard, told to the key remap daemon service.
     pub keys: ShellKeys,
     /// The desktop's own compositor's arm, when the host is on the connection it handed over.
     pub seat: super::compositor::ShellSeat,
@@ -244,7 +244,7 @@ fn host_event(shell: &mut Shell, ctx: &mut HostCtx<ShellMsg>, event: HostEvent<S
         &shell.services,
     );
     follow_keyboard_focus(shell, &event);
-    tell_keycap_the_holders(shell, &event);
+    tell_key_remap_the_holders(shell, &event);
     super::compositor::follow_mapped(&mut shell.seat, &shell.outputs, ctx, &event);
     // The engine has no config until told one; the watcher's and the reload's changes land through
     // `HostEvent::App(ShellMsg::Settings(_))` and `Request::Reload`.
@@ -298,9 +298,9 @@ fn follow_keyboard_focus(shell: &Shell, event: &HostEvent<ShellMsg>) {
 }
 
 /// Which of the shell's surfaces hold the keyboard, kept from the host's focus and close events;
-/// when whether any does changes, the keycap service hears it (it then sends `keymap-aware`, or
+/// when whether any does changes, the key remap daemon service hears it (it then sends `keymap-aware`, or
 /// the window's profile again).
-fn tell_keycap_the_holders(shell: &mut Shell, event: &HostEvent<ShellMsg>) {
+fn tell_key_remap_the_holders(shell: &mut Shell, event: &HostEvent<ShellMsg>) {
     let before = shell.keys.focus();
     let keys = std::mem::take(&mut shell.keys);
     shell.keys = match event {
@@ -318,9 +318,9 @@ fn tell_keycap_the_holders(shell: &mut Shell, event: &HostEvent<ShellMsg>) {
     if after != before {
         let _ = shell
             .services
-            .keycap
+            .key_remap
             .control
-            .send(KeycapCommand::ShellFocus(after));
+            .send(KeyRemapCommand::ShellFocus(after));
     }
 }
 

@@ -1,11 +1,11 @@
-//! A program's end of keycap.
+//! A program's end of key_remap.
 //!
 //! - [`Connection`]: the socket, one message per packet, `Hello` checked.
-//! - [`KeycapSource`]: this desktop's `keymap::KeymapSource`. It lays chordkit's conventions
+//! - [`KeyRemapSource`]: this desktop's `keymap::KeymapSource`. It lays chordkit's conventions
 //!   for our desktop, the desktop's own bindings ([`system_bindings`]) and the person's keymap
 //!   over each other, and tells the program when the person's keymap changes. Without a
 //!   daemon it reads the keymap file itself, so a program still honours the person's keymap.
-//! - [`Registered`]: an app's actions told to keycap so Settings can list them. Informational:
+//! - [`Registered`]: an app's actions told to the key remap daemon so Settings can list them. Informational:
 //!   resolution stays in each app, through chordkit.
 //!
 //! No keymap noun is defined here; every action, chord and keymap is chordkit's.
@@ -25,5 +25,5 @@ pub use bounded::{FileText, read_text};
 pub use connection::{ClientError, Connection, Heard};
 pub use key_remap_proto::{Registration, SOCKET_PATH};
 pub use register::Registered;
-pub use source::{KeycapSource, Layer, Origin};
+pub use source::{KeyRemapSource, Layer, Origin};
 pub use system::system_bindings;

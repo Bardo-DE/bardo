@@ -35,7 +35,7 @@ fn connect(runtime_dir: &Path) -> Result<Connection, String> {
     })
 }
 
-/// A status as the lines `keycap status` prints; `caps` is the Caps Lock lamp of a keyboard,
+/// A status as the lines `key_remap status` prints; `caps` is the Caps Lock lamp of a keyboard,
 /// when it has one, and goes on a line of its own under it.
 pub(super) fn render(status: &Status, caps: impl Fn(&Keyboard) -> Option<bool>) -> String {
     let mode = if status.paused {
@@ -43,7 +43,7 @@ pub(super) fn render(status: &Status, caps: impl Fn(&Keyboard) -> Option<bool>) 
     } else {
         "running"
     };
-    let mut lines = vec![format!("keycap: {mode}")];
+    let mut lines = vec![format!("key_remap: {mode}")];
     if status.keyboards.is_empty() {
         lines.push("  no keyboards".to_owned());
     }
@@ -90,7 +90,7 @@ fn caps_line(lamp: bool) -> String {
 }
 
 /// Whether the daemon is remapping at least one keyboard: what the exit status of
-/// `keycap status` says.
+/// `key_remap status` says.
 pub(super) fn is_remapping(status: &Status) -> bool {
     !status.paused && status.keyboards.iter().any(|k| k.grab == Grab::Active)
 }
@@ -121,7 +121,7 @@ mod tests {
                     paused: false,
                     keyboards: vec![],
                 },
-                "keycap: running\n  no keyboards",
+                "key_remap: running\n  no keyboards",
             ),
             (
                 "grabbed",
@@ -129,7 +129,7 @@ mod tests {
                     paused: false,
                     keyboards: vec![keyboard("K5", Grab::Active)],
                 },
-                "keycap: running\n  K5 (/dev/input/event16, 3434:0a53): grabbed, remapping",
+                "key_remap: running\n  K5 (/dev/input/event16, 3434:0a53): grabbed, remapping",
             ),
             (
                 "conflict",
@@ -137,7 +137,7 @@ mod tests {
                     paused: false,
                     keyboards: vec![keyboard("K5", Grab::Conflict)],
                 },
-                "keycap: running\n  K5 (/dev/input/event16, 3434:0a53): held by another remapper (Toshy, keyd, ...)",
+                "key_remap: running\n  K5 (/dev/input/event16, 3434:0a53): held by another remapper (Toshy, keyd, ...)",
             ),
         ];
         for (name, status, want) in cases {

@@ -5,9 +5,9 @@ use thiserror::Error;
 
 use crate::message::ToClient;
 
-/// Where keycap listens.
+/// Where the key remap daemon listens.
 pub const SOCKET_PATH: &str = "/run/bardo/key-remap/key-remap.sock";
-/// Where keycap's configuration lives unless `BARDO_KEY_REMAP_CONFIG_DIR` says otherwise.
+/// Where the key remap daemon's configuration lives unless `BARDO_KEY_REMAP_CONFIG_DIR` says otherwise.
 pub const CONFIG_DIR: &str = "/etc/bardo/key-remap";
 /// The person's keymap file inside the config directory, in chordkit's overrides line format.
 pub const KEYMAP_FILE: &str = "keymap";

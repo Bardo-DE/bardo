@@ -38,9 +38,9 @@ pub enum Create {
     Wheel,
     /// palmrest's keyboard with these key codes.
     Keys(Vec<u16>),
-    /// keycap's keyboard.
+    /// The key remap daemon's keyboard.
     Keyboard,
-    /// keycap's pointer with these capabilities.
+    /// The key remap daemon's pointer with these capabilities.
     Pointer(PointerCaps),
 }
 
@@ -63,13 +63,13 @@ impl Create {
         Self::Keys(codes)
     }
 
-    /// keycap's keyboard.
+    /// The key remap daemon's keyboard.
     #[must_use]
     pub const fn keyboard() -> Self {
         Self::Keyboard
     }
 
-    /// keycap's pointer with `caps`.
+    /// The key remap daemon's pointer with `caps`.
     #[must_use]
     pub fn pointer(caps: PointerCaps) -> Self {
         Self::Pointer(caps)
@@ -82,8 +82,8 @@ impl Create {
             Self::Touchpad => Kind::PalmrestTouchpad,
             Self::Wheel => Kind::PalmrestWheel,
             Self::Keys(_) => Kind::PalmrestKeys,
-            Self::Keyboard => Kind::KeycapKeyboard,
-            Self::Pointer(_) => Kind::KeycapPointer,
+            Self::Keyboard => Kind::KeyRemapKeyboard,
+            Self::Pointer(_) => Kind::KeyRemapPointer,
         }
     }
 }

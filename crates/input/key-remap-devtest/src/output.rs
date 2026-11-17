@@ -1,4 +1,4 @@
-//! The "key-remap keyboard" as a reader sees it: what keycap actually wrote to the kernel.
+//! The "key-remap keyboard" as a reader sees it: what the key remap daemon actually wrote to the kernel.
 
 use crate::event::{EV_LED, Event, SYN_REPORT, encode, token};
 use crate::failure::{Failure, errno};
@@ -20,7 +20,7 @@ const SETTLE: Duration = Duration::from_millis(200);
 const FIND_WAIT: Duration = Duration::from_secs(5);
 const POLL: Duration = Duration::from_millis(5);
 
-/// A read-only, nonblocking reader on keycap's output node. It sees only what is written after
+/// A read-only, nonblocking reader on the key remap daemon's output node. It sees only what is written after
 /// it opened, so open it before the action under test.
 #[derive(Debug)]
 pub struct Output {

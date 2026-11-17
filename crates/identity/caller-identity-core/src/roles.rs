@@ -15,7 +15,7 @@ pub const PORTAL_FRONTEND: RoleName = RoleName::from_static("portal_frontend");
 pub const COMPOSITOR: RoleName = RoleName::from_static("compositor");
 /// The agent tier (`cuad`): the process that drives other programs for an assistant.
 pub const AGENT_TIER: RoleName = RoleName::from_static("agent_tier");
-/// The Settings app (`detent`).
+/// The Settings app.
 pub const SETTINGS: RoleName = RoleName::from_static("settings");
 /// The software-update service (`bardo-updater.service`).
 pub const UPDATER: RoleName = RoleName::from_static("updater");

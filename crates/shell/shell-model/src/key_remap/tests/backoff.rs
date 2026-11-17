@@ -1,6 +1,6 @@
 use std::time::Duration;
 
-use crate::keycap::reconnect_delay;
+use crate::key_remap::reconnect_delay;
 
 #[test]
 fn the_wait_starts_at_one_second_and_doubles_to_thirty() {

@@ -7,7 +7,7 @@
 //! Under Bardo's context Inter is a family, maps every character of ordinary text, and the stack
 //! lays out exactly as `"Inter"` alone. Under layer-shell-host's there is no family called Inter (it is
 //! not installed on the system and `SharedFonts::register` has no caller), so the stack's first
-//! family that exists is Noto Color Emoji, which maps U+0020 and 0-9 (the keycap sequences' bases):
+//! family that exists is Noto Color Emoji, which maps U+0020 and 0-9 (the key remap daemon sequences' bases):
 //! the space and the digits come from it, wide, and every other character from system-ui.
 //! Skipped, with a note, where the `COLRv1` emoji font is not installed or Inter is a system font.
 

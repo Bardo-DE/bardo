@@ -1,4 +1,4 @@
-//! A stand-in for the service, for the tests of palmrest, keycap and this crate: no socket, no
+//! A stand-in for the service, for the tests of palmrest, the key remap daemon and this crate: no socket, no
 //! daemon, no device. It records what a caller asked for and answers as it is told to.
 
 use crate::error::ClientError;

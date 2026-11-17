@@ -1325,7 +1325,7 @@ What Blitz at the pinned rev paints (48 px, headless):
   emoji on a Mac at all: Apple Color Emoji is `sbix`, and macOS has no COLR emoji face.
   `ds-blitz/tests/it/colour_emoji.rs` `the_macs_bitmap_emoji_paint_in_colour` keeps it on vello_cpu;
   the hybrid path needs a GPU adapter to test.
-- **Stack order.** Noto Color Emoji's cmap maps U+0020, the digits, `#` and `*` (keycap bases),
+- **Stack order.** Noto Color Emoji's cmap maps U+0020, the digits, `#` and `*` (the key remap daemon bases),
   and parley takes each cluster from the first family in the stack that maps it. So the text
   face must come first *and be registered*, and the emoji face must come before `system-ui`
   (which maps emoji itself, from Symbola). With the emoji face first, "Ab 2#" drew "Ab" and
@@ -1804,7 +1804,7 @@ Open:
   "write during render" warning with a live source.
 - Open: `AppConfig::with_keymap_source` takes `Box<dyn KeymapSource + Send + Sync>`, not the bare
   `dyn KeymapSource`, because the source is shared with every window and its watch callback comes
-  from another thread. keycap's source must be `Send + Sync`.
+  from another thread. The key remap daemon's source must be `Send + Sync`.
 
 ## Keys: registration with forgo, overrides, pure drawing (wh-keys7)
 

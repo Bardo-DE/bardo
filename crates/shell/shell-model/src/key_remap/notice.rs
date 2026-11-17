@@ -2,7 +2,7 @@
 
 use super::model::Attention;
 
-/// What to do with the notification about keycap, given what it showed and what keycap now needs.
+/// What to do with the notification about the key remap daemon, given what it showed and what the key remap daemon now needs.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum NoticeChange {
     /// What is shown is right.
@@ -13,7 +13,7 @@ pub enum NoticeChange {
     Withdraw,
 }
 
-/// The change from `previous` (what the notification now says) to `next` (what keycap now needs
+/// The change from `previous` (what the notification now says) to `next` (what the key remap daemon now needs
 /// the person to know).
 #[must_use]
 pub fn notice_for(previous: Option<&Attention>, next: Option<&Attention>) -> NoticeChange {
@@ -38,7 +38,7 @@ pub fn notice_text(attention: &Attention) -> Notice {
     let (summary, body) = match attention {
         Attention::Failed => (
             "Command-key layout stopped".to_owned(),
-            "Keys work as on a standard keyboard. Run `bardo-shell keycap retry` to try again.".to_owned(),
+            "Keys work as on a standard keyboard. Run `bardo-shell key_remap retry` to try again.".to_owned(),
         ),
         Attention::Conflict { device } => (
             "Another keyboard program is running".to_owned(),
@@ -46,7 +46,7 @@ pub fn notice_text(attention: &Attention) -> Notice {
         ),
         Attention::Paused => (
             "Command-key layout paused".to_owned(),
-            "Keys work as on a standard keyboard. Run `bardo-shell keycap resume` to turn it back on."
+            "Keys work as on a standard keyboard. Run `bardo-shell key_remap resume` to turn it back on."
                 .to_owned(),
         ),
     };

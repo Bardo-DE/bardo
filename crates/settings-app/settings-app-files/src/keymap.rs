@@ -1,25 +1,25 @@
-//! The keymap the Shortcuts list sits on: keycap's `KeycapSource` for this computer's layer, the
+//! The keymap the Shortcuts list sits on: the key remap daemon's `KeyRemapSource` for this computer's layer, the
 //! desktop's own bindings and the change watch, and the person's own keymap file, which bardo-settings
 //! reads as text (to keep the person's comments) and writes.
 
 use crate::error::{FilesError, reason_of};
 use crate::values::ConfigHome;
 use base_fs::{NewFileMode, ReadCap, ReadError, read_text_capped, update_atomic};
-use key_remap_client::{KeycapSource, system_bindings};
+use key_remap_client::{KeyRemapSource, system_bindings};
 use keymap::{Keymap, KeymapSource, Watch};
 use settings_app_model::{KeymapText, KeymapTexts, MachineLayer, desktop_keymap};
 use std::path::{Path, PathBuf};
 
-/// The most keycap reads of a keymap file; a larger one is not used, so it is not written over.
+/// The most the key remap daemon reads of a keymap file; a larger one is not used, so it is not written over.
 const MAX_BYTES: ReadCap = ReadCap::kib(32);
 
-/// Where keycap's daemon would be, under a scratch home: nowhere, so nothing real is asked.
+/// Where the key remap daemon's daemon would be, under a scratch home: nowhere, so nothing real is asked.
 const NO_SOCKET: &str = "bardo/key-remap/no-daemon.sock";
 
-/// The keymap layers: keycap's source.
+/// The keymap layers: the key remap daemon's source.
 #[derive(Debug, Clone)]
 pub struct KeymapFiles {
-    source: KeycapSource,
+    source: KeyRemapSource,
 }
 
 impl KeymapFiles {
@@ -27,7 +27,7 @@ impl KeymapFiles {
     #[must_use]
     pub fn standard() -> KeymapFiles {
         KeymapFiles {
-            source: KeycapSource::standard(),
+            source: KeyRemapSource::standard(),
         }
     }
 
@@ -37,7 +37,7 @@ impl KeymapFiles {
     pub fn under(home: &ConfigHome) -> KeymapFiles {
         let dir = settings_types::app_folder(&home.0, "key-remap");
         KeymapFiles {
-            source: KeycapSource::new(home.0.join(NO_SOCKET), PathBuf::new(), dir.join("keymap")),
+            source: KeyRemapSource::new(home.0.join(NO_SOCKET), PathBuf::new(), dir.join("keymap")),
         }
     }
 
@@ -47,7 +47,7 @@ impl KeymapFiles {
         let person = self.source.person_file().to_path_buf();
         let socket = person.with_file_name("no-daemon.sock");
         KeymapFiles {
-            source: KeycapSource::new(socket, dir.join("keymap"), person),
+            source: KeyRemapSource::new(socket, dir.join("keymap"), person),
         }
     }
 

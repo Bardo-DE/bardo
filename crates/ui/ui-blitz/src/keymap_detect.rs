@@ -3,7 +3,7 @@
 //! desktop's own shortcut settings. Plasma's are in `kdeglobals`; GNOME's are in the dconf
 //! database, read through `dconf dump /`; every other platform has its conventions alone. Both
 //! stores are watched, so a change the person makes in the desktop's settings reaches the app as it
-//! runs. Our desktop's own source (keycap) is plugged in by the desktop's launcher, not found here.
+//! runs. Our desktop's own source (the key remap daemon) is plugged in by the desktop's launcher, not found here.
 //! The environment is read through a lookup the caller passes, so a test supplies its own.
 
 use base_xdg::Xdg;

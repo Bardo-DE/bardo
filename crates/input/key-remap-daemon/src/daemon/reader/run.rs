@@ -49,9 +49,9 @@ impl<E: Emitter> Reader<E> {
         }
         self.publish();
         if let Err(e) = self.notifier.ready() {
-            eprintln!("keycap: READY=1 failed: {e}");
+            eprintln!("key_remap: READY=1 failed: {e}");
         }
-        eprintln!("keycap: ready: {}", summary(&self.published));
+        eprintln!("key_remap: ready: {}", summary(&self.published));
         loop {
             self.once()?;
         }
@@ -60,7 +60,7 @@ impl<E: Emitter> Reader<E> {
     /// One pass: ping the watchdog, wait, and handle what woke it.
     pub(super) fn once(&mut self) -> Result<(), String> {
         if let Err(e) = self.notifier.watchdog() {
-            eprintln!("keycap: watchdog ping failed: {e}");
+            eprintln!("key_remap: watchdog ping failed: {e}");
         }
         let now = clock::now();
         let wake = [self.devices.next_wake(now), Some(self.safety.until(now))]
@@ -154,7 +154,7 @@ impl<E: Emitter> Reader<E> {
             Routed::Pass { device, events } => match self.twins.pass(device, &events) {
                 Passed::Written => {}
                 Passed::Lost(e) => eprintln!(
-                    "keycap: writing the pointer of device {} failed: {e}; \
+                    "key_remap: writing the pointer of device {} failed: {e}; \
                      it passes through the keyboard now",
                     device.0
                 ),
@@ -165,7 +165,7 @@ impl<E: Emitter> Reader<E> {
             },
             Routed::Resync(device) => {
                 eprintln!(
-                    "keycap: device {} overflowed its queue; releasing what it held",
+                    "key_remap: device {} overflowed its queue; releasing what it held",
                     device.0
                 );
                 self.reset_device(device);
@@ -178,7 +178,7 @@ impl<E: Emitter> Reader<E> {
         let status = status_of(&self.devices, self.machine.paused());
         if status != self.published {
             if let Err(e) = self.notifier.status(&summary(&status)) {
-                eprintln!("keycap: status line failed: {e}");
+                eprintln!("key_remap: status line failed: {e}");
             }
             self.socket.send(ToSocket::Status(status.clone()));
             self.published = status;

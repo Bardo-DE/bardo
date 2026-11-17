@@ -5,7 +5,7 @@ use super::shell::{bindings_of, merge};
 use crate::State;
 use compositor_core::Event;
 use compositor_core::input::Bindings;
-use key_remap_client::KeycapSource;
+use key_remap_client::KeyRemapSource;
 use keymap::{Desktop, KeymapSource, Platform, Watch};
 use smithay::reexports::calloop::channel::{self, Event as ChannelEvent};
 use std::path::Path;
@@ -29,15 +29,15 @@ const SOCKET: &str = "key-remap.sock";
 /// `$XDG_CONFIG_HOME`); a stand-in directory reads only inside itself, and no daemon answers there,
 /// so a test or a jail never reaches the real machine's keymap.
 #[must_use]
-pub fn source_for(home: Option<&Path>) -> KeycapSource {
+pub fn source_for(home: Option<&Path>) -> KeyRemapSource {
     match home {
-        None => KeycapSource::standard(),
+        None => KeyRemapSource::standard(),
         Some(dir) => stand_in(dir),
     }
 }
 
-fn stand_in(dir: &Path) -> KeycapSource {
-    KeycapSource::new(
+fn stand_in(dir: &Path) -> KeyRemapSource {
+    KeyRemapSource::new(
         dir.join(PERSON_DIR).join(SOCKET),
         dir.join(MACHINE_DIR).join(FILE),
         dir.join(PERSON_DIR).join(FILE),
@@ -46,7 +46,7 @@ fn stand_in(dir: &Path) -> KeycapSource {
 
 /// The shell bindings `source` gives now, and every problem it reported in plain words.
 #[must_use]
-pub fn load_bindings(source: &KeycapSource) -> (Bindings, Vec<String>) {
+pub fn load_bindings(source: &KeyRemapSource) -> (Bindings, Vec<String>) {
     let (keymap, problems) = source.load_reporting(OURS);
     (bindings_of(&keymap), problems)
 }
@@ -55,7 +55,7 @@ pub fn load_bindings(source: &KeycapSource) -> (Bindings, Vec<String>) {
 /// that tells the loop the keymap changed.
 #[derive(Debug)]
 struct Live {
-    source: KeycapSource,
+    source: KeyRemapSource,
     explicit: Bindings,
     _watch: Watch,
 }

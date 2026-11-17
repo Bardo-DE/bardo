@@ -455,9 +455,21 @@ fn shifted_minus_and_equals_in_a_terminal() {
             Some(S::Bigger),
             false,
         ),
-        // On our desktop keycap sends ⌘ as Ctrl+Shift: these are ⌘- and ⌘=.
-        ("keycap's command minus", ours, '-', Some(S::Smaller), true),
-        ("keycap's command equals", ours, '=', Some(S::Bigger), true),
+        // On our desktop the key remap daemon sends ⌘ as Ctrl+Shift: these are ⌘- and ⌘=.
+        (
+            "key_remap's command minus",
+            ours,
+            '-',
+            Some(S::Smaller),
+            true,
+        ),
+        (
+            "key_remap's command equals",
+            ours,
+            '=',
+            Some(S::Bigger),
+            true,
+        ),
     ];
     for (name, platform, key, expected, primary_form) in cases {
         let keymap = Keymap::conventional(*platform);

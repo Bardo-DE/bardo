@@ -1,4 +1,4 @@
-# keycap's built-in mapping: the standard Mac set. `when` names roles (command, option,
+# The key remap daemon's built-in mapping: the standard Mac set. `when` names roles (command, option,
 # control, shift) and `then` names written modifiers (ctrl, alt, super, shift). A string `then`
 # holds its stroke while the key is held; a list taps each stroke in order; `then = []`
 # swallows the chord. Keys are names from the key table, never numbers.

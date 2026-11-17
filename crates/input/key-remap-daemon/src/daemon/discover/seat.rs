@@ -1,10 +1,10 @@
-//! Which logind seat a device node belongs to. keycap serves one seat, `seat0`, with one virtual
+//! Which logind seat a device node belongs to. The key remap daemon serves one seat, `seat0`, with one virtual
 //! keyboard, so a keyboard assigned to another seat must be left to that seat's own session
 //! instead of typing into this one. Pure but for the one file read.
 
 use std::path::Path;
 
-/// The seat keycap serves, and the one a device has when udev assigns none.
+/// The seat the key remap daemon serves, and the one a device has when udev assigns none.
 pub(crate) const OUR_SEAT: &str = "seat0";
 
 /// The udev database prefix of a property line.

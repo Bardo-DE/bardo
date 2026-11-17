@@ -4,7 +4,7 @@
 //! | Kind | Role in the table | Proof | User | Control group |
 //! |---|---|---|---|---|
 //! | palmrest's | `pad_daemon` | `Full` | not the seat's active user (it is a dynamic user) | exactly `/system.slice/bardo-mouse-gestures.service` |
-//! | keycap's | `keymap_daemon` | `Full` | not the seat's active user (it is a dynamic user) | exactly `/system.slice/bardo-key-remap.service` |
+//! | the key remap daemon's | `keymap_daemon` | `Full` | not the seat's active user (it is a dynamic user) | exactly `/system.slice/bardo-key-remap.service` |
 //!
 //! Both are system services, so the control group is one only the system manager can fill; both are
 //! served before anyone is logged in.
@@ -21,7 +21,7 @@ use input_broker_wire::{Kind, Maker};
 
 /// palmrest's control group, which only a system service can have.
 pub const PAD_CGROUP: &str = "/system.slice/bardo-mouse-gestures.service";
-/// keycap's control group, which only a system service can have.
+/// The key remap daemon's control group, which only a system service can have.
 pub const KEYMAP_CGROUP: &str = "/system.slice/bardo-key-remap.service";
 
 /// Why a caller may not have a device.

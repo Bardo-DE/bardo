@@ -1,13 +1,13 @@
-//! What systemd says about keycap's unit, and the restart the person can ask for. Both go over
+//! What systemd says about the key remap daemon's unit, and the restart the person can ask for. Both go over
 //! the system bus (polkit lets the active session restart `bardo-key-remap.service`).
 
-use shell_model::keycap::{UnitState, unit_state};
+use shell_model::key_remap::{UnitState, unit_state};
 use zbus::proxy::CacheProperties;
 use zbus::zvariant::OwnedObjectPath;
 
 use crate::env::Bus;
 
-/// The unit keycap runs as.
+/// The unit the key remap daemon runs as.
 const UNIT: &str = "bardo-key-remap.service";
 
 /// The error name `GetUnit` answers with for a unit the manager has not loaded.

@@ -73,7 +73,7 @@ impl Pane {
     }
 
     /// The list follows the keymap for as long as the window lives: a change made elsewhere
-    /// (by keycap's other clients, by hand) shows within a moment.
+    /// (by the key remap daemon's other clients, by hand) shows within a moment.
     pub(super) async fn follow(self) {
         let (tell, mut changed) = tokio::sync::mpsc::unbounded_channel();
         let _watch = self.env.keymap.watch(move || {

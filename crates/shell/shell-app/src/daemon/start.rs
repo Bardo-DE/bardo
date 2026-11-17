@@ -27,7 +27,7 @@ use shell_model::idle::IdleService;
 use shell_model::input_source::InputSourceService;
 use shell_model::intents::IntentsService;
 use shell_model::kbd_backlight::KbdBacklightService;
-use shell_model::keycap::KeycapService;
+use shell_model::key_remap::KeyRemapService;
 use shell_model::launch::LaunchService;
 use shell_model::locker::LockerService;
 use shell_model::network::NetworkService;
@@ -60,7 +60,7 @@ use shell_services::seat::{SeatPublisher, SeatView, seat};
 use shell_services::service::spawn;
 use shell_services::sync_hold::SyncHoldLinks;
 use shell_services::{
-    AccountsLinks, Answers, AppMenuDeps, CompanionLinks, IdleLinks, IntentsLinks, KeycapLinks,
+    AccountsLinks, Answers, AppMenuDeps, CompanionLinks, IdleLinks, IntentsLinks, KeyRemapLinks,
     MenuLinks, SessionLinks, ShellCall, VoiceLinks, WindowsLinks,
 };
 use shell_ui_kit::app_menu::menu_name_of;
@@ -226,10 +226,10 @@ pub fn start(rt: &tokio::runtime::Handle, env: &Env, wiring: Wiring) -> Services
         },
     );
     let screenshots = spawn::<ScreenshotsService>(rt, env, ());
-    let keycap = spawn::<KeycapService>(
+    let key_remap = spawn::<KeyRemapService>(
         rt,
         env,
-        KeycapLinks {
+        KeyRemapLinks {
             windows: windows.state.clone(),
             apps: apps.state.clone(),
             notifications: notifications.control.clone(),
@@ -329,7 +329,7 @@ pub fn start(rt: &tokio::runtime::Handle, env: &Env, wiring: Wiring) -> Services
         auth,
         idle,
         screenshots,
-        keycap,
+        key_remap,
         accounts,
         accounts_sheet,
         sync_hold,

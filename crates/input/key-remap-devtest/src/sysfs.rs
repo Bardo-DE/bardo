@@ -10,7 +10,7 @@ const DEV_INPUT: &str = "/dev/input";
 /// How often a wait looks again.
 pub(crate) const POLL: Duration = Duration::from_millis(10);
 
-/// The name keycap's virtual keyboard registers under.
+/// The name the key remap daemon's virtual keyboard registers under.
 pub const OUTPUT_NAME: &str = "key-remap keyboard";
 
 /// `event<N>` as a number, for ordering.

@@ -12,7 +12,7 @@ those and no others.
 
 ```
 input-broker-wire    pure          kinds, ceilings, codec, rate limiter, key table
-input-broker-client  rustix        Broker (the socket), FakeSource; palmrest and keycap link this
+input-broker-client  rustix        Broker (the socket), FakeSource; palmrest and the key remap daemon link this
 turnstile         rustix,       Daemon, serve, Session, policy; seams: Backend, Authority,
                   input-linux,  SeatSource, Clock
                   peephole
@@ -42,11 +42,11 @@ socket unit (systemd) --accept--> Daemon --thread--> admit(conn)
   per user and 6 in all wait at once (`pending.rs`), and a connection over its user's share is closed
   at once with `TooMany`. Those 6 plus the 24 slots plus the loop are 31 threads, under `TasksMax=32`.
 - A connection is identified first and counted into a slot after (`slots.rs`, NEW-PI-6). A caller that passes
-  the policy for palmrest's or keycap's devices holds one of 4 slots reserved for that program, outside
+  the policy for palmrest's or the key remap daemon's devices holds one of 4 slots reserved for that program, outside
   every other cap. Anyone else holds a slot of its user's pool (4) and of the shared total for strangers
   (16), so one account that opens connections in a loop fills its own slots and nobody else's.
   A refused connection is answered `TooMany`.
-- A new connection that makes no device is closed: after a second for a proven palmrest or keycap
+- A new connection that makes no device is closed: after a second for a proven palmrest or the key remap daemon
   (`HANDSHAKE_TIMEOUT_MS`), after 200 ms for anyone else (`STRANGER_HANDSHAKE_TIMEOUT_MS`); one that
   has a device may be silent for hours.
 - The first datagram byte is the protocol version; every list in a datagram is counted and capped
@@ -58,7 +58,7 @@ socket unit (systemd) --accept--> Daemon --thread--> admit(conn)
 
 | Message | Direction | Body |
 |---|---|---|
-| `Create` | client to service | kind; for `PalmrestKeys` up to 64 key codes; for `KeycapPointer` a label, vendor, product, properties, buttons, relative axes, absolute axes |
+| `Create` | client to service | kind; for `PalmrestKeys` up to 64 key codes; for `KeyRemapPointer` a label, vendor, product, properties, buttons, relative axes, absolute axes |
 | `Created` | service to client | device id, delivery; for a handed device the descriptor rides as `SCM_RIGHTS` |
 | `Events` | client to service | device id, up to 64 `struct input_event` (24 bytes; the time is ignored) |
 | `Feedback` | service to client | device id, up to 8 events; reserved, the service sends none today |
@@ -70,7 +70,7 @@ socket unit (systemd) --accept--> Daemon --thread--> admit(conn)
 | Kind | Role in the table | Proof | User | Control group |
 |---|---|---|---|---|
 | palmrest touchpad, wheel, keys | `pad_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/bardo-mouse-gestures.service` |
-| keycap keyboard, pointer | `keymap_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/bardo-key-remap.service` |
+| The key remap daemon keyboard, pointer | `keymap_daemon` | the unit (`Full`) | not the seat's active user (a dynamic user); allowed before anyone is logged in | exactly `/system.slice/bardo-key-remap.service` |
 
 A caller is admitted only at peephole's `Full` proof (NEW-PI-4); the control group, or the group and
 the image, are refused and logged (`unproven` with the reason, then `refused ... its unit was not
@@ -99,12 +99,12 @@ admitted at all: the policy asks for a group under `/system.slice`.
 | `PalmrestTouchpad` | proxied | exactly palmrest's capabilities: `BTN_LEFT`, `BTN_TOUCH`, `BTN_TOOL_FINGER..QUADTAP`, `ABS_X/Y`, `ABS_MT_SLOT` 0..4, `ABS_MT_TRACKING_ID` -1..0xffff, `ABS_MT_POSITION_X/Y`, `INPUT_PROP_POINTER`; ranges 0..4000 by 0..2800 (positions outside are clamped); a click only while a finger is down |
 | `PalmrestWheel` | proxied | `REL_WHEEL`, `REL_HWHEEL` and the hi-res pair; magnitude at most 1200 |
 | `PalmrestKeys` | proxied | only keys of palmrest's name table; no auto-repeat; at most 8 down; a letter, digit, punctuation, Enter, Space, Tab, Backspace, Delete or Escape only while control, alt or super is held |
-| `KeycapKeyboard` | handed | codes 1 to 0x2ff, the six pointer axes of a combo device, the three lights; name `keycap keyboard`, vendor `0x4b43` |
-| `KeycapPointer` | handed | the request cut to buttons, relative axes, absolute axes with sane ranges and pointer properties; never a key |
+| `KeyRemapKeyboard` | handed | codes 1 to 0x2ff, the six pointer axes of a combo device, the three lights; name `key_remap keyboard`, vendor `0x4b43` |
+| `KeyRemapPointer` | handed | the request cut to buttons, relative axes, absolute axes with sane ranges and pointer properties; never a key |
 
 Every device, whatever its kind, is made with a label naming the service it is for: `phys`
 (`UI_SET_PHYS`, set before `UI_DEV_SETUP`) is `turnstile/pad_daemon` for palmrest's kinds and
-`turnstile/keymap_daemon` for keycap's (`turnstile_wire::Maker`; the role is the peephole role the
+`turnstile/keymap_daemon` for the key remap daemon's (`turnstile_wire::Maker`; the role is the peephole role the
 policy admitted). The kernel shows it in `/sys/class/input/<event>/device/phys`. Only a process that
 can open `/dev/uinput` can set it, and that is this service alone, so the desktop's compositor
 reads it as proof of who the device was made for (FINDINGS 13). No client sends any part of it.
@@ -113,9 +113,9 @@ Rate limit per proxied device: 120 `Events` datagrams per second (burst 30). Abo
 dropped and counted; three seconds of sustained excess close the connection. Events refused by a
 ceiling are counted; 256 over a connection's life close it.
 
-Why palmrest's kinds are proxied and keycap's handed: a uinput descriptor cannot be made write-only.
+Why palmrest's kinds are proxied and the key remap daemon's handed: a uinput descriptor cannot be made write-only.
 The holder can `UI_DEV_DESTROY` it and set it up again with any capabilities. Handing palmrest the
-descriptor would turn a bug in its input parsing into "types anything". keycap's keyboard is a full
+descriptor would turn a bug in its input parsing into "types anything". The key remap daemon's keyboard is a full
 keyboard by design, it polls the descriptor for lights, and proxying every keystroke would add a hop
 for nothing, so its authority is the strong identity above.
 

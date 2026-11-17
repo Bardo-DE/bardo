@@ -1,5 +1,5 @@
 //! What a client reads: the notifications server, the lock, the polkit agent, the clipboard
-//! history, idle and keycap.
+//! history, idle and key_remap.
 //!
 //! Each answer is the `shell-model` state, serialised; the two that hold more than a client should
 //! see (a clipboard entry's text, a polkit prompt's cookie) are reduced to counts and names here.
@@ -9,13 +9,13 @@ use shell_model::clipboard::{ClipStatus, Clipboard};
 use shell_model::idle::Idle;
 use shell_model::intents::terminal::{Breaker, ControlReach, grant_name};
 use shell_model::intents::{Intents, IntentsLink};
-use shell_model::keycap::KeycapState;
+use shell_model::key_remap::KeyRemapState;
 use shell_model::locker::Lock;
 use shell_model::notifications::{History, Notifications, ServerStatus};
 use shell_model::polkit_agent::{ActionId, Polkit, Registration};
 
 /// `bardo-shell notifications status|...`, `bardo-shell lock status`, `bardo-shell polkit status`, `bardo-shell clipboard
-/// status`, `bardo-shell idle status`, `bardo-shell keycap status`.
+/// status`, `bardo-shell idle status`, `bardo-shell the key remap daemon status`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum StatusRequest {
@@ -30,8 +30,8 @@ pub enum StatusRequest {
     Clipboard,
     /// Who owns idle, where it has got to, and what holds it off.
     Idle,
-    /// Whether keycap runs, and what it says about its mode and the keyboards.
-    Keycap,
+    /// Whether the key remap daemon runs, and what it says about its mode and the keyboards.
+    KeyRemap,
     /// Whether bardo-shell serves intentd's sheet, what waits on it, and the terminal's grants.
     Intents,
 }
@@ -45,7 +45,7 @@ pub enum StatusReport {
     Polkit(PolkitStatus),
     Clipboard(ClipboardStatus),
     Idle(Idle),
-    Keycap(KeycapState),
+    KeyRemap(KeyRemapState),
     Intents(IntentsStatus),
 }
 

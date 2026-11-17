@@ -1,4 +1,4 @@
-//! What palmrest and keycap link to ask the input-device service for a device.
+//! What palmrest and the key remap daemon link to ask the input-device service for a device.
 //!
 //! Sync and small: one `SOCK_SEQPACKET` connection, no bus, no async runtime. [`DeviceSource`] is the
 //! seam: [`Broker`] talks to the real service, `fake::FakeSource` (feature `fake`) is the double

@@ -1,7 +1,7 @@
 //! The compositor's own shell bindings, read from the desktop's keymap.
 //!
 //! The keymap is chordkit's layers: the conventions for our desktop, the machine's keymap, the
-//! person's keymap, through key-remap-client's `KeycapSource`.
+//! person's keymap, through key-remap-client's `KeyRemapSource`.
 //!
 //! - [`chord`]: a chordkit chord as the compositor's own (pure).
 //! - [`shell`]: which standard actions the compositor carries out, and the bindings a keymap

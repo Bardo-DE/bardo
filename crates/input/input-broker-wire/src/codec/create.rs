@@ -19,8 +19,8 @@ pub(super) fn read(r: &mut Reader<'_>) -> Result<Create, WireError> {
         Kind::PalmrestKeys => {
             Create::Keys(r.counted("the key list", MAX_KEY_CODES, Reader::u16)?)
         }
-        Kind::KeycapKeyboard => Create::Keyboard,
-        Kind::KeycapPointer => Create::Pointer(read_pointer(r)?),
+        Kind::KeyRemapKeyboard => Create::Keyboard,
+        Kind::KeyRemapPointer => Create::Pointer(read_pointer(r)?),
     };
     validate(&create)?;
     Ok(create)

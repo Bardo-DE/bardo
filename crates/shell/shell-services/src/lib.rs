@@ -1,7 +1,7 @@
 //! Effectful services behind watch channels: power, network, Wi-Fi, Bluetooth, power profiles,
 //! Now Playing, the session, the lock screen's password check and the polkit agent, notifications,
 //! calendar events, screenshots, volume, tray, apps, launching, dock pins, wallpaper, displays,
-//! the windows and workspaces and the keycap keyboard daemon.
+//! the windows and workspaces and the key remap daemon keyboard daemon.
 //!
 //! Every service is one module with the same shape: a marker type (in `shell-model`, beside its
 //! state) that this crate implements [`service::Run`] for, started by [`service::spawn`] against
@@ -41,7 +41,7 @@ pub mod idle;
 pub mod input_source;
 pub mod intents;
 pub mod kbd_backlight;
-pub mod keycap;
+pub mod key_remap;
 pub mod launch;
 pub mod locker;
 pub mod login_session;
@@ -80,7 +80,7 @@ pub use desktop_wl::WindowsLinks;
 pub use error::ServiceError;
 pub use idle::IdleLinks;
 pub use intents::{IntentsLinks, ShellCall};
-pub use keycap::KeycapLinks;
+pub use key_remap::KeyRemapLinks;
 pub use notifications::Answers;
 pub use session::SessionLinks;
 pub use voice::VoiceLinks;

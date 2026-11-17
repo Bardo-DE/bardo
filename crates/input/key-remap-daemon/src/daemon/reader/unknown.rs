@@ -63,10 +63,10 @@ impl Notice {
     pub(super) fn line(&self) -> String {
         match self {
             Notice::Undefined(name) => {
-                format!("keycap: profile \"{name}\" is not defined; using default")
+                format!("key_remap: profile \"{name}\" is not defined; using default")
             }
             Notice::TooMany => format!(
-                "keycap: more than {MAX_LISTED} undefined profile names were focused; not listing the rest"
+                "key_remap: more than {MAX_LISTED} undefined profile names were focused; not listing the rest"
             ),
         }
     }
@@ -92,7 +92,7 @@ mod tests {
     }
 
     fn line(s: &str) -> String {
-        format!("keycap: profile \"{s}\" is not defined; using default")
+        format!("key_remap: profile \"{s}\" is not defined; using default")
     }
 
     #[test]

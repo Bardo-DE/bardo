@@ -16,7 +16,7 @@ Edges: every source crate depends on `chordkit` (and a file-reading one on `base
 workspace crate. The core is I/O-free by design and the boundary script keeps it so.
 `scripts/check-boundary.sh` asserts the core reaches no I/O, runtime, bus,
 file-watching or plist crate (nor `base-fs`). The only file reads are in `KdeSource::load` and
-`GnomeSource::load` (a path injected by the caller), and both go through `base_fs::read_text_capped`. Our desktop's source is not here: keycap implements
+`GnomeSource::load` (a path injected by the caller), and both go through `base_fs::read_text_capped`. Our desktop's source is not here: the key remap daemon implements
 `KeymapSource` in its own repo.
 
 ## 2. Core modules (`crates/chordkit/src`)

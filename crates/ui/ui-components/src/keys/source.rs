@@ -30,7 +30,7 @@ impl KeySource {
     }
 
     /// This source with an app's own changes laid on top of whatever it loads (system detection,
-    /// keycap), so an app with its own rebinding file folds into the shared keymap without
+    /// The key remap daemon), so an app with its own rebinding file folds into the shared keymap without
     /// reimplementing detection. Applied again after every reload; a change it cannot apply is
     /// kept in `Keys::problems`. A second call replaces the first.
     #[must_use]

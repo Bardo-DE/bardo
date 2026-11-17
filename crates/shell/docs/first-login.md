@@ -5,18 +5,18 @@ screen's session list the whole time. Nothing below changes Plasma's files.
 
 ## 1. Before you log out (about 30 minutes, in Plasma)
 
-1. **Save your work and know the way back.** The keycap emergency chord is both Shift keys + Esc
-   (`sudo systemctl stop keycap` also works). Keep a text console in mind: Ctrl+Alt+F3. Ctrl+Alt+F1 to F12 switch text consoles; with the keyboard in
+1. **Save your work and know the way back.** The key remap daemon emergency chord is both Shift keys + Esc
+   (`sudo systemctl stop key_remap` also works). Keep a text console in mind: Ctrl+Alt+F3. Ctrl+Alt+F1 to F12 switch text consoles; with the keyboard in
    Mac mode the F-keys may need Fn, and `sudo chvt 3` from a terminal always works. For anything before
    the OS (MOK, BIOS) the K5 Max must be on Cable or 2.4G, not Bluetooth.
 2. **Bring the sibling checkouts up to date.** The install builds with `--locked`, and `Cargo.lock`
    was resolved against the current master of every repo next to `~/sill`: `almanac`, `anyview`,
-   `blitz-embed`, `cua`, `docket`, `keycap`, `porter`, `bardo`, `layer-shell-host`, plus `stoker` and
+   `blitz-embed`, `cua`, `docket`, `key_remap`, `porter`, `bardo`, `layer-shell-host`, plus `stoker` and
    `desktop-protocols` (reached through them). `palmrest` is not needed to build. A stale one
    (`anyview` was 11 commits behind once) stops the build with a raw cargo error, so check first:
 
    ```sh
-   for r in anyview Bardo layer-shell-host keycap blitz-embed almanac cua docket porter stoker desktop-protocols; do
+   for r in anyview Bardo layer-shell-host the key remap daemon blitz-embed almanac cua docket porter stoker desktop-protocols; do
      git -C ~/$r pull --ff-only || echo "NOT FAST-FORWARD: $r"; done
    git -C ~/anyview pull --ff-only                          # the one that was behind
    cd ~/sill && git status --short && git log --oneline -1  # clean, master
@@ -28,7 +28,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    advice and run it again. Install only when `bardo-shell` and `bardo` are both on a merged master (a
    Bardo merge breaks sill until sill follows it).
 3. **Remove a stale binary that would shadow the install:** `rm -f ~/.cargo/bin/bardo-shell`.
-4. **Install sill and the session.** The login entry "sill (the compositor)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, the Settings app, sill, keycap and the rest, then the session files). sill's own part, from `~/sill`:
+4. **Install sill and the session.** The login entry "sill (the compositor)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, the Settings app, sill, the key remap daemon and the rest, then the session files). sill's own part, from `~/sill`:
 
    ```sh
    dist/install.sh --dry-run        # read it: every step is printed, nothing is changed
@@ -44,12 +44,12 @@ screen's session list the whole time. Nothing below changes Plasma's files.
 
    It installs `/usr/local/bin/bardo-shell`, `/etc/pam.d/bardo-shell`, the intents manifest
    `/usr/local/share/bardo/intents/org.bardo.Shell.toml`, the skills and the settings schema; it also
-   copies the keycap layer to `~/.config/keycap/keycap.toml` when you have none (an existing file is
+   copies the key remap daemon layer to `~/.config/key_remap/key-remap.toml` when you have none (an existing file is
    never touched). It is safe to run again. Then install the session from `~/desktop` (it writes
    `bardo-session` and the `sill (compositor)` entry in `wayland-sessions`). Confirm:
 
    ```sh
-   ls /usr/local/bin/bardo-shell /etc/pam.d/bardo-shell ~/.config/keycap/keycap.toml
+   ls /usr/local/bin/bardo-shell /etc/pam.d/bardo-shell ~/.config/key_remap/key-remap.toml
    ls /usr/share/wayland-sessions/ | grep -i the compositor
    ```
    **System services sill uses (all optional).** Each feature below works only while its service runs
@@ -69,26 +69,26 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    `xdg-utils` (opening links), the same package name on all
    three. External monitor brightness needs the `i2c-dev` module and an ACL on `/dev/i2c-*`: the install
    adds both unless a ddcutil package already does (`ddcutil` on all three).
-5. **keycap** replaces Toshy; the sill session has no Mac layout without it (Cmd stays Cmd). It is
-   installed and running on this machine; if not, `~/keycap/install.sh --dry-run`, then
-   `~/keycap/install.sh` (it builds and installs with sudo; see `~/keycap/README.md`, "Install").
-   Check `systemctl status keycap` and Cmd+C / Cmd+V in a text field in Plasma.
+5. **the key remap daemon** replaces Toshy; the sill session has no Mac layout without it (Cmd stays Cmd). It is
+   installed and running on this machine; if not, `~/key_remap/install.sh --dry-run`, then
+   `~/key_remap/install.sh` (it builds and installs with sudo; see `~/key_remap/README.md`, "Install").
+   Check `systemctl status key_remap` and Cmd+C / Cmd+V in a text field in Plasma.
 
    `/etc/bardo/key-remap/key-remap.toml` is the Plasma overlay and is shared by every session: it writes
    Cmd+Space as Alt+Space (KRunner), which opens nothing in sill. So the sill session has its own layer,
-   `~/.config/keycap/keycap.toml` (copied from `dist/keycap/keycap.toml` by the install). sill forwards
-   that file to keycap and keycap lays it over the machine file, so in sill Cmd+Space is Super+Space and
+   `~/.config/key_remap/key-remap.toml` (copied from `dist/key_remap/key-remap.toml` by the install). sill forwards
+   that file to the key remap daemon and the key remap daemon lays it over the machine file, so in sill Cmd+Space is Super+Space and
    Cmd+Shift+3/4/5 is Print (`bardo-shell screenshot area`); Plasma never forwards it and keeps `alt+space`.
    It also sends Cmd+Tab and Shift+Cmd+Tab to the app switcher (Super+Tab, with Super held while Cmd is held, so the
    panel stays up), Shift+Cmd+Q to the power menu and Option+Cmd+Esc to Force Quit. If you installed before these
    were added, the install does not touch your file: it prints the rules yours lacks and the one command to
-   take the new file (your old one is kept as `keycap.toml.bak`).
-   Check offline (`keycap replay` reads no device):
+   take the new file (your old one is kept as `key-remap.toml.bak`).
+   Check offline (`key_remap replay` reads no device):
 
    ```sh
    printf '0 press 1 apple leftmeta\n10 press 1 apple space\n20 release 1 apple space\n30 release 1 apple leftmeta\n' > /tmp/cmd-space.txt
-   keycap replay /tmp/cmd-space.txt                           # built-in mapping: +leftmeta +space (Super+Space)
-   keycap replay --config /etc/bardo/key-remap/key-remap.toml /tmp/cmd-space.txt   # the Plasma overlay alone: +leftalt +space
+   The key remap daemon replay /tmp/cmd-space.txt                           # built-in mapping: +leftmeta +space (Super+Space)
+   The key remap daemon replay --config /etc/bardo/key-remap/key-remap.toml /tmp/cmd-space.txt   # the Plasma overlay alone: +leftalt +space
    ```
 
    Replay takes one file, so the layered result is checked after login: Cmd+Space opens the launcher
@@ -118,7 +118,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
 
 Pick **sill (the compositor)** from the session list (the plasmalogin menu), then log in as usual. Your
 password also unlocks the wallet (`pam_kwallet`). The next login preselects it; to go back,
-pick **Plasma (Wayland)** (section 5). The keyboard works here over Bluetooth, mapped by keycap.
+pick **Plasma (Wayland)** (section 5). The keyboard works here over Bluetooth, mapped by key_remap.
 
 ## 3. The first 10 minutes (open foot, or ghostty, with Cmd+Space then type it)
 
@@ -130,12 +130,12 @@ systemctl --user is-active graphical-session.target; echo $XDG_CURRENT_DESKTOP $
 sill ping; sill polkit status; sill idle status        # pong; registered; {"kind":"own"}
 journalctl -b --no-pager | grep -E 'bardo-session|guard' | tail     # no quick exits; cat $XDG_RUNTIME_DIR/bardo-session/guard.log is empty
 # 2 launcher by keyboard (G1/G2/L2): Cmd+Space opens it, again closes it; type "term", Enter; also Super+Space
-#   (Cmd+Space does nothing: Alt+Space is being sent, so ~/.config/keycap/keycap.toml is missing; section 1, item 5)
+#   (Cmd+Space does nothing: Alt+Space is being sent, so ~/.config/key_remap/key-remap.toml is missing; section 1, item 5)
 # 3 GPU (B3): which device did it pick, is sill quiet
 journalctl -b --no-pager | grep -iE 'render device|adapter|vulkan|llvmpipe' | tail
 top -b -n1 | head -12                                    # sill and the compositor not busy at idle
 # 4 keyboard: Cmd+C/Cmd+V in foot, Zen, Chrome; Ctrl+C still interrupts in the terminal; hold a key (400 ms / 10 per s)
-keycap status; sill keycap status                        # grabbed; connected
+The key remap daemon status; sill the key remap daemon status                        # grabbed; connected
 # 5 polkit
 pkexec true; echo $?                                     # prompt names the action; 0
 # 6 lock, with a TTY ready
@@ -149,7 +149,7 @@ Then, in this order, tick them in `docs/manual-checks.md`:
 
 ```sh
 # 9  Cmd+Tab: tap switches to the previous app, hold shows the panel
-# 10 Chinese input: pgrep -a fcitx5; type in Zen and in the launcher (Caps Lock switches input: the desktop vendor file /usr/lib/bardo/key-remap/key-remap.toml maps it to Ctrl+Space; keycap refuses that rule in the user file)
+# 10 Chinese input: pgrep -a fcitx5; type in Zen and in the launcher (Caps Lock switches input: the desktop vendor file /usr/lib/bardo/key-remap/key-remap.toml maps it to Ctrl+Space; the key remap daemon refuses that rule in the user file)
 # 11 secrets: secret-tool search xdg:schema org.freedesktop.Secret.Generic 2>&1 | head -3 ; open Chrome, Cursor, Teams: signed in?
 #    busctl --user status org.freedesktop.secrets | head -3   # owned (ksecretd)
 #    (if not: start them with --password-store=kwallet6; section 1, item 7)
@@ -177,7 +177,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 
 ## 4. Known gaps (decided, not bugs)
 
-- No Toshy: the Mac layout is keycap's. Without keycap running, Cmd is Cmd. A lone Cmd tap has no sender yet (the assistant's
+- No Toshy: the Mac layout is the key remap daemon's. Without the key remap daemon running, Cmd is Cmd. A lone Cmd tap has no sender yet (the assistant's
   Cmd double-tap); use `bardo-shell companion summon`.
 - `bardo-shell workspace next` and `prev` stop at the first and last workspace (no wrap).
 - Option+Cmd+Esc (Force Quit Applications) does nothing until the compositor runs `bardo-shell force-quit toggle`
@@ -201,12 +201,12 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 - **Log out from sill**: power menu (power key or Super+Shift+Esc) > Log Out, then at the login
   screen pick **Plasma (Wayland)**. That is all; Plasma's config was never touched.
 - **Black screen, or the login screen comes straight back**: press **Ctrl+Alt+F3** (or `sudo chvt 3`), log in on the TTY
-  (with the cable or 2.4G keyboard if keycap or Bluetooth is the problem), then either
+  (with the cable or 2.4G keyboard if the key remap daemon or Bluetooth is the problem), then either
   - `systemctl restart plasmalogin` and pick Plasma at the login screen (use `sudo`), or
   - remove the sill session: `~/sill/dist/uninstall.sh` (`--dry-run` first;
-    `--forget-seeds` also removes the keycap layer in `~/.config/keycap`, if you have not changed it). The Plasma entry stays.
-- **The keyboard is wrong**: hold both Shift keys and press Esc (keycap's release), or
-  `sudo systemctl stop keycap`.
+    `--forget-seeds` also removes the key remap daemon layer in `~/.config/key_remap`, if you have not changed it). The Plasma entry stays.
+- **The keyboard is wrong**: hold both Shift keys and press Esc (the key remap daemon's release), or
+  `sudo systemctl stop key_remap`.
 - **The rendering GPU.** sill's own windows render on the same GPU as the compositor, on any
   hardware: the shell asks the compositor which device it renders on (the `main_device` of
   `zwp_linux_dmabuf_v1`'s default feedback, which needs version 4) and takes the wgpu adapter with
@@ -224,7 +224,7 @@ Write the results next to the boxes in `docs/manual-checks.md`, and the surprise
 journalctl -b --no-pager | grep -iE 'sill|the compositor|bardo-session' | tail -100   # the session script, compositor, shell
 journalctl --user -b -u bardo-compositor.service -u bardo-session.target -u xdg-desktop-portal
 journalctl --user -b -u palmrest -u 'app-org.fcitx.Fcitx5@autostart'
-journalctl -b -u keycap                                              # system unit
+journalctl -b -u the key remap daemon                                              # system unit
 cat "$XDG_RUNTIME_DIR"/bardo-session/guard.log                     # the crash-loop guard's decisions
 ```
 

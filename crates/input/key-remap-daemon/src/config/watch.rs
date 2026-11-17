@@ -46,7 +46,7 @@ pub fn spawn_reading<T: Send + 'static>(
     read: fn(&Path) -> T,
 ) -> notify::Result<notify::RecommendedWatcher> {
     let at = dir.to_path_buf();
-    watch_file_on_thread(dir, name, format!("keycap-watch-{name}"), move || {
+    watch_file_on_thread(dir, name, format!("key-remap-watch-{name}"), move || {
         out.send(read(&at)).is_ok()
     })
 }

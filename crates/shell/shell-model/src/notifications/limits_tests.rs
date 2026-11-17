@@ -76,7 +76,7 @@ fn one_apps_flood_keeps_its_newest_banners_and_tells_it_about_the_rest() {
 #[test]
 fn many_apps_cannot_push_the_live_banners_past_the_total_or_push_out_the_shells_notice() {
     let policy = NotificationsPolicy::default();
-    let shell = note(1, "Keycap", Some("shell-keycap"), Hints::default());
+    let shell = note(1, "KeyRemap", Some("shell-key-remap"), Hints::default());
     let (mut state, _) = post(NotesState::default(), shell, policy);
     let total = u32::try_from(LIVE_BANNERS_MAX).unwrap_or(0) + 20;
     for id in 2..=total {
@@ -105,7 +105,7 @@ fn an_apps_critical_notice_gives_way_to_do_not_disturb_and_leaves_after_its_hold
     assert!(held.live.banners.is_empty(), "held back by Do Not Disturb");
 
     let policy = NotificationsPolicy::default();
-    let shell = note(2, "Keycap", Some("shell-keycap"), critical());
+    let shell = note(2, "KeyRemap", Some("shell-key-remap"), critical());
     let (state, _) = post(
         NotesState::default(),
         note(1, "app", None, critical()),

@@ -11,7 +11,7 @@ use super::action::do_action_request;
 use super::debug::debug_request;
 use super::desktop::dock_request;
 use super::intents::intents_request;
-use super::keycap::keycap_request;
+use super::key_remap::key_remap_request;
 use super::launch::launch_request;
 use super::launcher::{clipboard_request, launcher_request};
 use super::notifications::notifications_request;
@@ -53,7 +53,7 @@ pub fn request(command: &Command) -> Option<Request> {
         Command::Workspace { action } => do_request(workspace_action(*action)),
         Command::Polkit { .. } => Request::Status(StatusRequest::Polkit),
         Command::Idle { .. } => Request::Status(StatusRequest::Idle),
-        Command::Keycap { action } => keycap_request(*action),
+        Command::KeyRemap { action } => key_remap_request(*action),
         Command::Intents { action } => intents_request(action),
         Command::Clipboard { action } => clipboard_request(*action),
         Command::Debug { action } => debug_request(action),

@@ -20,7 +20,7 @@ pub struct FocusedWindow<'a> {
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct UserOverrides(pub BTreeMap<AppId, ProfileName>);
 
-/// The profile an app declares for itself with `X-Keycap-Profile`.
+/// The profile an app declares for itself with `X-Key-Remap-Profile`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct DeclaredProfile;
 
@@ -29,10 +29,10 @@ pub struct DeclaredProfile;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CategoryTable(pub Vec<(String, ProfileName)>);
 
-/// Profiles keycap defines for one app of its own (`[profile.ghostty]`, inheriting `terminal`),
+/// Profiles the key remap daemon defines for one app of its own (`[profile.ghostty]`, inheriting `terminal`),
 /// matched by a part of the window's app id, lowercased.
 ///
-/// The way keycap's Plasma feed does with the resource class. Above the category table, so a
+/// The way the key remap daemon's Plasma feed does with the resource class. Above the category table, so a
 /// terminal that has a profile of its own gets it, and below the user's overrides and what the app
 /// declares.
 #[derive(Debug, Clone, PartialEq, Eq)]

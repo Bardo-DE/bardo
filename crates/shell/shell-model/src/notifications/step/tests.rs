@@ -165,11 +165,14 @@ fn do_not_disturb_keeps_banners_and_sounds_back_except_the_shells_critical() {
     same_effects(&effects, &[SaveHistory], "an app's critical is held back");
 
     app_critical.id = NotificationId(3);
-    app_critical.app.desktop_entry = Some("shell-keycap".to_owned());
+    app_critical.app.desktop_entry = Some("shell-key-remap".to_owned());
     let (state, effects) = run(state, vec![posted(app_critical)], dnd);
     assert_eq!(
         shape(&state),
-        (vec![3], groups(&[("shell-keycap", &[3]), ("a", &[2, 1])]))
+        (
+            vec![3],
+            groups(&[("shell-key-remap", &[3]), ("a", &[2, 1])])
+        )
     );
     same_effects(
         &effects,

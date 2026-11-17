@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use shell_launcher::AppId;
 use shell_model::actions::Ask;
 use shell_model::intents::IntentsAsk;
-use shell_model::keycap::KeycapAsk;
+use shell_model::key_remap::KeyRemapAsk;
 
 use crate::act::DisplayRequest;
 use crate::debug::DebugRequest;
@@ -52,8 +52,8 @@ pub enum Request {
     /// banner, whichever appeared last (`bardo-shell focus-latest`; bound in the compositor's shortcuts
     /// like the launcher's). Nothing happens when none is showing.
     FocusLatest,
-    /// Restart keycap, or end its pause (`bardo-shell keycap retry|resume`).
-    Keycap(KeycapAsk),
+    /// Restart the key remap daemon, or end its pause (`bardo-shell key_remap retry|resume`).
+    KeyRemap(KeyRemapAsk),
     /// Withdraw a standing terminal grant, or let a paused terminal go on (`bardo-shell intents
     /// revoke|resume`).
     Intents(IntentsAsk),

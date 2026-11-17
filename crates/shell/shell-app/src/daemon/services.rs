@@ -89,12 +89,12 @@ pub(crate) fn follow_settings(
         CompanionBridge,
         services.companion.control.clone(),
     );
-    // keycap's per-app profiles follow `keyboard.overrides`.
+    // The key remap daemon's per-app profiles follow `keyboard.overrides`.
     follow(
         rt,
         settings(),
         KeyboardBridge,
-        services.keycap.control.clone(),
+        services.key_remap.control.clone(),
     );
     // The wallpaper follows `wallpaper.picture`.
     follow(
@@ -179,8 +179,8 @@ mod tests {
             "no clipboard read until the daemon's policy"
         );
         assert_eq!(
-            *services.keycap.state.borrow(),
-            shell_model::keycap::KeycapState::Unknown,
+            *services.key_remap.state.borrow(),
+            shell_model::key_remap::KeyRemapState::Unknown,
             "no socket and no system bus in an isolated Env: nothing is asked"
         );
         assert_eq!(

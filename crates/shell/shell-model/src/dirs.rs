@@ -171,7 +171,7 @@ impl Dirs {
 
     /// key-remap's folder under the config directory: the person's `key-remap.toml` is in it.
     #[must_use]
-    pub fn keycap_config(&self) -> PathBuf {
+    pub fn key_remap_config(&self) -> PathBuf {
         self.config.join("bardo").join("key-remap")
     }
 }
@@ -220,7 +220,7 @@ mod tests {
         assert_eq!(dirs.pictures, None);
         assert_eq!(dirs.sill_state(), Path::new("/scratch/state/bardo/shell"));
         assert_eq!(
-            dirs.keycap_config(),
+            dirs.key_remap_config(),
             Path::new("/scratch/config/bardo/key-remap")
         );
     }

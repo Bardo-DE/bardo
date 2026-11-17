@@ -1,33 +1,33 @@
 # Architecture
 
-keycap is the Mac keyboard mapping daemon: it grabs keyboards, remaps by profile and writes one
+The key remap daemon is the Mac keyboard mapping daemon: it grabs keyboards, remaps by profile and writes one
 virtual keyboard. `docs/development.md` has the data flow, the socket protocol, the lifecycle and the
 safety rules; `CONVENTIONS.md` holds the rules every repo shares; `FINDINGS.md` the open items
 and standing facts. This file is the map: where each thing lives, what may depend on what, and
-how to add the next thing. keycap depends on no desktop crate and runs on any Linux.
+how to add the next thing. The key remap daemon depends on no desktop crate and runs on any Linux.
 
 ## 1. Crate map
 
 | Crate | Path | Purpose | May depend on |
 |---|---|---|---|
-| `key-remap-proto` | `crates/keycap-protocol` | the socket contract: `ToDaemon` (`Steer` or `KeymapCall`), `ToClient`, `Status`, `ProfileName`, `KeymapState`, `Registration`, `PROTOCOL_VERSION`, `MIN_PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
-| `key-remap-client` | `crates/keycap-client` | a program's end of the socket (`Connection`) and `KeycapSource`, this desktop's `chordkit::KeymapSource`: chordkit's conventions for our desktop, `system_bindings`, the machine's keymap from the daemon or its file, then the person's own file; `register` | `key-remap-proto`, `chordkit`, `rustix` (std has no `SOCK_SEQPACKET`) |
-| `key-remap-evdev` | `crates/keycap-sys` | tier C (IO, no keycap concepts): the evdev and uinput ioctls through `input-linux`'s safe `EvdevHandle` and `UInputHandle` (`EVIOCGRAB`, `EVIOCGKEY`, `EVIOCGLED`, `EVIOCGBIT`, `EVIOCGPROP`, `EVIOCGABS`, uinput incl. `UI_ABS_SETUP`; raw codes in, typed handles inside, `io::Error` out) and `drain`, reading a nonblocking event node until it would block; shared by the daemon and `key-remap-devtest`, so neither keeps a copy | `input-linux`, `rustix`, `thiserror` |
-| `keycap` | `crates/keycap` | the pure core and the daemon; library plus the `keycap` binary | `key-remap-core`, `key-remap-proto`, `key-remap-client`, `key-remap-evdev`, `chordkit`, `serde`, `serde_json`, `thiserror`, `notify`, `rustix`, `peephole`, `caller-identity-core` (who is on the socket), `input-broker-client` (the root device service's client, which re-exports the wire types keycap names); the three are git deps by tag, `peephole` and `input-broker-client` with their `fake` features only as dev dependencies |
-| `key-remap-devtest` | `crates/keycap-devtest` | test-only (`publish = false`): fake keyboards on `/dev/uinput`, the daemon as a child process, the output device reader, a socket client | `key-remap-proto`, `key-remap-client` (its `Heard`), `key-remap-evdev`, `rustix` |
+| `key-remap-proto` | `crates/key-remap-protocol` | the socket contract: `ToDaemon` (`Steer` or `KeymapCall`), `ToClient`, `Status`, `ProfileName`, `KeymapState`, `Registration`, `PROTOCOL_VERSION`, `MIN_PROTOCOL_VERSION`, `MAX_PACKET`, `encode`, `decode`, `compat` | `serde`, `serde_json`, `thiserror` |
+| `key-remap-client` | `crates/key-remap-client` | a program's end of the socket (`Connection`) and `KeyRemapSource`, this desktop's `chordkit::KeymapSource`: chordkit's conventions for our desktop, `system_bindings`, the machine's keymap from the daemon or its file, then the person's own file; `register` | `key-remap-proto`, `chordkit`, `rustix` (std has no `SOCK_SEQPACKET`) |
+| `key-remap-evdev` | `crates/key-remap-sys` | tier C (IO, no key remap daemon concepts): the evdev and uinput ioctls through `input-linux`'s safe `EvdevHandle` and `UInputHandle` (`EVIOCGRAB`, `EVIOCGKEY`, `EVIOCGLED`, `EVIOCGBIT`, `EVIOCGPROP`, `EVIOCGABS`, uinput incl. `UI_ABS_SETUP`; raw codes in, typed handles inside, `io::Error` out) and `drain`, reading a nonblocking event node until it would block; shared by the daemon and `key-remap-devtest`, so neither keeps a copy | `input-linux`, `rustix`, `thiserror` |
+| `key_remap` | `crates/key_remap` | the pure core and the daemon; library plus the `key_remap` binary | `key-remap-core`, `key-remap-proto`, `key-remap-client`, `key-remap-evdev`, `chordkit`, `serde`, `serde_json`, `thiserror`, `notify`, `rustix`, `peephole`, `caller-identity-core` (who is on the socket), `input-broker-client` (the root device service's client, which re-exports the wire types the key remap daemon names); the three are git deps by tag, `peephole` and `input-broker-client` with their `fake` features only as dev dependencies |
+| `key-remap-devtest` | `crates/key-remap-devtest` | test-only (`publish = false`): fake keyboards on `/dev/uinput`, the daemon as a child process, the output device reader, a socket client | `key-remap-proto`, `key-remap-client` (its `Heard`), `key-remap-evdev`, `rustix` |
 
-Edges: `keycap` -> `key-remap-proto` and `key-remap-client` (the `status` verb's socket client), and `key-remap-client` -> `key-remap-proto` and `chordkit`, never `keycap`; `keycap` also takes `chordkit` for the keymap file's judgement. keycap defines no action, chord or keymap type: those are chordkit's. And `keycap` dev-depends on `key-remap-devtest`, which
-depends on `key-remap-proto`, `key-remap-client` and `key-remap-evdev`, and never on `keycap`. `key-remap-proto` depends on no other workspace
+Edges: `key_remap` -> `key-remap-proto` and `key-remap-client` (the `status` verb's socket client), and `key-remap-client` -> `key-remap-proto` and `chordkit`, never `key_remap`; `key_remap` also takes `chordkit` for the keymap file's judgement. The key remap daemon defines no action, chord or keymap type: those are chordkit's. And `key_remap` dev-depends on `key-remap-devtest`, which
+depends on `key-remap-proto`, `key-remap-client` and `key-remap-evdev`, and never on `key_remap`. `key-remap-proto` depends on no other workspace
 crate, and has no `toml`, `notify` or `rustix`, so a desktop takes it without pulling the
 daemon. sill imports it as a path dependency. `scripts/check-boundary.sh` holds the edges
-(including the four above for `keycap`); `cargo tree -p key-remap-proto` shows only serde, serde_json and thiserror.
+(including the four above for `key_remap`); `cargo tree -p key-remap-proto` shows only serde, serde_json and thiserror.
 
-The library surface of `keycap` is the pure core. The daemon and the CLI verbs are
+The library surface of `key_remap` is the pure core. The daemon and the CLI verbs are
 `pub(crate)`; the one public entry to them is `command::run`.
 
 ## 2. Modules and layers
 
-`crates/keycap/src`. A module imports from its own layer or a lower one only. Core modules
+`crates/key_remap/src`. A module imports from its own layer or a lower one only. Core modules
 never name `daemon` modules.
 
 | Layer | Modules | Nature | Visibility |
@@ -45,25 +45,25 @@ Daemon modules:
 
 | Module | Role |
 |---|---|
-| `command/status.rs` | `keycap status` and `keycap resume`: a plain socket client (`Hello` read, `Resume` sent), `render` and `is_remapping` pure and table-tested |
-| `daemon/uinput.rs` | the one "keycap keyboard" virtual device, a descriptor from a `Source`, destroyed on `Drop`; `direct_keyboard` makes it on `/dev/uinput` itself; passes the pointer events of plain combo devices through and carries the lock LEDs back; the `Emitter` and `PointerSink` traits and their recording fakes. Everything below device creation (writes, `led_fd`, `leds`) is the same whichever source made the descriptor |
-| `daemon/source.rs` | where a virtual device comes from: `Source::Service` asks the root device service (`input-broker-client`'s `Broker`, socket `/run/bardo/input-broker/input.sock`, `BARDO_KEY_REMAP_DEVICE_SERVICE`) for a `KeycapKeyboard` or `KeycapPointer` and receives the finished device's descriptor; `Source::Direct` (the default when the socket is absent, and the standalone install) opens `/dev/uinput`. A service that stops answering falls back to `Direct` with a log line; a refusal does not. `recreate` drops the old descriptor and asks again. The test source is `input-broker-client`'s `FakeSource` |
-| `daemon/twin.rs` | the "<name> (keycap pointer)" virtual device of a combo device whose pointer the keyboard cannot carry (absolute axes): its descriptor from a `Source` (the service is asked with the original's name as the label and adds the suffix), destroyed on `Drop`; `direct_pointer` registers it on `/dev/uinput` from a `PointerCaps` |
+| `command/status.rs` | `key_remap status` and `key_remap resume`: a plain socket client (`Hello` read, `Resume` sent), `render` and `is_remapping` pure and table-tested |
+| `daemon/uinput.rs` | the one "the key remap daemon keyboard" virtual device, a descriptor from a `Source`, destroyed on `Drop`; `direct_keyboard` makes it on `/dev/uinput` itself; passes the pointer events of plain combo devices through and carries the lock LEDs back; the `Emitter` and `PointerSink` traits and their recording fakes. Everything below device creation (writes, `led_fd`, `leds`) is the same whichever source made the descriptor |
+| `daemon/source.rs` | where a virtual device comes from: `Source::Service` asks the root device service (`input-broker-client`'s `Broker`, socket `/run/bardo/input-broker/input.sock`, `BARDO_KEY_REMAP_DEVICE_SERVICE`) for a `KeyRemapKeyboard` or `KeyRemapPointer` and receives the finished device's descriptor; `Source::Direct` (the default when the socket is absent, and the standalone install) opens `/dev/uinput`. A service that stops answering falls back to `Direct` with a log line; a refusal does not. `recreate` drops the old descriptor and asks again. The test source is `input-broker-client`'s `FakeSource` |
+| `daemon/twin.rs` | the "<name> (the key remap daemon pointer)" virtual device of a combo device whose pointer the keyboard cannot carry (absolute axes): its descriptor from a `Source` (the service is asked with the original's name as the label and adds the suffix), destroyed on `Drop`; `direct_pointer` registers it on `/dev/uinput` from a `PointerCaps` |
 | `daemon/pointer.rs` | pure: `PointerCaps`, the pointer half of a device as a value (axes with their `absinfo`, relative axes, buttons, input properties, the original's name as `label` and the twin's name), built from the kernel's masks; `needs_twin` |
 | `daemon/buttons.rs` | pure: the mouse buttons each combo device holds, released on unplug, overflow and pause; the keyboard's record and each twin's are separate values |
-| `daemon/caps.rs`, `daemon/machine.rs`, `daemon/reader/caps.rs` | a Caps Lock nobody asked for: the pure `CapsFix` (whose word on the lock, the lock, the lock the user asked for through keycap's own Caps Lock presses) and `remaps_caps` (does a rule take the bare Caps Lock key); the reader feeds it the desktop's Caps Lock LED reports, the lamp read (`EVIOCGLED`) at a grab until the desktop has reported, and the batches it writes, and writes one Caps Lock tap before the next non-modifier, non-Caps-Lock key while the lock is stray; `Machine` (`machine.rs`) composes the remapper and `CapsFix` once (`settled`, `step`, `wrote`, `reported`, `grabbed`, `forgotten`), and both the reader and `keycap replay` run it, with the reader doing the writes between the calls |
-| `command/caps_lamp.rs` | the Caps Lock lamp of a keyboard for `keycap status`, from the LED class in sysfs |
+| `daemon/caps.rs`, `daemon/machine.rs`, `daemon/reader/caps.rs` | a Caps Lock nobody asked for: the pure `CapsFix` (whose word on the lock, the lock, the lock the user asked for through the key remap daemon's own Caps Lock presses) and `remaps_caps` (does a rule take the bare Caps Lock key); the reader feeds it the desktop's Caps Lock LED reports, the lamp read (`EVIOCGLED`) at a grab until the desktop has reported, and the batches it writes, and writes one Caps Lock tap before the next non-modifier, non-Caps-Lock key while the lock is stray; `Machine` (`machine.rs`) composes the remapper and `CapsFix` once (`settled`, `step`, `wrote`, `reported`, `grabbed`, `forgotten`), and both the reader and `key_remap replay` run it, with the reader doing the writes between the calls |
+| `command/caps_lamp.rs` | the Caps Lock lamp of a keyboard for `key_remap status`, from the LED class in sysfs |
 | `daemon/leds.rs` | pure: the lock-LED events the compositor writes to the virtual device, forwarded to every grabbed keyboard, and `LedState`, the last lamps it set, written to a keyboard the moment it is grabbed |
 | `daemon/readiness.rs` | which polled fds are ready, as a bool |
-| `daemon/events.rs` | `struct input_event` as bytes, `decode` (what a device sent) and `encode` (what keycap writes), pure |
+| `daemon/events.rs` | `struct input_event` as bytes, `decode` (what a device sent) and `encode` (what the key remap daemon writes), pure |
 | `daemon/discover/` | the /sys scan and `notify` on `/dev/input`; `classify(&Caps, &Identity, Origin, &VirtualAllowance) -> Eligibility` is pure and table-tested (virtual devices are never grabbed unless the allowance names one exactly, which rules out loops with other remappers), sysfs roots injectable; `seat.rs` leaves a node whose udev entry names a seat other than `seat0` alone |
 | `daemon/devices/` | every keyboard as a pure state machine: `{ identity, layout, gate, grab }` plus the conflict `Backoff`; transitions return `(Devices, Vec<DeviceEffect>)`, `drive` carries the effects out through `Nodes`, `status_of` makes the `Status` a desktop sees |
 | `daemon/grabber.rs` | `Grabber` (grab, ungrab) and `Nodes` (open, close, keys down): the real evdev fds, and `FakeGrabber` in tests |
 | `daemon/reader/` | the main thread: one `poll` over the nodes and the inbox's eventfd, timeout from the next gate or backoff deadline and half the watchdog; the reader waits on nothing but `poll`. `grabs.rs` acts on a device just grabbed or let go (LEDs, twin), `twins.rs` holds the twins and the pure `grab_change`, `unknown.rs` the pure `Unknowns` set behind the once-per-generation log of an undefined focused profile (64 names), `rescan.rs` the pure `Lookout` (which nodes to look at after a pass's hotplug messages: a burst is one scan) and `SafetyLook` (everything again every 30 s) |
-| `daemon/route.rs` | pure `route` over the events one read of a node drained (`keycap_sys::drain`, until `EAGAIN`) into `RemapInput`s and pointer frames |
+| `daemon/route.rs` | pure `route` over the events one read of a node drained (`key_remap_sys::drain`, until `EAGAIN`) into `RemapInput`s and pointer frames |
 | `daemon/inbox.rs`, `daemon/waker.rs` | what other threads send the reader (`Request`, vendor config, system config, hotplug) over one bounded channel (256; the socket thread uses `try_send` and drops a client whose request does not fit) and one eventfd |
 | `daemon/socket/shelf.rs` | pure: the keymap in force, who watches it and what each connection registered (`Shelf::call`, `read`, `retain`); returns replies, the server sends them |
-| `daemon/socket/` | the socket thread; `seat.rs` holds the pure parts (`peer_of(uid, active, Claim)` to `Peer { Steering, Plain, Observer }`, `request_of`, `Seat::look` for owner leaving or user switch); `shell.rs` keycap's steering table and who is believed (the check, the seat file and the accept failures are `latchkey::guard`, shared with palmrest); `limits.rs` the bounds against hostile clients (32 clients, the seat owner exempt from that cap; 8 per uid; 16 messages per client per pass; 100 requests a second per client; listener paused 1 s on EMFILE; complaints logged once a minute per uid); `peer.rs` a connection (role, pace, what it missed) and `send` (`Sent`: a full queue or an oversize message never closes it); `inbound.rs` the bounded read |
+| `daemon/socket/` | the socket thread; `seat.rs` holds the pure parts (`peer_of(uid, active, Claim)` to `Peer { Steering, Plain, Observer }`, `request_of`, `Seat::look` for owner leaving or user switch); `shell.rs` the key remap daemon's steering table and who is believed (the check, the seat file and the accept failures are `latchkey::guard`, shared with palmrest); `limits.rs` the bounds against hostile clients (32 clients, the seat owner exempt from that cap; 8 per uid; 16 messages per client per pass; 100 requests a second per client; listener paused 1 s on EMFILE; complaints logged once a minute per uid); `peer.rs` a connection (role, pace, what it missed) and `send` (`Sent`: a full queue or an oversize message never closes it); `inbound.rs` the bounded read |
 | `daemon/settings.rs` | the config layers in force (built-in, vendor, system, user, in that order) and their resolution; `Layers::offered` reads the user layer as the socket delivers it and cuts it down (`ConfigLayer::confined`) |
 | `daemon/service.rs` | `run(env)`: the virtual keyboard, socket thread, watchers, then the reader |
 | `daemon/sdnotify.rs` | `READY=1`, `WATCHDOG=1` and `STATUS=` to `$NOTIFY_SOCKET` |
@@ -74,14 +74,14 @@ Daemon modules:
 
 Outside `crates/`: `install.sh`, `uninstall.sh` and `scripts/lib.sh` (every change goes through
 `step`, so `--dry-run` prints and `--destdir` stages under `--prefix`; idempotent by `cmp`), `dist/` (the unit, the
-udev and polkit rules, the `uinput` modules-load file, `keycap.plasma.toml`, and `dist/plasma/`: the KWin script and the
+udev and polkit rules, the `uinput` modules-load file, `key_remap.plasma.toml`, and `dist/plasma/`: the KWin script and the
 `bardo-key-remap-focus` D-Bus-to-socket helper with its unit and tests), `docs/switch-from-toshy.md`.
 
 ### Who steers, and where devices come from
 
-Two outside parties decide what keycap trusts, and both are in the unit's reach only:
+Two outside parties decide what the key remap daemon trusts, and both are in the unit's reach only:
 
-- **Devices.** The desktop's `turnstile` service owns `/dev/uinput` (root only) and hands keycap finished
+- **Devices.** The desktop's `turnstile` service owns `/dev/uinput` (root only) and hands the key remap daemon finished
   devices; the unit has no `DeviceAllow=/dev/uinput`. The standalone install has no such service and gets the
   one line back as the drop-in `bardo-key-remap.service.d/10-uinput.conf` (`dist/bardo-key-remap.uinput.conf`, placed by
   `install.sh`) next to the udev rule that lets the `input` group write the node. `SupplementaryGroups=input`
@@ -92,7 +92,7 @@ Two outside parties decide what keycap trusts, and both are in the unit's reach 
   and still alive; judged by peephole at `Proof::Cgroup` or better, any pin), `Plain` (any other process of
   the active uid: it hears status, watches the keymap and registers actions and may `Resume`; any other request ends its
   connection) and `Observer` (another user). Only `Steering` is obeyed for `Focus` and `UserConfig`.
-  `ProtectProc=default` (with `ProcSubset=pid`) lets keycap read `/proc/<pid>/cgroup` of the shell's process;
+  `ProtectProc=default` (with `ProcSubset=pid`) lets the key remap daemon read `/proc/<pid>/cgroup` of the shell's process;
   it still cannot read another user's image or sandbox metadata, and peephole reads a refused `<pid>/root`
   as "no sandbox".
   This is a speed bump: a program of the same user can put itself in a control group of that name. What it
@@ -113,7 +113,7 @@ Two outside parties decide what keycap trusts, and both are in the unit's reach 
 | Every default mapping | `defaults.toml` |
 | Lenient per-key reading, config layers, inheritance flattening | `config::{lenient, ConfigLayer, resolve}` |
 | How large a configuration may be (profiles, inherit steps, rules) | `config::limits` (`within_limits`); the daemon takes a layer only through `Layers::accepted` |
-| A text file read safely (regular file, not blocking, bounded) | `keycap_client::read_text`, which is `chordkit_file::read_text` mapped to `FileText` |
+| A text file read safely (regular file, not blocking, bounded) | `key_remap_client::read_text`, which is `chordkit_file::read_text` mapped to `FileText` |
 | What each press emitted, and which written keys are lifted | `held::Held` |
 | The pointer half of a combo device | `daemon::pointer::PointerCaps` |
 | Which lamps the desktop last set | `daemon::leds::LedState` |
@@ -125,9 +125,9 @@ Two outside parties decide what keycap trusts, and both are in the unit's reach 
 | Socket messages | `key-remap-proto` |
 | Actions, chords, keymaps, overrides, conventions, the resolver | `chordkit` (never redefined here) |
 | The machine's keymap file | `keymap`, served by `daemon::socket::shelf` |
-| The person's keymap file | read by `keycap_client::KeycapSource` (Settings writes it); the daemon never reads it |
-| The desktop's own bindings beyond chordkit's conventions | `keycap_client::system_bindings` |
-| A program's socket client | `keycap_client::Connection` |
+| The person's keymap file | read by `key_remap_client::KeyRemapSource` (Settings writes it); the daemon never reads it |
+| The desktop's own bindings beyond chordkit's conventions | `key_remap_client::system_bindings` |
+| A program's socket client | `key_remap_client::Connection` |
 | Threads, sockets, devices, clocks | `daemon` |
 | ioctls, draining an event node | `key-remap-evdev` |
 | Environment, clock, directories | `daemon::Env`, built once in `command::run` |
@@ -162,10 +162,10 @@ that stay enums:** `RemapInput`, `RemapOut`, `RuleAction`, `Edge`, `Layout`, `To
    and its rules. A name is `[a-z0-9_-]+`.
 2. A scenario test that focuses the profile and drives its rules, and one that switches into
    and out of it with a modifier held.
-3. The desktop must send `Focus { profile: NAME }`; keycap needs no change for that. This is
+3. The desktop must send `Focus { profile: NAME }`; the key remap daemon needs no change for that. This is
    how a profile for one app is made (`ghostty` inherits `terminal`; `keymap-aware` is for apps that read the keymap themselves and gets Super unchanged): the desktop maps its app id
    to the name (on Plasma, `OWN_PROFILES` in `dist/plasma/bardo-key-remap-focus`, with a case in
-   `test_keycap_focus.py`).
+   `test_key_remap_focus.py`).
 4. The README mapping table gains a row.
 
 ### Add a socket message
@@ -185,14 +185,14 @@ that stay enums:** `RemapInput`, `RemapOut`, `RuleAction`, `Edge`, `Layout`, `To
 | Whole-core behaviour | scripts of `RemapInput`s through `Remapper::step`, asserting `RemapOut`s, in `tests/` |
 | Stuck keys | a property test: every emitted press has exactly one release |
 | Socket | a private socket in a temp dir and a fake seat file, in `daemon/socket/tests.rs` (the harness treats every program of the seat's user as the shell, or none of them); the keymap's serving in the pure `shelf` tests plus the same file |
-| Who is the shell | `latchkey::guard::ShellCheck` over keycap's table in `daemon/socket/shell.rs`, tested on peephole's fixture `/proc` (a held process that is only a claim), as a table of control groups and images |
+| Who is the shell | `latchkey::guard::ShellCheck` over the key remap daemon's table in `daemon/socket/shell.rs`, tested on peephole's fixture `/proc` (a held process that is only a claim), as a table of control groups and images |
 | Devices from the service | `daemon/source.rs`: `input-broker-client`'s `FakeSource` (handed descriptor, `recreate`, twin, refusal, absent) |
 | The user layer's limits | `key-remap-core` `config/tests/confine.rs`, `Layers::offered` in `daemon/settings.rs`, and the reader's `UserConfig` handling |
-| `KeycapSource` | `key-remap-client`'s own tests against a fake daemon on a private socket (`testing.rs`): with the daemon, with an old one, with the file only, with nothing; watch; register; and `crates/keycap/tests/devices/keymap.rs` against the real binary |
+| `KeyRemapSource` | `key-remap-client`'s own tests against a fake daemon on a private socket (`testing.rs`): with the daemon, with an old one, with the file only, with nothing; watch; register; and `crates/key_remap/tests/devices/keymap.rs` against the real binary |
 | Grab conflicts, pause and resume | `daemon/devices` tests: the state machine driven through `FakeGrabber` |
 | The reader's decisions | `daemon/reader/tests.rs` and `pointer_tests.rs`: a recording `Emitter` whose twins log what they are told and whether they were dropped, a private socket, no node opened |
 | Replay | `command/script.rs` table tests and `command/replay.rs` on a script in a temp dir |
-| The real kernel path | `crates/keycap/tests/devices/` (gated, see section 7): the built binary, a fake keyboard, the output device and the socket, through `tests/devices/support` (`Scene`, `Rig`) |
+| The real kernel path | `crates/key_remap/tests/devices/` (gated, see section 7): the built binary, a fake keyboard, the output device and the socket, through `tests/devices/support` (`Scene`, `Rig`) |
 | The unit under systemd | `ci/systemd-test.sh`, the `systemd` CI job |
 
 Outside the gated device tests no test creates an input device, opens a real node for writing,
@@ -203,7 +203,7 @@ The `key-remap-devtest` modules:
 | Module | Holds |
 |---|---|
 | `fake` | `FakeKeyboard` (create from a `FakeSpec`: vendor, LEDs, pointer; `press`, `release`, `tap`, `chord`, LED reads), `Leds`, `Pointer` |
-| `output` | `Output`: reads "keycap keyboard", `expect("+leftctrl +c SYN")`, silence, held keys, LED writes |
+| `output` | `Output`: reads "the key remap daemon keyboard", `expect("+leftctrl +c SYN")`, silence, held keys, LED writes |
 | `daemon`, `notify` | `Daemon`: the binary as a child with scratch paths, stderr to a file, `READY=1` and `WATCHDOG=1` recorded with times |
 | `client` | `Client`: `Hello`, `Focus`, `Resume`, `wait_status` |
 | `grab` | `ExternalGrab`: another program's `EVIOCGRAB` |
@@ -228,7 +228,7 @@ The `key-remap-devtest` modules:
 - **The protocol is a crate:** a change to a message is a change to `key-remap-proto`, its
   tests, `PROTOCOL_VERSION` when incompatible, and the desktop, in one change.
 - **Tests never create an input device, with one gated exception.** The device tests in
-  `crates/keycap/tests/devices` and the `key-remap-devtest` crate they use create fake keyboards on
+  `crates/key_remap/tests/devices` and the `key-remap-devtest` crate they use create fake keyboards on
   `/dev/uinput` and grab them. Each such test is `#[ignore = "creates input devices; run in CI
   with BARDO_KEY_REMAP_DEVICE_TESTS=1"]` and asserts that variable, so a plain `cargo test` never touches
   a device. They run as root, one at a time, in the `devices` CI job (docs/development.md, "Tests"). The
@@ -256,7 +256,7 @@ the types keep them apart.
 | In | `Physical(Key)` | the evdev code the keyboard sent |
 | In | `Role` | `Command`, `Option`, `Control`, `Shift`: what a modifier key *means*, by position |
 | In | `Roles` | bitset of held roles |
-| Out | `Logical(Key)` | the evdev code keycap writes |
+| Out | `Logical(Key)` | the evdev code the key remap daemon writes |
 | Out | `OutMod` | `Ctrl`, `Alt`, `Super`, `Shift`: written as the left-hand key |
 | Out | `OutMods` | bitset of written modifiers |
 | Both | `Key(u16)` | an evdev code, constructed only from the name table |
@@ -297,7 +297,7 @@ trusted, so both are read by one function, `config::trusted::read_layer`, and on
 check, the file and every folder above it root's and not writable by group or others, and a link never passes.
 The file is also read through a 64 KiB cap. A file that fails is no layer and one plain-words warning in the log
 (`installed defaults: ...` or `machine settings: ...`); a missing file or folder is no layer and no warning.
-The vendor folder (`$BARDO_KEY_REMAP_VENDOR_DIR`, else `/usr/lib/keycap`) is watched as the config folder is, and a
+The vendor folder (`$BARDO_KEY_REMAP_VENDOR_DIR`, else `/usr/lib/key_remap`) is watched as the config folder is, and a
 missing folder is not watched, so a vendor file installed after the daemon started is read at its next start.
 A test that points `$BARDO_KEY_REMAP_CONFIG_DIR` at a scratch folder has no machine layer from a file in it.
 

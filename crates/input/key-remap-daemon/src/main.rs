@@ -1,4 +1,4 @@
-//! The `keycap` command: the daemon and its tools.
+//! The `key_remap` command: the daemon and its tools.
 
 use std::process::ExitCode;
 

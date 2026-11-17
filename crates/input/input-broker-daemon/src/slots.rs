@@ -1,9 +1,9 @@
 //! Who may hold a connection (NEW-PI-6).
 //!
 //! The socket is open to every local account, so slots cannot be first come: an account that opened
-//! sixteen idle connections would keep palmrest and keycap from reaching the service at all.
+//! sixteen idle connections would keep palmrest and the key remap daemon from reaching the service at all.
 //!
-//! A peer is identified first, then counted. A caller shown to be palmrest or keycap holds a slot of
+//! A peer is identified first, then counted. A caller shown to be palmrest or the key remap daemon holds a slot of
 //! its own reserve, outside every other cap. Anyone else holds a slot of its user's, at most
 //! [`MAX_CONNECTIONS_PER_USER`], and of the shared total for strangers, [`MAX_CONNECTIONS`].
 
@@ -33,7 +33,7 @@ impl Bucket {
     pub fn of(caller: &Caller, seat: ActiveUid) -> Self {
         if authorise(Kind::PalmrestWheel, caller, seat).is_ok() {
             Self::Reserved(Maker::PadDaemon)
-        } else if authorise(Kind::KeycapKeyboard, caller, seat).is_ok() {
+        } else if authorise(Kind::KeyRemapKeyboard, caller, seat).is_ok() {
             Self::Reserved(Maker::KeymapDaemon)
         } else {
             Self::Stranger(caller.uid)

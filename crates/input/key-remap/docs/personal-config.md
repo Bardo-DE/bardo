@@ -1,22 +1,22 @@
 # Personal configuration
 
-Your own choices go in a TOML file. keycap reads two places you edit, the later overriding the earlier. A third, `/usr/lib/bardo/key-remap/key-remap.toml`, is
+Your own choices go in a TOML file. The key remap daemon reads two places you edit, the later overriding the earlier. A third, `/usr/lib/bardo/key-remap/key-remap.toml`, is
 what a desktop ships and lies under both; leave it alone and override it here.
 
 1. `/etc/bardo/key-remap/key-remap.toml`: machine-wide, applies at the login screen too, reloaded when
-   saved. **Every session on the machine shares it**, whichever desktop it runs. keycap uses it
+   saved. **Every session on the machine shares it**, whichever desktop it runs. The key remap daemon uses it
    only when root owns it and nobody else can change it, or any folder above it: make it with
    `sudo` and mode `644`. A file anyone else could write is ignored, and the log says so (the
-   vendor file is judged the same way). On Plasma, `install.sh` puts `dist/keycap.plasma.toml` here first; it already has a `[profile.default]`
+   vendor file is judged the same way). On Plasma, `install.sh` puts `dist/key_remap.plasma.toml` here first; it already has a `[profile.default]`
    table, so add your rules to the end of its `rules = [...]` list and put `[[device]]` blocks at
    the end of the file.
-2. `~/.config/keycap/keycap.toml`, if your desktop forwards it: this layer is yours alone and
+2. `~/.config/key_remap/key-remap.toml`, if your desktop forwards it: this layer is yours alone and
    exists only while that desktop's session runs. The Plasma focus feed does not forward it, so
    on Plasma use the machine file. sill does forward it.
 
 ## What your own file may say
 
-When a desktop forwards `~/.config/keycap/keycap.toml`, keycap keeps from it only rules that need a
+When a desktop forwards `~/.config/key_remap/key-remap.toml`, the key remap daemon keeps from it only rules that need a
 modifier held (Command, Option, Control or Shift) and write one stroke, and at most 256 of them; the rest
 are reported and left out. A rule on a key pressed alone, a rule whose `then` is a list of strokes or
 `[]`, and a long list all belong in `/etc/bardo/key-remap/key-remap.toml`, which is not cut down. An administrator who
@@ -30,12 +30,12 @@ sequences = true
 ## Which file, when you use more than one desktop
 
 Put a rule in the machine file when every session should have it: a keyboard's `[[device]]`
-layout, Caps Lock as the input switch. Put it in `~/.config/keycap/keycap.toml` when it is about
+layout, Caps Lock as the input switch. Put it in `~/.config/key_remap/key-remap.toml` when it is about
 one desktop, because the machine file may be the Plasma overlay and the Plasma shortcuts are
 wrong elsewhere. Cmd+Space, for example, is Alt+Space on Plasma and Super+Space on sill:
 
 ```toml
-# ~/.config/keycap/keycap.toml, read only by a desktop that forwards it (sill)
+# ~/.config/key_remap/key-remap.toml, read only by a desktop that forwards it (sill)
 [profile.default]
 rules = [
   { when = "command+space", then = "super+space" },    # the launcher, not KRunner
@@ -48,12 +48,12 @@ rules = [
 
 A layer overrides per trigger: only the chords it lists change, the rest of the machine file
 stays. Plasma never reads this file, so the same machine keeps `alt+space` there. sill ships
-these rules in its `dist/keycap/keycap.toml`; you only write the file yourself to change them.
-To see the result without touching a keyboard, `keycap replay --config FILE script.txt` lays one
+these rules in its `dist/key_remap/key-remap.toml`; you only write the file yourself to change them.
+To see the result without touching a keyboard, `key_remap replay --config FILE script.txt` lays one
 file over the built-in mapping; to try both layers, paste the user file's rules after the machine
 file's in a scratch file and replay that.
 
-`keycap --print-config` prints the built-in defaults to copy from. A bad value is logged and
+`key_remap --print-config` prints the built-in defaults to copy from. A bad value is logged and
 ignored.
 
 ## Chords that keep a modifier down: `hold`
@@ -85,8 +85,8 @@ no held non-Shift role (`shift+y`) has nothing to own the modifier and behaves a
 ## Keyboard layout
 
 Keyboards with a Mac/Windows switch (Keychron and others) look identical to the computer in both
-positions, so keycap treats them as PC keyboards until you say otherwise. Find the ids with
-`keycap status`, then:
+positions, so the key remap daemon treats them as PC keyboards until you say otherwise. Find the ids with
+`key_remap status`, then:
 
 ```toml
 # Keychron K5 Max with its switch on Mac, over USB or Bluetooth
@@ -101,11 +101,11 @@ swapped, the layout is wrong.
 ## Caps Lock as the input-method switch
 
 As on macOS: Caps Lock switches input source (fcitx5's trigger is Ctrl+Space), Shift+Caps Lock is
-the real Caps Lock. A desktop that ships keycap's defaults (sill does) already has the first rule below in
+the real Caps Lock. A desktop that ships the key remap daemon's defaults (sill does) already has the first rule below in
 `/usr/lib/bardo/key-remap/key-remap.toml`. To change it, or on a machine without that desktop, put this in the
 machine file, `/etc/bardo/key-remap/key-remap.toml`: a desktop that forwards
 your own file has it cut down on arrival, and a rule on Caps Lock alone, with no modifier held, is
-left out of it (keycap says so), and so is a rule on Shift and a key, such as `shift+capslock`: Shift is held for every capital letter, so only Command, Option and Control make a shortcut in a file a desktop forwards. Both rules below belong in the machine file.
+left out of it (the key remap daemon says so), and so is a rule on Shift and a key, such as `shift+capslock`: Shift is held for every capital letter, so only Command, Option and Control make a shortcut in a file a desktop forwards. Both rules below belong in the machine file.
 
 ```toml
 [profile.default]
@@ -115,7 +115,7 @@ rules = [
 ]
 ```
 
-keycap keeps the lock off unless you set it with Shift+Caps Lock. `keycap status` shows the lamp.
+The key remap daemon keeps the lock off unless you set it with Shift+Caps Lock. `key_remap status` shows the lamp.
 
 ## Terminals
 
@@ -136,7 +136,7 @@ temor and every Bardo app resolve Cmd through chordkit, so they must see it unch
 could not tell a right split from a downward one. The `keymap-aware` profile writes Cmd as Super
 and leaves Cmd+letter alone. temor gets it by default. To give it to another app, have the desktop
 send that profile name for the app (on Plasma add its class to `OWN_PROFILES` in
-`dist/plasma/bardo-key-remap-focus`; on sill an app declares `X-Keycap-Profile=keymap-aware` in its
+`dist/plasma/bardo-key-remap-focus`; on sill an app declares `X-Key-Remap-Profile=keymap-aware` in its
 desktop entry, or you override it in sill's settings). To change one chord for those apps:
 
 ```toml

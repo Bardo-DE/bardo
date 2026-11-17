@@ -49,7 +49,7 @@ impl Scene {
         self.scratch.path()
     }
 
-    /// The built `keycap` binary.
+    /// The built `key_remap` binary.
     pub fn binary() -> &'static Path {
         Path::new(env!("CARGO_BIN_EXE_bardo-key-remap"))
     }
@@ -93,9 +93,9 @@ impl Scene {
             std::fs::read_to_string(self.dir().join(file)).unwrap_or_else(|_| "(none)\n".into())
         };
         format!(
-            "==== {name}: keycap stderr ====\n{}\n==== {name}: output device trace ====\n{}\n\
+            "==== {name}: key_remap stderr ====\n{}\n==== {name}: output device trace ====\n{}\n\
              ==== {name}: client log ====\n{}",
-            read("keycap.stderr"),
+            read("key_remap.stderr"),
             read("output.trace"),
             read("client.log"),
             name = self.name
@@ -111,7 +111,7 @@ impl Scene {
         if std::fs::create_dir_all(&dest).is_err() {
             return;
         }
-        for file in ["keycap.stderr", "output.trace", "client.log"] {
+        for file in ["key_remap.stderr", "output.trace", "client.log"] {
             let _ = std::fs::copy(self.dir().join(file), dest.join(file));
         }
     }

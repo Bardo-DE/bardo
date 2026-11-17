@@ -1,5 +1,5 @@
-# keycap: the bardo-shell session's layer. dist/install.sh copies it to ~/.config/key-remap/key-remap.toml when
-# that file is missing (never over yours). bardo-shell forwards that file to keycap as the seat owner's
+# The key remap daemon: the bardo-shell session's layer. dist/install.sh copies it to ~/.config/key-remap/key-remap.toml when
+# that file is missing (never over yours). bardo-shell forwards that file to the key remap daemon as the seat owner's
 # settings, which lie over /etc/bardo/key-remap/key-remap.toml, so the machine file can stay the Plasma one:
 # Plasma never forwards a user file and keeps its own mapping.
 #
@@ -30,9 +30,9 @@ rules = [
   # Works the same in both sessions (Super+Ctrl+Left/Right change workspace).
   { when = "control+left", then = "ctrl+super+left" },
   { when = "control+right", then = "ctrl+super+right" },
-  # Caps Lock rules are not here: keycap's user layer refuses a rule whose trigger has no modifier
+  # Caps Lock rules are not here: the key remap daemon's user layer refuses a rule whose trigger has no modifier
   # or only Shift. Both (Caps Lock -> Ctrl+Space, and Shift+Caps Lock -> Caps Lock) live in the
-  # desktop's vendor file, /usr/lib/bardo/key-remap/key-remap.toml (the desktop repo's dist/keycap.toml);
+  # desktop's vendor file, /usr/lib/bardo/key-remap/key-remap.toml (the desktop repo's dist/key-remap.toml);
   # bardo-shell ships no machine file.
 ]
 

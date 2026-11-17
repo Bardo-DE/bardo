@@ -1,6 +1,6 @@
 //! Judging a reading of the keymap file against the last good copy. Pure.
 //!
-//! chordkit reads the file leniently: a bad line is reported and skipped. keycap adds one rule
+//! chordkit reads the file leniently: a bad line is reported and skipped. The key remap daemon adds one rule
 //! on top: a file that is unusable, or whose every line is bad, is a bad edit (half a save, a
 //! pasted error), so the last good copy stays in force and the problem is reported.
 

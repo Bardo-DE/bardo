@@ -17,10 +17,10 @@ name = "bardo-computer-use"
 path = "src/main.rs"
 
 [features]
-# The person's own keymap (and this desktop's bindings) from keycap, for the shortcut line the
+# The person's own keymap (and this desktop's bindings) from the key remap daemon, for the shortcut line the
 # model is told. On for the daemon; off, only the platform's conventions apply.
-default = ["keycap"]
-keycap = ["dep:key-remap-client"]
+default = ["key-remap"]
+key-remap = ["dep:key-remap-client"]
 # A test build only: callers are read from a fixture process tree and a callers file the harness
 # names (`BARDO_COMPUTER_USE_TEST_PROC_ROOT`, `BARDO_COMPUTER_USE_TEST_SYSTEM_CALLERS`) in place of `/proc` and `/etc/bardo`.
 # Never on in a shipped build.

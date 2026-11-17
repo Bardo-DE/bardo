@@ -1,8 +1,8 @@
-//! The keymap cuad tells its model about: the platform's conventions and, where the `keycap`
+//! The keymap cuad tells its model about: the platform's conventions and, where the `key_remap`
 //! feature is on, this desktop's own bindings and the person's overrides, read once at start.
 //!
 //! cuad uses the standard shortcuts only (owner decision, 2026-10-10). Its sandbox
-//! (`dist/bardo-computer-use.service`) keeps the person's home and the keycap socket closed, so their own
+//! (`dist/bardo-computer-use.service`) keeps the person's home and the key remap daemon socket closed, so their own
 //! remappings are not read and the shortcut hints come from chordkit's conventional keymap (with
 //! the desktop's own bindings). A source that cannot be opened is therefore not a problem: it is
 //! skipped without a word, and only what was read and found wrong (a bad line in a keymap file
@@ -14,26 +14,26 @@ use keymap::{Keymap, Platform};
 ///
 /// That is `couldn't be used` and the operating system's own reason (`os error`). Under the
 /// sandbox every closed source says it.
-#[cfg(feature = "keycap")]
+#[cfg(feature = "key-remap")]
 fn is_closed_source(problem: &str) -> bool {
     problem.contains("couldn't be used") && problem.contains("(os error")
 }
 
 /// The keymap of `platform`, with every problem found reading it in plain words.
 ///
-/// Nothing is reported without the `keycap` feature. Environment variables are read through
+/// Nothing is reported without the `key_remap` feature. Environment variables are read through
 /// `lookup`; the daemon's `main` passes the process's.
 ///
-/// With the feature, the person's keymap comes from keycap's daemon, or its files when none
+/// With the feature, the person's keymap comes from the key remap daemon's daemon, or its files when none
 /// answers; a daemon or file that is closed to cuad (its sandbox) leaves the conventional keymap
 /// and no problem. Without the feature, only the platform's conventions apply.
-#[cfg(feature = "keycap")]
+#[cfg(feature = "key-remap")]
 pub fn desktop_keymap(
     platform: Platform,
     lookup: impl Fn(&str) -> Option<String>,
 ) -> (Keymap, Vec<String>) {
     let (keymap, problems) =
-        key_remap_client::KeycapSource::from_lookup(lookup).load_reporting(platform);
+        key_remap_client::KeyRemapSource::from_lookup(lookup).load_reporting(platform);
     let read = problems
         .into_iter()
         .filter(|problem| !is_closed_source(problem))
@@ -41,8 +41,8 @@ pub fn desktop_keymap(
     (keymap, read)
 }
 
-/// The keymap of `platform`: its conventions only (the `keycap` feature is off).
-#[cfg(not(feature = "keycap"))]
+/// The keymap of `platform`: its conventions only (the `key_remap` feature is off).
+#[cfg(not(feature = "key-remap"))]
 pub fn desktop_keymap(
     platform: Platform,
     lookup: impl Fn(&str) -> Option<String>,
@@ -72,14 +72,14 @@ mod tests {
     fn nothing_found_is_the_conventions() {
         let nowhere = |name: &str| match name {
             "BARDO_KEY_REMAP_SOCKET" => Some("/nonexistent/key-remap.sock".to_owned()),
-            "BARDO_KEY_REMAP_CONFIG_DIR" => Some("/nonexistent/keycap".to_owned()),
+            "BARDO_KEY_REMAP_CONFIG_DIR" => Some("/nonexistent/key_remap".to_owned()),
             _ => None,
         };
         let (keymap, _) = desktop_keymap(OURS, nowhere);
         assert!(copy_of(&keymap).contains(&"\u{2318}C".to_owned()));
     }
 
-    #[cfg(feature = "keycap")]
+    #[cfg(feature = "key-remap")]
     #[test]
     fn the_persons_own_keymap_file_is_laid_over_the_conventions() {
         let home = tempfile::tempdir().expect("a scratch directory");
@@ -97,7 +97,7 @@ mod tests {
         assert_eq!(copy_of(&keymap), ["\u{2325}\u{2318}C".to_owned()]);
     }
 
-    #[cfg(feature = "keycap")]
+    #[cfg(feature = "key-remap")]
     #[test]
     fn sources_closed_to_cuad_leave_the_conventions_and_say_nothing() {
         // A path below a regular file cannot be opened (not "missing"): what the sandbox does to
@@ -117,7 +117,7 @@ mod tests {
         assert!(copy_of(&keymap).contains(&"\u{2318}C".to_owned()));
     }
 
-    #[cfg(feature = "keycap")]
+    #[cfg(feature = "key-remap")]
     #[test]
     fn a_closed_source_reads_as_closed_and_a_bad_line_does_not() {
         assert!(is_closed_source(

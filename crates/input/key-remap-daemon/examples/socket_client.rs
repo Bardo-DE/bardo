@@ -1,4 +1,4 @@
-//! A desktop's end of keycap's socket, for scripts and the device tests.
+//! A desktop's end of the key remap daemon's socket, for scripts and the device tests.
 //!
 //! `socket_client SOCKET status` prints the status the daemon says hello with.
 //! `socket_client SOCKET focus PROFILE` sends `Focus` and prints what follows: each message,

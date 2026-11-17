@@ -5,7 +5,7 @@
 - Primary is Command (Super) on macOS and on our desktop, Ctrl on Windows and other Linux. In a
   terminal, Primary is Super on macOS and our desktop and Ctrl+Shift elsewhere, and plain Ctrl is never
   matched except with `=`, `-` and `0`, the text size keys every terminal takes (Ctrl+_, with Shift,
-  stays the program's). On our desktop a terminal also accepts Ctrl+Shift for Primary (keycap remaps Command to it
+  stays the program's). On our desktop a terminal also accepts Ctrl+Shift for Primary (the key remap daemon remaps Command to it
   there), as an input alias that resolves to the same action and displays as the Super form. A Primary
   chord that already uses Shift is Ctrl+Shift+Alt+key in a terminal off the Mac style (temor's
   stand-in for Redo, Save As, Find Previous); one that also uses Alt has no terminal form.
@@ -87,9 +87,9 @@
   cannot stop `open`), regular files only (links are followed, then the target is checked), 4 MiB at most
   (`SETTINGS_FILE_LIMIT`), UTF-8 only. A refusal is a `ReadError`, which a source turns into
   `SourceError::Read`; the caller skips the source and logs it. A missing file is not an error (nothing
-  was changed). Open: keycap (`keycap-client/src/fallback.rs`, `keycap/src/keymap/file.rs`) and palmrest
+  was changed). Open: the key remap daemon (`key-remap-client/src/fallback.rs`, `key_remap/src/keymap/file.rs`) and palmrest
   (`config/load.rs`) still open their own files; they take `chordkit-file` in their own repos (pin
-  `chordkit-file` by git rev, as keycap pins `chordkit`).
+  `chordkit-file` by git rev, as the key remap daemon pins `chordkit`).
 - Change notification: the trait is a callback; no source here implements a file watcher (that would
   need a watcher crate in a source crate). The default `watch` never fires.
 
@@ -114,5 +114,5 @@
 - `StandardAction` has no text-editing actions (word moves, line deletes); add them when a source
   (macOS DefaultKeyBinding) or an app needs them.
 - On our desktop in a terminal, Ctrl+Shift+Z is read as Super+Z (Undo), so Redo (Super+Shift+Z)
-  arrives only as the real Super chord; if keycap remaps Command+Shift+Z to Ctrl+Shift+Alt+Z, add
+  arrives only as the real Super chord; if the key remap daemon remaps Command+Shift+Z to Ctrl+Shift+Alt+Z, add
   that as an alias form.

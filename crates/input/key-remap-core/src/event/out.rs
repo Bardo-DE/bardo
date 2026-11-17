@@ -1,4 +1,4 @@
-//! `OutEvent`: one event keycap writes to the virtual keyboard.
+//! `OutEvent`: one event the key remap daemon writes to the virtual keyboard.
 
 use super::{Edge, Logical};
 

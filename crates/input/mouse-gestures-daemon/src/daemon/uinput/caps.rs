@@ -134,7 +134,7 @@ mod tests {
         );
         assert!(
             wanted(&Create::keyboard()).is_none(),
-            "keycap's keyboard is not ours"
+            "key_remap's keyboard is not ours"
         );
     }
 }

@@ -28,7 +28,7 @@ fn files_that_are_not_there_are_empty() {
 }
 
 #[test]
-fn the_person_file_is_written_whole_in_keycaps_place_and_read_back() {
+fn the_person_file_is_written_whole_in_key_remap_place_and_read_back() {
     let dir = scratch("keymap-save");
     let files = files(&dir);
     files

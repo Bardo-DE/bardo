@@ -1,4 +1,4 @@
-//! `KeycapSource`: this desktop's `keymap::KeymapSource`.
+//! `KeyRemapSource`: this desktop's `keymap::KeymapSource`.
 
 use crate::{fallback, fetch, system, watch};
 use base_xdg::Xdg;
@@ -8,7 +8,7 @@ use keymap::{
 };
 use std::path::{Path, PathBuf};
 
-/// Where our desktop's keymap is the person's own: the platform keycap serves.
+/// Where our desktop's keymap is the person's own: the platform the key remap daemon serves.
 const OURS: Platform = Platform::Linux {
     desktop: Desktop::Ours,
 };
@@ -16,7 +16,7 @@ const OURS: Platform = Platform::Linux {
 /// Where a layer of overrides came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Origin {
-    /// The keycap daemon, serving the machine's keymap file.
+    /// The key remap daemon daemon, serving the machine's keymap file.
     Daemon,
     /// The machine's keymap file, read directly because no daemon answered.
     MachineFile,
@@ -47,21 +47,21 @@ pub struct Layer {
 /// ([`crate::system_bindings`]), the machine's keymap and the person's own keymap laid over
 /// them, the person's last.
 #[derive(Debug, Clone)]
-pub struct KeycapSource {
+pub struct KeyRemapSource {
     socket: PathBuf,
     machine_file: PathBuf,
     person_file: PathBuf,
 }
 
-impl KeycapSource {
+impl KeyRemapSource {
     /// A source talking to the daemon at `socket`, falling back to `machine_file`, and reading
     /// the person's overrides from `person_file`. An empty `person_file` means none.
     pub fn new(
         socket: impl Into<PathBuf>,
         machine_file: impl Into<PathBuf>,
         person_file: impl Into<PathBuf>,
-    ) -> KeycapSource {
-        KeycapSource {
+    ) -> KeyRemapSource {
+        KeyRemapSource {
             socket: socket.into(),
             machine_file: machine_file.into(),
             person_file: person_file.into(),
@@ -71,7 +71,7 @@ impl KeycapSource {
     /// The source for this machine and person, read through `lookup`: `$BARDO_KEY_REMAP_SOCKET` (else
     /// `/run/bardo/key-remap/key-remap.sock`), the machine file in `$BARDO_KEY_REMAP_CONFIG_DIR` (else `/etc/bardo/key-remap`)
     /// and the person's file `bardo/key-remap/keymap` in `$XDG_CONFIG_HOME` (else `$HOME/.config`).
-    pub fn from_lookup(lookup: impl Fn(&str) -> Option<String>) -> KeycapSource {
+    pub fn from_lookup(lookup: impl Fn(&str) -> Option<String>) -> KeyRemapSource {
         let non_empty = |name: &str| lookup(name).filter(|value| !value.is_empty());
         let config =
             non_empty("BARDO_KEY_REMAP_CONFIG_DIR").unwrap_or_else(|| CONFIG_DIR.to_owned());
@@ -80,7 +80,7 @@ impl KeycapSource {
             .ok()
             .map(|dir| dir.join("bardo/key-remap").join(KEYMAP_FILE))
             .unwrap_or_default();
-        KeycapSource::new(
+        KeyRemapSource::new(
             non_empty("BARDO_KEY_REMAP_SOCKET").unwrap_or_else(|| SOCKET_PATH.to_owned()),
             Path::new(&config).join(KEYMAP_FILE),
             person,
@@ -89,8 +89,8 @@ impl KeycapSource {
 
     /// The source for this machine and person, from the process environment.
     #[must_use]
-    pub fn standard() -> KeycapSource {
-        KeycapSource::from_lookup(|name| std::env::var(name).ok())
+    pub fn standard() -> KeyRemapSource {
+        KeyRemapSource::from_lookup(|name| std::env::var(name).ok())
     }
 
     pub(crate) fn socket(&self) -> &Path {
@@ -180,7 +180,7 @@ fn describe(problem: &KeymapProblem) -> String {
     }
 }
 
-impl KeymapSource for KeycapSource {
+impl KeymapSource for KeyRemapSource {
     fn load(&self, platform: Platform) -> Result<Keymap, SourceError> {
         Ok(self.load_reporting(platform).0)
     }

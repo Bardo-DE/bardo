@@ -1,11 +1,11 @@
-//! keycap's two handed devices: fixed shapes, and a pointer that can never be a keyboard.
+//! The key remap daemon's two handed devices: fixed shapes, and a pointer that can never be a keyboard.
 
 use input_broker_wire::ceiling::{KEYBOARD_NAME, POINTER_SUFFIX};
 use input_broker_wire::codes::*;
 use input_broker_wire::{AbsAxis, BadCaps, Create, PointerCaps, Route, plan};
 
 #[test]
-fn the_keyboard_is_the_full_keyboard_of_keycap() {
+fn the_keyboard_is_the_full_keyboard_of_key_remap() {
     let p = plan(&Create::keyboard()).expect("plans");
     assert!(
         matches!(p.route, Route::Handed),

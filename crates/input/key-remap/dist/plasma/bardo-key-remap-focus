@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""bardo-key-remap-focus: tells keycap which profile the focused Plasma window wants.
+"""bardo-key-remap-focus: tells key_remap which profile the focused Plasma window wants.
 
 A KWin script (kwin-script/) calls org.bardo.KeyRemap.Focus.Focus on the session bus with the focused
-window's resource class; this service turns it into keycap's one desktop-facing message,
+window's resource class; this service turns it into key_remap's one desktop-facing message,
 `Focus { profile }`, on /run/bardo/key-remap/key-remap.sock. Terminals get the `terminal` profile, file managers
 `filemanager`, Ghostty `ghostty` (the terminal profile plus Ghostty's own split keys), every
-other window `default`. keycap forgets the profile when a client leaves, so every two seconds the
-connection is checked and, if it dropped (keycap restarted), reopened with the current profile.
+other window `default`. key_remap forgets the profile when a client leaves, so every two seconds the
+connection is checked and, if it dropped (key_remap restarted), reopened with the current profile.
 
 Needs python3-gobject (Gio). Run with --dry-run to print what would be sent, without a socket.
 """
@@ -59,7 +59,7 @@ INTERFACE_XML = """
 
 
 def profile_for(resource_class):
-    """The keycap profile for a window's resource class."""
+    """The key_remap profile for a window's resource class."""
     name = resource_class.strip().lower()
     for part, profile in OWN_PROFILES:
         if part in name:
@@ -78,12 +78,12 @@ def from_kwin(sender, owner):
 
 
 def focus_message(profile):
-    """The packet keycap reads: adjacently tagged JSON."""
+    """The packet key_remap reads: adjacently tagged JSON."""
     return json.dumps({"kind": "steer", "v": {"kind": "focus", "v": {"profile": profile}}}, separators=(",", ":")).encode()
 
 
-class Keycap:
-    """One SOCK_SEQPACKET connection to keycap, reopened when it breaks."""
+class KeyRemap:
+    """One SOCK_SEQPACKET connection to key_remap, reopened when it breaks."""
 
     def __init__(self, path=SOCKET):
         self.path = path
@@ -141,14 +141,14 @@ class Keycap:
 
 def main(argv):
     dry_run = "--dry-run" in argv
-    keycap = Keycap()
+    key_remap = KeyRemap()
 
     def on_focus(resource_class):
         profile = profile_for(resource_class)
         if dry_run:
             print(f"{resource_class!r} -> {focus_message(profile).decode()}", flush=True)
-        elif not keycap.send(profile):
-            print(f"bardo-key-remap-focus: keycap is not reachable at {keycap.path}", file=sys.stderr, flush=True)
+        elif not key_remap.send(profile):
+            print(f"bardo-key-remap-focus: key_remap is not reachable at {key_remap.path}", file=sys.stderr, flush=True)
 
     # Gio's register_object is deprecated in favour of a closure-based call that is much harder to
     # read; the old one keeps working.
@@ -185,7 +185,7 @@ def main(argv):
         conn.register_object(OBJECT_PATH, node.interfaces[0], on_call, None, None)
 
     if not dry_run:
-        GLib.timeout_add_seconds(2, lambda: keycap.restore() or True)
+        GLib.timeout_add_seconds(2, lambda: key_remap.restore() or True)
 
     loop = GLib.MainLoop()
     lost = []

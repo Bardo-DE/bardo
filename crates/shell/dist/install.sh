@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Install bardo-shell from the bardo tree: build `bardo-shell` in release, then put the binary, the PAM service,
 # the intents manifest (`org.bardo.Shell`, for intentd and `bardo-do`), the companion skills
-# (dist/skills) and the settings schema where a login reads them, and copy the keycap layer for
+# (dist/skills) and the settings schema where a login reads them, and copy the key remap daemon layer for
 # the bardo-shell session to ~/.config/key-remap/key-remap.toml when that file is missing (never over yours).
 # The login itself, "Bardo", is the desktop repo's session/ and install/. Run as
 # yourself; the root step asks once. Safe to run again.
@@ -10,7 +10,7 @@
 #   dist/install.sh              do it
 #   --prefix DIR                 install under DIR (default /usr/local): DIR/bin, DIR/share/bardo
 #   --destdir DIR                stage under DIR instead of the real system (packaging): nothing is
-#                                escalated, and the keycap layer, udev reload and user manager are skipped
+#                                escalated, and the key remap daemon layer, udev reload and user manager are skipped
 #   --no-build                   do not run cargo; use the release binary already built
 #
 # Root: $SUDO if set, else sudo, doas or pkexec; with none of them the commands that need root are
@@ -22,7 +22,7 @@
 # dist/modules-load.d, so the i2c buses of external monitors open to the person at the seat (DDC/CI
 # brightness). Not installed here, on purpose: dist/bardo-shell.service (the desktop repo's installer puts it root-held beside
 # bardo-compositor.service and its session starts it; a copy under ~/.config is not trusted by the account service),
-# anything of Plasma's or Toshy's, and keycap's machine file /etc/bardo/key-remap/key-remap.toml.
+# anything of Plasma's or Toshy's, and the key remap daemon's machine file /etc/bardo/key-remap/key-remap.toml.
 # dist/uninstall.sh undoes it. docs/first-login.md is next.
 set -euo pipefail
 # shellcheck source=install-lib.sh
@@ -89,7 +89,7 @@ else
   fi
 fi
 
-step "7/8 the keycap layer for the bardo-shell session (copied when missing; never overwritten)"
+step "7/8 the key_remap layer for the bardo-shell session (copied when missing; never overwritten)"
 if [ -n "$DESTDIR" ]; then
   note "skipped: a staging root has no person's home"
 elif [ -f "$BARDO_KEY_REMAP_LAYER_DEST" ] && cmp -s "$BARDO_KEY_REMAP_LAYER_SRC" "$BARDO_KEY_REMAP_LAYER_DEST"; then
@@ -97,7 +97,7 @@ elif [ -f "$BARDO_KEY_REMAP_LAYER_DEST" ] && cmp -s "$BARDO_KEY_REMAP_LAYER_SRC"
 elif [ -e "$BARDO_KEY_REMAP_LAYER_DEST" ]; then
   note "kept (yours): $BARDO_KEY_REMAP_LAYER_DEST"
   note "YOUR KEYBOARD FILE IS OLDER THAN THIS ONE ($BARDO_KEY_REMAP_LAYER_SRC). Install never changes your file."
-  lacking="$(keycap_rules_lacking)"
+  lacking="$(key_remap_rules_lacking)"
   if [ -n "$lacking" ]; then
     note "These rules are in the new file and not in yours (a missing one can send a shortcut to the wrong place, such as Cmd+Tab; the app switcher rules keep Super down while Cmd is held):"
     while IFS= read -r rule; do note "  $rule"; done <<<"$lacking"

@@ -26,7 +26,7 @@ use ddc::{DdcBus, FileBus, I2cBuses};
 use shell_model::auth::{RealName, UserName};
 use shell_model::dirs::Dirs;
 use shell_model::idle::IdleTimes;
-use shell_model::keycap::{UNIT_GRACE, UNIT_RECHECK};
+use shell_model::key_remap::{UNIT_GRACE, UNIT_RECHECK};
 
 pub use authenticator::{Authenticator, FakeAuthenticator, FakeRule};
 pub use bus_name::{NameState, name_state};
@@ -71,11 +71,11 @@ pub struct Env {
     /// The children a service starts and does not wait for (the file opener, the trash): real
     /// processes, or a record of what would have started.
     pub children: Arc<dyn Children>,
-    /// keycap's control socket; `None` means the keycap service never connects.
-    pub keycap_socket: Option<PathBuf>,
-    /// How long keycap's socket may be down before systemd is asked about the unit, and how often
+    /// The key remap daemon's control socket; `None` means the key remap daemon service never connects.
+    pub key_remap_socket: Option<PathBuf>,
+    /// How long the key remap daemon's socket may be down before systemd is asked about the unit, and how often
     /// after that; the process's own is the model's, a test's is short.
-    pub keycap_unit_wait: UnitWait,
+    pub key_remap_unit_wait: UnitWait,
     /// The `/proc` tree a process's cgroup is read from, which names the app that launched it
     /// (porter's caller identity): `/proc`, or a fixture tree in a test, or a folder with
     /// nothing in it, where no process is proven to be any app.
@@ -110,7 +110,7 @@ pub enum NameClaims {
     Passive,
 }
 
-/// When the keycap service asks systemd about its unit.
+/// When the key remap daemon service asks systemd about its unit.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct UnitWait {
     /// How long the socket is down before the first question.
@@ -141,7 +141,7 @@ pub enum IdleTimesSource {
 impl Env {
     /// The process's own: its buses, its compositor, its directories, the system clock, the
     /// kernel's i2c buses, polkitd on the system bus, logind's session actions, PAM through
-    /// `bardo-shell auth-check`, the system's accounts database and keycap's socket under `/run/keycap`.
+    /// `bardo-shell auth-check`, the system's accounts database and the key remap daemon's socket under `/run/key_remap`.
     #[must_use]
     pub fn from_process() -> Env {
         let buses = Buses::from_process();
@@ -161,8 +161,8 @@ impl Env {
                 fallback_login: std::env::var("USER").unwrap_or_default(),
             }),
             children: Arc::new(RealChildren),
-            keycap_socket: Some(PathBuf::from(key_remap_proto::SOCKET_PATH)),
-            keycap_unit_wait: UnitWait::default(),
+            key_remap_socket: Some(PathBuf::from(key_remap_proto::SOCKET_PATH)),
+            key_remap_unit_wait: UnitWait::default(),
             proc_root: PathBuf::from("/proc"),
             callers: Arc::new(DesktopCallers::from_system()),
             current_desktop: std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default(),
@@ -178,7 +178,7 @@ impl Env {
     /// every directory inside `scratch`, the system clock (read only), DDC monitors from a file
     /// that is not there (none), no polkit helper, session actions that are only recorded, and a
     /// password check that refuses everything, a made-up person for the account, no processes
-    /// running, no child started (each is recorded), no keycap socket, no bus name claimed and callers judged against an empty table (every call to a
+    /// running, no child started (each is recorded), no key remap daemon socket, no bus name claimed and callers judged against an empty table (every call to a
     /// shell object is refused until a test says who its stand-ins are). For tests that start
     /// services and must never reach the person's session or files. `scratch` must exist: the
     /// wallpaper service watches the nearest existing folder above the wallpaper's source file.
@@ -211,8 +211,8 @@ impl Env {
                 name: RealName("Test Person".to_owned()),
             })),
             children: RecordedChildren::shared(),
-            keycap_socket: None,
-            keycap_unit_wait: UnitWait::default(),
+            key_remap_socket: None,
+            key_remap_unit_wait: UnitWait::default(),
             proc_root: scratch.join("no-proc"),
             // An empty table: nobody is a service, so nothing is let in until a test says who.
             callers: Arc::new(DesktopCallers::new(

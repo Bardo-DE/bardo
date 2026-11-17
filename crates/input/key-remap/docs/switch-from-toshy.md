@@ -1,13 +1,13 @@
-# Switching from Toshy to keycap
+# Switching from Toshy to the key remap daemon
 
 Written for KDE Plasma 6. The order below keeps two remappers from fighting over the keyboard: a
-keyboard is held by one program at a time, so keycap goes in first and waits, Toshy comes off,
-and keycap takes over.
+keyboard is held by one program at a time, so the key remap daemon goes in first and waits, Toshy comes off,
+and the key remap daemon takes over.
 
-**Emergency chord: hold both Shift keys and press Esc.** keycap gives the keyboards back to the
-kernel at once; `keycap resume` takes them again. `sudo systemctl stop keycap` does the same
+**Emergency chord: hold both Shift keys and press Esc.** the key remap daemon gives the keyboards back to the
+kernel at once; `key_remap resume` takes them again. `sudo systemctl stop key_remap` does the same
 until the next start. Keep a terminal open throughout, and remember that Cmd is Ctrl and Ctrl is
-Super while keycap runs.
+Super while the key remap daemon runs.
 
 ## 1. Preview
 
@@ -17,7 +17,7 @@ Super while keycap runs.
 
 This prints every command and runs none. `--desktop plasma` installs Plasma's shortcut set as
 `/etc/bardo/key-remap/key-remap.toml` if you have none (it never overwrites yours). `--plasma-focus` installs
-the focus feed, which tells keycap when a terminal has focus. **Do not run keycap without it:
+the focus feed, which tells the key remap daemon when a terminal has focus. **Do not run the key remap daemon without it:
 Cmd+C in Konsole would be Ctrl+C.** It needs `python3-gobject` (Fedora: `sudo dnf install
 python3-gobject`).
 
@@ -30,7 +30,7 @@ python3-gobject`).
 Toshy is not touched. Note that `/etc/bardo/key-remap/key-remap.toml` is the machine file: every session
 shares it, so it holds the Plasma shortcuts (Cmd+Space is KRunner, Cmd+H minimises,
 Cmd+Shift+3/4 are Spectacle). If you also log in to a desktop that forwards
-`~/.config/keycap/keycap.toml` (sill does), that desktop's rules go in your own file, which
+`~/.config/key_remap/key-remap.toml` (sill does), that desktop's rules go in your own file, which
 overrides the machine file in that session only; see
 [personal-config.md](personal-config.md#which-file-when-you-use-more-than-one-desktop).
 
@@ -41,18 +41,18 @@ method, the Caps Lock rules. Both are explained in [personal-config.md](personal
 ## 3. Check
 
 ```bash
-keycap status
+The key remap daemon status
 ```
 
 Because Toshy still holds the keyboard, expect:
 
 ```
-keycap: running
+The key remap daemon: running
   Keychron K5 Max Keyboard (/dev/input/eventNN, 3434:0a53): held by another remapper
 ```
 
-`keycap status` exits 1 until a keyboard is grabbed; that is not an error here. Also check that
-`systemctl status keycap` and `systemctl --user status bardo-key-remap-focus` are active.
+`key_remap status` exits 1 until a keyboard is grabbed; that is not an error here. Also check that
+`systemctl status key_remap` and `systemctl --user status bardo-key-remap-focus` are active.
 
 ## 4. Switch
 
@@ -60,8 +60,8 @@ keycap: running
 systemctl --user disable --now toshy-session-monitor.service
 systemctl --user disable --now toshy-config.service toshy-kwin-dbus.service \
     toshy-wlroots-dbus.service
-sudo systemctl restart keycap
-keycap status                      # must say: grabbed, remapping
+sudo systemctl restart the key remap daemon
+The key remap daemon status                      # must say: grabbed, remapping
 ```
 
 The keyboard is raw for a few seconds in between, and Caps Lock may have been toggled on. If
@@ -80,7 +80,7 @@ Nothing here edits Toshy's own files.
 
 ## 5. Verify
 
-1. `pgrep -a xwaykeyz` prints nothing; `keycap status` says `grabbed, remapping`.
+1. `pgrep -a xwaykeyz` prints nothing; `key_remap status` says `grabbed, remapping`.
 2. Click one window, then another, so the focus feed sends its first message.
 3. Konsole: Ctrl+C stops `sleep 100`; Cmd+C and Cmd+V copy and paste; Cmd+D and Cmd+Z do not end
    or suspend the shell.
@@ -90,7 +90,7 @@ Nothing here edits Toshy's own files.
 6. Dolphin: Cmd+Backspace trashes the selection.
 7. If you set up Caps Lock as the input switch: it switches input, Shift+Caps Lock toggles the
    real lock.
-8. Shift+Shift+Esc pauses keycap (`keycap status` says paused); `keycap resume` restores it.
+8. Shift+Shift+Esc pauses the key remap daemon (`key_remap status` says paused); `key_remap resume` restores it.
 9. Reconnect or sleep the keyboard: it is grabbed again a few seconds later.
 10. Reboot: the keyboard is mapped at the login screen.
 
@@ -103,12 +103,12 @@ Sublime, ...).
 ## 6. Rolling back
 
 ```bash
-./uninstall.sh --restore-toshy --plasma-focus     # add --purge to delete /etc/keycap too
+./uninstall.sh --restore-toshy --plasma-focus     # add --purge to delete /etc/key_remap too
 mv ~/.config/autostart.toshy-off/*.desktop ~/.config/autostart/ && rmdir ~/.config/autostart.toshy-off
 nohup ~/.local/bin/toshy-tray >/dev/null 2>&1 &
 ```
 
-To pause keycap without removing it:
+To pause the key remap daemon without removing it:
 
 ```bash
 sudo systemctl disable --now bardo-key-remap.service
@@ -119,10 +119,10 @@ systemctl --user enable --now toshy-config.service toshy-kwin-dbus.service toshy
 
 | You see | What to do |
 | --- | --- |
-| `held by another remapper` | Stop the other remapper (`pgrep -a xwaykeyz`), then `sudo systemctl restart keycap` |
-| Cmd+C in Konsole interrupts | The focus feed is not reaching keycap: check `systemctl --user status bardo-key-remap-focus`, click another window, and make sure the KWin script is enabled in System Settings, Window Management, KWin Scripts |
+| `held by another remapper` | Stop the other remapper (`pgrep -a xwaykeyz`), then `sudo systemctl restart key_remap` |
+| Cmd+C in Konsole interrupts | The focus feed is not reaching the key remap daemon: check `systemctl --user status bardo-key-remap-focus`, click another window, and make sure the KWin script is enabled in System Settings, Window Management, KWin Scripts |
 | Cmd and Option swapped | Add the `[[device]]` layout entry, with the keyboard's switch on Mac |
-| `cannot connect` | `systemctl status keycap`, `journalctl -u keycap -b` |
+| `cannot connect` | `systemctl status key_remap`, `journalctl -u key_remap -b` |
 | No keyboard listed | A Bluetooth keyboard is asleep; wake it |
-| Nothing mapped after the chord | `keycap resume` |
+| Nothing mapped after the chord | `key_remap resume` |
 | Capital letters, Caps Lock stuck | Press Shift+Caps Lock once |

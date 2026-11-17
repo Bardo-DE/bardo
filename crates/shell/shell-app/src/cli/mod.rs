@@ -15,7 +15,7 @@ mod command;
 mod debug;
 mod desktop;
 mod intents;
-mod keycap;
+mod key_remap;
 pub mod launch;
 mod launcher;
 mod made_up;

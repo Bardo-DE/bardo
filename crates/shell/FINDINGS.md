@@ -193,21 +193,21 @@ A settled item is deleted, not marked closed.
   typed word begins a word of its name, keywords or shortcodes. A 300-cell grid scrolls inside
   a 60 Hz frame at p95 on vello_cpu and vello_hybrid at 100-200 %.
 
-- **keycap**: the daemon's socket is `SOCK_SEQPACKET` (`keycap-protocol`), held by one thread
+- **the key remap daemon**: the daemon's socket is `SOCK_SEQPACKET` (`key-remap-protocol`), held by one thread
   (`poll` on the socket and an eventfd), reconnecting after 1 s doubling to 30 s. Each connection
-  starts with the current `Focus` and the text of `~/.config/keycap/keycap.toml`, whatever was sent
+  starts with the current `Focus` and the text of `~/.config/key_remap/key-remap.toml`, whatever was sent
   before. Unit state comes from systemd's `GetUnit` and `ActiveState` on the system bus after the
   socket has been down 3 s, then every 5 s: `GetUnit` answers `NoSuchUnit` for an installed unit
   that is not loaded (stopped and collected), which reads as `NotInstalled`, and that is as
   silent as `Unknown`. A stopped unit is silent on purpose; only a unit that gave up (five
-  failures in 30 s) is `Failed`. keycap's notices carry no action, so they point at `bardo-shell keycap retry` and
-  `bardo-shell keycap resume`.
+  failures in 30 s) is `Failed`. The key remap daemon's notices carry no action, so they point at `bardo-shell key_remap retry` and
+  `bardo-shell key_remap resume`.
   `keyboard.overrides` (design/22 §3.25) is a list of `{ app, profile }` tables, which needs
   Bardo's `ds-settings` list-of-tables keys (`SettingsRow`, Bardo PR #2): sill builds against
   Bardo's `claude/settings-rows` branch until that PR merges. A row whose `profile` is not a
   profile name or whose `app` is empty is dropped, a row that is not a table of two texts is
   dropped on load, each costs only itself and is logged as `sill: settings.toml: ...`, and when
-  two rows name one app the last wins. The settings `Policy` sends `KeycapCommand::Overrides`
+  two rows name one app the last wins. The settings `Policy` sends `KeyRemapCommand::Overrides`
   and the service re-chooses the focused window's profile.
 
 - **accounts**: `sill_services::accounts` follows accountd (`org.bardo.Accounts1`, session bus) through
@@ -577,7 +577,7 @@ a source; `assumed` means not yet checked.
 | A virtual-keyboard path that reaches clients in a headless session | Key tests on the headless compositor | test harness only |
 
 - **Surfaces read the windows model, not `DesktopView`.** The Wlr arm publishes through the compositor
-  service's existing state (`sill_model::windows`), so the dock, switcher, bar, corners and keycap's focus
+  service's existing state (`sill_model::windows`), so the dock, switcher, bar, corners and the key remap daemon's focus
   feed run on the compositor unchanged; `desktop_wl::desktop_view` builds the frozen `DesktopView` from
   the same state and nothing reads it yet. Ends when the surfaces take `DesktopView` and
   `DesktopCommand`.
@@ -889,7 +889,7 @@ Open items of the voice client (`sill_services::voice`, `sill_model::voice`, `si
   `UNCATALOGUED`. Ends when Bardo's design/22 gains the rows and `SECTIONS` names them.
 - **The hold's edges come from a source that detects the hold itself** (`bardo-shell voice
   hold-start|hold-end|hold-cancel`). The raw-edge machine (`HoldKey`: command down, up, other key,
-  pointer) is not built; it ends when keycap or the compositor sends raw edges.
+  pointer) is not built; it ends when the key remap daemon or the compositor sends raw edges.
 - **Cancel carries a cause** (docket a0c168a): Escape when the launcher is dismissed, OtherInput
   for `bardo-shell voice hold-cancel`, Shell for the service's own cancel after a broken stream.
   `FocusLost` is modelled but nothing sends it: sill does not watch the focus leaving the prompt
@@ -1390,7 +1390,7 @@ compositor older than version 4 nothing is sent and the bar behaves as before.
   opened, not by use; this one is by recency (`AppView::mru`), which keeps the app that just hung
   near the top. Windowless apps (background helpers) and launching apps are not listed.
 - **The key.** chordkit has the action (`StandardAction::ForceQuit`, Option+Command+Escape on the
-  Mac convention; keycap writes it as Alt+Super+Esc). The compositor binds the action to
+  Mac convention; the key remap daemon writes it as Alt+Super+Esc). The compositor binds the action to
   `DesktopCommand::ForceQuitPanel`, which does nothing and swallows the chord
   (`crates/compositor/src/keymap/shell.rs`, `ROWS`) and the shell protocol has no event for
   it. **Ask of the compositor:** run `bardo-shell force-quit toggle` for that row (`Does::Sill(&["force-quit",
@@ -1656,10 +1656,10 @@ only in `sill-services`' dev-dependencies). `Cargo.lock` is the orchestrator's t
   question in the line starts its own wait when drawn. The compositor may refuse an answer sooner than
   500 ms after its question; it does not enforce that yet. The confirmation sheet (intentd's
   questions) is a different component with its own gate (`ARM_MS`, 500 ms) and is unchanged.
-- **Caps Lock.** Neither Caps Lock rule is in `dist/keycap/keycap.toml`: keycap's user layer
+- **Caps Lock.** Neither Caps Lock rule is in `dist/key_remap/key-remap.toml`: the key remap daemon's user layer
   refuses a rule whose trigger has no modifier (`capslock` -> `ctrl+space`) or only Shift
   (`shift+capslock` -> `capslock`). Both live in the desktop's vendor file,
-  `/usr/lib/keycap/keycap.toml` (the desktop repo's `dist/keycap.toml`).
+  `/usr/lib/key_remap/key-remap.toml` (the desktop repo's `dist/key-remap.toml`).
 - **Also not run (arming test).** `permission_sheet.rs`' `nothing_answers_until_the_sheet_has_been_up_for_the_arming_time`
   assumes the harness's clock is virtual (about 30 ms pass between the alert mounting and the test's first
   input, 200 ms before the early inputs end, and the late click comes `PERMISSION_ARM_AFTER` later), that a click on

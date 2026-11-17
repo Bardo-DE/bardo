@@ -84,7 +84,7 @@ pub(crate) struct Reader<E: Emitter> {
     nodes: EvdevGrabber,
     layers: Layers,
     profiles: Profiles,
-    /// The remapper and the Caps Lock lock as keycap follows it, and whether the user asked for it.
+    /// The remapper and the Caps Lock lock as the key remap daemon follows it, and whether the user asked for it.
     machine: Machine,
     devices: Devices,
     /// The mouse buttons written for combo devices, released with the device.

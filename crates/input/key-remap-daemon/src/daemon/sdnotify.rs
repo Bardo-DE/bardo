@@ -122,7 +122,7 @@ mod tests {
         let path_notifier = Notifier::new(path.to_str()).unwrap();
 
         // An abstract socket is addressed by its name after the at sign.
-        let name = format!("keycap-notify-test-{}", std::process::id());
+        let name = format!("key-remap-notify-test-{}", std::process::id());
         let abstract_listener =
             UnixDatagram::bind_addr(&SocketAddr::from_abstract_name(name.as_bytes()).unwrap())
                 .unwrap();

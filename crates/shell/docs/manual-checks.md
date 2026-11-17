@@ -80,7 +80,7 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   --icon=root` and drag from its square: the icon follows the pointer the whole way (the
   headless KWin draws no cursor). The screenshot thumbnail's own drag is automated up to a drop
   with no target (`dev/accept/screenshot.sh --real-input`).
-- [ ] **Launcher with a Mac keyboard through keycap** (real typing, Down, Space, Ctrl+Y, → twice,
+- [ ] **Launcher with a Mac keyboard through the key remap daemon** (real typing, Down, Space, Ctrl+Y, → twice,
   Tab, Escape three times, Ctrl+R, Shift+Tab to Emoji and Enter on a clipboard row already pass
   under fake input through `dev/accept/launcher.sh --real-input`; this is the physical keys and
   the look). Open the launcher with `bardo-shell launcher open` (Cmd+Space itself needs a sill (the compositor)
@@ -91,8 +91,8 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
   to Documents): the selected row stays in view. In the emoji grid (Shift+Tab twice with
   nothing typed) all four arrows move and ⌘Y shows the emoji's preview; Enter then Cmd+V pastes
   the emoji in another app. By eye: the focus ring on the pane's buttons in the dark scheme, and
-  the chord hint on the selected row only. If ⌘ chords act like a terminal's, keycap still thinks
-  the terminal has focus (`keycap status` names the profile): note it.
+  the chord hint on the selected row only. If ⌘ chords act like a terminal's, the key remap daemon still thinks
+  the terminal has focus (`key_remap status` names the profile): note it.
 - [ ] **A file from the launcher in the viewer** (needs `anyview` installed with its
   `org.bardo.Anyview1.service` activation file, or already running). Type part of a document's
   name with other documents listed: the pane shows the viewer's own picture of it (a picture, a
@@ -142,8 +142,8 @@ sections below. The monitor is the BenQ MA270U (27", 3840 x 2160).
 
 ## Needs a real sill (the compositor) login (not the headless compositor)
 
-- [ ] **Cmd+Space through keycap** opens the launcher (keycap writes Super+Space from the sill layer
-  `~/.config/keycap/keycap.toml`; Alt+Space means the layer is missing and only `/etc/bardo/key-remap/key-remap.toml`, the
+- [ ] **Cmd+Space through the key remap daemon** opens the launcher (the key remap daemon writes Super+Space from the sill layer
+  `~/.config/key_remap/key-remap.toml`; Alt+Space means the layer is missing and only `/etc/bardo/key-remap/key-remap.toml`, the
   Plasma overlay, applies).
 - [ ] **Super shortcuts** reach the shell (the headless compositor never gets them).
 - [ ] **A compositor shortcut runs `bardo-shell launcher toggle`**: bind Ctrl+Alt+Space to run
@@ -281,43 +281,43 @@ and a stand-in helper; these need polkitd, polkit's own helper and a real passwo
 - [ ] Caps Lock on shows the caps mark in the field.
 - [ ] Two requests at once (`pkexec true & pkexec true`): the second shows once the first ends.
 
-### keycap (the Command-key layout)
+### the key remap daemon (the Command-key layout)
 
-`cargo test -p shell-services --test it keycap_socket` covers the socket against a fake daemon; these
+`cargo test -p shell-services --test it key_remap_socket` covers the socket against a fake daemon; these
 need the real daemon on a machine with a Mac keyboard (or a PC keyboard with the Mac layout) and
-root for the unit. Install keycap first (`install.sh` in the keycap repo, with its unit, config
+root for the unit. Install the key remap daemon first (`install.sh` in the key remap daemon repo, with its unit, config
 folder and polkit rule `dist/bardo-key-remap.polkit.rules`), run sill's `dist/install.sh` (it copies the
-sill layer `dist/keycap/keycap.toml` to `~/.config/keycap/keycap.toml` when missing), then log in to a sill session.
+sill layer `dist/key_remap/key-remap.toml` to `~/.config/key_remap/key-remap.toml` when missing), then log in to a sill session.
 
-- [ ] `bardo-shell keycap status` says `connected` with your keyboard listed and `grab` `active`.
+- [ ] `bardo-shell key_remap status` says `connected` with your keyboard listed and `grab` `active`.
 - [ ] Cmd+Space opens the launcher and again closes it (Super+Space, not Alt+Space), and Cmd+Shift+4 starts
   `bardo-shell screenshot area`.
 - [ ] Focus a terminal (foot, Alacritty): Cmd+C copies in it, and Ctrl+C still
   interrupts a running program. Focus a browser: Cmd+C copies there too. Moving between the two
   changes nothing visible and loses no keystroke.
 - [ ] Add an override in `~/.config/shell/settings.toml` (`[[keyboard.overrides]]` with `app = "<the
-  desktop-entry id of an app that is open>"` and `profile = "<a profile in keycap.toml>"`): within
+  desktop-entry id of an app that is open>"` and `profile = "<a profile in key-remap.toml>"`): within
   a second, that app's windows switch to the profile (a key the profile remaps behaves
   differently there) and other apps do not. Change the `profile`, then delete the row: each
   switches again. A row with `profile = "Bad Name"` is dropped and a `sill: settings.toml:` line
   in the daemon's log says so; the other rows still apply.
-- [ ] Edit `~/.config/keycap/keycap.toml` (a rule on a key you can tell): the change applies
+- [ ] Edit `~/.config/key_remap/key-remap.toml` (a rule on a key you can tell): the change applies
   within a second, no restart.
-- [ ] `sudo pkill -KILL keycap` once: keys keep working, **no notification** appears (systemd
-  brings it back in 200 ms; `bardo-shell keycap status` is `connected` again).
-- [ ] Make it give up: run `for i in 1 2 3 4 5 6; do sudo pkill -KILL keycap; sleep 0.4; done`.
+- [ ] `sudo pkill -KILL key_remap` once: keys keep working, **no notification** appears (systemd
+  brings it back in 200 ms; `bardo-shell key_remap status` is `connected` again).
+- [ ] Make it give up: run `for i in 1 2 3 4 5 6; do sudo pkill -KILL key_remap; sleep 0.4; done`.
   After about 3 s a "Command-key layout stopped" notification appears, the keys work as on a
-  standard keyboard, and `bardo-shell keycap status` says `failed`. `bardo-shell keycap retry` (no password
+  standard keyboard, and `bardo-shell key_remap status` says `failed`. `bardo-shell key_remap retry` (no password
   asked) brings it back: the notification goes and the layout works again.
-- [ ] `sudo systemctl stop keycap`: nothing is posted (stopped on purpose); `sudo systemctl start
-  keycap` and the layout is back.
-- [ ] `sudo systemctl mask --now keycap`: nothing is posted and `bardo-shell keycap status` says `not_installed`
-  or `unknown`; `sudo systemctl unmask keycap && sudo systemctl start keycap` restores it.
+- [ ] `sudo systemctl stop key_remap`: nothing is posted (stopped on purpose); `sudo systemctl start
+  The key remap daemon` and the layout is back.
+- [ ] `sudo systemctl mask --now key_remap`: nothing is posted and `bardo-shell key_remap status` says `not_installed`
+  or `unknown`; `sudo systemctl unmask key_remap && sudo systemctl start key_remap` restores it.
 - [ ] Start another remapper that grabs the same keyboard (`keyd`, or `kmonad`): an "Another keyboard
   program is running" notification names the keyboard; stopping the other program clears it
-  within about 30 s, and keycap grabs the keyboard.
+  within about 30 s, and the key remap daemon grabs the keyboard.
 - [ ] Press both Shifts and Esc: a "Command-key layout paused" notification appears and the
-  keys work as on a standard keyboard. `bardo-shell keycap resume` brings the layout back and the
+  keys work as on a standard keyboard. `bardo-shell key_remap resume` brings the layout back and the
   notification goes.
 - [ ] Log out and in again: the login screen already has the layout, and after login the terminal
   and the browser behave as in the second item.
@@ -368,7 +368,7 @@ The service, the machines and the launcher's mode are tested on stand-ins and fa
 the real daemons or a real keyboard.
 
 - [ ] **Double tap, route B** (a lone Cmd tap mapped to the unique chord that runs `bardo-shell companion
-  tap`; Toshy did this and keycap does not emit that chord yet, so this waits for a sender): tap Cmd twice within the double-tap window with the launcher closed: the launcher opens as a
+  tap`; Toshy did this and key_remap does not emit that chord yet, so this waits for a sender): tap Cmd twice within the double-tap window with the launcher closed: the launcher opens as a
   prompt ("Ask the assistant", no rows). Cmd-click and Cmd-drag in a terminal and a browser are
   unharmed (spike T). One tap does nothing; two taps a second apart do nothing.
 - [ ] **Double tap with the launcher open in search**: type `mail` in the launcher, tap Cmd twice: the
@@ -393,18 +393,18 @@ the real daemons or a real keyboard.
 - [ ] **Memory filter**: Tab to Memory: the newest events read "You archived ...", newest first, each
   row's app below.
 
-## Keys as shared actions (keycap's keymap)
+## Keys as shared actions (the key remap daemon's keymap)
 
-- [ ] **Launcher keys on a live session**: with a window focused whose keycap profile is `default`
+- [ ] **Launcher keys on a live session**: with a window focused whose the key remap daemon profile is `default`
   (Cmd written as Ctrl), open the launcher and press Cmd+K, Cmd+R, Cmd+Y, Cmd+B and Cmd+Backspace
   on rows that carry them. The launcher resolves Super (Command) through the keymap only, so each
-  must work. While a sill surface holds the keyboard sill tells keycap `keymap-aware` (and the
-  window's profile again when it lets go): check in keycap's log that the
+  must work. While a sill surface holds the keyboard sill tells the key remap daemon `keymap-aware` (and the
+  window's profile again when it lets go): check in the key remap daemon's log that the
   profile flips on open and back on close, and that Cmd+Tab still switches apps while the launcher is up.
 - [ ] **Next Input Source**: with fcitx5 running and two or more input methods in its group, `bardo-shell do next-input-source` (Control-Space once the compositor binds it) switches fcitx5 to the next input method, wrapping from the last to the first; the same with IBus running and two or more engines turned on (`ibus engine` shows the change). With no input-method framework running `bardo-shell do next-input-source` prints "No input sources to switch." and exits non-zero.
 - [ ] **Dock Cmd/Alt+click**: Cmd+click on a running tile raises it with the other windows hidden as
   before; Alt+click hides the current one. The dock reads Command as the keymap's primary modifier,
-  which is Super on our desktop; if keycap rewrites Cmd to Ctrl for the focused window the click
+  which is Super on our desktop; if the key remap daemon rewrites Cmd to Ctrl for the focused window the click
   reads as plain.
 - [ ] **temor** (profile `keymap-aware`): Cmd+H reaches temor as Super+H (hide), not Ctrl+H.
 - [ ] **Assistant answer text**: a handle that holds mail or web text shows between curly quotes; one

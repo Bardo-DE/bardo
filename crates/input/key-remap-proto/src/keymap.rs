@@ -14,7 +14,7 @@ pub struct KeymapProblem {
     pub what: String,
 }
 
-/// The person's keymap as keycap serves it.
+/// The person's keymap as the key remap daemon serves it.
 #[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct KeymapState {
     /// The overrides in chordkit's line format (`copy = Primary+C`), only lines that read.
@@ -33,7 +33,7 @@ pub struct RegisteredAction {
     pub chord: String,
 }
 
-/// An app's actions, told to keycap so Settings can list them. Informational: each app resolves
+/// An app's actions, told to the key remap daemon so Settings can list them. Informational: each app resolves
 /// its own keys in-process; this changes no binding.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct Registration {

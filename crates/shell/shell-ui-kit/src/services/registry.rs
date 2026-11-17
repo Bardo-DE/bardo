@@ -24,7 +24,7 @@ use shell_model::idle::IdleService;
 use shell_model::input_source::InputSourceService;
 use shell_model::intents::IntentsService;
 use shell_model::kbd_backlight::KbdBacklightService;
-use shell_model::keycap::KeycapService;
+use shell_model::key_remap::KeyRemapService;
 use shell_model::launch::LaunchService;
 use shell_model::locker::LockerService;
 use shell_model::network::NetworkService;
@@ -92,8 +92,8 @@ services! {
         idle: IdleService;
         /// Screenshots for the floating thumbnail; passive until the daemon configures it.
         screenshots: ScreenshotsService;
-        /// The keycap keyboard daemon: its connection, and the notices about it.
-        keycap: KeycapService;
+        /// The key remap daemon keyboard daemon: its connection, and the notices about it.
+        key_remap: KeyRemapService;
         /// The accounts that need signing in again, and the notices that say so.
         accounts: AccountsService;
         /// The accounts sheet accountd opens on `org.bardo.AccountsSheet1`; passive until the daemon

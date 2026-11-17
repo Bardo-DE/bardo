@@ -66,7 +66,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 17. **SELinux labels (lane distro-slip).** `slipway-apply` runs `restorecon` on the root and on placed
     system files where SELinux is in use; `scripts/install.sh` adds the `semanage fcontext` rules.
     Not run on a real SELinux computer: the first Fedora install should check `ls -Z /opt/bardo/current/bin`
-    and that `keycap.service` starts under the enforcing policy.
+    and that `bardo-key-remap.service` starts under the enforcing policy.
 
 18. **The helper does not trust what the caller can touch (audit ROOT-01, ROOT-05, ROOT-06).** It sets
     umask 022 first (via `rustix`, no `unsafe`); makes the new tree `0700`/`0600` until whole; keeps
@@ -140,17 +140,17 @@ Departures from the plan, standing facts and open items. An entry names the cond
     password for the person at the keyboard, the very thing the exact system-file list (ROOT-07) closes for rules. It is
     removed; the list is ten folders, the desktop's `release.py` has the same ten, and `release/selftest.sh` forges a
     release exporting there (`export-polkit`) and checks `verify.sh` refuses it. The desktop ships no polkit action
-    (slipway's own policy comes from `scripts/install.sh`; keycap's file is a rule, named in the exact list), so nothing
+    (slipway's own policy comes from `scripts/install.sh`; the key remap daemon's file is a rule, named in the exact list), so nothing
     needed a replacement. Were one ever needed, it would be one exact `/usr/share/polkit-1/actions` rule in `system.rs`
     for that file name, and the check that it does not give `allow_active=yes` to a privileged action would have to
     be added to the desktop's `release/check-helpers.py` first. Test: `export_links_are_allowed_only_below_the_listed_folders`
     now refuses three links in that folder. The helper and the daemon share the list, so a computer needs the new helper
     (`scripts/install.sh`) before this holds there; an older helper still accepts a release that exports there.
 27. **A release-only install enables the keyboard map (NEW-ROOT-5, lane pa3-root).** `settle` enabled and started
-    `turnstile.socket` only; `keycap.service` was placed in `/usr/lib/systemd/system` but its `[Install]` section is never
+    `turnstile.socket` only; `bardo-key-remap.service` was placed in `/usr/lib/systemd/system` but its `[Install]` section is never
     acted on, so the Mac key mapping did not run until someone enabled it (the desktop's `install/system.sh` does `enable --now
-    keycap.service`). The unit's name is the file name the exact list gives (`keycap.service`, checked against keycap's
-    `dist/keycap.service` and `install/system.sh`). `commands` now adds `enable --now keycap.service` when that file is
+    bardo-key-remap.service`). The unit's name is the file name the exact list gives (`bardo-key-remap.service`, checked against key_remap's
+    `dist/bardo-key-remap.service` and `install/system.sh`). `commands` now adds `enable --now bardo-key-remap.service` when that file is
     *placed*, after the socket's. Not done: a running map is not restarted when a release replaces its program (the unit file is
     placed only when it changed, and a restart would drop key state mid-typing); it picks the new program up at the next start of
     the computer or of the service. Test: `what_the_system_is_told_follows_the_paths_that_changed` (placed, removed, both).
@@ -188,7 +188,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
    `system/etc/polkit-1/rules.d/00-all.rules` now makes the release unusable instead of giving root. Left to the
    desktop: `pack` should refuse a `system/` tree that differs from the same list (exact diff in the lane report).
    Whoever adds a system file edits the list and installs a new helper by hand (decision 1 of the desktop's
-   FINDINGS: a release never replaces the helper). 2026-10-17: `/usr/lib/keycap/keycap.toml` was added (18 rules)
+   FINDINGS: a release never replaces the helper). 2026-10-17: `/usr/lib/key_remap/key-remap.toml` was added (18 rules)
    for the desktop's keyboard-daemon defaults; no rule was removed, so a rollback to an older release still places
    its files. Machines that already have a helper must re-run the installer before a release that lists it, or the
    helper refuses that release whole.
@@ -390,7 +390,7 @@ the `--config` flag on the pinned 1.98.1; and the toolchain-install branch of th
 
 `ALLOWED_SYSTEM_FILES` grew to 21 rules, in the order the desktop's `release/system-files.list` has them (after
 `/etc/modprobe.d/99-palmrest.conf`): `/usr/lib/systemd/system/palmrest.service` (the touchpad daemon became a
-system service, as keycap is), `/usr/lib/systemd/user/*.service` and
+system service, as the key remap daemon is), `/usr/lib/systemd/user/*.service` and
 `/usr/lib/systemd/user/xdg-desktop-portal.service.d/10-bardo.conf`. The last two exist because a unit that has to
 prove its standing to its callers cannot be an export link: the unit manager's judge looks at the fragment with
 `lstat`, a link has mode 0777, and it reads as a file anyone could change. The desktop's `plain_units` therefore

@@ -98,12 +98,12 @@ install_file 644 "$HERE/dist/bardo-key-remap-modules.conf" "$MODULESDIR/bardo-ke
 MODULES_CHANGED=$CHANGED; CHANGED=no
 
 say "3. machine config (/etc/bardo/key-remap/key-remap.toml, never overwritten)"
-# Temporary: an install from before the rename keeps its machine config in /etc/keycap; carry it over
+# Temporary: an install from before the rename keeps its machine config in /etc/key_remap; carry it over
 # once (the file names change with it). Delete in the release after everyone has installed once.
-if [[ -d "$(dest /etc/keycap)" && ! -e "$(dest /etc/bardo/key-remap)" ]]; then
-  root_step "move /etc/keycap to /etc/bardo/key-remap" \
-    sh -c 'mkdir -p "$(dirname "$2")" && mv "$1" "$2" && if [ -e "$2/keycap.toml" ]; then mv "$2/keycap.toml" "$2/key-remap.toml"; fi' \
-    sh "$(dest /etc/keycap)" "$(dest /etc/bardo/key-remap)"
+if [[ -d "$(dest /etc/key_remap)" && ! -e "$(dest /etc/bardo/key-remap)" ]]; then
+  root_step "move /etc/key_remap to /etc/bardo/key-remap" \
+    sh -c 'mkdir -p "$(dirname "$2")" && mv "$1" "$2" && if [ -e "$2/key-remap.toml" ]; then mv "$2/key-remap.toml" "$2/key-remap.toml"; fi' \
+    sh "$(dest /etc/key_remap)" "$(dest /etc/bardo/key-remap)"
 fi
 if [[ "$DESKTOP" == plasma ]]; then
   if [[ -e "$(dest /etc/bardo/key-remap/key-remap.toml)" ]]; then

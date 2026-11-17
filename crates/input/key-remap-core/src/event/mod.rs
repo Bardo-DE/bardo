@@ -1,4 +1,4 @@
-//! Input and output events: who pressed what, and what keycap writes.
+//! Input and output events: who pressed what, and what the key remap daemon writes.
 
 mod edge;
 mod out;

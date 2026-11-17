@@ -11,7 +11,7 @@ use super::action::DoArgs;
 use super::debug::DebugAction;
 use super::desktop::DockAction;
 use super::intents::IntentsAction;
-use super::keycap::KeycapAction;
+use super::key_remap::KeyRemapAction;
 use super::launch::LaunchArgs;
 use super::launcher::{ClipboardAction, LauncherAction};
 use super::notifications::NotificationsAction;
@@ -110,10 +110,10 @@ pub enum Command {
         #[arg(value_parser = ["status"])]
         verb: String,
     },
-    /// The Command-key layout: whether keycap runs, restart it, or end its pause.
-    Keycap {
+    /// The Command-key layout: whether the key remap daemon runs, restart it, or end its pause.
+    KeyRemap {
         #[command(subcommand)]
-        action: KeycapAction,
+        action: KeyRemapAction,
     },
     /// What intentd may ask of bardo-shell: its confirmation sheet, and the terminal's standing grants.
     Intents {

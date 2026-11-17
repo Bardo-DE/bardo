@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Remove what dist/install.sh put in place: the binary, the PAM service, the intents manifest, the
 # skills and the settings schema. Files an older install put in place (the session script, the
-# login-screen entry, the user target and the seed directory) are removed too. Plasma, Toshy, keycap's
+# login-screen entry, the user target and the seed directory) are removed too. Plasma, Toshy, the key remap daemon's
 # system files and your own config are not touched. Run as yourself; the root step asks once (root
 # is $SUDO, else sudo, doas or pkexec; with none the commands are printed for you to run).
 #
 #   dist/uninstall.sh --dry-run        print every step, change nothing
 #   dist/uninstall.sh                  remove the system files
-#   dist/uninstall.sh --forget-seeds   also remove the keycap layer in ~/.config/bardo/key-remap, but only
+#   dist/uninstall.sh --forget-seeds   also remove the key remap daemon layer in ~/.config/bardo/key-remap, but only
 #                                      while it is still identical to the seed (a file you never
 #                                      changed)
 #   --prefix DIR, --destdir DIR        the same as install.sh's
@@ -54,7 +54,7 @@ for pair in "$DDC_RULE_SRC $DDC_RULE_DEST" "$DDC_MODULES_SRC $DDC_MODULES_DEST";
 done
 [ "$removed_rule" = 0 ] || [ -n "$DESTDIR" ] || as_root udevadm control --reload-rules
 if [ "${FLAG_forget_seeds:-0}" = 1 ]; then
-  step "2b the keycap layer, if it still matches"
+  step "2b the key_remap layer, if it still matches"
   if [ -f "$BARDO_KEY_REMAP_LAYER_DEST" ] && cmp -s "$BARDO_KEY_REMAP_LAYER_DEST" "$BARDO_KEY_REMAP_LAYER_SRC"; then
     run rm -f "$BARDO_KEY_REMAP_LAYER_DEST"
   elif [ -f "$BARDO_KEY_REMAP_LAYER_DEST" ]; then

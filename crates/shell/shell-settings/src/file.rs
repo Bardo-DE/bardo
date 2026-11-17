@@ -49,7 +49,7 @@ pub struct ShellFile {
     pub hot_corners: HotCornerSettings,
     /// bardo-shell's own idle service.
     pub idle: IdleSettings,
-    /// How the keyboard is treated per app (keycap profiles).
+    /// How the keyboard is treated per app (the key remap daemon profiles).
     pub keyboard: KeyboardSettings,
     /// The companion's summon and confirmation.
     pub companion: CompanionSettings,

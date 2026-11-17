@@ -57,7 +57,7 @@ pub struct FakeSpec {
 }
 
 impl FakeSpec {
-    /// An Apple keyboard: vendor `0x05ac`, so keycap gives it the Apple layout.
+    /// An Apple keyboard: vendor `0x05ac`, so the key remap daemon gives it the Apple layout.
     #[must_use]
     pub fn apple(name: &str) -> Self {
         Self {
@@ -206,7 +206,7 @@ impl FakeKeyboard {
     }
 
     /// The LED events that reached the fake since the last call, as `(led, value)`: what a
-    /// compositor (through keycap) wrote to the keyboard it believes it is typing on.
+    /// compositor (through the key remap daemon) wrote to the keyboard it believes it is typing on.
     pub fn leds(&self) -> Vec<(u16, i32)> {
         drain(&self.fd, Event::from_bytes)
             .events

@@ -1,4 +1,4 @@
-//! How long to wait before connecting to keycap again.
+//! How long to wait before connecting to the key remap daemon again.
 
 use std::time::Duration;
 

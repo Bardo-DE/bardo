@@ -1,7 +1,7 @@
 [package]
 publish.workspace = true
 name = "key-remap-proto"
-description = "The socket contract between keycap and the desktop that drives it: messages, their vocabulary, and the packet codec"
+description = "The socket contract between the key remap daemon and the desktop that drives it: messages, their vocabulary, and the packet codec"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

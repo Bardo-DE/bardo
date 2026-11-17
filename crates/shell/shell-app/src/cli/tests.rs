@@ -17,7 +17,7 @@ use shell_model::auth::FakeVerdict;
 use shell_model::hot_corners::Corner;
 use shell_model::intents::IntentsAsk;
 use shell_model::intents::terminal::parse_grant;
-use shell_model::keycap::KeycapAsk;
+use shell_model::key_remap::KeyRemapAsk;
 use shell_model::notifications::{
     Action, ActionKey, AppRef, Expiry, Hints, IconRef, NotificationId, NotifyUrgency, Posting,
     parse_body,
@@ -154,14 +154,14 @@ fn every_command_line_sends_its_request() {
         ),
         (&["polkit", "status"], status(StatusRequest::Polkit)),
         (&["idle", "status"], status(StatusRequest::Idle)),
-        (&["keycap", "status"], status(StatusRequest::Keycap)),
+        (&["key_remap", "status"], status(StatusRequest::KeyRemap)),
         (
-            &["keycap", "retry"],
-            Some(Request::Keycap(KeycapAsk::Retry)),
+            &["key_remap", "retry"],
+            Some(Request::KeyRemap(KeyRemapAsk::Retry)),
         ),
         (
-            &["keycap", "resume"],
-            Some(Request::Keycap(KeycapAsk::Resume)),
+            &["key_remap", "resume"],
+            Some(Request::KeyRemap(KeyRemapAsk::Resume)),
         ),
         (&["intents", "status"], status(StatusRequest::Intents)),
         (

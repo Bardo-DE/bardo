@@ -115,7 +115,7 @@ pub struct App {
     /// `Categories=`, the registered category names, for what a keyboard profile may follow
     /// (a `TerminalEmulator` wants the terminal profile).
     pub categories: Vec<String>,
-    /// `X-Keycap-Profile`, the keyboard profile this app asks for; `None` when the entry does
+    /// `X-Key-Remap-Profile`, the keyboard profile this app asks for; `None` when the entry does
     /// not say or names something that is not a profile name.
     pub keyboard_profile: Option<ProfileName>,
     /// `Keywords=`, localised, matched by the launcher.

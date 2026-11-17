@@ -4,11 +4,11 @@
 //! (a switch of remapper, a restart) or when the desktop syncs a stale lock onto a new virtual
 //! keyboard.
 //!
-//! The rule: while the Caps Lock key is remapped, the lock is on only if keycap wrote the Caps
-//! Lock press that turned it on (Shift+Caps Lock, say). keycap follows the lock from the LEDs
+//! The rule: while the Caps Lock key is remapped, the lock is on only if the key remap daemon wrote the Caps
+//! Lock press that turned it on (Shift+Caps Lock, say). The key remap daemon follows the lock from the LEDs
 //! the desktop sets on the virtual keyboard (and, until the desktop has said anything, from the
-//! lamp of a keyboard read as it is grabbed). When the lock is on and nothing keycap wrote asked
-//! for it, keycap taps Caps Lock before the next key typed. The tap waits for a key because the
+//! lamp of a keyboard read as it is grabbed). When the lock is on and nothing the key remap daemon wrote asked
+//! for it, the key remap daemon taps Caps Lock before the next key typed. The tap waits for a key because the
 //! desktop may not have opened a freshly created virtual keyboard yet, and events written before
 //! that are lost; a key typed proves it has. Pure; the reads and the writes belong to the reader.
 
@@ -20,16 +20,16 @@ pub(crate) fn remaps_caps(profile: &Profile) -> bool {
     Trigger::parse("capslock").is_ok_and(|trigger| profile.rules.contains_key(&trigger))
 }
 
-/// What keycap knows of the Caps Lock lock and what the user asked of it.
+/// What the key remap daemon knows of the Caps Lock lock and what the user asked of it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub(crate) struct CapsFix {
     /// Whether the desktop has set the LEDs of the virtual keyboard: from then on its word is
     /// the one kept, and a grab read no longer counts. Until then the lock is nothing yet, or
     /// the lamp of a keyboard read as it was grabbed.
     desktop_reported: bool,
-    /// The lock as last reported, or as keycap's own writes are about to make it.
+    /// The lock as last reported, or as the key remap daemon's own writes are about to make it.
     lock: bool,
-    /// The lock the user asked for through what keycap wrote: on after a Caps Lock press that
+    /// The lock the user asked for through what the key remap daemon wrote: on after a Caps Lock press that
     /// turned it on, off again after one that turned it off. Off until then.
     want: bool,
 }
@@ -54,7 +54,7 @@ impl CapsFix {
         }
     }
 
-    /// The state after keycap wrote `batch` to the virtual keyboard: each Caps Lock press in it
+    /// The state after the key remap daemon wrote `batch` to the virtual keyboard: each Caps Lock press in it
     /// toggles the lock, and the lock it leaves is the one the user asked for.
     pub(crate) fn wrote(self, batch: &[OutEvent]) -> CapsFix {
         let caps = caps_lock().map(Logical);

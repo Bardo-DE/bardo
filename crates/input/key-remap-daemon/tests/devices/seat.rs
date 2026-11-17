@@ -1,4 +1,4 @@
-//! Who may steer keycap: the seat's owner, not any other local user.
+//! Who may steer the key remap daemon: the seat's owner, not any other local user.
 
 use crate::support::{Rig, Scene, ok};
 use key_remap_devtest::FOCUS_SETTLE;

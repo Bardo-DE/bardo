@@ -1,4 +1,6 @@
-use crate::support::{KEYCAP_UID, PALMREST_CGROUP, PALMREST_UID, USER, keycap, listed, palmrest};
+use crate::support::{
+    KEY_REMAP_UID, PALMREST_CGROUP, PALMREST_UID, USER, key_remap, listed, palmrest,
+};
 use caller_identity_core::{Proof, Uid};
 use input_broker_daemon::identity::{ActiveUid, Caller};
 use input_broker_daemon::policy::{Refusal, authorise};
@@ -9,7 +11,7 @@ const PALMREST_KINDS: [Kind; 3] = [
     Kind::PalmrestWheel,
     Kind::PalmrestKeys,
 ];
-const KEYCAP_KINDS: [Kind; 2] = [Kind::KeycapKeyboard, Kind::KeycapPointer];
+const KEY_REMAP_KINDS: [Kind; 2] = [Kind::KeyRemapKeyboard, Kind::KeyRemapPointer];
 
 fn seat(uid: Option<Uid>) -> ActiveUid {
     ActiveUid(uid)
@@ -24,13 +26,13 @@ fn the_genuine_programs_get_their_own_devices_and_only_those() {
             "{kind:?}"
         );
         assert!(
-            authorise(kind, &keycap(), seat(Some(USER))).is_err(),
-            "keycap asking for {kind:?}"
+            authorise(kind, &key_remap(), seat(Some(USER))).is_err(),
+            "key_remap asking for {kind:?}"
         );
     }
-    for kind in KEYCAP_KINDS {
+    for kind in KEY_REMAP_KINDS {
         assert_eq!(
-            authorise(kind, &keycap(), seat(Some(USER))),
+            authorise(kind, &key_remap(), seat(Some(USER))),
             Ok(()),
             "{kind:?}"
         );
@@ -44,7 +46,7 @@ fn the_genuine_programs_get_their_own_devices_and_only_those() {
 #[test]
 fn both_are_served_before_anyone_logs_in() {
     assert_eq!(
-        authorise(Kind::KeycapKeyboard, &keycap(), seat(None)),
+        authorise(Kind::KeyRemapKeyboard, &key_remap(), seat(None)),
         Ok(())
     );
     assert_eq!(
@@ -58,7 +60,7 @@ fn refusals_table() {
     use Refusal::*;
     let user_palmrest =
         "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-mouse-gestures.service";
-    let user_keycap =
+    let user_key_remap =
         "/user.slice/user-1000.slice/user@1000.service/app.slice/bardo-key-remap.service";
     let table: Vec<(&str, Kind, Caller, ActiveUid, Refusal)> = vec![
         (
@@ -81,8 +83,8 @@ fn refusals_table() {
             },
         ),
         (
-            "palmrest asks for keycap's keyboard",
-            Kind::KeycapKeyboard,
+            "palmrest asks for key_remap's keyboard",
+            Kind::KeyRemapKeyboard,
             palmrest(),
             seat(Some(USER)),
             WrongRole {
@@ -90,9 +92,9 @@ fn refusals_table() {
             },
         ),
         (
-            "keycap asks for palmrest's keys",
+            "key_remap asks for palmrest's keys",
             Kind::PalmrestKeys,
-            keycap(),
+            key_remap(),
             seat(Some(USER)),
             WrongRole {
                 have: "keymap_daemon".to_owned(),
@@ -106,12 +108,12 @@ fn refusals_table() {
             TooWeak,
         ),
         (
-            "keycap proven by its control group only",
-            Kind::KeycapKeyboard,
+            "key_remap proven by its control group only",
+            Kind::KeyRemapKeyboard,
             listed(
                 "keymap_daemon",
                 Proof::Cgroup,
-                KEYCAP_UID,
+                KEY_REMAP_UID,
                 "/system.slice/bardo-key-remap.service",
             ),
             seat(Some(USER)),
@@ -144,7 +146,7 @@ fn refusals_table() {
             WrongPlace,
         ),
         (
-            "palmrest in keycap's unit",
+            "palmrest in key_remap's unit",
             Kind::PalmrestWheel,
             listed(
                 "pad_daemon",
@@ -156,8 +158,8 @@ fn refusals_table() {
             WrongPlace,
         ),
         (
-            "keycap running as the logged in user",
-            Kind::KeycapKeyboard,
+            "key_remap running as the logged in user",
+            Kind::KeyRemapKeyboard,
             listed(
                 "keymap_daemon",
                 Proof::Full,
@@ -168,19 +170,19 @@ fn refusals_table() {
             WrongUser,
         ),
         (
-            "keycap as a user unit of the person",
-            Kind::KeycapKeyboard,
-            listed("keymap_daemon", Proof::Full, KEYCAP_UID, user_keycap),
+            "key_remap as a user unit of the person",
+            Kind::KeyRemapKeyboard,
+            listed("keymap_daemon", Proof::Full, KEY_REMAP_UID, user_key_remap),
             seat(Some(USER)),
             WrongPlace,
         ),
         (
-            "keycap in a lookalike system unit",
-            Kind::KeycapPointer,
+            "key_remap in a lookalike system unit",
+            Kind::KeyRemapPointer,
             listed(
                 "keymap_daemon",
                 Proof::Full,
-                KEYCAP_UID,
+                KEY_REMAP_UID,
                 "/system.slice/bardo-key-remap.service/x",
             ),
             seat(Some(USER)),
@@ -214,7 +216,7 @@ fn only_a_proven_unit_gets_devices_whatever_the_place_is() {
         let key = listed(
             "keymap_daemon",
             *proof,
-            KEYCAP_UID,
+            KEY_REMAP_UID,
             "/system.slice/bardo-key-remap.service",
         );
         for kind in PALMREST_KINDS {
@@ -224,11 +226,11 @@ fn only_a_proven_unit_gets_devices_whatever_the_place_is() {
                 "palmrest, {name}, {kind:?}"
             );
         }
-        for kind in KEYCAP_KINDS {
+        for kind in KEY_REMAP_KINDS {
             assert_eq!(
                 authorise(kind, &key, seat(Some(USER))),
                 *want,
-                "keycap, {name}, {kind:?}"
+                "key_remap, {name}, {kind:?}"
             );
         }
     }

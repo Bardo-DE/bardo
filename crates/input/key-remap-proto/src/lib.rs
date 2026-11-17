@@ -1,4 +1,4 @@
-//! The socket contract between keycap and the desktop that drives it.
+//! The socket contract between the key remap daemon and the desktop that drives it.
 //!
 //! `/run/bardo/key-remap/key-remap.sock` (`SOCKET_PATH`), `SOCK_SEQPACKET`: one JSON message per packet, so
 //! there is no framing to get wrong and a reader never sees half a message. The first packet

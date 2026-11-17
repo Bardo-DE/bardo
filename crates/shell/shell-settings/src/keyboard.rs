@@ -1,7 +1,7 @@
 //! `keyboard.*`: how bardo-shell treats the keyboard per app (design/22 §3.25).
 //!
-//! One key, a list of tables: the keycap profile each app's keys are drawn with. The file keeps the
-//! person's text; [`overrides`] turns it into the typed values the keycap service reads, once per
+//! One key, a list of tables: the key remap daemon profile each app's keys are drawn with. The file keeps the
+//! person's text; [`overrides`] turns it into the typed values the key remap daemon service reads, once per
 //! load.
 
 use key_remap_proto::ProfileName;
@@ -12,13 +12,13 @@ use shell_launcher::AppId;
 use shell_model::keyboard::UserOverrides;
 use std::collections::BTreeMap;
 
-/// One row of `keyboard.overrides`: an app and the keycap profile its windows get.
+/// One row of `keyboard.overrides`: an app and the key remap daemon profile its windows get.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, settings_types::SettingsRow)]
 pub struct KeyboardOverride {
     /// The desktop-entry id (`org.gnome.Nautilus`).
     #[settings(label = "App")]
     pub app: String,
-    /// A keycap profile name; one keycap does not define resolves to `default` there.
+    /// A key remap daemon profile name; one the key remap daemon does not define resolves to `default` there.
     #[settings(label = "Profile", pattern = "[a-z0-9_-]{1,64}")]
     pub profile: String,
 }
@@ -109,7 +109,7 @@ fn dropped(reason: &str) -> InvalidKey {
 /// The typed overrides `settings` holds, and a line for every row that did not become one.
 ///
 /// A row whose `profile` is not a profile name or whose `app` is empty is dropped, and when two
-/// rows name one app the last wins. The keycap service never sees a string.
+/// rows name one app the last wins. The key remap daemon service never sees a string.
 #[must_use]
 pub fn overrides(settings: &KeyboardSettings) -> (UserOverrides, Vec<InvalidKey>) {
     let mut found = BTreeMap::new();

@@ -1,4 +1,4 @@
-//! Every keyboard keycap has seen: whether it may be grabbed yet, whether it is, and when a
+//! Every keyboard the key remap daemon has seen: whether it may be grabbed yet, whether it is, and when a
 //! refused grab is tried again. The state machine is pure; `drive` carries its effects out.
 
 mod drive;

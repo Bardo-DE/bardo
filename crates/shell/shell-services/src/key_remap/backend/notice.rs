@@ -1,12 +1,12 @@
-//! The notification about keycap: its posting, and finding the one already shown.
+//! The notification about the key remap daemon: its posting, and finding the one already shown.
 
-use shell_model::keycap::{Attention, notice_text};
+use shell_model::key_remap::{Attention, notice_text};
 use shell_model::notifications::{
     AppKey, AppRef, Body, Expiry, Hints, IconRef, NotesState, NotificationId, Posting,
 };
 
 /// The desktop entry the notices carry; it names them among the notifications held.
-const ENTRY: &str = "shell-keycap";
+const ENTRY: &str = "shell-key-remap";
 
 /// The posting that tells the person `attention`, in place of `replaces` when one is shown.
 pub(crate) fn posting(attention: &Attention, replaces: Option<NotificationId>) -> Posting {

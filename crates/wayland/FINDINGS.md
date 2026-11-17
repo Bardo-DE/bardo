@@ -146,7 +146,7 @@ sill's `desktop_wl` is not touched here).
    Space or app command; `SetMinimiseTarget` works on wlr through a registered surface, unlike
    sill's earlier table).
 7. **Events to wire** from `DesktopEvent::Shell(..)`:
-   `Modifiers` -> hot corners and the Option-held dock/bar variants (keycap stays the source of
+   `Modifiers` -> hot corners and the Option-held dock/bar variants (the key remap daemon stays the source of
    truth for chords, `Modifiers` is the pointer-over-shell-surface view); `KeyGesture::Summon`
    -> the companion's double-tap, `HoldStart/End/Cancel` -> the hold overlay;
    `SwitcherApp/Shown/Selected/Hidden` -> the app switcher (`AppId` is the app key; answer with
@@ -369,7 +369,7 @@ say `since="6"`.
   `ALL` and `argv` come from one `shell_verbs!` table; `WireCode::to_wire` replaces the hand ladders to
   the generated enums; `PlaceTarget::zone` and `From<TileZone>` replace the zone ladders.
 - `MacMods` is `HeldMods` (`held_mods.rs`); its bits and the XML bitfield's name `mac_mods` are unchanged.
-- `vocab::receipt` (P-5) is deleted: no caller in the compositor, sill, the Settings app, cua, docket or keycap.
+- `vocab::receipt` (P-5) is deleted: no caller in the compositor, sill, the Settings app, cua, docket or key_remap.
 - Kept on purpose: `TrustedKind` and `TrustedAnchor` (the XML enums are frozen interface and
   `every_xml_enum_has_a_vocab_type` needs a vocab twin), `Withdrawn` (same file, same reason), and `GlowCode`
   (`desktop_client::bardo::Lease::glow` carries it). Closing them takes an owner call on the XML.

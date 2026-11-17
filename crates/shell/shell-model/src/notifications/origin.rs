@@ -1,4 +1,4 @@
-//! Whose a notification is. The shell's own notices (accounts, sync hold, keycap, guest asks) carry
+//! Whose a notification is. The shell's own notices (accounts, sync hold, the key remap daemon, guest asks) carry
 //! a desktop entry in the `shell-` namespace; the D-Bus boundary drops that namespace from an app's
 //! hint, so an entry in it proves the notice was posted inside the shell.
 
@@ -49,7 +49,7 @@ mod tests {
     fn only_the_shells_namespace_is_the_system() {
         const CASES: &[(Option<&str>, Origin)] = &[
             (Some("shell-accounts"), Origin::System),
-            (Some("shell-keycap"), Origin::System),
+            (Some("shell-key-remap"), Origin::System),
             (Some("org.example.Mail"), Origin::App),
             (Some("bardo-shell"), Origin::App),
             (Some("not-shell-accounts"), Origin::App),

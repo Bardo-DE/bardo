@@ -94,7 +94,7 @@
    "status": "done",
    "lede": "Until today shell-host never registered bardo's own fonts, so the shell fell back to whatever the system had. Now every shell surface gets them from the host. sill re-ran every nested check under Inter and retook every capture: nothing new wraps, clips or shifts, and no failure came from a width that moved.",
    "notes": [
-    "Better on the way: the arrow keycaps are real arrows, times and shortcuts sit apart in the launcher, labels meant for Space Mono are now Space Mono, and the bar clock uses even-width digits so it stops jumping between minutes.",
+    "Better on the way: the arrow key_remap are real arrows, times and shortcuts sit apart in the launcher, labels meant for Space Mono are now Space Mono, and the bar clock uses even-width digits so it stops jumping between minutes.",
     "Found and being fixed: the password field puts its dots about 90 px in with the caret before them; the small calendar's today circle is tight around two digits; with all five widgets in the widget center, the on-screen frame stacks two widgets over the Calendar (sill's own capture of the same screen is correct)."
    ],
    "images": [

@@ -1,4 +1,4 @@
-//! Keyboard LEDs: what the compositor writes to the virtual keyboard and keycap copies onto
+//! Keyboard LEDs: what the compositor writes to the virtual keyboard and the key remap daemon copies onto
 //! the grabbed physical ones. Pure; the reads and writes belong to `uinput` and `grabber`.
 
 use super::events::{EV_LED, InputEvent};
@@ -87,7 +87,7 @@ impl Led {
     }
 }
 
-/// The LED change `e` asks for; `None` for anything else, including a LED keycap does not
+/// The LED change `e` asks for; `None` for anything else, including a LED the key remap daemon does not
 /// register.
 pub(crate) fn decode(e: InputEvent) -> Option<LedEvent> {
     if e.kind != EV_LED {

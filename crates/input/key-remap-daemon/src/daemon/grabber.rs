@@ -13,7 +13,7 @@ use std::collections::BTreeMap;
 use std::io;
 use std::path::Path;
 
-/// The device nodes keycap holds open, and the grab on them; the real one issues `EVIOCGRAB`,
+/// The device nodes the key remap daemon holds open, and the grab on them; the real one issues `EVIOCGRAB`,
 /// tests use `FakeGrabber`.
 pub(crate) trait Nodes {
     /// Opens the node for reading and for injecting LED events, and starts managing it under

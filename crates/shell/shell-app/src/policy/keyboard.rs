@@ -1,36 +1,36 @@
-//! The keycap service on the settings' side.
+//! The key remap daemon service on the settings' side.
 //!
 //! `keyboard.overrides` as the typed [`UserOverrides`] ([`shell_settings::overrides`] parses the
 //! rows once), sent now and whenever the answer changes so the service re-chooses the focused
 //! window's profile.
 
+use shell_model::key_remap::KeyRemapCommand;
 use shell_model::keyboard::UserOverrides;
-use shell_model::keycap::KeycapCommand;
 use shell_settings::{ShellFile, overrides};
 
 use super::Policy;
 
-/// The keycap service's overrides from the settings.
+/// The key remap daemon service's overrides from the settings.
 #[derive(Debug, Clone, Copy)]
 pub struct KeyboardBridge;
 
 impl Policy for KeyboardBridge {
-    type Command = KeycapCommand;
+    type Command = KeyRemapCommand;
     type Out = UserOverrides;
 
     fn of(&self, file: &ShellFile) -> UserOverrides {
         overrides(&file.keyboard).0
     }
 
-    fn command(out: UserOverrides) -> KeycapCommand {
-        KeycapCommand::Overrides(out)
+    fn command(out: UserOverrides) -> KeyRemapCommand {
+        KeyRemapCommand::Overrides(out)
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use shell_model::key_remap::KeyRemapCommand;
     use shell_model::keyboard::UserOverrides;
-    use shell_model::keycap::KeycapCommand;
     use shell_settings::{KeyboardOverride, ShellFile};
 
     use super::KeyboardBridge;
@@ -84,7 +84,7 @@ mod tests {
         let answer = KeyboardBridge.of(&file(&[("foot", "term")]));
         assert_eq!(
             KeyboardBridge::command(answer.clone()),
-            KeycapCommand::Overrides(answer)
+            KeyRemapCommand::Overrides(answer)
         );
     }
 }

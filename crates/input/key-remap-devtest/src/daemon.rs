@@ -1,4 +1,4 @@
-//! The real `keycap` binary as a child process, with every path it touches in a scratch
+//! The real `key_remap` binary as a child process, with every path it touches in a scratch
 //! directory and `sd_notify` going to a socket the harness reads.
 
 use crate::failure::{Failure, io};
@@ -11,7 +11,7 @@ use std::time::{Duration, Instant};
 /// How a daemon is started.
 #[derive(Debug, Clone)]
 pub struct DaemonSpec<'a> {
-    /// The built binary (`env!("CARGO_BIN_EXE_bardo-key-remap")` in keycap's own tests).
+    /// The built binary (`env!("CARGO_BIN_EXE_bardo-key-remap")` in the key remap daemon's own tests).
     pub binary: &'a Path,
     /// Where the runtime directory, config directory, seat file, notify socket and stderr log go.
     pub scratch: &'a Path,
@@ -54,7 +54,7 @@ impl Daemon {
         let notify_path = spec.scratch.join("notify.sock");
         let notifications =
             Notifications::listen(&notify_path).map_err(io("binding the notify socket"))?;
-        let stderr_log = spec.scratch.join("keycap.stderr");
+        let stderr_log = spec.scratch.join("key_remap.stderr");
         let stderr = File::options()
             .create(true)
             .append(true)

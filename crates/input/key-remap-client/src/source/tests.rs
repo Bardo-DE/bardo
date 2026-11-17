@@ -1,4 +1,4 @@
-//! `KeycapSource` against a fake daemon, with the file fallback and without any file.
+//! `KeyRemapSource` against a fake daemon, with the file fallback and without any file.
 
 use super::*;
 use crate::testing::FakeDaemon;
@@ -28,12 +28,12 @@ fn alt_copy() -> keymap::Chord {
 }
 
 /// A source with no daemon and the keymap file in `dir` holding `text` (none: no file).
-fn file_only(dir: &tempfile::TempDir, text: Option<&str>) -> KeycapSource {
+fn file_only(dir: &tempfile::TempDir, text: Option<&str>) -> KeyRemapSource {
     let file = dir.path().join("keymap");
     if let Some(text) = text {
         std::fs::write(&file, text).expect("write");
     }
-    KeycapSource::new(dir.path().join("no-daemon.sock"), file, "")
+    KeyRemapSource::new(dir.path().join("no-daemon.sock"), file, "")
 }
 
 #[test]
@@ -42,7 +42,7 @@ fn with_a_daemon_the_persons_keymap_comes_from_it_and_not_from_the_file() {
     let dir = tempfile::tempdir().expect("scratch dir");
     let file = dir.path().join("keymap");
     std::fs::write(&file, "copy = Primary+Alt+X\n").expect("write");
-    let source = KeycapSource::new(daemon.socket.clone(), file, "");
+    let source = KeyRemapSource::new(daemon.socket.clone(), file, "");
 
     assert_eq!(source.machine().origin, Origin::Daemon);
     let keymap = source.load(OURS).expect("loads");
@@ -64,7 +64,7 @@ fn a_daemon_too_old_for_the_keymap_means_the_file_too() {
     let dir = tempfile::tempdir().expect("scratch dir");
     let file = dir.path().join("keymap");
     std::fs::write(&file, "copy = Primary+Alt+C\n").expect("write");
-    let source = KeycapSource::new(daemon.socket.clone(), file, "");
+    let source = KeyRemapSource::new(daemon.socket.clone(), file, "");
     assert_eq!(source.machine().origin, Origin::MachineFile);
     assert_eq!(
         chords(&source.load(OURS).expect("loads"), StandardAction::Copy),
@@ -119,7 +119,7 @@ fn problems_the_daemon_reports_are_passed_on_without_repeating_the_refusals() {
         }],
     };
     let daemon = FakeDaemon::start(PROTOCOL_VERSION, served);
-    let source = KeycapSource::new(daemon.socket.clone(), "/nonexistent/keymap", "");
+    let source = KeyRemapSource::new(daemon.socket.clone(), "/nonexistent/keymap", "");
     let (_, problems) = source.load_reporting(OURS);
     assert_eq!(problems[0], "System keymap: line 4: Something was wrong.");
     assert_eq!(problems.len(), 2, "{problems:?}");
@@ -139,7 +139,7 @@ fn the_machine_source_reads_its_paths_from_the_environment() {
             .find(|(k, _)| *k == name)
             .map(|(_, v)| (*v).to_owned())
     };
-    let source = KeycapSource::from_lookup(lookup);
+    let source = KeyRemapSource::from_lookup(lookup);
     assert_eq!(source.socket(), Path::new("/tmp/k.sock"));
     assert_eq!(source.machine_file, Path::new("/tmp/cfg/keymap"));
     assert_eq!(
@@ -147,12 +147,12 @@ fn the_machine_source_reads_its_paths_from_the_environment() {
         Path::new("/tmp/xdg/bardo/key-remap/keymap")
     );
     let home_only =
-        KeycapSource::from_lookup(|name| (name == "HOME").then(|| "/home/me".to_owned()));
+        KeyRemapSource::from_lookup(|name| (name == "HOME").then(|| "/home/me".to_owned()));
     assert_eq!(
         home_only.person_file(),
         Path::new("/home/me/.config/bardo/key-remap/keymap")
     );
-    let default = KeycapSource::from_lookup(|_| None);
+    let default = KeyRemapSource::from_lookup(|_| None);
     assert_eq!(default.person_file(), Path::new(""));
     assert_eq!(default.socket(), Path::new(SOCKET_PATH));
     assert_eq!(
@@ -175,7 +175,7 @@ fn counter() -> (Arc<AtomicUsize>, ChangeCallback) {
 #[test]
 fn watch_fires_when_the_daemon_says_the_keymap_changed_and_not_for_the_first_state() {
     let daemon = FakeDaemon::start(PROTOCOL_VERSION, state("copy = Primary+Alt+C\n"));
-    let source = KeycapSource::new(daemon.socket.clone(), "/nonexistent/keymap", "");
+    let source = KeyRemapSource::new(daemon.socket.clone(), "/nonexistent/keymap", "");
     let (count, callback) = counter();
     let _watch = source.watch(callback).expect("watches");
     base_testkit::eventually_blocking("the watcher to subscribe", || daemon.watchers() == 1);
@@ -229,7 +229,7 @@ fn dropping_the_watch_ends_it() {
 #[test]
 fn registered_actions_are_listed_and_end_with_their_registration() {
     let daemon = FakeDaemon::start(PROTOCOL_VERSION, KeymapState::default());
-    let source = KeycapSource::new(daemon.socket.clone(), "/nonexistent/keymap", "");
+    let source = KeyRemapSource::new(daemon.socket.clone(), "/nonexistent/keymap", "");
     let app = keymap::AppId::new("mail").expect("app");
     let compose = keymap::AppAction::new("mail.compose").expect("action");
     let chord: keymap::DefaultChord = "Primary+Shift+N".parse().expect("chord");
@@ -254,7 +254,7 @@ fn registered_actions_are_listed_and_end_with_their_registration() {
 #[test]
 fn registering_with_an_absent_daemon_says_so() {
     let app = keymap::AppId::new("mail").expect("app");
-    let absent = KeycapSource::new("/nonexistent/key-remap.sock", "/nonexistent/keymap", "");
+    let absent = KeyRemapSource::new("/nonexistent/key-remap.sock", "/nonexistent/keymap", "");
     assert!(matches!(
         absent.register(&app, &[]),
         Err(crate::ClientError::Connect { .. })
@@ -268,7 +268,7 @@ fn the_persons_file_wins_over_the_machines_and_problems_say_whose_they_are() {
     let person = dir.path().join("person");
     std::fs::write(&machine, "copy = Primary+Alt+X\nundo = none\nbogus = F5\n").expect("write");
     std::fs::write(&person, "copy = Primary+Alt+C\nteleport = F5\n").expect("write");
-    let source = KeycapSource::new(dir.path().join("no-daemon.sock"), &machine, &person);
+    let source = KeyRemapSource::new(dir.path().join("no-daemon.sock"), &machine, &person);
 
     let (keymap, problems) = source.load_reporting(OURS);
     assert_eq!(chords(&keymap, StandardAction::Copy), [alt_copy()]);
@@ -295,7 +295,7 @@ fn watch_fires_when_the_persons_file_changes_with_or_without_a_daemon() {
     let dir = tempfile::tempdir().expect("scratch dir");
     let person = dir.path().join("person");
     std::fs::write(&person, "copy = Primary+Alt+C\n").expect("write");
-    let source = KeycapSource::new(daemon.socket.clone(), "/nonexistent/keymap", &person);
+    let source = KeyRemapSource::new(daemon.socket.clone(), "/nonexistent/keymap", &person);
     let (count, callback) = counter();
     let _watch = source.watch(callback).expect("watches");
     base_testkit::eventually_blocking("the watcher to subscribe", || daemon.watchers() == 1);
@@ -309,7 +309,7 @@ fn watch_fires_when_the_persons_file_changes_with_or_without_a_daemon() {
 
     let alone = tempfile::tempdir().expect("scratch dir");
     let file = alone.path().join("person");
-    let source = KeycapSource::new(
+    let source = KeyRemapSource::new(
         alone.path().join("no-daemon.sock"),
         "/nonexistent/keymap",
         &file,

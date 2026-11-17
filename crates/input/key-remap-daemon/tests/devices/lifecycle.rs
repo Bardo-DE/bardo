@@ -29,7 +29,7 @@ fn a_key_held_before_the_daemon_starts_delays_the_grab_until_it_is_released() {
     // The gate only looks; nothing holds the keyboard, so another reader can grab it now.
     ok(
         ExternalGrab::take(fake.node()).and_then(ExternalGrab::release),
-        "grabbing the fake keyboard while keycap waits for the key",
+        "grabbing the fake keyboard while key_remap waits for the key",
     );
 
     ok(fake.release("a"), "releasing a");

@@ -5,7 +5,7 @@
 //! naming the rest can wait for ever on a program the peer controls, so it happens on the
 //! connection's own thread ([`crate::admit`]), and the loop only counts how many such threads each
 //! user has waiting ([`crate::pending`]) and closes a connection over its user's share at once.
-//! Slots are still counted after identification, so the reserve of palmrest and keycap is safe.
+//! Slots are still counted after identification, so the reserve of palmrest and the key remap daemon is safe.
 
 use crate::admit::admit;
 use crate::backend::Backend;

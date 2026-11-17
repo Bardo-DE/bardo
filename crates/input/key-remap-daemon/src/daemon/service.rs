@@ -24,7 +24,7 @@ pub(crate) fn run(env: &Env) -> Result<(), String> {
     let notifier =
         Notifier::new(env.notify_socket.as_deref()).map_err(|e| format!("notify socket: {e}"))?;
     let source = Source::detect(&env.device_service);
-    eprintln!("keycap: virtual devices from {}", source.describe());
+    eprintln!("key_remap: virtual devices from {}", source.describe());
     let emitter = create_output(&source)?;
     let (inbox, mailbox) = mailbox().map_err(|e| format!("inbox: {e}"))?;
     let path = socket_path(&env.runtime_dir);
@@ -34,7 +34,7 @@ pub(crate) fn run(env: &Env) -> Result<(), String> {
     keymap::settle(&KeymapState::default(), first_keymap.clone())
         .problems
         .iter()
-        .for_each(|p| eprintln!("keycap: keymap: line {}: {}", p.line, p.what));
+        .for_each(|p| eprintln!("key_remap: keymap: line {}: {}", p.line, p.what));
     let socket = socket::spawn(
         listener,
         inbox.clone(),
@@ -44,7 +44,7 @@ pub(crate) fn run(env: &Env) -> Result<(), String> {
         first_keymap,
     )
     .map_err(|e| format!("socket thread: {e}"))?;
-    eprintln!("keycap: listening on {}", path.display());
+    eprintln!("key_remap: listening on {}", path.display());
     let _devices = watch_devices(&env.dev_input, &inbox)?;
     let (layers, _config) = load_config(env, &inbox);
     let _keymap = watch_keymap(&env.config_dir, &socket);
@@ -95,12 +95,12 @@ fn create_output(source: &Source) -> Result<Device, String> {
                 Patience::GiveUp => {
                     return Err(format!(
                         "no virtual keyboard after {}s: {e} (is the device service running, or \
-                         the uinput module loaded and /dev/uinput writable by the keycap unit?)",
+                         the uinput module loaded and /dev/uinput writable by the key_remap unit?)",
                         waited.as_secs()
                     ));
                 }
                 Patience::TryAgainAfter(delay) => {
-                    eprintln!("keycap: {e}; retrying in {}ms", delay.as_millis());
+                    eprintln!("key_remap: {e}; retrying in {}ms", delay.as_millis());
                     std::thread::sleep(delay);
                     waited += delay;
                 }
@@ -126,7 +126,7 @@ fn watch_keymap(dir: &Path, socket: &SocketHandle) -> Option<notify::Recommended
     let (tx, rx) = mpsc::channel::<FileText>();
     let relay = socket.clone();
     let thread = std::thread::Builder::new()
-        .name("keycap-keymap".to_owned())
+        .name("key-remap-keymap".to_owned())
         .spawn(move || rx.iter().for_each(|r| relay.send(ToSocket::Keymap(r))));
     let watcher = thread
         .map_err(|e| format!("keymap thread: {e}"))
@@ -134,7 +134,7 @@ fn watch_keymap(dir: &Path, socket: &SocketHandle) -> Option<notify::Recommended
             keymap::spawn(dir, tx)
                 .map_err(|e| format!("not watching the keymap in {}: {e}", dir.display()))
         });
-    watcher.map_err(|e| eprintln!("keycap: {e}")).ok()
+    watcher.map_err(|e| eprintln!("key_remap: {e}")).ok()
 }
 
 /// How a config file is watched: the function that starts the watch and the message its
@@ -160,7 +160,7 @@ fn watch_layer(
                 .map(|()| watcher)
                 .map_err(|e| format!("config thread: {e}"))
         });
-    watcher.map_err(|e| eprintln!("keycap: {e}")).ok()
+    watcher.map_err(|e| eprintln!("key_remap: {e}")).ok()
 }
 
 /// The built-in, vendor and system layers, and the watches that re-read the vendor and system
@@ -172,7 +172,7 @@ fn load_config(env: &Env, inbox: &Inbox) -> (Layers, Vec<notify::RecommendedWatc
     vendor_warnings
         .iter()
         .chain(&warnings)
-        .for_each(|w| eprintln!("keycap: config: {}: {}", w.key, w.problem));
+        .for_each(|w| eprintln!("key_remap: config: {}: {}", w.key, w.problem));
     let layers = Layers::builtin_only()
         .with_vendor(vendor_layer)
         .with_system(layer);

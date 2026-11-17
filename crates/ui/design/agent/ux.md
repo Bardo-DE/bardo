@@ -486,7 +486,7 @@ Keys on `Page::Intelligence` owned by other areas (UX fixes only the section ord
 | actions / security | `ConfirmRequest` type (router-generated text, effect, taint, offer) and the compositor delivery | `ConfirmCard` |
 | compositor | `bardo_agent_glow_v1.set(toplevel, GlowState, GlowSpec)`; `bardo_trusted_surface_v1` (role, hardware-only input, no agent seat, no capture, compositor frame) | glow, confirm |
 
-Each area ships a **serde-only wire crate** (no zbus), the same way keycap ships `key-remap-proto`. `shell-model` depends on those crates.
+Each area ships a **serde-only wire crate** (no zbus), the same way the key remap daemon ships `key-remap-proto`. `shell-model` depends on those crates.
 
 ---
 

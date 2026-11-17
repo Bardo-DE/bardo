@@ -1,4 +1,4 @@
-//! `keycap replay FILE`: a script through the remapper with the built-in profiles, printing each
+//! `key_remap replay FILE`: a script through the remapper with the built-in profiles, printing each
 //! input and what it writes, the Caps Lock tap of `daemon::caps` included.
 
 use super::script::{Input, Step, parse};
@@ -88,14 +88,14 @@ pub(super) fn replay_file(file: &Path, config: Option<&Path>) -> Result<Vec<Stri
                 std::fs::read_to_string(path).map_err(|e| format!("{}: {e}", path.display()))?;
             let (layer, warnings) = parse_user(&toml);
             for w in &warnings {
-                eprintln!("keycap: config: {}: {}", w.key, w.problem);
+                eprintln!("key_remap: config: {}: {}", w.key, w.problem);
             }
             Layers::builtin_only().with_user(layer)
         }
     };
     let (profiles, warnings) = layers.resolve();
     for w in &warnings {
-        eprintln!("keycap: config: {}: {}", w.key, w.problem);
+        eprintln!("key_remap: config: {}: {}", w.key, w.problem);
     }
     Ok(run(steps, &profiles))
 }
@@ -160,7 +160,7 @@ mod tests {
     /// The race at a restart: the lamp read Off at the grab, then the desktop set the new
     /// virtual keyboard's Caps Lock LED.
     const RACE: &str = "\
-# keycap just grabbed the keyboard; its lamp read off
+# key_remap just grabbed the keyboard; its lamp read off
 0 led caps on
 10 press 1 apple leftshift
 20 press 1 apple a

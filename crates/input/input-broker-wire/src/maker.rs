@@ -19,7 +19,7 @@ pub const PREFIX: &str = "input-broker/";
 pub enum Maker {
     /// palmrest, the Magic Mouse gesture daemon: peephole role `pad_daemon`.
     PadDaemon,
-    /// keycap, the Mac keyboard mapping daemon: peephole role `keymap_daemon`.
+    /// The key remap daemon, the Mac keyboard mapping daemon: peephole role `keymap_daemon`.
     KeymapDaemon,
 }
 

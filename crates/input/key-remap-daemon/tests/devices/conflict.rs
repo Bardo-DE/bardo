@@ -19,7 +19,7 @@ fn a_keyboard_another_program_grabbed_is_a_conflict_until_it_lets_go() {
     );
     let other = ok(
         ExternalGrab::take(fake.node()),
-        "grabbing the fake keyboard before keycap",
+        "grabbing the fake keyboard before key_remap",
     );
 
     let daemon = scene.daemon();

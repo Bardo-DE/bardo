@@ -1,4 +1,4 @@
-//! Where keycap's virtual devices come from: the root service that owns `/dev/uinput` and hands
+//! Where the key remap daemon's virtual devices come from: the root service that owns `/dev/uinput` and hands
 //! over a finished device, or `/dev/uinput` itself. The desktop's install has the service and no
 //! access to the node; the standalone install has the node and no service.
 
@@ -82,7 +82,7 @@ fn ask(
     match handed(source, request) {
         Ok(fd) => Ok(fd),
         Err(ClientError::Absent) => {
-            eprintln!("keycap: the device service is not running; opening the device directly");
+            eprintln!("key_remap: the device service is not running; opening the device directly");
             direct()
         }
         Err(e) => Err(OutputError::Unavailable(e.to_string())),

@@ -14,7 +14,7 @@
    `S:58-59`). Size and stroke are the SVG's own attributes (spike S6), never CSS. */
 .ds-ic{display:block;flex:none}
 /* Emoji in colour (FINDINGS "Colour emoji"): Inter, then the COLRv1 Noto Color Emoji face, so
-   text stays Inter (the emoji face maps digits and # to empty keycap bases) and every emoji falls
+   text stays Inter (the emoji face maps digits and # to empty key_remap bases) and every emoji falls
    to colour. For an emoji grid, a reaction, any text that carries emoji. */
 .ds-emoji-text{font-family:var(--font-emoji)}
 /* Times, counts and numeric cells (design/02-TYPE.md section 9). */

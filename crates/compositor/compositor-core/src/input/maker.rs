@@ -17,7 +17,7 @@ const PREFIX: &str = "input-broker/";
 pub enum Maker {
     /// palmrest, the Magic Mouse gesture daemon (peephole role `pad_daemon`).
     PadDaemon,
-    /// keycap, the Mac keyboard mapping daemon (peephole role `keymap_daemon`).
+    /// The key remap daemon, the Mac keyboard mapping daemon (peephole role `keymap_daemon`).
     KeymapDaemon,
 }
 
@@ -36,7 +36,7 @@ impl Maker {
 
     /// The origin of events from a virtual device made for this service.
     ///
-    /// keycap only replays the person's own keyboard and mouse, so its devices are their hand.
+    /// The key remap daemon only replays the person's own keyboard and mouse, so its devices are their hand.
     /// palmrest's are not: its daemon turns Magic Mouse gestures into synthetic key chords (Alt+Left
     /// by default, and the shell's settings choose others, `Ctrl+Alt+F3` among them), which must not
     /// switch the virtual terminal or answer a consent sheet. They still move the pointer's scroll,

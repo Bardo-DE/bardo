@@ -16,10 +16,10 @@ Departures from the plan, standing facts and open items. An entry names the cond
    alone cannot open it. Opening it would take `CAP_DAC_READ_SEARCH` (every file) or reading the
    process's memory (every process's); only root can set a system unit's environment, and the unit's
    root-owned files must unset every loader variable, so the check is dropped instead.
-2. **keycap's identity is the strong one, the keyboard is handed over, the pad is proxied (owner,
+2. **the key remap daemon's identity is the strong one, the keyboard is handed over, the pad is proxied (owner,
    2026-10-16).** A uinput descriptor cannot be made write-only (the holder can destroy the device and
    set it up again with any capabilities), so a handed descriptor is only as safe as its holder.
-   keycap is a system service with a control group a user cannot enter, so it gets the fd. palmrest
+   The key remap daemon is a system service with a control group a user cannot enter, so it gets the fd. palmrest
    is a system service too since 2026-10-17 (owner decision) and its identity is as strong, but its
    events still pass the ceiling one by one: the ceiling bounds what a bug in its input parsing can type.
 3. **No `RuntimeDirectory=` in the service unit.** The design listed it; stopping the service would
@@ -27,23 +27,23 @@ Departures from the plan, standing facts and open items. An entry names the cond
    the folder (`DirectoryMode=0755`) and nothing else needs one.
 4. **`MaxConnections=` is not in the socket unit.** It applies to `Accept=yes` sockets only. The
    service caps its own live connections and answers the rest with `Refused(TooMany)`: 16 for strangers
-   in all and 4 per user, plus a reserve of 4 for each of palmrest and keycap (NEW-PI-6, `slots.rs`).
+   in all and 4 per user, plus a reserve of 4 for each of palmrest and the key remap daemon (NEW-PI-6, `slots.rs`).
 5. **`LimitNOFILE=128`, not 64.** Twenty-four connections (16 strangers, 8 reserved) plus up to four proxied devices on each is 120
    descriptors in the worst case (strangers make none, so the real bound is far lower); 64 would make the cap unreachable.
 6. **`Feedback` is on the wire but the service sends none.** No proxied kind has an output
-   capability (no lights, no repeat, no sound), so there is nothing to forward. keycap's lights
+   capability (no lights, no repeat, no sound), so there is nothing to forward. The key remap daemon's lights
    travel on the descriptor it is handed. The message exists so a future kind with feedback needs no
    protocol change.
-7. **A keycap pointer carries a label, vendor and product and the original's axis ranges.** The design
-   said the service takes no name, ids or absinfo from a client. keycap's twin of a combo device must
+7. **A key remap daemon pointer carries a label, vendor and product and the original's axis ranges.** The design
+   said the service takes no name, ids or absinfo from a client. The key remap daemon's twin of a combo device must
    keep the original's vendor and product so the desktop's per-device quirks still match, and a
    touchpad's absolute axes with their ranges. So the pointer request carries them, cut to the
    ceiling: only buttons (`BTN_MISC` to `BTN_GEAR_UP` and the `0x2c0` block, never a key), relative
    axes up to `REL_MAX`, absolute axes up to `ABS_MAX` with ranges within 2^24, properties up to
    `INPUT_PROP_POINTING_STICK`; the name is the label (at most 62 bytes) plus the fixed suffix
-   `(keycap pointer)`, which keycap never grabs. Because the descriptor is handed over, the ceiling
+   `(key_remap pointer)`, which key remap daemon never grabs. Because the descriptor is handed over, the ceiling
    shapes the device the service makes and is not a boundary on what the holder can then do
-   (decision 2). Closes if keycap stops cloning axis ranges.
+   (decision 2). Closes if the key remap daemon stops cloning axis ranges.
 8. **Palmrest's keyboard classes are stricter than the design's list.** Besides letters, digits, Enter,
    Space, Backspace, Delete and Escape, Tab and the punctuation keys also need a control, alt or super
    held. Navigation, function keys, Insert, Back and Forward are free. palmrest's real combinations
@@ -54,15 +54,15 @@ Departures from the plan, standing facts and open items. An entry names the cond
    tracking id outside its range is refused.
 10. **`fake` code is behind the `fake` feature.** The daemon's fake kernel and identity (since
     v0.1.0) and the client's `fake` (since v0.1.1) are compiled only with `fake`, so a shipped build
-    cannot hold a stand-in for the service. palmrest and keycap name the feature on their
+    cannot hold a stand-in for the service. palmrest and the key remap daemon name the feature on their
     dev-dependency, so their tests always have it; this repo's gate runs `--all-features`, and a plain
     `cargo test` skips the client's `fake` tests.
 
-11. **Full proof for both clients (NEW-PI-4, 2026-10-17).** palmrest and keycap are admitted at peephole's
+11. **Full proof for both clients (NEW-PI-4, 2026-10-17).** palmrest and the key remap daemon are admitted at peephole's
     `Full` only. With no manager to ask, `identity/unit_files` supplies the unit's facts from the unit
     files and the process (ARCHITECTURE "Who may have what"). `MainPID` is taken as the caller's own pid.
     That was a residual for palmrest while it was a user unit (a same-user process could fill the
-    group); palmrest is a system unit since 2026-10-17 (`/system.slice/palmrest.service`, as keycap), so
+    group); palmrest is a system unit since 2026-10-17 (`/system.slice/palmrest.service`, as the key remap daemon), so
     it is closed: the group is the system manager's alone.
     A symlink as the unit's fragment reads as writable (a link's mode is 0777), so it is refused; our
     units are plain files.
@@ -70,7 +70,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 12. **Identification runs on the connection's thread, with a pending cap (NEW-FA-3, 2026-10-17).**
     Naming a peer reads its `/proc` entries and stats its image, and a program running from a file
     system it controls (FUSE) can make that wait for ever; on the single accept thread that stalled
-    every later accept, palmrest's and keycap's included. Now the accept loop reads only the peer's
+    every later accept, palmrest's and the key remap daemon's included. Now the accept loop reads only the peer's
     user from `SO_PEERCRED` (no `/proc`), takes a ticket from `pending.rs` (2 per user, 6 in all,
     `MAX_PENDING_PER_USER`, `MAX_PENDING_IDENTIFICATIONS`) and spawns the connection thread, which
     identifies and then takes its slot (`admit.rs`), so NEW-PI-6 holds as before: strangers are
@@ -86,7 +86,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     can use up their 2 each; with 3 such accounts the 6 are gone and no new connection (palmrest's
     included) is served until those peers exit. A hung peer also keeps the service from exiting idle.
     That takes several local accounts, not one. Closes if the pending room is split so that a user
-    already proven as palmrest or keycap has its own (needs the policy's uid, a config the service
+    already proven as palmrest or the key remap daemon has its own (needs the policy's uid, a config the service
     does not have).
 
 13. **Every device carries the label of the service it was made for (owner, 2026-10-17, NEW-FA-4).**
@@ -96,7 +96,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     device (`dist/72-turnstile.rules`) and it already proves which service each device is for
     (`policy.rs`), so it writes that into the device with `UI_SET_PHYS` (`input-linux`'s
     `UInputHandle::set_phys`, before `UI_DEV_SETUP`): `turnstile/pad_daemon` for palmrest's three kinds,
-    `turnstile/keymap_daemon` for keycap's two. The kernel shows it in
+    `turnstile/keymap_daemon` for the key remap daemon's two. The kernel shows it in
     `/sys/class/input/<event>/device/phys`. The format is `turnstile_wire::Maker` (format and
     `parse`); every plan sets `DeviceSpec::maker` and a test pins the exact strings and the label of
     each kind. The compositor links nothing of turnstile, so it keeps its own copy of the parser and pins the
@@ -159,4 +159,4 @@ Departures from the plan, standing facts and open items. An entry names the cond
 
 - The units, rule and modules file are placed by the desktop installer (`pa2-desk`); this repository
   only ships them in `dist/`.
-- palmrest and keycap switch over (`pa2-palm`, `pa2-key`); their briefs are in the lane report.
+- palmrest and the key remap daemon switch over (`pa2-palm`, `pa2-key`); their briefs are in the lane report.
