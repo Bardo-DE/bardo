@@ -1,4 +1,4 @@
-//! A Space's look as compact JSON, for a registry that stores one per desktop Space (porter's).
+//! A Space's look as compact JSON, for a registry that stores one per desktop Space (the accounts service's).
 //! The registry bounds what it keeps, so the text is at most [`LOOK_JSON_MOST`] bytes both ways.
 
 use super::list::clamp_look;

@@ -1,5 +1,5 @@
 //! One line of `GET /localapi/v0/watch-ipn-bus`: tailscaled's `ipn.Notify`, newline-delimited
-//! JSON, as of v1.80.0 (`ipn/backend.go`). porter reads it only as a nudge that something
+//! JSON, as of v1.80.0 (`ipn/backend.go`). The accounts service reads it only as a nudge that something
 //! changed (the answer to "what is the state now" is `status`), so only the few fields that
 //! say what changed are read, and the net map, which is large, is only noticed.
 

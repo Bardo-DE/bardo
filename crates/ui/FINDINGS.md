@@ -1714,8 +1714,8 @@ Open:
 
 Standing facts:
 
-- The components take plain props and name no porter type; a host maps its sheet view to them in
-  one table-tested file (porter's `SheetView::Consent` to `ConsentAlert`, `Providers` to
+- The components take plain props and name no accounts type; a host maps its sheet view to them in
+  one table-tested file (the accounts service's `SheetView::Consent` to `ConsentAlert`, `Providers` to
   `ProviderList`, `SignIn` to `SignInForm`, `BrowserWait` to `BrowserWait`, `ShowCode` to
   `ShowCode`, `Review` to `ReviewServices`, `Working` to `SignInWorking`, `Failed` to
   `SignInFailed`).
@@ -2165,7 +2165,7 @@ apps (first the Settings app's Settings, "install llama.cpp" with a copyable com
   of `org.bardo.Outputs1` the shell?) belongs with the shell; Bardo now drops rows with no size or no scale and caps the list at 16. The dbusmenu
   `RequestName` in `ds-blitz::menus` is a call to the bus daemon itself and has no deadline. The frame-link channel (BARDO-21) is still
   unbounded. The Settings app's half of SETTINGS-07 (feeding `Failed` on `LiveError::Timeout`, awaiting `invoke` off the effect loop) and the same
-  convention in porter-dbus are theirs.
+  convention in account-dbus are theirs.
 
 ## One reader for desktop files (ds-helpers `DesktopFile`)
 

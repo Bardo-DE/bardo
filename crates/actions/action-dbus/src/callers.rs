@@ -1,6 +1,6 @@
 //! Who is calling a daemon.
 //!
-//! One way, for every daemon of the agent tier: porter's [`ProcCallers`] (the bus names the process
+//! One way, for every daemon of the agent tier: the accounts service's [`ProcCallers`] (the bus names the process
 //! behind a connection, `/proc/<pid>/cgroup` names the unit or app scope, the daemon's callers file
 //! names the role) and a check of the [`Standing`] a method asks for. A daemon never decides that a
 //! name it can see on the bus, the well-known name someone owns, or a uid alone is a role; a caller
@@ -186,7 +186,7 @@ pub async fn require(
     }
 }
 
-/// Says who a bus connection is: porter's [`ProcCallers`] on the daemon's connection and table.
+/// Says who a bus connection is: the accounts service's [`ProcCallers`] on the daemon's connection and table.
 #[derive(Debug)]
 pub struct Identity {
     procs: Procs,
@@ -196,7 +196,7 @@ pub struct Identity {
 /// Where the callers a test did not introduce come from.
 #[derive(Debug)]
 enum Procs {
-    /// porter's reading of `/proc` and the unit manager, or of a fixture tree.
+    /// The accounts service's reading of `/proc` and the unit manager, or of a fixture tree.
     Read(Box<ProcCallers>),
     /// Nobody: a fixture tree was named to a build that cannot read one (no `fixture-callers`),
     /// so no caller is identified rather than the system's `/proc` being read in its place.

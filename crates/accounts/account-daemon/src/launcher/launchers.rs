@@ -528,7 +528,7 @@ impl LaunchersSeam for Launchers {
 pub enum SignOutNews {
     /// The launcher was asked; the outcome follows.
     Asked,
-    /// No launcher is registered: porter forgot the sign-in and the agent's own login was not
+    /// No launcher is registered: the accounts service forgot the sign-in and the agent's own login was not
     /// touched.
     LoginUntouched,
     /// The agent says it is signed out.

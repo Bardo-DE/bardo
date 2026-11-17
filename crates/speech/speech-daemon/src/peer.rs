@@ -1,6 +1,6 @@
 //! Who is on the other end of a bus connection. The identity is derived from what the bus and
 //! `/proc` say about the process behind the connection and never from anything the caller sends,
-//! and never from a name it owns: porter's `ProcCallers` (through [`Identity`]) names the unit or
+//! and never from a name it owns: the accounts service's `ProcCallers` (through [`Identity`]) names the unit or
 //! app scope (the bus gives the pid, `/proc/<pid>/cgroup` names the unit or app, `voiced-callers.toml`
 //! gives the role). The roles are `voiced.toml`'s: the shell is the app that file lists as `shell`
 //! when the callers table gives it the system's `sheet_host` role, which only a unit's main

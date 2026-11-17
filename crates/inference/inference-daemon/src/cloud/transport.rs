@@ -2,7 +2,7 @@
 //!
 //! A hosted model's transport: the model layer's `HttpClient` (which speaks TLS for a `Tls` target, behind
 //! `model-http`'s `tls` feature, with `TlsRoots` choosing the trusted roots) wrapped so each body
-//! is first shaped by porter's request policy ([`BodyShape`]: sampling, a model's reasoning
+//! is first shaped by the accounts service's request policy ([`BodyShape`]: sampling, a model's reasoning
 //! field). The shaping is inferd's and stays here; the connection, the handshake and the
 //! certificate and name checks are the model layer's and always on.
 //!

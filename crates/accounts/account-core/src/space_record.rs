@@ -1,5 +1,5 @@
 //! A desktop-wide Space as accountd's registry of them keeps it (`spaces.json`,
-//! `org.bardo.Spaces1`): its id, the name the person typed, and a look porter does not read.
+//! `org.bardo.Spaces1`): its id, the name the person typed, and a look the accounts service does not read.
 
 use crate::error::CoreError;
 use crate::space::DesktopSpace;
@@ -12,7 +12,7 @@ pub const SPACE_NAME_MAX_CHARS: usize = 64;
 pub const SPACE_LOOK_MAX_BYTES: usize = 1024;
 
 /// A Space's name as the person typed it: not blank, at most [`SPACE_NAME_MAX_CHARS`]
-/// characters, no control characters. porter adds no words of its own.
+/// characters, no control characters. The accounts service adds no words of its own.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct SpaceName(String);
@@ -43,7 +43,7 @@ base_ids::string_newtype!(SpaceName, CoreError);
 /// How a Space looks (a colour, a symbol), as Bardo's Spaces kit writes it (compact JSON of its
 /// `SpaceLook`).
 ///
-/// Opaque to porter: kept and handed back as it came, never parsed; only its length is checked (at
+/// Opaque to the accounts service: kept and handed back as it came, never parsed; only its length is checked (at
 /// most [`SPACE_LOOK_MAX_BYTES`]). Empty is the kit's default look.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]

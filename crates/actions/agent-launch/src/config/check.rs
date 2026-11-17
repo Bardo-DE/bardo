@@ -243,7 +243,7 @@ pub(super) fn check(raw: Raw, dir: Option<&AgentsDir>) -> Result<Entry, ConfigFa
     let program = AgentProgram::parse(&raw.program).map_err(|e| {
         bad_value(
             &at,
-            "a program is lower-case letters, digits and - (porter's grammar)",
+            "a program is lower-case letters, digits and - (the accounts service's grammar)",
             &e,
         )
     })?;

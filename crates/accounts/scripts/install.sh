@@ -1,5 +1,5 @@
 #!/bin/sh
-# Install porter: its daemon, its systemd user unit and D-Bus activation file, the provider files
+# Install the accounts service: its daemon, its systemd user unit and D-Bus activation file, the provider files
 # and the caller table. The sync daemon, and the helper that shows drives in ~/Cloud, are the sync service's
 # (its scripts/install.sh).
 #
@@ -151,12 +151,12 @@ else
         fi
         for tool in git cargo; do
             if ! command -v "$tool" >/dev/null 2>&1; then
-                echo "install.sh: $tool is needed to build porter; install $tool and run this again" >&2
+                echo "install.sh: $tool is needed to build the accounts service; install $tool and run this again" >&2
                 exit 1
             fi
         done
         # Linked by this system's own linker. The source tree's .cargo/config.toml links with
-        # clang and mold, which is how porter is worked on, not something an install may ask the
+        # clang and mold, which is how the accounts service is worked on, not something an install may ask the
         # person to have. Cargo reads that file (and rustup the toolchain file) from the
         # directory it runs in, so the build runs from / with the manifest named, the pinned
         # toolchain passed on, and the one setting an install wants from that file given again.

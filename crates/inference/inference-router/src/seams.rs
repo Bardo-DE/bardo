@@ -1,7 +1,7 @@
 //! What the session server leans on, as traits the daemon fills: who answers (the route), the
 //! engines behind it, the model turn itself and the audit trail.
 //!
-//! Async seams return `impl Future + Send`, as everywhere in porter; none needs `dyn`.
+//! Async seams return `impl Future + Send`, as everywhere in the accounts service; none needs `dyn`.
 
 use crate::carried::Carried;
 use crate::session::{HeardAudio, RouteDecision, Routing, SessionSpec};

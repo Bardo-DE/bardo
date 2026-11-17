@@ -1,4 +1,4 @@
-//! porter's pure accounts vocabulary: accounts and their endpoints, consent, and credentials'
+//! The accounts service's pure accounts vocabulary: accounts and their endpoints, consent, and credentials'
 //! filing. No runtime, no file system, no I/O: the file writer lives in `base-fs`. What it is
 //! built from lives below it, each in its own crate: ids, units, URLs, the clock and
 //! percent-encoding in `base-url`, the capability vocabulary in `account-capability`.

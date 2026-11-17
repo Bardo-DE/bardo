@@ -4,7 +4,7 @@
 # sandbox. It owns no state and needs no network, keyring or account data.
 #
 # What protects the person here is how little the helper is and does, not the sandbox:
-#   - it is std and rustix only, and scripts/check-boundary.sh forbids it every crate of porter's
+#   - it is std and rustix only, and scripts/check-boundary.sh forbids it every crate of the accounts service's
 #     and every effect crate (no network, keyring or account code is in it);
 #   - it answers only a caller of its own uid (SO_PEERCRED), on a 0600 socket;
 #   - a request names a folder, never a path: one plain name (no '/', NUL or leading dot), put in
@@ -38,7 +38,7 @@ Requires=bardo-drive-mount.socket
 After=bardo-drive-mount.socket
 
 [Service]
-# The manager's environment must not reach this unit, as for porter's daemons.
+# The manager's environment must not reach this unit, as for the accounts service's daemons.
 UnsetEnvironment=LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT GCONV_PATH GIO_EXTRA_MODULES GTK_MODULES GTK_PATH GST_PLUGIN_PATH GST_PLUGIN_SYSTEM_PATH LIBGL_DRIVERS_PATH MESA_LOADER_DRIVER_OVERRIDE __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES GBM_BACKENDS_PATH LIBVA_DRIVERS_PATH VK_ICD_FILENAMES VK_DRIVER_FILES VK_ADD_DRIVER_FILES VK_LAYER_PATH VK_ADD_LAYER_PATH VK_INSTANCE_LAYERS VK_LOADER_LAYERS_ENABLE
 Type=simple
 ExecStart=/usr/libexec/bardo/bardo-drive-mount

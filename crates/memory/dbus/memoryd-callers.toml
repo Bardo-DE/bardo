@@ -4,7 +4,7 @@
 # neither (a terminal's child, an unlisted unit) is refused.
 #
 # The shell runs as bardo-shell.service and the System Settings app as org.bardo.Settings.service. A scope
-# never carries a fixed role (porter's caller table gives a scope row a plain app's standing), so
+# never carries a fixed role (the accounts service's caller table gives a scope row a plain app's standing), so
 # neither has a scope row.
 #
 # Install as /etc/bardo/memoryd-callers.toml; the user's ~/.config/bardo/memoryd/callers.toml is

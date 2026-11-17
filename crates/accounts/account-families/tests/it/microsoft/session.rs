@@ -443,7 +443,7 @@ fn holding(rig: &Rig, held: &str, recorded: &[&str]) -> Presented {
 #[tokio::test]
 async fn the_whole_drive_never_given_is_needs_consent_and_microsoft_is_not_asked() {
     let rig = Rig::over(true, whole_drive_alone()).await;
-    // A credential from before porter kept what was granted holds nothing asked on use.
+    // A credential from before the accounts service kept what was granted holds nothing asked on use.
     let session = open(&rig).await;
     assert_eq!(
         session

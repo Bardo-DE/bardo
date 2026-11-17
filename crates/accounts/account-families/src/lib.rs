@@ -1,6 +1,6 @@
-//! The protocol families as code (porter PLAN G6): [`DynProvider`], the object-safe twin of
+//! The protocol families as code (the accounts service PLAN G6): [`DynProvider`], the object-safe twin of
 //! `Provider`: a family is picked at run time from a provider file, so the host holds
-//! `Box<dyn DynProvider>`, which is itself a `Provider`. accountd and an app hosting porter in
+//! `Box<dyn DynProvider>`, which is itself a `Provider`. accountd and an app hosting the accounts service in
 //! process (mailo) both build it, so a family is written once.
 //!
 //! This crate is the registry. The families that have a protocol of their own live in crates of

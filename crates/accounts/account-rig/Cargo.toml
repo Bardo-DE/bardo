@@ -1,6 +1,6 @@
 [package]
 name = "account-rig"
-description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives porter with. account-rig-servers starts account-fake-servers' fakes on loopback and plants known secrets, account-rig-client acts as an app over the session bus, account-rig-secrets is a fake org.freedesktop.secrets so the real accountd runs with no keyring. Nothing shipped depends on it."
+description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives the accounts service with. account-rig-servers starts account-fake-servers' fakes on loopback and plants known secrets, account-rig-client acts as an app over the session bus, account-rig-secrets is a fake org.freedesktop.secrets so the real accountd runs with no keyring. Nothing shipped depends on it."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

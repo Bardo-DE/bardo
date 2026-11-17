@@ -11,7 +11,7 @@ use zbus::Connection as BusConnection;
 ///
 /// The caller-identity library holds the process behind a sender (a pidfd), reads what `/proc` and the systemd manager
 /// say of it, and judges it against the table's service rows; the table then names the role. The
-/// table is porter's own (`callers.toml`), translated once when this is built (see `translate`).
+/// table is the accounts service's own (`callers.toml`), translated once when this is built (see `translate`).
 #[derive(Debug)]
 pub struct ProcCallers {
     table: CallerTable,

@@ -20,7 +20,7 @@ pub struct SrvAnswers {
     pub imaps: Vec<SrvRecord>,
     /// `_imap._tcp`: IMAP with STARTTLS.
     pub imap: Vec<SrvRecord>,
-    /// `_pop3s._tcp`: POP3 with implicit TLS (RFC 6186; there is no STARTTLS name porter asks).
+    /// `_pop3s._tcp`: POP3 with implicit TLS (RFC 6186; there is no STARTTLS name the accounts service asks).
     pub pop3s: Vec<SrvRecord>,
     /// `_submissions._tcp`: submission with implicit TLS.
     pub submissions: Vec<SrvRecord>,

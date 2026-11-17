@@ -1,12 +1,12 @@
 //! The `AgentLogin` family (lane P1): an external coding agent that signs itself in (Claude Code,
 //! Gemini CLI, Codex, any ACP agent; any file with `kind = "agent_login"`). The account holds NO
 //! credential of any kind: the agent's own login lives in the agent's own state directory, which
-//! porter never reads (design/31 R7, R8). Adding the account asks nothing; the person reviews the
+//! The accounts service never reads (design/31 R7, R8). Adding the account asks nothing; the person reviews the
 //! agent and confirms, and the account is stored in `needs_login` until the launcher reports the
 //! agent's state (`Launcher.ReportAgentLogin`).
 //!
 //! A session mints no token (there is nothing to mint it from) and revoking has nothing to do at a
-//! provider: forgetting the account is all porter can do.
+//! provider: forgetting the account is all the accounts service can do.
 
 mod sign_in;
 

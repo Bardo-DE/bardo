@@ -40,7 +40,7 @@ pub(super) const WORDS: [(&str, &str, Option<&str>); 6] = [
 ];
 
 /// Where a model of the slots layout runs: the two local ones on this computer through
-/// llama.cpp, as porter's inferd says them; the hosted ones in their company's cloud.
+/// llama.cpp, as the accounts service's inferd says them; the hosted ones in their company's cloud.
 fn place_of(word: &str) -> Option<ChoicePlace> {
     let engine = |name: &str| ChoicePlace::ThisComputer {
         engine: Some(EngineName(name.to_owned())),

@@ -1,6 +1,6 @@
 [package]
 name = "account-wire"
-description = "porter's wire protocol: what an app asks accountd, what it answers, and the framing of a session socket."
+description = "accounts's wire protocol: what an app asks accountd, what it answers, and the framing of a session socket."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -1,6 +1,6 @@
 //! Which system caller table a daemon reads.
 //!
-//! The rows that give a fixed role (Settings, the sheet host, a porter daemon, cuad, the agent
+//! The rows that give a fixed role (Settings, the sheet host, an accounts daemon, cuad, the agent
 //! launcher) come only from a system table under `/etc/bardo`, which a person cannot write:
 //! accountd and syncd read [`CALLERS`], inferd reads [`INFERD_CALLERS`]. A jailed acceptance
 //! test cannot write `/etc` either, so a test build may be told to read another file instead.

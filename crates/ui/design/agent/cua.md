@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/cua.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area: cua — the computer-use runtime and its desktop plumbing
 
-Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, the UI kit design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), Bardo CONVENTIONS.md and ARCHITECTURE.md (`Machine`), porter (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
+Status: plan for the freeze. Sources read: BRIEF.md, COMPANION.md, cua-integration.md, research-ecosystem-{agents,infra}.md, research-cua-models.md, research-agent-memory §3, intents-research/{models,agent-ux}.md, the UI kit design/31-ACCOUNTS.md (§2.3-2.4, §4, §5.5, §11), Bardo CONVENTIONS.md and ARCHITECTURE.md (`Machine`), the accounts service (ARCHITECTURE, CONVENTIONS, FINDINGS, check-boundary.sh, dbus XML), shell-launcher (`Provider`, `Activation`), and layer-shell-host's nested-compositor harness (`scripts/dev/`).
 
 I also checked the installed binaries on this machine (Fedora 44: the compositor, kwin 6.7.5) and the nested compositor globals the harness recorded (`~/shell-host/scripts/dev/out/globals.txt`):
 
@@ -38,20 +38,20 @@ I also checked the installed binaries on this machine (Fedora 44: the compositor
 
 **Conflicts with the docs, and the resolution I propose**
 1. **COMPANION settled item 4 ("No screen clicking") against the CUA tier.** cua-integration proposes replacing item 4. Until the user confirms, `cuad` ships with `cua.enabled = off` and nothing else depends on it. *User question Q1.*
-2. **Floating-point coordinates.** cua-integration uses `f32` `LogicalPoint`; porter's rule allows floats only in `EmbedVector`. Resolution: integer `Lpx(i32)` window-local logical px. Model-frame coordinate types (normalised 0-999 grid, model-pixel space) stay inside the models area's adapters.
+2. **Floating-point coordinates.** cua-integration uses `f32` `LogicalPoint`; the accounts service's rule allows floats only in `EmbedVector`. Resolution: integer `Lpx(i32)` window-local logical px. Model-frame coordinate types (normalised 0-999 grid, model-pixel space) stay inside the models area's adapters.
 3. **"Second wl_seat" (cua-integration §4.2) against "computer-use-seat-input over reis" (COMPANION build map).** Resolution: one client path. Injection is always EI through reis. On the fork, the EI sender context is bound to a compositor-side agent seat; on stock, it lands on the user's seat (`SeatIsolation::SharedSeat`).
 4. **Where masking happens.** cua-integration masks in the compositor; the infra survey masks in the capturing process. Resolution: both, chosen by backend. `MaskReport.applied_by: MaskWhere {Compositor, Cuad}` records which one ran, and pixels never leave `cuad` unmasked in either case.
 5. **Where `cuad` runs.** cua-integration offers "a daemon, or a module inside the shell host". Resolution: its own daemon. It holds a privileged Wayland connection and an EIS fd, needs its own systemd sandbox, and must not share a process with GPU UI. layer-shell-host stays a UI host.
 6. **`HandBack` has two meanings in cua-integration** (user→agent at the start, and resuming after a takeover). Resolution: `Run.HandBack` only resumes a taken-over run. Starting from the user's manual work is `Manager.Start` with `origin = Handover`.
-7. **No CUA need or CUA grant in porter.** porter's `Need` has no `cua` kind and `GrantKey` has no Space. Resolution: the models area adds `Need::Cua` (a 31-ACCOUNTS edit). The CUA grant `(app, Space) → Once/Always` lives in the actions area's action-grant store, not in porter's account grants (§7).
+7. **No CUA need or CUA grant in the accounts service.** the accounts service's `Need` has no `cua` kind and `GrantKey` has no Space. Resolution: the models area adds `Need::Cua` (a 31-ACCOUNTS edit). The CUA grant `(app, Space) → Once/Always` lives in the actions area's action-grant store, not in the accounts service's account grants (§7).
 
 ---
 
 ## 2. Repos and crates
 
-### New repo `~/cua` (working name; Q3), MIT OR Apache-2.0, porter-style
+### New repo `~/cua` (working name; Q3), MIT OR Apache-2.0, account-style
 
-Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, the UI kit's `deny.toml` verbatim, `CONVENTIONS.md` pointing at the UI kit's with the porter additions (closed sets are enums with serde slugs and no `Word`; async seams are `-> impl Future + Send`; closed sets of implementations are enums, not `dyn`; `todo!()` only behind a frozen interface and listed in FINDINGS; nothing ambient below the daemon). It also gets `ARCHITECTURE.md`, `FINDINGS.md`, `dbus/`, `protocols/` and `scripts/`.
+Workspace conventions are copied from the accounts service: `rust-toolchain.toml` at 1.98.1, the UI kit's `deny.toml` verbatim, `CONVENTIONS.md` pointing at the UI kit's with the accounts service additions (closed sets are enums with serde slugs and no `Word`; async seams are `-> impl Future + Send`; closed sets of implementations are enums, not `dyn`; `todo!()` only behind a frozen interface and listed in FINDINGS; nothing ambient below the daemon). It also gets `ARCHITECTURE.md`, `FINDINGS.md`, `dbus/`, `protocols/` and `scripts/`.
 
 | Crate | Purpose | I/O | Portable |
 |---|---|---|---|
@@ -65,7 +65,7 @@ Workspace conventions are copied from porter: `rust-toolchain.toml` at 1.98.1, t
 | `computer-use-fake` | test-only: `FakeSeat`, `FakeEis` (an in-process reis EIS server on a socketpair), `FakeCapture`, `FakeDesktop`, `FakeA11y`, `ScriptedModel` (over models' replay provider), `FakePdp`, `MemoryEvents`, `FixedClock`, `run_harness` | none | yes |
 | `cuad` | the daemon: env and settings, effect executor, zbus server, caller checks, backend selection; `dist/bardo-computer-use.service` and the D-Bus activation file | everything | Linux |
 
-**Allowed edges** (checked by `scripts/check-boundary.sh`, copied from porter's script and adapted):
+**Allowed edges** (checked by `scripts/check-boundary.sh`, copied from the accounts service's script and adapted):
 
 | Crate | May depend on (ours and other areas') |
 |---|---|
@@ -394,7 +394,7 @@ pub fn stalled(history: &[FrameDigest], limit: u8) -> Stall;
 pub enum Stall { Moving, Stalled }
 ```
 
-The run machine has the same shape as `ds_core::Machine`, but is not tied to it: `computer-use-run` is portable and sits below the design system, like porter.
+The run machine has the same shape as `ds_core::Machine`, but is not tied to it: `computer-use-run` is portable and sits below the design system, like the accounts service.
 
 ```rust
 pub struct Run { pub id: RunId, pub task: CuaTask, pub phase: RunPhase, pub used: BudgetUse, pub taint: Label,
@@ -482,7 +482,7 @@ post = { node = [{ role = "heading", name = "Invoices" }] }
 
 ### 3.8 D-Bus `org.bardo.ComputerUse1` (`computer-use-dbus`, served by `cuad`) — freeze now
 
-Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is one protocol with two carriers, as in 31 §4.3. Caller identity comes from the connection (porter `AppId`) and is never sent.
+Bodies are JSON in `s` with the envelope `{ "vocab": 1, "body": … }`. This is one protocol with two carriers, as in 31 §4.3. Caller identity comes from the connection (the accounts service `AppId`) and is never sent.
 
 ```xml
 <node>
@@ -652,7 +652,7 @@ Pure tests use `const CASES` tables, named by behaviour; the I/O feature tests r
 - `lease_request_refuses_shell_trust` (pure validation)
 
 **`computer-use-dbus`**
-- `introspection_matches_xml`: fails until `dbus/org.bardo.ComputerUse1.xml` equals the skeleton's introspection, as in porter.
+- `introspection_matches_xml`: fails until `dbus/org.bardo.ComputerUse1.xml` equals the skeleton's introspection, as in the accounts service.
 - `error_names_cover_control_refusal`.
 
 **`cuad`**
@@ -774,7 +774,7 @@ Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~
 - `computer-use-action` exactly as §3.0: integer `Lpx`, `ActionTarget::Node`, `CuaTurn`, `StepReply`, `StepEvent`.
 - `CuaModel`/`CuaSession` with cooperative cancel, and the `Transient`/`Parse`/`Fatal` error split.
 - The replay provider for `ScriptedModel`.
-- `Need::Cua` added to porter and 31-ACCOUNTS, with `DataClass::Screen` keeping the OnDevice floor.
+- `Need::Cua` added to the accounts service and 31-ACCOUNTS, with `DataClass::Screen` keeping the OnDevice floor.
 - Frame transport to inferd as an fd/memfd, never base64 on the bus.
 
 **actions**
@@ -795,7 +795,7 @@ Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~
 - The orb presence mapping from §4.
 - The Ask form calls `Run.Answer`.
 
-**accounts / porter**
+**accounts / the accounts service**
 - `AppId` derived from the connection, for cuad's caller checks.
 - accounts-ui draws the CUA grant prompt on stock.
 
@@ -836,7 +836,7 @@ Fork: `cargo build --release && cargo test` in `~/bardo/compositor`, then the `~
 
 ### Critical files for implementation
 - /home/pohsuanlai/rs-wt/companion/cua-integration.md
-- /home/pohsuanlai/porter/ARCHITECTURE.md (the repo shape, boundary script and frozen-trait conventions to copy)
+- /home/pohsuanlai/accounts/ARCHITECTURE.md (the repo shape, boundary script and frozen-trait conventions to copy)
 - /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.4 Inference1, §4.5 consent, §5.5 data-class floors)
 - /home/pohsuanlai/shell-host/scripts/dev/README.md (the nested compositor and headless KWin harness the spikes reuse)
 - /home/pohsuanlai/shell/crates/shell-launcher/src/activation.rs and provider.rs (where the run strip plugs in)

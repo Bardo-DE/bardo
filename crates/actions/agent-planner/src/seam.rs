@@ -1,5 +1,5 @@
 //! The planner as the task model sees it: the actions it may call, the voice it speaks in, and the
-//! model turns it makes. [`PlannerModel`](crate::PlannerModel) is the one over a porter transport;
+//! model turns it makes. [`PlannerModel`](crate::PlannerModel) is the one over an accounts transport;
 //! a test or an evaluation harness that has no transport uses the scripted one behind the
 //! `testing` feature.
 

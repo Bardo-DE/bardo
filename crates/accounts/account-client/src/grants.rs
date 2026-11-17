@@ -25,7 +25,7 @@ pub enum GrantsError {
     Link(#[from] LinkError),
 }
 
-/// An account as a porter daemon that keeps a switch per account reads it.
+/// An account as an accounts daemon that keeps a switch per account reads it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ListedAccount {
     /// The account: its id, provider, label, state, what it claims and where its servers are.
@@ -113,8 +113,8 @@ impl<T: GrantsLink> Grants<T> {
         self.link.grants().await
     }
 
-    /// The accounts the person has, for a porter daemon that keeps a switch per account (the sync
-    /// daemon's Settings rows). accountd answers a porter daemon, Settings and the shell only: an
+    /// The accounts the person has, for an accounts daemon that keeps a switch per account (the sync
+    /// daemon's Settings rows). accountd answers an accounts daemon, Settings and the shell only: an
     /// app learns of accounts through its grants.
     ///
     /// # Errors

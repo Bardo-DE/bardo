@@ -1,7 +1,7 @@
 //! inferd's bus name and object, the option and result keys its methods take and give, and the
 //! error-name prefixes its refusals use.
 
-// inferd's bus name and object live with porter's other bus names.
+// inferd's bus name and object live with the accounts service's other bus names.
 pub use account_wire::names::{INFERENCE_BUS, INFERENCE_PATH};
 /// inferd's settings module (`org.bardo.SettingsModule1`, declared in design/22 §9.4, not
 /// here): the picker rows per kind and the `ai.model.<kind>.<tier>` map.

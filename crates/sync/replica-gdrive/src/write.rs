@@ -38,7 +38,7 @@ fn boundary_for(content: &[u8]) -> String {
     };
     // Every occurrence rules out one boundary, so any content under 4 GiB leaves one free.
     (0..=u32::MAX)
-        .map(|n| format!("porter-gdrive-{n:08x}"))
+        .map(|n| format!("account-gdrive-{n:08x}"))
         .find(|b| !occurs(b))
         .unwrap_or_default()
 }
@@ -268,7 +268,7 @@ mod tests {
     #[test]
     fn a_boundary_never_occurs_in_the_content() {
         let first = boundary_for(b"plain");
-        assert_eq!(first, "porter-gdrive-00000000");
+        assert_eq!(first, "account-gdrive-00000000");
         let taken = boundary_for(first.as_bytes());
         assert_ne!(taken, first);
         assert!(

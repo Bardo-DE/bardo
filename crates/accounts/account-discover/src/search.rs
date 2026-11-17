@@ -4,7 +4,7 @@
 //! Apache-2.0, same author), over the [`Http`] and [`Dns`] seams instead of reqwest and
 //! hickory. The order:
 //!
-//! 1. a provider porter knows that lists the address's domain (no network at all);
+//! 1. a provider the accounts service knows that lists the address's domain (no network at all);
 //! 2. the domain's own autoconfig document, its `.well-known` path, then the ISPDB;
 //! 3. RFC 6186 SRV records;
 //! 4. the MX records: a provider that claims an MX host, or the ISPDB document of the host's
@@ -31,7 +31,7 @@ use std::sync::Arc;
 /// The most a configuration document may weigh. Real ones are a few kilobytes.
 const MAX_DOCUMENT: usize = 256 * 1024;
 
-/// What the search came to: servers, or a provider porter already describes.
+/// What the search came to: servers, or a provider the accounts service already describes.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Outcome {
     /// Servers a source named.

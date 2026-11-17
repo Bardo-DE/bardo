@@ -20,7 +20,7 @@ fn table() -> CallerTable {
             row(
                 "org.bardo.Inference",
                 Some("bardo-inferd.service"),
-                CallerRole::PorterDaemon,
+                CallerRole::AccountDaemon,
             ),
             row("org.bardo.Settings", None, CallerRole::Settings),
             row(
@@ -37,7 +37,7 @@ fn a_unit_resolves_to_its_app_and_role() {
     let cases = [
         (
             "bardo-inferd.service",
-            Some(("org.bardo.Inference", CallerRole::PorterDaemon)),
+            Some(("org.bardo.Inference", CallerRole::AccountDaemon)),
         ),
         (
             "bardo-computer-use.service",
@@ -106,7 +106,7 @@ fn a_table_round_trips_through_its_serde_form() {
         serde_json::from_str::<CallerTable>(&json).expect("table"),
         table()
     );
-    assert!(json.contains(r#""role":"porter_daemon""#));
+    assert!(json.contains(r#""role":"account_daemon_support""#));
 }
 
 #[test]
@@ -177,7 +177,7 @@ fn a_user_row_cannot_replace_a_fixed_system_row_with_another_fixed_role() {
         callers: vec![row(
             "org.example.Mine",
             Some("bardo-computer-use.service"),
-            CallerRole::PorterDaemon,
+            CallerRole::AccountDaemon,
         )],
     };
     let merged = CallerTable::layered(table(), user);

@@ -3,7 +3,7 @@
 //!
 //! - `config`: `agents.toml`, the programs the person lists; off unless `agent.acp.agents` is on
 //!   (the host checks it before it builds a spawner).
-//! - `accounts`: the seam to porter (accountd's launcher interface, inferd's agent endpoints);
+//! - `accounts`: the seam to the accounts service (accountd's launcher interface, inferd's agent endpoints);
 //!   `dbus::DbusAccounts` is the real link, `fake::FakeAccounts` the test one.
 //! - `spawn`: `AgentSpawn`, the real `Spawn`: a launcher session, the model route (an inferd
 //!   endpoint, a handed-off key, or the agent's own sign-in), the environment built from nothing

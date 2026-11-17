@@ -1,7 +1,7 @@
 //! A `Shape` from JSON-schema text: the subset the vocabulary can say, and a typed refusal of the
 //! rest.
 //!
-//! The reader exists so that a caller that holds a schema as text (porter's `ReplyShape::Json`)
+//! The reader exists so that a caller that holds a schema as text (the accounts service's `ReplyShape::Json`)
 //! can still validate a reply with `Shape::check` and repair it through `ExtractSession`. A schema
 //! the vocabulary cannot say is refused, never approximated: a looser `Shape` would pass a reply
 //! the schema forbids, a stricter one would repair a reply it allows.

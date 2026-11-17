@@ -34,7 +34,7 @@ pub enum RowRefused {
 /// the row of `issuer` on `channel`.
 ///
 /// A new row for Google says `testing = true`: a person's own Google client is in testing until
-/// Google verifies it, which is what makes porter say why Google signs the account out after seven
+/// Google verifies it, which is what makes the accounts service say why Google signs the account out after seven
 /// days.
 ///
 /// # Errors

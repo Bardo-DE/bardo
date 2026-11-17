@@ -95,8 +95,8 @@ BANS=(
 # HTTP stack (model-http) may reach a runtime but nothing below. The codecs (model-wire,
 # model-openai-compat) and model-extract are pure over the Transport trait, so when
 # `HttpClient`'s transport is used it sits behind a feature that only a daemon turns on, and these rows
-# keep checking default features. Nothing here reaches porter: the model layer is portable.
-PORTER="account-core inference-core account-client account-provider"
+# keep checking default features. Nothing here reaches the accounts service: the model layer is portable.
+ACCOUNTS="account-core inference-core account-client account-provider"
 EFFECTS="tokio hyper hyper-util rustls zbus zvariant reqwest ureq wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify cedar-policy rmcp"
 # Audio devices belong to the voice stack (speech-audio, speech-pipewire, speech-daemon), never to the crates checked here; and no
 # TTS stack with a GPL grapheme step is ever linked: Kokoro runs as its own process (voice.md 0.3).
@@ -107,32 +107,32 @@ IO_FORBIDDEN="zbus zvariant reqwest wayland-client wayland-backend reis atspi oo
 # reaches a bus, a compositor, a database or an inference runtime.
 IO_NO_BUS="zbus zvariant wayland-client wayland-backend reis atspi oo7 ort fastembed rusqlite notify cedar-policy rmcp"
 RULES=(
-  "computer-use-action: $EFFECTS $PORTER"
-  "model-vision-prep: $EFFECTS $PORTER image fast_image_resize"
-  "model-provider: $EFFECTS $PORTER"
-  "computer-use-parse: $EFFECTS $PORTER"
-  "computer-use-vendors: $EFFECTS $PORTER"
-  "computer-use-session: $EFFECTS $PORTER"
-  "model-replay: $EFFECTS $PORTER"
-  "model-catalog: $EFFECTS $PORTER"
-  "engine-supervisor: $EFFECTS $PORTER"
-  "model-http: $IO_FORBIDDEN $PORTER"
-  "model-wire: $EFFECTS $PORTER"
-  "model-extract: $EFFECTS $PORTER"
-  "model-genai-names: $EFFECTS $PORTER"
-  "model-openai-compat: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
-  "speech-provider: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
-  "speech-vad: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
-  "speech-host-client: $IO_FORBIDDEN $PORTER $AUDIO_DEVICES $GPL_TTS"
-  "bardo-speech-host: $EFFECTS $PORTER $AUDIO_DEVICES $GPL_TTS"
-  "engine-spec: $EFFECTS $PORTER"
-  "engine-manifest: $EFFECTS $PORTER"
-  "engine-probe: $EFFECTS $PORTER"
-  "engine-install: $IO_NO_BUS $PORTER"
+  "computer-use-action: $EFFECTS $ACCOUNTS"
+  "model-vision-prep: $EFFECTS $ACCOUNTS image fast_image_resize"
+  "model-provider: $EFFECTS $ACCOUNTS"
+  "computer-use-parse: $EFFECTS $ACCOUNTS"
+  "computer-use-vendors: $EFFECTS $ACCOUNTS"
+  "computer-use-session: $EFFECTS $ACCOUNTS"
+  "model-replay: $EFFECTS $ACCOUNTS"
+  "model-catalog: $EFFECTS $ACCOUNTS"
+  "engine-supervisor: $EFFECTS $ACCOUNTS"
+  "model-http: $IO_FORBIDDEN $ACCOUNTS"
+  "model-wire: $EFFECTS $ACCOUNTS"
+  "model-extract: $EFFECTS $ACCOUNTS"
+  "model-genai-names: $EFFECTS $ACCOUNTS"
+  "model-openai-compat: $EFFECTS $ACCOUNTS $AUDIO_DEVICES $GPL_TTS"
+  "speech-provider: $EFFECTS $ACCOUNTS $AUDIO_DEVICES $GPL_TTS"
+  "speech-vad: $EFFECTS $ACCOUNTS $AUDIO_DEVICES $GPL_TTS"
+  "speech-host-client: $IO_FORBIDDEN $ACCOUNTS $AUDIO_DEVICES $GPL_TTS"
+  "bardo-speech-host: $EFFECTS $ACCOUNTS $AUDIO_DEVICES $GPL_TTS"
+  "engine-spec: $EFFECTS $ACCOUNTS"
+  "engine-manifest: $EFFECTS $ACCOUNTS"
+  "engine-probe: $EFFECTS $ACCOUNTS"
+  "engine-install: $IO_NO_BUS $ACCOUNTS"
 )
 # The excluded crates may reach `ort` and `sherpa-onnx`, which is why they are excluded; they
-# reach no porter crate, no audio device crate and no GPL TTS stack.
-EXCLUDED_FORBIDDEN="$PORTER $AUDIO_DEVICES $GPL_TTS"
+# reach no accounts crate, no audio device crate and no GPL TTS stack.
+EXCLUDED_FORBIDDEN="$ACCOUNTS $AUDIO_DEVICES $GPL_TTS"
 
 tier_of() {
   local row

@@ -61,14 +61,14 @@ pub async fn read<T: Transport>(
     match reply {
         InferReply::Chat(chat) => match chat.stop {
             StopReason::EndTurn | StopReason::StopSequence => answer_of(&chat.text, &ask.want),
-            // MaxTokens, ContentFilter, ToolUse and any stop a later porter adds: not an answer.
+            // MaxTokens, ContentFilter, ToolUse and any stop a later the accounts service adds: not an answer.
             _ => Err(ReaderError::Unparseable),
         },
         InferReply::Failed(ModelError::Refused) => Err(ReaderError::Refused),
         InferReply::Failed(ModelError::Unparseable | ModelError::Unreadable) => {
             Err(ReaderError::Unparseable)
         }
-        // Failed, Refused, Cancelled, a reply of another kind, and any a later porter adds.
+        // Failed, Refused, Cancelled, a reply of another kind, and any a later the accounts service adds.
         _ => Err(ReaderError::ModelUnavailable),
     }
 }

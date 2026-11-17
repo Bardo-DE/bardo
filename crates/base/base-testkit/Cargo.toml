@@ -1,6 +1,6 @@
 [package]
 name = "base-testkit"
-description = "Test-only utilities that know nothing of porter: scratch directories and the one wait deadline."
+description = "Test-only utilities that know nothing of the accounts service: scratch directories and the one wait deadline."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

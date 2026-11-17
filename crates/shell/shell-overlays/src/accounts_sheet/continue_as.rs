@@ -1,6 +1,6 @@
 //! The "Continue as" question: an app offers to continue as one of the person's accounts. It
 //! stands like the consent alert, but there is nothing to allow: the account is picked and the
-//! person presses Continue. The answer is the same `Allow` once that porter reads as the pick.
+//! person presses Continue. The answer is the same `Allow` once that the accounts service reads as the pick.
 
 use dioxus::prelude::*;
 use ui_components::components::controls::button::Button;

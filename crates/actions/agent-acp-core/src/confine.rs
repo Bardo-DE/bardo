@@ -34,7 +34,7 @@ const SECRET_PAIRS: &[(&str, &str)] = &[
     (".local", "share/bardo/accounts"),
     (".local", "state/bardo/accounts"),
     (".local", "state/bardo/inference"),
-    (".local", "state/porter"),
+    (".local", "state/accounts"),
     (".local", "state/bardo/accountd"),
     (".local", "state/bardo/inferd"),
 ];
@@ -215,7 +215,7 @@ mod tests {
             "/home/u/proj/.local/share/keyrings/login.keyring",
             "/home/u/proj/.local/state/bardo/inferd/keys/registry.json",
             "/home/u/proj/.local/state/bardo/inferd",
-            "/home/u/proj/.local/state/porter/registry.json",
+            "/home/u/proj/.local/state/accounts/registry.json",
             "/home/u/proj/.local/state/bardo/accountd/audit.jsonl",
             "/home/u/proj/.local/state/bardo/inference/keys/registry.json",
             "/home/u/proj/.local/state/bardo/accounts/audit.jsonl",

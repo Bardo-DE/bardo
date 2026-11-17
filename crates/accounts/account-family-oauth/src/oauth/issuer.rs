@@ -85,14 +85,14 @@ pub trait BrowserIssuer: Clone + Debug + Send + Sync + Sized + 'static {
         session: &OAuthSession<Self, H>,
     ) -> impl Future<Output = Result<String, ProviderError>> + Send;
 
-    /// What porter's own token for `audience` is refreshed with (`None`: the whole grant) and
+    /// What the accounts service's own token for `audience` is refreshed with (`None`: the whole grant) and
     /// its form, or `Forbidden` for an audience that is not the account's. No token minted this
     /// way leaves accountd: an app's or a relay's comes from [`BrowserIssuer::grant_token`].
     ///
     /// # Errors
     ///
     /// Returns a [`ProviderError`] when the audience is not the account's or no token can be made.
-    fn porter_token<H>(
+    fn account_token<H>(
         &self,
         session: &OAuthSession<Self, H>,
         audience: &Audience,

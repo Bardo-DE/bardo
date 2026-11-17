@@ -3,7 +3,7 @@
 desktop-protocols holds the desktop's private Wayland protocols, `bardo_*_v1`: the XML, the pure
 wire vocabulary every tier shares, and the wayland-scanner bindings for clients and the
 compositor. It is a leaf: it depends on nothing of ours, so the compositor (the compositor), the shell
-(the shell, layer-shell-host), the agent tier (cua, the actions service, porter's `prov`), the portal (the portal) and
+(the shell, layer-shell-host), the agent tier (cua, the actions service, the accounts service's `prov`), the portal (the portal) and
 Bardo's `ui-blitz` all depend on it without a cycle. `CONVENTIONS.md` holds the rules;
 `FINDINGS.md` the open items.
 

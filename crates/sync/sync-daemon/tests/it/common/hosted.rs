@@ -9,8 +9,8 @@
     reason = "a shared test helper: each test binary uses only part of it"
 )]
 
-use account_client::{Grants, Porter};
-use account_client_inproc::{Hosted as HostedLink, PorterRelays};
+use account_client::{AccountClient, Grants};
+use account_client_inproc::{AccountRelays, Hosted as HostedLink};
 use account_core::consent::{ConsentAnswer, ConsentAsk, GrantScope};
 use account_fake::{FakeProvider, MemoryStore, RecordingAudit, ScriptedLink, ScriptedSheets};
 use account_secrets::MemorySecrets;
@@ -62,12 +62,12 @@ impl Sheets for Person {
 pub type Service =
     AccountService<FakeProvider, MemorySecrets, Person, FixedClock, MemoryStore, RecordingAudit>;
 
-pub type Link = HostedLink<Service, PorterRelays>;
+pub type Link = HostedLink<Service, AccountRelays>;
 
 /// The hosted service and the handles syncd uses, as syncd (`org.bardo.Sync`).
 pub struct Hosted {
     pub service: Arc<Service>,
-    pub porter: Porter<Link>,
+    pub account_client: AccountClient<Link>,
     pub accounts: Arc<Grants<Link>>,
     pub store: MemoryStore,
     pub audit: RecordingAudit,
@@ -105,11 +105,11 @@ pub fn host_with(
         .with_store(store.clone())
         .with_audit(audit.clone()),
     );
-    let link = HostedLink::new(Arc::clone(&service), sync_app()).with_relays(PorterRelays::new());
-    let porter = Porter::over(link);
+    let link = HostedLink::new(Arc::clone(&service), sync_app()).with_relays(AccountRelays::new());
+    let account_client = AccountClient::over(link);
     Hosted {
-        accounts: Arc::new(porter.grants()),
-        porter,
+        accounts: Arc::new(account_client.grants()),
+        account_client,
         service,
         store,
         audit,
@@ -119,5 +119,5 @@ pub fn host_with(
 
 /// What syncd keeps of the accounts, over `hosted`; a removal wipes what `paths` and `hub` name.
 pub fn keep(hosted: &Hosted, paths: Paths, hub: Hub) -> Keep<Link> {
-    Keep::new(&hosted.porter, paths, hub)
+    Keep::new(&hosted.account_client, paths, hub)
 }

@@ -1,4 +1,4 @@
-//! The real porter link: the accounts service's launcher interface
+//! The real the accounts link: the accounts service's launcher interface
 //! (`account_client_dbus::Launcher`) and its `org.bardo.Inference1.Agents` (`OpenEndpoint`,
 //! `CloseEndpoint`) over the bus.
 //!
@@ -14,7 +14,7 @@ use account_capability::LoginOutcome;
 use account_capability::{AgentProgram, AgentProtocol, EnvName};
 use account_client::{Changes, LinkError};
 use account_client_dbus::{
-    AskKind as PorterAskKind, Bus, ChildKey, Delivery as KeyDelivery, Launcher, LauncherError,
+    AskKind as AccountAskKind, Bus, ChildKey, Delivery as KeyDelivery, Launcher, LauncherError,
     LauncherRequest, Revoked,
 };
 use account_core::{DataClass, GrantId, ProcessCredentialId, SecretText, SessionToken};
@@ -222,8 +222,8 @@ impl Accounts for DbusAccounts {
                     if let Ok(ask) = ask? {
                         return Some(Heard::Ask(LoginAsk {
                             kind: match ask.kind {
-                                PorterAskKind::Login => AskKind::Login,
-                                PorterAskKind::Logout => AskKind::Logout,
+                                AccountAskKind::Login => AskKind::Login,
+                                AccountAskKind::Logout => AskKind::Logout,
                             },
                             request: ask.request,
                             account: ask.account,

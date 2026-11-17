@@ -460,7 +460,7 @@ impl<P: Transport> Planner for PlannerModel<P> {
 /// The session type of a transport.
 type AnyOrP<P> = <P as Transport>::Session;
 
-/// What a reply that is not a chat was, for the log: a refusal or a failure with porter's own
+/// What a reply that is not a chat was, for the log: a refusal or a failure with the accounts service's own
 /// words for it (never the prompt), any other kind by name.
 fn not_chat(reply: &InferReply) -> String {
     match reply {
@@ -483,7 +483,7 @@ pub(crate) fn log_unreadable(what: &str, error: &serde_json::Error) {
     );
 }
 
-/// A model that could not be used: the daemon's log says at which stage and why (the porter
+/// A model that could not be used: the daemon's log says at which stage and why (the accounts service
 /// error, never the prompt), the loop sees [`PlanFault::Unavailable`].
 fn unavailable(stage: &str, error: &dyn std::fmt::Display) -> PlanFault {
     tracing::warn!(stage, %error, "the planner's model could not be used");

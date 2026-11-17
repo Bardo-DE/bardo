@@ -35,7 +35,7 @@
 #                                        security tables: always replaced, reset on every install.
 #                                        Need root; read when a daemon starts, so restart them after
 #
-# install-dev.sh stays the way to install the whole agent stack (with porter and the memory service) for one user.
+# install-dev.sh stays the way to install the whole agent stack (with the accounts service and the memory service) for one user.
 set -euo pipefail
 
 REPO_NAME="actions"

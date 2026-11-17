@@ -58,7 +58,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
 12. **Plain types (owner, 2026-10-28).** The type rule changed. The private two-state
     enums `UnitUse` and `UnitCheck` are `bool`; the `LOADER_VARIABLES` doc no longer repeats the
     names. No behaviour change. The public two-state types (`Alive`, `Transient`, `Loader`,
-    `Fragment`, `DropIns`) wait for wave 2 because porter and the compositor use them.
+    `Fragment`, `DropIns`) wait for wave 2 because the accounts service and the compositor use them.
 
 ## Open items
 
@@ -95,6 +95,6 @@ Departures from the plan, standing facts and open items. An entry names the cond
 - The owner chose (2026-10-27) a new level over taking `Full` on the manager's word or reshaping the sandbox: `Proof::Unit`, between
   `Exe` and `Full`, for a hidden image whose unit passes every unit check of `Full` and whose `ExecStart` program is root-only all
   the way up (`UnitFacts::exec_trust`, new). `Full` still means the running image itself was read. What `Unit` cannot see: a main
-  process that later exec'd another program. Consumers opt in (porter: fixed roles accept `Unit`).
+  process that later exec'd another program. Consumers opt in (the accounts service: fixed roles accept `Unit`).
 - `BusPeers::require` asks the manager when any requirement is `Unit` or higher.
-- Breaking for anything that builds `UnitFacts` (porter's fixture): add `exec_trust`.
+- Breaking for anything that builds `UnitFacts` (the accounts service's fixture): add `exec_trust`.

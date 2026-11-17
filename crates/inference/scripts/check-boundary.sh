@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Crate boundaries, mechanically enforced (ARCHITECTURE.md section 1 is the table; this is its
-# mechanical form). Cut from porter's script (porter e9e7cdcd) for the crates that live here.
+# mechanical form). Cut from the accounts service's script (the accounts service e9e7cdcd) for the crates that live here.
 #
 # `cargo tree -i <dep>` exits 101 when the dependency is absent, which is precisely the state
 # we want. Checking the exit status would therefore fail whenever the boundary holds, so we
@@ -52,7 +52,7 @@ for rule in "${RULES[@]}"; do
   fi
 done
 
-# ONE CLIENT: reqwest is named by http-reqwest (porter's crate) and by no crate of this
+# ONE CLIENT: reqwest is named by http-reqwest (the accounts service's crate) and by no crate of this
 # workspace; inferd takes `ReqwestHttp` from it.
 named=$(grep -lE '^reqwest[ .=]' */Cargo.toml || true)
 if [ -n "$named" ]; then
@@ -130,15 +130,15 @@ ratchet() {
     echo "deleted: $what is not in any crate"
   fi
 }
-ratchet "a hand-rolled percent encoder or decoder" 'fn percent_(en|de)code\b' "" "porter_ids::percent"
+ratchet "a hand-rolled percent encoder or decoder" 'fn percent_(en|de)code\b' "" "account_ids::percent"
 ratchet "hand-rolled civil-date arithmetic" '(days_from_civil|civil_from_days|719_468)' "" "chrono"
 ratchet "a hand-written MD5 (its first round constant)" '0xd76aa478' "" "md-5"
 ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? )?struct Scratch\b' "" "test_kit::Scratch"
 
-# The allowed edges to the crates of ours and of the repos we pin (this workspace, porter, the model layer,
+# The allowed edges to the crates of ours and of the repos we pin (this workspace, the accounts service, the model layer,
 # Bardo): each crate's DIRECT normal and build dependencies (all features), and nothing else. A
 # dependency not listed is a leak; so is one the crate no longer has, so the table stays exact.
-# Dev dependencies are outside it. The inference service depends on porter by git rev; porter never depends on
+# Dev dependencies are outside it. The inference service depends on the accounts service by git rev; the accounts service never depends on
 # The inference service.
 EDGES=(
   "inference-daemon: inference-agent-proto inference-fs inference-settings computer-use-action computer-use-parse computer-use-session computer-use-vendors settings-dbus settings-types engine-manifest engine-probe engine-spec engine-supervisor inference-probe model-catalog model-extract model-http model-openai-compat model-provider model-replay model-wire inference-bridge account-callers account-capability account-client account-client-dbus account-core account-daemon-support account-dbus base-fs http-core http-reqwest account-ids inference-core account-match account-provider inference-router account-settings account-store inference-tailnet account-tailscale inference-turns account-wire speech-host-client speech-provider inference-dbus model-vision-prep"

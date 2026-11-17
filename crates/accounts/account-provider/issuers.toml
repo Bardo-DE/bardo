@@ -16,7 +16,7 @@
 #   byo_only   asked only of a client that is the person's own (Gmail's restricted scope);
 #   identity   asked in a sign-in for one more access too, to show who answered;
 #   reads_who  the scope whose token shows who the account is.
-# `all_scope` names every permission already consented to, for the token porter itself uses.
+# `all_scope` names every permission already consented to, for the token the accounts service itself uses.
 # A `[[<issuer>.api]]` row is where an API is when the provider file names no server for it.
 
 [google]

@@ -82,7 +82,7 @@ pub fn pinned_model_catalog() -> PathBuf {
         "this build found no catalog under crates/models to embed"
     );
     let dir = std::env::temp_dir().join(format!(
-        "porter-model-catalog-{}",
+        "account-model-catalog-{}",
         env!("BARDO_ENGINE_CATALOG_REV")
     ));
     if dir.is_dir() {

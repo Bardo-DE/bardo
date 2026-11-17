@@ -31,8 +31,8 @@ pub use classes::{
 
 use account_capability::CapabilityKind;
 use account_client::{
-    Accounts, AccountsError, AccountsLink, ConsentOffer, Grants, GrantsError, GrantsLink,
-    ListedAccount, Porter,
+    AccountClient, Accounts, AccountsError, AccountsLink, ConsentOffer, Grants, GrantsError,
+    GrantsLink, ListedAccount,
 };
 use account_core::consent::{Grant, Usage};
 use account_core::{Account, AccountId, GrantKey, ProviderHint};
@@ -165,12 +165,12 @@ pub struct Keep<T> {
 }
 
 impl<T: GrantsLink + AccountsLink> Keep<T> {
-    /// The accounts of `porter`; a removal wipes what `paths` and `hub` name.
+    /// The accounts of `accounts`; a removal wipes what `paths` and `hub` name.
     #[must_use]
-    pub fn new(porter: &Porter<T>, paths: Paths, hub: Hub) -> Self {
+    pub fn new(account_client: &AccountClient<T>, paths: Paths, hub: Hub) -> Self {
         Self {
-            grants: Arc::new(porter.grants()),
-            accounts: porter.accounts(),
+            grants: Arc::new(account_client.grants()),
+            accounts: account_client.accounts(),
             turning: tokio::sync::Mutex::new(()),
             paths,
             hub,

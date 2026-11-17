@@ -1,5 +1,5 @@
 //! The SMTP relay: `EHLO`, `STARTTLS` and `AUTH` happen between the relay and the server; the
-//! app sees `220 porter ESMTP ready`, then an `EHLO` reply that offers no `AUTH` and no
+//! app sees `220 accounts ESMTP ready`, then an `EHLO` reply that offers no `AUTH` and no
 //! `STARTTLS`, then a session that is already authenticated.
 
 use crate::auth::{Sasl, pick};
@@ -131,7 +131,7 @@ impl SmtpAuth {
 /// What the app is greeted with before it sends `EHLO`.
 #[must_use]
 pub fn app_greeting() -> Vec<u8> {
-    b"220 porter ESMTP ready\r\n".to_vec()
+    b"220 the accounts service ESMTP ready\r\n".to_vec()
 }
 
 /// Where the relay stands.

@@ -18,7 +18,7 @@ pub fn group_heading(group: ProviderGroup) -> &'static str {
     }
 }
 
-/// What this capability lets porter do with the account.
+/// What this capability lets the accounts service do with the account.
 ///
 /// In the words a sign-in that asks
 /// for it shows ("See and change this account's files"), where those say more than the

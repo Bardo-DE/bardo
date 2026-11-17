@@ -2,7 +2,7 @@
 //!
 //! Everything an app sends over dbusmenu is a claim. A command id counts only when the app is
 //! proven to be the app whose manifest names it (`Identity::Verified`, which the service grants
-//! only when porter's caller identity of the name's owner is that app and its menu name is the
+//! only when the accounts service's caller identity of the name's owner is that app and its menu name is the
 //! one Bardo derives from the app). Then the item is that action, run through intentd so the
 //! gate, the confirmation, the undo journal and the audit apply as for a typed call. Every other
 //! item of an app is a click the shell cannot weigh, so it is `Destructive` and always asks; the
@@ -78,7 +78,7 @@ pub enum Identity {
     /// (`/proc/<pid>/root/.flatpak-info`, which a Landlock-confined reader is refused), so it
     /// cannot say which app it is: shown as an unknown app, and never proven.
     Unreadable,
-    /// Porter's caller identity names the owner as this app, and the name is the menu name of
+    /// The accounts service's caller identity names the owner as this app, and the name is the menu name of
     /// that app.
     Verified(AppName),
 }

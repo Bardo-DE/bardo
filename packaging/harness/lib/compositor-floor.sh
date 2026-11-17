@@ -99,8 +99,8 @@ floor_image() {
     bardo-compositorctl | compositor-probe | compositor-shell-exec) path="${SCEN_TOOLS:?floor_image: scenario.sh is not sourced}/bin/$1" ;;
     bardo-portal) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/portal-target/debug/bardo-portal" ;;
     bardo-shell) path="${FLOOR_SHELL_TARGET:-${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/shell-target}/debug/bardo-shell" ;; # FLOOR_SHELL_TARGET: the accounts rig runs bardo-shell at its pin
-    bardo-accountd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/porter-target/debug/bardo-accountd" ;;
-    bardo-syncd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/sync-target/debug/bardo-syncd" ;; # sync's, since sync left porter
+    bardo-accountd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/account-target/debug/bardo-accountd" ;;
+    bardo-syncd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/sync-target/debug/bardo-syncd" ;; # sync's, since sync left accounts
     bardo-inferd) path="${SCEN_BUILD:?floor_image: scenario.sh is not sourced}/inference-target/debug/bardo-inferd" ;;
     xdg-desktop-portal) path=/usr/libexec/xdg-desktop-portal ;;
     bardo-compositor) path="${SCEN_TOOLS:?floor_image: scenario.sh is not sourced}/bin/bardo-compositor" ;;

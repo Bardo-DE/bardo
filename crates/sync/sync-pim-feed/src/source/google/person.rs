@@ -301,7 +301,7 @@ pub fn to_vcf(person: &Person) -> String {
     let mut lines: Vec<String> = vec![
         "BEGIN:VCARD".into(),
         "VERSION:3.0".into(),
-        "PRODID:-//porter//syncd google contacts//EN".into(),
+        "PRODID:-//accounts//syncd google contacts//EN".into(),
         format!("UID:{}", escape(&person.resource_name)),
         format!("FN:{}", escape(&full_name(person))),
         format!(

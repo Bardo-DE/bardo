@@ -6,7 +6,7 @@
 //!    capabilities again. A credential is never sent before the connection is secure.
 //! 3. Authenticate by the credential: a password by `USER` and `PASS` (or `AUTH PLAIN` when the
 //!    server offers `SASL PLAIN` and no `USER`); an access token by `AUTH XOAUTH2`.
-//! 4. Tell the app `+OK porter relay ready`, then relay bytes both ways. The app's own `USER`,
+//! 4. Tell the app `+OK accounts relay ready`, then relay bytes both ways. The app's own `USER`,
 //!    `PASS` and `APOP` are answered `+OK` here and never forwarded (a client that logs in
 //!    anyway is told it succeeded); its `AUTH` and `STLS` are refused.
 
@@ -60,7 +60,7 @@ impl Pop3Auth {
 /// What the app is greeted with once the relay has authenticated.
 #[must_use]
 pub fn app_greeting() -> Vec<u8> {
-    b"+OK porter relay ready\r\n".to_vec()
+    b"+OK the accounts relay ready\r\n".to_vec()
 }
 
 /// Where the relay stands.

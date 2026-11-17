@@ -18,7 +18,7 @@ use tokio::net::{TcpListener, TcpStream};
 /// was registered; the listener accepts either, because a browser sends `GET /?code=...` for both.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum RedirectPath {
-    /// `http://127.0.0.1:<port>/`, porter's form and the default.
+    /// `http://127.0.0.1:<port>/`, the accounts service's form and the default.
     #[default]
     Slash,
     /// `http://127.0.0.1:<port>`, with no path, the form mailo registered.

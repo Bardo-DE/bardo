@@ -7,9 +7,9 @@ use account_core::{
     ProviderId, SecretText, SessionToken,
 };
 use account_sheet::{
-    Entry, FieldKind, FieldSpec, FieldValue, ProblemKind as PorterProblem, ProviderKind,
+    Entry, FieldKind, FieldSpec, FieldValue, ProblemKind as AccountProblem, ProviderKind,
     ProviderRow, Review, ReviewView, RowKind, ServiceRow, ServiceState, SheetView,
-    SignInFault as PorterFault, SignInView, UserCode,
+    SignInFault as AccountFault, SignInView, UserCode,
 };
 use base_url::WebUrl;
 use shell_model::accounts::sheet::{
@@ -88,7 +88,7 @@ fn line(key: &str, name: &str, offer: ServiceOffer, limit: Option<Limitation>) -
     }
 }
 
-/// The row porter sends for the provider `id`: its label is the id with a capital.
+/// The row the accounts service sends for the provider `id`: its label is the id with a capital.
 fn named(id: &str) -> ProviderRow {
     let mut chars = id.chars();
     let label: String = chars
@@ -106,7 +106,7 @@ fn named(id: &str) -> ProviderRow {
     }
 }
 
-/// The row porter sends for an assistant whose provider file says `agent_login`.
+/// The row the accounts service sends for an assistant whose provider file says `agent_login`.
 fn agent_row() -> ProviderRow {
     ProviderRow {
         id: provider("claude-code"),
@@ -183,7 +183,7 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
         ],
         problem: Some(account_sheet::FieldProblem {
             field: FieldKind::Password,
-            problem: PorterProblem::Refused,
+            problem: AccountProblem::Refused,
         }),
     });
     let review = SheetView::Review(ReviewView {
@@ -356,7 +356,7 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
             SheetView::Failed {
                 provider: provider("nextcloud"),
                 row: Some(named("nextcloud")),
-                fault: PorterFault::NeedsClientId,
+                fault: AccountFault::NeedsClientId,
             },
             Some(Step::Failed {
                 provider: "Nextcloud".to_owned(),
@@ -370,7 +370,7 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
             SheetView::Failed {
                 provider: provider("google"),
                 row: Some(named("google")),
-                fault: PorterFault::NeedsClientId,
+                fault: AccountFault::NeedsClientId,
             },
             Some(Step::Failed {
                 provider: "Google".to_owned(),
@@ -384,7 +384,7 @@ fn every_sheet_view_becomes_the_props_of_its_part() {
             SheetView::Failed {
                 provider: provider("claude-code"),
                 row: Some(agent_row()),
-                fault: PorterFault::NoLauncher,
+                fault: AccountFault::NoLauncher,
             },
             Some(Step::Failed {
                 provider: "Claude Code".to_owned(),
@@ -503,7 +503,7 @@ fn the_title_area_carries_the_steps_own_title() {
             SheetView::Failed {
                 provider: provider("google"),
                 row: Some(named("google")),
-                fault: PorterFault::Refused,
+                fault: AccountFault::Refused,
             },
             "Could not add Google",
         ),
@@ -866,16 +866,16 @@ fn an_app_password_field_says_where_the_provider_makes_one() {
 }
 
 #[test]
-fn porter_faults_land_on_the_shell_faults() {
+fn accounts_service_faults_land_on_the_shell_faults() {
     use super::words::fault_of;
     let cases = [
-        (PorterFault::NoLauncher, SignInFault::NoLauncher),
-        (PorterFault::NotInstalled, SignInFault::NotInstalled),
-        (PorterFault::Expired, SignInFault::TimedOut),
-        (PorterFault::AlreadyAdded, SignInFault::AlreadyAdded),
+        (AccountFault::NoLauncher, SignInFault::NoLauncher),
+        (AccountFault::NotInstalled, SignInFault::NotInstalled),
+        (AccountFault::Expired, SignInFault::TimedOut),
+        (AccountFault::AlreadyAdded, SignInFault::AlreadyAdded),
     ];
-    for (porter, shell) in cases {
-        assert_eq!(fault_of(porter), shell);
+    for (account_client, shell) in cases {
+        assert_eq!(fault_of(account_client), shell);
     }
 }
 
@@ -883,15 +883,15 @@ fn porter_faults_land_on_the_shell_faults() {
 fn only_a_fault_a_retry_can_fix_offers_try_again() {
     use super::words::recovery_of;
     let cases = [
-        (PorterFault::NeedsClientId, Some(Recovery::NoRetry)),
-        (PorterFault::NotInstalled, Some(Recovery::NoRetry)),
-        (PorterFault::NoLauncher, Some(Recovery::NoRetry)),
+        (AccountFault::NeedsClientId, Some(Recovery::NoRetry)),
+        (AccountFault::NotInstalled, Some(Recovery::NoRetry)),
+        (AccountFault::NoLauncher, Some(Recovery::NoRetry)),
         // The fault's own answer applies: it is no retry.
-        (PorterFault::AlreadyAdded, None),
-        (PorterFault::Forbidden, Some(Recovery::NoRetry)),
-        (PorterFault::Unreachable, Some(Recovery::Retry)),
-        (PorterFault::TimedOut, Some(Recovery::Retry)),
-        (PorterFault::Refused, Some(Recovery::Retry)),
+        (AccountFault::AlreadyAdded, None),
+        (AccountFault::Forbidden, Some(Recovery::NoRetry)),
+        (AccountFault::Unreachable, Some(Recovery::Retry)),
+        (AccountFault::TimedOut, Some(Recovery::Retry)),
+        (AccountFault::Refused, Some(Recovery::Retry)),
     ];
     for (fault, recovery) in cases {
         assert_eq!(recovery_of(fault), recovery, "{fault:?}");
@@ -903,7 +903,7 @@ fn the_microsoft_failure_without_a_client_id_has_no_try_again() {
     let failed = SheetView::Failed {
         provider: provider("microsoft"),
         row: Some(named("microsoft")),
-        fault: PorterFault::NeedsClientId,
+        fault: AccountFault::NeedsClientId,
     };
     let Some(Step::Failed { recovery, why, .. }) = shown(failed, vec![]) else {
         panic!("no failure");
@@ -913,7 +913,7 @@ fn the_microsoft_failure_without_a_client_id_has_no_try_again() {
 }
 
 #[test]
-fn consent_and_review_name_the_app_as_porter_resolved_it() {
+fn consent_and_review_name_the_app_as_accounts_service_resolved_it() {
     let agent = app("org.bardo.Agent.claude-code");
     let consent = SheetView::Consent(
         ConsentAsk::new(

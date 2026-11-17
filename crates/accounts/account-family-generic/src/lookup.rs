@@ -94,7 +94,7 @@ impl MailLookup {
                 claims,
             }),
             SignInMode::Reauthenticate { .. } => Self::ask_server(typed),
-            // a variant a newer porter adds: the sign-in ends as unreadable
+            // a variant a newer the accounts service adds: the sign-in ends as unreadable
             _ => Outcome::Fail(SignInFault::Unreadable),
         }
     }

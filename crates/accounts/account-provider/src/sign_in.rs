@@ -1,4 +1,4 @@
-//! A family's sign-in (porter PLAN G4): a small conversation the host drives. The host feeds it
+//! A family's sign-in (the accounts service PLAN G4): a small conversation the host drives. The host feeds it
 //! a [`SignInInput`] and gets a [`SignInStep`] back, draws what the step asks for, and repeats
 //! until `Done` or `Failed`. The credential comes out only in `Done(Signed)`, which the host
 //! keeps: it is never drawn, never sent to a sheet and never serialised.

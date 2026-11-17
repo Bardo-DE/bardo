@@ -146,7 +146,7 @@ pub fn turn(obs: &Observation) -> (CuaStepRequest, FrameAttachment) {
 /// [`turn`], telling the model what the last input did to the window.
 ///
 /// An input that ran and left
-/// the screen as it was is reported to the model as such (porter's `PrevResult` has no word for
+/// the screen as it was is reported to the model as such (the accounts service's `PrevResult` has no word for
 /// "ran, no change", so it goes as a failure with plain words).
 pub fn turn_after(obs: &Observation, unchanged: bool) -> (CuaStepRequest, FrameAttachment) {
     let nodes: &[A11yNode] = match &obs.tree {

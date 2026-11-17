@@ -1,4 +1,4 @@
-//! OAuth for the families (porter PLAN §2.6), from mailo's `oauth`, `signin`, `renewal` and
+//! OAuth for the families (the accounts service PLAN §2.6), from mailo's `oauth`, `signin`, `renewal` and
 //! `loopback`: PKCE values (`pkce`), what a loopback redirect may be (`loopback`, with the
 //! listener behind feature `io`), which client id this build presents (`registry`), when a
 //! token is renewed (`renewal`), and the code exchange, refresh and revoke calls over the

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scenario `accounts-regress-sheet`: the add-account sheet and the consent window, as accounts-hunt found them
 # wrong (probes 1, 2, 3 and 6) and bardo-shell 245cc25 fixed them. Each step fails when its bug comes back. Real bardo-accountd,
-# bardo-shell drawing the sheets, the rigs' fake mail and Graph (porter's and the sync service's); no probe of bardo-shell's surfaces exists (see harness/lib/regress.sh),
+# bardo-shell drawing the sheets, the rigs' fake mail and Graph (the accounts service's and the sync service's); no probe of bardo-shell's surfaces exists (see harness/lib/regress.sh),
 # so a check reads the bus record (what bardo-accountd shows the sheet, what the keys made it send) or compares captures.
 #
 #   boot      bardo-compositor, recorded bus, rig, bardo-accountd with 14 filler providers (at least 24 rows: the shipped providers
@@ -12,7 +12,7 @@
 #   S1        "Other..." picks `generic-imap` and shows its form, not the calendar and contacts one [bus: Input, Update]
 #   S5        the step title follows the provider's label, never its id: two providers with one label and two ids draw
 #             the same title, one with another label draws another [capture of the card's title band]
-#   S6        Microsoft with no client id (the client goes between the list and the pick: porter 1c9a8e8 leaves a clientless provider off the list): the failure is `needs_client_id`; Return (Done, the default) dismisses; Tab
+#   S6        Microsoft with no client id (the client goes between the list and the pick: the accounts service 1c9a8e8 leaves a clientless provider off the list): the failure is `needs_client_id`; Return (Done, the default) dismisses; Tab
 #             twice then Return still dismisses, so there is no Try Again between Back and Done [bus: Input]
 #   add       one OpenAI key added through the same sheet, for the consent window (the consent question is bardo-accountd's)
 #   S5        an agent's app id is shown as written: `org.example.Agent.Zq-Bx` and its lowercase twin draw different
@@ -75,7 +75,7 @@ step_s4_cancel_stays() {
   reg_verdict
 }
 
-# Batch 7 (porter 1c9a8e8): the add list leaves out an OAuth provider whose issuer has no client for this build, so
+# Batch 7 (the accounts service 1c9a8e8): the add list leaves out an OAuth provider whose issuer has no client for this build, so
 # Google is listed (and "Google" + Return picks it, not google-ai) only once a Google client is registered. The
 # shipped file is the jail's /usr/share overlay; the files are read again each time a sheet opens.
 acc_clients_google() {
@@ -125,7 +125,7 @@ step_s5_titles() {
 }
 
 # S6 reaches the failed card with a client that is there when the list is drawn and gone when the sign-in starts
-# (Microsoft with no client is no longer listed at all, so it cannot be picked; porter reads the files at each sign-in).
+# (Microsoft with no client is no longer listed at all, so it cannot be picked; the accounts service reads the files at each sign-in).
 s6_pick_microsoft_without_client() {
   acc_clients_for_issuer
   open_sheet || return 1

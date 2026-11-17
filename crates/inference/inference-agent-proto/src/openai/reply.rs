@@ -146,7 +146,7 @@ pub fn models_json(ids: &[String], created: i64) -> Value {
         "object": "list",
         "data": ids
             .iter()
-            .map(|id| json!({ "id": id, "object": "model", "created": created, "owned_by": "porter" }))
+            .map(|id| json!({ "id": id, "object": "model", "created": created, "owned_by": "accounts" }))
             .collect::<Vec<_>>(),
     })
 }

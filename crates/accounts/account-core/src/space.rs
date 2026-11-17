@@ -5,7 +5,7 @@
 //! Spaces (Bardo's Spaces kit numbers them, `ui_style::space::list::SpaceId(u64)`), and any of
 //! them may be linked to a desktop-wide Space, whose registry accountd keeps
 //! (`org.bardo.Spaces1`). Only linked Spaces share agent memory and consent across apps; an
-//! unlinked Space is its app's alone. porter owns the ids; Bardo's kit stores only an opaque
+//! unlinked Space is its app's alone. The accounts service owns the ids; Bardo's kit stores only an opaque
 //! link per Space, which is a desktop-wide Space's id.
 //!
 //! One [`SpaceId`] names any of the three kinds ([`SpaceKind`]), as text:

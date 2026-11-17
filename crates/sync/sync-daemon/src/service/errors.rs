@@ -1,6 +1,6 @@
 //! What a method answers instead of a value: a refusal as the error
 //! `org.bardo.Accounts1.Error.<Refusal>` (`account_dbus::accounts::refusal_error_name` pins the names; one
-//! error vocabulary for porter's daemons), or one of the bus's own under its real name, so a
+//! error vocabulary for the accounts service's daemons), or one of the bus's own under its real name, so a
 //! client classifies it as it does a bus's refusal. Written by hand, as accountd's: the
 //! `DBusError` derive names every non-refusal `org.freedesktop.zbus.Error`.
 

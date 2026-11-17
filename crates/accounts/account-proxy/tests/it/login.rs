@@ -45,8 +45,8 @@ impl Proto {
     fn ready(self) -> &'static str {
         match self {
             Proto::Imap => "* PREAUTH",
-            Proto::Pop3 => "+OK porter relay ready\r\n",
-            Proto::Smtp => "220 porter ESMTP ready\r\n",
+            Proto::Pop3 => "+OK the accounts relay ready\r\n",
+            Proto::Smtp => "220 the accounts service ESMTP ready\r\n",
         }
     }
 

@@ -1,5 +1,5 @@
 //! What a transport carries, one trait per domain. A transport implements the domains it can
-//! serve; a method a transport cannot serve is not on its type, because [`crate::Porter`] hands out
+//! serve; a method a transport cannot serve is not on its type, because [`crate::AccountClient`] hands out
 //! a domain client only over a transport that implements the domain's trait.
 
 use crate::accounts::{
@@ -80,7 +80,7 @@ pub trait GrantsLink: Send + Sync + 'static {
     /// Withdraws one of this app's own grants.
     fn revoke(&self, grant: &GrantId) -> impl Future<Output = Result<(), GrantsError>> + Send;
 
-    /// The accounts the person has, for a porter daemon that keeps a switch per account.
+    /// The accounts the person has, for an accounts daemon that keeps a switch per account.
     fn accounts(&self) -> impl Future<Output = Result<Vec<ListedAccount>, GrantsError>> + Send;
 
     /// Asks the person for the access the account's provider asks only on use, for `kinds`.

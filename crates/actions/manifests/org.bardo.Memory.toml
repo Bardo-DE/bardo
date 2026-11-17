@@ -1,6 +1,6 @@
 # The built-in `org.bardo.Memory` provider, served by bardo-actiond (SPEC C19): the planner reaches
 # memory only through these router actions, so the router can compute taint and label what it
-# delivers. Every field is written (porter's provider-file rule). Names carry the app's prefix.
+# delivers. Every field is written (the accounts service's provider-file rule). Names carry the app's prefix.
 vocab = 1
 app = "org.bardo.Memory"
 

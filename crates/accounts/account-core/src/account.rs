@@ -47,7 +47,7 @@ pub enum AccountState {
     /// Working, with a restriction the UI explains.
     Limited,
     /// A program that holds its own sign-in has not signed in (or says it is signed out): an
-    /// agent, or Tailscale. The person signs in inside that program, never by giving porter a
+    /// agent, or Tailscale. The person signs in inside that program, never by giving the accounts service a
     /// password. Only `AgentLogin` and `OwnProgram` accounts are ever here.
     NeedsLogin,
 }

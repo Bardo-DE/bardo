@@ -1,4 +1,4 @@
-//! Opening the add sheet from Settings, through porter's client: one sheet in the account service
+//! Opening the add sheet from Settings, through the accounts service's client: one sheet in the account service
 //! adds everything, an identity or an AI key. The Settings role may call `AddAccount`. The sheet
 //! is asked of the owner of the service's name that was confirmed, never of the name.
 
@@ -16,10 +16,10 @@ pub async fn add_account(bus: &BusSource) -> AddEnd {
     let Ok(accountd) = pinned_starting(bus, ACCOUNTS_BUS).await else {
         return AddEnd::Failed;
     };
-    let Ok(porter) = accountd.accounts() else {
+    let Ok(account_client) = accountd.accounts() else {
         return AddEnd::Failed;
     };
-    let registry = porter.accounts();
+    let registry = account_client.accounts();
     let asked = answered(
         Deadline::PROMPT,
         peer::ACCOUNTS,

@@ -82,8 +82,8 @@ are named by both the desktop and the crates that serve it), and `computer-use-b
 where the leaf types its records and the `Start` body name now live (it links none of the capability crates). See FINDINGS, "Spec
 conflicts".
 
-The repo order is the model layer, porter, the memory service, the actions service, cua, the shell. cua reaches the model layer's
-`computer-use-action` and `model-replay`, porter's `prov`, `account-core`, `inference-core`,
+The repo order is the model layer, the accounts service, the memory service, the actions service, cua, the shell. cua reaches the model layer's
+`computer-use-action` and `model-replay`, the accounts service's `prov`, `account-core`, `inference-core`,
 The memory service's `memory-core` and `memory-client`, and the actions service's `action-core`
 (`CuaAsk`, `GateAnswer`, `MessageDraft`) and `action-client`
 (`IntentProvider`, `Intents`), all by sibling path until pinned git revs replace them. Nothing of
@@ -125,10 +125,10 @@ only; the pure set never reaches an effect crate; `wayland-client` is behind `co
 
 | Concept | Home |
 | --- | --- |
-| who acted, effects, labels, ids of sessions, runs, tasks, messages and entities, `Message`, `AgentRef`, `Address` | porter `prov` (never redefined here); the actor of a run's records is `cua_bus::cua_actor` |
+| who acted, effects, labels, ids of sessions, runs, tasks, messages and entities, `Message`, `AgentRef`, `Address` | the accounts service `prov` (never redefined here); the actor of a run's records is `cua_bus::cua_actor` |
 | **a run's progress and result** | `prov::Message` of kind `Report`; `cua_bus::report_draft` builds the draft, `CuaOutcome::status` picks the status. There is no result type |
 | coordinate spaces, `CuaAction`, `Point<S>`, `Chord`, `NodeId` | the model layer `computer-use-action` (`WindowSpace`, never a bare pixel pair) |
-| the model step (`CuaBegin`, `CuaStepRequest`, `CuaStepReply`, `TreeText`, `StepIndex`, `ServedBy`) | porter `inference-core`; `cua_run::turn` builds the request |
+| the model step (`CuaBegin`, `CuaStepRequest`, `CuaStepReply`, `TreeText`, `StepIndex`, `ServedBy`) | the accounts service `inference-core`; `cua_run::turn` builds the request |
 | the gate vocabulary `RunMode`, `WindowTrust`, `WindowClass` | the model layer `computer-use-action`; `computer-use-desktop` re-exports `RunMode` and `WindowTrust` |
 | the gate contract (`CuaAsk`, `GateAnswer`, `EffectBasis`, `GrantAsk`, `MessageDraft`) | the actions service `action-core` |
 | the confirmation | the router's, through `Confirm1`; cua only stops its input (`RunEffect::SuspendLease(Consent)`, then `Proceed`) |
@@ -273,7 +273,7 @@ action it leads to is gated like any other.
 
 - Licence `MIT OR Apache-2.0`; edition 2024; `unsafe_code = "deny"`; `rust-toolchain.toml` pins
   1.98.1 and `deny.toml` is the licence gate.
-- Cross-repo dependencies are git dependencies at pinned revs (the model layer, porter, the memory service, the actions service,
+- Cross-repo dependencies are git dependencies at pinned revs (the model layer, the accounts service, the memory service, the actions service,
   desktop-protocols), so a plain clone builds with no sibling checkout; the URLs and revs match the
   other repos' pins of the same crates, or cargo links two copies. External versions are copied from Bardo's `docs/workspace-deps.toml`, never chosen here;
   FINDINGS lists the ones added to this workspace.
@@ -362,13 +362,13 @@ local model cannot play (the spend cap) are `engines = "scripted_only"`.
 
 **The cloud engine** is the `computer-use-eval-cloud` crate (the bus is not allowed in `computer-use-eval`). It plays
 the same tasks with the same `ProviderModel` and `CuaSession`, but the provider under them is
-`InferdProvider`: each model turn is a chat turn asked of porter's inferd over the bus (`Need::Llm`
+`InferdProvider`: each model turn is a chat turn asked of the accounts service's inferd over the bus (`Need::Llm`
 with chat, vision and, for a tool dialect, tools; data class `screen`; the screenshot inline). inferd
 picks the model by tier from its own config, fetches the API key from accountd for that one turn and
 meters the reply against `[ai.spend]`; the eval process never has the key (`isolation::look` checks
 its environment and descriptors and the binary refuses to run if a credential is in reach). This is
 one layer above computer-use-system's `InferdCuaModel`, which opens `Need::ComputerUse`: inferd refuses a computer-use
-session on a hosted model today (porter FINDINGS, "inferd hosted"), so the cloud eval cannot use that
+session on a hosted model today (the accounts service FINDINGS, "inferd hosted"), so the cloud eval cannot use that
 path; what it exercises of the production path is the prompt, the parse, the run machine and the
 broker's routing, consent and spend. A model is a trial entry under `eval/cloud-catalog/` (the
 hosted entries of the model layer's catalogue say nothing of a computer-use dialect); a refusal on a spend

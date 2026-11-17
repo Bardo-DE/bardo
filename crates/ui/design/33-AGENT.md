@@ -31,7 +31,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | Repo | Holds | Portable |
 | --- | --- | --- |
 | The model layer (new) | the model layer: provider trait, backends, computer-use action and parse, vision prep, catalogue, engine supervisor | yes |
-| porter | the account and capability layer, plus `prov` (labels and the shared who and what vocabulary), `SpaceId`, streaming inference, inferd | yes |
+| The accounts service | the account and capability layer, plus `prov` (labels and the shared who and what vocabulary), `SpaceId`, streaming inference, inferd | yes |
 | The memory service (new) | memory: event log, memory files, recall, the memory daemon | yes (daemon Linux) |
 | The actions service (new) | typed actions, router, policy, review, the MCP edge, and the companion agent (loop, daemon, reader), plus the adapter Bardo apps use | core yes; daemons Linux |
 | cua (new) | computer use: accessibility tree, agent seat, masked capture, leases, run machine, the daemon, the compositor protocol | core yes; daemon Linux |
@@ -40,7 +40,7 @@ SPEC.md and an area spec disagree, SPEC.md wins.
 | The shell | launcher companion mode, the companion service, providers, overlays, settings domain | no |
 | The Settings app | the Intelligence page row and icon | no |
 
-Direction, acyclic and enforced per repo by each `check-boundary.sh`: the model layer, then porter, then
+Direction, acyclic and enforced per repo by each `check-boundary.sh`: the model layer, then the accounts service, then
 The memory service, then the actions service, then cua, then the shell. Bardo depends on none of them; the actions service's adapter depends
 on the UI kit's `ui-intents`.
 
@@ -48,7 +48,7 @@ on the UI kit's `ui-intents`.
 
 The spec's section 2 holds the whole table; the ones the UI kit's part touches:
 
-- `Effect`, `Actor`, labels (`Integrity`, `Confidentiality`, `Label`), ids and receipts: porter's
+- `Effect`, `Actor`, labels (`Integrity`, `Confidentiality`, `Label`), ids and receipts: the accounts service's
   `prov`. The UI kit's `EffectMark` and `ActorMark` are views of them, converted in the shell.
 - Presence: `ui-core::vocab::CompanionPresence`, derived only by the shell's `presence_of`.
 - Memory verb: `ui-core::vocab::MemoryVerb`, used by the shell's launcher too.
@@ -63,7 +63,7 @@ The spec's section 2 holds the whole table; the ones the UI kit's part touches:
 
 | Daemon | Repo | Serves | Calls |
 | --- | --- | --- | --- |
-| inferd | porter | `org.bardo.Inference1`: availability, open and prepare a model session, usage; engines over Unix sockets in transient units | engines |
+| inferd | the accounts service | `org.bardo.Inference1`: availability, open and prepare a model session, usage; engines over Unix sockets in transient units | engines |
 | intentd | the actions service | `org.bardo.Intents1`: registry, search, run, context, session, the computer-use gate, control, request | apps' providers, the confirm surface, the reader, memory, inferd |
 | companiond | the actions service | `org.bardo.Companion1`: prepare, open, ask, close, and an answer object per task | intentd, inferd |
 | readerd | the actions service | `org.bardo.Reader1`: the quarantined reader, a separate process | intentd, inferd |
@@ -104,12 +104,12 @@ Caller identity is always derived from the connection, never sent. Every interfa
 `ui-shell` confirmation card and glow values, the orb duration tokens, `Page::Intelligence`, the
 `22-SETTINGS.md` rows for every `ai`, `agent`, `memory`, `cua` and `companion` key, and this
 documentation. Every behaviour behind a frozen signature is `todo!()`, listed in `FINDINGS.md`.
-The UI kit does not own `31-ACCOUNTS.md` (porter's agent edits it), the `TextField` and `CommandPalette`
+The UI kit does not own `31-ACCOUNTS.md` (the accounts service's agent edits it), the `TextField` and `CommandPalette`
 prompt props (Bardo fill), or anything in the other repos.
 
 ## 9. The freeze plan
 
-The spec's section 6 orders the agents (dependency list, the model layer, Bardo, porter, the memory service and the actions service,
+The spec's section 6 orders the agents (dependency list, the model layer, Bardo, the accounts service, the memory service and the actions service,
 cua and the compositor fork, the shell and the Settings app), the spikes that block fills, and the fill waves.
 Every repo's gate is format, clippy with warnings denied, tests, the boundary script and the
 licence check, and the UI kit's adds the consumer check; each exit code is checked and nothing is piped.

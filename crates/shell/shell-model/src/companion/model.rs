@@ -162,7 +162,7 @@ pub struct Companion {
     /// How many answers to a waiting memory have come back, kept or failed. The Memory filter
     /// asks again when this moves, and only then: a timeline's own answer must not.
     pub memory_answers: u64,
-    /// The provider rows' labels for coding-agent programs; empty until porter's list is read.
+    /// The provider rows' labels for coding-agent programs; empty until the accounts service's list is read.
     pub programs: super::ProgramLabels,
     /// The helpers the person keeps.
     pub helpers: HelpersModel,

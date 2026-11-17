@@ -470,7 +470,7 @@ done
 
 layers_check . || fail=1
 
-# The actions service sits below cua and the shell in the repo order (the model layer, porter, the memory service, the actions service, cua, the shell):
+# The actions service sits below cua and the shell in the repo order (the model layer, the accounts service, the memory service, the actions service, cua, the shell):
 # nothing of theirs may enter any tree of this workspace, dev-dependencies included.
 THEIRS="computer-use-daemon computer-use-bus computer-use-run computer-use-desktop computer-use-dbus computer-use-fake computer-use-a11y-tree computer-use-seat-input computer-use-capture bardo-agent-protocol"
 workspace_tree=$(cargo tree --workspace -e normal,build,dev --prefix none --all-features 2>/dev/null | awk '{print $1}' | sort -u)
@@ -493,7 +493,7 @@ fi
 
 # No shipped crate carries a test-only switch. The proc root of the callers and the model tap are
 # arguments (`HarnessSeams`) that only the action-accept mains pass (agent-live, which runs the same world, names them too); no daemon source reads
-# `*_PROC_ROOT` or `BARDO_ACTIONS_MODEL_TRACE`. porter reads a fixture tree only with account-callers's
+# `*_PROC_ROOT` or `BARDO_ACTIONS_MODEL_TRACE`. The accounts service reads a fixture tree only with account-callers's
 # `test-proc-root`, which action-dbus's `fixture-callers` forwards (that one line is the only
 # mention allowed); action-accept, agent-live and tests' dev-dependencies turn it on.
 leaks=$(grep -rnE 'PROC_ROOT|BARDO_ACTIONS_MODEL_TRACE|test-proc-root|test-model-trace' */ \

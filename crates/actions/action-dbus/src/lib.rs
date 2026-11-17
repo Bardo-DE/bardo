@@ -42,7 +42,7 @@ mod terminals;
 mod watch;
 
 /// The reserved key of the W3C trace context in an `options` vardict, and the vardict type:
-/// porter's, shared on every call that starts work.
+/// The accounts service's, shared on every call that starts work.
 pub use account_dbus::Details;
 pub use agent_host::{AgentHostProxy, AgentHostSkeleton};
 pub use answer::{CompanionAnswerProxy, CompanionAnswerSkeleton};

@@ -57,7 +57,7 @@ fn the_app_is_offered_everything_but_starttls_and_auth() {
             .expect("text")
             .contains("AUTH")
     );
-    assert_eq!(app_greeting(), b"220 porter ESMTP ready\r\n");
+    assert_eq!(app_greeting(), b"220 the accounts service ESMTP ready\r\n");
 }
 
 #[test]
@@ -104,7 +104,10 @@ mod scripted {
         let (relay, _) = whole(relay(Tls::Implicit), Side::Server, b"220 hi\r\n");
         let (relay, _) = whole(relay, Side::Server, SERVER_PLAIN);
         let (relay, effects) = whole(relay, Side::Server, b"235 ok\r\n");
-        assert_eq!(sent(&effects, Side::App), "220 porter ESMTP ready\r\n");
+        assert_eq!(
+            sent(&effects, Side::App),
+            "220 the accounts service ESMTP ready\r\n"
+        );
         relay
     }
 
@@ -135,7 +138,10 @@ mod scripted {
         );
         assert_eq!(sent(&effects, Side::App), "");
         let (relay, effects) = bytewise(relay, Side::Server, b"235 2.7.0 ok\r\n");
-        assert_eq!(sent(&effects, Side::App), "220 porter ESMTP ready\r\n");
+        assert_eq!(
+            sent(&effects, Side::App),
+            "220 the accounts service ESMTP ready\r\n"
+        );
         assert!(matches!(relay.phase, SmtpPhase::AppEhlo(_)));
     }
 

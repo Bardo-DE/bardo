@@ -142,7 +142,7 @@ fn the_sample_caller_table_gives_settings_the_sheet_host_and_both_daemons_their_
         ("org.bardo.Settings.service", CallerRole::Settings),
         ("bardo-shell.service", CallerRole::SheetHost),
         ("bardo-inferd.service", CallerRole::AiBroker),
-        ("bardo-syncd.service", CallerRole::PorterDaemon),
+        ("bardo-syncd.service", CallerRole::AccountDaemon),
     ] {
         assert_eq!(
             table.resolve_unit(unit).map(|caller| caller.role),
@@ -196,7 +196,8 @@ fn default_features(manifest: &str, feature: &str) -> (bool, Vec<String>) {
 }
 
 #[test]
-fn the_test_keys_feature_is_declared_and_is_not_a_default_feature_of_accountd_or_porter_secrets() {
+fn the_test_keys_feature_is_declared_and_is_not_a_default_feature_of_accountd_or_accounts_service_secrets()
+ {
     for (manifest, feature) in [
         (include_str!("../../Cargo.toml"), "test-keys"),
         (

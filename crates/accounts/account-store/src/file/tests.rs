@@ -14,7 +14,7 @@ fn registry() -> Persisted {
 
 fn store_in(scratch: &Scratch) -> FileStore {
     // A directory that does not exist yet: the first save makes it.
-    FileStore::new(scratch.path().join("porter"))
+    FileStore::new(scratch.path().join("accounts"))
 }
 
 /// The host names the directory: a store keeps both files there and nowhere else.
@@ -45,7 +45,7 @@ async fn a_saved_registry_loads_back_equal() {
     assert_eq!(store.load().await, Ok(registry()));
     assert_eq!(
         store.path(),
-        scratch.path().join("porter").join("registry.json")
+        scratch.path().join("accounts").join("registry.json")
     );
     let again = Persisted::empty();
     store.save(&again).await.expect("replaced");
@@ -95,7 +95,7 @@ async fn overlapping_saves_never_share_a_staging_file() {
     let loaded = store.load().await.expect("a whole document");
     assert!(loaded == registry() || loaded == Persisted::empty());
     // Nothing is left staged: every save renamed its own file.
-    let left: Vec<_> = std::fs::read_dir(scratch.path().join("porter"))
+    let left: Vec<_> = std::fs::read_dir(scratch.path().join("accounts"))
         .expect("dir")
         .map(|e| e.expect("entry").file_name().to_string_lossy().into_owned())
         .filter(|name| name.contains(".tmp"))
@@ -148,7 +148,7 @@ async fn a_refused_registry_is_explained_with_both_files_and_touched_by_nobody()
     // With no backup the message says so rather than naming a file that is not there.
     let alone = Scratch::new("store");
     let none = store_in(&alone);
-    std::fs::create_dir_all(alone.path().join("porter")).expect("dir");
+    std::fs::create_dir_all(alone.path().join("accounts")).expect("dir");
     std::fs::write(none.path(), b"{oops").expect("write");
     assert_eq!(none.refusal(&fault).backup(), None);
 }
@@ -157,7 +157,7 @@ async fn a_refused_registry_is_explained_with_both_files_and_touched_by_nobody()
 async fn a_corrupt_file_is_refused_and_never_overwritten() {
     let scratch = Scratch::new("store");
     let store = store_in(&scratch);
-    std::fs::create_dir_all(scratch.path().join("porter")).expect("dir");
+    std::fs::create_dir_all(scratch.path().join("accounts")).expect("dir");
     let garbage: &[u8] = b"{\"vocab\": 3, \"accounts\": [oops";
     std::fs::write(store.path(), garbage).expect("write");
     assert!(matches!(

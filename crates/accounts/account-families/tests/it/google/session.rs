@@ -172,7 +172,7 @@ async fn a_grants_refresh_carries_its_own_kinds_scope_alone() {
 async fn a_grants_refresh_never_asks_beyond_what_was_granted() {
     let rig = Rig::new(PLAIN).await;
     let session = open(&rig).await;
-    // Porter's own token: the answer says what the grant holds (no contacts).
+    // The accounts service's own token: the answer says what the grant holds (no contacts).
     session
         .access_token(&audience("google_tasks"))
         .await
@@ -427,7 +427,7 @@ fn holding(rig: &Rig, held: &str, recorded: &[&str]) -> Presented {
 #[tokio::test]
 async fn the_whole_drive_never_given_is_needs_consent_and_google_is_not_asked() {
     let rig = Rig::over(PLAIN, whole_drive_alone).await;
-    // A credential from before porter kept what was granted holds nothing asked on use.
+    // A credential from before the accounts service kept what was granted holds nothing asked on use.
     let session = open(&rig).await;
     assert_eq!(
         session

@@ -1,6 +1,6 @@
 [package]
 name = "http-relay"
-description = "porter's HTTP client over an accountd relay: hyper's HTTP/1 connection over the authenticated byte stream accountd opens, with streamed request and response bodies, connection reuse and a new connection when a kept one's credential lapsed."
+description = "accounts's HTTP client over an accountd relay: hyper's HTTP/1 connection over the authenticated byte stream accountd opens, with streamed request and response bodies, connection reuse and a new connection when a kept one's credential lapsed."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

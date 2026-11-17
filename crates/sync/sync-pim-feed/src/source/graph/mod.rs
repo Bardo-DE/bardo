@@ -12,7 +12,7 @@
 //! deleted items are `{"id", "@removed": {"reason"}}`, and that `Prefer:
 //! outlook.body-content-type="text"` applies to it. The fake (`FakeGraph`) serves exactly this.
 //! The calendars' list and the `Prefer: odata.maxpagesize` page size are the same as the rest of
-//! porter's Graph code uses.
+//! The accounts service's Graph code uses.
 
 pub mod convert;
 mod json;

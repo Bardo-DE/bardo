@@ -145,11 +145,11 @@ pub struct FileSecrets {
 }
 
 impl FileSecrets {
-    /// The store in the file at `path` (absolute), filing under [`Namespace::PORTER`]: created
+    /// The store in the file at `path` (absolute), filing under [`Namespace::ACCOUNTS`]: created
     /// empty with mode `0600` (and its directories) if missing, refused if it is not a regular
     /// file, has a group or other permission bit set, or does not parse.
     pub fn open(path: impl Into<PathBuf>) -> Result<Self, FileSecretsError> {
-        Self::open_in(path, Namespace::PORTER)
+        Self::open_in(path, Namespace::ACCOUNTS)
     }
 
     /// The store in the file at `path`, filing under `namespace`: [`FileSecrets::open`] for a

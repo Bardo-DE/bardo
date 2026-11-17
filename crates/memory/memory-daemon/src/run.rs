@@ -179,7 +179,7 @@ async fn run(
     let connection = builder.build().await?;
     let inferd = inferd_link(&connection);
     let spaces = Bus::over(connection.clone()).spaces();
-    let registry = SpaceRegistry::Porter(spaces.clone());
+    let registry = SpaceRegistry::AccountClient(spaces.clone());
     let backend = SystemBackend::with(
         dirs.clone(),
         keys,
@@ -207,7 +207,7 @@ async fn run(
             .into_iter()
             .for_each(|meta| service.register(meta));
     }
-    // porter reads a fixture tree only in a test build; everywhere else it asks /proc and the
+    // The accounts service reads a fixture tree only in a test build; everywhere else it asks /proc and the
     // user manager, which a fixture tree has no stand-in for.
     let table = read_callers(&system, &dirs)?;
     let peers = match proc_root.honoured() {

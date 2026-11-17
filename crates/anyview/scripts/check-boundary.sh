@@ -28,19 +28,19 @@ cd "$(dirname "$0")/.."
 # in anyview-machines, whose source is checked file by file below.
 # anyview-pane is the viewer as a pane another Bardo app hosts in its own process (temor, the terminal): a thin
 # crate over anyview-ui, so it carries the window's tree (the renderer, wgpu, pdfrum, tokio) and nothing more. It
-# never asks the OS for anything, so it reaches no bus (zbus, ashpd), no actions service or porter, no player (by default), no libav and no
+# never asks the OS for anything, so it reaches no bus (zbus, ashpd), no actions service or the accounts service, no player (by default), no libav and no
 # sound card; abilities arrive as data (`PlatformAbilities`). Like anyview-ui it does not name wgpu, tokio or a PDF
 # library itself (the DIRECT table below). Only the host links it; the viewer and the peek do not.
 # With its `player` feature (off by default, so the default tree above has no player in it) the pane also links
 # anyview-media-host: the player host and the hub of sessions, over the person's own mpv run as a child process
-# (mpv-wgpu-player's `subprocess` host). It still reaches no bus, no actions service or porter, no libmpv, no libav and no
+# (mpv-wgpu-player's `subprocess` host). It still reaches no bus, no actions service or the accounts service, no libmpv, no libav and no
 # sound card (the media host's `audio` feature, which brings cpal and the symphonia decoders, is not the pane's
 # `player`); PANE_PLAYER_FORBIDDEN below checks that tree and PANE_PLAYER_BUDGET sizes it.
 # anyview-media-host is the host side of the player, shared by the viewer and the pane: PlayerHost (the MediaHost
 # the views are lent), MediaHub (the sessions, the desktop's now-playing entry through anyview-platform's
 # `MediaSession` trait, one audio source at a time) and the thread each player runs on. It names the views'
 # seam (anyview-ui), the platform crate WITHOUT `desktop`, the plugin vocabulary and anyview-runtime, and
-# reaches no bus, no actions service or porter, no libmpv or libav and (with its default features) no sound card. The
+# reaches no bus, no actions service or the accounts service, no libmpv or libav and (with its default features) no sound card. The
 # MPRIS entry is a session the binary passes in.
 # anyview-runtime is the program's threads (the pool, the runner, the actors): anyview-core and thiserror, and
 # no UI, no GPU, no bus, no player, no runtime of tokio's.
@@ -221,7 +221,7 @@ DIRECT=(
 # The UI kit's ui-helpers (capped reads and atomic writes, for anyview-fs, -store and -platform) adds
 # ui-helpers and base-time everywhere, and to the headless peek toml with serde_spanned and toml_writer
 # too (its catalog is TOML): the headless budget rose by five, the others by one or two.
-# porter 063e9db's account-dbus checks callers through the caller-identity library (the caller-identity library, -core and -bus) instead of
+# The accounts service 063e9db's account-dbus checks callers through the caller-identity library (the caller-identity library, -core and -bus) instead of
 # account-daemon-support, and reaches the viewer through action-dbus: two more than before account-daemon-support left.
 # The unused freedesktop-desktop-entry left anyview-platform, and with it gettext-rs and gettext-sys
 # (C, LGPL) and five others the viewer reached: 695.
@@ -238,10 +238,10 @@ DIRECT=(
 # alone: 701.
 # Bardo v0.3.45's ui-extensions (the desktop's Extensions, MIT OR Apache-2.0, over the plugin host, already in
 # the viewer's tree) finds the chosen look's sheet: one more in the viewer alone: 702.
-# The agent layer's Round A (porter f7e47a71, the memory service 8d91de73, the actions service 01390d02): account-core keeps its
+# The agent layer's Round A (the accounts service f7e47a71, the memory service 8d91de73, the actions service 01390d02): account-core keeps its
 # secrets in secrecy (with subtle, const-hex and cpufeatures) and memory-core names entries by ulid, all
 # pure Rust under licences deny.toml already allows; action-provider takes action-client's place: 706.
-# Round B (porter 31799cfa, the actions service 77be9598) splits code the viewer already had into crates of its own:
+# Round B (the accounts service 31799cfa, the actions service 77be9598) splits code the viewer already had into crates of its own:
 # action-vocab, -manifest, -wire, -gate-wire and -permissions-core, companion-model, account-ids,
 # -capability, -match, -tailscale and -wire (eleven); the actions service's spend is a Money, which brings rust_decimal,
 # iso_currency and iso_country: 720.
@@ -392,7 +392,7 @@ for budget in "${BUDGETS[@]}"; do
   fi
 done
 
-# The pane with its `player` feature reaches no bus, no actions service or porter, no libmpv or libav and no sound card,
+# The pane with its `player` feature reaches no bus, no actions service or the accounts service, no libmpv or libav and no sound card,
 # and stays inside its own budget (the default pane, above, has no player at all).
 for dep in "${PANE_PLAYER_FORBIDDEN[@]}"; do
   if cargo tree -p anyview-pane --features player -i "$dep" -e normal,build 2>/dev/null | grep -q .; then
@@ -451,7 +451,7 @@ EDGES=(
   "anyview-raw: anyview-plugin-protocol anyview-tool-kit"
   "anyview-tool-kit: anyview-plugin-common anyview-plugin-protocol"
 )
-  # Bardo, the actions service, porter, prov and the plugin host crates are git dependencies, so they show with their url where a
+  # Bardo, the actions service, the accounts service, prov and the plugin host crates are git dependencies, so they show with their url where a
   # workspace crate shows a path. (the plugin host is a path while it sits beside this checkout, and then shows
   # with a path like the workspace's own.)
 for edge in "${EDGES[@]}"; do

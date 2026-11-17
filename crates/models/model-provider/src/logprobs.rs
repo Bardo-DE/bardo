@@ -2,7 +2,7 @@
 //! constrained choice, from the same call that answers it.
 //!
 //! The request side is [`ChoiceScores`]; the engine's answer is [`FirstTokenLogprobs`] on the
-//! turn's end. The renormalisation over declared options is the caller's (porter's) job; the pure
+//! turn's end. The renormalisation over declared options is the caller's (the accounts service's) job; the pure
 //! helper [`FirstTokenLogprobs::option_permille`] states the rules once.
 
 use serde::{Deserialize, Serialize};

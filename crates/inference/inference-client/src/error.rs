@@ -16,7 +16,7 @@ pub enum TransportError {
     /// again does not help; the person or the packager must change who may call.
     #[error("refused by the daemon: {0}")]
     Denied(String),
-    /// The other side sent something that is not porter's protocol.
+    /// The other side sent something that is not the accounts service's protocol.
     #[error("malformed reply: {0}")]
     Malformed(String),
     /// This link does not carry that call: the computers and the guests are inferd's, over the

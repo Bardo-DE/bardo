@@ -63,7 +63,7 @@ pub enum WeightSource {
     Hosted,
 }
 
-/// A provider as porter's provider files name it: `openrouter`, `anthropic`, `google-ai`,
+/// A provider as the accounts service's provider files name it: `openrouter`, `anthropic`, `google-ai`,
 /// `moonshot`, `openai`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
@@ -95,7 +95,7 @@ pub struct Reach {
     pub wire: Wire,
 }
 
-/// Where an entry runs. The names mirror porter's `Locality` (`OnDevice`; `Remote` is its cloud).
+/// Where an entry runs. The names mirror the accounts service's `Locality` (`OnDevice`; `Remote` is its cloud).
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum Locality {

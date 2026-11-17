@@ -1,5 +1,5 @@
-//! The launcher's duties, against the fake porter and the recording process seam: what is
-//! asked of porter and in what order, what the child is given and not given, what is undone on
+//! The launcher's duties, against the fake accounts service and the recording process seam: what is
+//! asked of the accounts service and in what order, what the child is given and not given, what is undone on
 //! close, on a failure, and when a credential is revoked.
 
 use super::support::{ALLOWLIST, ENDPOINT, HANDOFF, LOGIN, plan, rig};
@@ -37,7 +37,7 @@ async fn the_endpoint_route_gives_the_child_a_base_url_and_a_token_and_nothing_e
         .expect("spawned");
     let mut child = spawned.child;
 
-    // What porter was asked, in order: a session, then an endpoint.
+    // What the accounts service was asked, in order: a session, then an endpoint.
     assert_eq!(
         rig.accounts.calls(),
         [

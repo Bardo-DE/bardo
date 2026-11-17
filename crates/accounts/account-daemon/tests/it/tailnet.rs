@@ -509,7 +509,7 @@ async fn the_account_follows_tailscale_while_it_is_added() {
         world.state() == Some(AccountState::NeedsLogin)
     })
     .await;
-    // Signed in again, in Tailscale: working, with no sign-in through porter.
+    // Signed in again, in Tailscale: working, with no sign-in through the accounts service.
     fake.set(Daemon::Running(network()));
     eventually("the account to work again", || {
         world.state() == Some(AccountState::Ok)
@@ -567,7 +567,7 @@ async fn removing_the_account_does_not_sign_tailscale_out() {
         .await
         .expect("removed");
     assert!(world.service.registry().accounts.is_empty());
-    // Porter asked Tailscale nothing that signs it out: no request of any kind but reads.
+    // The accounts service asked Tailscale nothing that signs it out: no request of any kind but reads.
     assert!(
         world
             .scene
@@ -621,7 +621,7 @@ async fn machines_lists_every_kind_of_computer_and_not_this_one() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn machines_is_empty_with_no_account_and_with_one_that_is_not_working() {
-    // No Tailscale account in porter: empty, though Tailscale is running.
+    // No Tailscale account in the accounts service: empty, though Tailscale is running.
     let scene = Scene::with("empty-no-account", Daemon::Running(network()), vec![]);
     let world = World::start(scene, true).await;
     assert_eq!(

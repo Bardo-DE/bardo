@@ -62,7 +62,7 @@ base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 action-gate-wire = {path = "../../actions/action-gate-wire"}
 permission-core = {path = "../../actions/permission-core"}
 account-capability = {path = "../../accounts/account-capability"}
-# The tests present their processes as a fixture tree, which porter reads only in a test build.
+# The tests present their processes as a fixture tree, which the accounts service reads only in a test build.
 action-dbus = {features = ["fixture-callers"], path = "../../actions/action-dbus"}
 memory-core = {path = "../../memory/memory-core"}
 computer-use-action = {path = "../../models/computer-use-action"}

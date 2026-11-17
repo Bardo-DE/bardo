@@ -13,7 +13,7 @@ async fn sign_in(running: &NextcloudHandle, address: &FakeAddress) -> String {
     running.set_login_policy(LoginPolicy::Approve);
     let started = call(
         address,
-        Request::new("POST", "/index.php/login/v2").with_header("User-Agent", "porter test"),
+        Request::new("POST", "/index.php/login/v2").with_header("User-Agent", "accounts test"),
     )
     .await;
     let flow = started.json_body().expect("json");

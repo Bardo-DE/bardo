@@ -70,7 +70,7 @@ fn the_app_is_told_the_capabilities_without_the_ways_to_authenticate() {
     );
     assert_eq!(
         String::from_utf8(preauth_greeting(&server)).expect("text"),
-        "* PREAUTH [CAPABILITY IMAP4rev1 IDLE UIDPLUS CONDSTORE] porter relay ready\r\n"
+        "* PREAUTH [CAPABILITY IMAP4rev1 IDLE UIDPLUS CONDSTORE] the accounts relay ready\r\n"
     );
 }
 
@@ -138,7 +138,7 @@ mod scripted {
         );
         assert_eq!(
             sent(&effects, Side::App),
-            "* PREAUTH [CAPABILITY IMAP4rev1 IDLE UIDPLUS] porter relay ready\r\n"
+            "* PREAUTH [CAPABILITY IMAP4rev1 IDLE UIDPLUS] the accounts relay ready\r\n"
         );
         assert_eq!(relay.phase, ImapPhase::Relaying);
         let (relay, effects) = whole(relay, Side::App, b"a SELECT INBOX\r\n");
@@ -217,7 +217,7 @@ mod scripted {
         );
         assert_eq!(
             sent(&effects, Side::App),
-            "* PREAUTH [CAPABILITY IMAP4rev1 IDLE MOVE] porter relay ready\r\n"
+            "* PREAUTH [CAPABILITY IMAP4rev1 IDLE MOVE] the accounts relay ready\r\n"
         );
         assert_eq!(relay.phase, ImapPhase::Relaying);
     }

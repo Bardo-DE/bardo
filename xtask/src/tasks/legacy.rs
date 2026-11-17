@@ -98,9 +98,9 @@ mod tests {
     #[test]
     fn label_format() {
         let s = Script {
-            repo: "porter".into(),
+            repo: "accounts".into(),
             rel: "scripts/check-features.sh".into(),
         };
-        assert_eq!(s.label(), "legacy porter/scripts/check-features.sh");
+        assert_eq!(s.label(), "legacy accounts/scripts/check-features.sh");
     }
 }

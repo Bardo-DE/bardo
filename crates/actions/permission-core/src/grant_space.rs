@@ -1,6 +1,6 @@
 //! Consent keyed by Space: what a grant file holds when a Space is gone, was written before
-//! Spaces had ids of porter's making, or sits over another app's own Space. Every outcome here
-//! only removes grants. A grant that cannot be placed in a Space porter knows is dropped, never
+//! Spaces had ids of the accounts service's making, or sits over another app's own Space. Every outcome here
+//! only removes grants. A grant that cannot be placed in a Space the accounts service knows is dropped, never
 //! moved to another Space and never widened to every Space.
 
 use crate::grant::{ActionGrant, ActionGrantKey};
@@ -14,9 +14,9 @@ use std::collections::BTreeSet;
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(tag = "kind", content = "v", rename_all = "snake_case")]
 pub enum GrantEnd {
-    /// The Space is gone, or porter does not know it.
+    /// The Space is gone, or the accounts service does not know it.
     SpaceGone(SpaceId),
-    /// The Space the grant was written for is not an id porter reads.
+    /// The Space the grant was written for is not an id the accounts service reads.
     SpaceUnreadable,
     /// The grant was for an app over another app's own Space.
     NotTheirSpace(SpaceId),
@@ -31,7 +31,7 @@ pub struct Ended {
     pub count: u32,
 }
 
-/// The desktop-wide Spaces porter's registry holds.
+/// The desktop-wide Spaces the accounts service's registry holds.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct KnownSpaces(BTreeSet<SpaceId>);
 
@@ -126,7 +126,7 @@ pub struct GrantListFault(pub String);
 
 /// The grants a file's text holds.
 ///
-/// An entry whose Space is not an id porter reads is dropped and counted (never read as "every
+/// An entry whose Space is not an id the accounts service reads is dropped and counted (never read as "every
 /// Space"); an entry that is wrong in any other way makes the whole file a fault, so a damaged file
 /// is left alone and never rewritten.
 ///

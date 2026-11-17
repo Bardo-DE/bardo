@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One cloud eval run: a hosted model reached through porter's inferd, with the API key held by
+# One cloud eval run: a hosted model reached through the accounts service's inferd, with the API key held by
 # accountd. Everything runs on a private bus in scratch directories; the real session bus, the real
 # home and the real Secret Service are never touched, and the eval process gets an environment with
 # no key in it.
@@ -7,8 +7,8 @@
 #   scripts/cloud-eval.sh --accountd BIN --inferd BIN --eval BIN --home DIR --entry FILE --label NAME \
 #       [--catalog DIR] [--tier fast|balanced|best] [--cents N] [-- extra computer-use-eval-cloud flags]
 #
-# --accountd  porter's accountd built with `--features test-proc-root,test-keys`.
-# --inferd    porter's inferd built with `--features test-proc-root`, at the porter rev cua pins.
+# --accountd  the accounts service's accountd built with `--features test-proc-root,test-keys`.
+# --inferd    the accounts service's inferd built with `--features test-proc-root`, at the accounts rev cua pins.
 # --eval      the computer-use-eval-cloud binary.
 # --home      the filled accountd home (the actions service's dev/live/cloud-key.sh): `accountd.keys` (0600) is only
 #             pointed at by accountd's BARDO_ACCOUNTD_KEYS, never read by this script or the eval.

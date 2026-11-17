@@ -2,7 +2,7 @@
 //! `Candidate` is a vardict whose entries are its fields by name. A string is `s`, an integer
 //! `x` (`t` above `i64::MAX`), a list `av` and a nested record `a{sv}`; a variant inside a
 //! list or record is wrapped once (`v`), as D-Bus requires. `null` has no D-Bus form: an
-//! absent key stands for it, and porter's values hold no `Option` inside a list.
+//! absent key stands for it, and the accounts service's values hold no `Option` inside a list.
 
 use account_core::CoreError;
 use serde_json::{Map, Number, Value as Json};
@@ -49,7 +49,7 @@ fn number_to_value(n: &Number) -> Value<'static> {
     }
 }
 
-/// A D-Bus value as a JSON value, or why it is not one porter's values use.
+/// A D-Bus value as a JSON value, or why it is not one accounts service's values use.
 pub fn from_value(value: &Value<'_>) -> Result<Json, CoreError> {
     match value {
         Value::Value(inner) => from_value(inner),
@@ -77,7 +77,7 @@ pub fn from_value(value: &Value<'_>) -> Result<Json, CoreError> {
             .map(|(key, value)| Ok((key_text(key)?, from_value(value)?)))
             .collect::<Result<Map<_, _>, CoreError>>()
             .map(Json::Object),
-        _ => Err(bad("a value of a type porter does not use")),
+        _ => Err(bad("a value of a type the accounts service does not use")),
     }
 }
 
@@ -132,7 +132,7 @@ mod tests {
     use proptest::prelude::*;
 
     fn json() -> impl Strategy<Value = Json> {
-        // No `null` (it has no D-Bus form) and no floats (porter stores none).
+        // No `null` (it has no D-Bus form) and no floats (the accounts service stores none).
         let leaf = prop_oneof![
             any::<i64>().prop_map(Json::from),
             any::<u64>().prop_map(Json::from),
@@ -168,7 +168,7 @@ mod tests {
     }
 
     #[test]
-    fn a_value_porter_does_not_use_is_refused() {
+    fn a_value_accounts_service_does_not_use_is_refused() {
         let value = Value::from(zbus::zvariant::Signature::Str);
         from_value(&value).unwrap_err();
     }

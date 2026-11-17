@@ -65,7 +65,7 @@ fn the_relay_picks_the_way_the_server_and_the_credential_allow() {
         Pop3Auth::choose(&[], &RelayAuth::Anonymous),
         Err(RelayFault::Protocol)
     );
-    assert_eq!(app_greeting(), b"+OK porter relay ready\r\n");
+    assert_eq!(app_greeting(), b"+OK the accounts relay ready\r\n");
 }
 
 fn relay(tls: Tls, auth: RelayAuth) -> Pop3Relay {
@@ -105,7 +105,10 @@ fn ready() -> Pop3Relay {
     let (relay, effects) = whole(at_user(), Side::Server, b"+OK\r\n");
     assert_eq!(sent(&effects, Side::Server), "PASS hunter2\r\n");
     let (relay, effects) = whole(relay, Side::Server, b"+OK maildrop locked\r\n");
-    assert_eq!(sent(&effects, Side::App), "+OK porter relay ready\r\n");
+    assert_eq!(
+        sent(&effects, Side::App),
+        "+OK the accounts relay ready\r\n"
+    );
     assert_eq!(relay.phase, Pop3Phase::Relaying);
     relay
 }
@@ -127,7 +130,10 @@ fn a_split_read_changes_nothing() {
         sent(&effects, Side::Server),
         "CAPA\r\nUSER ada\r\nPASS hunter2\r\n"
     );
-    assert_eq!(sent(&effects, Side::App), "+OK porter relay ready\r\n");
+    assert_eq!(
+        sent(&effects, Side::App),
+        "+OK the accounts relay ready\r\n"
+    );
 }
 
 #[test]
@@ -264,7 +270,10 @@ fn sasl_plain_is_used_when_the_server_offers_no_user() {
         b"\0ada\0hunter2"
     );
     let (_, effects) = whole(relay, Side::Server, b"+OK welcome\r\n");
-    assert_eq!(sent(&effects, Side::App), "+OK porter relay ready\r\n");
+    assert_eq!(
+        sent(&effects, Side::App),
+        "+OK the accounts relay ready\r\n"
+    );
 }
 
 #[test]
@@ -301,7 +310,7 @@ fn what_the_app_sent_before_the_greeting_is_handled_after_it() {
     let (_, effects) = whole(relay, Side::Server, b"+OK in\r\n");
     assert_eq!(
         sent(&effects, Side::App),
-        "+OK porter relay ready\r\n+OK already authenticated\r\n+OK already authenticated\r\n"
+        "+OK the accounts relay ready\r\n+OK already authenticated\r\n+OK already authenticated\r\n"
     );
     assert_eq!(sent(&effects, Side::Server), "STAT\r\n");
 }

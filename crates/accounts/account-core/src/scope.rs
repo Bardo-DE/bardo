@@ -1,7 +1,7 @@
 //! The name of the systemd scope a launcher starts an app in.
 //!
 //! Its form is `app-[<launcher>-]<app>-<run>.scope` (XDG "Desktop Entry / systemd integration").
-//! The shell writes one for each launch, Flatpak writes one for each run, and porter reads them to learn
+//! The shell writes one for each launch, Flatpak writes one for each run, and the accounts service reads them to learn
 //! which app a process is (`identity_of`), so the writer and the reader are one type,
 //! [`ScopeName`], and what one writes the other reads back.
 //!

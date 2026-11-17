@@ -4,7 +4,7 @@
 //!
 //! Who may call: the shell (`CallerRole::SheetHost`), Settings (`CallerRole::Settings`), the
 //! terminal (`CallerRole::Terminal`, temor, by its unit as the systemd manager says its main
-//! process is) and the AI broker (`CallerRole::PorterDaemon`, inferd, which looks for the
+//! process is) and the AI broker (`CallerRole::AccountDaemon`, inferd, which looks for the
 //! computers that lend their models). Anyone else, and a sender accountd does not know, is
 //! `AccessDenied`.
 
@@ -26,7 +26,7 @@ pub trait Tailnet {
     /// `addresses` (`as`, its Tailscale addresses), `os` (`s`), `online` (`b`), `last_seen`
     /// (`x`, Unix seconds; absent while it is online and when unknown), `ssh` (`b`, Tailscale's
     /// SSH is on) and `ssh_host_keys` (`as`), and `owner` (`s`: `mine`, `shared` or `tagged`).
-    /// With no Tailscale account in porter, or one that is not working, the list is empty: the
+    /// With no Tailscale account in the accounts service, or one that is not working, the list is empty: the
     /// account's own state says why.
     fn machines(&self) -> zbus::Result<Vec<(String, Details)>>;
     /// The computers changed. No payload: a listener calls `Machines` again. A burst of changes

@@ -55,7 +55,7 @@ provider_copy() {
   sed -e "s/^id = .*/id = \"$1\"/" -e "s/^label = .*/label = \"$2\"/" "$PROV/$3.toml" >"$PROV/$1.toml"
 }
 
-# regress_boot: bardo-compositor, the recorded bus, porter's rig (mail, the LLM API for an AI key) and the sync service's (the issuer and Graph for Microsoft), Secret Service, the
+# regress_boot: bardo-compositor, the recorded bus, the accounts service's rig (mail, the LLM API for an AI key) and the sync service's (the issuer and Graph for Microsoft), Secret Service, the
 # provider files. The scenario starts the daemons itself.
 regress_boot() {
   start_compositor || return 1

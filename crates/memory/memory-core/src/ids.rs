@@ -66,13 +66,13 @@ text_id!(
     is_topic
 );
 text_id!(
-    /// One remember rule, in porter's id grammar.
+    /// One remember rule, in the accounts service's id grammar.
     RuleId,
     "rule id",
     is_id
 );
 text_id!(
-    /// The token of one forget plan, in porter's id grammar.
+    /// The token of one forget plan, in the accounts service's id grammar.
     PlanToken,
     "plan token",
     is_id

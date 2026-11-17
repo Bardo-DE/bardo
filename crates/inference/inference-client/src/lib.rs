@@ -1,7 +1,7 @@
 //! The app's client of inferd (design/31 §5.1): sessions, warm-ups, the places the assistant could
 //! run, the person's other computers that lend or ask for models, and the models inferd runs.
 //!
-//! **This crate sits in porter until the inference service takes it.** It is what `account-client` held of
+//! **This crate sits in the accounts service until the inference service takes it.** It is what `account-client` held of
 //! inference, moved whole (`git mv`) when `account-client` became the accounts client; the inference service
 //! lane lifts it out as it stands. It reaches accountd for nothing: the accounts, the AI keys and
 //! the agent launcher are `account-client`'s.

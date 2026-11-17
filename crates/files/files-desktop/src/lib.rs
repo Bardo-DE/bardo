@@ -14,7 +14,7 @@
 //! - [`disks`]: the computer's disks from `UDisks2` on the system bus ([`Disks`]): list, open, eject
 //!   and a stream of changes, with the programs holding a disk open found by [`DiskUsers`].
 //!
-//! - [`storage`]: the cloud drives from porter's `org.bardo.Storage1` ([`Storage`], and
+//! - [`storage`]: the cloud drives from the accounts service's `org.bardo.Storage1` ([`Storage`], and
 //!   [`DesktopClouds`] behind `files_fs::Clouds`), and [`open_url`], an online document opened in
 //!   the browser through the desktop portal.
 //!

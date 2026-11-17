@@ -147,7 +147,7 @@ def attached_catalog(text, served, tool_parser="", reasoning_parser=""):
     """A catalogue entry that is served somewhere else: its engine rows go, `serving` comes in.
 
     The shipped entries describe an engine the desktop would start itself; an engine on another
-    computer needs the entry to say it is attached (porter: a launched entry cannot be attached).
+    computer needs the entry to say it is attached (accounts: a launched entry cannot be attached).
     The parsers are the entry's own engine line's (`engine_parsers`) unless a tool parser is given.
     """
     if not tool_parser:

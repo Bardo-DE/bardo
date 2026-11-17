@@ -12,7 +12,7 @@
 //!   the colon dropped and each dot an underscore (the portals' form), then the `handle_token`
 //!   the caller put in the call's `options`. A daemon uses a valid token as given and mints one
 //!   otherwise, so a caller can subscribe before it calls, by path namespace.
-//! - **Code.** 0 the sheet finished (`Done`), 1 the person closed it (`Cancelled`, porter's
+//! - **Code.** 0 the sheet finished (`Done`), 1 the person closed it (`Cancelled`, the accounts service's
 //!   `Refusal::Dismissed`), 2 anything else (`Other`: the results hold `refusal`, the slug of the
 //!   other `Refusal`, among them `denied` for "Don't Allow").
 //! - **Results.** `Choose` (code 0): the chosen candidate as `candidate_to_dbus` gives it, its
@@ -225,7 +225,7 @@ fn refusal_in(mut results: Details) -> Result<AccountsReply, CoreError> {
         .map_err(|e| bad(&format!("refusal: {e}")))
 }
 
-/// The reply a `Response` carries for a `kind` sheet, or why it is not one porter's daemons
+/// The reply a `Response` carries for a `kind` sheet, or why it is not one accounts service's daemons
 /// send: an undefined code, or results that do not hold what the code promises.
 ///
 /// # Errors

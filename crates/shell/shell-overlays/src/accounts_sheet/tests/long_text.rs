@@ -70,7 +70,7 @@ fn an_exact_label_ranks_first_then_a_prefix_then_the_rest() {
         )[..],
         ["Mail.ru", "Webmail", "Fastmail"]
     );
-    // Nothing typed: the list is as porter sent it.
+    // Nothing typed: the list is as the accounts service sent it.
     assert_eq!(
         labels_after("", listed()),
         [

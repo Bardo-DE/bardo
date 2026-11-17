@@ -278,7 +278,7 @@ fn a_handle_token_is_a_path_segment_or_it_is_not_one() {
     let long = "x".repeat(64);
     let too_long = "x".repeat(65);
     let cases: [(&str, bool); 9] = [
-        ("porter_1_0", true),
+        ("account_1_0", true),
         ("A", true),
         (long.as_str(), true),
         (too_long.as_str(), false),

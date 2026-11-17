@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Scenario `accounts-sync` (design 31 §6, porter 5fdeafa Sync1.Resolve): bardo-syncd mirrors a OneDrive app folder from the
+# Scenario `accounts-sync` (design 31 §6, the accounts service 5fdeafa Sync1.Resolve): bardo-syncd mirrors a OneDrive app folder from the
 # rig's fake Graph, a two-sided edit makes a Conflict signal with its number, and the owning app settles it with
 # Sync1.Resolve keep_remote: the next cycle takes the remote. bardo-syncd (the sync service's) has no accounts of
 # its own: it uses the bardo-accountd account the person signed in with, through account-client over org.bardo.Grants1, and keeps
@@ -47,7 +47,7 @@ trap cleanup EXIT
 # (ACCOUNT, set by sheet_add_microsoft); bardo-syncd has none of its own.
 SYNC_ACCOUNT=
 segment() { echo "${SYNC_ACCOUNT//[-.]/_}"; }
-folder() { echo "$DATA/porter/storage/$(segment)"; }
+folder() { echo "$DATA/accounts/storage/$(segment)"; }
 local_is() { [ "$(cat "$(folder)/$1" 2>/dev/null)" = "$2" ]; }
 remote_is() { [ "$(frigctl GET "/graph/file?path=$1")" = "$2" ]; }
 detent_mapped() { [ -n "$(detent_frame 2>/dev/null)" ]; }

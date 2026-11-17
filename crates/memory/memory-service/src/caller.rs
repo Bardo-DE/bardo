@@ -6,7 +6,7 @@ use memory_core::{AppId, AppName, Isolation};
 /// Who is calling: the input of the authorisation matrix ([`crate::allowed`]).
 ///
 /// It is not wire: no request, reply or stored file carries one. The daemon maps the D-Bus sender
-/// to its app and its shared role ([`CallerRole`], porter R12: unsandboxed callers are advisory).
+/// to its app and its shared role ([`CallerRole`], the accounts service R12: unsandboxed callers are advisory).
 /// Of the roles, four stand for the fixed callers of memoryd, and every other is a plain app for
 /// its own things:
 ///

@@ -57,7 +57,7 @@ Departures from the plan, standing facts and open items. An entry names the cond
     one and a folder link is not needed, so it is refused (`ExportTargetMissing`).
 
 15. **More export folders (lane distro-slip, 2026-10-16).** `ALLOWED_LINK_DIRS` gained `/usr/share/bardo`,
-    `/usr/share/porter`, `/usr/share/models` and `/usr/share/fonts`, so intents, skills, settings schemas,
+    `/usr/share/accounts`, `/usr/share/models` and `/usr/share/fonts`, so intents, skills, settings schemas,
     providers, the model catalog and the bundled colour-emoji font reach the places their readers look.
     The user-level systemd and D-Bus service folders were already listed. Each folder is named; a table test
     covers accept and refuse.

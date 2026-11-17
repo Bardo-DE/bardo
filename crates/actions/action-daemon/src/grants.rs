@@ -66,7 +66,7 @@ impl FileGrants {
     }
 
     /// What the file holds: nothing when it is missing. A file that cannot be read or is not a
-    /// list of grants is a fault, never an empty list. An entry for a Space porter does not read
+    /// list of grants is a fault, never an empty list. An entry for a Space the accounts service does not read
     /// is not in the answer (it is dropped, and counted in `ended`).
     fn read(&self) -> Result<Reconciled, GrantFileError> {
         read_grant_file(&self.path, Reconciled::default(), decode_grants)
@@ -94,7 +94,7 @@ impl FileGrants {
     }
 
     /// Drops every grant over a desktop-wide Space `known` does not hold (and any over another
-    /// app's own Space), and those the file holds for a Space porter does not read. Run at
+    /// app's own Space), and those the file holds for a Space the accounts service does not read. Run at
     /// start: a Space removed while the daemon was away ends its grants here.
     ///
     /// # Errors

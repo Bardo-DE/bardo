@@ -60,7 +60,7 @@ pub enum Credential {
         /// When `access` expires.
         expires_at: UnixSeconds,
         /// The scopes the refresh token was granted, as the issuer last said. A credential
-        /// stored before porter kept them has none (`GrantedScopes::unknown`).
+        /// stored before the accounts service kept them has none (`GrantedScopes::unknown`).
         #[serde(default, skip_serializing_if = "GrantedScopes::is_unknown")]
         granted: GrantedScopes,
     },
@@ -82,14 +82,14 @@ pub enum Credential {
 /// The scopes an OAuth refresh token was granted, as the issuer's token answers said.
 ///
 /// They are the answers' `scope`, kept with the token so they are replaced with it: a sign-in
-/// again, or one that asks for more, files both at once. A record from before porter kept them is
+/// again, or one that asks for more, files both at once. A record from before the accounts service kept them is
 /// unknown, which a family reads as "what sign-in asks was granted, and nothing asked later".
 #[derive(Debug, Clone, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct GrantedScopes(Option<Vec<String>>);
 
 impl GrantedScopes {
-    /// Not known: a credential stored before porter kept its scopes, or an issuer that does not
+    /// Not known: a credential stored before the accounts service kept its scopes, or an issuer that does not
     /// say.
     #[must_use]
     pub fn unknown() -> Self {

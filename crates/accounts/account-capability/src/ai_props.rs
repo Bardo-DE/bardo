@@ -38,7 +38,7 @@ pub enum Billing {
     /// Nothing (local runtimes).
     Free,
     /// Per token, charged by the provider. What a reply cost is what the provider reports for it
-    /// (porter keeps no price table), and a provider that reports none shows tokens only.
+    /// (the accounts service keeps no price table), and a provider that reports none shows tokens only.
     Metered,
     /// A subscription's allowance: requests count against a rate budget, not money.
     PlanBudget,

@@ -18,7 +18,7 @@ use tokio::net::UnixStream;
 /// The most descriptors one frame may carry and the most the queue may hold unclaimed.
 pub const MAX_QUEUED_FDS: usize = 32;
 
-/// Not porter's protocol (or the stream broke): the session ends.
+/// Not the accounts service's protocol (or the stream broke): the session ends.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Broken;
 

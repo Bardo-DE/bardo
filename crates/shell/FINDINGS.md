@@ -112,8 +112,8 @@ A settled item is deleted, not marked closed.
   sends (labels, titles, `x-bardo-command-id`) is a claim, so the effect table is
   `shell_model::app_menu::{route_of, effect_of}`: the shell's own rows (raise or minimise a window, Hide,
   Hide Others, Show All) are `Read`; Quit is `Destructive`; a command id counts only when the app is
-  `Identity::Verified` (porter's caller identity of the name's owner, from its cgroup scope through
-  `porter_dbus::ProcCallers::caller_of_pid` over `Env::proc_root`, is an app whose own menu name is the
+  `Identity::Verified` (the accounts service's caller identity of the name's owner, from its cgroup scope through
+  `account_dbus::ProcCallers::caller_of_pid` over `Env::proc_root`, is an app whose own menu name is the
   one served) and its manifest declares that action: then the item is that action, performed through
   Intents1 as the shell with the call's own origin, and takes the action's declared effect. Every other
   item, whatever its title ("View", "Window") or id, is a `Destructive` dbusmenu click. A person's own
@@ -380,7 +380,7 @@ A settled item is deleted, not marked closed.
   also lifts a halt of that Space; a global halt (`all`) stays. The Terminal module draws only
   while there is a grant or a pause to show.
 - **Checkouts.** the actions service's own path dependencies resolve beside it, so every checkout of the shell also
-  needs `../porter`, `../models` and `../memory` (and `../actions`); `~/shell-wt/gate` needs the
+  needs `../accounts`, `../models` and `../memory` (and `../actions`); `~/shell-wt/gate` needs the
   same links as its other siblings.
 
 ## Standing facts: the companion
@@ -589,7 +589,7 @@ a source; `assumed` means not yet checked.
   animates to the compositor's default place. Ends when shell-host exports the surface to a client
   that can register it with `DesktopClient::register_surface`.
 
-- **Accounts: what waits on other repos.** (1) A provider's `mark_face` cannot reach the add list: `ds_shell::ProviderEntry` has no face (`gap(bardo)` at `mark_of`); Bardo v0.2.31's `ProviderEntry::faced` is the way in. (2) Settings is opened by activating `org.bardo.Settings` (`ActivateAction("open-account", [account path])` at `/org/bardo/Settings`), so it runs as `org.bardo.Settings.service`; the Settings app must serve `org.freedesktop.Application` with that action, and its desktop entry should say `DBusActivatable=true` (the launch service already activates any such entry over the bus, and Settings by name whatever its entry says). (3) The app-password hint under an iCloud, Fastmail or Yahoo password is the empty entry's hint, shortened: the UI kit has no help line under a field for porter's full sentence.
+- **Accounts: what waits on other repos.** (1) A provider's `mark_face` cannot reach the add list: `ds_shell::ProviderEntry` has no face (`gap(bardo)` at `mark_of`); Bardo v0.2.31's `ProviderEntry::faced` is the way in. (2) Settings is opened by activating `org.bardo.Settings` (`ActivateAction("open-account", [account path])` at `/org/bardo/Settings`), so it runs as `org.bardo.Settings.service`; the Settings app must serve `org.freedesktop.Application` with that action, and its desktop entry should say `DBusActivatable=true` (the launch service already activates any such entry over the bus, and Settings by name whatever its entry says). (3) The app-password hint under an iCloud, Fastmail or Yahoo password is the empty entry's hint, shortened: the UI kit has no help line under a field for the accounts service's full sentence.
 
 ### The shell
 
@@ -674,7 +674,7 @@ a source; `assumed` means not yet checked.
   pure `route_of` and `effect_of`). The answers: `{"kind":"effect","v":"read"}` for the shell's own
   rows (Hide, Hide Others, Show All, Minimise, raising a window); `{"kind":"effect","v":"destructive"}`
   for Quit and every foreign, unverified or spoofed item; `{"kind":"delegates","v":{"app":"dev.notes",
-  "name":"<command id>"}}` for a command id of an app proven by porter's caller identity and declared in
+  "name":"<command id>"}}` for a command id of an app proven by accounts's caller identity and declared in
   that app's own manifest (`app` is the intents manifest app id; the dbusmenu bus name only proves the
   owner). `Perform` re-derives the class and refuses `ClassificationChanged` on a mismatch, accepting
   `destructive` always (the router's re-ask); a delegation is not done by the shell: it answers
@@ -755,21 +755,21 @@ a source; `assumed` means not yet checked.
   (and `F20` to `summon`, route A); the remap of a lone Cmd tap to that chord is written in the keyboard
   remapper's own config until spike T says tap-versus-hold is safe on Cmd.
 
-- **accountd does not yet serve the shell what the accounts service reads (porter ask).** the shell is accountd's
+- **accountd does not yet serve the shell what the accounts service reads (the accounts service ask).** the shell is accountd's
   `SheetHost` and holds no grants, so today accountd sends it no `NeedsReauth`, refuses it every `Account`
   property and `Reauthenticate` (`UnknownObject`), and has no call that lists the accounts needing sign-in or
   announces an account's recovery: the accounts service meets accountd and then sees nothing. The ask is
-  four small changes in `accountd` and `porter-dbus`: (1) `Manager.NeedingReauth() -> a(os)`, `SheetHost`
+  four small changes in `accountd` and `account-dbus`: (1) `Manager.NeedingReauth() -> a(os)`, `SheetHost`
   only; (2) a `SheetHost` caller sees every account's properties and may call `Reauthenticate` without a
   grant; (3) `NeedsReauth` also goes to the roster's `SheetHost` connections; (4) `State` changes send
   `PropertiesChanged` (invalidating `State`) to the same. Ends when accountd serves them and the accounts
-  service's local `ManagerSignIn` proxy is replaced by `porter_dbus::ManagerProxy::needing_reauth`.
+  service's local `ManagerSignIn` proxy is replaced by `account_dbus::ManagerProxy::needing_reauth`.
 
 - **The accounts sheet's props live in `shell-overlays`, not `shell-model`.** PLAN §2.4 and the lane brief put the
   `SheetView` to props table in `shell-model`; the props are the UI kit's (`ds-shell::accounts::model` names `MarkProvider`
   and its own `Word` enums), and `shell-model` may reach no design system (`scripts/check-boundary.sh`). The pure half
   (what is open, what is typed, what is sent back) is `shell_model::accounts::sheet`; the table is
-  `shell_overlays::accounts_sheet::props` (with `words.rs`, `events.rs`). `shell-model` takes `porter-core` for it.
+  `shell_overlays::accounts_sheet::props` (with `words.rs`, `events.rs`). `shell-model` takes `account-core` for it.
 
 ### Bardo
 

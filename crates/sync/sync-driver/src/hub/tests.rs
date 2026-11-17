@@ -51,8 +51,8 @@ fn who_sees_a_dataset_by_role_and_ownership() {
             true,
         ),
         (
-            "a porter daemon",
-            caller("org.bardo.Inference", CallerRole::PorterDaemon),
+            "an accounts daemon",
+            caller("org.bardo.Inference", CallerRole::AccountDaemon),
             true,
         ),
         (

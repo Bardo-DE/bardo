@@ -81,7 +81,7 @@ use std::collections::BTreeMap;
 #[serde(rename_all = "snake_case")]
 pub enum Route {
     /// inferd opens a per-session loopback endpoint (P4): the agent gets a base URL and a
-    /// per-session token, and the real key never leaves porter. The default.
+    /// per-session token, and the real key never leaves the accounts service. The default.
     Endpoint,
     /// accountd hands the agent's process a key (P2), for an agent that cannot take a base URL.
     Handoff,
@@ -212,7 +212,7 @@ pub enum ConfigFault {
 pub struct Entry {
     /// Our name for it (grants and records use this).
     pub name: ProgramName,
-    /// Porter's name for it (the same text, in porter's grammar).
+    /// The accounts service's name for it (the same text, in the accounts service's grammar).
     pub program: AgentProgram,
     /// The executable, absolute.
     pub command: AbsPath,
@@ -340,7 +340,7 @@ impl AgentsFile {
         self.entries.values().find(|e| &e.name == name)
     }
 
-    /// The entry for the porter-side name.
+    /// The entry for the account-side name.
     #[must_use]
     pub fn by_program(&self, program: &AgentProgram) -> Option<&Entry> {
         self.entries.get(program)

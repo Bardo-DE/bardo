@@ -85,10 +85,10 @@ fn the_row_in_the_guide_is_a_row_the_registry_reads() {
 }
 
 #[test]
-fn the_guide_says_what_porter_does_with_each_google_service() {
+fn the_guide_says_what_accounts_service_does_with_each_google_service() {
     let text = guide();
     let section = text
-        .split("## What porter does with each Google service")
+        .split("## What the accounts service does with each Google service")
         .nth(1)
         .expect("the section is there");
     for word in [

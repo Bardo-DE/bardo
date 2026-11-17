@@ -112,7 +112,7 @@ pub(super) fn slug<T: Serialize + ?Sized>(value: &T) -> Result<String, Transport
 
 /// A bus error as the transport's: no daemon on the name or no bus is `Unreachable`; the bus's
 /// `AccessDenied` (a caller the daemon does not know, or one without the grant) is `Denied` with
-/// the daemon's text; anything else is the other side not speaking porter's protocol.
+/// the daemon's text; anything else is the other side not speaking the accounts service's protocol.
 pub(crate) fn bus_error(error: &BusError) -> TransportError {
     // inferd's answer to a call that named its places and has none to run in.
     if let Some((reason, kind)) = inference_dbus::inference::place_refusal_of(error)

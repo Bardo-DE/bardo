@@ -3,8 +3,8 @@
 use crate::relays::{NoRelays, RelayHost};
 use account_capability::CapabilityKind;
 use account_client::{
-    AccountsError, AccountsLink, AuthenticatedStream, ConsentOffer, EditError, GrantsError,
-    GrantsLink, ListedAccount, Porter, ServerEdits,
+    AccountClient, AccountsError, AccountsLink, AuthenticatedStream, ConsentOffer, EditError,
+    GrantsError, GrantsLink, ListedAccount, ServerEdits,
 };
 use account_core::RelayPlan;
 use account_core::consent::{Availability, Grant, Usage};
@@ -29,7 +29,7 @@ use std::sync::Arc;
 /// How much of a relay's traffic an in-memory stream holds before the writer waits.
 const RELAY_BUFFER: usize = 64 * 1024;
 
-/// The service, hosted in this process, answering for one app. `C` is the service (porter's
+/// The service, hosted in this process, answering for one app. `C` is the service (the accounts service's
 /// `AccountService<..>`, a [`Service`]); the relay host defaults to none.
 #[derive(Debug)]
 pub struct Hosted<C, H = NoRelays> {
@@ -50,7 +50,7 @@ impl<C> Hosted<C, NoRelays> {
 }
 
 impl<C, H> Hosted<C, H> {
-    /// The same link with `relays` running its authenticated relays (`PorterRelays`, feature
+    /// The same link with `relays` running its authenticated relays (`AccountRelays`, feature
     /// `relays`, or a host the app writes). Without one, opening an authenticated stream says
     /// nobody is reachable.
     #[must_use]
@@ -77,7 +77,7 @@ impl<C: Service + 'static, H: RelayHost + 'static> AccountsLink for Hosted<C, H>
             AccountsReply::Added(account) => Ok(account),
             AccountsReply::AlreadyAdded(account) => Err(AccountsError::AlreadyAdded(account)),
             AccountsReply::Refused(refusal) => Err(AccountsError::Refused(refusal)),
-            // a reply a newer porter adds
+            // a reply a newer the accounts service adds
             _ => Err(AccountsError::Refused(Refusal::Unavailable)),
         }
     }
@@ -355,7 +355,9 @@ impl<P, S, U, K, R, H> HostConfig<P, S, U, K, R, H> {
 ///
 /// A config with a store is not accepted here (it would start from nothing and overwrite what the
 /// store holds): [`hosted_with_store`] loads it first.
-pub fn hosted<P, S, U, K, H>(config: HostConfig<P, S, U, K, NoStore, H>) -> Porter<impl Hosting>
+pub fn hosted<P, S, U, K, H>(
+    config: HostConfig<P, S, U, K, NoStore, H>,
+) -> AccountClient<impl Hosting>
 where
     P: Provider + 'static,
     S: Secrets + 'static,
@@ -375,7 +377,7 @@ where
 /// The store's [`StoreError`] when it cannot load.
 pub async fn hosted_with_store<P, S, U, K, R, H>(
     config: HostConfig<P, S, U, K, R, H>,
-) -> Result<Porter<impl Hosting>, StoreError>
+) -> Result<AccountClient<impl Hosting>, StoreError>
 where
     P: Provider + 'static,
     S: Secrets + 'static,
@@ -391,7 +393,7 @@ where
 fn build<P, S, U, K, R, H>(
     config: HostConfig<P, S, U, K, R, H>,
     stored: Persisted,
-) -> Porter<impl Hosting>
+) -> AccountClient<impl Hosting>
 where
     P: Provider + 'static,
     S: Secrets + 'static,
@@ -408,5 +410,5 @@ where
         config.clock,
     )
     .with_store(config.store);
-    Porter::over(Hosted::new(Arc::new(service), config.app).with_relays(config.relays))
+    AccountClient::over(Hosted::new(Arc::new(service), config.app).with_relays(config.relays))
 }

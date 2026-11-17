@@ -1,4 +1,4 @@
-//! The bus side of porter's sheets. accountd shows the person a sheet (for an identity, an AI key
+//! The bus side of the accounts service's sheets. accountd shows the person a sheet (for an identity, an AI key
 //! or a grant), and what a daemon that shows one needs lives here, so each is thin wiring over
 //! it:
 //!

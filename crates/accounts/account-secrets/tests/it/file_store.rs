@@ -216,10 +216,10 @@ async fn concurrent_writers_are_serialised_and_none_loses_an_update() {
 async fn namespaces_share_a_file_without_reading_each_other() {
     let dir = Scratch::new("file-store-namespaces");
     let path = dir.join("keys.json");
-    let porter = FileSecrets::open(&path).expect("created");
+    let account_client = FileSecrets::open(&path).expect("created");
     let mailo = FileSecrets::open_in(&path, Namespace::parse("mailo/work").expect("a namespace"))
         .expect("another namespace over the same file");
-    porter
+    account_client
         .put(&key("cloud"), &api_key("one"))
         .await
         .expect("put");
@@ -228,7 +228,7 @@ async fn namespaces_share_a_file_without_reading_each_other() {
         .put(&key("cloud"), &api_key("two"))
         .await
         .expect("put");
-    assert_eq!(porter.get(&key("cloud")).await, Ok(api_key("one")));
+    assert_eq!(account_client.get(&key("cloud")).await, Ok(api_key("one")));
     assert_eq!(mailo.get(&key("cloud")).await, Ok(api_key("two")));
     let text = std::fs::read_to_string(&path).expect("read");
     let document: serde_json::Value = serde_json::from_str(&text).expect("json");
@@ -244,7 +244,7 @@ async fn namespaces_share_a_file_without_reading_each_other() {
         .await
         .expect("wipe");
     assert_eq!(mailo.get(&key("cloud")).await, Err(SecretsError::Missing));
-    assert_eq!(porter.get(&key("cloud")).await, Ok(api_key("one")));
+    assert_eq!(account_client.get(&key("cloud")).await, Ok(api_key("one")));
 }
 
 #[tokio::test]

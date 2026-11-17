@@ -179,10 +179,10 @@ fn a_vdirsyncer_folder_is_one_calendar_per_collection() {
     assert_eq!(work, Some(CalendarName("work".to_owned())));
 }
 
-/// porter's `vdir/<account>/<collection>`: every collection of every account is a calendar, an
+/// The accounts service's `vdir/<account>/<collection>`: every collection of every account is a calendar, an
 /// address book's `.vcf` files make none, a `*-tasks` directory (a VTODO task list) is no calendar, and a place that is missing is a problem, not a panic.
 #[test]
-fn a_porter_vdir_is_one_calendar_per_collection_of_every_account() {
+fn an_accounts_service_vdir_is_one_calendar_per_collection_of_every_account() {
     let root = std::env::temp_dir().join(format!("shell-vdir-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&root);
     let event = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nUID:u\r\nSUMMARY:Dentist\r\nDTSTART;VALUE=DATE:20260927\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n";

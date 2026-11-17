@@ -134,7 +134,7 @@ fn providers(
         SheetAction::Pick(key) => {
             let picked = match key {
                 ListKey::Provider(id) => rows.iter().find(|row| row.id == id).map(|row| &row.id),
-                // "Other..." is the mail form, chosen by id: the row order is porter's to change.
+                // "Other..." is the mail form, chosen by id: the row order is the accounts service's to change.
                 ListKey::Other => rows
                     .iter()
                     .find(|row| row.kind == RowKind::Generic && row.id.as_str() == OTHER_PROVIDER)

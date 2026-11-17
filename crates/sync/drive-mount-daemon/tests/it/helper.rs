@@ -69,14 +69,14 @@ fn a_mount_hands_back_the_fd_the_mount_step_made_end_to_end() {
         .expect("writers")
         .get_mut(&target)
         .expect("mounted at ~/Cloud/Google Drive")
-        .write_all(b"porter")
+        .write_all(b"accounts")
         .expect("write");
     helper.mounts().writers.lock().expect("writers").clear();
     let mut got = String::new();
     std::fs::File::from(fd)
         .read_to_string(&mut got)
         .expect("read");
-    assert_eq!(got, "porter");
+    assert_eq!(got, "accounts");
     // The folder was made, private to the person.
     let mode = std::fs::metadata(&target)
         .expect("folder")

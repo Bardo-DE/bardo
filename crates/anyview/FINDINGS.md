@@ -10,7 +10,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   libraries pinned by rev.** Forks of other projects: vello (five crates, `[patch.crates-io]`; ends when the
   changes are released upstream), anyrender (five; the same), dioxus (five; the dirty-task fix, ends when a
   dioxus release has it) and blitz (with taffy reached through it; ends when its changes are released upstream).
-  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, the plugin host, the actions service, porter
+  The owner's own libraries, none yet a crates.io release: Bardo, blitz-kit, the chord keymap, the plugin host, the actions service, the accounts service
   (with the memory service, the model layer and the caller-identity library), the service locator and mpv-wgpu (each ends when it is published). `deny.toml` allows
   each git source by name. A source build is reproducible while those repositories keep the revs (`Cargo.lock` is
   committed, CI builds with `--locked`). The tag workflow (`.github/workflows/release.yml`) builds the Linux
@@ -1191,7 +1191,7 @@ on. It is a reference, not a log: how each was found lives in git history.
 
 ## The agent layer (the actions service)
 
-- **The actions service is a git dependency** at 30aa26b8, with porter (`prov`, `porter-core`) at 260a14d, the rev the actions service
+- **The actions service is a git dependency** at 30aa26b8, with the accounts service (`prov`, `account-core`) at 260a14d, the rev the actions service
   itself pins, spelled the same way so Cargo keeps one copy; the actions service's own the memory service and the model pins come through it.
   The actions service, the memory service and the model layer are public, so a plain checkout of anyview builds. Owner: the actions service.
 - **The action is `anyview.file.open`, not `file.open`.** the actions service's `validate` requires the action name to start with the
@@ -1206,7 +1206,7 @@ on. It is a reference, not a log: how each was found lives in git history.
   ds context model.
 
 - **The viewer's package budget is 682 (was 670).** the actions service's app side brings twelve packages, all behind
-  `desktop`: action-client, action-core, action-dbus, porter-core, porter-dbus, prov, memory-core, cua-action,
+  `desktop`: action-client, action-core, action-dbus, account-core, account-dbus, prov, memory-core, cua-action,
   model-provider, genai-names, vision-prep and base64 0.22.1. Most are vocabulary crates action-core names in its
   signatures, not code the viewer runs. `anyview-peek` stays at 590. Ends when action-core splits the app-facing
   types from the planner and reader vocabulary.

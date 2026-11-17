@@ -1,8 +1,8 @@
 //! The launcher's side of an agent's login (accountd's `Launcher` over the bus; it is this crate's and
-//! not `Porter`'s, because the key it hands over is a sealed memfd, a Linux descriptor) (design/31 R7-R9, C5, C6). The agent launcher
+//! not `AccountClient`'s, because the key it hands over is a sealed memfd, a Linux descriptor) (design/31 R7-R9, C5, C6). The agent launcher
 //! (bardo-agent-acp) registers the programs it runs, hears when accountd asks it to sign an agent in or
 //! out, has the agent do it, and reports only a coarse [`LoginOutcome`]. Nothing of the login
-//! itself (a token, a URL, a code) crosses to porter: there is no way to send one.
+//! itself (a token, a URL, a code) crosses to the accounts service: there is no way to send one.
 //!
 //! The launcher talks to accountd (`org.bardo.Accounts1`), which holds the AI keys: whoever uses a
 //! credential holds it. An agent's yes to use one of the person's keys is a permit
@@ -21,7 +21,7 @@
 //! launcher.register(&[AgentProgram::parse("claude-code")?]).await?;
 //! while let Some(ask) = requests.next().await {
 //!     let ask = ask?;
-//!     let outcome = run_the_agents_own_login(&ask).await;   // the agent's, never porter's
+//!     let outcome = run_the_agents_own_login(&ask).await;   // the agent's, never the accounts service's
 //!     match ask.kind {
 //!         AskKind::Login => launcher.report_login(&ask.request, outcome).await?,
 //!         AskKind::Logout => launcher.report_logout(&ask.request, outcome).await?,
@@ -65,7 +65,7 @@ pub enum LauncherError {
     #[error("refused")]
     Refused(Refusal),
     /// The call did not complete: accountd is not there, did not know the caller as the agent
-    /// launcher, refused an argument, or sent something that is not porter's protocol.
+    /// launcher, refused an argument, or sent something that is not the accounts service's protocol.
     #[error(transparent)]
     Link(#[from] LinkError),
 }
@@ -258,7 +258,7 @@ impl Launcher {
     /// the session does ([`Launcher::end_session`], or this connection leaving).
     ///
     /// For an agent that cannot be pointed at inferd (P4, the metered route, needs none of this).
-    /// The key is outside porter's meter and the child can read its own key: see the module
+    /// The key is outside the accounts service's meter and the child can read its own key: see the module
     /// documentation of [`crate::credential`] for the launcher's duties.
     ///
     /// # Errors

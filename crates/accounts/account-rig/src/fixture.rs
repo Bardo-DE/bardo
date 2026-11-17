@@ -17,7 +17,7 @@
 //!    some other process, runs
 //!    `account-rig-client --app-id org.example.App --proc-root <dir>/proc write-identity --pid N`.
 //!
-//! The role of the app (App, Settings, `SheetHost`, `PorterDaemon`, ...) is the daemons' own table
+//! The role of the app (App, Settings, `SheetHost`, `AccountDaemon`, ...) is the daemons' own table
 //! (`callers.toml`), not something the fixture says.
 
 use std::io;

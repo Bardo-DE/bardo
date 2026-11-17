@@ -1,5 +1,5 @@
-//! Building a request from porter's URLs, and reading headers. The request and response are the
-//! `http` crate's (`Request<Vec<u8>>`, `Response<Vec<u8>>`); the URL a request goes to is a porter
+//! Building a request from the accounts service's URLs, and reading headers. The request and response are the
+//! `http` crate's (`Request<Vec<u8>>`, `Response<Vec<u8>>`); the URL a request goes to is an accounts service
 //! `WebUrl`, and [`request`] is the one place it becomes the request's `Uri`.
 
 use crate::error::HttpError;

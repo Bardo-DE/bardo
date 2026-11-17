@@ -1,4 +1,4 @@
-//! The Microsoft Graph replica (design/31 §6.1, porter PLAN W6c): [`GraphReplica`] implements
+//! The Microsoft Graph replica (design/31 §6.1, the accounts service PLAN W6c): [`GraphReplica`] implements
 //! sync-core's `Replica` over a folder of `OneDrive`'s app folder (`/me/drive/special/approot`)
 //! or, given [`Root::Drive`], of the whole drive (`/me/drive/root`).
 //!

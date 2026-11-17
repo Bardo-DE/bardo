@@ -55,7 +55,7 @@ const BY_SENSITIVITY: [DataClass; 13] = [
 
 /// The class a read over `labels` is sent as: the most sensitive present.
 ///
-/// A class porter adds that this list does not rank yet counts as more sensitive than any ranked
+/// A class the accounts service adds that this list does not rank yet counts as more sensitive than any ranked
 /// one, so a new class is never sent as something looser. Text that no label classes is treated as
 /// the person's own words, whose floor is this computer, so an unclassed input is never sent off
 /// it.

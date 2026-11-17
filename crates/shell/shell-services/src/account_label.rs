@@ -2,7 +2,7 @@
 //! name an account call it by. The accounts service and the sync-hold service both name accounts,
 //! so neither reaches into the other for this.
 
-use account_client::{AccountRef, Accounts, Porter};
+use account_client::{AccountClient, AccountRef, Accounts};
 use account_client_dbus::Bus;
 use account_wire::names::ACCOUNTS_PATH;
 use shell_model::accounts::AccountKey;
@@ -16,7 +16,7 @@ pub(crate) type Accountd = Accounts<Bus>;
 
 /// The handle on accountd over `connection`.
 pub(crate) fn accountd(connection: &Connection) -> Accountd {
-    Porter::over(Bus::over(connection.clone())).accounts()
+    AccountClient::over(Bus::over(connection.clone())).accounts()
 }
 
 /// The account `key` (accountd's object path for it) as the client names it; `None` for a key

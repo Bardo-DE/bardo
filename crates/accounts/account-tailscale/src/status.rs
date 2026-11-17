@@ -34,7 +34,7 @@ pub enum Backend {
     Starting,
     /// Connected.
     Running,
-    /// A state this version of porter does not know.
+    /// A state this version of the accounts service does not know.
     Other,
 }
 
@@ -69,7 +69,7 @@ impl Backend {
         }
     }
 
-    /// What this state means for a porter account.
+    /// What this state means for an accounts account.
     #[must_use]
     pub fn standing(self) -> Standing {
         match self {
@@ -83,7 +83,7 @@ impl Backend {
     }
 }
 
-/// What tailscaled's state means for the account porter keeps for it.
+/// What tailscaled's state means for the account the accounts service keeps for it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Standing {
     /// Running and signed in.

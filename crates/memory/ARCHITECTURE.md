@@ -16,7 +16,7 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 
 | Crate | Purpose | I/O |
 | --- | --- | --- |
-| `memory-core` | the vocabulary: ids and their grammars (`FactId`, `TopicPath`, `KindTag`, `KindPattern`, `SpacePath`), things (`ThingRef` = `prov::EntityId`), `Record`, `EventBody` (with `Message` and `Episode`), `AreaPayload`, `Episode` and its skeleton, `InjectQuery`/`RecentQuery`, facts, remember rules and the pure `admit`, the wire (`MemoryRequest`, `MemoryReply`, `Refusal`), the timeline, forget-plan, draft and status views, the export manifest, `Dirs`; re-exports the porter and `prov` names the other crates use | none |
+| `memory-core` | the vocabulary: ids and their grammars (`FactId`, `TopicPath`, `KindTag`, `KindPattern`, `SpacePath`), things (`ThingRef` = `prov::EntityId`), `Record`, `EventBody` (with `Message` and `Episode`), `AreaPayload`, `Episode` and its skeleton, `InjectQuery`/`RecentQuery`, facts, remember rules and the pure `admit`, the wire (`MemoryRequest`, `MemoryReply`, `Refusal`), the timeline, forget-plan, draft and status views, the export manifest, `Dirs`; re-exports the accounts service and `prov` names the other crates use | none |
 | `memory-seal` | `SpaceKey`, purpose subkeys (`derive`), `DbKey`, `seal`/`unseal` for files, the `KeyStore` seam, `ProvidedKeys` (Space keys derived from a master key the app provides: the portable key source), `MemoryKeys` (feature `testing`), `Oo7Keys` (feature `oo7`) | none (oo7 behind its feature) |
 | `memory-keyfile` | `FileKeys`: a `KeyStore` in one sealed file, replaced through `atomic-write-file` (synced); TEST ONLY, reached only through memoryd's `test-keys` feature | the file |
 | `memory-store` | the seams the service stands on, traits and types only: the log (`LogRead`, `LogWrite`, `Entry`, `Header`, `NewHeader`, `verify_chain`, `LogError`), the vault (`Vault`, `VaultPath`, `VaultError`), the search index (`SearchIndex`, `IndexFailure`, `SearchQuery`, `Doc`, `DocId`, `Allow`, `IndexView` (core's), `Embedder`, `EmbedderCard`, `Vector`, `fuse_rrf`, `chunk`). Each store crate implements them and re-exports the names it used to hold | none |
@@ -36,7 +36,7 @@ trait), section 5 (what is built), section 6 (copy the recipe).
 | `memory-client` | the app-facing `Memory` over a `Transport`: `Absent` (no-op on other desktops), `DbusTransport` (feature `dbus`), `InProcess` (feature `in_process`, off by default: only it links `memory-service`, which links no storage) | through its transport |
 | `memory-local` | the portable on-disk `Backend` for an app that hosts its own memory: `LocalBackend` (SQLCipher log and index, sealed or plain files, `ProvidedKeys`, `SystemClock` (the one real `Clock`) or an app-passed clock, embedder and consolidator, `NoEmbedder`/`NoConsolidator` by default), `Root` (the one directory the app gives), `open`, `create_space`, `save_spaces` (`spaces.toml`); no XDG, bus, inotify or Landlock | none (seams are passed in) |
 | `memory-fake` | test-only: `fake_service`, `FakeBackend`, `SteppedClock`, `SharedVault`, `ScriptedConsolidator`, `Scratch`, the five fixtures | none |
-| `memoryd` | the daemon and its library: `SystemBackend` (over any key store, embedder and consolidator), built over `memory-infer`'s `InferdEmbedder` and `InferdConsolidator`, the XDG roots, `Peers` (who is calling), `Daemon` (the bus handler), the Landlock `sandbox` policy, `keysel` (which key store: the Secret Service, or with the test-only `test-keys` feature a sealed file named by `BARDO_MEMORYD_KEYS=file:<path>`; the same feature lets `BARDO_MEMORYD_SANDBOX=off` skip Landlock, see FINDINGS; `PROC_GATE` and account-daemon-support's `ProcRoot`: the test-only `test-proc-root` feature's `BARDO_MEMORYD_PROC_ROOT=<dir>`, a fixture `/proc` for callers); `callers` (the callers file and porter's caller mapped onto the memory service's); the binary applies the sandbox, then serves the session bus; `SettingsWatch` (the directory watch on `memory/settings.toml`; `apply_next` puts each change in force on the service), `Consent` (the person's confirmations of loosened settings, `Memory1.ConfirmSettings`, kept in `confirmed-settings.toml` in memoryd's own data directory, which the agent sandbox cannot write; the Settings app's alone; `Consent::waiting` answers `Memory1.PendingSettings`, the Settings app's and the shell's), the nightly consolidation timer, `Policy.read_dirs`, `--write-schema` | everything |
+| `memoryd` | the daemon and its library: `SystemBackend` (over any key store, embedder and consolidator), built over `memory-infer`'s `InferdEmbedder` and `InferdConsolidator`, the XDG roots, `Peers` (who is calling), `Daemon` (the bus handler), the Landlock `sandbox` policy, `keysel` (which key store: the Secret Service, or with the test-only `test-keys` feature a sealed file named by `BARDO_MEMORYD_KEYS=file:<path>`; the same feature lets `BARDO_MEMORYD_SANDBOX=off` skip Landlock, see FINDINGS; `PROC_GATE` and account-daemon-support's `ProcRoot`: the test-only `test-proc-root` feature's `BARDO_MEMORYD_PROC_ROOT=<dir>`, a fixture `/proc` for callers); `callers` (the callers file and the accounts service's caller mapped onto the memory service's); the binary applies the sandbox, then serves the session bus; `SettingsWatch` (the directory watch on `memory/settings.toml`; `apply_next` puts each change in force on the service), `Consent` (the person's confirmations of loosened settings, `Memory1.ConfirmSettings`, kept in `confirmed-settings.toml` in memoryd's own data directory, which the agent sandbox cannot write; the Settings app's alone; `Consent::waiting` answers `Memory1.PendingSettings`, the Settings app's and the shell's), the nightly consolidation timer, `Policy.read_dirs`, `--write-schema` | everything |
 
 ## 1a. Portable core and desktop extras
 
@@ -88,7 +88,7 @@ The script also reports source files over 500 lines (`--long-files`, report only
 
 The memory service never depends on the model layer, the actions service or cua: their payloads (policy, consent, computer-use
 steps, sessions) are `EventBody::Area` in their owners' serde form, and `check-boundary.sh`
-fails if any of their crates enters the tree. Other crates reach porter's names through
+fails if any of their crates enters the tree. Other crates reach the accounts service's names through
 `memory-core`'s re-exports, so the dependency tiers stay this exact.
 
 External boundaries (default features): `memory-core` never reaches `zbus zvariant tokio
@@ -127,7 +127,7 @@ may reach `notify` and never `rusqlite`; `memory-dbus` and `memory-dbus` reach `
 
 | Concept | Home |
 | --- | --- |
-| who acted, effects, labels, ids of sessions and runs, the confirmation receipt | porter `prov` (re-exported by `memory-core`) |
+| who acted, effects, labels, ids of sessions and runs, the confirmation receipt | the accounts service `prov` (re-exported by `memory-core`) |
 | `SpaceId`, `AppName`, `AppId`, `Count`, `Bytes`, `UnixSeconds`, `DataClass` | `account-core` |
 | a thing's identity | `prov::EntityId`; `ThingRef`, `ThingKind`, `ThingKey` are aliases in `memory-core::thing` |
 | an event's typed body, its kind tag | `memory-core::event::EventBody::kind` (the one match) |
@@ -401,7 +401,7 @@ the fakes.
 - **No `unsafe`** anywhere (`unsafe_code = "deny"`). That is why vectors are exact scan and not
   `sqlite-vec` (QUESTIONS P5).
 - **Dependencies** come from Bardo's pinned block (`docs/workspace-deps.toml` there), copied
-  verbatim, only the lines the memory service names; a new one joins that file first. porter's crates are
+  verbatim, only the lines the memory service names; a new one joins that file first. The accounts service's crates are
   git dependencies at a pinned rev, so a plain clone builds with no sibling checkout.
 - **The wire is serde.** Every stored or wire type has a round-trip test; enums with data are
   adjacently tagged (`kind`/`v`).

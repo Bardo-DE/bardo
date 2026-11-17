@@ -38,7 +38,7 @@ impl<H> ApiKeyFlow<H> {
     fn held_server(&self) -> Option<ServiceEndpoint> {
         match &self.mode {
             SignInMode::Reauthenticate { endpoints, .. } => own_server(endpoints).cloned(),
-            // `Add`, or a variant a newer porter adds: no held server, so the person is asked
+            // `Add`, or a variant a newer the accounts service adds: no held server, so the person is asked
             // for one
             _ => None,
         }
@@ -72,7 +72,7 @@ impl<H> ApiKeyFlow<H> {
         match self.mode {
             SignInMode::Add => Move::Review(signed),
             SignInMode::Reauthenticate { .. } => Move::Done(signed),
-            // a variant a newer porter adds: the sign-in ends as unreadable
+            // a variant a newer the accounts service adds: the sign-in ends as unreadable
             _ => Move::Fail(SignInFault::Unreadable),
         }
     }

@@ -3,7 +3,7 @@
 ## Release bundle (lane desk-release, 2026-10-15)
 
 `release/build.sh` stages the whole desktop under `/opt/bardo/current` with a destdir. Where a component's
-installer could stage, it is used (porter, the Settings app, anyview, mailo, and this repo's session installer). The
+installer could stage, it is used (the accounts service, the Settings app, anyview, mailo, and this repo's session installer). The
 rest is staged by build.sh itself, marked INTERIM in the script, because the component's installer cannot
 stage without sudo or writes `$HOME`. What each installer must gain so the INTERIM block can go (all
 `--prefix DIR --destdir DIR`, no sudo, nothing under `$HOME` or `/etc` outside the destdir, `--no-build`
@@ -22,8 +22,8 @@ and `--locked` builds, the installed path (never the destdir-prefixed one) insid
   build.sh stages its unit as a system file (see "the mouse gestures daemon as a system service" below).
 - mailo (`dist/install.sh`): `MAILO_PREFIX` as a destdir writes the destdir-prefixed path into
   `org.bardo.Mail.service` (build.sh seds it out). Needs a real `--destdir` beside the prefix.
-- porter (`scripts/install.sh`): fine, but builds without `--locked` (build.sh builds locked first and passes
-  `--no-build`); the top-level `install.sh` has no way to pass `--no-build`, so build.sh calls porter directly.
+- The accounts service (`scripts/install.sh`): fine, but builds without `--locked` (build.sh builds locked first and passes
+  `--no-build`); the top-level `install.sh` has no way to pass `--no-build`, so build.sh calls the accounts service directly.
 - anyview (`dist/install.sh`): builds the mpv plugin's C plugin and fetches mpv-wgpu without `--locked`
   (build.sh builds it locked and passes `ANYVIEW_MPV_CPLUGIN`); `--mpv PATH` cannot be passed through the
   top-level `install.sh`, so the plugin manifest names the builder's `mpv` or `/usr/bin/mpv`.
@@ -40,13 +40,13 @@ lists as `release.py`'s):
 - Links (`[[export]]`, derived from the staged tree): everything staged under `share/wayland-sessions`,
   `share/xdg-desktop-portal`, `share/dbus-1/services`, `lib/systemd/user`, `share/applications`,
   `share/polkit-1/actions`, and now `share/bardo` (intents, skills, settings schemas, helpers, icons),
-  `share/porter` (providers, client tables), `share/models` (the model catalog) and `share/fonts` (the desktop
+  `share/accounts` (providers, client tables), `share/models` (the model catalog) and `share/fonts` (the desktop
   lane ships `fonts/Noto-COLRv1.ttf` to `share/fonts/bardo/`). Commands are `exports.toml` links in `/usr/local/bin`.
   A distribution's own file at the same path is a conflict and is left alone.
 - Files (`[[system]]`, staged in `system/<absolute path>`): `/etc/pam.d/shell`, the key remap daemon's `bardo-key-remap.service` (at
   `/usr/lib/systemd/system`), `70-key-remap.rules`, `key_remap.polkit.rules` and `modules-load.d/key-remap.conf` (`uinput`,
   written by build.sh because the key remap daemon ships none), the mouse gestures daemon's `70-mouse-gestures.rules` and `modprobe.d/99-mouse-gestures.conf`,
-  and porter's `/etc/porter/callers.toml` (porter's installer is pointed at `<prefix>/system/etc`).
+  and the accounts service's `/etc/accounts/callers.toml` (the accounts service's installer is pointed at `<prefix>/system/etc`).
 - Still data only (no home on the system): `share/shell/key-remap.toml` (the shell session's key remap daemon layer, which the shell's
   installer copied into the home), `share/key_remap/key_remap.plasma.toml` (the Plasma overlay; not used by this
   desktop).
@@ -86,7 +86,7 @@ polkit does; confirm on a machine.
 ## desk-callers (2026-10-16)
 
 The top-level `install.sh` now installs the memory service (the memory daemon, `/etc/bardo/memory-callers.toml`) and
-The actions service (its four daemons, `bardo-do`, and the `/etc/bardo/*-callers.toml` tables), between porter and detent.
+The actions service (its four daemons, `bardo-do`, and the `/etc/bardo/*-callers.toml` tables), between the accounts service and detent.
 Both are in `ORDER`, the `--only` help, the README list and `gate/installer-check.sh` (stubs, plan order, the
 staged arguments, and the not-staged case).
 
@@ -96,7 +96,7 @@ What I found and decided:
   invented: the top-level declares those places as written, under the destdir, and passes only `--prefix` and
   `--destdir`. No `--distro`, `--sandbox` or `--no-build` is passed (nothing existing passes them either); the
   installers read the family from the machine, so Ubuntu, Fedora and Arch work. No linker is asked for.
-- They do not fit porter's "print the root command" path: both refuse to run as root ("Run this as yourself")
+- They do not fit the accounts service's "print the root command" path: both refuse to run as root ("Run this as yourself")
   and escalate (`$SUDO`, sudo, doas, pkexec) per step themselves. A root hint for them would fail. So without a
   `--destdir` they are listed as "yourself" with the plain command (the same way the shell and the key remap daemon are); with a
   `--destdir` they run here and never escalate. A destdir that you cannot write stops them with their own message.
@@ -128,7 +128,7 @@ What I found and decided:
 ## Release bundle: the memory service and the actions service (lane desk-callers, 2026-10-16)
 
 - `release/build.sh` builds the memory service (`memoryd`) and the actions service (its four daemons, `bardo-do`, `agent-acp-server`; not the
-  voice daemon) after porter, locked, then runs their installers with `--bin-dir`, `--prefix /opt/bardo/current`,
+  voice daemon) after the accounts service, locked, then runs their installers with `--bin-dir`, `--prefix /opt/bardo/current`,
   `--destdir <stage>` and `--sysconfdir /opt/bardo/current/system/etc`. The caller tables land as system files in
   `/etc/bardo`, the actions service's default settings in `/etc/xdg/bardo`. These steps need the memory service >= 6aade09 and the actions service >=
   e44112c (the `--sysconfdir` commits); the manifest revs are unchanged and the next bump brings them, so a release
@@ -146,16 +146,16 @@ What I found and decided:
 
 ## desk-pprefix (2026-10-16)
 
-B1 is closed by porter 2e5cd74 (in the pinned de06006), so `install.sh` no longer forces porter to `/usr`: it gets
+B1 is closed by the accounts service 2e5cd74 (in the pinned de06006), so `install.sh` no longer forces the accounts service to `/usr`: it gets
 the desktop `--prefix` (default `/usr/local`) and `--sysconfdir` (default `/etc`) like the other components, and the
-"porter goes to /usr" note is gone. Checked in porter's source at de06006, with `--prefix /usr/local --sysconfdir /etc`
-(`scripts/install.sh` puts providers, `clients.toml`, the tailnet drop-in under `$prefix/share/porter` and the caller
-tables at `$sysconfdir/porter`):
+"accounts goes to /usr" note is gone. Checked in the accounts service's source at de06006, with `--prefix /usr/local --sysconfdir /etc`
+(`scripts/install.sh` puts providers, `clients.toml`, the tailnet drop-in under `$prefix/share/accounts` and the caller
+tables at `$sysconfdir/accounts`):
 
-- providers, `clients.toml` and the model catalog: accountd, syncd and inferd take `Xdg::shipped("porter/providers")`,
-  `("porter/clients.toml")` and `("models/catalog")` (`porter-core/src/xdg.rs`): the first `$XDG_DATA_DIRS` entry
+- providers, `clients.toml` and the model catalog: accountd, syncd and inferd take `Xdg::shipped("accounts/providers")`,
+  `("accounts/clients.toml")` and `("models/catalog")` (`account-core/src/xdg.rs`): the first `$XDG_DATA_DIRS` entry
   (default `/usr/local/share:/usr/share`) that has the path, else `/usr/share/...`.
-- `callers.toml` and `inferd-callers.toml`: `/etc/porter/<file>` is searched first (`porter-daemon/src/system_callers.rs`,
+- `callers.toml` and `inferd-callers.toml`: `/etc/accounts/<file>` is searched first (`account-daemon-support/src/system_callers.rs`,
   `SYSTEM_CALLERS`, `INFERD_CALLERS`, `search`), so `--sysconfdir /etc` is found. Since 36f5014 the other places are a
   fixed list (`TABLE_DIRS`), not `$XDG_*`, and a table counts only when root holds it (root-owned, no group or other
   write along its real path), so it must be installed as root, as before.
@@ -163,7 +163,7 @@ tables at `$sysconfdir/porter`):
   sets it without that entry would not find an install under `/usr/local`). Nothing was built or installed;
   `gate/installer-check.sh` and a dry run passed.
 - The model catalog was installed by nothing on this repo's master, so inferd had no model catalogue on a fresh install.
-  `install.sh` now has a `models` step right after porter (`scripts/install.sh --prefix P --sysconfdir S [--destdir D]`,
+  `install.sh` now has a `models` step right after the accounts service (`scripts/install.sh --prefix P --sysconfdir S [--destdir D]`,
   The model layer 3ae1211; it builds nothing and writes only `<prefix>/share/models/catalog`). Outside a `--destdir` it is left to
   the person like the memory service (its installer escalates itself). `release/build.sh` has `build_models` (`--no-build`, staged
   under `share/models`, an auto-exported folder in `release.py`) and the CI `agents` job builds `memory,actions,models`.
@@ -177,8 +177,8 @@ tables at `$sysconfdir/porter`):
   installer's bardo-compositor.service check (`install/install.sh`) only tests that the file exists under the prefix, so it
   does not catch this.
 - The release bundle is not affected: it lives under `/opt/bardo/current` but `release.py` exports `share/dbus-1/services`,
-  `lib/systemd/user`, `share/porter`, `share/models` and the other folders in `AUTO_EXPORT_DIRS` as links into `/usr/share`
-  and `/usr/lib/systemd/user`, and the caller tables go to `/etc/porter` as system files. `release/build.sh` is unchanged
+  `lib/systemd/user`, `share/accounts`, `share/models` and the other folders in `AUTO_EXPORT_DIRS` as links into `/usr/share`
+  and `/usr/lib/systemd/user`, and the caller tables go to `/etc/accounts` as system files. `release/build.sh` is unchanged
   apart from the model step.
 
 ## desk-cua: the helper for apps that are not ours (B6, 2026-10-16)
@@ -298,7 +298,7 @@ check first is listed under "Not verified" at the end of this section.
 - `manifest.toml` moves the updater from aa427f2 to 769704c, the tip with the exact list, the three helpers and the session
   calls. The release cannot be installed by the older helper once it carries a path the older list does not name; the
   hand-installed helper must be replaced on each computer (the updater's `scripts/install.sh`).
-- Every file `build.sh` stages is on the list. porter, the memory service, the actions service and cua stage their caller tables through their own
+- Every file `build.sh` stages is on the list. The accounts service, the memory service, the actions service and cua stage their caller tables through their own
   installers, so a name they write that the list does not cover is only found when `pack` runs in CI.
 - Superseded wording above: "allowed system folders" (this file and the README) now means the list; the stale line in
   "Whether the release should write `/etc/pam.d` at all" is answered: one file, `/etc/pam.d/shell`, named.
@@ -419,7 +419,7 @@ check first is listed under "Not verified" at the end of this section.
   have one, and an escape that works in bash, zsh and fish alike was not found); the second stage still sources
   `~/.config/desktop-session/session.env`, which decides the compositor command line (a same-user process can already edit
   `~/.profile`, so this adds little, as the verified row says).
-- **Interface ask for porter:** accountd should not accept a unit by name alone for the `compositor` and shell roles: check the
+- **Interface ask for the accounts service:** accountd should not accept a unit by name alone for the `compositor` and shell roles: check the
   unit's fragment path and drop-in paths (`systemctl --user show -p FragmentPath -p DropInPaths`), since the drop-in that
   decides what runs as `bardo-compositor.service` is written under `$XDG_RUNTIME_DIR/systemd/user/`, which any process of the person
   can write. (Done on the session side, lane pa-units: bardo-compositor.service and shell.service are installed root-held in
@@ -595,7 +595,7 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   The caller-identity library's constant: `gate/check-loader-unset.sh` reads it from `caller-identity-core/src/facts.rs` and checks the drop-in and every `unit =` row of
   `dist/desktop-callers.toml` (plus `bardo-input-broker.service`) whose file is in a sibling checkout; `gate/installer-check.sh` runs it on the staged drop-in and on generated
   trees (3d); `gate/desktop-gate.sh --self` runs it. Units that live in other repositories and still lack the full line are on `gate/loader-unset-pending.txt`
-  (a debt list: accountd.service in porter, bardo-key-remap.service in the key remap daemon, org.bardo.Settings.service in the Settings app, bardo-input-broker.service in the input broker, which has 3 of 22);
+  (a debt list: accountd.service in the accounts service, bardo-key-remap.service in the key remap daemon, org.bardo.Settings.service in the Settings app, bardo-input-broker.service in the input broker, which has 3 of 22);
   the check fails when one of them is complete and still listed. `updater/dist/bardo-updater.service` got the line in this lane. Not verified: that a drop-in that is a
   symlink into `/opt/bardo/current` is judged `RootOwned` (read: `trust_of_path` is the same for fragments and drop-ins, and bardo-compositor.service is already such a link).
 - **ROOT-17 leftovers.** `install -d` without a mode in `install/install.sh`, `install/fonts.sh`, `release/smoke.sh` and `release/health-scenarios.sh` now says `-m 755`, and
@@ -604,7 +604,7 @@ screen or changes the displays (the compositor ARCHITECTURE "Consent"). Nobody a
   had started). `read_settings` now reads lines `NAME=VALUE` and takes only `BARDO_SESSION_QUICK_SECS`, `BARDO_SESSION_FIRST_RUN_DELAY` (whole numbers) and
   `BARDO_SESSION_BACKEND_ARGS`; anything else is ignored with a line in the log, and nothing in the file is run. The other `DESKTOP_SESSION_*` knobs (the compositor command,
   stubs, state folder) stay environment-only, which is how the harness sets them. Test: `gate/installer-check.sh` 3e takes the function out of the script and runs it on a
-  file that holds a command, a `$(...)`, `PATH=` and a bad number. Still open, not ours: porter's unit-path check (porter ask in the ROOT-14 entry above, on hold);
+  file that holds a command, a `$(...)`, `PATH=` and a bad number. Still open, not ours: the accounts service's unit-path check (the accounts service ask in the ROOT-14 entry above, on hold);
   `COMPOSITOR_SESSION_ARGS` in the user manager is same-user writable and the compositor refuses a floor not owned by root, so no bypass.
 - **ROOT-18 (more places, still a deny-list).** `harness/secret-paths.list` grew by browser profiles, cloud and secret-manager tool folders and token files (43 lines).
   The allow-list (show only `/usr`, the worktree and scratch) still needs a pass over the scenarios to learn what each reads: left, as the plan says.

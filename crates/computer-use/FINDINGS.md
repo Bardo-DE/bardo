@@ -41,7 +41,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 - **A message carries no authority.** No input grants a lease, mode, budget or permission;
   `a_message_changes_no_authority` pins it (ignored until the machine).
 - **Edges.** SPEC 1.3 gives seat-input, maskcap and a11y-tree only `cua-action`, and cua-bus only
-  prov, action-core and porter-infer. Its own types need more: a lease, a `Stamp` and `SeatIsolation`
+  prov, action-core and inference-core. Its own types need more: a lease, a `Stamp` and `SeatIsolation`
   are named by `AgentSeat::attach`, `WindowCapture::open` and `BackendCaps`; the records name
   `InputReceipt`, `FrameDigest`, `NodeSelector`. So `cua-desktop` is the base crate and the leaf
   crates depend on it; cua-bus depends on the four leaves; `RunBudget` lives in cua-bus (SPEC 2 says
@@ -88,7 +88,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 - `atspi` is pinned with `default-features = false, features = ["connection", "proxies", "tokio"]`
   (the block's bare `0.30` cannot be narrowed by a member); `reis` gains `tokio` in seat-input;
   `base64 0.22` is already in the block (maskcap's serde form).
-- `rustix 1.1` (`std`, `fs`), porter's line narrowed: cuad makes the frame memfd (`memfd_create` and its seals).
+- `rustix 1.1` (`std`, `fs`), the accounts service's line narrowed: cuad makes the frame memfd (`memfd_create` and its seals).
 - `xkbcommon 0.8` with `default-features = false` (seat-input `Keymap::parse_xkb` reads the text
   of a keymap and no wayland keymap fd; the block's bare line enables `wayland` and `memmap2`);
   `blake3 1` (maskcap's frame digest and cua-run's thought digest; already in the lock); `futures-util`
@@ -96,7 +96,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 - Dev-dependencies of cuad's tests only, so not in any tree the boundary script checks: `intentd`,
   `action-fake`, `action-router` (a real intentd over the actions service's fakes on a private bus) and
   `memory-fake` with `memory-client`'s `in_process` (a real memory service); `tokio`'s `test-util`.
-- cua-eval only, the model layer's crates at the pinned rev: `cua-session`, `cua-vendors`, `model-catalog`, `model-http` (feature `hyper`), `model-openai-compat` and `vision-prep` (feature `pixels`, so `image` and `fast_image_resize`), the same ones porter's inferd uses to run a step. The eval's 8x16 font is cut from Hack Regular by `scripts/dev/gen-eval-font.py`; no font crate.
+- cua-eval only, the model layer's crates at the pinned rev: `cua-session`, `cua-vendors`, `model-catalog`, `model-http` (feature `hyper`), `model-openai-compat` and `vision-prep` (feature `pixels`, so `image` and `fast_image_resize`), the same ones the accounts service's inferd uses to run a step. The eval's 8x16 font is cut from Hack Regular by `scripts/dev/gen-eval-font.py`; no font crate.
 - Not added: `ashpd`, `pipewire` (KWin).
 
 ## Upstream asks (nothing was edited in another repo)
@@ -104,7 +104,7 @@ wake}`, and `Exec`, which carries a run's effects out against the seams), `run_h
 Closed by the w4-cua fill, from the asks lists (and by f4-cua-seat: 114, 149): 62 (cuad calls `Intents::gate_grant` and
 `gate_check`), 72 (`HandedBack.user_events`, cua-bus on memory-core), 92 (`Observation.notes`), the
 The actions service label ask (the router joins `Untrusted(Screen)` into the run's session at `Gate.Check`), the
-The actions service `InProcess` feature ask (it is behind `in_process`), and the porter `StepNote` ask
+The actions service `InProcess` feature ask (it is behind `in_process`), and the accounts service `StepNote` ask
 (`CuaStepRequest.notes` exists).
 
 - **The model layer `cua-action`:** the markers `WindowSpace`, `ImageSpace`, `GridSpace` derive neither `Hash`
@@ -133,7 +133,7 @@ The actions service `InProcess` feature ask (it is behind `in_process`), and the
 - **The actions service `Run.Perform` / Intents1 XML:** `inv.actor` carries the planner's session, which
   `cua.run.start` uses as the task's session until the ask above is settled (ask 62: any copy of
   the XML gains `session` on `Run.Perform` and `app` on `Context.Current`).
-- **porter `porter-infer` / cuad `Seams`:** a run holds a model session (`CuaBegin` once, then
+- **The accounts service `inference-core` / cuad `Seams`:** a run holds a model session (`CuaBegin` once, then
   steps), but `Seams` has one `Model`. The supervisor therefore lets a run hold the model for as
   long as it lasts and runs on different windows take turns at their first model call. Ask: a
   per-run model (`Seams::Model` becomes a factory, `fn open(&self) -> Self::Model`), so runs on
@@ -166,7 +166,7 @@ The actions service `InProcess` feature ask (it is behind `in_process`), and the
   label into a run's taint with them.
 - Nothing was pushed; no GitHub repo.
 
-## Following porter's client fill (ask 82)
+## Following the accounts service's client fill (ask 82)
 
 - `InferdCuaModel::{begin, step}` are built over `Transport::open(Need::ComputerUse, Screen, tier)`
   (the tier is `Balanced`, `on_tier` sets `CuadConfig::tier`). `begin` sends `CuaBegin` and reads
@@ -314,7 +314,7 @@ the machine under it. What was decided:
   (`org.bardo.Companion` / `companion.session`, as the actions service's log does) and the app as a `Source` thing
   (`<app>` / `desktop.app`; the memory service's `ThingRole` has only `Subject` and `Source`).
 - **Ask 114**: `Cargo.lock` is refreshed (adds `tokio`, `futures-util`, `rustix`, `cua-parse` edges) and
-  `--locked` passes against porter, the actions service, the model layer and the memory service master.
+  `--locked` passes against the accounts service, the actions service, the model layer and the memory service master.
 
 ## The f4-cua-capture fill (2026-10-06): the stock wayland backends and the daemon's seams
 
@@ -401,7 +401,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
    --write-schema`.
 8. **Lockfile.** `notify` joins cua's `Cargo.lock` (cuad's watch). The watch code is the same shape as
    The actions service's intentd and the memory service's memoryd (`SettingsWatch`); one shared crate replaces the three copies when
-   porter has a place for it.
+   The accounts service has a place for it.
 9. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent`
    mark) and parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a
    scratch project: a dev-dependency on ds-settings would unify zbus's executor features); every schema key
@@ -410,7 +410,7 @@ section 9.2). cua's covers the `cua.*` keys of section 3.29 that cuad reads, and
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-The model layer, porter, the memory service, the actions service and desktop-protocols are git dependencies at pinned revs in the root
+The model layer, the accounts service, the memory service, the actions service and desktop-protocols are git dependencies at pinned revs in the root
 `Cargo.toml`, spelled `https://github.com/PoHsuanLai/<repo>` (no `.git`) as the other repos spell them, so one copy
 of each crate is in the graph. For cross-repo work, override a pin with a
 `[patch."https://github.com/PoHsuanLai/<repo>"]` table of `path` lines in a `.cargo/config.toml` in a directory
@@ -515,8 +515,8 @@ a real desktop. The model-time figures are wall time on a shared machine and are
 
 - `cua-eval-cloud` plays the eval task set on a hosted model through inferd (`Need::Llm` with images,
   class `screen`), not through `Need::ComputerUse` as cuad does: inferd refuses a computer-use
-  session on a hosted model (porter FINDINGS, "inferd hosted: only chat and task turns"), and
-  `catalog::claims_of` makes no computer-use claim for a remote entry. Closes when porter gives
+  session on a hosted model (the accounts service FINDINGS, "inferd hosted: only chat and task turns"), and
+  `catalog::claims_of` makes no computer-use claim for a remote entry. Closes when the accounts service gives
   `structured`/`cua_step` a model that is not a `LocalModel`; then the provider can be replaced by
   `InferdCuaModel` and the eval will exercise the production path whole.
 - The model layer's hosted entries carry no `actions_out`, and `claude-sonnet-5.5` and `ui-tars-1.5-7b` are
@@ -539,7 +539,7 @@ a real desktop. The model-time figures are wall time on a shared machine and are
   shell: it could answer confirmations, stop runs, and (through `emit_to_shell`) read a run's
   thoughts, proposed actions and questions.
 - **Change.** The caller is the process behind the message's sender, as the actions service does since
-  `187751f`: `action_dbus::callers::Identity` (porter's `ProcCallers`) names the unit or app scope
+  `187751f`: `action_dbus::callers::Identity` (the accounts service's `ProcCallers`) names the unit or app scope
   from `/proc/<pid>/cgroup` and the systemd manager's main pid, and `cuad-callers.toml`
   (`dist/cuad-callers.toml`, laid over by the person's file; only the system's can give a fixed
   role) gives the role. The router is the actions service's `INTENTD` (`org.bardo.Intents`, `agent`), the planner
@@ -553,7 +553,7 @@ a real desktop. The model-time figures are wall time on a shared machine and are
 - **API.** `serve_on(connection, supervisor, table)` takes the callers table (`read_callers`);
   `serve_on_with(connection, supervisor, identity)` is the seam. No environment variable or feature
   switches the proc root in the shipped binary.
-- **Pins.** porter `7911dee`, the model layer `f42e737`, and the actions service `187751f` (with the memory service `8a07b35`, the one
+- **Pins.** the accounts service `7911dee`, the model layer `f42e737`, and the actions service `187751f` (with the memory service `8a07b35`, the one
   The actions pins) move together: `Identity` exists from the actions service `187751f`. `action-dbus` is a new
   direct dependency of cuad.
 - **Tests.** The classify table, the shipped file's three rows, a squatter of the shell's name (not
@@ -705,7 +705,7 @@ authorise step), `Verb` (serialised in the run track: F18),
 `CuaSignal` against `StepEvent` (the proposed action is re-targeted, not re-typed: F16),
 `AxRole` (`Role` is adjacently tagged, so a TOML string cannot read it: F15), `Drivable` (an
 alias for twenty bounds), `Reason`/`Cause` (F8) and the a11y-tree/maskcap option-shaped enums
-(F10; they re-record goldens), the keys table of cua-eval (F22), and F3 (waits for the porter
+(F10; they re-record goldens), the keys table of cua-eval (F22), and F3 (waits for the accounts service
 re-pin).
 
 ## Round B: spend is what the provider reports (2026-10-28)
@@ -715,7 +715,7 @@ nothing else. No price table, no estimate, no per-reply stand-in; `exec/cost.rs`
 one-micro-dollar charge for a cloud reply are gone.
 
 - `RunBudget.spend` is a `Money` (proposed: zero US dollars); `BudgetUse.spend`, `RunEnd.charges`
-  and `CuaRecord::Finished.charges` are a `porter_infer::ChargeTotal` (the reported sum plus the
+  and `CuaRecord::Finished.charges` are a `inference_core::ChargeTotal` (the reported sum plus the
   count of replies that reported none). The stored settings key stays `cua.budget.spend_microusd`
   (and `spend_microusd` in task files): millionths of a US dollar, read as `Money`.
 - The check is unchanged in order and strictness: after each reply is added, the run stops when

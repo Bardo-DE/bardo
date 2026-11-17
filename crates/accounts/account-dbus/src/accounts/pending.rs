@@ -63,7 +63,7 @@ static NEXT_TOKEN: AtomicU64 = AtomicU64::new(0);
 /// A token no other call of this process shares.
 fn fresh_token() -> String {
     format!(
-        "porter_{}_{}",
+        "accounts_{}_{}",
         std::process::id(),
         NEXT_TOKEN.fetch_add(1, Ordering::Relaxed)
     )

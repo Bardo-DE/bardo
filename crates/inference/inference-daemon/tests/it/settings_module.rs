@@ -195,7 +195,7 @@ fn text(value: &str) -> toml::Value {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn the_settings_path_is_under_inference1_and_named_in_porter_dbus() {
+async fn the_settings_path_is_under_inference1_and_named_in_accounts_service_dbus() {
     assert_eq!(
         INFERENCE_SETTINGS_PATH,
         format!("{INFERENCE_PATH}/settings")

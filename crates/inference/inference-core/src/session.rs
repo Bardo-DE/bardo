@@ -17,7 +17,7 @@ pub enum SessionError {
     /// be cloned.
     #[error("session socket failed")]
     Broken(#[source] Arc<std::io::Error>),
-    /// The other side sent something that is not porter's protocol.
+    /// The other side sent something that is not the accounts service's protocol.
     #[error("malformed frame: {0}")]
     Malformed(String),
 }

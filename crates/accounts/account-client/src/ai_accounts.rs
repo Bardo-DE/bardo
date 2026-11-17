@@ -12,7 +12,7 @@ pub enum AiAccountsError {
     #[error("refused")]
     Refused(Refusal),
     /// The call did not complete: accountd is not there, did not know the caller as the AI broker,
-    /// refused an argument, or sent something that is not porter's protocol.
+    /// refused an argument, or sent something that is not the accounts service's protocol.
     #[error(transparent)]
     Link(#[from] LinkError),
 }

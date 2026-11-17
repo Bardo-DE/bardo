@@ -197,7 +197,7 @@ done
 
 # Dependencies point down only: a crate's DIRECT normal and build path dependencies (all
 # features, so memory-client's `in_process` and `dbus` both count) are of its own tier or a
-# lower one. Dev dependencies are outside it. A dependency from another repo (porter, prov) has
+# lower one. Dev dependencies are outside it. A dependency from another repo (the accounts service, prov) has
 # no row here.
 for row in "${LAYERS[@]}"; do
   crate="${row%%:*}"

@@ -3,7 +3,7 @@
 The sync service keeps the copies of your calendars, contacts, tasks, files and photos on your computer in
 step with the services your accounts reach, and shows an account's whole drive as a folder
 (`~/Cloud/OneDrive`, `~/Cloud/Google Drive`) whose files come down when they are opened. It is the
-sync half of what began as porter; [porter](https://github.com/Bardo-DE/porter) is the accounts
+sync half of what began as the accounts service; [the accounts service](https://github.com/Bardo-DE/porter) is the accounts
 half (sign-in, consent, the keyring), and the sync service depends on it by git rev.
 
 ## What runs
@@ -29,17 +29,17 @@ half (sign-in, consent, the keyring), and the sync service depends on it by git 
 
 ## Accounts
 
-The accounts are accountd's (porter). The sync service reaches them only through porter's client crates
+The accounts are accountd's (the accounts service). The sync service reaches them only through the accounts service's client crates
 (`account-client` over `account-client-dbus`): syncd lists the accounts, asks accountd for the grant
 it needs (accountd's consent sheet shows the first time a sync switch is turned on for an account,
 and its answer is kept), reads its own grants, and opens the streams to an account's servers that
 accountd has signed in. syncd holds no account, no token and no password of its own, and
-`scripts/check-boundary.sh` fails if a crate here builds on porter's account stack.
+`scripts/check-boundary.sh` fails if a crate here builds on the accounts service's account stack.
 
 ## Install
 
 You need a Linux desktop with systemd, a keyring (GNOME Keyring or KWallet), `fuse3` for the drives
-and a Rust toolchain to build. Install porter first (it ships the caller table that names syncd).
+and a Rust toolchain to build. Install the accounts service first (it ships the caller table that names syncd).
 
     scripts/install.sh                      # builds, then installs under /usr (run as root)
     scripts/install.sh --prefix /usr/local

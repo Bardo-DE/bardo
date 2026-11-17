@@ -46,7 +46,7 @@ impl std::fmt::Display for DatasetName {
 }
 
 /// Who may see a dataset: the apps that own it, besides Settings (which shows and pauses
-/// everything) and the porter daemons.
+/// everything) and the accounts service daemons.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct Access {
     /// The owning apps.
@@ -58,7 +58,7 @@ impl Access {
     #[must_use]
     pub fn admits(&self, caller: &Caller) -> bool {
         match caller.role {
-            CallerRole::Settings | CallerRole::PorterDaemon => true,
+            CallerRole::Settings | CallerRole::AccountDaemon => true,
             CallerRole::App | CallerRole::SheetHost => self.owners.contains(&caller.app.name),
             CallerRole::Agent
             | CallerRole::AiBroker
@@ -79,14 +79,14 @@ impl Access {
         self.admits(caller) || caller.role == CallerRole::SheetHost
     }
 
-    /// Whether `caller` is an app that owns the dataset (Settings and the porter daemons see it
+    /// Whether `caller` is an app that owns the dataset (Settings and the accounts service daemons see it
     /// but do not own it).
     #[must_use]
     pub fn owned_by(&self, caller: &Caller) -> bool {
         match caller.role {
             CallerRole::App | CallerRole::SheetHost => self.owners.contains(&caller.app.name),
             CallerRole::Settings
-            | CallerRole::PorterDaemon
+            | CallerRole::AccountDaemon
             | CallerRole::Agent
             | CallerRole::AiBroker
             | CallerRole::Cua

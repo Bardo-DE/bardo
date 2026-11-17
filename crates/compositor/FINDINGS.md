@@ -325,7 +325,7 @@ byte-exact for tier P and 2 per channel on at most 1000 ppm of pixels for tier L
   points per inch, whole scale from an ideal of 1.5 while at least 1280 points wide, capped at
   2x; quarter steps otherwise.
 - **`cargo fmt --all` reaches sibling workspaces** through path dependencies;
-  `--check` needs `../models` beside porter.
+  `--check` needs `../models` beside the accounts service.
 - **Motion goldens rest on the platform's `f64::exp`** (A25); quantising to `SubPx` keeps the
   chance of a one-ulp flip moving a value tiny, not zero.
 - **smithay 118e34ff, as P0-Z2 found it:** every global's dispatch goes through
@@ -1637,7 +1637,7 @@ Lane P2-Q2 (not compiled; the orchestrator gates). Removed rows: the ten `todo!(
 ignored tests of this lane; two tests were rewritten (below).
 
 - **Units are fixed, not configuration.** The plan names them (`shell.service` the shell, `cuad.service` the agent tier),
-  so `role_for` is a `match`. Moving them to a typed list is a one-function change if porter's unit check wants it.
+  so `role_for` is a `match`. Moving them to a typed list is a one-function change if the accounts service's unit check wants it.
 - **Departure: `on_set_minimise_target` takes the window, not the identifier string.** The dispatch turns the identifier
   into a `WindowId` and keeps it only when `BardoShellHandler::window_known` says the model has it; the part gets
   `Option<WindowId>` (`None` is `unknown_toplevel`). `on_clear_minimise_target` still takes the string and refuses one that
@@ -1681,10 +1681,10 @@ ignored tests of this lane; two tests were rewritten (below).
 
 The compositor as a systemd service, and its Spaces registered with accountd. Nothing here was compiled or run.
 
-- **New dependency.** `porter-dbus = { path = "../accounts/account-dbus" }` in the workspace table (beside
-  `porter-core`, the same layout), named by `compositor-ipc` only; `compositor-ipc` also names `porter-core` (`SpaceId`).
-  `Cargo.lock` needs `cargo update -w`/a build to gain porter-dbus and whatever it adds (its `zbus`, `serde_json`,
-  `tokio` are already in the graph). porter must be at 71f779a2 or later (`SpacesProxy::register`). B1's allowed list
+- **New dependency.** `account-dbus = { path = "../accounts/account-dbus" }` in the workspace table (beside
+  `account-core`, the same layout), named by `compositor-ipc` only; `compositor-ipc` also names `account-core` (`SpaceId`).
+  `Cargo.lock` needs `cargo update -w`/a build to gain account-dbus and whatever it adds (its `zbus`, `serde_json`,
+  `tokio` are already in the graph). The accounts service must be at 71f779a2 or later (`SpacesProxy::register`). B1's allowed list
   covers core only, so no boundary row changes; check-boundary was not run.
 - **Readiness.** `Notify` seam (`compositor::notify`), real `SocketNotify` over std's `UnixDatagram` (a path or `@abstract`
   `$NOTIFY_SOCKET`), no-op when unset, no new crate. `run` sends `Ready { status: "listening on wayland-N" }` after
@@ -1696,7 +1696,7 @@ The compositor as a systemd service, and its Spaces registered with accountd. No
 - **Registration.** `SpaceRegistry` seam in `compositor-ipc` (a background thread with its own runtime, one call at a time,
   queue of 64, `Pace`: eight calls then a 60 s wait, no clock read; the service allows ten new a minute). `SpaceSync`
   (`compositor::space_sync`) registers each Desktop-content Space once, named `Space::plain_name()` ("Desktop N", a new core
-  method now also used by `workspace.rs`), look `""` (porter: empty is the default look). Triggered by
+  method now also used by `workspace.rs`), look `""` (the accounts service: empty is the default look). Triggered by
   `Effect::PublishWorkspaces` (creation, renumbering) and once at startup; `poll()` runs every turn.
   Full Screen, Split View and Agent Spaces are not registered (transient, nothing to link to).
 - **Outcomes.** AccessDenied -> logged once, no more calls this run. Service not on the bus, or `LimitsExceeded` -> the
@@ -4177,8 +4177,8 @@ Rows for the findings CASW-02/03/04/07/11/12/13/15/18/19, CASC-02/05/06/07/09/10
   context made by an unproven client leaves every client of its socket unproven. A cgroup that cannot be read now leaves the
   peer unproven instead of standing in for the root. **Consequence to know:** every connection the compositor accepts today is
   `PeerIdentity::Unproven` (the public socket, hand-outs), so until a creator can be proven no security-context client is
-  `Proven(Flatpak)`; sandboxed apps are known by their claimed app id until then. **Still open (porter):** a proven creator can
-  still claim any Flatpak app id, and a native process can name its own `app-<id>-<rand>.scope`; porter's `identity_of` should
+  `Proven(Flatpak)`; sandboxed apps are known by their claimed app id until then. **Still open (the accounts service):** a proven creator can
+  still claim any Flatpak app id, and a native process can name its own `app-<id>-<rand>.scope`; the accounts service's `identity_of` should
   cross-check the peer's cgroup against `app-flatpak-<id>-*.scope` before it returns `Proven`, and decide how far same-UID
   spoofing is in scope (interface ask in the lane report). Test: `a_context_carries_at_most_its_creators_proof` (the
   fixture cannot connect a proven creator, so the table is on the pure function).
@@ -5065,8 +5065,8 @@ One commit per root cause on branch `pa3-cas`; nothing here was compiled or run 
   connector that has exited (`ESRCH`) gets no handle; a kernel before 6.5 gets the old reopen-and-recheck.
   The same handle now guards the security-context client's cgroup read (`handlers/security_context.rs`
   `peer_of`): the cgroup counts only if the held process still runs after it is read. The caller-identity library 0.1.6 has the
-  same pin (`Pinned::of_stream`, `Pinned::pidfd`); the compositor moves to it with porter's next the caller-identity library bump
-  (porter-dbus pins 0.1.4, and one lock carries one caller-identity library).
+  same pin (`Pinned::of_stream`, `Pinned::pidfd`); the compositor moves to it with the accounts service's next the caller-identity library bump
+  (account-dbus pins 0.1.4, and one lock carries one caller-identity library).
 - **NEW-PI-4 (the compositor half), as replaced by NEW-FA-4 below.** A virtual-bus device is `Origin::Virtual` unless the device service made it
   for the key remap daemon (`Origin::of_kernel_device`). A virtual device still moves the pointer, fires bindings and drives swipes (`Origin::is_pad`),
   but trusted surfaces, the lock surface and VT switching never hear it.

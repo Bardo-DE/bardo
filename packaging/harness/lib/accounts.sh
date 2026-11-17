@@ -1,4 +1,4 @@
-# What the accounts-* scenarios share: porter's real bardo-accountd, the sync service's bardo-syncd, the inference service's bardo-inferd, porter's test rig
+# What the accounts-* scenarios share: the accounts service's real bardo-accountd, the sync service's bardo-syncd, the inference service's bardo-inferd, the accounts service's test rig
 # (account-rig-servers: the fakes, account-rig-secrets: a fake Secret Service, account-rig-client: an app), the sync service's test rig
 # (sync-rig-servers: the OAuth issuer and the Graph fake, sync-rig-client: an app talking to bardo-syncd) and inference-rig-client (an app opening an bardo-inferd session) on the
 # private bus bardo-compositor's dev/up.sh made, with bardo-shell drawing the sheets. Sourced after harness/lib/all.sh,
@@ -6,9 +6,9 @@
 #
 # Identity. The daemons (bardo-inferd is the inference service's, from build/inference-target) are test-proc-root builds: they name the process behind a bus connection from
 # $PROC/<pid>/cgroup (BARDO_ACCOUNTD_PROC_ROOT, BARDO_SYNCD_PROC_ROOT, BARDO_INFERD_PROC_ROOT; bardo-syncd is the sync service's, from build/sync-target), because nothing in the jail runs
-# in a systemd scope; the role of each is the system caller table, porter's dist copy at $ACC_SYSTEM_CALLERS
+# in a systemd scope; the role of each is the system caller table, the accounts service's dist copy at $ACC_SYSTEM_CALLERS
 # (BARDO_ACCOUNTD_SYSTEM_CALLERS: the jail cannot write /etc/bardo/accountd-callers.toml, and a person's own file gives no fixed role);
-# bardo-inferd's is $BARDO_INFERD_SYSTEM_CALLERS (BARDO_INFERD_CALLERS, in place of /etc/bardo/inferd-callers.toml: porter
+# bardo-inferd's is $BARDO_INFERD_SYSTEM_CALLERS (BARDO_INFERD_CALLERS, in place of /etc/bardo/inferd-callers.toml: the accounts service
 # reads no [callers] from bardo-inferd.toml since CALLER-INFERD; the inference service's dist/inferd-callers.toml is its shipped copy).
 # `acc_identity UNIT PID` writes a unit's cgroup (bardo-shell.service, bardo-syncd.service, bardo-inferd.service) and, for a service
 # unit, its main pid ($PROC/units/<unit>); `acc_app APP PID` names bardo-settings the Settings unit (org.bardo.Settings.service)
@@ -17,7 +17,7 @@
 # Every process is stopped by its PID (acc_stop_all); nothing is found by name.
 
 ACC_LIB="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ARIG="$SCEN_BUILD/porter-target/debug"
+ARIG="$SCEN_BUILD/account-target/debug"
 ASTW="$SCEN_BUILD/inference-target/debug"
 AFER="$SCEN_BUILD/sync-target/debug"
 ACC_PIDS=()
@@ -39,7 +39,7 @@ acc_env() {
   export CARGO_TARGET_DIR="$SCEN_BUILD/shell-probe-target" BARDO_COMPOSITOR_TOOLS="$SCEN_TOOLS"
   # The rig's programs take no power; bardo-compositorctl's `shot` (acc_shot) takes the screen and the window list, so those are the
   # floor's only rows and nothing waits on a question (an unanswered ask stops the capture after ~29 s, and its dialog
-  # covers the page). The caller list names bardo-shell (at its pin) as the shell, bardo-settings as Settings and the porter daemons by
+  # covers the page). The caller list names bardo-shell (at its pin) as the shell, bardo-settings as Settings and the accounts service daemons by
   # their roles, for bardo-compositor and for bardo-shell (floor_shell_callers before launch_daemon).
   FLOOR_SHELL_TARGET="$SCEN_BUILD/shell-probe-target" floor_shim accounts bardo-shell bardo-settings bardo-accountd bardo-inferd bardo-syncd bardo-compositor bardo-compositorctl || return 1
 }
@@ -137,7 +137,7 @@ sync_rig_start() {
   BARDO_SYNC_RIG_PID=$ACC_LAST
   acc_wait 20 test -s "$RIG_DIR/sync/rig.json" || { echo "sync-rig-servers never wrote rig.json:" >&2; cat "$OUT_DIR/sync-rig-servers.log" >&2; return 1; }
 }
-# rigj PATH: a value of rig.json (a dotted path, `imap.port`), or the planted secrets with `secrets`. It reads porter's rig
+# rigj PATH: a value of rig.json (a dotted path, `imap.port`), or the planted secrets with `secrets`. It reads the accounts service's rig
 # (RIG_JSON_DIR, default $RIG_DIR/servers); frigj reads the sync service's (oauth.*, graph.url, secrets).
 rigj() {
   python3 -I -c '
@@ -147,7 +147,7 @@ for k in sys.argv[2].split("."): v = v[k]
 print("\n".join(v) if isinstance(v, list) else v)' "${RIG_JSON_DIR:-$RIG_DIR/servers}/rig.json" "$1"
 }
 frigj() { RIG_JSON_DIR="$RIG_DIR/sync" rigj "$@"; }
-# rigctl METHOD TARGET [BODY]: a lever of porter's rig control endpoint; the JSON answer. frigctl: the same on the sync service's rig
+# rigctl METHOD TARGET [BODY]: a lever of the accounts service's rig control endpoint; the JSON answer. frigctl: the same on the sync service's rig
 # (/graph/..., /issuer/...).
 rigctl() {
   local ctl; ctl=$(rigj control) || return 1
@@ -162,7 +162,7 @@ secrets_start() {
 }
 
 # --- configuration -------------------------------------------------------------------------------------------
-# acc_config: the system caller table (porter's own, read through BARDO_ACCOUNTD_SYSTEM_CALLERS), the shipped provider
+# acc_config: the system caller table (the accounts service's own, read through BARDO_ACCOUNTD_SYSTEM_CALLERS), the shipped provider
 # files, and the person's clients file (acc_clients_for_issuer writes the shipped one).
 acc_config() {
   cp "$SCEN_SIB/accounts/dist/callers.toml" "$ACC_SYSTEM_CALLERS"
@@ -170,7 +170,7 @@ acc_config() {
 }
 
 # acc_clients_for_issuer: the shipped clients.toml (/usr/share/bardo/accounts, the jail's throwaway overlay) pointing the
-# Microsoft client at the fake issuer of the sync service's rig (the one its Graph fake accepts tokens from; sync_rig_start first): porter takes endpoints that leave the issuer only from the shipped file, never
+# Microsoft client at the fake issuer of the sync service's rig (the one its Graph fake accepts tokens from; sync_rig_start first): the accounts service takes endpoints that leave the issuer only from the shipped file, never
 # from the person's own (sec-4).
 acc_clients_for_issuer() {
   mkdir -p /usr/share/bardo/accounts
@@ -202,7 +202,7 @@ acc_providers_only() {
 }
 
 # --- the daemons ---------------------------------------------------------------------------------------------
-# Since porter's step 5c bardo-accountd holds every account: the identities, the AI keys with their permits and switches (its
+# Since the accounts service's step 5c bardo-accountd holds every account: the identities, the AI keys with their permits and switches (its
 # Keys interface), and the local runtimes bardo-inferd's probe reports to it (Broker.ReportLocal, a call only the `ai_broker`
 # role may make: bardo-inferd.service in dist/callers.toml). bardo-inferd (org.bardo.Inference1) holds no key; it serves the models
 # and the spend rows (`accounts.<id>.spend.*`) of the accounts bardo-accountd lists. bardo-syncd (the sync service's) has no accounts of
@@ -216,7 +216,7 @@ acc_ca_env() { [ ! -f "$RIG_DIR/servers/ca.pem" ] || echo "SSL_CERT_FILE=$RIG_DI
 
 # acc_ship_providers: the provider files of $PROV (the pin's, with the rig's brand and fake-host files) into the jail's
 # /usr/share overlay, the Shipped layer. bardo-inferd and bardo-syncd have no --providers: they read the first XDG_DATA_DIRS entry
-# that has porter/providers (the jail pins XDG_DATA_DIRS to /usr/share, so a host install under /usr/local/share
+# that has accounts/providers (the jail pins XDG_DATA_DIRS to /usr/share, so a host install under /usr/local/share
 # cannot shadow it) and $XDG_DATA_HOME/bardo/accounts/providers, and a person's layer may not point a shipped provider at
 # another server.
 acc_ship_providers() {
@@ -247,7 +247,7 @@ syncd_start() {
 syncd_stop() { [ -z "$BARDO_SYNCD_PID" ] || acc_kill "$BARDO_SYNCD_PID"; BARDO_SYNCD_PID=; }
 
 # inferd_write_config: $CONFIG/bardo/inference/inferd.toml is what is on stdin (tables of the scenario: [probe], [ai] ...), and
-# $BARDO_INFERD_SYSTEM_CALLERS is bardo-inferd's caller table, in the shape of porter's dist/inferd-callers.toml: bardo-inferd serves its
+# $BARDO_INFERD_SYSTEM_CALLERS is bardo-inferd's caller table, in the shape of the accounts service's dist/inferd-callers.toml: bardo-inferd serves its
 # settings module (the spend rows) to the unit org.bardo.Settings.service and its places to the shell (bardo-shell.service); an
 # app in a Flatpak or app scope needs no row. The file is bardo-inferd's own folder's, where Settings looks for it. Call it
 # before inferd_start.

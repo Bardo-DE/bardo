@@ -336,7 +336,7 @@ pub fn plan_step(state: PlanState, event: PlanEvent) -> (PlanState, Vec<PlanEffe
 }
 
 /// The token a plan is addressed by: `p-` and the digest's first 16 hex digits (an id in
-/// porter's grammar).
+/// The accounts service's grammar).
 #[must_use]
 pub fn token_for(digest: &PlanDigest) -> Option<PlanToken> {
     let hex = digest.to_string();

@@ -101,7 +101,7 @@ impl<C: Callers> BusSheets<C> {
             .receive_name_owner_changed_with_args(&[(0, owner.as_str())])
             .await
             .map_err(SheetFault::unreachable)?;
-        let handle = format!("porter-{}", self.next.fetch_add(1, Ordering::Relaxed));
+        let handle = format!("accounts-{}", self.next.fetch_add(1, Ordering::Relaxed));
         let window = match &open.window {
             ParentWindow::Unparented => "",
             ParentWindow::Handle(handle) => handle.as_str(),

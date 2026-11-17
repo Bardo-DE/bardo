@@ -64,7 +64,7 @@ fn context_of(request: &ChatRequest) -> Tokens {
         .flat_map(|m| &m.parts)
         .map(|part| match part {
             MessagePart::Text(text) => text.len(),
-            // Images, tool calls, results and thoughts (and any part a later porter adds) count no
+            // Images, tool calls, results and thoughts (and any part a later the accounts service adds) count no
             // text.
             _ => 0,
         })

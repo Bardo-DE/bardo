@@ -6,7 +6,7 @@
 # run's id once the run has begun. `reach` is `hidden` while `cua.enabled` is off: bardo-computer-use rewrites
 # it when the setting is on. `app` is a dynamic parameter: its options are the open apps, by id,
 # which `Suggest` answers so the planner can offer them before it guesses one. Every field is
-# written (porter's provider-file rule).
+# written (the accounts service's provider-file rule).
 vocab = 1
 app = "org.bardo.ComputerUse"
 

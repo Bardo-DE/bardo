@@ -1,7 +1,7 @@
 #!/bin/sh
 # Install the sync service: the sync daemon, its systemd user unit and D-Bus activation file, and the helper
-# that shows drives in ~/Cloud with its socket. porter's accountd, the provider files and the caller
-# table (which names syncd) are installed by porter's own scripts/install.sh.
+# that shows drives in ~/Cloud with its socket. The accounts service's accountd, the provider files and the caller
+# table (which names syncd) are installed by the accounts service's own scripts/install.sh.
 #
 #   scripts/install.sh [--prefix DIR] [--destdir DIR] [--bin-dir DIR] [--no-build]
 #

@@ -1,6 +1,6 @@
 [package]
 name = "account-capability"
-description = "porter's capability vocabulary (what an account can do for an app), what an account offers with its provenance, and the effective set once the person's switches apply."
+description = "accounts's capability vocabulary (what an account can do for an app), what an account offers with its provenance, and the effective set once the person's switches apply."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

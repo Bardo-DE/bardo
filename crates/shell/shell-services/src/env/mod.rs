@@ -77,7 +77,7 @@ pub struct Env {
     /// after that; the process's own is the model's, a test's is short.
     pub key_remap_unit_wait: UnitWait,
     /// The `/proc` tree a process's cgroup is read from, which names the app that launched it
-    /// (porter's caller identity): `/proc`, or a fixture tree in a test, or a folder with
+    /// (the accounts service's caller identity): `/proc`, or a fixture tree in a test, or a folder with
     /// nothing in it, where no process is proven to be any app.
     pub proc_root: PathBuf,
     /// How the callers of the shell's bus objects and the owners of the apps' menu names are

@@ -5,8 +5,8 @@ this computer, on another of your computers (if you allow it) or one you have an
 the limits you set (what may leave the machine, how much it may spend). Apps ask for what they need
 ("a chat model that reads images"), never for a brand, and never see a key.
 
-Status: cut from [porter](https://github.com/Bardo-DE/porter) at `e9e7cdcd`; see
-[CHANGELOG.md](CHANGELOG.md). The crates keep porter's names for now.
+Status: cut from [the accounts service](https://github.com/Bardo-DE/porter) at `e9e7cdcd`; see
+[CHANGELOG.md](CHANGELOG.md). The crates keep the accounts service's names for now.
 
 ## What is here
 
@@ -26,7 +26,7 @@ Status: cut from [porter](https://github.com/Bardo-DE/porter) at `e9e7cdcd`; see
 | `inference-bridge` | the one mapping between the wire types and the model layer's provider types |
 | `inference-tailnet` | lending models to the person's other computers over their Tailscale network |
 
-`ARCHITECTURE.md` has the map and the allowed edges. The inference service depends on porter by git rev; porter
+`ARCHITECTURE.md` has the map and the allowed edges. The inference service depends on the accounts service by git rev; the accounts service
 never depends on the inference service.
 
 ## Install
@@ -42,7 +42,7 @@ a file that is already right is left alone, and a caller table you edited is kep
 is put beside it as `inferd-callers.toml.dist`). It never writes into a home folder. `--bin-dir DIR`
 installs a daemon you built yourself instead of building it, and `--help` lists the rest.
 
-Building needs access to the private repositories the dependencies come from (porter, the model layer and
+Building needs access to the private repositories the dependencies come from (the accounts service, the model layer and
 Bardo, as git dependencies); there is no public mirror yet.
 
 ## Where files go

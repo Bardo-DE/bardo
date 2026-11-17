@@ -26,7 +26,7 @@ fn encoded(value: &Credential) -> Result<Zeroizing<Vec<u8>>, SecretsError> {
 }
 
 /// The user's Secret Service collection, opened on first use and kept, filing under
-/// [`Namespace::PORTER`]. [`Oo7Secrets::in_namespace`] files under another.
+/// [`Namespace::ACCOUNTS`]. [`Oo7Secrets::in_namespace`] files under another.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct Oo7Secrets;
 
@@ -68,11 +68,11 @@ pub struct Oo7KeyringSecrets {
 }
 
 impl Oo7KeyringSecrets {
-    /// Files secrets in `keyring`, under [`Namespace::PORTER`].
+    /// Files secrets in `keyring`, under [`Namespace::ACCOUNTS`].
     pub fn new(keyring: oo7::Keyring) -> Self {
         Self {
             keyring: Arc::new(keyring),
-            namespace: Namespace::PORTER,
+            namespace: Namespace::ACCOUNTS,
         }
     }
 
@@ -315,14 +315,14 @@ impl Secrets for Oo7KeyringSecrets {
 impl Secrets for Oo7Secrets {
     async fn put(&self, key: &SecretKey, value: &Credential) -> Result<(), SecretsError> {
         ambient(
-            &Namespace::PORTER,
+            &Namespace::ACCOUNTS,
             |s| async move { s.put(key, value).await },
         )
         .await
     }
 
     async fn get(&self, key: &SecretKey) -> Result<Credential, SecretsError> {
-        ambient(&Namespace::PORTER, |s| async move { s.get(key).await }).await
+        ambient(&Namespace::ACCOUNTS, |s| async move { s.get(key).await }).await
     }
 
     async fn put_if_absent(
@@ -330,18 +330,18 @@ impl Secrets for Oo7Secrets {
         key: &SecretKey,
         value: &Credential,
     ) -> Result<bool, SecretsError> {
-        ambient(&Namespace::PORTER, |s| async move {
+        ambient(&Namespace::ACCOUNTS, |s| async move {
             s.put_if_absent(key, value).await
         })
         .await
     }
 
     async fn delete(&self, key: &SecretKey) -> Result<(), SecretsError> {
-        ambient(&Namespace::PORTER, |s| async move { s.delete(key).await }).await
+        ambient(&Namespace::ACCOUNTS, |s| async move { s.delete(key).await }).await
     }
 
     async fn delete_account(&self, account: &AccountId) -> Result<(), SecretsError> {
-        ambient(&Namespace::PORTER, |s| async move {
+        ambient(&Namespace::ACCOUNTS, |s| async move {
             s.delete_account(account).await
         })
         .await
@@ -349,7 +349,7 @@ impl Secrets for Oo7Secrets {
 
     async fn accounts_filed(&self) -> Result<Vec<AccountId>, SecretsError> {
         ambient(
-            &Namespace::PORTER,
+            &Namespace::ACCOUNTS,
             |s| async move { s.accounts_filed().await },
         )
         .await

@@ -61,7 +61,7 @@ fn chat_world(script: Script) -> Plan {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn a_porter_client_chat_turn_streams_text_from_the_engine() {
+async fn an_accounts_service_client_chat_turn_streams_text_from_the_engine() {
     let world = World::start(chat_world(Script {
         chat: vec![Chat::Say(vec!["Hel", "lo"])],
         dims: 0,

@@ -56,7 +56,7 @@ async fn for_an_app_the_account_does_not_exist_and_a_stranger_is_denied() {
     let rig = Rig::start().await;
     for who in [
         caller("org.bardo.Mail", CallerRole::App),
-        caller("org.bardo.Inference", CallerRole::PorterDaemon),
+        caller("org.bardo.Inference", CallerRole::AccountDaemon),
     ] {
         let app = rig.client_as(who).await;
         let storage = proxy_of(&app, &storage_account().id).await;

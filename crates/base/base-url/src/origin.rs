@@ -1,4 +1,4 @@
-//! The origin of a URL: scheme, host and port. A [`UrlScheme`] names the schemes porter dials
+//! The origin of a URL: scheme, host and port. A [`UrlScheme`] names the schemes the accounts service dials
 //! (web, mail, `ManageSieve`), with each one's default port; an [`Origin`] is what "the same server"
 //! means, with the two questions about its host a caller asks: is it this computer, is it a
 //! tailnet's.

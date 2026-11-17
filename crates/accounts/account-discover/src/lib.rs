@@ -1,4 +1,4 @@
-//! Discovery (porter PLAN §2.7), from mailo's `discover` and `mail-proto::discover`: one
+//! Discovery (the accounts service PLAN §2.7), from mailo's `discover` and `mail-proto::discover`: one
 //! function per [`account_provider::Discovery`] kind. Each is a pure parser of what a server
 //! answered, plus the seams it asks through: [`http_core::Http`] for fetches and [`Dns`] for
 //! SRV and MX records. A fake of each is how the tests run without a network. [`discover_mail`]

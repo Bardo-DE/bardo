@@ -767,7 +767,7 @@ fn what_a_person_reads_of_the_network_is_plain_words() {
         assert!(text.ends_with('.'), "{text}");
         let lower = text.to_lowercase();
         for word in [
-            "porter", "inferd", "socket", "port ", "node", "tailnet", "daemon", "api",
+            "accounts", "inferd", "socket", "port ", "node", "tailnet", "daemon", "api",
         ] {
             assert!(!lower.contains(word), "{text:?} says {word:?}");
         }

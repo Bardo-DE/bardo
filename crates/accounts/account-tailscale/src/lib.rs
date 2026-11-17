@@ -1,6 +1,6 @@
 //! A client of Tailscale's `LocalAPI`: what this computer's Tailscale says of itself, its
 //! network and the computers on it, who an address on the network belongs to, and Tailscale's
-//! own sign-in page. porter never links Tailscale's code and never reads what its program
+//! own sign-in page. The accounts service never links Tailscale's code and never reads what its program
 //! prints: the one way in is the HTTP the program serves on its unix socket.
 //!
 //! The types and the readers of the answers are pure. [`LocalApi`], which makes the requests

@@ -95,7 +95,7 @@ pub struct Classed {
 }
 
 /// Turns texts into vectors. Implementations: `FakeEmbedder` (feature `testing`),
-/// `InferdEmbedder` (memoryd, over porter's
+/// `InferdEmbedder` (memoryd, over the accounts service's
 /// inference session).
 pub trait Embedder: Send + Sync {
     /// Which vector space it produces, how many texts it takes at once and its prompt prefixes.

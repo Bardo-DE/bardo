@@ -1,4 +1,4 @@
-//! The seam to inferd: what the actions service needs to list, as data. Porter implements it over its
+//! The seam to inferd: what the actions service needs to list, as data. The accounts service implements it over its
 //! listing call; tests implement it over a fixed list.
 
 use super::known::Known;

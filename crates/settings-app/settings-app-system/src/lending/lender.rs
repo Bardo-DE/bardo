@@ -1,4 +1,4 @@
-//! What lending this computer's models to the person's other computers touches: porter's file for
+//! What lending this computer's models to the person's other computers touches: the accounts service's file for
 //! it and the person's own service manager. Behind one handle that the environment carries, so a
 //! test hands in scratch folders and a manager that only writes down what it was asked.
 
@@ -132,7 +132,7 @@ pub fn from_env() -> Lender {
         .map_or_else(|| Lender::new(Arc::new(Nowhere)), session)
 }
 
-/// The person's own session, with porter's file at `<prefix>/share/porter/` and the setting
+/// The person's own session, with the accounts service's file at `<prefix>/share/accounts/` and the setting
 /// kept under `config_home`.
 #[must_use]
 pub fn under_prefix(prefix: &Path, config_home: &ConfigHome) -> Lender {

@@ -23,7 +23,7 @@ async fn the_app_sees_capabilities_without_sasl_and_starttls_then_a_working_sess
         sieve_plan(port(&fake.address), password()),
         trusting_fakes(),
     );
-    let greeting = app.read_until("OK \"porter relay ready\"\r\n").await;
+    let greeting = app.read_until("OK \"accounts relay ready\"\r\n").await;
     assert!(
         greeting.contains("\"SIEVE\" \"fileinto vacation\""),
         "{greeting}"

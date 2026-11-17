@@ -43,7 +43,10 @@ fn pop3_plan(tls: Tls, port: u16, auth: account_core::RelayAuth) -> account_core
 async fn session_works(tls: Tls) {
     let (fake, port) = pop3(tls).await;
     let mut app = start(pop3_plan(tls, port, password()), trusting_fakes());
-    assert_eq!(app.read_until("\r\n").await, "+OK porter relay ready\r\n");
+    assert_eq!(
+        app.read_until("\r\n").await,
+        "+OK the accounts relay ready\r\n"
+    );
 
     // A client that logs in anyway is told it worked, and the fake never hears it.
     app.send("USER someone\r\n").await;

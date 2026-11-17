@@ -26,14 +26,14 @@ const LIMITS_EXCEEDED: &str = "org.freedesktop.DBus.Error.LimitsExceeded";
 /// Options whose identity uses are kept in a directory of `scratch`.
 fn options(scratch: &Scratch) -> Options {
     Options {
-        uses: Some(scratch.join("porter")),
+        uses: Some(scratch.join("accounts")),
         ..Options::default()
     }
 }
 
 /// The file those uses are written to.
 fn file(scratch: &Scratch) -> PathBuf {
-    scratch.join("porter").join("identity-uses.json")
+    scratch.join("accounts").join("identity-uses.json")
 }
 
 /// A host whose person picks `account` in the sheet.
@@ -98,16 +98,16 @@ async fn list_gives_the_sign_in_accounts_and_leaves_out_the_rest_and_every_secre
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn apps_and_porter_daemons_use_identities_and_everything_else_is_refused() {
+async fn apps_and_accounts_service_daemons_use_identities_and_everything_else_is_refused() {
     let rig = Rig::start_with(Options::default(), picking(storage_identity_account())).await;
     let id = "fake-storage";
-    // Who may ask: an app, Settings, the shell and a porter daemon. Only Settings and the shell
+    // Who may ask: an app, Settings, the shell and an accounts daemon. Only Settings and the shell
     // read `Uses`.
     let allowed = [
         (CallerRole::App, false),
         (CallerRole::Settings, true),
         (CallerRole::SheetHost, true),
-        (CallerRole::PorterDaemon, false),
+        (CallerRole::AccountDaemon, false),
     ];
     for (n, (role, reads_uses)) in allowed.into_iter().enumerate() {
         let who = caller(&format!("org.example.Asker{n}"), role);

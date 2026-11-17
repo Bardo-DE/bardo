@@ -35,7 +35,7 @@ fn named(word: &str) -> MarkProvider {
 }
 
 impl ProviderMarks {
-    /// The marks of the provider files porter ships.
+    /// The marks of the provider files the accounts service ships.
     #[must_use]
     pub fn shipped() -> ProviderMarks {
         let marks = shipped_marks()

@@ -24,14 +24,14 @@ use provenance::{
 use serde::{Deserialize, Serialize};
 
 text_id!(
-    /// One episode: the task or run id it closes, in porter's id grammar. A side conversation
+    /// One episode: the task or run id it closes, in the accounts service's id grammar. A side conversation
     /// of the person with a worker or run gets its own.
     EpisodeId,
     "episode id",
     is_id
 );
 text_id!(
-    /// The name of one typed result value (`messages_archived`), in porter's id grammar.
+    /// The name of one typed result value (`messages_archived`), in the accounts service's id grammar.
     ResultName,
     "result name",
     is_id

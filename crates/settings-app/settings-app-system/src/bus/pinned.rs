@@ -3,7 +3,7 @@
 
 use super::activate::start_one;
 use super::io::{because, confirmed, connect};
-use account_client::Porter;
+use account_client::AccountClient;
 use account_client_dbus::Bus;
 use inference_client::DbusTransport;
 use settings_app_link::bus::BusSource;
@@ -31,13 +31,13 @@ impl Pinned {
         self.owner.0.clone()
     }
 
-    /// The owner as the unique name porter's client sends to. A name the bus would not have given
+    /// The owner as the unique name the accounts service's client sends to. A name the bus would not have given
     /// is a service that cannot be confirmed.
     fn unique(&self) -> Result<UniqueName<'static>, Absence> {
         UniqueName::try_from(self.owner.0.clone()).map_err(because(Absence::Unavailable))
     }
 
-    /// Porter's bus transport with every call to accountd sent to the owner that was confirmed:
+    /// The accounts service's bus transport with every call to accountd sent to the owner that was confirmed:
     /// the Spaces registry is reached from it (`bus().spaces()`).
     ///
     /// # Errors
@@ -47,14 +47,14 @@ impl Pinned {
         Ok(Bus::over(self.connection.clone()).accounts_at(self.unique()?))
     }
 
-    /// Porter's client with every call to accountd (the sheets) sent to the owner that was
+    /// The accounts service's client with every call to accountd (the sheets) sent to the owner that was
     /// confirmed.
     ///
     /// # Errors
     ///
     /// As [`Self::bus`].
-    pub fn accounts(&self) -> Result<Porter<Bus>, Absence> {
-        Ok(Porter::over(self.bus()?))
+    pub fn accounts(&self) -> Result<AccountClient<Bus>, Absence> {
+        Ok(AccountClient::over(self.bus()?))
     }
 
     /// inferd's carrier with every call to inferd (the computers, the engines) sent to the owner

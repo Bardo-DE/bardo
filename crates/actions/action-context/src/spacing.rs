@@ -1,6 +1,6 @@
 //! Where a call's targets live.
 //!
-//! An entity id names no Space (`provenance::EntityId` is porter's), so the router asks a resolver:
+//! An entity id names no Space (`provenance::EntityId` is the accounts service's), so the router asks a resolver:
 //! today the shadow index, which holds the Space scope each app pushed for each thing it indexed. A
 //! target the resolver does not know is taken to be in the session's own Space (the call is the
 //! app's to refuse); one scoped to another Space makes the call cross-Space, which Cedar sends to

@@ -1,5 +1,5 @@
 //! A directory tree standing for `/proc`, for the test builds of the daemons (feature
-//! `test-proc-root`) and porter's own tests: the processes of an acceptance run sit in no unit and
+//! `test-proc-root`) and the accounts service's own tests: the processes of an acceptance run sit in no unit and
 //! have no systemd to ask. Never part of a default build.
 //!
 //! The tree holds, per process, `<pid>/cgroup`, optionally `<pid>/root/.flatpak-info` and
@@ -27,7 +27,7 @@ use std::path::{Path, PathBuf};
 use zbus::Connection as BusConnection;
 
 /// The image of a process the tree gives no image and that is no unit's main process.
-pub(super) const STAND_IN_IMAGE: &str = "/usr/bin/porter-fixture-app";
+pub(super) const STAND_IN_IMAGE: &str = "/usr/bin/account-fixture-app";
 
 /// The file system of the fixture world.
 #[derive(Debug, Clone)]

@@ -3,7 +3,7 @@
 //! is well again, are both changes of its state.
 
 use crate::common::{Rig, SheetHost, caller, mail_account, poking_options, publish};
-use account_client::{AccountChange, AccountRef, Changes, Porter};
+use account_client::{AccountChange, AccountClient, AccountRef, Changes};
 use account_client_dbus::Bus;
 use account_core::AccountState;
 use caller_role_types::CallerRole;
@@ -25,7 +25,7 @@ async fn a_recovering_account_is_told_as_a_state_like_a_refused_one() {
     let shell = rig
         .client_as(caller("org.bardo.Shell", CallerRole::SheetHost))
         .await;
-    let accounts = Porter::over(Bus::over(shell)).accounts();
+    let accounts = AccountClient::over(Bus::over(shell)).accounts();
     let mut changes = accounts.watch().await.expect("watch");
     let account = AccountRef::of_account(&mail.id);
 

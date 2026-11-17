@@ -5,7 +5,7 @@
 Status: LOCKED for the freeze wave, except the items that point at QUESTIONS.md. Written 2026-10-02.
 Inputs: BRIEF.md, models.md, actions.md + actions-addendum.md (the addendum wins), memory.md, cua.md,
 ux.md, research-action-gating.md; context ~/rs-wt/companion/COMPANION.md, ~/bardo/design/31-ACCOUNTS.md,
-~/porter, Bardo CONVENTIONS.md.
+~/accounts, Bardo CONVENTIONS.md.
 
 How to read this file:
 - The **area specs stay the detail** (state tables, test lists, fill-wave splits). This file overrides
@@ -17,7 +17,7 @@ How to read this file:
 |---|---|
 | "context" | the actions service (`action-core::context`, `IntentProvider1.Context/Summon`), Bardo `ui-intents` (view shapes, seams), the actions service `action-ui-adapter` (the adapter) |
 | "agent", "planner", "agent-loop", "companion daemon" | the actions service: `agent-loop`, `companion-wire`, `companiond`, `readerd` (§3.6, §4) |
-| "security" | labels: porter `prov`; policy, review, breaker, budgets: the actions service; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (the model layer `model-http` already takes a proxy `HttpTarget`) |
+| "security" | labels: the accounts service `prov`; policy, review, breaker, budgets: the actions service; sandbox units: each daemon's `dist/` in its own repo; egress proxy and `secret-cell`: deferred until a cloud backend is turned on (the model layer `model-http` already takes a proxy `HttpTarget`) |
 | "compositor" | the compositor (cua repo owns the protocol crate; the compositor branch is shared with double-tap ⌘ later) and the shell (`shell-overlays` phase A) |
 | "launcher", "presence", "settings" | ux (the shell, the UI kit ds, the Settings app; design/22 rows by Bardo agent) |
 | "intents" | the actions service |
@@ -28,15 +28,15 @@ How to read this file:
 
 ### 1.1 Repos
 
-Four new library repos plus one GPL fork. Every new repo copies porter's shape: `rust-toolchain.toml`
-(1.98.1), the UI kit's `deny.toml`, `rustfmt.toml`, CONVENTIONS pointer + porter additions, ARCHITECTURE.md
+Four new library repos plus one GPL fork. Every new repo copies the accounts service's shape: `rust-toolchain.toml`
+(1.98.1), the UI kit's `deny.toml`, `rustfmt.toml`, CONVENTIONS pointer + the accounts service additions, ARCHITECTURE.md
 (crate map, one-home table, recipes), FINDINGS.md (every `todo!()`), `scripts/check-boundary.sh`,
 `dbus/*.xml` checked by an introspection test. Licence MIT OR Apache-2.0 except the fork.
 
 | Repo | New? | Holds | Portable |
 |---|---|---|---|
-| `~/models` | new (name: Q-P1) | the model layer: provider trait, backends, CUA action/parse/session, vision prep, catalog, engine supervisor | yes, no porter dependency |
-| `~/porter` | existing | + `prov` (labels and shared who/what vocabulary), `SpaceId`, ComputerUse vocabulary, streaming inference, inferd engines | yes |
+| `~/models` | new (name: Q-P1) | the model layer: provider trait, backends, CUA action/parse/session, vision prep, catalog, engine supervisor | yes, no accounts dependency |
+| `~/accounts` | existing | + `prov` (labels and shared who/what vocabulary), `SpaceId`, ComputerUse vocabulary, streaming inference, inferd engines | yes |
 | `~/memory` | new | memory: eventlog, memfiles, recall, memoryd | yes (memoryd Linux) |
 | `~/actions` | new | typed actions, router, policy, review, eval, MCP edge, **and the companion agent** (agent-loop, companiond, readerd), the ds adapter | core yes; daemons Linux |
 | `~/cua` | new (name: Q-P1) | computer-use runtime: a11y tree, agent seat, masked capture, desktop leases, run machine, cuad, `bardo-agent-v1` protocol | core yes; cuad Linux |
@@ -51,14 +51,14 @@ Why the companion agent lives in the actions service and not its own repo: the p
 (it reaches CUA and memory as router actions, §4.2), so the actions service can host it without a repo cycle, and
 the planner/reader contract types are already the actions service's. This saves a repo.
 
-Why `prov` lives in porter: memory (the memory service) needs labels, `Actor`, `Effect` and `EntityId`; the actions service's
-intentd needs the memory service's client. With `prov` in the actions service the repos would form a cycle. porter is already
+Why `prov` lives in the accounts service: memory (the memory service) needs labels, `Actor`, `Effect` and `EntityId`; the actions service's
+intentd needs the memory service's client. With `prov` in the actions service the repos would form a cycle. The accounts service is already
 the pure, portable foundation that owns `AppName`, `DataClass` and now `SpaceId`.
 
 ### 1.2 Repo dependency direction (acyclic; enforced per repo by `check-boundary.sh` rows)
 
 ```
-models  ←  porter  ←  memory  ←  actions  ←  cua  ←  shell
+models  ←  accounts  ←  memory  ←  actions  ←  cua  ←  shell
    ↑          ↑          ↑          ↑   ↖Bardo(ui-intents only)
    └──────────┴──────────┴──────────┴── mailo, the Settings app (clients only)
 Bardo depends on none of them.  The compositor → cua's bardo-agent-protocol only.
@@ -79,8 +79,8 @@ Bardo depends on none of them.  The compositor → cua's bardo-agent-protocol on
 | 9 | `engine-supervisor` | the model layer | pure core; io features | model-catalog |
 | 10 | `model-http` | the model layer | io | — |
 | 11 | `model-openai-compat` | the model layer | io | model-provider, model-http |
-| 12 | `prov` | porter | pure | account-core |
-| — | account-core, account-provider, inference-core, account-dbus, account-client, account-fake, inferd | porter | existing, changed (§3.2) | inference-core → **computer-use-action**; inferd → **the model layer 1-3, 6, 8-11** |
+| 12 | `prov` | the accounts service | pure | account-core |
+| — | account-core, account-provider, inference-core, account-dbus, account-client, account-fake, inferd | the accounts service | existing, changed (§3.2) | inference-core → **computer-use-action**; inferd → **the model layer 1-3, 6, 8-11** |
 | 13 | `memory-core` | the memory service | pure, serde-only | **account-core, prov** |
 | 14 | `memory-seal` | the memory service | pure | memory-core |
 | 15 | `eventlog` | the memory service | sqlite | memory-core, memory-seal |
@@ -144,7 +144,7 @@ rusqlite notify cedar-policy rmcp` except where the table says so (`permission-p
 | chacha20poly1305 / zeroize / getrandom | 0.10 / 1 / 0.3 | memory-seal | |
 | rusqlite | 0.40, `bundled-sqlcipher-vendored-openssl` | eventlog, recall | after spike S-SQL (FTS5 + deny) |
 | tar | 0.4 | memory-service export | |
-| oo7 | 0.6 | memory-seal `Oo7Keys`, porter secrets | |
+| oo7 | 0.6 | memory-seal `Oo7Keys`, the accounts service secrets | |
 | fastembed | 7.1 (ort 2.0.0-rc.13) | recall-fastembed only | excluded from gate |
 | reis | 0.7 (the minor the compositor lock resolves) | computer-use-seat-input `ei`, computer-use-fake | |
 | atspi | 0.30 | computer-use-a11y-tree `atspi` | |
@@ -196,11 +196,11 @@ crates; each pair gets a `*_total` conversion test in `shell-ui-kit::companion`.
 | Event payloads (policy, consent, CUA, session) | the memory service re-declared each | **their owners** (`action-core::AuditRecord`, `computer-use-bus::CuaRecord`, `companion-wire::SessionRecord`) | the memory service stores them as `EventBody::Area` (§3.4) |
 | Budgets | the actions service `Budget/BudgetKind`, cua `Budget/BudgetKind` | session budget **action-core**; per-run budget **computer-use-run `RunBudget/RunBudgetKind`** | cua `denials` field removed: the router's breaker counts |
 | Denial reasons | the actions service `DenyReason` (internal), `DenyCode` (to agent); cua `DenyReason` | **action-core** `DenyCode`; `DenyReason` internal to permission-policy/audit | cua keeps only local pre-checks `LocalRefusal {OutsideLease, SecretField}` |
-| Verdict names | porter consent `Verdict`, action-review `Verdict`, the memory service `Verdict` | porter keeps `Verdict` | action-review → `ReviewVerdict`; the memory service → `Settlement {Keep(ConfirmReceipt), Discard}` |
-| Decision names | porter consent `Decision`; permission-policy `Decision` | porter keeps `Decision` | permission-policy → `Ruling {Deny, Ask, AllowJudged, AllowFinal}` |
+| Verdict names | the accounts service consent `Verdict`, action-review `Verdict`, the memory service `Verdict` | the accounts service keeps `Verdict` | action-review → `ReviewVerdict`; the memory service → `Settlement {Keep(ConfirmReceipt), Discard}` |
+| Decision names | the accounts service consent `Decision`; permission-policy `Decision` | the accounts service keeps `Decision` | permission-policy → `Ruling {Deny, Ask, AllowJudged, AllowFinal}` |
 | `Need` | account-core `Need`; the actions service `Need` (param); ds `Need` (form) | account-core | the actions service → `ParamNeed`; ds → `FieldNeed` |
 | `Visibility<T>` (plain or handle) | the actions service | action-core, renamed **`Reveal<T>`** | computer-use-run's window `Visibility` keeps its name |
-| `Usage` | porter consent `Usage`; model-provider `Usage` (tokens) | porter keeps `Usage` | model-provider → `TurnUsage`; inference-core `TokenUsage` unchanged |
+| `Usage` | the accounts service consent `Usage`; model-provider `Usage` (tokens) | the accounts service keeps `Usage` | model-provider → `TurnUsage`; inference-core `TokenUsage` unchanged |
 | `Role` | model-provider message `Role`; catalog `roles`; intentd caller roles | model-provider `Role` | catalog `roles: BTreeSet<AiKind>`; intentd `CallerRole` |
 | `Latency` | the actions service `Latency` (decl), addendum `Latency2` | the actions service `Latency` | → `StageLatency` |
 | `Repeat` | computer-use-action `Repeat` (key repeat), the actions gate param | computer-use-action | the actions gate → `RepeatState` |
@@ -219,11 +219,11 @@ enums; standard derive order; redacting `Debug` on user text; async seams `-> im
 closed implementation sets are enums, never `dyn`. Derives and doc comments are omitted below.
 Everything here is **freeze now** unless marked later. Area-internal types stay in the area specs.
 
-### 3.1 porter `prov` (new crate) and account-core additions
+### 3.1 the accounts service `prov` (new crate) and account-core additions
 
 ```rust
 // account-core/src/space.rs
-pub struct SpaceId(String);                       // slug grammar of porter ids; minted by shell's Space store (Q-P6); reserved "desktop"
+pub struct SpaceId(String);                       // slug grammar of accounts ids; minted by shell's Space store (Q-P6); reserved "desktop"
 pub enum SpaceScope { Any, Only(SpaceId) }
 // account-core consent: GrantKey gains `space: SpaceScope`; Grant<K = GrantKey>; decide<K: Eq>(&[Grant<K>], &K) -> Verdict
 // account-core vocabulary: VocabVersion(2); Capability::ComputerUse(CuaCap); CapabilityKind::ComputerUse;
@@ -231,7 +231,7 @@ pub enum SpaceScope { Any, Only(SpaceId) }
 //   CuaEnv { Desktop, Browser, Mobile }; CuaBatching { One, Many }; CuaNeed { environments: BTreeSet<CuaEnv> }
 
 // prov/src/ids.rs
-pub use porter_core::{AppName, DataClass, SpaceId, SpaceScope, UnixSeconds};
+pub use account_core::{AppName, DataClass, SpaceId, SpaceScope, UnixSeconds};
 pub struct SessionId(String);  pub struct RunId(String);  pub struct ClientName(String);
 pub struct EntityKind(String);                    // "mail.thread": 2+ dotted [a-z][a-z0-9_]*
 pub struct EntityKey(String);                     // app-local, opaque, <= 512 bytes, no control chars
@@ -603,7 +603,7 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
   `RunInput::ConfirmPending(ConfirmId)` (from Request `Progress(Confirming)`) drives `SuspendLease(Consent)` on stock, then `Request.Proceed`.
   `Granting` calls `Intents1.Gate.Grant(app, space)`.
 - `RunBudget { steps, active, stall_frames, actions_per_min, model_failures, spend }` (no `denials`); `GateAnswer::Refused(Paused(_))` → `Finished(Blocked(PolicyDenials))`; `Refused(Halted(_))` → `Paused`.
-- `computer-use-bus` (new, serde-only): `RunStateSlug`, `CuaTask` (the `Start` body), `CuaResult`, `CuaOutcome`, `CuaRecord` (actor `prov::Actor::Companion{role: Cua{run}}`, served_by `porter_infer::ServedBy`), `ControlRefusal`, plus the `Cua1` XML (cua.md §3.8, unchanged; ux's `Replay`/`UndoAll` additions rejected: undo is `Intents1.Run.UndoAll(Run(id))`).
+- `computer-use-bus` (new, serde-only): `RunStateSlug`, `CuaTask` (the `Start` body), `CuaResult`, `CuaOutcome`, `CuaRecord` (actor `prov::Actor::Companion{role: Cua{run}}`, served_by `inference_core::ServedBy`), `ControlRefusal`, plus the `Cua1` XML (cua.md §3.8, unchanged; ux's `Replay`/`UndoAll` additions rejected: undo is `Intents1.Run.UndoAll(Run(id))`).
 - cuad also serves `IntentProvider1` as app **`org.bardo.ComputerUse`** with one action
   `computeruse.run.start { goal: Text(sink Body), target: Entity(desktop.window) | app: Text, mode: Choice }`,
   `effect: Read`, `latency: Long`, `reach: Hidden` while `cua.enabled = off`. Each pixel step is gated on its own.
@@ -616,7 +616,7 @@ pub enum RunControl { Watch, TakeOver, HandBack, Pause, Resume, Stop, UndoAll } 
 
 | Daemon | Repo | Merges | Bus name / object | Serves | Calls |
 |---|---|---|---|---|---|
-| **inferd** (existing) | porter | models' engine host; 31's MCP host role removed (C16) | `org.bardo.Inference1` `/org/bardo/Inference1`; `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` | `Availability`, `Open(need,class,tier)->h` (fd stream of ClientFrame/InferEvent, memfds), **`Prepare(need,class,tier)->s`**, `Usage`, `Rescan`; signal **`EnginesChanged()`**; property **`Gpu s`** | engines over Unix sockets (transient systemd units) |
+| **inferd** (existing) | the accounts service | models' engine host; 31's MCP host role removed (C16) | `org.bardo.Inference1` `/org/bardo/Inference1`; `org.bardo.SettingsModule1` at `/org/bardo/Inference1/settings` | `Availability`, `Open(need,class,tier)->h` (fd stream of ClientFrame/InferEvent, memfds), **`Prepare(need,class,tier)->s`**, `Usage`, `Rescan`; signal **`EnginesChanged()`**; property **`Gpu s`** | engines over Unix sockets (transient systemd units) |
 | **intentd** | the actions service | actions' router, ux's "security" checks, cua's per-step PDP, the planner's memory path | `org.bardo.Intents1` `/org/bardo/Intents1` | §4.2 | `IntentProvider1` on apps, `Confirm1` (the shell), `Reader1`, `Memory1` (Record; Recall for the built-in Memory provider), inferd (reviewer, policy writer) |
 | **companiond** | the actions service | ux's "agent daemon", actions' "companion", cua's "planner/router that calls Start", memory's "agent-loop" | `org.bardo.Companion1` `/org/bardo/Companion1` | §4.2 | `Intents1` (role companion), inferd (planner) |
 | **readerd** | the actions service | actions' quarantined reader | `org.bardo.Reader1` `/org/bardo/Reader1` | `Extract(session s, ask s) -> s` (caller must be intentd) | `Intents1.Session.Resolve`, inferd (reader: `Need::Llm{StructuredOutput}`, no tools) |
@@ -732,7 +732,7 @@ Name rule: every interface we own is `org.bardo.<Name>1`; objects at `/org/bardo
 | 1b | "Forget" on a memory row: the shell (ShellUi) `PlanForget(space, Thing(id))` → ForgetPlanView → Alert "Also forgets 3 facts and 1 routine" → `Forget(token)` | ux, the memory service |
 | 2 | Closure: events whose subjects/sources include the thing (including `Area` payloads by their `things` lists: router audit, CUA records), facts linked transitively, pending facts, procedures, kept CUA thumbnails, index docs | the memory service |
 | 3 | Apply: index → memfiles → event bodies (headers stay, Q-Me3) → `Memory.Forgot` → WAL truncate; signal `Forgotten` → the shell refreshes | the memory service, ux |
-| 4 | Outside memory: mailo pushes `Index.Push(removals)` to intentd's shadow index; undo journal holds no entity ids; inferd audit holds no content; intentd sessions keep no content after Close | mailo, the actions service, porter |
+| 4 | Outside memory: mailo pushes `Index.Push(removals)` to intentd's shadow index; undo journal holds no entity ids; inferd audit holds no content; intentd sessions keep no content after Close | mailo, the actions service, the accounts service |
 | 5 | Forgetting a memory never deletes the mail itself (stated in the Alert) | ux |
 
 Gaps found by the walk and fixed above: who may record a turn (TurnSource); context captured before
@@ -771,17 +771,17 @@ JSON, step tables of the pure parts) pass.
 | Stage | Agent (repo) | Owns | Verify |
 |---|---|---|---|
 | 0 | **deps** (Bardo) | `docs/workspace-deps.toml` only (§1.4 lines, after S-SQL and S-Cedar) | Bardo gate |
-| 1 | **the model layer** (new) | everything in `~/models`; S0 first; commits `computer-use-action` first so porter can path-patch it | porter-style gate |
+| 1 | **the model layer** (new) | everything in `~/models`; S0 first; commits `computer-use-action` first so the accounts service can path-patch it | account-style gate |
 | 1 | **Bardo** | `ui-core/src/vocab.rs`, `ui-intents/**` (new), `ds/src/components/companion/**` + its `mod.rs` line, `ds/src/assembly/sheets.rs`, `ui-shell/src/{confirm,tokens/glow.rs}`, `ui-style` orb tokens (proposed values, marked), `ui-settings/src/schema/key.rs`; docs: `design/22` rows (all `ai.*`, `agent.*`, `memory.*`, `cua.*`, `companion.*` keys), `design/32-COMPANION.md` (from COMPANION.md), `design/33-AGENT.md` (this spec); **not** design/31, TextField or CommandPalette | Bardo gate incl. `check-consumer.sh`, `check-doc-paths.sh` |
-| 2 | **porter** | `crates/prov/**` (new), account-core (`space.rs`, consent generic + Space, ComputerUse, VocabVersion 2), account-provider (`Discovery::Supervised`, `providers/local.toml`), inference-core (§3.2), account-dbus + `dbus/org.bardo.Inference1.xml`, account-client, account-fake, inferd skeleton modules, ARCHITECTURE/FINDINGS/boundary rows, **and `~/bardo/design/31-ACCOUNTS.md`** (§2.3, §3.3, §4.4, §4.5, §5.5 MCP role removed, §11) | porter gate |
-| 3 | **the memory service** (new) | everything in `~/memory` | porter-style gate, `--exclude recall-fastembed` |
-| 3 | **the actions service** (new) | everything in `~/actions` (including companion crates, `action-ui-adapter`, `manifests/org.bardo.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | porter-style gate + `cargo test -p permission-policy -p action-eval` |
-| 4 | **cua** (new) | everything in `~/cua` (incl. `computer-use-bus`, both XML/protocol files); joins nothing to Bardo (reis/atspi landed in stage 0) | porter-style gate |
+| 2 | **the accounts service** | `crates/prov/**` (new), account-core (`space.rs`, consent generic + Space, ComputerUse, VocabVersion 2), account-provider (`Discovery::Supervised`, `providers/local.toml`), inference-core (§3.2), account-dbus + `dbus/org.bardo.Inference1.xml`, account-client, account-fake, inferd skeleton modules, ARCHITECTURE/FINDINGS/boundary rows, **and `~/bardo/design/31-ACCOUNTS.md`** (§2.3, §3.3, §4.4, §4.5, §5.5 MCP role removed, §11) | the accounts gate |
+| 3 | **the memory service** (new) | everything in `~/memory` | account-style gate, `--exclude recall-fastembed` |
+| 3 | **the actions service** (new) | everything in `~/actions` (including companion crates, `action-ui-adapter`, `manifests/org.bardo.Memory.toml`, `default.cedar` stubs with ids `rule-of-two`, `untrusted-sink`, the XML for Intents1, IntentProvider1, Confirm1, Companion1, Reader1) | account-style gate + `cargo test -p permission-policy -p action-eval` |
+| 4 | **cua** (new) | everything in `~/cua` (incl. `computer-use-bus`, both XML/protocol files); joins nothing to Bardo (reis/atspi landed in stage 0) | account-style gate |
 | 4 | **fork-setup** | `~/bardo/compositor` at the 1.8 tag, branch `bardo`, `src/bardo/mod.rs` hook, stub globals | `cargo build --release && cargo test`; runs nested |
 | 5 | **the shell** | ux.md §6 F2 file list with §3.8 here; design/22 is Bardo agent's | the shell gate |
 | 5 | **The Settings app** | `settings-app-model/src/page.rs`, `settings-app-ui/src/icons.rs`, fixtures | the Settings app gate + `scripts/gen-fixtures.sh` |
 
-Porter-style gate (the model layer, porter, the memory service, the actions service, cua):
+AccountClient-style gate (the model layer, the accounts service, the memory service, the actions service, cua):
 
 ```bash
 set -euo pipefail
@@ -803,9 +803,9 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 
 | Wave | Parallel agents (repo: owned paths) | Source |
 |---|---|---|
-| F1 pure | the model layer: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. porter: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. The memory service: eventlog; memfiles; recall (+fastembed); seal + watch. The actions service: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
+| F1 pure | the model layer: model-vision-prep; computer-use-parse (+fuzz/); model-catalog + supervisor `step/budget`; model-replay + ScriptedProvider. The accounts service: matching arm, `picker_rows`, `tier_choice`, session step, FakeModel streaming, `prov` lattice. The memory service: eventlog; memfiles; recall (+fastembed); seal + watch. The actions service: permission-policy (Cedar, grid); action-review (cascade, breaker); action-router (call step, covers/compare, SessionSaw, journal, Previewing; owns action-fake); action-dbus + action-client; agent-eval; agent-loop. cua: computer-use-run; computer-use-a11y-tree; computer-use-seat-input; maskcap. Bardo W1: orb, chips, prompt, TextField/CommandPalette prop pass-through. | models §6, memory §6, actions §6 + addendum, cua §6, ux §6 |
 | F2 io/backends | the model layer: model-http + openai-compat (fixtures by dev script); supervisor io (after models S1); computer-use-session. The memory service: memory-service + memory-fake. The actions service: intentd (private bus, seams wired to memory-client); bardo-actions-mcp; readerd; companiond. cua (after Spike A/E): computer-use-seat-input `ei`; maskcap `wayland`; computer-use-a11y-tree `atspi`; computer-use-desktop `desktop`. Bardo W2/W3: cards, plan, replace, form, rows, ui-shell views; ui-intents ContextModel (after Q-P7). | same |
-| F3 daemons | porter: inferd bridge, engines, fd session server with memfds, Prepare, `cua_run`; client `DbusTransport::open`. The memory service: memory-dbus, memory-client, memoryd + unit. cua: cuad, computer-use-dbus codec, computer-use-fake harness, `dist/`. The actions service: action-ui-adapter against bardo. The shell W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
+| F3 daemons | the accounts service: inferd bridge, engines, fd session server with memfds, Prepare, `cua_run`; client `DbusTransport::open`. The memory service: memory-dbus, memory-client, memoryd + unit. cua: cuad, computer-use-dbus codec, computer-use-fake harness, `dist/`. The actions service: action-ui-adapter against bardo. The shell W4/W5 (on fakes): companion service, providers, launcher mode, bar/control centre, overlays (confirm, glow phase A). | same |
 | F4 integration | mailo session (manifest, provider, actor on UndoStack, undo-send window); the shell W6 (replace fakes; nested compositor, private bus, scratch HOME); fork fill F1-F7 with acceptance scripts; acceptance `dev/cua-step-holo.sh` (GPU, by hand) | — |
 | Later | cloud backends + computer-use-vendors bodies, mistral.rs spike, weight downloader, procedures, KWin backend, `bardo_sensitive_v1`, recall-sqlite-vec, egress, secret-cell | — |
 
@@ -816,7 +816,7 @@ pinned git revs replace them in fill wave 1, stage by stage, once each upstream 
 | # | Conflict | Resolution |
 |---|---|---|
 | C1 | Specs guessed crate/repo names (`actions-*`, `memory-*`, `bardo-intents`, two crates named `cua-wire`) | §1.3 names; models' `cua-wire` → `computer-use-vendors`; `bardo-intents` → `action-core` |
-| C2 | `prov` home: the actions service (actions) vs prov/memory (memory); actions↔memory repo cycle | `prov` in porter; the memory service stores other areas' payloads opaquely |
+| C2 | `prov` home: the actions service (actions) vs prov/memory (memory); actions↔memory repo cycle | `prov` in the accounts service; the memory service stores other areas' payloads opaquely |
 | C3 | `Effect` four homes | `prov::Effect`; ds `EffectMark` view |
 | C4 | Two `Actor` enums + cua's `Companion(CuaRun)` + ux view | merged `prov::Actor` (§3.1) |
 | C5 | `RunId(u64)` vs `RunId(String)` | String slugs in prov |

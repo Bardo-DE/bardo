@@ -1,4 +1,4 @@
-//! What the account sheets are given and what they report: plain values, no porter types. A host
+//! What the account sheets are given and what they report: plain values, no accounts types. A host
 //! maps its sheet view to these in one table-tested file (design/31 section 5.1).
 
 use super::hidden::Hidden;
@@ -123,7 +123,7 @@ pub enum FieldRole {
     SessionUrl,
     /// The web address of a service's server, such as a model server's
     /// `https://llm.example.org/v1`: https, or http only for this computer or one of the person's
-    /// own computers (porter's `SERVER_ADDRESS_RULE`).
+    /// own computers (the accounts service's `SERVER_ADDRESS_RULE`).
     #[word(slug = "server-url")]
     ServerUrl,
 }

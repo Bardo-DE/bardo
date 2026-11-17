@@ -1,5 +1,5 @@
 //! account-keyring-chunked over keyring-core's mock store: values in parts and whole, shrinking, a
-//! write that fails part-way, damaged heads, and the entries porter and mailo wrote before this
+//! write that fails part-way, damaged heads, and the entries the accounts service and mailo wrote before this
 //! crate. Nothing here touches a real keyring.
 
 use account_keyring_chunked::{ChunkError, ChunkedStore, Error, Limit, MOST_PARTS};
@@ -247,35 +247,35 @@ fn a_write_that_fails_part_way_leaves_the_old_value_or_nothing_but_never_a_mix()
 
 /// What account-secrets' own `chunks.rs` wrote before this crate, at a limit of 16 units: the
 /// format must read unchanged, and writing the same value must give the same entries.
-const PORTER_WROTE: &[(&str, &str)] = &[
+const ACCOUNT_WROTE: &[(&str, &str)] = &[
     ("acct:oauth", "porter-parts:4"),
     ("acct:oauth#1", "{\"refresh\":\"1//0"),
     ("acct:oauth#2", "gYw-déjà-vu-😀-t"),
     ("acct:oauth#3", "oken\",\"expires\":"),
     ("acct:oauth#4", "1767225600}"),
 ];
-const PORTER_VALUE: &str = "{\"refresh\":\"1//0gYw-déjà-vu-😀-token\",\"expires\":1767225600}";
+const ACCOUNT_VALUE: &str = "{\"refresh\":\"1//0gYw-déjà-vu-😀-token\",\"expires\":1767225600}";
 
 #[test]
-fn entries_porter_wrote_before_this_crate_read_back_and_are_written_the_same_way() {
+fn entries_accounts_service_wrote_before_this_crate_read_back_and_are_written_the_same_way() {
     let mock = mock();
-    for (user, value) in PORTER_WROTE {
+    for (user, value) in ACCOUNT_WROTE {
         plant(&mock, user, value);
     }
     // Read at any limit: the head says how the value was cut.
     for limit in [Limit::None, SIXTEEN, Limit::WINDOWS] {
         let got = entry(&chunked(&mock, limit), "acct:oauth").get_password();
-        assert_eq!(got.expect("read"), PORTER_VALUE, "{limit:?}");
+        assert_eq!(got.expect("read"), ACCOUNT_VALUE, "{limit:?}");
     }
 
     let again = self::mock();
     entry(&chunked(&again, SIXTEEN), "acct:oauth")
-        .set_password(PORTER_VALUE)
+        .set_password(ACCOUNT_VALUE)
         .expect("set");
-    for (user, value) in PORTER_WROTE {
+    for (user, value) in ACCOUNT_WROTE {
         assert_eq!(raw(&again, user).as_deref(), Some(*value), "{user}");
     }
-    assert_eq!(names(&again).len(), PORTER_WROTE.len());
+    assert_eq!(names(&again).len(), ACCOUNT_WROTE.len());
 }
 
 #[test]
@@ -288,9 +288,12 @@ fn mailos_entries_read_with_mailos_marker() {
     let mailo = ChunkedStore::new(Arc::clone(&mock), "mailo-parts:", SIXTEEN).expect("store");
     let got = mailo.build(SERVICE, "smime:ab", None).expect("entry");
     assert_eq!(got.get_password().expect("read"), "{\"smime_key\":\"pem\"}");
-    // Under porter's marker the head is just a value: the marker must match the writer's.
-    let porter = entry(&chunked(&mock, SIXTEEN), "smime:ab");
-    assert_eq!(porter.get_password().expect("read"), "mailo-parts:2");
+    // Under the accounts service's marker the head is just a value: the marker must match the writer's.
+    let account_client = entry(&chunked(&mock, SIXTEEN), "smime:ab");
+    assert_eq!(
+        account_client.get_password().expect("read"),
+        "mailo-parts:2"
+    );
 }
 
 #[test]

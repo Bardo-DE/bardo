@@ -125,7 +125,7 @@ done
 #   set:                every family a daemon maps (what oauth, generic, api_key and tailnet
 #                       reach together), with the system resolver (account-discover's `io`)
 # Every feature in account-families' Cargo.toml must have a row, so a new family cannot slip in
-# unchecked; the direct porter-* edges of each feature are exact too (FAMILY_EDGES).
+# unchecked; the direct accounts-* edges of each feature are exact too (FAMILY_EDGES).
 MS_FORBIDS="zbus zvariant reqwest ureq oo7 keyring secret-service interprocess service-locator ui-settings"
 DIRECT_FORBIDS="zbus zvariant ureq oo7 keyring secret-service interprocess service-locator ui-settings"
 declare -A FAMILY_FORBIDS=(
@@ -436,9 +436,9 @@ for crate in account-daemon; do
   fi
 done
 
-# THE SYNC REPO IS NOT A DEPENDENCY: porter is accounts only. syncd and everything that is sync
+# THE SYNC REPO IS NOT A DEPENDENCY: the accounts service is accounts only. syncd and everything that is sync
 # (the storage replicas, the drive, the mount helper, the Graph fake, the bus interfaces of
-# Sync1 and Storage1) are the sync service's, in a repo of its own that pins porter by git rev. No manifest
+# Sync1 and Storage1) are the sync service's, in a repo of its own that pins the accounts service by git rev. No manifest
 # here names one of the sync service's crates, and no dependency tree of the workspace (normal, build or dev)
 # reaches one.
 BARDO_SYNC_CRATES='sync-daemon|sync-fakes|replica-[a-z]+|sync-[a-z-]+|drive-[a-z-]+'
@@ -460,7 +460,7 @@ done
 # account-fake is built over account-core, account-provider, account-secrets and account-service, so none
 # of them (nor anything below them) may take it, even as a dev dependency: a dev-dependency
 # cycle makes the crate's own tests compile it twice. Their tests use `base-testkit`, which knows
-# nothing of porter; tests that need the fakes live in account-fake's own tests.
+# nothing of the accounts service; tests that need the fakes live in account-fake's own tests.
 for below in account-core account-provider account-secrets account-service-core account-service-accounts account-service-grants account-service; do
   if cargo tree -p "$below" -e normal,build,dev --prefix none 2>/dev/null | grep -qx 'account-fake v.*'; then
     echo "LEAK: $below reaches account-fake, which depends on it (a dev-dependency cycle)"
@@ -483,7 +483,7 @@ for testonly in account-fake-servers; do
   fi
 done
 
-# account-rig is test tooling (the rig a jailed scenario drives porter with): no other crate of
+# account-rig is test tooling (the rig a jailed scenario drives the accounts service with): no other crate of
 # ours names it, not even as a dev dependency, it is never published, and nothing in dist/ (the
 # units, the packaging) mentions it, so it is never installed.
 for manifest in */Cargo.toml; do

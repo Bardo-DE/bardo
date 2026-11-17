@@ -1,7 +1,7 @@
 //! An app that hosts the service itself (mailo's shape) edits an IMAP account's servers through
-//! `Porter::accounts().edit_servers`: the sheet is drawn by the app's own host, the typed servers
+//! `AccountClient::accounts().edit_servers`: the sheet is drawn by the app's own host, the typed servers
 //! are logged in at a fake server before anything is handed back, and the app keeps what comes
-//! back in its own store. Porter stores nothing.
+//! back in its own store. The accounts service stores nothing.
 
 use account_client::EditError;
 use account_client_inproc::{HostConfig, hosted};
@@ -50,7 +50,7 @@ fn hop(host: &str, port: u16, security: Tls) -> Hop {
     }
 }
 
-/// What the app keeps of an account: its own store, not porter's.
+/// What the app keeps of an account: its own store, not the accounts service's.
 #[derive(Debug, PartialEq)]
 struct Kept {
     servers: Manual,
@@ -129,7 +129,7 @@ async fn a_hosted_app_edits_an_imap_accounts_host_and_port_and_the_stored_accoun
         plain(FieldKind::OutgoingPort, &smtp.to_string()),
     ]);
     let sheets = ScriptedSheets::default().conversing([vec![typed]]);
-    let porter = hosted(HostConfig::new(
+    let account_client = hosted(HostConfig::new(
         app(),
         vec![mail_family()],
         MemorySecrets::default(),
@@ -137,7 +137,7 @@ async fn a_hosted_app_edits_an_imap_accounts_host_and_port_and_the_stored_accoun
     ));
 
     let mut kept = stored_before();
-    let edited = porter
+    let edited = account_client
         .accounts()
         .edit_servers(request(&kept), &ParentWindow::Unparented)
         .await
@@ -190,13 +190,13 @@ async fn servers_that_do_not_let_the_account_in_are_not_handed_back() {
         plain(FieldKind::OutgoingPort, "1"),
     ]);
     let sheets = ScriptedSheets::default().conversing([vec![typed, SheetInput::Dismiss]]);
-    let porter = hosted(HostConfig::new(
+    let account_client = hosted(HostConfig::new(
         app(),
         vec![mail_family()],
         MemorySecrets::default(),
         sheets,
     ));
-    let got = porter
+    let got = account_client
         .accounts()
         .edit_servers(request(&stored_before()), &ParentWindow::Unparented)
         .await;
@@ -207,13 +207,13 @@ async fn servers_that_do_not_let_the_account_in_are_not_handed_back() {
 #[tokio::test]
 async fn a_cancelled_edit_hands_nothing_back() {
     let sheets = ScriptedSheets::default().conversing([vec![SheetInput::Dismiss]]);
-    let porter = hosted(HostConfig::new(
+    let account_client = hosted(HostConfig::new(
         app(),
         vec![mail_family()],
         MemorySecrets::default(),
         sheets,
     ));
-    let got = porter
+    let got = account_client
         .accounts()
         .edit_servers(request(&stored_before()), &ParentWindow::Unparented)
         .await;
@@ -222,7 +222,7 @@ async fn a_cancelled_edit_hands_nothing_back() {
 
 #[tokio::test]
 async fn an_account_whose_provider_signs_in_at_its_own_page_has_fixed_servers() {
-    let porter = hosted(HostConfig::new(
+    let account_client = hosted(HostConfig::new(
         app(),
         vec![mail_provider()],
         MemorySecrets::default(),
@@ -234,7 +234,7 @@ async fn an_account_whose_provider_signs_in_at_its_own_page_has_fixed_servers() 
         AccountLabel(ADDRESS.to_owned()),
         stored_before().servers,
     );
-    let got = porter
+    let got = account_client
         .accounts()
         .edit_servers(edit, &ParentWindow::Unparented)
         .await;

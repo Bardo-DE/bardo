@@ -33,7 +33,10 @@ async fn send_mail(tls: Tls) {
         smtp_plan(tls, port(fake.address()), password()),
         trusting_fakes(),
     );
-    assert_eq!(app.read_until("\r\n").await, "220 porter ESMTP ready\r\n");
+    assert_eq!(
+        app.read_until("\r\n").await,
+        "220 the accounts service ESMTP ready\r\n"
+    );
 
     app.send("EHLO app.test\r\n").await;
     let ehlo = app.read_until("250 ").await;

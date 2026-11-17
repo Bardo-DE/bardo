@@ -302,7 +302,7 @@ async fn a_sheet_for_an_agent_host_that_is_off_or_gone_expires_and_is_not_moved_
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_process_that_is_not_the_shells_unit_is_never_asked() {
     // Each owns org.bardo.Confirm1 and the shell's name and answers yes. A scope that claims the
-    // shell is a plain app (porter gives a scope row no fixed role), an agent is not the sheet
+    // shell is a plain app (the accounts service gives a scope row no fixed role), an agent is not the sheet
     // host, and a process nothing identifies is nobody: none is asked, none allows.
     for (what, standing) in [
         ("a scope claiming the shell", Some(CallerRole::App)),

@@ -11,14 +11,14 @@
 #   build/shell-host-target/debug/examples/demo_*                        layer-shell-host's real-input demos
 #   build/detent-target/debug/bardo-settings                                     bardo-settings with ui-blitz/debug-probe, for the accounts-* and bardo-settings-on-compositor-at-1.5 scenarios
 #   build/shell-probe-target/debug/bardo-shell                                   bardo-shell with --features debug,ui-blitz/debug-probe (the accounts-* scenarios; the probe is linked but writes nothing for bardo-shell's surfaces)
-#   build/porter-target/debug/bardo-accountd                                   porter's bardo-accountd, a test-proc-root build
-#   build/sync-target/debug/bardo-syncd                                       the sync service's bardo-syncd, a test-proc-root build (the sync daemon left porter)
+#   build/account-target/debug/bardo-accountd                                   the accounts service's bardo-accountd, a test-proc-root build
+#   build/sync-target/debug/bardo-syncd                                       the sync service's bardo-syncd, a test-proc-root build (the sync daemon left the accounts service)
 #   build/sync-target/debug/sync-rig-{servers,client}                  the sync service's test rig: the OAuth issuer + Graph fake, an app client for bardo-syncd
 #   build/inference-target/debug/bardo-inferd                                    the inference service's bardo-inferd, a test-proc-root build
 #   build/inference-target/debug/inference-rig-client                        the inference service's rig: an app opening an bardo-inferd session
-#   build/porter-target/debug/porter-rig-{servers,client,secrets}        porter's test rig: fakes, an app client, a fake Secret Service
+#   build/account-target/debug/account-rig-{servers,client,secrets}        the accounts service's test rig: fakes, an app client, a fake Secret Service
 #
-#   scenario-build.sh --accounts   only what the accounts-* scenarios need (bardo-compositor, bardo-settings, bardo-shell with the probe, porter and its rig, the sync service and its rig, the inference service)
+#   scenario-build.sh --accounts   only what the accounts-* scenarios need (bardo-compositor, bardo-settings, bardo-shell with the probe, the accounts service and its rig, the sync service and its rig, the inference service)
 #   scenario-build.sh --w2         only what scenarios/w2-excalidraw.sh needs (bardo-compositor, bardo-shell, and the two below):
 #   build/cua-target/debug/bardo-computer-use                                          bardo-computer-use (the screen helper) with --features fixture-callers: a plain build identifies nobody
 #   build/actions-target/debug/{agent-bringup,accept-*}                  action-accept's test builds (the assistant's services on a fake /proc, bardo-do)
@@ -112,15 +112,15 @@ build_shell_host() {
     --example demo_popup_keys --example demo_window --example probe_toplevel)
 }
 
-# Porter's bardo-accountd and test rig (account-rig). Test builds: `test-proc-root` makes each daemon read caller identities from
+# The accounts service's bardo-accountd and test rig (account-rig). Test builds: `test-proc-root` makes each daemon read caller identities from
 # a fixture /proc tree (BARDO_ACCOUNTD_PROC_ROOT; the sync service's bardo-syncd, below, reads BARDO_SYNCD_PROC_ROOT and the inference service's bardo-inferd BARDO_INFERD_PROC_ROOT),
 # because nothing in the jail runs in a systemd scope. A release build ignores the variables; the features are never default.
-build_porter() {
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/porter-target" cargo build -p account-daemon --features test-proc-root) || return 1
-  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/porter-target" cargo build -p account-rig)
+build_accounts() {
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/account-target" cargo build -p account-daemon --features test-proc-root) || return 1
+  (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/account-target" cargo build -p account-rig)
 }
 
-# The sync service's bardo-syncd and test rig. bardo-syncd is a test build like porter's bardo-accountd: `test-proc-root` makes it read caller identities from a
+# The sync service's bardo-syncd and test rig. bardo-syncd is a test build like the accounts service's bardo-accountd: `test-proc-root` makes it read caller identities from a
 # fixture /proc tree (BARDO_SYNCD_PROC_ROOT). One invocation per package: `-p a -p b --features a/f,b/f` once left a daemon without its
 # feature (the binary then ignores the variable and no caller is known). sync-rig gives sync-rig-servers (the issuer and Graph)
 # and sync-rig-client.
@@ -129,7 +129,7 @@ build_sync() {
     && CARGO_TARGET_DIR="$SCEN_BUILD/sync-target" cargo build -p sync-rig)
 }
 
-# The inference service's bardo-inferd. A test build like porter's daemons: `test-proc-root` makes it read caller identities from a fixture /proc tree
+# The inference service's bardo-inferd. A test build like the accounts service's daemons: `test-proc-root` makes it read caller identities from a fixture /proc tree
 # (BARDO_INFERD_PROC_ROOT).
 build_inference() {
   (cd "$SCEN_TREE" && CARGO_TARGET_DIR="$SCEN_BUILD/inference-target" cargo build -p inference-daemon --features test-proc-root \
@@ -177,7 +177,7 @@ if [ "$only_accounts" = 0 ]; then
 fi
 stage "bardo-settings (with the debug probe)" build_detent
 stage "bardo-shell with the debug probe" build_shell_probe
-stage "porter: bardo-accountd (test-proc-root) and account-rig" build_porter
+stage "accounts: bardo-accountd (test-proc-root) and account-rig" build_accounts
 stage "sync: bardo-syncd (test-proc-root) and sync-rig" build_sync
 stage "inference: bardo-inferd (test-proc-root) and inference-rig-client" build_inference
 echo "scenario-build: done ($SCEN_BUILD)"

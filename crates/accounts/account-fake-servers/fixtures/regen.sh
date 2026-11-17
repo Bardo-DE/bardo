@@ -10,12 +10,12 @@ trap 'rm -rf "$work"' EXIT
 days=36500
 
 openssl req -x509 -newkey rsa:2048 -nodes -keyout "$work/ca.key" -out "$work/ca.crt" \
-  -days "$days" -subj "/O=porter test only/CN=porter fake CA (TEST ONLY)" \
+  -days "$days" -subj "/O=accounts test only/CN=accounts fake CA (TEST ONLY)" \
   -addext "basicConstraints=critical,CA:TRUE,pathlen:0" \
   -addext "keyUsage=critical,keyCertSign,cRLSign" 2>/dev/null
 
 openssl req -newkey rsa:2048 -nodes -keyout "$work/leaf.key" -out "$work/leaf.csr" \
-  -subj "/O=porter test only/CN=localhost" 2>/dev/null
+  -subj "/O=accounts test only/CN=localhost" 2>/dev/null
 
 cat >"$work/leaf.ext" <<EXT
 basicConstraints=critical,CA:FALSE

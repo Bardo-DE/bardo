@@ -1,11 +1,11 @@
-//! What a launcher asks of porter, behind a seam: accountd (sessions, grants, process credentials,
+//! What a launcher asks of the accounts service, behind a seam: accountd (sessions, grants, process credentials,
 //! the agent's login) and inferd (the per-session model endpoint, P4).
 //!
 //! The real link is `dbus::DbusAccounts`; `fake::FakeAccounts` stands in for it in tests. Methods
 //! take `&self` because one link serves every session and the supervisor listens on it at the same
 //! time.
 //!
-//! The types are ours so this file names no bus: a secret is porter's `SecretText` (its `Debug`
+//! The types are ours so this file names no bus: a secret is the accounts service's `SecretText` (its `Debug`
 //! shows nothing).
 
 use crate::config::EndpointKind;
@@ -16,7 +16,7 @@ use account_core::{AccountId, DataClass, GrantId, ProcessCredentialId, SecretTex
 /// What was underneath an [`AccountFault`], when something was.
 pub type FaultSource = std::sync::Arc<dyn std::error::Error + Send + Sync>;
 
-/// Why a call to porter failed. Coarse on purpose: the kind says what the launcher does next, and
+/// Why a call to the accounts service failed. Coarse on purpose: the kind says what the launcher does next, and
 /// the source (when there is one) is what the link reported, for logs.
 #[derive(Debug, Clone, thiserror::Error)]
 pub enum AccountFault {
@@ -98,7 +98,7 @@ pub enum AskKind {
     Logout,
 }
 
-/// What porter tells a launcher without being asked.
+/// What the accounts service tells a launcher without being asked.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Heard {
     /// Run the agent's own login or logout.
@@ -164,7 +164,7 @@ pub trait Accounts: Send + Sync {
         id: &ProcessCredentialId,
     ) -> impl Future<Output = Result<(), AccountFault>> + Send;
 
-    /// The next thing porter says to this launcher; `None` when the link is gone.
+    /// The next thing the accounts service says to this launcher; `None` when the link is gone.
     fn hear(&self) -> impl Future<Output = Option<Heard>> + Send;
 
     /// Reports what became of a login request.

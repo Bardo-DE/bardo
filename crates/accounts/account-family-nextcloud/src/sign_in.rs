@@ -55,7 +55,7 @@ impl NextcloudFlow {
     fn known_server(&self) -> Option<EndpointUrl> {
         let held = match &self.mode {
             SignInMode::Reauthenticate { endpoints, .. } => server_of(endpoints).map(|(s, _)| s),
-            // `Add`, or a variant a newer porter adds: no held server, so the person is asked for one
+            // `Add`, or a variant a newer the accounts service adds: no held server, so the person is asked for one
             _ => None,
         };
         held.or_else(|| self.fixed.clone())
@@ -125,7 +125,7 @@ impl NextcloudFlow {
         match self.mode {
             SignInMode::Add => Move::Review(signed),
             SignInMode::Reauthenticate { .. } => Move::Done(signed),
-            // a variant a newer porter adds: the sign-in ends as unreadable
+            // a variant a newer the accounts service adds: the sign-in ends as unreadable
             _ => Move::Fail(SignInFault::Unreadable),
         }
     }

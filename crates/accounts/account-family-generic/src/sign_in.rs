@@ -172,7 +172,7 @@ impl<L: Lookup> GenericFlow<L> {
                         Move::Review(signed)
                     }
                     SignInMode::Reauthenticate { .. } => Move::Done(signed),
-                    // a variant a newer porter adds: the sign-in ends as unreadable
+                    // a variant a newer the accounts service adds: the sign-in ends as unreadable
                     _ => Move::Fail(SignInFault::Unreadable),
                 }
             }

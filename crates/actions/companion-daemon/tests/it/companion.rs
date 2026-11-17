@@ -16,8 +16,8 @@ fn note(status: ReportStatus, attention: Attention) -> CompletionNote {
             run: RunId::parse("r-3").expect("run"),
         },
         status,
-        steps: porter_count(9),
-        values: porter_count(2),
+        steps: account_count(9),
+        values: account_count(2),
         why: None,
         attention,
     }
@@ -331,6 +331,6 @@ async fn an_unreadable_record_is_a_fault_not_a_guess() {
     );
 }
 
-fn porter_count(n: u32) -> base_ids::Count {
+fn account_count(n: u32) -> base_ids::Count {
     base_ids::Count(n)
 }

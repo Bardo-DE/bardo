@@ -99,7 +99,7 @@ impl From<ProviderError> for account_sheet::SignInFault {
             ProviderError::Unauthorized => SignInFault::Refused,
             ProviderError::Forbidden => SignInFault::Forbidden,
             ProviderError::Unreachable | ProviderError::Down(_) => SignInFault::Unreachable,
-            // access that was not given ends as unreadable, as does any variant a newer porter adds
+            // access that was not given ends as unreadable, as does any variant a newer the accounts service adds
             ProviderError::Unreadable | ProviderError::Garbled(_) | ProviderError::NeedsConsent => {
                 SignInFault::Unreadable
             }

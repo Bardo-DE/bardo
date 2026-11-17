@@ -11,12 +11,12 @@
 //! (a computer going offline is announced by a net map in some versions and not in others) would
 //! otherwise be missed. So accountd also looks every half minute while the stream is open, and
 //! every ten seconds tries to open the stream again while it is not (Tailscale stopped, not
-//! started yet, or not letting porter ask).
+//! started yet, or not letting the accounts service ask).
 //!
 //! **What the state follows.** Running and signed in: `Ok`. Signed out: `NeedsLogin`, the state
 //! that means "sign in again" (the person signs in in Tailscale; Settings offers "Sign in", which
 //! hands them Tailscale's own page). Turned off, not running, not installed, or not letting
-//! porter ask: `Offline`, the account kept. In the middle of starting: unchanged, since the next
+//! The accounts service ask: `Offline`, the account kept. In the middle of starting: unchanged, since the next
 //! answer settles it.
 
 use crate::host::Host;
@@ -74,7 +74,7 @@ pub(crate) fn state_of(answer: &Result<Status, TailscaleError>) -> Option<Accoun
             | TailscaleError::Refused
             | TailscaleError::TimedOut,
         ) => Some(AccountState::Offline),
-        // An answer porter cannot read says nothing about the account.
+        // An answer the accounts service cannot read says nothing about the account.
         Err(_) => None,
     }
 }

@@ -4,11 +4,11 @@
 //! file or folder downloaded, or removes a download to free space.
 //!
 //! A drive is one storage account the person turned on for Files ("Show in Files"). Its `path` is
-//! porter's to choose and is only ever read from `Drives`: a caller never builds it. Every path
+//! The accounts service's to choose and is only ever read from `Drives`: a caller never builds it. Every path
 //! this interface takes or gives is absolute and inside one drive's `path`.
 //!
 //! Who may call: the shell (`CallerRole::SheetHost`), Settings (`CallerRole::Settings`) and an app
-//! the person let see their files (per-app consent, as any app asks porter). Anyone else, and a
+//! the person let see their files (per-app consent, as any app asks the accounts service). Anyone else, and a
 //! sender syncd does not know, is `AccessDenied`. A caller sees only the drives it was let see.
 //! Only the shell and Settings may pause a drive.
 //!
@@ -189,7 +189,7 @@ pub type Saved = HashMap<String, String>;
 )]
 pub trait Storage {
     /// The drives the caller may see, one row each: the drive's id (stable while the account is
-    /// in porter), then `account`, `label`, `provider`, `path`, `state`, `local`, and `words`,
+    /// in the accounts service), then `account`, `label`, `provider`, `path`, `state`, `local`, and `words`,
     /// `used` and `total` when there is something to say (the `DRIVE_KEY_*` names). A drive is
     /// listed from the moment the person turns it on, `starting` until its listing is read.
     fn drives(&self) -> zbus::Result<Vec<(String, Details)>>;

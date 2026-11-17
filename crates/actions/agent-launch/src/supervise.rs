@@ -20,7 +20,7 @@ fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
     m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
-/// Listens for what porter says to this launcher.
+/// Listens for what the accounts service says to this launcher.
 pub struct Supervisor<A, P, L> {
     accounts: Arc<A>,
     file: Arc<AgentsFile>,
@@ -93,13 +93,13 @@ impl<A: Accounts + 'static, P: Proc, L: LoginRunner + 'static> Supervisor<A, P, 
     ///
     /// # Errors
     ///
-    /// Returns an [`AccountFault`] when porter is unreachable, refuses, or fails; this includes a
+    /// Returns an [`AccountFault`] when the accounts service is unreachable, refuses, or fails; this includes a
     /// program another launcher already holds.
     pub async fn register(&self) -> Result<(), crate::accounts::AccountFault> {
         self.accounts.register(&self.file.programs()).await
     }
 
-    /// Handles one thing porter said. False when the link is gone. A revocation is done when
+    /// Handles one thing the accounts service said. False when the link is gone. A revocation is done when
     /// this returns; a login or logout is started in its own task, so this does not wait on it.
     pub async fn step(&self) -> bool {
         let Some(heard) = self.accounts.hear().await else {

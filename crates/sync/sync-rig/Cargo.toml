@@ -1,6 +1,6 @@
 [package]
 name = "sync-rig"
-description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives the sync service with. sync-rig-servers starts the Microsoft Graph fake (the drive and the calendars) behind porter's fake OAuth issuer on loopback, plants known tokens and serves the scenario's levers; sync-rig-client acts as an app over the session bus and talks to syncd's org.bardo.Sync1. Nothing shipped depends on it."
+description = "Test tooling, never installed and never in dist: the rig a jailed scenario drives the sync service with. sync-rig-servers starts the Microsoft Graph fake (the drive and the calendars) behind the accounts service's fake OAuth issuer on loopback, plants known tokens and serves the scenario's levers; sync-rig-client acts as an app over the session bus and talks to syncd's org.bardo.Sync1. Nothing shipped depends on it."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

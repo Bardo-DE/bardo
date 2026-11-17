@@ -598,7 +598,7 @@ the real daemons or a real keyboard.
 - [ ] **Go to Folder** (files 234a3f3): ⇧⌘G opens the sheet; type `~/Documents` and Return goes; Escape stays.
 - [ ] **Sheets take the keys** (files 234a3f3): right-click a file, Open With, Other…: arrows and Return work in the list at once, with no click first; ⌘I then Return closes Get Info.
 
-## Internet Accounts page (the Settings app c4a69c2, a real login with porter running)
+## Internet Accounts page (the Settings app c4a69c2, a real login with the accounts service running)
 
 - [ ] **List beside detail**: Settings > Internet Accounts shows the accounts on the left and the chosen one on the right; arrows and click choose. The split is tall enough and scrolls inside on a small window (`.accounts-split` is a fixed 40em).
 - [ ] **Sync line**: a synced account shows "Synced N minutes ago" and its storage under Sync now; a ring turns round its mark while items wait.
@@ -635,9 +635,9 @@ Settings > Appearance, "Automatically hide and show the menu bar" (`bar.autohide
 - [ ] **Two displays in full screen**: full screen an app on each display. Rest the pointer at the top edge of one: only that display's bar comes in; the other's stays away. The same for the docks at the bottom edges.
 - [ ] **Reduced motion in full screen**: turn on Reduce motion (Settings > Appearance, or the desktop's own setting). In full screen the bar and dock fade in and out in place instead of sliding; turn it off and they slide again, with no restart.
 
-## Cloud drives in Files (porter ae56db17 S2a, files 7b64cc4, the Settings app 5c18e4d; a real login with the release installed)
+## Cloud drives in Files (the accounts service ae56db17 S2a, files 7b64cc4, the Settings app 5c18e4d; a real login with the release installed)
 
-The first real mount: the test machines have no `/dev/fuse`. Steps from porter `docs/drive-files.md`
+The first real mount: the test machines have no `/dev/fuse`. Steps from the accounts service `docs/drive-files.md`
 "The check" (that page says how syncd and bardo-drive-mount fit). The drive is read-only in S2a.
 
 - [ ] **Installed and listening.** `fuse3` is installed (`command -v fusermount3`, `ls /dev/fuse`).
@@ -645,7 +645,7 @@ The first real mount: the test machines have no `/dev/fuse`. Steps from porter `
 - [ ] **The drive shows.** In Settings → Accounts, turn on "Show in Files" for an account with a few
   files, a folder of photos and, for Google, a Doc and a Sheet. `ls ~/Cloud/` lists `OneDrive` or
   `Google Drive` (the account's label after the name when one provider has two); `ls -la` inside
-  lists sizes and times before anything downloads, and `du -sh ~/.cache/porter/drives/` is about
+  lists sizes and times before anything downloads, and `du -sh ~/.cache/accounts/drives/` is about
   nothing. Files shows the drive in its sidebar with the cloud glyph and the badges on its items.
 - [ ] **On demand.** Open a large video and seek to the middle: it plays from there before the rest
   has come, and `du` of the cache grows. The pie on the item fills in Files while it downloads.
@@ -667,7 +667,7 @@ The first real mount: the test machines have no `/dev/fuse`. Steps from porter `
   sitting in the folder (it goes at once and the terminal's folder reads as gone). On again, then
   `systemctl --user stop bardo-syncd.service`: the mount goes with it. `systemctl --user kill -s KILL
   bardo-syncd.service` and let it start: the stale mount is cleared and the folder comes back.
-- [ ] **A folder that isn't porter's.** Stop syncd, put a file in an empty `~/Cloud/OneDrive`, start
+- [ ] **A folder that isn't the accounts service's.** Stop syncd, put a file in an empty `~/Cloud/OneDrive`, start
   it: the drive says "The drive's folder in Cloud already has other files in it. Move them, then try
   again." and the file is still there.
 - [ ] **syncd's sandbox is whole.** `systemctl --user show bardo-syncd.service -p NoNewPrivileges -p

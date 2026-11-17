@@ -46,13 +46,13 @@ impl SpaceSeed {
 
 /// The Space id for 16 bytes of entropy.
 ///
-/// It is `s-` and 32 lowercase hex digits, a valid porter
+/// It is `s-` and 32 lowercase hex digits, a valid the accounts service
 /// [`SpaceId`] (it starts with a lowercase letter, holds only `[0-9a-f-]` and is 34 bytes, within
-/// the 64 every porter id allows).
+/// the 64 every accounts service id allows).
 ///
 /// # Panics
 ///
-/// Never: the id it builds is always a valid porter slug.
+/// Never: the id it builds is always a valid the accounts service slug.
 #[must_use]
 pub fn mint_space_id(entropy: [u8; 16]) -> SpaceId {
     use std::fmt::Write as _;
@@ -63,7 +63,7 @@ pub fn mint_space_id(entropy: [u8; 16]) -> SpaceId {
             hex
         });
     SpaceId::parse(&format!("s-{hex}"))
-        .expect("`s-` and 32 hex digits is a porter slug (34 bytes, [a-z0-9-])")
+        .expect("`s-` and 32 hex digits is an accounts service slug (34 bytes, [a-z0-9-])")
 }
 
 /// The odd constant splitmix64 steps by (2^64 over the golden ratio).
@@ -134,9 +134,9 @@ mod tests {
     }
 
     proptest! {
-        /// Whatever the entropy, a minted id is `s-` and 32 lowercase hex digits, a porter id.
+        /// Whatever the entropy, a minted id is `s-` and 32 lowercase hex digits, an accounts service id.
         #[test]
-        fn every_minted_id_is_a_porter_id(entropy in any::<[u8; 16]>()) {
+        fn every_minted_id_is_an_accounts_service_id(entropy in any::<[u8; 16]>()) {
             let id = mint_space_id(entropy);
             let text = id.as_str();
             prop_assert_eq!(text.len(), 34);

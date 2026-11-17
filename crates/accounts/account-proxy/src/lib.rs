@@ -1,4 +1,4 @@
-//! The authenticated relay behind `Tokens.OpenAuthenticated` (porter PLAN G2, D8): a password
+//! The authenticated relay behind `Tokens.OpenAuthenticated` (the accounts service PLAN G2, D8): a password
 //! never leaves accountd, so an app that needs one (generic IMAP and DAV, Nextcloud, iCloud)
 //! gets a stream to a relay that authenticates for it.
 //!
@@ -14,7 +14,7 @@
 //! - **`ManageSieve`** (`sieve`, RFC 5804): the relay does `STARTTLS` and `AUTHENTICATE`; the app
 //!   sees the capability list without `SASL` and `STARTTLS`, then relays bytes.
 //! - **POP3** (`pop3`): the relay does `CAPA`, `STLS` and `USER`/`PASS` (or `AUTH`); the app sees
-//!   `+OK porter relay ready` in the transaction state, and its own login commands are answered
+//!   `+OK accounts relay ready` in the transaction state, and its own login commands are answered
 //!   here, never forwarded.
 //!
 //! Each protocol is a pure machine (`step`: input in, effects out) over frozen types; the

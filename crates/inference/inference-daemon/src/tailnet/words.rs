@@ -79,7 +79,7 @@ mod tests {
 
     /// Words a person reads never include a program name or a term of the network's plumbing.
     const JARGON: [&str; 16] = [
-        "porter", "inferd", "accountd", "socket", "port ", "node", "tailnet", "address",
+        "accounts", "inferd", "accountd", "socket", "port ", "node", "tailnet", "address",
         "localapi", "daemon", "whois", "http", "tcp", "listener", "tagged", "api",
     ];
 

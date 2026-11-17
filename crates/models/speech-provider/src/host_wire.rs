@@ -1,6 +1,6 @@
 //! inferd to `bardo-speech-host`, over `$XDG_RUNTIME_DIR/bardo/inference/<engine>.sock`: a 4-byte big-endian
-//! length, then that many bytes of JSON, at most 1 MiB. porter's framing shape, declared again
-//! here because the model layer has no porter dependency.
+//! length, then that many bytes of JSON, at most 1 MiB. The accounts service's framing shape, declared again
+//! here because the model layer has no accounts dependency.
 
 use model_provider::ProviderError;
 use serde::de::DeserializeOwned;

@@ -52,8 +52,8 @@ fn a_fixed_role_service_proved_by_its_unit_keeps_its_role() {
     let cases = [
         (
             "org.bardo.Inference",
-            "porter_daemon",
-            CallerRole::PorterDaemon,
+            "account_daemon_support",
+            CallerRole::AccountDaemon,
         ),
         ("org.bardo.Shell", "sheet_host", CallerRole::SheetHost),
         ("org.bardo.ComputerUse", "cua", CallerRole::Cua),
@@ -74,7 +74,11 @@ fn a_fixed_role_service_proved_by_its_unit_keeps_its_role() {
 fn a_fixed_role_service_with_only_its_program_or_its_cgroup_is_a_plain_app() {
     for proof in [Proof::Exe, Proof::Cgroup] {
         assert_eq!(
-            shown(&service("org.bardo.Inference", "porter_daemon", proof)),
+            shown(&service(
+                "org.bardo.Inference",
+                "account_daemon_support",
+                proof
+            )),
             want(
                 "org.bardo.Inference",
                 Isolation::Unsandboxed,
@@ -98,7 +102,7 @@ fn a_role_that_is_no_more_than_an_app_needs_no_more_than_the_row() {
 }
 
 #[test]
-fn a_role_no_porter_caller_has_is_nobody() {
+fn a_role_no_accounts_service_caller_has_is_nobody() {
     assert_eq!(
         shown(&service("org.freedesktop.systemd1", "manager", Proof::Exe)),
         None

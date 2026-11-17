@@ -34,7 +34,7 @@ pub fn is_terminal_scope(cgroup: &str) -> bool {
 /// role a call acts in is the first that may make it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CallerId {
-    /// The application, as porter derives it from the connection.
+    /// The application, as the accounts service derives it from the connection.
     pub app: AppId,
     /// The roles of the name; empty means a plain app.
     pub roles: BTreeSet<CallerRole>,

@@ -256,7 +256,7 @@ impl BrowserIssuer for Google {
 
     /// The form of token `audience` takes (whole grant), or `Forbidden` for one that is not the
     /// account's.
-    fn porter_token<H>(
+    fn account_token<H>(
         &self,
         session: &OAuthSession<Self, H>,
         audience: &Audience,

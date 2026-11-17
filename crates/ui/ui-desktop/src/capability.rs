@@ -78,7 +78,7 @@ impl Capability {
         match self {
             // design/33-AGENT.md section 5 (intentd, the actions repo).
             Capability::Intents => Some(session("org.bardo.Intents1")),
-            // accountd, porter repo (porter/crates/accountd/src/lib.rs:2); also named by
+            // accountd, the accounts repo (accounts/crates/accountd/src/lib.rs:2); also named by
             // ui-settings' live client docs.
             Capability::Accounts => Some(session("org.bardo.Accounts1")),
             // memoryd, design/33-AGENT.md section 5 (the memory repo).

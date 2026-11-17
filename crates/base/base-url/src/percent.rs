@@ -1,4 +1,4 @@
-//! Percent-encoding, once: the character sets porter encodes with, and the one decoder.
+//! Percent-encoding, once: the character sets the accounts service encodes with, and the one decoder.
 //!
 //! The work is `percent-encoding`'s; this module names the sets so every crate spells a path
 //! segment, a path, and a query value the same way. A `+` is a space only in a form body or

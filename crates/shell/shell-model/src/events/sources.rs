@@ -9,7 +9,7 @@ pub enum IcsPlace {
     File(PathBuf),
     /// A directory: a vdir collection itself, or a parent of collections (provider doc).
     Dir(PathBuf),
-    /// A directory of directories of collections: porter's `vdir/<account>/<collection>`. Read
+    /// A directory of directories of collections: the accounts service's `vdir/<account>/<collection>`. Read
     /// afresh each time, so an account or a collection that appears later is found, and watched
     /// as one directory.
     Vdir(PathBuf),
@@ -86,7 +86,7 @@ fn place_of(path: PathBuf) -> IcsPlace {
 /// Where `auto` looks, in order.
 ///
 /// `$XDG_DATA_HOME/bardo/shell/calendars` (a directory to drop `.ics` files into),
-/// `$XDG_DATA_HOME/bardo/sync/vdir` (what porter's syncd mirrors from the accounts the person
+/// `$XDG_DATA_HOME/bardo/sync/vdir` (what the accounts service's syncd mirrors from the accounts the person
 /// granted it: `<account>/<collection>/*.ics`) and `~/.calendars` (vdirsyncer and khal's
 /// convention). Candidates only: the caller keeps those that exist (`provider_for`).
 #[must_use]
@@ -98,7 +98,7 @@ pub fn auto_places(env: &AutoEnv) -> Vec<IcsPlace> {
     ]
 }
 
-/// Whether a vdir collection directory is a task list (VTODO), not a calendar: porter names it
+/// Whether a vdir collection directory is a task list (VTODO), not a calendar: the accounts service names it
 /// `<collection>-tasks`. The calendar view skips it.
 #[must_use]
 pub fn is_task_list(dir: &Path) -> bool {
@@ -135,7 +135,7 @@ mod tests {
     }
 
     #[test]
-    fn auto_looks_at_shell_porter_and_vdirsyncer() {
+    fn auto_looks_at_shell_accounts_service_and_vdirsyncer() {
         let env = AutoEnv {
             home: PathBuf::from(HOME),
             data_home: PathBuf::from("/home/ada/.local/share"),

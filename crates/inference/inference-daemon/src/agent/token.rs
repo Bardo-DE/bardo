@@ -7,7 +7,7 @@
 use subtle::ConstantTimeEq;
 
 /// The prefix of every token, so a person who sees one in a process list knows what it is.
-const PREFIX: &str = "sk-porter-agent-";
+const PREFIX: &str = "sk-account-agent-";
 
 /// `N` random bytes from the kernel, as hex.
 #[must_use]

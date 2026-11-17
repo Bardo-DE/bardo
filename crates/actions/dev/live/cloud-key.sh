@@ -6,12 +6,12 @@
 # DIR       absolute, outside every git work tree; made 0700 here. Holds accountd.keys (0600), which
 #           only accountd opens, and accountd's non-secret records (state/, data/): the registry with
 #           the key permits is state/bardo/accounts/registry.json.
-# ACCOUNTD  porter's accountd built with `--features test-keys` (it runs `accountd add`).
+# ACCOUNTD  the accounts service's accountd built with `--features test-keys` (it runs `accountd add`).
 # --key-file FILE   a 0600 file holding the OpenRouter key on one line, outside every git work
 #           tree. It is piped to accountd's standard input (never put in argv or the environment,
 #           never printed or read by this script). Without it, accountd asks at its own prompt
 #           with echo off.
-# --providers DIR   where openrouter.toml is (default $BARDO_ACCOUNT_PROVIDERS, else ~/porter/providers).
+# --providers DIR   where openrouter.toml is (default $BARDO_ACCOUNT_PROVIDERS, else ~/accounts/providers).
 #
 # accountd runs on a private bus (dbus-run-session): the real session bus, the real Secret Service
 # and the real home are never touched.
@@ -23,7 +23,7 @@ in_git() { (cd "$(dirname "$1")" && git rev-parse --is-inside-work-tree >/dev/nu
 
 [ $# -ge 2 ] || die "usage: cloud-key.sh DIR ACCOUNTD [--key-file FILE] [--providers DIR]"
 home=$1; accountd=$2; shift 2
-keyfile=; providers=${BARDO_ACCOUNT_PROVIDERS:-$HOME/porter/providers}
+keyfile=; providers=${BARDO_ACCOUNT_PROVIDERS:-$HOME/accounts/providers}
 while [ $# -gt 0 ]; do
   case "$1" in
     --key-file) [ $# -ge 2 ] || die "--key-file needs a value"; keyfile=$2; shift 2 ;;

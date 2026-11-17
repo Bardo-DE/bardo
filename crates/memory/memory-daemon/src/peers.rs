@@ -2,11 +2,11 @@
 //!
 //! The caller class is derived by the transport, never sent (memory.md section 3.9): the bus
 //! says which process owns a connection and `/proc/<pid>/cgroup` says which unit or app scope
-//! it runs in (porter's `ProcCallers`; the executable is not read, because a Landlock domain
+//! it runs in (the accounts service's `ProcCallers`; the executable is not read, because a Landlock domain
 //! may not read another process's `exe`). `memoryd-callers.toml` gives the unit or app its role
 //! and `callers::caller_for` maps that role onto the memory service's callers. A process in no named unit
 //! and no app scope (a terminal's child) is refused. This is advisory for unsandboxed
-//! processes (porter R12).
+//! processes (the accounts service R12).
 
 use crate::callers::caller_for;
 use account_callers::{Callers, ProcCallers};
@@ -38,7 +38,7 @@ fn hears_signals(caller: &Caller) -> bool {
     matches!(caller.role(), CallerRole::Agent | CallerRole::SheetHost)
 }
 
-/// Peers by process: porter's [`ProcCallers`] over the connection, mapped onto the memory service's callers.
+/// Peers by process: the accounts service's [`ProcCallers`] over the connection, mapped onto the memory service's callers.
 #[derive(Debug)]
 pub struct ProcPeers {
     callers: ProcCallers,

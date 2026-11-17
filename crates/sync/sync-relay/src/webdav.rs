@@ -1,5 +1,5 @@
 //! The `WebDAV` replica as syncd runs it: connections come from accountd's
-//! `Tokens.OpenAuthenticated`, so syncd never holds the account's credential (porter PLAN G3, D8).
+//! `Tokens.OpenAuthenticated`, so syncd never holds the account's credential (the accounts service PLAN G3, D8).
 //!
 //! [`RelayDial`] asks accountd for one authenticated stream to the account's `WebDAV` endpoint each
 //! time the replica needs a connection; the relay at the far end adds `Authorization`, speaks TLS

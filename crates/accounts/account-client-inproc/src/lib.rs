@@ -1,5 +1,5 @@
 //! The account service hosted in the app, as a transport for `account-client`: the app brings its
-//! providers, its secret store and its sheet host, and [`hosted`] gives the [`Porter`] over a
+//! providers, its secret store and its sheet host, and [`hosted`] gives the [`AccountClient`] over a
 //! service built from them. A daemon with seams of its own (syncd's bus sheets, file store and audit
 //! file) builds an `AccountService` itself and uses [`Hosted::new`].
 //!
@@ -15,5 +15,5 @@ mod relays;
 
 pub use hosted::{HostConfig, Hosted, Hosting, hosted, hosted_with_store};
 #[cfg(feature = "relays")]
-pub use relays::PorterRelays;
+pub use relays::AccountRelays;
 pub use relays::{NoRelays, RelayHost};

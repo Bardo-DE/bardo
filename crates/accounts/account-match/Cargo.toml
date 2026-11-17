@@ -1,6 +1,6 @@
 [package]
 name = "account-match"
-description = "porter's offer/need matching engine, sans I/O: what an app asks for, and the one function that says whether an offer meets it."
+description = "accounts's offer/need matching engine, sans I/O: what an app asks for, and the one function that says whether an offer meets it."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

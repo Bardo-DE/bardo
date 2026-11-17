@@ -59,7 +59,7 @@ pub enum Isolation {
     /// by `identity_of`). Same-UID processes can impersonate each other, so consent here is
     /// advisory and the UI says "unsandboxed".
     Unsandboxed,
-    /// The app hosts porter's core itself (the in-process link); it is the only caller.
+    /// The app hosts the accounts service's core itself (the in-process link); it is the only caller.
     InProcess,
 }
 

@@ -228,7 +228,7 @@ pub(crate) fn signed_server(
 }
 
 /// An open account of either family. An API key is never handed to an app, whatever the
-/// audience: only `Peer.ResolveKey` reads it, and only for a porter daemon.
+/// audience: only `Peer.ResolveKey` reads it, and only for an accounts daemon.
 #[derive(Debug)]
 pub struct KeySession {
     account: AccountId,

@@ -203,7 +203,7 @@ fn admits(scheme: UrlScheme, tls: Tls) -> bool {
 
 base_ids::string_newtype!(EndpointUrl, CoreError);
 
-/// Why an endpoint is not one porter will use.
+/// Why an endpoint is not one accounts service will use.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, thiserror::Error)]
 pub enum EndpointFault {
     /// The family does not speak the URL's scheme, or has no relay protocol.

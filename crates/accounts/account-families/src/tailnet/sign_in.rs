@@ -3,9 +3,9 @@
 //! - signed in: show the account (the review of a new one) and finish;
 //! - signed out: ask Tailscale to start its own sign-in, hand the person its page to open, and
 //!   wait until somebody is signed in;
-//! - not installed, not running, not letting porter ask: say which, in the sheet's closed words.
+//! - not installed, not running, not letting the accounts service ask: say which, in the sheet's closed words.
 //!
-//! The page is Tailscale's (`https://login.tailscale.com/...`); porter opens nothing itself and
+//! The page is Tailscale's (`https://login.tailscale.com/...`); the accounts service opens nothing itself and
 //! takes no password, key or code.
 
 use account_core::{AccountLabel, Restriction};

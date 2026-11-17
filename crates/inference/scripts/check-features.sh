@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# The feature sets the consumers of porter's crates build, each one clippy with -D warnings.
+# The feature sets the consumers of the accounts service's crates build, each one clippy with -D warnings.
 #
 # The workspace gate builds `--workspace --all-features`, which unifies every feature into one
 # build and so never sees the build a consumer makes on its own. The actions service builds inferd that way
 # (`cargo install --git inference`, -D warnings): the client with `dbus` and no other feature once
-# left two framed.rs methods unused, and the gate passed (porter 5bdda62; fixed in b12886e).
+# left two framed.rs methods unused, and the gate passed (the accounts service 5bdda62; fixed in b12886e).
 # Each set below is checked here, alone, so the same break fails this script.
 #
 # The sets come from the consumers' manifests at origin/master. The comment above each set

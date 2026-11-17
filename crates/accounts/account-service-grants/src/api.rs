@@ -35,7 +35,7 @@ pub trait GrantsApi {
     fn grants(&self, caller: &AppId) -> Vec<Grant>;
 
     /// Every account the registry holds, whoever holds a grant for it: for the transport that
-    /// answers a porter daemon, Settings or the shell, which keep a switch per account. An app
+    /// answers an accounts daemon, Settings or the shell, which keep a switch per account. An app
     /// is never answered this.
     fn accounts(&self) -> Vec<Account>;
 

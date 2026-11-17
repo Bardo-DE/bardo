@@ -12,7 +12,7 @@ use base_time::UnixSeconds;
 
 /// Why Google refused a renewal, when it is the seven days: the client is in testing and the
 /// sign-in is old enough, or of unknown age (core's one rule, `ReauthReason::of_seven_days`). A
-/// young sign-in was ended by someone, and any other refusal has no reason porter knows.
+/// young sign-in was ended by someone, and any other refusal has no reason the accounts service knows.
 pub(super) fn reason_of_refusal(
     testing: bool,
     signed_in: Option<UnixSeconds>,

@@ -140,7 +140,7 @@ fn fatal(why: impl Into<String>) -> EmbedError {
 /// Why inferd would not run the request.
 #[expect(
     clippy::match_same_arms,
-    reason = "the wildcard stands for reasons porter adds later (the enum is non-exhaustive); the named arms are the known ones"
+    reason = "the wildcard stands for reasons the accounts service adds later (the enum is non-exhaustive); the named arms are the known ones"
 )]
 pub(crate) fn refusal(why: InferRefusal) -> EmbedError {
     match why {
@@ -150,7 +150,7 @@ pub(crate) fn refusal(why: InferRefusal) -> EmbedError {
         | InferRefusal::Denied
         | InferRefusal::OverBudget
         | InferRefusal::Unsupported => EmbedError::Refused(why.to_string()),
-        // porter may add reasons (`InferRefusal` is non-exhaustive); one not named is a refusal.
+        // The accounts service may add reasons (`InferRefusal` is non-exhaustive); one not named is a refusal.
         _ => EmbedError::Refused(why.to_string()),
     }
 }
@@ -158,7 +158,7 @@ pub(crate) fn refusal(why: InferRefusal) -> EmbedError {
 /// Why the model call failed.
 #[expect(
     clippy::match_same_arms,
-    reason = "the wildcard stands for failures porter adds later (the enum is non-exhaustive); the named arms are the known ones"
+    reason = "the wildcard stands for failures the accounts service adds later (the enum is non-exhaustive); the named arms are the known ones"
 )]
 pub(crate) fn model_failure(why: ModelError) -> EmbedError {
     match why {
@@ -175,7 +175,7 @@ pub(crate) fn model_failure(why: ModelError) -> EmbedError {
                 why: why.to_string(),
             }
         }
-        // porter may add failures (`ModelError` is non-exhaustive); one not named is a refusal.
+        // The accounts service may add failures (`ModelError` is non-exhaustive); one not named is a refusal.
         _ => EmbedError::Refused(why.to_string()),
     }
 }
@@ -228,7 +228,7 @@ fn transport_failure(error: TransportError) -> EmbedError {
         // A caller inferd's table does not name, or one without the grant: asking again does not
         // help until someone changes who may call, so it is fatal with the daemon's own text.
         TransportError::Denied(why) | TransportError::Malformed(why) => fatal(why),
-        // porter may add reasons (`TransportError` is non-exhaustive); one this code does not
+        // The accounts service may add reasons (`TransportError` is non-exhaustive); one this code does not
         // name is fatal too, with its own text, since asking again will not change it.
         other => fatal(other.to_string()),
     }

@@ -226,7 +226,7 @@ pub struct AccountView {
     pub label: AccountLabel,
     /// Where it stands.
     pub state: AccountState,
-    /// Why it has to be signed in again, when porter knows beyond "the provider refused".
+    /// Why it has to be signed in again, when the accounts service knows beyond "the provider refused".
     pub reauth_reason: Option<ReauthReason>,
 }
 

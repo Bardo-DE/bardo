@@ -1,7 +1,7 @@
 //! The machine's tables. The rules are those of mailo's add-account tests
 //! (`mailo/crates/mail-app/src/ui/add_account/flow_tests.rs`, copied in spirit: looked up once,
 //! nothing added without being told, checked field by field, a refusal says so and keeps going,
-//! a password goes to the sign-in and nowhere else), restated over porter's stages.
+//! a password goes to the sign-in and nowhere else), restated over the accounts service's stages.
 
 use super::*;
 use crate::fields::{Entry, FieldAnswer, FieldKind, FieldSpec, FieldValue};

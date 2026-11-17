@@ -23,7 +23,7 @@ pub struct AccountsState {
 impl AccountsState {
     /// Tells the domain which agent programs have a launcher, so that adding an agent account
     /// with none ends in `SignInFault::NoLauncher` before anything is stored. Set once; a
-    /// service that is never told (no launcher bus: an app hosting porter in process) adds
+    /// service that is never told (no launcher bus: an app hosting the accounts service in process) adds
     /// agent accounts as it always did.
     pub fn set_launcher_roster(&self, roster: Roster) {
         let _ = self.roster.set(roster);

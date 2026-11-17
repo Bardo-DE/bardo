@@ -1,4 +1,4 @@
-//! What the daemons read from a `/proc` tree. Which tree is the daemon's choice (porter's
+//! What the daemons read from a `/proc` tree. Which tree is the daemon's choice (the accounts service's
 //! `ProcRoot`: the system's, or a fixture in a test build); this crate reads under the directory
 //! it is handed, so a test builds a scratch one.
 

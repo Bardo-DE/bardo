@@ -6,17 +6,17 @@
 # we want. Checking the exit status would therefore fail whenever the boundary holds, so we
 # check for OUTPUT instead: any line naming the dependency is a leak.
 #
-# The sync service reaches accounts through porter's crates, taken by git rev. The pure crates below (the
+# The sync service reaches accounts through the accounts service's crates, taken by git rev. The pure crates below (the
 # sync contract, the engine, the replicas, the drive, the mount helper) reach no bus, no service and no secret
-# store of porter's; only syncd, the bus crate and the test tooling name those, and syncd names no
-# account crate at all (see ACCOUNTS ONLY THROUGH PORTER-CLIENT below).
+# store of the accounts service's; only syncd, the bus crate and the test tooling name those, and syncd names no
+# account crate at all (see ACCOUNTS ONLY THROUGH ACCOUNTS-CLIENT below).
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
 # RULES: what a crate reaches through ANY path (transitive, default features). The pure crates
 # never reach a bus, a runtime, an HTTP client or a keyring. drive-fs and drive-fuse reach
 # tokio (a drive fetches in the background) but never a bus or a client. drive-mount-daemon, the mount
-# helper outside syncd's sandbox, reaches no effect crate and none of porter's or the sync service's own:
+# helper outside syncd's sandbox, reaches no effect crate and none of the accounts service's or the sync service's own:
 # std, rustix and listenfd only (no network, keyring or account data). sync-bus is the interface
 # definitions: zbus and tokio (through account-dbus), nothing that shows or fetches.
 EFFECTS="zbus zvariant tokio reqwest hyper ureq oo7 keyring secret-service interprocess service-locator ui-settings"
@@ -86,14 +86,14 @@ ratchet() {
     echo "deleted: $what is not in any crate"
   fi
 }
-ratchet "a hand-rolled percent encoder or decoder" 'fn percent_(en|de)code\b' "" "porter_ids::percent"
+ratchet "a hand-rolled percent encoder or decoder" 'fn percent_(en|de)code\b' "" "account_ids::percent"
 ratchet "hand-rolled civil-date arithmetic" '(days_from_civil|civil_from_days|719_468)' "" "chrono"
 ratchet "a hand-written MD5 (its first round constant)" '0xd76aa478' "" "md-5"
 ratchet "a second Windows-to-IANA zone table" 'Pacific Standard Time", *"America/Los_Angeles' "windows-zones/" "windows_zones::iana"
 ratchet "a hand-written scratch directory type" '^[[:space:]]*(pub(\([a-z]+\))? )?struct Scratch\b' "" "test_kit::Scratch"
 
-# ACCOUNTS ONLY THROUGH PORTER-CLIENT: accounts, grants, tokens and relays are accountd's. No crate
-# of this workspace has porter's account stack as a normal or build dependency (the service, the
+# ACCOUNTS ONLY THROUGH ACCOUNTS-CLIENT: accounts, grants, tokens and relays are accountd's. No crate
+# of this workspace has the accounts service's account stack as a normal or build dependency (the service, the
 # secret stores, the registry store, the sheets, the provider families and the in-process transport
 # are what accountd is built from); a program here reaches accountd through account-client over
 # account-client-dbus. A test may host the stack in process: dev dependencies, and the test tooling
@@ -112,13 +112,13 @@ for manifest in */Cargo.toml; do
   done
 done
 if [ -n "$stack_leaks" ]; then
-  echo "LEAK: a crate here builds on porter's account stack, not on account-client: $stack_leaks"
+  echo "LEAK: a crate here builds on the accounts service's account stack, not on account-client: $stack_leaks"
   fail=1
 else
   echo "boundary holds: accounts are reached only through account-client"
 fi
 
-# The allowed edges between our own crates (the sync service's, and porter's by git): each crate's DIRECT
+# The allowed edges between our own crates (the sync service's, and the accounts service's by git): each crate's DIRECT
 # normal and build dependencies (all features), and nothing else. A dependency not listed is a
 # leak; so is one the crate no longer has, so the table stays exact. Dev dependencies are outside
 # it.

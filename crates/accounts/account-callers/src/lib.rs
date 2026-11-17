@@ -1,5 +1,5 @@
 //! Who is calling: a bus connection's unique name to a [`Caller`] (an app and a role), for the
-//! daemons (porter PLAN §2.1). The process behind the connection is held and judged by
+//! daemons (the accounts service PLAN §2.1). The process behind the connection is held and judged by
 //! [the caller-identity library](https://github.com/Bardo-DE/peephole) (`BusPeers`): the bus names the process (a
 //! pidfd), `/proc/<pid>` and the systemd manager state what it is, and the judgement is one of
 //! four standings, which [`ProcCallers`] turns into a [`Caller`]:
@@ -202,7 +202,7 @@ impl CallerTable {
                     };
                     if let Some(why) = why {
                         eprintln!(
-                            "porter: callers: ignoring the user's row for {} ({:?}): {why}",
+                            "accounts: callers: ignoring the user's row for {} ({:?}): {why}",
                             row.unit.as_deref().unwrap_or(row.app.as_str()),
                             row.role
                         );

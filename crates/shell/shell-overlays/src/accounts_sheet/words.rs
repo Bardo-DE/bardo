@@ -1,4 +1,4 @@
-//! The words and marks the sheet's props take from porter's values: what a person reads for an
+//! The words and marks the sheet's props take from the accounts service's values: what a person reads for an
 //! app, a provider, a kind of service and a reason a service is limited. Pure, table-tested in
 //! `props.rs`'s tests.
 
@@ -6,7 +6,7 @@ use account_capability::{AbsentReason, CapabilityKind};
 use account_core::LimitReason;
 use account_core::consent::Usage;
 use account_core::{AppId, DataClass, ProviderId};
-use account_sheet::SignInFault as PorterFault;
+use account_sheet::SignInFault as AccountFault;
 use account_sheet::{ProviderKind, ProviderRow, RowKind};
 use base_url::WebUrl;
 use ui_components::base::text::clip::clip_chars;
@@ -15,7 +15,7 @@ use ui_components::components::content::provider_mark::MarkProvider;
 use ui_shell::accounts::model::{Limitation, SignInFault};
 use ui_shell::prelude::{Recovery, WorkingFor};
 
-/// What the person reads for an app. `resolved` is the label the app's own entry gives it (porter
+/// What the person reads for an app. `resolved` is the label the app's own entry gives it (the accounts service
 /// will send one with the ask: this is where it plugs in); without one the last element of its
 /// reverse-DNS name is shown as it is written (`org.bardo.Photos` is "Photos",
 /// `org.bardo.Agent.claude-code` is "claude-code"), never lowercased or re-spelled.
@@ -32,7 +32,7 @@ pub(super) fn app_name(app: &AppId, resolved: Option<&str>) -> String {
     }
 }
 
-/// What the steps call the provider: the label of its row, which porter sends with every view
+/// What the steps call the provider: the label of its row, which the accounts service sends with every view
 /// after the list; the provider's id as written for a view that carries no row.
 pub(super) fn provider_name(id: &ProviderId, row: Option<&ProviderRow>) -> String {
     row.map_or_else(|| id.as_str().to_owned(), |row| row.label.clone())
@@ -156,22 +156,22 @@ pub(super) fn absence_of(reason: AbsentReason) -> Limitation {
 }
 
 /// Why a sign-in ended without an account.
-pub(super) fn fault_of(fault: PorterFault) -> SignInFault {
+pub(super) fn fault_of(fault: AccountFault) -> SignInFault {
     match fault {
-        PorterFault::Refused => SignInFault::Refused,
-        PorterFault::Unreachable => SignInFault::Unreachable,
-        PorterFault::Unreadable => SignInFault::Unreadable,
-        PorterFault::NeedsClientId => SignInFault::NeedsClientId,
-        PorterFault::TimedOut | PorterFault::Expired => SignInFault::TimedOut,
-        PorterFault::Cancelled => SignInFault::Cancelled,
-        PorterFault::Forbidden => SignInFault::Forbidden,
-        PorterFault::StoreFailed => SignInFault::StoreFailed,
-        PorterFault::NoLauncher => SignInFault::NoLauncher,
-        PorterFault::NotInstalled => SignInFault::NotInstalled,
-        PorterFault::AlreadyAdded => SignInFault::AlreadyAdded,
-        PorterFault::NotRunning => SignInFault::NotRunning,
-        PorterFault::SignedOut => SignInFault::SignedOut,
-        PorterFault::NotAllowed => SignInFault::NotAllowed,
+        AccountFault::Refused => SignInFault::Refused,
+        AccountFault::Unreachable => SignInFault::Unreachable,
+        AccountFault::Unreadable => SignInFault::Unreadable,
+        AccountFault::NeedsClientId => SignInFault::NeedsClientId,
+        AccountFault::TimedOut | AccountFault::Expired => SignInFault::TimedOut,
+        AccountFault::Cancelled => SignInFault::Cancelled,
+        AccountFault::Forbidden => SignInFault::Forbidden,
+        AccountFault::StoreFailed => SignInFault::StoreFailed,
+        AccountFault::NoLauncher => SignInFault::NoLauncher,
+        AccountFault::NotInstalled => SignInFault::NotInstalled,
+        AccountFault::AlreadyAdded => SignInFault::AlreadyAdded,
+        AccountFault::NotRunning => SignInFault::NotRunning,
+        AccountFault::SignedOut => SignInFault::SignedOut,
+        AccountFault::NotAllowed => SignInFault::NotAllowed,
     }
 }
 
@@ -179,23 +179,23 @@ pub(super) fn fault_of(fault: PorterFault) -> SignInFault {
 /// own answer: not for a fault only a change outside the sheet fixes (a build without a client id,
 /// a missing assistant or launcher). An account already added needs no word of ours: the fault
 /// knows a retry changes nothing.
-pub(super) fn recovery_of(fault: PorterFault) -> Option<Recovery> {
+pub(super) fn recovery_of(fault: AccountFault) -> Option<Recovery> {
     match fault {
-        PorterFault::AlreadyAdded => None,
-        PorterFault::NeedsClientId
-        | PorterFault::NotInstalled
-        | PorterFault::NoLauncher
-        | PorterFault::Forbidden => Some(Recovery::NoRetry),
-        PorterFault::Refused
-        | PorterFault::Unreachable
-        | PorterFault::Unreadable
-        | PorterFault::TimedOut
-        | PorterFault::Cancelled
-        | PorterFault::StoreFailed
-        | PorterFault::Expired
-        | PorterFault::NotRunning
-        | PorterFault::SignedOut
-        | PorterFault::NotAllowed => Some(Recovery::Retry),
+        AccountFault::AlreadyAdded => None,
+        AccountFault::NeedsClientId
+        | AccountFault::NotInstalled
+        | AccountFault::NoLauncher
+        | AccountFault::Forbidden => Some(Recovery::NoRetry),
+        AccountFault::Refused
+        | AccountFault::Unreachable
+        | AccountFault::Unreadable
+        | AccountFault::TimedOut
+        | AccountFault::Cancelled
+        | AccountFault::StoreFailed
+        | AccountFault::Expired
+        | AccountFault::NotRunning
+        | AccountFault::SignedOut
+        | AccountFault::NotAllowed => Some(Recovery::Retry),
     }
 }
 
@@ -212,7 +212,7 @@ pub(super) fn service_of(key: &str) -> Option<CapabilityKind> {
     serde_json::from_value(serde_json::Value::String(key.to_owned())).ok()
 }
 
-/// What a choice's slug is called on a pop-up: the plain name of each protocol and security porter
+/// What a choice's slug is called on a pop-up: the plain name of each protocol and security the accounts service
 /// offers, the protocol after it in brackets (the hand-typed server form is the one place it shows).
 pub(super) fn choice_label(slug: &str) -> &str {
     match slug {
@@ -225,7 +225,7 @@ pub(super) fn choice_label(slug: &str) -> &str {
     }
 }
 
-/// The port a server usually listens on, the hint in an empty port entry. porter keeps its own
+/// The port a server usually listens on, the hint in an empty port entry. The accounts service keeps its own
 /// table private (`usual_port` in `account-core/src/sheet/manual.rs`); this one repeats it, and
 /// a test pins the two together through `refit`'s prefill: outgoing 465 for TLS and 587 for
 /// STARTTLS; POP3 995 for TLS and 110 for STARTTLS; IMAP (and JMAP, which has no port) 993 and 143.
@@ -241,7 +241,7 @@ pub(super) fn usual_port(protocol: &str, outgoing: bool, security: &str) -> u16 
 }
 
 /// Where the person makes the app password a provider asks for in place of the account's own,
-/// said short enough for an empty entry. porter words the full steps; the entry only points.
+/// said short enough for an empty entry. The accounts service words the full steps; the entry only points.
 pub(super) fn app_password_hint(provider: &ProviderId) -> Option<&'static str> {
     match provider.as_str() {
         "icloud" => Some("Made at account.apple.com, not your Apple Account password"),

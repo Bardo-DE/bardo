@@ -1,5 +1,5 @@
 //! The switch "Let my other computers use this computer's models": turning it on asks first, then
-//! sets sharing up through porter, and only when that worked is the setting written; turning it
+//! sets sharing up through the accounts service, and only when that worked is the setting written; turning it
 //! off takes sharing away and clears the setting. The steps are `settings-app-model`'s `sharing_step`.
 
 use crate::copy::{

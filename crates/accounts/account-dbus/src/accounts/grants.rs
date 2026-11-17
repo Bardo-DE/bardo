@@ -5,9 +5,9 @@
 //! socket), and accountd runs the relay on its other end, so no token and no password crosses the
 //! bus or reaches the app.
 //!
-//! Who may call: an app, and the porter daemons. The shell, Settings, the agent, the agent
+//! Who may call: an app, and the accounts service daemons. The shell, Settings, the agent, the agent
 //! launcher, the AI broker, the terminal and the compositor are `AccessDenied`, as is a role
-//! porter does not know yet and a sender accountd does not know. Whose grants are read, asked for,
+//! The accounts service does not know yet and a sender accountd does not know. Whose grants are read, asked for,
 //! revoked and used is the caller's own app, judged by its connection.
 //!
 //! A `need` is the JSON text of a `account_match::Need`; `class` and `usage` are the words of
@@ -28,7 +28,7 @@ use zbus::zvariant::{OwnedFd, OwnedObjectPath};
 
 /// The JSON text of `value`: how a need, a list of grants or a list of accounts crosses.
 pub fn to_text<T: serde::Serialize>(value: &T) -> String {
-    // The values porter sends are plain data: serialising them cannot fail.
+    // The values the accounts service sends are plain data: serialising them cannot fail.
     serde_json::to_string(value).unwrap_or_default()
 }
 
@@ -88,8 +88,8 @@ pub trait Grants {
     /// credential.
     fn open_linked(&self, grant: &str, origin: &str) -> zbus::Result<OwnedFd>;
     /// The accounts the person has, as the JSON text of a list of `[account, provider label]`
-    /// (the label is empty when accountd has none): for the porter daemons that keep a switch per
-    /// account (the sync daemon's Settings rows). Only a porter daemon, Settings or the shell may
+    /// (the label is empty when accountd has none): for the accounts service daemons that keep a switch per
+    /// account (the sync daemon's Settings rows). Only an accounts daemon, Settings or the shell may
     /// ask; an app learns of accounts through its grants.
     fn accounts(&self) -> zbus::Result<String>;
     /// Asks the person, in a sign-in of its own, for the access the account's provider asks only

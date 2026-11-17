@@ -45,11 +45,11 @@ impl SecurityContextPart {
     }
 }
 
-/// The sandbox facts a security context carries (engine, app id, instance), as porter reads them;
+/// The sandbox facts a security context carries (engine, app id, instance), as the accounts service reads them;
 /// clients of its listener connect as `Sandboxed(facts)`.
 ///
 /// The handler inserts the listener into the event loop. A field the sandbox engine did not set is
-/// the empty text, which porter's `identity_of` never takes for a name, so the clients stay
+/// the empty text, which the accounts service's `identity_of` never takes for a name, so the clients stay
 /// unproven.
 ///
 /// No event: a listener is not a client, and the model first hears of a sandboxed client when

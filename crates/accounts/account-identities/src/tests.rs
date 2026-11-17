@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 /// The directory the uses file is kept in, under `scratch`.
 fn store(scratch: &Scratch) -> PathBuf {
-    scratch.join("porter")
+    scratch.join("accounts")
 }
 
 fn identity(id: &str) -> IdentityId {
@@ -65,7 +65,7 @@ async fn uses_are_kept_once_each_survive_a_restart_and_go_with_the_identity() {
 #[tokio::test]
 async fn a_file_that_cannot_be_read_is_left_as_it_is_and_no_use_is_recorded() {
     let scratch = Scratch::new("identities");
-    let dir = scratch.path().join("porter");
+    let dir = scratch.path().join("accounts");
     std::fs::create_dir_all(&dir).expect("dir");
     std::fs::write(dir.join(FILE), "{not json").expect("file");
     let (mut book, said) = UseBook::open(Some(&store(&scratch))).await;

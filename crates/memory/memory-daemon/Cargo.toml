@@ -62,7 +62,7 @@ base-ids = { path = "../../base/base-ids" }
 inference-core = {path = "../../inference/inference-core"}
 account-dbus = {path = "../../accounts/account-dbus"}
 inference-dbus = {path = "../../inference/inference-dbus"}
-# The tests present their processes as a fixture tree, which porter reads only in a test build.
+# The tests present their processes as a fixture tree, which the accounts service reads only in a test build.
 memory-daemon = { path = ".", features = ["test-proc-root"] }
 memory-client = {path = "../memory-client", default-features = false, features = ["dbus"]}
 memory-fake = {path = "../memory-fake"}

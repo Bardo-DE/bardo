@@ -2,7 +2,7 @@
 //! connection.
 //!
 //! - Any identified caller may `List`; `Create` an app, Settings or the shell (never an assistant,
-//!   computer use, an agent launcher or a porter daemon); `Register` (an id the caller minted)
+//!   computer use, an agent launcher or an accounts daemon); `Register` (an id the caller minted)
 //!   only the compositor, Settings and the shell; `Rename`, `SetLook` and `Remove` only the
 //!   Settings and sheet-host roles (the Settings app and the shell). Anyone else, and a sender
 //!   accountd does not know, is `AccessDenied`, as `Accounts1`'s roles are checked. The
@@ -11,7 +11,7 @@
 //!   one, as the manager's signals do; a client calls `List` once to be told.
 //! - `Remove` ends nothing else: no grant is scoped to a Space here any more. An app whose Space
 //!   linked to it learns by `Changed(id, "removed")` and falls back to its own Space: that is the
-//!   app's choice, and porter moves or deletes no memory (the memory service's and the actions service's).
+//!   app's choice, and the accounts service moves or deletes no memory (the memory service's and the actions service's).
 
 use crate::callers::Callers;
 use crate::errors::RefusedError;
@@ -102,7 +102,7 @@ impl<H: Host, C: Callers> SpacesObject<H, C> {
             | CallerRole::AgentLauncher
             | CallerRole::Terminal
             | CallerRole::Compositor
-            | CallerRole::PorterDaemon
+            | CallerRole::AccountDaemon
             | CallerRole::AiBroker => Err(RefusedError::access_denied(
                 "only an app the person uses may make a Space",
             )),

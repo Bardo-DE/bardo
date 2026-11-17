@@ -2,7 +2,7 @@
 //! scratch tempdir, the binaries are fake files named by `INSTALL_DEV_BIN_DIR` (nothing builds,
 //! nothing is compiled), and the environment is cleared, so the person's real `~/.config`,
 //! `~/.local` and `/etc` are never named. The script reads the sibling checkouts' `dist` files, so the tests that
-//! install skip (and say so) when porter, the inference service, the memory service and the model layer are not checked out beside the actions service: a plain
+//! install skip (and say so) when the accounts service, the inference service, the memory service and the model layer are not checked out beside the actions service: a plain
 //! clone builds with no sibling, and this is a developer tool.
 
 use std::collections::BTreeSet;
@@ -28,7 +28,7 @@ const BINARIES: [&str; 12] = [
 fn siblings_present() -> bool {
     let beside = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../../actions/crates");
     let here = [
-        "porter/dist",
+        "accounts/dist",
         "inference/dist",
         "memory/dbus",
         "models/catalog",
@@ -37,7 +37,7 @@ fn siblings_present() -> bool {
     .all(|dir| beside.join(dir).is_dir());
     if !here {
         eprintln!(
-            "skipped: porter, the inference service, the memory service and the model layer are not checked out beside actions"
+            "skipped: the accounts service, the inference service, the memory service and the model layer are not checked out beside actions"
         );
     }
     here
@@ -438,7 +438,7 @@ fn cloud_is_opt_in_and_an_uninstall_removes_it() {
     assert_eq!(jail.tree(), offline, "a dry run writes nothing");
     jail.ok(&["--cloud"]);
     let dropin = jail.read(".config/systemd/user/bardo-inferd.service.d/cloud.conf");
-    // porter's drop-in opens every address (the families are already open in the unit).
+    // The accounts service's drop-in opens every address (the families are already open in the unit).
     assert!(dropin.contains("IPAddressAllow=any"), "{dropin}");
     jail.ok(&["--uninstall"]);
     assert!(jail.tree().is_empty(), "{:#?}", jail.tree());

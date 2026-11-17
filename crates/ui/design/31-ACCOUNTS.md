@@ -1,7 +1,7 @@
 # 31 Accounts: the account and capability layer
 
 Status: this whole document is **proposed** (2026-09-30) unless a line says settled. Its
-interfaces are **frozen** in the porter repo (section 11): where a frozen type differs from the
+interfaces are **frozen** in the accounts repo (section 11): where a frozen type differs from the
 first proposal, the text below already says the frozen form. It
 replaces the "28-ACCOUNTS" design doc promised by `20-SURFACES.md#117-accounts-system-service`
 (28 went to Customization). Status column: **P** = proposed, **S** = settled, **O** = option
@@ -99,7 +99,7 @@ pub enum CapabilityKind { Identity, Mail, Calendar, Contacts, Tasks, Notes, Stor
     Llm, Embeddings, Speech, ImageGen, Rerank, KeyValue, Push }   // serde snake_case slug
 ```
 
-Every closed set's stable slug is its serde `snake_case` form (files, bus, consent store). porter
+Every closed set's stable slug is its serde `snake_case` form (files, bus, consent store). The accounts service
 does not depend on the UI kit's `ui-core`, so these enums do not implement `Word`: the account core
 builds below the design system for mailo on every platform; UI crates map slugs to labels.
 
@@ -224,12 +224,12 @@ kind = "storage"
 v = { access = "read_write", delta = "poll", quota = "reported", scope = "full", hashes = "none", ranges = "present", chunked_upload = "absent" }
 ```
 
-The file is the serde form of porter's `ProviderSpec`: each row names its `family`, an optional
+The file is the serde form of the accounts service's `ProviderSpec`: each row names its `family`, an optional
 fixed `endpoint`, and the capability as `kind` plus `v` with **every** field written (a missing
 field refuses the file; nothing defaults). An `issuer` is required exactly for the OAuth kinds
 (`Issuer`: google, microsoft, dropbox, box, fastmail, openrouter, openai). A provider with AI
 rows adds `[ai]` with `locality` and `billing`, and only such a provider may. A user file with a
-system file's `id` replaces it. porter ships `providers/{nextcloud,google,ollama,local}.toml`.
+system file's `id` replaces it. The accounts service ships `providers/{nextcloud,google,ollama,local}.toml`.
 **[accounts plan 2026-10-05]** A provider file may add `[matching]` with `domains` and
 `mx_suffixes`, so an address or its MX picks the provider; mailo's brand presets become files
 this way (`microsoft`, `fastmail`, `icloud`, `yahoo`, `gmx`, `generic-imap`, `generic-dav`,
@@ -308,7 +308,7 @@ AI providers:
 | `accountd` | account registry, provider registry, token broker, secrets, consent store, discovery and probes, the Settings live module | the control plane; small, must never stall | P |
 | `syncd` | the sync journal, anchors, the polling scheduler, dataset plug-ins (Photos first) | a failing backend or a long upload cannot block sign-in ([R] §3) | P |
 | `inferd` | the AI broker: routing, policy, spend, audit, wire adapters, engine supervision, GPU queue, streaming sessions | streams and big payloads; restartable alone | P |
-| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws the UI kit's `ui-shell::accounts` views from porter's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **the shell** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to the compositor's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
+| sheet host | the sheets accountd must draw itself: add account, consent prompt, chooser, re-auth, device code. It serves `org.bardo.AccountsSheet1` (§4.4) and draws the UI kit's `ui-shell::accounts` views from the accounts service's `SheetView`. **[departs §8 item 14, 2026-10-05]** On our desktop the host is **the shell** (an Overlay with `Sheet` material and exclusive keyboard, the pattern of its `Confirm1` sheet and polkit agent; phase B moves it to the compositor's trusted surface); where accountd is absent (macOS, Windows, another Linux desktop) the app hosting the core in process (mailo) draws the same view; a standalone `account-sheet` for other Linux desktops with accountd is later | an app cannot draw its own consent; same split as portal backends ([R] §2 portals) | P |
 
 All are user-session services, D-Bus activated on Linux, single-instance through the service locator
 ([R] §1). syncd gets tokens and authenticated streams from accountd like any client; inferd also
@@ -318,7 +318,7 @@ resolution and reporting probed local runtimes.
 **Caller roles [refines §4.5, 2026-10-05].** One caller table (`account-dbus` `ProcCallers`, shared
 by accountd and inferd) maps a connection's pid, through its cgroup scope or Flatpak info and
 `identity_of`, to an `AppId` and a role from a shipped table (`/etc/bardo/accountd-callers.toml`, the
-user file wins): `App`, `Settings` (the Settings app), `SheetHost` (the shell), `PorterDaemon` (inferd, syncd),
+user file wins): `App`, `Settings` (the Settings app), `SheetHost` (the shell), `AccountDaemon` (inferd, syncd),
 `Agent` (intentd, companiond, readerd, cuad, bardo-do, bardo-actions-mcp), `Cua` (cuad, for inferd). A
 sender with no app scope and no Flatpak info is refused. accountd refuses every account call from
 the `Agent` role (`Choose`, `AddAccount`, `Reauthenticate`, `IssueToken`, `OpenAuthenticated`);
@@ -329,10 +329,10 @@ agents keep inferd.
 The core comes out of mailo the way the service locator did, coordinated with the mailo session: mailo
 moves to depending on it in the same change (no alias left behind).
 
-Frozen as the porter repo (`porter-*` crates; section 11). **[2026-10-05]** The proposal's
+Frozen as the accounts repo (`accounts-*` crates; section 11). **[2026-10-05]** The proposal's
 `accounts-auth` and `accounts-discover` become `account-oauth` and `account-discover`, beside
 `account-families` (the `Provider` implementations, one feature per family, built by accountd
-and by mailo in process), `porter-dav` (mailo's WebDAV reply parsing, moved) and `account-proxy`
+and by mailo in process), `account-dav` (mailo's WebDAV reply parsing, moved) and `account-proxy`
 (the authenticated relays of `OpenAuthenticated`). Each keeps a pure core; its HTTP half
 (hyper + hyper-rustls from the pinned block, not reqwest) sits behind a named feature.
 
@@ -346,18 +346,18 @@ and by mailo in process), `porter-dav` (mailo's WebDAV reply parsing, moved) and
 | `account-client` | the app-facing API (§5.1); trait `Transport` with `DbusTransport`, `SocketTransport` (the service locator), `InProcess` | new | per transport | yes |
 | `account-dbus` | the three buses as zbus proxies and skeletons, `dbus/*.xml` | new | D-Bus | Linux |
 | `accountd` | zbus front end, consent store, probes; also serves the service locator front end where D-Bus is absent | new | yes | Linux first |
-| `porter-sync`, `syncd` | `Replica` contract (§6.1), dataset kinds; journal and scheduler in syncd | new | SQLite | core yes |
+| `account-sync`, `syncd` | `Replica` contract (§6.1), dataset kinds; journal and scheduler in syncd | new | SQLite | core yes |
 | `storage-*` (later) | one per family: `webdav`, `graph`, `gdrive`, `dropbox`, `s3` | new (mailo's CardDAV WebDAV code reused) | HTTP | yes |
 | `inference-core`, `inferd` | typed request model, routing, policy, spend, audit, `Model` trait; adapters later (`ChatCompletions`, `Responses`, `Messages`, `GenerateContent`, `OllamaNative`, `ComfyWorkflow`) | new | HTTP (adapters) | core yes |
 | `account-oauth`, `account-discover` | OAuth PKCE, loopback, device code, client registry (shipped `/usr/share/bardo/accounts/clients.toml` per channel, a user-supplied override written only by the Settings app), renewal, OpenRouter key mint; autoconfig, SRV, MX, `.well-known`, JMAP session, Nextcloud OCS, port probes | `mail-runtime/src/{oauth,signin,renewal,loopback,discover}.rs`, `mail-proto/src/discover` | HTTP | yes |
 | `account-families` | `Provider` implementations (sign-in, discover, open, revoke) per family: Nextcloud (Login Flow v2), generic IMAP/SMTP + DAV, Microsoft; moved out of accountd so mailo builds the same families in process | new | HTTP | yes |
-| `porter-dav`, `account-proxy` | WebDAV PROPFIND/REPORT/sync-collection/quota parsing; the IMAP, SMTP and HTTP relays behind `OpenAuthenticated` | `mail-pim/src/dav` (vCard and iCal values stay in mail-pim) | HTTP, TLS | yes |
+| `account-dav`, `account-proxy` | WebDAV PROPFIND/REPORT/sync-collection/quota parsing; the IMAP, SMTP and HTTP relays behind `OpenAuthenticated` | `mail-pim/src/dav` (vCard and iCal values stay in mail-pim) | HTTP, TLS | yes |
 | `mail-proto`, `mail-pim` | stay in mailo, now "family" crates for Mail, Calendar, Contacts | unchanged | none | yes |
 
 `mail-domain` keeps mail-shaped types (`Incoming`, `Outgoing`, `AccountCaps` for IMAP detail);
-`AccountPlan` references a `porter_core::AccountId` and a `Grant`. The OAuth client ID stays
-deployment config, never in the account (as mailo's `AuthPlan` comment already says). porter's
-`ARCHITECTURE.md` section 8 maps every mailo type to its porter home; mail signing keys
+`AccountPlan` references a `account_core::AccountId` and a `Grant`. The OAuth client ID stays
+deployment config, never in the account (as mailo's `AuthPlan` comment already says). The accounts service's
+`ARCHITECTURE.md` section 8 maps every mailo type to its accounts service home; mail signing keys
 (OpenPGP, S/MIME, filed by fingerprint) stay mailo's.
 <!-- paths: end -->
 
@@ -395,12 +395,12 @@ proposal can reuse it ([R] §2 portals).
 | `.Request` (per sheet) | `Close()`; signal `Response(response: u, results: a{sv})` | 0 done, 1 cancelled, 2 other | the portal Request shape |
 | Signals on `.Manager` | `AccountAdded(o)`, `AccountRemoved(o)`, `CapabilityChanged(o)`, `NeedsReauth(o)`, `GrantChanged(s)` | sent only to holders of a relevant grant (unicast) | |
 | `org.bardo.SettingsModule1` | at `/org/bardo/Accounts1/settings`: `Describe`, `Get`, `Set`, `Changed` | 22 §9.4 (declared there, built in the UI kit's `ui-settings` feature `live`, not in account-dbus); keys `accounts.<id>.service.<kind>` (toggle), `accounts.<id>.grant.<grant>` (Revoke), `accounts.<id>.remove` (destructive, `Alert{Critical}`), `accounts.<id>.reauth`, `accounts.clients.<issuer>` (a user-supplied client id, Advanced) | the Settings app reads it; `Set` only from the `Settings` role |
-| `.Peer` | `Verdicts(app, need, class, usage)`, `ResolveKey(grant) -> h` (the key on a sealed memfd, never a string), `ReportLocal(provider, claims, state)` | only the `PorterDaemon` role [2026-10-05] | inferd asks with the app it derived from its own connection |
+| `.Peer` | `Verdicts(app, need, class, usage)`, `ResolveKey(grant) -> h` (the key on a sealed memfd, never a string), `ReportLocal(provider, claims, state)` | only the `AccountDaemon` role [2026-10-05] | inferd asks with the app it derived from its own connection |
 | `org.bardo.AccountsSheet1` (served by the sheet host) | `Open(handle, parent_window, view: s)`, `Update(handle, view: s)`, `Close(handle)`, signal `Input(handle, input: s)` | only accountd's connection may `Open`; only the sheet owner's `Input` counts [refines §4.6: a typed password travels inward here, nothing outward] | the add, re-auth, device-code and consent conversations [2026-10-05] |
 | `.Manager` (mailo migration) | `Adopt(legacy)` | the daemon reads an app's own legacy keyring entries itself (gated by an `[adopt]` table, `org.bardo.Mail = "mailo"`), so no credential crosses a transport | [2026-10-05] |
 
 A need on the bus is `(sa{sv})`: the kind's slug and its fields by name, each field's value its
-slug; `class` and `usage` are `DataClass` and `Usage` slugs. The full introspection is porter's
+slug; `class` and `usage` are `DataClass` and `Usage` slugs. The full introspection is the accounts service's
 `dbus/org.bardo.Accounts1.xml`, checked against the skeletons by a test.
 
 syncd serves `org.bardo.Sync1` at `/org/bardo/Sync1` (`Datasets() -> as`, `Status(dataset: s) ->
@@ -419,7 +419,7 @@ serves `org.bardo.Inference1` at `/org/bardo/Inference1`:
 | `org.bardo.SettingsModule1` | at `/org/bardo/Inference1/settings`: the picker rows per kind and the `ai.model.<kind>.<tier>` map | 22 §9.4 (declared there, not in account-dbus) |
 
 Speech and computer-use steps travel on the `Open` fd, so the interface has no member for them.
-The full introspection is porter's `dbus/org.bardo.Inference1.xml`, checked by the same test.
+The full introspection is the accounts service's `dbus/org.bardo.Inference1.xml`, checked by the same test.
 
 ### 4.5 Consent
 
@@ -432,7 +432,7 @@ The full introspection is porter's `dbus/org.bardo.Inference1.xml`, checked by t
 | First-party apps | Mail, Photos, Calendar, Notes, Files and the shell still get one prompt at first use; no silent pre-grant, so the per-app list in the Settings app is complete | P |
 | Identity of caller | `AppId { name: AppName (reverse DNS), isolation: Isolation {Flatpak, Unsandboxed, InProcess} }`, established by the transport, never sent by the caller. Flatpak: app id from the sandbox info of the caller's pid (`GetConnectionCredentials`, pidfd); native: the systemd `app-<id>-*.scope` cgroup, marked "unsandboxed" (R12) | P |
 | Flatpak reach | `--talk-name=org.bardo.Accounts1` finish arg; consent is enforced inside the daemon | P |
-| Storage | the consent store is accountd's own table, PermissionStore-shaped, so a portal can adopt it; persisted with the registry as `$XDG_STATE_HOME/porter/registry.json` (`Persisted { vocab, accounts, grants, toggles }`, atomic write; JSON, not SQLite: tens of rows, no SQLCipher in mailo); a vocabulary bump now needs a migration test [2026-10-05] | P |
+| Storage | the consent store is accountd's own table, PermissionStore-shaped, so a portal can adopt it; persisted with the registry as `$XDG_STATE_HOME/accounts/registry.json` (`Persisted { vocab, accounts, grants, toggles }`, atomic write; JSON, not SQLite: tens of rows, no SQLCipher in mailo); a vocabulary bump now needs a migration test [2026-10-05] | P |
 | Voice | the caller `org.bardo.Voice` with class `Voice` and an `OnDevice` route holds a shipped default grant, because the person's first-use voice consent (a shell sheet) is the grant; any other route for `Voice` needs `ai.local_only` off, a floor change and an explicit grant; an app transcribing its own files uses its own class and the normal grant | P |
 | Audit | grants, denials, revocations, token issues (with audience), proxy opens, sign-ins, re-auths, removals, adoptions: time, app, account, capability; never content; `$XDG_STATE_HOME/bardo/accountd/audit.jsonl`, the shape of inferd's [2026-10-05] | P |
 | Add and allow | when an app's `Choose` finds no fitting account and the person adds one from that sheet, the last step reads "Add, and allow Mail to use it": one grant, not a second prompt [refines, 2026-10-05] | P |
@@ -454,8 +454,8 @@ The full introspection is porter's `dbus/org.bardo.Inference1.xml`, checked by t
 ### 5.1 The client library
 
 ```rust
-use porter_client::{Accounts, Found};
-use porter_core::{need::StorageNeed, DataClass, Need, consent::Usage};
+use account_client::{Accounts, Found};
+use account_core::{need::StorageNeed, DataClass, Need, consent::Usage};
 
 let accounts = Accounts::connect(&env).await?;       // the first reachable link in env: D-Bus, then the socket
                                                      // (an app hosting the core: Accounts::over(InProcess::new(service, app)))
@@ -487,7 +487,7 @@ let token = accounts.token(&candidate, &Audience("webdav".into())).await?;  // s
 | Step | Change | St |
 | --- | --- | --- |
 | 1 | mailo's account add flow moves to accountd's add sheet; mailo calls `Choose`/`AddAccount` | P |
-| 2 | mailo's `Secrets`, OAuth, renewal come from porter; on Linux via `DbusTransport`, elsewhere `InProcess` | P |
+| 2 | mailo's `Secrets`, OAuth, renewal come from the accounts service; on Linux via `DbusTransport`, elsewhere `InProcess` | P |
 | 3 | IMAP/JMAP/SMTP/Graph engines and protocol-native sync stay in mailo; `AccountCaps` stays mailo's discovered detail under `Capability::Mail` | P |
 | 3a | for a password account the IMAP, SMTP and CardDAV engines take a pre-authenticated stream from `OpenAuthenticated` (IMAP `PREAUTH`) instead of a password; OAuth accounts keep XOAUTH2 or bearer tokens from `IssueToken` [2026-10-05] | P |
 | 4 | Contacts and calendars move to the Calendar app and a Contacts reader through the same grants | P |
@@ -574,7 +574,7 @@ One small trait per backend family (File Provider and rclone shape, [R] §2 sync
 implemented by each `storage-*` crate and by the fake that tests drive (one small trait per backend).
 
 ```rust
-pub trait Replica: Send + Sync {   // porter-sync; async fns written as `-> impl Future + Send`
+pub trait Replica: Send + Sync {   // account-sync; async fns written as `-> impl Future + Send`
     async fn changes(&self, from: Cursor) -> Result<ChangePage, ReplicaError>; // Cursor::{Start, At(Anchor)}; changes + next + More|Done
     async fn fetch(&self, item: &RemoteId, range: ByteRange) -> Result<Blob, ReplicaError>;
     async fn put(&self, item: PutItem, base: BaseVersion) -> Result<(RemoteId, RemoteVersion), PutRefused>;
@@ -589,7 +589,7 @@ pub enum ReplicaError { AnchorExpired, Unauthorized, Transient(RetryAfter), Gone
 
 `Cursor::Start` is a full listing of what exists, without tombstones: what a replica reads after
 `AnchorExpired`. A removal returns the tombstone's version and leaves `Change::Tombstone { id,
-version, deleted_at }` in the feed. porter-sync's `MemoryReplica` is the reference semantics the
+version, deleted_at }` in the feed. account-sync's `MemoryReplica` is the reference semantics the
 contract tests drive.
 
 | Rule | Detail | St |
@@ -613,7 +613,7 @@ contract tests drive.
 | Settings, Spaces, dock, widgets, style CSS | encrypted item log with cursor (§6.4), LWW per key, HLC; lists as small CRDTs only where order matters (dock) | per key; dock order merges | syncd `KeyValue` | v2 (O) |
 | Keychain | encrypted items, LWW per item | conflict object shown in the Keychain UI | syncd | v3 (O) |
 | Mail, calendars, contacts, tasks | protocol-native (CONDSTORE/QRESYNC, JMAP state, CalDAV/CardDAV sync-token, Graph delta) | the protocol's | mailo, Calendar app | v1 (mail) |
-| Calendars and contacts until their apps exist | `PimMirror`: server to a local vdir, `$XDG_DATA_HOME/porter/vdir/<account>/<collection>`, read-only first; the shell's calendar widget reads it (`calendar.sources = auto`) under its own grant [departs: placement, 2026-10-05] | the server wins | syncd | v1 |
+| Calendars and contacts until their apps exist | `PimMirror`: server to a local vdir, `$XDG_DATA_HOME/accounts/vdir/<account>/<collection>`, read-only first; the shell's calendar widget reads it (`calendar.sources = auto`) under its own grant [departs: placement, 2026-10-05] | the server wins | syncd | v1 |
 | Notes | protocol-native where the provider has notes; else files | keep both | app | v2 |
 
 ### 6.3 Continuity (option)
@@ -640,7 +640,7 @@ those keys. v3, O.
 
 | Item | Scope | St |
 | --- | --- | --- |
-| Crates | porter's `account-core`, `-provider`, `-secrets`, `-service`, `-client` (frozen), plus `account-families`, `-oauth`, `-discover`, `-dav`, `-proxy`, extracted from mailo where mailo has the code; mailo builds on them on all three platforms | P |
+| Crates | the accounts service's `account-core`, `-provider`, `-secrets`, `-service`, `-client` (frozen), plus `account-families`, `-oauth`, `-discover`, `-dav`, `-proxy`, extracted from mailo where mailo has the code; mailo builds on them on all three platforms | P |
 | accountd | the whole D-Bus API of §4.4, `OpenAuthenticated` included (owner, 2026-10-05), `Peer` and the sheet conversation; consent; Secret Service via oo7; settings module | P |
 | Kinds | Identity, Mail, Calendar, Contacts, Tasks, Storage (with quota), Llm, Embeddings, Speech, ComputerUse; ImageGen and Rerank when a request kind and a consumer exist | P |
 | Providers | Nextcloud, Microsoft (our own verified multi-tenant client), generic IMAP/SMTP + DAV; AI: Ollama, llama.cpp, the supervised `local`; Anthropic key, OpenAI key and OpenRouter once the model layer's cloud backends exist. Google: **TODO** (owner, 2026-10-05) | P |
@@ -731,8 +731,8 @@ stores elsewhere. Items 4-13 stand as recommended.
 12. **Repos and boundaries.** (a) one new repo holding `accounts-*`, accountd, accounts-ui,
     syncd, inferd and the provider files, mailo depending on it by path like the service locator; (b) split
     AI (inferd) into its own repo. **Recommend (a)** now, split later if inferd grows. Name
-    candidates: `porter` (holds the keys, forwards the deliveries), `lanyard`. **Recommend
-    `porter`.**
+    candidates: `accounts` (holds the keys, forwards the deliveries), `lanyard`. **Recommend
+    `accounts`.**
 13. **Consent for first-party apps.** (a) one prompt each; (b) silent pre-grant. **Recommend
     (a)**, so the per-app list is always the whole truth. (§4.5)
 14. **Where the add/consent sheets live.** (a) accounts-ui owned by accountd; (b) inside
@@ -774,22 +774,22 @@ stores elsewhere. Items 4-13 stand as recommended.
 9. Self-hosted server: optional, v3; no hosted service of ours.
 10. Continuity over Tailscale: v3.
 11. GNOME Online Accounts compatibility: defer to v3.
-12. Repo: one new repo (`porter` suggested) for the account core, daemons and provider files.
+12. Repo: one new repo (`accounts` suggested) for the account core, daemons and provider files.
 13. First-party apps also ask for consent once.
 14. Sign-in and consent sheets are drawn by a trusted sheet host that only accountd opens: the shell on our desktop, the app hosting the core elsewhere.
 15. Passwords never leave accountd: `OpenAuthenticated` relays in v1.
 
-## 11. Frozen interfaces (porter)
+## 11. Frozen interfaces (the accounts service)
 
-The interfaces of sections 2 to 6 are frozen as code in the porter repo
-(github.com/Bardo-DE/porter, private): types, traits, the provider file format, the wire
+The interfaces of sections 2 to 6 are frozen as code in the accounts repo
+(github.com/Bardo-DE/accounts, private): types, traits, the provider file format, the wire
 protocol and the D-Bus signatures compile, pure logic is implemented with table tests, and
-behaviour that needs a provider, a vendor, a bus or a keyring is stubbed. porter's
+behaviour that needs a provider, a vendor, a bus or a keyring is stubbed. The accounts service's
 `ARCHITECTURE.md` is the map (section 5 there says what is built and what is stubbed; section 8
 maps mailo's types). This document stays the source of truth: a change to a frozen interface is
 an edit here and a change there in step.
 
-| Section here | porter crate | Frozen as |
+| Section here | the accounts crate | Frozen as |
 | --- | --- | --- |
 | §2 vocabulary, provenance, restrictions | `account-core` (and `prov` for the companion's shared ids, labels and `Actor`) | `Capability`, `CapabilityKind`, `VocabVersion(3)`, `ComputerUse`, `Family` (moved here from account-provider), `endpoint` (`ServiceEndpoint`, `EndpointUrl`, `Origin`, `Tls`, `LoginName`, `EndpointProtocol`, `RelayPlan`), `sheet` (`SheetView`, `SheetInput`, `Stage`, `step`), `store` (`Persisted`, the migration table), `audit` (`AuditEntry`), `stream` (`ByteStream`, `duplex`), `Need`, `matches -> Match`, `Claim`/`Offer`/`Subject`/`Provenance`, `effective`, `Restriction`/`Limit`, `Locality`/`Tier`/`Billing` |
 | §3 providers | `account-provider` | `ProviderSpec` (the TOML file, with `[matching]`), `parse_provider`, `ProviderSet` (`claiming`), `Issuer` (`endpoints`), `Discovery`, traits `Provider` (`sign_in`, `revoke`) and `ProviderSession`, `SignIn`/`SignInStep`/`Signed`, the client registry file (`ClientsFile`) |
@@ -799,8 +799,8 @@ an edit here and a change there in step.
 | §4.6 secrets | `account-secrets` | `Secrets` (get, put, delete, delete_account), `attributes`, `MemorySecrets`, `Oo7Secrets`, `KeyringSecrets` (stubs until W2a) |
 | §5.1 client | `account-client` | `Accounts`, `Found`, `ConsentOffer`, `NoAccount` |
 | §5.5 AI broker | `inference-core` | `InferRequest` (chat with tools and `ChatControl`, embeddings with a role, tasks, computer use, speech), `StopReason`, `OpenOptions`/`Traceparent`, `ClientFrame`/`InferEvent`/`InferReply`, `Readiness`, `AiKind`/`TierMap`/`PickerRow`, `Policy`/`Floor`, `route`, `SpendCap`/`spend_verdict`/`cost`, `AuditEntry`, trait `Model`, `Broker` (stub) |
-| §6 sync | `porter-sync` | `Replica` (with `quota`), `Quota`, `Cursor`, `ChangePage`, `Conflict`, `DatasetKind`/`ConflictRule`, `MemoryReplica` |
-| §3, §4.2, §4.4 families and relays | `account-families`, `http-core`, `account-oauth`, `account-discover`, `porter-dav`, `account-proxy` | `FamilyProvider` (Nextcloud, generic IMAP/DAV, Microsoft, API key, OpenRouter; no Google), the `Http` seam, PKCE and `ClientRegistry`, the `Dns` seam and parsers, `Multistatus`, the IMAP/SMTP/HTTP relay machines and `relay`; skeletons with `todo!()` bodies, each named in porter's FINDINGS with its lane |
+| §6 sync | `account-sync` | `Replica` (with `quota`), `Quota`, `Cursor`, `ChangePage`, `Conflict`, `DatasetKind`/`ConflictRule`, `MemoryReplica` |
+| §3, §4.2, §4.4 families and relays | `account-families`, `http-core`, `account-oauth`, `account-discover`, `account-dav`, `account-proxy` | `FamilyProvider` (Nextcloud, generic IMAP/DAV, Microsoft, API key, OpenRouter; no Google), the `Http` seam, PKCE and `ClientRegistry`, the `Dns` seam and parsers, `Multistatus`, the IMAP/SMTP/HTTP relay machines and `relay`; skeletons with `todo!()` bodies, each named in the accounts service's FINDINGS with its lane |
 | §4.1 processes | `accountd`, `syncd`, `inferd` | skeletons that build their service and exit "not implemented" |
 
 Frozen decisions that differ from the first proposal of this document, each already applied in
@@ -814,6 +814,6 @@ dimension of a grant (§2.3, §4.5); streaming inference sessions with tools, co
 and speech on the `Open` fd, `Prepare`, `EnginesChanged` and `Gpu` (§4.4, §5.5); and the removal
 of inferd's MCP host role (§5.5).
 
-The rig amendment (2026-10-03) added, before any fill: chat controls, a stop reason, a thought seal and `Choice` replies on the chat wire; an embedding role, batch limit and prompts; the `options` vardict of `Inference1` with the reserved `traceparent`; and the decision that inferd owns retry and structured-output repair (§5.5). The matching code is porter's `inference-core`, `account-core` and `account-dbus`; the model layer's `model-provider`, `model-wire` and `model-extract` hold the engine side.
+The rig amendment (2026-10-03) added, before any fill: chat controls, a stop reason, a thought seal and `Choice` replies on the chat wire; an embedding role, batch limit and prompts; the `options` vardict of `Inference1` with the reserved `traceparent`; and the decision that inferd owns retry and structured-output repair (§5.5). The matching code is the accounts service's `inference-core`, `account-core` and `account-dbus`; the model layer's `model-provider`, `model-wire` and `model-extract` hold the engine side.
 
-The accounts amendment (2026-10-06, porter a209912) froze, before the account fills: endpoints on accounts and candidates, `OpenAuthenticated` in v1 with its relays, the sheet conversation (`Sheets`, `AccountsSheet1`, the `SheetView` machine), `Peer` (no `OpenCredential`), `Adopt`, caller roles, `[matching]`, sign-in and revoke on `Provider`, the persisted registry and audit, `Replica::quota`, and the family crates; `VocabVersion(3)`, and from now on a bump needs a migration row (§4.5 Storage). A grant's audience is a family slug (or a fixed row endpoint) of the families serving its kind, plus `smtp` when a mail row sends.
+The accounts amendment (2026-10-06, the accounts service a209912) froze, before the account fills: endpoints on accounts and candidates, `OpenAuthenticated` in v1 with its relays, the sheet conversation (`Sheets`, `AccountsSheet1`, the `SheetView` machine), `Peer` (no `OpenCredential`), `Adopt`, caller roles, `[matching]`, sign-in and revoke on `Provider`, the persisted registry and audit, `Replica::quota`, and the family crates; `VocabVersion(3)`, and from now on a bump needs a migration row (§4.5 Storage). A grant's audience is a family slug (or a fixed row endpoint) of the families serving its kind, plus `smtp` when a mail row sends.

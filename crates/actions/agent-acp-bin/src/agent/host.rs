@@ -1,6 +1,6 @@
 //! Hosting one agent session over any account seam: the performer the router's `Perform` for the
 //! pseudo-app reaches, the pseudo-app served on the bus under `org.bardo.AcpAgent`, the spawner,
-//! the backend, and the session opened at the router. `bardo-agent` hosts with porter's
+//! the backend, and the session opened at the router. `bardo-agent` hosts with the accounts service's
 //! accountd behind it; the live-eval harness hosts with `LoginOnly` on its private bus. Nothing
 //! here reads the environment or a file: everything is handed in.
 

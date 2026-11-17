@@ -1,7 +1,7 @@
 # Findings
 
 Open items and standing facts. An entry names the condition that closes it. At the freeze
-(porter 4623e18) there were 59 `todo!()` bodies; fill waves 1 and 2 (eventlog, memfiles, recall, seal,
+(the accounts service 4623e18) there were 59 `todo!()` bodies; fill waves 1 and 2 (eventlog, memfiles, recall, seal,
 watch, memory-service) removed 53 and the bus and daemon wave (F2 memoryd, below) removed the last
 6, so **0 remain**. No contract test is `#[ignore]`d.
 
@@ -20,7 +20,7 @@ A9 (the macro states each slug once and tests use `ALL`), A10 (`change_for` bran
 
 ## Stubs behind frozen interfaces
 
-None. What still waits on other repos is under "Open" below (porter's transports, the actions service, cua).
+None. What still waits on other repos is under "Open" below (the accounts service's transports, the actions service, cua).
 
 ## Built at the freeze (pinned by tests)
 
@@ -40,7 +40,7 @@ memory-client (`Memory`, `Absent`, `InProcess`), memory-fake, memoryd (`xdg`).
 
 Interface changes made before any fill wave, from QUESTIONS "Persistent companion" and "One
 message model", `research-persistent-agent.md` sections C, D and E, and `research-rig.md`
-section 7 item 9. It builds against the amended porter (branch `m-amend-comp`: `prov::Message`,
+section 7 item 9. It builds against the amended the accounts service (branch `m-amend-comp`: `prov::Message`,
 `AgentRef`, `Address`, `AgentRole::Worker`). Types, traits, signatures, docs, pure tables and
 tests; no new `todo!()` (the count and the list above are unchanged; three stub bodies,
 `InferdEmbedder::embed` and the `Index` methods, only have longer
@@ -48,8 +48,8 @@ doc text).
 
 **Rig item 9 (recall).** `Embedder::embed(texts, role, urgency)` with `EmbedRole { Query,
 Document }`; `EmbedderCard` gained `max_batch: MaxBatch` and `prompts: PromptPrefixes { query,
-document }` (recall names no porter type, so memoryd maps them to porter-infer `EmbedRequest.role`
-and porter-core `EmbedCap.{max_batch, prompts}`); `EmbedderCard::{prefixed, batch_sizes,
+document }` (recall names no accounts type, so memoryd maps them to inference-core `EmbedRequest.role`
+and account-core `EmbedCap.{max_batch, prompts}`); `EmbedderCard::{prefixed, batch_sizes,
 space_vs}` are pure and table-tested (a different prefix or model is a different vector space, a
 different batch size is not); `EmbedError` gained `Busy` and `Failed { class, why }` with
 `retry_class() -> RetryClass { Retry, Fatal }` (`Unavailable` and `Busy` retry; `Refused` and
@@ -178,8 +178,8 @@ Nothing below is built; the interfaces it will use are.
     carry theirs as fields.
   - `Verdict` is `Settlement { Keep(prov::ConfirmReceipt), Discard }` everywhere
     (`MemoryRequest::Settle`, `Store::settle`); `Confirmation` is `prov::Witness`/`ConfirmReceipt`.
-  - `Actor`, `Effect`, `Label`, `SpaceId`, `EntityId`, `RunId` and `SessionId` are porter's `prov`
-    and `porter-core`; `AgentTier` is `prov::AgentRole`; `ThingRef/ThingKind/ThingKey` are aliases of
+  - `Actor`, `Effect`, `Label`, `SpaceId`, `EntityId`, `RunId` and `SessionId` are the accounts service's `prov`
+    and `account-core`; `AgentTier` is `prov::AgentRole`; `ThingRef/ThingKind/ThingKey` are aliases of
     `EntityId/EntityKind/EntityKey`; `ActionName` is `prov`'s and not re-declared.
   - `EventBody` has no `Action`, `Session`, `Cua`, `Policy` or `Consent`: other areas' payloads are
     `Area(AreaPayload)` (an `AreaTag`, the owner's `KindTag`, `JsonText`, and the `things` for
@@ -205,9 +205,9 @@ Nothing below is built; the interfaces it will use are.
     (`org.bardo.Memory1.Error.*`), so the mapping to `Refusal` is 1:1 (memory.md listed seven).
     `Export` is `(s options, h out) -> s manifest`; `RecordBatch` and `Propose` have two out
     arguments.
-  - `memoryd` does not link `memory-client` (it has no use for it); its porter edges are
-    `porter-core`, `porter-infer` and `inferd-client` (`InferdEmbedder` and `InferdConsolidator`), and
-    `porter-client` with `porter-client-dbus` (the Spaces registry).
+  - `memoryd` does not link `memory-client` (it has no use for it); its accounts service edges are
+    `account-core`, `inference-core` and `inferd-client` (`InferdEmbedder` and `InferdConsolidator`), and
+    `account-client` with `account-client-dbus` (the Spaces registry).
   - `sqlite-vec` is not a dependency: exact scan is the default (QUESTIONS P5, no `unsafe`);
     file capture is inotify on Space roots (P4); fanotify is later.
 - **Answered questions this freeze applies** (QUESTIONS Rec column): Me1 sealed per file by default
@@ -221,22 +221,22 @@ Nothing below is built; the interfaces it will use are.
 - **Physical erasure** on copy-on-write storage is only guaranteed by destroying a Space's key;
   per-item forget is logical deletion plus SQLite `secure_delete`. The UI states this limit
   (memory.md conflict 2).
-- **porter's `prov::Label` constructors and `Label::join` are stubs** until porter's fill, so
+- **The accounts service's `prov::Label` constructors and `Label::join` are stubs** until the accounts service's fill, so
   The memory service's tests build labels from their fields and `check_draft` is a stub with them.
-- **Cross-repo dependencies are git deps at pinned revs** (`porter-core`, `prov`, `porter-client`,
-  `porter-client-dbus`, `porter-dbus` from `https://github.com/Bardo-DE/porter`; `porter-infer`,
+- **Cross-repo dependencies are git deps at pinned revs** (`account-core`, `prov`, `account-client`,
+  `account-client-dbus`, `account-dbus` from `https://github.com/Bardo-DE/porter`; `inference-core`,
   `inferd-client`, `inference-dbus` from `https://github.com/Bardo-DE/steward`), so a plain `git clone`
   builds with no sibling checkout (Bardo `CONSUMING.md` section 1). The URL spelling and the rev
-  match porter's own pins of the model layer and Bardo, so cargo sees one copy of each crate. For work that
+  match the accounts service's own pins of the model layer and Bardo, so cargo sees one copy of each crate. For work that
   spans repos, override the pin locally with a `[patch]` that is never committed: put it in a
   `.cargo/config.toml` in a directory ABOVE the checkout (cargo merges the config of every parent
   directory; this repo's own `.cargo/config.toml` is tracked), for example
 
   ```toml
   [patch."https://github.com/Bardo-DE/porter"]
-  porter-core = { path = "/path/to/porter/crates/porter-core" }
-  # one line per porter crate memory names; add the same for models/bardo crates if the
-  # local porter checkout pins a different rev than the one in Cargo.lock
+  account-core = { path = "/path/to/accounts/crates/account-core" }
+  # one line per accounts crate memory names; add the same for models/bardo crates if the
+  # local accounts checkout pins a different rev than the one in Cargo.lock
 
   [patch."https://github.com/Bardo-DE/prov"]
   prov = { path = "/path/to/prov/prov" }
@@ -293,14 +293,14 @@ error of its name, one to one. `DbusTransport::call` maps a missing daemon
 (`ServiceUnknown`, `NameHasNoOwner`) to `Absent`; `Export` needs a stream, so it has
 `DbusTransport::export(options, fd)` and `call(Export)` is a `Bus` error.
 
-**Who is calling.** `Peers` turns the sender's unique name into a `Caller`. `ProcPeers` is porter's
+**Who is calling.** `Peers` turns the sender's unique name into a `Caller`. `ProcPeers` is the accounts service's
 `ProcCallers` (bus pid, then `/proc/<pid>/cgroup` alone; no `exe`, which a Landlock domain cannot
-read) with `callers::caller_for` mapping porter's caller onto the memory service's: role `cua` is `Cuad`,
+read) with `callers::caller_for` mapping the accounts service's caller onto the memory service's: role `cua` is `Cuad`,
 role `sheet_host` of app `org.bardo.Shell` is `ShellUi`, role `settings` of app `org.bardo.Settings`
 (the unit `org.bardo.Settings.service`, the Settings app) is `Settings`, role `agent` of app
 `org.bardo.Intents` is `Router`, every other identified process is `App`. The table is `/etc/bardo/memoryd-callers.toml`
 with `<config>/bardo/memoryd/callers.toml` laid over it (user rows win; a missing file is empty, a
-bad one stops the daemon): porter's `[[caller]]` rows of `app`, optional `unit`, `role`.
+bad one stops the daemon): the accounts service's `[[caller]]` rows of `app`, optional `unit`, `role`.
 `dbus/memory-callers.toml` is the packaged system file. `TablePeers` is the test seam.
 
 **One queue per Space.** The queue lives in `memory-service` (`queue`), in front of
@@ -379,7 +379,7 @@ the card of the default embedding model (768 numbers, nomic prefixes) and must m
 serves.
 
 **Embedding by data class (ask 70/80).** `recall::Doc.class` is a `ClassTag` (the data-class slug;
-recall names no porter type; empty means "no class"). `memory-service` sets it from the strictest
+recall names no accounts type; empty means "no class"). `memory-service` sets it from the strictest
 class of the document's label (`memory_store::class_of`, which now also ranks `Prompt` after `Voice`; the tag is
 `class_tag`/`class_from_tag`, beside `ClassTag` in `memory-store`). `recall::Embedder::embed_classed` (defaulted to `embed`) receives
 each batch with its texts' classes, and `memory_infer::InferdEmbedder` partitions the batch by class, opens one
@@ -401,7 +401,7 @@ events only through their things; `Forget` by Space or Kind reaches them. `Actor
 
 **Interface ask 26 (cua `HandedBack.user_events`): decided, and done on this side.** Option taken:
 `cua-bus` depends on `memory-core` and carries `memory_core::EventRef`; no memory call at record
-time. Why: `memory-core` is already pure (its tree is `porter-core`, `prov`, serde, thiserror),
+time. Why: `memory-core` is already pure (its tree is `account-core`, `prov`, serde, thiserror),
 cua is above the memory service in the repo order and cuad already depends on it, so the edge costs cua-bus
 nothing it does not already link; a memory call at record time would need `Caller::Cuad` to read
 events, which the authorisation matrix refuses on purpose (cuad handles untrusted screen text).
@@ -520,11 +520,11 @@ cuad, reads the person's events during the takeover (`Recent`, a `Router` call) 
   `desktop`; the feature-off twin runs in a default-feature build).
 - **Landlock broke caller identity** (CLOSED by the f4-memory-callers lane): under its own
   Landlock domain memoryd cannot read `/proc/<pid>/exe` of a process outside the domain, so the
-  exe-based `ProcPeers` refused every caller. Callers are now identified by porter's
+  exe-based `ProcPeers` refused every caller. Callers are now identified by the accounts service's
   `ProcCallers` from `/proc/<pid>/cgroup` (service unit, `app-*.scope`, Flatpak scope; anything
   else, such as a terminal's child, is `NotAllowed`). The ruleset reads `/proc` files only
   (`Policy::read_files`: `ReadFile`, no listing, no execute) and `/proc` is no longer a readable
-  tree. The memory service now depends on `porter-dbus` (check-boundary row). `MEMORYD_SANDBOX=off` stays
+  tree. The memory service now depends on `account-dbus` (check-boundary row). `MEMORYD_SANDBOX=off` stays
   test-only, but `memoryd/tests/it/binary.rs` runs with the sandbox ON.
 - **`MEMORYD_PROC_ROOT=<dir>` for action-accept (TEST ONLY, feature `test-proc-root`, separate from `test-keys`; the acceptance build enables both)**: memoryd reads
   `<dir>/<pid>/cgroup` instead of `/proc/<pid>/cgroup`, and `<dir>` joins the sandbox's
@@ -596,7 +596,7 @@ reads them.
 6. **`memoryd --write-schema DIR`** writes `memory.settings.toml` for a local install. `notify` is now a
    dependency of memoryd as well as memory-watch (`scripts/check-boundary.sh` comment updated); the watch
    code has the same shape as the actions service's intentd and cua's cuad (`SettingsWatch`): one shared crate replaces the
-   three copies when porter has a place for it.
+   three copies when the accounts service has a place for it.
 7. **Tests.** The schema is held structurally to the key table (ranges, words, on-page rows, no `agent` mark) and
    parses with the Settings app's loader (`ds_settings::Schema::from_toml`, run by hand from a scratch
    project: a dev-dependency on ds-settings would unify zbus's executor features); every schema key is read
@@ -840,10 +840,10 @@ their name, all through the daemon on a private bus) and `memoryd/tests/it/bus_m
 goes through `invoke` to a recording handler, and the members reached must equal the members in the XML, so a
 member added to the interface without an `invoke` arm fails).
 
-## Memory keyed by porter's SpaceId (batch 8)
+## Memory keyed by the accounts service's SpaceId (batch 8)
 
-Memory was already keyed by `porter_core::SpaceId` (a bare slug reads as a desktop-wide Space, `app:<app>:<n>` is one
-app's own). What this adds, on porter 993c56b (`Spaces1`, `SpaceId::{kind, for_app, owner}`, `SpaceScope::open_to`):
+Memory was already keyed by `account_core::SpaceId` (a bare slug reads as a desktop-wide Space, `app:<app>:<n>` is one
+app's own). What this adds, on the accounts service 993c56b (`Spaces1`, `SpaceId::{kind, for_app, owner}`, `SpaceScope::open_to`):
 
 - **Ownership.** `allowed` refuses an app's request that names another app's own Space (`Refusal::OutsideSpace`, the
   existing refusal: "reaches into another Space"); a desktop-wide Space and `desktop` are open. An app's batch is
@@ -915,7 +915,7 @@ confirmation is kept where the agent sandbox and the apps cannot write.
   store, unused. A store that does not read counts as nothing confirmed and is reported.
 - `Memory1.Control.ConfirmSettings(a{ss} values)` records confirmations. Only the System Settings
   app (the Settings app) may call it: it is the app that takes the person's agreement, and it runs as the unit
-  `org.bardo.Settings.service` (porter role `settings` and app `org.bardo.Settings`, mapped to
+  `org.bardo.Settings.service` (the accounts role `settings` and app `org.bardo.Settings`, mapped to
   `Caller::Settings`; the row is a unit row in `dbus/memory-callers.toml`, as a scope never
   carries a fixed role). `allowed` refuses every other caller, the shell included, with
   `NotAllowed`. `Caller::Settings` is not an app with memory: it may use only `ConfirmSettings`
@@ -944,7 +944,7 @@ on a page, the app writes it to `memory/settings.toml` and calls
 `{"memory.retention.search_days": "7"}`; numbers in decimal, words as the file has them). The
 person's save is the agreement. Until the call is made, the value waits and the shipped value is in
 force. The call returns nothing and, once it has, the value is in force. The app must run as
-`org.bardo.Settings.service` with porter's `settings` role (the row is in
+`org.bardo.Settings.service` with the accounts service's `settings` role (the row is in
 `dbus/memory-callers.toml`); the shell can no longer confirm.
 For a value typed into the file by hand, the page shows "waits for you to confirm" with a Confirm
 button: read `org.bardo.Memory1.Control.PendingSettings` (no arguments; answers `a(sss)`, each
@@ -1066,6 +1066,6 @@ builds; show nothing for it (or treat any unknown word the same way). Not done: 
 - Licences: MIT and MIT OR Apache-2.0 are in deny.toml's list. `ulid` pulls `web-time` only on wasm.
 
 ## Round B re-pin (2026-10-28)
-- porter 31799cfa (step 3 + spending), the model layer c8fed624 (via porter-infer), prov 628083b3. Paths per ~/rs-wt/step3-core/PATHMAP.md and ~/rs-wt/spending/PATHMAP.md: ids from `porter-ids`, model kinds and needs from `porter-capability`/`porter-match`, the accounts frame from `porter-wire`; `porter_core::consent::Usage`; `CoreError::MalformedValue` for a JSON text that is not JSON; `TokenUsage.charge`; `flow_to` is a bool.
-- `DataClass` is `#[non_exhaustive]` now, so a class porter adds is no longer a compile error here. `class_of` instead counts a class it has no place for as the most sensitive, never as the app's own data; the order test that relied on the exhaustive match is gone, and the tag test is a table.
-- model-provider now reaches the memory service under porter-infer (`TokenUsage.charge` is its `Money`). The owner relaxed the boundary rule (2026-10-28): only a direct dependency of a memory crate on model-provider is a leak; the other area bans stay whole-tree.
+- The accounts service 31799cfa (step 3 + spending), the model layer c8fed624 (via inference-core), prov 628083b3. Paths per ~/rs-wt/step3-core/PATHMAP.md and ~/rs-wt/spending/PATHMAP.md: ids from `account-ids`, model kinds and needs from `account-capability`/`account-match`, the accounts frame from `account-wire`; `account_core::consent::Usage`; `CoreError::MalformedValue` for a JSON text that is not JSON; `TokenUsage.charge`; `flow_to` is a bool.
+- `DataClass` is `#[non_exhaustive]` now, so a class the accounts service adds is no longer a compile error here. `class_of` instead counts a class it has no place for as the most sensitive, never as the app's own data; the order test that relied on the exhaustive match is gone, and the tag test is a table.
+- model-provider now reaches the memory service under inference-core (`TokenUsage.charge` is its `Money`). The owner relaxed the boundary rule (2026-10-28): only a direct dependency of a memory crate on model-provider is a leak; the other area bans stay whole-tree.

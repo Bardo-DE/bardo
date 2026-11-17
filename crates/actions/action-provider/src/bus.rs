@@ -4,7 +4,7 @@
 //! (a test holds the introspection to `dbus/org.bardo.IntentProvider1.xml`).
 //!
 //! The gate lives in intentd: a provider answers nothing but intentd, so a process that calls
-//! an app's bus name directly gets no way around it. Intentd is the process porter's callers table
+//! an app's bus name directly gets no way around it. Intentd is the process the accounts service's callers table
 //! names as the router (its unit, `bardo-actiond.service`, by the main process the systemd manager
 //! reports), never whoever owns a well-known name. `Summon` is the one member that also comes
 //! from the shell.

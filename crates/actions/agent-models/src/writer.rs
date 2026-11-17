@@ -127,7 +127,7 @@ fn failed(error: ModelError) -> ReviewError {
         ModelError::Unparseable | ModelError::Unreadable => ReviewError::Unparseable,
         // Unreachable, rate limited, unauthorized, payment required (top up or pick another
         // model), a refused sign-in, refused, not ready, context overflow, and any error a later
-        // porter adds: the reviewer is out of reach, retrying cannot help, and nothing is
+        // The accounts service adds: the reviewer is out of reach, retrying cannot help, and nothing is
         // allowed because of it.
         _ => ReviewError::Unavailable,
     }

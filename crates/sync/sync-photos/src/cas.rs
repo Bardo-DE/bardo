@@ -98,7 +98,7 @@ pub fn hash_file(path: &Path) -> io::Result<(ContentId, u64)> {
 
 /// Writes `bytes` to `target` so that a reader sees the old file or the whole new one.
 ///
-/// It goes through porter's one atomic writer: a staging file (a dot file named `.tmp-*`, which no scan lists)
+/// It goes through the accounts service's one atomic writer: a staging file (a dot file named `.tmp-*`, which no scan lists)
 /// beside it, synced, renamed over it. Missing directories are made.
 ///
 /// # Errors

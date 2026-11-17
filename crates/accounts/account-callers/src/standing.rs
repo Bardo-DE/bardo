@@ -1,4 +1,4 @@
-//! A caller-identity library [`Standing`] as a porter [`Caller`]: which app it is, how that was established, and
+//! A caller-identity library [`Standing`] as an accounts service [`Caller`]: which app it is, how that was established, and
 //! which role the proof reaches. Pure: the table and the standing in, the caller out.
 
 use super::translate::role_of_name;

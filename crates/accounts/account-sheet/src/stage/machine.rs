@@ -4,7 +4,7 @@
 //! (`mailo/crates/mail-app/src/ui/add_account/flow.rs`, MIT OR Apache-2.0, same author): ask
 //! before looking, look once and not again on a second press, add only when told to (Confirm),
 //! check a form field by field, say a refusal and keep going, never let what was typed leave
-//! except into the one call that needs it. Here the pieces are porter's: a sign-in
+//! except into the one call that needs it. Here the pieces are the accounts service's: a sign-in
 //! conversation (`Feed`), not mailo's lookup and add.
 //!
 //! Rules, in order of importance:

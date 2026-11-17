@@ -2,7 +2,7 @@
 //! capability, is asked for consent, and gets a token; a refusal sticks; a once-grant is spent.
 
 use account_capability::{Access, Delta, StorageScope};
-use account_client::{AccountsError, ConsentOffer, Found, GrantsError, NoAccount, Porter};
+use account_client::{AccountClient, AccountsError, ConsentOffer, Found, GrantsError, NoAccount};
 use account_client_inproc::Hosted;
 use account_core::AccountId;
 use account_core::consent::{GrantScope, Usage};
@@ -13,7 +13,7 @@ use account_match::StorageNeed;
 use account_wire::{ParentWindow, Refusal};
 use std::sync::Arc;
 
-type App = Porter<Hosted<FakeService>>;
+type App = AccountClient<Hosted<FakeService>>;
 
 fn app_id(name: &str) -> AppId {
     AppId {
@@ -23,7 +23,7 @@ fn app_id(name: &str) -> AppId {
 }
 
 fn app(service: &Arc<FakeService>, name: &str) -> App {
-    Porter::over(Hosted::new(Arc::clone(service), app_id(name)))
+    AccountClient::over(Hosted::new(Arc::clone(service), app_id(name)))
 }
 
 fn storage(delta: Delta) -> Need {
@@ -571,12 +571,12 @@ type FamilyService = account_service::AccountService<
     base_time::FixedClock,
 >;
 
-type FamilyApp = Porter<Hosted<FamilyService>>;
+type FamilyApp = AccountClient<Hosted<FamilyService>>;
 
 fn app_over(service: &Arc<FamilyService>, name: &str) -> FamilyApp {
     let id = AppId {
         name: AppName::parse(name).expect("app name"),
         isolation: Isolation::Flatpak,
     };
-    Porter::over(Hosted::new(Arc::clone(service), id))
+    AccountClient::over(Hosted::new(Arc::clone(service), id))
 }

@@ -1,6 +1,6 @@
 [package]
 name = "account-daemon"
-description = "porter's identity daemon: org.bardo.Accounts1 over account-service, holding the identities signed in on this computer, Spaces and Tailscale. The library serves the bus objects (Manager, Account, Identities1, Spaces1, Tailnet1, the Request objects and the settings module); the binary resolves its paths, builds the service over its seams and serves."
+description = "accounts's identity daemon: org.bardo.Accounts1 over account-service, holding the identities signed in on this computer, Spaces and Tailscale. The library serves the bus objects (Manager, Account, Identities1, Spaces1, Tailnet1, the Request objects and the settings module); the binary resolves its paths, builds the service over its seams and serves."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

@@ -32,7 +32,7 @@ pub struct Seams<D, T, W, U> {
     pub warm: W,
     /// Whether voice may be used.
     pub usage: U,
-    /// Who is which unit or app: porter's `ProcCallers` over the daemon's table (a test's fake
+    /// Who is which unit or app: the accounts service's `ProcCallers` over the daemon's table (a test's fake
     /// proc root, and the connections it introduces).
     pub callers: Arc<Identity>,
 }

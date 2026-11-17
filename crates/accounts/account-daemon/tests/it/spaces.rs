@@ -16,7 +16,7 @@ use common::*;
 /// Options whose Spaces are kept in a directory of `scratch`.
 fn options(scratch: &Scratch) -> Options {
     Options {
-        spaces: Some(scratch.join("porter")),
+        spaces: Some(scratch.join("accounts")),
         ..Options::default()
     }
 }

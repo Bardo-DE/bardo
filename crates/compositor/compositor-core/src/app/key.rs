@@ -168,7 +168,7 @@ mod tests {
         }
     }
 
-    /// CASW-04 (porter PR #38): sandbox metadata alone does not prove a Flatpak app; the
+    /// CASW-04 (the accounts service PR #38): sandbox metadata alone does not prove a Flatpak app; the
     /// peer's cgroup must be that app's own `app-flatpak-<id>-<n>.scope`.
     #[test]
     fn flatpak_metadata_under_a_session_scope_is_not_proven() {

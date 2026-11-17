@@ -188,7 +188,7 @@ mod tests {
                 (CallerRole::SheetHost, true),
                 (CallerRole::Settings, true),
                 (CallerRole::App, false),
-                (CallerRole::PorterDaemon, false),
+                (CallerRole::AccountDaemon, false),
                 (CallerRole::AiBroker, false),
                 (CallerRole::Agent, false),
             ] {

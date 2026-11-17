@@ -3,7 +3,7 @@
 //! - The caller is the connection's, found by account-dbus's `Callers` (cgroup, the one table both
 //!   daemons share); a sender nothing names is `AccessDenied` and a caller never says who it is.
 //! - A dataset is named `<account>/<dataset>` (`Hub`). A caller sees the datasets it owns;
-//!   Settings and the porter daemons see all. A name that is unknown, or not the caller's, answers
+//!   Settings and the accounts service daemons see all. A name that is unknown, or not the caller's, answers
 //!   the refusal `NoFittingAccount` (`org.bardo.Accounts1.Error.NoFittingAccount`): nothing is
 //!   there for this caller, and no dataset (the state before W6e/W6f) is the same answer, never a
 //!   panic. A malformed name is `InvalidArgs`.
@@ -12,13 +12,13 @@
 //!   (`STATUS_KEY_QUOTA`: `used` and `total`, both `t`).
 //! - `Resolve(dataset, conflict, how)` settles a stored conflict (`how` is `keep_local` or
 //!   `keep_remote`; the `Conflict` signal's `number` is the conflict). Only the dataset's owning
-//!   app may call it (Settings and the porter daemons see a dataset but do not own it: `Denied`);
+//!   app may call it (Settings and the accounts service daemons see a dataset but do not own it: `Denied`);
 //!   a dataset the caller cannot see answers `NoFittingAccount` as for the other methods, a
 //!   conflict unknown or already settled `org.bardo.Sync1.Error.NoSuchConflict`, any other `how`
 //!   `InvalidArgs`. The dataset's driver settles it between cycles and runs the next soon.
 //! - `ConfirmDiscard(dataset)` lets one discard through for a dataset held with
 //!   `needs_confirmation` in `Status`; whoever may pause the dataset may call it (the owning
-//!   app, Settings, the porter daemons); a dataset the caller cannot see answers
+//!   app, Settings, the accounts service daemons); a dataset the caller cannot see answers
 //!   `NoFittingAccount`, one not held `org.bardo.Sync1.Error.NothingHeld`. The driver takes the
 //!   request between cycles and runs the next at once. `NeedsConfirmation(dataset, held)` tells
 //!   when a hold starts (the same `{discard, held}` as `Status`) and when it ends (empty).

@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/memory.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area: memory — implementation spec (plan for the freeze)
 
-Status: PROPOSAL to lock. Sources: COMPANION.md item 11, Security items 1, 2 and 6, Deferred; research-agent-memory.md §7; research-os-memory.md §8 P1–P10; research-ecosystem-infra.md §2 and §7 (crates 2–4); cua-integration.md §6; intents-research/models.md; design/31 and porter (the code shape is copied from porter); design/21-SPACES; Bardo CONVENTIONS.md and docs/workspace-deps.toml.
+Status: PROPOSAL to lock. Sources: COMPANION.md item 11, Security items 1, 2 and 6, Deferred; research-agent-memory.md §7; research-os-memory.md §8 P1–P10; research-ecosystem-infra.md §2 and §7 (crates 2–4); cua-integration.md §6; intents-research/models.md; design/31 and the accounts service (the code shape is copied from the accounts service); design/21-SPACES; Bardo CONVENTIONS.md and docs/workspace-deps.toml.
 Marks: **[freeze now]** means the type, signature or format is fixed in the freeze wave, with `todo!()` bodies where the behaviour is not built yet. **[later]** means the place is named now and the shape is decided when the work happens. **[Q]** means only the user can answer.
 
 ---
@@ -33,7 +33,7 @@ Marks: **[freeze now]** means the type, signature or format is fixed in the free
 
 ### 2.1 Placement
 
-A **new repo `~/memory`** (github.com/Bardo-DE/memory). It is shaped like porter: a workspace, frozen interfaces, `todo!()` stubs listed in FINDINGS.md, `scripts/check-boundary.sh`, and `dbus/*.xml` checked against the skeletons. The daemon is **`memoryd`**, named for the concept like porter's `accountd`, `inferd` and `syncd`. The bus name is `org.bardo.Memory1`.
+A **new repo `~/memory`** (github.com/Bardo-DE/memory). It is shaped like the accounts service: a workspace, frozen interfaces, `todo!()` stubs listed in FINDINGS.md, `scripts/check-boundary.sh`, and `dbus/*.xml` checked against the skeletons. The daemon is **`memoryd`**, named for the concept like the accounts service's `accountd`, `inferd` and `syncd`. The bus name is `org.bardo.Memory1`.
 
 Why a separate repo: memory is not accounts. The three owned crates (`eventlog`, `memfiles`, `recall`) are meant to be reusable. memoryd also has its own confinement unit.
 
@@ -59,7 +59,7 @@ Why a separate repo: memory is not accounts. The three owned crates (`eventlog`,
 | `memory-fake` | Test harness: `fake_service`, `FixedClock`, `ScriptedConsolidator`, fixtures, golden files | core, seal, eventlog, memfiles, recall, service | — |
 | `memoryd` | The daemon. Wiring, the system clock, `InferdEmbedder` and `InferdConsolidator` (through account-client), the systemd unit | all of the above + account-client | tokio, zbus, oo7 |
 
-**Allowed edges** (in `check-boundary.sh`, porter style):
+**Allowed edges** (in `check-boundary.sh`, the accounts service style):
 - `memory-core` → `account-core`, `prov`.
 - `memory-seal` → `memory-core`.
 - `eventlog` and `memfiles` → `memory-core`, `memory-seal`.
@@ -77,7 +77,7 @@ Why a separate repo: memory is not accounts. The three owned crates (`eventlog`,
 - **New lines for `bardo/docs/workspace-deps.toml` (wave 0):**
   - `rusqlite = { version = "0.40", features = ["bundled-sqlcipher-vendored-openssl"] }`. mailo is on 0.40 `bundled`, in a separate tree, so there is no conflict. Spike S2 verifies that FTS5 is compiled in.
   - `blake3 = "1"`, `chacha20poly1305 = "0.10"` (XChaCha20-Poly1305), `zeroize = "1"`, `getrandom = "0.3"`, `tar = "0.4"`, `tempfile = "3"` (dev only).
-  - `oo7 = "0.6"`. porter is also waiting for this line.
+  - `oo7 = "0.6"`. The accounts service is also waiting for this line.
   - `fastembed = "7.1"`, used only by `recall-fastembed`.
   - `nix = "0.30"` for fanotify [later].
 - **account-core** (git dependency at the frozen rev): `AppName`, `AppId`, `DataClass`, `Usage`, `UnixSeconds`, `Count`, `Bytes`, `ModelId`, `Dims`. account-core is pure and portable, so there is one home per concept.
@@ -401,7 +401,7 @@ pub trait Embedder: Send + Sync {
         -> impl Future<Output = Result<Vec<Vector>, EmbedError>> + Send;
 }
 // Impls: FakeEmbedder (hashed bag-of-words, deterministic), FastembedEmbedder (recall-fastembed),
-// InferdEmbedder (memoryd: porter InferRequest::Embed, Usage::Background, class = doc's DataClass).
+// InferdEmbedder (memoryd: accounts InferRequest::Embed, Usage::Background, class = doc's DataClass).
 
 pub trait VectorIndex: Send {
     fn card(&self) -> &EmbedderCard;                               // which space the vectors live in
@@ -476,7 +476,7 @@ pub enum ForgetScope { Event(EventRef), Thing(ThingRef), Fact(FactId), Range(Uni
     App(AppName), Kind(KindPattern), Space }
 ```
 
-**Authorisation matrix.** The pure function is `allowed(&Caller, &MemoryRequest) -> Allowed`. The caller is derived by the transport: D-Bus sender → pid → `AppId` (porter R12: unsandboxed callers are advisory). `Router` and `ShellUi` are fixed `AppName`s configured in memoryd.
+**Authorisation matrix.** The pure function is `allowed(&Caller, &MemoryRequest) -> Allowed`. The caller is derived by the transport: D-Bus sender → pid → `AppId` (the accounts service R12: unsandboxed callers are advisory). `Router` and `ShellUi` are fixed `AppName`s configured in memoryd.
 
 | Request | App | Router | Companion | ShellUi |
 |---|---|---|---|---|
@@ -491,7 +491,7 @@ pub enum ForgetScope { Event(EventRef), Thing(ThingRef), Fact(FactId), Range(Uni
 
 ### 3.10 D-Bus `org.bardo.Memory1` [freeze now]
 
-memoryd runs on the session bus and is activatable. Object: `/org/bardo/Memory1`. Complex bodies are the serde JSON of the §3.9 types in an `s` argument (one protocol, two carriers: the same as the intents v1 proposal and porter's wire enums).
+memoryd runs on the session bus and is activatable. Object: `/org/bardo/Memory1`. Complex bodies are the serde JSON of the §3.9 types in an `s` argument (one protocol, two carriers: the same as the intents v1 proposal and the accounts service's wire enums).
 
 ```
 interface org.bardo.Memory1.Record
@@ -561,7 +561,7 @@ pub enum Lands { Active, Pending }
 pub struct SpaceStatus { pub state: SpaceState, pub index: IndexState, pub chain: ChainHealth, pub usage: Bytes,
     pub events: Count, pub facts: Count, pub pending: Count, pub last_run: Option<RunId> }
 ```
-The UI renders the sentence ("You archived *Q4 budget*") from `actor`, `kind` and `things`. Labels belong to the UI (porter convention), so memoryd never sends prose.
+The UI renders the sentence ("You archived *Q4 budget*") from `actor`, `kind` and `things`. Labels belong to the UI (the accounts service convention), so memoryd never sends prose.
 
 ---
 
@@ -700,7 +700,7 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 | service | `space_state_machine_table` | One table per machine in §4. |
 | watch | `join_table` | The §4.6 rows. |
 | watch | `inotify_sees_create_rename_delete_in_scratch_dir` | Scratch dir only. |
-| dbus | `introspection_matches_xml` | Porter style; prints the new XML on mismatch. |
+| dbus | `introspection_matches_xml` | the accounts service style; prints the new XML on mismatch. |
 | client | `absent_transport_is_noop` | |
 | client | `in_process_end_to_end` | An app records, the shell UI reads the timeline. |
 
@@ -711,7 +711,7 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 **Wave 0 (prerequisites, sequential, user/toolchain owner)**
 1. Add the dependency lines of §2.3 to `bardo/docs/workspace-deps.toml`, including the rusqlite sqlcipher line.
 2. The actions area freezes `prov` (Label, Integrity, Confirmation, and SpaceId and Actor if they agree, §7).
-3. Create the empty repo `~/memory`, copying porter's `rust-toolchain.toml` (1.98.1), `.cargo/config.toml`, `deny.toml`, `rustfmt.toml` and `CONVENTIONS.md` pointer.
+3. Create the empty repo `~/memory`, copying the accounts service's `rust-toolchain.toml` (1.98.1), `.cargo/config.toml`, `deny.toml`, `rustfmt.toml` and `CONVENTIONS.md` pointer.
 
 **Freeze wave (one agent; owns all of `~/memory`)**
 - Every crate in §2.2 except `recall-sqlite-vec`.
@@ -731,7 +731,7 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 - Admission, the forget planner and apply, the fact pipeline, the consolidation machine and `check_draft`, the retention sweep, timeline assembly, the export writer, Space lifecycle.
 
 **Fill wave 3 (one agent; owns `memory-dbus`, `memory-client`, `memoryd`, `dist/`)**
-- The codec, the serving skeletons, Dbus/InProcess transports, memoryd wiring, `InferdEmbedder` and `InferdConsolidator` (blocked on porter's `Broker::infer` and `DbusTransport` fills).
+- The codec, the serving skeletons, Dbus/InProcess transports, memoryd wiring, `InferdEmbedder` and `InferdConsolidator` (blocked on the accounts service's `Broker::infer` and `DbusTransport` fills).
 - A systemd user unit with sandboxing: `PrivateNetwork=yes`, `ProtectSystem=strict`, `ReadWritePaths=` for the memory dirs only, `ProtectHome=read-only` for watching, and a Landlock ruleset in main.
 
 **Spikes (parallel with wave 1, dev scripts under the test rules)**
@@ -742,7 +742,7 @@ No test touches a bus, a keyring, the network or real XDG directories. The D-Bus
 - S5: sqlite-vec activity re-check.
 - S6: xattr survival on btrfs. The design does not depend on xattrs, so this is only for the optional hint.
 
-**Verify commands** (porter's gate, every exit code checked; `recall-fastembed` is excluded because ort downloads binaries):
+**Verify commands** (the accounts service's gate, every exit code checked; `recall-fastembed` is excluded because ort downloads binaries):
 ```bash
 cd ~/memory
 cargo fmt --all --check
@@ -764,7 +764,7 @@ cargo deny check licenses
   - `EntityId`/`EntityKind`/`ActionName` in a light crate, which ThingRef re-exports.
   - The router is the only `Router` caller. It records `Action` events write-ahead (`outcome: Pending`, then `Done`) and policy decisions. Proposal: the router refuses outbound and destructive actions when memoryd cannot give a receipt (fail-closed audit). That is the router's call.
 - **permission-policy:** the `Decision` and request-view serde forms, re-declared in `EventBody::Policy`.
-- **porter/inferd:**
+- **accounts/inferd:**
   - `InferRequest::Embed` with `Usage::Background` and the doc's `DataClass`, so mail text keeps its on-device floor.
   - Chat for consolidation.
   - The embedding model's identity comes from `ServedBy.model` into the stored `EmbedderCard`.
@@ -797,8 +797,8 @@ cargo deny check licenses
 
 ### Critical Files for Implementation
 - /home/pohsuanlai/rs-wt/companion/COMPANION.md (item 11, Security 1/2/6, Deferred)
-- /home/pohsuanlai/porter/ARCHITECTURE.md and /home/pohsuanlai/porter/scripts/check-boundary.sh (the repo shape to copy)
-- /home/pohsuanlai/porter/crates/porter-core/src/{id.rs,app_id.rs,units.rs,data_class.rs} and /home/pohsuanlai/porter/crates/porter-infer/src/{request.rs,reply.rs} (reused types; Embed path)
+- /home/pohsuanlai/accounts/ARCHITECTURE.md and /home/pohsuanlai/accounts/scripts/check-boundary.sh (the repo shape to copy)
+- /home/pohsuanlai/accounts/crates/account-core/src/{id.rs,app_id.rs,units.rs,data_class.rs} and /home/pohsuanlai/accounts/crates/inference-core/src/{request.rs,reply.rs} (reused types; Embed path)
 - /home/pohsuanlai/bardo/docs/workspace-deps.toml (wave-0 dependency additions)
 - /home/pohsuanlai/bardo/CONVENTIONS.md and /home/pohsuanlai/bardo/design/21-SPACES.md (rules; Space identity question)
 

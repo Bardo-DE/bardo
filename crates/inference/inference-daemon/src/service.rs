@@ -1243,7 +1243,7 @@ where
                         .await;
                     }
                     // Missed some news: say the answers changed so a listener reads them all.
-                    // Also a kind of news a newer porter adds: a listener re-reads them all.
+                    // Also a kind of news a newer the accounts service adds: a listener re-reads them all.
                     Ok(_) | Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => {
                         let _ = InferenceServed::<Inference<P, O, C>>::guests_changed(
                             iface.signal_emitter(),

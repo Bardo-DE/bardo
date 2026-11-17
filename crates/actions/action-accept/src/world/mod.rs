@@ -72,9 +72,9 @@ pub struct Binaries {
     pub readerd: PathBuf,
     /// The memory service's packaged `memoryd`, built with `test-keys`.
     pub memoryd: PathBuf,
-    /// porter's packaged `accountd`, built with `test-keys`: it holds the AI keys.
+    /// The accounts service's packaged `accountd`, built with `test-keys`: it holds the AI keys.
     pub accountd: PathBuf,
-    /// porter's packaged `inferd`.
+    /// The accounts service's packaged `inferd`.
     pub inferd: PathBuf,
     /// `accept-bardo-do`.
     pub bardo_do: PathBuf,

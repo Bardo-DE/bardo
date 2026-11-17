@@ -129,7 +129,7 @@ async fn only_an_app_settings_or_the_shell_may_ask() {
         CallerRole::AiBroker,
         CallerRole::Terminal,
         CallerRole::Compositor,
-        CallerRole::PorterDaemon,
+        CallerRole::AccountDaemon,
     ] {
         let connection = rig.client_as("org.example.Refused", role).await;
         let proxy = KeysProxy::new(&connection).await.expect("proxy");

@@ -1010,7 +1010,7 @@ impl Engines {
                 InferRefusal::RequiresCloud(_) | InferRefusal::Unavailable => {
                     Availability::NeedsAccount
                 }
-                // `Denied`, `OverBudget` and a variant a newer porter adds: not available to the app
+                // `Denied`, `OverBudget` and a variant a newer the accounts service adds: not available to the app
                 _ => Availability::Denied,
             }),
         }
@@ -1105,7 +1105,7 @@ fn readiness_in(snapshot: &Snapshot, model: &LocalModel) -> Readiness {
             }
             _ => Readiness::Unavailable,
         },
-        // No engine, or a state a later supervisor adds: not offered until porter knows it.
+        // No engine, or a state a later supervisor adds: not offered until the accounts service knows it.
         _ => Readiness::Unavailable,
     }
 }

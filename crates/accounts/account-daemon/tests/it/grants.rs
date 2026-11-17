@@ -1,7 +1,7 @@
 //! `org.bardo.Grants1`: an app finds the accounts it holds a grant for, is asked through the
 //! sheet host (once for an account: the answer is kept), and opens a stream to the account's server that accountd has signed in: the
 //! descriptor reaches a fake DAV server, which saw accountd's credential and the app never did.
-//! Nobody asks about another app's grants, and only a porter daemon, Settings or the shell lists
+//! Nobody asks about another app's grants, and only an accounts daemon, Settings or the shell lists
 //! the accounts.
 
 use crate::common;
@@ -310,10 +310,10 @@ async fn a_grant_is_the_apps_own_and_an_endpoint_outside_it_is_refused() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn only_an_app_or_a_porter_daemon_asks_about_grants_and_a_stranger_is_denied() {
+async fn only_an_app_or_an_accounts_service_daemon_asks_about_grants_and_a_stranger_is_denied() {
     let dav = FakeDav::start("alice", APP_PASSWORD).await.expect("dav");
     let rig = rig(&dav).await;
-    for role in [CallerRole::App, CallerRole::PorterDaemon] {
+    for role in [CallerRole::App, CallerRole::AccountDaemon] {
         let connection = rig.client_as(caller("org.example.Asker", role)).await;
         assert!(
             grants_of(&connection).await.grants().await.is_ok(),
@@ -348,12 +348,13 @@ async fn only_an_app_or_a_porter_daemon_asks_about_grants_and_a_stranger_is_deni
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn the_accounts_are_listed_to_a_porter_daemon_settings_and_the_shell_and_to_no_app() {
+async fn the_accounts_are_listed_to_an_accounts_service_daemon_settings_and_the_shell_and_to_no_app()
+ {
     let dav = FakeDav::start("alice", APP_PASSWORD).await.expect("dav");
     let rig = rig(&dav).await;
     let account = dav_account(&dav);
     for role in [
-        CallerRole::PorterDaemon,
+        CallerRole::AccountDaemon,
         CallerRole::Settings,
         CallerRole::SheetHost,
     ] {
@@ -380,7 +381,7 @@ async fn extending_access_names_an_account_it_holds_and_a_provider_that_asks_on_
     let dav = FakeDav::start("alice", APP_PASSWORD).await.expect("dav");
     let rig = rig(&dav).await;
     let daemon = rig
-        .client_as(caller("org.bardo.Sync", CallerRole::PorterDaemon))
+        .client_as(caller("org.bardo.Sync", CallerRole::AccountDaemon))
         .await;
     let proxy = grants_of(&daemon).await;
     let nobody = AccountId::parse("nobody").expect("id");

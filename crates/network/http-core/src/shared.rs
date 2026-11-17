@@ -1,6 +1,6 @@
 //! [`SharedHttp`]: any [`Http`], shared and cloneable. A family holds its client as one of these
 //! so the closed enum over families needs no type parameter, and the daemon, an app hosting
-//! porter and a test each hand in theirs. The cost is one boxed future per request, which is
+//! The accounts service and a test each hand in theirs. The cost is one boxed future per request, which is
 //! nothing next to the request.
 
 use crate::error::HttpError;

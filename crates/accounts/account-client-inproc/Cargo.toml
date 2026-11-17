@@ -22,7 +22,7 @@ account-service-core = {path = "../account-service-core"}
 account-service-grants = {path = "../account-service-grants"}
 account-sheet = {path = "../account-sheet"}
 account-wire = {path = "../account-wire"}
-# `relays`: `PorterRelays`, the relay host that runs `porter_proxy::relay` over rustls.
+# `relays`: `AccountRelays`, the relay host that runs `account_proxy::relay` over rustls.
 account-proxy = {path = "../account-proxy", optional = true, features = ["io", "tls"]}
 tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macros", "net", "io-util", "process"], optional = true}
 
@@ -38,7 +38,7 @@ tokio = {workspace = true, features = ["rt-multi-thread", "sync", "time", "macro
 [features]
 # No feature is on by default: a consumer names the ones it uses.
 default = []
-# `PorterRelays`: a `RelayHost` that runs the authenticated relays of an app or daemon hosting its
+# `AccountRelays`: a `RelayHost` that runs the authenticated relays of an app or daemon hosting its
 # own `AccountService`, on its tokio runtime, over rustls. Off by default: it brings account-proxy
 # with TLS and a runtime.
 relays = ["dep:account-proxy", "dep:tokio"]

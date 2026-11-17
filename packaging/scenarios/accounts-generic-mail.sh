@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scenario `accounts-generic-mail` (accounts PLAN §8, design 31 §7.1): a password mail account is added through
 # bardo-accountd's sheet as bardo-shell draws it, against fake IMAP and SMTP servers, and an app continues as that identity. Since
-# porter's accounts split (Phase B) bardo-accountd holds identities only: it no longer relays an app to the IMAP server, so the
+# The accounts service's accounts split (Phase B) bardo-accountd holds identities only: it no longer relays an app to the IMAP server, so the
 # app's side is "Continue as" (Identities1.Offer, a sheet) and "I use this identity" (RegisterUse), and Settings lists the app
 # under the identity. Real bardo-accountd, real bardo-shell on bardo-compositor, the rig's fakes (account-rig-servers) and its fake Secret
 # Service; no network (harness/lib/accounts.sh says how each is set up).
@@ -20,7 +20,7 @@
 #
 # The provider is a brand file ("Fake Mail", discovery fixed) and not "Other..." (generic-imap): that provider
 # finds servers by autoconfig over HTTPS on 443 or asks a host and dials 993 and 587, none of which a jail can
-# bind (ports under 1024); the typed-port form of porter's manual-server answers it and bardo-shell's mapping of it is
+# bind (ports under 1024); the typed-port form of the accounts service's manual-server answers it and bardo-shell's mapping of it is
 # the open piece (see accounts-typed-server).
 #
 # budget: 180

@@ -1,5 +1,5 @@
-//! The backend over the real spawner, with the fake porter and the recording process seam and
-//! the scripted agent of agent-acp-host's tests: a session start asks porter for what the agent needs,
+//! The backend over the real spawner, with the fake accounts service and the recording process seam and
+//! the scripted agent of agent-acp-host's tests: a session start asks the accounts service for what the agent needs,
 //! and a close gives it all back.
 
 // The scripted agent is agent-acp-host's; this file uses part of it.
@@ -76,7 +76,8 @@ impl Seams for Launched {
 }
 
 #[tokio::test]
-async fn a_session_through_the_launcher_asks_porter_in_order_and_gives_it_all_back_on_close() {
+async fn a_session_through_the_launcher_asks_accounts_service_in_order_and_gives_it_all_back_on_close()
+ {
     let (wire, view) = scripted(vec![vec![say("done"), Act::Stop("end_turn")]]);
     let accounts = FakeAccounts::with(Mood::Working, Secrets::default());
     let (procs, seen) = FakeProcs::new(vec![wire]);

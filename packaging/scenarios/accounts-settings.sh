@@ -2,7 +2,7 @@
 # Scenario `accounts-settings` (design 31 §7.1, PLAN §2.5): bardo-settings's Accounts pane against the live daemons. Each control
 # is clicked in the real window on bardo-compositor (the window is placed by the compositor; clicks are relative to its frame,
 # `bardo-compositorctl debug windows`), and the daemon's own state is what is checked afterwards, never bardo-settings's.
-# Since porter's step 5c the pane reads bardo-accountd's module for every account (the identities: sign in again, remove, the
+# Since the accounts service's step 5c the pane reads bardo-accountd's module for every account (the identities: sign in again, remove, the
 # apps using one; the AI keys: the Language model switch, the apps' permits with their Revoke, remove), bardo-inferd's for the
 # spend rows beside them, and the sync service's bardo-syncd (not run here). The switch and the Revoke this scenario clicked on a mail account are
 # the AI key's now.
@@ -131,7 +131,7 @@ step_remove() {
   press_question_remove
   acc_wait 15 no_ai || { echo "the key is still in bardo-accountd's settings module after Remove" >&2; return 1; }
   sleep 1; acc_shot 6-removed
-  grep -q "$AI" "$STATE/porter/registry.json" 2>/dev/null && { echo "the registry still holds the key" >&2; return 1; }
+  grep -q "$AI" "$STATE/accounts/registry.json" 2>/dev/null && { echo "the registry still holds the key" >&2; return 1; }
   [ "$(removed_events)" = 1 ] || { echo "the audit file has $(removed_events) removed events after the key was removed, not 1" >&2; return 1; }
   # And the identity, from its own page.
   choose_account "$MAIL_LABEL"; sleep 1
@@ -139,7 +139,7 @@ step_remove() {
   press_question_remove
   acc_wait 15 no_ident || { echo "the identity is still in the settings module after Remove" >&2; return 1; }
   sleep 1; acc_shot 6-removed-identity
-  grep -q "$IDENT" "$STATE/porter/registry.json" && { echo "the registry still holds the identity" >&2; return 1; }
+  grep -q "$IDENT" "$STATE/accounts/registry.json" && { echo "the registry still holds the identity" >&2; return 1; }
   [ "$(removed_events)" = 2 ] || { echo "the audit file has $(removed_events) removed events after the identity was removed too, not 2" >&2; return 1; }
   return 0
 }

@@ -4,8 +4,8 @@ The model layer is the model layer of the desktop program: one trait for chat, t
 computer-use models; the backends that speak to local engines; the computer-use action
 vocabulary, parsers and per-step session; image preparation; the curated model catalog; and the
 supervisor that starts and stops the engines; and speech: the speech-to-text and text-to-speech
-seams, voice-activity detection, the host process that runs the STT engine, and its client. It is portable and has no dependency on porter:
-porter's `inferd` is where the model types and porter types meet (`inferd::bridge`). The design
+seams, voice-activity detection, the host process that runs the STT engine, and its client. It is portable and has no dependency on the accounts service:
+The accounts service's `inferd` is where the model types and the accounts types meet (`inferd::bridge`). The design
 is the companion agent spec (`SPEC.md`, `models.md` in the spec worktree); this file is the map of
 the code that freezes its interfaces. `CONVENTIONS.md` holds the rules; `FINDINGS.md` the open
 items.
@@ -83,7 +83,7 @@ reach no HTTP stack and no runtime: `HttpClient`'s reqwest transport sits behind
 default features. `model-http`
 never reaches the second half of that list (a bus, a compositor, a database, an inference runtime);
 `engine-install` reaches a runtime and an HTTP client through it and nothing of that second half, and `engine-manifest` and
-`engine-probe` reach neither. No crate reaches a `porter-*` crate. No speech
+`engine-probe` reach neither. No crate reaches a `accounts-*` crate. No speech
 crate reaches an audio device crate (`pipewire`, `libpulse-binding`, `libpulse-simple-binding`,
 `cpal`: capture and playback belong to the actions service's `voiced`) or a TTS stack with a GPL grapheme
 step (`espeak-rs`, `espeak-ng`, `espeak-ng-sys`, `piper-rs`): text to speech is a separate engine
@@ -91,7 +91,7 @@ process (Kokoro-FastAPI), and `bardo-speech-host` links sherpa-onnx built withou
 excluded crates are not workspace members; `check-boundary.sh` checks them from their own
 manifests (their direct edges and the same lists), and they alone may reach `ort` and `sherpa-onnx`.
 
-Downstream, porter's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-provider`,
+Downstream, the accounts service's `inferd` takes `computer-use-action`, `model-vision-prep`, `model-provider`,
 `computer-use-session`, `model-catalog`, `engine-supervisor`, `model-http`, `model-wire`,
 `model-openai-compat`, `model-extract`, `speech-provider` and `speech-host-client` (SPEC.md 1.3, voice.md 2.2); the actions service's `voiced` takes
 `speech-vad`; inference-core takes `computer-use-action` only. cuad, the memory service, the actions service and the shell do not name
@@ -167,7 +167,7 @@ The model layer.
 | how to ask for a typed output and repair it | `model-extract` (inferd runs it) |
 | retry classes and backoff | `model-provider::retry` (inferd runs it) |
 | the order a conversation must be in | `model-provider::sequence` |
-| OpenTelemetry GenAI names | `model-genai-names` (our own `bardo.*` names are porter's `prov::trace`) |
+| OpenTelemetry GenAI names | `model-genai-names` (our own `bardo.*` names are the accounts service's `prov::trace`) |
 | wire cassettes (HTTP exchanges at the `Transport`) | `model-replay::wire` |
 | default sampling of a model | `model-catalog::SamplingDefaults` |
 | audio formats, positions and durations; the bytes of PCM | `speech-provider::audio` (`AudioFormat`, `SampleIndex`, `AudioMs`, `PcmBytes`) |
@@ -181,7 +181,7 @@ The model layer.
 
 Names SPEC.md 2 settled for this repo: `CoordSpace` (was `Space`), `ToolCallId` (was `CallId`),
 `TurnUsage` (was `Usage`), `Role` stays `model-provider`'s, `Repeat` stays `computer-use-action`'s, and the
-catalog's `roles` are `CatalogKind`s (the model layer's copy of porter's `AiKind`, same slugs); since C1
+catalog's `roles` are `CatalogKind`s (the model layer's copy of the accounts service's `AiKind`, same slugs); since C1
 (agent-spec/capabilities.md) they are derived from the declared capabilities, and `Slot` is the
 name a person picks by.
 
@@ -214,7 +214,7 @@ pub trait ReadyProbe: Send + Sync { fn probe(&self, id: &EngineId) -> impl Futur
 pub trait GpuProbe: Send + Sync { fn memory(&self) -> impl Future<Output = Result<GpuMemory, GpuError>> + Send; }
 
 // speech-provider: one per backend (SpeechHostClient, OpenAiTranscription, KokoroSpeech, SpeechReplay, RecordingSpeech);
-// `SttBackend` and `TtsBackend` are closed enums in porter's inferd. Cancellation is drop.
+// `SttBackend` and `TtsBackend` are closed enums in accounts's inferd. Cancellation is drop.
 pub trait SpeechToText: Send + Sync {
     fn describe(&self) -> impl Future<Output = Result<Vec<SpeechModelInfo>, ProviderError>> + Send;
     fn transcribe<A: AudioSource, K: TranscriptSink>(&self, request: &SttRequest, audio: &mut A, sink: &mut K)
@@ -306,7 +306,7 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 | `engine-supervisor`: types, `Supervisor::new`, config defaults, fakes, `step`, `budget`, `command` | built, tested (the lifecycle table, the budget table with the in-turn window, `command` for vLLM, llama-server, the speech host and Kokoro) |
 | `model-http`: types, `ResponseHead`, `BodySink::head`, `Exchange`, `Transport`, `Timeouts`, `ExtraHeader`, `HttpError`, the SSE and NDJSON decoders, `Transport for HttpClient` (feature `client`) | built; round-trip, pinned-JSON, proptest and loopback-socket tested (TLS is feature `tls`, tested against a scratch CA on loopback; the egress proxy answers `Connect`) |
 | `engine-spec`: `Engine`, the five impls, `engine`, `check_entry`, `EnginePaths` | built, tested (the words, the defaults on a test engine, the entry checks moved from `parse_entry`) |
-| `engine-manifest`, `engine-probe`, `engine-install`: moved from porter's `porter-engines` and `porter-engines-install` (porter `f0539103`) | built, tested (the rows, the seal against `tools/seal.py`'s vector, the Finder and Verifier on scratch directories, the fetcher, installer, jobs and helper against a loopback `https` host with a scratch CA); porter, the Settings app and the installer scripts still use their own copies until they move over |
+| `engine-manifest`, `engine-probe`, `engine-install`: moved from the accounts service's `account-engines` and `account-engines-install` (the accounts service `f0539103`) | built, tested (the rows, the seal against `tools/seal.py`'s vector, the Finder and Verifier on scratch directories, the fetcher, installer, jobs and helper against a loopback `https` host with a scratch CA); the accounts service, the Settings app and the installer scripts still use their own copies until they move over |
 | `model-wire`: `ChatCodec`, `ChatDecoder`, `EmbedCodec`, `ErrorWire`, `CodecError`, `Driver` | built, tested with a scripted transport and a line codec (head decides, framer, decoder fault, Retry-After, stop, every transport failure, embed checks) |
 | `model-extract`: `ExtractMode`, `ToolsPresent`, `ExtractSession`, `Extracted`, `ExtractFailure`, `choose`, `request`, `absorb` | built, tested |
 | `model-genai-names`: every name, `Operation`, `Finish` | built, tested (names are values, so there is no stub) |
@@ -324,7 +324,7 @@ on; a change is an edit of SPEC.md first. Every `todo!()` is listed in `FINDINGS
 `model-provider`; a pure codec (`ChatCodec` and its `ChatDecoder`, `ErrorWire::classify`, and
 `EmbedCodec` if it embeds) tested against wire fixtures in `fixtures/<name>/` recorded at the
 `Transport` by a dev script; the provider is `Driver<YourCodec, HttpClient>`; its row in
-`scripts/check-boundary.sh` (RULES and LAYERS) and in section 1; its variant in porter's
+`scripts/check-boundary.sh` (RULES and LAYERS) and in section 1; its variant in the accounts service's
 `inferd::AdapterModel`.
 
 **Add a dialect**: the variant in `computer-use-action::dialect` (`TextDialect`, `ToolDialect` or
@@ -391,7 +391,7 @@ says `context_arg = { kind = "per_request" }` and gets nothing at start.
 **Add an engine kind**: its `EngineKind` variant (the one closed set of engines: llama.cpp, vLLM, Strata and the speech engines; nothing else in the model layer keeps its own list); a unit struct and `impl Engine` in `engine-spec` that overrides only what differs (`slug` is required; the disk, bus and running words, packages, `command`, `seat_flags`, `env`, `caches_prompts`, `hears`, `speaks`, `accepts`, `requires_gpu_estimate` and `pointed` default), its arm in `engine-spec::engine` and its entry in `ENGINES`; the settings key that fills its `EnginePaths` program (`SpeechHost`: `ai.engine.speech_host.path`; `KokoroFastApi`: `ai.engine.kokoro.python`). A test engine needs only its impl (`engine-spec/tests/it/echo.rs`).
 
 **Add a hosted entry**: a `catalog/<id>.toml` with `locality = { kind = "remote", v = { reach = [...] } }`
-(each reach: `provider` as porter's provider file id, `model` the provider's own id, `wire`; no
+(each reach: `provider` as the accounts service's provider file id, `model` the provider's own id, `wire`; no
 price: the catalogue keeps none), `source = { kind = "hosted" }`, zero `vram`, no `[[engine]]`,
 `cold_start_estimate_s = 0`, and the usual capability tables (tool calling is required for the Text
 slot). Every id and limit is read from the company's own docs and the gateway's model data,
@@ -408,7 +408,7 @@ file that says best, recommended or the like. A model that runs on the CPU write
 three `vram` fields and the sandbox gets no GPU; a vLLM entry may not.
 
 **Add a speech backend**: an impl of `SpeechToText` or `TextToSpeech` in its own crate or module,
-a variant of `SttBackend` or `TtsBackend` in porter's inferd, a row in section 1 and in
+a variant of `SttBackend` or `TtsBackend` in the accounts service's inferd, a row in section 1 and in
 `scripts/check-boundary.sh`; no GPL code is linked, so a TTS engine is a separate process with a
 catalog engine profile.
 
@@ -417,7 +417,7 @@ in the reference table; nothing else (the map and the session read the rule).
 
 **Add a seam implementation** (`EngineHost`, `ReadyProbe`, `GpuProbe`): a feature of
 `engine-supervisor` (`systemd`, `process`, `nvidia`) that adds its dependency to the pinned block
-first; the daemon (porter's inferd) chooses it.
+first; the daemon (the accounts service's inferd) chooses it.
 
 ## 7. Test harness
 
@@ -475,7 +475,7 @@ run by hand against the user's own engine.
 machine-wide install). It builds and installs one program, engine-install's `bardo-engine-helper`, at
 `PREFIX/libexec/bardo/bardo-engine-helper`, and on a system install its polkit action
 `org.bardo.engines.install` (`dist/org.bardo.engines.policy`, path rewritten to the prefix); the
-action porter installed before the engines moved here is removed. The rest of the model layer is libraries
+action the accounts service installed before the engines moved here is removed. The rest of the model layer is libraries
 and data. Flags: `--prefix DIR` (default `/usr/local`), `--destdir DIR` (for packages), `--user`
 (under `~/.local`, no root, no polkit action), `--dry-run` (print every action), `--no-build` and
 `--bin-dir` (use a helper built elsewhere); `--sandbox` and `--distro` are accepted for the same

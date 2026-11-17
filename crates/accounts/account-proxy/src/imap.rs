@@ -63,11 +63,11 @@ pub fn app_capabilities(server: &[String]) -> Vec<String> {
         .collect()
 }
 
-/// The greeting the app sees: `* PREAUTH [CAPABILITY ...] porter relay ready`.
+/// The greeting the app sees: `* PREAUTH [CAPABILITY ...] accounts relay ready`.
 #[must_use]
 pub fn preauth_greeting(server_capabilities: &[String]) -> Vec<u8> {
     let caps = app_capabilities(server_capabilities).join(" ");
-    format!("* PREAUTH [CAPABILITY {caps}] porter relay ready\r\n").into_bytes()
+    format!("* PREAUTH [CAPABILITY {caps}] the accounts relay ready\r\n").into_bytes()
 }
 
 /// Where the relay stands.

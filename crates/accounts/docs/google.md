@@ -1,7 +1,7 @@
-# Using Google accounts with porter
+# Using Google accounts with the accounts service
 
-Porter ships the Google code but no Google client: a Google Cloud OAuth client is a project of
-yours, with your name on its consent screen. Until you register one and tell porter its id,
+The accounts service ships the Google code but no Google client: a Google Cloud OAuth client is a project of
+yours, with your name on its consent screen. Until you register one and tell the accounts service its id,
 "Google" is in the list of providers and adding it says *Google sign-in needs a client id*.
 This page is exactly what to register. It is about 15 minutes in the console, once.
 
@@ -11,10 +11,10 @@ buttons may have moved. Where a step is marked **(check)**, confirm it against t
 ## 1. A project
 
 1. Open <https://console.cloud.google.com/> and create a project (any name, for example
-   `porter`). No billing is needed.
+   `accounts`). No billing is needed.
 2. In **APIs & Services > Library**, enable each API for the services you will use:
 
-| Service in porter | API to enable |
+| Service in the accounts service | API to enable |
 | --- | --- |
 | Calendar | Google Calendar API |
 | Contacts | People API |
@@ -23,7 +23,7 @@ buttons may have moved. Where a step is marked **(check)**, confirm it against t
 | Photos upload and picker | Photos Library API and Photos Picker API |
 | Mail (only with `byo = true`, below) | Gmail API (IMAP itself needs no API, but Google asks the project to have it) **(check)** |
 
-An API left off shows in porter as a service the account lacks, for *this build*, not for the
+An API left off shows in the accounts service as a service the account lacks, for *this build*, not for the
 account: enable it and add the account again.
 
 ## 2. The consent screen
@@ -44,14 +44,14 @@ in the newer console) **(check)**:
 An app in testing mode has two limits you will notice:
 
 - At most 100 test users.
-- **Google ends each sign-in after 7 days.** Porter shows the account as needing sign-in and
+- **Google ends each sign-in after 7 days.** the accounts service shows the account as needing sign-in and
   says *Google signs this app out every 7 days until it is verified.* Sign in again from
   Settings; it takes a click and the browser. This is the price of not verifying the app. The
-  clients.toml row below says `testing = true` so porter knows that is what is happening.
+  clients.toml row below says `testing = true` so the accounts service knows that is what is happening.
 
 ## 3. The scopes, per capability
 
-Porter asks one set of scopes per service and only for services you leave on. They are
+The accounts service asks one set of scopes per service and only for services you leave on. They are
 *incremental*: a service you turn on later is asked for then, and what you granted before is kept.
 
 | Service | Scope | Class |
@@ -67,40 +67,40 @@ Porter asks one set of scopes per service and only for services you leave on. Th
 | Mail (Gmail IMAP and SMTP) | `https://mail.google.com/` | **restricted** |
 
 *Sensitive* scopes show a warning screen ("Google hasn't verified this app") to a client in
-testing; click **Advanced > Go to porter**. *Restricted* is Gmail's full-mailbox scope: Google
+testing; click **Advanced > Go to the accounts service**. *Restricted* is Gmail's full-mailbox scope: Google
 verifies it only after a security assessment, so it works only for **your own** client with
-**your own** test users, which is why mail needs `byo = true` below. Without it porter never asks
+**your own** test users, which is why mail needs `byo = true` below. Without it the accounts service never asks
 for it, and Gmail shows as unavailable for this build.
 
 Signing in never asks for the whole of Drive (`.../auth/drive`, restricted): it asks only for
-the hidden app folder. Porter asks for all of Drive later, and only when you turn on **Show in
+the hidden app folder. The accounts service asks for all of Drive later, and only when you turn on **Show in
 Files** for the account in Settings: Google's page then asks for that one thing, and what you
 granted before is kept. Like Gmail's scope it is restricted, so a client in testing can use it
-for its test users only. With it on, porter lists your My Drive (names, sizes, when each last
+for its test users only. With it on, the accounts service lists your My Drive (names, sizes, when each last
 changed; shared drives not yet) and downloads nothing until you open a file. Turning it off
 stops the listing and keeps what was listed and the access you gave, so turning it on again asks
 nothing in the browser. Google's own
 documents (Docs, Sheets, Slides, Forms) show as documents that open in the browser, and Files'
 Save a Copy (served from the next step) saves a Doc, Sheet, Slides or Drawing next to it as an
 Office file. A grant made before Show in
-Files existed reaches the app folder only. Porter never asks for the Photos library (Google removed its read scopes
+Files existed reaches the app folder only. The accounts service never asks for the Photos library (Google removed its read scopes
 in 2025): Photos is upload plus the picker you drive in Google's own window.
 
 ## 4. The client
 
 In **APIs & Services > Credentials > Create credentials > OAuth client ID**:
 
-- **Application type: Desktop app.** (This is Google's installed-app flow: porter listens on
+- **Application type: Desktop app.** (This is Google's installed-app flow: the accounts service listens on
   `127.0.0.1` on a free port and Google redirects the browser there. No redirect URI is
   registered for a Desktop client; Google accepts any `http://127.0.0.1:<port>`.)
 - Name: anything.
 
 Create it and keep the **Client ID** (`123-abc.apps.googleusercontent.com`) and the **Client
 secret** (`GOCSPX-...`). Google calls it a secret and still requires it for a desktop client;
-it cannot protect anything in an app that runs on your computer, and porter uses PKCE as well.
-Porter stores it in your clients file below, never in an account and never on the bus.
+it cannot protect anything in an app that runs on your computer, and the accounts service uses PKCE as well.
+The accounts service stores it in your clients file below, never in an account and never on the bus.
 
-## 5. Tell porter
+## 5. Tell the accounts service
 
 Create or edit `$XDG_CONFIG_HOME/bardo/accounts/clients.toml` (`~/.config/bardo/accounts/clients.toml`) and add
 this row:
@@ -120,7 +120,7 @@ testing = true
 | `issuer` | always `"google"` |
 | `channel` | `"stable"` for a release build, `"beta"`, or `"development"` for a development build |
 | `client_id`, `client_secret` | from step 4 |
-| `testing` | `true` while the consent screen is in Testing (always, unless Google verified it). Porter then knows a sign-in lasts 7 days and says why when it ends |
+| `testing` | `true` while the consent screen is in Testing (always, unless Google verified it). The accounts service then knows a sign-in lasts 7 days and says why when it ends |
 | `byo` | `true` to also use Gmail through IMAP and SMTP. Omit it unless you want mail: it asks for the restricted scope |
 
 Your file wins over `/usr/share/bardo/accounts/clients.toml`. The file is read when the account service
@@ -132,32 +132,32 @@ edit it by hand.
 
 Settings > Accounts > Add > Google (or type your address, `@gmail.com`, `@googlemail.com` or a
 domain whose mail Google hosts, and choose Google). The browser opens Google's sign-in; pick the
-test user, click through the warning screen, tick every box (porter works with fewer: an unticked
+test user, click through the warning screen, tick every box (the accounts service works with fewer: an unticked
 service shows as off), and return. The review lists what the account can do.
 
 ## What has not been tried against Google
 
 Everything below is built: the sign-in and the grant, the calendar, contacts and tasks mirror,
 the Drive app folder, Photos upload and the picker, and Gmail. All of it has so far run only
-against porter's own stand-in for Google, never against Google itself, because no client of yours
+against the accounts service's own stand-in for Google, never against Google itself, because no client of yours
 existed to try it with. Expect to find a detail or two that Google answers differently: the first
 sign-in with your client is the first real test. Photos stays off until its row is turned on for
 the account in Settings.
 
-## What porter does with each Google service
+## What the accounts service does with each Google service
 
-| Service | What porter does with it | What it never does |
+| Service | What the accounts service does with it | What it never does |
 | --- | --- | --- |
-| Calendar, Contacts, Tasks | Mirrors them for apps that hold a grant (Calendar, Contacts, Tasks apps read and change them through porter). | Share them with any app that holds no grant. |
-| Drive | Keeps one hidden **app data folder** that only porter can see, and mirrors it to a folder on this computer so apps can keep files there. With **Show in Files** on, lists all of your Drive in Files. | Read or list the rest of your Drive unless you turn on Show in Files: until then the scope is `drive.appdata` only. |
-| Photos, upload | Sends each **new photo or video you put in this account's upload folder** (`$XDG_DATA_HOME/bardo/sync/photos/<account>/upload`) to Google Photos, once, into an album porter makes. Settings > Accounts > the account > *Upload new photos from a folder on this computer to Google Photos* turns it on. | Read your library, delete a photo at Google, or delete a local file when it uploads. |
+| Calendar, Contacts, Tasks | Mirrors them for apps that hold a grant (Calendar, Contacts, Tasks apps read and change them through the accounts service). | Share them with any app that holds no grant. |
+| Drive | Keeps one hidden **app data folder** that only the accounts service can see, and mirrors it to a folder on this computer so apps can keep files there. With **Show in Files** on, lists all of your Drive in Files. | Read or list the rest of your Drive unless you turn on Show in Files: until then the scope is `drive.appdata` only. |
+| Photos, upload | Sends each **new photo or video you put in this account's upload folder** (`$XDG_DATA_HOME/bardo/sync/photos/<account>/upload`) to Google Photos, once, into an album the accounts service makes. Settings > Accounts > the account > *Upload new photos from a folder on this computer to Google Photos* turns it on. | Read your library, delete a photo at Google, or delete a local file when it uploads. |
 | Photos, picker | The Photos app opens Google's own picker in your browser; what you pick is downloaded into `$XDG_DATA_HOME/bardo/sync/photos/<account>/picked/<session>/`. | See anything you did not pick. |
 | Mail | With `byo = true` only: IMAP and SMTP to Gmail, signed in with XOAUTH2 (the token never reaches the mail app). | Ask for the mailbox scope otherwise. |
 
-Granting is per service. If you tick only the picker on Google's consent page, porter offers
+Granting is per service. If you tick only the picker on Google's consent page, the accounts service offers
 the picker alone: no upload row appears in Settings and nothing is sent. If you tick only the
 upload, there is no picker. Picked photos are downloaded from Google's image host
-(`lh3.googleusercontent.com`) with the same sign-in, and porter's account service will connect
+(`lh3.googleusercontent.com`) with the same sign-in, and the accounts service's account service will connect
 only to that host (the provider file names it), never to a host a response names.
 
 An account for a client in testing is signed out by Google 7 days after it signed in. Settings

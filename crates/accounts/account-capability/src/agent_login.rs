@@ -1,5 +1,5 @@
 //! Signing an agent in and out through its launcher (lane agent-login; design/31 R7-R9, C5, C6).
-//! Only the agent can log itself in: porter asks the launcher that registered the agent's
+//! Only the agent can log itself in: the accounts service asks the launcher that registered the agent's
 //! program, and the launcher answers with a coarse outcome. Nothing else crosses: no token, no
 //! URL, no code, no free text. Every word here is a member of a closed set, so a launcher cannot
 //! tunnel the login through the outcome.

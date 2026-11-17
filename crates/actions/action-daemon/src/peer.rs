@@ -1,12 +1,12 @@
 //! Who is on the other end of a bus connection. The identity is derived here from what the bus
 //! says about the connection and never from anything the caller sends, and never from a name it
-//! owns: porter's `ProcCallers` (through [`Identity`]) names the process behind the connection
+//! owns: the accounts service's `ProcCallers` (through [`Identity`]) names the process behind the connection
 //! (the bus gives its pid; `/proc/<pid>/cgroup` names its unit or app scope; the callers file,
 //! `actiond-callers.toml`, gives the role). The roles of `actiond.toml` are those of the app the
 //! process is, and a role that stands for more than an app is played only by a process whose
 //! callers-file role backs it ([`backs`]): the sheet roles (`launcher`, `confirm`, `control`) by
 //! the `sheet_host` of the system's table, `cua` by `cua`, the other daemons' roles by a role
-//! above a plain app. A scope never has one (porter gives a scope row a plain app's role).
+//! above a plain app. A scope never has one (the accounts service gives a scope row a plain app's role).
 //!
 //! A connection nothing identifies is nobody and is refused, with one exception that is not a
 //! name: a terminal's child (`vte-spawn-*`, `tmux-spawn-*`, a login `session-*` scope) has no

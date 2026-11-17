@@ -1,4 +1,4 @@
-//! accountd on the session bus, as a transport for `account-client`: `Porter::over(Bus::over(c))`.
+//! accountd on the session bus, as a transport for `account-client`: `AccountClient::over(Bus::over(c))`.
 //! The caller's identity is what the bus says about the connection. This is the one crate of the
 //! client side that names zbus, because an app that already runs zbus hands over its own
 //! connection; `account-client`'s own API names none.
@@ -21,7 +21,7 @@ mod launcher;
 mod spaces;
 mod tailnet;
 
-use account_client::{LinkError, Porter};
+use account_client::{AccountClient, LinkError};
 pub use account_wire::AskKind;
 pub use ai_accounts::AiAccounts;
 pub use ai_keys::AiKeys;
@@ -81,6 +81,6 @@ impl Bus {
 ///
 /// # Errors
 /// There is no session bus.
-pub async fn connect() -> Result<Porter<Bus>, LinkError> {
-    Bus::session().await.map(Porter::over)
+pub async fn connect() -> Result<AccountClient<Bus>, LinkError> {
+    Bus::session().await.map(AccountClient::over)
 }

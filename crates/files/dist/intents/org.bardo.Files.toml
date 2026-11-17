@@ -1,6 +1,6 @@
 # What agents and the command line may ask Files to do (the actions service intents vocabulary 1). Installed to
 # $XDG_DATA_DIRS/bardo/intents/org.bardo.Files.toml beside dbus-1/services/org.bardo.Files.service,
-# which starts Files when the actions service's router calls the name. Every field is written (porter's
+# which starts Files when the actions service's router calls the name. Every field is written (the accounts service's
 # provider-file rule). crates/files/files-desktop embeds this file, so the file the installer ships and
 # the one the window answers for are one file; a test holds it to the actions service's validator.
 #

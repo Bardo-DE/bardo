@@ -116,7 +116,7 @@ parameter in `ArgsChecked` and `AppLink::perform` can say `AppFault::TimedOut`, 
    (`ai.floor.prompt`), so a reviewer request is pinned on-device; `action-review/tests/it/infer.rs`
    (`every_reviewer_request_carries_the_prompt_class_pinned_on_device`) holds every stage to it. The
    test lives in action-review rather than policy-point because policy-point (the Cedar grid) has
-   no porter-infer edge and none is added for a test.
+   no inference-core edge and none is added for a test.
 6. **The reviewer's schema is hand-written** (ask 14) until the model layer's `Shape::to_json_schema` is
    filled; `InferReviewer` then switches to `verdict_shape(stage)`.
 7. **Stage deadlines come from the clock.** `Clock::after(Millis)` is the router's timer: it races
@@ -128,9 +128,9 @@ parameter in `ArgsChecked` and `AppLink::perform` can say `AppFault::TimedOut`, 
 
 Built, with tests against `action-fake` (the router in process) and a private bus:
 
-- **Caller and rows.** `CallerRole::Cli`, `Origin::Cli`, `GrantCaller::Cli`, porter `prov`'s `Actor::Cli`,
-  `ActorKind::Cli` and `Source::Cli` (porter branch `l-cli`; `Actor` and `ActorKind` live in `prov`, so the
-  porter change is three variants, not one). A terminal's arguments are `Untrusted, Source::Cli`, derived by
+- **Caller and rows.** `CallerRole::Cli`, `Origin::Cli`, `GrantCaller::Cli`, the accounts service `prov`'s `Actor::Cli`,
+  `ActorKind::Cli` and `Source::Cli` (the accounts service branch `l-cli`; `Actor` and `ActorKind` live in `prov`, so the
+  The accounts service change is three variants, not one). A terminal's arguments are `Untrusted, Source::Cli`, derived by
   the router. The Cedar rows (`policy/default.cedar`, `policy-point/tests/it/terminal.rs`): a read is final; an
   undoable, outbound or destructive act asks and never goes to review, in every strictness; an ask-always
   action asks; a hidden action is denied; a destructive act always asks. `AskReason::FromTerminal` names it.
@@ -166,7 +166,7 @@ Open, and the asks they make (nothing below was edited in the other repos):
    action, until logout", answering `ConfirmAnswer::AllowedFromTerminal`; list the grants in the control centre
    through `Control.TerminalGrants` with a revoke through `Control.RevokeTerminalGrant`.
 4. **The launcher's natural-date parser** is the shell's and the actions service cannot reach it, so a Date or DateTime parameter
-   takes RFC 3339 only and says so. Ask: the parser as a pure crate below the shell (Bardo or porter), which
+   takes RFC 3339 only and says so. Ask: the parser as a pure crate below the shell (Bardo or the accounts service), which
    `action-cli::when` then calls ("tomorrow at nine").
 5. **ds menu commands and shortcuts carry no action id** (`ds::MenuItem::Item` has a `value: T` and a
    `Shortcut`), so rule three of cli.md section 6 cannot be read from the data an app has today. The shape
@@ -309,7 +309,7 @@ Not built yet, and what each blocks:
    `Control.Resume` button (item 6 above).
 3. ~~`Request.Proceed` answers `Malformed`~~: a watched `Gate.Check` implements it (w5-actions). On a request that is
    not a watched gate check it still answers `Malformed`: nothing waits for it.
-4. **Identity beyond name and executable** (Flatpak, a systemd scope): done in f4-actions-ident (cgroup, porter's `ProcCallers`).
+4. **Identity beyond name and executable** (Flatpak, a systemd scope): done in f4-actions-ident (cgroup, the accounts service's `ProcCallers`).
 
 ## The persistent companion and the MCP edge (w4-companion)
 
@@ -488,8 +488,8 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
 4. **128:** `BreakerTripped` is emitted (intentd `signals`, `tests/it/signals.rs`: said once, again after a resume and a second
    pause): closed. `Resume(Only(space))` also lifts a global halt for that Space (the global halt becomes a halt of every other
    Space the router has a session in; `tests/it/control.rs`). The effect classes **"changes only the view"** and **"file with no
-   undo"** cannot grow additively here: `Effect` is porter's `prov::Effect` (`Read < UndoableWrite < Outbound < Destructive`),
-   ordered, and the Cedar grid, the budgets and the ceilings are written over it. Ask (porter): the two classes, with the grid rows
+   undo"** cannot grow additively here: `Effect` is the accounts service's `prov::Effect` (`Read < UndoableWrite < Outbound < Destructive`),
+   ordered, and the Cedar grid, the budgets and the ceilings are written over it. Ask (the accounts service): the two classes, with the grid rows
    and the ceilings decided by the person; until then a view-only action is `read` and a file with no undo is `destructive`.
 5. **The daemons' `main`s.** `readerd::run` / `readerd::start` and `companiond::run` / `companiond::start` (configuration,
    `action_dbus::session_connection` (shared with intentd), `DbusTransport`, `inferd_transport`, `restore`, `serve_on`),
@@ -501,7 +501,7 @@ Built, each with tests on a private bus, over the fakes or in process (nothing r
 Interface asks left after the w5 fill, as the f4-actions fill leaves them (the full account is in
 "The f4-actions fill" below):
 
-- porter: the two effect classes (item 4 of the w5 fill).
+- The accounts service: the two effect classes (item 4 of the w5 fill).
 - Bardo: `mcp.enabled` (item 3 of the w5 fill): until the settings row exists the edge reads its own
   `actions-mcp.toml`.
 - cuad: use `gate_check_watched`, open its run's session, and have `cua.run.start` answer the session it opened.
@@ -580,8 +580,8 @@ recipient `Quoted{from: Mail}`, taint `ReadUntrusted(Mail)`), and one ignored (f
    `MemoryKeys` and no Landlock. Ask (the memory service, `memoryd/src/main.rs`): an environment switch such as
    `MEMORYD_KEYS=file:<path>` selecting a file-backed `KeyStore` for a scratch HOME, so the packaged binary itself
    can be started in the jail.
-4. **inferd has no replay engine.** CLOSED (f4-e2e-2, porter's replay engine). Was: the run speaks the `Inference1` wire from a fake (`src/inferd.rs`). Ask
-   (porter, `inferd`): `[engines.<name>] replay = "<file>"` in `inferd.toml`, an engine host that answers the OpenAI
+4. **inferd has no replay engine.** CLOSED (f4-e2e-2, the accounts service's replay engine). Was: the run speaks the `Inference1` wire from a fake (`src/inferd.rs`). Ask
+   (the accounts service, `inferd`): `[engines.<name>] replay = "<file>"` in `inferd.toml`, an engine host that answers the OpenAI
    compatible chat route from a cassette of (request match, SSE reply) pairs, with the planner, writer and reader
    replies of `dev/accept` as its first cassette; then the acceptance can run the real inferd binary.
 5. Observed, no action: entity ids in a step's value are shown to the planner plain even when the result is
@@ -590,7 +590,7 @@ recipient `Quoted{from: Mail}`, taint `ReadUntrusted(Mail)`), and one ignored (f
 
 ### f4-e2e-2: real inferd and memoryd binaries
 
-Branch `f4-e2e-2`. The acceptance now runs porter's packaged `inferd` (replay engine, cassettes in
+Branch `f4-e2e-2`. The acceptance now runs the accounts service's packaged `inferd` (replay engine, cassettes in
 `dev/accept/cassettes`) and the memory service's packaged `memoryd` (`test-keys`, sandbox off) as processes; the library
 memoryd main and the scripted `Inference1` are removed. `crates/action-accept/build.rs` builds both from their own
 workspaces (`$CARGO`, `--locked`, cargo variables scrubbed) into `<target>/accept-siblings/`, so the gate's
@@ -605,7 +605,7 @@ break) makes flow (c) fail, so the cassette match is checked.
 
 ### f4-e2e-3: callers by cgroup, sandbox on, class asserted
 
-Branch `f4-e2e-3`. Since porter W2c inferd and memoryd name callers by `/proc/<pid>/cgroup` only, which a jailed
+Branch `f4-e2e-3`. Since the accounts service W2c inferd and memoryd name callers by `/proc/<pid>/cgroup` only, which a jailed
 test process cannot satisfy. Both daemons are built with their test-only `test-proc-root` feature (memoryd also
 `test-keys`) and run with `INFERD_PROC_ROOT` / `MEMORYD_PROC_ROOT` = `<scratch>/proc`. `World` writes
 `<scratch>/proc/<pid>/cgroup` for each daemon it spawns (`.../app.slice/<name>.service`) and for the test
@@ -632,7 +632,7 @@ memory-client's `memory-service` is behind `in_process`, Bardo's `ds-intents` ha
 marks and re-exports `Tally` (action-ui-adapter no longer reaches `ds-core`), and Bardo's
 `docs/workspace-deps.toml` has `pipewire = "0.10"`.
 
-1. **porter `prov` fills** are done (`Label::{trusted_user, untrusted, join}`); the actions service's tests and
+1. **the accounts service `prov` fills** are done (`Label::{trusted_user, untrusted, join}`); the actions service's tests and
    fakes use them. Labels with an app source and no private scope (`Label` with
    `Source::App`, a model's text) still have no constructor and stay literals.
 2. **the model layer `model-provider::Shape`** is filled: the reader renders its reply schema through it
@@ -644,15 +644,15 @@ marks and re-exports `Tally` (action-ui-adapter no longer reaches `ds-core`), an
    `ReplayWhat::Run` by the words of `CuaRecord`'s serde form and names no cua type; the strings
    it reads (`cua.run.started`, `cua.asked`, `cua.confirmed`, `cua.taken_over`, `cua.handed_back`,
    `cua.run.finished`, and the `run`, `space` and `outcome.kind` fields) are pinned by a test.
-4. voice.md section 3.4 (porter's speech items) is all present in `porter-infer`
+4. voice.md section 3.4 (the accounts service's speech items) is all present in `inference-core`
    (`TranscribeBegin`, `SpeakRequest`, `AudioFrame`, `HeardDelta`, `ClientFrame::{Audio,
-   EndOfAudio}`, `Readiness`): nothing is asked of porter for voice.
-5. **porter `DataClass`:** a class for the person's prompts (item 5 above).
+   EndOfAudio}`, `Readiness`): nothing is asked of accounts for voice.
+5. **the accounts service `DataClass`:** a class for the person's prompts (item 5 above).
 6. **the model layer `Shape::to_json_schema`** (item 6 above) also blocks `InferReviewer`.
 
 ## Spec conflicts resolved
 
-- **`TaskId` home**: porter `prov` (as the brief says), not `action-core`.
+- **`TaskId` home**: the accounts service `prov` (as the brief says), not `action-core`.
 - **`Ruling` and its words live in `action-core`**, not `policy-point` (SPEC section 2) or
   `action-review`: `tighten` consumes a `Ruling` and may not depend on `policy-point`, and the
   refusals and audit records name `AskReason`, `Stage`, `Impact`, `ReasonCode`, `BreakerTrip`,
@@ -682,7 +682,7 @@ marks and re-exports `Tally` (action-ui-adapter no longer reaches `ds-core`), an
 - **A Quick flag cannot be overruled.** `escalate` adds the Deliberate stage after a low-impact
   Quick flag, but `tighten` requires every planned stage to allow, so the flag still asks (see the
   open questions).
-- **Name collisions** (SPEC section 2): `Verdict` and `Decision` of porter kept; the reviewer's is
+- **Name collisions** (SPEC section 2): `Verdict` and `Decision` of the accounts service kept; the reviewer's is
   `ReviewVerdict`; the policy's is `Ruling`; `Reveal<T>` for the plain-or-handle value; `ParamNeed`;
   `RepeatState`; `DenyCode` to the agent. `Envelope` exists in `action-core` (Intents1) and in
   `voice-wire` (Voice1), in different crates; the assembler's budget is `AssemblerBudget`
@@ -696,9 +696,9 @@ marks and re-exports `Tally` (action-ui-adapter no longer reaches `ds-core`), an
 ## Decisions beyond the spec
 
 - `action-core` depends on `memory-core` and `model-provider`; `policy-point`, `action-review`,
-  `action-router`, `companion-wire`, `agent-loop` take `porter-core` or `memory-core` directly;
-  `action-dbus` takes `porter-dbus` (for `Details` and `OPTION_TRACEPARENT`, not redefined);
-  `voice-wire` takes `porter-infer` (`Readiness`, `ServedBy`, `ModelError`, `InferRefusal`);
+  `action-router`, `companion-wire`, `agent-loop` take `account-core` or `memory-core` directly;
+  `action-dbus` takes `account-dbus` (for `Details` and `OPTION_TRACEPARENT`, not redefined);
+  `voice-wire` takes `inference-core` (`Readiness`, `ServedBy`, `ModelError`, `InferRefusal`);
   `readerd` takes `action-dbus`. The edge table in `ARCHITECTURE.md` is the exact list.
 - The router is generic over `Seams`, one bundle of nine seams, instead of nine type parameters;
   `MemoryLink` is the router's read of memory (`Caller::Router`), `GrantStore` and `EventSink` as
@@ -745,10 +745,10 @@ intentd's `inferd_transport`, `PlannerModel::on_bus` and `ReaderService::on_bus`
 nothing; the actions service never calls `declassify`, so no caller handles its `Result`). intentd's
 `inferd_transport(connection)`, `InferdModel::on_bus`, `InferdWriter::on_bus`, companiond's
 `PlannerModel::on_bus` and readerd's `ReaderService::on_bus` build
-`AnyTransport::Dbus(DbusTransport::over(connection))` (porter-client with feature `dbus`); nothing is
+`AnyTransport::Dbus(DbusTransport::over(connection))` (account-client with feature `dbus`); nothing is
 called until the first session, so an absent inferd is `Unreachable` at the first `open`. The models' and the
 reader's bodies are filled (see "The bus path") and tested over a scripted session (`ScriptedInferd`, in
-`intentd/tests/support/inferd.rs`, porter-fake's session with the opens and frames logged). The companiond and
+`intentd/tests/support/inferd.rs`, account-fake's session with the opens and frames logged). The companiond and
 voiced `main`s are still skeletons (exit 2) and the planner's and `serve` bodies are `todo!()`: whoever fills them
 builds the connection first and passes it here.
 
@@ -762,7 +762,7 @@ builds the connection first and passes it here.
   and `write_schema`) for the whole `agent` domain, and is `actions/settings.toml` the file design/22 wants? The old
   `access` key of `actions-mcp.toml` is gone (a file that still has it is refused). `McpAccess` is now `McpExpose`.
 - **Rename `mail.thread.find` to `mail.thread.search`** in action-accept (fixture, provider, planner scripts, tests,
-  README) to match mailo. porter's `inferd` cassette `actions-flow-a.jsonl` still says `mail.thread.find`.
+  README) to match mailo. The accounts service's `inferd` cassette `actions-flow-a.jsonl` still says `mail.thread.find`.
 - **First-use consent** is tested (`first_use_of_mail_in_a_space_asks_once_and_the_second_call_does_not`): the scripted
   sheet gained `Verdict::AllowAlways`.
 
@@ -813,13 +813,13 @@ builds the connection first and passes it here.
      `action-router/tests/it/index.rs` (`a_hit_is_opened_by_its_kinds_open_action_performed_as_the_launcher`).
 
 3. **The other f4-actions-2 items** are not behaviour over fakes in the actions service's own paths: the `ds-settings` question is
-   Bardo's, the `mail.thread.find` rename is in action-accept (lane f4-e2e-2's files), the `inferd` cassette is porter's;
+   Bardo's, the `mail.thread.find` rename is in action-accept (lane f4-e2e-2's files), the `inferd` cassette is the accounts service's;
    first-use consent was already tested. Nothing further closed.
 
 ## f4-actions-ident: cgroup identity and the activation token
 
 1. **Caller identity moved off `/proc/<pid>/exe` onto the cgroup** (`intentd/src/peer.rs`). The bus still names the
-   pid; `porter_dbus::ProcCallers::caller_of_pid` reads only `/proc/<pid>/cgroup` (no ptrace check, works in a
+   pid; `account_dbus::ProcCallers::caller_of_pid` reads only `/proc/<pid>/cgroup` (no ptrace check, works in a
    Landlock domain). Order, unchanged for names: a connection that owns application-shaped well-known names is
    those names, with `intentd.toml`'s roles (confirm = owner of `org.bardo.Confirm1` through the `confirm` row).
    A connection that owns no name is identified by its cgroup alone:
@@ -827,7 +827,7 @@ builds the connection first and passes it here.
      lists under `<id>` (none for almost every app: a plain app). This is also how a user whose terminal runs in
      an app scope (konsole in `app-org.kde.konsole-<n>.scope`) opts in: list `org.kde.konsole` under `cli`.
    - **a terminal child: `vte-spawn-*.scope`, `tmux-spawn-*.scope`, a login `session-*.scope`: `org.bardo.Do`, the
-     cli role.** porter-dbus returns nobody for these (they are no app scope), so the cli role has this rule of its
+     cli role.** account-dbus returns nobody for these (they are no app scope), so the cli role has this rule of its
      own. **Security decision for the orchestrator to review:** the rule is same uid (checked as before) + a bus
      connection owning no name + a cgroup leaf in that short list. It is NOT "any unidentified process": a service
      unit (`foo.service`), `run-*.scope`, an unreadable or malformed cgroup are refused (`NotAllowed`). It is
@@ -835,7 +835,7 @@ builds the connection first and passes it here.
      `bardo-do` (the old exe name was as forgeable by a copy of any binary); and stronger in another: a binary
      named `bardo-do` outside a terminal scope (a service, a cron job's scope) is no longer the cli. The cli role
      still asks for everything that is not a read, so it stays advisory on a desktop where every process runs as
-     the person. No callers file is read: intentd has no unit rows (porter's `CallerTable` is passed empty); a
+     the person. No callers file is read: intentd has no unit rows (the accounts service's `CallerTable` is passed empty); a
      daemon that is a service owns a well-known name, which already names it.
    - Tests: `peer/tests.rs` (a table of names x cgroup facts; the cgroup leaves over a fixture proc tree),
      `tests/it/identity.rs` (over a private bus with a fake proc root: the shell's token goes through, a nameless
@@ -863,10 +863,10 @@ builds the connection first and passes it here.
    Tests: `action-router/tests/it/activation.rs` (launcher gets it through; cli, field, companion, mcp dropped; wire
    form), `intentd/tests/it/identity.rs` (launcher token crosses the real bus; the cli's is dropped),
    `intentd/tests/it/link.rs` (the token reaches a real provider through `DbusLink`).
-4. **The shell is `shell.service`.** porter's caller table names the shell by that service unit alone (a scope never
+4. **The shell is `shell.service`.** the accounts service's caller table names the shell by that service unit alone (a scope never
    carries a fixed role; there is no `bardo-shell.scope`). action-accept's fake proc root puts the fake shell in
    `shell.service` with its main pid registered (`proc/units/shell.service`), and memoryd's callers fixture has the one
-   `shell.service` row. The daemons' own caller checks move onto porter's `ProcCallers` (see the callers entry).
+   `shell.service` row. The daemons' own caller checks move onto the accounts service's `ProcCallers` (see the callers entry).
 
 ## f4-actions-skills: skills (agent-spec skills.md)
 
@@ -1005,7 +1005,7 @@ An action's declared effect is a **ceiling**; an action may opt in to a per-call
 
 For the owner's live demo of the companion on a cloud model (runbook: `docs/demo-cloud.md`).
 
-- **`dist/install-dev.sh`** installs the stack for one user from the sibling checkouts (`../porter`,
+- **`dist/install-dev.sh`** installs the stack for one user from the sibling checkouts (`../accounts`,
   `../memory`, `../models`, this one), builds with `cargo build --release --locked`, never runs sudo, and
   records what it wrote in `~/.local/state/bardo-dev/install-dev.manifest` for `--uninstall` (a config the person
   edited is kept; directories are removed only if the install made them and they are empty). Tested in a jail
@@ -1013,8 +1013,8 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
   `INSTALL_DEV_BIN_DIR`, cleared environment).
   - memoryd has no unit in `memory/dist`: `memory/dbus/memoryd.service` is its unit, started by D-Bus
     activation (`org.bardo.Memory1.service` names it); that is what is installed.
-  - Beyond the brief, because the demo does not work without them: porter's `providers/*.toml` (accountd cannot
-    `add openrouter` without its provider file) to `$XDG_DATA_HOME/porter/providers`, and the model layer's `catalog/*.toml`
+  - Beyond the brief, because the demo does not work without them: the accounts service's `providers/*.toml` (accountd cannot
+    `add openrouter` without its provider file) to `$XDG_DATA_HOME/accounts/providers`, and the model layer's `catalog/*.toml`
     (inferd reads its model entries only from `$XDG_DATA_HOME/models/catalog` and `/usr/share/models/catalog`;
     without them there is no `cloud/<entry>`).
   - Left out on purpose: `voiced` (skeleton), `syncd`, `cuad`; `actions/manifests` (the Memory and Companion
@@ -1023,16 +1023,16 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
     built-in default whole, so a later change to the shipped file does not reach a machine that has a copy.
   - Skills land in `$XDG_DATA_HOME/bardo/skills`, which agent-skills reads as the person's own (`Origin::Own`,
     source `User`), not as shipped (`Source::App`). Fine for a dev install; a package installs under `/usr/share`.
-  - **Dev-only change to the packaged units** (f4-demo-install-2, after porter e7b8e35): `ProtectHome=yes` becomes
+  - **Dev-only change to the packaged units** (f4-demo-install-2, after the accounts service e7b8e35): `ProtectHome=yes` becomes
     `read-only` for companiond and readerd when the prefix is under `$HOME`; their units still say `yes`, and with it the
     binary in `~/.local/bin` cannot be executed (and companiond could not read `~/.config/bardo` or the skills). The
-    porter units need no drop-ins any more (they make their own directories). `--cloud` installs porter's
+    The accounts units need no drop-ins any more (they make their own directories). `--cloud` installs the accounts service's
     `dist/inferd-cloud.conf` as `inferd.service.d/cloud.conf` (network on); opt-in because local engines share inferd's
     sandbox, so an on-device-only setup keeps none. An install made before this change has its `10-dev.conf` drop-ins
     removed on the next run.
-  - The one root step (printed, never run): `sudo install -D -m644 <porter>/dist/callers.toml /etc/porter/callers.toml`.
-    accountd and syncd read `/etc/porter/callers.toml` with `$XDG_CONFIG_HOME/porter/callers.toml` laid over it (user
-    rows win); inferd's own caller table is `/etc/porter/inferd-callers.toml` (root's; a `[callers]` table in `inferd.toml` is ignored), and memoryd's is
+  - The one root step (printed, never run): `sudo install -D -m644 <accounts>/dist/callers.toml /etc/accounts/callers.toml`.
+    accountd and syncd read `/etc/accounts/callers.toml` with `$XDG_CONFIG_HOME/accounts/callers.toml` laid over it (user
+    rows win); inferd's own caller table is `/etc/accounts/inferd-callers.toml` (root's; a `[callers]` table in `inferd.toml` is ignored), and memoryd's is
     `memory-callers.toml` (installed in the user config, which layers over `/etc/bardo/`), so neither needs root.
 - **`bardo-do ask [--space <id>] "<text>"`**: `Companion1.Open` in the Space (default `desktop`), `Session.Turn`
   through intentd, `Companion1.Ask`, then the answer object is followed (its current `View`, then each `Updated`)
@@ -1107,7 +1107,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
    another app's content. The default names the shell and no other app, so a delegate's inner action (an
    app's own `app_own` rows, e.g. `dev.notes`) keeps the normal first-use ask per app, and the person can answer
    Always there.
-2. **Layering.** Defaults are read as grants dated the epoch, so porter's `decide` (the newest grant for the exact
+2. **Layering.** Defaults are read as grants dated the epoch, so the accounts service's `decide` (the newest grant for the exact
    key wins, a denial wins a tie) lets any entry of the person's outrank them. `consent_for` already tries the
    narrowest key first, so a denial for one action or one Space also wins over the broad default.
 3. **Revoking.** No new form was needed: a grant already carries `Decision::Deny`. A revoke of a default is the
@@ -1137,9 +1137,9 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
    and `AskWire` are unchanged, so no literal in the shell, cua or the memory service breaks.
 2. **The line.** `companion_wire::footer_line(&[RouteNote]) -> String` prints "Heard by Whisper · Answered by Claude
    Haiku 4.5 via OpenRouter (already loaded)"; the shell and the Settings app both call it. Model names are made from the id
-   (`model_name`: "claude-haiku-4-5" is "Claude Haiku 4.5"); a catalogue display name would be better when porter has one.
-   Done: `RouteNote.name: Option<ModelLabel>` copies porter's `StageNote.name` (the catalogue label, sent on every
-   answer's `Answer` note since porter 11651d4), and the line prefers it; the id-made name is the fallback for a model
+   (`model_name`: "claude-haiku-4-5" is "Claude Haiku 4.5"); a catalogue display name would be better when the accounts service has one.
+   Done: `RouteNote.name: Option<ModelLabel>` copies the accounts service's `StageNote.name` (the catalogue label, sent on every
+   answer's `Answer` note since the accounts service 11651d4), and the line prefers it; the id-made name is the fallback for a model
    with no label or an older inferd. The field is skipped when absent, so an unnamed note's JSON is unchanged.
 3. **Folding.** `RouteLog` folds one turn's events: `Why` words collect until a `Stage` (or the end, for a one-model session
    with only `Routed`) closes a note; `Why::Reached` is the door, not a reason. A `Stage`'s own `why` is always sent by
@@ -1147,7 +1147,7 @@ For the owner's live demo of the companion on a cloud model (runbook: `docs/demo
    (and for an eviction, always).
 4. **Declined.** `PlanFault::Declined` (no longer `Copy`): a `Declined` event before `Finished(Refused)` makes the task's
    refusal `Failed("Kimi K2.6 cannot answer: it is not installed on this computer.")` (`declined_text`).
-5. Needs porter at f34da56 or later (`Why::Reached`, `Stage`). The workspace paths point at `../porter`.
+5. Needs the accounts service at f34da56 or later (`Why::Reached`, `Stage`). The workspace paths point at `../accounts`.
 
 ## v-voiced: spike V-A and the voiced daemon (voice wave, F2)
 
@@ -1159,7 +1159,7 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
 - **Builds and licenses.** `pipewire = "0.10"` (0.10.1, with libspa 0.10.1, pipewire-sys and libspa-sys 0.10.1; all
   MIT) builds here against the system libpipewire 1.6.9 (`pipewire-devel`) and needs `libclang` for bindgen
   (`clang` is installed). `cargo deny check licenses` passes with it; the workspace line is in `Cargo.toml` and only
-  voiced takes it (`check-boundary.sh` allows `porter-dbus` and `speech-provider` for voiced and still forbids
+  voiced takes it (`check-boundary.sh` allows `account-dbus` and `speech-provider` for voiced and still forbids
   `pipewire` everywhere else). No fallback to libpulse was needed.
 - **Listing, read-only, run on this machine** (`dev/voice-capture-try.sh list`; it opens no stream): the registry
   shows three `Audio/Sink` nodes (SPDIF, Speaker, Headphones) and two `Audio/Source` nodes on the USB audio device
@@ -1184,10 +1184,10 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
   objects) and starts the loop; `serve(config, device)` is `start` over the session bus with `DbusTransport`,
   `BusWarm` and `FileUse`, and runs until the bus closes. `Seams` holds the device, the inferd transport, the
   warmer, the consent source and the `/proc` root: the tests serve the whole daemon on a private bus with a scripted
-  device and porter-fake's `FakeInferSession`.
+  device and account-fake's `FakeInferSession`.
 - **Roles from the connection.** `peer.rs` takes the well-known names a connection owns (`ListNames` plus
   `GetNameOwner`, the same user by `GetConnectionCredentials`) and, if it owns none, the app scope its cgroup names
-  (`porter_dbus::ProcCallers`, `/proc/<pid>/cgroup` only). `shell` is any connection that owns a name listed under
+  (`account_dbus::ProcCallers`, `/proc/<pid>/cgroup` only). `shell` is any connection that owns a name listed under
   `shell` in `voiced.toml`; `app` is never derived, it is whoever owns the name a `Route` names (`GetNameOwner`).
 - **One loop, two pure machines.** Every command, capture frame, inferd event and playback report is an input to one
   task that runs `utterance_step` and `speech_step` and carries out their effects. Slow things run elsewhere and come
@@ -1203,7 +1203,7 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
   the existing machine row); an Ask never does.
 - **Bodies.** Voice1 bodies are `voice_wire::Envelope { vocab, body }` JSON in `s`; a foreign vocabulary or bad JSON
   is `org.bardo.Voice1.Error.Malformed`. The refusals are `VoiceRefusal`'s error names, one to one. The event fd frame
-  is a 4-byte big-endian length then the envelope (porter-core's framing with `VoiceVocab`). `wire::{seal, frame,
+  is a 4-byte big-endian length then the envelope (account-core's framing with `VoiceVocab`). `wire::{seal, frame,
   unframe, Unframed, MAX_FRAME}` are exported for shell's client.
 - Earcons: a two-note blip generated in integers (`earcon_samples`), played on its own stream at 24 kHz when
   `earcons = "on"`.
@@ -1212,10 +1212,10 @@ Closes the voiced rows of the todo table: `voiced::serve` is filled and the bina
 
 1. **`CaptureStream: Send + Sync`** (was `Send`) and **`serve<D: AudioDevice + 'static>`**: the loop holds the
    stream across awaits in a spawned task. Every implementor in this repo already meets both.
-2. **porter, `Transport::prepare`** (landed, porter d903d6a): `BusWarm` is now `TransportWarm<DbusTransport>` and asks
+2. **the accounts service, `Transport::prepare`** (landed, the accounts service d903d6a): `BusWarm` is now `TransportWarm<DbusTransport>` and asks
    `Transport::prepare(stt_need, DataClass::Voice, tier, interactive options)`; a `Denied` or `Unreachable` reads as
-   `Unavailable`, as before. voiced keeps `porter-dbus` only for `ProcCallers` (`peer.rs`); the raw `InferenceProxy`
-   is gone. Nothing else is asked of porter.
+   `Unavailable`, as before. voiced keeps `account-dbus` only for `ProcCallers` (`peer.rs`); the raw `InferenceProxy`
+   is gone. Nothing else is asked of the accounts service.
 3. **the shell, the consent source** (ask): voiced decides `VoiceUse` per call by reading the shell's `settings.toml` (the
    unit binds `%h/.config/shell` read-only). It reads the `[voice]` table: `hold_to_talk = "off"` is Off; `consent =
    "given"` (or a `[voice.consent] given = <unix seconds>` table) is On; `"declined"` is Off; anything else, a missing
@@ -1276,9 +1276,9 @@ roles, consent text, framing, errors, earcons, the PipeWire node classification 
 
 ### v-warm-prepare (2026-10-07)
 
-`BusWarm` goes through porter-client's `Transport::prepare` (`TransportWarm<T>`, `BusWarm` is the alias over
+`BusWarm` goes through account-client's `Transport::prepare` (`TransportWarm<T>`, `BusWarm` is the alias over
 `DbusTransport`); `Warm` and `FixedWarm` are unchanged. New `tests/it/warm.rs` (3 tests: readiness pass-through, refusal
-and missing inferd read as `Unavailable`, the need/class/tier asked) with `ScriptedInfer::prepared`. porter's
+and missing inferd read as `Unavailable`, the need/class/tier asked) with `ScriptedInfer::prepared`. The accounts service's
 voice-chat contract (11c7a2e): voiced only drives the `Transcribe` path (16 kHz, EndOfAudio), so it needs no change;
 `RouteLog`/`footer_line` already handle two `Routed` per voice turn (each `Stage` clears the pending `Routed`), now
 pinned by `a_voice_turn_has_two_routed_and_one_answer_line` in companion-wire. `todo!()` counts unchanged.
@@ -1320,10 +1320,10 @@ Gaps and decisions.
 - Not run here: `--engine local` and `--engine cloud` (no network, not our machine config). The gate runs `scripted` only.
 
 Interface asks.
-- I1 (porter, accountd): a file-backed key store for private-bus runs, as memoryd has: a `test-keys` feature and
+- I1 (the accounts service, accountd): a file-backed key store for private-bus runs, as memoryd has: a `test-keys` feature and
   `ACCOUNTD_KEYS=file:<path>` (accountd hard-codes `Oo7Secrets`, which needs a Secret Service). Also say where a scratch
   accountd finds provider files (openrouter). Until then `--engine cloud` cannot hold a key.
-- I2 (porter, inferd): let `record` (or a new `tee`) capture the answers of a live engine, so the trace can be inferd's own view
+- I2 (the accounts service, inferd): let `record` (or a new `tee`) capture the answers of a live engine, so the trace can be inferd's own view
   and the tap in action-dbus can go.
 
 ## hostile-model: model output is hostile input
@@ -1419,7 +1419,7 @@ Interface asks.
   `ChatReply` (say `tool_parse: Option<ToolParseFault>`). `PlannerModel::read` should test it first and map it to
   `PlanFault::CallInText` (the same typed refusal); `leaked_call` stays as the fallback for engines that do not report it.
   No actions code depends on the field.
-- porter (inferd): none needed. (Noted above: it unwraps a fenced record.)
+- The accounts service (inferd): none needed. (Noted above: it unwraps a fenced record.)
 
 ## loop-guard: a planner that repeats itself is stopped and the person is asked
 
@@ -1525,12 +1525,12 @@ desktop's extras are additive. The actions service's portable core is an in-app 
   workspace is unchanged, while the workspace declares it with `default-features = false` and each
   desktop crate names `dbus` (as the shell already does), so every in-workspace build is what it was.
 - `agent-planner` (new, portable): companiond's `PlannerModel`, `Catalogue`, prompt rendering, `step_text` (loop-guard) and
-  `read_call` moved out unchanged, generic over any `porter_client::Transport`. `PlannerModel::on_bus`
+  `read_call` moved out unchanged, generic over any `account_client::Transport`. `PlannerModel::on_bus`
   is gone (an inherent impl cannot live in another crate); companiond writes
   `PlannerModel::new(action_dbus::inferd_transport(connection))`. companiond re-exports every name, so
   its tests and its callers are unchanged.
 - `agent-inapp` (new, portable): `InAppAgent<P, C, T, R, M, K>` over the app's `IntentProvider` `P`,
-  its `ContextSource` `C`, its `ConfirmSheet` `T`, a `Reviewer` `R`, a `porter_client::Transport` `M`
+  its `ContextSource` `C`, its `ConfirmSheet` `T`, a `Reviewer` `R`, a `account_client::Transport` `M`
   and a router `Clock` `K`. `ask(text)` records the person's turn, then runs `agent_step` over the
   planner and the router (gate, Cedar, reviewer, budgets, the sheet) until the task is done, asks a
   question, pauses or fails, and returns a `Reply` (words, the calls and how each ended, the
@@ -1561,13 +1561,13 @@ desktop's extras are additive. The actions service's portable core is an in-app 
 What is still missing for a real app (mailo, anyview) to host it, each with its owner. Items marked
 DONE were filled by the inapp-seams lane (see the next section); the rest are listed as they were.
 
-1. Model access without inferd. `porter-client::InProcess` exists, but its inference broker is the
+1. Model access without inferd. `account-client::InProcess` exists, but its inference broker is the
    `SessionHost` seam and the only implementation is `NoBroker` (every `open` is `Unreachable`). A
    portable broker, the routing of a `Need` and `DataClass` to a model account and a local or HTTP
-   engine, is inferd's brain as a library without the bus. Owner: porter (a `porter-infer-host` or
+   engine, is inferd's brain as a library without the bus. Owner: the accounts service (a `account-infer-host` or
    `inferd-core` crate with a `SessionHost`). Until it exists an app reaches a model only by running
    inferd and the service locator socket (`SocketTransport`, feature `socket`); the Windows named pipe is not
-   built there either (porter).
+   built there either (the accounts service).
 2. DONE. Reviewer and policy writer over a model. `agent-models` (portable) holds `TransportModel<T>`,
    `TransportWriter<T>` and `reviewer_over`; intentd's `InferdModel` and `InferdWriter` are thin adapters
    (the bus constructor). `InAppKit::writer` takes the writer, `InAppParts::reviewer` the cascade.
@@ -1620,7 +1620,7 @@ DONE were filled by the inapp-seams lane (see the next section); the rest are li
   planner crate cannot) and no longer by readerd alone.
 
 Interface asks.
-- porter: item 1 (a `SessionHost` that routes to a model without the bus) and the Windows named pipe.
+- The accounts service: item 1 (a `SessionHost` that routes to a model without the bus) and the Windows named pipe.
 - The memory service: none (item 3 is done over `memory-client` `in_process`).
 - Bardo: `ds-desktop` for item 10; nothing else.
 - The model layer: none.
@@ -1737,7 +1737,7 @@ wrote no content, the daemon answered `ModelError::Unparseable` (0 tokens), the 
 stage sends `Reasoning::Off` (the record carries its own `reason`). A new `ReviewError::OnlyThought` names the
 case in traces and the audit: a reply with no text and no tool call but a non-empty `thought`, or a failed
 turn whose events were only `ThoughtDelta`s (the reviewer's sink watches the kind of output that went by).
-It is handled like `Unparseable` (the cascade tightens to asking). **Interface ask (porter-infer):** when
+It is handled like `Unparseable` (the cascade tightens to asking). **Interface ask (inference-core):** when
 the daemon fails a turn with `Unparseable` it returns no `ChatReply`, so the thought and the stop reason
 (`MaxTokens`) are lost; the sink's `ThoughtDelta`s are the only evidence. A `ModelError::OnlyThought`, or
 the partial reply on a failed turn, would say it without the sink. In the live traces the failed turns showed
@@ -1862,18 +1862,18 @@ The `SessionLog` seam, and what companion-memory needs from the memory service i
 
 ## Cross-repo dependencies are git deps (gitdeps lane)
 
-porter, the memory service, the model layer and Bardo are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
-`fuzz/Cargo.toml`): a plain `git clone` builds with no sibling. The URLs are spelled as porter and the memory service spell
-them (`https://github.com/PoHsuanLai/<repo>`, no `.git`) and the revs match porter's pins of the model layer and Bardo,
+The accounts service, the memory service, the model layer and Bardo are git dependencies at pinned revs in the root `Cargo.toml` (and `prov` in
+`fuzz/Cargo.toml`): a plain `git clone` builds with no sibling. The URLs are spelled as the accounts service and the memory service spell
+them (`https://github.com/PoHsuanLai/<repo>`, no `.git`) and the revs match the accounts service's pins of the model layer and Bardo,
 so one copy of `cua-action` and `model-*` is in the graph.
 
 - **Override for cross-repo work**: a `[patch."https://github.com/PoHsuanLai/<repo>"]` table with `path` lines
   for each crate named, in a `.cargo/config.toml` in a directory ABOVE the checkout (cargo merges parent
   directories' config; never commit it). Commit `Cargo.lock` only from a build without the override.
-- **`action-accept/build.rs`** no longer reads `../porter` and `../memory`: it runs `cargo install --git <url>
+- **`action-accept/build.rs`** no longer reads `../accounts` and `../memory`: it runs `cargo install --git <url>
   --rev <pin> --locked --debug` for `inferd` and `memoryd`, reading the rev from the workspace manifest's own
-  porter and the memory service lines, into `<target>/accept-siblings/<repo>`. It needs network at build time (the gate's build
-  step has it; its jail runs the finished archive). `ACCEPT_PORTER_DIR` / `ACCEPT_MEMORY_DIR` name a local checkout
+  The accounts service and the memory service lines, into `<target>/accept-siblings/<repo>`. It needs network at build time (the gate's build
+  step has it; its jail runs the finished archive). `ACCEPT_ACCOUNT_DIR` / `ACCEPT_MEMORY_DIR` name a local checkout
   instead.
 - **Still sibling-based by design** (developer tools, not the build): `dist/install-dev.sh`
   (`INSTALL_DEV_SIBLINGS`), `dev/live-smoke.sh` and `action-accept`'s catalogue default (`../models/catalog`;
@@ -2260,10 +2260,10 @@ command outside the sandbox.
   returns `ShellFault::CannotSandbox`, `Terminals::capabilities` leaves the `terminal` client
   capability off so an agent is told it has no terminal, and `terminal/create` is refused before the
   person is asked. It never falls back to running unsandboxed.
-- **The `Execute` effect.** prov's `Effect` is porter's frozen enum (`Read < UndoableWrite <
-  Outbound < Destructive`) and has no `Execute`; design note D-4 asks for one. Until porter adds it,
+- **The `Execute` effect.** prov's `Effect` is the accounts service's frozen enum (`Read < UndoableWrite <
+  Outbound < Destructive`) and has no `Execute`; design note D-4 asks for one. Until accounts adds it,
   The actions service gates an `Execute` as `EXECUTE_AS = Outbound`, the severity at which untrusted input into the
-  call is never grantable. Ask for porter: `Effect::Execute` between `Outbound` and `Destructive`.
+  call is never grantable. Ask for the accounts service: `Effect::Execute` between `Outbound` and `Destructive`.
 - **The rules** (`rule_execute`, tables in `action-core/tests/it/execute.rs`): a reviewer's `Deny`
   refuses; a command that cannot be sandboxed asks with the reason and offers no "always"; untrusted-
   derived arguments ask and offer no "always" (a held grant does not stand in); a tripped breaker or
@@ -2294,7 +2294,7 @@ command outside the sandbox.
   real bubblewrap tests that print `SKIP real sandbox test: <reason>` and return when `bwrap` is
   missing or the kernel refuses namespaces), `agent-acp-server` (`Terminals` against the schema).
 - **Deferred.** Landlock backend; resource limits (rlimits, a cgroup, a wall-clock limit); a network
-  allowlist; `Effect::Execute` in porter; the settings page for terminal grants (the generic
+  allowlist; `Effect::Execute` in the accounts service; the settings page for terminal grants (the generic
   standing-grant list already shows them); the S4 dispatch and the `agent-reported` records (closed by "acp-client" below); a
   hostile-corpus case for `terminal/create` with `curl | sh`.
 
@@ -2616,9 +2616,9 @@ bubblewrap process, not in its arguments, so a key is never on a command line.
 set to those (for Claude Code `ANTHROPIC_BASE_URL` and `ANTHROPIC_API_KEY`; whether the adapter wants
 `ANTHROPIC_AUTH_TOKEN` is unverified and is a config line); `CloseEndpoint` on close. `handoff` (P2) for a program that
 cannot take a base URL: `request_agent_grant` for the session, `issue_credential`, the key as `Value` (in the child's
-environment; porter's residual-risk note applies) or `File` (`<key_env>_FILE` names the tmpfs file, bound read-only;
+environment; the accounts service's residual-risk note applies) or `File` (`<key_env>_FILE` names the tmpfs file, bound read-only;
 for programs that read such a variable, none known); `revoke_credential` on close. `login`: nothing from us; the agent
-signs itself in and the actions service never reads its state. The launcher's duties from porter's `credential` docs, and where
+signs itself in and the actions service never reads its state. The launcher's duties from the accounts service's `credential` docs, and where
 each is tested (`agent-launch/tests/it/{launch,login,e2e}.rs`): key in the child only and after a cleared environment
 (`the_endpoint_route_...`, `a_handed_off_key_...`); a command line without the key (same tests scan
 `agent_bwrap_args`); revocation ends the process (`a_revocation_ends_the_process_...`, `Registry` and
@@ -2629,9 +2629,9 @@ listed programs; login and logout requests run the entry's own command (outside 
 exactly the environment the daemon hands in) and report only `Ready`, `Failed(reason)` from the closed set.
 - **Not done: a descriptor handed to the child.** `Delivery::File { child_fd }` with a memfd needs the child to inherit
   an fd at a given number, which std offers only through `pre_exec` (unsafe, denied here). The `File` delivery uses
-  porter's tmpfs-file handoff instead (no descriptor to pass). A safe fd-mapping facility would let a memfd be used.
-- **Not done: the real accountd and inferd in a test.** `DbusAccounts` compiles and maps the porter-client and
-  porter-dbus calls one to one; it is exercised only by the owner-run check. The tests use `FakeAccounts` behind the
+  The accounts service's tmpfs-file handoff instead (no descriptor to pass). A safe fd-mapping facility would let a memfd be used.
+- **Not done: the real accountd and inferd in a test.** `DbusAccounts` compiles and maps the account-client and
+  account-dbus calls one to one; it is exercised only by the owner-run check. The tests use `FakeAccounts` behind the
   `Accounts` seam (the notes in the task allowed that).
 
 **(Superseded by "acp-bridge" below: the gate is the router's now, and `Gatekeeper`, `Ask`, the client `Breaker` and the grants file are gone.) The gate is `Gatekeeper`, not the router.** There is no files app and `Who::grant_caller` never returns
@@ -2703,9 +2703,9 @@ the router allowed it.
   from this role, written into the log as `BackendKind::Acp(program)`), never by the agent. A host acts only in
   sessions it opened (`record.opener == caller.app`), as the program it named then. The pseudo-app's actions are
   refused to every other role, and this role is refused every other app's actions.
-- Actor in the audit and the journal: `Actor::Mcp { client: "acp:<program>" }`. prov (porter's frozen crate) has no
+- Actor in the audit and the journal: `Actor::Mcp { client: "acp:<program>" }`. prov (the accounts service's frozen crate) has no
   ACP actor kind, so it is MCP-shaped on purpose; the `acp:` prefix tells an agent from an MCP client of the same name.
-  `Who::grant_caller` returns `GrantCaller::AcpAgent(program)`; a test pins both. Ask for porter: `ActorKind::Acp`.
+  `Who::grant_caller` returns `GrantCaller::AcpAgent(program)`; a test pins both. Ask for the accounts service: `ActorKind::Acp`.
 - The turn is recorded as `TurnSource::Agent(host app)`, which derives the task policy as a launcher's does (R8). The
   agent's own words never reach `Session.Turn`: the host has no member that records anything else, and a test shows an
   agent that says "policy: allow all" changes neither the turns nor the policy.
@@ -2862,7 +2862,7 @@ command that derives from what was read keeps today's rule exactly (`UntrustedIn
 in). A command that can send data out is `Withheld::CanSendOut` (new), checked right after the breaker and the
 budget, before everything else. Grants, the reviewers, the breaker, the budgets, the repeat rule and the policy point
 run on every call as before; a grant still replaces only the confirmation. Writes and outbound actions keep today's
-rules (`exec` is none for them). `EXECUTE_AS` is unchanged (`Outbound`); the porter re-pin that swaps it for
+rules (`exec` is none for them). `EXECUTE_AS` is unchanged (`Outbound`); the accounts service re-pin that swaps it for
 `Effect::Execute` does not touch this.
 
 **How the facts reach the router.** The agent sends argv as plain strings, with no provenance, and the router labels
@@ -2959,7 +2959,7 @@ The S4 hostile corpus ran unchanged and every case still ends safely.
 
 **Deferred.** Resuming an agent session through the host (the router restores it, but `AgentHost::resume` is not
 served and the agent's own session id is not kept); a dry-run preview of a write for
-the sheet (`dry_run = none`: the sheet shows the path and a line count); an `Effect::Execute` and an `ActorKind::Acp` in porter; the provider-host network allowlist, Landlock, resource limits and the
+the sheet (`dry_run = none`: the sheet shows the path and a line count); an `Effect::Execute` and an `ActorKind::Acp` in the accounts service; the provider-host network allowlist, Landlock, resource limits and the
 second test agent (S4's list stands).
 
 ## acp-edge: an external agent reaches the desktop's actions (D-3)
@@ -3181,7 +3181,7 @@ holds, and that nothing of the preset is a file or a bind; they never start Clau
 actions: the person is asked once per action, not on every search and read. Only `Effect::Read`; never a write, an
 outbound, an execute or a destructive call.
 
-**Scope chosen: `StandingScope::Reads { action }`, per action** (the actions service's own grant type; no porter change). It is
+**Scope chosen: `StandingScope::Reads { action }`, per action** (the actions service's own grant type; no accounts service change). It is
 keyed like the other agent grants, by (program, app, action): `GrantCaller::AcpAgent(program)` is the caller and the
 `ActionRef` carries the app and the action, so `mail.thread.search` is one grant and `mail.thread.read` another. The
 app-wide "all its read-only actions" scope was not chosen: it would quietly cover a read action an app adds later, and
@@ -3368,9 +3368,9 @@ harness cannot reach them through `Rig`: `ScriptedWriter` calls, `FakeMemory` an
 
 ## runwhere (2026-10-09): where the assistant may run
 
-- Model routing is not in action-router (that is the action router); it is porter's `route` plus the `ai.*` keys of inferd's own config. The actions service had no setting of its own, so the places setting lives in action-settings (`places/`), table `assistant` in `actions/settings.toml`.
+- Model routing is not in action-router (that is the action router); it is the accounts service's `route` plus the `ai.*` keys of inferd's own config. The actions service had no setting of its own, so the places setting lives in action-settings (`places/`), table `assistant` in `actions/settings.toml`.
 - Nothing older says yes to a particular computer or account (`ai.local_only` is one switch for every cloud model), so migration leaves every known place Off.
-- Needs porter: a call listing own computers and signed-in cloud accounts (name, provider) and the models each offers, implementing `PlaceSource`; and `route` at inferd honouring the allowed set the actions service sends. Not built here.
+- Needs the accounts service: a call listing own computers and signed-in cloud accounts (name, provider) and the models each offers, implementing `PlaceSource`; and `route` at inferd honouring the allowed set the actions service sends. Not built here.
 
 ## Shadow Quick flagger (phase 1 of the decision-model trial)
 
@@ -3387,11 +3387,11 @@ the shadow's false-negative rate is no worse in every category. `action-live cor
 appends a "Shadow flagger" section to the report (P(flag) per case, AUC, FNR with Wilson bounds
 and benign FPR at 12%/30%/50%, flags where the live Quick passed). The scripted engine uses a
 deterministic stand-in readout (`action-fake::FeatureReadout`); local and cloud runs score
-nothing until porter returns option probabilities.
+nothing until the accounts service returns option probabilities.
 
-Porter does not return token log-probabilities: `logprobs` is dropped without a word in
-inferd's OpenAI front, and `ChatReply` carries none. The ask (porter, no edit made here):
-`porter-infer` `ChatControl` gains `scores: Knob<ScoreOptions>`; with `ReplyShape::Choice`, a
+The accounts service does not return token log-probabilities: `logprobs` is dropped without a word in
+inferd's OpenAI front, and `ChatReply` carries none. The ask (the accounts service, no edit made here):
+`inference-core` `ChatControl` gains `scores: Knob<ScoreOptions>`; with `ReplyShape::Choice`, a
 reply gets `scores: Option<OptionScores>`, one `(option, Permille)` per declared option, the
 first-token log-probabilities of the constrained choice renormalised over the options (sum
 1000). inferd passes it to the model layer's `TurnRequest`/`Shape::Choice` (vLLM `logprobs` /
@@ -3419,10 +3419,10 @@ by the large model on fatcat; the corpus must grow roughly tenfold before any pr
 
 ## cloudkey (2026-10-09): one key entry for every cloud world
 
-- porter now has `test-keys` (I1 above is met): `ACCOUNTD_KEYS=file:<abs path>`, 0600 file, refused when loose. A cloud run no longer needs a key typed per world: `--accountd-home DIR` (action-live, so also `scripts/eval-release.sh`) points every world's accountd at `DIR/accountd.keys` and copies the non-secret records into the scratch root (`DIR/state` to `.local/state`, which holds `porter/registry.json` and the grants; `DIR/data` to `data`, the provider file). The harness only stats the key file; accountd alone opens it.
+- The accounts service now has `test-keys` (I1 above is met): `ACCOUNTD_KEYS=file:<abs path>`, 0600 file, refused when loose. A cloud run no longer needs a key typed per world: `--accountd-home DIR` (action-live, so also `scripts/eval-release.sh`) points every world's accountd at `DIR/accountd.keys` and copies the non-secret records into the scratch root (`DIR/state` to `.local/state`, which holds `accounts/registry.json` and the grants; `DIR/data` to `data`, the provider file). The harness only stats the key file; accountd alone opens it.
 - `DIR` must be absolute, 0700 with a 0600 key file, and outside every git work tree (`live::accountd_home`, unit-tested). An empty home stops the run with the exact `dev/live/cloud-key.sh` command instead of waiting on stdin.
 - `dev/live/cloud-key.sh DIR ACCOUNTD [--key-file FILE]` does the one-time fill on a private bus (`dbus-run-session`, scratch HOME and XDG). accountd's `add` accepts a non-tty stdin (echo is turned off only on a tty) but reads two lines: the key, then the answer to "Add this account?". So `--key-file` pipes `cat FILE` plus a blank line (the default, yes) into it; a bare `< FILE` redirect would end in EOF at the confirmation. The key is in a pipe, never in argv or the environment.
-- The accountd provider files are not in `/usr/share/porter` on this machine; the home keeps a copy of `openrouter.toml` under `data/porter/providers`, which a scratch accountd finds through `XDG_DATA_HOME`. The old per-world flow never supplied one.
+- The accountd provider files are not in `/usr/share/accounts` on this machine; the home keeps a copy of `openrouter.toml` under `data/accounts/providers`, which a scratch accountd finds through `XDG_DATA_HOME`. The old per-world flow never supplied one.
 - `action-live smoke` now honours `--accountd` and `--accountd-home` (the flows' `World` starts accountd with the home's key file and records; `--accountd` alone is refused there), and `--repeat N` plays each flow N times (`<flow>.runKofN`). The ACP agent path (`--agent acp`) is unchanged and takes neither.
 - `dev/live/inferd.cloud.example.toml` used `cloud/<id>` ids, which match the catalogue (`ai.model.text` is `cloud/<entry id>`; entries carry `openrouter` reach rows; accountd's provider id is `openrouter`). The example now leaves the three tiers empty: each run pins all three to one model.
 
@@ -3533,7 +3533,7 @@ Open, each needs an interface another repo or the wire owns:
   up to here" the person can ask for; it is a new typed request on the shell-facing session API, so it
   waits for that wire change. The router's `rebuild` still restores whole `turns` and `history`; it
   should keep `plan.summary` on the record and hand `live_*` to the view.
-- `CacheBreak` is not sent: porter's `ChatRequest` has no slot for it (the model layer's `TurnRequest` has
+- `CacheBreak` is not sent: the accounts service's `ChatRequest` has no slot for it (the model layer's `TurnRequest` has
   `PromptCache` only as an on/off in `LlamaExtras`). It needs a typed `cache_break` field and a
   provider mapping (a cache marker after the system message and the tools).
 - The tools follow the view's action order, which `uses_first` changes when a skill is loaded
@@ -3541,7 +3541,7 @@ Open, each needs an interface another repo or the wire owns:
 
 ## Callers by unit (w3-callers)
 
-Every agent daemon identifies a caller through porter's `ProcCallers` (the bus names the process, `/proc/<pid>/cgroup`
+Every agent daemon identifies a caller through the accounts service's `ProcCallers` (the bus names the process, `/proc/<pid>/cgroup`
 names the unit or app scope, the daemon's callers file names the role) and checks the standing the method asks for
 (`action_dbus::callers`: `Identity`, `Standing`, `require`). Nothing decides a caller's standing from a bus name it
 owns, `GetNameOwner` or a uid alone; an unidentified caller is refused.
@@ -3673,7 +3673,7 @@ The planner's role (`RoleText`) is where the helper's role and the job's goal ar
 (every literal gains `helper: None`); `DenyCode::OwnedByAnotherJob` (the shell matches on
 `DenyCode`: it must handle it); `NoteAsk::Helper`, `AuditRecord::Helper` (a consumer that matches
 `AuditRecord` exhaustively: the shell, cua); `Roster::helpers`, `HelperRosterLine`; new dependency
-`porter-infer`. `action-router`: `HELPER_POST_JOB`, `HELPER_PROPOSE`, `SessionRecord::helper`.
+`inference-core`. `action-router`: `HELPER_POST_JOB`, `HELPER_PROPOSE`, `SessionRecord::helper`.
 `agent-planner`: `PlannerModel::{with_open_options, set_role}`, a "Helpers the person keeps"
 section. `companion-tasks`: `HelperDesk`, `Companion::{with_desk, set_desk, open_job, run_job}`,
 `Change::HelpersChanged`. `action-dbus`: `org.bardo.Companion1.Helpers` (proxy, skeleton, the
@@ -3681,7 +3681,7 @@ checked-in XML). `manifests/org.bardo.Companion.toml`: `companion.helper.post_jo
 `companion.helper.propose` (named under `companion.` because an action's first element must be
 its app's prefix; the brief said `helpers.*`).
 
-**Assumed from porter (the coordinator re-pins):** `prov::HelperId` (a serde string; only
+**Assumed from the accounts service (the coordinator re-pins):** `prov::HelperId` (a serde string; only
 `action_core::helper::ids` names its construction), `AgentRole::Helper { helper, task }`,
 `Asker`, `OpenOptions::{with_asker, with_model}`, `memory_core::AreaTag::Helpers`. Messages to
 and from a job rely on `AgentRef::of(&Actor::Companion { role: Helper { task, .. }, .. })`
@@ -3856,7 +3856,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
 - `Companion<P, I, K, S>` (companion-tasks), `NativeHost`, `NativeBackend`, `Hub`, `HubHost` and the companiond
   serve code now take `P: Planner`. The `Companiond`, `Daemon` and `LiveHost` aliases and `agent-inapp`'s
   `Tasks` alias spell `PlannerModel<transport>`. `InAppParts::model` is still a transport. `companion-tasks` and
-  `agent-native` no longer depend on `porter-client`; companiond keeps it as a dev-dependency (its test transport).
+  `agent-native` no longer depend on `account-client`; companiond keeps it as a dev-dependency (its test transport).
 - `companion_tasks::planner_for` is deleted. The two call sites build
   `PlannerModel::new(transport).with_open_options(companion_tasks::open_options(card))`.
 - `ScriptedPlanner` (feature `testing`) plays a list of `converse` results and `summarise` results, keeps the
@@ -3865,7 +3865,7 @@ again anyway). `Roster.helpers` is for the planner's view; the shell's list is `
   The companiond and agent-native tests stay on `PlannerModel` over `ScriptedInfer`: they check the request and the
   reading of tool calls through the real model.
 - `planner.rs` was 820 lines; the meta tools moved to `meta_tools.rs` and the reply reading to `meta_reply.rs`
-  (planner.rs is now 463 lines). `Cargo.lock` was edited by hand (two `porter-client` edges out, the
+  (planner.rs is now 463 lines). `Cargo.lock` was edited by hand (two `account-client` edges out, the
   planner's dev self-dependency in).
 - The shell, the Settings app, files, mailo and cua at origin/master: no use of `PlannerModel` or `agent-planner` (the Settings app's
   FINDINGS.md names `PlannerModel::new` in prose only).
@@ -3982,10 +3982,10 @@ Two commits: the harness seams first, then the split.
 ## Layering lane D4.12: one proc-root crate (2026-10-28)
 
 - New crate `action-procroot` (C): `terminal_scope(root, pid)` and `own_uid()`. It replaces two copies of the cgroup-to-terminal read (`intentd/src/peer.rs` `in_terminal`, a `bool` over `is_terminal_scope`; `companiond/src/speaker.rs` `in_terminal`, a `TerminalScope`) and four copies of the `/proc/self` owner read (`intentd` `peer.rs` and `link.rs`, `companiond` `speaker.rs`, `voiced` `peer.rs`) and one inline (`agent-acp-host` `edge/serve.rs`). intentd's terminal test table moved into the crate.
-- The `ProcRoot` type itself was already one type, porter's `porter_daemon::ProcRoot`; the actions service had a second spelling of it in companiond (`HarnessSeams::proc_root: PathBuf`, compared with `/proc` to find the fixture; `serve_on_rooted` and `serve_with_routines` took a `PathBuf`). companiond now takes `ProcRoot` from `main` through `HarnessSeams`, as intentd does; `serve_on_rooted`, `serve_with_routines` and `Speakers::new` take a `ProcRoot`; `serve_on` passes `ProcRoot::System`. `accept-companiond` builds `ProcRoot::Fake` (action-accept gains a `porter-daemon` dependency; companiond does not re-export it).
+- The `ProcRoot` type itself was already one type, the accounts service's `account_daemon_support::ProcRoot`; the actions service had a second spelling of it in companiond (`HarnessSeams::proc_root: PathBuf`, compared with `/proc` to find the fixture; `serve_on_rooted` and `serve_with_routines` took a `PathBuf`). companiond now takes `ProcRoot` from `main` through `HarnessSeams`, as intentd does; `serve_on_rooted`, `serve_with_routines` and `Speakers::new` take a `ProcRoot`; `serve_on` passes `ProcRoot::System`. `accept-companiond` builds `ProcRoot::Fake` (action-accept gains a `account-daemon-support` dependency; companiond does not re-export it).
 - One behaviour note: intentd's cli-role test is now `TerminalScope::from_cgroup(..).is_ok()` (the same scope rule as companiond's, and the leaf must be graphic ASCII, at most 255 bytes) where it was `is_terminal_scope` on the whole path; every scope the table of the old test names gives the same answer.
-- readerd's and agent-acp-bin's `HarnessSeams` (and its crate-private `Callers`) take `ProcRoot` too, with hand-written `Default` (`ProcRoot::System`; `ProcRoot` has no `Default`). `action-accept`'s `seams::proc_root` returns a `ProcRoot` for every daemon, so no `Option<PathBuf>` is left on the proc-root path. `Identity::on` (action-dbus) still takes `Option<&Path>`; the daemons convert at the call with `ProcRoot::fixture()`. readerd and agent-acp-bin gain a `porter-daemon` dependency.
-- The memory service (memoryd) has its own `MEMORYD_PROC_ROOT` choice and cgroup read; not touched. For a later lane: it could take `porter_daemon::ProcRoot` the same way.
+- readerd's and agent-acp-bin's `HarnessSeams` (and its crate-private `Callers`) take `ProcRoot` too, with hand-written `Default` (`ProcRoot::System`; `ProcRoot` has no `Default`). `action-accept`'s `seams::proc_root` returns a `ProcRoot` for every daemon, so no `Option<PathBuf>` is left on the proc-root path. `Identity::on` (action-dbus) still takes `Option<&Path>`; the daemons convert at the call with `ProcRoot::fixture()`. readerd and agent-acp-bin gain a `account-daemon-support` dependency.
+- The memory service (memoryd) has its own `MEMORYD_PROC_ROOT` choice and cgroup read; not touched. For a later lane: it could take `account_daemon_support::ProcRoot` the same way.
 - `Folder` seam: not added. The only audit row (H16, `action-checkpoint-git` `files.rs` and `git.rs`) asks for a fake of `symlink_metadata`, `remove` and `create_dir_all`, but those tests exist to meet hostile folders (symlinks, permissions) and must run on the real file system; a fake would test the fake. No other C-tier library reads a directory in a way a test wants to fake (`agent-skills-disk` already has `DiskFolder` behind a skills trait).
 - Not verified by a build in the lane that made the change; `cargo metadata --offline` resolved.
 
@@ -4018,7 +4018,7 @@ Two commits: the harness seams first, then the split.
 
 ## Layering lane D4.10a: permission-core (2026-10-28)
 
-- New P crate `permission-core`: `review`, `mode`, `grant`, `grant_space`, `space_access`, `standing`, `limit`, `rules`, `floor`, `standing_match`, `standing_offer`, `agent_app`, `exec_derive`, `exec_facts`, `exec_reach`, `execute`, `pattern`, `reach_menu` and `task_policy` left `action-core` with their inline tests. It depends on `action-vocab`, `action-manifest`, `porter-core`, `prov`, `sandbox` (with `standing`), `serde`, `serde_json`, `thiserror` and `url` (for `pattern`), and on no `action-core` item; `check-core-layers.sh` found 0 upward edges. `action-core` depends on it and no longer on `sandbox` or `url`.
+- New P crate `permission-core`: `review`, `mode`, `grant`, `grant_space`, `space_access`, `standing`, `limit`, `rules`, `floor`, `standing_match`, `standing_offer`, `agent_app`, `exec_derive`, `exec_facts`, `exec_reach`, `execute`, `pattern`, `reach_menu` and `task_policy` left `action-core` with their inline tests. It depends on `action-vocab`, `action-manifest`, `account-core`, `prov`, `sandbox` (with `standing`), `serde`, `serde_json`, `thiserror` and `url` (for `pattern`), and on no `action-core` item; `check-core-layers.sh` found 0 upward edges. `action-core` depends on it and no longer on `sandbox` or `url`.
 - The `Derive` step of the design (the policy writer trait leaving `task_policy`) was already done: `PolicyWriter`, `Derived` and `Corrected` live in `action-core`'s `derived.rs`, and `task_policy` imports nothing from `planner` or `call`.
 - Tests that went with the modules into one `it` binary: `grant_space`, `limits`, `standing` (split: the offer rule's tests are now `offer.rs`, since the file was 640 lines), `task_policy`, `task_paths` and `url_hosts`, plus the small builders they share in `tests/it/support`. `action-core`'s `helper` test builds its own reach policy instead of reaching into the `task_policy` test module.
 - Re-exports gone: `standing` re-exported `sandbox`'s `AbsPath`, `Cover`, `PathFault` and `RootState`, and `action-core` re-exported them at its root; importers now say `sandbox::`. `companion-tasks` re-exported `COMPANION_APP`, `SKILL_LOAD`, `PROPOSE_ROUTINE` and `HAND_ON_JOB` (as `POST_JOB`) from `read`, `helpers::menu` and `helpers::desk_calls`; its modules now import them from `permission_core`.
@@ -4029,7 +4029,7 @@ Two commits: the harness seams first, then the split.
 
 ## Layering lane D4.13d: companion-model (2026-10-28)
 
-- New P crate `companion-model`: `helper` (with `agent`, `apps`, `apps_wire`, `board`, `card`, `hand`, `ids`, `job`, `notice`, `post`, `reach`, `records`, `rules`, `seat`), `routine` (with `book`, `kept`, `schedule`, `trigger`) and `hand` left `action-core` with their tests. It depends on `action-vocab`, `action-manifest`, `permission-core`, `porter-core`, `porter-infer` (moved with `helper/card.rs`), `prov`, `memory-core`, `serde`, `serde_json` and `thiserror`, and on no `action-core` item; `check-core-layers.sh` found 0 upward edges. `action-core` depends on it and no longer on `porter-infer`.
+- New P crate `companion-model`: `helper` (with `agent`, `apps`, `apps_wire`, `board`, `card`, `hand`, `ids`, `job`, `notice`, `post`, `reach`, `records`, `rules`, `seat`), `routine` (with `book`, `kept`, `schedule`, `trigger`) and `hand` left `action-core` with their tests. It depends on `action-vocab`, `action-manifest`, `permission-core`, `account-core`, `inference-core` (moved with `helper/card.rs`), `prov`, `memory-core`, `serde`, `serde_json` and `thiserror`, and on no `action-core` item; `check-core-layers.sh` found 0 upward edges. `action-core` depends on it and no longer on `inference-core`.
 - Paths: `helper` and `routine` stay public modules, so `action_core::helper::X` is `companion_model::helper::X` and `action_core::routine::X` is `companion_model::routine::X`. The `hand` items were re-exported at the `action-core` root and are now at the `companion-model` root (`companion_model::WatchedAgent`, `HandTo`, `HandNote`, `Watching`, `WatchOwner`, `WatchedLine`, `AppSessionId`, `AppSessionIdError`, `SeenCommand`, `SeenCommandFault`).
 - Re-exports gone: `action-core`'s root `pub use hand::{...}` and its `pub mod helper` / `pub mod routine`. Importers in this repo (`companion-core`, `companion-wire`, `companion-client`, `companiond`, `agent-acp-server`, `agent-acp-bin`, `agent-acp-host`, `action-client`, `companion-helpers`, `agent-launch`, `companion-memory-core`, `agent-native`, `agent-planner`, `action-router`, `agent-session`, `companion-tasks`, `intentd`, `acp-core`, and `action-core`'s own `audit`, `confirm`, `roster`, `task` and `wire`) say `companion_model::`.
 - Files split to stay under 500 lines: `helper/board.rs` (794) into `board.rs` (types, queries, `step`) and `board/moves.rs` (one method per event); `routine/book.rs` (543) into `book.rs` and `shapes.rs` (`NewRoutine`, `RunRequest`, `JobEnd`, `RoutineRecord`, `RoutineNotice`); the board test file into `board.rs` and `board_records.rs`.
@@ -4039,8 +4039,8 @@ Two commits: the harness seams first, then the split.
 
 ## Layering lane D4.13e (with D4.2): action-gate-wire and action-wire (2026-10-28)
 
-- New P crate `action-gate-wire` (`gate`, 69 lines): `CuaAsk`, `NodeFacts`, `EffectBasis`, `GateAnswer`. It sits above `action-core` because `GateAnswer` holds `CallRefusal`. It depends on `action-core`, `cua-action`, `porter-core`, `prov` and `serde`; `action-core` no longer depends on `cua-action`.
-- New P crate `action-wire`: `wire` (split into `bodies`, `request`, `reply`; the `IntentsRequest::member` impl was already its own file and is `member`), `caller`, `started`, `task` and `summon`. It depends on `action-core`, `action-gate-wire`, `action-vocab`, `action-manifest`, `permission-core`, `companion-model`, `porter-core`, `prov`, `memory-core`, `serde` and `thiserror`. Nothing left in `action-core` reads any of them (`check-core-layers.sh`: 0 upward edges).
+- New P crate `action-gate-wire` (`gate`, 69 lines): `CuaAsk`, `NodeFacts`, `EffectBasis`, `GateAnswer`. It sits above `action-core` because `GateAnswer` holds `CallRefusal`. It depends on `action-core`, `cua-action`, `account-core`, `prov` and `serde`; `action-core` no longer depends on `cua-action`.
+- New P crate `action-wire`: `wire` (split into `bodies`, `request`, `reply`; the `IntentsRequest::member` impl was already its own file and is `member`), `caller`, `started`, `task` and `summon`. It depends on `action-core`, `action-gate-wire`, `action-vocab`, `action-manifest`, `permission-core`, `companion-model`, `account-core`, `prov`, `memory-core`, `serde` and `thiserror`. Nothing left in `action-core` reads any of them (`check-core-layers.sh`: 0 upward edges).
 - Moved public items, each under the same name: gate-wire `CuaAsk`, `EffectBasis`, `GateAnswer`, `NodeFacts`; wire `Displayed`, `Envelope`, `GrantAnswer`, `GrantAsk`, `HelperNote`, `IntentsReply`, `IntentsRequest`, `JournalFilter`, `NoteAsk`, `ReadAsk`, `RecallAsk`, `RecallView`, `RecentLine`, `Resolved`, `SessionModeAsk`, `SessionNote`, `StoredAsk`, `StoredRow`, `StoredView`, `UndoReport`, `WidenAnswer`, `WidenAsk`, `WireRefusal`, `CallerId`, `CallerRole`, `Member`, `is_terminal_scope`, `NotATerminalScope`, `StartedFrom`, `TerminalScope`, `LedgerStep`, `SessionOpen`, `SessionOpened`, `TaskKind`, `TaskLedger`, `TaskStart`, `close`, `skeleton_of`, `step_outcome`, `SummonAnswer`, `SummonOrigin`, `SummonSerial`, `VoiceIntent`.
 - Re-exports gone: `action-core`'s root `pub use` of all of the above, including `gate`'s `pub use cua_action::{RunMode, WindowClass, WindowTrust}` (say `cua_action::` now), and the test-support `pub use action_core::VoiceIntent` in `voiced`.
 - Files split to stay under 500 lines: `wire.rs` (675) into `bodies.rs` (319), `request.rs` (272), `reply.rs` (95) and `member.rs` (60).
@@ -4062,7 +4062,7 @@ Two commits: the harness seams first, then the split.
 
 ## E-D2: permissions, settings and launch (2026-10-28)
 - Done: the network-program table is data (`dist/network-programs.toml`, `NetPrograms`, same programs, wrappers and subcommands; `action-router` embeds and parses it, `NetReach::of` and `ExecFacts::from_choices` take it); `BreakerState`, `BudgetState`, `NarrowState` and git's `IndexKind` are gone (bools, `StandingScope::is_narrow`, string stems); `GitCause` wraps `GitFault` instead of copying it; the `action-settings` choice rows read their value by the type's serde name (`parse_into`) instead of a word list joined to a value array by index; `Style::choose` is the one place that picks JSON or text in `action-cli`; `Bus` is a bool (`needs_bus`); the private `Sight` is a bool.
-- Left on purpose: `Strictness` (used by action-review, router and action-fake), the row `word()` methods and `AgentConfig::value` (`action-core` `config.rs`), `ScopeKind`/`VerdictKind` (the audit in `action-core`), `derives_choice`/`network_choice` (`acp-core`), `McpExpose`/`AcpExpose`/`AcpAgents` and `SignInState`/`Offers`/`Toggle`/`Places` (the Settings app and `actions-mcp` name them), `Profile::ClaudeCode` (needs the registry snapshot to carry the preset), `Delivery` (porter's has a `child_fd` a file must not hold), `Buses` (the seam `program` runs over).
+- Left on purpose: `Strictness` (used by action-review, router and action-fake), the row `word()` methods and `AgentConfig::value` (`action-core` `config.rs`), `ScopeKind`/`VerdictKind` (the audit in `action-core`), `derives_choice`/`network_choice` (`acp-core`), `McpExpose`/`AcpExpose`/`AcpAgents` and `SignInState`/`Offers`/`Toggle`/`Places` (the Settings app and `actions-mcp` name them), `Profile::ClaudeCode` (needs the registry snapshot to carry the preset), `Delivery` (the accounts service's has a `child_fd` a file must not hold), `Buses` (the seam `program` runs over).
 - Not verified by a build; `action-router` gains a `toml` dependency (Cargo.lock edited by hand).
 
 ## E-D3: harness, router and daemons (2026-10-28)
@@ -4110,5 +4110,5 @@ Two commits: the harness seams first, then the split.
 - No re-exports: the router's `lib.rs` no longer exports `call_step` and friends, `classify_step`, `RunFacts` and the fact builders, `gate`, `Pending`, `GateInputs`, `Revoked` or the companion action names. The importers are the router's modules and its tests (`brief`, `helpers`, `notes`, `terminal`); no other crate in the actions service named them, and the shell, the Settings app, files, cua and mailo name only `Router`, `Seams`, `AppLink`, `GrantStore`, `NoLog` and `AppFault`.
 - The `pub(crate)` items the router uses are `pub` with docs; `Run` and `Next` got `Debug`, `Run` got `Default`. Items only the new crate uses (`sheet_of`, the whole of `standing_facts`) stay crate-private.
 - Tests: `gate.rs` and `call_step.rs` moved to `action-gate/tests/it`; the inline tests of `classify`, `spans` and `standing_facts` moved with their modules. Router tests that drive `Router` stay.
-- `action-router` no longer depends on `url`, `genai-names`, `porter-capability` or `serde`; `sandbox`, `model-provider` and `toml` are dev-dependencies now. Rows added in `scripts/check-boundary.sh` (layers and rules) and `scripts/check-portable.sh`.
+- `action-router` no longer depends on `url`, `genai-names`, `account-capability` or `serde`; `sandbox`, `model-provider` and `toml` are dev-dependencies now. Rows added in `scripts/check-boundary.sh` (layers and rules) and `scripts/check-portable.sh`.
 - Not verified by a build; rustfmt ran. `Cargo.lock` was edited by hand for the new crate and the router's edges.

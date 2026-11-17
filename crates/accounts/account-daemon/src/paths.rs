@@ -163,7 +163,7 @@ mod tests {
 
     #[test]
     fn home_alone_gives_the_xdg_defaults() {
-        // A data directory that holds nothing, so the porter installed on this machine does not
+        // A data directory that holds nothing, so the accounts service installed on this machine does not
         // decide where the system's providers are.
         let paths = Paths::resolve(
             env(&[("HOME", "/home/ada"), ("XDG_DATA_DIRS", "/scratch/share")]),

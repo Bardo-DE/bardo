@@ -76,7 +76,7 @@ fn a_system_file_is_accepted_only_when_a_rule_names_it() {
         ),
         ("/usr/lib/systemd/user/other.service.d/10-bardo.conf", false),
         ("/usr/lib/systemd/user/sub/bardo-shell.service", false),
-        ("/etc/porter/other.toml", false),
+        ("/etc/accounts/other.toml", false),
         ("/etc/bardo/policy.toml", false),
         ("/etc/bardo/-callers.toml", false),
         ("/etc/xdg/bardo/evil.sh", false),

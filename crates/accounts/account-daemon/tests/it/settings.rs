@@ -21,7 +21,7 @@ async fn only_the_settings_role_may_read_or_set_anything() {
     for who in [
         caller("org.example.App", CallerRole::App),
         caller("org.bardo.Companion", CallerRole::Agent),
-        caller("org.bardo.Inference", CallerRole::PorterDaemon),
+        caller("org.bardo.Inference", CallerRole::AccountDaemon),
     ] {
         let client = settings_as(&rig, who).await;
         assert!(matches!(

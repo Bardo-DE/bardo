@@ -44,7 +44,7 @@ pub struct Wiring<T> {
     pub settings: Settings,
     /// The network, as the daemon reads it.
     pub network: watch::Receiver<Network>,
-    /// The apps that see the datasets in `Sync1` besides Settings and the porter daemons.
+    /// The apps that see the datasets in `Sync1` besides Settings and the accounts service daemons.
     pub owners: Access,
     /// The clock the replicas date tombstones with: the daemon's.
     pub clock: Clock,

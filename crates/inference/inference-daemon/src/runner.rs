@@ -314,7 +314,7 @@ impl Job {
                 self.transcribe(&model, served, &begin, ChannelAudio(audio))
                     .await
             }
-            // speaking has no runner, and a variant a newer porter adds: refused as unsupported
+            // speaking has no runner, and a variant a newer the accounts service adds: refused as unsupported
             _ => refused(InferRefusal::Unsupported),
         };
         self.explained(&model, reply).await

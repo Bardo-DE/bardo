@@ -99,7 +99,7 @@ impl Restriction {
     }
 }
 
-/// Why an account has to be signed in again, when porter knows beyond "the provider refused".
+/// Why an account has to be signed in again, when the accounts service knows beyond "the provider refused".
 /// Closed: the sheet words each, nothing from the network.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]

@@ -11,7 +11,7 @@
 //! watch for them) are `sync-rig-client`'s.
 
 use account_capability::AgentProgram;
-use account_client::{Accounts, AccountsError, AiKeysError, IdentitiesError, Porter};
+use account_client::{AccountClient, Accounts, AccountsError, AiKeysError, IdentitiesError};
 use account_client_dbus::{Bus, Identities, Launcher, LauncherError};
 use account_core::ProviderHint;
 use account_core::SessionToken;
@@ -174,7 +174,7 @@ pub async fn run(
     command: Command,
     emit: &mut impl FnMut(Value),
 ) -> bool {
-    let accounts = Porter::over(Bus::over(connection.clone())).accounts();
+    let accounts = AccountClient::over(Bus::over(connection.clone())).accounts();
     match command {
         Command::Identities(IdentitiesCommand::List) => identities_list(connection, emit).await,
         Command::Identities(IdentitiesCommand::Offer { provider }) => {

@@ -12,7 +12,7 @@
 //! - **Never plain.** A server offered with no TLS is skipped. Implicit TLS is preferred; a
 //!   `STARTTLS` server is used only when no implicit one will do, and its endpoint says
 //!   `Tls::StartTls` so the relay refuses to send a credential before the upgrade (mailo skipped
-//!   `STARTTLS` entirely; the endpoint type lets porter record it instead).
+//!   `STARTTLS` entirely; the endpoint type lets the accounts record it instead).
 //! - **Nothing here is a decision to connect.** The [`Found`] goes to the review step.
 
 use crate::config::{self, AuthMethod, ClientConfig, Server, ServerProtocol, SocketType};

@@ -6,7 +6,7 @@
 # systemd manager says; a scope, which has none, as any process in it). A row with a unit gives
 # its role to that unit alone, never to an app scope of the same id. Roles:
 # `settings` (the Settings app), `sheet_host` (draws the accounts sheets), `ai_broker` (inferd: the
-# one daemon that asks for the key behind a permit), `porter_daemon` (syncd), `agent`, `cua`,
+# one daemon that asks for the key behind a permit), `account_daemon_support` (syncd), `agent`, `cua`,
 # `agent_launcher` (the launcher of external coding agents: see below), `terminal` (temor:
 # reads the person's computers from `org.bardo.Tailnet1` and nothing else), `compositor` (bardo-compositor:
 # lists the desktop-wide Spaces and registers the ids it mints for its workspaces through
@@ -60,7 +60,7 @@ name = "Intelligence"
 [[caller]]
 app = "org.bardo.Sync"
 unit = "bardo-syncd.service"
-role = "porter_daemon"
+role = "account_daemon_support"
 name = "Sync"
 
 # temor, the terminal: reads the person's computers (`Tailnet1.Machines`) and nothing else.

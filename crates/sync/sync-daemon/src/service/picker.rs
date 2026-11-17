@@ -2,7 +2,7 @@
 //! Photos Picker for the Photos app. Served in a build with the `photos-picker` feature; an
 //! account answers through it while its Photos row in Settings is on. The caller is identified as `Sync1`'s are (the connection's, by
 //! account-dbus's `Callers`), and only an app that owns the Photos datasets (`org.bardo.Photos`)
-//! may call it. Settings and the porter daemons see datasets but are not the app that imports
+//! may call it. Settings and the accounts service daemons see datasets but are not the app that imports
 //! photos, so they are `Denied`, as they are for `Sync1.Resolve`.
 //!
 //! - An account with no Picker (unknown, not Google, the person did not grant the picker scope,

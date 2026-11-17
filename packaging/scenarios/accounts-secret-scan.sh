@@ -10,7 +10,7 @@
 #   boot      bardo-compositor, recorded bus, the rig with its LLM API fake (a bearer key), Secret Service, bardo-accountd, bardo-inferd, bardo-shell
 #   api-key   an AI company's account is added through bardo-accountd's add sheet (add-account) with the planted API key
 #             (openai.toml pointed at the fake): the key goes sheet -> bardo-accountd -> Secret Service and the fake accepted
-#             it (models list). Since porter's step 5c the AI keys are bardo-accountd's, as every account is
+#             it (models list). Since the accounts service's step 5c the AI keys are bardo-accountd's, as every account is
 #   scan      the real record of this run is clean, and the scan SAW the key where the design lets it be (the sheet's
 #             Input and the Secret Service), so it can see
 #

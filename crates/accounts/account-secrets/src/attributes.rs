@@ -3,7 +3,7 @@
 use crate::namespace::Namespace;
 use account_core::SecretKey;
 
-/// The `service` attribute of every item porter's own daemons file: [`Namespace::PORTER`].
+/// The `service` attribute of every item the accounts service's own daemons file: [`Namespace::ACCOUNTS`].
 pub const SERVICE: &str = "porter";
 
 /// The attributes of one item, in the order the store is searched by.
@@ -17,10 +17,10 @@ pub struct SecretAttributes {
     pub purpose: String,
 }
 
-/// The attributes `key` is filed under in porter's own namespace.
+/// The attributes `key` is filed under in the accounts service's own namespace.
 #[must_use]
 pub fn attributes(key: &SecretKey) -> SecretAttributes {
-    attributes_in(&Namespace::PORTER, key)
+    attributes_in(&Namespace::ACCOUNTS, key)
 }
 
 /// The attributes `key` is filed under in `namespace`.

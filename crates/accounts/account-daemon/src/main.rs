@@ -17,7 +17,7 @@ use clap::{Parser, Subcommand};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-/// porter's identity service (`org.bardo.Accounts1`).
+/// The accounts service's identity service (`org.bardo.Accounts1`).
 #[derive(Debug, Parser)]
 #[command(name = "bardo-accountd", version)]
 struct Args {

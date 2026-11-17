@@ -83,7 +83,7 @@ pub fn app_greeting(capabilities: &[String]) -> Vec<u8> {
         out.push_str(line);
         out.push_str("\r\n");
     }
-    out.push_str("OK \"porter relay ready\"\r\n");
+    out.push_str("OK \"accounts relay ready\"\r\n");
     out.into_bytes()
 }
 

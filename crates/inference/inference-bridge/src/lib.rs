@@ -28,7 +28,7 @@ pub const ENGINE_RETRY: RetryPolicy = RetryPolicy {
     cap: WaitMs(4000),
 };
 
-/// The porter `ModelId` for the name an engine serves a model under.
+/// The accounts service `ModelId` for the name an engine serves a model under.
 ///
 /// `Hcompany/Holo-3.1-4B` becomes `hcompany-holo-3.1-4b`: lower case, every character outside the id grammar becomes
 /// `-`, runs collapse, ends are trimmed, at most 64 bytes.

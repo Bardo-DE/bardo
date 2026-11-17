@@ -1,6 +1,6 @@
 //! The app-facing API of the account service (design/31 §5.1). An app asks for a capability,
-//! never a brand. [`Porter`] is the handle, over a transport: [`Porter::accounts`] signs an account
-//! in; [`Porter::grants`] finds an account by capability, asks for consent and opens the relays a
+//! never a brand. [`AccountClient`] is the handle, over a transport: [`AccountClient::accounts`] signs an account
+//! in; [`AccountClient::grants`] finds an account by capability, asks for consent and opens the relays a
 //! grant allows. The transports are `account-client-dbus` (accountd on the session bus) and
 //! `account-client-inproc` (the service hosted in the app); this crate names neither a bus nor a
 //! service.
@@ -40,9 +40,9 @@ mod changes;
 mod error;
 mod found;
 mod grants;
+mod handle;
 mod identities;
 mod link;
-mod porter;
 mod spaces;
 
 pub use accounts::{
@@ -55,7 +55,7 @@ pub use changes::Changes;
 pub use error::{LinkError, Malformed, MalformedError, Unwritable};
 pub use found::{ConsentOffer, Found, NoAccount, found};
 pub use grants::{Grants, GrantsError, ListedAccount};
+pub use handle::AccountClient;
 pub use identities::{IdentitiesError, Picked};
 pub use link::{AccountWatch, AccountsLink, GrantsLink, ServerEdits};
-pub use porter::Porter;
 pub use spaces::SpacesError;

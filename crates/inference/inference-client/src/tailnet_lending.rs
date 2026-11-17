@@ -3,9 +3,9 @@
 //! Letting the person's other computers use this computer's models: the one thing the Settings
 //! switch "Let my other computers use this computer's models" does besides setting
 //! `ai.tailnet.serve`. inferd's service is shut off from every network address but its own; the
-//! file porter ships (`dist/inferd-tailnet.conf`, installed as data at
+//! file the accounts service ships (`dist/inferd-tailnet.conf`, installed as data at
 //! `$prefix/share/bardo/inference/tailnet.conf`) opens Tailscale's own addresses and nothing else.
-//! It is the person's to turn on, so porter installs it only here, when they say yes.
+//! It is the person's to turn on, so the accounts service installs it only here, when they say yes.
 //!
 //! [`TailnetLending`] writes the file into the person's systemd user configuration, or takes it
 //! away, then tells the manager to read its files again and restarts inferd. It never sets
@@ -127,9 +127,9 @@ impl LendingConfig {
 pub enum LendingState {
     /// There is no drop-in: the switch is off.
     NotInstalled,
-    /// The drop-in is there and is the one porter ships: the switch is on.
+    /// The drop-in is there and is the one accounts service ships: the switch is on.
     Installed,
-    /// A file is there but it is not the one porter ships (the person edited it, or an older
+    /// A file is there but it is not the one accounts service ships (the person edited it, or an older
     /// version wrote it): the switch is off until it is turned on again, which replaces it.
     Differs,
 }
@@ -138,7 +138,7 @@ pub enum LendingState {
 /// reads are the app's, written from the variant. More may be added: match with a wildcard.
 #[derive(Debug, thiserror::Error)]
 pub enum LendingError {
-    /// The file porter ships is not on this computer.
+    /// The file the accounts service ships is not on this computer.
     #[error("the shipped drop-in file could not be read")]
     ShippedFileMissing(#[source] io::Error),
     /// The setting could not be saved in the person's folder.

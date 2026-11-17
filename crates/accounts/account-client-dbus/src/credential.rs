@@ -17,7 +17,7 @@
 //!
 //! **Residual risk**, which no choice here removes: the child holds its own key. It, and anything
 //! it spawns, can read it and send it wherever its network allows. A handed-off key is outside
-//! porter's meter (`ai.spend.*` caps count only what passes inferd), and outside the data-class
+//! The accounts service's meter (`ai.spend.*` caps count only what passes inferd), and outside the data-class
 //! floors inferd applies to a turn. The sandbox's network rules are the mitigation; the metered,
 //! key-less route is inferd as the agent's model endpoint (P4) for any agent that takes a base
 //! URL. A memfd keeps the key out of `/proc/<pid>/environ`; delivering it as text in the child's
@@ -53,7 +53,7 @@ pub enum Delivery {
     Value,
     /// The variable `<KEY_VAR>_FILE` holds a path to a file with the key, and the key is in no
     /// environment. Only for a program that is known to read such a variable or that is
-    /// started through a wrapper that does; porter declares no program that does. The memfd is
+    /// started through a wrapper that does; the accounts service declares no program that does. The memfd is
     /// shown to the child as descriptor `child_fd` (`/proc/self/fd/<child_fd>`).
     File {
         /// The descriptor number the child sees the memfd at.

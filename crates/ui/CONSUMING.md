@@ -1032,12 +1032,12 @@ A few props worth knowing about before you read the signatures:
   you are wiring up drag and drop for that row.
 - `ds_shell::accounts::model::SignInForm` fields for a hand-typed server: `FormField::new(role,
   requirement, text)` plus `.choosing(Vec<Choice>)`, `.hinted(text)` and `.in_part(FormPart)`.
-  `FieldRole` is one-to-one with porter's `FieldKind` (`Protocol`, `Port`, `Security`,
+  `FieldRole` is one-to-one with the accounts service's `FieldKind` (`Protocol`, `Port`, `Security`,
   `OutgoingServer`, `OutgoingPort`, `OutgoingSecurity`, `SessionUrl`; `Token` stays the secret);
   `ProblemKind::Invalid` joins `Missing` and `Refused`. A field with `choices: Some(..)` is a pop-up
   button (the host words each `Choice { slug, label }`) and holds the chosen slug as
   `FieldText::Plain(slug)`; a pick reaches `on_input` as `(role, FieldText::Plain(slug))`, exactly the
-  slug, like any edit, so the host maps it (porter's `FieldKind::choices()` slugs) and refits the
+  slug, like any edit, so the host maps it (the accounts service's `FieldKind::choices()` slugs) and refits the
   field list; Bardo reshapes nothing. A port is a plain entry, empty meaning the usual port, with
   the host's number as `hint`. When any field has choices or a `part`, the form is a `Form` of
   titled `FormSection`s (neighbouring fields of one `FormPart`: Incoming, Outgoing, SignIn), one

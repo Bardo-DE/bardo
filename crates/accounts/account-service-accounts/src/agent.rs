@@ -1,6 +1,6 @@
 //! An agent program's sign-in state (agent-session ask P1, design/31 R7, R8): the launcher runs
 //! the agent and reports whether the agent says it is signed in. That word is the only thing
-//! porter holds for an `AgentLogin` account: no token, no key, no path to the agent's own login
+//! The accounts service holds for an `AgentLogin` account: no token, no key, no path to the agent's own login
 //! files, which are the agent's and never read.
 
 use crate::Accounts;
@@ -14,7 +14,7 @@ use account_service_core::{Audited, Ports};
 pub enum AgentFault {
     /// No account has this id.
     UnknownAccount,
-    /// The account is not an agent that signs itself in; its state is porter's to set.
+    /// The account is not an agent that signs itself in; its state is the accounts service's to set.
     NotAnAgent,
     /// The registry could not be saved; nothing changed.
     Unavailable,

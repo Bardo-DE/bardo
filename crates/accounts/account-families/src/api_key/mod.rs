@@ -2,7 +2,7 @@
 //! Gemini, Moonshot, `OpenAI`; any file with `kind = "api_key"` and an Llm row). Sign-in asks for the key in a hidden
 //! field, lists the provider's models with it as the check, and files the key as the account's
 //! one secret. The key never leaves accountd: a session mints no token, and `Peer.ResolveKey`
-//! gives it to a porter daemon on a sealed memfd.
+//! gives it to an accounts daemon on a sealed memfd.
 //!
 //! Revoking is the person's: the family has no key-delete call, so the company's keys page is named.
 //!

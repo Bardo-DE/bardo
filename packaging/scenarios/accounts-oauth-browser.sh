@@ -75,7 +75,7 @@ step_stored() {
   grep -q '"kind":"signed_in"' "$STATE/bardo/accounts/audit.jsonl" || { echo "no signed_in in the audit file" >&2; return 1; }
   # The refresh token went to the Secret Service (the scan lists that call as the one place it may go) and into no
   # file: the registry holds the account, never a credential.
-  grep -q "$ACCOUNT" "$STATE/porter/registry.json" || { echo "the account is not in the registry" >&2; return 1; }
+  grep -q "$ACCOUNT" "$STATE/accounts/registry.json" || { echo "the account is not in the registry" >&2; return 1; }
 }
 
 graph_bearer() { frigctl GET /graph/hits | grep -q '"bearer":true'; }

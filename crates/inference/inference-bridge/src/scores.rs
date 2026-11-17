@@ -12,7 +12,7 @@
 //! answer is `None` when a token with mass starts two options (first-token scores cannot tell
 //! them apart; the model layer carries no whole-sequence log-probabilities to fall back on), when no
 //! option has any mass, or with fewer than two options. A NaN never reaches it (the model layer drops the
-//! entry) and a `-inf` is a mass of 0. This module only maps its answer onto porter's types, so
+//! entry) and a `-inf` is a mass of 0. This module only maps its answer onto the accounts service's types, so
 //! the two `Permille` types meet in one place, and checks the result once more.
 
 use base_ids::Permille;

@@ -70,8 +70,8 @@ fn icon_arg(icon: &AppIcon) -> String {
     }
 }
 
-/// `app-bardo-<id>-<nonce>.scope`, the scope a launch runs in: porter's [`ScopeName`] writes it, so
-/// what porter reads back to learn which app a process is (`identity_of`) is the same name.
+/// `app-bardo-<id>-<nonce>.scope`, the scope a launch runs in: the accounts service's [`ScopeName`] writes it, so
+/// what the accounts service reads back to learn which app a process is (`identity_of`) is the same name.
 ///
 /// The id is escaped as a unit name component (`systemd-escape`); an empty id has no scope.
 ///
@@ -168,7 +168,7 @@ mod tests {
         for (name, given, want) in table {
             let unit = scope_unit(&id(given), 1).expect("a non-empty id");
             assert_eq!(unit.0, *want, "{name}");
-            let read = ScopeName::parse(&unit.0).expect("porter reads it back");
+            let read = ScopeName::parse(&unit.0).expect("accounts reads it back");
             assert_eq!(read.app(), *given, "{name}: read back");
         }
         assert!(scope_unit(&id(""), 1).is_err(), "an empty id has no scope");

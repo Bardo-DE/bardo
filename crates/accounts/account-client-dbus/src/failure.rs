@@ -13,7 +13,7 @@ use account_wire::Refusal;
 
 /// A failed call: no daemon on the name or no bus is `Unreachable`; the bus's `AccessDenied` (a
 /// caller the daemon does not know, or one without the grant) is `Denied`; a refused argument, or an object the daemon does not serve (an account that is
-/// not there), is `Invalid`; anything else is the other side not speaking porter's protocol.
+/// not there), is `Invalid`; anything else is the other side not speaking the accounts service's protocol.
 pub(crate) fn link_error(error: &BusError) -> LinkError {
     if is_invalid_args(error) || is_unknown_object(error) {
         return LinkError::Invalid;

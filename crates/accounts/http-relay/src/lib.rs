@@ -1,4 +1,4 @@
-//! porter's HTTP client over an accountd relay.
+//! The accounts service's HTTP client over an accountd relay.
 //!
 //! A relay is an authenticated byte stream to one endpoint of a granted account
 //! (`Tokens.OpenAuthenticated`): the daemon at its far end adds the credential and speaks TLS, so

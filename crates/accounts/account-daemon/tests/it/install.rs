@@ -107,7 +107,7 @@ fn program(line: &str) -> &str {
 
 #[test]
 fn every_file_a_unit_or_an_activation_file_names_is_installed_at_the_path_it_names() {
-    for prefix in ["/usr", "/opt/porter-try"] {
+    for prefix in ["/usr", "/opt/account-try"] {
         let run = Run::new(&format!("names{}", prefix.replace('/', "-")));
         run.install(&["--prefix", prefix]);
         let units = run.at(&format!("{prefix}/lib/systemd/user"));
@@ -209,7 +209,7 @@ fn a_second_run_changes_nothing_and_a_home_directory_is_never_written() {
 #[test]
 fn no_unit_has_a_live_drop_in_but_the_sandbox_one() {
     let run = Run::new("tailnet");
-    run.install(&["--prefix", "/opt/porter"]);
+    run.install(&["--prefix", "/opt/accounts"]);
     // Nothing is written under the home folder, and no unit has a drop-in but the sandbox one.
     assert!(files_under(&run.home).is_empty());
     for path in files_under(&run.destdir) {
@@ -228,9 +228,9 @@ fn no_unit_has_a_live_drop_in_but_the_sandbox_one() {
 fn the_sandbox_drop_ins_land_next_to_their_units_without_a_probe_when_staging() {
     let run = Run::new("sandbox");
     // With a destdir the script does not ask this computer whether it allows mount namespaces.
-    let out = run.install(&["--prefix", "/opt/porter"]);
+    let out = run.install(&["--prefix", "/opt/accounts"]);
     assert!(!out.contains("without their extra sandbox"), "{out}");
-    let installed = run.at("/opt/porter/lib/systemd/user/bardo-accountd.service.d/sandbox.conf");
+    let installed = run.at("/opt/accounts/lib/systemd/user/bardo-accountd.service.d/sandbox.conf");
     assert_eq!(
         fs::read(&installed).expect("the drop-in is installed"),
         fs::read(repo().join("dist/bardo-accountd.service.d/sandbox.conf")).expect("shipped")

@@ -1,10 +1,10 @@
-//! What accountd records about its own decisions (design/31 §4.5 "Audit", porter PLAN §2.3): one line per event, never a value.
+//! What accountd records about its own decisions (design/31 §4.5 "Audit", the accounts service PLAN §2.3): one line per event, never a value.
 //!
 //! An entry names ids, kinds, audiences and endpoints; there is no field that could hold a secret,
 //! so a log of them cannot leak one.
 //!
 //! Where the line goes is a seam, [`AuditSink`], so the daemon appends `audit.jsonl`, an app
-//! hosting porter appends its own, and tests collect entries.
+//! hosting the accounts service appends its own, and tests collect entries.
 
 pub use account_core::audit::CredentialEnd;
 
@@ -148,7 +148,7 @@ pub enum AuditEvent {
     Reauthed,
     /// An account and everything filed for it was removed.
     Removed,
-    /// `Peer.ResolveKey` released an account's API key (on a sealed memfd, to a porter daemon).
+    /// `Peer.ResolveKey` released an account's API key (on a sealed memfd, to an accounts daemon).
     /// The entry's `app` is the app the grant is for, which for an agent route is
     /// `org.bardo.Agent.<program>`; `audience` repeats its name as the service the key was
     /// resolved for. Never the key.

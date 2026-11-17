@@ -20,7 +20,7 @@ proptest = { workspace = true }
 serde_json = { workspace = true }
 
 [features]
-# Scripted fakes of the three seams, for tests of the daemon and of porter's inferd.
+# Scripted fakes of the three seams, for tests of the daemon and of the accounts service's inferd.
 testing = []
 
 [lints]

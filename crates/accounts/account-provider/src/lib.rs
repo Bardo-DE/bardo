@@ -2,7 +2,7 @@
 //! installed providers, and the [`Provider`] trait each protocol family implements. Pure: the
 //! caller reads files and runs futures.
 //!
-//! The files porter ships are compiled in, so an app has the same providers with nothing
+//! The files the accounts service ships are compiled in, so an app has the same providers with nothing
 //! installed:
 //!
 //! ```
@@ -10,7 +10,7 @@
 //!
 //! let providers = account_provider::shipped();
 //! let id = ProviderId::parse("nextcloud").expect("an id");
-//! let nextcloud = providers.get(&id).expect("porter ships a Nextcloud file");
+//! let nextcloud = providers.get(&id).expect("accounts ships a Nextcloud file");
 //! assert_eq!(nextcloud.id.as_str(), "nextcloud");
 //! ```
 

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 /// The directory a Spaces file is kept in, under `scratch`.
 fn store(scratch: &Scratch) -> PathBuf {
-    scratch.join("porter")
+    scratch.join("accounts")
 }
 
 fn app(name: &str) -> AppName {
@@ -27,7 +27,7 @@ async fn a_first_start_writes_an_empty_list_once() {
     let (book, said) = SpaceBook::open(Some(&store(&scratch))).await;
     assert_eq!(said, None);
     assert!(book.list().is_empty());
-    assert!(scratch.path().join("porter/spaces.json").exists());
+    assert!(scratch.path().join("accounts/spaces.json").exists());
 }
 
 #[tokio::test]
@@ -70,7 +70,7 @@ async fn ids_are_minted_not_named_and_survive_renames_and_restarts() {
     assert_eq!(ids(&after), ["space-1", "space-2", "space-3"]);
     assert_eq!(after.list()[1].name.as_str(), "Office");
     assert_eq!(after.list()[1].look.as_str(), "teal");
-    assert!(scratch.path().join("porter/spaces.json.bak").exists());
+    assert!(scratch.path().join("accounts/spaces.json.bak").exists());
 }
 
 #[tokio::test]
@@ -125,7 +125,7 @@ async fn creates_are_limited_per_app_within_the_window() {
 #[tokio::test]
 async fn a_counter_at_the_top_of_its_range_is_refused_and_not_wrapped() {
     let scratch = Scratch::new("spaces");
-    let dir = scratch.path().join("porter");
+    let dir = scratch.path().join("accounts");
     std::fs::create_dir_all(&dir).expect("dir");
     let file = dir.join("spaces.json");
     let at = (Instant::now(), NOW);
@@ -166,7 +166,7 @@ async fn a_counter_at_the_top_of_its_range_is_refused_and_not_wrapped() {
 #[tokio::test]
 async fn an_unreadable_file_is_left_alone_and_nothing_changes() {
     let scratch = Scratch::new("spaces");
-    let dir = scratch.path().join("porter");
+    let dir = scratch.path().join("accounts");
     std::fs::create_dir_all(&dir).expect("dir");
     std::fs::write(dir.join("spaces.json"), "{ not the spaces").expect("write");
     let (mut book, said) = SpaceBook::open(Some(&store(&scratch))).await;

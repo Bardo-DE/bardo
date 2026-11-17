@@ -1,9 +1,9 @@
-//! The sheets' seam (porter PLAN G5): the host that draws for accountd.
+//! The sheets' seam (the accounts service PLAN G5): the host that draws for accountd.
 //!
 //! A consent is one call; a
 //! conversation (add an account, sign in again, a device code) is a link accountd updates with
 //! views and reads the person's inputs from. accountd serves it over `org.bardo.AccountsSheet1`
-//! (the shell draws), an app hosting porter in process draws it itself, tests script it.
+//! (the shell draws), an app hosting the accounts service in process draws it itself, tests script it.
 
 use crate::{SheetInput, SheetView};
 use account_core::consent::{ConsentAnswer, ConsentAsk};

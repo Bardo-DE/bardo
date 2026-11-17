@@ -18,7 +18,7 @@ use inference_daemon::{Config, Daemon};
 use std::path::PathBuf;
 use std::process::ExitCode;
 
-/// porter's AI broker (`org.bardo.Inference1`).
+/// The accounts service's AI broker (`org.bardo.Inference1`).
 #[derive(Debug, Parser)]
 #[command(name = "bardo-inferd", version)]
 struct Args {

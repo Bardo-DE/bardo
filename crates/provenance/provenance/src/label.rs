@@ -94,7 +94,7 @@ pub struct Label {
     pub integrity: Integrity,
     /// Who may see it.
     pub confidentiality: Confidentiality,
-    /// The porter data classes it carries (the routing floor is the strictest).
+    /// The accounts service data classes it carries (the routing floor is the strictest).
     pub classes: BTreeSet<DataClass>,
     /// Everything it was derived from.
     pub sources: BTreeSet<Source>,

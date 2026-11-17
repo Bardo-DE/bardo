@@ -1,5 +1,5 @@
 //! What a coding agent's program is called, where the person can read it: the label of the
-//! provider row porter lists for it (`claude-code` is "Claude Code").
+//! provider row the accounts service lists for it (`claude-code` is "Claude Code").
 
 use std::collections::BTreeMap;
 

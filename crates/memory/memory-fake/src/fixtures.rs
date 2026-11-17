@@ -1,5 +1,5 @@
 //! Records the specs talk about, as values. Labels are built from fields: `provenance::Label`'s
-//! constructors are stubs in porter until its fill.
+//! constructors are stubs in the accounts service until its fill.
 
 use crate::clock::NOW;
 use memory_core::{

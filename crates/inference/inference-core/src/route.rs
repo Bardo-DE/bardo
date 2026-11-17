@@ -173,7 +173,7 @@ pub(crate) fn closeness(locality: &Locality) -> u8 {
     }
 }
 
-/// Free, then plan allowance, then metered. Among metered models none is cheaper: porter keeps no
+/// Free, then plan allowance, then metered. Among metered models none is cheaper: the accounts service keeps no
 /// price, so the order they are listed in decides.
 pub(crate) fn billing_rank(billing: &Billing) -> u8 {
     match billing {

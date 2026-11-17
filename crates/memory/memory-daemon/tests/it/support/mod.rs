@@ -22,7 +22,7 @@ use memory_store::{EmbedRole, EmbedderCard, Urgency, Vector};
 use std::path::Path;
 use std::sync::Arc;
 
-/// A registry that lists the Spaces these tests use, as porter's would after they were made.
+/// A registry that lists the Spaces these tests use, as the accounts service's would after they were made.
 pub fn listed_spaces() -> SpaceRegistry {
     SpaceRegistry::listing(["work", "home", "old"].map(space))
 }

@@ -2,7 +2,7 @@
 # Scenario `accounts-local-runtime` (design 31 §3.3, PLAN acceptance 6): a runtime on this computer is an account.
 # The rig's fake Ollama listens on 127.0.0.1; bardo-inferd (real, `[probe] ollama` set to the fake's port, a look a second)
 # finds it and reports it to bardo-accountd (Broker.ReportLocal, which bardo-accountd lets bardo-inferd.service make as the `ai_broker` of
-# dist/callers.toml; since porter's step 5c the registry of the AI accounts, the local runtimes among them, is bardo-accountd's);
+# dist/callers.toml; since the accounts service's step 5c the registry of the AI accounts, the local runtimes among them, is bardo-accountd's);
 # the account `ollama` appears in bardo-accountd's settings module, its place is this computer, bardo-settings's Intelligence page lists
 # it; when the fake stops, bardo-inferd reports it offline: the account is `offline` and the page greys it. Real bardo-accountd, bardo-inferd and bardo-settings on bardo-compositor; no bardo-shell (no sheet is needed).
 #

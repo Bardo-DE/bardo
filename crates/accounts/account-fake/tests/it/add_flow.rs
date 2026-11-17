@@ -1121,7 +1121,7 @@ async fn open_again_shows_the_browser_page_again_without_restarting_the_sign_in(
 }
 
 #[tokio::test]
-async fn an_endpoint_porter_would_not_use_is_not_stored() {
+async fn an_endpoint_accounts_service_would_not_use_is_not_stored() {
     let mut bad = signed("ada");
     bad.endpoints = vec![ServiceEndpoint {
         family: Family::Imap,

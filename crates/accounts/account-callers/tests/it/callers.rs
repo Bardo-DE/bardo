@@ -64,7 +64,7 @@ fn table() -> CallerTable {
         {"app": "org.bardo.Intent", "unit": "bardo-actiond.service", "role": "agent"},
         {"app": "org.bardo.ComputerUse", "unit": "bardo-computer-use.service", "role": "cua"},
         {"app": "org.bardo.Shell", "role": "sheet_host"},
-        {"app": "org.bardo.Inference", "unit": "bardo-inferd.service", "role": "porter_daemon"},
+        {"app": "org.bardo.Inference", "unit": "bardo-inferd.service", "role": "account_daemon_support"},
         {"app": "org.example.Sheets", "role": "sheet_host"},
         {"app": "org.bardo.Shell", "unit": "bardo-shell.scope", "role": "sheet_host",
          "exe": ["/usr/bin/bardo-shell"]},
@@ -165,7 +165,7 @@ fn a_process_is_named_by_its_scope_or_unit() {
             got(
                 "org.bardo.Inference",
                 Isolation::Unsandboxed,
-                CallerRole::PorterDaemon,
+                CallerRole::AccountDaemon,
             ),
         ),
         (
@@ -323,7 +323,7 @@ fn an_unreadable_sandbox_root_leaves_the_cgroup_and_the_image_to_decide() {
         got(
             "org.bardo.Inference",
             Isolation::Unsandboxed,
-            CallerRole::PorterDaemon
+            CallerRole::AccountDaemon
         )
     );
     assert_eq!(
@@ -404,7 +404,7 @@ async fn on_a_private_bus_a_service_is_its_unit_only_as_the_units_main_process()
     let caller = callers.caller_of(&sender).await.expect("the daemon");
     assert_eq!(
         (caller.app.name.as_str(), caller.role),
-        ("org.bardo.Inference", CallerRole::PorterDaemon)
+        ("org.bardo.Inference", CallerRole::AccountDaemon)
     );
 
     // A unit the tree has not loaded is nobody's.

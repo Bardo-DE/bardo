@@ -1,4 +1,4 @@
-//! The ids agent-side crates share. Slug ids use porter's one id grammar; entity names carry
+//! The ids agent-side crates share. Slug ids use the accounts service's one id grammar; entity names carry
 //! their own.
 
 use account_core::AppName;

@@ -1,4 +1,4 @@
-//! The rig a jailed scenario drives porter with (test tooling: `publish = false`, never
+//! The rig a jailed scenario drives the accounts service with (test tooling: `publish = false`, never
 //! installed, never in `dist/`; check-boundary lists it so nothing shipped depends on it).
 //!
 //! Three binaries, built on the modules here:
@@ -11,7 +11,7 @@
 //! - `account-rig-secrets`: a fake `org.freedesktop.secrets` (the `account-fake-secret-service` crate), in
 //!   memory, plain algorithm, so the real accountd's `Oo7Secrets` works in a jail with no keyring.
 //!
-//! The rig for the sync daemon (the Graph fake behind porter's issuer, the client for
+//! The rig for the sync daemon (the Graph fake behind the accounts service's issuer, the client for
 //! `org.bardo.Sync1`) and `sync-rig-storage`, the fake `org.bardo.Storage1` for building Files,
 //! are the sync service's: `sync-rig` and `sync-fakes`.
 

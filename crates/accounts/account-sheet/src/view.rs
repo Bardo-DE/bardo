@@ -24,7 +24,7 @@ pub struct ProviderRow {
     /// Whether this is a provider or the generic "Other…" row.
     #[serde(default)]
     pub kind: RowKind,
-    /// Whether signing in is porter's or the agent's own, from the provider file's auth kind.
+    /// Whether signing in is the accounts service's or the agent's own, from the provider file's auth kind.
     /// The row's `label` is the display name ("Claude Code").
     #[serde(default)]
     pub auth: ProviderKind,
@@ -43,11 +43,11 @@ pub struct ProviderRow {
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ProviderKind {
-    /// A service porter signs the person in to (every provider whose auth kind is not
+    /// A service the accounts service signs the person in to (every provider whose auth kind is not
     /// `agent_login`).
     #[default]
     Service,
-    /// An agent program that signs itself in (`agent_login`); porter asks its launcher.
+    /// An agent program that signs itself in (`agent_login`); the accounts service asks its launcher.
     AgentLogin,
 }
 

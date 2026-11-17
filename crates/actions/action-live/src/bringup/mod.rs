@@ -105,7 +105,7 @@ fn say_up(args: &cli::UpArgs, binaries: &Binaries, started: &[up::Started]) {
         );
         if args.providers.is_none() {
             println!(
-                "The root has no provider files, so accountd add will not know OpenRouter: run up with --providers (an install keeps them in ~/.local/share/porter/providers) first."
+                "The root has no provider files, so accountd add will not know OpenRouter: run up with --providers (an install keeps them in ~/.local/share/accounts/providers) first."
             );
         }
     }

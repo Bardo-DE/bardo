@@ -2,7 +2,7 @@
 //! on `:8080`, LM Studio on `:1234` (design/31 §3.3).
 //!
 //! The ports are configuration (the `[probe]` table of `inferd.toml`, these defaults); the host is
-//! always `127.0.0.1`, the only plain-HTTP address porter allows.
+//! always `127.0.0.1`, the only plain-HTTP address the accounts service allows.
 //!
 //! What a port answers is read by `inference_probe::probe_ports` (Ollama's `/api/tags` and
 //! `/api/show`, llama.cpp's `/props`, an OpenAI-compatible `/v1/models`), which gives each model

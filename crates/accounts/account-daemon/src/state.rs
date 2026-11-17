@@ -257,7 +257,7 @@ mod tests {
             CallerRole::App,
             CallerRole::Settings,
             CallerRole::SheetHost,
-            CallerRole::PorterDaemon,
+            CallerRole::AccountDaemon,
             CallerRole::Cua,
         ] {
             assert_eq!(admitted(role), everywhere, "{role:?}");

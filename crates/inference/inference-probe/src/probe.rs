@@ -4,7 +4,7 @@
 //! Each port is asked, in order, what it is: Ollama's `/api/tags` (then `/api/show` per model for
 //! its features and context), llama.cpp's `/props`, then the OpenAI-compatible `/v1/models`. The
 //! first that answers decides; a port that refuses or answers nothing readable is skipped.
-//! Everything is `127.0.0.1`, plain HTTP: the only plain endpoint porter allows is loopback.
+//! Everything is `127.0.0.1`, plain HTTP: the only plain endpoint the accounts service allows is loopback.
 
 use account_capability::ModelId;
 use account_capability::{

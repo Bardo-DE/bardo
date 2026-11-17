@@ -25,7 +25,7 @@ pub enum SpaceAccess {
     Refused(SpaceRefusal),
 }
 
-/// What `app` may do with `scope`: porter's `open_to`, with the reason when it is no.
+/// What `app` may do with `scope`: the accounts service's `open_to`, with the reason when it is no.
 #[must_use]
 pub fn space_access(scope: &SpaceScope, app: &AppName) -> SpaceAccess {
     match scope {

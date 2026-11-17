@@ -56,7 +56,7 @@ mkdir -p "$servicedir"
 sed "s|^Exec=.*|Exec=$sedprefix/bin/bardo-settings --service|" "$repo/dist/dbus-1/services/org.bardo.Settings.service" \
   >"$servicedir/org.bardo.Settings.service"
 chmod 644 "$servicedir/org.bardo.Settings.service"
-# The user unit the D-Bus file names (`SystemdService=`): porter gives Settings its role only to this
+# The user unit the D-Bus file names (`SystemdService=`): the accounts service gives Settings its role only to this
 # unit's main process.
 install -Dm644 "$repo/dist/systemd/org.bardo.Settings.service" "$unitdir/org.bardo.Settings.service"
 sed -i "s|^ExecStart=.*|ExecStart=$sedprefix/bin/bardo-settings --service|" "$unitdir/org.bardo.Settings.service"

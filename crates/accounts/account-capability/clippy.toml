@@ -1,9 +1,9 @@
 # Nothing ambient below the daemons. The clock, the filesystem and the
-# monotonic clock are passed in (`porter_ids::clock::{Clock, Monotonic}`, `base-fs`); only
+# monotonic clock are passed in (`account_ids::clock::{Clock, Monotonic}`, `base-fs`); only
 # accountd, account-daemon-support and base-fs read them. A crate with this file reads none of them.
 disallowed-methods = [
-    { path = "std::time::SystemTime::now", reason = "pass a `porter_ids::clock::Clock`" },
-    { path = "std::time::Instant::now", reason = "pass a `porter_ids::clock::Monotonic`" },
+    { path = "std::time::SystemTime::now", reason = "pass a `account_ids::clock::Clock`" },
+    { path = "std::time::Instant::now", reason = "pass a `account_ids::clock::Monotonic`" },
     { path = "std::fs::read", reason = "file access belongs to base-fs and the daemons" },
     { path = "std::fs::read_to_string", reason = "file access belongs to base-fs and the daemons" },
     { path = "std::fs::read_dir", reason = "file access belongs to base-fs and the daemons" },

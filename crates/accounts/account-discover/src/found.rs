@@ -66,7 +66,7 @@ pub struct OAuthOffer {
     pub servers: Vec<OAuthServer>,
 }
 
-/// A POP3 server a document lists. Reported as data: porter's endpoints are IMAP and SMTP.
+/// A POP3 server a document lists. Reported as data: the accounts service's endpoints are IMAP and SMTP.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Pop3Server {
     /// The host, placeholders filled in.
@@ -80,7 +80,7 @@ pub struct Pop3Server {
 }
 
 /// How the mail search treats a document that is usable only in part. Each option is off by
-/// default (porter's rule); mailo's rule turns `starttls_only` on.
+/// default (the accounts service's rule); mailo's rule turns `starttls_only` on.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct SearchOptions {
     /// A document whose servers are `STARTTLS` only is a miss: only implicit-TLS servers count,

@@ -34,7 +34,7 @@ caller-role-types = {path = "../../identity/caller-role-types"}
 # and the watch on it that a live run turns on (`watch`; action-trace is the watcher).
 inferd = ["dep:inference-client", "dep:inference-core"]
 # Callers read from a fixture tree standing for /proc and the unit manager (`Identity::on_fixture`):
-# porter reads one only in a test build. Turned on by action-accept and by tests' dev-dependencies,
+# The accounts service reads one only in a test build. Turned on by action-accept and by tests' dev-dependencies,
 # never by a shipped crate (check-boundary.sh checks every shipped package's feature tree).
 fixture-callers = ["account-callers/test-proc-root"]
 

@@ -28,7 +28,7 @@ allow = [
     "MPL-2.0",
     # bzip2-1.0.6: the bzip2 library's own permissive licence (anyview-archive's bzip2 crate).
     "bzip2-1.0.6",
-    # webpki-roots: the Mozilla CA list as data, attribution only (porter, the inference service, the sync service had this as a
+    # webpki-roots: the Mozilla CA list as data, attribution only (the accounts service, the inference service, the sync service had this as a
     # per-crate exception; the updater and the others allowed it globally).
     "CDLA-Permissive-2.0",
 ]
@@ -63,7 +63,7 @@ multiple-versions = "warn"
 # anyview allowed wildcards; airwaves and the plugin host denied them with allow-wildcard-paths. Lenient until the root
 # [workspace.dependencies] table lands (step 1.2 follow-up).
 wildcards = "allow"
-# Present in airwaves, porter, the inference service: TLS goes through rustls. The memory service's encrypted store is SQLCipher, which
+# Present in airwaves, the accounts service, the inference service: TLS goes through rustls. The memory service's encrypted store is SQLCipher, which
 # links a vendored OpenSSL for its crypto only (rusqlite's bundled-sqlcipher-vendored-openssl), so libsqlite3-sys
 # may wrap it; nothing else may.
 deny = [

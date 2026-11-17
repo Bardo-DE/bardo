@@ -207,7 +207,7 @@ async fn no_other_caller_is_served() {
     let world = World::start().await;
     for role in [
         CallerRole::App,
-        CallerRole::PorterDaemon,
+        CallerRole::AccountDaemon,
         CallerRole::Agent,
         CallerRole::AgentLauncher,
     ] {

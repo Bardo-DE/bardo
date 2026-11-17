@@ -2,7 +2,7 @@
 //! (`Agents`).
 //!
 //! With them go the bus names, option keys, row keys and error prefixes, and
-//! the codec of a need and a candidate. These leave porter with inferd. The AI keys, the agent
+//! the codec of a need and a candidate. These leave the accounts service with inferd. The AI keys, the agent
 //! launcher's calls and the AI broker's questions are accountd's (`account_dbus::accounts`).
 
 mod agents;

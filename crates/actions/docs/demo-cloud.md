@@ -4,7 +4,7 @@ For the owner, on this machine, with the shell not running. Everything is instal
 root step is a copy of one file. The companion talks to inferd, inferd to OpenRouter with a key that only
 accountd holds (inferd asks it for the key when a turn needs it). About ten minutes.
 
-Run the first step from the checkouts the installer builds from: `~/actions`, `~/porter`, `~/memory` and
+Run the first step from the checkouts the installer builds from: `~/actions`, `~/accounts`, `~/memory` and
 `~/models` (the model catalogue inferd reads).
 
 ## 1. Build and install
@@ -22,12 +22,12 @@ offline and a hosted model cannot connect.
 does not run it; run that yourself:
 
 ```sh
-sudo install -D -m644 ~/porter/dist/callers.toml /etc/bardo/accountd-callers.toml
-sudo install -D -m644 ~/porter/dist/inferd-callers.toml /etc/bardo/inferd-callers.toml
+sudo install -D -m644 ~/accounts/dist/callers.toml /etc/bardo/accountd-callers.toml
+sudo install -D -m644 ~/accounts/dist/inferd-callers.toml /etc/bardo/inferd-callers.toml
 ```
 
 (the caller tables. accountd's names the Settings app, the shell and bardo-inferd.service (the AI broker); rows in
-`~/.config/porter/callers.toml` win over it. inferd reads who is calling from its own file alone, which only root
+`~/.config/accounts/callers.toml` win over it. inferd reads who is calling from its own file alone, which only root
 can write; a `[callers]` table in `inferd.toml` is ignored.) The daemons read the tables only when they start, so
 the next step restarts them.
 
@@ -126,5 +126,5 @@ systemctl --user daemon-reload
 ```
 
 `--uninstall` keeps `~/.config/inferd/inferd.toml` because you edited it (delete it by hand), and does not touch your
-key: remove the AI account in Settings later (accountd's list under `~/.local/state/porter`, and the
+key: remove the AI account in Settings later (accountd's list under `~/.local/state/accounts`, and the
 `porter.accountd` entry in KWallet), or delete the OpenRouter key at openrouter.ai.

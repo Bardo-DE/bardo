@@ -1,8 +1,8 @@
 //! MX leads: where a domain's mail exchangers point.
 //!
 //! Ported from mailo's `from_mx` in `crates/mail-proto/src/discover/mod.rs` (MIT OR Apache-2.0,
-//! same author). mailo's brand table is porter's provider files, so "an MX at a provider
-//! porter knows" is `ProviderSet::claiming`; "an MX at another host" leads to that host's ISPDB
+//! same author). mailo's brand table is the accounts service's provider files, so "an MX at a provider
+//! The accounts service knows" is `ProviderSet::claiming`; "an MX at another host" leads to that host's ISPDB
 //! document. mailo found the host's registered domain with the public-suffix list, which is not
 //! in the pinned block, so [`ispdb_candidates`] offers each parent of the host instead and the
 //! ISPDB's 404 answers the question the list would have.
@@ -11,7 +11,7 @@ use crate::dns::{Dns, DnsFault, MxRecord};
 use account_core::ProviderId;
 use account_provider::{DomainMatch, DomainName, ProviderSet};
 
-/// A provider porter knows, reached through an address.
+/// A provider the accounts service knows, reached through an address.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ProviderLead {
     /// The provider.

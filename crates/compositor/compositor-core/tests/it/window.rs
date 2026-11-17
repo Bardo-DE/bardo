@@ -4,7 +4,7 @@ use account_core::SpaceId;
 use compositor_core::space::mint_space_id;
 
 #[test]
-fn minted_space_ids_are_porter_ids() {
+fn minted_space_ids_are_accounts_service_ids() {
     let cases: [([u8; 16], &str); 3] = [
         ([0; 16], "s-00000000000000000000000000000000"),
         ([0xff; 16], "s-ffffffffffffffffffffffffffffffff"),

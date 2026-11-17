@@ -94,7 +94,7 @@ impl Draft {
             .collect()
     }
 
-    /// What is wrong with the form as typed, if anything (porter's `form_problem` over the form
+    /// What is wrong with the form as typed, if anything (the accounts service's `form_problem` over the form
     /// the view asked for, reshaped by the answers). The form stays unsent while this is `Some`.
     #[must_use]
     pub fn problem(&self, specs: &[FieldSpec]) -> Option<FieldProblem> {
@@ -102,8 +102,8 @@ impl Draft {
         form_problem(&refit(specs, &answers), &answers)
     }
 
-    /// The draft with the form reshaped to its answers: the fields porter's `refit` of `specs`
-    /// gives, each keeping what was typed. A typed host follows the protocol (porter retargets a
+    /// The draft with the form reshaped to its answers: the fields the accounts service's `refit` of `specs`
+    /// gives, each keeping what was typed. A typed host follows the protocol (the accounts service retargets a
     /// guessed `imap.` or `pop.` name); a port keeps only what was typed, since empty means the
     /// usual one; a secret does not survive, as everywhere.
     pub(super) fn refitted(self, specs: &[FieldSpec]) -> Draft {

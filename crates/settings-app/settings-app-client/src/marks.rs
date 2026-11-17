@@ -1,4 +1,4 @@
-//! The marks of the providers porter ships: each provider file names a mark and may give it a
+//! The marks of the providers the accounts service ships: each provider file names a mark and may give it a
 //! face (a letter on a colour). The window draws them; this is only what the files say.
 
 use account_provider::shipped_specs;
@@ -23,7 +23,7 @@ pub struct ProviderMarkFacts {
     pub face: Option<MarkFacts>,
 }
 
-/// The marks of the provider files porter ships.
+/// The marks of the provider files the accounts service ships.
 #[must_use]
 pub fn shipped_marks() -> Vec<ProviderMarkFacts> {
     shipped_specs()

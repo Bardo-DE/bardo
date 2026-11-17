@@ -75,7 +75,7 @@ impl From<&Locality> for PlaceKind {
 }
 
 /// The name of one of the person's own computers: a lowercase slug (`lab`, `studio-2`), the same
-/// grammar as every id of porter's.
+/// grammar as every id of the accounts service's.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct ComputerName(String);

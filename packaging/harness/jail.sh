@@ -128,7 +128,7 @@ trap cleanup EXIT
 args=(
   --ro-bind / / --dev /dev --dev-bind /dev/udmabuf /dev/udmabuf --proc /proc
   --tmpfs /run --dir "/run/user/$uid" --tmpfs /tmp
-  # /usr/share is a throwaway overlay: a scenario may write what an install ships there (porter's
+  # /usr/share is a throwaway overlay: a scenario may write what an install ships there (the accounts service's
   # /usr/share/bardo/accounts/clients.toml, which it trusts and a person's own file cannot widen), and the
   # machine's /usr/share is never touched.
   --overlay-src /usr/share --tmp-overlay /usr/share
@@ -163,7 +163,7 @@ args+=(
   --setenv XDG_CONFIG_HOME "$scratch/config" --setenv XDG_STATE_HOME "$scratch/state"
   --setenv XDG_CACHE_HOME "$scratch/cache"
   # The system data dirs are the overlaid /usr/share alone: the default also reads /usr/local/share, where a host
-  # install (porter's providers, 2026-10-19) shadowed what a scenario ships and sent its daemons to real servers.
+  # install (the accounts service's providers, 2026-10-19) shadowed what a scenario ships and sent its daemons to real servers.
   --setenv XDG_DATA_DIRS /usr/share
   --setenv __EGL_VENDOR_LIBRARY_FILENAMES /usr/share/glvnd/egl_vendor.d/50_mesa.json
   --setenv VK_ICD_FILENAMES "$vulkan_icd"

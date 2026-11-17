@@ -1,7 +1,7 @@
 //! The inferd side: one session per turn kind, run by its own task so a cold engine never stops
 //! the daemon's loop. The loop writes `ClientFrame`s into the task's inbox and reads
 //! `LinkEvent`s out of its outbox. Dropping the inbox ends the task and, with it, the session.
-//! The session's `next` must be cancel safe (porter's framed sessions say so).
+//! The session's `next` must be cancel safe (the accounts service's framed sessions say so).
 
 use account_capability::Tier;
 use account_core::DataClass;

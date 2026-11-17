@@ -163,7 +163,7 @@ impl BrowserIssuer for Microsoft {
         ))
     }
 
-    /// What the account's Graph services answer, with porter's own token for Graph.
+    /// What the account's Graph services answer, with the accounts service's own token for Graph.
     async fn discover<H: Http + 'static>(
         &self,
         session: &OAuthSession<Self, H>,
@@ -198,10 +198,10 @@ impl BrowserIssuer for Microsoft {
         whoami(&*session.env().http, &base, graph.value.expose()).await
     }
 
-    /// What an audience is refreshed with and the form of the token it gets, for porter's own
+    /// What an audience is refreshed with and the form of the token it gets, for the accounts service's own
     /// use inside accountd (the add-time probe). No token minted this way leaves accountd: an
     /// app's or a relay's comes from `grant_token`.
-    fn porter_token<H>(
+    fn account_token<H>(
         &self,
         session: &OAuthSession<Self, H>,
         audience: &Audience,

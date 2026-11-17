@@ -1,6 +1,6 @@
 //! A fake accounts module: the live settings module at accountd's, inferd's or syncd's path, hosted
 //! in memory (or served on a private bus, for the tests of who owns a name), with the rows the real modules describe (`accounts.<id>.service.<kind>`, `.grant.<grant>`, `.sync.<leaf>`, `.reauth`,
-//! `.remove`, `accounts.clients.<issuer>`). A removed account and a revoked grant leave the rows. As in porter,
+//! `.remove`, `accounts.clients.<issuer>`). A removed account and a revoked grant leave the rows. As in the accounts service,
 //! inferd's module lists only the `spend.month` and `spend.cap` rows of the accounts it holds, and
 //! the others never list them.
 

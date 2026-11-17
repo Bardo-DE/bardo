@@ -1,6 +1,6 @@
 //! Who is calling cuad: the process behind the connection, never a name it owns. Anyone can own
 //! a well-known bus name (a program that starts while the shell restarts can take
-//! `org.bardo.Shell`), so a role comes from the process: porter's callers table (this daemon's
+//! `org.bardo.Shell`), so a role comes from the process: the accounts service's callers table (this daemon's
 //! `computer-use-callers.toml`, shipped as `dist/computer-use-callers.toml`) names the unit or app scope behind
 //! the sender, and a [`Standing`] says what a caller must be. Only the system's file can give a
 //! fixed role; a scope is never more than a plain app.

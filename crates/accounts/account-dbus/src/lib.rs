@@ -1,4 +1,4 @@
-//! porter's D-Bus API (design/31 §4.4): the buses of accountd (identities, Spaces, Tailnet, the AI
+//! The accounts service's D-Bus API (design/31 §4.4): the buses of accountd (identities, Spaces, Tailnet, the AI
 //! keys and the agent launcher), portal-shaped (a method that shows UI returns a Request object
 //! whose `Response` signal carries the answer). No bus carries a token or a grant: the app that
 //! wants an identity asks `Identities1`, the one that wants an AI key asks accountd's `Keys` for

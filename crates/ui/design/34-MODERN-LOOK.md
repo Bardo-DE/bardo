@@ -340,7 +340,7 @@ poster child), anyview (`anyview-ui/tests/snapshots`, anyview-peek/tests/golden.
 `snapshots/pane`), mailo (`mail-app/src/ui/fixtures`; its mail list rows keep Table/List
 density, so only chrome moves). Run `cargo test --workspace` in each after a Bardo pin move.
 Per memory: **batch Bardo release and warn the consumer sessions first**; each move costs
-anyview/mailo a re-pin and can break porter.
+anyview/mailo a re-pin and can break the accounts service.
 
 API: additive unless noted.
 - `ControlSize::ExtraLarge` (additive variant; **breaking for exhaustive `match` in consumers**;

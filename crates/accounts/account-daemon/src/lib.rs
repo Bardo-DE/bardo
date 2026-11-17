@@ -36,9 +36,9 @@
 //! - `org.bardo.Grants1` at `/org/bardo/Grants1`: `Candidates`, `Availability` and `Grants` for the
 //!   caller's own grants, `RequestGrant` (a Request object; the sheet is drawn each time, and the
 //!   answer is kept as a grant), `Revoke`, `OpenAuthenticated` and `OpenLinked` (a descriptor whose other end
-//!   accountd's relay holds), `Accounts` for a porter daemon, Settings or the shell, and
+//!   accountd's relay holds), `Accounts` for an accounts daemon, Settings or the shell, and
 //!   `ExtendAccess` and `AsksOnUse` for the access a provider asks only on use. Apps and the
-//!   porter daemons use it; every other role is refused.
+//!   The accounts service daemons use it; every other role is refused.
 //!
 //! - The AI keys: `org.bardo.Accounts1.Keys` (`keys`: an app's `RequestKey`, answered with the
 //!   permit it already holds or a consent sheet), `org.bardo.Accounts1.Launcher` (`launcher`:

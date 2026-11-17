@@ -44,8 +44,8 @@ prints `name pid stopped|killed|gone`, last started first, and leaves the root o
   into this root. Stop the services first (`down`), run it in your own terminal (the key is typed at accountd's
   prompt), then `up` again.
 - `--catalog DIR` copies the model layer catalogue entries (`*.toml`) in; cloud models need them.
-- `--providers DIR` copies porter's provider files (`*.toml`, no secrets; an install keeps them in
-  `~/.local/share/porter/providers`) into `<root>/data/porter/providers`. Without `--keys-home`, pass it before
+- `--providers DIR` copies the accounts service's provider files (`*.toml`, no secrets; an install keeps them in
+  `~/.local/share/accounts/providers`) into `<root>/data/accounts/providers`. Without `--keys-home`, pass it before
   the `accountd add` step: accountd adds a key only for a provider it serves.
 - `--inferd-config FILE` adds your own `[ai]` rows (data floors, model choices, caps; see
   `dev/live/inferd.cloud.example.toml`). Nothing is added by default, so no class of data may leave the computer

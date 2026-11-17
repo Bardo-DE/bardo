@@ -54,7 +54,7 @@ fn the_app_is_told_the_capabilities_without_sasl_and_starttls() {
     );
     assert_eq!(
         String::from_utf8(app_greeting(&server)).expect("text"),
-        "\"IMPLEMENTATION\" \"x\"\r\n\"SIEVE\" \"fileinto\"\r\nOK \"porter relay ready\"\r\n"
+        "\"IMPLEMENTATION\" \"x\"\r\n\"SIEVE\" \"fileinto\"\r\nOK \"accounts relay ready\"\r\n"
     );
 }
 
@@ -88,7 +88,7 @@ fn starttls_then_authenticate_then_relay_a_byte_at_a_time() {
         greeting.contains("\"SIEVE\" \"fileinto\"") && !greeting.contains("SASL"),
         "{greeting}"
     );
-    assert!(greeting.ends_with("OK \"porter relay ready\"\r\n"));
+    assert!(greeting.ends_with("OK \"accounts relay ready\"\r\n"));
     let (relay, effects) = whole(relay, Side::App, b"LISTSCRIPTS\r\n");
     assert_eq!(sent(&effects, Side::Server), "LISTSCRIPTS\r\n");
     let (_, effects) = whole(relay, Side::Server, b"OK\r\n");

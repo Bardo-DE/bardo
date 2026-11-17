@@ -216,7 +216,7 @@ fn an_acp_actor_pins_its_json_and_is_its_own_kind() {
     assert_eq!(ActorKind::Acp.slug(), "acp");
     assert!(
         serde_json::from_str::<Actor>(r#"{"kind":"acp","v":{"program":"Claude Code"}}"#).is_err(),
-        "a program outside porter-core's grammar is refused"
+        "a program outside account-core's grammar is refused"
     );
 }
 
@@ -347,7 +347,7 @@ fn malformed_ids_do_not_deserialize() {
 }
 
 #[test]
-fn space_vocabulary_is_re_exported_from_porter_core() {
+fn space_vocabulary_is_re_exported_from_accounts_service_core() {
     let scope = SpaceScope::Only(space("work"));
     assert_eq!(round_trip(&scope), r#"{"kind":"only","v":"work"}"#);
 }

@@ -1,4 +1,4 @@
-//! Porter's requests as the model layer's turns over a model of inferd's book: the turn target of a
+//! The accounts service's requests as the model layer's turns over a model of inferd's book: the turn target of a
 //! `LocalModel` (its catalog entry's default sampling and output limit, its engine's flavor), and
 //! the embedding limits of its entry. The mapping is `inference_bridge`'s.
 

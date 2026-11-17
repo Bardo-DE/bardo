@@ -168,7 +168,7 @@ fn model_failed(error: ModelError, heard: Heard) -> ReviewError {
         ModelError::Unparseable | ModelError::Unreadable => ReviewError::Unparseable,
         // Unreachable, rate limited, unauthorized, payment required (top up or pick another
         // model), a refused sign-in, refused, not ready, context overflow, and any error a later
-        // porter adds: the reviewer is out of reach, retrying cannot help, and nothing is
+        // The accounts service adds: the reviewer is out of reach, retrying cannot help, and nothing is
         // allowed because of it.
         _ => ReviewError::Unavailable,
     }
@@ -199,7 +199,7 @@ fn complete(reply: ChatReply) -> Result<String, ReviewError> {
         // Out of room is a limit too small, not a model that refused; it fails closed all the
         // same (the person is asked), and the audit says which it was.
         StopReason::MaxTokens => Err(ReviewError::OutOfRoom),
-        // A filter, a tool call, and any stop a later porter adds: not a verdict.
+        // A filter, a tool call, and any stop a later the accounts service adds: not a verdict.
         _ => Err(ReviewError::Unparseable),
     }
 }

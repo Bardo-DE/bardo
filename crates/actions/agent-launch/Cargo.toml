@@ -1,6 +1,6 @@
 [package]
 name = "agent-launch"
-description = "Starts the external coding agents (Claude Code, Gemini CLI) that agent-acp-host drives: the agents.toml config, the sandboxed process behind the Spawn seam, the model endpoint (inferd, P4) or the key handoff (P2) from porter, the login the agent runs itself, and the duties of a launcher (register, sessions, revocations, give back what was lent). The `dbus` feature adds the real accountd and inferd link."
+description = "Starts the external coding agents (Claude Code, Gemini CLI) that agent-acp-host drives: the agents.toml config, the sandboxed process behind the Spawn seam, the model endpoint (inferd, P4) or the key handoff (P2) from the accounts service, the login the agent runs itself, and the duties of a launcher (register, sessions, revocations, give back what was lent). The `dbus` feature adds the real accountd and inferd link."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,7 +10,7 @@ publish.workspace = true
 
 [features]
 default = []
-# The real porter link: accountd's launcher interface and inferd's agent endpoints over the bus.
+# The real the accounts link: accountd's launcher interface and inferd's agent endpoints over the bus.
 dbus = [
   "dep:account-client", "dep:account-client-dbus", "dep:account-dbus", "dep:account-wire", "dep:inference-dbus",
   "dep:zbus",

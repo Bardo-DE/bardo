@@ -1,12 +1,12 @@
 //! The one HTTP seam (design/31 D12): the [`Http`] trait every family, discovery step, OAuth
 //! exchange, sync replica and model call sends through, over the [`http`] crate's request and response. A family never names a
 //! client; the daemon hands it `http_reqwest::ReqwestHttp`, a test hands it a fake server's.
-//! Bodies are whole byte vectors (`Request<Vec<u8>>`, `Response<Vec<u8>>`): what porter sends and reads
+//! Bodies are whole byte vectors (`Request<Vec<u8>>`, `Response<Vec<u8>>`): what the accounts service sends and reads
 //! over HTTP (sign-in exchanges, PROPFIND replies, model lists) is small, and a transfer of file
 //! content belongs to the replica that streams it. The `http` crate is re-exported, so a caller
-//! names the same version porter does.
+//! names the same version the accounts service does.
 //!
-//! A request's URL is a porter [`WebUrl`](base_url::WebUrl) (`https`, or `http` to this
+//! A request's URL is an accounts service [`WebUrl`](base_url::WebUrl) (`https`, or `http` to this
 //! computer); [`request`] turns it into the request's URI.
 //!
 //! The clients are other crates: `http-reqwest` for a direct connection and

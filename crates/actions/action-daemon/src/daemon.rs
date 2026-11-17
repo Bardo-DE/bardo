@@ -150,7 +150,7 @@ pub struct Setup {
     /// Who is which unit: `actiond-callers.toml` of `/etc/bardo` with the person's laid over it.
     pub callers: CallerTable,
     /// Says who a connection is, when a test names its own (`Identity::introduce_app`); otherwise
-    /// porter's `ProcCallers` over `callers` and `proc_root`.
+    /// The accounts service's `ProcCallers` over `callers` and `proc_root`.
     pub identity: Option<Arc<Identity>>,
     /// Where callers' cgroups are read: `/proc`, unless the harness's main passed another root.
     pub proc_root: ProcRoot,

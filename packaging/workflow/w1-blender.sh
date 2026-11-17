@@ -370,7 +370,7 @@ prepare_models() {
 }
 
 start_assistant() {
-  local providers=${W1_PROVIDERS:-$SIB/porter/providers} extra=()
+  local providers=${W1_PROVIDERS:-$SIB/accounts/providers} extra=()
   [ ! -d "$providers" ] || extra+=(--providers "$providers")
   env -u DBUS_SESSION_BUS_ADDRESS -u DBUS_SYSTEM_BUS_ADDRESS "$BRINGUP" up --bus "$BUS" --root "$AGENTS" \
     --shell-pid "$BARDO_SHELL_PID" --catalog "$RUN/catalog" "${extra[@]}" >"$RUN/bringup.log" 2>&1 \

@@ -1,5 +1,5 @@
 //! External coding agents (design/31 R7, R8; agent-session ask P1): a program that talks ACP
-//! and is run by the launcher, not by porter. An account that "runs" an agent is either the
+//! and is run by the launcher, not by the accounts service. An account that "runs" an agent is either the
 //! agent's own login (`AuthKind::AgentLogin`, no credential held here) or an API-key account
 //! whose provider file names the agent programs allowed to use its key. This module holds the
 //! typed facts about a program: what it is called, how it takes a key and a base URL, and which

@@ -27,7 +27,7 @@ pub enum Urgency {
 /// What a text is for: asymmetric models (nomic, e5, Qwen3-embedding) embed a search query and an
 /// indexed passage differently.
 ///
-/// Mirrors `inference-core`'s `EmbedRole`; recall names no porter type, so memoryd maps the two.
+/// Mirrors `inference-core`'s `EmbedRole`; recall names no accounts type, so memoryd maps the two.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum EmbedRole {
     /// A search query.

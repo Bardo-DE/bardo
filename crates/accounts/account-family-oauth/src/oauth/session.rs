@@ -1,5 +1,5 @@
 //! An open OAuth account: the refresh token, and the short-lived tokens minted from it, one per
-//! scope asked (`None`: the whole grant, which is porter's own and never leaves accountd). The
+//! scope asked (`None`: the whole grant, which is the accounts service's own and never leaves accountd). The
 //! issuer's rules say which scope an audience or a grant is refreshed with and in which form (a
 //! bearer for the APIs, an XOAUTH2 string for IMAP and SMTP), and whether the account may have it
 //! at all.
@@ -223,10 +223,10 @@ impl<R: BrowserIssuer, H: Http + 'static> OAuthSession<R, H> {
 }
 
 impl<R: BrowserIssuer, H: Http + 'static> ProviderSession for OAuthSession<R, H> {
-    /// A token for porter's own use, for every scope granted. The host gives apps and relays
+    /// A token for the accounts service's own use, for every scope granted. The host gives apps and relays
     /// only [`Self::access_token_for`]'s.
     async fn access_token(&self, audience: &Audience) -> Result<IssuedToken, ProviderError> {
-        let (scope, form) = self.rules.porter_token(self, audience)?;
+        let (scope, form) = self.rules.account_token(self, audience)?;
         let token = self.mint(scope.as_deref()).await?;
         self.shaped(token, form).await
     }

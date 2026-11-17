@@ -1,4 +1,4 @@
-//! The cloud drives: `org.bardo.Storage1`, porter's sync service, as files-core's vocabulary.
+//! The cloud drives: `org.bardo.Storage1`, the accounts service's sync service, as files-core's vocabulary.
 //!
 //! [`Storage`] is the async side over a bus connection the caller passes in (the session bus, or
 //! a private one in a test): the drives, where items stand, and the three asks. [`DesktopClouds`]

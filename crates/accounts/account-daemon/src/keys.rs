@@ -10,7 +10,7 @@
 //!
 //! Who may call: any app, Settings and the shell. Every other role (an assistant of the desktop,
 //! cuad, the terminal, the compositor, the agent launcher, the AI broker, and any role a newer
-//! porter adds) is refused: the match fails closed. Settings lists and revokes permits through its
+//! The accounts service adds) is refused: the match fails closed. Settings lists and revokes permits through its
 //! settings rows, so there is no method for it here. Adding a key is `Manager.AddAccount`.
 
 use crate::callers::Callers;

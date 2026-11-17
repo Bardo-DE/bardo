@@ -60,7 +60,7 @@ fn every_former_preset_address_and_mx_resolves_to_its_file() {
     use DomainMatch::{Domain, Mx};
     const CASES: &[Case] = &[
         // Microsoft, personal and work: one multi-tenant file claims both (mailo's preset
-        // was work-only and `is_personal_microsoft` kept the personal domains out; porter signs
+        // was work-only and `is_personal_microsoft` kept the personal domains out; the accounts service signs
         // both in through one client, design/31 §3.2).
         (
             "outlook",

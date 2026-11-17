@@ -1,4 +1,4 @@
-//! Consent keyed by Space: the file read keeps what porter reads and drops what it does not,
+//! Consent keyed by Space: the file read keeps what the accounts service reads and drops what it does not,
 //! a Space that is gone ends its grants, and another app's own Space is never open.
 
 use crate::support::*;
@@ -124,7 +124,8 @@ fn text(grants: &[ActionGrant]) -> String {
 }
 
 #[test]
-fn an_old_file_is_read_by_porters_rules_and_what_it_cannot_place_is_dropped_never_widened() {
+fn an_old_file_is_read_by_the_accounts_services_rules_and_what_it_cannot_place_is_dropped_never_widened()
+ {
     let held = [
         grant("g-1", GrantCaller::Companion, only("work")),
         grant("g-2", GrantCaller::Companion, only("placeholder-a")),

@@ -241,7 +241,7 @@ pub struct ProposedEvent {
 }
 
 pub enum RefusedView {
-    NeedsCloud { class: String },      // porter RequiresCloud; action "Allow Once…" -> accounts-ui
+    NeedsCloud { class: String },      // accounts RequiresCloud; action "Allow Once…" -> accounts-ui
     NotAllowed { what: String },       // policy Denied / grant missing
     NoWay { app: String },             // no typed action, CUA off for app
     OverBudget,

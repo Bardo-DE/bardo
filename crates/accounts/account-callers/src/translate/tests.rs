@@ -31,14 +31,14 @@ fn a_daemon_unit_without_a_program_is_taken_to_be_installed_as_a_daemon() {
     let table = table_of(vec![row(
         "org.bardo.Inference",
         Some("bardo-inferd.service"),
-        CallerRole::PorterDaemon,
+        CallerRole::AccountDaemon,
         &[],
     )]);
     let found = table
         .row_for_unit(&unit("bardo-inferd.service"))
         .expect("a row");
     assert_eq!(found.app.as_str(), "org.bardo.Inference");
-    assert_eq!(found.role.as_str(), "porter_daemon");
+    assert_eq!(found.role.as_str(), "account_daemon_support");
     assert_eq!(
         images_of(&table, "bardo-inferd.service"),
         Some(installed(Install::Libexec, "bardo-inferd"))

@@ -198,7 +198,7 @@ impl<C: Callers> SyncServer for SyncObject<C> {
     /// replica's listing lacks all, or most, of what the dataset holds (`Status` carries
     /// `needs_confirmation`, `NeedsConfirmation` announces it) and nothing was removed here. The
     /// next cycle runs at once and removes those items; the hold is cleared when it ends.
-    /// Anyone who may pause the dataset may call it (its owning app, Settings, the porter
+    /// Anyone who may pause the dataset may call it (its owning app, Settings, the accounts service
     /// daemons). Keeping is not calling it: the dataset stays held and nothing is removed,
     /// every cycle asking the replica for its listing again. Errors:
     /// `org.bardo.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
@@ -225,7 +225,7 @@ impl<C: Callers> SyncServer for SyncObject<C> {
     /// call answers when the request is taken, not when the cycle ends (`Progress` and `Status`
     /// tell how it went); a dataset waiting for the network (offline, or metered when the
     /// setting says to wait) starts when the network allows. Anyone who may pause the dataset
-    /// may call it (its owning app, Settings, the porter daemons). Errors:
+    /// may call it (its owning app, Settings, the accounts service daemons). Errors:
     /// `org.bardo.Accounts1.Error.NoFittingAccount` when the caller sees no such dataset;
     /// `org.bardo.Sync1.Error.Paused` when the person paused it (`Resume` first).
     async fn sync_now(

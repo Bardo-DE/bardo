@@ -1,4 +1,4 @@
-//! `SheetView` to the UI kit's `ui-shell::accounts` props: the one place porter's sheet values become
+//! `SheetView` to the UI kit's `ui-shell::accounts` props: the one place the accounts service's sheet values become
 //! what the drawn parts take (PLAN §2.4, design/31 §5.1). It stands in `shell-overlays`, not
 //! `shell-model`: the props are the UI kit's (they name `MarkProvider` and the `Word` enums of
 //! `ui-shell`), and `shell-model` may reach no design system (`scripts/check-boundary.sh`).
@@ -19,7 +19,7 @@
 use account_core::consent::{AskPurpose, ConsentAsk};
 use account_core::{AccountId, ProviderId, SessionToken};
 use account_sheet::{
-    Entry, FieldKind, FieldValue, ProblemKind as PorterProblem, ProviderRow, ReviewView,
+    Entry, FieldKind, FieldValue, ProblemKind as AccountProblem, ProviderRow, ReviewView,
     ServiceState, SheetView, SignInView,
 };
 use shell_model::accounts::sheet::{CopyMark, Draft, ListKey, OpenSheet};
@@ -269,15 +269,15 @@ fn sign_in_props(form: &SignInView, draft: &Draft) -> SignInProps {
             .or_else(|| {
                 draft
                     .problem(&form.fields)
-                    .filter(|problem| problem.problem == PorterProblem::Invalid)
+                    .filter(|problem| problem.problem == AccountProblem::Invalid)
                     .map(|problem| (problem.field, problem.problem))
             })
             .map(|(field, problem)| FieldProblem {
                 role: role_of(field),
                 kind: match problem {
-                    PorterProblem::Missing => ProblemKind::Missing,
-                    PorterProblem::Refused => ProblemKind::Refused,
-                    PorterProblem::Invalid => ProblemKind::Invalid,
+                    AccountProblem::Missing => ProblemKind::Missing,
+                    AccountProblem::Refused => ProblemKind::Refused,
+                    AccountProblem::Invalid => ProblemKind::Invalid,
                 },
                 attempt: Attempt(draft.submits.0),
             }),
@@ -384,7 +384,7 @@ fn part_of(kind: FieldKind) -> Option<FormPart> {
         FieldKind::Username | FieldKind::Password | FieldKind::AppPassword | FieldKind::Token => {
             Some(FormPart::SignIn)
         }
-        // A server address (porter's ServerUrl) and any kind porter adds later: no group.
+        // A server address (the accounts service's ServerUrl) and any kind the accounts service adds later: no group.
         _ => None,
     }
 }
@@ -397,7 +397,7 @@ fn copy_state(draft: &Draft) -> bool {
     draft.copied == CopyMark::Copied
 }
 
-/// The role a porter field kind plays in the form.
+/// The role an accounts service field kind plays in the form.
 pub(super) fn role_of(kind: FieldKind) -> FieldRole {
     match kind {
         FieldKind::Address => FieldRole::Address,

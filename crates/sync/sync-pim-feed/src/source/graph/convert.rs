@@ -254,7 +254,7 @@ pub fn to_ics(event: &Event) -> Result<String, ConvertError> {
     let mut lines: Vec<String> = vec![
         "BEGIN:VCALENDAR".into(),
         "VERSION:2.0".into(),
-        "PRODID:-//porter//syncd graph calendar//EN".into(),
+        "PRODID:-//accounts//syncd graph calendar//EN".into(),
         "BEGIN:VEVENT".into(),
         format!("UID:{}", escape(uid(event))),
     ];

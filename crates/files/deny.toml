@@ -77,15 +77,15 @@ allow-git = [
     "https://github.com/Bardo-DE/mpv-wgpu",
     "https://github.com/Bardo-DE/vello",
     # The desktop's agent layer (anyview-platform, desktop): the actions service at the manifest's rev, and
-    # porter, the memory service and the model layer at the revs the actions pins, and the caller-identity library (account-dbus's caller check,
-    # at the tag porter pins). All MIT OR Apache-2.0.
+    # The accounts service, the memory service and the model layer at the revs the actions pins, and the caller-identity library (account-dbus's caller check,
+    # at the tag the accounts pins). All MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/docket",
     "https://github.com/Bardo-DE/porter",
     "https://github.com/Bardo-DE/almanac",
     "https://github.com/Bardo-DE/stoker",
     "https://github.com/Bardo-DE/peephole",
     # syncd's bus vocabulary and its test fake (files-desktop, Storage1): the sync service at the rev that pins
-    # the same porter. MIT OR Apache-2.0.
+    # the same the accounts service. MIT OR Apache-2.0.
     "https://github.com/Bardo-DE/ferry",
     # The AI crates the actions pins (the inference service) and the provenance types (prov), at the revs the actions pins.
     # MIT OR Apache-2.0.

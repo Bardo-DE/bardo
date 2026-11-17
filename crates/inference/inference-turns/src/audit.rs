@@ -4,7 +4,7 @@
 //! app); the entries go to an [`AuditOut`]: nowhere, a JSON-lines file, or a test's memory.
 //!
 //! memoryd's `Record` is not the destination yet: it has no area tag for inference, and `prov`
-//! no system part for inferd (see FINDINGS), and porter does not depend on the memory service. The file is
+//! no system part for inferd (see FINDINGS), and the accounts service does not depend on the memory service. The file is
 //! the stand-in; its lines are `AuditEntry`'s serde form, so a bridge reads them unchanged.
 //! `images` and `audio_ms` come from what the session server counted of the request
 //! (`serve::Carried`); the reply alone could not say.

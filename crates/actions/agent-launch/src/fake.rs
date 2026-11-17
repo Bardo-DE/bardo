@@ -1,4 +1,4 @@
-//! For tests: porter as a script (`FakeAccounts`) and the process seam as a recorder
+//! For tests: the accounts service as a script (`FakeAccounts`) and the process seam as a recorder
 //! (`FakeProcs`). No bus, no process, no clock.
 
 use crate::accounts::{AccountFault, Accounts, Heard, Issued, LoginAsk, OpenedEndpoint, RouteWish};
@@ -15,7 +15,7 @@ fn locked<T>(m: &Mutex<T>) -> MutexGuard<'_, T> {
     m.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
-/// One call made to the fake porter, in order.
+/// One call made to the fake accounts service, in order.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Call {
     /// `register`.
@@ -77,7 +77,7 @@ struct State {
     heard: VecDeque<Heard>,
 }
 
-/// A scripted porter.
+/// A scripted the accounts service.
 #[derive(Debug, Clone)]
 pub struct FakeAccounts {
     state: Arc<Mutex<State>>,
@@ -86,13 +86,13 @@ pub struct FakeAccounts {
 }
 
 impl FakeAccounts {
-    /// A porter that works and hands out the default values.
+    /// An accounts service that works and hands out the default values.
     #[must_use]
     pub fn new() -> Self {
         Self::with(Mood::Working, Secrets::default())
     }
 
-    /// A porter in `mood` handing out `secrets`.
+    /// An accounts service in `mood` handing out `secrets`.
     #[must_use]
     pub fn with(mood: Mood, secrets: Secrets) -> Self {
         Self {

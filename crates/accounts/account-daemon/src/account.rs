@@ -106,7 +106,7 @@ impl<H: Host, C: Callers> AccountServer for AccountObject<H, C> {
         Ok(base_ids::word::word(&visible(&self.0, header.as_ref()).await?.state).to_owned())
     }
 
-    /// Why the account has to be signed in again, when porter knows: a word of
+    /// Why the account has to be signed in again, when the accounts service knows: a word of
     /// `ReauthReason`, else empty.
     async fn reauth_reason(&self, header: Option<Header<'_>>) -> fdo::Result<String> {
         let account = visible(&self.0, header.as_ref()).await?;

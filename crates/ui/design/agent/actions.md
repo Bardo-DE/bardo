@@ -2,7 +2,7 @@
 <!-- Reference copy of ~/rs-wt/agent-spec/actions.md for the companion freeze (2026-10-02). It names files of other repos and of crates that do not exist yet, so the path check skips it. -->
 # Area "actions": the typed action layer and its safety core
 
-Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, the UI kit design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, Bardo CONVENTIONS.md, porter (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, Bardo `ds` host seams and `toast_hub::UndoToken`.
+Status: a proposal for the user to lock. Sources read: BRIEF.md, COMPANION.md (items 1-11, Security, Build map), cua-integration.md, research-ecosystem-infra.md, research-ecosystem-agents.md, research-os-memory.md §8, intents-research/models.md and agent-ux.md, the UI kit design/31-ACCOUNTS.md (§2, §4, §5.5, §11), 30-CATALOGUE.md §3.4, 21-SPACES.md, Bardo CONVENTIONS.md, the accounts service (ARCHITECTURE, CONVENTIONS, FINDINGS, `account-core` consent/app_id/data_class/wire, `account-dbus`, `check-boundary.sh`), shell-launcher (`provider.rs`, `item.rs`, `activation.rs`, `subject.rs`, `query.rs`, `sink.rs`, `ids.rs`, `preview.rs`), mailo `mail-app/src/undo.rs`, Bardo `ds` host seams and `toast_hub::UndoToken`.
 
 This version includes the coordinator's scope addition, the **auto-mode action reviewer** (§3.9, §4.4, §5.6).
 
@@ -18,7 +18,7 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 - `prov`: the provenance and taint label lattice (FIDES-style integrity × confidentiality).
 - `permission-policy`: a Cedar wrapper. It holds the entity schema, the request shape and a decision of Deny, Allow, Review or Ask.
 - `action-review`: the auto-mode reviewer that judges grey-zone actions.
-- Consent grants for actions. This extends porter's `GrantKey` with a Space dimension and makes porter's `decide` generic over its key.
+- Consent grants for actions. This extends the accounts service's `GrantKey` with a Space dimension and makes the accounts service's `decide` generic over its key.
 - The planner/reader split contract. It says what the planner may see, and that the reader returns typed values only. The router owns the handle table, so nobody can forge taint.
 - The confirmation request and answer as values, plus the `Confirmer` seam. Drawing them is not ours.
 - Budgets, the per-Space kill switch, and the audit records handed to the event log.
@@ -40,7 +40,7 @@ This version includes the coordinator's scope addition, the **auto-mode action r
 
 ### 2.1 New repo `actions` (working name; question U1), at `~/actions`
 
-It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
+It mirrors the accounts service's layout, conventions, gate and `check-boundary.sh`.
 
 | Crate | Purpose | I/O | Portable |
 |---|---|---|---|
@@ -76,7 +76,7 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 - Only `bardo-actions-mcp` reaches `rmcp`.
 - `prov` and `action-core` never reach `toml`. Manifest TOML is parsed in `action-router::registry::parse`.
 
-**Sibling path dependencies:** `account-core` and `inference-core` (`../porter/crates/...`).
+**Sibling path dependencies:** `account-core` and `inference-core` (`../accounts/crates/...`).
 
 **Third-party, joining the UI kit's `docs/workspace-deps.toml` first**:
 - `cedar-policy = "4.13"` (4.13.0, 2026-09-15, Apache-2.0)
@@ -88,7 +88,7 @@ It mirrors porter's layout, conventions, gate and `check-boundary.sh`.
 
 | Repo | Change | Wave |
 |---|---|---|
-| porter | `account-core`: new `space.rs` (`SpaceId`, `SpaceScope`); `GrantKey.space: SpaceScope`; consent generic over its key (`Grant<K = GrantKey>`, `decide<K: Eq>`). A design/31 §4.5 edit in step. | freeze |
+| The accounts service | `account-core`: new `space.rs` (`SpaceId`, `SpaceScope`); `GrantKey.space: SpaceScope`; consent generic over its key (`Grant<K = GrantKey>`, `decide<K: Eq>`). A design/31 §4.5 edit in step. | freeze |
 | Bardo | Add `cedar-policy` and `rmcp` to `docs/workspace-deps.toml`. Write `design/33-ACTIONS.md` from this file. Edit 31 §4.5 (Space in the key) and §5.5 (inferd is no longer the MCP host, see C4). | freeze |
 | Bardo | New crate `ui-intents`: the `ContextModel` gathered from components (`thing` prop on `Row`/`List`, edit surfaces as text targets), answered through `docker-client`. Blocked on question U6 (30 §3.4 defers companion work). | fill 2 |
 | The shell | `shell-launcher` gains `ProviderKind::Things`, `Subject::Entity`, `Activation::Intent`, `Preview::Intent`. `shell-search`/`shell-services` gain a `ThingsProvider` over the router. The shell serves `IntentProvider1` as `org.bardo.Shell` (launch, focus window, open file) by reusing its `Activation` executor. | fill 2 |
@@ -100,7 +100,7 @@ Correction to the table above: the crate `ui-intents` uses `action-client`, not 
 
 ## 3. Frozen interfaces
 
-Rules, following porter:
+Rules, following the accounts service:
 - No `bool`; newtypes everywhere; adjacently tagged serde (`kind`/`v`) and snake_case slugs; derive order as in the shared rules.
 - `#[derive]` lines are omitted below for brevity. Every public type is `Debug, Clone, PartialEq, Eq` (+ `Serialize, Deserialize` if it is stored or crosses a wire).
 - Redacting `Debug` on every type that holds user text.
@@ -129,7 +129,7 @@ pub enum ModelRole { Planner, Reader, Reviewer, Cua }
 pub struct Label {
     pub integrity: Integrity,
     pub confidentiality: Confidentiality,
-    pub classes: BTreeSet<DataClass>,   // porter_core::DataClass
+    pub classes: BTreeSet<DataClass>,   // account_core::DataClass
     pub sources: BTreeSet<Source>,
 }
 impl Label {
@@ -158,7 +158,7 @@ pub fn declassify<T>(v: Labelled<T>, to: Confidentiality, w: &Witness) -> Labell
 
 `ConfirmReceipt` lives in `prov` because `Witness` needs it and `prov` sits below action-core. Its fields are listed in §3.7.
 
-### 3.2 `account-core` additions (freeze now; a porter change)
+### 3.2 `account-core` additions (freeze now; an accounts service change)
 
 ```rust
 /// A Space's stable id, minted by Bardo when the Space is made (not the workspace id,
@@ -194,7 +194,7 @@ pub struct IntentsVocab(pub u32); impl IntentsVocab { pub const CURRENT: Intents
 
 /// `$XDG_DATA_DIRS/bardo/intents/<AppName>.toml`, installed beside the app's
 /// `dbus-1/services/<AppName>.service` (DBusActivatable). Its serde form is the file format;
-/// every field is written (porter's provider-file rule).
+/// every field is written (accounts's provider-file rule).
 pub struct Manifest {
     pub vocab: IntentsVocab,
     pub app: AppName,
@@ -380,12 +380,12 @@ pub struct ActionGrantKey {
     pub owner: AppName,
     pub target: GrantTarget,
     pub class: DataClass,
-    pub usage: Usage,                              // porter_core
-    pub space: SpaceScope,                         // porter_core
+    pub usage: Usage,                              // account_core
+    pub space: SpaceScope,                         // account_core
 }
 pub enum GrantTarget { App, Action(ActionName) }   // "the companion may use Mail" vs one verb
 pub enum ActorKind { User, Companion, Cua, Mcp(ClientName), App(AppName) }
-pub type ActionGrant = porter_core::consent::Grant<ActionGrantKey>;
+pub type ActionGrant = account_core::consent::Grant<ActionGrantKey>;
 ```
 
 Defaults:
@@ -657,7 +657,7 @@ Note: `DecidedBy::Reviewer` carries `{ code: ReasonCode, under: Option<AuthId> }
 
 ### 3.12 Wire and D-Bus (freeze now)
 
-There is one protocol with two carriers, as in porter. `IntentsRequest`/`IntentsReply` are serde enums in `action-core::wire`. The socket frame reuses porter's `{ vocab, body }` frame. Over D-Bus, bodies travel as JSON in `s`. The caller's identity is derived from the connection (porter `AppId`) and is never sent.
+There is one protocol with two carriers, as in the accounts service. `IntentsRequest`/`IntentsReply` are serde enums in `action-core::wire`. The socket frame reuses the accounts service's `{ vocab, body }` frame. Over D-Bus, bodies travel as JSON in `s`. The caller's identity is derived from the connection (the accounts service `AppId`) and is never sent.
 
 Caller roles are configured in `intentd`'s config:
 - `launcher`: the shell. Gets Actor::User when `Origin::Launcher`/`InWindowField`.
@@ -894,7 +894,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### 5.6 `action-dbus`, `action-client`, `bardo-actions-mcp`, `intentd`
 
-- `introspection_matches_xml`: the porter pattern. It fails with the new text.
+- `introspection_matches_xml`: the accounts service pattern. It fails with the new text.
 - `p2p_perform_round_trip`: a zbus p2p proxy against the skeleton backed by the fake router.
 - `caller_identity_derived_not_sent`.
 - `tools_only_offered_actions` and `tool_hints_follow_effect`.
@@ -915,7 +915,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
    - Edits 31 §4.5 (`space` in `GrantKey`, generic grants) and §5.5 (MCP hosting moves to bardo-actions-mcp, C4).
    - Does not touch `ds`.
    - Verify: `scripts/check-doc-paths.sh`.
-2. **porter agent.** Owns `crates/porter-core/src/{space.rs, consent/*, lib.rs}` and `tests/round_trip.rs` rows. Updates every caller of `GrantKey`/`Grant` in the same change (account-service, account-fake). Verify with porter's gate:
+2. **the accounts agent.** Owns `crates/account-core/src/{space.rs, consent/*, lib.rs}` and `tests/round_trip.rs` rows. Updates every caller of `GrantKey`/`Grant` in the same change (account-service, account-fake). Verify with the accounts service's gate:
    ```bash
    cargo fmt --all --check
    cargo clippy --workspace --all-targets --all-features -- -D warnings
@@ -924,16 +924,16 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
    cargo deny check licenses
    ```
 3. **the actions agent** (new repo; starts after 1 and 2 merge).
-   - Scaffolds the workspace by copying porter's `rust-toolchain.toml` (1.98.1), `deny.toml`, `rustfmt.toml` and lints.
+   - Scaffolds the workspace by copying the accounts service's `rust-toolchain.toml` (1.98.1), `deny.toml`, `rustfmt.toml` and lints.
    - Writes every crate in §2.1 with the types and traits of §3. Behaviour bodies are `todo!()`, each listed in `FINDINGS.md`.
    - Fully implemented in this wave: the pure, cheap parts (`prov::join`, `validate`, `combine`, `charge`, `halted`, `conforms`).
    - Also: the XML, the fixtures, all §5 shape tests (behaviour tests `#[ignore]` with a FINDINGS line), `ARCHITECTURE.md` and `CONVENTIONS.md`.
-   - Verify: the same gate as porter, plus `cargo test -p permission-policy` (schema loads).
+   - Verify: the same gate as the accounts service, plus `cargo test -p permission-policy` (schema loads).
 
 ### Fill wave 1 (the actions service, parallel by file ownership)
 
 - **F1a**: `prov` + `permission-policy` (Cedar evaluation, `default.cedar`, the grid test). Owns `crates/prov/**` and `crates/policy-point/**`.
-- **F1b**: `action-review` (render, parse, `InferReviewer` over `porter_infer::Model` with `FakeModel`, the injection corpus). Owns `crates/action-review/**` and `crates/action-fake/fixtures/injection/**`.
+- **F1b**: `action-review` (render, parse, `InferReviewer` over `inference_core::Model` with `FakeModel`, the injection corpus). Owns `crates/action-review/**` and `crates/action-fake/fixtures/injection/**`.
 - **F1c**: `action-router` (call step, gate wiring, session and handles, journal, authorizations, index model). Owns `crates/action-router/**`.
 - **F1d**: `action-dbus` codec and p2p tests, and `action-client` `InProcess`/`DbusTransport`. Owns `crates/action-dbus/**`, `crates/action-client/**` and `dbus/**`.
 - `action-fake` belongs to F1c. Others request additions through it.
@@ -986,7 +986,7 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### 7.3 Questions only the user can answer
 
-- **U1.** Repo name and placement: a new `actions` repo (proposed), versus putting the router in porter or the shell. Also: must action names carry their app's prefix (`mail.…` only in Mail)?
+- **U1.** Repo name and placement: a new `actions` repo (proposed), versus putting the router in the accounts service or the shell. Also: must action names carry their app's prefix (`mail.…` only in Mail)?
 - **U2.** Auto mode default strictness per Space: `Default` as defined (item 9 unless you state an Authorization), or something else?
 - **U3.** May the reviewer ever allow `Destructive` (proposed: only under `TrustMore` with an Authorization and untainted args), and may it ever allow tainted `Outbound` (proposed: only `TrustMore` with an Authorization)?
 - **U4.** Authorizations: is the reviewer's check of your own words enough, or should each one also get a one-time compositor confirm ("Let it archive newsletters in Work for an hour?")? Default length is 1 h, this session only.
@@ -1013,8 +1013,8 @@ All tests are hermetic. Bus tests use a private `dbus-daemon --session` with scr
 
 ### Critical files for implementation
 
-- /home/pohsuanlai/porter/crates/porter-core/src/consent/grant.rs and /home/pohsuanlai/porter/crates/porter-core/src/consent/decide.rs (the `GrantKey` Space dimension and generic `Grant<K>`)
-- /home/pohsuanlai/porter/ARCHITECTURE.md and /home/pohsuanlai/porter/scripts/check-boundary.sh (the template for the actions service's layout, gate and boundaries)
+- /home/pohsuanlai/accounts/crates/account-core/src/consent/grant.rs and /home/pohsuanlai/accounts/crates/account-core/src/consent/decide.rs (the `GrantKey` Space dimension and generic `Grant<K>`)
+- /home/pohsuanlai/accounts/ARCHITECTURE.md and /home/pohsuanlai/accounts/scripts/check-boundary.sh (the template for the actions service's layout, gate and boundaries)
 - /home/pohsuanlai/shell/crates/shell-launcher/src/activation.rs, /home/pohsuanlai/shell/crates/shell-launcher/src/ids.rs and /home/pohsuanlai/shell/crates/shell-launcher/src/subject.rs (the shell variants)
 - /home/pohsuanlai/bardo/docs/workspace-deps.toml (cedar-policy and rmcp must join first)
 - /home/pohsuanlai/bardo/design/31-ACCOUNTS.md (§4.5 and §5.5 edits), /home/pohsuanlai/rs-wt/companion/COMPANION.md and /home/pohsuanlai/rs-wt/intents-research/models.md (the sources this spec resolves)

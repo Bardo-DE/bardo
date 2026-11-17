@@ -1,10 +1,10 @@
 //! `org.bardo.Grants1` at `/org/bardo/Grants1`: who may use which account, and the relays a grant
 //! opens, over the service's grants domain.
 //!
-//! - An app and the porter daemons use it, for their own grants: the caller is the connection's,
+//! - An app and the accounts service daemons use it, for their own grants: the caller is the connection's,
 //!   and a grant is the caller's app's, never a name the request sends. Every other role (the
 //!   shell, Settings, the agent, the agent launcher, the AI broker, the terminal, the compositor,
-//!   and any role a newer porter adds) is refused `AccessDenied`, as a sender accountd does not
+//!   and any role a newer the accounts service adds) is refused `AccessDenied`, as a sender accountd does not
 //!   know is.
 //! - `RequestGrant` returns a Request object like `Keys.RequestKey` and answers on it with the
 //!   candidate the person granted. The sheet is drawn every time it is asked for: an app that
@@ -13,7 +13,7 @@
 //! - `OpenAuthenticated` and `OpenLinked` check the grant and the endpoint (the service), then
 //!   hand the app one end of a socket pair whose other end the relay holds (`relay`). The
 //!   credential in the relay's plan is in no reply.
-//! - `Accounts` lists every account to a porter daemon, Settings or the shell, with what accountd
+//! - `Accounts` lists every account to an accounts daemon, Settings or the shell, with what accountd
 //!   calls the provider; an app is refused. `ExtendAccess` and `AsksOnUse` are the sync daemon's
 //!   "Show in Files": the first waits for the person, in a sign-in of its own.
 
@@ -69,11 +69,11 @@ fn endpoint_of(text: &str) -> Result<EndpointUrl, RefusedError> {
 }
 
 impl<H: Host, C: Callers> GrantsObject<H, C> {
-    /// The caller, which must be an app the person uses or a porter daemon.
+    /// The caller, which must be an app the person uses or an accounts daemon.
     async fn user(&self, header: &Header<'_>) -> Result<Caller, RefusedError> {
         let caller = self.0.identify(header, Standing::Any).await?;
         match caller.role {
-            CallerRole::App | CallerRole::PorterDaemon => Ok(caller),
+            CallerRole::App | CallerRole::AccountDaemon => Ok(caller),
             _ => Err(RefusedError::access_denied(
                 "only an app the person uses may ask about its grants",
             )),
@@ -108,13 +108,13 @@ impl<H: Host, C: Callers> GrantsObject<H, C> {
         Ok(OwnedFd::from(fd))
     }
 
-    /// The caller, which must be a porter daemon, Settings or the shell.
+    /// The caller, which must be an accounts daemon, Settings or the shell.
     async fn reader(&self, header: &Header<'_>) -> Result<Caller, RefusedError> {
         let caller = self.0.identify(header, Standing::Any).await?;
         match caller.role {
-            CallerRole::PorterDaemon | CallerRole::Settings | CallerRole::SheetHost => Ok(caller),
+            CallerRole::AccountDaemon | CallerRole::Settings | CallerRole::SheetHost => Ok(caller),
             _ => Err(RefusedError::access_denied(
-                "only a porter daemon, Settings or the shell may list the accounts",
+                "only an accounts daemon, Settings or the shell may list the accounts",
             )),
         }
     }

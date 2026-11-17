@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Scenario `accounts-typed-server` (porter's manual-server form, accounts PLAN §8): when the lookup of an address finds no
+# Scenario `accounts-typed-server` (the accounts service's manual-server form, accounts PLAN §8): when the lookup of an address finds no
 # server, bardo-accountd asks for one by hand (protocol, host, security, port, outgoing server, login name) and the account added
 # from it logs in through the relay. bardo-shell draws the form (its dd048640 maps the new fields) and the scenario fills it in with
 # clicks and keys; the server is the rig's fake POP3 with STARTTLS on its own port, the outgoing one its fake SMTP with
-# STARTTLS. Real bardo-accountd, bardo-shell on bardo-compositor, the rig's fake Secret Service. Since porter's accounts split (Phase B) bardo-accountd
+# STARTTLS. Real bardo-accountd, bardo-shell on bardo-compositor, the rig's fake Secret Service. Since the accounts service's accounts split (Phase B) bardo-accountd
 # no longer relays an app to the mail server (the app signs in itself, with the password Identities1 hands it), so the typed
 # port is checked where bardo-accountd keeps it: the account's endpoints in its registry.
 #
@@ -40,9 +40,9 @@ OUT_DIR=$(scenario_out accounts-typed-server)
 cleanup() { acc_stop_all; stop_daemon; stop_compositor; scratch_drop; }
 trap cleanup EXIT
 
-# The porter in the build has the form.
+# The accounts service in the build has the form.
 grep -q 'Protocol,' "$SCEN_SIB/accounts/account-sheet/src/fields.rs" || {
-  echo "SKIP accounts-typed-server: porter has no typed mail server form (FieldKind::Protocol)" >&2; exit 2; }
+  echo "SKIP accounts-typed-server: the accounts service has no typed mail server form (FieldKind::Protocol)" >&2; exit 2; }
 
 # Where the form's controls are (sheet coordinates): pop-ups, their items below them, text fields, Continue.
 PROTOCOL="907 362"; SERVER="1025 410"; SECURITY="922 458"; PORT="1025 506"
@@ -95,8 +95,8 @@ step_typed() {
 
 step_stored() {
   # The account must carry the ports typed in step_typed: a default port here means a typed field was lost.
-  grep -q "127.0.0.1:$(rigj pop3.port)" "$STATE/porter/registry.json" || { echo "the account's POP3 endpoint is not the typed port $(rigj pop3.port) (step_typed lost a field; capture 4 shows the form): $(cat "$STATE/porter/registry.json")" >&2; return 1; }
-  grep -q "127.0.0.1:$(rigj smtp.port)" "$STATE/porter/registry.json" || { echo "the account's SMTP endpoint is not the typed port $(rigj smtp.port): $(cat "$STATE/porter/registry.json")" >&2; return 1; }
+  grep -q "127.0.0.1:$(rigj pop3.port)" "$STATE/accounts/registry.json" || { echo "the account's POP3 endpoint is not the typed port $(rigj pop3.port) (step_typed lost a field; capture 4 shows the form): $(cat "$STATE/accounts/registry.json")" >&2; return 1; }
+  grep -q "127.0.0.1:$(rigj smtp.port)" "$STATE/accounts/registry.json" || { echo "the account's SMTP endpoint is not the typed port $(rigj smtp.port): $(cat "$STATE/accounts/registry.json")" >&2; return 1; }
   rigc_bg "$OUT_DIR/offer.log" org.bardo.Mail identities offer
   sheet_await || { cat "$OUT_DIR/offer.log" >&2; return 1; }
   sleep 1; sheet_key Enter

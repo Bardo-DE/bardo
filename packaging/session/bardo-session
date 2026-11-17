@@ -3,7 +3,7 @@
 # Run by the display manager (session/bardo.desktop). Installed by install/install.sh; the
 # first-login checks that need a real login are listed in the final lines of install/install.sh.
 #
-# bardo-compositor runs as the user unit bardo-compositor.service (shipped by the bardo-compositor repo, Type=notify): porter's
+# bardo-compositor runs as the user unit bardo-compositor.service (shipped by the bardo-compositor repo, Type=notify): the accounts service's
 # bardo-accountd proves the `compositor` caller role only for the main process of that unit, so a bare child
 # would not be trusted. This script starts it with `systemctl --user start bardo-compositor.service`, which
 # returns once bardo-compositor has said READY=1, and then watches the unit. When the unit ends cleanly
@@ -13,7 +13,7 @@
 #
 # How the unit is driven, nothing under ~/.config or /etc, and no drop-in at all: bardo-compositor.service and bardo-shell.service are
 # installed root-held under the system user-unit folder (/etc/systemd/user or /usr/lib/systemd/user; install/install.sh puts
-# them there), because porter's bardo-accountd gives the compositor and shell roles only to a unit whose file and every drop-in
+# them there), because the accounts service's bardo-accountd gives the compositor and shell roles only to a unit whose file and every drop-in
 # sit in such folders (a drop-in under $XDG_RUNTIME_DIR, which any program of the person can write, would make it
 # distrust the unit). So the session imports its environment into the user manager first, then passes this run's
 # arguments to the unit through the manager's environment: `systemctl --user set-environment BARDO_COMPOSITOR_SESSION_ARGS=...`
@@ -27,7 +27,7 @@
 # What runs beside it, once bardo-compositor's socket exists, and why each:
 #   bardo-shell run                      bar, dock, launcher, control centre, notifications, lock, polkit; as the
 #                                 installed user service bardo-shell.service (`systemctl --user start bardo-shell.service`,
-#                                 Type=exec): porter's bardo-accountd, the companion's daemons (bardo-memoryd, bardo-actiond)
+#                                 Type=exec): the accounts service's bardo-accountd, the companion's daemons (bardo-memoryd, bardo-actiond)
 #                                 and bardo-compositor admit the shell only as that unit's main process. A stale
 #                                 bardo-shell.service is stopped first; if the unit is missing or cannot start, the
 #                                 session stays up without a shell
@@ -364,7 +364,7 @@ wallet() {
 }
 
 # bardo-shell as the user service bardo-shell.service (installed root-held beside bardo-compositor.service, Type=exec, so it has a
-# real main process). Porter's bardo-accountd and the companion's daemons (bardo-memoryd, bardo-actiond) admit the shell, and
+# real main process). The accounts service's bardo-accountd and the companion's daemons (bardo-memoryd, bardo-actiond) admit the shell, and
 # bardo-compositor gives it the Shell role, only as the main process of that unit; a scope has no main process
 # to check, so it could not be proved. A bardo-shell.service left over from a crashed session is stopped first;
 # if the unit is not installed or cannot be started that is logged and the session carries on without a shell:

@@ -1,4 +1,4 @@
-//! memoryd's view of porter's registry of desktop-wide Spaces (`org.bardo.Spaces1`).
+//! memoryd's view of the accounts service's registry of desktop-wide Spaces (`org.bardo.Spaces1`).
 
 use account_client_dbus::Spaces;
 use memory_core::SpaceId;
@@ -12,8 +12,8 @@ pub const REGISTRY_WAIT: Duration = Duration::from_secs(3);
 /// Where the desktop-wide Spaces are listed.
 #[derive(Debug)]
 pub enum SpaceRegistry {
-    /// porter's registry, over the bus.
-    Porter(Spaces),
+    /// The accounts service's registry, over the bus.
+    AccountClient(Spaces),
     /// A fixed list (a test's, or a host with its own).
     Listed(BTreeSet<SpaceId>),
     /// No registry: nothing is listed, and an app opens no desktop-wide Space.
@@ -30,7 +30,7 @@ impl SpaceRegistry {
     /// answers badly, is [`RegistryError::Failed`].
     pub(crate) async fn is_listed(&self, space: &SpaceId) -> Result<Listing, RegistryError> {
         match self {
-            Self::Porter(spaces) => {
+            Self::AccountClient(spaces) => {
                 let listed = tokio::time::timeout(REGISTRY_WAIT, spaces.list())
                     .await
                     .map_err(RegistryError::failed)?

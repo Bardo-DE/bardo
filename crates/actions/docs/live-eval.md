@@ -124,20 +124,20 @@ thought-free answer and the milliseconds each stage took.
 
 The key comes from accountd, which holds the AI keys and the permits ("may this app use my AI keys");
 inferd asks it for the key behind a permit. On the private bus there is no Secret Service, so the run
-uses a porter accountd built with `test-keys` (a 0600 key file, `BARDO_ACCOUNTD_KEYS=file:<path>`; test builds
+uses an accounts service accountd built with `test-keys` (a 0600 key file, `BARDO_ACCOUNTD_KEYS=file:<path>`; test builds
 only). The packaged `agent-live` already builds its own accountd that way, and starts it beside inferd in
 every world; `accountd add` below needs one too.
 
 The key is entered ONCE into a durable key home outside every repository, and every world reuses it
 (`--keys-home DIR`: absolute, 0700, never inside a git work tree; the harness refuses a loose mode or a
 git work tree). The home holds `accountd.keys` (0600, opened only by accountd; this harness only looks at
-its metadata), accountd's non-secret records (`state/porter/registry.json`, which also holds
-the key permits, copied into each scratch world's `.local/state/porter/`, so a run never
-changes the home) and the provider file (`data/porter/providers/openrouter.toml`).
+its metadata), accountd's non-secret records (`state/accounts/registry.json`, which also holds
+the key permits, copied into each scratch world's `.local/state/accounts/`, so a run never
+changes the home) and the provider file (`data/accounts/providers/openrouter.toml`).
 
 ```sh
-# 1. a test build of accountd (feature test-keys), from porter
-(cd ~/porter && cargo build -p account-daemon --features test-keys)
+# 1. a test build of accountd (feature test-keys), from accounts
+(cd ~/accounts && cargo build -p account-daemon --features test-keys)
 # 2. once, in your own terminal: typed at accountd's own prompt with echo off, on a private bus
 dev/live/cloud-key.sh ~/.local/share/bardo-test/keys <accountd>
 #    or from a 0600 key file outside every repository (piped to accountd's stdin, never in argv):

@@ -1,4 +1,4 @@
-//! What accountd persists (porter PLAN §2.3): the registry as one JSON document.
+//! What accountd persists (the accounts service PLAN §2.3): the registry as one JSON document.
 //!
 //! Once it is on disk a vocabulary bump costs something: the stored `vocab` says which version
 //! wrote it, and reading an older file goes through the migration table, one step per version that
@@ -54,7 +54,7 @@ pub enum StoreFault {
     /// Older than the first version ever stored, or a version whose change has no migration.
     #[error("no migration from vocabulary {0:?}")]
     NoMigration(VocabVersion),
-    /// An account holds an endpoint porter would not use.
+    /// An account holds an endpoint the accounts service would not use.
     #[error("account {0} holds an incoherent endpoint")]
     BadEndpoint(AccountId),
 }
@@ -93,9 +93,9 @@ impl PartialEq for StoreError {
 
 impl Eq for StoreError {}
 
-/// Where the registry lives between runs (porter PLAN §2.3).
+/// Where the registry lives between runs (the accounts service PLAN §2.3).
 ///
-/// It is a seam, so the daemon writes a JSON file atomically, an app hosting porter writes its
+/// It is a seam, so the daemon writes a JSON file atomically, an app hosting the accounts service writes its
 /// platform state directory, and tests keep it in memory. Loads and saves the registry as one
 /// document.
 pub trait RegistryStore: Send + Sync {

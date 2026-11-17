@@ -3,10 +3,10 @@
 //! connection. Local runtimes, Tailscale, AI keys and agent logins are not identities, and
 //! `registry.json` is read as it is.
 //!
-//! - Any identified app (and the porter daemons) may `List`, `Offer` and `RegisterUse`. `Uses`
+//! - Any identified app (and the accounts service daemons) may `List`, `Offer` and `RegisterUse`. `Uses`
 //!   only the Settings and sheet-host roles (the Settings app and the shell). The agent, computer
 //!   use, the agent launcher, the terminal and the compositor are `AccessDenied`, and so is a role
-//!   porter does not know yet (the `_` arm fails closed), and a sender accountd does not know.
+//!   The accounts service does not know yet (the `_` arm fails closed), and a sender accountd does not know.
 //! - `Offer` shows the identity picker through the sheet host (the sheet `Choose` draws, with
 //!   `AskPurpose::ContinueAs`) and waits for the person: the answer is the identity's id, address
 //!   and provider, or `Dismissed` (the person closed the sheet). It never returns a token, and it
@@ -77,7 +77,7 @@ fn identities_in<H, C>(core: &Core<H, C>, registry: &Registry) -> Vec<Held> {
 fn may_use(role: CallerRole) -> bool {
     matches!(
         role,
-        CallerRole::App | CallerRole::Settings | CallerRole::SheetHost | CallerRole::PorterDaemon
+        CallerRole::App | CallerRole::Settings | CallerRole::SheetHost | CallerRole::AccountDaemon
     )
 }
 
@@ -99,9 +99,9 @@ fn unsaved(why: Unsaved) -> RefusedError {
 }
 
 impl<H: Host, C: Callers> IdentitiesObject<H, C> {
-    /// The caller, which must be an app the person uses, Settings, the shell or a porter daemon.
+    /// The caller, which must be an app the person uses, Settings, the shell or an accounts daemon.
     /// The agent, computer use, the agent launcher, the terminal and the compositor are refused,
-    /// and so is a role porter does not know yet.
+    /// and so is a role the accounts service does not know yet.
     async fn user(&self, header: &Header<'_>) -> Result<account_callers::Caller, RefusedError> {
         let caller = self.0.identify(header, Standing::Any).await?;
         if may_use(caller.role) {

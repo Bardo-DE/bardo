@@ -1,4 +1,4 @@
-//! `LoginOnly`: the account seam for a launcher with no porter behind it. Only the `login` route
+//! `LoginOnly`: the account seam for a launcher with no accounts service behind it. Only the `login` route
 //! can work: the agent signs itself in and nothing is lent. Every route that needs a key or an
 //! endpoint is refused, so an entry that asks for one fails to start instead of running without
 //! what it was promised. It is what the live-eval harness hosts an agent with on its private bus,

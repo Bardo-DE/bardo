@@ -1,4 +1,4 @@
-//! Driving a provider's sign-in through the sheet (porter PLAN G4, G5, §2.4): the host half of
+//! Driving a provider's sign-in through the sheet (the accounts service PLAN G4, G5, §2.4): the host half of
 //! the conversation. The sheet's pure machine (`account_sheet::step`) says what to draw,
 //! what to tell the sign-in and when to store; this loop carries those out, and reports what the
 //! person did and what the sign-in said back to the machine.
@@ -847,7 +847,7 @@ fn left(fault: SheetFault) -> Refusal {
 fn person(input: Result<account_sheet::SheetInput, SheetFault>) -> SheetEvent {
     match input {
         Ok(input) => SheetEvent::Input(input),
-        // Closed or unavailable, and a fault a later porter adds: the person is gone.
+        // Closed or unavailable, and a fault a later the accounts service adds: the person is gone.
         Err(_) => SheetEvent::Left,
     }
 }

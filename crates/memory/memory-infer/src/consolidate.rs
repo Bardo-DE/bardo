@@ -55,7 +55,7 @@ fn need() -> Need {
 
 #[expect(
     clippy::match_same_arms,
-    reason = "the wildcard stands for reasons porter adds later (the enum is non-exhaustive); the named arms are the known ones"
+    reason = "the wildcard stands for reasons the accounts service adds later (the enum is non-exhaustive); the named arms are the known ones"
 )]
 fn refusal(why: InferRefusal) -> ConsolidateError {
     match why {
@@ -65,14 +65,14 @@ fn refusal(why: InferRefusal) -> ConsolidateError {
         | InferRefusal::Denied
         | InferRefusal::Unsupported => ConsolidateError::Unavailable,
         InferRefusal::OverBudget => ConsolidateError::Busy,
-        // porter may add reasons (`InferRefusal` is non-exhaustive); one not named means no run.
+        // The accounts service may add reasons (`InferRefusal` is non-exhaustive); one not named means no run.
         _ => ConsolidateError::Unavailable,
     }
 }
 
 #[expect(
     clippy::match_same_arms,
-    reason = "the wildcard stands for failures porter adds later (the enum is non-exhaustive); the named arms are the known ones"
+    reason = "the wildcard stands for failures the accounts service adds later (the enum is non-exhaustive); the named arms are the known ones"
 )]
 fn failure(why: ModelError) -> ConsolidateError {
     match why {
@@ -89,7 +89,7 @@ fn failure(why: ModelError) -> ConsolidateError {
         | ModelError::SignInRefused
         | ModelError::Refused
         | ModelError::NotReady => ConsolidateError::Unavailable,
-        // porter may add failures (`ModelError` is non-exhaustive); one not named left no draft.
+        // The accounts service may add failures (`ModelError` is non-exhaustive); one not named left no draft.
         _ => ConsolidateError::Unparseable,
     }
 }

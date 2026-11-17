@@ -1,6 +1,6 @@
 [package]
 name = "account-oauth"
-description = "OAuth for porter's families: PKCE, the loopback redirect rules, the client registry, renewal, and the token, refresh and revoke exchanges over the `Http` seam; the loopback listener is behind the `io` feature."
+description = "OAuth for the accounts service's families: PKCE, the loopback redirect rules, the client registry, renewal, and the token, refresh and revoke exchanges over the `Http` seam; the loopback listener is behind the `io` feature."
 version.workspace = true
 edition.workspace = true
 license.workspace = true

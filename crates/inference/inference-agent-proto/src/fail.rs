@@ -165,7 +165,7 @@ impl Failure {
             Shape::Anthropic => json!({
                 "type": "error",
                 "error": { "type": kind, "message": self.message },
-                "request_id": "req_porter",
+                "request_id": "req_accounts",
             }),
             Shape::OpenAi => json!({
                 "error": {

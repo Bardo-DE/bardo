@@ -18,7 +18,7 @@
 //!   them), a changed one or a removal reads the file's `version` and compares it with the base
 //!   (a stale base is a `Conflict`, never an overwrite). Drive documents no conditional update,
 //!   so another writer can still slip in between the check and the write: the window is one
-//!   round trip (porter's FINDINGS.md). A file up to [`SIMPLE_MAX`] bytes is one multipart request; a larger
+//!   round trip (the accounts service's FINDINGS.md). A file up to [`SIMPLE_MAX`] bytes is one multipart request; a larger
 //!   one goes in a resumable session, in chunks of a multiple of [`CHUNK_UNIT`] (256 KiB).
 //! - **Whole-drive writes** ([`sync_core::DriveWrite`], in My Drive): a folder or a file made
 //!   in a parent by id, new content for a file by id, a rename or move and the trash as
@@ -37,7 +37,7 @@
 //! The crate is pure: no runtime and no socket. It keeps its own vendor error reasons and wire reading on top of sync-core's
 //! `status` and dates its tombstones with sync-core's `Clock`. Every
 //! endpoint, field and status is written from Google's documentation, without network access:
-//! unverified (porter's FINDINGS.md).
+//! unverified (the accounts service's FINDINGS.md).
 
 mod addr;
 mod drive;

@@ -259,7 +259,7 @@ async fn model<S: AsyncWrite + Unpin>(
     let body = match shape {
         Shape::Anthropic => anthropic_model(id),
         Shape::OpenAi => json!({
-            "id": id, "object": "model", "created": ctx.clock.now().0, "owned_by": "porter",
+            "id": id, "object": "model", "created": ctx.clock.now().0, "owned_by": "accounts",
         }),
     };
     reply_json(out, &body).await

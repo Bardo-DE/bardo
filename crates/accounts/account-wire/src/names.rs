@@ -24,7 +24,7 @@ pub const SHEET_PATH: &str = "/org/bardo/AccountsSheet1";
 /// accountd's settings module (`org.bardo.SettingsModule1`): the account, grant and client-id
 /// rows the Accounts pane reads.
 pub const ACCOUNTS_SETTINGS_PATH: &str = "/org/bardo/Accounts1/settings";
-/// The bus name of the inference service's model service (`org.bardo.Inference1`). Porter keeps the name because
+/// The bus name of the inference service's model service (`org.bardo.Inference1`). The accounts service keeps the name because
 /// accountd's old-key import probes for it (`old_inferd_serves_keys`).
 pub const INFERENCE_BUS: &str = "org.bardo.Inference1";
 /// The root object of the inference service's model service; kept for the same probe.

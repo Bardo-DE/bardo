@@ -359,7 +359,7 @@ pub enum ConfirmAnswer {
     },
     /// Never: refuse this call and keep a "never" for it. The receipt proves the person said so,
     /// as it does for a yes. It is a new answer rather than a scope because a scope says how long
-    /// a yes lasts (`GrantScope` is porter's and has no no), and a no that is kept is not a
+    /// a yes lasts (`GrantScope` is the accounts service's and has no no), and a no that is kept is not a
     /// `ConfirmEnd`, which says no answer was given.
     Never {
         /// The proof.

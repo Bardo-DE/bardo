@@ -29,7 +29,7 @@ pub struct Meta {
 
 /// Writes `bytes` to `dir/name` atomically.
 ///
-/// It goes through porter's one atomic writer: a temporary file
+/// It goes through the accounts service's one atomic writer: a temporary file
 /// in the same directory, synced, renamed into place, the directory synced. The directory is
 /// never made: a collection whose directory is gone stays gone (`NotFound`).
 ///

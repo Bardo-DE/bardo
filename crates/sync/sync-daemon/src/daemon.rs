@@ -19,7 +19,7 @@ use crate::service;
 use crate::settings::{SyncSettings, serve_settings};
 use account_callers::choose_proc_root;
 use account_callers::{CallerFileError, ProcCallers};
-use account_client::{AccountsLink, GrantsLink, Porter};
+use account_client::{AccountClient, AccountsLink, GrantsLink};
 use account_client_dbus::Bus;
 use base_time::SystemClock;
 use base_xdg::PathError;
@@ -210,8 +210,8 @@ impl Daemon {
         network: watch::Receiver<Network>,
     ) -> Result<Self, StartError> {
         let connection = config.bus.connect().await.map_err(StartError::Bus)?;
-        let porter = Porter::over(Bus::over(connection.clone()));
-        Self::build_over(config, network, connection, porter).await
+        let account_client = AccountClient::over(Bus::over(connection.clone()));
+        Self::build_over(config, network, connection, account_client).await
     }
 
     /// [`Daemon::build`] over a connection the caller made and the handle on accountd it chose:
@@ -223,7 +223,7 @@ impl Daemon {
         config: Config,
         network: watch::Receiver<Network>,
         connection: Connection,
-        porter: Porter<T>,
+        account_client: AccountClient<T>,
     ) -> Result<Self, StartError> {
         let Config {
             paths,
@@ -245,7 +245,7 @@ impl Daemon {
             _ => ProcCallers::new(connection.clone(), table),
         });
         let hub = Hub::default();
-        let accounts = Arc::new(porter.grants());
+        let accounts = Arc::new(account_client.grants());
         // What tells this run from every other: its anchors, its new Photos devices.
         let nonce = fresh_nonce();
         let wiring = |network| Wiring {
@@ -286,7 +286,8 @@ impl Daemon {
         // On an error below `daemon` drops, which ends both supervisors.
         // The Settings rows: the accounts accountd lists, the sync switches and removal.
         let settings_file = paths.settings.clone();
-        let own = Arc::new(Keep::new(&porter, paths, hub.clone()).with_drives(drives.clone()));
+        let own =
+            Arc::new(Keep::new(&account_client, paths, hub.clone()).with_drives(drives.clone()));
         serve_settings(
             &connection,
             SyncSettings::new(own, Arc::clone(&callers))

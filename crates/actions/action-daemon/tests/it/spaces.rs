@@ -1,7 +1,7 @@
 //! Consent keyed by Space, on disk and through a whole intentd: another app's own Space is
 //! never held, a removed Space drops the grants scoped to it (never moving them), a restart
 //! drops the grants of a Space that went while the daemon was away, and an old file's entries
-//! that porter cannot read are dropped, never widened. The bus is private and accountd is a
+//! that the accounts service cannot read are dropped, never widened. The bus is private and accountd is a
 //! fake that serves only `Spaces1`.
 
 use crate::support::bus::PrivateBus;
@@ -240,7 +240,7 @@ async fn a_restart_drops_the_grants_of_a_space_that_went_and_audits_it() {
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-async fn an_old_entry_porter_cannot_read_is_dropped_never_widened() {
+async fn an_old_entry_accounts_service_cannot_read_is_dropped_never_widened() {
     let desk = Desk::start(&["work"], |path| {
         plant(
             path,

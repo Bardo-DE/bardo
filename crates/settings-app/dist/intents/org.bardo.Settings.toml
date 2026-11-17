@@ -1,6 +1,6 @@
 # bardo-settings's intents manifest (the actions service actions.md section 3.3, cli.md): what an agent or a command
 # line may do in Settings. Installed as $XDG_DATA_DIRS/bardo/intents/org.bardo.Settings.toml
-# beside dbus-1/services/org.bardo.Settings.service. Every field is written (porter's
+# beside dbus-1/services/org.bardo.Settings.service. Every field is written (the accounts service's
 # provider-file rule). Names carry the app's prefix: `settings.`.
 #
 # An entity key is a page's slug (`dock`, `app:acme`) or a key's dotted path

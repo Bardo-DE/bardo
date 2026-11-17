@@ -197,7 +197,7 @@ fn the_test_proc_root_feature_is_not_a_default_feature() {
 #[test]
 fn syncd_is_one_app_id_in_every_test_and_doc() {
     // The name this crate once also went by; no source, test or doc may use it again. (The caller
-    // table that names syncd `org.bardo.Sync` is porter's: accountd and syncd read it from
+    // table that names syncd `org.bardo.Sync` is the accounts service's: accountd and syncd read it from
     // /etc/bardo/accountd-callers.toml.)
     let stray = ["org.bardo.", "Syncd"].concat();
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));

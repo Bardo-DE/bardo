@@ -3,7 +3,7 @@
 //! They are the consent alert, the add-account steps (provider list, sign-in form, browser wait,
 //! device code, review) and the small parts apps show (account picker, no-account state, badge,
 //! limited note). Every component takes plain props and reports events; nothing here keeps a value
-//! the host owns, and no porter type is named: a host maps its sheet view to these props. A secret
+//! the host owns, and no accounts type is named: a host maps its sheet view to these props. A secret
 //! typed into a field travels as [`Hidden`] and prints as `<hidden>`.
 
 pub(crate) mod adapter;

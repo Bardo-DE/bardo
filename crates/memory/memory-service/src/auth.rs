@@ -210,7 +210,7 @@ fn spaces_of(request: &MemoryRequest) -> Vec<&SpaceId> {
 }
 
 /// An app reaches only Spaces open to it: its own App Spaces, the desktop and the desktop-wide
-/// Spaces (porter's `SpaceScope::open_to`). The name is the caller's, never read from the id.
+/// Spaces (the accounts service's `SpaceScope::open_to`). The name is the caller's, never read from the id.
 /// Router, cuad, the shell and the Settings app are not apps and act across Spaces (the Settings
 /// app's two members name none, and every other request of it is refused by class).
 fn space_is_open(caller: &Caller, request: &MemoryRequest) -> Result<(), Refusal> {

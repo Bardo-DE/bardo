@@ -24,7 +24,7 @@ pub enum LinkError {
     /// An argument could not be written for the wire.
     #[error("an argument could not be written")]
     Unwritable(#[source] Unwritable),
-    /// The other side sent something that is not porter's protocol.
+    /// The other side sent something that is not the accounts service's protocol.
     #[error("the other side did not speak the protocol")]
     Malformed(#[source] MalformedError),
 }

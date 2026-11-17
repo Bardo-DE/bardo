@@ -1,6 +1,6 @@
-# porter
+# The accounts service
 
-Porter keeps the accounts on your computer in one place. You sign in to a service once (mail,
+The accounts service keeps the accounts on your computer in one place. You sign in to a service once (mail,
 calendar, contacts, files, photos, an AI service), and the apps you choose can then use that
 account without ever seeing your password or key. Every app asks first, you decide what each one
 may do, and you can take it back at any time.
@@ -13,15 +13,15 @@ the real services.
 
 ## What runs
 
-Porter is one background service. It starts when an app first needs it and stops when
+The accounts service is one background service. It starts when an app first needs it and stops when
 nothing does.
 
 | Service | Name on the session bus | What it does |
 | --- | --- | --- |
 | `accountd` | `org.bardo.Accounts1` | Holds the accounts, the consent you gave each app and the audit trail. Signs you in, keeps the passwords and keys in your keyring, and gives apps a short-lived pass or a connection already signed in, never the secret itself. |
 
-The windows you see (the sign-in sheet, the Settings pages) belong to the desktop, not to porter.
-Porter supplies what they show. The AI service (`org.bardo.Inference1`) is not porter's: it lives in the inference service repository, which depends on porter. Neither is the sync daemon (`org.bardo.Sync1`), which keeps copies of calendars, contacts, tasks, files and photos in step with the service: it lives in the sync service repository, which depends on porter.
+The windows you see (the sign-in sheet, the Settings pages) belong to the desktop, not to the accounts service.
+The accounts service supplies what they show. The AI service (`org.bardo.Inference1`) is not the accounts service's: it lives in the inference service repository, which depends on the accounts service. Neither is the sync daemon (`org.bardo.Sync1`), which keeps copies of calendars, contacts, tasks, files and photos in step with the service: it lives in the sync service repository, which depends on the accounts service.
 
 ## Install
 
@@ -38,7 +38,7 @@ shipped one is put beside it as `callers.toml.dist`). It never writes into a hom
 `--bin-dir DIR` installs a service you built yourself instead of building it, and `--help` lists
 the rest.
 
-Building needs access to the private repositories that porter's dependencies come from (the model layer
+Building needs access to the private repositories that the accounts service's dependencies come from (the model layer
 and Bardo, as git dependencies); there is no public mirror yet.
 
 ## Where files go
@@ -50,11 +50,11 @@ Installed by the script (under the prefix, `/usr` by default):
 | The service | `libexec/bardo/` |
 | Its systemd user unit | `lib/systemd/user/` |
 | What lets the session bus start it | `share/dbus-1/services/` |
-| The providers porter knows (one file each) | `share/bardo/accounts/providers/` |
+| The providers the accounts service knows (one file each) | `share/bardo/accounts/providers/` |
 | The sign-in client ids for Microsoft and others, when some ship | `share/bardo/accounts/clients.toml` |
 | The table that says which app is Settings, which draws the sheets, which are the services (the sync service's `syncd` among them) | `/etc/bardo/accountd-callers.toml` |
 
-Yours, made as you use porter:
+Yours, made as you use the accounts service:
 
 | What | Where |
 | --- | --- |
@@ -75,14 +75,14 @@ These two need a sign-in client id registered with the company. Google's has to 
 - [ARCHITECTURE.md](ARCHITECTURE.md): the crates, what depends on what, what is built and what is not.
 - [CONVENTIONS.md](CONVENTIONS.md): how the code is written and tested.
 - [FINDINGS.md](FINDINGS.md): open items, standing facts and what each piece of work found.
-- [docs/google.md](docs/google.md): registering a Google client and what porter does with each Google service.
+- [docs/google.md](docs/google.md): registering a Google client and what the accounts service does with each Google service.
 - [CHANGELOG.md](CHANGELOG.md).
 
-## Working on porter
+## Working on the accounts service
 
     cargo test --workspace        # the tests that start a private session bus are meant to run in a jail (no real session, devices or network); .github/workflows/ci.yml says which packages
     scripts/check-boundary.sh     # the crate boundaries, mechanically
-    scripts/check-features.sh     # the feature sets that programs building porter use, each warning-free
+    scripts/check-features.sh     # the feature sets that programs building the accounts service use, each warning-free
     cargo deny check licenses
 
 ## Licence

@@ -260,7 +260,7 @@ fn a_pipeline_gives_one_note_per_stage_and_a_bare_routed_one_answer() {
 
 #[test]
 fn a_voice_turn_has_two_routed_and_one_answer_line() {
-    // Porter's voice-chat order: Routed, Stage(Hear), Heard.., Routed, Stage(Answer), deltas, end.
+    // The accounts service's voice-chat order: Routed, Stage(Hear), Heard.., Routed, Stage(Answer), deltas, end.
     let mut log = RouteLog::default();
     for event in [
         InferEvent::Routed(served("whisper", Locality::OnDevice)),

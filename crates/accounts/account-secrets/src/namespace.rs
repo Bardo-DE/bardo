@@ -1,9 +1,9 @@
 //! The keyring namespace: the `service` attribute every item is filed under (and the keyring-core
 //! service), chosen by the host, so two programs on one keyring never read each other's items.
 //!
-//! Every constructor that takes no namespace files under `porter` ([`Namespace::PORTER`]). That
+//! Every constructor that takes no namespace files under `porter` ([`Namespace::ACCOUNTS`]). That
 //! namespace is kept for apps that migrate their old items out of it; new code names its own.
-//! porter's daemons each name theirs (`porter.accountd`, `porter.syncd`), and a
+//! The accounts service's daemons each name theirs (`porter.accountd`, `porter.syncd`), and a
 //! host that keeps its own credentials names its own, such as mailo's `mailo/<profile>`
 //! (`mailo/default`, `mailo/3fa9c01b`). Any one line of text is a valid name.
 
@@ -28,7 +28,7 @@ pub struct Namespace(Cow<'static, str>);
 impl Namespace {
     /// `porter`: what every store uses unless its host names another, and `Namespace::default()`.
     /// Kept for apps that migrate their old items out of it; new code names its own namespace.
-    pub const PORTER: Self = Self(Cow::Borrowed("porter"));
+    pub const ACCOUNTS: Self = Self(Cow::Borrowed("porter"));
 
     /// The namespace `text` names (`mailo/work`, `porter.accountd`).
     ///
@@ -53,7 +53,7 @@ impl Namespace {
 
 impl Default for Namespace {
     fn default() -> Self {
-        Self::PORTER
+        Self::ACCOUNTS
     }
 }
 
@@ -85,6 +85,6 @@ mod tests {
                 "{text:?}"
             );
         }
-        assert_eq!(Namespace::default(), Namespace::PORTER);
+        assert_eq!(Namespace::default(), Namespace::ACCOUNTS);
     }
 }

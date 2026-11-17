@@ -1,11 +1,11 @@
-//! The accounts sheet as values (design/31 §5.6, porter PLAN G5): what the host draws
+//! The accounts sheet as values (design/31 §5.6, the accounts service PLAN G5): what the host draws
 //! (`SheetView`), what the person does (`SheetInput`), what a sign-in says as it goes
 //! (`Progress`) and the pure machine between them (`step`). Nothing here draws, reads a
 //! secret store or talks to a provider.
 //!
 //! The words a person reads for these values are this crate's declared vocabulary, in [`words`]:
 //! free functions over the typed values of the lower crates (a service's name, a group's heading,
-//! what a whole store's access says), so no value type of porter carries a label. An app that
+//! what a whole store's access says), so no value type of the accounts service carries a label. An app that
 //! words them itself takes the typed values and ignores `words`.
 //!
 //! A view and an input cross the bus as JSON (`org.bardo.AccountsSheet1`). An input may carry

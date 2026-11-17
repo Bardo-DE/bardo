@@ -20,15 +20,15 @@
 //!     (SERVICE, "cloud", r#"{"kind":"password"}"#)
 //! );
 //!
-//! // A host that keeps its own credentials names its own namespace; porter's daemons keep
-//! // `Namespace::PORTER`, which is what every constructor without a namespace uses.
+//! // A host that keeps its own credentials names its own namespace; the accounts service's daemons keep
+//! // `Namespace::ACCOUNTS`, which is what every constructor without a namespace uses.
 //! let mailo = Namespace::parse("mailo/work").expect("a namespace");
 //! assert_eq!(attributes_in(&mailo, &key).service, "mailo/work");
-//! assert_eq!(attributes_in(&Namespace::PORTER, &key), filed);
+//! assert_eq!(attributes_in(&Namespace::ACCOUNTS, &key), filed);
 //! ```
 //!
 //! The namespace is the `service` attribute (and the keyring-core service). `Oo7Secrets`,
-//! `KeyringSecrets` and `FileSecrets` file under `Namespace::PORTER`; `Oo7Secrets::in_namespace`,
+//! `KeyringSecrets` and `FileSecrets` file under `Namespace::ACCOUNTS`; `Oo7Secrets::in_namespace`,
 //! `KeyringSecrets::in_namespace` and `FileSecrets::open_in` take another.
 
 mod attributes;

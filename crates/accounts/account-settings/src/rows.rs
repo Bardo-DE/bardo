@@ -139,7 +139,7 @@ impl AccountRow for Reauth {
     fn specs(&self, at: &At<'_>) -> Vec<KeySpec> {
         let account = at.account;
         let (label, help) = match account.auth {
-            // Tailscale signed out: "Sign in" hands the person Tailscale's own page; porter takes
+            // Tailscale signed out: "Sign in" hands the person Tailscale's own page; the accounts service takes
             // no password or key of Tailscale's.
             AuthKind::OwnProgram if account.state == AccountState::NeedsLogin => (
                 "Sign in",

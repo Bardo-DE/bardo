@@ -141,7 +141,7 @@ impl BrowserIssuer for Standard {
         userinfo_address(&*session.env().http, &userinfo, token.value.expose()).await
     }
 
-    fn porter_token<H>(
+    fn account_token<H>(
         &self,
         session: &OAuthSession<Self, H>,
         audience: &Audience,

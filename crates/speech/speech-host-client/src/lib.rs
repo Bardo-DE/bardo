@@ -1,7 +1,7 @@
 //! The client of `bardo-speech-host`, the STT engine process, over `$XDG_RUNTIME_DIR/bardo/inference/<engine>.sock`.
 //!
 //! It speaks `speech_provider::host_wire` (a 4-byte length, then JSON). `SpeechHostClient` is
-//! one of the `SttBackend` arms in porter's inferd.
+//! one of the `SttBackend` arms in the accounts service's inferd.
 //!
 //! Errors: a host that cannot be reached, closes early or breaks the stream is `Unreachable`; a
 //! frame that is over the cap, is not JSON of the vocabulary, or a host of another vocabulary

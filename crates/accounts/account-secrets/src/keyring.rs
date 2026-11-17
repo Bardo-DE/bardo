@@ -1,4 +1,4 @@
-//! The platform keyring store for an app that hosts porter's core itself on macOS or Windows
+//! The platform keyring store for an app that hosts the accounts service's core itself on macOS or Windows
 //! (the Apple keychain, the Windows credential manager), over keyring-core. Linux keeps its
 //! secrets in the Secret Service through oo7; the keyring store there answers only once a
 //! default keyring-core store is set, which is how the tests give it keyring-core's mock.
@@ -48,7 +48,7 @@ fn chunked(store: Arc<CredentialStore>, limit: Limit) -> ChunkedStore {
     ChunkedStore::new(store, MARK, limit).expect("the marker is not empty")
 }
 
-/// The user's platform keyring, filing under [`Namespace::PORTER`].
+/// The user's platform keyring, filing under [`Namespace::ACCOUNTS`].
 /// [`KeyringSecrets::in_namespace`] files under another.
 #[derive(Debug, Default)]
 pub struct KeyringSecrets;
@@ -91,22 +91,22 @@ pub struct StoreSecrets {
 }
 
 impl StoreSecrets {
-    /// Files secrets in `store` under [`Namespace::PORTER`], with this platform's entry size
+    /// Files secrets in `store` under [`Namespace::ACCOUNTS`], with this platform's entry size
     /// limit.
     pub fn new(store: Arc<CredentialStore>) -> Self {
         Self {
             store: chunked(store, LIMIT),
-            namespace: Namespace::PORTER,
+            namespace: Namespace::ACCOUNTS,
         }
     }
 
-    /// Files secrets in `store` under [`Namespace::PORTER`], splitting any value over `units`
+    /// Files secrets in `store` under [`Namespace::ACCOUNTS`], splitting any value over `units`
     /// UTF-16 code units, as the Windows credential manager needs. For tests of the splitting on
     /// any platform.
     pub fn chunked(store: Arc<CredentialStore>, units: usize) -> Self {
         Self {
             store: chunked(store, Limit::Utf16Units(units)),
-            namespace: Namespace::PORTER,
+            namespace: Namespace::ACCOUNTS,
         }
     }
 
@@ -324,11 +324,11 @@ impl Secrets for StoreSecrets {
 
 impl Secrets for KeyringSecrets {
     async fn put(&self, key: &SecretKey, value: &Credential) -> Result<(), SecretsError> {
-        resolve(&Namespace::PORTER)?.put(key, value).await
+        resolve(&Namespace::ACCOUNTS)?.put(key, value).await
     }
 
     async fn get(&self, key: &SecretKey) -> Result<Credential, SecretsError> {
-        resolve(&Namespace::PORTER)?.get(key).await
+        resolve(&Namespace::ACCOUNTS)?.get(key).await
     }
 
     async fn put_if_absent(
@@ -336,15 +336,17 @@ impl Secrets for KeyringSecrets {
         key: &SecretKey,
         value: &Credential,
     ) -> Result<bool, SecretsError> {
-        resolve(&Namespace::PORTER)?.put_if_absent(key, value).await
+        resolve(&Namespace::ACCOUNTS)?
+            .put_if_absent(key, value)
+            .await
     }
 
     async fn delete(&self, key: &SecretKey) -> Result<(), SecretsError> {
-        resolve(&Namespace::PORTER)?.delete(key).await
+        resolve(&Namespace::ACCOUNTS)?.delete(key).await
     }
 
     async fn delete_account(&self, account: &AccountId) -> Result<(), SecretsError> {
-        resolve(&Namespace::PORTER)?.delete_account(account).await
+        resolve(&Namespace::ACCOUNTS)?.delete_account(account).await
     }
 }
 

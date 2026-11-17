@@ -107,7 +107,7 @@ fn authorize(shared: &Shared, request: &Request) -> Response {
         Consent::Grant => {
             let code = next(&mut state, "fake-code");
             // Microsoft keeps every consent of a client; Google only when asked to
-            // (`include_granted_scopes`), which porter always is.
+            // (`include_granted_scopes`), which the accounts service always is.
             let keep = state.style == Style::Rotating
                 || q("include_granted_scopes").as_deref() == Some("true");
             let scope = consented(&state, &client_id, &q("scope").unwrap_or_default(), keep);

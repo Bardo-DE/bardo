@@ -13,7 +13,7 @@ pub struct TopK(pub u32);
 
 /// A document's data class, as an opaque tag.
 ///
-/// recall names no porter type, so it carries the tag from the caller to the embedder untouched and
+/// recall names no accounts type, so it carries the tag from the caller to the embedder untouched and
 /// never reads it: the caller that builds the documents and the embedder that receives them agree
 /// on its spelling (the memory service uses the data-class slug, `mail`, `notes`, and so on). The empty tag,
 /// the default, says "no class": an embedder treats it as its own strictest pin.

@@ -5,7 +5,7 @@
 //! here carries a token. The one secret that may leave is a password, on a descriptor, after the
 //! person picked that identity in the sheet (`TakePassword`).
 //!
-//! Who may call: any identified app (and the porter daemons) may `List`, `Offer` and
+//! Who may call: any identified app (and the accounts service daemons) may `List`, `Offer` and
 //! `RegisterUse`; `TakePassword` the app whose `Offer` the person just answered with that
 //! identity, once; `Uses` only Settings and the shell (`CallerRole::Settings`,
 //! `CallerRole::SheetHost`). The agent, computer use, the agent launcher, the terminal and the

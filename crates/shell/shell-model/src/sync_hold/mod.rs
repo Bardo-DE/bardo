@@ -1,7 +1,7 @@
 //! The mass deletions syncd holds back, as the shell tells the person: a notification per held
 //! dataset whose one action opens Settings at the account, withdrawn when the hold ends.
 //!
-//! The shell never confirms a discard itself; Settings does (porter FINDINGS rel-6b, rel-6c).
+//! The shell never confirms a discard itself; Settings does (the accounts service FINDINGS rel-6b, rel-6c).
 
 mod command;
 mod model;

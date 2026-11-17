@@ -1,5 +1,5 @@
 # Scenario `accounts-reauth` (design 31 §7.1): the issuer stops honouring the refresh token, the account needs the person,
-# and signing it in again through the sheet makes it work again. Since porter's accounts split (Phase B) the tokens are held
+# and signing it in again through the sheet makes it work again. Since the accounts service's accounts split (Phase B) the tokens are held
 # by whoever uses them, so the refusal is met by bardo-syncd (the sync service's; it has no accounts of its own and uses bardo-accountd's through
 # org.bardo.Grants1), and the account it shows needs the person. Real bardo-accountd and bardo-syncd, bardo-shell (the sheet host) on bardo-compositor,
 # The sync service's rig (the issuer and Graph) (harness/lib/accounts.sh). Internet Accounts (bardo-accountd) owns Sign in again: bardo-syncd's rows
@@ -9,7 +9,7 @@
 #             that account in bardo-syncd's rows is turned on (bardo-accountd's consent sheet shows once, Always Allow) and bardo-syncd mirrors the drive
 #   refusal   the issuer refuses refreshes (rig lever /issuer/refuse-refreshes, what a revoked refresh token is to bardo-syncd:
 #             invalid_grant; the rig's tokens last 4 s); at its next cycle bardo-syncd's OpenAuthenticated makes bardo-accountd refresh, the issuer
-#             refuses, and bardo-accountd marks the account `needs_reauth` (porter credential.rs refused_refresh); bardo-syncd's settings
+#             refuses, and bardo-accountd marks the account `needs_reauth` (the accounts service credential.rs refused_refresh); bardo-syncd's settings
 #             module reads the state from bardo-accountd's account list, so it shows `needs_reauth` there
 #   sign-in   bardo-syncd's rows have no Sign in again (checked); Settings' Sign in again on bardo-accountd's row (accounts.<id>.reauth): the sheet shows the browser wait, bardo-shell opens the issuer's
 #             authorize page, the sign-in finishes by itself (no review step on a sign-in again, for any family; Done): the

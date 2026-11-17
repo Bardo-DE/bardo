@@ -1,4 +1,4 @@
-//! `Porter`: the app's handle on the account service, over a transport.
+//! `AccountClient`: the app's handle on the account service, over a transport.
 
 use crate::accounts::Accounts;
 use crate::grants::Grants;
@@ -11,11 +11,11 @@ use std::sync::Arc;
 /// process (`account-client-inproc`). A domain accessor exists only over a transport that carries
 /// the domain, so a call a transport cannot serve does not compile.
 #[derive(Debug)]
-pub struct Porter<T> {
+pub struct AccountClient<T> {
     link: Arc<T>,
 }
 
-impl<T> Clone for Porter<T> {
+impl<T> Clone for AccountClient<T> {
     fn clone(&self) -> Self {
         Self {
             link: Arc::clone(&self.link),
@@ -23,7 +23,7 @@ impl<T> Clone for Porter<T> {
     }
 }
 
-impl<T> Porter<T> {
+impl<T> AccountClient<T> {
     /// Over a transport the app built.
     pub fn over(link: T) -> Self {
         Self {
@@ -32,7 +32,7 @@ impl<T> Porter<T> {
     }
 }
 
-impl<T: AccountsLink> Porter<T> {
+impl<T: AccountsLink> AccountClient<T> {
     /// Signing an account in.
     #[must_use]
     pub fn accounts(&self) -> Accounts<T> {
@@ -42,7 +42,7 @@ impl<T: AccountsLink> Porter<T> {
     }
 }
 
-impl<T: GrantsLink> Porter<T> {
+impl<T: GrantsLink> AccountClient<T> {
     /// Who may use which account, and the relays a grant opens.
     #[must_use]
     pub fn grants(&self) -> Grants<T> {

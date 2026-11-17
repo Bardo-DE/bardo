@@ -708,7 +708,7 @@ async fn a_computer_that_cannot_show_the_folder_says_so_and_the_drive_still_list
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn porter_mountd_is_asked_when_it_listens_and_its_words_are_shown() {
+async fn accounts_service_mountd_is_asked_when_it_listens_and_its_words_are_shown() {
     let mut rig = rig_showing(agreeing(), |scratch| {
         // The drive's folder already holds a file of the person's: the helper refuses before it
         // would run fusermount3.

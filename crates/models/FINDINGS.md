@@ -2,10 +2,10 @@
 
 Open items and standing facts. An entry names the condition that closes it.
 
-## Engine crates moved from porter (T1.1, T1.2; 2026-10-28)
+## Engine crates moved from the accounts service (T1.1, T1.2; 2026-10-28)
 
-`engine-manifest` (pure), `engine-probe` and `engine-install` are `porter-engines` and
-`porter-engines-install` at porter `f0539103`, split by the layer rule. Changes callers must know:
+`engine-manifest` (pure), `engine-probe` and `engine-install` are `account-engines` and
+`account-engines-install` at the accounts service `f0539103`, split by the layer rule. Changes callers must know:
 
 - `EngineId` is gone; the engine is `model_catalog::EngineKind`, and `EngineId::LlamaCpp` is
   `EngineKind::LlamaServer`. Its slug is the serde one, so the install directory, the record's
@@ -18,7 +18,7 @@ Open items and standing facts. An entry names the condition that closes it.
   `Accept: application/json` (the `Framing::Whole` header) and no `User-Agent`.
 - `HelperProgram::system()` is gone: the caller passes the `pkexec` path and the helper's path.
   The polkit policy file keeps naming the helper's path, so the installer keeps the two in step.
-- `Roots::SYSTEM` (`/usr/local/lib/porter/engines`) and the `porter/engines` folder under the data
+- `Roots::SYSTEM` (`/usr/local/lib/accounts/engines`) and the `accounts/engines` folder under the data
   home in `Roots::standard` are unchanged; a neutral name is a later change with a migration.
 
 ## Simplification by the new type rules (2026-10-28)
@@ -26,7 +26,7 @@ Open items and standing facts. An entry names the condition that closes it.
 Lane `esto` made the code match the new type rules (the old "no bool, never `dyn`" rules went).
 Done: `Flavor` keeps its name and serde shape, and what differs per server is now the `Server`
 trait (default methods, one impl per server) in `model-openai-compat/src/server.rs`; the five
-two-way enums and `Quirks` are gone; porter reads the one row it needs through
+two-way enums and `Quirks` are gone; the accounts service reads the one row it needs through
 `Flavor::shape_with_tools()`. `OpenAiSpeech` is split into `OpenAiTranscription` and
 `KokoroSpeech`; `SpeechFlavor` is gone. `WireDialect` is its own `WireCodec`. `ToolNeed`,
 `Thinking`, `Done`, `Closed` and `IfMalformed::KeepOpen` are gone. `CuaDialect` gained `wire()`,
@@ -78,7 +78,7 @@ Decisions taken from it:
 Decisions taken from it:
 
 - **`CatalogKind::Speech` is split into `SpeechIn` and `SpeechOut`** (slugs `speech_in`, `speech_out`):
-  one speech table has one direction, and the pickers choose a model per direction. porter's `AiKind`
+  one speech table has one direction, and the pickers choose a model per direction. The accounts service's `AiKind`
   makes the same split (voice.md C-V2), and inferd's bridge owns the total mapping test.
 - **`ModelEntry.caps` is `Option<Caps>` and `speech` is `Option<SpeechCaps>`.** A speech entry
   writes no chat fields, a chat entry no `speech` table; `parse_entry` checks both against the roles
@@ -235,7 +235,7 @@ Types, traits, signatures, docs, pure tables and tests only; the new bodies are 
 - **New crates.** `model-extract` and `genai-names` (zero dependencies; `model-provider`
   depends on it for the `Finish` conversion). Boundary rows for all three.
 - **Decided.** No untyped JSON escape hatch: sampling is typed and engine knobs are per-flavor
-  enum arms. inferd owns retry and structured-output validate-and-repair (porter's
+  enum arms. inferd owns retry and structured-output validate-and-repair (the accounts service's
   ARCHITECTURE.md section 7); `ExtractSession` and `Retrying` are the machines it runs.
   `ShapeWithTools` is a `Quirks` field of the flavor and a parameter of `choose`, since
   `Caps` is catalog data.
@@ -454,13 +454,13 @@ pairing, which a later catalog change should.
 
 ### Consumers
 
-`porter` and `actions` consume the model layer by path (`cua-action`, `model-provider`, `speech-vad`). No call
+`accounts` and `actions` consume the model layer by path (`cua-action`, `model-provider`, `speech-vad`). No call
 site of a changed signature exists in either repo (searched for `ExtractSession`, `Sleeper`,
 `Retrying`, `CassetteHeader`, `HttpError`, `VllmExtras`, `GuidedBackend`, `ChatDecoder`,
 `StreamDecoder`, `ModelInfo`, `loaded_context`, `Target::`; the actions service's `budget` is its own). Two
-things to know: `cua-action::Target` gained a variant, so an exhaustive `match` on it in porter's
-executor (none today) needs the `Centre` arm; and porter's own `DropReason` mirror
-(`porter-infer/src/cua.rs`) has no `BadArgument` yet, which the `cua-parse` to porter mapping will
+things to know: `cua-action::Target` gained a variant, so an exhaustive `match` on it in the accounts service's
+executor (none today) needs the `Centre` arm; and the accounts service's own `DropReason` mirror
+(`inference-core/src/cua.rs`) has no `BadArgument` yet, which the `cua-parse` to the accounts service mapping will
 need when it is written.
 
 ## Fill W4: the model layer (2026-10-03)
@@ -584,9 +584,9 @@ waits for a multipart POST in `model-http`.
 
 1. `Gguf { model, mmproj }` has a required `mmproj`: an embedding or text-only GGUF has none (the
    tests write an empty name). Proposed: `mmproj: Option<FileName>` (a serde change).
-2. `ObservationIn` has no place for porter's window-contents text (`TreeText`) or notes
+2. `ObservationIn` has no place for the accounts service's window-contents text (`TreeText`) or notes
    (`StepNote`); inferd's `cua_step` puts both in the prompt today. Proposed: `tree: Option<String>`
-   and `notes: Vec<Note>` on `ObservationIn` (porter builds it by struct literal, so this breaks
+   and `notes: Vec<Note>` on `ObservationIn` (the accounts service builds it by struct literal, so this breaks
    it once), or a `Context` passed to `request`.
 3. `TurnTranscript` has no safety signals: a vendor's `SafetySignal`s cannot reach `decode`
    through `absorb`. Proposed: `safety: Vec<SafetySignal>` on `TurnTranscript`.
@@ -596,7 +596,7 @@ waits for a multipart POST in `model-http`.
 5. `model-http` needs a multipart (or raw-bytes) POST before `OpenAiSpeech` can send
    `encode_transcription`'s body.
 
-### Porter call sites that should change (porter was not edited)
+### The accounts service call sites that should change (the accounts service was not edited)
 
 - `crates/inferd/src/bridge/request.rs:195-199` `reasoning`: map `pi::Reasoning::EngineDefault`
   to `sp::Reasoning::EngineDefault` (it maps to `Off` today), and `:215-219` `default_sampling`
@@ -622,10 +622,10 @@ waits for a multipart POST in `model-http`.
   `caps.computer_use`, `TurnSettings` from the catalog's `sampling.reasoning_off` and `max_output`,
   `ObservationIn.prev` from `PrevResult` (`Done` to `StepResult::Done`, `Refused`, `NotRun`; the
   other `PrevResult`s map to `Refused` with their words), and the `DropReason` mirror
-  (`cua_step.rs:dropped_reason`, `porter-infer/src/cua.rs`) is unchanged. `StepOutcome::Repair`
+  (`cua_step.rs:dropped_reason`, `inference-core/src/cua.rs`) is unchanged. `StepOutcome::Repair`
   means one more `provider.turn` with the returned request.
-- `Target::Centre` and `DropReason::BadArgument` (F2 notes) are still the porter-side items.
-- `CodecError` has no porter call site.
+- `Target::Centre` and `DropReason::BadArgument` (F2 notes) are still the account-side items.
+- `CodecError` has no accounts service call site.
 
 ## Fill W5: the model layer (2026-10-03)
 
@@ -647,7 +647,7 @@ literal, nothing outside the model layer builds any of them today).
 No shipped catalog file uses `gguf`, and an earlier spelling (`mmproj = ""`) still parses (as
 `Some("")`) and `command` treats an empty name as none: no `--mmproj` flag. Chosen over a second
 variant because every reader of the weights already matches `Gguf`, and the only literals were
-The model layer's own tests (porter names neither `WeightFiles` nor `Gguf`).
+The model layer's own tests (the accounts service names neither `WeightFiles` nor `Gguf`).
 
 ### `cua-session`
 
@@ -695,7 +695,7 @@ its `ParamType::Date` stays hand-written until the planner's grammar is allowed 
 ContentType, bytes }` prints a length only. `UploadTransport: Transport` has `upload`;
 `HttpClient` implements it over the same connection code as `exchange` (the request builder is
 shared, so the endpoint's auth and extra headers apply). It is a separate trait, not a new `Verb`
-and not a field of `Exchange`, so every existing `Exchange` literal (porter's health probe among
+and not a field of `Exchange`, so every existing `Exchange` literal (the accounts service's health probe among
 them) and every `Transport` implementation (the replay and recording transports) are unchanged.
 A header value that cannot be written (a newline in the content type) is `Connect`, never sent.
 
@@ -724,9 +724,9 @@ gives it the catalog's caps.
 - Not zeroized: the WAV and multipart copies of the audio live in plain `Vec<u8>`s until the
   request finishes (`PcmBytes` zeroizes only the chunks the source handed over).
 
-### Breaks (model-internal, listed for porter)
+### Breaks (model-internal, listed for the accounts service)
 
-None of these types is built by literal in porter today. If the porter agent builds one from the
+None of these types is built by literal in the accounts service today. If the accounts agent builds one from the
 W4 API:
 - `ObservationIn { step, cursor, prev, masked }` becomes `ObservationIn::new(step, cursor, prev,
   masked)` (then `.with_tree(..)` and `.with_notes(..)`), or add `tree` and `notes` to the literal.
@@ -736,7 +736,7 @@ W4 API:
 - `Shape` gained a variant: an exhaustive `match` on it needs an `OrHandle` arm (none exists
   outside the model layer).
 - `OpenAiSpeech::new(HttpClient, flavor)` is unchanged; the type is now `OpenAiSpeech<T = HttpClient>`.
-Porter call sites that should change: `crates/inferd` where it builds the CUA observation (add
+The accounts service call sites that should change: `crates/inferd` where it builds the CUA observation (add
 `tree` from `TreeText` and `notes` from `StepNote`, and put the vendor's safety signals into the
 transcript), where it builds the CUA profile (`CuaProfile::for_model` with
 `ai.cua.history_frames`), and where it makes the speech providers (`with_known` from the catalog's
@@ -751,8 +751,8 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
   - `cua-vendors` depends on `cua-parse` (its `decode` returns `Parsed`) and not on
     `vision-prep` (SPEC.md 1.3 lists the reverse; the table there predates `Parsed` having a
     crate of its own). `model-replay` depends on `vision-prep` for `MediaType`.
-  - The catalog's `roles` use `CatalogKind`, the model layer's copy of porter's `AiKind`: the model layer cannot
-    name porter. The slugs are identical; porter's `inferd::bridge` owns the total mapping test.
+  - The catalog's `roles` use `CatalogKind`, the model layer's copy of the accounts service's `AiKind`: the model layer cannot
+    name the accounts service. The slugs are identical; the accounts service's `inferd::bridge` owns the total mapping test.
   - `WeightFiles::Gguf` is adjacently tagged (`{ kind = "gguf", v = { model, mmproj } }`) like every
     other data enum, where models.md's example inlined the fields.
   - `RequestPrint` is its own struct (a `TurnRequest` with image bytes replaced by digest and
@@ -784,7 +784,7 @@ transcript), where it builds the CUA profile (`CuaProfile::for_model` with
 
 ## Standing facts
 
-- No ds-core, no porter: a closed set's serde form is its slug.
+- No ds-core, no accounts service: a closed set's serde form is its slug.
 - `todo!()` is allowed only behind a frozen interface; every such stub is listed above.
 - The catalog file is `ModelEntry`'s serde form: every field is written, none defaulted, and the
   capability fields sit at the top level beside `id` and `label`.
@@ -801,7 +801,7 @@ above); this lane checked each against the code and tests and found no gap.
 
 | Ask | What changed |
 | --- | --- |
-| 141 | `CuaSession::absorb_for(&mut self, sent, reply, map) -> StepOutcome` and `absorb(&mut self, reply, map) -> StepOutcome` change the session in place; the caller keeps one session and no copy. `refill_repairs(&mut self)` gives the repair budget back when a step fails after a repair. `StepNote` keeps `NoteFrom` on the porter side (the model layer's `StepNote` is the one line of text) |
+| 141 | `CuaSession::absorb_for(&mut self, sent, reply, map) -> StepOutcome` and `absorb(&mut self, reply, map) -> StepOutcome` change the session in place; the caller keeps one session and no copy. `refill_repairs(&mut self)` gives the repair budget back when a step fails after a repair. `StepNote` keeps `NoteFrom` on the accounts side (the model layer's `StepNote` is the one line of text) |
 | 142 | `SamplingDefaults.reasoning_default: ReasoningDefault` (`on` or `off`, written in every chat entry) and `SamplingDefaults::for_reasoning(Reasoning) -> &Sampling`: `On(_)` takes `reasoning_on`, `Off` takes `reasoning_off`, `EngineDefault` takes the one the model's default names. `holo-3.1-4b` says `on` (Qwen3.5 templates think unless `enable_thinking` is false; a proposal the first recorded step confirms) |
 
 ### Still open for spike S1 (ask 68, needs a real engine)
@@ -815,7 +815,7 @@ above); this lane checked each against the code and tests and found no gap.
 - `reasoning_default` and the `reasoning_on`/`reasoning_off` sampling of Holo-3.1-4B, `GridMax(1000)`;
 - the speech request spellings (record with `dev/record-speech.sh`).
 
-### Porter call sites that follow (porter was not edited)
+### The accounts service call sites that follow (the accounts service was not edited)
 
 - `crates/inferd/src/cua_step.rs` `step`: take `session: &mut CuaSession`, call
   `session.absorb_for(&sent, tee.finish(end), &map)` (it returns the outcome), drop the
@@ -848,7 +848,7 @@ Lane `v-host`. Closes the two `speech-host` stubs (7 to 5 `todo!()` in the repo;
 - `speech-host` joins the workspace and the gate: std only (blocking Unix sockets, no tokio, no native code). `parse_args` (four flags, each once, a value each, positive numbers, nothing else; table tests), `Recognizer` (the seam: `models`, `begin`, `accept`, `finish`, `reset`), `Session` (the host_wire state machine as a pure `step(HostIn) -> Vec<HostOut>`), `serve_connection`/`serve_listener`/`serve_with` (framing over a socket) and `bind_private` (bound in an owner-only directory, 0600, replaces only a stale socket, never another kind of file). 18 tests over `UnixStream::pair` and one real listener with a scripted recognizer, no sleeps.
 - Protocol rules the tests pin: `Hello` first (anything else is `Failed(BadRequest)`; a wrong vocab too); a second `Begin` while one runs is `Failed(BadRequest)` and the running utterance goes on; `Cancel` is silent and drops the utterance; `Audio` or `End` with no utterance is refused; a recognizer error is `Failed` and drops the utterance; a connection closing mid-utterance drops it; a frame over 1 MiB closes the connection before its body is read; a frame that is not a host message gets `Failed` and the connection goes on. Connections are served one after another, so one utterance at a time across the process.
 - `speech-host-sherpa` (excluded from the workspace and from deny's graph, like `speech-vad-silero`): `SherpaRecognizer` over sherpa-onnx's online recognizer (greedy search, endpointing on: an endpoint with text is a `Final` for that segment, a changed hypothesis is a `Partial` from the segment start; `finish` pads 0.3 s of silence, flushes and sends the last `Final`; `Done.text` joins the finals). It carries the `speech-host` binary. `serve` in `speech-host` stays frozen and engine-less; the binary calls `serve_with`.
-- `scripts/check-boundary.sh` gained the rows for `speech-host` (workspace: the pure rules, edges to `model-provider` and `speech-provider`) and `speech-host-sherpa` (excluded: edges to `model-provider`, `speech-host`, `speech-provider`; no porter, audio-device or GPL TTS crate reached).
+- `scripts/check-boundary.sh` gained the rows for `speech-host` (workspace: the pure rules, edges to `model-provider` and `speech-provider`) and `speech-host-sherpa` (excluded: edges to `model-provider`, `speech-host`, `speech-provider`; no accounts service, audio-device or GPL TTS crate reached).
 - `--chunk-ms` is accepted and validated but the 560 ms export fixes the model's own chunk, so it changes nothing in the engine (it is the size clients send). The language is the primary subtag of the first preferred tag, or `auto`, set as the stream option `language`.
 
 ### Spike V-H: results
@@ -978,8 +978,8 @@ Both were downloaded with `uvx --from huggingface_hub hf download <repo> --revis
   the engine's default. (An earlier version of this note said the codec still needed the change.)
 - Second family is optional, not required: SPEC §6.3 / QUESTIONS M2 say one resident model plus a
   second small model of another family loaded on demand for SecondOpinion, and without it a
-  high-impact AllowJudged cell falls back to Ask. Porter's reviewer family filter is still open
-  (porter FINDINGS: "porter-infer `pick`: no reviewer family filter"). The two do not fit side by
+  high-impact AllowJudged cell falls back to Ask. The accounts service's reviewer family filter is still open
+  (the accounts service FINDINGS: "inference-core `pick`: no reviewer family filter"). The two do not fit side by
   side (6766 + 6502 MiB); the supervisor's budget evicts one to load the other (cold start 52 to 90 s).
 
 ### Measurements (by hand, `--uds`, offline, desktop at 2.4 GB)
@@ -1184,7 +1184,7 @@ Interface ask (the signal reaches a caller only through a type change; the model
 behind the existing types): `model-provider` gains
 `TurnEvent::CallInContent(LeakMarker)` (`LeakMarker` moves from `model-openai-compat::leak` to
 `model-provider`, same slugs), emitted once by the chat decoder with the finish reason (or
-`[DONE]`) of a turn that delivered no call and whose content held a marker. porter-infer's
+`[DONE]`) of a turn that delivered no call and whose content held a marker. inference-core's
 exhaustive matches on `TurnEvent` gain an arm; the actions service refuses the turn or retries it when it
 sees the event with `StopReason::EndTurn`. Until then nothing reaches the actions service, and prose that
 looks like a call is simply text.
@@ -1211,8 +1211,8 @@ is among the caller's engines and its capabilities fit. The budget test only rea
 as local, so it skips attached ones; `vram` is still written (the host's, assumed card 97887 MiB,
 overhead not measured) but nothing reads it.
 
-What porter's I3 lane sees (the model layer path dep, nothing in porter needs to change to keep building;
-porter never builds a `ModelEntry` literally):
+What the accounts service's I3 lane sees (the model layer path dep, nothing in the accounts service needs to change to keep building;
+The accounts service never builds a `ModelEntry` literally):
 - `parse_entry` accepts the file; `entry.locality` is `OnDevice`, so `local_claims` (the
   `is_on_device()` filter) makes its claims like any local model.
 - `entry.engines` is EMPTY, so today's `local.rs` (`engines.iter().find(..)?`) builds no
@@ -1247,7 +1247,7 @@ the proptest suites' shared code only and not run under libFuzzer). Seeds are in
 ## First-token log-probabilities for a Choice (2026-10-09, lane `choicelp`)
 
 For the actions service's shadow decision-model trial: the probability of each declared option from the same call
-that answers it. The model layer carries the raw material; porter renormalises.
+that answers it. The model layer carries the raw material; the accounts service renormalises.
 
 ### Types (`model-provider`)
 
@@ -1298,7 +1298,7 @@ Holo 3.1 4B writes its final answer in a `text` argument, not `summary`. In the 
 **reqwest replaces model-http's own hyper client (plan U0.6).** The owner chose reqwest as the one
 HTTP client. `hyper_client.rs` (350 lines) and `tls.rs` (83) are gone; `connect.rs`, `request.rs`
 and `transport.rs` build a reqwest 0.13 client in their place. Why: two hand-written hyper wrappers
-(this one and porter's `porter-http`) were the same code twice, and reqwest brings unix sockets
+(this one and the accounts service's `account-http`) were the same code twice, and reqwest brings unix sockets
 (`ClientBuilder::unix_socket`), redirect and proxy control, and rustls roots from the platform
 without our own connector.
 
@@ -1328,7 +1328,7 @@ The model layer. It gains `Strata` (slug `strata`), so it covers llama.cpp (`lla
 beside the speech engines. Nothing else in the model layer had an engine-id enum (`Flavor` in
 `model-openai-compat` is a wire dialect that includes cloud hosts, and `EngineLabel` in
 `model-replay` is a cassette string). `engine-supervisor::command` has an arm for it and
-`EnginePaths` a `strata_python` field. porter's `porter-engines::EngineId` moves in T1.1 and is
+`EnginePaths` a `strata_python` field. The accounts service's `account-engines::EngineId` moves in T1.1 and is
 replaced by this enum then.
 
 ## Provider-reported charge (2026-10-28, lane `scharge`)
@@ -1351,7 +1351,7 @@ Owner decision: the model layer shows only what the provider reports and keeps n
   `cargo metadata --offline` also re-locked `toml_datetime`, `toml_parser` and added `toml_edit`,
   `borsh`, `rand 0.8`, `lazy_static`, `iso_country` and friends (transitive of the two crates).
 - Deleted: `model-catalog`'s `Price`, `MicroUsd` and `Reach.price`, every `price =` in `catalog/*.toml`
-  and the price text in their header comments. porter's `price_of` must go at its next re-pin.
+  and the price text in their header comments. The accounts service's `price_of` must go at its next re-pin.
 - **Needs a live recording.** `tests/fixtures/openrouter_stream_cost_from_docs.sse` is built from
   OpenRouter's documented response shape, not recorded (no network or key in this lane). Record a real
   streamed reply with a key, check where `usage.cost` sits and its number format, and replace it.
@@ -1376,13 +1376,13 @@ lane (no cargo build, check, test or clippy), so the first gate is the first com
   argument match in `command_with_window` (engine-supervisor).
 - `parse_entry` no longer refuses a vLLM line with an all-zero estimate or a llama-server line whose
   weights are not GGUF (`CatalogError::VllmWithoutVram`, `LlamaServerWithoutGguf` are gone);
-  `engine_spec::check_entry` does, and the caller (porter's catalog loader) must run it after
+  `engine_spec::check_entry` does, and the caller (the accounts service's catalog loader) must run it after
   `parse_entry`. Their tests moved to `engine-spec/tests/it/check.rs`, which also checks every
   shipped entry.
 - Left as it is: `AttachedEngine.engine: EngineKind`. `Flavor` lives in `model-openai-compat`, and
   `model-catalog` naming it would put a codec crate (and `model-http`) under the catalogue.
-  Making it a wire slug type is a separate step with porter's `flavor_of`.
-- Not in the trait at that step, added for porter's adoption (below): `bus_word`, `seat_flags`, `env`.
+  Making it a wire slug type is a separate step with the accounts service's `flavor_of`.
+- Not in the trait at that step, added for the accounts service's adoption (below): `bus_word`, `seat_flags`, `env`.
   `program` is `EnginePaths::program(kind)`, a map lookup, not a method.
 
 ## One `ActionDialect` trait instead of matches on `CuaDialect` (2026-10-29, lane `tr7`)
@@ -1406,20 +1406,20 @@ cargo build, check, test or clippy), so the first gate is the first compile.
 - `cua-eval`'s `matches!(dialect, CuaDialect::Wire(_))` still compiles; `spec(dialect).wire().is_some()`
   replaces it when cua adopts the trait.
 
-## `Engine` gains the methods porter needs (2026-10-29, lane `tr2`)
+## `Engine` gains the methods the accounts service needs (2026-10-29, lane `tr2`)
 
-Porter's TR2 lane replaces its own matches on `EngineKind` with these. Nothing was built or run in
+The accounts service's TR2 lane replaces its own matches on `EngineKind` with these. Nothing was built or run in
 this lane (no cargo build, check, test or clippy), so the first gate is the first compile. Every
-word is the one porter sends today.
+word is the one accounts service sends today.
 
 - `bus_word` (default the disk word: `llama_cpp`, `vllm`, `strata`; the speech host `speech`,
   Kokoro `kokoro`): the id on the bus.
 - `running_word` (default the slug; `llama-server`, `speech-host`, `kokoro`): the engine word of a
-  running-models row. Porter had two tables for the same engines (it sends `llama-server` there and
+  running-models row. The accounts service had two tables for the same engines (it sends `llama-server` there and
   `llama_cpp` in the engines list), so there are two methods.
 - `seat_flags` (`Option`, `--max-num-seqs` for vLLM, `--parallel` and `-np` for llama.cpp; `None`
   for an engine that takes every request at once, which is also what "has seats" asked).
 - `env(libs) -> HostEnv` (`vars`, `reads`): vLLM's `PYTHONDONTWRITEBYTECODE=1`, the speech host's
   `LD_LIBRARY_PATH` and a read-only bind of the libraries folder.
 - `caches_prompts` (llama.cpp), `hears` (speech host) and `speaks` (speech host, Kokoro): which
-  slots an engine serves, without naming porter's slot type.
+  slots an engine serves, without naming the accounts service's slot type.

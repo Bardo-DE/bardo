@@ -27,7 +27,7 @@ they run the drive in memory and mount nothing.
    `bardo-drive-mount.socket`, starts `bardo-drive-mount.service`.
 2. syncd asks to show "OneDrive" (a folder name, never a path), read-write (`rw`; `ro` for a
    drive shown read-only). bardo-drive-mount checks the caller is the person, the name is one plain
-   name and the folder is empty or new, clears a stale `fuse.porter` mount there, runs
+   name and the folder is empty or new, clears a stale `fuse.accounts` mount there, runs
    `fusermount3` (always with `nosuid,nodev,noatime`) and sends back the `/dev/fuse` fd.
 3. syncd serves the drive over that fd. Turning the drive off asks bardo-drive-mount to unmount it
    (`fusermount3 -u -z`, then the connection is ended), so syncd stops serving at once, even
@@ -93,7 +93,7 @@ they run the drive in memory and mount nothing.
     syncd (`systemctl --user stop bardo-syncd.service`): the mount goes with it. Kill it with
     `systemctl --user kill -s KILL bardo-syncd.service` and let it start again: the stale mount is
     cleared (`fusermount3 -u -z`) and the folder comes back.
-16. A folder that is not porter's is left alone: stop syncd, put a file in an empty
+16. A folder that is not the accounts service's is left alone: stop syncd, put a file in an empty
     `~/Cloud/OneDrive` and start it: the drive says "The drive's folder in Cloud already has other
     files in it. Move them, then try again." and the file is still there.
 17. syncd's sandbox is whole: `systemctl --user show bardo-syncd.service -p NoNewPrivileges -p

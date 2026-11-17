@@ -7,7 +7,7 @@
 //! and not edited ([`servers_fixed`]).
 //!
 //! The servers typed are tried before anything is kept: the sheet ends only after the sign-in has
-//! logged in at them, and the host's own store step hands back an [`EditedServers`]. Porter
+//! logged in at them, and the host's own store step hands back an [`EditedServers`]. The accounts service
 //! stores nothing of an edit; the app that asked keeps what it carries.
 
 use crate::fields::{FieldAnswer, FieldKind, FieldValue};
@@ -46,7 +46,7 @@ pub fn servers_fixed(auth: AuthKind) -> Option<ServersFixed> {
         | AuthKind::LoginFlowV2
         | AuthKind::CloudIdentity => Some(ServersFixed::ProviderSignIn),
         // None, a runtime or a bridge on this computer, a key pair, an API key, an agent, a
-        // program that signs itself in; and a way a newer porter adds, which is not typed until
+        // program that signs itself in; and a way a newer the accounts service adds, which is not typed until
         // this says so.
         _ => Some(ServersFixed::NotTyped),
     }

@@ -15,7 +15,7 @@ pub(crate) enum Sasl {
 
 /// The mechanism to present `auth` by, given whether the server offers `PLAIN` and `XOAUTH2`:
 /// `Protocol` when it offers the one the credential needs no way to. An anonymous credential, and
-/// a kind a newer porter adds, are refused here: never sent as anonymous.
+/// a kind a newer the accounts service adds, are refused here: never sent as anonymous.
 pub(crate) fn pick(auth: &RelayAuth, plain: bool, xoauth2: bool) -> Result<Sasl, RelayFault> {
     match auth {
         RelayAuth::AccessToken(_) if xoauth2 => Ok(Sasl::Xoauth2),

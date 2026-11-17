@@ -4,7 +4,7 @@ use crate::secret::SecretText;
 use base_time::UnixSeconds;
 use serde::{Deserialize, Serialize};
 
-/// The two SASL initial responses porter presents or reads, unencoded: the protocol base64-encodes
+/// The two SASL initial responses the accounts service presents or reads, unencoded: the protocol base64-encodes
 /// them on the wire. One spelling of each, here, so a relay, a provider session and a fake server
 /// cannot drift apart.
 const FIELD_END: char = '\u{1}';

@@ -111,8 +111,8 @@ impl ProgramName {
 }
 
 impl From<&provenance::AgentProgram> for ProgramName {
-    /// porter's program grammar (lowercase ASCII, digits and `-`, at most 48 bytes) is a subset
-    /// of this one, so every porter program is a program name here.
+    /// The accounts service's program grammar (lowercase ASCII, digits and `-`, at most 48 bytes) is a subset
+    /// of this one, so every accounts program is a program name here.
     fn from(program: &provenance::AgentProgram) -> Self {
         Self(program.as_str().to_owned())
     }
@@ -142,5 +142,5 @@ pub enum GrantTarget {
     Action(ActionName),
 }
 
-/// An action grant: porter's grant over the actions service's key.
+/// An action grant: the accounts service's grant over the actions service's key.
 pub type ActionGrant = Grant<ActionGrantKey>;

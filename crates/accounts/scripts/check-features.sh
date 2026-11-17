@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# The feature sets the consumers of porter's crates build, each one clippy with -D warnings.
+# The feature sets the consumers of the accounts service's crates build, each one clippy with -D warnings.
 #
 # The workspace gate builds `--workspace --all-features`, which unifies every feature into one
 # build and so never sees the build a consumer makes on its own. A consumer that builds with one
-# feature and no other once left two methods unused, and the gate passed (porter 5bdda62; fixed
+# feature and no other once left two methods unused, and the gate passed (the accounts service 5bdda62; fixed
 # in b12886e). Each set below is checked here, alone, so the same break fails this script.
 #
 # The sets come from the consumers' manifests at origin/master (account-client and the other
-# porter crates each consumer takes with default-features = false). The comment above each set
+# The accounts crates each consumer takes with default-features = false). The comment above each set
 # names the consumer it comes from. Keep the list as data: add a set when a consumer adds one.
 #
 # Output: one line per build, `ok <set>` or `FAIL <set>`, with the first compiler errors of a
@@ -33,7 +33,7 @@ BUILDS=(
   "account-client-inproc (no features: mailo) :: -p account-client-inproc --no-default-features"
   "account-client-inproc (relays: the sync service syncd) :: -p account-client-inproc --features relays"
 
-  # The other porter crates a consumer takes with default-features = false (mailo's workspace
+  # The other the accounts crates a consumer takes with default-features = false (mailo's workspace
   # block, which mail-core, mail-app and mail-runtime name), in the features each one turns on.
   "account-secrets (testing: mailo mail-core, mail-app) :: -p account-secrets --no-default-features --features testing"
   "account-secrets (oo7: mailo mail-runtime, Linux) :: -p account-secrets --no-default-features --features oo7"

@@ -1,13 +1,13 @@
-//! The provider files porter ships (`providers/*.toml`), compiled in: an app that links
+//! The provider files the accounts service ships (`providers/*.toml`), compiled in: an app that links
 //! account-provider (mailo on macOS and Windows, a test with nothing installed) has the same files
-//! accountd reads from `/usr/share/bardo/accounts/providers`, from the same porter rev, with no copy.
+//! accountd reads from `/usr/share/bardo/accounts/providers`, from the same the accounts rev, with no copy.
 
 use crate::{ProviderSet, ProviderSpec, parse_provider};
 
 /// Every shipped provider file, by its id (the file stem), in id order.
 pub const SHIPPED_FILES: &[(&str, &str)] = include!(concat!(env!("OUT_DIR"), "/shipped_files.rs"));
 
-/// The shipped provider files, parsed. Every file parses (porter's `tests/shipped_files.rs`
+/// The shipped provider files, parsed. Every file parses (the accounts service's `tests/shipped_files.rs`
 /// checks each one and that this list is the whole `providers/` directory).
 ///
 /// # Panics

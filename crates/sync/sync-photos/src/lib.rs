@@ -25,7 +25,7 @@
 //! which `AccountRemoved` wipes with the journals and the PIM mirrors.
 //!
 //! Not here yet: purging the originals of deleted photos, the replica folders' creation on a
-//! fresh account, streaming transfers of originals larger than one `Http` body (porter's FINDINGS.md).
+//! fresh account, streaming transfers of originals larger than one `Http` body (the accounts service's FINDINGS.md).
 
 pub mod cas;
 pub mod desk;

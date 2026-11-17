@@ -276,14 +276,17 @@ async fn keyring_without_chunking_keeps_the_contract_too() {
 #[tokio::test]
 async fn namespaces_keep_their_items_apart() {
     let mock = keyring_core::mock::Store::new().expect("mock");
-    let porter = StoreSecrets::new(Arc::<keyring_core::mock::Store>::clone(&mock));
+    let account_client = StoreSecrets::new(Arc::<keyring_core::mock::Store>::clone(&mock));
     let mailo = StoreSecrets::new(Arc::<keyring_core::mock::Store>::clone(&mock))
         .in_namespace(Namespace::parse("mailo/work").expect("a namespace"));
     let filed = key("cloud", SecretPurpose::Password);
-    porter.put(&filed, &password("a")).await.expect("put");
+    account_client
+        .put(&filed, &password("a"))
+        .await
+        .expect("put");
     assert_eq!(mailo.get(&filed).await, Err(SecretsError::Missing));
     assert_eq!(mailo.put_if_absent(&filed, &password("b")).await, Ok(true));
-    assert_eq!(porter.get(&filed).await, Ok(password("a")));
+    assert_eq!(account_client.get(&filed).await, Ok(password("a")));
     assert_eq!(mailo.get(&filed).await, Ok(password("b")));
     let entry = |service: &str| {
         keyring_core::api::CredentialStoreApi::build(
@@ -299,7 +302,7 @@ async fn namespaces_keep_their_items_apart() {
     entry("mailo/work").unwrap();
     mailo.delete_account(&filed.account).await.expect("wipe");
     assert_eq!(mailo.get(&filed).await, Err(SecretsError::Missing));
-    assert_eq!(porter.get(&filed).await, Ok(password("a")));
+    assert_eq!(account_client.get(&filed).await, Ok(password("a")));
 }
 
 #[tokio::test]
@@ -388,20 +391,24 @@ mod oo7_file {
 
     #[tokio::test]
     async fn oo7_namespaces_keep_their_items_apart() {
-        let porter = scratch("namespaces").await;
-        let mailo = porter
+        let account_client = scratch("namespaces").await;
+        let mailo = account_client
             .store
             .clone()
             .in_namespace(Namespace::parse("mailo/work").expect("a namespace"));
         let filed = key("cloud", SecretPurpose::Password);
-        porter.store.put(&filed, &password("a")).await.expect("put");
+        account_client
+            .store
+            .put(&filed, &password("a"))
+            .await
+            .expect("put");
         assert_eq!(mailo.get(&filed).await, Err(SecretsError::Missing));
         mailo.put(&filed, &password("b")).await.expect("put");
-        assert_eq!(porter.store.get(&filed).await, Ok(password("a")));
+        assert_eq!(account_client.store.get(&filed).await, Ok(password("a")));
         assert_eq!(mailo.get(&filed).await, Ok(password("b")));
         mailo.delete_account(&filed.account).await.expect("wipe");
         assert_eq!(mailo.get(&filed).await, Err(SecretsError::Missing));
-        assert_eq!(porter.store.get(&filed).await, Ok(password("a")));
+        assert_eq!(account_client.store.get(&filed).await, Ok(password("a")));
     }
 }
 

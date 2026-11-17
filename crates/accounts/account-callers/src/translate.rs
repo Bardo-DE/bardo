@@ -1,6 +1,6 @@
-//! porter's caller table as the caller-identity library's [`Table`], and the names between the two.
+//! The accounts service's caller table as the caller-identity library's [`Table`], and the names between the two.
 //!
-//! The caller-identity library knows a service by unit and program; porter's rows say app, unit and role. The
+//! The caller-identity library knows a service by unit and program; the accounts service's rows say app, unit and role. The
 //! smallest sound translation, and the only one made:
 //!
 //! - a row with a `unit` and at least one program ([`CallerRow::images`]) becomes a `[[peer]]` row
@@ -11,14 +11,14 @@
 //!   and [`CallerTable::role_of`] gives its role;
 //! - one row is added for the unit manager itself (`systemd`'s image), the role the bus crate
 //!   demands of whoever answers questions about units ([`manager_need`]);
-//! - the role is porter's own spelling (`account_daemon_support`, `sheet_host`) so that nothing is
+//! - the role is the accounts service's own spelling (`account_daemon_support`, `sheet_host`) so that nothing is
 //!   renamed in either direction;
 //! - the first row for a unit wins, as in [`CallerTable::resolve_unit`].
 
 use super::{CallerRole, CallerRow, CallerTable};
 use caller_identity_core::{Proof, Requirement, RoleName, Table};
 
-/// The role of the unit manager's row. No porter role has this name.
+/// The role of the unit manager's row. No accounts role has this name.
 const MANAGER_ROLE: &str = "manager";
 
 /// The row for the unit manager: `systemd --user` runs the system's `systemd`.
@@ -41,7 +41,7 @@ pub(super) fn role_name(role: CallerRole) -> Option<RoleName> {
     RoleName::new(value.as_str()?).ok()
 }
 
-/// The role a caller-identity role name stands for; `None` for a name no porter role has.
+/// The role a caller-identity role name stands for; `None` for a name no accounts role has.
 pub(super) fn role_of_name(name: &RoleName) -> Option<CallerRole> {
     serde_json::from_value(serde_json::Value::String(name.as_str().to_owned())).ok()
 }
@@ -77,7 +77,7 @@ fn one_row(row: &CallerRow) -> Option<Table> {
         Ok(table) => Some(table),
         Err(why) => {
             eprintln!(
-                "porter: callers: ignoring the row for {}: {why}",
+                "accounts: callers: ignoring the row for {}: {why}",
                 row.unit.as_deref().unwrap_or(row.app.as_str())
             );
             None

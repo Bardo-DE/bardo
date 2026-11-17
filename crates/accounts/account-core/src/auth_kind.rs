@@ -40,9 +40,9 @@ pub enum AuthKind {
     /// the account holds no credential of any kind, only whether the agent says it is signed
     /// in (design/31 R7, R8).
     AgentLogin,
-    /// A program on this computer that holds the sign-in itself and answers porter when asked
+    /// A program on this computer that holds the sign-in itself and answers the accounts service when asked
     /// (Tailscale): the account holds no credential of any kind, and its state is what the
-    /// program says it is. Signing in again is done in the program, never through porter.
+    /// program says it is. Signing in again is done in the program, never through the accounts service.
     OwnProgram,
 }
 
@@ -59,7 +59,7 @@ pub enum SignInWay {
     Key,
     /// Inside the agent program, which signs itself in.
     Agent,
-    /// Outside porter: a cloud identity a command-line tool holds.
+    /// Outside the accounts service: a cloud identity a command-line tool holds.
     Outside,
     /// Not at all: no credential (a probed runtime, an open endpoint).
     Nothing,

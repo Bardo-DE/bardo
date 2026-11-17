@@ -11,12 +11,12 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    the OS (MOK, BIOS) the K5 Max must be on Cable or 2.4G, not Bluetooth.
 2. **Bring the sibling checkouts up to date.** The install builds with `--locked`, and `Cargo.lock`
    was resolved against the current master of every repo next to `~/shell`: `memory`, `anyview`,
-   `blitz-embed`, `cua`, `actions`, `key_remap`, `porter`, `bardo`, `layer-shell-host`, plus `models` and
+   `blitz-embed`, `cua`, `actions`, `key_remap`, `accounts`, `bardo`, `layer-shell-host`, plus `models` and
    `desktop-protocols` (reached through them). `mouse_gestures` is not needed to build. A stale one
    (`anyview` was 11 commits behind once) stops the build with a raw cargo error, so check first:
 
    ```sh
-   for r in anyview Bardo layer-shell-host the key remap daemon blitz-embed memory cua actions porter models desktop-protocols; do
+   for r in anyview Bardo layer-shell-host the key remap daemon blitz-embed memory cua actions accounts models desktop-protocols; do
      git -C ~/$r pull --ff-only || echo "NOT FAST-FORWARD: $r"; done
    git -C ~/anyview pull --ff-only                          # the one that was behind
    cd ~/shell && git status --short && git log --oneline -1  # clean, master
@@ -28,7 +28,7 @@ screen's session list the whole time. Nothing below changes Plasma's files.
    advice and run it again. Install only when `bardo-shell` and `bardo` are both on a merged master (a
    Bardo merge breaks the shell until the shell follows it).
 3. **Remove a stale binary that would shadow the install:** `rm -f ~/.cargo/bin/bardo-shell`.
-4. **Install the shell and the session.** The login entry "shell (the compositor)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: porter, the Settings app, the shell, the key remap daemon and the rest, then the session files). The shell's own part, from `~/shell`:
+4. **Install the shell and the session.** The login entry "shell (the compositor)" and its script come from the desktop repo (`~/desktop/install.sh --dry-run` prints the plan: the accounts service, the Settings app, the shell, the key remap daemon and the rest, then the session files). The shell's own part, from `~/shell`:
 
    ```sh
    dist/install.sh --dry-run        # read it: every step is printed, nothing is changed

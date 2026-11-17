@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Scenario `accounts-consent` (design 31 §7.1 item on consent): an app asks to use the person's AI key, bardo-shell draws the
 # consent sheet (captured), and each answer gives the right permit, or none; a second request after Always asks nothing.
-# Since porter's step 5c the question is bardo-accountd's (org.bardo.Accounts1.Keys.RequestKey, the rig's `ai-keys request`):
+# Since the accounts service's step 5c the question is bardo-accountd's (org.bardo.Accounts1.Keys.RequestKey, the rig's `ai-keys request`):
 # bardo-accountd keeps the AI keys and their permits, and bardo-inferd asks it for the key behind a permit. Real bardo-accountd, bardo-inferd,
 # bardo-shell on bardo-compositor, the rig's LLM API fake and Secret Service. Each case is its own app id
 # (account-rig-client --app-id), so one answer cannot stand in for another. The permits are read from bardo-accountd's settings

@@ -22,7 +22,7 @@ drive-fs = {path = "../drive-fs"}
 drive-fuse = {path = "../drive-fuse"}
 sync-core = {path = "../sync-core"}
 # Accounts, grants and relays: accountd's, reached through account-client (the bus transport in
-# the daemon). Nothing of porter's account stack is a dependency of syncd; the dev-dependencies
+# the daemon). Nothing of the accounts service's account stack is a dependency of syncd; the dev-dependencies
 # host one in process for the tests.
 account-client = {path = "../../accounts/account-client"}
 account-client-dbus = {path = "../../accounts/account-client-dbus"}

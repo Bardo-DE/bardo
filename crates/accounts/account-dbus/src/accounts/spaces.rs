@@ -22,7 +22,7 @@ pub trait Spaces {
     /// `SetLook` was given it) and `created` (`x`, Unix seconds), in the order they were made.
     fn list(&self) -> zbus::Result<Vec<(String, Details)>>;
     /// Makes a desktop-wide Space named `name` (the person's words, 1 to 64 characters) that
-    /// looks like `look` (at most 1024 bytes, never read by porter; empty is the default look),
+    /// looks like `look` (at most 1024 bytes, never read by the accounts service; empty is the default look),
     /// and answers its id, minted here and kept across renames. Errors: `InvalidArgs` for a name
     /// or look out of bounds; `LimitsExceeded` when the caller made too many Spaces within the
     /// last minute.

@@ -70,7 +70,7 @@ pub fn to_ics(task: &Task) -> String {
     let mut lines: Vec<String> = vec![
         "BEGIN:VCALENDAR".into(),
         "VERSION:2.0".into(),
-        "PRODID:-//porter//syncd google tasks//EN".into(),
+        "PRODID:-//accounts//syncd google tasks//EN".into(),
         "BEGIN:VTODO".into(),
         format!("UID:{}", escape(&task.id)),
         format!(

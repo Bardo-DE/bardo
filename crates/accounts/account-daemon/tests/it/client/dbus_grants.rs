@@ -1,14 +1,15 @@
 //! `Grants` against the real accountd (`common::accountd`, over the fake providers and a scripted
 //! consent sheet): finding, asking, listing, revoking and opening a relayed stream over
 //! `account-client-dbus`'s `Bus`. The consent sheet shows once and its answer is kept; a refusal
-//! sticks; a stream arrives as a descriptor; and only a porter daemon lists the accounts.
+//! sticks; a stream arrives as a descriptor; and only an accounts daemon lists the accounts.
 
 use super::common;
 
 use account_callers::Caller;
 use account_capability::{Access, CapabilityKind, Delta, StorageScope};
 use account_client::{
-    AuthenticatedStream, ConsentOffer, Found, Grants, GrantsError, LinkError, NoAccount, Porter,
+    AccountClient, AuthenticatedStream, ConsentOffer, Found, Grants, GrantsError, LinkError,
+    NoAccount,
 };
 use account_client_dbus::Bus;
 use account_core::consent::{GrantScope, Usage};
@@ -38,7 +39,7 @@ fn offer() -> ConsentOffer {
 }
 
 async fn grants(daemon: &Daemon) -> Grants<Bus> {
-    Porter::over(Bus::over(daemon.client().await)).grants()
+    AccountClient::over(Bus::over(daemon.client().await)).grants()
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -147,17 +148,17 @@ async fn an_offer_that_names_an_account_asks_about_that_account_alone() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn a_porter_daemon_lists_the_accounts_and_an_app_or_a_stranger_may_not() {
+async fn an_accounts_service_daemon_lists_the_accounts_and_an_app_or_a_stranger_may_not() {
     let daemon = Daemon::start([]).await;
     let connection = daemon.bus.connect().await;
     daemon.callers.introduce_as(
         connection.unique_name().expect("unique name").as_str(),
         Caller {
             app: named("org.bardo.Sync"),
-            role: CallerRole::PorterDaemon,
+            role: CallerRole::AccountDaemon,
         },
     );
-    let listed = Porter::over(Bus::over(connection))
+    let listed = AccountClient::over(Bus::over(connection))
         .grants()
         .accounts()
         .await
@@ -169,7 +170,7 @@ async fn a_porter_daemon_lists_the_accounts_and_an_app_or_a_stranger_may_not() {
         grants(&daemon).await.accounts().await,
         Err(GrantsError::Link(LinkError::Denied))
     );
-    let stranger = Porter::over(Bus::over(daemon.stranger().await)).grants();
+    let stranger = AccountClient::over(Bus::over(daemon.stranger().await)).grants();
     assert_eq!(
         stranger
             .find(&need(), DataClass::Photos, Usage::Interactive)
@@ -186,7 +187,7 @@ async fn extending_access_and_asking_whether_a_provider_does_are_calls_of_the_gr
         connection.unique_name().expect("unique name").as_str(),
         named("org.bardo.Sync"),
     );
-    let grants = Porter::over(Bus::over(connection)).grants();
+    let grants = AccountClient::over(Bus::over(connection)).grants();
     assert_eq!(
         grants
             .extend_access(

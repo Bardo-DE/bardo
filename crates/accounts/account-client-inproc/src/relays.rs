@@ -1,8 +1,8 @@
-//! The host that runs relays for an app hosting porter in process: the app owns the runtime and
+//! The host that runs relays for an app hosting the accounts service in process: the app owns the runtime and
 //! the network, so it spawns the relay (`account-proxy`'s `relay` over a TLS connector it
 //! chooses) and the client only hands it the plan and the relay's end of an in-memory duplex.
 //!
-//! With the feature `relays` the crate brings that host ready made: [`PorterRelays`], which runs
+//! With the feature `relays` the crate brings that host ready made: [`AccountRelays`], which runs
 //! `account_proxy::relay` on the app's tokio runtime with the platform's trusted roots. An app or
 //! daemon that hosts its own `AccountService` (syncd) hands it to `Hosted::with_relays`.
 
@@ -28,11 +28,11 @@ impl RelayHost for NoRelays {
 }
 
 #[cfg(feature = "relays")]
-pub use porter_relays::PorterRelays;
+pub use account_relays::AccountRelays;
 
 /// The relay host over `account-proxy` (feature `relays`).
 #[cfg(feature = "relays")]
-mod porter_relays {
+mod account_relays {
     use super::RelayHost;
     use account_core::RelayPlan;
     use account_core::stream::DuplexEnd;
@@ -47,11 +47,11 @@ mod porter_relays {
     /// it has none), read from disk once, on first use, off the async threads. [`RelayHost::run`]
     /// must be called from inside a tokio runtime, as `Hosted` does.
     #[derive(Debug, Clone, Default)]
-    pub struct PorterRelays {
+    pub struct AccountRelays {
         connector: Arc<OnceCell<RustlsConnect>>,
     }
 
-    impl PorterRelays {
+    impl AccountRelays {
         /// A host that trusts the platform's roots.
         #[must_use]
         pub fn new() -> Self {
@@ -67,7 +67,7 @@ mod porter_relays {
         }
     }
 
-    impl RelayHost for PorterRelays {
+    impl RelayHost for AccountRelays {
         fn run(&self, plan: RelayPlan, end: DuplexEnd) {
             let cell = Arc::clone(&self.connector);
             tokio::spawn(async move {

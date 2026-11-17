@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 pub struct LangError;
 
 /// A BCP 47 language tag (`en`, `zh-TW`), checked for its character set only: the same grammar
-/// as porter's `LanguageTag`, which inferd's bridge maps one to one.
+/// as the accounts service's `LanguageTag`, which inferd's bridge maps one to one.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub struct Lang(String);
