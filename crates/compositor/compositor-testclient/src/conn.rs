@@ -573,8 +573,10 @@ mod tests {
         assert!(
             client
                 .transcript()
-                .text()
-                .contains("wl_display#1.error(wl_display#1, 0, \"no such object\")")
+                .0
+                .iter()
+                .any(|line| line.event == "error"
+                    && line.args.iter().any(|a| a.contains("no such object")))
         );
         assert!(!client.pump());
     }

@@ -4,6 +4,9 @@
 use super::*;
 use ui_components::prelude::*;
 
+/// Where an inline PNG's bytes start in the markup.
+const PLANE: &str = "data:image/png;base64,";
+
 #[derive(Props, Clone, PartialEq)]
 struct Editing {
     look: SpaceLook,

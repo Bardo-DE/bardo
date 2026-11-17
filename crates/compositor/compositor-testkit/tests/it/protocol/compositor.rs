@@ -6,7 +6,6 @@ use compositor_testclient::{ClientError, Pattern, shm_buffer};
 use wayland_client::protocol::wl_compositor::WlCompositor;
 
 use compositor_core::policy::ConnectionRole;
-use compositor_testclient::TestClient;
 use compositor_testkit::{ClientId, Fixture, FixtureSpec};
 
 fn boot() -> (Fixture, ClientId) {

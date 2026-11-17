@@ -21,7 +21,7 @@ mod strip_press;
 #[path = "lists/thread_row.rs"]
 mod thread_row;
 
-use cases::{CASES, Case};
+use cases::CASES;
 use css_scan::{classes, styles_class};
 use dioxus::prelude::*;
 use rows::ROW_CASES;
