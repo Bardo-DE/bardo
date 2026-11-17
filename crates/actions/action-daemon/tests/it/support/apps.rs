@@ -256,6 +256,8 @@ impl ConfirmServer {
             let at = path.clone();
             let connection = connection.clone();
             tokio::spawn(async move {
+                // The answer comes after the call's reply, as a person's would; nothing tells
+                // the fake when the caller has taken the reply and subscribed.
                 tokio::time::sleep(std::time::Duration::from_millis(20)).await;
                 let body = serde_json::to_string(&answer).unwrap_or_default();
                 let _ = connection

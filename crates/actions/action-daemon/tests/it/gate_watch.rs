@@ -144,6 +144,8 @@ impl Desk {
     }
 }
 
+/// A best-effort absence check: nothing announces that the daemon looked and drew no sheet, so
+/// this waits a while for a sheet that must not come.
 async fn settle() {
     tokio::time::sleep(Duration::from_millis(300)).await;
 }
@@ -202,20 +204,13 @@ async fn closing_before_proceed_draws_no_sheet_and_closing_a_sheet_withdraws_it(
         panic!("confirming")
     };
     late.proceed().await.expect("proceed");
-    for _ in 0..40 {
-        if !desk.sill.shown().is_empty() {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
+    base_testkit::eventually("the sheet to be shown", || !desk.sill.shown().is_empty()).await;
     assert_eq!(desk.sill.shown().len(), 1, "the sheet is up");
     late.close().await.expect("close");
-    for _ in 0..40 {
-        if !desk.sill.cancelled().is_empty() {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
+    base_testkit::eventually("the sheet to be withdrawn", || {
+        !desk.sill.cancelled().is_empty()
+    })
+    .await;
     assert_eq!(
         desk.sill.cancelled(),
         [id.to_string()],

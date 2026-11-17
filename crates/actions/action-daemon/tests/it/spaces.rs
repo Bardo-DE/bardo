@@ -178,44 +178,35 @@ impl Desk {
         }
     }
 
-    /// The grants held, once `wanted` says the file is as the test expects (or the wait ends).
+    /// The grants held, once `wanted` says the file is as the test expects.
     async fn held_when(&self, wanted: impl Fn(&[String]) -> bool) -> Vec<String> {
-        for _ in 0..100 {
+        base_testkit::eventually_some("the grants file to be as expected", || {
             let now = held(&FileGrants::at(self.path.clone()));
-            if wanted(&now) {
-                return now;
-            }
-            tokio::time::sleep(Duration::from_millis(50)).await;
-        }
-        held(&FileGrants::at(self.path.clone()))
+            wanted(&now).then_some(now)
+        })
+        .await
     }
 
-    /// The consent file's text, once it no longer holds `gone` (or the wait ends).
+    /// The consent file's text, once it no longer holds `gone`.
     async fn file_without(&self, gone: &str) -> String {
-        for _ in 0..100 {
+        base_testkit::eventually_some("the consent file to lose the entry", || {
             let text = std::fs::read_to_string(&self.path).unwrap_or_default();
-            if !text.contains(gone) {
-                return text;
-            }
-            tokio::time::sleep(Duration::from_millis(50)).await;
-        }
-        std::fs::read_to_string(&self.path).unwrap_or_default()
+            (!text.contains(gone)).then_some(text)
+        })
+        .await
     }
 
     async fn ended_records(&self) -> usize {
-        for _ in 0..100 {
+        base_testkit::eventually_some("a grants-ended record", || {
             let n = self
                 .memoryd
                 .stored()
                 .iter()
                 .filter(|r| r.body.kind().as_str() == "docket.grants_ended")
                 .count();
-            if n > 0 {
-                return n;
-            }
-            tokio::time::sleep(Duration::from_millis(50)).await;
-        }
-        0
+            (n > 0).then_some(n)
+        })
+        .await
     }
 }
 

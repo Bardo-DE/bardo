@@ -16,7 +16,6 @@ use action_vocab::{
     Value,
 };
 use provenance::{Actor, EntityId, EntityKey, EntityKind, SpaceId};
-use std::time::Duration;
 
 fn mail() -> account_core::AppName {
     app("org.bardo.Mail")
@@ -160,7 +159,7 @@ async fn an_app_that_is_away_is_unavailable_and_never_a_panic() {
     );
 }
 
-/// An app that takes its time.
+/// An app that never answers.
 struct Slow(ValidManifest);
 
 impl IntentProvider for Slow {
@@ -168,8 +167,7 @@ impl IntentProvider for Slow {
         &self.0
     }
     async fn perform(&self, _: Invocation) -> Result<Outcome, AppRefusal> {
-        tokio::time::sleep(Duration::from_secs(3)).await;
-        Err(AppRefusal::Busy)
+        std::future::pending().await
     }
     #[expect(
         clippy::unused_async_trait_impl,
@@ -231,16 +229,11 @@ async fn a_slow_app_is_cut_at_its_latency() {
     .await
     .expect("serves");
     let slow = app("org.bardo.Slow");
-    let started = std::time::Instant::now();
     let performed = link
         .perform(&slow, invocation("slow.do", "x"), Latency::Instant)
         .await;
+    // The app never answers, so only the link's own cut-off can end the call.
     assert_eq!(performed, Err(AppFault::TimedOut));
-    assert!(
-        started.elapsed() < Duration::from_secs(2),
-        "cut at 250 ms, not left to finish: {:?}",
-        started.elapsed()
-    );
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

@@ -72,16 +72,6 @@ fn menu(router: &Router<FakeSeams>) -> Vec<String> {
         .collect()
 }
 
-async fn until(what: &str, mut ready: impl FnMut() -> bool) {
-    for _ in 0..100 {
-        if ready() {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    panic!("never happened: {what}");
-}
-
 /// A provider on its own connection: owns mail's name and serves `reach`.
 async fn provider(bus: &PrivateBus, reach: &ReachServer) -> BusConnection {
     let connection = bus.connect().await;
@@ -96,7 +86,7 @@ async fn provider(bus: &PrivateBus, reach: &ReachServer) -> BusConnection {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_provider_turns_a_hidden_action_on_and_off_and_the_menu_follows() {
     let rig = rig().await;
-    until("the file is loaded", || {
+    base_testkit::eventually("the file is loaded", || {
         !menu(&rig.router).contains(&OPEN.to_owned()) && !menu(&rig.router).is_empty()
     })
     .await;
@@ -105,7 +95,7 @@ async fn a_provider_turns_a_hidden_action_on_and_off_and_the_menu_follows() {
     let reach = ReachServer::new();
     reach.replace([(OPEN.to_owned(), ReachNow::Offered)]);
     let connection = provider(&rig.bus, &reach).await;
-    until("the name appearing is noticed", || {
+    base_testkit::eventually("the name appearing is noticed", || {
         menu(&rig.router).contains(&OPEN.to_owned())
     })
     .await;
@@ -117,7 +107,7 @@ async fn a_provider_turns_a_hidden_action_on_and_off_and_the_menu_follows() {
 
     reach.replace([(OPEN.to_owned(), ReachNow::Hidden)]);
     reach.announce(&connection).await.expect("announced");
-    until("ReachChanged is followed", || {
+    base_testkit::eventually("ReachChanged is followed", || {
         !menu(&rig.router).contains(&OPEN.to_owned())
     })
     .await;
@@ -126,12 +116,12 @@ async fn a_provider_turns_a_hidden_action_on_and_off_and_the_menu_follows() {
     // Gone from the bus, the file's value stands, whatever it last said.
     reach.replace([(OPEN.to_owned(), ReachNow::Offered)]);
     reach.announce(&connection).await.expect("announced");
-    until("offered again", || {
+    base_testkit::eventually("offered again", || {
         menu(&rig.router).contains(&OPEN.to_owned())
     })
     .await;
     connection.close().await.expect("closed");
-    until("the provider vanishing is noticed", || {
+    base_testkit::eventually("the provider vanishing is noticed", || {
         !menu(&rig.router).contains(&OPEN.to_owned())
     })
     .await;
@@ -140,7 +130,7 @@ async fn a_provider_turns_a_hidden_action_on_and_off_and_the_menu_follows() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn an_action_the_manifest_does_not_declare_changes_nothing() {
     let rig = rig().await;
-    until("the file is loaded", || !menu(&rig.router).is_empty()).await;
+    base_testkit::eventually("the file is loaded", || !menu(&rig.router).is_empty()).await;
     let before = marks_of(&rig.router);
     let menu_before = menu(&rig.router);
 
@@ -151,7 +141,7 @@ async fn an_action_the_manifest_does_not_declare_changes_nothing() {
     ]);
     let _connection = provider(&rig.bus, &reach).await;
     // What it declares and says is hidden does go; what it only claims does not appear.
-    until("the declared action is switched", || {
+    base_testkit::eventually("the declared action is switched", || {
         !menu(&rig.router).contains(&"mail.thread.read".to_owned())
     })
     .await;
@@ -167,11 +157,13 @@ async fn an_action_the_manifest_does_not_declare_changes_nothing() {
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn a_provider_without_the_interface_keeps_the_files_reach() {
     let rig = rig().await;
-    until("the file is loaded", || !menu(&rig.router).is_empty()).await;
+    base_testkit::eventually("the file is loaded", || !menu(&rig.router).is_empty()).await;
     let before = marks_of(&rig.router);
 
     let connection = rig.bus.connect().await;
     connection.request_name(MAIL).await.expect("mail's name");
+    // A best-effort absence check: nothing announces that the follower looked at the name and
+    // ignored it, so this waits a while for a change that must not come.
     tokio::time::sleep(Duration::from_millis(600)).await;
     assert!(!menu(&rig.router).contains(&OPEN.to_owned()));
     assert_eq!(changes(&before, &marks_of(&rig.router)), vec![]);

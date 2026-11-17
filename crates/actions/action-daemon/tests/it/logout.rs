@@ -56,16 +56,6 @@ async fn removed(logind: &action_dbus::BusConnection, id: &str, number: u32) {
         .expect("emit");
 }
 
-async fn until(mut done: impl FnMut() -> bool) -> bool {
-    for _ in 0..100 {
-        if done() {
-            return true;
-        }
-        tokio::time::sleep(Duration::from_millis(30)).await;
-    }
-    done()
-}
-
 async fn terminal_with_a_grant() -> Arc<action_router::Router<action_fake::FakeSeams>> {
     let mut router = mail_router();
     router.seams.confirmer = ScriptedConfirmer::answering(vec![from_terminal()]);
@@ -103,6 +93,7 @@ async fn the_persons_session_ending_takes_the_terminals_grants_with_it() {
 
     // Somebody else's session (an ssh login) ends: the person is still here.
     removed(&logind, "c7", 7).await;
+    // A best-effort absence check: nothing announces that the watcher saw and ignored it.
     tokio::time::sleep(Duration::from_millis(300)).await;
     assert_eq!(
         router.terminal_grants().len(),
@@ -112,10 +103,7 @@ async fn the_persons_session_ending_takes_the_terminals_grants_with_it() {
 
     // The person's own ends: the grant goes, and the next call from the terminal asks again.
     removed(&logind, "c1", 1).await;
-    assert!(
-        until(|| router.terminal_grants().is_empty()).await,
-        "grants ended"
-    );
+    base_testkit::eventually("grants ended", || router.terminal_grants().is_empty()).await;
     let cli = caller("org.bardo.Do", &[CallerRole::Cli]);
     let again = router
         .handle(
@@ -152,8 +140,5 @@ async fn with_no_session_id_known_any_logout_counts() {
     let watching = watch_logind(&system).await.expect("subscribed");
     tokio::spawn(watching.end_terminals(Arc::clone(&router), None));
     removed(&logind, "c9", 9).await;
-    assert!(
-        until(|| router.terminal_grants().is_empty()).await,
-        "grants ended"
-    );
+    base_testkit::eventually("grants ended", || router.terminal_grants().is_empty()).await;
 }

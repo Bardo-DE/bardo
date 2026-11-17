@@ -68,6 +68,7 @@ zbus = {version = "5.19", default-features = false, features = ["tokio"]}
 zbus-ready = { path = "../../zbus-ready" }
 
 [dev-dependencies]
+base-testkit = {path = "../../base/base-testkit", features = ["tokio"]}
 model-provider = {path = "../../models/model-provider"}
 rust_decimal = { workspace = true, features = ["std", "serde"] }
 account-match = {path = "../../accounts/account-match"}

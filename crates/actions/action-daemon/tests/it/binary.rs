@@ -7,7 +7,6 @@ use action_client::Transport;
 use action_wire::{IntentsReply, IntentsRequest, WireRefusal};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
-use std::time::Duration;
 use zbus::fdo::DBusProxy;
 
 fn scratch_world(dir: &Path) -> (PathBuf, Vec<(String, String)>) {
@@ -62,14 +61,27 @@ async fn has_owner(connection: &zbus::Connection) -> bool {
     dbus.name_has_owner(name).await.unwrap_or(false)
 }
 
-async fn until_served(connection: &zbus::Connection) {
-    for _ in 0..200 {
-        if has_owner(connection).await {
-            return;
+/// Waits until `org.bardo.Intents1` has an owner (`owned`) or has none, by the bus's own
+/// announcement of the change.
+async fn until_owned(connection: &zbus::Connection, owned: bool, what: &str) {
+    use futures_util::StreamExt;
+    let dbus = DBusProxy::new(connection).await.expect("dbus");
+    // Subscribed before the first look, so a change in between is not missed.
+    let mut changes = dbus
+        .receive_name_owner_changed_with_args(&[(0, "org.bardo.Intents1")])
+        .await
+        .expect("subscribed to the name's owner");
+    tokio::time::timeout(base_testkit::GENEROUS, async {
+        while has_owner(connection).await != owned {
+            changes.next().await.expect("the bus keeps announcing");
         }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    panic!("intentd never claimed org.bardo.Intents1");
+    })
+    .await
+    .expect(what);
+}
+
+async fn until_served(connection: &zbus::Connection) {
+    until_owned(connection, true, "intentd never claimed org.bardo.Intents1").await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
@@ -103,13 +115,7 @@ async fn the_binary_claims_the_name_and_a_name_alone_gives_no_role() {
     // Stopping it frees the name.
     daemon.0.kill().expect("kill");
     daemon.0.wait().expect("wait");
-    for _ in 0..100 {
-        if !has_owner(&me).await {
-            return;
-        }
-        tokio::time::sleep(Duration::from_millis(50)).await;
-    }
-    panic!("the name outlived the daemon");
+    until_owned(&me, false, "the name outlived the daemon").await;
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

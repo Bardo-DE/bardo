@@ -193,7 +193,12 @@ async fn a_sheet_nobody_answers_expires_and_a_sill_that_vanishes_dismisses() {
         let sheet = desk.sheet.clone();
         async move { sheet.confirm(request("c-2", 120)).await }
     });
-    tokio::time::sleep(Duration::from_millis(200)).await;
+    base_testkit::eventually("the second sheet to be shown", || {
+        sill.shown()
+            .iter()
+            .any(|shown| shown.id.to_string() == "c-2")
+    })
+    .await;
     connection.close().await.expect("close sill");
     let ended = tokio::time::timeout(Duration::from_secs(5), waiting)
         .await

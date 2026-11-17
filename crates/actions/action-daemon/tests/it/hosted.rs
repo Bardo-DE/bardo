@@ -181,19 +181,16 @@ impl Desk {
     }
 
     async fn records(&self, kind: &str) -> Vec<Record> {
-        for _ in 0..100 {
+        base_testkit::eventually_some(&format!("a stored record of kind {kind}"), || {
             let found: Vec<Record> = self
                 .memoryd
                 .stored()
                 .into_iter()
                 .filter(|r| r.body.kind().as_str() == kind)
                 .collect();
-            if !found.is_empty() {
-                return found;
-            }
-            tokio::time::sleep(Duration::from_millis(50)).await;
-        }
-        Vec::new()
+            (!found.is_empty()).then_some(found)
+        })
+        .await
     }
 }
 
@@ -493,13 +490,33 @@ async fn an_installed_manifest_appearing_changing_and_going_is_said_on_the_regis
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn a_file_cannot_declare_the_built_in_providers() {
     let desk = Desk::start(FakeMemoryd::recording()).await;
+    let listener = desk.bus.connect().await;
+    let registry = action_dbus::RegistryProxy::new(&listener)
+        .await
+        .expect("proxy");
+    let mut changed = registry
+        .receive_manifest_changed()
+        .await
+        .expect("subscribed");
     let folder = desk.dir.path().join("data/bardo/intents");
     std::fs::create_dir_all(&folder).expect("dir");
     // A file that renames the memory actions' effects: the built-in declaration stands.
     let memory = include_str!("../../../manifests/org.bardo.Memory.toml")
         .replace("reach = \"hidden\"", "reach = \"offered\"");
     std::fs::write(folder.join("org.bardo.Memory.toml"), memory).expect("write");
-    tokio::time::sleep(Duration::from_millis(400)).await;
+    // A marker written after it: once the registry says the marker's app appeared, a scan that
+    // saw the marker has seen the memory file as well.
+    std::fs::write(
+        folder.join("org.bardo.Mail.toml"),
+        action_fake::MAIL_MANIFEST,
+    )
+    .expect("write");
+    loop {
+        let signal = first(&mut changed).await;
+        if signal.args().expect("args").app() == &"org.bardo.Mail" {
+            break;
+        }
+    }
     let listed = desk.companion.manifests().await.expect("manifests");
     let memory = listed
         .iter()
